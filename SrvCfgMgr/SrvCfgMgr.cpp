@@ -3,13 +3,9 @@
 
 #ifdef LINUX
 #include <FlexLexer.h>
-#include "SrvParser.h"
-#endif
-#ifdef WIN32
-#include "SrvLexer.h"
-#include "SrvParser.h"
 #endif
 
+#include "SrvParser.h"
 #include "SrvCfgMgr.h"
 #include "IfaceMgr.h"
 #include "SrvCfgIface.h"

@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
  *          Marek Senderski <msend@o2.pl>                                    *
  *                                                                           *
- * $Id: DHCPServer.cpp,v 1.3 2004-02-23 00:14:01 thomson Exp $                
+ * $Id: DHCPServer.cpp,v 1.4 2004-02-28 15:33:37 thomson Exp $                
  *                                                                           *
  * released under GNU GPL v2 or later licence                                */
       
@@ -45,6 +45,11 @@ void TDHCPServer::run()
 	if (timeout == DHCPV6_INFINITY) timeout = DHCPV6_INFINITY/2;
 	if (timeout == 0)        timeout = 1;
 	if (serviceShutdown)     timeout = 0;
+#ifdef WIN32
+	// There's no easy way to break select, so just don't sleep
+	// for too long.
+	if (timeout>10) timeout = 10;
+#endif
 
         std::clog << logger::logNotice << "Sleeping for " << timeout << " seconds." << logger::endl;
         SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
@@ -77,12 +82,12 @@ void TDHCPServer::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
-	std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="
-		<< TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << logger::endl;
-    int fd=	sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
-	char buf = CONTROL_MSG;
-    int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
-    sock_del(fd);
+	//std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="
+	//	<< TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << logger::endl;
+    //   int fd=	sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
+	//char buf = CONTROL_MSG;
+    //   int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
+    //   sock_del(fd);
 #endif
 }
 

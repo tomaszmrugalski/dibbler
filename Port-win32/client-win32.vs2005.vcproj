@@ -338,6 +338,9 @@
 					RelativePath="..\ClntCfgMgr\ClntCfgMgr.cpp">
 				</File>
 				<File
+					RelativePath="..\ClntCfgMgr\ClntLexer.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntCfgMgr\ClntParsAddrOpt.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -396,6 +399,9 @@
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntParser.cpp">
 				</File>
 				<File
 					RelativePath="..\CfgMgr\StationID.cpp">
@@ -498,12 +504,6 @@
 			<Filter
 				Name="port-winxp"
 				Filter="">
-				<File
-					RelativePath="ClntLexer.cpp">
-				</File>
-				<File
-					RelativePath="ClntParser.cpp">
-				</File>
 				<File
 					RelativePath="ClntService.cpp">
 				</File>

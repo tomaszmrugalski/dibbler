@@ -1,6 +1,6 @@
  Dibbler README
 ----------------
-$Id: INFO-winxp.txt,v 1.7 2004-02-22 23:11:29 thomson Exp $
+$Id: INFO-winxp.txt,v 1.8 2004-02-28 15:33:37 thomson Exp $
 
 For newest informations, please visit http://klub.com.pl/dhcpv6/
 
@@ -20,10 +20,14 @@ where
 	uninstall - uninstall service
 	run       - run interactively
 
-2. Suggested use it to install as service and run from
-
 2. Config file sanity check has some bugs
 Do not use interface names. Use interface number instead.
+
+3. If you get 10004 error, please add following lines to your
+   client.conf to avoid virtual interfaces configuration:
+iface 1 no-config
+iface 2 no-config
+iface 3 no-config
 
  Compilation
 -------------
