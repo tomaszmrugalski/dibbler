@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.12 2004-06-04 16:55:27 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.13 2004-07-05 00:12:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.11  2004/05/24 00:08:11  thomson
  * *** empty log message ***
  *
@@ -77,6 +80,21 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 
     AddrMgr=new TClntAddrMgr(CfgMgr, CLNTDB_FILE, loadDB);
 
+    // find loopback interface
+    IfaceMgr->firstIface();
+    SmartPtr<TIfaceIface> loopback;
+    SmartPtr<TIfaceIface> ptrIface;
+    while (ptrIface=IfaceMgr->getIface()) {
+	if (!ptrIface->flagLoopback()) {
+	    continue;
+	}
+	loopback = ptrIface;
+	break;
+    }
+    if (!loopback) {
+	Log(Error) << "Loopback interface not found!" << LogEnd;
+    }
+
     if (!CfgMgr->isDone())
     {
         SmartPtr<TClntCfgIface> iface;
@@ -95,46 +113,37 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
             }
         }
 
-        //In my opinion on every interface, which is up
-        //open socket on port 546 and ANY_ADDRESS, through which all messages 
-        //directed to all_dhcp_server_and_relay will be sent and answers will
-        //be received
-        //unsigned char addrlaptop[16]={0xfe,0x80,0,0,0,0,0,0,0x2,0x0,0x39,0xff,0xfe,0x3a,0x1d,0xb2};
-        //unsigned char addrloop[16]={0xfe,0x80,0,0,0,0,0,0,0,0,0,0,0,0,0,1}; 
-
         CfgMgr->firstIface();
-        while(iface=CfgMgr->getIface())
-        {
-            if (!iface->noConfig())
-            {
-                SmartPtr<TIfaceIface> realIface=IfaceMgr->getIfaceByID(iface->getID());
-                if (realIface&&realIface->flagUp()&&realIface->flagRunning())
-                {
-                    realIface->firstLLAddress();
-                    char* llAddr;
-                    while((llAddr=realIface->getLLAddress())&&
-                        (!realIface->addSocket(new TIPv6Addr(llAddr),DHCPCLIENT_PORT,false)));
+        while(iface=CfgMgr->getIface()) {
+	    
+	    // ignore interfaces with no-config flag set
+            if (iface->noConfig())       
+		continue;
 
-                    if (llAddr)
-                    {
-			char buf[48];
-                        std::clog<<logger::logInfo<<"Socket created on ";
-			inet_ntop6(llAddr,buf);
-			std::clog << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
-			this->ctrlIface = realIface->getID();
-			memcpy(this->ctrlAddr,buf,48);
-                    }
-                    else
-                    {
-                        std::clog << logger::logInfo << "Unable to create any socket on iface:"
-				  << iface->getID() 
-				  << " (No appropriate link local address available"
-				  << LogEnd;
-                    }
-                }
-            }
-        }
-
+	    SmartPtr<TIfaceIface> realIface=IfaceMgr->getIfaceByID(iface->getID());
+	    if (realIface&&realIface->flagUp()&&realIface->flagRunning())
+	    {
+		realIface->firstLLAddress();
+		char* llAddr;
+		llAddr=realIface->getLLAddress();
+		SmartPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
+		realIface->addSocket(addr,DHCPCLIENT_PORT,true);
+		loopback->addSocket(addr,DHCPCLIENT_PORT,false);
+		if (llAddr) {
+		    char buf[48];
+		    Log(Info) << "Socket created on ";
+		    inet_ntop6(llAddr,buf);
+		    std::clog << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
+		    this->ctrlIface = realIface->getID();
+		    memcpy(this->ctrlAddr,buf,48);
+		} else {
+		    Log(Info) << "Unable to create any socket on iface:"
+			      << iface->getID() 
+			      << " (No appropriate link-local address available)"
+			      << LogEnd;
+		}
+	    }
+	}
     }
 
     // we're just getting started
@@ -167,15 +176,12 @@ void TClntTransMgr::checkDB()
 
 }
 
-
+/*
+ * this method is called, when no message has been received, but some
+ * action should be taken, e.g. RENEW transmission
+ */
 void TClntTransMgr::doDuties()
 {
-    //Metoda wywo³ywana w momecie, gdy nie przysz³a ¿adna wiadomo¶æ, a
-    //powinna byæ wykonana jaka¶ czynno¶æ zwi±zana z gospodark± adresami
-    //(np. wygenerowanie RENEW/REBIND itp.) lub z rozpoczêtymi transakcjami
-    //(np. retransmisja). Metoda wywo³uje odpowiednio doDuties na wszystkich
-    //wiadomo¶ciach/transakcjach oraz wywo³uje:
-
     // for each message on list, let it do its duties, if timeout is reached
     SmartPtr <TMsg> msg;
     Transactions.first();

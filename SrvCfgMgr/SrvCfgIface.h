@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvCfgIface.h,v 1.5 2004-07-05 00:12:30 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 class TSrvCfgIface;
 #ifndef SRVCONFIFACE_H
 #define SRVCONFIFACE_H
@@ -16,21 +30,22 @@ public:
     TSrvCfgIface(string ifaceName);
     TSrvCfgIface(int ifaceNr);
 
-    void setIfaceName(string ifaceName);
-    void setIfaceID(int ifaceID);
+    void setName(string ifaceName);
+    void setID(int ifaceID);
     int	getID();
     string getName();
 
     void addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass);
-    void firstAddrClass();   
+    void firstAddrClass();
     SmartPtr<TSrvCfgAddrClass> getAddrClass();
+    SmartPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
     SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, 
 					      SmartPtr<TIPv6Addr> clntAddr);
     long countAddrClass();
 
-    void	setNoConfig();
+    void setNoConfig();
 
-    void	setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
+    void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     virtual ~TSrvCfgIface();
     
     TContainer<SmartPtr<TIPv6Addr> > getDNSSrvLst();
@@ -39,25 +54,30 @@ public:
     string getTimeZone();
     unsigned char getPreference();
 
-    void setIfaceMaxLease(long maxLease);
     long getIfaceMaxLease();
+    unsigned long getClntMaxLease();
+
+    // assigned address functions
+    void addClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
+    void delClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
 
 private:
     unsigned char preference;
-    int		ID;
-    string	Name;
-    bool	NoConfig;
-    bool	isUniAddress;
+    int	ID;
+    string Name;
+    bool NoConfig;
+    bool isUniAddress;
     SmartPtr<TIPv6Addr> UniAddress;
     unsigned long IfaceMaxLease;
+    unsigned long ClntMaxLease;
     
-    TContainer <SmartPtr<TSrvCfgAddrClass> > SrvCfgAddrClassLst;
-    TContainer<SmartPtr<TIPv6Addr> > DNSSrv;
-    TContainer<SmartPtr<TIPv6Addr> > NTPSrv;    
+    List(TSrvCfgAddrClass) SrvCfgAddrClassLst;
+    List(TIPv6Addr) DNSSrv;
+    List(TIPv6Addr) NTPSrv;    
 
-    string				Domain;
-    string				TimeZone;
+    string Domain;
+    string TimeZone;
 
 };
 
-#endif /* SRVCONFIFACE_H_HEADER_INCLUDED_C100F216 */
+#endif /* SRVCONFIFACE_H */

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.21 2004-07-01 18:12:46 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.22 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/07/01 18:12:46  thomson
+ * Minor clean up.
+ *
  * Revision 1.20  2004/06/29 22:03:36  thomson
  * *MaxLease option partialy implemented/fixed.
  *
@@ -87,16 +90,16 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
         return;
     }
 
-	// setup workdir
+    // setup workdir
     this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
-
-	// analyse interfaces mentioned in config file
-	if (!this->matchParsedSystemInterfaces(&parser)) {
-		this->IsDone = true;
-		return;
-	}
-
-	// check for invalid values, e.g. T1>T2
+    
+    // analyse interfaces mentioned in config file
+    if (!this->matchParsedSystemInterfaces(&parser)) {
+	this->IsDone = true;
+	return;
+    }
+    
+    // check for invalid values, e.g. T1>T2
     if(!checkConfigConsistency())
     {
         this->IsDone=true;
@@ -106,19 +109,23 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     string duidFile = this->WorkDir+"/"+(string)SRVDUID_FILE;
 
     // load or create DUID
-    if ( !loadDUID(duidFile) ) {
+    if ( !this->loadDUID(duidFile) ) {
 		this->IsDone=true;
 		return;
     }
 
     Log(Info) << "My duid is " << this->DUID->getPlain() << "." << LogEnd;
 
+    this->dump();
+
+    IsDone = false;
+}
+
+void TSrvCfgMgr::dump() {
     std::ofstream xmlDump;
     xmlDump.open(SRVCFGMGR_FILE);
     xmlDump << *this;
     xmlDump.close();
-
-    IsDone = false;
 }
 
 /*
@@ -148,11 +155,11 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 				 << LogEnd;
 			return false;
 		}
-		cfgIface->setIfaceName(ifaceIface->getName());
-		cfgIface->setIfaceID(ifaceIface->getID());
+		cfgIface->setName(ifaceIface->getName());
+		cfgIface->setID(ifaceIface->getID());
 		this->addIface(cfgIface);
 		Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-				     << " has been added." << LogEnd;
+			  << " has been configured." << LogEnd;
     }
 
     if (!cfgIfaceCnt) {
@@ -189,11 +196,19 @@ TSrvCfgMgr::~TSrvCfgMgr() {
 
 /*
  * returns how many addresses can be assigned to this client?
+ * factors used: 
+ * - iface-max-lease
+ * - clntSupported()
+ * - class-max-lease in each class
+ * - assignedCount in each class
+ * return value <= clnt-max-lease <= iface-max-lease
  */
-long TSrvCfgMgr::getMaxAddrsPerClient(SmartPtr<TDUID> clntDuid, 
-				      SmartPtr<TIPv6Addr> clntAddr,  int iface)
+long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid, 
+				 SmartPtr<TIPv6Addr> clntAddr,  int iface)
 {
-    unsigned long cnt=0;
+    // FIXME: long long long int (128bit) could come in handy
+    double avail         = 0; // how many are available?
+    double ifaceAssigned = 0; // how many are assigned on this iface?
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
@@ -202,30 +217,27 @@ long TSrvCfgMgr::getMaxAddrsPerClient(SmartPtr<TDUID> clntDuid,
 	return 0;
     }
 
+    unsigned long ifaceMaxLease = ptrIface->getIfaceMaxLease();
+
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     ptrIface->firstAddrClass();
     while (ptrClass = ptrIface->getAddrClass()) {
 	if (!ptrClass->clntSupported(clntDuid,clntAddr))
 	    continue;
-	// FIXME: class max. lease support is missing
-	cnt += ptrClass->getClientMaxLease();
+	unsigned long classMaxLease;
+	unsigned long classAssigned;
+	double tmp;
+	classMaxLease = ptrClass->getClassMaxLease();
+	classAssigned = ptrClass->getAssignedCount();
+	tmp = classMaxLease - classAssigned;
+	ifaceAssigned += classAssigned;
+	if (tmp>0)
+	    avail += tmp;
     }
-    return cnt;
-}
-
-long TSrvCfgMgr::getFreeAddrsCount( SmartPtr<TDUID> duid, 
-					 SmartPtr<TIPv6Addr> clntAddr,  int iface)
-{
-    //FIXME: I don't know how SrvCfgMgr can count this and what for
-    return 8;
-}
-
-
-//Can client(DUID,clntAddr) have address addr ?
-bool TSrvCfgMgr::addrIsSupported( SmartPtr<TDUID> duid,
-				   SmartPtr<TIPv6Addr> clntAddr ,  SmartPtr<TIPv6Addr> addr) {
-    // FIXME:
-    return true;
+    
+    if (avail > (ifaceMaxLease-ifaceAssigned))
+	avail = ifaceMaxLease-ifaceAssigned;
+    return (long)avail;
 }
 
 /*
@@ -340,6 +352,8 @@ bool TSrvCfgMgr::checkConfigConsistency() {
         }
     }
     return true;
+
+    //FIXME: fail, if configured class is multicast or link-local
 }
 
 
@@ -354,6 +368,30 @@ SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
 	       << ") specifed, cannot get address." << LogEnd;
     return 0; // NULL
 }
+
+
+void TSrvCfgMgr::delClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
+    SmartPtr<TSrvCfgIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Warning) << "Unable to decrease address usage: unknown interface (id=" 
+		     << iface << ")" << LogEnd;
+	return;
+    }
+    ptrIface->delClntAddr(addr);
+}
+
+void TSrvCfgMgr::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
+    SmartPtr<TSrvCfgIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Warning) << "Unable to increase address usage: unknown interface (id=" 
+		     << iface << ")" << LogEnd;
+	return;
+    }
+    ptrIface->addClntAddr(addr);
+}
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

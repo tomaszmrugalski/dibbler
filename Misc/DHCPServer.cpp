@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.11 2004-06-20 19:29:23 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.12 2004-07-05 00:12:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  * Revision 1.10  2004/06/04 16:55:27  thomson
  * *** empty log message ***
  *
@@ -61,9 +64,10 @@ void TDHCPServer::run()
 
         TransMgr->doDuties();
         unsigned int timeout = TransMgr->getTimeout();
-	if (timeout == DHCPV6_INFINITY) timeout = DHCPV6_INFINITY/2;
+	if (timeout == DHCPV6_INFINITY) timeout = DHCPV6_INFINITY;
 	if (timeout == 0)        timeout = 1;
 	if (serviceShutdown)     timeout = 0;
+
 #ifdef WIN32
 	// There's no easy way to break select, so just don't sleep
 	// for too long.

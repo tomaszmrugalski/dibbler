@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.11 2004-06-29 22:03:36 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.12 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/06/29 22:03:36  thomson
+ * *MaxLease option partialy implemented/fixed.
+ *
  * Revision 1.10  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
@@ -28,6 +31,12 @@
 #include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+
+/*
+ * static field initialization
+ */
+unsigned long TSrvCfgAddrClass::staticID=0;
+
  
 TSrvCfgAddrClass::TSrvCfgAddrClass() {
     this->T1Beg    = 0;
@@ -38,6 +47,9 @@ TSrvCfgAddrClass::TSrvCfgAddrClass() {
     this->PrefEnd  = DHCPV6_INFINITY;
     this->ValidBeg = 0;
     this->ValidEnd = DHCPV6_INFINITY;
+    this->ID = staticID++;
+    this->AddrsAssigned = 0;
+    this->AddrsCount = 0;
 }
 
 TSrvCfgAddrClass::~TSrvCfgAddrClass() {
@@ -68,14 +80,6 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
     }
 }
 
-/* FIXME: is this thing work? */
-long TSrvCfgAddrClass::getAddrCount(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr)
-{
-    if ( ClntMaxLease < ClassMaxLease )
-        return ClntMaxLease;
-    else
-        return ClassMaxLease;
-}
 
 
 long TSrvCfgAddrClass::chooseTime(long beg, long end, long clntTime)
@@ -117,13 +121,11 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
     ValidBeg=opt->getValidBeg();
     ValidEnd=opt->getValidEnd();
     
-    ClntMaxLease  = opt->getClntMaxLease();
     ClassMaxLease = opt->getClassMaxLease();
     RapidCommit=opt->getRapidCommit();
     Unicast=opt->getUnicast();
-	//NISServer=opt.NISServer;
-
-	SmartPtr<TStationRange> statRange;
+    
+    SmartPtr<TStationRange> statRange;
     opt->firstRejedClnt();
     while(statRange=opt->getRejedClnt())
         this->RejedClnt.append(statRange);
@@ -133,77 +135,33 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
         this->AcceptClnt.append(statRange);
 	
     opt->firstPool();
-    while(statRange=opt->getPool())
-	    	this->Pool.append(statRange);
+    this->Pool = opt->getPool();
+    if (opt->getPool()) {
+	Log(Warning) << "Two or more pool defined. Only one is used." << LogEnd;
+    }
 
+    // set up address counter counts
+    this->AddrsCount = this->Pool->rangeCount();
+    this->AddrsAssigned = 0;
 }
 
 bool TSrvCfgAddrClass::addrInPool(SmartPtr<TIPv6Addr> addr)
 {
-    Pool.first();
-    SmartPtr<TStationRange> ptrRange;
-    while(ptrRange=Pool.get())
-        if (ptrRange->in(addr))
-            return true;
-    return false;
+    return Pool->in(addr);
 }
 
 unsigned long TSrvCfgAddrClass::countAddrInPool()
 {
-    Pool.first();
-    SmartPtr<TStationRange> ptrRange;
-    unsigned long sum=0;
-    while(ptrRange=Pool.get())
-    {
-        if ((double(sum)+double(ptrRange->rangeCount()))>DHCPV6_INFINITY)
-            return DHCPV6_INFINITY;
-        else
-            sum+=ptrRange->rangeCount();
-    }
-    return sum;
+    return this->AddrsCount;
 }
 
 SmartPtr<TIPv6Addr> TSrvCfgAddrClass::getRandomAddr()
 {
-    int poolNr=rand()%Pool.count();
-    SmartPtr<TStationRange> range;
-    Pool.first();
-    while((range=Pool.get())&&(poolNr>0)) poolNr--;
-    return range->getRandomAddr();
-}
-
-SmartPtr<TIPv6Addr> TSrvCfgAddrClass::getFreeAddr(SmartPtr<TSrvAddrMgr> addrMgr,
-						  SmartPtr<TDUID> clntDuid,
-						  SmartPtr<TIPv6Addr> clntAddr,
-						  SmartPtr<TIPv6Addr> hint) {
-    long cnt=0;
-    SmartPtr<TIPv6Addr> ptrAddr = hint;
-
-    // FIXME: after 1000 tries, return 0
-    while (!addrMgr->addrIsFree(ptrAddr) && (cnt<1000) ) {
-	ptrAddr = this->getRandomAddr();
-	cnt++;
-    }
-    if (cnt==1000) 
-	return 0;
-
-    return ptrAddr;
+    return Pool->getRandomAddr();
 }
 
 unsigned long TSrvCfgAddrClass::getClassMaxLease() {
-    unsigned long addrsInPool = this->countAddrInPool();
-    if (addrsInPool>ClassMaxLease)
-        return ClassMaxLease;
-    else
-        return addrsInPool;
-}
-
-unsigned long TSrvCfgAddrClass::getClientMaxLease()
-{
-    if (this->countAddrInPool()>ClntMaxLease)
-        return this->ClntMaxLease;
-    else
-        return countAddrInPool();
+    return ClassMaxLease;
 }
 
 bool TSrvCfgAddrClass::getRapidCommit()
@@ -211,18 +169,38 @@ bool TSrvCfgAddrClass::getRapidCommit()
     return this->RapidCommit;
 }
 
+unsigned long TSrvCfgAddrClass::getID()
+{
+    return this->ID;
+}
+
+long TSrvCfgAddrClass::incrAssigned(int count) {
+    this->AddrsAssigned += count;
+    return this->AddrsAssigned;
+}
+
+long TSrvCfgAddrClass::decrAssigned(int count) {
+    this->AddrsAssigned -= count;
+    return this->AddrsAssigned;
+}
+
+long TSrvCfgAddrClass::getAssignedCount() {
+    return this->AddrsAssigned;
+}
+
 ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
 {
-    out << "    <class>" << std::endl;
+    out << "    <class id=\"" << addrClass.ID << "\">" << std::endl;
+    out << "      <!-- total addrs in class: " << addrClass.AddrsCount 
+	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
     out << "      <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  
-	<< "\" />" << logger::endl;
+	<< "\" />" << endl;
     out << "      <T2 min=\"" << addrClass.T2Beg << "\" max=\"" << addrClass.T2End  
-	<< "\" />" << logger::endl;
+	<< "\" />" << endl;
     out << "      <pref min=\"" << addrClass.PrefBeg << "\" max=\""<< addrClass.PrefEnd  
-	<< "\" />" <<logger::endl;
+	<< "\" />" <<endl;
     out << "      <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd
 	<< "\" />" << logger::endl;
-    out << "      <ClntMaxLease>" << addrClass.ClntMaxLease << "</ClntMaxLease>" << logger::endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << logger::endl;
     
     if (addrClass.RapidCommit) {
@@ -233,10 +211,8 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     }
     
     SmartPtr<TStationRange> statRange;
-    out << "      <!-- ranges:" << addrClass.Pool.count() << " -->" << logger::endl;
-    addrClass.Pool.first();
-    while(statRange=addrClass.Pool.get())
-	out << *statRange;
+    out << "      <!-- address range -->" << logger::endl;
+    out << *addrClass.Pool;
     
     out << "      <!-- reject-clients ranges:" << addrClass.RejedClnt.count() << " -->" << logger::endl;
     addrClass.RejedClnt.first();

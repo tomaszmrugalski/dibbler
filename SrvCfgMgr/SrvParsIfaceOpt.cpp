@@ -6,20 +6,24 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.2 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.3 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  */
 
 #include "SrvParsIfaceOpt.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 {
-	UniAddress=false;
-	//memset(UniAddress,0,16);
-    Address=new TIPv6Addr();
-	Domain="";
-	TimeZone="";
+    this->UniAddress=false;
+    this->Address=new TIPv6Addr();
+    this->Domain="";
+    this->TimeZone="";
+    this->ClntMaxLease  = ULONG_MAX;
+    this->IfaceMaxLease = ULONG_MAX;
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void)
@@ -116,4 +120,13 @@ void TSrvParsIfaceOpt::setIfaceMaxLease(long maxLease) {
 
 long TSrvParsIfaceOpt::getIfaceMaxLease() {
     return this->IfaceMaxLease;
+}
+
+void TSrvParsIfaceOpt::setClntMaxLease(long clntMaxLease) {
+    this->ClntMaxLease = clntMaxLease;
+}
+
+long TSrvParsIfaceOpt::getClntMaxLease()
+{
+    return this->ClntMaxLease;
 }

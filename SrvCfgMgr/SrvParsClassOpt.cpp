@@ -17,7 +17,6 @@ TSrvParsClassOpt::TSrvParsClassOpt(void)
     
     Unicast=false;
     RapidCommit=false;
-    ClntMaxLease = ULONG_MAX;
     ClassMaxLease= ULONG_MAX;
 }
 
@@ -204,17 +203,9 @@ void TSrvParsClassOpt::setClassMaxLease(long classMaxLease) {
     this->ClassMaxLease = classMaxLease;
 }
 
+
 long TSrvParsClassOpt::getClassMaxLease() {
     return this->ClassMaxLease;
-}
-
-void TSrvParsClassOpt::setClntMaxLease(long clntMaxLease) {
-    this->ClntMaxLease = clntMaxLease;
-}
-
-long TSrvParsClassOpt::getClntMaxLease()
-{
-    return this->ClntMaxLease;
 }
 
 TSrvParsClassOpt::~TSrvParsClassOpt(void)

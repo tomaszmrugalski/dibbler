@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.7 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.8 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  * Revision 1.6  2004/06/21 23:08:49  thomson
  * Minor fixes.
  *
@@ -141,30 +144,35 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     }
 
     // --- check address counts, how many we've got, how many assigned etc. ---
-    unsigned long addrsAssigned  = 0;
-    unsigned long addrsRequested = 0;
-    unsigned long addrsFree      = 0;
-    unsigned long addrsMax       = 0;
+    unsigned long addrsAssigned  = 0; // already assigned
+    unsigned long addrsRequested = 0; // how many requested in this IA
+    unsigned long addrsAvail     = 0; // how many are allowed for client?
+    unsigned long addrsMax       = 0; // clnt-max-lease
+    unsigned long willAssign     = 0; // how many will be assigned?
 
     addrsAssigned = addrMgr->getAddrCount(clntDuid);
     addrsRequested= queryOpt->countAddrs();
-    addrsFree     = this->countFreeAddrsForClient();
-    addrsMax      = cfgMgr->getMaxAddrsPerClient(clntDuid, clntAddr, iface);
+    addrsAvail    = cfgMgr->countAvailAddrs(clntDuid, clntAddr, iface);
+    addrsMax      = cfgMgr->getIfaceByID(iface)->getClntMaxLease();
+
+    willAssign = addrsRequested;
+
+    if (willAssign > addrsMax - addrsAssigned) {
+	Log(Notice) << "Client got " << addrsAssigned << " and requested " 
+		    << addrsRequested << " more, but limit for a client is "
+		    << addrsMax << LogEnd;
+	willAssign = addrsMax - addrsAssigned;
+    }
+
+    if (willAssign > addrsAvail) {
+	Log(Notice) << willAssign << " addrs would be assigned, but only" << addrsAssigned
+		    << " is available." << LogEnd;
+	willAssign = addrsAvail;
+    }
 
     Log(Debug) << "Client has " << addrsAssigned << " addrs, asks for " 
-	       << addrsRequested << ", " << addrsFree << " is free, max. " 
-	       << addrsMax << " can be assigned." << LogEnd;
-
-    if (addrsAssigned+addrsRequested > addrsMax) {
-	Log(Info) << "Client has " << addrsAssigned << " addrs and asks for additional "
-		  << addrsRequested << ", but max. addrs per client is " << addrsMax << LogEnd;
-    }
-
-    if (addrsRequested > addrsFree) {
-	Log(Info) << "Client has " << addrsAssigned << " addrs and asks for additional "
-		  << addrsRequested << ", but there are only " << addrsMax 
-		  << " free addrs left." << LogEnd;
-    }
+	       << addrsRequested << ", " << addrsAvail << " is available, limit for client is "
+	       << addrsMax << ", " << willAssign << " will be assigned." << LogEnd;
 
     // --- ok, let's assign those damn addresses ---
     SmartPtr<TOpt> opt;
@@ -180,12 +188,12 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 	    optAddr = (Ptr*) opt;
 	    hint    = optAddr->getAddr();
 	    
-	    if (addrsFree) {
+	    if (willAssign) {
 		// we've got free addrs left, assign one of them
 		// always register this address as used by this client
 		// (if this is solicit, this addr will be released later)
-		assignAddr(hint, optAddr->getPref(), optAddr->getValid(), quiet);
-		addrsFree--;
+		this->assignAddr(hint, optAddr->getPref(), optAddr->getValid(), quiet);
+		willAssign--;
 		addrsAssigned++;
 
 	    } else {
@@ -234,9 +242,9 @@ void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
 	optAddr = (Ptr*) opt;
 	addr = optAddr->getAddr();
 	this->AddrMgr->delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
+	this->CfgMgr->delClntAddr(this->Iface, addr);
     }
 }
-
 
 SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
 						    unsigned long valid,
@@ -265,45 +273,11 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
     // register this address as used by this client
     this->AddrMgr->addClntAddr(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, 
 			       this->T1, this->T2, addr, pref, valid, quiet);
+    this->CfgMgr->addClntAddr(this->Iface, addr);
     
     return optAddr;
 }
 
-unsigned long TSrvOptIA_NA::countFreeAddrsForClient()
-{
-    unsigned long maxAddrs;
-    maxAddrs = this->CfgMgr->getMaxAddrsPerClient(this->ClntDuid, 
-						  this->ClntAddr, 
-						  this->Iface) -
-	this->AddrMgr->getAddrCount(this->ClntDuid);
-    
-    // FIXME: unsigned long long long int (128bit) type would come in handy here
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
-    SmartPtr<TSrvCfgIface> ptrIface;
-
-    this->CfgMgr->firstIface();
-    while( (ptrIface=this->CfgMgr->getIface()) 
-	   && (ptrIface->getID()!=this->Iface) );
-    // FIXME: if (!ptrIface) ...
-
-    //tmpcnt will contain maximum number of addresses, which can be assigned
-    //to this client
-    unsigned long tmpcnt=0;
-    ptrIface->firstAddrClass();
-    while (ptrClass = ptrIface->getAddrClass() ) {
-        if (ptrClass->clntSupported(this->ClntDuid,this->ClntAddr)) {
-            tmpcnt += ptrClass->getAddrCount(this->ClntDuid, this->ClntAddr);
-        }
-    }
-    //substract addresses which has been already assigned to this client
-    tmpcnt -= this->AddrMgr->getAddrCount(this->ClntDuid);
-
-    float bigNumber = this->CfgMgr->getFreeAddrsCount(this->ClntDuid, this->ClntAddr, this->Iface);
-    if (maxAddrs > bigNumber ) {
-        maxAddrs = (int) bigNumber;
-    }
-    return maxAddrs;
-}
 
 // constructor used only in RENEW, REBIND, DECLINE and RELEASE
 TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.3 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.4 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  */
 
 #ifndef TSRCPARSIFACEOPT_H_
@@ -43,12 +46,15 @@ public:
     void setTimeZone(string timeZone);
     string getTimeZone();
 
+    void setClntMaxLease(long maxLeases);
+    long getClntMaxLease();
     void setIfaceMaxLease(long maxLease);
     long getIfaceMaxLease();
 
 private:
     bool UniAddress;
     long IfaceMaxLease;
+    long ClntMaxLease;
     SmartPtr<TIPv6Addr> Address;
     TContainer<SmartPtr<TIPv6Addr> > DNSSrv;		
     string Domain;			

@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.6 2004-04-10 12:18:01 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.7 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/04/10 12:18:01  thomson
+ * Numerous fixes: LogName, LogMode options added, dns-servers changed to
+ * dns-server, '' around strings are no longer needed.
+ *
  * Revision 1.5  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -45,8 +49,6 @@ int TIfaceSocketIPv6::Count=0;
 TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface, int ifaceid, int port,
 				   SmartPtr<TIPv6Addr> addr, bool ifaceonly) { 
     if (this->Count==0) {
-	// first socket created, have to run some weird POSIX FD_ZERO macro.
-	std::clog << logger::logDebug << "First socket created, zeroing FDS" << logger::endl;
 	FD_ZERO(getFDS());
     }
     this->Count++;
@@ -62,7 +64,6 @@ TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface, int ifaceid, int port,
  */
 TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface,int ifaceid, int port,bool ifaceonly) {
     if (this->Count==0) {
-	std::clog << logger::logDebug << "First socket created, zeroing FDS" << logger::endl;
 	FD_ZERO(getFDS());
     }
 
@@ -109,7 +110,7 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
     switch (sock) {
     case -7:
         std::clog << logger::logError 
-		  << "getaddrinfo() failed. Is IPv6 protocol supported by kernel?" 
+		  << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" 
 		  << logger::endl;
         break;
     case -1:

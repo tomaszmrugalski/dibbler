@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.8 2004-06-20 21:00:45 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.9 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/20 21:00:45  thomson
+ * Various fixes.
+ *
  * Revision 1.7  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -342,13 +345,13 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,
 						 "No such IA is bound.",this) );
 	    } else {
+		CfgMgr->delClntAddr(this->Iface,addr->getAddr());
 		if (AddrMgr->delClntAddr(clntID->getDUID(),
 					 clntIA->getIAID(),
 					 addr->getAddr(),
 					 false) )
 		    anyDeleted=true;                    
-		else
-		{
+		else {
 		    Log(Warning) << "No such binding found: "
 				 << "IAID:" <<clntIA->getIAID() 
 				 << "Address:"<< addr->getAddr()->getPlain()

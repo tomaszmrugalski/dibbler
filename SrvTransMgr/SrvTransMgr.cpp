@@ -218,6 +218,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
     
     // save DB state regardless of action taken
     AddrMgr->dbStore();
+    CfgMgr->dump();
 }	
 
 void TSrvTransMgr::doDuties()

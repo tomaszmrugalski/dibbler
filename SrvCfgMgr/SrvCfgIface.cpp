@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.9 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.10 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  * Revision 1.8  2004/06/28 21:34:18  thomson
  * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
  *
@@ -31,6 +34,46 @@ void TSrvCfgIface::firstAddrClass() {
 
 SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
     return SrvCfgAddrClassLst.get();
+}
+
+SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
+    this->firstAddrClass();
+    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    while (ptrClass = this->getAddrClass()) {
+	if (ptrClass->getID() == id)
+	    return ptrClass;
+    }
+    return 0;
+}
+
+void TSrvCfgIface::addClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
+    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    this->firstAddrClass();
+    while (ptrClass = this->getAddrClass() ) {
+	if (ptrClass->addrInPool(ptrAddr)) {
+	    Log(Debug) << "Address usage for class " << ptrClass->getID()
+		       << " increased by 1." << LogEnd;
+	    ptrClass->incrAssigned();
+	    return;
+	}
+    }
+    Log(Warning) << "Unable to increase address usage: no class found for " 
+		 << *ptrAddr << LogEnd;
+}
+
+void TSrvCfgIface::delClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
+    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    this->firstAddrClass();
+    while (ptrClass = this->getAddrClass() ) {
+	if (ptrClass->addrInPool(ptrAddr)) {
+	    ptrClass->decrAssigned();
+	    Log(Debug) << "Address usage for class " << ptrClass->getID()
+		       << " decreased by 1." << LogEnd;
+	    return;
+	}
+    }
+    Log(Warning) << "Unable to decrease address usage: no class found for " 
+		 << *ptrAddr << LogEnd;
 }
 
 SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid, 
@@ -62,6 +105,7 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->Domain        = opt->getDomain();
     this->TimeZone      = opt->getTimeZone();
     this->IfaceMaxLease = opt->getIfaceMaxLease();
+    this->ClntMaxLease  = opt->getClntMaxLease();
     
     SmartPtr<TIPv6Addr> stat;
 
@@ -108,11 +152,11 @@ unsigned char TSrvCfgIface::getPreference() {
     return this->preference;
 }
 
-void TSrvCfgIface::setIfaceName(string ifaceName) {
+void TSrvCfgIface::setName(string ifaceName) {
 	this->Name=ifaceName;
 }
 
-void TSrvCfgIface::setIfaceID(int ifaceID) {
+void TSrvCfgIface::setID(int ifaceID) {
 	this->ID=ifaceID;
 }
 
@@ -136,12 +180,14 @@ string TSrvCfgIface::getTimeZone() {
     return this->TimeZone;
 }
 
-void TSrvCfgIface::setIfaceMaxLease(long maxLease) {
-    this->IfaceMaxLease=maxLease;
-}
 
 long TSrvCfgIface::getIfaceMaxLease() {
     return this->IfaceMaxLease;
+}
+
+unsigned long TSrvCfgIface::getClntMaxLease()
+{
+    return this->ClntMaxLease;
 }
 
 // --------------------------------------------------------------------
@@ -165,6 +211,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     }
     out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << logger::endl;
+    out << "    <clntMaxLease>" << iface.ClntMaxLease << "</clntMaxLease>" << logger::endl;
     
     SmartPtr<TIPv6Addr> stat;
     out << "    <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;

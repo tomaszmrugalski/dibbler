@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.7 2004-07-01 18:13:51 thomson Exp $
+ * $Id: layer3.c,v 1.8 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/07/01 18:13:51  thomson
+ * Sockets are now bound to specific interface (bug #46)
+ *
  * Revision 1.6  2004/06/04 20:54:34  thomson
  * *** empty log message ***
  *
@@ -308,9 +311,11 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	return -8;
     }
 
-    if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
-      // Unable to bind to interface
-      return -10;
+    if (thisifaceonly) {
+	if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
+	    // Unable to bind to interface
+	    return -10;
+	}
     }
 
     // ???

@@ -526,6 +526,7 @@ InterfaceOptionDeclaration
 | DomainOption
 | TimeZoneOption
 | IfaceMaxLeaseOption
+| ClntMaxLeaseOption
 ;
 
 ClassOptionDeclaration
@@ -540,7 +541,6 @@ ClassOptionDeclaration
 | UnicastOption
 | RapidCommitOption
 | ClassMaxLeaseOption
-| ClntMaxLeaseOption
 ;
 
 %%

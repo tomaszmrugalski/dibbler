@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.6 2004-06-29 22:03:36 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.7 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/29 22:03:36  thomson
+ * *MaxLease option partialy implemented/fixed.
+ *
  * Revision 1.5  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
@@ -47,27 +50,24 @@ class TSrvCfgAddrClass
     //Is client with this DUID and IP address supported?
     bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
     
-    //How many addresses can be assigned to this particular client?
-    long getAddrCount(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
-    
     //checks if the address belongs to the pool
     bool addrInPool(SmartPtr<TIPv6Addr> addr);
     unsigned long countAddrInPool();
     SmartPtr<TIPv6Addr> getRandomAddr();
-    SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TSrvAddrMgr> addrMgr,
-				    SmartPtr<TDUID> clntDuid,
-				    SmartPtr<TIPv6Addr> clntAddr,
-				    SmartPtr<TIPv6Addr> hint);
     
     unsigned long getT1(long clntT1);
     unsigned long getT2(long clntT2);
     unsigned long getPref(long clntPref);
     unsigned long getValid(long clntValid);
     unsigned long getClassMaxLease();
-    unsigned long getClientMaxLease();
+    unsigned long getID();
+
+    long getAssignedCount();
+    long incrAssigned(int count=1);
+    long decrAssigned(int count=1);
+
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     bool getRapidCommit();
-    
     virtual ~TSrvCfgAddrClass();
  private:
     long T1Beg;
@@ -80,16 +80,20 @@ class TSrvCfgAddrClass
     long ValidEnd;
     
     long chooseTime(long beg, long end, long clntTime);
-
-    int Prefix;
-    int Name;
+    
+    unsigned long ID;
+    static unsigned long staticID;
 
     TContainer<SmartPtr<TStationRange> > RejedClnt;
     TContainer<SmartPtr<TStationRange> > AcceptClnt;
-    TContainer<SmartPtr<TStationRange> > Pool;
+    SmartPtr<TStationRange> Pool;
 
-    unsigned long ClntMaxLease;
     unsigned long ClassMaxLease;
+
+    unsigned long AddrsAssigned;
+
+    unsigned long AddrsCount;
+    
     bool Unicast;		
     bool RapidCommit;	
 };

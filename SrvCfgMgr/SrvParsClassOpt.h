@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsClassOpt.h,v 1.3 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvParsClassOpt.h,v 1.4 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  */
 
 class TSrvParsClassOpt;
@@ -77,9 +80,7 @@ class TSrvParsClassOpt
     bool getRapidCommit();
 
     // leases count
-    void setClntMaxLease(long maxLeases);
     void setClassMaxLease(long maxClntLeases);
-    long getClntMaxLease();
     long getClassMaxLease();
 
 private:
@@ -101,6 +102,5 @@ private:
     bool Unicast;
     bool RapidCommit;
     long ClassMaxLease;
-    long ClntMaxLease;
 };
 #endif

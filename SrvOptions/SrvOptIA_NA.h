@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptIA_NA.h,v 1.6 2004-06-20 21:00:45 thomson Exp $
+ * $Id: SrvOptIA_NA.h,v 1.7 2004-07-05 00:12:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/20 21:00:45  thomson
+ * Various fixes.
+ *
  * Revision 1.5  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -77,7 +80,7 @@ class TSrvOptIA_NA : public TOptIA_NA
 					  unsigned long valid,
 					  bool quiet);
     SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TIPv6Addr> hint);
-    unsigned long countFreeAddrsForClient();
+
 };
 
 
