@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.5 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.6 2004-06-29 22:03:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  * Revision 1.4  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *
@@ -60,8 +63,8 @@ class TSrvCfgAddrClass
     unsigned long getT2(long clntT2);
     unsigned long getPref(long clntPref);
     unsigned long getValid(long clntValid);
-    unsigned long getMaxLease();
-    unsigned long getMaxClientLease();
+    unsigned long getClassMaxLease();
+    unsigned long getClientMaxLease();
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     bool getRapidCommit();
     

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.10 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.11 2004-06-29 22:03:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  * Revision 1.9  2004/06/28 21:34:18  thomson
  * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
  *
@@ -187,7 +190,7 @@ SmartPtr<TIPv6Addr> TSrvCfgAddrClass::getFreeAddr(SmartPtr<TSrvAddrMgr> addrMgr,
     return ptrAddr;
 }
 
-unsigned long TSrvCfgAddrClass::getMaxLease() {
+unsigned long TSrvCfgAddrClass::getClassMaxLease() {
     unsigned long addrsInPool = this->countAddrInPool();
     if (addrsInPool>ClassMaxLease)
         return ClassMaxLease;
@@ -195,7 +198,7 @@ unsigned long TSrvCfgAddrClass::getMaxLease() {
         return addrsInPool;
 }
 
-unsigned long TSrvCfgAddrClass::getMaxClientLease()
+unsigned long TSrvCfgAddrClass::getClientMaxLease()
 {
     if (this->countAddrInPool()>ClntMaxLease)
         return this->ClntMaxLease;

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.19 2004-06-28 22:37:59 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.20 2004-06-29 22:03:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/06/28 22:37:59  thomson
+ * Minor changes.
+ *
  * Revision 1.18  2004/06/20 21:00:45  thomson
  * Various fixes.
  *
@@ -179,10 +182,13 @@ TSrvCfgMgr::~TSrvCfgMgr() {
     Log(Debug) << "SrvCfgMgr cleanup." << LogEnd;
 }
 
-
-long TSrvCfgMgr::getMaxAddrsPerClient(SmartPtr<TDUID> duid, 
+/*
+ * returns how many addresses can be assigned to this client?
+ */
+long TSrvCfgMgr::getMaxAddrsPerClient(SmartPtr<TDUID> clntDuid, 
 				      SmartPtr<TIPv6Addr> clntAddr,  int iface)
 {
+    unsigned long cnt=0;
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
@@ -190,12 +196,16 @@ long TSrvCfgMgr::getMaxAddrsPerClient(SmartPtr<TDUID> duid,
 		  << LogEnd;
 	return 0;
     }
-    Log(Debug) << "Max lease per client is " << ptrIface->getIfaceMaxLease()
-	       << "," << LogEnd;
 
-    //FIXME: For all classes by which client is supported get MaxAddrPerClient
-    //and return sum of this value (it must be smaller then MAX_LONG)
-    return 10;
+    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    ptrIface->firstAddrClass();
+    while (ptrClass = ptrIface->getAddrClass()) {
+	if (!ptrClass->clntSupported(clntDuid,clntAddr))
+	    continue;
+	// FIXME: class max. lease support is missing
+	cnt += ptrClass->getClientMaxLease();
+    }
+    return cnt;
 }
 
 long TSrvCfgMgr::getFreeAddrsCount( SmartPtr<TDUID> duid, 
