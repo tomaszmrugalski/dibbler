@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.3 2005-01-08 16:52:04 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.4 2005-01-25 00:32:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.2  2005/01/03 23:13:57  thomson
  * Partial relay implementation.
  *
@@ -34,7 +37,8 @@ typedef struct Relay TRelay;
 class TSrvIfaceIface: public TIfaceIface {
  public:
     TSrvIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
-		   int maclen, char* llAddr, int llAddrCnt, int hwType);
+		   int maclen, char* llAddr, int llAddrCnt, char * globalAddr, 
+		   int globalAddrCnt, int hwType);
 
     friend ostream & operator <<(ostream & strum, TSrvIfaceIface &x);
 

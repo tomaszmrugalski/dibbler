@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.4 2005-01-03 21:55:47 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.5 2005-01-25 00:32:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/03 21:55:47  thomson
+ * Minor print change.
+ *
  * Revision 1.3  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -30,8 +33,9 @@
  * stores informations about interface
  */
 TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* mac, 
-				 int maclen, char* llAddr, int llAddrCnt, int hwType)
-    :TIfaceIface(name, id, flags, mac, maclen, llAddr, llAddrCnt, hwType) {
+				 int maclen, char* llAddr, int llAddrCnt, char * globalAddr,
+				 int globalAddrCnt, int hwType)
+    :TIfaceIface(name, id, flags, mac, maclen, llAddr, llAddrCnt, globalAddr, globalAddrCnt, hwType) {
     this->DNSServerLst.clear();
     this->DomainLst.clear();
     this->NTPServerLst.clear();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.4 2005-01-11 22:53:36 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.5 2005-01-25 00:32:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/11 22:53:36  thomson
+ * Relay skeleton implemented.
+ *
  * Revision 1.3  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -26,8 +29,9 @@
   this one is used to create relay interfaces
 **/
 TSrvIfaceIface::TSrvIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
-			 int maclen, char* llAddr, int llAddrCnt, int hwType)
-    :TIfaceIface(name,id, flags, mac, maclen, llAddr, llAddrCnt, hwType)
+			       int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalAddrCnt,
+			       int hwType)
+    :TIfaceIface(name,id, flags, mac, maclen, llAddr, llAddrCnt, globalAddr, globalAddrCnt, hwType)
 {
     this->Relay = false;
     this->RelaysCnt = 0;

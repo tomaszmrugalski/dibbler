@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.16 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.17 2005-01-25 00:32:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/01/08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.15  2004/12/27 20:48:22  thomson
  * Problem with absent link local addresses fixed (bugs #90, #91)
  *
@@ -200,6 +203,8 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
 							ptr->maclen,
 							ptr->linkaddr,
 							ptr->linkaddrcount,
+							ptr->globaladdr,
+							ptr->globaladdrcount,
 							ptr->hardwareType));
         this->IfaceLst.append((Ptr*) iface);
         ptr = ptr->next;

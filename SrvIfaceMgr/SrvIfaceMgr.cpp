@@ -56,12 +56,14 @@ TSrvIfaceMgr::TSrvIfaceMgr(string xmlFile)
 		    << ptr->flags << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
         SmartPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
-							ptr->flags,
-							ptr->mac,
-							ptr->maclen,
-							ptr->linkaddr,
-							ptr->linkaddrcount,
-							ptr->hardwareType));
+						       ptr->flags,
+						       ptr->mac,
+						       ptr->maclen,
+						       ptr->linkaddr,
+						       ptr->linkaddrcount,
+						       ptr->globaladdr,
+						       ptr->globaladdrcount,
+						       ptr->hardwareType));
         this->IfaceLst.append((Ptr*) iface);
         ptr = ptr->next;
     }
@@ -196,12 +198,12 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int in
     }
 
     SmartPtr<TSrvIfaceIface> relay = new TSrvIfaceIface((const char*)name.c_str(), ifindex, 
-							0,  // flags
-							0,  // MAC
-							0,  // MAC length
-							0,  // link address
-							0,  // link address count
-							0); // hardware type
+							0,   // flags
+							0,   // MAC
+							0,   // MAC length
+							0,0, // link address
+							0,0, // global addresses
+							0);  // hardware type
     relay->setUnderlaying(under);
     this->IfaceLst.append((Ptr*)relay);
 

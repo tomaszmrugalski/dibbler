@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.h,v 1.3 2004-11-01 23:31:24 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.4 2005-01-25 00:32:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/11/01 23:31:24  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.2  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -29,7 +32,8 @@ class TClntIfaceIface: public TIfaceIface {
  public:
     friend ostream & operator <<(ostream & strum, TClntIfaceIface &x);
     TClntIfaceIface(char * name, int id, unsigned int flags, char* mac, 
-		    int maclen, char* llAddr, int llAddrCnt, int hwType);
+		    int maclen, char* llAddr, int llAddrCnt, char * globalAddr, 
+		    int globalAddrCnt, int hwType);
     ~TClntIfaceIface();
 
     bool setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
