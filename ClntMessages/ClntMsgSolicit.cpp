@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.3 2004-04-12 21:46:59 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.4 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/04/12 21:46:59  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -248,7 +251,7 @@ int TClntMsgSolicit::getMaxPreference()
 {
     if (AnswersLst.count() == 0)
 	return -1;
-    unsigned int max = 0;
+    int max = 0;
     
     SmartPtr<TClntMsgAdvertise> ptr;
     AnswersLst.first();
@@ -270,7 +273,7 @@ void TClntMsgSolicit::sortAnswers()
     // sort ADVERTISE by the PREFERENCE value
     SmartPtr<TClntMsgAdvertise> ptr;
     while (AnswersLst.count()) {
-	unsigned int max = getMaxPreference();
+	int max = getMaxPreference();
 	AnswersLst.first();
 	while ( ptr = (Ptr*) AnswersLst.get() ) {
 	    if (ptr->getPreference() == max) 

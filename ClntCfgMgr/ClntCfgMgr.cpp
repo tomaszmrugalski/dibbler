@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.16 2004-05-23 23:46:02 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.17 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/05/23 23:46:02  thomson
+ * *** empty log message ***
+ *
  * Revision 1.15  2004/05/23 22:37:54  thomson
  * *** empty log message ***
  *
@@ -62,20 +65,20 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     // parse config file
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
-	Log(logCrit) << "Unable to open " << cfgFile << " file." << logger::endl; 
+	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
 	this->IsDone = true;
         return;
     }
     yyFlexLexer lexer(&f,&clog);
     clntParser parser(&lexer);
-    std::clog << logger::logDebug << "Parsing " << cfgFile << "..." << logger::endl;
+    std::clog << logger::logDebug << "Parsing " << cfgFile << "..." << LogEnd;
     result = parser.yyparse();
-    std::clog << logger::logDebug << "Parsing " << cfgFile << " done." << logger::endl;
+    std::clog << logger::logDebug << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
 
     if (result) {
         //Result!=0 means config errors. Finish whole DHCPClient 
-        Log(logCrit) << "Config error." << logger::endl;
+        Log(Crit) << "Config error." << LogEnd;
         IsDone = true; 
         this->DUID=new TDUID();
         return;
@@ -115,7 +118,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
     int cfgIfaceCnt;
     cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
-    Log(logDebug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCONF_FILE << logger::endl;
+    Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCONF_FILE << LogEnd;
 
     SmartPtr<TClntCfgIface> cfgIface;
     SmartPtr<TIfaceIface> ifaceIface;
@@ -132,14 +135,14 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    }
 
 	    if (!ifaceIface) {
-		Log(logError) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+		Log(Error) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
 			      << " specified in " << CLNTCFGMGR_FILE << " is not present in the system."
-			      << logger::endl;
+			      << LogEnd;
 		continue;
 	    }
 	    if (cfgIface->noConfig()) {
-		Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			       << " has flag no-config set, so it is ignored." << logger::endl;
+		Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			       << " has flag no-config set, so it is ignored." << LogEnd;
 		continue;
 	    }
 
@@ -147,37 +150,37 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    cfgIface->setIfaceID(ifaceIface->getID());
 
 	    this->addIface(cfgIface);
-	    Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			 << " has been added." << logger::endl;
+	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			 << " has been added." << LogEnd;
 	}
     } else {
 	// user didn't specified any interfaces in config file, so
 	// we'll try to configure each interface we could find
-	Log(logWarning) << CLNTCFGMGR_FILE << " does not contain any interface definitions."
-			<< logger::endl;
+	Log(Warning) << CLNTCFGMGR_FILE << " does not contain any interface definitions."
+			<< LogEnd;
 	
 	IfaceMgr->firstIface();
 	while ( ifaceIface = IfaceMgr->getIface() ) {
 	    // for each interface present in the system...
 	    if (!ifaceIface->flagUp()) {
-		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			       << " is down, ignoring." << logger::endl;
+		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			       << " is down, ignoring." << LogEnd;
 		continue;
 	    }
 	    if (!ifaceIface->flagRunning()) {
-		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			       << " has flag RUNNING not set, ignoring." << logger::endl;
+		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			       << " has flag RUNNING not set, ignoring." << LogEnd;
 		continue;
 	    }
 	    if (!ifaceIface->flagMulticast()) {
-		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			       << " is not multicast capable, ignoring." << logger::endl;
+		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			       << " is not multicast capable, ignoring." << LogEnd;
 		continue;
 	    }
 	    if ( !(ifaceIface->getMacLen() > 5) ) {
-		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
 			       << " has MAC address length " << ifaceIface->getMacLen() 
-			       << " (6 or more required), ignoring." << logger::endl;
+			       << " (6 or more required), ignoring." << LogEnd;
 		continue;
 	    }
 
@@ -206,8 +209,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    // ... which is added to ClntCfgMgr
 	    this->addIface(cfgIface);
 
-	    Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			 << " has been added." << logger::endl;
+	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			 << " has been added." << LogEnd;
 	}
     }
     return true;
@@ -303,7 +306,7 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
     }
     if (! ptrIface) {
         std::clog << logger::logError <<"ClntCfgMgr: Unable to set IA state (id=" << iaid 
-            << "):Interface " << iface << " not found." << logger::endl;
+            << "):Interface " << iface << " not found." << LogEnd;
         return false;
     }
 
@@ -322,7 +325,7 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
         }
     }
     std::clog << logger::logError << "ClntCfgMgr: Unable to set IA state (id=" 
-        << iaid << ")" << logger::endl;
+        << iaid << ")" << LogEnd;
     return false;
 }	    
 
@@ -346,7 +349,7 @@ bool TClntCfgMgr::checkConfigConsistency()
                 clog<<logger::logCrit
                     <<"Wrong time zone option for:"
                     <<"iface(id/name)"<<ptrIface->getID()<<"/"
-                    <<ptrIface->getName() << logger::endl;
+                    <<ptrIface->getName() << LogEnd;
                 return !(IsDone=true);
             }
         }
@@ -360,9 +363,9 @@ bool TClntCfgMgr::checkConfigConsistency()
                 if ((unsigned long)ptrIA->getT2()<(unsigned long)ptrIA->getT1()) 
                 {
                     clog<<logger::logCrit
-                        <<"T1 can't be lower than T2 for IA:"<<*ptrIA << logger::endl
+                        <<"T1 can't be lower than T2 for IA:"<<*ptrIA << LogEnd
                         <<"in iface(id/name)"<<ptrIface->getID()<<"/"
-                        <<ptrIface->getName() << logger::endl;
+                        <<ptrIface->getName() << LogEnd;
                     return !(IsDone=true);
                 }
                 SmartPtr<TClntCfgAddr> ptrAddr;
@@ -371,22 +374,22 @@ bool TClntCfgMgr::checkConfigConsistency()
                 {
                     if((unsigned long)ptrAddr->getPref()>(unsigned long)ptrAddr->getValid())
                     {
-                        clog<<logger::logCrit
-                        <<"Prefered time:" <<ptrAddr->getPref()
-                        <<"can't be lower than Valid lifetime:"<<ptrAddr->getValid()
-                        <<"for IA:"<<*ptrIA << logger::endl
-                        <<"in iface(id/name)"<<ptrIface->getID()<<"/"
-                        <<ptrIface->getName() << logger::endl;
+                        Log(Crit)
+                        << "Prefered time " << ptrAddr->getPref()
+                        << " can't be lower than Valid lifetime " << ptrAddr->getValid()
+                        << "for IA:" << *ptrIA 
+                        << "in iface(id/name)" << ptrIface->getName() << "/"
+                        << ptrIface->getID() << LogEnd;
                         return !(IsDone=true);
                     }
                     if ((unsigned long)ptrIA->getT1()>(unsigned long)ptrAddr->getValid())
                     {
-                        clog<<logger::logCrit
+			Log(Crit)
                         <<"Valid lifetime:"<<ptrAddr->getValid()
                         <<"can't be lower than T1 "<<ptrIA->getT1()
-                        <<"(address can't be renewed) in IA:"<<*ptrIA << logger::endl
+                        <<"(address can't be renewed) in IA:"<<*ptrIA << LogEnd
                         <<"in iface(id/name)"<<ptrIface->getID()<<"/"
-                        <<ptrIface->getName() << logger::endl;
+                        <<ptrIface->getName() << LogEnd;
                         return !(IsDone=true);
                     }
                 }

@@ -176,10 +176,10 @@ int start() {
 int stop() {
     int pid = getClientPID();
     if (pid==-1) {
-	Log(logCrit) << "Client is not running." << endl;
+	Log(Crit) << "Client is not running." << endl;
 	return -1;
     }
-    Log(logCrit) << "Sending KILL signal to process " << pid << endl;
+    Log(Crit) << "Sending KILL signal to process " << pid << endl;
     kill(pid, SIGTERM);
     return 0;
 }

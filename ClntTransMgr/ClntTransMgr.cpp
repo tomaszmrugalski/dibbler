@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.11 2004-05-24 00:08:11 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.12 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/05/24 00:08:11  thomson
+ * *** empty log message ***
+ *
  * Revision 1.10  2004/05/23 22:37:54  thomson
  * *** empty log message ***
  *
@@ -117,7 +120,7 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 			char buf[48];
                         std::clog<<logger::logInfo<<"Socket created on ";
 			inet_ntop6(llAddr,buf);
-			std::clog << buf << "/port=" << DHCPCLIENT_PORT << logger::endl;
+			std::clog << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
 			this->ctrlIface = realIface->getID();
 			memcpy(this->ctrlAddr,buf,48);
                     }
@@ -126,7 +129,7 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
                         std::clog << logger::logInfo << "Unable to create any socket on iface:"
 				  << iface->getID() 
 				  << " (No appropriate link local address available"
-				  << logger::endl;
+				  << LogEnd;
                     }
                 }
             }
@@ -189,7 +192,7 @@ void TClntTransMgr::doDuties()
 	    while (ptrOpt = msg->getOption()) {
 		std::clog << " " << ptrOpt->getOptType();
 	    }
-	    std::clog << ")" << logger::endl;
+	    std::clog << ")" << LogEnd;
             msg->doDuties();
 	}
     }
@@ -264,7 +267,7 @@ void TClntTransMgr::shutdown()
 {
     this->Shutdown = true;
 
-    std::clog << logger::logNotice << "Shutting down entire client." << logger::endl;
+    std::clog << logger::logNotice << "Shutting down entire client." << LogEnd;
 
     // delete all transactions
     Transactions.clear();
@@ -306,7 +309,7 @@ void TClntTransMgr::shutdown()
                     ptrIface = IfaceMgr->getIfaceByID(ptrNextIA->getIface());
                     if (!ptrIface) {
                         std::clog << logger::logError << "Unable to find " << ptrNextIA->getIface()
-                            << " interface while releasing address." << logger::endl;
+                            << " interface while releasing address." << LogEnd;
                         break;
                     }
                     ptrNextIA->firstAddr();
@@ -344,7 +347,7 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
     if (!found) 
         std::clog << logger::logWarning << "Message with wrong transID (" 
 		  << hex << msgAnswer->getTransID() << dec
-        << ") received. Ignoring." << logger::endl;
+        << ") received. Ignoring." << LogEnd;
     AddrMgr->dbStore();
 }
 
@@ -359,11 +362,11 @@ unsigned long TClntTransMgr::getTimeout()
 
     addrTimeout = AddrMgr->getTimeout();
 //    std::clog << logger::logDebug << "AddrMgr returned " << addrTimeout 
-//        << " timeout." << logger::endl;
+//        << " timeout." << LogEnd;
 
     addrTentativeTimeout = AddrMgr->getTentativeTimeout();
 //    std::clog << logger::logDebug << "AddrMgr returned " << addrTentativeTimeout 
-//        << " tentative timeout." << logger::endl;
+//        << " tentative timeout." << LogEnd;
     if (addrTentativeTimeout < addrTimeout)
         addrTimeout = addrTentativeTimeout;
 
@@ -376,7 +379,7 @@ unsigned long TClntTransMgr::getTimeout()
 //        std::clog << logger::logDebug << "Msg (transID=" 
 //		  << hex << ptrMsg->getTransID() << dec
 //		  << " type:"<<ptrMsg->getType()
-//		  <<") returned timemout " << ptrMsg->getTimeout() << logger::endl;
+//		  <<") returned timemout " << ptrMsg->getTimeout() << LogEnd;
     }
     if (timeout < addrTimeout)
         return timeout;
@@ -399,14 +402,14 @@ void TClntTransMgr::sendRequest( TContainer< SmartPtr<TOpt> > requestOptions,
 void TClntTransMgr::sendRelease( List(TAddrIA) IALst)
 {
     if (!IALst.count()) {
-        std::clog << logger::logError << "Unable to send RELEASE with empty IAs list." << logger::endl;
+        std::clog << logger::logError << "Unable to send RELEASE with empty IAs list." << LogEnd;
         return;
     }
 
     SmartPtr<TAddrIA> ptrIA;
     IALst.first();
     ptrIA = IALst.get();
-    std::clog << logger::logNotice << "Sending RELEASE for " << IALst.count() << " IAs" << logger::endl;
+    std::clog << logger::logNotice << "Sending RELEASE for " << IALst.count() << " IAs" << LogEnd;
 
     SmartPtr<TMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, ptrIA->getIface(), 
         ptrIA->getSrvAddr(), IALst);
@@ -469,8 +472,8 @@ void TClntTransMgr::checkSolicit()
             };
             if (IALstToConfig.count()) {//Are there any IA, which should be configured?
 		
-		Log(logInfo) << "Creating SOLICIT message on "
-			     << iface->getName() <<" interface." << logger::endl;
+		Log(Info) << "Creating SOLICIT message on "
+			     << iface->getName() <<" interface." << LogEnd;
                 Transactions.append(
 		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
 					iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
@@ -520,8 +523,8 @@ void TClntTransMgr::checkInfRequest()
         if (iface->noConfig())
             continue;
         if (iface->onlyInformationRequest()) {
-	    Log(logInfo) << "Creating INFORMATION-REQUEST message on "
-			 << iface->getName() <<" interface." << logger::endl;
+	    Log(Info) << "Creating INFORMATION-REQUEST message on "
+			 << iface->getName() <<" interface." << LogEnd;
 
             Transactions.append(new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,iface));
 	}
@@ -546,7 +549,7 @@ void TClntTransMgr::checkRenew()
 
             TContainer<SmartPtr<TAddrIA> > iaLst;
             std::clog << logger::logNotice << "IA (IAID=" << ptrIA->getIAID() 
-                << " needs RENEW. Creating one and grouping with other IA:" << logger::endl;
+                << " needs RENEW. Creating one and grouping with other IA:" << LogEnd;
             SmartPtr<TAddrIA> iaPattern=ptrIA;
             iaLst.append(ptrIA);
             ptrIA->setState(INPROCESS);
@@ -615,7 +618,7 @@ void TClntTransMgr::checkDecline()
             while (ptrIA = declineIALst.get() ) {
                 SmartPtr<TAddrAddr> ptrAddr;
                 ptrIA->firstAddr();
-		std::clog << logger::logDebug << "Sending DECLINE for IA(IAID=" << ptrIA->getIAID() << "): ";
+		Log(Info) << "Sending DECLINE for IA(IAID=" << ptrIA->getIAID() << "): ";
 
                 while ( ptrAddr= ptrIA->getAddr() ) {
                     if (ptrAddr->getTentative() == YES) {
@@ -629,7 +632,7 @@ void TClntTransMgr::checkDecline()
                         std::clog << " AddrDB removal=" << result << ")";
                     }
                 }
-		std::clog << logger::endl;
+		std::clog << LogEnd;
 		
                 ptrIA->setTentative();
             }

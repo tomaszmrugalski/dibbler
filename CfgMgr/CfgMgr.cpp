@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.7 2004-05-23 21:35:31 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.8 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/05/23 21:35:31  thomson
+ * *** empty log message ***
+ *
  * Revision 1.6  2004/05/23 19:12:34  thomson
  * *** empty log message ***
  *
@@ -189,7 +192,7 @@ bool TCfgMgr::loadDUID(const string filename) {
 	return true;
     } 
     
-    Log(logCrit) << "Cannot generate DUID, because I cannot find interface with "
+    Log(Crit) << "Cannot generate DUID, because I cannot find interface with "
 		 << "MAC address at least 6 bytes long." << logger::endl;
     this->DUID=new TDUID();
     return false;
@@ -200,7 +203,7 @@ void TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     ofstream f;
     f.open( duidFile.c_str() );
     if (!f.is_open()) {
-	Log(logCrit) << "Unable to write " << duidFile << " file." << logger::endl;
+	Log(Crit) << "Unable to write " << duidFile << " file." << logger::endl;
 	return;
     }
     

@@ -1,3 +1,16 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsg.cpp,v 1.2 2004-06-04 16:55:27 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 #ifdef WIN32
 #include <winsock2.h>
 #endif
@@ -37,7 +50,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     //After reading message code and transactionID   
     //read options contained in message    
-    unsigned int pos=0;
+    int pos=0;
     while (pos<bufSize)		 
     {
         short code = ntohs( *((short*) (buf+pos)));

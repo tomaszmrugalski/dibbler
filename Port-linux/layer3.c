@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.4 2004-05-23 15:19:29 thomson Exp $
+ * $Id: layer3.c,v 1.5 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/05/23 15:19:29  thomson
+ * All comments translated to english.
+ *
  */
 
 #include <stdio.h>
@@ -44,7 +47,7 @@ struct nlmsg_list
 int print_linkinfo(struct nlmsghdr *n);
 int print_addrinfo(struct nlmsghdr *n);
 int print_selected_addrinfo(int ifindex, struct nlmsg_list *ainfo);
-int ipaddr_local_get(int *count, char **buf, int ifindex, struct nlmsg_list *ainfo);
+void ipaddr_local_get(int *count, char **buf, int ifindex, struct nlmsg_list *ainfo);
 void print_link_flags( unsigned flags);
 int default_scope(inet_prefix *lcl);
 
@@ -150,7 +153,7 @@ struct iface * if_list_get()
     return head;
 }
 
-int ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list *ainfo) {
+void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list *ainfo) {
     int cnt=0;
     char * buf=0, * tmpbuf=0;
     char addr[16];

@@ -13,7 +13,7 @@ ClntLexer.o: ClntLexer.cpp
 	$(CPP) $(OPTS) -c ClntLexer.cpp
 
 parser: ClntParser.y ClntLexer.l
-	echo "[BISON  ] ClntParser.y"
+	echo "[BISON++] ClntParser.y"
 	$(BISONPP) -d ClntParser.y -o ClntParser.cpp
 	echo "[FLEX   ] ClntLexer.l"
 	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l

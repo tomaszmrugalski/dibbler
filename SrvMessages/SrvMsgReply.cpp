@@ -430,7 +430,6 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
 	     request->getIface(),request->getAddr(), REPLY_MSG, request->getTransID())
 {
-    unsigned long addrCount=0;
     SmartPtr<TOpt> ptrOpt;
     
     setOptionsReqOptClntDUID((Ptr*)request);
@@ -513,7 +512,6 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,solicit->getIface(),
 	     solicit->getAddr(),REPLY_MSG,solicit->getTransID())
 {
-    unsigned long addrCount=0;
     SmartPtr<TOpt> ptrOpt;
     setOptionsReqOptClntDUID((Ptr*)solicit);
     

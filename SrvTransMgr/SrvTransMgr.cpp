@@ -62,9 +62,6 @@ long TSrvTransMgr::getTimeout()
     MsgLst.first();
     while (ptrMsg = MsgLst.get() ) 
     {
-//        std::clog << logger::logDebug << "Msg (transID=" << hex 
-//            << ptrMsg->getTransID() << dec  << ") returned timemout " 
-//            << ptrMsg->getTimeout() << logger::endl;
         if (ptrMsg->getTimeout() < min) 
             min = ptrMsg->getTimeout();
     }
@@ -82,7 +79,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
     }
     // Do we have ready answer for this?
     SmartPtr<TMsg> answ;
-    std::clog << logger::logDebug << MsgLst.count() << " answers buffered.";
+    Log(Debug) << MsgLst.count() << " answers buffered.";
 
     MsgLst.first();
     while(answ=MsgLst.get()) 
@@ -216,6 +213,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
             break;
         }
     }
+    std::ofstream xmlDump;
     
     // save DB state regardless of action taken
     AddrMgr->dbStore();

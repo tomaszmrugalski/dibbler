@@ -12,7 +12,7 @@ SRV_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
 DEBUGINFO    = -g
-EFENCE       = -lefence
+#EFENCE       = -lefence
 
 # === libxml2 stuff ===
 #XMLCFLAGS    = `pkg-config libxml-2.0 --cflags` -DLIBXML2

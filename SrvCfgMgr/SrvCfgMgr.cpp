@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.15 2004-05-24 21:16:37 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.16 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
  * Revision 1.14  2004/05/23 23:46:02  thomson
  * *** empty log message ***
  *                                                                           
@@ -64,7 +67,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 
     if (result) {
         //Result!=0 means config errors. Finish whole DHCPClient 
-        Log(logCrit) << "Config error." << logger::endl;
+        Log(Crit) << "Config error." << logger::endl;
         IsDone = true; 
         return;
     }
@@ -106,7 +109,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
     int cfgIfaceCnt;
     cfgIfaceCnt = parser->SrvCfgIfaceLst.count();
-    Log(logDebug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << logger::endl;
+    Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << logger::endl;
 
     SmartPtr<TSrvCfgIface> cfgIface;
     SmartPtr<TIfaceIface>  ifaceIface;
@@ -121,20 +124,20 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 		    ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
 		}
 		if (!ifaceIface) {
-		    Log(logCrit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+		    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
 				 << " specified in " << CLNTCFGMGR_FILE << " is not present in the system."
-				 << logger::endl;
+				 << LogEnd;
 			return false;
 		}
 		cfgIface->setIfaceName(ifaceIface->getName());
 		cfgIface->setIfaceID(ifaceIface->getID());
 		this->addIface(cfgIface);
-		Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-				     << " has been added." << logger::endl;
+		Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+				     << " has been added." << LogEnd;
     }
 
     if (!cfgIfaceCnt) {
-		Log(logCrit) << "No interfaces defined. Server startup aborted." << logger::endl;
+		Log(Crit) << "No interfaces defined. Server startup aborted." << LogEnd;
 		return false;
     }
 

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.4 2004-05-23 22:37:54 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.5 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/05/23 22:37:54  thomson
+ * *** empty log message ***
+ *
  * Revision 1.3  2004/05/23 20:13:12  thomson
  * *** empty log message ***
  *
@@ -308,28 +311,28 @@ void TClntCfgIface::setDomainName(string domainName,SmartPtr<TDUID> duid) {
     string timeZone,
     SmartPtr<TDUID> duid)
 {
-    switch(TimeZoneState)
-    {
+    switch(TimeZoneState) {
         //Is this a first configuration (so prob. reply has been received to:
         //solicit(rap.commit), request or information request message
-        case NOTCONFIGURED:
-        {
-            TimeZoneState=CONFIGURED;
-            this->TZone=timeZone;
-            GiverNTPSrvDUID=duid;
-        }
+    case NOTCONFIGURED: {
+	TimeZoneState=CONFIGURED;
+	this->TZone=timeZone;
+	GiverNTPSrvDUID=duid;
+	break;
+    }
         //Is this parameter is in renewing process 
         //(renew/rebind/information request message was sent)
-        case INPROCESS:
-        {
-            if (timeZone!="")
-            {
-                TimeZoneState=CONFIGURED;
-                this->TZone=timeZone;
-            }
-            else
-                TimeZoneState=NOTCONFIGURED;
-        }
+    case INPROCESS: {
+	if (timeZone!="") {
+	    TimeZoneState=CONFIGURED;
+	    this->TZone=timeZone;
+	} else {
+	    TimeZoneState=NOTCONFIGURED;
+	}
+    }
+    default: {
+	
+    }
     };
     //FIXME: Here should be also set options somewhere in the system ???
 }

@@ -8,9 +8,13 @@ objs: $(OBJECTS)
 libs: libSrvCfgMgr.a
 
 parser: SrvParser.y SrvLexer.l
+	echo "[BISON++] SrvParser.y"
 	$(BISONPP) -d SrvParser.y -o SrvParser.cpp
+	echo "[FLEX   ] SrvLexer.l"
 	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
+	@echo "[CPP    ] $(SUBDIR)/$@"
+	$(CPP) -c $(OPTS) SrvLexer.cpp 
 
 SrvLexer.o: SrvLexer.cpp
 	@echo "[CPP    ] $(SUBDIR)/$@"
-	$(CPP) -c $(OPTS) -I $(INCDIR) SrvLexer.cpp 
+	$(CPP) -c $(OPTS) SrvLexer.cpp 

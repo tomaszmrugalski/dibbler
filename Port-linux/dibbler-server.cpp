@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: dibbler-server.cpp,v 1.7 2004-06-04 14:15:53 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.8 2004-06-04 16:55:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/06/04 14:15:53  thomson
+ * Command line parsing.
+ *
  *                                                                           
  */
 
@@ -104,7 +107,7 @@ void die() {
 }
 
 void signal_handler(int n) {
-    Log(logCrit) << "Signal received. Shutting down." << logger::endl;
+    Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
 }
 
@@ -174,10 +177,10 @@ int start() {
 int stop() {
     int pid = getServerPID();
     if (pid==-1) {
-	Log(logCrit) << "Server is not running." << endl;
+	cout << "Server is not running." << endl;
 	return -1;
     }
-    Log(logCrit) << "Sending KILL signal to process " << pid << endl;
+    cout << "Sending KILL signal to process " << pid << endl;
     kill(pid, SIGTERM);
     return 0;
 }

@@ -2452,7 +2452,7 @@ void yyfree (void * ptr )
  {
   
   int i,obyte;
-  int ipos=0;
+  unsigned int ipos=0;
     for (i=0;i<4;i++)
     {
       obyte=src[ipos]-'0';
