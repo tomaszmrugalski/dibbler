@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.6 2004-04-06 22:21:05 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.7 2004-04-06 23:09:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/04/06 22:21:05  thomson
+ * *** empty log message ***
+ *
  * Revision 1.5  2004/04/06 22:18:54  thomson
  * *** empty log message ***
  *
@@ -52,13 +55,13 @@ void TAddrMgr::dbStore()
 {
     char buf[128];
     ofstream f;
-//    return;
     strcpy(buf,this->dbfile.c_str());
     std::clog << "###dbStore(): " << buf << std::endl;
 
-    f.open(buf);
+    // this was causing problems in some cases, so it was commented out
+//    f.open(buf);
 //    f << *this;
-    f.close();
+//    f.close();
 }
 
 void TAddrMgr::addClient(SmartPtr<TAddrClient> x)
