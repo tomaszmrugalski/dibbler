@@ -1,6 +1,6 @@
 # Copyright 2004 Tomasz Mrugalski
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/dibbler-0.3.1.ebuild,v 1.1 2004-12-29 00:18:08 thomson Exp $
+# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/dibbler-0.3.1.ebuild,v 1.2 2004-12-29 01:49:35 thomson Exp $
 
 inherit eutils
 
@@ -45,6 +45,5 @@ src_install() {
 }
 
 pkg_postinst() {
-	einfo "Sample dhcp6c.conf and dhcp6s.conf files are in"
-	einfo "/usr/share/doc/${P}/"
+	einfo "Sample .conf files are in /var/lib/dibbler/"
 }
