@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrMgr.h,v 1.8 2004-06-17 23:53:54 thomson Exp $
+ * $Id: AddrMgr.h,v 1.9 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  * Revision 1.7  2004/06/04 19:03:46  thomson
  * Resolved warnings with signed/unisigned
  *
@@ -58,7 +61,8 @@ class TAddrMgr
     
     // --- backup/restore ---
     void dbLoad();
-    void dbStore();
+    void dump();
+    bool isDone();
 
 #ifdef LIBXML2
     xmlDocPtr xmlLoad(const char * filename);
@@ -69,8 +73,9 @@ class TAddrMgr
 #endif
 
 protected:
-    TContainer< SmartPtr<TAddrClient> > ClntsLst;
-    string dbfile;
+    bool IsDone;
+    List(TAddrClient) ClntsLst;
+    string XmlFile;
 };
 
 #endif

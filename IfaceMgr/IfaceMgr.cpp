@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.16 2004-12-04 23:45:40 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.17 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/12/04 23:45:40  thomson
+ * Problem with client and server on the same Linux host fixed (bug #56)
+ *
  * Revision 1.15  2004/11/01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -61,11 +64,12 @@
 /*
  * creates list of interfaces
  */
-TIfaceMgr::TIfaceMgr(bool getIfaces)
+TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
 {
-    IsDone = false;
-    struct iface * ptr;
-    struct iface * ifaceList;
+    this->XmlFile = xmlFile;
+    this->IsDone  = false;
+    struct iface  * ptr;
+    struct iface  * ifaceList;
 
     if (!getIfaces)
 	return;
@@ -251,10 +255,10 @@ int TIfaceMgr::countIface() {
 /*
  * dump yourself to file
  */
-void TIfaceMgr::dump(char * file)
+void TIfaceMgr::dump()
 {
     std::ofstream xmlDump;
-    xmlDump.open(file);
+    xmlDump.open(this->XmlFile.c_str());
     xmlDump << *this;
     xmlDump.close();
 }

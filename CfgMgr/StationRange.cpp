@@ -6,6 +6,7 @@
 #endif 
 #include "StationRange.h"
 #include "DHCPConst.h"
+#include "Logger.h"
 
 TStationRange::TStationRange(void)
 {
@@ -114,8 +115,15 @@ unsigned long TStationRange::rangeCount()
         return 0;
 }
 
-TStationRange::~TStationRange(void)
-{
+TStationRange::~TStationRange(void) {
+}
+
+SmartPtr<TIPv6Addr> TStationRange::getAddrL() {
+    return this->AddrL;
+}
+
+SmartPtr<TIPv6Addr> TStationRange::getAddrR() {
+    return this->AddrR;
 }
 
 ostream& operator<<(ostream& out,TStationRange&  range)

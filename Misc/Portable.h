@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.29 2004-12-04 23:45:40 thomson Exp $
+ * $Id: Portable.h,v 1.30 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/12/04 23:45:40  thomson
+ * Problem with client and server on the same Linux host fixed (bug #56)
+ *
  * Revision 1.28  2004/11/15 20:59:12  thomson
  * 0.3.0-RC2
  *
@@ -74,13 +77,15 @@
 #define CLNTIFACEMGR_FILE "client-IfaceMgr.xml"
 #define CLNTDUID_FILE	  "client-duid"
 #define CLNTLOG_FILE	  "client.log"
-#define CLNTDB_FILE	      "client-AddrMgr.xml"
+#define CLNTADDRMGR_FILE  "client-AddrMgr.xml"
+#define CLNTTRANSMGR_FILE "client-TransMgr.xml"
 
 #define SRVCFGMGR_FILE    "server-CfgMgr.xml"
 #define SRVIFACEMGR_FILE  "server-IfaceMgr.xml"
 #define SRVDUID_FILE	  "server-duid"
 #define SRVLOG_FILE       "server.log"
-#define SRVDB_FILE        "server-AddrMgr.xml"
+#define SRVADDRMGR_FILE   "server-AddrMgr.xml"
+#define SRVTRANSMGR_FILE  "server-TransMgr.xml"
 
 // false - normal operation
 // true - Linux: client and server can be run on the same host, but

@@ -1,10 +1,11 @@
 
   Dibbler changelog
  ------------------- 
- Expected changes in 0.3.0
-  - Linux: Fixed issue with running server and client on the same host
 
- 0.3.0-RC3
+ Soon to be released 0.3.0
+  - Server no longer supports link local addresses (bug #38)
+  - Linux: Fixed issue with running server and client on the same host (bug #56)
+  - Server now supports stateless mode (bug #71)
   - Developer's guide (bugs #42, #43)
   - Log files are now created, even when run in the console (bugs #34, #36)
   - DAD timeout was decreased to 1 second
@@ -15,7 +16,7 @@
   - Client requests for Lifetime option only if explicitly told to do so (bug #75)
   - Server now properly retransmits messages.
   - Client no longer sends RapidCommit unless told to do so (bug #55)
-  - Client no longer retrasmits indefinetly INF-REQUEST message
+  - Client no longer retrasmits indefinetly INF-REQUEST message.
 
  0.3.0-RC2
   - Fixed bug found by PCSS team regarding improper socket initialization in ClntTransMgr.
@@ -73,5 +74,5 @@
  0.1.0
   - First release
 
- For details, see http://klub.com.pl/bugzilla/
+ For details regarding bugs and requested features, see http://klub.com.pl/bugzilla/
  

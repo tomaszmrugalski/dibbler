@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.29 2004-12-04 23:45:40 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.30 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/12/04 23:45:40  thomson
+ * Problem with client and server on the same Linux host fixed (bug #56)
+ *
  * Revision 1.28  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -86,27 +89,17 @@ using namespace std;
 
 
 TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
+			     SmartPtr<TClntAddrMgr> addrMgr,
+			     SmartPtr<TClntCfgMgr> cfgMgr,
                              string config)
 {
     // should we set REUSE option during binding sockets?
     this->BindReuse = CLIENT_BIND_REUSE;
-
-    //FIXME: loadDB
-    bool loadDB = false;
     this->IsDone = true;
 
-    //FIXME: this should be renamed, and used apropriately
-    //don't send CONFIRM 
-    this->ConfirmEnabled=true;
-
-    // create managers
-    CfgMgr = new TClntCfgMgr(ifaceMgr, config, config+"-old");
-    IfaceMgr=ifaceMgr;
-    AddrMgr=new TClntAddrMgr(CfgMgr, CLNTDB_FILE, loadDB);
-
-    if (CfgMgr->isDone() || IfaceMgr->isDone() ) {
-	return;
-    }
+    this->IfaceMgr = ifaceMgr;
+    this->AddrMgr  = addrMgr;
+    this->CfgMgr   = cfgMgr;
 
     if (this->BindReuse)
 	Log(Info) << "Bind reuse enabled." << LogEnd;
@@ -125,11 +118,10 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 	}
     }
 
-    // we're just getting started
-    if (loadDB) {
-	this->checkDB();
-	checkConfirm();
-    }
+    // FIXME: CONFIRM support is not complete
+    // this->checkDB();
+    // checkConfirm();
+    this->ConfirmEnabled=true;
 
     this->Shutdown = false;
     this->IsDone = false;
@@ -316,8 +308,8 @@ void TClntTransMgr::doDuties()
 
     this->removeExpired();
 
-    this->AddrMgr->dbStore();
-    this->IfaceMgr->dump(CLNTIFACEMGR_FILE);
+    this->AddrMgr->dump();
+    this->IfaceMgr->dump();
     this->CfgMgr->dump();
 
     if (!this->Shutdown && !this->IsDone) {
@@ -463,7 +455,7 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
     if (!found) 
         Log(Warning) << "Message with wrong transID (" << hex << msgAnswer->getTransID() << dec
 		     << ") received. Ignoring." << LogEnd;
-    AddrMgr->dbStore();
+    AddrMgr->dump();
 }
 
 unsigned long TClntTransMgr::getTimeout()
@@ -884,4 +876,8 @@ char* TClntTransMgr::getCtrlAddr() {
 }
 int  TClntTransMgr::getCtrlIface() {
 	return this->ctrlIface;
+}
+
+TClntTransMgr::~TClntTransMgr() {
+    Log(Debug) << "ClntTransMgr cleanup." << LogEnd;
 }

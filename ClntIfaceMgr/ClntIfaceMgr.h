@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.4 2004-12-01 20:55:17 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.5 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/12/01 20:55:17  thomson
+ * Obsolete definitions removed.
+ *
  * Revision 1.3  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -35,10 +38,10 @@ class TClntIfaceMgr;
 class TClntIfaceMgr : public TIfaceMgr
 {
  public:
-    TClntIfaceMgr();
+    TClntIfaceMgr(string xmlFile);
     ~TClntIfaceMgr();
     friend ostream & operator <<(ostream & strum, TClntIfaceMgr &x);
-    void dump(char * file);
+    void dump();
     
     bool sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
     
@@ -57,6 +60,7 @@ class TClntIfaceMgr : public TIfaceMgr
     unsigned int getTimeout();
 
   private:
+    string XmlFile;
     SmartPtr<TClntCfgMgr> ClntCfgMgr;
     SmartPtr<TClntAddrMgr> ClntAddrMgr;
     SmartPtr<TClntTransMgr> ClntTransMgr;

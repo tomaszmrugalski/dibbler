@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.h,v 1.2 2004-06-20 19:29:23 thomson Exp $
+ * $Id: DHCPClient.h,v 1.3 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  *                                                                           
  */
 
@@ -21,6 +24,8 @@
 using namespace std;
 
 class TClntIfaceMgr;
+class TClntAddrMgr;
+class TClntCfgMgr;
 class TClntTransMgr;
 
 class TDHCPClient
@@ -36,6 +41,8 @@ class TDHCPClient
 
   private:
     SmartPtr<TClntIfaceMgr> IfaceMgr;
+    SmartPtr<TClntAddrMgr>  AddrMgr;
+    SmartPtr<TClntCfgMgr>   CfgMgr;
     SmartPtr<TClntTransMgr> TransMgr;
     bool IsDone;
 

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: dibbler-server.cpp,v 1.9 2004-12-02 00:51:06 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.10 2004-12-07 00:45:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.8  2004/06/04 16:55:27  thomson
  * *** empty log message ***
  *
@@ -69,7 +72,7 @@ void daemon_init() {
 	    cout << "Can't fork second child." << endl;
 	    return;
 	} else if (childpid > 0)
-	    exit(0); // pierwszy potomek
+	    exit(0); // first child
 	
     } // getppid()!=1
 
@@ -78,7 +81,7 @@ void daemon_init() {
     tmp = (string)WORKDIR+"/"+(string)SRVPID_FILE;
     unlink(tmp.c_str());
     ofstream pidfile(tmp.c_str());
-    cout << "My pid (" << getpid() << ") is stored in " << tmp << endl;
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << tmp << LogEnd;
     pidfile << getpid();
     pidfile.close();
     umask(0);

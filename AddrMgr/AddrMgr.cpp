@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.17 2004-07-05 00:53:03 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.18 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.16  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *
@@ -36,10 +39,11 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
-TAddrMgr::TAddrMgr(string addrdb, bool loadfile)
+TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
 {
-    this->dbfile = addrdb;
-
+    this->IsDone = false;
+    this->XmlFile = xmlFile;
+    
     if (loadfile)
 	dbLoad();
 }
@@ -58,12 +62,10 @@ void TAddrMgr::dbLoad()
 #endif
 }
 
-void TAddrMgr::dbStore()
+void TAddrMgr::dump()
 {
-    // uncomment this line below to avoid crashes in g++-3.x
-    // return;
     std::ofstream xmlDump;
-    xmlDump.open(this->dbfile.c_str(), ios::ate);
+    xmlDump.open(this->XmlFile.c_str(), ios::ate);
     xmlDump << *this;
     xmlDump.close();
 }
@@ -352,6 +354,10 @@ void TAddrMgr::parseAddrMgr(xmlDocPtr doc,int depth)
      }
 }
 #endif
+
+bool TAddrMgr::isDone() {
+    return this->IsDone;
+}
 
 TAddrMgr::~TAddrMgr() {
 

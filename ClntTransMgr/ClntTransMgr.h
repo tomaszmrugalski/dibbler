@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.5 2004-12-04 23:45:40 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.6 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/12/04 23:45:40  thomson
+ * Problem with client and server on the same Linux host fixed (bug #56)
+ *
  * Revision 1.4  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -29,7 +32,11 @@ class TClntConfMgr;
 class TClntTransMgr
 {
   public:
-    TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, string config);
+    TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
+		  SmartPtr<TClntAddrMgr> addrMgr,
+		  SmartPtr<TClntCfgMgr> cfgMgr,
+		  string config);
+    ~TClntTransMgr();
     void doDuties();
     void relayMsg(SmartPtr<TMsg> msg);
     unsigned long getTimeout();

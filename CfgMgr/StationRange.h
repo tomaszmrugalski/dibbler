@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: StationRange.h,v 1.3 2004-07-05 00:12:29 thomson Exp $
+ * $Id: StationRange.h,v 1.4 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/07/05 00:12:29  thomson
+ * Lots of minor changes.
+ *
  *                                                                           
  */
 
@@ -40,6 +43,8 @@ class TStationRange
     bool in(SmartPtr<TDUID> duid);
     SmartPtr<TIPv6Addr> getRandomAddr();
     unsigned long rangeCount();
+    SmartPtr<TIPv6Addr> getAddrL();
+    SmartPtr<TIPv6Addr> getAddrR();
  private:
     bool isAddrRange;
     SmartPtr<TDUID> DUIDL;

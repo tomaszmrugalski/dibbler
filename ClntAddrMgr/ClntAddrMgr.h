@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.h,v 1.4 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntAddrMgr.h,v 1.5 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.3  2004/09/08 21:22:45  thomson
  * Parser improvements, signed/unsigned issues addressed.
  *
@@ -31,7 +35,7 @@ class TClntCfgMgr;
 class TClntAddrMgr : public TAddrMgr
 {
   public:
-    TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntConfMgr, string addrdb, bool loadDB);
+    TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntConfMgr, string xmlFile, bool loadDB);
 
     unsigned long getT1Timeout();
     unsigned long getT2Timeout();

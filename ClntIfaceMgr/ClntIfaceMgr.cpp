@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.11 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.12 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.10  2004/11/02 02:14:20  thomson
  * no message
  *
@@ -155,11 +158,13 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
     }
 }
 
-TClntIfaceMgr::TClntIfaceMgr() 
-    : TIfaceMgr(false)
+TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
+    : TIfaceMgr(xmlFile, false)
 {
     struct iface * ptr;
     struct iface * ifaceList;
+
+    this->XmlFile = xmlFile;
 
     // get interface list
     ifaceList = if_list_get(); // external (C coded) function
@@ -203,7 +208,7 @@ void TClntIfaceMgr::setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
 }
 
 TClntIfaceMgr::~TClntIfaceMgr() {
-    Log(Debug) << "ClntIfaceMgr clean up." << LogEnd;
+    Log(Debug) << "ClntIfaceMgr cleanup." << LogEnd;
 }
 
 void TClntIfaceMgr::removeAllOpts() {
@@ -232,10 +237,10 @@ unsigned int TClntIfaceMgr::getTimeout() {
     return min;
 }
 
-void TClntIfaceMgr::dump(char * file)
+void TClntIfaceMgr::dump()
 {
     std::ofstream xmlDump;
-    xmlDump.open(file);
+    xmlDump.open( this->XmlFile.c_str() );
     xmlDump << *this;
     xmlDump.close();
 }

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.5 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.6 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.4  2004/05/23 20:41:03  thomson
  * *** empty log message ***
  *
@@ -35,6 +39,7 @@ class TClntCfgMgr : public TCfgMgr
  public:
     TClntCfgMgr(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 		const string cfgFile,const string oldCfgFile);
+    ~TClntCfgMgr();
     
     // --- Iface related ---
     SmartPtr<TClntCfgIA> getIA(long IAID);
@@ -60,9 +65,12 @@ class TClntCfgMgr : public TCfgMgr
 
 private:
     SmartPtr<TClntIfaceMgr> IfaceMgr;
-    TContainer < SmartPtr<TClntCfgIface> >  ClntCfgIfaceLst;
+    List(TClntCfgIface) ClntCfgIfaceLst;
 
-    bool checkConfigConsistency();
+    bool validateConfig();
+    bool validateIface(SmartPtr<TClntCfgIface> iface);
+    bool validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA);
+
     bool matchParsedSystemInterfaces(clntParser *parser);
 };
 

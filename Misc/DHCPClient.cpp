@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.16 2004-12-03 20:51:42 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.17 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.15  2004/11/02 02:13:49  thomson
  * no message
  *
@@ -38,6 +41,7 @@
 #include "SmartPtr.h"
 #include "DHCPClient.h"
 #include "ClntTransMgr.h"
+
 #include "IfaceMgr.h"
 #include "ClntIfaceMgr.h"
 #include "Logger.h"
@@ -51,23 +55,38 @@ volatile int serviceShutdown;
 
 TDHCPClient::TDHCPClient(string config)
 {
-    //foo();
-    string oldconf = config+"-old";
-
     serviceShutdown = 0;
     srand(now());
     this->IsDone = false;
 
-    IfaceMgr = new TClntIfaceMgr();
-    if ( IfaceMgr->isDone() ) {
- 	  Log(Crit) << "Fatal error during IfaceMgr init. Aborting." << LogEnd;
+    IfaceMgr = new TClntIfaceMgr(CLNTIFACEMGR_FILE);
+    if ( this->IfaceMgr->isDone() ) {
+ 	  Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
 	  this->IsDone = true;
 	  return;
     }
 
-    IfaceMgr->dump(CLNTIFACEMGR_FILE);
+    this->CfgMgr = new TClntCfgMgr(IfaceMgr, config, CLNTCFGMGR_FILE);
+    if ( this->CfgMgr->isDone() ) {
+	Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
 
-    TransMgr = new TClntTransMgr(IfaceMgr, config);
+    this->AddrMgr = new TClntAddrMgr(CfgMgr, CLNTADDRMGR_FILE, false);
+    if ( this->AddrMgr->isDone() ) {
+ 	  Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
+	  this->IsDone = true;
+	  return;
+    }
+
+    this->TransMgr = new TClntTransMgr(IfaceMgr, AddrMgr, CfgMgr, CLNTTRANSMGR_FILE);
+    if ( this->TransMgr->isDone() ) {
+	Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+
     TransMgr->setThat(TransMgr);
 }
 
@@ -90,7 +109,7 @@ void TDHCPClient::stop() {
 void TDHCPClient::run()
 {
     SmartPtr<TMsg> msg;
-    while ( !TransMgr->isDone() && (!this->isDone()) )
+    while ( (!this->isDone()) && !TransMgr->isDone() )
     {
 	if (serviceShutdown)
 	    TransMgr->shutdown();

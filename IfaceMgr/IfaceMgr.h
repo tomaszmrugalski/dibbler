@@ -18,7 +18,7 @@ class TIfaceMgr {
   public:
     friend ostream & operator <<(ostream & strum, TIfaceMgr &x);
 
-    TIfaceMgr(bool getIfaces);
+    TIfaceMgr(string xmlFile, bool getIfaces);
 
     // ---Iface related---
     void firstIface();
@@ -30,16 +30,16 @@ class TIfaceMgr {
 
     // ---other---
     int select(unsigned long time, char *buf, int &bufsize, SmartPtr<TIPv6Addr> peer);
-    void dump(char * file);
+    void dump();
     bool isDone();
 
     ~TIfaceMgr();
 
  protected:
-    //Interface list
-    List(TIfaceIface) IfaceLst; 
+    string XmlFile;
 
-    // true if communication with kernel failed
+    List(TIfaceIface) IfaceLst; //Interface list
+
     bool IsDone; 
 };
 

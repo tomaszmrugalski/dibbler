@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.24 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.25 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.23  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -94,7 +97,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
   
     // check config consistency
-    if(!checkConfigConsistency()) {
+    if(!validateConfig()) {
         this->IsDone=true;
         return;
     }
@@ -159,7 +162,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 
 	    this->addIface(cfgIface);
 	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			 << " has been added." << LogEnd;
+			 << " configuation has been loaded." << LogEnd;
 	}
     } else {
 	// user didn't specified any interfaces in config file, so
@@ -337,7 +340,7 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
 }	    
 
 //check whether T1<T2 and Pref<Valid and at least T1<=Valid
-bool TClntCfgMgr::checkConfigConsistency()
+bool TClntCfgMgr::validateConfig()
 {
     //Is everything so far is ok
     if (IsDone) return false;
@@ -345,61 +348,73 @@ bool TClntCfgMgr::checkConfigConsistency()
     this->ClntCfgIfaceLst.first();
     while(ptrIface=ClntCfgIfaceLst.get())
     {
-        SmartPtr<TClntCfgGroup> ptrGroup;
-        ptrIface->firstGroup();
-        if(ptrIface->isReqTimezone()&&(ptrIface->getProposedTimezone()!=""))
-        {   
-            TTimeZone tmp(ptrIface->getProposedTimezone());
-            if(!tmp.isValid())
-            {
-                this->IsDone=true;
-		Log(Crit) << "Wrong time zone option for " << ptrIface->getName() 
-			  << "/" <<ptrIface->getID() << LogEnd;
-                return !(IsDone=true);
-            }
-        }
+	if (!this->validateIface(ptrIface)) {
+	    return false;
+	}
+    }
+    return true;
+}
 
-        while(ptrGroup=ptrIface->getGroup())
-        {
-            SmartPtr<TClntCfgIA> ptrIA;
-            ptrGroup->firstIA();
-            while(ptrIA=ptrGroup->getIA())
-            {
-                if ((unsigned long)ptrIA->getT2()<(unsigned long)ptrIA->getT1()) 
-                {
-		    Log(Crit) << "T1 can't be lower than T2 for IA "<<*ptrIA << LogEnd
-			      <<"on the "<<ptrIface->getName()<<"/"
-			      <<ptrIface->getID() << " interface." << LogEnd;
-                    return !(IsDone=true);
-                }
-                SmartPtr<TClntCfgAddr> ptrAddr;
-                ptrIA->firstAddr();
-                while(ptrAddr=ptrIA->getAddr())
-                {
-                    if((unsigned long)ptrAddr->getPref()>(unsigned long)ptrAddr->getValid())
-                    {
-                        Log(Crit)
-                        << "Prefered time " << ptrAddr->getPref()
-                        << " can't be lower than Valid lifetime " << ptrAddr->getValid()
-                        << "for IA:" << *ptrIA 
-                        << "in iface(id/name)" << ptrIface->getName() << "/"
-                        << ptrIface->getID() << LogEnd;
-                        return !(IsDone=true);
-                    }
-                    if ((unsigned long)ptrIA->getT1()>(unsigned long)ptrAddr->getValid())
-                    {
-			Log(Crit)
-                        <<"Valid lifetime:"<<ptrAddr->getValid()
-                        <<"can't be lower than T1 "<<ptrIA->getT1()
-                        <<"(address can't be renewed) in IA:"<<*ptrIA << LogEnd
-                        <<"in iface(id/name)"<<ptrIface->getID()<<"/"
-                        <<ptrIface->getName() << LogEnd;
-                        return !(IsDone=true);
-                    }
-                }
-            }
-            
-        }
+bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
+    SmartPtr<TClntCfgGroup> ptrGroup;
+    ptrIface->firstGroup();
+    if(ptrIface->isReqTimezone()&&(ptrIface->getProposedTimezone()!=""))
+    {   
+	TTimeZone tmp(ptrIface->getProposedTimezone());
+	if(!tmp.isValid())
+	{
+	    Log(Crit) << "Wrong time zone option for " << ptrIface->getName() 
+		      << "/" <<ptrIface->getID() << LogEnd;
+	    return false;
+	}
+    }
+    
+    while(ptrGroup=ptrIface->getGroup())
+    {
+	SmartPtr<TClntCfgIA> ptrIA;
+	ptrGroup->firstIA();
+	while(ptrIA=ptrGroup->getIA())
+	{
+	    if (!this->validateIA(ptrIface, ptrIA)) 
+		return false;
+	}
+	
+    }
+    return true;
+}
+
+bool TClntCfgMgr::validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA) {
+    if ((unsigned long)ptrIA->getT2()<(unsigned long)ptrIA->getT1()) 
+    {
+	Log(Crit) << "T1 can't be lower than T2 for IA "<<*ptrIA << LogEnd
+		  <<"on the "<<ptrIface->getName()<<"/"
+		  <<ptrIface->getID() << " interface." << LogEnd;
+	return false;
+    }
+    SmartPtr<TClntCfgAddr> ptrAddr;
+    ptrIA->firstAddr();
+    while(ptrAddr=ptrIA->getAddr())
+    {
+	if((unsigned long)ptrAddr->getPref()>(unsigned long)ptrAddr->getValid())
+	{
+	    Log(Crit)
+		<< "Prefered time " << ptrAddr->getPref()
+		<< " can't be lower than Valid lifetime " << ptrAddr->getValid()
+		<< "for IA:" << *ptrIA 
+		<< "in iface(id/name)" << ptrIface->getName() << "/"
+		<< ptrIface->getID() << LogEnd;
+	    return false;
+	}
+	if ((unsigned long)ptrIA->getT1()>(unsigned long)ptrAddr->getValid())
+	{
+	    Log(Crit)
+		<<"Valid lifetime:"<<ptrAddr->getValid()
+		<<"can't be lower than T1 "<<ptrIA->getT1()
+		<<"(address can't be renewed) in IA:"<<*ptrIA << LogEnd
+		<<"in iface(id/name)"<<ptrIface->getID()<<"/"
+		<<ptrIface->getName() << LogEnd;
+	    return false;
+	}
     }
     return true;
 }
@@ -453,10 +468,14 @@ SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
     return SmartPtr<TClntCfgIface>();
 }
 
-bool TClntCfgMgr::isDone()
-{
+bool TClntCfgMgr::isDone() {
     return this->IsDone;
 }
+
+TClntCfgMgr::~TClntCfgMgr() {
+    Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;
+}
+
 
 ostream & operator<<(ostream &strum, TClntCfgMgr &x)
 {

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.7 2004-12-03 20:51:42 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.8 2004-12-07 00:45:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.6  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -30,8 +33,8 @@
 #include "Logger.h"
 
 
-TClntAddrMgr::TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntCfgMgr, string addrdb, bool loadDB)
-    :TAddrMgr(addrdb, loadDB)
+TClntAddrMgr::TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntCfgMgr, string xmlFile, bool loadDB)
+    :TAddrMgr(xmlFile, loadDB)
 {
     
     // add this client (with proper duid)
@@ -115,36 +118,28 @@ void TClntAddrMgr::doDuties()
 	    
 }
 
-void TClntAddrMgr::firstIA()
-{
+void TClntAddrMgr::firstIA() {
     Client->firstIA();
 }
 
-SmartPtr<TAddrIA> TClntAddrMgr::getIA()
-{
+SmartPtr<TAddrIA> TClntAddrMgr::getIA() {
     return Client->getIA();
 }
 
-bool TClntAddrMgr::delIA(long IAID)
-{
+bool TClntAddrMgr::delIA(long IAID) {
     return Client->delIA(IAID);
 }
 
-void TClntAddrMgr::addIA(SmartPtr<TAddrIA> ptr)
-{
+void TClntAddrMgr::addIA(SmartPtr<TAddrIA> ptr) {
     Client->addIA(ptr);
 }
 
-int TClntAddrMgr::countIA()
-{
+int TClntAddrMgr::countIA() {
     return Client->countIA();
 }
 
-
-
-
-TClntAddrMgr::~TClntAddrMgr()
-{
+TClntAddrMgr::~TClntAddrMgr() {
+    Log(Debug) << "ClntAddrMgr cleanup." << LogEnd;
 }
 
 bool TClntAddrMgr::isIAAssigned(unsigned long IAID)

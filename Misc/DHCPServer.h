@@ -21,6 +21,8 @@ class TDHCPServer
   private:
     bool IsDone;
     SmartPtr<TSrvIfaceMgr> IfaceMgr;
+    SmartPtr<TSrvAddrMgr> AddrMgr;
+    SmartPtr<TSrvCfgMgr> CfgMgr;
     SmartPtr<TSrvTransMgr> TransMgr;
 };
 
