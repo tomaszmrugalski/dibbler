@@ -6,9 +6,13 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.12 2004-10-27 22:07:56 thomson Exp $
+ * $Id: DHCPConst.h,v 1.13 2004-11-29 17:42:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.11  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -119,29 +123,33 @@
 
 // additional options
 
-// RFC3319
+// RFC3319: SIP servers and domains
 #define OPTION_SIP_SERVERS      21
 #define OPTION_SIP_DOMAINS      22
 
-// draft-ietf-dhc-dhcpv6-opt-dnsconfig-03.txt
+// RFC3646: DNS servers and domains
 #define OPTION_DNS_RESOLVERS	23
 #define OPTION_DOMAIN_LIST      24
 
-// draft-ietf-dhc-dhcpv6-opt-nisconfig-05.txt
-#define OPTION_NIS_SERVERS	35
-#define OPTION_NISP_SERVERS	36
-#define OPTION_NIS_DOMAIN_NAME  37
-#define OPTION_NISP_DOMAIN_NAME 38
+// RFC3633: Prefix options (not supported yet)
+#define OPTION_IA_PD            25
+#define OPTION_IAPREFIX         26
+
+// RFC3898
+#define OPTION_NIS_SERVERS	27
+#define OPTION_NISP_SERVERS	28
+#define OPTION_NIS_DOMAIN_NAME  29
+#define OPTION_NISP_DOMAIN_NAME 30
 
 // draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
 #define OPTION_NTP_SERVERS      40
 #define OPTION_TIME_ZONE        41
 
-// draft-ietf-dhc-dhcpv6-fqdn-00.txt
-#define OPTION_FQDN             34
-
 // draft-ietf-dhc-lifetime-02.txt
 #define OPTION_LIFETIME         42
+
+// draft-ietf-dhc-dhcpv6-fqdn-00.txt
+#define OPTION_FQDN             43
 
 // --- Status Codes --- 
 #define STATUSCODE_SUCCESS       0
@@ -155,7 +163,7 @@
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
 
 // how long should we wait before we assume that OS detected duplicated addresses (in secs)
-#define DADTIMEOUT (unsigned) 3
+#define DADTIMEOUT (unsigned) 1
 
 // addresses reported ad DECLINED are not used for 2 hours
 #define DECLINED_TIMEOUT (unsigned) 7200
