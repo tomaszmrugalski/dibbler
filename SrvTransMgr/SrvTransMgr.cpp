@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.13 2004-09-03 20:58:36 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.14 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/09/03 20:58:36  thomson
+ * *** empty log message ***
+ *
  *
  */
 
@@ -115,122 +118,112 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
     std::clog << "Old reply for transID=" << hex << msg->getTransID()
 	      << " not found. Generating new answer." << dec << LogEnd;
 
-    switch(msg->getType()) 
+    switch(msg->getType()) {
+    case SOLICIT_MSG: {
+	SmartPtr<TSrvCfgIface> ptrCfgIface = CfgMgr->getIfaceByID(msg->getIface());
+	if (msg->getOption(OPTION_RAPID_COMMIT) && !ptrCfgIface->getRapidCommit()) {
+	    Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
+		      << ptrCfgIface->getName() << " interface." << LogEnd;
+	}
+	if (msg->getOption(OPTION_RAPID_COMMIT) && ptrCfgIface->getRapidCommit() )
+	{
+	    SmartPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
+	    SmartPtr<TSrvMsgReply> answRep=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
+	    //if at least one IA has in reply message status success
+	    if (!answRep->isDone()) {
+		SmartPtr<TOpt> ptrOpt;
+		answRep->firstOption();
+		bool found=false;
+		while( (ptrOpt=answRep->getOption()) && (!found) ) {
+		    if (ptrOpt->getOptType()==OPTION_IA) {
+			SmartPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
+			SmartPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
+			    ptrIA->getOption(OPTION_STATUS_CODE);
+			if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
+			    found=true;
+		    }
+		}
+		if(found) {
+		    this->MsgLst.append((Ptr*)answRep);
+		    break;
+		}
+		// else we didn't assign any address - this message sucks
+		// it's better if advertise will be sent - maybe with better options
+	    }
+	}
+	//if there was no Rapid Commit option in solicit message or
+	//construction of reply with rapid commit wasn't successful
+	//Maybe it's possible to construct appropriate advertise message
+	//and assign some "not rapid" addresses to this client
+	SmartPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise(IfaceMgr,That,CfgMgr,AddrMgr,(Ptr*)msg);
+	this->MsgLst.append((Ptr*)x);
+	break;
+    }
+    case REQUEST_MSG: 
     {
-        case SOLICIT_MSG: 
-        {
-            //Here should be checked whether message solicit contains Rapid 
-            //Commit Option If yes - rapid Reply message shlould be constructed
-            //if server is allowed to answer in such way for this 
-            //iface/class/client i.e. there is/are appropriate class(es) with
-            //Rapid commit option and there is enough addresses to assign to
-            //at least one IA use rapid method of answer
-            if (msg->getOption(OPTION_RAPID_COMMIT))
-            {
-                SmartPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-                SmartPtr<TSrvMsgReply> answRep=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
-                //if at least one IA has in reply message status success
-                if (!answRep->isDone())
-                {
-                    SmartPtr<TOpt> ptrOpt;
-                    answRep->firstOption();
-                    bool notFound=true;
-                    while((ptrOpt=answRep->getOption())&&(notFound))
-                    {
-                        if (ptrOpt->getOptType()==OPTION_IA)
-                        {
-                            SmartPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
-                            SmartPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
-                                ptrIA->getOption(OPTION_STATUS_CODE);
-                            if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
-                                notFound=false;
-                        }
-                    }
-                    if(!notFound)
-                    {
-                        this->MsgLst.append((Ptr*)answRep);
-                        break;
-                    }
-                    //else we didn't assign any address - this message sucks
-                    //it'd better if advertise will be sent - maybe with better
-                    //options
-                }   
-                //else execute instructions after if (no addresses were assigned,
-                //nothing has happened)
-            }
-            //if there was no Rapid Commit option in solicit message or
-            //construction of reply with rapid commit wasn't successful
-            //Maybe it's possible to construct appropriate advertise message
-            //and assign some "not rapid" addresses to this client
-            SmartPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise(IfaceMgr,That,CfgMgr,AddrMgr,(Ptr*)msg);
-            this->MsgLst.append((Ptr*)x);
-            break;
-        }
-        case REQUEST_MSG: 
-        {
-            SmartPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
-            answ=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
-            this->MsgLst.append((Ptr*)answ);
-            break;
-        }
-        case CONFIRM_MSG: 
-        {
-            SmartPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
-            answ=new TSrvMsgReply(IfaceMgr,That,CfgMgr,AddrMgr,nmsg);
-            this->MsgLst.append((Ptr*)answ);
-            break;
-        }
-        case RENEW_MSG: 
-        {
-            SmartPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
-            answ=new TSrvMsgReply(IfaceMgr, That,CfgMgr,AddrMgr,nmsg);
-            this->MsgLst.append((Ptr*)answ);
-            break;
-        }
-        case REBIND_MSG: 
-        {
-            SmartPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
-            answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
-            MsgLst.append((Ptr*)answ);
-            break;
-        }
-        case DECLINE_MSG: 
-        {
-            SmartPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
-            answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
-            MsgLst.append((Ptr*)answ);
-            break;
-        }
-        case RELEASE_MSG: 
-        {
-            SmartPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
-            answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
-            MsgLst.append((Ptr*)answ);
-            break;
-        }
-        case INFORMATION_REQUEST_MSG : 
-        {
-             SmartPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-             answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
-             MsgLst.append((Ptr*)answ);
-            // FIXME: INFORMATION-REQUEST not supported
-            break;
-        }
-        case RECONFIGURE_MSG:
-        case ADVERTISE_MSG:
-        case REPLY_MSG: 
-        {
-	    Log(Warning) << "Invalid message type received" << LogEnd;
-            break;
-        }
-        case RELAY_FORW:
-        case RELAY_REPL:
-        default:
-        {
-            std::clog << logger::logWarning << "Message type " << msg->getType() 
-		      << " not supported." << logger::endl;
-            break;
-        }
+	SmartPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
+	answ=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
+	this->MsgLst.append((Ptr*)answ);
+	break;
+    }
+    case CONFIRM_MSG: 
+    {
+	SmartPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
+	answ=new TSrvMsgReply(IfaceMgr,That,CfgMgr,AddrMgr,nmsg);
+	this->MsgLst.append((Ptr*)answ);
+	break;
+    }
+    case RENEW_MSG: 
+    {
+	SmartPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
+	answ=new TSrvMsgReply(IfaceMgr, That,CfgMgr,AddrMgr,nmsg);
+	this->MsgLst.append((Ptr*)answ);
+	break;
+    }
+    case REBIND_MSG: 
+    {
+	SmartPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
+	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	MsgLst.append((Ptr*)answ);
+	break;
+    }
+    case DECLINE_MSG: 
+    {
+	SmartPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
+	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	MsgLst.append((Ptr*)answ);
+	break;
+    }
+    case RELEASE_MSG: 
+    {
+	SmartPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
+	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	MsgLst.append((Ptr*)answ);
+	break;
+    }
+    case INFORMATION_REQUEST_MSG : 
+    {
+	SmartPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
+	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	MsgLst.append((Ptr*)answ);
+	// FIXME: INFORMATION-REQUEST not supported
+	break;
+    }
+    case RECONFIGURE_MSG:
+    case ADVERTISE_MSG:
+    case REPLY_MSG: 
+    {
+	Log(Warning) << "Invalid message type received" << LogEnd;
+	break;
+    }
+    case RELAY_FORW:
+    case RELAY_REPL:
+    default:
+    {
+	Log(Warning)<< "Message type " << msg->getType() 
+		    << " not supported." << LogEnd;
+	break;
+    }
     }
     
     // save DB state regardless of action taken

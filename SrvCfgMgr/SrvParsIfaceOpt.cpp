@@ -6,24 +6,31 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.3 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.4 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.2  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
  */
 
 #include "SrvParsIfaceOpt.h"
+#include "DHCPConst.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 {
     this->UniAddress=false;
     this->Address=new TIPv6Addr();
-    this->Domain="";
-    this->TimeZone="";
-    this->ClntMaxLease  = ULONG_MAX;
-    this->IfaceMaxLease = ULONG_MAX;
+    this->Unicast=false;
+    this->Domain        = SERVER_DEFAULT_DOMAIN;
+    this->TimeZone      = SERVER_DEFAULT_TIMEZONE;
+    this->ClntMaxLease  = SERVER_DEFAULT_CLNTMAXLEASE;
+    this->IfaceMaxLease = SERVER_DEFAULT_IFACEMAXLEASE;
+    this->Preference    = SERVER_DEFAULT_PREFERENCE;
+    this->RapidCommit   = SERVER_DEFAULT_RAPIDCOMMIT;
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void)
@@ -129,4 +136,32 @@ void TSrvParsIfaceOpt::setClntMaxLease(long clntMaxLease) {
 long TSrvParsIfaceOpt::getClntMaxLease()
 {
     return this->ClntMaxLease;
+}
+
+void TSrvParsIfaceOpt::setPreference(char pref)
+{
+    this->Preference=pref;
+}
+char TSrvParsIfaceOpt::getPreference()
+{
+    return this->Preference;
+}
+void TSrvParsIfaceOpt::setUnicast(bool unicast)
+{
+    this->Unicast=unicast;
+}
+
+bool TSrvParsIfaceOpt::getUnicast()
+{
+    return this->Unicast;
+}
+
+void TSrvParsIfaceOpt::setRapidCommit(bool rapidComm)
+{
+    this->RapidCommit=rapidComm;
+}
+
+bool TSrvParsIfaceOpt::getRapidCommit()
+{
+    return this->RapidCommit;
 }

@@ -521,12 +521,14 @@ InterfaceOptionDeclaration
 : ClassOptionDeclaration
 | UnicastAddressOption
 | PreferenceOption
+| RapidCommitOption
 | DNSServerOption
 | NTPServerOption
 | DomainOption
 | TimeZoneOption
 | IfaceMaxLeaseOption
 | ClntMaxLeaseOption
+| UnicastOption
 ;
 
 ClassOptionDeclaration
@@ -538,8 +540,6 @@ ClassOptionDeclaration
 //| NISServerOption
 | RejectClientsOption
 | AcceptOnlyOption
-| UnicastOption
-| RapidCommitOption
 | ClassMaxLeaseOption
 ;
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.7 2004-08-24 22:48:35 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.8 2004-09-03 23:20:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/08/24 22:48:35  thomson
+ * *** empty log message ***
+ *
  * Revision 1.6  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -147,6 +150,10 @@ void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
     switch (msg->getType()) {
     case ADVERTISE_MSG:
     {
+	if (this->getOption(OPTION_RAPID_COMMIT)) {
+	    Log(Info) << "Server responded with ADVERTISE instead of REPLY, probably does not support"
+		" RAPID-COMMIT." << LogEnd;
+	}
 	AnswersLst.append(msg);
 	SmartPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
 	if (prefOpt && (prefOpt->getPreference() == 255) )
@@ -169,14 +176,12 @@ void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
     }
     case REPLY_MSG:
     {
-	if (!this->getOption(OPTION_RAPID_COMMIT))
-	{
+	if (!this->getOption(OPTION_RAPID_COMMIT)) {
 	    Log(Warning) << "REPLY received, but SOLICIT was sent without RAPID_COMMIT. Ingoring." 
 			 << LogEnd;
 	    return;
 	}
-	if (!msg->getOption(OPTION_RAPID_COMMIT))
-	{
+	if (!msg->getOption(OPTION_RAPID_COMMIT)) {
 	    Log(Warning) << "REPLY as answer for SOLICIT received without RAPID_COMMIT. Ignoring."
 			 << LogEnd;
 	    return;

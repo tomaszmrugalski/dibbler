@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.4 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.5 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.3  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
@@ -51,8 +54,19 @@ public:
     void setIfaceMaxLease(long maxLease);
     long getIfaceMaxLease();
 
+    void setPreference(char pref);
+    char getPreference();
+    void setUnicast(bool unicast);
+    bool getUnicast();
+    void setRapidCommit(bool rapidComm);
+    bool getRapidCommit();
+
 private:
     bool UniAddress;
+    char Preference;
+    bool Unicast;
+    bool RapidCommit;
+
     long IfaceMaxLease;
     long ClntMaxLease;
     SmartPtr<TIPv6Addr> Address;

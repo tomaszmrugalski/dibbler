@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.7 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.8 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.6  2004/06/29 22:03:36  thomson
  * *MaxLease option partialy implemented/fixed.
  *
@@ -67,7 +70,6 @@ class TSrvCfgAddrClass
     long decrAssigned(int count=1);
 
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
-    bool getRapidCommit();
     virtual ~TSrvCfgAddrClass();
  private:
     long T1Beg;
@@ -87,15 +89,9 @@ class TSrvCfgAddrClass
     TContainer<SmartPtr<TStationRange> > RejedClnt;
     TContainer<SmartPtr<TStationRange> > AcceptClnt;
     SmartPtr<TStationRange> Pool;
-
     unsigned long ClassMaxLease;
-
     unsigned long AddrsAssigned;
-
     unsigned long AddrsCount;
-    
-    bool Unicast;		
-    bool RapidCommit;	
 };
 
 #endif

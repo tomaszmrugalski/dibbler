@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsClassOpt.h,v 1.4 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvParsClassOpt.h,v 1.5 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.3  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
@@ -72,35 +75,25 @@ class TSrvParsClassOpt
     void setPool(TContainer<SmartPtr<TStationRange> > *pool);
     long countPool();
 
-    void setPreference(char pref);
-    char getPreference();
-    void setUnicast(bool unicast);
-    bool getUnicast();
-    void setRapidCommit(bool rapidComm);
-    bool getRapidCommit();
-
     // leases count
     void setClassMaxLease(long maxClntLeases);
     long getClassMaxLease();
 
 private:
     //Ranges of T1 i T2
-    long T1Beg;
-    long T1End;
-    long T2End;
-    long T2Beg;
-    long PrefBeg;
-    long PrefEnd;
-    long ValidBeg;
-    long ValidEnd;
+    unsigned long T1Beg;
+    unsigned long T1End;
+    unsigned long T2End;
+    unsigned long T2Beg;
+    unsigned long PrefBeg;
+    unsigned long PrefEnd;
+    unsigned long ValidBeg;
+    unsigned long ValidEnd;
     
     TContainer<SmartPtr<TStationRange> > RejedClnt;
     TContainer<SmartPtr<TStationRange> > AcceptClnt;
     TContainer<SmartPtr<TStationRange> > Pool;
     
-    char Preference;
-    bool Unicast;
-    bool RapidCommit;
     long ClassMaxLease;
 };
 #endif

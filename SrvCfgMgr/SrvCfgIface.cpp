@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.11 2004-09-03 20:58:35 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.12 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/09/03 20:58:35  thomson
+ * *** empty log message ***
+ *
  * Revision 1.10  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -109,6 +112,8 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->TimeZone      = opt->getTimeZone();
     this->IfaceMaxLease = opt->getIfaceMaxLease();
     this->ClntMaxLease  = opt->getClntMaxLease();
+    this->RapidCommit   = opt->getRapidCommit();
+    this->Unicast       = opt->getUnicast();
     
     SmartPtr<TIPv6Addr> stat;
 
@@ -163,6 +168,12 @@ void TSrvCfgIface::setID(int ifaceID) {
 	this->ID=ifaceID;
 }
 
+bool TSrvCfgIface::getRapidCommit()
+{
+    return this->RapidCommit;
+}
+
+
 void TSrvCfgIface::addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass) {
     this->SrvCfgAddrClassLst.append(addrClass);
 }
@@ -210,33 +221,40 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     }
     out << ">" << std::endl;
     if (iface.isUniAddress) {
-	out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
+	out << "    <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
     } else {
-	out << "  <unicast/>" << std::endl;
+	out << "    <!-- <unicast/> -->" << std::endl;
     }
+
+    if (iface.RapidCommit) {
+	out << "    <rapid-commit/>" << std::endl;
+    } else {
+	out << "    <!-- <rapid-commit/> -->" << std::endl;
+    }
+
     out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
-    out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << logger::endl;
-    out << "    <clntMaxLease>" << iface.ClntMaxLease << "</clntMaxLease>" << logger::endl;
+    out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << std::endl;
+    out << "    <clntMaxLease>" << iface.ClntMaxLease << "</clntMaxLease>" << std::endl;
     
     SmartPtr<TIPv6Addr> stat;
-    out << "    <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;
+    out << "    <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << std::endl;
     iface.NTPSrv.first();
     while(stat=iface.NTPSrv.get())
-	out << "    <ntp>" << *stat << "</ntp>" << logger::endl;
+	out << "    <ntp>" << *stat << "</ntp>" << std::endl;
     
-    out << "    <timezone>" << iface.TimeZone << "</timezone>" << logger::endl;
+    out << "    <timezone>" << iface.TimeZone << "</timezone>" << std::endl;
     
-    out << "    <!-- DNS Resolvers count: " << iface.DNSSrv.count() << "-->" << logger::endl;
+    out << "    <!-- DNS Resolvers count: " << iface.DNSSrv.count() << "-->" << std::endl;
     iface.DNSSrv.first();
     while(stat=iface.DNSSrv.get())
-	out << "    <dns>" << *stat << "</dns>" << logger::endl;
+	out << "    <dns>" << *stat << "</dns>" << std::endl;
     
-    out << "    <domain>" << iface.Domain << "</domain>" << logger::endl;
+    out << "    <domain>" << iface.Domain << "</domain>" << std::endl;
     
     SmartPtr<TSrvCfgAddrClass>	groupPtr;
     iface.SrvCfgAddrClassLst.first();
     out << "    <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() 
-	<< "-->" << logger::endl;
+	<< "-->" << std::endl;
     while(groupPtr=iface.SrvCfgAddrClassLst.get())
     {	
 	out << *groupPtr;

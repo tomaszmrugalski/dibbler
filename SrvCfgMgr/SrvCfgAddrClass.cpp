@@ -6,9 +6,10 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.13 2004-07-05 23:27:54 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.14 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ *
  * Revision 1.12  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -125,8 +126,6 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
     ValidEnd=opt->getValidEnd();
     
     ClassMaxLease = opt->getClassMaxLease();
-    RapidCommit=opt->getRapidCommit();
-    Unicast=opt->getUnicast();
     
     SmartPtr<TStationRange> statRange;
     opt->firstRejedClnt();
@@ -170,11 +169,6 @@ unsigned long TSrvCfgAddrClass::getClassMaxLease() {
     return ClassMaxLease;
 }
 
-bool TSrvCfgAddrClass::getRapidCommit()
-{
-    return this->RapidCommit;
-}
-
 unsigned long TSrvCfgAddrClass::getID()
 {
     return this->ID;
@@ -208,14 +202,7 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     out << "      <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd
 	<< "\" />" << logger::endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << logger::endl;
-    
-    if (addrClass.RapidCommit) {
-	out << "      <rapid-commit/>" << logger::endl;
-    }
-    if (addrClass.Unicast) {
-	out <<   "    <unicast/>" << logger::endl;
-    }
-    
+        
     SmartPtr<TStationRange> statRange;
     out << "      <!-- address range -->" << logger::endl;
     out << *addrClass.Pool;

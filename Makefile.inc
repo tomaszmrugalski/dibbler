@@ -11,7 +11,7 @@ CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
-#DEBUGINFO    = -g
+DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === libxml2 stuff ===
@@ -30,7 +30,7 @@ SERVERBIN    = dibbler-server-linux
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
-VERSION      = 0.2.0
+VERSION      = 0.2.0-CVS
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux

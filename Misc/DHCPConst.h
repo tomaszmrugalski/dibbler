@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: DHCPConst.h,v 1.4 2004-06-04 19:03:47 thomson Exp $
+ * $Id: DHCPConst.h,v 1.5 2004-09-03 23:20:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/04 19:03:47  thomson
+ * Resolved warnings with signed/unisigned
+ *
  * Revision 1.3  2004/03/29 22:06:49  thomson
  * 0.1.1 version
  *
@@ -122,6 +125,18 @@
 // addresses reported ad DECLINED are not used for 2 hours
 #define DECLINED_TIMEOUT (unsigned) 7200
 
+// DHCPv6 server default values
+#define SERVER_DEFAULT_DOMAIN ""
+#define SERVER_DEFAULT_TIMEZONE ""
+#define SERVER_DEFAULT_CLNTMAXLEASE ULONG_MAX
+#define SERVER_DEFAULT_IFACEMAXLEASE ULONG_MAX
+#define SERVER_DEFAULT_PREFERENCE 0
+#define SERVER_DEFAULT_RAPIDCOMMIT false
+
+#define SERVER_DEFAULT_MIN_T1 0
+#define SERVER_DEFAULT_MAX_T1 ULONG_MAX
+
+
 enum ESendOpt {Send,Default,Supersede};
 enum EReqOpt {Request, Require};
 enum ETentative {YES, NO, DONTKNOWYET};
@@ -137,6 +152,8 @@ bool canBeOptInMsg(int msgType, int optType);
 #define uint16_t unsigned short int
 #define uint32_t unsigned int
 #endif
+
+
 
 #endif
 

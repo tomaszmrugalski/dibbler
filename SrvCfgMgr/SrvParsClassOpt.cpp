@@ -1,9 +1,10 @@
 #include <limits.h>
 #include "SrvParsClassOpt.h"
+#include "DHCPConst.h"
 
 TSrvParsClassOpt::TSrvParsClassOpt(void)
 {
-    T1Beg    = 0x7fffffff;
+    T1Beg    = SERVER_DEFAULT_MIN_T1;
     T1End    = 0x7fffffff;
     T2Beg    = 0x7fffffff;
     T2End    = 0x7fffffff;
@@ -12,11 +13,6 @@ TSrvParsClassOpt::TSrvParsClassOpt(void)
     ValidBeg = 0x7fffffff;
     ValidEnd = 0x7fffffff;
 
-	//NISServer="";
-    Preference=0;
-    
-    Unicast=false;
-    RapidCommit=false;
     ClassMaxLease= ULONG_MAX;
 }
 
@@ -169,34 +165,6 @@ void TSrvParsClassOpt::setPool(TContainer<SmartPtr<TStationRange> > *pool)
     SmartPtr<TStationRange> addr;
     while(addr=pool->get())
         this->Pool.append(addr);
-}
-
-void TSrvParsClassOpt::setPreference(char pref)
-{
-    this->Preference=pref;
-}
-char TSrvParsClassOpt::getPreference()
-{
-    return this->Preference;
-}
-void TSrvParsClassOpt::setUnicast(bool unicast)
-{
-    this->Unicast=unicast;
-}
-
-bool TSrvParsClassOpt::getUnicast()
-{
-    return this->Unicast;
-}
-
-void TSrvParsClassOpt::setRapidCommit(bool rapidComm)
-{
-    this->RapidCommit=rapidComm;
-}
-
-bool TSrvParsClassOpt::getRapidCommit()
-{
-    return this->RapidCommit;
 }
 
 void TSrvParsClassOpt::setClassMaxLease(long classMaxLease) {
