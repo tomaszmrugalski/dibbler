@@ -372,7 +372,7 @@
 					RelativePath="dns-winxp.c">
 				</File>
 				<File
-					RelativePath="lowlevel-winxpsp1.c">
+					RelativePath="lowlevel-winxp-netsh.c">
 				</File>
 				<File
 					RelativePath="server-winxp.cpp">
@@ -427,6 +427,9 @@
 					RelativePath="..\misc\Container.h">
 				</File>
 				<File
+					RelativePath="..\misc\DHCPConst.h">
+				</File>
+				<File
 					RelativePath="..\misc\DUID.h">
 				</File>
 				<File
@@ -457,6 +460,9 @@
 		</File>
 		<File
 			RelativePath="..\README">
+		</File>
+		<File
+			RelativePath="..\RELNOTES">
 		</File>
 		<File
 			RelativePath="..\TODO">

@@ -6,9 +6,12 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.8 2004-06-21 23:08:49 thomson Exp $
+ * $Id: WinService.cpp,v 1.9 2004-09-28 21:49:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/21 23:08:49  thomson
+ * Minor fixes.
+ *
  * Revision 1.7  2004/05/24 21:16:37  thomson
  * Various fixes.
  *
@@ -337,7 +340,7 @@ bool TWinService::isRunning(const char * name) {
         // Try to open the service
         SC_HANDLE hService = OpenService(hSCM,name,SERVICE_QUERY_CONFIG);
         if (hService) {
-			LPSERVICE_STATUS lpServiceStatus;
+			LPSERVICE_STATUS lpServiceStatus = 0;
 			ok = ControlService(hService, SERVICE_CONTROL_INTERROGATE,lpServiceStatus);
 			result = true;
             CloseServiceHandle(hService);

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: server-win32.cpp,v 1.7 2004-09-20 20:14:54 thomson Exp $
+ * $Id: server-win32.cpp,v 1.8 2004-09-28 21:49:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/09/20 20:14:54  thomson
+ * *** empty log message ***
+ *
  * Revision 1.6  2004/07/17 16:02:35  thomson
  * Command line minor modifications.
  *
@@ -65,65 +68,67 @@ int main(int argc, char* argv[]) {
     TSrvService SrvService;
 	int i=0;
     WSADATA wsaData;
-	if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
-			clog<<"Unable to load WinSock 2.2"<<endl;
-			return 0;
-	}
-
-	// find ipv6.exe (or netsh.exe in future implementations)
-	if (!lowlevelInit()) {
-		clog << "lowlevelInit() failed. Startup aborted.\n";
-		return -1;		
-	}
-
-	EServiceState status = SrvService.ParseStandardArgs(argc, argv);
-	SrvService.setState(status);
-
-	clog << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
-	clog << DIBBLER_COPYRIGHT2 << endl;
-	clog << DIBBLER_COPYRIGHT3 << endl;
-	clog << DIBBLER_COPYRIGHT4 << endl;
-	clog << endl;
-
-	SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
-
-	switch (status) {
-	case STATUS: {
-		clog << "Service: ";
-		if (SrvService.IsInstalled()) 
-			clog << "INSTALLED " << endl;
-		else
-			clog << "NOT INSTALLED" << endl;
- 		break;
-	};
-	case START: {
-		SrvService.StartService();
+    if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
+	clog<<"Unable to load WinSock 2.2"<<endl;
+	return 0;
+    }
+    
+    // find ipv6.exe (or netsh.exe in future implementations)
+    if (!lowlevelInit()) {
+	clog << "lowlevelInit() failed. Startup aborted.\n";
+	return -1;		
+    }
+    
+    EServiceState status = SrvService.ParseStandardArgs(argc, argv);
+    SrvService.setState(status);
+    
+    clog << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
+    clog << DIBBLER_COPYRIGHT2 << endl;
+    clog << DIBBLER_COPYRIGHT3 << endl;
+    clog << DIBBLER_COPYRIGHT4 << endl;
+    clog << endl;
+    
+    SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
+    
+    switch (status) {
+    case STATUS: {
+	clog << "Service: ";
+	if (SrvService.IsInstalled()) 
+	    clog << "INSTALLED " << endl;
+	else
+	    clog << "NOT INSTALLED" << endl;
 	break;
-	}
-	case STOP: {
-		clog << "FIXME: STOP function is not implemented yet." << endl;
-		break;
-	}
-	case INSTALL: {
-		SrvService.Install();
-		break;
-	}
-	case UNINSTALL: {
-		SrvService.Uninstall();
-		break;
-	} 
-	case RUN: {
-		SrvService.Run();
-		break;
-	}
-  	case INVALID: {
-		clog << "Invalid usage." << endl;
+    };
+    case START: {
+	SrvService.StartService();
+	break;
+    }
+    case STOP: {
+	clog << "FIXME: STOP function is not implemented yet." << endl;
+	break;
+    }
+    case INSTALL: {
+	SrvService.Install();
+	    break;
+    }
+    case UNINSTALL: {
+	SrvService.Uninstall();
+	break;
+    } 
+    case RUN: {
+	SrvService.Run();
+	break;
+    }
+    case INVALID: {
+	clog << "Invalid usage." << endl;
     }				  
-	case HELP: 
-	default: {
-		usage();
-	}	
-	}
-
+    case HELP: 
+    default: {
+	    usage();
+    }	
+    }
+    
     return 0;
 }
+
+

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.16 2004-09-07 15:37:44 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.17 2004-09-28 21:49:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  * Revision 1.15  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -81,7 +84,8 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
     
     SmartPtr<TIfaceIface> iface=IfaceMgr->getIfaceByID(confIface->getID());
     SmartPtr<TIPv6Addr> unicast = confIface->getUnicast();
-    if (unicast) {
+
+	if (unicast) {
 	/* unicast */
 	Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName() 
 		    << "/" << confIface->getID() << " interface." << LogEnd;
@@ -90,7 +94,6 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
 	    return false;
 	}
     } 
-
     
     /* multicast */
     Log(Notice) << "Creating multicast (ff02::1:2) socket on " << confIface->getName() 

@@ -1,7 +1,10 @@
 /*
- * $Id: lowlevel-winxpsp1.c,v 1.8 2004-09-28 19:43:46 thomson Exp $
+ * $Id: lowlevel-winxpsp1.c,v 1.9 2004-09-28 21:49:32 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
+ *  Revision 1.8  2004/09/28 19:43:46  thomson
+ *  Sockets now can be bound on multiple interfaces.
+ *
  *  Revision 1.7  2004/09/28 16:01:49  thomson
  *  Various improvements, socket binding fix in progress.
  *
@@ -272,7 +275,7 @@ extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thi
 	} 
 
 	// REUSEADDR must be before bind() in order to take effect
-	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &hops, sizeof(hops)) !=0 )
+	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char*)&hops, sizeof(hops)))
 		return -9;
 
     if (bind(s, (struct sockaddr*)&bindme, sizeof(bindme))) {

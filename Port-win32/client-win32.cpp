@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: client-win32.cpp,v 1.12 2004-07-17 16:02:34 thomson Exp $
+ * $Id: client-win32.cpp,v 1.13 2004-09-28 21:49:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/07/17 16:02:34  thomson
+ * Command line minor modifications.
+ *
  * Revision 1.11  2004/05/24 21:16:37  thomson
  * Various fixes.
  *

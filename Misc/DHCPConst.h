@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.7 2004-09-07 22:02:34 thomson Exp $
+ * $Id: DHCPConst.h,v 1.8 2004-09-28 21:49:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/09/07 22:02:34  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.6  2004/09/07 17:42:31  thomson
  * Server Unicast implemented.
  *
@@ -138,8 +141,14 @@
 #define SERVER_DEFAULT_PREFERENCE 0
 #define SERVER_DEFAULT_RAPIDCOMMIT false
 
-#define SERVER_DEFAULT_MIN_T1 0
-#define SERVER_DEFAULT_MAX_T1 ULONG_MAX
+#define SERVER_DEFAULT_MIN_T1    5
+#define SERVER_DEFAULT_MAX_T1    ULONG_MAX
+#define SERVER_DEFAULT_MIN_T2    10
+#define SERVER_DEFAULT_MAX_T2    ULONG_MAX
+#define SERVER_DEFAULT_MIN_PREF  1800
+#define SERVER_DEFAULT_MAX_PREF  86400     /* 1 day */
+#define SERVER_DEFAULT_MIN_VALID 3600
+#define SERVER_DEFAULT_MAX_VALID 172800    /* 2 days */
 
 #define CLIENT_DEFAULT_T1 ULONG_MAX
 #define CLIENT_DEFAULT_T2 ULONG_MAX
