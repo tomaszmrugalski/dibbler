@@ -1,19 +1,16 @@
 #! /bin/sh
 #
-# skeleton	example file to build /etc/init.d/ scripts.
-#		This file should be used to construct scripts for /etc/init.d.
-#
 #		Written by Miquel van Smoorenburg <miquels@cistron.nl>.
 #		Modified for Debian 
 #		by Ian Murdock <imurdock@gnu.ai.mit.edu>.
 #
-# Version:	@(#)skeleton  1.9  26-Feb-2001  miquels@cistron.nl
+# Version:	2005-01-27 Tomasz Mrugalski<thomson@klub.com.pl>
 #
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/dibbler-client
 NAME=dibbler-client
-DESC=DHCPv6 client
+DESC="DHCPv6 client"
 DAEMON_OPTS=run
 
 test -x $DAEMON || exit 0
@@ -28,13 +25,17 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	$(DAEMON) start > /dev/null
+	$DAEMON start > /dev/null
 	echo "$NAME."
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-	$(DAEMON) stop > /dev/null
+	$DAEMON stop > /dev/null
 	echo "$NAME."
+	;;
+  status)
+	echo -n "Status $DESC: $NAME"
+	$DAEMON status
 	;;
   #reload)
 	#
@@ -55,9 +56,9 @@ case "$1" in
 	#	just the same as "restart".
 	#
 	echo -n "Restarting $DESC: "
-	dibbler-server stop
+	$DAEMON stop > /dev/null
 	sleep 1
-	dibbler-server start
+	$DAEMON start > /dev/null
 	echo "$NAME."
 	;;
   *)

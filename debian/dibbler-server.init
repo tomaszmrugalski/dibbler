@@ -25,12 +25,12 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	$(DAEMON) start > /dev/null
+	$DAEMON start > /dev/null
 	echo "$NAME."
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-	$(DAEMON) stop > /dev/null
+	$DAEMON stop > /dev/null
 	echo "$NAME."
 	;;
   #reload)
@@ -52,9 +52,9 @@ case "$1" in
 	#	just the same as "restart".
 	#
 	echo -n "Restarting $DESC: "
-	dibbler-server stop
+	$(DAEMON) stop
 	sleep 1
-	dibbler-server start
+	$(DAEMON) start
 	echo "$NAME."
 	;;
   *)
