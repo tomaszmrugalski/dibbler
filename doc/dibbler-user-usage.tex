@@ -1,7 +1,9 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.2 2004-06-19 10:24:59 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.3 2004-06-19 19:51:14 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.2  2004/06/19 10:24:59  thomson
+%% Hyperlinks in PDF, building process modified
 %%
 
 \section{Installation and usage}
@@ -9,19 +11,19 @@ Both client and server are installed in the same way. Installation
 method is different in WindowsXP and Linux systems, so they're described
 separately. To simplify installation, it assumes that binary versions
 are used\footnote{Compilation is not
-  required, binary version can be used safely. It can be performed by
+  required, binary version can be used safely. Compilation can be performed by
   advanced users, see \emph{Compilation} section for details.}.
 
 \subsection{Linux installation}
 Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an archive with
-Dibbler binaries and extract it to /var/lib/dibbler directory:
+Dibbler binaries and extract it to \verb+/var/lib/dibbler+ directory:
 \begin{verbatim}
 cd /var/lib/dibbler/
 tar zxvf dibbler-0.2.0-linux.tar.gz 
 \end{verbatim}
 
 Depending what functionality do you want to use (server or client),
-you should edit config file (client.conf for client and server.conf
+you should edit config file (\verb+client.conf+ for client and \verb+server.conf+
 for server). After editing, issue following commands:
 
 \begin{verbatim}
@@ -34,12 +36,12 @@ for starting server or
 ./dibbler-client-linux start
 \end{verbatim}
 
-for starting client. ,,start'' parameter needs a little comment. It
+for starting client. \verb+start+ parameter needs a little comment. It
 instructs Dibbler to run in daemon mode -- detach from console and run
 in the background. During config files fine-tuning, it is ofter better
-to watch Dibbler's bahavior instantly. In this case, use ,,run''
-instead of ,,start'' parameter. Dibbler will present its messages on
-your console. To finish it, press control-c.
+to watch Dibbler's bahavior instantly. In this case, use \verb+run+
+instead of \verb+start+ parameter. Dibbler will present its messages on
+your console. To finish it, press ctrl-c.
 
 To stop server running in daemon mode, type:
 \begin{verbatim}
@@ -53,7 +55,7 @@ To stop client running in daemon mode, type:
 
 To see, if client or server are running\footnote{Running status is
   based on /var/lib/dibbler/client.pid or server.pid files. In rare
-  occasions, when server crashes, this status will show server status as running}, type:
+  occasions, when server crashes, this status will show server status as running.}, type:
 \begin{verbatim}
 ./dibbler-client-linux status
 \end{verbatim}
@@ -65,9 +67,9 @@ or
 
 \subsection{WindowsXP installation}
 Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an archive with
-Dibbler binaries and extract it to a directory, e.g. c:$\backslash$dibbler.
+Dibbler binaries and extract it to a directory, e.g. \verb+c:\dibbler+.
 
-Now run console (start $\rightarrow$ run... $\rightarrow$ cmd). Now
+Open a console (start $\rightarrow$ run... $\rightarrow$ cmd) and
 issue following commands:
 
 \begin{verbatim}
@@ -76,11 +78,11 @@ cd \dibbler
 dibbler-client-winxp run -d c:\dibbler
 \end{verbatim}
 
-,,run'' command instructs Dibbler to run in console and not become a
+\verb+run+ command instructs Dibbler to run in console and not become a
 daemon. Is it very useful feature in early configuration stages. To
 finish it, press ctrl-c. 
 
-After configuration files are edited, user can install dibbler as a
+After configuration files are edited and tested, user can install Dibbler as a
 Windows service. In this case, following command should be issued:
 \begin{verbatim}
 dibbler-client-winxp install -d c:\dibbler
@@ -90,16 +92,16 @@ Now dibbler is installed as a Windows service and it can be controlled
 from Control Panel $\rightarrow$ Administrative tasks $\rightarrow$
 Services. 
 
-If you want to uninstall Dibbler as a service, use ,,uninstall''
-instead of ,,install''.
+If you want to uninstall Dibbler as a service, use \verb+uninstall+
+instead of \verb+install+.
 
 \section{Compilation}
 Dibbler is distributed in 2 versions: binary and source files. For
 most users, binary version is better choice.  Compilation is
 performed by more experienced users, preferably with programming
 knowledge. It does not offer any advances over binary version, only
-allow to understand internal Dibbler workings. You probalby want just
-install and use Dibbler. If that is your case, skip to next section
+allows to understand internal Dibbler workings. You probalby want just
+install and use Dibbler. If that is your case, read section
 named \emph{Installation}.
 
 \subsection{Linux compilation}
@@ -111,9 +113,11 @@ make
 \end{verbatim}
 That's it. If there are problems with missing/different compiler
 version, take a look at Makefile.inc file. Dibbler was compiled using
-gcc 2.95, 3.0, 3.2 and 3.3 versions. Lexer files were generated using
-flex 2.5.31. Parser file were created using bison++ 1.21.9. Everything
-was developed under Debian GNU/Linux systems.
+gcc 2.95, 3.0, 3.2, 3.3 and 3.4 versions. Lexer files were generated using
+flex 2.5.31. Parser file were created using bison++
+1.21.9\footnote{flex and bison++ tools are not required to compile
+  Dibbler. Generated files are placed in CVS and in tar.gz
+  archives}. Everything was developed under Debian GNU/Linux systems.
 
 \subsection{WindowsXP compilation}
 Download dibbler-0.2.0-src.tar.gz and extract it. In port-winxp there
@@ -121,23 +125,23 @@ will be project files (one for server and one for client) for MS
 Visual C++ 2003. Open one of them and click Build command. That should
 do the trick.
 
-\subsubsection{Flex/bison under windows}
+\subsubsection{Flex/bison under Windows}
 
-Lexer and Parser files (ClntLexer.*, ClntParser.*, SrvLexer.* and
-SrvParser.*) are generated by author and placed in CVS and
-distributed. There is no need to generate them. If you want to do
-this, there is an flex binary included in port-winxp. Take note that
+Lexer and Parser files (\verb+ClntLexer.*+, \verb+ClntParser.*+, \verb+SrvLexer.*+ and
+\verb+SrvParser.*+) are generated by author and placed in CVS and
+archives. There is no need to generate them. However, if you insist on
+doing so, there is an flex and bison binary included in port-winxp. Take note that
 several modifications are required:
 
 \begin{itemize}
-\item To generate ClntParser.cpp and ClntLexer.cpp files, you can use
-parser.bat. After generation, in file ClntLexer.cpp replace: \verb+class istream;+
+\item To generate \verb+ClntParser.cpp+ and \verb+ClntLexer.cpp+ files, you can use
+\verb+parser.bat+. After generation, in file \verb+ClntLexer.cpp+ replace: \verb+class istream;+
 with: \verb+#include <iostream>+ and \verb+using namespace std;+ lines.
 \item flex binary included is slightly modified. It generates
 \verb+#include "FlexLexer.h"+ instead of \verb+#include <FlexLexer.h>+. You should
-add .\ to include path if you have problem with missing FlexLexer.h.
-Also note that FlexLexer.h is modified (std:: added in several places,
-\verb+<fstream.h>+ is replaced with \verb+<fstream>+ etc.
+add .\ to include path if you have problem with missing \verb+FlexLexer.h+.
+Also note that \verb+FlexLexer.h+ is modified (std:: added in several places,
+\verb+<fstream.h>+ is replaced with \verb+<fstream>+ etc.)
 %%\item In file ClntParser.cpp, substitute line (around 1860): ,,	*++yyvsp = yylval;''
 %%with: ,,*++yyvsp = ::yylval;''. This trick is supposed to fix numerous
 %%parser problems.

@@ -1,16 +1,28 @@
 %%
-%% $Id: dibbler-user-epilogue.tex,v 1.2 2004-06-19 10:24:59 thomson Exp $
+%% $Id: dibbler-user-epilogue.tex,v 1.3 2004-06-19 19:51:14 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.2  2004/06/19 10:24:59  thomson
+%% Hyperlinks in PDF, building process modified
+%%
 %%
 
 \section{History}
  Dibbler project was started as master thesis by Tomasz Mrugalski and
-Marek Senderski of  Computer Science faculty on Gdansk University of
+Marek Senderski on Computer Science faculty on Gdansk University of
 Technology. Both authors graduated in september 2003 and soon after
 started their jobs. 
 
-Sadly, Marek does not have free time to develop Dibbler, so his
+During master thesis writing, it came to my attention that there are
+other DHCPv6 implementations available, but none of them has been
+named properly. Refering to them was a bit
+silly: ,,DHCPv6 published on sourceforge.net has better support than
+DHCPv6 developed in KAME project, but our DHCPv6
+implementation...''. So I have decided that this implementation should
+have a name. Soon it was named Dibbler after famous CMOT
+Dibbler from Discworld series by Terry Pratchett.
+
+Sadly, Marek does not have enough free time to develop Dibbler, so his
 involvment is very limited at this time. However, that does not mean,
 that this project is abadoned. It is being actively developed by
 Tomek. Keep in mind that Tomek works at full time and does
@@ -26,24 +38,26 @@ you are using and so on. Without feedback from users, author will not
 be aware of many bugs and so will not be able to fix them. That's why
 users feedback is very important. You can also send bug report
 directly using e-mail. Be sure to be as detailed as possible. Please
-include both server and client log files with maximum verbose level
-set. 
+include both server and client log files, both config and xml
+files. If you are familiar with tcpdump or ethereal, traffic dumps
+from this programs are also great help.
 
 If you have used Dibbler and it worked ok, this documentation answered
 all you question and everything is in order (hmmm, wake up, it must be
 a dream, it isn't reality:), also send a short note to author. He can
 be contated at thomson(at)klub(dot)com(dot)pl (replace (at) with @ and
 dot with .). Be sure to include information which country do you live
-in. It's just author's curiosity to know where Dibbler is used.
+in. It's just author's curiosity to know where Dibbler is being used
+or tested.
 
 \section{Thanks and greetings}
 
-I would like to send my thanks and greetings to numerous persons.
+I would like to send my thanks and greetings to various persons.
 Without them, Dibbler would not be where is it today.
 \begin{description}
 \item[Marek Senderski] -- He's author of almost half of the Dibbler
   code. Without his efforts, Dibbler would be simple, long forgotten
-  by now master thesis without him.
+  by now master thesis.
 \item[Jacek Swiatowiak] -- He's my master thesis consultant. He guided 
   Marek and me to take first steps with DHCPv6 implementation.
 \item[Ania Szulc] -- Discworld fan and a great girl, too. She's the one

@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.2 2004-06-19 10:24:59 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.3 2004-06-19 19:51:14 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.2  2004/06/19 10:24:59  thomson
+%% Hyperlinks in PDF, building process modified
+%%
 %%
 
 \section{Intro}
@@ -9,57 +12,57 @@ First of all, as an author I would like to thank you for your interest
 in this DHCPv6 implementation. If this documentation doesn't answer
 your question or you have any suggestions, feel free to contact
 me. See \emph{Contact} section for details. Also be sure to check out
-Dibbler's website located at \url{http://klub.com.pl/dhcpv6/}.
+Dibbler website located at \url{http://klub.com.pl/dhcpv6/}.
 
 %%\href{http://klub.com.pl/dhcpv6/}{Dibbler's website}.
 
 \section{Overview}
 
 Dibbler is a portable DHCPv6 solution. It features both server and
-client. Currently there are implementations available for WindowsXP
+client. Currently there are ports available for WindowsXP
 and Linux systems. Besides basic functionality specified in RFC3315,
 it also offers serveral enhancements, e.g. DNS servers and doman names
 configuration.
 
-Dibbler is an open source software, distrubuted under GNU GPL
+Dibbler is an open source software, distributed under GNU GPL
 licence. It means that it is freely available, free of charge and can
 be used by anyone (including commercial usage). Sources are also
 available, so anyone skilled enough can fix bugs or add new features.
 
 As for now, Dibbler offers these features:
 \begin{itemize}
-\item basic server discovery and address retrival (SOLICIT,
+\item Basic server discovery and address assignment (SOLICIT,
   ADVERTISE, REQUEST and REPLY messages) -- simplest case possible:
   client discovers server, then asks for an address, which is granted
-  by server.
-\item discovering best server -- when client receives more than one
-  ADVERTISE messages from different server, it chooses the best 
-  and remembers remaining ones as a backup servers.
-\item many servers support -- client is capable of discovering and
+  by a~server.
+\item Best server discovery -- when client receives more than one
+  ADVERTISE messages from different servers, it chooses the best one
+  and remembers remaining ones as a backup.
+\item Many servers support -- client is capable of discovering and
   dealing with multiple servers. For example, client would like to
   have 5 addresses configured. Prefered server can only grant 3, so
-  client send request for 2 remaining addresses to one of the
+  client send request for remaining 2 addresses to one of the
   remaining servers.
-\item address renewal (RENEW,REBIND and REPLY messages) -- client renews
-  addresses at certain time intervals, if server specified so. 
-\item duplicate address detection (DECLINE and REPLY messages) -- client
+\item Address renewal (RENEW,REBIND and REPLY messages) -- client renews
+  addresses at certain time intervals, if server specified so.
+\item Duplicate address detection (DECLINE and REPLY messages) -- client
   can detect and properly handle faulty situation, when server grants
   address which is illegaly used by some other host. It will inform
   server of such circumstances, and request for another
   address. Server will mark this address as used by unknown host, and
   will assign another address to a client.
-\item power failure/crash support (CONFIRM and REPLY messages) -- after
+\item Power failure/crash support (CONFIRM and REPLY messages) -- after
   client recovers from crash or power failure, it still can have
   assigned valid addresses. In such circumstances, client uses CONFIRM
-  message, to config if those addresses are still valid. 
-  \footnote{As for now, this functionality works on server side only,
-  client side support is in progress.}
+  message, to config if those addresses are still valid%
+  \footnote{As for 0.2.0 version, this functionality works on server side only,
+  client side support is in progress.}.
 \item IA Option -- this option is used to carry addresses. Both server
   and client support multiple IAs in one message. Additional feature
   is client capability to ask for a specific address.
 \item Rapid Commit Option (SOLICIT and REPLY messages) -- if both
   client and server are configured to use rapid commit, address
-  assignment procedure can be shortened to 2 messages. It's major
+  assignment procedure can be shortened to 2 messages. Major
   advantage is lesser network usage and quicker client startup time.
 \end{itemize}
 
@@ -67,22 +70,22 @@ Except RFC3315-specified behavior, Dibbler also support several enhancements:
 
 \begin{itemize}
 \item DNS Servers Option -- client can ask for information about DNS
-  servers. 
+  servers.
 \item Domain Name Option -- client can ask for information about
   domain name it is connected in.
 \item Time Zone Option -- client can ask for information about 
 time zone it is currently in.
 \item NTP Servers Option -- client can ask for Network Time Protocol
-  Servers to synchronize its clock
+  Servers to synchronize its clock.
 \end{itemize}
 
 And now some implementation specific details:
 \begin{itemize}
 \item On both server and client, after each modification data is
-  dumped in XML format, so it can be easily processed in a automated
-  manner. Simple example of advantage is a script, which can generate
+  dumped in XML format, so it can be easily processed in an automated
+  manner. Simple example of this advantage is a script, which can generate
   reports about server usage (assigned addresses, clients configured
-  and so on).
+  and so on);
 \item Dibbler is fully portable. Core logic is system independent and
   coded in C++ language. There is about dozen low-level functions,
   which are system speficic. They're used for adding addresses,
