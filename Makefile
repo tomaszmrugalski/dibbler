@@ -207,7 +207,8 @@ release-src: VERSION-src
 	echo "File is stored in dibbler-$(VERSION)-src.tar.gz"
 
 release-doc: VERSION-src doc oxygen
-	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG doc/*.pdf doc/html
+	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG \
+                 doc/*.pdf doc/html doc/rfc doc/rfc-drafts 
 
 fixme:
 	rm -rf FIXME
