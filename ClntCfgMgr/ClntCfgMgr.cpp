@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.11 2004-05-23 20:41:03 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.12 2004-05-23 20:50:38 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/05/23 20:41:03  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -144,7 +147,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	// we'll try to configure each interface we could find
 	Log(logWarning) << CLNTCFGMGR_FILE << " does not contain any interface definitions."
 			<< logger::endl;
-
+	
 	IfaceMgr->firstIface();
 	while ( ifaceIface = IfaceMgr->getIface() ) {
 	    // for each interface present in the system...
@@ -174,7 +177,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    cfgIface = SmartPtr<TClntCfgIface>(new TClntCfgIface(ifaceIface->getID()));
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
-
+	    
 	    SmartPtr<TClntCfgGroup> group(new TClntCfgGroup());
 	    group->setOptions(parser->ParserOptStack.getLast());
 	    SmartPtr<TClntCfgIA> ia(new TClntCfgIA(

@@ -30,12 +30,17 @@ objs: ClntParser.o ClntLexer.o ClntCfgIA.o ClntCfgMgr.o ClntCfgIface.o \
       ClntCfgGroup.o ClntCfgAddr.o \
       ClntParsAddrOpt.o ClntParsGlobalOpt.o ClntParsIAOpt.o ClntParsIfaceOpt.o
 
-ClntParser.o: ClntParser.y
+
+parser:
 	$(BISONPP) -d ClntParser.y -o ClntParser.cpp
+	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
+	$(CPP) $(OPTS) -c ClntLexer.cpp
+	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntParser.cpp 
+
+ClntParser.o: ClntParser.cpp
 	$(CPP) $(OPTS) -c -I $(INCDIR) -ftemplate-depth-30 ClntParser.cpp 
 
-ClntLexer.o: ClntLexer.l
-	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
+ClntLexer.o: ClntLexer.cpp
 	$(CPP) $(OPTS) -c -I $(INCDIR) ClntLexer.cpp
 
 ClntCfgIA.o: ClntCfgIA.cpp ClntCfgIA.h
