@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.9 2004-11-01 23:31:24 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.10 2004-11-15 20:47:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/11/01 23:31:24  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.8  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -65,7 +68,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     IsDone=false;
 
     Log(Info) << "Creating REQUEST. Backup server list contains " 
-	      << advs.count()-1 << " server(s)." << LogEnd;
+	      << advs.count() << " server(s)." << LogEnd;
     if (!advs.count()) 
     {
         // FIXME: set State of unconfigured IAs
