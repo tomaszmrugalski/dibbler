@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.8 2004-03-28 19:57:59 thomson Exp $
+$Id: TODO,v 1.9 2004-05-24 21:16:37 thomson Exp $
 
 Warning: This TODO may be outdated/out of sync.
 
@@ -28,6 +28,8 @@ Warning: This TODO may be outdated/out of sync.
 
   BUGS
  ------
+ See http://klub.com.pl/bugzilla/
+
 - When client receives NO-ADDR AVAILABLE, it simultaneusly:
   - starts SOLICIT transaction
   - sends REQUEST to next server on backup list.

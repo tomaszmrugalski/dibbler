@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.8 2004-05-23 23:45:19 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.9 2004-05-24 21:16:37 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/05/23 23:45:19  thomson
+ * getInterfaceByName bug fixed.
+ *
  * Revision 1.7  2004/05/23 20:27:23  thomson
  * *** empty log message ***
  *
@@ -48,10 +51,10 @@ TIfaceMgr::TIfaceMgr()
     ptr = ifaceList;
     
     if  (!ifaceList) {
-	IsDone = true;
-	std::clog << logger::logCrit << "Unable to read info interfaces. Make sure "
-	    "you are using proper port (i.e. winxp on winxp and not winxp on win2k)"
-	    " and you have IPv6 support enabled." << logger::endl;
+		IsDone = true;
+		std::clog << logger::logCrit << "Unable to read info interfaces. Make sure "
+	    << "you are using proper port (i.e. winxp on winxp and not winxp on win2k)"
+	    << " and you have IPv6 support enabled." << logger::endl;
 	return;
     }
     

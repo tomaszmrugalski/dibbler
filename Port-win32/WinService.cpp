@@ -4,14 +4,13 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: WinService.cpp,v 1.6 2004-04-15 23:53:45 thomson Exp $
+ * Released under GNU GPL v2 licence
+ *                                                                           
+ * $Id: WinService.cpp,v 1.7 2004-05-24 21:16:37 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.5  2004/04/15 23:24:43  thomson
+ * Revision 1.6  2004/04/15 23:53:45  thomson
  * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
- *
- *
- * Released under GNU GPL v2 licence
  *
  */
 
@@ -26,7 +25,6 @@ TWinService::TWinService(const char* serviceName, const char* dispName,
 			 DWORD serviceType, char* dependencies, char * descr)
 {
     ServicePtr= this;
-	
     strncpy(ServiceName, serviceName, sizeof(ServiceName)-1);
     ServiceType=serviceType;
     Dependencies=dependencies;
@@ -59,7 +57,6 @@ TWinService::~TWinService(void)
 void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 {
     // Get a pointer to the C++ object
-	//DebugBreak();
     TWinService* pService = ServicePtr;
     
     //FIXME:pService->DebugMsg("Entering CNTService::ServiceMain()");
@@ -86,8 +83,8 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     pService->SetStatus(SERVICE_STOPPED);
     //FIXME:pService->DebugMsg("Leaving CNTService::ServiceMain()");
 }
-void TWinService::Handler(DWORD dwOpcode)
-{
+
+void TWinService::Handler(DWORD dwOpcode) {
 	//DebugBreak();
     // Get a pointer to the object
 	TWinService* pService = ServicePtr;
@@ -306,14 +303,9 @@ void TWinService::Run()
 {
 	printf("WinService::Run()\n");
 	return;
-    //FIXME:DebugMsg("Entering CNTService::Run()");
-
     while (IsRunning) {
         Sleep(5000);
     }
-
-    // nothing more to do
-    //FIXME:DebugMsg("Leaving CNTService::Run()");
 }
 
 bool TWinService::OnInit()
@@ -351,18 +343,16 @@ int TWinService::getStatus() {
 }
 
 bool TWinService::isRunning(const char * name) {
-	    bool result = false;
+    bool result = false;
+	bool ok;
     // Open the Service Control Manager
-    SC_HANDLE hSCM = ::OpenSCManager(NULL, // local machine
-                                     NULL, // ServicesActive database
-                                     SC_MANAGER_ALL_ACCESS); // full access
+    SC_HANDLE hSCM = ::OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
     if (hSCM) {
         // Try to open the service
         SC_HANDLE hService = OpenService(hSCM,name,SERVICE_QUERY_CONFIG);
         if (hService) {
 			LPSERVICE_STATUS lpServiceStatus;
-			BOOL ok = ControlService(hService, SERVICE_CONTROL_INTERROGATE,lpServiceStatus);
-
+			ok = ControlService(hService, SERVICE_CONTROL_INTERROGATE,lpServiceStatus);
 			result = true;
             CloseServiceHandle(hService);
         }
@@ -375,12 +365,9 @@ void TWinService::showStatus() {
 	bool serverInstalled, clientInstalled;
 	serverInstalled = this->IsInstalled("DHCPv6Server");
 	clientInstalled = this->IsInstalled("DHCPv6Client");
-
 	std::clog <<  "Dibbler server :" << (serverInstalled?"INSTALLED":"NOT INSTALLED")
-		<< logger::endl;
+	  		  << logger::endl;
 	std::clog <<  "Dibbler client :" << (clientInstalled?"INSTALLED":"NOT INSTALLED")
-		<< logger::endl;
-	
+		      << logger::endl;
 	std::clog << "Client running: " << (this->isRunning("DHCPv6Client") ? "YES":"NO") << logger::endl;
-
 }

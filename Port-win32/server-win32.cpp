@@ -11,6 +11,7 @@
 #include "Logger.h"
 
 extern "C" int lowlevelInit();
+extern TDHCPServer * ptr;
 
 void usage() {
 	cout << "Usage:" << endl;
@@ -23,6 +24,23 @@ void usage() {
 		 << " uninstall - uninstall service" << endl
 		 << " run       - run in console" << endl;
 
+}
+
+/* 
+ * Handle the CTRL-C, CTRL-BREAK signal. 
+ */
+BOOL CtrlHandler( DWORD fdwCtrlType ) 
+{ 
+  switch( fdwCtrlType ) 
+  { 
+  case CTRL_C_EVENT: {
+	  ptr->stop();
+      return TRUE;
+  }
+    case CTRL_BREAK_EVENT: 
+      return FALSE; 
+  }
+  return TRUE;
 }
 
 int main(int argc, char* argv[]) {
@@ -41,7 +59,8 @@ int main(int argc, char* argv[]) {
 		return -1;		
 	}
 
-	int status = SrvService.ParseStandardArgs(argc, argv);
+	EServiceState status = SrvService.ParseStandardArgs(argc, argv);
+	SrvService.setState(status);
 
 	clog << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
 	clog << DIBBLER_COPYRIGHT2 << endl;
@@ -49,40 +68,41 @@ int main(int argc, char* argv[]) {
 	clog << DIBBLER_COPYRIGHT4 << endl;
 	clog << endl;
 
+	SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
+
 	switch (status) {
-case 1: {// status
-	clog << "Service: ";
-	if (SrvService.IsInstalled()) 
-		clog << "INSTALLED ";
-	else
-		clog << "NOT INSTALLED";
+	case STATUS: {
+		clog << "Service: ";
+		if (SrvService.IsInstalled()) 
+			clog << "INSTALLED " << endl;
+		else
+			clog << "NOT INSTALLED" << endl;
+ 		break;
+	};
+	case START: {
+		SrvService.StartService();
+	break;
+	}
+	case STOP: {
+		clog << "FIXME: STOP function is not implemented yet." << endl;
+		break;
+	}
+	case INSTALL: {
+		SrvService.Install();
+		break;
+	}
+	case UNINSTALL: {
+		SrvService.Uninstall();
+		break;
+	}
+	case RUN: {
+		SrvService.Run();
+		break;
+	}
+	default: {
+		usage();
+	}
+	}
 
-	clog << endl;
-	break;
-		};
-case 2: { // start
-	SrvService.StartService();
-	break;
-		}
-
-case 3: {// stop
-	break;
-		}
-case 4: {// install
-	SrvService.Install();
-	break;
-		}
-case 5: {// uninstall
-	SrvService.Uninstall();
-	break;
-	}
-case 6: {// run
-	SrvService.Run();
-	break;
-	}
-default: {
-	usage();
-	}
-}
     return 0;
 }

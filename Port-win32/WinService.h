@@ -4,7 +4,6 @@
 #include <windows.h>
 #include <string>
 
-//#include "ntservmsg.h" // Event message ids
 #define SERVICE_CONTROL_USER 128
 
 typedef enum {
@@ -21,16 +20,14 @@ typedef enum {
 class TWinService
 {
 public:
-	std::string				ServiceDir;
+	std::string	ServiceDir;
 	TWinService(const char* serviceName, const char* dispName,
-					DWORD deviceType=SERVICE_DEMAND_START,
-						char* dependencies=NULL, char* descr=NULL);
+				DWORD deviceType=SERVICE_DEMAND_START,
+				char* dependencies=NULL, char* descr=NULL);
 	static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
     static void WINAPI Handler(DWORD dwOpcode);
-    void LogEvent(WORD wType, DWORD dwID,
-		          const char* pszS1 = NULL,
-                  const char* pszS2 = NULL,
-                  const char* pszS3 = NULL);
+    void LogEvent(WORD wType, DWORD dwID, const char* pszS1 = NULL,
+                  const char* pszS2 = NULL, const char* pszS3 = NULL);
     bool IsInstalled();
 	bool IsInstalled(const char *name);
     bool Install();
@@ -66,10 +63,7 @@ protected:
 	char*					Dependencies;
 	char*					DisplayName;
 	char*                   descr;
-	//Trick to enable static functions to call methods,
-	//drawback - but there can be only one instance of this class
 	static	TWinService*	ServicePtr;
     HANDLE					EventSource;
-
 };
 #endif

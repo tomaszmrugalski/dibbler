@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.8 2004-04-23 20:51:09 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.9 2004-05-24 21:16:37 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/04/23 20:51:09  thomson
+ * Changes informational message. (closes bug #21)
+ *
  * Revision 1.7  2004/03/28 19:57:59  thomson
  * no message
  *
@@ -89,7 +92,7 @@ bool TDHCPServer::checkPrivileges() {
 
 void TDHCPServer::stop() {
     serviceShutdown = 1;
-
+	Log(logWarning) << "Service SHUTDOWN." << logger::endl;
 #ifdef WIN32
     // just to break select() in WIN32 systems
 	//std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="

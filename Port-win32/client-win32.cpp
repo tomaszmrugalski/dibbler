@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: client-win32.cpp,v 1.10 2004-04-15 23:53:45 thomson Exp $
+ * $Id: client-win32.cpp,v 1.11 2004-05-24 21:16:37 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/04/15 23:53:45  thomson
+ * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
+ *
  * Revision 1.9  2004/04/15 23:24:44  thomson
  * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
  *
@@ -50,17 +53,21 @@ void usage() {
 
 extern TDHCPClient * ptr;
 
+/* 
+ * Handle the CTRL-C, CTRL-BREAK signal. 
+ */
 BOOL CtrlHandler( DWORD fdwCtrlType ) 
 { 
   switch( fdwCtrlType ) 
   { 
-    // Handle the CTRL-C signal. 
-    case CTRL_C_EVENT: 
+  case CTRL_C_EVENT: {
 	  ptr->stop();
-      return( TRUE );
+      return TRUE;
+  }
     case CTRL_BREAK_EVENT: 
       return FALSE; 
   }
+  return TRUE;
 }
 
 int main(int argc, char* argv[])
@@ -93,20 +100,20 @@ int main(int argc, char* argv[])
 	}
 
 	switch(status) {
-	case STATUS: { // STATUS
+	case STATUS: { 
 		Client.showStatus();
 		break;
 	}
-	case START: { // START
+	case START: { 
 		clog << "Running client... " << std::endl;
 		Client.StartService();
 		break;
 	}
-	case STOP: { // STOP
-		// FIXME
+	case STOP: { 
+		clog << "FIXME: STOP function is not implemented yet." << endl;
 		break;
 	}
-	case INSTALL: { // INSTALL
+	case INSTALL: {
 		Client.Install();
 		break;
 	}
@@ -120,7 +127,7 @@ int main(int argc, char* argv[])
 		clog << "Client unistalled." << endl;
 		break;
 	}
-	case RUN: { // RUN
+	case RUN: {
 		clog << "Running client... (in console) " << std::endl;
 		Client.Run();
 		break;
@@ -129,17 +136,11 @@ int main(int argc, char* argv[])
 		clog << endl << "Type: \"" << argv[0] << " help\" (without quotes) to see usage information." << endl;
 		break;
     }				  
-	case HELP: {
-		usage();
-    }
+	case HELP: 
 	default: {
-		
+		usage();
+	}	
 	}
-	
-	}
-	//When we get here, the service has been stopped
-    //  return Client.Status.dwWin32ExitCode;
-    //Client.Run();
-    //clog<<logger::logInfo<<"Heap:"<<_CrtCheckMemory()<<endl;
+
 	return 0;
 }

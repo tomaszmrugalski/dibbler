@@ -1,7 +1,10 @@
 /*
- * $Id: lowlevel-winxpsp1.c,v 1.5 2004-03-28 19:51:26 thomson Exp $
+ * $Id: lowlevel-winxpsp1.c,v 1.6 2004-05-24 21:16:37 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
+ *  Revision 1.5  2004/03/28 19:51:26  thomson
+ *  no message
+ *
  *  Revision 1.4  2004/03/28 19:48:10  thomson
  *  Problem with missing IPv6 stack solved.
  *
@@ -47,15 +50,12 @@ int lowlevelInit()
 	}
 	fclose(f);
 	memcpy(ipv6Path, buf,256);
-
 	strcpy(buf+i,"\\system32\\cmd.exe");
 	memcpy(cmdPath, buf,256);
-
 	return 1;
 }
 
-void displayError(int errCode)
-{
+void displayError(int errCode) {
 	static char Message[1024];
 	printf("Error %d:",errCode);
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |
@@ -256,7 +256,6 @@ extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thi
 	struct ipv6_mreq	ipmreq; 
 	int					hops=8;		
 	char				addrpack[16];
-	int					err;
 	struct sockaddr_in6 *addrpck;
 	itoa(port,portStr,10);
 	itoa(ifaceid,ifaceStr,10);
@@ -318,7 +317,6 @@ extern int sock_del(int fd)
 }
 extern int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
 {	
-	struct ipv6_mreq	ipmreq; 
 	ADDRINFO			inforemote,*remote;
 	char				addrStr[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")+5];
 	char				portStr[10];

@@ -11,9 +11,11 @@ public:
 	TSrvService(void);
 	void Run();
     void OnStop();
-    int ParseStandardArgs(int argc,char* argv[]);
+    EServiceState ParseStandardArgs(int argc,char* argv[]);
+	void setState(EServiceState status);
 	~TSrvService(void);
 private:
+	EServiceState status;
 };
 
 #endif
