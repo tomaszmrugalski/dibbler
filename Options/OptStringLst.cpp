@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.3 2005-03-07 23:36:14 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.4 2005-03-07 23:48:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/03/07 23:36:14  thomson
+ * Minor changes.
+ *
  * Revision 1.2  2005/03/07 22:44:22  thomson
  * DomainList is now stored and parsed approprietly (bug #104)
  *
@@ -71,11 +74,9 @@ TOptStringLst::TOptStringLst(int type, char *&buf, int &bufsize, TMsg* parent)
 	    memcpy(str,buf+1,len);
 	    str[len]=0;
 
-        Log(Debug) << "BEFORE: " << domain << LogEnd;
         if (domain.length())
             domain += string(".");
         domain = domain + string(str);
-        Log(Debug) << "AFTER: " << domain << LogEnd;
 
 	    bufsize -= len+1;
 	    buf     += len+1;
@@ -97,14 +98,12 @@ char * TOptStringLst::storeSelf(char* buf)
     StringLst.first();
     while (x = StringLst.get() ) {
         string cp(*x);
-        Log(Debug) << "LEN: " << buf-bufStart << LogEnd;
         len = x->length();
 
         dotpos = -1;
         while (cp.find(".")!=-1) {
 	    if (*cp.c_str()=='.')
 		break;
-            Log(Debug) << "TMP: " << cp << LogEnd;
             dotpos = cp.find(".");
             if (dotpos!=-1) {
                 *buf = dotpos;
@@ -113,8 +112,6 @@ char * TOptStringLst::storeSelf(char* buf)
                 buf+=dotpos;
                 cp = cp.substr(dotpos+1);
             }
-            Log(Debug) << "dotpos=" << dotpos << LogEnd;   
-
         }
 
         *buf = cp.length(); // length of the string
@@ -133,7 +130,6 @@ int TOptStringLst::getSize() {
     SmartPtr<string> x;
     StringLst.first();
     while ( x = StringLst.get() ) {
-	Log(Debug) << "### GetSize()" << x->length() << LogEnd;
 	const char * c = x->c_str();
 	tmplen = x->length();
 	if (c[tmplen]=='.')
