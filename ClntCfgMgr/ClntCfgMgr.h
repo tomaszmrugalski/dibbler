@@ -15,15 +15,6 @@ class TClntCfgMgr : public TCfgMgr
 {
 	friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
 public:
-	
-	//##Documentation
-	//## Odczytuje plik zawiêraj¹cy ostatni¹ konfiguracjê (oldCfgFile) i tworzy
-	//## jego odwzorowanie w pamiêci.
-	//## Je¿eli ten plik nie istnieje lub parametr forceParsing ma wartoœæ true
-	//## parsuje normalny plik konfiguracyjny(metoda parseCfgFile, plik
-	//## newCfgFile) i tworzy jego odwzorowanie w pamiêci. Zapamiêtuje wskaŸnik
-	//## do IfaceMgr'a, a tak¿e komunikuje siê z IfaceMgr'em w celu uzyskania
-	//## potrzebnej informacji o interfejsach.
 	TClntCfgMgr(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 		    const string cfgFile,const string oldCfgFile);
 
@@ -35,12 +26,8 @@ public:
 	void addIface(SmartPtr<TClntCfgIface> x);
 	int countIfaces();
 
-	
 	string getWorkDir();
-
-	
 	bool getReconfigure();
-
 	string getLogName();
 	int getLogLevel();
     
