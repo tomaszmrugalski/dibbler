@@ -1,0 +1,70 @@
+\documentclass[10pt]{article}
+\usepackage[latin2]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage{float}
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{indentfirst}
+\usepackage{longtable}
+
+%\setlength{\topmargin}{-1.0cm}
+
+\addtolength{\textwidth}{4cm}
+\addtolength{\hoffset}{-2cm} 
+\addtolength{\textheight}{3.0 cm}
+\addtolength{\voffset}{-0.5cm}
+
+\author{Tomasz Mrugalski\\ \small{thomson(at)klub.com.pl}}
+\date{29-05-2004}
+\title{Dibbler -- a portable DHCPv6\\User's guide}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries Dibbler -- a portable DHCPv6}
+\fancyhead[C]{\small\bfseries User's Guide}
+\fancyhead[R]{\small\bfseries\thepage}
+%%\fancyhead[C]{\small\bfseries\leftmark}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\addtolength{\headheight}{0.5pt}
+\fancypagestyle{plain}{%
+\fancyhead{} %
+\renewcommand{\headrulewidth}{0pt} %
+}
+
+
+\makeindex
+
+\newcommand{\msg}[1]{ \textbf{#1} }
+\newcommand{\opt}[1]{ \emph{#1} }
+\newcommand{\IA}{ \textbf{\emph{IA}} }
+\newcommand{\duid} { DUID }
+\newcommand{\code}[1]{\textbf{#1}}
+\newcommand{\subsubsubsection}[1]{\subsubsection{#1}}
+%% pakiety wypisuj tak: \msgt{SOLICIT}
+%% opcje wypisuj tak:   \opt{Option Request}
+
+\begin{document}
+
+\vspace{-4cm}
+\maketitle
+\vspace{-1cm}
+\begin{center}
+version 0.2.0
+\end{center}
+
+\tableofcontents
+
+%% INTRO, OVERVIEW
+\input{dibbler-user-intro.tex}
+
+%% INSTALLATION and USAGE
+\input{dibbler-user-usage.tex}
+
+%% CONFIG FILES
+\input{dibbler-user-config.tex}
+
+%% HISTORY, CONTACT
+\input{dibbler-user-epilogue.tex}
+
+\end{document}

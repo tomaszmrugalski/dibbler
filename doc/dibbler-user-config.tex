@@ -1,0 +1,472 @@
+
+\section{Config files}
+
+This section describes Dibbler server and (optional) client
+configuration. Square brackets denotes optional values: mandatory
+[optional]. Alternative is marked as $\mid$. A $\mid$ B means A or B.
+
+\subsection{Tokens and basic informations}
+Config file parsing is token-based. Here's list of tokens used:
+\begin{description}
+\item[IPv6 address] -- IPv6 address 
+\item[32-bit decimal integer] -- string containing only numbers, e.g. 123456
+\item[32-bit hex integer] -- string constaining only numbers and
+  letter a--f, ended with h letter, e.g. 23afh
+\item[string] -- string of arbitrary characters enclosed in single
+  quotes, e.g. 'this is string'
+\item[DUID identifier] -- hex number enclosed in double quotes, e.g. ''deadbeaf''
+\end{description}
+
+There are also some client or server specified tokens. Here's the list:
+\begin{description}
+\item[client] -- iface, no-config, address, ia, no-ia,
+log-level, work-dir, append, prepend, require, request, send, default,
+supersede, prefered-lifetime, valid-lifetime, t1, t2, dns-servers,
+domain, ntp-servers, time-zone, reject-servers, prefered-servers,
+rapid-commit 
+\item[server] -- iface, no-config, class, log-level, work-dir,
+  dns-servers, domain, ntp-server, time-zone, accept-only,
+  reject-only, t1, t2, prefered lifetime, valid-lifetime, unicast,
+  preference, pool, rapid-commit, max-lease, client-max-lease 
+\end{description}
+
+\subsection{Scopes}
+There are four scopes, in which options can be specified:
+\begin{itemize}
+\item global
+\item inteface
+\item IA
+\item address
+\end{itemize}
+
+Global scope is the largest. It covers the whole config file and
+applies to all intefaces, IAs, and addresses, until some lower level
+options override it. Next comes inteface scope. Options defined there
+are inteface-specific and apply to this interface, all IAs in this
+interface and addresses in those IAs. Next is IA scope. Options
+defined there are IA-specific and apply to this IA and to addresses it
+contains. Least significant scope is address. Every option is specific
+for one scope. For example, T1 is defined for
+IA scope. However, it can be also used in more common scopes. In this
+case -- in interface or global. Defining T1 in interface scope means:
+,,for this interface default value for T1 is ...''. The same applies
+to global scope. Options can be used multiple times. In that case
+value defined later is used.
+
+\subsection{Comments}
+
+Comments are also allowed. All common comment styles are supported:
+\begin{itemize}
+\item C++ style one-line comments: // this is comment
+\item C style multi-line comments: /* this is multiline comment */
+\item bash style one-line comments: \# this is one-line comment
+\end{itemize}
+
+Parses is case-insensitive, so Iface, IfAcE, iface and IFACE mean the
+same. This does not apply to interface names, of course. eth0 and ETH0
+are dwo diffrent interfaces.
+
+\subsection{Client config file}
+
+Client config file should be named \emph{client.conf}. After
+successful startup, old version of this file is stored as
+\emph{client.conf-old}. One of design requirements for client was
+,,out of the box'' usage. To achieve this, simply use empty
+client.conf file. Client will try to get one address for each up and
+running interface \footnote{Exactly: Client tries to configure each up
+  and running interface, which has link address at lease 6 bytes
+  long. So it will not configure tunnels (which usually have IPv4
+  address (4bytes long) as their link address. It should configure all
+  Ethernet and 802.11 interfaces. The latter was not tested by author,
+  because of lack of access to 802.11 equipment.}.
+
+\subsubsection{Global scope}
+
+Every option can be declared in global scope.
+Config file has this form:
+
+\begin{verbatim}
+ [interface declaration	 |
+  global options         |
+  interface options      |
+  IA options             |
+  address options        ]
+\end{verbatim}
+
+\subsubsection{Interface declaration}
+
+Interface can be declared this way:
+\begin{verbatim}
+iface name_of_this_interface
+{
+  interface options      |
+  IA options             |
+  address options        
+}
+\end{verbatim}
+
+or 
+
+\begin{verbatim}
+iface number 
+{
+  interface options      |
+  IA options             |
+  address options        
+}
+\end{verbatim}
+
+or
+\begin{verbatim}
+iface name_of_this_interface no-config
+\end{verbatim}
+
+or 
+\begin{verbatim}
+iface number no-config
+\end{verbatim}
+
+In every case, number denotes interface number. It can be extracted
+from ,,ip~l'' (Linux) or ,,ipv6~if'' (Windows). \opt{no-config} is
+depreciated and means that this interface should not be
+configured. Client retrives interface list from the system. 
+
+Also take a note that name of the interface no longer needs to be
+enclosed in single or double quotes. It is necessary only in windows
+systems, where interface names sometimes contains spaces.
+
+If interface contains no IA keyword, one IA with one address is
+assumed. If interface should not request for address, \opt{no-ia}
+should be used or this interface can be omited in config file.
+
+\subsubsection{IA declaration}
+
+IA is declared this way:
+
+\begin{verbatim}
+ia [number]
+[{ 
+  [address declaration   | 
+   IA options            | 
+   address options       ] 
+   ...          
+}]
+\end{verbatim}
+
+where number is optional number, which describes how many such IAs
+should be requested. If this number is not equal 1, then address
+options are not allowed. That could come in handy when someone need
+serveral IAs with the same parameters. If IA contains no addresses,
+client assumes that one address should be configured.
+
+
+\subsubsection{Address declaration}
+Addres is declared like this:
+
+\begin{verbatim}
+address [number] 
+[{ 
+	[address options   |
+	IPv6 address    ] 
+}]
+\end{verbatim}
+where number denotes how many addresses with those values should be
+requested. If it is diffrent than 1, then IPv6 address option is not
+allowed.
+
+\subsubsection{Standard options}
+Standard options are... well, standard. This means that they have 
+nothing to do with any extensions. Standard options are declared this way:
+
+\begin{verbatim}
+OptionName option-value
+\end{verbatim}
+
+Every option has a scope it can be used in, default value and
+sometimes allowed range.
+
+\begin{tabular}{|c|c|p{2.5cm}|p{3cm}|p{6cm}|}
+\hline
+Name           & Scope & Values & default & Description \\
+               &       & (default) &    & \\
+\hline
+valid-lifetime    & address& 32-bit integer & (4294967296) & valid lifetime for address (specified in seconds) (H)\\
+prefered-lifetime&address& 32-bit integer& (4294967296) & after this amount of time(in seconds) address becomes depreciated (H)\\
+T1               & IA     & 32-bit integer & (4294967296) & client should renew addresses after T1 seconds (H)\\
+T2               & IA     & 32-bit integer & (4294967296) & client should send REBIND after T2 seconds (H)\\
+reject-servers   & IA     & IPv6 addrs or DUID list, coma separated &
+(null list)      & list containing servers which should be discarded in configuration of this IA \\
+prefered-servers & IA     & IPv6 addrs or DUID list & (null list) & Prefered servers list. ADVERTISE messages received by client are sorted according to this list. \\
+rapid-commit     & IA     & 0 or 1         & 0            & should we use Rapid Commit? \\
+work-dir         & global & string & (null) & working directory \\
+log-level        & global & 1-8    & 8    & log-level (8 is most verbose) \\
+log-name         & global & string & Client & Name, which appears in a log file\\
+log-mode         & global & short | full & full & logging mode: short (date
+and name suppressed) or full\footnote{In future versions, syslog (Linux) and
+  eventlog (Windows) is also planned)} \\
+\hline
+\end{tabular}
+
+\subsubsection{Extension options}
+Extension options are options specified in external drafts and (in a
+near future) in RFC documents. They are declared with ,,option''
+keyword:
+
+\begin{verbatim}
+option OptionName option-value
+\end{verbatim}
+
+where OptionName is one of possible values listed below:
+
+\begin{tabular}{|c|c|p{2.5cm}|p{3cm}|p{6cm}|}
+\hline
+OptionName     & Scope & Values    & default & Description \\
+               &       & (default) &         & \\
+\hline
+dns-servers    & interface& IPv6 addrs list, coma separated & (null list) & prefered DNS servers list (H) \\
+domain         & interface& domain & (null) & prefered domain (H)\\
+ntp-servers    & interface& IPv6 addrs list, coma separated & (null list) & prefered NTP servers list (H)\\
+time-zone      & interface& timezone string & (null) & time zone (H)\\
+
+\hline
+\end{tabular}
+
+Note that timezone format is described in file draft-ietf-dhc-dhcpv6-opt-tz-00.txt 
+and domain format is described in RFC 3646.
+
+\subsubsection{Client Example}
+
+In simplest case, client config can be empty. Client will try to
+assign one address for every interface present in the system, except
+interfaces:
+\begin{itemize}
+\item which are down (flag UP not set)
+\item loopback (flag LOOPBACK set)
+\item which are not running (flag RUNNING not set)
+\item which are not multicast capable (flag MULTICAST not set)
+\end{itemize}
+
+If you must use DHCPv6 on one of such interfaces (which is not
+recommended and probably will fail), you must specify this interface
+in config file.
+
+Let's consider more coplicated case. Let's say there are 4 interfaces,
+numbered 1 thru 4. Interfaces 1,2 and 3 are not to be
+configured. Interface 4, named eth0 should have 3 IAs. Two of them are
+supposed to contain one address each. Third IA should contain 3
+addresses. Addresses assigned to first and second IA should have
+prefered-lifetime 1 hour and valid-lifetime 2 hours. This IA should
+have 3 specific addresses: 2000::1, 2000::2 and 2000::3. Information
+about NTP servers,our current timezone, available DNS servers and our
+domain should also be retrived,
+
+Here's config file:
+
+\begin{verbatim}
+iface eth0
+{
+  valid-lifetime 7200    // default value - 2 hours
+  prefered-lifetime 3600 // default value - 1 hour
+  T1 600                 // request 10 minutes interval
+  T2 1200		 /* trouble begins after 20 minutes
+                            of server's silence */
+  IA 2                   // 2 IAs with just specified values (1h/2h/10min/20min)
+  IA			 // third IA is more specific
+  {
+    valid-lifetime 3600   	// valid lifetime changed to 1 hour
+    prefered-lifetime 1800	// prefered lifetime changed to 30min
+    address
+    {			  
+      2000::1		  // request those addresses
+      2000::2             
+      2000::3
+    }
+  }
+  option ntp-servers       // ask for NTP servers
+  option time-zone         // ask for timezone
+  option dns-servers       // ask for DNS servers
+  option domain            // ask for domain
+}
+\end{verbatim}
+
+\subsection{Server config file}
+
+Client config file should be named \emph{server.conf}. After
+successful startup, old version of this file is stored as \emph{server.conf-old}.
+
+\subsubsection{Global scope}
+
+Every option can be declared in global scope.
+Config file has this form:
+
+\begin{verbatim}
+ interface declaration	|
+ global options         |
+ interface options      |
+ class options          
+\end{verbatim}
+
+\subsubsection{Interface declaration}
+
+Interface can be declared this way:
+\begin{verbatim}
+iface name_of_this_interface
+{
+  interface options      |
+  class options        
+}
+\end{verbatim}
+
+or 
+
+\begin{verbatim}
+iface number 
+{
+  interface options      |
+  class options        
+}
+\end{verbatim}
+
+where name\_of\_this\_interface denotes name of the interface and
+number denotes it's number. It no longer needs to be enclosed in
+single or double quotes (except windows cases, when interface name
+contains spaces).
+
+\subsubsection{Class scope}
+Address class is declared as follows:
+
+\begin{verbatim}
+class
+{  
+     class options |
+     address poll    
+}
+\end{verbatim}
+
+address poll has this format:
+\begin{verbatim}
+poll minaddress-maxaddress
+\end{verbatim}
+
+\subsubsection{Options}
+
+Every option has a scope it can be used in, default value and
+sometimes allowed range.
+
+\begin{tabular}{|c|c|p{2.5cm}|p{3cm}|p{6cm}|}
+\hline
+Name           & Scope & Values & default & Description \\
+               &       & (default) &  & \\
+\hline
+valid-lifetime & class& 32-bit integer & (4294967296) & valid lifetime for address (specified in seconds)\\
+prefered-lifetime&class& 32-bit integer& (4294967296) & after this amount of time(in seconds) address becomes depreciated\\
+T1             & class & 32-bit integer & (4294967296) & client should renew addresses after T1 seconds \\
+T2             & class & 32-bit integer & (4294967296) & client should send REBIND after T2 seconds\\
+reject-clients & class & IPv6 addrs or DUID list, coma separated & (null list) & list containing servers which should be discarded in configuration of this IA \\
+accept-only    & class & IPv6 addrs or DUID list & (null list) & these are the only clients allowed to use this class\\
+RapidCommit    & class & 0 or 1         & 0            & should we allow Rapid Commit (SOLICIT--REPLY)? \\
+work-dir       & global & string & (null) & working directory \\
+log-level      & global & 1-8    & 8    & log-level (8 is most verbose) \\
+log-name       & global & string & Client & Name, which appears in a log file\\
+log-mode       & global & short | full & full & logging mode: short (date
+and name suppressed) or full\footnote{In future versions, syslog (Linux) and
+  eventlog (Windows) is also planned)} \\
+dns-servers    & interface& IPv6 addrs list, coma separated & (null list) & DNS servers list \\
+domain         & interface& domain & (null) & domain name \\
+ntp-servers    & interface& IPv6 addrs list, coma separated & (null list) & NTP servers list \\
+time-zone      & interface& timezone string & (null) & time zone \\
+unicast	       & class & 0 or 1         & 0 & is unicast communication allowed? \\
+preference     & class & 0-255          & 0 & server preference value (higher is more prefered) \\
+max-lease      & class & 32-bit integer & 4294967296 & how many addresses can be leased by clients? \\
+client-max-lease & class & 32-bit integer & 4294967296 & how many addresses can be leased by one client? \\
+\hline
+\end{tabular}
+
+\subsubsection{Server example}
+
+In opposite to client, server uses only interfaces described in config
+file. Examine this common situation: server has interface
+named \emph{eth0} (which is fourth interface in the system) and is
+supposed to assign addresses from 2000::100/124 class. Simplest config
+file looks like that:
+
+\begin{verbatim}
+iface eth0
+{ 
+  class
+  {
+    pool 2000::100-2000::10f
+  } 
+}
+\end{verbatim}
+
+Let's extend this with numerous requirements:
+\begin{itemize}
+\item add new class on fifth interface named \emph{eth1}, for example 2000::fe00/120, for
+  which Rapit commit will be allowed
+\item server preference set to maximum (255)
+\item assign 2000::20/124 class on fourth interface named
+  eth0. Preference value for this interface should be 0.
+\item don't ignore client with DUID ``00001231200adeaaa'' in the class
+  2000::20/124.
+\item valid and prefered lifetimes are 1 hour and 30 minutes
+  respectively. T1 and T2 set to 10 minutes and 20 minutes.
+\item For class 2000::100/124 valid and prefered lifetimes are 2 hours
+  and 1 hour.
+\item in class 2000::100/124 one client can request up to two
+  addresses
+\item do not assign more than 10 addresses from 2000::20/124 class.
+\item client with fe80::200:39ff:fe4b:1abc address should get his
+  static address 2000::2f
+\item we shall support DNS and NTP servers on interface 5. Timezone
+  and domains information is also supported.
+\item working directory and log level is also set
+\end{itemize}
+
+Here's config to do all this stuff:
+
+\begin{verbatim}
+log-level 5
+work-dir '/var/lib/dibbler'
+valid-lifetime 3600
+prefered-lifetime 1800
+T1 600
+T2 1200
+iface 4
+{
+  preference 0
+  class
+  {
+    reject-clients ``00001231200adeaaa''
+    2000::2f-2000::20  // it's in reverse order, but it works.
+                       // just a trick. 
+    max-lease 10
+  }
+  class
+  {
+    accept-only fe80::200:39ff:fe4b:1abc
+    pool 2000::2f 
+  }
+}
+iface 5
+{
+  dns-server 2000::123:456,2000::456:1234
+  ntp-server 2000::1111:2222
+  rapid-commit 1
+  time-zone ''EST''
+  domain ''example.com''
+  preference 255
+  class
+  {
+    pool 2000::fe00-2000::feff
+  }
+  
+  class
+  {
+    valid-lifetime 7200
+    prefered-lifetime 3600
+    pool 2000::0-2000::f
+    client-max-lease 2
+  } 
+}
+\end{verbatim}
