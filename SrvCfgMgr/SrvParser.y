@@ -467,7 +467,7 @@ PreferenceOption
 : PREFERENCE_ Number 
 { 
     if (($2<0)||($2>255))
-	YYABORT; //FIXME:Exception or what kind of notification
+	YYABORT;
     ParserOptStack.getLast()->setPreference($2);    
 }
 ;
@@ -515,6 +515,7 @@ GlobalOptionDeclaration
 InterfaceOptionDeclaration
 : ClassOptionDeclaration
 | UnicastAddressOption
+| PreferenceOption
 | DNSServerOption
 | NTPServerOption
 | DomainOption
@@ -532,7 +533,6 @@ ClassOptionDeclaration
 | AcceptOnlyOption
 | UnicastOption
 | RapidCommitOption
-| PreferenceOption
 | MaxLeaseOption
 | ClntMaxLeaseOption
 ;

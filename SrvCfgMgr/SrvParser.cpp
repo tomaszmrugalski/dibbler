@@ -8,8 +8,6 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
   */
 
 #define YY_USE_CLASS
-
-#line 1 "../bison++/bison.cc"
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Bob Corbett and Richard Stallman
@@ -98,9 +96,6 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include <stdio.h>
 #define YYBISON 1  
 
- #line 88 "../bison++/bison.cc"
-#line 3 "SrvParser.y"
-
 #include <iostream>
 #include <string>
 #include <malloc.h>
@@ -117,7 +112,6 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include "Logger.h"
 
 #define YY_USE_CLASS
-#line 21 "SrvParser.y"
 
 #include <FlexLexer.h>
 
@@ -149,7 +143,6 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);    \
    this->lex = lex;
 
-#line 59 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -162,8 +155,6 @@ typedef union
   char                          addrval[16];
 } yy_SrvParser_stype;
 #define YY_SrvParser_STYPE yy_SrvParser_stype
-
-#line 88 "../bison++/bison.cc"
 /* %{ and %header{ and %union, during decl */
 #define YY_SrvParser_BISON 1
 
@@ -206,33 +197,17 @@ typedef union
 #endif
 
 #ifndef YY_SrvParser_PURE
-
- #line 130 "../bison++/bison.cc"
-
-#line 130 "../bison++/bison.cc"
 /*  YY_SrvParser_PURE */
 #endif
 
 /* section apres lecture def, avant lecture grammaire S2 */
-
- #line 134 "../bison++/bison.cc"
-
-#line 134 "../bison++/bison.cc"
 /* prefix */
 #ifndef YY_SrvParser_DEBUG
-
- #line 136 "../bison++/bison.cc"
-
-#line 136 "../bison++/bison.cc"
 /* YY_SrvParser_DEBUG */
 #endif
 
 
 #ifndef YY_SrvParser_LSP_NEEDED
-
- #line 141 "../bison++/bison.cc"
-
-#line 141 "../bison++/bison.cc"
  /* YY_SrvParser_LSP_NEEDED*/
 #endif
 
@@ -355,8 +330,6 @@ typedef
 
 #ifndef YY_USE_CLASS
 /* TOKEN C */
-
- #line 263 "../bison++/bison.cc"
 #define	IFACE_	258
 #define	NO_CONFIG_	259
 #define	CLASS_	260
@@ -387,8 +360,6 @@ typedef
 #define	IPV6ADDR_	285
 #define	DUID_	286
 
-
-#line 263 "../bison++/bison.cc"
  /* #defines tokens */
 #else
 /* CLASS */
@@ -433,8 +404,6 @@ class YY_SrvParser_CLASS YY_SrvParser_INHERIT
 public: 
 #if YY_SrvParser_USE_CONST_TOKEN != 0
 /* static const int token ... */
-
- #line 307 "../bison++/bison.cc"
 static const int IFACE_;
 static const int NO_CONFIG_;
 static const int CLASS_;
@@ -465,13 +434,9 @@ static const int INTNUMBER_;
 static const int IPV6ADDR_;
 static const int DUID_;
 
-
-#line 307 "../bison++/bison.cc"
  /* decl const */
 #else
 enum YY_SrvParser_ENUM_TOKEN { YY_SrvParser_NULL_TOKEN=0
-
- #line 310 "../bison++/bison.cc"
 	,IFACE_=258
 	,NO_CONFIG_=259
 	,CLASS_=260
@@ -502,8 +467,6 @@ enum YY_SrvParser_ENUM_TOKEN { YY_SrvParser_NULL_TOKEN=0
 	,IPV6ADDR_=285
 	,DUID_=286
 
-
-#line 310 "../bison++/bison.cc"
  /* enum token */
      }; /* end of enum declaration */
 #endif
@@ -535,8 +498,6 @@ public:
 };
 /* other declare folow */
 #if YY_SrvParser_USE_CONST_TOKEN != 0
-
- #line 341 "../bison++/bison.cc"
 const int YY_SrvParser_CLASS::IFACE_=258;
 const int YY_SrvParser_CLASS::NO_CONFIG_=259;
 const int YY_SrvParser_CLASS::CLASS_=260;
@@ -567,8 +528,6 @@ const int YY_SrvParser_CLASS::INTNUMBER_=284;
 const int YY_SrvParser_CLASS::IPV6ADDR_=285;
 const int YY_SrvParser_CLASS::DUID_=286;
 
-
-#line 341 "../bison++/bison.cc"
  /* const YY_SrvParser_CLASS::token */
 #endif
 /*apres const  */
@@ -580,8 +539,6 @@ YY_SrvParser_DEBUG_FLAG=0;
 YY_SrvParser_CONSTRUCTOR_CODE;
 };
 #endif
-
- #line 352 "../bison++/bison.cc"
 
 
 #define	YYFINAL		134
@@ -657,10 +614,10 @@ static const short yyrhs[] = {    37,
      0,    22,    45,     0,    24,    45,     0,    23,    45,     0,
     25,    45,     0,     7,    45,     0,     8,    27,     0,     6,
     27,     0,     9,    27,     0,    76,     0,    72,     0,    71,
-     0,    73,     0,    74,     0,    77,     0,    66,     0,    59,
-     0,    62,     0,    61,     0,    64,     0,    55,     0,    56,
-     0,    53,     0,    57,     0,    58,     0,    49,     0,    51,
-     0,    67,     0,    68,     0,    69,     0,    70,     0,    65,
+     0,    73,     0,    74,     0,    77,     0,    66,     0,    69,
+     0,    59,     0,    62,     0,    61,     0,    64,     0,    55,
+     0,    56,     0,    53,     0,    57,     0,    58,     0,    49,
+     0,    51,     0,    67,     0,    68,     0,    70,     0,    65,
      0
 };
 
@@ -675,8 +632,8 @@ static const short yyrline[] = { 0,
    330,   335,   343,   348,   356,   361,   369,   374,   386,   390,
    399,   409,   413,   422,   436,   443,   451,   460,   467,   476,
    483,   489,   494,   501,   508,   509,   510,   511,   512,   516,
-   517,   518,   519,   520,   521,   525,   526,   527,   528,   529,
-   531,   532,   533,   534,   535,   536,   537
+   517,   518,   519,   520,   521,   522,   526,   527,   528,   529,
+   530,   532,   533,   534,   535,   536,   537
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","NO_CONFIG_",
@@ -704,7 +661,7 @@ static const short yyr1[] = {     0,
     55,    55,    56,    56,    57,    57,    58,    58,    60,    59,
     61,    63,    62,    64,    65,    66,    67,    68,    69,    70,
     71,    72,    73,    74,    75,    75,    75,    75,    75,    76,
-    76,    76,    76,    76,    76,    77,    77,    77,    77,    77,
+    76,    76,    76,    76,    76,    76,    77,    77,    77,    77,
     77,    77,    77,    77,    77,    77,    77
 };
 
@@ -723,8 +680,8 @@ static const short yyr2[] = {     0,
 static const short yydefact[] = {     2,
      0,     0,     0,     0,     0,     0,    37,    35,    39,     0,
      0,     0,     0,     0,     0,     0,     0,     0,     1,     4,
-    81,    82,    78,    76,    77,    79,    80,    72,    74,    73,
-    75,    87,    71,    83,    84,    85,    86,    67,    66,    68,
+    82,    83,    79,    77,    78,    80,    81,    73,    75,    74,
+    76,    87,    71,    84,    85,    72,    86,    67,    66,    68,
     69,     3,    65,    70,     0,    19,    20,     0,    63,    61,
     62,    64,    52,     0,    49,     0,     0,     0,     0,    45,
     47,    41,    43,    56,    57,    59,    58,    60,    55,     6,
@@ -751,27 +708,27 @@ static const short yypact[] = {    53,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,    35,-32768,-32768,    59,-32768,-32768,
--32768,-32768,-32768,    30,-32768,    91,    23,    23,    90,    84,
-   100,   101,   102,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,   109,-32768,   109,-32768,   103,   105,    87,
-    87,   106,   110,    52,    52,    52,    52,    77,    77,-32768,
-   111,   111,   112,   115,    86,   113,   117,-32768,-32768,-32768,
--32768,   116,     3,-32768,-32768,    25,   119,-32768,-32768,   118,
-   120,-32768,   121,-32768,-32768,-32768,-32768,-32768,-32768,   122,
-   123,   127,   108,-32768,-32768,-32768,    52,    89,-32768,-32768,
--32768,   150,   151,-32768
+-32768,-32768,-32768,    30,-32768,    85,    23,    23,    88,    84,
+    96,   100,   101,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,    90,-32768,    90,-32768,   102,   103,    87,
+    87,   104,   106,    52,    52,    52,    52,    77,    77,-32768,
+   107,   107,   112,   113,    86,   115,   116,-32768,-32768,-32768,
+-32768,   111,     3,-32768,-32768,    25,   117,-32768,-32768,   114,
+   118,-32768,   119,-32768,-32768,-32768,-32768,-32768,-32768,   120,
+   121,   125,   108,-32768,-32768,-32768,    52,    89,-32768,-32768,
+-32768,   148,   151,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,   139,-32768,-32768,    70,   -99,-32768,-32768,    -1,    85,
--32768,   104,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,   137,-32768,-32768,    68,   -99,-32768,-32768,    -1,    82,
+-32768,   105,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   141,   -51,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   140,   -51,
   -122
 };
 
 
-#define	YYLAST		162
+#define	YYLAST		163
 
 
 static const short yytable[] = {    48,
@@ -786,12 +743,12 @@ static const short yytable[] = {    48,
     47,   102,    98,    99,   100,   101,     6,    46,    47,    64,
     73,     7,     8,     9,    10,    11,    12,    13,    14,    15,
     16,    17,    18,     7,     8,     9,    10,    11,    12,    13,
-   127,    15,    16,    17,    18,   110,   111,    77,    84,    82,
+   127,    77,    16,    17,    18,   110,   111,    82,    84,    90,
     95,   130,     7,     8,     9,    10,    11,    12,    13,   127,
-    15,    16,    17,    18,    85,    86,    87,    93,    90,    94,
-    96,   108,   112,    97,   107,   109,   113,   114,   119,   133,
-   134,   124,   120,   125,   121,   122,   126,    70,   106,    71,
-    92,    81
+    85,    16,    17,    18,    86,    87,    93,    94,    96,    97,
+   107,   108,   114,   109,   112,   113,   119,   133,   120,   124,
+   134,   125,   121,   122,   126,    70,   106,    92,    71,     0,
+     0,     0,    81
 };
 
 static const short yycheck[] = {     1,
@@ -806,15 +763,13 @@ static const short yycheck[] = {     1,
     29,     5,    84,    85,    86,    87,    10,    28,    29,    30,
     32,    15,    16,    17,    18,    19,    20,    21,    22,    23,
     24,    25,    26,    15,    16,    17,    18,    19,    20,    21,
-    22,    23,    24,    25,    26,    30,    31,    27,    35,    30,
+    22,    27,    24,    25,    26,    30,    31,    30,    35,    30,
     34,    33,    15,    16,    17,    18,    19,    20,    21,    22,
-    23,    24,    25,    26,    35,    35,    35,    35,    30,    35,
-    35,    30,    30,    34,    34,    31,    30,    32,    30,     0,
-     0,    30,    35,    31,    35,    35,    30,    19,    89,    19,
-    76,    58
+    35,    24,    25,    26,    35,    35,    35,    35,    35,    34,
+    34,    30,    32,    31,    30,    30,    30,     0,    35,    30,
+     0,    31,    35,    35,    30,    19,    89,    76,    19,    -1,
+    -1,    -1,    58
 };
-
-#line 352 "../bison++/bison.cc"
  /* fattrs + tables */
 
 /* parser code folow  */
@@ -1303,19 +1258,15 @@ YYLABEL(yyreduce)
 #endif
 
 
- #line 839 "../bison++/bison.cc"
-
   switch (yyn) {
 
 case 7:
-#line 110 "SrvParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 8:
-#line 115 "SrvParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1326,59 +1277,49 @@ case 8:
 ;
     break;}
 case 9:
-#line 127 "SrvParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 10:
-#line 132 "SrvParser.y"
 {
     SrvCfgIfaceLst.append(new TSrvCfgIface(yyvsp[-4].ival));
     EndIfaceDeclaration();
 ;
     break;}
 case 15:
-#line 150 "SrvParser.y"
 { 
     StartClassDeclaration();
 ;
     break;}
 case 16:
-#line 154 "SrvParser.y"
 {
     EndClassDeclaration();
 ;
     break;}
 case 19:
-#line 168 "SrvParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 20:
-#line 169 "SrvParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 21:
-#line 196 "SrvParser.y"
 {
     PresentLst.append(new TIPv6Addr(yyvsp[0].addrval));
   ;
     break;}
 case 22:
-#line 200 "SrvParser.y"
 {
     PresentLst.append(new TIPv6Addr(yyvsp[0].addrval));
   ;
     break;}
 case 23:
-#line 207 "SrvParser.y"
 {
         PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
 case 24:
-#line 211 "SrvParser.y"
 {
         SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
         SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -1389,13 +1330,11 @@ case 24:
     ;
     break;}
 case 25:
-#line 220 "SrvParser.y"
 {
         PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
 case 26:
-#line 224 "SrvParser.y"
 {
         SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
         SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -1406,13 +1345,11 @@ case 26:
     ;
     break;}
 case 27:
-#line 236 "SrvParser.y"
 {
     PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
 ;
     break;}
 case 28:
-#line 240 "SrvParser.y"
 {
     SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
     SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -1423,13 +1360,11 @@ case 28:
 ;
     break;}
 case 29:
-#line 249 "SrvParser.y"
 {
     PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
 ;
     break;}
 case 30:
-#line 253 "SrvParser.y"
 {
         SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
         SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -1440,14 +1375,12 @@ case 30:
 ;
     break;}
 case 31:
-#line 263 "SrvParser.y"
 {
     PresentRangeLst.append(new TStationRange(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length)));
     delete yyvsp[0].duidval.duid;
 ;
     break;}
 case 32:
-#line 268 "SrvParser.y"
 {   
     SmartPtr<TDUID> duid1(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
     SmartPtr<TDUID> duid2(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
@@ -1461,14 +1394,12 @@ case 32:
 ;
     break;}
 case 33:
-#line 280 "SrvParser.y"
 {
         PresentRangeLst.append(new TStationRange(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length)));
         delete yyvsp[0].duidval.duid;
     ;
     break;}
 case 34:
-#line 285 "SrvParser.y"
 {
         SmartPtr<TDUID> duid2(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
         SmartPtr<TDUID> duid1(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
@@ -1481,149 +1412,126 @@ case 34:
     ;
     break;}
 case 35:
-#line 300 "SrvParser.y"
 {
         PresentRangeLst.clear();    
     ;
     break;}
 case 36:
-#line 303 "SrvParser.y"
 {
         ParserOptStack.getLast()->setRejedClnt(&PresentRangeLst);
     ;
     break;}
 case 37:
-#line 310 "SrvParser.y"
 {
         PresentRangeLst.clear();    
     ;
     break;}
 case 38:
-#line 313 "SrvParser.y"
 {
         ParserOptStack.getLast()->setAcceptClnt(&PresentRangeLst);
     ;
     break;}
 case 39:
-#line 320 "SrvParser.y"
 {
 
             PresentRangeLst.clear();    
         ;
     break;}
 case 40:
-#line 324 "SrvParser.y"
 {
             ParserOptStack.getLast()->setPool(&PresentRangeLst);
         ;
     break;}
 case 41:
-#line 331 "SrvParser.y"
 { 
         ParserOptStack.getLast()->setPrefBeg(yyvsp[0].ival);
         ParserOptStack.getLast()->setPrefEnd(yyvsp[0].ival);
     ;
     break;}
 case 42:
-#line 336 "SrvParser.y"
 {
         ParserOptStack.getLast()->setPrefBeg(yyvsp[-2].ival);
         ParserOptStack.getLast()->setPrefEnd(yyvsp[0].ival);   
     ;
     break;}
 case 43:
-#line 344 "SrvParser.y"
 { 
         ParserOptStack.getLast()->setValidBeg(yyvsp[0].ival);
         ParserOptStack.getLast()->setValidEnd(yyvsp[0].ival);
     ;
     break;}
 case 44:
-#line 349 "SrvParser.y"
 {
         ParserOptStack.getLast()->setValidBeg(yyvsp[-2].ival);
         ParserOptStack.getLast()->setValidEnd(yyvsp[0].ival);  
     ;
     break;}
 case 45:
-#line 357 "SrvParser.y"
 {
         ParserOptStack.getLast()->setT1Beg(yyvsp[0].ival); 
         ParserOptStack.getLast()->setT1End(yyvsp[0].ival); 
     ;
     break;}
 case 46:
-#line 362 "SrvParser.y"
 {
         ParserOptStack.getLast()->setT1Beg(yyvsp[-2].ival); 
         ParserOptStack.getLast()->setT1End(yyvsp[0].ival); 
     ;
     break;}
 case 47:
-#line 370 "SrvParser.y"
 { 
         ParserOptStack.getLast()->setT2Beg(yyvsp[0].ival); 
         ParserOptStack.getLast()->setT2End(yyvsp[0].ival); 
     ;
     break;}
 case 48:
-#line 375 "SrvParser.y"
 {
         ParserOptStack.getLast()->setT2Beg(yyvsp[-2].ival); 
         ParserOptStack.getLast()->setT2End(yyvsp[0].ival); 
     ;
     break;}
 case 49:
-#line 387 "SrvParser.y"
 {
     PresentLst.clear();
 ;
     break;}
 case 50:
-#line 390 "SrvParser.y"
 {
     ParserOptStack.getLast()->setDNSSrv(&PresentLst);
 ;
     break;}
 case 51:
-#line 400 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setDomain(yyvsp[0].strval);
 ;
     break;}
 case 52:
-#line 410 "SrvParser.y"
 {
     PresentLst.clear();
 ;
     break;}
 case 53:
-#line 413 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNTPSrv(&PresentLst);
 ;
     break;}
 case 54:
-#line 423 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setTimeZone(yyvsp[0].strval); 
 ;
     break;}
 case 55:
-#line 437 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setMaxClientLease(yyvsp[0].ival);    
 ;
     break;}
 case 56:
-#line 444 "SrvParser.y"
 {
     ParserOptStack.getLast()->setUnicast(true);
     ParserOptStack.getLast()->setAddress(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 57:
-#line 452 "SrvParser.y"
 {
     if((yyvsp[0].ival&&(!ParserOptStack.getLast()->getUnicast() ))||(yyvsp[0].ival>1))
 	YYABORT; //there should be declared prior unicast address
@@ -1631,52 +1539,43 @@ case 57:
 ;
     break;}
 case 58:
-#line 461 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setRapidCommit(yyvsp[0].ival); 
 ;
     break;}
 case 59:
-#line 468 "SrvParser.y"
 { 
     if ((yyvsp[0].ival<0)||(yyvsp[0].ival>255))
-	YYABORT; //FIXME:Exception or what kind of notification
+	YYABORT;
     ParserOptStack.getLast()->setPreference(yyvsp[0].ival);    
 ;
     break;}
 case 60:
-#line 477 "SrvParser.y"
 {
     ParserOptStack.getLast()->setMaxLeases(yyvsp[0].ival);
 ;
     break;}
 case 61:
-#line 483 "SrvParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
 case 62:
-#line 489 "SrvParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
 case 63:
-#line 495 "SrvParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
 case 64:
-#line 502 "SrvParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
 }
-
-#line 839 "../bison++/bison.cc"
    /* the action file gets copied in in place of this dollarsign  */
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1876,9 +1775,6 @@ YYLABEL(yyerrhandle)
 }
 
 /* END */
-
- #line 1038 "../bison++/bison.cc"
-#line 540 "SrvParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

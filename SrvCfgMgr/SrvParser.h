@@ -1,8 +1,6 @@
 #ifndef YY_SrvParser_h_included
 #define YY_SrvParser_h_included
 #define YY_USE_CLASS
-
-#line 1 "../bison++/bison.h"
 /* before anything */
 #ifdef c_plusplus
  #ifndef __cplusplus
@@ -10,9 +8,6 @@
  #endif
 #endif
 
-
- #line 8 "../bison++/bison.h"
-#line 3 "SrvParser.y"
 
 #include <iostream>
 #include <string>
@@ -57,7 +52,6 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);    \
    this->lex = lex;
 
-#line 59 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -70,8 +64,6 @@ typedef union
   char                          addrval[16];
 } yy_SrvParser_stype;
 #define YY_SrvParser_STYPE yy_SrvParser_stype
-
-#line 21 "../bison++/bison.h"
  /* %{ and %header{ and %union, during decl */
 #ifndef YY_SrvParser_COMPATIBILITY
  #ifndef YY_USE_CLASS
@@ -116,32 +108,16 @@ typedef union
 #endif
 
 #ifndef YY_SrvParser_PURE
-
- #line 65 "../bison++/bison.h"
-
-#line 65 "../bison++/bison.h"
 /* YY_SrvParser_PURE */
 #endif
 
-
- #line 68 "../bison++/bison.h"
-
-#line 68 "../bison++/bison.h"
 /* prefix */
 
 #ifndef YY_SrvParser_DEBUG
-
- #line 71 "../bison++/bison.h"
-
-#line 71 "../bison++/bison.h"
 /* YY_SrvParser_DEBUG */
 #endif
 
 #ifndef YY_SrvParser_LSP_NEEDED
-
- #line 75 "../bison++/bison.h"
-
-#line 75 "../bison++/bison.h"
  /* YY_SrvParser_LSP_NEEDED*/
 #endif
 
@@ -236,8 +212,6 @@ typedef
   #endif
  #endif
 
-
- #line 169 "../bison++/bison.h"
 #define	IFACE_	258
 #define	NO_CONFIG_	259
 #define	CLASS_	260
@@ -268,8 +242,6 @@ typedef
 #define	IPV6ADDR_	285
 #define	DUID_	286
 
-
-#line 169 "../bison++/bison.h"
  /* #defines token */
 /* after #define tokens, before const tokens S5*/
 #else
@@ -313,9 +285,7 @@ class YY_SrvParser_CLASS YY_SrvParser_INHERIT
 public: 
  #if YY_SrvParser_USE_CONST_TOKEN != 0
   /* static const int token ... */
-  
- #line 212 "../bison++/bison.h"
-static const int IFACE_;
+  static const int IFACE_;
 static const int NO_CONFIG_;
 static const int CLASS_;
 static const int LOGNAME_;
@@ -345,14 +315,10 @@ static const int INTNUMBER_;
 static const int IPV6ADDR_;
 static const int DUID_;
 
-
-#line 212 "../bison++/bison.h"
  /* decl const */
  #else
   enum YY_SrvParser_ENUM_TOKEN { YY_SrvParser_NULL_TOKEN=0
-  
- #line 215 "../bison++/bison.h"
-	,IFACE_=258
+  	,IFACE_=258
 	,NO_CONFIG_=259
 	,CLASS_=260
 	,LOGNAME_=261
@@ -382,8 +348,6 @@ static const int DUID_;
 	,IPV6ADDR_=285
 	,DUID_=286
 
-
-#line 215 "../bison++/bison.h"
  /* enum token */
      }; /* end of enum declaration */
  #endif
@@ -436,6 +400,4 @@ public:
 
 #endif
 /* END */
-
- #line 267 "../bison++/bison.h"
 #endif
