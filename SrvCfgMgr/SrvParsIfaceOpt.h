@@ -1,10 +1,15 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski <msend@o2.pl>                                    *
- *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+/*
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvParsIfaceOpt.h,v 1.3 2004-06-28 22:37:59 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
 
 #ifndef TSRCPARSIFACEOPT_H_
 #define TSRCPARSIFACEOPT_H_
@@ -13,8 +18,8 @@
 class TSrvParsIfaceOpt : public TSrvParsClassOpt
 {
 public:
-	TSrvParsIfaceOpt(void);
-	~TSrvParsIfaceOpt(void);
+    TSrvParsIfaceOpt(void);
+    ~TSrvParsIfaceOpt(void);
 
     bool uniAddress();
     void setUniAddress(bool isUni);
@@ -38,15 +43,17 @@ public:
     void setTimeZone(string timeZone);
     string getTimeZone();
 
+    void setIfaceMaxLease(long maxLease);
+    long getIfaceMaxLease();
 
 private:
-	bool			    UniAddress;
-	SmartPtr<TIPv6Addr> Address;
+    bool UniAddress;
+    long IfaceMaxLease;
+    SmartPtr<TIPv6Addr> Address;
     TContainer<SmartPtr<TIPv6Addr> > DNSSrv;		
-	string				Domain;			
-	TContainer<SmartPtr<TIPv6Addr> > NTPSrv;		
-	string				TimeZone;		
-	//string				NISServer;		
+    string Domain;			
+    TContainer<SmartPtr<TIPv6Addr> > NTPSrv;		
+    string TimeZone;		
 };
 
 #endif

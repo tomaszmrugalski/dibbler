@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.6 2004-06-21 23:08:49 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.7 2004-06-28 22:37:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/21 23:08:49  thomson
+ * Minor fixes.
+ *
  * Revision 1.5  2004/06/20 21:00:45  thomson
  * Various fixes.
  *
@@ -148,10 +151,9 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     addrsFree     = this->countFreeAddrsForClient();
     addrsMax      = cfgMgr->getMaxAddrsPerClient(clntDuid, clntAddr, iface);
 
-    Log(Debug) << "Client got " << addrsAssigned << " addrs, requests for " 
+    Log(Debug) << "Client has " << addrsAssigned << " addrs, asks for " 
 	       << addrsRequested << ", " << addrsFree << " is free, max. " 
-	       << addrsMax << " can be assigned to one client."
-	       << LogEnd;
+	       << addrsMax << " can be assigned." << LogEnd;
 
     if (addrsAssigned+addrsRequested > addrsMax) {
 	Log(Info) << "Client has " << addrsAssigned << " addrs and asks for additional "

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.9 2004-06-28 21:34:18 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.10 2004-06-28 22:37:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/06/28 21:34:18  thomson
+ * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
+ *
  * Revision 1.8  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -113,7 +116,6 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
     
     ClntMaxLease  = opt->getClntMaxLease();
     ClassMaxLease = opt->getClassMaxLease();
-    IfaceMaxLease = opt->getIfaceMaxLease();
     RapidCommit=opt->getRapidCommit();
     Unicast=opt->getUnicast();
 	//NISServer=opt.NISServer;
@@ -219,7 +221,6 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
 	<< "\" />" << logger::endl;
     out << "      <ClntMaxLease>" << addrClass.ClntMaxLease << "</ClntMaxLease>" << logger::endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << logger::endl;
-    out << "      <IFaceMaxLease>" << addrClass.IfaceMaxLease << "</IfaceMaxLease>" << logger::endl;
     
     if (addrClass.RapidCommit) {
 	out << "      <rapid-commit/>" << logger::endl;

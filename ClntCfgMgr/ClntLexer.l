@@ -124,108 +124,66 @@ rapid-commit     { return clntParser::RAPID_COMMIT_;}
 <COMMENT>"*/" BEGIN(INITIAL);
 <COMMENT>.|"\n" ;
 <COMMENT><<EOF>> {
-    //printf ("Niezamkniêty komentarz /* w linii:%d\n",ComBeg); 
+    Log(Crit) << "Comment not closed. (/* in line " << ComBeg << LogEnd;
   { YYABORT; }
 }
 
 %{    //IPv6 address - various forms
 %}
-({hex1to4}:){7}{hexdigit} {
-  if(!inet_pton6(yytext,yylval.addrval))
-      { YYABORT; }
-    else
-    /*analyzeBigPart(yytext,strlen(yytext)-2,Address);
-    memcpy(yylval.addrval,Address,16);*/
-        return clntParser::IPV6ADDR_;
+({hex1to4}:){7}{hex1to4} {
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+	YYABORT; 
+    } else {
+	return clntParser::IPV6ADDR_;
+    }
 }
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
-  if(!inet_pton6(yytext,yylval.addrval))
-      { YYABORT; }
-    else  
-  /*pos=0;
-  while ((yytext[pos]!=':')||(yytext[pos+1]!=':')) pos++;
-  LftCnt=analyzeBigPart(yytext,pos,AddrPart);
-  resetAddress(Address);
-  memcpy(Address, AddrPart,16);
-  pos+=2;
-    RgtCnt=analyzeBigPart(yytext+pos,strlen(yytext+pos),AddrPart);
-    if ((LftCnt+RgtCnt)>8)
-      { YYABORT; } //to many address parts - raise exception
-    memcpy( Address+16-(RgtCnt<<1), AddrPart,RgtCnt<<1);
-    memcpy(yylval.addrval,Address,16);*/
-    return clntParser::IPV6ADDR_;
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+	YYABORT; 
+    } else {
+	return clntParser::IPV6ADDR_;
+    }
 }
 
 "::"(({hex1to4}:){1,7})?{hex1to4} { 
-  if(!inet_pton6(yytext,yylval.addrval))
-      { YYABORT; }
-    else  
-  /*resetAddress(Address);
-  RgtCnt=analyzeBigPart(yytext+2,strlen(yytext)-2,AddrPart);
-    memcpy(Address+16-(RgtCnt<<1), AddrPart, RgtCnt<<1);
-    memcpy(yylval.addrval,Address,16);*/
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+	YYABORT; 
+    } else {
         return clntParser::IPV6ADDR_;
+    }
 }
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
-  if(!inet_pton6(yytext,yylval.addrval))
-      { YYABORT; }
-    else  
-    /*analyzeBigPart(yytext,strlen(yytext)-2,Address);
-    memcpy(yylval.addrval,Address,16);*/
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+	YYABORT; 
+    } else {
         return clntParser::IPV6ADDR_;
+    }
 }
 
 "::" {
-    /*resetAddress(Address);
-    memcpy(yylval.addrval,Address,16);*/
-  if(!inet_pton6(yytext,yylval.addrval))
-      { YYABORT; }
-    else  
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+	YYABORT; 
+    } else {
         return clntParser::IPV6ADDR_;
+    }
 }
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
-  if(!inet_pton6(yytext,yylval.addrval))
-      { YYABORT; }
-    else
-  /*pos=0;
-  while ((yytext[pos]!=':')||(yytext[pos+1]!=':')) pos++;
-  LftCnt=analyzeBigPart(yytext,pos,AddrPart);
-  resetAddress(Address);
-  memcpy(Address, AddrPart,16);
-  intpos=(pos+=2);
-    while (yytext[intpos]!='.') intpos++;
-    while (yytext[intpos]!=':') intpos--;
-    if(intpos>pos)
-    {
-      RgtCnt=analyzeBigPart(yytext+pos,intpos-pos,AddrPart);
-      if ((RgtCnt+LftCnt)>6) { YYABORT; }
-      memcpy(Address+12-(RgtCnt<<1), AddrPart, RgtCnt<<1);  
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+	YYABORT; 
+    } else {
+	return clntParser::IPV6ADDR_;
     }
-    decodeIntPart(yytext+intpos+1, Address+12);
-    memcpy(yylval.addrval,Address,16);*/
-      return clntParser::IPV6ADDR_;
 }
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
-
-  if(!inet_pton6(yytext,yylval.addrval))
-      { YYABORT; }
-    else  
-    /*resetAddress(Address);
-  intpos=0;
-    while (yytext[intpos]!='.') intpos++;
-    while (yytext[intpos]!=':') intpos--;
-    if (intpos>1)
-    {
-    RgtCnt=analyzeBigPart(yytext+2,intpos-2,AddrPart);
-      memcpy(Address+12-(RgtCnt<<1), AddrPart, RgtCnt<<1);
-    };
-    decodeIntPart(yytext+intpos+1, Address+12);
-    memcpy(yylval.addrval,Address,16);*/
-      return clntParser::IPV6ADDR_;
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+	YYABORT; 
+    } else {
+	return clntParser::IPV6ADDR_;
+    }
 }
 
 %{  //STRING (interface identifier,dns server etc.)
@@ -248,28 +206,36 @@ rapid-commit     { return clntParser::RAPID_COMMIT_;}
 %{  //FIXME: Remember to free memory in parser
   //DUID
 %}
-\"{hexdigit}+\" {
-    //every hex digit corresponds to half of byte, even at the begining
-    //of string
-  if (strlen(yytext)%2) 
-        yytext[0]='0'; //if odd than no-meaning zero at the beginning
-  else
-        yytext++;
-  //and now there is an even number of hex digits
-    yylval.duidval.length=(strlen(yytext)-1)>>1;
-  yylval.duidval.duid=new char[yylval.duidval.length];
-    for (int i=0;i<(yylval.duidval.length<<1);i+=1)
+
+0x{hexdigit}+ {
+    int len;
+    char * ptr;
+    if (strlen(yytext)%2) {
+        yytext[1]='0'; //if odd than no-meaning zero at the beginning
+        len = strlen(yytext)-1;
+        ptr = yytext+1;
+    } else {
+        len = strlen(yytext)-2;
+        ptr = yytext+2;
+    }
+
+    //and now there is an even number of hex digits
+    yylval.duidval.length = len >> 1;
+    yylval.duidval.duid   = new char[len >> 1];
+    for (int i=0 ; i<len; i++)
     {
         yylval.duidval.duid[i>>1]<<=4;
-        if (!isxdigit(yytext[i])) 
-            { YYABORT; } //or raise exeception
-        else
-        if (isalpha(yytext[i]))
-            yylval.duidval.duid[i>>1]|=toupper(yytext[i])-'A'+10;
-        else
-            yylval.duidval.duid[i>>1]|=yytext[i]-'0';
-  }
-    return clntParser::DUID_;
+        if (!isxdigit(ptr[i])) { 
+             Log(Error) << "DUID parsing failed." << LogEnd;
+             YYABORT; 
+        } 
+        if (isalpha(ptr[i])) {
+            yylval.duidval.duid[i>>1]|=toupper(ptr[i])-'A'+10;
+        } else {
+            yylval.duidval.duid[i>>1]|=ptr[i]-'0';
+        }
+   }
+   return clntParser::DUID_;
 }
 
 %{    //HEXADECIMAL NUMBER (interface id, option's values etc.)

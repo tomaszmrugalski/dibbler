@@ -239,8 +239,6 @@ void TSrvTransMgr::doDuties()
     {
         if (msg->isDone()) 
         {
-            std::clog << logger::logNotice << "Msg (transID=" << hex << msg->getTransID() << dec
-                << ") has expired.Removing from cache." << logger::endl;
             MsgLst.del();
         }
     }

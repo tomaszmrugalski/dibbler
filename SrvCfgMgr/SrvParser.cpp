@@ -116,20 +116,20 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include <FlexLexer.h>
 
 
-#define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                   \
-List(TSrvParsGlobalOpt) ParserOptStack;                                            \
-/* List of parsed interfaces/IAs/Addresses, last    */                            \
-/* interface/IA/address is just being parsing or have been just parsed */   \
-/* FIXME:Don't forget to clear this lists in apropriate moment         */   \
-List(TSrvCfgIface)          SrvCfgIfaceLst;   \
-List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;   \
-/*Pointer to list which should contain either DNS servers or NTPServers*/   \
-List(TIPv6Addr) PresentLst;  \
-/*Pointer to list which should contain: rejected clients, accepted clients */ \
-/*or addressess ranges */ \
-List(TStationRange) PresentRangeLst; \
-/*method check whether interface with id=ifaceNr has been already declared */ \
-bool CheckIsIface(int ifaceNr);  \
+#define YY_SrvParser_MEMBERS  FlexLexer * lex;                                               \
+List(TSrvParsGlobalOpt) ParserOptStack;                                        \
+/* List of parsed interfaces/IAs/Addresses, last    */                         \
+/* interface/IA/address is just being parsing or have been just parsed */      \
+/* FIXME:Don't forget to clear this lists in apropriate moment         */      \
+List(TSrvCfgIface)          SrvCfgIfaceLst;                                    \
+List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;                                    \
+/*Pointer to list which should contain either DNS servers or NTPServers*/      \
+List(TIPv6Addr) PresentLst;                                                    \
+/*Pointer to list which should contain: rejected clients, accepted clients */  \
+/*or addressess ranges */                                                      \
+List(TStationRange) PresentRangeLst;                                           \
+/*method check whether interface with id=ifaceNr has been already declared */  \
+bool CheckIsIface(int ifaceNr);                                                \
 /*method check whether interface with id=ifaceName has been already declared*/ \
 bool CheckIsIface(string ifaceName); \
 void StartIfaceDeclaration(); \
@@ -620,9 +620,9 @@ static const short yyrhs[] = {    38,
     28,     0,     6,    28,     0,     9,    28,     0,    78,     0,
     74,     0,    73,     0,    75,     0,    76,     0,    79,     0,
     69,     0,    72,     0,    60,     0,    63,     0,    62,     0,
-    65,     0,    56,     0,    57,     0,    54,     0,    58,     0,
-    59,     0,    50,     0,    52,     0,    70,     0,    71,     0,
-    67,     0,    66,     0,    68,     0
+    65,     0,    68,     0,    56,     0,    57,     0,    54,     0,
+    58,     0,    59,     0,    50,     0,    52,     0,    70,     0,
+    71,     0,    67,     0,    66,     0
 };
 
 #endif
@@ -636,8 +636,8 @@ static const short yyrline[] = { 0,
    328,   333,   341,   346,   354,   359,   367,   372,   384,   388,
    397,   407,   411,   420,   434,   441,   448,   455,   463,   472,
    479,   488,   494,   499,   506,   513,   514,   515,   516,   517,
-   521,   522,   523,   524,   525,   526,   527,   531,   532,   533,
-   534,   535,   537,   538,   539,   540,   541,   542,   543
+   521,   522,   523,   524,   525,   526,   527,   528,   532,   533,
+   534,   535,   536,   538,   539,   540,   541,   542,   543
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","NO_CONFIG_",
@@ -666,7 +666,7 @@ static const short yyr1[] = {     0,
     56,    56,    57,    57,    58,    58,    59,    59,    61,    60,
     62,    64,    63,    65,    66,    67,    68,    69,    70,    71,
     72,    73,    74,    75,    76,    77,    77,    77,    77,    77,
-    78,    78,    78,    78,    78,    78,    78,    79,    79,    79,
+    78,    78,    78,    78,    78,    78,    78,    78,    79,    79,
     79,    79,    79,    79,    79,    79,    79,    79,    79
 };
 
@@ -685,8 +685,8 @@ static const short yyr2[] = {     0,
 static const short yydefact[] = {     2,
      0,     0,     0,     0,     0,     0,    37,    35,    39,     0,
      0,     0,     0,     0,     0,     0,     0,     0,     0,     1,
-     4,    83,    84,    80,    78,    79,    81,    82,    74,    76,
-    75,    77,    88,    87,    89,    72,    85,    86,    73,    68,
+     4,    84,    85,    81,    79,    80,    82,    83,    74,    76,
+    75,    77,    89,    88,    78,    72,    86,    87,    73,    68,
     67,    69,    70,     3,    66,    71,     0,    19,    20,     0,
     64,    62,    63,    65,    52,     0,    49,     0,     0,     0,
      0,    45,    47,    41,    43,    58,    59,    61,    60,    57,
@@ -717,23 +717,23 @@ static const short yypact[] = {    75,
     43,    44,    68,    69,    70,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,    45,-32768,    45,-32768,
     71,    73,    76,    76,    74,    77,    -8,    -8,    -8,    -8,
-    98,    98,-32768,    99,    99,    46,    47,    36,   108,   109,
--32768,-32768,-32768,-32768,   110,    14,-32768,-32768,    37,   113,
--32768,-32768,   105,   106,-32768,   118,-32768,-32768,-32768,-32768,
--32768,-32768,   128,   129,   132,   131,-32768,-32768,-32768,    -8,
-   111,-32768,-32768,-32768,   160,   162,-32768
+    98,    98,-32768,    99,    99,    46,    47,    36,   105,   108,
+-32768,-32768,-32768,-32768,   107,    14,-32768,-32768,    37,   110,
+-32768,-32768,   106,   118,-32768,   120,-32768,-32768,-32768,-32768,
+-32768,-32768,   112,   127,   113,   131,-32768,-32768,-32768,    -8,
+   111,-32768,-32768,-32768,   160,   161,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,    55,-32768,-32768,    72,  -105,-32768,-32768,    -1,    86,
--32768,   107,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,    55,-32768,-32768,    72,  -105,-32768,-32768,    -1,    83,
+-32768,   103,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   146,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   145,
    -86,  -123
 };
 
 
-#define	YYLAST		167
+#define	YYLAST		165
 
 
 static const short yytable[] = {    50,
@@ -750,10 +750,10 @@ static const short yytable[] = {    50,
     18,    19,   105,    88,    89,    90,    96,     6,    97,    99,
     98,   100,     7,     8,     9,    10,    11,    12,    13,    14,
     15,    16,    17,    18,    19,     7,     8,     9,    10,    11,
-    12,    13,   130,   110,    16,    17,    18,    19,   115,   116,
-   123,   124,   117,   122,   133,     7,     8,     9,    10,    11,
-    12,    13,   130,   125,    16,    17,    18,    19,   127,   136,
-   128,   137,   129,   109,    95,    74,    84
+    12,    13,   130,   110,    16,   115,    18,    19,   116,   117,
+   122,   123,   127,   129,   133,     7,     8,     9,    10,    11,
+    12,    13,   130,   124,    16,   125,    18,    19,   128,   136,
+   137,    95,    84,   109,    74
 };
 
 static const short yycheck[] = {     1,
@@ -770,10 +770,10 @@ static const short yycheck[] = {     1,
     26,    27,     5,    36,    36,    36,    36,    10,    36,    36,
     35,    35,    15,    16,    17,    18,    19,    20,    21,    22,
     23,    24,    25,    26,    27,    15,    16,    17,    18,    19,
-    20,    21,    22,    35,    24,    25,    26,    27,    31,    31,
-    36,    36,    33,    31,    34,    15,    16,    17,    18,    19,
-    20,    21,    22,    36,    24,    25,    26,    27,    31,     0,
-    32,     0,    31,    92,    79,    20,    60
+    20,    21,    22,    35,    24,    31,    26,    27,    31,    33,
+    31,    36,    31,    31,    34,    15,    16,    17,    18,    19,
+    20,    21,    22,    36,    24,    36,    26,    27,    32,     0,
+     0,    79,    60,    92,    20
 };
  /* fattrs + tables */
 

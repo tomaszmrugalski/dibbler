@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.4 2004-06-28 21:34:18 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.5 2004-06-28 22:38:00 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.4  2004/06/28 21:34:18  thomson
+%% DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
+%%
 %% Revision 1.3  2004/06/19 19:51:14  thomson
 %% Various fixes.
 %%
@@ -363,6 +366,7 @@ poll minaddress-maxaddress
 Every option has a scope it can be used in, default value and
 sometimes allowed range.
 
+%% FIXME: this table must be sanitized
 \begin{tabular}{|c|c|>{\centering}p{1.7cm}<{}|c|p{6cm}|}
 \hline
 Name             & Scope & Values    & default & Description \\
@@ -372,9 +376,9 @@ valid-lifetime   & class & 32-bit integer & (4294967296) & valid lifetime for ad
 prefered-lifetime&class& 32-bit integer& (4294967296) & after this amount of time(in seconds) address becomes depreciated\\
 T1             & class & 32-bit integer & (4294967296) & client should renew addresses after T1 seconds \\
 T2             & class & 32-bit integer & (4294967296) & client should send REBIND after T2 seconds\\
-reject-clients & class & IPv6 addrs or DUID list, coma separated & (null list) & list containing servers which should be discarded in configuration of this IA \\
+reject-clients & class & IPv6 addrs or DUID list & (null list) & list containing servers which should be discarded in configuration of this IA \\
 accept-only    & class & IPv6 addrs or DUID list & (null list) & these are the only clients allowed to use this class\\
-RapidCommit    & class & 0 or 1         & 0            & should we allow Rapid Commit (SOLICIT--REPLY)? \\
+rapid-commit   & class & 0 or 1         & 0            & should we allow Rapid Commit (SOLICIT--REPLY)? \\
 work-dir       & global & string & (null) & working directory \\
 log-level      & global & 1-8    & 8    & log-level (8 is most verbose) \\
 log-name       & global & string & Client & Name, which appears in a log file\\
@@ -383,10 +387,12 @@ dns-servers    & interface& IPv6 addrs list, coma separated & (null list) & DNS 
 domain         & interface& domain & (null) & domain name \\
 ntp-servers    & interface& IPv6 addrs list, coma separated & (null list) & NTP servers list \\
 time-zone      & interface& timezone string & (null) & time zone \\
-unicast	       & class & 0 or 1         & 0 & is unicast communication allowed? \\
-preference     & class & 0-255          & 0 & server preference value (higher is more prefered) \\
-max-lease      & class & 32-bit integer & 4294967296 & how many addresses can be leased by clients? \\
-client-max-lease & class & 32-bit integer & 4294967296 & how many addresses can be leased by one client? \\
+unicast	         & class & 0 or 1         & 0 & is unicast communication allowed? \\
+preference       & class & 0-255          & 0 & server preference value (higher is more prefered) \\
+iface-max-lease  &interface& integer & 4294967296 & how many addresses can be leased by all clients? \\
+client-max-lease & class & integer & 4294967296 & how many addresses can be leased by one client? \\
+class-max-lease  & class & integer & 4294967296 & how many addresses can be leased from this class? \\
+
 \hline
 \end{tabular}
 

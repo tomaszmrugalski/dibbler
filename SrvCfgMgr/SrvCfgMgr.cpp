@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.18 2004-06-20 21:00:45 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.19 2004-06-28 22:37:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/06/20 21:00:45  thomson
+ * Various fixes.
+ *
  * Revision 1.17  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *
@@ -177,9 +180,19 @@ TSrvCfgMgr::~TSrvCfgMgr() {
 }
 
 
-long TSrvCfgMgr::getMaxAddrsPerClient( SmartPtr<TDUID> duid, 
-						 SmartPtr<TIPv6Addr> clntAddr,  int iface)
+long TSrvCfgMgr::getMaxAddrsPerClient(SmartPtr<TDUID> duid, 
+				      SmartPtr<TIPv6Addr> clntAddr,  int iface)
 {
+    SmartPtr<TSrvCfgIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Crit) << "Interface " << iface << " does not exist in SrvCfgMgr" 
+		  << LogEnd;
+	return 0;
+    }
+    Log(Debug) << "Max lease per client is " << ptrIface->getIfaceMaxLease()
+	       << "," << LogEnd;
+
     //FIXME: For all classes by which client is supported get MaxAddrPerClient
     //and return sum of this value (it must be smaller then MAX_LONG)
     return 10;
@@ -322,7 +335,8 @@ SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
 	if ( ptrIface->getID()==iface )
 	    return ptrIface;
     }
-    Log(Error) << "Invalid interface (id=" << iface << ") specifed, cannot get address." << LogEnd;
+    Log(Error) << "Invalid interface (id=" << iface 
+	       << ") specifed, cannot get address." << LogEnd;
     return 0; // NULL
 }
 

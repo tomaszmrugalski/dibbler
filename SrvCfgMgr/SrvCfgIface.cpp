@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.8 2004-06-28 21:34:18 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.9 2004-06-28 22:37:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/28 21:34:18  thomson
+ * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
+ *
  * Revision 1.7  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *
@@ -53,11 +56,12 @@ TSrvCfgIface::~TSrvCfgIface() {
 }
 
 void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
-    this->isUniAddress = opt->getUnicast();
-    this->UniAddress   = opt->getAddress();
-    this->preference   = opt->getPreference();
-    this->Domain       = opt->getDomain();
-    this->TimeZone     = opt->getTimeZone();
+    this->isUniAddress  = opt->getUnicast();
+    this->UniAddress    = opt->getAddress();
+    this->preference    = opt->getPreference();
+    this->Domain        = opt->getDomain();
+    this->TimeZone      = opt->getTimeZone();
+    this->IfaceMaxLease = opt->getIfaceMaxLease();
     
     SmartPtr<TIPv6Addr> stat;
 
@@ -132,6 +136,14 @@ string TSrvCfgIface::getTimeZone() {
     return this->TimeZone;
 }
 
+void TSrvCfgIface::setIfaceMaxLease(long maxLease) {
+    this->IfaceMaxLease=maxLease;
+}
+
+long TSrvCfgIface::getIfaceMaxLease() {
+    return this->IfaceMaxLease;
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -152,6 +164,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 	out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
     }
     out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
+    out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << logger::endl;
     
     SmartPtr<TIPv6Addr> stat;
     out << "    <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;

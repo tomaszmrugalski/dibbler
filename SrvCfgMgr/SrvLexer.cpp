@@ -1396,7 +1396,8 @@ YY_RULE_SETUP
     return SrvParser::STRING_;
 }
 	YY_BREAK
- //DUID
+ 
+//DUID
 
 case 44:
 YY_RULE_SETUP
@@ -1411,8 +1412,6 @@ YY_RULE_SETUP
         len = strlen(yytext)-2;
         ptr = yytext+2;
     }
-    // here's len is always even number
-    cout << "DUID: len=" << len << " [" << ptr << "]" << endl;
 
     //and now there is an even number of hex digits
     yylval.duidval.length = len >> 1;

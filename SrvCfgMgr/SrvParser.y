@@ -25,20 +25,20 @@
 %}
 
 // class definition
-%define MEMBERS FlexLexer * lex;                                                   \
-List(TSrvParsGlobalOpt) ParserOptStack;                                            \
-/* List of parsed interfaces/IAs/Addresses, last    */                            \
-/* interface/IA/address is just being parsing or have been just parsed */   \
-/* FIXME:Don't forget to clear this lists in apropriate moment         */   \
-List(TSrvCfgIface)          SrvCfgIfaceLst;   \
-List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;   \
-/*Pointer to list which should contain either DNS servers or NTPServers*/   \
-List(TIPv6Addr) PresentLst;  \
-/*Pointer to list which should contain: rejected clients, accepted clients */ \
-/*or addressess ranges */ \
-List(TStationRange) PresentRangeLst; \
-/*method check whether interface with id=ifaceNr has been already declared */ \
-bool CheckIsIface(int ifaceNr);  \
+%define MEMBERS FlexLexer * lex;                                               \
+List(TSrvParsGlobalOpt) ParserOptStack;                                        \
+/* List of parsed interfaces/IAs/Addresses, last    */                         \
+/* interface/IA/address is just being parsing or have been just parsed */      \
+/* FIXME:Don't forget to clear this lists in apropriate moment         */      \
+List(TSrvCfgIface)          SrvCfgIfaceLst;                                    \
+List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;                                    \
+/*Pointer to list which should contain either DNS servers or NTPServers*/      \
+List(TIPv6Addr) PresentLst;                                                    \
+/*Pointer to list which should contain: rejected clients, accepted clients */  \
+/*or addressess ranges */                                                      \
+List(TStationRange) PresentRangeLst;                                           \
+/*method check whether interface with id=ifaceNr has been already declared */  \
+bool CheckIsIface(int ifaceNr);                                                \
 /*method check whether interface with id=ifaceName has been already declared*/ \
 bool CheckIsIface(string ifaceName); \
 void StartIfaceDeclaration(); \
@@ -525,6 +525,7 @@ InterfaceOptionDeclaration
 | NTPServerOption
 | DomainOption
 | TimeZoneOption
+| IfaceMaxLeaseOption
 ;
 
 ClassOptionDeclaration
@@ -540,7 +541,6 @@ ClassOptionDeclaration
 | RapidCommitOption
 | ClassMaxLeaseOption
 | ClntMaxLeaseOption
-| IfaceMaxLeaseOption
 ;
 
 %%

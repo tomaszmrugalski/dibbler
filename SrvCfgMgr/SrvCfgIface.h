@@ -39,6 +39,9 @@ public:
     string getTimeZone();
     unsigned char getPreference();
 
+    void setIfaceMaxLease(long maxLease);
+    long getIfaceMaxLease();
+
 private:
     unsigned char preference;
     int		ID;
@@ -46,6 +49,7 @@ private:
     bool	NoConfig;
     bool	isUniAddress;
     SmartPtr<TIPv6Addr> UniAddress;
+    unsigned long IfaceMaxLease;
     
     TContainer <SmartPtr<TSrvCfgAddrClass> > SrvCfgAddrClassLst;
     TContainer<SmartPtr<TIPv6Addr> > DNSSrv;

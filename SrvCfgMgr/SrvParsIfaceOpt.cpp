@@ -1,3 +1,16 @@
+/*
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvParsIfaceOpt.cpp,v 1.2 2004-06-28 22:37:59 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 #include "SrvParsIfaceOpt.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
@@ -95,4 +108,12 @@ void TSrvParsIfaceOpt::setTimeZone(string timeZone)
 string TSrvParsIfaceOpt::getTimeZone()
 {
     return this->TimeZone;
+}
+
+void TSrvParsIfaceOpt::setIfaceMaxLease(long maxLease) {
+    this->IfaceMaxLease=maxLease;
+}
+
+long TSrvParsIfaceOpt::getIfaceMaxLease() {
+    return this->IfaceMaxLease;
 }

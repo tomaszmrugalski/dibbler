@@ -1,5 +1,20 @@
-#ifndef TSRVPARSCLASS_H_
-#define TSRVPARSCLASS_H_
+/*
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvParsClassOpt.h,v 1.3 2004-06-28 22:37:59 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
+class TSrvParsClassOpt;
+#ifndef TSRVPARSCLASS_H
+#define TSRVPARSCLASS_H
+
 #include <string>
 #include "StationID.h"
 #include "DHCPConst.h"
@@ -10,9 +25,9 @@
 
 class TSrvParsClassOpt
 {
-public:
-	TSrvParsClassOpt(void);
-	~TSrvParsClassOpt(void);
+ public:
+    TSrvParsClassOpt(void);
+    ~TSrvParsClassOpt(void);
 
     //T1,T2,Valid,Prefered time routines
     void setT1Beg(long t1);
@@ -64,10 +79,8 @@ public:
     // leases count
     void setClntMaxLease(long maxLeases);
     void setClassMaxLease(long maxClntLeases);
-    void setIfaceMaxLease(long maxClntLeases);
     long getClntMaxLease();
     long getClassMaxLease();
-    long getIfaceMaxLease();
 
 private:
     //Ranges of T1 i T2
@@ -87,10 +100,7 @@ private:
     char Preference;
     bool Unicast;
     bool RapidCommit;
-    long IfaceMaxLease;
     long ClassMaxLease;
     long ClntMaxLease;
-    unsigned long IfaceMaxLeases;
- 
 };
 #endif
