@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.11 2004-04-10 14:14:30 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.12 2004-04-11 18:04:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/04/10 14:14:30  thomson
+ * *** empty log message ***
+ *
  * Revision 1.10  2004/04/10 12:18:00  thomson
  * Numerous fixes: LogName, LogMode options added, dns-servers changed to
  * dns-server, '' around strings are no longer needed.
@@ -46,6 +49,8 @@ TAddrMgr::TAddrMgr(string addrdb, bool loadfile)
 
 void TAddrMgr::dbLoad()
 {
+
+#ifdef LIBXML2
      xmlDocPtr root;
      root = xmlLoad(this->dbfile.c_str());
      if (!root) {
@@ -53,6 +58,7 @@ void TAddrMgr::dbLoad()
      }
      this->parseAddrMgr(root,0);
      xmlFreeDoc(root);
+#endif
 }
 
 void TAddrMgr::dbStore()
@@ -173,7 +179,7 @@ unsigned long TAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
 // --------------------------------------------------------------------
 // --- XML-related methods --------------------------------------------
 // --------------------------------------------------------------------
-
+#ifdef LIBXML2
 // loads entire file
 xmlDocPtr TAddrMgr::xmlLoad(const char * filename) {
      xmlDocPtr doc;
@@ -348,7 +354,7 @@ void TAddrMgr::parseAddrMgr(xmlDocPtr doc,int depth)
  	xmlClient = xmlClient->next;
      }
 }
-
+#endif
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
