@@ -80,6 +80,7 @@ clean:
 	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) TAGS
 	find . -type l -exec rm {} \;
 	find . -name *.a -exec rm {} \;
+	find . -name *~ -exec rm {} \;
 	find . -name *.o -exec rm {} \;
 	find . -name test? -exec rm {} \;
 

@@ -95,7 +95,7 @@ srvlibs:	includes
 doc: 
 	cd doc; $(MAKE)
 
-VERSION:
+VERSION-linux:
 	echo " Operating system " >  VERSION
 	echo "------------------" >> VERSION
 	uname -o >> VERSION
@@ -152,6 +152,17 @@ VERSION-win:
 	date +%Y-%m-%d >> VERSION
 	echo >> VERSION
 
+VERSION-src:
+	echo " Version " >> VERSION
+	echo "---------" >> VERSION
+	echo "$(VERSION)" >> VERSION
+	echo >> VERSION
+
+	echo " Date " >> VERSION
+	echo "------" >> VERSION
+	date +%Y-%m-%d >> VERSION
+	echo >> VERSION
+
 release:
 	echo "There are 3 release targets available:"
 	echo "release-linux"
@@ -161,7 +172,7 @@ release:
 	echo "To make release-winxp work, place dibbler-server-winxp.exe and"
 	echo "dibbler-client-winxp.exe in this directory."
 
-release-linux: VERSION
+release-linux: VERSION-linux
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                  \
 		$(SERVERBIN) $(CLIENTBIN) client.conf server.conf \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
@@ -172,9 +183,20 @@ release-winxp: VERSION-win
                 client.conf server.conf                           \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
 
-release-src: VERSION
+release-src: VERSION-src
 	$(MAKE) clean
-	tar czvf dibbler-$(VERSION)-src.tar.gz *
+	rm -f file-list
+	echo "Makefile.inc CHANGELOG RELNOTES LICENSE VERSION " > file-list
+	find . -name \*.cpp >> file-list
+	find . -name \*.h >> file-list
+	find . -name \*.c >> file-list
+	find . -name Makefile >> file-list
+	find . -name \*.tex >> file-list
+	find . -name \*.l >> file-list
+	find . -name \*.y >> file-list
+	find . -name bison++/\* >> file-list
+	find . -name port-winxp/\* >> file-list
+	xargs tar czvf dibbler-$(VERSION)-src.tar.gz < file-list
 
 fixme:
 	rm -rf FIXME
