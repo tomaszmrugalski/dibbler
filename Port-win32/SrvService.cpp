@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: SrvService.cpp,v 1.10 2004-12-02 00:51:06 thomson Exp $
+ * $Id: SrvService.cpp,v 1.11 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.9  2004/05/24 21:16:37  thomson
  * Various fixes.
  *
@@ -119,7 +122,6 @@ void TSrvService::Run()
     string addrfile = SRVDB_FILE;
     string logFile  = SRVLOG_FILE;
     logger::setLogName("Srv");
-    if (this->status != RUN)
 	logger::Initialize((char*)logFile.c_str());
     
     Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER)" << LogEnd;

@@ -25,7 +25,6 @@
  */
 
 using namespace std;
-using namespace logger;
 
 /*
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
@@ -145,7 +144,7 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	case RELAY_FORW:
 	case RELAY_REPL:
 	default:
-	    Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << logger::endl;
+	    Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
 	    return 0; //NULL
 	}
     } else {

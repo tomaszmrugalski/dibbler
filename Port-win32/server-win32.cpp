@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: server-win32.cpp,v 1.8 2004-09-28 21:49:32 thomson Exp $
+ * $Id: server-win32.cpp,v 1.9 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/09/28 21:49:32  thomson
+ * no message
+ *
  * Revision 1.7  2004/09/20 20:14:54  thomson
  * *** empty log message ***
  *
@@ -69,34 +72,34 @@ int main(int argc, char* argv[]) {
 	int i=0;
     WSADATA wsaData;
     if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
-	clog<<"Unable to load WinSock 2.2"<<endl;
+	cout<<"Unable to load WinSock 2.2"<<endl;
 	return 0;
     }
     
     // find ipv6.exe (or netsh.exe in future implementations)
     if (!lowlevelInit()) {
-	clog << "lowlevelInit() failed. Startup aborted.\n";
+	cout << "lowlevelInit() failed. Startup aborted.\n";
 	return -1;		
     }
     
     EServiceState status = SrvService.ParseStandardArgs(argc, argv);
     SrvService.setState(status);
     
-    clog << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
-    clog << DIBBLER_COPYRIGHT2 << endl;
-    clog << DIBBLER_COPYRIGHT3 << endl;
-    clog << DIBBLER_COPYRIGHT4 << endl;
-    clog << endl;
+    cout << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
+    cout << DIBBLER_COPYRIGHT2 << endl;
+    cout << DIBBLER_COPYRIGHT3 << endl;
+    cout << DIBBLER_COPYRIGHT4 << endl;
+    cout << endl;
     
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
     
     switch (status) {
     case STATUS: {
-	clog << "Service: ";
+	cout << "Service: ";
 	if (SrvService.IsInstalled()) 
-	    clog << "INSTALLED " << endl;
+	    cout << "INSTALLED " << endl;
 	else
-	    clog << "NOT INSTALLED" << endl;
+	    cout << "NOT INSTALLED" << endl;
 	break;
     };
     case START: {
@@ -104,7 +107,7 @@ int main(int argc, char* argv[]) {
 	break;
     }
     case STOP: {
-	clog << "FIXME: STOP function is not implemented yet." << endl;
+	cout << "FIXME: STOP function is not implemented yet." << endl;
 	break;
     }
     case INSTALL: {
@@ -120,7 +123,7 @@ int main(int argc, char* argv[]) {
 	break;
     }
     case INVALID: {
-	clog << "Invalid usage." << endl;
+	cout << "Invalid usage." << endl;
     }				  
     case HELP: 
     default: {

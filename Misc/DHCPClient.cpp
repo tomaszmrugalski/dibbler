@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.15 2004-11-02 02:13:49 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.16 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/11/02 02:13:49  thomson
+ * no message
+ *
  * Revision 1.14  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -73,8 +76,9 @@ void TDHCPClient::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
-    Log(Warning) << "Service shutdown: Sending SHUTDOWN packet on iface="
-		 << TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << LogEnd;
+    SmartPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
+    Log(Warning) << "Sending SHUTDOWN packet on the " << iface->getName()
+        << "/" << iface->getID() << " (addr=" << TransMgr->getCtrlAddr() << ")." << LogEnd;
     int fd = sock_add("", TransMgr->getCtrlIface(),"::",0,true, false); 
     char buf = CONTROL_MSG;
     int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());

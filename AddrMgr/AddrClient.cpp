@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.8 2004-10-27 22:07:55 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.9 2004-12-03 20:51:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.7  2004/09/08 21:22:45  thomson
  * Parser improvements, signed/unsigned issues addressed.
  *
@@ -149,8 +153,8 @@ unsigned long TAddrClient::getValidTimeout() {
 ostream & operator<<(ostream & strum,TAddrClient &x) 
 {
     if (x.DUID->getLen()==1)
-	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << logger::endl;
-    strum << "  <AddrClient>" << std::endl;
+	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
+    strum << "  <AddrClient>" << endl;
     if (x.DUID->getLen())
 	strum << "    " << *x.DUID;
     
@@ -160,8 +164,8 @@ ostream & operator<<(ostream & strum,TAddrClient &x)
         strum << *ptr;
     }
 
-    strum << "  </AddrClient>" << logger::endl;
+    strum << "  </AddrClient>" << endl;
     if (x.DUID->getLen()==1)
-	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << logger::endl;
+	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
     return strum;
 }

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: ClntService.cpp,v 1.14 2004-12-02 00:51:06 thomson Exp $
+ * $Id: ClntService.cpp,v 1.15 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.13  2004/05/24 21:16:37  thomson
  * Various fixes.
  *
@@ -121,7 +124,6 @@ void TClntService::Run() {
     string logFile  = CLNTLOG_FILE;
     
     logger::setLogName("Client");
-    if (this->status != RUN)
 	logger::Initialize((char*)logFile.c_str());
     
     Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT)" << LogEnd;
@@ -138,25 +140,25 @@ void TClntService::Run() {
 
 void TClntService::Install() {
     if (this->IsInstalled()) {
-	clog << "Service already installed. Aborting." << endl;
+	cout << "Service already installed. Aborting." << endl;
 	return;
     }
     bool result = this->TWinService::Install();
     if (!result) {
-	clog << "Service installation failed." << endl;
+	cout << "Service installation failed." << endl;
     } else {
-	clog << "Installation successful." << endl;
+	cout << "Installation successful." << endl;
     }
 }
 
 void TClntService::Uninstall() {
     if (!this->IsInstalled()) {
-	clog << "Service not installed. Cannot uninstall" << endl;
+	cout << "Service not installed. Cannot uninstall" << endl;
 	return;
     }
     bool result = this->TWinService::Uninstall();
     if (!result) {
-	clog << "Service uninstallation failed." << endl;
+	cout << "Service uninstallation failed." << endl;
     }
 }
 

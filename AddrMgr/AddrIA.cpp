@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.8 2004-10-27 22:07:55 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.9 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.7  2004/09/07 22:02:32  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -406,7 +410,7 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
 	strum << "    <AddrIA unicast=\"";
     if (x.Unicast)
 	strum << x.SrvAddr->getPlain();
-    strum << "\"" << logger::endl;
+    strum << "\"" << endl;
     
     strum  << "            T1=\"" << x.T1 << "\""
 	   << " T2=\"" << x.T2 << "\""

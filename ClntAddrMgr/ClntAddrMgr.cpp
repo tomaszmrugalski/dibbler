@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.6 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.7 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.5  2004/09/08 21:22:45  thomson
  * Parser improvements, signed/unsigned issues addressed.
  *
@@ -72,15 +76,14 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
     Client->firstIA();
     unsigned long min = DHCPV6_INFINITY;
     unsigned long tmp;
-//    std::clog << logger::logDebug << "getTentativeTimeout(): ";
+
     while(ptrIA=Client->getIA())
     {
 	tmp = ptrIA->getTentativeTimeout();
-//	std::clog << " IA(IAID=" << ptrIA->getIAID() << "),timeout=" << tmp;
 	if (min > tmp)
 	    min = tmp;
     }
-//    std::clog << logger::endl;
+
     return min;
 }
 

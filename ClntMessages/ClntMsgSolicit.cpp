@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.11 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.12 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.10  2004/10/02 13:11:24  thomson
  * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
  * Unicast communication now can be enable on client side (disabled by default).
@@ -250,8 +253,8 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TMsg> msg) {
     // are there any options (requested in REQUEST_OPTION) not yet configured?
     if ( ptrOptionReqOpt && (ptrOptionReqOpt->count()) )
     {
-	Log(Notice) << "All IA(s) were supplied, but not all requested options.";
-	clog<<"Sending Information Request" << logger::endl;
+	Log(Notice) << "All IA(s) were supplied, but not all requested options."
+	  << "Sending Information Request" << LogEnd;
 	ClntTransMgr->sendInfRequest(this->Options, this->Iface);
     }
 

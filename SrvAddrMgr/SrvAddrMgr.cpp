@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.7 2004-09-07 22:02:33 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.8 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.6  2004/06/21 23:08:48  thomson
  * Minor fixes.
  *
@@ -90,7 +93,7 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
     // address already exists
     if (ptrAddr) {
         Log(Warning) << "Address " << *ptrAddr 
-		     << " is already assigned to this IA." << logger::endl;
+		             << " is already assigned to this IA." << LogEnd;
         return false;
     }
 
@@ -299,7 +302,7 @@ void TSrvAddrMgr::doDuties()
                             {
                                 std::clog << *ptrClient->getDUID();
                             }
-                            std::clog << "\") has expired." << dec << logger::endl;
+                            Log(Cont) << "\") has expired." << dec << LogEnd;
                             ptrIA->delAddr(ptrAddr->get());
                             anyDeleted=true;
                         }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.27 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.28 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.26  2004/11/30 00:53:56  thomson
  * RapidCommit is now property of the interface, not the group.
  *
@@ -208,12 +211,11 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
     }
 
     if (llAddr) {
-	char buf[48];
-	inet_ntop6(llAddr,buf);
-	Log(Info) << "Socket created on ";
-	std::clog << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
-	this->ctrlIface = realIface->getID();
-	memcpy(this->ctrlAddr,buf,48);
+	    char buf[48];
+	    inet_ntop6(llAddr,buf);
+	    Log(Info) << "Socket bound to " << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
+	    this->ctrlIface = realIface->getID();
+	    memcpy(this->ctrlAddr,buf,48);
     } 
     return true;
 }
@@ -282,15 +284,14 @@ void TClntTransMgr::doDuties()
     while(msg=Transactions.get())
     {
         if ((!msg->getTimeout())&&(!msg->isDone())) {
-	    Log(Info) << "Processing msg (" << msg->getName() << ",transID=0x";
-	    std::clog.width(6); std::clog.fill('0');
-	    std::clog << hex << msg->getTransID() << dec << ",opts:";
+	    Log(Info) << "Processing msg (" << msg->getName() << ",transID=0x"
+	     << hex << msg->getTransID() << dec << ",opts:";
 	    SmartPtr<TOpt> ptrOpt;
 	    msg->firstOption();
 	    while (ptrOpt = msg->getOption()) {
-		std::clog << " " << ptrOpt->getOptType();
+		Log(Cont) << " " << ptrOpt->getOptType();
 	    }
-	    std::clog << ")" << LogEnd;
+	    Log(Cont) << ")" << LogEnd;
             msg->doDuties();
 	}
     }
@@ -777,16 +778,16 @@ void TClntTransMgr::checkDecline()
                 while ( ptrAddr= ptrIA->getAddr() ) {
                     if (ptrAddr->getTentative() == YES) {
                         // remove this address from interface
-                        std::clog << "(" << ptrAddr->get()->getPlain();
+                        Log(Cont) << "(" << ptrAddr->get()->getPlain();
                         result = ptrIface->delAddr(ptrAddr->get());
-                        std::clog << " Iface removal=" << result;
+                        Log(Cont) << " Iface removal=" << result;
 
                         // remove this address from addrDB
                         result = ptrIA->delAddr(ptrAddr->get());
-                        std::clog << " AddrDB removal=" << result << ")";
+                        Log(Cont) << " AddrDB removal=" << result << ")";
                     }
                 }
-		std::clog << LogEnd;
+		Log(Cont) << LogEnd;
 		
                 ptrIA->setTentative();
             }

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.16 2004-10-27 22:07:56 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.17 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.15  2004/09/08 21:22:45  thomson
  * Parser improvements, signed/unsigned issues addressed.
  *
@@ -196,26 +200,22 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     out << "    <class id=\"" << addrClass.ID << "\">" << std::endl;
     out << "      <!-- total addrs in class: " << addrClass.AddrsCount 
 	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
-    out << "      <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  
-	<< "\" />" << endl;
-    out << "      <T2 min=\"" << addrClass.T2Beg << "\" max=\"" << addrClass.T2End  
-	<< "\" />" << endl;
-    out << "      <pref min=\"" << addrClass.PrefBeg << "\" max=\""<< addrClass.PrefEnd  
-	<< "\" />" <<endl;
-    out << "      <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd
-	<< "\" />" << logger::endl;
-    out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << logger::endl;
+    out << "      <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  << "\" />" << endl;
+    out << "      <T2 min=\"" << addrClass.T2Beg << "\" max=\"" << addrClass.T2End  << "\" />" << endl;
+    out << "      <pref min=\"" << addrClass.PrefBeg << "\" max=\""<< addrClass.PrefEnd  << "\" />" <<endl;
+    out << "      <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd << "\" />" << endl;
+    out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << endl;
         
     SmartPtr<TStationRange> statRange;
-    out << "      <!-- address range -->" << logger::endl;
+    out << "      <!-- address range -->" << endl;
     out << *addrClass.Pool;
     
-    out << "      <!-- reject-clients ranges:" << addrClass.RejedClnt.count() << " -->" << logger::endl;
+    out << "      <!-- reject-clients ranges:" << addrClass.RejedClnt.count() << " -->" << endl;
     addrClass.RejedClnt.first();
     while(statRange=addrClass.RejedClnt.get())
 	out << *statRange;	
 	
-    out << "      <!-- accept-only ranges:" << addrClass.AcceptClnt.count() << " -->" << logger::endl;
+    out << "      <!-- accept-only ranges:" << addrClass.AcceptClnt.count() << " -->" << endl;
     addrClass.AcceptClnt.first();
     while(statRange=addrClass.AcceptClnt.get())
 	out << *statRange;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.14 2004-12-02 00:51:05 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.15 2004-12-03 20:51:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/12/02 00:51:05  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.13  2004/11/25 01:22:22  thomson
  * Comment tags converted from javadoc to doxygen format.
  *
@@ -143,7 +146,7 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
         break;
     case -3: // this error no longer could occur in Linux version
         Log(Error) << "Unable to create a network address structure (addr=" 
-		  << addr->getPlain() << ")" << logger::endl;
+		  << addr->getPlain() << ")" << LogEnd;
     case -4:
         Log(Error) << "Unable to bind socket (iface=" << iface << "/" << ifaceid 
 		   << ", addr=" << addr->getPlain() << ", port=" 
@@ -154,17 +157,17 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
 		   << ", addr=" << *this->Addr << ", port=" << this->Port << ")" << LogEnd;
         break;
     case -6:
-        Log(Error) << "Unable to join multicast group." << logger::endl;
+        Log(Error) << "Unable to join multicast group." << LogEnd;
 	break;
         break;
     case -7:
         Log(Error) << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" << LogEnd;
         break;
     case -8:
-        Log(Error) << "Unable to set up socket option IPV6_PKTINFO" << logger::endl;
+        Log(Error) << "Unable to set up socket option IPV6_PKTINFO" << LogEnd;
         break;
     case -9:
-        Log(Error) << "Unable to set up socket option SO_REUSEADDR" << logger::endl;
+        Log(Error) << "Unable to set up socket option SO_REUSEADDR" << LogEnd;
         break;
     default:
         break;
