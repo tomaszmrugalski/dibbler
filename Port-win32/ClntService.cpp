@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: ClntService.cpp,v 1.9 2004-03-28 19:50:19 thomson Exp $
+ * $Id: ClntService.cpp,v 1.10 2004-03-29 21:37:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/03/28 19:50:19  thomson
+ * Problem with failed startup solved.
+ *
  *                                                                           
  * Released under GNU GPL v2 licence                                
  *                                                                           
@@ -87,14 +90,15 @@ void TClntService::Run()
 	string addrfile = CLNTDB_FILE;
     string logFile  = CLNTLOG_FILE;
     logger::Initialize((char*)logFile.c_str());
-
-	TDHCPClient client(confile);
-	ptr = &client; // remember address
+	logger::setLogname("Client");
 
 	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << "(CLIENT)" << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT3 << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT4 << endl;
+
+	TDHCPClient client(confile);
+	ptr = &client; // remember address
 
 	if (!client.isDone()) 
         client.run();

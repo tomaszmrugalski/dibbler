@@ -2,8 +2,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-//#define DIBBLER_VERSION "CVS $Date: 2004-02-28 20:08:16 $"
-#define DIBBLER_VERSION "0.1.0"
+//#define DIBBLER_VERSION "CVS $Date: 2004-03-29 21:37:07 $"
+#define DIBBLER_VERSION "0.1.1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| by Tomasz Mrugalski <thomson@klub.com.pl> engine,Linux port,doc"
