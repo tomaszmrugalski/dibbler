@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.24 2004-11-01 23:31:25 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.25 2004-11-05 09:01:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.23  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -234,6 +237,7 @@ bool TClntTransMgr::openLoopbackSocket() {
 
 #ifndef WIN32
     SmartPtr<TIfaceIface> loopback;
+    IfaceMgr->firstIface();
     while (ptrIface=IfaceMgr->getIface()) {
         if (!ptrIface->flagLoopback()) {
             continue;
