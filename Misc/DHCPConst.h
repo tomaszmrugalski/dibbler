@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.14 2004-11-30 00:43:24 thomson Exp $
+ * $Id: DHCPConst.h,v 1.15 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/11/30 00:43:24  thomson
+ * SIP option value mismatch fixed (bug #68)
+ *
  * Revision 1.13  2004/11/29 17:42:33  thomson
  * Update option values to RFC3898
  *
@@ -66,8 +69,8 @@
 #define DECLINE_MSG    9
 #define RECONFIGURE_MSG 10
 #define INFORMATION_REQUEST_MSG 11
-#define RELAY_FORW     12
-#define RELAY_REPL     13
+#define RELAY_FORW_MSG 12
+#define RELAY_REPL_MSG 13
 #define CONTROL_MSG    255
 
 // timers, timeouts

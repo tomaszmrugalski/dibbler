@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.5 2004-12-07 00:45:41 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.6 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.4  2004/12/01 20:55:17  thomson
  * Obsolete definitions removed.
  *
@@ -23,6 +26,7 @@
  */
 
 class TClntIfaceMgr;
+class TClntMsg;
 #ifndef CLNTIFACEMGR_H
 #define CLNTIFACEMGR_H
 
@@ -33,7 +37,7 @@ class TClntIfaceMgr;
 #include "ClntTransMgr.h"
 #include "ClntIfaceIface.h"
 #include "IPv6Addr.h"
-#include "Msg.h"
+#include "ClntMsg.h"
 
 class TClntIfaceMgr : public TIfaceMgr
 {
@@ -47,7 +51,7 @@ class TClntIfaceMgr : public TIfaceMgr
     
     bool sendMulticast(int iface, char *msg, int msgsize);
     
-    SmartPtr<TMsg> select(unsigned int timeout);
+    SmartPtr<TClntMsg> select(unsigned int timeout);
 
     void setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
 		  SmartPtr<TClntTransMgr> clntTransMgr,

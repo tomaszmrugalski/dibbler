@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgConfirm.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgConfirm.cpp,v 1.3 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 
@@ -36,21 +39,14 @@ TSrvMsgConfirm::TSrvMsgConfirm(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	pkt=NULL;
 }
 
-void TSrvMsgConfirm::answer(SmartPtr<TMsg> Rep)
-{
+void TSrvMsgConfirm::doDuties() {
 }
 
-void TSrvMsgConfirm::doDuties()
-{
-}
-
-unsigned long TSrvMsgConfirm::getTimeout()
-{
+unsigned long TSrvMsgConfirm::getTimeout() {
 	return 0;
 }
 
-bool TSrvMsgConfirm::check()
-{
+bool TSrvMsgConfirm::check() {
     //Servers MUST discard any received Confirm messages that do not
     //include a Client Identifier option or that do include a Server
     //Identifier option. 
@@ -61,8 +57,7 @@ bool TSrvMsgConfirm::check()
     return true;
 }
 
-TSrvMsgConfirm::~TSrvMsgConfirm()
-{
+TSrvMsgConfirm::~TSrvMsgConfirm() {
 }
 
 string TSrvMsgConfirm::getName() {

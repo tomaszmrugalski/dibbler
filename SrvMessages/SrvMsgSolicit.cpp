@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgSolicit.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgSolicit.cpp,v 1.3 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 
@@ -34,14 +37,8 @@ TSrvMsgSolicit::TSrvMsgSolicit(SmartPtr<TSrvIfaceMgr>	ifaceMgr,
 {
 }
 
-void TSrvMsgSolicit::answer(SmartPtr<TMsg> msg)
-{
-	//FIXME
-}
-
-void TSrvMsgSolicit::doDuties()
-{
-	//FIXME
+void TSrvMsgSolicit::doDuties() {
+    // this function should not be called on the server side
 }
 
 string TSrvMsgSolicit::getName() {
@@ -67,33 +64,6 @@ bool TSrvMsgSolicit::check()
 unsigned long TSrvMsgSolicit::getTimeout()
 {
 	return 0;
-}
-
-void TSrvMsgSolicit::send()
-{
-	//FIXME:Here was division by zero & what if RT=0
-	//		it's not accrptable. (FIXED)
-	//	RT =(int) floor(0.5+2.0*RT+RT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
-
-	//FIXME:rand() is supposed to return number in range: (-0.1,0.1)
-	//FIXME:it's intresting even if it is above MRT, as it was set in prev instruction
-	//		it can be set again below this value, so in SOLICIT message ending condition
-	//		should be changed a little bit. By the way there is no SOLICIT ending condition
-	//		this transaction can end only after receiving an answer
-
-	//if (MRT != 0 && RT>MRT) 
-	//	RT = (int) floor(0.5+MRT + MRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
-	//RC++;
-	
-	TMsg::send();
-    
-/*	if (PeerAddr)
-		ClntIfaceMgr->sendUnicast(Iface,pkt,getSize(),PeerAddr);
-	else
-		ClntIfaceMgr->sendMulticast(Iface, pkt, getSize());
-
-	LastTimeStamp = now();*/
-	
 }
 
 TSrvMsgSolicit::~TSrvMsgSolicit()

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.11 2004-11-30 00:55:58 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.12 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/11/30 00:55:58  thomson
+ * Not improtant log message commented out.
+ *
  * Revision 1.10  2004/11/15 20:47:07  thomson
  * Minor printing bug fixed.
  *
@@ -178,7 +181,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 /*
  * analyse REPLY received for this REQUEST
  */
-void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
+void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
 {
     SmartPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) this->getOption(OPTION_SERVERID);

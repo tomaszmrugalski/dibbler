@@ -1,14 +1,13 @@
 
-$Id: TODO,v 1.15 2004-12-15 23:12:37 thomson Exp $
+$Id: TODO,v 1.16 2005-01-08 16:52:03 thomson Exp $
 
-Warning: This TODO may be outdated/out of sync.
-
-  Internal TODO
- ---------------
+  Internal/code TODO
+ --------------------
+- move answer(SmartPtr<TMsg> msg) should be moved from TMsg to TClntMsg
 - IfaceMgr.cpp:232 (remove #ifndef WIN32)
 
+
 - setting up a domain: echo homenetwork > /etc/dnsdomainname
-- IA_TA option support
 - Flex (gentoo: emerge /usr/portage/sys-devel/flex/flex-2.5.31-r1.ebuild)
 
 - check server's behavior: there isn't any addrs left, and srv receives SOLICIT.
@@ -33,3 +32,4 @@ Warning: This TODO may be outdated/out of sync.
    ipv6_add_addr
    ndisc.c ndisc_router_discovery
    
+

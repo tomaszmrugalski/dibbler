@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgDecline.h,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgDecline.h,v 1.3 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -35,7 +38,7 @@ class TClntMsgDecline : public TClntMsg
 		    char* buf, int bufSize);
     bool  check();
     
-    void  answer(SmartPtr<TMsg> Rep);
+    void  answer(SmartPtr<TClntMsg> Rep);
     void  doDuties();
     string getName();
     ~TClntMsgDecline();

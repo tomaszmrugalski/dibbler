@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.5 2004-12-08 01:08:51 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.6 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/12/08 01:08:51  thomson
+ * OptInMsg value corrected.
+ *
  * Revision 1.4  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -51,7 +54,7 @@ bool allowOptInMsg(int msg, int opt)
 
     // additional options
     if (msg == CONFIRM_MSG || msg == RELEASE_MSG || msg == DECLINE_MSG ||
-	msg == RECONFIGURE_MSG || msg == RELAY_FORW || msg == RELAY_REPL)
+	msg == RECONFIGURE_MSG || msg == RELAY_FORW_MSG || msg == RELAY_REPL_MSG)
 	return false;
     return true;
 }
@@ -87,9 +90,10 @@ bool allowOptInOpt(int msgType, int parent, int subopt) {
     if (subopt>20)
 	return true;
 
-    if ((msgType==RELAY_FORW)||(msgType==RELAY_REPL)) {
-	// FIXME: those messages are not supported
-	return true;
+    if ((msgType==RELAY_FORW_MSG)||(msgType==RELAY_REPL_MSG)) {
+	if ( (subopt==OPTION_INTERFACE_ID) || (subopt=OPTION_RELAY_MSG))
+	    return true;
+	return false;
     }
 
     switch (parent) {

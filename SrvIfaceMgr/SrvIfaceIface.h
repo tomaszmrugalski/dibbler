@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.2 2005-01-03 23:13:57 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.3 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/01/03 23:13:57  thomson
+ * Partial relay implementation.
+ *
  * Revision 1.1  2005/01/03 21:56:27  thomson
  * Initial version.
  *
@@ -19,8 +22,7 @@ class TSrvIfaceIface;
 #define SRVIFACEIFACE_H
 
 #include "Iface.h"
-
-#define MAX_RELAYS 32
+#include "DHCPConst.h"
 
 struct Relay {
     SmartPtr<TSrvIfaceIface> iface;
@@ -46,7 +48,7 @@ class TSrvIfaceIface: public TIfaceIface {
     SmartPtr<TSrvIfaceIface> UnderRelay;
     bool Relay;
 
-    TRelay Relays[MAX_RELAYS];
+    TRelay Relays[HOP_COUNT_LIMIT];
     int RelaysCnt;
 };
 

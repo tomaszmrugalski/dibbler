@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.15 2005-01-03 21:57:08 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.16 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/01/03 21:57:08  thomson
+ * Relay support added.
+ *
  * Revision 1.14  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -137,6 +140,11 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
 	this->RelayName        = opt->getRelayName();
 	this->RelayID          = opt->getRelayID();
 	this->RelayInterfaceID = opt->getRelayInterfaceID();
+    } else {
+	this->Relay = false;
+	this->RelayName = "";
+	this->RelayID = 0;
+	this->RelayInterfaceID = 0;
     }
 }
 

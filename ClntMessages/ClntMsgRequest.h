@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.h,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgRequest.h,v 1.3 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -41,7 +44,7 @@ class TClntMsgRequest : public TClntMsg
                  SmartPtr<TDUID> srvDUID,
 				 int iface);
 
-    void answer(SmartPtr<TMsg> msg);
+    void answer(SmartPtr<TClntMsg> msg);
     void doDuties();
     bool check();
     string getName();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.15 2004-12-27 20:48:22 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.16 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/12/27 20:48:22  thomson
+ * Problem with absent link local addresses fixed (bugs #90, #91)
+ *
  * Revision 1.14  2004/12/15 23:12:37  thomson
  * Minor improvements.
  *
@@ -103,7 +106,7 @@ bool TClntIfaceMgr::sendMulticast(int iface, char * msg, int msgsize)
 }
 
 
-SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
+SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 {
     int bufsize=4096;
     static char buf[4096];
@@ -122,10 +125,10 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
 	    } else {
 		Log(Warning) << "Control message received." << LogEnd;
 	    }
-            return SmartPtr<TMsg>(); // NULL
+            return 0; // NULL
         }
         msgtype = buf[0];
-        SmartPtr<TMsg> ptr;
+        SmartPtr<TClntMsg> ptr;
         SmartPtr<TIfaceIface> ptrIface;
         ptrIface = this->getIfaceBySocket(sockid);
         ifaceid = ptrIface->getID();
@@ -147,7 +150,7 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
         case DECLINE_MSG:
         case INFORMATION_REQUEST_MSG:
 	    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return SmartPtr<TMsg>(); // NULL
+            return 0; // NULL
         case REPLY_MSG:
             ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
                 ifaceid, peer, buf, bufsize);
@@ -155,15 +158,15 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
 
         case RECONFIGURE_MSG:
             Log(Warning) << "Reconfigure Message is currently not supported." << LogEnd;
-            return SmartPtr<TMsg>();
-        case RELAY_FORW:
-        case RELAY_REPL:
+            return 0; // NULL
+        case RELAY_FORW_MSG: // those two msgs should not be visible for client
+        case RELAY_REPL_MSG:
         default:
-            Log(Warning) << "Message type " << msgtype << " not supported." << LogEnd;
-            return SmartPtr<TMsg>();
+            Log(Warning) << "Message type " << msgtype << " must not be recevied by client. Check your relay/server configuration." << LogEnd;
+            return 0;
         }
     } else {
-        return SmartPtr<TMsg>();
+        return 0;
     }
 }
 

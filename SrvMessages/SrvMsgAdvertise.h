@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgAdvertise.h,v 1.3 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvMsgAdvertise.h,v 1.4 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.2  2004/06/20 17:25:07  thomson
  * getName() method implemented, clean up
  *
@@ -45,7 +48,6 @@ class TSrvMsgAdvertise : public TSrvMsg
 
     bool check();
     bool answer(SmartPtr<TSrvMsgSolicit> solicit);
-    void answer(SmartPtr<TMsg> Rep);
     void doDuties();
     unsigned long getTimeout();
     string getName();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.h,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgConfirm.h,v 1.3 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -32,7 +35,7 @@ public:
 	unsigned int iface, 
     TContainer<SmartPtr<TAddrIA> > iaLst);
     bool check();
-    void answer(SmartPtr<TMsg> Rep);
+    void answer(SmartPtr<TClntMsg> Rep);
     void doDuties();
     unsigned long getTimeout();
     string getName();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgRebind.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgRebind.cpp,v 1.3 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 #include "SmartPtr.h"
@@ -35,10 +38,6 @@ TSrvMsgRebind::TSrvMsgRebind(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 			     char* buf,
 			     int bufSize)
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize)
-{
-}
-
-void TSrvMsgRebind::answer(SmartPtr<TMsg> Rep)
 {
 }
 

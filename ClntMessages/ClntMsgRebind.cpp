@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.5 2004-12-08 00:15:49 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.6 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/12/08 00:15:49  thomson
+ * Issues with denied RENEW (bug #53), code clean up
+ *
  * Revision 1.4  2004/12/02 00:51:04  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -76,7 +79,7 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->IsDone = false;    
 }
 
-void TClntMsgRebind::answer(SmartPtr<TMsg> Reply)
+void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
 {
         SmartPtr<TOpt> opt;
     

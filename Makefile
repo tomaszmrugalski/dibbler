@@ -19,9 +19,9 @@ parser:
 
 client: $(CLIENTBIN)
 
-$(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
+$(CLIENTBIN): includes commonlibs clntlibs misc/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
+	$(CPP) $(OPTS) $(CLNTLINKOPTS) -o $@ misc/DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
@@ -42,9 +42,9 @@ $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
 
 server: $(SERVERBIN)
 
-$(SERVERBIN): includes commonlibs srvlibs DHCPServer.o $(SERVER)
+$(SERVERBIN): includes commonlibs srvlibs misc/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
+	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ misc/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(LOWLEVEL)    \

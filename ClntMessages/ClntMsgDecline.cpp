@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgDecline.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgDecline.cpp,v 1.3 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -63,7 +66,7 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	pkt=NULL;
 }
 
-void TClntMsgDecline::answer(SmartPtr<TMsg> rep)
+void TClntMsgDecline::answer(SmartPtr<TClntMsg> rep)
 {
     //FIXME: Is UseMulticast option included?
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.5 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvMsg.h,v 1.6 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.4  2004/06/20 17:25:07  thomson
  * getName() method implemented, clean up
  *
@@ -28,6 +31,7 @@ class TSrvMsg;
 #include "SrvAddrMgr.h"
 #include "IPv6Addr.h"
 #include "SrvOptOptionRequest.h"
+#include "SrvOptInterfaceID.h"
 #include "SmartPtr.h"
 
 class TSrvMsg : public TMsg
@@ -56,15 +60,21 @@ public:
 		SmartPtr<TSrvCfgMgr> CfgMgr,
 		SmartPtr<TSrvAddrMgr> AddrMgr);
 	
-	void answer(SmartPtr<TMsg> answer);
-
     SmartPtr<TSrvTransMgr>  SrvTransMgr;
     SmartPtr<TSrvAddrMgr>   SrvAddrMgr;
     SmartPtr<TSrvCfgMgr>    SrvCfgMgr;
     SmartPtr<TSrvIfaceMgr>  SrvIfaceMgr;
     
+    void copyRelayInfo(SmartPtr<TSrvMsg> q);
     bool appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
-        int iface, SmartPtr<TSrvOptOptionRequest> reqOpt);
+				int iface, SmartPtr<TSrvOptOptionRequest> reqOpt);
+
+    void addRelayInfo(SmartPtr<TIPv6Addr> linkAddr,
+		      SmartPtr<TIPv6Addr> peerAddr,
+		      int hop,
+		      SmartPtr<TSrvOptInterfaceID> interfaceID);
+
+    int getRelayCount();
 
     // maximum retransmission timeout
     unsigned long MRT;
@@ -78,6 +88,12 @@ protected:
 		    SmartPtr<TSrvTransMgr> TransMgr, 
 		    SmartPtr<TSrvCfgMgr> CfgMgr,
 		    SmartPtr<TSrvAddrMgr> AddrMgr);
+
+    SmartPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
+    SmartPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
+    SmartPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
+    int HopTbl[HOP_COUNT_LIMIT];
+    int Relays;
 };
 
 #endif

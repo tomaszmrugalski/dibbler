@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.3 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.4 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -58,7 +61,7 @@ TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr,
     pkt = new char[getSize()];
 }           
 
-void TClntMsgConfirm::answer(SmartPtr<TMsg> reply)
+void TClntMsgConfirm::answer(SmartPtr<TClntMsg> reply)
 {
     SmartPtr <TClntOptStatusCode> ptrOptCode;
     ptrOptCode = (Ptr*) reply->getOption(OPTION_STATUS_CODE);

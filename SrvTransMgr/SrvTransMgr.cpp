@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.22 2005-01-03 23:13:38 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.23 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2005/01/03 23:13:38  thomson
+ * Relay initialization implemented.
+ *
  * Revision 1.21  2004/12/07 00:45:10  thomson
  * Manager creation unified and cleaned up.
  *
@@ -82,9 +85,6 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
  * opens proper (multicast or unicast) socket on interface 
  */
 bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
-    char srvAddr[16];
-    inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
-    SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
     
     SmartPtr<TSrvIfaceIface> iface = (Ptr*)IfaceMgr->getIfaceByID(confIface->getID());
     SmartPtr<TIPv6Addr> unicast = confIface->getUnicast();
@@ -107,13 +107,31 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
 	    return false;
 	}
     } 
-    
-    /* multicast */
-    Log(Notice) << "Creating multicast (ff02::1:2) socket on " << confIface->getName() 
-		<< "/" << confIface->getID() << " interface." << LogEnd;
-    if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true, false)) {
-	Log(Crit) << "Proper socket creation failed." << LogEnd;
-	return false;
+
+    if (!confIface->isRelay()) {
+	/* multicast */
+	char srvAddr[16];
+	inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
+	SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
+
+	Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName() 
+		    << "/" << confIface->getID() << " interface." << LogEnd;
+	if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true, false)) {
+	    Log(Crit) << "Proper socket creation failed." << LogEnd;
+	    return false;
+	}
+    } else {
+	char srvAddr[16];
+	inet_pton6(ALL_DHCP_SERVERS,srvAddr);
+	SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
+	
+	Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName() 
+		    << "/" << confIface->getID() << " (" << iface->getName() << "/" 
+		    << iface->getID() << ") interface." << LogEnd;
+	if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true, false)) {
+	    Log(Crit) << "Proper socket creation failed." << LogEnd;
+	    return false;
+	}
     }
     return true;
 }
@@ -133,7 +151,7 @@ long TSrvTransMgr::getTimeout()
     return min<addrTimeout?min:addrTimeout;
 }
 
-void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
+void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 {	
     if (!msg->check())
     {
@@ -141,16 +159,16 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
         return;
     }
     // Do we have ready answer for this?
-    SmartPtr<TMsg> answ;
+    SmartPtr<TSrvMsg> answ;
     Log(Debug) << MsgLst.count() << " answers buffered.";
 
     MsgLst.first();
-    while(answ=MsgLst.get()) 
+    while(answ=(Ptr*)MsgLst.get()) 
     {
         if (answ->getTransID()==msg->getTransID()) {
             Log(Cont) << " Old reply with transID=" << hex << msg->getTransID() 
 		      << dec << " found. Sending old reply." << LogEnd;
-            answ->send();
+	    answ->send();
             return;
         }
     }
@@ -255,8 +273,8 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
 		     << LogEnd;
 	break;
     }
-    case RELAY_FORW:
-    case RELAY_REPL:
+    case RELAY_FORW_MSG: // They should be decapsulated earlier
+    case RELAY_REPL_MSG:
     default:
     {
 	Log(Warning)<< "Message type " << msg->getType() 

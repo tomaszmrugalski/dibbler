@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.7 2004-11-30 00:56:31 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.8 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/11/30 00:56:31  thomson
+ * Inf-Request in now not retransmited indefinetly.
+ *
  * Revision 1.6  2004/11/29 22:47:08  thomson
  * Minor fix in memory management.
  *
@@ -137,7 +140,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 }
 
 
-void TClntMsgInfRequest::answer(SmartPtr<TMsg> msg)
+void TClntMsgInfRequest::answer(SmartPtr<TClntMsg> msg)
 {
     //server DUID from which there is answer
     SmartPtr<TClntOptServerIdentifier> ptrDUID;

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.18 2004-12-07 22:56:20 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.19 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/12/07 22:56:20  thomson
+ * Typo corrected.
+ *
  * Revision 1.17  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -124,7 +127,7 @@ void TDHCPClient::run()
 	    timeout = 1;
 	
         Log(Notice) << "Sleeping for " << timeout << " second(s)." << LogEnd;
-        SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
+        SmartPtr<TClntMsg> msg=IfaceMgr->select(timeout);
 	
         if (msg) {
 	    int iface = msg->getIface();

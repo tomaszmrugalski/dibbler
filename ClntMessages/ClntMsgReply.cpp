@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgReply.cpp,v 1.3 2004-07-05 23:04:08 thomson Exp $
+ * $Id: ClntMsgReply.cpp,v 1.4 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/07/05 23:04:08  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -38,12 +41,13 @@ TClntMsgReply::TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr,
     
 }
 
-void TClntMsgReply::answer(SmartPtr<TMsg> Rep)
-{
+void TClntMsgReply::answer(SmartPtr<TClntMsg> Rep) {
+    // this should never happen. After receiving REPLY for e.g. REQUEST,
+    // request->answer(reply) is called. Client nevers sends reply msg, so
+    // this method will never be called.
 }
 
-void TClntMsgReply::doDuties()
-{
+void TClntMsgReply::doDuties() {
 }
 
 

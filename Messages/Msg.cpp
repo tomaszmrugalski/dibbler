@@ -78,21 +78,24 @@ bool TMsg::check()
 	return false;
 }
 
-void TMsg::send()
+/* prepares binary version of this message, returns number of bytes used
+**/
+int TMsg::storeSelf(char * buffer)
 {
-    char *tmppkt = this->pkt;
+    char *start = buffer;
 
-    *(tmppkt++) = (char)MsgType;
-    *(tmppkt++) = * ( ( (char*)&TransID ) + 2);
-    *(tmppkt++) = * ( ( (char*)&TransID ) + 1);
-    *(tmppkt++) = * ( ( (char*)&TransID ) + 0);
+    *(buffer++) = (char)MsgType;
+    *(buffer++) = * ( ( (char*)&TransID ) + 2);
+    *(buffer++) = * ( ( (char*)&TransID ) + 1);
+    *(buffer++) = * ( ( (char*)&TransID ) + 0);
     Options.first();
     SmartPtr<TOpt> Option;
     while( Option = Options.get() )
     {
-        Option->storeSelf(tmppkt);
-        tmppkt += Option->getSize();
+        Option->storeSelf(buffer);
+        buffer += Option->getSize();
     }
+    return buffer-start;
 }
 
 SmartPtr<TOpt> TMsg::getOption(int type) {

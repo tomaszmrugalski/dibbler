@@ -14,6 +14,7 @@
 #include "SrvMsgRelease.h"
 #include "SrvMsgDecline.h"
 #include "SrvMsgInfRequest.h"
+#include "SrvOptInterfaceID.h"
 #include "IPv6Addr.h"
 #include "AddrClient.h"
 #include "SrvIfaceIface.h"
@@ -104,13 +105,13 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     ptrIface->firstSocket();
     ptrSocket = ptrIface->getSocket();
     if (!ptrSocket) {
-	Log(Error) << "Send failed: interface \"" << ptrIface->getName() 
-		   << "\",id=" << iface << " has no open sockets." << LogEnd;
+	Log(Error) << "Send failed: interface " << ptrIface->getName() 
+		   << "/" << iface << " has no open sockets." << LogEnd;
 	return false;
     }
 
     // send it!
-    return ptrSocket->send(msg,size,addr,DHCPCLIENT_PORT);
+    return ptrSocket->send(msg,size,addr,DHCPSERVER_PORT);
 }
 
 /**
@@ -119,7 +120,7 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
  * @param timeout - how long can we wait for packets?
  * returns SmartPtr to message object
  */
-SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
+SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     
     // static buffer speeds things up
     static char buf[4096];
@@ -145,7 +146,6 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	// get interface
 	ptrIface = (Ptr*)this->getIfaceBySocket(sockid);
 
-	int ifaceid = ptrIface->getID();
 	Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/" 
 		   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "." 
 		   << ")." << LogEnd;
@@ -153,44 +153,21 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	// create specific message object
 	switch (msgtype) {
 	case SOLICIT_MSG:
-	    return new TSrvMsgSolicit(That, this->SrvTransMgr, 
-				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, peer, buf, bufsize);
 	case REQUEST_MSG:
-            return new TSrvMsgRequest(That, this->SrvTransMgr, 
-				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, peer, buf, bufsize);
 	case CONFIRM_MSG:
-	    return new TSrvMsgConfirm(That, this->SrvTransMgr, 
-				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid,  peer, buf, bufsize);
 	case RENEW_MSG:
-	    return new TSrvMsgRenew  (That, this->SrvTransMgr, 
-				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid,  peer, buf, bufsize);
 	case REBIND_MSG:
-	    return new TSrvMsgRebind (That, this->SrvTransMgr, 
-				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, peer, buf, bufsize);
 	case RELEASE_MSG:
-	    return new TSrvMsgRelease(That, this->SrvTransMgr, 
-				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, peer, buf, bufsize);
 	case DECLINE_MSG:
-	    return new TSrvMsgDecline(That, this->SrvTransMgr, 
-				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, peer, buf, bufsize);
 	case INFORMATION_REQUEST_MSG:
-	    return new TSrvMsgInfRequest(That, this->SrvTransMgr, 
-					 this->SrvCfgMgr, this->SrvAddrMgr,
-					 ifaceid, peer, buf, bufsize);
-	case RELAY_FORW: {
+	    return this->decodeMsg(ptrIface, peer, buf, bufsize);
+	case RELAY_FORW_MSG: {
 	    return this->decodeRelayForw(ptrIface, peer, buf, bufsize);
 	}
 	case ADVERTISE_MSG:
 	case REPLY_MSG:
 	case RECONFIGURE_MSG:
-	case RELAY_REPL:
+	case RELAY_REPL_MSG:
 	    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
 	    return 0; //NULL;;
 	default:
@@ -231,7 +208,7 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int in
     if (!under->appendRelay(relay, interfaceID)) {
 	Log(Crit) << "Unable to setup " << name << "/" << ifindex 
 		  << " relay: underlaying interface " << under->getName() << "/" << underIfindex 
-		  << " already has " << MAX_RELAYS << " relays defined." << LogEnd;
+		  << " already has " << HOP_COUNT_LIMIT << " relays defined." << LogEnd;
 	return false;
     }
 
@@ -241,27 +218,134 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int in
     return true;
 }
 
- SmartPtr<TMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIface, 
-					      SmartPtr<TIPv6Addr> peer, 
-					      char * buf, int bufsize) {
-     /* decode RELAY_FORW message */
-     if (bufsize < 34) {
-	 Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
-	 return 0;
-     }
+SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIface, 
+						SmartPtr<TIPv6Addr> peer, 
+						char * buf, int bufsize) {
+    SmartPtr<TSrvIfaceIface> relayIface;
 
-     char type = buf[0];
-     int hopCount = buf[1];
-     SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
-     SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
+    SmartPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
+    SmartPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
+    SmartPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
+    int hopTbl[HOP_COUNT_LIMIT];
+    int relays=0;
+    
+    while (bufsize>0 && buf[0]==RELAY_FORW_MSG) {
+	/* decode RELAY_FORW message */
+	if (bufsize < 34) {
+	    Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
+	    return 0;
+	}
 
-     Log(Debug) << "### linkAddr="<< linkAddr->getPlain() << " peerAddr=" << peerAddr->getPlain()
-		<< " peer=" << peer->getPlain() << LogEnd;
+	char type = buf[0];
+	if (type!=RELAY_FORW_MSG)
+	    return 0;
+	int hopCount = buf[1];
+	bool relay;
+	SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
+	SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
+	buf+=34;
+	bufsize-=34;
 
-     Log(Debug) << "### RELAY_FORW was received on the " << ptrIface->getName() << " interface." << LogEnd;
-     return 0;
+	SmartPtr<TSrvOptInterfaceID> ptrIfaceID;
+	relay = false;
+	// options: only INTERFACEID and RELAY_MSG are allowed
+	while (!relay && bufsize>=4) {
+	    short code = ntohs( * ((short*) (buf)));
+	    short len  = ntohs(*((short*)(buf+2)));
+	    buf     += 4;
+	    bufsize -= 4;
+	    switch (code) {
+	    case OPTION_INTERFACE_ID:
+		if (bufsize<8) {
+		    Log(Warning) << "Truncated INTERFACE_ID option in RELAY_FORW message. Message dropped." << LogEnd;
+		    return 0;
+		}
+		ptrIfaceID = new TSrvOptInterfaceID(buf, bufsize, 0);
+		break;
+	    case OPTION_RELAY_MSG:
+		relay = true;
+		break;
+	    default:
+		Log(Warning) << "Invalid option " << code << " in RELAY_FORW message. Message dropped.\n" << LogEnd;
+	    }
+	    if (!relay) { // check next option
+		buf     += len;
+		bufsize -= len;
+	    }
+	}
+
+	linkAddrTbl[relays] = linkAddr;
+	peerAddrTbl[relays] = peerAddr;
+	interfaceIDTbl[relays] = ptrIfaceID;
+	hopTbl[relays] = hopCount;
+	relays++;
+
+	Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
+	if (ptrIfaceID)
+	    Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue();
+	Log(Cont) << LogEnd;
+
+	relayIface = ptrIface->getRelayByInterfaceID(ptrIfaceID->getValue());
+	if (!relayIface) {
+	    Log(Warning) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getValue() << " defined on the " 
+			 << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+	    return 0;
+	}
+	ptrIface = relayIface;
+
+    }
+
+    // now switch to relay interface
+
+    SmartPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, buf, bufsize);
+    msg->addRelayInfo(linkAddrTbl[0], peerAddrTbl[0], hopTbl[0], interfaceIDTbl[0]);
+    return (Ptr*)msg;
  }
 
+SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SmartPtr<TSrvIfaceIface> ptrIface, 
+					     SmartPtr<TIPv6Addr> peer, 
+					     char * buf, int bufsize) {
+    int ifaceid = ptrIface->getID();
+    if (bufsize<4) 
+	return 0;
+    switch (buf[0]) {
+    case SOLICIT_MSG:
+	return new TSrvMsgSolicit(That, this->SrvTransMgr, 
+				  this->SrvCfgMgr, this->SrvAddrMgr,
+				  ifaceid, peer, buf, bufsize);
+    case REQUEST_MSG:
+	return new TSrvMsgRequest(That, this->SrvTransMgr, 
+				  this->SrvCfgMgr, this->SrvAddrMgr,
+				      ifaceid, peer, buf, bufsize);
+    case CONFIRM_MSG:
+	return new TSrvMsgConfirm(That, this->SrvTransMgr, 
+				  this->SrvCfgMgr, this->SrvAddrMgr,
+				  ifaceid,  peer, buf, bufsize);
+    case RENEW_MSG:
+	return new TSrvMsgRenew  (That, this->SrvTransMgr, 
+				  this->SrvCfgMgr, this->SrvAddrMgr,
+				  ifaceid,  peer, buf, bufsize);
+    case REBIND_MSG:
+	return new TSrvMsgRebind (That, this->SrvTransMgr, 
+				  this->SrvCfgMgr, this->SrvAddrMgr,
+				  ifaceid, peer, buf, bufsize);
+    case RELEASE_MSG:
+	return new TSrvMsgRelease(That, this->SrvTransMgr, 
+				  this->SrvCfgMgr, this->SrvAddrMgr,
+				  ifaceid, peer, buf, bufsize);
+    case DECLINE_MSG:
+	return new TSrvMsgDecline(That, this->SrvTransMgr, 
+				  this->SrvCfgMgr, this->SrvAddrMgr,
+				  ifaceid, peer, buf, bufsize);
+    case INFORMATION_REQUEST_MSG:
+	return new TSrvMsgInfRequest(That, this->SrvTransMgr, 
+				     this->SrvCfgMgr, this->SrvAddrMgr,
+				     ifaceid, peer, buf, bufsize);
+    default:
+	Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
+	return 0; //NULL;;
+    }
+}
 
 /*
  * remember SmartPtrs to all managers (including this one)

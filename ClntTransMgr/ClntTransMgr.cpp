@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.32 2004-12-08 00:18:35 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.33 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/12/08 00:18:35  thomson
+ * Log message clarified.
+ *
  * Revision 1.31  2004/12/07 22:57:51  thomson
  * removeExpired() method rewritten.
  *
@@ -445,7 +448,7 @@ void TClntTransMgr::shutdown()
     this->IfaceMgr->removeAllOpts();
 }
 
-void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
+void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
 {
     // is message valid?
     if (!msgAnswer->check())
@@ -453,9 +456,9 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
     
     // find which message this is answer for
     bool found = false;
-    SmartPtr<TMsg> msgQuestion;
+    SmartPtr<TClntMsg> msgQuestion;
     Transactions.first();
-    while(msgQuestion=Transactions.get()) {
+    while(msgQuestion=(Ptr*)Transactions.get()) {
         if (msgQuestion->getTransID()==msgAnswer->getTransID()) {
             found =true;
             msgQuestion->answer(msgAnswer);

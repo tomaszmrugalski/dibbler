@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.h,v 1.3 2004-09-07 22:02:33 thomson Exp $
+ * $Id: ClntMsgSolicit.h,v 1.4 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -34,11 +37,11 @@ public:
 		    SmartPtr<TIPv6Addr> addr,
 		    TContainer< SmartPtr<TClntCfgIA> > IAs, bool rapid=false);
     
-    void answer(SmartPtr<TMsg> msg);
-    void replyReceived(SmartPtr<TMsg> msg);
+    void answer(SmartPtr<TClntMsg> msg);
+    void replyReceived(SmartPtr<TClntMsg> msg);
 
     void doDuties();
-    bool shallRejectAnswer(SmartPtr<TMsg> msg);
+    bool shallRejectAnswer(SmartPtr<TClntMsg> msg);
     void sortAnswers();
     string getName();
     bool check();

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.31 2005-01-03 21:57:08 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.32 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2005/01/03 21:57:08  thomson
+ * Relay support added.
+ *
  * Revision 1.30  2004/12/27 20:48:22  thomson
  * Problem with absent link local addresses fixed (bugs #90, #91)
  *
@@ -476,7 +479,6 @@ bool TSrvCfgMgr::stateless() {
 bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
     SmartPtr<TIfaceIface> iface;
     string name = cfgIface->getRelayName();
-    int ifindex = cfgIface->getRelayID();
 
     iface = IfaceMgr->getIfaceByName(name);
     if (!iface) {

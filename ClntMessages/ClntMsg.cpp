@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.9 2004-12-08 01:08:23 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.10 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/12/08 01:08:23  thomson
+ * Warning messages now print proper message names.
+ *
  * Revision 1.8  2004/11/29 22:46:45  thomson
  * Lifetime option is only requested if specified in conf file (bug #75)
  *
@@ -294,8 +297,8 @@ void TClntMsg::send()
     if (MRD) MRD-=RT;
     
     RC++;
-    
-    TMsg::send();
+
+    this->storeSelf(this->pkt);
 
     SmartPtr<TIfaceIface> ptrIface = ClntIfaceMgr->getIfaceByID(Iface);
     if (PeerAddr) {

@@ -26,6 +26,9 @@ public:
     unsigned long getTimeout();
     void send();
 
+    //answer for a specific message
+    virtual void answer(SmartPtr<TClntMsg> Rep) = 0;
+
     void appendRequestedOptions();
     
     SmartPtr<TClntTransMgr>  getClntTransMgr();
@@ -35,6 +38,7 @@ public:
 
     virtual string getName() = 0;
 
+ protected:
     long IRT;           // Initial Retransmission Time
     long MRT;           // Maximum Retransmission Time
     long MRC;           // Maximum Retransmission Count
@@ -43,8 +47,6 @@ public:
     int RT;             // Retransmission timeout (in seconds)
     int FirstTimeStamp; // timestamp of the first transmission
     int LastTimeStamp;  // timestamp of the last transmission
-
- protected:
     SmartPtr<TClntTransMgr>  ClntTransMgr;
     SmartPtr<TClntAddrMgr>   ClntAddrMgr;
     SmartPtr<TClntCfgMgr>    ClntCfgMgr;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgInfRequest.h,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgInfRequest.h,v 1.3 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 
@@ -37,8 +40,6 @@ class TSrvMsgInfRequest : public TSrvMsg
 		      SmartPtr<TSrvAddrMgr>  AddrMgr, 
 		      int iface, SmartPtr<TIPv6Addr> addr, 
 		      char* buf, int bufSize);
-
-    void answer(SmartPtr<TMsg> msg);
     void doDuties();
     bool check();
     unsigned long getTimeout();
@@ -46,7 +47,7 @@ class TSrvMsgInfRequest : public TSrvMsg
     ~TSrvMsgInfRequest();
   private:
     SmartPtr<TSrvAddrMgr> AddrMgr;
-    TContainer< SmartPtr<TMsg> > BackupSrvLst;
+    List(TMsg) BackupSrvLst;
 };
 
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.14 2004-12-04 23:43:26 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.15 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/12/04 23:43:26  thomson
+ * Server no longer crashes after receiving the same INF-REQUEST (bug #84)
+ *
  * Revision 1.13  2004/12/02 00:51:06  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -50,7 +53,7 @@
 #include <cmath>
 
 
-// used ad CONFIRM reply
+// used as CONFIRM reply
 TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
 			   SmartPtr<TSrvTransMgr> transMgr, 
 			   SmartPtr<TSrvCfgMgr> CfgMgr, 
@@ -60,6 +63,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     confirm->getIface(),confirm->getAddr(), REPLY_MSG, 
 	     confirm->getTransID())
 {
+    this->copyRelayInfo((Ptr*)confirm);
     SmartPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID( confirm->getIface() );
     if (!ptrIface) {
 	Log(Crit) << "Msg received through not configured interface. "
@@ -137,6 +141,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
 	     decline->getIface(),decline->getAddr(), REPLY_MSG, decline->getTransID())
 {
+    this->copyRelayInfo((Ptr*)decline);
+
     SmartPtr<TOpt> ptrOpt;
     // include our DUID
     ptrOpt = decline->getOption(OPTION_SERVERID);
@@ -240,6 +246,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
 	     rebind->getIface(),rebind->getAddr(), REPLY_MSG, rebind->getTransID())
 {
+    this->copyRelayInfo((Ptr*)rebind);
+
     unsigned long addrCount=0;
     SmartPtr<TOpt> ptrOpt;
 
@@ -303,6 +311,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     release->getIface(),release->getAddr(), REPLY_MSG, 
 	     release->getTransID())
 {
+    this->copyRelayInfo((Ptr*)release);
+
      //FIXME:When the server receives a Release message via unicast from a client
     //to which the server has not sent a unicast option, the server
     //discards the Release message and responds with a Reply message
@@ -404,6 +414,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
 	     renew->getIface(),renew->getAddr(), REPLY_MSG, renew->getTransID())
 {
+    this->copyRelayInfo((Ptr*)renew);
     // uncomment this to test REBIND
     //IsDone = true;
     //return;
@@ -462,6 +473,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
 	     request->getIface(),request->getAddr(), REPLY_MSG, request->getTransID())
 {
+    this->copyRelayInfo((Ptr*)request);
+
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
     SmartPtr<TDUID>      clntDuid;
@@ -536,6 +549,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,solicit->getIface(),
 	     solicit->getAddr(),REPLY_MSG,solicit->getTransID())
 {
+    this->copyRelayInfo((Ptr*)solicit);
+
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
     SmartPtr<TDUID>      clntDuid;
@@ -623,6 +638,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,question->getIface(),
 	     question->getAddr(),REPLY_MSG,question->getTransID())
 {
+    this->copyRelayInfo((Ptr*)question);
+
     SmartPtr<TOpt> ptrOpt;
     setOptionsReqOptClntDUID((Ptr*)question);
 
@@ -662,10 +679,6 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	Log(Warning) << "No options to answer in INF-REQUEST, so REPLY will not be send." << LogEnd;
         IsDone=true;
     }
-}
-
-void TSrvMsgReply::answer(SmartPtr<TMsg> Rep) {
-    // this should never happen
 }
 
 void TSrvMsgReply::doDuties() {
@@ -714,10 +727,10 @@ void TSrvMsgReply::setOptionsReqOptClntDUID(SmartPtr<TMsg> msg)
     //wich are included in packet but not in Request Option
     //if Request option wasn't included by client - create new one
     //in which number of "hint" options could be stored
-    reqOpts=(Ptr*)msg->getOption(OPTION_ORO);
+    this->reqOpts=(Ptr*)msg->getOption(OPTION_ORO);
     //If there is no option Request it will ba added
     if (!reqOpts)
-        reqOpts=new TSrvOptOptionRequest(this);
+        this->reqOpts=new TSrvOptOptionRequest(this);
 }
 
 TSrvMsgReply::~TSrvMsgReply()

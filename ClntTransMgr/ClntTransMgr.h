@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.6 2004-12-07 00:45:41 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.7 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.5  2004/12/04 23:45:40  thomson
  * Problem with client and server on the same Linux host fixed (bug #56)
  *
@@ -17,6 +20,12 @@
  *
  */
 class TClntTransMgr;
+class TDHCPMsg;
+class TClntAddrMgr;
+class TMsg;
+class TClntMsg;
+class TClntConfMgr;
+
 #ifndef CLNTTRANSMGR_H
 #define CLNTTRANSMGR_H
 #include <string>
@@ -24,10 +33,6 @@ class TClntTransMgr;
 #include "ClntCfgIface.h"
 #include "Opt.h"
 #include "IPv6Addr.h"
-class TDHCPMsg;
-class TClntAddrMgr;
-class TMsg;
-class TClntConfMgr;
 
 class TClntTransMgr
 {
@@ -38,7 +43,7 @@ class TClntTransMgr
 		  string config);
     ~TClntTransMgr();
     void doDuties();
-    void relayMsg(SmartPtr<TMsg> msg);
+    void relayMsg(SmartPtr<TClntMsg> msg);
     unsigned long getTimeout();
     void stop();
     void sendRequest(TContainer< SmartPtr<TOpt> > requestOptions, 

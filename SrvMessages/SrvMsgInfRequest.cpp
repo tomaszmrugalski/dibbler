@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgInfRequest.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgInfRequest.cpp,v 1.3 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 
@@ -43,11 +46,6 @@ TSrvMsgInfRequest::TSrvMsgInfRequest(SmartPtr<TSrvIfaceMgr> IfaceMgr,
                                int bufSize)
                                :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize)
 {
-}
-
-void TSrvMsgInfRequest::answer(SmartPtr<TMsg> msg)
-{
-    return;
 }
 
 void TSrvMsgInfRequest::doDuties()

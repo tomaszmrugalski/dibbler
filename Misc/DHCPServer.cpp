@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.19 2005-01-03 21:54:49 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.20 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/01/03 21:54:49  thomson
+ * Mgr dumps added.
+ *
  * Revision 1.18  2004/12/07 00:45:09  thomson
  * Manager creation unified and cleaned up.
  *
@@ -122,7 +125,7 @@ void TDHCPServer::run()
 	}
 #endif
 	
-	SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
+	SmartPtr<TSrvMsg> msg=IfaceMgr->select(timeout);
 	if (!msg) 
 	    continue;
 	silent = false;
@@ -136,10 +139,10 @@ void TDHCPServer::run()
 	msg->firstOption();
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();
-	Log(Cont) << LogEnd;
+	Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;
 	if (CfgMgr->stateless() && ( (msg->getType()!=SOLICIT_MSG) || 
 				     (msg->getType()!=INFORMATION_REQUEST_MSG) ||
-				     (msg->getType()!=RELAY_FORW))) {
+				     (msg->getType()!=RELAY_FORW_MSG))) {
 	    Log(Warning) 
 		<< "Stateful configuration related message received while running in the stateless mode. Message ignored." 
 		<< LogEnd;

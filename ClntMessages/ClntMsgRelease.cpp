@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.3 2004-07-05 23:04:07 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.4 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/07/05 23:04:07  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -73,7 +76,7 @@ TClntMsgRelease::TClntMsgRelease(
     IsDone = false;
 }
 
-void TClntMsgRelease::answer(SmartPtr<TMsg> rep)
+void TClntMsgRelease::answer(SmartPtr<TClntMsg> rep)
 {
     SmartPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
     SmartPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);

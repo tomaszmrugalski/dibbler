@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.12 2004-12-03 20:51:42 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.13 2005-01-08 16:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.11  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -98,7 +101,7 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
     pkt = new char[getSize()];
 }
 
-void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
+void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
 {
     if (shallRejectAnswer(msg))
 	return;
@@ -110,7 +113,7 @@ void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
 	    Log(Info) << "Server responded with ADVERTISE instead of REPLY, probably does not support"
 		" RAPID-COMMIT." << LogEnd;
 	}
-	AnswersLst.append(msg);
+	AnswersLst.append((Ptr*)msg);
 	SmartPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
 	if (prefOpt && (prefOpt->getPreference() == 255) )
 	{
@@ -157,7 +160,7 @@ void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
 /*
  * use REPLY provided in rapid-commit situation
  */
-void TClntMsgSolicit::replyReceived(SmartPtr<TMsg> msg) {
+void TClntMsgSolicit::replyReceived(SmartPtr<TClntMsg> msg) {
     SmartPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
 
@@ -274,7 +277,7 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TMsg> msg) {
 //
 //  + at least one IA has appropriate number of addresses
 
-bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TMsg> msg)
+bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TClntMsg> msg)
 {
     //get option IA_NA it must be included-it's a solicit message
     SmartPtr<TClntOptIA_NA> ptrSolIA = (Ptr*) this->getOption(OPTION_IA);

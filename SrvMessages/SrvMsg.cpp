@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.8 2004-12-04 23:43:26 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.9 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/12/04 23:43:26  thomson
+ * Server no longer crashes after receiving the same INF-REQUEST (bug #84)
+ *
  * Revision 1.7  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -67,6 +70,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
                  :TMsg(iface, addr, msgType, transID)
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
+    this->Relays = 0;
 }
 
 //Constructor builds message on the basis of buffer
@@ -79,6 +83,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
                  :TMsg(iface, addr, buf, bufSize)
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
+    this->Relays = 0;
 
     int pos=0;
     while (pos<bufSize)	{
@@ -194,6 +199,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
                  :TMsg(iface,addr,msgType)
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
+    this->Relays = 0;
 }
 
 void TSrvMsg::setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
@@ -219,50 +225,106 @@ void TSrvMsg::setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     MRD = 0;*/
 }
 
-void TSrvMsg::answer(SmartPtr<TMsg> answer)
-{
-    SmartPtr<TSrvOptClientIdentifier> srvDUID;
-    srvDUID=(Ptr*)this->getOption(OPTION_CLIENTID);
-
-    SmartPtr<TSrvOptClientIdentifier> clntDUID;
-    clntDUID=(Ptr*)answer->getOption(OPTION_CLIENTID);
-    if (!( srvDUID->getDUID()==clntDUID->getDUID() ))
-        return;
-    //retransmission
-    TMsg::send();
-    this->SrvIfaceMgr->send(this->Iface,(char*)this->pkt,
-			    this->getSize(),this->PeerAddr);
-    return;
-}
-
-void TSrvMsg::doDuties()
-{
+void TSrvMsg::doDuties() {
     if ( (this->FirstTimeStamp+this->MRT) >= now() )
         this->IsDone = true;
 }
 
-unsigned long TSrvMsg::getTimeout()
-{
+unsigned long TSrvMsg::getTimeout() {
     if (this->FirstTimeStamp+this->MRT - now() > 0 )
         return this->FirstTimeStamp+this->MRT - now(); 
     else
         return 0;
 }
 
+void TSrvMsg::addRelayInfo(SmartPtr<TIPv6Addr> linkAddr,
+			   SmartPtr<TIPv6Addr> peerAddr,
+			   int hop,
+			   SmartPtr<TSrvOptInterfaceID> interfaceID) {
+    this->LinkAddrTbl[this->Relays] = linkAddr;
+    this->PeerAddrTbl[this->Relays] = peerAddr;
+    this->HopTbl[this->Relays]      = hop;
+    this->InterfaceIDTbl[this->Relays] = interfaceID;
+    this->Relays++;
+}
+
+int TSrvMsg::getRelayCount() {
+    return this->Relays;
+}
+
 void TSrvMsg::send()
 {
-    SmartPtr<TIfaceIface> ptrIface;
-    ptrIface = SrvIfaceMgr->getIfaceByID(this->Iface);
+    static char buf[2048];
+    int offset = 0;
+
+    SmartPtr<TSrvIfaceIface> ptrIface;
+    SmartPtr<TSrvIfaceIface> under;
+    ptrIface = (Ptr*) SrvIfaceMgr->getIfaceByID(this->Iface);
     Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getName() << "/" << this->Iface
 		<< hex << ",transID=0x" << this->getTransID() << dec << ", opts:";
     SmartPtr<TOpt> ptrOpt;
     this->firstOption();
     while (ptrOpt = this->getOption() )
         Log(Cont) << " " << ptrOpt->getOptType();
-    Log(Cont) << "." << LogEnd;
-    TMsg::send();
-    this->SrvIfaceMgr->send(this->Iface, this->pkt, 
-			    this->getSize(), this->PeerAddr);
+    Log(Cont) << ", " << this->Relays << " relays." << LogEnd;
+
+    if (this->Relays>0) {
+	if (this->Relays>HOP_COUNT_LIMIT) {
+	    Log(Error) << "Unable to send message. Got " << this->Relays << " relay entries (" << HOP_COUNT_LIMIT
+		       << " is allowed maximum." << LogEnd;
+	    return;
+	}
+	int len[HOP_COUNT_LIMIT];
+
+	// calculate lengths of all relays
+	len[this->Relays-1]=this->getSize();
+	for (int i=this->Relays-1; i>0; i--) {
+	    len[i-1]= len[i] + 34;
+	    if (this->InterfaceIDTbl[i])
+		len[i-1]+=this->InterfaceIDTbl[i]->getSize();
+	}
+	
+	for (int i=0; i < this->Relays; i++) {
+	    under = ptrIface->getUnderlaying();
+	    if (!under) {
+		Log(Error) << "Sending message on the " << ptrIface->getName() << "/" << ptrIface->getID()
+			   << " failed: No underlaying interface found." << LogEnd;
+		return;
+	    }
+	    ptrIface = under;
+
+	    buf[offset++]=RELAY_REPL_MSG;
+	    buf[offset++]=this->HopTbl[i];
+	    this->LinkAddrTbl[i]->storeSelf(buf+offset);
+	    this->PeerAddrTbl[i]->storeSelf(buf+offset+16);
+	    offset +=32;
+	    if (this->InterfaceIDTbl[i]) {
+		this->InterfaceIDTbl[i]->storeSelf(buf+offset);
+		offset += this->InterfaceIDTbl[i]->getSize();
+	    }
+	    *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
+	    offset+=2;
+	    *(short*)(buf+offset) = htons(len[i]);
+	    offset+=2;
+	    Log(Debug) << "RELAY_REPL header has been built (" << offset << " bytes)." << LogEnd;
+	}
+
+	Log(Debug) << "Sending " << this->getSize() << "(packet)+" << offset << "(relay headers) data on the "
+		   << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+    }
+
+    this->storeSelf(buf+offset);
+    this->SrvIfaceMgr->send(ptrIface->getID(), buf, offset+this->getSize(), this->PeerAddr);
+}
+
+void TSrvMsg::copyRelayInfo(SmartPtr<TSrvMsg> q) {
+    this->Relays = q->Relays;
+    for (int i=0; i < this->Relays; i++) {
+	this->LinkAddrTbl[i]   = q->LinkAddrTbl[i];
+	this->PeerAddrTbl[i]   = q->PeerAddrTbl[i];
+	this->InterfaceIDTbl[i]= q->InterfaceIDTbl[i];
+	this->HopTbl[i]        = q->HopTbl[i];
+    }
 }
 
 /*

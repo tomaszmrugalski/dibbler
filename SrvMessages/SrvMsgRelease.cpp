@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgRelease.cpp,v 1.3 2004-06-20 21:00:45 thomson Exp $
+ * $Id: SrvMsgRelease.cpp,v 1.4 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/20 21:00:45  thomson
+ * Various fixes.
+ *
  * Revision 1.2  2004/06/20 17:25:07  thomson
  * getName() method implemented, clean up
  *
@@ -29,12 +32,6 @@ TSrvMsgRelease::TSrvMsgRelease(
 	int bufSize)
     :TSrvMsg(IfMgr, TransMgr, ConfMgr, AddrMgr, iface, addr,buf,bufSize)
 {
-}
-
-void TSrvMsgRelease::answer(SmartPtr<TMsg> Rep)
-{
-    //On server side nothing to do
-    //there shouldn't be such a transaction
 }
 
 void TSrvMsgRelease::doDuties()

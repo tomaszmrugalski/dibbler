@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.11 2004-12-02 00:51:06 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.12 2005-01-08 16:52:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.10  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -52,6 +55,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
 	     solicit->getTransID())
 {
+    this->copyRelayInfo((Ptr*)solicit);
     if (!this->answer(solicit)) {
 	this->IsDone = true;
 	return;
@@ -214,11 +218,6 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 bool TSrvMsgAdvertise::check() {
     // this should never happen
     return true;
-}
-
-void TSrvMsgAdvertise::answer(SmartPtr<TMsg> Rep) {
-    // this should never happen
-    return;
 }
 
 TSrvMsgAdvertise::~TSrvMsgAdvertise() {

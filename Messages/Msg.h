@@ -22,9 +22,6 @@ class TMsg
     TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
     
     int getSize();
-
-    //answer for a specific message
-    virtual void answer(SmartPtr<TMsg> Rep) = 0;
     
     // trasnmit (or retransmit)
     virtual void doDuties() = 0;
@@ -33,7 +30,7 @@ class TMsg
 
     virtual unsigned long getTimeout();
 
-    virtual void send();
+    virtual int storeSelf(char * buffer);
 
     virtual string getName() = 0;
 
