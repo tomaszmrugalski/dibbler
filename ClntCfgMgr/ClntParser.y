@@ -14,6 +14,8 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgGroup.h"
 #include "Logger.h"
+
+    using namespace std;
     
 #define YY_USE_CLASS
 %}
@@ -73,7 +75,9 @@ void EmptyAddr(); \
 }
 
 %{
+	namespace std{
 extern yy_clntParser_stype yylval;
+	};
 %}
 
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_,NTP_SERVER_,DOMAIN_,TIME_ZONE_
@@ -959,9 +963,9 @@ void clntParser::EndIADeclaration(long iaCnt)
   };
 }
 
-//metoda dodaje 1 IA do kolejki ClntCfgIAs, a nastêpnie adres do 
-//ostatniego IA w kolejce ClntCfgIALst o w³aœciwoœciach opcji 
-//znajduj¹cych siê na stosie ParsOptStack
+//metoda dodaje 1 IA do kolejki ClntCfgIAs, a nastepnie adres do 
+//ostatniego IA w kolejce ClntCfgIALst o wlasciwosciach opcji 
+//znajdujacych sie na stosie ParsOptStack
 void clntParser::EmptyIA()
 {
       EmptyAddr();
@@ -970,20 +974,21 @@ void clntParser::EmptyIA()
     ClntCfgIALst.getLast()->addAddr(ClntCfgAddrLst.getLast());
 }   
 
-//metoda dodaje 1 adres do kolejki ClntCfgAddrLst o w³aœciwoœciach opcji 
-//znajduj¹cych siê na stosie ParsOptStack
+//metoda dodaje 1 adres do kolejki ClntCfgAddrLst o wlasciwosciach opcji 
+//znajdujacych sie na stosie ParsOptStack
 void clntParser::EmptyAddr()
 {
     ClntCfgAddrLst.append(new TClntCfgAddr());
     ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
 }   
 
-extern yy_clntParser_stype yylval;
 
 int clntParser::yylex()
 {
+    memset(&std::yylval,0, sizeof(std::yylval));
+    memset(&this->yylval,0, sizeof(this->yylval));
     int x = this->lex->yylex();
-    this->yylval=::yylval;
+    this->yylval=std::yylval;
     return x;
 }
 
