@@ -95,6 +95,10 @@ srvlibs:	includes
 doc: 
 	cd doc; $(MAKE)
 
+oxygen:
+	@echo "[DOXYGEN]"
+	doxygen oxygen.cfg >oxygen.log 2>oxygen.err
+
 VERSION-linux:
 	echo " Operating system " >  VERSION
 	echo "------------------" >> VERSION
@@ -202,8 +206,8 @@ release-src: VERSION-src
 	mv ../dibbler-$(VERSION)-src.tar.gz .
 	echo "File is stored in dibbler-$(VERSION)-src.tar.gz"
 
-release-doc: VERSION-src doc
-	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG doc/*.pdf
+release-doc: VERSION-src doc oxygen
+	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG doc/*.pdf doc/html
 
 fixme:
 	rm -rf FIXME
