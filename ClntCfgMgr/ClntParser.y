@@ -1,20 +1,21 @@
 %name clntParser
 
 %header{
-    #include <iostream>
-    #include <string>
-    #include <FlexLexer.h>
-    #include "DHCPConst.h"
-    #include "SmartPtr.h"
-    #include "Container.h"
-    #include "ClntParser.h"
-    #include "ClntParsGlobalOpt.h"
-    #include "ClntCfgIface.h"
-    #include "ClntCfgAddr.h"
-    #include "ClntCfgIA.h"
-    #include "ClntCfgGroup.h"
-
-    #define YY_USE_CLASS
+#include <iostream>
+#include <string>
+#include <malloc.h>
+#include "FlexLexer.h"
+#include "DHCPConst.h"
+#include "SmartPtr.h"
+#include "Container.h"
+#include "ClntParser.h"
+#include "ClntParsGlobalOpt.h"
+#include "ClntCfgIface.h"
+#include "ClntCfgAddr.h"
+#include "ClntCfgIA.h"
+#include "ClntCfgGroup.h"
+    
+#define YY_USE_CLASS
 %}
 
 // --- CLASS MEMBERS ---

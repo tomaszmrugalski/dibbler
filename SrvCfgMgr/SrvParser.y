@@ -1,23 +1,24 @@
 %name SrvParser
 
 %header{
-    #include <iostream>
-    #include <string>
-    #include <FlexLexer.h>
-    #include "DHCPConst.h"
-    #include "SmartPtr.h"
-    #include "Container.h"
-    #include "SrvParser.h"
-    #include "SrvParsGlobalOpt.h"
-    #include "SrvParsClassOpt.h"
-    #include "SrvParsIfaceOpt.h"
-    #include "SrvCfgAddrClass.h"
-    #include "SrvCfgIface.h"
-    #include "SrvCfgMgr.h"
-    #include "DUID.h"
-    #include "Logger.h"
+#include <iostream>
+#include <string>
+#include "FlexLexer.h"
+#include <malloc.h>
+#include "DHCPConst.h"
+#include "SmartPtr.h"
+#include "Container.h"
+#include "SrvParser.h"
+#include "SrvParsGlobalOpt.h"
+#include "SrvParsClassOpt.h"
+#include "SrvParsIfaceOpt.h"
+#include "SrvCfgAddrClass.h"
+#include "SrvCfgIface.h"
+#include "SrvCfgMgr.h"
+#include "DUID.h"
+#include "Logger.h"
 
-    #define YY_USE_CLASS
+#define YY_USE_CLASS
 %}
 
 // class definition

@@ -1,5 +1,8 @@
 include ../Makefile.inc
 
+PREFIX=..
+COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages     Options misc 
+
 all: links
 
 libs:
@@ -7,9 +10,13 @@ libs:
 objs:
 
 links: clean
-	find .. -name '*.h' -maxdepth 2 -type f -exec ln -s {} \; 2>/dev/null
-	ln -f -s $(LOWLEVEL)/SrvParser.h SrvParser.h
-	ln -f -s $(LOWLEVEL)/ClntParser.h ClntParser.h
+	@for dir in $(SUBDIRS); do \
+	  echo $(PREFIX)/$$dir; \
+          ln -f -s $(PREFIX)/$$dir/*.h .;  \
+	done
+	ln -f -s $(PREFIX)/*.h .
+	ln -f -s $(SRVCFGMGR)/SrvParser.h SrvParser.h
+	ln -f -s $(CLNTCFGMGR)/ClntParser.h ClntParser.h
 
 clean:
 	find . -type l -exec rm {} \;

@@ -48,3 +48,8 @@ SRVCFGMGR   = $(PREFIX)/SrvCfgMgr
 SRVPARSER   = $(PREFIX)/SrvParser
 SRVMESSAGES = $(PREFIX)/SrvMessages
 SRVOPTIONS  = $(PREFIX)/SrvOptions
+
+COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      TransMgr   Messages     Options include misc
+CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
+SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
+SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)

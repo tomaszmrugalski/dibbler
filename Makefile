@@ -1,11 +1,6 @@
 include Makefile.inc
 PREFIX = .
 
-COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      TransMgr   Messages     Options include misc
-CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
-SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
-SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
-
 all: includes libs server client
 
 includes:
@@ -35,7 +30,7 @@ $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
 	-L$(CLNTMESSAGES) -lClntMsg \
 	-L$(MISC)         -lMisc \
-	-lClntOpts -lOpts -lClntParser $(XMLLIBS) $(EFENCE)
+	-lClntOpts -lOpts $(XMLLIBS) $(EFENCE)
 
 server: $(SERVERBIN)
 $(SERVERBIN): includes DHCPServer.o $(SERVER)
@@ -57,7 +52,7 @@ $(SERVERBIN): includes DHCPServer.o $(SERVER)
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
 	-L$(MISC)        -lMisc\
-	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr -lSrvParser \
+	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
 	-L$(LOWLEVEL)    -lSrvParser \
 	-L$(SRVOPTIONS)  -lSrvOpts \

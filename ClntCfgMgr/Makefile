@@ -12,8 +12,10 @@ libClntCfgMgr.a: objs
 	cd $(CFGMGR); $(MAKE) libs
 	rm -f $@
 	cp $(CFGMGR)/libCfgMgr.a ./$@
-	ar r $@ ClntCfgIA.o ClntCfgMgr.o ClntCfgIface.o ClntCfgGroup.o ClntCfgAddr.o \
+	ar r $@ ClntParser.o ClntLexer.o ClntCfgIA.o ClntCfgMgr.o ClntCfgIface.o \
+		ClntCfgGroup.o ClntCfgAddr.o \
 		ClntParsAddrOpt.o ClntParsGlobalOpt.o ClntParsIAOpt.o ClntParsIfaceOpt.o
+
 test: test1 
 
 test1: test1.cpp libs
@@ -31,8 +33,17 @@ test2: test2.cpp
 	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test2.cpp \
 
 # Objects 
-objs: ClntCfgIA.o ClntCfgMgr.o ClntCfgIface.o ClntCfgGroup.o ClntCfgAddr.o \
+objs: ClntParser.o ClntLexer.o ClntCfgIA.o ClntCfgMgr.o ClntCfgIface.o \
+      ClntCfgGroup.o ClntCfgAddr.o \
       ClntParsAddrOpt.o ClntParsGlobalOpt.o ClntParsIAOpt.o ClntParsIfaceOpt.o
+
+ClntParser.o: ClntParser.y
+	$(BISONPP) -d ClntParser.y -o ClntParser.cpp
+	$(CPP) $(OPTS) -c -I $(INCDIR) -ftemplate-depth-30 ClntParser.cpp 
+
+ClntLexer.o: ClntLexer.l
+	$(FLEX) -+ -oClntLexer.cpp ClntLexer.l
+	$(CPP) $(OPTS) -c -I $(INCDIR) ClntLexer.cpp
 
 ClntCfgIA.o: ClntCfgIA.cpp ClntCfgIA.h
 	$(CPP) $(OPTS) -I $(INCDIR) -c -o $@ $<

@@ -9,10 +9,19 @@ libSrvCfgMgr.a: objs
 	rm -f $@
 	cp $(CFGMGR)/libCfgMgr.a ./$@
 	ar r $@ $(CFGMGR)/CfgMgr.o SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o \
-	SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o
+	SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o SrvParser.o SrvLexer.o
 
 # Objects 
-objs: SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o
+objs: SrvParser.o SrvLexer.o SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o \
+      SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o
+
+SrvParser.o: SrvParser.y
+	$(BISONPP) -d SrvParser.y -o SrvParser.cpp
+	$(CPP) -c $(OPTS) -I $(INCDIR) SrvParser.cpp 
+
+SrvLexer.o: SrvLexer.l
+	$(FLEX) -+ -oSrvLexer.cpp SrvLexer.l
+	$(CPP) -c $(OPTS) -I $(INCDIR) SrvLexer.cpp 
 
 SrvCfgAddrClass.o: SrvCfgAddrClass.cpp SrvCfgAddrClass.h
 	$(CPP) $(OPTS) -I $(INCDIR) -c -o $@ $<
