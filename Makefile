@@ -312,12 +312,14 @@ release-rpm: VERSION-linux release-src
 	$(CP) $$file ../../../.. ; \
 	done
 
-install: server client doc
+install: server client relay doc
 	$(MKDIR) $(INST_WORKDIR)
 	@echo "[INSTALL] $(SERVERBIN)"
-	$(INSTALL) -m 755 $(SERVERBIN) $(INST_WORKDIR)/
+	$(INSTALL) -m 755 $(SERVERBIN) $(INST_BINDIR)/
 	@echo "[INSTALL] $(CLIENTBIN)"
-	$(INSTALL) -m 755 $(CLIENTBIN) $(INST_WORKDIR)/
+	$(INSTALL) -m 755 $(CLIENTBIN) $(INST_BINDIR)/
+	@echo "[INSTALL] $(RELAYBIN)"
+	$(INSTALL) -m 755 $(RELAYBIN) $(INST_BINDIR)/
 	@for dir in *.conf; do \
 		(echo "[INSTALL] $$dir" && $(INSTALL) -m 644 $$dir $(INST_WORKDIR)) \
 	done
@@ -330,11 +332,39 @@ install: server client doc
 	$(INSTALL) -m 755 doc/dibbler-user.pdf $(INST_DOCDIR)/dibbler/dibbler-user.pdf
 	@echo "[INSTALL] /doc/dibbler-devel.pdf"
 	$(INSTALL) -m 755 doc/dibbler-devel.pdf $(INST_DOCDIR)/dibbler/dibbler-devel.pdf
-	echo "[LINKS  ] $(SERVERBIN) "
-	ln -sf $(INST_WORKDIR)/$(SERVERBIN) $(INST_BINDIR)
-	echo "[LINKS  ] $(CLIENTBIN) "
-	ln -sf $(INST_WORKDIR)/$(CLIENTBIN) $(INST_BINDIR)
 
+snapshot: clean
+	cvs update -d
+	rm -f dibbler-`date +%Y%m%d`-CVS.tar.gz
+	cd ..; tar czf dibbler-CVS.tar.gz dibbler
+	mv ../dibbler-CVS.tar.gz dibbler-`date +%Y%m%d`-CVS.tar.gz
+	echo "Snapshot has been stored in the dibbler-`date +%Y%m%d`-CVS.tar.gz file."
+
+help:
+	@echo "Welcome to Dibbler building help system"
+	@echo "To build specific target, type: make target"
+	@echo "There are several targets which can be useful:"
+	@echo
+	@echo "server         - builds DHCPv6 server"
+	@echo "client         - builds DHCPv6 client"
+	@echo "relay          - builds DHCPv6 relay"
+	@echo "install        - install server, client and relay in /usr/local"
+	@echo
+	@echo "bison          - builds bison++ (required if you want to generate parsers by yourself)"
+	@echo "parser         - generate parser files"
+	@echo "doc            - generate User's Guide and Developer's Guide PDF files (LaTeX system is required)"
+	@echo "oxygen         - generate Source Documentation (Doxygen is required)"
+	@echo "snapshot       - generate CVS snapshot"
+	@echo "clean          - cleans source tree"
+	@echo
+	@echo "release-linux  - prepares tar.gz with Linux binaries"
+	@echo "release-win32  - prepares tar.gz with Windows binaries"
+	@echo "release-src    - prepares tar.gz with sources"
+	@echo "release-doc    - prepares tar.gz with all documentation (LaTeX and Doxygen is required)"
+	@echo "release-rpm    - prepares RPM archive (for RedHat, PLD, Mandrake or Fedora Core) with binaries"
+	@echo "release-deb    - prepares DEB archive (for Debian systems) with binaries"
+	@echo "release-gentoo - prepares ebuild (for Gentoo systems) with building instructions"
+	@echo 
 
 fixme:
 	rm -rf FIXME
@@ -351,4 +381,4 @@ clean-libs:
 links: includes
 clobber: clean
 
-.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser
+.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser snapshot help
