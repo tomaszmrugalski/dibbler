@@ -3,6 +3,7 @@ class TMsg;
 #define MSG_H
 
 #include <iostream>
+#include <string>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "DHCPConst.h"
