@@ -1,7 +1,11 @@
 
-  Dibbler 0.3.0-RC1 release notes
+  Dibbler 0.3.0-RC2 release notes
  ---------------------------------
   
+ This version incorporates two simple, yet critical bugfixes: server crash when
+ receiving IA option without IAADDR suboption and improper socket initialization
+ in Linux.
+
  Main goal of this release is to improve stateless configuration support.
  Lots of new options were added and support for already present was improved.
  

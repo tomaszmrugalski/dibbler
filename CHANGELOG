@@ -5,6 +5,10 @@
   - Developer's guide
   - Linux: Fixed issue with running server and client on the same host
 
+ 0.3.0-RC2
+  - Fixed bug found by PCSS team regarding improper socket initialization in ClntTransMgr.
+  - Server now properly supports clients which send IA without IAADDR included.
+
  0.3.0-RC1
   - Socket binding has changes (no more REUSE_ADDR). See RELNOTES for details.
   - New options: SIP-SERVERS, SIP-DOMAINS, NIS-SERVERS, NIS-DOMAIN, NIS+-SERVERS, NIS+-DOMAIN, LIFETIME
