@@ -1,7 +1,7 @@
   TODO
  ------
 
-- check CVS setup (Th)
+- check CVS setup (Th) (Marek)
 - place some copyleft informations in every cpp/h file
 - release first public version, display info about version and compilation time
 - client segfaults when config-file load has failed
