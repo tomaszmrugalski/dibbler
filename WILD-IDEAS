@@ -1,5 +1,5 @@
 
- WILD IDEAS $Id: WILD-IDEAS,v 1.6 2004-06-05 23:38:08 thomson Exp $
+ WILD IDEAS $Id: WILD-IDEAS,v 1.7 2004-06-21 23:08:48 thomson Exp $
 ------------
 
  This file contains various ideas and concepts which are not yet approved.
@@ -10,4 +10,3 @@
   pointer to my handler". When system receives an option, looks in option table.
   If it finds appropriate handler, it passes nessesary data (4xMgr, parent-option ptr,
   msg ptr). If not, drops this option.
-- interoperability: is IA without IAADDR (received from client) legal?

@@ -85,7 +85,6 @@ bool TMsg::check()
 
 void TMsg::send()
 {
-    //FIXME:what the hell means this is not initialized pointer
     char *tmppkt = this->pkt;
 
     *(tmppkt++) = (char)MsgType;
@@ -99,54 +98,42 @@ void TMsg::send()
         Option->storeSelf(tmppkt);
         tmppkt += Option->getSize();
     }
-
-
-    // FIXME: So we have constructed a message. Should we send it?
 }
 
-SmartPtr<TOpt> TMsg::getOption(int type)
-{
-	SmartPtr<TOpt> Option;
-	
-	Options.first();
-	while ( Option = Options.get() ) 
-	{
-		if (Option->getOptType()==type) 
-			return Option;
-	}
-	return SmartPtr<TOpt>();
+SmartPtr<TOpt> TMsg::getOption(int type) {
+    SmartPtr<TOpt> Option;
+    
+    Options.first();
+    while ( Option = Options.get() ) {
+	if (Option->getOptType()==type) 
+	    return Option;
+    }
+    return SmartPtr<TOpt>();
 }
 
-void TMsg::firstOption()
-{
+void TMsg::firstOption() {
     Options.first();
 }
 
-int TMsg::countOption()
-{
+int TMsg::countOption() {
     return Options.count();
 }
 
-SmartPtr<TOpt> TMsg::getOption()
-{
+SmartPtr<TOpt> TMsg::getOption() {
     return Options.get();
 }
 
-TMsg::~TMsg()
-{
+TMsg::~TMsg() {
 }
 
-SmartPtr<TIPv6Addr> TMsg::getAddr()
-{
+SmartPtr<TIPv6Addr> TMsg::getAddr() {
 	return PeerAddr;
 }
 
-int TMsg::getIface()
-{
+int TMsg::getIface() {
 	return this->Iface;
 }
 
-bool TMsg::isDone()
-{
+bool TMsg::isDone() {
     return IsDone;
 }

@@ -10,6 +10,8 @@
   - Doc: Now it is a real documentation
   - Srv: class-max-lease, iface-max-lease parameters added
   - Client: config file logic changed, no-config is no longer needed. 
+  - Client: No more stupid "Interface is loopback, down, not multicast-capable or 
+    not present in the system" message.
   - Linux: build process rewritten
 
  0.1.1

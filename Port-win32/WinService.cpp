@@ -6,9 +6,12 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.7 2004-05-24 21:16:37 thomson Exp $
+ * $Id: WinService.cpp,v 1.8 2004-06-21 23:08:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
  * Revision 1.6  2004/04/15 23:53:45  thomson
  * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
  *
@@ -59,13 +62,11 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     // Get a pointer to the C++ object
     TWinService* pService = ServicePtr;
     
-    //FIXME:pService->DebugMsg("Entering CNTService::ServiceMain()");
     // Register the control request handler
     pService->Status.dwCurrentState = SERVICE_START_PENDING;
     pService->hServiceStatus = RegisterServiceCtrlHandler(pService->ServiceName,Handler);
     if (pService->hServiceStatus==NULL)
 	{
-        //FIXME:pService->LogEvent(EVENTLOG_ERROR_TYPE, EVMSG_CTRLHANDLERNOTINSTALLED);
         return;
     }
     // Start the initialisation
@@ -81,7 +82,6 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     }
     // Tell the service manager we are stopped
     pService->SetStatus(SERVICE_STOPPED);
-    //FIXME:pService->DebugMsg("Leaving CNTService::ServiceMain()");
 }
 
 void TWinService::Handler(DWORD dwOpcode) {
@@ -89,13 +89,11 @@ void TWinService::Handler(DWORD dwOpcode) {
     // Get a pointer to the object
 	TWinService* pService = ServicePtr;
     
-    //FIXME:pService->DebugMsg("CNTService::Handler(%lu)", dwOpcode);
     switch (dwOpcode) {
     case SERVICE_CONTROL_STOP: // 1
         pService->SetStatus(SERVICE_STOP_PENDING);
         pService->OnStop();
         pService->IsRunning = FALSE;
-        //FIXME:pService->LogEvent(EVENTLOG_INFORMATION_TYPE, EVMSG_STOPPED);
         break;
 
     case SERVICE_CONTROL_PAUSE: // 2
@@ -119,20 +117,15 @@ void TWinService::Handler(DWORD dwOpcode) {
 		{
             if (!pService->OnUserControl(dwOpcode)) 
 			{
-                //FIXME:pService->LogEvent(EVENTLOG_ERROR_TYPE, EVMSG_BADREQUEST);
             }
         } 
 		else 
 		{
-            //FIXME:pService->LogEvent(EVENTLOG_ERROR_TYPE, EVMSG_BADREQUEST);
         }
         break;
     }
 
     // Report current status
-    //FIXME:pService->DebugMsg("Updating status (%lu, %lu)",
-	//                       pService->m_hServiceStatus,
-	//                       pService->m_Status.dwCurrentState);
     SetServiceStatus(pService->hServiceStatus, &pService->Status);
 }
 
@@ -265,22 +258,18 @@ bool TWinService::StartService()
         {ServiceName, ServiceMain},
         {NULL, NULL}
     };
-    //FIXME:DebugMsg("Calling StartServiceCtrlDispatcher()");
     BOOL result = StartServiceCtrlDispatcher(st);
-    //FIXME:DebugMsg("Returned from StartServiceCtrlDispatcher()");
-	return result?true:false;
+    return result?true:false;
 }
 
 void TWinService::SetStatus(DWORD dwState)
 {
-    //FIXME:DebugMsg("CNTService::SetStatus(%lu, %lu)", m_hServiceStatus, dwState);
     Status.dwCurrentState = dwState;
     SetServiceStatus(hServiceStatus, &Status);
 }
 
 bool TWinService::Initialize()
 {
-    //FIXME:DebugMsg("Entering CNTService::Initialize()");
     // Start the initialization
     SetStatus(SERVICE_START_PENDING);   
     // Perform the actual initialization
@@ -290,13 +279,10 @@ bool TWinService::Initialize()
     Status.dwCheckPoint = 0;
     Status.dwWaitHint = 0;
     if (!result) {
-        //FIXME:LogEvent(EVENTLOG_ERROR_TYPE, EVMSG_FAILEDINIT);
         SetStatus(SERVICE_STOPPED);
         return false;    
     }
-    //FIXME:LogEvent(EVENTLOG_INFORMATION_TYPE, EVMSG_STARTED);
     SetStatus(SERVICE_RUNNING);
-    //FIXME:DebugMsg("Leaving CNTService::Initialize()");
     return true;
 }
 void TWinService::Run()

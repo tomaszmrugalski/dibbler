@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.5 2004-06-20 21:00:26 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.6 2004-06-21 23:08:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/20 21:00:26  thomson
+ * quiet flag added.
+ *
  * Revision 1.4  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -171,7 +174,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
 /*
  * how many addresses does this client have?
  */
-unsigned long TSrvAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
+unsigned long TSrvAddrMgr::getAddrCount(SmartPtr<TDUID> duid)
 {
     SmartPtr <TAddrClient> ptrClient;
     ClntsLst.first();

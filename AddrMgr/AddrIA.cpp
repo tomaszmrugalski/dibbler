@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.5 2004-06-04 19:03:46 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.6 2004-06-21 23:08:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/04 19:03:46  thomson
+ * Resolved warnings with signed/unisigned
+ *
  * Revision 1.4  2004/03/29 22:06:49  thomson
  * 0.1.1 version
  *
@@ -185,7 +188,7 @@ int TAddrIA::delAddr(SmartPtr<TIPv6Addr> addr)
             return 0;
         }
     }
-    return 0; //FIXME
+    return -1;
 }
 
 int TAddrIA::getAddrCount()

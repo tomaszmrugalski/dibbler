@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.5 2004-06-20 21:00:45 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.6 2004-06-21 23:08:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/20 21:00:45  thomson
+ * Various fixes.
+ *
  * Revision 1.4  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -135,16 +138,15 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     }
 
     // --- check address counts, how many we've got, how many assigned etc. ---
-    unsigned long addrsAssigned;
-    unsigned long addrsRequested;
-    unsigned long addrsFree;
-    unsigned long addrsMax;
+    unsigned long addrsAssigned  = 0;
+    unsigned long addrsRequested = 0;
+    unsigned long addrsFree      = 0;
+    unsigned long addrsMax       = 0;
 
-    addrsAssigned = addrMgr->getAddrCount(clntDuid, iface);
+    addrsAssigned = addrMgr->getAddrCount(clntDuid);
     addrsRequested= queryOpt->countAddrs();
     addrsFree     = this->countFreeAddrsForClient();
     addrsMax      = cfgMgr->getMaxAddrsPerClient(clntDuid, clntAddr, iface);
-    addrsAssigned = 0;
 
     Log(Debug) << "Client got " << addrsAssigned << " addrs, requests for " 
 	       << addrsRequested << ", " << addrsFree << " is free, max. " 
@@ -271,7 +273,7 @@ unsigned long TSrvOptIA_NA::countFreeAddrsForClient()
     maxAddrs = this->CfgMgr->getMaxAddrsPerClient(this->ClntDuid, 
 						  this->ClntAddr, 
 						  this->Iface) -
-	this->AddrMgr->getAddrCount(this->ClntDuid, this->Iface);
+	this->AddrMgr->getAddrCount(this->ClntDuid);
     
     // FIXME: unsigned long long long int (128bit) type would come in handy here
     SmartPtr<TSrvCfgAddrClass> ptrClass;
@@ -292,7 +294,7 @@ unsigned long TSrvOptIA_NA::countFreeAddrsForClient()
         }
     }
     //substract addresses which has been already assigned to this client
-    tmpcnt -= this->AddrMgr->getAddrCount(this->ClntDuid, this->Iface);
+    tmpcnt -= this->AddrMgr->getAddrCount(this->ClntDuid);
 
     float bigNumber = this->CfgMgr->getFreeAddrsCount(this->ClntDuid, this->ClntAddr, this->Iface);
     if (maxAddrs > bigNumber ) {
