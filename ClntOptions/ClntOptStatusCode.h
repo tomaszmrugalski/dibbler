@@ -1,5 +1,18 @@
-#ifndef CLNTSTATUSCODE_H_HEADER_INCLUDED_C11257D8
-#define CLNTSTATUSCODE_H_HEADER_INCLUDED_C11257D8
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntOptStatusCode.h,v 1.2 2004-12-08 00:16:39 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
+#ifndef CLNTOPTSTATUSCODE_H
+#define CLNTOPTSTATUSCODE_H
 
 
 #include "OptStatusCode.h"
@@ -11,4 +24,4 @@ class TClntOptStatusCode : public TOptStatusCode
     TClntOptStatusCode( char * buf,  int len, TMsg* parent);
 };
 
-#endif /* STATUSCODE_H_HEADER_INCLUDED_C11257D8 */
+#endif /* CLNTOPTSTATUSCODE_H */
