@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.3 2004-03-29 18:53:08 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.4 2004-04-06 21:57:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -41,8 +44,10 @@ void TAddrMgr::dbLoad()
 
 void TAddrMgr::dbStore()
 {
+    char buf[128];
     ofstream f;
-    f.open(this->dbfile.c_str());
+    strcpy(buf,this->dbfile.c_str());
+    f.open(buf);
     f << *this;
     f.close();
 //  std::clog << logger::logDebug << "AddrDB saved in " << this->dbfile << logger::endl;
