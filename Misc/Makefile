@@ -8,7 +8,7 @@ addrpack.o: addrpack.c
 	$(CC) $(COPTS) -I $(INCDIR) -I. -c addrpack.c 
 
 Logger.o: Logger.cpp Logger.h
-	$(CPP) $(OPTS) -c -o $@ $<
+	$(CPP) $(OPTS) -c -g -o $@ $<
 
 DHCPConst.o: DHCPConst.cpp DHCPConst.h
 	$(CPP) $(OPTS) -c -o $@ $<

@@ -31,13 +31,13 @@ namespace logger {
 			       "Debug    "
 	};
 
-	if ( x >= logger::logLevel) {
-	    mute = 1;
-	    strum.clear(ios::failbit);
-	    return strum;
-	}
-	strum.clear();
-	mute=0;
+//	if ( x >= logger::logLevel) {
+//	    mute = 1;
+//	    strum.clear(ios::failbit);
+//	    return strum;
+//	}
+//	strum.clear();
+//	mute=0;
 
 	time_t teraz;
 	teraz = time(NULL);
