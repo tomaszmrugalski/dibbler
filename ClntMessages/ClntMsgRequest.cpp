@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.10 2004-11-15 20:47:07 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.11 2004-11-30 00:55:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/11/15 20:47:07  thomson
+ * Minor printing bug fixed.
+ *
  * Revision 1.9  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -228,8 +231,7 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
                 break;
             default:
             {
-                //option->setParent( &(*msg));
-		Log(Debug) << "Setting up option " << option->getOptType() << "." << LogEnd;
+		//Log(Debug) << "Setting up option " << option->getOptType() << "." << LogEnd;
                 if (!option->doDuties()) 
 		    break;
 		SmartPtr<TOpt> requestOpt;
