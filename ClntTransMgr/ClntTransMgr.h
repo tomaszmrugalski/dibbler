@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.4 2004-09-07 15:37:44 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.5 2004-12-04 23:45:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  */
 class TClntTransMgr;
 #ifndef CLNTTRANSMGR_H
@@ -40,8 +43,8 @@ class TClntTransMgr
     bool isDone();
     void setThat(SmartPtr<TClntTransMgr> that);
 
-	char * getCtrlAddr();
-	int    getCtrlIface();
+    char * getCtrlAddr();
+    int    getCtrlIface();
     
  protected:
     void removeExpired();
@@ -67,6 +70,9 @@ class TClntTransMgr
     bool IsDone;
     bool Shutdown;
     bool ConfirmEnabled;  // should we send CONFIRM message?
+
+    bool BindReuse; // Bug #56. Shall we allow running client and server on the same machine?
+
     int ctrlIface;
     char ctrlAddr[48];
 };

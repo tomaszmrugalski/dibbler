@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.28 2004-12-03 20:51:42 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.29 2004-12-04 23:45:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.27  2004/12/02 00:51:04  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -85,6 +88,9 @@ using namespace std;
 TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
                              string config)
 {
+    // should we set REUSE option during binding sockets?
+    this->BindReuse = CLIENT_BIND_REUSE;
+
     //FIXME: loadDB
     bool loadDB = false;
     this->IsDone = true;
@@ -102,6 +108,11 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 	return;
     }
 
+    if (this->BindReuse)
+	Log(Info) << "Bind reuse enabled." << LogEnd;
+    else
+	Log(Info) << "Bind reuse disabled." << LogEnd;
+
     if (!this->openLoopbackSocket()) {
 	return;
     }
@@ -110,7 +121,6 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
     CfgMgr->firstIface();
     while(iface=CfgMgr->getIface()) {
 	if (!this->openSocket(iface)) {
-	    Log(Debug) << "ClntTransMgr: Stop" << LogEnd;
 	    return;
 	}
     }
@@ -204,7 +214,7 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
 
     Log(Notice) << "Creating socket (addr=" << *addr << ") on the " << iface->getName() 
 		<< "/" << iface->getID() << " interface." << LogEnd;
-    if (!realIface->addSocket(addr,DHCPCLIENT_PORT,true, false)) {
+    if (!realIface->addSocket(addr,DHCPCLIENT_PORT,true, this->BindReuse)) {
 	Log(Crit) << "Socket creation (addr=" << *addr << ") on the " << iface->getName() 
 		  << "/" << iface->getID() << " interface failed." << LogEnd;
 	return false;
@@ -238,11 +248,13 @@ void TClntTransMgr::checkDB()
             ptrIA->setState(NOTCONFIGURED);
         }
     }
-
 }
 
 bool TClntTransMgr::openLoopbackSocket() {
     SmartPtr<TIfaceIface> ptrIface;
+
+    if (!this->BindReuse)
+	return true;
 
 #ifndef WIN32
     SmartPtr<TIfaceIface> loopback;
@@ -259,10 +271,9 @@ bool TClntTransMgr::openLoopbackSocket() {
 	   return false;
     }
 
-    SmartPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::1", true);
+    SmartPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::", true);
     Log(Notice) << "Creating control (" << *loopAddr << ") socket on the " << loopback->getName() 
 		<< "/" << loopback->getID() << " interface." << LogEnd;
-    
 
     if (!loopback->addSocket(loopAddr,DHCPCLIENT_PORT, false, true)) {
 	Log(Crit) << "Proper socket creation failed." << LogEnd;
@@ -492,7 +503,10 @@ unsigned long TClntTransMgr::getTimeout()
 void TClntTransMgr::stop()
 {
 }
-// requestOptions list MUST NOT contain server DUID.
+
+/**
+ * Note: requestOptions list MUST NOT contain server DUID.
+ */
 void TClntTransMgr::sendRequest(List(TOpt) requestOptions, 
                                 List(TMsg) srvlist,int iface)
 {

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.15 2004-11-01 23:31:25 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.16 2004-12-04 23:45:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.14  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -226,7 +229,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     // check if we've received data addressed to us. There's problem with sockets binding. 
     // If there are 2 open sockets (one bound to multicast and one to global address),
     // each packet sent on multicast address is also received on unicast socket.
-    if (memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)) {
+    if (!iface->flagLoopback() && memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)) {
 	Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
 		   << *sock->getAddr() << ", message ignored." << LogEnd;
 	bufsize = 0;

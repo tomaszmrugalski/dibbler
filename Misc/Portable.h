@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.28 2004-11-15 20:59:12 thomson Exp $
+ * $Id: Portable.h,v 1.29 2004-12-04 23:45:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/11/15 20:59:12  thomson
+ * 0.3.0-RC2
+ *
  * Revision 1.27  2004/11/01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -78,6 +81,11 @@
 #define SRVDUID_FILE	  "server-duid"
 #define SRVLOG_FILE       "server.log"
 #define SRVDB_FILE        "server-AddrMgr.xml"
+
+// false - normal operation
+// true - Linux: client and server can be run on the same host, but
+//        there is also a drawback: multiple clients can be run at once.
+#define CLIENT_BIND_REUSE false
 
 #ifdef WIN32
 #define WORKDIR           ".\\"
