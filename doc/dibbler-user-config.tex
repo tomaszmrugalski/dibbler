@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.12 2005-02-01 23:06:48 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.13 2005-03-07 22:45:51 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -39,7 +39,7 @@ There are also some client or server specified tokens. Here's the list:
 \item[server] -- iface, class, log-level, log-name, log-level,
   work-dir, accept-only, reject-only, t1, t2, prefered-lifetime,
   valid-lifetime, unicast, preference, pool, rapid-commit,
-  client-max-lease, class-max-lease, iface-max-lease, dns-servers,
+  client-max-lease, class-max-lease, iface-max-lease, dns-server,
   domain, ntp-server, time-zone, sip-server, sip-domain, nis-server,
   nis-domain, nis+-server, nis+-domain, lifetime
 \end{description}
@@ -368,9 +368,9 @@ iface eth0
       2000::3
     }
   }
-  option ntp-servers       // ask for NTP servers
+  option ntp-server        // ask for NTP servers
   option time-zone         // ask for timezone
-  option dns-servers       // ask for DNS servers
+  option dns-server        // ask for DNS servers
   option domain            // ask for domain
 }
 \end{verbatim}
@@ -774,6 +774,9 @@ iface eth3 {
 \end{verbatim}
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.12  2005/02/01 23:06:48  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.11  2005/01/23 23:16:56  thomson
 %% Relay related things.
 %%
