@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.37 2005-01-30 22:53:28 thomson Exp $
+ * $Id: Portable.h,v 1.38 2005-01-31 18:46:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2005/01/30 22:53:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.36  2005/01/25 21:14:14  thomson
  * *** empty log message ***
  *
@@ -121,22 +124,22 @@
 #define SRVCONF_FILE      "server.conf"
 #define RELCONF_FILE      "relay.conf"
 #define CLNTLOG_FILE	  "client.log"
-#define CLNTLOG_FILE	  "client.log"
+#define SRVLOG_FILE	      "server.log"
 #define RELLOG_FILE       "relay.log"
 #define NULLFILE          "nul"
 #endif
 
 #ifdef LINUX
-#define WORKDIR		  "/var/lib/dibbler"
-#define CLNTCONF_FILE	  "/etc/dibbler/client.conf"
+#define WORKDIR           "/var/lib/dibbler"
+#define CLNTCONF_FILE     "/etc/dibbler/client.conf"
 #define SRVCONF_FILE      "/etc/dibbler/server.conf"
 #define RELCONF_FILE      "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
 #define CLNTPID_FILE      "/var/lib/dibbler/client.pid"
 #define SRVPID_FILE       "/var/lib/dibbler/server.pid"
 #define RELPID_FILE       "/var/lib/dibbler/relay.pid"
-#define CLNTLOG_FILE	  "/var/lib/dibbler/dibbler-client.log"
-#define SRVLOG_FILE	  "/var/lib/dibbler/dibbler-server.log"
+#define CLNTLOG_FILE      "/var/lib/dibbler/dibbler-client.log"
+#define SRVLOG_FILE       "/var/lib/dibbler/dibbler-server.log"
 #define RELLOG_FILE       "/var/lib/dibbler/dibbler-relay.log"
 #define NULLFILE          "/dev/null"
 #endif

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptElapsed.cpp,v 1.3 2004-09-28 20:08:37 thomson Exp $
+ * $Id: OptElapsed.cpp,v 1.4 2005-01-31 18:46:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/28 20:08:37  thomson
+ * Minor changes.
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  */
@@ -48,7 +51,7 @@ char * TOptElapsed::storeSelf( char* buf)
     buf+=2;
     *(uint16_t*)buf = htons( getSize()-4 );
     buf+=2;
-    *(uint16_t*)buf = htons( now()-this->Timestamp);
+    *(uint16_t*)buf = htons( uint16_t(now()-this->Timestamp) );
     buf+=2;
     return buf;
 }

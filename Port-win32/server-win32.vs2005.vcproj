@@ -132,6 +132,9 @@
 					RelativePath="..\IfaceMgr\SocketIPv6.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvIfaceMgr\SrvIfaceIface.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvIfaceMgr\SrvIfaceMgr.cpp">
 				</File>
 			</Filter>
@@ -161,9 +164,6 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptInteger4.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptInterfaceID.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
@@ -365,7 +365,7 @@
 					RelativePath="..\misc\DHCPConst.cpp">
 				</File>
 				<File
-					RelativePath="..\DHCPServer.cpp">
+					RelativePath="..\Misc\DHCPServer.cpp">
 				</File>
 				<File
 					RelativePath="..\misc\DUID.cpp">

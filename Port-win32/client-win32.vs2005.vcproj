@@ -179,9 +179,6 @@
 					RelativePath="..\Options\OptInteger4.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptInterfaceID.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
 				</File>
 				<File
@@ -247,9 +244,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptIA_NA.cpp">
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptInterfaceID.cpp">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptLifetime.cpp">
@@ -471,7 +465,7 @@
 				Name="misc"
 				Filter="">
 				<File
-					RelativePath="..\DHCPClient.cpp">
+					RelativePath="..\Misc\DHCPClient.cpp">
 				</File>
 				<File
 					RelativePath="..\misc\DHCPConst.cpp">
