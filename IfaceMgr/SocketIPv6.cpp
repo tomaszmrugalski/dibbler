@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.12 2004-11-01 23:31:25 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.13 2004-11-25 01:22:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.11  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -41,19 +44,19 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-/*
+/**
  * IfaceSocketIPv6 - represents network socket 
  * @date 2003-10-26
  * @author Tomasz Mrugalski <admin@klub.com.pl>
  * @licence GNU GPL v2 or later
  */
 
-/* 
+/**
  * static elements of TIfaceSocket class
  */ 
 int TIfaceSocket::Count=0;
 
-/*
+/**
  * creates socket bound to specific address on this interface
  * @param iface - interface name
  * @param ifaceid - interface ID
@@ -75,7 +78,7 @@ enum EState TIfaceSocket::getStatus() {
 }
 
 
-/*
+/**
  * creates socket bound to this interface
  * @param iface - interface name
  * @param ifaceid - interface ID
@@ -94,7 +97,7 @@ TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly, bo
     this->Count++;
 }
 
-/*
+/**
  * creates socket on this interface.
  * @param iface - interface name
  * @param ifaceid - interface ID
@@ -178,7 +181,7 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
     return 0;
 }
 
-/*
+/**
  * sends data through socket
  * @param buf - buffer to send
  * @param len - number of bytes to send
@@ -202,7 +205,7 @@ int TIfaceSocket::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port) {
     return result;
 }
 
-/*
+/**
  * receives data from socket
  * @param buf - received data are stored here
  * @param addr - will contain info about sender
@@ -228,7 +231,7 @@ int TIfaceSocket::recv(char * buf, SmartPtr<TIPv6Addr> addr) {
     return len;
 }
 
-/*
+/**
  * returns FDS - FileDescriptorSet 
  * it's some really weird POSIX macro. It uses FD_SET, FD_ZERO and FD_CLR macros
  * defined somewhere in system headers
@@ -238,35 +241,35 @@ fd_set * TIfaceSocket::getFDS() {
     return &FDS;
 }
 
-/*
+/**
  * returns FileDescritor
  */
 int TIfaceSocket::getFD() {
     return this->FD;
 }
 
-/*
+/**
  * returns interface ID
  */
 int TIfaceSocket::getIfaceID() {
     return this->IfaceID;
 }
 
-/*
+/**
  * returns port
  */
 int TIfaceSocket::getPort() {
     return this->Port;
 }
 
-/*
+/**
  * returns address
  */
 SmartPtr<TIPv6Addr> TIfaceSocket::getAddr() {
     return this->Addr;
 }
 
-/*
+/**
  * closes socket, and removes its number from FDS
  */
 TIfaceSocket::~TIfaceSocket() {
