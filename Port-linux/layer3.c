@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.6 2004-06-04 20:54:34 thomson Exp $
+ * $Id: layer3.c,v 1.7 2004-07-01 18:13:51 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/04 20:54:34  thomson
+ * *** empty log message ***
+ *
  * Revision 1.5  2004/06/04 16:55:27  thomson
  * *** empty log message ***
  *
@@ -303,6 +306,11 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof(on)) < 0) {
 	// Unable to set up socket option IPV6_PKTINFO
 	return -8;
+    }
+
+    if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
+      // Unable to bind to interface
+      return -10;
     }
 
     // ???
