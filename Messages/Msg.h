@@ -2,6 +2,7 @@ class TMsg;
 #ifndef MSG_H
 #define MSG_H
 
+#include <iostream>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "DHCPConst.h"
@@ -21,24 +22,19 @@ class TMsg
     
     int getSize();
 
-    //## Odpowiada za reakcjê na otrzymanie wiadomoœci. W prztpadku zakoñczenia
-    //## transakcji ustawia pole IsDone na true
+    //answer for a specific message
     virtual void answer(SmartPtr<TMsg> Rep) = 0;
     
-    //## Funkcja odpowiada za transmisjê i retransmisjê danej wiadomoœci z
-    //## uwzglednienirem sta³ych czasowych.
+    // trasnmit (or retransmit)
     virtual void doDuties() = 0;
 
     virtual bool check() = 0;
 
-    //## Zwraca timeout (wykorzystywane po stronie klienta) do okreœlenia
-    //## czasu, po którym powinna zostaæ wykonana jakaœ akcja (retransmisja,
-    //## koniec transakcji itp.) wykonywana przez metodê getTimeout/doDuties
-    //## Transaction Managera 
-    //## po stronie klienta. 
     virtual unsigned long getTimeout();
 
     virtual void send();
+
+    virtual string getName() = 0;
 
     // returns requested option (or NULL, there is no such option)
     SmartPtr<TOpt> getOption(int type);
@@ -62,15 +58,15 @@ class TMsg
 
     List(TOpt) Options;
     
-    void setAttribs(int iface, SmartPtr<TIPv6Addr> addr, int msgType, long transID);
+    void setAttribs(int iface, SmartPtr<TIPv6Addr> addr, 
+		    int msgType, long transID);
 
     // Is this transaction done?
     bool IsDone;
     char * pkt;
-    // it points to server/client interface from/to which message was received/should be sent
+    // interface from/to which message was received/should be sent
     int Iface;
-
-    // it points to server/client address from/to which message was received/should be sent
+    // server/client address from/to which message was received/should be sent
     SmartPtr<TIPv6Addr> PeerAddr;
 
 };

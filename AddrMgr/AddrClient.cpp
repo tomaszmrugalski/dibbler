@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.5 2004-06-04 19:03:46 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.6 2004-06-20 19:29:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/04 19:03:46  thomson
+ * Resolved warnings with signed/unisigned
+ *
  * Revision 1.4  2004/03/29 18:53:09  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -147,17 +150,17 @@ ostream & operator<<(ostream & strum,TAddrClient &x)
 {
     if (x.DUID->getLen()==1)
 	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << logger::endl;
-	strum << hex << "  <AddrClient>" << std::endl;
-     if (x.DUID->getLen())
-	 strum << "    " << *x.DUID;
-
+    strum << "  <AddrClient>" << std::endl;
+    if (x.DUID->getLen())
+	strum << "    " << *x.DUID;
+    
     SmartPtr<TAddrIA> ptr;
     x.IAsLst.first();
     while (ptr = x.IAsLst.get() ) {
         strum << *ptr;
     }
 
-    strum << "  </AddrClient>" << dec << logger::endl;
+    strum << "  </AddrClient>" << logger::endl;
     if (x.DUID->getLen()==1)
 	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << logger::endl;
     return strum;

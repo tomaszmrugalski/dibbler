@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.3 2004-06-17 23:53:55 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.4 2004-06-20 19:29:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/17 23:53:55  thomson
+ * Server Address Assignment rewritten.
+ *
  * Revision 1.2  2004/06/06 22:31:44  thomson
  * *** empty log message ***
  *
@@ -98,7 +101,6 @@ TSrvOptIA_NA::TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent)
 TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
 			   SmartPtr<TSrvOptIA_NA> queryOpt,
 			   SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
-			   bool doNotAssignAddrs,
 			   int iface, int msgType, TMsg* parent)
     :TOptIA_NA(queryOpt->getIAID(), DHCPV6_INFINITY, DHCPV6_INFINITY, parent) {
     
@@ -114,7 +116,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 		     << LogEnd;
 	
 	SmartPtr<TIPv6Addr> anyaddr;
-	assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, doNotAssignAddrs);
+	assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY);
 	
        	// include status code
         SmartPtr<TSrvOptStatusCode> ptrStatus;
@@ -172,7 +174,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 		// we've got free addrs left, assign one of them
 		// always register this address as used by this client
 		// (if this is solicit, this addr will be released later)
-		assignAddr(hint, optAddr->getPref(), optAddr->getValid(), true);
+		assignAddr(hint, optAddr->getPref(), optAddr->getValid() );
 		addrsFree--;
 		addrsAssigned++;
 
@@ -209,8 +211,6 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     SubOptions.append((Ptr*)ptrStatus);
 
     // --- release addresses if this reply for SOLICIT) ---
-    if (!doNotAssignAddrs)
-	this->releaseAllAddrs();
 }
 
 
@@ -220,15 +220,18 @@ void TSrvOptIA_NA::releaseAllAddrs() {
     SmartPtr<TOptIAAddress> optAddr;
     this->firstOption();
     while ( opt = this->getOption() ) {
+	if (opt->getOptType() != OPTION_IAADDR)
+	    continue;
 	optAddr = (Ptr*) opt;
 	addr = optAddr->getAddr();
+	Log(Debug) << "About to release " << *addr << " address." << LogEnd;
 	this->AddrMgr->delClntAddr(this->ClntDuid, this->IAID, addr);
     }
 }
 
 
 SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
-						    unsigned long valid, bool doNotAssignAddrs) {
+						    unsigned long valid) {
 
     // Assign one address
     SmartPtr<TIPv6Addr> addr;
@@ -243,15 +246,16 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
     optAddr = new TSrvOptIAAddress(addr, pref, valid, this->Parent);
     SubOptions.append((Ptr*)optAddr);
 
+    Log(Info) << "Client requested " << *hint <<", got " << *addr 
+	      << " (IAID= " << this->IAID << ")" << LogEnd;
+
     // configure this IA
     this->T1= ptrClass->getT1(this->T1);
     this->T2= ptrClass->getT2(this->T2);
     
-    if (!doNotAssignAddrs) {
-	// register this address as used by this client
-	this->AddrMgr->addClntAddr(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, 
-				   this->T1, this->T2, addr, pref, valid);
-    }
+    // register this address as used by this client
+    this->AddrMgr->addClntAddr(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, 
+			       this->T1, this->T2, addr, pref, valid);
     
     return optAddr;
 }
@@ -470,13 +474,15 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
     // is it anyaddress (::)?
     SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
     if (*anyaddr==*hint) {
-	Log(Debug) << "Client requested unspecified (" << *hint << ") address. Hint ignored." << LogEnd;
+	Log(Debug) << "Client requested unspecified (" << *hint 
+		   << ") address. Hint ignored." << LogEnd;
 	invalidAddr = true;
     }
 
     // is it multicast address (ff...)?
     if ((*(hint->getAddr()))==0xff) {
-	Log(Debug) << "Client requested multicast (" << *hint << ") address. Hint ignored." << LogEnd;
+	Log(Debug) << "Client requested multicast (" << *hint 
+		   << ") address. Hint ignored." << LogEnd;
 	invalidAddr = true;
     }
 

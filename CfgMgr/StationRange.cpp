@@ -118,27 +118,6 @@ TStationRange::~TStationRange(void)
 {
 }
 
-
-/*TStationRange::TStationRange(const TStationRange& info)
-{
-	if (info.DUIDL||info.DUIDR)
-	{
-		this->DUIDLengthL=info.DUIDLengthL;
-		this->DUIDLengthR=info.DUIDLengthR;
-		this->DUIDL=new  char[info.DUIDLengthL];
-		this->DUIDR=new  char[info.DUIDLengthR];
-		memcpy(this->DUIDL,info.DUIDL,info.DUIDLengthL);
-		memcpy(this->DUIDR,info.DUIDR,info.DUIDLengthR);
-		}
-	else
-	{
-		DUIDL=DUIDR=NULL;
-		memcpy(AddrL,info.AddrL,16);
-		memcpy(AddrR,info.AddrR,16);
-	}
-
-}*/
-
 ostream& operator<<(ostream& out,TStationRange&  range)
 {
     if (range.isAddrRange) {

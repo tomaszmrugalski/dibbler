@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.7 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.8 2004-06-20 19:29:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  * Revision 1.6  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *
@@ -38,7 +41,8 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 				   SmartPtr<TSrvAddrMgr> AddrMgr,
 				   SmartPtr<TSrvMsgSolicit> solicit)
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
-	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, solicit->getTransID())
+	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
+	     solicit->getTransID())
 {
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
@@ -81,7 +85,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_IA : {
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt,
-					clntDuid, clntAddr, true, 
+					clntDuid, clntAddr, 
 					clntIface, SOLICIT_MSG,this);
 	    this->Options.append((Ptr*)optIA_NA);
 	    break;
@@ -89,7 +93,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_RAPID_COMMIT: {
 	    // RAPID COMMIT present, but we're in ADVERTISE, so obviously
 	    // server is configured not to use RAPID COMMIT
-	    Log(Notice) <<"RAPID COMMIT option ignored, ADVERTISE message generated." << LogEnd;
+	    Log(Notice) << "Generating ADVERTISE message, RAPID COMMIT option ignored." << LogEnd;
 	    break;
 	}
 	case OPTION_IAADDR: {
@@ -170,6 +174,17 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
     ptrPreference = new TSrvOptPreference(preference,this);
     Options.append((Ptr*)ptrPreference);
+
+    // this is ADVERTISE only, so we need to release assigned addresses
+    this->firstOption();
+    while ( opt = this->getOption()) {
+	if ( opt->getOptType()==OPTION_IA) {
+	    SmartPtr<TSrvOptIA_NA> ptrOptIA_NA;
+	    ptrOptIA_NA = (Ptr*) opt;
+	    ptrOptIA_NA->releaseAllAddrs();
+	}
+    }
+
 
     pkt = new char[this->getSize()];
     IsDone = false;

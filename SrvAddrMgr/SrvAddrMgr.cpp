@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.3 2004-06-17 23:53:54 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.4 2004-06-20 19:29:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  *                                                                           
  */
 
@@ -45,7 +48,8 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
 
     // have we found this client? 
     if (!ptrClient) {
-        Log(Notice) << "Client not found in addrDB, adding it." << LogEnd;
+        Log(Debug) << "Client (" << *clntAddr
+		   << ") not found in addrDB, adding it." << LogEnd;
 	ptrClient = new TAddrClient(clntDuid);
 	this->addClient(ptrClient);
     }
@@ -62,25 +66,28 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
     if (!ptrIA) {
 	ptrIA = new TAddrIA(iface, clntAddr, clntDuid, T1, T2, IAID);
 	ptrClient->addIA(ptrIA);
-        Log(Info) << "IA (IAID=" << IAID << ") not found in addrDB, adding it." << LogEnd;
-        return false;
+        Log(Debug) << "IA (IAID=" << IAID << ") not found in addrDB, adding it." << LogEnd;
     }
 
     SmartPtr <TAddrAddr> ptrAddr;
     ptrIA->firstAddr();
     while ( ptrAddr = ptrIA->getAddr() ) {
-        if (*ptrAddr->get()==*addr)//( !memcmp(ptrAddr->get(), addr, 16))
+        if (*ptrAddr->get()==*addr)
             break;
     }
+
     // address already exists
     if (ptrAddr) {
-        Log(Warning) << "Address " << *ptrAddr << " is already assigned in addrDB." << logger::endl;
+        Log(Warning) << "Address " << *ptrAddr 
+		     << " is already assigned to this IA." << logger::endl;
         return false;
     }
 
     // add address
     ptrAddr = new TAddrAddr(addr, pref, valid);
     ptrIA->addAddr(ptrAddr);
+    Log(Debug) << "Adding " << *ptrAddr << " (pref=" << pref << ", valid=" 
+	       << valid << ")	to IA (IAID=" << IAID << ")" << LogEnd;
     return true;
 }
 
@@ -127,11 +134,11 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid ,
 
     // address already exists
     if (!ptrAddr) {
-	Log(Warning) << "Address " << *ptrAddr << " not assigned, cannot delete." << LogEnd;
+	Log(Warning) << "Address " << *clntAddr << " not assigned, cannot delete." << LogEnd;
     }
 
     ptrIA->delAddr(clntAddr);
-    Log(Info) << "Address " << clntAddr << " deleted from addrDB." << LogEnd;
+    Log(Info) << "Address " << *clntAddr << " deleted from addrDB." << LogEnd;
     
     if (!ptrIA->countAddr()) {
 	Log(Info) << "IA (IAID=" << IAID << ") no longer used, removing." << LogEnd;
@@ -160,7 +167,6 @@ unsigned long TSrvAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
     }
     // Have we found this client? 
     if (!ptrClient) {
-	Log(Info) << "Client is not present in addrDB." << LogEnd;
         return 0;
     }
 

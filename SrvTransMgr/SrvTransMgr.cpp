@@ -203,7 +203,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
         case ADVERTISE_MSG:
         case REPLY_MSG: 
         {
-            std::clog << logger::logWarning << "Invalid message type received" << logger::endl;
+	    Log(Warning) << "Invalid message type received" << LogEnd;
             break;
         }
         case RELAY_FORW:

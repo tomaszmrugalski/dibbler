@@ -6,9 +6,11 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.7 2004-06-17 23:53:54 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.8 2004-06-20 19:29:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
  *                                                                           
  */
 

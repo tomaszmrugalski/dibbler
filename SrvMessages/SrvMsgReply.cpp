@@ -6,12 +6,14 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.6 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.7 2004-06-20 19:29:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  * Revision 1.5  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
- *
  *                                                                           
  */
 
@@ -485,7 +487,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	{
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA=new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, 
-				      clntDuid, clntAddr, false, 
+				      clntDuid, clntAddr,
 				      clntIface, REQUEST_MSG,this);
 	    this->Options.append((Ptr*)optIA_NA);
 	    break;
@@ -560,7 +562,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	{
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA=new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, 
-				      clntDuid, clntAddr, true, 
+				      clntDuid, clntAddr, 
 				      clntIface, REQUEST_MSG,this);
 	    this->Options.append((Ptr*)optIA_NA);
 	    break;

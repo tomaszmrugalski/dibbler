@@ -120,10 +120,10 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	ptrIface = this->getIfaceBySocket(sockid);
 
 	int ifaceid = ptrIface->getID();
-	std::clog << logger::logNotice << "Received " << bufsize 
-		  << " bytes via " << sockid 
-		  << " socket, ifaceid=" << ifaceid 
-		  << ",type=" << msgtype << logger::endl;
+	Log(Debug) << "Received " << bufsize 
+		   << " bytes ifaceid=" << ifaceid 
+		   << ",type=" << msgtype 
+		   << logger::endl;
 
 	// create specific message object
 	switch (msgtype) {

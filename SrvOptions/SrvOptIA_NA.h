@@ -1,3 +1,21 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvOptIA_NA.h,v 1.5 2004-06-20 19:29:23 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
+ *
+ */
+
+class TSrvOptIA_NA;
 #ifndef SRVOPTIA_NA_H
 #define SRVOPTIA_NA_H
 
@@ -11,22 +29,20 @@
 #include "Container.h"
 #include "IPv6Addr.h"
 
-class TOptIA_NA;
-
 class TSrvOptIA_NA : public TOptIA_NA
 {
   public:
     
-    TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
+    TSrvOptIA_NA(SmartPtr<TSrvCfgMgr> cfgMgr,
 		 SmartPtr<TSrvAddrMgr> addrMgr,
 		 SmartPtr<TSrvOptIA_NA> queryOpt,
 		 SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TDUID> duid,
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent);
 
-    TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent);    
-    TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent);    
-    TSrvOptIA_NA( long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);    
-    
+    TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent);    
+    TSrvOptIA_NA(long IAID, long T1, long T2, TMsg* parent);    
+    TSrvOptIA_NA(long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);
+
 /* Constructor used in answers to:
  * - SOLICIT 
  * - SOLICIT (with RAPID_COMMIT)
@@ -34,7 +50,6 @@ class TSrvOptIA_NA : public TOptIA_NA
     TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
 		 SmartPtr<TSrvOptIA_NA> queryOpt,
 		 SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
-		 bool doNotAssignAddrs,
 		 int iface, int msgType, TMsg* parent);
     
     void releaseAllAddrs();
@@ -55,7 +70,7 @@ class TSrvOptIA_NA : public TOptIA_NA
     int                   Iface;
     
     SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
-					  unsigned long valid, bool doNotAssignAddrs);
+					  unsigned long valid);
     SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TIPv6Addr> hint);
     unsigned long countFreeAddrsForClient();
 };

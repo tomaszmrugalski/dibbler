@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.10 2004-06-04 16:55:27 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.11 2004-06-20 19:29:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.9  2004/05/24 21:16:37  thomson
  * Various fixes.
  *
@@ -67,18 +70,25 @@ void TDHCPServer::run()
 	if (timeout>10) timeout = 10;
 #endif
 
-        std::clog << logger::logNotice << "Accepting connections. Next event in " << timeout << " second(s)." << logger::endl;
+        Log(Notice) << "Accepting connections. Next event in " << timeout 
+		    << " second(s)." << LogEnd;
         SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
         if (msg) 
         {
-            std::clog << logger::logNotice << "Received msg:type=" << msg->getType() 
-                << hex << " transID=" << msg->getTransID() << dec
-                << ", " << msg->countOption() << " opts:";
+	    int iface = msg->getIface();
+	    SmartPtr<TIfaceIface> ptrIface;
+	    ptrIface = IfaceMgr->getIfaceByID(iface);
+            Log(Notice) << "Received " << msg->getName()
+			<< "(type=" << msg->getType() 
+			<< ") on " << ptrIface->getName() << "/" << iface
+			<< hex << ",TransID=0x" << msg->getTransID() << dec
+			<< ", " << msg->countOption() << " opts:";
             SmartPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
-                std::clog << " " << ptrOpt->getOptType() << "(" << ptrOpt->getSize() << ")";
-            std::clog << logger::endl;
+                std::clog << " " << ptrOpt->getOptType();
+		    //<< "(" << ptrOpt->getSize() << ")"
+            std::clog << LogEnd;
             TransMgr->relayMsg(msg);
         }
     }
