@@ -1,7 +1,10 @@
 /*
- * $Id: lowlevel-winxpsp1.c,v 1.4 2004-03-28 19:48:10 thomson Exp $
+ * $Id: lowlevel-winxpsp1.c,v 1.5 2004-03-28 19:51:26 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
+ *  Revision 1.4  2004/03/28 19:48:10  thomson
+ *  Problem with missing IPv6 stack solved.
+ *
  *  Revision 1.3  2004/03/28 17:23:48  thomson
  *  no message
  *
