@@ -1,5 +1,6 @@
 include Makefile.inc
 PREFIX = .
+export TOPDIR=$(CURDIR)
 
 all: includes bison libs server client tags
 
@@ -11,16 +12,7 @@ bison:
 
 client: $(CLIENTBIN)
 
-$(CLIENTBIN): includes DHCPClient.o $(CLIENT)
-	cd $(LOWLEVEL);     $(MAKE) libs
-	cd $(CLNTTRANSMGR); $(MAKE) libs
-	cd $(CLNTIFACEMGR); $(MAKE) libs
-	cd $(CLNTADDRMGR);  $(MAKE) libs
-	cd $(CLNTCFGMGR);   $(MAKE) libs
-	cd $(CLNTMESSAGES); $(MAKE) libs
-	cd $(CLNTOPTIONS);  $(MAKE) libs
-	cd $(OPTIONS);      $(MAKE) libs
-	cd $(MISC);	    $(MAKE) libs
+$(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
 	$(CPP) -I $(INCDIR) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
@@ -33,7 +25,7 @@ $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
 	-L$(CLNTMESSAGES) -lClntMsg \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
 	-L$(MISC)         -lMisc \
-	-lClntOpts -lOptions $(XMLLIBS) $(EFENCE) 
+	-lClntOpts -lOptions -lLowLevel $(XMLLIBS) $(EFENCE) 
 
 server: $(SERVERBIN)
 $(SERVERBIN): includes DHCPServer.o $(SERVER)

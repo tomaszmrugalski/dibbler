@@ -22,9 +22,9 @@ LDFLAGS       = $(XMLLIBS) $(EFENCE)
 
 # === Portability ===
 ARCH         = LINUX
-LOWLEVEL     = $(PREFIX)/port-linux
-CLIENT       = port-linux/client-linux.cpp
-SERVER       = port-linux/server-linux.cpp
+LOWLEVEL     = $(PREFIX)/$(PORTDIR)
+CLIENT       = $(PORTDIR)/client-linux.cpp
+SERVER       = $(PORTDIR)/server-linux.cpp
 CLIENTBIN    = dibbler-client-linux
 SERVERBIN    = dibbler-server-linux
 
@@ -32,6 +32,7 @@ SERVERBIN    = dibbler-server-linux
 #MAKEFLAGS   += -s
 
 PREFIX       = ..
+PORTDIR      = $(PREFIX)/port-linux
 INCDIR       = $(PREFIX)/include
 ADDRMGR      = $(PREFIX)/AddrMgr
 CFGMGR       = $(PREFIX)/CfgMgr
@@ -56,7 +57,7 @@ SRVPARSER   = $(PREFIX)/SrvParser
 SRVMESSAGES = $(PREFIX)/SrvMessages
 SRVOPTIONS  = $(PREFIX)/SrvOptions
 
-COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      TransMgr   Messages     Options include misc
+COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      TransMgr   Messages     Options include misc $(PORTDIR)
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
 SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
