@@ -2,7 +2,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-//#define DIBBLER_VERSION "0.0.20040117"
+//#define DIBBLER_VERSION "$Date: 2004-02-22 23:03:11 $"
 #define DIBBLER_VERSION "0.1.0-RC1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
@@ -83,13 +83,9 @@
 #ifdef WIN32
 #include <windows.h>
 #include <time.h>
-extern time_t timer;
-#define now() time(&timer)
 #endif
 
-#ifdef LINUX
 #define now() time(NULL)
-#endif
 
 // **********************************************************************
 // *** interface/socket low level functions *****************************
