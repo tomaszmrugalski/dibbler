@@ -114,27 +114,45 @@ void die() {
     domain_del_all();
 }
 
-int main(int argc, char * argv[])
-{
-    std::cout << DIBBLER_COPYRIGHT1 << " (CLIENT)" << std::endl;
-    std::cout << DIBBLER_COPYRIGHT2 << std::endl;
-    std::cout << DIBBLER_COPYRIGHT3 << std::endl;
-    std::cout << DIBBLER_COPYRIGHT4 << std::endl;
+int getClientPID() {
+    string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
+    ifstream pidfile(tmp.c_str());
+    if (!pidfile.is_open()) 
+	return -1;
+    int pid;
+    pidfile >> pid;
+    return pid;
+}
 
-    bool daemon_mode = false;
+int getServerPID() {
+    string tmp = (string)WORKDIR+"/"+(string)SRVPID_FILE;
+    ifstream pidfile(tmp.c_str());
+    if (!pidfile.is_open()) 
+	return -1;
+    int pid;
+    pidfile >> pid;
+    return pid;
+}
 
-    logger::setLogName("Client");
-
-    init();
-
-    // parse command line parameters
-    // Well, one big FIXME here :)
-    if (argc>1 && !strncasecmp("start",argv[1],5) ) {
-	daemon_mode = true;
-	daemon_init();
+int status() {
+    int pid = getServerPID();
+    if (pid==-1) {
+	cout << "Dibbler server: NOT RUNNING." << endl;
+    } else {
+	cout << "Dibbler server: RUNNING, pid=" << pid << endl;
     }
     
+    pid = getClientPID();
+    if (pid==-1) {
+	cout << "Dibbler client: NOT RUNNING." << endl;
+    } else {
+	cout << "Dibbler client: RUNNING, pid=" << pid << endl;
+    }
 
+    return 0;
+}
+
+int run() {
     TDHCPClient client(CLNTCONF_FILE);
     ptr = &client;
 
@@ -145,10 +163,98 @@ int main(int argc, char * argv[])
     client.run();
 
     die();
+    return 0;
+}
 
-    if (daemon_mode)
-	daemon_die();
+int start() {
+    daemon_init();
+    run();
+    daemon_die();
+    return 0;
+}
+
+int stop() {
+    int pid = getClientPID();
+    if (pid==-1) {
+	Log(logCrit) << "Client is not running." << endl;
+	return -1;
+    }
+    Log(logCrit) << "Sending KILL signal to process " << pid << endl;
+    kill(pid, SIGTERM);
+    return 0;
+}
+
+int install() {
+    return 0;
+}
+
+int uninstall() {
+    return 0;
+}
+
+void help() {
+	cout << "Usage:" << endl;
+	cout << " dibbler-client-linux ACTION" << endl
+	     << " ACTION = status|start|stop|install|uninstall|run" << endl
+	     << " status    - show status and exit" << endl
+	     << " start     - start installed service" << endl
+	     << " stop      - stop installed service" << endl
+	     << " install   - install service [NOT IMPLEMENTED YET]" << endl
+	     << " uninstall - uninstall service [NOT IMPLEMENTED YET]" << endl
+	     << " run       - run in the console" << endl
+	     << " help      - displays usage info." << endl;
+}
+
+int main(int argc, char * argv[])
+{
+    char command[256];
+    int result=-1;
+
+    std::cout << DIBBLER_COPYRIGHT1 << " (CLIENT)" << std::endl;
+    std::cout << DIBBLER_COPYRIGHT2 << std::endl;
+    std::cout << DIBBLER_COPYRIGHT3 << std::endl;
+    std::cout << DIBBLER_COPYRIGHT4 << std::endl;
+
+    logger::setLogName("Client");
+
+    // parse command line parameters
+    if (argc>1) {
+	strncpy(command,argv[1],strlen(argv[1]));
+    } else {
+	memset(command,0,256);
+    }
+
+    if (!strncasecmp(command,"start",5) ) {
+	result = start();
+    }
+    if (!strncasecmp(command,"run",3) ) {
+	init();
+	result = run();
+    }
+    if (!strncasecmp(command,"stop",4)) {
+	result = stop();
+    }
+    if (!strncasecmp(command,"status",6)) {
+	result = status();
+    }
+    if (!strncasecmp(command,"help",4)) {
+	help();
+	result = 0;
+    }
+    if (!strncasecmp(command,"install",7)) {
+	cout << "NOT IMPLEMENTED YET" << endl;
+	result = 0;
+    }
+    if (!strncasecmp(command,"uninstall",9)) {
+	cout << "NOT IMPLEMENTED YET" << endl;
+	result = 0;
+    }
+
+    if (result!=0) {
+	help();
+    }
 
     return 0;
+
 }
 
