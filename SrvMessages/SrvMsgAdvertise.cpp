@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.9 2004-06-20 21:00:45 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.10 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/06/20 21:00:45  thomson
+ * Various fixes.
+ *
  * Revision 1.8  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -17,8 +20,6 @@
  *
  * Revision 1.6  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
- *
- *                                                                           
  */
 
 #include "SrvMsgAdvertise.h"
@@ -27,7 +28,8 @@
 #include "SrvOptOptionRequest.h"
 #include "SrvOptClientIdentifier.h"
 #include "SrvOptIA_NA.h"
-#include "OptStatusCode.h"
+#include "SrvOptServerUnicast.h"
+#include "SrvOptStatusCode.h"
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptPreference.h"
 #include "SrvOptDNSServers.h"
@@ -47,6 +49,14 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
 	     solicit->getTransID())
 {
+    if (!this->answer(solicit)) {
+	this->IsDone = true;
+	return;
+    }
+    this->IsDone = false;
+}
+
+bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
     SmartPtr<TDUID>      clntDuid;
@@ -60,12 +70,11 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     clntIface =solicit->getIface();
 
     // is this client supported?
-    if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
+    if (!SrvCfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
         //No reply for this client 
 	Log(Notice) << "Client with DUID=" << clntDuid << "/addr=" << clntAddr 
 		    << " was rejected (due to accept-only or reject-client)." << LogEnd;
-        IsDone=true;
-        return;
+        return false;
     }
 
     SmartPtr<TSrvOptOptionRequest> reqOpts;
@@ -87,7 +96,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	}
 	case OPTION_IA : {
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
-	    optIA_NA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt,
+	    optIA_NA = new TSrvOptIA_NA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt,
 					clntDuid, clntAddr, 
 					clntIface, SOLICIT_MSG,this);
 	    this->Options.append((Ptr*)optIA_NA);
@@ -116,8 +125,8 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    break;
 	}
 	    
-        //add options requested by client to option Request Option if
-       //client didn't included them
+	    //add options requested by client to option Request Option if
+	    //client didn't included them
 
 	case OPTION_DNS_RESOLVERS: {
 	    if (!reqOpts->isOption(OPTION_DNS_RESOLVERS))
@@ -141,8 +150,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_PREFERENCE :
 	case OPTION_UNICAST :
 	case OPTION_SERVERID : {
-	    std::clog << logger::logWarning 
-		      << "Invalid option (OPTION_UNICAST) received." << logger::endl;
+	    Log(Warning) << "Invalid option (OPTION_UNICAST) received." << LogEnd;
 	    break;
 	}
                 // options not yet supported 
@@ -164,19 +172,26 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     } // end of while
     
     //if client requested parameters and policy doesn't forbid from answering
-    appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
+    this->appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
 
     // include our DUID
     SmartPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
+    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr->getDUID(),this);
     Options.append((Ptr*)ptrSrvID);
 
     // ... and our preference
     SmartPtr<TSrvOptPreference> ptrPreference;
-    unsigned char preference = CfgMgr->getIfaceByID(solicit->getIface())->getPreference();
+    unsigned char preference = SrvCfgMgr->getIfaceByID(solicit->getIface())->getPreference();
     Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
     ptrPreference = new TSrvOptPreference(preference,this);
     Options.append((Ptr*)ptrPreference);
+
+    // does this server support unicast?
+    SmartPtr<TIPv6Addr> unicastAddr = SrvCfgMgr->getIfaceByID(solicit->getIface())->getUnicast();
+    if (unicastAddr) {
+	SmartPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
+	Options.append((Ptr*)optUnicast);
+    }
 
     // this is ADVERTISE only, so we need to release assigned addresses
     this->firstOption();
@@ -184,40 +199,33 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	if ( opt->getOptType()==OPTION_IA) {
 	    SmartPtr<TSrvOptIA_NA> ptrOptIA_NA;
 	    ptrOptIA_NA = (Ptr*) opt;
-	    // FIXME: quiet should be true
 	    ptrOptIA_NA->releaseAllAddrs(false);
 	}
     }
 
-
     pkt = new char[this->getSize()];
-    IsDone = false;
     this->MRT = 0;
     this->send();
+    return true;
 }
 
-bool TSrvMsgAdvertise::check()
-{
+bool TSrvMsgAdvertise::check() {
     // this should never happen
     return true;
 }
 
-void TSrvMsgAdvertise::answer(SmartPtr<TMsg> Rep)
-{
+void TSrvMsgAdvertise::answer(SmartPtr<TMsg> Rep) {
     // this should never happen
     return;
 }
 
-TSrvMsgAdvertise::~TSrvMsgAdvertise()
-{
+TSrvMsgAdvertise::~TSrvMsgAdvertise() {
 }
 
-unsigned long TSrvMsgAdvertise::getTimeout()
-{
+unsigned long TSrvMsgAdvertise::getTimeout() {
     return 0;
 }
-void TSrvMsgAdvertise::doDuties()
-{
+void TSrvMsgAdvertise::doDuties() {
     IsDone = true;
 }
 

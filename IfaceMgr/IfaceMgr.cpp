@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.9 2004-05-24 21:16:37 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.10 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
  * Revision 1.8  2004/05/23 23:45:19  thomson
  * getInterfaceByName bug fixed.
  *
@@ -147,7 +150,7 @@ SmartPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
  * @param buf - buffer
  * @param bufsize - buffer size
  * @param peer - informations about sender
- * returns interface ID
+ * returns socketID
  */
 int TIfaceMgr::select(unsigned long time, char *buf, 
 		      int &bufsize, SmartPtr<TIPv6Addr> peer) {
@@ -180,22 +183,34 @@ int TIfaceMgr::select(unsigned long time, char *buf,
             }
         }
 
-        char plain[48]; // plain address
+        char myPlainAddr[48];   // my plain address
+	char peerPlainAddr[48]; // peer plain address
 
         // receive data (pure C function used)
-        result = sock_recv(sock->getFD(), plain, buf, bufsize);
+        result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
 
 	// pack data (convert from plain to 16-byte)
-        char peerPacked[16];
-        inet_pton6(plain,peerPacked);
-        peer->setAddr(peerPacked);
+        char peerAddrPacked[16];
+	char myAddrPacked[16];
+        inet_pton6(peerPlainAddr,peerAddrPacked);
+        inet_pton6(myPlainAddr,myAddrPacked);
+        peer->setAddr(peerAddrPacked);
 
         if (result==-1) {
-            std::clog << logger::logError << "sock_recv(" << sock->getFD() << ","
-                << plain << "...) failed." << logger::endl;
+            Log(Error) << "sock_recv(" << sock->getFD() << "," << "...) failed." << LogEnd;
             bufsize = 0;
             return -1;
         }
+	
+	// check if we've received data addressed to us. There's problem with sockets binding. 
+	// If there are 2 open sockets (one bound to multicast and one to global address),
+	// each packet sent on multicast address is also received on unicast socket.
+	Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
+		   << *sock->getAddr() << LogEnd;
+	if (!memcmp(sock->getAddr()->getPlain(), myAddrPacked,16)) {
+	} else {
+
+	}
 
         bufsize = result;
         return sock->getFD();

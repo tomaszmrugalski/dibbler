@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.14 2004-09-03 23:20:23 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.15 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.13  2004/09/03 20:58:36  thomson
  * *** empty log message ***
  *
@@ -52,22 +55,14 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         // for each interface in CfgMgr, create socket (in IfaceMgr)
         SmartPtr<TSrvCfgIface> confIface;
         CfgMgr->firstIface();
-        char srvAddr[16];
-        inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
-        SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
 
         // TransMgr is certainly not done yet. We're just getting started
         IsDone = false;
 
-        while (confIface=CfgMgr->getIface())
-        {
-            // FIXME: check for NO-CONFIG
-            SmartPtr<TIfaceIface> iface=IfaceMgr->getIfaceByID(confIface->getID());
-	    Log(Notice) << "Creating ff02::1:2 socket on " << confIface->getName() 
-			<< "/" << confIface->getID() << " interface." << LogEnd;
-            if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true)) {
-		Log(Crit) << "Proper socket creation failed." << LogEnd;
+        while (confIface=CfgMgr->getIface()) {
+	    if (!this->openSocket(confIface)) {
 		this->IsDone = true;
+		break;
 	    }
         }
 
@@ -76,6 +71,37 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         IsDone=true;
     if (loadDB)
 	AddrMgr->doDuties();
+}
+
+/*
+ * opens proper (multicast or unicast) socket on interface 
+ */
+bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
+    char srvAddr[16];
+    inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
+    SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
+    
+    SmartPtr<TIfaceIface> iface=IfaceMgr->getIfaceByID(confIface->getID());
+    SmartPtr<TIPv6Addr> unicast = confIface->getUnicast();
+    if (unicast) {
+	/* unicast */
+	Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName() 
+		    << "/" << confIface->getID() << " interface." << LogEnd;
+	if (!iface->addSocket( unicast, DHCPSERVER_PORT, true)) {
+	    Log(Crit) << "Proper socket creation failed." << LogEnd;
+	    return false;
+	}
+    } 
+
+    
+    /* multicast */
+    Log(Notice) << "Creating multicast (ff02::1:2) socket on " << confIface->getName() 
+		<< "/" << confIface->getID() << " interface." << LogEnd;
+    if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true)) {
+	Log(Crit) << "Proper socket creation failed." << LogEnd;
+	return false;
+    }
+    return true;
 }
 
 long TSrvTransMgr::getTimeout()

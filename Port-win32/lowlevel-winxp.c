@@ -223,70 +223,63 @@ extern int ipaddr_del(char * ifacename, int ifaceid, char * addr)
 
 extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly)
 {
-	ADDRINFO			info;
-	ADDRINFO			*local;
-	char				ifaceStr[10];
-	char				portStr[10];
-	struct in6_addr		*packed;
-	char				addrStr[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")+5];
-	SOCKET				s;
-	struct ipv6_mreq	ipmreq; 
-	int					hops=8;		
-	char				addrpack[16];
-	int					err;
-	struct sockaddr_in6 *addrpck;
-	itoa(port,portStr,10);
-	itoa(ifaceid,ifaceStr,10);
-	inet_pton6(addr,addrpack);
-
-	packed=(struct in6_addr*)addrpack;
-	strcpy(addrStr,addr);
-
-	if(IN6_IS_ADDR_LINKLOCAL(packed)||IN6_IS_ADDR_SITELOCAL(packed))
-		strcat(strcat(addrStr,"%"),ifaceStr);
-
-	memset(&info, 0, sizeof(info));
-	info.ai_flags=AI_PASSIVE|AI_NUMERICHOST;
-	info.ai_family=PF_INET6;
-	info.ai_socktype=SOCK_DGRAM;
-
-	
-	if (IN6_IS_ADDR_MULTICAST(packed))
-	{
-		if(getaddrinfo(NULL,portStr,&info,&local)) 
-			return -1;
-	}
-	else
-		if(getaddrinfo(addrStr,portStr,&info,&local)) 
-			return -1;
- 
-	 addrpck=(struct sockaddr_in6*)(local->ai_addr);
-	if ((s=socket(local->ai_family,local->ai_socktype,local->ai_protocol))
-			==INVALID_SOCKET)
-		return -2;
-	
-	if (port>0)
-	if (bind(s,local->ai_addr,local->ai_addrlen))
-    {
-		displayError(WSAGetLastError());
-		return -3;
+    ADDRINFO info;
+    ADDRINFO *local;
+    char     ifaceStr[10];
+    char     portStr[10];
+    struct in6_addr *packed;
+    char addrStr[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")+5];
+    SOCKET s;
+    struct ipv6_mreq ipmreq; 
+    int hops=8;		
+    char addrpack[16];
+    int err;
+    struct sockaddr_in6 *addrpck;
+    itoa(port,portStr,10);
+    itoa(ifaceid,ifaceStr,10);
+    inet_pton6(addr,addrpack);
+    
+    packed=(struct in6_addr*)addrpack;
+    strcpy(addrStr,addr);
+    
+    if(IN6_IS_ADDR_LINKLOCAL(packed)||IN6_IS_ADDR_SITELOCAL(packed))
+	strcat(strcat(addrStr,"%"),ifaceStr);
+    
+    memset(&info, 0, sizeof(info));
+    info.ai_flags=AI_PASSIVE|AI_NUMERICHOST;
+    info.ai_family=PF_INET6;
+    info.ai_socktype=SOCK_DGRAM;
+    
+    if (IN6_IS_ADDR_MULTICAST(packed)) {
+	if(getaddrinfo(NULL,portStr,&info,&local)) 
+	    return -1;
     }
-
-
-
-	if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addrpack))
-	{
-		ipmreq.ipv6mr_interface=ifaceid;
-		memcpy(&ipmreq.ipv6mr_multiaddr,addrpack,16);
-		if(setsockopt(s,IPPROTO_IPV6,IPV6_ADD_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq)))
-			return -4;
+    else
+	if(getaddrinfo(addrStr,portStr,&info,&local)) 
+	    return -1;
+    
+    addrpck=(struct sockaddr_in6*)(local->ai_addr);
+    if ((s=socket(local->ai_family,local->ai_socktype,local->ai_protocol))
+	==INVALID_SOCKET)
+	return -2;
+    
+    if (port>0 && bind(s,local->ai_addr,local->ai_addrlen)) {
+//	    displayError(WSAGetLastError());
+	    return -3;
+    }
+    
+    if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addrpack)) {
+	ipmreq.ipv6mr_interface=ifaceid;
+	memcpy(&ipmreq.ipv6mr_multiaddr,addrpack,16);
+	if(setsockopt(s,IPPROTO_IPV6,IPV6_ADD_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq)))
+	    return -4;
 //			displayError(WSAGetLastError());
-		if(setsockopt(s,IPPROTO_IPV6,IPV6_MULTICAST_HOPS,(char*)&hops,sizeof(hops)))
-			return -5;
+	if(setsockopt(s,IPPROTO_IPV6,IPV6_MULTICAST_HOPS,(char*)&hops,sizeof(hops)))
+	    return -5;
 //			displayError(WSAGetLastError());
-	}
-	freeaddrinfo(local);
-	return s;
+    }
+    freeaddrinfo(local);
+    return s;
 }
 
 extern int sock_del(int fd)

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.19 2004-07-11 14:08:39 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.20 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/07/11 14:08:39  thomson
+ * Missing/invalid interface specifed in cfg, results in client shutdown
+ *
  * Revision 1.18  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -96,8 +99,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
   
     // check config consistency
-    if(!checkConfigConsistency())
-    {
+    if(!checkConfigConsistency()) {
         this->IsDone=true;
         return;
     }

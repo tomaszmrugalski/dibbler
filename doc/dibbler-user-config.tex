@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.6 2004-07-05 00:53:03 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.7 2004-09-05 15:27:49 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.6  2004/07/05 00:53:03  thomson
+%% Various changes.
+%%
 %% Revision 1.5  2004/06/28 22:38:00  thomson
 %% Minor changes.
 %%
@@ -379,6 +382,7 @@ work-dir         & global  & string      & empty      & working directory \\
 log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
 log-name         & global  & string      & Client     & Name, which appears in a log file\\
 log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
+
 preference       &interface& 0-255       & 0          & server preference value (higher is more prefered) \\
 dns-servers      &interface& addrs list  & empty      & DNS servers list \\
 domain           &interface& domain      & empty      & domain name \\
@@ -388,6 +392,7 @@ time-zone        &interface& timezone    & empty      & time zone \\
 %%unicast        &interface& 0 or 1      & 0          & is unicast communication allowed? \\
 iface-max-lease  &interface& integer     & 4294967296 & how many addresses can be leased by all clients? \\
 client-max-lease &interface& integer     & 4294967296 & how many addresses can be leased by one client? \\
+rapid-commit     &interface& 0 or 1      & 0          & should we allow Rapid Commit (SOLICIT--REPLY)? \\
 
 valid-lifetime   & class   & integer     & 4294967296 & valid lifetime for address (specified in seconds)\\
 prefered-lifetime& class   & integer     & 4294967296 & after this amount of time(in seconds) address becomes depreciated\\
@@ -397,7 +402,6 @@ reject-clients   & class   & addrs or
                              DUID list   & empty      & list containing servers which should be discarded in configuration of this IA \\
 accept-only      & class   & addrs or
                              DUID list   & empty      & these are the only clients allowed to use this class\\
-rapid-commit     & class   & 0 or 1      & 0          & should we allow Rapid Commit (SOLICIT--REPLY)? \\
 class-max-lease  & class   & integer     & 4294967296 & how many addresses can be leased from this class? \\
 
 \hline

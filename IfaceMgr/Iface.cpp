@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.10 2004-09-03 20:58:35 thomson Exp $
+ * $Id: Iface.cpp,v 1.11 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/09/03 20:58:35  thomson
+ * *** empty log message ***
+ *
  * Revision 1.9  2004/07/05 00:12:29  thomson
  * Lots of minor changes.
  *
@@ -213,6 +216,9 @@ bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly) {
 bool TIfaceIface::addSocket(int port, bool ifaceonly) {
     SmartPtr<TIfaceSocketIPv6> ptr = 
 	new TIfaceSocketIPv6(this->Name, this->ID, port, ifaceonly);
+    if (ptr->getStatus()!=CONFIGURED) {
+	return false;
+    }
     SocketsLst.append(ptr);
     return true;
 }

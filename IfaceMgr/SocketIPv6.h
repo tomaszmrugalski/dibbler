@@ -37,6 +37,7 @@ class TIfaceSocketIPv6 {
     int getFD();
     int getPort();
     int getIfaceID();
+    SmartPtr<TIPv6Addr> getAddr();
     enum EState getStatus();
 
     // ---select() stuff---
@@ -69,10 +70,7 @@ class TIfaceSocketIPv6 {
     // interface ID, on which this socket has been created
     int  IfaceID;
 
-    // bounded addr (plain text)
-    char Plain[48];
-
-    // bounded addr (object)
+    // bounded address 
     SmartPtr<TIPv6Addr> Addr;
 
     // true = bounded to this interface only

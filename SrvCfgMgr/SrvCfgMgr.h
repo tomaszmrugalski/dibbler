@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.5 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.6 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.4  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *
@@ -38,6 +41,9 @@ public:
     friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
     TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile,string oldCfgFile);
     
+
+    bool parseConfigFile(string cfgFile);
+
     //Interfaces acccess methods
     void firstIface();
     SmartPtr<TSrvCfgIface> getIface();

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.11 2004-09-05 10:45:16 thomson Exp $
+ * $Id: layer3.c,v 1.12 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/09/05 10:45:16  thomson
+ * Socket binding fixed.
+ *
  * Revision 1.10  2004/07/05 23:04:08  thomson
  * *** empty log message ***
  *
@@ -310,7 +313,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	// getaddrinfo failed. Is IPv6 protocol supported by kernel?
 	return -7;
     }
-    if( (Insock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0){
+    if( (Insock = socket(AF_INET6, SOCK_DGRAM,0 )) < 0){
 	//printf("socket creation failed. Is IPv6 protocol supported by kernel?\n");
 	return -1;
     }	
@@ -329,10 +332,10 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     }
 
     // allow address reuse (this option sucks - why allow running multiple servers?)
-//    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
-//	// Unable to set up socket option SO_REUSEADDR
-//	return -9;
-//    }
+    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
+	// Unable to set up socket option SO_REUSEADDR
+	return -9;
+    }
 
     // bind socket to a specified port
     struct sockaddr_in6 bindme;
@@ -400,17 +403,68 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
 	return result;
 }
 
-int sock_recv(int fd, char * addr, char * buf, int buflen)
+/*
+ *
+ */
+int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen)
 {
+    struct msghdr msg;            // message received by recvmsg
+    struct sockaddr_in6 peerAddr; // sender address
+    struct sockaddr_in6 myAddr;   // my address
+    struct iovec iov;             // simple structure containing buffer address and length
+
+    struct cmsghdr *cm;           // control message
+    struct in6_pktinfo *pktinfo; 
+
+    char control[CMSG_SPACE(sizeof(struct in6_pktinfo))];
+    char controlLen = CMSG_SPACE(sizeof(struct in6_pktinfo));
+    int result = 0;
+    bzero(&msg, sizeof(msg));
+    bzero(&peerAddr, sizeof(peerAddr));
+    bzero(&myAddr, sizeof(myAddr));
+    bzero(&control, sizeof(control));
+    iov.iov_base = buf;
+    iov.iov_len  = buflen;
+
+    msg.msg_name       = &peerAddr;
+    msg.msg_namelen    = sizeof(peerAddr);
+    msg.msg_iov        = &iov;
+    msg.msg_iovlen     = 1;
+    msg.msg_control    = control;
+    msg.msg_controllen = controlLen;
+
+    result = recvmsg(fd, &msg, 0);
+
+    if (result==-1) {
+	return -1;
+    }
+
+    // get source address
+    inet_ntop6((void*)&peerAddr.sin6_addr, peerPlainAddr);
+
+    // get destination address
+    for(cm = (struct cmsghdr *) CMSG_FIRSTHDR(&msg); cm; cm = (struct cmsghdr *) CMSG_NXTHDR(&msg, cm)){
+	if (cm->cmsg_level != IPPROTO_IPV6 || cm->cmsg_type != IPV6_PKTINFO)
+	    continue;
+	pktinfo= (struct in6_pktinfo *) (CMSG_DATA(cm));
+	inet_ntop6((void*)&pktinfo->ipi6_addr, myPlainAddr);
+    }
+    return result;
+
+#if 0
     char * znak;
     int port;
     struct sockaddr_storage from;
     socklen_t fromlen = sizeof(from);
-    int result = recvfrom( fd, buf, buflen, 0, (struct sockaddr *) &from,&fromlen);
     char addr_char[NI_MAXHOST], port_char[NI_MAXSERV];
     char iface_name[MAX_IFNAME_LENGTH];
+
+
+    result = recvfrom( fd, buf, buflen, 0, (struct sockaddr *) &from,&fromlen);
+
     getnameinfo((struct sockaddr *)&from, fromlen,
-		addr_char, sizeof(addr_char), port_char, sizeof(port_char), NI_NUMERICHOST|NI_NUMERICSERV);
+		addr_char, sizeof(addr_char), port_char, sizeof(port_char), 
+		NI_NUMERICHOST|NI_NUMERICSERV);
 
     if ( (znak = strchr(addr_char,37)) ) { // split after % sign
 	*znak=0;
@@ -426,6 +480,7 @@ int sock_recv(int fd, char * addr, char * buf, int buflen)
     // port      - port (integer)
     //printf("sock_recv2(): result=%d, addr=%s, iface=%s port %d\n",result,addr_char,iface_name,port);
     return result;
+#endif
 }
 
 void microsleep(int microsecs)

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.6 2004-09-03 23:20:23 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.7 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.5  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -45,6 +48,8 @@ public:
     SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, 
 					      SmartPtr<TIPv6Addr> clntAddr);
     long countAddrClass();
+
+    SmartPtr<TIPv6Addr> getUnicast();
 
     void setNoConfig();
 

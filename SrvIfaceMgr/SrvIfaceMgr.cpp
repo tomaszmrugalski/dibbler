@@ -48,10 +48,7 @@ bool TSrvIfaceMgr::sendMulticast  (int iface, char *msg, int size,
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-	// uh oh. No such interface
-	std::clog << logger::logError 
-		  << "Send failed: No such interface id=" 
-		  << iface << logger::endl;
+	Log(Error)  << "Send failed: No such interface id=" << iface << LogEnd;
 	return false;
     }
 
@@ -60,9 +57,8 @@ bool TSrvIfaceMgr::sendMulticast  (int iface, char *msg, int size,
     ptrIface->firstSocket();
     ptrSocket = ptrIface->getSocket();
     if (!ptrSocket) {
-	// uh oh.
-	clog << logError << "Send failed: interface \"" << ptrIface->getName() 
-	     << "\",id=" << iface << " has no open sockets." << logger::endl;
+	Log(Error) << "Send failed: interface \"" << ptrIface->getName() 
+		   << "\",id=" << iface << " has no open sockets." << LogEnd;
 	return false;
     }
 
@@ -105,9 +101,7 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     sockid = TIfaceMgr::select(timeout,buf,bufsize,Peer);
     if (sockid>0) {
 	if (bufsize<4) {
-	    std::clog << logger::logWarning 
-		      << "Received message is too short (" << bufsize 
-		      << ") bytes." << logger::endl;
+	    Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
 	    return 0; //NULL
 	}
 	
@@ -120,11 +114,9 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	ptrIface = this->getIfaceBySocket(sockid);
 
 	int ifaceid = ptrIface->getID();
-	Log(Debug) << "Received " << bufsize 
-		   << " bytes ifaceid=" << ifaceid 
-		   << ",type=" << msgtype 
-		   << logger::endl;
-
+	Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/" 
+		   << ptrIface->getID() << " (socket " << sockid << ") ,msg type=" << msgtype << "." 
+		   << LogEnd;
 	// create specific message object
 	switch (msgtype) {
 	case SOLICIT_MSG:

@@ -4,17 +4,13 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Portable.h,v 1.22 2004-08-24 22:48:36 thomson Exp $
+ * Released under GNU GPL v2 licence
+ *
+ * $Id: Portable.h,v 1.23 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
  * Revision 1.21  2004/07/11 14:09:11  thomson
  * 0.2.0-RC2
- *
- * Revision 1.20  2004/07/05 23:27:55  thomson
- * *** empty log message ***
- *
- * Revision 1.19  2004/06/04 21:02:45  thomson
- * *** empty log message ***
  *
  * Revision 1.18  2004/06/04 19:03:47  thomson
  * Resolved warnings with signed/unisigned
@@ -22,15 +18,8 @@
  * Revision 1.17  2004/05/23 23:45:45  thomson
  * logLevel works (finally...)
  *
- * Revision 1.16  2004/04/09 19:34:18  thomson
- * *** empty log message ***
- *
  * Revision 1.15  2004/03/29 22:06:49  thomson
  * 0.1.1 version
- *
- *
- * Released under GNU GPL v2 licence
- *
  */
 
 #ifndef PORTABLE_H
@@ -144,7 +133,7 @@ extern int ipaddr_del(char* ifacename, int ifaceid, char* addr);
 extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly);
 extern int sock_del(int fd);
 extern int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface);
-extern int sock_recv(int fd, char* addr, char* buf, int buflen);
+extern int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen);
 
 /* pack/unpack address */
 extern void print_packed(char addr[]);

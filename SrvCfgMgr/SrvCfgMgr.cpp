@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.24 2004-07-11 14:04:54 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.25 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/07/11 14:04:54  thomson
+ * Downed/invalid interface specified in cfg now results in server shutdown (bug #23)
+ *
  * Revision 1.23  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -64,54 +67,13 @@ using namespace std;
 TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string oldCfgFile)
     :TCfgMgr((Ptr*)ifaceMgr)
 {
-    int result;
-    ifstream f;
     this->IfaceMgr = ifaceMgr;
-    
-    /* support for config changes between runs - currently disabled */
-    //newConf=true if files differs
-    //newConf=compareConfigs(cfgFile,oldCfgFile);
-    //if(newConf) 
-    //   this->copyFile(cfgFile,oldCfgFile);
-    /* support for config changes between runs - currently disabled */
 
-    // parse config file
-    f.open( cfgFile.c_str() );
-    if ( ! f.is_open() ) {
-	std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl;
+    // load config file
+    if (!this->parseConfigFile(cfgFile)) {
 	this->IsDone = true;
 	return;
     }
-    yyFlexLexer lexer(&f,&clog);
-    SrvParser parser(&lexer);
-    std::clog << logger::logDebug << "Parsing config file..." << logger::endl;
-    result = parser.yyparse();
-    std::clog << logger::logDebug << "Parsing config done." << logger::endl;
-    f.close();
-
-    if (result) {
-        //Result!=0 means config errors. Finish whole DHCPClient 
-        Log(Crit) << "Config error." << logger::endl;
-        IsDone = true; 
-        return;
-    }
-
-    // setup workdir
-    this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
-    
-    // analyse interfaces mentioned in config file
-    if (!this->matchParsedSystemInterfaces(&parser)) {
-	this->IsDone = true;
-	return;
-    }
-    
-    // check for invalid values, e.g. T1>T2
-    if(!checkConfigConsistency())
-    {
-        this->IsDone=true;
-        return;
-    }
-
 
     // load or create DUID
     string duidFile = this->WorkDir+"/"+(string)SRVDUID_FILE;
@@ -125,6 +87,50 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     this->dump();
 
     IsDone = false;
+}
+
+bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
+    int result;
+    ifstream f;
+    
+    /* support for config changes between runs - currently disabled */
+    //newConf=true if files differs
+    //newConf=compareConfigs(cfgFile,oldCfgFile);
+    //if(newConf) 
+    //   this->copyFile(cfgFile,oldCfgFile);
+    /* support for config changes between runs - currently disabled */
+
+    // parse config file
+    f.open( cfgFile.c_str() );
+    if ( ! f.is_open() ) {
+	std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl;
+	return false;
+    }
+    yyFlexLexer lexer(&f,&clog);
+    SrvParser parser(&lexer);
+    Log(Debug) << "Parsing config file..." << LogEnd;
+    result = parser.yyparse();
+    Log(Debug) << "Parsing config done." << LogEnd;
+    f.close();
+
+    if (result) {
+        Log(Crit) << "Config error." << LogEnd;
+        return false;
+    }
+
+    // setup workdir
+    this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
+    
+    // analyse interfaces mentioned in config file
+    if (!this->matchParsedSystemInterfaces(&parser)) {
+	return false;
+    }
+    
+    // check for invalid values, e.g. T1>T2
+    if(!checkConfigConsistency()) {
+        return false;
+    }
+    return true;
 }
 
 void TSrvCfgMgr::dump() {
@@ -157,8 +163,9 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 		}
 		if (!ifaceIface) {
 		    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-				 << " specified in " << SRVCONF_FILE << " is not present in the system or does not support IPv6."
-				 << LogEnd;
+			      << " specified in " << SRVCONF_FILE 
+			      << " is not present in the system or does not support IPv6."
+			      << LogEnd;
 			this->IsDone = true;
 			return false;
 		}

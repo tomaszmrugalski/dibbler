@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.h,v 1.3 2004-09-03 20:58:36 thomson Exp $
+ * $Id: SrvTransMgr.h,v 1.4 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/03 20:58:36  thomson
+ * *** empty log message ***
+ *
  *
  */
 
@@ -29,6 +32,8 @@ class TSrvTransMgr
   public:
     TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		 string newconf, string oldconf);
+
+    bool openSocket(SmartPtr<TSrvCfgIface> confIface);
 
     long getTimeout();
     void relayMsg(SmartPtr<TMsg> msg);

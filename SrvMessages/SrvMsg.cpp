@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.5 2004-06-20 17:25:06 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.6 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/20 17:25:06  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 
@@ -65,8 +68,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     //After reading meessage code and transaction id	
     //read options contained in message    
     int pos=0;
-    while (pos<bufSize)		 
-    {
+    while (pos<bufSize)	{
         short code = ntohs( * ((short*) (buf+pos)));
         pos+=2;
         short length = ntohs(*((short*)(buf+pos)));
@@ -128,23 +130,22 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
                 case OPTION_RECONF_MSG:
                 case OPTION_AUTH_MSG:
                 case OPTION_RELAY_MSG:
-                    clog<< logger::logWarning <<"Option nr:" << code<< "not supported "
-                        <<" in field of message (type="<< MsgType <<") in this version of server."<<logger::endl;
+		default:
+                    Log(Warning) <<"Option nr:" << code<< "not supported in field of message (type="
+				 << MsgType <<") in this version of server."<< logger::endl;
                     break;
                 }
                 if ((ptr)&&(ptr->isValid()))
                     Options.append( ptr );
                 else
-                    clog<<logger::logWarning<<"Option nr:"<<code <<" invalid. Option ignored" << logger::endl;
+                    Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
             }
             else
-                clog << logger::logWarning << "Illegal option received, opttype=" << code 
-                    << " in field of message (type="<< MsgType <<")"<<logger::endl;
-        }
-        else
-        {
-                clog << logger::logWarning <<"Unknown option in package (" 
-                    << code << ", addr = " << *addr << "). Option ignored." << logger::endl;
+                Log(Warning) << "Illegal option received, opttype=" << code 
+			     << " in field of message (type="<< MsgType <<")" << LogEnd;
+        } else {
+	    Log(Warning) << "Unknown option in package (" << code << ", addr = " << *addr 
+			 << "). Option ignored." << LogEnd;
         };
         pos+=length;
     }
@@ -219,46 +220,48 @@ void TSrvMsg::send()
 {
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = SrvIfaceMgr->getIfaceByID(this->Iface);
-    Log(Notice) << "Sending " << this->getName()
-		<< "(type=" << this->getType() 
+    Log(Notice) << "Sending " << this->getName() << "(type=" << this->getType() 
 		<< ") on " << ptrIface->getName() << "/" << this->Iface
-		<< hex << ",TransID=0x" << this->getTransID() << dec 
-		<< ", " << this->countOption() << " opts:";
+		<< hex << ",TransID=0x" << this->getTransID() << dec << ", " 
+		<< this->countOption() << " opts:";
     SmartPtr<TOpt> ptrOpt;
     this->firstOption();
     while (ptrOpt = this->getOption() )
-        std::clog << " " << ptrOpt->getOptType();
-    std::clog << LogEnd;
+        Log(Cont) << " " << ptrOpt->getOptType();
+    Log(Cont) << LogEnd;
     TMsg::send();
     // FIXME: If server supports unicast, sendUnicast...
     this->SrvIfaceMgr->sendMulticast(this->Iface, this->pkt, 
 				     this->getSize(), this->PeerAddr);
 }
 
+/*
+ * this function appends all standard options
+ */
 bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
         int iface, SmartPtr<TSrvOptOptionRequest> reqOpts)
 {
     bool newOptionAssigned = false;
-    if ((reqOpts->getOptCnt())&&(SrvCfgMgr->isClntSupported(duid,addr,iface)))
-    {
+    if ((reqOpts->getOptCnt())&&(SrvCfgMgr->isClntSupported(duid,addr,iface))) {
         SmartPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr->getIfaceByID(iface);
-    
-        if ((reqOpts->isOption(OPTION_DNS_RESOLVERS))&&ptrIface->getDNSSrvLst().count())
-        {
+
+	// DNS resolvers option
+        if ((reqOpts->isOption(OPTION_DNS_RESOLVERS))&&ptrIface->getDNSSrvLst().count()) {
             SmartPtr<TSrvOptDNSServers> dnsLst=
                 new TSrvOptDNSServers(ptrIface->getDNSSrvLst(),this);
             Options.append((Ptr*)dnsLst);
             newOptionAssigned = true;
         };
         
-        if ((reqOpts->isOption(OPTION_NTP_SERVERS))&&ptrIface->getNTPSrvLst().count())
-        {
+	// NTP servers
+        if ((reqOpts->isOption(OPTION_NTP_SERVERS))&&ptrIface->getNTPSrvLst().count()) {
             SmartPtr<TSrvOptNTPServers> ntpLst=
                 new TSrvOptNTPServers(ptrIface->getNTPSrvLst(),this);
             Options.append((Ptr*)ntpLst);
             newOptionAssigned = true;
         };
 
+	// timezone option
         if ((reqOpts->isOption(OPTION_TIME_ZONE))&&(ptrIface->getTimeZone()!=""))
         {
             SmartPtr<TSrvOptTimeZone> timeZone=
@@ -267,8 +270,8 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
             newOptionAssigned = true;
         };
 
-        if ((reqOpts->isOption(OPTION_DOMAIN_LIST))&&(ptrIface->getDomain()!=""))
-        {
+	// Domain list option
+        if ((reqOpts->isOption(OPTION_DOMAIN_LIST))&&(ptrIface->getDomain()!="")) {
             SmartPtr<TSrvOptDomainName> domain=
                 new TSrvOptDomainName(ptrIface->getDomain(),this);
             Options.append((Ptr*)domain);

@@ -207,8 +207,7 @@ fixme:
 
 tags:
 	rm -f TAGS
-	find . -name \*.cpp | xargs etags
-	find . -name \*.h | xargs etags
+	find . -name '*.cpp' -or -name '*.h' | xargs etags
 
 clean-libs:
 	find . -name *.a -exec rm {} \;

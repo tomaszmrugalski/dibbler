@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.8 2004-09-03 20:58:35 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.9 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/09/03 20:58:35  thomson
+ * *** empty log message ***
+ *
  * Revision 1.7  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -100,9 +103,8 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
     this->Port = port;
     this->IfaceOnly = ifaceonly;
     this->Status = UNKNOWN;
-
-	memcpy(this->Plain,addr->getPlain(),48);
-
+    this->Addr   = addr;
+    
     // is this address multicast? So the socket is.
     if ((addr->getAddr())[0]==(char)0xff) 
         this->Multicast = true;
@@ -116,46 +118,39 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
     // detect errors
     switch (sock) {
     case -7:
-        std::clog << logger::logError 
-		  << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" 
-		  << logger::endl;
+        Log(Error) << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" << LogEnd;
         break;
     case -1:
-        std::clog << logger::logError 
-		  << "Unable to create socket. Is IPv6 protocol supported by kernel?" 
+        Log(Error) << "Unable to create socket. Is IPv6 protocol supported in your system?" 
 		  << logger::endl;
         break;
     case -2:
-        std::clog << logger::logError 
-		  << "Unable to bind socket to interface " << this->Iface << logger::endl;
+        Log(Error) << "Unable to bind socket to interface " << this->Iface << logger::endl;
         break;
     case -8:
-        std::clog << logger::logError 
-		  << "Unable to set up socket option IPV6_PKTINFO" << logger::endl;
+        Log(Error) << "Unable to set up socket option IPV6_PKTINFO" << logger::endl;
         break;
     case -9:
-        std::clog << logger::logError 
-		  << "Unable to set up socket option SO_REUSEADDR" << logger::endl;
+        Log(Error) << "Unable to set up socket option SO_REUSEADDR" << logger::endl;
         break;
     case -3: // this error no longer could occur in Linux version
-        std::clog << logger::logError 
-		  << "Unable to create a network address structure (addr=" 
+        Log(Error) << "Unable to create a network address structure (addr=" 
 		  << addr->getPlain() << ")" << logger::endl;
         break;
     case -4:
-        std::clog << logger::logError << "Unable to bind socket (iface=" << ifaceid  
-		  << ", addr=" << addr->getPlain() << ", port=" 
-		  << this->Port << ")" << logger::endl;
+	
+        Log(Error) << "Unable to bind socket (iface=" << iface << "/" << ifaceid 
+		   << ", addr=" << addr->getPlain() << ", port=" 
+		   << this->Port << ")" << logger::endl;
         break;
     case -5:
-        std::clog << logger::logError 
-		  << "Unable to getaddrinfo() of multicast group. (iface= " << ifaceid  
-		  << ", addr=" << this->Plain << ", port=" 
-		  << this->Port << ")" << logger::endl;
+        Log(Error) << "Unable to getaddrinfo() of multicast group. (iface= " << iface << "/" << ifaceid  
+		   << ", addr=" << *this->Addr << ", port=" 
+		   << this->Port << ")" << logger::endl;
         break;
     case -6:
-        std::clog << logger::logError 
-		  << "Unable to join multicast group." << logger::endl;
+        Log(Error) << "Unable to join multicast group." << logger::endl;
+	break;
     default:
         break;
     }
@@ -204,21 +199,22 @@ int TIfaceSocketIPv6::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port)
  * @param addr - will contain info about sender
  */
 int TIfaceSocketIPv6::recv(char * buf, SmartPtr<TIPv6Addr> addr) {
-    char peeraddr[48];
+    char myPlainAddr[48];
+    char peerPlainAddr[48];
 
     // maximum DHCPv6 packet size
     int len=1500;
 
-    len = sock_recv(this->FD, peeraddr, buf, len);
+    len = sock_recv(this->FD, myPlainAddr, peerPlainAddr, buf, len);
 
     if ( len  < 0 ) {
-        clog << logger::logError << "Error during recvfrom socket " << this->FD << logger::endl;
+        Log(Error) << "Error during sock_recv() on socket " << this->FD << LogEnd;
         return -1;
     }
 
     // convert to packed form (plain->16-byte)
     char packedAddr[16];
-    inet_pton6(peeraddr,packedAddr);
+    inet_pton6(peerPlainAddr,packedAddr);
     addr->setAddr(packedAddr);
     return len;
 }
@@ -255,6 +251,13 @@ int TIfaceSocketIPv6::getPort() {
 }
 
 /*
+ * returns address
+ */
+SmartPtr<TIPv6Addr> TIfaceSocketIPv6::getAddr() {
+    return this->Addr;
+}
+
+/*
  * closes socket, and removes its number from FDS
  */
 TIfaceSocketIPv6::~TIfaceSocketIPv6() {
@@ -280,7 +283,7 @@ ostream & operator <<(ostream & strum, TIfaceSocketIPv6 &x)
 	  << " fd=\"" << x.getFD() << "\""
 	  << " port=\"" << x.getPort() << "\""
 	  << " iface=\"" << x.Iface << "\""
-	  << " addr=\"" << x.Plain << "\"";
+	  << " addr=\"" << *x.Addr << "\"";
     if (x.Multicast) 
 	strum << " multicast=\"true\"";
     if (x.IfaceOnly)

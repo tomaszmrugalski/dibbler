@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.12 2004-09-03 23:20:23 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.13 2004-09-05 15:27:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.11  2004/09/03 20:58:35  thomson
  * *** empty log message ***
  *
@@ -100,6 +103,14 @@ int TSrvCfgIface::getID() {
 string TSrvCfgIface::getName() {
 	return Name;
 }
+
+SmartPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {
+    if (this->Unicast)
+	return this->UniAddress;
+    else
+	return 0;
+}
+
 
 TSrvCfgIface::~TSrvCfgIface() {
 }
