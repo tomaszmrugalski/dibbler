@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.4 2004-09-27 22:01:01 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.5 2004-10-03 21:36:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/09/27 22:01:01  thomson
+ * Sending is now more verbose.
+ *
  * Revision 1.3  2004/09/07 17:42:31  thomson
  * Server Unicast implemented.
  *
@@ -223,12 +226,12 @@ void TClntMsg::send()
 
     SmartPtr<TIfaceIface> ptrIface = ClntIfaceMgr->getIfaceByID(Iface);
     if (PeerAddr) {
-	Log(Debug) << "Sending " << this->getName() << " on /" << ptrIface->getName() 
+	Log(Debug) << "Sending " << this->getName() << " on " << ptrIface->getName() 
 		   << "/" << Iface << " to unicast addr " << *PeerAddr << "." << LogEnd;
 	ClntIfaceMgr->sendUnicast(Iface,pkt,getSize(),PeerAddr);
     } else {
-	Log(Debug) << "Sending " << this->getName() << " on /" << ptrIface->getName() 
-		   << "/" << Iface << " to mulitcast." << LogEnd;
+	Log(Debug) << "Sending " << this->getName() << " on " << ptrIface->getName() 
+		   << "/" << Iface << " to multicast." << LogEnd;
 	ClntIfaceMgr->sendMulticast(Iface, pkt, getSize());
     }
     LastTimeStamp = now();
