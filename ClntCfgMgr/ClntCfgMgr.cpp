@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.15 2004-05-23 22:37:54 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.16 2004-05-23 23:46:02 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/05/23 22:37:54  thomson
+ * *** empty log message ***
+ *
  * Revision 1.14  2004/05/23 21:35:31  thomson
  * *** empty log message ***
  *
@@ -112,7 +115,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
     int cfgIfaceCnt;
     cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
-    Log(logDebug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCFGMGR_FILE << logger::endl;
+    Log(logDebug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCONF_FILE << logger::endl;
 
     SmartPtr<TClntCfgIface> cfgIface;
     SmartPtr<TIfaceIface> ifaceIface;

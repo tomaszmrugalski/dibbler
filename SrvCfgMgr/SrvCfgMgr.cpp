@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.13 2004-05-23 21:35:31 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.14 2004-05-23 23:46:02 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/05/23 21:35:31  thomson
+ * *** empty log message ***
+ *
  * Revision 1.12  2004/05/23 21:24:50  thomson
  * *** empty log message ***
  *
@@ -94,59 +97,43 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     IsDone = false;
 }
 
+/*
+ * Now parsed information should be place in config manager
+ * in accordance with information provided by interface manager
+ */
 bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
-    //Now parsed information should be place in config manager
-    //in accordance with information provided by interface manager
-    SmartPtr<TIfaceIface> iface;
-    IfaceMgr->firstIface();
-    //so for each iface in the system
-    while(iface=IfaceMgr->getIface())
-	//which is to be configured
-	if ( (iface) &&
-	     (iface->flagUp()) &&
-	     (iface->flagRunning()) &&
-	     (iface->flagMulticast()) )
-	{
-	    //try to find it in parsed config file
-	    SmartPtr<TSrvCfgIface> cfgIface,foundIface;
-	    parser->SrvCfgIfaceLst.first();
-	    while(cfgIface=parser->SrvCfgIfaceLst.get())
-		if((iface->getID()==cfgIface->getID())||
-		   (string(iface->getName())==string(cfgIface->getName())))
-		    //yes - it's provided by user
-		{
-		    if(foundIface) //Oops! He did it again.
-			std::clog << logger::logWarning 
-				  << "Redefinition of interface - last one is valid." << logger::endl;
-		    //So it is memorized and removed from information descirbing config file
-		    foundIface=cfgIface;
-		    parser->SrvCfgIfaceLst.del();
-		};
-	    //Have we found any interface ?
-	    if (foundIface) 
-	    {
-		//Here should be match iface name and iface id from IfaceMgr
-		//there is declaration of this iface in config file
-		if(iface->getID()==foundIface->getID()) {
-		    foundIface->setIfaceName(iface->getName());
-		}
-		else {
-		    foundIface->setIfaceID(iface->getID());
-		}
-		this->addIface(foundIface);
-	    };
-	};
-    //So we configure approprieatly all interfaces in the system
-    //Rest of interfaces described in config file can't be configured
-    //because they don't exist, are not up/running etc.
-    //so appropriate warning should be logged
+    int cfgIfaceCnt;
+    cfgIfaceCnt = parser->SrvCfgIfaceLst.count();
+    Log(logDebug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << logger::endl;
+
     SmartPtr<TSrvCfgIface> cfgIface;
+    SmartPtr<TIfaceIface>  ifaceIface;
+
+    if (!cfgIfaceCnt) {
+	Log(logCrit) << "No interfaces defined. Server startup aborted." << logger::endl;
+	return false;
+    }
+    
     parser->SrvCfgIfaceLst.first();
     while(cfgIface=parser->SrvCfgIfaceLst.get()) {
-	std::clog << logger::logError << "Unable to configure " << cfgIface->getName()<<"/"
-		  << cfgIface->getID() << " interface. Reason: "
-		  << "is loopback, not present in system (IfaceMgr), down, " 
-		  << "not running or is not multicast-capable." << logger::endl;
+	// for each interface from config file
+	if (cfgIface->getID()==-1) {
+	    // ID==-1 means that user referenced to interface by name
+	    ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
+	} else {
+	    ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
+	}
+	if (!ifaceIface) {
+	    Log(logCrit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			 << " specified in " << CLNTCFGMGR_FILE << " is not present in the system."
+			 << logger::endl;
+	    return false;
+	}
+	cfgIface->setIfaceName(ifaceIface->getName());
+	cfgIface->setIfaceID(ifaceIface->getID());
+	this->addIface(cfgIface);
+	Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+		     << " has been added." << logger::endl;
     }
     return true;
 }

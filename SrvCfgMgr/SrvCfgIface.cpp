@@ -58,18 +58,18 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
 
 }
 
-TSrvCfgIface::	TSrvCfgIface(int ifaceNr)
+TSrvCfgIface::TSrvCfgIface(int ifaceNr)
 {
+    this->Name="[unknown]";
     this->ID=ifaceNr;
     this->NoConfig=false;
-    //FIXME:here checking iface name in ConfMgr
 }
 
 TSrvCfgIface::TSrvCfgIface(string ifaceName)
 {
     this->Name=ifaceName;
+    this->ID = -1;
     this->NoConfig=false;
-    //FIXME:here checking iface number in ConfgMgr
 }
 void TSrvCfgIface::setNoConfig()
 {

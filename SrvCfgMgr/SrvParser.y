@@ -133,27 +133,6 @@ InterfaceDeclarationsList '}'
     SrvCfgIfaceLst.append(new TSrvCfgIface($2));
     EndIfaceDeclaration();
 }
-/////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: iface 'eth0' no-config
-/////////////////////////////////////////////////////////////////////////////
-|IFACE_ STRING_ NO_CONFIG_
-{
-    CheckIsIface(string($2));
-    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-    SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-    SrvCfgIfaceLst.getLast()->setNoConfig();
-}
-/////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: iface 5 no-config
-/////////////////////////////////////////////////////////////////////////////
-|IFACE_ Number NO_CONFIG_
-{
-    CheckIsIface($2);
-    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-    SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-    SrvCfgIfaceLst.getLast()->setNoConfig();
-}
-;
 
 InterfaceDeclarationsList
 : InterfaceOptionDeclaration
