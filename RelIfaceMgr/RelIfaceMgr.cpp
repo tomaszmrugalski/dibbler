@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.3 2005-01-13 22:45:55 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.4 2005-01-23 23:17:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.2  2005/01/11 23:35:22  thomson
  * *** empty log message ***
  *
@@ -209,6 +212,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     SmartPtr<TRelMsg> msg = this->decodeMsg(iface, peer, buf, bufsize);
 
     // inform that this message should be sent to the peerAddr address on the ptrIface interface.
+
     msg->setDestination(ptrIfaceID->getValue(), peerAddr);
     return (Ptr*)msg;
 }

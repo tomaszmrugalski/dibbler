@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.2 2005-01-13 22:45:55 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.3 2005-01-23 23:17:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.1  2005/01/11 22:53:36  thomson
  * Relay skeleton implemented.
  *
@@ -120,7 +123,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     buf[offset++] = hopCount;
 
     // store link-addr 
-    //addr = iface->getGlobalAddr();
+    addr = iface->getGlobalAddr();
     if (!addr) {
 	Log(Warning) << "Interface " << iface->getFullName() << " does not have global address." << LogEnd;
 	addr = new TIPv6Addr("::", true);
@@ -196,8 +199,8 @@ void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
     }
 
     bufLen = msg->storeSelf(buf);
-    Log(Notice) << "Relaying " << msg->getName() << " message on the " << iface->getName()
-		<< "/" << iface->getID() << " interface to the " << addr->getPlain() << "." << LogEnd;
+    Log(Notice) << "Relaying " << msg->getName() << " message on the " << iface->getFullName()
+		<< " interface to the " << addr->getPlain() << "." << LogEnd;
 
     // FIXME: if this is a RELAY_REPL (one RELAY_REPL was already decapsulated, so this would be
     // SOMETHING in RELAY_REPL in RELAY_REPL) DHCPSERVER_PORT should be used instead

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.16 2005-01-13 22:45:55 thomson Exp $
+ * $Id: Iface.cpp,v 1.17 2005-01-23 23:17:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.15  2005/01/03 21:53:41  thomson
  * const modifier added.
  *
@@ -40,6 +43,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include "Iface.h"
 #include "Portable.h"
 #include "Logger.h"
@@ -49,7 +53,7 @@ using namespace std;
  * stores informations about interface
  */
 TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
-			 int maclen, char* llAddr, int llAddrCnt, int hwType)
+			 int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType)
 {
 #ifdef LINUX
     snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
@@ -76,6 +80,14 @@ TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* ma
         this->LLAddr=NULL;
     this->PresLLAddr=this->LLAddr;
 
+    // store all global addresses
+    this->GlobalAddrCnt = globalCnt;
+    if (globalCnt>0) {
+	this->GlobalAddr = new char[16*globalCnt];
+	memcpy(this->GlobalAddr, globalAddr, 16*globalCnt);
+    } else 
+	this->GlobalAddr = NULL;
+
     // store hardware type
     this->HWType=hwType;
 }
@@ -95,9 +107,11 @@ int TIfaceIface::getID() {
 }
 
 string TIfaceIface::getFullName() {
+    ostringstream oss;
+    oss << this->ID;
     return string(this->Name)
-	+"/";
-//	+(string)this->ID;
+	+"/"
+	+oss.str();
 }
 
 /*
@@ -147,6 +161,13 @@ int TIfaceIface::getMacLen() {
  */
 char* TIfaceIface::getMac() {
     return this->Mac;
+}
+
+SmartPtr<TIPv6Addr> TIfaceIface::getGlobalAddr() {
+    if (!this->GlobalAddr)
+	return 0;
+    SmartPtr<TIPv6Addr> ptr = new TIPv6Addr(this->GlobalAddr);
+    return ptr;
 }
 
 /*
@@ -325,6 +346,13 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
 
     for (int i=0; i<x.LLAddrCnt; i++) {
 	inet_ntop6(x.LLAddr+i*16,buf);
+	strum << "    <Addr>" << buf << "</Addr>" << endl;
+    }
+
+    strum << "    <!-- " << x.GlobalAddrCnt << " non-local addrs -->" << endl;
+
+    for (int i=0; i<x.GlobalAddrCnt; i++) {
+	inet_ntop6(x.GlobalAddr+i*16,buf);
 	strum << "    <Addr>" << buf << "</Addr>" << endl;
     }
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.10 2005-01-13 22:45:55 thomson Exp $
+ * $Id: Iface.h,v 1.11 2005-01-23 23:17:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.9  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -43,7 +46,7 @@ class TIfaceIface{
     friend ostream & operator <<(ostream & strum, TIfaceIface &x);
 
     TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
-                int maclen, char* llAddr, int llAddrCnt, int hwType);
+                int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType);
     char * getName();
     int getID();
     string getFullName();
@@ -62,6 +65,8 @@ class TIfaceIface{
     char* firstLLAddress();
     char* getLLAddress();
     int   countLLAddress();
+
+    SmartPtr<TIPv6Addr> getGlobalAddr();
 
     // ---address related---
     bool addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
@@ -88,6 +93,9 @@ class TIfaceIface{
     int Maclen;
     char* LLAddr;
     int LLAddrCnt;
+    char * GlobalAddr;
+    int GlobalAddrCnt;
+    
     int HWType;
 
     // sockets

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.20 2004-12-08 00:20:14 thomson Exp $
+ * $Id: layer3.c,v 1.21 2005-01-23 23:17:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/12/08 00:20:14  thomson
+ * LOWDEBUG printing added, code identiation.
+ *
  * Revision 1.19  2004/12/04 23:47:01  thomson
  * sock_add() now supports low debug info.
  *
@@ -83,6 +86,7 @@ int print_linkinfo(struct nlmsghdr *n);
 int print_addrinfo(struct nlmsghdr *n);
 int print_selected_addrinfo(int ifindex, struct nlmsg_list *ainfo);
 void ipaddr_local_get(int *count, char **buf, int ifindex, struct nlmsg_list *ainfo);
+void ipaddr_global_get(int *count, char **buf, int ifindex, struct nlmsg_list *ainfo);
 void print_link_flags( unsigned flags);
 int default_scope(inet_prefix *lcl);
 
@@ -183,6 +187,7 @@ struct iface * if_list_get()
 	}
 
 	ipaddr_local_get(&tmp->linkaddrcount, &tmp->linkaddr, tmp->id, ainfo);
+	ipaddr_global_get(&tmp->globaladdrcount, &tmp->globaladdr, tmp->id, ainfo);
     }
 
     release_nlmsg_list(linfo);
@@ -212,6 +217,47 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
 	    
 	    memcpy(addr,(char*)RTA_DATA(rta_tb[IFLA_ADDRESS]),16);
 	    if (addr[0]!=0xfe || addr[1]!=0x80) {
+		continue; // ignore non link-scoped addrs
+	    }
+	    
+	    // ifa->ifa_flags & 128 - permenent
+	    //printf("flags:%d : ",ifa->ifa_flags);
+
+	    pos = cnt*16;
+	    buf = (char*) malloc( pos + 16);
+	    memcpy(buf,tmpbuf, pos); // copy old addrs
+	    memcpy(buf+pos,addr,16); // copy new addr
+	    
+	    free(tmpbuf);
+	    tmpbuf = buf;
+	    cnt++;
+	}
+    }
+    *count = cnt;
+    *bufPtr = buf;
+}
+
+/**
+ * returns non-local addresses for specified interface
+ */
+void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list *ainfo) {
+    int cnt=0;
+    char * buf=0, * tmpbuf=0;
+    char addr[16];
+    struct rtattr * rta_tb[IFA_MAX+1];
+    int pos;
+
+    for ( ;ainfo ;  ainfo = ainfo->next) {
+	struct nlmsghdr *n = &ainfo->h;
+	struct ifaddrmsg *ifa = NLMSG_DATA(n);
+	if ( (ifa->ifa_family == AF_INET6) && (ifa->ifa_index == ifindex) ) {
+	    memset(rta_tb, 0, sizeof(rta_tb));
+	    parse_rtattr(rta_tb, IFA_MAX, IFA_RTA(ifa), n->nlmsg_len - NLMSG_LENGTH(sizeof(*ifa)));
+	    if (!rta_tb[IFA_LOCAL])   rta_tb[IFA_LOCAL]   = rta_tb[IFA_ADDRESS];
+	    if (!rta_tb[IFA_ADDRESS]) rta_tb[IFA_ADDRESS] = rta_tb[IFA_LOCAL];
+	    
+	    memcpy(addr,(char*)RTA_DATA(rta_tb[IFLA_ADDRESS]),16);
+	    if (addr[0]==0xfe || addr[1]==0x80) {
 		continue; // ignore non link-scoped addrs
 	    }
 	    

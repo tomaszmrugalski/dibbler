@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.20 2004-12-27 20:48:22 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.21 2005-01-23 23:17:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/12/27 20:48:22  thomson
+ * Problem with absent link local addresses fixed (bugs #90, #91)
+ *
  * Revision 1.19  2004/12/16 22:00:58  thomson
  * *** empty log message ***
  *
@@ -106,6 +109,8 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
 						       ptr->maclen,
 						       ptr->linkaddr,
 						       ptr->linkaddrcount,
+						       ptr->globaladdr,
+						       ptr->globaladdrcount,
 						       ptr->hardwareType));
         this->IfaceLst.append(smartptr);
         ptr = ptr->next;

@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.18 2005-01-13 22:45:55 thomson Exp $
+$Id: TODO,v 1.19 2005-01-23 23:17:53 thomson Exp $
 
   Internal/code TODO
  --------------------
@@ -8,6 +8,9 @@ $Id: TODO,v 1.18 2005-01-13 22:45:55 thomson Exp $
 - IfaceMgr.cpp:232 (remove #ifndef WIN32)
 - IfaceMgr contains only info about link local addresses.
 
+- Clnt requests for Address and options (receives both and lifetime option). It should send renew only if T1<lifetime
+  and renew and inf-request if T1>lifetime.
+
 - 20. RFC3315: If the relay agent has not been explicitly configured,
   it MUST use the All_DHCP_Servers multicast address as the default.
 
@@ -15,7 +18,15 @@ $Id: TODO,v 1.18 2005-01-13 22:45:55 thomson Exp $
 - Flex (gentoo: emerge /usr/portage/sys-devel/flex/flex-2.5.31-r1.ebuild)
 
 - check server's behavior: there isn't any addrs left, and srv receives SOLICIT.
-  Does PREFERENCE have normal value (e.g. not faulty 255, check tex/test09/10th packet)
+  Does PREFERENCE have normal value (e.g. not faulty 255, check
+   tex/test09/10th packet)
+
+- Debian:
+  Ogólnie to pakiet nie mo¿e byæ tylko binarny by go umie¶ciæ w
+   Debianie. To musi byæ paczka .orig.tar.gz ze ¼ród³ami plus
+   .diff.tar.gz z zawarto¶ci± debian/ by po uploadniêciu siê to
+   scali³o i zbudowa³o.
+  - New Maintainer's Guide, a resztê opisuje Debian Policy.
 
   BUGS
  ------

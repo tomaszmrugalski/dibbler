@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.33 2005-01-11 22:53:35 thomson Exp $
+ * $Id: Portable.h,v 1.34 2005-01-23 23:17:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  * Revision 1.32  2004/12/27 20:45:00  thomson
  * 0.3.1 version.
  *
@@ -244,6 +247,8 @@ struct iface {
     int  maclen;                   // length of link layer address
     char *linkaddr;                // assigned IPv6 link local addresses 
     int  linkaddrcount;            // number of assigned IPv6 link local addresses
+    char *globaladdr;              // global IPv6 addresses
+    int  globaladdrcount;          // number of global IPV6 addresses
     unsigned int flags;            // look IF_xxx in portable.h
     struct iface* next;            // structure describing next iface in system
 };
