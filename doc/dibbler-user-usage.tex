@@ -1,3 +1,8 @@
+%%
+%% $Id: dibbler-user-usage.tex,v 1.2 2004-06-19 10:24:59 thomson Exp $
+%%
+%% $Log: not supported by cvs2svn $
+%%
 
 \section{Installation and usage}
 Both client and server are installed in the same way. Installation
@@ -8,7 +13,7 @@ are used\footnote{Compilation is not
   advanced users, see \emph{Compilation} section for details.}.
 
 \subsection{Linux installation}
-Obtain (e.g. download from http://klub.com.pl/dhcpv6/) an archive with
+Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an archive with
 Dibbler binaries and extract it to /var/lib/dibbler directory:
 \begin{verbatim}
 cd /var/lib/dibbler/
@@ -59,7 +64,7 @@ or
 \end{verbatim}
 
 \subsection{WindowsXP installation}
-Obtain (e.g. download from http://klub.com.pl/dhcpv6/) an archive with
+Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an archive with
 Dibbler binaries and extract it to a directory, e.g. c:$\backslash$dibbler.
 
 Now run console (start $\rightarrow$ run... $\rightarrow$ cmd). Now
@@ -126,16 +131,16 @@ several modifications are required:
 
 \begin{itemize}
 \item To generate ClntParser.cpp and ClntLexer.cpp files, you can use
-parser.bat. After generation, in file ClntLexer.cpp replace: ,,class istream;''
-with: ,,\#include <iostream>'' and ,,using namespace std;'' lines.
+parser.bat. After generation, in file ClntLexer.cpp replace: \verb+class istream;+
+with: \verb+#include <iostream>+ and \verb+using namespace std;+ lines.
 \item flex binary included is slightly modified. It generates
-,,\#include "FlexLexer.h"'' instead of ,,\#include <FlexLexer.h>''. You should
+\verb+#include "FlexLexer.h"+ instead of \verb+#include <FlexLexer.h>+. You should
 add .\ to include path if you have problem with missing FlexLexer.h.
 Also note that FlexLexer.h is modified (std:: added in several places,
-<fstream.h> is replaced with <fstream> etc.
-\item In file ClntParser.cpp, substitute line (around 1860): ,,	*++yyvsp = yylval;''
-with: ,,*++yyvsp = ::yylval;''. This trick is supposed to fix numerous
-parser problems.
+\verb+<fstream.h>+ is replaced with \verb+<fstream>+ etc.
+%%\item In file ClntParser.cpp, substitute line (around 1860): ,,	*++yyvsp = yylval;''
+%%with: ,,*++yyvsp = ::yylval;''. This trick is supposed to fix numerous
+%%parser problems.
 \end{itemize}
 
 Keep in mind that author is in no way a flex/bison guru and found this method

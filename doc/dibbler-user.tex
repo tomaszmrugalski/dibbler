@@ -1,4 +1,10 @@
-\documentclass[10pt]{article}
+%%
+%% $Id: dibbler-user.tex,v 1.3 2004-06-19 10:24:59 thomson Exp $
+%%
+%% $Log: not supported by cvs2svn $
+%%
+
+\documentclass[11pt]{article}
 \usepackage[latin2]{inputenc}
 \usepackage[pdftex]{graphicx}
 \usepackage{float}
@@ -6,6 +12,9 @@
 \usepackage{fancyhdr}
 \usepackage{indentfirst}
 \usepackage{longtable}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage[ps2pdf,colorlinks=true,linkcolor=myLinkColor,urlcolor=myUrlColor]{hyperref}
 
 %\setlength{\topmargin}{-1.0cm}
 
@@ -14,9 +23,14 @@
 \addtolength{\textheight}{3.0 cm}
 \addtolength{\voffset}{-0.5cm}
 
-\author{Tomasz Mrugalski\\ \small{thomson(at)klub.com.pl}}
-\date{29-05-2004}
+\author{Tomasz Mrugalski\\ \small{\href{mailto:thomson(at)klub.com.pl}{thomson(at)klub.com.pl}}}
+\date{2004-06-21}
 \title{Dibbler -- a portable DHCPv6\\User's guide}
+
+\definecolor{myBgColor}{rgb}{0.9,0.9,0.9}
+\definecolor{myLinkColor}{rgb}{0.0,0.4,0.0}
+\definecolor{myUrlColor}{rgb}{0.7,0.2, 0.4}
+\pagecolor{myBgColor}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -53,7 +67,11 @@
 version 0.2.0
 \end{center}
 
+\newpage
 \tableofcontents
+
+
+\newpage
 
 %% INTRO, OVERVIEW
 \input{dibbler-user-intro.tex}
