@@ -251,6 +251,12 @@ release-gentoo: VERSION-linux
 
 release-all: release-src release-linux release-doc release-deb release-rpm release-win32
 
+deb:
+	@echo "Make sure that this directory is called dibbler-0.4.0 (substitute 0.4.0 with current version)"
+	@echo " and that there is a file ../dibbler_0.4.0.orig.tar.gz"
+	ln -s $(PORTDIR)/debian debian
+	dpkg-buildpackage -rfakeroot
+
 release-deb: VERSION-linux server client doc
 	@echo "[RM     ] dibbler_$(VERSION)_i386.deb"
 	rm -f dibbler_$(VERSION)_i386.deb
@@ -334,9 +340,12 @@ install: server client relay doc
 	done
 	$(MKDIR) $(INST_DOCDIR)/dibbler
 	@echo "[INSTALL] /doc/dibbler-user.pdf"
-	$(INSTALL) -m 755 doc/dibbler-user.pdf $(INST_DOCDIR)/dibbler/dibbler-user.pdf
+	$(INSTALL) -m 644 doc/dibbler-user.pdf $(INST_DOCDIR)/dibbler/dibbler-user.pdf
 	@echo "[INSTALL] /doc/dibbler-devel.pdf"
-	$(INSTALL) -m 755 doc/dibbler-devel.pdf $(INST_DOCDIR)/dibbler/dibbler-devel.pdf
+	$(INSTALL) -m 644 doc/dibbler-devel.pdf $(INST_DOCDIR)/dibbler/dibbler-devel.pdf
+	@echo "[INSTALL] CHANGELOG"
+	$(INSTALL) -m 644 CHANGELOG $(INST_DOCDIR)/dibbler/changelog
+	gzip -9 $(INST_DOCDIR)/dibbler/changelog
 
 snapshot: clean
 	cvs update -d
