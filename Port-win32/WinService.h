@@ -50,7 +50,7 @@ public:
 	void showStatus();
 
 	int getStatus();
-	bool isRunning();
+	bool isRunning(const char * name);
 
 	~TWinService(void);
 

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: client-win32.cpp,v 1.9 2004-04-15 23:24:44 thomson Exp $
+ * $Id: client-win32.cpp,v 1.10 2004-04-15 23:53:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/04/15 23:24:44  thomson
+ * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
+ *
  * Revision 1.8  2004/03/29 22:06:49  thomson
  * 0.1.1 version
  *
@@ -92,7 +95,6 @@ int main(int argc, char* argv[])
 	switch(status) {
 	case STATUS: { // STATUS
 		Client.showStatus();
-		clog << "Running: "<< (Client.isRunning() ? "YES":"NO") << endl;
 		break;
 	}
 	case START: { // START

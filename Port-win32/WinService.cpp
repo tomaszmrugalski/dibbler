@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: WinService.cpp,v 1.5 2004-04-15 23:24:43 thomson Exp $
+ * $Id: WinService.cpp,v 1.6 2004-04-15 23:53:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/04/15 23:24:43  thomson
+ * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
+ *
  *
  * Released under GNU GPL v2 licence
  *
@@ -347,8 +350,25 @@ int TWinService::getStatus() {
 	return this->Status.dwCurrentState;
 }
 
-bool TWinService::isRunning() {
-	return this->IsRunning;
+bool TWinService::isRunning(const char * name) {
+	    bool result = false;
+    // Open the Service Control Manager
+    SC_HANDLE hSCM = ::OpenSCManager(NULL, // local machine
+                                     NULL, // ServicesActive database
+                                     SC_MANAGER_ALL_ACCESS); // full access
+    if (hSCM) {
+        // Try to open the service
+        SC_HANDLE hService = OpenService(hSCM,name,SERVICE_QUERY_CONFIG);
+        if (hService) {
+			LPSERVICE_STATUS lpServiceStatus;
+			BOOL ok = ControlService(hService, SERVICE_CONTROL_INTERROGATE,lpServiceStatus);
+
+			result = true;
+            CloseServiceHandle(hService);
+        }
+        CloseServiceHandle(hSCM);
+    }
+    return result;
 }
 
 void TWinService::showStatus() {
@@ -360,4 +380,7 @@ void TWinService::showStatus() {
 		<< logger::endl;
 	std::clog <<  "Dibbler client :" << (clientInstalled?"INSTALLED":"NOT INSTALLED")
 		<< logger::endl;
+	
+	std::clog << "Client running: " << (this->isRunning("DHCPv6Client") ? "YES":"NO") << logger::endl;
+
 }
