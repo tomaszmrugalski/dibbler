@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.2 2005-02-01 01:09:34 thomson Exp $
+ * $Id: relay-win32.cpp,v 1.3 2005-02-01 22:08:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/02/01 01:09:34  thomson
+ * Cosmetics.
+ *
  * Revision 1.1  2005/01/24 00:42:37  thomson
  * no message
  *
@@ -61,9 +64,10 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 }
 
 int main(int argc, char* argv[]) {
-    // Create the service object
-    TRelService RelService;
-	int i=0;
+    // get the service object
+    TRelService * RelService = TRelService::getHandle();
+
+    int i=0;
     WSADATA wsaData;
     if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
 	cout<<"Unable to load WinSock 2.2"<<endl;
@@ -76,8 +80,8 @@ int main(int argc, char* argv[]) {
 	return -1;		
     }
     
-    EServiceState status = RelService.ParseStandardArgs(argc, argv);
-    RelService.setState(status);
+    EServiceState status = RelService->ParseStandardArgs(argc, argv);
+    RelService->setState(status);
     
     cout << DIBBLER_COPYRIGHT1 << " (RELAY)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
@@ -89,35 +93,32 @@ int main(int argc, char* argv[]) {
     
     switch (status) {
     case STATUS: {
-        RelService.showStatus();
-#if 0
-        cout << "Service: ";
-	if (RelService.IsInstalled()) 
-	    cout << "INSTALLED " << endl;
-	else
-	    cout << "NOT INSTALLED" << endl;
-#endif
+        RelService->showStatus();
 	break;
     };
     case START: {
-	    RelService.StartService();
+	    RelService->StartService();
 	    break;
     }
     case STOP: {
-	    RelService.StopService();
+	    RelService->StopService();
     	break;
     }
     case INSTALL: {
-        RelService.Install();
+        RelService->Install();
 	    break;
     }
     case UNINSTALL: {
-	    RelService.Uninstall();
+	    RelService->Uninstall();
 	    break;
     } 
     case RUN: {
-	    RelService.Run();
+	    RelService->Run();
 	    break;
+    }
+    case SERVICE: {
+        RelService->RunService();
+        break;
     }
     case INVALID: {
 	    cout << "Invalid usage." << endl;

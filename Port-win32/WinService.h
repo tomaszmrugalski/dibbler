@@ -12,6 +12,7 @@ typedef enum {
 	STOP,
 	INSTALL,
 	UNINSTALL,
+    SERVICE,
 	RUN,
 	HELP,
 	INVALID
@@ -32,7 +33,9 @@ public:
 	bool IsInstalled(const char *name);
     bool Install();
     bool Uninstall();
-    bool StartService();
+    bool StartService(); /* invoked to trigger start */
+    bool RunService();   /* actual service start and run */
+    bool StopService();
     void SetStatus(DWORD dwState);
     bool Initialize();
     
@@ -48,6 +51,7 @@ public:
 
 	int getStatus();
 	bool isRunning(const char * name);
+    bool isRunning();
 
 	~TWinService(void);
 

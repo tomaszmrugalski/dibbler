@@ -6,9 +6,12 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.12 2005-02-01 18:36:53 thomson Exp $
+ * $Id: WinService.cpp,v 1.13 2005-02-01 22:08:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/02/01 18:36:53  thomson
+ * IsRunning implemented, Install/Uninstall cleanup.
+ *
  * Revision 1.11  2005/02/01 18:26:45  thomson
  * no message
  *
@@ -105,6 +108,7 @@ void TWinService::Handler(DWORD dwOpcode) {
     case SERVICE_CONTROL_STOP: // 1
         pService->SetStatus(SERVICE_STOP_PENDING);
         pService->OnStop();
+        pService->SetStatus(SERVICE_STOPPED);
         pService->IsRunning = FALSE;
         break;
 
@@ -202,7 +206,7 @@ bool TWinService::Install()
     char filePath[_MAX_PATH];
     GetModuleFileName(NULL, filePath, sizeof(filePath));
 	int i = strlen(filePath); 
-	sprintf(filePath+i, " start -d \"%s\"",ServiceDir.c_str());
+	sprintf(filePath+i, " service -d \"%s\"",ServiceDir.c_str());
 
     // Create the service
 	//printf("Install(): filepath=[%s]\nServiceName=[%s]\n",filePath,ServiceName);
@@ -232,6 +236,11 @@ bool TWinService::Install()
 
 bool TWinService::Uninstall()
 {
+    if (this->isRunning()) {
+        Log(Crit) << "Unable to stop. Service " << ServiceName << " is running." << LogEnd;
+        return false;
+    }
+
     if (!this->IsInstalled()) {
         Log(Crit) << "Service " << ServiceName << " is not installed." << LogEnd;
         return false;
@@ -264,7 +273,8 @@ bool TWinService::Uninstall()
     return result;
 }
 
-bool TWinService::StartService()
+/* this method is called when service is being started (by service itself) */
+bool TWinService::RunService()
 {
     SERVICE_TABLE_ENTRY st[] = {
         {ServiceName, ServiceMain},
@@ -272,6 +282,84 @@ bool TWinService::StartService()
     };
     BOOL result = StartServiceCtrlDispatcher(st);
     return result?true:false;
+}
+
+/* this method is called from console, when someone wants to start service */
+bool TWinService::StartService() {
+    if (!IsInstalled()) {
+        Log(Crit) << "Unable to start. Service " << ServiceName << " is not installed." << LogEnd;
+        return false;
+    }
+
+
+    // open a handle to the SCM
+	SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
+	if(!handle)	{
+		Log(Crit) << "Could not connect to SCM dataase" << LogEnd;
+		return false;
+	}
+
+	// open a handle to the service
+	SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
+	if(!service) {
+		::CloseServiceHandle( handle );
+		Log(Crit) << "Could not get handle to " << ServiceName << " service" << LogEnd;
+		return false;
+	}
+
+	// and start the service!
+	if( !::StartService( service, 0, NULL ) ) {
+		Log(Crit) << "Service " << ServiceName << " startup failed." << LogEnd;
+    	::CloseServiceHandle( service );
+	    ::CloseServiceHandle( handle );
+        return false;
+	}
+
+    Log(Notice) << "Service " << ServiceName << " started." << LogEnd;
+   	::CloseServiceHandle( service );
+    ::CloseServiceHandle( handle );
+    return true;
+}
+
+bool TWinService::StopService() 
+{
+    if (!IsInstalled()) {
+        Log(Crit) << "Unable to stop. Service " << ServiceName << " is not installed." << LogEnd;
+        return false;
+    }
+
+    // open a handle to the SCM
+	SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
+	if(!handle)	{
+		Log(Crit) << "Could not connect to SCM database" << LogEnd;
+		return false;
+	}
+
+	// open a handle to the service
+	SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
+	if(!service) {
+		::CloseServiceHandle( handle );
+        Log(Crit) << "Unable to open service " << ServiceName << LogEnd;
+		return false;
+	}
+
+	// send the STOP control request to the service
+	SERVICE_STATUS status;
+	::ControlService( service, SERVICE_CONTROL_STOP, &status );
+	::CloseServiceHandle( service );
+	::CloseServiceHandle( handle );
+
+    if (status.dwCurrentState == SERVICE_STOP_PENDING) {
+        Log(Notice) << "Service " << ServiceName << " stop process initialized." << LogEnd;
+        return true;
+    }
+
+	if( status.dwCurrentState != SERVICE_STOPPED ) {
+		Log(Crit) << "Service " << ServiceName << " stop failed." << LogEnd;
+        return false;
+	}
+	Log(Notice) << "Service " << ServiceName << " stopped." << LogEnd;
+    return true;
 }
 
 void TWinService::SetStatus(DWORD dwState)
@@ -302,7 +390,7 @@ void TWinService::Run()
 	printf("WinService::Run()\n");
 	return;
     while (IsRunning) {
-        Sleep(5000);
+        Sleep(1000);
     }
 }
 
@@ -338,6 +426,10 @@ bool TWinService::OnUserControl(DWORD dwOpcode)
 
 int TWinService::getStatus() {
 	return this->Status.dwCurrentState;
+}
+
+bool TWinService::isRunning() {
+    return this->isRunning(this->ServiceName);
 }
 
 bool TWinService::isRunning(const char * name) {
