@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.4 2004-06-06 22:31:44 thomson Exp $
+ * $Id: DUID.cpp,v 1.5 2004-06-20 20:59:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/06 22:31:44  thomson
+ * *** empty log message ***
+ *
  * Revision 1.3  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -16,6 +19,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 
 #include "DUID.h"
 #include "Logger.h"
@@ -24,6 +28,7 @@ TDUID::TDUID()
 {
     DUID=NULL;
     len=0;
+    Plain="";
 }
 
 // packed
@@ -34,12 +39,25 @@ TDUID::TDUID(char* DUID,int DUIDlen)
         this->DUID=new char[DUIDlen];
         memcpy(this->DUID,DUID,DUIDlen);
         this->len=DUIDlen;
+	this->packedToPlain();
     }
     else
     {
         this->DUID=NULL;
         this->len=0;
+	this->Plain="";
     }
+}
+
+void TDUID::packedToPlain() {
+    ostringstream tmp;
+    for(int i=0; i<this->len; i++)
+	tmp << setfill('0')<<setw(2)<<hex<< (unsigned int) this->DUID[i];
+    this->Plain = tmp.str();
+}
+
+void TDUID::plainToPacked() {
+
 }
 
 // plain
@@ -50,6 +68,8 @@ TDUID::TDUID(char* Plain)
 	this->len=0;
 	return;
     }
+
+    this->Plain = Plain;
 
     int DUIDlen = strlen((char*)Plain);
     this->DUID = new char[DUIDlen>>1];
@@ -77,6 +97,7 @@ TDUID::TDUID(const TDUID &duid) {
     this->DUID=new char [duid.len];
     memcpy(this->DUID,duid.DUID,duid.len);
     this->len=duid.len;
+    this->Plain = duid.Plain;
 }
 
 TDUID& TDUID::operator=(const TDUID &duid) {
@@ -89,6 +110,7 @@ TDUID& TDUID::operator=(const TDUID &duid) {
     this->DUID=new char [duid.len];
     memcpy(this->DUID,duid.DUID,duid.len);
     this->len=duid.len;
+    this->Plain=duid.Plain;
     
     return *this;
 }
@@ -137,6 +159,10 @@ int TDUID::getLen() {
     return this->len;
 }
 
+const string TDUID::getPlain() {
+    return this->Plain;
+}
+
 char * TDUID::storeSelf(char* buf) {
     memcpy(buf,DUID,len);
     return buf+len;
@@ -144,10 +170,8 @@ char * TDUID::storeSelf(char* buf) {
 
 ostream& operator<<(ostream& out,TDUID&  duid) {
     if ( (duid.DUID && duid.len) ) {
-	out << "<duid length=\"" << duid.len << "\">";
-        for(int i=0;i<duid.len;i++)
-            out<<setfill('0')<<setw(2)<<hex<< (unsigned int)duid.DUID[i];
-	out << dec << "</duid>" << std::endl;
+	out << "<duid length=\"" << duid.len << "\">"
+	    << duid.Plain << "</duid>" << std::endl;
     } else {
         out << "<duid length=\"0\"></duid>" << std::endl;
     }
