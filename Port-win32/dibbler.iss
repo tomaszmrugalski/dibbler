@@ -5,7 +5,9 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.3.0
+AppVerName=Dibbler 0.3.1
+OutputBaseFilename=dibbler-0.3.1-win32
+OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
 UninstallDisplayIcon={app}\MyProg.exe
