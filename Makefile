@@ -33,8 +33,9 @@ $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
 	-L$(MESSAGES)     -lMsg \
 	-lClntOptions -lOptions -lLowLevel $(XMLLIBS) $(EFENCE) 
 
-server: includes commonlibs srvlibs $(SERVERBIN)
-$(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
+server: $(SERVERBIN)
+
+$(SERVERBIN): includes commonlibs srvlibs DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
@@ -44,6 +45,7 @@ $(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
 	-L$(CFGMGR)      -lCfgMgr\
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
+	-L$(IFACEMGR)     -lIfaceMgr \
 	-L$(MISC)        -lMisc\
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
