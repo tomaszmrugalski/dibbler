@@ -3,6 +3,8 @@
  ------------------- 
 
  0.3.0 [2004-12-16]
+  - Linux: make install was implemented (bugs #86, #87)
+  - Linux: man pages were created (buf #61, #62)
   - Linux: RPM package prepared (bugs #63, #64)
   - Windows installed (bugs #59, #60)
   - Client now can handle denied REPLY for RENEW in a sanite way (bug #53)

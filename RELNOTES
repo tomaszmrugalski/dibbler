@@ -1,21 +1,22 @@
 
-  Dibbler 0.3.0-RC2 release notes
- ---------------------------------
+  Dibbler 0.3.0 release notes [2004-12-16]
+ ------------------------------------------
   
- This version incorporates two simple, yet critical bugfixes: server crash when
- receiving IA option without IAADDR suboption and improper socket initialization
- in Linux.
+ This version incorporates lots of fixes for bugs reported by various 
+ users. It is considered stable. All changes are mentioned in the
+ CHANGELOG file. 
 
- Main goal of this release is to improve stateless configuration support.
- Lots of new options were added and support for already present was improved.
- 
- Socket binding has changed. REUSE_ADDR is used no more. There is still unresolved
- issue with running server and client on the same Linux host. It probably will
- be removed in the full 0.3.0 release.
- 
+ This version is a first one which is also available as RPM package 
+ for Linux and binary installer for Windows. Those installation methods
+ are relatively new and untested, so the usual tar.gz version is also
+ available.
+  
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
- or send directly to author. Appropriate links are on project website:
- http://klub.com.pl/dhcpv6/
+ or send bug report directly to the author. Appropriate links are on 
+ project website: http://klub.com.pl/dhcpv6/
+
+ This release is dedicated to memory of my grandfather Brunon 
+ Czurlowski, who passed out recently.
 
                                Tomasz Mrugalski,
                                author
