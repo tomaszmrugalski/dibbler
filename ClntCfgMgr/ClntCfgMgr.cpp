@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.28 2004-12-27 20:48:22 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.29 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/12/27 20:48:22  thomson
+ * Problem with absent link local addresses fixed (bugs #90, #91)
+ *
  * Revision 1.27  2004/12/07 22:55:14  thomson
  * Problem with null pointer solved.
  *
@@ -171,7 +174,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 
 	    if (!ifaceIface->countLLAddress()) {
 		Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			  << " does not appear to have any link-layer address." << LogEnd;
+			  << " is down or doesn't have any link-layer address." << LogEnd;
 		this->IsDone = true;
 		continue;
 	    }

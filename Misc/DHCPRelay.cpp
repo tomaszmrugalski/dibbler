@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPRelay.cpp,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: DHCPRelay.cpp,v 1.2 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  */
       
 #include "DHCPRelay.h"
@@ -92,8 +95,10 @@ void TDHCPRelay::run()
 	Log(Cont) << ", " << msg->countOption() << " opts:";
 	SmartPtr<TOpt> ptrOpt;
 	msg->firstOption();
-	while (ptrOpt = msg->getOption() )
-	    Log(Cont) << " " << ptrOpt->getOptType();
+	while ( ptrOpt = msg->getOption() ) {
+	    Log(Cont) << " " << ptrOpt->getOptType(); 
+            // uncomment this to get detailed info about option lengths Log(Cont) << "/" << ptrOpt->getSize();
+	}
 	// Log(Cont) << ", " << msg->getRelayCount() << " relay(s).";
 	Log(Cont) << LogEnd;
 	this->Ctx.TransMgr->relayMsg(msg);

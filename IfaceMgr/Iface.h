@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.9 2005-01-11 22:53:35 thomson Exp $
+ * $Id: Iface.h,v 1.10 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  * Revision 1.8  2005/01/03 21:53:41  thomson
  * const modifier added.
  *
@@ -43,6 +46,7 @@ class TIfaceIface{
                 int maclen, char* llAddr, int llAddrCnt, int hwType);
     char * getName();
     int getID();
+    string getFullName();
 
     // ---flags related---
     unsigned int getFlags();

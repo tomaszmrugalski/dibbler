@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.15 2005-01-03 21:53:41 thomson Exp $
+ * $Id: Iface.cpp,v 1.16 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/01/03 21:53:41  thomson
+ * const modifier added.
+ *
  * Revision 1.14  2004/12/27 20:48:22  thomson
  * Problem with absent link local addresses fixed (bugs #90, #91)
  *
@@ -41,6 +44,7 @@
 #include "Portable.h"
 #include "Logger.h"
 
+using namespace std;
 /*
  * stores informations about interface
  */
@@ -88,6 +92,12 @@ char* TIfaceIface::getName() {
  */
 int TIfaceIface::getID() {
     return this->ID;
+}
+
+string TIfaceIface::getFullName() {
+    return string(this->Name)
+	+"/";
+//	+(string)this->ID;
 }
 
 /*

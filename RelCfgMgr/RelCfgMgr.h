@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.h,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelCfgMgr.h,v 1.2 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  *
  */
 
@@ -37,6 +40,7 @@ public:
     void firstIface();
     SmartPtr<TRelCfgIface> getIface();
     SmartPtr<TRelCfgIface> getIfaceByID(int iface);
+    SmartPtr<TRelCfgIface> getIfaceByInterfaceID(int iface);
     long countIface();
     void addIface(SmartPtr<TRelCfgIface> iface);
 

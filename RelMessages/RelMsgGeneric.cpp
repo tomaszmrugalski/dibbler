@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelMsgGeneric.cpp,v 1.1 2005-01-12 00:00:38 thomson Exp $
+ * $Id: RelMsgGeneric.cpp,v 1.2 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/12 00:00:38  thomson
+ * *** empty log message ***
+ *
  * Revision 1.1  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -33,7 +36,7 @@ bool TRelMsgGeneric::check() {
 string TRelMsgGeneric::getName() {
     switch (this->MsgType) {
     case SOLICIT_MSG:             return "SOLICIT";
-    case ADVERTISE_MSG:           return "ADVETISE";
+    case ADVERTISE_MSG:           return "ADVERTISE";
     case REQUEST_MSG:             return "REQUEST";
     case CONFIRM_MSG:             return "CONFIRM";
     case RENEW_MSG:               return "RENEW";

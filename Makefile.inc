@@ -9,6 +9,7 @@ COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) 
 OPTS         = -ftemplate-depth-40 $(COPTS)
 CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
+REL_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
 DEBUGINFO    = -g

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelMsg.cpp,v 1.2 2005-01-11 23:35:22 thomson Exp $
+ * $Id: RelMsg.cpp,v 1.3 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/01/11 23:35:22  thomson
+ * *** empty log message ***
+ *
  * Revision 1.1  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -66,7 +69,7 @@ TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  
 	    ptr = new TRelOptInterfaceID(data+pos,length,this);
 	    break;
 	default:
-	    ptr = new TRelOptGeneric(data+pos, length, this);
+	    ptr = new TRelOptGeneric(code, data+pos, length, this);
 	    break;
 	}
 
@@ -77,4 +80,17 @@ TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  
         pos+=length;
     }
 
+}
+
+void TRelMsg::setDestination(int iface, SmartPtr<TIPv6Addr> dest) {
+    this->DestIface = iface;
+    this->DestAddr  = dest;
+}
+
+int TRelMsg::getDestIface() {
+    return this->DestIface;
+}
+
+SmartPtr<TIPv6Addr> TRelMsg::getDestAddr() {
+    return this->DestAddr;
 }

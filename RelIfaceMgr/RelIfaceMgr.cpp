@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.2 2005-01-11 23:35:22 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.3 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/01/11 23:35:22  thomson
+ * *** empty log message ***
+ *
  * Revision 1.1  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -22,6 +25,7 @@
 #include "SocketIPv6.h"
 #include "RelIfaceMgr.h"
 #include "RelMsgGeneric.h"
+#include "RelOptInterfaceID.h"
 
 /*
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
@@ -109,9 +113,9 @@ SmartPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 
 	sock = iface->getSocketByFD(sockid);
 
-	Log(Debug) << "Received " << dataLen << " bytes on interface " << iface->getName() << "/" 
-		   << iface->getID() << " (socket=" << sockid << ", addr=" << *peer << ", port=" 
-		   << sock->getFD() << ")." << LogEnd;
+	Log(Debug) << "Received " << dataLen << " bytes on the " << iface->getName() << "/" 
+		   << iface->getID() << " interface (socket=" << sockid << ", addr=" << *peer << ", port=" 
+		   << sock->getPort() << ")." << LogEnd;
 	
 	if (sock->getPort()!=DHCPSERVER_PORT) {
 	    Log(Error) << "Message was received on invalid (" << sock->getPort() << ") port." << LogEnd;
@@ -143,7 +147,70 @@ SmartPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface, 
 						SmartPtr<TIPv6Addr> peer, 
 						char * buf, int bufsize) {
-    return 0;
+    SmartPtr<TIPv6Addr> peerAddr;
+    SmartPtr<TRelOptInterfaceID> ptrIfaceID;
+    bool relay;
+
+    while (bufsize>0 && buf[0]==RELAY_REPL_MSG) {
+	/* decode RELAY_FORW message */
+	if (bufsize < 34) {
+	    Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
+	    return 0;
+	}
+
+	// char type = buf[0];    // ignore it
+	// int hopCount = buf[1]; // this one is not currently needed either
+	SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
+	peerAddr = new TIPv6Addr(buf+18, false);
+	buf+=34;
+	bufsize-=34;
+
+	relay = false;
+	// options: only INTERFACEID and RELAY_MSG are allowed
+	while (!relay && bufsize>=4) {
+	    short code = ntohs( * ((short*) (buf)));
+	    short len  = ntohs(*((short*)(buf+2)));
+	    buf     += 4;
+	    bufsize -= 4;
+	    switch (code) {
+	    case OPTION_INTERFACE_ID:
+		if (bufsize<8) {
+		    Log(Warning) << "Truncated INTERFACE_ID option in RELAY_FORW message. Message dropped." << LogEnd;
+		    return 0;
+		}
+		ptrIfaceID = new TRelOptInterfaceID(buf, bufsize, 0);
+		break;
+	    case OPTION_RELAY_MSG:
+		relay = true;
+		break;
+	    default:
+		Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Message dropped.\n" << LogEnd;
+	    }
+	    if (!relay) { // check next option
+		buf     += len;
+		bufsize -= len;
+	    }
+	}
+
+	Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
+	if (ptrIfaceID)
+	    Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue();
+	Log(Cont) << LogEnd;
+
+	if (!ptrIfaceID) {
+	    Log(Warning) << "InterfaceID option is missing, unable to forward. Packet dropped." << LogEnd;
+	    return 0;
+	}
+
+    }
+
+    // now switch to relay interface
+
+    SmartPtr<TRelMsg> msg = this->decodeMsg(iface, peer, buf, bufsize);
+
+    // inform that this message should be sent to the peerAddr address on the ptrIface interface.
+    msg->setDestination(ptrIfaceID->getValue(), peerAddr);
+    return (Ptr*)msg;
 }
 
 SmartPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SmartPtr<TIfaceIface> iface, 

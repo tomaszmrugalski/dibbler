@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.2 2005-01-13 22:45:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  *
  */
 
@@ -126,7 +129,7 @@ bool TRelCfgMgr::matchParsedSystemInterfaces(List(TRelCfgIface) * lst) {
 
         if (!ifaceIface->countLLAddress()) {
 	    Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID()
-		      << " does not appear to have any link-layer address." << LogEnd;
+		      << " is down or doesn't have any link-layer address. " << LogEnd;
 	    return false;
         }
 
@@ -189,8 +192,9 @@ bool TRelCfgMgr::validateConfig() {
 
 bool TRelCfgMgr::validateIface(SmartPtr<TRelCfgIface> ptrIface)
 {
-    if (ptrIface->getInterfaceID() == (signed int)DHCPV6_INFINITY) {
-	Log(Crit) << "Interface-ID not defined on the " << ptrIface->getName() << "/" << ptrIface->getID()
+    if ( (ptrIface->getInterfaceID() == (signed int)DHCPV6_INFINITY) &&
+	(ptrIface->getClientUnicast() || ptrIface->getClientMulticast()) ) {
+	Log(Crit) << "Client addresse defined without Interface-ID on the " << ptrIface->getName() << "/" << ptrIface->getID()
 		  << " interface." << LogEnd;
 	return false;
     }
@@ -215,8 +219,20 @@ SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface) {
 	if ( ptrIface->getID()==iface )
 	    return ptrIface;
     }
-    Log(Error) << "Invalid interface (id=" << iface 
-	       << ") specifed, cannot get address." << LogEnd;
+    Log(Error) << "There is no interface with ifindex=" << iface << " in the CfgMgr." << LogEnd;
+    return 0; // NULL
+}
+
+
+SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) {
+    SmartPtr<TRelCfgIface> ptrIface;
+    this->firstIface();
+    while ( ptrIface = this->getIface() ) {
+	if ( ptrIface->getInterfaceID()==iface )
+	    return ptrIface;
+    }
+    Log(Error) << "There is not interface with interfaceID=" << iface 
+	       << " in the CfgMgr." << LogEnd;
     return 0; // NULL
 }
 

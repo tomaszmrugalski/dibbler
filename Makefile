@@ -22,7 +22,7 @@ client: $(CLIENTBIN)
 
 $(CLIENTBIN): includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
+	$(CPP) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
@@ -39,13 +39,13 @@ $(CLIENTBIN): includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	                  -lAddrMgr \
 	-L$(MISC)         -lMisc \
 	-L$(MESSAGES)     -lMsg \
-	-lClntOptions -lOptions -lLowLevel $(XMLLIBS) $(EFENCE) 
+	-lClntOptions -lOptions -lLowLevel
 
 server: $(SERVERBIN)
 
 $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
+	$(CPP) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(LOWLEVEL)    \
@@ -66,14 +66,14 @@ $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	-L$(SRVMESSAGES) -lSrvMsg \
 	-L$(MESSAGES)    -lMsg \
 	-L$(MISC)        -lMisc \
-	-L$(OPTIONS)     -lOptions $(XMLLIBS) \
-	-L$(LOWLEVEL)    -lLowLevel $(EFENCE) 
+	-L$(OPTIONS)     -lOptions \
+	-L$(LOWLEVEL)    -lLowLevel
 
 relay: $(RELAYBIN)
 
 $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
+	$(CPP) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
 	-L$(RELTRANSMGR) -lRelTransMgr \
 	-L$(RELCFGMGR)   -lRelCfgMgr \
 	-L$(RELIFACEMGR) -lRelIfaceMgr \
@@ -86,8 +86,7 @@ $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	-L$(MESSAGES)    -lMsg \
 	-L$(MISC)        -lMisc \
 	-L$(OPTIONS)     -lOptions \
-	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions\
-	 $(XMLLIBS) $(EFENCE) 
+	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions
 
 objs:	includes
 	@for dir in $(COMMONSUBDIRS); do \
