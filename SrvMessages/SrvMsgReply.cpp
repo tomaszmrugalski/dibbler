@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.13 2004-12-02 00:51:06 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.14 2004-12-04 23:43:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.12  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -656,8 +659,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         this->MRT = 330; // FIXME: 
         this->send();
     } else {
-	Log(Notice) << "No options to send to INF-REQUEST, so REPLY will not be send." << LogEnd;
-        IsDone=false;
+	Log(Warning) << "No options to answer in INF-REQUEST, so REPLY will not be send." << LogEnd;
+        IsDone=true;
     }
 }
 

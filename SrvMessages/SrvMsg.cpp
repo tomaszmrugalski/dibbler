@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.7 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.8 2004-12-04 23:43:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.6  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -256,7 +259,7 @@ void TSrvMsg::send()
     this->firstOption();
     while (ptrOpt = this->getOption() )
         Log(Cont) << " " << ptrOpt->getOptType();
-    Log(Cont) << LogEnd;
+    Log(Cont) << "." << LogEnd;
     TMsg::send();
     this->SrvIfaceMgr->send(this->Iface, this->pkt, 
 			    this->getSize(), this->PeerAddr);
