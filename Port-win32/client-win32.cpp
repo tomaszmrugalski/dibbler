@@ -45,13 +45,14 @@ int main(int argc, char* argv[])
 		return -1;		
 	}
 
+	clog << DIBBLER_COPYRIGHT1 << " (CLIENT)" << endl;
+	clog << DIBBLER_COPYRIGHT2 << endl;
+	clog << DIBBLER_COPYRIGHT3 << endl;
+	clog << DIBBLER_COPYRIGHT4 << endl;
+	clog << endl;
+
 	switch(status) {
 	case 1: { // STATUS
-		clog << DIBBLER_COPYRIGHT1 << endl;
-		clog << DIBBLER_COPYRIGHT2 << endl;
-		clog << DIBBLER_COPYRIGHT3 << endl;
-		clog << DIBBLER_COPYRIGHT4 << endl;
-		clog << endl;
 		clog << "Service: ";
 		if (Client.IsInstalled()) {
 			clog << "INSTALLED" << std::endl;

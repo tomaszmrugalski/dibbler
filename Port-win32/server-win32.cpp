@@ -42,15 +42,15 @@ int main(int argc, char* argv[]) {
 	}
 
 	int status = SrvService.ParseStandardArgs(argc, argv);
-	cout << "status=" << status << SrvService.ServiceDir << endl;
 
-	switch (status) {
-case 1: {// status
-	clog << DIBBLER_COPYRIGHT1 << endl;
+	clog << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
 	clog << DIBBLER_COPYRIGHT2 << endl;
 	clog << DIBBLER_COPYRIGHT3 << endl;
 	clog << DIBBLER_COPYRIGHT4 << endl;
 	clog << endl;
+
+	switch (status) {
+case 1: {// status
 	clog << "Service: ";
 	if (SrvService.IsInstalled()) 
 		clog << "INSTALLED ";

@@ -77,7 +77,7 @@ void TSrvService::Run()
     string logFile  = SRVLOG_FILE;
     logger::Initialize((char*)logFile.c_str());
 
-	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << endl;
+	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT3 << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT4 << endl;

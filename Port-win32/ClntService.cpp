@@ -77,7 +77,7 @@ void TClntService::Run()
 	TDHCPClient client(confile);
 	ptr = &client; // remember address
 
-	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << endl;
+	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << "(CLIENT)" << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT3 << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT4 << endl;
