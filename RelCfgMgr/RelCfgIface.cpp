@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgIface.cpp,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelCfgIface.cpp,v 1.2 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  *
  */
 
@@ -94,7 +97,7 @@ ostream& operator<<(ostream& out,TRelCfgIface& iface) {
 
     out << dec;
     out << "  <RelCfgIface name=\""<<iface.Name << "\" ifindex=\""<<iface.ID 
-	<< "\" interfaceID=\"" << iface.InterfaceID << "\"/>" << std::endl;
+	<< "\" interfaceID=\"" << iface.InterfaceID << "\">" << std::endl;
 
     if (iface.ClientUnicast) {
         out << "    <ClientUnicast>" << iface.ClientUnicast->getPlain() << "</ClientUnicast>" << endl;

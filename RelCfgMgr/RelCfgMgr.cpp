@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.3 2005-01-24 00:42:57 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.4 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/24 00:42:57  thomson
+ * no message
+ *
  * Revision 1.2  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -67,6 +70,9 @@ bool TRelCfgMgr::parseConfigFile(string cfgFile) {
     result = parser.yyparse();
     Log(Debug) << "Parsing config done." << LogEnd;
     f.close();
+
+    this->LogLevel = logger::getLogLevel();
+    this->LogName  = logger::getLogName();
 
     if (result) {
         Log(Crit) << "Fatal error during config parsing." << LogEnd;
@@ -147,10 +153,6 @@ bool TRelCfgMgr::matchParsedSystemInterfaces(List(TRelCfgIface) * lst) {
 
 SmartPtr<TRelCfgIface> TRelCfgMgr::getIface() {
 	return this->IfaceLst.get();
-}
-
-string TRelCfgMgr::getWorkdir() {
-    return Workdir;
 }
 
 void TRelCfgMgr::addIface(SmartPtr<TRelCfgIface> ptr) {
@@ -245,7 +247,9 @@ SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) {
 
 ostream & operator<<(ostream &out, TRelCfgMgr &x) {
     out << "<RelCfgMgr>" << std::endl;
-    out << "  <workdir>" << x.getWorkdir() << "</workdir>" << std::endl;
+    out << "  <workdir>" << x.getWorkDir()  << "</workdir>" << endl;
+    out << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
+    out << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
     
     SmartPtr<TRelCfgIface> ptrIface;
     x.firstIface();

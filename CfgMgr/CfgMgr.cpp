@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.11 2004-12-02 00:51:04 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.12 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.10  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -209,7 +212,7 @@ bool TCfgMgr::setDUID(const string filename) {
 				realIface->getMacLen(), realIface->getHardwareType());
     } 
     
-    Log(Crit) << "Cannot generate DUID, because I cannot find interface with "
+    Log(Crit) << "Cannot generate DUID, because there is no up and running interface with "
 		 << "MAC address at least 6 bytes long." << LogEnd;
     this->DUID=new TDUID();
     return false;
@@ -246,6 +249,24 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
 
     f.close();
     return true;
+}
+
+void TCfgMgr::setWorkdir(std::string workdir) {
+    this->Workdir = workdir;
+}
+
+string TCfgMgr::getWorkDir() {
+    return Workdir;
+}
+
+string TCfgMgr::getLogName()
+{
+    return LogName;
+}
+
+int TCfgMgr::getLogLevel()
+{
+    return LogLevel;
 }
 
 SmartPtr<TDUID> TCfgMgr::getDUID()

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.h,v 1.7 2005-01-12 00:10:05 thomson Exp $
+ * $Id: SrvTransMgr.h,v 1.8 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/01/12 00:10:05  thomson
+ * Compilation fixes.
+ *
  * Revision 1.6  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -28,6 +31,7 @@ class TSrvTransMgr;
 #ifndef SRVTRANSMGR_H
 #define SRVTRANSMGR_H
 
+#include <string>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "Opt.h"

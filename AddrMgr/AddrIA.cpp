@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.9 2004-12-03 20:51:42 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.10 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.8  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -355,12 +358,13 @@ enum ETentative TAddrIA::getTentative()
                     return YES;
                 case    0:
                     ptrAddr->setTentative(NO);
-		    Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
+                    Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
 			       << " is not tentative." << LogEnd;
                     break;
                 default:
-                    Log(Error) << "No such a address on interface "
-			       << *ptrAddr->get() << LogEnd;
+                    Log(Error) << "DAD inconclusive. Unable to dermine " << ptrAddr->get()->getPlain() 
+                               << " address state. Assuming NOT TENTATIVE." << LogEnd;
+                    ptrAddr->setTentative(NO);
                     break;
             }
         } 
@@ -370,10 +374,10 @@ enum ETentative TAddrIA::getTentative()
 	}
     }
     if (allChecked) {
-	this->Tentative = NO;
-	return NO;
+        this->Tentative = NO;
+	    return NO;
     } else {
-	return DONTKNOWYET;
+	    return DONTKNOWYET;
     }
 }
 

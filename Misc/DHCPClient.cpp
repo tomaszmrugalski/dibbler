@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.19 2005-01-08 16:52:04 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.20 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.18  2004/12/07 22:56:20  thomson
  * Typo corrected.
  *
@@ -54,10 +57,6 @@
 #include "Portable.h"
 
 volatile int serviceShutdown;
-
-//static void foo() {
-//    SmartPtr<TClntParsGlobalOpt> opt = new TClntParsGlobalOpt();
-//}
 
 TDHCPClient::TDHCPClient(string config)
 {
@@ -155,6 +154,12 @@ bool TDHCPClient::isDone() {
 bool TDHCPClient::checkPrivileges() {
     // FIXME: check privileges
     return true;
+}
+
+void TDHCPClient::setWorkdir(std::string workdir) {
+    if (this->CfgMgr)
+        this->CfgMgr->setWorkdir(workdir);
+    this->CfgMgr->dump();
 }
 
 TDHCPClient::~TDHCPClient()

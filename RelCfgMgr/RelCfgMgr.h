@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.h,v 1.2 2005-01-13 22:45:55 thomson Exp $
+ * $Id: RelCfgMgr.h,v 1.3 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.1  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -62,8 +65,6 @@ private:
     bool IsDone;
     bool validateConfig();
     bool validateIface(SmartPtr<TRelCfgIface> ptrIface);
-    string LogName;
-    string LogLevel;
     List(TRelCfgIface) IfaceLst;
 
     bool matchParsedSystemInterfaces(List(TRelCfgIface) * lst);

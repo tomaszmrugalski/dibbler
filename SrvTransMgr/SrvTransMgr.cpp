@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.24 2005-01-12 00:10:05 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.25 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2005/01/12 00:10:05  thomson
+ * Compilation fixes.
+ *
  * Revision 1.23  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -69,6 +72,7 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     this->IfaceMgr = ifaceMgr;
     this->AddrMgr  = addrMgr;
     this->CfgMgr   = cfgMgr;
+    this->XmlFile  = xmlFile;
     
     // TransMgr is certainly not done yet. We're just getting started
     IsDone = false;
@@ -350,7 +354,6 @@ void TSrvTransMgr::dump() {
 TSrvTransMgr::~TSrvTransMgr() {
     Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
 }
-
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)
 {

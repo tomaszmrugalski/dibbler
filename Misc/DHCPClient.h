@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.h,v 1.3 2004-12-07 00:45:41 thomson Exp $
+ * $Id: DHCPClient.h,v 1.4 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.2  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -36,6 +39,7 @@ class TDHCPClient
     void stop();
     bool isDone();
     bool checkPrivileges();
+    void setWorkdir(std::string workdir);
 
     ~TDHCPClient();
 

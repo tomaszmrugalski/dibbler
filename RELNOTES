@@ -1,6 +1,19 @@
 
-  Dibbler 0.3.1 release notes [2004-12-27]
+  Dibbler 0.4.0 release notes [NOT RELEASED YET]
  ------------------------------------------
+
+ This version is the first one with relay support. Althougt I have spent many hours
+ testing this and everything worked fine, I cannot guarantee that this will work
+ for you. 
+
+ Duplicate Address Detection does not work under Windows XP/2003. 
+
+
+
+
+
+  
+
 
  This version fixes bug with link local addresses on certain systems. 
  DEB package for Debian systems is provided. Except that, it is almost 

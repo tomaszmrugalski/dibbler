@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.10 2004-12-08 00:17:59 thomson Exp $
+ * $Id: Logger.h,v 1.11 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/12/08 00:17:59  thomson
+ * StatusCodeToString function added.
+ *
  * Revision 1.9  2004/12/02 00:51:06  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -74,6 +77,8 @@ namespace logger {
     void setLogMode(string x);
     void EchoOff();
     void EchoOn();
+    string getLogName();
+    int getLogLevel();
     
     ostream & endl (ostream & strum);
 

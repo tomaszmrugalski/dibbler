@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.21 2005-01-11 22:53:35 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.22 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  * Revision 1.20  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -170,6 +173,12 @@ void TDHCPServer::stop() {
     serviceShutdown = 1;
 	Log(Warning) << "Service SHUTDOWN." << LogEnd;
 
+}
+
+void TDHCPServer::setWorkdir(std::string workdir) {
+    if (this->CfgMgr)
+        this->CfgMgr->setWorkdir(workdir);
+    this->CfgMgr->dump();
 }
 
 TDHCPServer::~TDHCPServer()

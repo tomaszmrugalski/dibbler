@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.13 2005-01-11 22:53:35 thomson Exp $
+ * $Id: Logger.cpp,v 1.14 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  * Revision 1.12  2004/12/08 00:17:59  thomson
  * StatusCodeToString function added.
  *
@@ -130,6 +133,14 @@ namespace logger {
 
     void setLogName(string x) {
 	logger::logname = x;
+    }
+
+    string getLogName() {
+        return logger::logname;
+    }
+
+    int getLogLevel() {
+        return logger::logLevel;
     }
 
     void setLogMode(string x) {

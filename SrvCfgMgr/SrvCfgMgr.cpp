@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.33 2005-01-13 22:45:55 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.34 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.32  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -103,7 +106,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string x
     }
 
     // load or create DUID
-    string duidFile = this->Workdir+"/"+(string)SRVDUID_FILE;
+    string duidFile = (string)SRVDUID_FILE;
     if (!this->setDUID(duidFile)) {
 		this->IsDone=true;
 		return;
@@ -133,6 +136,9 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     result = parser.yyparse();
     Log(Debug) << "Parsing config done." << LogEnd;
     f.close();
+
+    this->LogLevel = logger::getLogLevel();
+    this->LogName  = logger::getLogName();
 
     if (result) {
         Log(Crit) << "Fatal error during config parsing." << LogEnd;
@@ -235,10 +241,6 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 
 SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIface() {
 	return this->SrvCfgIfaceLst.get();
-}
-
-string TSrvCfgMgr::getWorkdir() {
-    return Workdir;
 }
 
 void TSrvCfgMgr::addIface(SmartPtr<TSrvCfgIface> ptr) {
@@ -505,7 +507,11 @@ bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
 
 ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     out << "<SrvCfgMgr>" << std::endl;
-    out << "  <workdir>" << x.getWorkdir() << "</workdir>" << std::endl;
+    out << "  <workDir>" << x.getWorkDir()  << "</workDir>" << endl;
+    out << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
+    out << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
+    out << "  " << *x.DUID;
+
     if (x.stateless())
 	out << "  <stateless/>" << std::endl;
     else

@@ -16,6 +16,7 @@ class TDHCPServer
     void stop();
     bool isDone();
     bool checkPrivileges();
+    void setWorkdir(std::string workdir);
     ~TDHCPServer();
 
   private:

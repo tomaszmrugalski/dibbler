@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.8 2005-01-03 21:57:08 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.9 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/01/03 21:57:08  thomson
+ * Relay support added.
+ *
  * Revision 1.7  2004/12/07 00:43:03  thomson
  * Server no longer support link local addresses (bug #38),
  * Server now supports stateless mode (bug #71)
@@ -84,14 +87,11 @@ private:
     bool validateConfig();
     bool validateIface(SmartPtr<TSrvCfgIface> ptrIface);
     bool validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfgAddrClass> ptrClass);
-    string LogName;
-    string LogLevel;
     List(TSrvCfgIface) SrvCfgIfaceLst;
     SmartPtr<TSrvIfaceMgr> IfaceMgr;
     bool matchParsedSystemInterfaces(SrvParser *parser);
 
     // global options
-    string Workdir;
     bool Stateless;
 };
 

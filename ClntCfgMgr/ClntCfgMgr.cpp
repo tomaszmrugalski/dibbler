@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.29 2005-01-13 22:45:55 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.30 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.28  2004/12/27 20:48:22  thomson
  * Problem with absent link local addresses fixed (bugs #90, #91)
  *
@@ -95,6 +98,9 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
 
+    this->LogLevel = logger::getLogLevel();
+    this->LogName  = logger::getLogName();
+
     if (result) {
         //Result!=0 means config errors. Finish whole DHCPClient 
         Log(Crit) << "Fatal error during config parsing." << LogEnd;
@@ -105,8 +111,6 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 
     // match parsed interfaces with interfaces detected in system
     matchParsedSystemInterfaces(&parser);
-
-    this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
   
     // check config consistency
     if(!validateConfig()) {
@@ -115,7 +119,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     }
 
     // load or create DUID
-    string duidFile = this->WorkDir+"/"+(string)CLNTDUID_FILE;
+    string duidFile = (string)CLNTDUID_FILE;
     if (!setDUID(duidFile)) {
 	this->IsDone=true;
 	return;
@@ -266,25 +270,10 @@ int TClntCfgMgr::countIfaces()
     return ClntCfgIfaceLst.count();
 }
 
-string TClntCfgMgr::getWorkDir()
-{
-    return WorkDir;
-}
-
 bool TClntCfgMgr::getReconfigure()
 {
     //FIXME
     return false;
-}
-
-string TClntCfgMgr::getLogName()
-{
-    return LogName;
-}
-
-int TClntCfgMgr::getLogLevel()
-{
-    return LogLevel;
 }
 
 int TClntCfgMgr::countAddrForIA(long IAID)
@@ -508,10 +497,10 @@ TClntCfgMgr::~TClntCfgMgr() {
 ostream & operator<<(ostream &strum, TClntCfgMgr &x)
 {
     strum << "<ClntCfgMgr>" << endl;
-    strum << "  " << *x.DUID;
-    strum << "  <WorkDir>" << x.getWorkDir()  << "</WorkDir>" << endl;
+    strum << "  <workdir>" << x.getWorkDir()  << "</workdir>" << endl;
     strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
+    strum << "  " << *x.DUID;
 
     SmartPtr<TClntCfgIface> ptr;
     x.firstIface();

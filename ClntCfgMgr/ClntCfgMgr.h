@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.7 2004-12-07 20:51:35 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.8 2005-02-01 00:57:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/12/07 20:51:35  thomson
+ * Link local safety checks added (bug #39)
+ *
  * Revision 1.6  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -53,10 +56,7 @@ class TClntCfgMgr : public TCfgMgr
     int countIfaces();
     void dump();
     
-    string getWorkDir();
     bool getReconfigure();
-    string getLogName();
-    int getLogLevel();
     
     //IA related
     bool setIAState(int iface, int iaid, enum EState state);

@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-faq.tex,v 1.6 2004-12-04 23:47:57 thomson Exp $
+%% $Id: dibbler-user-faq.tex,v 1.7 2005-02-01 00:57:36 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.6  2004/12/04 23:47:57  thomson
+%% Work around for bug #56 described.
+%%
 %% Revision 1.5  2004/12/01 21:58:43  thomson
 %% *** empty log message ***
 %%
@@ -87,14 +90,20 @@ works or not.
 
 \Q After installing \emph{Advanced Networking Pack} or \emph{Windows XP
   ServicePack2} my DHCPv6 (or other IPv6 application) stopped
-   working. Is Dibbler XP SP2 compatible?
+   working. Is Dibbler compatible with Windows XP SP2?
 
-\A In both of this products, there is a IPv6 firewall installed. It
+\A In both products provide IPv6 firewall. It
 is configured by default to reject all incoming IPv6 traffic. You have
 to disable this firewall. To do so, issue following commands in a
 console:
 
 \begin{verbatim}
-
+netsh firewall set adapter "Local Area Connection" filter=disable
 \end{verbatim}
 
+\Q Server or client refuses to create DUID. What's wrong?
+
+\A Make sure that you have at least one up and running interface with
+at least 6 bytes long MAC address. Simple Ethernet card matches those
+requirements. Note that network cable must be plugged, otherwise
+interface is marked as down.
