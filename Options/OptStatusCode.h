@@ -1,5 +1,18 @@
-#ifndef STATUSCODE_H_HEADER_INCLUDED_C11257D8
-#define STATUSCODE_H_HEADER_INCLUDED_C11257D8
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: OptStatusCode.h,v 1.2 2004-12-08 00:17:04 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
+#ifndef OPTSTATUSCODE_H
+#define OPTSTATUSCODE_H
 
 #include <string>
 #include "Opt.h"
