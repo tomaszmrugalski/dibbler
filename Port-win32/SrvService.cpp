@@ -85,7 +85,7 @@ void TSrvService::Run()
     string workdir=this->ServiceDir;
 	string oldconf=SRVCONF_FILE+(string)"-old";
 	string addrfile=SRVDB_FILE;
-    string logFile=workdir+"srvlog.txt";
+    string logFile=workdir + SRVLOG_FILE;
     char *logChar=new char[logFile.length()+1];
     strcpy(logChar,logFile.c_str());
     logger::Initialize(logChar);

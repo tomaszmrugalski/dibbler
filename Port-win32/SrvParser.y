@@ -1,67 +1,60 @@
-%{
-/****************************************************************************
-parser.y
-ParserWizard generated YACC file.
-
-Date: 30 czerwca 2003
-****************************************************************************/
-
-//TParsServAddr
-%}
-
-
-/////////////////////////////////////////////////////////////////////////////
-// declarations section
-
-// parser name
 %name SrvParser
 
+%header{
+#include <iostream>
+#include <string>
+#include "FlexLexer.h"
+#include <malloc.h>
+#include "DHCPConst.h"
+#include "SmartPtr.h"
+#include "Container.h"
+#include "SrvParser.h"
+#include "SrvParsGlobalOpt.h"
+#include "SrvParsClassOpt.h"
+#include "SrvParsIfaceOpt.h"
+#include "SrvCfgAddrClass.h"
+#include "SrvCfgIface.h"
+#include "SrvCfgMgr.h"
+#include "DUID.h"
+#include "Logger.h"
+
+#define YY_USE_CLASS
+%}
+
 // class definition
-{
-  public:
-    //List of options in scope stack,the most fresh is last in the list
-    List(TSrvParsGlobalOpt) ParserOptStack;
-    //List of parsed interfaces/IAs/Addresses, last 
-    //interface/IA/address is just being parsing or have been just parsed
-    //FIXME:Don't forget to clear this lists in apropriate moment
-    List(TSrvCfgIface)          SrvCfgIfaceLst;
-    List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;
-    
-    //Pointer to list which should contain either DNS servers or NTPServers 
-    List(TIPv6Addr) PresentLst;
-    
-    //Pointer to list which should contain: rejected clients, accepted clients 
-    //or addressess ranges 
-    List(TStationRange) PresentRangeLst;
-        
-    //method check whether interface with id=ifaceNr has been 
-    //already declared
-    void CheckIsIface(int ifaceNr); 
+%define MEMBERS FlexLexer * lex;                                                   \
+List(TSrvParsGlobalOpt) ParserOptStack;                                            \
+/* List of parsed interfaces/IAs/Addresses, last    */                            \
+/* interface/IA/address is just being parsing or have been just parsed */   \
+/* FIXME:Don't forget to clear this lists in apropriate moment         */   \
+List(TSrvCfgIface)          SrvCfgIfaceLst;   \
+List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;   \
+/*Pointer to list which should contain either DNS servers or NTPServers*/   \
+List(TIPv6Addr) PresentLst;  \
+/*Pointer to list which should contain: rejected clients, accepted clients */ \
+/*or addressess ranges */ \
+List(TStationRange) PresentRangeLst; \
+/*method check whether interface with id=ifaceNr has been already declared */ \
+bool CheckIsIface(int ifaceNr);  \
+/*method check whether interface with id=ifaceName has been already declared*/ \
+bool CheckIsIface(string ifaceName); \
+void StartIfaceDeclaration(); \
+bool EndIfaceDeclaration(); \
+void StartClassDeclaration(); \
+bool EndClassDeclaration();
 
-    //method check whether interface with id=ifaceName has been
-    //already declared 
-    void CheckIsIface(string ifaceName);
-    void StartIfaceDeclaration();
-    void EndIfaceDeclaration();
-    void StartClassDeclaration();
-    void EndClassDeclaration();
-}
-
-    // constructor
-{
-    // place any extra initialisation code here
-    ParserOptStack.append(new TSrvParsGlobalOpt());
-    ParserOptStack.getLast()->setUnicast(false);
-}
-
-    // attribute type
-
-    // place any declarations here
-
+// constructor
+// <Linux>
+%define CONSTRUCTOR_PARAM yyFlexLexer * lex
+%define CONSTRUCTOR_CODE \
+    ParserOptStack.append(new TSrvParsGlobalOpt()); \
+    ParserOptStack.getLast()->setUnicast(false);    \
+   this->lex = lex;
+// </Linux>
 
 %union    
 {
-  unsigned int          ival;
+    unsigned int ival;
   char                          *strval;
   struct                        SDuid
   {
@@ -70,13 +63,6 @@ Date: 30 czerwca 2003
     }                                   duidval;
   char                          addrval[16];
 }
-
-%include {
-#ifndef YYSTYPE
-#define YYSTYPE int
-#endif
-}
-
 
 %token IFACE_, NO_CONFIG_,CLASS_,LOGNAME_,LOGLEVEL_,WORKDIR_
 %token NTP_SERVER_,TIME_ZONE_,DNS_SERVER_,DOMAIN_
@@ -471,7 +457,7 @@ UnicastOption
     : UNICAST_ Number   
     {
         if(($2&&(!ParserOptStack.getLast()->getUnicast() ))||($2>1))
-            yyabort(); //there should be declared prior unicast address
+            YYABORT; //there should be declared prior unicast address
         ParserOptStack.getLast()->setUnicast($2);
     }
     ;
@@ -487,7 +473,7 @@ PreferenceOption
     : PREFERENCE_ Number 
     { 
         if (($2<0)||($2>255))
-            yyabort(); //FIXME:Exception or what kind of notification
+            YYABORT; //FIXME:Exception or what kind of notification
         ParserOptStack.getLast()->setPreference($2);    
     }
     ;
@@ -504,7 +490,7 @@ LogLevelOption
         if ($2<5)
             ParserOptStack.getLast()->setLogLevel($2);
         else
-            yyabort();
+            YYABORT;
     }
     ;
 
@@ -561,24 +547,24 @@ ClassOptionDeclaration
 
 //method check whether interface with id=ifaceNr has been 
 //already declared
-void SrvParser::CheckIsIface(int ifaceNr)
+bool SrvParser::CheckIsIface(int ifaceNr)
 {
   SmartPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
-    if ((ptr->getID())==ifaceNr) yyabort();
+    if ((ptr->getID())==ifaceNr) YYABORT;
 };
     
 //method check whether interface with id=ifaceName has been
 //already declared 
-void SrvParser::CheckIsIface(string ifaceName)
+bool SrvParser::CheckIsIface(string ifaceName)
 {
   SmartPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
   {
     string presName=ptr->getName();
-    if (presName==ifaceName) yyabort();
+    if (presName==ifaceName) YYABORT;
   };
 };
 
@@ -592,12 +578,12 @@ void SrvParser::StartIfaceDeclaration()
 
 }
 
-void SrvParser::EndIfaceDeclaration()
+bool SrvParser::EndIfaceDeclaration()
 {
 
   SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
   if (!SrvCfgAddrClassLst.count())
-    yyabort();
+    YYABORT;
   SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
       SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);
@@ -617,13 +603,32 @@ void SrvParser::StartClassDeclaration()
   ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
 }
 
-void SrvParser::EndClassDeclaration()
+bool SrvParser::EndClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool())
-        yyabort();
+        YYABORT;
     SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
   //setting interface options on the basis of just read information
   SrvCfgAddrClassLst.getLast()->setOptions(ParserOptStack.getLast());
   //FIXED:Here should be add list of Groups to this iface and here it is
   ParserOptStack.delLast();
 }
+
+// <Linux>
+
+extern yy_SrvParser_stype yylval;
+
+int SrvParser::yylex()
+{
+    int x = this->lex->yylex();
+    this->yylval=::yylval;
+    return x;
+}
+
+void SrvParser::yyerror(char *m)
+{
+    // logging 
+    std::clog << logger::logEmerg << "Config parse error: line " << lex->lineno() << ", unexpected [" 
+	 << lex->YYText() << "] token." << logger::endl;
+}
+// </Linux>

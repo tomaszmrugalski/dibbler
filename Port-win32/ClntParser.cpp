@@ -2050,7 +2050,6 @@ bool clntParser::CheckIsIface(int ifaceNr)
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) YYABORT;
-  return true;
 };
     
     //method check whether interface with id=ifaceName has been
@@ -2064,7 +2063,6 @@ bool clntParser::CheckIsIface(string ifaceName)
     string presName=ptr->getName();
     if (presName==ifaceName) YYABORT;
   };
-  return true;
 };
 
     //method creates new scope appropriately for interface options and declarations
@@ -2116,7 +2114,7 @@ bool clntParser::EndIfaceDeclaration()
   }
   //restore global options
   ParserOptStack.delLast();
-  return true;    
+    
 }   
 
 void clntParser::EmptyIface()

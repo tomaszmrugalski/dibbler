@@ -88,7 +88,7 @@ void TClntService::Run()
     string workdir=this->ServiceDir;
 	string oldconf=CLNTCONF_FILE+(string)"old";
 	string addrfile=CLNTDB_FILE;
-    string logFile=workdir+"clntlog.txt";
+    string logFile=workdir + CLNTLOG_FILE;
     char *logChar=new char[logFile.length()+1];
     strcpy(logChar,logFile.c_str());
     logger::Initialize(logChar);

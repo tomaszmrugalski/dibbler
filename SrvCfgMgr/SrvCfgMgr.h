@@ -12,6 +12,7 @@ class TSrvCfgMgr;
 class TSrvCfgMgr : public TCfgMgr
 {
 public:  
+	friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
     TSrvCfgMgr(
         SmartPtr<TSrvIfaceMgr> ifaceMgr, 
         string cfgFile,

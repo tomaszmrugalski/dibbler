@@ -1,17 +1,13 @@
+/* <Linux> */
+%option noyywrap
+%option yylineno
+/* </Linux> */
+
 %{
-/****************************************************************************
-lexer.l
-ParserWizard generated Lex file.
-
-Date: 30 czerwca 2003
-****************************************************************************/
-
-#include "srvparser.h"
+#include "SrvParser.h"
 #include "Portable.h"
+#define YYABORT yyterminate();
 %}
-
-/////////////////////////////////////////////////////////////////////////////
-// declarations section
 
 %x COMMENT
 %x ADDR
@@ -25,11 +21,7 @@ curly_op [{]
 curly_cl [}]
 hex1to4  {hexdigit}{1,4}
 
-// lexical analyser name
-%name SrvLexer
-// class definition
-
-{
+%{
   unsigned ComBeg; //line, in which comment begins
   unsigned LftCnt; //how many signs : on the left side of 
                                     //'::' sign was interpreted
@@ -39,69 +31,56 @@ hex1to4  {hexdigit}{1,4}
   unsigned intpos,pos;
   unsigned analyzeBigPart(char* bigPart, unsigned length, char *dst);
   int decodeSmallPart(char *src, char* dst,int length);
-  void decodeIntPart(char *src, char *dst);
+  bool decodeIntPart(char *src, char *dst);
   void resetAddress(char *tab);
-}
-
-// constructor
-{
-    // place any extra initialisation code here
-}
-
-// place any declarations here
+  yy_SrvParser_stype yylval;
+%}
 
 %%
 
-/////////////////////////////////////////////////////////////////////////////
-// rules section
 
-%{
-// extract yylval for use later on in actions
-YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
+%{//KEYWORDS
 %}
 
-// place your Lex rules here
+[Ii][fF][aA][cC][Ee] {return SrvParser::IFACE_;}  //defines which iface is gonna be to config.
+[Nn][Oo]-[Cc][Oo][Nn][Ff][Ii][Gg] {return SrvParser::NO_CONFIG_;} //not configure this iface
+[Cc][Ll][Aa][Ss][Ss] {return SrvParser::CLASS_;}
 
-//KEYWORDS
+[Ll][Oo][Gg]-[Nn][aA][Mm][Ee] {return SrvParser::LOGNAME_;}
+[Ll][Oo][Gg]-[Ll][Ee][Vv][Ee][Ll] {return SrvParser::LOGLEVEL_;}
+[Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return SrvParser::WORKDIR_;}
 
-[Ii][fF][aA][cC][Ee] {return IFACE_;}  //defines which iface is gonna be to config.
-[Nn][Oo]-[Cc][Oo][Nn][Ff][Ii][Gg] {return NO_CONFIG_;} //not configure this iface
-[Cc][Ll][Aa][Ss][Ss] {return CLASS_;}
+[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return SrvParser::DNS_SERVER_;}
+[Dd][Oo][Mm][Aa][Ii][Nn] {return SrvParser::DOMAIN_;}
 
-[Ll][Oo][Gg]-[Nn][aA][Mm][Ee] {return LOGNAME_;}
-[Ll][Oo][Gg]-[Ll][Ee][Vv][Ee][Ll] {return LOGLEVEL_;}
-[Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return WORKDIR_;}
+[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr] {return SrvParser::NTP_SERVER_;}
+[Tt][Ii][Mm][Ee]-[Zz][Oo][Nn][Ee] {return SrvParser::TIME_ZONE_;}
 
-[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return DNS_SERVER_;}
-[Dd][Oo][Mm][Aa][Ii][Nn] {return DOMAIN_;}
+%{ //[Nn][Ii][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return SrvParser::NIS_SERVER_;}
+%}
+[Aa][Cc][Ee][Pp][Tt]-[Oo][Nn][Ll][Yy] {return SrvParser::ACCEPT_ONLY_;}
+[Rr][Ee][Jj][Ee][Cc][Tt]-[Cc][Ll][Ii][eE][nN][tT][sS] {return SrvParser::REJECT_CLIENTS_;}
 
-[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr] {return NTP_SERVER_;}
-[Tt][Ii][Mm][Ee]-[Zz][Oo][Nn][Ee] {return TIME_ZONE_;}
+[Tt][1] {return SrvParser::T1_;}
+[Tt][2] {return SrvParser::T2_;}
 
- //[Nn][Ii][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return NIS_SERVER_;}
+[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee] {return SrvParser::PREF_TIME_;}
+[Vv][Aa][Ll][Ii][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee]  {return SrvParser::VALID_TIME_;}
 
-[Aa][Cc][Ee][Pp][Tt]-[Oo][Nn][Ll][Yy] {return ACCEPT_ONLY_;}
-[Rr][Ee][Jj][Ee][Cc][Tt]-[Cc][Ll][Ii][eE][nN][tT][sS] {return REJECT_CLIENTS_;}
+[Uu][Nn][Ii][Cc][Aa][Ss][Tt] {return SrvParser::UNICAST_;}
+[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee] {return SrvParser::PREFERENCE_;}
+[Pp][Oo][Oo][Ll] {return SrvParser::POOL_;}
+[Rr][Aa][Pp][Ii][Dd][Cc][Oo][Mm][Mm][Ii][Tt] {return SrvParser::RAPID_COMMIT_;}
+[Mm][Aa][Xx]-[Ll][Ee][Aa][Ss][Ee] {return SrvParser::MAX_LEASE_;}
+[Cc][Ll][iI][Ee][Nn][Tt]-[Mm][Aa][Xx]-[Ll][Ee][Aa][Ss][Ee] {return SrvParser::CLNT_MAX_LEASE_;}
 
-[Tt][1] {return T1_;}
-[Tt][2] {return T2_;}
+[Yy][Ee][Ss] {yylval.ival=1; return SrvParser::INTNUMBER_;}
+[Nn][Oo]         {yylval.ival=0; return SrvParser::INTNUMBER_;}
+[Tt][Rr][Uu][Ee]    {yylval.ival=1; return SrvParser::INTNUMBER_;}
+[Ff][Aa][Ll][Ss][Ee] {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee] {return PREF_TIME_;}
-[Vv][Aa][Ll][Ii][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee]  {return VALID_TIME_;}
-
-[Uu][Nn][Ii][Cc][Aa][Ss][Tt] {return UNICAST_;}
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee] {return PREFERENCE_;}
-[Pp][Oo][Oo][Ll] {return POOL_;}
-[Rr][Aa][Pp][Ii][Dd][Cc][Oo][Mm][Mm][Ii][Tt] {return RAPID_COMMIT_;}
-[Mm][Aa][Xx]-[Ll][Ee][Aa][Ss][Ee] {return MAX_LEASE_;}
-[Cc][Ll][iI][Ee][Nn][Tt]-[Mm][Aa][Xx]-[Ll][Ee][Aa][Ss][Ee] {return CLNT_MAX_LEASE_;}
-
-[Yy][Ee][Ss] {yylval.ival=1; return INTNUMBER_;}
-[Nn][Oo]         {yylval.ival=0; return INTNUMBER_;}
-[Tt][Rr][Uu][Ee]    {yylval.ival=1; return INTNUMBER_;}
-[Ff][Aa][Ll][Ss][Ee] {yylval.ival=0; return INTNUMBER_;}
-
-//COMMENTS
+%{ //COMMENTS
+%}
 #.* ;
 
 "//"(.*) ;
@@ -116,22 +95,23 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
 <COMMENT>.|"\n" ;
 <COMMENT><<EOF>> {
 //  printf ("Niezamkniêty komentarz /* w linii:%d\n",ComBeg); 
-  yyabort();
+  { YYABORT; }
 }
 
-    //IPv6 address - various forms
+%{ //IPv6 address - various forms
+%}
 ({hex1to4}:){7}{hexdigit} {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else
     /*analyzeBigPart(yytext,strlen(yytext)-2,Address);
     memcpy(yylval.addrval,Address,16);*/
-        return IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
 }
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
   /*pos=0;
   while ((yytext[pos]!=':')||(yytext[pos+1]!=':')) pos++;
@@ -141,44 +121,44 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
   pos+=2;
     RgtCnt=analyzeBigPart(yytext+pos,strlen(yytext+pos),AddrPart);
     if ((LftCnt+RgtCnt)>8)
-      yyabort(); //to many address parts - raise exception
+      { YYABORT; } //to many address parts - raise exception
     memcpy( Address+16-(RgtCnt<<1), AddrPart,RgtCnt<<1);
     memcpy(yylval.addrval,Address,16);*/
-    return IPV6ADDR_;
+    return SrvParser::IPV6ADDR_;
 }
 
 "::"(({hex1to4}:){1,7})?{hex1to4} { 
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
   /*resetAddress(Address);
   RgtCnt=analyzeBigPart(yytext+2,strlen(yytext)-2,AddrPart);
     memcpy(Address+16-(RgtCnt<<1), AddrPart, RgtCnt<<1);
     memcpy(yylval.addrval,Address,16);*/
-        return IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
 }
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
     /*analyzeBigPart(yytext,strlen(yytext)-2,Address);
     memcpy(yylval.addrval,Address,16);*/
-        return IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
 }
 
 "::" {
     /*resetAddress(Address);
     memcpy(yylval.addrval,Address,16);*/
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
-        return IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
 }
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else
   /*pos=0;
   while ((yytext[pos]!=':')||(yytext[pos+1]!=':')) pos++;
@@ -191,18 +171,18 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
     if(intpos>pos)
     {
       RgtCnt=analyzeBigPart(yytext+pos,intpos-pos,AddrPart);
-      if ((RgtCnt+LftCnt)>6) yyabort();
+      if ((RgtCnt+LftCnt)>6) { YYABORT; }
       memcpy(Address+12-(RgtCnt<<1), AddrPart, RgtCnt<<1);  
     }
     decodeIntPart(yytext+intpos+1, Address+12);
     memcpy(yylval.addrval,Address,16);*/
-      return IPV6ADDR_;
+      return SrvParser::IPV6ADDR_;
 }
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
 
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
     /*resetAddress(Address);
   intpos=0;
@@ -215,19 +195,21 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
     };
     decodeIntPart(yytext+intpos+1, Address+12);
     memcpy(yylval.addrval,Address,16);*/
-      return IPV6ADDR_;
+      return SrvParser::IPV6ADDR_;
 }
 
-//STRING (interface identifier,dns server etc.)
+%{ //STRING (interface identifier,dns server etc.)
+%}
 
 '([^']|(''))*' {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
-    return STRING_;
+    return SrvParser::STRING_;
 }
 
-//DUID
+%{ //DUID
+%}
 \"{hexdigit}+\" {
     //every hex digit corresponds to half of byte, even at the begining
     //of string
@@ -242,36 +224,40 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
     {
         yylval.duidval.duid[i>>1]<<=4;
         if (!isxdigit(yytext[i])) 
-            yyabort(); //or raise exeception
+            { YYABORT; } //or raise exeception
         else
         if (isalpha(yytext[i]))
             yylval.duidval.duid[i>>1]|=toupper(yytext[i])-'A'+10;
         else
             yylval.duidval.duid[i>>1]|=yytext[i]-'0';
    }
-   return DUID_;
+   return SrvParser::DUID_;
 }
 
-//HEXADECIMAL NUMBER (interface id, option's values etc.)
+%{ //HEXADECIMAL NUMBER (interface id, option's values etc.)
+%}
 {hexnumber} {
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%x",&(yylval.ival)))
-      yyabort();
-    return HEXNUMBER_;
+      { YYABORT; }
+    return SrvParser::HEXNUMBER_;
 }
 
-//DECIMAL NUMBER (as for HEXNUMBER)
+%{ //DECIMAL NUMBER (as for HEXNUMBER)
+%}
 {integer} { 
     //FIXME:Check if number appropriate
     if(!sscanf(yytext,"%u",&(yylval.ival)))
-      yyabort();
-    return INTNUMBER_;
+      { YYABORT; }
+    return SrvParser::INTNUMBER_;
 }
 
-//WHITE CHARS should be omitted
+%{ //WHITE CHARS should be omitted
+%}
 [ \n\t] ; 
 
-//OTHER CHARS are direclty passed to parser
+%{ //OTHER CHARS are direclty passed to parser
+%}
 .  {return yytext[0];}
 
 
@@ -280,13 +266,13 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
 /////////////////////////////////////////////////////////////////////////////
 // programs section
 
- void SrvLexer::resetAddress(char *tab)
+ void resetAddress(char *tab)
  {
   int i;
   for (i=0;i<16;i++) tab[i]=0;
  }
 
- void SrvLexer::decodeIntPart(char *src, char *dst)
+ bool decodeIntPart(char *src, char *dst)
  {
   
   int i,obyte;
@@ -297,19 +283,19 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
       while((src[++ipos]!='.')&&(ipos<strlen(src)))
       {
         obyte=obyte*10+src[ipos]-'0';
-        if (obyte>255) yyabort();
+        if (obyte>255) { YYABORT; }
       }
       Address[12+i]=obyte;
       ipos++;
     }
  }
 
- int SrvLexer::decodeSmallPart(char *src, char* dst,int length)
+ int decodeSmallPart(char *src, char* dst,int length)
  {
   int int16=0;
   int i;
   if (length>4)
-    yyabort();//there is too many digits abort and raise exception
+    { YYABORT; }//there is too many digits abort and raise exception
   for (i=0; i<length; i++) 
   {
     if (!isxdigit(src[i])) 
@@ -326,7 +312,7 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
   return 1;
  }
 
- unsigned SrvLexer::analyzeBigPart(char* bigPart, unsigned length, char *dst)
+ unsigned analyzeBigPart(char* bigPart, unsigned length, char *dst)
  {
   unsigned srcStart,dstStart,pos;
   srcStart=pos=0;
