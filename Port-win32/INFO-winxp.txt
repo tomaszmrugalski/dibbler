@@ -5,7 +5,7 @@ Usage:
  
 dibbler-server.exe ACTION -d dirname -i ipv6path
 
-e.g.: dibbler-server.exe run -d "c:\dibbler\\" -i "c:\windows\system32\ipv6.exe\\"
+e.g.: dibbler-server.exe run -d "c:\dibbler\\" -i "c:\windows\system32\ipv6.exe"
 
 Please note double backslashes at the end of paths.
 	
