@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.27 2004-11-01 23:31:25 thomson Exp $
+ * $Id: Portable.h,v 1.28 2004-11-15 20:59:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.26  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -37,8 +40,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.3.0-RC1-CVS (" __DATE__ " " __TIME__ ")"
-//#define DIBBLER_VERSION "0.3.0-RC1"
+#define DIBBLER_VERSION "0.3.0-RC2-CVS (" __DATE__ " " __TIME__ ")"
+//#define DIBBLER_VERSION "0.3.0-RC2"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson@klub.com.pl>,Marek Senderski<msend@o2.pl>"
