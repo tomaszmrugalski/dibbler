@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.8 2004-04-10 12:18:01 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.9 2004-05-23 20:20:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/04/10 12:18:01  thomson
+ * Numerous fixes: LogName, LogMode options added, dns-servers changed to
+ * dns-server, '' around strings are no longer needed.
+ *
  * Revision 1.7  2004/04/09 22:33:11  thomson
  * dns-servers changed to option dns-server
  *
@@ -92,7 +96,7 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
         CfgMgr->firstIface();
         while(iface=CfgMgr->getIface())
         {
-            if (!iface->isNoConfig())
+            if (!iface->noConfig())
             {
                 SmartPtr<TIfaceIface> realIface=IfaceMgr->getIfaceByID(iface->getID());
                 if (realIface&&realIface->flagUp()&&realIface->flagRunning())
@@ -437,7 +441,7 @@ void TClntTransMgr::checkSolicit()
     CfgMgr->firstIface();
     while( (iface=CfgMgr->getIface()) )
     {
-        if (iface->isNoConfig())
+        if (iface->noConfig())
             continue;
         SmartPtr<TClntCfgGroup> group;
         iface->firstGroup();
@@ -507,7 +511,7 @@ void TClntTransMgr::checkInfRequest()
     CfgMgr->firstIface();
     while( (iface=CfgMgr->getIface()) )
     {
-        if (iface->isNoConfig())
+        if (iface->noConfig())
             continue;
         if (iface->onlyInformationRequest())
             Transactions.append(new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,iface));
