@@ -8,8 +8,8 @@ objs: $(OBJECTS)
 libs: libSrvCfgMgr.a
 
 SrvLexer.o: SrvLexer.cpp
-	@echo "[CPP    ] $(SUBDIR)/$@"
-	$(CPP) -c $(OPTS) -ftemplate-depth-30 SrvLexer.cpp 
+	@echo "[CXX    ] $(SUBDIR)/$@"
+	$(CXX) -c $(OPTS) -ftemplate-depth-30 SrvLexer.cpp 
 
 parser: SrvParser.y SrvLexer.l 
 	echo "[BISON++] SrvParser.y"

@@ -45,14 +45,14 @@ addrpack.o: addrpack.c
 test: test1 test2
 
 test1: test1.cpp dns.c
-	$(CPP) $(OPTS) test1.cpp dns.c -o test1
+	$(CXX) $(OPTS) test1.cpp dns.c -o test1
 
 test2: test2.cpp libLowLevel.a
 	cd $(SRVCFGMGR); $(MAKE) libs
-	$(CPP) $(OPTS)  test2.cpp -L. -lLowLevel -o test2
+	$(CXX) $(OPTS)  test2.cpp -L. -lLowLevel -o test2
 
 test3: test1.cpp SrvParser.cpp SrvLexer.o
 	cd $(SRVCFGMGR); $(MAKE) libs
-	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test3.cpp SrvParser.cpp SrvLexer.o \
+	$(CXX) $(OPTS) -I $(INCDIR) -o $@ test3.cpp SrvParser.cpp SrvLexer.o \
 	-L. -lSrvParser -L$(SRVCFGMGR) -lSrvCfgMgr ../IPv6Addr.cpp ../DUID.cpp \
 	$(LOWLEVEL)/addrpack.o ../Logger.o

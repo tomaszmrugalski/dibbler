@@ -11,5 +11,5 @@ libs: libClntAddrMgr.a
 test: test1
 
 test1: test1.cpp libs
-	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test1.cpp  \
+	$(CXX) $(OPTS) -I $(INCDIR) -o $@ test1.cpp  \
 	-L. -lClntAddrMgr
