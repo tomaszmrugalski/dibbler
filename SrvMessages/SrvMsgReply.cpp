@@ -490,20 +490,17 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    std::clog << "Invalid option type("
 		      <<ptrOpt->getOptType()<<") received." << logger::endl;
 	    break;
-            
-            // not supported yet
 	default:
 	    appendDefaultOption(ptrOpt);
 	    break;
         }
     }
     appendRequestedOptions(duidOpt->getDUID(),request->getAddr(),request->getIface(),reqOpts);
-    delete clntFreeAddr;
+    delete [] clntFreeAddr;
     pkt = new char[this->getSize()];
     IsDone = false;
     SmartPtr<TIPv6Addr> ptrAddr;
-    //assAddrLst->first(); - I wanted assign addresses here but it's done in IA_NA option
-    this->MRT = 330; // FIXME: 
+    this->MRT = 330; 
     this->send();
 }
 

@@ -163,7 +163,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     ptrPreference = new TSrvOptPreference(preference,this);
     Options.append((Ptr*)ptrPreference);
 
-    delete clntFreeAddr;
+    delete [] clntFreeAddr;
     pkt = new char[this->getSize()];
     IsDone = false;
     this->MRT = 0;

@@ -229,16 +229,16 @@ void TSrvMsg::getFreeAddressesForClient (SmartPtr<TContainer<SmartPtr<TSrvCfgAdd
     clntFreeAddr=NULL;    //FIXME:remember to free
     long *classAssignAddr=NULL;
     long *clntAssignAddr=NULL; 
-
+    long count = clntAllClasses->count();
 
     clntClasses=new TContainer<SmartPtr<TSrvCfgAddrClass> > ();
 
-    if(clntAllClasses->count())
+    if(count)
     {
-        classAssignAddr=new long[clntAllClasses->count()];
-        clntAssignAddr=new long[clntAllClasses->count()];
-        clntFreeAddr=new long[clntAllClasses->count()];
-        memset(clntFreeAddr,0,clntAllClasses->count()*sizeof(long));
+        classAssignAddr=new long[count];
+        clntAssignAddr=new long[count];
+        clntFreeAddr=new long[count];
+        memset(clntFreeAddr,0,count*sizeof(long));
 
         SrvAddrMgr->getAddrsCount(clntAllClasses, clntAssignAddr, classAssignAddr, 
             duid, iface);
@@ -262,8 +262,9 @@ void TSrvMsg::getFreeAddressesForClient (SmartPtr<TContainer<SmartPtr<TSrvCfgAdd
             }
             i++;
         }
-        delete classAssignAddr;
-        delete clntAssignAddr;
+        delete[] classAssignAddr;
+        delete[] clntAssignAddr;
+	//delete[] clntFreeAddr;
     }
     else
         clntClasses=clntAllClasses;
