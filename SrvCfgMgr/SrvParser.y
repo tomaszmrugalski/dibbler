@@ -685,10 +685,6 @@ void SrvParser::StartIfaceDeclaration()
 bool SrvParser::EndIfaceDeclaration()
 {
     SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
-    if (!SrvCfgAddrClassLst.count()) {
-        Log(Crit) << "No address classes defined." << LogEnd;
-        YYABORT;
-    }
     SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
         SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.7 2005-01-12 00:10:05 thomson Exp $
+ * $Id: SrvMsg.h,v 1.8 2005-02-07 20:51:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/01/12 00:10:05  thomson
+ * Compilation fixes.
+ *
  * Revision 1.6  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -71,6 +74,7 @@ public:
     void copyRelayInfo(SmartPtr<TSrvMsg> q);
     bool appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
 				int iface, SmartPtr<TSrvOptOptionRequest> reqOpt);
+    string showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro);
 
     void addRelayInfo(SmartPtr<TIPv6Addr> linkAddr,
 		      SmartPtr<TIPv6Addr> peerAddr,

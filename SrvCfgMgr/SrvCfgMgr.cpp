@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.34 2005-02-01 00:57:36 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.35 2005-02-07 20:51:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.33  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -358,6 +361,10 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
     SmartPtr<TSrvCfgIface> ptrIface;
     firstIface();
     while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
+
+    /* FIXME: reject-client and accept-only does not work in stateless mode */
+    if (this->stateless())
+	return true;
 
     if (ptrIface)
     {

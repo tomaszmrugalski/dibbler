@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.11 2005-01-30 23:12:28 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.12 2005-02-07 20:51:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/01/30 23:12:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.10  2005/01/30 22:53:28  thomson
  * *** empty log message ***
  *
@@ -30,10 +33,10 @@
  *
  */
 
+#include <sstream>
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-
 #ifdef LINUX
 #include <netinet/in.h>
 #endif
@@ -433,4 +436,19 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     }
     
     return newOptionAssigned;
+}
+
+/**
+ * this function enumerates all options specified in the ORO option
+ */
+string TSrvMsg::showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro) {
+    ostringstream x;
+    int i = oro->count();
+    x << i << " opts";
+    if (i)
+	x << ":";
+    for (i=0;i<oro->count();i++) {
+	x << " " << oro->getReqOpt(i);
+    }
+    return x.str();
 }

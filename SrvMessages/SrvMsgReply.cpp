@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.15 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.16 2005-02-07 20:51:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.14  2004/12/04 23:43:26  thomson
  * Server no longer crashes after receiving the same INF-REQUEST (bug #84)
  *
@@ -32,6 +35,7 @@
  *                                                                           
  */
 
+#include <cmath>
 #include "SmartPtr.h"
 #include "SrvMsgReply.h"
 #include "SrvMsg.h"
@@ -50,7 +54,6 @@
 #include "AddrAddr.h"
 #include "Logger.h"
 #include "OptStatusCode.h"
-#include <cmath>
 
 
 // used as CONFIRM reply
@@ -642,6 +645,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
     SmartPtr<TOpt> ptrOpt;
     setOptionsReqOptClntDUID((Ptr*)question);
+    
+    Log(Debug) << "Received INF-REQUEST requesting " << this->showRequestedOptions(this->reqOpts) << "." << LogEnd;
 
     question->firstOption();
     while (ptrOpt = question->getOption() ) 

@@ -2,6 +2,10 @@
   Dibbler changelog
  ------------------- 
 
+ 0.4.0 [NOT-RELEASED-YET]
+  - Server stateless mode fixed (bug #103)
+  - /etc/init.d scripts are provided for Debian,PLD and Gentoo (bug #94, #95)
+
  0.4.0-RC1 [2005-02-03]
   - Relay implemented
   - Win32: start/stop command are now working (bug #27)

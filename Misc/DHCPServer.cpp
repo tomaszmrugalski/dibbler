@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.22 2005-02-01 00:57:36 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.23 2005-02-07 20:51:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.21  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -147,8 +150,7 @@ void TDHCPServer::run()
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();
 	Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;
-	if (CfgMgr->stateless() && ( (msg->getType()!=SOLICIT_MSG) || 
-				     (msg->getType()!=INFORMATION_REQUEST_MSG) ||
+	if (CfgMgr->stateless() && ( (msg->getType()!=INFORMATION_REQUEST_MSG) &&
 				     (msg->getType()!=RELAY_FORW_MSG))) {
 	    Log(Warning) 
 		<< "Stateful configuration related message received while running in the stateless mode. Message ignored." 
