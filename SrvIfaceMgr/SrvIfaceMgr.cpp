@@ -98,7 +98,6 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     int bufsize=4096;
 
     SmartPtr<TIPv6Addr> Peer (new TIPv6Addr());
-    char peer[16];
     int sockid;
     int msgtype;
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.7 2004-03-29 18:53:08 thomson Exp $
+ * $Id: Iface.cpp,v 1.8 2004-05-24 00:02:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -155,7 +158,7 @@ bool TIfaceIface::updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
 #ifdef LINUX
   // FIXME: Linux kernel currently does not provide API for dynamic adresses
 #endif
-
+    return true;
 }
 
 /*
@@ -171,7 +174,7 @@ char* TIfaceIface::firstLLAddress() {
  */
 char* TIfaceIface::getLLAddress() {
     char* retVal;
-    if(retVal=this->PresLLAddr) {
+    if( (retVal=this->PresLLAddr) ) {
         if ( (this->PresLLAddr-this->LLAddr) < (16*this->LLAddrCnt) )
             this->PresLLAddr+=16;
         else

@@ -20,7 +20,7 @@ int dns_add(const char * ifname, int ifaceid, char * addrPlain) {
     while (!feof(f)) {
 	char * c;
 	fgets(buf,511,f);
-	if (c = strstr(buf,"\n")) 
+	if ( (c = strstr(buf,"\n")) ) 
 	    *c = 0;
 	if (!strncmp("nameserver ",buf,11) && !strcmp(addrPlain,buf+11)) {
 	    // it's out name server
@@ -82,6 +82,7 @@ int dns_del(const char * ifname, int ifaceid, char *addrPlain) {
 	fclose(f2);
     }
     chmod(RESOLVCONF_FILE,12);
+    return 0;
 }
 
 int domain_add(const char* ifname, int ifaceid, char* domain) {
@@ -97,7 +98,7 @@ int domain_add(const char* ifname, int ifaceid, char* domain) {
     while (!feof(f)) {
 	char * c;
 	fgets(buf,511,f);
-	if (c = strstr(buf,"\n")) 
+	if ( (c = strstr(buf,"\n")) ) 
 	    *c = 0;
 	if (!strncmp("search ",buf,7) && !strcmp(domain,buf+7)) {
 	    // it's out name server
@@ -161,6 +162,7 @@ int domain_del(const char * ifname, int ifaceid, char *domain) {
 	fclose(f2);
     }
     chmod(RESOLVCONF_FILE,12);
+    return 0;
 }
 
 int dns_del_all() {
@@ -181,7 +183,7 @@ int dns_del_all() {
 	    dns_del("",0,buf[i]);
 	}
     }
-
+    return 0;
 }
 
 int domain_del_all() {
@@ -202,5 +204,5 @@ int domain_del_all() {
 	    domain_del("",0,buf[i]);
 	}
     }
-
+    return 0;
 }

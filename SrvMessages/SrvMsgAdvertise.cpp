@@ -23,7 +23,6 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
 	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, solicit->getTransID())
 {
-    unsigned long addrCount=0;
     char preference = 0;
     SmartPtr<TOpt> ptrOpt;
     SmartPtr<TSrvOptOptionRequest> reqOpts;

@@ -31,6 +31,7 @@ $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
 	-L$(CLNTCFGMGR)   -lClntCfgMgr \
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
 	-L$(CLNTMESSAGES) -lClntMsg \
+	-L$(CLNTADDRMGR)  -lClntAddrMgr \
 	-L$(MISC)         -lMisc \
 	-lClntOpts -lOpts $(XMLLIBS) $(EFENCE) 
 

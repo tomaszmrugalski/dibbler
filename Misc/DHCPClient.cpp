@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.8 2004-05-23 20:41:03 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.9 2004-05-24 00:02:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/05/23 20:41:03  thomson
+ * *** empty log message ***
+ *
  * Revision 1.7  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *                                                                           
@@ -64,7 +67,6 @@ void TDHCPClient::stop() {
 
 void TDHCPClient::run()
 {
-    long theBeginning = now();
     SmartPtr<TMsg> msg;
     while ( (!TransMgr->isDone()) && (!this->isDone()) )
     {
