@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.15 2004-07-05 23:04:08 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.16 2004-07-11 14:08:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/07/05 23:04:08  thomson
+ * *** empty log message ***
+ *
  * Revision 1.14  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -88,18 +91,21 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 
     // find loopback interface
     IfaceMgr->firstIface();
-    SmartPtr<TIfaceIface> loopback;
     SmartPtr<TIfaceIface> ptrIface;
+#ifndef WIN32
+	SmartPtr<TIfaceIface> loopback;
     while (ptrIface=IfaceMgr->getIface()) {
-	if (!ptrIface->flagLoopback()) {
-	    continue;
-	}
-	loopback = ptrIface;
-	break;
+        if (!ptrIface->flagLoopback()) {
+            continue;
+	    }
+	    loopback = ptrIface;
+	    break;
     }
     if (!loopback) {
-	Log(Error) << "Loopback interface not found!" << LogEnd;
+	   Log(Error) << "Loopback interface not found!" << LogEnd;
+	   this->IsDone = true;
     }
+#endif
 
     if (!CfgMgr->isDone())
     {
@@ -134,7 +140,9 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 		llAddr=realIface->getLLAddress();
 		SmartPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
 		realIface->addSocket(addr,DHCPCLIENT_PORT,true);
+#ifndef WIN32
 		loopback->addSocket(addr,DHCPCLIENT_PORT,false);
+#endif
 		if (llAddr) {
 		    char buf[48];
 		    Log(Info) << "Socket created on ";
