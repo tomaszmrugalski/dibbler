@@ -5,6 +5,12 @@
   - Developer's guide
   - Linux: Fixed issue with running server and client on the same host
 
+ 0.3.0-RC3
+  - DAD timeout was decreased to 1 second
+  - NIS options values are changed to meet recently published RFC3898
+  - Server now supports domains containing - (bug #73)
+  - 
+
  0.3.0-RC2
   - Fixed bug found by PCSS team regarding improper socket initialization in ClntTransMgr.
   - Server now properly supports clients which send IA without IAADDR included.
