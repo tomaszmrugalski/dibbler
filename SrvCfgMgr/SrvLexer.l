@@ -22,6 +22,8 @@ curly_cl [}]
 hex1to4  {hexdigit}{1,4}
 
 %{
+using namespace std;
+namespace std{
   unsigned ComBeg; //line, in which comment begins
   unsigned LftCnt; //how many chars : on the left side of '::' char was interpreted
   unsigned RgtCnt; //the same as above, but on the right side of '::'
@@ -33,6 +35,7 @@ hex1to4  {hexdigit}{1,4}
   bool decodeIntPart(char *src, char *dst);
   void resetAddress(char *tab);
   yy_SrvParser_stype yylval;
+};
 %}
 
 %%

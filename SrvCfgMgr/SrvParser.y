@@ -3,7 +3,7 @@
 %header{
 #include <iostream>
 #include <string>
-//#include <malloc.h>
+#include <malloc.h>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -21,6 +21,7 @@
 %}
 %{
 #include <FlexLexer.h>
+
 
 %}
 
@@ -631,21 +632,22 @@ bool SrvParser::EndClassDeclaration()
   ParserOptStack.delLast();
 }
 
-// <Linux>
-
+namespace std {
 extern yy_SrvParser_stype yylval;
+};
 
 int SrvParser::yylex()
 {
+    memset(&std::yylval,0, sizeof(std::yylval));
+    memset(&this->yylval,0, sizeof(this->yylval));
     int x = this->lex->yylex();
-    this->yylval=::yylval;
+    this->yylval=std::yylval;
     return x;
 }
 
 void SrvParser::yyerror(char *m)
 {
     // logging 
-    std::clog << logger::logEmerg << "Config parse error: line " << lex->lineno() << ", unexpected [" 
-	 << lex->YYText() << "] token." << logger::endl;
+    std::clog << logger::logEmerg << "Config parse error: line " << lex->lineno() 
+              << ", unexpected [" << lex->YYText() << "] token." << logger::endl;
 }
-// </Linux>

@@ -16,7 +16,7 @@
 
 #include <iostream>
 #include <string>
-//#include <malloc.h>
+#include <malloc.h>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -57,7 +57,7 @@ bool EndClassDeclaration();
     ParserOptStack.getLast()->setUnicast(false);    \
    this->lex = lex;
 
-#line 58 "SrvParser.y"
+#line 59 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
