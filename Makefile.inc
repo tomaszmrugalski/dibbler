@@ -1,6 +1,6 @@
 # === used tools ===
-CPP          = g++-2.95
-CC           = gcc-2.95
+CPP          = g++
+CC           = gcc
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
@@ -8,9 +8,14 @@ BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREF
 COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO)
 OPTS         = -ftemplate-depth-40 $(COPTS)
 
-# debug info
+# debuging parameters
 DEBUGINFO    = -g
-#EFENCE       = -lefence
+EFENCE       = -lefence
+
+# === libxml2 stuff ===
+#XMLCFLAGS    = `pkg-config libxml-2.0 --cflags` -DLIBXML2
+#XMLLIBS      = `pkg-config libxml-2.0 --libs`
+
 
 # === Portability ===
 ARCH         = LINUX
@@ -20,9 +25,6 @@ SERVER       = port-linux/server-linux.cpp
 CLIENTBIN    = dibbler-client-linux
 SERVERBIN    = dibbler-server-linux
 
-# === libxml2 stuff ===
-XMLCFLAGS    = `pkg-config libxml-2.0 --cflags`
-XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
 # === do not modify anything below ===
 PREFIX       = ..

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <malloc.h>
-#include "FlexLexer.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -18,7 +17,10 @@
     
 #define YY_USE_CLASS
 %}
+%{
+#include "FlexLexer.h"
 
+%}
 // --- CLASS MEMBERS ---
 
 // <Linux>

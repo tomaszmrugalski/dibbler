@@ -40,18 +40,18 @@ hex1to4  {hexdigit}{1,4}
 %%
 
   // place your Lex rules here
-[Ii][fF][aA][cC][Ee] {return clntParser::IFACE_;}
-[Nn][Oo]-[Cc][Oo][Nn][Ff][Ii][Gg] {return clntParser::NO_CONFIG_;}
-[Aa][Dd][Dd][Rr][Ee][Ss][Ss] {return clntParser::ADDRES_;}
-[Ii][Aa] {return clntParser::IA_;}
-[Nn][Oo]-[Ii][Aa] {return clntParser::NOIA_;}
+iface     {return clntParser::IFACE_;}
+no-config {return clntParser::NO_CONFIG_;}
+address   {return clntParser::ADDRES_;}
+ia        {return clntParser::IA_;}
+no-ia     {return clntParser::NOIA_;}
 
 log-level {return clntParser::LOGLEVEL_; }
 log-mode  {return clntParser::LOGMODE_; }
 log-name  {return clntParser::LOGNAME_; }
 
-[Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return clntParser::WORKDIR_;}
-[Oo][Pp][Tt][Ii][Oo][Nn] { return clntParser::OPTION_; }
+work-dir  {return clntParser::WORKDIR_;}
+option    {return clntParser::OPTION_; }
 
 %{    //KEYWORDS FOR OPTIONS
   // [-|REQUEST|REQUIRE] OptionName [SEND|DEFAULT|SUPERSEDE|-] Value
@@ -60,51 +60,51 @@ log-name  {return clntParser::LOGNAME_; }
   //REQUEST - only request of option from a server - messages without will be
   //                    accepted (default)
 %}
-[Rr][Ee][Qq][Uu][Ee][Ss][Tt] {return clntParser::REQUEST_;}     
+request {return clntParser::REQUEST_;}     
 %{  //REQUIRE - messages from server must include this option, otherwise its 
   //                    message will be discarded by client
 %}
-[Rr][Ee][Qq][Uu][Ii][Rr][Ee] {return clntParser::REQUIRE_;} 
+require {return clntParser::REQUIRE_;} 
 
 %{    //SEND -    only hint of option's value sent to server - if server dosen't 
     //              include it nothing happens(default)
 %}
-[Ss][Ee][Nn][Dd] {return clntParser::SEND_;}                                 
+send {return clntParser::SEND_;}                                 
 %{  //DEFAULT - default value of option. If server dosen't include this option 
   //                    this default value should be used
 %}
-[Dd][Ee][Ff][Aa][Uu][Ll][Tt] {return clntParser::DEFAULT_;} 
+default {return clntParser::DEFAULT_;} 
 %{  //SUPERSEDE - whatever server returns overwrite returned value
 %}
-[Ss][Uu][Pp][Ee][Rr][Ss][Ee][Dd][Ee] {return clntParser::SUPERSEDE_;} 
+supersede {return clntParser::SUPERSEDE_;} 
 %{  //APPEND - for options which can have multiple values, ordered in sequence
     //                 e.g. list of DNS servers, orders append list of options at the
     //               end of those returned by server
 %}
-[Aa][Pp][Pp][Ee][Nn][Dd] {return clntParser::APPEND_;} 
+append {return clntParser::APPEND_;} 
 %{  //PREPPEND - for options which can have multiple values, ordered in sequence
   //                 e.g. list of DNS servers, orders append list of options at the
     //               beginning of those returned by server
 %}
-[Pp][Rr][Ee][Pp][Ee][Nn][Dd] {return clntParser::PREPEND_;}  
+prepend {return clntParser::PREPEND_;}  
 
 
 %{    //OPTIONS NAMES
 %}
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee] {return clntParser::PREF_TIME_;}
-[Vv][Aa][Ll][Ii][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee]  {return clntParser::VALID_TIME_;}
-[Tt][1] {return clntParser::T1_;}
-[Tt][2] {return clntParser::T2_;}
+prefered-lifetime {return clntParser::PREF_TIME_;}
+valid-lifetime  {return clntParser::VALID_TIME_;}
+t1 {return clntParser::T1_;}
+t2 {return clntParser::T2_;}
 
-[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return clntParser::DNS_SERVER_;}
-[Dd][Oo][Mm][Aa][Ii][Nn] {return clntParser::DOMAIN_;}
+dns-server {return clntParser::DNS_SERVER_;}
+domain {return clntParser::DOMAIN_;}
 
-[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr] {return clntParser::NTP_SERVER_;}
-[Tt][Ii][Mm][Ee]-[Zz][Oo][Nn][Ee] {return clntParser::TIME_ZONE_;}
+ntp-server {return clntParser::NTP_SERVER_;}
+time-zone {return clntParser::TIME_ZONE_;}
 
-[Rr][Ee][Jj][Ee][Cc][Tt]-[Ss][Ee][Rr][Vv][Ee][Rr] {return clntParser::REJECT_SERVERS_;}
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ss][Ee][Rr][Vv][Ee][Rr]  {return clntParser::PREFERRED_SERVERS_;}
-[Rr][Aa][Pp][Ii][Dd]-[Cc][Oo][Mm][Mm][Ii][Tt] {return clntParser::RAPID_COMMIT_;}
+reject-server    { return clntParser::REJECT_SERVERS_;}
+prefered-server  { return clntParser::PREFERRED_SERVERS_;}
+rapid-commit     { return clntParser::RAPID_COMMIT_;}
 
 %{ //COMMENTS
 %} 
