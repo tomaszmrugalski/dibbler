@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.9 2004-07-05 23:04:08 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.10 2004-09-08 21:22:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/07/05 23:04:08  thomson
+ * *** empty log message ***
+ *
  * Revision 1.8  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -493,18 +496,24 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
 
 	// medium case: addess belongs to supported class, but is used
 	if ( ptrClass ) {
-	    Log(Debug) << "Requested address (" << *hint << ") is used, found." << LogEnd;
-	    // FIXME: loops if all addrs are used
-	    do {
-		addr = ptrClass->getRandomAddr();
-	    } while (!AddrMgr->addrIsFree(hint));
+	    if (ptrClass->getAssignedCount()>=ptrClass->getClassMaxLease()) {
+		Log(Debug) << "Requested address (" << *hint 
+			   << ") belongs to supported class, which has reached its limit (" 
+			   << ptrClass->getAssignedCount() << " assigned, " 
+			   << ptrClass->getClassMaxLease() << " max lease)." << LogEnd;
+	    } else {
+		Log(Debug) << "Requested address (" << *hint 
+			   << ") belongs to supported class, but is used." << LogEnd;
+		do {
+		    addr = ptrClass->getRandomAddr();
+		} while (!AddrMgr->addrIsFree(addr));
 	    return addr;
+	    }
 	}
     }
 
     // worst case: address does not belong to supported class
     // or specified hint is invalid
-
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     ptrClass = ptrIface->getRandomClass(this->ClntDuid, this->ClntAddr);
     if (!ptrClass) {

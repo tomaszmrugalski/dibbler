@@ -459,18 +459,13 @@ UnicastAddressOption
 }
 ;
 
-UnicastOption
-: UNICAST_ Number   
-{
-    if(($2&&(!ParserOptStack.getLast()->getUnicast() ))||($2>1))
-	YYABORT; //there should be declared prior unicast address
-    ParserOptStack.getLast()->setUnicast($2);
-}
-;
-
 RapidCommitOption
 :   RAPID_COMMIT_ Number 
 { 
+    if ( ($2!=0) && ($2!=1)) {
+	Log(Error) << "RAPID-COMMIT in line " << lex->lineno() << " must have 0 or 1 value." << LogEnd;
+	YYABORT;
+    }
     ParserOptStack.getLast()->setRapidCommit($2); 
 }
 ;
@@ -478,8 +473,11 @@ RapidCommitOption
 PreferenceOption
 : PREFERENCE_ Number 
 { 
-    if (($2<0)||($2>255))
+    if (($2<0)||($2>255)) {
+	Log(Error) << "Preference value (" << $2 << ") in line " << lex->lineno() 
+		   << " is out of range [0..255]." << LogEnd;
 	YYABORT;
+    }
     ParserOptStack.getLast()->setPreference($2);    
 }
 ;
@@ -528,7 +526,6 @@ InterfaceOptionDeclaration
 | TimeZoneOption
 | IfaceMaxLeaseOption
 | ClntMaxLeaseOption
-| UnicastOption
 ;
 
 ClassOptionDeclaration
@@ -555,7 +552,10 @@ bool SrvParser::CheckIsIface(int ifaceNr)
   SmartPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
-    if ((ptr->getID())==ifaceNr) YYABORT;
+    if ((ptr->getID())==ifaceNr) {
+	Log(Error) << "Interface with ID=" << ifaceNr << " is already defined." << LogEnd;
+	YYABORT;
+    }
   return true;
 };
     
@@ -568,7 +568,10 @@ bool SrvParser::CheckIsIface(string ifaceName)
   while (ptr=SrvCfgIfaceLst.get())
   {
     string presName=ptr->getName();
-    if (presName==ifaceName) YYABORT;
+    if (presName==ifaceName) {
+	Log(Error) << "Interface " << ifaceName << " is already defined." << LogEnd;
+	YYABORT;
+    }
   }
   return true;
 };
@@ -585,8 +588,10 @@ void SrvParser::StartIfaceDeclaration()
 bool SrvParser::EndIfaceDeclaration()
 {
     SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
-    if (!SrvCfgAddrClassLst.count())
+    if (!SrvCfgAddrClassLst.count()) {
+	Log(Error) << "No address classes defined." << LogEnd;
 	YYABORT;
+    }
     SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
 	SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);
@@ -604,8 +609,10 @@ void SrvParser::StartClassDeclaration()
 
 bool SrvParser::EndClassDeclaration()
 {
-    if (!ParserOptStack.getLast()->countPool())
+    if (!ParserOptStack.getLast()->countPool()) {
+	Log(Error) << "No pools defined for this interface." << LogEnd;
         YYABORT;
+    }
     SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
     //setting interface options on the basis of just read information
     SrvCfgAddrClassLst.getLast()->setOptions(ParserOptStack.getLast());

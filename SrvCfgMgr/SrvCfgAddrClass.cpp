@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.14 2004-09-03 23:20:23 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.15 2004-09-08 21:22:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  *
  * Revision 1.12  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
@@ -184,7 +187,7 @@ long TSrvCfgAddrClass::decrAssigned(int count) {
     return this->AddrsAssigned;
 }
 
-long TSrvCfgAddrClass::getAssignedCount() {
+unsigned long TSrvCfgAddrClass::getAssignedCount() {
     return this->AddrsAssigned;
 }
 

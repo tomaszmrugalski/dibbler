@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.h,v 1.2 2004-09-07 22:02:32 thomson Exp $
+ * $Id: ClntAddrMgr.h,v 1.3 2004-09-08 21:22:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/09/07 22:02:32  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  */
 
 #ifndef CLNTADDRMGR_H
@@ -36,7 +39,7 @@ class TClntAddrMgr : public TAddrMgr
     unsigned long getTentativeTimeout();
     void firstIA();
     SmartPtr<TAddrIA> getIA();
-    SmartPtr<TAddrIA> getIA(long IAID);
+    SmartPtr<TAddrIA> getIA(unsigned long IAID);
     void addIA(SmartPtr<TAddrIA> ptr);
     bool delIA(long IAID);
     int countIA();
@@ -44,7 +47,7 @@ class TClntAddrMgr : public TAddrMgr
 
     void doDuties();
     
-    bool isIAAssigned(long IAID);
+    bool isIAAssigned(unsigned long IAID);
  private:
     SmartPtr<TAddrClient> Client;
 };

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.4 2004-03-29 18:53:08 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.5 2004-09-08 21:22:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -142,7 +145,7 @@ TClntAddrMgr::~TClntAddrMgr()
 {
 }
 
-bool TClntAddrMgr::isIAAssigned(long IAID)
+bool TClntAddrMgr::isIAAssigned(unsigned long IAID)
 {
 	SmartPtr<TAddrIA> ia;
 	//FIXME:maybe it should be also method of TAddrMgr ? (Marek)
@@ -152,7 +155,7 @@ bool TClntAddrMgr::isIAAssigned(long IAID)
 	return false;
 }	
 
-SmartPtr<TAddrIA> TClntAddrMgr::getIA(long IAID)
+SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
 {
     SmartPtr<TAddrIA> ptrIA;
     this->Client->firstIA();

@@ -29,10 +29,7 @@ using namespace std;
   char Address[16]; //address, which is analizing right now
   char AddrPart[16];
   unsigned intpos,pos;
-  unsigned analyzeBigPart(char* bigPart, unsigned length, char *dst);
-  int decodeSmallPart(char *src, char* dst,int length);
-  bool decodeIntPart(char *src, char *dst);
-  void resetAddress(char *tab);
+
 namespace std{
   yy_SrvParser_stype yylval;
 };
@@ -102,6 +99,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 %}
 ({hex1to4}:){7}{hex1to4} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -110,6 +108,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -118,6 +117,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 "::"(({hex1to4}:){1,7})?{hex1to4} { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -126,6 +126,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -134,6 +135,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 "::" {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -142,6 +144,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -150,6 +153,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -212,7 +216,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 {hexnumber} {
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%x",&(yylval.ival)))
-      { YYABORT; }
+      { Log(Error) << "Hex value [" << yytext << " parsing failed." << LogEnd; YYABORT; }
     return SrvParser::HEXNUMBER_;
 }
 
@@ -221,7 +225,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 {integer} { 
     //FIXME:Check if number appropriate
     if(!sscanf(yytext,"%u",&(yylval.ival)))
-      { YYABORT; }
+      { Log(Error) << "Decimal value [" << yytext << " parsing failed." << LogEnd; YYABORT; }
     return SrvParser::INTNUMBER_;
 }
 
@@ -239,70 +243,3 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 /////////////////////////////////////////////////////////////////////////////
 // programs section
 
- void resetAddress(char *tab)
- {
-  int i;
-  for (i=0;i<16;i++) tab[i]=0;
- }
-
- bool decodeIntPart(char *src, char *dst)
- {
-  
-  int i,obyte;
-  unsigned int ipos=0;
-    for (i=0;i<4;i++)
-    {
-      obyte=src[ipos]-'0';
-      while((src[++ipos]!='.')&&(ipos<strlen(src)))
-      {
-        obyte=obyte*10+src[ipos]-'0';
-        if (obyte>255) { YYABORT; }
-      }
-      Address[12+i]=obyte;
-      ipos++;
-    }
-    return true;
- }
-
- int decodeSmallPart(char *src, char* dst,int length)
- {
-  int int16=0;
-  int i;
-  if (length>4)
-    { YYABORT; }//there is too many digits abort and raise exception
-  for (i=0; i<length; i++) 
-  {
-    if (!isxdigit(src[i])) 
-      return 0; //or raise exeception
-    else
-      if (isalpha(src[i]))
-        int16=(int16<<4)+toupper(src[i])-55;
-      else
-
-        int16=(int16<<4)+src[i]-48;
-  }
-  dst[1]=*((char*)(&int16));
-  dst[0]=*(((char*)(&int16))+1);
-  return 1;
- }
-
- unsigned analyzeBigPart(char* bigPart, unsigned length, char *dst)
- {
-  unsigned srcStart,dstStart,pos;
-  srcStart=pos=0;
-  dstStart=0;
-  resetAddress(dst);
-  do
-  {
-    //extracting part of string to next ':' sign or its end
-    while((pos<length)&&(bigPart[pos]!=':')) pos++;
-    //decode this part to binary form
-    decodeSmallPart(bigPart+srcStart,dst+dstStart,pos-srcStart);
-    //bigPart[pos]!=':'?(pos-srcStart-1):
-    //next two bytes found
-    dstStart+=2;
-    //omission of : sign    
-    srcStart=++pos;
-  }while(pos<=length);
-  return (dstStart)>>1;
- }

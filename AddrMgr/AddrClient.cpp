@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.6 2004-06-20 19:29:23 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.7 2004-09-08 21:22:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  * Revision 1.5  2004/06/04 19:03:46  thomson
  * Resolved warnings with signed/unisigned
  *
@@ -41,7 +44,7 @@ SmartPtr<TAddrIA> TAddrClient::getIA()
     return IAsLst.get();
 }
 
-SmartPtr<TAddrIA> TAddrClient::getIA(int IAID)
+SmartPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID)
 {
     SmartPtr<TAddrIA> ptr;
     IAsLst.first();
@@ -70,7 +73,7 @@ int TAddrClient::countIA()
     return IAsLst.count();
 }
 
-bool TAddrClient::delIA(long IAID)
+bool TAddrClient::delIA(unsigned long IAID)
 {
     SmartPtr<TAddrIA> ptr;
     IAsLst.first();

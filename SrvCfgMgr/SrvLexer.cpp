@@ -954,10 +954,7 @@ using namespace std;
   char Address[16]; //address, which is analizing right now
   char AddrPart[16];
   unsigned intpos,pos;
-  unsigned analyzeBigPart(char* bigPart, unsigned length, char *dst);
-  int decodeSmallPart(char *src, char* dst,int length);
-  bool decodeIntPart(char *src, char *dst);
-  void resetAddress(char *tab);
+
 namespace std{
   yy_SrvParser_stype yylval;
 };
@@ -1309,6 +1306,7 @@ case 35:
 YY_RULE_SETUP
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -1319,6 +1317,7 @@ case 36:
 YY_RULE_SETUP
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -1329,6 +1328,7 @@ case 37:
 YY_RULE_SETUP
 { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -1339,6 +1339,7 @@ case 38:
 YY_RULE_SETUP
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -1349,6 +1350,7 @@ case 39:
 YY_RULE_SETUP
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -1359,6 +1361,7 @@ case 40:
 YY_RULE_SETUP
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -1369,6 +1372,7 @@ case 41:
 YY_RULE_SETUP
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
+	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT; 
     } else {
 	return SrvParser::IPV6ADDR_;
@@ -1439,7 +1443,7 @@ YY_RULE_SETUP
 {
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%x",&(yylval.ival)))
-      { YYABORT; }
+      { Log(Error) << "Hex value [" << yytext << " parsing failed." << LogEnd; YYABORT; }
     return SrvParser::HEXNUMBER_;
 }
 	YY_BREAK
@@ -1450,7 +1454,7 @@ YY_RULE_SETUP
 { 
     //FIXME:Check if number appropriate
     if(!sscanf(yytext,"%u",&(yylval.ival)))
-      { YYABORT; }
+      { Log(Error) << "Decimal value [" << yytext << " parsing failed." << LogEnd; YYABORT; }
     return SrvParser::INTNUMBER_;
 }
 	YY_BREAK
@@ -2377,72 +2381,4 @@ void yyfree (void * ptr )
 
 /////////////////////////////////////////////////////////////////////////////
 // programs section
-
- void resetAddress(char *tab)
- {
-  int i;
-  for (i=0;i<16;i++) tab[i]=0;
- }
-
- bool decodeIntPart(char *src, char *dst)
- {
-  
-  int i,obyte;
-  unsigned int ipos=0;
-    for (i=0;i<4;i++)
-    {
-      obyte=src[ipos]-'0';
-      while((src[++ipos]!='.')&&(ipos<strlen(src)))
-      {
-        obyte=obyte*10+src[ipos]-'0';
-        if (obyte>255) { YYABORT; }
-      }
-      Address[12+i]=obyte;
-      ipos++;
-    }
-    return true;
- }
-
- int decodeSmallPart(char *src, char* dst,int length)
- {
-  int int16=0;
-  int i;
-  if (length>4)
-    { YYABORT; }//there is too many digits abort and raise exception
-  for (i=0; i<length; i++) 
-  {
-    if (!isxdigit(src[i])) 
-      return 0; //or raise exeception
-    else
-      if (isalpha(src[i]))
-        int16=(int16<<4)+toupper(src[i])-55;
-      else
-
-        int16=(int16<<4)+src[i]-48;
-  }
-  dst[1]=*((char*)(&int16));
-  dst[0]=*(((char*)(&int16))+1);
-  return 1;
- }
-
- unsigned analyzeBigPart(char* bigPart, unsigned length, char *dst)
- {
-  unsigned srcStart,dstStart,pos;
-  srcStart=pos=0;
-  dstStart=0;
-  resetAddress(dst);
-  do
-  {
-    //extracting part of string to next ':' sign or its end
-    while((pos<length)&&(bigPart[pos]!=':')) pos++;
-    //decode this part to binary form
-    decodeSmallPart(bigPart+srcStart,dst+dstStart,pos-srcStart);
-    //bigPart[pos]!=':'?(pos-srcStart-1):
-    //next two bytes found
-    dstStart+=2;
-    //omission of : sign    
-    srcStart=++pos;
-  }while(pos<=length);
-  return (dstStart)>>1;
- }
 

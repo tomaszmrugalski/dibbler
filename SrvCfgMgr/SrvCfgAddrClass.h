@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.8 2004-09-03 23:20:23 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.9 2004-09-08 21:22:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.7  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -65,7 +68,7 @@ class TSrvCfgAddrClass
     unsigned long getClassMaxLease();
     unsigned long getID();
 
-    long getAssignedCount();
+    unsigned long getAssignedCount();
     long incrAssigned(int count=1);
     long decrAssigned(int count=1);
 

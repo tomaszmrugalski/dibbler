@@ -1,3 +1,16 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski  <msend@o2.pl>
+ *
+ * released under GNU GPL v2 licence
+ *
+ * $Id: AddrClient.h,v 1.3 2004-09-08 21:22:45 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 class TAddrClient;
 #ifndef ADDRCLIENT_H
 #define ADDRCLIENT_H
@@ -18,9 +31,9 @@ public:
     //--- IA list ---
     void firstIA();
     SmartPtr<TAddrIA> getIA();
-    SmartPtr<TAddrIA> getIA(int IAID);
+    SmartPtr<TAddrIA> getIA(unsigned long IAID);
     void addIA(SmartPtr<TAddrIA> ia);
-    bool delIA(long IAID);
+    bool delIA(unsigned long IAID);
     int countIA();
 
     // time related

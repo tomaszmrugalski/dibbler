@@ -1,6 +1,12 @@
 
   Dibbler changelog
  ------------------- 
+ 0.2.1
+  - Unicast communication support (bug #29, #30, #31)
+  - RAPID-COMMIT support fixed (bug #50, #51, #52)
+  - DECLINE infinite loop fixed
+  - DECLINE and RELEASE does no longer contain addrs with non-zero pref/valid lifetimes (bug #32)
+  - Invalid address parsing fixed.
 
  0.2.0
   - WinXP: client displays help when command line parameters are incorrect.
