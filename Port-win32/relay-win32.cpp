@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.3 2005-02-01 22:08:03 thomson Exp $
+ * $Id: relay-win32.cpp,v 1.4 2005-02-01 22:39:20 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/02/01 22:08:03  thomson
+ * start, stop commands implemented.
+ *
  * Revision 1.2  2005/02/01 01:09:34  thomson
  * Cosmetics.
  *
@@ -94,7 +97,7 @@ int main(int argc, char* argv[]) {
     switch (status) {
     case STATUS: {
         RelService->showStatus();
-	break;
+	    break;
     };
     case START: {
 	    RelService->StartService();

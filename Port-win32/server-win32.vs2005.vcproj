@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.00"
-	Name="server-winxp"
+	Name="server-win32"
 	ProjectGUID="{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
 	Keyword="ManagedCProj">
 	<Platforms>
@@ -384,7 +384,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="port-winxp"
+				Name="port-win32"
 				Filter="">
 				<File
 					RelativePath="SrvService.cpp">
@@ -470,6 +470,16 @@
 				</File>
 				<File
 					RelativePath="..\misc\long128.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="port-win32"
+				Filter="">
+				<File
+					RelativePath="SrvService.h">
+				</File>
+				<File
+					RelativePath="WinService.h">
 				</File>
 			</Filter>
 		</Filter>

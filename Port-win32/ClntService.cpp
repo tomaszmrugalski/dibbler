@@ -1,12 +1,15 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6 
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * $Id: ClntService.cpp,v 1.17 2005-02-01 01:10:52 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * $Id: ClntService.cpp,v 1.18 2005-02-01 22:39:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2005/02/01 01:10:52  thomson
+ * Working directory fix.
+ *
  * Revision 1.16  2004/12/13 23:31:30  thomson
  * *DB_FILE renamed to *ADDRMGR_FILE
  *
@@ -45,6 +48,7 @@
 #include <direct.h>
 
 TDHCPClient * ptr;
+TClntService StaticService;
 
 TClntService::TClntService() 
     :TWinService("DHCPv6Client","Dibbler - a DHCPv6 client",SERVICE_AUTO_START,
@@ -62,12 +66,13 @@ EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
     
     while(n<argc) {
 		if (!strncmp(argv[n], "status",6))    {	return STATUS;}
-		if (!strncmp(argv[n], "start",5))     {	status = START;	}
-		if (!strncmp(argv[n], "stop",4))      {	status = STOP;	}
+		if (!strncmp(argv[n], "start",5))     {	return START;	}
+		if (!strncmp(argv[n], "stop",4))      {	return STOP;	}
 		if (!strncmp(argv[n], "help",4))      {	return HELP;	}
 		if (!strncmp(argv[n], "install",7))   {	status = INSTALL;	}
 		if (!strncmp(argv[n], "uninstall",9)) {	return UNINSTALL;}
 		if (!strncmp(argv[n], "run",3))       { status = RUN; }
+        if (!strncmp(argv[n], "service", 7))  { status = SERVICE; }
 	
 		if (strncmp(argv[n], "-d",2)==0) {
 			if (n+1==argc) {
@@ -143,30 +148,6 @@ void TClntService::Run() {
 
     if (!client.isDone()) 
         client.run();
-}
-
-void TClntService::Install() {
-    if (this->IsInstalled()) {
-	cout << "Service already installed. Aborting." << endl;
-	return;
-    }
-    bool result = this->TWinService::Install();
-    if (!result) {
-	cout << "Service installation failed." << endl;
-    } else {
-	cout << "Installation successful." << endl;
-    }
-}
-
-void TClntService::Uninstall() {
-    if (!this->IsInstalled()) {
-	cout << "Service not installed. Cannot uninstall" << endl;
-	return;
-    }
-    bool result = this->TWinService::Uninstall();
-    if (!result) {
-	cout << "Service uninstallation failed." << endl;
-    }
 }
 
 void TClntService::setState(EServiceState status) {

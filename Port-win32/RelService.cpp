@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.3 2005-02-01 22:08:04 thomson Exp $
+ * $Id: RelService.cpp,v 1.4 2005-02-01 22:39:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/02/01 22:08:04  thomson
+ * start, stop commands implemented.
+ *
  * Revision 1.2  2005/02/01 01:11:10  thomson
  * Working directory fix.
  *
@@ -51,8 +54,8 @@ EServiceState TRelService::ParseStandardArgs(int argc,char* argv[])
 	if (!strncmp(argv[n], "start",5))     {	return START;	}
 	if (!strncmp(argv[n], "stop",4))      {	return STOP;	}
 	if (!strncmp(argv[n], "help",4))      { return HELP; }
-	if (!strncmp(argv[n], "install",7))   {	status = INSTALL; }
 	if (!strncmp(argv[n], "uninstall",9)) {	return UNINSTALL; }
+	if (!strncmp(argv[n], "install",7))   {	status = INSTALL; }
 	if (!strncmp(argv[n], "run",3))       { status = RUN; }
     if (!strncmp(argv[n], "service", 7))  { status = SERVICE; }
 	

@@ -6,9 +6,12 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.13 2005-02-01 22:08:04 thomson Exp $
+ * $Id: WinService.cpp,v 1.14 2005-02-01 22:39:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005/02/01 22:08:04  thomson
+ * start, stop commands implemented.
+ *
  * Revision 1.12  2005/02/01 18:36:53  thomson
  * IsRunning implemented, Install/Uninstall cleanup.
  *
@@ -438,14 +441,14 @@ bool TWinService::isRunning(const char * name) {
     // Open the Service Control Manager
     SC_HANDLE hSCM = ::OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
     if (!hSCM) {
-	Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
+    //Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
 	return false;
     }
 
     // Try to open the service
     SC_HANDLE hService = OpenService(hSCM,name, GENERIC_READ);
     if (!hService) {
-	Log(Crit) << "Unable to open " << name << " service." << LogEnd;
+	//Log(Crit) << "Unable to open " << name << " service." << LogEnd;
 	CloseServiceHandle(hSCM);
 	return false;
     }
@@ -481,10 +484,10 @@ void TWinService::showStatus() {
     serverRun  = this->isRunning("DHCPv6Server");
     clientRun  = this->isRunning("DHCPv6Client");
 
-    Log(Notice) <<  "Dibbler server installed: " << (serverInst? "INSTALLED":"NOT INSTALLED") << LogEnd;
-    Log(Notice) <<  "Dibbler server running  : " << (serverRun ? "RUNNING":"NOT RUNNING") << LogEnd;
-    Log(Notice) <<  "Dibbler client installed: " << (clientInst? "INSTALLED":"NOT INSTALLED") << LogEnd;
-    Log(Notice) <<  "Dibbler client running  : " << (clientRun ? "RUNNING":"NOT RUNNING") << LogEnd;
-    Log(Notice) <<  "Dibbler relay installed : " << (relayInst ? "INSTALLED":"NOT INSTALLED") << LogEnd;
-    Log(Notice) <<  "Dibbler relay running   : " << (relayRun  ? "RUNNING":"NOT RUNNING") << LogEnd;
+    Log(Notice) <<  "Dibbler server : " << (serverInst? "INSTALLED":"NOT INSTALLED") 
+                << ", " << (serverRun ? "RUNNING":"NOT RUNNING") << LogEnd;
+    Log(Notice) <<  "Dibbler client : " << (clientInst? "INSTALLED":"NOT INSTALLED") 
+                << ", " << (clientRun ? "RUNNING":"NOT RUNNING") << LogEnd;
+    Log(Notice) <<  "Dibbler relay  : " << (relayInst ? "INSTALLED":"NOT INSTALLED") 
+                << ", " << (relayRun  ? "RUNNING":"NOT RUNNING") << LogEnd;
 }

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: server-win32.cpp,v 1.9 2004-12-03 20:51:42 thomson Exp $
+ * $Id: server-win32.cpp,v 1.10 2005-02-01 22:39:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.8  2004/09/28 21:49:32  thomson
  * no message
  *
@@ -67,8 +70,9 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 }
 
 int main(int argc, char* argv[]) {
-    // Create the service object
-    TSrvService SrvService;
+    // get the service object
+    TSrvService * SrvService = TSrvService::getHandle();
+
 	int i=0;
     WSADATA wsaData;
     if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
@@ -82,8 +86,8 @@ int main(int argc, char* argv[]) {
 	return -1;		
     }
     
-    EServiceState status = SrvService.ParseStandardArgs(argc, argv);
-    SrvService.setState(status);
+    EServiceState status = SrvService->ParseStandardArgs(argc, argv);
+    SrvService->setState(status);
     
     cout << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
@@ -95,35 +99,35 @@ int main(int argc, char* argv[]) {
     
     switch (status) {
     case STATUS: {
-	cout << "Service: ";
-	if (SrvService.IsInstalled()) 
-	    cout << "INSTALLED " << endl;
-	else
-	    cout << "NOT INSTALLED" << endl;
-	break;
+	    SrvService->showStatus();
+    	break;
     };
     case START: {
-	SrvService.StartService();
-	break;
+	    SrvService->StartService();
+	    break;
     }
     case STOP: {
-	cout << "FIXME: STOP function is not implemented yet." << endl;
-	break;
+        SrvService->StopService();
+	    break;
     }
     case INSTALL: {
-	SrvService.Install();
+	    SrvService->Install();
 	    break;
     }
     case UNINSTALL: {
-	SrvService.Uninstall();
-	break;
+	    SrvService->Uninstall();
+	    break;
     } 
     case RUN: {
-	SrvService.Run();
-	break;
+	    SrvService->Run();
+	    break;
+    }
+    case SERVICE: {
+	    SrvService->RunService();
+	    break;
     }
     case INVALID: {
-	cout << "Invalid usage." << endl;
+    	cout << "Invalid usage." << endl;
     }				  
     case HELP: 
     default: {

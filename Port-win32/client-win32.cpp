@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: client-win32.cpp,v 1.14 2004-10-03 21:28:44 thomson Exp $
+ * $Id: client-win32.cpp,v 1.15 2005-02-01 22:39:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/10/03 21:28:44  thomson
+ * 0.2.1-RC1 version.
+ *
  * Revision 1.13  2004/09/28 21:49:32  thomson
  * no message
  *
@@ -80,16 +83,17 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 
 int main(int argc, char* argv[])
 {
-    //Create the service object
-    TClntService Client;
+    // get the service object
+    TClntService * Client = TClntService::getHandle();
+
     int i=0;
     WSADATA wsaData;
 
-	clog << DIBBLER_COPYRIGHT1 << " (CLIENT)" << endl;
-	clog << DIBBLER_COPYRIGHT2 << endl;
-	clog << DIBBLER_COPYRIGHT3 << endl;
-	clog << DIBBLER_COPYRIGHT4 << endl;
-	clog << endl;
+	cout << DIBBLER_COPYRIGHT1 << " (CLIENT)" << endl;
+	cout << DIBBLER_COPYRIGHT2 << endl;
+	cout << DIBBLER_COPYRIGHT3 << endl;
+	cout << DIBBLER_COPYRIGHT4 << endl;
+	cout << endl;
 
 	SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
 
@@ -98,8 +102,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	EServiceState status = Client.ParseStandardArgs(argc, argv);
-	Client.setState(status);
+	EServiceState status = Client->ParseStandardArgs(argc, argv);
+	Client->setState(status);
 
 	// find ipv6.exe (or netsh.exe in future implementations)
 	if (!lowlevelInit()) {
@@ -109,39 +113,35 @@ int main(int argc, char* argv[])
 
 	switch(status) {
 	case STATUS: { 
-		Client.showStatus();
+		Client->showStatus();
 		break;
 	}
 	case START: { 
-		clog << "Running client... " << std::endl;
-		Client.StartService();
+		Client->StartService();
 		break;
 	}
 	case STOP: { 
-		clog << "FIXME: STOP function is not implemented yet." << endl;
-		break;
+        Client->StopService();
+        break;
 	}
 	case INSTALL: {
-		Client.Install();
+		Client->Install();
 		break;
 	}
-	case UNINSTALL: { // UNINSTALL
-		if (Client.IsInstalled())
-			Client.Uninstall();
-		else {
-			clog << "Client already uninstalled." << endl;
-			break;
-		}
-		clog << "Client unistalled." << endl;
+	case UNINSTALL: {
+		Client->Uninstall();
 		break;
 	}
 	case RUN: {
-		clog << "Running client... (in console) " << std::endl;
-		Client.Run();
+		Client->Run();
 		break;
 	}
+    case SERVICE: {
+        Client->RunService();
+        break;
+    }
 	case INVALID: {
-		clog << "Invalid usage." << endl;
+		Log(Crit) << "Invalid usage." << endl;
     }				  
 	case HELP: 
 	default: {
