@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
  *          Marek Senderski <msend@o2.pl>                                    *
  *                                                                           *
- * $Id: DHCPServer.cpp,v 1.4 2004-02-28 15:33:37 thomson Exp $                
+ * $Id: DHCPServer.cpp,v 1.5 2004-02-28 15:56:30 thomson Exp $               *
  *                                                                           *
  * released under GNU GPL v2 or later licence                                */
       

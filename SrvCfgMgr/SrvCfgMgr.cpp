@@ -41,7 +41,9 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     }
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
+	std::clog << logger::logDebug << "Parsing config file...";
     result = parser.yyparse();
+	std::clog << "done." << logger::endl;
     f.close();
 	// this code is common to Linux and WIN32
 
