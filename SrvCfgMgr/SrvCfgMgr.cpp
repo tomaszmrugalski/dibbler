@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.12 2004-05-23 21:24:50 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.13 2004-05-23 21:35:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/05/23 21:24:50  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -36,19 +39,17 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     :TCfgMgr((Ptr*)ifaceMgr)
 {
     int result;
-    bool newConf=false;
-    ifstream f,oldF,newF;
+    ifstream f;
     this->IfaceMgr = ifaceMgr;
     
+    /* support for config changes between runs - currently disabled */
     //newConf=true if files differs
-    newConf=compareConfigs(cfgFile,oldCfgFile);
-    
-    //FIXME:newConf should be returned to Srv/ClntAddrMgr - whether release
-    //addresses 
-    if(newConf) 
-	this->copyFile(cfgFile,oldCfgFile);
-    //if files differs - make copy of new config
+    //newConf=compareConfigs(cfgFile,oldCfgFile);
+    //if(newConf) 
+    //   this->copyFile(cfgFile,oldCfgFile);
+    /* support for config changes between runs - currently disabled */
 
+    // parse config file
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {
 	std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl;
@@ -63,12 +64,10 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     f.close();
 
     if (result) {
-	clog << "config error" << logger::endl;
-	//Finish whole DHCPClient 
-	//FIXME:I don't like isDone, it should be either parameter passed 
-	//		by reference or exception should be thrown
-	IsDone = true; 
-	return;
+        //Result!=0 means config errors. Finish whole DHCPClient 
+        Log(logCrit) << "Config error." << logger::endl;
+        IsDone = true; 
+        return;
     }
 
     this->matchParsedSystemInterfaces(&parser);
@@ -81,31 +80,10 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
         return;
     }
 
-    SmartPtr<TIfaceIface> realIface;
-    bool found=false;
-    ifaceMgr->firstIface();
-
-    while ( (!found) && (realIface=ifaceMgr->getIface()) ) {
-        realIface->firstLLAddress();
-	char buf[64];
-	memset(buf,0,64);
-        if (realIface->getLLAddress() &&
-	    (realIface->getMacLen() >5) &&
-	    memcmp(realIface->getMac(),buf,realIface->getMacLen()) &&
-	    realIface->flagUp() &&
-	    !realIface->flagLoopback())
-	    found=true;
-    }
-
-    if(found) {
-        this->setDUID(this->WorkDir+"/"+(string)SRVDUID_FILE,
-		      (char*)realIface->getMac(),
-		      (int)realIface->getMacLen(),
-		      (int)realIface->getHardwareType());
-    } else {
-        IsDone=true;
-        std::clog<<logger::logCrit
-		 <<"Cannot generate DUID, because there is no appropriate interface" << logger::endl;
+    // load or create DUID
+    if ( !loadDUID(this->WorkDir+"/"+(string)SRVDUID_FILE) ) {
+	this->IsDone=true;
+	return;
     }
 
     std::ofstream xmlDump;

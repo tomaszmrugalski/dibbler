@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.6 2004-05-23 19:12:34 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.7 2004-05-23 21:35:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/05/23 19:12:34  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -160,7 +163,7 @@ void TCfgMgr::setDUID(const string duidFile,char * mac,int macLen, int macType)
     }
 }
 
-bool TCfgMgr::loadDUID() {
+bool TCfgMgr::loadDUID(const string filename) {
     
     // --- load DUID ---
     SmartPtr<TIfaceIface> realIface;
@@ -181,29 +184,23 @@ bool TCfgMgr::loadDUID() {
     }
 
     if(found) {
-        this->setDUID(this->WorkDir+"/"+(string)CLNTDUID_FILE,
-		      (char*)realIface->getMac(),
-		      (int)realIface->getMacLen(),
-		      (int)realIface->getHardwareType());
+        this->setDUID(filename, (char*)realIface->getMac(),
+		      (int)realIface->getMacLen(), (int)realIface->getHardwareType());
 	return true;
     } 
-	
-    Log(logCrit) << "Cannot generate DUID, because there is no interface with "
-		 << "MAC address." << logger::endl;
+    
+    Log(logCrit) << "Cannot generate DUID, because I cannot find interface with "
+		 << "MAC address at least 6 bytes long." << logger::endl;
     this->DUID=new TDUID();
     return false;
 };
 
 void TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macType)
 {
-    //FIXME:DUID should be generated on basis of one of the ifaces' mac address
-    //FIXME:what if file create fails?
-    //		I think service stops. Hmmm. Exceptions are neccesity (Marek)
     ofstream f;
     f.open( duidFile.c_str() );
     if (!f.is_open()) {
-	std::clog << logger::logCrit << "Unable to write " << duidFile << " file." << logger::endl;
-//	this->isDone = true;
+	Log(logCrit) << "Unable to write " << duidFile << " file." << logger::endl;
 	return;
     }
     

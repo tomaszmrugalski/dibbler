@@ -115,3 +115,6 @@ clean:
 	cd $(LOWLEVEL); $(MAKE) clean
 	rm -f *.o $(CLIENTBIN) $(SERVERBIN)
 	rm -f TAGS
+
+clean-libs:
+	find . -name *.a -exec rm {} \;

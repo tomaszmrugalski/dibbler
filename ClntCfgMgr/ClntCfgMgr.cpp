@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.13 2004-05-23 21:02:43 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.14 2004-05-23 21:35:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/05/23 21:02:43  thomson
+ * *** empty log message ***
+ *
  * Revision 1.12  2004/05/23 20:50:38  thomson
  * *** empty log message ***
  *
@@ -66,7 +69,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 
     if (result) {
         //Result!=0 means config errors. Finish whole DHCPClient 
-        std::clog << logger::logCrit << "Config error." << logger::endl;
+        Log(logCrit) << "Config error." << logger::endl;
         IsDone = true; 
         this->DUID=new TDUID();
         return;
@@ -85,7 +88,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     }
 
     // load or create DUID
-    if (!loadDUID()) {
+    if ( !loadDUID(this->WorkDir+"/"+(string)CLNTDUID_FILE) ) {
 	this->IsDone=true;
 	return;
     }
