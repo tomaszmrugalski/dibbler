@@ -6,13 +6,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.4 2004-05-23 16:38:18 thomson Exp $
+ * $Id: Opt.cpp,v 1.5 2004-05-23 16:40:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/03/29 19:11:56  thomson
- * Author/Licence/cvs log/cvs version headers added.
+ * Revision 1.4  2004/05/23 16:38:18  thomson
+ * CR-LF issues.
  *
- * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Revision 1.3  2004/03/29 19:11:56  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
  */
