@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgReply.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "SmartPtr.h"
 #include "ClntMsgReply.h"
 #include "ClntMsg.h"
@@ -53,7 +67,10 @@ bool TClntMsgReply::check()
 }
 
 
-//##ModelId=3EC8AA3A01C8
+string TClntMsgReply::getName() {
+    return "REPLY";
+}
+
 TClntMsgReply::~TClntMsgReply()
 {
 }

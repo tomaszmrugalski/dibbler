@@ -6,17 +6,19 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.4 2004-06-04 16:55:27 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.5 2004-06-20 17:51:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.3  2004/04/12 21:46:59  thomson
  * *** empty log message ***
  *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
- *
- *
  */
+
 #include "SmartPtr.h"
 #include "Msg.h"
 
@@ -310,15 +312,14 @@ void TClntMsgSolicit::doDuties()
 }
 
 
-//##Documentation Metoda TClntMsgSolicit o nazwie check
-//i rownoczesnie powinna istniec abstrakcyjna metoda o nazwie check
-//w klasie TMsgSolicit
 bool TClntMsgSolicit::check()
 {
     return false;
 }
 
-
+string TClntMsgSolicit::getName() {
+    return "REQUEST";
+}
 
 TClntMsgSolicit::~TClntMsgSolicit()
 {

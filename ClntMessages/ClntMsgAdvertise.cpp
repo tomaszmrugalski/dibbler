@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgAdvertise.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "ClntMsgAdvertise.h"
 #include "OptPreference.h"
 #include "ClntOptClientIdentifier.h"
@@ -12,11 +26,15 @@ TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
     pkt=NULL;
 }
 
+/* 
+ * creates buffer based on buffer
+ */
 TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
 				     SmartPtr<TClntTransMgr> TransMgr,
 				     SmartPtr<TClntCfgMgr> CfgMgr,
 				     SmartPtr<TClntAddrMgr> AddrMgr,
-				     int iface, SmartPtr<TIPv6Addr> addr, char* buf, int buflen)
+				     int iface, SmartPtr<TIPv6Addr> addr, 
+				     char* buf, int buflen)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,buflen)
 {
     pkt=NULL;
@@ -46,8 +64,8 @@ bool TClntMsgAdvertise::check()
 int TClntMsgAdvertise::getPreference()
 {
     // FIXME: here we can implement more sophisticated pointing scheme, not just 
-    //        pure PREFERENCE OPTION value (number of SUCCESS IAs for example could
-    //        be taken into account)
+    //        pure PREFERENCE OPTION value. Number of SUCCESS IAs for example 
+    //        could be taken into account
     SmartPtr<TOptPreference> ptr;
     ptr = (Ptr*) this->getOption(OPTION_PREFERENCE);
     if (!ptr)
@@ -65,6 +83,11 @@ void TClntMsgAdvertise::doDuties()
     // this should never happen
 }
 
+string TClntMsgAdvertise::getName() {
+    return "ADVERTISE";
+}
+
 TClntMsgAdvertise::~TClntMsgAdvertise()
 {
 }
+

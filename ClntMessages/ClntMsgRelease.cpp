@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgRelease.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "ClntMsgRelease.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
@@ -77,6 +91,10 @@ void TClntMsgRelease::doDuties()
 bool TClntMsgRelease::check()
 {
 	return false;
+}
+
+string TClntMsgRelease::getName() {
+    return "RELEASE";
 }
 
 TClntMsgRelease::~TClntMsgRelease()

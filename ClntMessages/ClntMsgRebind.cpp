@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgRebind.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "SmartPtr.h"
 #include "ClntMsg.h"
 #include "ClntMsgRebind.h"
@@ -10,40 +24,13 @@
 #include "ClntOptOptionRequest.h"
 #include <cmath>
 
-/*TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-			       SmartPtr<TClntTransMgr> TransMgr, 
-			       SmartPtr<TClntCfgMgr> CfgMgr, 
-			       SmartPtr<TClntAddrMgr> AddrMgr,
-			       SmartPtr<TAddrIA> ptrIA)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,ptrIA->getIface(), NULL ,REBIND_MSG)
-{
-    // remember this AddrIA;
-    this->AddrIA = ptrIA;
-
-    SmartPtr<TClntOptIA_NA> ptrOptIA = new TClntOptIA_NA(ptrIA,this);
-    Options.append( (Ptr*) ptrOptIA);
-    
-    SmartPtr<TClntOptClientIdentifier> ptrClntID = 
-	new TClntOptClientIdentifier( CfgMgr->getDUID(),this);
-    Options.append( (Ptr*) ptrClntID);
-
-    IRT=REB_TIMEOUT;
-    MRT=REB_MAX_RT;
-
-    MRC=0;
-
-    RT = ptrIA->getValidTimeout();
-
-    // retransmit until any addr expires
-    MRD= ptrIA->getMaxValid();
-    this->IsDone = false;
-}*/
 TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 			       SmartPtr<TClntTransMgr> TransMgr, 
 			       SmartPtr<TClntCfgMgr> CfgMgr, 
 			       SmartPtr<TClntAddrMgr> AddrMgr,
 			       TContainer<SmartPtr<TOpt> > ptrOpts, int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, SmartPtr<TIPv6Addr>() /*NULL*/, REBIND_MSG)
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, 
+	      SmartPtr<TIPv6Addr>() /*NULL*/, REBIND_MSG)
 {
     Options=ptrOpts;
     IRT=REB_TIMEOUT;
@@ -319,6 +306,10 @@ void TClntMsgRebind::releaseIA(int IAID)
 bool TClntMsgRebind::check()
 {
 	return 0;
+}
+
+string TClntMsgRebind::getName() {
+    return "REBIND";
 }
 
 TClntMsgRebind::~TClntMsgRebind()

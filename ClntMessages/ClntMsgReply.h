@@ -1,8 +1,22 @@
-#ifndef REPLY_H_HEADER_INCLUDED_C1125C05
-#define REPLY_H_HEADER_INCLUDED_C1125C05
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgReply.h,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
+class TClntMsgReply;
+#ifndef CLNTMSGREPLY_H
+#define CLNTMSGREPLY_H
 #include "ClntMsg.h"
 
-//##ModelId=3EC75CE4006C
 class TClntMsgReply : public TClntMsg
 {
   public:
@@ -18,23 +32,11 @@ class TClntMsgReply : public TClntMsg
 		  SmartPtr<TClntAddrMgr> AddrMgr,
 		  int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize);
 	
-    //## Odpowiada za reakcjê na otrzymanie wiadomoœci. W prztpadku zakoñczenia
-    //## transakcji ustawia pole IsDone na true
     void answer(SmartPtr<TMsg> Rep);
-
-    //##ModelId=3ECA870203A6
-    //##Documentation
-    //## Funkcja odpowiada za transmisjê i retransmisjê danej wiadomoœci z
-    //## uwzglednienirem sta³ych czasowych.
     void doDuties();
-
-	
-	bool check();
-    
-    //##ModelId=3EC8AA3A01C8
+    bool check();
+    string getName();
     ~TClntMsgReply();
-
 };
 
-
-#endif /* REPLY_H_HEADER_INCLUDED_C1125C05 */
+#endif /* CLNTMSGREPLY_H */

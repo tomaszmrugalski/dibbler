@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgInfRequest.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "ClntMsgInfRequest.h"
 #include "SmartPtr.h"
 #include "DHCPConst.h"
@@ -187,6 +201,10 @@ void TClntMsgInfRequest::doDuties()
 bool TClntMsgInfRequest::check()
 {
     return false;
+}
+
+string TClntMsgInfRequest::getName() {
+    return "INF-REQUEST";
 }
 
 TClntMsgInfRequest::~TClntMsgInfRequest()

@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgDecline.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "ClntMsgDecline.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
@@ -74,6 +88,11 @@ bool TClntMsgDecline::check()
 {
 	return false;
 }
+
+string TClntMsgDecline::getName() {
+    return "DECLINE";
+}
+
 
 TClntMsgDecline::~TClntMsgDecline()
 {

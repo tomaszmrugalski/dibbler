@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgRenew.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "ClntMsgRenew.h"
 #include "DHCPConst.h"
 #include "ClntOptIA_NA.h"
@@ -260,6 +274,10 @@ bool TClntMsgRenew::check()
 {
     // this should never happen
     return false;
+}
+
+string TClntMsgRenew::getName() {
+    return "RENEW";
 }
 
 TClntMsgRenew::~TClntMsgRenew()

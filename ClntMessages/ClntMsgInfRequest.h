@@ -1,5 +1,20 @@
-#ifndef INFREQUEST_H_HEADER_INCLUDED_C1127952
-#define INFREQUEST_H_HEADER_INCLUDED_C1127952
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntMsgInfRequest.h,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
+class TClntIfaceMgr;
+#ifndef CLNTMSGINFREQUEST_H
+#define CLNTMSGINFREQUEST_H
 
 #include "SmartPtr.h"
 #include "ClntMsg.h"
@@ -8,34 +23,30 @@
 #include "ClntIfaceMgr.h"
 #include "ClntCfgMgr.h"
 
-class TClntIfaceMgr;
-
-
 class TClntMsgInfRequest : public TClntMsg
 {
   public:
-
-      TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr>   ConfMgr, 
-		    SmartPtr<TClntAddrMgr>  AddrMgr, 
-		    TContainer< SmartPtr<TOpt> > ReqOpts,
-		    int iface);
+    TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
+		       SmartPtr<TClntTransMgr> TransMgr,
+		       SmartPtr<TClntCfgMgr>   ConfMgr, 
+		       SmartPtr<TClntAddrMgr>  AddrMgr, 
+		       TContainer< SmartPtr<TOpt> > ReqOpts,
+		       int iface);
     
-      TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr>   ConfMgr, 
-		    SmartPtr<TClntAddrMgr>  AddrMgr, 
-            SmartPtr<TClntCfgIface> iface);
-
+    TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
+		       SmartPtr<TClntTransMgr> TransMgr,
+		       SmartPtr<TClntCfgMgr>   ConfMgr, 
+		       SmartPtr<TClntAddrMgr>  AddrMgr, 
+		       SmartPtr<TClntCfgIface> iface);
+    
     void answer(SmartPtr<TMsg> msg);
     void doDuties();    
     bool check();
+    string getName();
     ~TClntMsgInfRequest();
 
   private:
     SmartPtr<TClntAddrMgr> AddrMgr;
-    
 };
 
 
