@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.5 2004-09-07 22:02:32 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.6 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/07 22:02:32  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.4  2004/09/07 17:42:31  thomson
  * Server Unicast implemented.
  *
@@ -80,8 +83,15 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Options = opts;
 
     // does this server support unicast?
+    SmartPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(iface);
+    if (!cfgIface)
+	Log(Error) << "Unable to find interface with ifindex " << iface << "." << LogEnd;    
     SmartPtr<TClntOptServerUnicast> unicast = (Ptr*) srv->getOption(OPTION_UNICAST);
-    if (unicast) {
+    if (unicast && !cfgIface->getUnicast()) {
+	Log(Info) << "Server offers unicast (" << *unicast->getAddr() 
+		  << ") communication, but this client is not configured to so." << LogEnd;
+    }
+    if (unicast && cfgIface->getUnicast()) {
 	Log(Debug) << "Server supports unicast on address " << *unicast->getAddr() << "." << LogEnd;
 	this->PeerAddr = unicast->getAddr();
 	Options.first();

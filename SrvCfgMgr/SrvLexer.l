@@ -171,6 +171,20 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 }
 
 ([a-zA-Z][a-zA-Z0-9\.]+) {
+    int len = strlen(yytext);
+    if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
+         ( (len>3) && !strncasecmp("true", yytext,4) )
+       ) {
+       yylval.ival = 1;
+       return SrvParser::INTNUMBER_;
+   }
+    if ( ( (len>1) && !strncasecmp("no",yytext,2) ) ||
+         ( (len>4) && !strncasecmp("false",yytext,5) )
+       ) {
+       yylval.ival = 0;
+       return SrvParser::INTNUMBER_;
+    }
+
     yylval.strval=new char[strlen(yytext)+1];
     strncpy(yylval.strval, yytext, strlen(yytext));
     yylval.strval[strlen(yytext)]=0;

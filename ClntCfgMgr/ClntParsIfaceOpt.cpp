@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.2 2004-05-23 22:37:54 thomson Exp $
+ * $Id: ClntParsIfaceOpt.cpp,v 1.3 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/05/23 22:37:54  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -21,20 +24,17 @@ using namespace std;
 
 TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
 {
-	DNSSrvSendOpt=Send;
-	DNSSrvReqOpt=Request;
-	//NISServer="";
-	//NISSrvSendOpt=Send;	
-	//NISSrvReqOpt=Request;
-	NTPSrvSendOpt=Send;
-	NTPSrvReqOpt=Request;
-	NewGroup=false;
-	Domain="";
-	DomainReqOpt=Request;
-	DomainSendOpt=Send;
-	TZone="";
-	TimeZoneReqOpt=Request;
-	TimeZoneSendOpt=Send;
+    DNSSrvSendOpt=Send;
+    DNSSrvReqOpt=Request;
+    NTPSrvSendOpt=Send;
+    NTPSrvReqOpt=Request;
+    NewGroup=false;
+    Domain="";
+    DomainReqOpt=Request;
+    DomainSendOpt=Send;
+    TZone="";
+    TimeZoneReqOpt=Request;
+    TimeZoneSendOpt=Send;
     
     ReqDNSSrv=false;
     ReqNTPSrv=false;
@@ -42,6 +42,9 @@ TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
     ReqTimeZone=false;
     
     NoIAs = false;
+
+    this->Unicast = CLIENT_DEFAULT_UNICAST;
+    
 }
 
 //-- DNS connected methods --
@@ -345,4 +348,14 @@ bool TClntParsIfaceOpt::getIsIAs()
 void TClntParsIfaceOpt::setIsIAs(bool state)
 {
     this->NoIAs=!state;
+}
+
+void TClntParsIfaceOpt::setUnicast(bool unicast)
+{
+    this->Unicast = unicast;
+}
+
+bool TClntParsIfaceOpt::getUnicast()
+{
+    return this->Unicast;
 }

@@ -634,10 +634,10 @@ static const short yyrline[] = { 0,
    195,   199,   206,   210,   219,   223,   235,   239,   248,   252,
    262,   267,   277,   282,   297,   301,   307,   311,   317,   322,
    328,   333,   341,   346,   354,   359,   367,   372,   384,   388,
-   397,   407,   411,   420,   434,   441,   448,   455,   463,   474,
-   486,   492,   497,   504,   511,   512,   513,   514,   515,   519,
-   520,   521,   522,   523,   524,   525,   526,   527,   528,   532,
-   533,   534,   535,   536,   538,   539,   540
+   397,   407,   411,   420,   434,   441,   448,   455,   463,   478,
+   490,   496,   501,   508,   515,   516,   517,   518,   519,   523,
+   524,   525,   526,   527,   528,   529,   530,   531,   532,   536,
+   537,   538,   539,   540,   542,   543,   544
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","NO_CONFIG_",
@@ -1545,13 +1545,14 @@ case 58:
 case 59:
 { 
     if ( (yyvsp[0].ival!=0) && (yyvsp[0].ival!=1)) {
-	Log(Error) << "RAPID-COMMIT in line " << lex->lineno() << " must have 0 or 1 value." << LogEnd;
+	Log(Error) << "RAPID-COMMIT in line " << lex->lineno() << " must have 0 or 1 value." 
+		   << LogEnd;
 	YYABORT;
     }
-	if (yyvsp[0].ival==1)
-		ParserOptStack.getLast()->setRapidCommit(true); 
-	else
-		ParserOptStack.getLast()->setRapidCommit(false); 
+    if (yyvsp[0].ival==1)
+	ParserOptStack.getLast()->setRapidCommit(true); 
+    else
+	ParserOptStack.getLast()->setRapidCommit(false); 
 ;
     break;}
 case 60:

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.3 2004-05-23 20:13:12 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.4 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/05/23 20:13:12  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -35,30 +38,21 @@ class TClntCfgIface
 {
 	friend std::ostream& operator<<(std::ostream&,TClntCfgIface&);
 public:
-    TContainer< SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;
-
-    void firstGroup();
-    int countGroup();
-
-    SmartPtr<TClntCfgGroup> getGroup();
-    void addGroup(SmartPtr<TClntCfgGroup> ptr);
-
-	string getName(void);
-    
-    void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
-    SmartPtr<TClntCfgGroup> getLastGroup();
-
-	int	getID(void);
-	
-	TClntCfgIface(string ifaceName);
-
+    TClntCfgIface(string ifaceName);
     TClntCfgIface(int ifaceNr);
 
+    TContainer< SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;
+    void firstGroup();
+    int countGroup();
+    SmartPtr<TClntCfgGroup> getGroup();
+    void addGroup(SmartPtr<TClntCfgGroup> ptr);
+    string getName(void);
+    void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
+    SmartPtr<TClntCfgGroup> getLastGroup();
+    int	getID(void);
     void setNoConfig();
-
     void setIfaceID(int ifaceID);
     void setIfaceName(string ifaceName);
-    
     bool noConfig();
     
     ESendOpt getDNSSendOpt();
@@ -103,6 +97,7 @@ public:
     string getProposedTimeZone();
 
     bool onlyInformationRequest();
+    bool getUnicast();
 private:
     string      IfaceName;
     int	        ID;
@@ -138,6 +133,8 @@ private:
     EState      DomainNameState;
     EState      DNSSrvState;
     EState      NTPSrvState;
+
+    bool Unicast;
     
     TContainer<SmartPtr<TIPv6Addr> > ReceivedDNSSrv;
     SmartPtr<TDUID>                  GiverDNSSrvDUID;

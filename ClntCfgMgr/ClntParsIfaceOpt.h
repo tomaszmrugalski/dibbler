@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.h,v 1.2 2004-05-23 22:37:54 thomson Exp $
+ * $Id: ClntParsIfaceOpt.h,v 1.3 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/05/23 22:37:54  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -104,6 +107,9 @@ public:
     bool getIsIAs();
     void setIsIAs(bool state);
 
+    void setUnicast(bool unicast);
+    bool getUnicast();
+
 private:
     //DNS connected options
     TContainer<SmartPtr<TIPv6Addr> >	DNSSrv;
@@ -135,6 +141,8 @@ private:
 
     bool NewGroup;//indicates whether new group should be created
     bool NoIAs;
+
+    bool Unicast; // do we accept unicast?
 };
 
 

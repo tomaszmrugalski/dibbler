@@ -229,31 +229,32 @@ typedef
 #define	NTP_SERVER_	263
 #define	DOMAIN_	264
 #define	TIME_ZONE_	265
-#define	IFACE_	266
-#define	NO_CONFIG_	267
-#define	REJECT_SERVERS_	268
-#define	PREFERRED_SERVERS_	269
-#define	REQUIRE_	270
-#define	REQUEST_	271
-#define	SEND_	272
-#define	DEFAULT_	273
-#define	SUPERSEDE_	274
-#define	APPEND_	275
-#define	PREPEND_	276
-#define	IA_	277
-#define	ADDRES_	278
-#define	IPV6ADDR_	279
-#define	WORKDIR_	280
-#define	RAPID_COMMIT_	281
-#define	NOIA_	282
-#define	OPTION_	283
-#define	LOGNAME_	284
-#define	LOGLEVEL_	285
-#define	LOGMODE_	286
-#define	STRING_	287
-#define	HEXNUMBER_	288
-#define	INTNUMBER_	289
-#define	DUID_	290
+#define	UNICAST_	266
+#define	IFACE_	267
+#define	NO_CONFIG_	268
+#define	REJECT_SERVERS_	269
+#define	PREFERRED_SERVERS_	270
+#define	REQUIRE_	271
+#define	REQUEST_	272
+#define	SEND_	273
+#define	DEFAULT_	274
+#define	SUPERSEDE_	275
+#define	APPEND_	276
+#define	PREPEND_	277
+#define	IA_	278
+#define	ADDRES_	279
+#define	IPV6ADDR_	280
+#define	WORKDIR_	281
+#define	RAPID_COMMIT_	282
+#define	NOIA_	283
+#define	OPTION_	284
+#define	LOGNAME_	285
+#define	LOGLEVEL_	286
+#define	LOGMODE_	287
+#define	STRING_	288
+#define	HEXNUMBER_	289
+#define	INTNUMBER_	290
+#define	DUID_	291
 
  /* #defines token */
 /* after #define tokens, before const tokens S5*/
@@ -306,6 +307,7 @@ static const int VALID_TIME_;
 static const int NTP_SERVER_;
 static const int DOMAIN_;
 static const int TIME_ZONE_;
+static const int UNICAST_;
 static const int IFACE_;
 static const int NO_CONFIG_;
 static const int REJECT_SERVERS_;
@@ -343,31 +345,32 @@ static const int DUID_;
 	,NTP_SERVER_=263
 	,DOMAIN_=264
 	,TIME_ZONE_=265
-	,IFACE_=266
-	,NO_CONFIG_=267
-	,REJECT_SERVERS_=268
-	,PREFERRED_SERVERS_=269
-	,REQUIRE_=270
-	,REQUEST_=271
-	,SEND_=272
-	,DEFAULT_=273
-	,SUPERSEDE_=274
-	,APPEND_=275
-	,PREPEND_=276
-	,IA_=277
-	,ADDRES_=278
-	,IPV6ADDR_=279
-	,WORKDIR_=280
-	,RAPID_COMMIT_=281
-	,NOIA_=282
-	,OPTION_=283
-	,LOGNAME_=284
-	,LOGLEVEL_=285
-	,LOGMODE_=286
-	,STRING_=287
-	,HEXNUMBER_=288
-	,INTNUMBER_=289
-	,DUID_=290
+	,UNICAST_=266
+	,IFACE_=267
+	,NO_CONFIG_=268
+	,REJECT_SERVERS_=269
+	,PREFERRED_SERVERS_=270
+	,REQUIRE_=271
+	,REQUEST_=272
+	,SEND_=273
+	,DEFAULT_=274
+	,SUPERSEDE_=275
+	,APPEND_=276
+	,PREPEND_=277
+	,IA_=278
+	,ADDRES_=279
+	,IPV6ADDR_=280
+	,WORKDIR_=281
+	,RAPID_COMMIT_=282
+	,NOIA_=283
+	,OPTION_=284
+	,LOGNAME_=285
+	,LOGLEVEL_=286
+	,LOGMODE_=287
+	,STRING_=288
+	,HEXNUMBER_=289
+	,INTNUMBER_=290
+	,DUID_=291
 
  /* enum token */
      }; /* end of enum declaration */

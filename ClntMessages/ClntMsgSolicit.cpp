@@ -6,26 +6,20 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.9 2004-09-07 22:02:32 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.10 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/09/07 22:02:32  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.8  2004/09/03 23:20:22  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.7  2004/08/24 22:48:35  thomson
- * *** empty log message ***
  *
  * Revision 1.6  2004/07/05 00:53:03  thomson
  * Various changes.
  *
  * Revision 1.5  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
- *
- * Revision 1.4  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.3  2004/04/12 21:46:59  thomson
- * *** empty log message ***
  *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.

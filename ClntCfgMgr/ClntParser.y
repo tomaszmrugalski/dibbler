@@ -81,7 +81,7 @@ extern yy_clntParser_stype yylval;
 	};
 %}
 
-%token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_,NTP_SERVER_,DOMAIN_,TIME_ZONE_
+%token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_,NTP_SERVER_,DOMAIN_,TIME_ZONE_, UNICAST_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token REQUIRE_,REQUEST_,SEND_,DEFAULT_,SUPERSEDE_,APPEND_,PREPEND_
 %token IA_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,NOIA_
@@ -363,6 +363,7 @@ InterfaceOptionDeclaration
 //| NISServerOption
 | DomainOption
 | TimeZoneOption
+| UnicastOption
 ;
 
 IAOptionDeclaration
@@ -714,6 +715,24 @@ NTPServerOption
 }
 ;
 
+UnicastOption
+:UNICAST_ Number
+{
+    switch($2) {
+    case 0:
+	ParserOptStack.getLast()->setUnicast(false);
+	break;
+    case 1:
+	ParserOptStack.getLast()->setUnicast(true);
+	break;
+    default:
+	Log(Error) << "Invalid parameter (" << $2 << ") passed to unicast in line " 
+		   << lex->YYText() << "." << LogEnd;
+	return 1;
+    }
+}
+;
+
 /*NISServerOption
   :NIS_SERVER_ STRING_
   {
@@ -878,12 +897,12 @@ bool clntParser::EndIfaceDeclaration()
 void clntParser::EmptyIface()
 {
     //set iface options on the basis of recent information
-  ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-  //add one IA with one address to this iface
-  ClntCfgIfaceLst.getLast()->addGroup(new TClntCfgGroup());
-  EmptyIA();
-  ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
-  ClntCfgIfaceLst.getLast()->getLastGroup()->
+    ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
+    //add one IA with one address to this iface
+    ClntCfgIfaceLst.getLast()->addGroup(new TClntCfgGroup());
+    EmptyIA();
+    ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
+    ClntCfgIfaceLst.getLast()->getLastGroup()->
     addIA(ClntCfgIALst.getLast());
     
 }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.13 2004-09-28 21:49:32 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.14 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/09/28 21:49:32  thomson
+ * no message
+ *
  * Revision 1.12  2004/07/05 00:12:29  thomson
  * Lots of minor changes.
  *
@@ -60,44 +63,44 @@ TDHCPServer::TDHCPServer(string config)
 
 void TDHCPServer::run()
 {
-	boolean silent = false;
+    bool silent = false;
     while ( (!TransMgr->isDone()) && (!this->isDone()) ) {
     	if (serviceShutdown)
-		    TransMgr->shutdown();
-
-			TransMgr->doDuties();
-		unsigned int timeout = TransMgr->getTimeout();
-		if (timeout == 0)        timeout = 1;
-		if (serviceShutdown)     timeout = 0;
-
+	    TransMgr->shutdown();
+	
+	TransMgr->doDuties();
+	unsigned int timeout = TransMgr->getTimeout();
+	if (timeout == 0)        timeout = 1;
+	if (serviceShutdown)     timeout = 0;
+	
 	if (!silent)
-       Log(Notice) << "Accepting connections. Next event in " << timeout 
-                   << " second(s)." << LogEnd;
+	    Log(Notice) << "Accepting connections. Next event in " << timeout 
+			<< " second(s)." << LogEnd;
 #ifdef WIN32
-		// There's no easy way to break select, so just don't sleep for too long.
-		if (timeout>5) {
-			silent = true;
-			timeout = 5;
-		}
+	// There's no easy way to break select, so just don't sleep for too long.
+	if (timeout>5) {
+	    silent = true;
+	    timeout = 5;
+	}
 #endif
-
+	
 	SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
-    if (!msg) 
+	if (!msg) 
 	    continue;
 	silent = false;
 	int iface = msg->getIface();
-    SmartPtr<TIfaceIface> ptrIface;
-    ptrIface = IfaceMgr->getIfaceByID(iface);
-    Log(Notice) << "Received " << msg->getName() << "(type=" << msg->getType() 
-			    << ") on " << ptrIface->getName() << "/" << iface
-			    << hex << ",TransID=0x" << msg->getTransID() << dec
-			    << ", " << msg->countOption() << " opts:";
-    SmartPtr<TOpt> ptrOpt;
-    msg->firstOption();
-    while (ptrOpt = msg->getOption() )
-        std::clog << " " << ptrOpt->getOptType();
-    std::clog << LogEnd;
-    TransMgr->relayMsg(msg);
+	SmartPtr<TIfaceIface> ptrIface;
+	ptrIface = IfaceMgr->getIfaceByID(iface);
+	Log(Notice) << "Received " << msg->getName() << "(type=" << msg->getType() 
+		    << ") on " << ptrIface->getName() << "/" << iface
+		    << hex << ",TransID=0x" << msg->getTransID() << dec
+		    << ", " << msg->countOption() << " opts:";
+	SmartPtr<TOpt> ptrOpt;
+	msg->firstOption();
+	while (ptrOpt = msg->getOption() )
+	    std::clog << " " << ptrOpt->getOptType();
+	std::clog << LogEnd;
+	TransMgr->relayMsg(msg);
     }
 }
 

@@ -6,18 +6,11 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.6 2004-07-05 00:53:03 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.7 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.5  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.4  2004/05/23 22:37:54  thomson
- * *** empty log message ***
- *
- * Revision 1.3  2004/05/23 20:13:12  thomson
- * *** empty log message ***
- *
+ * Revision 1.6  2004/07/05 00:53:03  thomson
+ * Various changes.
  *                                                                           
  */
 
@@ -69,6 +62,8 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     TZone=opt->getTimeZone();
     TimeZoneReqOpt=opt->getTimeZoneReqOpt();
     TimeZoneSendOpt=opt->getTimeZoneSendOpt();
+
+    this->Unicast = opt->getUnicast();
     
     SmartPtr<TIPv6Addr> StationIDPtr;
     opt->firstDNSSrv();
@@ -427,6 +422,10 @@ EReqOpt  TClntCfgIface::getTimeZoneReqOpt()
 
 bool TClntCfgIface::noConfig() {
     return NoConfig;
+}
+
+bool TClntCfgIface::getUnicast() {
+    return this->Unicast;
 }
 
 ostream& operator<<(ostream& out,TClntCfgIface& iface)

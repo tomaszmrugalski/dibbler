@@ -6,33 +6,17 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.20 2004-09-05 15:27:49 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.21 2004-10-02 13:11:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.19  2004/07/11 14:08:39  thomson
  * Missing/invalid interface specifed in cfg, results in client shutdown
  *
  * Revision 1.18  2004/07/05 00:53:03  thomson
  * Various changes.
- *
- * Revision 1.17  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.16  2004/05/23 23:46:02  thomson
- * *** empty log message ***
- *
- * Revision 1.15  2004/05/23 22:37:54  thomson
- * *** empty log message ***
- *
- * Revision 1.14  2004/05/23 21:35:31  thomson
- * *** empty log message ***
- *
- * Revision 1.13  2004/05/23 21:02:43  thomson
- * *** empty log message ***
- *
- * Revision 1.12  2004/05/23 20:50:38  thomson
- * *** empty log message ***
- *
  */
 
 #include <iostream>
@@ -80,15 +64,15 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     }
     yyFlexLexer lexer(&f,&clog);
     clntParser parser(&lexer);
-    std::clog << logger::logDebug << "Parsing " << cfgFile << "..." << LogEnd;
+    Log(Debug) << "Parsing " << cfgFile << "..." << LogEnd;
     result = parser.yyparse();
-    std::clog << logger::logDebug << "Parsing " << cfgFile << " done." << LogEnd;
+    Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
 
     if (result) {
         //Result!=0 means config errors. Finish whole DHCPClient 
         Log(Crit) << "Config error." << LogEnd;
-        IsDone = true; 
+        this->IsDone = true; 
         this->DUID=new TDUID();
         return;
     }
