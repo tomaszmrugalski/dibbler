@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * $Id: server-win32.cpp,v 1.6 2004-07-17 16:02:35 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Released under GNU GPL v2 licence
+ *
+ */
+
 #include <string>
 #include <iostream>
 #include <winsock2.h>
@@ -94,14 +108,18 @@ int main(int argc, char* argv[]) {
 	case UNINSTALL: {
 		SrvService.Uninstall();
 		break;
-	}
+	} 
 	case RUN: {
 		SrvService.Run();
 		break;
 	}
+  	case INVALID: {
+		clog << "Invalid usage." << endl;
+    }				  
+	case HELP: 
 	default: {
 		usage();
-	}
+	}	
 	}
 
     return 0;

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: client-win32.cpp,v 1.11 2004-05-24 21:16:37 thomson Exp $
+ * $Id: client-win32.cpp,v 1.12 2004-07-17 16:02:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
  * Revision 1.10  2004/04/15 23:53:45  thomson
  * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
  *
@@ -133,8 +136,7 @@ int main(int argc, char* argv[])
 		break;
 	}
 	case INVALID: {
-		clog << endl << "Type: \"" << argv[0] << " help\" (without quotes) to see usage information." << endl;
-		break;
+		clog << "Invalid usage." << endl;
     }				  
 	case HELP: 
 	default: {
