@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.7 2004-12-27 20:48:22 thomson Exp $
+ * $Id: Iface.h,v 1.8 2005-01-03 21:53:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/12/27 20:48:22  thomson
+ * Problem with absent link local addresses fixed (bugs #90, #91)
+ *
  * Revision 1.6  2004/11/01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -33,7 +36,7 @@ class TIfaceIface{
  public:
     friend ostream & operator <<(ostream & strum, TIfaceIface &x);
 
-    TIfaceIface(char * name, int id, unsigned int flags, char* mac, 
+    TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
                 int maclen, char* llAddr, int llAddrCnt, int hwType);
     char * getName();
     int getID();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.14 2004-12-27 20:48:22 thomson Exp $
+ * $Id: Iface.cpp,v 1.15 2005-01-03 21:53:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/12/27 20:48:22  thomson
+ * Problem with absent link local addresses fixed (bugs #90, #91)
+ *
  * Revision 1.13  2004/11/01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -41,7 +44,7 @@
 /*
  * stores informations about interface
  */
-TIfaceIface::TIfaceIface(char * name, int id, unsigned int flags, char* mac, 
+TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
 			 int maclen, char* llAddr, int llAddrCnt, int hwType)
 {
 #ifdef LINUX
