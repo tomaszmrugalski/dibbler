@@ -1,9 +1,13 @@
 /*
-  $Id: lowlevel-winxpsp1.c,v 1.3 2004-03-28 17:23:48 thomson Exp $
-
-  $Log: not supported by cvs2svn $
-
-*/
+ * $Id: lowlevel-winxpsp1.c,v 1.4 2004-03-28 19:48:10 thomson Exp $
+ *
+ *  $Log: not supported by cvs2svn $
+ *  Revision 1.3  2004/03/28 17:23:48  thomson
+ *  no message
+ *
+ * Released under GNU GPL v2 licence                                
+ * 
+ */
 
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
@@ -82,12 +86,16 @@ extern	struct iface* if_list_get()
     PIP_ADAPTER_UNICAST_ADDRESS linkaddr;
 
 	buflen=0;
-	GetAdaptersAddresses(AF_INET6,
-	GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST|GAA_FLAG_SKIP_DNS_SERVER,
-	NULL,
-	(PIP_ADAPTER_ADDRESSES) buffer,
-	&buflen);
+	GetAdaptersAddresses(AF_INET6, GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST|GAA_FLAG_SKIP_DNS_SERVER,
+	NULL, (PIP_ADAPTER_ADDRESSES) buffer, &buflen);
+
+	if (!buflen) {
+		// no interfaces found. Probably IPv6 is not installed.
+		return NULL;
+	}
+
 	buffer=(char*)malloc(buflen);
+
 	GetAdaptersAddresses(AF_INET6,GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST
 			|GAA_FLAG_SKIP_DNS_SERVER,NULL,(PIP_ADAPTER_ADDRESSES) buffer,&buflen);
 	adaptaddr=(PIP_ADAPTER_ADDRESSES) buffer;
