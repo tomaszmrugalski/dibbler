@@ -21,10 +21,8 @@ class TClntCfgGroup
     void addIA(SmartPtr<TClntCfgIA> ptr);
     long countIA();
     void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
-    bool getRapidCommit();
     bool isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> duid);
  private:
-    bool isRapidcommit;
     TContainer< SmartPtr<TClntCfgIA> > ClntCfgIALst;
     TContainer< SmartPtr<TStationID> > PrefSrv;
     TContainer< SmartPtr<TStationID> > RejedSrv;

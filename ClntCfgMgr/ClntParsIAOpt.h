@@ -39,15 +39,12 @@ class TClntParsIAOpt : public TClntParsAddrOpt
     SmartPtr<TStationID> getRejedSrv();
     void clearRejedSrv();
     void setRejedSrvLst(TContainer<SmartPtr<TStationID> > *lst);
-    bool getRapidCommit();
-    void setRapidCommit(bool rapCom);
 private:
     long T1;
     long T2;
     
     long IAIDCnt;
     bool AddrHint;
-    bool isRapidCommit;	
     TContainer<SmartPtr<TStationID> > PrefSrv;
     TContainer<SmartPtr<TStationID> > RejedSrv;
 };

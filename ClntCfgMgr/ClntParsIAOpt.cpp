@@ -15,7 +15,6 @@ TClntParsIAOpt::TClntParsIAOpt() : TClntParsAddrOpt()
     T2=ULONG_MAX;
     IAIDCnt=0;
     AddrHint=true;
-    this->isRapidCommit=false;
 }
 
 long TClntParsIAOpt::getT1()
@@ -116,12 +115,4 @@ void TClntParsIAOpt::setRejedSrvLst(TContainer<SmartPtr<TStationID> > *lst)
 SmartPtr<TStationID> TClntParsIAOpt::getRejedSrv()
 {
     return this->RejedSrv.get();
-}
-bool TClntParsIAOpt::getRapidCommit()
-{
-    return this->isRapidCommit;
-}
-void TClntParsIAOpt::setRapidCommit(bool rapCom)
-{
-    this->isRapidCommit=rapCom;
 }

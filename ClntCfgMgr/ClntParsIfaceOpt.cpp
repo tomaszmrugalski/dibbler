@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.6 2004-11-29 21:21:56 thomson Exp $
+ * $Id: ClntParsIfaceOpt.cpp,v 1.7 2004-11-30 00:42:50 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/11/29 21:21:56  thomson
+ * Client parser now supports 'option lifetime' directive (bug #75)
+ *
  * Revision 1.5  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -62,6 +65,15 @@ bool TClntParsIfaceOpt::getUnicast()
     return this->Unicast;
 }
 
+bool TClntParsIfaceOpt::getRapidCommit()
+{
+    return this->RapidCommit;
+}
+void TClntParsIfaceOpt::setRapidCommit(bool rapCom)
+{
+    this->RapidCommit=rapCom;
+}
+
 TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
 {
     DNSServerLst.clear();
@@ -79,7 +91,9 @@ TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
     
     NewGroup=false;
     NoIAs   = false;
-    this->Unicast = CLIENT_DEFAULT_UNICAST;
+
+    this->Unicast     = CLIENT_DEFAULT_UNICAST;
+    this->RapidCommit = CLIENT_DEFAULT_RAPID_COMMIT;
     
     ReqDNSServer  = false;
     ReqDomain     = false;

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.7 2004-11-29 21:21:56 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.8 2004-11-30 00:42:50 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/11/29 21:21:56  thomson
+ * Client parser now supports 'option lifetime' directive (bug #75)
+ *
  * Revision 1.6  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -68,6 +71,9 @@ public:
 
     bool stateless();
     bool getUnicast();
+
+    bool getRapidCommit();
+    void setRapidCommit(bool rapCom);
 
     // --- option: DNS servers ---
     bool isReqDNSServer();
@@ -157,6 +163,7 @@ private:
     bool NoConfig;
     bool isIA;
     bool Unicast;
+    bool RapidCommit;
     
     List(TIPv6Addr) DNSServerLst;
     List(string) DomainLst;

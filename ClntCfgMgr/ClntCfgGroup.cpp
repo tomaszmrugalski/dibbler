@@ -8,7 +8,6 @@ using namespace std;
 
 TClntCfgGroup::TClntCfgGroup()
 {
-    this->isRapidcommit = false;
 }
 
 void TClntCfgGroup::firstIA()
@@ -42,12 +41,6 @@ void TClntCfgGroup::setOptions(SmartPtr<TClntParsGlobalOpt> opt)
     opt->firstRejedSrv();
     while(Station=opt->getRejedSrv())
 	this->RejedSrv.append(Station);
-    this->isRapidcommit=opt->getRapidCommit();
-}
-
-bool TClntCfgGroup::getRapidCommit()
-{
-    return this->isRapidcommit;
 }
 
 bool TClntCfgGroup::isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> duid)
@@ -64,7 +57,7 @@ bool TClntCfgGroup::isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> du
 
 ostream& operator<<(ostream& out,TClntCfgGroup& group)
 {
-    out << "      <group>" << logger::endl;
+    out << "      <group>" << std::endl;
     out << "        <!-- prefered servers count="<<group.PrefSrv.count() << " -->" << std::endl;
     
     SmartPtr<TStationID> StationIDPtr;

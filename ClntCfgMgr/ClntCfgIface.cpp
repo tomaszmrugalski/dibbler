@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.11 2004-11-29 21:21:56 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.12 2004-11-30 00:42:50 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/11/29 21:21:56  thomson
+ * Client parser now supports 'option lifetime' directive (bug #75)
+ *
  * Revision 1.10  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -72,8 +75,9 @@ TClntCfgIface::TClntCfgIface(int ifaceNr) {
 }
 
 void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
-    this->isIA = opt->getIsIAs();
-    this->Unicast = opt->getUnicast();
+    this->isIA        = opt->getIsIAs();
+    this->Unicast     = opt->getUnicast();
+    this->RapidCommit = opt->getRapidCommit();
 
     // copy YES/NO information
     ReqDNSServer = opt->getReqDNSServer();
@@ -177,6 +181,10 @@ bool TClntCfgIface::noConfig() {
 
 bool TClntCfgIface::getUnicast() {
     return this->Unicast;
+}
+
+bool TClntCfgIface::getRapidCommit() {
+    return this->RapidCommit;
 }
 
 // --------------------------------------------------------------------------------
@@ -353,6 +361,12 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     out << "name=\"" << iface.IfaceName << "\""
         << " id=\"" << iface.ID << "\">" << endl;
+    
+    if (iface.RapidCommit) {
+	out << "    <RapidCommit/>" << endl;
+    } else {
+	out << "    <!-- <RapidCommit/> -->" << endl;
+    }
 
     out << "    <!-- addresses -->" << endl;
     out << "    <groups count=\"" << iface.ClntCfgGroupLst.count() << "\">" << endl;
