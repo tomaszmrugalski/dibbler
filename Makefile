@@ -261,6 +261,10 @@ release-gentoo: VERSION-linux
 
 release-all: release-src release-linux release-doc release-deb release-rpm release-win32
 
+orig:   release-src
+	@echo "[RENAME ] ../dibbler_$(VERSION).orig.tar.gz"
+	mv dibbler-$(VERSION)-src.tar.gz ../dibbler_$(VERSION).orig.tar.gz
+
 deb:
 	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
 	echo " Make sure that there is a file ../dibbler_$(VERSION).orig.tar.gz"; false; fi
