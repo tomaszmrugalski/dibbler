@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.1 2005-02-03 22:06:40 thomson Exp $
+ * $Id: daemon.cpp,v 1.2 2005-02-03 22:42:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/02/03 22:06:40  thomson
+ * Linux startup/pid checking changed.
+ *
  */
 
 #include <iostream>
@@ -110,9 +113,13 @@ int init(char * pidfile, char * workdir) {
 
     unlink(pidfile);
     ofstream pidFile(pidfile);
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << pidfile << endl;
+    if (!pidFile.is_open()) {
+	Log(Crit) << "Unable to create " << pidfile << " file." << LogEnd;
+	return 0;
+    }
     pidFile << getpid();
     pidFile.close();
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << pidfile << endl;
 
     if (chdir(workdir)) {
 	Log(Crit) << "Unable to change directory to " << workdir << "." << LogEnd;
@@ -128,13 +135,11 @@ void die(char * pidfile) {
 
 
 int start(char * pidfile, char * workdir) {
+    int result;
     daemon_init();
-    if (!init(pidfile, workdir)) {
-	return -1;
-    }
-    run();
+    result = run();
     daemon_die();
-    return 0;
+    return result;
 }
 
 int stop(char * pidfile) {

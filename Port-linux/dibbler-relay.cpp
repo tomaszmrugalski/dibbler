@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-relay.cpp,v 1.5 2005-02-03 22:06:40 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.6 2005-02-03 22:42:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/02/03 22:06:40  thomson
+ * Linux startup/pid checking changed.
+ *
  * Revision 1.4  2005/02/03 20:09:11  thomson
  * *** empty log message ***
  *
@@ -108,13 +111,13 @@ int main(int argc, char * argv[])
     }
 
     if (!strncasecmp(command,"start",5) ) {
-	result = start(CLNTPID_FILE, WORKDIR);
+	result = start(RELPID_FILE, WORKDIR);
     } else
     if (!strncasecmp(command,"run",3) ) {
 	result = run();
     } else
     if (!strncasecmp(command,"stop",4)) {
-	result = stop(SRVPID_FILE);
+	result = stop(RELPID_FILE);
     } else
     if (!strncasecmp(command,"status",6)) {
 	result = status();
