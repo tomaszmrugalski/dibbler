@@ -1,13 +1,17 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski  <msend@o2.pl>                                   *
- *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski  <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ * $Id: AddrAddr.h,v 1.4 2004-06-20 19:36:46 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
 
-#ifndef ADDRADDR_H_HEADER_INCLUDED_C1122093
-#define ADDRADDR_H_HEADER_INCLUDED_C1122093
+#ifndef ADDRADDR_H
+#define ADDRADDR_H
 
 #include <iostream>
 #include "IPv6Addr.h"
