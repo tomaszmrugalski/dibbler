@@ -30,6 +30,7 @@ string TSrvCfgIface::getName()
 
 TSrvCfgIface::TSrvCfgIface()
 {
+    this->NoConfig = false;
 }
 
 
@@ -59,14 +60,16 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
 
 TSrvCfgIface::	TSrvCfgIface(int ifaceNr)
 {
-	ID=ifaceNr;
-	//FIXME:here checking iface name in ConfMgr
+    this->ID=ifaceNr;
+    this->NoConfig=false;
+    //FIXME:here checking iface name in ConfMgr
 }
 
 TSrvCfgIface::TSrvCfgIface(string ifaceName)
 {
-	Name=ifaceName;
-	//FIXME:here checking iface number in ConfgMgr
+    this->Name=ifaceName;
+    this->NoConfig=false;
+    //FIXME:here checking iface number in ConfgMgr
 }
 void TSrvCfgIface::setNoConfig()
 {
@@ -75,46 +78,47 @@ void TSrvCfgIface::setNoConfig()
 
 ostream& operator<<(ostream& out,TSrvCfgIface& iface)
 {
-	SmartPtr<TStationID> Station;
-	out << "  <SrvCfgIface ";
-	out << "name=\""<<iface.Name << "\" ";
-	out << "id=\""<<iface.ID << "\" ";
-	if (iface.NoConfig) {
-	   out << "no-config=\"true\" ";
-	}
-	if (iface.isUniAddress) {
-	   out << "uniaddress=\"true\" ";
-	}
-	out << ">" << std::endl;
-	if (iface.isUniAddress) {
-   	   out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
-	}
-
+    SmartPtr<TStationID> Station;
+    out << "  <SrvCfgIface ";
+    out << "name=\""<<iface.Name << "\" ";
+    out << "id=\""<<iface.ID << "\" ";
+    if (iface.NoConfig) {
+	out << "no-config=\"true\" ";
+    }
+    if (iface.isUniAddress) {
+	out << "uniaddress=\"true\" ";
+    }
+    out << ">" << std::endl;
+    if (iface.isUniAddress) {
+	out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
+    }
+    
     SmartPtr<TIPv6Addr> stat;
-	out << "  <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;
-	iface.NTPSrv.first();
-	while(stat=iface.NTPSrv.get())
-		out << "  <ntp>" << *stat << "</ntp>" << logger::endl;
-		
-    out << "  <timezone>" << iface.TimeZone << "</timezone>" << logger::endl;
-
-	out << "  <!-- DNS Resolvers count: " << iface.DNSSrv.count() << "-->" << logger::endl;
-	iface.DNSSrv.first();
-	while(stat=iface.DNSSrv.get())
-		out << "  <dns>" << *stat << "</dns>" << logger::endl;
-	
-    out << "  <domain>" << iface.Domain << "</domain>" << logger::endl;
-
-	int classCnt=0;
-	SmartPtr<TSrvCfgAddrClass>	groupPtr;
-	iface.SrvCfgAddrClassLst.first();
-	out << "  <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() 
-		<< "-->" << logger::endl;
-	while(groupPtr=iface.SrvCfgAddrClassLst.get())
-	{	
-		out << *groupPtr;
-	}
-	return out;
+    out << "  <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;
+    iface.NTPSrv.first();
+    while(stat=iface.NTPSrv.get())
+	out << "    <ntp>" << *stat << "</ntp>" << logger::endl;
+    
+    out << "    <timezone>" << iface.TimeZone << "</timezone>" << logger::endl;
+    
+    out << "    <!-- DNS Resolvers count: " << iface.DNSSrv.count() << "-->" << logger::endl;
+    iface.DNSSrv.first();
+    while(stat=iface.DNSSrv.get())
+	out << "  <dns>" << *stat << "</dns>" << logger::endl;
+    
+    out << "    <domain>" << iface.Domain << "</domain>" << logger::endl;
+    
+    int classCnt=0;
+    SmartPtr<TSrvCfgAddrClass>	groupPtr;
+    iface.SrvCfgAddrClassLst.first();
+    out << "    <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() 
+	<< "-->" << logger::endl;
+    while(groupPtr=iface.SrvCfgAddrClassLst.get())
+    {	
+	out << *groupPtr;
+    }
+    out << "  </SrvCfgIface>" << std::endl;
+    return out;
 }
 void TSrvCfgIface::setIfaceName(string ifaceName)
 {

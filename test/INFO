@@ -1,7 +1,5 @@
 Those subdirs contain various test code. It was my playground and it is pretty useless.
 
-
-
 test01 - serwer/klient UDP (DONE) + bindowanie tylko jednego interfejsu
 test02 - serwer/klient TCP (DONE)
 test03 - wy¶wietla liste interfejsów (DONE)

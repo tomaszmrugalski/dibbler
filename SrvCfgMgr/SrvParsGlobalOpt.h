@@ -13,20 +13,14 @@
 class TSrvParsGlobalOpt : public TSrvParsIfaceOpt
 {
 public:
-	TSrvParsGlobalOpt(void);
-	~TSrvParsGlobalOpt(void);
+    TSrvParsGlobalOpt(void);
+    ~TSrvParsGlobalOpt(void);
 
-    int	getLogLevel();
-	string getLogName();
-	string getWorkDir();
+    string getWorkDir();
 
-    void setLogLevel(int logLevel);
-	void setLogName(string logName);
-	void setWorkDir(string dir);
-
+    void setWorkDir(string dir);
+	
 private:
-	int				LogLevel;
-	string			LogName;
-	string			WorkDir;
+	string	WorkDir;
 };
 #endif

@@ -11,6 +11,7 @@ namespace logger {
     int logLevel=8;
     bool mute = false;
     string logname="Init";
+    Elogmode logmode = FULL;
     ofstream logfile;
     ofstream tmp;
 
@@ -42,14 +43,18 @@ namespace logger {
 	time_t teraz;
 	teraz = time(NULL);
 	struct tm * czas = localtime( &teraz );
-	strum << (1900+czas->tm_year) << ".";
-	strum.width(2); strum.fill('0'); strum << czas->tm_mon+1 << ".";
-	strum.width(2);	strum.fill('0'); strum << czas->tm_mday  << " ";
-	strum.width(2);	strum.fill('0'); strum << czas->tm_hour  << ":";
+	if (logmode!=SHORT) {
+	    strum << (1900+czas->tm_year) << ".";
+	    strum.width(2); strum.fill('0'); strum << czas->tm_mon+1 << ".";
+	    strum.width(2);	strum.fill('0'); strum << czas->tm_mday  << " ";
+	    strum.width(2);	strum.fill('0'); strum << czas->tm_hour  << ":";
+	}
 	strum.width(2);	strum.fill('0'); strum << czas->tm_min   << ":";
 	strum.width(2);	strum.fill('0'); strum << czas->tm_sec;
-	strum << ' ' << logger::logname << ' ';
-	strum << lv[x-1] << " ";
+	if (logmode!=SHORT) {
+	    strum << ' ' << logger::logname ;
+	}
+	strum << ' ' << lv[x-1] << " ";
 	return strum;
     }
 
@@ -61,10 +66,6 @@ namespace logger {
     ostream& logNotice(ostream & strum)  { return logger::logCommon(strum,6); }
     ostream& logInfo(ostream & strum)    { return logger::logCommon(strum,7); }
     ostream& logDebug(ostream & strum)   { return logger::logCommon(strum,8); }
-
-    void setLogname(string x) {
-	logger::logname = x;
-    }
 
     void Initialize(char * file) {
 	logger::tmp.clear(ios::failbit);
@@ -84,5 +85,29 @@ namespace logger {
 	if (x>8 || x<1) 
 	    return;
 	logger::logLevel = x;
+    }
+
+    void setLogName(string x) {
+	logger::logname = x;
+    }
+
+    void setLogMode(string x) {
+	if (x=="short") {
+	    logger::logmode = SHORT;
+	}
+	if (x=="full") {
+	    logger::logmode = FULL;
+	}
+
+#ifdef LINUX
+	if (x=="syslog") {
+	    logger::logmode = SYSLOG;
+	}
+#endif 
+#ifdef WIN32
+	if (x=="eventlog") {
+	    logger::logmode = EVENTLOG;
+	}
+#endif
     }
 }

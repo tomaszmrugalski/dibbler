@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.7 2004-04-09 22:33:11 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.8 2004-04-10 12:18:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/04/09 22:33:11  thomson
+ * dns-servers changed to option dns-server
+ *
  * Revision 1.6  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -329,10 +332,9 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
     }
 
     if (!found) 
-        std::clog << logger::logWarning << "Message with wrong TransID (" << msgAnswer->getTransID()
+        std::clog << logger::logWarning << "Message with wrong transID (" 
+		  << hex << msgAnswer->getTransID() << dec
         << ") received. Ignoring." << logger::endl;
-
-    // save DB state
     AddrMgr->dbStore();
 }
 

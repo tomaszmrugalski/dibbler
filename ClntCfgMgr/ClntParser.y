@@ -14,6 +14,7 @@
 #include "ClntCfgAddr.h"
 #include "ClntCfgIA.h"
 #include "ClntCfgGroup.h"
+#include "Logger.h"
     
 #define YY_USE_CLASS
 %}
@@ -76,9 +77,9 @@ extern yy_clntParser_stype yylval;
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_,NTP_SERVER_,DOMAIN_,TIME_ZONE_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token REQUIRE_,REQUEST_,SEND_,DEFAULT_,SUPERSEDE_,APPEND_,PREPEND_
-%token IA_,ADDRES_,IPV6ADDR_,LOGLEVEL_,WORKDIR_, RAPID_COMMIT_,NOIA_
+%token IA_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,NOIA_
 %token OPTION_
-//LOGNAME_
+%token LOGNAME_, LOGLEVEL_, LOGMODE_
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
 %token <ival>       INTNUMBER_
@@ -268,14 +269,16 @@ IADeclarationList
 ADDRESDeclaration
 : ADDRES_ '{' 
 {
-    ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
+    SmartPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
+    ParserOptStack.append(new TClntParsGlobalOpt(*globalOpt));
 }
 ADDRESDeclarationList '}'
 {
     //ClntCfgAddrLst.append(SmartPtr<TClntCfgAddr> (new TClntCfgAddr()));
     //set proper options specific for this Address
     //ClntCfgAddrLst.getLast()->setOptions(&(*ParserOptStack.getLast()));
-    ParserOptStack.delLast();
+    if (ParserOptStack.count())
+	ParserOptStack.delLast();
 }
 //In this agregated declaration no address hints are allowed
 |ADDRES_ Number '{' 
@@ -339,10 +342,11 @@ ADDRESDeclarationList
 
 GlobalOptionDeclaration
 : InterfaceOptionDeclaration
+| LogModeOption
+| LogNameOption
 | LogLevelOption
 | WorkDirOption
 ;
-//  | LogNameOption
 
 InterfaceOptionDeclaration
 : IAOptionDeclaration 
@@ -371,16 +375,20 @@ ADDRESOptionDeclaration
 LogLevelOption
 : LOGLEVEL_ Number 
 {
-    ParserOptStack.getLast()->setLogLevel($2);
+    logger::setLogLevel($2);
 }
 ;
 
-/*LogNameOption
-  : LOGNAME_ STRING_
-  {
-  ParserOptStack.getLast()->LogName=$2;
-  }
-  ;*/
+LogModeOption
+: LOGMODE_ STRING_ {
+    logger::setLogMode($2);
+}
+
+LogNameOption
+: LOGNAME_ STRING_ {
+    logger::setLogName($2);
+}
+
 NoIAsOptions
 :   NOIA_
 {
@@ -519,25 +527,25 @@ DNSServerOption
     ParserOptStack.getLast()->setReqDNSSrv(true);
 }
 
-|RequestRequirePrefix OPTION_ DNS_SERVER_ 
+|OPTION_ RequestRequirePrefix DNS_SERVER_ 
 {
     PresentAddrLst.clear();
 } ADDRESSList
 {
     ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setDNSSrvSendOpt(Send);
-    ParserOptStack.getLast()->setDNSSrvReqOpt($1);
+    ParserOptStack.getLast()->setDNSSrvReqOpt($2);
     ParserOptStack.getLast()->setReqDNSSrv(true);
 }
 
-|RequestRequirePrefix OPTION_ DNS_SERVER_ SendDefaultSupersedeOpt 
+|OPTION_ RequestRequirePrefix DNS_SERVER_ SendDefaultSupersedeOpt 
 {
     PresentAddrLst.clear();
 } ADDRESSList
 {
     ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setDNSSrvSendOpt($4);
-    ParserOptStack.getLast()->setDNSSrvReqOpt($1);
+    ParserOptStack.getLast()->setDNSSrvReqOpt($2);
     ParserOptStack.getLast()->setReqDNSSrv(true);
 }
 
@@ -554,198 +562,203 @@ DNSServerOption
 }
 ;
 
-
+//////////////////////////////////////////////////////////////////////
+//DOMAIN option///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 DomainOption
-  :DOMAIN_
-  {
-        ParserOptStack.getLast()->setDomainReqOpt(Request); 
-        ParserOptStack.getLast()->setDomainSendOpt(Send);
-        ParserOptStack.getLast()->setDomain(string(""));
-        ParserOptStack.getLast()->setReqDomainName(true);  
-  }
-  |DOMAIN_ STRING_
-  {
-        ParserOptStack.getLast()->setDomainReqOpt(Request); 
-        ParserOptStack.getLast()->setDomainSendOpt(Send);
-        ParserOptStack.getLast()->setDomain($2);
-        ParserOptStack.getLast()->setReqDomainName(true);
-  }
-  |DOMAIN_ SendDefaultSupersedeOpt STRING_
-  {
-        ParserOptStack.getLast()->setDomainReqOpt(Request);
-        ParserOptStack.getLast()->setDomainSendOpt($2);
-        ParserOptStack.getLast()->setDomain($3);
-        ParserOptStack.getLast()->setReqDomainName(true);
-
-  }
-    
-  |RequestRequirePrefix DOMAIN_ STRING_
-  {
-    ParserOptStack.getLast()->setDomainReqOpt($1);
+:OPTION_ DOMAIN_
+{
+    ParserOptStack.getLast()->setDomainReqOpt(Request); 
+    ParserOptStack.getLast()->setDomainSendOpt(Send);
+    ParserOptStack.getLast()->setDomain(string(""));
+    ParserOptStack.getLast()->setReqDomainName(true);  
+}
+|OPTION_ DOMAIN_ STRING_
+{
+    ParserOptStack.getLast()->setDomainReqOpt(Request); 
     ParserOptStack.getLast()->setDomainSendOpt(Send);
     ParserOptStack.getLast()->setDomain($3);
     ParserOptStack.getLast()->setReqDomainName(true);
-  }
-  |RequestRequirePrefix DOMAIN_ SendDefaultSupersedeOpt STRING_
-  {
-    ParserOptStack.getLast()->setDomainReqOpt($1);
+}
+|OPTION_ DOMAIN_ SendDefaultSupersedeOpt STRING_
+{
+    ParserOptStack.getLast()->setDomainReqOpt(Request);
     ParserOptStack.getLast()->setDomainSendOpt($3);
     ParserOptStack.getLast()->setDomain($4);
     ParserOptStack.getLast()->setReqDomainName(true);
-  }
-  ;
+}
+|OPTION_ RequestRequirePrefix DOMAIN_ STRING_
+{
+    ParserOptStack.getLast()->setDomainReqOpt($2);
+    ParserOptStack.getLast()->setDomainSendOpt(Send);
+    ParserOptStack.getLast()->setDomain($4);
+    ParserOptStack.getLast()->setReqDomainName(true);
+}
+|OPTION_ RequestRequirePrefix DOMAIN_ SendDefaultSupersedeOpt STRING_
+{
+    ParserOptStack.getLast()->setDomainReqOpt($2);
+    ParserOptStack.getLast()->setDomainSendOpt($4);
+    ParserOptStack.getLast()->setDomain($5);
+    ParserOptStack.getLast()->setReqDomainName(true);
+}
+;
 
+//////////////////////////////////////////////////////////////////////
+//DOMAIN option///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 TimeZoneOption
-  : TIME_ZONE_ 
-  {
-        ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
-        ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
-        ParserOptStack.getLast()->setTimeZone(string(""));
-        ParserOptStack.getLast()->setReqTimeZone(true);
+: OPTION_ TIME_ZONE_ 
+{
+    ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
+    ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
+    ParserOptStack.getLast()->setTimeZone(string(""));
+    ParserOptStack.getLast()->setReqTimeZone(true);
   }
-  |TIME_ZONE_ STRING_
-  {
-        ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
-        ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
-        ParserOptStack.getLast()->setTimeZone($2);
-        ParserOptStack.getLast()->setReqTimeZone(true);
-  }
-    
-    |TIME_ZONE_ SendDefaultSupersedeOpt STRING_
-    {
-        ParserOptStack.getLast()->setTimeZoneReqOpt(Request);
-        ParserOptStack.getLast()->setTimeZoneSendOpt($2);
-        ParserOptStack.getLast()->setTimeZone($3);
-        ParserOptStack.getLast()->setReqTimeZone(true);
-    }
-    
-  |RequestRequirePrefix TIME_ZONE_ STRING_
-  {
-    ParserOptStack.getLast()->setTimeZoneReqOpt($1);
+|OPTION_ TIME_ZONE_ STRING_
+{
+    ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
     ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
     ParserOptStack.getLast()->setTimeZone($3);
     ParserOptStack.getLast()->setReqTimeZone(true);
-  }
-  
-  |RequestRequirePrefix TIME_ZONE_ SendDefaultSupersedeOpt STRING_
-  {
-    ParserOptStack.getLast()->setTimeZoneReqOpt($1);
+}
+
+|OPTION_ TIME_ZONE_ SendDefaultSupersedeOpt STRING_
+{
+    ParserOptStack.getLast()->setTimeZoneReqOpt(Request);
     ParserOptStack.getLast()->setTimeZoneSendOpt($3);
     ParserOptStack.getLast()->setTimeZone($4);
     ParserOptStack.getLast()->setReqTimeZone(true);
-  }
-  ;
+}
 
+|OPTION_ RequestRequirePrefix TIME_ZONE_ STRING_
+{
+    ParserOptStack.getLast()->setTimeZoneReqOpt($2);
+    ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
+    ParserOptStack.getLast()->setTimeZone($4);
+    ParserOptStack.getLast()->setReqTimeZone(true);
+}
+
+|OPTION_ RequestRequirePrefix TIME_ZONE_ SendDefaultSupersedeOpt STRING_
+{
+    ParserOptStack.getLast()->setTimeZoneReqOpt($2);
+    ParserOptStack.getLast()->setTimeZoneSendOpt($4);
+    ParserOptStack.getLast()->setTimeZone($5);
+    ParserOptStack.getLast()->setReqTimeZone(true);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//NTP-SERVER option///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 NTPServerOption
-    :NTP_SERVER_ 
-    {
-        PresentAddrLst.clear();
-        ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
-        ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
-        ParserOptStack.getLast()->setReqNTPSrv(true);        
-    }
-    |NTP_SERVER_ {
-        PresentAddrLst.clear();
-    } ADDRESSList
-    {
-        ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
-        ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
-        ParserOptStack.getLast()->setReqNTPSrv(true);
-    }
-    |NTP_SERVER_ SendDefaultSupersedeOpt  {
-        PresentAddrLst.clear();
-    } ADDRESSList
-    {
-        ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setNTPSrvSendOpt($2);
-        ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
-        ParserOptStack.getLast()->setReqNTPSrv(true);
-    }
-    |RequestRequirePrefix NTP_SERVER_  {
-        PresentAddrLst.clear();
-    } ADDRESSList
-    {
-        ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
-        ParserOptStack.getLast()->setNTPSrvReqOpt($1);
-        ParserOptStack.getLast()->setReqNTPSrv(true);
-    }
-    |RequestRequirePrefix NTP_SERVER_ SendDefaultSupersedeOpt {
-        PresentAddrLst.clear();
-    } ADDRESSList
-    {
-        ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setNTPSrvSendOpt($3);
-        ParserOptStack.getLast()->setNTPSrvReqOpt($1);
-        ParserOptStack.getLast()->setReqNTPSrv(true);
-    }
-    
-    |NTP_SERVER_ SuperAppPrepOpt {      
-        PresentAddrLst.clear(); 
-        ParserOptStack.getLast()->setReqNTPSrv(true);
-    } ADDRESSList
-    {
-        if ($2)
-            ParserOptStack.getLast()->setAppNTPSrvLst(&PresentAddrLst);
-        else
-            ParserOptStack.getLast()->setPrepNTPSrvLst(&PresentAddrLst);
-    }
-    ;
-  
-    /*NISServerOption
-    :NIS_SERVER_ STRING_
-    {
-        ParserOptStack.getLast()->NISServer=$2;
-        ParserOptStack.getLast()->NISSrvSendOpt=Send;
-        ParserOptStack.getLast()->NISSrvReqOpt=Request;
-    }
-    |NIS_SERVER_ SendDefaultSupersedeOpt STRING_
-        {
-            ParserOptStack.getLast()->NISServer=$3;
-        ParserOptStack.getLast()->NISSrvSendOpt=$2;
-        ParserOptStack.getLast()->NISSrvReqOpt=Request;
-        }
-    |RequestRequirePrefix NIS_SERVER_  STRING_
-    {
-            ParserOptStack.getLast()->NISServer=$3;
-        ParserOptStack.getLast()->NISSrvSendOpt=Send;
-        ParserOptStack.getLast()->NISSrvReqOpt=$1;
-    }
-    |RequestRequirePrefix NIS_SERVER_ SendDefaultSupersedeOpt STRING_
-    {
-            ParserOptStack.getLast()->NISServer=$4;
-        ParserOptStack.getLast()->NISSrvSendOpt=$3;
-        ParserOptStack.getLast()->NISSrvReqOpt=$1;
-        }
-        |NIS_SERVER_ SuperAppPrepOpt STRING_
-    {
-        if ($2)
-        ParserOptStack.getLast()->NISAppServer=$3;
-        else
-            ParserOptStack.getLast()->NISPrepServer=$3;
-    }
-    ;*/
+:OPTION_ NTP_SERVER_ 
+{
+    PresentAddrLst.clear();
+    ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
+    ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
+    ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
+    ParserOptStack.getLast()->setReqNTPSrv(true);        
+}
+|OPTION_ NTP_SERVER_ {
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
+    ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
+    ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
+    ParserOptStack.getLast()->setReqNTPSrv(true);
+}
+|OPTION_ NTP_SERVER_ SendDefaultSupersedeOpt  {
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
+    ParserOptStack.getLast()->setNTPSrvSendOpt($3);
+    ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
+    ParserOptStack.getLast()->setReqNTPSrv(true);
+}
+|OPTION_ RequestRequirePrefix NTP_SERVER_  {
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
+    ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
+    ParserOptStack.getLast()->setNTPSrvReqOpt($2);
+    ParserOptStack.getLast()->setReqNTPSrv(true);
+}
+|OPTION_ RequestRequirePrefix NTP_SERVER_ SendDefaultSupersedeOpt {
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
+    ParserOptStack.getLast()->setNTPSrvSendOpt($4);
+    ParserOptStack.getLast()->setNTPSrvReqOpt($2);
+    ParserOptStack.getLast()->setReqNTPSrv(true);
+}
+|OPTION_ NTP_SERVER_ SuperAppPrepOpt {      
+    PresentAddrLst.clear(); 
+    ParserOptStack.getLast()->setReqNTPSrv(true);
+} ADDRESSList
+{
+    if ($3)
+	ParserOptStack.getLast()->setAppNTPSrvLst(&PresentAddrLst);
+    else
+	ParserOptStack.getLast()->setPrepNTPSrvLst(&PresentAddrLst);
+}
+;
+
+/*NISServerOption
+  :NIS_SERVER_ STRING_
+  {
+  ParserOptStack.getLast()->NISServer=$2;
+  ParserOptStack.getLast()->NISSrvSendOpt=Send;
+  ParserOptStack.getLast()->NISSrvReqOpt=Request;
+  }
+  |NIS_SERVER_ SendDefaultSupersedeOpt STRING_
+  {
+  ParserOptStack.getLast()->NISServer=$3;
+  ParserOptStack.getLast()->NISSrvSendOpt=$2;
+  ParserOptStack.getLast()->NISSrvReqOpt=Request;
+  }
+  |RequestRequirePrefix NIS_SERVER_  STRING_
+  {
+  ParserOptStack.getLast()->NISServer=$3;
+  ParserOptStack.getLast()->NISSrvSendOpt=Send;
+  ParserOptStack.getLast()->NISSrvReqOpt=$1;
+  }
+  |RequestRequirePrefix NIS_SERVER_ SendDefaultSupersedeOpt STRING_
+  {
+  ParserOptStack.getLast()->NISServer=$4;
+  ParserOptStack.getLast()->NISSrvSendOpt=$3;
+  ParserOptStack.getLast()->NISSrvReqOpt=$1;
+  }
+  |NIS_SERVER_ SuperAppPrepOpt STRING_
+  {
+  if ($2)
+  ParserOptStack.getLast()->NISAppServer=$3;
+  else
+  ParserOptStack.getLast()->NISPrepServer=$3;
+  }
+  ;*/
 
 ADDRESDUIDList
-  : IPV6ADDR_   
-  {
+: IPV6ADDR_   
+{
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr($1))));
-  }
-  | DUID_
-  {
+}
+| DUID_
+{
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TDUID($1.duid,$1.length))));
-  }
-  | ADDRESDUIDList ',' IPV6ADDR_
-  {
+}
+| ADDRESDUIDList ',' IPV6ADDR_
+{
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr($3))));
-  }
-  | ADDRESDUIDList ',' DUID_
-  {
+}
+| ADDRESDUIDList ',' DUID_
+{
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID( new TDUID($3.duid,$3.length))));
-  }
-  ;
+}
+;
 
 ADDRESSList
 : IPV6ADDR_   {PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr($1)));}
@@ -753,32 +766,33 @@ ADDRESSList
 ;
   
 SendDefaultSupersedeOpt
-  : SEND_ {$$=Send;}
-  | DEFAULT_ {$$=Default;}
-  | SUPERSEDE_ {$$=Supersede;}
-  ;
+: SEND_ {$$=Send;}
+| DEFAULT_ {$$=Default;}
+| SUPERSEDE_ {$$=Supersede;}
+;
 
 RequestRequirePrefix
-    :REQUEST_ {$$=Request;}
-  |REQUIRE_ {$$=Require;}
-  ;
+:REQUEST_ {$$=Request;}
+|REQUIRE_ {$$=Require;}
+;
 
 SuperAppPrepOpt
-    :APPEND_ {$$=1;}
-  |PREPEND_ {$$=0;}
-  ;
+:APPEND_ {$$=1;}
+|PREPEND_ {$$=0;}
+;
 Number
-  :  HEXNUMBER_ {$$=$1;}
-  |  INTNUMBER_ {$$=$1;}
-  ;
+:  HEXNUMBER_ {$$=$1;}
+|  INTNUMBER_ {$$=$1;}
+;
 
 %%
 
-    /////////////////////////////////////////////////////////////////////////////
-    // programs section
-    
-    //method check whether interface with id=ifaceNr has been 
-    //already declared
+/////////////////////////////////////////////////////////////////////////////
+// programs section
+/////////////////////////////////////////////////////////////////////////////
+
+//method check whether interface with id=ifaceNr has been 
+//already declared
 bool clntParser::CheckIsIface(int ifaceNr)
 {
   SmartPtr<TClntCfgIface> ptr;
@@ -787,8 +801,8 @@ bool clntParser::CheckIsIface(int ifaceNr)
     if ((ptr->getID())==ifaceNr) YYABORT;
 };
     
-    //method check whether interface with id=ifaceName has been
-    //already declared 
+//method check whether interface with id=ifaceName has been
+//already declared 
 bool clntParser::CheckIsIface(string ifaceName)
 {
   SmartPtr<TClntCfgIface> ptr;
@@ -800,8 +814,8 @@ bool clntParser::CheckIsIface(string ifaceName)
   };
 };
 
-    //method creates new scope appropriately for interface options and declarations
-    //clears all lists except the list of interfaces and adds new group
+//method creates new scope appropriately for interface options and declarations
+//clears all lists except the list of interfaces and adds new group
 void clntParser::StartIfaceDeclaration()
 {
   //Interface scope, so parameters associated with global scope are pushed on stack
@@ -962,7 +976,6 @@ void clntParser::EmptyAddr()
     ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
 }   
 
-// <Linux>
 extern yy_clntParser_stype yylval;
 
 int clntParser::yylex()
@@ -978,4 +991,3 @@ void clntParser::yyerror(char *m)
     std::clog << "Config parse error: line " << lex->lineno() << ", unexpected [" 
 	      << lex->YYText() << "] token.";
 }
-// </Linux>

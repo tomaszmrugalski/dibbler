@@ -42,7 +42,7 @@ ClntParser.o: ClntParser.y
 	$(CPP) $(OPTS) -c -I $(INCDIR) -ftemplate-depth-30 ClntParser.cpp 
 
 ClntLexer.o: ClntLexer.l
-	$(FLEX) -+ -oClntLexer.cpp ClntLexer.l
+	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
 	$(CPP) $(OPTS) -c -I $(INCDIR) ClntLexer.cpp
 
 ClntCfgIA.o: ClntCfgIA.cpp ClntCfgIA.h

@@ -3,26 +3,17 @@
 
 #include "ClntParsIfaceOpt.h"
 
-//class TClntParsIfaceOpt;
-
 class TClntParsGlobalOpt : public TClntParsIfaceOpt
 {
 public:
-	TClntParsGlobalOpt();
-    
-    void setLogLevel(int logLevel);
-    int getLogLevel();
+    TClntParsGlobalOpt();
     
     void setWorkDir(string dir);
     string getWorkDir();
 
-    void setLogName(string logName);
-    string getLogname();
 
 private:
-	int LogLevel;
-	string LogName;
-	string WorkDir;
+    string WorkDir;
 };
 
 #endif

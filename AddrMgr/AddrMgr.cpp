@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.9 2004-04-09 22:33:11 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.10 2004-04-10 12:18:00 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/04/09 22:33:11  thomson
+ * dns-servers changed to option dns-server
+ *
  * Revision 1.8  2004/04/09 19:25:04  thomson
  * *** empty log message ***
  *
@@ -350,7 +353,7 @@ void TAddrMgr::parseAddrMgr(xmlDocPtr doc,int depth)
 // --------------------------------------------------------------------
 
 ostream & operator<<(ostream & strum,TAddrMgr &x) {
-    strum << "<TAddrMgr>" << endl;
+    strum << "<AddrMgr>" << endl;
     SmartPtr<TAddrClient> ptr;
 
     x.ClntsLst.first();
@@ -359,6 +362,6 @@ ostream & operator<<(ostream & strum,TAddrMgr &x) {
         strum << *ptr;
     }
 
-    strum << "</TAddrMgr>" << endl;
+    strum << "</AddrMgr>" << endl;
     return strum;
 }

@@ -32,7 +32,6 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 	this->copyFile(cfgFile,oldCfgFile);
     //if files differs - make copy of new config
 
-	// this code is common to Linux and WIN32
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {
 	std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl;
@@ -41,11 +40,10 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     }
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
-	std::clog << logger::logDebug << "Parsing config file...";
+    std::clog << logger::logDebug << "Parsing config file..." << logger::endl;
     result = parser.yyparse();
-	std::clog << "done." << logger::endl;
+    std::clog << logger::logDebug << "Parsing config done." << logger::endl;
     f.close();
-	// this code is common to Linux and WIN32
 
     if (result) {
 	clog << "config error" << logger::endl;
@@ -110,8 +108,6 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     }
 
     this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
-    this->LogName = parser.ParserOptStack.getLast()->getLogName();
-    this->LogLevel= parser.ParserOptStack.getLast()->getLogLevel();
 
     if(!checkConfigConsistency())
     {

@@ -74,6 +74,14 @@ void daemon_init() {
 	
     } // getppid()!=1
 
+    string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
+    unlink(tmp.c_str());
+    ofstream pidfile(tmp.c_str());
+    std::clog << logger::logNotice << "My pid (" << getpid() << ") is stored in " 
+	      << tmp << logger::endl;
+    pidfile << getpid();
+    pidfile.close();
+
     umask(0);
 }
 
@@ -115,13 +123,13 @@ int main(int argc, char * argv[])
 
     bool daemon_mode = false;
 
-    logger::setLogname("Client");
+    logger::setLogName("Client");
 
     init();
 
     // parse command line parameters
     // Well, one big FIXME here :)
-    if (argc<2 || strncasecmp("-d",argv[1],2) ) {
+    if (argc>1 && !strncasecmp("start",argv[1],5) ) {
 	daemon_mode = true;
 	daemon_init();
     }

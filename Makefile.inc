@@ -5,11 +5,12 @@ FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
-COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) -g
+COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO)
 OPTS         = -ftemplate-depth-40 $(COPTS)
 
 # debug info
-#EFENCE      = -lefence
+DEBUGINFO    = -g
+EFENCE      = -lefence
 
 # === Portability ===
 ARCH         = LINUX

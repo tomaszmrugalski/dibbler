@@ -71,7 +71,16 @@ void daemon_init() {
 	    exit(0); // pierwszy potomek
 	
     } // getppid()!=1
-   
+
+    // store new pid file
+    string tmp;
+    tmp = (string)WORKDIR+"/"+(string)SRVPID_FILE;
+    unlink(tmp.c_str());
+    ofstream pidfile(tmp.c_str());
+    std::clog << logger::logNotice << "My pid (" << getpid() << ") is stored in " 
+	      << tmp << logger::endl;
+    pidfile << getpid();
+    pidfile.close();
 
     umask(0);
 }
@@ -109,15 +118,15 @@ int main(int argc, char * argv[])
     std::cout << DIBBLER_COPYRIGHT3 << std::endl;
     std::cout << DIBBLER_COPYRIGHT4 << std::endl;
 
-    bool daemon_mode = false;
+    logger::setLogName("Server");
 
-    logger::setLogname("Server");
+    bool daemon_mode = false;
 
     init();
 
     // parse command line parameters
     // Well, one big FIXME here :)
-    if (argc<2 || strncasecmp("-d",argv[1],2) ) {
+    if (argc>1 && !strncasecmp("start",argv[1],5) ) {
 	daemon_mode = true;
 	daemon_init();
     }

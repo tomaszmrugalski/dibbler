@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.2 2004-03-29 22:06:49 thomson Exp $
+ * $Id: Logger.h,v 1.3 2004-04-10 12:18:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 22:06:49  thomson
+ * 0.1.1 version
+ *
  *
  * Released under GNU GPL v2 licence
  *
@@ -18,6 +21,14 @@
 #include <string>
 
 namespace logger {
+
+    enum Elogmode {
+	FULL,
+	SHORT,
+	SYSLOG,
+	EVENTLOG
+    };
+
     using namespace std;
     ostream& logEmerg(ostream & strum);
     ostream& logAlert(ostream & strum);
@@ -30,8 +41,9 @@ namespace logger {
 
     void Initialize(char * file);
     void Terminate();
-    void setLogname(string x);
+    void setLogName(string x);
     void setLogLevel(int x);
+    void setLogMode(string x);
     
     ostream & endl (ostream & strum);
 

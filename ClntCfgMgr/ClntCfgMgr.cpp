@@ -33,7 +33,6 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
         this->copyFile(cfgFile,oldCfgFile);
     //if files differs - make copy of new config
 	
-	// now this code is common to Linux and win32. Cool.
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
         std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl; 
@@ -42,12 +41,10 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     }
     yyFlexLexer lexer(&f,&clog);
     clntParser parser(&lexer);
-    std::clog << logger::logDebug << "Parsing " << cfgFile << "...";
+    std::clog << logger::logDebug << "Parsing " << cfgFile << "..." << logger::endl;
     result = parser.yyparse();
-    std::clog << "done." << logger::endl;
+    std::clog << logger::logDebug << "Parsing " << cfgFile << " done." << logger::endl;
     f.close();
-	// now this code is common to Linux and win32. Cool.
-
 
     if (result) {
         std::clog << logger::logCrit << "Config error." << logger::endl;
@@ -129,11 +126,6 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
             << "not running or is not multicast-capable." << logger::endl;
     }
     this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
-    this->LogName = parser.ParserOptStack.getLast()->getLogname();
-    this->LogLevel= parser.ParserOptStack.getLast()->getLogLevel();
-
-    logger::setLogname(this->LogName);
-    logger::setLogLevel(this->LogLevel);
     
     if(!checkConfigConsistency())
     {
@@ -435,7 +427,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
         strum << *ptr;
     }
 
-    strum << "<ClntCfgMgr>" << endl;
+    strum << "</ClntCfgMgr>" << endl;
     return strum;
 }
 

@@ -82,22 +82,21 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
     }
     // Do we have ready answer for this?
     SmartPtr<TMsg> answ;
-    std::clog << logger::logDebug << MsgLst.count() << " answers buffered." << logger::endl;
+    std::clog << logger::logDebug << MsgLst.count() << " answers buffered.";
+
     MsgLst.first();
     while(answ=MsgLst.get()) 
     {
-        std::clog << logger::logDebug << "Searching for TransID=" << hex << msg->getTransID()
-            << ", found TransID=" << answ->getTransID() << dec << logger::endl;
         if (answ->getTransID()==msg->getTransID()) 
         {
-            std::clog << logger::logInfo << "Same TransID (" << hex << msg->getTransID() << dec
-                << ") found. Sending old reply." << logger::endl;
+            std::clog << "Old reply with transID (" << hex << msg->getTransID() 
+		      << dec << ") found. Sending old reply." << logger::endl;
             answ->answer(msg);
             return;
         }
     }
-    std::clog << logger::logDebug << "Old reply for TransID=" << hex << msg->getTransID()
-        << " not found. Generating new answer." << dec << logger::endl;
+    std::clog << "Old reply for transID=" << hex << msg->getTransID()
+	      << " not found. Generating new answer." << dec << logger::endl;
 
     switch(msg->getType()) 
     {

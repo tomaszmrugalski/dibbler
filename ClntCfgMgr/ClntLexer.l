@@ -45,7 +45,11 @@ hex1to4  {hexdigit}{1,4}
 [Aa][Dd][Dd][Rr][Ee][Ss][Ss] {return clntParser::ADDRES_;}
 [Ii][Aa] {return clntParser::IA_;}
 [Nn][Oo]-[Ii][Aa] {return clntParser::NOIA_;}
-[Ll][Oo][Gg]-[Ll][Ee][Vv][Ee][Ll] {return clntParser::LOGLEVEL_;}
+
+log-level {return clntParser::LOGLEVEL_; }
+log-mode  {return clntParser::LOGMODE_; }
+log-name  {return clntParser::LOGNAME_; }
+
 [Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return clntParser::WORKDIR_;}
 [Oo][Pp][Tt][Ii][Oo][Nn] { return clntParser::OPTION_; }
 
@@ -224,12 +228,20 @@ hex1to4  {hexdigit}{1,4}
 %{  //STRING (interface identifier,dns server etc.)
   //FIXME: Remember to free memory in parser    
 %}
-'([^']|(''))*' {
+('([^']|(''))*')|(\"[^\"]*\") {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
         return clntParser::STRING_;
 }
+
+([a-zA-Z][a-zA-Z0-9\.]+) {
+    yylval.strval=new char[strlen(yytext)+1];
+    strncpy(yylval.strval, yytext, strlen(yytext));
+    yylval.strval[strlen(yytext)]=0;
+    return clntParser::STRING_;
+}
+
 %{  //FIXME: Remember to free memory in parser
   //DUID
 %}

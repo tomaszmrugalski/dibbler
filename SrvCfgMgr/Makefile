@@ -20,7 +20,7 @@ SrvParser.o: SrvParser.y
 	$(CPP) -c $(OPTS) -I $(INCDIR) SrvParser.cpp 
 
 SrvLexer.o: SrvLexer.l
-	$(FLEX) -+ -oSrvLexer.cpp SrvLexer.l
+	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
 	$(CPP) -c $(OPTS) -I $(INCDIR) SrvLexer.cpp 
 
 SrvCfgAddrClass.o: SrvCfgAddrClass.cpp SrvCfgAddrClass.h

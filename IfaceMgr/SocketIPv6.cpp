@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.5 2004-03-29 18:53:08 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.6 2004-04-10 12:18:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -274,7 +277,7 @@ ostream & operator <<(ostream & strum, TIfaceSocketIPv6 &x)
 	strum << " multicast=\"true\"";
     if (x.IfaceOnly)
 	strum << " ifaceonly=\"true\"";
-    strum << " status==\"";
+    strum << " status=\"";
 	
 	switch (x.Status) {
 	case NOTCONFIGURED: { strum << "NOTCONFIGURED"; break; }

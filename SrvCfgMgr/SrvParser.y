@@ -64,8 +64,9 @@ bool EndClassDeclaration();
   char                          addrval[16];
 }
 
-%token IFACE_, NO_CONFIG_,CLASS_,LOGNAME_,LOGLEVEL_,WORKDIR_
-%token NTP_SERVER_,TIME_ZONE_,DNS_SERVER_,DOMAIN_
+%token IFACE_, NO_CONFIG_,CLASS_, 
+%token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
+%token OPTION_, NTP_SERVER_,TIME_ZONE_,DNS_SERVER_,DOMAIN_
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
@@ -83,130 +84,127 @@ bool EndClassDeclaration();
 
 /////////////////////////////////////////////////////////////////////////////
 // rules section
-
-// place your YACC rules here (there must be at least one)
+/////////////////////////////////////////////////////////////////////////////
 
 Grammar
-    : GlobalDeclarationList
-  |
-    ;
+: GlobalDeclarationList
+|
+;
 
 GlobalDeclarationList
-  : GlobalOptionDeclaration
-    | InterfaceDeclaration
-    | GlobalDeclarationList GlobalOptionDeclaration
-    | GlobalDeclarationList InterfaceDeclaration
-    ;
+: GlobalOptionDeclaration
+| InterfaceDeclaration
+| GlobalDeclarationList GlobalOptionDeclaration
+| GlobalDeclarationList InterfaceDeclaration
+;
 
 InterfaceDeclaration
-    /////////////////////////////////////////////////////////////////////////////
-    //Deklaracja typu: iface 'eth0' { T1 10 T2 20 ... }
-    /////////////////////////////////////////////////////////////////////////////
-  :IFACE_ STRING_ '{' 
-  {
-      CheckIsIface(string($2)); //If no - everything is ok
-      StartIfaceDeclaration();
-  }
-  InterfaceDeclarationsList '}'
-  {
+/////////////////////////////////////////////////////////////////////////////
+//Deklaracja typu: iface 'eth0' { T1 10 T2 20 ... }
+/////////////////////////////////////////////////////////////////////////////
+:IFACE_ STRING_ '{' 
+{
+    CheckIsIface(string($2)); //If no - everything is ok
+    StartIfaceDeclaration();
+}
+InterfaceDeclarationsList '}'
+{
     //Information about new interface has been read
     //Add it to list of read interfaces
-      SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-      //FIXME:used of char * should be always realeased
-      delete $2;
-      EndIfaceDeclaration();
-  }
-    /////////////////////////////////////////////////////////////////////////////
-    //Deklaracja typu: iface 5 { T1 10 T2 20 ... }
-    /////////////////////////////////////////////////////////////////////////////
-  |IFACE_ Number '{' 
-  {
-        CheckIsIface($2);   //If no - everything is ok
-        StartIfaceDeclaration();
-  }
-    InterfaceDeclarationsList '}'
-  {
-      SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-      EndIfaceDeclaration();
-  }
-    /////////////////////////////////////////////////////////////////////////////
-    //Deklaracja typu: iface 'eth0' no-config
-    /////////////////////////////////////////////////////////////////////////////
-    |IFACE_ STRING_ NO_CONFIG_
-    {
-      CheckIsIface(string($2));
-      SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-      SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-      SrvCfgIfaceLst.getLast()->setNoConfig();
-    }
-    /////////////////////////////////////////////////////////////////////////////
-    //Deklaracja typu: iface 5 no-config
-    /////////////////////////////////////////////////////////////////////////////
-    |IFACE_ Number NO_CONFIG_
-    {
-        CheckIsIface($2);
-      SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-      SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-        SrvCfgIfaceLst.getLast()->setNoConfig();
-    }
-    ;
+    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
+    //FIXME:used of char * should be always realeased
+    delete $2;
+    EndIfaceDeclaration();
+}
+/////////////////////////////////////////////////////////////////////////////
+//Deklaracja typu: iface 5 { T1 10 T2 20 ... }
+/////////////////////////////////////////////////////////////////////////////
+|IFACE_ Number '{' 
+{
+    CheckIsIface($2);   //If no - everything is ok
+    StartIfaceDeclaration();
+}
+InterfaceDeclarationsList '}'
+{
+    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
+    EndIfaceDeclaration();
+}
+/////////////////////////////////////////////////////////////////////////////
+//Deklaracja typu: iface 'eth0' no-config
+/////////////////////////////////////////////////////////////////////////////
+|IFACE_ STRING_ NO_CONFIG_
+{
+    CheckIsIface(string($2));
+    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
+    SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
+    SrvCfgIfaceLst.getLast()->setNoConfig();
+}
+/////////////////////////////////////////////////////////////////////////////
+//Deklaracja typu: iface 5 no-config
+/////////////////////////////////////////////////////////////////////////////
+|IFACE_ Number NO_CONFIG_
+{
+    CheckIsIface($2);
+    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
+    SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
+    SrvCfgIfaceLst.getLast()->setNoConfig();
+}
+;
 
 InterfaceDeclarationsList
-  : InterfaceOptionDeclaration
-  | InterfaceDeclarationsList InterfaceOptionDeclaration
-  | ClassDeclaration
-  | InterfaceDeclarationsList ClassDeclaration
-  ;
+: InterfaceOptionDeclaration
+| InterfaceDeclarationsList InterfaceOptionDeclaration
+| ClassDeclaration
+| InterfaceDeclarationsList ClassDeclaration
+;
 
 
 ClassDeclaration:
-    /////////////////////////////////////////////////////////////////////////////
-    //Deklaracja typu: CLASS { T1 10 T2 20 ... }
-    /////////////////////////////////////////////////////////////////////////////
-  CLASS_ '{'
-    { 
-        StartClassDeclaration();
-    }
-        ClassOptionDeclarationsList '}'
-    {
-            EndClassDeclaration();
-        }
-    ;
+/////////////////////////////////////////////////////////////////////////////
+//Deklaracja typu: CLASS { T1 10 T2 20 ... }
+/////////////////////////////////////////////////////////////////////////////
+CLASS_ '{'
+{ 
+    StartClassDeclaration();
+}
+ClassOptionDeclarationsList '}'
+{
+    EndClassDeclaration();
+}
+;
 
 ClassOptionDeclarationsList
-    : ClassOptionDeclaration
-    | ClassOptionDeclarationsList ClassOptionDeclaration
-    ;
-    
+: ClassOptionDeclaration
+| ClassOptionDeclarationsList ClassOptionDeclaration
+;
 
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
 /////////////////////////////////////////////////////////////////////////////
-
 Number
-  :  HEXNUMBER_ {$$=$1;}
-  |  INTNUMBER_ {$$=$1;}
-  ;
+:  HEXNUMBER_ {$$=$1;}
+|  INTNUMBER_ {$$=$1;}
+;
 
 
-    /*ADDRESDUIDList
+/*ADDRESDUIDList
   : IPV6ADDR_   
   {
-    PresentLst.append(SmartPtr<TStationID> (new TStationID($1)));
+  PresentLst.append(SmartPtr<TStationID> (new TStationID($1)));
   }
   | DUID_       
   {
-    PresentLst.append(SmartPtr<TStationID> (new TStationID($1.duid,$1.length))); 
-    delete $1.duid;
+  PresentLst.append(SmartPtr<TStationID> (new TStationID($1.duid,$1.length))); 
+  delete $1.duid;
   }
   | ADDRESDUIDList ',' IPV6ADDR_    
   {
-    PresentLst.append(SmartPtr<TStationID> (new TStationID($3)));
+  PresentLst.append(SmartPtr<TStationID> (new TStationID($3)));
   }
   | ADDRESDUIDList ',' DUID_        
   {
-    PresentLst.append(SmartPtr<TStationID> (new TStationID($3.duid,$3.length)));
-    delete $3.duid;
+  PresentLst.append(SmartPtr<TStationID> (new TStationID($3.duid,$3.length)));
+  delete $3.duid;
   }
   ;*/   
 
@@ -248,53 +246,53 @@ ADDRESSRangeList
         else
             PresentRangeLst.append(new TStationRange(addr2,addr1));
     }
-    ;
+;
 
 ADDRESSDUIDRangeList
-    : IPV6ADDR_     
-    {
-        PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
-    }
-    |   IPV6ADDR_ '-' IPV6ADDR_ 
-    {
-        SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
-        SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
-        if (*addr1<=*addr2)
-            PresentRangeLst.append(new TStationRange(addr1,addr2));
-        else
-            PresentRangeLst.append(new TStationRange(addr2,addr1));
-    }
-    | ADDRESSDUIDRangeList ',' IPV6ADDR_ 
-    {
-        PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
-    }
-    |   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_ 
-    {
+: IPV6ADDR_     
+{
+    PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
+}
+|   IPV6ADDR_ '-' IPV6ADDR_ 
+{
+    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
+    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
+    if (*addr1<=*addr2)
+	PresentRangeLst.append(new TStationRange(addr1,addr2));
+    else
+	PresentRangeLst.append(new TStationRange(addr2,addr1));
+}
+| ADDRESSDUIDRangeList ',' IPV6ADDR_ 
+{
+    PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
+}
+|   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_ 
+{
         SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
         SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
             PresentRangeLst.append(new TStationRange(addr2,addr1));
-    }
+}
     
-    | DUID_ 
-    {
-        PresentRangeLst.append(new TStationRange(new TDUID($1.duid,$1.length)));
-        delete $1.duid;
-    }
-    | DUID_ '-' DUID_ 
-    {   
-        SmartPtr<TDUID> duid1(new TDUID($1.duid,$1.length));
-        SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
-        
-        if (*duid1<=*duid2)
+| DUID_ 
+{
+    PresentRangeLst.append(new TStationRange(new TDUID($1.duid,$1.length)));
+    delete $1.duid;
+}
+| DUID_ '-' DUID_ 
+{   
+    SmartPtr<TDUID> duid1(new TDUID($1.duid,$1.length));
+    SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
+    
+    if (*duid1<=*duid2)
             PresentRangeLst.append(new TStationRange(duid1,duid2));
-        else
-            PresentRangeLst.append(new TStationRange(duid2,duid1));
-        delete $1.duid;
-        delete $3.duid;
-    }
+    else
+	PresentRangeLst.append(new TStationRange(duid2,duid1));
+    delete $1.duid;
+    delete $3.duid;
+}
     | ADDRESSDUIDRangeList ',' DUID_ 
     {
         PresentRangeLst.append(new TStationRange(new TDUID($3.duid,$3.length)));
@@ -397,148 +395,164 @@ T2Option
     }
     ;
 
-DNSServerOption
-    :DNS_SERVER_ 
-    {
-        PresentLst.clear();
-  } ADDRESSList
-  {
-            ParserOptStack.getLast()->setDNSSrv(&PresentLst);
-  }
-    ;
+////////////////////////////////////////////////////////////////////////
+/// DNS-server option //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
-NTPServerOption
-  :NTP_SERVER_ 
-  {
+DNSServerOption
+:OPTION_ DNS_SERVER_ 
+{
     PresentLst.clear();
-  } ADDRESSList
-    {
-        ParserOptStack.getLast()->setNTPSrv(&PresentLst);
-    }
-    ;
-  
-    /*NISServerOption
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setDNSSrv(&PresentLst);
+}
+;
+
+////////////////////////////////////////////////////////////////////////
+/// DOMAIN option //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+DomainOption
+: OPTION_ DOMAIN_ STRING_ 
+{ 
+    ParserOptStack.getLast()->setDomain($3);
+}
+;
+
+////////////////////////////////////////////////////////////////////////
+/// NTP-SERVER option //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+NTPServerOption
+:OPTION_ NTP_SERVER_ 
+{
+    PresentLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNTPSrv(&PresentLst);
+}
+;
+
+////////////////////////////////////////////////////////////////////////
+/// TIME-ZONE option ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+TimeZoneOption
+: OPTION_ TIME_ZONE_ STRING_ 
+{ 
+    ParserOptStack.getLast()->setTimeZone($3); 
+}
+;
+
+/*NISServerOption
   :NIS_SERVER_ STRING_
   { 
-    ParserOptStack.getLast()->NISServer=$2;
+  ParserOptStack.getLast()->NISServer=$2;
   }
   ;*/
 
-DomainOption
-    : DOMAIN_ STRING_ 
-    { 
-        ParserOptStack.getLast()->setDomain($2);
-    }
-    ;
-
-TimeZoneOption
-    :   TIME_ZONE_ STRING_ 
-    { 
-        ParserOptStack.getLast()->setTimeZone($2); 
-    }
-    ;
-
 ClntMaxLeaseOption
-    : CLNT_MAX_LEASE_ Number 
-    { 
-        ParserOptStack.getLast()->setMaxClientLease($2);    
-    }
-    ;
+: CLNT_MAX_LEASE_ Number 
+{ 
+    ParserOptStack.getLast()->setMaxClientLease($2);    
+}
+;
 
 UnicastAddressOption
-    : UNICAST_ IPV6ADDR_
-    {
-        ParserOptStack.getLast()->setUnicast(true);
-        ParserOptStack.getLast()->setAddress(new TIPv6Addr($2));
-    }
-    ;
+: UNICAST_ IPV6ADDR_
+{
+    ParserOptStack.getLast()->setUnicast(true);
+    ParserOptStack.getLast()->setAddress(new TIPv6Addr($2));
+}
+;
 
 UnicastOption
-    : UNICAST_ Number   
-    {
-        if(($2&&(!ParserOptStack.getLast()->getUnicast() ))||($2>1))
-            YYABORT; //there should be declared prior unicast address
-        ParserOptStack.getLast()->setUnicast($2);
-    }
-    ;
+: UNICAST_ Number   
+{
+    if(($2&&(!ParserOptStack.getLast()->getUnicast() ))||($2>1))
+	YYABORT; //there should be declared prior unicast address
+    ParserOptStack.getLast()->setUnicast($2);
+}
+;
 
 RapidCommitOption
-    :   RAPID_COMMIT_ Number 
-    { 
-        ParserOptStack.getLast()->setRapidCommit($2); 
-    }
-    ;
+:   RAPID_COMMIT_ Number 
+{ 
+    ParserOptStack.getLast()->setRapidCommit($2); 
+}
+;
     
 PreferenceOption
-    : PREFERENCE_ Number 
-    { 
-        if (($2<0)||($2>255))
-            YYABORT; //FIXME:Exception or what kind of notification
-        ParserOptStack.getLast()->setPreference($2);    
-    }
-    ;
-    
+: PREFERENCE_ Number 
+{ 
+    if (($2<0)||($2>255))
+	YYABORT; //FIXME:Exception or what kind of notification
+    ParserOptStack.getLast()->setPreference($2);    
+}
+;
+
 MaxLeaseOption
-    : MAX_LEASE_ Number 
-    {
-        ParserOptStack.getLast()->setMaxLeases($2);
-    }
-    ;
+: MAX_LEASE_ Number 
+{
+    ParserOptStack.getLast()->setMaxLeases($2);
+}
+;
 
 LogLevelOption
-    : LOGLEVEL_ Number {
-        if ($2<5)
-            ParserOptStack.getLast()->setLogLevel($2);
-        else
-            YYABORT;
-    }
-    ;
+: LOGLEVEL_ Number {
+    logger::setLogLevel($2);
+}
+;
+
+LogModeOption
+: LOGMODE_ STRING_ {
+    logger::setLogMode($2);
+}
 
 LogNameOption
-    : LOGNAME_ STRING_
-    {
-        ParserOptStack.getLast()->setLogName($2);
-    }
-    ;
+: LOGNAME_ STRING_
+{
+    logger::setLogName($2);
+}
+;
 
 WorkDirOption
-    :   WORKDIR_ STRING_
-    {
-        ParserOptStack.getLast()->setWorkDir($2);
-    }
-    ;
+:   WORKDIR_ STRING_
+{
+    ParserOptStack.getLast()->setWorkDir($2);
+}
+;
 
 GlobalOptionDeclaration
-  : InterfaceOptionDeclaration
-  | LogLevelOption
-  | LogNameOption
-  | WorkDirOption
-  ;
+: InterfaceOptionDeclaration
+| LogModeOption
+| LogLevelOption
+| LogNameOption
+| WorkDirOption
+;
 
 InterfaceOptionDeclaration
-  : ClassOptionDeclaration
-  | UnicastAddressOption
-  | DNSServerOption
-  | NTPServerOption
-  | DomainOption
-  | TimeZoneOption
-  ;
+: ClassOptionDeclaration
+| UnicastAddressOption
+| DNSServerOption
+| NTPServerOption
+| DomainOption
+| TimeZoneOption
+;
 
 ClassOptionDeclaration
-  : PreferredTimeOption
-  | ValidTimeOption
-  | PoolOption
-  | T1Option
-  | T2Option
-  //| NISServerOption
-  | RejectClientsOption
-  | AcceptOnlyOption
-  | UnicastOption
-  | RapidCommitOption
-  | PreferenceOption
-  | MaxLeaseOption
-  | ClntMaxLeaseOption
-  ;
+: PreferredTimeOption
+| ValidTimeOption
+| PoolOption
+| T1Option
+| T2Option
+//| NISServerOption
+| RejectClientsOption
+| AcceptOnlyOption
+| UnicastOption
+| RapidCommitOption
+| PreferenceOption
+| MaxLeaseOption
+| ClntMaxLeaseOption
+;
 
 %%
 

@@ -23,8 +23,7 @@ hex1to4  {hexdigit}{1,4}
 
 %{
   unsigned ComBeg; //line, in which comment begins
-  unsigned LftCnt; //how many signs : on the left side of 
-                                    //'::' sign was interpreted
+  unsigned LftCnt; //how many chars : on the left side of '::' char was interpreted
   unsigned RgtCnt; //the same as above, but on the right side of '::'
   char Address[16]; //address, which is analizing right now
   char AddrPart[16];
@@ -38,49 +37,47 @@ hex1to4  {hexdigit}{1,4}
 
 %%
 
+iface               { return SrvParser::IFACE_;}
+no-config           { return SrvParser::NO_CONFIG_;}
+class               { return SrvParser::CLASS_;}
 
-%{//KEYWORDS
-%}
+log-name            { return SrvParser::LOGNAME_;}
+log-level           { return SrvParser::LOGLEVEL_;}
+log-mode            { return SrvParser::LOGMODE_; }
 
-[Ii][fF][aA][cC][Ee] {return SrvParser::IFACE_;}  //defines which iface is gonna be to config.
-[Nn][Oo]-[Cc][Oo][Nn][Ff][Ii][Gg] {return SrvParser::NO_CONFIG_;} //not configure this iface
-[Cc][Ll][Aa][Ss][Ss] {return SrvParser::CLASS_;}
+work-dir            { return SrvParser::WORKDIR_;}
 
-[Ll][Oo][Gg]-[Nn][aA][Mm][Ee] {return SrvParser::LOGNAME_;}
-[Ll][Oo][Gg]-[Ll][Ee][Vv][Ee][Ll] {return SrvParser::LOGLEVEL_;}
-[Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return SrvParser::WORKDIR_;}
+option              { return SrvParser::OPTION_; }
+dns-server          { return SrvParser::DNS_SERVER_;}
+domain              { return SrvParser::DOMAIN_;}
+ntp-server          { return SrvParser::NTP_SERVER_;}
+time-zone           { return SrvParser::TIME_ZONE_;}
 
-[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return SrvParser::DNS_SERVER_;}
-[Dd][Oo][Mm][Aa][Ii][Nn] {return SrvParser::DOMAIN_;}
+accept-only         { return SrvParser::ACCEPT_ONLY_;}
+reject-clients      { return SrvParser::REJECT_CLIENTS_;}
 
-[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr] {return SrvParser::NTP_SERVER_;}
-[Tt][Ii][Mm][Ee]-[Zz][Oo][Nn][Ee] {return SrvParser::TIME_ZONE_;}
+T1                  { return SrvParser::T1_;}
+T2                  { return SrvParser::T2_;}
+prefered-lifetime   { return SrvParser::PREF_TIME_;}
+valid-lifetime      { return SrvParser::VALID_TIME_;}
+
+unicast             { return SrvParser::UNICAST_;}
+preference          { return SrvParser::PREFERENCE_;}
+pool                { return SrvParser::POOL_;}
+rapid-commit        { return SrvParser::RAPID_COMMIT_;}
+max-lease           { return SrvParser::MAX_LEASE_;}
+client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;}
+
+yes {yylval.ival=1; return SrvParser::INTNUMBER_;}
+no         {yylval.ival=0; return SrvParser::INTNUMBER_;}
+true    {yylval.ival=1; return SrvParser::INTNUMBER_;}
+false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 %{ //[Nn][Ii][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return SrvParser::NIS_SERVER_;}
 %}
-[Aa][Cc][Ee][Pp][Tt]-[Oo][Nn][Ll][Yy] {return SrvParser::ACCEPT_ONLY_;}
-[Rr][Ee][Jj][Ee][Cc][Tt]-[Cc][Ll][Ii][eE][nN][tT][sS] {return SrvParser::REJECT_CLIENTS_;}
-
-[Tt][1] {return SrvParser::T1_;}
-[Tt][2] {return SrvParser::T2_;}
-
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee] {return SrvParser::PREF_TIME_;}
-[Vv][Aa][Ll][Ii][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee]  {return SrvParser::VALID_TIME_;}
-
-[Uu][Nn][Ii][Cc][Aa][Ss][Tt] {return SrvParser::UNICAST_;}
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee] {return SrvParser::PREFERENCE_;}
-[Pp][Oo][Oo][Ll] {return SrvParser::POOL_;}
-[Rr][Aa][Pp][Ii][Dd][Cc][Oo][Mm][Mm][Ii][Tt] {return SrvParser::RAPID_COMMIT_;}
-[Mm][Aa][Xx]-[Ll][Ee][Aa][Ss][Ee] {return SrvParser::MAX_LEASE_;}
-[Cc][Ll][iI][Ee][Nn][Tt]-[Mm][Aa][Xx]-[Ll][Ee][Aa][Ss][Ee] {return SrvParser::CLNT_MAX_LEASE_;}
-
-[Yy][Ee][Ss] {yylval.ival=1; return SrvParser::INTNUMBER_;}
-[Nn][Oo]         {yylval.ival=0; return SrvParser::INTNUMBER_;}
-[Tt][Rr][Uu][Ee]    {yylval.ival=1; return SrvParser::INTNUMBER_;}
-[Ff][Aa][Ll][Ss][Ee] {yylval.ival=0; return SrvParser::INTNUMBER_;}
-
 %{ //COMMENTS
 %}
+
 #.* ;
 
 "//"(.*) ;
@@ -201,16 +198,23 @@ hex1to4  {hexdigit}{1,4}
 %{ //STRING (interface identifier,dns server etc.)
 %}
 
-'([^']|(''))*' {
+('([^']|(''))*')|(\"[^\"]*\") {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
     return SrvParser::STRING_;
 }
 
+([a-zA-Z][a-zA-Z0-9\.]+) {
+    yylval.strval=new char[strlen(yytext)+1];
+    strncpy(yylval.strval, yytext, strlen(yytext));
+    yylval.strval[strlen(yytext)]=0;
+    return SrvParser::STRING_;
+}
+
 %{ //DUID
 %}
-\"{hexdigit}+\" {
+(\"{hexdigit}+\")|(\'{hexdigit}+\') {
     //every hex digit corresponds to half of byte, even at the begining
     //of string
     if (strlen(yytext)%2) 
@@ -256,7 +260,7 @@ hex1to4  {hexdigit}{1,4}
 %}
 [ \n\t] ; 
 
-%{ //OTHER CHARS are direclty passed to parser
+%{ //OTHER CHARS are directly passed to parser
 %}
 .  {return yytext[0];}
 

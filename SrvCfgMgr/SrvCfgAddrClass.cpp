@@ -5,8 +5,8 @@
  
 TSrvCfgAddrClass::TSrvCfgAddrClass()
 {
-	//FIXME:here should be set default values of all fields
-	//except pool, which can be set only by the user
+    //FIXME:here should be set default values of all fields
+    //except pool, which can be set only by the user
 }
 
 
@@ -21,7 +21,7 @@ char TSrvCfgAddrClass::getPreference()
 
 bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr)
 {
-	SmartPtr<TStationRange> range;
+    SmartPtr<TStationRange> range;
     RejedClnt.first();
     while(range=RejedClnt.get())
         if (range->in(duid,clntAddr))
@@ -169,38 +169,43 @@ bool TSrvCfgAddrClass::getRapidCommit()
 
 ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
 {
-	out << "  <class>" << std::endl;
-	out << "    <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  << "\" />" << logger::endl;
-    out << "    <T2 min=\"" << addrClass.T2Beg << "\" max=\"" << addrClass.T2End  << "\" />" << logger::endl;
-    out << "    <pref min=\"" << addrClass.PrefBeg << "\" max=\""<< addrClass.PrefEnd  << "\" />" <<logger::endl;
-	out << "    <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd  << "\" />" << logger::endl;
-	out << "    <MaxClientLease>" << addrClass.MaxClientLease << "</MaxClientLease>" << logger::endl;
-	out << "    <MaxLease>" << addrClass.MaxLease << "</MaxLease>" << logger::endl;
-	    
-	out << "    <preference>" << (int)addrClass.Preference << "</preference>" << logger::endl;
-	if (addrClass.RapidCommit) {
-	  out << "    <rapid-commit/>" << logger::endl;
-	}
-	if (addrClass.Unicast) {
-	  out << "    <unicast/>" << logger::endl;
-	}
-//	cout<<"NISServer:"<<addrClass.NISServer << logger::endl;
-	
+    out << "    <class>" << std::endl;
+    out << "      <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  
+	<< "\" />" << logger::endl;
+    out << "      <T2 min=\"" << addrClass.T2Beg << "\" max=\"" << addrClass.T2End  
+	<< "\" />" << logger::endl;
+    out << "      <pref min=\"" << addrClass.PrefBeg << "\" max=\""<< addrClass.PrefEnd  
+	<< "\" />" <<logger::endl;
+    out << "      <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd
+	<< "\" />" << logger::endl;
+    out << "      <MaxClientLease>" << addrClass.MaxClientLease << "</MaxClientLease>" 
+	<< logger::endl;
+    out << "      <MaxLease>" << addrClass.MaxLease << "</MaxLease>" 
+	<< logger::endl;
+    
+    out << "      <preference>" << (int)addrClass.Preference << "</preference>" << logger::endl;
+    if (addrClass.RapidCommit) {
+	out << "      <rapid-commit/>" << logger::endl;
+    }
+    if (addrClass.Unicast) {
+	out <<   "    <unicast/>" << logger::endl;
+    }
+    
     SmartPtr<TStationRange> statRange;
-	out << "    <!-- ranges:" << addrClass.Pool.count() << " -->" << logger::endl;
-	addrClass.Pool.first();
-	while(statRange=addrClass.Pool.get())
-		out << *statRange;
+    out << "      <!-- ranges:" << addrClass.Pool.count() << " -->" << logger::endl;
+    addrClass.Pool.first();
+    while(statRange=addrClass.Pool.get())
+	out << *statRange;
+    
+    out << "      <!-- rejected ranges:" << addrClass.RejedClnt.count() << " -->" << logger::endl;
+    addrClass.RejedClnt.first();
+    while(statRange=addrClass.RejedClnt.get())
+	out << *statRange;	
 	
-	out << "    <!-- rejected ranges:" << addrClass.RejedClnt.count() << " -->" << logger::endl;
-	addrClass.RejedClnt.first();
-	while(statRange=addrClass.RejedClnt.get())
-		out << *statRange;	
-	
-	out << "    <!-- accepted ranges:" << addrClass.AcceptClnt.count() << " -->" << logger::endl;
-	addrClass.AcceptClnt.first();
-	while(statRange=addrClass.AcceptClnt.get())
-		out << *statRange;
-	out << "  </class>" << std::endl;
-	return out;
+    out << "      <!-- accepted ranges:" << addrClass.AcceptClnt.count() << " -->" << logger::endl;
+    addrClass.AcceptClnt.first();
+    while(statRange=addrClass.AcceptClnt.get())
+	out << *statRange;
+    out << "    </class>" << std::endl;
+    return out;
 }
