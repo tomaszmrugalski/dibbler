@@ -43,7 +43,6 @@ public:
     unsigned long getMaxClientLease();
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     bool getRapidCommit();
-    char getPreference();
 
     virtual ~TSrvCfgAddrClass();
 private:
@@ -67,7 +66,6 @@ private:
 
     unsigned long MaxClientLease;
     unsigned long MaxLease;
-    char Preference;	
     bool Unicast;		
     bool RapidCommit;	
 };

@@ -35,8 +35,10 @@ public:
     TContainer<SmartPtr<TIPv6Addr> > getNTPSrvLst();
     string getDomain();
     string getTimeZone();
+    unsigned char getPreference();
 
 private:
+    unsigned char preference;
     int		ID;
     string	Name;
     bool	NoConfig;

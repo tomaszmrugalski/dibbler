@@ -3,20 +3,12 @@
 #include "SrvParsGlobalOpt.h"
 #include "Logger.h"
  
-TSrvCfgAddrClass::TSrvCfgAddrClass()
-{
+TSrvCfgAddrClass::TSrvCfgAddrClass() {
     //FIXME:here should be set default values of all fields
     //except pool, which can be set only by the user
 }
 
-
-TSrvCfgAddrClass::~TSrvCfgAddrClass()
-{
-}
-
-char TSrvCfgAddrClass::getPreference()
-{
-    return Preference;
+TSrvCfgAddrClass::~TSrvCfgAddrClass() {
 }
 
 bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr)
@@ -88,7 +80,6 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
     
 	MaxClientLease=opt->getMaxClientLease();
 	MaxLease=opt->getMaxLeases();
-    Preference=opt->getPreference();
     RapidCommit=opt->getRapidCommit();
     Unicast=opt->getUnicast();
 	//NISServer=opt.NISServer;
@@ -178,7 +169,6 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     out << "      <MaxLease>" << addrClass.MaxLease << "</MaxLease>" 
 	<< logger::endl;
     
-    out << "      <preference>" << (int)addrClass.Preference << "</preference>" << logger::endl;
     if (addrClass.RapidCommit) {
 	out << "      <rapid-commit/>" << logger::endl;
     }

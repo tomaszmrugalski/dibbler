@@ -1,83 +1,129 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvCfgIface.cpp,v 1.6 2004-06-06 22:12:29 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #include "SrvCfgIface.h"
 #include "SrvCfgAddrClass.h"
 #include "Logger.h"
 
-void TSrvCfgIface::firstAddrClass()
-{
+void TSrvCfgIface::firstAddrClass() {
     this->SrvCfgAddrClassLst.first();
 }
 
-SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass()
-{
+SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
     return SrvCfgAddrClassLst.get();
 }
 
-long TSrvCfgIface::countAddrClass()
-{
+long TSrvCfgIface::countAddrClass() {
     return SrvCfgAddrClassLst.count();
 }
 
-int TSrvCfgIface::getID()
-{
+int TSrvCfgIface::getID() {
 	return ID;
 }
 
-string TSrvCfgIface::getName()
-{
+string TSrvCfgIface::getName() {
 	return Name;
 }
 
-
-TSrvCfgIface::TSrvCfgIface()
-{
-    this->NoConfig = false;
+TSrvCfgIface::~TSrvCfgIface() {
 }
 
-
-TSrvCfgIface::~TSrvCfgIface()
-{
-}
-
-void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
-{
-    this->isUniAddress=opt->getUnicast();
-	//memcpy(UniAddress,opt.UniAddress,16);
-    this->UniAddress=opt->getAddress();
+void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
+    this->isUniAddress = opt->getUnicast();
+    this->UniAddress   = opt->getAddress();
+    this->preference   = opt->getPreference();
+    this->Domain       = opt->getDomain();
+    this->TimeZone     = opt->getTimeZone();
     
-	SmartPtr<TIPv6Addr> stat;
-    
-    Domain=opt->getDomain();
+    SmartPtr<TIPv6Addr> stat;
+
+    // copy DNS servers
     opt->firstDNSSrv();
     while(stat=opt->getDNSSrv())
         this->DNSSrv.append(stat);
-    
-    TimeZone=opt->getTimeZone();
+
+    // copy NTP servers
     opt->firstNTPSrv();
     while(stat=opt->getNTPSrv())
         this->NTPSrv.append(stat);
-
 }
 
-TSrvCfgIface::TSrvCfgIface(int ifaceNr)
-{
+
+
+/*
+ * default contructor
+ */
+TSrvCfgIface::TSrvCfgIface() {
+    this->Name = "[unknown]";
+    this->ID = -1;
+    this->NoConfig = false;
+    this->preference = 0;
+}
+
+TSrvCfgIface::TSrvCfgIface(int ifaceNr) {
     this->Name="[unknown]";
     this->ID=ifaceNr;
     this->NoConfig=false;
+    this->preference = 0;
 }
 
-TSrvCfgIface::TSrvCfgIface(string ifaceName)
-{
+TSrvCfgIface::TSrvCfgIface(string ifaceName) {
     this->Name=ifaceName;
     this->ID = -1;
     this->NoConfig=false;
 }
-void TSrvCfgIface::setNoConfig()
-{
-	NoConfig=true;
+void TSrvCfgIface::setNoConfig() {
+    NoConfig=true;
 }
 
-ostream& operator<<(ostream& out,TSrvCfgIface& iface)
-{
+unsigned char TSrvCfgIface::getPreference() {
+    return this->preference;
+}
+
+void TSrvCfgIface::setIfaceName(string ifaceName) {
+	this->Name=ifaceName;
+}
+
+void TSrvCfgIface::setIfaceID(int ifaceID) {
+	this->ID=ifaceID;
+}
+
+void TSrvCfgIface::addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass) {
+    this->SrvCfgAddrClassLst.append(addrClass);
+}
+
+TContainer<SmartPtr<TIPv6Addr> > TSrvCfgIface::getDNSSrvLst() {
+    return this->DNSSrv;
+}
+
+TContainer<SmartPtr<TIPv6Addr> > TSrvCfgIface::getNTPSrvLst() {
+    return this->NTPSrv;
+}
+
+string TSrvCfgIface::getDomain() {
+    return this->Domain;
+}
+
+string TSrvCfgIface::getTimeZone() {
+    return this->TimeZone;
+}
+
+// --------------------------------------------------------------------
+// --- operators ------------------------------------------------------
+// --------------------------------------------------------------------
+
+ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     SmartPtr<TStationID> Station;
     out << "  <SrvCfgIface ";
     out << "name=\""<<iface.Name << "\" ";
@@ -92,6 +138,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface)
     if (iface.isUniAddress) {
 	out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
     }
+    out << "  <preference>" << iface.preference << "</preference>" << std::endl;
     
     SmartPtr<TIPv6Addr> stat;
     out << "  <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;
@@ -118,34 +165,4 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface)
     }
     out << "  </SrvCfgIface>" << std::endl;
     return out;
-}
-void TSrvCfgIface::setIfaceName(string ifaceName)
-{
-	this->Name=ifaceName;
-}
-
-void TSrvCfgIface::setIfaceID(int ifaceID)
-
-{
-	this->ID=ifaceID;
-}
-void TSrvCfgIface::addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass)
-{
-    this->SrvCfgAddrClassLst.append(addrClass);
-}
-TContainer<SmartPtr<TIPv6Addr> > TSrvCfgIface::getDNSSrvLst()
-{
-    return this->DNSSrv;
-}
-TContainer<SmartPtr<TIPv6Addr> > TSrvCfgIface::getNTPSrvLst()
-{
-    return this->NTPSrv;
-}
-string TSrvCfgIface::getDomain()
-{
-    return this->Domain;
-}
-string TSrvCfgIface::getTimeZone()
-{
-    return this->TimeZone;
 }
