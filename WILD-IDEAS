@@ -1,0 +1,14 @@
+
+ WILD IDEAS
+------------
+ This file contains various ideas and concepts which are not yet approved.
+ Consider it as notes made during unformal developers meeting (i.e. beer drinking :).
+
+ 
+- Unified option handling: Every option registers itself "Hi, I'm option 67 and here's
+  pointer to my handler". When system receives an option, looks in option table.
+  If it finds appropriate handler, it passes nessesary data (4xMgr, parent-option ptr,
+  msg ptr). If not, drops this option.
+  
+
+  
