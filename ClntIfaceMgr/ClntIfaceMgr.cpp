@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.12 2004-12-07 00:45:41 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.13 2004-12-07 20:53:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.11  2004/12/02 00:51:04  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -107,12 +110,12 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
 
     if (sockid>0) {
         if (bufsize<4) {
-			if (buf[0]!=CONTROL_MSG) {
-				Log(Warning) << "Received message is too short (" << bufsize
-					 << ") bytes." << LogEnd;
-			} else {
-				Log(Warning) << "Control message received." << LogEnd;
-			}
+	    if (buf[0]!=CONTROL_MSG) {
+		Log(Warning) << "Received message is too short (" << bufsize
+			     << ") bytes." << LogEnd;
+	    } else {
+		Log(Warning) << "Control message received." << LogEnd;
+	    }
             return SmartPtr<TMsg>(); // NULL
         }
         msgtype = buf[0];
