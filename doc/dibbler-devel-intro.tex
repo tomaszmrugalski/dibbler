@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-intro.tex,v 1.3 2004-11-28 11:14:07 thomson Exp $
+%% $Id: dibbler-devel-intro.tex,v 1.4 2004-11-30 00:52:05 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.3  2004/11/28 11:14:07  thomson
+%% RFCs and drafts added, clarification about option values
+%%
 %% Revision 1.2  2004/11/25 01:16:36  thomson
 %% *** empty log message ***
 %%
@@ -31,7 +34,7 @@ methods used, see documentation generated with the Doxygen tool (open
 file \verb+doc/html/index.html+).
 
 \section{Option values}
-\A DHCPv6 is a relatively new protocol and additional options are in a
+DHCPv6 is a relatively new protocol and additional options are in a
 specification phase. It means that until standarisation process is
 over, they do not have any officially assigned numbers. Once
 standarization process is over (and RFC document is released), this
@@ -44,3 +47,17 @@ misc/DHCPConst.h and recompile server or client. Make sure that you
 build everything for scratch. Use \verb+make clean+ in Linux and
 \verb+Clean up solution+ in Windows before you start building a new
 version.
+
+\section{Documentation}
+There are three parts of the documentation: User's Guide, Developer's
+Guide and a Code documentation. Both guides are written in \LaTeX
+(*.tex files). To generate PDF files, you need to have \LaTeX
+installed. To generate Code documentation, 
+a tool called \href{http://www.doxygen.org}{Doxygen} is required. All
+documentation is of course available at
+\href{http://klub.com.pl/dhcpv6}{Dibbler's homepage}.
+
+To generate all documentation type (in Dibbler source directory):
+\begin{verbatim}
+make doc oxygen
+\end{verbatim}
