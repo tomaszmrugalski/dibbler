@@ -13,15 +13,8 @@ using namespace std;
 #include "ClntParsGlobalOpt.h"
 #include "TimeZone.h"
 
-#ifdef LINUX
-#include <FlexLexer.h>
+#include "FlexLexer.h"
 #include "ClntParser.h"
-#endif
-
-#ifdef WIN32
-#include "ClntParser.h"
-#include <FlexLexer.h>
-#endif
 
 TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr, 
                          const string cfgFile,const string oldCfgFile)
@@ -166,13 +159,12 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
             found=true;
     }
 
-    if(found)    
+	if(found) {
         this->setDUID(this->WorkDir+"/"+(string)CLNTDUID_FILE,
         (char*)realIface->getMac(),
         (int)realIface->getMacLen(),
         (int)realIface->getHardwareType());
-    else
-    {
+	} else {
         IsDone=true;
         std::clog<<logger::logCrit
             <<"Cannot generate DUID, because there is no appropriate interface." << logger::endl;

@@ -3,19 +3,19 @@
 #include "portable.h"
 #include "logger.h"
 #include "DHCPConst.h"
-#ifdef  WIN32
 #include <crtdbg.h>
-#endif
+#include <direct.h>
+
+TDHCPClient * ptr;
 
 TClntService::TClntService() 
-  :TWinService("DHCPv6Client","Klient DHCPv6",SERVICE_AUTO_START,"RpcSS\0tcpip6\0winmgmt\0")
+  :TWinService("DHCPv6Client","Dibbler - a DHCPv6 client",SERVICE_AUTO_START,"RpcSS\0tcpip6\0winmgmt\0")
 {
 }
 
 int TClntService::ParseStandardArgs(int argc,char* argv[])
 {    
     bool dirFound=false;
-	bool ipFound=true;
 	int status=1;
 	int n=1;
         
@@ -38,7 +38,6 @@ int TClntService::ParseStandardArgs(int argc,char* argv[])
 			char temp[255];
 			strncpy(temp,argv[n],255);
             ServiceDir=temp;
-			cout << "workdir found: [" << temp << "]" << endl;
             dirFound=true;
         }
 		n++;
@@ -51,39 +50,35 @@ int TClntService::ParseStandardArgs(int argc,char* argv[])
 
 void TClntService::OnShutdown()
 {
-    clog<<logger::logInfo<<"Service shutdown."<<std::endl;
-    int fd=sock_add("",1,"::1",DHCPCLIENT_PORT+1005,true);
-    char buf[4]={CONTROL_MSG,0,0,0};
-    sock_send(fd,"::1",buf,4,DHCPCLIENT_PORT+1000,1);
-    sock_del(fd);
+	ptr->stop();
 }
 
 void TClntService::OnStop()
 {
-    clog<<logger::logInfo<<"Stopping service."<<std::endl;
-    int fd=sock_add("",1,"::1",DHCPCLIENT_PORT+1005,true);
-    char buf[4]={CONTROL_MSG,0,0,0};
-    sock_send(fd,"::1",buf,4,DHCPCLIENT_PORT+1000,1);
-    sock_del(fd);
+	ptr->stop();
 }
 
 void TClntService::Run()
 {
-    // When we get here, the service has been stopped
-	//return Client.Status.dwWin32ExitCode;
-    string confile=CLNTCONF_FILE;
-    string workdir=this->ServiceDir;
-	string oldconf=CLNTCONF_FILE+(string)"old";
-	string addrfile=CLNTDB_FILE;
-    string logFile=workdir + CLNTLOG_FILE;
-    char *logChar=new char[logFile.length()+1];
-    strcpy(logChar,logFile.c_str());
-    logger::Initialize(logChar);
-    delete logChar;
-    logger::setLogname("DHCPv6 Server");
-    //char dir[200];
-    //_getcwd(dir,200);
-    TDHCPClient client(workdir+confile);
+	if (_chdir(this->ServiceDir.c_str())) {
+		logger::clog << "Unable to change directory to " 
+			<< this->ServiceDir << ". Aborting.\n" << logger::endl;
+		return;
+	}
+    string confile  = CLNTCONF_FILE;
+	string oldconf  = CLNTCONF_FILE+(string)"-old";
+	string addrfile = CLNTDB_FILE;
+    string logFile  = CLNTLOG_FILE;
+    logger::Initialize((char*)logFile.c_str());
+
+	TDHCPClient client(confile);
+	ptr = &client; // remember address
+
+	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << endl;
+	clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;
+	clog << logger::logCrit << DIBBLER_COPYRIGHT3 << endl;
+	clog << logger::logCrit << DIBBLER_COPYRIGHT4 << endl;
+
     client.run();
 }
 

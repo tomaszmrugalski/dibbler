@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 		clog << "lowlevelInit() failed. Startup aborted.\n";
 		return -1;		
 	}
-    
+
 	switch(status) {
 	case 1: { // STATUS
 		clog << DIBBLER_COPYRIGHT1 << endl;
@@ -57,15 +57,17 @@ int main(int argc, char* argv[])
 		clog << DIBBLER_COPYRIGHT4 << endl;
 		clog << endl;
 		clog << "Service: ";
-		if (Client.IsInstalled()) 
-			clog << "INSTALLED ";
-		else
-			clog << "NOT INSTALLED";
-		clog << endl;
+		if (Client.IsInstalled()) {
+			clog << "INSTALLED" << std::endl;
+		} else {
+			clog << "NOT INSTALLED" << std::endl;
+		}
+		// clog << "Running: "<< (Client.isRunning() ? "YES":"NO") << endl;
 		break;
 	}
 	case 2: { // START
-		Client.Run();
+		clog << "Running client... " << std::endl;
+		Client.StartService();
 		break;
 	}
 	case 3: { // STOP
@@ -81,6 +83,7 @@ int main(int argc, char* argv[])
 		break;
 	}
 	case 6: { // RUN
+		clog << "Running client... (in console) " << std::endl;
 		Client.Run();
 		break;
 	}

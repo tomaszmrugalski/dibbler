@@ -38,6 +38,9 @@ public:
     virtual bool OnUserControl(DWORD dwOpcode);
     void DebugMsg(const char* Format, ...);
 
+	int getStatus();
+	bool isRunning();
+
 	~TWinService(void);
 
 protected:

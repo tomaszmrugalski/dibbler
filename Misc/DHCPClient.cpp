@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
  *          Marek Senderski <msend@o2.pl>                                    *
  *                                                                           *
- * $Id: DHCPClient.cpp,v 1.3 2004-01-23 19:25:36 thomson Exp $                                                                           
+ * $Id: DHCPClient.cpp,v 1.4 2004-02-22 23:19:56 thomson Exp $                                                                           
  *                                                                           *
  * released under GNU GPL v2 or later licence                                *
  *                                                                           */
@@ -44,27 +44,17 @@ void TDHCPClient::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
-    //std::clog << logger::logInfo << "Service shutdown." << logger::endl;
-    //int fd=sock_add("",1,"::1",DHCPCLIENT_PORT,true);
-    //char buf = 0;
-    //sock_send(fd,"::1",buf,1,DHCPCLIENT_PORT,1);
-    //sock_del(fd);
+	std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="
+		<< TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << logger::endl;
+    int fd=	sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
+	char buf = CONTROL_MSG;
+    int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
+    sock_del(fd);
 #endif
 }
 
 
 void TDHCPClient::run()
-//## 1. W zale¿no¶ci czy:  
-//## a. wyst±pi³ timeoutu - wywo³anie doDuties
-//## b. przyszla wiadomo¶æ - wywo³anie relayMessage
-//## 
-//## powtarzanie: (do nadrobienia czasu)
-//## 2. wywolanie getTimeout
-//## 3. wywolanie doDuties 
-//## 
-//## 4. Za¶niêcie w oczekiwaniu na przyj¶cie wiadomo¶ci lub up³yniêcie
-//## tiemoutu tj. wywo³anie SELECT
-
 {
     long theBeginning = now();
     SmartPtr<TMsg> msg;
@@ -73,9 +63,9 @@ void TDHCPClient::run()
 	if (serviceShutdown)
 	    TransMgr->shutdown();
 
-        TransMgr->doDuties();
+    TransMgr->doDuties();
 
-        unsigned int timeout = TransMgr->getTimeout();
+    unsigned int timeout = TransMgr->getTimeout();
 	// FIXME: everything should be unsigned
 	if (timeout == DHCPV6_INFINITY)
 	    timeout = DHCPV6_INFINITY/2;

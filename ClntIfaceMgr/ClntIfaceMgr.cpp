@@ -51,7 +51,6 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
 {
     int bufsize=4096;
     static char buf[4096];
-    //char anyaddr[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     SmartPtr<TIPv6Addr> peer(new TIPv6Addr());
     int sockid;
     int msgtype;
@@ -61,8 +60,12 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
 
     if (sockid>0) {
         if (bufsize<4) {
-            clog << logWarning << "Received message is too short (" << bufsize
-                << ") bytes." << logger::endl;
+			if (buf[0]!=CONTROL_MSG) {
+				clog << logWarning << "Received message is too short (" << bufsize
+					 << ") bytes." << logger::endl;
+			} else {
+				clog << logWarning << "Control message received." << logger::endl;
+			}
             return SmartPtr<TMsg>(); // NULL
         }
         msgtype = buf[0];

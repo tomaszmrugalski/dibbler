@@ -514,7 +514,7 @@
 					RelativePath="client-winxp.cpp">
 				</File>
 				<File
-					RelativePath="windowsfun.c">
+					RelativePath="lowlevel-winxp.c">
 				</File>
 			</Filter>
 		</Filter>

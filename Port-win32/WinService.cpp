@@ -142,47 +142,6 @@ void TWinService::LogEvent(WORD wType, DWORD dwID,
 
 bool TWinService::ParseStandardArgs(int argc, char* argv[])
 {
-    // See if we have any command line args we recognise
-    if (argc <= 1) return false;
-
-    if (_stricmp(argv[1], "-v") == 0) {
-	//Display version
-        printf("%s Wersja %d.%d\n",
-               ServiceName, MajorVersion, MinorVersion);
-        printf("Service is %s installed.\n",
-			IsInstalled() ? " " : "NOT");
-        return true;
-    } 
-    if (_stricmp(argv[1], "-i") == 0) 
-    {
-	// Install service
-	if (IsInstalled())
-	    printf("%s is already installed\n", ServiceName);
-	else
-	    if (Install())
-		printf("Usluga '%s' jest zainstslowana\n", ServiceName);
-	    else
-		printf("Nie mozna zainstalowac uslugi '%s' Blad: %d\n", 
-		       ServiceName, GetLastError());
-	return true; 
-    } 
-    if (_stricmp(argv[1], "-u") == 0) 
-    {
-	// Uninstall service
-	if (!IsInstalled()) 
-	    printf("Usluga %s nie jest zainstalowana\n", ServiceName);
-	else 
-	    if (Uninstall()) 
-	    {
-		// Get the executable file path
-		char filePath[_MAX_PATH];
-		GetModuleFileName(NULL, filePath, sizeof(filePath));
-		printf("Usluga %s zostala usunnieta. (Mozesz bezpiecznie usunac plik (%s).)\n",
-		       ServiceName, filePath);
-            } else
-                printf("Nie mozna usunac uslugi '%s'. Blad %d\n", ServiceName, GetLastError());
-	return true; 
-    }
     return false;
 }
 
@@ -218,13 +177,13 @@ bool TWinService::Install()
     // Get the executable file path
     char filePath[_MAX_PATH];
     GetModuleFileName(NULL, filePath, sizeof(filePath));
-	int i = strlen(filePath);
-	sprintf(filePath+i, " -d \"%s\"",ServiceDir.c_str());
+	int i = strlen(filePath); 
+	sprintf(filePath+i, " start -d \"%s\"",ServiceDir.c_str());
 
     // Create the service
-	printf("Install(): filepath=[%s] ServiceName=[%s]\n",filePath,ServiceName);
-	printf("ServiceDir=[%s]\n",ServiceDir.c_str());
-    SC_HANDLE hService = CreateService(	hSCM,ServiceName,ServiceName,
+	//printf("Install(): filepath=[%s] ServiceName=[%s]\n",filePath,ServiceName);
+	//printf("ServiceDir=[%s]\n",ServiceDir.c_str());
+    SC_HANDLE hService = CreateService(	hSCM,ServiceName, DisplayName,
 					SERVICE_ALL_ACCESS,
 					SERVICE_WIN32_OWN_PROCESS,
 					ServiceType,
@@ -236,43 +195,13 @@ bool TWinService::Install()
         return FALSE;
     }
 
-	//ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION,"To jest opis uslugi" );
+	SERVICE_DESCRIPTION sdBuf;
+	sdBuf.lpDescription = "Dibbler - a portable DHCPv6. This is DHCPv6 client,"
+					      "Windows version.";
+	ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION, &sdBuf );
 
-    // make registry entries to support logging messages
-    // add the source name as a subkey under the Application
-    // key in the EventLog service portion of the registry.
-    char key[256];
-    HKEY hKey = NULL;
-    strcpy(key, "SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\");
-    strcat(key, ServiceName);
-    if (RegCreateKey(HKEY_LOCAL_MACHINE, key, &hKey) != ERROR_SUCCESS) {
-        CloseServiceHandle(hService);
-        CloseServiceHandle(hSCM);
-        return FALSE;
-    }
-
-    // Add the Event ID message-file name to the 'EventMessageFile' subkey.
-    RegSetValueEx(hKey,
-                  "EventMessageFile",
-                  0,
-                  REG_EXPAND_SZ, 
-                  (CONST BYTE*)filePath,
-                  (DWORD)strlen(filePath) + 1);
-
-    // Set the supported types flags.
-    DWORD dwData = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | EVENTLOG_INFORMATION_TYPE;
-    RegSetValueEx(hKey,
-                  "TypesSupported",
-                  0,
-                  REG_DWORD,
-                  (CONST BYTE*)&dwData,
-                  sizeof(DWORD));
-    RegCloseKey(hKey);
-
-//    FIXME:LogEvent(EVENTLOG_INFORMATION_TYPE, EVMSG_INSTALLED, ServiceName);
-
-    // tidy up
     CloseServiceHandle(hService);
+
     CloseServiceHandle(hSCM);
     return true;
 }
@@ -345,6 +274,8 @@ bool TWinService::Initialize()
 }
 void TWinService::Run()
 {
+	printf("WinService::Run()\n");
+	return;
     //FIXME:DebugMsg("Entering CNTService::Run()");
 
     while (IsRunning) {
@@ -396,4 +327,12 @@ void TWinService::DebugMsg(const char* Format, ...)
 	va_end(arglist);
     strcat(buf, "\n");
     OutputDebugString(buf);
+}
+
+int TWinService::getStatus() {
+	return this->Status.dwCurrentState;
+}
+
+bool TWinService::isRunning() {
+	return this->IsRunning;
 }

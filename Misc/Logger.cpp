@@ -10,7 +10,7 @@ namespace logger {
     std::streambuf* orig;
     int logLevel=8;
     bool mute = false;
-    string logname="Unknown";
+    string logname="Init";
     ofstream logfile;
     ofstream tmp;
 
@@ -31,14 +31,13 @@ namespace logger {
 			       "Debug    "
 	};
 
-	// FIXME:
-/*	if ( x >= logger::logLevel) {
+	if ( x >= logger::logLevel) {
 	    mute = 1;
 	    strum.clear(ios::failbit);
 	    return strum;
 	}
 	strum.clear();
-	mute=0; */
+	mute=0;
 
 	time_t teraz;
 	teraz = time(NULL);
