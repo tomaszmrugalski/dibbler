@@ -2,6 +2,9 @@
 #include "sys/stat.h"
 #include "Portable.h"
 
+#define CR 0x0a
+#define LF 0x0d
+
 /*
  * results 0 - ok
           -1 - unable to open temp. file
@@ -9,8 +12,16 @@
  */
 int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
     FILE * f;
+    unsigned char c;
     if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
 	return -1;
+    }
+
+    fseek(f, -1, SEEK_END);
+    c = fgetc(f);
+    fseek(f,0, SEEK_END);
+    if ( (c!=CR) && (c!=LF) ) {
+	fprintf(f,"\n");
     }
 
     fprintf(f,"nameserver %s\n",addrPlain);
@@ -22,7 +33,9 @@ int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
     FILE * f, *f2;
     char buf[512];
     int found=0;
-    char * s;
+    struct stat st;
+    memset(&st,0,sizeof(st));
+    stat(RESOLVCONF_FILE, &st);
 
     unlink(RESOLVCONF_FILE".old");
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
@@ -38,24 +51,27 @@ int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
     fclose(f);
     fclose(f2);
 
-    chmod(RESOLVCONF_FILE,12);
+    chmod(RESOLVCONF_FILE, st.st_mode);
     return 0;
 }
 
 int domain_add(const char* ifname, int ifaceid, const char* domain) {
     FILE * f;
-    char buf[512];
-    memset(buf,0,512);
+    unsigned char c;
     if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
 	return -1;
     }
+
+    fseek(f, -1, SEEK_END);
+    c = fgetc(f);
+    fseek(f,0, SEEK_END);
+    if ( (c!=CR) && (c!=LF) ) {
+	fprintf(f,"\n");
+    }
+
     fprintf(f,"search %s\n",domain);
     fclose(f);
-    if (!(f=fopen(WORKDIR"/tmp-domain","a+"))) {
-	return -2;
-    }
-    fprintf(f,"%s\n",domain);
-    fclose(f);
+
     return 0;
 }
 
@@ -63,6 +79,9 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
     FILE * f, *f2;
     char buf[512];
     int found=0;
+    struct stat st;
+    memset(&st,0,sizeof(st));
+    stat(RESOLVCONF_FILE, &st);
 
     unlink(RESOLVCONF_FILE".old");
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
@@ -80,7 +99,7 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
     fclose(f);
     fclose(f2);
 
-    chmod(RESOLVCONF_FILE,12);
+    chmod(RESOLVCONF_FILE,st.st_mode);
     return 0;
 }
 
