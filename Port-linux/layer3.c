@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.14 2004-09-07 15:37:45 thomson Exp $
+ * $Id: layer3.c,v 1.15 2004-09-28 17:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/09/07 15:37:45  thomson
+ * Socket handling changes.
+ *
  * Revision 1.13  2004/09/05 16:28:25  thomson
  * *** empty log message ***
  *
@@ -389,7 +392,7 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
 {
 	struct addrinfo hints, *res;
 	int result;
-	int lim=8;
+	int lim=1;
 	char cport[10];
 	sprintf(cport,"%d",port);
 	
@@ -400,9 +403,9 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
 	    return -1; // Error in transmitting
 	}
 
-	if (setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &lim, sizeof(lim)) < 0) {
-	    return -2; // Error setting up socket
-	}
+//	if (setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &lim, sizeof(lim)) < 0) {
+//	    return -2; // Error setting up socket
+//	}
  
 	result = sendto(sock, buf, message_len, 0, res->ai_addr, res->ai_addrlen);
 	freeaddrinfo(res);
