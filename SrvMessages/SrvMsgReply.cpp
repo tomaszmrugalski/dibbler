@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.16 2005-02-07 20:51:56 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.17 2005-03-15 23:02:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/02/07 20:51:56  thomson
+ * Server stateless mode fixed (bug #103)
+ *
  * Revision 1.15  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -495,8 +498,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     // is this client supported?
     if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
         //No reply for this client 
-	Log(Notice) << "Client with DUID=" << clntDuid << "/addr=" << clntAddr 
-		    << " was rejected (due to accept-only or reject-client)." << LogEnd;
+	Log(Notice) << "Client (DUID=" << clntDuid->getPlain() << ",addr=" << *clntAddr 
+		    << ") was rejected due to accept-only or reject-client." << LogEnd;
         IsDone=true;
         return;
     }
@@ -579,8 +582,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     // is this client supported?
     if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
         //No reply for this client 
-	Log(Notice) << "Client with DUID=" << clntDuid << "/addr=" << clntAddr 
-		    << " was rejected (due to accept-only or reject-client)." << LogEnd;
+	Log(Notice) << "Client (DUID=" << clntDuid->getPlain() << ",addr=" << *clntAddr 
+		    << ") was rejected due to accept-only or reject-client." << LogEnd;
         IsDone=true;
         return;
     }

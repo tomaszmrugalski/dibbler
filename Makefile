@@ -215,6 +215,12 @@ release:
 	echo "dibbler-client.exe in this directory."
 
 release-linux: VERSION-linux client server relay doc
+	@echo "[STRIP  ] $(SERVERBIN)"
+	strip $(SERVERBIN)
+	@echo "[STRIP  ] $(CLIENTBIN)"
+	strip $(CLIENTBIN)
+	@echo "[STRIP  ] $(RELAYBIN)"
+	strip $(RELAYBIN)
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-linux.tar.gz"
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                                   \
 		 $(SERVERBIN) $(CLIENTBIN) $(RELAYBIN) client*.conf server*.conf relay*.conf   \

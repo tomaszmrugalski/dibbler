@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.13 2005-03-07 22:45:51 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.14 2005-03-15 23:02:31 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -28,30 +28,25 @@ Config file parsing is token-based. Here's list of tokens used:
   used, when user must enable or disable specific option.
 \end{description}
 
-There are also some client or server specified tokens. Here's the list:
-\begin{description}
-\item[client] -- iface, address, ia, no-ia, log-mode, log-name,
-  log-level, work-dir, prefered-lifetime, valid-lifetime, t1, t2,
-  reject-servers, prefered-servers, rapid-commit, unicast, sip-server,
-  sip-domain, nis-server, nis-domain, nis+-server, nis+-domain,
-  lifetime, dns-server, domain, ntp-server, time-zone,
+% There are also some client or server specified tokens. Here's the list:
+% \begin{description}
+% \item[client] -- iface, address, ia, no-ia, log-mode, log-name,
+%   log-level, prefered-lifetime, valid-lifetime, t1, t2,
+%   reject-servers, prefered-servers, rapid-commit, unicast, sip-server,
+%   sip-domain, nis-server, nis-domain, nis+-server, nis+-domain,
+%   lifetime, dns-server, domain, ntp-server, time-zone,
 
-\item[server] -- iface, class, log-level, log-name, log-level,
-  work-dir, accept-only, reject-only, t1, t2, prefered-lifetime,
-  valid-lifetime, unicast, preference, pool, rapid-commit,
-  client-max-lease, class-max-lease, iface-max-lease, dns-server,
-  domain, ntp-server, time-zone, sip-server, sip-domain, nis-server,
-  nis-domain, nis+-server, nis+-domain, lifetime
-\end{description}
+% \item[server] -- iface, class, log-level, log-name, log-level,
+%   accept-only, reject-only, t1, t2, prefered-lifetime,
+%   valid-lifetime, unicast, preference, pool, rapid-commit,
+%   client-max-lease, class-max-lease, iface-max-lease, dns-server,
+%   domain, ntp-server, time-zone, sip-server, sip-domain, nis-server,
+%   nis-domain, nis+-server, nis+-domain, lifetime
+% \end{description}
 
 \subsection{Scopes}
-There are four scopes, in which options can be specified:
-\begin{itemize}
-\item global
-\item inteface
-\item IA
-\item address
-\end{itemize}
+There are four scopes, in which options can be specified: global,
+inteface, IA and address.
 
 Global scope is the largest. It covers the whole config file and
 applies to all intefaces, IAs, and addresses, until some lower scope
@@ -96,10 +91,10 @@ Every option can be declared in global scope.
 Config file has this form:
 
 \begin{verbatim}
-interface declaration | 
-global options        | 
-interface options     |
-IA options            |
+interface declaration
+global options
+interface options
+IA options
 address options
 \end{verbatim}
 
@@ -109,8 +104,8 @@ Interface can be declared this way:
 \begin{verbatim}
 iface name_of_this_interface
 {
-  interface options      |
-  IA options             |
+  interface options
+  IA options
   address options        
 }
 \end{verbatim}
@@ -120,8 +115,8 @@ or
 \begin{verbatim}
 iface number 
 {
-  interface options      |
-  IA options             |
+  interface options
+  IA options
   address options        
 }
 \end{verbatim}
@@ -136,34 +131,36 @@ contain spaces, e.g. ''local network connection''.
 
 \subsubsection{IA declaration}
 
-IA is declared this way:
+IA is a short for Identity Association. It is a logical entity
+representing address or addresses used to perform some
+functions. Almost always, each DHCPv6 client will have exactly one
+IA. IA is declared this way:
 
 \begin{verbatim}
-ia [number]
-[{ 
-  [address declaration   | 
-   IA options            | 
-   address options       ] 
-   ...          
-}]
+ia number
+{ 
+  address declaration
+  IA options
+  address options
+}
 \end{verbatim}
 
 where number is an optional number, which describes how many such IAs
-should be requested. If this number is not equal 1, then address
+should be requested. Number is optional. If it is not specified, 1 is
+used. If this number is not equal 1, then address
 options are not allowed. That could come in handy when someone need
 serveral IAs with the same parameters. If IA contains no addresses,
 client assumes that one address should be configured.
-
 
 \subsubsection{Address declaration}
 Addres is declared like this:
 
 \begin{verbatim}
-address [number] 
-[{ 
-	[address options   |
-	IPv6 address    ] 
-}]
+address number
+{ 
+  address options
+  IPv6 address
+}
 \end{verbatim}
 where number denotes how many addresses with those values should be
 requested. If it is diffrent than 1, then IPv6 address options are not
@@ -663,7 +660,7 @@ Interface can be declared this way:
 \begin{verbatim}
 iface name_of_the_interface
 {
-  interface options      |
+  interface options
 }
 \end{verbatim}
 
@@ -672,7 +669,7 @@ or
 \begin{verbatim}
 iface number 
 {
-  interface options      |
+  interface options
 }
 \end{verbatim}
 
@@ -692,7 +689,7 @@ sometimes allowed range.
 Name             & Scope   & Values      & default    & Description \\
                  &         & (default)   &  & \\
 \hline
-work-dir         & global  & string      & empty      & working directory \\
+%%work-dir         & global  & string      & empty      & working directory \\
 log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
 log-name         & global  & string      & Client     & Name, which appears in a log file\\
 log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
@@ -704,6 +701,8 @@ server unicast   &interface& address     &not defined & Forwarded messages shoul
 interface-id     &interface& integer     &not defined & Identifier of that particular interface. Used for interface-id option. \\
 \hline
 \end{tabular}
+
+\vspace{0.5cm}
 
 It is worth mentioning that interface-id should be specified on the
 interface, which is used to receive messages from the clients, not the
@@ -747,12 +746,11 @@ iface eth1 {
 }
 \end{verbatim}
 
-Here is another exmaple. This time messages should be forwarded from
+Here is another example. This time messages should be forwarded from
 eth1 and eth3 to the eth0 interface (using multicast) and to the eth2
 interface (using server's global address 2000::546). Also clients must
 use multicasts (the default approach):
 
-.nf
 \begin{verbatim}
 iface eth0 {
   server multicast yes
@@ -774,6 +772,9 @@ iface eth3 {
 \end{verbatim}
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.13  2005/03/07 22:45:51  thomson
+%% Typo fix.
+%%
 %% Revision 1.12  2005/02/01 23:06:48  thomson
 %% *** empty log message ***
 %%

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.4 2005-03-07 23:48:16 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.5 2005-03-15 23:02:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/03/07 23:48:16  thomson
+ * Typo fix.
+ *
  * Revision 1.3  2005/03/07 23:36:14  thomson
  * Minor changes.
  *
@@ -91,7 +94,6 @@ char * TOptStringLst::storeSelf(char* buf)
     buf+=2;
     *(short*)buf = htons(getSize()-4);
     buf+=2;
-    char * bufStart = buf;
     int len = 0;
     int dotpos;
    

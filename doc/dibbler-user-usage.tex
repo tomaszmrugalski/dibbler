@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.9 2005-02-01 23:06:48 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.10 2005-03-15 23:02:31 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.9  2005/02/01 23:06:48  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.8  2005/01/23 23:16:56  thomson
 %% Relay related things.
 %%
@@ -46,9 +49,9 @@ archive, which suits your needs. Currently there are provided RPM packages
 (which can be used in RedHat, Fedora Core, Mandrake or PLD
 distribution), DEB packages (suitable for Debian or Knoppix) and
 ebuild (for Gentoo users). To install rpm package, run $rpm -i
-archive.rpm$ command. For example, to install dibbler 0.3.1, issue following command:
+archive.rpm$ command. For example, to install dibbler 0.4.0, issue following command:
 \begin{verbatim}
-rpm -i dibbler-0.3.1-1.i386.rpm 
+rpm -i dibbler-0.4.0-1.i386.rpm 
 \end{verbatim}
 
 To install Dibbler on Debian or other system with dpkg management
@@ -73,7 +76,7 @@ client or relay\footnote{To get full target list, type: $make
 example, to build server and relay, type:
 
 \begin{verbatim}
-tar zxvf dibbler-0.3.1-src.tar.gz
+tar zxvf dibbler-0.4.0-src.tar.gz
 make server relay
 make install
 \end{verbatim}
@@ -81,7 +84,7 @@ make install
 Depending what functionality do you want to use (server,client or relay),
 you should edit config file (\verb+client.conf+ for client, \verb+server.conf+
 for server and \verb+relay.conf+ for relay). All config files should
-be placed in the +/etc/dibbler+ directory. After editing, issue one of
+be placed in the \verb+/etc/dibbler+ directory. After editing, issue one of
 the following commands:
 
 \begin{verbatim}
@@ -104,8 +107,8 @@ dibbler-client stop
 dibbler-relay stop
 \end{verbatim}
 
-To see, if client or server are running\footnote{Running status is
-  based on /var/lib/dibbler/client.pid or server.pid files. In rare
+To see, if client, server or relay are running\footnote{Running status is
+  based on /var/lib/dibbler/*.pid files. In rare
   occasions, when server crashes, this status will show server status as running.}, type:
 \begin{verbatim}
 dibbler-server status
@@ -126,7 +129,7 @@ Dibbler is distributed in 2 versions: binary and source files. For
 most users, binary version is better choice.  Compilation is
 performed by more experienced users, preferably with programming
 knowledge. It does not offer any advances over binary version, only
-allows to understand internal Dibbler workings. You probalby want just
+allows to understand internal Dibbler workings. You probably want just
 install and use Dibbler. If that is your case, read section
 named \emph{Installation}.
 
@@ -136,7 +139,7 @@ Compilation in most cases is not necessary and should be performed
 only by experienced users. Perferred method is to use binaries
 provided on Dibbler's website. Issue following commands:
 \begin{verbatim}
-tar zxvf dibbler-0.3.1-src.tar.gz
+tar zxvf dibbler-0.4.0-src.tar.gz
 cd dibbler
 make server client relay doc
 \end{verbatim}

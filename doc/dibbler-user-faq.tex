@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-faq.tex,v 1.7 2005-02-01 00:57:36 thomson Exp $
+%% $Id: dibbler-user-faq.tex,v 1.8 2005-03-15 23:02:31 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.7  2005/02/01 00:57:36  thomson
+%% no message
+%%
 %% Revision 1.6  2004/12/04 23:47:57  thomson
 %% Work around for bug #56 described.
 %%
@@ -50,19 +53,26 @@ change those values in Dibbler, you have to modify file
 misc/DHCPConst.h and recompile server or client. See Developer's
 Guide, section \emph{Option Values} for details.
 
-Currently options with assigned values are: RFC3315: \opt{CLIENT\_ID},
+Currently options with assigned values are: 
+\begin{itemize}
+\item RFC3315: \opt{CLIENT\_ID},
 \opt{SERVER\_ID}, \opt{IA\_NA}, \opt{IAADDR}, \opt{OPTION\_REQUEST},
 \opt{PREFERENCE}, \opt{ELAPSED}, \opt{STATUS\_CODE},
 \opt{RAPID-COMMIT}, \opt{IA\_TA}, \opt{RELAY\_MSG}, \opt{AUTH\_MSG},
 \opt{USER\_CLASS}, \opt{VENDOR\_CLASS}, \opt{VENDOR\_OPTS},
-\opt{INTERFACE\_ID}, \opt{RECONF\_MSG}, \opt{RECONF\_ACCEPT}; RFC3319:
-\opt{SIP\_SERVERS}, \opt{SIP\_DOMAINS}; RFC3646: \opt{DNS\_RESOLVERS},
-\opt{DOMAIN\_LIST}; RFC3633: \opt{IA\_PD}, \opt{IA\_PREFIX}; RFC3898:
+\opt{INTERFACE\_ID}, \opt{RECONF\_MSG}, \opt{RECONF\_ACCEPT};
+\item RFC3319:
+\opt{SIP\_SERVERS}, \opt{SIP\_DOMAINS};
+\item RFC3646: \opt{DNS\_RESOLVERS},
+\opt{DOMAIN\_LIST};
+\item RFC3633: \opt{IA\_PD}, \opt{IA\_PREFIX};
+\item RFC3898:
 \opt{NIS\_SERVERS}, \opt{NIS+\_SERVERS}, \opt{NIS\_DOMAIN},
-\opt{NIS+\_DOMAIN}. Take note that Dibbler does not support all of
-them.
+\opt{NIS+\_DOMAIN}. 
 
-There are several options which currently does not have values
+\end{itemize}
+Take note that Dibbler does not support all of
+them. There are several options which currently does not have values
 assigned (in parenthesis are numbers used in Dibbler):
 \opt{NTP\_SERVERS} (40), \opt{TIME\_ZONE} (41), \opt{LIFETIME} (42),
 \opt{FQDN} (43).
