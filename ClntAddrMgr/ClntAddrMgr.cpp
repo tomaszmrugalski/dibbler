@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.5 2004-09-08 21:22:45 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.6 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/08 21:22:45  thomson
+ * Parser improvements, signed/unsigned issues addressed.
+ *
  * Revision 1.4  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -37,20 +40,16 @@ TClntAddrMgr::TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntCfgMgr, string addrdb, bool
 }
 
 
-long TClntAddrMgr::getT1Timeout()
-{
+unsigned long TClntAddrMgr::getT1Timeout() {
     return Client->getT1Timeout();
 }
-long TClntAddrMgr::getT2Timeout()
-{
+unsigned long TClntAddrMgr::getT2Timeout() {
     return Client->getT2Timeout();
 }
-long TClntAddrMgr::getPrefTimeout()
-{
+unsigned long TClntAddrMgr::getPrefTimeout() {
     return Client->getPrefTimeout();
 }
-long TClntAddrMgr::getValidTimeout()
-{
+unsigned long TClntAddrMgr::getValidTimeout() {
     return Client->getValidTimeout();
 }
 

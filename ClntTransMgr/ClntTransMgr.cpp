@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.22 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.23 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.21  2004/09/07 22:02:33  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -117,9 +120,9 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
 	SmartPtr<TClntCfgIA> ia;
 	group->firstIA();
 	while(ia=group->getIA()) {
-	    // FIXME: use constants
 	    AddrMgr->addIA(new TAddrIA(iface->getID(),SmartPtr<TIPv6Addr>(), 
-				       SmartPtr<TDUID>(),0x7fffffff,0x7fffffff,ia->getIAID()));
+				       SmartPtr<TDUID>(),CLIENT_DEFAULT_T1,CLIENT_DEFAULT_T2,
+				       ia->getIAID()));
 	}
     }
 
@@ -256,6 +259,7 @@ void TClntTransMgr::doDuties()
 
     this->AddrMgr->dbStore();
     this->IfaceMgr->dump(CLNTIFACEMGR_FILE);
+    this->CfgMgr->dump();
 
     if (!this->Shutdown && !this->IsDone) {
         // are there any tentative addrs?
@@ -384,7 +388,7 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
     // is message valid?
     if (!msgAnswer->check())
         return ;
-
+    
     // find which message this is answer for
     bool found = false;
     SmartPtr<TMsg> msgQuestion;
@@ -406,37 +410,35 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
 unsigned long TClntTransMgr::getTimeout()
 {
     unsigned long timeout = DHCPV6_INFINITY;
-    unsigned long addrTimeout = DHCPV6_INFINITY;
-    unsigned long addrTentativeTimeout = DHCPV6_INFINITY;
+    unsigned long tmp;
 
     if (this->IsDone) 
         return 0;
 
-    addrTimeout = AddrMgr->getTimeout();
-//    std::clog << logger::logDebug << "AddrMgr returned " << addrTimeout 
-//        << " timeout." << LogEnd;
+    // AddrMgr timeout
+    timeout = AddrMgr->getTimeout();
+    tmp     = AddrMgr->getTentativeTimeout();
+    if (timeout > tmp)
+        timeout = tmp;
 
-    addrTentativeTimeout = AddrMgr->getTentativeTimeout();
-//    std::clog << logger::logDebug << "AddrMgr returned " << addrTentativeTimeout 
-//        << " tentative timeout." << LogEnd;
-    if (addrTentativeTimeout < addrTimeout)
-        addrTimeout = addrTentativeTimeout;
+    // IfaceMgr (Lifetime option) timeout
+    tmp = IfaceMgr->getTimeout();
+    if (timeout > tmp)
+	timeout = tmp;
 
+    // Messages timeout
     SmartPtr<TMsg> ptrMsg;
     Transactions.first();
+    tmp = DHCPV6_INFINITY;
     while(ptrMsg=Transactions.get())
     {
-        if (ptrMsg->getTimeout()<timeout)
-            timeout=ptrMsg->getTimeout();
-//        std::clog << logger::logDebug << "Msg (transID=" 
-//		  << hex << ptrMsg->getTransID() << dec
-//		  << " type:"<<ptrMsg->getType()
-//		  <<") returned timemout " << ptrMsg->getTimeout() << LogEnd;
+        if (tmp > ptrMsg->getTimeout())
+            tmp = ptrMsg->getTimeout();
     }
-    if (timeout < addrTimeout)
-        return timeout;
-    else
-        return addrTimeout;
+    if (timeout > tmp)
+	timeout = tmp;
+
+    return timeout;
 }
 
 void TClntTransMgr::stop()
@@ -574,20 +576,55 @@ void TClntTransMgr::checkConfirm()
 
 void TClntTransMgr::checkInfRequest()
 {
-    static bool firstTime = true;
-    if (!firstTime)
-	return;
-    firstTime = false;
     SmartPtr<TClntCfgIface> iface;
     CfgMgr->firstIface();
     while( (iface=CfgMgr->getIface()) )
     {
         if (iface->noConfig())
             continue;
-        if (iface->onlyInformationRequest()) {
+	SmartPtr<TClntIfaceIface> ifaceIface = (Ptr*)IfaceMgr->getIfaceByID(iface->getID());
+	if (!ifaceIface) {
+	    Log(Error) << "Interface with ifindex=" << iface->getID() << " not found." << LogEnd;
+	    continue;
+	}
+	if (!ifaceIface->getTimeout()) {
+	    if (iface->getDNSServerState()  == CONFIGURED) 
+		iface->setDNSServerState(NOTCONFIGURED);
+	    if (iface->getDomainState()     == CONFIGURED) 
+		iface->setDomainState(NOTCONFIGURED);
+	    if (iface->getNTPServerState()  == CONFIGURED) 
+		iface->setNTPServerState(NOTCONFIGURED);
+            if (iface->getTimezoneState()   == CONFIGURED) 
+		iface->setTimezoneState (NOTCONFIGURED);
+	    if (iface->getSIPServerState()  == CONFIGURED) 
+		iface->setSIPServerState(NOTCONFIGURED);
+	    if (iface->getSIPDomainState()  == CONFIGURED) 
+		iface->setSIPDomainState(NOTCONFIGURED);
+	    if (iface->getFQDNState()       == CONFIGURED) 
+		iface->setFQDNState(NOTCONFIGURED);
+	    if (iface->getNISServerState()  == CONFIGURED) 
+		iface->setNISServerState(NOTCONFIGURED);
+	    if (iface->getNISDomainState()  == CONFIGURED) 
+		iface->setNISDomainState(NOTCONFIGURED);
+	    if (iface->getNISPServerState() == CONFIGURED) 
+		iface->setNISPServerState(NOTCONFIGURED);
+	    if (iface->getNISPDomainState() == CONFIGURED) 
+		iface->setNISPDomainState(NOTCONFIGURED);
+	}
+
+	if ( (iface->getDNSServerState()  == NOTCONFIGURED) ||
+	     (iface->getDomainState()     == NOTCONFIGURED) ||
+	     (iface->getNTPServerState()  == NOTCONFIGURED) ||
+	     (iface->getTimezoneState()   == NOTCONFIGURED) ||
+	     (iface->getSIPServerState()  == NOTCONFIGURED) ||
+	     (iface->getSIPDomainState()  == NOTCONFIGURED) ||
+	     (iface->getFQDNState()       == NOTCONFIGURED) ||
+	     (iface->getNISServerState()  == NOTCONFIGURED) ||
+	     (iface->getNISDomainState()  == NOTCONFIGURED) ||
+	     (iface->getNISPServerState() == NOTCONFIGURED) ||
+	     (iface->getNISPDomainState() == NOTCONFIGURED) ) {
 	    Log(Info) << "Creating INFORMATION-REQUEST message on "
 		      << iface->getName() << "/" << iface->getID() << " interface." << LogEnd;
-	    
             Transactions.append(new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,iface));
 	}
     }
@@ -596,7 +633,8 @@ void TClntTransMgr::checkInfRequest()
 void TClntTransMgr::checkRenew()
 {
     // are there any IAs which require RENEW?
-    if (AddrMgr->getT1Timeout() > 0 ) return;
+    if (AddrMgr->getT1Timeout() > 0 ) 
+	return;
 
     // yes, there are. Find them!
     AddrMgr->firstIA();
@@ -758,9 +796,6 @@ void TClntTransMgr::checkRequest()
                 }
 
             }
-            //  TContainer<SmartPtr<TAddrIA> > IAs,
-            //  SmartPtr<TDUID> srvDUID,
-            //int iface)
 
             //Here should be send decline for all tentative addresses in IAs
             SmartPtr<TClntMsgRequest> request = 

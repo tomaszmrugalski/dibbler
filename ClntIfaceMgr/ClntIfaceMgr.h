@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.2 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.3 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  *
  */
 
@@ -30,6 +33,8 @@ class TClntIfaceMgr : public TIfaceMgr
  public:
     TClntIfaceMgr();
     ~TClntIfaceMgr();
+    friend ostream & operator <<(ostream & strum, TClntIfaceMgr &x);
+    void dump(char * file);
     
     bool sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
     
@@ -52,6 +57,8 @@ class TClntIfaceMgr : public TIfaceMgr
     void addOptFQDN(char * fqdn, char opts);     // FQDN
 
     void removeAllOpts();
+
+    unsigned int getTimeout();
 
   private:
     SmartPtr<TClntCfgMgr> ClntCfgMgr;

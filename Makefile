@@ -207,6 +207,7 @@ fixme:
 	find . -name \*.cpp -exec grep -H "FIXME" {} \; | tee FIXME
 
 tags:
+	@echo "[TAGS   ]"
 	rm -f TAGS
 	find . -name '*.cpp' -or -name '*.h' | xargs etags
 

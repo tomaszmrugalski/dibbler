@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.h,v 1.3 2004-09-07 22:02:32 thomson Exp $
+ * $Id: AddrIA.h,v 1.4 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/07 22:02:32  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  */
 
 class TAddrIA;
@@ -66,7 +69,7 @@ class TAddrIA
     int delAddr(SmartPtr<TIPv6Addr> addr);
     
     // timestamp
-    void setTimestamp(long ts);
+    void setTimestamp(unsigned long ts);
     void setTimestamp();
     unsigned long getT1Timeout();
     unsigned long getT2Timeout();
@@ -89,7 +92,7 @@ private:
     enum EState State; // State of this IA
     enum ETentative Tentative;
 
-    long Timestamp;         // timestamp of last IA refresh (renew/rebind/confirm etc.)
+    unsigned long Timestamp; // timestamp of last IA refresh (renew/rebind/confirm etc.)
 
     SmartPtr<TDUID> DUID;
 

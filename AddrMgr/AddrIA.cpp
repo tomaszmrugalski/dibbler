@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.7 2004-09-07 22:02:32 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.8 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/09/07 22:02:32  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.6  2004/06/21 23:08:48  thomson
  * Minor fixes.
  *
@@ -165,6 +168,8 @@ SmartPtr<TAddrAddr> TAddrIA::getAddr()
 // returns AddrAddr object 
 SmartPtr<TAddrAddr> TAddrIA::getAddr(SmartPtr<TIPv6Addr> addr)
 {
+    if (!addr)
+	return 0;
     AddrLst.first();
     SmartPtr <TAddrAddr> ptrAddr;
     while (ptrAddr = AddrLst.get() ) {
@@ -203,7 +208,7 @@ int TAddrIA::getAddrCount()
 // --- time related methods -------------------------------------------
 // --------------------------------------------------------------------
 unsigned long TAddrIA::getT1Timeout() {
-    long ts;
+    unsigned long ts;
     ts = (this->Timestamp) + (this->T1) - now();
     if (ts>0) 
         return ts;
@@ -212,7 +217,7 @@ unsigned long TAddrIA::getT1Timeout() {
 }
 
 unsigned long TAddrIA::getT2Timeout() {
-    long ts;
+    unsigned long ts;
     ts = (this->Timestamp) + (this->T2) - now();
     if (ts>0) 
         return ts;
@@ -221,7 +226,7 @@ unsigned long TAddrIA::getT2Timeout() {
 }
 
 unsigned long TAddrIA::getPrefTimeout() {
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
 
     SmartPtr<TAddrAddr> ptr;
     this->AddrLst.first();
@@ -247,7 +252,7 @@ unsigned long TAddrIA::getMaxValidTimeout() {
 }
 
 unsigned long TAddrIA::getValidTimeout() {
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
 
     SmartPtr<TAddrAddr> ptr;
     this->AddrLst.first();
@@ -273,7 +278,7 @@ unsigned long TAddrIA::getMaxValid() {
 }
 
 // set timestamp
-void TAddrIA::setTimestamp(long ts)
+void TAddrIA::setTimestamp(unsigned long ts)
 {
     this->Timestamp = ts;
     SmartPtr<TAddrAddr> ptr;
@@ -328,6 +333,8 @@ enum ETentative TAddrIA::getTentative()
     while ( ptrAddr = AddrLst.get() ) {
 	switch (ptrAddr->getTentative()) {
 	case YES:
+	    Log(Warning) << "DAD failed. Address " << ptrAddr->get()->getPlain() 
+			 << " was detected as tentative." << LogEnd;
 	    this->Tentative = YES;
 	    return YES;
 	case NO:
@@ -344,10 +351,12 @@ enum ETentative TAddrIA::getTentative()
                     return YES;
                 case    0:
                     ptrAddr->setTentative(NO);
+		    Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
+			       << " is not tentative." << LogEnd;
                     break;
                 default:
-                    clog<<logger::logError<<"No such a address on interface "
-                        <<*ptrAddr->get()<<logger::endl;
+                    Log(Error) << "No such a address on interface "
+			       << *ptrAddr->get() << LogEnd;
                     break;
             }
         } 
@@ -402,33 +411,8 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
     strum  << "            T1=\"" << x.T1 << "\""
 	   << " T2=\"" << x.T2 << "\""
 	   << " IAID=\"" << x.IAID << "\""
-	   << " state=\"";
-    switch (x.State) {
-    case NOTCONFIGURED:
-	strum << "NOTCONFIGURED";
-	break;
-    case INPROCESS:
-	strum << "INPROCESS";
-	break;
-    case CONFIGURED:
-	strum << "CONFIGURED";
-	break;
-    case FAILED:
-	strum << "FAILED";
-	break;
-    case UNKNOWN:
-	strum << "UNKNOWN";
-	break;
-    case TENTATIVECHECK:
-	strum << "TENTATIVECHECK";
-	break;
-    case TENTATIVE:
-	strum << "TENTATIVE";
-	break;
-    default:
-	strum << x.State;
-    }
-    strum << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
+	   << " state=\"" << StateToString(x.State) 
+	   << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
         strum << "      " << *x.DUID;
 

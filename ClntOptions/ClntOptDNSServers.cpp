@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptDNSServers.cpp,v 1.8 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntOptDNSServers.cpp,v 1.9 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.7  2004/10/03 21:28:45  thomson
  * 0.2.1-RC1 version.
  *
@@ -41,6 +44,8 @@ TClntOptDNSServers::TClntOptDNSServers(char* buf, int size, TMsg* parent)
 
 bool TClntOptDNSServers::doDuties()
 {
+    //Log(Debug) << "### PeerAddr3=" << this->Parent->getAddr() << LogEnd;
+
     string reason = "trying to set DNS server(s).";
     int ifindex = this->Parent->getIface();
     SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
@@ -56,17 +61,16 @@ bool TClntOptDNSServers::doDuties()
 		   << " while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)msg->getOption(OPTION_SERVERID);
-    if (!optSrvID) {
-	Log(Error) << "Unable to find ServerID option while " << reason << LogEnd;
+
+    if (!this->DUID) {
+	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
 	return false;
     }
-    SmartPtr<TDUID> duid = optSrvID->getDUID();
 
-    return iface->setDNSServerLst(duid, addr,this->AddrLst);
+    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    cfgIface->setDNSServerState(CONFIGURED);
+
+    return iface->setDNSServerLst(this->DUID, addr, this->AddrLst);
 }
 
-void TClntOptDNSServers::setSrvDuid(SmartPtr<TDUID> duid)
-{
-    this->SrvDUID=duid;
-}

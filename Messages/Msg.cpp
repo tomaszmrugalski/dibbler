@@ -34,11 +34,6 @@ TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType,  long transID)
 
 void TMsg::setAttribs(int iface, SmartPtr<TIPv6Addr> addr, int msgType, long transID)
 {
-/*    if (addr) {
-        this->PeerAddr=new char[16];
-    	memcpy(this->PeerAddr,addr,16);
-    }  else 
-        this->PeerAddr=NULL;*/
     PeerAddr=addr;
 
     this->Iface=iface;
@@ -127,11 +122,11 @@ TMsg::~TMsg() {
 }
 
 SmartPtr<TIPv6Addr> TMsg::getAddr() {
-	return PeerAddr;
+    return PeerAddr;
 }
 
 int TMsg::getIface() {
-	return this->Iface;
+    return this->Iface;
 }
 
 bool TMsg::isDone() {

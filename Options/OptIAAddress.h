@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: OptIAAddress.h,v 1.3 2004-09-07 22:02:33 thomson Exp $
+ * $Id: OptIAAddress.h,v 1.4 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  */
 
 #ifndef OPTIAADDRESS_H
@@ -23,7 +26,7 @@ class TOptIAAddress : public TOpt
 {
   public:
     TOptIAAddress( char * &addr, int &n, TMsg* parent);
-    TOptIAAddress( SmartPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent);
+    TOptIAAddress( SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg* parent);
     int getSize();
     
     char * storeSelf( char* buf);

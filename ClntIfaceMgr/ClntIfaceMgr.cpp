@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.8 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.9 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.7  2004/09/27 22:00:32  thomson
  * Sending problem is now verbose.
  *
@@ -129,7 +132,7 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
             return SmartPtr<TMsg>(); // NULL
         case REPLY_MSG:
             ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-                ifaceid, peer,buf, bufsize);
+                ifaceid, peer, buf, bufsize);
             return ptr;
 
         case RECONFIGURE_MSG:
@@ -206,4 +209,38 @@ void TClntIfaceMgr::removeAllOpts() {
 	clntIface = (Ptr*) iface;
 	clntIface->removeAllOpts();
     }
+}
+
+unsigned int TClntIfaceMgr::getTimeout() {
+    unsigned int min=DHCPV6_INFINITY, tmp;
+    SmartPtr<TIfaceIface> iface;
+    SmartPtr<TClntIfaceIface> clntIface;
+
+    this->firstIface();
+    while (iface = this->getIface()) {
+	clntIface = (Ptr*) iface;
+	tmp = clntIface->getTimeout();
+	if (min > tmp)
+	    min = tmp;
+    }
+    return min;
+}
+
+void TClntIfaceMgr::dump(char * file)
+{
+    std::ofstream xmlDump;
+    xmlDump.open(file);
+    xmlDump << *this;
+    xmlDump.close();
+}
+
+ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
+    strum << "<ClntIfaceMgr>" << endl;
+    SmartPtr<TClntIfaceIface> ptr;
+    x.IfaceLst.first();
+    while ( ptr= (Ptr*) x.IfaceLst.get() ) {
+	strum << *ptr;
+    }
+    strum << "</ClntIfaceMgr>" << endl;
+    return strum;
 }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.7 2004-09-08 21:22:45 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.8 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/09/08 21:22:45  thomson
+ * Parser improvements, signed/unsigned issues addressed.
+ *
  * Revision 1.6  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
  *
@@ -39,8 +42,7 @@ SmartPtr<TDUID> TAddrClient::getDUID()
     return this->DUID;
 }
 
-SmartPtr<TAddrIA> TAddrClient::getIA()
-{
+SmartPtr<TAddrIA> TAddrClient::getIA() {
     return IAsLst.get();
 }
 
@@ -57,24 +59,19 @@ SmartPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID)
     return SmartPtr<TAddrIA>();
 }
 
-void TAddrClient::firstIA()
-{
+void TAddrClient::firstIA() {
     IAsLst.first();
 }
 
-void TAddrClient::addIA(SmartPtr<TAddrIA> ia)
-{
+void TAddrClient::addIA(SmartPtr<TAddrIA> ia) {
     IAsLst.append(ia);
-    //    ia->setDUID(this->DUID,this->DUIDlen);
 }
 
-int TAddrClient::countIA()
-{
+int TAddrClient::countIA() {
     return IAsLst.count();
 }
 
-bool TAddrClient::delIA(unsigned long IAID)
-{
+bool TAddrClient::delIA(unsigned long IAID) {
     SmartPtr<TAddrIA> ptr;
     IAsLst.first();
 
@@ -93,7 +90,7 @@ bool TAddrClient::delIA(unsigned long IAID)
 
 unsigned long TAddrClient::getT1Timeout() {
     SmartPtr<TAddrIA> ptr;
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -107,7 +104,7 @@ unsigned long TAddrClient::getT1Timeout() {
 
 unsigned long TAddrClient::getT2Timeout() {
     SmartPtr<TAddrIA> ptr;
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -121,7 +118,7 @@ unsigned long TAddrClient::getT2Timeout() {
 
 unsigned long TAddrClient::getPrefTimeout() {
     SmartPtr<TAddrIA> ptr;
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -135,7 +132,7 @@ unsigned long TAddrClient::getPrefTimeout() {
 
 unsigned long TAddrClient::getValidTimeout() {
     SmartPtr<TAddrIA> ptr;
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {

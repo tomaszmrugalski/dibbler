@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.4 2004-05-23 20:41:03 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.5 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/05/23 20:41:03  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -40,8 +43,7 @@ class TClntCfgMgr : public TCfgMgr
     void firstIface();
     void addIface(SmartPtr<TClntCfgIface> x);
     int countIfaces();
-
-
+    void dump();
     
     string getWorkDir();
     bool getReconfigure();

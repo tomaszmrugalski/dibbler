@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIAAddress.cpp,v 1.3 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvOptIAAddress.cpp,v 1.4 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.2  2004/06/17 23:53:55  thomson
  * Server Address Assignment rewritten.
  *
@@ -71,10 +74,12 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
     }
 }
 
-TSrvOptIAAddress::TSrvOptIAAddress( SmartPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent)
-	:TOptIAAddress(addr,pref,valid, parent) {
+TSrvOptIAAddress::TSrvOptIAAddress(SmartPtr<TIPv6Addr> addr, unsigned long pref, 
+				   unsigned long valid, TMsg* parent)
+    :TOptIAAddress(addr,pref,valid, parent) {
 
 }
+
 bool TSrvOptIAAddress::doDuties() {
     return true;
 }

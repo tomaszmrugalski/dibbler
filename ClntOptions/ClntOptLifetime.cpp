@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptLifetime.cpp,v 1.1 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntOptLifetime.cpp,v 1.2 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -45,12 +48,11 @@ bool TClntOptLifetime::doDuties()
 		   << " while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)msg->getOption(OPTION_SERVERID);
-    if (!optSrvID) {
-	Log(Error) << "Unable to find ServerID option while " << reason << LogEnd;
+
+    if (!this->DUID) {
+	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
 	return false;
     }
-    SmartPtr<TDUID> duid = optSrvID->getDUID();
 
-    return iface->setLifetime(duid, addr, this->Value);
+    return iface->setLifetime(this->DUID, addr, this->Value);
 }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptDomainName.cpp,v 1.7 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntOptDomainName.cpp,v 1.8 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.6  2004/09/07 17:42:31  thomson
  * Server Unicast implemented.
  *
@@ -46,14 +49,13 @@ bool TClntOptDomainName::doDuties() {
 		   << " while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)msg->getOption(OPTION_SERVERID);
-    if (!optSrvID) {
-	Log(Error) << "Unable to find ServerID option while " << reason << LogEnd;
+
+    if (!this->DUID) {
+	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
 	return false;
     }
-    SmartPtr<TDUID> duid = optSrvID->getDUID();
 
-    return iface->setDomainLst(duid, addr,this->StringLst);
+    return iface->setDomainLst(this->DUID, addr, this->StringLst);
 }
 
 void TClntOptDomainName::setSrvDuid(SmartPtr<TDUID> duid) {

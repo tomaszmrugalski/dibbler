@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.12 2004-10-25 20:45:52 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.13 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/10/25 20:45:52  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.11  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -63,8 +66,8 @@ void TDHCPClient::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
-    std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="
-	      << TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << logger::endl;
+    Log(Warning) << "Service shutdown: Sending SHUTDOWN packet on iface="
+		 << TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << LogEnd;
     int fd = sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
     char buf = CONTROL_MSG;
     int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
@@ -84,14 +87,10 @@ void TDHCPClient::run()
 	TransMgr->doDuties();
 	
 	unsigned int timeout = TransMgr->getTimeout();
-	// FIXME: everything should be unsigned
-	if (timeout == DHCPV6_INFINITY)
-	    timeout = DHCPV6_INFINITY/2;
 	if (timeout == 0)
 	    timeout = 1;
 	
-        std::clog << logger::logNotice << "Sleeping for " 
-		  << timeout << " seconds." << logger::endl;
+        Log(Notice) << "Sleeping for " << timeout << " second(s)." << LogEnd;
         SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
 	
         if (msg) {
@@ -100,7 +99,7 @@ void TDHCPClient::run()
 	    ptrIface = IfaceMgr->getIfaceByID(iface);
             Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 			<< "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
-			<< dec << ", " << msg->countOption() << " opts:";
+			<< dec << ", addr=" << msg->countOption() << " opts:";
             SmartPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.7 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.8 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.6  2004/10/02 13:11:24  thomson
  * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
  * Unicast communication now can be enable on client side (disabled by default).
@@ -218,7 +221,8 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
                 break;
             default:
             {
-                option->setParent(this);
+                //option->setParent( &(*msg));
+		Log(Debug) << "Setting up option " << option->getOptType() << "." << LogEnd;
                 if (!option->doDuties()) 
 		    break;
 		SmartPtr<TOpt> requestOpt;

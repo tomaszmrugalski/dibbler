@@ -43,16 +43,15 @@ void TClntCfgIA::firstAddr()
     ClntCfgAddrLst.first();
 }
 
-SmartPtr<TClntCfgAddr> TClntCfgIA::getAddr()
-{
+SmartPtr<TClntCfgAddr> TClntCfgIA::getAddr() {
     return ClntCfgAddrLst.get();
 }
 
 
 TClntCfgIA::TClntCfgIA(long iAID) {
     IAID=iAID;
-    T1=0;
-    T2=0;
+    T1=CLIENT_DEFAULT_T1;
+    T2=CLIENT_DEFAULT_T2;
 }
 
 TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)

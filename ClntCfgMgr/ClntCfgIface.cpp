@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.8 2004-10-25 20:45:52 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.9 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/25 20:45:52  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.7  2004/10/02 13:11:24  thomson
  * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
  * Unicast communication now can be enable on client side (disabled by default).
@@ -29,34 +32,34 @@ TClntCfgIface::TClntCfgIface(string ifaceName) {
     NoConfig=false;
     IfaceName=ifaceName;
     ID=-1;
-    this->DNSServerState  = NOTCONFIGURED;
-    this->DomainState     = NOTCONFIGURED;
-    this->NTPServerState  = NOTCONFIGURED;
-    this->TimezoneState   = NOTCONFIGURED;
-    this->SIPServerState  = NOTCONFIGURED;
-    this->SIPDomainState  = NOTCONFIGURED;
-    this->FQDNState       = NOTCONFIGURED;
-    this->NISServerState  = NOTCONFIGURED;
-    this->NISPServerState = NOTCONFIGURED;
-    this->NISDomainState  = NOTCONFIGURED;
-    this->NISPDomainState = NOTCONFIGURED;
+    this->DNSServerState  = DISABLED;
+    this->DomainState     = DISABLED;
+    this->NTPServerState  = DISABLED;
+    this->TimezoneState   = DISABLED;
+    this->SIPServerState  = DISABLED;
+    this->SIPDomainState  = DISABLED;
+    this->FQDNState       = DISABLED;
+    this->NISServerState  = DISABLED;
+    this->NISPServerState = DISABLED;
+    this->NISDomainState  = DISABLED;
+    this->NISPDomainState = DISABLED;
 }
 
 TClntCfgIface::TClntCfgIface(int ifaceNr) {
     NoConfig=false;
     ID=ifaceNr;
     IfaceName="[unknown]";
-    this->DNSServerState  = NOTCONFIGURED;
-    this->DomainState     = NOTCONFIGURED;
-    this->NTPServerState  = NOTCONFIGURED;
-    this->TimezoneState   = NOTCONFIGURED;
-    this->SIPServerState  = NOTCONFIGURED;
-    this->SIPDomainState  = NOTCONFIGURED;
-    this->FQDNState       = NOTCONFIGURED;
-    this->NISServerState  = NOTCONFIGURED;
-    this->NISPServerState = NOTCONFIGURED;
-    this->NISDomainState  = NOTCONFIGURED;
-    this->NISPDomainState = NOTCONFIGURED;
+    this->DNSServerState  = DISABLED;
+    this->DomainState     = DISABLED;
+    this->NTPServerState  = DISABLED;
+    this->TimezoneState   = DISABLED;
+    this->SIPServerState  = DISABLED;
+    this->SIPDomainState  = DISABLED;
+    this->FQDNState       = DISABLED;
+    this->NISServerState  = DISABLED;
+    this->NISPServerState = DISABLED;
+    this->NISDomainState  = DISABLED;
+    this->NISPDomainState = DISABLED;
 }
 
 void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
@@ -88,6 +91,18 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     this->NISDomain    = opt->getNISDomain();
     this->NISPServerLst= *opt->getNISPServerLst();
     this->NISPDomain   = opt->getNISPDomain();
+
+    if (ReqDNSServer)  this->setDNSServerState(NOTCONFIGURED);
+    if (ReqDomain)     this->setDomainState(NOTCONFIGURED);
+    if (ReqNTPServer)  this->setNTPServerState(NOTCONFIGURED);
+    if (ReqTimezone)   this->setTimezoneState(NOTCONFIGURED);
+    if (ReqSIPServer)  this->setSIPServerState(NOTCONFIGURED);
+    if (ReqSIPDomain)  this->setSIPDomainState(NOTCONFIGURED);
+    if (ReqFQDN)       this->setFQDNState(NOTCONFIGURED);
+    if (ReqNISServer)  this->setNISServerState(NOTCONFIGURED);
+    if (ReqNISDomain)  this->setNISDomainState(NOTCONFIGURED);
+    if (ReqNISPServer) this->setNISPServerState(NOTCONFIGURED);
+    if (ReqNISPDomain) this->setNISPDomainState(NOTCONFIGURED);
 }
 
  void TClntCfgIface::firstGroup()
@@ -140,7 +155,7 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     NoConfig=true;
 }
 
-bool TClntCfgIface::onlyInformationRequest()
+bool TClntCfgIface::stateless()
 {
     return !this->isIA;
 }
@@ -226,166 +241,6 @@ EState TClntCfgIface::getNISDomainState() {
 EState TClntCfgIface::getNISPDomainState() {
     return NISPDomainState;
 }
-
-
-/*
- void TClntCfgIface::setDNSSrv(
-    TContainer<SmartPtr<TIPv6Addr> > newSrvLst,
-    SmartPtr<TDUID> duid)
-{
-    switch(DNSSrvState) {
-        //Is this a first configuration (so prob. reply has been received to:
-        //solicit(rap.commit), request or information request message
-    case NOTCONFIGURED: {
-	std::clog << logger::logDebug << "DNSes for interface " << this->getName() 
-		  << " are in state NOTCONFIGURED" << logger::endl;
-	DNSSrvState=CONFIGURED;
-	newSrvLst.first();
-	DNSSrv.clear();
-	SmartPtr<TIPv6Addr> dnsAddr;
-	while (dnsAddr=newSrvLst.get()) {
-	    DNSSrv.append(dnsAddr);
-	    dns_add(this->IfaceName.c_str(), this->ID, dnsAddr->getPlain());
-	}
-	GiverDNSSrvDUID=duid;
-    }
-	
-        //Is this parameter is in renewing process 
-        //(renew/rebind/information request message was sent)
-    case INPROCESS: {
-	if (DNSSrv.count()) {
-	    std::clog << logger::logDebug << "DNSes for interface " << this->getName() 
-		      << " are in state INPROCESS -> CONFIGURED" << logger::endl;
-	    DNSSrvState=CONFIGURED;
-	    newSrvLst.first();
-	    DNSSrv.clear();
-	    SmartPtr<TIPv6Addr> dnsAddr;
-	    while (dnsAddr=newSrvLst.get()) {
-		DNSSrv.append(dnsAddr);
-		dns_add(this->IfaceName.c_str(), this->ID, dnsAddr->getPlain());
-	    }
-	}
-	else
-	    DNSSrvState=NOTCONFIGURED;
-    }
-    default: { // configured 
-	//FIXME: check if current list != new received list
-    }
-    };
-
-}
-*/
-
-/*
- void TClntCfgIface::setNTPSrv(
-    TContainer<SmartPtr<TIPv6Addr> > newSrvLst,
-    SmartPtr<TDUID> duid)
-{
-    switch(NTPSrvState)
-    {
-        //Is this a first configuration (so prob. reply has been received to:
-        //solicit(rap.commit), request or information request message
-    case NOTCONFIGURED: {
-	NTPSrvState=CONFIGURED;
-	clog<< logger::logNotice << "New NTP server list received:";
-	newSrvLst.first();
-	NTPSrv.clear();
-	SmartPtr<TIPv6Addr> dnsAddr;
-	while (dnsAddr=newSrvLst.get()) {
-	    NTPSrv.append(dnsAddr);
-	    clog<< *dnsAddr<<",";
-	}
-	GiverNTPSrvDUID=duid;
-	clog << "(server duid:"<<*duid<<")" << logger::endl;
-	break;
-    }
-    case INPROCESS: {
-        //Is this parameter is in renewing process 
-        //(renew/rebind/information request message was sent)
-	if (NTPSrv.count())
-	{
-	    NTPSrvState=CONFIGURED;
-	    newSrvLst.first();
-	    NTPSrv.clear();
-	    SmartPtr<TIPv6Addr> ntpAddr;
-	    while (ntpAddr=newSrvLst.get())
-		NTPSrv.append(ntpAddr);
-	}
-	else
-	    NTPSrvState=NOTCONFIGURED;
-	break;
-    }
-    default: {
-	break;
-    }
-    };
-    //FIXME: Here should be also set options somewhere in the system ???
-}
-*/
-
-/*
-void TClntCfgIface::setDomainName(string domainName,SmartPtr<TDUID> duid) {
-    switch(DomainNameState) {
-	//Is this a first configuration (so prob. reply has been received to:
-        //solicit(rap.commit), request or information request message
-    case NOTCONFIGURED: {
-	DomainNameState=CONFIGURED;
-	this->Domain=domainName;
-	GiverNTPSrvDUID=duid;
-	domain_add(this->IfaceName.c_str(), this->ID, (char*)domainName.c_str());
-	break;
-    }
-        //Is this parameter is in renewing process 
-        //(renew/rebind/information request message was sent)
-    case INPROCESS: {
-	if (domainName!="") {
-	    DomainNameState=CONFIGURED;
-	    Domain=domainName;
-	    domain_add(this->IfaceName.c_str(), this->ID, (char*)domainName.c_str());
-	}
-	else {
-	    DomainNameState=NOTCONFIGURED;
-	}
-	break;
-    }
-    default: {
-	// FIXME: check if domain has changed
-    }
-    };
-}
-*/
-
-/*
- void TClntCfgIface::setTimeZone(
-    string timeZone,
-    SmartPtr<TDUID> duid)
-{
-    switch(TimeZoneState) {
-        //Is this a first configuration (so prob. reply has been received to:
-        //solicit(rap.commit), request or information request message
-    case NOTCONFIGURED: {
-	TimeZoneState=CONFIGURED;
-	this->TZone=timeZone;
-	GiverNTPSrvDUID=duid;
-	break;
-    }
-        //Is this parameter is in renewing process 
-        //(renew/rebind/information request message was sent)
-    case INPROCESS: {
-	if (timeZone!="") {
-	    TimeZoneState=CONFIGURED;
-	    this->TZone=timeZone;
-	} else {
-	    TimeZoneState=NOTCONFIGURED;
-	}
-    }
-    default: {
-	
-    }
-    };
-    //FIXME: Here should be also set options somewhere in the system ???
-}
-*/
 
 // --------------------------------------------------------------------
 // --- options: get option --------------------------------------------
@@ -494,7 +349,9 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: DNS-servers ---
     if (iface.isReqDNSServer()) {
-	out << "    <dns-servers hints=\"" << iface.DNSServerLst.count() << "\"/>" << endl;
+	out << "    <dns-servers hints=\"" << iface.DNSServerLst.count() << "\" state=\"" 
+	    << StateToString(iface.getDNSServerState()) << "\" />" << endl;
+
 	iface.DNSServerLst.first();
 	while(addr=iface.DNSServerLst.get())
 	    out << "      <dns-server>" << *addr << "</dns-server>" << endl;  
@@ -504,7 +361,9 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: DOMAIN ---
     if (iface.isReqDomain()) {
-	out << "    <domains hints=\"" << iface.DomainLst.count() << "\">" << endl;
+	out << "    <domains hints=\"" << iface.DomainLst.count() << "\" state=\""
+	    << StateToString(iface.getDomainState()) << "\" />" << endl;
+
 	iface.DomainLst.first();
 	while (str = iface.DomainLst.get())
 	    out << "      <domain>" << *str <<"</domain>" << endl;
@@ -514,7 +373,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	
     // --- option: NTP servers ---
     if (iface.isReqNTPServer()) {
-	out << "    <ntp-servers hints=\"" << iface.NTPServerLst.count() << "\"/>" << endl;
+	out << "    <ntp-servers hints=\"" << iface.NTPServerLst.count() << "\" state=\""
+	    << StateToString(iface.getNTPServerState()) << "\" />" << endl;
 	iface.NTPServerLst.first();
 	while(addr=iface.NTPServerLst.get())
 	    out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;  
@@ -524,7 +384,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     
     // --- option: Timezone ---
     if (iface.isReqTimezone()) {
-	out << "    <timezone>" << iface.Timezone << "</timezone>" << endl;
+	out << "    <timezone state=\"" << StateToString(iface.getNTPServerState())
+	    << "\">" << iface.Timezone << "</timezone>" << endl;
     } else {
 	out << "    <!-- <timezone/> -->" << endl;
     }

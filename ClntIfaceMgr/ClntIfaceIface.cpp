@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.1 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.2 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  */
 
 #include <iostream>
@@ -23,9 +26,28 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
 				 int maclen, char* llAddr, int llAddrCnt, int hwType)
     :TIfaceIface(name, id, flags, mac, maclen, llAddr, llAddrCnt, hwType) {
     this->DNSServerLst.clear();
+    this->DomainLst.clear();
+    this->NTPServerLst.clear();
+    this->Timezone = "";
+
+    this->LifetimeTimeout = DHCPV6_INFINITY;
+    this->LifetimeTimestamp = now();
 }
 
-bool TClntIfaceIface::setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs) {
+/*
+ * this method returns timeout to nearest option renewal
+ */
+unsigned int TClntIfaceIface::getTimeout() {
+    if (this->LifetimeTimeout == DHCPV6_INFINITY)
+	return DHCPV6_INFINITY;
+    unsigned int current = now();
+    if (current > this->LifetimeTimestamp+this->LifetimeTimeout)
+	return 0;
+    return this->LifetimeTimestamp+this->LifetimeTimeout-current;
+}
+
+bool TClntIfaceIface::setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, 
+				      List(TIPv6Addr) addrs) {
     // remove old addresses
     SmartPtr<TIPv6Addr> old, addr;
     this->DNSServerLst.first();
@@ -42,9 +64,10 @@ bool TClntIfaceIface::setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 	}
 	if (!found) {
 	    // it's not on the new list, so remove it
-	    Log(Debug) << "Removing DNS server: " << *old << "on interface "
+	    Log(Debug) << "Removing DNS server: " << *old << " on interface "
 		       << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
 	    dns_del(this->getName(), this->getID(), old->getPlain());
+	    this->DNSServerLst.del();
 	}
     }
 
@@ -73,7 +96,6 @@ bool TClntIfaceIface::setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     }
     this->DNSServerLstAddr = srv;
     this->DNSServerLstDUID = duid;
-    this->DNSServerLstTimestamp = now();
     return true;
 }
 
@@ -115,9 +137,13 @@ bool TClntIfaceIface::setNISPDomain(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> sr
 }
 
 bool TClntIfaceIface::setLifetime(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, unsigned int life) {
+    this->LifetimeTimeout = life;
+    this->LifetimeTimestamp = now();
+    if (life == DHCPV6_INFINITY)
+	Log(Info) << "Granted options are parmanent (lifetime = INFINITY)" << LogEnd;
+    Log(Info) << "Next option renewal in " << life << " seconds ." << LogEnd;
     return true;
 }
-
 
 TClntIfaceIface::~TClntIfaceIface() {
     this->removeAllOpts();
@@ -141,11 +167,61 @@ void TClntIfaceIface::removeAllOpts() {
  * just prints important informations (debugging & logging)
  */
 ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
+    char buf[48];
+    SmartPtr<TIPv6Addr> addr;
+    SmartPtr<string> str;
 
-    strum << "  <IClntIfaceIface";
+    strum << "  <ClntIfaceIface";
     strum << " name=\"" << x.Name << "\"";
     strum << " id=\"" << x.ID << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
-    strum << " FIXME" << endl;
+    strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
+
+    for (int i=0; i<x.LLAddrCnt; i++) {
+	inet_ntop6(x.LLAddr+i*16,buf);
+	strum << "    <Addr>" << buf << "</Addr>" << endl;
+    }
+
+    strum << "    <Mac>";
+    for (int i=0; i<x.Maclen; i++) {
+	strum.fill('0');
+	strum.width(2);
+	strum << (hex) << (int) x.Mac[i];
+	if (i<x.Maclen-1) strum  << ":";
+    }
+    strum << "</Mac>" << endl;
+
+    SmartPtr<TIfaceSocket> sock;
+    x.firstSocket();
+    while (sock = x.getSocket() ) {
+	strum << "    " << *sock;
+    }
+    strum << "    <!-- options -->" << endl;
+
+    // option: DNS-SERVERS
+    if (!x.DNSServerLstAddr || !x.DNSServerLstDUID) {
+	strum << "    <!-- <dns-servers /> -->" << endl;
+    } else {
+	strum << "    <dns-servers addr=\"" << *x.DNSServerLstAddr << "\" duid=\"" 
+	      << x.DNSServerLstDUID->getPlain() << "\" />" << endl;
+    }
+    x.DNSServerLst.first();
+    while (addr = x.DNSServerLst.get()) {
+	strum << "    <dns-server>" << *addr << "</dns-server>" << endl;
+    }
+
+    // option: DOMAINS
+    if (!x.DomainLstAddr || !x.DomainLstDUID) {
+	strum << "    <!-- <domains /> -->" << endl;
+    } else {
+	strum << "    <domains addr=\"" << *x.DomainLstAddr << "\" duid=\"" 
+	      << x.DomainLstDUID->getPlain() << "\" />" << endl;
+    }
+    x.DomainLst.first();
+    while (str = x.DomainLst.get()) {
+	strum << "  <domain>" << *str << "</domain>" << endl;
+    }
+
+    strum << "  </ClntIfaceIface>" << endl;
     return strum;
 }

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Opt.h,v 1.4 2004-05-23 16:40:12 thomson Exp $
+ * $Id: Opt.h,v 1.5 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/05/23 16:40:12  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -17,6 +20,7 @@
 
 #include "SmartPtr.h"
 #include "Container.h"
+#include "DUID.h"
 
 class TMsg;
 
@@ -43,10 +47,14 @@ class TOpt
     int countOption();
     void setParent(TMsg* Parent);
 
+    SmartPtr<TDUID> getDUID();
+    void setDUID(SmartPtr<TDUID> duid);
+
  protected:
     TContainer< SmartPtr<TOpt> > SubOptions;
     int OptType;
     TMsg* Parent;
+    SmartPtr<TDUID> DUID;
 };
 
 #endif

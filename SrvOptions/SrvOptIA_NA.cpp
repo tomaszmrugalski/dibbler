@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.11 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.12 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.10  2004/09/08 21:22:46  thomson
  * Parser improvements, signed/unsigned issues addressed.
  *
@@ -201,7 +204,9 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 		// we've got free addrs left, assign one of them
 		// always register this address as used by this client
 		// (if this is solicit, this addr will be released later)
-		this->assignAddr(hint, optAddr->getPref(), optAddr->getValid(), quiet);
+		unsigned long pref  = optAddr->getPref();
+		unsigned long valid = optAddr->getValid();
+		this->assignAddr(hint, pref, valid, quiet);
 		willAssign--;
 		addrsAssigned++;
 
@@ -268,12 +273,12 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
     addr = this->getFreeAddr(hint);
     ptrClass = this->CfgMgr->getClassByAddr(this->Iface, addr);
     pref = ptrClass->getPref(pref);
-    valid= ptrClass->getPref(valid);
+    valid= ptrClass->getValid(valid);
     optAddr = new TSrvOptIAAddress(addr, pref, valid, this->Parent);
     SubOptions.append((Ptr*)optAddr);
 
     Log(Info) << "Client requested " << *hint <<", got " << *addr 
-	      << " (IAID= " << this->IAID << ")" << LogEnd;
+	      << " (IAID=" << this->IAID << ", pref=" << pref << ",valid=" << valid << ")." << LogEnd;
 
     // configure this IA
     this->T1= ptrClass->getT1(this->T1);

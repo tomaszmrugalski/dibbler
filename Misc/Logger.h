@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.7 2004-09-03 20:58:36 thomson Exp $
+ * $Id: Logger.h,v 1.8 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/09/03 20:58:36  thomson
+ * *** empty log message ***
+ *
  * Revision 1.6  2004/06/04 21:02:45  thomson
  * *** empty log message ***
  *
@@ -32,6 +35,7 @@
 #define LOGGER_H
 #include <iostream>
 #include <string>
+#include "DHCPConst.h"
 
 #define Log(X) std::clog << logger:: log##X
 #define LogEnd logger::endl
@@ -65,6 +69,8 @@ namespace logger {
     ostream & endl (ostream & strum);
 
 }
+
+std::string StateToString(EState state);
 
 
 #endif

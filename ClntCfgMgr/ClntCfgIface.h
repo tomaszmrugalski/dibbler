@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.5 2004-10-25 20:45:52 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.6 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/25 20:45:52  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.4  2004/10/02 13:11:24  thomson
  * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
  * Unicast communication now can be enable on client side (disabled by default).
@@ -59,7 +62,7 @@ public:
     void setIfaceName(string ifaceName);
     bool noConfig();
 
-    bool onlyInformationRequest();
+    bool stateless();
     bool getUnicast();
 
     // --- option: DNS servers ---

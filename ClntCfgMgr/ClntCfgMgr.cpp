@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.22 2004-10-25 20:45:52 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.23 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/10/25 20:45:52  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.21  2004/10/02 13:11:24  thomson
  * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
  * Unicast communication now can be enable on client side (disabled by default).
@@ -98,14 +101,17 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 	this->IsDone=true;
 	return;
     }
+    this->dump();
     
+    IsDone = false;
+}
+
+void TClntCfgMgr::dump() {
     // store ClntCfgMgr in file
     std::ofstream xmlDump;
     xmlDump.open(CLNTCFGMGR_FILE);
     xmlDump << *this;
     xmlDump.close();
-    
-    IsDone = false;
 }
 
 /*

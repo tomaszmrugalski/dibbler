@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.9 2004-10-25 20:45:54 thomson Exp $
+ * $Id: Logger.cpp,v 1.10 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  */
 
 #include <iostream>
@@ -18,6 +21,7 @@
 #include <time.h>
 #include "Logger.h"
 #include "Portable.h"
+#include "DHCPConst.h"
 
 namespace logger {
 
@@ -135,5 +139,34 @@ namespace logger {
 	    logger::logmode = EVENTLOG;
 	}
 #endif
+    }
+}
+
+
+std::string StateToString(EState state) {
+    switch (state) {
+    case NOTCONFIGURED:
+	return "NOTCONFIGURED";
+	break;
+    case INPROCESS:
+	return "INPROCESS";
+	break;
+    case CONFIGURED:
+	return "CONFIGURED";
+	break;
+    case FAILED:
+	return "FAILED";
+	break;
+    case UNKNOWN:
+	return "UNKNOWN";
+	break;
+    case TENTATIVECHECK:
+	return "TENTATIVECHECK";
+	break;
+    case TENTATIVE:
+	return "TENTATIVE";
+	break;
+    default:
+	return "???";
     }
 }

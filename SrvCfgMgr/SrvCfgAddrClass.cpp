@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.15 2004-09-08 21:22:45 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.16 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/09/08 21:22:45  thomson
+ * Parser improvements, signed/unsigned issues addressed.
+ *
  * Revision 1.14  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
  *
@@ -91,15 +94,12 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
 
 long TSrvCfgAddrClass::chooseTime(long beg, long end, long clntTime)
 {
-    if (beg<clntTime) 
-        if (clntTime<end)
-            return clntTime;
-        else
-            return end;
-    else
-        return beg;
+    if (clntTime < beg)
+	return beg;
+    if (clntTime > end)
+	return end;
+    return clntTime;
 }
-
 
 unsigned long TSrvCfgAddrClass::getT1(long clntT1) {
     return chooseTime(T1Beg,T1End,clntT1);

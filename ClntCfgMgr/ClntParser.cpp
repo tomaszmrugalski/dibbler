@@ -2195,7 +2195,7 @@ bool clntParser::EndIfaceDeclaration()
       groupsCnt++;
     };
     
-  if ((ClntCfgIfaceLst.getLast())->onlyInformationRequest())
+  if ((ClntCfgIfaceLst.getLast())->stateless())
   {
     if (groupsCnt) YYABORT;
   }

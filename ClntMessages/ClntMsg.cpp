@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.6 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.7 2004-10-27 22:07:55 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.5  2004/10/03 21:36:48  thomson
  * Just a typo.
  *
@@ -191,30 +194,10 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	return;
     }
 
-#if 0
     this->firstOption();
-    SmartPtr<TOpt> 
-
-    while (SmartPtr<TOpt> ptrOpt=getOption())
-        {
-            switch (ptrOpt->getOptType())
-            {
-                case OPTION_DNS_RESOLVERS:
-                    ((TClntOptDNSServers*)&(*ptrOpt))->setSrvDuid(ptrSrvID->getDUID());
-                    break;
-                case OPTION_DOMAIN_LIST:
-                    ((TClntOptDomainName*)&(*ptrOpt))->setSrvDuid(ptrSrvID->getDUID());
-                    break;
-                case OPTION_NTP_SERVERS:
-                    ((TClntOptNTPServers*)&(*ptrOpt))->setSrvDuid(ptrSrvID->getDUID());
-                    break;
-                case OPTION_TIME_ZONE:
-                    ((TClntOptTimeZone*)&(*ptrOpt))->setSrvDuid(ptrSrvID->getDUID());
-                    break;
-            }
-        }
-    }
-#endif 
+    SmartPtr<TOpt> opt;
+    while ( opt = getOption())
+	opt->setDUID(optSrvID->getDUID());
 }
 
 TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
@@ -331,6 +314,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptDNSServers> opt = new TClntOptDNSServers(dnsLst,this);
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setDNSServerState(INPROCESS);
     }
 
     // --- option: DOMAINS --
@@ -343,6 +327,7 @@ void TClntMsg::appendRequestedOptions() {
             SmartPtr<TClntOptDomainName> opt = new TClntOptDomainName(domainsLst,this);
             Options.append( (Ptr*)opt );
 	}
+	iface->setDomainState(INPROCESS);
     }
 
     // --- option: NTP SERVER ---
@@ -355,6 +340,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNTPServers> opt = new TClntOptNTPServers(ntpLst,this);
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setNTPServerState(INPROCESS);
     }
         
     // --- option: TIMEZONE ---
@@ -367,6 +353,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptTimeZone> opt = new TClntOptTimeZone(timezone,this);
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setTimezoneState(INPROCESS);
     }
 
     // --- option: SIP-SERVERS ---
@@ -379,6 +366,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptSIPServers> opt = new TClntOptSIPServers( lst, this );
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setSIPServerState(INPROCESS);
     }
 
     // --- option: SIP-DOMAINS ---
@@ -391,6 +379,7 @@ void TClntMsg::appendRequestedOptions() {
             SmartPtr<TClntOptSIPDomain> opt = new TClntOptSIPDomain( domainsLst,this );
             Options.append( (Ptr*)opt );
 	}
+	iface->setSIPDomainState(INPROCESS);
     }
 
     // --- option: FQDN ---
@@ -402,6 +391,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setFQDNState(INPROCESS);
     }
 
     // --- option: NIS-SERVERS ---
@@ -414,6 +404,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNISServers> opt = new TClntOptNISServers( lst,this );
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setNISServerState(INPROCESS);
     }
 
     // --- option: NIS-DOMAIN ---
@@ -424,6 +415,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNISDomain> opt = new TClntOptNISDomain( domain,this );
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setNISDomainState(INPROCESS);
     }
 
     // --- option: NIS+-SERVERS ---
@@ -436,6 +428,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNISPServers> opt = new TClntOptNISPServers( lst,this );
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setNISPServerState(INPROCESS);
     }
 
     // --- option: NIS+-DOMAIN ---
@@ -446,6 +439,7 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNISPDomain> opt = new TClntOptNISPDomain( domain,this );
 	    Options.append( (Ptr*)opt );
 	}
+	iface->setNISPDomainState(INPROCESS);
     }
 
     // --- option: LIFETIME ---

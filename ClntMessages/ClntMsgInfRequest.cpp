@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.3 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.4 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -149,10 +152,13 @@ void TClntMsgInfRequest::answer(SmartPtr<TMsg> msg)
         }
     }
 
+    ptrOptionReqOpt->delOption(OPTION_LIFETIME);
     if (ptrOptionReqOpt && ptrOptionReqOpt->count() && newOptionAssigned)
     {
-	Log(Notice) << "Not all options were delivered."
-		    <<" Sending new Inormation Request." << LogEnd;
+	Log(Notice) << "Not all options were assigned (";
+	for (int i=0; i<ptrOptionReqOpt->count(); i++)
+	    Log(Cont) << ptrOptionReqOpt->getReqOpt(i) << " ";
+	Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
         ClntTransMgr->sendInfRequest(Options,Iface);
     }
     if (newOptionAssigned) 

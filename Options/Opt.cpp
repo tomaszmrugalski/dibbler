@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.5 2004-05-23 16:40:12 thomson Exp $
+ * $Id: Opt.cpp,v 1.6 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/05/23 16:40:12  thomson
+ * *** empty log message ***
+ *
  * Revision 1.4  2004/05/23 16:38:18  thomson
  * CR-LF issues.
  *
@@ -85,4 +88,11 @@ bool TOpt::isValid()
 {   
     //for most of options it's enough
     return true;
+}
+
+SmartPtr<TDUID> TOpt::getDUID() {
+    return this->DUID;
+}
+void TOpt::setDUID(SmartPtr<TDUID> duid) {
+    this->DUID = duid;
 }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.10 2004-09-07 15:37:44 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.11 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  * Revision 1.9  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -290,18 +293,7 @@ ostream & operator <<(ostream & strum, TIfaceSocket &x)
 	strum << " multicast=\"true\"";
     if (x.IfaceOnly)
 	strum << " ifaceonly=\"true\"";
-    strum << " status=\"";
-	
-	switch (x.Status) {
-	case NOTCONFIGURED: { strum << "NOTCONFIGURED"; break; }
-	case INPROCESS: { strum << "INPROCESS"; break; }
-	case CONFIGURED:{ strum << "CONFIGURED"; break; }
-	case FAILED:{ strum << "FAILED"; break; }
-	case UNKNOWN:
-	default:
-		{ strum << "UNKNOWN"; break; }
-	}
-		
-	strum << "\"" << " />" << endl;
+    strum << " status=\"" << StateToString(x.Status)
+	  << "\"" << " />" << endl;
     return strum;
 }

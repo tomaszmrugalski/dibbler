@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.11 2004-10-25 20:45:54 thomson Exp $
+ * $Id: DHCPConst.h,v 1.12 2004-10-27 22:07:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.10  2004/10/03 21:52:12  thomson
  * FALSE changed to false
  *
@@ -151,8 +154,7 @@
 // INFINITY + 1 is 0. Hih, cool
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
 
-// how long should we wait before we assume that OS detected duplicated addresses 
-// default (3 secs)
+// how long should we wait before we assume that OS detected duplicated addresses (in secs)
 #define DADTIMEOUT (unsigned) 3
 
 // addresses reported ad DECLINED are not used for 2 hours
@@ -181,7 +183,7 @@
 #define CLIENT_DEFAULT_UNICAST false
 
 enum ETentative {YES, NO, DONTKNOWYET};
-enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, IGNORE, UNKNOWN, TENTATIVECHECK, TENTATIVE};
+enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, DISABLED, UNKNOWN, TENTATIVECHECK, TENTATIVE};
 
 // FQDN option flags
 #define FQDN_N 0x4
