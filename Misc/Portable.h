@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.41 2005-03-08 00:43:48 thomson Exp $
+ * $Id: Portable.h,v 1.42 2005-03-15 00:36:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.41  2005/03/08 00:43:48  thomson
+ * 0.4.0-RC2 release.
+ *
  * Revision 1.40  2005/02/03 19:10:26  thomson
  * *** empty log message ***
  *
@@ -79,11 +82,11 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.4.0-RC2-CVS (" __DATE__ " " __TIME__ ")"
-//#define DIBBLER_VERSION "0.4.0-RC2"
+#define DIBBLER_VERSION "0.4.0-CVS (" __DATE__ " " __TIME__ ")"
+//#define DIBBLER_VERSION "0.4.0"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
-#define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson@klub.com.pl>,Marek Senderski<msend@o2.pl>"
+#define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
 #define DIBBLER_COPYRIGHT3 "| Licence : GNU GPL v2 or later. Developed at Gdansk University of Technology."
 #define DIBBLER_COPYRIGHT4 "| Homepage: http://klub.com.pl/dhcpv6/"
 

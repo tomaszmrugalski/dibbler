@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.12 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.13 2005-03-15 00:36:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.11  2004/12/02 00:51:06  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -79,8 +82,8 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     // is this client supported?
     if (!SrvCfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
         //No reply for this client 
-	Log(Notice) << "Client with DUID=" << clntDuid << "/addr=" << clntAddr 
-		    << " was rejected (due to accept-only or reject-client)." << LogEnd;
+	Log(Notice) << "Client (DUID=" << *clntDuid << ",addr=" << *clntAddr 
+		    << ") was rejected due to accept-only or reject-client." << LogEnd;
         return false;
     }
 

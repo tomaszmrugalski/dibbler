@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.19 2005-01-23 23:17:53 thomson Exp $
+$Id: TODO,v 1.20 2005-03-15 00:36:22 thomson Exp $
 
   Internal/code TODO
  --------------------
@@ -20,13 +20,6 @@ $Id: TODO,v 1.19 2005-01-23 23:17:53 thomson Exp $
 - check server's behavior: there isn't any addrs left, and srv receives SOLICIT.
   Does PREFERENCE have normal value (e.g. not faulty 255, check
    tex/test09/10th packet)
-
-- Debian:
-  Ogólnie to pakiet nie mo¿e byæ tylko binarny by go umie¶ciæ w
-   Debianie. To musi byæ paczka .orig.tar.gz ze ¼ród³ami plus
-   .diff.tar.gz z zawarto¶ci± debian/ by po uploadniêciu siê to
-   scali³o i zbudowa³o.
-  - New Maintainer's Guide, a resztê opisuje Debian Policy.
 
   BUGS
  ------

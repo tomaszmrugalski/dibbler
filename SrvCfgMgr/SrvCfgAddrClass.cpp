@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.18 2004-12-07 00:43:03 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.19 2005-03-15 00:36:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/12/07 00:43:03  thomson
+ * Server no longer support link local addresses (bug #38),
+ * Server now supports stateless mode (bug #71)
+ *
  * Revision 1.17  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -83,9 +87,10 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
     while(range=RejedClnt.get())
         if (range->in(duid,clntAddr))
             return false;
-
+    
     if (AcceptClnt.count()) {
-	// there's white list
+        AcceptClnt.first();
+	    // there's white list
         while(range=AcceptClnt.get()) {
 	    // is client on this white list?
             if (range->in(duid,clntAddr))
