@@ -9,7 +9,12 @@
   - DAD timeout was decreased to 1 second
   - NIS options values are changed to meet recently published RFC3898
   - Server now supports domains containing - (bug #73)
-  - 
+  - Linux: /etc/resolv.conf no longer gets corrupted if not ended with CR (bug #74)
+  - Multiple instantions are no longer allowed (bug #2)
+  - Client requests for Lifetime option only if explicitly told to do so (bug #75)
+  - Server now properly retransmits messages.
+  - Client no longer sends RapidCommit unless told to do so (bug #55)
+  - Client no longer retrasmits indefinetly INF-REQUEST message
 
  0.3.0-RC2
   - Fixed bug found by PCSS team regarding improper socket initialization in ClntTransMgr.
@@ -22,6 +27,9 @@
   - Fixed issues with large timeouts (signed/unsigned problem)
   - Assigned options are now stored in files in working directory (besides of setting them up in the system)
   - Parsers are now more robust and more verbose in case of invalid config files.
+  - Server granting incorrect valid lifetime values fixed (bug #57)
+
+ 0.2.1 was never released
 
  0.2.1-RC1
   - Windows2003 is now supported.
