@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.10 2004-07-05 23:04:08 thomson Exp $
+ * $Id: layer3.c,v 1.11 2004-09-05 10:45:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/07/05 23:04:08  thomson
+ * *** empty log message ***
+ *
  * Revision 1.9  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -286,6 +289,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     int multicast;
     char port_char[6];
     sprintf(port_char,"%d",port);
+    char * tmp;
 
     if (!strncasecmp(addr,"ff",2))
 	multicast = 1;
@@ -324,14 +328,21 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	}
     }
 
-    // ???
-    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
-	// Unable to set up socket option SO_REUSEADDR
-	return -9;
-    }
+    // allow address reuse (this option sucks - why allow running multiple servers?)
+//    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
+//	// Unable to set up socket option SO_REUSEADDR
+//	return -9;
+//    }
 
     // bind socket to a specified port
-    if (bind(Insock, res->ai_addr, res->ai_addrlen) < 0) {
+    struct sockaddr_in6 bindme;
+    bzero(&bindme, sizeof(struct sockaddr_in6));
+    bindme.sin6_family = AF_INET6;
+    bindme.sin6_port   = htons(547);
+    tmp = (char*)(&bindme.sin6_addr);
+    inet_pton6(addr, tmp);
+    //if (bind(Insock, res->ai_addr, res->ai_addrlen) < 0) {
+    if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme)) < 0) {
 	// Unable to bind socket
 	return -4;
     }
@@ -342,7 +353,6 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     if (multicast) {
 	hints.ai_flags = 0;
 	if((error = getaddrinfo(addr, port_char, &hints, &res2))){
-	    //printf("Server: Error all agent addrinfo");
 	    return -5;
 	}
 	memset(&mreq6, 0, sizeof(mreq6));
