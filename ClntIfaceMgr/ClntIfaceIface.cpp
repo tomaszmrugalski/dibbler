@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.3 2004-11-01 23:31:24 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.4 2005-01-03 21:55:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/11/01 23:31:24  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.2  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -674,9 +677,10 @@ ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
     SmartPtr<TIPv6Addr> addr;
     SmartPtr<string> str;
 
+    strum << dec;
     strum << "  <ClntIfaceIface";
     strum << " name=\"" << x.Name << "\"";
-    strum << " id=\"" << x.ID << "\"";
+    strum << " ifindex=\"" << x.ID << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
@@ -685,7 +689,7 @@ ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
 	strum << "    <Addr>" << buf << "</Addr>" << endl;
     }
 
-    strum << "    <Mac>";
+    strum << "    <Mac length=\"" << x.Maclen << "\">";
     for (int i=0; i<x.Maclen; i++) {
 	strum.fill('0');
 	strum.width(2);
