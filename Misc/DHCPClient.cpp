@@ -1,13 +1,16 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski <msend@o2.pl>                                    *
- *                                                                           *
- * $Id: DHCPClient.cpp,v 1.5 2004-02-28 11:29:03 thomson Exp $                                                                           
- *                                                                           *
- * released under GNU GPL v2 or later licence                                *
- *                                                                           */
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * $Id: DHCPClient.cpp,v 1.6 2004-03-28 19:57:59 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ */
 
 #include <iostream>
 #include <stdlib.h>
@@ -31,8 +34,9 @@ TDHCPClient::TDHCPClient(string config)
 
     IfaceMgr = new TClntIfaceMgr();
     if ( IfaceMgr->isDone() ) {
-	std::clog << logger::logCrit << "Fatal error during IfaceMgr init. Aborting." << logger::endl;
-	this->IsDone = true;
+ 	  std::clog << logger::logCrit << "Fatal error during IfaceMgr init. Aborting." << logger::endl;
+	  this->IsDone = true;
+	  return;
     }
 
     IfaceMgr->dump(CLNTIFACEMGR_FILE);

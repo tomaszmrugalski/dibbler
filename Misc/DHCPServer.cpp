@@ -1,12 +1,15 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski <msend@o2.pl>                                    *
- *                                                                           *
- * $Id: DHCPServer.cpp,v 1.6 2004-02-28 20:08:16 thomson Exp $               *
- *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 licence
+ *
+ * $Id: DHCPServer.cpp,v 1.7 2004-03-28 19:57:59 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
       
 #include "DHCPServer.h"
 #include "AddrClient.h"
@@ -24,9 +27,11 @@ TDHCPServer::TDHCPServer(string config)
     serviceShutdown = 0;
     this->IsDone = false;
     IfaceMgr = new TSrvIfaceMgr();
-    if ( IfaceMgr->isDone() ) {
-	std::clog << logger::logCrit << "Fatal error during IfaceMgr. Aborting." << logger::endl;
-	this->IsDone = true;
+    
+	if ( IfaceMgr->isDone() ) {
+	  std::clog << logger::logCrit << "Fatal error during IfaceMgr. Aborting." << logger::endl;
+	  this->IsDone = true;
+	  return;
     }
 	
 	IfaceMgr->dump(SRVIFACEMGR_FILE);

@@ -1,4 +1,15 @@
-
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski  <msend@o2.pl>
+ *
+ * released under GNU GPL v2 licence
+ *
+ * $Id: AddrMgr.h,v 1.3 2004-03-28 19:58:15 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
 
 class TAddrMgr;
 #ifndef ADDRMGR_H

@@ -1,10 +1,15 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski  <msend@o2.pl>                                   *
- *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski  <msend@o2.pl>
+ *
+ * released under GNU GPL v2 licence
+ *
+ * $Id: AddrClient.cpp,v 1.3 2004-03-28 19:57:59 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
 
 #include <iostream>
 #include <string>
