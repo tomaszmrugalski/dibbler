@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.25 2004-11-05 09:01:29 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.26 2004-11-30 00:53:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/11/05 09:01:29  thomson
+ * Win32 socket initialization error corrected.
+ * Thanks to Michal Balcerkiewicz.
+ *
  * Revision 1.24  2004/11/01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -574,14 +578,14 @@ void TClntTransMgr::checkSolicit() {
             if (IALstToConfig.count()) {//Are there any IA, which should be configured?
 		
 		Log(Info) << "Creating SOLICIT message ";
-		if (group->getRapidCommit()) {
+		if (iface->getRapidCommit()) {
 		    Log(Cont) << "(with rapid-commit)";
 		} 
 		Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
                 Transactions.append(
 		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
 					iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
-					IALstToConfig, group->getRapidCommit()));
+					IALstToConfig, iface->getRapidCommit()));
 	    }
         }//for every group
     }//for every iface
