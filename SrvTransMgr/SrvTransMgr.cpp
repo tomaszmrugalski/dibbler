@@ -44,7 +44,7 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
             SmartPtr<TIfaceIface> iface=IfaceMgr->getIfaceByID(confIface->getID());
             std::clog << logger::logNotice << "Creating ff02::1:2 socket on " << confIface->getName() 
                 << " interface." << logger::endl;
-            iface->addSocket( ipAddr, DHCPSERVER_PORT, false);
+            iface->addSocket( ipAddr, DHCPSERVER_PORT, true);
         }
 
         // TransMgr is certainly not done yet. We're just getting started
