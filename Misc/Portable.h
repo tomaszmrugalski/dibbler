@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Portable.h,v 1.16 2004-04-09 19:34:18 thomson Exp $
+ * $Id: Portable.h,v 1.17 2004-05-23 23:45:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/04/09 19:34:18  thomson
+ * *** empty log message ***
+ *
  * Revision 1.15  2004/03/29 22:06:49  thomson
  * 0.1.1 version
  *
@@ -18,7 +21,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.1.1-CVS $Date: 2004-04-09 19:34:18 $"
+#define DIBBLER_VERSION "0.1.1-CVS $Date: 2004-05-23 23:45:45 $"
 //#define DIBBLER_VERSION "0.1.1-CVS"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
@@ -61,6 +64,7 @@
 #define WORKDIR		      ".\\"
 #define CLNTCONF_FILE	  "client.conf"
 #define SRVCONF_FILE      "server.conf"
+#define NULLFILE          "nul"
 #endif
 
 #ifdef LINUX
@@ -70,6 +74,7 @@
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
 #define CLNTPID_FILE      "client.pid"
 #define SRVPID_FILE       "server.pid"
+#define NULLFILE "/dev/null"
 #endif
 
 // **********************************************************************

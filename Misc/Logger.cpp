@@ -4,6 +4,7 @@
 #include <string>
 #include <time.h>
 #include "Logger.h"
+#include "Portable.h"
 
 namespace logger {
 
@@ -12,8 +13,9 @@ namespace logger {
     bool mute = false;
     string logname="Init";
     Elogmode logmode = FULL;
-    ofstream logfile;
-    ofstream tmp;
+    ofstream logfile;            // file where wanted msgs are stored
+    ofstream nullfile(NULLFILE); // file where unwanted msgs are dumped
+    bool fileMode = false;
 
     ostream & endl (ostream & strum) {
 	if (!mute)
@@ -32,13 +34,20 @@ namespace logger {
 			       "Debug    "
 	};
 
-//	if ( x >= logger::logLevel) {
-//	    mute = 1;
-//	    strum.clear(ios::failbit);
-//	    return strum;
-//	}
-//	strum.clear();
-//	mute=0;
+	if ( x > logger::logLevel) {
+	    // ignore this entry
+	    strum.rdbuf(logger::nullfile.rdbuf());
+	    mute = 1;
+	    return strum;
+	} else {
+	    // log this entry
+	    if (fileMode) {
+		strum.rdbuf(logger::logfile.rdbuf());
+	    } else {
+		strum.rdbuf(std::cerr.rdbuf());
+	    }
+	    mute = 0;
+	}
 
 	time_t teraz;
 	teraz = time(NULL);
@@ -46,8 +55,8 @@ namespace logger {
 	if (logmode!=SHORT) {
 	    strum << (1900+czas->tm_year) << ".";
 	    strum.width(2); strum.fill('0'); strum << czas->tm_mon+1 << ".";
-	    strum.width(2);	strum.fill('0'); strum << czas->tm_mday  << " ";
-	    strum.width(2);	strum.fill('0'); strum << czas->tm_hour  << ":";
+	    strum.width(2); strum.fill('0'); strum << czas->tm_mday  << " ";
+	    strum.width(2); strum.fill('0'); strum << czas->tm_hour  << ":";
 	}
 	strum.width(2);	strum.fill('0'); strum << czas->tm_min   << ":";
 	strum.width(2);	strum.fill('0'); strum << czas->tm_sec;
@@ -68,8 +77,7 @@ namespace logger {
     ostream& logDebug(ostream & strum)   { return logger::logCommon(strum,8); }
 
     void Initialize(char * file) {
-	logger::tmp.clear(ios::failbit);
-	
+	fileMode = true;
 	logger::orig = std::clog.rdbuf();
 
 	logger::logfile.open(file);
@@ -79,6 +87,7 @@ namespace logger {
 
     void Terminate() {
 	std::clog.rdbuf(logger::orig);
+	fileMode = false;
     }
 
     void setLogLevel(int x) {

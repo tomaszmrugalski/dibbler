@@ -29,3 +29,6 @@ libMisc.a: objs
 
 clean:
 	rm -f *.o *.a
+
+test1: test1.cpp libMisc.a
+	$(CPP) $(OPTS) -o $@ $< -L. -lMisc
