@@ -1,7 +1,7 @@
 
   Beka
  ------
-Cos takiego bylo w IfaceMgr.h (prosto z Rose'a): d
+Cos takiego bylo w IfaceMgr.h (prosto z Rose'a):
 
   int addAddr(void char *iface, void char * addr);
   int delAddr(void int iface, void char *addr);
