@@ -1,7 +1,7 @@
 include Makefile.inc
 PREFIX = .
 
-all: includes libs server client
+all: includes libs server client tags
 
 includes:
 	cd $(INCDIR); $(MAKE) all 
@@ -99,6 +99,10 @@ srvlibs:	includes
 	done
 
 
+tags:
+	rm -f TAGS
+	find . -name \*.cpp | xargs etags
+	find . -name \*.h | xargs etags
 
 clean:
 	@for dir in $(SUBDIRS); do \
@@ -107,3 +111,4 @@ clean:
 	done
 	cd $(LOWLEVEL); $(MAKE) clean
 	rm -f *.o $(CLIENTBIN) $(SERVERBIN)
+	rm -f TAGS
