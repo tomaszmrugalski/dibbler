@@ -129,7 +129,7 @@ void TCfgMgr::setDUID(const string duidFile,char * mac,int macLen, int macType)
         DUIDlen>>=1;
         this->DUID=new TDUID(DUID,DUIDlen);
         
-        delete DUID;
+        delete [] DUID;
         f.close();
     }
 }
