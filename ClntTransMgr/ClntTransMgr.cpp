@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.30 2004-12-07 00:45:41 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.31 2004-12-07 22:57:51 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.29  2004/12/04 23:45:40  thomson
  * Problem with client and server on the same Linux host fixed (bug #56)
  *
@@ -222,6 +225,35 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
     return true;
 }
 
+/** this function removes expired addresses from interface and from database
+ *  It must be called before AddrMgr::doDuties() is called.
+ */
+void TClntTransMgr::removeExpired() {
+
+    if (AddrMgr->getValidTimeout())
+        return;
+
+    SmartPtr<TAddrIA> ptrIA;
+    SmartPtr<TAddrAddr> ptrAddr;
+    SmartPtr<TIfaceIface> ptrIface;
+
+    this->AddrMgr->firstIA();
+    while (ptrIA = this->AddrMgr->getIA()) {
+	if (ptrIA->getValidTimeout())
+	    continue;
+
+	ptrIA->firstAddr();
+	while (ptrAddr = ptrIA->getAddr()) {
+	    if (ptrAddr->getValidTimeout())
+		continue;
+	    ptrIface = this->IfaceMgr->getIfaceByID(ptrIA->getIface());
+	    Log(Warning) << "Address " << ptrAddr->get()->getPlain() << " assigned to the "
+			 << ptrIface->getName() << "/" << ptrIface->getID() 
+			 << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
+	    ptrIface->delAddr(ptrAddr->get());
+	}
+    }
+}
 
 void TClntTransMgr::checkDB()
 {
@@ -307,6 +339,7 @@ void TClntTransMgr::doDuties()
     }
 
     this->removeExpired();
+    this->AddrMgr->doDuties();
 
     this->AddrMgr->dump();
     this->IfaceMgr->dump();
@@ -337,33 +370,6 @@ void TClntTransMgr::doDuties()
 
     if (this->Shutdown && !Transactions.count())
         this->IsDone = true;
-}
-
-// removes expired addrs from addrDB and IfaceMgr
-void TClntTransMgr::removeExpired()
-{
-    if (AddrMgr->getValidTimeout())
-        return;
-
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TAddrAddr> ptrAddr;
-    SmartPtr<TIfaceIface> ptrIface;
-    AddrMgr->firstIA();
-
-    while ( ptrIA = AddrMgr->getIA() ) {
-        if (ptrIA->getValidTimeout())
-            continue;
-        ptrIA->firstAddr();
-        while ( ptrAddr = ptrIA->getAddr() ) {
-            if (ptrAddr->getValidTimeout())
-                continue;
-            // we fount it, at last!
-            // remove it from addrMgr ...
-            ptrIA->delAddr(ptrAddr->get());
-            // ... and from IfaceMgr
-            ptrIface = IfaceMgr->getIfaceByID( ptrIA->getIface() );
-        }
-    }
 }
 
 void TClntTransMgr::shutdown()
