@@ -30,6 +30,7 @@ class TIfaceMgr {
 
     // ---other---
     int select(unsigned long time, char *buf, int &bufsize, SmartPtr<TIPv6Addr> peer);
+    void dump(char * file);
     bool isDone();
 
     ~TIfaceMgr();

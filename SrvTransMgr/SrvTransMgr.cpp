@@ -56,20 +56,20 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
 long TSrvTransMgr::getTimeout()
 {
-    unsigned long min = 0x7fffffff;
-    unsigned long addrTimeout = 0x7fffffff;
+    unsigned long min = 0xffffffff;
+    unsigned long addrTimeout = 0xffffffff;
     SmartPtr<TMsg> ptrMsg;
     MsgLst.first();
     while (ptrMsg = MsgLst.get() ) 
     {
-        std::clog << logger::logDebug << "Msg (transID=" << hex 
-            << ptrMsg->getTransID() << dec  << ") returned timemout " 
-            << ptrMsg->getTimeout() << logger::endl;
+//        std::clog << logger::logDebug << "Msg (transID=" << hex 
+//            << ptrMsg->getTransID() << dec  << ") returned timemout " 
+//            << ptrMsg->getTimeout() << logger::endl;
         if (ptrMsg->getTimeout() < min) 
             min = ptrMsg->getTimeout();
     }
     addrTimeout = AddrMgr->getTimeout();
-    std::clog << logger::logDebug << "AddrMgr returned " << addrTimeout << " timeout." << logger::endl;
+//    std::clog << logger::logDebug << "AddrMgr returned " << addrTimeout << " timeout." << logger::endl;
     return min<addrTimeout?min:addrTimeout;
 }
 

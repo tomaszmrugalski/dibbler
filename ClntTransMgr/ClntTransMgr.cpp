@@ -148,8 +148,20 @@ void TClntTransMgr::doDuties()
     Transactions.first();
     while(msg=Transactions.get())
     {
-        if ((!msg->getTimeout())&&(!msg->isDone()))
+        if ((!msg->getTimeout())&&(!msg->isDone())) {
+	    std::clog << logger::logDebug << "Processing msg (type=" << msg->getType()  
+		      << ",transID=";
+	    std::clog.width(6);
+	    std::clog.fill('0');
+	    std::clog << hex << msg->getTransID() << dec << ",opts:";
+	    SmartPtr<TOpt> ptrOpt;
+	    msg->firstOption();
+	    while (ptrOpt = msg->getOption()) {
+		std::clog << " " << ptrOpt->getOptType();
+	    }
+	    std::clog << ")" << logger::endl;
             msg->doDuties();
+	}
     }
 
     // now delete messages which are marked as done
@@ -162,6 +174,7 @@ void TClntTransMgr::doDuties()
     this->removeExpired();
 
     AddrMgr->dbStore();
+    IfaceMgr->dump(CLNTIFACEMGR_FILE);
 
     if (!this->Shutdown && !this->IsDone) {
         // are there any tentative addrs?
@@ -316,12 +329,12 @@ unsigned long TClntTransMgr::getTimeout()
         return 0;
 
     addrTimeout = AddrMgr->getTimeout();
-    std::clog << logger::logDebug << "AddrMgr returned " << addrTimeout 
-        << " timeout." << logger::endl;
+//    std::clog << logger::logDebug << "AddrMgr returned " << addrTimeout 
+//        << " timeout." << logger::endl;
 
     addrTentativeTimeout = AddrMgr->getTentativeTimeout();
-    std::clog << logger::logDebug << "AddrMgr returned " << addrTentativeTimeout 
-        << " tentative timeout." << logger::endl;
+//    std::clog << logger::logDebug << "AddrMgr returned " << addrTentativeTimeout 
+//        << " tentative timeout." << logger::endl;
     if (addrTentativeTimeout < addrTimeout)
         addrTimeout = addrTentativeTimeout;
 
@@ -331,10 +344,10 @@ unsigned long TClntTransMgr::getTimeout()
     {
         if (ptrMsg->getTimeout()<timeout)
             timeout=ptrMsg->getTimeout();
-        std::clog << logger::logDebug << 
-            "Msg (transID=" << hex << ptrMsg->getTransID() << dec
-            << " type:"<<ptrMsg->getType()
-            <<") returned timemout " << ptrMsg->getTimeout() << logger::endl;
+//        std::clog << logger::logDebug << "Msg (transID=" 
+//		  << hex << ptrMsg->getTransID() << dec
+//		  << " type:"<<ptrMsg->getType()
+//		  <<") returned timemout " << ptrMsg->getTimeout() << logger::endl;
     }
     if (timeout < addrTimeout)
         return timeout;

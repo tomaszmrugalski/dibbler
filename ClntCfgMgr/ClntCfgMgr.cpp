@@ -172,7 +172,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
         //this->DUIDlen=0;
         return;
     };
-
+	
 	std::ofstream xmlDump;
 	xmlDump.open(CLNTCFGMGR_FILE);
 	xmlDump << *this;

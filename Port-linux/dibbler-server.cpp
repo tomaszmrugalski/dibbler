@@ -35,6 +35,10 @@ void daemon_init() {
     //fclose(stdout);
     //fclose(stderr);
 
+    if (chdir(WORKDIR)) {
+	std::clog << logger::logError << "Unable to change directory to " << WORKDIR << logger::endl;
+    }
+
     logger::Initialize(SRVLOG_FILE);
 
     int fd,childpid;
@@ -71,8 +75,7 @@ void daemon_init() {
 	    exit(0); // pierwszy potomek
 	
     } // getppid()!=1
-    
-    chdir("/");
+   
 
     umask(0);
 }
@@ -111,7 +114,7 @@ int main(int argc, char * argv[])
 
     // parse command line parameters
     // Well, one big FIXME here :)
-    if (argc==2 && !strncasecmp("-d",argv[1],2) ) {
+    if (argc<2 || strncasecmp("-d",argv[1],2) ) {
 	daemon_mode = true;
 	daemon_init();
     }

@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
  *          Marek Senderski <msend@o2.pl>                                    *
  *                                                                           *
- * $Id: DHCPClient.cpp,v 1.4 2004-02-22 23:19:56 thomson Exp $                                                                           
+ * $Id: DHCPClient.cpp,v 1.5 2004-02-28 11:29:03 thomson Exp $                                                                           
  *                                                                           *
  * released under GNU GPL v2 or later licence                                *
  *                                                                           */
@@ -31,9 +31,11 @@ TDHCPClient::TDHCPClient(string config)
 
     IfaceMgr = new TClntIfaceMgr();
     if ( IfaceMgr->isDone() ) {
-	std::clog << logger::logCrit << "Fatal error during IfaceMgr. Aborting." << logger::endl;
+	std::clog << logger::logCrit << "Fatal error during IfaceMgr init. Aborting." << logger::endl;
 	this->IsDone = true;
     }
+
+    IfaceMgr->dump(CLNTIFACEMGR_FILE);
 
     TransMgr = new TClntTransMgr(IfaceMgr, config);
     TransMgr->setThat(TransMgr);
@@ -44,10 +46,10 @@ void TDHCPClient::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
-	std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="
-		<< TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << logger::endl;
-    int fd=	sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
-	char buf = CONTROL_MSG;
+    std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="
+	      << TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << logger::endl;
+    int fd = sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
+    char buf = CONTROL_MSG;
     int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
     sock_del(fd);
 #endif

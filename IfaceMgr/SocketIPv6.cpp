@@ -120,11 +120,11 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
     case -3: // this error no longer could occur in Linux version
         std::clog << logger::logError 
 		  << "Unable to create a network address structure (addr=" 
-		  << this->Plain << ")" << logger::endl;
+		  << addr->getPlain() << ")" << logger::endl;
         break;
     case -4:
-        std::clog << logger::logError << "Unable to bind socket (iface= " << ifaceid  
-		  << ", addr=" << this->Plain << ", port=" 
+        std::clog << logger::logError << "Unable to bind socket (iface=" << ifaceid  
+		  << ", addr=" << addr->getPlain() << ", port=" 
 		  << this->Port << ")" << logger::endl;
         break;
     case -5:

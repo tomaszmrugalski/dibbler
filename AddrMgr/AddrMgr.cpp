@@ -31,7 +31,7 @@ void TAddrMgr::dbStore()
     f.open(this->dbfile.c_str());
     f << *this;
     f.close();
-    std::clog << logger::logNotice << "AddrDB saved in " << this->dbfile << logger::endl;
+//  std::clog << logger::logDebug << "AddrDB saved in " << this->dbfile << logger::endl;
 }
 
 void TAddrMgr::addClient(SmartPtr<TAddrClient> x)

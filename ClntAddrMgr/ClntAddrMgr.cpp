@@ -56,15 +56,15 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
     Client->firstIA();
     unsigned long min = DHCPV6_INFINITY;
     unsigned long tmp;
-    std::clog << logger::logDebug << "getTentativeTimeout(): ";
+//    std::clog << logger::logDebug << "getTentativeTimeout(): ";
     while(ptrIA=Client->getIA())
     {
 	tmp = ptrIA->getTentativeTimeout();
-	std::clog << " IA(IAID=" << ptrIA->getIAID() << "),timeout=" << tmp;
+//	std::clog << " IA(IAID=" << ptrIA->getIAID() << "),timeout=" << tmp;
 	if (min > tmp)
 	    min = tmp;
     }
-    std::clog << logger::endl;
+//    std::clog << logger::endl;
     return min;
 }
 

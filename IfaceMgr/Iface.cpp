@@ -258,7 +258,7 @@ TIfaceIface::~TIfaceIface() {
 ostream & operator <<(ostream & strum, TIfaceIface &x) {
     char buf[48];
 
-    strum << "  <TIfaceIface";
+    strum << "  <IfaceIface";
     strum << " name=\"" << x.Name << "\"";
     strum << " id=\"" << x.ID << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
@@ -283,6 +283,6 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
     while (sock = x.getSocket() ) {
 	strum << *sock;
     }
-    strum << "  </TIfaceIface>" << endl;
+    strum << "  </IfaceIface>" << endl;
     return strum;
 }

@@ -190,6 +190,17 @@ int TIfaceMgr::countIface() {
 }
 
 /*
+ * dump yourself to file
+ */
+void TIfaceMgr::dump(char * file)
+{
+    std::ofstream xmlDump;
+    xmlDump.open(file);
+    xmlDump << *this;
+    xmlDump.close();
+}
+
+/*
  * destructor. Does really nothing. (SmartPtr is a sweet thing, isn't it?)
  */
 TIfaceMgr::~TIfaceMgr()
@@ -208,7 +219,7 @@ ostream & operator <<(ostream & strum, TIfaceMgr &x)
     SmartPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr=x.IfaceLst.get() ) {
-	cout << *ptr;
+	strum << *ptr;
     }
     
     strum << "</IfaceMgr>" << endl;
