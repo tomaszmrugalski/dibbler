@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.00"
-	Name="client-winxp"
+	Name="client-win32"
 	ProjectGUID="{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
 	Keyword="Win32Proj">
 	<Platforms>

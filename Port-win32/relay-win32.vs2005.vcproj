@@ -221,9 +221,6 @@
 					RelativePath="WinService.cpp">
 				</File>
 				<File
-					RelativePath="foo.cpp">
-				</File>
-				<File
 					RelativePath="lowlevel-win32.c">
 				</File>
 				<File
