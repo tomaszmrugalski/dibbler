@@ -1,53 +1,63 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: IPv6Addr.cpp,v 1.4 2004-12-07 20:53:14 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include "IPv6Addr.h"
 #include "Portable.h"
 
-TIPv6Addr::TIPv6Addr()
-{
+TIPv6Addr::TIPv6Addr() {
     memset(Addr,0,16);
     inet_ntop6(Addr,Plain);
 }
-TIPv6Addr::TIPv6Addr(char* addr, bool plain)
-{
-    if (plain)
-    {
+
+TIPv6Addr::TIPv6Addr(char* addr, bool plain) {
+    if (plain) {
         strcpy(Plain,addr);
         inet_pton6(Plain,Addr);
-    }
-    else
-    {
+    } else {
         memcpy(Addr,addr,16);
         inet_ntop6(Addr,Plain);
     }
 }
 
-char* TIPv6Addr::getAddr()
-{
+bool TIPv6Addr::linkLocal() {
+    if (this->Addr[0]==0xfe &&
+	this->Addr[1]==0x80)
+	return true;
+    return false;
+}
+
+char* TIPv6Addr::getAddr() {
     return Addr;
 }
 
-char* TIPv6Addr::getPlain()
-{
+char* TIPv6Addr::getPlain() {
     inet_ntop6( Addr, Plain);
     return Plain;
 }
 
-void TIPv6Addr::setAddr(char* addr)
-{
+void TIPv6Addr::setAddr(char* addr) {
     memcpy(Addr,addr,16);
     inet_ntop6(Addr,Plain);
 }
 
-char* TIPv6Addr::storeSelf(char *buf)
-{
+char* TIPv6Addr::storeSelf(char *buf) {
     memcpy(buf,this->Addr,16);
     return buf+16;
 }
 
-
-bool TIPv6Addr::operator==(const TIPv6Addr &other)
-{
+bool TIPv6Addr::operator==(const TIPv6Addr &other) {
     return !memcmp(this->Addr,other.Addr,16);
 }
 

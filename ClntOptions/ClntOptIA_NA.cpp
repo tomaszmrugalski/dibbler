@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.7 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.8 2004-12-07 20:51:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.6  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -415,11 +418,22 @@ void TClntOptIA_NA::releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr )
         ptrIA->delAddr(addr);
     else
 	Log(Warning) << "Unable to release addr: IA (" 
-		     << IAID << ") not in addrDB." << LogEnd;
+		     << IAID << ") not present in addrDB." << LogEnd;
 }
 
 bool TClntOptIA_NA::isValid()
 {
+    SmartPtr<TClntOptIAAddress> addr;
+    this->firstAddr();
+    while (addr = this->getAddr()) {
+	if (addr->getAddr()->linkLocal()) {
+	    Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA (IAID=" 
+			 << this->IAID << ") is link local. The whole IA option is considered invalid."
+			 << LogEnd;
+	    return false;
+	}
+    }
+
     if (Valid)
         return this->T1<=this->T2;
     else

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.25 2004-12-07 00:45:41 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.26 2004-12-07 20:51:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.24  2004/12/02 00:51:04  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -384,40 +387,48 @@ bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
 }
 
 bool TClntCfgMgr::validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA) {
-    if ((unsigned long)ptrIA->getT2()<(unsigned long)ptrIA->getT1()) 
+
+    if ( ptrIA->getT2()<ptrIA->getT1() ) 
     {
-	Log(Crit) << "T1 can't be lower than T2 for IA "<<*ptrIA << LogEnd
-		  <<"on the "<<ptrIface->getName()<<"/"
-		  <<ptrIface->getID() << " interface." << LogEnd;
+	Log(Crit) << "T1 can't be lower than T2 for IA " << *ptrIA << "on the " << ptrIface->getName() 
+		  << "/" << ptrIface->getID() << " interface." << LogEnd;
 	return false;
     }
     SmartPtr<TClntCfgAddr> ptrAddr;
     ptrIA->firstAddr();
     while(ptrAddr=ptrIA->getAddr())
     {
-	if((unsigned long)ptrAddr->getPref()>(unsigned long)ptrAddr->getValid())
-	{
-	    Log(Crit)
-		<< "Prefered time " << ptrAddr->getPref()
-		<< " can't be lower than Valid lifetime " << ptrAddr->getValid()
-		<< "for IA:" << *ptrIA 
-		<< "in iface(id/name)" << ptrIface->getName() << "/"
-		<< ptrIface->getID() << LogEnd;
+	if (!this->validateAddr(ptrIface, ptrIA, ptrAddr))
 	    return false;
-	}
-	if ((unsigned long)ptrIA->getT1()>(unsigned long)ptrAddr->getValid())
-	{
-	    Log(Crit)
-		<<"Valid lifetime:"<<ptrAddr->getValid()
-		<<"can't be lower than T1 "<<ptrIA->getT1()
-		<<"(address can't be renewed) in IA:"<<*ptrIA << LogEnd
-		<<"in iface(id/name)"<<ptrIface->getID()<<"/"
-		<<ptrIface->getName() << LogEnd;
-	    return false;
-	}
     }
     return true;
 }
+
+bool TClntCfgMgr::validateAddr(SmartPtr<TClntCfgIface> ptrIface, 
+			       SmartPtr<TClntCfgIA> ptrIA,
+			       SmartPtr<TClntCfgAddr> ptrAddr) {
+    if (ptrAddr->get()->linkLocal()) {
+	Log(Crit) << "Address " << ptrAddr->get()->getPlain() << " specified in IA "
+		  << ptrIA->getIAID() << " on the " << ptrIface->getName() << "/" << ptrIface->getID()
+		  << " interface is link local." << LogEnd;
+	return false;
+    }
+    if( ptrAddr->getPref()>ptrAddr->getValid() ) {
+	Log(Crit) << "Prefered time " << ptrAddr->getPref() << " can't be lower than valid lifetime " 
+		  << ptrAddr->getValid() << " for IA " << ptrIA->getIAID() << " on the " 
+		  << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+	return false;
+    }
+    if ((unsigned long)ptrIA->getT1()>(unsigned long)ptrAddr->getValid()) {
+	Log(Crit) << "Valid lifetime " << ptrAddr->getValid() << " can't be lower than T1 " <<ptrIA->getT1()
+		  << "(address can't be renewed) in IA " << ptrIA->getIAID() << " on the " 
+		  << ptrIface->getName() << "/" << ptrIface->getName() << " interface." << LogEnd;
+	return false;
+    }
+    
+    return true;
+}
+
 
 SmartPtr<TClntCfgGroup> TClntCfgMgr::getGroupForIA(long IAID)
 {

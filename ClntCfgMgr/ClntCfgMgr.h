@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.6 2004-12-07 00:45:41 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.7 2004-12-07 20:51:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.5  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -70,6 +73,9 @@ private:
     bool validateConfig();
     bool validateIface(SmartPtr<TClntCfgIface> iface);
     bool validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA);
+    bool validateAddr(SmartPtr<TClntCfgIface> ptrIface, 
+		      SmartPtr<TClntCfgIA> ptrIA,
+		      SmartPtr<TClntCfgAddr> ptrAddr);
 
     bool matchParsedSystemInterfaces(clntParser *parser);
 };

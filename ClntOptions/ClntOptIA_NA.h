@@ -17,8 +17,7 @@ class TClntOptIA_NA : public TOptIA_NA
     TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent);
     TClntOptIA_NA(SmartPtr<TAddrIA> AddrIA, TMsg* parent);
     TClntOptIA_NA(SmartPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* parent);
-
-    TClntOptIA_NA( char * buf, int bufsize, TMsg* parent);
+    TClntOptIA_NA(char * buf, int bufsize, TMsg* parent);
     ~TClntOptIA_NA();    
 
     bool doDuties();
@@ -33,7 +32,9 @@ class TClntOptIA_NA : public TOptIA_NA
     SmartPtr<TClntOptIAAddress> getAddr(SmartPtr<TIPv6Addr> addr);
     void firstAddr();
     int countAddr();
-    TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, SmartPtr<TAddrIA> ClntaddrIA, TMsg* parent);
+    TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, 
+		  SmartPtr<TAddrIA> ClntaddrIA, 
+		  TMsg* parent);
     bool isValid();
 
  private:
