@@ -144,12 +144,12 @@ ostream& operator<<(ostream& out,TStationRange&  range)
     if (range.isAddrRange)
 	{
         if(range.AddrL&&range.AddrR)
-            out<<"Address range: ("<<*range.AddrL<<" , "<<*range.AddrR<<")";
+			out << "    <range min=\"" << *range.AddrL << "\" max=\"" << *range.AddrR << "\"/>" << std::endl;
 	}
 	else
 	{
         if (range.DUIDL&&range.DUIDR)
-            out<<"DUID range: ("<<*range.DUIDL<<" , "<<*range.DUIDR<< ")";
+			out << "    <range min=\"" << *range.DUIDL << "\" max=\"" << *range.DUIDR << "\"/>" << std::endl;
 	}
 	return out;
 }

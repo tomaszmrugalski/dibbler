@@ -338,7 +338,11 @@ bool TSrvCfgMgr::checkConfigConsistency()
 
 ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
 	out << "<SrvCfgMgr>" << std::endl;
-
+	SmartPtr<TSrvCfgIface> ptrIface;
+	x.firstIface();
+	while (ptrIface = x.getIface()) {
+		out << *ptrIface;
+	}
 	out << "</SrvCfgMgr>" << std::endl;
 	return out;
 }

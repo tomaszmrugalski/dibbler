@@ -76,36 +76,43 @@ void TSrvCfgIface::setNoConfig()
 ostream& operator<<(ostream& out,TSrvCfgIface& iface)
 {
 	SmartPtr<TStationID> Station;
-	out<<"Parametry interfejsu:" << logger::endl;
-	out<<"Nazwa:"<<iface.Name << logger::endl;
-	out<<"ID:"<<iface.ID << logger::endl;
-	out<<"No config.:"<<iface.NoConfig << logger::endl;
-	out<<"Czy uzywac unicastu:"<<iface.isUniAddress << logger::endl;
-    out<<"Adres unicastowy:"<<*(iface.UniAddress);
-	out<<dec << logger::endl;
+	out << "  <SrvCfgIface ";
+	out << "name=\""<<iface.Name << "\" ";
+	out << "id=\""<<iface.ID << "\" ";
+	if (iface.NoConfig) {
+	   out << "no-config=\"true\" ";
+	}
+	if (iface.isUniAddress) {
+	   out << "uniaddress=\"true\" ";
+	}
+	out << ">" << std::endl;
+	if (iface.isUniAddress) {
+   	   out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
+	}
 
     SmartPtr<TIPv6Addr> stat;
-    cout<<"Liczba serwerow NTP:"<<iface.NTPSrv.count() << logger::endl;
+	out << "  <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;
 	iface.NTPSrv.first();
 	while(stat=iface.NTPSrv.get())
-		cout<<*stat << logger::endl;
-	
-    cout<<"TimeZone:"<<iface.TimeZone << logger::endl;
+		out << "  <ntp>" << *stat << "</ntp>" << logger::endl;
+		
+    out << "  <timezone>" << iface.TimeZone << "</timezone>" << logger::endl;
 
-	cout<<"Liczba serwerow DNS:"<<iface.DNSSrv.count() << logger::endl;
+	out << "  <!-- DNS Resolvers count: " << iface.DNSSrv.count() << "-->" << logger::endl;
 	iface.DNSSrv.first();
 	while(stat=iface.DNSSrv.get())
-		cout<<*stat << logger::endl;
+		out << "  <dns>" << *stat << "</dns>" << logger::endl;
 	
-    cout<<"Domena:"<<iface.Domain << logger::endl;
+    out << "  <domain>" << iface.Domain << "</domain>" << logger::endl;
 
 	int classCnt=0;
 	SmartPtr<TSrvCfgAddrClass>	groupPtr;
 	iface.SrvCfgAddrClassLst.first();
+	out << "  <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() 
+		<< "-->" << logger::endl;
 	while(groupPtr=iface.SrvCfgAddrClassLst.get())
 	{	
-		cout<<"Nr.klasy:"<<classCnt++ << logger::endl;
-		cout<<"{" << logger::endl<<*groupPtr << logger::endl<<"}" << logger::endl;
+		out << *groupPtr;
 	}
 	return out;
 }

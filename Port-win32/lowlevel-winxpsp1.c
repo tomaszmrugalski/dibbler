@@ -5,6 +5,7 @@
 #include <Ws2spi.h>
 
 #include <iphlpapi.h>
+#include <iptypes.h>
 #include <process.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -74,8 +75,11 @@ extern	struct iface* if_list_get()
     PIP_ADAPTER_UNICAST_ADDRESS linkaddr;
 
 	buflen=0;
-	GetAdaptersAddresses(AF_INET6,GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST
-			|GAA_FLAG_SKIP_DNS_SERVER,NULL,(PIP_ADAPTER_ADDRESSES) buffer,&buflen);
+	GetAdaptersAddresses(AF_INET6,
+	GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST|GAA_FLAG_SKIP_DNS_SERVER,
+	NULL,
+	(PIP_ADAPTER_ADDRESSES) buffer,
+	&buflen);
 	buffer=(char*)malloc(buflen);
 	GetAdaptersAddresses(AF_INET6,GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST
 			|GAA_FLAG_SKIP_DNS_SERVER,NULL,(PIP_ADAPTER_ADDRESSES) buffer,&buflen);
@@ -88,6 +92,7 @@ extern	struct iface* if_list_get()
 		WideCharToMultiByte( CP_ACP, 0, adaptaddr->FriendlyName, -1,
 										iface->name,MAX_IFNAME_LENGTH, NULL, NULL );
 		iface->id=adaptaddr->IfIndex;
+		iface->id=adaptaddr->Ipv6IfIndex;
         
         //set hardware type of interface		
         iface->hardwareType=adaptaddr->IfType;

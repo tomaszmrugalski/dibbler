@@ -169,32 +169,38 @@ bool TSrvCfgAddrClass::getRapidCommit()
 
 ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
 {
-	cout<<"T1:"<<addrClass.T1Beg<<"- "<< addrClass.T1End  << logger::endl;
-    cout<<"T2:"<<addrClass.T2Beg<<"- "<< addrClass.T2End  << logger::endl;
-    cout<<"Preferred:"<<addrClass.PrefBeg<<"- "<< addrClass.PrefEnd  << logger::endl;
-	cout<<"Valid:"<<addrClass.ValidBeg<<"- "<< addrClass.ValidEnd  << logger::endl;
-	cout<<"MaxClientLease:"<<addrClass.MaxClientLease << logger::endl;
-	cout<<"MaxLease:"<<addrClass.MaxLease << logger::endl;
+	out << "  <class>" << std::endl;
+	out << "    <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  << "\" />" << logger::endl;
+    out << "    <T2 min=\"" << addrClass.T2Beg << "\" max=\"" << addrClass.T2End  << "\" />" << logger::endl;
+    out << "    <pref min=\"" << addrClass.PrefBeg << "\" max=\""<< addrClass.PrefEnd  << "\" />" <<logger::endl;
+	out << "    <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd  << "\" />" << logger::endl;
+	out << "    <MaxClientLease>" << addrClass.MaxClientLease << "</MaxClientLease>" << logger::endl;
+	out << "    <MaxLease>" << addrClass.MaxLease << "</MaxLease>" << logger::endl;
 	    
-	cout<<"Preference:"<<(int)addrClass.Preference << logger::endl;
-	cout<<"RapidCommit:"<<addrClass.RapidCommit << logger::endl;
-	cout<<"Unicast:"<<addrClass.Unicast << logger::endl;
+	out << "    <preference>" << (int)addrClass.Preference << "</preference>" << logger::endl;
+	if (addrClass.RapidCommit) {
+	  out << "    <rapid-commit/>" << logger::endl;
+	}
+	if (addrClass.Unicast) {
+	  out << "    <unicast/>" << logger::endl;
+	}
 //	cout<<"NISServer:"<<addrClass.NISServer << logger::endl;
 	
     SmartPtr<TStationRange> statRange;
-	cout<<"Liczba zakresow w puli adresowej:"<<addrClass.Pool.count() << logger::endl;
+	out << "    <!-- ranges:" << addrClass.Pool.count() << " -->" << logger::endl;
 	addrClass.Pool.first();
 	while(statRange=addrClass.Pool.get())
-		cout<<*statRange << logger::endl;
+		out << *statRange;
 	
-    cout<<"Liczba zakresow w odrzuconych:"<<addrClass.RejedClnt.count() << logger::endl;
+	out << "    <!-- rejected ranges:" << addrClass.RejedClnt.count() << " -->" << logger::endl;
 	addrClass.RejedClnt.first();
 	while(statRange=addrClass.RejedClnt.get())
-		cout<<*statRange << logger::endl;	
+		out << *statRange;	
 	
-    cout<<"Liczba zakresow akceptowanych:"<<addrClass.AcceptClnt.count() << logger::endl;
+	out << "    <!-- accepted ranges:" << addrClass.AcceptClnt.count() << " -->" << logger::endl;
 	addrClass.AcceptClnt.first();
 	while(statRange=addrClass.AcceptClnt.get())
-		cout<<*statRange << logger::endl;
+		out << *statRange;
+	out << "  </class>" << std::endl;
 	return out;
 }

@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
  *          Marek Senderski <msend@o2.pl>                                    *
  *                                                                           *
- * $Id: DHCPServer.cpp,v 1.5 2004-02-28 15:56:30 thomson Exp $               *
+ * $Id: DHCPServer.cpp,v 1.6 2004-02-28 20:08:16 thomson Exp $               *
  *                                                                           *
  * released under GNU GPL v2 or later licence                                */
       
@@ -28,6 +28,8 @@ TDHCPServer::TDHCPServer(string config)
 	std::clog << logger::logCrit << "Fatal error during IfaceMgr. Aborting." << logger::endl;
 	this->IsDone = true;
     }
+	
+	IfaceMgr->dump(SRVIFACEMGR_FILE);
 
     TransMgr = new TSrvTransMgr(IfaceMgr, config, oldConf);
     TransMgr->setThat(TransMgr);

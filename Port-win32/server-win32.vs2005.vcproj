@@ -372,7 +372,7 @@
 					RelativePath="dns-winxp.c">
 				</File>
 				<File
-					RelativePath="lowlevel-winxp.c">
+					RelativePath="lowlevel-winxpsp1.c">
 				</File>
 				<File
 					RelativePath="server-winxp.cpp">
