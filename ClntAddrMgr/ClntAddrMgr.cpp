@@ -54,7 +54,7 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
 {
     SmartPtr<TAddrIA> ptrIA;
     Client->firstIA();
-    unsigned long min = INFINITY;
+    unsigned long min = DHCPV6_INFINITY;
     unsigned long tmp;
     std::clog << logger::logDebug << "getTentativeTimeout(): ";
     while(ptrIA=Client->getIA())

@@ -268,13 +268,13 @@ void TAddrIA::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr, long pref,long va
 
 unsigned long TAddrIA::getTentativeTimeout()
 {
-    unsigned long min = INFINITY;
+    unsigned long min = DHCPV6_INFINITY;
     switch (this->getTentative()) 
     {
     case YES:
         return 0;
     case NO:
-        return INFINITY;
+        return DHCPV6_INFINITY;
     case DONTKNOWYET:
         SmartPtr <TAddrAddr> ptrAddr;
         AddrLst.first();

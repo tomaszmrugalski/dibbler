@@ -1,5 +1,4 @@
 #include <iostream>
-#include <strstream>
 #include "Iface.h"
 #include "Portable.h"
 #include "Logger.h"
@@ -10,7 +9,7 @@
 TIfaceIface::TIfaceIface(char * name, int id, unsigned int flags, char* mac, 
 			 int maclen, char* llAddr, int llAddrCnt, int hwType)
 {
-    ostrstream(this->Name,MAX_IFNAME_LENGTH) << name << ends;
+    snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
     this->ID = id;
     this->Flags = flags;
 

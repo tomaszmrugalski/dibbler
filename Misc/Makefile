@@ -5,7 +5,7 @@ objs:	Logger.o DHCPConst.o DUID.o IPv6Addr.o long128.o addrpack.o
 
 # addr conversion (packed[[16] <-> plaintext[48])
 addrpack.o: addrpack.c 
-	$(CC) $(OPTS) -I $(INCDIR) -I. -c addrpack.c 
+	$(CC) $(COPTS) -I $(INCDIR) -I. -c addrpack.c 
 
 Logger.o: Logger.cpp Logger.h
 	$(CPP) $(OPTS) -c -o $@ $<

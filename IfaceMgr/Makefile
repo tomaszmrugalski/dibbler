@@ -10,8 +10,8 @@ server: objs
 test: test1 test2 test3 test4 test5
 
 test1: test1.cpp libIfaceMgr.a
-	cd $(PREFIX); $(MAKE) Logger.o
-	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test1.cpp -L. -lIfaceMgr $(PREFIX)/Logger.o $(PREFIX)/IPv6Addr.o
+	cd $(MISC); $(MAKE) Logger.o IPv6Addr.o
+	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test1.cpp -L. -lIfaceMgr $(MISC)/Logger.o $(MISC)/IPv6Addr.o
 
 test2: test2.cpp IfaceMgr.o Iface.o SocketIPv6.o 
 	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test2.cpp -L. -lIfaceMgr $(PREFIX)/Logger.o

@@ -309,9 +309,9 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
 
 unsigned long TClntTransMgr::getTimeout()
 {
-    unsigned long timeout = INFINITY;
-    unsigned long addrTimeout = INFINITY;
-    unsigned long addrTentativeTimeout = INFINITY;
+    unsigned long timeout = DHCPV6_INFINITY;
+    unsigned long addrTimeout = DHCPV6_INFINITY;
+    unsigned long addrTentativeTimeout = DHCPV6_INFINITY;
 
     if (this->IsDone) 
         return 0;

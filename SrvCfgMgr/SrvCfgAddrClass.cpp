@@ -129,8 +129,8 @@ unsigned long TSrvCfgAddrClass::countAddrInPool()
     unsigned long sum=0;
     while(ptrRange=Pool.get())
     {
-        if ((double(sum)+double(ptrRange->rangeCount()))>INFINITY)
-            return INFINITY;
+        if ((double(sum)+double(ptrRange->rangeCount()))>DHCPV6_INFINITY)
+            return DHCPV6_INFINITY;
         else
             sum+=ptrRange->rangeCount();
     }

@@ -98,7 +98,7 @@
 #define STATUSCODE_USEMULTICAST  5
 
 // INFINITY + 1 is 0. Hih, cool
-#define INFINITY 0xffffffff
+#define DHCPV6_INFINITY 0xffffffff
 
 // how long should we wait before we assume that OS detected duplicated addresses 
 // default (3 secs)

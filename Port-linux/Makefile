@@ -44,25 +44,25 @@ libSrvParser.a:  SrvParser.o SrvLexer.o
 # === C low level stuff ======================================
 # ============================================================
 layer3.o: layer3.c 
-	$(CC) $(OPTS) -I $(INCDIR) -I. -c layer3.c 
+	$(CC) $(COPTS) -I $(INCDIR) -I. -c layer3.c 
 
 libnetlink.o: libnetlink.c
-	$(CC) $(OPTS) -I $(INCDIR) -c libnetlink.c
+	$(CC) $(COPTS) -I $(INCDIR) -c libnetlink.c
 
 ll_map.o: ll_map.c 
-	$(CC) $(OPTS) -I $(INCDIR) -c ll_map.c
+	$(CC) $(COPTS) -I $(INCDIR) -c ll_map.c
 
 ll_types.o: ll_types.c
-	$(CC) $(OPTS) -I $(INCDIR) -c ll_types.c
+	$(CC) $(COPTS) -I $(INCDIR) -c ll_types.c
 
 utils.o: utils.c
-	$(CC) $(OPTS) -I $(INCDIR) -c utils.c
+	$(CC) $(COPTS) -I $(INCDIR) -c utils.c
 
 dns.o: dns.c	
-	$(CC) $(OPTS) -c $<
+	$(CC) $(COPTS) -c $<
 
 addrpack.o: addrpack.c
-	$(CC) $(OPTS) -c $<
+	$(CC) $(COPTS) -c $<
 
 # ============================================================
 # === tests ==================================================

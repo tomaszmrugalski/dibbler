@@ -100,6 +100,11 @@ void die() {
 
 int main(int argc, char * argv[])
 {
+    std::cout << DIBBLER_COPYRIGHT1 << " (CLIENT)" << std::endl;
+    std::cout << DIBBLER_COPYRIGHT2 << std::endl;
+    std::cout << DIBBLER_COPYRIGHT3 << std::endl;
+    std::cout << DIBBLER_COPYRIGHT4 << std::endl;
+
     bool daemon_mode = false;
 
     logger::setLogname("Client");

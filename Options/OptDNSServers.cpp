@@ -1,3 +1,11 @@
+/*                                                                           *
+ * Dibbler - a portable DHCPv6                                               *
+ *                                                                           *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
+ *          Marek Senderski <msend@o2.pl>                                    *
+ *                                                                           *
+ * released under GNU GPL v2 or later licence                                */
+
 #include <stdlib.h>
 #ifdef LINUX
 #include <netinet/in.h>
@@ -71,3 +79,4 @@ bool TOptDNSServers::isValid()
 {
     return this->Valid;
 }
+

@@ -30,13 +30,15 @@ namespace logger {
 			       "Info     ",
 			       "Debug    "
 	};
-	if ( x >= logger::logLevel) {
+
+	// FIXME:
+/*	if ( x >= logger::logLevel) {
 	    mute = 1;
-	    std::clog.clear(ios::eofbit);
+	    strum.clear(ios::failbit);
 	    return strum;
 	}
-	std::clog.clear();
-	mute=0;
+	strum.clear();
+	mute=0; */
 
 	time_t teraz;
 	teraz = time(NULL);

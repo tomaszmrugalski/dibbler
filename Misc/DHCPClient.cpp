@@ -22,11 +22,6 @@ TDHCPClient::TDHCPClient(string config)
 {
     string oldconf = config+"-old";
 
-    std::clog << logger::logEmerg << DIBBLER_COPYRIGHT1 << logger::endl;
-    std::clog << logger::logEmerg << DIBBLER_COPYRIGHT2 << logger::endl;
-    std::clog << logger::logEmerg << DIBBLER_COPYRIGHT3 << logger::endl;
-    std::clog << logger::logEmerg << DIBBLER_COPYRIGHT4 << logger::endl;
-
     serviceShutdown = 0;
     srand(now());
     this->IsDone = false;
@@ -78,8 +73,9 @@ void TDHCPClient::run()
         TransMgr->doDuties();
 
         unsigned int timeout = TransMgr->getTimeout();
-	if (timeout == INFINITY)
-	    timeout = INFINITY/2;
+	// FIXME: everything should be unsigned
+	if (timeout == DHCPV6_INFINITY)
+	    timeout = DHCPV6_INFINITY/2;
 	if (timeout == 0)
 	    timeout = 1;
 

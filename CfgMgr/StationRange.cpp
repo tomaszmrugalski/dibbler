@@ -105,7 +105,7 @@ unsigned long TStationRange::rangeCount()
         char *addr=diff->getAddr();
         for(int i=0;i<12;i++)
         {
-            if (addr[i]>0) return INFINITY;
+            if (addr[i]>0) return DHCPV6_INFINITY;
         }
         unsigned long retVal=ntohl(*(long*)(addr+12))+1;
         return retVal;

@@ -50,7 +50,7 @@ void TDHCPServer::run()
 
         TransMgr->doDuties();
         unsigned int timeout = TransMgr->getTimeout();
-	if (timeout == INFINITY) timeout = INFINITY/2;
+	if (timeout == DHCPV6_INFINITY) timeout = DHCPV6_INFINITY/2;
 	if (timeout == 0)        timeout = 1;
 	if (serviceShutdown)     timeout = 0;
 

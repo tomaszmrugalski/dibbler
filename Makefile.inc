@@ -1,22 +1,23 @@
 # === used tools ===
-CPP          = g++-2.95
-CC           = gcc-2.95
+CPP          = g++-3.3
+CC           = gcc-3.3
 FLEX         = flex
 BISONPP      = bison++
 
 # === compiler options ===
-OPTS         = -D$(ARCH) -funsigned-char -ftemplate-depth-40 $(XMLCFLAGS) -I $(INCDIR)
-EFENCE       =
-#OPTS         = -D$(ARCH) -funsigned-char -ftemplate-depth-40 $(XMLCFLAGS) -I $(INCDIR) -g
-#EFENCE       = -lefence
+COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR)
+OPTS         = -ftemplate-depth-40 $(COPTS)
+
+# debug info
+#EFENCE      = -lefence
 
 # === Portability ===
 ARCH         = LINUX
 LOWLEVEL     = $(PREFIX)/port-linux
 CLIENT       = port-linux/client-linux.cpp
 SERVER       = port-linux/server-linux.cpp
-CLIENTBIN    = client-linux-efence
-SERVERBIN    = server-linux-efence
+CLIENTBIN    = dibbler-client-linux
+SERVERBIN    = dibbler-server-linux
 
 # === libxml2 stuff ===
 XMLCFLAGS    = `pkg-config libxml-2.0 --cflags`
