@@ -218,8 +218,12 @@ bool TWinService::Install()
     // Get the executable file path
     char filePath[_MAX_PATH];
     GetModuleFileName(NULL, filePath, sizeof(filePath));
+	int i = strlen(filePath);
+	sprintf(filePath+i, " -d \"%s\"",ServiceDir.c_str());
+
     // Create the service
 	printf("Install(): filepath=[%s] ServiceName=[%s]\n",filePath,ServiceName);
+	printf("ServiceDir=[%s]\n",ServiceDir.c_str());
     SC_HANDLE hService = CreateService(	hSCM,ServiceName,ServiceName,
 					SERVICE_ALL_ACCESS,
 					SERVICE_WIN32_OWN_PROCESS,
@@ -231,6 +235,8 @@ bool TWinService::Install()
         CloseServiceHandle(hSCM);
         return FALSE;
     }
+
+	//ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION,"To jest opis uslugi" );
 
     // make registry entries to support logging messages
     // add the source name as a subkey under the Application
@@ -275,19 +281,24 @@ bool TWinService::Uninstall()
 {
    // Open the Service Control Manager
     SC_HANDLE hSCM = OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
-    if (!hSCM) return false;
+	if (!hSCM) {
+		printf("OpenSCManager() failed. Unable to open ServiceControl Manager\n");
+		return false;
+	}
     bool result = false;
     SC_HANDLE hService = ::OpenService(hSCM,ServiceName,DELETE);
     if (hService) 
 	{
         if (DeleteService(hService)) 
 		{
-            //FIXME:LogEvent(EVENTLOG_INFORMATION_TYPE, EVMSG_REMOVED, m_szServiceName);
             result = true;
-        } else 
-            //FIXME:LogEvent(EVENTLOG_ERROR_TYPE, EVMSG_NOTREMOVED, m_szServiceName);
-        CloseServiceHandle(hService);
-    }
+		} else {
+			printf("DeleteService(hService) failed.\n");
+		}
+		CloseServiceHandle(hService);
+	} else {
+		printf("Unable to open %s service.\n",ServiceName);
+	}
     CloseServiceHandle(hSCM);
     return result;
 }

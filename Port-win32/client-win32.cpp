@@ -13,7 +13,9 @@
 #include <crtdbg.h>
 #endif
 
-time_t timer; 
+extern "C" int lowlevelInit();
+
+time_t timer;
 
 using namespace std;
 
@@ -38,8 +40,14 @@ int main(int argc, char* argv[])
     WSADATA wsaData;
     if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData ))
         cout<<"Nie mozna zaladowac biblioteki WinSock 2.2"<<endl;
-    //Client.ParseStandardArgs(argc,argv);
+
 	int status = Client.ParseStandardArgs(argc, argv);
+
+	// find ipv6.exe (or netsh.exe in future implementations)
+	if (!lowlevelInit()) {
+		clog << "lowlevelInit() failed. Startup aborted.\n";
+		return -1;		
+	}
     
 	switch(status) {
 	case 1: { // STATUS

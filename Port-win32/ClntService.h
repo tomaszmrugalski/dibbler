@@ -1,10 +1,7 @@
-#ifndef _CLNTSERVICE_H
-#define _CLNTSERVICE_H
+#ifndef CLNTSERVICE_H
+#define CLNTSERVICE_H
 
-#include <windows.h>
-#include <stdio.h>
 #include "winservice.h"
-#include "DHCPClient.h"
 
 class TClntService : public TWinService
 {
@@ -13,10 +10,12 @@ public:
 	void Run();
     void OnStop();
     void OnShutdown();
+	void Install();
+	void Uninstall();
 	~TClntService(void);
     int ParseStandardArgs(int argc,char* argv[]);
-private:
-    string ServiceDir;
+
+	
 };
 
 #endif

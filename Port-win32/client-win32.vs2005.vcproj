@@ -727,6 +727,16 @@
 					RelativePath="..\misc\long128.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="port-winxp"
+				Filter="">
+				<File
+					RelativePath="ClntService.h">
+				</File>
+				<File
+					RelativePath="WinService.h">
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="..\FUN">

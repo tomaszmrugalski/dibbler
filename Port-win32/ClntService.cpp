@@ -7,9 +7,8 @@
 #include <crtdbg.h>
 #endif
 
-extern "C" char* ipv6Path;
-
-TClntService::TClntService() : TWinService("DHCPv6Client","Klient DHCPv6",SERVICE_AUTO_START,"RpcSS\0tcpip6\0winmgmt\0")
+TClntService::TClntService() 
+  :TWinService("DHCPv6Client","Klient DHCPv6",SERVICE_AUTO_START,"RpcSS\0tcpip6\0winmgmt\0")
 {
 }
 
@@ -42,21 +41,9 @@ int TClntService::ParseStandardArgs(int argc,char* argv[])
 			cout << "workdir found: [" << temp << "]" << endl;
             dirFound=true;
         }
-
-        if (strncmp(argv[n], "-i",2)==0) {
-           ipv6Path= new char [255];
-           ipv6Path[0]=0;
-		   if (n+1==argc) 
-				return -1; // this is last parameter
-		   n++;
-           strcat(ipv6Path,argv[n]);
-           ipv6Path[strlen(ipv6Path)]=0;
-           ipFound=true;
-		   cout << "ipv6path found: [" << ipv6Path << "]" << endl;
-        }
 		n++;
     }
-	if (ipFound && dirFound)
+	if (dirFound)
 		return status;
 	else
 		return -1;
@@ -93,14 +80,36 @@ void TClntService::Run()
     strcpy(logChar,logFile.c_str());
     logger::Initialize(logChar);
     delete logChar;
-    //clog<<logger::logAlert<<"Working dir:"<<ServiceDir;
     logger::setLogname("DHCPv6 Server");
     //char dir[200];
     //_getcwd(dir,200);
-    clog<<logger::logInfo<<"Work Dir:"<<workdir<<"  ipv6path:"<<ipv6Path<<endl;
     TDHCPClient client(workdir+confile);
     client.run();
 }
+
+void TClntService::Install() {
+	if (this->IsInstalled()) {
+		printf("Service already installed. Aborting.\n");
+		return;
+	}
+	bool result = this->TWinService::Install();
+	if (!result) {
+		printf("Service installation failed.\n");
+	}
+}
+
+void TClntService::Uninstall() {
+	if (!this->IsInstalled()) {
+		printf("Service not installed. Cannot uninstall\n");
+		return;
+	}
+	bool result = this->TWinService::Uninstall();
+	if (!result) {
+		printf("Service uninstallation failed.\n");
+	}
+}
+
+
 
 TClntService::~TClntService(void)
 {

@@ -2,6 +2,7 @@
 #define _WINSERVICE_
 
 #include <windows.h>
+#include <string>
 
 //#include "ntservmsg.h" // Event message ids
 #define SERVICE_CONTROL_USER 128
@@ -39,6 +40,7 @@ public:
 
 	~TWinService(void);
 
+protected:
     SERVICE_STATUS			Status;
 	SERVICE_STATUS_HANDLE	hServiceStatus;
     BOOL					IsRunning;
@@ -54,5 +56,6 @@ public:
 	static	TWinService*	ServicePtr;
     HANDLE					EventSource;
 
+	std::string				ServiceDir;
 };
 #endif
