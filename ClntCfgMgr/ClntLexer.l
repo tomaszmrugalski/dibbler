@@ -42,7 +42,6 @@ namespace std {
 
 %%
 
-  // place your Lex rules here
 iface     {return clntParser::IFACE_;}
 no-config {return clntParser::NO_CONFIG_;}
 address   {return clntParser::ADDRES_;}

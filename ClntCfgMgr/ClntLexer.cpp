@@ -1034,8 +1034,6 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-  // place your Lex rules here
-
 	if ( (yy_init) )
 		{
 		(yy_init) = 0;

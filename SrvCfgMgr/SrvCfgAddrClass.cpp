@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.12 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.13 2004-07-05 23:27:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.11  2004/06/29 22:03:36  thomson
  * *MaxLease option partialy implemented/fixed.
  *
@@ -143,6 +146,9 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
     // set up address counter counts
     this->AddrsCount = this->Pool->rangeCount();
     this->AddrsAssigned = 0;
+
+    if (this->ClassMaxLease > this->AddrsCount)
+	this->ClassMaxLease = this->AddrsCount;
 }
 
 bool TSrvCfgAddrClass::addrInPool(SmartPtr<TIPv6Addr> addr)

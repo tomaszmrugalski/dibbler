@@ -101,9 +101,6 @@ release:
 	echo "Version       : $(VERSION)" >> VERSION
 	echo -n "Date          : " >> VERSION
 	date >> VERSION
-	if [ "$(EFENCE)" == "" ]; then                \
-	    echo "Electric fence: NO"       \
-	fi
 #	if [ "$XMLCFLAGS" != "" ]; then
 #	    echo "libxml2       : YES" >> VERSION
 #	else
