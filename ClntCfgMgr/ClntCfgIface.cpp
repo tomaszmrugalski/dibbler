@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.12 2004-11-30 00:42:50 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.13 2005-01-03 21:53:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/11/30 00:42:50  thomson
+ * Client no longer sends RapidCommit, unless told to do so (bug #55)
+ *
  * Revision 1.11  2004/11/29 21:21:56  thomson
  * Client parser now supports 'option lifetime' directive (bug #75)
  *
@@ -353,6 +356,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     SmartPtr<TIPv6Addr> addr;
     SmartPtr<string> str;
 
+    out << dec;
     out<<"  <ClntCfgIface ";
     if (iface.NoConfig) {
         out << "no-config=\"true\" />" << endl;
@@ -360,7 +364,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     }
 
     out << "name=\"" << iface.IfaceName << "\""
-        << " id=\"" << iface.ID << "\">" << endl;
+        << " ifindex=\"" << iface.ID << "\">" << endl;
     
     if (iface.RapidCommit) {
 	out << "    <RapidCommit/>" << endl;
