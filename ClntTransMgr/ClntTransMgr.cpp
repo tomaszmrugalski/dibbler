@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.10 2004-05-23 22:37:54 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.11 2004-05-24 00:08:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/05/23 22:37:54  thomson
+ * *** empty log message ***
+ *
  * Revision 1.9  2004/05/23 20:20:49  thomson
  * *** empty log message ***
  *
@@ -177,7 +180,7 @@ void TClntTransMgr::doDuties()
     {
         if ((!msg->getTimeout())&&(!msg->isDone())) {
 	    std::clog << logger::logDebug << "Processing msg (type=" << msg->getType()  
-		      << ",transID=";
+		      << ",transID=0x";
 	    std::clog.width(6);
 	    std::clog.fill('0');
 	    std::clog << hex << msg->getTransID() << dec << ",opts:";
