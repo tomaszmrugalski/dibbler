@@ -29,19 +29,23 @@ TIfaceMgr::TIfaceMgr()
     
     if  (!ifaceList) {
 	IsDone = true;
-	std::clog << logger::logCrit << "Unable to read info interfaces. Make sure "
-	    "you are using kernel with NETLINK driver enabled." << logger::endl;
+	std::clog << logger::logCrit << "Low level functions failed. Make sure "
+	    "you are using kernel with NETLINK driver enabled (Linux) or "
+	    "have specified proper path to ipv6.exe (win)." << logger::endl;
 	return;
     }
     
     while (ptr!=NULL) {
-        std::clog << logger::logNotice << "Detected interface: name=" << ptr->name 
-		  << ",id=" << ptr->id << ",flags=" << ptr->flags << logger::endl;
+        std::clog << logger::logNotice << "Detected iface " << ptr->name 
+		  << "/id=" << ptr->id << ",flags=" << ptr->flags 
+//		  << " LLaddrsCnt=" << ptr->linkaddrcount 
+		  << logger::endl;
 	
         SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,
 						       ptr->mac,
-						       ptr->maclen,ptr->linkaddr,
+						       ptr->maclen,
+						       ptr->linkaddr,
 						       ptr->linkaddrcount,
 						       ptr->hardwareType));
         this->IfaceLst.append(smartptr);
