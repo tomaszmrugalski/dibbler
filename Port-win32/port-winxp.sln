@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-win2k", "client-winxp.vcproj", "{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server-win2k", "server-winxp.vcproj", "{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Debug.ActiveCfg = Debug|Win32
+		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Debug.Build.0 = Debug|Win32
+		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Release.ActiveCfg = Release|Win32
+		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Release.Build.0 = Release|Win32
+		{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}.Debug.ActiveCfg = Debug|Win32
+		{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}.Debug.Build.0 = Debug|Win32
+		{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}.Release.ActiveCfg = Release|Win32
+		{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
