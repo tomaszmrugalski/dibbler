@@ -33,7 +33,6 @@ class TSrvOptIA_NA : public TOptIA_NA
 		 long  &totalFreeAddr,
 		 SmartPtr<TContainer<SmartPtr<TIPv6Addr> > > assignedAddresses,
 		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 char &preference,
 		 SmartPtr<TDUID> DUID, SmartPtr<TIPv6Addr> clntAddr, int iface,
 		 int msgType, TMsg* parent);
     

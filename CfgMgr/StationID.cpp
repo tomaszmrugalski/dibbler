@@ -31,40 +31,12 @@ bool TStationID::operator==(SmartPtr<TDUID> duid)
     return *duid==*DUID;
 }
 
-/*TStationID::TStationID(const TStationID& info)
-{
-	if (info.DUID)
-	{
-		DUIDlength=info.DUIDlength;
-		DUID=new char[info.DUIDlength];
-		memcpy(DUID,info.DUID,DUIDlength);
-	}
-	else
-	{
-		DUID=NULL;
-		memcpy(Addr,info.Addr,16);
-	}
-}
-
-TStationID::~TStationID()
-{
-	if (DUID) 
-		delete DUID;	
-}*/
-
 ostream& operator<<(ostream& out,TStationID&  station)
 {
-    if (station.DUID)
-    {
-		out<<"DUID:";
+    if (station.DUID) {
         out<<*station.DUID;
-        
+    } else {
+	out << "<Addr>" << *station.Addr << "</Addr>" << endl;
     }
-	else
-	{
-		out << "<Addr>";
-        out << *station.Addr;
-		out << "</Addr>" << endl;
-	}
-	return out;
+    return out;
 }

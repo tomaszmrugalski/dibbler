@@ -469,10 +469,9 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    break;
 	case OPTION_IA          : 
 	{
-	    char ignoreme;
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA=new TSrvOptIA_NA(AddrMgr, clntClasses, clntFreeAddr, 
-				      totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, ignoreme,
+				      totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, 
 				      duidOpt->getDUID(),request->getAddr(), request->getIface(),
 				      REQUEST_MSG,this);
 	    this->Options.append((Ptr*)optIA_NA);
@@ -549,11 +548,10 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
             {
                 //if it's possible assign these addresses - so we use constructor
                 //with request option
-		char ignoreme;
                 SmartPtr<TSrvOptIA_NA> optIA_NA;
                 optIA_NA=new TSrvOptIA_NA(
                     AddrMgr, clntClasses, clntFreeAddr, 
-                    totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, ignoreme,
+                    totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, 
                     duidOpt->getDUID(),solicit->getAddr(), solicit->getIface(),
                     REQUEST_MSG,this);
                     //optIA_NA = new TSrvOptIA_NA(CfgMgr,AddrMgr,

@@ -95,12 +95,26 @@ srvlibs:	includes
 doc: 
 	cd doc; $(MAKE)
 
-release: server client doc
+release: 
+	$(CPP) --version > VERSION
+	$(CC) --version  >>VERSION
+	echo "Version       : $(VERSION)" >> VERSION
+	echo -n "Date          : " >> VERSION
+	date >> VERSION
+	if [ "$(EFENCE)" == "" ]; then                \
+	    echo "Electric fence: NO"       \
+	fi
+#	if [ "$XMLCFLAGS" != "" ]; then
+#	    echo "libxml2       : YES" >> VERSION
+#	else
+#	    echo "libxml2       : NO" >> VERSION
+#	fi
+
+
+
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                  \
 		$(SERVERBIN) $(CLIENTBIN) client.conf server.conf \
-		CHANGELOG RELNOTES LICENSE doc/*.pdf
-
-
+		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
 
 tags:
 	rm -f TAGS

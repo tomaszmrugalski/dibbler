@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.3 2004-03-29 18:53:08 thomson Exp $
+ * $Id: DUID.cpp,v 1.4 2004-06-06 22:31:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -65,21 +68,18 @@ TDUID::TDUID(char* Plain)
     this->len = DUIDlen;
 }
 
-TDUID::~TDUID()
-{
+TDUID::~TDUID() {
     if (this->len)
-	delete this->DUID;
+	delete [] this->DUID;
 }
 
-TDUID::TDUID(const TDUID &duid)
-{
+TDUID::TDUID(const TDUID &duid) {
     this->DUID=new char [duid.len];
     memcpy(this->DUID,duid.DUID,duid.len);
     this->len=duid.len;
 }
 
-TDUID& TDUID::operator=(const TDUID &duid)
-{
+TDUID& TDUID::operator=(const TDUID &duid) {
     if (this==&duid)
         return *this;
     
@@ -89,21 +89,18 @@ TDUID& TDUID::operator=(const TDUID &duid)
     this->DUID=new char [duid.len];
     memcpy(this->DUID,duid.DUID,duid.len);
     this->len=duid.len;
-
+    
     return *this;
 }
 
-bool TDUID::operator==(const TDUID &duid)
-{
+bool TDUID::operator==(const TDUID &duid) {
     if (this->len!=duid.len)
         return false;
     else
         return !memcmp(this->DUID,duid.DUID,this->len);
 }
 
-bool TDUID::operator<=(const TDUID &duid)
-{
-    
+bool TDUID::operator<=(const TDUID &duid) {
     int minLen=this->len<duid.len?this->len:duid.len;
     int maxLen=this->len>=duid.len?this->len:duid.len;
     
@@ -117,7 +114,7 @@ bool TDUID::operator<=(const TDUID &duid)
         longer=this->DUID;
         retVal=true;
     };
-
+    
     //if they are not equal check if longer has only zeros at the begining
     for (int i=0;i<(maxLen-minLen);i++)
         if (longer[i])
@@ -126,38 +123,33 @@ bool TDUID::operator<=(const TDUID &duid)
     for (int i=minLen-1;i>=0;i--)
         if(this->DUID[this->len-i]!=duid.DUID[duid.len-i])
         {
-            if(this->DUID[this->len-i]>duid.DUID[duid.len-i])
+            if(this->DUID[this->len-i]>duid.DUID[duid.len-i]) {
                 return true; //right is smaller
-            else
+            } else {
                 if(this->DUID[this->len-i]<duid.DUID[duid.len-i])
                     return false;	//left is smaller
+	    }
         };
     return false;//left is equal to right
 }
 
-int TDUID::getLen()
-{
+int TDUID::getLen() {
     return this->len;
 }
 
-char * TDUID::storeSelf(char* buf)
-{
+char * TDUID::storeSelf(char* buf) {
     memcpy(buf,DUID,len);
     return buf+len;
 }
 
-ostream& operator<<(ostream& out,TDUID&  duid)
-{
-    if ( (duid.DUID && duid.len) )
-    {
-		out << "<duid length=\"" << duid.len << "\">";
+ostream& operator<<(ostream& out,TDUID&  duid) {
+    if ( (duid.DUID && duid.len) ) {
+	out << "<duid length=\"" << duid.len << "\">";
         for(int i=0;i<duid.len;i++)
             out<<setfill('0')<<setw(2)<<hex<< (unsigned int)duid.DUID[i];
-		out << dec << "</duid>" << std::endl;
-		
-    }
-	else {
+	out << dec << "</duid>" << std::endl;
+    } else {
         out << "<duid length=\"0\"></duid>" << std::endl;
-	}
-	return out;
+    }
+    return out;
 }

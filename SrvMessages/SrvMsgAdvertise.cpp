@@ -23,7 +23,6 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
 	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, solicit->getTransID())
 {
-    char preference = 0;
     SmartPtr<TOpt> ptrOpt;
     SmartPtr<TSrvOptOptionRequest> reqOpts;
    
@@ -50,8 +49,6 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     long *clntFreeAddr;
     long totalFreeAddresses;
     
-    //AddrMgr->dbStore();
-
     getFreeAddressesForClient(clntAllClasses,clntClasses,clntFreeAddr, 
 			      totalFreeAddresses, duidOpt->getDUID(),
 			      solicit->getAddr(), solicit->getIface());
@@ -79,7 +76,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
                 SmartPtr<TSrvOptIA_NA> optIA_NA;
                 optIA_NA=new TSrvOptIA_NA(
                     AddrMgr, clntClasses, clntFreeAddr, 
-                    totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, preference,
+                    totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, 
                     duidOpt->getDUID(),solicit->getAddr(), solicit->getIface(),
                     SOLICIT_MSG,this);
 
@@ -161,7 +158,8 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 
     // ... and our preference
     SmartPtr<TSrvOptPreference> ptrPreference;
-    
+    unsigned char preference = CfgMgr->getIface(solicit->getIface())->getPreference();
+    Log(Debug) << "Preference set to " << preference << LogEnd;
     ptrPreference = new TSrvOptPreference(preference,this);
     Options.append((Ptr*)ptrPreference);
 
