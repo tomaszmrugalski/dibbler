@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.8 2004-09-28 21:49:32 thomson Exp $
+ * $Id: DHCPConst.h,v 1.9 2004-10-03 21:21:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/09/28 21:49:32  thomson
+ * no message
+ *
  * Revision 1.7  2004/09/07 22:02:34  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -152,6 +155,8 @@
 
 #define CLIENT_DEFAULT_T1 ULONG_MAX
 #define CLIENT_DEFAULT_T2 ULONG_MAX
+
+#define CLIENT_DEFAULT_UNICAST FALSE
 
 
 enum ESendOpt {Send,Default,Supersede};
