@@ -6,12 +6,15 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptTimeZone.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: OptTimeZone.cpp,v 1.3 2004-04-11 18:10:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
-#include <stdlib.h>
+#include <stdlib.h>
 #include <iostream>
 #ifdef LINUX
 #include <netinet/in.h>
@@ -38,7 +41,7 @@ TOptTimeZone::TOptTimeZone(char *&buf, int &bufsize,TMsg* parent)
    memcpy(str,buf,bufsize);
    str[bufsize]=0;
    Zone=TTimeZone(str);
-   delete str;
+   delete [] str;
    bufsize-=Zone.getLength();
    buf+=Zone.getLength();
 }
