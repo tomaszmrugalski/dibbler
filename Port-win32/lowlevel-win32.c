@@ -1,9 +1,14 @@
 /*
- * $Id: lowlevel-win32.c,v 1.4 2005-01-24 00:42:37 thomson Exp $
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 licence
+ *
+ * $Id: lowlevel-win32.c,v 1.5 2005-02-01 01:08:44 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
- *  Revision 1.3  2004/11/02 02:14:20  thomson
- *  no message
  *
  *  Revision 1.2  2004/10/25 20:45:54  thomson
  *  Option support, parsers rewritten. ClntIfaceMgr now handles options.
@@ -18,14 +23,8 @@
  *  Revision 1.7  2004/09/28 16:01:49  thomson
  *  Various improvements, socket binding fix in progress.
  *
- *  Revision 1.6  2004/05/24 21:16:37  thomson
- *  Various fixes.
- *
  *  Revision 1.4  2004/03/28 19:48:10  thomson
  *  Problem with missing IPv6 stack solved.
- *
- * Released under GNU GPL v2 licence                                
- * 
  */
 
 /* this file contains lowlevel functions for M$ WindowsXP/2003. It uses netsh.exe to perform
@@ -102,8 +101,10 @@ extern	struct iface* if_list_get()
     struct  iface* iface;
     struct  iface* retval;
     struct  sockaddr_in6 *addrpck;
-    char*  addr;    
+    char*  addr;
+    char * gaddr;
     int linkLocalAddrCnt;
+    int globalAddrCnt;
     PIP_ADAPTER_ADDRESSES adaptaddr;
     PIP_ADAPTER_UNICAST_ADDRESS linkaddr;
 
@@ -131,8 +132,8 @@ extern	struct iface* if_list_get()
 	iface->id=adaptaddr->IfIndex;
 	iface->id=adaptaddr->Ipv6IfIndex;
         
-        //set hardware type of interface		
-        iface->hardwareType=adaptaddr->IfType;
+	//set hardware type of interface		
+	iface->hardwareType=adaptaddr->IfType;
 	
 	//set physical address - require during DUID generation
 	memcpy(iface->mac,adaptaddr->PhysicalAddress,adaptaddr->PhysicalAddressLength);
@@ -144,31 +145,38 @@ extern	struct iface* if_list_get()
 	iface->globaladdrcount = 0;
 	iface->globaladdr = 0;
 	
-        linkaddr=adaptaddr->FirstUnicastAddress;
-        //for evert unicast address on iface
-        linkLocalAddrCnt=0;
-        while(linkaddr) {
+	linkaddr=adaptaddr->FirstUnicastAddress;
+	//for evert unicast address on iface
+	linkLocalAddrCnt= 0;
+	globalAddrCnt   = 0;
+	while(linkaddr) {
 	    addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
-	    if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr)))&&
-		(linkaddr->PreferredLifetime>0))
+	    if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr))))
                 linkLocalAddrCnt++;
+	    else
+		globalAddrCnt++;
             linkaddr=linkaddr->Next;
         }
         
-        iface->linkaddrcount=linkLocalAddrCnt;
+        iface->linkaddrcount   = linkLocalAddrCnt;
+	iface->globaladdrcount = globalAddrCnt;
         if (linkLocalAddrCnt>0) {
-            iface->linkaddr=addr=(char*)malloc(linkLocalAddrCnt*16);
+            iface->linkaddr   = (char*)malloc(linkLocalAddrCnt*16);
+	    iface->globaladdr = (char*) malloc(globalAddrCnt*16);
+	    addr = iface->linkaddr;
+	    gaddr= iface->globaladdr;
             
             linkaddr=adaptaddr->FirstUnicastAddress;
             while(linkaddr)
             {
 		addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
-		if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr)))&&
-		    (linkaddr->PreferredLifetime>0))  
-                {
+		if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr)))) {
                     memcpy(addr,&(addrpck->sin6_addr),16);
                     addr+=16;
-                }
+                } else {
+		    memcpy(gaddr, &(addrpck->sin6_addr), 16);
+		    gaddr+=16;
+		}
                 linkaddr=linkaddr->Next;
             }
         }
@@ -216,23 +224,24 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     
     while(adaptaddr&&(!found))	
     {
-	linkaddr=adaptaddr->FirstUnicastAddress;
-	//for evert unicast address on iface
-	while(linkaddr&&(!found))
-	{
-	    addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
-	    if (!memcmp((struct in6_addr*)(&addrpck->sin6_addr),netAddr,16))
-		found=linkaddr;
-	    linkaddr=linkaddr->Next;
-	}
-	
-	adaptaddr=adaptaddr->Next;
+	    linkaddr=adaptaddr->FirstUnicastAddress;
+	    //for evert unicast address on iface
+	    while(linkaddr&&(!found))
+	    {
+	        addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
+	        if (!memcmp((struct in6_addr*)(&addrpck->sin6_addr),netAddr,16))
+		        found=linkaddr;
+	        linkaddr=linkaddr->Next;
+	    }
+	    adaptaddr=adaptaddr->Next;
     }
     
-    if (found)
-	retVal=found->DadState==IpDadStateDuplicate;
     free(buffer);
-    return retVal;
+    if (!found)
+        return -1; /* not found */
+    if (found->DadState==IpDadStateDuplicate)
+        return 1; /* tentative */
+    return 0; /* not tentative */
 }
 extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, 
                       unsigned long pref, unsigned long valid)
