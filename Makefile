@@ -189,7 +189,7 @@ release-linux: VERSION-linux client server doc
 		 $(SERVERBIN) $(CLIENTBIN) client*.conf server*.conf    \
 		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-linux
 
-release-win32: VERSION-win
+release-win32: VERSION-win doc
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-win32.tar.gz"
 	tar czvf dibbler-$(VERSION)-win32.tar.gz                   \
 		 dibbler-server.exe dibbler-client.exe             \
