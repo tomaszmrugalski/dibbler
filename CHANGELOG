@@ -2,13 +2,14 @@
   Dibbler changelog
  ------------------- 
 
- 0.4.0 [not-released-yet]
+ 0.4.0-RC1 [2005-02-03]
   - Relay implemented
   - Win32: start/stop command are now working (bug #27)
   - Win32: status command now shows if service is running (bug #28)
   - Server now supports relays (bug #70)
   - Working directories are not properly stored in the *-CfgMgr.xml files (bug #100)
- 
+  - Linux: Paths to config files fixed (bugs #96, #97)
+	
  0.3.1 [2004-12-27] (bugfix release)
   - Documenatation (PDF files) now should look ok on all systems
   - Linux: URLs in the manual are now visible (bugs #92, #93)
