@@ -7,17 +7,20 @@
 #include <crtdbg.h>
 #endif
 
-char * ipv6Path;
+TDHCPServer * ptr;
 
-TSrvService::TSrvService() : TWinService("Dibbler-server","DHCPv6 server",SERVICE_AUTO_START,"RpcSS\0tcpip6\0winmgmt\0")
+TSrvService::TSrvService() 
+ :TWinService("DHCPv6Server","Dibbler - a DHCPv6 server",SERVICE_AUTO_START,
+	"RpcSS\0tcpip6\0winmgmt\0",
+	"Dibbler - a portable DHCPv6. This is DHCPv6 server,"
+    "Windows version.")
 {
 }
 
 int TSrvService::ParseStandardArgs(int argc,char* argv[])
 {
 	bool dirFound = false;
-    bool ipFound  = false;
-	int status = 1;
+ 	int status = 1;
 
 	int n=1;
     while (n<argc)
@@ -38,25 +41,13 @@ int TSrvService::ParseStandardArgs(int argc,char* argv[])
 
 			char temp[255];
 			strncpy(temp,argv[n],255);
-            ServiceDir=temp;
-			cout << "workdir found: [" << temp << "]" << endl;
+            ServiceDir = temp;
             dirFound=true;
         }
 
-        if (strncmp(argv[n], "-i",2)==0) {
-           ipv6Path= new char [255];
-           ipv6Path[0]=0;
-		   if (n+1==argc) 
-				return -1; // this is last parameter
-		   n++;
-           strcat(ipv6Path,argv[n]);
-           ipv6Path[strlen(ipv6Path)]=0;
-           ipFound=true;
-		   cout << "ipv6path found: [" << ipv6Path << "]" << endl;
-        }
-		n++;
+ 		n++;
     }
-	if (ipFound && dirFound)
+	if (dirFound)
 		return status;
 	else
 		return -1;
@@ -68,32 +59,26 @@ TSrvService::~TSrvService(void)
 
 void TSrvService::OnStop()
 {
-    clog<<logger::logInfo<<"Stopping service."<<std::endl;
-    int fd=sock_add("",1,"::1",DHCPSERVER_PORT+1005,true);
-    char buf[4]={CONTROL_MSG,0,0,0};
-    sock_send(fd,"::1",buf,4,DHCPSERVER_PORT+1000,1);
-    sock_del(fd);
+	ptr->stop();
 }
 
 void TSrvService::Run()
 {
-    // When we get here, the service has been stopped
-	//return Client.Status.dwWin32ExitCode;
-    
-    string confile=SRVCONF_FILE;
+	if (_chdir(this->ServiceDir.c_str())) {
+		logger::clog << "Unable to change directory to " 
+			<< this->ServiceDir << ". Aborting.\n" << logger::endl;
+		return;
+	}
+   
+    string confile  = SRVCONF_FILE;
+	string oldconf  = SRVCONF_FILE+(string)"-old";
+    string workdir  = this->ServiceDir;
+	string addrfile = SRVDB_FILE;
+    string logFile  = SRVLOG_FILE;
+    logger::Initialize((char*)logFile.c_str());
 
-    string workdir=this->ServiceDir;
-	string oldconf=SRVCONF_FILE+(string)"-old";
-	string addrfile=SRVDB_FILE;
-    string logFile=workdir + SRVLOG_FILE;
-    char *logChar=new char[logFile.length()+1];
-    strcpy(logChar,logFile.c_str());
-    logger::Initialize(logChar);
-    delete logChar;
-    //clog<<logger::logAlert<<"Working dir:"<<ServiceDir;
-    logger::setLogname("Dibbler server");
-    char dir[200];
-    _getcwd(dir,200);
-    TDHCPServer server(workdir+confile);
+	TDHCPServer server(confile);
+	ptr = &server; // remember address
+
     server.run();
 }

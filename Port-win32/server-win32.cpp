@@ -10,18 +10,18 @@
 #include "SrvService.h"
 #include "Logger.h"
 
-time_t timer;
+extern "C" int lowlevelInit();
 
 void usage() {
 	cout << "Usage:" << endl;
-	cout << " dibbler-server-winxp.exe ACTION -d dirname -i ipv6path" << endl
+	cout << " dibbler-server-winxp.exe ACTION -d dirname " << endl
 		 << " ACTION = status|start|stop|install|uninstall|run" << endl
 		 << " status    - show status and exit" << endl
 		 << " start     - start installed service" << endl
 		 << " stop      - stop installed service" << endl
 		 << " install   - install service" << endl
 		 << " uninstall - uninstall service" << endl
-		 << " run       - run interactively" << endl;
+		 << " run       - run in console" << endl;
 
 }
 
@@ -35,8 +35,14 @@ int main(int argc, char* argv[]) {
 			return 0;
 	}
 
+	// find ipv6.exe (or netsh.exe in future implementations)
+	if (!lowlevelInit()) {
+		clog << "lowlevelInit() failed. Startup aborted.\n";
+		return -1;		
+	}
+
 	int status = SrvService.ParseStandardArgs(argc, argv);
-	cout << "status=" << status << endl;
+	cout << "status=" << status << SrvService.ServiceDir << endl;
 
 	switch (status) {
 case 1: {// status
@@ -55,7 +61,7 @@ case 1: {// status
 	break;
 		};
 case 2: { // start
-	SrvService.Run();
+	SrvService.StartService();
 	break;
 		}
 

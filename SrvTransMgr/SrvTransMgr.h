@@ -23,7 +23,8 @@ class TSrvTransMgr
     bool isDone();
     void shutdown();
     
-    
+	char * getCtrlAddr();
+	int    getCtrlIface();
     
     void setThat(SmartPtr<TSrvTransMgr> that);
   private:
@@ -34,6 +35,10 @@ class TSrvTransMgr
     SmartPtr<TSrvTransMgr> That;
     SmartPtr<TSrvCfgMgr>  CfgMgr;
     SmartPtr<TSrvAddrMgr>  AddrMgr;
+
+	int ctrlIface;
+	char ctrlAddr[48];
+
 };
 
 

@@ -11,9 +11,10 @@
 class TWinService
 {
 public:
+	std::string				ServiceDir;
 	TWinService(const char* serviceName, const char* dispName,
 					DWORD deviceType=SERVICE_DEMAND_START,
-						char* dependencies=NULL);
+						char* dependencies=NULL, char* descr=NULL);
 	static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
     static void WINAPI Handler(DWORD dwOpcode);
     void LogEvent(WORD wType, DWORD dwID,
@@ -54,11 +55,11 @@ protected:
 	DWORD					ServiceType;
 	char*					Dependencies;
 	char*					DisplayName;
+	char*                   descr;
 	//Trick to enable static functions to call methods,
 	//drawback - but there can be only one instance of this class
 	static	TWinService*	ServicePtr;
     HANDLE					EventSource;
 
-	std::string				ServiceDir;
 };
 #endif

@@ -14,7 +14,6 @@ public:
     int ParseStandardArgs(int argc,char* argv[]);
 	~TSrvService(void);
 private:
-    string ServiceDir;
 };
 
 #endif

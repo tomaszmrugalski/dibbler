@@ -275,3 +275,12 @@ void TSrvTransMgr::setThat(SmartPtr<TSrvTransMgr> that)
     this->That=that;
     IfaceMgr->setThats(IfaceMgr,That,CfgMgr,AddrMgr);
 }
+
+char* TSrvTransMgr::getCtrlAddr() {
+	return this->ctrlAddr;
+}
+
+int  TSrvTransMgr::getCtrlIface() {
+	return this->ctrlIface;
+}
+

@@ -369,13 +369,13 @@
 					RelativePath="dns-winxp.c">
 				</File>
 				<File
+					RelativePath="lowlevel-winxp.c">
+				</File>
+				<File
 					RelativePath="server-winxp.cpp">
 				</File>
 				<File
 					RelativePath="srvParser.cpp">
-				</File>
-				<File
-					RelativePath="windowsfun.c">
 				</File>
 			</Filter>
 		</Filter>

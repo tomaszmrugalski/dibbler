@@ -9,19 +9,15 @@
 #include "DHCPClient.h"
 #include "logger.h"
 #include <iostream>
-#ifdef  WIN32
 #include <crtdbg.h>
-#endif
 
 extern "C" int lowlevelInit();
-
-time_t timer;
 
 using namespace std;
 
 void usage() {
 	cout << "Usage:" << endl;
-	cout << " dibbler-client-winxp.exe ACTION -d dirname -i ipv6path" << endl
+	cout << " dibbler-client-winxp.exe ACTION -d dirname" << endl
 		 << " ACTION = status|start|stop|install|uninstall|run" << endl
 		 << " status    - show status and exit" << endl
 		 << " start     - start installed service" << endl

@@ -5,7 +5,7 @@
 TWinService* TWinService::ServicePtr= NULL;
 
 TWinService::TWinService(const char* serviceName, const char* dispName, 
-			 DWORD serviceType, char* dependencies)
+			 DWORD serviceType, char* dependencies, char * descr)
 {
     ServicePtr= this;
 	
@@ -15,6 +15,8 @@ TWinService::TWinService(const char* serviceName, const char* dispName,
     MajorVersion = 1;
     MinorVersion = 0;
     EventSource = NULL;
+
+	this->descr = descr;
     
     // set service status 
     hServiceStatus = NULL;
@@ -181,7 +183,7 @@ bool TWinService::Install()
 	sprintf(filePath+i, " start -d \"%s\"",ServiceDir.c_str());
 
     // Create the service
-	//printf("Install(): filepath=[%s] ServiceName=[%s]\n",filePath,ServiceName);
+	printf("Install(): filepath=[%s]\nServiceName=[%s]\n",filePath,ServiceName);
 	//printf("ServiceDir=[%s]\n",ServiceDir.c_str());
     SC_HANDLE hService = CreateService(	hSCM,ServiceName, DisplayName,
 					SERVICE_ALL_ACCESS,
@@ -196,8 +198,7 @@ bool TWinService::Install()
     }
 
 	SERVICE_DESCRIPTION sdBuf;
-	sdBuf.lpDescription = "Dibbler - a portable DHCPv6. This is DHCPv6 client,"
-					      "Windows version.";
+	sdBuf.lpDescription = this->descr;
 	ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION, &sdBuf );
 
     CloseServiceHandle(hService);

@@ -9,7 +9,10 @@
 TDHCPClient * ptr;
 
 TClntService::TClntService() 
-  :TWinService("DHCPv6Client","Dibbler - a DHCPv6 client",SERVICE_AUTO_START,"RpcSS\0tcpip6\0winmgmt\0")
+  :TWinService("DHCPv6Client","Dibbler - a DHCPv6 client",SERVICE_AUTO_START,
+  "RpcSS\0tcpip6\0winmgmt\0",
+  "Dibbler - a portable DHCPv6. This is DHCPv6 client,"
+  "Windows version.")
 {
 }
 
