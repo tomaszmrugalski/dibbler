@@ -42,6 +42,7 @@ $(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
 	-L$(SRVOPTIONS)  -lSrvOptions \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
+	-L$(CFGMGR)      -lCfgMgr\
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
 	-L$(MISC)        -lMisc\
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
@@ -51,6 +52,7 @@ $(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
 	-L$(SRVMESSAGES) -lSrvMsg \
+	-L$(MESSAGES)    -lMsg \
 	-L$(MISC)        -lMisc \
 	-L$(OPTIONS)     -lOptions $(XMLLIBS) \
 	-L$(LOWLEVEL)    -lLowLevel $(EFENCE) 

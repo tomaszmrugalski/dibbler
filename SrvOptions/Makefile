@@ -7,7 +7,6 @@ OBJECTS = 	SrvOptClientIdentifier.o	SrvOptElapsed.o 	SrvOptIAAddress.o  \
 		SrvOptIA_NA.o 			SrvOptOptionRequest.o   SrvOptDNSServers.o \
 		SrvOptDomainName.o              SrvOptNTPServers.o SrvOptTimeZone.o
 
-
 objs: $(OBJECTS)
 
 libs: libSrvOptions.a
