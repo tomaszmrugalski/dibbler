@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.6 2004-09-07 17:42:31 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.7 2004-09-27 22:00:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/07 17:42:31  thomson
+ * Server Unicast implemented.
+ *
  * Revision 1.5  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -55,8 +58,12 @@ bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Ad
     sock = Iface->getSocket();
 
     result = sock->send( (char*)msg, size, addr, DHCPSERVER_PORT);
-    if (result == -1)
+    if (result == -1) {
+	Log(Error) << "Send failed: " << size << " bytes to " << *addr 
+		   << " on " << Iface->getName() << "/" << Iface->getID() 
+		   << "(socket " << sock->getFD() << ")." << LogEnd;
 	return false;
+    }
 
     return true;
 }
