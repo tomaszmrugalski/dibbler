@@ -5,7 +5,7 @@ export TOPDIR=$(CURDIR)
 all: includes bison libs server client tags
 
 includes:
-	cd $(INCDIR); $(MAKE) all 
+	cd $(INCDIR); $(MAKE) links
 
 bison:
 	cd $(PREFIX)/bison++; ./configure; $(MAKE)
@@ -15,15 +15,18 @@ client: $(CLIENTBIN)
 $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
 	$(CPP) -I $(INCDIR) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
+	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
 	-L$(LOWLEVEL)    \
 	-L$(CLNTOPTIONS)  -lClntOpts \
 	-L$(OPTIONS)      -lOptions \
 	-L$(CLNTTRANSMGR) -lClntTransMgr \
 	-L$(CLNTCFGMGR)   -lClntCfgMgr \
+	-L$(CFGMGR)       -lCfgMgr \
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
 	-L$(CLNTMESSAGES) -lClntMsg \
-	-L$(CLNTADDRMGR)  -lClntAddrMgr \
+	                  -lClntAddrMgr \
+	                  -lAddrMgr \
 	-L$(MISC)         -lMisc \
 	-lClntOpts -lOptions -lLowLevel $(XMLLIBS) $(EFENCE) 
 
@@ -47,12 +50,6 @@ $(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
 	-L$(MISC)        -lMisc \
 	-L$(OPTIONS)     -lOptions $(XMLLIBS) \
 	-L$(LOWLEVEL)    -lLowLevel $(EFENCE) 
-
-DHCPClient.o: DHCPClient.cpp DHCPClient.h
-	$(CPP) $(OPTS) -c -I $(INCDIR) -o $@ $<
-
-DHCPServer.o: DHCPServer.cpp DHCPServer.h
-	$(CPP) $(OPTS) -c -I $(INCDIR) -o $@ $<
 
 objs:	includes
 	@for dir in $(COMMONSUBDIRS); do \
@@ -90,15 +87,6 @@ tags:
 	rm -f TAGS
 	find . -name \*.cpp | xargs etags
 	find . -name \*.h | xargs etags
-
-clean:
-	@for dir in $(SUBDIRS); do \
-		echo "Cleaning in $$dir"; \
-		(cd $$dir; $(MAKE) clean) || exit 1; \
-	done
-	cd $(LOWLEVEL); $(MAKE) clean
-	rm -f *.o $(CLIENTBIN) $(SERVERBIN)
-	rm -f TAGS
 
 clean-libs:
 	find . -name *.a -exec rm {} \;
