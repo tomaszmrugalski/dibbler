@@ -5,7 +5,7 @@ FLEX         = flex
 BISONPP      = bison++
 
 # === compiler options ===
-COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) -g
+COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR)
 OPTS         = -ftemplate-depth-40 $(COPTS)
 
 # debug info

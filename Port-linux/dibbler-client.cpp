@@ -37,10 +37,6 @@ void daemon_init() {
 
     std::clog << "Switching to background..." << std::endl;
 
-    if (chdir(WORKDIR)) {
-	std::clog << logger::logError << "Can't change directory to " << WORKDIR << logger::endl;
-    }
-
     logger::Initialize(CLNTLOG_FILE);
 
     int fd,childpid;
@@ -96,6 +92,11 @@ void init() {
 	      << tmp << logger::endl;
     pidfile << getpid();
     pidfile.close();
+
+    if (chdir(WORKDIR)) {
+	std::clog << logger::logError << "Can't change directory to " << WORKDIR << logger::endl;
+    }
+
 }
 
 void die() {
@@ -116,6 +117,8 @@ int main(int argc, char * argv[])
 
     logger::setLogname("Client");
 
+    init();
+
     // parse command line parameters
     // Well, one big FIXME here :)
     if (argc<2 || strncasecmp("-d",argv[1],2) ) {
@@ -123,7 +126,6 @@ int main(int argc, char * argv[])
 	daemon_init();
     }
     
-    init();
 
     TDHCPClient client(CLNTCONF_FILE);
     ptr = &client;

@@ -35,10 +35,6 @@ void daemon_init() {
     //fclose(stdout);
     //fclose(stderr);
 
-    if (chdir(WORKDIR)) {
-	std::clog << logger::logError << "Unable to change directory to " << WORKDIR << logger::endl;
-    }
-
     logger::Initialize(SRVLOG_FILE);
 
     int fd,childpid;
@@ -93,6 +89,11 @@ void init() {
 	      << tmp << logger::endl;
     pidfile << getpid();
     pidfile.close();
+
+    if (chdir(WORKDIR)) {
+	std::clog << logger::logError << "Unable to change directory to " << WORKDIR << logger::endl;
+    }
+
 }
 
 void die() {
@@ -112,14 +113,14 @@ int main(int argc, char * argv[])
 
     logger::setLogname("Server");
 
+    init();
+
     // parse command line parameters
     // Well, one big FIXME here :)
     if (argc<2 || strncasecmp("-d",argv[1],2) ) {
 	daemon_mode = true;
 	daemon_init();
     }
-
-    init();
 
     TDHCPServer srv(SRVCONF_FILE);
 
