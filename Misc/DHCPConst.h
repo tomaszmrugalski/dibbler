@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.9 2004-10-03 21:21:32 thomson Exp $
+ * $Id: DHCPConst.h,v 1.10 2004-10-03 21:52:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/10/03 21:21:32  thomson
+ * CLIENT_DEFAULT_UNICAST is set to false.
+ *
  * Revision 1.8  2004/09/28 21:49:32  thomson
  * no message
  *
@@ -156,7 +159,7 @@
 #define CLIENT_DEFAULT_T1 ULONG_MAX
 #define CLIENT_DEFAULT_T2 ULONG_MAX
 
-#define CLIENT_DEFAULT_UNICAST FALSE
+#define CLIENT_DEFAULT_UNICAST false
 
 
 enum ESendOpt {Send,Default,Supersede};
