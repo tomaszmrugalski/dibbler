@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.12 2004-09-07 15:37:44 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.13 2004-09-28 20:33:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  * Revision 1.11  2004/09/05 15:37:44  thomson
  * Linux server now properly supports unicast.
  *
@@ -189,25 +192,24 @@ int TIfaceMgr::select(unsigned long time, char *buf,
             }
         }
 
-        char myPlainAddr[48];   // my plain address
+    char myPlainAddr[48];   // my plain address
 	char peerPlainAddr[48]; // peer plain address
-
-        // receive data (pure C function used)
-        result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
-
+    // receive data (pure C function used)
+    result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
 	// pack data (convert from plain to 16-byte)
-        char peerAddrPacked[16];
+    char peerAddrPacked[16];
 	char myAddrPacked[16];
-        inet_pton6(peerPlainAddr,peerAddrPacked);
-        inet_pton6(myPlainAddr,myAddrPacked);
-        peer->setAddr(peerAddrPacked);
+    inet_pton6(peerPlainAddr,peerAddrPacked);
+    inet_pton6(myPlainAddr,myAddrPacked);
+    peer->setAddr(peerAddrPacked);
 
         if (result==-1) {
             Log(Error) << "sock_recv(" << sock->getFD() << "," << "...) failed." << LogEnd;
             bufsize = 0;
             return -1;
         }
-	
+
+#ifndef WIN32
 	// check if we've received data addressed to us. There's problem with sockets binding. 
 	// If there are 2 open sockets (one bound to multicast and one to global address),
 	// each packet sent on multicast address is also received on unicast socket.
@@ -216,7 +218,8 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 		       << *sock->getAddr() << ", message ignored." << LogEnd;
 	    bufsize = 0;
 	    return 0;
-	} 
+	}  
+#endif
 
         bufsize = result;
         return sock->getFD();
