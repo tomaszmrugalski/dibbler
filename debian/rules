@@ -29,8 +29,6 @@ endif
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-#	echo "[PATCH ] 001_Makefile_usr_local"
-#	patch -p0 < debian/patches/001_Makefile_usr_local
 	touch configure-stamp
 
 
@@ -51,10 +49,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
-
-	# Add here commands to clean up after the build process.
-	-$(MAKE) clean
-
+	$(MAKE) clean
 	dh_clean 
 
 install: install-indep install-arch
@@ -73,36 +68,23 @@ install-arch:
 # Install everything to the tmp directory
 	mkdir -p $(CURDIR)/debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
-# This one instructs dh_install to use packagename.install from the debian directory
+# This one instructs dh_install to use packagename.install from the debian/tmp directory
 	dh_install --sourcedir=debian/tmp
 
 # This one will look for debian/package.init and install it into /etc/init.d
 	dh_installinit 
 
-# Must not depend on anything. This is to be called by
-# binary-arch/binary-indep
-# in another 'make' thread.
 binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs CHANGELOG
 	dh_installdocs
 	dh_installexamples
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate	
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installcron
-#	dh_installinfo
 	dh_installman
 	dh_link
 	dh_strip
 	dh_compress 
 	dh_fixperms
-#	dh_perl
-#	dh_python
 	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps

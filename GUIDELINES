@@ -16,3 +16,9 @@
  6. (Ptr*) is used ONLY while casting one SmartPtr on another SmartPtr.
  7. Port-specific files MUST be places in dir named port-PORTNAME
  
+
+  Debian GUIDELINES
+--------------------
+ 1. Change version in Misc/Portable.h
+ 2. Change debian/changelog
+ 3. Change paths in Makefile.inc (e.g. /usr/local/make -> /usr/share/make)

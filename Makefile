@@ -2,7 +2,7 @@ include Makefile.inc
 PREFIX = .
 export TOPDIR=$(CURDIR)
 
-all: includes bison libs server client relay tags
+all: server client relay
 
 includes:
 	cd $(INCDIR); $(MAKE) links
@@ -330,7 +330,7 @@ release-rpm: VERSION-linux release-src
 	$(CP) $$file ../../../.. ; \
 	done
 
-install: server client relay doc
+install: 
 	$(MKDIR) $(INST_WORKDIR)
 	$(MKDIR) $(INST_BINDIR)
 	$(MKDIR) $(INST_CONFDIR)
