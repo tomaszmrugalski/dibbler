@@ -2,8 +2,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-//#define DIBBLER_VERSION "CVS $Date: 2004-02-22 23:19:56 $"
-#define DIBBLER_VERSION "0.1.0-RC2"
+#define DIBBLER_VERSION "CVS $Date: 2004-02-28 11:28:07 $"
+//#define DIBBLER_VERSION "0.1.0-RC2"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| by Tomasz Mrugalski <thomson@klub.com.pl> engine,Linux port,doc"
@@ -29,29 +29,31 @@
 // *** file setup/default paths *****************************************
 // **********************************************************************
 
-#define CLNTCFGMGR_FILE "client-CfgMgr.xml"
-#define CLNTDUID_FILE	"client-duid"
-#define CLNTLOG_FILE	"client.log"
-#define CLNTDB_FILE		"client-addrdb.xml"
+#define CLNTCFGMGR_FILE   "client-CfgMgr.xml"
+#define CLNTIFACEMGR_FILE "client-IfaceMgr.xml"
+#define CLNTDUID_FILE	  "client-duid"
+#define CLNTLOG_FILE	  "client.log"
+#define CLNTDB_FILE	  "client-AddrMgr.xml"
 
-#define SRVCFGMGR_FILE  "server-CfgMgr.xml"
-#define SRVDUID_FILE	"server-duid"
-#define SRVLOG_FILE	    "server.log"
-#define SRVDB_FILE      "server-addrdb.xml"
+#define SRVCFGMGR_FILE    "server-CfgMgr.xml"
+#define SRVIFACEMGR_FILE  "client-IfaceMgr.xml"
+#define SRVDUID_FILE	  "server-duid"
+#define SRVLOG_FILE	  "server.log"
+#define SRVDB_FILE        "server-AddrMgr.xml"
 
 #ifdef WIN32
-#define WORKDIR		    ".\\"
-#define CLNTCONF_FILE	"client.conf"
-#define SRVCONF_FILE    "server.conf"
+#define WORKDIR		  ".\\"
+#define CLNTCONF_FILE	  "client.conf"
+#define SRVCONF_FILE      "server.conf"
 #endif
 
 #ifdef LINUX
-#define WORKDIR		    "/var/lib/dibbler"
-#define CLNTCONF_FILE	"/var/lib/dibbler/client.conf"
-#define SRVCONF_FILE    "/var/lib/dibbler/server.conf"
-#define RESOLVCONF_FILE "/etc/resolv.conf"
-#define CLNTPID_FILE    "client.pid"
-#define SRVPID_FILE     "server.pid"
+#define WORKDIR		  "/var/lib/dibbler"
+#define CLNTCONF_FILE	  "/var/lib/dibbler/client.conf"
+#define SRVCONF_FILE      "/var/lib/dibbler/server.conf"
+#define RESOLVCONF_FILE   "/etc/resolv.conf"
+#define CLNTPID_FILE      "client.pid"
+#define SRVPID_FILE       "server.pid"
 #endif
 
 // **********************************************************************
