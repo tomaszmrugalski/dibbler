@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: ClntService.cpp,v 1.16 2004-12-13 23:31:30 thomson Exp $
+ * $Id: ClntService.cpp,v 1.17 2005-02-01 01:10:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/12/13 23:31:30  thomson
+ * *DB_FILE renamed to *ADDRMGR_FILE
+ *
  * Revision 1.15  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -47,7 +50,7 @@ TClntService::TClntService()
     :TWinService("DHCPv6Client","Dibbler - a DHCPv6 client",SERVICE_AUTO_START,
 		 "tcpip6\0winmgmt\0",
 		 "Dibbler - a portable DHCPv6. This is DHCPv6 client,"
-		 " version " DIBBLER_VERSION ",WindowsXP.")
+		 " version " DIBBLER_VERSION ".")
 {
 }
 
@@ -136,7 +139,8 @@ void TClntService::Run() {
     
     TDHCPClient client(confile);
     ptr = &client; // remember address
-    
+    client.setWorkdir(this->ServiceDir);
+
     if (!client.isDone()) 
         client.run();
 }

@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.1 2005-01-24 00:42:37 thomson Exp $
+ * $Id: RelService.cpp,v 1.2 2005-02-01 01:11:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/24 00:42:37  thomson
+ * no message
+ *
  *                                                                           
  */
 
@@ -27,8 +30,8 @@ TDHCPRelay * ptr;
 TRelService::TRelService() 
  :TWinService("DHCPv6Relay","Dibbler - a DHCPv6 relay",SERVICE_AUTO_START,
 	"RpcSS\0tcpip6\0winmgmt\0",
-	"Dibbler - a portable DHCPv6. This is DHCPv6 Relay,"
-    "Windows version.")
+	"Dibbler - a portable DHCPv6. This is DHCPv6 Relay, version "
+    DIBBLER_VERSION ".")
 {
 }
 
@@ -116,7 +119,8 @@ void TRelService::Run()
     
     TDHCPRelay relay(confile);
     ptr = &relay; // remember address
-    
+    relay.setWorkdir(this->ServiceDir);
+
     if (!relay.isDone())
 	relay.run();
 }
