@@ -1,0 +1,11 @@
+
+ port-winxp TODO
+-----------------
+
+ client
+--------
+- crashes if interface name used instead of number
+- crashes if wrong interface named used
+
+ server
+--------
