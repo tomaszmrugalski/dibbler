@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.17 2004-06-17 23:53:54 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.18 2004-06-20 21:00:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  * Revision 1.16  2004/06/04 16:55:27  thomson
  * *** empty log message ***
  *
@@ -96,6 +99,8 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 		this->IsDone=true;
 		return;
     }
+
+    Log(Info) << "My duid is " << this->DUID->getPlain() << "." << LogEnd;
 
     std::ofstream xmlDump;
     xmlDump.open(SRVCFGMGR_FILE);

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.7 2004-06-20 19:29:23 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.8 2004-06-20 21:00:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  * Revision 1.6  2004/06/20 17:25:07  thomson
  * getName() method implemented, clean up
  *
@@ -287,7 +290,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 			   SmartPtr<TSrvAddrMgr> AddrMgr,
 			   SmartPtr<TSrvMsgRelease> release)
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
-	     release->getIface(),release->getAddr(), REPLY_MSG, release->getTransID())
+	     release->getIface(),release->getAddr(), REPLY_MSG, 
+	     release->getTransID())
 {
      //FIXME:When the server receives a Release message via unicast from a client
     //to which the server has not sent a unicast option, the server
@@ -296,86 +300,84 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     //Identifier option containing the server's DUID, the Client Identifier
     //option from the client message, and no other options.
 
-
-    //Upon the receipt of a valid Release message, the server examines the
-    //IAs and the addresses in the IAs for validity.  If the IAs in the
-    //message are in a binding for the client, and the addresses in the IAs
-    //have been assigned by the server to those IAs, the server deletes the
-    //addresses from the IAs and makes the addresses available for
-    //assignment to other clients.  The server ignores addresses not
-    //assigned to the IA, although it may choose to log an error.
     SmartPtr<TSrvOptIA_NA> clntIA;
     SmartPtr<TSrvOptClientIdentifier> clntID;
     SmartPtr<TOpt> opt;
 
     release->firstOption();
-    while((opt=release->getOption())&&(opt->getOptType()!=OPTION_SERVERID)) ;    
+    opt = release->getOption(OPTION_SERVERID);
     Options.append(opt);
 
     release->firstOption();
-    while((opt=release->getOption())&&(opt->getOptType()!=OPTION_CLIENTID)) ;
+    opt = release->getOption(OPTION_CLIENTID);
     Options.append(opt);
     clntID=(Ptr*) opt;
 
     release->firstOption();
-    while(opt=release->getOption())
-        if (opt->getOptType()==OPTION_IA)
-        {
-            clntIA=(Ptr*) opt;
-            SmartPtr<TSrvOptIAAddress> addr;
-            clntIA->firstOption();
-            SmartPtr<TOpt> subOpt;
-            bool anyDeleted=false;
-	    clntIA->firstOption();
-            while(subOpt=clntIA->getOption())
-                if (subOpt->getOptType()==OPTION_IAADDR)
-                {
-                    addr=(Ptr*) subOpt;                
-		    SmartPtr<TAddrClient> ptrClient = AddrMgr->getClient(clntID->getDUID());
-		    if (!ptrClient) {
-			std::clog << logger::logWarning << "Received RELEASE from unknown client." << logger::endl;
-			IsDone = true;
-			return;
-		    }
-		    SmartPtr<TAddrIA> ptrIA = ptrClient->getIA(clntIA->getIAID() );
-		    if (!ptrIA) {
-			std::clog << logger::logWarning << "No such IA(" << clntIA->getIAID() 
-				  << ") found for client:" << *clntID->getDUID() << logger::endl;
-			Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,
-							 "No such IA is bound.",this) );
-		    } else {
-			if (!ptrIA->delAddr(addr->getAddr()))
-			    anyDeleted=true;                    
-			else
-			{
-			    clog<<logger::logWarning<<"No such binding found: "
-				<< "IAID:"<<clntIA->getIAID()<< "Address:"<< addr->getAddr()->getPlain();
-			    clog<<"DUID:"<<*clntID->getDUID();
-			    clog << logger::endl;
-			};
-		    };
-                };
-            //After all the addresses have been processed, the server generates a
-            //Reply message and includes a Status Code option with value Success,a
-            //Server Identifier option with the server's DUID, and a Client
-            //Identifier option with the client's DUID.  For each IA in the Release
-            //message for which the server has no binding information, the server
-            //adds an IA option using the IAID from the Release message, and
-            //includes a Status Code option with the value NoBinding in the IA
-            //option.  No other options are included in the IA option.
-            if (!anyDeleted)
-            {
-                SmartPtr<TSrvOptIA_NA> ansIA(new TSrvOptIA_NA(clntIA->getIAID(),
-                    clntIA->getT1(),clntIA->getT2(),this));
-                Options.append((Ptr*)ansIA);
-                ansIA->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
-                    "Not every address had binding",this));
-            };
-        };
+    while(opt=release->getOption()) {
+        if (opt->getOptType()!=OPTION_IA)
+	    continue;
+
+	clntIA=(Ptr*) opt;
+	SmartPtr<TSrvOptIAAddress> addr;
+	clntIA->firstOption();
+	SmartPtr<TOpt> subOpt;
+	bool anyDeleted=false;
+	clntIA->firstOption();
+	while(subOpt=clntIA->getOption()) {
+	    if (subOpt->getOptType()!=OPTION_IAADDR)
+		continue;
+	    
+	    addr=(Ptr*) subOpt;                
+	    SmartPtr<TAddrClient> ptrClient = AddrMgr->getClient(clntID->getDUID());
+	    if (!ptrClient) {
+		std::clog << logger::logWarning << "Received RELEASE from unknown client." << logger::endl;
+		IsDone = true;
+		return;
+	    }
+	    SmartPtr<TAddrIA> ptrIA = ptrClient->getIA(clntIA->getIAID() );
+	    if (!ptrIA) {
+		std::clog << logger::logWarning << "No such IA(" << clntIA->getIAID() 
+			  << ") found for client:" << *clntID->getDUID() << logger::endl;
+		Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,
+						 "No such IA is bound.",this) );
+	    } else {
+		if (AddrMgr->delClntAddr(clntID->getDUID(),
+					 clntIA->getIAID(),
+					 addr->getAddr(),
+					 false) )
+		    anyDeleted=true;                    
+		else
+		{
+		    Log(Warning) << "No such binding found: "
+				 << "IAID:" <<clntIA->getIAID() 
+				 << "Address:"<< addr->getAddr()->getPlain()
+				 << "DUID:"<< clntID->getDUID()->getPlain()
+				 << LogEnd;
+		};
+	    };
+	};
+	//After all the addresses have been processed, the server generates a
+	//Reply message and includes a Status Code option with value Success,a
+	//Server Identifier option with the server's DUID, and a Client
+	//Identifier option with the client's DUID.  For each IA in the Release
+	//message for which the server has no binding information, the server
+	//adds an IA option using the IAID from the Release message, and
+	//includes a Status Code option with the value NoBinding in the IA
+	//option.  No other options are included in the IA option.
+	if (!anyDeleted)
+	{
+	    SmartPtr<TSrvOptIA_NA> ansIA(new TSrvOptIA_NA(clntIA->getIAID(),
+							  clntIA->getT1(),clntIA->getT2(),this));
+	    Options.append((Ptr*)ansIA);
+	    ansIA->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
+						   "Not every address had binding",this));
+	};
+    };
     
     Options.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-        "All IA's in release message were processed",this));
-
+					 "All IA's in release message were processed",this));
+    
     pkt = new char[this->getSize()];
     IsDone = false;
 

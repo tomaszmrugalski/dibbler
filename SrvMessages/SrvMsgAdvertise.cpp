@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.8 2004-06-20 19:29:23 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.9 2004-06-20 21:00:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  * Revision 1.7  2004/06/20 17:25:07  thomson
  * getName() method implemented, clean up
  *
@@ -181,7 +184,8 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	if ( opt->getOptType()==OPTION_IA) {
 	    SmartPtr<TSrvOptIA_NA> ptrOptIA_NA;
 	    ptrOptIA_NA = (Ptr*) opt;
-	    ptrOptIA_NA->releaseAllAddrs();
+	    // FIXME: quiet should be true
+	    ptrOptIA_NA->releaseAllAddrs(false);
 	}
     }
 

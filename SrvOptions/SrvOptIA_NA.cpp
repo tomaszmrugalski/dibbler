@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.4 2004-06-20 19:29:23 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.5 2004-06-20 21:00:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  * Revision 1.3  2004/06/17 23:53:55  thomson
  * Server Address Assignment rewritten.
  *
@@ -110,13 +113,16 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
 
+    // FIXME: SOLICIT without RAPID COMMIT should set this to true
+    bool quiet = false;
+
     // --- Is this IA without IAADDR options? ---
     if (!queryOpt->countAddrs()) {
 	Log(Warning) << "IA option (with IAADDR suboptions missing) received. Assigning one address."
 		     << LogEnd;
 	
 	SmartPtr<TIPv6Addr> anyaddr;
-	assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY);
+	assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
 	
        	// include status code
         SmartPtr<TSrvOptStatusCode> ptrStatus;
@@ -174,7 +180,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 		// we've got free addrs left, assign one of them
 		// always register this address as used by this client
 		// (if this is solicit, this addr will be released later)
-		assignAddr(hint, optAddr->getPref(), optAddr->getValid() );
+		assignAddr(hint, optAddr->getPref(), optAddr->getValid(), quiet);
 		addrsFree--;
 		addrsAssigned++;
 
@@ -213,8 +219,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     // --- release addresses if this reply for SOLICIT) ---
 }
 
-
-void TSrvOptIA_NA::releaseAllAddrs() {
+void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
     SmartPtr<TOpt> opt;
     SmartPtr<TIPv6Addr> addr;
     SmartPtr<TOptIAAddress> optAddr;
@@ -224,14 +229,14 @@ void TSrvOptIA_NA::releaseAllAddrs() {
 	    continue;
 	optAddr = (Ptr*) opt;
 	addr = optAddr->getAddr();
-	Log(Debug) << "About to release " << *addr << " address." << LogEnd;
-	this->AddrMgr->delClntAddr(this->ClntDuid, this->IAID, addr);
+	this->AddrMgr->delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
     }
 }
 
 
 SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
-						    unsigned long valid) {
+						    unsigned long valid,
+						    bool quiet) {
 
     // Assign one address
     SmartPtr<TIPv6Addr> addr;
@@ -255,7 +260,7 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
     
     // register this address as used by this client
     this->AddrMgr->addClntAddr(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, 
-			       this->T1, this->T2, addr, pref, valid);
+			       this->T1, this->T2, addr, pref, valid, quiet);
     
     return optAddr;
 }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptIA_NA.h,v 1.5 2004-06-20 19:29:23 thomson Exp $
+ * $Id: SrvOptIA_NA.h,v 1.6 2004-06-20 21:00:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -52,7 +55,7 @@ class TSrvOptIA_NA : public TOptIA_NA
 		 SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
 		 int iface, int msgType, TMsg* parent);
     
-    void releaseAllAddrs();
+    void releaseAllAddrs(bool quiet);
 
     void solicit(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     void request(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
@@ -69,8 +72,10 @@ class TSrvOptIA_NA : public TOptIA_NA
     SmartPtr<TDUID>       ClntDuid;
     int                   Iface;
     
-    SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
-					  unsigned long valid);
+    SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, 
+					  unsigned long pref,
+					  unsigned long valid,
+					  bool quiet);
     SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TIPv6Addr> hint);
     unsigned long countFreeAddrsForClient();
 };
