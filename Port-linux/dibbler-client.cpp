@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-client.cpp,v 1.15 2005-02-03 22:06:40 thomson Exp $
+ * $Id: dibbler-client.cpp,v 1.16 2005-02-03 22:50:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/02/03 22:06:40  thomson
+ * Linux startup/pid checking changed.
+ *
  */
 
 #include <signal.h>
@@ -103,7 +106,7 @@ int main(int argc, char * argv[])
 	result = run();
     } else
     if (!strncasecmp(command,"stop",4)) {
-	result = stop(SRVPID_FILE);
+	result = stop(CLNTPID_FILE);
     } else
     if (!strncasecmp(command,"status",6)) {
 	result = status();
