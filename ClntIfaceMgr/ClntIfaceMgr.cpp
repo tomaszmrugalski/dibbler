@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.3 2004-03-29 18:53:08 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.4 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -87,9 +90,10 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
         SmartPtr<TIfaceIface> ptrIface;
         ptrIface = this->getIfaceBySocket(sockid);
         ifaceid = ptrIface->getID();
-        std::clog << logNotice << "Received " << bufsize << " bytes via " << sockid 
-            << " socket, ifaceid=" << ifaceid << ", msgtype=" << msgtype << ")" << logger::endl;
-
+	Log(Debug) << "Received " << bufsize << " bytes via " << sockid 
+		   << " socket, ifaceid=" << ifaceid << ", msgtype=" << msgtype 
+		   << ")" << LogEnd;
+	
         switch (msgtype) {
         case ADVERTISE_MSG:
             ptr = new TClntMsgAdvertise(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,

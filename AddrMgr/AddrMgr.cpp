@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.16 2004-06-17 23:53:54 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.17 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  *
  * Revision 1.10  2004/04/10 12:18:00  thomson
  * Numerous fixes: LogName, LogMode options added, dns-servers changed to
@@ -48,7 +51,7 @@ void TAddrMgr::dbLoad()
      xmlDocPtr root;
      root = xmlLoad(this->dbfile.c_str());
      if (!root) {
- 	cout << "File loading has failed.";
+ 	Log(Error) << "File loading has failed." << LogEnd;
      }
      this->parseAddrMgr(root,0);
      xmlFreeDoc(root);
@@ -204,7 +207,7 @@ xmlDocPtr TAddrMgr::xmlLoad(const char * filename) {
      xmlDtdPtr dtd = xmlParseDTD(NULL, ADDRDB_DTD); /* parse the DTD */
      if (!dtd)
      {
- 	cout << "DTD load failed." << logger::endl;
+ 	Log(Error) << "DTD load failed." << LogEnd;
  	return NULL;
      }
 

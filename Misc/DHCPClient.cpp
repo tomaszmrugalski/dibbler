@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.9 2004-05-24 00:02:58 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.10 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/05/24 00:02:58  thomson
+ * *** empty log message ***
+ *
  * Revision 1.8  2004/05/23 20:41:03  thomson
  * *** empty log message ***
  *
@@ -87,13 +90,20 @@ void TDHCPClient::run()
         SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
 	
         if (msg) {
-            std::clog << logger::logNotice << "Received msg(" << msg->getType() 
-		      << hex << ") transID=" << msg->getTransID() << dec
-		      << ", " << msg->countOption() << " opts:";
+	    int iface = msg->getIface();
+	    SmartPtr<TIfaceIface> ptrIface;
+	    ptrIface = IfaceMgr->getIfaceByID(iface);
+            Log(Notice) << "Received " << msg->getName()
+			<< "(type=" << msg->getType() 
+			<< ") on " << ptrIface->getName() << "/" << iface
+			<< hex << ",TransID=0x" << msg->getTransID() << dec
+			<< ", " << msg->countOption() << " opts:";
+
             SmartPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
-                std::clog << " " << ptrOpt->getOptType() << "(" << ptrOpt->getSize() << ")";
+                std::clog << " " << ptrOpt->getOptType(); 
+                // << "(" << ptrOpt->getSize() << ")";
             std::clog << logger::endl;
 	    
             TransMgr->relayMsg(msg);

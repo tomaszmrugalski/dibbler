@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.17 2004-06-04 16:55:27 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.18 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.16  2004/05/23 23:46:02  thomson
  * *** empty log message ***
  *
@@ -97,7 +100,8 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     }
 
     // load or create DUID
-    if ( !loadDUID(this->WorkDir+"/"+(string)CLNTDUID_FILE) ) {
+    string duidFile = this->WorkDir+"/"+(string)CLNTDUID_FILE;
+    if (!setDUID(duidFile)) {
 	this->IsDone=true;
 	return;
     }

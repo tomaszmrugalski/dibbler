@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.5 2004-06-04 16:55:27 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.6 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.4  2004/05/23 22:37:54  thomson
  * *** empty log message ***
  *
@@ -444,21 +447,21 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << "      <Request count=\""<<iface.DNSSrv.count() << "\">" << endl;
     iface.DNSSrv.first();
     while(Station=iface.DNSSrv.get())
-        cout << *Station ;  
+        out << *Station ;  
     out << "      </Request>" << endl;
 
     // appended DNS-servers 
     out << "      <Append count=\"" << iface.AppDNSSrv.count() << "\">" << endl;
     iface.AppDNSSrv.first();
     while(Station=iface.AppDNSSrv.get())
-        cout << *Station ;  
+        out << *Station ;  
     out << "      </Append>" << endl;
 
     // prepended DNS-servers
     out << "      <Prefered count=\"" << iface.PrepDNSSrv.count() << "\">" << endl;
     iface.PrepDNSSrv.first();
     while(Station=iface.PrepDNSSrv.get())
-        cout << *Station;  
+        out << *Station;  
     out << "      </Prefered>" << endl;
 
     // required
@@ -481,13 +484,13 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << "      <request count=\"" << iface.NTPSrv.count() << "\">" << endl;
     iface.NTPSrv.first();
     while(Station=iface.NTPSrv.get())
-        cout << *Station;  
+        out << *Station;  
     out << "      </request>" << endl;
 
     out << "      <append count=\"" << iface.AppNTPSrv.count() << "\">" << endl;
     iface.AppNTPSrv.first();
     while(Station=iface.AppNTPSrv.get())
-        cout << *Station;  
+        out << *Station;  
     out << "      </append>" << endl;
 
 

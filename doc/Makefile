@@ -18,7 +18,8 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue
 
 dibbler-devel.pdf: dibbler-devel.tex
 	$(LATEX) dibbler-devel.tex
-	dvips -z doc -o
+	$(DVIPS) -z dibbler-devel.dvi -o
+	$(PS2PDF) dibbler-user.ps
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"

@@ -6,18 +6,11 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.9 2004-07-01 18:12:12 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.10 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.8  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.7  2004/05/23 21:35:31  thomson
- * *** empty log message ***
- *
- * Revision 1.6  2004/05/23 19:12:34  thomson
- * *** empty log message ***
- *
+ * Revision 1.9  2004/07/01 18:12:12  thomson
+ * DUID creation failure results in client/server shutdown (bugs #44, #45)
  *                                                                           
  */
 
@@ -128,46 +121,47 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
     oOldF.close();
 }
 
-bool TCfgMgr::setDUID(const string duidFile,char * mac,int macLen, int macType)
+
+
+bool TCfgMgr::loadDUID(const string duidFile)
 {
     ifstream f;
-    // DUID - It's common for client and server so why not to create CfgMgr
     f.open(duidFile.c_str());
     if ( !(f.is_open())  ) {
         // unable to open DUID file
         Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID." << LogEnd;
+	return false;
+    }
 
-        return this->generateDUID(duidFile,mac,macLen,macType);
-    }
-    else
+    f.seekg(0,ios::end);
+    long DUIDlen = f.tellg();
+    f.seekg(0,ios::beg);
+    char *DUID = new char[DUIDlen>>1];
+    char digit;
+    for (int i=0;i<DUIDlen; i++)	
     {
-        f.seekg(0,ios::end);
-        long DUIDlen = f.tellg();
-        f.seekg(0,ios::beg);
-        char *DUID = new char[DUIDlen>>1];
-        char digit;
-        for (int i=0;i<DUIDlen; i++)	
-        {
-            f.read(&digit,1);
-            if (isalpha(digit))
-                digit=toupper(digit)-'A'+10;
-            else
-                digit-='0';
-            DUID[i>>1]<<=4;
-            DUID[i>>1]|=digit;
-        }
-        DUIDlen>>=1;
-        this->DUID=new TDUID(DUID,DUIDlen);
-        
-        delete [] DUID;
-        f.close();
-        return true;
+	f.read(&digit,1);
+	if (isalpha(digit))
+	    digit=toupper(digit)-'A'+10;
+	else
+	    digit-='0';
+	DUID[i>>1]<<=4;
+	DUID[i>>1]|=digit;
     }
+    DUIDlen>>=1;
+    this->DUID=new TDUID(DUID,DUIDlen);
+    
+    delete [] DUID;
+    f.close();
+    return true;
 }
 
-bool TCfgMgr::loadDUID(const string filename) {
+bool TCfgMgr::setDUID(const string filename) {
     
     // --- load DUID ---
+    if (this->loadDUID(filename))
+	return true;
+
     SmartPtr<TIfaceIface> realIface;
 
     bool found=false;
@@ -208,8 +202,8 @@ bool TCfgMgr::loadDUID(const string filename) {
     }
 
     if(found) {
-      return this->setDUID(filename, (char*)realIface->getMac(),
-		      (int)realIface->getMacLen(), (int)realIface->getHardwareType());
+      return this->generateDUID(filename, realIface->getMac(),
+				realIface->getMacLen(), realIface->getHardwareType());
     } 
     
     Log(Crit) << "Cannot generate DUID, because I cannot find interface with "

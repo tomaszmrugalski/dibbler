@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.8 2004-07-05 00:12:30 thomson Exp $
+ * $Id: layer3.c,v 1.9 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.7  2004/07/01 18:13:51  thomson
  * Sockets are now bound to specific interface (bug #46)
  *
@@ -252,8 +255,8 @@ int ipaddr_add_or_del(char * addr, char *ifacename,int add)
 
 	// is there an interface with this ifindex?
 	if ((req.ifa.ifa_index = ll_name_to_index(ifacename)) == 0) {
-		fprintf(stderr, "Cannot find device \"%s\"\n", ifacename);
-		return -1;
+	    //fprintf(stderr, "Cannot find device \"%s\"\n", ifacename);
+	    return -1;
 	}
 	rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
 	return 0;
@@ -336,7 +339,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     if (multicast) {
 	hints.ai_flags = 0;
 	if((error = getaddrinfo(addr, port_char, &hints, &res2))){
-	    printf("Server: Error all agent addrinfo");
+	    //printf("Server: Error all agent addrinfo");
 	    return -5;
 	}
 	memset(&mreq6, 0, sizeof(mreq6));

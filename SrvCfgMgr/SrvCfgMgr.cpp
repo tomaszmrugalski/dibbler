@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.22 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.23 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.21  2004/07/01 18:12:46  thomson
  * Minor clean up.
  *
@@ -106,10 +109,10 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
         return;
     }
 
-    string duidFile = this->WorkDir+"/"+(string)SRVDUID_FILE;
 
     // load or create DUID
-    if ( !this->loadDUID(duidFile) ) {
+    string duidFile = this->WorkDir+"/"+(string)SRVDUID_FILE;
+    if (!this->setDUID(duidFile)) {
 		this->IsDone=true;
 		return;
     }

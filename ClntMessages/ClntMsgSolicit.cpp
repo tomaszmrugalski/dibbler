@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.5 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.6 2004-07-05 00:53:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  * Revision 1.4  2004/06/04 16:55:27  thomson
  * *** empty log message ***
  *
@@ -318,7 +321,7 @@ bool TClntMsgSolicit::check()
 }
 
 string TClntMsgSolicit::getName() {
-    return "REQUEST";
+    return "SOLICIT";
 }
 
 TClntMsgSolicit::~TClntMsgSolicit()
