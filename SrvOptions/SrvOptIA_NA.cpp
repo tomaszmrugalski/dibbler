@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.12 2004-10-27 22:07:56 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.13 2004-11-15 20:46:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.11  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -142,7 +146,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 	Log(Warning) << "IA option (with IAADDR suboptions missing) received. Assigning one address."
 		     << LogEnd;
 	
-	SmartPtr<TIPv6Addr> anyaddr;
+	SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
 	assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
 	
        	// include status code
