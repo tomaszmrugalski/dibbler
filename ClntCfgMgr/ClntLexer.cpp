@@ -908,6 +908,8 @@ static yyconst flex_int32_t yy_rule_can_match_eol[49] =
 
 
 #line 26 "ClntLexer.l"
+using namespace std;
+namespace std {
   unsigned ComBeg; //line, in which comment begins
   unsigned LftCnt; //how many signs : on the left side of :: sign was interpreted
   unsigned RgtCnt; //the same as above, but on the right side of ::
@@ -919,7 +921,7 @@ static yyconst flex_int32_t yy_rule_can_match_eol[49] =
   void decodeIntPart(char *src, char *dst);
   void resetAddress(char *tab);
   yy_clntParser_stype yylval;
-
+};
 #line 924 "ClntLexer.cpp"
 
 #define INITIAL 0
