@@ -3,8 +3,7 @@
 %header{
 #include <iostream>
 #include <string>
-#include "FlexLexer.h"
-#include <malloc.h>
+//#include <malloc.h>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -19,6 +18,10 @@
 #include "Logger.h"
 
 #define YY_USE_CLASS
+%}
+%{
+#include <FlexLexer.h>
+
 %}
 
 // class definition
@@ -113,7 +116,7 @@ InterfaceDeclarationsList '}'
     //Add it to list of read interfaces
     SrvCfgIfaceLst.append(new TSrvCfgIface($2));
     //FIXME:used of char * should be always realeased
-    delete $2;
+    delete [] $2;
     EndIfaceDeclaration();
 }
 /////////////////////////////////////////////////////////////////////////////
