@@ -83,6 +83,8 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
     this->IfaceOnly = ifaceonly;
     this->Status = UNKNOWN;
 
+	memcpy(this->Plain,addr->getPlain(),48);
+
     // is this address multicast? So the socket is.
     if ((addr->getAddr())[0]==(char)0xff) 
         this->Multicast = true;
@@ -256,7 +258,7 @@ TIfaceSocketIPv6::~TIfaceSocketIPv6() {
  */
 ostream & operator <<(ostream & strum, TIfaceSocketIPv6 &x)
 {
-    strum << "<TIfaceSocketIPv6"
+    strum << "<IfaceSocket"
 	  << " fd=\"" << x.getFD() << "\""
 	  << " port=\"" << x.getPort() << "\""
 	  << " iface=\"" << x.Iface << "\""
@@ -265,6 +267,18 @@ ostream & operator <<(ostream & strum, TIfaceSocketIPv6 &x)
 	strum << " multicast=\"true\"";
     if (x.IfaceOnly)
 	strum << " ifaceonly=\"true\"";
-    strum << " status==\"" << x.Status << "\"" << ">" << endl;
+    strum << " status==\"";
+	
+	switch (x.Status) {
+	case NOTCONFIGURED: { strum << "NOTCONFIGURED"; break; }
+	case INPROCESS: { strum << "INPROCESS"; break; }
+	case CONFIGURED:{ strum << "CONFIGURED"; break; }
+	case FAILED:{ strum << "FAILED"; break; }
+	case UNKNOWN:
+	default:
+		{ strum << "UNKNOWN"; break; }
+	}
+		
+	strum << "\"" << " />" << endl;
     return strum;
 }
