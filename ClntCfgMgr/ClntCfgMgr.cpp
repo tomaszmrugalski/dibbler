@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.18 2004-07-05 00:53:03 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.19 2004-07-11 14:08:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.17  2004/06/04 16:55:27  thomson
  * *** empty log message ***
  *
@@ -140,8 +143,9 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 
 	    if (!ifaceIface) {
 		Log(Error) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			      << " specified in " << CLNTCFGMGR_FILE << " is not present in the system."
+			      << " specified in " << CLNTCONF_FILE << " is not present or does not support IPv6."
 			      << LogEnd;
+		this->IsDone = true;
 		continue;
 	    }
 	    if (cfgIface->noConfig()) {
