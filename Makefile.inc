@@ -24,12 +24,12 @@ LDFLAGS       = $(XMLLIBS) $(EFENCE)
 # === Portability ===
 ARCH         = LINUX
 LOWLEVEL     = $(PREFIX)/$(PORTDIR)
-CLIENT       = $(PORTDIR)/client-linux.cpp
-SERVER       = $(PORTDIR)/server-linux.cpp
-RELAY        = $(PORTDIR)/relay-linux.cpp
 CLIENTBIN    = dibbler-client
 SERVERBIN    = dibbler-server
 RELAYBIN     = dibbler-relay
+CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
+SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
+RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
