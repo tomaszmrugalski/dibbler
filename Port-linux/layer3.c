@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.19 2004-12-04 23:47:01 thomson Exp $
+ * $Id: layer3.c,v 1.20 2004-12-08 00:20:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/12/04 23:47:01  thomson
+ * sock_add() now supports low debug info.
+ *
  * Revision 1.18  2004/11/30 00:54:25  thomson
  * Minor improvements.
  *
@@ -85,22 +88,22 @@ int default_scope(inet_prefix *lcl);
 
 int store_nlmsg(struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 {
-	struct nlmsg_list **linfo = (struct nlmsg_list**)arg;
-	struct nlmsg_list *h;
-	struct nlmsg_list **lp;
-
-	h = malloc(n->nlmsg_len+sizeof(void*));
-	if (h == NULL)
-		return -1;
-
-	memcpy(&h->h, n, n->nlmsg_len);
-	h->next = NULL;
-
-	for (lp = linfo; *lp; lp = &(*lp)->next) /* NOTHING */;
-	*lp = h;
-
-	ll_remember_index(who, n, NULL);
-	return 0;
+    struct nlmsg_list **linfo = (struct nlmsg_list**)arg;
+    struct nlmsg_list *h;
+    struct nlmsg_list **lp;
+    
+    h = malloc(n->nlmsg_len+sizeof(void*));
+    if (h == NULL)
+	return -1;
+    
+    memcpy(&h->h, n, n->nlmsg_len);
+    h->next = NULL;
+    
+    for (lp = linfo; *lp; lp = &(*lp)->next) /* NOTHING */;
+    *lp = h;
+    
+    ll_remember_index(who, n, NULL);
+    return 0;
 }
 
 void release_nlmsg_list(struct nlmsg_list *n) {
@@ -159,7 +162,10 @@ struct iface * if_list_get()
 	len -= NLMSG_LENGTH(sizeof(*ifi));
 	parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), len);
 
-//	printf("C: %d %s (flags:%d)\n",ifi->ifi_index,(char*)RTA_DATA(tb[IFLA_IFNAME]),ifi->ifi_flags);
+#ifdef LOWLEVEL_DEBUG
+	printf("### iface %d %s (flags:%d) ###\n",ifi->ifi_index,
+	       (char*)RTA_DATA(tb[IFLA_IFNAME]),ifi->ifi_flags);
+#endif
 
 	tmp = malloc(sizeof(struct iface));
 	snprintf(tmp->name,MAX_IFNAME_LENGTH,(char*)RTA_DATA(tb[IFLA_IFNAME]));
@@ -177,10 +183,6 @@ struct iface * if_list_get()
 	}
 
 	ipaddr_local_get(&tmp->linkaddrcount, &tmp->linkaddr, tmp->id, ainfo);
-			 
-	//tmp->linkaddrcount=1;
-	//tmp->linkaddr = malloc(16);
-	//memset(tmp->linkaddr,0,16);
     }
 
     release_nlmsg_list(linfo);
@@ -189,7 +191,7 @@ struct iface * if_list_get()
     return head;
 }
 
-/*
+/**
  * returns local addresses for specified interface
  */
 void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list *ainfo) {
@@ -236,51 +238,55 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
 
 int ipaddr_add_or_del(const char * addr, const char *ifacename, int add)
 {
-	struct rtnl_handle rth;
-	struct {
-		struct nlmsghdr 	n;
-		struct ifaddrmsg 	ifa;
-		char   			buf[256];
-	} req;
-	inet_prefix lcl;
-	inet_prefix peer;
-	int local_len = 0;
-	int peer_len = 0;
-	int scoped = 0;
-
-	memset(&req, 0, sizeof(req));
-	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
-	req.n.nlmsg_flags = NLM_F_REQUEST;
-	if (add==1) req.n.nlmsg_type = RTM_NEWADDR; /* add address */
-	else req.n.nlmsg_type = RTM_DELADDR;        /* del address */
-	req.ifa.ifa_family = AF_INET6;
-	req.ifa.ifa_flags = 0;
-
-	get_prefix_1(&lcl, (char*)addr, AF_INET6);
-
-	addattr_l(&req.n, sizeof(req), IFA_LOCAL, &lcl.data, lcl.bytelen);
-	local_len = lcl.bytelen;
-
-	if (peer_len == 0 && local_len) {
-	    peer = lcl;
-	    addattr_l(&req.n, sizeof(req), IFA_ADDRESS, &lcl.data, lcl.bytelen);
-	}
-	if (req.ifa.ifa_prefixlen == 0)
-		req.ifa.ifa_prefixlen = lcl.bitlen;
-
-	if (!scoped)
-		req.ifa.ifa_scope = default_scope(&lcl);
-
-	rtnl_open(&rth, 0);
-	ll_init_map(&rth);
-
+    struct rtnl_handle rth;
+    struct {
+	struct nlmsghdr 	n;
+	struct ifaddrmsg 	ifa;
+	char   			buf[256];
+    } req;
+    inet_prefix lcl;
+    inet_prefix peer;
+    int local_len = 0;
+    int peer_len = 0;
+    int scoped = 0;
+    
+#ifdef LOWLEVEL_DEBUG
+    printf("### iface=%s, addr=%s, add=%d ###\n", ifacename, addr, add);
+#endif
+    
+    memset(&req, 0, sizeof(req));
+    req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
+    req.n.nlmsg_flags = NLM_F_REQUEST;
+    if (add==1) req.n.nlmsg_type = RTM_NEWADDR; /* add address */
+    else req.n.nlmsg_type = RTM_DELADDR;        /* del address */
+    req.ifa.ifa_family = AF_INET6;
+    req.ifa.ifa_flags = 0;
+    
+    get_prefix_1(&lcl, (char*)addr, AF_INET6);
+    
+    addattr_l(&req.n, sizeof(req), IFA_LOCAL, &lcl.data, lcl.bytelen);
+    local_len = lcl.bytelen;
+    
+    if (peer_len == 0 && local_len) {
+	peer = lcl;
+	addattr_l(&req.n, sizeof(req), IFA_ADDRESS, &lcl.data, lcl.bytelen);
+    }
+    if (req.ifa.ifa_prefixlen == 0)
+	req.ifa.ifa_prefixlen = lcl.bitlen;
+    
+    if (!scoped)
+	req.ifa.ifa_scope = default_scope(&lcl);
+    
+    rtnl_open(&rth, 0);
+    ll_init_map(&rth);
+    
 	// is there an interface with this ifindex?
-	if ((req.ifa.ifa_index = ll_name_to_index((char*)ifacename)) == 0) {
-	    //fprintf(stderr, "Cannot find device \"%s\"\n", ifacename);
+    if ((req.ifa.ifa_index = ll_name_to_index((char*)ifacename)) == 0) {
+	//fprintf(stderr, "Cannot find device \"%s\"\n", ifacename);
 	    return -1;
-	}
-	rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
-	return 0;
+    }
+    rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
+    return 0;
 }
 
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
@@ -399,25 +405,25 @@ int sock_del(int fd)
 
 int sock_send(int sock, char *addr, char *buf, int message_len, int port, int iface )
 {
-	struct addrinfo hints, *res;
-	int result;
-	char cport[10];
-	sprintf(cport,"%d",port);
-	
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = PF_INET6;
-	hints.ai_socktype = SOCK_DGRAM;
-	if (getaddrinfo(addr, cport, &hints, &res) < 0) {
-	    return -1; // Error in transmitting
-	}
-
+    struct addrinfo hints, *res;
+    int result;
+    char cport[10];
+    sprintf(cport,"%d",port);
+    
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = PF_INET6;
+    hints.ai_socktype = SOCK_DGRAM;
+    if (getaddrinfo(addr, cport, &hints, &res) < 0) {
+	return -1; // Error in transmitting
+    }
+    
 //	if (setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &lim, sizeof(lim)) < 0) {
 //	    return -2; // Error setting up socket
 //	}
- 
-	result = sendto(sock, buf, message_len, 0, res->ai_addr, res->ai_addrlen);
-	freeaddrinfo(res);
-	return result;
+    
+    result = sendto(sock, buf, message_len, 0, res->ai_addr, res->ai_addrlen);
+    freeaddrinfo(res);
+    return result;
 }
 
 /*
@@ -537,7 +543,7 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 	free(ainfo);
     }
     
-    // FIXME: close rth socket
+    rtnl_close(&rth);
 
     return tentative;
 }
