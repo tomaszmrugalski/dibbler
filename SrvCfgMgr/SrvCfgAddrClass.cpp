@@ -59,23 +59,19 @@ long TSrvCfgAddrClass::chooseTime(long beg, long end, long clntTime)
 }
 
 
-long TSrvCfgAddrClass::getT1(long clntT1)
-{
+unsigned long TSrvCfgAddrClass::getT1(long clntT1) {
     return chooseTime(T1Beg,T1End,clntT1);
 }
 
-long TSrvCfgAddrClass::getT2(long clntT2)
-{
+unsigned long TSrvCfgAddrClass::getT2(long clntT2) {
     return chooseTime(T2Beg,T2End,clntT2);
 }
 
-long TSrvCfgAddrClass::getPref(long clntPref)
-{
+unsigned long TSrvCfgAddrClass::getPref(long clntPref) {
     return chooseTime(PrefBeg,PrefEnd,clntPref);
 }
 
-long TSrvCfgAddrClass::getValid(long clntValid)
-{
+unsigned long TSrvCfgAddrClass::getValid(long clntValid) {
     return chooseTime(ValidBeg,ValidEnd,clntValid);
 }
 
@@ -146,15 +142,14 @@ SmartPtr<TIPv6Addr> TSrvCfgAddrClass::getRandomAddr()
     return range->getRandomAddr();
 }
 
-long TSrvCfgAddrClass::getMaxLease()
-{
+unsigned long TSrvCfgAddrClass::getMaxLease() {
     if (this->countAddrInPool()>MaxLease)
         return MaxLease;
     else
         return countAddrInPool();
 }
 
-long TSrvCfgAddrClass::getMaxClientLease()
+unsigned long TSrvCfgAddrClass::getMaxClientLease()
 {
     if (this->countAddrInPool()>MaxClientLease)
         return this->MaxClientLease;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.4 2004-03-29 22:06:49 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.5 2004-06-04 19:03:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/03/29 22:06:49  thomson
+ * 0.1.1 version
+ *
  * Revision 1.3  2004/03/29 18:53:09  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -193,7 +196,7 @@ int TAddrIA::getAddrCount()
 // --------------------------------------------------------------------
 // --- time related methods -------------------------------------------
 // --------------------------------------------------------------------
-long TAddrIA::getT1Timeout() {
+unsigned long TAddrIA::getT1Timeout() {
     long ts;
     ts = (this->Timestamp) + (this->T1) - now();
     if (ts>0) 
@@ -202,7 +205,7 @@ long TAddrIA::getT1Timeout() {
         return 0;
 }
 
-long TAddrIA::getT2Timeout() {
+unsigned long TAddrIA::getT2Timeout() {
     long ts;
     ts = (this->Timestamp) + (this->T2) - now();
     if (ts>0) 
@@ -211,7 +214,7 @@ long TAddrIA::getT2Timeout() {
         return 0;
 }
 
-long TAddrIA::getPrefTimeout() {
+unsigned long TAddrIA::getPrefTimeout() {
     unsigned long ts = LONG_MAX;
 
     SmartPtr<TAddrAddr> ptr;
@@ -224,7 +227,7 @@ long TAddrIA::getPrefTimeout() {
     return ts;
 }
 
-long TAddrIA::getMaxValidTimeout() {
+unsigned long TAddrIA::getMaxValidTimeout() {
     unsigned long ts = 0;
 
     SmartPtr<TAddrAddr> ptr;
@@ -237,7 +240,7 @@ long TAddrIA::getMaxValidTimeout() {
     return ts;
 }
 
-long TAddrIA::getValidTimeout() {
+unsigned long TAddrIA::getValidTimeout() {
     unsigned long ts = LONG_MAX;
 
     SmartPtr<TAddrAddr> ptr;
@@ -250,7 +253,7 @@ long TAddrIA::getValidTimeout() {
     return ts;
 }
 
-long TAddrIA::getMaxValid() {
+unsigned long TAddrIA::getMaxValid() {
     unsigned long ts = 0;
 
     SmartPtr<TAddrAddr> ptr;
@@ -298,7 +301,7 @@ unsigned long TAddrIA::getTentativeTimeout()
         while ( ptrAddr = AddrLst.get() )
         {
             if (ptrAddr->getTentative()==DONTKNOWYET)
-                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-now()) 
+                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-now() ) 
                 {
                     min = ptrAddr->getTimestamp()+DADTIMEOUT-now();
                 }
@@ -328,7 +331,7 @@ enum ETentative TAddrIA::getTentative()
 	case NO:
 	    continue;
 	case DONTKNOWYET:
-        if (ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
+        if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
         {
 
             switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 

@@ -17,10 +17,10 @@ class TClntCfgIA
     long getIAID();
     void setIAID(long iaid);
 
-    long getT1();
+    unsigned long getT1();
     ESendOpt getT1SendOpt();
 
-    long getT2();
+    unsigned long getT2();
     ESendOpt getT2SendOpt();
 
     void setOptions(SmartPtr<TClntParsGlobalOpt> opt);

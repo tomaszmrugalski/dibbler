@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.13 2004-05-23 21:24:50 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.14 2004-06-04 19:03:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/05/23 21:24:50  thomson
+ * *** empty log message ***
+ *
  * Revision 1.12  2004/04/11 18:04:53  thomson
  * LIBXML2 is now a optional feature
  *
@@ -57,7 +60,7 @@ void TAddrMgr::dbLoad()
      xmlDocPtr root;
      root = xmlLoad(this->dbfile.c_str());
      if (!root) {
- 	cout << "loading has fu###ed up";
+ 	cout << "File loading has failed.";
      }
      this->parseAddrMgr(root,0);
      xmlFreeDoc(root);
@@ -69,7 +72,7 @@ void TAddrMgr::dbStore()
     // uncomment this line below to avoid crashes in g++-3.x
     //return;
     std::ofstream xmlDump;
-    xmlDump.open(this->dbfile.c_str());
+    xmlDump.open(this->dbfile.c_str(), ios::ate);
     xmlDump << *this;
     xmlDump.close();
 }
@@ -126,9 +129,9 @@ bool TAddrMgr::delClient(SmartPtr<TDUID> duid)
 // --- time related methods -------------------------------------------
 // --------------------------------------------------------------------
 
-long TAddrMgr::getT1Timeout()
+unsigned long TAddrMgr::getT1Timeout()
 {
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -138,9 +141,9 @@ long TAddrMgr::getT1Timeout()
     return ts;
 }
 
-long TAddrMgr::getT2Timeout()
+unsigned long TAddrMgr::getT2Timeout()
 {
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -150,9 +153,9 @@ long TAddrMgr::getT2Timeout()
     return ts;
 }
 
-long TAddrMgr::getPrefTimeout()
+unsigned long TAddrMgr::getPrefTimeout()
 {
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -162,9 +165,9 @@ long TAddrMgr::getPrefTimeout()
     return ts;
 }
 
-long TAddrMgr::getValidTimeout()
+unsigned long TAddrMgr::getValidTimeout()
 {
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {

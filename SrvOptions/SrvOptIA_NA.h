@@ -1,6 +1,5 @@
-#ifndef SRVIA_NA_H_HEADER_INCLUDED_C112064B
-#define SRVTIA_NA_H_HEADER_INCLUDED_C112064B
-
+#ifndef SRVOPTIA_NA_H
+#define SRVOPTIA_NA_H
 
 #include "OptIA_NA.h"
 #include "SmartPtr.h"
@@ -92,13 +91,12 @@ class TSrvOptIA_NA : public TOptIA_NA
 		 int iface, unsigned long &addrCount);
        
     bool doDuties();
-private:
-    bool isAddrIn(
-        SmartPtr<TIPv6Addr> addr,
-        SmartPtr<TContainer<SmartPtr<TIPv6Addr> > > addrLst);
+ private:
+    bool isAddrIn(SmartPtr<TIPv6Addr> addr,
+		  SmartPtr<TContainer<SmartPtr<TIPv6Addr> > > addrLst);
 };
 
 
 
 
-#endif /* IA_NA_H_HEADER_INCLUDED_C112064B */
+#endif

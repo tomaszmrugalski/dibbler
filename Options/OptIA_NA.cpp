@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIA_NA.cpp,v 1.3 2004-05-23 19:12:34 thomson Exp $
+ * $Id: OptIA_NA.cpp,v 1.4 2004-06-04 19:03:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/05/23 19:12:34  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -39,12 +42,12 @@ TOptIA_NA::TOptIA_NA( long IAID, long t1,  long t2, TMsg* parent)
     return IAID;
 }
 
- long TOptIA_NA::getT1()
+unsigned long TOptIA_NA::getT1()
 {
     return T1;
 }
 
- long TOptIA_NA::getT2()
+unsigned long TOptIA_NA::getT2()
 {
     return T2;
 }
@@ -88,7 +91,7 @@ int TOptIA_NA::getSize()
 	return mySize+getSubOptSize();
 }
 
- char * TOptIA_NA::storeSelf( char* buf)
+char * TOptIA_NA::storeSelf( char* buf)
 {
     *(uint16_t*)buf = htons(OptType);
     buf+=2;
@@ -105,7 +108,7 @@ int TOptIA_NA::getSize()
     return buf;
 }
 
-long TOptIA_NA::getMaxValid()
+unsigned long TOptIA_NA::getMaxValid()
 {
     unsigned long maxValid=0;
     SmartPtr<TOpt> ptrOpt;

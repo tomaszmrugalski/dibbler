@@ -2278,7 +2278,6 @@ bool clntParser::CheckIsIface(string ifaceName)
     string presName=ptr->getName();
     if (presName==ifaceName) YYABORT;
   };
-  return true;
 };
 
 //method creates new scope appropriately for interface options and declarations
@@ -2330,87 +2329,98 @@ bool clntParser::EndIfaceDeclaration()
   }
   //restore global options
   ParserOptStack.delLast();
-  return 0;
+    
 }   
 
-void clntParser::EmptyIface() {
+void clntParser::EmptyIface()
+{
     //set iface options on the basis of recent information
-    ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-    //add one IA with one address to this iface
-    ClntCfgIfaceLst.getLast()->addGroup(new TClntCfgGroup());
-    EmptyIA();
-    ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
-    ClntCfgIfaceLst.getLast()->getLastGroup()->
-	addIA(ClntCfgIALst.getLast());
+  ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
+  //add one IA with one address to this iface
+  ClntCfgIfaceLst.getLast()->addGroup(new TClntCfgGroup());
+  EmptyIA();
+  ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
+  ClntCfgIfaceLst.getLast()->getLastGroup()->
+    addIA(ClntCfgIALst.getLast());
     
 }
 
 //method creates new scope appropriately for interface options and declarations
 //clears list of addresses
 //bool aggregation - whether it is agregated IA option
-void clntParser::StartIADeclaration(bool aggregation) {
-    ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
-    ParserOptStack.getLast()->setNewGroup(false);
-    ParserOptStack.getLast()->setAddrHint(!aggregation);
-    ClntCfgAddrLst.clear();
+void clntParser::StartIADeclaration(bool aggregation)
+{
+  ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
+  ParserOptStack.getLast()->setNewGroup(false);
+  ParserOptStack.getLast()->setAddrHint(!aggregation);
+  ClntCfgAddrLst.clear();
 }
 
-void clntParser::EndIADeclaration(long iaCnt) {
-    if(ClntCfgAddrLst.count()==0) {
-	EmptyIA();
-    } else  {
-	ClntCfgIALst.append(new TClntCfgIA(ParserOptStack.getFirst()->getIncedIAIDCnt()));
-	SmartPtr<TClntCfgAddr> ptr;
-	ClntCfgAddrLst.first();
-	while(ptr=ClntCfgAddrLst.get())
-	    ClntCfgIALst.getLast()->addAddr(ptr);
+void clntParser::EndIADeclaration(long iaCnt)
+{
+  if(ClntCfgAddrLst.count()==0)
+    EmptyIA();
+  else
+  {
+    ClntCfgIALst.append(new TClntCfgIA(ParserOptStack.getFirst()->getIncedIAIDCnt()));
+    SmartPtr<TClntCfgAddr> ptr;
+    ClntCfgAddrLst.first();
+    while(ptr=ClntCfgAddrLst.get())
+          ClntCfgIALst.getLast()->addAddr(ptr);
+  }
+  //set proper options specific for this IA
+  ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
+
+  //Options change - new group should be created
+  if (ParserOptStack.getLast()->isNewGroup())
+  {
+
+    //this IA will have its own group, bcse it does't match with previous ones
+    ClntCfgGroupLst.prepend(new TClntCfgGroup());
+    ClntCfgGroupLst.getFirst()->setOptions(ParserOptStack.getLast());
+    ClntCfgGroupLst.first();
+    ClntCfgGroupLst.getFirst()->addIA(ClntCfgIALst.getLast());
+    for (int i=1;i<iaCnt;i++)
+    {
+      //przy tworzeniu wskaŸnika utworzenie kopi opisu opcji znajduj¹cej siê na koñcu listy
+      SmartPtr<TClntCfgIA> ptr 
+        (new TClntCfgIA(ClntCfgIALst.getLast(),ParserOptStack.getFirst()->getIncedIAIDCnt()));
+      ClntCfgGroupLst.getFirst()->addIA(ptr);
     }
-    //set proper options specific for this IA
-    ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
-    
-    //Options change - new group should be created
-    if (ParserOptStack.getLast()->isNewGroup()) {
-	//this IA will have its own group, bcse it does't match with previous ones
-	ClntCfgGroupLst.prepend(new TClntCfgGroup());
-	ClntCfgGroupLst.getFirst()->setOptions(ParserOptStack.getLast());
-	ClntCfgGroupLst.first();
-	ClntCfgGroupLst.getFirst()->addIA(ClntCfgIALst.getLast());
-	for (int i=1;i<iaCnt;i++)
-	{
-	    //Create copies of options descriptions
-	    SmartPtr<TClntCfgIA> ptr 
-		(new TClntCfgIA(ClntCfgIALst.getLast(),ParserOptStack.getFirst()->getIncedIAIDCnt()));
-	    ClntCfgGroupLst.getFirst()->addIA(ptr);
-	}
-	ClntCfgIALst.delLast();
-	ParserOptStack.delLast();
-    } else {
-	//FIXME: increase IAID when copy
-	for (int i=1;i<iaCnt;i++) {
-	    SmartPtr<TClntCfgIA> ia(new TClntCfgIA(*ClntCfgIALst.getLast()));
-	    ia->setIAID(ParserOptStack.getFirst()->getIncedIAIDCnt());
-	    ClntCfgIALst.append(ia);
-	}
-	//this IA matches with previous ones and can be grouped with them
-	//so it's should be left on the list and be appended with them to present list
-	ParserOptStack.delLast();
-	//new IA was found, so should new group be created ??
-	
-	if (ParserOptStack.getLast()->isNewGroup()) {
-	    //ParserOptStack.delLast();
+    ClntCfgIALst.delLast();
+    ParserOptStack.delLast();
+  }
+  else
+  {
+    //FIXME: increase IAID when copy
+     for (int i=1;i<iaCnt;i++)
+     {
+        SmartPtr<TClntCfgIA> ia(new TClntCfgIA(*ClntCfgIALst.getLast()));
+        ia->setIAID(ParserOptStack.getFirst()->getIncedIAIDCnt());
+        ClntCfgIALst.append(ia);
+     }
+     //this IA matches with previous ones and can be grouped with them
+     //so it's should be left on the list and be appended with them to present list
+     ParserOptStack.delLast();
+       //new IA was found, so should new group be created ??
+
+     if (ParserOptStack.getLast()->isNewGroup())
+     {
+          //ParserOptStack.delLast();
             //new IA was found, so should new group be created ??
-	    //FIXED: in the case list of IAs has more than iaCnt elements insert them into
-	    //the group except the last iaCnt IA, which belongs to the new group
-	    while(ClntCfgIALst.count()>iaCnt) {
-		ClntCfgGroupLst.getLast()->addIA(ClntCfgIALst.getFirst());
-		ClntCfgIALst.delFirst();
-	    }
-	    ClntCfgGroupLst.append(new TClntCfgGroup());
-	    //and now we will be waiting for matchin IAs
-	    ParserOptStack.getLast()->setNewGroup(false);
-	    ClntCfgGroupLst.getLast()->setOptions(ParserOptStack.getLast());
-	};
-    };
+        //FIXED: in the case list of IAs has more than iaCnt elements insert them into
+        //the group except the last iaCnt IA, which belongs to the new group
+        while(ClntCfgIALst.count()>iaCnt)
+        {
+             ClntCfgGroupLst.getLast()->addIA(ClntCfgIALst.getFirst());
+             ClntCfgIALst.delFirst();
+        }
+        ClntCfgGroupLst.append(new TClntCfgGroup());
+        //and now we will be waiting for matchin IAs
+        ParserOptStack.getLast()->setNewGroup(false);
+        ClntCfgGroupLst.getLast()->setOptions(ParserOptStack.getLast());
+     };
+  };
 }
 
 //metoda dodaje 1 IA do kolejki ClntCfgIAs, a nastepnie adres do 

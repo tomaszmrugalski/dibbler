@@ -24,10 +24,10 @@ public:
     int countIA();
 
     // time related
-    long getT1Timeout();
-    long getT2Timeout();
-    long getPrefTimeout();
-    long getValidTimeout();
+    unsigned long getT1Timeout();
+    unsigned long getT2Timeout();
+    unsigned long getPrefTimeout();
+    unsigned long getValidTimeout();
 
 private:
     TContainer< SmartPtr<TAddrIA> > IAsLst;

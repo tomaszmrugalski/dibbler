@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Portable.h,v 1.17 2004-05-23 23:45:45 thomson Exp $
+ * $Id: Portable.h,v 1.18 2004-06-04 19:03:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/05/23 23:45:45  thomson
+ * logLevel works (finally...)
+ *
  * Revision 1.16  2004/04/09 19:34:18  thomson
  * *** empty log message ***
  *
@@ -21,7 +24,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.1.1-CVS $Date: 2004-05-23 23:45:45 $"
+#define DIBBLER_VERSION "0.1.1-CVS $Date: 2004-06-04 19:03:47 $"
 //#define DIBBLER_VERSION "0.1.1-CVS"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
@@ -108,7 +111,7 @@
 #include <time.h>
 #endif
 
-#define now() time(NULL)
+#define now() (unsigned) time(NULL)
 
 // **********************************************************************
 // *** interface/socket low level functions *****************************

@@ -13,17 +13,17 @@ class TOptIA_NA : public TOpt
     int getStatusCode();
     
     long getIAID();
-    long getT1();
-    long getT2();
-    long getMaxValid();
+    unsigned long getT1();
+    unsigned long getT2();
+    unsigned long getMaxValid();
 
     char * storeSelf( char* buf);
     bool isValid();
  protected:
      bool Valid;
      long IAID;
-     long T1;
-     long T2;
+     unsigned long T1;
+     unsigned long T2;
 };
 
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.3 2004-06-04 19:03:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -369,9 +372,10 @@ bool TClntOptIA_NA::doDuties()
     
     enum ESendOpt opt=ptrCfgIA->getT1SendOpt();
     //if really want to set our, but shorter value
-    if ((opt==Supersede)&&(ptrCfgIA->getT1()<this->getT1()))
+    if ( (opt==Supersede) && 
+	 (ptrCfgIA->getT1()<this->getT1())) {
             ptrIA->setT1( ptrCfgIA->getT1() );       
-    else
+    } else {
         //or server allows to set it at our convenience
         if( (opt==Default)&&(!this->getT1()) )
             ptrIA->setT1( ptrCfgIA->getT1() );
@@ -381,6 +385,7 @@ bool TClntOptIA_NA::doDuties()
                 ptrIA->setT1( this->getT1() );
             else
                 ptrIA->setT1(ptrCfgIA->getT1());
+    }
 
     //The same for T2
     opt=ptrCfgIA->getT2SendOpt();

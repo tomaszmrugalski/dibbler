@@ -9,38 +9,31 @@ long TClntCfgIA::countAddr()
     return ClntCfgAddrLst.count();
 }
 
-long TClntCfgIA::getT1()
-{
+unsigned long TClntCfgIA::getT1() {
     return T1;
 }
 
-long TClntCfgIA::getT2()
-{
+unsigned long TClntCfgIA::getT2() {
     return T2;
 }
 
-void TClntCfgIA::setState(enum EState state)
-{
+void TClntCfgIA::setState(enum EState state) {
     State = state;
 }
 
-enum EState TClntCfgIA::getState()
-{
+enum EState TClntCfgIA::getState() {
     return State;
 }
 
-long  TClntCfgIA::getIAID()
-{
+long  TClntCfgIA::getIAID() {
     return IAID;
 }
 
-void TClntCfgIA::setIAID(long iaid)
-{
+void TClntCfgIA::setIAID(long iaid) {
     IAID=iaid;
 }
 
-void TClntCfgIA::setOptions(SmartPtr<TClntParsGlobalOpt> opt)
-{
+void TClntCfgIA::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     this->T1=opt->getT1();
     this->T1SendOpt=opt->getT1SendOpt();
     this->T2=opt->getT2();

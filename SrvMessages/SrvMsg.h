@@ -48,9 +48,8 @@ public:
     bool appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
         int iface, SmartPtr<TSrvOptOptionRequest> reqOpt);
 
-    //##ModelId=3EC75CE3032B
     // maximum retransmission timeout
-    long MRT;
+    unsigned long MRT;
 
     unsigned long getTimeout();
     void doDuties();
@@ -63,7 +62,7 @@ protected:
         SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface, bool rapid=false);
 private:
     //##Stempel czasowy pierwszej transmiji wiadomoœci
-    int FirstTimeStamp;
+    unsigned long FirstTimeStamp;
 
     void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
 		    SmartPtr<TSrvTransMgr> TransMgr, 

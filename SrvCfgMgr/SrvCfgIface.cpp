@@ -108,7 +108,6 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface)
     
     out << "    <domain>" << iface.Domain << "</domain>" << logger::endl;
     
-    int classCnt=0;
     SmartPtr<TSrvCfgAddrClass>	groupPtr;
     iface.SrvCfgAddrClassLst.first();
     out << "    <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() 

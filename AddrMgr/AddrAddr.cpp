@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.4 2004-04-10 14:14:30 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.5 2004-06-04 19:03:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/04/10 14:14:30  thomson
+ * *** empty log message ***
+ *
  * Revision 1.3  2004/03/29 18:53:09  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -47,12 +50,12 @@ TAddrAddr::TAddrAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid)
     this->Tentative = DONTKNOWYET;
 }
 
-long TAddrAddr::getPref()
+unsigned long TAddrAddr::getPref()
 {
     return Prefered;
 }
 
-long TAddrAddr::getValid()
+unsigned long TAddrAddr::getValid()
 {
     return Valid;
 }
@@ -64,7 +67,7 @@ SmartPtr<TIPv6Addr> TAddrAddr::get()
 
 
 // return Prefered time left
-long TAddrAddr::getPrefTimeout()
+unsigned long TAddrAddr::getPrefTimeout()
 {
     long ts = this->Timestamp + this->Prefered - now();
     if (ts>0) 
@@ -74,7 +77,7 @@ long TAddrAddr::getPrefTimeout()
 }
 
 // return Valid time left
-long TAddrAddr::getValidTimeout()
+unsigned long TAddrAddr::getValidTimeout()
 {
     long ts = (this->Timestamp) + (this->Valid) - now();
     if (ts>0) 
@@ -100,12 +103,12 @@ void TAddrAddr::setTentative(enum ETentative state)
     this->Tentative = state;
 }
 
-void TAddrAddr::setPref(long pref)
+void TAddrAddr::setPref(unsigned long pref)
 {
     this->Prefered = pref;
 }
 
-void TAddrAddr::setValid(long valid)
+void TAddrAddr::setValid(unsigned long valid)
 {
     this->Valid = valid;
 }

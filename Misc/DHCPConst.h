@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: DHCPConst.h,v 1.3 2004-03-29 22:06:49 thomson Exp $
+ * $Id: DHCPConst.h,v 1.4 2004-06-04 19:03:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/03/29 22:06:49  thomson
+ * 0.1.1 version
+ *
  *
  * Released under GNU GPL v2 licence
  *
@@ -110,14 +113,14 @@
 #define STATUSCODE_USEMULTICAST  5
 
 // INFINITY + 1 is 0. Hih, cool
-#define DHCPV6_INFINITY 0xffffffff
+#define DHCPV6_INFINITY (unsigned) 0xffffffff
 
 // how long should we wait before we assume that OS detected duplicated addresses 
 // default (3 secs)
-#define DADTIMEOUT 3
+#define DADTIMEOUT (unsigned) 3
 
 // addresses reported ad DECLINED are not used for 2 hours
-#define DECLINED_TIMEOUT 7200
+#define DECLINED_TIMEOUT (unsigned) 7200
 
 enum ESendOpt {Send,Default,Supersede};
 enum EReqOpt {Request, Require};

@@ -23,26 +23,21 @@ class TAddrAddr
 
     TAddrAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
 
-    long getPref();
-    long getValid();
-
     // return address in packed format (char[16])
     SmartPtr<TIPv6Addr> get();
 
-    // return Prefered time left
-    long getPrefTimeout();
-    void setPref(long pref);
-    void setValid(long valid);
+    // lifetime related
+    unsigned long getPref();
+    unsigned long getValid();
+    unsigned long getPrefTimeout();
+    void setPref(unsigned long pref);
+    void setValid(unsigned long valid);
+    unsigned long getValidTimeout();
 
-    // return Valid time left
-    long getValidTimeout();
-
-    // return timestamp
+    // timestamp
     long getTimestamp();
-
-    // set timestamp
     void setTimestamp(long ts);
-    void setTimestamp();        // now
+    void setTimestamp();
     
     // tentative
     enum ETentative getTentative();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.4 2004-03-29 18:53:09 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.5 2004-06-04 19:03:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/03/29 18:53:09  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  * Revision 1.3  2004/03/28 19:57:59  thomson
  * no message
  *
@@ -82,9 +85,9 @@ bool TAddrClient::delIA(long IAID)
 // --- time related methods -------------------------------------------
 // --------------------------------------------------------------------
 
-long TAddrClient::getT1Timeout() {
+unsigned long TAddrClient::getT1Timeout() {
     SmartPtr<TAddrIA> ptr;
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -96,9 +99,9 @@ long TAddrClient::getT1Timeout() {
     return ts;
 }
 
-long TAddrClient::getT2Timeout() {
+unsigned long TAddrClient::getT2Timeout() {
     SmartPtr<TAddrIA> ptr;
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -110,9 +113,9 @@ long TAddrClient::getT2Timeout() {
     return ts;
 }
 
-long TAddrClient::getPrefTimeout() {
+unsigned long TAddrClient::getPrefTimeout() {
     SmartPtr<TAddrIA> ptr;
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -124,9 +127,9 @@ long TAddrClient::getPrefTimeout() {
     return ts;
 }
 
-long TAddrClient::getValidTimeout() {
+unsigned long TAddrClient::getValidTimeout() {
     SmartPtr<TAddrIA> ptr;
-    long ts = LONG_MAX;
+    unsigned long ts = LONG_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {

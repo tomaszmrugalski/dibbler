@@ -1,6 +1,6 @@
 class TSrvCfgAddrClass;
-#ifndef SRVCONFADDRCLASS_H_HEADER_INCLUDED_C0F0C90C
-#define SRVCONFADDRCLASS_H_HEADER_INCLUDED_C0F0C90C
+#ifndef SRVCONFADDRCLASS_H
+#define SRVCONFADDRCLASS_H
 
 #include <string>
 #include <iostream>
@@ -35,12 +35,12 @@ public:
     unsigned long TSrvCfgAddrClass::countAddrInPool();
     SmartPtr<TIPv6Addr> getRandomAddr();
 
-    long getT1(long clntT1);
-    long getT2(long clntT2);
-    long getPref(long clntPref);
-    long getValid(long clntValid);
-    long getMaxLease();
-    long getMaxClientLease();
+    unsigned long getT1(long clntT1);
+    unsigned long getT2(long clntT2);
+    unsigned long getPref(long clntPref);
+    unsigned long getValid(long clntValid);
+    unsigned long getMaxLease();
+    unsigned long getMaxClientLease();
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     bool getRapidCommit();
     char getPreference();
@@ -65,12 +65,11 @@ private:
     TContainer<SmartPtr<TStationRange> > AcceptClnt;
     TContainer<SmartPtr<TStationRange> > Pool;
 
-    long                MaxClientLease;
-    long                MaxLease;
-    char                Preference;	
-    bool				Unicast;		
-    bool				RapidCommit;	
-    //string			NISServer;		
+    unsigned long MaxClientLease;
+    unsigned long MaxLease;
+    char Preference;	
+    bool Unicast;		
+    bool RapidCommit;	
 };
 
-#endif /* SRVCONFADDRCLASS_H_HEADER_INCLUDED_C0F0C90C */
+#endif
