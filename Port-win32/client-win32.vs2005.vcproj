@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;include;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
+				AdditionalIncludeDirectories="..;.;include;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;YYDEBUG"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -435,7 +435,7 @@
 				Name="misc"
 				Filter="">
 				<File
-					RelativePath="..\misc\DHCPClient.cpp">
+					RelativePath="..\DHCPClient.cpp">
 				</File>
 				<File
 					RelativePath="..\misc\DHCPConst.cpp">
@@ -477,6 +477,9 @@
 					RelativePath="..\misc\addrpack.c">
 				</File>
 				<File
+					RelativePath="dns-winxp.c">
+				</File>
+				<File
 					RelativePath="..\misc\long128.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -509,9 +512,6 @@
 				</File>
 				<File
 					RelativePath="client-winxp.cpp">
-				</File>
-				<File
-					RelativePath="ipv6-wrapper.c">
 				</File>
 				<File
 					RelativePath="windowsfun.c">
@@ -702,6 +702,9 @@
 		</File>
 		<File
 			RelativePath="..\GUIDELINES">
+		</File>
+		<File
+			RelativePath="INFO-winxp.txt">
 		</File>
 		<File
 			RelativePath="..\README">
