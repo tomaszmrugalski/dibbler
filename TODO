@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.12 2004-10-25 20:45:52 thomson Exp $
+$Id: TODO,v 1.13 2004-11-02 19:23:25 thomson Exp $
 
 Warning: This TODO may be outdated/out of sync.
 
@@ -7,8 +7,6 @@ Warning: This TODO may be outdated/out of sync.
  ---------------
 - setting up a domain: echo homenetwork > /etc/dnsdomainname
 - IA_TA option support
-- ClntCfgIface.cpp:107: what are "additonal DNS servers"?
-- ClntCfgIface.cpp:157: what are those options?
 - Flex (gentoo: emerge /usr/portage/sys-devel/flex/flex-2.5.31-r1.ebuild)
 
 - check server's behavior: there isn't any addrs left, and srv receives SOLICIT.
