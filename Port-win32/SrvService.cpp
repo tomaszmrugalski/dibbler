@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6 
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * $Id: SrvService.cpp,v 1.6 2004-03-28 19:50:29 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ * Released under GNU GPL v2 licence                                
+ *                                                                           
+ */
+
 #include <direct.h>
 #include "SrvService.h"
 #include "DHCPClient.h"
@@ -85,5 +99,6 @@ void TSrvService::Run()
 	TDHCPServer server(confile);
 	ptr = &server; // remember address
 
-    server.run();
+	if (!server.isDone())
+       server.run();
 }

@@ -753,6 +753,9 @@
 		<File
 			RelativePath="..\TODO">
 		</File>
+		<File
+			RelativePath="TODO-winxp">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
