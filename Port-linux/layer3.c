@@ -1,5 +1,14 @@
-/*
- *  $Id: layer3.c,v 1.3 2004-01-23 19:25:37 thomson Exp $
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: layer3.c,v 1.4 2004-05-23 15:19:29 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
  */
 
 #include <stdio.h>
@@ -89,7 +98,7 @@ struct iface * if_list_get()
     struct iface * tmp;
     int preferred_family = AF_PACKET;
 
-    // potrzebne do wy¶wietlenia informacji o interfejsie
+    // required to display information about interface
     struct ifinfomsg *ifi;
     struct rtattr * tb[IFLA_MAX+1];
     int len;
@@ -99,11 +108,11 @@ struct iface * if_list_get()
     rtnl_wilddump_request(&rth, preferred_family, RTM_GETLINK);
     rtnl_dump_filter(&rth, store_nlmsg, &linfo, NULL, NULL);
     
-    // 2 atrybut: AF_UNSPEC, AF_INET, AF_INET6
+    // 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6
     rtnl_wilddump_request(&rth, AF_UNSPEC, RTM_GETADDR);
     rtnl_dump_filter(&rth, store_nlmsg, &ainfo, NULL, NULL);
 
-    // zbuduj kolejke z nazwami interfejsów
+    // build list with interface names
     for (l=linfo; l; l = l->next) {
 	// n = &l->h;
 	ifi = NLMSG_DATA(&l->h);
@@ -197,8 +206,8 @@ int ipaddr_add_or_del(char * addr, char *d,int add)
 	memset(&req, 0, sizeof(req));
 	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
 	req.n.nlmsg_flags = NLM_F_REQUEST;
-	if (add==1) req.n.nlmsg_type = RTM_NEWADDR; /* dodawanie adresu */
-	else req.n.nlmsg_type = RTM_DELADDR;        /* usuwanie adresu */
+	if (add==1) req.n.nlmsg_type = RTM_NEWADDR; /* add address */
+	else req.n.nlmsg_type = RTM_DELADDR;        /* del address */
 	req.ifa.ifa_family = AF_INET6;
 	req.ifa.ifa_flags = 0;
 
@@ -220,7 +229,7 @@ int ipaddr_add_or_del(char * addr, char *d,int add)
 	rtnl_open(&rth, 0);
 	ll_init_map(&rth);
 
-	// jest wogóle taki interfejs?
+	// is there an interface with this ifindex?
 	if ((req.ifa.ifa_index = ll_name_to_index(d)) == 0) {
 		fprintf(stderr, "Cannot find device \"%s\"\n", d);
 		return -1;
@@ -309,7 +318,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	
 	// Add to the all agent multicast address 
 	if (setsockopt(Insock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &mreq6, sizeof(mreq6))) {
-	    printf("Server: Error joining ipv6 group");
+	    //printf("Server: Error joining ipv6 group");
 	    return -6;
 	}
 	freeaddrinfo(res2);
@@ -359,7 +368,7 @@ int sock_recv(int fd, char * addr, char * buf, int buflen)
     getnameinfo((struct sockaddr *)&from, fromlen,
 		addr_char, sizeof(addr_char), port_char, sizeof(port_char), NI_NUMERICHOST|NI_NUMERICSERV);
 
-    if ( (znak = strchr(addr_char,37)) ) { // rozdzielamy po %
+    if ( (znak = strchr(addr_char,37)) ) { // split after % sign
 	*znak=0;
 	strncpy(iface_name,++znak,MAX_IFNAME_LENGTH);
     } else {
@@ -403,7 +412,7 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 
     rtnl_open(&rth, 0);
 
-    // 2 atrybut: AF_UNSPEC, AF_INET, AF_INET6
+    // 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6
     // rtnl_wilddump_request(&rth, AF_PACKET, RTM_GETLINK);
     rtnl_wilddump_request(&rth, AF_INET6, RTM_GETADDR);
     rtnl_dump_filter(&rth, store_nlmsg, &ainfo, NULL, NULL);
@@ -452,7 +461,6 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 
 /***************************************************************
  *** DEPRECIATED ***********************************************
- * poni¿ej znajduj± siê funkcje, które nie s± u¿ywane          *
  ***************************************************************/
 
 /* 
@@ -524,14 +532,6 @@ int print_selected_addrinfo(int ifindex, struct nlmsg_list *ainfo)
 		struct nlmsghdr *n = &ainfo->h;
 		struct ifaddrmsg *ifa = NLMSG_DATA(n);
 
-/* HEJ! to ¶cierwo wypisuje wszystkie adresy, jak leci poprzypisywane wogóle w ca³ym systemie
-   Dopiero ten if odrzuca te, które nie dotycz± ¿±danego interfejsu
-*/
-
-//FIXME: tutaj sprawdzaæ rodzaj adresu:
-//		if (ifa->ifa_index != ifindex || 
-//		    (filter.family && filter.family != ifa->ifa_family))
-//		    continue; 
 		if (ifa->ifa_index == ifindex) print_addrinfo(n);
 	}
 	return 0;
@@ -548,11 +548,11 @@ int print_linkinfo(struct nlmsghdr *n)
 	memset(tb, 0, sizeof(tb));
 	parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), len);
 
-	// nr interfejsu + nazwa interfejsu
+	// interface number + interface name
 	printf("%d: %4s", ifi->ifi_index,
 		tb[IFLA_IFNAME] ? (char*)RTA_DATA(tb[IFLA_IFNAME]) : "<nil>");
 
-	// do czego jest przypiête urz±dzenie (sit0@eth0)
+	// What physical interface is this interface on?
 	if (tb[IFLA_LINK]) {
 		SPRINT_BUF(b1);
 		int iflink = *(int*)RTA_DATA(tb[IFLA_LINK]);
@@ -565,14 +565,12 @@ int print_linkinfo(struct nlmsghdr *n)
 		printf(":      ");
 	}
 
-	// wypisz typ interfejsu
-//FIXME:	if (!filter.family || filter.family == AF_PACKET) 
 	{
 	    char b1[SPRINT_BSIZE];
 	    printf(" link/%-8s ", ll_type_n2a(ifi->ifi_type, b1, sizeof(b1)));
 	}
 
-	// flagi <UP,NOARP,LOOPBACK,MULTICAST,BROADCAST>
+	// flags <UP,NOARP,LOOPBACK,MULTICAST,BROADCAST>
 	print_link_flags(ifi->ifi_flags);
 	
 	printf("\n");
@@ -591,7 +589,7 @@ int print_linkinfo2(struct nlmsghdr *n)
     len -= NLMSG_LENGTH(sizeof(*ifi));
     memset(tb, 0, sizeof(tb));
     parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), len);
-    printf("Interfejs nr %d: %s \n", i++, (char*)RTA_DATA(tb[IFLA_IFNAME]));
+    printf("Interface no %d: %s \n", i++, (char*)RTA_DATA(tb[IFLA_IFNAME]));
     return 0;
 }
 
@@ -638,7 +636,7 @@ int print_addrinfo(struct nlmsghdr *n)
 	printf("dynamic ");
     } 
     
-    // adres dynamiczny (DHCP!!!)
+    // dynamic address
     if (rta_tb[IFA_CACHEINFO]) {
 	struct ifa_cacheinfo *ci = RTA_DATA(rta_tb[IFA_CACHEINFO]);
 	char buf[128];
