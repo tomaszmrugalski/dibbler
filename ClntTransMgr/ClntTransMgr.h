@@ -31,6 +31,9 @@ class TClntTransMgr
     void shutdown();
     bool isDone();
     void setThat(SmartPtr<TClntTransMgr> that);
+
+	char * getCtrlAddr();
+	int    getCtrlIface();
     
  protected:
     void removeExpired();
@@ -53,6 +56,9 @@ class TClntTransMgr
     bool IsDone;
     bool Shutdown;
     bool isStart;
+
+	int ctrlIface;
+	char ctrlAddr[48];
 };
 #endif
 

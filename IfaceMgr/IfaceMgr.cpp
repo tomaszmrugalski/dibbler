@@ -29,9 +29,9 @@ TIfaceMgr::TIfaceMgr()
     
     if  (!ifaceList) {
 	IsDone = true;
-	std::clog << logger::logCrit << "Low level functions failed. Make sure "
-	    "you are using kernel with NETLINK driver enabled (Linux) or "
-	    "have specified proper path to ipv6.exe (win)." << logger::endl;
+	std::clog << logger::logCrit << "Unable to read info interfaces. Make sure "
+	    "you are using proper port (i.e. winxp on winxp and not winxp on win2k)"
+	    " and you have IPv6 support enabled." << logger::endl;
 	return;
     }
     

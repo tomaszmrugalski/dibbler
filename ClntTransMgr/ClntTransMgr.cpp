@@ -42,7 +42,7 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
     CfgMgr = new TClntCfgMgr(ifaceMgr, config, oldConf);
     IfaceMgr=ifaceMgr;
 
-    AddrMgr=new TClntAddrMgr(CfgMgr, CfgMgr->getWorkDir()+"/"+CLNTDB_FILE, loadDB);
+    AddrMgr=new TClntAddrMgr(CfgMgr, CLNTDB_FILE, loadDB);
 
     if (!CfgMgr->isDone())
     {
@@ -84,17 +84,20 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 
                     if (llAddr)
                     {
-                        std::clog << logger::logInfo << "New socket created on addres/port:";
-			char tmp[48];
-			inet_ntop6(tmp,llAddr);
-			std::clog << tmp << "/" << DHCPCLIENT_PORT;
+			char buf[48];
+                        std::clog<<logger::logInfo<<"Socket created on ";
+			inet_ntop6(llAddr,buf);
+			std::clog << buf << "/port=" << DHCPCLIENT_PORT << logger::endl;
+			this->ctrlIface = realIface->getID();
+			memcpy(this->ctrlAddr,buf,48);
                     }
                     else
                     {
-                        std::clog<<logger::logInfo<<"Unable to create any socket on iface:"
-                            <<iface->getID()<<" No appropriate link local address available.";
-                    };
-                    std::clog << logger::endl;
+                        std::clog << logger::logInfo << "Unable to create any socket on iface:"
+				  << iface->getID() 
+				  << " (No appropriate link local address available"
+				  << logger::endl;
+                    }
                 }
             }
         }
@@ -657,3 +660,9 @@ void TClntTransMgr::setThat(SmartPtr<TClntTransMgr> that)
     IfaceMgr->setThats(IfaceMgr,That,CfgMgr,AddrMgr);
 }
 
+char* TClntTransMgr::getCtrlAddr() {
+	return this->ctrlAddr;
+}
+int  TClntTransMgr::getCtrlIface() {
+	return this->ctrlIface;
+}
