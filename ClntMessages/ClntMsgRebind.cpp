@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.4 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.5 2004-12-08 00:15:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.3  2004/09/07 22:02:32  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -234,18 +237,23 @@ void TClntMsgRebind::doDuties()
 {
     SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)getOption(OPTION_IA);
     SmartPtr<TAddrIA> ptrAddrIA = ClntAddrMgr->getIA(ptrIA->getIAID());
+    SmartPtr<TIfaceIface> iface = ClntIfaceMgr->getIfaceByID(this->Iface);
 
     if (!MRD)
     {
         SmartPtr<TOpt> ptrOpt;
         firstOption();
+	Log(Warning) << "REBIND for the IA:";
         while(ptrOpt=getOption())
         {
             if (ptrOpt->getOptType()!=OPTION_IA)
                 continue;
             SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
+	    Log(Cont) << ptrIA->getIAID() << " ";
             releaseIA(ptrIA->getIAID());
         }
+	Log(Cont) << " failed on the " << iface->getName() << "/" 
+		  << iface->getID() << " interface." << LogEnd;
         IsDone=true;
     }
     else

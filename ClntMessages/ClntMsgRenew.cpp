@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.4 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.5 2004-12-08 00:15:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.3  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -24,12 +27,9 @@
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptOptionRequest.h"
+#include "ClntOptStatusCode.h"
 #include "Logger.h"
 #include "SmartPtr.h"
-#include "ClntOptDNSServers.h"
-#include "ClntOptNTPServers.h"
-#include "ClntOptDomainName.h"
-#include "ClntOptTimeZone.h"
 
 #include <cmath>
 
@@ -75,96 +75,10 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     while(ptrAddrIA= ptrIALst.get())
           Options.append(new TClntOptIA_NA(ptrAddrIA,this));
 
-#if 0
-    //Here should be addede option request option and other options, which
-    //can be refreshed
-    SmartPtr<TClntOptOptionRequest> ptrOptOptReq=
-        new TClntOptOptionRequest(CfgMgr->getIface(ptrIALst.getFirst()->getIface()),this);
-    Options.append((Ptr*)ptrOptOptReq);
-
-    SmartPtr<TClntCfgIface> ptrIface;
-    if (ptrIface=CfgMgr->getIface(ptrIALst.getFirst()->getIface()))
-    {
-        if (ptrIface->isReqDNSSrv()&&(ptrIface->getDNSSrvState()==CONFIGURED))
-        {
-            SmartPtr<TClntOptDNSServers> ptrDNSOpt=
-                new TClntOptDNSServers(ptrIface->getProposedDNSSrv(),this);
-            Options.append((Ptr*)ptrDNSOpt);
-            // ptrIface->setDNSSrvState(INPROCESS);
-        }
-
-        if (ptrIface->isReqNTPSrv()&&(ptrIface->getNTPSrvState()==CONFIGURED))
-        {
-            SmartPtr<TClntOptNTPServers> ptrNTPOpt=
-                new TClntOptNTPServers(ptrIface->getProposedNTPSrv(),this);
-            Options.append((Ptr*)ptrNTPOpt);
-            ptrIface->setNTPSrvState(INPROCESS);
-        }
-        
-        if (ptrIface->isReqDomainName()&&(ptrIface->getDomainNameState()==CONFIGURED))
-        {
-            SmartPtr<TClntOptDomainName> ptrDomainOpt=
-                new TClntOptDomainName(ptrIface->getProposedDomainName(),this);
-            Options.append((Ptr*)ptrDomainOpt);
-            //ptrIface->setDomainNameState(INPROCESS);
-        }
-
-        if (ptrIface->isReqTimeZone()&&(ptrIface->getTimeZoneState()==CONFIGURED))
-        {
-            SmartPtr<TClntOptTimeZone> ptrTimeOpt=
-                new TClntOptTimeZone(ptrIface->getProposedTimeZone(),this);
-            Options.append((Ptr*)ptrTimeOpt);
-            ptrIface->setTimeZoneState(INPROCESS);
-        }
-    }
-#endif
-
     pkt = new char[getSize()];
     this->IsDone = false;
     this->send();
 }
-
-/*TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
-			     SmartPtr<TClntTransMgr> TransMgr,
-			     SmartPtr<TClntCfgMgr> CfgMgr,
-			     SmartPtr<TClntAddrMgr> AddrMgr,
-			     SmartPtr<TAddrIA> ptrAddrIA)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,ptrAddrIA->getIface(),ptrAddrIA->getSrvAddr(),RENEW_MSG)
-{
-    // set transmission parameters
-    IRT=REN_TIMEOUT;
-    MRT=REN_MAX_RT;
-    MRC=0;
-    RT=(int)floor(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
-
-    // retransmit until T2 has been reached or any address has expired
-    MRD= ptrAddrIA->getT2Timeout();
-    unsigned long valid = ptrAddrIA->getValidTimeout();
-    if (MRD < valid)
-    	MRD = valid;
-    if (RT>MRD) 
-        RT=MRD;
-
-    // remember ptrIA in case we need it to send REBIND message...
-    this->AddrIA = ptrAddrIA;
-
-    // create OPTION_IA (with OPTION_IAADDR suboptions) 
-    SmartPtr<TClntOptIA_NA> ptrIA =  new TClntOptIA_NA(ptrAddrIA,this);
-    SmartPtr<TOpt> ptrOptIA = (Ptr*) ptrIA;
-    Options.append(ptrOptIA);
-
-    // store our DUID
-    SmartPtr<TOpt> ptrSrvID = new TClntOptServerIdentifier(ptrAddrIA->getDUID(),this);
-    Options.append( ptrSrvID);
-
-    // and say who's this message is for
-    SmartPtr<TOpt> ptrClntID = new TClntOptClientIdentifier(CfgMgr->getDUID(),this);
-    Options.append(ptrClntID);
-
-    pkt = new char[getSize()];
-    this->send();
-    this->IsDone = false;
-}*/
 
 void TClntMsgRenew::answer(SmartPtr<TMsg> Reply)
 {
@@ -179,76 +93,41 @@ void TClntMsgRenew::answer(SmartPtr<TMsg> Reply)
     Reply->firstOption();
     // for each option in message... (there should be only one IA option, as we send 
     // separate RENEW for each IA, but we check all options anyway)
-    while ( opt = Reply->getOption() ) 
-    {
-        switch (opt->getOptType()) 
-        {
-            case OPTION_IA:
-            {
-                SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
-                ptrOptIA->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-				   ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
-                //FIXME: replace this NULL with something meaningfull
-                //       (required for Unicast to work correctly)
-                ptrOptIA->doDuties();
-                if (ptrOptIA->getStatusCode()==STATUSCODE_SUCCESS)
-                {
-                    //if we have received enough addresses,
-                    //remove assigned IA's by server from request message
-                    SmartPtr<TOpt> requestOpt;
-                    Options.first();
-                    while (requestOpt = Options.get())
-                    {
-                        if (requestOpt->getOptType()==OPTION_IA)
-                        {
-                            SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
-                            if ((ptrIA->getIAID() == ptrOptIA->getIAID() ) &&
-                                (ClntCfgMgr->countAddrForIA(ptrIA->getIAID()) == ptrIA->countAddr()) )
-                            {
-                                //found this IA, it has enough addresses and everything is ok.
-                                //Shortly, we have this IA configured.
-                                Options.del();
-                                break;
-                            }
-                        } //if
-                    } //while
-                }
-                break;
-            }
-            case OPTION_ORO:
-            case OPTION_RELAY_MSG:
-            case OPTION_INTERFACE_ID:
-            case OPTION_IAADDR:
-            case OPTION_RECONF_MSG:
-            {
-                Log(Warning) << "Illegal option (" << opt->getOptType() 
-                    << ") in received REPLY message." << LogEnd;
-                break;
-            }
-            default:
-            {             
-                // what to do with unknown/other options? execute them
-                opt->setParent(this);
-                if (opt->doDuties()) 
-                {
-                    SmartPtr<TOpt> requestOpt;
-                    Options.first();
-                    while ( requestOpt = Options.get()) {
-                        if (requestOpt->getOptType()==opt->getOptType()) 
-                        {
-                            if (ptrOptionReqOpt&&(ptrOptionReqOpt->isOption(opt->getOptType())))
-                                ptrOptionReqOpt->delOption(opt->getOptType());
-                            Options.del();
-                        }//if
-                    }//while
-                }
-            }
-        }
+    while ( opt = Reply->getOption() ) {
+        switch (opt->getOptType()) {
+	case OPTION_IA: {
+	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
+	    if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
+		SmartPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
+		Log(Warning) << "IA with status code " << 
+		    StatusCodeToString(status->getCode()) << ": " 
+			     << status->getText() << LogEnd;
+		break;
+	    }
+	    ptrOptIA->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+			       ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
+
+	    ptrOptIA->doDuties();
+	    break;
+	}
+	case OPTION_ORO:
+	case OPTION_RELAY_MSG:
+	case OPTION_INTERFACE_ID:
+	case OPTION_IAADDR:
+	case OPTION_RECONF_MSG:
+	    Log(Warning) << "Illegal option (" << opt->getOptType() 
+			 << ") in received REPLY message." << LogEnd;
+	    break;
+	default:
+	    // what to do with unknown/other options? execute them
+	    opt->setParent(this);
+	    opt->doDuties();
+	}
     }
+
     //Here we received answer from our server, which updated the "whole information"
     //There is no use to send Rebind even if server realesed some addresses/IAs
     //in such a case new Solicit message should be sent
-    //Also if some configuration parameters weren't sustain they should be changed
     IsDone = true;
 }
 
