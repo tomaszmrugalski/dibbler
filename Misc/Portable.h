@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.30 2004-12-07 00:45:41 thomson Exp $
+ * $Id: Portable.h,v 1.31 2004-12-15 22:54:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.29  2004/12/04 23:45:40  thomson
  * Problem with client and server on the same Linux host fixed (bug #56)
  *
@@ -46,8 +49,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.3.0-RC2-CVS (" __DATE__ " " __TIME__ ")"
-//#define DIBBLER_VERSION "0.3.0-RC2"
+#define DIBBLER_VERSION "0.3.0-CVS (" __DATE__ " " __TIME__ ")"
+//#define DIBBLER_VERSION "0.3.0"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson@klub.com.pl>,Marek Senderski<msend@o2.pl>"

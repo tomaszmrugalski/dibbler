@@ -11,6 +11,8 @@ DefaultGroupName=Dibbler
 UninstallDisplayIcon={app}\MyProg.exe
 Compression=lzma
 SolidCompression=yes
+LicenseFile=..\license
+InfoAfterFile=..\RELNOTES
 
 [Types]
 Name: "Full";   Description: "Server, client and docs";
@@ -29,8 +31,9 @@ Source: "client.log"; DestDir: "{app}"; Components: Client;
 Source: "Debug\dibbler-server.exe"; DestDir: "{app}"; Components: Server;
 Source: "..\server*.conf"; DestDir: "{app}"; Components: Server;
 Source: "server.log"; DestDir: "{app}"; Components: Server;
-Source: "..\doc\dibbler-user.pdf"; DestDir: "{app}"; Flags: isreadme; Components: Documentation;
+Source: "..\doc\dibbler-user.pdf"; DestDir: "{app}"; Components: Documentation;
 Source: "..\CHANGELOG"; DestDir: "{app}"; Components: Documentation;
+Source: "..\RELNOTES"; DestDir: "{app}"; Components: Documentation;
 
 [Icons]
 Name: "{group}\User's Guide"; Filename: "{app}\dibbler-user.pdf"
