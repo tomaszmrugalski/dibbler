@@ -172,26 +172,29 @@ VERSION-src:
 
 release:
 	echo "Following release targets are available:"
-	echo "release-linux"
-	echo "release-win32"
-	echo "release-src"
-	echo "release-doc"
-	echo "release-deb"
-	echo "release-rpm"
+	echo "release-linux - Linux binaries"
+	echo "release-win32 - Windows binaries"
+	echo "release-src   - Sources"
+	echo "release-doc   - Documentation"
+	echo "release-deb   - DEB package"
+	echo "release-rpm   - RPM package"
+	echo "release-all   - all of the above"
 	echo
 	echo "To make release-win32 work, place dibbler-server.exe and"
 	echo "dibbler-client.exe in this directory."
 
-release-linux: VERSION-linux
-	tar czvf dibbler-$(VERSION)-linux.tar.gz                    \
-		$(SERVERBIN) $(CLIENTBIN) client*.conf server*.conf \
-		CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf
+release-linux: VERSION-linux client server doc
+	@echo "[TAR/GZ ] dibbler-$(VERSION)-linux.tar.gz"
+	tar czvf dibbler-$(VERSION)-linux.tar.gz                        \
+		 $(SERVERBIN) $(CLIENTBIN) client*.conf server*.conf    \
+		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-linux
 
 release-win32: VERSION-win
-	tar czvf dibbler-$(VERSION)-win32.tar.gz                  \
-		dibbler-server.exe dibbler-client.exe             \
-                client*.conf server*.conf                         \
-		CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf
+	@echo "[TAR/GZ ] dibbler-$(VERSION)-win32.tar.gz"
+	tar czvf dibbler-$(VERSION)-win32.tar.gz                   \
+		 dibbler-server.exe dibbler-client.exe             \
+                 client*.conf server*.conf                         \
+		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-win32
 
 release-src: VERSION-src 
 	@echo "[RM     ] dibbler-$(VERSION)-src.tar.gz"
@@ -200,9 +203,16 @@ release-src: VERSION-src
 	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; cd bison++; $(MAKE) clean; fi
 	@echo "[TAR/GZ ] ../dibbler-tmp.tar.gz"
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
-        --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler > filelist
+        --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler > filelist-src
 	@echo "[RENAME ] dibbler-$(VERSION)-src.tar.gz"
 	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
+
+release-doc: VERSION-src doc oxygen
+	@echo "[TAR/GZ ] dibbler-$(VERSION)-doc.tar.gz"
+	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG \
+                 doc/*.pdf doc/html doc/rfc doc/rfc-drafts > filelist-doc
+
+release-all: release-src release-linux release-doc release-deb release-rpm release-win32
 
 release-deb: VERSION-linux server client doc
 	@echo "[RM     ] dibbler_$(VERSION)_i386.deb"
@@ -240,6 +250,7 @@ release-deb: VERSION-linux server client doc
 	@echo "[CHMOD  ] port-linux/debian/root"
 	find port-linux/debian/root/ -type d -exec chmod 755 {} \;
 	find port-linux/debian/root/ -type f -exec chmod 644 {} \;
+	chmod 755 port-linux/debian/root/usr/sbin/*
 	@echo "[DPKG   ] dibbler_$(VERSION)_i386.deb"
 	cd port-linux/debian; dpkg-deb --build root 1>dpkg-deb.log
 	mv port-linux/debian/root.deb dibbler_$(VERSION)_i386.deb
@@ -265,10 +276,6 @@ release-rpm: VERSION-linux release-src
 	echo "[CP     ] $$file"; \
 	$(CP) $$file ../../../.. ; \
 	done
-
-release-doc: VERSION-src doc oxygen
-	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG \
-                 doc/*.pdf doc/html doc/rfc doc/rfc-drafts 
 
 install: server client doc
 	$(MKDIR) $(INST_WORKDIR)
@@ -309,4 +316,4 @@ clean-libs:
 links: includes
 clobber: clean
 
-.PHONY: release-winxp release-src release-linux release-deb relase-rpm VERSION VERSION-win doc
+.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc
