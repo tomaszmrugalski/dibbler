@@ -174,14 +174,14 @@ release:
 	echo "dibbler-client-win32.exe in this directory."
 
 release-linux: VERSION-linux
-	tar czvf dibbler-$(VERSION)-linux.tar.gz                  \
-		$(SERVERBIN) $(CLIENTBIN) client.conf server.conf \
+	tar czvf dibbler-$(VERSION)-linux.tar.gz                    \
+		$(SERVERBIN) $(CLIENTBIN) client*.conf server*.conf \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
 
 release-win32: VERSION-win
-	tar czvf dibbler-$(VERSION)-winxp.tar.gz                  \
+	tar czvf dibbler-$(VERSION)-win32.tar.gz                  \
 		dibbler-server-win32.exe dibbler-client-win32.exe \
-                client.conf server.conf                           \
+                client*.conf server*.conf                         \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
 
 release-src: VERSION-src

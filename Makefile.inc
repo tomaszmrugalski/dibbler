@@ -1,6 +1,6 @@
 # === used tools ===
-CPP          = g++-3.3
-CC           = gcc-3.3
+CPP          = g++
+CC           = gcc
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
@@ -11,7 +11,7 @@ CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
-DEBUGINFO    = -g
+#DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === libxml2 stuff ===
@@ -30,7 +30,7 @@ SERVERBIN    = dibbler-server-linux
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
-VERSION      = 0.2.1-RC1
+VERSION      = `test/xtract_version`
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux
