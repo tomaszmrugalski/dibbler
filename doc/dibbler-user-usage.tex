@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.5 2004-10-25 20:45:54 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.6 2004-12-08 00:20:57 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.5  2004/10/25 20:45:54  thomson
+%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
+%%
 %% Revision 1.4  2004/07/05 00:12:30  thomson
 %% Lots of minor changes.
 %%
@@ -33,13 +36,13 @@ you should edit config file (\verb+client.conf+ for client and \verb+server.conf
 for server). After editing, issue following commands:
 
 \begin{verbatim}
-./dibbler-server-linux start
+./dibbler-server start
 \end{verbatim}
 
 for starting server or
 
 \begin{verbatim}
-./dibbler-client-linux start
+./dibbler-client start
 \end{verbatim}
 
 for starting client. \verb+start+ parameter needs a little comment. It
@@ -51,24 +54,24 @@ your console. To finish it, press ctrl-c.
 
 To stop server running in daemon mode, type:
 \begin{verbatim}
-./dibbler-server-linux stop
+./dibbler-server stop
 \end{verbatim}
 
 To stop client running in daemon mode, type:
 \begin{verbatim}
-./dibbler-client-linux stop
+./dibbler-client stop
 \end{verbatim}
 
 To see, if client or server are running\footnote{Running status is
   based on /var/lib/dibbler/client.pid or server.pid files. In rare
   occasions, when server crashes, this status will show server status as running.}, type:
 \begin{verbatim}
-./dibbler-client-linux status
+./dibbler-client status
 \end{verbatim}
 
 or
 \begin{verbatim}
-./dibbler-server-linux status
+./dibbler-server status
 \end{verbatim}
 
 \subsection{Windows installation}
@@ -82,7 +85,7 @@ issue following commands:
 \begin{verbatim}
 c:
 cd \dibbler
-dibbler-client-winxp run -d c:\dibbler
+dibbler-client run -d c:\dibbler
 \end{verbatim}
 
 \verb+run+ command instructs Dibbler to run in a console and not become a
@@ -92,7 +95,7 @@ finish it, press ctrl-c.
 After configuration files are edited and tested, user can install Dibbler as a
 Windows service. In this case, following command should be issued:
 \begin{verbatim}
-dibbler-client-winxp install -d c:\dibbler
+dibbler-client install -d c:\dibbler
 \end{verbatim}
 
 Now dibbler is installed as a Windows service and it can be controlled
@@ -117,7 +120,7 @@ Compilation in most cases is not necessary and should be performed
 only by experienced users. Perferred method is to use binaries
 provided on Dibbler's website. Issue following commands:
 \begin{verbatim}
-tar zxvf dibbler-0.2.1-src.tar.gz
+tar zxvf dibbler-0.3.0-src.tar.gz
 cd dibber
 make
 \end{verbatim}
@@ -136,7 +139,7 @@ directory. Most simple way to do this is to copy this file to
 compilation can be found in \emph{Dibbler Developer's Guide}.
 
 \subsection{WindowsXP compilation}
-Download dibbler-0.2.1-src.tar.gz and extract it. In port-winxp there
+Download dibbler-0.3.0-src.tar.gz and extract it. In port-winxp there
 will be project files (one for server and one for client) for MS
 Visual C++ 2003. Open one of them and click Build command. That should
 do the trick. Additional information about compilation can be found in
