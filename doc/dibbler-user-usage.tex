@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.7 2004-12-27 20:44:29 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.8 2005-01-23 23:16:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.7  2004/12/27 20:44:29  thomson
+%% Date is now generated in an automatic manner, deb/rpm building described
+%%
 %% Revision 1.6  2004/12/08 00:20:57  thomson
 %% Binary file names information changed.
 %%
@@ -27,86 +30,89 @@ are used\footnote{Compilation is not
   advanced users, see \emph{Compilation} section for details.}.
 
 \subsection{Linux installation}
-Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an archive with
-Dibbler binaries and extract it to \verb+/var/lib/dibbler+ directory:
+As for 0.3.1, both server and client were provided within one
+packege. Starting with 0.4.0, there will be 3 different packages:
+client, server and relay. For some architectures there will be also
+documentation package provided.
+
+Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an
+archive, which suits your needs. Currently there are provided RPM packages
+(which can be used in RedHat, Fedora Core, Mandrake or PLD
+distribution), DEB packages (suitable for Debian or Knoppix) and
+ebuild (for Gentoo users). To install rpm package, run $rpm -i
+archive.rpm$ command. For example, to install dibbler 0.3.1, issue following command:
 \begin{verbatim}
-cd /var/lib/dibbler/
-tar zxvf dibbler-0.2.1-linux.tar.gz 
+rpm -i dibbler-0.3.1-1.i386.rpm 
 \end{verbatim}
 
-Depending what functionality do you want to use (server or client),
-you should edit config file (\verb+client.conf+ for client and \verb+server.conf+
-for server). After editing, issue following commands:
+To install Dibbler on Debian or other system with dpkg management
+system, run $dpkg -i archive.deb$ command. For example, to install
+dibbler 0.4.0, issue following command:
 
 \begin{verbatim}
-./dibbler-server start
+dpkg -i dibbler_0.4.0_i386.rpm 
 \end{verbatim}
 
-for starting server or
+To install Dibbler in Gentoo systems, download ebuild script and issue
+command:
 
 \begin{verbatim}
-./dibbler-client start
+emerge dibbler-0.3.1.ebuild
 \end{verbatim}
 
-for starting client. \verb+start+ parameter needs a little comment. It
+If you would like to install Dibbler from sources, download tar.gz
+source archive, extract it, type make followed by target (e.g. server,
+client or relay\footnote{To get full target list, type: $make
+  help$}). After successful compilation type make install. For
+example, to build server and relay, type:
+
+\begin{verbatim}
+tar zxvf dibbler-0.3.1-src.tar.gz
+make server relay
+make install
+\end{verbatim}
+
+Depending what functionality do you want to use (server,client or relay),
+you should edit config file (\verb+client.conf+ for client, \verb+server.conf+
+for server and \verb+relay.conf+ for relay). All config files should
+be placed in the +/etc/dibbler+ directory. After editing, issue one of
+the following commands:
+
+\begin{verbatim}
+dibbler-server start
+dibbler-client start
+dibbler-relay start
+\end{verbatim}
+
+\verb+start+ parameter needs a little comment. It
 instructs Dibbler to run in daemon mode -- detach from console and run
 in the background. During config files fine-tuning, it is ofter better
 to watch Dibbler's bahavior instantly. In this case, use \verb+run+
 instead of \verb+start+ parameter. Dibbler will present its messages on
 your console. To finish it, press ctrl-c.
 
-To stop server running in daemon mode, type:
+To stop server, client or relay running in daemon mode, type:
 \begin{verbatim}
-./dibbler-server stop
-\end{verbatim}
-
-To stop client running in daemon mode, type:
-\begin{verbatim}
-./dibbler-client stop
+dibbler-server stop
+dibbler-client stop
+dibbler-relay stop
 \end{verbatim}
 
 To see, if client or server are running\footnote{Running status is
   based on /var/lib/dibbler/client.pid or server.pid files. In rare
   occasions, when server crashes, this status will show server status as running.}, type:
 \begin{verbatim}
-./dibbler-client status
-\end{verbatim}
-
-or
-\begin{verbatim}
-./dibbler-server status
+dibbler-server status
+dibbler-client status
+dibbler-relay status
 \end{verbatim}
 
 \subsection{Windows installation}
 Starting at 0.2.1, Dibbler supports Windows XP and 2003. 
-Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an archive with
-Dibbler binaries and extract it to a directory, e.g. \verb+c:\dibbler+.
-
-Open a console (start $\rightarrow$ run... $\rightarrow$ cmd) and
-issue following commands:
-
-\begin{verbatim}
-c:
-cd \dibbler
-dibbler-client run -d c:\dibbler
-\end{verbatim}
-
-\verb+run+ command instructs Dibbler to run in a console and not become a
-daemon. Is it very useful feature in early configuration stages. To
-finish it, press ctrl-c. 
-
-After configuration files are edited and tested, user can install Dibbler as a
-Windows service. In this case, following command should be issued:
-\begin{verbatim}
-dibbler-client install -d c:\dibbler
-\end{verbatim}
-
-Now dibbler is installed as a Windows service and it can be controlled
-from Control Panel $\rightarrow$ Administrative tasks $\rightarrow$
-Services. 
-
-If you want to uninstall Dibbler as a service, use \verb+uninstall+
-instead of \verb+install+.
+Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an
+windows installer. After downloading, click on it and follow on screen
+instructions. Dibbler will be installed and all required links will be
+placed in the Start menu.
 
 \section{Compilation}
 Dibbler is distributed in 2 versions: binary and source files. For
@@ -143,14 +149,14 @@ were created using bison++ 1.21.9\footnote{flex and bison++ tools are
 GNU/Linux system.
 
 If there are problems with \verb+SrvLexer.cpp+ and
-\verb+ClntLexer.cpp+ files, please use FlexLexer.h in port-linux/
+\verb+ClntLexer.cpp+ files, please use FlexLexer.h in Port-linux/
 directory. Most simple way to do this is to copy this file to
 \verb+/usr/include+ directory. Additional information about
 compilation can be found in \emph{Dibbler Developer's Guide}.
 
 \subsection{WindowsXP compilation}
-Download dibbler-0.3.0-src.tar.gz and extract it. In port-winxp there
-will be project files (one for server and one for client) for MS
+Download dibbler-0.3.0-src.tar.gz and extract it. In Port-winxp there
+will be project files (for server, client and relay) for MS
 Visual C++ 2003. Open one of them and click Build command. That should
 do the trick. Additional information about compilation can be found in
 \emph{Dibbler Developer's Guide}.

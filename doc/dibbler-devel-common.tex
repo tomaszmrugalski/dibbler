@@ -188,7 +188,7 @@ manager, and transmsission manager. Each of them uses different
 prefix: Addr, Iface, Cfg or Trans. There are also objects shared among
 them: messages (Msg prefix) and options (Opt prefix). Often there are
 two derived versions: related to client (Clnt prefix) or related to
-server (Clnt). In a near future relay will also be used (Rel prefix). 
+server (Clnt). Rel prefix is used to denote Relay related classes. 
 Here are examples of some class names:
 \begin{description}
 \item[TAddrMgr] -- Address manager, common version.
@@ -209,9 +209,12 @@ Also note that class function names start with small letters
 letters (e.g. \verb+bool TOpt::IsValid;+).
 
 %%
-%% $Id: dibbler-devel-common.tex,v 1.4 2004-12-27 20:44:29 thomson Exp $
+%% $Id: dibbler-devel-common.tex,v 1.5 2005-01-23 23:16:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.4  2004/12/27 20:44:29  thomson
+%% Date is now generated in an automatic manner, deb/rpm building described
+%%
 %% Revision 1.3  2004/12/01 21:58:43  thomson
 %% *** empty log message ***
 %%

@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.10 2004-12-01 20:55:49 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.11 2005-01-23 23:16:56 thomson Exp $
 %%
 
 \section{Config files}
@@ -227,16 +227,16 @@ where OptionName is one of possible values listed below:
 OptionName     & Scope    & Values      &default& Description \\
                &          & (default)   &       & \\
 \hline
-dns-server     & interface& addrs list  & empty & preferred DNS servers list (H) \\
-domain         & interface&domains list & empty & preferred domain (H)\\
-ntp-server     & interface& addrs list  & empty & preferred NTP servers list (H)\\
-time-zone      & interface& timezone    & empty & preferred time zone (H)\\
-sip-server     & interface& addrs list  & empty & preferred SIP servers list (H)\\
-sip-domain     & interface&domains list & empty & preferred SIP domain (H)\\
-nis-server     & interface& addrs list  & empty & preferred NIS servers list (H)\\
-nis-domain     & interface& domain      & empty & preferred NIS domain (H)\\
-nis+-server    & interface& addrs list  & empty & preferred NIS+ servers list (H)\\
-nis+-domain    & interface& domain      & empty & preferred NIS+ domain (H)\\
+dns-server     & interface& addrs list  & not defined & preferred DNS servers list (H) \\
+domain         & interface&domains list & not defined & preferred domain (H)\\
+ntp-server     & interface& addrs list  & not defined & preferred NTP servers list (H)\\
+time-zone      & interface& timezone    & not defined & preferred time zone (H)\\
+sip-server     & interface& addrs list  & not defined & preferred SIP servers list (H)\\
+sip-domain     & interface&domains list & not defined & preferred SIP domain (H)\\
+nis-server     & interface& addrs list  & not defined & preferred NIS servers list (H)\\
+nis-domain     & interface& domain      & not defined & preferred NIS domain (H)\\
+nis+-server    & interface& addrs list  & not defined & preferred NIS+ servers list (H)\\
+nis+-domain    & interface& domain      & not defined & preferred NIS+ domain (H)\\
 lifetime       & interface& YES/NO      & no    & Should client request lifetime option? \\
 \hline
 \end{tabular}
@@ -378,7 +378,8 @@ iface eth0
 \subsection{Server config file}
 
 Server configuration is stored in \verb+server.conf+ file. After
-successful startup, old version of this file is stored as \verb+server.conf-old+.
+successful startup, old version of this file is stored as
+\verb+server.conf-old+.
 
 \subsubsection{Global scope}
 
@@ -455,6 +456,8 @@ unicast          &interface& address     & empty      & Specify which address sh
 iface-max-lease  &interface& integer     & 4294967296 & how many addresses can be leased by all clients? \\
 client-max-lease &interface& integer     & 4294967296 & how many addresses can be leased by one client? \\
 rapid-commit     &interface& 0 or 1      & 0          & should we allow Rapid Commit (SOLICIT--REPLY)? \\
+relay            &interface& string      & not defined& Name of the physical interface used to reach this relay \\
+interface-id     &interface& integer     & not defined& ID of the relay interface. Must be unique \\
 
 valid-lifetime   & class   & integer     & 4294967296 & valid lifetime for address (specified in seconds)\\
 prefered-lifetime& class   & integer     & 4294967296 & after this amount of time(in seconds) address becomes depreciated\\
@@ -624,7 +627,156 @@ iface 5
 }
 \end{verbatim}
 
+The last server configuration example explains how to use
+relays. There is some remote relay with will send encapsulated over
+eth1 interface. It is configured to append interface-id option set to
+5020 value. Let's allow all clients using this relay some addresses
+and information about DNS servers:
+
+\begin{verbatim}
+iface relay1 {
+ relay eth1
+ interface-id 5020
+
+ class {
+   pool 2000::1-2000::ff
+ }
+ option dns-server 2000::100,2000::101
+}
+\end{verbatim}
+
+
+\subsection{Relay config file}
+
+Relay configuration is stored in \verb+/etc/dibbler/relay.conf+ file.
+
+\subsubsection{Global scope}
+
+Every option can be declared in global scope.
+Config file consists of global options and one or more inteface
+definitions. Note that reasonable minimum is 2 interfaces, as defining
+only one would mean to resend messages on the same interface.
+
+\subsubsection{Interface declaration}
+
+Interface can be declared this way:
+\begin{verbatim}
+iface name_of_the_interface
+{
+  interface options      |
+}
+\end{verbatim}
+
+or 
+
+\begin{verbatim}
+iface number 
+{
+  interface options      |
+}
+\end{verbatim}
+
+where name\_of\_the\_interface denotes name of the interface and
+number denotes it's number. It does not need to be enclosed in
+single or double quotes (except windows cases, when interface name
+contains spaces).
+
+\subsubsection{Options}
+
+Every option has a scope it can be used in, default value and
+sometimes allowed range.
+
+%% FIXME: this table must be sanitized
+\begin{tabular}{|c|c|>{\centering}p{1.7cm}<{}|c|p{6cm}|}
+\hline
+Name             & Scope   & Values      & default    & Description \\
+                 &         & (default)   &  & \\
+\hline
+work-dir         & global  & string      & empty      & working directory \\
+log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
+log-name         & global  & string      & Client     & Name, which appears in a log file\\
+log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
+
+client multicast &interface& boolean     &            & Client's messages should be received on the multicast address.\\
+client unicast   &interface& address     &not defined & Client's messages should be received on the specified multicast address. \\
+server multicast &interface& boolean     &            & Forwarded messages should be sent to the multicast address. \\
+server unicast   &interface& address     &not defined & Forwarded messages should be send to the specified address. \\
+interface-id     &interface& integer     &not defined & Identifier of that particular interface. Used for interface-id option. \\
+\hline
+\end{tabular}
+
+It is worth mentioning that interface-id should be specified on the
+interface, which is used to receive messages from the clients, not the
+one used to forward packets to server.
+
+\subsubsection{Example relay config file}
+
+Relay configuration file is fairly simple. Relay forwards DHCPv6
+messages between interfaces. Messages from client are encapsulated and
+forwarded as RELAY\_FORW messages. Replies from server are received as
+RELAY\_REPL message. After decapsulation, they are being sent back to
+clients. 
+
+It is vital to inform server, where this relayed message was
+received. DHCPv6 does this using interface-id option. This identifier
+must be unique. Otherwise relays will get confused when they will
+receive reply from server. Note that this id does not need to be
+alligned with system interface id (ifindex). Think about it as
+"ethernet segment identifier" if you are using Ethernet network or as
+"bss identifier" if you are using 802.11 network.
+
+Let's assume this case: relay has 2 interfaces: eth0 and
+eth1. Clients are located on the eth1 network. Relay should receive
+data on that interface using well-known ALL\_DHCP\_RELAYS\_AND\_SERVER
+multicast address (ff02::1:2). Relay also listens on its global
+address 2000::123. Packets received on the eth1 should be forwarded on
+the eth0 interface, also using multicast address:
+
+\begin{verbatim}
+log-level 8
+log-mode short
+
+iface eth0 {
+  server multicast yes
+}
+
+iface eth1 {
+  client multicast yes
+  client unicast 2000::123
+  interface-id 1000
+}
+\end{verbatim}
+
+Here is another exmaple. This time messages should be forwarded from
+eth1 and eth3 to the eth0 interface (using multicast) and to the eth2
+interface (using server's global address 2000::546). Also clients must
+use multicasts (the default approach):
+
+.nf
+\begin{verbatim}
+iface eth0 {
+  server multicast yes
+}
+
+iface eth2 {
+  server unicast 2000::456
+}
+
+iface eth1 {
+  client multicast yes                    
+  interface-id 1000
+}
+
+iface eth3 {
+  client multicast yes                    
+  interface-id 1001
+}
+\end{verbatim}
+
 %% $Log: not supported by cvs2svn $
+%% Revision 1.10  2004/12/01 20:55:49  thomson
+%% Documentation updated.
+%%
 %% Revision 1.9  2004/11/02 00:02:23  thomson
 %% Documentation improved.
 %%

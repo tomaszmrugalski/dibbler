@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-arch.tex,v 1.1 2004-12-01 20:55:49 thomson Exp $
+%% $Id: dibbler-devel-arch.tex,v 1.2 2005-01-23 23:16:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.1  2004/12/01 20:55:49  thomson
+%% Documentation updated.
+%%
 %% Revision 1.3  2004/11/25 01:16:36  thomson
 %% *** empty log message ***
 %%
@@ -51,14 +54,14 @@ cases, all classes are divided into several major groups:
   servers option). 
 \item[Misc] -- This cathegory (or rather directory) contains various
   miscellanous classes and functions.
-
-None of those classes is used directly. Both client and server (and
-relay in a near future) uses derived classes.
 \end{itemize}
 
+None of those classes is used directly. Client, server and
+relay uses derived classes.
+
 They are all created within DHCPClient or DHCPServer objects in client
-or server, respectively. In the not so distant future DHCPRelay object
-will also be created.
+or server, respectively. DHCPRelay object will perform similar
+function for relays.
 
 \section{Client Architecture}
 
@@ -131,5 +134,25 @@ are defined:
 \end{itemize}
 
 \section{Relay Architecture}
-Relay is not implemented at this time, but there are preliminary steps
-taken to enhance Dibbler to support relays.
+Preliminary relay version was available in the 0.4.0 release. It
+consists of serveral simple blocks:
+\begin{itemize}
+\item[TRelIfaceMgr] -- contains relayr version of the IfaceMgr. There
+  are almost no modificiation compared to common version, execept
+  decodeMsg() and decodeRelayRepl() methods.
+\item[TRelCfgMgr] -- Relay related parser. TRelCfgMgr and related
+  objects are designed to provide easy access to parameters specified
+  in the configuration file. RelCfgIface is a very important class as
+  most of the parameters is interface-specific.
+\item[TRelTransMgr] -- It's plain simple manager. It's only function
+  is to relay received message on all interfaces.
+\item[TRelMsg] -- From the relay's point of view, all messages fall to
+  one of 3 categories: Generic (i.e. not encapsulated) messages,
+  RelayForw (already forwarded by some other relay) and RelayRepl
+  (replies from server). Most of the messages is threated as generic
+  message.
+\item[TRelOpt] -- Similar approach is used to handle options. Expect
+  RELAY\_MSG option (which contains relayed message) and interface-id
+  option (which contains identifier of the interface), all options are
+  threated as generic options, which are handled transparently.
+\end{itemize}

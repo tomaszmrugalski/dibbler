@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.4 2004-10-25 20:45:54 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.5 2005-01-23 23:16:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.4  2004/10/25 20:45:54  thomson
+%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
+%%
 %% Revision 1.3  2004/06/19 19:51:14  thomson
 %% Various fixes.
 %%
@@ -21,8 +24,8 @@ Dibbler website located at \url{http://klub.com.pl/dhcpv6/}.
 
 \section{Overview}
 
-Dibbler is a portable DHCPv6 solution. It features both server and
-client. Currently there are ports available for Windows XP and 2003
+Dibbler is a portable DHCPv6 solution. It features server, client and
+relay. Currently there are ports available for Windows XP and 2003
 and Linux systems. Besides basic functionality specified in RFC3315,
 it also offers serveral enhancements, e.g. DNS servers and doman names
 configuration.
@@ -46,6 +49,9 @@ As for now, Dibbler offers these features:
   have 5 addresses configured. Prefered server can only grant 3, so
   client send request for remaining 2 addresses to one of the
   remaining servers.
+\item Relay support -- Dibbler server supports indirect
+  communication with clients via relays. Relay implementation is also
+  available. Clients can talk to the server directly or via relays.
 \item Unicast communication -- if specific conditions are met, client
   could send messages directly to a server's unicast address, so
   additional servers does not need to process those messages. It also
@@ -65,8 +71,8 @@ As for now, Dibbler offers these features:
   client recovers from crash or power failure, it still can have
   assigned valid addresses. In such circumstances, client uses CONFIRM
   message, to config if those addresses are still valid%
-  \footnote{As for 0.2.1 version, this functionality works on server side only,
-  client side support will be available in 0.2.2.}.
+  \footnote{As for 0.3.1 version, this functionality works on server side only,
+  client side support will be available in 0.4.0.}.
 \item IA Option -- this option is used to carry addresses. Both server
   and client support multiple IAs in one message. Additional feature
   is client capability to ask for a specific address.
@@ -87,11 +93,20 @@ Except RFC3315-specified behavior, Dibbler also support several enhancements:
 time zone it is currently in.
 \item NTP Servers Option -- client can ask for Network Time Protocol
   Servers to synchronize its clock.
+\item SIP Servers Option -- SIP servers IPv6 address information can
+  be passed to clients.
+\item SIP domain name - SIP domain name can be passed to clients.
+\item NIS, NIS+ server Option -- Both NIS and NIS+ server adresses
+  can be passed to clients.
+\item NIS, NIS+ domain name Option -- NIS or NIS+ domain names can be
+  passed to clients.
+\item Option renewal mechanism (Lifetime Option) -- options obtained
+  from server can be updated periodically.
 \end{itemize}
 
 And now some implementation specific details:
 \begin{itemize}
-\item On both server and client, after each modification data is
+\item On Server, client and relay, after each modification data is
   dumped in XML format, so it can be easily processed in an automated
   manner. Simple example of this advantage is a script, which can generate
   reports about server usage (assigned addresses, clients configured
