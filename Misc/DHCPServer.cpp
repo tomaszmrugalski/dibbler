@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.17 2004-12-02 00:51:04 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.18 2004-12-07 00:45:09 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.16  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -54,27 +57,45 @@ volatile int serviceShutdown;
 
 TDHCPServer::TDHCPServer(string config)
 {
-    string oldConf = config+"-old";
     serviceShutdown = 0;
+    srand(now());
     this->IsDone = false;
-    IfaceMgr = new TSrvIfaceMgr();
-    
-	if ( IfaceMgr->isDone() ) {
-	    Log(Crit) << "Fatal error during IfaceMgr. Aborting." << LogEnd;
-	  this->IsDone = true;
-	  return;
-    }
-	
-	IfaceMgr->dump(SRVIFACEMGR_FILE);
 
-    TransMgr = new TSrvTransMgr(IfaceMgr, config, oldConf);
+    this->IfaceMgr = new TSrvIfaceMgr(SRVIFACEMGR_FILE);
+    if ( this->IfaceMgr->isDone() ) {
+	Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+    
+    this->AddrMgr = new TSrvAddrMgr(SRVADDRMGR_FILE);
+    if ( this->AddrMgr->isDone() ) {
+	Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+
+    this->CfgMgr = new TSrvCfgMgr(IfaceMgr, config, SRVCFGMGR_FILE);
+    if ( this->CfgMgr->isDone() ) {
+	Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+
+    this->TransMgr = new TSrvTransMgr(IfaceMgr, AddrMgr, CfgMgr, SRVTRANSMGR_FILE);
+    if ( this->TransMgr->isDone() ) {
+	Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+    
     TransMgr->setThat(TransMgr);
 }
 
 void TDHCPServer::run()
 {
     bool silent = false;
-    while ( (!TransMgr->isDone()) && (!this->isDone()) ) {
+    while ( (!this->isDone()) && (!TransMgr->isDone()) ) {
     	if (serviceShutdown)
 	    TransMgr->shutdown();
 	
@@ -109,6 +130,14 @@ void TDHCPServer::run()
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();
 	Log(Cont) << LogEnd;
+	if (CfgMgr->stateless() && ( (msg->getType()!=SOLICIT_MSG) || 
+				     (msg->getType()!=INFORMATION_REQUEST_MSG) ||
+				     (msg->getType()!=RELAY_FORW))) {
+	    Log(Warning) 
+		<< "Stateful configuration related message received while running in the stateless mode. Message ignored." 
+		<< LogEnd;
+	    continue;
+	} 
 	TransMgr->relayMsg(msg);
     }
     Log(Notice) << "Bye bye." << LogEnd;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.20 2004-11-29 23:25:13 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.21 2004-12-07 00:45:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/11/29 23:25:13  thomson
+ * Server now properly retransmits messages.
+ *
  * Revision 1.19  2004/11/02 01:37:09  thomson
  * *** empty log message ***
  *
@@ -49,38 +52,27 @@
 #include "SrvOptStatusCode.h"
 
 TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
-                           string newconf, string oldconf)
+			   SmartPtr<TSrvAddrMgr> addrMgr,
+			   SmartPtr<TSrvCfgMgr> cfgMgr,
+                           string xmlFile)
 {
-    // FIXME: loadDB
-    bool loadDB = false;
-
     // remember IfaceMgr and create remaining managers
     this->IfaceMgr = ifaceMgr;
-    CfgMgr  = new TSrvCfgMgr(this->IfaceMgr, newconf, oldconf);
-    if (CfgMgr->isDone()) {
-	this->IsDone = true;
-	return;
-    }
-
-    AddrMgr = new TSrvAddrMgr( CfgMgr->getWorkDir()+"/"+SRVDB_FILE, loadDB);
-    AddrMgr->dbStore();
-    
-    // for each interface in CfgMgr, create socket (in IfaceMgr)
-    SmartPtr<TSrvCfgIface> confIface;
-    CfgMgr->firstIface();
+    this->AddrMgr  = addrMgr;
+    this->CfgMgr   = cfgMgr;
     
     // TransMgr is certainly not done yet. We're just getting started
     IsDone = false;
     
+    // for each interface in CfgMgr, create socket (in IfaceMgr)
+    SmartPtr<TSrvCfgIface> confIface;
+    CfgMgr->firstIface();
     while (confIface=CfgMgr->getIface()) {
 	if (!this->openSocket(confIface)) {
 	    this->IsDone = true;
 	    break;
 	}
     }
-
-    if (loadDB)
-	AddrMgr->doDuties();
 }
 
 /*
@@ -262,7 +254,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
     }
     
     // save DB state regardless of action taken
-    AddrMgr->dbStore();
+    AddrMgr->dump();
     CfgMgr->dump();
 }	
 
@@ -292,7 +284,7 @@ void TSrvTransMgr::doDuties()
 
 void TSrvTransMgr::shutdown()
 {
-    AddrMgr->dbStore();
+    AddrMgr->dump();
     IsDone = true;
 }
 
@@ -315,3 +307,22 @@ int  TSrvTransMgr::getCtrlIface() {
 	return this->ctrlIface;
 }
 
+void TSrvTransMgr::dump() {
+    std::ofstream xmlDump;
+    xmlDump.open(this->XmlFile.c_str());
+    xmlDump << *this;
+    xmlDump.close();
+}
+
+TSrvTransMgr::~TSrvTransMgr() {
+    Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
+}
+
+
+ostream & operator<<(ostream &s, TSrvTransMgr &x)
+{
+    s << "<TSrvTransMgr>" << endl;
+    s << "<!-- SrvTransMgr dumps are not implemented yet -->" << endl;
+    s << "</TSrvTransMgr>" << endl;
+    return s;
+}

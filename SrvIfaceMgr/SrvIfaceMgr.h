@@ -9,7 +9,7 @@ class TSrvIfaceMgr;
 #include "SrvTransMgr.h"
 #include "Msg.h"
 
-/*
+/**
  * ServerInterfaceManager - sends and receives messages (server version)
  * @date 2003-10-14
  * @author Tomasz Mrugalski <admin@klub.com.pl>
@@ -18,7 +18,8 @@ class TSrvIfaceMgr;
 
 class TSrvIfaceMgr :public TIfaceMgr {
  public:
-    TSrvIfaceMgr();
+    TSrvIfaceMgr(string xmlFile);
+    ~TSrvIfaceMgr();
     
     // ---sends messages---
     bool send(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
@@ -33,10 +34,11 @@ class TSrvIfaceMgr :public TIfaceMgr {
 		  SmartPtr<TSrvAddrMgr> srvAddrMgr);
 
   private:
-	SmartPtr<TSrvCfgMgr> SrvCfgMgr;
-	SmartPtr<TSrvAddrMgr> SrvAddrMgr;
-	SmartPtr<TSrvTransMgr> SrvTransMgr;
-	SmartPtr<TSrvIfaceMgr> That;
+    string XmlFile;
+    SmartPtr<TSrvCfgMgr> SrvCfgMgr;
+    SmartPtr<TSrvAddrMgr> SrvAddrMgr;
+    SmartPtr<TSrvTransMgr> SrvTransMgr;
+    SmartPtr<TSrvIfaceMgr> That;
 };
 
 #endif 

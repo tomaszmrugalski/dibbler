@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.8 2004-12-03 20:51:42 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.9 2004-12-07 00:45:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.7  2004/09/07 22:02:33  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -34,9 +37,13 @@
 #include "Logger.h"
 #include "SrvCfgAddrClass.h"
 
-TSrvAddrMgr::TSrvAddrMgr(string addrdb, bool loadDB) 
-    :TAddrMgr(addrdb,loadDB) {
+TSrvAddrMgr::TSrvAddrMgr(string xmlfile) 
+    :TAddrMgr(xmlfile, false) {
     
+}
+
+TSrvAddrMgr::~TSrvAddrMgr() {
+    Log(Debug) << "SrvAddrMgr cleanup." << LogEnd;
 }
 
 long TSrvAddrMgr::getTimeout() {
@@ -300,7 +307,7 @@ void TSrvAddrMgr::doDuties()
 					<< ptrIA->getIAID() << ") in client (DUID=\"";
                             if (ptrClient->getDUID()) 
                             {
-                                std::clog << *ptrClient->getDUID();
+                                Log(Cont) << *ptrClient->getDUID();
                             }
                             Log(Cont) << "\") has expired." << dec << LogEnd;
                             ptrIA->delAddr(ptrAddr->get());
@@ -322,5 +329,5 @@ void TSrvAddrMgr::doDuties()
         };
     }
     if (anyDeleted) 
-        this->dbStore();
+        this->dump();
 }

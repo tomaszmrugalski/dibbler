@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.5 2004-09-07 22:02:33 thomson Exp $
+ * $Id: SrvAddrMgr.h,v 1.6 2004-12-07 00:45:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.4  2004/06/21 23:08:48  thomson
  * Minor fixes.
  *
@@ -30,7 +33,8 @@ class TSrvAddrMgr;
 class TSrvAddrMgr : public TAddrMgr
 {
   public:
-    TSrvAddrMgr(string addrdb, bool loadDB=false);
+    TSrvAddrMgr(string xmlfile);
+    ~TSrvAddrMgr();
 
     long getTimeout();
     bool addClntAddr(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
@@ -45,12 +49,8 @@ class TSrvAddrMgr : public TAddrMgr
 
     void doDuties();
     
-    void getAddrsCount(
-        SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > classes,
-        long    *clntCnt,
-        long    *addrCnt,
-        SmartPtr<TDUID> duid, 
-        int iface);
+    void getAddrsCount(SmartPtr<List(TSrvCfgAddrClass)> classes, long *clntCnt,
+		       long *addrCnt, SmartPtr<TDUID> duid, int iface);
 
     bool addrIsFree(SmartPtr<TIPv6Addr> addr);
 };

@@ -17,7 +17,7 @@
 #include "IPv6Addr.h"
 #include "AddrClient.h"
 
-/*
+/**
  * ServerInterfaceManager - sends and receives messages (server version)
  * @date 2003-10-14
  * @author Tomasz Mrugalski <admin@klub.com.pl>
@@ -29,11 +29,16 @@ using namespace std;
 /*
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
  */
-TSrvIfaceMgr::TSrvIfaceMgr() 
-    : TIfaceMgr(true) {
+TSrvIfaceMgr::TSrvIfaceMgr(string xmlFile) 
+    : TIfaceMgr(xmlFile, true) {
 }
 
-/* 
+TSrvIfaceMgr::~TSrvIfaceMgr() {
+    Log(Debug) << "SrvIfaceMgr cleanup." << LogEnd;
+}
+
+
+/**
  * sends data to client. Uses multicast address as source
  * @param iface - interface ID
  * @param msg - buffer containing message ready to send
@@ -65,7 +70,7 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     return ptrSocket->send(msg,size,addr,DHCPCLIENT_PORT);
 }
 
-/*
+/**
  * reads messages from all interfaces
  * it's wrapper around IfaceMgr::select(...) method
  * @param timeout - how long can we wait for packets?

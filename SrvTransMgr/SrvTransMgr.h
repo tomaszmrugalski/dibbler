@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.h,v 1.4 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvTransMgr.h,v 1.5 2004-12-07 00:45:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.3  2004/09/03 20:58:36  thomson
  * *** empty log message ***
  *
@@ -29,24 +32,30 @@ class TSrvTransMgr;
 
 class TSrvTransMgr
 {
+    friend ostream & operator<<(ostream &strum, TSrvTransMgr &x);
   public:
     TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
-		 string newconf, string oldconf);
+		 SmartPtr<TSrvAddrMgr> addrMgr,
+		 SmartPtr<TSrvCfgMgr> cfgMgr,
+		 string xmlFile);
+    ~TSrvTransMgr();
 
     bool openSocket(SmartPtr<TSrvCfgIface> confIface);
 
     long getTimeout();
     void relayMsg(SmartPtr<TMsg> msg);
     void doDuties();
+    void dump();
 
     bool isDone();
     void shutdown();
     
-	char * getCtrlAddr();
-	int    getCtrlIface();
+    char * getCtrlAddr();
+    int    getCtrlIface();
     
     void setThat(SmartPtr<TSrvTransMgr> that);
   private:
+    string XmlFile;
     TContainer< SmartPtr<TMsg> > MsgLst;
     bool IsDone;
 
@@ -55,9 +64,8 @@ class TSrvTransMgr
     SmartPtr<TSrvCfgMgr>  CfgMgr;
     SmartPtr<TSrvAddrMgr>  AddrMgr;
 
-	int ctrlIface;
-	char ctrlAddr[48];
-
+    int ctrlIface;
+    char ctrlAddr[48];
 };
 
 
