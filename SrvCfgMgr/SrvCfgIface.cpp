@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.7 2004-06-17 23:53:54 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.8 2004-06-28 21:34:18 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  * Revision 1.6  2004/06/06 22:12:29  thomson
  * Preference option has changed scope from class to interface
  *
@@ -148,10 +151,10 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     if (iface.isUniAddress) {
 	out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
     }
-    out << "  <preference>" << (int)iface.preference << "</preference>" << std::endl;
+    out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
     
     SmartPtr<TIPv6Addr> stat;
-    out << "  <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;
+    out << "    <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;
     iface.NTPSrv.first();
     while(stat=iface.NTPSrv.get())
 	out << "    <ntp>" << *stat << "</ntp>" << logger::endl;
@@ -161,7 +164,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "    <!-- DNS Resolvers count: " << iface.DNSSrv.count() << "-->" << logger::endl;
     iface.DNSSrv.first();
     while(stat=iface.DNSSrv.get())
-	out << "  <dns>" << *stat << "</dns>" << logger::endl;
+	out << "    <dns>" << *stat << "</dns>" << logger::endl;
     
     out << "    <domain>" << iface.Domain << "</domain>" << logger::endl;
     

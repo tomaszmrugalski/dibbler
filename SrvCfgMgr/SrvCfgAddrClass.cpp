@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.8 2004-06-20 19:29:23 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.9 2004-06-28 21:34:18 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
  * Revision 1.7  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *                                                                           
@@ -231,12 +234,12 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     while(statRange=addrClass.Pool.get())
 	out << *statRange;
     
-    out << "      <!-- rejected ranges:" << addrClass.RejedClnt.count() << " -->" << logger::endl;
+    out << "      <!-- reject-clients ranges:" << addrClass.RejedClnt.count() << " -->" << logger::endl;
     addrClass.RejedClnt.first();
     while(statRange=addrClass.RejedClnt.get())
 	out << *statRange;	
 	
-    out << "      <!-- accepted ranges:" << addrClass.AcceptClnt.count() << " -->" << logger::endl;
+    out << "      <!-- accept-only ranges:" << addrClass.AcceptClnt.count() << " -->" << logger::endl;
     addrClass.AcceptClnt.first();
     while(statRange=addrClass.AcceptClnt.get())
 	out << *statRange;

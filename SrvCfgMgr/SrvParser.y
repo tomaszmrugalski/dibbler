@@ -251,12 +251,12 @@ ADDRESSDUIDRangeList
 }
 |   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_ 
 {
-        SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
-        SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
-        if (*addr1<=*addr2)
-            PresentRangeLst.append(new TStationRange(addr1,addr2));
-        else
-            PresentRangeLst.append(new TStationRange(addr2,addr1));
+    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
+    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
+    if (*addr1<=*addr2)
+	PresentRangeLst.append(new TStationRange(addr1,addr2));
+    else
+	PresentRangeLst.append(new TStationRange(addr2,addr1));
 }
     
 | DUID_ 
@@ -270,11 +270,9 @@ ADDRESSDUIDRangeList
     SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
     
     if (*duid1<=*duid2)
-            PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
 	PresentRangeLst.append(new TStationRange(duid2,duid1));
-    delete $1.duid;
-    delete $3.duid;
 }
     | ADDRESSDUIDRangeList ',' DUID_ 
     {
@@ -630,9 +628,8 @@ int SrvParser::yylex()
 
 void SrvParser::yyerror(char *m)
 {
-    // logging 
-    std::clog << logger::logEmerg << "Config parse error: line " << lex->lineno() 
-              << ", unexpected [" << lex->YYText() << "] token." << logger::endl;
+    Log(Crit) << "Config parse error: line " << lex->lineno() 
+              << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
 }
 
 SrvParser::~SrvParser() {

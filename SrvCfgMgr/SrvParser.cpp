@@ -632,12 +632,12 @@ static const short yyrline[] = { 0,
     94,    95,    99,   100,   101,   102,   109,   114,   126,   131,
    138,   139,   140,   141,   145,   153,   160,   161,   168,   169,
    195,   199,   206,   210,   219,   223,   235,   239,   248,   252,
-   262,   267,   279,   284,   299,   303,   309,   313,   319,   324,
-   330,   335,   343,   348,   356,   361,   369,   374,   386,   390,
-   399,   409,   413,   422,   436,   443,   450,   457,   465,   474,
-   481,   490,   496,   501,   508,   515,   516,   517,   518,   519,
-   523,   524,   525,   526,   527,   528,   529,   533,   534,   535,
-   536,   537,   539,   540,   541,   542,   543,   544,   545
+   262,   267,   277,   282,   297,   301,   307,   311,   317,   322,
+   328,   333,   341,   346,   354,   359,   367,   372,   384,   388,
+   397,   407,   411,   420,   434,   441,   448,   455,   463,   472,
+   479,   488,   494,   499,   506,   513,   514,   515,   516,   517,
+   521,   522,   523,   524,   525,   526,   527,   531,   532,   533,
+   534,   535,   537,   538,   539,   540,   541,   542,   543
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","NO_CONFIG_",
@@ -1371,12 +1371,12 @@ case 29:
     break;}
 case 30:
 {
-        SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
-        SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
-        if (*addr1<=*addr2)
-            PresentRangeLst.append(new TStationRange(addr1,addr2));
-        else
-            PresentRangeLst.append(new TStationRange(addr2,addr1));
+    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
+    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
+    if (*addr1<=*addr2)
+	PresentRangeLst.append(new TStationRange(addr1,addr2));
+    else
+	PresentRangeLst.append(new TStationRange(addr2,addr1));
 ;
     break;}
 case 31:
@@ -1391,11 +1391,9 @@ case 32:
     SmartPtr<TDUID> duid2(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
     
     if (*duid1<=*duid2)
-            PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
 	PresentRangeLst.append(new TStationRange(duid2,duid1));
-    delete yyvsp[-2].duidval.duid;
-    delete yyvsp[0].duidval.duid;
 ;
     break;}
 case 33:
@@ -1870,9 +1868,8 @@ int SrvParser::yylex()
 
 void SrvParser::yyerror(char *m)
 {
-    // logging 
-    std::clog << logger::logEmerg << "Config parse error: line " << lex->lineno() 
-              << ", unexpected [" << lex->YYText() << "] token." << logger::endl;
+    Log(Crit) << "Config parse error: line " << lex->lineno() 
+              << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
 }
 
 SrvParser::~SrvParser() {

@@ -123,13 +123,16 @@ ostream& operator<<(ostream& out,TStationRange&  range)
     if (range.isAddrRange) {
 	// address range
         if(range.AddrL&&range.AddrR)
-	    out << "      <range min=\"" << *range.AddrL << "\" max=\"" 
-		<< *range.AddrR << "\"/>" << std::endl;
+	    out << "      <range type=\"addr\" min=\"" << *range.AddrL 
+		<< "\" max=\""  << *range.AddrR << "\"/>" << std::endl;
     } else {
 	// DUID range
-        if (range.DUIDL&&range.DUIDR)
-	    out << "      <range min=\"" << *range.DUIDL << "\" max=\"" 
-		<< *range.DUIDR << "\"/>" << std::endl;
+        if (range.DUIDL&&range.DUIDR) {
+	    out << "      <range type=\"duid\">" << std::endl
+		<< "         " << *range.DUIDL
+		<< "         " << *range.DUIDR
+		<< "      </range>" << std::endl;
+	}
     }
     return out;
 }

@@ -38,7 +38,8 @@ class TClntCfgIA
 
   private:
     long IAID;
-    
+
+    // FIXME: unsigned
     long T1;
     ESendOpt T1SendOpt;
     

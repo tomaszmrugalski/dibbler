@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.5 2004-06-20 20:59:30 thomson Exp $
+ * $Id: DUID.cpp,v 1.6 2004-06-28 21:34:18 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/20 20:59:30  thomson
+ * getPlain() method added.
+ *
  * Revision 1.4  2004/06/06 22:31:44  thomson
  * *** empty log message ***
  *
@@ -170,7 +173,7 @@ char * TDUID::storeSelf(char* buf) {
 
 ostream& operator<<(ostream& out,TDUID&  duid) {
     if ( (duid.DUID && duid.len) ) {
-	out << "<duid length=\"" << duid.len << "\">"
+	out << "<duid length=\"" << duid.len << "\">0x"
 	    << duid.Plain << "</duid>" << std::endl;
     } else {
         out << "<duid length=\"0\"></duid>" << std::endl;
