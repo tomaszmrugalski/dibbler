@@ -6,13 +6,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.3 2004-07-05 23:04:08 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.4 2004-09-07 17:42:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
- *
- *
  */
 
 #include "ClntMsgRequest.h"
@@ -21,6 +19,7 @@
 #include "ClntIfaceMgr.h"
 #include "ClntMsgAdvertise.h"
 #include "ClntOptServerIdentifier.h"
+#include "ClntOptServerUnicast.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptClientIdentifier.h"
@@ -28,8 +27,9 @@
 #include <cmath>
 #include "Logger.h"
 
-//opts - options list WITHOUT serverDUID
-//FIXED: remover server identifier from opt if it exists there
+/*
+ * opts - options list WITHOUT serverDUID
+ */
 TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 				 SmartPtr<TClntTransMgr> TransMgr,
 				 SmartPtr<TClntCfgMgr>   CfgMgr, 
@@ -56,7 +56,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
         return;
     }
 
-    //C++ RULES: to kopiuje jedna liste na druga za pomoca konstruktora 
+    //C++ RULEZ: this copies one list to the other
     BackupSrvLst = advs;
 
     // looking for first server's DUID on server list	
@@ -67,8 +67,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     
     //Delete all server DUID options if any (can appear after verify)
     opts.first();
-    while(srvDUID=opts.get())
-    {
+    while(srvDUID=opts.get()) {
         if (srvDUID->getOptType()==OPTION_SERVERID)
             opts.del();
     }
@@ -76,6 +75,28 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     // copy whole list from SOLICIT ...
     Options = opts;
+
+    // does this server support unicast?
+    SmartPtr<TClntOptServerUnicast> unicast = (Ptr*) srv->getOption(OPTION_UNICAST);
+    if (unicast) {
+	Log(Debug) << "Server supports unicast on address " << *unicast->getAddr() << "." << LogEnd;
+	this->PeerAddr = unicast->getAddr();
+	Options.first();
+	SmartPtr<TOpt> opt;
+	// set this unicast address in each IA in AddrMgr
+	while (opt = Options.get()) {
+	    if (opt->getOptType()!=OPTION_IA)
+		continue;
+	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
+	    SmartPtr<TAddrIA> ptrAddrIA = AddrMgr->getIA(ptrOptIA->getIAID());
+	    if (!ptrAddrIA) {
+		Log(Crit) << "IA with IAID=" << ptrOptIA->getIAID() << " not found." << LogEnd;
+		continue;
+	    }
+	    ptrAddrIA->setUnicast(unicast->getAddr());
+	}
+	
+    }
     
     // ... and append server's DUID from ADVERTISE
     Options.append( srvDUID );

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.19 2004-09-07 15:37:44 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.20 2004-09-07 17:42:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  * Revision 1.16  2004/07/11 14:08:01  thomson
  * Opening additonal socket on loopback is not necessary in WIN32 systems.
  *
@@ -224,11 +227,8 @@ void TClntTransMgr::doDuties()
     while(msg=Transactions.get())
     {
         if ((!msg->getTimeout())&&(!msg->isDone())) {
-	    Log(Info) << "Processing msg (" << msg->getName() 
-		      << ",type=" << msg->getType()  
-		      << ",transID=0x";
-	    std::clog.width(6);
-	    std::clog.fill('0');
+	    Log(Info) << "Processing msg (" << msg->getName() << ",transID=0x";
+	    std::clog.width(6); std::clog.fill('0');
 	    std::clog << hex << msg->getTransID() << dec << ",opts:";
 	    SmartPtr<TOpt> ptrOpt;
 	    msg->firstOption();

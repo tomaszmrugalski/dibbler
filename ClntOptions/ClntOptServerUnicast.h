@@ -1,11 +1,23 @@
-#ifndef CLNTSERVERUNICAST_H_HEADER_INCLUDED_C1126AA1
-#define CLNTSERVERUNICAST_H_HEADER_INCLUDED_C1126AA1
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntOptServerUnicast.h,v 1.2 2004-09-07 17:42:31 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
+#ifndef CLNTOPTSERVERUNICAST_H
+#define CLNTOPTSERVERUNICAST_H
 
 #include "Opt.h"
 #include "DHCPConst.h"
 #include "OptServerUnicast.h"
 
-//##ModelId=3EC75CE3038C
 class TClntOptServerUnicast : public TOptServerUnicast 
 {
   public:
@@ -13,6 +25,4 @@ class TClntOptServerUnicast : public TOptServerUnicast
     bool doDuties();
 };
 
-
-
-#endif /* SERVERUNICAST_H_HEADER_INCLUDED_C1126AA1 */
+#endif /* CLNTOPTSERVERUNICAST_H */

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.2 2004-06-04 16:55:27 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.3 2004-09-07 17:42:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  */
 
 #ifdef WIN32
@@ -51,89 +54,86 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
     //After reading message code and transactionID   
     //read options contained in message    
     int pos=0;
-    while (pos<bufSize)		 
-    {
+    SmartPtr<TOpt> ptr;
+    while (pos<bufSize) {
+	ptr = 0;
         short code = ntohs( *((short*) (buf+pos)));
         pos+=2;
         short length = ntohs(*((short*) (buf+pos)));
         pos+=2;
-        SmartPtr<TOpt> ptr;
-        if (((code>0)&&(code<=24)) || (code==OPTION_DNS_RESOLVERS)||
-            (code==OPTION_DOMAIN_LIST) || (code==OPTION_NTP_SERVERS) || (code==OPTION_TIME_ZONE))
-        {                
-            if((canBeOptInMsg(MsgType,code))&&
-                (canBeOptInOpt(MsgType,0,code)))
-            {
-                switch (code)
-                {
-                case OPTION_CLIENTID:
-                    ptr = new TClntOptClientIdentifier(buf+pos,length,this);
-                    break;
-                case OPTION_SERVERID:
-                    ptr =new TClntOptServerIdentifier(buf+pos,length,this);
-                    break;
-                case OPTION_IA:
-                    ptr = new TClntOptIA_NA(buf+pos,length,this);
-                    break;
-                case OPTION_ORO:
-                    ptr = new TClntOptOptionRequest(buf+pos,length,this);
-                    break;
-                case OPTION_PREFERENCE:
-                    ptr = new TClntOptPreference(buf+pos,length,this);
-                    break;
-                case OPTION_ELAPSED_TIME:
-                    ptr = new TClntOptElapsed(buf+pos,length,this);
-                    break;
-                case OPTION_UNICAST:
-                    ptr = new TClntOptServerUnicast(buf+pos,length,this);
-                    break;
-                case OPTION_STATUS_CODE:
-                    ptr = new TClntOptStatusCode(buf+pos,length,this);
-                    break;
-                case OPTION_RAPID_COMMIT:
-                    ptr = new TClntOptRapidCommit(buf+pos,length,this);
-                    break;
-                case OPTION_DNS_RESOLVERS:
-                    ptr = new TClntOptDNSServers(buf+pos,length,this);
-                    break;
-                case OPTION_NTP_SERVERS:
-                    ptr = new TClntOptNTPServers(buf+pos,length,this);
-                    break;
-                case OPTION_DOMAIN_LIST:
-                    ptr = new TClntOptDomainName(buf+pos, length, this);
-                    break;
-                case OPTION_TIME_ZONE:
-                    ptr = new TClntOptTimeZone(buf+pos, length,this);
-                    break;
 
-                case OPTION_IA_TA:
-                case OPTION_RECONF_ACCEPT:
-                case OPTION_USER_CLASS:
-                case OPTION_VENDOR_CLASS:
-                case OPTION_VENDOR_OPTS:
-                case OPTION_RECONF_MSG:
-                case OPTION_RELAY_MSG:
-                case OPTION_AUTH_MSG:
-                case OPTION_INTERFACE_ID:
-                    clog<< logger::logWarning <<"Option opttype=" << code<< "not supported "
-                        <<" in field of message (type="<< MsgType <<") in this version of client."<<logger::endl;
-                    break;
-                }
-                if ((ptr)&&(ptr->isValid()))
+	if (!canBeOptInMsg(MsgType,code)) {
+            Log(Warning) << "Option " << code << " is not allowed in " << MsgType
+			 << " message. Ignoring." << LogEnd;
+	    pos+=length;
+	    continue;
+	}
+	if (!canBeOptInOpt(MsgType,0,code)) {
+	    Log(Warning) << "Option " << code << " is not allowed directly in " << MsgType
+			 << " message. Ignoring." << LogEnd;
+	    pos+=length;
+	    continue;
+	}
+	switch (code) {
+	case OPTION_CLIENTID:
+	    ptr = new TClntOptClientIdentifier(buf+pos,length,this);
+	    break;
+	case OPTION_SERVERID:
+	    ptr =new TClntOptServerIdentifier(buf+pos,length,this);
+	    break;
+	case OPTION_IA:
+	    ptr = new TClntOptIA_NA(buf+pos,length,this);
+	    break;
+	case OPTION_ORO:
+	    ptr = new TClntOptOptionRequest(buf+pos,length,this);
+	    break;
+	case OPTION_PREFERENCE:
+	    ptr = new TClntOptPreference(buf+pos,length,this);
+	    break;
+	case OPTION_ELAPSED_TIME:
+	    ptr = new TClntOptElapsed(buf+pos,length,this);
+	    break;
+	case OPTION_UNICAST:
+	    ptr = new TClntOptServerUnicast(buf+pos,length,this);
+	    break;
+	case OPTION_STATUS_CODE:
+	    ptr = new TClntOptStatusCode(buf+pos,length,this);
+	    break;
+	case OPTION_RAPID_COMMIT:
+	    ptr = new TClntOptRapidCommit(buf+pos,length,this);
+	    break;
+	case OPTION_DNS_RESOLVERS:
+	    ptr = new TClntOptDNSServers(buf+pos,length,this);
+	    break;
+	case OPTION_NTP_SERVERS:
+	    ptr = new TClntOptNTPServers(buf+pos,length,this);
+	    break;
+	case OPTION_DOMAIN_LIST:
+	    ptr = new TClntOptDomainName(buf+pos, length, this);
+	    break;
+	case OPTION_TIME_ZONE:
+	    ptr = new TClntOptTimeZone(buf+pos, length,this);
+	    break;
+	    
+	case OPTION_IA_TA:
+	case OPTION_RECONF_ACCEPT:
+	case OPTION_USER_CLASS:
+	case OPTION_VENDOR_CLASS:
+	case OPTION_VENDOR_OPTS:
+	case OPTION_RECONF_MSG:
+	case OPTION_RELAY_MSG:
+	case OPTION_AUTH_MSG:
+	case OPTION_INTERFACE_ID:
+	    Log(Warning) << "Option " << code<< "not supported in message " 
+			 << MsgType << ") in this version of client." << LogEnd;
+	    break;
+	}
+	
+	if ( (ptr) && (ptr->isValid())) {
                     Options.append( ptr );
-                else
-                    std::clog<<logger::logWarning<<"Option nr:"<<ptr->getOptType()
-                        <<" invalid."<<"Option ignored."<<logger::endl;
-            }
-            else
-                clog << logger::logWarning << "Illegal option received, opttype=" << code 
-                    << " in field of message (type="<< MsgType <<")"<<logger::endl;
-        }
-        else
-        {
-                clog << logger::logWarning <<"Unknown option in package (" 
-                    << code << ", addr = " << *addr << "). Option ignored." << logger::endl;
-        };
+	} else {
+	    Log(Warning) << "Option " << ptr->getOptType() << " is invalid. Ignoring." << LogEnd;
+	}
         pos+=length;
     }
 
@@ -202,35 +202,27 @@ unsigned long TClntMsg::getTimeout()
 
 void TClntMsg::send()
 {
-	//FIXME:Here was division by zero & what if RT=0
-	//		it's not accrptable. (FIXED)
     if (!RC)
         RT=(int)floor(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
     else
-	    RT =(int) floor(0.5+2.0*RT+RT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
+	RT =(int) floor(0.5+2.0*RT+RT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
 
-	//FIXME:rand() is supposed to return number in range: (-0.1,0.1)
-	//FIXME:it's intresting even if it is above MRT, as it was set in prev instruction
-	//		it can be set again below this value, so in SOLICIT message ending condition
-	//		should be changed a little bit. By the way there is no SOLICIT ending condition
-	//		this transaction can end only after receiving an answer
-
-	if (MRT != 0 && RT>MRT) 
-		RT = (int) floor(0.5+MRT + MRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
+    if (MRT != 0 && RT>MRT) 
+	RT = (int) floor(0.5+MRT + MRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
     
     if ((MRD != 0) && (RT>MRD))
         RT = MRD;
     if (MRD) MRD-=RT;
     
     RC++;
-    	
-	TMsg::send();
     
-	if (PeerAddr)
-		ClntIfaceMgr->sendUnicast(Iface,pkt,getSize(),PeerAddr);
-	else
-		ClntIfaceMgr->sendMulticast(Iface, pkt, getSize());
-	LastTimeStamp = now();
+    TMsg::send();
+    
+    if (PeerAddr)
+	ClntIfaceMgr->sendUnicast(Iface,pkt,getSize(),PeerAddr);
+    else
+	ClntIfaceMgr->sendMulticast(Iface, pkt, getSize());
+    LastTimeStamp = now();
 }
 
 SmartPtr<TClntTransMgr> TClntMsg::getClntTransMgr()
@@ -252,3 +244,4 @@ SmartPtr<TClntIfaceMgr> TClntMsg::getClntIfaceMgr()
 {
     return this->ClntIfaceMgr;
 }
+

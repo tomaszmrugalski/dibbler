@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.3 2004-09-07 17:42:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
@@ -72,7 +75,9 @@ bool canBeOptInMsg(int msgType, int optType)
         case OPTION_NTP_SERVERS:    optType=23; break;
         case OPTION_TIME_ZONE:      optType=24; break;
     }
-    return OptInMsg[msgType-1][optType-1];
+    if (optType<11) 
+	return OptInMsg[msgType-1][optType-1];
+    return OptInMsg[msgType-1][optType];
 }
 
 /*          Appearance of Options in the Options Field of DHCP Options

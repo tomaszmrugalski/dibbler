@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.5 2004-09-07 15:37:44 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.6 2004-09-07 17:42:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  * Revision 1.4  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -30,16 +33,7 @@ using namespace std;
 
 bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr)
 {
-    // FIXME:
-    return true;
-}
-
-bool TClntIfaceMgr::sendMulticast(int iface, char * msg, int msgsize)
-{
-    // prepare address
-    char addr[16];
-    inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,addr);
-
+    int result;
     // get interface
     SmartPtr<TIfaceIface> Iface;
     Iface = this->getIfaceByID(iface);
@@ -56,14 +50,25 @@ bool TClntIfaceMgr::sendMulticast(int iface, char * msg, int msgsize)
         return false;
     }
 
-    // yes, there are. Get first of them (there should by only one anyway :)
+    // yes, there are. Get first of them.
     Iface->firstSocket();
     sock = Iface->getSocket();
 
-    // FIXME: check if send() has finished successfully
-    sock->send( (char*)msg, msgsize, new TIPv6Addr(addr), DHCPSERVER_PORT);
+    result = sock->send( (char*)msg, size, addr, DHCPSERVER_PORT);
+    if (result == -1)
+	return false;
 
     return true;
+}
+
+bool TClntIfaceMgr::sendMulticast(int iface, char * msg, int msgsize)
+{
+    // prepare address
+    char addr[16];
+    inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,addr);
+    SmartPtr<TIPv6Addr> multicastAddr = new TIPv6Addr(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,true);
+    
+    return this->sendUnicast(iface, msg, msgsize, multicastAddr);
 }
 
 

@@ -4,17 +4,19 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: DHCPConst.h,v 1.5 2004-09-03 23:20:23 thomson Exp $
+ * Released under GNU GPL v2 licence
+ *
+ * $Id: DHCPConst.h,v 1.6 2004-09-07 17:42:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.4  2004/06/04 19:03:47  thomson
  * Resolved warnings with signed/unisigned
  *
  * Revision 1.3  2004/03/29 22:06:49  thomson
  * 0.1.1 version
- *
- *
- * Released under GNU GPL v2 licence
  *
  */
 
@@ -71,7 +73,7 @@
 
 #define HOP_COUNT_LIMIT 32
 
-// opcje
+// supported options
 #define OPTION_CLIENTID 1
 #define OPTION_SERVERID 2
 #define OPTION_IA       3

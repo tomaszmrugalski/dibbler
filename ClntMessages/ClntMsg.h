@@ -1,5 +1,5 @@
-#ifndef CLNTMSG_H_
-#define CLNTMSG_H_
+#ifndef CLNTMSG_H
+#define CLNTMSG_H
 
 #include "Msg.h"
 #include "ClntIfaceMgr.h"
@@ -30,23 +30,24 @@ public:
     SmartPtr<TClntAddrMgr>   getClntAddrMgr();
     SmartPtr<TClntCfgMgr>    getClntCfgMgr();
     SmartPtr<TClntIfaceMgr>  getClntIfaceMgr();
-    
 
-    long IRT;             // Initial Retransmission Time
-    long MRT;             // Maximum Retransmission Time
-    long MRC;    // Maximum Retransmission Count
-    long MRD;    // Maximum Retransmission Duration
-    int RC;    //##iloœæ retransmisji (licznik zlicza do 0)
-    int RT;    //## timeout retransmisji (w sek.)
-    int FirstTimeStamp;    //##Stempel czasowy pierwszej transmiji wiadomoœci
-    int LastTimeStamp;    //##Stempel czasowy ostatnio wyss³anej wiadomoœci
+    virtual string getName() = 0;
 
-protected:
+    long IRT;           // Initial Retransmission Time
+    long MRT;           // Maximum Retransmission Time
+    long MRC;           // Maximum Retransmission Count
+    long MRD;           // Maximum Retransmission Duration
+    int RC;             // Retransmission counter (counts to 0)
+    int RT;             // Retransmission timeout (in seconds)
+    int FirstTimeStamp; // timestamp of the first transmission
+    int LastTimeStamp;  // timestamp of the last transmission
+
+ protected:
     SmartPtr<TClntTransMgr>  ClntTransMgr;
     SmartPtr<TClntAddrMgr>   ClntAddrMgr;
     SmartPtr<TClntCfgMgr>    ClntCfgMgr;
     SmartPtr<TClntIfaceMgr>  ClntIfaceMgr;
-private:
+ private:
     void setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 		    SmartPtr<TClntTransMgr> TransMgr, 
 		    SmartPtr<TClntCfgMgr>   CfgMgr,
