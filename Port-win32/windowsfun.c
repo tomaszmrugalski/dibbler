@@ -12,7 +12,9 @@
 #include "portable.h"
 
 time_t timer;
+
 char* ipv6Path;
+
 void displayError(int errCode)
 {
 	static char Message[1024];

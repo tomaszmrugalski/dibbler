@@ -7,7 +7,7 @@
 #include <crtdbg.h>
 #endif
 
-char* ipv6Path;
+extern "C" char* ipv6Path;
 
 TClntService::TClntService() : TWinService("DHCPv6Client","Klient DHCPv6",SERVICE_AUTO_START,"RpcSS\0tcpip6\0winmgmt\0")
 {

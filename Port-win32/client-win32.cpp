@@ -85,5 +85,5 @@ int main(int argc, char* argv[])
     //  return Client.Status.dwWin32ExitCode;
     //Client.Run();
     //clog<<logger::logInfo<<"Heap:"<<_CrtCheckMemory()<<endl;
-
+	return 0;
 }
