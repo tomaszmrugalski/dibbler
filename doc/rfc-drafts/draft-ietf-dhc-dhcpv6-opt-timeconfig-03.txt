@@ -1,0 +1,487 @@
+
+Network Working Group                                 A.K. Vijayabhaskar
+Internet-Draft                                           Hewlett-Packard
+Expires: April 16, 2004                                      15 Oct 2003
+
+
+                 Time Configuration Options for DHCPv6
+               draft-ietf-dhc-dhcpv6-opt-timeconfig-03.txt
+
+Status of this Memo
+
+   This document is an Internet-Draft and is in full conformance with
+   all provisions of Section 10 of RFC2026.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as Internet-
+   Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/ietf/1id-abstracts.txt.
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+   http://www.ietf.org/shadow.html.
+
+   This Internet-Draft will expire on April 16, 2004.
+
+Copyright Notice
+
+   Copyright (C) The Internet Society (2003).  All Rights Reserved.
+
+Abstract
+
+   This document describes the options for Time related configuration
+   information in DHCPv6: SNTP Server addresses - using which the clients
+   can synchronize their system time to that of the standard time 
+   servers; Timezone specifier - used to set the timezone of the clients.
+
+1. Introduction
+
+   This document describes the options for time related configuration 
+   information in DHCPv6 [1].
+
+2. Requirements
+
+   The keywords MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD,
+   SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL, when they appear in this
+   document, are to be interpreted as described in RFC 2119 [4]
+
+
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 1]
+
+Internet-Draft        Time Configuration Options for DHCPv6     Oct 2003
+
+3. Terminology
+
+   This document uses terminology specific to IPv6 and DHCPv6 as defined
+   in "Terminology" section of the DHCPv6 specification.
+
+4. Simple Network Time Protocol (SNTP) Servers option
+
+   The Simple Network Time Protocol Servers option provides a list of 
+   one or more IPv6 addresses of SNTP [2] servers available to the 
+   client for synchronization. The SNTP servers SHOULD be listed in 
+   the order of preference.
+
+   The format of the Simple Network Time Protocol Servers option is as 
+   shown below:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |      OPTION_SNTP_SERVERS       |        option-len            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      |                  SNTP server (IPv6 address)                   |
+      |                                                               |
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      |                  SNTP server (IPv6 address)                   |
+      |                                                               |
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                              ...                              |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+   option-code:   OPTION_SNTP_SERVERS (tbd)
+
+   option-len:  Length of the 'SNTP server'  fields in octets; It must be
+         a multiple of 16
+
+   SNTP server:    IPv6 address of SNTP server
+
+5. Timezone option
+
+   The Timezone option is used by the server to convey the timezone 
+   in which the client resides. The client is expected to set the 
+   timezone in its system on receiving this option from the server.
+
+
+
+
+
+
+
+
+
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 2]
+
+Internet-Draft        Time Configuration Options for DHCPv6     Oct 2003
+
+   The format of the Timezone option is:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |        OPTION_TIME_ZONE       |         option-len            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                            time-zone                          |
+      |                              ...                              |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   option-code:   OPTION_TIME_ZONE (tbd)
+
+   option-len: Length of the 'time-zone' field in octets
+
+   time-zone:   Time zone of the client in the NVT-ASCII string format. 
+                The format of this string is explained below:
+   
+      Std[Offset[Dst[Offset],[Start[/Time],End[/Time]]]]
+
+   where '[' and ']' enclose optional fields, '|' indicates choice
+   of exactly one of the alternatives, ',' and '/' represent literal
+   characters present in the string.
+
+   If "Offset" is specified, then the time-zone is represented in the
+   IEEE 1003.1 POSIX timezone format [3].
+
+      Std      Three or more octets for the standard timezone (Std).
+               Any character (or case) except a leading colon, digits,
+               comma, minus or plus sign is allowed. If there is no 
+               Offset followed by the Std, then the timezone is not
+               represented in IEEE 1003.1 format. In this case, the
+               Std is treated as the index to the timezone database, for 
+               example, a file name, from where additional information 
+               about the timezone may be obtained.
+
+      Offset   Indicates the value one must add to local time to
+               arrive at UTC, of the form:  [+|-]hh[:mm[:ss]].  Offset
+               following Std is required, if the timezone is represented
+               in IEEE 1003.1 POSIX timezone format. Digits are always 
+               interpreted as decimal number.  If preceded by a '-', the 
+               timezone is east of the Prime Meridian, otherwise it is 
+               west ('+' is optional) The permissible values for 
+               hh[:mm[:ss]] are as follows:
+
+                  hh       0 <= hh <= 23
+
+                  mm       0 <= mm <= 60
+                  
+		  ss       0 <= ss <= 60
+
+      Dst      Three or more octets for the daylight savings timezone.
+               If Dst is missing, then daylight savings time does not
+               apply in this locale.  If no Offset follows Dst, then
+               Dst is assumed to be one hour ahead of standard time.
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 3]
+
+Internet-Draft        Time Configuration Options for DHCPv6     Oct 2003
+
+               Any character (or case) except a leading colon, digits,
+               comma, minus or plus sign is allowed.
+
+      Start    Indicates the day of the year, in one of the formats
+               indicated below, when to change to daylight savings time.
+               The ``Time'' field (which follows immediately after a
+               ``/'' character, if present) indicates when the change is
+               made, in local time.
+
+      End      Indicates the day of the year, in one of the formats
+               indicated below, when to change back from daylight
+               savings time.  The ``Time'' field (which follows
+               immediately after a ``/'' character, if present)
+               indicates when the change is made, in local time.
+
+      Time     Time has the same format as Offset, except that no
+               leading ``-'' or ``+'' is permitted.  The default is
+               02:00:00.
+
+   The day of the year needs to be given in any of the following 
+   formats:
+
+      Jn       The julian day n, (1 <= n <= 365).  Leap days are not
+               counted.
+
+      n        Zero-based julian day, (0 <= n <= 365).  Leap days are
+               counted so it is possible to refer to Feb 29.
+
+      Mm.n.d   The ``d''th day, (0 <= d <= 6) of week ``n'' of month
+               ``m'' of the year (1 <= n <= 5, 1 <= m <= 12, where week
+               5 means last ``d'' day in month ``m'' which may occur in
+               either the fourth or the fifth week.  Week ``1'' is the
+               first week in which the ``d'' day occurs. Day ``0'' refers
+               Sunday, day ``1'' refers Monday and so on.
+
+   Examples:
+
+   i) Indian Standard Time zone is represented as:
+
+      IST-5:30
+
+   Here, ``IST'' refers the standard timezone and ``-5:30'' is the 
+   offset. `-' sign in the offset says that the timezone is 5 hours and 
+   30 minutes ahead of UTC. Absence of ``Dst'' says that daylight savings
+   doesn't apply to this locale.
+
+   ii) For Eastern USA time zone, 1986, the timezone string is as shown 
+   below:
+
+      EST5EDT4,116/02:00:00,298/02:00:00
+
+
+
+
+
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 4]
+
+Internet-Draft        Time Configuration Options for DHCPv6     Oct 2003
+
+   It says:
+
+   The standard time zone is in 5 hours behind UTC. The Daylight Savings 
+   Timezone is 4 hours behind UTC. Day light savings starts at 116 day, 
+   i.e., April 27 02:00 AM standard time and ends at 298th day, i.e., 
+   October 26 02:00 AM daylight time.
+
+      It can also represented as:
+      
+      EST5EDT,116/02:00:00,298/02:00:00
+    
+    Since no offset follows the ``Dst'', daylight savings time is 1 hour 
+    ahead of standard time, thus, it is 4 hours behind UTC.
+
+    iii) Representing ii) in the non POSIX standard way is:
+
+       America/New-York
+
+     It says that the locale belongs to New-York timezone in America, 
+     which will be used as the index in to a timezone database to get 
+     more information of the timezone.
+
+6. Usage of Timezone option
+
+     The Timezone option has the flexibility of providing timezone 
+     information in formats other than POSIX timezone, because 
+     some vendor specific databases can provide more information than 
+     POSIX Timezone string. The server SHOULD be configurable to send any 
+     of the format specified in Section 5.
+
+     The timezone option can be used along with the Vendor Class 
+     Option [1] to make sure that the client and server agree upon the 
+     meaning of the string. For example, the clients running in different
+     OS expect the string in different formats. Here, the Vendor Class 
+     Option [1] sent by clients can be used by the server to distinguish 
+     between the clients to return the proper timezone string.
+
+     If the client is not able to interpret the timezone option sent 
+     by the server, then it SHOULD ignore the option. It MAY contact 
+     alternative DHCPv6 servers to obtain the timezone information.
+
+
+7. Appearance of these options
+
+   The SNTP servers and Timezone options MUST NOT appear in other than
+   the following messages: Solicit, Advertise, Request, Renew, Rebind,
+   Information-Request and Reply.
+
+   The option number for these options MAY appear in the Option Request
+   Option [1] in the following messages: Solicit, Request, Renew, Rebind,
+   Information-Request and Reconfigure.
+
+
+
+
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 5]
+
+Internet-Draft        Time Configuration Options for DHCPv6     Oct 2003
+
+8. Security Considerations
+
+   The SNTP servers option may be used by an intruder DHCPv6 server to
+   cause DHCPv6 clients to contact a rogue SNTP server, resulting in 
+   invalid synchronization of time in client and finally leading to
+   time critical applications running inaccurately in client machine.
+   The time accuracy can be crucial to some security algorithms. For 
+   example, it may cause expired certificates to gain a new life, making
+   the applications running on the client machine less secure. It can 
+   even cause clients to set their time incorrectly, making them 
+   vulnerable to replay attacks in protocols that use time stamps to 
+   detect replays.
+
+   The Timezone option may be used by an intruder DHCPv6 server to 
+   assign invalid time zones, leading to timing issues for the 
+   applications running on the client machine. For example, because of 
+   wrongly configured timezone, there is a possibility that some critical
+   applications, which are supposed to start at a particular time don't 
+   get started at that time. A delayed start of OS security update will
+   leave the client's machine vulnerable to security attacks.
+
+   To avoid attacks through these options, the DHCPv6 client SHOULD use 
+   authenticated DHCPv6 (see "Authentication of DHCP messages" section
+   in the DHCPv6 specification [1]).
+
+9. IANA Considerations
+
+   IANA is requested to assign an option code to the following options 
+   from the option-code space defined in "DHCPv6 Options" section of the
+   DHCPv6 specification [1].
+
+   Option Name	       Value	Described in
+   OPTION_SNTP_SERVERS   tbd	 Section 4.
+   OPTION_TIME_ZONE     tbd	 Section 5.
+
+
+
+10. Normative References
+
+   [1]  Bound, J., Carney, M., Perkins, C., Lemon, T., Volz, B. and R.
+        Droms (ed.), "Dynamic Host Configuration Protocol for IPv6
+        (DHCPv6)", RFC 3315, July 2003.
+
+11. Informative References
+
+   [2]  D. Mills.  Simple Network Time Protocol (SNTP) Version 4 for
+        IPv4, IPv6 and OSI.  Request for Comments (Informational) 2030,
+        Internet Engineering Task Force, October 1996.
+
+   [3]  IEEE, "1003.1 POSIX Timezone Specification", 1988.
+
+   [4]  Bradner, S., "Key words for use in RFCs to Indicate Requirement
+        Levels", BCP 14, RFC 2119, March 1997.
+
+
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 6]
+
+Internet-Draft        Time Configuration Options for DHCPv6     Oct 2003
+
+
+Author's Addresses
+
+   Vijayabhaskar A K
+   Hewlett-Packard STSD-I
+   29, Cunningham Road
+   Bangalore - 560052
+   India
+
+   Phone: +91-80-2053085
+   E-Mail: vijayak@india.hp.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 7]
+
+Internet-Draft        Time Configuration Options for DHCPv6     Oct 2003
+
+Full Copyright Statement
+
+   Copyright (C) The Internet Society (2003).  All Rights Reserved.
+
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the Internet Society or other
+   Internet organizations, except as needed for the purpose of
+   developing Internet standards in which case the procedures for
+   copyrights defined in the Internet Standards process must be
+   followed, or as required to translate it into languages other than
+   English.
+
+   The limited permissions granted above are perpetual and will not be
+   revoked by the Internet Society or its successors or assigns.
+
+   This document and the information contained herein is provided on an
+   "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
+   TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+Acknowledgement
+
+   Funding for the RFC Editor function is currently provided by the
+   Internet Society. Thanks to the DHC Working Group for their time and 
+   input into the specification. In particular, thanks to (in 
+   alphabetical order) Bernie Volz, Jim Bound, Margaret Wasserman, Ralph
+   Droms, Robert Elz and Thomas Narten for their thorough review. Special
+   thanks to Robert Elz for his suggestions and help in making this 
+   document more readable. Thanks to Mike Carney for his abstract 
+   on Timezone option.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Vijayabhaskar A K               Expires April 16, 2004          [Page 8]
+

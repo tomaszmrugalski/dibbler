@@ -1,0 +1,507 @@
+
+
+
+
+
+
+Network Working Group                                           R. Droms
+Request for Comments: 3736                                 Cisco Systems
+Category: Standards Track                                     April 2004
+
+
+ Stateless Dynamic Host Configuration Protocol (DHCP) Service for IPv6
+
+Status of this Memo
+
+   This document specifies an Internet standards track protocol for the
+   Internet community, and requests discussion and suggestions for
+   improvements.  Please refer to the current edition of the "Internet
+   Official Protocol Standards" (STD 1) for the standardization state
+   and status of this protocol.  Distribution of this memo is unlimited.
+
+Copyright Notice
+
+   Copyright (C) The Internet Society (2004).  All Rights Reserved.
+
+Abstract
+
+   Stateless Dynamic Host Configuration Protocol service for IPv6
+   (DHCPv6) is used by nodes to obtain configuration information, such
+   as the addresses of DNS recursive name servers, that does not require
+   the maintenance of any dynamic state for individual clients.  A node
+   that uses stateless DHCP must have obtained its IPv6 addresses
+   through some other mechanism, typically stateless address
+   autoconfiguration.  This document explains which parts of RFC 3315
+   must be implemented in each of the different kinds of DHCP agents so
+   that agent can support stateless DHCP.
+
+1.  Introduction
+
+   Nodes that have obtained IPv6 addresses through some other mechanism,
+   such as stateless address autoconfiguration [6] or manual
+   configuration, can use stateless DHCP to obtain other configuration
+   information such as a list of DNS recursive name servers or SIP
+   servers.  A stateless DHCP server provides only configuration
+   information to nodes and does not perform any address assignment.
+   Such a server is called "stateless" because it need not maintain any
+   dynamic state for individual clients.
+
+   While the DHCP specification [1] defines more than 10 protocol
+   messages and 20 options, only a subset of those messages and options
+   are required for stateless DHCP service.  This document explains
+   which messages and options defined in RFC 3315 are required for
+   stateless DHCP service.  The intended use of the document is to guide
+
+
+
+
+Droms                       Standards Track                     [Page 1]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+   the interoperable implementation of clients and servers that use
+   stateless DHCP service.
+
+   The operation of relay agents is the same for stateless and stateful
+   DHCP service.  The operation of relay agents is described in the DHCP
+   specification.
+
+   Section 4 of this document lists the sections of the DHCP document
+   that an implementor should read for an overview of the DHCP
+   specification and the basic requirements of a DHCP service.  Section
+   5 lists the specific messages and options that are specifically
+   required for stateless DHCP service.  Section 6 describes how
+   stateless and stateful DHCP servers interact to provide service to
+   clients that require address assignment and clients that require only
+   stateless service.
+
+2.  Terminology
+
+   Throughout this document, "DHCP" refers to DHCP for IPv6.
+
+   This document uses the terminology defined in RFC 2460 [2], the DHCP
+   specification [1], and the DHCP DNS configuration options
+   specification [3].
+
+   "Stateless DHCP" refers to the use of DHCP to provide configuration
+   information to clients that does not require the server to maintain
+   dynamic state about the DHCP clients.
+
+3.  Overview
+
+   This document assumes that a node using stateless DHCP configuration
+   is not using DHCP for address assignment, and that a node has
+   determined at least a link-local address as described in section 5.3
+   of RFC 2461 [4].
+
+   To obtain configuration parameters through stateless DHCP, a node
+   uses the DHCP Information-request message.  DHCP servers respond to
+   the node's message with a Reply message that carries configuration
+   parameters for the node.  The Reply message from the server can carry
+   configuration information, such as a list of DNS recursive name
+   servers [3] and SIP servers [5].
+
+   This document does not apply to the function of DHCP relay agents as
+   described in RFC 3315.  A network element can provide both DHCP
+   server and DHCP relay service.  For example, a network element can
+   provide stateless DHCP service to hosts requesting stateless DHCP
+   service, while relaying messages from hosts requesting address
+   assignment through DHCP to another DHCP server.
+
+
+
+Droms                       Standards Track                     [Page 2]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+4.  Basic Requirements for Implementation of DHCP
+
+   Several sections of the DHCP specification provide background
+   information or define parts of the specification that are common to
+   all implementations:
+
+   1-4:   give an introduction to DHCP and an overview of DHCP message
+          flows
+
+   5:     defines constants used throughout the protocol specification
+
+   6, 7:  illustrate the format of DHCP messages
+
+   8:     describes the representation of Domain Names
+
+   9:     defines the "DHCP unique identifier" (DUID)
+
+   13-16: describe DHCP message transmission, retransmission, and
+          validation
+
+   21:    describes authentication for DHCP
+
+5.  Implementation of Stateless DHCP
+
+   The client indicates that it is requesting configuration information
+   by sending an Information-request message that includes an Option
+   Request option specifying the options that it wishes to receive from
+   the DHCP server.  For example, if the client is attempting to obtain
+   a list of DNS recursive name servers, it identifies the DNS Recursive
+   Name Server option in the Information-request message.  The server
+   determines the appropriate configuration parameters for the client
+   based on its configuration policies and responds with a Reply message
+   containing the requested parameters.  In this example, the server
+   would respond with DNS configuration parameters.
+
+   As described in section 18.1.5 of RFC 3315, a node may include a
+   Client Identifier option in the Information-request message to
+   identify itself to a server, because the server administrator may
+   want to customize the server's response to each node, based on the
+   node's identity.
+
+   RFC 3315 does not define any mechanisms through which the time at
+   which a host uses an Information-request message to obtain updated
+   configuration parameters can be controlled.  The DHC WG has
+   undertaken the development of such a mechanism or mechanisms which
+   will be published as Standards-track RFC(s).
+
+
+
+
+
+Droms                       Standards Track                     [Page 3]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+   RFC 3315 also does not provide any guidance about when a host might
+   use an Information-request message to obtain updated configuration
+   parameters when the host has moved to a new link.  The DHC WG is
+   reviewing a related document, "Detection of Network Attachment (DNA)
+   in IPv4" [8], which describes how a host using IPv4 can determine
+   when to use DHCPv4.  Either the DHC WG or a WG formed from the DNA
+   BOF will undertake development of a similar document for IPv6.
+
+5.1.  Messages Required for Stateless DHCP Service
+
+   Clients and servers implement the following messages for stateless
+   DHCP service; the section numbers in this list refer to the DHCP
+   specification:
+
+   Information-request: sent by a DHCP client to a server to request
+                        configuration parameters (sections 18.1.5 and
+                        18.2.5)
+
+   Reply:               sent by a DHCP server to a client containing
+                        configuration parameters (sections 18.2.6 and
+                        18.2.8)
+
+   In addition, servers and relay agents implement the following
+   messages for stateless DHCP service; the section numbers in this list
+   refer to the DHCP specification:
+
+   Relay-forward: sent by a DHCP relay agent to carry the client message
+                  to a server (section 15.13)
+
+   Relay-reply:   sent by a DHCP server to carry a response message to
+                  the relay agent (section 15.14)
+
+5.2.  Options Required for Stateless DHCP Service
+
+   Clients and servers implement the following options for stateless
+   DHCP service; the section numbers in this list refer to the DHCP
+   specification:
+
+   Option Request:    specifies the configuration information that the
+                      client is requesting from the server (section
+                      22.7)
+
+   Status Code:       used to indicate completion status or other status
+                      information (section 22.13)
+
+   Server Identifier: used to identify the server responding to a client
+                      request (section 22.3)
+
+
+
+
+Droms                       Standards Track                     [Page 4]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+   Servers and relay agents implement the following options for
+   stateless DHCP service; the section numbers in this list refer to the
+   DHCP specification:
+
+   Client message: sent by a DHCP relay agent in a Relay-forward message
+                   to carry the client message to a server (section 20)
+
+   Server message: sent by a DHCP server in a Relay-reply message to
+                   carry a response message to the relay agent (section
+                   20)
+
+   Interface-ID:   sent by the DHCP relay agent and returned by the
+                   server to identify the interface to be used when
+                   forwarding a message to the client (section 22.18)
+
+5.3.  Options Used for Configuration Information
+
+   Clients and servers use the following options to pass configuration
+   information to clients; note that other options for configuration
+   information may be specified in future Internet Standards:
+
+   DNS Recursive Name Servers: specifies the DNS recursive name servers
+                               [7] the client uses for name resolution;
+                               see "DNS Configuration options for
+                               DHCPv6" [3]
+
+   DNS search list:            specifies the domain names to be searched
+                               during name resolution; see "DNS
+                               Configuration options for DHCPv6" [3]
+
+   SIP Servers:                specifies the SIP servers the client uses
+                               to obtain a list of domain names of IPv6
+                               addresses that can be mapped to one or
+                               more SIP outbound proxy servers [5]
+
+5.4.  Other Options Used in Stateless DHCP
+
+   Clients and servers may implement the following options for stateless
+   DHCP service; the section numbers in this list refer to the DHCP
+   specification:
+
+   Preference:     sent by a DHCP server to indicate the preference
+                   level for the server (section 22.8)
+
+   Elapsed time:   sent by a DHCP client to indicate the time since the
+                   client began the DHCP configuration process (section
+                   22.9)
+
+
+
+
+Droms                       Standards Track                     [Page 5]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+   User Class:     sent by a DHCP client to give additional information
+                   to the server for selecting configuration parameters
+                   for the client (section 22.15)
+
+   Vendor Class:   sent by a DHCP client to give additional information
+                   about the client vendor and hardware to the server
+                   for selecting configuration parameters for the client
+                   (section 22.16)
+
+   Vendor-specific Information: used to pass information to clients in
+                                options defined by vendors (section
+                                22.17)
+
+   Client Identifier: sent by a DHCP client to identify itself (section
+                      22.2).  Clients are not required to send this
+                      option; servers send the option back if included
+                      in a message from a client
+
+   Authentication: used to provide authentication of DHCP messages
+                   (section 21)
+
+6.  Interaction with DHCP for Address Assignment
+
+   In some networks, there may be both clients that are using stateless
+   address autoconfiguration and DHCP for DNS configuration and clients
+   that are using DHCP for stateful address configuration.  Depending on
+   the deployment and configuration of relay agents, DHCP servers that
+   are intended only for stateless configuration may receive messages
+   from clients that are performing stateful address configuration.
+
+   A DHCP server that is only able to provide stateless configuration
+   information through an Information-request/Reply message exchange
+   discards any other DHCP messages it receives.  Specifically, the
+   server discards any messages other than Information-Request or
+   Relay-forward it receives, and the server does not participate in any
+   stateful address configuration message exchanges.  If there are other
+   DHCP servers that are configured to provide stateful address
+   assignment, one of those servers will provide the address assignment.
+
+7.  Security Considerations
+
+   Stateless DHCP service is a proper subset of the DHCP service
+   described in the DHCP specification, RFC 3315 [1].  Therefore,
+   stateless DHCP service introduces no additional security
+   considerations beyond those discussed in sections 21, 22.11, and 23
+   of the DHCP specification [1].
+
+
+
+
+
+Droms                       Standards Track                     [Page 6]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+   Configuration information provided to a node through stateless DHCP
+   service may be used to mount spoofing, man-in-the-middle, denial-of-
+   service, and other attacks.  These attacks are described in more
+   detail in the specifications for each of the options that carry
+   configuration information.  Authenticated DHCP, as described in
+   sections 21 and 22.11 of the DHCP specification [1], can be used to
+   avoid attacks mounted through the stateless DHCP service.
+
+8.  Acknowledgments
+
+   Jim Bound, Ted Lemon, and Bernie Volz reviewed this document and
+   contributed editorial suggestions.  Thanks to Peter Barany, Tim
+   Chown, Christian Huitema, Tatuya Jinmei, Pekka Savola, and Juha
+   Wiljakka for their review and comments.
+
+9.  References
+
+9.1.  Normative References
+
+   [1] Droms, R., Ed., Bound, J., Volz, B., Lemon, T., Perkins, C. and
+       M. Carney, "Dynamic Host Configuration Protocol for IPv6
+       (DHCPv6)", RFC 3315, July 2003.
+
+   [2] Deering, S. and R. Hinden, "Internet Protocol, Version 6 (IPv6)
+       Specification", RFC 2460, December 1998.
+
+9.2.  Informative References
+
+   [3] Droms, R., Ed., "DNS Configuration options for Dynamic Host
+       Configuration Protocol for IPv6 (DHCPv6)", RFC 3646, December
+       2003.
+
+   [4] Narten, T., Nordmark, E. and W. Simpson, "Neighbor Discovery for
+       IP Version 6 (IPv6)", RFC 2461, December 1998.
+
+   [5] Schulzrinne, H. and B. Volz, "Dynamic Host Configuration Protocol
+       (DHCPv6) Options for Session Initiation Protocol (SIP) Servers",
+       RFC 3319, July 2003.
+
+   [6] Thomson, S. and T. Narten, "IPv6 Stateless Address
+       Autoconfiguration", RFC 2462, December 1998.
+
+   [7] Mockapetris, P., "Domain names - concepts and facilities", STD
+       13, RFC 1034, November 1987.
+
+   [8] Aboba, B., "Detection of Network Attachment (DNA) in IPv4", Work
+       in Progress.
+
+
+
+
+Droms                       Standards Track                     [Page 7]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+10.  Author's Address
+
+   Ralph Droms
+   Cisco Systems
+   1414 Massachusetts Avenue
+   Boxborough, MA  01719
+   USA
+
+   Phone: +1 978 497 4733
+   EMail: rdroms@cisco.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Droms                       Standards Track                     [Page 8]
+
+RFC 3736            Stateless DHCP Service for IPv6           April 2004
+
+
+11.  Full Copyright Statement
+
+   Copyright (C) The Internet Society (2004).  This document is subject
+   to the rights, licenses and restrictions contained in BCP 78 and
+   except as set forth therein, the authors retain all their rights.
+
+   This document and the information contained herein are provided on an
+   "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE
+   REPRESENTS OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE
+   INTERNET ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF
+   THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+   WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+Intellectual Property
+
+   The IETF takes no position regarding the validity or scope of any
+   Intellectual Property Rights or other rights that might be claimed
+   to pertain to the implementation or use of the technology
+   described in this document or the extent to which any license
+   under such rights might or might not be available; nor does it
+   represent that it has made any independent effort to identify any
+   such rights.  Information on the procedures with respect to
+   rights in RFC documents can be found in BCP 78 and BCP 79.
+
+   Copies of IPR disclosures made to the IETF Secretariat and any
+   assurances of licenses to be made available, or the result of an
+   attempt made to obtain a general license or permission for the use
+   of such proprietary rights by implementers or users of this
+   specification can be obtained from the IETF on-line IPR repository
+   at http://www.ietf.org/ipr.
+
+   The IETF invites any interested party to bring to its attention
+   any copyrights, patents or patent applications, or other
+   proprietary rights that may cover technology that may be required
+   to implement this standard.  Please address the information to the
+   IETF at ietf-ipr@ietf.org.
+
+Acknowledgement
+
+   Funding for the RFC Editor function is currently provided by the
+   Internet Society.
+
+
+
+
+
+
+
+
+
+Droms                       Standards Track                     [Page 9]
+

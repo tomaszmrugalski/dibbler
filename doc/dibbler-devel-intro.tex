@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-intro.tex,v 1.2 2004-11-25 01:16:36 thomson Exp $
+%% $Id: dibbler-devel-intro.tex,v 1.3 2004-11-28 11:14:07 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.2  2004/11/25 01:16:36  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.1  2004/07/05 01:04:40  thomson
 %% Initial version.
 %%
@@ -21,3 +24,23 @@ and client. Detailed description of the internal architecture is also
 provided. People with programming background can find useful
 informations here. Main purpose of this document is to help
 contributors to quickly know Dibbler from the inside.
+
+This document is intenteded just as its title states -- a guide. It is
+not a thorough code description. To quickly wander around classes and
+methods used, see documentation generated with the Doxygen tool (open
+file \verb+doc/html/index.html+).
+
+\section{Option values}
+\A DHCPv6 is a relatively new protocol and additional options are in a
+specification phase. It means that until standarisation process is
+over, they do not have any officially assigned numbers. Once
+standarization process is over (and RFC document is released), this
+option gets an official number. 
+
+There's pretty good chance that different implementors may choose
+diffrent values for those not-yet officialy accepted options. To
+change those values in Dibbler, you have to modify file
+misc/DHCPConst.h and recompile server or client. Make sure that you
+build everything for scratch. Use \verb+make clean+ in Linux and
+\verb+Clean up solution+ in Windows before you start building a new
+version.

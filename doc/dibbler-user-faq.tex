@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-faq.tex,v 1.3 2004-10-25 20:45:54 thomson Exp $
+%% $Id: dibbler-user-faq.tex,v 1.4 2004-11-28 11:14:07 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.3  2004/10/25 20:45:54  thomson
+%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
+%%
 %% Revision 1.2  2004/06/19 10:24:59  thomson
 %% Hyperlinks in PDF, building process modified
 %%
@@ -18,10 +21,42 @@ users. Some of them were common enough to get into this section.
 I cannot e.g. ping other hosts?
 
 \A It's rather difficult problem. DHCP's job is to obtain address and
-it exactly does that. To ping any other host, there should be routing
-specified. And this should be done using Router Advertisements. It's
+it exactly does that. To ping any other host, routing should be 
+configured. And this should be done using Router Advertisements. It's
 kinda odd, but that's the way it was meant to work. If there will be
 requests from users, I'll think about some enchancements.
+
+\Q Dibbler sends some options which have values not recognized by the
+Ethereal or by other implementations. What's wrong?
+
+\A DHCPv6 is a relatively new protocol and additional options are in a
+specification phase. It means that until standarisation process is
+over, they do not have any officially assigned numbers. Once
+standarization process is over (and RFC document is released), this
+option gets an official number. 
+
+There's pretty good chance that different implementors may choose
+diffrent values for those not-yet officialy accepted options. To
+change those values in Dibbler, you have to modify file
+misc/DHCPConst.h and recompile server or client. See Developer's
+Guide, section \emph{Option Values} for details.
+
+Currently options with assigned values are: RFC3315: \opt{CLIENT\_ID},
+\opt{SERVER\_ID}, \opt{IA_NA}, \opt{IAADDR}, \opt{OPTION\_REQUEST},
+\opt{PREFERENCE}, \opt{ELAPSED}, \opt{STATUS\_CODE},
+\opt{RAPID-COMMIT}, \opt{IA\_TA}, \opt{RELAY\_MSG}, \opt{AUTH\_MSG},
+\opt{USER\_CLASS}, \opt{VENDOR\_CLASS}, \opt{VENDOR\_OPTS},
+\opt{INTERFACE\_ID}, \opt{RECONF\_MSG}, \opt{RECONF\_ACCEPT}; RFC3319:
+\opt{SIP\_SERVERS}, \opt{SIP\_DOMAINS}; RFC3646: \opt{DNS\_RESOLVERS},
+\opt{DOMAIN\_LIST}; RFC3633: \opt{IA\_PD}, \opt{IA\_PREFIX}; RFC3898:
+\opt{NIS\_SERVERS}, \opt{NIS+\_SERVERS}, \opt{NIS\_DOMAIN},
+\opt{NIS+\_DOMAIN}. Take note that Dibbler does not support all of
+them.
+
+There are several options which currently does not have values
+assigned (in parenthesis are numbers used in Dibbler):
+\opt{NTP\_SERVERS} (40), \opt{TIME\_ZONE} (41), \opt{LIFETIME} (42),
+\opt{FQDN} (43).
 
 \subsection{Linux specific}
 

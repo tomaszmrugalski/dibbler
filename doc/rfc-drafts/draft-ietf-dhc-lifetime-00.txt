@@ -1,0 +1,282 @@
+
+
+
+
+
+
+Internet Engineering Task Force                                S. Venaas
+Internet Draft                                                   UNINETT
+Expiration Date: September 2004
+                                                                T. Chown
+                                               University of Southampton
+
+                                                              March 2004
+
+
+                       Lifetime Option for DHCPv6
+
+                     draft-ietf-dhc-lifetime-00.txt
+
+Status of this Memo
+
+   This document is an Internet-Draft and is subject to all provisions
+   of Section 10 of RFC2026.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as Internet-
+   Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/ietf/1id-abstracts.txt.
+
+   To view the list Internet-Draft Shadow Directories, see
+   http://www.ietf.org/shadow.html.
+
+Abstract
+
+   This document describes an option for specifying a lifetime for other
+   DHCPv6 configuration options.  It's mainly intended for the stateless
+   DHCPv6, but also useful when there are no addresses or other entities
+   with lifetimes that can tell the client when to contact the DHCP
+   server to update its configuration.
+
+
+
+
+
+
+
+
+
+
+Venaas & Chown          [Expires September 2004]                [Page 1]
+
+Internet Draft       draft-ietf-dhc-lifetime-00.txt           March 2004
+
+
+Table of Contents
+
+   1.  Introduction  ...............................................   2
+   2.  Terminology  ................................................   3
+   3.  Lifetime option definition  .................................   3
+     3.1.  Client behaviour  .......................................   3
+     3.2.  Server behaviour  .......................................   4
+     3.3.  Option format  ..........................................   4
+   4.  IANA Considerations  ........................................   4
+   5.  Acknowledgments  ............................................   4
+   6.  Security Considerations  ....................................   5
+   7.  References  .................................................   5
+     7.1.  Normative References  ...................................   5
+     7.2.  Informative References  .................................   5
+   Authors' Addresses  .............................................   5
+
+
+
+
+1. Introduction
+
+   DHCPv6 [RFC 3315] has been defined for IPv6 hosts wishing to use
+   stateful autoconfiguration.  However, many hosts will use stateless
+   autoconfiguration as specified in [RFC 2462] for address assignment,
+   and use DHCPv6 only for other configuration data.  This other
+   configuration data will typically have no associated lifetime, hence
+   there may be no information telling a host when to update its DHCP
+   configuration data.
+
+   This option may be useful in unstable environments where unexpected
+   changes are likely to occur, or for planned changes, including
+   renumbering where an administrator can gradually decrease the value
+   as the event nears.
+
+   It may also be useful to allow the client to detect within an
+   appropriate time when a specific service change has been made, e.g.
+   the addition of a new NTP server, or a change of address of a DNS
+   server within the local network.  See [RENUMREQS] for further
+   details.
+
+
+
+
+
+
+
+
+
+
+
+
+Venaas & Chown          [Expires September 2004]                [Page 2]
+
+Internet Draft       draft-ietf-dhc-lifetime-00.txt           March 2004
+
+
+2. Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in BCP 14, RFC 2119 [RFC
+   2119].
+
+
+3. Lifetime option definition
+
+   The lifetime option specifies a lifetime for all configuration data
+   contained in other options in an advertise or reply message that have
+   no associated lifetime.  This means that it does not effect e.g. the
+   IA Address option which contains a lifetime.
+
+
+3.1. Client behaviour
+
+   A client supporting this option MAY include it in the Option Request
+   Option (ORO) when sending messages to the DHCP server that allows ORO
+   to be included.
+
+   If client has received a lifetime with this option, and contacts
+   server to receive new or update any existing data prior to its
+   expiration, it SHOULD also update data covered by this option.  If no
+   new lifetime is received, it MUST behave as if no value was ever
+   provided.
+
+   When the client detects that the lifetime has expired, it must do as
+   follows.
+
+   First it MUST ignore or remove the existing lifetime value.  If it
+   does not receive a new value in a later request, it MUST behave as if
+   no value was ever provided.
+
+   Next it MUST wait for a random amount of time between 0 and
+   INF_MAX_DELAY.  INF_MAX_DELAY is defined in [RFC 3315].
+
+   Finally it must make a new DHCP request, updating the current
+   configuration.  This request will usually be an Information-request
+   Message.  If client fails to receive a valid response from a server,
+   it MUST retransmit the message according to the retransmission rules
+   specified in [RFC 3315].
+
+   If the update fails, the current configuration must be kept as if no
+   lifetime was ever provided.
+
+
+
+
+
+Venaas & Chown          [Expires September 2004]                [Page 3]
+
+Internet Draft       draft-ietf-dhc-lifetime-00.txt           March 2004
+
+
+3.2. Server behaviour
+
+   A server sending an Advertise or Reply message containing options,
+   SHOULD include this option if requested by client, or if none of the
+   options contained in the message have associated lifetimes.  The
+   option MAY also be used in other cases when server sends Advertise or
+   Reply messages.  It MUST not be used when server sends other types of
+   messages.
+
+
+3.3. Option format
+
+   The format of the Lifetime option is:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |       OPTION_LIFETIME         |           option-len          |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                           lifetime                            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      option-code: OPTION_LIFETIME (to be decided)
+
+      option-len:  4
+
+      lifetime:    lifetime in seconds
+
+
+4. IANA Considerations
+
+   IANA is requested to assign an option code to the lifetime option
+   from the DHCP option-code space defined in section "IANA
+   Considerations" of RFC 3315.
+
+
+5. Acknowledgments
+
+   The authors thank Mat Ford, A.K. Vijayabhaskar and Bernie Volz for
+   valuable discussions and comments.
+
+
+
+
+
+
+
+
+
+
+
+Venaas & Chown          [Expires September 2004]                [Page 4]
+
+Internet Draft       draft-ietf-dhc-lifetime-00.txt           March 2004
+
+
+6. Security Considerations
+
+   An attacker could send a fake DHCP reply with a very low lifetime
+   value.  This could make a client request new data almost immediately.
+   The value is however not kept when the next request is made.
+
+
+7. References
+
+7.1. Normative References
+
+   [RFC 2119]  Bradner, S., "Key words for use in RFCs to Indicate
+               Requirement Levels", BCP 14, RFC 2119, March 1997.
+
+   [RFC 2462]  S. Thomson, T. Narten, "IPv6 Stateless Address
+               Autoconfiguration", RFC 2462, December 1998.
+
+   [RFC 3315]  R. Droms, Ed., J. Bound, B. Volz, T. Lemon, C. Perkins,
+               M. Carney, "Dynamic Host Configuration Protocol for IPv6
+               (DHCPv6)", RFC 3315, July 2003.
+
+7.2. Informative References
+
+   [RENUMREQS] T. Chown, S. Venaas, A.K. Vijayabhaskar, "Renumbering
+               Requirements for Stateless DHCPv6", work-in-progress,
+               draft-chown-dhc-stateless-dhcpv6-renumbering-00,
+               November 2003.
+
+Authors' Addresses
+
+   Stig Venaas
+   UNINETT
+   NO-7465 Trondheim, Norway
+   Email: venaas@uninett.no
+
+   Tim Chown
+   University of Southampton
+   School of Electronics and Computer Science
+   Southampton, Hampshire  SO17 1BJ
+   United Kingdom
+   EMail: tjc@ecs.soton.ac.uk
+
+
+
+
+
+
+
+
+
+
+Venaas & Chown          [Expires September 2004]                [Page 5]

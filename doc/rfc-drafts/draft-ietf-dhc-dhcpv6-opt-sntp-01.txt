@@ -1,0 +1,355 @@
+Network Working Group                                  V. Kalusivalingam
+Internet-Draft                     Cisco Systems (India) Private Limited
+Category: Standards Track                                   October 2004
+
+
+      Simple Network Time Protocol Configuration Option for DHCPv6
+                   draft-ietf-dhc-dhcpv6-opt-sntp-01
+
+
+Status of this Memo
+
+
+   This document is an Internet-Draft and is subject to all provisions
+   of section 3 of RFC 3667.  By submitting this Internet-Draft, each
+   author represents that any applicable patent or other IPR claims of
+   which he or she is aware have been or will be disclosed, and any of
+   which he or she become aware will be disclosed, in accordance with
+   RFC 3668.
+
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as
+   Internet-Drafts.
+
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/ietf/1id-abstracts.txt.
+
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+   http://www.ietf.org/shadow.html.
+
+
+   This Internet-Draft will expire on April 2005.
+
+
+Copyright Notice
+
+
+   Copyright (C) The Internet Society (2004). All Rights Reserved.
+
+
+Abstract
+
+
+   This document describes a new DHCPv6 option for passing a list of
+   Simple Network Time Protocol (SNTP) server addresses to a client. 
+
+
+1. Introduction
+
+
+   This document describes a new option called SNTP [3] servers Option
+   for passing information about SNTP servers in DHCPv6 [1].
+
+
+2. Requirements
+
+
+   The keywords MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD,
+   SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL, when they appear in this
+   document, are to be interpreted as described in RFC 2119 [2].
+   
+   
+
+
+
+Vijay                           Expires Apr, 2005                [Page 1]
+Internet-Draft            SNTP Configuration Option for DHCPv6   Oct 2004
+
+
+3. Terminology
+
+
+   This document uses terminology specific to IPv6 and DHCPv6 as defined
+   in "Terminology" section of the DHCPv6 specification [1].
+
+
+4. Simple Network Time Protocol (SNTP) Servers option
+
+
+   The Simple Network Time Protocol Servers option provides a list of 
+   one or more IPv6 addresses of SNTP [3] servers available to the 
+   client for synchronization. The clients use these SNTP servers to
+   synchronize their system time to that of the standard time servers. 
+   Clients MUST treat the list of SNTP servers as an ordered list. The 
+   server MAY list the SNTP servers in the order of preference. 
+   
+   The option defined in this document can only be used to configure
+   information about SNTP servers that can be reached using IPv6. The
+   DHCP option to configure information about IPv4 SNTP servers can be
+   found in RFC 2132 [4]. Mechanisms for configuring IPv4/IPv6 dual-
+   stack applications are being considered, but are not specified in
+   this document.
+
+
+   The format of the Simple Network Time Protocol Servers option is as 
+   shown below:
+
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |      OPTION_SNTP_SERVERS       |        option-len            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      |                  SNTP server (IPv6 address)                   |
+      |                                                               |
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      |                  SNTP server (IPv6 address)                   |
+      |                                                               |
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                              ...                              |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+   option-code:   OPTION_SNTP_SERVERS (tbd)
+
+
+   option-len:  Length of the 'SNTP server'  fields in octets; It must be
+         a multiple of 16
+
+
+   SNTP server:    IPv6 address of SNTP server
+
+
+5. Appearance of this option
+
+
+   The SNTP servers option MUST NOT appear in other than the following
+   messages:  Solicit, Advertise, Request, Renew, Rebind,
+   Information-Request and Reply. If this option appears in other than the 
+
+
+
+Vijay                           Expires Apr, 2005                [Page 2]
+Internet-Draft            SNTP Configuration Option for DHCPv6   Oct 2004
+
+
+   messages specified above, the receiver SHOULD ignore the option.
+   
+   The option number for this option MAY appear in the Option Request
+   Option [1] in the following messages:  Solicit, Request, Renew,
+   Rebind, Information-Request and Reconfigure. If this option number appear
+   in the Option Request Option in other than the messages specified above, 
+   the receiver SHOULD ignore the option number.
+
+
+6. Security Considerations
+
+
+   The SNTP servers option may be used by an intruder DHCPv6 server to
+   cause DHCPv6 clients to contact a rogue SNTP server, resulting in 
+   invalid synchronization of time in client and finally leading to
+   time critical applications running inaccurately in client machine.
+   The time accuracy can be crucial to some security algorithms. For 
+   example, it may cause expired certificates to gain a new life, making
+   the applications running on the client machine less secure. It can 
+   even cause clients to set their time incorrectly, making them 
+   vulnerable to replay attacks in protocols that use time stamps to 
+   detect replays.
+
+
+   To avoid attacks through these options, the DHCPv6 client SHOULD use 
+   authenticated DHCPv6 (see "Authentication of DHCP messages" section
+   in the DHCPv6 specification [1]).
+
+
+7. IANA Considerations
+
+
+   IANA is requested to assign an option code to the following options 
+   from the option-code space defined in "DHCPv6 Options" section of the
+   DHCPv6 specification [1].
+
+
+   Option Name         Value    Described in
+   OPTION_SNTP_SERVERS   tbd     Section 4.
+
+
+8. Normative References
+
+
+   [1]  Bound, J., Carney, M., Perkins, C., Lemon, T., Volz, B. and R.
+        Droms (ed.), "Dynamic Host Configuration Protocol for IPv6
+        (DHCPv6)", RFC 3315, July 2003.
+
+
+   [2]  Bradner, S., "Key words for use in RFCs to Indicate Requirement
+        Levels", BCP 14, RFC 2119, March 1997.
+
+
+9. Informative References
+
+
+   [3]  D. Mills.  Simple Network Time Protocol (SNTP) Version 4 for
+        IPv4, IPv6 and OSI.  Request for Comments (Informational) 2030,
+        Internet Engineering Task Force, October 1996.
+        
+   [4]  Alexander, S. and R. Droms, "DHCP Options and BOOTP Vendor
+        Extensions", RFC 2132, March 1997.
+  
+
+
+
+
+
+
+Vijay                           Expires Apr, 2005                [Page 3]
+Internet-Draft            SNTP Configuration Option for DHCPv6   Oct 2004
+
+
+Acknowledgements
+
+
+   Thanks to the DHC Working Group for their time and input into the 
+   specification. In particular, thanks to (in alphabetical order) Bernie 
+   Volz, Jim Bound, Margaret Wasserman, Pekka Savola, Ralph Droms, Robert 
+   Elz and Thomas Narten for their thorough review.
+
+
+Author's Address
+
+
+   Vijayabhaskar A Kalusivalingam
+   Cisco Systems (India) Private Limited,
+   No: 9, Brunton Road,
+   Bangalore - 560025
+   India
+  
+   Phone: +91-80-51036615
+   EMail: vibhaska@cisco.com
+
+
+
+Intellectual Property Statement
+
+
+   The IETF takes no position regarding the validity or scope of any
+   Intellectual Property Rights or other rights that might be claimed to
+   pertain to the implementation or use of the technology described in
+   this document or the extent to which any license under such rights
+   might or might not be available; nor does it represent that it has
+   made any independent effort to identify any such rights.  Information
+   on the procedures with respect to rights in RFC documents can be
+   found in BCP 78 and BCP 79.
+
+
+   Copies of IPR disclosures made to the IETF Secretariat and any
+   assurances of licenses to be made available, or the result of an
+   attempt made to obtain a general license or permission for the use of
+   such proprietary rights by implementers or users of this
+   specification can be obtained from the IETF on-line IPR repository at
+   http://www.ietf.org/ipr.
+
+
+   The IETF invites any interested party to bring to its attention any
+   copyrights, patents or patent applications, or other proprietary
+   rights that may cover technology that may be required to implement
+   this standard.  Please address the information to the IETF at
+   ietf-ipr@ietf.org.
+
+
+
+Disclaimer of Validity
+
+
+   This document and the information contained herein are provided on an
+   "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS
+   OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET
+   ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE
+   INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+   WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+
+
+
+
+Vijay                           Expires Apr, 2005                [Page 4]
+Internet-Draft            SNTP Configuration Option for DHCPv6   Oct 2004
+
+
+Copyright Statement
+
+
+   Copyright (C) The Internet Society (2004).  This document is subject
+   to the rights, licenses and restrictions contained in BCP 78, and
+   except as set forth therein, the authors retain all their rights.
+
+
+
+Acknowledgment
+
+
+   Funding for the RFC Editor function is currently provided by the
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Vijay                           Expires Apr, 2005                [Page 5] 
