@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.20 2004-06-29 22:03:36 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.21 2004-07-01 18:12:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/06/29 22:03:36  thomson
+ * *MaxLease option partialy implemented/fixed.
+ *
  * Revision 1.19  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
@@ -100,8 +103,10 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
         return;
     }
 
+    string duidFile = this->WorkDir+"/"+(string)SRVDUID_FILE;
+
     // load or create DUID
-    if ( !loadDUID(this->WorkDir+"/"+(string)SRVDUID_FILE) ) {
+    if ( !loadDUID(duidFile) ) {
 		this->IsDone=true;
 		return;
     }
