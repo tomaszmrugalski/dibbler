@@ -1,0 +1,31 @@
+
+   Dibbler - a portable DHCPv6
+  -----------------------------
+  authors: Tomasz Mrugalski <thomson@klub.com.pl>
+           Marek Senderski <msend@o2.pl>
+           
+   Ports available
+  -----------------
+  Linux - Tomasz Mrugalski
+  WinXP - Marek Senderski
+  Win2k - Tomasz Mrugalski/Marek Senderski
+
+  Compilation info
+ -----------------------
+  just type "make" and have your fingers crossed.
+ 
+  Linux user guide
+ ------------------------
+  Server start: ./server
+  Server start in daemon mode: ./server -d
+  Server stop: kill `cat server.pid`
+
+  Server start: ./server
+  Server start in daemon mode: ./server -d
+  Server stop: kill `cat server.pid`
+  
+  Additional info
+ -----------------
+ Newest version is available at http://klub.com.pl/dhcpv6/
+ 
+ 
