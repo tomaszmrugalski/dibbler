@@ -27,6 +27,8 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgGroup.h"
 #include "Logger.h"
+
+    using namespace std;
     
 #define YY_USE_CLASS
 #define YY_clntParser_MEMBERS  yyFlexLexer * lex; \
@@ -63,7 +65,7 @@ void EmptyAddr(); \
     ParserOptStack.getFirst()->setIAIDCnt(1);\
     ParserOptStack.getLast();
 
-#line 62 "ClntParser.y"
+#line 64 "ClntParser.y"
 typedef union    
 {
     int          ival;    

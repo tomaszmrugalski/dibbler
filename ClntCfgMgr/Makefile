@@ -18,16 +18,9 @@ libClntCfgMgr.a: objs
 
 test: test1 
 
-test1: test1.cpp libs
+test1: test1.cpp ClntParser.o ClntLexer.o
 	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test1.cpp  \
-	-L. -lClntCfgMgr \
-	-L$(CLNTPARSER) -lClntParser \
-	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
-	-L$(CLNTMESSAGES) -lClntMsg \
-	-L$(CLNTOPTS)     -lClntOpts \
-        -L$(OPTIONS)      -lOpts \
-	-L$(ADDRMGR)      -lAddrMgr \
-	$(PREFIX)/Logger.o
+	ClntParser.o ClntLexer.o -L. -lClntCfgMgr
 
 test2: test2.cpp
 	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test2.cpp \

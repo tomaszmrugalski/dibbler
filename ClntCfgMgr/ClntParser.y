@@ -130,7 +130,7 @@ InterfaceDeclarationsList '}'
     //Add it to list of read interfaces
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
     //FIXME:used of char * should be always realeased
-    delete $2;
+    delete [] $2;
     EndIfaceDeclaration();
 }
 
