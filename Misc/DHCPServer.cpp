@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.20 2005-01-08 16:52:04 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.21 2005-01-11 22:53:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.19  2005/01/03 21:54:49  thomson
  * Mgr dumps added.
  *
@@ -90,7 +93,6 @@ TDHCPServer::TDHCPServer(string config)
 	return;
     }
     this->CfgMgr->dump();
-    this->IfaceMgr->dump(); // dump it once more (important, if relay interfaces were added)
 
     this->TransMgr = new TSrvTransMgr(IfaceMgr, AddrMgr, CfgMgr, SRVTRANSMGR_FILE);
     if ( this->TransMgr->isDone() ) {
@@ -98,6 +100,8 @@ TDHCPServer::TDHCPServer(string config)
 	this->IsDone = true;
 	return;
     }
+    this->IfaceMgr->dump(); // dump it once more (important, if relay interfaces were added)
+    this->TransMgr->dump(); 
     
     TransMgr->setThat(TransMgr);
 }

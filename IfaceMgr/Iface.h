@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.8 2005-01-03 21:53:41 thomson Exp $
+ * $Id: Iface.h,v 1.9 2005-01-11 22:53:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/01/03 21:53:41  thomson
+ * const modifier added.
+ *
  * Revision 1.7  2004/12/27 20:48:22  thomson
  * Problem with absent link local addresses fixed (bugs #90, #91)
  *
@@ -84,7 +87,7 @@ class TIfaceIface{
     int HWType;
 
     // sockets
-    TContainer< SmartPtr<TIfaceSocket> > SocketsLst;
+    List(TIfaceSocket) SocketsLst;
     char*   PresLLAddr;
 };
 

@@ -25,8 +25,10 @@ ARCH         = LINUX
 LOWLEVEL     = $(PREFIX)/$(PORTDIR)
 CLIENT       = $(PORTDIR)/client-linux.cpp
 SERVER       = $(PORTDIR)/server-linux.cpp
+RELAY        = $(PORTDIR)/relay-linux.cpp
 CLIENTBIN    = dibbler-client
 SERVERBIN    = dibbler-server
+RELAYBIN     = dibbler-relay
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
@@ -65,10 +67,15 @@ SRVPARSER   = $(PREFIX)/SrvParser
 SRVMESSAGES = $(PREFIX)/SrvMessages
 SRVOPTIONS  = $(PREFIX)/SrvOptions
 
+RELIFACEMGR = $(PREFIX)/RelIfaceMgr
+RELTRANSMGR = $(PREFIX)/RelTransMgr
+RELCFGMGR   = $(PREFIX)/RelCfgMgr
+
 COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include Misc Port-linux
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
-SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
+RELSUBDIRS   = RelTransMgr RelMessages RelOptions  RelIfaceMgr RelCfgMgr
+SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS)
 
 # === UNIVERSAL TARGETS ===
 
@@ -84,7 +91,7 @@ all: libs
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
-	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) TAGS
+	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) TAGS
 	find . -type l -exec rm {} \;
 	find . -name *.a -exec rm {} \;
 	find . -name *~ -exec rm {} \;

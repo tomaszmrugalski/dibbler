@@ -12,6 +12,6 @@ links:
 	  ln -s $(PREFIX)/$$dir/*.h . 2>/dev/null;  \
 	fi \
 	done
-	ln -f -s $(PREFIX)/*.h .
 	ln -f -s $(SRVCFGMGR)/SrvParser.h SrvParser.h
 	ln -f -s $(CLNTCFGMGR)/ClntParser.h ClntParser.h
+	ln -f -s $(RELCFGMGR)/RelParser.h RelParser.h

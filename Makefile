@@ -2,7 +2,7 @@ include Makefile.inc
 PREFIX = .
 export TOPDIR=$(CURDIR)
 
-all: includes bison libs server client tags
+all: includes bison libs server client relay tags
 
 includes:
 	cd $(INCDIR); $(MAKE) links
@@ -16,6 +16,7 @@ bison:
 parser: 
 	cd ClntCfgMgr; $(MAKE) parser
 	cd SrvCfgMgr; $(MAKE) parser
+	cd RelCfgMgr; $(MAKE) parser
 
 client: $(CLIENTBIN)
 
@@ -68,6 +69,26 @@ $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	-L$(OPTIONS)     -lOptions $(XMLLIBS) \
 	-L$(LOWLEVEL)    -lLowLevel $(EFENCE) 
 
+relay: $(RELAYBIN)
+
+$(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
+	@echo "[LINK   ] $(SUBDIR)/$@"
+	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
+	-L$(RELTRANSMGR) -lRelTransMgr \
+	-L$(RELCFGMGR)   -lRelCfgMgr \
+	-L$(RELIFACEMGR) -lRelIfaceMgr \
+	-L$(RELOPTIONS)  -lRelOptions \
+	-L$(RELMESSAGES) -lRelMsg \
+	-L$(LOWLEVEL)    -lLowLevel\
+	-L$(CFGMGR)      -lCfgMgr\
+	-L$(IFACEMGR)     -lIfaceMgr \
+	-L$(MISC)        -lMisc\
+	-L$(MESSAGES)    -lMsg \
+	-L$(MISC)        -lMisc \
+	-L$(OPTIONS)     -lOptions \
+	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr\
+	 $(XMLLIBS) $(EFENCE) 
+
 objs:	includes
 	@for dir in $(COMMONSUBDIRS); do \
 		( cd $$dir; $(MAKE) objs ) || exit 1; \
@@ -96,6 +117,11 @@ clntlibs:	includes
 
 srvlibs:	includes
 	@for dir in $(SRVSUBDIRS); do \
+		( cd $$dir; $(MAKE) libs ) || exit 1; \
+	done
+
+relaylibs:	includes
+	@for dir in $(RELSUBDIRS); do \
 		( cd $$dir; $(MAKE) libs ) || exit 1; \
 	done
 

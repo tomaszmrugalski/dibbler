@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.15 2004-12-03 20:51:42 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.16 2005-01-11 22:53:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.14  2004/12/02 00:51:05  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -297,7 +300,8 @@ TIfaceSocket::~TIfaceSocket() {
  */
 ostream & operator <<(ostream & strum, TIfaceSocket &x)
 {
-    strum << "<IfaceSocket"
+    strum << dec 
+	  << "<IfaceSocket"
 	  << " fd=\"" << x.getFD() << "\""
 	  << " port=\"" << x.getPort() << "\""
 	  << " iface=\"" << x.Iface << "\""

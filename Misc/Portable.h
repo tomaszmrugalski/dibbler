@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.32 2004-12-27 20:45:00 thomson Exp $
+ * $Id: Portable.h,v 1.33 2005-01-11 22:53:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/12/27 20:45:00  thomson
+ * 0.3.1 version.
+ *
  * Revision 1.31  2004/12/15 22:54:45  thomson
  * no message
  *
@@ -93,6 +96,11 @@
 #define SRVADDRMGR_FILE   "server-AddrMgr.xml"
 #define SRVTRANSMGR_FILE  "server-TransMgr.xml"
 
+#define RELCFGMGR_FILE    "relay-CfgMgr.xml"
+#define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
+#define RELLOG_FILE       "relay.log"
+#define RELTRANSMGR_FILE  "relay-TransMgr.xml"
+
 // false - normal operation
 // true - Linux: client and server can be run on the same host, but
 //        there is also a drawback: multiple clients can be run at once.
@@ -102,6 +110,7 @@
 #define WORKDIR           ".\\"
 #define CLNTCONF_FILE	  "client.conf"
 #define SRVCONF_FILE      "server.conf"
+#define RELCONF_FILE      "client.conf"
 #define NULLFILE          "nul"
 #endif
 
@@ -109,9 +118,11 @@
 #define WORKDIR		  "/var/lib/dibbler"
 #define CLNTCONF_FILE	  "/var/lib/dibbler/client.conf"
 #define SRVCONF_FILE      "/var/lib/dibbler/server.conf"
+#define RELCONF_FILE      "/var/lib/dibbler/relay.conf"
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
 #define CLNTPID_FILE      "client.pid"
 #define SRVPID_FILE       "server.pid"
+#define RELPID_FILE       "relay.pid"
 #define NULLFILE          "/dev/null"
 #endif
 

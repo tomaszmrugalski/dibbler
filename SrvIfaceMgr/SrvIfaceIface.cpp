@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.3 2005-01-08 16:52:04 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.4 2005-01-11 22:53:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.2  2005/01/03 23:13:57  thomson
  * Partial relay implementation.
  *
@@ -108,11 +111,12 @@ ostream & operator <<(ostream & strum, TSrvIfaceIface &x) {
     }
     strum << "</Mac>" << endl;
 
+    strum << "    <!-- " << x.countSocket() << " sockets -->" << endl;
     SmartPtr<TIfaceSocket> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {
 	strum << "    " << *sock;
     }
-    strum << "  </IfaceIface>" << endl;
+    strum << "  </SrvIfaceIface>" << endl;
     return strum;
 }

@@ -1,10 +1,12 @@
 
-$Id: TODO,v 1.16 2005-01-08 16:52:03 thomson Exp $
+$Id: TODO,v 1.17 2005-01-11 22:53:35 thomson Exp $
 
   Internal/code TODO
  --------------------
-- move answer(SmartPtr<TMsg> msg) should be moved from TMsg to TClntMsg
+- Statistics: TransMgr->dump() should be implemented.
+- Change Srv/ClntOptServer/ClientIdentifier to use TOptGeneric class.
 - IfaceMgr.cpp:232 (remove #ifndef WIN32)
+- IfaceMgr contains only info about link local addresses.
 
 
 - setting up a domain: echo homenetwork > /etc/dnsdomainname

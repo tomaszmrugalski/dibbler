@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.12 2004-12-08 00:17:59 thomson Exp $
+ * $Id: Logger.cpp,v 1.13 2005-01-11 22:53:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/12/08 00:17:59  thomson
+ * StatusCodeToString function added.
+ *
  * Revision 1.11  2004/12/02 00:51:06  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -34,7 +37,7 @@
 namespace logger {
 
     string logname="Init";
-    int logLevel=7;
+    int logLevel=8;
     Elogmode logmode = FULL;
     ofstream logFile;    // file where wanted msgs are stored
     bool logFileMode = false;

@@ -4,7 +4,7 @@ OBJECTS = Opt.o               OptClientIdentifier.o  OptElapsed.o       OptIAAdd
 	  OptPreference.o     OptRapidCommit.o       OptInteger4.o      OptServerIdentifier.o \
 	  OptStatusCode.o     OptUserClass.o         OptVendorClass.o   OptVendorSpecInfo.o   \
 	  OptIA_NA.o          OptOptionRequest.o     OptAddr.o          OptAddrLst.o          \
-	  OptString.o         OptStringLst.o         
+	  OptString.o         OptStringLst.o         OptGeneric.o
 
 objs: $(OBJECTS)
 
