@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.9 2004-12-02 00:51:06 thomson Exp $
+ * $Id: Logger.h,v 1.10 2004-12-08 00:17:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.8  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -77,6 +80,6 @@ namespace logger {
 }
 
 std::string StateToString(EState state);
-
+std::string StatusCodeToString(int status);
 
 #endif

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.11 2004-12-02 00:51:06 thomson Exp $
+ * $Id: Logger.cpp,v 1.12 2004-12-08 00:17:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.10  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -174,4 +177,22 @@ std::string StateToString(EState state) {
     default:
 	return "???";
     }
+}
+
+std::string StatusCodeToString(int status) {
+    switch(status) {
+    case STATUSCODE_SUCCESS:
+	return "Success";
+    case STATUSCODE_UNSPECFAIL:
+	return "Unspecified failure";
+    case STATUSCODE_NOADDRSAVAIL:
+	return "No addresses available";
+    case STATUSCODE_NOBINDING:
+	return "No binding";
+    case STATUSCODE_NOTONLINK:
+	return "Not on link";
+    case STATUSCODE_USEMULTICAST:
+	return "Use multicast";
+    }
+    return "";
 }
