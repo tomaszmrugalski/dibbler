@@ -29,7 +29,7 @@ CLIENTBIN    = dibbler-client-linux
 SERVERBIN    = dibbler-server-linux
 
 # === do not modify anything below ===
-#MAKEFLAGS   += -s
+MAKEFLAGS   += -s
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux
