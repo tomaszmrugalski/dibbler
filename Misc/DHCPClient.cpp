@@ -6,14 +6,11 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.10 2004-07-05 00:53:03 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.11 2004-09-07 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.9  2004/05/24 00:02:58  thomson
- * *** empty log message ***
- *
- * Revision 1.8  2004/05/23 20:41:03  thomson
- * *** empty log message ***
+ * Revision 1.10  2004/07/05 00:53:03  thomson
+ * Various changes.
  *
  * Revision 1.7  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
@@ -42,7 +39,7 @@ TDHCPClient::TDHCPClient(string config)
 
     IfaceMgr = new TClntIfaceMgr();
     if ( IfaceMgr->isDone() ) {
- 	  std::clog << logger::logCrit << "Fatal error during IfaceMgr init. Aborting." << logger::endl;
+ 	  Log(Crit) << "Fatal error during IfaceMgr init. Aborting." << LogEnd;
 	  this->IsDone = true;
 	  return;
     }
@@ -71,7 +68,7 @@ void TDHCPClient::stop() {
 void TDHCPClient::run()
 {
     SmartPtr<TMsg> msg;
-    while ( (!TransMgr->isDone()) && (!this->isDone()) )
+    while ( !TransMgr->isDone() && (!this->isDone()) )
     {
 	if (serviceShutdown)
 	    TransMgr->shutdown();

@@ -43,8 +43,8 @@ class TIfaceIface{
     bool addSocket(int port, bool ifaceonly = true); 
     bool delSocket(int id);
     void firstSocket();
-    SmartPtr <TIfaceSocketIPv6> getSocketByFD(int fd);
-    SmartPtr <TIfaceSocketIPv6> getSocket();
+    SmartPtr <TIfaceSocket> getSocketByFD(int fd);
+    SmartPtr <TIfaceSocket> getSocket();
     int countSocket();
 
     ~TIfaceIface();
@@ -61,7 +61,7 @@ class TIfaceIface{
     int HWType;
 
     // sockets
-    TContainer< SmartPtr<TIfaceSocketIPv6> > SocketsLst;
+    TContainer< SmartPtr<TIfaceSocket> > SocketsLst;
     char*   PresLLAddr;
 };
 

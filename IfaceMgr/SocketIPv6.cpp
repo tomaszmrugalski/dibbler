@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.9 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.10 2004-09-07 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.8  2004/09/03 20:58:35  thomson
  * *** empty log message ***
  *
@@ -39,9 +42,9 @@
  */
 
 /* 
- * static elements of TIfaceSocketIPv6 class
+ * static elements of TIfaceSocket class
  */ 
-int TIfaceSocketIPv6::Count=0;
+int TIfaceSocket::Count=0;
 
 /*
  * creates socket bound to specific address on this interface
@@ -51,7 +54,7 @@ int TIfaceSocketIPv6::Count=0;
  * @param addr - address 
  * @param ifaceonly - force interface-only flag in setsockopt()
  */
-TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface, int ifaceid, int port,
+TIfaceSocket::TIfaceSocket(char * iface, int ifaceid, int port,
 				   SmartPtr<TIPv6Addr> addr, bool ifaceonly) { 
     if (this->Count==0) {
 	FD_ZERO(getFDS());
@@ -60,7 +63,7 @@ TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface, int ifaceid, int port,
     this->createSocket(iface, ifaceid, addr, port, ifaceonly);
 }
 
-enum EState TIfaceSocketIPv6::getStatus() {
+enum EState TIfaceSocket::getStatus() {
     return this->Status;
 }
 
@@ -72,7 +75,7 @@ enum EState TIfaceSocketIPv6::getStatus() {
  * @param port - port, to which socket will be bound
  * @param ifaceonly - force interface-only flag in setsockopt()
  */
-TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface,int ifaceid, int port,bool ifaceonly) {
+TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly) {
     if (this->Count==0) {
 	FD_ZERO(getFDS());
     }
@@ -93,7 +96,7 @@ TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface,int ifaceid, int port,bool iface
  * @param ifaceonly - force interface-only flag in setsockopt()
  * returns error code (or 0 if everything is ok)
  */
-int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 
+int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 
 				   int port, bool ifaceonly) {
     int sock;
 
@@ -117,15 +120,32 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
 
     // detect errors
     switch (sock) {
-    case -7:
-        Log(Error) << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" << LogEnd;
-        break;
     case -1:
         Log(Error) << "Unable to create socket. Is IPv6 protocol supported in your system?" 
-		  << logger::endl;
+		   << LogEnd;
         break;
     case -2:
-        Log(Error) << "Unable to bind socket to interface " << this->Iface << logger::endl;
+        Log(Error) << "Unable to bind socket to interface " << this->Iface << "/" 
+		   << this->IfaceID << "." << LogEnd;
+        break;
+    case -3: // this error no longer could occur in Linux version
+        Log(Error) << "Unable to create a network address structure (addr=" 
+		  << addr->getPlain() << ")" << logger::endl;
+    case -4:
+        Log(Error) << "Unable to bind socket (iface=" << iface << "/" << ifaceid 
+		   << ", addr=" << addr->getPlain() << ", port=" 
+		   << this->Port << ")." << LogEnd;
+        break;
+    case -5:
+        Log(Error) << "Unable to getaddrinfo() of multicast group. (iface= " << iface << "/" << ifaceid  
+		   << ", addr=" << *this->Addr << ", port=" << this->Port << ")" << LogEnd;
+        break;
+    case -6:
+        Log(Error) << "Unable to join multicast group." << logger::endl;
+	break;
+        break;
+    case -7:
+        Log(Error) << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" << LogEnd;
         break;
     case -8:
         Log(Error) << "Unable to set up socket option IPV6_PKTINFO" << logger::endl;
@@ -133,24 +153,6 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
     case -9:
         Log(Error) << "Unable to set up socket option SO_REUSEADDR" << logger::endl;
         break;
-    case -3: // this error no longer could occur in Linux version
-        Log(Error) << "Unable to create a network address structure (addr=" 
-		  << addr->getPlain() << ")" << logger::endl;
-        break;
-    case -4:
-	
-        Log(Error) << "Unable to bind socket (iface=" << iface << "/" << ifaceid 
-		   << ", addr=" << addr->getPlain() << ", port=" 
-		   << this->Port << ")" << logger::endl;
-        break;
-    case -5:
-        Log(Error) << "Unable to getaddrinfo() of multicast group. (iface= " << iface << "/" << ifaceid  
-		   << ", addr=" << *this->Addr << ", port=" 
-		   << this->Port << ")" << logger::endl;
-        break;
-    case -6:
-        Log(Error) << "Unable to join multicast group." << logger::endl;
-	break;
     default:
         break;
     }
@@ -177,7 +179,7 @@ int TIfaceSocketIPv6::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr
  * @param port - to which port
  * returns number of bytes sent or -1 if something went wrong
  */
-int TIfaceSocketIPv6::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port) {
+int TIfaceSocket::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port) {
 
     int result;
     
@@ -198,7 +200,7 @@ int TIfaceSocketIPv6::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port)
  * @param buf - received data are stored here
  * @param addr - will contain info about sender
  */
-int TIfaceSocketIPv6::recv(char * buf, SmartPtr<TIPv6Addr> addr) {
+int TIfaceSocket::recv(char * buf, SmartPtr<TIPv6Addr> addr) {
     char myPlainAddr[48];
     char peerPlainAddr[48];
 
@@ -224,7 +226,7 @@ int TIfaceSocketIPv6::recv(char * buf, SmartPtr<TIPv6Addr> addr) {
  * it's some really weird POSIX macro. It uses FD_SET, FD_ZERO and FD_CLR macros
  * defined somewhere in system headers
  */
-fd_set * TIfaceSocketIPv6::getFDS() {
+fd_set * TIfaceSocket::getFDS() {
     static fd_set FDS;
     return &FDS;
 }
@@ -232,35 +234,35 @@ fd_set * TIfaceSocketIPv6::getFDS() {
 /*
  * returns FileDescritor
  */
-int TIfaceSocketIPv6::getFD() {
+int TIfaceSocket::getFD() {
     return this->FD;
 }
 
 /*
  * returns interface ID
  */
-int TIfaceSocketIPv6::getIfaceID() {
+int TIfaceSocket::getIfaceID() {
     return this->IfaceID;
 }
 
 /*
  * returns port
  */
-int TIfaceSocketIPv6::getPort() {
+int TIfaceSocket::getPort() {
     return this->Port;
 }
 
 /*
  * returns address
  */
-SmartPtr<TIPv6Addr> TIfaceSocketIPv6::getAddr() {
+SmartPtr<TIPv6Addr> TIfaceSocket::getAddr() {
     return this->Addr;
 }
 
 /*
  * closes socket, and removes its number from FDS
  */
-TIfaceSocketIPv6::~TIfaceSocketIPv6() {
+TIfaceSocket::~TIfaceSocket() {
     if (Status!=CONFIGURED) return;
 
     //pure C function
@@ -277,7 +279,7 @@ TIfaceSocketIPv6::~TIfaceSocketIPv6() {
 /*
  * flush this data in XML format
  */
-ostream & operator <<(ostream & strum, TIfaceSocketIPv6 &x)
+ostream & operator <<(ostream & strum, TIfaceSocket &x)
 {
     strum << "<IfaceSocket"
 	  << " fd=\"" << x.getFD() << "\""

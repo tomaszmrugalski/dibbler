@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.11 2004-09-05 15:37:44 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.12 2004-09-07 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/09/05 15:37:44  thomson
+ * Linux server now properly supports unicast.
+ *
  * Revision 1.10  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -166,14 +169,14 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 
     // tricks with FDS macros
     fd_set fds;
-    fds = *TIfaceSocketIPv6::getFDS();
+    fds = *TIfaceSocket::getFDS();
 
     result = ::select(FD_SETSIZE,&fds,NULL, NULL, &czas);
 
     // something received
     if (result>0) {
         SmartPtr<TIfaceIface> iface;
-        SmartPtr<TIfaceSocketIPv6> sock;
+        SmartPtr<TIfaceSocket> sock;
         bool found = 0;
         IfaceLst.first();
         while ( (!found) && (iface = IfaceLst.get()) ) {

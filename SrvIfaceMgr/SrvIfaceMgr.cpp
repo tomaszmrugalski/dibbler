@@ -53,7 +53,7 @@ bool TSrvIfaceMgr::sendMulticast  (int iface, char *msg, int size,
     }
 
     // find this socket
-    SmartPtr<TIfaceSocketIPv6> ptrSocket;
+    SmartPtr<TIfaceSocket> ptrSocket;
     ptrIface->firstSocket();
     ptrSocket = ptrIface->getSocket();
     if (!ptrSocket) {

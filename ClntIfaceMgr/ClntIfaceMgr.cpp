@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.4 2004-07-05 00:53:03 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.5 2004-09-07 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.3  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -41,15 +44,15 @@ bool TClntIfaceMgr::sendMulticast(int iface, char * msg, int msgsize)
     SmartPtr<TIfaceIface> Iface;
     Iface = this->getIfaceByID(iface);
     if (!Iface) {
-        std::clog << logError << " No such interface (id=" << iface << "). Send failed." << logger::endl;
+        Log(Error) << " No such interface (id=" << iface << "). Send failed." << LogEnd;
         return false;
     }
 
     // are there any sockets on this interface?
-    SmartPtr<TIfaceSocketIPv6> sock; 
+    SmartPtr<TIfaceSocket> sock; 
     if (! Iface->countSocket() ) {
         std::clog << logError << "Interface " << Iface->getName() 
-            << " has no open sockets" << logger::endl;
+            << " has no open sockets." << LogEnd;
         return false;
     }
 
@@ -79,9 +82,9 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
         if (bufsize<4) {
 			if (buf[0]!=CONTROL_MSG) {
 				clog << logWarning << "Received message is too short (" << bufsize
-					 << ") bytes." << logger::endl;
+					 << ") bytes." << LogEnd;
 			} else {
-				clog << logWarning << "Control message received." << logger::endl;
+				clog << logWarning << "Control message received." << LogEnd;
 			}
             return SmartPtr<TMsg>(); // NULL
         }
@@ -107,7 +110,7 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
         case RELEASE_MSG:
         case DECLINE_MSG:
         case INFORMATION_REQUEST_MSG:
-            std::clog << logWarning << "Illegal message type " << msgtype << " received." << logger::endl;
+            std::clog << logWarning << "Illegal message type " << msgtype << " received." << LogEnd;
             return SmartPtr<TMsg>(); // NULL
         case REPLY_MSG:
             ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
@@ -116,12 +119,12 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
 
         case RECONFIGURE_MSG:
             //FIXME: Reconfigure message
-            std::clog << logDebug << "Reconfigure Message is currently not supported." << logger::endl;
+            std::clog << logDebug << "Reconfigure Message is currently not supported." << LogEnd;
             return SmartPtr<TMsg>();
         case RELAY_FORW:
         case RELAY_REPL:
         default:
-            std::clog << logWarning << "Message type " << msgtype << " not supported." << logger::endl;
+            std::clog << logWarning << "Message type " << msgtype << " not supported." << LogEnd;
             return SmartPtr<TMsg>();
         }
     } else {

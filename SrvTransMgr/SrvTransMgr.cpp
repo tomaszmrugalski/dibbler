@@ -6,16 +6,14 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.15 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.16 2004-09-07 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.14  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.13  2004/09/03 20:58:36  thomson
- * *** empty log message ***
- *
- *
  */
 
 #include <limits.h>
@@ -45,30 +43,30 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     bool loadDB = false;
 
     // remember IfaceMgr and create remaining managers
-    IfaceMgr = ifaceMgr;
+    this->IfaceMgr = ifaceMgr;
     CfgMgr  = new TSrvCfgMgr(this->IfaceMgr, newconf, oldconf);
-    if (!CfgMgr->isDone())
-    {
-        AddrMgr = new TSrvAddrMgr( CfgMgr->getWorkDir()+"/"+SRVDB_FILE, loadDB);
-	AddrMgr->dbStore();
-
-        // for each interface in CfgMgr, create socket (in IfaceMgr)
-        SmartPtr<TSrvCfgIface> confIface;
-        CfgMgr->firstIface();
-
-        // TransMgr is certainly not done yet. We're just getting started
-        IsDone = false;
-
-        while (confIface=CfgMgr->getIface()) {
-	    if (!this->openSocket(confIface)) {
-		this->IsDone = true;
-		break;
-	    }
-        }
-
+    if (CfgMgr->isDone()) {
+	this->IsDone = true;
+	return;
     }
-    else
-        IsDone=true;
+
+    AddrMgr = new TSrvAddrMgr( CfgMgr->getWorkDir()+"/"+SRVDB_FILE, loadDB);
+    AddrMgr->dbStore();
+    
+    // for each interface in CfgMgr, create socket (in IfaceMgr)
+    SmartPtr<TSrvCfgIface> confIface;
+    CfgMgr->firstIface();
+    
+    // TransMgr is certainly not done yet. We're just getting started
+    IsDone = false;
+    
+    while (confIface=CfgMgr->getIface()) {
+	if (!this->openSocket(confIface)) {
+	    this->IsDone = true;
+	    break;
+	}
+    }
+
     if (loadDB)
 	AddrMgr->doDuties();
 }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.11 2004-09-05 15:27:49 thomson Exp $
+ * $Id: Iface.cpp,v 1.12 2004-09-07 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.10  2004/09/03 20:58:35  thomson
  * *** empty log message ***
  *
@@ -201,8 +204,8 @@ char* TIfaceIface::getLLAddress() {
  */
 bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly) {
     // Log(Debug) << "Creating socket on " << *addr << " address." << LogEnd;
-    SmartPtr<TIfaceSocketIPv6> ptr = 
-	new TIfaceSocketIPv6(this->Name, this->ID, port, addr, ifaceonly);
+    SmartPtr<TIfaceSocket> ptr = 
+	new TIfaceSocket(this->Name, this->ID, port, addr, ifaceonly);
     if (ptr->getStatus()!=CONFIGURED) {
 	return false;
     }
@@ -214,8 +217,8 @@ bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly) {
  * binds socket on whole interface
  */
 bool TIfaceIface::addSocket(int port, bool ifaceonly) {
-    SmartPtr<TIfaceSocketIPv6> ptr = 
-	new TIfaceSocketIPv6(this->Name, this->ID, port, ifaceonly);
+    SmartPtr<TIfaceSocket> ptr = 
+	new TIfaceSocket(this->Name, this->ID, port, ifaceonly);
     if (ptr->getStatus()!=CONFIGURED) {
 	return false;
     }
@@ -227,7 +230,7 @@ bool TIfaceIface::addSocket(int port, bool ifaceonly) {
  * closes socket
  */
 bool TIfaceIface::delSocket(int fd) {
-    SmartPtr<TIfaceSocketIPv6> sock;
+    SmartPtr<TIfaceSocket> sock;
     SocketsLst.first();
     
     while ( sock = SocketsLst.get() ) {
@@ -249,15 +252,15 @@ void TIfaceIface::firstSocket() {
 /*
  * returns next socket from list
  */
-SmartPtr <TIfaceSocketIPv6> TIfaceIface::getSocket() {
+SmartPtr <TIfaceSocket> TIfaceIface::getSocket() {
     return SocketsLst.get();
 }
 
 /*
  * returns socket by FileDescriptor (or NULL, if no such socket exists)
  */
-SmartPtr <TIfaceSocketIPv6> TIfaceIface::getSocketByFD(int fd) {
-    SmartPtr<TIfaceSocketIPv6> ptr;
+SmartPtr <TIfaceSocket> TIfaceIface::getSocketByFD(int fd) {
+    SmartPtr<TIfaceSocket> ptr;
     SocketsLst.first();
     while ( ptr = SocketsLst.get() ) {
 	if ( ptr->getFD()==fd )
@@ -311,7 +314,7 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
     }
     strum << "</Mac>" << endl;
 
-    SmartPtr<TIfaceSocketIPv6> sock;
+    SmartPtr<TIfaceSocket> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {
 	strum << "    " << *sock;

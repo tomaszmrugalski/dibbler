@@ -6,12 +6,9 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.18 2004-09-03 20:58:35 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.19 2004-09-07 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.17  2004/08/24 22:48:35  thomson
- * *** empty log message ***
- *
  * Revision 1.16  2004/07/11 14:08:01  thomson
  * Opening additonal socket on loopback is not necessary in WIN32 systems.
  *
@@ -24,8 +21,6 @@
  *
  * Revision 1.6  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
- *
- *
  */
 
 #ifdef WIN32
@@ -61,87 +56,33 @@ using namespace std;
 TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
                              string config)
 {
-    //FIXME: oldconf not used
-    string oldConf = config+"-old";
-
     //FIXME: loadDB
     bool loadDB = false;
+    this->IsDone = true;
 
-    this->isStart=true;
+    //FIXME: this should be renamed, and used apropriately
+    //don't send CONFIRM 
+    this->ConfirmEnabled=true;
+
     // create managers
-    CfgMgr = new TClntCfgMgr(ifaceMgr, config, oldConf);
+    CfgMgr = new TClntCfgMgr(ifaceMgr, config, config+"-old");
     IfaceMgr=ifaceMgr;
-
     AddrMgr=new TClntAddrMgr(CfgMgr, CLNTDB_FILE, loadDB);
 
-    // find loopback interface
-    IfaceMgr->firstIface();
-    SmartPtr<TIfaceIface> ptrIface;
-#ifndef WIN32
-	SmartPtr<TIfaceIface> loopback;
-    while (ptrIface=IfaceMgr->getIface()) {
-        if (!ptrIface->flagLoopback()) {
-            continue;
-	    }
-	    loopback = ptrIface;
-	    break;
+    if (CfgMgr->isDone() || IfaceMgr->isDone() ) {
+	return;
     }
-    if (!loopback) {
-	   Log(Error) << "Loopback interface not found!" << LogEnd;
-	   this->IsDone = true;
+
+    if (!this->openLoopbackSocket()) {
+	return;
     }
-#endif
 
-    if (!CfgMgr->isDone())
-    {
-        SmartPtr<TClntCfgIface> iface;
-        CfgMgr->firstIface();
-        while(iface=CfgMgr->getIface())
-        {
-            iface->firstGroup();
-            SmartPtr<TClntCfgGroup> group;
-            while(group=iface->getGroup())
-            {
-                SmartPtr<TClntCfgIA> ia;
-                group->firstIA();
-                while(ia=group->getIA())
-                    AddrMgr->addIA(new TAddrIA(iface->getID(),SmartPtr<TIPv6Addr>(), 
-                    SmartPtr<TDUID>(),0x7fffffff,0x7fffffff,ia->getIAID()));
-            }
-        }
-
-        CfgMgr->firstIface();
-        while(iface=CfgMgr->getIface()) {
-	    
-	    // ignore interfaces with no-config flag set
-            if (iface->noConfig())       
-		continue;
-
-	    SmartPtr<TIfaceIface> realIface=IfaceMgr->getIfaceByID(iface->getID());
-	    if (realIface&&realIface->flagUp()&&realIface->flagRunning())
-	    {
-		realIface->firstLLAddress();
-		char* llAddr;
-		llAddr=realIface->getLLAddress();
-		SmartPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
-		realIface->addSocket(addr,DHCPCLIENT_PORT,true);
-#ifndef WIN32
-		loopback->addSocket(addr,DHCPCLIENT_PORT,false);
-#endif
-		if (llAddr) {
-		    char buf[48];
-		    Log(Info) << "Socket created on ";
-		    inet_ntop6(llAddr,buf);
-		    std::clog << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
-		    this->ctrlIface = realIface->getID();
-		    memcpy(this->ctrlAddr,buf,48);
-		} else {
-		    Log(Info) << "Unable to create any socket on iface:"
-			      << iface->getID() 
-			      << " (No appropriate link-local address available)"
-			      << LogEnd;
-		}
-	    }
+    SmartPtr<TClntCfgIface> iface;
+    CfgMgr->firstIface();
+    while(iface=CfgMgr->getIface()) {
+	if (!this->openSocket(iface)) {
+	    Log(Debug) << "ClntTransMgr: Stop" << LogEnd;
+	    return;
 	}
     }
 
@@ -151,9 +92,77 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 	checkConfirm();
     }
 
-    IsDone = CfgMgr->isDone();
     Shutdown = false;
+    this->IsDone = false;
+
 }
+
+bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
+
+    if (iface->noConfig())       
+	return true;
+
+    // create IAs in AddrMgr corresponding to those specified in CfgMgr.
+    SmartPtr<TClntCfgGroup> group;
+    iface->firstGroup();
+    while(group=iface->getGroup()) {
+	SmartPtr<TClntCfgIA> ia;
+	group->firstIA();
+	while(ia=group->getIA()) {
+	    // FIXME: use constants
+	    AddrMgr->addIA(new TAddrIA(iface->getID(),SmartPtr<TIPv6Addr>(), 
+				       SmartPtr<TDUID>(),0x7fffffff,0x7fffffff,ia->getIAID()));
+	}
+    }
+
+    // open socket
+    SmartPtr<TIfaceIface> realIface = IfaceMgr->getIfaceByID(iface->getID());
+    if (!realIface) {
+	Log(Error) << "Interface " << iface->getName() << "/" << iface->getID()
+		   << " not present in system." << LogEnd;
+	return false;
+    }
+    if (!realIface->flagUp()) {
+	Log(Error) << "Interface " << realIface->getName() << "/" << realIface->getID()
+		   << " is down. Unable to open socket." << LogEnd;
+	return false;
+    }
+    if (!realIface->flagRunning()) {
+	Log(Error) << "Interface " << realIface->getName() << "/" << realIface->getID()
+		   << " is not running." << LogEnd;
+	return false;
+    }
+    
+    // get link-local address
+    char* llAddr;
+    realIface->firstLLAddress();
+    llAddr=realIface->getLLAddress();
+    if (!llAddr) {
+	Log(Error) << "Interface " << realIface->getName() << "/" << realIface->getID()
+		   << " does not have link-layer address. Weird." << LogEnd;
+	return false;
+    }
+
+    SmartPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
+    Log(Notice) << "Creating socket (addr=" << *addr << ") on " << iface->getName() 
+		<< "/" << iface->getID() << " interface." << LogEnd;
+    
+    if (!realIface->addSocket(addr,DHCPCLIENT_PORT,true)) {
+	Log(Error) << "Socket creation failed." << LogEnd;
+	return false;
+    }
+
+    if (llAddr) {
+	char buf[48];
+	inet_ntop6(llAddr,buf);
+	Log(Info) << "Socket created on ";
+	std::clog << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
+	this->ctrlIface = realIface->getID();
+	memcpy(this->ctrlAddr,buf,48);
+    } 
+    return true;
+}
+
 
 void TClntTransMgr::checkDB()
 {
@@ -173,6 +182,34 @@ void TClntTransMgr::checkDB()
         }
     }
 
+}
+
+bool TClntTransMgr::openLoopbackSocket() {
+    SmartPtr<TIfaceIface> ptrIface;
+#ifndef WIN32
+	SmartPtr<TIfaceIface> loopback;
+    while (ptrIface=IfaceMgr->getIface()) {
+        if (!ptrIface->flagLoopback()) {
+            continue;
+	    }
+	    loopback = ptrIface;
+	    break;
+    }
+    if (!loopback) {
+	   Log(Error) << "Loopback interface not found!" << LogEnd;
+	   return false;
+    }
+
+    SmartPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::1", true);
+    Log(Notice) << "Creating control (" << *loopAddr << ") socket on " << loopback->getName() 
+		<< "/" << loopback->getID() << " interface." << LogEnd;
+    
+    if (!loopback->addSocket(loopAddr,DHCPCLIENT_PORT, false)) {
+	Log(Crit) << "Proper socket creation failed." << LogEnd;
+	return false;
+    }
+#endif
+    return true;
 }
 
 /*
@@ -490,7 +527,7 @@ void TClntTransMgr::checkConfirm()
 {
     //FIXME: When should we send CONFIRM? How to detect switching to new link?
     //Is it a start of address of manager
-    if(!isStart)
+    if(!ConfirmEnabled)
         return;
     SmartPtr<TAddrIA> ptrIA;
     SmartPtr<TIfaceIface> ptrIface;
@@ -527,8 +564,8 @@ void TClntTransMgr::checkInfRequest()
             continue;
         if (iface->onlyInformationRequest()) {
 	    Log(Info) << "Creating INFORMATION-REQUEST message on "
-			 << iface->getName() <<" interface." << LogEnd;
-
+		      << iface->getName() << "/" << iface->getID() << " interface." << LogEnd;
+	    
             Transactions.append(new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,iface));
 	}
     }

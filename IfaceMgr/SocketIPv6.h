@@ -1,4 +1,4 @@
-class TIfaceSocketIPv6;
+class TIfaceSocket;
 #ifndef IFACESOCKETIPV6_H
 #define IFACESOCKETIPV6_H
 
@@ -21,12 +21,12 @@ using namespace std;
 /*
  * repesents network socket
  */
-class TIfaceSocketIPv6 {
-    friend ostream& operator<<(ostream& strum, TIfaceSocketIPv6 &x);
+class TIfaceSocket {
+    friend ostream& operator<<(ostream& strum, TIfaceSocket &x);
  public:
-    TIfaceSocketIPv6(char * iface,int ifaceid, int port, 
+    TIfaceSocket(char * iface,int ifaceid, int port, 
 		     SmartPtr<TIPv6Addr> addr, bool ifaceonly=true);
-    TIfaceSocketIPv6(char * iface,int ifaceid, int port,
+    TIfaceSocket(char * iface,int ifaceid, int port,
 		     bool ifaceonly=true);
    
     // ---transmission---
@@ -46,7 +46,7 @@ class TIfaceSocketIPv6 {
     //  with POSIX select() function. )
     static fd_set * getFDS();
 
-    ~TIfaceSocketIPv6();
+    ~TIfaceSocket();
  private:
     // adds socket to this interface
     int createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 

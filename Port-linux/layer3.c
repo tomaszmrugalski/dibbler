@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.13 2004-09-05 16:28:25 thomson Exp $
+ * $Id: layer3.c,v 1.14 2004-09-07 15:37:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/09/05 16:28:25  thomson
+ * *** empty log message ***
+ *
  * Revision 1.12  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -330,7 +333,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     if (thisifaceonly) {
 	if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
 	    // Unable to bind to interface
-	    return -10;
+	    return -2;
 	}
     }
 
@@ -344,7 +347,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     struct sockaddr_in6 bindme;
     bzero(&bindme, sizeof(struct sockaddr_in6));
     bindme.sin6_family = AF_INET6;
-    bindme.sin6_port   = htons(547);
+    bindme.sin6_port   = htons(port);
     tmp = (char*)(&bindme.sin6_addr);
     inet_pton6(addr, tmp);
     //if (bind(Insock, res->ai_addr, res->ai_addrlen) < 0) {
@@ -453,37 +456,6 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
 	inet_ntop6((void*)&pktinfo->ipi6_addr, myPlainAddr);
     }
     return result;
-
-#if 0
-    char * znak;
-    int port;
-    struct sockaddr_storage from;
-    socklen_t fromlen = sizeof(from);
-    char addr_char[NI_MAXHOST], port_char[NI_MAXSERV];
-    char iface_name[MAX_IFNAME_LENGTH];
-
-
-    result = recvfrom( fd, buf, buflen, 0, (struct sockaddr *) &from,&fromlen);
-
-    getnameinfo((struct sockaddr *)&from, fromlen,
-		addr_char, sizeof(addr_char), port_char, sizeof(port_char), 
-		NI_NUMERICHOST|NI_NUMERICSERV);
-
-    if ( (znak = strchr(addr_char,37)) ) { // split after % sign
-	*znak=0;
-	strncpy(iface_name,++znak,MAX_IFNAME_LENGTH);
-    } else {
-	iface_name[0]=0;
-    }
-    strcpy(addr,addr_char);
-    port = atoi(port_char);
-    // result - received bytes count (or -1 if something is wrong)
-    // addr_char - address (in plain text)
-    // port_char - port (in plain text)
-    // port      - port (integer)
-    //printf("sock_recv2(): result=%d, addr=%s, iface=%s port %d\n",result,addr_char,iface_name,port);
-    return result;
-#endif
 }
 
 void microsleep(int microsecs)
@@ -557,201 +529,4 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
     // FIXME: close rth socket
 
     return tentative;
-}
-
-
-
-/***************************************************************
- *** DEPRECIATED ***********************************************
- ***************************************************************/
-
-/* 
- * wy¶wietla flagi interfejsu
- */
-void print_link_flags( unsigned flags)
-{
-	printf("<");
-	if (flags & IFF_RUNNING)     { flags &= ~IFF_RUNNING; printf("RUNNING "); }
-	if (flags & IFF_LOOPBACK)    { flags &=~IFF_LOOPBACK; printf("LOOPBACK "); }
-	if (flags & IFF_BROADCAST)   { flags &=~IFF_BROADCAST; printf("BROADCAST "); }
-	if (flags & IFF_POINTOPOINT) { flags &=~IFF_POINTOPOINT; printf("POINTOPOINT "); }
-	if (flags & IFF_MULTICAST)   { flags &=~IFF_MULTICAST; printf("MULTICAST "); }
-	if (flags & IFF_NOARP)    { flags &=~IFF_NOARP;    printf("NOARP "); }
-	if (flags & IFF_ALLMULTI) { flags &=~IFF_ALLMULTI; printf("ALLMULTI "); }
-	if (flags & IFF_PROMISC) { flags &=~IFF_PROMISC; printf("PROMISC "); }
-	if (flags & IFF_MASTER) { flags &=~IFF_MASTER; printf("MASTER "); }
-	if (flags & IFF_SLAVE) { flags &=~IFF_SLAVE; printf("SLAVE "); }
-	if (flags & IFF_DEBUG) { flags &=~IFF_DEBUG; printf("DEBUG "); }
-	if (flags & IFF_DYNAMIC) { flags &=~IFF_DYNAMIC; printf("DYNAMIC "); }
-	if (flags & IFF_AUTOMEDIA) { flags &=~IFF_AUTOMEDIA; printf("AUTOMEDIA "); }
-	if (flags & IFF_PORTSEL) { flags &=~IFF_PORTSEL; printf("PORTSEL "); }
-	if (flags & IFF_NOTRAILERS) { flags &=~IFF_NOTRAILERS; printf("NOTRAILERS "); }
-	if (flags & IFF_UP) { flags &=~IFF_UP; printf("UP"); }
-	printf("> ");
-}
-
-int if_show()
-{
-    struct nlmsg_list *linfo = NULL;
-    struct nlmsg_list *ainfo = NULL;
-    struct nlmsg_list *l;
-    struct rtnl_handle rth;
-    int preferred_family = AF_PACKET;
-//    char *filter_dev = NULL;
-    
-//    ipaddr_reset_filter(oneline);
-    
-//    if (filter.family == AF_UNSPEC)
-//	filter.family = preferred_family;
-//    filter_dev="eth0";
-    
-    rtnl_open(&rth, 0);
-    rtnl_wilddump_request(&rth, preferred_family, RTM_GETLINK);
-    rtnl_dump_filter(&rth, store_nlmsg, &linfo, NULL, NULL);
-    
-//    filter.ifindex = ll_name_to_index(filter_dev);
-    
-    // 2 atrybut: AF_UNSPEC, AF_INET, AF_INET6
-    rtnl_wilddump_request(&rth, AF_UNSPEC, RTM_GETADDR);
-    rtnl_dump_filter(&rth, store_nlmsg, &ainfo, NULL, NULL);
-
-    // wy¶wietl informacje o interfejsach
-    for (l=linfo; l; l = l->next) {
-	struct ifinfomsg *ifi = NLMSG_DATA(&l->h);
-
-	// wy¶wietl info o interfejsie
-	print_linkinfo(&l->h);
-
-	// wy¶wietl adresy dla tego interfejsu
-	print_selected_addrinfo(ifi->ifi_index, ainfo);
-    }
-    return 0;
-}
-
-int print_selected_addrinfo(int ifindex, struct nlmsg_list *ainfo)
-{
-	for ( ;ainfo ;  ainfo = ainfo->next) {
-		struct nlmsghdr *n = &ainfo->h;
-		struct ifaddrmsg *ifa = NLMSG_DATA(n);
-
-		if (ifa->ifa_index == ifindex) print_addrinfo(n);
-	}
-	return 0;
-}
-
-
-int print_linkinfo(struct nlmsghdr *n)
-{
-	struct ifinfomsg *ifi = NLMSG_DATA(n);
-	struct rtattr * tb[IFLA_MAX+1];
-	int len = n->nlmsg_len;
-
-	len -= NLMSG_LENGTH(sizeof(*ifi));
-	memset(tb, 0, sizeof(tb));
-	parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), len);
-
-	// interface number + interface name
-	printf("%d: %4s", ifi->ifi_index,
-		tb[IFLA_IFNAME] ? (char*)RTA_DATA(tb[IFLA_IFNAME]) : "<nil>");
-
-	// What physical interface is this interface on?
-	if (tb[IFLA_LINK]) {
-		SPRINT_BUF(b1);
-		int iflink = *(int*)RTA_DATA(tb[IFLA_LINK]);
-		if (iflink == 0)
-			printf("@NONE: ");
-		else {
-			printf("@%-4s: ", ll_idx_n2a(iflink, b1));
-		}
-	} else {
-		printf(":      ");
-	}
-
-	{
-	    char b1[SPRINT_BSIZE];
-	    printf(" link/%-8s ", ll_type_n2a(ifi->ifi_type, b1, sizeof(b1)));
-	}
-
-	// flags <UP,NOARP,LOOPBACK,MULTICAST,BROADCAST>
-	print_link_flags(ifi->ifi_flags);
-	
-	printf("\n");
-	return 0;
-}
-
-int print_linkinfo2(struct nlmsghdr *n)
-{
-    struct ifinfomsg *ifi;
-    struct rtattr * tb[IFLA_MAX+1];
-    static int i=1;
-    int len;
-
-    ifi=NLMSG_DATA(n);
-    len = n->nlmsg_len;
-    len -= NLMSG_LENGTH(sizeof(*ifi));
-    memset(tb, 0, sizeof(tb));
-    parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), len);
-    printf("Interface no %d: %s \n", i++, (char*)RTA_DATA(tb[IFLA_IFNAME]));
-    return 0;
-}
-
-int print_addrinfo(struct nlmsghdr *n)
-{
-    struct ifaddrmsg *ifa = NLMSG_DATA(n);
-    struct rtattr * rta_tb[IFA_MAX+1];
-    char abuf[256];
-    printf("    ");
-    
-    memset(rta_tb, 0, sizeof(rta_tb));
-    parse_rtattr(rta_tb, IFA_MAX, IFA_RTA(ifa), n->nlmsg_len - NLMSG_LENGTH(sizeof(*ifa)));
-    
-    if (!rta_tb[IFA_LOCAL])   rta_tb[IFA_LOCAL]   = rta_tb[IFA_ADDRESS];
-    if (!rta_tb[IFA_ADDRESS]) rta_tb[IFA_ADDRESS] = rta_tb[IFA_LOCAL];
-    
-    // rodzina
-    if (ifa->ifa_family == AF_INET6) printf("inet6 "); else
-	if (ifa->ifa_family == AF_INET) printf("inet  "); else
-	    printf("other: ");
-    
-    // adres
-    printf("%s", rt_addr_n2a(ifa->ifa_family,
-			     RTA_PAYLOAD(rta_tb[IFA_LOCAL]),
-			     RTA_DATA(rta_tb[IFA_LOCAL]),
-			     abuf, sizeof(abuf)));
-    
-    // maska
-    printf("/%d", ifa->ifa_prefixlen);
-    
-    // anycast?
-    if (rta_tb[IFA_ANYCAST]) {
-	printf("any %s ",
-	       rt_addr_n2a(ifa->ifa_family,
-			   RTA_PAYLOAD(rta_tb[IFA_ANYCAST]),
-			   RTA_DATA(rta_tb[IFA_ANYCAST]),
-			   abuf, sizeof(abuf)));
-    }
-
-    // scope?
-    // printf(" scope %s ", rtnl_rtscope_n2a(ifa->ifa_scope, b1, sizeof(b1)));
-    
-    if (!(ifa->ifa_flags&IFA_F_PERMANENT)) {
-	printf("dynamic ");
-    } 
-    
-    // dynamic address
-    if (rta_tb[IFA_CACHEINFO]) {
-	struct ifa_cacheinfo *ci = RTA_DATA(rta_tb[IFA_CACHEINFO]);
-	char buf[128];
-	if (ci->ifa_valid == 0xFFFFFFFFU)
-	    sprintf(buf, "valid_lft forever");
-	else
-	    sprintf(buf, "valid_lft %dsec", ci->ifa_valid);
-	if (ci->ifa_prefered == 0xFFFFFFFFU)
-	    sprintf(buf+strlen(buf), " preferred_lft forever");
-	else
-	    sprintf(buf+strlen(buf), " preferred_lft %dsec", ci->ifa_prefered);
-	printf("       %s", buf);
-    }
-    printf("\n");
-    return 0;
 }

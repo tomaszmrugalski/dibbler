@@ -1,8 +1,21 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntTransMgr.h,v 1.4 2004-09-07 15:37:44 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
 class TClntTransMgr;
 #ifndef CLNTTRANSMGR_H
 #define CLNTTRANSMGR_H
 #include <string>
 #include "ClntIfaceMgr.h"
+#include "ClntCfgIface.h"
 #include "Opt.h"
 #include "IPv6Addr.h"
 class TDHCPMsg;
@@ -13,8 +26,7 @@ class TClntConfMgr;
 class TClntTransMgr
 {
   public:
-    TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-		  string config);
+    TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, string config);
     void doDuties();
     void relayMsg(SmartPtr<TMsg> msg);
     unsigned long getTimeout();
@@ -40,7 +52,11 @@ class TClntTransMgr
     void checkRequest();
     void checkSolicit();
     void checkInfRequest();
+
   private:
+    bool openLoopbackSocket();
+    bool openSocket(SmartPtr<TClntCfgIface> iface);
+
     // managers
     SmartPtr<TClntCfgMgr>   CfgMgr;
     SmartPtr<TClntIfaceMgr> IfaceMgr;
@@ -48,13 +64,11 @@ class TClntTransMgr
     SmartPtr<TClntTransMgr> That;
 
     TContainer< SmartPtr<TMsg> > Transactions;
-
     bool IsDone;
     bool Shutdown;
-    bool isStart;
-
-	int ctrlIface;
-	char ctrlAddr[48];
+    bool ConfirmEnabled;  // should we send CONFIRM message?
+    int ctrlIface;
+    char ctrlAddr[48];
 };
 #endif
 
