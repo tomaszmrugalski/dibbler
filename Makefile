@@ -108,7 +108,6 @@ tags:
 	find . -name \*.h | xargs etags
 
 clean:
-	cd $(PREFIX)/bison++; $(MAKE) clean
 	@for dir in $(SUBDIRS); do \
 		echo "Cleaning in $$dir"; \
 		(cd $$dir; $(MAKE) clean) || exit 1; \

@@ -1,5 +1,19 @@
-#ifndef CLNTCFGIFACE_H_HEADER_INCLUDED_C0FD9791
-#define CLNTCFGIFACE_H_HEADER_INCLUDED_C0FD9791
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: ClntCfgIface.h,v 1.3 2004-05-23 20:13:12 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
+#ifndef CLNTCFGIFACE_H
+#define CLNTCFGIFACE_H
 
 #include <iostream>
 #include <iomanip>
@@ -40,25 +54,25 @@ public:
 
     TClntCfgIface(int ifaceNr);
 
-	void setNoConfig();
+    void setNoConfig();
 
     void setIfaceID(int ifaceID);
-	void setIfaceName(string ifaceName);
-
-	bool isNoConfig() {return NoConfig;};
-
+    void setIfaceName(string ifaceName);
+    
+    bool noConfig();
+    
     ESendOpt getDNSSendOpt();
     EReqOpt  getDNSReqOpt();
 
     ESendOpt getNTPSendOpt();
     EReqOpt  getNTPReqOpt();
-
+    
     ESendOpt getDomainSendOpt();
     EReqOpt  getDomainReqOpt();
-
+    
     ESendOpt getTimeZoneSendOpt();
     EReqOpt  getTimeZoneReqOpt();
-
+    
     bool isReqDNSSrv();
     bool isReqNTPSrv();
     bool isReqDomainName();
@@ -91,41 +105,35 @@ public:
     bool onlyInformationRequest();
 private:
     string      IfaceName;
-	int	        ID;
-	bool        NoConfig;
-
+    int	        ID;
+    bool        NoConfig;
+    
     EReqOpt DNSReqOpt;
     EReqOpt NTPReqOpt;
-    //EReqOpt NISReqOpt;
-
+    
     ESendOpt DNSSendOpt;
-   	ESendOpt NTPSendOpt;
-    //ESendOpt NISOptions;
-
+    ESendOpt NTPSendOpt;
+    
     TContainer<SmartPtr<TIPv6Addr> > DNSSrv;
     TContainer<SmartPtr<TIPv6Addr> > NTPSrv;
-    //string NISServer;
     TContainer<SmartPtr<TIPv6Addr> > AppDNSSrv;
     TContainer<SmartPtr<TIPv6Addr> > AppNTPSrv;
-    //string NISApp;
     TContainer<SmartPtr<TIPv6Addr> > PrepDNSSrv;
     TContainer<SmartPtr<TIPv6Addr> > PrepNTPSrv;
-    //string NISPrep;
 
     bool        ReqDomainName;
     bool        ReqTimeZone;
     bool        ReqDNSSrv;
     bool        ReqNTPSrv;
-
+    
     string      TZone;
-	ESendOpt    TimeZoneSendOpt;
-	EReqOpt	    TimeZoneReqOpt;
-	
+    ESendOpt    TimeZoneSendOpt;
+    EReqOpt	    TimeZoneReqOpt;
+    
     string	    Domain;
-	ESendOpt    DomainSendOpt;
-	EReqOpt	    DomainReqOpt;
-
-
+    ESendOpt    DomainSendOpt;
+    EReqOpt	    DomainReqOpt;
+    
     EState      TimeZoneState;
     EState      DomainNameState;
     EState      DNSSrvState;

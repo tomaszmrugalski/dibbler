@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: ClntCfgIface.cpp,v 1.3 2004-05-23 20:13:12 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #include <iostream>
 #include <iomanip>
 #include "ClntCfgIface.h"
@@ -18,7 +32,7 @@ TClntCfgIface::TClntCfgIface(string ifaceName) {
 TClntCfgIface::TClntCfgIface(int ifaceNr) {
     NoConfig=false;
     ID=ifaceNr;
-    IfaceName="(Interface name not yet set)";
+    IfaceName="[unknown]";
     this->DNSSrvState=NOTCONFIGURED;
     this->NTPSrvState=NOTCONFIGURED;
     this->DomainNameState=NOTCONFIGURED;
@@ -220,42 +234,44 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     {
         //Is this a first configuration (so prob. reply has been received to:
         //solicit(rap.commit), request or information request message
-        case NOTCONFIGURED:
-        {
-            NTPSrvState=CONFIGURED;
-            clog<< logger::logNotice << "New NTP server list received:";
-            newSrvLst.first();
-            NTPSrv.clear();
-            SmartPtr<TIPv6Addr> dnsAddr;
-            while (dnsAddr=newSrvLst.get())
-            {
-                NTPSrv.append(dnsAddr);
-                clog<< *dnsAddr<<",";
-            }
-            GiverNTPSrvDUID=duid;
-            clog << "(server duid:"<<*duid<<")" << logger::endl;
-        }
+    case NOTCONFIGURED: {
+	NTPSrvState=CONFIGURED;
+	clog<< logger::logNotice << "New NTP server list received:";
+	newSrvLst.first();
+	NTPSrv.clear();
+	SmartPtr<TIPv6Addr> dnsAddr;
+	while (dnsAddr=newSrvLst.get()) {
+	    NTPSrv.append(dnsAddr);
+	    clog<< *dnsAddr<<",";
+	}
+	GiverNTPSrvDUID=duid;
+	clog << "(server duid:"<<*duid<<")" << logger::endl;
+	break;
+    }
+    case INPROCESS: {
         //Is this parameter is in renewing process 
         //(renew/rebind/information request message was sent)
-        case INPROCESS:
-        {
-            if (NTPSrv.count())
-            {
-                NTPSrvState=CONFIGURED;
-                newSrvLst.first();
-                NTPSrv.clear();
-                SmartPtr<TIPv6Addr> ntpAddr;
-                while (ntpAddr=newSrvLst.get())
-                    NTPSrv.append(ntpAddr);
-            }
-            else
-                NTPSrvState=NOTCONFIGURED;
-        }
+	if (NTPSrv.count())
+	{
+	    NTPSrvState=CONFIGURED;
+	    newSrvLst.first();
+	    NTPSrv.clear();
+	    SmartPtr<TIPv6Addr> ntpAddr;
+	    while (ntpAddr=newSrvLst.get())
+		NTPSrv.append(ntpAddr);
+	}
+	else
+	    NTPSrvState=NOTCONFIGURED;
+	break;
+    }
+    default: {
+	break;
+    }
     };
     //FIXME: Here should be also set options somewhere in the system ???
 }
 
- void TClntCfgIface::setDomainName(string domainName,SmartPtr<TDUID> duid) {
+void TClntCfgIface::setDomainName(string domainName,SmartPtr<TDUID> duid) {
     switch(DomainNameState) {
 	//Is this a first configuration (so prob. reply has been received to:
         //solicit(rap.commit), request or information request message
@@ -263,7 +279,6 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
 	DomainNameState=CONFIGURED;
 	this->Domain=domainName;
 	GiverNTPSrvDUID=duid;
-
 	domain_add(this->IfaceName.c_str(), this->ID, (char*)domainName.c_str());
 	break;
     }
@@ -401,6 +416,9 @@ EReqOpt  TClntCfgIface::getTimeZoneReqOpt()
     return this->TimeZoneReqOpt;
 }
 
+bool TClntCfgIface::noConfig() {
+    return NoConfig;
+}
 
 ostream& operator<<(ostream& out,TClntCfgIface& iface)
 {
@@ -486,7 +504,6 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << "    </TimeZone>" << endl;
 
     out << "    <groups count=\"" << iface.ClntCfgGroupLst.count() << "\">" << endl;
-    int groupCnt=0;
     SmartPtr<TClntCfgGroup>	groupPtr;
     iface.ClntCfgGroupLst.first();
     while(groupPtr=iface.ClntCfgGroupLst.get())
