@@ -12,7 +12,7 @@ SRV_LDFLAGS  = $(LDFLAGS)
 REL_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
-DEBUGINFO    = -g
+#DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === libxml2 stuff ===
