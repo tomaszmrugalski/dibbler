@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-OBJECTS = layer3.o libnetlink.o ll_map.o ll_types.o utils.o lowlevel-options-linux.o addrpack.o
+OBJECTS = layer3.o libnetlink.o ll_map.o ll_types.o utils.o lowlevel-options-linux.o addrpack.o daemon.o
 
 objs: $(OBJECTS)
 
