@@ -314,6 +314,9 @@ release-rpm: VERSION-linux release-src
 
 install: server client relay doc
 	$(MKDIR) $(INST_WORKDIR)
+	$(MKDIR) $(INST_BINDIR)
+	$(MKDIR) $(INST_CONFDIR)
+	$(MKDIR) $(INST_MANDIR)
 	@echo "[INSTALL] $(SERVERBIN)"
 	$(INSTALL) -m 755 $(SERVERBIN) $(INST_BINDIR)/
 	@echo "[INSTALL] $(CLIENTBIN)"
@@ -321,7 +324,7 @@ install: server client relay doc
 	@echo "[INSTALL] $(RELAYBIN)"
 	$(INSTALL) -m 755 $(RELAYBIN) $(INST_BINDIR)/
 	@for dir in *.conf; do \
-		(echo "[INSTALL] $$dir" && $(INSTALL) -m 644 $$dir $(INST_WORKDIR)) \
+		(echo "[INSTALL] $$dir" && $(INSTALL) -m 644 $$dir $(INST_CONFDIR)) \
 	done
 	$(MKDIR) $(INST_MANDIR)/man8
 	@for dir in doc/man/*.8; do \

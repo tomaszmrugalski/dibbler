@@ -38,6 +38,7 @@ INST_WORKDIR = '/var/lib/dibbler'
 INST_MANDIR  = '/usr/local/man'
 INST_DOCDIR  = '/usr/local/share/doc'
 INST_BINDIR  = '/usr/local/sbin'
+INST_CONFDIR = '/var/lib/dibbler'
 INSTALL      = 'install'
 MKDIR        = mkdir -p
 CP           = cp
