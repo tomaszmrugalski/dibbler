@@ -5,8 +5,8 @@
 #define DIBBLER_VERSION "0.0.20040114"
 
 #define DIBBLER_COPYRIGHT1 "Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
-#define DIBBLER_COPYRIGHT2 "by Tomasz Mrugalski <thomson@klub.com.pl> engine, doc, Linux port"
-#define DIBBLER_COPYRIGHT3 " & Marek Senderski <msend@o2.pl> engine, winXP port"
+#define DIBBLER_COPYRIGHT2 "by Tomasz Mrugalski <thomson@klub.com.pl> engine,Linux port,doc"
+#define DIBBLER_COPYRIGHT3 "   Marek Senderski  <msend@o2.pl>         engine,winXP port"
 #define DIBBLER_COPYRIGHT4 "Published under GNU GPL v2 or later licence. "
 
 #ifdef LINUX
@@ -29,11 +29,11 @@
 // **********************************************************************
 
 #ifdef WIN32
-#define WORKDIR			".\\"
-#define SRVDUID_FILE		"duid-server"
-#define CLNTDUID_FILE		"duid-client"
+#define WORKDIR		   ".\\"
+#define SRVDUID_FILE	   "duid-server"
+#define CLNTDUID_FILE	   "duid-client"
 #define CLNTLOG_FILE	   "client.log"
-#define SRVLOG_FILE	       "server.log"
+#define SRVLOG_FILE	   "server.log"
 #define CLNTCONF_FILE	   "client.conf"
 #define SRVCONF_FILE       "server.conf"
 #define CLNTDB_FILE	   "addrdb-client.xml"
