@@ -9,7 +9,12 @@
 TIfaceIface::TIfaceIface(char * name, int id, unsigned int flags, char* mac, 
 			 int maclen, char* llAddr, int llAddrCnt, int hwType)
 {
+#ifdef LINUX
     snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
+#endif
+#ifdef WIN32
+    _snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
+#endif
     this->ID = id;
     this->Flags = flags;
 

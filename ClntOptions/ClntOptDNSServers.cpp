@@ -31,6 +31,7 @@ bool TClntOptDNSServers::doDuties()
     while (ptrAddr = DNSSrv.get() ) {
 	dns_add("",0,ptrAddr->getPlain() );
     }
+	return true;
 }
 
 void TClntOptDNSServers::setSrvDuid(SmartPtr<TDUID> duid)
