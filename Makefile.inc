@@ -25,8 +25,8 @@ ARCH         = LINUX
 LOWLEVEL     = $(PREFIX)/$(PORTDIR)
 CLIENT       = $(PORTDIR)/client-linux.cpp
 SERVER       = $(PORTDIR)/server-linux.cpp
-CLIENTBIN    = dibbler-client-linux
-SERVERBIN    = dibbler-server-linux
+CLIENTBIN    = dibbler-client
+SERVERBIN    = dibbler-server
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s

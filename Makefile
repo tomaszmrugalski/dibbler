@@ -174,8 +174,8 @@ release:
 	echo "release-src"
 	echo "release-doc"
 	echo
-	echo "To make release-win32 work, place dibbler-server-win32.exe and"
-	echo "dibbler-client-win32.exe in this directory."
+	echo "To make release-win32 work, place dibbler-server.exe and"
+	echo "dibbler-client.exe in this directory."
 
 release-linux: VERSION-linux
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                    \
@@ -184,7 +184,7 @@ release-linux: VERSION-linux
 
 release-win32: VERSION-win
 	tar czvf dibbler-$(VERSION)-win32.tar.gz                  \
-		dibbler-server-win32.exe dibbler-client-win32.exe \
+		dibbler-server.exe dibbler-client                 \
                 client*.conf server*.conf                         \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
 
