@@ -1,6 +1,7 @@
 
- WILD IDEAS
+ WILD IDEAS $Id: WILD-IDEAS,v 1.5 2004-04-04 14:32:45 thomson Exp $
 ------------
+
  This file contains various ideas and concepts which are not yet approved.
  Consider it as notes made during unformal developers meeting (i.e. beer drinking :).
 
@@ -9,6 +10,5 @@
   pointer to my handler". When system receives an option, looks in option table.
   If it finds appropriate handler, it passes nessesary data (4xMgr, parent-option ptr,
   msg ptr). If not, drops this option.
-- (Marek was here) - cvs test (test2: lokalnie jako user marek)
-  (teraz thomson)
-  
+- Include bison++ sources
+- interoperability: is IA without IAADDR (received from client) legal?
