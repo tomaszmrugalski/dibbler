@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.h,v 1.4 2004-10-25 20:45:52 thomson Exp $
+ * $Id: ClntParsIfaceOpt.h,v 1.5 2004-11-29 21:21:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/10/25 20:45:52  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.3  2004/10/02 13:11:24  thomson
  * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
  * Unicast communication now can be enable on client side (disabled by default).
@@ -102,6 +105,11 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     void setNISPDomain(string domain);
     bool getReqNISPDomain();
 
+    // option: Lifetime
+    bool getLifetime();
+    void setLifetime();
+    bool getReqLifetime();
+
 private:
     bool NewGroup;//indicates whether new group should be created
     bool NoIAs;
@@ -118,6 +126,7 @@ private:
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
     string NISPDomain;
+    bool Lifetime;
 
     bool ReqDNSServer;
     bool ReqDomain;
@@ -130,6 +139,7 @@ private:
     bool ReqNISPServer;
     bool ReqNISDomain;
     bool ReqNISPDomain;
+    bool ReqLifetime;
 };
 
 

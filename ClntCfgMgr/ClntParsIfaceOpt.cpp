@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.5 2004-11-01 23:31:24 thomson Exp $
+ * $Id: ClntParsIfaceOpt.cpp,v 1.6 2004-11-29 21:21:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/11/01 23:31:24  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.4  2004/10/25 20:45:52  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -72,6 +75,7 @@ TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
     NISDomain = "";
     NISPServerLst.clear();
     NISPDomain = "";
+    Lifetime = false;
     
     NewGroup=false;
     NoIAs   = false;
@@ -88,6 +92,7 @@ TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
     ReqNISPServer = false;
     ReqNISDomain  = false;
     ReqNISPDomain = false;
+    ReqLifetime   = false;
 }
 
 TClntParsIfaceOpt::~TClntParsIfaceOpt() {
@@ -225,5 +230,15 @@ bool TClntParsIfaceOpt::getReqNISPDomain() {
     return this->ReqNISPDomain;
 }
 
+// --- option: Lifetime ---
 
-
+bool TClntParsIfaceOpt::getLifetime() { 
+    return this->Lifetime;
+}
+void TClntParsIfaceOpt::setLifetime() { 
+    this->Lifetime = true;
+    this->ReqLifetime = true;
+}
+bool TClntParsIfaceOpt::getReqLifetime() {
+    return this->ReqLifetime;
+}

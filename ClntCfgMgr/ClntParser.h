@@ -262,24 +262,25 @@ typedef
 #define	NIS_DOMAIN_	271
 #define	NISP_DOMAIN_	272
 #define	FQDN_	273
-#define	IFACE_	274
-#define	NO_CONFIG_	275
-#define	REJECT_SERVERS_	276
-#define	PREFERRED_SERVERS_	277
-#define	IA_	278
-#define	ADDRES_	279
-#define	IPV6ADDR_	280
-#define	WORKDIR_	281
-#define	RAPID_COMMIT_	282
-#define	STATELESS_	283
-#define	OPTION_	284
-#define	LOGNAME_	285
-#define	LOGLEVEL_	286
-#define	LOGMODE_	287
-#define	STRING_	288
-#define	HEXNUMBER_	289
-#define	INTNUMBER_	290
-#define	DUID_	291
+#define	LIFETIME_	274
+#define	IFACE_	275
+#define	NO_CONFIG_	276
+#define	REJECT_SERVERS_	277
+#define	PREFERRED_SERVERS_	278
+#define	IA_	279
+#define	ADDRES_	280
+#define	IPV6ADDR_	281
+#define	WORKDIR_	282
+#define	RAPID_COMMIT_	283
+#define	STATELESS_	284
+#define	OPTION_	285
+#define	LOGNAME_	286
+#define	LOGLEVEL_	287
+#define	LOGMODE_	288
+#define	STRING_	289
+#define	HEXNUMBER_	290
+#define	INTNUMBER_	291
+#define	DUID_	292
 
 
 #line 169 "../bison++/bison.h"
@@ -344,6 +345,7 @@ static const int NISP_SERVER_;
 static const int NIS_DOMAIN_;
 static const int NISP_DOMAIN_;
 static const int FQDN_;
+static const int LIFETIME_;
 static const int IFACE_;
 static const int NO_CONFIG_;
 static const int REJECT_SERVERS_;
@@ -386,24 +388,25 @@ static const int DUID_;
 	,NIS_DOMAIN_=271
 	,NISP_DOMAIN_=272
 	,FQDN_=273
-	,IFACE_=274
-	,NO_CONFIG_=275
-	,REJECT_SERVERS_=276
-	,PREFERRED_SERVERS_=277
-	,IA_=278
-	,ADDRES_=279
-	,IPV6ADDR_=280
-	,WORKDIR_=281
-	,RAPID_COMMIT_=282
-	,STATELESS_=283
-	,OPTION_=284
-	,LOGNAME_=285
-	,LOGLEVEL_=286
-	,LOGMODE_=287
-	,STRING_=288
-	,HEXNUMBER_=289
-	,INTNUMBER_=290
-	,DUID_=291
+	,LIFETIME_=274
+	,IFACE_=275
+	,NO_CONFIG_=276
+	,REJECT_SERVERS_=277
+	,PREFERRED_SERVERS_=278
+	,IA_=279
+	,ADDRES_=280
+	,IPV6ADDR_=281
+	,WORKDIR_=282
+	,RAPID_COMMIT_=283
+	,STATELESS_=284
+	,OPTION_=285
+	,LOGNAME_=286
+	,LOGLEVEL_=287
+	,LOGMODE_=288
+	,STRING_=289
+	,HEXNUMBER_=290
+	,INTNUMBER_=291
+	,DUID_=292
 
 
 #line 215 "../bison++/bison.h"

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.6 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.7 2004-11-29 21:21:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.5  2004/10/25 20:45:52  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -142,6 +146,11 @@ public:
     void setNISPDomainState(EState state);
     string getProposedNISPDomain();
 
+    // --- option: Lifetime ---
+    bool isReqLifetime();
+    EState getLifetimeState();
+    void setLifetimeState(EState state);
+
 private:
     string IfaceName;
     int ID;
@@ -172,6 +181,7 @@ private:
     EState NISPServerState;
     EState NISDomainState;
     EState NISPDomainState;
+    EState LifetimeState;
 
     bool ReqDNSServer;
     bool ReqDomain;
@@ -184,20 +194,7 @@ private:
     bool ReqNISPServer;
     bool ReqNISDomain;
     bool ReqNISPDomain;
-    
-//    TContainer<SmartPtr<TIPv6Addr> > ReceivedDNSSrv;
-//    SmartPtr<TDUID>                  GiverDNSSrvDUID;
-//    SmartPtr<TIPv6Addr>              GiverDNSSrvAddr;
-//    TContainer<SmartPtr<TIPv6Addr> > ReceivedNTPSrv;
-//    SmartPtr<TDUID>                  GiverNTPSrvDUID;
-//    SmartPtr<TIPv6Addr>              GiverNTPSrvAddr;
-//    string                           ReceivedDomainName;
-//    SmartPtr<TDUID>                  GiverDomainDUID;
-//    SmartPtr<TIPv6Addr>              GiverDomainAddr;
-//    string                           ReceivedTimeZone;
-//    SmartPtr<TDUID>                  GiverTimeDUID;
-//    SmartPtr<TIPv6Addr>              GiverTimeAddr;
-    
+    bool ReqLifetime;
 };
 
 #endif 

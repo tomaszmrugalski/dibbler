@@ -82,6 +82,7 @@ extern yy_clntParser_stype yylval;
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_, UNICAST_
 %token NTP_SERVER_, DOMAIN_, TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_
+%token LIFETIME_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,STATELESS_
 %token OPTION_
@@ -367,6 +368,7 @@ InterfaceOptionDeclaration
 | NISPServerOption
 | NISDomainOption
 | NISPDomainOption
+| LifetimeOption
 ;
 
 IAOptionDeclaration
@@ -710,6 +712,15 @@ NISPDomainOption
 }
 ;
 
+//////////////////////////////////////////////////////////////////////
+//LIFETIME option/////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+LifetimeOption
+:OPTION_ LIFETIME_
+{
+    ParserOptStack.getLast()->setLifetime();
+}
+;
 
 %%
 
