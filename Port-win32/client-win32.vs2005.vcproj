@@ -136,6 +136,9 @@
 				Name="IfaceMgr"
 				Filter="">
 				<File
+					RelativePath="..\ClntIfaceMgr\ClntIfaceIface.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntIfaceMgr\ClntIfaceMgr.cpp">
 				</File>
 				<File
@@ -155,13 +158,13 @@
 					RelativePath="..\Options\Opt.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptAddr.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptAddrLst.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptClientIdentifier.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptDNSServers.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptDomainName.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptElapsed.cpp">
@@ -173,10 +176,10 @@
 					RelativePath="..\Options\OptIA_NA.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptInterfaceID.cpp">
+					RelativePath="..\Options\OptInteger4.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptNTPServers.cpp">
+					RelativePath="..\Options\OptInterfaceID.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
@@ -203,13 +206,13 @@
 					RelativePath="..\Options\OptServerIdentifier.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptServerUnicast.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptStatusCode.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptTimeZone.cpp">
+					RelativePath="..\Options\OptString.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptStringLst.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptUserClass.cpp">
@@ -237,6 +240,9 @@
 					RelativePath="..\ClntOptions\ClntOptElapsed.cpp">
 				</File>
 				<File
+					RelativePath="..\ClntOptions\ClntOptFQDN.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntOptions\ClntOptIAAddress.cpp">
 				</File>
 				<File
@@ -244,6 +250,21 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptInterfaceID.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptLifetime.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISDomain.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISPDomain.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISPServer.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISServer.cpp">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptNTPServers.cpp">
@@ -256,6 +277,12 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptRapidCommit.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptSIPDomain.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptSIPServer.cpp">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptServerIdentifier.cpp">
@@ -547,6 +574,12 @@
 					RelativePath="..\sources\Options\Opt.h">
 				</File>
 				<File
+					RelativePath="..\Options\OptAddr.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptAddrLst.h">
+				</File>
+				<File
 					RelativePath="..\sources\Options\OptClientIdentifier.h">
 				</File>
 				<File
@@ -563,6 +596,9 @@
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptIA_NA.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptInteger4.h">
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptInterfaceID.h">
@@ -587,6 +623,12 @@
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptStatusCode.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptString.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptStringLst.h">
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptTimeZone.h">
@@ -617,6 +659,9 @@
 					RelativePath="..\sources\ClntOptions\ClntOptElapsed.h">
 				</File>
 				<File
+					RelativePath="..\ClntOptions\ClntOptFQDN.h">
+				</File>
+				<File
 					RelativePath="..\sources\ClntOptions\ClntOptIAAddress.h">
 				</File>
 				<File
@@ -624,6 +669,24 @@
 				</File>
 				<File
 					RelativePath="..\sources\ClntOptions\ClntOptInterfaceID.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptLifetime.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISDomain.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISPDomain.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISPServer.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNISServer.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptNTPServers.h">
 				</File>
 				<File
 					RelativePath="..\sources\ClntOptions\ClntOptNTPServers.h">
@@ -636,6 +699,12 @@
 				</File>
 				<File
 					RelativePath="..\sources\ClntOptions\ClntOptRapidCommit.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptSIPDomain.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptSIPServer.h">
 				</File>
 				<File
 					RelativePath="..\sources\ClntOptions\ClntOptServerIdentifier.h">

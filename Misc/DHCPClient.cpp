@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.14 2004-11-01 23:31:24 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.15 2004-11-02 02:13:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/11/01 23:31:24  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.13  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -72,7 +75,7 @@ void TDHCPClient::stop() {
     // just to break select() in WIN32 systems
     Log(Warning) << "Service shutdown: Sending SHUTDOWN packet on iface="
 		 << TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << LogEnd;
-    int fd = sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
+    int fd = sock_add("", TransMgr->getCtrlIface(),"::",0,true, false); 
     char buf = CONTROL_MSG;
     int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
     sock_del(fd);

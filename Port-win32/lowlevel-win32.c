@@ -1,7 +1,10 @@
 /*
- * $Id: lowlevel-win32.c,v 1.2 2004-10-25 20:45:54 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.3 2004-11-02 02:14:20 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
+ *  Revision 1.2  2004/10/25 20:45:54  thomson
+ *  Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  *  Revision 1.1  2004/10/03 22:21:16  thomson
  *  lowlevel-winxp.c renamed to lowlevel-win32.c due to huge changes, e.g.
  *  switch from ipv6.exe to netsh.exe, different binding sockets method.
@@ -224,7 +227,8 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     free(buffer);
     return retVal;
 }
-extern int ipaddr_add(char * ifacename, int ifaceid, char * addr, long pref, long valid)
+extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, 
+                      unsigned long pref, unsigned long valid)
 {
     // netsh interface ipv6 add address interface="eth0" address=2000::123 validlifetime=120 preferredlifetime=60
     char arg1[]="interface";
@@ -244,7 +248,7 @@ extern int ipaddr_add(char * ifacename, int ifaceid, char * addr, long pref, lon
     return i;
 }
 
-extern int ipaddr_del(char * ifacename, int ifaceid, char * addr)
+extern int ipaddr_del(const char * ifacename, int ifaceid, const char * addr)
 {
     // netsh interface ipv6 add address interface=eth0 address=2000::123 validlifetime=120 preferredlifetime=60
     char arg1[]="interface";
@@ -262,7 +266,7 @@ extern int ipaddr_del(char * ifacename, int ifaceid, char * addr)
 
 SOCKET mcast=0;
 
-extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly)
+extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly, int reuse)
 {
     SOCKET s;
     struct sockaddr_in6 bindme;
@@ -377,9 +381,7 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
     }
 }
 
-extern int dns_add(const char* ifname, int ifaceid, char* addrPlain) {
-    // Now that's a nasty workaround, used for total laziness reasons only
-    static int alreadySetup = 0;
+extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
     
     // netsh interface ipv6 add dns interface="eth0" address=2000::123
     char arg1[]="interface";
@@ -390,16 +392,12 @@ extern int dns_add(const char* ifname, int ifaceid, char* addrPlain) {
     char arg6[256]; // address=...
     intptr_t i;
     
-//    if (alreadySetup)
-//	return 0;
-    
     sprintf(arg5,"interface=\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
-    alreadySetup = 1;
     return i;
 }
-extern int dns_del(const char* ifname, int ifaceid, char* addrPlain) {
+extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     // netsh interface ipv6 add dns interface="eth0" address=2000::123
     char arg1[]="interface";
     char arg2[]="ipv6";
@@ -415,11 +413,74 @@ extern int dns_del(const char* ifname, int ifaceid, char* addrPlain) {
     return 0;
 }
 
-extern int domain_add(const char* ifname, int ifaceid, char* domain) {
+extern int domain_add(const char* ifname, int ifaceid, const char* domain) {
     return 0;
 }
 
-extern int domain_del(const char* ifname, int ifaceid, char* domain) {
+extern int domain_del(const char* ifname, int ifaceid, const char* domain) {
     return 0;
 }
 
+int ntp_add(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int ntp_del(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int timezone_set(const char* ifname, int ifindex, const char* timezone){
+    return 0;
+}
+
+int timezone_del(const char* ifname, int ifindex, const char* timezone){
+    return 0;
+}
+
+int sipserver_add(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int sipserver_del(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int sipdomain_add(const char* ifname, int ifindex, const char* domain){
+    return 0;
+}
+
+int sipdomain_del(const char* ifname, int ifindex, const char* domain){
+    return 0;
+}
+
+int nisserver_add(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int nisserver_del(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int nisdomain_set(const char* ifname, int ifindex, const char* domain){
+    return 0;
+}
+
+int nisdomain_del(const char* ifname, int ifindex, const char* domain){
+    return 0;
+}
+
+int nisplusserver_add(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain){
+    return 0;
+}
+
+int nisplusdomain_set(const char* ifname, int ifindex, const char* domain){
+    return 0;
+}
+
+int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
+    return 0;
+}

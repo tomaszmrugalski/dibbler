@@ -142,13 +142,13 @@
 					RelativePath="..\Options\Opt.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptAddr.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptAddrLst.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptClientIdentifier.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptDNSServers.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptDomainName.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptElapsed.cpp">
@@ -160,10 +160,10 @@
 					RelativePath="..\Options\OptIA_NA.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptInterfaceID.cpp">
+					RelativePath="..\Options\OptInteger4.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptNTPServers.cpp">
+					RelativePath="..\Options\OptInterfaceID.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
@@ -178,13 +178,13 @@
 					RelativePath="..\Options\OptServerIdentifier.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptServerUnicast.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptStatusCode.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptTimeZone.cpp">
+					RelativePath="..\Options\OptString.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptStringLst.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptUserClass.cpp">
@@ -212,6 +212,9 @@
 					RelativePath="..\SrvOptions\SrvOptElapsed.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvOptions\SrvOptFQDN.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvOptions\SrvOptIAAddress.cpp">
 				</File>
 				<File
@@ -219,6 +222,21 @@
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptInterfaceID.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptLifetime.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISDomain.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISPDomain.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISPServer.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISServer.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptNTPServers.cpp">
@@ -231,6 +249,12 @@
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptRapidCommit.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptSIPDomain.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptSIPServer.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptServerIdentifier.cpp">
@@ -369,7 +393,7 @@
 					RelativePath="WinService.cpp">
 				</File>
 				<File
-					RelativePath="lowlevel-winxp-netsh.c">
+					RelativePath="lowlevel-win32.c">
 				</File>
 				<File
 					RelativePath="server-winxp.cpp">

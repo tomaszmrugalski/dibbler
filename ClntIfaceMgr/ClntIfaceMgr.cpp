@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.9 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.10 2004-11-02 02:14:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.8  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -235,12 +239,12 @@ void TClntIfaceMgr::dump(char * file)
 }
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
-    strum << "<ClntIfaceMgr>" << endl;
+    strum << "<ClntIfaceMgr>" << std::endl;
     SmartPtr<TClntIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr= (Ptr*) x.IfaceLst.get() ) {
 	strum << *ptr;
     }
-    strum << "</ClntIfaceMgr>" << endl;
+    strum << "</ClntIfaceMgr>" << std::endl;
     return strum;
 }
