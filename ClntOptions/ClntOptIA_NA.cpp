@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.3 2004-06-04 19:03:46 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.4 2004-07-05 23:04:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/04 19:03:46  thomson
+ * Resolved warnings with signed/unisigned
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -42,7 +45,7 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg*
 						 zeroTimes?0:addr->getValid(),
 						 parent) );
     }
-
+    
 }
 
 TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
@@ -98,7 +101,6 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
     DUID = SmartPtr<TDUID>(); // NULL
 }
 
-//konstruktor chyba trza zostawic
 TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
 :TOptIA_NA(buf,bufsize, parent)
 {
@@ -237,12 +239,6 @@ bool TClntOptIA_NA::doDuties()
     SmartPtr<TAddrAddr> ptrAddrAddr;
     SmartPtr<TClntOptIAAddress> ptrOptAddr;
 
-    // are all addrs configured?
-    //some yes some no
-    //we should have sufficient address number in IA
-    //i.e. in this IA and in addrMgr which are
-    //valid and can be used
-
     //if not we don't like this server, cause
     //WE WANT IA WITH AT LEAST NUMBER OF ADDRESSES
     //and we release the whole IA with addresses just received and those in AddrMgr
@@ -250,30 +246,11 @@ bool TClntOptIA_NA::doDuties()
     //Was enough number of addresses received by client?
     if (countValidAddrs(ptrIA) < CfgMgr->countAddrForIA(ptrIA->getIAID()))
     {
-        //No there is no enough addresses, so realese this IA received from
-        //this particular server (it deceit us in advertise message or
+        //Server provided not enough addresses, so realese this IA in 
+        //this particular server (it cheated us in advertise message or
         //or another client stole our addresses in the meantime 
-        //or the server doesn't want to prolong lease - everything possible)
+        //or the server doesn't want to prolong lease.
 
-
-        //FIXME:New release transaction should be generated for this IA 
-        //      It should contained addresses contained both in just received
-        //      IA and in address manager - probably fixed
-        
-        //Why number of addresses in received option must be lower than in 
-        //IA in address manager - I don't know
-        //if (this->countAddr() < ptrIA->countAddr() ) 
-        //{
-        //I change it to:
-        //  there is something to release in AddrMgr 
-        //if (!((ptrIA)&&(ptrIA->countAddr())))
-        //    ptrIA=new TAddrIA
-        //{
-        //yes - fine
-        
-        //FIXED:Before some of addresse will be released
-        //      shouldn't they also be removed from iface manager        
-        //release all addresses from iface manager
         ptrIA->firstAddr();
         while(SmartPtr<TAddrAddr> addrToRel=ptrIA->getAddr()) {
 	    SmartPtr<TIPv6Addr> addr2(addrToRel->get());
@@ -307,23 +284,20 @@ bool TClntOptIA_NA::doDuties()
         List(TAddrIA) list;
         list.append(ptrIA);
 
-        //FIXED: Before  they can be realese they should be removed from AddrMgr
         AddrMgr->delIA(ptrIA->getIAID() );
         AddrMgr->addIA(new TAddrIA(ptrIA->getIface(), SmartPtr<TIPv6Addr>(), SmartPtr<TDUID>(),
 				   0x7fffffff,0x7fffffff,ptrIA->getIAID()));
-
         if (ptrIA->getAddrCount())
             TransMgr->sendRelease(list);
-        //but what about removing request option from options
-        //}
         return false;
     }
+
     //In other case, we have appropriate number of addresses and all is ok
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = IfaceMgr->getIfaceByID(this->Iface);
     if (!ptrIface) 
     {
-        clog << logger::logCrit << "Interface " << this->Iface << " not found." << logger::endl;
+	Log(Error) << "Interface " << this->Iface << " not found." << LogEnd;
     }
 
     // for each address in IA option...
@@ -339,9 +313,12 @@ bool TClntOptIA_NA::doDuties()
                 ptrIA->setDUID(this->DUID);
                 // ... and in IfaceMgr - 
                 ptrIface->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid());
+		Log(Notice) << "Address " << *ptrOptAddr->getAddr() << " added to "
+			    << ptrIface->getName() << "/" << ptrIface->getID() 
+			    << " interface." << LogEnd;
             } 
             else {
-                std::clog << logger::logWarning << "Server send new addr with valid=0." << logger::endl;
+                Log(Warning) << "Server send new addr with valid=0." << LogEnd;
             }
         } 
         else {
@@ -468,8 +445,8 @@ void TClntOptIA_NA::releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr )
     if (ptrIA)
         ptrIA->delAddr(addr);
     else
-        std::clog << logger::logWarning << "Unable to release addr: IA (" 
-		  << IAID << ") not in addrDB." << logger::endl;
+	Log(Warning) << "Unable to release addr: IA (" 
+		     << IAID << ") not in addrDB." << LogEnd;
 }
 
 bool TClntOptIA_NA::isValid()

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.14 2004-07-05 00:53:03 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.15 2004-07-05 23:04:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.13  2004/07/05 00:12:29  thomson
  * Lots of minor changes.
  *
@@ -323,9 +326,11 @@ void TClntTransMgr::shutdown()
                         break;
                     }
                     ptrNextIA->firstAddr();
-                    while (ptrAddr = ptrNextIA->getAddr() ) {
-                        ptrIface->delAddr( ptrAddr->get() );
-                    }
+
+		    // addrs are RELEASEd in ClntMsgRelease.cpp
+                    // while (ptrAddr = ptrNextIA->getAddr() ) {
+                    //     ptrIface->delAddr( ptrAddr->get() );
+                    //}
 
                     // delete IA from AddrMgr
                     AddrMgr->delIA( ptrNextIA->getIAID() );

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.8 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.9 2004-07-05 23:04:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.7  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
@@ -170,9 +173,9 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 	willAssign = addrsAvail;
     }
 
-    Log(Debug) << "Client has " << addrsAssigned << " addrs, asks for " 
-	       << addrsRequested << ", " << addrsAvail << " is available, limit for client is "
-	       << addrsMax << ", " << willAssign << " will be assigned." << LogEnd;
+    Log(Info) << "Client has " << addrsAssigned << " addrs, asks for " 
+	      << addrsRequested << ", " << addrsAvail << " is available, limit for client is "
+	      << addrsMax << ", " << willAssign << " will be assigned." << LogEnd;
 
     // --- ok, let's assign those damn addresses ---
     SmartPtr<TOpt> opt;

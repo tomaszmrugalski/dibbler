@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.3 2004-07-05 23:04:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -59,9 +62,10 @@ TClntMsgRelease::TClntMsgRelease(
 	ptrIface = IfMgr->getIfaceByID(ia->getIface());
 	ia->firstAddr();
 	while (ptrAddr = ia->getAddr()) {
-	    std::clog << logger::logDebug << "About to release " << ptrAddr->get()->getPlain() << 
-		logger::endl;
 	    ptrIface->delAddr(ptrAddr->get());
+	    Log(Notice)<< ptrAddr->get()->getPlain() 
+		       << " address released from " << ptrIface->getName() << "/" 
+		       << ptrIface->getID() << " interface." << LogEnd;
 	}
     }
 

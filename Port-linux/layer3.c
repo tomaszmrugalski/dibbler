@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.9 2004-07-05 00:53:03 thomson Exp $
+ * $Id: layer3.c,v 1.10 2004-07-05 23:04:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.8  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -242,7 +245,7 @@ int ipaddr_add_or_del(char * addr, char *ifacename,int add)
 
 	if (peer_len == 0 && local_len) {
 	    peer = lcl;
-		addattr_l(&req.n, sizeof(req), IFA_ADDRESS, &lcl.data, lcl.bytelen);
+	    addattr_l(&req.n, sizeof(req), IFA_ADDRESS, &lcl.data, lcl.bytelen);
 	}
 	if (req.ifa.ifa_prefixlen == 0)
 		req.ifa.ifa_prefixlen = lcl.bitlen;

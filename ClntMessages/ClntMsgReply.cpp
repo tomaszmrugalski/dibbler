@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgReply.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgReply.cpp,v 1.3 2004-07-05 23:04:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -16,7 +19,6 @@
 #include "ClntMsgReply.h"
 #include "ClntMsg.h"
 
-//##ModelId=3EC8AA2F0262
 TClntMsgReply::TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 			     SmartPtr<TClntTransMgr> TransMgr, 
 			     SmartPtr<TClntCfgMgr> CfgMgr, 

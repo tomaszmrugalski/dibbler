@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.3 2004-07-05 23:04:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -34,7 +37,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 				 TContainer< SmartPtr<TOpt> > opts, 
 				 TContainer< SmartPtr<TMsg> > advs,
 				 int iface)
-     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, SmartPtr<TIPv6Addr>() /*NULL*/, REQUEST_MSG) {
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, SmartPtr<TIPv6Addr>() /*NULL*/, REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
     MRC = REQ_MAX_RC;
@@ -44,8 +47,8 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface;
     IsDone=false;
 
-    std::clog << logger::logDebug << "Create REQUEST. BackupSrvLst.count()=" 
-        << advs.count() << logger::endl;
+    Log(Info) << "Creating REQUEST. Backup server list contains " 
+	      << advs.count()-1 << " server(s)." << LogEnd;
     if (!advs.count()) 
     {
         // FIXME: set State of unconfigured IAs
@@ -237,11 +240,9 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
 
 void TClntMsgRequest::doDuties()
 {
-    // mamy timeout i nadal nie ma odpowiedzi, retransmisja
-    //uplynal ostateczny timeout dla wiadomosci
+    // timeout is reached and we still don't have answer, retransmit
     if (RC>MRC) 
     {
-	// przekroczony MRC, brak odpowiedzi i nie ma ju¿ nowych serwerów
 	if (BackupSrvLst.count() == 0) 
 	{ 
 	    SmartPtr<TOpt> option;
@@ -257,8 +258,6 @@ void TClntMsgRequest::doDuties()
 	    return;
 	}
 	
-//    void sendRequest(TContainer< SmartPtr<TOpt> > requestOptions, 
-//		     TContainer< SmartPtr<TMsg> > srvlist,int iface);
 	ClntTransMgr->sendRequest(Options, BackupSrvLst, Iface);
 
 	IsDone = true;
