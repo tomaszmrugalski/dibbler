@@ -52,6 +52,7 @@ void StartIADeclaration(bool aggregation); \
 void EndIADeclaration(long iaCnt); \
 void EmptyIA(); \
 void EmptyAddr(); \
+virtual ~clntParser();
 
 // <Linux>
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
@@ -132,6 +133,7 @@ InterfaceDeclarationsList '}'
     //FIXME:used of char * should be always realeased
     delete [] $2;
     EndIfaceDeclaration();
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -805,6 +807,7 @@ bool clntParser::CheckIsIface(int ifaceNr)
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) YYABORT;
+  return true;
 };
     
 //method check whether interface with id=ifaceName has been
@@ -997,4 +1000,8 @@ void clntParser::yyerror(char *m)
 {
     std::clog << logger::logCrit << "Config parse error: line " << lex->lineno() 
 	      << ", unexpected [" << lex->YYText() << "] token." << logger::endl;
+}
+
+clntParser::~clntParser() {
+
 }

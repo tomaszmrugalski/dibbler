@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.14 2004-05-23 21:35:31 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.15 2004-05-23 22:37:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/05/23 21:35:31  thomson
+ * *** empty log message ***
+ *
  * Revision 1.13  2004/05/23 21:02:43  thomson
  * *** empty log message ***
  *
@@ -171,26 +174,35 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    if ( !(ifaceIface->getMacLen() > 5) ) {
 		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
 			       << " has MAC address length " << ifaceIface->getMacLen() 
-			       << ", but greater than 5 is required, ignoring." << logger::endl;
+			       << " (6 or more required), ignoring." << logger::endl;
 		continue;
 	    }
+
+	    // One address...
+	    SmartPtr<TClntCfgAddr> addr(new TClntCfgAddr());
+	    addr->setOptions(parser->ParserOptStack.getLast());
+
+	    // ... is stored in one IA...
+	    SmartPtr<TClntCfgIA> ia(new TClntCfgIA(parser->ParserOptStack.getLast()->getIncedIAIDCnt()));
+	    ia->setOptions(parser->ParserOptStack.getLast());
+	    ia->addAddr(addr);
+
 	    
+	    // ... which is stored in one group...
+	    SmartPtr<TClntCfgGroup> group(new TClntCfgGroup());
+	    group->setOptions(parser->ParserOptStack.getLast());
+	    group->addIA(ia);
+	    
+	    // ... on this newly created interface...
 	    cfgIface = SmartPtr<TClntCfgIface>(new TClntCfgIface(ifaceIface->getID()));
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
-	    
-	    SmartPtr<TClntCfgGroup> group(new TClntCfgGroup());
-	    group->setOptions(parser->ParserOptStack.getLast());
-	    SmartPtr<TClntCfgIA> ia(new TClntCfgIA(
-					parser->ParserOptStack.getLast()->getIncedIAIDCnt()));
-	    ia->setOptions(parser->ParserOptStack.getLast());
-	    SmartPtr<TClntCfgAddr> addr(new TClntCfgAddr());
-	    addr->setOptions(parser->ParserOptStack.getLast());
-	    //append created iface, group and address
 	    cfgIface->addGroup(group);
-	    group->addIA(ia);
-	    ia->addAddr(addr);
+	    cfgIface->setOptions(parser->ParserOptStack.getLast());
+
+	    // ... which is added to ClntCfgMgr
 	    this->addIface(cfgIface);
+
 	    Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
 			 << " has been added." << logger::endl;
 	}

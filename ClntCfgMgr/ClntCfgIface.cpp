@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.3 2004-05-23 20:13:12 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.4 2004-05-23 22:37:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/05/23 20:13:12  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -86,7 +89,7 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     while(StationIDPtr=opt->getPrepNTPSrv())
         this->PrepNTPSrv.append(StationIDPtr);
     
-    this->isIA=opt->getIsIAs();
+    this->isIA = opt->getIsIAs();
 }
 
  void TClntCfgIface::firstGroup()

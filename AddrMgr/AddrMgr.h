@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrMgr.h,v 1.5 2004-05-23 21:24:50 thomson Exp $
+ * $Id: AddrMgr.h,v 1.6 2004-05-23 22:37:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/05/23 21:24:50  thomson
+ * *** empty log message ***
+ *
  * Revision 1.4  2004/04/11 18:04:53  thomson
  * LIBXML2 is now a optional feature
  *
@@ -57,8 +60,8 @@ class TAddrMgr
     unsigned long getAddrCount(SmartPtr<TDUID> duid, int iface);
     
     // --- backup/restore ---
-    virtual void dbLoad();
-    virtual void dbStore();
+    void dbLoad();
+    void dbStore();
 
 #ifdef LIBXML2
     xmlDocPtr xmlLoad(const char * filename);

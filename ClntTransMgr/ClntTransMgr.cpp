@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.9 2004-05-23 20:20:49 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.10 2004-05-23 22:37:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/05/23 20:20:49  thomson
+ * *** empty log message ***
+ *
  * Revision 1.8  2004/04/10 12:18:01  thomson
  * Numerous fixes: LogName, LogMode options added, dns-servers changed to
  * dns-server, '' around strings are no longer needed.
@@ -197,8 +200,8 @@ void TClntTransMgr::doDuties()
 
     this->removeExpired();
 
-    AddrMgr->dbStore();
-    IfaceMgr->dump(CLNTIFACEMGR_FILE);
+    this->AddrMgr->dbStore();
+    this->IfaceMgr->dump(CLNTIFACEMGR_FILE);
 
     if (!this->Shutdown && !this->IsDone) {
         // are there any tentative addrs?
@@ -463,8 +466,8 @@ void TClntTransMgr::checkSolicit()
             };
             if (IALstToConfig.count()) {//Are there any IA, which should be configured?
 		
-		std::clog << logger::logInfo << "Creating SOLICIT message on "
-			  << iface->getName() <<" interface." << logger::endl;
+		Log(logInfo) << "Creating SOLICIT message on "
+			     << iface->getName() <<" interface." << logger::endl;
                 Transactions.append(
 		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
 					iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
@@ -513,8 +516,12 @@ void TClntTransMgr::checkInfRequest()
     {
         if (iface->noConfig())
             continue;
-        if (iface->onlyInformationRequest())
+        if (iface->onlyInformationRequest()) {
+	    Log(logInfo) << "Creating INFORMATION-REQUEST message on "
+			 << iface->getName() <<" interface." << logger::endl;
+
             Transactions.append(new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,iface));
+	}
     }
 }
 

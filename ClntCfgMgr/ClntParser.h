@@ -57,7 +57,7 @@ void StartIADeclaration(bool aggregation); \
 void EndIADeclaration(long iaCnt); \
 void EmptyIA(); \
 void EmptyAddr(); \
-
+virtual ~clntParser();
 #define YY_clntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_clntParser_CONSTRUCTOR_CODE  \
    this->lex = lex; \
@@ -65,7 +65,7 @@ void EmptyAddr(); \
     ParserOptStack.getFirst()->setIAIDCnt(1);\
     ParserOptStack.getLast();
 
-#line 64 "ClntParser.y"
+#line 65 "ClntParser.y"
 typedef union    
 {
     int          ival;    
