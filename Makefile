@@ -38,7 +38,8 @@ server: $(SERVERBIN)
 $(SERVERBIN): includes commonlibs srvlibs DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
-	-L$(SRVADDRMGR)  -lSrvAddrMgr \
+	-L$(SRVADDRMGR)   -lSrvAddrMgr \
+	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(LOWLEVEL)    \
 	-L$(SRVOPTIONS)  -lSrvOptions \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
@@ -49,6 +50,7 @@ $(SERVERBIN): includes commonlibs srvlibs DHCPServer.o $(SERVER)
 	-L$(MISC)        -lMisc\
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
+	                 -lAddrMgr \
 	-L$(SRVOPTIONS)  -lSrvOptions \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
