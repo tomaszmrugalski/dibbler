@@ -66,17 +66,12 @@ called \verb+SmartPtr<TYPE>+.
 To quickly explain smart pointers usage, here's short code example:
 \begin{verbatim}
  1 void foo()  {
-
- 2 SmartPtr<TIPv6Addr> addr = new TIPv6Addr("ff02::1:2");
- 3 SmartPtr<TIPv6Addr> tmp;
-
- 4 if (!tmp) cout << "Null pointer" << endl;
-
- 5 tmp = addr;
- 
- 6 std::cout << addr->getPlain();
-
- 7}
+ 2   SmartPtr<TIPv6Addr> addr = new TIPv6Addr("ff02::1:2");
+ 3   SmartPtr<TIPv6Addr> tmp;
+ 4   if (!tmp) cout << "Null pointer" << endl;
+ 5   tmp = addr;
+ 6   std::cout << addr->getPlain();
+ 7 }
 \end{verbatim}
 What's happened in those lines?
 \begin{description}
@@ -90,7 +85,7 @@ What's happened in those lines?
 \item[4] -- Simple check if pointer does not point to anything.
 \item[5] -- Smart pointers can be coppied in a easy way.
 \item[6] -- Using object pointed by smart pointer is simple
-\item[7] -- Here's magic begins. addr and tmp are local variables, so
+\item[7] -- Here magic begins. addr and tmp are local variables, so
   they are destroyed here. But they are the only smart pointers which
   access TIPv6Addr object. So they are destroy that object. 
 \end{description}
@@ -117,26 +112,19 @@ List(TIPv6Addr) addrLst;
 How to use this list? Oh well, another example:
 \begin{verbatim}
 1  List(TIPv6Addr) addrLst;
-
 2  SmartPtr<TIPv6Addr> ptr = ...;
 3  SmartPtr<TIPv6Addr> tmp;
-
 4  addrLst.clear();
-
 5  addrLst.append(ptr);
-
 6  addrLst.first();
-
 7  tmp = addrLst.get();
-
 8  cout << "List contains " << addrLst.count() << " elements" << endl;
-
 9  addrLst.first();
 10 while (tmp = addrLst.get()) 
 11   cout << *tmp << endl;
-
-}
 \end{verbatim}
+
+And here is description what that code does:
 
 \begin{description}
 \item[1] -- Address list declaration.
@@ -162,8 +150,9 @@ are eight levels of logging:
   logging level should not be used. Called with
   \verb+Log(Emerg) << "..." << LogEnd+.
 
-\item[Alert] -- Used to alert administrator. This logging level should
-  not be used. Called with \verb+Log(Alert) << "..." << LogEnd+.
+\item[Alert] -- Used to alert an administrator about system wide
+  alerts. This logging level should not be used in DHCPv6. 
+  Called with \verb+Log(Alert) << "..." << LogEnd+.
 
 \item[Critical] -- Used in situations critical to the application,
   e.g. application shutdown. Fatal errors should be logged on this
@@ -173,10 +162,11 @@ are eight levels of logging:
   with binding sockets. Called with \verb+Log(Error) << "..." << LogEnd+.
 
 \item[Warning] -- Used to report RFC violations, e.g. missing required
-  options. Called with \verb+Log(Warning) << "..." << LogEnd+.
+  options, invalid parameters and so on. Called with \verb+Log(Warning) << "..." << LogEnd+.
 
 \item[Notice] -- Used to report normal operations, e.g. address
- assignement. Called with \verb+Log(Notice) << "..." << LogEnd+.
+ assignement or informations about received options. Called with
+ \verb+Log(Notice) << "..." << LogEnd+.
 
 \item[Info] -- Used to report detailed information. DHCPv6 protocol
   knowledge might be needed to understand those messages.
@@ -219,9 +209,12 @@ Also note that class function names start with small letters
 letters (e.g. \verb+bool TOpt::IsValid;+).
 
 %%
-%% $Id: dibbler-devel-common.tex,v 1.2 2004-12-01 20:55:49 thomson Exp $
+%% $Id: dibbler-devel-common.tex,v 1.3 2004-12-01 21:58:43 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.2  2004/12/01 20:55:49  thomson
+%% Documentation updated.
+%%
 %% Revision 1.1  2004/11/25 01:16:36  thomson
 %% *** empty log message ***
 %%

@@ -9,26 +9,24 @@ user: dibbler-user.pdf
 devel: dibbler-devel.pdf
 
 dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue.tex \
-	  dibbler-user-intro.tex dibbler-user-usage.tex
+	  dibbler-user-intro.tex dibbler-user-usage.tex version.tex
 	$(LATEX) dibbler-user.tex
 	$(LATEX) dibbler-user.tex
 	$(LATEX) dibbler-user.tex
 	$(DVIPS) -z dibbler-user.dvi -o
 	$(PS2PDF) dibbler-user.ps
 
-dibbler-devel.pdf: dibbler-devel.tex dibbler-devel-compile.tex \
+dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
                    dibbler-devel-common.tex dibbler-devel-compile.tex \
-		   dibbler-devel-arch-clnt.tex dibbler-devel-arch-srv.tex \
-                   dibbler-devel-intro.tex dibbler-devel-misc.tex
+		   dibbler-devel-arch.tex   dibbler-devel-intro.tex \
+                   dibbler-devel-misc.tex   version.tex
 	$(LATEX) dibbler-devel.tex
 	$(DVIPS) -z dibbler-devel.dvi -o
 	$(PS2PDF) dibbler-devel.ps
 
 version.tex:
 	@echo "[GREP  ] $(SUBDIR)/$@"
-	@echo "\newcommand{\dibblerVersion}{" > $@
-	@../test/xtract_version >> $@
-	@echo "}" >> $@
+	@../test/xtract_version > $@
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
