@@ -2,10 +2,11 @@
   Dibbler changelog
  ------------------- 
  Expected changes in 0.3.0
-  - Developer's guide
   - Linux: Fixed issue with running server and client on the same host
 
  0.3.0-RC3
+  - Developer's guide (bugs #42, #43)
+  - Log files are now created, even when run in the console (bugs #34, #36)
   - DAD timeout was decreased to 1 second
   - NIS options values are changed to meet recently published RFC3898
   - Server now supports domains containing - (bug #73)
@@ -36,7 +37,7 @@
   - WIN32: netsh.exe is used instead depreciated ipv6.exe (bug #24, #48)
   - First version of Developer's guide is included (bug #42, #43)
   - WIN32: DNS is now properly added to interface. (Adv.NetworkingPack or SP2 might be necessary)
-  - Unicast communication support (bug #30)
+  - Unicast communication support (bug #30,#31)
   - RAPID-COMMIT support fixed (bug #50, #51, #52)
   - DECLINE infinite loop fixed.
   - DECLINE and RELEASE does no longer contain addrs with non-zero pref/valid lifetimes (bug #32)
