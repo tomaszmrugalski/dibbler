@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.17 2004-11-01 23:31:25 thomson Exp $
+ * $Id: layer3.c,v 1.18 2004-11-30 00:54:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.16  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -145,6 +148,7 @@ struct iface * if_list_get()
     struct rtattr * tb[IFLA_MAX+1];
     int len;
     memset(tb, 0, sizeof(tb));
+    memset(&rth,0, sizeof(rth));
 
     rtnl_open(&rth, 0);
     rtnl_wilddump_request(&rth, preferred_family, RTM_GETLINK);
