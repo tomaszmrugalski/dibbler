@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.34 2005-01-23 23:17:53 thomson Exp $
+ * $Id: Portable.h,v 1.35 2005-01-24 00:42:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
  * Revision 1.33  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -113,7 +116,7 @@
 #define WORKDIR           ".\\"
 #define CLNTCONF_FILE	  "client.conf"
 #define SRVCONF_FILE      "server.conf"
-#define RELCONF_FILE      "client.conf"
+#define RELCONF_FILE      "relay.conf"
 #define NULLFILE          "nul"
 #endif
 

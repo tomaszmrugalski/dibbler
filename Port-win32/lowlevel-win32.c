@@ -1,7 +1,10 @@
 /*
- * $Id: lowlevel-win32.c,v 1.3 2004-11-02 02:14:20 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.4 2005-01-24 00:42:37 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
+ *  Revision 1.3  2004/11/02 02:14:20  thomson
+ *  no message
+ *
  *  Revision 1.2  2004/10/25 20:45:54  thomson
  *  Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -136,6 +139,10 @@ extern	struct iface* if_list_get()
 	
         //set link local addresses available on interface
 	iface->maclen=adaptaddr->PhysicalAddressLength;
+
+	// FIXME: set non-local addrs to a real value
+	iface->globaladdrcount = 0;
+	iface->globaladdr = 0;
 	
         linkaddr=adaptaddr->FirstUnicastAddress;
         //for evert unicast address on iface

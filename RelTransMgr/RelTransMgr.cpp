@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.3 2005-01-23 23:17:53 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.4 2005-01-24 00:42:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
  * Revision 1.2  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -31,7 +34,8 @@ TRelTransMgr::TRelTransMgr(TCtx * ctx, string xmlFile)
     // remember context
     this->Ctx = ctx;
     this->IsDone = false; // TransMgr is certainly not done yet. We're just getting started
-    
+    this->XmlFile = xmlFile;
+
     // for each interface in CfgMgr, create socket (in IfaceMgr)
     SmartPtr<TRelCfgIface> confIface;
     this->Ctx->CfgMgr->firstIface();

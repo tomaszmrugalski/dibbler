@@ -6,15 +6,21 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptGeneric.cpp,v 1.1 2005-01-12 00:01:06 thomson Exp $
+ * $Id: OptGeneric.cpp,v 1.2 2005-01-24 00:42:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/12 00:01:06  thomson
+ * *** empty log message ***
+ *
  */
 
 #include <stdlib.h>
 #ifdef LINUX
 #include <netinet/in.h>
 #endif 
+#ifdef WIN32
+#include <winsock2.h>
+#endif
 
 #include "DHCPConst.h"
 #include "OptGeneric.h"

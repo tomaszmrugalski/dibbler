@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.2 2005-01-13 22:45:55 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.3 2005-01-24 00:42:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.1  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -60,7 +63,7 @@ bool TRelCfgMgr::parseConfigFile(string cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     RelParser parser(&lexer);
-    Log(Debug) << "Parsing config file..." << LogEnd;
+    Log(Debug) << "Parsing " << cfgFile << " config file..." << LogEnd;
     result = parser.yyparse();
     Log(Debug) << "Parsing config done." << LogEnd;
     f.close();
