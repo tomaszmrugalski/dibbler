@@ -1,28 +1,6 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.8 2004-10-25 20:45:54 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.9 2004-11-02 00:02:23 thomson Exp $
 %%
-%% $Log: not supported by cvs2svn $
-%% Revision 1.7  2004/09/05 15:27:49  thomson
-%% Data receive switched from recvfrom to recvmsg, unicast partially supported.
-%%
-%% Revision 1.6  2004/07/05 00:53:03  thomson
-%% Various changes.
-%%
-%% Revision 1.5  2004/06/28 22:38:00  thomson
-%% Minor changes.
-%%
-%% Revision 1.4  2004/06/28 21:34:18  thomson
-%% DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
-%%
-%% Revision 1.3  2004/06/19 19:51:14  thomson
-%% Various fixes.
-%%
-%% Revision 1.2  2004/06/19 10:24:59  thomson
-%% Hyperlinks in PDF, building process modified
-%%
-%%
-
-%% dopisac client-max-lease, class-max-lease iface-max-lease
 
 \section{Config files}
 
@@ -45,6 +23,7 @@ Config file parsing is token-based. Here's list of tokens used:
 \item[DUID identifier] -- hex number starting with 0x, e.g. 0x12abcd.
 \item[IPv6 address list] -- IPv6 addresses separated with commas.
 \item[DUID list] -- DUIDs separated with commas.
+\item[string list] -- strings separated with comas.
 \item[Boolean] -- YES, NO, TRUE, FALSE, 0 or 1. Each of them can be
   used, when user must enable or disable specific option.
 \end{description}
@@ -53,7 +32,7 @@ There are also some client or server specified tokens. Here's the list:
 \begin{description}
 \item[client] -- iface, address, ia, no-ia,
 log-mode, log-name, log-level, work-dir, prefered-lifetime, valid-lifetime,
-t1, t2, dns-servers, domain, ntp-servers, time-zone, reject-servers,
+t1, t2, dns-server, domain, ntp-servers, time-zone, reject-servers,
 prefered-servers, rapid-commit, unicast
 \item[server] -- iface, class, log-level, log-name,
   log-level, work-dir, dns-servers, domain, ntp-server, time-zone, accept-only,
@@ -152,11 +131,6 @@ no longer needs to be enclosed in single or double quotes. It is
 necessary only in Windows systems, where interface names sometimes
 contain spaces, e.g. ''local network connection''.
 
-If interface does not contain \verb+IA+ keyword, one IA with one address is
-assumed. If client should not request for address on this interface, \opt{no-ia}
-must be used. In such circumstances, only specified options will be
-requested.
-
 \subsubsection{IA declaration}
 
 IA is declared this way:
@@ -234,8 +208,8 @@ log-mode          & global  &short or full& full      & logging mode: short (dat
 \end{tabular}
 \end{center}
 
-\subsubsection{Extension options}
-Extension options are options specified in external drafts and in RFC
+\subsubsection{Addional options}
+Additional options are the options specified in external drafts and in RFC
 documents. They are declared with \verb+option+ keyword:
 
 \begin{verbatim}
@@ -250,16 +224,55 @@ where OptionName is one of possible values listed below:
 OptionName     & Scope    & Values      &default& Description \\
                &          & (default)   &       & \\
 \hline
-dns-servers    & interface& addrs list  & empty & prefered DNS servers list (H) \\
-domain         & interface& domain      & empty & prefered domain (H)\\
-ntp-servers    & interface& addrs list  & empty & prefered NTP servers list (H)\\
-time-zone      & interface& timezone    & empty & prefered time zone (H)\\
+dns-server     & interface& addrs list  & empty & preferred DNS servers list (H) \\
+domain         & interface&domains list & empty & preferred domain (H)\\
+ntp-server     & interface& addrs list  & empty & preferred NTP servers list (H)\\
+time-zone      & interface& timezone    & empty & preferred time zone (H)\\
+sip-server     & interface& addrs list  & empty & preferred SIP servers list (H)\\
+sip-domain     & interface&domains list & empty & preferred SIP domain (H)\\
+nis-server     & interface& addrs list  & empty & preferred NIS servers list (H)\\
+nis-domain     & interface& domain      & empty & preferred NIS domain (H)\\
+nis+-server    & interface& addrs list  & empty & preferred NIS+ servers list (H)\\
+nis+-domain    & interface& domain      & empty & preferred NIS+ domain (H)\\
 \hline
 \end{tabular}
 \end{center}
 
 Note that timezone format is described in file \verb+draft-ietf-dhc-dhcpv6-opt-tz-00.txt+
-and domain format is described in RFC 3646.
+and domain format is described in RFC 3646. After receiving options
+values from a server, client stores them in separate files in the
+working directory, e.g. \verb+option-dns-server+. Several options
+are processed and set up in the system. Options supported in Linux and
+Windows environments are presented in the table below.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+Option & Support (Linux) & Support (winXP/2003)  \\
+\hline
+dns-server  & system, file & system, file \\
+domain      & file         & system, file \\
+ntp-server  & file         & file \\
+time-zone   & file         & file \\
+sip-server  & file         & file \\
+sip-domain  & file         & file \\
+nis-server  & file         & file \\
+nis-domain  & file         & file \\
+nis+-server & file         & file \\
+nis+-domain & file         & file \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Stateless configuration}
+
+If interface does not contain \verb+IA+ keyword, one IA with one address is
+assumed. If client should not request for address on this interface,
+\opt{stateless}\footnote{In the version 0.2.1-RC1 and earlier, this
+  directive was called no-ia. This depreciated name is valid for now,
+  but might be removed in future releases.}
+must be used. In such circumstances, only specified options will be
+requested.
 
 \subsubsection{Example client config file}
 
@@ -434,10 +447,6 @@ log-name         & global  & string      & Client     & Name, which appears in a
 log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
 
 preference       &interface& 0-255       & 0          & server preference value (higher is more prefered) \\
-dns-servers      &interface& addrs list  & empty      & DNS servers list \\
-domain           &interface& domain      & empty      & domain name \\
-ntp-servers      &interface& addrs list  & empty      & NTP servers list \\
-time-zone        &interface& timezone    & empty      & time zone \\
 unicast          &interface& address     & empty      & Specify which address should be used. \\
 iface-max-lease  &interface& integer     & 4294967296 & how many addresses can be leased by all clients? \\
 client-max-lease &interface& integer     & 4294967296 & how many addresses can be leased by one client? \\
@@ -452,9 +461,43 @@ reject-clients   & class   & addrs or
 accept-only      & class   & addrs or
                              DUID list   & empty      & these are the only clients allowed to use this class\\
 class-max-lease  & class   & integer     & 4294967296 & how many addresses can be leased from this class? \\
-
 \hline
 \end{tabular}
+
+\subsubsection{Addional options}
+Server supports additonal options, not specified in RFC3315. They have
+generic form:
+
+\begin{verbatim}
+option OptionName OptionsValue
+\end{verbatim}
+
+All supported options are specified in the table below:
+
+\begin{center}
+\begin{tabular}{|l|l|c|c|l|}
+\hline
+OptionName       & OptionsValue& Default    & Description \\ \hline
+dns-server       & addrs list  & empty      & DNS servers list \\
+domain           & string list & empty      & domain names list \\
+ntp-server       & addrs list  & empty      & NTP servers list \\
+time-zone        & timezone    & empty      & time zone \\
+sip-server       & addrs list  & empty      & SIP servers list \\
+sip-domain       & string list & empty      & domain names list \\
+
+nis-server       & addrs list  & empty      & NIS servers list \\
+nis-domain       & string      & empty      & domain name \\
+
+nisplus-server   & addrs list  & empty      & NIS+ servers list \\
+nis-domain       & string      & empty      & domain name \\
+lifetime         & integer     & empty      & how often renew options? \\
+\hline
+\end{tabular}
+\end{center}
+
+Lifetime is a special case. It is not set up by client in a system
+configuration. It is, however, used by the client to know how long
+obtained values are correct.
 
 \subsubsection{Example server config file}
 
@@ -576,3 +619,26 @@ iface 5
   } 
 }
 \end{verbatim}
+
+%% $Log: not supported by cvs2svn $
+%% Revision 1.8  2004/10/25 20:45:54  thomson
+%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
+%%
+%% Revision 1.7  2004/09/05 15:27:49  thomson
+%% Data receive switched from recvfrom to recvmsg, unicast partially supported.
+%%
+%% Revision 1.6  2004/07/05 00:53:03  thomson
+%% Various changes.
+%%
+%% Revision 1.5  2004/06/28 22:38:00  thomson
+%% Minor changes.
+%%
+%% Revision 1.4  2004/06/28 21:34:18  thomson
+%% DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
+%%
+%% Revision 1.3  2004/06/19 19:51:14  thomson
+%% Various fixes.
+%%
+%% Revision 1.2  2004/06/19 10:24:59  thomson
+%% Hyperlinks in PDF, building process modified
+%%
