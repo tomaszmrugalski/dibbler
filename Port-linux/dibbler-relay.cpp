@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: dibbler-relay.cpp,v 1.3 2005-01-30 23:12:28 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.4 2005-02-03 20:09:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/30 23:12:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2005/01/30 22:53:28  thomson
  * *** empty log message ***
  *
@@ -73,13 +76,8 @@ void daemon_init() {
 	
     } // getppid()!=1
 
-    // store new pid file
-    unlink(RELPID_FILE);
-    ofstream pidfile(RELPID_FILE);
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << RELPID_FILE << LogEnd;
-    pidfile << getpid();
-    pidfile.close();
     umask(0);
+    init();
 }
 
 void daemon_die() {

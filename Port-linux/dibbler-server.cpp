@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: dibbler-server.cpp,v 1.12 2005-01-30 23:12:28 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.13 2005-02-03 20:09:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/01/30 23:12:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.11  2005/01/30 22:53:28  thomson
  * *** empty log message ***
  *
@@ -82,13 +85,8 @@ void daemon_init() {
 	
     } // getppid()!=1
 
-    // store new pid file
-    unlink(SRVPID_FILE);
-    ofstream pidfile(SRVPID_FILE);
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << SRVPID_FILE << LogEnd;
-    pidfile << getpid();
-    pidfile.close();
     umask(0);
+    init();
 }
 
 void daemon_die() {

@@ -72,13 +72,8 @@ void daemon_init() {
 	
     } // getppid()!=1
 
-    unlink(CLNTPID_FILE);
-    ofstream pidfile(CLNTPID_FILE);
-    pidfile << getpid();
-    pidfile.close();
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << CLNTPID_FILE << LogEnd;
-
     umask(0);
+    init();
 }
 
 void daemon_die() {
