@@ -2,6 +2,10 @@
 %option yylineno
 
 %{
+#ifdef WIN32
+#define strncasecmp _strnicmp
+#endif
+
 #include "ClntParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();

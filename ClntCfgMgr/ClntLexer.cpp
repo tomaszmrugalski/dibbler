@@ -975,12 +975,16 @@ static yyconst flex_int32_t yy_rule_can_match_eol[52] =
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "ClntLexer.l"
 #line 5 "ClntLexer.l"
+#ifdef WIN32
+#define strncasecmp _strnicmp
+#endif
+
 #include "ClntParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
 
 
-#line 27 "ClntLexer.l"
+#line 31 "ClntLexer.l"
   using namespace std;
 
 namespace std {
@@ -992,7 +996,7 @@ namespace std {
   unsigned intpos,pos;
   yy_clntParser_stype yylval;
 };
-#line 996 "ClntLexer.cpp"
+#line 1000 "ClntLexer.cpp"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -1094,10 +1098,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 40 "ClntLexer.l"
+#line 44 "ClntLexer.l"
 
 
-#line 1101 "ClntLexer.cpp"
+#line 1105 "ClntLexer.cpp"
 
 	if ( (yy_init) )
 		{
@@ -1193,177 +1197,177 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 42 "ClntLexer.l"
+#line 46 "ClntLexer.l"
 ; // ignore end of line
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 43 "ClntLexer.l"
+#line 47 "ClntLexer.l"
 ; // ignore TABs and spaces
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 44 "ClntLexer.l"
+#line 48 "ClntLexer.l"
 {return clntParser::IFACE_;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 45 "ClntLexer.l"
+#line 49 "ClntLexer.l"
 {return clntParser::NO_CONFIG_;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 46 "ClntLexer.l"
+#line 50 "ClntLexer.l"
 {return clntParser::ADDRES_;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 47 "ClntLexer.l"
+#line 51 "ClntLexer.l"
 {return clntParser::IA_;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 48 "ClntLexer.l"
+#line 52 "ClntLexer.l"
 {return clntParser::STATELESS_;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 49 "ClntLexer.l"
+#line 53 "ClntLexer.l"
 {return clntParser::STATELESS_;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 51 "ClntLexer.l"
+#line 55 "ClntLexer.l"
 {return clntParser::LOGLEVEL_; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 52 "ClntLexer.l"
+#line 56 "ClntLexer.l"
 {return clntParser::LOGMODE_; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 53 "ClntLexer.l"
+#line 57 "ClntLexer.l"
 {return clntParser::LOGNAME_; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 55 "ClntLexer.l"
+#line 59 "ClntLexer.l"
 {return clntParser::WORKDIR_;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 57 "ClntLexer.l"
+#line 61 "ClntLexer.l"
 { return clntParser::PREF_TIME_; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 58 "ClntLexer.l"
+#line 62 "ClntLexer.l"
 { return clntParser::VALID_TIME_; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 59 "ClntLexer.l"
+#line 63 "ClntLexer.l"
 { return clntParser::T1_;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 60 "ClntLexer.l"
+#line 64 "ClntLexer.l"
 { return clntParser::T2_;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 62 "ClntLexer.l"
+#line 66 "ClntLexer.l"
 {return clntParser::OPTION_; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 63 "ClntLexer.l"
+#line 67 "ClntLexer.l"
 { return clntParser::DNS_SERVER_;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 64 "ClntLexer.l"
+#line 68 "ClntLexer.l"
 { return clntParser::DOMAIN_;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 65 "ClntLexer.l"
+#line 69 "ClntLexer.l"
 { return clntParser::NTP_SERVER_;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 66 "ClntLexer.l"
+#line 70 "ClntLexer.l"
 { return clntParser::TIME_ZONE_;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 67 "ClntLexer.l"
+#line 71 "ClntLexer.l"
 { return clntParser::SIP_SERVER_; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 68 "ClntLexer.l"
+#line 72 "ClntLexer.l"
 { return clntParser::SIP_DOMAIN_; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 69 "ClntLexer.l"
+#line 73 "ClntLexer.l"
 { return clntParser::FQDN_; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 70 "ClntLexer.l"
+#line 74 "ClntLexer.l"
 { return clntParser::NIS_SERVER_; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 71 "ClntLexer.l"
+#line 75 "ClntLexer.l"
 { return clntParser::NIS_DOMAIN_; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 72 "ClntLexer.l"
+#line 76 "ClntLexer.l"
 { return clntParser::NISP_SERVER_; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 73 "ClntLexer.l"
+#line 77 "ClntLexer.l"
 { return clntParser::NISP_DOMAIN_; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 75 "ClntLexer.l"
+#line 79 "ClntLexer.l"
 { return clntParser::REJECT_SERVERS_;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 76 "ClntLexer.l"
+#line 80 "ClntLexer.l"
 { return clntParser::PREFERRED_SERVERS_;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 77 "ClntLexer.l"
+#line 81 "ClntLexer.l"
 { return clntParser::RAPID_COMMIT_;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 78 "ClntLexer.l"
+#line 82 "ClntLexer.l"
 { return clntParser::UNICAST_; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 80 "ClntLexer.l"
+#line 84 "ClntLexer.l"
 ;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 82 "ClntLexer.l"
+#line 86 "ClntLexer.l"
 ;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 84 "ClntLexer.l"
+#line 88 "ClntLexer.l"
 {
   BEGIN(COMMENT);
   ComBeg=yylineno;
@@ -1371,17 +1375,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 90 "ClntLexer.l"
+#line 94 "ClntLexer.l"
 BEGIN(INITIAL);
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-#line 91 "ClntLexer.l"
+#line 95 "ClntLexer.l"
 ;
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 92 "ClntLexer.l"
+#line 96 "ClntLexer.l"
 {
     Log(Crit) << "Comment not closed. (/* in line " << ComBeg << LogEnd;
     { YYABORT; }
@@ -1391,7 +1395,7 @@ case YY_STATE_EOF(COMMENT):
 
 case 38:
 YY_RULE_SETUP
-#line 99 "ClntLexer.l"
+#line 103 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1403,7 +1407,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 108 "ClntLexer.l"
+#line 112 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1415,7 +1419,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 117 "ClntLexer.l"
+#line 121 "ClntLexer.l"
 { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1428,7 +1432,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 127 "ClntLexer.l"
+#line 131 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1440,7 +1444,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 136 "ClntLexer.l"
+#line 140 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1452,7 +1456,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 145 "ClntLexer.l"
+#line 149 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1464,7 +1468,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 154 "ClntLexer.l"
+#line 158 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1477,7 +1481,7 @@ YY_RULE_SETUP
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 163 "ClntLexer.l"
+#line 167 "ClntLexer.l"
 {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
@@ -1487,7 +1491,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 170 "ClntLexer.l"
+#line 174 "ClntLexer.l"
 {
     int len = strlen(yytext);
     if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
@@ -1511,7 +1515,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 191 "ClntLexer.l"
+#line 195 "ClntLexer.l"
 {
     int len;
     char * ptr;
@@ -1545,7 +1549,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 222 "ClntLexer.l"
+#line 226 "ClntLexer.l"
 { 
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%x",&(yylval.ival))) {
@@ -1557,7 +1561,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 231 "ClntLexer.l"
+#line 235 "ClntLexer.l"
 { 
     if(!sscanf(yytext,"%u",&(yylval.ival))) { 
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
@@ -1568,15 +1572,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 241 "ClntLexer.l"
+#line 245 "ClntLexer.l"
 {return yytext[0];} 
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 245 "ClntLexer.l"
+#line 249 "ClntLexer.l"
 ECHO;
 	YY_BREAK
-#line 1580 "ClntLexer.cpp"
+#line 1584 "ClntLexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ADDR):
 	yyterminate();
@@ -2480,7 +2484,7 @@ void yyfree (void * ptr )
 #undef YY_DECL_IS_OURS
 #undef YY_DECL
 #endif
-#line 245 "ClntLexer.l"
+#line 249 "ClntLexer.l"
 
 
 
