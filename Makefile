@@ -7,22 +7,24 @@ all: includes bison libs server client relay tags
 includes:
 	cd $(INCDIR); $(MAKE) links
 
-bison:
+bison: bison/bison++
+
+bison/bison++:
 	@echo "[CONFIG ] /bison++/"
-	cd $(PREFIX)/bison++; ./configure &>configure.log
+	cd $(PREFIX)/bison++; ./configure >configure.log
 	@echo "[MAKE   ] /bison++/bison++"
-	cd $(PREFIX)/bison++; $(MAKE)
+	$(MAKE) -C $(PREFIX)/bison++
 
 parser: 
-	cd ClntCfgMgr; $(MAKE) parser
-	cd SrvCfgMgr; $(MAKE) parser
-	cd RelCfgMgr; $(MAKE) parser
+	$(MAKE) -C $(CLNTCFGMGR) parser
+	$(MAKE) -C $(SRVCFGMGR) parser
+	$(MAKE) -C $(RELCFGMGR) parser
 
 client: $(CLIENTBIN)
 
 $(CLIENTBIN): includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
+	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
@@ -45,7 +47,7 @@ server: $(SERVERBIN)
 
 $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
+	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(LOWLEVEL)    \
@@ -73,7 +75,7 @@ relay: $(RELAYBIN)
 
 $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
+	$(CXX) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
 	-L$(RELTRANSMGR) -lRelTransMgr \
 	-L$(RELCFGMGR)   -lRelCfgMgr \
 	-L$(RELIFACEMGR) -lRelIfaceMgr \
@@ -144,7 +146,7 @@ VERSION-linux:
 
 	echo " C++ compiler used " >> VERSION
 	echo "-------------------" >> VERSION
-	$(CPP) --version >> VERSION
+	$(CXX) --version >> VERSION
 	echo >> VERSION
 
 	echo " C compiler used " >> VERSION
@@ -229,7 +231,7 @@ release-src: VERSION-src
 	@echo "[RM     ] dibbler-$(VERSION)-src.tar.gz"
 	rm -f dibbler-$(VERSION)-src.tar.gz
 	cd doc; $(MAKE) clean
-	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; cd bison++; $(MAKE) clean; fi
+	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; $(MAKE) -C bison++ clean; fi
 	@echo "[TAR/GZ ] ../dibbler-tmp.tar.gz"
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler > filelist-src

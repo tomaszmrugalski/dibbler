@@ -1,18 +1,18 @@
 # === used tools ===
-CPP          = g++
+CXX          = g++
 CC           = gcc
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
 COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall
-OPTS         = -ftemplate-depth-40 $(COPTS)
+OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
 CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
 REL_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
-DEBUGINFO    = -g
+#DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === libxml2 stuff ===
@@ -84,8 +84,8 @@ SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS)
 # === UNIVERSAL TARGETS ===
 
 %.o: %.cpp %.h
-	@echo "[CPP    ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) -c -o $@ $<
+	@echo "[CXX    ] $(SUBDIR)/$@"
+	$(CXX) $(OPTS) -c -o $@ $<
 
 %.a: objs
 	@echo "[LIB    ] $(SUBDIR)/$@"	
