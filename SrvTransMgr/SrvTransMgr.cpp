@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.19 2004-11-02 01:37:09 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.20 2004-11-29 23:25:13 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/11/02 01:37:09  thomson
+ * *** empty log message ***
+ *
  * Revision 1.18  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -140,15 +143,14 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
     MsgLst.first();
     while(answ=MsgLst.get()) 
     {
-        if (answ->getTransID()==msg->getTransID()) 
-        {
-            std::clog << "Old reply with transID (" << hex << msg->getTransID() 
-		      << dec << ") found. Sending old reply." << LogEnd;
-            answ->answer(msg);
+        if (answ->getTransID()==msg->getTransID()) {
+            Log(Cont) << " Old reply with transID=" << hex << msg->getTransID() 
+		      << dec << " found. Sending old reply." << LogEnd;
+            answ->send();
             return;
         }
     }
-    std::clog << "Old reply for transID=" << hex << msg->getTransID()
+    Log(Cont) << " Old reply for transID=" << hex << msg->getTransID()
 	      << " not found. Generating new answer." << dec << LogEnd;
 
     switch(msg->getType()) {
@@ -245,7 +247,8 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
     case ADVERTISE_MSG:
     case REPLY_MSG: 
     {
-	Log(Warning) << "Invalid message type received" << LogEnd;
+	Log(Warning) << "Invalid message type received: " << msg->getType()
+		     << LogEnd;
 	break;
     }
     case RELAY_FORW:
