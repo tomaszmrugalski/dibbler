@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.12 2004-09-05 15:27:49 thomson Exp $
+ * $Id: layer3.c,v 1.13 2004-09-05 16:28:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.11  2004/09/05 10:45:16  thomson
  * Socket binding fixed.
  *
@@ -332,10 +335,10 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     }
 
     // allow address reuse (this option sucks - why allow running multiple servers?)
-    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
-	// Unable to set up socket option SO_REUSEADDR
-	return -9;
-    }
+//    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
+//	// Unable to set up socket option SO_REUSEADDR
+//	return -9;
+//    }
 
     // bind socket to a specified port
     struct sockaddr_in6 bindme;
