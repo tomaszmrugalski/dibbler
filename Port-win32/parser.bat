@@ -5,5 +5,4 @@ bison++ --no-lines -d %FOO%\ClntParser.y -o %FOO%\ClntParser.cpp
 set FOO=..\SrvCfgMgr
 @echo "Generating server files..."
 flex -+ -L -o%FOO%\SrvLexer.cpp %FOO%\SrvLexer.l
-bison++ --no-lines -d SrvParser.y -o SrvParser.cpp
-@pause
+bison++ --no-lines -d %FOO%\SrvParser.y -o %FOO%\SrvParser.cpp

@@ -310,6 +310,9 @@
 					RelativePath="..\SrvCfgMgr\SrvCfgMgr.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvCfgMgr\SrvLexer.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvParsClassOpt.cpp">
 				</File>
 				<File
@@ -317,6 +320,9 @@
 				</File>
 				<File
 					RelativePath="..\SrvCfgMgr\SrvParsIfaceOpt.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvParser.cpp">
 				</File>
 				<File
 					RelativePath="..\CfgMgr\StationID.cpp">
@@ -357,9 +363,6 @@
 				Name="port-winxp"
 				Filter="">
 				<File
-					RelativePath="SrvLexer.cpp">
-				</File>
-				<File
 					RelativePath="SrvService.cpp">
 				</File>
 				<File
@@ -373,9 +376,6 @@
 				</File>
 				<File
 					RelativePath="server-winxp.cpp">
-				</File>
-				<File
-					RelativePath="srvParser.cpp">
 				</File>
 			</Filter>
 		</Filter>
