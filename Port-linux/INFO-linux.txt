@@ -7,7 +7,9 @@
   Compilation info
  -----------------------
   Edit Makefile.inc to suit your needs.
-  You can change compiler (gcc-2.95 instead of gcc-3.3) for example.
+  You need flex and bison++ to generate parser files. 
+  bison++ will be included in next release.
+
   Then just type "make" and have your fingers crossed.
  
   Users guide
@@ -16,11 +18,11 @@
   Extract this archive to /var/lib/dibbler
   
   Server start: ./dibbler-server-linux
-  Server start in daemon mode: ./dibbler-server-linux -d
+  Server start in debug mode: ./dibbler-server-linux -d
   Server stop: kill `cat server.pid`
 
   Client start: ./dibbler-client-linux
-  Client start in daemon mode: ./dibbler-client-linux -d
+  Client start in debug mode: ./dibbler-client-linux -d
   Client stop: kill `cat server.pid`
   
   Additional info
