@@ -1,6 +1,6 @@
 # === used tools ===
-CPP          = g++-3.4
-CC           = gcc-3.4
+CPP          = g++
+CC           = gcc
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
