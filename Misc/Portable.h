@@ -2,7 +2,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.0.20040117"
+//#define DIBBLER_VERSION "0.0.20040117"
+#define DIBBLER_VERSION "0.1.0-RC1"
 
 #define DIBBLER_COPYRIGHT1 "Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "by Tomasz Mrugalski <thomson@klub.com.pl> engine,Linux port,doc"
@@ -48,7 +49,7 @@
 #define CLNTDUID_FILE	   "duid-client"
 #define CLNTLOG_FILE	   "client.log"
 #define SRVLOG_FILE	   "server.log"
-#define RESOLVCONF_FILE    "resolv.conf"
+#define RESOLVCONF_FILE    "/etc/resolv.conf"
 #define CLNTDB_FILE	   "addrdb-client.xml"
 #define SRVDB_FILE         "addrdb-server.xml"
 #define CLNTPID_FILE       "client.pid"
@@ -127,8 +128,10 @@ extern void microsleep(int microsecs);
 /* DNS */
 extern int dns_add(const char* ifname, int ifaceid, char* addrPlain);
 extern int dns_del(const char* ifname, int ifaceid, char* addrPlain);
+extern int dns_del_all();
 extern int domain_add(const char* ifname, int ifaceid, char* domain);
 extern int domain_del(const char* ifname, int ifaceid, char* domain);
+extern int domain_del_all();
 
 #ifdef __cplusplus
 }
