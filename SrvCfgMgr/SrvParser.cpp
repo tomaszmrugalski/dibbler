@@ -1548,7 +1548,10 @@ case 59:
 	Log(Error) << "RAPID-COMMIT in line " << lex->lineno() << " must have 0 or 1 value." << LogEnd;
 	YYABORT;
     }
-    ParserOptStack.getLast()->setRapidCommit(yyvsp[0].ival); 
+	if (yyvsp[0].ival==1)
+		ParserOptStack.getLast()->setRapidCommit(true); 
+	else
+		ParserOptStack.getLast()->setRapidCommit(false); 
 ;
     break;}
 case 60:

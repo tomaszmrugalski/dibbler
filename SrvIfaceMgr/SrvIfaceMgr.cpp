@@ -115,8 +115,9 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
 	int ifaceid = ptrIface->getID();
 	Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/" 
-		   << ptrIface->getID() << " (socket " << sockid << ") ,msg type=" << msgtype << "." 
-		   << LogEnd;
+               << ptrIface->getID() << " (socket " << sockid << ") , addr=" << *Peer << "." 
+		       << LogEnd;
+
 	// create specific message object
 	switch (msgtype) {
 	case SOLICIT_MSG:
