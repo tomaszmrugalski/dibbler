@@ -18,4 +18,14 @@ where
 	uninstall - uninstall service
 	run       - run interactively
 	
+Compile info:
 
+To generate ClntParser.cpp and ClntLexer.cpp files, you can use
+parser.bat. After generation, in file ClntLexer.cpp replace:
+
+class istream;
+
+with:
+
+#include <iostream>
+using namespace std;
