@@ -1,6 +1,6 @@
 # === used tools ===
-CPP          = g++
-CC           = gcc
+CPP          = g++-3.3
+CC           = gcc-3.3
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
@@ -30,13 +30,14 @@ SERVERBIN    = dibbler-server
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
-VERSION      = `test/xtract_version`
+VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = '/var/lib/dibbler'
 INST_MANDIR  = '/usr/local/man'
 INST_DOCDIR  = '/usr/local/share/doc'
 INST_BINDIR  = '/usr/local/sbin'
 INSTALL      = 'install'
 MKDIR        = mkdir -p
+CP           = cp
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux
