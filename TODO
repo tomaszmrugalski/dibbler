@@ -1,0 +1,32 @@
+  TODO
+ ------
+
+- place some copyleft informations in every cpp/h file
+- release first public version, display info about version and compilation time
+- client segfaults when config-file load has failed
+- fill stucture desrcibing iface with link local addresses available on this iface
+- repeated DNS SERVERS Option write redundant information to RESOLVCONF_FILE
+- merge Tentative and State in IAa
+- IA_TA option support
+- AddrMgr: db load from file
+- bug: SrvMsgReply:331 - always replies with NoBinding. 
+- finish CONFIRM (db load required)
+- implement useMulticast
+- implement Server Unicast
+- gcc 3.3 support
+- How to update pref/valid?
+- Srv: DECLINE should have addrs with valid=preferred=0 values
+- unified start/stop for WIN/Linux
+- ClntCfgIface.cpp:107: what are "additonal DNS servers"?
+- ClntCfgIface.cpp:157: what are those options?
+- check server's behavior: there isn't any addrs left, and srv receives SOLICIT.
+  Does PREFERENCE have normal value (e.g. not faulty 255, check tex/test09/10th packet)
+
+  BUGS
+ ------
+- When client receives NO-ADDR AVAILABLE, it simultaneusly:
+  - starts SOLICIT transaction
+  - sends REQUEST to next server on backup list.
+- test11: reply contains empty IA with 2 STATUS CODE options:
+  - unspecfail (1) + description "no such IA"
+  - ok (!!!)
