@@ -1419,7 +1419,7 @@ case 11:
 {
     CheckIsIface(string(yyvsp[-2].strval));
     ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-2].strval));
-    delete yyvsp[-2].strval;
+    delete [] yyvsp[-2].strval;
     EmptyIface();
 ;
     break;}

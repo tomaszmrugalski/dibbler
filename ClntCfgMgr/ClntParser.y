@@ -153,7 +153,7 @@ InterfaceDeclarationsList '}'
 {
     CheckIsIface(string($2));
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
-    delete $2;
+    delete [] $2;
     EmptyIface();
 }
 
