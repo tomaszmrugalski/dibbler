@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-compile.tex,v 1.6 2004-12-01 21:58:43 thomson Exp $
+%% $Id: dibbler-devel-compile.tex,v 1.7 2004-12-27 20:44:29 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.6  2004/12/01 21:58:43  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.5  2004/11/30 00:52:05  thomson
 %% Minor changes.
 %%
@@ -162,3 +165,15 @@ Also note that \verb+FlexLexer.h+ is modified (std:: added in several places,
 
 Keep in mind that author is in no way a flex/bison guru and found this method
 in a painful trial-and-error way. 
+
+\subsection{DEB and RPM Packages}
+There is a possibility to generate RPM (RadHat, Fedora Core, Mandrake,
+PLD and lots of other distributions) and DEB (Debian, Knoppix and
+other) packages. Before trying this trick, make sure that you have
+required tools (rpmbuild for RPM;dpkg-deb for DEB
+packages). Package generation is done by the following commands:
+
+\begin{verbatim}
+make release-deb
+make release-rpm
+\end{verbatim}

@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel.tex,v 1.9 2004-12-01 21:58:43 thomson Exp $
+%% $Id: dibbler-devel.tex,v 1.10 2004-12-27 20:44:29 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.9  2004/12/01 21:58:43  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.8  2004/12/01 20:55:49  thomson
 %% Documentation updated.
 %%
@@ -56,8 +59,17 @@
 \addtolength{\textheight}{2.0 cm}
 \addtolength{\voffset}{-0.5cm}
 
+%%%%%% \dzis macro by Lupan %%%%%%
+\newcommand{\dzis}{
+\the\year-%
+\ifnum\month<10{}0\fi
+\the\month-%
+\ifnum\day<10{}0\fi
+\the\day
+}
+
 \author{Tomasz Mrugalski\\ \small{\href{mailto:thomson(at)klub.com.pl}{thomson(at)klub.com.pl}}}
-\date{2004-11-15}
+\date{\dzis}
 \title{Dibbler -- a portable DHCPv6\\Developer's Guide}
 
 \pagestyle{fancy}

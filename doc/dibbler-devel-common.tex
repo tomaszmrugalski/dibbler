@@ -77,8 +77,8 @@ What's happened in those lines?
 \begin{description}
 \item[1] -- Function starts.
 \item[2] -- New TIPv6Addr object is created. Smart Pointer
-  (SmartPtr<TIPv6Addr>) is also created to point at this object. Using
-  normal pointer to achive the same goal would look like this:
+  (SmartPtr$<$TIPv6Addr$>$) is also created to point at this object. Using
+  normal pointer to achive the same goal would look like this: \\
   \verb+TIPv6Addr * addr = new TIPv6Addr("ff02::1:2");+
 \item[3] -- Another pointer is created. It is equivalent of the
   classical pointer (TIPv6Addr * tmp).
@@ -209,9 +209,12 @@ Also note that class function names start with small letters
 letters (e.g. \verb+bool TOpt::IsValid;+).
 
 %%
-%% $Id: dibbler-devel-common.tex,v 1.3 2004-12-01 21:58:43 thomson Exp $
+%% $Id: dibbler-devel-common.tex,v 1.4 2004-12-27 20:44:29 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.3  2004/12/01 21:58:43  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.2  2004/12/01 20:55:49  thomson
 %% Documentation updated.
 %%
