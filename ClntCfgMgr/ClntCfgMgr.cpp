@@ -67,7 +67,8 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
         if ( (iface) &&
             (iface->flagUp()) &&
             (iface->flagRunning()) &&
-            (iface->flagMulticast()) )
+            (iface->flagMulticast()) &&
+			(iface->getMacLen()>5) )
         {
             //try to find it in parsed config file
             SmartPtr<TClntCfgIface> cfgIface,foundIface;
