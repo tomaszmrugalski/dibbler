@@ -243,10 +243,16 @@ release-src: VERSION-src
 	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
 	rm ../dibbler-version
 
-FOO1:=`$(TOPDIR)/test/xtract_version`
-foo:
-	echo $(FOO1)
-	cd ..; echo "VERSION=[$(F001)]"
+orig:   release-src
+	@echo "[RENAME ] ../dibbler_$(VERSION).orig.tar.gz"
+	mv dibbler-$(VERSION)-src.tar.gz ../dibbler_$(VERSION).orig.tar.gz
+
+deb:
+	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
+	echo " Make sure that there is a file ../dibbler_$(VERSION).orig.tar.gz"; false; fi
+	if [ -d ../dibbler ]; then \
+	echo "[RENAME ] ../dibbler-$(VERSION)" ; mv ../dibbler ../dibbler-$(VERSION); fi
+	dpkg-buildpackage -rfakeroot
 
 release-doc: VERSION-src doc oxygen
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-doc.tar.gz"
@@ -260,17 +266,6 @@ release-gentoo: VERSION-linux
 	mv dibbler-tmp.tar.gz dibbler-$(VERSION)-gentoo.tar.gz
 
 release-all: release-src release-linux release-doc release-deb release-rpm release-win32
-
-orig:   release-src
-	@echo "[RENAME ] ../dibbler_$(VERSION).orig.tar.gz"
-	mv dibbler-$(VERSION)-src.tar.gz ../dibbler_$(VERSION).orig.tar.gz
-
-deb:
-	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
-	echo " Make sure that there is a file ../dibbler_$(VERSION).orig.tar.gz"; false; fi
-	if [ -d ../dibbler ]; then \
-	echo "[RENAME ] ../dibbler-$(VERSION)" ; mv ../dibbler ../dibbler-$(VERSION); fi
-	dpkg-buildpackage -rfakeroot
 
 release-deb: VERSION-linux server client doc
 	@echo "[RM     ] dibbler_$(VERSION)_i386.deb"
