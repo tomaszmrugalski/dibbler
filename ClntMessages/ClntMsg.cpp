@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.7 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.8 2004-11-29 22:46:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.6  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -443,7 +447,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: LIFETIME ---
-    if ( this->MsgType == INFORMATION_REQUEST_MSG && optORO->count() )
+    if ( iface->isReqLifetime() && (this->MsgType == INFORMATION_REQUEST_MSG) && optORO->count() )
 	optORO->addOption(OPTION_LIFETIME);
 
     // final setup: Did we add any options at all? 
