@@ -3,22 +3,18 @@ include ../Makefile.inc
 all: objs libs
 all: objs parser lexer libs
 
-objs: layer3.o libnetlink.o ll_map.o ll_types.o utils.o dns.o addrpack.o\
-	SrvParser.o SrvLexer.o
+objs: layer3.o libnetlink.o ll_map.o ll_types.o utils.o dns.o addrpack.o
 
 
 # ============================================================
 # === libs ===================================================
 # ============================================================
 
-libs: objs libLowLevel.a libSrvParser.a
+libs: objs libLowLevel.a 
 
 libLowLevel.a: objs
 	rm -f libLowLevel.a
 	ar cr $@ layer3.o libnetlink.o ll_map.o ll_types.o utils.o addrpack.o dns.o
-
-libSrvParser.a:  SrvParser.o SrvLexer.o 
-	ar cr $@ SrvParser.o SrvLexer.o 
 
 # ============================================================
 # === C low level stuff ======================================

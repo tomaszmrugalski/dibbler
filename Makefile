@@ -9,7 +9,6 @@ includes:
 client: $(CLIENTBIN)
 
 $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
-	cd $(INCDIR); 	    $(MAKE) all
 	cd $(LOWLEVEL);     $(MAKE) libs
 	cd $(CLNTTRANSMGR); $(MAKE) libs
 	cd $(CLNTIFACEMGR); $(MAKE) libs
@@ -34,7 +33,6 @@ $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
 
 server: $(SERVERBIN)
 $(SERVERBIN): includes DHCPServer.o $(SERVER)
-	cd $(INCDIR); 	    $(MAKE) all 	
 	cd $(LOWLEVEL);     $(MAKE) libs
 	cd $(SRVTRANSMGR);  $(MAKE) libs
 	cd $(SRVIFACEMGR);  $(MAKE) libs
@@ -46,7 +44,7 @@ $(SERVERBIN): includes DHCPServer.o $(SERVER)
 	cd $(MISC);	    $(MAKE) libs
 	$(CPP) $(OPTS) -I $(INCDIR) -o $@ DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
-	-L$(LOWLEVEL)    -lSrvParser \
+	-L$(LOWLEVEL)    \
 	-L$(SRVOPTIONS)  -lSrvOpts \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
@@ -54,7 +52,6 @@ $(SERVERBIN): includes DHCPServer.o $(SERVER)
 	-L$(MISC)        -lMisc\
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
-	-L$(LOWLEVEL)    -lSrvParser \
 	-L$(SRVOPTIONS)  -lSrvOpts \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
