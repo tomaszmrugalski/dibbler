@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.1 2005-01-24 00:42:37 thomson Exp $
+ * $Id: relay-win32.cpp,v 1.2 2005-02-01 01:09:34 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/24 00:42:37  thomson
+ * no message
+ *
  *
  */
 
@@ -86,35 +89,38 @@ int main(int argc, char* argv[]) {
     
     switch (status) {
     case STATUS: {
-	cout << "Service: ";
+        RelService.showStatus();
+#if 0
+        cout << "Service: ";
 	if (RelService.IsInstalled()) 
 	    cout << "INSTALLED " << endl;
 	else
 	    cout << "NOT INSTALLED" << endl;
+#endif
 	break;
     };
     case START: {
-	RelService.StartService();
-	break;
+	    RelService.StartService();
+	    break;
     }
     case STOP: {
-	cout << "FIXME: STOP function is not implemented yet." << endl;
-	break;
+	    RelService.StopService();
+    	break;
     }
     case INSTALL: {
-	RelService.Install();
+        RelService.Install();
 	    break;
     }
     case UNINSTALL: {
-	RelService.Uninstall();
-	break;
+	    RelService.Uninstall();
+	    break;
     } 
     case RUN: {
-	RelService.Run();
-	break;
+	    RelService.Run();
+	    break;
     }
     case INVALID: {
-	cout << "Invalid usage." << endl;
+	    cout << "Invalid usage." << endl;
     }				  
     case HELP: 
     default: {
