@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.4 2004-06-21 23:08:48 thomson Exp $
+ * $Id: SrvAddrMgr.h,v 1.5 2004-09-07 22:02:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/21 23:08:48  thomson
+ * Minor fixes.
+ *
  * Revision 1.3  2004/06/20 21:00:26  thomson
  * quiet flag added.
  *
@@ -31,10 +34,10 @@ class TSrvAddrMgr : public TAddrMgr
 
     long getTimeout();
     bool addClntAddr(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
-		     int iface, long IAID, unsigned long T1, unsigned long T2, 
-		     SmartPtr<TIPv6Addr> addr, long pref, long valid,
+		     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+		     SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
 		     bool quiet);
-    bool delClntAddr(SmartPtr<TDUID> duid,long IAID, SmartPtr<TIPv6Addr> addr,
+    bool delClntAddr(SmartPtr<TDUID> duid,unsigned long IAID, SmartPtr<TIPv6Addr> addr,
 		     bool quiet);
     
     // how many addresses does this client have?

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.3 2004-09-07 22:02:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -146,43 +149,7 @@ void TClntMsgRebind::answer(SmartPtr<TMsg> Reply)
             }
         }
     }
-    //Here we received answer from our server, which updated the "whole information"
-    //There is no use to send Rebind even if server realesed some addresses/IAs
-    //in such a case new Solicit message should be sent
-    //Also if some configuration parameters weren't sustain they should be changed
     IsDone = true;
-
-    /*SmartPtr<TOpt> opt;
-    SmartPtr<TClntOptServerIdentifier> optSrvDUID = (Ptr*) Reply->getOption(OPTION_SERVERID);
-    SmartPtr<TClntOptServerUnicast> optUnicast = (Ptr*) Reply->getOption(OPTION_UNICAST);
-    
-    Reply->firstOption();
-    
-    // for each option in message... (there should be only one IA option, as we send 
-    // separate REBIND for each IA, but we check all options anyway)
-    while ( opt = Reply->getOption() ) {
-	switch (opt->getOptType()) {
-	case OPTION_IA: {
-	    SmartPtr< TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
-	    this->updateIA(ptrOptIA, optSrvDUID, optUnicast);
-	    break;
-	}
-	case OPTION_ORO:
-	case OPTION_RELAY_MSG:
-	case OPTION_INTERFACE_ID:
-	case OPTION_IAADDR: 
-	case OPTION_RECONF_MSG:
-	{
-	    clog << logger::logWarning << "Illegal option (" << opt->getOptType() 
-		 << ") in received REPLY message." << logger::endl;
-	    break;
-	}
-	default:
-	    // what to do with unknown/other options? execute them
-	    opt->doDuties();
-	}
-    }
-    IsDone = true;*/
 }
 
 void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
@@ -287,10 +254,10 @@ void TClntMsgRebind::releaseIA(int IAID)
     SmartPtr<TAddrIA> ptrAddrIA=this->ClntAddrMgr->getIA(IAID);
     if (!ptrAddrIA)
     {
-        std::clog<<logger::logError<<"IA has not been found in Address Manager."<< logger::endl;
+        Log(Error) << "IA has not been found in Address Manager."<< LogEnd;
         return;
     }
-    //FIXME: release all addrs
+
     SmartPtr<TAddrAddr> ptrAddr;
     ptrAddrIA->firstAddr();
     while(ptrAddr=ptrAddrIA->getAddr())
@@ -303,8 +270,7 @@ void TClntMsgRebind::releaseIA(int IAID)
     ptrAddrIA->setState(NOTCONFIGURED);
 }
 
-bool TClntMsgRebind::check()
-{
+bool TClntMsgRebind::check() {
 	return 0;
 }
 
@@ -312,6 +278,5 @@ string TClntMsgRebind::getName() {
     return "REBIND";
 }
 
-TClntMsgRebind::~TClntMsgRebind()
-{
+TClntMsgRebind::~TClntMsgRebind() {
 }

@@ -1,15 +1,16 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 or later licence                                
- *                                                                           
- * $Id: SrvOptIAAddress.h,v 1.2 2004-06-17 23:53:55 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvOptIAAddress.h,v 1.3 2004-09-07 22:02:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- *                                                                           
+ * Revision 1.2  2004/06/17 23:53:55  thomson
+ * Server Address Assignment rewritten.
  */
 
 #ifndef SRVOPTIAADDRESS_H

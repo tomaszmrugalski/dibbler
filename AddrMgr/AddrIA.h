@@ -1,3 +1,16 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: AddrIA.h,v 1.3 2004-09-07 22:02:32 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 class TAddrIA;
 #ifndef ADDRIA_H
 #define ADDRIA_H
@@ -15,17 +28,18 @@ class TAddrIA
 {
   public:
     friend ostream & operator<<(ostream & strum,TAddrIA &x);
-    TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, long T1, long T2,long ID);
+    TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, 
+	    unsigned long T1, unsigned long T2,unsigned long ID);
     ~TAddrIA();
 
     //---IA state---
     enum EState getState();
     void setState(enum EState state);
-    void setT1(long T1);
-    void setT2(long T2);
-    long getT1();
-    long getT2();
-    long getIAID();
+    void setT1(unsigned long T1);
+    void setT2(unsigned long T2);
+    unsigned long getT1();
+    unsigned long getT2();
+    unsigned long getIAID();
 
     //---Iface---
     int getIface();
@@ -41,8 +55,7 @@ class TAddrIA
 
     //---list related methods---
     void addAddr(SmartPtr<TAddrAddr> x);
-    void addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
-    void addClntAddr(int iface, SmartPtr<TIPv6Addr> addr, long pref, long valid);
+    void addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid);
     int getAddrCount();
 
     // --- address management ---
@@ -69,9 +82,9 @@ class TAddrIA
 private:
     TContainer< SmartPtr<TAddrAddr> > AddrLst;
 
-    long IAID;
-    long T1;
-    long T2;
+    unsigned long IAID;
+    unsigned long T1;
+    unsigned long T2;
 
     enum EState State; // State of this IA
     enum ETentative Tentative;

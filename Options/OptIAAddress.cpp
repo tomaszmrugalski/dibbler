@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIAAddress.cpp,v 1.3 2004-05-23 19:12:34 thomson Exp $
+ * $Id: OptIAAddress.cpp,v 1.4 2004-09-07 22:02:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/05/23 19:12:34  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -60,6 +63,13 @@ TOptIAAddress::TOptIAAddress( SmartPtr<TIPv6Addr> addr, long pref, long valid, T
 	return mySize+getSubOptSize();
 }
 
+void TOptIAAddress::setPref(unsigned long pref) {
+    this->Pref = pref;
+}
+
+void TOptIAAddress::setValid(unsigned long valid) {
+    this->Valid = valid;
+}
 
  char * TOptIAAddress::storeSelf( char* buf)
 {

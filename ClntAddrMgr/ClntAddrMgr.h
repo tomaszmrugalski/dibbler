@@ -1,5 +1,18 @@
-#ifndef CLNTADDRMGR_H_HEADER_INCLUDED_C109774C
-#define CLNTADDRMGR_H_HEADER_INCLUDED_C109774C
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntAddrMgr.h,v 1.2 2004-09-07 22:02:32 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
+#ifndef CLNTADDRMGR_H
+#define CLNTADDRMGR_H
 
 #include "Container.h"
 #include "SmartPtr.h"
@@ -12,9 +25,6 @@ class TClntCfgMgr;
 class TClntAddrMgr : public TAddrMgr
 {
   public:
-    //## Wczytuje bazê danych z dysku. Sprawdza równie¿, czy wszystkie
-    //## interfejsy s± dostêpne i nale¿y je konfigurowaæ komunikuj±c siê z
-    //## ConfMgr'em
     TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntConfMgr, string addrdb, bool loadDB);
 
     long getT1Timeout();
@@ -38,7 +48,5 @@ class TClntAddrMgr : public TAddrMgr
  private:
     SmartPtr<TAddrClient> Client;
 };
-
-
 
 #endif

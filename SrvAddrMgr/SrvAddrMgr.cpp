@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.6 2004-06-21 23:08:48 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.7 2004-09-07 22:02:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/21 23:08:48  thomson
+ * Minor fixes.
+ *
  * Revision 1.5  2004/06/20 21:00:26  thomson
  * quiet flag added.
  *
@@ -42,8 +45,8 @@ long TSrvAddrMgr::getTimeout() {
  * add address for a client. If client o IA is missing, add it, too.
  */
 bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
-			      int iface, long IAID, unsigned long T1, unsigned long T2, 
-			      SmartPtr<TIPv6Addr> addr, long pref, long valid,
+			      int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+			      SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
 			      bool quiet) {
     // find this client
     SmartPtr <TAddrClient> ptrClient;
@@ -105,7 +108,7 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
  *  Frees address (also deletes IA and/or client, if this was last address)
  */
 bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
-			      long IAID, SmartPtr<TIPv6Addr> clntAddr,
+			      unsigned long IAID, SmartPtr<TIPv6Addr> clntAddr,
 			      bool quiet) {
     // find this client
     SmartPtr <TAddrClient> ptrClient;

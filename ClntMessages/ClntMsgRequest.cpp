@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.4 2004-09-07 17:42:31 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.5 2004-09-07 22:02:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/09/07 17:42:31  thomson
+ * Server Unicast implemented.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  */
@@ -145,18 +148,11 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     pkt = new char[getSize()];
 }
 
+/*
+ * analyse REPLY received for this REQUEST
+ */
 void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
 {
-    //to:    requestedOptions, backSrvLst,   receivedOptions
-    //to:    RequestOptions,   BackupSrvLst, Options
-    //na to: this->Options   , BackupSrvLst, msg->getOptLst()
-
-
-    // FIXME: address checking
-    // check if addressess are not used
-    // remove valid IAs from BackupSrvList's Options
-    // if any IA has used addressess, send DECLINE,
-    // send next request (with reduced IAs list)
     SmartPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) this->getOption(OPTION_SERVERID);
     
@@ -175,8 +171,6 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
             case OPTION_IA:
             {
                 SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
-                //FIXME: replace this NULL with something meaningfull
-                //       (required for Unicast to work correctly)
                 clntOpt->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
 				  ptrDUID->getDUID(), SmartPtr<TIPv6Addr>()/*NULL*/, this->Iface);
 
@@ -184,8 +178,8 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
 
                 if (clntOpt->getStatusCode()==STATUSCODE_SUCCESS)
                 {
-                    //if we have received enough addresses,
-                    //remove assigned IA's by server from request message
+                    // if we have received enough addresses,
+		    // remove assigned IA's by server from request message
                     SmartPtr<TOpt> requestOpt;
                     this->Options.first();
                     while (requestOpt = this->Options.get())
@@ -207,7 +201,7 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
                 break;
             }
             case OPTION_IAADDR:
-                std::clog << logger::logWarning << "Option OPTION_IAADDR misplaced." << logger::endl;
+                Log(Warning) << "Option OPTION_IAADDR misplaced." << LogEnd;
                 break;
             default:
             {
@@ -246,17 +240,13 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
     } else {
         if (ptrOptionReqOpt&&(ptrOptionReqOpt->getOptCnt()))
         {
-            clog<<logger::logNotice<<"All Identity associations were supplied, but not all requested options.";
+            Log(Notice) << "All IA(s) were supplied, but not all requested options.";
             clog<<"Sending Information Request" << logger::endl;
             ClntTransMgr->sendInfRequest(this->Options, this->Iface);
-            //Here should be information request message send
-            //FIXME: only options, send Information-Request to another server
         }
     }
     IsDone = true;
     return;
-
-
 }
 
 void TClntMsgRequest::doDuties()

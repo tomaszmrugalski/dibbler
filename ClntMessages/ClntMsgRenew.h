@@ -6,9 +6,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.h,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgRenew.h,v 1.3 2004-09-07 22:02:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
  *
  */
 

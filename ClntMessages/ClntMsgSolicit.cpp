@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.8 2004-09-03 23:20:22 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.9 2004-09-07 22:02:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/09/03 23:20:22  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.7  2004/08/24 22:48:35  thomson
  * *** empty log message ***
  *
@@ -187,7 +190,7 @@ void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
 	    return;
 	}
 
-	sortAnswers();
+	this->replyReceived(msg);
 	IsDone=true;
 	break;
     }
@@ -197,6 +200,115 @@ void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
 	return;
     }
  }
+
+/*
+ * use REPLY provided in rapid-commit situation
+ */
+void TClntMsgSolicit::replyReceived(SmartPtr<TMsg> msg) {
+    SmartPtr<TClntOptServerIdentifier> ptrDUID;
+    ptrDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
+
+    if (!ptrDUID) {
+	Log(Warning) << "REPLY (for SOLICIT with rapid-commit) recevied without SERVER-ID option." 
+		     << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+    
+    // analyse all options received
+    SmartPtr<TOpt> option;
+
+    // find ORO in received options
+    msg->firstOption();
+    SmartPtr<TClntOptOptionRequest> ptrOptionReqOpt = (Ptr*) msg->getOption(OPTION_ORO);
+
+    msg->firstOption();
+    while (option = msg->getOption() ) 
+    {
+        switch (option->getOptType()) 
+        {
+            case OPTION_IA:
+            {
+                SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
+                clntOpt->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+				  ptrDUID->getDUID(), SmartPtr<TIPv6Addr>()/*NULL*/, this->Iface);
+
+                clntOpt->doDuties();
+
+                if (clntOpt->getStatusCode()==STATUSCODE_SUCCESS)
+                {
+                    // if we have received enough addresses,
+		    // remove assigned IA's from request message
+                    SmartPtr<TOpt> requestOpt;
+                    this->Options.first();
+                    while (requestOpt = this->Options.get())
+                    {
+                        if (requestOpt->getOptType()==OPTION_IA)
+                        {
+                            SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
+                            if ((ptrIA->getIAID() == clntOpt->getIAID() ) &&
+                                (ClntCfgMgr->countAddrForIA(ptrIA->getIAID()) == ptrIA->countAddr()) )	
+                            {
+                                //found this IA, it has enough addresses and everything is ok.
+                                //Shortly, we have this IA configured.
+                                this->Options.del();
+                                break;
+                            }
+                        } //if
+                    } //while
+                }
+                break;
+            }
+            case OPTION_IAADDR:
+                Log(Warning) << "Option OPTION_IAADDR misplaced." << LogEnd;
+                break;
+            default:
+            {
+                option->setParent(this);
+                if (option->doDuties()) 
+                {
+                    SmartPtr<TOpt> requestOpt;
+                    this->Options.first();
+                    while ( requestOpt = this->Options.get()) {
+                        if ( requestOpt->getOptType() == option->getOptType() ) 
+                        {
+                            if (ptrOptionReqOpt&&(ptrOptionReqOpt->isOption(option->getOptType())))
+                                ptrOptionReqOpt->delOption(option->getOptType());
+                            this->Options.del();
+                        }//if
+                    }//while
+                }
+            }
+        }
+    }
+    //Options and IAs serviced by server are removed from requestOptions list
+
+    SmartPtr<TOpt> solicitOpt;
+    this->Options.first();
+    bool IAsToConfigure = false;
+    while ( solicitOpt = this->Options.get()) {
+        if (solicitOpt->getOptType() == OPTION_IA) {
+	    SmartPtr<TClntOptIA_NA> optIA = (Ptr*) solicitOpt;
+	    SmartPtr<TAddrIA> addrIA = ClntAddrMgr->getIA(optIA->getIAID());
+	    addrIA->setState(NOTCONFIGURED);
+	    Log(Info) << "IA (IAID=" << addrIA->getIAID() << ") still not configured." << LogEnd;
+	    IAsToConfigure = true;
+            break;
+        }
+    }
+
+    // are there any options (requested in REQUEST_OPTION) not yet configured?
+    if ( ptrOptionReqOpt && (ptrOptionReqOpt->getOptCnt()) )
+    {
+	Log(Notice) << "All IA(s) were supplied, but not all requested options.";
+	clog<<"Sending Information Request" << logger::endl;
+	ClntTransMgr->sendInfRequest(this->Options, this->Iface);
+    }
+
+    IsDone = true;
+    return;
+}
+
 
 //Check reveived message against following conditions:
 //  + is received from appropriate server (not rejected)
@@ -286,9 +398,6 @@ int TClntMsgSolicit::getMaxPreference()
 
 void TClntMsgSolicit::sortAnswers()
 {
-    // delete not wanted servers from AnswersLst
-    // FIXME: (get info from cfgMgr)
-
     // we'll store all ADVERTISE here 
     List(TMsg) sorted;
 

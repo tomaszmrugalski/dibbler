@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.6 2004-09-07 17:42:31 thomson Exp $
+ * $Id: DHCPConst.h,v 1.7 2004-09-07 22:02:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/07 17:42:31  thomson
+ * Server Unicast implemented.
+ *
  * Revision 1.5  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
  *
@@ -138,12 +141,15 @@
 #define SERVER_DEFAULT_MIN_T1 0
 #define SERVER_DEFAULT_MAX_T1 ULONG_MAX
 
+#define CLIENT_DEFAULT_T1 ULONG_MAX
+#define CLIENT_DEFAULT_T2 ULONG_MAX
+
 
 enum ESendOpt {Send,Default,Supersede};
 enum EReqOpt {Request, Require};
 enum ETentative {YES, NO, DONTKNOWYET};
 
-enum EState { NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, UNKNOWN };
+enum EState { NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, UNKNOWN, TENTATIVECHECK, TENTATIVE };
     
 bool canBeOptInOpt(int msgType, int optOut, int optIn);
 bool canBeOptInMsg(int msgType, int optType);

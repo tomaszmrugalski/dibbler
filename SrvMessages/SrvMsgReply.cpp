@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.10 2004-08-24 22:48:35 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.11 2004-09-07 22:02:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/08/24 22:48:35  thomson
+ * *** empty log message ***
+ *
  * Revision 1.9  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -147,8 +150,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     duidOpt=(Ptr*)ptrOpt;
     SmartPtr<TAddrClient> ptrClient = AddrMgr->getClient(duidOpt->getDUID());
     if (!ptrClient) {
-	std::clog << logger::logWarning << "Received DECLINE from unknown client:" 
-		  << *duidOpt->getDUID() << logger::endl;
+	Log(Warning) << "Received DECLINE from unknown client, DUID=" << *duidOpt->getDUID() << LogEnd;
 	IsDone = true;
 	return;
     }
@@ -195,6 +197,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		if (subOpt->getOptType()==OPTION_IAADDR)
 		{
 		    addr = (Ptr*) subOpt;
+		    addr->setValid(0);
+		    addr->setPref(0);
 		    
 		    // if there's no such address in out DB
 		    if (!ptrIA->getAddr( addr->getAddr() ) )

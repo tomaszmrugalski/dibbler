@@ -6,16 +6,15 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.4 2004-07-05 23:04:08 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.5 2004-09-07 22:02:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ *
  * Revision 1.3  2004/06/04 19:03:46  thomson
  * Resolved warnings with signed/unisigned
  *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
- *
- *
  */
 
 #ifdef WIN32
@@ -197,18 +196,10 @@ void TClntOptIA_NA::setThats(SmartPtr<TClntIfaceMgr> ifaceMgr,
     this->IfaceMgr=ifaceMgr;
     this->TransMgr=transMgr;
     this->CfgMgr=cfgMgr;
-    /*if (DUIDlen>0) {
-    this->DUID = new char [DUIDlen];
-    memcpy(this->DUID,DUID, DUIDlen);
-    }
-    this->DUIDlen = DUIDlen;*/
     this->DUID=duid;
-    if (addr) 
-    {
+    if (addr) {
         this->Unicast = true;
-        //memcpy(this->Addr,addr,16);
     } else {
-        //memset(this->Addr,0,16);
         this->Unicast = false;
     }
     this->Addr=addr;

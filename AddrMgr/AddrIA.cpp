@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.6 2004-06-21 23:08:48 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.7 2004-09-07 22:02:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/21 23:08:48  thomson
+ * Minor fixes.
+ *
  * Revision 1.5  2004/06/04 19:03:46  thomson
  * Resolved warnings with signed/unisigned
  *
@@ -34,7 +37,8 @@
 #include <windows.h>
 #endif
 
-TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, long T1, long T2,long ID) 
+TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, 
+		 unsigned long T1, unsigned long T2,unsigned long ID) 
 {
     this->T1 = T1;
     this->T2 = T2;
@@ -51,7 +55,7 @@ TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, long
         this->setMulticast();
 }
 
-long TAddrIA::getIAID()
+unsigned long TAddrIA::getIAID()
 {
     return this->IAID;
 }
@@ -61,22 +65,22 @@ int TAddrIA::getIface()
     return this->Iface;
 }
 
-void TAddrIA::setT1(long T1)
+void TAddrIA::setT1(unsigned long T1)
 {
     this->T1 = T1;
 }
 
-long TAddrIA::getT1()
+unsigned long TAddrIA::getT1()
 {
     return T1;
 }
 
-long TAddrIA::getT2()
+unsigned long TAddrIA::getT2()
 {
     return T2;
 }
 
-void TAddrIA::setT2(long T2)
+void TAddrIA::setT2(unsigned long T2)
 {
     this->T2 = T2;
 }
@@ -87,7 +91,7 @@ void TAddrIA::addAddr(SmartPtr<TAddrAddr> x)
     Tentative = DONTKNOWYET;
 }
 
-void TAddrIA::addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid)
+void TAddrIA::addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid)
 {
     SmartPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid);
     AddrLst.append(ptr);
@@ -115,7 +119,6 @@ TAddrIA::~TAddrIA()
 void TAddrIA::setUnicast(SmartPtr<TIPv6Addr> addr)
 {
     this->Unicast = true;
-    //memcpy(this->SrvAddr,addr,16);
     this->SrvAddr=addr;
 }
 
@@ -127,7 +130,7 @@ void TAddrIA::setMulticast()
 SmartPtr<TIPv6Addr> TAddrIA::getSrvAddr()
 {
     if (!this->Unicast) 
-        return SmartPtr<TIPv6Addr> ();
+        return 0;
     else
         return SrvAddr;
 }
@@ -285,10 +288,6 @@ void TAddrIA::setTimestamp() {
     this->setTimestamp(now());
 }
 
-void TAddrIA::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr, long pref,long valid)
-{
-}
-
 unsigned long TAddrIA::getTentativeTimeout()
 {
     unsigned long min = DHCPV6_INFINITY;
@@ -403,9 +402,33 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
     strum  << "            T1=\"" << x.T1 << "\""
 	   << " T2=\"" << x.T2 << "\""
 	   << " IAID=\"" << x.IAID << "\""
-	   << " state=\"" << x.State << "\""
-	   << " iface=\"" << x.Iface << "\""
-	   << ">" << endl;
+	   << " state=\"";
+    switch (x.State) {
+    case NOTCONFIGURED:
+	strum << "NOTCONFIGURED";
+	break;
+    case INPROCESS:
+	strum << "INPROCESS";
+	break;
+    case CONFIGURED:
+	strum << "CONFIGURED";
+	break;
+    case FAILED:
+	strum << "FAILED";
+	break;
+    case UNKNOWN:
+	strum << "UNKNOWN";
+	break;
+    case TENTATIVECHECK:
+	strum << "TENTATIVECHECK";
+	break;
+    case TENTATIVE:
+	strum << "TENTATIVE";
+	break;
+    default:
+	strum << x.State;
+    }
+    strum << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
         strum << "      " << *x.DUID;
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIA_NA.cpp,v 1.5 2004-06-17 23:53:54 thomson Exp $
+ * $Id: OptIA_NA.cpp,v 1.6 2004-09-07 22:02:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  * Revision 1.4  2004/06/04 19:03:46  thomson
  * Resolved warnings with signed/unisigned
  *
@@ -36,7 +39,7 @@ TOptIA_NA::TOptIA_NA( long IAID, long t1,  long t2, TMsg* parent)
     this->T2   = t2;
 }
 
-long TOptIA_NA::getIAID() {
+unsigned long TOptIA_NA::getIAID() {
     return IAID;
 }
 

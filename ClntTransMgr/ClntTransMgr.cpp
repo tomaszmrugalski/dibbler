@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.20 2004-09-07 17:42:31 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.21 2004-09-07 22:02:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/09/07 17:42:31  thomson
+ * Server Unicast implemented.
+ *
  * Revision 1.19  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -95,9 +98,8 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 	checkConfirm();
     }
 
-    Shutdown = false;
+    this->Shutdown = false;
     this->IsDone = false;
-
 }
 
 bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
@@ -446,14 +448,14 @@ void TClntTransMgr::sendRequest( TContainer< SmartPtr<TOpt> > requestOptions,
 void TClntTransMgr::sendRelease( List(TAddrIA) IALst)
 {
     if (!IALst.count()) {
-        std::clog << logger::logError << "Unable to send RELEASE with empty IAs list." << LogEnd;
+        Log(Error) << "Unable to send RELEASE with empty IAs list." << LogEnd;
         return;
     }
 
     SmartPtr<TAddrIA> ptrIA;
     IALst.first();
     ptrIA = IALst.get();
-    std::clog << logger::logNotice << "Sending RELEASE for " << IALst.count() << " IAs" << LogEnd;
+    Log(Notice) << "Sending RELEASE for " << IALst.count() << " IA(s)." << LogEnd;
 
     SmartPtr<TMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, ptrIA->getIface(), 
         ptrIA->getSrvAddr(), IALst);
@@ -588,8 +590,8 @@ void TClntTransMgr::checkRenew()
                 continue;
 
             TContainer<SmartPtr<TAddrIA> > iaLst;
-            std::clog << logger::logNotice << "IA (IAID=" << ptrIA->getIAID() 
-                << " needs RENEW. Creating one and grouping with other IA:" << LogEnd;
+            Log(Notice) << "IA (IAID=" << ptrIA->getIAID() 
+                << ") needs RENEW. Trying to group with other IA(s) requiring renewal:";
             SmartPtr<TAddrIA> iaPattern=ptrIA;
             iaLst.append(ptrIA);
             ptrIA->setState(INPROCESS);
@@ -602,10 +604,17 @@ void TClntTransMgr::checkRenew()
                     (ptrIA->getIface()==iaPattern->getIface())&&
                     (ptrIA->getDUID()==iaPattern->getDUID()))
                 {
+		    Log(Cont) << ptrIA->getIAID() << " ";
                     iaLst.append(ptrIA);
                     ptrIA->setState(INPROCESS);
                 }
             }
+	    if (iaLst.count()==1) {
+		Log(Cont) << "none found." << LogEnd;
+	    } else {
+		Log(Cont) << "." << LogEnd;
+	    }
+	    
             SmartPtr <TMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst);
             Transactions.append(ptrRenew);
             AddrMgr->firstIA();
