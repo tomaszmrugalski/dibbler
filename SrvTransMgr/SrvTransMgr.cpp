@@ -42,8 +42,8 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         {
             // FIXME: check for NO-CONFIG
             SmartPtr<TIfaceIface> iface=IfaceMgr->getIfaceByID(confIface->getID());
-            std::clog << logger::logNotice << "Creating ff02::1:2 socket on " << confIface->getName() 
-                << " interface." << logger::endl;
+	    Log(Notice) << "Creating ff02::1:2 socket on " << confIface->getName() 
+			<< "/" << confIface->getID() << " interface." << LogEnd;
             iface->addSocket( ipAddr, DHCPSERVER_PORT, true);
         }
 
@@ -68,7 +68,6 @@ long TSrvTransMgr::getTimeout()
             min = ptrMsg->getTimeout();
     }
     addrTimeout = AddrMgr->getTimeout();
-//    std::clog << logger::logDebug << "AddrMgr returned " << addrTimeout << " timeout." << logger::endl;
     return min<addrTimeout?min:addrTimeout;
 }
 
@@ -76,7 +75,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
 {	
     if (!msg->check())
     {
-        clog << logger::logWarning << "Invalid message received." << logger::endl;
+	Log(Warning) << "Invalid message received." << LogEnd;
         return;
     }
     // Do we have ready answer for this?
@@ -89,13 +88,13 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
         if (answ->getTransID()==msg->getTransID()) 
         {
             std::clog << "Old reply with transID (" << hex << msg->getTransID() 
-		      << dec << ") found. Sending old reply." << logger::endl;
+		      << dec << ") found. Sending old reply." << LogEnd;
             answ->answer(msg);
             return;
         }
     }
     std::clog << "Old reply for transID=" << hex << msg->getTransID()
-	      << " not found. Generating new answer." << dec << logger::endl;
+	      << " not found. Generating new answer." << dec << LogEnd;
 
     switch(msg->getType()) 
     {
@@ -110,8 +109,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
             if (msg->getOption(OPTION_RAPID_COMMIT))
             {
                 SmartPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-                SmartPtr<TSrvMsgReply>
-                    answRep=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
+                SmartPtr<TSrvMsgReply> answRep=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
                 //if at least one IA has in reply message status success
                 if (!answRep->isDone())
                 {

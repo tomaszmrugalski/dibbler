@@ -11,7 +11,7 @@ CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
-DEBUGINFO    = -g
+#DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === libxml2 stuff ===
@@ -30,7 +30,7 @@ SERVERBIN    = dibbler-server-linux
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
-VERSION      = 0.2.0-RC1
+VERSION      = 0.2.0-RC2
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux
@@ -77,7 +77,7 @@ all: libs
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
-	rm -f *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) TAGS
+	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) TAGS
 	find . -type l -exec rm {} \;
 	find . -name *.a -exec rm {} \;
 	find . -name *.o -exec rm {} \;

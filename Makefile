@@ -95,20 +95,87 @@ srvlibs:	includes
 doc: 
 	cd doc; $(MAKE)
 
-release: 
-	$(CPP) --version > VERSION
+VERSION:
+	echo " Operating system " >  VERSION
+	echo "------------------" >> VERSION
+	uname -o >> VERSION
+	echo >> VERSION
+
+	echo " Version " >> VERSION
+	echo "---------" >> VERSION
+	echo "$(VERSION)" >> VERSION
+	echo >> VERSION
+
+	echo " C++ compiler used " >> VERSION
+	echo "-------------------" >> VERSION
+	$(CPP) --version >> VERSION
+	echo >> VERSION
+
+	echo " C compiler used " >> VERSION
+	echo "-----------------" >> VERSION
 	$(CC) --version  >>VERSION
-	echo "Version       : $(VERSION)" >> VERSION
-	echo -n "Date          : " >> VERSION
+	echo >> VERSION
+
+	echo " Date " >> VERSION
+	echo "------" >> VERSION
 	date +%Y-%m-%d >> VERSION
+	echo >> VERSION
 #	if [ "$XMLCFLAGS" != "" ]; then
 #	    echo "libxml2       : YES" >> VERSION
 #	else
 #	    echo "libxml2       : NO" >> VERSION
 #	fi
+
+VERSION-win:
+	echo " Operating system " >  VERSION
+	echo "------------------" >> VERSION
+	echo " Windows XP"        >> VERSION
+	echo >> VERSION
+
+	echo " Version " >> VERSION
+	echo "---------" >> VERSION
+	echo "$(VERSION)" >> VERSION
+	echo >> VERSION
+
+	echo " C++ compiler used " >> VERSION
+	echo "-------------------" >> VERSION
+	echo "MS Visual C++ 2003 edition" >> VERSION
+	echo >> VERSION
+
+	echo " C compiler used " >> VERSION
+	echo "-----------------" >> VERSION
+	echo "MS Visual C++ 2003 edition" >> VERSION
+	echo >> VERSION
+
+	echo " Date " >> VERSION
+	echo "------" >> VERSION
+	date +%Y-%m-%d >> VERSION
+	echo >> VERSION
+
+release:
+	echo "There are 3 release targets available:"
+	echo "release-linux"
+	echo "release-winxp"
+	echo "release-src"
+	echo
+	echo "To make release-winxp work, place dibbler-server-winxp.exe and"
+	echo "dibbler-client-winxp.exe in this directory."
+
+release-linux: VERSION
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                  \
 		$(SERVERBIN) $(CLIENTBIN) client.conf server.conf \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
+
+release-winxp: VERSION-win
+	tar czvf dibbler-$(VERSION)-winxp.tar.gz                  \
+		dibbler-server-winxp.exe dibbler-client-winxp.exe \
+                client.conf server.conf                           \
+		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
+
+release-src: VERSION
+	$(MAKE) clean
+	tar czvf dibbler-$(VERSION)-src.tar.gz *
+
 fixme:
 	rm -rf FIXME
 	find . -name \*.cpp -exec grep -H "FIXME" {} \; | tee FIXME
@@ -120,3 +187,5 @@ tags:
 
 clean-libs:
 	find . -name *.a -exec rm {} \;
+
+.PHONY: release-winxp release-src release-linux VERSION VERSION-win
