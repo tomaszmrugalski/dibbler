@@ -1,3 +1,10 @@
+/*
+  $Id: lowlevel-winxpsp1.c,v 1.3 2004-03-28 17:23:48 thomson Exp $
+
+  $Log: not supported by cvs2svn $
+
+*/
+
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
