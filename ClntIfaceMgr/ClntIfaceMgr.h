@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.3 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.4 2004-12-01 20:55:17 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.2  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -48,14 +52,6 @@ class TClntIfaceMgr : public TIfaceMgr
 		  SmartPtr<TClntAddrMgr>  clntAddrMgr);
 
     // --- option related ---
-    void setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    void addOptDomains(List(char) domains);      // Domains
-    void addOptNTPServers(List(TIPv6Addr) addr); // NTP servers
-    void addOptTimezone(char * timezone);        // timezone: DEPRECIATED
-    void addOptSIPServers(List(TIPv6Addr) addr); // SIP servers
-    void addOptSIPDomains(List(char) domains);   // SIP domains
-    void addOptFQDN(char * fqdn, char opts);     // FQDN
-
     void removeAllOpts();
 
     unsigned int getTimeout();
