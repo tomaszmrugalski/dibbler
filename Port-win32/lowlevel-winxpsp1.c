@@ -1,15 +1,12 @@
 /*
- * $Id: lowlevel-winxpsp1.c,v 1.6 2004-05-24 21:16:37 thomson Exp $
+ * $Id: lowlevel-winxpsp1.c,v 1.7 2004-09-28 16:01:49 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
- *  Revision 1.5  2004/03/28 19:51:26  thomson
- *  no message
+ *  Revision 1.6  2004/05/24 21:16:37  thomson
+ *  Various fixes.
  *
  *  Revision 1.4  2004/03/28 19:48:10  thomson
  *  Problem with missing IPv6 stack solved.
- *
- *  Revision 1.3  2004/03/28 17:23:48  thomson
- *  no message
  *
  * Released under GNU GPL v2 licence                                
  * 
@@ -55,7 +52,7 @@ int lowlevelInit()
 	return 1;
 }
 
-void displayError(int errCode) {
+char * displayError(int errCode) {
 	static char Message[1024];
 	printf("Error %d:",errCode);
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |
@@ -63,6 +60,7 @@ void displayError(int errCode) {
                   NULL, errCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                   (LPSTR)Message, 1024, NULL);
 	printf("%s\n",Message);
+	return Message;
 }
 
 void if_list_release(struct iface * list) {
@@ -244,78 +242,64 @@ extern int ipaddr_del(char * ifacename, int ifaceid, char * addr)
 	return ipaddr_add(NULL,ifaceid, addr,0, 0);
 }
 
+SOCKET mcast=0;
+
 extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly)
 {
-	ADDRINFO			info;
-	ADDRINFO			*local;
-	char				ifaceStr[10];
-	char				portStr[10];
-	struct in6_addr		*packed;
-	char				addrStr[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")+5];
-	SOCKET				s;
-	struct ipv6_mreq	ipmreq; 
-	int					hops=8;		
-	char				addrpack[16];
-	struct sockaddr_in6 *addrpck;
-	itoa(port,portStr,10);
-	itoa(ifaceid,ifaceStr,10);
-	inet_pton6(addr,addrpack);
+	SOCKET s;
+	struct sockaddr_in6 bindme;
+	struct ipv6_mreq ipmreq; 
+	int	hops=1;
+	char packedAddr[16];
+	char multiAddr[16] = { 0xff,2, 0,0, 0,0, 0,0, 0,0, 0,0, 0,1, 0,2};
 
-	packed=(struct in6_addr*)addrpack;
-	strcpy(addrStr,addr);
-
-	if(IN6_IS_ADDR_LINKLOCAL(packed)||IN6_IS_ADDR_SITELOCAL(packed))
-		strcat(strcat(addrStr,"%"),ifaceStr);
-
-	memset(&info, 0, sizeof(info));
-	info.ai_flags=AI_PASSIVE|AI_NUMERICHOST;
-	info.ai_family=PF_INET6;
-	info.ai_socktype=SOCK_DGRAM;
-
-	
-	if (IN6_IS_ADDR_MULTICAST(packed))
-	{
-		if(getaddrinfo(NULL,portStr,&info,&local)) 
-			return -1;
-	}
-	else
-		if(getaddrinfo(addrStr,portStr,&info,&local)) 
-			return -1;
- 
-	 addrpck=(struct sockaddr_in6*)(local->ai_addr);
-	if ((s=socket(local->ai_family,local->ai_socktype,local->ai_protocol))
-			==INVALID_SOCKET)
+	inet_pton6(addr,packedAddr);
+	if ((s=socket(AF_INET6,SOCK_DGRAM, 0)) == INVALID_SOCKET)
 		return -2;
-	
-	if (port>0)
-	if (bind(s,local->ai_addr,local->ai_addrlen))
-    {
-		displayError(WSAGetLastError());
-		return -3;
-    }
+
+//	if (!IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addrpack))
+//		return s;
+//	}
+
+	memset(&bindme, 0, sizeof(bindme));
+	bindme.sin6_family   = AF_INET6;
+	bindme.sin6_port     = htons(port);
+	if (!IN6_IS_ADDR_MULTICAST((IN6_ADDR*)packedAddr)) 	{
+		// unicast 
+        inet_pton6(addr, (char*)&bindme.sin6_addr);
+	} else {
+		// multicast
+		//bindme.sin6_scope_id = ifaceid;
+	}
+
+	if (!mcast) {
+	  mcast = s;
+      if (bind(s, (struct sockaddr*)&bindme, sizeof(bindme))) {
+	      displayError(WSAGetLastError());		
+		  return -4;
+	  }
+	} else {
+      s = mcast;
+	}
 
 
-
-	if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addrpack))
-	{
+	if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)packedAddr)) {
+		/* multicast */
 		ipmreq.ipv6mr_interface=ifaceid;
-		memcpy(&ipmreq.ipv6mr_multiaddr,addrpack,16);
+		memcpy(&ipmreq.ipv6mr_multiaddr,packedAddr,16);
 		if(setsockopt(s,IPPROTO_IPV6,IPV6_ADD_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq)))
-			return -4;
-//			displayError(WSAGetLastError());
+			return -6;
 		if(setsockopt(s,IPPROTO_IPV6,IPV6_MULTICAST_HOPS,(char*)&hops,sizeof(hops)))
 			return -5;
-//			displayError(WSAGetLastError());
-	}
-	freeaddrinfo(local);
+	} 
 	return s;
 }
 
-extern int sock_del(int fd)
+int sock_del(int fd)
 {
 	return closesocket(fd);
 }
-extern int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
+int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
 {	
 	ADDRINFO			inforemote,*remote;
 	char				addrStr[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")+5];
@@ -329,7 +313,8 @@ extern int sock_send(int fd, char * addr, char * buf, int buflen, int port,int i
     itoa(iface,ifaceStr,10);
 	inet_pton6(addrStr,packaddr);
 
-    if(IN6_IS_ADDR_LINKLOCAL(packaddr)||IN6_IS_ADDR_SITELOCAL(packaddr))
+    if(IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)packaddr)
+		||IN6_IS_ADDR_SITELOCAL((struct in6_addr*)packaddr))
 		strcat(strcat(addrStr,"%"),ifaceStr);
 /*	if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addr))
 	{
@@ -361,18 +346,19 @@ extern int sock_send(int fd, char * addr, char * buf, int buflen, int port,int i
 	freeaddrinfo(remote);
 	return i;
 }
-extern int sock_recv(int fd, char * addr, char * buf, int buflen)
+
+int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen)
 {
-	SOCKADDR_IN6	info;  
-	int				infolen;		
-	int				readBytes;
+	struct sockaddr_in6 info;  
+	int	infolen ;		
+	int	readBytes;
 	
 	infolen=sizeof(info);
 	if(!(readBytes=recvfrom(fd,buf,buflen,0,(SOCKADDR*)&info,&infolen)))
 		return -1;
 	else
 	{
-		inet_ntop6(info.sin6_addr.u.Byte,addr);
+		inet_ntop6(info.sin6_addr.u.Byte,peerPlainAddr);
 		return	readBytes;
 	}
 } 
