@@ -369,9 +369,6 @@
 					RelativePath="WinService.cpp">
 				</File>
 				<File
-					RelativePath="dns-winxp.c">
-				</File>
-				<File
 					RelativePath="lowlevel-winxp-netsh.c">
 				</File>
 				<File

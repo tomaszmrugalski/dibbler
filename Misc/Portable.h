@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.24 2004-10-03 21:28:45 thomson Exp $
+ * $Id: Portable.h,v 1.25 2004-10-03 21:53:15 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/10/03 21:28:45  thomson
+ * 0.2.1-RC1 version.
+ *
  * Revision 1.23  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -111,6 +114,7 @@
 // **********************************************************************
 
 #ifdef WIN32
+#define strncasecmp _strnicmp
 #include <windows.h>
 #include <time.h>
 #endif
