@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.27 2004-12-07 22:55:14 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.28 2004-12-27 20:48:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/12/07 22:55:14  thomson
+ * Problem with null pointer solved.
+ *
  * Revision 1.26  2004/12/07 20:51:35  thomson
  * Link local safety checks added (bug #39)
  *
@@ -165,6 +168,13 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
+
+	    if (!ifaceIface->countLLAddress()) {
+		Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			  << " does not appear to have any link-layer address." << LogEnd;
+		this->IsDone = true;
+		continue;
+	    }
 
 	    this->addIface(cfgIface);
 	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
@@ -369,8 +379,8 @@ bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
 	TTimeZone tmp(ptrIface->getProposedTimezone());
 	if(!tmp.isValid())
 	{
-	    Log(Crit) << "Wrong time zone option for " << ptrIface->getName() 
-		      << "/" <<ptrIface->getID() << LogEnd;
+	    Log(Crit) << "Wrong time zone option for the " << ptrIface->getName() 
+		      << "/" <<ptrIface->getID() << " interface." << LogEnd;
 	    return false;
 	}
     }

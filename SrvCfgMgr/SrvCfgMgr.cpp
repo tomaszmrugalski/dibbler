@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.29 2004-12-07 22:55:50 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.30 2004-12-27 20:48:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/12/07 22:55:50  thomson
+ * Typos corrected.
+ *
  * Revision 1.28  2004/12/07 00:43:03  thomson
  * Server no longer support link local addresses (bug #38),
  * Server now supports stateless mode (bug #71)
@@ -191,6 +194,13 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 		      << LogEnd;
 	    return false;
 	}
+
+        if (!ifaceIface->countLLAddress()) {
+	    Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID()
+		      << " does not appear to have any link-layer address." << LogEnd;
+	    return false;
+        }
+
 	cfgIface->setName(ifaceIface->getName());
 	cfgIface->setID(ifaceIface->getID());
 	this->addIface(cfgIface);

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.14 2004-12-15 23:12:37 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.15 2004-12-27 20:48:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/12/15 23:12:37  thomson
+ * Minor improvements.
+ *
  * Revision 1.13  2004/12/07 20:53:40  thomson
  * *** empty log message ***
  *
@@ -185,15 +188,8 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
     }
     
     while (ptr!=NULL) {
-        Log(Notice) << "Detected clnt iface " << ptr->name << "/" << ptr->id << ", flags=" 
-		    << ptr->flags << ", maclen=" << ptr->maclen << LogEnd;
-
-        if (!ptr->linkaddrcount) {
-          Log(Crit) << "Interface " << ptr->name << "/" << ptr->id 
-                    << " does not appear to have any link-layer address. Do you have IPv6 enabled in your system?" << LogEnd;
-          this->IsDone = true;
-          return;
-        }
+        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
+		    << ptr->flags << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
         SmartPtr<TIfaceIface> iface(new TClntIfaceIface(ptr->name,ptr->id,
 							ptr->flags,

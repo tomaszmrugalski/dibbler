@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.13 2004-11-01 23:31:25 thomson Exp $
+ * $Id: Iface.cpp,v 1.14 2004-12-27 20:48:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.12  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -196,6 +199,10 @@ char* TIfaceIface::getLLAddress() {
             this->PresLLAddr=NULL;
     }
     return retVal;
+}
+
+int TIfaceIface::countLLAddress() {
+    return this->LLAddrCnt;
 }
 
 // --------------------------------------------------------------------

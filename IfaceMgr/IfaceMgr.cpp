@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.19 2004-12-16 22:00:58 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.20 2004-12-27 20:48:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/12/16 22:00:58  thomson
+ * *** empty log message ***
+ *
  * Revision 1.18  2004/12/15 23:12:37  thomson
  * Minor improvements.
  *
@@ -52,6 +55,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "Portable.h"
 #include "IfaceMgr.h"
@@ -94,13 +98,7 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
     
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
-		    << ptr->flags << ", maclen=" << ptr->maclen << LogEnd;
-        if (!ptr->linkaddrcount) {
-          Log(Crit) << "Interface " << ptr->name << "/" << ptr->id 
-                    << " does not appear to have any link-layer address. Do you have IPv6 enabled in your system?" << LogEnd;
-          this->IsDone = true;
-	  return;
-        }
+		    << ptr->flags << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
         SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,
@@ -280,6 +278,21 @@ void TIfaceMgr::dump()
  */
 TIfaceMgr::~TIfaceMgr()
 {
+}
+
+string TIfaceMgr::printMac(char * mac, int macLen) {
+    ostringstream tmp;
+    int i;
+
+    for (i=0; i<macLen; i++) {
+	if (i)
+	    tmp << ":";
+	tmp << hex;
+	tmp.fill('0');
+	tmp.width(2);
+	tmp << (int)mac[i];
+    }
+    return tmp.str();
 }
 
 // --------------------------------------------------------------------

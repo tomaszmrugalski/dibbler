@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.6 2004-11-01 23:31:25 thomson Exp $
+ * $Id: Iface.h,v 1.7 2004-12-27 20:48:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.5  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -48,6 +51,7 @@ class TIfaceIface{
     int   getHardwareType();
     char* firstLLAddress();
     char* getLLAddress();
+    int   countLLAddress();
 
     // ---address related---
     bool addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
