@@ -21,7 +21,7 @@ $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
 	cd $(CLNTOPTIONS);  $(MAKE) libs
 	cd $(OPTIONS);      $(MAKE) libs
 	cd $(MISC);	    $(MAKE) libs
-	$(CPP) -I $(INCDIR) $(OPTS) -o $@ DHCPClient.o $(CLIENT) \
+	$(CPP) -I $(INCDIR) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
 	-L$(LOWLEVEL)    \
@@ -32,7 +32,7 @@ $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
 	-L$(CLNTMESSAGES) -lClntMsg \
 	-L$(MISC)         -lMisc \
-	-lClntOpts -lOpts $(XMLLIBS) $(EFENCE)
+	-lClntOpts -lOpts $(XMLLIBS) $(EFENCE) 
 
 server: $(SERVERBIN)
 $(SERVERBIN): includes DHCPServer.o $(SERVER)
@@ -45,7 +45,7 @@ $(SERVERBIN): includes DHCPServer.o $(SERVER)
 	cd $(SRVOPTIONS);   $(MAKE) libs
 	cd $(OPTIONS);      $(MAKE) libs
 	cd $(MISC);	    $(MAKE) libs
-	$(CPP) $(OPTS) -I $(INCDIR) -o $@ DHCPServer.o $(SERVER)  \
+	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
 	-L$(LOWLEVEL)    \
 	-L$(SRVOPTIONS)  -lSrvOpts \
@@ -62,7 +62,7 @@ $(SERVERBIN): includes DHCPServer.o $(SERVER)
 	-L$(SRVMESSAGES) -lSrvMsg \
 	-L$(MISC)        -lMisc \
 	-L$(OPTIONS)     -lOpts $(XMLLIBS) \
-	-L$(LOWLEVEL)    -lLowLevel $(EFENCE)
+	-L$(LOWLEVEL)    -lLowLevel $(EFENCE) 
 
 DHCPClient.o: DHCPClient.cpp DHCPClient.h
 	$(CPP) $(OPTS) -c -I $(INCDIR) -o $@ $<

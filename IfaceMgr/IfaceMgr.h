@@ -24,6 +24,7 @@ class TIfaceMgr {
     void firstIface();
     SmartPtr<TIfaceIface> getIface();
     SmartPtr<TIfaceIface> getIfaceByName(char * name);
+    SmartPtr<TIfaceIface> getIfaceByName(string name);
     SmartPtr<TIfaceIface> getIfaceByID(int id);
     SmartPtr<TIfaceIface> getIfaceBySocket(int fd);
     int countIface();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.6 2004-03-29 18:53:08 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.7 2004-05-23 20:27:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -87,6 +90,11 @@ void TIfaceMgr::firstIface() {
  */
 SmartPtr<TIfaceIface> TIfaceMgr::getIface() {
     return IfaceLst.get();
+}
+
+
+SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
+    return getIfaceByName(name.c_str());
 }
 
 /*
