@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: ClntService.cpp,v 1.10 2004-03-29 21:37:07 thomson Exp $
+ * $Id: ClntService.cpp,v 1.11 2004-04-12 22:21:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/03/29 21:37:07  thomson
+ * 0.1.1 version
+ *
  * Revision 1.9  2004/03/28 19:50:19  thomson
  * Problem with failed startup solved.
  *
@@ -90,7 +93,7 @@ void TClntService::Run()
 	string addrfile = CLNTDB_FILE;
     string logFile  = CLNTLOG_FILE;
     logger::Initialize((char*)logFile.c_str());
-	logger::setLogname("Client");
+	logger::setLogName("Client");
 
 	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << "(CLIENT)" << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;
