@@ -1,1526 +1,2043 @@
-#include <cyacc.h>
+#define YY_clntParser_h_included
 
-#line 1 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
+/*  A Bison++ parser, made from ClntParser-linux.y  */
 
-/****************************************************************************
-parser.y
-ParserWizard generated YACC file.
+ /* with Bison++ version bison++ Version 1.21-8, adapted from GNU bison by coetmeur@icdc.fr
+  */
 
-Date: 30 czerwca 2003
-****************************************************************************/
+/* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
+/* Skeleton output parser for bison,
+   Copyright (C) 1984, 1989, 1990 Bob Corbett and Richard Stallman
 
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 1, or (at your option)
+   any later version.
 
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-//TClntParsServAddr
-
-#line 17 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-// repeated because of possible precompiled header
-#include <cyacc.h>
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "ClntParser.h"
+#include "malloc.h"
+/* HEADER SECTION */
+#if defined( _MSDOS ) || defined(MSDOS) || defined(__MSDOS__) 
+#define __MSDOS_AND_ALIKE
+#endif
+#if defined(_WINDOWS) && defined(_MSC_VER)
+#define __HAVE_NO_ALLOCA
+#define __MSDOS_AND_ALIKE
+#endif
 
-/////////////////////////////////////////////////////////////////////////////
-// constructor
+#ifndef alloca
+#if defined( __GNUC__)
+#define alloca __builtin_alloca
 
-YYPARSENAME::YYPARSENAME()
-{
-	yytables();
-#line 58 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
+#elif (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc)  || defined (__sgi)
+#include <alloca.h>
 
-    // place any extra initialisation code here
-    ParserOptStack.append(new TClntParsGlobalOpt());
+#elif defined (__MSDOS_AND_ALIKE)
+#include <malloc.h>
+#ifndef __TURBOC__
+/* MS C runtime lib */
+#define alloca _alloca
+#endif
+
+#elif defined(_AIX)
+#include <malloc.h>
+#pragma alloca
+
+#elif defined(__hpux)
+#ifdef __cplusplus
+extern "C" {
+void *alloca (unsigned int);
+};
+#else /* not __cplusplus */
+void *alloca ();
+#endif /* not __cplusplus */
+
+#endif /* not _AIX  not MSDOS, or __TURBOC__ or _AIX, not sparc.  */
+#endif /* alloca not defined.  */
+#ifdef c_plusplus
+#ifndef __cplusplus
+#define __cplusplus
+#endif
+#endif
+#ifdef __cplusplus
+#ifndef YY_USE_CLASS
+#define YY_USE_CLASS
+#endif
+#else
+#ifndef __STDC__
+#define const
+#endif
+#endif
+#include <stdio.h>
+#define YYBISON 1  
+
+    #include <iostream>
+    #include <string>
+    #include <FlexLexer.h>
+    #include "DHCPConst.h"
+    #include "SmartPtr.h"
+    #include "Container.h"
+    #include "ClntParser.h"
+    #include "ClntParsGlobalOpt.h"
+    #include "ClntCfgIface.h"
+    #include "ClntCfgAddr.h"
+    #include "ClntCfgIA.h"
+    #include "ClntCfgGroup.h"
+
+    #define YY_USE_CLASS
+#define YY_clntParser_MEMBERS  yyFlexLexer * lex; \
+/*List of options in scope stack,the most fresh is last in the list*/ \
+TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack; \
+/*List of parsed interfaces/IAs/Addresses, last */ \
+/*interface/IA/address is just being parsing or have been just parsed*/ \
+/*FIXME:Don't forget to clear this lists in apropriate moment*/ \
+TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst; \
+TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst; \
+TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;    \
+TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;  \
+/*Pointer to list which should contain either rejected servers or */ \
+/*preffered servers*/  \
+TContainer<SmartPtr<TStationID> > PresentStationLst;\
+TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst; \
+/*method check whether interface with id=ifaceNr has been */ \
+/*already declared */ \
+bool CheckIsIface(int ifaceNr); \
+/* method check whether interface with id=ifaceName has been already declared */ \
+bool CheckIsIface(string ifaceName); \
+void StartIfaceDeclaration(); \
+bool EndIfaceDeclaration(); \
+void EmptyIface(); \
+void StartIADeclaration(bool aggregation); \
+void EndIADeclaration(long iaCnt); \
+void EmptyIA(); \
+void EmptyAddr(); \
+
+#define YY_clntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
+#define YY_clntParser_CONSTRUCTOR_CODE  \
+   this->lex = lex; \
+    ParserOptStack.append(new TClntParsGlobalOpt()); \
     ParserOptStack.getFirst()->setIAIDCnt(1);
 
-#line 35 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-}
-
-#ifndef YYSTYPE
-#define YYSTYPE int
-#endif
-#ifndef YYSTACK_SIZE
-#define YYSTACK_SIZE 100
-#endif
-
-// yyattribute
-#ifdef YYDEBUG
-void YYFAR* YYPARSENAME::yyattribute1(int index) const
+typedef union    
 {
-	YYSTYPE YYFAR* p = &((YYSTYPE YYFAR*)yyattributestackptr)[yytop + index];
-	return p;
-}
-#define yyattribute(index) (*(YYSTYPE YYFAR*)yyattribute1(index))
+    int          ival;    
+    char         *strval;  
+    struct SDuid  {      
+        int         length;    
+        char*     duid;  
+    } duidval;  
+    char    addrval[16];  
+    ESendOpt  SendOpt;  
+    EReqOpt   ReqOpt; 
+} yy_clntParser_stype;
+#define YY_clntParser_STYPE yy_clntParser_stype
+/* %{ and %header{ and %union, during decl */
+#define YY_clntParser_BISON 1
+#ifndef YY_clntParser_COMPATIBILITY
+#ifndef YY_USE_CLASS
+#define  YY_clntParser_COMPATIBILITY 1
 #else
-#define yyattribute(index) (((YYSTYPE YYFAR*)yyattributestackptr)[yytop + (index)])
+#define  YY_clntParser_COMPATIBILITY 0
+#endif
 #endif
 
+#if YY_clntParser_COMPATIBILITY != 0
+/* backward compatibility */
+#ifdef YYLTYPE
+#ifndef YY_clntParser_LTYPE
+#define YY_clntParser_LTYPE YYLTYPE
+#endif
+#endif
+#ifdef YYSTYPE
+#ifndef YY_clntParser_STYPE 
+#define YY_clntParser_STYPE YYSTYPE
+#endif
+#endif
 #ifdef YYDEBUG
-void YYPARSENAME::yyinitdebug(void YYFAR** p, int count) const
-{
-	yyassert(p != NULL);
-	yyassert(count >= 1);
+#ifndef YY_clntParser_DEBUG
+#define  YY_clntParser_DEBUG YYDEBUG
+#endif
+#endif
+#ifdef YY_clntParser_STYPE
+#ifndef yystype
+#define yystype YY_clntParser_STYPE
+#endif
+#endif
+/* use goto to be compatible */
+#ifndef YY_clntParser_USE_GOTO
+#define YY_clntParser_USE_GOTO 1
+#endif
+#endif
 
-	YYSTYPE YYFAR** p1 = (YYSTYPE YYFAR**)p;
-	for (int i = 0; i < count; i++) {
-		p1[i] = &((YYSTYPE YYFAR*)yyattributestackptr)[yytop + i - (count - 1)];
-	}
+/* use no goto to be clean in C++ */
+#ifndef YY_clntParser_USE_GOTO
+#define YY_clntParser_USE_GOTO 0
+#endif
+
+#ifndef YY_clntParser_PURE
+/*  YY_clntParser_PURE */
+#endif
+
+/* section apres lecture def, avant lecture grammaire S2 */
+/* prefix */
+#ifndef YY_clntParser_DEBUG
+/* YY_clntParser_DEBUG */
+#endif
+
+
+#ifndef YY_clntParser_LSP_NEEDED
+ /* YY_clntParser_LSP_NEEDED*/
+#endif
+
+
+
+/* DEFAULT LTYPE*/
+#ifdef YY_clntParser_LSP_NEEDED
+#ifndef YY_clntParser_LTYPE
+typedef
+  struct yyltype
+    {
+      int timestamp;
+      int first_line;
+      int first_column;
+      int last_line;
+      int last_column;
+      char *text;
+   }
+  yyltype;
+
+#define YY_clntParser_LTYPE yyltype
+#endif
+#endif
+/* DEFAULT STYPE*/
+      /* We used to use `unsigned long' as YY_clntParser_STYPE on MSDOS,
+	 but it seems better to be consistent.
+	 Most programs should declare their own type anyway.  */
+
+#ifndef YY_clntParser_STYPE
+#define YY_clntParser_STYPE int
+#endif
+/* DEFAULT MISCELANEOUS */
+#ifndef YY_clntParser_PARSE
+#define YY_clntParser_PARSE yyparse
+#endif
+#ifndef YY_clntParser_LEX
+#define YY_clntParser_LEX yylex
+#endif
+#ifndef YY_clntParser_LVAL
+#define YY_clntParser_LVAL yylval
+#endif
+#ifndef YY_clntParser_LLOC
+#define YY_clntParser_LLOC yylloc
+#endif
+#ifndef YY_clntParser_CHAR
+#define YY_clntParser_CHAR yychar
+#endif
+#ifndef YY_clntParser_NERRS
+#define YY_clntParser_NERRS yynerrs
+#endif
+#ifndef YY_clntParser_DEBUG_FLAG
+#define YY_clntParser_DEBUG_FLAG yydebug
+#endif
+#ifndef YY_clntParser_ERROR
+#define YY_clntParser_ERROR yyerror
+#endif
+#ifndef YY_clntParser_PARSE_PARAM
+#ifndef __STDC__
+#ifndef __cplusplus
+#ifndef YY_USE_CLASS
+#define YY_clntParser_PARSE_PARAM
+#ifndef YY_clntParser_PARSE_PARAM_DEF
+#define YY_clntParser_PARSE_PARAM_DEF
+#endif
+#endif
+#endif
+#endif
+#ifndef YY_clntParser_PARSE_PARAM
+#define YY_clntParser_PARSE_PARAM void
+#endif
+#endif
+#if YY_clntParser_COMPATIBILITY != 0
+/* backward compatibility */
+#ifdef YY_clntParser_LTYPE
+#ifndef YYLTYPE
+#define YYLTYPE YY_clntParser_LTYPE
+#else
+/* WARNING obsolete !!! user defined YYLTYPE not reported into generated header */
+#endif
+#endif
+#ifndef YYSTYPE
+#define YYSTYPE YY_clntParser_STYPE
+#else
+/* WARNING obsolete !!! user defined YYSTYPE not reported into generated header */
+#endif
+#ifdef YY_clntParser_PURE
+#ifndef YYPURE
+#define YYPURE YY_clntParser_PURE
+#endif
+#endif
+#ifdef YY_clntParser_DEBUG
+#ifndef YYDEBUG
+#define YYDEBUG YY_clntParser_DEBUG 
+#endif
+#endif
+#ifndef YY_clntParser_ERROR_VERBOSE
+#ifdef YYERROR_VERBOSE
+#define YY_clntParser_ERROR_VERBOSE YYERROR_VERBOSE
+#endif
+#endif
+#ifndef YY_clntParser_LSP_NEEDED
+#ifdef YYLSP_NEEDED
+#define YY_clntParser_LSP_NEEDED YYLSP_NEEDED
+#endif
+#endif
+#endif
+#ifndef YY_USE_CLASS
+/* TOKEN C */
+#define	T1_	258
+#define	T2_	259
+#define	PREF_TIME_	260
+#define	DNS_SERVER_	261
+#define	VALID_TIME_	262
+#define	NTP_SERVER_	263
+#define	DOMAIN_	264
+#define	TIME_ZONE_	265
+#define	IFACE_	266
+#define	NO_CONFIG_	267
+#define	REJECT_SERVERS_	268
+#define	PREFERRED_SERVERS_	269
+#define	REQUIRE_	270
+#define	REQUEST_	271
+#define	SEND_	272
+#define	DEFAULT_	273
+#define	SUPERSEDE_	274
+#define	APPEND_	275
+#define	PREPEND_	276
+#define	IA_	277
+#define	ADDRES_	278
+#define	IPV6ADDR_	279
+#define	LOGLEVEL_	280
+#define	WORKDIR_	281
+#define	RAPID_COMMIT_	282
+#define	NOIA_	283
+#define	STRING_	284
+#define	HEXNUMBER_	285
+#define	INTNUMBER_	286
+#define	DUID_	287
+
+ /* #defines tokens */
+#else
+/* CLASS */
+#ifndef YY_clntParser_CLASS
+#define YY_clntParser_CLASS clntParser
+#endif
+#ifndef YY_clntParser_INHERIT
+#define YY_clntParser_INHERIT
+#endif
+#ifndef YY_clntParser_MEMBERS
+#define YY_clntParser_MEMBERS 
+#endif
+#ifndef YY_clntParser_LEX_BODY
+#define YY_clntParser_LEX_BODY  
+#endif
+#ifndef YY_clntParser_ERROR_BODY
+#define YY_clntParser_ERROR_BODY  
+#endif
+#ifndef YY_clntParser_CONSTRUCTOR_PARAM
+#define YY_clntParser_CONSTRUCTOR_PARAM
+#endif
+#ifndef YY_clntParser_CONSTRUCTOR_CODE
+#define YY_clntParser_CONSTRUCTOR_CODE
+#endif
+#ifndef YY_clntParser_CONSTRUCTOR_INIT
+#define YY_clntParser_CONSTRUCTOR_INIT
+#endif
+/* choose between enum and const */
+#ifndef YY_clntParser_USE_CONST_TOKEN
+#define YY_clntParser_USE_CONST_TOKEN 0
+/* yes enum is more compatible with flex,  */
+/* so by default we use it */ 
+#endif
+#if YY_clntParser_USE_CONST_TOKEN != 0
+#ifndef YY_clntParser_ENUM_TOKEN
+#define YY_clntParser_ENUM_TOKEN yy_clntParser_enum_token
+#endif
+#endif
+
+class YY_clntParser_CLASS YY_clntParser_INHERIT
+{
+public: 
+#if YY_clntParser_USE_CONST_TOKEN != 0
+/* static const int token ... */
+static const int T1_;
+static const int T2_;
+static const int PREF_TIME_;
+static const int DNS_SERVER_;
+static const int VALID_TIME_;
+static const int NTP_SERVER_;
+static const int DOMAIN_;
+static const int TIME_ZONE_;
+static const int IFACE_;
+static const int NO_CONFIG_;
+static const int REJECT_SERVERS_;
+static const int PREFERRED_SERVERS_;
+static const int REQUIRE_;
+static const int REQUEST_;
+static const int SEND_;
+static const int DEFAULT_;
+static const int SUPERSEDE_;
+static const int APPEND_;
+static const int PREPEND_;
+static const int IA_;
+static const int ADDRES_;
+static const int IPV6ADDR_;
+static const int LOGLEVEL_;
+static const int WORKDIR_;
+static const int RAPID_COMMIT_;
+static const int NOIA_;
+static const int STRING_;
+static const int HEXNUMBER_;
+static const int INTNUMBER_;
+static const int DUID_;
+
+ /* decl const */
+#else
+enum YY_clntParser_ENUM_TOKEN { YY_clntParser_NULL_TOKEN=0
+	,T1_=258
+	,T2_=259
+	,PREF_TIME_=260
+	,DNS_SERVER_=261
+	,VALID_TIME_=262
+	,NTP_SERVER_=263
+	,DOMAIN_=264
+	,TIME_ZONE_=265
+	,IFACE_=266
+	,NO_CONFIG_=267
+	,REJECT_SERVERS_=268
+	,PREFERRED_SERVERS_=269
+	,REQUIRE_=270
+	,REQUEST_=271
+	,SEND_=272
+	,DEFAULT_=273
+	,SUPERSEDE_=274
+	,APPEND_=275
+	,PREPEND_=276
+	,IA_=277
+	,ADDRES_=278
+	,IPV6ADDR_=279
+	,LOGLEVEL_=280
+	,WORKDIR_=281
+	,RAPID_COMMIT_=282
+	,NOIA_=283
+	,STRING_=284
+	,HEXNUMBER_=285
+	,INTNUMBER_=286
+	,DUID_=287
+
+ /* enum token */
+     }; /* end of enum declaration */
+#endif
+public:
+ int YY_clntParser_PARSE (YY_clntParser_PARSE_PARAM);
+ virtual void YY_clntParser_ERROR(char *msg) YY_clntParser_ERROR_BODY;
+#ifdef YY_clntParser_PURE
+#ifdef YY_clntParser_LSP_NEEDED
+ virtual int  YY_clntParser_LEX (YY_clntParser_STYPE *YY_clntParser_LVAL,YY_clntParser_LTYPE *YY_clntParser_LLOC) YY_clntParser_LEX_BODY;
+#else
+ virtual int  YY_clntParser_LEX (YY_clntParser_STYPE *YY_clntParser_LVAL) YY_clntParser_LEX_BODY;
+#endif
+#else
+ virtual int YY_clntParser_LEX() YY_clntParser_LEX_BODY;
+ YY_clntParser_STYPE YY_clntParser_LVAL;
+#ifdef YY_clntParser_LSP_NEEDED
+ YY_clntParser_LTYPE YY_clntParser_LLOC;
+#endif
+ int   YY_clntParser_NERRS;
+ int    YY_clntParser_CHAR;
+#endif
+#if YY_clntParser_DEBUG != 0
+ int YY_clntParser_DEBUG_FLAG;   /*  nonzero means print parse trace     */
+#endif
+public:
+ YY_clntParser_CLASS(YY_clntParser_CONSTRUCTOR_PARAM);
+public:
+ YY_clntParser_MEMBERS 
+};
+/* other declare folow */
+#if YY_clntParser_USE_CONST_TOKEN != 0
+const int YY_clntParser_CLASS::T1_=258;
+const int YY_clntParser_CLASS::T2_=259;
+const int YY_clntParser_CLASS::PREF_TIME_=260;
+const int YY_clntParser_CLASS::DNS_SERVER_=261;
+const int YY_clntParser_CLASS::VALID_TIME_=262;
+const int YY_clntParser_CLASS::NTP_SERVER_=263;
+const int YY_clntParser_CLASS::DOMAIN_=264;
+const int YY_clntParser_CLASS::TIME_ZONE_=265;
+const int YY_clntParser_CLASS::IFACE_=266;
+const int YY_clntParser_CLASS::NO_CONFIG_=267;
+const int YY_clntParser_CLASS::REJECT_SERVERS_=268;
+const int YY_clntParser_CLASS::PREFERRED_SERVERS_=269;
+const int YY_clntParser_CLASS::REQUIRE_=270;
+const int YY_clntParser_CLASS::REQUEST_=271;
+const int YY_clntParser_CLASS::SEND_=272;
+const int YY_clntParser_CLASS::DEFAULT_=273;
+const int YY_clntParser_CLASS::SUPERSEDE_=274;
+const int YY_clntParser_CLASS::APPEND_=275;
+const int YY_clntParser_CLASS::PREPEND_=276;
+const int YY_clntParser_CLASS::IA_=277;
+const int YY_clntParser_CLASS::ADDRES_=278;
+const int YY_clntParser_CLASS::IPV6ADDR_=279;
+const int YY_clntParser_CLASS::LOGLEVEL_=280;
+const int YY_clntParser_CLASS::WORKDIR_=281;
+const int YY_clntParser_CLASS::RAPID_COMMIT_=282;
+const int YY_clntParser_CLASS::NOIA_=283;
+const int YY_clntParser_CLASS::STRING_=284;
+const int YY_clntParser_CLASS::HEXNUMBER_=285;
+const int YY_clntParser_CLASS::INTNUMBER_=286;
+const int YY_clntParser_CLASS::DUID_=287;
+
+ /* const YY_clntParser_CLASS::token */
+#endif
+/*apres const  */
+YY_clntParser_CLASS::YY_clntParser_CLASS(YY_clntParser_CONSTRUCTOR_PARAM) YY_clntParser_CONSTRUCTOR_INIT
+{
+#if YY_clntParser_DEBUG != 0
+YY_clntParser_DEBUG_FLAG=0;
+#endif
+YY_clntParser_CONSTRUCTOR_CODE;
+};
+#endif
+
+
+#define	YYFINAL		169
+#define	YYFLAG		32768
+#define	YYNTBASE	36
+
+#define YYTRANSLATE(x) ((unsigned)(x) <= 287 ? yytranslate[x] : 86)
+
+static const char yytranslate[] = {     0,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,    35,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,    33,     2,    34,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
+     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
+    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
+    26,    27,    28,    29,    30,    31,    32
+};
+
+#if YY_clntParser_DEBUG != 0
+static const short yyprhs[] = {     0,
+     0,     2,     3,     5,     7,    10,    13,    14,    21,    22,
+    29,    34,    39,    43,    47,    49,    52,    54,    57,    58,
+    64,    65,    72,    77,    80,    84,    86,    88,    91,    93,
+    96,    97,   103,   104,   111,   116,   120,   123,   125,   127,
+   130,   132,   135,   137,   139,   141,   143,   145,   147,   149,
+   151,   153,   155,   157,   159,   161,   163,   165,   167,   169,
+   172,   174,   177,   178,   182,   183,   187,   190,   194,   197,
+   200,   204,   207,   211,   214,   218,   220,   221,   225,   226,
+   231,   232,   237,   238,   244,   245,   250,   252,   255,   259,
+   263,   268,   270,   273,   277,   281,   286,   288,   289,   293,
+   294,   299,   300,   305,   306,   312,   313,   318,   320,   322,
+   326,   330,   332,   336,   338,   340,   342,   344,   346,   348,
+   350,   352
+};
+
+static const short yyrhs[] = {    37,
+     0,     0,    50,     0,    38,     0,    37,    50,     0,    37,
+    38,     0,     0,    11,    29,    33,    39,    41,    34,     0,
+     0,    11,    85,    33,    40,    41,    34,     0,    11,    29,
+    33,    34,     0,    11,    85,    33,    34,     0,    11,    29,
+    12,     0,    11,    85,    12,     0,    51,     0,    41,    51,
+     0,    42,     0,    41,    42,     0,     0,    22,    33,    43,
+    45,    34,     0,     0,    22,    85,    33,    44,    45,    34,
+     0,    22,    85,    33,    34,     0,    22,    85,     0,    22,
+    33,    34,     0,    22,     0,    52,     0,    45,    52,     0,
+    46,     0,    45,    46,     0,     0,    23,    33,    47,    49,
+    34,     0,     0,    23,    85,    33,    48,    49,    34,     0,
+    23,    85,    33,    34,     0,    23,    33,    34,     0,    23,
+    85,     0,    23,     0,    53,     0,    49,    53,     0,    24,
+     0,    49,    24,     0,    51,     0,    54,     0,    56,     0,
+    52,     0,    66,     0,    74,     0,    55,     0,    72,     0,
+    73,     0,    64,     0,    65,     0,    57,     0,    59,     0,
+    62,     0,    53,     0,    61,     0,    63,     0,    25,    85,
+     0,    28,     0,    26,    29,     0,     0,    13,    58,    80,
+     0,     0,    14,    60,    80,     0,     5,    85,     0,     5,
+    82,    85,     0,    27,    85,     0,     7,    85,     0,     7,
+    82,    85,     0,     3,    85,     0,     3,    82,    85,     0,
+     4,    85,     0,     4,    82,    85,     0,     6,     0,     0,
+     6,    67,    81,     0,     0,     6,    82,    68,    81,     0,
+     0,    83,     6,    69,    81,     0,     0,    83,     6,    82,
+    70,    81,     0,     0,     6,    84,    71,    81,     0,     9,
+     0,     9,    29,     0,     9,    82,    29,     0,    83,     9,
+    29,     0,    83,     9,    82,    29,     0,    10,     0,    10,
+    29,     0,    10,    82,    29,     0,    83,    10,    29,     0,
+    83,    10,    82,    29,     0,     8,     0,     0,     8,    75,
+    81,     0,     0,     8,    82,    76,    81,     0,     0,    83,
+     8,    77,    81,     0,     0,    83,     8,    82,    78,    81,
+     0,     0,     8,    84,    79,    81,     0,    24,     0,    32,
+     0,    80,    35,    24,     0,    80,    35,    32,     0,    24,
+     0,    81,    35,    24,     0,    17,     0,    18,     0,    19,
+     0,    16,     0,    15,     0,    20,     0,    21,     0,    30,
+     0,    31,     0
+};
+
+#endif
+
+#if YY_clntParser_DEBUG != 0
+static const short yyrline[] = { 0,
+    94,    95,    99,   100,   101,   102,   109,   114,   127,   132,
+   141,   152,   162,   174,   184,   185,   186,   187,   194,   198,
+   206,   210,   218,   227,   236,   245,   253,   254,   255,   256,
+   260,   264,   272,   277,   283,   288,   293,   298,   305,   306,
+   307,   318,   334,   335,   336,   341,   342,   343,   344,   346,
+   347,   351,   352,   353,   354,   355,   356,   360,   361,   365,
+   378,   385,   392,   399,   405,   410,   417,   423,   431,   441,
+   446,   454,   459,   467,   472,   481,   489,   493,   500,   504,
+   511,   515,   522,   526,   533,   538,   547,   554,   561,   570,
+   577,   587,   594,   602,   610,   618,   628,   636,   639,   645,
+   648,   654,   657,   663,   666,   673,   677,   720,   724,   728,
+   732,   739,   740,   744,   745,   746,   750,   751,   755,   756,
+   759,   760
+};
+
+static const char * const yytname[] = {   "$","error","$illegal.","T1_","T2_",
+"PREF_TIME_","DNS_SERVER_","VALID_TIME_","NTP_SERVER_","DOMAIN_","TIME_ZONE_",
+"IFACE_","NO_CONFIG_","REJECT_SERVERS_","PREFERRED_SERVERS_","REQUIRE_","REQUEST_",
+"SEND_","DEFAULT_","SUPERSEDE_","APPEND_","PREPEND_","IA_","ADDRES_","IPV6ADDR_",
+"LOGLEVEL_","WORKDIR_","RAPID_COMMIT_","NOIA_","STRING_","HEXNUMBER_","INTNUMBER_",
+"DUID_","'{'","'}'","','","Grammar","GlobalDeclarationList","InterfaceDeclaration",
+"@1","@2","InterfaceDeclarationsList","IADeclaration","@3","@4","IADeclarationList",
+"ADDRESDeclaration","@5","@6","ADDRESDeclarationList","GlobalOptionDeclaration",
+"InterfaceOptionDeclaration","IAOptionDeclaration","ADDRESOptionDeclaration",
+"LogLevelOption","NoIAsOptions","WorkDirOption","RejectServersOption","@7","PreferServersOption",
+"@8","PreferredTimeOption","RapidCommitOption","ValidTimeOption","T1Option",
+"T2Option","DNSServerOption","@9","@10","@11","@12","@13","DomainOption","TimeZoneOption",
+"NTPServerOption","@14","@15","@16","@17","@18","ADDRESDUIDList","ADDRESSList",
+"SendDefaultSupersedeOpt","RequestRequirePrefix","SuperAppPrepOpt","Number",
+""
+};
+#endif
+
+static const short yyr1[] = {     0,
+    36,    36,    37,    37,    37,    37,    39,    38,    40,    38,
+    38,    38,    38,    38,    41,    41,    41,    41,    43,    42,
+    44,    42,    42,    42,    42,    42,    45,    45,    45,    45,
+    47,    46,    48,    46,    46,    46,    46,    46,    49,    49,
+    49,    49,    50,    50,    50,    51,    51,    51,    51,    51,
+    51,    52,    52,    52,    52,    52,    52,    53,    53,    54,
+    55,    56,    58,    57,    60,    59,    61,    61,    62,    63,
+    63,    64,    64,    65,    65,    66,    67,    66,    68,    66,
+    69,    66,    70,    66,    71,    66,    72,    72,    72,    72,
+    72,    73,    73,    73,    73,    73,    74,    75,    74,    76,
+    74,    77,    74,    78,    74,    79,    74,    80,    80,    80,
+    80,    81,    81,    82,    82,    82,    83,    83,    84,    84,
+    85,    85
+};
+
+static const short yyr2[] = {     0,
+     1,     0,     1,     1,     2,     2,     0,     6,     0,     6,
+     4,     4,     3,     3,     1,     2,     1,     2,     0,     5,
+     0,     6,     4,     2,     3,     1,     1,     2,     1,     2,
+     0,     5,     0,     6,     4,     3,     2,     1,     1,     2,
+     1,     2,     1,     1,     1,     1,     1,     1,     1,     1,
+     1,     1,     1,     1,     1,     1,     1,     1,     1,     2,
+     1,     2,     0,     3,     0,     3,     2,     3,     2,     2,
+     3,     2,     3,     2,     3,     1,     0,     3,     0,     4,
+     0,     4,     0,     5,     0,     4,     1,     2,     3,     3,
+     4,     1,     2,     3,     3,     4,     1,     0,     3,     0,
+     4,     0,     4,     0,     5,     0,     4,     1,     1,     3,
+     3,     1,     3,     1,     1,     1,     1,     1,     1,     1,
+     1,     1
+};
+
+static const short yydefact[] = {     2,
+     0,     0,     0,    76,     0,    97,    87,    92,     0,    63,
+    65,   118,   117,     0,     0,     0,    61,     1,     4,     3,
+    43,    46,    57,    44,    49,    45,    54,    55,    58,    56,
+    59,    52,    53,    47,    50,    51,    48,     0,   114,   115,
+   116,   121,   122,     0,    72,     0,    74,     0,    67,   119,
+   120,     0,    79,    85,     0,    70,     0,   100,   106,    88,
+     0,    93,     0,     0,     0,     0,     0,    60,    62,    69,
+     6,     5,    81,   102,     0,     0,    73,    75,    68,   112,
+    78,     0,     0,    71,    99,     0,     0,    89,    94,    13,
+     7,    14,     9,   108,   109,    64,    66,     0,    83,     0,
+   104,    90,     0,    95,     0,     0,    80,    86,   101,   107,
+    11,     0,    12,     0,     0,    82,     0,   103,     0,    91,
+    96,   113,    26,     0,    17,    15,     0,   110,   111,    84,
+   105,    19,    24,     8,    18,    16,    10,    25,     0,    21,
+    38,     0,    29,    27,    23,     0,    31,    37,    20,    30,
+    28,     0,    36,     0,    33,    22,    41,     0,    39,    35,
+     0,    42,    32,    40,     0,    34,     0,     0,     0
+};
+
+static const short yydefgoto[] = {   167,
+    18,    19,   112,   114,   124,   125,   139,   146,   142,   143,
+   154,   161,   158,    20,    21,    22,    23,    24,    25,    26,
+    27,    66,    28,    67,    29,    30,    31,    32,    33,    34,
+    52,    82,    98,   117,    83,    35,    36,    37,    57,    86,
+   100,   119,    87,    96,    81,    44,    38,    54,    45
+};
+
+static const short yypact[] = {   155,
+   124,   124,   124,   213,   124,   221,   182,   187,    20,-32768,
+-32768,-32768,-32768,   -21,     7,   -21,-32768,   155,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,   168,-32768,-32768,
+-32768,-32768,-32768,   -21,-32768,   -21,-32768,   -21,-32768,-32768,
+-32768,    11,-32768,-32768,   -21,-32768,    11,-32768,-32768,-32768,
+    25,-32768,    31,    -7,    -4,    88,    88,-32768,-32768,-32768,
+-32768,-32768,   208,   208,   195,   200,-32768,-32768,-32768,-32768,
+    28,    11,    11,-32768,    28,    11,    11,-32768,-32768,-32768,
+    40,-32768,    47,-32768,-32768,    48,    48,    11,-32768,    11,
+-32768,-32768,    55,-32768,    64,    70,    28,    28,    28,    28,
+-32768,   181,-32768,   181,   143,    28,    11,    28,    11,-32768,
+-32768,-32768,   102,    63,-32768,-32768,    95,-32768,-32768,    28,
+    28,    62,    73,-32768,-32768,-32768,-32768,-32768,    34,    79,
+   190,   111,-32768,-32768,-32768,    34,    85,    74,-32768,-32768,
+-32768,   123,-32768,    51,    97,-32768,-32768,    -1,-32768,-32768,
+    51,-32768,-32768,-32768,     6,-32768,   148,   149,-32768
+};
+
+static const short yypgoto[] = {-32768,
+-32768,   134,-32768,-32768,    39,  -102,-32768,-32768,    10,  -118,
+-32768,-32768,    12,   154,   -32,   -87,   -14,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,   112,   -55,    13,-32768,   186,    -2
+};
+
+
+#define	YYLAST		245
+
+
+static const short yytable[] = {    47,
+    49,    85,    56,     3,    90,     5,    65,    92,    42,    43,
+     3,    68,     5,    70,    46,    48,    53,    55,    58,    61,
+    63,   135,   162,   150,   135,    91,   107,   108,    93,   162,
+   109,   110,   163,   150,    80,    69,     1,     2,     3,   166,
+     5,    77,   116,    78,   118,    79,    10,    11,    64,    42,
+    43,   144,    84,    88,   151,     3,   141,     5,   144,    89,
+    16,   130,   106,   131,   151,     1,     2,     3,     4,     5,
+     6,     7,     8,   111,   157,    10,    11,    12,    13,   126,
+   113,   126,   115,   120,   123,    99,   101,   103,   105,    16,
+    17,   136,   121,   122,   136,   138,   134,     1,     2,     3,
+     4,     5,     6,     7,     8,   140,   155,    10,    11,    12,
+    13,    94,   145,     1,     2,     3,   123,     5,   153,    95,
+   133,    16,    17,    10,    11,     1,     2,     3,   137,     5,
+   160,    42,    43,   141,   132,    10,    11,    16,   148,   159,
+    39,    40,    41,   164,   149,   141,   159,   168,   169,    16,
+   164,    71,   127,    42,    43,   152,   156,     1,     2,     3,
+     4,     5,     6,     7,     8,     9,   128,    10,    11,    12,
+    13,    72,   165,    73,   129,    74,    75,    76,    97,    14,
+    15,    16,    17,     1,     2,     3,     4,     5,     6,     7,
+     8,    59,     0,    10,    11,    12,    13,     0,    39,    40,
+    41,     0,   123,    39,    40,    41,     0,    16,    17,     0,
+    60,    39,    40,    41,     0,    62,    39,    40,    41,    42,
+    43,     0,   147,   102,    39,    40,    41,     0,   104,    39,
+    40,    41,    50,    51,     0,     0,   -77,    39,    40,    41,
+    50,    51,     0,     0,   -98
+};
+
+static const short yycheck[] = {     2,
+     3,    57,     5,     5,    12,     7,     9,    12,    30,    31,
+     5,    14,     7,    16,     2,     3,     4,     5,     6,     7,
+     8,   124,    24,   142,   127,    33,    82,    83,    33,    24,
+    86,    87,    34,   152,    24,    29,     3,     4,     5,    34,
+     7,    44,    98,    46,   100,    48,    13,    14,    29,    30,
+    31,   139,    55,    29,   142,     5,    23,     7,   146,    29,
+    27,   117,    35,   119,   152,     3,     4,     5,     6,     7,
+     8,     9,    10,    34,    24,    13,    14,    15,    16,   112,
+    34,   114,    35,    29,    22,    73,    74,    75,    76,    27,
+    28,   124,    29,    24,   127,    34,    34,     3,     4,     5,
+     6,     7,     8,     9,    10,    33,    33,    13,    14,    15,
+    16,    24,    34,     3,     4,     5,    22,     7,    34,    32,
+   123,    27,    28,    13,    14,     3,     4,     5,    34,     7,
+    34,    30,    31,    23,    33,    13,    14,    27,   141,   154,
+    17,    18,    19,   158,    34,    23,   161,     0,     0,    27,
+   165,    18,   114,    30,    31,   146,    34,     3,     4,     5,
+     6,     7,     8,     9,    10,    11,    24,    13,    14,    15,
+    16,    18,   161,     6,    32,     8,     9,    10,    67,    25,
+    26,    27,    28,     3,     4,     5,     6,     7,     8,     9,
+    10,     6,    -1,    13,    14,    15,    16,    -1,    17,    18,
+    19,    -1,    22,    17,    18,    19,    -1,    27,    28,    -1,
+    29,    17,    18,    19,    -1,    29,    17,    18,    19,    30,
+    31,    -1,    33,    29,    17,    18,    19,    -1,    29,    17,
+    18,    19,    20,    21,    -1,    -1,    24,    17,    18,    19,
+    20,    21,    -1,    -1,    24
+};
+ /* fattrs + tables */
+
+/* parser code folow  */
+
+
+/* This is the parser code that is written into each bison parser
+  when the %semantic_parser declaration is not specified in the grammar.
+  It was written by Richard Stallman by simplifying the hairy parser
+  used when %semantic_parser is specified.  */
+
+/* Note: dollar marks section change
+   the next  is replaced by the list of actions, each action
+   as one case of the switch.  */ 
+
+#if YY_clntParser_USE_GOTO != 0
+/* 
+ SUPRESSION OF GOTO : on some C++ compiler (sun c++)
+  the goto is strictly forbidden if any constructor/destructor
+  is used in the whole function (very stupid isn't it ?)
+ so goto are to be replaced with a 'while/switch/case construct'
+ here are the macro to keep some apparent compatibility
+*/
+#define YYGOTO(lb) {yy_gotostate=lb;continue;}
+#define YYBEGINGOTO  enum yy_labels yy_gotostate=yygotostart; \
+                     for(;;) switch(yy_gotostate) { case yygotostart: {
+#define YYLABEL(lb) } case lb: {
+#define YYENDGOTO } } 
+#define YYBEGINDECLARELABEL enum yy_labels {yygotostart
+#define YYDECLARELABEL(lb) ,lb
+#define YYENDDECLARELABEL  };
+#else
+/* macro to keep goto */
+#define YYGOTO(lb) goto lb
+#define YYBEGINGOTO 
+#define YYLABEL(lb) lb:
+#define YYENDGOTO
+#define YYBEGINDECLARELABEL 
+#define YYDECLARELABEL(lb)
+#define YYENDDECLARELABEL 
+#endif
+/* LABEL DECLARATION */
+YYBEGINDECLARELABEL
+  YYDECLARELABEL(yynewstate)
+  YYDECLARELABEL(yybackup)
+/* YYDECLARELABEL(yyresume) */
+  YYDECLARELABEL(yydefault)
+  YYDECLARELABEL(yyreduce)
+  YYDECLARELABEL(yyerrlab)   /* here on detecting error */
+  YYDECLARELABEL(yyerrlab1)   /* here on error raised explicitly by an action */
+  YYDECLARELABEL(yyerrdefault)  /* current state does not do anything special for the error token. */
+  YYDECLARELABEL(yyerrpop)   /* pop the current state because it cannot handle the error token */
+  YYDECLARELABEL(yyerrhandle)  
+YYENDDECLARELABEL
+/* ALLOCA SIMULATION */
+/* __HAVE_NO_ALLOCA */
+#ifdef __HAVE_NO_ALLOCA
+int __alloca_free_ptr(char *ptr,char *ref)
+{if(ptr!=ref) free(ptr);
+ return 0;}
+
+#define __ALLOCA_alloca(size) malloc(size)
+#define __ALLOCA_free(ptr,ref) __alloca_free_ptr((char *)ptr,(char *)ref)
+
+#ifdef YY_clntParser_LSP_NEEDED
+#define __ALLOCA_return(num) \
+            return( __ALLOCA_free(yyss,yyssa)+\
+		    __ALLOCA_free(yyvs,yyvsa)+\
+		    __ALLOCA_free(yyls,yylsa)+\
+		   (num))
+#else
+#define __ALLOCA_return(num) \
+            return( __ALLOCA_free(yyss,yyssa)+\
+		    __ALLOCA_free(yyvs,yyvsa)+\
+		   (num))
+#endif
+#else
+#define __ALLOCA_return(num) return(num)
+#define __ALLOCA_alloca(size) alloca(size)
+#define __ALLOCA_free(ptr,ref) 
+#endif
+
+/* ENDALLOCA SIMULATION */
+
+#define yyerrok         (yyerrstatus = 0)
+#define yyclearin       (YY_clntParser_CHAR = YYEMPTY)
+#define YYEMPTY         -2
+#define YYEOF           0
+#define YYACCEPT        __ALLOCA_return(0)
+#define YYABORT         __ALLOCA_return(1)
+#define YYERROR         YYGOTO(yyerrlab1)
+/* Like YYERROR except do call yyerror.
+   This remains here temporarily to ease the
+   transition to the new meaning of YYERROR, for GCC.
+   Once GCC version 2 has supplanted version 1, this can go.  */
+#define YYFAIL          YYGOTO(yyerrlab)
+#define YYRECOVERING()  (!!yyerrstatus)
+#define YYBACKUP(token, value) \
+do                                                              \
+  if (YY_clntParser_CHAR == YYEMPTY && yylen == 1)                               \
+    { YY_clntParser_CHAR = (token), YY_clntParser_LVAL = (value);                 \
+      yychar1 = YYTRANSLATE (YY_clntParser_CHAR);                                \
+      YYPOPSTACK;                                               \
+      YYGOTO(yybackup);                                            \
+    }                                                           \
+  else                                                          \
+    { YY_clntParser_ERROR ("syntax error: cannot back up"); YYERROR; }   \
+while (0)
+
+#define YYTERROR        1
+#define YYERRCODE       256
+
+#ifndef YY_clntParser_PURE
+/* UNPURE */
+#define YYLEX           YY_clntParser_LEX()
+#ifndef YY_USE_CLASS
+/* If nonreentrant, and not class , generate the variables here */
+int     YY_clntParser_CHAR;                      /*  the lookahead symbol        */
+YY_clntParser_STYPE      YY_clntParser_LVAL;              /*  the semantic value of the */
+				/*  lookahead symbol    */
+int YY_clntParser_NERRS;                 /*  number of parse errors so far */
+#ifdef YY_clntParser_LSP_NEEDED
+YY_clntParser_LTYPE YY_clntParser_LLOC;   /*  location data for the lookahead     */
+			/*  symbol                              */
+#endif
+#endif
+
+
+#else
+/* PURE */
+#ifdef YY_clntParser_LSP_NEEDED
+#define YYLEX           YY_clntParser_LEX(&YY_clntParser_LVAL, &YY_clntParser_LLOC)
+#else
+#define YYLEX           YY_clntParser_LEX(&YY_clntParser_LVAL)
+#endif
+#endif
+#ifndef YY_USE_CLASS
+#if YY_clntParser_DEBUG != 0
+int YY_clntParser_DEBUG_FLAG;                    /*  nonzero means print parse trace     */
+/* Since this is uninitialized, it does not stop multiple parsers
+   from coexisting.  */
+#endif
+#endif
+
+
+
+/*  YYINITDEPTH indicates the initial size of the parser's stacks       */
+
+#ifndef YYINITDEPTH
+#define YYINITDEPTH 200
+#endif
+
+/*  YYMAXDEPTH is the maximum size the stacks can grow to
+    (effective only if the built-in stack extension method is used).  */
+
+#if YYMAXDEPTH == 0
+#undef YYMAXDEPTH
+#endif
+
+#ifndef YYMAXDEPTH
+#define YYMAXDEPTH 10000
+#endif
+
+
+#if __GNUC__ > 1                /* GNU C and GNU C++ define this.  */
+#define __yy_bcopy(FROM,TO,COUNT)       __builtin_memcpy(TO,FROM,COUNT)
+#else                           /* not GNU C or C++ */
+
+/* This is the most reliable way to avoid incompatibilities
+   in available built-in functions on various systems.  */
+
+#ifdef __cplusplus
+static void __yy_bcopy (char *from, char *to, int count)
+#else
+#ifdef __STDC__
+static void __yy_bcopy (char *from, char *to, int count)
+#else
+static void __yy_bcopy (from, to, count)
+     char *from;
+     char *to;
+     int count;
+#endif
+#endif
+{
+  register char *f = from;
+  register char *t = to;
+  register int i = count;
+
+  while (i-- > 0)
+    *t++ = *f++;
 }
 #endif
 
-void YYPARSENAME::yyaction(int action)
+int
+#ifdef YY_USE_CLASS
+ YY_clntParser_CLASS::
+#endif
+     YY_clntParser_PARSE(YY_clntParser_PARSE_PARAM)
+#ifndef __STDC__
+#ifndef __cplusplus
+#ifndef YY_USE_CLASS
+/* parameter definition without protypes */
+YY_clntParser_PARSE_PARAM_DEF
+#endif
+#endif
+#endif
 {
-	switch (action) {
-	case 0:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 128 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
+  register int yystate;
+  register int yyn;
+  register short *yyssp;
+  register YY_clntParser_STYPE *yyvsp;
+  int yyerrstatus;      /*  number of tokens to shift before error messages enabled */
+  int yychar1=0;          /*  lookahead token as an internal (translated) token number */
 
-        CheckIsIface(string(yyattribute(2 - 3).strval)); //If no - everything is ok
+  short yyssa[YYINITDEPTH];     /*  the state stack                     */
+  YY_clntParser_STYPE yyvsa[YYINITDEPTH];        /*  the semantic value stack            */
+
+  short *yyss = yyssa;          /*  refer to the stacks thru separate pointers */
+  YY_clntParser_STYPE *yyvs = yyvsa;     /*  to allow yyoverflow to reallocate them elsewhere */
+
+#ifdef YY_clntParser_LSP_NEEDED
+  YY_clntParser_LTYPE yylsa[YYINITDEPTH];        /*  the location stack                  */
+  YY_clntParser_LTYPE *yyls = yylsa;
+  YY_clntParser_LTYPE *yylsp;
+
+#define YYPOPSTACK   (yyvsp--, yyssp--, yylsp--)
+#else
+#define YYPOPSTACK   (yyvsp--, yyssp--)
+#endif
+
+  int yystacksize = YYINITDEPTH;
+
+#ifdef YY_clntParser_PURE
+  int YY_clntParser_CHAR;
+  YY_clntParser_STYPE YY_clntParser_LVAL;
+  int YY_clntParser_NERRS;
+#ifdef YY_clntParser_LSP_NEEDED
+  YY_clntParser_LTYPE YY_clntParser_LLOC;
+#endif
+#endif
+
+  YY_clntParser_STYPE yyval;             /*  the variable used to return         */
+				/*  semantic values from the action     */
+				/*  routines                            */
+
+  int yylen;
+/* start loop, in which YYGOTO may be used. */
+YYBEGINGOTO
+
+#if YY_clntParser_DEBUG != 0
+  if (YY_clntParser_DEBUG_FLAG)
+    fprintf(stderr, "Starting parse\n");
+#endif
+  yystate = 0;
+  yyerrstatus = 0;
+  YY_clntParser_NERRS = 0;
+  YY_clntParser_CHAR = YYEMPTY;          /* Cause a token to be read.  */
+
+  /* Initialize stack pointers.
+     Waste one element of value and location stack
+     so that they stay on the same level as the state stack.
+     The wasted elements are never initialized.  */
+
+  yyssp = yyss - 1;
+  yyvsp = yyvs;
+#ifdef YY_clntParser_LSP_NEEDED
+  yylsp = yyls;
+#endif
+
+/* Push a new state, which is found in  yystate  .  */
+/* In all cases, when you get here, the value and location stacks
+   have just been pushed. so pushing a state here evens the stacks.  */
+YYLABEL(yynewstate)
+
+  *++yyssp = yystate;
+
+  if (yyssp >= yyss + yystacksize - 1)
+    {
+      /* Give user a chance to reallocate the stack */
+      /* Use copies of these so that the &'s don't force the real ones into memory. */
+      YY_clntParser_STYPE *yyvs1 = yyvs;
+      short *yyss1 = yyss;
+#ifdef YY_clntParser_LSP_NEEDED
+      YY_clntParser_LTYPE *yyls1 = yyls;
+#endif
+
+      /* Get the current used size of the three stacks, in elements.  */
+      int size = yyssp - yyss + 1;
+
+#ifdef yyoverflow
+      /* Each stack pointer address is followed by the size of
+	 the data in use in that stack, in bytes.  */
+#ifdef YY_clntParser_LSP_NEEDED
+      /* This used to be a conditional around just the two extra args,
+	 but that might be undefined if yyoverflow is a macro.  */
+      yyoverflow("parser stack overflow",
+		 &yyss1, size * sizeof (*yyssp),
+		 &yyvs1, size * sizeof (*yyvsp),
+		 &yyls1, size * sizeof (*yylsp),
+		 &yystacksize);
+#else
+      yyoverflow("parser stack overflow",
+		 &yyss1, size * sizeof (*yyssp),
+		 &yyvs1, size * sizeof (*yyvsp),
+		 &yystacksize);
+#endif
+
+      yyss = yyss1; yyvs = yyvs1;
+#ifdef YY_clntParser_LSP_NEEDED
+      yyls = yyls1;
+#endif
+#else /* no yyoverflow */
+      /* Extend the stack our own way.  */
+      if (yystacksize >= YYMAXDEPTH)
+	{
+	  YY_clntParser_ERROR("parser stack overflow");
+	  __ALLOCA_return(2);
+	}
+      yystacksize *= 2;
+      if (yystacksize > YYMAXDEPTH)
+	yystacksize = YYMAXDEPTH;
+      yyss = (short *) __ALLOCA_alloca (yystacksize * sizeof (*yyssp));
+      __yy_bcopy ((char *)yyss1, (char *)yyss, size * sizeof (*yyssp));
+      __ALLOCA_free(yyss1,yyssa);
+      yyvs = (YY_clntParser_STYPE *) __ALLOCA_alloca (yystacksize * sizeof (*yyvsp));
+      __yy_bcopy ((char *)yyvs1, (char *)yyvs, size * sizeof (*yyvsp));
+      __ALLOCA_free(yyvs1,yyvsa);
+#ifdef YY_clntParser_LSP_NEEDED
+      yyls = (YY_clntParser_LTYPE *) __ALLOCA_alloca (yystacksize * sizeof (*yylsp));
+      __yy_bcopy ((char *)yyls1, (char *)yyls, size * sizeof (*yylsp));
+      __ALLOCA_free(yyls1,yylsa);
+#endif
+#endif /* no yyoverflow */
+
+      yyssp = yyss + size - 1;
+      yyvsp = yyvs + size - 1;
+#ifdef YY_clntParser_LSP_NEEDED
+      yylsp = yyls + size - 1;
+#endif
+
+#if YY_clntParser_DEBUG != 0
+      if (YY_clntParser_DEBUG_FLAG)
+	fprintf(stderr, "Stack size increased to %d\n", yystacksize);
+#endif
+
+      if (yyssp >= yyss + yystacksize - 1)
+	YYABORT;
+    }
+
+#if YY_clntParser_DEBUG != 0
+  if (YY_clntParser_DEBUG_FLAG)
+    fprintf(stderr, "Entering state %d\n", yystate);
+#endif
+
+  YYGOTO(yybackup);
+YYLABEL(yybackup)
+
+/* Do appropriate processing given the current state.  */
+/* Read a lookahead token if we need one and don't already have one.  */
+/* YYLABEL(yyresume) */
+
+  /* First try to decide what to do without reference to lookahead token.  */
+
+  yyn = yypact[yystate];
+  if (yyn == YYFLAG)
+    YYGOTO(yydefault);
+
+  /* Not known => get a lookahead token if don't already have one.  */
+
+  /* yychar is either YYEMPTY or YYEOF
+     or a valid token in external form.  */
+
+  if (YY_clntParser_CHAR == YYEMPTY)
+    {
+#if YY_clntParser_DEBUG != 0
+      if (YY_clntParser_DEBUG_FLAG)
+	fprintf(stderr, "Reading a token: ");
+#endif
+      YY_clntParser_CHAR = YYLEX;
+    }
+
+  /* Convert token to internal form (in yychar1) for indexing tables with */
+
+  if (YY_clntParser_CHAR <= 0)           /* This means end of input. */
+    {
+      yychar1 = 0;
+      YY_clntParser_CHAR = YYEOF;                /* Don't call YYLEX any more */
+
+#if YY_clntParser_DEBUG != 0
+      if (YY_clntParser_DEBUG_FLAG)
+	fprintf(stderr, "Now at end of input.\n");
+#endif
+    }
+  else
+    {
+      yychar1 = YYTRANSLATE(YY_clntParser_CHAR);
+
+#if YY_clntParser_DEBUG != 0
+      if (YY_clntParser_DEBUG_FLAG)
+	{
+	  fprintf (stderr, "Next token is %d (%s", YY_clntParser_CHAR, yytname[yychar1]);
+	  /* Give the individual parser a way to print the precise meaning
+	     of a token, for further debugging info.  */
+#ifdef YYPRINT
+	  YYPRINT (stderr, YY_clntParser_CHAR, YY_clntParser_LVAL);
+#endif
+	  fprintf (stderr, ")\n");
+	}
+#endif
+    }
+
+  yyn += yychar1;
+  if (yyn < 0 || yyn > YYLAST || yycheck[yyn] != yychar1)
+    YYGOTO(yydefault);
+
+  yyn = yytable[yyn];
+
+  /* yyn is what to do for this token type in this state.
+     Negative => reduce, -yyn is rule number.
+     Positive => shift, yyn is new state.
+       New state is final state => don't bother to shift,
+       just return success.
+     0, or most negative number => error.  */
+
+  if (yyn < 0)
+    {
+      if (yyn == YYFLAG)
+	YYGOTO(yyerrlab);
+      yyn = -yyn;
+      YYGOTO(yyreduce);
+    }
+  else if (yyn == 0)
+    YYGOTO(yyerrlab);
+
+  if (yyn == YYFINAL)
+    YYACCEPT;
+
+  /* Shift the lookahead token.  */
+
+#if YY_clntParser_DEBUG != 0
+  if (YY_clntParser_DEBUG_FLAG)
+    fprintf(stderr, "Shifting token %d (%s), ", YY_clntParser_CHAR, yytname[yychar1]);
+#endif
+
+  /* Discard the token being shifted unless it is eof.  */
+  if (YY_clntParser_CHAR != YYEOF)
+    YY_clntParser_CHAR = YYEMPTY;
+
+  *++yyvsp = YY_clntParser_LVAL;
+#ifdef YY_clntParser_LSP_NEEDED
+  *++yylsp = YY_clntParser_LLOC;
+#endif
+
+  /* count tokens shifted since error; after three, turn off error status.  */
+  if (yyerrstatus) yyerrstatus--;
+
+  yystate = yyn;
+  YYGOTO(yynewstate);
+
+/* Do the default action for the current state.  */
+YYLABEL(yydefault)
+
+  yyn = yydefact[yystate];
+  if (yyn == 0)
+    YYGOTO(yyerrlab);
+
+/* Do a reduction.  yyn is the number of a rule to reduce with.  */
+YYLABEL(yyreduce)
+  yylen = yyr2[yyn];
+  if (yylen > 0)
+    yyval = yyvsp[1-yylen]; /* implement default value of the action */
+
+#if YY_clntParser_DEBUG != 0
+  if (YY_clntParser_DEBUG_FLAG)
+    {
+      int i;
+
+      fprintf (stderr, "Reducing via rule %d (line %d), ",
+	       yyn, yyrline[yyn]);
+
+      /* Print the symbols being reduced, and their result.  */
+      for (i = yyprhs[yyn]; yyrhs[i] > 0; i++)
+	fprintf (stderr, "%s ", yytname[yyrhs[i]]);
+      fprintf (stderr, " -> %s\n", yytname[yyr1[yyn]]);
+    }
+#endif
+
+
+  switch (yyn) {
+
+case 7:
+{
+        CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
         StartIfaceDeclaration();
-    
-#line 85 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 1:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[7];
-			yyinitdebug((void YYFAR**)yya, 7);
-#endif
-			{
-#line 133 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 8:
+{
         //Information about new interface has been read
         //Add it to list of read interfaces
-        ClntCfgIfaceLst.append(new TClntCfgIface(yyattribute(2 - 6).strval));
+        ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-4].strval));
         //FIXME:used of char * should be always realeased
-        delete yyattribute(2 - 6).strval;
+        delete yyvsp[-4].strval;
         EndIfaceDeclaration();
-    
-#line 105 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 2:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 146 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        CheckIsIface(yyattribute(2 - 3).ival);   //If no - everything is ok
+    ;
+    break;}
+case 9:
+{
+        CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
         StartIfaceDeclaration();
-    
-#line 121 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 3:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[7];
-			yyinitdebug((void YYFAR**)yya, 7);
-#endif
-			{
-#line 151 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ClntCfgIfaceLst.append(new TClntCfgIface(yyattribute(2 - 6).ival) );
+    ;
+    break;}
+case 10:
+{
+        ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-4].ival) );
         EndIfaceDeclaration();
-    
-#line 137 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 4:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 160 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-      CheckIsIface(string(yyattribute(2 - 4).strval));
-      ClntCfgIfaceLst.append(new TClntCfgIface(yyattribute(2 - 4).strval));
-      delete yyattribute(2 - 4).strval;
+    ;
+    break;}
+case 11:
+{
+      CheckIsIface(string(yyvsp[-2].strval));
+      ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-2].strval));
+      delete yyvsp[-2].strval;
       EmptyIface();
-    
-#line 155 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 5:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 171 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-      CheckIsIface(yyattribute(2 - 4).ival);
-      ClntCfgIfaceLst.append(new TClntCfgIface(yyattribute(2 - 4).ival));
+    ;
+    break;}
+case 12:
+{
+      CheckIsIface(yyvsp[-2].ival);
+      ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-2].ival));
       EmptyIface();
-    
-#line 172 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 6:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 181 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        CheckIsIface(string(yyattribute(2 - 3).strval));
-        ClntCfgIfaceLst.append(new TClntCfgIface(yyattribute(2 - 3).strval));
+    ;
+    break;}
+case 13:
+{
+        CheckIsIface(string(yyvsp[-1].strval));
+        ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-1].strval));
         ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
         ClntCfgIfaceLst.getLast()->setNoConfig();
-        delete yyattribute(2 - 3).strval;
-    
-#line 191 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 7:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 193 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        CheckIsIface(yyattribute(2 - 3).ival);
-        ClntCfgIfaceLst.append(SmartPtr<TClntCfgIface> (new TClntCfgIface(yyattribute(2 - 3).ival)) );
+        delete yyvsp[-1].strval;
+    ;
+    break;}
+case 14:
+{
+        CheckIsIface(yyvsp[-1].ival);
+        ClntCfgIfaceLst.append(SmartPtr<TClntCfgIface> (new TClntCfgIface(yyvsp[-1].ival)) );
         ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
         ClntCfgIfaceLst.getLast()->setNoConfig();
-    
-#line 209 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 8:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 213 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
- 
+    ;
+    break;}
+case 19:
+{ 
     StartIADeclaration(false);
-  
-#line 224 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 9:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[6];
-			yyinitdebug((void YYFAR**)yya, 6);
-#endif
-			{
-#line 217 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 20:
+{
         EndIADeclaration(1);
-    
-#line 239 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 10:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 225 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 21:
+{
         StartIADeclaration(false);
-    
-#line 254 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 11:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[7];
-			yyinitdebug((void YYFAR**)yya, 7);
-#endif
-			{
-#line 229 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    EndIADeclaration(yyattribute(2 - 6).ival);
-  
-#line 269 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 12:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 237 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 22:
+{
+    EndIADeclaration(yyvsp[-4].ival);
+  ;
+    break;}
+case 23:
+{
     StartIADeclaration(false);
-        EndIADeclaration(yyattribute(2 - 4).ival);
-    
-#line 285 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 13:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 246 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+        EndIADeclaration(yyvsp[-2].ival);
+    ;
+    break;}
+case 24:
+{
     StartIADeclaration(false);
-        EndIADeclaration(yyattribute(2 - 2).ival);
-    
-#line 301 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 14:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 255 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+        EndIADeclaration(yyvsp[0].ival);
+    ;
+    break;}
+case 25:
+{
     StartIADeclaration(true);
         EndIADeclaration(1);
-    
-#line 317 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 15:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 264 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 26:
+{
     StartIADeclaration(true);
         EndIADeclaration(1);
-    
-#line 333 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 16:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 279 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 31:
+{
       ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
-    
-#line 348 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 17:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[6];
-			yyinitdebug((void YYFAR**)yya, 6);
-#endif
-			{
-#line 283 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 32:
+{
       //ClntCfgAddrLst.append(SmartPtr<TClntCfgAddr> (new TClntCfgAddr()));
       //set proper options specific for this Address
       //ClntCfgAddrLst.getLast()->setOptions(&(*ParserOptStack.getLast()));
       ParserOptStack.delLast();
-    
-#line 366 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 18:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 291 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 33:
+{
       ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
       ParserOptStack.getLast()->setAddrHint(false);
-    
-#line 382 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 19:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[7];
-			yyinitdebug((void YYFAR**)yya, 7);
-#endif
-			{
-#line 296 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-      for (int i=0;i<yyattribute(2 - 6).ival; i++) EmptyAddr();
+    ;
+    break;}
+case 34:
+{
+      for (int i=0;i<yyvsp[-4].ival; i++) EmptyAddr();
       ParserOptStack.delLast();
-    
-#line 398 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 20:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 302 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-      for (int i=0;i<yyattribute(2 - 4).ival; i++) EmptyAddr();
-    
-#line 413 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 21:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 307 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 35:
+{
+      for (int i=0;i<yyvsp[-2].ival; i++) EmptyAddr();
+    ;
+    break;}
+case 36:
+{
       EmptyAddr();
-    
-#line 428 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 22:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 312 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-      for (int i=0;i<yyattribute(2 - 2).ival; i++) EmptyAddr();
-    
-#line 443 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 23:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 317 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 37:
+{
+      for (int i=0;i<yyvsp[0].ival; i++) EmptyAddr();
+    ;
+    break;}
+case 38:
+{
       EmptyAddr();
-    
-#line 458 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 24:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 326 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 41:
+{
     if (ParserOptStack.getLast()->getAddrHint())
     {
-        ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr(yyattribute(1 - 1).addrval)));
+        ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr(yyvsp[0].addrval)));
         ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
     }
         else
             //here is agregated version of IA
-            yyabort(); 
-  
-#line 480 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 25:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 337 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+            YYABORT; 
+  ;
+    break;}
+case 42:
+{
         if (ParserOptStack.getLast()->getAddrHint())
         {
-                ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr(yyattribute(2 - 2).addrval)));
+                ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr(yyvsp[0].addrval)));
                 ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
         }
             else
                 //here is agregated version of IA
-                yyabort();
-  
-#line 502 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 26:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 384 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        if (yyattribute(2 - 2).ival<5)
-            ParserOptStack.getLast()->setLogLevel(yyattribute(2 - 2).ival);
-        else
-            yyabort();
-    
-#line 520 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 27:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 400 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+                YYABORT;
+  ;
+    break;}
+case 60:
+{
+	ParserOptStack.getLast()->setLogLevel(yyvsp[0].ival);
+    ;
+    break;}
+case 61:
+{
            ParserOptStack.getLast()->setIsIAs(false);
-        
-#line 535 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 28:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 407 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setWorkDir(yyattribute(2 - 2).strval);
-    
-#line 550 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 29:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 414 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+        ;
+    break;}
+case 62:
+{
+        ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
+    ;
+    break;}
+case 63:
+{
             //ParserOptStack.getLast()->clearRejedSrv();
             PresentStationLst.clear();
             if (!(ParserOptStack.getLast()->isNewGroup())) 
                 ParserOptStack.getLast()->setNewGroup(true);
-    
-#line 568 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 30:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 420 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 64:
+{
         ParserOptStack.getLast()->setRejedSrvLst(&PresentStationLst);
-    
-#line 583 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 31:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 427 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 65:
+{
             PresentStationLst.clear();
             if (!(ParserOptStack.getLast()->isNewGroup())) 
                 ParserOptStack.getLast()->setNewGroup(true);
-  
-#line 600 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 32:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 431 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 66:
+{
             ParserOptStack.getLast()->setPrefSrvLst(&PresentStationLst);
-     
-#line 615 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 33:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 439 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setPref(yyattribute(2 - 2).ival);
+     ;
+    break;}
+case 67:
+{
+        ParserOptStack.getLast()->setPref(yyvsp[0].ival);
         ParserOptStack.getLast()->setPrefSendOpt(Send);
-    
-#line 631 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 34:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 445 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setPref(yyattribute(3 - 3).ival);
-        ParserOptStack.getLast()->setPrefSendOpt(yyattribute(2 - 3).SendOpt);
-    
-#line 647 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 35:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 453 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
- 
+    ;
+    break;}
+case 68:
+{
+        ParserOptStack.getLast()->setPref(yyvsp[0].ival);
+        ParserOptStack.getLast()->setPrefSendOpt(yyvsp[-1].SendOpt);
+    ;
+    break;}
+case 69:
+{ 
         if ((!(ParserOptStack.getLast()->isNewGroup()))&&
-            (ParserOptStack.getLast()->getRapidCommit()!=(bool)yyattribute(2 - 2).ival))
+            (ParserOptStack.getLast()->getRapidCommit()!=(bool)yyvsp[0].ival))
             ParserOptStack.getLast()->setNewGroup(true);
-        ParserOptStack.getLast()->setRapidCommit(yyattribute(2 - 2).ival);
-    
-#line 665 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 36:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 463 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setValid(yyattribute(2 - 2).ival);
+        ParserOptStack.getLast()->setRapidCommit(yyvsp[0].ival);
+    ;
+    break;}
+case 70:
+{
+        ParserOptStack.getLast()->setValid(yyvsp[0].ival);
         ParserOptStack.getLast()->setValidSendOpt(Send);
-  
-#line 681 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 37:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 468 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setValid(yyattribute(3 - 3).ival);
-        ParserOptStack.getLast()->setValidSendOpt(yyattribute(2 - 3).SendOpt);
-    
-#line 697 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 38:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 476 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setT1(yyattribute(2 - 2).ival);
+  ;
+    break;}
+case 71:
+{
+        ParserOptStack.getLast()->setValid(yyvsp[0].ival);
+        ParserOptStack.getLast()->setValidSendOpt(yyvsp[-1].SendOpt);
+    ;
+    break;}
+case 72:
+{
+        ParserOptStack.getLast()->setT1(yyvsp[0].ival);
         ParserOptStack.getLast()->setT1SendOpt(Send);
-    
-#line 713 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 39:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 481 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setT1(yyattribute(3 - 3).ival);
-        ParserOptStack.getLast()->setT1SendOpt(yyattribute(2 - 3).SendOpt);
-    
-#line 729 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 40:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 489 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setT2(yyattribute(2 - 2).ival);
+    ;
+    break;}
+case 73:
+{
+        ParserOptStack.getLast()->setT1(yyvsp[0].ival);
+        ParserOptStack.getLast()->setT1SendOpt(yyvsp[-1].SendOpt);
+    ;
+    break;}
+case 74:
+{
+        ParserOptStack.getLast()->setT2(yyvsp[0].ival);
         ParserOptStack.getLast()->setT2SendOpt(Send);
-  
-#line 745 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 41:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 494 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        ParserOptStack.getLast()->setT2(yyattribute(3 - 3).ival);
-        ParserOptStack.getLast()->setT2SendOpt(yyattribute(2 - 3).SendOpt);
-  
-#line 761 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 42:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 503 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 75:
+{
+        ParserOptStack.getLast()->setT2(yyvsp[0].ival);
+        ParserOptStack.getLast()->setT2SendOpt(yyvsp[-1].SendOpt);
+  ;
+    break;}
+case 76:
+{
         PresentAddrLst.clear();
         ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
         ParserOptStack.getLast()->setDNSSrvSendOpt(Send);
         ParserOptStack.getLast()->setDNSSrvReqOpt(Request);
         ParserOptStack.getLast()->setReqDNSSrv(true);
-    
-#line 780 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 43:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 511 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 77:
+{
             PresentAddrLst.clear();
-    
-#line 795 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 44:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 514 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 78:
+{
             ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
             ParserOptStack.getLast()->setDNSSrvSendOpt(Send);
             ParserOptStack.getLast()->setDNSSrvReqOpt(Request);
             ParserOptStack.getLast()->setReqDNSSrv(true);
-    
-#line 813 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 45:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 522 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 79:
+{
         PresentAddrLst.clear();
-    
-#line 828 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 46:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 525 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 80:
+{
         ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setDNSSrvSendOpt(yyattribute(2 - 4).SendOpt);
+        ParserOptStack.getLast()->setDNSSrvSendOpt(yyvsp[-2].SendOpt);
         ParserOptStack.getLast()->setDNSSrvReqOpt(Request);
         ParserOptStack.getLast()->setReqDNSSrv(true);
-    
-#line 846 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 47:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 533 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 81:
+{
         PresentAddrLst.clear();
-    
-#line 861 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 48:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 536 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 82:
+{
         ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
         ParserOptStack.getLast()->setDNSSrvSendOpt(Send);
-        ParserOptStack.getLast()->setDNSSrvReqOpt(yyattribute(1 - 4).ReqOpt);
+        ParserOptStack.getLast()->setDNSSrvReqOpt(yyvsp[-3].ReqOpt);
         ParserOptStack.getLast()->setReqDNSSrv(true);
-  
-#line 879 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 49:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 544 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 83:
+{
         PresentAddrLst.clear();
-  
-#line 894 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 50:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[6];
-			yyinitdebug((void YYFAR**)yya, 6);
-#endif
-			{
-#line 547 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 84:
+{
         ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setDNSSrvSendOpt(yyattribute(3 - 5).SendOpt);
-        ParserOptStack.getLast()->setDNSSrvReqOpt(yyattribute(1 - 5).ReqOpt);
+        ParserOptStack.getLast()->setDNSSrvSendOpt(yyvsp[-2].SendOpt);
+        ParserOptStack.getLast()->setDNSSrvReqOpt(yyvsp[-4].ReqOpt);
         ParserOptStack.getLast()->setReqDNSSrv(true);
-  
-#line 912 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 51:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 555 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 85:
+{
         PresentAddrLst.clear();
         ParserOptStack.getLast()->setReqDNSSrv(true);
-  
-#line 928 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 52:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 559 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        if (yyattribute(2 - 4).ival)
+  ;
+    break;}
+case 86:
+{
+        if (yyvsp[-2].ival)
             ParserOptStack.getLast()->setAppDNSSrvLst(&PresentAddrLst);
         else
             ParserOptStack.getLast()->setPrepDNSSrvLst(&PresentAddrLst);
-  
-#line 946 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 53:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 569 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 87:
+{
         ParserOptStack.getLast()->setDomainReqOpt(Request); 
         ParserOptStack.getLast()->setDomainSendOpt(Send);
         ParserOptStack.getLast()->setDomain(string(""));
         ParserOptStack.getLast()->setReqDomainName(true);  
-  
-#line 964 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 54:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 576 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 88:
+{
         ParserOptStack.getLast()->setDomainReqOpt(Request); 
         ParserOptStack.getLast()->setDomainSendOpt(Send);
-        ParserOptStack.getLast()->setDomain(yyattribute(2 - 2).strval);
+        ParserOptStack.getLast()->setDomain(yyvsp[0].strval);
         ParserOptStack.getLast()->setReqDomainName(true);
-  
-#line 982 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 55:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 583 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 89:
+{
         ParserOptStack.getLast()->setDomainReqOpt(Request);
-        ParserOptStack.getLast()->setDomainSendOpt(yyattribute(2 - 3).SendOpt);
-        ParserOptStack.getLast()->setDomain(yyattribute(3 - 3).strval);
+        ParserOptStack.getLast()->setDomainSendOpt(yyvsp[-1].SendOpt);
+        ParserOptStack.getLast()->setDomain(yyvsp[0].strval);
         ParserOptStack.getLast()->setReqDomainName(true);
 
-  
-#line 1001 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 56:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 592 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    ParserOptStack.getLast()->setDomainReqOpt(yyattribute(1 - 3).ReqOpt);
+  ;
+    break;}
+case 90:
+{
+    ParserOptStack.getLast()->setDomainReqOpt(yyvsp[-2].ReqOpt);
     ParserOptStack.getLast()->setDomainSendOpt(Send);
-    ParserOptStack.getLast()->setDomain(yyattribute(3 - 3).strval);
+    ParserOptStack.getLast()->setDomain(yyvsp[0].strval);
     ParserOptStack.getLast()->setReqDomainName(true);
-  
-#line 1019 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 57:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 599 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    ParserOptStack.getLast()->setDomainReqOpt(yyattribute(1 - 4).ReqOpt);
-    ParserOptStack.getLast()->setDomainSendOpt(yyattribute(3 - 4).SendOpt);
-    ParserOptStack.getLast()->setDomain(yyattribute(4 - 4).strval);
+  ;
+    break;}
+case 91:
+{
+    ParserOptStack.getLast()->setDomainReqOpt(yyvsp[-3].ReqOpt);
+    ParserOptStack.getLast()->setDomainSendOpt(yyvsp[-1].SendOpt);
+    ParserOptStack.getLast()->setDomain(yyvsp[0].strval);
     ParserOptStack.getLast()->setReqDomainName(true);
-  
-#line 1037 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 58:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 609 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 92:
+{
         ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
         ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
         ParserOptStack.getLast()->setTimeZone(string(""));
         ParserOptStack.getLast()->setReqTimeZone(true);
-  
-#line 1055 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 59:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 616 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 93:
+{
         ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
         ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
-        ParserOptStack.getLast()->setTimeZone(yyattribute(2 - 2).strval);
+        ParserOptStack.getLast()->setTimeZone(yyvsp[0].strval);
         ParserOptStack.getLast()->setReqTimeZone(true);
-  
-#line 1073 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 60:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 624 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 94:
+{
         ParserOptStack.getLast()->setTimeZoneReqOpt(Request);
-        ParserOptStack.getLast()->setTimeZoneSendOpt(yyattribute(2 - 3).SendOpt);
-        ParserOptStack.getLast()->setTimeZone(yyattribute(3 - 3).strval);
+        ParserOptStack.getLast()->setTimeZoneSendOpt(yyvsp[-1].SendOpt);
+        ParserOptStack.getLast()->setTimeZone(yyvsp[0].strval);
         ParserOptStack.getLast()->setReqTimeZone(true);
-    
-#line 1091 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 61:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 632 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    ParserOptStack.getLast()->setTimeZoneReqOpt(yyattribute(1 - 3).ReqOpt);
+    ;
+    break;}
+case 95:
+{
+    ParserOptStack.getLast()->setTimeZoneReqOpt(yyvsp[-2].ReqOpt);
     ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
-    ParserOptStack.getLast()->setTimeZone(yyattribute(3 - 3).strval);
+    ParserOptStack.getLast()->setTimeZone(yyvsp[0].strval);
     ParserOptStack.getLast()->setReqTimeZone(true);
-  
-#line 1109 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 62:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 640 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    ParserOptStack.getLast()->setTimeZoneReqOpt(yyattribute(1 - 4).ReqOpt);
-    ParserOptStack.getLast()->setTimeZoneSendOpt(yyattribute(3 - 4).SendOpt);
-    ParserOptStack.getLast()->setTimeZone(yyattribute(4 - 4).strval);
+  ;
+    break;}
+case 96:
+{
+    ParserOptStack.getLast()->setTimeZoneReqOpt(yyvsp[-3].ReqOpt);
+    ParserOptStack.getLast()->setTimeZoneSendOpt(yyvsp[-1].SendOpt);
+    ParserOptStack.getLast()->setTimeZone(yyvsp[0].strval);
     ParserOptStack.getLast()->setReqTimeZone(true);
-  
-#line 1127 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 63:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 650 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+  ;
+    break;}
+case 97:
+{
         PresentAddrLst.clear();
         ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
         ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
         ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
         ParserOptStack.getLast()->setReqNTPSrv(true);        
-    
-#line 1146 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 64:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 657 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 98:
+{
         PresentAddrLst.clear();
-    
-#line 1161 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 65:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 660 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 99:
+{
         ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
         ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
         ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
         ParserOptStack.getLast()->setReqNTPSrv(true);
-    
-#line 1179 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 66:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 666 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 100:
+{
         PresentAddrLst.clear();
-    
-#line 1194 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 67:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 669 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 101:
+{
         ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setNTPSrvSendOpt(yyattribute(2 - 4).SendOpt);
+        ParserOptStack.getLast()->setNTPSrvSendOpt(yyvsp[-2].SendOpt);
         ParserOptStack.getLast()->setNTPSrvReqOpt(Request);
         ParserOptStack.getLast()->setReqNTPSrv(true);
-    
-#line 1212 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 68:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 675 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 102:
+{
         PresentAddrLst.clear();
-    
-#line 1227 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 69:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 678 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 103:
+{
         ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
         ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
-        ParserOptStack.getLast()->setNTPSrvReqOpt(yyattribute(1 - 4).ReqOpt);
+        ParserOptStack.getLast()->setNTPSrvReqOpt(yyvsp[-3].ReqOpt);
         ParserOptStack.getLast()->setReqNTPSrv(true);
-    
-#line 1245 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 70:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 684 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 104:
+{
         PresentAddrLst.clear();
-    
-#line 1260 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 71:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[6];
-			yyinitdebug((void YYFAR**)yya, 6);
-#endif
-			{
-#line 687 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
+    ;
+    break;}
+case 105:
+{
         ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
-        ParserOptStack.getLast()->setNTPSrvSendOpt(yyattribute(3 - 5).SendOpt);
-        ParserOptStack.getLast()->setNTPSrvReqOpt(yyattribute(1 - 5).ReqOpt);
+        ParserOptStack.getLast()->setNTPSrvSendOpt(yyvsp[-2].SendOpt);
+        ParserOptStack.getLast()->setNTPSrvReqOpt(yyvsp[-4].ReqOpt);
         ParserOptStack.getLast()->setReqNTPSrv(true);
-    
-#line 1278 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 72:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[3];
-			yyinitdebug((void YYFAR**)yya, 3);
-#endif
-			{
-#line 694 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-      
+    ;
+    break;}
+case 106:
+{      
         PresentAddrLst.clear(); 
         ParserOptStack.getLast()->setReqNTPSrv(true);
-    
-#line 1294 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 73:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[5];
-			yyinitdebug((void YYFAR**)yya, 5);
-#endif
-			{
-#line 698 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-        if (yyattribute(2 - 4).ival)
+    ;
+    break;}
+case 107:
+{
+        if (yyvsp[-2].ival)
             ParserOptStack.getLast()->setAppNTPSrvLst(&PresentAddrLst);
         else
             ParserOptStack.getLast()->setPrepNTPSrvLst(&PresentAddrLst);
-    
-#line 1312 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 74:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 742 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyattribute(1 - 1).addrval))));
-  
-#line 1327 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 75:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 746 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TDUID(yyattribute(1 - 1).duidval.duid,yyattribute(1 - 1).duidval.length))));
-  
-#line 1342 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 76:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 750 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyattribute(3 - 3).addrval))));
-  
-#line 1357 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 77:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 754 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID( new TDUID(yyattribute(3 - 3).duidval.duid,yyattribute(3 - 3).duidval.length))));
-  
-#line 1372 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 78:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 760 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyattribute(1 - 1).addrval)));
-#line 1385 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 79:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[4];
-			yyinitdebug((void YYFAR**)yya, 4);
-#endif
-			{
-#line 761 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyattribute(3 - 3).addrval)));
-#line 1398 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 80:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 765 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).SendOpt=Send;
-#line 1411 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 81:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 766 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).SendOpt=Default;
-#line 1424 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 82:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 767 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).SendOpt=Supersede;
-#line 1437 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 83:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 771 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).ReqOpt=Request;
-#line 1450 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 84:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 772 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).ReqOpt=Require;
-#line 1463 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 85:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 776 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).ival=1;
-#line 1476 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 86:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 777 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).ival=0;
-#line 1489 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 87:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 780 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).ival=yyattribute(1 - 1).ival;
-#line 1502 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	case 88:
-		{
-#ifdef YYDEBUG
-			YYSTYPE YYFAR* yya[2];
-			yyinitdebug((void YYFAR**)yya, 2);
-#endif
-			{
-#line 781 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
-(*(YYSTYPE YYFAR*)yyvalptr).ival=yyattribute(1 - 1).ival;
-#line 1515 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-			}
-		}
-		break;
-	default:
-		yyassert(0);
-		break;
-	}
+    ;
+    break;}
+case 108:
+{
+    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
+  ;
+    break;}
+case 109:
+{
+    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
+  ;
+    break;}
+case 110:
+{
+    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
+  ;
+    break;}
+case 111:
+{
+    PresentStationLst.append(SmartPtr<TStationID> (new TStationID( new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
+  ;
+    break;}
+case 112:
+{PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
+    break;}
+case 113:
+{PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
+    break;}
+case 114:
+{yyval.SendOpt=Send;;
+    break;}
+case 115:
+{yyval.SendOpt=Default;;
+    break;}
+case 116:
+{yyval.SendOpt=Supersede;;
+    break;}
+case 117:
+{yyval.ReqOpt=Request;;
+    break;}
+case 118:
+{yyval.ReqOpt=Require;;
+    break;}
+case 119:
+{yyval.ival=1;;
+    break;}
+case 120:
+{yyval.ival=0;;
+    break;}
+case 121:
+{yyval.ival=yyvsp[0].ival;;
+    break;}
+case 122:
+{yyval.ival=yyvsp[0].ival;;
+    break;}
 }
-#line 784 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.y"
+   /* the action file gets copied in in place of this dollarsign  */
+  yyvsp -= yylen;
+  yyssp -= yylen;
+#ifdef YY_clntParser_LSP_NEEDED
+  yylsp -= yylen;
+#endif
+
+#if YY_clntParser_DEBUG != 0
+  if (YY_clntParser_DEBUG_FLAG)
+    {
+      short *ssp1 = yyss - 1;
+      fprintf (stderr, "state stack now");
+      while (ssp1 != yyssp)
+	fprintf (stderr, " %d", *++ssp1);
+      fprintf (stderr, "\n");
+    }
+#endif
+
+  *++yyvsp = yyval;
+
+#ifdef YY_clntParser_LSP_NEEDED
+  yylsp++;
+  if (yylen == 0)
+    {
+      yylsp->first_line = YY_clntParser_LLOC.first_line;
+      yylsp->first_column = YY_clntParser_LLOC.first_column;
+      yylsp->last_line = (yylsp-1)->last_line;
+      yylsp->last_column = (yylsp-1)->last_column;
+      yylsp->text = 0;
+    }
+  else
+    {
+      yylsp->last_line = (yylsp+yylen-1)->last_line;
+      yylsp->last_column = (yylsp+yylen-1)->last_column;
+    }
+#endif
+
+  /* Now "shift" the result of the reduction.
+     Determine what state that goes to,
+     based on the state we popped back to
+     and the rule number reduced by.  */
+
+  yyn = yyr1[yyn];
+
+  yystate = yypgoto[yyn - YYNTBASE] + *yyssp;
+  if (yystate >= 0 && yystate <= YYLAST && yycheck[yystate] == *yyssp)
+    yystate = yytable[yystate];
+  else
+    yystate = yydefgoto[yyn - YYNTBASE];
+
+  YYGOTO(yynewstate);
+
+YYLABEL(yyerrlab)   /* here on detecting error */
+
+  if (! yyerrstatus)
+    /* If not already recovering from an error, report this error.  */
+    {
+      ++YY_clntParser_NERRS;
+
+#ifdef YY_clntParser_ERROR_VERBOSE
+      yyn = yypact[yystate];
+
+      if (yyn > YYFLAG && yyn < YYLAST)
+	{
+	  int size = 0;
+	  char *msg;
+	  int x, count;
+
+	  count = 0;
+	  /* Start X at -yyn if nec to avoid negative indexes in yycheck.  */
+	  for (x = (yyn < 0 ? -yyn : 0);
+	       x < (sizeof(yytname) / sizeof(char *)); x++)
+	    if (yycheck[x + yyn] == x)
+	      size += strlen(yytname[x]) + 15, count++;
+	  msg = (char *) malloc(size + 15);
+	  if (msg != 0)
+	    {
+	      strcpy(msg, "parse error");
+
+	      if (count < 5)
+		{
+		  count = 0;
+		  for (x = (yyn < 0 ? -yyn : 0);
+		       x < (sizeof(yytname) / sizeof(char *)); x++)
+		    if (yycheck[x + yyn] == x)
+		      {
+			strcat(msg, count == 0 ? ", expecting `" : " or `");
+			strcat(msg, yytname[x]);
+			strcat(msg, "'");
+			count++;
+		      }
+		}
+	      YY_clntParser_ERROR(msg);
+	      free(msg);
+	    }
+	  else
+	    YY_clntParser_ERROR ("parse error; also virtual memory exceeded");
+	}
+      else
+#endif /* YY_clntParser_ERROR_VERBOSE */
+	YY_clntParser_ERROR("parse error");
+    }
+
+  YYGOTO(yyerrlab1);
+YYLABEL(yyerrlab1)   /* here on error raised explicitly by an action */
+
+  if (yyerrstatus == 3)
+    {
+      /* if just tried and failed to reuse lookahead token after an error, discard it.  */
+
+      /* return failure if at end of input */
+      if (YY_clntParser_CHAR == YYEOF)
+	YYABORT;
+
+#if YY_clntParser_DEBUG != 0
+      if (YY_clntParser_DEBUG_FLAG)
+	fprintf(stderr, "Discarding token %d (%s).\n", YY_clntParser_CHAR, yytname[yychar1]);
+#endif
+
+      YY_clntParser_CHAR = YYEMPTY;
+    }
+
+  /* Else will try to reuse lookahead token
+     after shifting the error token.  */
+
+  yyerrstatus = 3;              /* Each real token shifted decrements this */
+
+  YYGOTO(yyerrhandle);
+
+YYLABEL(yyerrdefault)  /* current state does not do anything special for the error token. */
+
+#if 0
+  /* This is wrong; only states that explicitly want error tokens
+     should shift them.  */
+  yyn = yydefact[yystate];  /* If its default is to accept any token, ok.  Otherwise pop it.*/
+  if (yyn) YYGOTO(yydefault);
+#endif
+
+YYLABEL(yyerrpop)   /* pop the current state because it cannot handle the error token */
+
+  if (yyssp == yyss) YYABORT;
+  yyvsp--;
+  yystate = *--yyssp;
+#ifdef YY_clntParser_LSP_NEEDED
+  yylsp--;
+#endif
+
+#if YY_clntParser_DEBUG != 0
+  if (YY_clntParser_DEBUG_FLAG)
+    {
+      short *ssp1 = yyss - 1;
+      fprintf (stderr, "Error: state stack now");
+      while (ssp1 != yyssp)
+	fprintf (stderr, " %d", *++ssp1);
+      fprintf (stderr, "\n");
+    }
+#endif
+
+YYLABEL(yyerrhandle)
+
+  yyn = yypact[yystate];
+  if (yyn == YYFLAG)
+    YYGOTO(yyerrdefault);
+
+  yyn += YYTERROR;
+  if (yyn < 0 || yyn > YYLAST || yycheck[yyn] != YYTERROR)
+    YYGOTO(yyerrdefault);
+
+  yyn = yytable[yyn];
+  if (yyn < 0)
+    {
+      if (yyn == YYFLAG)
+	YYGOTO(yyerrpop);
+      yyn = -yyn;
+      YYGOTO(yyreduce);
+    }
+  else if (yyn == 0)
+    YYGOTO(yyerrpop);
+
+  if (yyn == YYFINAL)
+    YYACCEPT;
+
+#if YY_clntParser_DEBUG != 0
+  if (YY_clntParser_DEBUG_FLAG)
+    fprintf(stderr, "Shifting error token, ");
+#endif
+
+  *++yyvsp = YY_clntParser_LVAL;
+#ifdef YY_clntParser_LSP_NEEDED
+  *++yylsp = YY_clntParser_LLOC;
+#endif
+
+  yystate = yyn;
+  YYGOTO(yynewstate);
+/* end loop, in which YYGOTO may be used. */
+  YYENDGOTO
+}
+
+/* END */
 
 
     /////////////////////////////////////////////////////////////////////////////
@@ -1528,24 +2045,24 @@ PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyattribute(3 - 3).addr
     
     //method check whether interface with id=ifaceNr has been 
     //already declared
-void clntParser::CheckIsIface(int ifaceNr)
+bool clntParser::CheckIsIface(int ifaceNr)
 {
   SmartPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
-    if ((ptr->getID())==ifaceNr) yyabort();
+    if ((ptr->getID())==ifaceNr) YYABORT;
 };
     
     //method check whether interface with id=ifaceName has been
     //already declared 
-void clntParser::CheckIsIface(string ifaceName)
+bool clntParser::CheckIsIface(string ifaceName)
 {
   SmartPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
   {
     string presName=ptr->getName();
-    if (presName==ifaceName) yyabort();
+    if (presName==ifaceName) YYABORT;
   };
 };
 
@@ -1565,7 +2082,7 @@ void clntParser::StartIfaceDeclaration()
 
 }
 
-void clntParser::EndIfaceDeclaration()
+bool clntParser::EndIfaceDeclaration()
 {
   //add all identity associations to last group
   SmartPtr<TClntCfgIA> ptrIA;
@@ -1588,7 +2105,7 @@ void clntParser::EndIfaceDeclaration()
     
   if ((ClntCfgIfaceLst.getLast())->onlyInformationRequest())
   {
-    if (groupsCnt) yyabort();
+    if (groupsCnt) YYABORT;
   }
   else
   {
@@ -1711,944 +2228,21 @@ void clntParser::EmptyAddr()
     ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
 }   
 
-#line 1715 "C:\\Dyplom\\sources\\ClntParser\\ClntParser.cpp"
-void YYPARSENAME::yytables()
+// <Linux>
+extern yy_clntParser_stype yylval;
+
+int clntParser::yylex()
 {
-	yyattribute_size = sizeof(YYSTYPE);
-	yysstack_size = YYSTACK_SIZE;
-
-#ifdef YYDEBUG
-	static const yysymbol_t YYNEARFAR YYBASED_CODE symbol[] = {
-		{ "$end", 0 },
-		{ "\',\'", 44 },
-		{ "\'{\'", 123 },
-		{ "\'}\'", 125 },
-		{ "error", 256 },
-		{ "T1_", 257 },
-		{ "T2_", 258 },
-		{ "PREF_TIME_", 259 },
-		{ "DNS_SERVER_", 260 },
-		{ "VALID_TIME_", 261 },
-		{ "NTP_SERVER_", 262 },
-		{ "DOMAIN_", 263 },
-		{ "TIME_ZONE_", 264 },
-		{ "IFACE_", 265 },
-		{ "NO_CONFIG_", 266 },
-		{ "REJECT_SERVERS_", 267 },
-		{ "PREFERRED_SERVERS_", 268 },
-		{ "REQUIRE_", 269 },
-		{ "REQUEST_", 270 },
-		{ "SEND_", 271 },
-		{ "DEFAULT_", 272 },
-		{ "SUPERSEDE_", 273 },
-		{ "APPEND_", 274 },
-		{ "PREPEND_", 275 },
-		{ "IA_", 276 },
-		{ "ADDRES_", 277 },
-		{ "IPV6ADDR_", 278 },
-		{ "LOGLEVEL_", 279 },
-		{ "WORKDIR_", 280 },
-		{ "RAPID_COMMIT_", 281 },
-		{ "NOIA_", 282 },
-		{ "STRING_", 283 },
-		{ "HEXNUMBER_", 284 },
-		{ "INTNUMBER_", 285 },
-		{ "DUID_", 286 },
-		{ NULL, 0 }
-	};
-	yysymbol = symbol;
-
-	static const char* const YYNEARFAR YYBASED_CODE rule[] = {
-		"$accept: Grammar",
-		"Grammar: GlobalDeclarationList",
-		"Grammar:",
-		"GlobalDeclarationList: GlobalOptionDeclaration",
-		"GlobalDeclarationList: InterfaceDeclaration",
-		"GlobalDeclarationList: GlobalDeclarationList GlobalOptionDeclaration",
-		"GlobalDeclarationList: GlobalDeclarationList InterfaceDeclaration",
-		"$$1:",
-		"InterfaceDeclaration: IFACE_ STRING_ \'{\' $$1 InterfaceDeclarationsList \'}\'",
-		"$$2:",
-		"InterfaceDeclaration: IFACE_ Number \'{\' $$2 InterfaceDeclarationsList \'}\'",
-		"InterfaceDeclaration: IFACE_ STRING_ \'{\' \'}\'",
-		"InterfaceDeclaration: IFACE_ Number \'{\' \'}\'",
-		"InterfaceDeclaration: IFACE_ STRING_ NO_CONFIG_",
-		"InterfaceDeclaration: IFACE_ Number NO_CONFIG_",
-		"InterfaceDeclarationsList: InterfaceOptionDeclaration",
-		"InterfaceDeclarationsList: InterfaceDeclarationsList InterfaceOptionDeclaration",
-		"InterfaceDeclarationsList: IADeclaration",
-		"InterfaceDeclarationsList: InterfaceDeclarationsList IADeclaration",
-		"$$3:",
-		"IADeclaration: IA_ \'{\' $$3 IADeclarationList \'}\'",
-		"$$4:",
-		"IADeclaration: IA_ Number \'{\' $$4 IADeclarationList \'}\'",
-		"IADeclaration: IA_ Number \'{\' \'}\'",
-		"IADeclaration: IA_ Number",
-		"IADeclaration: IA_ \'{\' \'}\'",
-		"IADeclaration: IA_",
-		"IADeclarationList: IAOptionDeclaration",
-		"IADeclarationList: IADeclarationList IAOptionDeclaration",
-		"IADeclarationList: ADDRESDeclaration",
-		"IADeclarationList: IADeclarationList ADDRESDeclaration",
-		"$$5:",
-		"ADDRESDeclaration: ADDRES_ \'{\' $$5 ADDRESDeclarationList \'}\'",
-		"$$6:",
-		"ADDRESDeclaration: ADDRES_ Number \'{\' $$6 ADDRESDeclarationList \'}\'",
-		"ADDRESDeclaration: ADDRES_ Number \'{\' \'}\'",
-		"ADDRESDeclaration: ADDRES_ \'{\' \'}\'",
-		"ADDRESDeclaration: ADDRES_ Number",
-		"ADDRESDeclaration: ADDRES_",
-		"ADDRESDeclarationList: ADDRESOptionDeclaration",
-		"ADDRESDeclarationList: ADDRESDeclarationList ADDRESOptionDeclaration",
-		"ADDRESDeclarationList: IPV6ADDR_",
-		"ADDRESDeclarationList: ADDRESDeclarationList IPV6ADDR_",
-		"GlobalOptionDeclaration: InterfaceOptionDeclaration",
-		"GlobalOptionDeclaration: LogLevelOption",
-		"GlobalOptionDeclaration: WorkDirOption",
-		"InterfaceOptionDeclaration: IAOptionDeclaration",
-		"InterfaceOptionDeclaration: DNSServerOption",
-		"InterfaceOptionDeclaration: NTPServerOption",
-		"InterfaceOptionDeclaration: NoIAsOptions",
-		"InterfaceOptionDeclaration: DomainOption",
-		"InterfaceOptionDeclaration: TimeZoneOption",
-		"IAOptionDeclaration: T1Option",
-		"IAOptionDeclaration: T2Option",
-		"IAOptionDeclaration: RejectServersOption",
-		"IAOptionDeclaration: PreferServersOption",
-		"IAOptionDeclaration: RapidCommitOption",
-		"IAOptionDeclaration: ADDRESOptionDeclaration",
-		"ADDRESOptionDeclaration: PreferredTimeOption",
-		"ADDRESOptionDeclaration: ValidTimeOption",
-		"LogLevelOption: LOGLEVEL_ Number",
-		"NoIAsOptions: NOIA_",
-		"WorkDirOption: WORKDIR_ STRING_",
-		"$$7:",
-		"RejectServersOption: REJECT_SERVERS_ $$7 ADDRESDUIDList",
-		"$$8:",
-		"PreferServersOption: PREFERRED_SERVERS_ $$8 ADDRESDUIDList",
-		"PreferredTimeOption: PREF_TIME_ Number",
-		"PreferredTimeOption: PREF_TIME_ SendDefaultSupersedeOpt Number",
-		"RapidCommitOption: RAPID_COMMIT_ Number",
-		"ValidTimeOption: VALID_TIME_ Number",
-		"ValidTimeOption: VALID_TIME_ SendDefaultSupersedeOpt Number",
-		"T1Option: T1_ Number",
-		"T1Option: T1_ SendDefaultSupersedeOpt Number",
-		"T2Option: T2_ Number",
-		"T2Option: T2_ SendDefaultSupersedeOpt Number",
-		"DNSServerOption: DNS_SERVER_",
-		"$$9:",
-		"DNSServerOption: DNS_SERVER_ $$9 ADDRESSList",
-		"$$10:",
-		"DNSServerOption: DNS_SERVER_ SendDefaultSupersedeOpt $$10 ADDRESSList",
-		"$$11:",
-		"DNSServerOption: RequestRequirePrefix DNS_SERVER_ $$11 ADDRESSList",
-		"$$12:",
-		"DNSServerOption: RequestRequirePrefix DNS_SERVER_ SendDefaultSupersedeOpt $$12 ADDRESSList",
-		"$$13:",
-		"DNSServerOption: DNS_SERVER_ SuperAppPrepOpt $$13 ADDRESSList",
-		"DomainOption: DOMAIN_",
-		"DomainOption: DOMAIN_ STRING_",
-		"DomainOption: DOMAIN_ SendDefaultSupersedeOpt STRING_",
-		"DomainOption: RequestRequirePrefix DOMAIN_ STRING_",
-		"DomainOption: RequestRequirePrefix DOMAIN_ SendDefaultSupersedeOpt STRING_",
-		"TimeZoneOption: TIME_ZONE_",
-		"TimeZoneOption: TIME_ZONE_ STRING_",
-		"TimeZoneOption: TIME_ZONE_ SendDefaultSupersedeOpt STRING_",
-		"TimeZoneOption: RequestRequirePrefix TIME_ZONE_ STRING_",
-		"TimeZoneOption: RequestRequirePrefix TIME_ZONE_ SendDefaultSupersedeOpt STRING_",
-		"NTPServerOption: NTP_SERVER_",
-		"$$14:",
-		"NTPServerOption: NTP_SERVER_ $$14 ADDRESSList",
-		"$$15:",
-		"NTPServerOption: NTP_SERVER_ SendDefaultSupersedeOpt $$15 ADDRESSList",
-		"$$16:",
-		"NTPServerOption: RequestRequirePrefix NTP_SERVER_ $$16 ADDRESSList",
-		"$$17:",
-		"NTPServerOption: RequestRequirePrefix NTP_SERVER_ SendDefaultSupersedeOpt $$17 ADDRESSList",
-		"$$18:",
-		"NTPServerOption: NTP_SERVER_ SuperAppPrepOpt $$18 ADDRESSList",
-		"ADDRESDUIDList: IPV6ADDR_",
-		"ADDRESDUIDList: DUID_",
-		"ADDRESDUIDList: ADDRESDUIDList \',\' IPV6ADDR_",
-		"ADDRESDUIDList: ADDRESDUIDList \',\' DUID_",
-		"ADDRESSList: IPV6ADDR_",
-		"ADDRESSList: ADDRESSList \',\' IPV6ADDR_",
-		"SendDefaultSupersedeOpt: SEND_",
-		"SendDefaultSupersedeOpt: DEFAULT_",
-		"SendDefaultSupersedeOpt: SUPERSEDE_",
-		"RequestRequirePrefix: REQUEST_",
-		"RequestRequirePrefix: REQUIRE_",
-		"SuperAppPrepOpt: APPEND_",
-		"SuperAppPrepOpt: PREPEND_",
-		"Number: HEXNUMBER_",
-		"Number: INTNUMBER_"
-	};
-	yyrule = rule;
-#endif
-
-	static const yyreduction_t YYNEARFAR YYBASED_CODE reduction[] = {
-		{ 0, 1, -1 },
-		{ 1, 1, -1 },
-		{ 1, 0, -1 },
-		{ 2, 1, -1 },
-		{ 2, 1, -1 },
-		{ 2, 2, -1 },
-		{ 2, 2, -1 },
-		{ 4, 0, 0 },
-		{ 3, 6, 1 },
-		{ 5, 0, 2 },
-		{ 3, 6, 3 },
-		{ 3, 4, 4 },
-		{ 3, 4, 5 },
-		{ 3, 3, 6 },
-		{ 3, 3, 7 },
-		{ 6, 1, -1 },
-		{ 6, 2, -1 },
-		{ 6, 1, -1 },
-		{ 6, 2, -1 },
-		{ 8, 0, 8 },
-		{ 7, 5, 9 },
-		{ 9, 0, 10 },
-		{ 7, 6, 11 },
-		{ 7, 4, 12 },
-		{ 7, 2, 13 },
-		{ 7, 3, 14 },
-		{ 7, 1, 15 },
-		{ 10, 1, -1 },
-		{ 10, 2, -1 },
-		{ 10, 1, -1 },
-		{ 10, 2, -1 },
-		{ 12, 0, 16 },
-		{ 11, 5, 17 },
-		{ 13, 0, 18 },
-		{ 11, 6, 19 },
-		{ 11, 4, 20 },
-		{ 11, 3, 21 },
-		{ 11, 2, 22 },
-		{ 11, 1, 23 },
-		{ 14, 1, -1 },
-		{ 14, 2, -1 },
-		{ 14, 1, 24 },
-		{ 14, 2, 25 },
-		{ 15, 1, -1 },
-		{ 15, 1, -1 },
-		{ 15, 1, -1 },
-		{ 16, 1, -1 },
-		{ 16, 1, -1 },
-		{ 16, 1, -1 },
-		{ 16, 1, -1 },
-		{ 16, 1, -1 },
-		{ 16, 1, -1 },
-		{ 17, 1, -1 },
-		{ 17, 1, -1 },
-		{ 17, 1, -1 },
-		{ 17, 1, -1 },
-		{ 17, 1, -1 },
-		{ 17, 1, -1 },
-		{ 18, 1, -1 },
-		{ 18, 1, -1 },
-		{ 19, 2, 26 },
-		{ 20, 1, 27 },
-		{ 21, 2, 28 },
-		{ 23, 0, 29 },
-		{ 22, 3, 30 },
-		{ 25, 0, 31 },
-		{ 24, 3, 32 },
-		{ 26, 2, 33 },
-		{ 26, 3, 34 },
-		{ 27, 2, 35 },
-		{ 28, 2, 36 },
-		{ 28, 3, 37 },
-		{ 29, 2, 38 },
-		{ 29, 3, 39 },
-		{ 30, 2, 40 },
-		{ 30, 3, 41 },
-		{ 31, 1, 42 },
-		{ 32, 0, 43 },
-		{ 31, 3, 44 },
-		{ 33, 0, 45 },
-		{ 31, 4, 46 },
-		{ 34, 0, 47 },
-		{ 31, 4, 48 },
-		{ 35, 0, 49 },
-		{ 31, 5, 50 },
-		{ 36, 0, 51 },
-		{ 31, 4, 52 },
-		{ 37, 1, 53 },
-		{ 37, 2, 54 },
-		{ 37, 3, 55 },
-		{ 37, 3, 56 },
-		{ 37, 4, 57 },
-		{ 38, 1, 58 },
-		{ 38, 2, 59 },
-		{ 38, 3, 60 },
-		{ 38, 3, 61 },
-		{ 38, 4, 62 },
-		{ 39, 1, 63 },
-		{ 40, 0, 64 },
-		{ 39, 3, 65 },
-		{ 41, 0, 66 },
-		{ 39, 4, 67 },
-		{ 42, 0, 68 },
-		{ 39, 4, 69 },
-		{ 43, 0, 70 },
-		{ 39, 5, 71 },
-		{ 44, 0, 72 },
-		{ 39, 4, 73 },
-		{ 45, 1, 74 },
-		{ 45, 1, 75 },
-		{ 45, 3, 76 },
-		{ 45, 3, 77 },
-		{ 46, 1, 78 },
-		{ 46, 3, 79 },
-		{ 47, 1, 80 },
-		{ 47, 1, 81 },
-		{ 47, 1, 82 },
-		{ 48, 1, 83 },
-		{ 48, 1, 84 },
-		{ 49, 1, 85 },
-		{ 49, 1, 86 },
-		{ 50, 1, 87 },
-		{ 50, 1, 88 }
-	};
-	yyreduction = reduction;
-
-	static const yytokenaction_t YYNEARFAR YYBASED_CODE tokenaction[] = {
-		{ 128, YYAT_SHIFT, 138 },
-		{ 20, YYAT_SHIFT, 1 },
-		{ 20, YYAT_SHIFT, 2 },
-		{ 20, YYAT_SHIFT, 3 },
-		{ 20, YYAT_SHIFT, 4 },
-		{ 20, YYAT_SHIFT, 5 },
-		{ 20, YYAT_SHIFT, 6 },
-		{ 20, YYAT_SHIFT, 7 },
-		{ 20, YYAT_SHIFT, 8 },
-		{ 20, YYAT_SHIFT, 9 },
-		{ 162, YYAT_ERROR, 0 },
-		{ 20, YYAT_SHIFT, 10 },
-		{ 20, YYAT_SHIFT, 11 },
-		{ 20, YYAT_SHIFT, 12 },
-		{ 20, YYAT_SHIFT, 13 },
-		{ 142, YYAT_SHIFT, 148 },
-		{ 153, YYAT_SHIFT, 157 },
-		{ 124, YYAT_SHIFT, 133 },
-		{ 66, YYAT_SHIFT, 93 },
-		{ 65, YYAT_SHIFT, 91 },
-		{ 166, YYAT_SHIFT, 167 },
-		{ 57, YYAT_SHIFT, 43 },
-		{ 57, YYAT_SHIFT, 44 },
-		{ 20, YYAT_SHIFT, 14 },
-		{ 20, YYAT_SHIFT, 15 },
-		{ 20, YYAT_SHIFT, 16 },
-		{ 20, YYAT_SHIFT, 17 },
-		{ 0, YYAT_SHIFT, 1 },
-		{ 0, YYAT_SHIFT, 2 },
-		{ 0, YYAT_SHIFT, 3 },
-		{ 0, YYAT_SHIFT, 4 },
-		{ 0, YYAT_SHIFT, 5 },
-		{ 0, YYAT_SHIFT, 6 },
-		{ 0, YYAT_SHIFT, 7 },
-		{ 0, YYAT_SHIFT, 8 },
-		{ 0, YYAT_SHIFT, 9 },
-		{ 159, YYAT_SHIFT, 163 },
-		{ 0, YYAT_SHIFT, 10 },
-		{ 0, YYAT_SHIFT, 11 },
-		{ 0, YYAT_SHIFT, 12 },
-		{ 0, YYAT_SHIFT, 13 },
-		{ 6, YYAT_SHIFT, 40 },
-		{ 6, YYAT_SHIFT, 41 },
-		{ 6, YYAT_SHIFT, 42 },
-		{ 6, YYAT_SHIFT, 51 },
-		{ 6, YYAT_SHIFT, 52 },
-		{ 156, YYAT_SHIFT, 161 },
-		{ 149, YYAT_SHIFT, 156 },
-		{ 6, YYAT_REDUCE, 98 },
-		{ 0, YYAT_SHIFT, 14 },
-		{ 0, YYAT_SHIFT, 15 },
-		{ 0, YYAT_SHIFT, 16 },
-		{ 0, YYAT_SHIFT, 17 },
-		{ 4, YYAT_SHIFT, 40 },
-		{ 4, YYAT_SHIFT, 41 },
-		{ 4, YYAT_SHIFT, 42 },
-		{ 4, YYAT_SHIFT, 51 },
-		{ 4, YYAT_SHIFT, 52 },
-		{ 148, YYAT_SHIFT, 154 },
-		{ 147, YYAT_ERROR, 0 },
-		{ 4, YYAT_REDUCE, 77 },
-		{ 75, YYAT_SHIFT, 40 },
-		{ 75, YYAT_SHIFT, 41 },
-		{ 75, YYAT_SHIFT, 42 },
-		{ 8, YYAT_SHIFT, 40 },
-		{ 8, YYAT_SHIFT, 41 },
-		{ 8, YYAT_SHIFT, 42 },
-		{ 7, YYAT_SHIFT, 40 },
-		{ 7, YYAT_SHIFT, 41 },
-		{ 7, YYAT_SHIFT, 42 },
-		{ 73, YYAT_SHIFT, 40 },
-		{ 73, YYAT_SHIFT, 41 },
-		{ 73, YYAT_SHIFT, 42 },
-		{ 75, YYAT_SHIFT, 105 },
-		{ 143, YYAT_SHIFT, 150 },
-		{ 116, YYAT_SHIFT, 129 },
-		{ 8, YYAT_SHIFT, 63 },
-		{ 68, YYAT_SHIFT, 95 },
-		{ 18, YYAT_SHIFT, 72 },
-		{ 7, YYAT_SHIFT, 61 },
-		{ 18, YYAT_SHIFT, 73 },
-		{ 18, YYAT_SHIFT, 74 },
-		{ 18, YYAT_SHIFT, 75 },
-		{ 116, YYAT_SHIFT, 130 },
-		{ 141, YYAT_SHIFT, 146 },
-		{ 68, YYAT_SHIFT, 96 },
-		{ 72, YYAT_SHIFT, 40 },
-		{ 72, YYAT_SHIFT, 41 },
-		{ 72, YYAT_SHIFT, 42 },
-		{ 5, YYAT_ERROR, 0 },
-		{ 5, YYAT_SHIFT, 43 },
-		{ 5, YYAT_SHIFT, 44 },
-		{ 134, YYAT_SHIFT, 141 },
-		{ 133, YYAT_SHIFT, 139 },
-		{ 132, YYAT_SHIFT, 109 },
-		{ 131, YYAT_SHIFT, 109 },
-		{ 125, YYAT_SHIFT, 135 },
-		{ 120, YYAT_SHIFT, 109 },
-		{ 119, YYAT_SHIFT, 83 },
-		{ 118, YYAT_SHIFT, 109 },
-		{ 115, YYAT_ERROR, 0 },
-		{ 111, YYAT_SHIFT, 109 },
-		{ 110, YYAT_SHIFT, 109 },
-		{ 109, YYAT_SHIFT, 123 },
-		{ 108, YYAT_SHIFT, 109 },
-		{ 107, YYAT_SHIFT, 109 },
-		{ 106, YYAT_SHIFT, 122 },
-		{ 104, YYAT_SHIFT, 121 },
-		{ 98, YYAT_SHIFT, 116 },
-		{ 97, YYAT_SHIFT, 116 },
-		{ 93, YYAT_SHIFT, 114 },
-		{ 91, YYAT_SHIFT, 112 },
-		{ 88, YYAT_SHIFT, 109 },
-		{ 84, YYAT_SHIFT, 109 },
-		{ 74, YYAT_SHIFT, 103 },
-		{ 64, YYAT_SHIFT, 90 },
-		{ 62, YYAT_SHIFT, 89 },
-		{ 19, YYAT_ACCEPT, 0 },
-		{ 15, YYAT_SHIFT, 70 },
-		{ 9, YYAT_SHIFT, 65 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 128, YYAT_SHIFT, 4 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 128, YYAT_SHIFT, 6 },
-		{ 128, YYAT_SHIFT, 7 },
-		{ 128, YYAT_SHIFT, 8 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 128, YYAT_SHIFT, 12 },
-		{ 128, YYAT_SHIFT, 13 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 153, YYAT_SHIFT, 1 },
-		{ 153, YYAT_SHIFT, 2 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 128, YYAT_SHIFT, 124 },
-		{ 128, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 166, YYAT_SHIFT, 3 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 166, YYAT_SHIFT, 5 },
-		{ 128, YYAT_SHIFT, 17 },
-		{ 153, YYAT_SHIFT, 10 },
-		{ 153, YYAT_SHIFT, 11 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 66, YYAT_SHIFT, 94 },
-		{ 65, YYAT_SHIFT, 92 },
-		{ 162, YYAT_SHIFT, 158 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 153, YYAT_SHIFT, 142 },
-		{ 153, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 153, YYAT_SHIFT, 16 },
-		{ 166, YYAT_SHIFT, 164 },
-		{ -1, YYAT_ERROR, 0 },
-		{ -1, YYAT_ERROR, 0 },
-		{ 142, YYAT_SHIFT, 43 },
-		{ 142, YYAT_SHIFT, 44 },
-		{ 124, YYAT_SHIFT, 43 },
-		{ 124, YYAT_SHIFT, 44 }
-	};
-	yytokenaction = tokenaction;
-	yytokenaction_size = 180;
-
-	static const yystateaction_t YYNEARFAR YYBASED_CODE stateaction[] = {
-		{ -230, 1, YYAT_REDUCE, 2 },
-		{ 0, 0, YYAT_DEFAULT, 5 },
-		{ 0, 0, YYAT_DEFAULT, 5 },
-		{ 0, 0, YYAT_DEFAULT, 5 },
-		{ -218, 1, YYAT_REDUCE, 76 },
-		{ -194, 1, YYAT_DEFAULT, 75 },
-		{ -230, 1, YYAT_REDUCE, 97 },
-		{ -204, 1, YYAT_REDUCE, 87 },
-		{ -207, 1, YYAT_REDUCE, 92 },
-		{ -164, 1, YYAT_DEFAULT, 57 },
-		{ 0, 0, YYAT_REDUCE, 63 },
-		{ 0, 0, YYAT_REDUCE, 65 },
-		{ 0, 0, YYAT_REDUCE, 118 },
-		{ 0, 0, YYAT_REDUCE, 117 },
-		{ 0, 0, YYAT_DEFAULT, 57 },
-		{ -165, 1, YYAT_DEFAULT, 106 },
-		{ 0, 0, YYAT_DEFAULT, 57 },
-		{ 0, 0, YYAT_REDUCE, 61 },
-		{ -182, 1, YYAT_ERROR, 0 },
-		{ 117, 1, YYAT_ERROR, 0 },
-		{ -256, 1, YYAT_REDUCE, 1 },
-		{ 0, 0, YYAT_REDUCE, 3 },
-		{ 0, 0, YYAT_REDUCE, 4 },
-		{ 0, 0, YYAT_REDUCE, 43 },
-		{ 0, 0, YYAT_REDUCE, 46 },
-		{ 0, 0, YYAT_REDUCE, 57 },
-		{ 0, 0, YYAT_REDUCE, 44 },
-		{ 0, 0, YYAT_REDUCE, 45 },
-		{ 0, 0, YYAT_REDUCE, 47 },
-		{ 0, 0, YYAT_REDUCE, 48 },
-		{ 0, 0, YYAT_REDUCE, 49 },
-		{ 0, 0, YYAT_REDUCE, 50 },
-		{ 0, 0, YYAT_REDUCE, 51 },
-		{ 0, 0, YYAT_REDUCE, 52 },
-		{ 0, 0, YYAT_REDUCE, 53 },
-		{ 0, 0, YYAT_REDUCE, 54 },
-		{ 0, 0, YYAT_REDUCE, 55 },
-		{ 0, 0, YYAT_REDUCE, 56 },
-		{ 0, 0, YYAT_REDUCE, 58 },
-		{ 0, 0, YYAT_REDUCE, 59 },
-		{ 0, 0, YYAT_REDUCE, 114 },
-		{ 0, 0, YYAT_REDUCE, 115 },
-		{ 0, 0, YYAT_REDUCE, 116 },
-		{ 0, 0, YYAT_REDUCE, 121 },
-		{ 0, 0, YYAT_REDUCE, 122 },
-		{ 0, 0, YYAT_REDUCE, 72 },
-		{ 0, 0, YYAT_DEFAULT, 57 },
-		{ 0, 0, YYAT_REDUCE, 74 },
-		{ 0, 0, YYAT_DEFAULT, 57 },
-		{ 0, 0, YYAT_REDUCE, 67 },
-		{ 0, 0, YYAT_DEFAULT, 57 },
-		{ 0, 0, YYAT_REDUCE, 119 },
-		{ 0, 0, YYAT_REDUCE, 120 },
-		{ 0, 0, YYAT_REDUCE, 79 },
-		{ 0, 0, YYAT_REDUCE, 85 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_REDUCE, 70 },
-		{ -263, 1, YYAT_ERROR, 0 },
-		{ 0, 0, YYAT_REDUCE, 100 },
-		{ 0, 0, YYAT_REDUCE, 106 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_REDUCE, 88 },
-		{ -167, 1, YYAT_DEFAULT, 106 },
-		{ 0, 0, YYAT_REDUCE, 93 },
-		{ -168, 1, YYAT_DEFAULT, 106 },
-		{ -104, 1, YYAT_DEFAULT, 66 },
-		{ -105, 1, YYAT_ERROR, 0 },
-		{ 0, 0, YYAT_DEFAULT, 68 },
-		{ -201, 1, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_REDUCE, 60 },
-		{ 0, 0, YYAT_REDUCE, 62 },
-		{ 0, 0, YYAT_REDUCE, 69 },
-		{ -185, 1, YYAT_REDUCE, 81 },
-		{ -201, 1, YYAT_REDUCE, 102 },
-		{ -169, 1, YYAT_DEFAULT, 75 },
-		{ -210, 1, YYAT_DEFAULT, 106 },
-		{ 0, 0, YYAT_REDUCE, 5 },
-		{ 0, 0, YYAT_REDUCE, 6 },
-		{ 0, 0, YYAT_REDUCE, 73 },
-		{ 0, 0, YYAT_REDUCE, 75 },
-		{ 0, 0, YYAT_REDUCE, 68 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_REDUCE, 112 },
-		{ 69, 1, YYAT_REDUCE, 78 },
-		{ 0, 0, YYAT_REDUCE, 71 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 68, 1, YYAT_REDUCE, 99 },
-		{ 0, 0, YYAT_REDUCE, 89 },
-		{ 0, 0, YYAT_REDUCE, 94 },
-		{ -14, 1, YYAT_REDUCE, 7 },
-		{ 0, 0, YYAT_REDUCE, 13 },
-		{ -15, 1, YYAT_REDUCE, 9 },
-		{ 0, 0, YYAT_REDUCE, 14 },
-		{ 0, 0, YYAT_REDUCE, 108 },
-		{ 0, 0, YYAT_REDUCE, 109 },
-		{ 65, 1, YYAT_REDUCE, 64 },
-		{ 64, 1, YYAT_REDUCE, 66 },
-		{ 0, 0, YYAT_REDUCE, 83 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_REDUCE, 104 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_REDUCE, 90 },
-		{ -176, 1, YYAT_DEFAULT, 106 },
-		{ 0, 0, YYAT_REDUCE, 95 },
-		{ -177, 1, YYAT_ERROR, 0 },
-		{ 61, 1, YYAT_REDUCE, 80 },
-		{ 60, 1, YYAT_REDUCE, 86 },
-		{ -175, 1, YYAT_DEFAULT, 119 },
-		{ 58, 1, YYAT_REDUCE, 101 },
-		{ 57, 1, YYAT_REDUCE, 107 },
-		{ 0, 0, YYAT_REDUCE, 11 },
-		{ 0, 0, YYAT_DEFAULT, 115 },
-		{ 0, 0, YYAT_REDUCE, 12 },
-		{ -25, 1, YYAT_DEFAULT, 128 },
-		{ -203, 1, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_DEFAULT, 119 },
-		{ 55, 1, YYAT_REDUCE, 82 },
-		{ -180, 1, YYAT_ERROR, 0 },
-		{ 53, 1, YYAT_REDUCE, 103 },
-		{ 0, 0, YYAT_REDUCE, 91 },
-		{ 0, 0, YYAT_REDUCE, 96 },
-		{ 0, 0, YYAT_REDUCE, 113 },
-		{ -106, 1, YYAT_REDUCE, 26 },
-		{ -29, 1, YYAT_DEFAULT, 128 },
-		{ 0, 0, YYAT_REDUCE, 15 },
-		{ 0, 0, YYAT_REDUCE, 17 },
-		{ -125, 1, YYAT_DEFAULT, 153 },
-		{ 0, 0, YYAT_REDUCE, 110 },
-		{ 0, 0, YYAT_REDUCE, 111 },
-		{ 51, 1, YYAT_REDUCE, 84 },
-		{ 50, 1, YYAT_REDUCE, 105 },
-		{ -32, 1, YYAT_REDUCE, 19 },
-		{ -31, 1, YYAT_REDUCE, 24 },
-		{ 0, 0, YYAT_REDUCE, 8 },
-		{ 0, 0, YYAT_REDUCE, 16 },
-		{ 0, 0, YYAT_REDUCE, 18 },
-		{ 0, 0, YYAT_REDUCE, 10 },
-		{ 0, 0, YYAT_REDUCE, 25 },
-		{ 0, 0, YYAT_DEFAULT, 147 },
-		{ -41, 1, YYAT_REDUCE, 21 },
-		{ -108, 1, YYAT_REDUCE, 38 },
-		{ -51, 1, YYAT_DEFAULT, 153 },
-		{ 0, 0, YYAT_REDUCE, 27 },
-		{ 0, 0, YYAT_REDUCE, 29 },
-		{ 0, 0, YYAT_REDUCE, 23 },
-		{ -66, 1, YYAT_DEFAULT, 153 },
-		{ -67, 1, YYAT_REDUCE, 31 },
-		{ -76, 1, YYAT_REDUCE, 37 },
-		{ 0, 0, YYAT_REDUCE, 20 },
-		{ 0, 0, YYAT_REDUCE, 28 },
-		{ 0, 0, YYAT_REDUCE, 30 },
-		{ -109, 1, YYAT_DEFAULT, 166 },
-		{ 0, 0, YYAT_REDUCE, 36 },
-		{ 0, 0, YYAT_DEFAULT, 162 },
-		{ -79, 1, YYAT_REDUCE, 33 },
-		{ 0, 0, YYAT_REDUCE, 22 },
-		{ 0, 0, YYAT_REDUCE, 41 },
-		{ -89, 1, YYAT_DEFAULT, 166 },
-		{ 0, 0, YYAT_REDUCE, 39 },
-		{ 0, 0, YYAT_REDUCE, 35 },
-		{ -115, 1, YYAT_DEFAULT, 166 },
-		{ 0, 0, YYAT_REDUCE, 32 },
-		{ 0, 0, YYAT_REDUCE, 42 },
-		{ 0, 0, YYAT_REDUCE, 40 },
-		{ -105, 1, YYAT_DEFAULT, 119 },
-		{ 0, 0, YYAT_REDUCE, 34 }
-	};
-	yystateaction = stateaction;
-
-	static const yynontermgoto_t YYNEARFAR YYBASED_CODE nontermgoto[] = {
-		{ 128, 137 },
-		{ 153, 152 },
-		{ 72, 100 },
-		{ 156, 162 },
-		{ 128, -1 },
-		{ 155, 159 },
-		{ 73, 102 },
-		{ 153, 151 },
-		{ 153, 25 },
-		{ 128, 136 },
-		{ 128, 24 },
-		{ 73, 101 },
-		{ 153, 35 },
-		{ 128, 30 },
-		{ 153, 36 },
-		{ 72, 99 },
-		{ 148, 155 },
-		{ 153, 37 },
-		{ 162, 166 },
-		{ 153, 33 },
-		{ 153, 34 },
-		{ 20, 77 },
-		{ 162, 160 },
-		{ 142, 149 },
-		{ 128, 28 },
-		{ 20, -1 },
-		{ 0, 19 },
-		{ 0, 20 },
-		{ 0, 22 },
-		{ 4, 55 },
-		{ 128, 31 },
-		{ 128, 32 },
-		{ 128, 29 },
-		{ 20, 76 },
-		{ 20, 23 },
-		{ 166, 165 },
-		{ 141, 147 },
-		{ 20, 26 },
-		{ 140, 143 },
-		{ 20, 27 },
-		{ 0, 21 },
-		{ 128, 18 },
-		{ 6, 60 },
-		{ 166, 38 },
-		{ 4, 53 },
-		{ 166, 39 },
-		{ 4, 54 },
-		{ 115, 128 },
-		{ 115, 127 },
-		{ 6, 58 },
-		{ 133, 140 },
-		{ 6, 59 },
-		{ 147, 153 },
-		{ 147, 145 },
-		{ 124, 134 },
-		{ 5, 57 },
-		{ 119, 132 },
-		{ 115, 126 },
-		{ 5, 56 },
-		{ 147, 144 },
-		{ 3, 50 },
-		{ 2, 48 },
-		{ 1, 46 },
-		{ 3, 49 },
-		{ 2, 47 },
-		{ 1, 45 },
-		{ 117, 131 },
-		{ 113, 125 },
-		{ 102, 120 },
-		{ 101, 119 },
-		{ 100, 118 },
-		{ 99, 117 },
-		{ 93, 115 },
-		{ 91, 113 },
-		{ 87, 111 },
-		{ 86, 110 },
-		{ 82, 108 },
-		{ 81, 107 },
-		{ 75, 106 },
-		{ 74, 104 },
-		{ 68, 98 },
-		{ 67, 97 },
-		{ 60, 88 },
-		{ 59, 87 },
-		{ 58, 86 },
-		{ 57, 85 },
-		{ 55, 84 },
-		{ 54, 82 },
-		{ 53, 81 },
-		{ 50, 80 },
-		{ 48, 79 },
-		{ 46, 78 },
-		{ 16, 71 },
-		{ 14, 69 },
-		{ 11, 68 },
-		{ 10, 67 },
-		{ 9, 66 },
-		{ 8, 64 },
-		{ 7, 62 }
-	};
-	yynontermgoto = nontermgoto;
-	yynontermgoto_size = 99;
-
-	static const yystategoto_t YYNEARFAR YYBASED_CODE stategoto[] = {
-		{ 25, 20 },
-		{ 15, -1 },
-		{ 14, -1 },
-		{ 13, -1 },
-		{ -3, -1 },
-		{ 8, -1 },
-		{ 2, -1 },
-		{ 51, -1 },
-		{ 50, -1 },
-		{ 46, -1 },
-		{ 72, -1 },
-		{ 69, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 43, -1 },
-		{ 0, -1 },
-		{ 42, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 18, 128 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 41, -1 },
-		{ 0, -1 },
-		{ 40, -1 },
-		{ 0, -1 },
-		{ 39, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 55, -1 },
-		{ 51, -1 },
-		{ 40, -1 },
-		{ 0, -1 },
-		{ 35, -1 },
-		{ 43, -1 },
-		{ 39, -1 },
-		{ 36, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 36, -1 },
-		{ 35, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ -32, -1 },
-		{ -36, -1 },
-		{ 32, -1 },
-		{ 31, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 31, -1 },
-		{ 30, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 29, -1 },
-		{ 28, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 69, -1 },
-		{ 0, -1 },
-		{ 67, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 36, -1 },
-		{ 24, -1 },
-		{ 26, -1 },
-		{ 22, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 61, 115 },
-		{ 0, -1 },
-		{ 41, 128 },
-		{ 0, -1 },
-		{ 20, -1 },
-		{ 0, -1 },
-		{ 10, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 4, -1 },
-		{ 0, 128 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ -7, 153 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 42, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 28, 147 },
-		{ 27, -1 },
-		{ -27, -1 },
-		{ 0, 153 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 42, 153 },
-		{ 4, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ -10, 166 },
-		{ 0, -1 },
-		{ -9, 162 },
-		{ -10, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, 166 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 4, 166 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 0, -1 },
-		{ 17, -1 },
-		{ 0, -1 }
-	};
-	yystategoto = stategoto;
-
-	yydestructorptr = NULL;
-
-	yytokendestptr = NULL;
-	yytokendest_size = 0;
-	yytokendestbase = 0;
+    int x = this->lex->yylex();
+    this->yylval=::yylval;
+    return x;
 }
+
+
+void clntParser::yyerror(char *m)
+{
+    // logging 
+    std::clog << "Config parse error: line " << lex->lineno() << ", unexpected [" 
+	      << lex->YYText() << "] token." << std::endl;
+}
+// </Linux>

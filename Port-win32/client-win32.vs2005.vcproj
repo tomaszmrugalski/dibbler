@@ -23,7 +23,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;YYDEBUG"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="4"
 				DefaultCharIsUnsigned="TRUE"
 				TreatWChar_tAsBuiltInType="TRUE"
 				UsePrecompiledHeader="0"
@@ -34,7 +34,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="yld.lib ws2_32.lib Iphlpapi.lib libxml2.lib"
+				AdditionalDependencies="ws2_32.lib Iphlpapi.lib libxml2.lib libfl.lib libfl.a"
 				OutputFile="$(OutDir)/dibbler-client-winxp.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
