@@ -19,9 +19,9 @@ parser:
 
 client: $(CLIENTBIN)
 
-$(CLIENTBIN): includes commonlibs clntlibs misc/DHCPClient.o $(CLIENT)
+$(CLIENTBIN): includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) $(CLNTLINKOPTS) -o $@ misc/DHCPClient.o $(CLIENT) \
+	$(CPP) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
@@ -42,9 +42,9 @@ $(CLIENTBIN): includes commonlibs clntlibs misc/DHCPClient.o $(CLIENT)
 
 server: $(SERVERBIN)
 
-$(SERVERBIN): includes commonlibs srvlibs misc/DHCPServer.o $(SERVER)
+$(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ misc/DHCPServer.o $(SERVER)  \
+	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(LOWLEVEL)    \
@@ -218,7 +218,7 @@ release-doc: VERSION-src doc oxygen
 
 release-gentoo: VERSION-linux
 	@echo "[TAR/GZ ] dibbler-tmp.tar.gz"
-	cd port-linux/gentoo; tar czvf ../../dibbler-tmp.tar.gz --exclude CVS net-misc
+	cd $(PORTDIR)/gentoo; tar czvf ../../dibbler-tmp.tar.gz --exclude CVS net-misc
 	@echo "[RENAME ] dibbler-$(VERSION)-gentoo.tar.gz"
 	mv dibbler-tmp.tar.gz dibbler-$(VERSION)-gentoo.tar.gz
 
@@ -227,62 +227,62 @@ release-all: release-src release-linux release-doc release-deb release-rpm relea
 release-deb: VERSION-linux server client doc
 	@echo "[RM     ] dibbler_$(VERSION)_i386.deb"
 	rm -f dibbler_$(VERSION)_i386.deb
-	@echo "[RM     ] port-linux/debian/root"
-	rm -rf port-linux/debian/root
-	@echo "[MKDIR  ] port-linux/debian/root"
-	$(MKDIR) port-linux/debian/root/usr/sbin
-	$(MKDIR) port-linux/debian/root/usr/share/doc/dibbler
-	$(MKDIR) port-linux/debian/root/usr/share/man/man8
-	$(MKDIR) port-linux/debian/root/var/lib/dibbler
-	$(MKDIR) port-linux/debian/root/DEBIAN
-	@echo "[CP     ] port-linux/debian/root"
-	$(CP) port-linux/debian/dibbler-$(VERSION).control port-linux/debian/root/DEBIAN/control
-	$(CP) $(SERVERBIN) port-linux/debian/root/usr/sbin
-	$(CP) $(CLIENTBIN) port-linux/debian/root/usr/sbin
-	$(CP) CHANGELOG port-linux/debian/root/usr/share/doc/dibbler/changelog
-	$(CP) RELNOTES port-linux/debian/root/usr/share/doc/dibbler
-	$(CP) VERSION port-linux/debian/root/usr/share/doc/dibbler
-	$(CP) port-linux/debian//copyright port-linux/debian/root/usr/share/doc/dibbler
-	$(CP) doc/dibbler-user.pdf port-linux/debian/root/usr/share/doc/dibbler
-	$(CP) doc/man/dibbler-server.8 port-linux/debian/root/usr/share/man/man8
-	$(CP) doc/man/dibbler-client.8 port-linux/debian/root/usr/share/man/man8
-	$(CP) *.conf port-linux/debian/root/var/lib/dibbler
-	@echo "[GZIP   ] port-linux/debian/root"
-	gzip -9 port-linux/debian/root/usr/share/doc/dibbler/changelog
-	gzip -9 port-linux/debian/root/usr/share/man/man8/dibbler-server.8
-	gzip -9 port-linux/debian/root/usr/share/man/man8/dibbler-client.8
-	@echo "[STRIP  ] port-linux/debian/root"
-	strip --remove-section=.comment port-linux/debian/root/usr/sbin/dibbler-server
-	strip --remove-section=.comment port-linux/debian/root/usr/sbin/dibbler-client
-	@echo "[CHOWN  ] port-linux/debian/root"
-	chown -R root:root port-linux/debian/root/usr
-	chown -R root:root port-linux/debian/root/var
-	@echo "[CHMOD  ] port-linux/debian/root"
-	find port-linux/debian/root/ -type d -exec chmod 755 {} \;
-	find port-linux/debian/root/ -type f -exec chmod 644 {} \;
-	chmod 755 port-linux/debian/root/usr/sbin/*
+	@echo "[RM     ] $(PORTDIR)/debian/root"
+	rm -rf $(PORTDIR)/debian/root
+	@echo "[MKDIR  ] $(PORTDIR)/debian/root"
+	$(MKDIR) $(PORTDIR)/debian/root/usr/sbin
+	$(MKDIR) $(PORTDIR)/debian/root/usr/share/doc/dibbler
+	$(MKDIR) $(PORTDIR)/debian/root/usr/share/man/man8
+	$(MKDIR) $(PORTDIR)/debian/root/var/lib/dibbler
+	$(MKDIR) $(PORTDIR)/debian/root/DEBIAN
+	@echo "[CP     ] $(PORTDIR)/debian/root"
+	$(CP) $(PORTDIR)/debian/dibbler-$(VERSION).control $(PORTDIR)/debian/root/DEBIAN/control
+	$(CP) $(SERVERBIN) $(PORTDIR)/debian/root/usr/sbin
+	$(CP) $(CLIENTBIN) $(PORTDIR)/debian/root/usr/sbin
+	$(CP) CHANGELOG $(PORTDIR)/debian/root/usr/share/doc/dibbler/changelog
+	$(CP) RELNOTES $(PORTDIR)/debian/root/usr/share/doc/dibbler
+	$(CP) VERSION $(PORTDIR)/debian/root/usr/share/doc/dibbler
+	$(CP) $(PORTDIR)/debian//copyright $(PORTDIR)/debian/root/usr/share/doc/dibbler
+	$(CP) doc/dibbler-user.pdf $(PORTDIR)/debian/root/usr/share/doc/dibbler
+	$(CP) doc/man/dibbler-server.8 $(PORTDIR)/debian/root/usr/share/man/man8
+	$(CP) doc/man/dibbler-client.8 $(PORTDIR)/debian/root/usr/share/man/man8
+	$(CP) *.conf $(PORTDIR)/debian/root/var/lib/dibbler
+	@echo "[GZIP   ] $(PORTDIR)/debian/root"
+	gzip -9 $(PORTDIR)/debian/root/usr/share/doc/dibbler/changelog
+	gzip -9 $(PORTDIR)/debian/root/usr/share/man/man8/dibbler-server.8
+	gzip -9 $(PORTDIR)/debian/root/usr/share/man/man8/dibbler-client.8
+	@echo "[STRIP  ] $(PORTDIR)/debian/root"
+	strip --remove-section=.comment $(PORTDIR)/debian/root/usr/sbin/dibbler-server
+	strip --remove-section=.comment $(PORTDIR)/debian/root/usr/sbin/dibbler-client
+	@echo "[CHOWN  ] $(PORTDIR)/debian/root"
+	chown -R root:root $(PORTDIR)/debian/root/usr
+	chown -R root:root $(PORTDIR)/debian/root/var
+	@echo "[CHMOD  ] $(PORTDIR)/debian/root"
+	find $(PORTDIR)/debian/root/ -type d -exec chmod 755 {} \;
+	find $(PORTDIR)/debian/root/ -type f -exec chmod 644 {} \;
+	chmod 755 $(PORTDIR)/debian/root/usr/sbin/*
 	@echo "[DPKG   ] dibbler_$(VERSION)_i386.deb"
-	cd port-linux/debian; dpkg-deb --build root 1>dpkg-deb.log
-	mv port-linux/debian/root.deb dibbler_$(VERSION)_i386.deb
+	cd $(PORTDIR)/debian; dpkg-deb --build root 1>dpkg-deb.log
+	mv $(PORTDIR)/debian/root.deb dibbler_$(VERSION)_i386.deb
 	@echo "[LINTIAN] dibbler_$(VERSION)_i386.deb"
-	lintian -i dibbler_$(VERSION)_i386.deb &> port-linux/debian/dibbler_$(VERSION)_i386.log
+	lintian -i dibbler_$(VERSION)_i386.deb &> $(PORTDIR)/debian/dibbler_$(VERSION)_i386.log
 
 release-rpm: VERSION-linux release-src
-	$(MKDIR) port-linux/redhat/BUILD
-	$(MKDIR) port-linux/redhat/RPMS/athlon
-	$(MKDIR) port-linux/redhat/RPMS/i386
-	$(MKDIR) port-linux/redhat/RPMS/i486
-	$(MKDIR) port-linux/redhat/RPMS/i586
-	$(MKDIR) port-linux/redhat/RPMS/i686
-	$(MKDIR) port-linux/redhat/RPMS/noarch
-	$(MKDIR) port-linux/redhat/SOURCES
-	$(MKDIR) port-linux/redhat/SPECS
-	$(MKDIR) port-linux/redhat/SRPMS
-	@echo "[CP     ] port-linux/redhat/SOURCES/dibbler-$(VERSION)-src.tar.gz"
-	$(CP) dibbler-$(VERSION)-src.tar.gz port-linux/redhat/SOURCES
-	@echo "[RPM    ] port-linux/redhat/SPEC/dibbler-$(VERSION).spec"
-	rpmbuild --define "_topdir `pwd`/port-linux/redhat" -bb port-linux/redhat/SPECS/dibbler-$(VERSION).spec
-	cd port-linux/redhat/RPMS/i386; for file in *; do \
+	$(MKDIR) $(PORTDIR)/redhat/BUILD
+	$(MKDIR) $(PORTDIR)/redhat/RPMS/athlon
+	$(MKDIR) $(PORTDIR)/redhat/RPMS/i386
+	$(MKDIR) $(PORTDIR)/redhat/RPMS/i486
+	$(MKDIR) $(PORTDIR)/redhat/RPMS/i586
+	$(MKDIR) $(PORTDIR)/redhat/RPMS/i686
+	$(MKDIR) $(PORTDIR)/redhat/RPMS/noarch
+	$(MKDIR) $(PORTDIR)/redhat/SOURCES
+	$(MKDIR) $(PORTDIR)/redhat/SPECS
+	$(MKDIR) $(PORTDIR)/redhat/SRPMS
+	@echo "[CP     ] $(PORTDIR)/redhat/SOURCES/dibbler-$(VERSION)-src.tar.gz"
+	$(CP) dibbler-$(VERSION)-src.tar.gz $(PORTDIR)/redhat/SOURCES
+	@echo "[RPM    ] $(PORTDIR)/redhat/SPEC/dibbler-$(VERSION).spec"
+	rpmbuild --define "_topdir `pwd`/$(PORTDIR)/redhat" -bb $(PORTDIR)/redhat/SPECS/dibbler-$(VERSION).spec
+	cd $(PORTDIR)/redhat/RPMS/i386; for file in *; do \
 	echo "[CP     ] $$file"; \
 	$(CP) $$file ../../../.. ; \
 	done

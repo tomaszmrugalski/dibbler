@@ -40,14 +40,14 @@ MKDIR        = mkdir -p
 CP           = cp
 
 PREFIX       = ..
-PORTDIR      = $(PREFIX)/port-linux
+PORTDIR      = $(PREFIX)/Port-linux
 INCDIR       = $(PREFIX)/include
 ADDRMGR      = $(PREFIX)/AddrMgr
 CFGMGR       = $(PREFIX)/CfgMgr
 IFACEMGR     = $(PREFIX)/IfaceMgr
 MESSAGES     = $(PREFIX)/Messages
 OPTIONS      = $(PREFIX)/Options
-MISC         = $(PREFIX)/misc
+MISC         = $(PREFIX)/Misc
 
 CLNTIFACEMGR= $(PREFIX)/ClntIfaceMgr
 CLNTTRANSMGR= $(PREFIX)/ClntTransMgr
@@ -65,7 +65,7 @@ SRVPARSER   = $(PREFIX)/SrvParser
 SRVMESSAGES = $(PREFIX)/SrvMessages
 SRVOPTIONS  = $(PREFIX)/SrvOptions
 
-COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include misc port-linux
+COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include Misc Port-linux
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
 SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
