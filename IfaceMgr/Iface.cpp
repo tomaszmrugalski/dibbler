@@ -174,6 +174,7 @@ char* TIfaceIface::getLLAddress() {
  * binds socket to one address only
  */
 bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly) {
+	std::clog << logger::logDebug << "Creating socket on " << *addr << " address." << std::endl;
     SmartPtr<TIfaceSocketIPv6> ptr = 
 	new TIfaceSocketIPv6(this->Name, this->ID, port, addr, ifaceonly);
     SocketsLst.append(ptr);
@@ -281,7 +282,7 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
     SmartPtr<TIfaceSocketIPv6> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {
-	strum << *sock;
+	strum << "    " << *sock;
     }
     strum << "  </IfaceIface>" << endl;
     return strum;
