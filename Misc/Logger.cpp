@@ -12,7 +12,7 @@ namespace logger {
     bool mute = false;
     string logname="Unknown";
     ofstream logfile;
-    ostream tmp;
+    ofstream tmp;
 
     ostream & endl (ostream & strum) {
 	if (!mute)

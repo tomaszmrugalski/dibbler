@@ -45,6 +45,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 	if (lexer.yycreate(&parser))
 	    result = parser.yyparse();
     }
+
 #endif
 
 #ifdef LINUX
