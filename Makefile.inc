@@ -101,6 +101,7 @@ clean:
 	find . -name *~ -exec rm {} \;
 	find . -name *.o -exec rm {} \;
 	find . -name test? -exec rm {} \;
+	if [ -d bison++/.deps ]; then rm -rf bison++/.deps; fi
 
 # === SUBDIR NAMES ===
 SUBDIR=$(subst $(TOPDIR),,$(CURDIR))
