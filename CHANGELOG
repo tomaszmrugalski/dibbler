@@ -2,7 +2,10 @@
   Dibbler changelog
  ------------------- 
  
- Next - not released yet
+ 0.3.1 [2004-12-27] (bugfix release)
+  - Documenatation (PDF files) now should look ok on all systems
+  - Linux: URLs in the manual are now visible (bugs #92, #93)
+  - Problem with interfaces without link local address (e.g. downed sit0) fixed (bugs #90, #91)
   - Linux: DEB packages are now generated (bugs #65, #66)
 
  0.3.0 [2004-12-16]

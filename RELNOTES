@@ -1,12 +1,16 @@
 
-  Dibbler 0.3.0 release notes [2004-12-16]
+  Dibbler 0.3.1 release notes [2004-12-27]
  ------------------------------------------
+
+ This version fixes bug with link local addresses on certain systems. 
+ DEB package for Debian systems is provided. Except that, it is almost 
+ identhical to 0.3.0, so here is 0.3.0 info:
   
- This version incorporates lots of fixes for bugs reported by various 
+ This [0.3.0] version incorporates lots of fixes for bugs reported by various 
  users. It is considered stable. All changes are mentioned in the
  CHANGELOG file. 
 
- This version is a first one which is also available as RPM package 
+ This [0.3.0] version is a first one which is also available as RPM package 
  for Linux and binary installer for Windows. Those installation methods
  are relatively new and untested, so the usual tar.gz version is also
  available.
