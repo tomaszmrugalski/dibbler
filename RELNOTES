@@ -1,39 +1,17 @@
 
-  Dibbler 0.4.0 release notes [NOT RELEASED YET]
+  Dibbler 0.4.0-RC1 release notes [2005-02-03]
  ------------------------------------------
 
- This version is the first one with relay support. Althougt I have spent many hours
- testing this and everything worked fine, I cannot guarantee that this will work
- for you. 
+ This version is the first one with relay support. Server supports relays. 
+ Stand alone relay is also available. Although I have spent many hours 
+ testing this and everything worked fine, I cannot guarantee that this will 
+ work for you. 
 
  Duplicate Address Detection does not work under Windows XP/2003. 
 
-
-
-
-
-  
-
-
- This version fixes bug with link local addresses on certain systems. 
- DEB package for Debian systems is provided. Except that, it is almost 
- identhical to 0.3.0, so here is 0.3.0 info:
-  
- This [0.3.0] version incorporates lots of fixes for bugs reported by various 
- users. It is considered stable. All changes are mentioned in the
- CHANGELOG file. 
-
- This [0.3.0] version is a first one which is also available as RPM package 
- for Linux and binary installer for Windows. Those installation methods
- are relatively new and untested, so the usual tar.gz version is also
- available.
-  
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 
  project website: http://klub.com.pl/dhcpv6/
-
- This release is dedicated to memory of my grandfather Brunon 
- Czurlowski, who passed out recently.
 
                                Tomasz Mrugalski,
                                author
