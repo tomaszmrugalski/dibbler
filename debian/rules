@@ -29,8 +29,8 @@ endif
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	echo "[PATCH ] 001_Makefile_usr_local"
-	patch -p0 < debian/patches/001_Makefile_usr_local
+#	echo "[PATCH ] 001_Makefile_usr_local"
+#	patch -p0 < debian/patches/001_Makefile_usr_local
 	# Add here commands to configure the package.
 
 	touch configure-stamp
