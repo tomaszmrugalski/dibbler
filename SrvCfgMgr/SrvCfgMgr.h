@@ -6,19 +6,17 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.6 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.7 2004-12-07 00:43:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.5  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
  * Revision 1.4  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
- *
- * Revision 1.3  2004/05/23 21:24:50  thomson
- * *** empty log message ***
- *
- *                                                                           
  */
 
 class TSrvCfgMgr;
@@ -39,8 +37,7 @@ class TSrvCfgMgr : public TCfgMgr
 {
 public:  
     friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
-    TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile,string oldCfgFile);
-    
+    TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile);
 
     bool parseConfigFile(string cfgFile);
 
@@ -63,19 +60,30 @@ public:
     void delClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
     void addClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
 
-    string getWorkDir();
     bool isDone();
     virtual ~TSrvCfgMgr();
+    bool setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt);
+
+    // configuration parameters
+    string getWorkdir();
+    bool stateless();
 
 private:    
+    string XmlFile;
+
     bool IsDone;
-    bool checkConfigConsistency();
-    string WorkDir;
+    bool validateConfig();
+    bool validateIface(SmartPtr<TSrvCfgIface> ptrIface);
+    bool validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfgAddrClass> ptrClass);
     string LogName;
     string LogLevel;
     List(TSrvCfgIface) SrvCfgIfaceLst;
     SmartPtr<TSrvIfaceMgr> IfaceMgr;
     bool matchParsedSystemInterfaces(SrvParser *parser);
+
+    // global options
+    string Workdir;
+    bool Stateless;
 };
 
 #endif /* SRVCONFMGR_H */

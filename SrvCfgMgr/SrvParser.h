@@ -265,11 +265,12 @@ typedef
 #define	IFACE_MAX_LEASE_	287
 #define	CLASS_MAX_LEASE_	288
 #define	CLNT_MAX_LEASE_	289
-#define	STRING_	290
-#define	HEXNUMBER_	291
-#define	INTNUMBER_	292
-#define	IPV6ADDR_	293
-#define	DUID_	294
+#define	STATELESS_	290
+#define	STRING_	291
+#define	HEXNUMBER_	292
+#define	INTNUMBER_	293
+#define	IPV6ADDR_	294
+#define	DUID_	295
 
 
 #line 169 "../bison++/bison.h"
@@ -350,6 +351,7 @@ static const int RAPID_COMMIT_;
 static const int IFACE_MAX_LEASE_;
 static const int CLASS_MAX_LEASE_;
 static const int CLNT_MAX_LEASE_;
+static const int STATELESS_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -395,11 +397,12 @@ static const int DUID_;
 	,IFACE_MAX_LEASE_=287
 	,CLASS_MAX_LEASE_=288
 	,CLNT_MAX_LEASE_=289
-	,STRING_=290
-	,HEXNUMBER_=291
-	,INTNUMBER_=292
-	,IPV6ADDR_=293
-	,DUID_=294
+	,STATELESS_=290
+	,STRING_=291
+	,HEXNUMBER_=292
+	,INTNUMBER_=293
+	,IPV6ADDR_=294
+	,DUID_=295
 
 
 #line 215 "../bison++/bison.h"

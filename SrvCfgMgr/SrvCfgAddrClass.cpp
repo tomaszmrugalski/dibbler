@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.17 2004-12-03 20:51:42 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.18 2004-12-07 00:43:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.16  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -193,6 +196,36 @@ long TSrvCfgAddrClass::decrAssigned(int count) {
 
 unsigned long TSrvCfgAddrClass::getAssignedCount() {
     return this->AddrsAssigned;
+}
+
+bool TSrvCfgAddrClass::isLinkLocal() {
+    SmartPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::",true);
+    if (this->addrInPool(addr)) {
+	Log(Crit) << "Link local address (fe80::) belongs to the class." << LogEnd;
+	return true;
+    }
+
+    addr = new TIPv6Addr("fe80:ffff:ffff:ffff:ffff:ffff:ffff:ffff", true);
+    if (this->addrInPool(addr)) {
+	Log(Crit) << "Link local address (fe80:ffff:ffff:ffff:ffff:ffff:ffff:ffff) belongs to the class." << LogEnd;
+	return true;
+    }
+
+    addr = this->Pool->getAddrL();
+    char linklocal[] = { 0xfe, 0x80};
+
+    if (!memcmp(addr->getAddr(), linklocal,2)) {
+	Log(Crit) << "Staring address " << addr->getPlain() << " is link-local." << LogEnd;
+	return true;
+    }
+    
+    addr = this->Pool->getAddrR();
+    if (!memcmp(addr->getAddr(), linklocal,2)) {
+	Log(Crit) << "Ending address " << addr->getPlain() << " is link-local." << LogEnd;
+	return true;
+    }
+
+    return false;
 }
 
 ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)

@@ -17,10 +17,12 @@ public:
     ~TSrvParsGlobalOpt(void);
 
     string getWorkDir();
-
     void setWorkDir(string dir);
+    void setStateless(bool stateless);
+    bool getStateless();
 	
 private:
-	string	WorkDir;
+    string WorkDir;
+    bool Stateless;
 };
 #endif

@@ -68,6 +68,7 @@ virtual ~SrvParser();
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
 %token IFACE_MAX_LEASE_, CLASS_MAX_LEASE_, CLNT_MAX_LEASE_
+%token STATELESS_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -428,12 +429,20 @@ WorkDirOption
 }
 ;
 
+StatelessOption
+: STATELESS_
+{
+    ParserOptStack.getLast()->setStateless(true);
+}
+;
+
 GlobalOptionDeclaration
 : InterfaceOptionDeclaration
 | LogModeOption
 | LogLevelOption
 | LogNameOption
 | WorkDirOption
+| StatelessOption
 ;
 
 InterfaceOptionDeclaration

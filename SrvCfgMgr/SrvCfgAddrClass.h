@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.10 2004-10-25 20:45:53 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.11 2004-12-07 00:43:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.9  2004/09/08 21:22:45  thomson
  * Parser improvements, signed/unsigned issues addressed.
  *
@@ -70,6 +73,8 @@ class TSrvCfgAddrClass
     unsigned long getValid(long clntValid);
     unsigned long getClassMaxLease();
     unsigned long getID();
+
+    bool isLinkLocal();
 
     unsigned long getAssignedCount();
     long incrAssigned(int count=1);

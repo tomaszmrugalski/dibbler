@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.27 2004-12-02 00:51:05 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.28 2004-12-07 00:43:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/12/02 00:51:05  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.26  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -70,7 +73,7 @@ using namespace std;
 #include "FlexLexer.h"
 #include "SrvParser.h"
 
-TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string oldCfgFile)
+TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile)
     :TCfgMgr((Ptr*)ifaceMgr)
 {
     this->IfaceMgr = ifaceMgr;
@@ -82,7 +85,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     }
 
     // load or create DUID
-    string duidFile = this->WorkDir+"/"+(string)SRVDUID_FILE;
+    string duidFile = this->Workdir+"/"+(string)SRVDUID_FILE;
     if (!this->setDUID(duidFile)) {
 		this->IsDone=true;
 		return;
@@ -90,6 +93,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 
     Log(Info) << "My duid is " << this->DUID->getPlain() << "." << LogEnd;
 
+    this->XmlFile = xmlFile;
     this->dump();
 
     IsDone = false;
@@ -98,13 +102,6 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     int result;
     ifstream f;
-    
-    /* support for config changes between runs - currently disabled */
-    //newConf=true if files differs
-    //newConf=compareConfigs(cfgFile,oldCfgFile);
-    //if(newConf) 
-    //   this->copyFile(cfgFile,oldCfgFile);
-    /* support for config changes between runs - currently disabled */
 
     // parse config file
     f.open( cfgFile.c_str() );
@@ -125,26 +122,41 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
         return false;
     }
 
-    // setup workdir
-    this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
+    // setup global options
+    this->setupGlobalOpts(parser.ParserOptStack.getLast());
     
     // analyse interfaces mentioned in config file
     if (!this->matchParsedSystemInterfaces(&parser)) {
+	this->IsDone = true;
 	return false;
     }
     
     // check for invalid values, e.g. T1>T2
-    if(!checkConfigConsistency()) {
+    if(!validateConfig()) {
+	this->IsDone = true;
         return false;
     }
+    
+    if (this->stateless()) {
+	Log(Notice) << "Running in stateless mode." << LogEnd;
+    } else {
+	Log(Notice) << "Running in stateful mode." << LogEnd;
+    }
+
     return true;
 }
 
 void TSrvCfgMgr::dump() {
     std::ofstream xmlDump;
-    xmlDump.open(SRVCFGMGR_FILE);
+    xmlDump.open(this->XmlFile.c_str());
     xmlDump << *this;
     xmlDump.close();
+}
+
+bool TSrvCfgMgr::setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt) {
+    this->Workdir   = opt->getWorkDir();
+    this->Stateless = opt->getStateless();
+    return true;
 }
 
 /*
@@ -161,33 +173,26 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
     
     parser->SrvCfgIfaceLst.first();
     while(cfgIface=parser->SrvCfgIfaceLst.get()) {
-		// for each interface from config file
-		if (cfgIface->getID()==-1) {
-			// ID==-1 means that user referenced to interface by name
-			ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
-		} else {
-		    ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
-		}
-		if (!ifaceIface) {
-		    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			      << " specified in " << SRVCONF_FILE 
-			      << " is not present in the system or does not support IPv6."
-			      << LogEnd;
-			this->IsDone = true;
-			return false;
-		}
-		cfgIface->setName(ifaceIface->getName());
-		cfgIface->setID(ifaceIface->getID());
-		this->addIface(cfgIface);
-		Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			  << " has been configured." << LogEnd;
+	// for each interface from config file
+	if (cfgIface->getID()==-1) {
+	    // ID==-1 means that user referenced to interface by name
+	    ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
+	} else {
+	    ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
+	}
+	if (!ifaceIface) {
+	    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+		      << " specified in " << SRVCONF_FILE 
+		      << " is not present in the system or does not support IPv6."
+		      << LogEnd;
+	    return false;
+	}
+	cfgIface->setName(ifaceIface->getName());
+	cfgIface->setID(ifaceIface->getID());
+	this->addIface(cfgIface);
+	Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+		  << " configuration has been loaded." << LogEnd;
     }
-
-    if (!cfgIfaceCnt) {
-		Log(Crit) << "No interfaces defined. Server startup aborted." << LogEnd;
-		return false;
-    }
-
     return true;
 }
 
@@ -195,8 +200,8 @@ SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIface() {
 	return this->SrvCfgIfaceLst.get();
 }
 
-string TSrvCfgMgr::getWorkDir() {
-    return WorkDir;
+string TSrvCfgMgr::getWorkdir() {
+    return Workdir;
 }
 
 void TSrvCfgMgr::addIface(SmartPtr<TSrvCfgIface> ptr) {
@@ -233,8 +238,7 @@ long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid,
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-	Log(Crit) << "Interface " << iface << " does not exist in SrvCfgMgr" 
-		  << LogEnd;
+	Log(Error) << "Interface " << iface << " does not exist in SrvCfgMgr." << LogEnd;
 	return 0;
     }
 
@@ -331,52 +335,73 @@ bool TSrvCfgMgr::isDone() {
     return IsDone;
 }
 
-bool TSrvCfgMgr::checkConfigConsistency() {
+bool TSrvCfgMgr::validateConfig() {
     SmartPtr<TSrvCfgIface> ptrIface;
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+
+    if (!this->countIface()) {
+	Log(Crit) << "Config problem: No interface defined." << LogEnd;
+	return false;
+    }
+
     firstIface();
-    while(ptrIface=getIface())
-    {
-        TTimeZone tzone(ptrIface->getTimezone());
-        if ((ptrIface->getTimezone()!="")&&(!tzone.isValid()))
-        {
-	    Log(Crit)
-                << "Not appropiate time zone option for iface(id/name) "
-                <<ptrIface->getID()<<"/"<<ptrIface->getName()
-                <<" is provided." << LogEnd;
-            return !(this->IsDone=true);
-        }
-        
-        ptrIface->firstAddrClass();
-        while(ptrClass=ptrIface->getAddrClass())
-        {
-            if (ptrClass->getPref(0)>ptrClass->getValid(0x7fffffff))
-            {
-		Log(Crit)
-                    <<"Prefered time upper bound:" <<ptrClass->getPref(0x7fffffff)
-                    <<"can't be lower than valid time lower bound:"
-                    <<ptrClass->getValid(0)
-                    <<"for iface(id/name)"<<ptrIface->getID()<<"/"
-                    <<ptrIface->getName() << LogEnd;
-                return !(this->IsDone=true);
-            }
-            if (ptrClass->getT1(0)>ptrClass->getT2(0x7fffffff))
-            {
-		Log(Crit)
-                    <<"T2 timeout upper bound:" <<ptrClass->getPref(0x7fffffff)
-                    <<"can't be lower than T2 lower bound:"
-                    <<ptrClass->getT2(0)
-                    <<"for iface(id/name)"<<ptrIface->getID()<<"/"
-                    <<ptrIface->getName() << LogEnd;
-                return !(IsDone=true);
-            }
-        }
+    while(ptrIface=getIface()) {
+	if (!this->validateIface(ptrIface))
+	    return false;
     }
     return true;
-
-    //FIXME: fail, if configured class is multicast or link-local
 }
 
+bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
+{
+    if (ptrIface->countAddrClass() && this->stateless()) {
+	Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
+		  << ": Class definitions present, but stateless mode set." << LogEnd;
+	return false;
+    }
+    if (!ptrIface->countAddrClass() && !this->stateless()) {
+	Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
+		  << ": No class definitions present, but stateless mode not set." << LogEnd;
+	return false;
+    }
+
+    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    ptrIface->firstAddrClass();
+    while(ptrClass=ptrIface->getAddrClass()) {
+	if (!this->validateClass(ptrIface, ptrClass)) {
+	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
+		      << ": Invalid class defined." << LogEnd;
+	    return false;
+	}
+    }
+    return true;
+}
+
+bool TSrvCfgMgr::validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfgAddrClass> ptrClass)
+{
+    if (ptrClass->isLinkLocal()) {
+	Log(Crit) << "One of the classes defined on the " << ptrIface->getName() << "/" << ptrIface->getID()
+		  << " overlaps with link local addresses." << LogEnd;
+	return false;
+    }
+    
+    if ( ptrClass->getPref(0) > ptrClass->getValid(0x7fffffff) )
+    {
+	Log(Crit) << "Prefered time upper bound " <<ptrClass->getPref(0x7fffffff)
+		  << "can't be lower than valid time lower bound:" << ptrClass->getValid(0)
+		  << "on the "<<ptrIface->getName()<<"/"
+		  << ptrIface->getID() << " interface." << LogEnd;
+	return false;
+    }
+    if ( ptrClass->getT1(0)>ptrClass->getT2(0x7fffffff) )
+    {
+	Log(Crit) << "T2 timeout upper bound:" <<ptrClass->getPref(0x7fffffff)
+		  << "can't be lower than T2 lower bound:" << ptrClass->getT2(0)
+		  << "on the "<<ptrIface->getName()<<"/"
+		  << ptrIface->getID() << " interface." << LogEnd;
+	return false;
+    }
+    return true;
+}
 
 SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
     SmartPtr<TSrvCfgIface> ptrIface;
@@ -413,18 +438,28 @@ void TSrvCfgMgr::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
     ptrIface->addClntAddr(addr);
 }
 
+bool TSrvCfgMgr::stateless() {
+    return this->Stateless;
+}
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
 ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
-	out << "<SrvCfgMgr>" << std::endl;
-	SmartPtr<TSrvCfgIface> ptrIface;
-	x.firstIface();
-	while (ptrIface = x.getIface()) {
-		out << *ptrIface;
-	}
-	out << "</SrvCfgMgr>" << std::endl;
-	return out;
+    out << "<SrvCfgMgr>" << std::endl;
+    out << "  <workdir>" << x.getWorkdir() << "</workdir>" << std::endl;
+    if (x.stateless())
+	out << "  <stateless/>" << std::endl;
+    else
+	out << "  <!-- <stateless/> -->" << std::endl;
+    
+    SmartPtr<TSrvCfgIface> ptrIface;
+    x.firstIface();
+    while (ptrIface = x.getIface()) {
+	out << *ptrIface;
+    }
+    out << "</SrvCfgMgr>" << std::endl;
+    return out;
 }
