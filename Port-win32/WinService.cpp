@@ -6,9 +6,12 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.11 2005-02-01 18:26:45 thomson Exp $
+ * $Id: WinService.cpp,v 1.12 2005-02-01 18:36:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/02/01 18:26:45  thomson
+ * no message
+ *
  * Revision 1.10  2004/12/02 00:51:06  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -242,20 +245,22 @@ bool TWinService::Uninstall()
 	}
     bool result = false;
     SC_HANDLE hService = ::OpenService(hSCM,ServiceName,DELETE);
+    if (!hService) {
+        Log(Crit) << "Unable to open " << ServiceName << " service for deletion." << LogEnd;
+        CloseServiceHandle(hSCM);
+        return false;
+    }
 
-    if (hService) 
-	{
-        if (DeleteService(hService)) 
-		{
-            result = true;
-		} else {
-			printf("DeleteService(hService) failed.\n");
-		}
-		CloseServiceHandle(hService);
-	} else {
-		printf("Unable to open %s service.\n",ServiceName);
+    if (!DeleteService(hService)) {
+        Log(Crit) << "Unable to delete " << ServiceName << " service." << LogEnd;
+    	CloseServiceHandle(hService);
+        CloseServiceHandle(hSCM);
+        return false;
 	}
+
+    CloseServiceHandle(hService);
     CloseServiceHandle(hSCM);
+    Log(Notice) << "Service " << ServiceName << " has been uninstalled." << LogEnd;
     return result;
 }
 
@@ -336,31 +341,58 @@ int TWinService::getStatus() {
 }
 
 bool TWinService::isRunning(const char * name) {
-    bool result = false;
-	bool ok;
+    DWORD state = 0;
+
     // Open the Service Control Manager
     SC_HANDLE hSCM = ::OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
-    if (hSCM) {
-        // Try to open the service
-        SC_HANDLE hService = OpenService(hSCM,name,SERVICE_QUERY_CONFIG);
-        if (hService) {
-			LPSERVICE_STATUS lpServiceStatus = 0;
-			ok = ControlService(hService, SERVICE_CONTROL_INTERROGATE,lpServiceStatus);
-			result = true;
-            CloseServiceHandle(hService);
-        }
-        CloseServiceHandle(hSCM);
+    if (!hSCM) {
+	Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
+	return false;
     }
-    return result;
+
+    // Try to open the service
+    SC_HANDLE hService = OpenService(hSCM,name, GENERIC_READ);
+    if (!hService) {
+	Log(Crit) << "Unable to open " << name << " service." << LogEnd;
+	CloseServiceHandle(hSCM);
+	return false;
+    }
+
+    SERVICE_STATUS service;
+    LPSERVICE_STATUS ptr = &service;
+    memset((void*)&service,0, sizeof(SERVICE_STATUS) );
+    if (QueryServiceStatus(hService, ptr)) {
+	state = ptr->dwCurrentState;
+    } 
+    CloseServiceHandle(hService);
+    CloseServiceHandle(hSCM);
+    
+    switch (state) {
+    case SERVICE_STOPPED:
+        return false;
+    case SERVICE_RUNNING:
+        return true;
+    case SERVICE_START_PENDING:
+    default:
+        return false;
+    }
+    return false;
 }
 
 void TWinService::showStatus() {
-    bool serverInstalled, clientInstalled;
-    serverInstalled = this->IsInstalled("DHCPv6Server");
-    clientInstalled = this->IsInstalled("DHCPv6Client");
-    
-    // FIXME
-    Log(Notice) <<  "Dibbler server :" << (serverInstalled?"INSTALLED":"NOT INSTALLED") << LogEnd;
-    Log(Notice) <<  "Dibbler client :" << (clientInstalled?"INSTALLED":"NOT INSTALLED") << LogEnd;
-    Log(Notice) << "Client running: " << (this->isRunning("DHCPv6Client") ? "YES":"NO") << LogEnd;
+    bool serverInst, clientInst, relayInst;
+    bool serverRun,  clientRun, relayRun;
+    serverInst = this->IsInstalled("DHCPv6Server");
+    clientInst = this->IsInstalled("DHCPv6Client");
+    relayInst  = this->IsInstalled("DHCPv6Relay");
+    relayRun   = this->isRunning("DHCPV6Relay");
+    serverRun  = this->isRunning("DHCPv6Server");
+    clientRun  = this->isRunning("DHCPv6Client");
+
+    Log(Notice) <<  "Dibbler server installed: " << (serverInst? "INSTALLED":"NOT INSTALLED") << LogEnd;
+    Log(Notice) <<  "Dibbler server running  : " << (serverRun ? "RUNNING":"NOT RUNNING") << LogEnd;
+    Log(Notice) <<  "Dibbler client installed: " << (clientInst? "INSTALLED":"NOT INSTALLED") << LogEnd;
+    Log(Notice) <<  "Dibbler client running  : " << (clientRun ? "RUNNING":"NOT RUNNING") << LogEnd;
+    Log(Notice) <<  "Dibbler relay installed : " << (relayInst ? "INSTALLED":"NOT INSTALLED") << LogEnd;
+    Log(Notice) <<  "Dibbler relay running   : " << (relayRun  ? "RUNNING":"NOT RUNNING") << LogEnd;
 }
