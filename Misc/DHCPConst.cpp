@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.4 2004-10-25 20:45:54 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.5 2004-12-08 01:08:51 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.3  2004/09/07 17:42:31  thomson
  * Server Unicast implemented.
  *
@@ -25,7 +28,7 @@ bool OptInMsg[13][20] = {
 //           Client Server  IA_NA IA_TA IAAddr Option  Pref  Elap  Relay  Empty Auth. Server  Status  Rap. User  Vendor Vendor Inter. Recon. Recon.
 //             ID     ID                       Request       Time  Msg.   Empty       Unica.   Code  Comm. Class Class  Spec.    ID    Msg.  Accept
 /*Solicit */ {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  true, true, true,  true, false, false,true },
-/*Advertise*/{true,  true , true,  true, false, false,true , false,false, false,true, false, true ,  false,true, true,  true, false, false,true },
+/*Advertise*/{true,  true , true,  true, false, false,true , false,false, false,true, true,  true ,  false,true, true,  true, false, false,true },
 /*Request*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,true },                
 /*Confirm*/  {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
 /*Renew*/    {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false, true},
