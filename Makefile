@@ -133,7 +133,7 @@ VERSION-linux:
 VERSION-win:
 	echo " Operating system " >  VERSION
 	echo "------------------" >> VERSION
-	echo " Windows XP"        >> VERSION
+	echo " Windows XP/2003"   >> VERSION
 	echo >> VERSION
 
 	echo " Version " >> VERSION
@@ -180,13 +180,13 @@ release:
 release-linux: VERSION-linux
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                    \
 		$(SERVERBIN) $(CLIENTBIN) client*.conf server*.conf \
-		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
+		CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf
 
 release-win32: VERSION-win
 	tar czvf dibbler-$(VERSION)-win32.tar.gz                  \
-		dibbler-server.exe dibbler-client                 \
+		dibbler-server.exe dibbler-client.exe             \
                 client*.conf server*.conf                         \
-		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
+		CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf
 
 release-src: VERSION-src
 	$(MAKE) clean
