@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptDomainName.cpp,v 1.8 2004-10-27 22:07:56 thomson Exp $
+ * $Id: ClntOptDomainName.cpp,v 1.9 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.7  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -54,6 +58,10 @@ bool TClntOptDomainName::doDuties() {
 	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
 	return false;
     }
+
+    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    cfgIface->setDomainState(CONFIGURED);
 
     return iface->setDomainLst(this->DUID, addr, this->StringLst);
 }

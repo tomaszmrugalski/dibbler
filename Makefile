@@ -195,9 +195,12 @@ release-src: VERSION-src
 	find . -name \*.tex >> file-list
 	find . -name \*.l >> file-list
 	find . -name \*.y >> file-list
-	find . -name bison++/\* >> file-list
-	find . -name port-winxp/\* >> file-list
-	xargs tar czvf dibbler-$(VERSION)-src.tar.gz < file-list
+	find bison++ -name \* >> file-list
+	find port-winxp -name \* >> file-list
+#	xargs tar czvf dibbler-$(VERSION)-src.tar.gz < file-list
+	tar czvf ../dibbler-$(VERSION)-src.tar.gz .
+	mv ../dibbler-$(VERSION)-src.tar.gz .
+	echo "File is stored in dibbler-$(VERSION)-src.tar.gz"
 
 release-doc: VERSION-src doc
 	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG doc/*.pdf

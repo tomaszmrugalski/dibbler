@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.26 2004-10-25 20:45:54 thomson Exp $
+ * $Id: Portable.h,v 1.27 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.25  2004/10/03 21:53:15  thomson
  * strncasecmp macro added (win32)
  *
@@ -34,8 +37,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.2.0-RC1-CVS (" __DATE__ " " __TIME__ ")"
-//#define DIBBLER_VERSION "0.2.1-RC1"
+#define DIBBLER_VERSION "0.3.0-RC1-CVS (" __DATE__ " " __TIME__ ")"
+//#define DIBBLER_VERSION "0.3.0-RC1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson@klub.com.pl>,Marek Senderski<msend@o2.pl>"
@@ -90,6 +93,18 @@
 #define NULLFILE          "/dev/null"
 #endif
 
+// --- options ---
+#define OPTION_DNS_SERVERS_FILENAME  "option-dns-servers"
+#define OPTION_DOMAINS_FILENAME      "option-domains"
+#define OPTION_NTP_SERVERS_FILENAME  "option-ntp-servers"
+#define OPTION_TIMEZONE_FILENAME     "option-timezone"
+#define OPTION_SIP_SERVERS_FILENAME  "option-sip-servers"
+#define OPTION_SIP_DOMAINS_FILENAME  "option-sip-domains"
+#define OPTION_NIS_SERVERS_FILENAME  "option-nis-servers"
+#define OPTION_NIS_DOMAIN_FILENAME   "option-nis-domain"
+#define OPTION_NISP_SERVERS_FILENAME "option-nisplus-servers"
+#define OPTION_NISP_DOMAIN_FILENAME  "option-nisplus-domain"
+
 // **********************************************************************
 // *** interface flags **************************************************
 // **********************************************************************
@@ -136,11 +151,12 @@ extern struct iface * if_list_get();
 extern void if_list_release(struct iface * list);
     
 /* add address to interface */
-extern int ipaddr_add(char* ifacename, int ifaceid, char* addr, long pref, long valid);
-extern int ipaddr_del(char* ifacename, int ifaceid, char* addr);
+extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
+		      unsigned long pref, unsigned long valid);
+extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr);
 
 /* add socket to interface */
-extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly);
+extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse);
 extern int sock_del(int fd);
 extern int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface);
 extern int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen);
@@ -157,12 +173,27 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
 extern void microsleep(int microsecs);
 
 /* DNS */
-extern int dns_add(const char* ifname, int ifaceid, char* addrPlain);
-extern int dns_del(const char* ifname, int ifaceid, char* addrPlain);
-extern int dns_del_all();
-extern int domain_add(const char* ifname, int ifaceid, char* domain);
-extern int domain_del(const char* ifname, int ifaceid, char* domain);
-extern int domain_del_all();
+extern int dns_add(const char* ifname, int ifindex, const char* addrPlain);
+extern int dns_del(const char* ifname, int ifindex, const char* addrPlain);
+extern int domain_add(const char* ifname, int ifindex, const char* domain);
+extern int domain_del(const char* ifname, int ifindex, const char* domain);
+extern int ntp_add(const char* ifname, int ifindex, const char* addrPlain);
+extern int ntp_del(const char* ifname, int ifindex, const char* addrPlain);
+extern int timezone_set(const char* ifname, int ifindex, const char* timezone);
+extern int timezone_del(const char* ifname, int ifindex, const char* timezone);
+extern int sipserver_add(const char* ifname, int ifindex, const char* addrPlain);
+extern int sipserver_del(const char* ifname, int ifindex, const char* addrPlain);
+extern int sipdomain_add(const char* ifname, int ifindex, const char* domain);
+extern int sipdomain_del(const char* ifname, int ifindex, const char* domain);
+extern int nisserver_add(const char* ifname, int ifindex, const char* addrPlain);
+extern int nisserver_del(const char* ifname, int ifindex, const char* addrPlain);
+extern int nisdomain_set(const char* ifname, int ifindex, const char* domain);
+extern int nisdomain_del(const char* ifname, int ifindex, const char* domain);
+
+extern int nisplusserver_add(const char* ifname, int ifindex, const char* addrPlain);
+extern int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain);
+extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
+extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
 
 #ifdef __cplusplus
 }

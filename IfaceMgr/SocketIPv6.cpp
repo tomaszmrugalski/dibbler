@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.11 2004-10-27 22:07:56 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.12 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.10  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -58,12 +62,12 @@ int TIfaceSocket::Count=0;
  * @param ifaceonly - force interface-only flag in setsockopt()
  */
 TIfaceSocket::TIfaceSocket(char * iface, int ifaceid, int port,
-				   SmartPtr<TIPv6Addr> addr, bool ifaceonly) { 
+				   SmartPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse) { 
     if (this->Count==0) {
 	FD_ZERO(getFDS());
     }
     this->Count++;
-    this->createSocket(iface, ifaceid, addr, port, ifaceonly);
+    this->createSocket(iface, ifaceid, addr, port, ifaceonly, reuse);
 }
 
 enum EState TIfaceSocket::getStatus() {
@@ -78,7 +82,7 @@ enum EState TIfaceSocket::getStatus() {
  * @param port - port, to which socket will be bound
  * @param ifaceonly - force interface-only flag in setsockopt()
  */
-TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly) {
+TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly, bool reuse) {
     if (this->Count==0) {
 	FD_ZERO(getFDS());
     }
@@ -86,7 +90,7 @@ TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly) {
     // bind it to any address (::)
     char anyaddr[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     SmartPtr<TIPv6Addr> smartAny (new TIPv6Addr(anyaddr));   
-    this->createSocket(iface, ifaceid, smartAny, port, ifaceonly);
+    this->createSocket(iface, ifaceid, smartAny, port, ifaceonly, reuse);
     this->Count++;
 }
 
@@ -100,7 +104,7 @@ TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly) {
  * returns error code (or 0 if everything is ok)
  */
 int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 
-				   int port, bool ifaceonly) {
+				   int port, bool ifaceonly, bool reuse) {
     int sock;
 
     // store info about this socket 
@@ -119,7 +123,7 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
 
     // create socket
     sock = sock_add(this->Iface, this->IfaceID, addr->getPlain(), 
-		    this->Port, (int)this->IfaceOnly);
+		    this->Port, ifaceonly?1:0, reuse?1:0);
 
     // detect errors
     switch (sock) {

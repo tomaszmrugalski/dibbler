@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.4 2004-10-25 20:45:52 thomson Exp $
+ * $Id: ClntParsIfaceOpt.cpp,v 1.5 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/10/25 20:45:52  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.3  2004/10/02 13:11:24  thomson
  * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
  * Unicast communication now can be enable on client side (disabled by default).
@@ -22,6 +25,7 @@
 #include "ClntParsIfaceOpt.h"
 #include <iostream>
 #include <iomanip>
+#include "Logger.h"
 
 using namespace std;
 
@@ -127,7 +131,7 @@ bool TClntParsIfaceOpt::getReqNTPServer(){
 }
 
 // --- option: Timezone ---
-void TClntParsIfaceOpt::setTimezone(string TimeZone) { 
+void TClntParsIfaceOpt::setTimezone(string Timezone) { 
     this->Timezone=Timezone;
     this->ReqTimezone=true;
 }

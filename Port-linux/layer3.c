@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.16 2004-10-25 20:45:54 thomson Exp $
+ * $Id: layer3.c,v 1.17 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.15  2004/09/28 17:31:24  thomson
  * Multicast hops are no longer set.
  *
@@ -234,7 +237,7 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
  * adds or deletes addresses to interface
  */
 
-int ipaddr_add_or_del(char * addr, char *ifacename,int add)
+int ipaddr_add_or_del(const char * addr, const char *ifacename, int add)
 {
 	struct rtnl_handle rth;
 	struct {
@@ -256,7 +259,7 @@ int ipaddr_add_or_del(char * addr, char *ifacename,int add)
 	req.ifa.ifa_family = AF_INET6;
 	req.ifa.ifa_flags = 0;
 
-	get_prefix_1(&lcl, addr, AF_INET6);
+	get_prefix_1(&lcl, (char*)addr, AF_INET6);
 
 	addattr_l(&req.n, sizeof(req), IFA_LOCAL, &lcl.data, lcl.bytelen);
 	local_len = lcl.bytelen;
@@ -275,7 +278,7 @@ int ipaddr_add_or_del(char * addr, char *ifacename,int add)
 	ll_init_map(&rth);
 
 	// is there an interface with this ifindex?
-	if ((req.ifa.ifa_index = ll_name_to_index(ifacename)) == 0) {
+	if ((req.ifa.ifa_index = ll_name_to_index((char*)ifacename)) == 0) {
 	    //fprintf(stderr, "Cannot find device \"%s\"\n", ifacename);
 	    return -1;
 	}
@@ -283,17 +286,18 @@ int ipaddr_add_or_del(char * addr, char *ifacename,int add)
 	return 0;
 }
 
-int ipaddr_add(char * ifacename, int ifaceid, char * addr, long pref, long valid)
+int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
+	       unsigned long valid)
 {
     return ipaddr_add_or_del(addr,ifacename,1);
 }
 
-int ipaddr_del(char * ifacename, int ifaceid, char * addr)
+int ipaddr_del(const char * ifacename, int ifaceid, const char * addr)
 {
     return ipaddr_add_or_del(addr,ifacename,0);
 }
 
-int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly)
+int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly, int reuse)
 {
     int error;
     int on = 1;
@@ -344,10 +348,10 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     }
 
     // allow address reuse (this option sucks - why allow running multiple servers?)
-//    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
-//	// Unable to set up socket option SO_REUSEADDR
-//	return -9;
-//    }
+    if ( (reuse!=0) && (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) )  {
+	// Unable to set up socket option SO_REUSEADDR
+	return -9;
+    }
 
     // bind socket to a specified port
     struct sockaddr_in6 bindme;

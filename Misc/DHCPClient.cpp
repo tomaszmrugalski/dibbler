@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.13 2004-10-27 22:07:55 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.14 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.12  2004/10/25 20:45:52  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -104,11 +108,12 @@ void TDHCPClient::run()
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
                 Log(Cont) << " " << ptrOpt->getOptType(); 
-            Log(Cont) << logger::endl;
+            Log(Cont) << LogEnd;
 	    
             TransMgr->relayMsg(msg);
         }
     }
+    Log(Notice) << "Bye bye." << LogEnd;
 }
 
 bool TDHCPClient::isDone() {

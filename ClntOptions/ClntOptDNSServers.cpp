@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptDNSServers.cpp,v 1.9 2004-10-27 22:07:56 thomson Exp $
+ * $Id: ClntOptDNSServers.cpp,v 1.10 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.8  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -44,8 +48,6 @@ TClntOptDNSServers::TClntOptDNSServers(char* buf, int size, TMsg* parent)
 
 bool TClntOptDNSServers::doDuties()
 {
-    //Log(Debug) << "### PeerAddr3=" << this->Parent->getAddr() << LogEnd;
-
     string reason = "trying to set DNS server(s).";
     int ifindex = this->Parent->getIface();
     SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.12 2004-09-07 15:37:44 thomson Exp $
+ * $Id: Iface.cpp,v 1.13 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  * Revision 1.11  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -202,10 +205,10 @@ char* TIfaceIface::getLLAddress() {
 /*
  * binds socket to one address only
  */
-bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly) {
+bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse) {
     // Log(Debug) << "Creating socket on " << *addr << " address." << LogEnd;
     SmartPtr<TIfaceSocket> ptr = 
-	new TIfaceSocket(this->Name, this->ID, port, addr, ifaceonly);
+	new TIfaceSocket(this->Name, this->ID, port, addr, ifaceonly, reuse);
     if (ptr->getStatus()!=CONFIGURED) {
 	return false;
     }
@@ -216,9 +219,9 @@ bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly) {
 /*
  * binds socket on whole interface
  */
-bool TIfaceIface::addSocket(int port, bool ifaceonly) {
+bool TIfaceIface::addSocket(int port, bool ifaceonly, bool reuse) {
     SmartPtr<TIfaceSocket> ptr = 
-	new TIfaceSocket(this->Name, this->ID, port, ifaceonly);
+	new TIfaceSocket(this->Name, this->ID, port, ifaceonly, reuse);
     if (ptr->getStatus()!=CONFIGURED) {
 	return false;
     }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.14 2004-10-25 20:45:53 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.15 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.13  2004/09/28 20:33:57  thomson
  * Address check in WIN32 should be disabled.
  *
@@ -168,8 +171,9 @@ SmartPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
 int TIfaceMgr::select(unsigned long time, char *buf, 
 		      int &bufsize, SmartPtr<TIPv6Addr> peer) {
     struct timeval czas;
-    
     int result;
+    if (time > DHCPV6_INFINITY/2)
+	time /=2;
     
     czas.tv_sec=time;
     czas.tv_usec=0;

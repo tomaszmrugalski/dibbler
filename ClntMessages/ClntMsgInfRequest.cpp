@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.4 2004-10-27 22:07:56 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.5 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.3  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -36,13 +40,16 @@
 #include "ClntOptTimeZone.h"
 #include <cmath>
 
-TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
+TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 				       SmartPtr<TClntTransMgr> TransMgr,
-				       SmartPtr<TClntCfgMgr>   ConfMgr, 
+				       SmartPtr<TClntCfgMgr>   CfgMgr, 
 				       SmartPtr<TClntAddrMgr>  AddrMgr, 
 				       SmartPtr<TClntCfgIface> iface)
-    :TClntMsg(IfMgr, TransMgr, ConfMgr, AddrMgr, iface->getID(), SmartPtr<TIPv6Addr>() /*NULL*/, 
+    :TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface->getID(), SmartPtr<TIPv6Addr>() /*NULL*/, 
 	      INFORMATION_REQUEST_MSG) {
+
+    Log(Debug) << "Creating INF-REQUEST on the " << iface->getName()
+	       << "/" << iface->getID() << "." << LogEnd;
     
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
@@ -79,8 +86,15 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface;
     IsDone=false;
     
-    std::clog << logger::logDebug << "Create Information Request"<<logger::endl;
-    //Filter options in case of options: server identifier
+    SmartPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Error) << "Unable to find interface with ifindex=" << iface 
+		   << " while trying to generate INF-REQUEST." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+    Log(Debug) << "Creating INF-REQUEST on the " << ptrIface->getName()
+	       << "/" << iface << "." << LogEnd;
     
     // copy whole list from Verify ...
     Options = ReqOpts;
@@ -133,23 +147,22 @@ void TClntMsgInfRequest::answer(SmartPtr<TMsg> msg)
     msg->firstOption();
     while(option = msg->getOption())
     {
-        option->setParent(&(*msg));
         //if option did what it was supposed to do ???
-        if (option->doDuties()) 
+	if (option->doDuties()) 
         {
+	    if ( ptrOptionReqOpt && (ptrOptionReqOpt->isOption(option->getOptType())) )
+		ptrOptionReqOpt->delOption(option->getOptType());
             SmartPtr<TOpt> requestOpt;
             this->firstOption();
             while ( requestOpt = getOption()) 
             {
                 if (requestOpt->getOptType()==option->getOptType())
                 {
-                    if (ptrOptionReqOpt&&(ptrOptionReqOpt->isOption(option->getOptType())))
-                        ptrOptionReqOpt->delOption(option->getOptType());
                     this->Options.del();
                     newOptionAssigned=true;
                 }//if
             }//while
-        }
+        } 
     }
 
     ptrOptionReqOpt->delOption(OPTION_LIFETIME);

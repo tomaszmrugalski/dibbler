@@ -25,9 +25,9 @@ class TIfaceSocket {
     friend ostream& operator<<(ostream& strum, TIfaceSocket &x);
  public:
     TIfaceSocket(char * iface,int ifaceid, int port, 
-		     SmartPtr<TIPv6Addr> addr, bool ifaceonly=true);
+		     SmartPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
     TIfaceSocket(char * iface,int ifaceid, int port,
-		     bool ifaceonly=true);
+		     bool ifaceonly, bool reuse);
    
     // ---transmission---
     int send(char * buf,int len, SmartPtr<TIPv6Addr> addr,int port);
@@ -50,7 +50,7 @@ class TIfaceSocket {
  private:
     // adds socket to this interface
     int createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 
-		     int port, bool ifaceonly);
+		     int port, bool ifaceonly, bool reuse);
 
     // FileDescriptor
     int FD;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptNTPServers.cpp,v 1.5 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntOptNTPServers.cpp,v 1.6 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.4  2004/03/29 19:10:06  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -47,14 +50,17 @@ bool TClntOptNTPServers::doDuties() {
 		   << " while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)msg->getOption(OPTION_SERVERID);
-    if (!optSrvID) {
-	Log(Error) << "Unable to find ServerID option while " << reason << LogEnd;
+
+    if (!this->DUID) {
+	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
 	return false;
     }
-    SmartPtr<TDUID> duid = optSrvID->getDUID();
 
-    return iface->setNTPServerLst(duid, addr,this->AddrLst);
+    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    cfgIface->setNTPServerState(CONFIGURED);
+
+    return iface->setNTPServerLst(this->DUID, addr,this->AddrLst);
 }
 
 void TClntOptNTPServers::setSrvDuid(SmartPtr<TDUID> duid)

@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.h,v 1.2 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.3 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.1  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -45,6 +49,11 @@ class TClntIfaceIface: public TIfaceIface {
     unsigned int getTimeout();
 
  private:
+
+    void addString(const char * filename, const char * str);
+    void delString(const char * filename, const char * str);
+    void setString(const char * filename, const char * str);
+
     List(TIPv6Addr)     DNSServerLst;
     SmartPtr<TIPv6Addr> DNSServerLstAddr;
     SmartPtr<TDUID>     DNSServerLstDUID;
@@ -60,6 +69,32 @@ class TClntIfaceIface: public TIfaceIface {
     string Timezone;
     SmartPtr<TIPv6Addr> TimezoneAddr;
     SmartPtr<TDUID>     TimezoneDUID;
+
+    // FIXME: FQDN
+
+    List(TIPv6Addr)     SIPServerLst;
+    SmartPtr<TIPv6Addr> SIPServerLstAddr;
+    SmartPtr<TDUID>     SIPServerLstDUID;
+
+    List(string)        SIPDomainLst;
+    SmartPtr<TIPv6Addr> SIPDomainLstAddr;
+    SmartPtr<TDUID>     SIPDomainLstDUID;
+
+    List(TIPv6Addr)     NISServerLst;
+    SmartPtr<TIPv6Addr> NISServerLstAddr;
+    SmartPtr<TDUID>     NISServerLstDUID;
+
+    string              NISDomain;
+    SmartPtr<TIPv6Addr> NISDomainAddr;
+    SmartPtr<TDUID>     NISDomainDUID;
+
+    List(TIPv6Addr)     NISPServerLst;
+    SmartPtr<TIPv6Addr> NISPServerLstAddr;
+    SmartPtr<TDUID>     NISPServerLstDUID;
+
+    string              NISPDomain;
+    SmartPtr<TIPv6Addr> NISPDomainAddr;
+    SmartPtr<TDUID>     NISPDomainDUID;
     
     unsigned int LifetimeTimeout;
     unsigned int LifetimeTimestamp;

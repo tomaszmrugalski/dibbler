@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.6 2004-06-28 21:34:18 thomson Exp $
+ * $Id: DUID.cpp,v 1.7 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/28 21:34:18  thomson
+ * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
+ *
  * Revision 1.5  2004/06/20 20:59:30  thomson
  * getPlain() method added.
  *
@@ -54,8 +57,10 @@ TDUID::TDUID(char* DUID,int DUIDlen)
 
 void TDUID::packedToPlain() {
     ostringstream tmp;
-    for(int i=0; i<this->len; i++)
+    for(int i=0; i<this->len; i++) {
+	if (i) tmp << ":";
 	tmp << setfill('0')<<setw(2)<<hex<< (unsigned int) this->DUID[i];
+    }
     this->Plain = tmp.str();
 }
 

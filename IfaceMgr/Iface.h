@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.5 2004-10-25 20:45:53 thomson Exp $
+ * $Id: Iface.h,v 1.6 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  */
 
 #ifndef IFACEIFACE_H
@@ -52,8 +55,8 @@ class TIfaceIface{
     bool updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
     
     // ---socket related---
-    bool addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly = true);
-    bool addSocket(int port, bool ifaceonly = true); 
+    bool addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);
+    bool addSocket(int port, bool ifaceonly, bool reuse); 
     bool delSocket(int id);
     void firstSocket();
     SmartPtr <TIfaceSocket> getSocketByFD(int fd);

@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.23 2004-10-27 22:07:56 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.24 2004-11-01 23:31:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.22  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -113,6 +117,21 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
     if (iface->noConfig())       
 	return true;
 
+    SmartPtr<TIfaceIface> loopback;
+    SmartPtr<TIfaceIface> ptrIface;
+    IfaceMgr->firstIface();
+    while (ptrIface=IfaceMgr->getIface()) {
+        if (!ptrIface->flagLoopback()) {
+            continue;
+	}
+	loopback = ptrIface;
+	break;
+    }
+    if (!loopback) {
+	Log(Error) << "Loopback interface not found!" << LogEnd;
+	return false;
+    }
+
     // create IAs in AddrMgr corresponding to those specified in CfgMgr.
     SmartPtr<TClntCfgGroup> group;
     iface->firstGroup();
@@ -155,11 +174,26 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
     }
 
     SmartPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
-    Log(Notice) << "Creating socket (addr=" << *addr << ") on " << iface->getName() 
+
+#if 0
+#ifndef WIN32
+    // required to be able to receive data from server on the same machine
+    // (data is sent via the lo interface)
+    Log(Notice) << "Creating socket (addr=" << *addr << ") on the " << loopback->getName() 
+		<< "/" << loopback->getID() << " interface." << LogEnd;
+    if (!loopback->addSocket(addr,DHCPCLIENT_PORT,false, true)) {
+	Log(Crit) << "Socket creation (addr=" << *addr << ") on the " << loopback->getName() 
+		  << "/" << loopback->getID() << " interface failed." << LogEnd;
+	return false;
+    }
+#endif
+#endif
+
+    Log(Notice) << "Creating socket (addr=" << *addr << ") on the " << iface->getName() 
 		<< "/" << iface->getID() << " interface." << LogEnd;
-    
-    if (!realIface->addSocket(addr,DHCPCLIENT_PORT,true)) {
-	Log(Error) << "Socket creation failed." << LogEnd;
+    if (!realIface->addSocket(addr,DHCPCLIENT_PORT,true, false)) {
+	Log(Crit) << "Socket creation (addr=" << *addr << ") on the " << iface->getName() 
+		  << "/" << iface->getID() << " interface failed." << LogEnd;
 	return false;
     }
 
@@ -197,8 +231,9 @@ void TClntTransMgr::checkDB()
 
 bool TClntTransMgr::openLoopbackSocket() {
     SmartPtr<TIfaceIface> ptrIface;
+
 #ifndef WIN32
-	SmartPtr<TIfaceIface> loopback;
+    SmartPtr<TIfaceIface> loopback;
     while (ptrIface=IfaceMgr->getIface()) {
         if (!ptrIface->flagLoopback()) {
             continue;
@@ -207,15 +242,16 @@ bool TClntTransMgr::openLoopbackSocket() {
 	    break;
     }
     if (!loopback) {
-	   Log(Error) << "Loopback interface not found!" << LogEnd;
+	   Log(Crit) << "Loopback interface not found!" << LogEnd;
 	   return false;
     }
 
     SmartPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::1", true);
-    Log(Notice) << "Creating control (" << *loopAddr << ") socket on " << loopback->getName() 
+    Log(Notice) << "Creating control (" << *loopAddr << ") socket on the " << loopback->getName() 
 		<< "/" << loopback->getID() << " interface." << LogEnd;
     
-    if (!loopback->addSocket(loopAddr,DHCPCLIENT_PORT, false)) {
+
+    if (!loopback->addSocket(loopAddr,DHCPCLIENT_PORT, false, true)) {
 	Log(Crit) << "Proper socket creation failed." << LogEnd;
 	return false;
     }

@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-OBJECTS = layer3.o libnetlink.o ll_map.o ll_types.o utils.o dns.o addrpack.o
+OBJECTS = layer3.o libnetlink.o ll_map.o ll_types.o utils.o lowlevel-options-linux.o addrpack.o
 
 objs: $(OBJECTS)
 
@@ -30,7 +30,7 @@ utils.o: utils.c
 	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(COPTS) -c utils.c
 
-dns.o: dns.c	
+lowlevel-options-linux.o: lowlevel-options-linux.c	
 	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(COPTS) -c $<
 

@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.8 2004-10-27 22:07:56 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.9 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.7  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -226,13 +230,14 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
                 if (!option->doDuties()) 
 		    break;
 		SmartPtr<TOpt> requestOpt;
+		if ( optORO && (optORO->isOption(option->getOptType())) )
+		    optORO->delOption(option->getOptType());
+
 		// find options specified in this message
 		this->Options.first();
 		while ( requestOpt = this->Options.get()) {
 		    if ( requestOpt->getOptType() == option->getOptType() ) 
 		    {
-			if ( optORO && (optORO->isOption(option->getOptType())) )
-			    optORO->delOption(option->getOptType());
 			this->Options.del();
 		    }//if
 		}//while
@@ -252,13 +257,15 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
     }
     if (isIA) {
         // send new Request to another server
-        Log(Notice) << "There are still some IA to configure." << LogEnd;
+        Log(Notice) << "There are still some IA(s) to configure." << LogEnd;
         ClntTransMgr->sendRequest(this->Options, BackupSrvLst, this->Iface);
     } else {
         if ( optORO && (optORO->count()) )
         {
-            Log(Notice) << "All IA(s) were supplied, but not all requested options."
-			<< "Sending Information Request" << LogEnd;
+	    Log(Notice) << "All IA(s), but not all options were assigned (";
+	    for (int i=0; i< optORO->count(); i++)
+		Log(Cont) << optORO->getReqOpt(i) << " ";
+	    Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
             ClntTransMgr->sendInfRequest(this->Options, this->Iface);
         }
     }

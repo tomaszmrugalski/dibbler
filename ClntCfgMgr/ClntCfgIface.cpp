@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.9 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.10 2004-11-01 23:31:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.8  2004/10/25 20:45:52  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -349,8 +353,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: DNS-servers ---
     if (iface.isReqDNSServer()) {
-	out << "    <dns-servers hints=\"" << iface.DNSServerLst.count() << "\" state=\"" 
-	    << StateToString(iface.getDNSServerState()) << "\" />" << endl;
+	out << "    <dns-servers state=\"" << StateToString(iface.getDNSServerState())
+	    << "\" state=\"" << iface.DNSServerLst.count() << "\" />" << endl;
 
 	iface.DNSServerLst.first();
 	while(addr=iface.DNSServerLst.get())
@@ -361,8 +365,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: DOMAIN ---
     if (iface.isReqDomain()) {
-	out << "    <domains hints=\"" << iface.DomainLst.count() << "\" state=\""
-	    << StateToString(iface.getDomainState()) << "\" />" << endl;
+	out << "    <domains state=\"" << StateToString(iface.getDomainState()) 
+	    << "\" hints=\"" << iface.DomainLst.count() << "\" />" << endl;
 
 	iface.DomainLst.first();
 	while (str = iface.DomainLst.get())
@@ -373,8 +377,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	
     // --- option: NTP servers ---
     if (iface.isReqNTPServer()) {
-	out << "    <ntp-servers hints=\"" << iface.NTPServerLst.count() << "\" state=\""
-	    << StateToString(iface.getNTPServerState()) << "\" />" << endl;
+	out << "    <ntp-servers state=\"" << StateToString(iface.getNTPServerState()) 
+	    << "\" hints=\"" << iface.NTPServerLst.count() << "\" />" << endl;
 	iface.NTPServerLst.first();
 	while(addr=iface.NTPServerLst.get())
 	    out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;  
@@ -384,7 +388,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     
     // --- option: Timezone ---
     if (iface.isReqTimezone()) {
-	out << "    <timezone state=\"" << StateToString(iface.getNTPServerState())
+	out << "    <timezone state=\"" << StateToString(iface.getTimezoneState())
 	    << "\">" << iface.Timezone << "</timezone>" << endl;
     } else {
 	out << "    <!-- <timezone/> -->" << endl;
@@ -392,7 +396,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: SIP servers ---
     if (iface.isReqSIPServer()) {
-	out << "    <sip-servers hints=\"" << iface.NTPServerLst.count() << "\"/>" << endl;
+	out << "    <sip-servers state=\"" << StateToString(iface.getSIPServerState())
+	    << "\" hints=\"" << iface.NTPServerLst.count() << "\"/>" << endl;
 	iface.NTPServerLst.first();
 	while(addr=iface.NTPServerLst.get())
 	    out << "      <sip-server>" << *addr << "</sip-server>" << endl;  
@@ -402,7 +407,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: SIP domains ---
     if (iface.isReqSIPDomain()) {
-	out << "    <sip-domains hints=\"" << iface.DomainLst.count() << "\"/>" << endl;
+	out << "    <sip-domains state=\"" << StateToString(iface.getSIPDomainState())
+	    << "\" hints=\"" << iface.DomainLst.count() << "\"/>" << endl;
 	iface.SIPDomainLst.first();
 	while (str = iface.SIPDomainLst.get())
 	    out << "      <sip-domain>" << *str <<"</sip-domain>" << endl;
@@ -412,14 +418,16 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: FQDN ---
     if (iface.isReqFQDN()) {
-	out << "    <fqdn>" << iface.FQDN << "</fqdn>" << endl;
+	out << "    <fqdn state=\"" << StateToString(iface.getFQDNState()) 
+	    << "\">" << iface.FQDN << "</fqdn>" << endl;
     } else {
 	out << "    <!-- <fqdn/> -->" << endl;
     }
 
     // --- option: NIS server ---
     if (iface.isReqNISServer()) {
-	out << "    <nis-servers hints=\"" << iface.NISServerLst.count() << "\"/>" << endl;
+	out << "    <nis-servers state=\"" << StateToString(iface.getNISServerState())
+	    << "\" hints=\"" << iface.NISServerLst.count() << "\"/>" << endl;
 	iface.NISServerLst.first();
 	while(addr=iface.NISServerLst.get())
 	    out << "      <nis-server>" << *addr << "</nis-server>" << endl;  
@@ -429,14 +437,16 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: NIS domains ---
     if (iface.isReqNISDomain()) {
-	out << "    <nis-domain>" << iface.NISDomain << "</nis-domain>" << endl;
+	out << "    <nis-domain state=\"" << StateToString(iface.getNISDomainState())
+	    << "\" >" << iface.NISDomain << "</nis-domain>" << endl;
     } else {
 	out << "    <!-- <nis-domain/> -->" << endl;
     }
 
     // --- option: NISP server ---
     if (iface.isReqNISPServer()) {
-	out << "    <nisplus-servers hints=\"" << iface.NISPServerLst.count() << "\"/>" << endl;
+	out << "    <nisplus-servers state=\"" << StateToString(iface.getNISPServerState())
+	    << "\" hints=\"" << iface.NISPServerLst.count() << "\"/>" << endl;
 	iface.NISPServerLst.first();
 	while(addr=iface.NISPServerLst.get())
 	    out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;  
@@ -446,7 +456,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: NISP domains ---
     if (iface.isReqNISPDomain()) {
-	out << "    <nisplus-domain>" << iface.NISPDomain << "</nisplus-domain>" << endl;
+	out << "    <nisplus-domain state=\"" << StateToString(iface.getNISPDomainState())
+	    << "\" >" << iface.NISPDomain << "</nisplus-domain>" << endl;
     } else {
 	out << "    <!-- <nisplus-domain> -->" << endl;
     }
