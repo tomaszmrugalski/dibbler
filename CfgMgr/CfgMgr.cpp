@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.8 2004-06-04 16:55:27 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.9 2004-07-01 18:12:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.7  2004/05/23 21:35:31  thomson
  * *** empty log message ***
  *
@@ -125,21 +128,16 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
     oOldF.close();
 }
 
-void TCfgMgr::setDUID(const string duidFile,char * mac,int macLen, int macType)
+bool TCfgMgr::setDUID(const string duidFile,char * mac,int macLen, int macType)
 {
     ifstream f;
     // DUID - It's common for client and server so why not to create CfgMgr
     f.open(duidFile.c_str());
     if ( !(f.is_open())  ) {
         // unable to open DUID file
-        std:: clog << logger::logNotice << "Unable to open DUID file (" << duidFile 
-            << "), generating new DUID." << logger::endl;
+        Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID." << LogEnd;
 
-        this->generateDUID(duidFile,mac,macLen,macType);
-        // FIXME: what if open fails? - at least it would be a little strange
-        //		  but could we keep opened file (of coz in mode r/w)
-        //        I don't know what for should be file open - DUID is set in CfgMgr
-        f.close();
+        return this->generateDUID(duidFile,mac,macLen,macType);
     }
     else
     {
@@ -163,6 +161,7 @@ void TCfgMgr::setDUID(const string duidFile,char * mac,int macLen, int macType)
         
         delete [] DUID;
         f.close();
+        return true;
     }
 }
 
@@ -170,26 +169,47 @@ bool TCfgMgr::loadDUID(const string filename) {
     
     // --- load DUID ---
     SmartPtr<TIfaceIface> realIface;
-    ////FIXME:get first iface - and pray it won't be loopback or other shit
+
     bool found=false;
     IfaceMgr->firstIface();
     while( (!found) && (realIface=IfaceMgr->getIface()) )
     {
         realIface->firstLLAddress();
-	char buf[64];
-	memset(buf,0,64);
-        if ( realIface->getLLAddress() && 
-	     (realIface->getMacLen() > 5) &&
-	     memcmp(realIface->getMac(),buf,realIface->getMacLen()) &&
-	     realIface->flagUp() &&
-	     !realIface->flagLoopback() )
-            found=true;
+        char buf[64];
+        memset(buf,0,64);
+
+        if (!realIface->getMac()) {
+          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+                     << " skipped: no link addresses." << LogEnd;
+          continue;
+        }
+        if ( realIface->getMacLen()<6 ) {
+          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+                     << " skipped: MAC length is " << realIface->getMacLen() << ", but at least 6 is required." << LogEnd;
+          continue;
+        }
+        if ( realIface->flagLoopback() ) {
+          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+                     << " skipped: Interface is loopback." << LogEnd;
+          continue;
+        }
+        if ( !memcmp(realIface->getMac(),buf,realIface->getMacLen()) ) {
+          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+                     << " skipped: MAC is all zero. " << LogEnd;
+          continue;
+        }
+        if ( !realIface->flagUp() ) {
+          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+                     << " skipped: Interface is down." << LogEnd;
+          continue;
+        }
+
+        found=true;
     }
 
     if(found) {
-        this->setDUID(filename, (char*)realIface->getMac(),
+      return this->setDUID(filename, (char*)realIface->getMac(),
 		      (int)realIface->getMacLen(), (int)realIface->getHardwareType());
-	return true;
     } 
     
     Log(Crit) << "Cannot generate DUID, because I cannot find interface with "
@@ -198,13 +218,13 @@ bool TCfgMgr::loadDUID(const string filename) {
     return false;
 };
 
-void TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macType)
+bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macType)
 {
     ofstream f;
     f.open( duidFile.c_str() );
     if (!f.is_open()) {
-	Log(Crit) << "Unable to write " << duidFile << " file." << logger::endl;
-	return;
+      Log(Crit) << "Unable to write " << duidFile << " file." << logger::endl;
+      return false;
     }
     
     int DUIDlen=macLen+8;
@@ -228,6 +248,7 @@ void TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     delete DUID;
 
     f.close();
+    return true;
 }
 
 SmartPtr<TDUID> TCfgMgr::getDUID()

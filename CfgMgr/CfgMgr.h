@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.h,v 1.3 2004-05-23 21:35:31 thomson Exp $
+ * $Id: CfgMgr.h,v 1.4 2004-07-01 18:12:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/05/23 21:35:31  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2004/05/23 19:12:34  thomson
  * *** empty log message ***
  *
@@ -36,9 +39,9 @@ class TCfgMgr
     
  protected:
     SmartPtr<TDUID> DUID;
-    void setDUID(const string duidFile,char * mac,int macLen, int macType);
+    bool setDUID(const string duidFile,char * mac,int macLen, int macType);
     bool TCfgMgr::loadDUID(const string filename);
-    void generateDUID(const string duidFile,char * mac,int macLen, int macType);
+    bool generateDUID(const string duidFile,char * mac,int macLen, int macType);
     string WorkDir;
     string LogName;
     int LogLevel;
