@@ -1,5 +1,12 @@
 #!/bin/bash
-VER1=`grep "^\#define DIBBLER_VERSION" misc/Portable.h | awk '{ print $3}'`
+if [ -e misc/Portable.h ]; then
+  VER1=`grep "^\#define DIBBLER_VERSION" misc/Portable.h | awk '{ print $3}'`
+else
+  if [ -e ../misc/Portable.h ]; then
+  VER1=`grep "^\#define DIBBLER_VERSION" ../misc/Portable.h | awk '{ print $3}'`
+  fi
+fi
+  
 VER2=${VER1##\"}
 VERSION=${VER2%%\"}
 echo $VERSION

@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.9 2004-11-02 00:02:23 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.10 2004-12-01 20:55:49 thomson Exp $
 %%
 
 \section{Config files}
@@ -30,15 +30,18 @@ Config file parsing is token-based. Here's list of tokens used:
 
 There are also some client or server specified tokens. Here's the list:
 \begin{description}
-\item[client] -- iface, address, ia, no-ia,
-log-mode, log-name, log-level, work-dir, prefered-lifetime, valid-lifetime,
-t1, t2, dns-server, domain, ntp-servers, time-zone, reject-servers,
-prefered-servers, rapid-commit, unicast
-\item[server] -- iface, class, log-level, log-name,
-  log-level, work-dir, dns-servers, domain, ntp-server, time-zone, accept-only,
-  reject-only, t1, t2, prefered-lifetime, valid-lifetime, unicast,
-  preference, pool, rapid-commit, client-max-lease, class-max-lease,
-  iface-max-lease, rapid-commit
+\item[client] -- iface, address, ia, no-ia, log-mode, log-name,
+  log-level, work-dir, prefered-lifetime, valid-lifetime, t1, t2,
+  reject-servers, prefered-servers, rapid-commit, unicast, sip-server,
+  sip-domain, nis-server, nis-domain, nis+-server, nis+-domain,
+  lifetime, dns-server, domain, ntp-server, time-zone,
+
+\item[server] -- iface, class, log-level, log-name, log-level,
+  work-dir, accept-only, reject-only, t1, t2, prefered-lifetime,
+  valid-lifetime, unicast, preference, pool, rapid-commit,
+  client-max-lease, class-max-lease, iface-max-lease, dns-servers,
+  domain, ntp-server, time-zone, sip-server, sip-domain, nis-server,
+  nis-domain, nis+-server, nis+-domain, lifetime
 \end{description}
 
 \subsection{Scopes}
@@ -234,6 +237,7 @@ nis-server     & interface& addrs list  & empty & preferred NIS servers list (H)
 nis-domain     & interface& domain      & empty & preferred NIS domain (H)\\
 nis+-server    & interface& addrs list  & empty & preferred NIS+ servers list (H)\\
 nis+-domain    & interface& domain      & empty & preferred NIS+ domain (H)\\
+lifetime       & interface& YES/NO      & no    & Should client request lifetime option? \\
 \hline
 \end{tabular}
 \end{center}
@@ -621,6 +625,9 @@ iface 5
 \end{verbatim}
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.9  2004/11/02 00:02:23  thomson
+%% Documentation improved.
+%%
 %% Revision 1.8  2004/10/25 20:45:54  thomson
 %% Option support, parsers rewritten. ClntIfaceMgr now handles options.
 %%

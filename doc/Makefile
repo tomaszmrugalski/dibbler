@@ -24,6 +24,14 @@ dibbler-devel.pdf: dibbler-devel.tex dibbler-devel-compile.tex \
 	$(DVIPS) -z dibbler-devel.dvi -o
 	$(PS2PDF) dibbler-devel.ps
 
+version.tex:
+	@echo "[GREP  ] $(SUBDIR)/$@"
+	@echo "\newcommand{\dibblerVersion}{" > $@
+	@../test/xtract_version >> $@
+	@echo "}" >> $@
+
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
 	@rm -f *.aux *.idx *.log *.toc *.out *~ *.pdf *.ps *.dvi
+
+.PHONY: version.tex
