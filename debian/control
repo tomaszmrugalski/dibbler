@@ -16,8 +16,29 @@ Description: A portable DHCPv6 server
  server if you'd like to have IPv6 hosts automatically configured in 
  your network.
 
+Package: dibbler-client
+Architecture: i386
+Depends: libstdc++5, libc6, libgcc1
+Recommends: dibbler, dibbler-relay, dibbler-doc
+Description: A portable DHCPv6 client
+ This is a DHCPv6 client. It supports both statefull (i.e. IPv6 address
+ granting) as well as stateless (i.e. option granting) autoconfiguration
+ modes of the DHCPv6 protocol. Besides basic capabilities, it supports
+ various DHCPv6 extensions, e.g. option renewal.
+
+Package: dibbler-relay
+Architecture: i386
+Depends: libstdc++5, libc6, libgcc1
+Recommends: dibbler, dibbler-client, dibbler-doc
+Description: A portable DHCPv6 relay
+ This is a DHCPv6 relay. Relays are used as proxies between server and
+ clients. Main advantage is the ability to support multiple remote links
+ using only one server.
+
 Package: dibbler-doc
 Architecture: all
+Depends:
+Recommends:
 Description: Documentation for dibbler
  User's Guide as well as Developer's Guide is included in this package.
  That documentation covers all aspects of this DHCPv6 implementation:

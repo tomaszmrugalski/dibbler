@@ -1,0 +1,3 @@
+etc/dibbler/relay.conf
+usr/sbin/dibbler-relay
+usr/share/man/man8/dibbler-relay.8*

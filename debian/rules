@@ -80,13 +80,20 @@ install-arch:
 	dh_testdir
 	dh_testroot
 	dh_clean -k -s 
-	dh_installdirs -s
+	dh_installdirs -s etc/dibbler var/lib/dibbler
 
-	# Add here commands to install the arch part of the package into 
-	# debian/tmp.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/dibbler
+	# Install everything to the tmp directory
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+	# This one instructs dh_install to use packagename.install from the debian directory
+	dh_install --sourcedir=debian/tmp
 
-	dh_install -s
+	# This one will look for debian/package.init and install it into /etc/init.d
+	dh_installinit 
+	# dibbler package (server)
+	# dibbler-client package (client)
+	# dibbler-relay package (relay)
+	# dibbler-doc package (doc)
+
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-indep
 # in another 'make' thread.

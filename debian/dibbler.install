@@ -1,0 +1,3 @@
+etc/dibbler/server.conf
+usr/sbin/dibbler-server
+usr/share/man/man8/dibbler-server.8*
