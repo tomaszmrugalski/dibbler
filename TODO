@@ -1,26 +1,12 @@
 
-$Id: TODO,v 1.9 2004-05-24 21:16:37 thomson Exp $
+$Id: TODO,v 1.10 2004-06-05 23:38:08 thomson Exp $
 
 Warning: This TODO may be outdated/out of sync.
 
   Internal TODO
  ---------------
 
-- addrmgr dump has problems with duid dump
-- UPGRADE: WORKDIR should be a global variable. So reasonable default could be applied.
-  It can also be overwritten from command line
-- BUG: ClntTransMgr:82 - socket is opened on specific LL addr, but Linux does not read LL addrs
-- release first public version, display info about version and compilation time
-- fill stucture desrcibing iface with link local addresses available on this iface
-- merge Tentative and State in IAa
 - IA_TA option support
-- AddrMgr: db load from file
-- bug: SrvMsgReply:331 - always replies with NoBinding. 
-- finish CONFIRM (db load required)
-- implement useMulticast
-- implement Server Unicast
-- How to update pref/valid?
-- Srv: DECLINE should have addrs with valid=preferred=0 values
 - ClntCfgIface.cpp:107: what are "additonal DNS servers"?
 - ClntCfgIface.cpp:157: what are those options?
 - check server's behavior: there isn't any addrs left, and srv receives SOLICIT.

@@ -92,6 +92,15 @@ srvlibs:	includes
 		( cd $$dir; $(MAKE) libs ) || exit 1; \
 	done
 
+doc: 
+	cd doc; $(MAKE)
+
+release: server client doc
+	tar czvf dibbler-$(VERSION)-linux.tar.gz                  \
+		$(SERVERBIN) $(CLIENTBIN) client.conf server.conf \
+		CHANGELOG RELNOTES LICENSE doc/*.pdf
+
+
 
 tags:
 	rm -f TAGS

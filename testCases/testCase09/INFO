@@ -1,0 +1,7 @@
+Client: 0.1.1, WindowsXP
+
+
+Details   :
+- crashes if conf file does not start with "log-level 8"
+- crashes if interface name used instead of number
+- crashes if wrong interface named used
