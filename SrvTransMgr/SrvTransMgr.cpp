@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.21 2004-12-07 00:45:10 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.22 2005-01-03 23:13:38 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/12/07 00:45:10  thomson
+ * Manager creation unified and cleaned up.
+ *
  * Revision 1.20  2004/11/29 23:25:13  thomson
  * Server now properly retransmits messages.
  *
@@ -83,10 +86,19 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
     inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
     SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
     
-    SmartPtr<TIfaceIface> iface=IfaceMgr->getIfaceByID(confIface->getID());
+    SmartPtr<TSrvIfaceIface> iface = (Ptr*)IfaceMgr->getIfaceByID(confIface->getID());
     SmartPtr<TIPv6Addr> unicast = confIface->getUnicast();
 
-	if (unicast) {
+    if (confIface->isRelay()) {
+	while (iface->getUnderlaying()) {
+	    iface = iface->getUnderlaying();
+	}
+	if (!iface->countSocket())
+	    Log(Notice) << "Relay init: Creating socket on the underlaying interface: " << iface->getName()
+			<< "/" << iface->getID() << "." << LogEnd;
+    }
+    
+    if (unicast) {
 	/* unicast */
 	Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName() 
 		    << "/" << confIface->getID() << " interface." << LogEnd;
