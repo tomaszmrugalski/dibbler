@@ -1,79 +1,59 @@
-%{
-/****************************************************************************
-parser.y
-ParserWizard generated YACC file.
-
-Date: 30 czerwca 2003
-****************************************************************************/
-
-
-
-//TClntParsServAddr
-%}
-
-%include {
-#include <string>
-#include "ClntParsGlobalOpt.h"
-#include "ClntCfgAddr.h"
-#include "ClntCfgIface.h"
-#include "ClntCfgGroup.h"
-#include "ClntCfgIA.h"
-
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// declarations section
-
-// parser name
 %name clntParser
 
-// class definition
-{
-
-public:
-    //List of options in scope stack,the most fresh is last in the list
-    TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;
+%header{
+#include <iostream>
+#include <string>
+#include <malloc.h>
+#include "FlexLexer.h"
+#include "DHCPConst.h"
+#include "SmartPtr.h"
+#include "Container.h"
+#include "ClntParser.h"
+#include "ClntParsGlobalOpt.h"
+#include "ClntCfgIface.h"
+#include "ClntCfgAddr.h"
+#include "ClntCfgIA.h"
+#include "ClntCfgGroup.h"
     
-    //List of parsed interfaces/IAs/Addresses, last 
-    //interface/IA/address is just being parsing or have been just parsed
-    //FIXME:Don't forget to clear this lists in apropriate moment
-    TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;
-    TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;
-    TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;
-    TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;
-    
-    //Pointer to list which should contain either rejected servers or 
-    //preffered servers
-    TContainer<SmartPtr<TStationID> > PresentStationLst;
-    
-    TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;
-    //method check whether interface with id=ifaceNr has been 
-    //already declared
-    void CheckIsIface(int ifaceNr); 
+#define YY_USE_CLASS
+%}
 
-    //method check whether interface with id=ifaceName has been
-    //already declared 
-    void CheckIsIface(std::string ifaceName);
-    void StartIfaceDeclaration();
-    void EndIfaceDeclaration();
-    void EmptyIface();
-    void StartIADeclaration(bool aggregation);
-    void EndIADeclaration(long iaCnt);
-    void EmptyIA();
-    void EmptyAddr();
-}
+// --- CLASS MEMBERS ---
 
-// constructor
-{
-    // place any extra initialisation code here
-    ParserOptStack.append(new TClntParsGlobalOpt());
+// <Linux>
+%define MEMBERS yyFlexLexer * lex; \
+/*List of options in scope stack,the most fresh is last in the list*/ \
+TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack; \
+/*List of parsed interfaces/IAs/Addresses, last */ \
+/*interface/IA/address is just being parsing or have been just parsed*/ \
+/*FIXME:Don't forget to clear this lists in apropriate moment*/ \
+TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst; \
+TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst; \
+TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;    \
+TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;  \
+/*Pointer to list which should contain either rejected servers or */ \
+/*preffered servers*/  \
+TContainer<SmartPtr<TStationID> > PresentStationLst;\
+TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst; \
+/*method check whether interface with id=ifaceNr has been */ \
+/*already declared */ \
+bool CheckIsIface(int ifaceNr); \
+/* method check whether interface with id=ifaceName has been already declared */ \
+bool CheckIsIface(string ifaceName); \
+void StartIfaceDeclaration(); \
+bool EndIfaceDeclaration(); \
+void EmptyIface(); \
+void StartIADeclaration(bool aggregation); \
+void EndIADeclaration(long iaCnt); \
+void EmptyIA(); \
+void EmptyAddr(); \
+
+// <Linux>
+%define CONSTRUCTOR_PARAM yyFlexLexer * lex
+%define CONSTRUCTOR_CODE \
+   this->lex = lex; \
+    ParserOptStack.append(new TClntParsGlobalOpt()); \
     ParserOptStack.getFirst()->setIAIDCnt(1);
-}
-
-// attribute type
-
-// place any declarations here
-
 
 %union    
 {
@@ -86,12 +66,6 @@ public:
     char    addrval[16];  
     ESendOpt  SendOpt;  
     EReqOpt   ReqOpt; 
-}
-
-%include {
-#ifndef YYSTYPE
-#define YYSTYPE int
-#endif
 }
 
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_,NTP_SERVER_,DOMAIN_,TIME_ZONE_
@@ -340,7 +314,7 @@ ADDRESDeclarationList
     }
         else
             //here is agregated version of IA
-            yyabort(); 
+            YYABORT; 
   }
   |  ADDRESDeclarationList IPV6ADDR_
   {
@@ -351,7 +325,7 @@ ADDRESDeclarationList
         }
             else
                 //here is agregated version of IA
-                yyabort();
+                YYABORT;
   }
   ;
 
@@ -391,10 +365,7 @@ ADDRESOptionDeclaration
 LogLevelOption
     : LOGLEVEL_ Number 
     {
-        if ($2<5)
-            ParserOptStack.getLast()->setLogLevel($2);
-        else
-            yyabort();
+	ParserOptStack.getLast()->setLogLevel($2);
     }
     ;
 
@@ -797,24 +768,24 @@ Number
     
     //method check whether interface with id=ifaceNr has been 
     //already declared
-void clntParser::CheckIsIface(int ifaceNr)
+bool clntParser::CheckIsIface(int ifaceNr)
 {
   SmartPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
-    if ((ptr->getID())==ifaceNr) yyabort();
+    if ((ptr->getID())==ifaceNr) YYABORT;
 };
     
     //method check whether interface with id=ifaceName has been
     //already declared 
-void clntParser::CheckIsIface(string ifaceName)
+bool clntParser::CheckIsIface(string ifaceName)
 {
   SmartPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
   {
     string presName=ptr->getName();
-    if (presName==ifaceName) yyabort();
+    if (presName==ifaceName) YYABORT;
   };
 };
 
@@ -834,7 +805,7 @@ void clntParser::StartIfaceDeclaration()
 
 }
 
-void clntParser::EndIfaceDeclaration()
+bool clntParser::EndIfaceDeclaration()
 {
   //add all identity associations to last group
   SmartPtr<TClntCfgIA> ptrIA;
@@ -857,7 +828,7 @@ void clntParser::EndIfaceDeclaration()
     
   if ((ClntCfgIfaceLst.getLast())->onlyInformationRequest())
   {
-    if (groupsCnt) yyabort();
+    if (groupsCnt) YYABORT;
   }
   else
   {
@@ -979,3 +950,22 @@ void clntParser::EmptyAddr()
     ClntCfgAddrLst.append(new TClntCfgAddr());
     ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
 }   
+
+// <Linux>
+extern yy_clntParser_stype yylval;
+
+int clntParser::yylex()
+{
+    int x = this->lex->yylex();
+    this->yylval=::yylval;
+    return x;
+}
+
+
+void clntParser::yyerror(char *m)
+{
+    // logging 
+    std::clog << "Config parse error: line " << lex->lineno() << ", unexpected [" 
+	      << lex->YYText() << "] token." << std::endl;
+}
+// </Linux>
