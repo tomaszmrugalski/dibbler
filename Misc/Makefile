@@ -7,5 +7,5 @@ libs:	libMisc.a
 
 # addr conversion (packed[[16] <-> plaintext[48])
 addrpack.o: addrpack.c 
-	@echo "[GCC    ] $(SUBDIR)/$@"
+	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(COPTS) -c addrpack.c 
