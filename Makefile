@@ -39,14 +39,14 @@ $(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
 	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
 	-L$(LOWLEVEL)    \
-	-L$(SRVOPTIONS)  -lSrvOpts \
+	-L$(SRVOPTIONS)  -lSrvOptions \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
 	-L$(MISC)        -lMisc\
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
-	-L$(SRVOPTIONS)  -lSrvOpts \
+	-L$(SRVOPTIONS)  -lSrvOptions \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
