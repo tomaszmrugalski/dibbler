@@ -1,6 +1,6 @@
 # === used tools ===
-CPP          = g++
-CC           = gcc
+CPP          = g++-2.95
+CC           = gcc-2.95
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
@@ -12,7 +12,7 @@ SRV_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
 DEBUGINFO    = -g
-EFENCE       = -lefence
+#EFENCE       = -lefence
 
 # === libxml2 stuff ===
 #XMLCFLAGS    = `pkg-config libxml-2.0 --cflags` -DLIBXML2

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.14 2004-06-04 19:03:46 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.15 2004-06-04 21:02:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/06/04 19:03:46  thomson
+ * Resolved warnings with signed/unisigned
+ *
  * Revision 1.13  2004/05/23 21:24:50  thomson
  * *** empty log message ***
  *
@@ -70,7 +73,7 @@ void TAddrMgr::dbLoad()
 void TAddrMgr::dbStore()
 {
     // uncomment this line below to avoid crashes in g++-3.x
-    //return;
+    // return;
     std::ofstream xmlDump;
     xmlDump.open(this->dbfile.c_str(), ios::ate);
     xmlDump << *this;

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.5 2004-06-04 16:55:27 thomson Exp $
+ * $Id: Logger.h,v 1.6 2004-06-04 21:02:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.4  2004/05/23 19:12:34  thomson
  * *** empty log message ***
  *
@@ -27,7 +30,7 @@
 #include <iostream>
 #include <string>
 
-#define Log(X) logger::clog << logger:: log##X
+#define Log(X) std::clog << logger:: log##X
 #define LogEnd logger::endl
 
 namespace logger {
