@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsClassOpt.h,v 1.5 2004-09-03 23:20:23 thomson Exp $
+ * $Id: SrvParsClassOpt.h,v 1.6 2004-09-28 20:12:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.4  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -36,25 +39,25 @@ class TSrvParsClassOpt
     ~TSrvParsClassOpt(void);
 
     //T1,T2,Valid,Prefered time routines
-    void setT1Beg(long t1);
-    void setT1End(long t1);
-    long getT1Beg();
-    long getT1End();
+    void setT1Beg(unsigned long t1);
+    void setT1End(unsigned long t1);
+    unsigned long getT1Beg();
+    unsigned long getT1End();
 
-    void setT2Beg(long t2);
-    void setT2End(long t2);
-    long getT2Beg();
-    long getT2End();
+    void setT2Beg(unsigned long t2);
+    void setT2End(unsigned long t2);
+    unsigned long getT2Beg();
+    unsigned long getT2End();
     
-    void setPrefBeg(long pref);
-    void setPrefEnd(long pref);
-    long getPrefBeg();
-    long getPrefEnd();
+    void setPrefBeg(unsigned long pref);
+    void setPrefEnd(unsigned long pref);
+    unsigned long getPrefBeg();
+    unsigned long getPrefEnd();
 
-    void setValidEnd(long valid);
-    void setValidBeg(long valid);
-    long getValidEnd();
-    long getValidBeg();
+    void setValidEnd(unsigned long valid);
+    void setValidBeg(unsigned long valid);
+    unsigned long getValidEnd();
+    unsigned long getValidBeg();
         
     //Rejected clients access routines
     void addRejedClnt(SmartPtr<TStationRange> addr);
@@ -76,8 +79,8 @@ class TSrvParsClassOpt
     long countPool();
 
     // leases count
-    void setClassMaxLease(long maxClntLeases);
-    long getClassMaxLease();
+    void setClassMaxLease(unsigned long maxClntLeases);
+    unsigned long getClassMaxLease();
 
 private:
     //Ranges of T1 i T2
@@ -94,6 +97,6 @@ private:
     TContainer<SmartPtr<TStationRange> > AcceptClnt;
     TContainer<SmartPtr<TStationRange> > Pool;
     
-    long ClassMaxLease;
+    unsigned long ClassMaxLease;
 };
 #endif

@@ -1,3 +1,16 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvParsClassOpt.cpp,v 1.6 2004-09-28 20:12:39 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 #include <limits.h>
 #include "SrvParsClassOpt.h"
 #include "DHCPConst.h"
@@ -5,94 +18,94 @@
 TSrvParsClassOpt::TSrvParsClassOpt(void)
 {
     T1Beg    = SERVER_DEFAULT_MIN_T1;
-    T1End    = 0x7fffffff;
-    T2Beg    = 0x7fffffff;
-    T2End    = 0x7fffffff;
-    PrefBeg  = 0x7fffffff;
-    PrefEnd  = 0x7fffffff;
-    ValidBeg = 0x7fffffff;
-    ValidEnd = 0x7fffffff;
+    T1End    = SERVER_DEFAULT_MAX_T1;
+    T2Beg    = SERVER_DEFAULT_MIN_T2;
+    T2End    = SERVER_DEFAULT_MAX_T2;
+    PrefBeg  = SERVER_DEFAULT_MIN_PREF;
+    PrefEnd  = SERVER_DEFAULT_MAX_PREF;
+    ValidBeg = SERVER_DEFAULT_MIN_VALID;
+    ValidEnd = SERVER_DEFAULT_MAX_VALID;
 
     ClassMaxLease= ULONG_MAX;
 }
 
 //T1,T2,Valid,Prefered time routines
-void TSrvParsClassOpt::setT1Beg(long t1)
+void TSrvParsClassOpt::setT1Beg(unsigned long t1)
 {
     this->T1Beg=t1;
 }
 
-void TSrvParsClassOpt::setT1End(long t1)
+void TSrvParsClassOpt::setT1End(unsigned long t1)
 {
     this->T1End=t1;
 }
 
-long TSrvParsClassOpt::getT1Beg()
+unsigned long TSrvParsClassOpt::getT1Beg()
 {
     return T1Beg;
 }
 
-long TSrvParsClassOpt::getT1End()
+unsigned long TSrvParsClassOpt::getT1End()
 {
     return T1End;
 }
 
-void TSrvParsClassOpt::setT2Beg(long t2)
+void TSrvParsClassOpt::setT2Beg(unsigned long t2)
 {
     this->T2Beg=t2;
 }
 
-void TSrvParsClassOpt::setT2End(long t2)
+void TSrvParsClassOpt::setT2End(unsigned long t2)
 {
     this->T2End=t2;
 }
 
-long TSrvParsClassOpt::getT2Beg()
+unsigned long TSrvParsClassOpt::getT2Beg()
 {
     return this->T2Beg;
 }
 
-long TSrvParsClassOpt::getT2End()
+unsigned long TSrvParsClassOpt::getT2End()
 {
     return this->T2End;
 }
 
-void TSrvParsClassOpt::setPrefBeg(long pref)
+void TSrvParsClassOpt::setPrefBeg(unsigned long pref)
 {
     this->PrefBeg=pref;
 }
 
-void TSrvParsClassOpt::setPrefEnd(long pref)
+void TSrvParsClassOpt::setPrefEnd(unsigned long pref)
 {
     this->PrefEnd=pref;
 }
 
-long TSrvParsClassOpt::getPrefBeg()
+unsigned long TSrvParsClassOpt::getPrefBeg()
 {
     return this->PrefBeg;
 }
 
-long TSrvParsClassOpt::getPrefEnd()
+unsigned long TSrvParsClassOpt::getPrefEnd()
 {
     return this->PrefEnd;
 }
 
-void TSrvParsClassOpt::setValidEnd(long valid)
+void TSrvParsClassOpt::setValidEnd(unsigned long valid)
 {
     this->ValidEnd=valid;
 }
 
-void TSrvParsClassOpt::setValidBeg(long valid)
+void TSrvParsClassOpt::setValidBeg(unsigned long valid)
 {
     this->ValidBeg=valid;
 }
 
-long TSrvParsClassOpt::getValidEnd()
+unsigned long TSrvParsClassOpt::getValidEnd()
 {
     return this->ValidEnd;
 }
 
-long TSrvParsClassOpt::getValidBeg()
+unsigned long TSrvParsClassOpt::getValidBeg()
 {
     return this->ValidBeg;
 }
@@ -167,12 +180,12 @@ void TSrvParsClassOpt::setPool(TContainer<SmartPtr<TStationRange> > *pool)
         this->Pool.append(addr);
 }
 
-void TSrvParsClassOpt::setClassMaxLease(long classMaxLease) {
+void TSrvParsClassOpt::setClassMaxLease(unsigned long classMaxLease) {
     this->ClassMaxLease = classMaxLease;
 }
 
 
-long TSrvParsClassOpt::getClassMaxLease() {
+unsigned long TSrvParsClassOpt::getClassMaxLease() {
     return this->ClassMaxLease;
 }
 
