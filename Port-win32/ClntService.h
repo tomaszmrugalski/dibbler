@@ -13,8 +13,11 @@ public:
 	void Install();
 	void Uninstall();
 	~TClntService(void);
-    int ParseStandardArgs(int argc,char* argv[]);
+    EServiceState ParseStandardArgs(int argc, char* argv[]);
+	void setState(EServiceState status);
 
+private:
+	EServiceState status;
 	
 };
 

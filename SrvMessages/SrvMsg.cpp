@@ -50,7 +50,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 
     //After reading meessage code and transaction id	
     //read options contained in message    
-    unsigned int pos=0;
+    int pos=0;
     while (pos<bufSize)		 
     {
         short code = ntohs( * ((short*) (buf+pos)));

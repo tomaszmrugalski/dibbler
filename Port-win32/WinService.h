@@ -7,6 +7,16 @@
 //#include "ntservmsg.h" // Event message ids
 #define SERVICE_CONTROL_USER 128
 
+typedef enum {
+	STATUS,
+	START,
+	STOP,
+	INSTALL,
+	UNINSTALL,
+	RUN,
+	HELP,
+	INVALID
+} EServiceState;
 
 class TWinService
 {
@@ -21,8 +31,8 @@ public:
 		          const char* pszS1 = NULL,
                   const char* pszS2 = NULL,
                   const char* pszS3 = NULL);
-    bool ParseStandardArgs(int argc, char* argv[]);
     bool IsInstalled();
+	bool IsInstalled(const char *name);
     bool Install();
     bool Uninstall();
     bool StartService();
@@ -37,7 +47,7 @@ public:
     virtual void OnContinue();
     virtual void OnShutdown();
     virtual bool OnUserControl(DWORD dwOpcode);
-    void DebugMsg(const char* Format, ...);
+	void showStatus();
 
 	int getStatus();
 	bool isRunning();

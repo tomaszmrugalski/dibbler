@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-win2k", "client-winxp.vcproj", "{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-winxp", "client-winxp.vcproj", "{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution

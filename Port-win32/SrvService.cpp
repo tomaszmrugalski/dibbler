@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: SrvService.cpp,v 1.7 2004-03-29 21:37:07 thomson Exp $
+ * $Id: SrvService.cpp,v 1.8 2004-04-15 23:24:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/03/29 21:37:07  thomson
+ * 0.1.1 version
+ *
  * Revision 1.6  2004/03/28 19:50:29  thomson
  * Problem with failed startup solved.
  *
@@ -93,7 +96,7 @@ void TSrvService::Run()
 	string addrfile = SRVDB_FILE;
     string logFile  = SRVLOG_FILE;
     logger::Initialize((char*)logFile.c_str());
-	logger::setLogname("Srv");
+	logger::setLogName("Srv");
 
 	clog << logger::logCrit << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
 	clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;

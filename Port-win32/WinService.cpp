@@ -1,6 +1,21 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6 
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * $Id: WinService.cpp,v 1.5 2004-04-15 23:24:43 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Released under GNU GPL v2 licence
+ *
+ */
+
 #include <windows.h>
 #include <stdio.h>
 #include "winservice.h"
+#include "Logger.h"
 
 TWinService* TWinService::ServicePtr= NULL;
 
@@ -34,7 +49,6 @@ TWinService::TWinService(const char* serviceName, const char* dispName,
 
 TWinService::~TWinService(void)
 {
-    DebugMsg("TWinService::~TWinService()");
     if (EventSource)
         DeregisterEventSource(EventSource);
 }
@@ -142,11 +156,6 @@ void TWinService::LogEvent(WORD wType, DWORD dwID,
         ReportEvent(EventSource,wType,0,dwID,NULL,iStr,0,ps,NULL);
 }
 
-bool TWinService::ParseStandardArgs(int argc, char* argv[])
-{
-    return false;
-}
-
 bool TWinService::IsInstalled()
 {
     bool result = false;
@@ -154,12 +163,29 @@ bool TWinService::IsInstalled()
     SC_HANDLE hSCM = ::OpenSCManager(NULL, // local machine
                                      NULL, // ServicesActive database
                                      SC_MANAGER_ALL_ACCESS); // full access
-    if (hSCM) 
-    {
+    if (hSCM) {
         // Try to open the service
         SC_HANDLE hService = OpenService(hSCM,ServiceName,SERVICE_QUERY_CONFIG);
-        if (hService) 
-	{
+        if (hService) {
+            result = true;
+            CloseServiceHandle(hService);
+        }
+        CloseServiceHandle(hSCM);
+    }
+    return result;
+}
+
+bool TWinService::IsInstalled(const char *name)
+{
+    bool result = false;
+    // Open the Service Control Manager
+    SC_HANDLE hSCM = ::OpenSCManager(NULL, // local machine
+                                     NULL, // ServicesActive database
+                                     SC_MANAGER_ALL_ACCESS); // full access
+    if (hSCM) {
+        // Try to open the service
+        SC_HANDLE hService = OpenService(hSCM,name,SERVICE_QUERY_CONFIG);
+        if (hService) {
             result = true;
             CloseServiceHandle(hService);
         }
@@ -183,7 +209,7 @@ bool TWinService::Install()
 	sprintf(filePath+i, " start -d \"%s\"",ServiceDir.c_str());
 
     // Create the service
-	printf("Install(): filepath=[%s]\nServiceName=[%s]\n",filePath,ServiceName);
+	//printf("Install(): filepath=[%s]\nServiceName=[%s]\n",filePath,ServiceName);
 	//printf("ServiceDir=[%s]\n",ServiceDir.c_str());
     SC_HANDLE hService = CreateService(	hSCM,ServiceName, DisplayName,
 					SERVICE_ALL_ACCESS,
@@ -280,7 +306,6 @@ void TWinService::Run()
     //FIXME:DebugMsg("Entering CNTService::Run()");
 
     while (IsRunning) {
-        DebugMsg("Sleeping...");
         Sleep(5000);
     }
 
@@ -318,22 +343,21 @@ bool TWinService::OnUserControl(DWORD dwOpcode)
 	return false;
 }
 
-void TWinService::DebugMsg(const char* Format, ...)
-{
-    char buf[1024];
-    sprintf(buf, "[%s](%lu): ", ServiceName, GetCurrentThreadId());
-	va_list arglist;
-	va_start(arglist, Format);
-    vsprintf(&buf[strlen(buf)], Format, arglist);
-	va_end(arglist);
-    strcat(buf, "\n");
-    OutputDebugString(buf);
-}
-
 int TWinService::getStatus() {
 	return this->Status.dwCurrentState;
 }
 
 bool TWinService::isRunning() {
 	return this->IsRunning;
+}
+
+void TWinService::showStatus() {
+	bool serverInstalled, clientInstalled;
+	serverInstalled = this->IsInstalled("DHCPv6Server");
+	clientInstalled = this->IsInstalled("DHCPv6Client");
+
+	std::clog <<  "Dibbler server :" << (serverInstalled?"INSTALLED":"NOT INSTALLED")
+		<< logger::endl;
+	std::clog <<  "Dibbler client :" << (clientInstalled?"INSTALLED":"NOT INSTALLED")
+		<< logger::endl;
 }
