@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.10 2004-06-05 23:38:08 thomson Exp $
+$Id: TODO,v 1.11 2004-08-24 22:48:35 thomson Exp $
 
 Warning: This TODO may be outdated/out of sync.
 
@@ -22,3 +22,12 @@ Warning: This TODO may be outdated/out of sync.
 - test11: reply contains empty IA with 2 STATUS CODE options:
   - unspecfail (1) + description "no such IA"
   - ok (!!!)
+
+
+  INFO
+ ------
+- kernel sources: 
+   addrconf.c:  inet6_rtm_newaddr() :1579
+   ipv6_add_addr
+   ndisc.c ndisc_router_discovery
+   

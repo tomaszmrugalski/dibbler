@@ -153,7 +153,7 @@ VERSION-win:
 	echo >> VERSION
 
 VERSION-src:
-	echo " Version " >> VERSION
+	echo " Version " > VERSION
 	echo "---------" >> VERSION
 	echo "$(VERSION)" >> VERSION
 	echo >> VERSION
@@ -197,6 +197,9 @@ release-src: VERSION-src
 	find . -name bison++/\* >> file-list
 	find . -name port-winxp/\* >> file-list
 	xargs tar czvf dibbler-$(VERSION)-src.tar.gz < file-list
+
+release-doc: VERSION-src doc
+	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG doc/*.pdf
 
 fixme:
 	rm -rf FIXME

@@ -21,10 +21,6 @@ class TClntTransMgr
     void stop();
     void sendRequest(TContainer< SmartPtr<TOpt> > requestOptions, 
 		     TContainer< SmartPtr<TMsg> > srvlist,int iface);
-    void sendVerify(TContainer< SmartPtr<TOpt> > requestOptions,
-		    TContainer< SmartPtr<TMsg> > srvlist,
-		    TContainer< SmartPtr<TOpt> > replyOptions,
-		    int iface, SmartPtr<TIPv6Addr> peeraddr);
     void sendInfRequest(TContainer< SmartPtr<TOpt> > requestOptions, int iface);
     void sendRebind( TContainer<SmartPtr<TOpt> > ptrIA, int iface);
     void sendRelease(List(TAddrIA) ptrIA);

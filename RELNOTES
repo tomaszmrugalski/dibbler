@@ -1,8 +1,13 @@
 
-  Dibbler 0.2.0-RC2 release notes
+  Dibbler 0.2.0 release notes
  ---------------------------------
  
- It's not stable 0.2.0 version, it's just a Release Candidate 2.
+ This release has a great number of bug fixes, small improvements and changes.
+ It also has a real documentation. 
+ 
+ Consider this release as stable. It concludes long bug fixing phase. I need
+ some rest and will start work on new features soon.
+
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send directly to author. Appropriate links are on project website:
  http://klub.com.pl/dhcpv6/

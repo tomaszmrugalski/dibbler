@@ -30,7 +30,7 @@ SERVERBIN    = dibbler-server-linux
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
-VERSION      = 0.2.0-RC2
+VERSION      = 0.2.0
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux

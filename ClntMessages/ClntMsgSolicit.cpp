@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.6 2004-07-05 00:53:03 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.7 2004-08-24 22:48:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.5  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -130,55 +133,64 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
     }
 
     //FIXME: If there will be enough time, implement options:
-	//UserClass i ReconfigureAccept should appear in this 
-	//part of code
+    //UserClass i ReconfigureAccept should appear in this 
+    //part of code
     
-  	pkt = new char[getSize()];
+    pkt = new char[getSize()];
 }
 
 void TClntMsgSolicit::answer(SmartPtr<TMsg> msg)
 {
-    //If we are not waiting for reply with rapid commit option
-    if (!getOption(OPTION_RAPID_COMMIT))
+    if (shallRejectAnswer(msg))
+	return;
+
+    switch (msg->getType()) {
+    case ADVERTISE_MSG:
     {
-        if(!shallRejectAnswer(msg))
-        {
-            AnswersLst.append(msg);
-            SmartPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
-            if ((prefOpt && (prefOpt->getPreference() == 255) )||(this->RC>1))
-            {
-                sortAnswers();
-                ClntTransMgr->sendRequest(Options,AnswersLst,Iface);
-            
-                IsDone = true;
-                return;
-            }
-        }
+	AnswersLst.append(msg);
+	SmartPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
+	if (prefOpt && (prefOpt->getPreference() == 255) )
+	{
+	    Log(Info) << "ADVERTISE message with prefrence set to 255 received, so wait time for"
+		" other possible ADVERTISE messages is skipped." << LogEnd;
+	    sortAnswers();
+	    ClntTransMgr->sendRequest(Options,AnswersLst,Iface);
+	    IsDone = true;
+	    return;
+	}
+	if (this->RC > 1)
+	{
+	    sortAnswers();
+	    ClntTransMgr->sendRequest(Options,AnswersLst,Iface);
+	    IsDone = true;
+	    return;
+	}
+	break;
     }
-    else //We are waiting for reply with rapid commit option
-        if (msg->getOption(OPTION_RAPID_COMMIT))
-        {
-            //here there is Reply and there is no need to send REQUEST
-            //Message can be verified immediately
-            //Have we just received one of it
-            sortAnswers();
-            ClntTransMgr->sendVerify(Options, AnswersLst, 
-                                msg->getOptLst(), msg->getIface(),msg->getAddr());
-            IsDone=true;
-            return;
-        }
-        else
-        {
-            //Here we don't take care of preference
-            this->AnswersLst.append(msg);
-            //If we are waiting so long
-            if(this->RC>1)
-            {
-                //we satisfy ourselves with answer(s) without RapidCommit Option
-                sortAnswers();
-                ClntTransMgr->sendRequest(Options,AnswersLst,Iface);
-            }
-        }
+    case REPLY_MSG:
+    {
+	if (!this->getOption(OPTION_RAPID_COMMIT))
+	{
+	    Log(Warning) << "REPLY received, but SOLICIT was sent without RAPID_COMMIT. Ingoring." 
+			 << LogEnd;
+	    return;
+	}
+	if (!msg->getOption(OPTION_RAPID_COMMIT))
+	{
+	    Log(Warning) << "REPLY as answer for SOLICIT received without RAPID_COMMIT. Ignoring."
+			 << LogEnd;
+	    return;
+	}
+
+	sortAnswers();
+	IsDone=true;
+	break;
+    }
+    default:
+	Log(Warning) << "Invalid message type (" << msg->getType() 
+		     << ") received as answer for SOLICIT message." << LogEnd;
+	return;
+    }
  }
 
 //Check reveived message against following conditions:

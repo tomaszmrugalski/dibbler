@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.9 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.10 2004-08-24 22:48:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.8  2004/06/20 21:00:45  thomson
  * Various fixes.
  *
@@ -544,6 +547,14 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
     setOptionsReqOptClntDUID((Ptr*)solicit);
 
+    // include our DUID 
+    SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
+    this->Options.append((Ptr*)srvDUID);
+
+    // include rapid commit
+    SmartPtr<TSrvOptRapidCommit> optRapidCommit = new TSrvOptRapidCommit(this);
+    this->Options.append((Ptr*)optRapidCommit);
+
     // is this client supported?
     if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
         //No reply for this client 
@@ -561,8 +572,9 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         switch (opt->getOptType()) 
         {
 	case OPTION_SERVERID    :
-	    this->Options.append(opt);
-	    break;
+	    Log(Warning) << "Solicit message contains ServerID option. Rejecting message. " << LogEnd;
+	    IsDone = true;
+	    return;
 	case OPTION_IA          : 
 	{
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
@@ -579,9 +591,11 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	case OPTION_INTERFACE_ID:
 	case OPTION_IAADDR      :
 	case OPTION_UNICAST     :
+	    Log(Warning) << "Invalid option type("
+			 <<opt->getOptType()<<") received." << LogEnd;
+	    break;
 	case OPTION_RAPID_COMMIT:
-	    std::clog << "Invalid option type("
-		      <<opt->getOptType()<<") received." << logger::endl;
+	    Log(Info) << "SOLICIT with RAPID-COMMIT received." << LogEnd;
 	    break;
 	default:
 	    appendDefaultOption(opt);
@@ -589,6 +603,10 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         }
     }
     appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
+
+
+
+
     pkt = new char[this->getSize()];
     IsDone = false;
     SmartPtr<TIPv6Addr> ptrAddr;

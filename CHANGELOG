@@ -2,9 +2,13 @@
   Dibbler changelog
  ------------------- 
 
+ 0.2.0
+  - WinXP: client displays help when command line parameters are incorrect.
+  - Windows 2000 is no longer supported.
+
  0.2.0-RC2
-  - Linux server send replies on proper interface
-  - Windows server/client no longer loops when interface is down 
+  - Linux server send replies on proper interface.
+  - Windows server/client no longer loops when interface is down.
 
  0.2.0-RC1
   - Console commands are common on WindowsXP and Linux

@@ -6,29 +6,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.16 2004-07-11 14:08:01 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.17 2004-08-24 22:48:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.15  2004/07/05 23:04:08  thomson
- * *** empty log message ***
- *
- * Revision 1.14  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.13  2004/07/05 00:12:29  thomson
- * Lots of minor changes.
- *
- * Revision 1.12  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.11  2004/05/24 00:08:11  thomson
- * *** empty log message ***
- *
- * Revision 1.10  2004/05/23 22:37:54  thomson
- * *** empty log message ***
- *
- * Revision 1.9  2004/05/23 20:20:49  thomson
- * *** empty log message ***
+ * Revision 1.16  2004/07/11 14:08:01  thomson
+ * Opening additonal socket on loopback is not necessary in WIN32 systems.
  *
  * Revision 1.8  2004/04/10 12:18:01  thomson
  * Numerous fixes: LogName, LogMode options added, dns-servers changed to
@@ -368,9 +350,8 @@ void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
     }
 
     if (!found) 
-        std::clog << logger::logWarning << "Message with wrong transID (" 
-		  << hex << msgAnswer->getTransID() << dec
-        << ") received. Ignoring." << LogEnd;
+        Log(Warning) << "Message with wrong transID (" << hex << msgAnswer->getTransID() << dec
+		     << ") received. Ignoring." << LogEnd;
     AddrMgr->dbStore();
 }
 
@@ -446,13 +427,6 @@ void TClntTransMgr::sendRebind( TContainer<SmartPtr<TOpt> > ptrOpts, int iface)
     Transactions.append( ptr );
 }
 
-// send VERIFY pseudo-message
-void TClntTransMgr::sendVerify(TContainer< SmartPtr<TOpt> > requestOptions,
-                               TContainer< SmartPtr<TMsg> > srvlist,
-                               TContainer< SmartPtr<TOpt> > replyOptions,
-                               int iface, SmartPtr<TIPv6Addr> peeraddr)
-{
-}
 
 void TClntTransMgr::sendInfRequest(
                                    TContainer< SmartPtr<TOpt> > requestOptions, 
