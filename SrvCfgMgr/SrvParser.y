@@ -463,10 +463,14 @@ RapidCommitOption
 :   RAPID_COMMIT_ Number 
 { 
     if ( ($2!=0) && ($2!=1)) {
-	Log(Error) << "RAPID-COMMIT in line " << lex->lineno() << " must have 0 or 1 value." << LogEnd;
+	Log(Error) << "RAPID-COMMIT in line " << lex->lineno() << " must have 0 or 1 value." 
+		   << LogEnd;
 	YYABORT;
     }
-    ParserOptStack.getLast()->setRapidCommit($2); 
+    if (yyvsp[0].ival==1)
+	ParserOptStack.getLast()->setRapidCommit(true); 
+    else
+	ParserOptStack.getLast()->setRapidCommit(false); 
 }
 ;
     
