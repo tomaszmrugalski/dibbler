@@ -10,3 +10,5 @@
   If it finds appropriate handler, it passes nessesary data (4xMgr, parent-option ptr,
   msg ptr). If not, drops this option.
 - (Marek was here) - cvs test (test2: lokalnie jako user marek)
+  (teraz thomson)
+  
