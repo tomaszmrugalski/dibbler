@@ -10,6 +10,7 @@ class TOpt
 {
   public:
     TOpt(int optType, TMsg* parent);
+    virtual ~TOpt();
     
     virtual int getSize() = 0;
 
