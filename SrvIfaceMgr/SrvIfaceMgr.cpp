@@ -140,10 +140,10 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	// check message type
 	msgtype = buf[0];
 	SmartPtr<TMsg> ptr;
-	SmartPtr<TIfaceIface> ptrIface;
+	SmartPtr<TSrvIfaceIface> ptrIface;
 
 	// get interface
-	ptrIface = this->getIfaceBySocket(sockid);
+	ptrIface = (Ptr*)this->getIfaceBySocket(sockid);
 
 	int ifaceid = ptrIface->getID();
 	Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/" 
@@ -184,13 +184,15 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	    return new TSrvMsgInfRequest(That, this->SrvTransMgr, 
 					 this->SrvCfgMgr, this->SrvAddrMgr,
 					 ifaceid, peer, buf, bufsize);
+	case RELAY_FORW: {
+	    return this->decodeRelayForw(ptrIface, peer, buf, bufsize);
+	}
 	case ADVERTISE_MSG:
 	case REPLY_MSG:
 	case RECONFIGURE_MSG:
+	case RELAY_REPL:
 	    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
 	    return 0; //NULL;;
-	case RELAY_FORW:
-	case RELAY_REPL:
 	default:
 	    Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
 	    return 0; //NULL
@@ -238,6 +240,28 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int in
 
     return true;
 }
+
+ SmartPtr<TMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIface, 
+					      SmartPtr<TIPv6Addr> peer, 
+					      char * buf, int bufsize) {
+     /* decode RELAY_FORW message */
+     if (bufsize < 34) {
+	 Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
+	 return 0;
+     }
+
+     char type = buf[0];
+     int hopCount = buf[1];
+     SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
+     SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
+
+     Log(Debug) << "### linkAddr="<< linkAddr->getPlain() << " peerAddr=" << peerAddr->getPlain()
+		<< " peer=" << peer->getPlain() << LogEnd;
+
+     Log(Debug) << "### RELAY_FORW was received on the " << ptrIface->getName() << " interface." << LogEnd;
+     return 0;
+ }
+
 
 /*
  * remember SmartPtrs to all managers (including this one)

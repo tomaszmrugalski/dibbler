@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.1 2005-01-03 21:56:27 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.2 2005-01-03 23:13:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/03 21:56:27  thomson
+ * Initial version.
+ *
  */
 
 #include "SrvIfaceIface.h"
@@ -41,6 +44,20 @@ bool TSrvIfaceIface::appendRelay(SmartPtr<TSrvIfaceIface> relay, int interfaceID
     this->RelaysCnt++;
     return true;
 }
+
+SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(int interfaceID) {
+    int i=0;
+    for (i=0; i<this->RelaysCnt; i++) {
+	if (this->Relays[i].interfaceID == interfaceID)
+	    return this->Relays[i].iface;
+    }
+    return 0;
+}
+
+int TSrvIfaceIface::getRelayCnt() {
+    return this->RelaysCnt;
+}
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

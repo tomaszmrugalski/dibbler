@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.4 2005-01-03 21:56:09 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.5 2005-01-03 23:13:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/03 21:56:09  thomson
+ * Relay support added.
+ *
  */
 
 class TSrvIfaceMgr;
@@ -20,6 +23,7 @@ class TSrvIfaceMgr;
 #include "SrvCfgMgr.h"
 #include "SrvAddrMgr.h"
 #include "SrvTransMgr.h"
+#include "SrvIfaceIface.h"
 #include "Msg.h"
 
 /**
@@ -35,6 +39,11 @@ class TSrvIfaceMgr :public TIfaceMgr {
     ~TSrvIfaceMgr();
     friend ostream & operator <<(ostream & strum, TSrvIfaceMgr &x);
 
+
+    SmartPtr<TMsg> decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIface, 
+				   SmartPtr<TIPv6Addr> peer, 
+				   char * buf, int bufsize);
+    
     bool setupRelay(string name, int ifindex, int underIfindex, int interfaceID);
     void dump();
     

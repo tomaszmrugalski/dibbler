@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.1 2005-01-03 21:56:27 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.2 2005-01-03 23:13:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/03 21:56:27  thomson
+ * Initial version.
+ *
  */
 
 class TSrvIfaceIface;
@@ -36,7 +39,8 @@ class TSrvIfaceIface: public TIfaceIface {
     void setUnderlaying(SmartPtr<TSrvIfaceIface> under);
     bool appendRelay(SmartPtr<TSrvIfaceIface> relay, int interfaceID);
     SmartPtr<TSrvIfaceIface> getUnderlaying();
-    
+    SmartPtr<TSrvIfaceIface> getRelayByInterfaceID(int interfaceID);
+    int getRelayCnt();
 
  private:
     SmartPtr<TSrvIfaceIface> UnderRelay;
