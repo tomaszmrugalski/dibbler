@@ -6,6 +6,11 @@
 
 using namespace std;
 
+TClntCfgGroup::TClntCfgGroup()
+{
+    this->isRapidcommit = false;
+}
+
 void TClntCfgGroup::firstIA()
 {
     ClntCfgIALst.first();
@@ -28,15 +33,15 @@ long TClntCfgGroup::countIA()
 
 void TClntCfgGroup::setOptions(SmartPtr<TClntParsGlobalOpt> opt)
 {
-	SmartPtr<TStationID> Station;
+    SmartPtr<TStationID> Station;
    
     opt->firstPrefSrv();
     while(Station=opt->getPrefSrv())
         this->PrefSrv.append(Station);
-
+    
     opt->firstRejedSrv();
-	while(Station=opt->getRejedSrv())
-        this->RejedSrv.append(Station);
+    while(Station=opt->getRejedSrv())
+	this->RejedSrv.append(Station);
     this->isRapidcommit=opt->getRapidCommit();
 }
 

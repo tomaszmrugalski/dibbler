@@ -1,5 +1,5 @@
-#ifndef CLNTCFGGROUP_H_HEADER_INCLUDED_C0FDDA6F
-#define CLNTCFGGROUP_H_HEADER_INCLUDED_C0FDDA6F
+#ifndef CLNTCFGGROUP_H
+#define CLNTCFGGROUP_H
 
 #include "Container.h"
 #include "SmartPtr.h"
@@ -9,13 +9,11 @@
 #include <iomanip>
 using namespace std;
 
-
-//##ModelId=3EF9E8FF0336
 class TClntCfgGroup
 {
  public:
-	 friend std::ostream& operator<<(std::ostream&,TClntCfgGroup&);
-    
+    friend std::ostream& operator<<(std::ostream&,TClntCfgGroup&);
+    TClntCfgGroup();
     
     // --- IA related methods ---
     void firstIA();
@@ -32,6 +30,4 @@ class TClntCfgGroup
     TContainer< SmartPtr<TStationID> > RejedSrv;
 };
 
-
-
-#endif /* CLNTCFGGROUP_H_HEADER_INCLUDED_C0FDDA6F */
+#endif
