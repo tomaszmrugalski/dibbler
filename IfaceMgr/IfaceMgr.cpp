@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.10 2004-09-05 15:27:49 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.11 2004-09-05 15:37:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.9  2004/05/24 21:16:37  thomson
  * Various fixes.
  *
@@ -205,12 +208,12 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 	// check if we've received data addressed to us. There's problem with sockets binding. 
 	// If there are 2 open sockets (one bound to multicast and one to global address),
 	// each packet sent on multicast address is also received on unicast socket.
-	Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
-		   << *sock->getAddr() << LogEnd;
-	if (!memcmp(sock->getAddr()->getPlain(), myAddrPacked,16)) {
-	} else {
-
-	}
+	if (memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)) {
+	    Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
+		       << *sock->getAddr() << ", message ignored." << LogEnd;
+	    bufsize = 0;
+	    return 0;
+	} 
 
         bufsize = result;
         return sock->getFD();
