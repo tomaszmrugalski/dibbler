@@ -151,10 +151,11 @@ void TSrvAddrMgr::getAddrsCount(
             }
         }            
     }
-    std::clog << logger::logDebug << "getAddrsCount() results: DUID=" << *duid;
-    for (int i=0; i< classNr; i++) {
-	std::clog << "addrCount=[" << *(addrCnt+i) << "] clntCount=[" << *(clntCnt+i) << "]" << logger::endl;
-    }
+// FIXME: Log it in some sanite way
+//    std::clog << logger::logDebug << "getAddrsCount() results: DUID=" << *duid;
+//    for (int i=0; i< classNr; i++) {
+//	std::clog << "addrCount=[" << *(addrCnt+i) << "] clntCount=[" << *(clntCnt+i) << "]" << logger::endl;
+//    }
 }
 
 // remove outdated addresses 

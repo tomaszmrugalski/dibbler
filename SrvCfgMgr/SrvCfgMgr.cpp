@@ -130,7 +130,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 	char buf[64];
 	memset(buf,0,64);
         if (realIface->getLLAddress() &&
-	    realIface->getMacLen() &&
+	    (realIface->getMacLen() >5) &&
 	    memcmp(realIface->getMac(),buf,realIface->getMacLen()) &&
 	    realIface->flagUp() &&
 	    !realIface->flagLoopback())
