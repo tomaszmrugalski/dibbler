@@ -6,6 +6,7 @@
  *                                                                           *
  * released under GNU GPL v2 or later licence                                */
 
+
 #ifndef CLNTOPTNTPSERVERS_H
 #define CLNTOPTNTPSERVERS_H
 #include "OptNTPServers.h"

@@ -6,12 +6,20 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: Opt.cpp,v 1.3 2004-03-29 19:11:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
  *
  */
-#include "Opt.h"int TOpt::getOptType(){    return OptType;}
+
+#include "Opt.h"
+int TOpt::getOptType()
+{
+    return OptType;
+}
+
 TOpt::TOpt( int optType, TMsg *parent){	OptType=optType;    Parent=parent;}
 int TOpt::getSubOptSize(){    int size = 0;    SubOptions.first();    SmartPtr<TOpt> ptr;    while (ptr = SubOptions.get()) 		size += ptr->getSize();    return size;}
 char* TOpt::storeSubOpt( char* buf){	SmartPtr<TOpt> ptr;	SubOptions.first();    while ( ptr = SubOptions.get() ) 	{		ptr->storeSelf(buf);		buf += ptr->getSize();    }	return buf;}
