@@ -1,6 +1,17 @@
 
   Dibbler changelog
  ------------------- 
+ Expected changes in 0.3.0
+  - Developer's guide
+  - Linux: Fixed issue with running server and client on the same host
+
+ 0.3.0-RC1
+  - Socket binding has changes (no more REUSE_ADDR). See RELNOTES for details.
+  - New options: SIP-SERVERS, SIP-DOMAINS, NIS-SERVERS, NIS-DOMAIN, NIS+-SERVERS, NIS+-DOMAIN, LIFETIME
+  - Option renewal mechanism (Lifetime option)
+  - Fixed issues with large timeouts (signed/unsigned problem)
+  - Assigned options are now stored in files in working directory (besides of setting them up in the system)
+  - Parsers are now more robust and more verbose in case of invalid config files.
 
  0.2.1-RC1
   - Windows2003 is now supported.

@@ -1,10 +1,13 @@
 
-  Dibbler 0.2.1-RC1 release notes
+  Dibbler 0.3.0-RC1 release notes
  ---------------------------------
+  
+ Main goal of this release is to improve stateless configuration support.
+ Lots of new options were added and support for already present was improved.
  
- This release has new features (unicast, win2003 support) for the first time in
- a very, very long time. A bunch of smaller improvements were made also.
- And its documentation is improved and clarified.
+ Socket binding has changed. REUSE_ADDR is used no more. There is still unresolved
+ issue with running server and client on the same Linux host. It probably will
+ be removed in the full 0.3.0 release.
  
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send directly to author. Appropriate links are on project website:
