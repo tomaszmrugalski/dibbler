@@ -1,10 +1,16 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski  <msend@o2.pl>                                   *
- *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * $Id: Container.h,v 1.3 2004-03-29 22:06:49 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Released under GNU GPL v2 licence
+ *
+ */
 
 #ifndef CONTAINER_H
 #define CONTAINER_H

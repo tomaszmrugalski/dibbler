@@ -1,8 +1,21 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * $Id: SmartPtr.h,v 1.2 2004-03-29 22:06:49 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Released under GNU GPL v2 licence
+ *
+ */
+
 #ifndef SMARTPTR_H
 #define SMARTPTR_H
 
 #include <stdio.h>
-
 
 class Ptr {
 public:

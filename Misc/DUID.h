@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * $Id: DUID.h,v 1.3 2004-03-29 22:06:49 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Released under GNU GPL v2 licence
+ *
+ */
+
 class TDUID;
 #ifndef DUID_H_
 #define DUID_H_

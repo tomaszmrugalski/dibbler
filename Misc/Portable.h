@@ -1,8 +1,21 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * $Id: Portable.h,v 1.15 2004-03-29 22:06:49 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Released under GNU GPL v2 licence
+ *
+ */
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-//#define DIBBLER_VERSION "CVS $Date: 2004-03-29 21:37:07 $"
+//#define DIBBLER_VERSION "CVS $Date: 2004-03-29 22:06:49 $"
 #define DIBBLER_VERSION "0.1.1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION

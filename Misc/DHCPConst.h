@@ -1,7 +1,19 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * $Id: DHCPConst.h,v 1.3 2004-03-29 22:06:49 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Released under GNU GPL v2 licence
+ *
+ */
+
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
-
-// adresy
 
 #define ALL_DHCP_RELAY_AGENTS_AND_SERVERS  "ff02::1:2"
 #define ALL_DHCP_SERVERS                   "ff05::1:3"
@@ -9,7 +21,7 @@
 #define DHCPCLIENT_PORT 546
 #define DHCPSERVER_PORT 547
 
-// wiadomosci
+// messages
 #define SOLICIT_MSG    1
 #define ADVERTISE_MSG  2
 #define REQUEST_MSG    3
@@ -25,7 +37,7 @@
 #define RELAY_REPL     13
 #define CONTROL_MSG    255
 
-// opó¿nienia,retransmisje
+// timers, timeouts
 
 #define SOL_MAX_DELAY 1
 #define SOL_TIMEOUT   1
