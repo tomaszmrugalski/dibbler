@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.7 2004-03-28 19:57:59 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.8 2004-04-23 20:51:09 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/03/28 19:57:59  thomson
+ * no message
+ *
  */
       
 #include "DHCPServer.h"
@@ -58,7 +61,7 @@ void TDHCPServer::run()
 	if (timeout>10) timeout = 10;
 #endif
 
-        std::clog << logger::logNotice << "Sleeping for " << timeout << " seconds." << logger::endl;
+        std::clog << logger::logNotice << "Accepting connections. Next event in " << timeout << " second(s)." << logger::endl;
         SmartPtr<TMsg> msg=IfaceMgr->select(timeout);
         if (msg) 
         {
