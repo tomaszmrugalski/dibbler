@@ -31,8 +31,6 @@ configure-stamp:
 	dh_testdir
 #	echo "[PATCH ] 001_Makefile_usr_local"
 #	patch -p0 < debian/patches/001_Makefile_usr_local
-	# Add here commands to configure the package.
-
 	touch configure-stamp
 
 
@@ -41,16 +39,12 @@ build: build-arch build-indep
 
 build-arch: build-arch-stamp
 build-arch-stamp: configure-stamp 
-
-	# Add here commands to compile the arch part of the package.
-	#$(MAKE) 
+	$(MAKE) server client doc
 	touch build-arch-stamp
 
 build-indep: build-indep-stamp
 build-indep-stamp: configure-stamp 
-
-	# Add here commands to compile the indep part of the package.
-	#$(MAKE) doc
+	$(MAKE) doc
 	touch build-indep-stamp
 
 clean:
@@ -69,11 +63,6 @@ install-indep:
 	dh_testroot
 	dh_clean -k -i 
 	dh_installdirs -i
-
-	# Add here commands to install the indep part of the package into
-	# debian/<package>-doc.
-	#INSTALLDOC#
-
 	dh_install -i
 
 install-arch:
@@ -81,19 +70,14 @@ install-arch:
 	dh_testroot
 	dh_clean -k -s 
 	dh_installdirs -s etc/dibbler var/lib/dibbler
-
-	# Install everything to the tmp directory
+# Install everything to the tmp directory
 	mkdir -p $(CURDIR)/debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
-	# This one instructs dh_install to use packagename.install from the debian directory
+# This one instructs dh_install to use packagename.install from the debian directory
 	dh_install --sourcedir=debian/tmp
 
-	# This one will look for debian/package.init and install it into /etc/init.d
+# This one will look for debian/package.init and install it into /etc/init.d
 	dh_installinit 
-	# dibbler package (server)
-	# dibbler-client package (client)
-	# dibbler-relay package (relay)
-	# dibbler-doc package (doc)
 
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-indep
