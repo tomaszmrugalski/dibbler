@@ -1,12 +1,9 @@
- INFO
-------
+ Usage:
+--------
 
-Usage:
- 
+1. Running
 dibbler-server.exe ACTION -d dirname -i ipv6path
-
 e.g.: dibbler-server.exe run -d "c:\dibbler\\" -i "c:\windows\system32\ipv6.exe"
-
 Please note double backslashes at the end of paths.
 	
 where
@@ -17,15 +14,24 @@ where
 	install   - install service
 	uninstall - uninstall service
 	run       - run interactively
-	
-Compile info:
 
+2. Config file sanity check
+Do not use interface names. Use interface number instead.
+
+ Compilation
+-------------
+
+1. flex/bison++ under win32
 To generate ClntParser.cpp and ClntLexer.cpp files, you can use
 parser.bat. After generation, in file ClntLexer.cpp replace:
-
 class istream;
-
 with:
-
 #include <iostream>
 using namespace std;
+
+2. flex binary included in cvs is slightly modified. It generates
+#include "FlexLexer.h" instead of #include <FlexLexer.h>. You should
+add .\ to include path if you have problem with missing FlexLexer.h.
+Also note that FlexLexer.h is modified (std:: added in several places,
+<fstream.h> is replaced with <fstream> etc.
+

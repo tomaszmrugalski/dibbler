@@ -12,7 +12,7 @@ using namespace std;
 
 class TStationID
 {
-	friend ostream& operator<<(ostream& out,TStationID&  station);
+	friend std::ostream& operator<<(std::ostream& out,TStationID&  station);
 public:
 
 	TStationID(SmartPtr<TIPv6Addr> addr);

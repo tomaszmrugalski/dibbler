@@ -412,8 +412,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
         return out;
     }
 
-    out<<"name=\""<<iface.IfaceName << "\""
-        <<" id=\""<<iface.ID << "\">" << endl;
+    out << "name=\"" << iface.IfaceName << "\""
+        << " id=\"" << iface.ID << "\">" << endl;
 
     // --- DNS-servers ---
     out << "    <DNSServers>" << endl;
@@ -454,24 +454,24 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     // --- NTP servers ---
     out << "    <NTPServers>" << endl;
 
-    out << "      <Request count=\"" << iface.NTPSrv.count() << "\">" << endl;
+    out << "      <request count=\"" << iface.NTPSrv.count() << "\">" << endl;
     iface.NTPSrv.first();
     while(Station=iface.NTPSrv.get())
         cout << *Station;  
-    out << "      </Request>" << endl;
+    out << "      </request>" << endl;
 
-    out << "      <Append count=\"" << iface.AppNTPSrv.count() << "\">" << endl;
+    out << "      <append count=\"" << iface.AppNTPSrv.count() << "\">" << endl;
     iface.AppNTPSrv.first();
     while(Station=iface.AppNTPSrv.get())
         cout << *Station;  
-    out << "      </Append>" << endl;
+    out << "      </append>" << endl;
 
 
-    out << "      <Prefered count=\"" << iface.PrepNTPSrv.count() << "\">"  << logger::endl;
+    out << "      <prefered count=\"" << iface.PrepNTPSrv.count() << "\">"  << logger::endl;
     iface.PrepNTPSrv.first();
     while(Station=iface.PrepNTPSrv.get())
         cout << *Station;  
-    out << "      </Append>" << endl;
+    out << "      </prefered>" << endl;
 
     // required NTP
     out << "      <Req value=\"" <<  iface.NTPReqOpt << "\" NTPOptions=\""
@@ -480,20 +480,20 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- Timezone ---
 
-    out << "      <TimeZone>:"<<iface.TZone << logger::endl;
-    out << "        <DomainReq>" << iface.TimeZoneReqOpt << "</DomainReq>" << endl;
-    out << "        <Options>" << iface.TimeZoneSendOpt << "</Options>" << endl;
-    out << "      </TimeZone>" << endl;
+    out << "    <TimeZone>:"<<iface.TZone << logger::endl;
+    out << "      <DomainReq>" << iface.TimeZoneReqOpt << "</DomainReq>" << endl;
+    out << "      <Options>" << iface.TimeZoneSendOpt << "</Options>" << endl;
+    out << "    </TimeZone>" << endl;
 
-    out << "      <groups count=\"" << iface.ClntCfgGroupLst.count() << "\">" << endl;
+    out << "    <groups count=\"" << iface.ClntCfgGroupLst.count() << "\">" << endl;
     int groupCnt=0;
     SmartPtr<TClntCfgGroup>	groupPtr;
     iface.ClntCfgGroupLst.first();
     while(groupPtr=iface.ClntCfgGroupLst.get())
     {	
-        cout<<"{" << logger::endl<<*groupPtr << logger::endl<<"}" << logger::endl;
+        out << *groupPtr;
     }
-    out << "      </groups>" << endl;
+    out << "    </groups>" << endl;
 
     out << "  </ClntCfgIface>" << endl;
 

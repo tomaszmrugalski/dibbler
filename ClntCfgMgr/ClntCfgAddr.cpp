@@ -5,12 +5,10 @@
 #include "ClntCfgAddr.h"
 #include "Logger.h"
 
-
 SmartPtr<TIPv6Addr> TClntCfgAddr::get()
 {
     return Addr;
 }
-
 
 long TClntCfgAddr::getValid()
 {
@@ -68,9 +66,8 @@ TClntCfgAddr::TClntCfgAddr(SmartPtr<TIPv6Addr> addr)
 
 ostream& operator<<(ostream& out,TClntCfgAddr& addr)
 {
-    out<<"Parametry IA:"<<logger::endl;
-    out<<"Prefered:"<<addr.Pref <<logger::endl;
-    out<<"Valid:"<<addr.Valid<<logger::endl;
-    out<<"Address:"<<(*addr.Addr)<<logger::endl;	
+    out << "<addr prefered=\"" << addr.Pref 
+		<< "\" valid=\"" << addr.Valid << "\">";
+    out << *addr.Addr << "</addr>" << std::endl;	
 	return out;
 }

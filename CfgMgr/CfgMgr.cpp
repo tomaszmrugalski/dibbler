@@ -5,19 +5,18 @@
 #include <netinet/in.h>
 #endif 
 
+#include <iostream>
 #include <fstream>
 #include <string>
-#include <iostream>
-#include <iomanip>
+//#include <iomanip>
 #include "CfgMgr.h"
 #include "Logger.h"
 #include "Portable.h"
 #include "Logger.h"
-using namespace std;
 
 bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
 {
-    ifstream oldF,newF;
+	std::ifstream oldF,newF;
     bool newConf=false;
     int  len;
     // It's common for client and server so why not to create CfgMgr

@@ -39,18 +39,8 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     if(newConf) 
         this->copyFile(cfgFile,oldCfgFile);
     //if files differs - make copy of new config
-
-#ifdef WIN32XX
-    clntLexer lexer;
-    clntParser parser;
-    if (parser.yycreate(&lexer)) {
-        lexer.yyin = fopen(cfgFile.c_str(),"r");
-        if (lexer.yycreate(&parser))
-            result = parser.yyparse();
-    }
-#endif
-
-#ifdef WIN32
+	
+	// now this code is common to Linux and win32. Cool.
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
         std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl; 
@@ -63,7 +53,8 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     result = parser.yyparse();
     std::clog << "done." << logger::endl;
     f.close();
-#endif
+	// now this code is common to Linux and win32. Cool.
+
 
     if (result) {
         std::clog << logger::logCrit << "Config error." << logger::endl;
@@ -189,6 +180,12 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
         //this->DUIDlen=0;
         return;
     };
+
+	std::ofstream xmlDump;
+	xmlDump.open(CLNTCFGMGR_FILE);
+	xmlDump << *this;
+	xmlDump.close();
+
     IsDone = false;
 }
 
@@ -432,9 +429,8 @@ bool TClntCfgMgr::isDone()
 
 ostream & operator<<(ostream &strum, TClntCfgMgr &x)
 {
-    strum << "<TClntCfgMgr>" << endl;
-    //strum << "  <DUID len=\"" << x.getDUIDlen() << ">" << x.getDUID() << "</DUID>" << endl;
-    strum << *x.DUID;
+    strum << "<ClntCfgMgr>" << endl;
+    strum << "  " << *x.DUID;
     strum << "  <WorkDir>" << x.getWorkDir()  << "</WorkDir>" << endl;
     strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
@@ -446,12 +442,8 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
         strum << *ptr;
     }
 
-    strum << "</TClntCfgMgr>" << endl;
+    strum << "<ClntCfgMgr>" << endl;
     return strum;
 }
 
 
-//yyFlexLexer::yyFlexLexer(istream *arg_yyin, ostream *arg_yyout) {
-//
-//}
-//

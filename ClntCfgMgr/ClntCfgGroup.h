@@ -14,7 +14,7 @@ using namespace std;
 class TClntCfgGroup
 {
  public:
-    friend ostream& operator<<(ostream&,TClntCfgGroup&);
+	 friend std::ostream& operator<<(std::ostream&,TClntCfgGroup&);
     
     
     // --- IA related methods ---

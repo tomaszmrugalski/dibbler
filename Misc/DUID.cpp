@@ -134,14 +134,16 @@ char * TDUID::storeSelf(char* buf)
 
 ostream& operator<<(ostream& out,TDUID&  duid)
 {
-    if ((duid.DUID&&duid.len))
+    if ( (duid.DUID && duid.len) )
     {
+		out << "<duid length=\"" << duid.len << "\">";
         for(int i=0;i<duid.len;i++)
             out<<setfill('0')<<setw(2)<<hex<< (unsigned int)duid.DUID[i];
-        out<<dec;
+		out << dec << "</duid>" << std::endl;
+		
     }
-    else
-        clog<<logger::logDebug
-            <<"Trying to display DUID of length zero or not set appropriately" << logger::endl;
+	else {
+        out << "<duid length=\"0\"></duid>" << std::endl;
+	}
 	return out;
 }

@@ -19,7 +19,7 @@ using namespace std;
 
 class TClntCfgIface
 {
-	friend ostream& operator<<(ostream&,TClntCfgIface&);
+	friend std::ostream& operator<<(std::ostream&,TClntCfgIface&);
 public:
     TContainer< SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;
 

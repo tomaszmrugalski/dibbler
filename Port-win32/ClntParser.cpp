@@ -1,6 +1,6 @@
 #define YY_clntParser_h_included
 
-/*  A Bison++ parser, made from ClntParser-linux.y  */
+/*  A Bison++ parser, made from ClntParser.y  */
 
  /* with Bison++ version bison++ Version 1.21-8, adapted from GNU bison by coetmeur@icdc.fr
   */
@@ -23,8 +23,6 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-#include "ClntParser.h"
-#include "malloc.h"
 /* HEADER SECTION */
 #if defined( _MSDOS ) || defined(MSDOS) || defined(__MSDOS__) 
 #define __MSDOS_AND_ALIKE
@@ -80,20 +78,21 @@ void *alloca ();
 #include <stdio.h>
 #define YYBISON 1  
 
-    #include <iostream>
-    #include <string>
-    #include <FlexLexer.h>
-    #include "DHCPConst.h"
-    #include "SmartPtr.h"
-    #include "Container.h"
-    #include "ClntParser.h"
-    #include "ClntParsGlobalOpt.h"
-    #include "ClntCfgIface.h"
-    #include "ClntCfgAddr.h"
-    #include "ClntCfgIA.h"
-    #include "ClntCfgGroup.h"
-
-    #define YY_USE_CLASS
+#include <iostream>
+#include <string>
+#include <malloc.h>
+#include "FlexLexer.h"
+#include "DHCPConst.h"
+#include "SmartPtr.h"
+#include "Container.h"
+#include "ClntParser.h"
+#include "ClntParsGlobalOpt.h"
+#include "ClntCfgIface.h"
+#include "ClntCfgAddr.h"
+#include "ClntCfgIA.h"
+#include "ClntCfgGroup.h"
+    
+#define YY_USE_CLASS
 #define YY_clntParser_MEMBERS  yyFlexLexer * lex; \
 /*List of options in scope stack,the most fresh is last in the list*/ \
 TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack; \
@@ -616,19 +615,19 @@ static const short yyrhs[] = {    37,
 
 #if YY_clntParser_DEBUG != 0
 static const short yyrline[] = { 0,
-    94,    95,    99,   100,   101,   102,   109,   114,   127,   132,
-   141,   152,   162,   174,   184,   185,   186,   187,   194,   198,
-   206,   210,   218,   227,   236,   245,   253,   254,   255,   256,
-   260,   264,   272,   277,   283,   288,   293,   298,   305,   306,
-   307,   318,   334,   335,   336,   341,   342,   343,   344,   346,
-   347,   351,   352,   353,   354,   355,   356,   360,   361,   365,
-   378,   385,   392,   399,   405,   410,   417,   423,   431,   441,
-   446,   454,   459,   467,   472,   481,   489,   493,   500,   504,
-   511,   515,   522,   526,   533,   538,   547,   554,   561,   570,
-   577,   587,   594,   602,   610,   618,   628,   636,   639,   645,
-   648,   654,   657,   663,   666,   673,   677,   720,   724,   728,
-   732,   739,   740,   744,   745,   746,   750,   751,   755,   756,
-   759,   760
+    95,    96,   100,   101,   102,   103,   110,   115,   128,   133,
+   142,   153,   163,   175,   185,   186,   187,   188,   195,   199,
+   207,   211,   219,   228,   237,   246,   254,   255,   256,   257,
+   261,   265,   273,   278,   284,   289,   294,   299,   306,   307,
+   308,   319,   335,   336,   337,   342,   343,   344,   345,   347,
+   348,   352,   353,   354,   355,   356,   357,   361,   362,   366,
+   379,   386,   393,   400,   406,   411,   418,   424,   432,   442,
+   447,   455,   460,   468,   473,   482,   490,   494,   501,   505,
+   512,   516,   523,   527,   534,   539,   548,   555,   562,   571,
+   578,   588,   595,   603,   611,   619,   629,   637,   640,   646,
+   649,   655,   658,   664,   667,   674,   678,   721,   725,   729,
+   733,   740,   741,   745,   746,   747,   751,   752,   756,   757,
+   760,   761
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","T1_","T2_",
@@ -2051,6 +2050,7 @@ bool clntParser::CheckIsIface(int ifaceNr)
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) YYABORT;
+  return true;
 };
     
     //method check whether interface with id=ifaceName has been
@@ -2064,6 +2064,7 @@ bool clntParser::CheckIsIface(string ifaceName)
     string presName=ptr->getName();
     if (presName==ifaceName) YYABORT;
   };
+  return true;
 };
 
     //method creates new scope appropriately for interface options and declarations
@@ -2115,7 +2116,7 @@ bool clntParser::EndIfaceDeclaration()
   }
   //restore global options
   ParserOptStack.delLast();
-    
+  return true;    
 }   
 
 void clntParser::EmptyIface()

@@ -6,7 +6,7 @@ class TDUID;
 using namespace std;
 class TDUID
 {
-    friend ostream& operator<<(ostream& out,TDUID &range);
+	friend std::ostream& operator<<(std::ostream& out,TDUID &range);
 public:
     TDUID();
     TDUID(char* DUID,int DUIDlen); // packed

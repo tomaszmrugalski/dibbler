@@ -29,31 +29,27 @@
 // *** file setup/default paths *****************************************
 // **********************************************************************
 
+#define CLNTCFGMGR_FILE "client-CfgMgr.xml"
+#define SRVDUID_FILE	"server-duid"
+#define CLNTDUID_FILE	"client-duid"
+#define CLNTLOG_FILE	"client.log"
+#define SRVLOG_FILE	    "server.log"
+#define CLNTDB_FILE		"client-addrdb.xml"
+#define SRVDB_FILE      "server-addrdb.xml"
+
 #ifdef WIN32
-#define WORKDIR		   ".\\"
-#define SRVDUID_FILE	   "duid-server"
-#define CLNTDUID_FILE	   "duid-client"
-#define CLNTLOG_FILE	   "client.log"
-#define SRVLOG_FILE	   "server.log"
-#define CLNTCONF_FILE	   "client.conf"
-#define SRVCONF_FILE       "server.conf"
-#define CLNTDB_FILE	   "addrdb-client.xml"
-#define SRVDB_FILE         "addrdb-server.xml"
+#define WORKDIR		    ".\\"
+#define CLNTCONF_FILE	"client.conf"
+#define SRVCONF_FILE    "server.conf"
 #endif
 
 #ifdef LINUX
-#define CLNTCONF_FILE	   "/var/lib/dibbler/client.conf"
-#define SRVCONF_FILE       "/var/lib/dibbler/server.conf"
-#define WORKDIR		   "/var/lib/dibbler"
-#define SRVDUID_FILE	   "duid-server"
-#define CLNTDUID_FILE	   "duid-client"
-#define CLNTLOG_FILE	   "client.log"
-#define SRVLOG_FILE	   "server.log"
-#define RESOLVCONF_FILE    "/etc/resolv.conf"
-#define CLNTDB_FILE	   "addrdb-client.xml"
-#define SRVDB_FILE         "addrdb-server.xml"
-#define CLNTPID_FILE       "client.pid"
-#define SRVPID_FILE        "server.pid"
+#define WORKDIR		    "/var/lib/dibbler"
+#define CLNTCONF_FILE	"/var/lib/dibbler/client.conf"
+#define SRVCONF_FILE    "/var/lib/dibbler/server.conf"
+#define RESOLVCONF_FILE "/etc/resolv.conf"
+#define CLNTPID_FILE    "client.pid"
+#define SRVPID_FILE     "server.pid"
 #endif
 
 // **********************************************************************

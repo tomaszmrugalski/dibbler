@@ -12,7 +12,7 @@ using namespace std;
 
 class TClntCfgIA
 {
-    friend ostream& operator<<(ostream& out,TClntCfgIA& group);
+	friend std::ostream& operator<<(std::ostream& out,TClntCfgIA& group);
  public:
     long getIAID();
     void setIAID(long iaid);

@@ -53,14 +53,12 @@ bool TIPv6Addr::operator==(const TIPv6Addr &other)
 
 ostream& operator<<(ostream& out,TIPv6Addr& addr)
 {
-    for(int addrlength=0;addrlength<16;addrlength+=2)
-	{
-		int part=addr.Addr[addrlength]*256+addr.Addr[addrlength+1];
-        out<<std::setfill('0')<<std::setw(4)<<std::hex<<part;
-		if (addrlength<14) 
-			out<<":";
-		else	
-            out<<std::dec;
+	char buf[48];
+	if (addr.Addr) {
+		inet_ntop6(addr.Addr, buf);
+		out << buf;
+	} else {
+		out << "::";
 	}
     return out;
 }

@@ -1,11 +1,13 @@
 #ifndef IPV6ADDR_H
 #define IPV6ADDR_H
+
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 using namespace std;
 class TIPv6Addr
 {
-    friend ostream& operator<<(ostream& out,TIPv6Addr& group);
+	friend std::ostream& operator<<(std::ostream& out,TIPv6Addr& group);
 public:
     TIPv6Addr();    //Creates any address
     TIPv6Addr(char* addr, bool plain=false);

@@ -4,7 +4,6 @@
 #include "Logger.h"
 using namespace std;
 
-
 long TClntCfgIA::countAddr()
 {
     return ClntCfgAddrLst.count();
@@ -94,20 +93,19 @@ void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)
 
 ostream& operator<<(ostream& out,TClntCfgIA& ia)
 {
-    out<<"Parametry IA:" << logger::endl;
-    out<<"T1:"<<ia.T1 << logger::endl;
-    out<<"Send opt. T1:"<<ia.T1SendOpt << logger::endl;
-    out<<"T2:"<<ia.T2 << logger::endl;
-    out<<"Send opt. T2:"<<ia.T2SendOpt << logger::endl;
+    out << "        <ia iaid=\"" << ia.IAID << "\" t1=\"" << ia.T1 << "\" t2=\"" 
+		<< ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
+		
+//	out << "Send opt. T1:"<<ia.T1SendOpt << logger::endl;
+//  out << "Send opt. T2:"<<ia.T2SendOpt << logger::endl;
 
-    out<<"Liczba Adresów:"<<ia.ClntCfgAddrLst.count() << logger::endl;
-    int addrCnt=0;
     SmartPtr<TClntCfgAddr> addr;
-    ia.ClntCfgAddrLst.first();
+
+	ia.ClntCfgAddrLst.first();
     while(addr=ia.ClntCfgAddrLst.get())
     {	
-        cout<<"Nr.addr:"<<addrCnt++ << logger::endl;
-        cout<<"{" << logger::endl<<*addr << logger::endl<<"}" << logger::endl;
+        out << "          " << *addr;
     }
+	out << "        </ia>" << std::endl;
     return out;
 }

@@ -12,7 +12,7 @@ using namespace std;
 
 class TClntCfgAddr
 {
-	friend ostream& operator<<(ostream& out,TClntCfgAddr& group);
+	friend std::ostream& operator<<(std::ostream& out,TClntCfgAddr& group);
   public:
     SmartPtr<TIPv6Addr> get();
 
