@@ -29,6 +29,7 @@ $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
 	                  -lClntAddrMgr \
 	                  -lAddrMgr \
 	-L$(MISC)         -lMisc \
+	-L$(MESSAGES)     -lMsg \
 	-lClntOptions -lOptions -lLowLevel $(XMLLIBS) $(EFENCE) 
 
 server: includes commonlibs srvlibs $(SERVERBIN)
