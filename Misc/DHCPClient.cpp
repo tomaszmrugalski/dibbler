@@ -4,7 +4,10 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
  *          Marek Senderski <msend@o2.pl>                                    *
  *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+ * $Id: DHCPClient.cpp,v 1.3 2004-01-23 19:25:36 thomson Exp $                                                                           
+ *                                                                           *
+ * released under GNU GPL v2 or later licence                                *
+ *                                                                           */
 
 #include <iostream>
 #include <stdlib.h>

@@ -26,5 +26,3 @@ int domain_add(const char* ifname, int ifaceid, char* domain) {
 int domain_del(const char * ifname, int ifaceid, char *domain) {
     //FIXME
 }
-
-

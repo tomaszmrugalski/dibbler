@@ -1,6 +1,5 @@
 /*
- *  $id$
- *  $Id: layer3.c,v 1.2 2004-01-22 23:06:07 thomson Exp $
+ *  $Id: layer3.c,v 1.3 2004-01-23 19:25:37 thomson Exp $
  */
 
 #include <stdio.h>
@@ -178,7 +177,6 @@ int ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list *
     }
     *count = cnt;
     *bufPtr = buf;
-    printf("iface: %d ma %d adresow lokalnych\n",ifindex,cnt);
 }
 
 
@@ -258,9 +256,9 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     else
 	multicast = 0;
 
-    printf("### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d mcast=%d ###\n",
-    ifacename,ifaceid, addr, port, thisifaceonly, multicast);
-    fflush(stdout);
+    //printf("### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d mcast=%d ###\n",
+    //ifacename,ifaceid, addr, port, thisifaceonly, multicast);
+    //fflush(stdout);
     
     // Open a socket for inbound traffic
     memset(&hints, 0, sizeof(hints));
@@ -273,7 +271,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	return -7;
     }
     if( (Insock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0){
-	printf("socket creation failed. Is IPv6 protocol supported by kernel?\n");
+	//printf("socket creation failed. Is IPv6 protocol supported by kernel?\n");
 	return -1;
     }	
 	

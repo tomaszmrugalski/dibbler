@@ -140,6 +140,11 @@ void TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     //		I think service stops. Hmmm. Exceptions are neccesity (Marek)
     ofstream f;
     f.open( duidFile.c_str() );
+    if (!f.is_open()) {
+	std::clog << logger::logCrit << "Unable to write " << duidFile << " file." << logger::endl;
+//	this->isDone = true;
+	return;
+    }
     
     int DUIDlen=macLen+8;
     char *DUID = new char[DUIDlen];

@@ -30,7 +30,7 @@ SrvLexer.o: SrvLexer-linux.l
 
 libs: objs libLowLevel.a libClntParser.a libSrvParser.a
 
-libLowLevel.a: 
+libLowLevel.a: objs
 	rm -f libLowLevel.a
 	ar cr $@ layer3.o libnetlink.o ll_map.o ll_types.o utils.o addrpack.o dns.o
 

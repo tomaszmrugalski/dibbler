@@ -19,7 +19,7 @@ TIfaceIface::TIfaceIface(char * name, int id, unsigned int flags, char* mac,
     memcpy(this->Mac,mac,maclen);
  
     // store all link-layer addresses
-    this->LLAddrCnt=LLAddrCnt;
+    this->LLAddrCnt=llAddrCnt;
     if (llAddrCnt>0)
     {
         this->LLAddr=new char[16*llAddrCnt];
@@ -251,10 +251,28 @@ TIfaceIface::~TIfaceIface() {
  * just prints important informations (debugging & logging)
  */
 ostream & operator <<(ostream & strum, TIfaceIface &x) {
+    char buf[48];
+
     strum << "  <TIfaceIface";
     strum << " name=\"" << x.Name << "\"";
     strum << " id=\"" << x.ID << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
+    strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
+
+    for (int i=0; i<x.LLAddrCnt; i++) {
+	inet_ntop6(x.LLAddr+i*16,buf);
+	strum << "    <Addr>" << buf << "</Addr>" << endl;
+    }
+
+    strum << "    <Mac>";
+    for (int i=0; i<x.Maclen; i++) {
+	strum.fill('0');
+	strum.width(2);
+	strum << (hex) << (int) x.Mac[i];
+	if (i<x.Maclen-1) strum  << ":";
+    }
+    strum << "</Mac>" << endl;
+
     SmartPtr<TIfaceSocketIPv6> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {

@@ -1,6 +1,9 @@
   Internal TODO
  ---------------
 
+- UPGRADE: WORKDIR should be a global variable. So reasonable default could be applied.
+  It can also be overwritten from command line
+- BUG: ClntTransMgr:82 - socket is opened on specific LL addr, but Linux does not read LL addrs
 - release first public version, display info about version and compilation time
 - fill stucture desrcibing iface with link local addresses available on this iface
 - repeated DNS SERVERS Option write redundant information to RESOLVCONF_FILE

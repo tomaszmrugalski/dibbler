@@ -135,19 +135,27 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     }
 
     SmartPtr<TIfaceIface> realIface;
-    ////FIXME:get first iface - and pray it won't be loopback or other shit
     bool found=false;
     ifaceMgr->firstIface();
 
-    while((!found)&&(realIface=ifaceMgr->getIface()))
-        if (realIface->getMacLen()) found=true; ;
-    if(found)    
+    while ( (!found) && (realIface=ifaceMgr->getIface()) ) {
+        realIface->firstLLAddress();
+	char buf[64];
+	memset(buf,0,64);
+        if (realIface->getLLAddress() &&
+	    realIface->getMacLen() &&
+	    memcmp(realIface->getMac(),buf,realIface->getMacLen()) &&
+	    realIface->flagUp() &&
+	    !realIface->flagLoopback())
+	    found=true;
+    }
+
+    if(found) {
         this->setDUID(this->WorkDir+"/"+(string)SRVDUID_FILE,
 		      (char*)realIface->getMac(),
 		      (int)realIface->getMacLen(),
 		      (int)realIface->getHardwareType());
-    else
-    {
+    } else {
         IsDone=true;
         std::clog<<logger::logCrit
 		 <<"Cannot generate DUID, because there is no appropriate interface" << logger::endl;

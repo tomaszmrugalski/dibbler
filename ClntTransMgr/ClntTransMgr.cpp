@@ -84,19 +84,15 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 
                     if (llAddr)
                     {
-                        std::clog<<logger::logInfo<<"New socket created on addres/port:";
-                        int i;
-                        for (i=0;i<14;i+=2)
-                            std::clog<<hex<<setw(4)<<setfill('0')
-                            <<ntohs(*(u_short*)(llAddr+i))<<":";
-                        std::clog << hex << setw(4) << setfill('0')
-                            << ntohs(*(u_short*)(llAddr+i))
-                            << dec << "/" << DHCPCLIENT_PORT;
+                        std::clog << logger::logInfo << "New socket created on addres/port:";
+			char tmp[48];
+			inet_ntop6(tmp,llAddr);
+			std::clog << tmp << "/" << DHCPCLIENT_PORT;
                     }
                     else
                     {
                         std::clog<<logger::logInfo<<"Unable to create any socket on iface:"
-                            <<iface->getID()<<" (No appropriate link local address available";
+                            <<iface->getID()<<" No appropriate link local address available.";
                     };
                     std::clog << logger::endl;
                 }

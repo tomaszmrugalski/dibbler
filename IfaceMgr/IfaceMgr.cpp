@@ -38,7 +38,7 @@ TIfaceMgr::TIfaceMgr()
     while (ptr!=NULL) {
         std::clog << logger::logNotice << "Detected iface " << ptr->name 
 		  << "/id=" << ptr->id << ",flags=" << ptr->flags 
-//		  << " LLaddrsCnt=" << ptr->linkaddrcount 
+		  << " maclen=" << ptr->maclen
 		  << logger::endl;
 	
         SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,

@@ -174,15 +174,21 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     ////FIXME:get first iface - and pray it won't be loopback or other shit
     bool found=false;
     IfaceMgr->firstIface();
-    while((realIface=IfaceMgr->getIface())&&(!found))
+    while( (!found) && (realIface=IfaceMgr->getIface()) )
     {
         realIface->firstLLAddress();
-        if (realIface->getLLAddress()&&realIface->getMacLen())
+	char buf[64];
+	memset(buf,0,64);
+        if ( realIface->getLLAddress() && 
+	     realIface->getMacLen() &&
+	     memcmp(realIface->getMac(),buf,realIface->getMacLen()) &&
+	     realIface->flagUp() &&
+	     !realIface->flagLoopback() )
             found=true;
     }
 
     if(found)    
-        this->setDUID(this->WorkDir+ (string) CLNTDUID_FILE,
+        this->setDUID(this->WorkDir+"/"+(string)CLNTDUID_FILE,
         (char*)realIface->getMac(),
         (int)realIface->getMacLen(),
         (int)realIface->getHardwareType());
@@ -190,7 +196,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     {
         IsDone=true;
         std::clog<<logger::logCrit
-            <<"Cannot generate DUID, because there is no appropriate interface" << logger::endl;
+            <<"Cannot generate DUID, because there is no appropriate interface." << logger::endl;
         this->DUID=new TDUID();
         //this->DUIDlen=0;
         return;
