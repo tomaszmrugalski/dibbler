@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.18 2004-12-07 00:45:09 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.19 2005-01-03 21:54:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/12/07 00:45:09  thomson
+ * Manager creation unified and cleaned up.
+ *
  * Revision 1.17  2004/12/02 00:51:04  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -67,6 +70,7 @@ TDHCPServer::TDHCPServer(string config)
 	this->IsDone = true;
 	return;
     }
+    this->IfaceMgr->dump();
     
     this->AddrMgr = new TSrvAddrMgr(SRVADDRMGR_FILE);
     if ( this->AddrMgr->isDone() ) {
@@ -74,6 +78,7 @@ TDHCPServer::TDHCPServer(string config)
 	this->IsDone = true;
 	return;
     }
+    this->AddrMgr->dump();
 
     this->CfgMgr = new TSrvCfgMgr(IfaceMgr, config, SRVCFGMGR_FILE);
     if ( this->CfgMgr->isDone() ) {
@@ -81,6 +86,8 @@ TDHCPServer::TDHCPServer(string config)
 	this->IsDone = true;
 	return;
     }
+    this->CfgMgr->dump();
+    this->IfaceMgr->dump(); // dump it once more (important, if relay interfaces were added)
 
     this->TransMgr = new TSrvTransMgr(IfaceMgr, AddrMgr, CfgMgr, SRVTRANSMGR_FILE);
     if ( this->TransMgr->isDone() ) {
