@@ -202,8 +202,8 @@ release-src: VERSION-src
 	find bison++ -name \* >> file-list
 	find port-winxp -name \* >> file-list
 #	xargs tar czvf dibbler-$(VERSION)-src.tar.gz < file-list
-	tar czvf ../dibbler-$(VERSION)-src.tar.gz .
-	mv ../dibbler-$(VERSION)-src.tar.gz .
+	cd ..; tar czvf dibbler-tmp.tar.gz dibbler
+	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
 	echo "File is stored in dibbler-$(VERSION)-src.tar.gz"
 
 release-doc: VERSION-src doc oxygen

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.18 2004-12-15 23:12:37 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.19 2004-12-16 22:00:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/12/15 23:12:37  thomson
+ * Minor improvements.
+ *
  * Revision 1.17  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -96,6 +99,7 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
           Log(Crit) << "Interface " << ptr->name << "/" << ptr->id 
                     << " does not appear to have any link-layer address. Do you have IPv6 enabled in your system?" << LogEnd;
           this->IsDone = true;
+	  return;
         }
 	
         SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,
