@@ -1,10 +1,13 @@
- Usage:
---------
+ Dibbler README
+----------------
+$Id: INFO-winxp.txt,v 1.6 2004-02-22 23:10:27 thomson Exp $
 
 1. Running
-dibbler-server.exe ACTION -d dirname -i ipv6path
-e.g.: dibbler-server.exe run -d "c:\dibbler\\" -i "c:\windows\system32\ipv6.exe"
-Please note double backslashes at the end of paths.
+
+dibbler-server.exe ACTION -d dirname 
+e.g.: dibbler-client-winxp.exe install -d "c:\devel\dibbler\port-winxp"
+
+Please note that double backslashes at the end of path are no longer needed.
 	
 where
 	ACTION = status|start|stop|install|uninstall|run
@@ -15,7 +18,9 @@ where
 	uninstall - uninstall service
 	run       - run interactively
 
-2. Config file sanity check
+2. Suggested use it to install as service and run from
+
+2. Config file sanity check has some bugs
 Do not use interface names. Use interface number instead.
 
  Compilation
