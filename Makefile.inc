@@ -57,7 +57,7 @@ SRVPARSER   = $(PREFIX)/SrvParser
 SRVMESSAGES = $(PREFIX)/SrvMessages
 SRVOPTIONS  = $(PREFIX)/SrvOptions
 
-COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      TransMgr   Messages     Options include misc $(PORTDIR)
+COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include misc port-linux
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
 SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
@@ -70,7 +70,6 @@ SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
 
 %.a: objs
 	@echo "[LIB    ]  $@"	
-	rm -f $@
 	ar cr $@ $(OBJECTS)
 
 all: libs
@@ -79,6 +78,9 @@ clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
 	rm -f *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) TAGS
 	find . -type l -exec rm {} \;
+	find . -name *.a -exec rm {} \;
+	find . -name *.o -exec rm {} \;
+	find . -name test? -exec rm {} \;
 
 # === SUBDIR NAMES ===
 SUBDIR=$(subst $(TOPDIR),,$(CURDIR))

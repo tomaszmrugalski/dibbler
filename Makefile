@@ -18,17 +18,18 @@ $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
 	-L$(LOWLEVEL)    \
-	-L$(CLNTOPTIONS)  -lClntOpts \
+	-L$(CLNTOPTIONS)  -lClntOptions \
 	-L$(OPTIONS)      -lOptions \
 	-L$(CLNTTRANSMGR) -lClntTransMgr \
 	-L$(CLNTCFGMGR)   -lClntCfgMgr \
 	-L$(CFGMGR)       -lCfgMgr \
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
+	-L$(IFACEMGR)     -lIfaceMgr \
 	-L$(CLNTMESSAGES) -lClntMsg \
 	                  -lClntAddrMgr \
 	                  -lAddrMgr \
 	-L$(MISC)         -lMisc \
-	-lClntOpts -lOptions -lLowLevel $(XMLLIBS) $(EFENCE) 
+	-lClntOptions -lOptions -lLowLevel $(XMLLIBS) $(EFENCE) 
 
 server: includes commonlibs srvlibs $(SERVERBIN)
 $(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
