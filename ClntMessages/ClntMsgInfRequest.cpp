@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.6 2004-11-29 22:47:08 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.7 2004-11-30 00:56:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/11/29 22:47:08  thomson
+ * Minor fix in memory management.
+ *
  * Revision 1.5  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -140,45 +143,41 @@ void TClntMsgInfRequest::answer(SmartPtr<TMsg> msg)
     SmartPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
     //which option have we requested from server
-    SmartPtr<TClntOptOptionRequest> ptrOptionReqOpt;
-    ptrOptionReqOpt = (Ptr*)getOption(OPTION_ORO);
-    //analyze the reveived packet and check if all options
-    //were provided
-    bool newOptionAssigned=false;
+    SmartPtr<TClntOptOptionRequest> ptrORO;
+    ptrORO = (Ptr*)getOption(OPTION_ORO);
     
     SmartPtr<TOpt> option;
     msg->firstOption();
     while(option = msg->getOption())
     {
         //if option did what it was supposed to do ???
-	if (option->doDuties()) 
-        {
-	    if ( ptrOptionReqOpt && (ptrOptionReqOpt->isOption(option->getOptType())) )
-		ptrOptionReqOpt->delOption(option->getOptType());
-            SmartPtr<TOpt> requestOpt;
-            this->firstOption();
-            while ( requestOpt = getOption()) 
-            {
-                if (requestOpt->getOptType()==option->getOptType())
-                {
-                    this->Options.del();
-                    newOptionAssigned=true;
-                }//if
-            }//while
-        } 
+	if (!option->doDuties()) {
+	    // Log(Debug) << "Setting option " << option->getOptType() << " failed." << LogEnd;
+	    continue;
+	}
+	if ( ptrORO && (ptrORO->isOption(option->getOptType())) )
+	    ptrORO->delOption(option->getOptType());
+	SmartPtr<TOpt> requestOpt;
+	this->firstOption();
+	while ( requestOpt = this->getOption()) 
+	{
+	    if (requestOpt->getOptType()==option->getOptType())
+		this->Options.del();
+	}//while
     }
 
-    ptrOptionReqOpt->delOption(OPTION_LIFETIME);
-    if (ptrOptionReqOpt && ptrOptionReqOpt->count() && newOptionAssigned)
+    ptrORO->delOption(OPTION_LIFETIME);
+    if (ptrORO && ptrORO->count())
     {
 	Log(Notice) << "Not all options were assigned (";
-	for (int i=0; i<ptrOptionReqOpt->count(); i++)
-	    Log(Cont) << ptrOptionReqOpt->getReqOpt(i) << " ";
+	for (int i=0; i<ptrORO->count(); i++)
+	    Log(Cont) << ptrORO->getReqOpt(i) << " ";
 	Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
         ClntTransMgr->sendInfRequest(Options,Iface);
-    }
-    if (newOptionAssigned) 
+    } else {
+	Log(Debug) << "All requested options were assigned." << LogEnd;
         IsDone=true;
+    }
     return;
 }
 
