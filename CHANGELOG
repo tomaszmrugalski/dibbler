@@ -1,6 +1,9 @@
 
   Dibbler changelog
  ------------------- 
+ 
+ Next - not released yet
+  - Linux: DEB packages are now generated (bugs #65, #66)
 
  0.3.0 [2004-12-16]
   - Linux: make install was implemented (bugs #86, #87)
