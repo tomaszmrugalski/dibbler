@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.8 2004-12-07 00:45:41 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.9 2004-12-07 22:54:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.7  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -99,8 +102,6 @@ void TClntAddrMgr::doDuties()
     SmartPtr<TAddrIA> ptrIA;
     SmartPtr<TAddrAddr> ptrAddr;
 
-    //Will contain list of ia to be refreshed
-    TContainer<SmartPtr<TAddrIA> > IALst;
     Client->firstIA();
     while ( ptrIA = Client->getIA() ) 
     {
@@ -109,7 +110,7 @@ void TClntAddrMgr::doDuties()
 	    //Removing outdated addresses
 	    if(!ptrAddr->getValidTimeout())
 	    {
-		//Here shoulb be also removed from iface manager
+		//Here should be also removed from iface manager
 		ptrIA->delAddr(ptrAddr->get());
 	    }
 	    

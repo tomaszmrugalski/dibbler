@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.28 2004-12-07 00:43:03 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.29 2004-12-07 22:55:50 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/12/07 00:43:03  thomson
+ * Server no longer support link local addresses (bug #38),
+ * Server now supports stateless mode (bug #71)
+ *
  * Revision 1.27  2004/12/02 00:51:05  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -132,7 +136,7 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     }
     
     // check for invalid values, e.g. T1>T2
-    if(!validateConfig()) {
+    if(!this->validateConfig()) {
 	this->IsDone = true;
         return false;
     }
@@ -387,7 +391,7 @@ bool TSrvCfgMgr::validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfg
     if ( ptrClass->getPref(0) > ptrClass->getValid(0x7fffffff) )
     {
 	Log(Crit) << "Prefered time upper bound " <<ptrClass->getPref(0x7fffffff)
-		  << "can't be lower than valid time lower bound:" << ptrClass->getValid(0)
+		  << " can't be lower than valid time lower bound " << ptrClass->getValid(0)
 		  << "on the "<<ptrIface->getName()<<"/"
 		  << ptrIface->getID() << " interface." << LogEnd;
 	return false;
@@ -395,7 +399,7 @@ bool TSrvCfgMgr::validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfg
     if ( ptrClass->getT1(0)>ptrClass->getT2(0x7fffffff) )
     {
 	Log(Crit) << "T2 timeout upper bound:" <<ptrClass->getPref(0x7fffffff)
-		  << "can't be lower than T2 lower bound:" << ptrClass->getT2(0)
+		  << " can't be lower than T2 lower bound:" << ptrClass->getT2(0)
 		  << "on the "<<ptrIface->getName()<<"/"
 		  << ptrIface->getID() << " interface." << LogEnd;
 	return false;
