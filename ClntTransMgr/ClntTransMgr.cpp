@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.31 2004-12-07 22:57:51 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.32 2004-12-08 00:18:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/12/07 22:57:51  thomson
+ * removeExpired() method rewritten.
+ *
  * Revision 1.30  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -250,6 +253,8 @@ void TClntTransMgr::removeExpired() {
 	    Log(Warning) << "Address " << ptrAddr->get()->getPlain() << " assigned to the "
 			 << ptrIface->getName() << "/" << ptrIface->getID() 
 			 << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
+
+	    // remove that address from the physical interace
 	    ptrIface->delAddr(ptrAddr->get());
 	}
     }
@@ -529,7 +534,7 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst)
     SmartPtr<TAddrIA> ptrIA;
     IALst.first();
     ptrIA = IALst.get();
-    Log(Notice) << "Sending RELEASE for " << IALst.count() << " IA(s)." << LogEnd;
+    Log(Notice) << "Creating RELEASE for " << IALst.count() << " IA(s)." << LogEnd;
 
     SmartPtr<TMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, ptrIA->getIface(), 
         ptrIA->getSrvAddr(), IALst);
