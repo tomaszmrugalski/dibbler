@@ -13,6 +13,10 @@ bison:
 	@echo "[MAKE   ] /bison++/bison++"
 	cd $(PREFIX)/bison++; $(MAKE)
 
+parser: 
+	cd ClntCfgMgr; $(MAKE) parser
+	cd SrvCfgMgr; $(MAKE) parser
+
 client: $(CLIENTBIN)
 
 $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
@@ -322,4 +326,4 @@ clean-libs:
 links: includes
 clobber: clean
 
-.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc
+.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser
