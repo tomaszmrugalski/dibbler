@@ -6,16 +6,18 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.7 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.8 2004-09-03 20:58:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.6  2004/04/10 12:18:01  thomson
  * Numerous fixes: LogName, LogMode options added, dns-servers changed to
  * dns-server, '' around strings are no longer needed.
  *
  * Revision 1.5  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
- *
  *
  */
 
@@ -54,6 +56,11 @@ TIfaceSocketIPv6::TIfaceSocketIPv6(char * iface, int ifaceid, int port,
     this->Count++;
     this->createSocket(iface, ifaceid, addr, port, ifaceonly);
 }
+
+enum EState TIfaceSocketIPv6::getStatus() {
+    return this->Status;
+}
+
 
 /*
  * creates socket bound to this interface

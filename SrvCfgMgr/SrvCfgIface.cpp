@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.10 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.11 2004-09-03 20:58:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.9  2004/06/28 22:37:59  thomson
  * Minor changes.
  *
@@ -208,6 +211,8 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << ">" << std::endl;
     if (iface.isUniAddress) {
 	out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
+    } else {
+	out << "  <unicast/>" << std::endl;
     }
     out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << logger::endl;

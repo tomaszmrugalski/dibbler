@@ -37,6 +37,7 @@ class TIfaceSocketIPv6 {
     int getFD();
     int getPort();
     int getIfaceID();
+    enum EState getStatus();
 
     // ---select() stuff---
     // FileDescriptors Set, for use with select()

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.9 2004-07-05 00:12:29 thomson Exp $
+ * $Id: Iface.cpp,v 1.10 2004-09-03 20:58:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/07/05 00:12:29  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.8  2004/05/24 00:02:58  thomson
  * *** empty log message ***
  *
@@ -194,9 +197,12 @@ char* TIfaceIface::getLLAddress() {
  * binds socket to one address only
  */
 bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly) {
-    Log(Debug) << "Creating socket on " << *addr << " address." << LogEnd;
+    // Log(Debug) << "Creating socket on " << *addr << " address." << LogEnd;
     SmartPtr<TIfaceSocketIPv6> ptr = 
 	new TIfaceSocketIPv6(this->Name, this->ID, port, addr, ifaceonly);
+    if (ptr->getStatus()!=CONFIGURED) {
+	return false;
+    }
     SocketsLst.append(ptr);
     return true;
 }

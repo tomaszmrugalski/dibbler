@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvTransMgr.h,v 1.3 2004-09-03 20:58:36 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 class TSrvTransMgr;
 #ifndef SRVTRANSMGR_H
 #define SRVTRANSMGR_H

@@ -34,6 +34,9 @@ namespace logger {
 			       "Debug    "
 	};
 
+	if ( x==0 )
+	    return strum;
+
 	if ( x > logger::logLevel) {
 	    // ignore this entry
 	    strum.rdbuf(logger::nullfile.rdbuf());
@@ -67,6 +70,7 @@ namespace logger {
 	return strum;
     }
 
+    ostream& logCont(ostream & strum)    { return logger::logCommon(strum,0); }
     ostream& logEmerg(ostream & strum)   { return logger::logCommon(strum,1); }
     ostream& logAlert(ostream & strum)   { return logger::logCommon(strum,2); }
     ostream& logCrit(ostream & strum)    { return logger::logCommon(strum,3); }

@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvTransMgr.cpp,v 1.13 2004-09-03 20:58:36 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include <limits.h>
 #include "SrvTransMgr.h"
 #include "SmartPtr.h"
@@ -38,17 +52,22 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         char srvAddr[16];
         inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
         SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
+
+        // TransMgr is certainly not done yet. We're just getting started
+        IsDone = false;
+
         while (confIface=CfgMgr->getIface())
         {
             // FIXME: check for NO-CONFIG
             SmartPtr<TIfaceIface> iface=IfaceMgr->getIfaceByID(confIface->getID());
 	    Log(Notice) << "Creating ff02::1:2 socket on " << confIface->getName() 
 			<< "/" << confIface->getID() << " interface." << LogEnd;
-            iface->addSocket( ipAddr, DHCPSERVER_PORT, true);
+            if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true)) {
+		Log(Crit) << "Proper socket creation failed." << LogEnd;
+		this->IsDone = true;
+	    }
         }
 
-        // TransMgr is certainly not done yet. We're just getting started
-        IsDone = false;
     }
     else
         IsDone=true;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.17 2004-08-24 22:48:35 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.18 2004-09-03 20:58:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/08/24 22:48:35  thomson
+ * *** empty log message ***
+ *
  * Revision 1.16  2004/07/11 14:08:01  thomson
  * Opening additonal socket on loopback is not necessary in WIN32 systems.
  *
@@ -469,8 +472,11 @@ void TClntTransMgr::checkSolicit()
             };
             if (IALstToConfig.count()) {//Are there any IA, which should be configured?
 		
-		Log(Info) << "Creating SOLICIT message on "
-			     << iface->getName() <<" interface." << LogEnd;
+		Log(Info) << "Creating SOLICIT message ";
+		if (group->getRapidCommit()) {
+		    Log(Cont) << "(with rapid-commit)";
+		} 
+		Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
                 Transactions.append(
 		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
 					iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
