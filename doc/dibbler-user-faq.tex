@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-faq.tex,v 1.5 2004-12-01 21:58:43 thomson Exp $
+%% $Id: dibbler-user-faq.tex,v 1.6 2004-12-04 23:47:57 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.5  2004/12/01 21:58:43  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.4  2004/11/28 11:14:07  thomson
 %% RFCs and drafts added, clarification about option values
 %%
@@ -62,6 +65,13 @@ assigned (in parenthesis are numbers used in Dibbler):
 \opt{FQDN} (43).
 
 \subsection{Linux specific}
+
+\Q I can't run client and server on the same host. What's wrong?
+
+\A First of all, running client and server on the same host is just
+plain meaningless, except testing purposes only. There is a problem
+with sockets binding. To work around this problem, consult Developer's
+Guide, Tip section how to compile Dibbler with certain options.
 
 \Q After enabling unicast communication, my client fails to send
 REQUEST messages. What's wrong?
