@@ -1,13 +1,23 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsgRelease.h,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 class TSrvMsgRelease;
-#ifndef RELEASE_H_HEADER_INCLUDED_C1123867
-#define RELEASE_H_HEADER_INCLUDED_C1123867
+#ifndef SRVMSGRELEASE_H
+#define SRVMSGRELEASE_H
 
 #include "SrvMsg.h"
 
-//##ModelId=3EC75CE40043
-//##Documentation
-//## Transakcja Release tworzona jest w przypadku:
-//## 1. zatrzymywanie us³ugi (Tworzona w metodzie stop())
 class TSrvMsgRelease : public TSrvMsg
 {
   public:
@@ -20,33 +30,11 @@ class TSrvMsgRelease : public TSrvMsg
 		 char* buf,
 		 int bufSize);
 	
-    //##ModelId=3ECA86C001AD
-    //##Documentation
-    //## Odpowiada za reakcjê na otrzymanie wiadomoœci. W prztpadku zakoñczenia
-    //## transakcji ustawia pole IsDone na true
     void answer(SmartPtr<TMsg> Rep);
-
-    //##ModelId=3ECA86C001CB
-    //##Documentation
-    //## Funkcja odpowiada za transmisjê i retransmisjê danej wiadomoœci z
-    //## uwzglednienirem sta³ych czasowych.
     void doDuties();
-
-    //##ModelId=3EFF0A95001F
-    //##Documentation
-    //## Zwraca timeout (wykorzystywane po stronie klienta) do okreœlenia
-    //## czasu, po którym powinna zostaæ wykonana jakaœ akcja (retransmisja,
-    //## koniec transakcji itp.) wykonywana przez metodê do Duties 
-    //## po stronie klienta. 
     unsigned long getTimeout();
-
-    //##ModelId=3ECA86C001FD
-    //##Documentation
-    //## Funkcja sprawdza, czy komunikat DHCP jest poprawny tj. czy zawiera
-    //## odpowiednie opcje jak podano w RFC.
     bool check();
-
-    //##ModelId=3EC8AA180101
+    string getName();
     ~TSrvMsgRelease();
 };
-#endif /* RELEASE_H_HEADER_INCLUDED_C1123867 */
+#endif /* SRVMSGRELEASE_H */

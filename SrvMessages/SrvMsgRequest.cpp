@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvMsgRequest.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #include "SrvMsgRequest.h"
 #include "SmartPtr.h"
 #include "DHCPConst.h"
@@ -77,4 +91,8 @@ unsigned long TSrvMsgRequest::getTimeout()
 TSrvMsgRequest::~TSrvMsgRequest()
 {
 
+}
+
+string TSrvMsgRequest::getName() {
+    return "REQUEST";
 }

@@ -1,5 +1,20 @@
-#ifndef SRVSOLICIT_H_HEADER_INCLUDED_C1126259
-#define SRVSOLICIT_H_HEADER_INCLUDED_C1126259
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvMsgSolicit.h,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
+class TSrvMsgSolicit;
+#ifndef SRVMSGSOLICIT_H
+#define SRVMSGSOLICIT_H
 #include "SrvMsg.h"
 #include "SrvCfgMgr.h"
 #include "SrvIfaceMgr.h"
@@ -8,46 +23,24 @@
 
 #include "SmartPtr.h"
 
-//## Powinien zostaæ wywo³any, przy:
-//## 1. Restarcie systemu
-//## 2. Przy zwolnieniu, któregoœ z IA
 class TSrvMsgSolicit : public TSrvMsg
 {
  public:
     TSrvMsgSolicit(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
-		   SmartPtr<TSrvTransMgr>			transMgr,
-		   SmartPtr<TSrvCfgMgr>			cfgMgr,
-		   SmartPtr<TSrvAddrMgr>			addrMgr,
+		   SmartPtr<TSrvTransMgr> transMgr,
+		   SmartPtr<TSrvCfgMgr>	  cfgMgr,
+		   SmartPtr<TSrvAddrMgr>  addrMgr,
 		   int iface, SmartPtr<TIPv6Addr> addr,
 		   char* buf, int bufSzie);
 
-    //## Odbiera wiadomoœci TAdvertise i wstawia jest do listy Answers.
     void answer(SmartPtr<TMsg> msg);
 
-    //## Wysy³a wiadomoœæ
-    //## Retransmituje wiadomoœæ
-    //## Po zakoñczeniu okresu zbierania SOLICITOW sortuje liste wg preferencji
-    //## okreœlonych w konfigu (+ odrzucanie niepo¿¹danych serwerów),
-    //##  wywo³uje metode sendRequest TransMgr(lista serwerow) i ustawia pole
-    //## IsDone na true.
     void doDuties();
-
-    // sort answers
     void sortAnswers();
-
-    //##ModelId=3EFCBFC9021B
-    //##Documentation
-    //## Zwraca timeout (wykorzystywane po stronie klienta) do okreœlenia
-    //## czasu, po którym powinna zostaæ wykonana jakaœ akcja (retransmisja,
-    //## koniec transakcji itp.) wykonywana przez metodê do Duties 
-    //## po stronie klienta. 
+    string getName();
     unsigned long getTimeout();
-
     bool check();
-
-	void send();
-    
-	//##ModelId=3EC75CE40027
+    void send();
     ~TSrvMsgSolicit();
 
 private:
@@ -59,4 +52,4 @@ private:
 	    char* addr, 
 	    int msgType);
 };
-#endif /* SOLICIT_H_HEADER_INCLUDED_C1126259 */
+#endif /* SRVMSGSOLICIT_H*/

@@ -1,56 +1,51 @@
-#ifndef CONFIRM_H_HEADER_INCLUDED_C1125A67
-#define CONFIRM_H_HEADER_INCLUDED_C1125A67
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsgConfirm.h,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
+#ifndef SRVMSGCONFIRM_H
+#define SRVMSGCONFIRM_H
 #include "SrvMsg.h"
 #include "SrvIfaceMgr.h"
 #include "SrvTransMgr.h"
 #include "SrvCfgMgr.h"
 #include "SrvAddrMgr.h"
 
-//##ModelId=3EC75CE30311
-//##Documentation
-//## Klient wysy³a komunikat CONFIRM do serwera, aby okreœliæ, czy adresy,
-//## które zosta³y mu przypisane s¹ nadal prwid³owe dla ³¹cza, do którego jest
-//## do³¹czony. 
-//## Mo¿e siê to staæ:
-//## 1. w momencie restartu systemu, po za³adowaniu danych z bazy danych dla
-//## ka¿dego adresu, dla którego adres wa¿noœci siê nie skoñczy³
-//## 2. w momencie zmainy, któregokolwiek z ³¹czy, do którego klient jest
-//## do³¹czony, wysy³any jest do wszystkich serwerów 
+// Client sends CONFIRM to a server to verify that his addresses
+// are still valid. It could happen when:
+// 1. client has restated
+// 2. client changed link
 class TSrvMsgConfirm : public TSrvMsg
 {
-  public:
+ public:
     TSrvMsgConfirm(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-			       SmartPtr<TSrvTransMgr> TransMgr, 
-			       SmartPtr<TSrvCfgMgr> CfgMgr, 
-			       SmartPtr<TSrvAddrMgr> AddrMgr,
-			       int iface, SmartPtr<TIPv6Addr> addr,
-			       char* buf, int bufSize);
-
-	//##ModelId=3EC8AABB02F0
+		   SmartPtr<TSrvTransMgr> TransMgr, 
+		   SmartPtr<TSrvCfgMgr> CfgMgr, 
+		   SmartPtr<TSrvAddrMgr> AddrMgr,
+		   int iface, SmartPtr<TIPv6Addr> addr,
+		   char* buf, int bufSize);
+    
     TSrvMsgConfirm(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-			       SmartPtr<TSrvTransMgr> TransMgr, 
-			       SmartPtr<TSrvCfgMgr>	CfgMgr, 
-			       SmartPtr<TSrvAddrMgr> AddrMgr,
-			       int iface, SmartPtr<TIPv6Addr> addr);
-
-    //##ModelId=3EC92E8601FC
-    //##Documentation
-    //## Funkcja sprawdza, czy komunikat DHCP jest poprawny tj. czy zawiera
-    //## odpowiednie opcje jak podano w RFC.
+		   SmartPtr<TSrvTransMgr> TransMgr, 
+		   SmartPtr<TSrvCfgMgr>	CfgMgr, 
+		   SmartPtr<TSrvAddrMgr> AddrMgr,
+		   int iface, SmartPtr<TIPv6Addr> addr);
+    
     bool check();
-
-    //##ModelId=3EEE4B930324
     void answer(SmartPtr<TMsg> Rep);
-
-
-    //##ModelId=3EEE4B93034C
     void doDuties();
-
-    //##ModelId=3EEE4B93037E
     unsigned long getTimeout();
-
-    //##ModelId=3EC8AAC10027
     ~TSrvMsgConfirm();
+    string getName();
 
 };
-#endif /* CONFIRM_H_HEADER_INCLUDED_C1125A67 */
+#endif /* SRVMSGCONFIRM_H*/

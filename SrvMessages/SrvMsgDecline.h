@@ -1,37 +1,44 @@
-#ifndef DECLINE_H_HEADER_INCLUDED_C112140C
-#define DECLINE_H_HEADER_INCLUDED_C112140C
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvMsgDecline.h,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
+class TSrvMsgDecline;
+#ifndef SRVMSGDECLINE_H
+#define SRVMSGDECLINE_H
 #include "SrvMsg.h"
 
 class TSrvMsgDecline : public TSrvMsg
 {
   public:
-    //##ModelId=3EC8AA8100F8
     TSrvMsgDecline(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 		   SmartPtr<TSrvTransMgr> TransMgr,
 		   SmartPtr<TSrvCfgMgr> CfgMgr,
 		   SmartPtr<TSrvAddrMgr> AddrMgr,
 		   int iface,  SmartPtr<TIPv6Addr> addr);
     
-	TSrvMsgDecline(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-		       SmartPtr<TSrvTransMgr> TransMgr,
-		       SmartPtr<TSrvCfgMgr> CfgMgr,
-		       SmartPtr<TSrvAddrMgr> AddrMgr,
-		       int iface, SmartPtr<TIPv6Addr> addr,
-		       char* buf, int bufSize);
-	
-    //## Funkcja sprawdza, czy komunikat DHCP jest poprawny tj. czy zawiera
-    //## odpowiednie opcje jak podano w RFC.
+    TSrvMsgDecline(SmartPtr<TSrvIfaceMgr> IfaceMgr,
+		   SmartPtr<TSrvTransMgr> TransMgr,
+		   SmartPtr<TSrvCfgMgr> CfgMgr,
+		   SmartPtr<TSrvAddrMgr> AddrMgr,
+		   int iface, SmartPtr<TIPv6Addr> addr,
+		   char* buf, int bufSize);
+    
     bool  check();
-
+    string getName();
     void  answer(SmartPtr<TMsg> Rep);
-
     void  doDuties();
-
     unsigned long  getTimeout();
-	
     ~TSrvMsgDecline();
 };
 
-
-
-#endif /* DECLINE_H_HEADER_INCLUDED_C112140C */
+#endif /* SRVMSGDECLINE_H */

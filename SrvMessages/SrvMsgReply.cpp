@@ -1,14 +1,17 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 or later licence                                
- *                                                                           
- * $Id: SrvMsgReply.cpp,v 1.5 2004-06-17 23:53:54 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsgReply.cpp,v 1.6 2004-06-20 17:25:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  *                                                                           
  */
 
@@ -40,7 +43,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 			   SmartPtr<TSrvAddrMgr> AddrMgr,
 			   SmartPtr<TSrvMsgConfirm> confirm)
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
-	     confirm->getIface(),confirm->getAddr(), REPLY_MSG, confirm->getTransID())
+	     confirm->getIface(),confirm->getAddr(), REPLY_MSG, 
+	     confirm->getTransID())
 {
     SmartPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID( confirm->getIface() );
     if (!ptrIface) {
@@ -723,4 +727,8 @@ void TSrvMsgReply::setOptionsReqOptClntDUID(SmartPtr<TMsg> msg)
 TSrvMsgReply::~TSrvMsgReply()
 {
 
+}
+
+string TSrvMsgReply::getName() {
+    return "REPLY";
 }

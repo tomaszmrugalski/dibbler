@@ -1,3 +1,16 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsgRelease.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
 #include "SrvMsgRelease.h"
 #include "OptServerIdentifier.h"
 #include "AddrClient.h"
@@ -49,6 +62,10 @@ bool TSrvMsgRelease::check()
     //	server's identifier.
     else
         return *(opt->getDUID())==*(SrvCfgMgr->getDUID());
+}
+
+string TSrvMsgRelease::getName() {
+    return "RELEASE";
 }
 
 TSrvMsgRelease::~TSrvMsgRelease()

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.6 2004-06-17 23:53:54 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.7 2004-06-20 17:25:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
  *                                                                           
  */
 
@@ -197,4 +200,8 @@ unsigned long TSrvMsgAdvertise::getTimeout()
 void TSrvMsgAdvertise::doDuties()
 {
     IsDone = true;
+}
+
+string TSrvMsgAdvertise::getName() {
+    return "ADVERTISE";
 }

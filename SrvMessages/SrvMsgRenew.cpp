@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsgRenew.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "SrvMsgRenew.h"
 #include "SrvOptClientIdentifier.h"
 #include "SrvOptServerIdentifier.h"
@@ -63,6 +77,10 @@ bool TSrvMsgRenew::check()
 	return false;
 
     return true;
+}
+
+string TSrvMsgRenew::getName() {
+    return "RENEW";
 }
 
 TSrvMsgRenew::~TSrvMsgRenew()

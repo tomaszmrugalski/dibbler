@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsg.cpp,v 1.5 2004-06-20 17:25:06 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #ifdef WIN32
 #include <winsock2.h>
 #endif
@@ -203,72 +217,23 @@ unsigned long TSrvMsg::getTimeout()
 
 void TSrvMsg::send()
 {
-    std::clog << logger::logNotice << "Sending msg:type=" << this->getType() 
-        << ", size=" <<this->getSize() 
-        << hex << ",transID=" << this->getTransID() << dec 
-        << ", " << this->countOption() << " opts:";
+    SmartPtr<TIfaceIface> ptrIface;
+    ptrIface = SrvIfaceMgr->getIfaceByID(this->Iface);
+    Log(Notice) << "Sending " << this->getName()
+		<< "(type=" << this->getType() 
+		<< ") on " << ptrIface->getName() << "/" << this->Iface
+		<< hex << ",TransID=0x" << this->getTransID() << dec 
+		<< ", " << this->countOption() << " opts:";
     SmartPtr<TOpt> ptrOpt;
     this->firstOption();
     while (ptrOpt = this->getOption() )
-        std::clog << " " << ptrOpt->getOptType() << "(" << ptrOpt->getSize() << ")";
-    std::clog << logger::endl;
+        std::clog << " " << ptrOpt->getOptType();
+    std::clog << LogEnd;
     TMsg::send();
     // FIXME: If server supports unicast, sendUnicast...
-    this->SrvIfaceMgr->sendMulticast(this->Iface, this->pkt, this->getSize(), this->PeerAddr);
+    this->SrvIfaceMgr->sendMulticast(this->Iface, this->pkt, 
+				     this->getSize(), this->PeerAddr);
 }
-
-//void TSrvMsg::getFreeAddressesForClient (SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntAllClasses,
-//					 SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntClasses,
-//					 long* &clntFreeAddr, long &totalFreeAddresses, 
-//					 SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface, bool rapid)
-//{
-//
-//    clntAllClasses=SrvCfgMgr->getClassesForClient(duid,addr,iface, rapid);
-//
-//    totalFreeAddresses=0;
-//    clntFreeAddr=NULL;    //FIXME:remember to free
-//    long *classAssignAddr=NULL;
-//    long *clntAssignAddr=NULL; 
-//    long count = clntAllClasses->count();
-//
-//    clntClasses=new TContainer<SmartPtr<TSrvCfgAddrClass> > ();
-//
-//    if(count)
-//    {
-//        classAssignAddr=new long[count];
-//        clntAssignAddr=new long[count];
-//        clntFreeAddr=new long[count];
-//        memset(clntFreeAddr,0,count*sizeof(long));
-//
-//        SrvAddrMgr->getAddrsCount(clntAllClasses, clntAssignAddr, classAssignAddr, 
-//            duid, iface);
-//        int i=0;
-//        int j=0;
-//        SmartPtr<TSrvCfgAddrClass> ptrClass;
-//        clntAllClasses->first();
-//        while(ptrClass=clntAllClasses->get())
-//        {
-//            long clntAvail=ptrClass->getMaxClientLease()-clntAssignAddr[i];
-//            long allAvail=ptrClass->getMaxLease()-classAssignAddr[i];
-//            if (clntAvail>allAvail)
-//                clntFreeAddr[j]=allAvail;
-//            else
-//                clntFreeAddr[j]=clntAvail;
-//            if (clntFreeAddr[j])
-//            {
-//                clntClasses->append(ptrClass);
-//                totalFreeAddresses+=clntFreeAddr[j];
-//                j++;
-//            }
-//            i++;
-//        }
-//        delete[] classAssignAddr;
-//        delete[] clntAssignAddr;
-//	//delete[] clntFreeAddr;
-//    }
-//    else
-//        clntClasses=clntAllClasses;
-//}
 
 bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
         int iface, SmartPtr<TSrvOptOptionRequest> reqOpts)

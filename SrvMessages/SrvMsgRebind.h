@@ -1,5 +1,20 @@
-#ifndef REBIND_H_HEADER_INCLUDED_C1126D16
-#define REBIND_H_HEADER_INCLUDED_C1126D16
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsgRebind.h,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
+class TSrvMsgRebind;
+#ifndef SRVMSGREBIND_H
+#define SRVMSGREBIND_H
 #include "SrvMsg.h"
 
 class TSrvMsgRebind : public TSrvMsg
@@ -10,30 +25,20 @@ class TSrvMsgRebind : public TSrvMsg
 		  SmartPtr<TSrvCfgMgr>, 
 		  SmartPtr<TSrvAddrMgr> AddrMgr,
 		  int iface,  SmartPtr<TIPv6Addr> addr);
-
+    
     TSrvMsgRebind(SmartPtr<TSrvIfaceMgr>, 
 		  SmartPtr<TSrvTransMgr>, 
 		  SmartPtr<TSrvCfgMgr>, 
 		  SmartPtr<TSrvAddrMgr> AddrMgr,
-          int iface, SmartPtr<TIPv6Addr> addr,
+		  int iface, SmartPtr<TIPv6Addr> addr,
 		  char* buf, int bufSize);
-
-    //## Odpowiada za reakcjê na otrzymanie wiadomoœci. W prztpadku zakoñczenia
-    //## transakcji ustawia pole IsDone na true
+    
     void answer(SmartPtr<TMsg> Rep);
-
-    //## Funkcja odpowiada za transmisjê i retransmisjê danej wiadomoœci z
-    //## uwzglednienirem sta³ych czasowych.
     void doDuties();
-
-    //## Zwraca timeout (wykorzystywane po stronie klienta) do okreœlenia czasu
-    //## po którym czasie powinna zostaæ wykonana akcja po stronie klienta. 
+    string getName();
     unsigned long getTimeout();
-
-    //## Funkcja sprawdza, czy komunikat DHCP jest poprawny tj. czy zawiera
-    //## odpowiednie opcje jak podano w RFC.
     bool check();
     ~TSrvMsgRebind();
 };
 
-#endif /* REBIND_H_HEADER_INCLUDED_C1126D16 */
+#endif /* SRVMSGREBIND_H */

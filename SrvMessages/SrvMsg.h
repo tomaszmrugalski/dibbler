@@ -1,5 +1,20 @@
-#ifndef SRVMSG_H_
-#define SRVMSG_H_
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsg.h,v 1.4 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
+class TSrvMsg;
+#ifndef SRVMSG_H
+#define SRVMSG_H
 
 #include "Msg.h"
 #include "SmartPtr.h"
@@ -55,15 +70,9 @@ public:
     void doDuties();
     void send();
 protected:
-//    void getFreeAddressesForClient(    
-//        SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntAllClasses,
-//        SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntClasses,
-//        long* &clntFreeAddr, long &totalFreeAddresses, 
-//        SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface, bool rapid=false);
 private:
     // timestamp of first message transmission
     unsigned long FirstTimeStamp;
-
     void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
 		    SmartPtr<TSrvTransMgr> TransMgr, 
 		    SmartPtr<TSrvCfgMgr> CfgMgr,

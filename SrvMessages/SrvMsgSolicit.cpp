@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvMsgSolicit.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include "SrvMsgSolicit.h"
 #include "Msg.h"
 #include "SmartPtr.h"
@@ -30,9 +44,10 @@ void TSrvMsgSolicit::doDuties()
 	//FIXME
 }
 
-//Metoda TClntMsgSolicit o nazwie check
-//i rownoczesnie powinna istniec abstrakcyjna metoda o nazwie check
-//w klasie TMsgSolicit
+string TSrvMsgSolicit::getName() {
+    return "SOLICIT";
+}
+
 bool TSrvMsgSolicit::check()
 {
 	SmartPtr<TOpt> option;

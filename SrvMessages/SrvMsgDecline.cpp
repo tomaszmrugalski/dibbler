@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvMsgDecline.cpp,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #include "SrvMsgDecline.h"
 #include "AddrClient.h"
 #include "SrvOptServerIdentifier.h"
@@ -65,3 +79,6 @@ TSrvMsgDecline::~TSrvMsgDecline()
 }
 
 
+string TSrvMsgDecline::getName() {
+    return "DECLINE";
+}
