@@ -83,6 +83,7 @@ install-arch:
 	dh_installdirs -s etc/dibbler var/lib/dibbler
 
 	# Install everything to the tmp directory
+	mkdir -p $(CURDIR)/debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	# This one instructs dh_install to use packagename.install from the debian directory
 	dh_install --sourcedir=debian/tmp
