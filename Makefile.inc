@@ -7,17 +7,18 @@ BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREF
 # === compiler options ===
 COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall
 OPTS         = -ftemplate-depth-40 $(COPTS)
-CLNTLINKOPTS = 
-SRVLINKOPTS  =
+CLNT_LDFLAGS = $(LDFLAGS)
+SRV_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
 DEBUGINFO    = -g
-#EFENCE       = -lefence
+EFENCE       = -lefence
 
 # === libxml2 stuff ===
 #XMLCFLAGS    = `pkg-config libxml-2.0 --cflags` -DLIBXML2
 #XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
+LDFLAGS       = $(XMLLIBS) $(EFENCE)
 
 # === Portability ===
 ARCH         = LINUX
@@ -27,8 +28,9 @@ SERVER       = port-linux/server-linux.cpp
 CLIENTBIN    = dibbler-client-linux
 SERVERBIN    = dibbler-server-linux
 
-
 # === do not modify anything below ===
+#MAKEFLAGS   += -s
+
 PREFIX       = ..
 INCDIR       = $(PREFIX)/include
 ADDRMGR      = $(PREFIX)/AddrMgr
@@ -58,3 +60,28 @@ COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      TransMgr   Messages     Opti
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
 SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
+
+# === UNIVERSAL TARGETS ===
+
+%.o: %.cpp %.h
+	@echo "[CPP    ] $(SUBDIR)/$@"
+	$(CPP) $(OPTS) -c -o $@ $<
+
+%.a: objs
+	@echo "[LIB    ]  $@"	
+	rm -f $@
+	ar cr $@ $(OBJECTS)
+
+all: libs
+
+clean:
+	@echo "[CLEAN  ] $(SUBDIR)"
+	rm -f *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) TAGS
+	find . -type l -exec rm {} \;
+
+# === SUBDIR NAMES ===
+SUBDIR=$(subst $(TOPDIR),,$(CURDIR))
+
+ifndef TOPDIR
+TOPDIR=$(CURDIR)
+endif 

@@ -26,14 +26,14 @@ $(CLIENTBIN): includes DHCPClient.o $(CLIENT)
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
 	-L$(LOWLEVEL)    \
 	-L$(CLNTOPTIONS)  -lClntOpts \
-	-L$(OPTIONS)      -lOpts \
+	-L$(OPTIONS)      -lOptions \
 	-L$(CLNTTRANSMGR) -lClntTransMgr \
 	-L$(CLNTCFGMGR)   -lClntCfgMgr \
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
 	-L$(CLNTMESSAGES) -lClntMsg \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
 	-L$(MISC)         -lMisc \
-	-lClntOpts -lOpts $(XMLLIBS) $(EFENCE) 
+	-lClntOpts -lOptions $(XMLLIBS) $(EFENCE) 
 
 server: $(SERVERBIN)
 $(SERVERBIN): includes DHCPServer.o $(SERVER)
