@@ -13,7 +13,8 @@ bison:
 client: $(CLIENTBIN)
 
 $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
-	$(CPP) -I $(INCDIR) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
+	@echo "[LINK   ] $(SUBDIR)/$@"
+	$(CPP) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc \
 	-L$(ADDRMGR)      -lAddrMgr \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
@@ -34,6 +35,7 @@ $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
 
 server: includes commonlibs srvlibs $(SERVERBIN)
 $(SERVERBIN): includes commonlibs clntlibs DHCPServer.o $(SERVER)
+	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
 	-L$(LOWLEVEL)    \

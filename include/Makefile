@@ -4,9 +4,10 @@ libs:
 
 objs:
 
-links: clean
+links: 
+	find -type l -exec rm {} \;
+	echo "[LINKS  ] $(SUBDIR) "
 	for dir in $(SUBDIRS); do \
-	  echo $(PREFIX)/$$dir; \
 	  if [ "$$dir" != "include" ]; then \
 	  ln -s $(PREFIX)/$$dir/*.h .;  \
 	fi \

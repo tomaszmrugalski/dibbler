@@ -29,7 +29,7 @@ CLIENTBIN    = dibbler-client-linux
 SERVERBIN    = dibbler-server-linux
 
 # === do not modify anything below ===
-#MAKEFLAGS   += -s
+MAKEFLAGS   += -s
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux
@@ -69,7 +69,7 @@ SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS)
 	$(CPP) $(OPTS) -c -o $@ $<
 
 %.a: objs
-	@echo "[LIB    ]  $@"	
+	@echo "[LIB    ] $(SUBDIR)/$@"	
 	ar cr $@ $(OBJECTS)
 
 all: libs
