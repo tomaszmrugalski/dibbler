@@ -9,7 +9,7 @@ links:
 	echo "[LINKS  ] $(SUBDIR) "
 	for dir in $(SUBDIRS); do \
 	  if [ "$$dir" != "include" ]; then \
-	  ln -s $(PREFIX)/$$dir/*.h .;  \
+	  ln -s $(PREFIX)/$$dir/*.h . 2>/dev/null;  \
 	fi \
 	done
 	ln -f -s $(PREFIX)/*.h .

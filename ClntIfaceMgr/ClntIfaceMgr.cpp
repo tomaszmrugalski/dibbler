@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.7 2004-09-27 22:00:32 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.8 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/09/27 22:00:32  thomson
+ * Sending problem is now verbose.
+ *
  * Revision 1.6  2004/09/07 17:42:31  thomson
  * Server Unicast implemented.
  *
@@ -93,10 +96,10 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
     if (sockid>0) {
         if (bufsize<4) {
 			if (buf[0]!=CONTROL_MSG) {
-				clog << logWarning << "Received message is too short (" << bufsize
+				Log(Warning) << "Received message is too short (" << bufsize
 					 << ") bytes." << LogEnd;
 			} else {
-				clog << logWarning << "Control message received." << LogEnd;
+				Log(Warning) << "Control message received." << LogEnd;
 			}
             return SmartPtr<TMsg>(); // NULL
         }
@@ -105,9 +108,9 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
         SmartPtr<TIfaceIface> ptrIface;
         ptrIface = this->getIfaceBySocket(sockid);
         ifaceid = ptrIface->getID();
-	Log(Debug) << "Received " << bufsize << " bytes via " << sockid 
-		   << " socket, ifaceid=" << ifaceid << ", msgtype=" << msgtype 
-		   << ")" << LogEnd;
+	Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/" 
+		   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "." 
+		   << ")." << LogEnd;
 	
         switch (msgtype) {
         case ADVERTISE_MSG:
@@ -122,7 +125,7 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
         case RELEASE_MSG:
         case DECLINE_MSG:
         case INFORMATION_REQUEST_MSG:
-            std::clog << logWarning << "Illegal message type " << msgtype << " received." << LogEnd;
+	    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
             return SmartPtr<TMsg>(); // NULL
         case REPLY_MSG:
             ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
@@ -130,13 +133,12 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
             return ptr;
 
         case RECONFIGURE_MSG:
-            //FIXME: Reconfigure message
-            std::clog << logDebug << "Reconfigure Message is currently not supported." << LogEnd;
+            Log(Warning) << "Reconfigure Message is currently not supported." << LogEnd;
             return SmartPtr<TMsg>();
         case RELAY_FORW:
         case RELAY_REPL:
         default:
-            std::clog << logWarning << "Message type " << msgtype << " not supported." << LogEnd;
+            Log(Warning) << "Message type " << msgtype << " not supported." << LogEnd;
             return SmartPtr<TMsg>();
         }
     } else {
@@ -144,11 +146,42 @@ SmartPtr<TMsg> TClntIfaceMgr::select(unsigned int timeout)
     }
 }
 
-TClntIfaceMgr::TClntIfaceMgr() : TIfaceMgr()
+TClntIfaceMgr::TClntIfaceMgr() 
+    : TIfaceMgr(false)
 {
+    struct iface * ptr;
+    struct iface * ifaceList;
+
+    // get interface list
+    ifaceList = if_list_get(); // external (C coded) function
+    ptr = ifaceList;
+    
+    if  (!ifaceList) {
+	IsDone = true;
+	Log(Crit) << "Unable to read info interfaces. Make sure "
+		  << "you are using proper port (i.e. win32 on WindowsXP or 2003)"
+		  << " and you have IPv6 support enabled." << LogEnd;
+	return;
+    }
+    
+    while (ptr!=NULL) {
+        Log(Notice) << "Detected clnt iface " << ptr->name << "/" << ptr->id << ", flags=" 
+		    << ptr->flags << ", maclen=" << ptr->maclen << LogEnd;
+	
+        SmartPtr<TIfaceIface> iface(new TClntIfaceIface(ptr->name,ptr->id,
+							ptr->flags,
+							ptr->mac,
+							ptr->maclen,
+							ptr->linkaddr,
+							ptr->linkaddrcount,
+							ptr->hardwareType));
+        this->IfaceLst.append((Ptr*) iface);
+        ptr = ptr->next;
+    }
+    if_list_release(ifaceList); // allocated in pure C, and so release it there
+
 }
-//I think this that setting, can be eliminated, when received message, won't
-//be executing any actions and I think that is possible
+
 void TClntIfaceMgr::setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
                              SmartPtr<TClntTransMgr> clntTransMgr,
                              SmartPtr<TClntCfgMgr> clntCfgMgr,
@@ -158,4 +191,19 @@ void TClntIfaceMgr::setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
     ClntAddrMgr=clntAddrMgr;
     ClntTransMgr=clntTransMgr;
     That=clntIfaceMgr;
+}
+
+TClntIfaceMgr::~TClntIfaceMgr() {
+    Log(Debug) << "ClntIfaceMgr clean up." << LogEnd;
+}
+
+void TClntIfaceMgr::removeAllOpts() {
+    SmartPtr<TIfaceIface> iface;
+    SmartPtr<TClntIfaceIface> clntIface;
+
+    this->firstIface();
+    while (iface = this->getIface()) {
+	clntIface = (Ptr*) iface;
+	clntIface->removeAllOpts();
+    }
 }

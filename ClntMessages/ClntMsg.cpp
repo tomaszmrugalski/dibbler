@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.5 2004-10-03 21:36:48 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.6 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/03 21:36:48  thomson
+ * Just a typo.
+ *
  * Revision 1.4  2004/09/27 22:01:01  thomson
  * Sending is now more verbose.
  *
@@ -42,10 +45,19 @@
 #include "ClntOptServerUnicast.h"
 #include "ClntOptStatusCode.h"
 #include "ClntOptRapidCommit.h"
+
 #include "ClntOptDNSServers.h"
+#include "ClntOptDomainName.h"
 #include "ClntOptNTPServers.h"
 #include "ClntOptTimeZone.h"
-#include "ClntOptDomainName.h"
+#include "ClntOptSIPServer.h"
+#include "ClntOptSIPDomain.h"
+#include "ClntOptFQDN.h"
+#include "ClntOptNISServer.h"
+#include "ClntOptNISDomain.h"
+#include "ClntOptNISPServer.h"
+#include "ClntOptNISPDomain.h"
+#include "ClntOptLifetime.h"
 #include "Logger.h"
 
 //Constructor builds message on the basis of buffer
@@ -68,13 +80,13 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
         short length = ntohs(*((short*) (buf+pos)));
         pos+=2;
 
-	if (!canBeOptInMsg(MsgType,code)) {
+	if (!allowOptInMsg(MsgType,code)) {
             Log(Warning) << "Option " << code << " is not allowed in " << MsgType
 			 << " message. Ignoring." << LogEnd;
 	    pos+=length;
 	    continue;
 	}
-	if (!canBeOptInOpt(MsgType,0,code)) {
+	if (!allowOptInOpt(MsgType,0,code)) {
 	    Log(Warning) << "Option " << code << " is not allowed directly in " << MsgType
 			 << " message. Ignoring." << LogEnd;
 	    pos+=length;
@@ -120,7 +132,30 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_TIME_ZONE:
 	    ptr = new TClntOptTimeZone(buf+pos, length,this);
 	    break;
-	    
+	case OPTION_SIP_SERVERS:
+	    ptr = new TClntOptSIPServers(buf+pos, length, this);
+	    break;
+	case OPTION_SIP_DOMAINS:
+	    ptr = new TClntOptSIPDomain(buf+pos, length, this);
+	    break;
+	case OPTION_NIS_SERVERS:
+	    ptr = new TClntOptNISServers(buf+pos, length, this);
+	    break;
+	case OPTION_NIS_DOMAIN_NAME:
+	    ptr = new TClntOptNISDomain(buf+pos, length, this);
+	    break;
+	case OPTION_NISP_SERVERS:
+	    ptr = new TClntOptNISPServers(buf+pos, length, this);
+	    break;
+	case OPTION_NISP_DOMAIN_NAME:
+	    ptr = new TClntOptNISPDomain(buf+pos, length, this);
+	    break;
+	case OPTION_FQDN:
+	    ptr = new TClntOptFQDN(buf+pos, length, this);
+	    break;
+	case OPTION_LIFETIME:
+	    ptr = new TClntOptLifetime(buf+pos, length, this);
+	    break;
 	case OPTION_IA_TA:
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
@@ -133,21 +168,34 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    Log(Warning) << "Option " << code<< "not supported in message " 
 			 << MsgType << ") in this version of client." << LogEnd;
 	    break;
+	default: 
+	    Log(Warning) << "Unknown option: " << code << ", length=" << length 
+			 << ". Ignored." << LogEnd;
+	    pos+=length;
+	    continue;
 	}
 	
-	if ( (ptr) && (ptr->isValid())) {
+	if ( (ptr) && (ptr->isValid()) ) {
                     Options.append( ptr );
 	} else {
-	    Log(Warning) << "Option " << ptr->getOptType() << " is invalid. Ignoring." << LogEnd;
+	    Log(Warning) << "Option " << code << " is invalid. Ignoring." << LogEnd;
 	}
         pos+=length;
     }
 
-    SmartPtr<TClntOptServerIdentifier> ptrSrvID;
-    if (ptrSrvID=(Ptr*)this->getOption(OPTION_SERVERID))
-    {
-        this->firstOption();
-        while (SmartPtr<TOpt> ptrOpt=getOption())
+    SmartPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)this->getOption(OPTION_SERVERID);
+    if (!optSrvID) {
+	Log(Warning) << "Message " << this->MsgType 
+		     << " does not contain SERVERID option. Ignoring." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+
+#if 0
+    this->firstOption();
+    SmartPtr<TOpt> 
+
+    while (SmartPtr<TOpt> ptrOpt=getOption())
         {
             switch (ptrOpt->getOptType())
             {
@@ -166,6 +214,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
             }
         }
     }
+#endif 
 }
 
 TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
@@ -202,7 +251,7 @@ void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
 unsigned long TClntMsg::getTimeout()
 {
-    long diff=(LastTimeStamp+RT) - now();
+    long diff = (LastTimeStamp+RT) - now();
     return (diff<0) ? 0 : diff;
 }
 
@@ -257,3 +306,154 @@ SmartPtr<TClntIfaceMgr> TClntMsg::getClntIfaceMgr()
     return this->ClntIfaceMgr;
 }
 
+
+/*
+ * this method adds requested (which have status==NOTCONFIGURED) options
+ */
+void TClntMsg::appendRequestedOptions() {
+
+    // find configuration specified in config file
+    SmartPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << this->Iface << LogEnd;
+	return;
+    }
+    
+    SmartPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
+
+    // --- option: DNS-SERVERS ---
+    if ( iface->isReqDNSServer() && (iface->getDNSServerState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_DNS_RESOLVERS);
+	
+	List(TIPv6Addr) * dnsLst = iface->getProposedDNSServerLst();
+	if (dnsLst->count()) {
+	    // if there are any hints specified in config file, include them
+	    SmartPtr<TClntOptDNSServers> opt = new TClntOptDNSServers(dnsLst,this);
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: DOMAINS --
+    if ( iface->isReqDomain() && (iface->getDomainState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_DOMAIN_LIST);
+
+	List(string) * domainsLst = iface->getProposedDomainLst();
+	if ( domainsLst->count() ) {
+	    // if there are any hints specified in config file, include them
+            SmartPtr<TClntOptDomainName> opt = new TClntOptDomainName(domainsLst,this);
+            Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: NTP SERVER ---
+    if ( iface->isReqNTPServer() && (iface->getNTPServerState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_NTP_SERVERS);
+
+	List(TIPv6Addr) * ntpLst = iface->getProposedNTPServerLst();
+	if (ntpLst->count()) {
+	    // if there are any hints specified in config file, include them
+	    SmartPtr<TClntOptNTPServers> opt = new TClntOptNTPServers(ntpLst,this);
+	    Options.append( (Ptr*)opt );
+	}
+    }
+        
+    // --- option: TIMEZONE ---
+    if ( iface->isReqTimezone() && (iface->getTimezoneState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_TIME_ZONE);
+
+	string timezone = iface->getProposedTimezone();
+	if (timezone.length()) {
+	    // if there are any hints specified in config file, include them
+	    SmartPtr<TClntOptTimeZone> opt = new TClntOptTimeZone(timezone,this);
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: SIP-SERVERS ---
+    if ( iface->isReqSIPServer() && (iface->getSIPServerState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_SIP_SERVERS);
+	
+	List(TIPv6Addr) * lst = iface->getProposedSIPServerLst();
+	if ( lst->count()) {
+	    // if there are any hints specified in config file, include them
+	    SmartPtr<TClntOptSIPServers> opt = new TClntOptSIPServers( lst, this );
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: SIP-DOMAINS ---
+    if ( iface->isReqSIPDomain() && (iface->getSIPDomainState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_SIP_DOMAINS);
+
+	List(string) * domainsLst = iface->getProposedSIPDomainLst();
+	if ( domainsLst->count() ) {
+	    // if there are any hints specified in config file, include them
+            SmartPtr<TClntOptSIPDomain> opt = new TClntOptSIPDomain( domainsLst,this );
+            Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: FQDN ---
+    if ( iface->isReqFQDN() && (iface->getFQDNState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_FQDN);
+
+	string fqdn = iface->getProposedFQDN();
+	if (fqdn.length()) {
+	    SmartPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: NIS-SERVERS ---
+    if ( iface->isReqNISServer() && (iface->getNISServerState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_NIS_SERVERS);
+	
+	List(TIPv6Addr) * lst = iface->getProposedNISServerLst();
+	if ( lst->count() ) {
+	    // if there are any hints specified in config file, include them
+	    SmartPtr<TClntOptNISServers> opt = new TClntOptNISServers( lst,this );
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: NIS-DOMAIN ---
+    if ( iface->isReqNISDomain() && (iface->getNISDomainState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_NIS_DOMAIN_NAME);
+	string domain = iface->getProposedNISDomain();
+	if (domain.length()) {
+	    SmartPtr<TClntOptNISDomain> opt = new TClntOptNISDomain( domain,this );
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: NIS+-SERVERS ---
+    if ( iface->isReqNISPServer() && (iface->getNISPServerState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_NISP_SERVERS);
+	
+	List(TIPv6Addr) * lst = iface->getProposedNISPServerLst();
+	if ( lst->count() ) {
+	    // if there are any hints specified in config file, include them
+	    SmartPtr<TClntOptNISPServers> opt = new TClntOptNISPServers( lst,this );
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: NIS+-DOMAIN ---
+    if ( iface->isReqNISPDomain() && (iface->getNISPDomainState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_NISP_DOMAIN_NAME);
+	string domain = iface->getProposedNISPDomain();
+	if (domain.length()) {
+	    SmartPtr<TClntOptNISPDomain> opt = new TClntOptNISPDomain( domain,this );
+	    Options.append( (Ptr*)opt );
+	}
+    }
+
+    // --- option: LIFETIME ---
+    if ( this->MsgType == INFORMATION_REQUEST_MSG && optORO->count() )
+	optORO->addOption(OPTION_LIFETIME);
+
+    // final setup: Did we add any options at all? 
+    if ( optORO->count() ) 
+	Options.append( (Ptr*) optORO );
+
+}

@@ -11,6 +11,7 @@
     - Lst (list)
  4. Lists are operated by methods: i.e. for Addr list, ther should be
     methods addAddr(), firstAddr(), getAddr() etc.
+ 5. Lists which will not be modified are parsed as pointers.
  5. Before running doDuties() on OptIA_NA, one should run setThats() and setSrvDUID().
  6. (Ptr*) is used ONLY while casting one SmartPtr on another SmartPtr.
  7. Port-specific files MUST be places in dir named port-PORTNAME

@@ -35,9 +35,7 @@ void TClntCfgIA::setIAID(long iaid) {
 
 void TClntCfgIA::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     this->T1=opt->getT1();
-    this->T1SendOpt=opt->getT1SendOpt();
     this->T2=opt->getT2();
-    this->T2SendOpt=opt->getT2SendOpt();
 }
 
 void TClntCfgIA::firstAddr()
@@ -51,13 +49,10 @@ SmartPtr<TClntCfgAddr> TClntCfgIA::getAddr()
 }
 
 
-TClntCfgIA::TClntCfgIA(long iAID)
-{
+TClntCfgIA::TClntCfgIA(long iAID) {
     IAID=iAID;
     T1=0;
     T2=0;
-    T1SendOpt=Send;
-    T2SendOpt=Send;
 }
 
 TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)
@@ -66,17 +61,6 @@ TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)
     IAID=iAID;
     T1=right->getT1();
     T2=right->getT2();
-    T1SendOpt=right->getT1SendOpt();
-    T2SendOpt=right->getT2SendOpt();
-}
-ESendOpt TClntCfgIA::getT1SendOpt()
-{
-    return this->T1SendOpt;
-}
-
-ESendOpt TClntCfgIA::getT2SendOpt()
-{
-    return this->T2SendOpt;
 }
 
 void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)
@@ -87,10 +71,7 @@ void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)
 ostream& operator<<(ostream& out,TClntCfgIA& ia)
 {
     out << "        <ia iaid=\"" << ia.IAID << "\" t1=\"" << ia.T1 << "\" t2=\"" 
-		<< ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
-		
-//	out << "Send opt. T1:"<<ia.T1SendOpt << logger::endl;
-//  out << "Send opt. T2:"<<ia.T2SendOpt << logger::endl;
+	<< ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
 
     SmartPtr<TClntCfgAddr> addr;
 

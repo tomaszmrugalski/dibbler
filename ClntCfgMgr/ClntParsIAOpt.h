@@ -12,23 +12,19 @@
 
 class TClntParsIAOpt : public TClntParsAddrOpt
 {
-public:
-	TClntParsIAOpt();
+ public:
+    TClntParsIAOpt();
     
     long getT1();
     void setT1(long T1);
-    ESendOpt getT1SendOpt();
-    void setT1SendOpt(ESendOpt opt);
     
     long getT2();
     void setT2(long T2);
-    ESendOpt getT2SendOpt();
-    void setT2SendOpt(ESendOpt opt);
     
     long getIAIDCnt();
     void setIAIDCnt(long cnt);
     long getIncedIAIDCnt();
-
+    
     bool getAddrHint();
     void setAddrHint(bool addrHint);
     
@@ -47,16 +43,13 @@ public:
     void setRapidCommit(bool rapCom);
 private:
     long T1;
-	ESendOpt T1SendOpt;
     long T2;
-	ESendOpt T2SendOpt;
     
     long IAIDCnt;
     bool AddrHint;
     bool isRapidCommit;	
     TContainer<SmartPtr<TStationID> > PrefSrv;
-	TContainer<SmartPtr<TStationID> > RejedSrv;
-//	TClntParsIAOpt(const TClntParsIAOpt const& ToCopy);
+    TContainer<SmartPtr<TStationID> > RejedSrv;
 };
 
 #endif

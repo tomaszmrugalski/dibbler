@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.7 2004-10-02 13:11:24 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.8 2004-10-25 20:45:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/10/02 13:11:24  thomson
+ * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
+ * Unicast communication now can be enable on client side (disabled by default).
+ *
  * Revision 1.6  2004/07/05 00:53:03  thomson
  * Various changes.
  *                                                                           
@@ -25,72 +29,65 @@ TClntCfgIface::TClntCfgIface(string ifaceName) {
     NoConfig=false;
     IfaceName=ifaceName;
     ID=-1;
-    this->DNSSrvState=NOTCONFIGURED;
-    this->NTPSrvState=NOTCONFIGURED;
-    this->DomainNameState=NOTCONFIGURED;
-    this->TimeZoneState=NOTCONFIGURED;
+    this->DNSServerState  = NOTCONFIGURED;
+    this->DomainState     = NOTCONFIGURED;
+    this->NTPServerState  = NOTCONFIGURED;
+    this->TimezoneState   = NOTCONFIGURED;
+    this->SIPServerState  = NOTCONFIGURED;
+    this->SIPDomainState  = NOTCONFIGURED;
+    this->FQDNState       = NOTCONFIGURED;
+    this->NISServerState  = NOTCONFIGURED;
+    this->NISPServerState = NOTCONFIGURED;
+    this->NISDomainState  = NOTCONFIGURED;
+    this->NISPDomainState = NOTCONFIGURED;
 }
 
 TClntCfgIface::TClntCfgIface(int ifaceNr) {
     NoConfig=false;
     ID=ifaceNr;
     IfaceName="[unknown]";
-    this->DNSSrvState=NOTCONFIGURED;
-    this->NTPSrvState=NOTCONFIGURED;
-    this->DomainNameState=NOTCONFIGURED;
-    this->TimeZoneState=NOTCONFIGURED;
+    this->DNSServerState  = NOTCONFIGURED;
+    this->DomainState     = NOTCONFIGURED;
+    this->NTPServerState  = NOTCONFIGURED;
+    this->TimezoneState   = NOTCONFIGURED;
+    this->SIPServerState  = NOTCONFIGURED;
+    this->SIPDomainState  = NOTCONFIGURED;
+    this->FQDNState       = NOTCONFIGURED;
+    this->NISServerState  = NOTCONFIGURED;
+    this->NISPServerState = NOTCONFIGURED;
+    this->NISDomainState  = NOTCONFIGURED;
+    this->NISPDomainState = NOTCONFIGURED;
 }
 
 void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
-    ReqDNSSrv=opt->getReqDNSSrv();
-    ReqNTPSrv=opt->getReqNTPSrv();
-    ReqDomainName=opt->getReqDomainName();
-    ReqTimeZone=opt->getReqTimeZone();
-
-    DNSReqOpt=opt->getDNSSrvReqOpt();
-    NTPReqOpt=opt->getNTPSrvReqOpt();
-
-    //NISReq=opt->NISSrvReqOpt;
-    DNSSendOpt=opt->getDNSSrvSendOpt();
-    NTPSendOpt=opt->getNTPSrvSendOpt();
-    //NISOptions=opt->NISSrvSendOpt;
-    
-    Domain=opt->getDomain();
-    DomainReqOpt=opt->getDomainReqOpt();
-    DomainSendOpt=opt->getDomainSendOpt();
-
-    TZone=opt->getTimeZone();
-    TimeZoneReqOpt=opt->getTimeZoneReqOpt();
-    TimeZoneSendOpt=opt->getTimeZoneSendOpt();
-
-    this->Unicast = opt->getUnicast();
-    
-    SmartPtr<TIPv6Addr> StationIDPtr;
-    opt->firstDNSSrv();
-    while(StationIDPtr=opt->getDNSSrv())
-        this->DNSSrv.append(StationIDPtr);
-
-    opt->firstAppDNSSrv();
-    while(StationIDPtr=opt->getAppDNSSrv())
-        this->AppDNSSrv.append(StationIDPtr);
-
-    opt->firstPrepDNSSrv();
-    while(StationIDPtr=opt->getPrepDNSSrv())
-        this->PrepDNSSrv.append(StationIDPtr);
-
-    opt->firstNTPSrv();
-    while(StationIDPtr=opt->getNTPSrv())
-        this->NTPSrv.append(StationIDPtr);
-
-    opt->firstAppNTPSrv();
-    while(StationIDPtr=opt->getAppNTPSrv())
-        this->AppNTPSrv.append(StationIDPtr);
-
-    opt->firstPrepNTPSrv();
-    while(StationIDPtr=opt->getPrepNTPSrv())
-        this->PrepNTPSrv.append(StationIDPtr);
-    
     this->isIA = opt->getIsIAs();
+    this->Unicast = opt->getUnicast();
+
+    // copy YES/NO information
+    ReqDNSServer = opt->getReqDNSServer();
+    ReqDomain    = opt->getReqDomain();
+    ReqNTPServer = opt->getReqNTPServer();
+    ReqTimezone  = opt->getReqTimezone();
+    ReqSIPServer = opt->getReqSIPServer();
+    ReqSIPDomain = opt->getReqSIPDomain();
+    ReqFQDN      = opt->getReqFQDN();
+    ReqNISServer = opt->getReqNISServer();
+    ReqNISDomain = opt->getReqNISDomain();
+    ReqNISPServer= opt->getReqNISPServer();
+    ReqNISPDomain= opt->getReqNISPDomain();
+
+    // copy parameters
+    this->DNSServerLst = *opt->getDNSServerLst();
+    this->DomainLst    = *opt->getDomainLst();
+    this->Timezone     = opt->getTimezone();
+    this->NTPServerLst = *opt->getNTPServerLst();
+    this->SIPServerLst = *opt->getSIPServerLst();
+    this->SIPDomainLst = *opt->getSIPDomainLst();
+    this->FQDN         = opt->getFQDN();
+    this->NISServerLst = *opt->getNISServerLst();
+    this->NISDomain    = opt->getNISDomain();
+    this->NISPServerLst= *opt->getNISPServerLst();
+    this->NISPDomain   = opt->getNISPDomain();
 }
 
  void TClntCfgIface::firstGroup()
@@ -143,47 +140,95 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     NoConfig=true;
 }
 
- bool TClntCfgIface::isReqDNSSrv()
+bool TClntCfgIface::onlyInformationRequest()
 {
-    return this->ReqDNSSrv;
+    return !this->isIA;
 }
 
- bool TClntCfgIface::isReqNTPSrv()
-{
-    return this->ReqNTPSrv;
+bool TClntCfgIface::noConfig() {
+    return NoConfig;
 }
 
- bool TClntCfgIface::isReqDomainName()
-{
-    return this->ReqDomainName;
+bool TClntCfgIface::getUnicast() {
+    return this->Unicast;
 }
 
- bool TClntCfgIface::isReqTimeZone()
-{
-    return this->ReqTimeZone;
+// --------------------------------------------------------------------------------
+// --- options below --------------------------------------------------------------
+// --------------------------------------------------------------------------------
+bool TClntCfgIface::isReqDNSServer() {
+    return this->ReqDNSServer;
+}
+bool TClntCfgIface::isReqDomain() {
+    return this->ReqDomain;
+}
+bool TClntCfgIface::isReqNTPServer() {
+    return this->ReqNTPServer;
+}
+bool TClntCfgIface::isReqTimezone() {
+    return this->ReqTimezone;
+}
+bool TClntCfgIface::isReqSIPServer() {
+    return this->ReqSIPServer;
+}
+bool TClntCfgIface::isReqSIPDomain() {
+    return this->ReqSIPDomain;
+}
+bool TClntCfgIface::isReqFQDN() {
+    return this->ReqFQDN;
+}
+bool TClntCfgIface::isReqNISServer() {
+    return this->ReqNISServer;
+}
+bool TClntCfgIface::isReqNISDomain() {
+    return this->ReqNISDomain;
+}
+bool TClntCfgIface::isReqNISPServer() {
+    return this->ReqNISPServer;
+}
+bool TClntCfgIface::isReqNISPDomain() {
+    return this->ReqNISPDomain;
+}
+
+// --------------------------------------------------------------------------------
+// --- options: state -------------------------------------------------------------
+// --------------------------------------------------------------------------------
+EState TClntCfgIface::getDNSServerState() {
+    return DNSServerState;
+}
+EState TClntCfgIface::getDomainState() {
+    return DomainState;
+}
+EState TClntCfgIface::getNTPServerState() {
+    return NTPServerState;
+}
+EState TClntCfgIface::getTimezoneState() {
+    return TimezoneState;
+}
+EState TClntCfgIface::getSIPServerState() {
+    return SIPServerState;
+}
+EState TClntCfgIface::getSIPDomainState() {
+    return SIPDomainState;
+}
+EState TClntCfgIface::getFQDNState() {
+    return FQDNState;
+}
+EState TClntCfgIface::getNISServerState() {
+    return NISServerState;
+}
+EState TClntCfgIface::getNISPServerState() {
+    return NISPServerState;
+}
+EState TClntCfgIface::getNISDomainState() {
+    return NISDomainState;
+}
+EState TClntCfgIface::getNISPDomainState() {
+    return NISPDomainState;
 }
 
 
- EState TClntCfgIface::getDNSSrvState()
-{
-    return DNSSrvState;
-}
-
- EState TClntCfgIface::getNTPSrvState()
-{
-    return NTPSrvState;
-}
-
- EState TClntCfgIface::getDomainNameState()
-{
-    return DomainNameState;
-}
-
- EState TClntCfgIface::getTimeZoneState()
-{
-    return TimeZoneState;
-}
-
+/*
  void TClntCfgIface::setDNSSrv(
     TContainer<SmartPtr<TIPv6Addr> > newSrvLst,
     SmartPtr<TDUID> duid)
@@ -229,7 +274,9 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     };
 
 }
+*/
 
+/*
  void TClntCfgIface::setNTPSrv(
     TContainer<SmartPtr<TIPv6Addr> > newSrvLst,
     SmartPtr<TDUID> duid)
@@ -274,7 +321,9 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     };
     //FIXME: Here should be also set options somewhere in the system ???
 }
+*/
 
+/*
 void TClntCfgIface::setDomainName(string domainName,SmartPtr<TDUID> duid) {
     switch(DomainNameState) {
 	//Is this a first configuration (so prob. reply has been received to:
@@ -304,7 +353,9 @@ void TClntCfgIface::setDomainName(string domainName,SmartPtr<TDUID> duid) {
     }
     };
 }
+*/
 
+/*
  void TClntCfgIface::setTimeZone(
     string timeZone,
     SmartPtr<TDUID> duid)
@@ -334,103 +385,90 @@ void TClntCfgIface::setDomainName(string domainName,SmartPtr<TDUID> duid) {
     };
     //FIXME: Here should be also set options somewhere in the system ???
 }
+*/
 
-TContainer<SmartPtr<TIPv6Addr> > TClntCfgIface::getProposedDNSSrv()
-{
-    return this->DNSSrv;
+// --------------------------------------------------------------------
+// --- options: get option --------------------------------------------
+// --------------------------------------------------------------------
+List(TIPv6Addr) * TClntCfgIface::getProposedDNSServerLst() {
+    return &this->DNSServerLst;
+}
+List(string) * TClntCfgIface::getProposedDomainLst() {
+    return &this->DomainLst;
+}
+List(TIPv6Addr) * TClntCfgIface::getProposedNTPServerLst() {
+    return &this->NTPServerLst;
+}
+string TClntCfgIface::getProposedTimezone() {
+    return this->Timezone;
+}
+List(TIPv6Addr) * TClntCfgIface::getProposedSIPServerLst() {
+    return &this->SIPServerLst;
+}
+List(string) * TClntCfgIface::getProposedSIPDomainLst() {
+    return &this->SIPDomainLst;
+}
+string TClntCfgIface::getProposedFQDN() {
+    return this->FQDN;
+}
+List(TIPv6Addr) * TClntCfgIface::getProposedNISServerLst() {
+    return &this->NISServerLst;
+}
+List(TIPv6Addr) * TClntCfgIface::getProposedNISPServerLst() {
+    return &this->NISPServerLst;
+}
+string TClntCfgIface::getProposedNISDomain() {
+    return this->NISDomain;
+}
+string TClntCfgIface::getProposedNISPDomain() {
+    return this->NISPDomain;
 }
 
-TContainer<SmartPtr<TIPv6Addr> > TClntCfgIface::getProposedNTPSrv()
-{
-    return this->NTPSrv;
+// --------------------------------------------------------------------
+// --- options: setState ----------------------------------------------
+// --------------------------------------------------------------------
+void TClntCfgIface::setDNSServerState(EState state) {
+    this->DNSServerState=state;
+}
+void TClntCfgIface::setDomainState(EState state) {
+    this->DomainState=state;
+}
+void TClntCfgIface::setNTPServerState(EState state) {
+    this->NTPServerState=state;
+}
+void TClntCfgIface::setTimezoneState(EState state) {
+    this->TimezoneState=state;
+}
+void TClntCfgIface::setSIPServerState(EState state) {
+    this->SIPServerState=state;
+}
+void TClntCfgIface::setSIPDomainState(EState state) {
+    this->SIPDomainState=state;
+}
+void TClntCfgIface::setFQDNState(EState state) {
+    this->FQDNState=state;
+}
+void TClntCfgIface::setNISServerState(EState state) {
+    this->NISServerState=state;
+}
+void TClntCfgIface::setNISPServerState(EState state) {
+    this->NISPServerState=state;
+}
+void TClntCfgIface::setNISDomainState(EState state) {
+    this->NISDomainState=state;
+}
+void TClntCfgIface::setNISPDomainState(EState state) {
+    this->NISPDomainState=state;
 }
 
-string TClntCfgIface::getProposedDomainName()
-{
-    return this->Domain;
-}
-
-string TClntCfgIface::getProposedTimeZone()
-{
-    return this->TZone;
-}
-
-void TClntCfgIface::setDNSSrvState(EState state)
-{
-    this->DNSSrvState=state;
-}
-
-void TClntCfgIface::setNTPSrvState(EState state)
-{
-    this->NTPSrvState=state;
-}
-
-void TClntCfgIface::setDomainNameState(EState state)
-{
-    this->DomainNameState=state;
-}
-
-void TClntCfgIface::setTimeZoneState(EState state)
-{
-    this->TimeZoneState=state;
-}
-
-bool TClntCfgIface::onlyInformationRequest()
-{
-    return !this->isIA;
-}
-
-ESendOpt TClntCfgIface::getDNSSendOpt()
-{
-    return this->DNSSendOpt;
-}
-
-EReqOpt  TClntCfgIface::getDNSReqOpt()
-{
-    return this->DNSReqOpt;
-}
-
-ESendOpt TClntCfgIface::getNTPSendOpt()
-{
-    return this->NTPSendOpt;
-}
-
-EReqOpt  TClntCfgIface::getNTPReqOpt()
-{
-    return this->NTPReqOpt;
-}
-
-ESendOpt TClntCfgIface::getDomainSendOpt()
-{
-    return this->DomainSendOpt;
-}
-
-EReqOpt  TClntCfgIface::getDomainReqOpt()
-{
-    return this->DomainReqOpt;
-}
-
-ESendOpt TClntCfgIface::getTimeZoneSendOpt()
-{
-    return this->TimeZoneSendOpt;
-}
-
-EReqOpt  TClntCfgIface::getTimeZoneReqOpt()
-{
-    return this->TimeZoneReqOpt;
-}
-
-bool TClntCfgIface::noConfig() {
-    return NoConfig;
-}
-
-bool TClntCfgIface::getUnicast() {
-    return this->Unicast;
-}
+// --------------------------------------------------------------------
+// --- operators ------------------------------------------------------
+// --------------------------------------------------------------------
 
 ostream& operator<<(ostream& out,TClntCfgIface& iface)
 {
-    SmartPtr<TIPv6Addr> Station;
+    SmartPtr<TIPv6Addr> addr;
+    SmartPtr<string> str;
 
     out<<"  <ClntCfgIface ";
     if (iface.NoConfig) {
@@ -441,76 +479,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << "name=\"" << iface.IfaceName << "\""
         << " id=\"" << iface.ID << "\">" << endl;
 
-    // --- DNS-servers ---
-    out << "    <DNSServers>" << endl;
-    out << "      <Request count=\""<<iface.DNSSrv.count() << "\">" << endl;
-    iface.DNSSrv.first();
-    while(Station=iface.DNSSrv.get())
-        out << *Station ;  
-    out << "      </Request>" << endl;
-
-    // appended DNS-servers 
-    out << "      <Append count=\"" << iface.AppDNSSrv.count() << "\">" << endl;
-    iface.AppDNSSrv.first();
-    while(Station=iface.AppDNSSrv.get())
-        out << *Station ;  
-    out << "      </Append>" << endl;
-
-    // prepended DNS-servers
-    out << "      <Prefered count=\"" << iface.PrepDNSSrv.count() << "\">" << endl;
-    iface.PrepDNSSrv.first();
-    while(Station=iface.PrepDNSSrv.get())
-        out << *Station;  
-    out << "      </Prefered>" << endl;
-
-    // required
-    out << "      <Required>" << iface.DNSReqOpt << "</Required>" << endl;
-
-    // DNSOptions
-    out << "      <Options>" << iface.DNSSendOpt << "</Options>" << endl;
-    out << "    </DNSServers>" << endl;
-
-
-    // --- DOMAIN ---
-    out << "    <Domain>" << iface.Domain << endl;
-    out << "      <DomainReq>" << iface.DomainReqOpt << "</DomainReq>" << endl;
-    out << "      <DomainOptions>" << iface.DomainSendOpt << "</DomainOptions>" << endl;
-    out << "    </Domain>" << endl;
-
-    // --- NTP servers ---
-    out << "    <NTPServers>" << endl;
-
-    out << "      <request count=\"" << iface.NTPSrv.count() << "\">" << endl;
-    iface.NTPSrv.first();
-    while(Station=iface.NTPSrv.get())
-        out << *Station;  
-    out << "      </request>" << endl;
-
-    out << "      <append count=\"" << iface.AppNTPSrv.count() << "\">" << endl;
-    iface.AppNTPSrv.first();
-    while(Station=iface.AppNTPSrv.get())
-        out << *Station;  
-    out << "      </append>" << endl;
-
-
-    out << "      <prefered count=\"" << iface.PrepNTPSrv.count() << "\">"  << logger::endl;
-    iface.PrepNTPSrv.first();
-    while(Station=iface.PrepNTPSrv.get())
-        cout << *Station;  
-    out << "      </prefered>" << endl;
-
-    // required NTP
-    out << "      <Req value=\"" <<  iface.NTPReqOpt << "\" NTPOptions=\""
-        << iface.NTPSendOpt << "\"/>" << endl;
-    out << "    </NTPServers>" << endl;
-
-    // --- Timezone ---
-
-    out << "    <TimeZone>:"<<iface.TZone << logger::endl;
-    out << "      <DomainReq>" << iface.TimeZoneReqOpt << "</DomainReq>" << endl;
-    out << "      <Options>" << iface.TimeZoneSendOpt << "</Options>" << endl;
-    out << "    </TimeZone>" << endl;
-
+    out << "    <!-- addresses -->" << endl;
     out << "    <groups count=\"" << iface.ClntCfgGroupLst.count() << "\">" << endl;
     SmartPtr<TClntCfgGroup>	groupPtr;
     iface.ClntCfgGroupLst.first();
@@ -519,6 +488,107 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
         out << *groupPtr;
     }
     out << "    </groups>" << endl;
+
+
+    out << "    <!-- options -->" << endl;
+
+    // --- option: DNS-servers ---
+    if (iface.isReqDNSServer()) {
+	out << "    <dns-servers hints=\"" << iface.DNSServerLst.count() << "\"/>" << endl;
+	iface.DNSServerLst.first();
+	while(addr=iface.DNSServerLst.get())
+	    out << "      <dns-server>" << *addr << "</dns-server>" << endl;  
+    } else {
+	out << "    <!-- <dns-servers/> -->" << endl;
+    }
+
+    // --- option: DOMAIN ---
+    if (iface.isReqDomain()) {
+	out << "    <domains hints=\"" << iface.DomainLst.count() << "\">" << endl;
+	iface.DomainLst.first();
+	while (str = iface.DomainLst.get())
+	    out << "      <domain>" << *str <<"</domain>" << endl;
+    } else {
+	out << "    <!-- <domains/> -->" << endl;
+    }
+	
+    // --- option: NTP servers ---
+    if (iface.isReqNTPServer()) {
+	out << "    <ntp-servers hints=\"" << iface.NTPServerLst.count() << "\"/>" << endl;
+	iface.NTPServerLst.first();
+	while(addr=iface.NTPServerLst.get())
+	    out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;  
+    } else {
+	out << "    <!-- <ntp-servers/> -->" << endl;
+    }
+    
+    // --- option: Timezone ---
+    if (iface.isReqTimezone()) {
+	out << "    <timezone>" << iface.Timezone << "</timezone>" << endl;
+    } else {
+	out << "    <!-- <timezone/> -->" << endl;
+    }
+
+    // --- option: SIP servers ---
+    if (iface.isReqSIPServer()) {
+	out << "    <sip-servers hints=\"" << iface.NTPServerLst.count() << "\"/>" << endl;
+	iface.NTPServerLst.first();
+	while(addr=iface.NTPServerLst.get())
+	    out << "      <sip-server>" << *addr << "</sip-server>" << endl;  
+    } else {
+	out << "    <!-- <sip-servers/> -->" << endl;
+    }
+
+    // --- option: SIP domains ---
+    if (iface.isReqSIPDomain()) {
+	out << "    <sip-domains hints=\"" << iface.DomainLst.count() << "\"/>" << endl;
+	iface.SIPDomainLst.first();
+	while (str = iface.SIPDomainLst.get())
+	    out << "      <sip-domain>" << *str <<"</sip-domain>" << endl;
+    } else {
+	out << "    <!-- <sip-domains/> -->" << endl;
+    }
+
+    // --- option: FQDN ---
+    if (iface.isReqFQDN()) {
+	out << "    <fqdn>" << iface.FQDN << "</fqdn>" << endl;
+    } else {
+	out << "    <!-- <fqdn/> -->" << endl;
+    }
+
+    // --- option: NIS server ---
+    if (iface.isReqNISServer()) {
+	out << "    <nis-servers hints=\"" << iface.NISServerLst.count() << "\"/>" << endl;
+	iface.NISServerLst.first();
+	while(addr=iface.NISServerLst.get())
+	    out << "      <nis-server>" << *addr << "</nis-server>" << endl;  
+    } else {
+	out << "    <!-- <nis-servers/> -->" << endl;
+    }
+
+    // --- option: NIS domains ---
+    if (iface.isReqNISDomain()) {
+	out << "    <nis-domain>" << iface.NISDomain << "</nis-domain>" << endl;
+    } else {
+	out << "    <!-- <nis-domain/> -->" << endl;
+    }
+
+    // --- option: NISP server ---
+    if (iface.isReqNISPServer()) {
+	out << "    <nisplus-servers hints=\"" << iface.NISPServerLst.count() << "\"/>" << endl;
+	iface.NISPServerLst.first();
+	while(addr=iface.NISPServerLst.get())
+	    out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;  
+    } else {
+	out << "    <!-- <nisplus-servers/> -->" << endl;
+    }
+
+    // --- option: NISP domains ---
+    if (iface.isReqNISPDomain()) {
+	out << "    <nisplus-domain>" << iface.NISPDomain << "</nisplus-domain>" << endl;
+    } else {
+	out << "    <!-- <nisplus-domain> -->" << endl;
+    }
 
     out << "  </ClntCfgIface>" << endl;
 

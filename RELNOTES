@@ -1,13 +1,11 @@
 
-  Dibbler 0.2.0 release notes
+  Dibbler 0.2.1-RC1 release notes
  ---------------------------------
  
- This release has a great number of bug fixes, small improvements and changes.
- It also has a real documentation. 
+ This release has new features (unicast, win2003 support) for the first time in
+ a very, very long time. A bunch of smaller improvements were made also.
+ And its documentation is improved and clarified.
  
- Consider this release as stable. It concludes long bug fixing phase. I need
- some rest and will start work on new features soon.
-
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send directly to author. Appropriate links are on project website:
  http://klub.com.pl/dhcpv6/

@@ -1,3 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntCfgAddr.cpp,v 1.3 2004-10-25 20:45:52 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <limits.h>
@@ -5,69 +19,50 @@
 #include "ClntCfgAddr.h"
 #include "Logger.h"
 
-SmartPtr<TIPv6Addr> TClntCfgAddr::get()
-{
+SmartPtr<TIPv6Addr> TClntCfgAddr::get() {
     return Addr;
 }
 
-long TClntCfgAddr::getValid()
-{
+unsigned long TClntCfgAddr::getValid() {
     return Valid;
 }
 
-
-long TClntCfgAddr::getPref()
-{
+unsigned long TClntCfgAddr::getPref() {
     return Pref;
 }
 
 
 TClntCfgAddr::TClntCfgAddr(SmartPtr<TIPv6Addr> addr,long valid,long pref)
 {
-    //memcpy(Addr,addr,16);
     Addr=addr;
     Valid = valid;
     Pref = pref;
 }
 
-
-TClntCfgAddr::~TClntCfgAddr()
-{
+TClntCfgAddr::~TClntCfgAddr() {
 
 }
 
-
-void TClntCfgAddr::setOptions(SmartPtr<TClntParsGlobalOpt> opt)
-{
-	this->Valid=opt->getValid();
-	this->Pref=opt->getPref();
-    this->ValidSendOpt=opt->getValidSendOpt();
-    this->PrefSendOpt=opt->getPrefSendOpt();
+void TClntCfgAddr::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
+    this->Valid=opt->getValid();
+    this->Pref=opt->getPref();
 }
 
-
-TClntCfgAddr::TClntCfgAddr()
-{
+TClntCfgAddr::TClntCfgAddr() {
     this->Valid=ULONG_MAX;
-	this->Pref=ULONG_MAX;
-	this->ValidSendOpt=Send;
-	this->PrefSendOpt=Send;
-	Addr=0;
-	//memset(Addr,0,16);
+    this->Pref=ULONG_MAX;
+    Addr=0;
 }
 
-TClntCfgAddr::TClntCfgAddr(SmartPtr<TIPv6Addr> addr)
-{
-	//memcpy(this->Addr,addr,16);
+TClntCfgAddr::TClntCfgAddr(SmartPtr<TIPv6Addr> addr) {
     Addr=addr;
     Valid = ULONG_MAX;
-	Pref = ULONG_MAX;
+    Pref = ULONG_MAX;
 }
 
-ostream& operator<<(ostream& out,TClntCfgAddr& addr)
-{
-    out << "<addr prefered=\"" << addr.Pref 
-		<< "\" valid=\"" << addr.Valid << "\">";
+ostream& operator<<(ostream& out,TClntCfgAddr& addr) {
+    out << "<addr preferred=\"" << addr.Pref 
+	<< "\" valid=\"" << addr.Valid << "\">";
     out << *addr.Addr << "</addr>" << std::endl;	
-	return out;
+    return out;
 }

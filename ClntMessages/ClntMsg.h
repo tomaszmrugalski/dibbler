@@ -25,6 +25,8 @@ public:
 	     int iface, SmartPtr<TIPv6Addr> addr, int msgType);
     unsigned long getTimeout();
     void send();
+
+    void appendRequestedOptions();
     
     SmartPtr<TClntTransMgr>  getClntTransMgr();
     SmartPtr<TClntAddrMgr>   getClntAddrMgr();

@@ -1,10 +1,15 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski  <msend@o2.pl>                                   *
- *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * Released under GNU GPL v2 licence
+ *
+ * $Id: ClntParsAddrOpt.cpp,v 1.3 2004-10-25 20:45:52 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
 
 #include <limits.h>
 #include "ClntParsAddrOpt.h"
@@ -12,9 +17,7 @@
 TClntParsAddrOpt::TClntParsAddrOpt()
 {
     Pref=ULONG_MAX;
-    PrefSendOpt=Send;
     Valid=ULONG_MAX;
-    ValidSendOpt=Send;
 }
 
 long TClntParsAddrOpt::getPref()
@@ -24,17 +27,7 @@ long TClntParsAddrOpt::getPref()
 
 void TClntParsAddrOpt::setPref(long pref)
 {
-    Pref=pref;
-}
-
-ESendOpt TClntParsAddrOpt::getPrefSendOpt()
-{
-    return PrefSendOpt;
-}
-
-void TClntParsAddrOpt::setPrefSendOpt(ESendOpt opt)
-{
-    PrefSendOpt=opt;
+    this->Pref=pref;
 }
 
 long TClntParsAddrOpt::getValid()
@@ -45,14 +38,4 @@ long TClntParsAddrOpt::getValid()
 void TClntParsAddrOpt::setValid(long valid)
 {
     Valid=valid;
-}
-
-ESendOpt TClntParsAddrOpt::getValidSendOpt()
-{
-    return ValidSendOpt;
-}
-
-void TClntParsAddrOpt::setValidSendOpt(ESendOpt opt)
-{
-    ValidSendOpt=opt;
 }

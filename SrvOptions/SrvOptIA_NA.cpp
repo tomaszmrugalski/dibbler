@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.10 2004-09-08 21:22:46 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.11 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/09/08 21:22:46  thomson
+ * Parser improvements, signed/unsigned issues addressed.
+ *
  * Revision 1.9  2004/07/05 23:04:08  thomson
  * *** empty log message ***
  *
@@ -75,7 +78,7 @@ TSrvOptIA_NA::TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent)
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
-            if(canBeOptInOpt(parent->getType(),OPTION_IA,code)) {
+            if(allowOptInOpt(parent->getType(),OPTION_IA,code)) {
                 SmartPtr<TOpt> opt;
 		opt = SmartPtr<TOpt>(); /* NULL */
                 switch (code)

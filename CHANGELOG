@@ -1,12 +1,18 @@
 
   Dibbler changelog
  ------------------- 
- 0.2.1
-  - Unicast communication support (bug #29, #30, #31)
+
+ 0.2.1-RC1
+  - Windows2003 is now supported.
+  - WIN32: netsh.exe is used instead depreciated ipv6.exe (bug #24, #48)
+  - First version of Developer's guide is included (bug #42, #43)
+  - WIN32: DNS is now properly added to interface. (Adv.NetworkingPack or SP2 might be necessary)
+  - Unicast communication support (bug #30)
   - RAPID-COMMIT support fixed (bug #50, #51, #52)
-  - DECLINE infinite loop fixed
+  - DECLINE infinite loop fixed.
   - DECLINE and RELEASE does no longer contain addrs with non-zero pref/valid lifetimes (bug #32)
   - Invalid address parsing fixed.
+  - YES,NO,TRUE and FALSE can now be used in config files instead of 0 or 1.
 
  0.2.0
   - WinXP: client displays help when command line parameters are incorrect.
@@ -38,3 +44,4 @@
   - First release
 
  For details, see http://klub.com.pl/bugzilla/
+ 

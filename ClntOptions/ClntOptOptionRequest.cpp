@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptOptionRequest.cpp,v 1.3 2004-03-29 18:53:08 thomson Exp $
+ * $Id: ClntOptOptionRequest.cpp,v 1.4 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -25,25 +28,15 @@
 
 
 TClntOptOptionRequest::TClntOptOptionRequest(SmartPtr<TClntCfgIface> ptrIface, TMsg* parent)
-	:TOptOptionRequest(parent)
-{
-    //FIXME: Here should be read list of options from CfgMgr
-    if (ptrIface->isReqDNSSrv()&&(ptrIface->getDNSSrvState()==NOTCONFIGURED))
-        this->addOption(OPTION_DNS_RESOLVERS);
-    if (ptrIface->isReqNTPSrv()&&(ptrIface->getNTPSrvState()==NOTCONFIGURED))
-        this->addOption(OPTION_NTP_SERVERS);
-    if (ptrIface->isReqDomainName()&&(ptrIface->getDomainNameState()==NOTCONFIGURED))
-        this->addOption(OPTION_DOMAIN_LIST);
-    if (ptrIface->isReqTimeZone()&&(ptrIface->getTimeZoneState()==NOTCONFIGURED))
-        this->addOption(OPTION_TIME_ZONE);
+	:TOptOptionRequest(parent) {
+    // requested options are no longer added here
+    // see void TClntMsg::appendRequestedOptions() for details
 }
 
 TClntOptOptionRequest::TClntOptOptionRequest( char * buf,  int n, TMsg* parent)
-	:TOptOptionRequest(buf,n, parent)
-{
+	:TOptOptionRequest(buf,n, parent) {
 }
 
-bool TClntOptOptionRequest::doDuties()
-{
+bool TClntOptOptionRequest::doDuties() {
     return false;
 }

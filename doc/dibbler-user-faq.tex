@@ -1,8 +1,11 @@
 %%
-%% $Id: dibbler-user-faq.tex,v 1.2 2004-06-19 10:24:59 thomson Exp $
+%% $Id: dibbler-user-faq.tex,v 1.3 2004-10-25 20:45:54 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.2  2004/06/19 10:24:59  thomson
+%% Hyperlinks in PDF, building process modified
 %%
+
 
 \section{Frequently Asked Question}
 
@@ -11,13 +14,39 @@ users. Some of them were common enough to get into this section.
 
 \subsection{Common}
 
-\begin{enumerate}
-\item Why client does not configure routing after assigning addresses?
-Because it should be done using Router Advertisements.
+\Q Why client does not configure routing after assigning addresses, so
+I cannot e.g. ping other hosts?
 
-\end{enumerate}
+\A It's rather difficult problem. DHCP's job is to obtain address and
+it exactly does that. To ping any other host, there should be routing
+specified. And this should be done using Router Advertisements. It's
+kinda odd, but that's the way it was meant to work. If there will be
+requests from users, I'll think about some enchancements.
 
 \subsection{Linux specific}
 
+\Q After enabling unicast communication, my client fails to send
+REQUEST messages. What's wrong?
+
+\A This is a problem with certain kernels. My limited test capabilites
+allowed me to conclude that there's problem with 2.4.20
+kernel. Everything works fine with 2.6.0 with USAGI patches. Patched 
+kernels with enhanced IPv6 support can be downloaded from
+\url{http://www.linux-ipv6.org/}. Please let me know if your kernel
+works or not.
 
 \subsection{Windows specific}
+
+\Q After installing \emph{Advanced Networking Pack} or \emph{Windows XP
+  ServicePack2} my DHCPv6 (or other IPv6 application) stopped
+   working. Is Dibbler XP SP2 compatible?
+
+\A In both of this products, there is a IPv6 firewall installed. It
+is configured by default to reject all incoming IPv6 traffic. You have
+to disable this firewall. To do so, issue following commands in a
+console:
+
+\begin{verbatim}
+
+\end{verbatim}
+

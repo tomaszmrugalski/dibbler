@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.6 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.7 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.5  2004/06/20 17:25:06  thomson
  * getName() method implemented, clean up
  *
@@ -34,12 +37,21 @@
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
+// --- options ---
 #include "SrvOptDNSServers.h"
-#include "SrvOptNTPServers.h"
 #include "SrvOptDomainName.h"
+#include "SrvOptNTPServers.h"
 #include "SrvOptTimeZone.h"
-#include "Logger.h"
+#include "SrvOptSIPServer.h"
+#include "SrvOptSIPDomain.h"
+#include "SrvOptFQDN.h"
+#include "SrvOptNISServer.h"
+#include "SrvOptNISDomain.h"
+#include "SrvOptNISPServer.h"
+#include "SrvOptNISPDomain.h"
+#include "SrvOptLifetime.h"
 
+#include "Logger.h"
 #include "SrvIfaceMgr.h"
 #include "AddrClient.h"
 
@@ -65,8 +77,6 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
 
-    //After reading meessage code and transaction id	
-    //read options contained in message    
     int pos=0;
     while (pos<bufSize)	{
         short code = ntohs( * ((short*) (buf+pos)));
@@ -74,79 +84,99 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
         short length = ntohs(*((short*)(buf+pos)));
         pos+=2;
         SmartPtr<TOpt> ptr;
-        if ((code>0)&&(code<=24) || (code==OPTION_DNS_RESOLVERS) ||
-            (code==OPTION_DOMAIN_LIST) || (code==OPTION_NTP_SERVERS) || (code==OPTION_TIME_ZONE))
-        {                
-            if((canBeOptInMsg(MsgType,code))&&
-                (canBeOptInOpt(MsgType,0,code)))
-            {
-                ptr= SmartPtr<TOpt>(); // NULL
-                switch (code)
-                {
-                case OPTION_CLIENTID:
-                    ptr = new TSrvOptClientIdentifier(buf+pos,length,this);
+
+	if (!allowOptInMsg(MsgType,code)) {
+	    Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Ignoring." << LogEnd;
+	    pos+=length;
+	    continue;
+	}
+	if (!allowOptInOpt(MsgType,0,code)) {
+	    Log(Warning) <<"Option " << code << " can't be present in message (type="
+			 << MsgType <<") directly. Ignoring." << LogEnd;
+	    pos+=length;
+	    continue;
+	}
+	ptr= 0;
+	switch (code) {
+	case OPTION_CLIENTID:
+	    ptr = new TSrvOptClientIdentifier(buf+pos,length,this);
+	    break;
+	case OPTION_SERVERID:
+	    ptr =new TSrvOptServerIdentifier(buf+pos,length,this);
+	    break;
+	case OPTION_IA:
+	    ptr = new TSrvOptIA_NA(buf+pos,length,this);
+	    break;
+	case OPTION_ORO:
+	    ptr = new TSrvOptOptionRequest(buf+pos,length,this);
+	    break;
+	case OPTION_PREFERENCE:
+	    ptr = new TSrvOptPreference(buf+pos,length,this);
+	    break;
+	case OPTION_ELAPSED_TIME:
+	    ptr = new TSrvOptElapsed(buf+pos,length,this);
+	    break;
+	case OPTION_UNICAST:
+	    ptr = new TSrvOptServerUnicast(buf+pos,length,this);
+	    break;
+	case OPTION_STATUS_CODE:
+	    ptr = new TSrvOptStatusCode(buf+pos,length,this);
+	    break;
+	case OPTION_RAPID_COMMIT:
+	    ptr = new TSrvOptRapidCommit(buf+pos,length,this);
+	    break;
+	case OPTION_DNS_RESOLVERS:
+	    ptr = new TSrvOptDNSServers(buf+pos,length,this);
                     break;
-                case OPTION_SERVERID:
-                    ptr =new TSrvOptServerIdentifier(buf+pos,length,this);
-                    break;
-                case OPTION_IA:
-                    ptr = new TSrvOptIA_NA(buf+pos,length,this);
-                    break;
-                case OPTION_ORO:
-                    ptr = new TSrvOptOptionRequest(buf+pos,length,this);
-                    break;
-                case OPTION_PREFERENCE:
-                    ptr = new TSrvOptPreference(buf+pos,length,this);
-                    break;
-                case OPTION_ELAPSED_TIME:
-                    ptr = new TSrvOptElapsed(buf+pos,length,this);
-                    break;
-                case OPTION_UNICAST:
-                    ptr = new TSrvOptServerUnicast(buf+pos,length,this);
-                    break;
-                case OPTION_STATUS_CODE:
-                    ptr = new TSrvOptStatusCode(buf+pos,length,this);
-                    break;
-                case OPTION_RAPID_COMMIT:
-                    ptr = new TSrvOptRapidCommit(buf+pos,length,this);
-                    break;
-                case OPTION_DNS_RESOLVERS:
-                    ptr = new TSrvOptDNSServers(buf+pos,length,this);
-                    break;
-                case OPTION_NTP_SERVERS:
-                    ptr = new TSrvOptNTPServers(buf+pos,length,this);
-                    break;
-                case OPTION_DOMAIN_LIST:
-                    ptr = new TSrvOptDomainName(buf+pos, length,this);
-                    break;
-                case OPTION_TIME_ZONE:
-                    ptr = new TSrvOptTimeZone(buf+pos, length,this);
-                    break;
-                case OPTION_IA_TA:
-                case OPTION_RECONF_ACCEPT:
-                case OPTION_USER_CLASS:
-                case OPTION_VENDOR_CLASS:
-                case OPTION_VENDOR_OPTS:
-                case OPTION_RECONF_MSG:
-                case OPTION_AUTH_MSG:
-                case OPTION_RELAY_MSG:
-		default:
-                    Log(Warning) <<"Option nr:" << code<< "not supported in field of message (type="
-				 << MsgType <<") in this version of server."<< logger::endl;
-                    break;
-                }
-                if ((ptr)&&(ptr->isValid()))
-                    Options.append( ptr );
-                else
-                    Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
-            }
-            else
-                Log(Warning) << "Illegal option received, opttype=" << code 
-			     << " in field of message (type="<< MsgType <<")" << LogEnd;
-        } else {
-	    Log(Warning) << "Unknown option in package (" << code << ", addr = " << *addr 
-			 << "). Option ignored." << LogEnd;
-        };
+	case OPTION_NTP_SERVERS:
+	    ptr = new TSrvOptNTPServers(buf+pos,length,this);
+	    break;
+	case OPTION_DOMAIN_LIST:
+	    ptr = new TSrvOptDomainName(buf+pos, length,this);
+	    break;
+	case OPTION_TIME_ZONE:
+	    ptr = new TSrvOptTimeZone(buf+pos, length,this);
+	    break;
+	case OPTION_SIP_SERVERS:
+	    ptr = new TSrvOptSIPServers(buf+pos, length, this);
+	    break;
+	case OPTION_SIP_DOMAINS:
+	    ptr = new TSrvOptSIPDomain(buf+pos, length, this);
+	    break;
+	case OPTION_NIS_SERVERS:
+	    ptr = new TSrvOptNISServers(buf+pos, length, this);
+	    break;
+	case OPTION_NIS_DOMAIN_NAME:
+	    ptr = new TSrvOptNISDomain(buf+pos, length, this);
+	    break;
+	case OPTION_NISP_SERVERS:
+	    ptr = new TSrvOptNISPServers(buf+pos, length, this);
+	    break;
+	case OPTION_NISP_DOMAIN_NAME:
+	    ptr = new TSrvOptNISPDomain(buf+pos, length, this);
+	    break;
+	case OPTION_FQDN:
+	    ptr = new TSrvOptFQDN(buf+pos, length, this);
+	    break;
+	case OPTION_LIFETIME:
+	    ptr = new TSrvOptLifetime(buf+pos, length, this);
+	    break;
+
+	case OPTION_IA_TA:
+	case OPTION_RECONF_ACCEPT:
+	case OPTION_USER_CLASS:
+	case OPTION_VENDOR_CLASS:
+	case OPTION_VENDOR_OPTS:
+	case OPTION_RECONF_MSG:
+	case OPTION_AUTH_MSG:
+	case OPTION_RELAY_MSG:
+	default:
+	    break;
+	}
+	if ( (ptr) && (ptr->isValid()) )
+	    Options.append( ptr );
+	else
+	    Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
         pos+=length;
     }
 
@@ -197,8 +227,8 @@ void TSrvMsg::answer(SmartPtr<TMsg> answer)
         return;
     //retransmission
     TMsg::send();
-    this->SrvIfaceMgr->sendMulticast(this->Iface,(char*)this->pkt,
-        this->getSize(),this->PeerAddr);
+    this->SrvIfaceMgr->send(this->Iface,(char*)this->pkt,
+			    this->getSize(),this->PeerAddr);
     return;
 }
 
@@ -220,63 +250,113 @@ void TSrvMsg::send()
 {
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = SrvIfaceMgr->getIfaceByID(this->Iface);
-    Log(Notice) << "Sending " << this->getName() << "(type=" << this->getType() 
-		<< ") on " << ptrIface->getName() << "/" << this->Iface
-		<< hex << ",TransID=0x" << this->getTransID() << dec << ", " 
-		<< this->countOption() << " opts:";
+    Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getName() << "/" << this->Iface
+		<< hex << ",transID=0x" << this->getTransID() << dec << ", opts:";
     SmartPtr<TOpt> ptrOpt;
     this->firstOption();
     while (ptrOpt = this->getOption() )
         Log(Cont) << " " << ptrOpt->getOptType();
     Log(Cont) << LogEnd;
     TMsg::send();
-    // FIXME: If server supports unicast, sendUnicast...
-    this->SrvIfaceMgr->sendMulticast(this->Iface, this->pkt, 
-				     this->getSize(), this->PeerAddr);
+    this->SrvIfaceMgr->send(this->Iface, this->pkt, 
+			    this->getSize(), this->PeerAddr);
 }
 
 /*
  * this function appends all standard options
  */
 bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
-        int iface, SmartPtr<TSrvOptOptionRequest> reqOpts)
+				     int iface, SmartPtr<TSrvOptOptionRequest> reqOpts)
 {
     bool newOptionAssigned = false;
-    if ((reqOpts->getOptCnt())&&(SrvCfgMgr->isClntSupported(duid,addr,iface))) {
-        SmartPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr->getIfaceByID(iface);
+    // client didn't want any option? Or maybe we're not supporting this client?
+    if (!reqOpts->count() || !SrvCfgMgr->isClntSupported(duid,addr,iface))
+	return false;
 
-	// DNS resolvers option
-        if ((reqOpts->isOption(OPTION_DNS_RESOLVERS))&&ptrIface->getDNSSrvLst().count()) {
-            SmartPtr<TSrvOptDNSServers> dnsLst=
-                new TSrvOptDNSServers(ptrIface->getDNSSrvLst(),this);
-            Options.append((Ptr*)dnsLst);
-            newOptionAssigned = true;
-        };
-        
-	// NTP servers
-        if ((reqOpts->isOption(OPTION_NTP_SERVERS))&&ptrIface->getNTPSrvLst().count()) {
-            SmartPtr<TSrvOptNTPServers> ntpLst=
-                new TSrvOptNTPServers(ptrIface->getNTPSrvLst(),this);
-            Options.append((Ptr*)ntpLst);
-            newOptionAssigned = true;
-        };
+    SmartPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr->getIfaceByID(iface);
+    
+    // --- option: DNS resolvers ---
+    if ( reqOpts->isOption(OPTION_DNS_RESOLVERS) && ptrIface->supportDNSServer() ) {
+	SmartPtr<TSrvOptDNSServers> optDNS = new TSrvOptDNSServers(*ptrIface->getDNSServerLst(),this);
+	Options.append((Ptr*)optDNS);
+	newOptionAssigned = true;
+    };
 
-	// timezone option
-        if ((reqOpts->isOption(OPTION_TIME_ZONE))&&(ptrIface->getTimeZone()!=""))
-        {
-            SmartPtr<TSrvOptTimeZone> timeZone=
-                new TSrvOptTimeZone(ptrIface->getTimeZone(),this);
-            Options.append((Ptr*)timeZone);
-            newOptionAssigned = true;
-        };
+    // --- option: DOMAIN LIST ---
+    if ( reqOpts->isOption(OPTION_DOMAIN_LIST) && ptrIface->supportDomain() ) {
+	SmartPtr<TSrvOptDomainName> optDomain= new TSrvOptDomainName(*ptrIface->getDomainLst(),this);
+	Options.append((Ptr*)optDomain);
+	newOptionAssigned = true;
+    };
+    
+    // --- option: NTP servers ---
+    if ( reqOpts->isOption(OPTION_NTP_SERVERS) && ptrIface->supportNTPServer() ) {
+	SmartPtr<TSrvOptNTPServers> optNTP = new TSrvOptNTPServers(*ptrIface->getNTPServerLst(),this);
+	Options.append((Ptr*)optNTP);
+	newOptionAssigned = true;
+    };
+    
+    // --- option: TIMEZONE --- 
+    if ( reqOpts->isOption(OPTION_TIME_ZONE) && ptrIface->supportTimezone() ) {
+	SmartPtr<TSrvOptTimeZone> optTimezone = new TSrvOptTimeZone(ptrIface->getTimezone(),this);
+	Options.append((Ptr*)optTimezone);
+	newOptionAssigned = true;
+    };
 
-	// Domain list option
-        if ((reqOpts->isOption(OPTION_DOMAIN_LIST))&&(ptrIface->getDomain()!="")) {
-            SmartPtr<TSrvOptDomainName> domain=
-                new TSrvOptDomainName(ptrIface->getDomain(),this);
-            Options.append((Ptr*)domain);
-            newOptionAssigned = true;
-        };
+    // --- option: SIP SERVERS ---
+    if ( reqOpts->isOption(OPTION_SIP_SERVERS) && ptrIface->supportSIPServer() ) {
+	SmartPtr<TSrvOptSIPServers> optSIPServer = new TSrvOptSIPServers(*ptrIface->getSIPServerLst(),this);
+	Options.append((Ptr*)optSIPServer);
+	newOptionAssigned = true;
+    };
+
+    // --- option: SIP DOMAINS ---
+    if ( reqOpts->isOption(OPTION_SIP_DOMAINS) && ptrIface->supportSIPDomain() ) {
+	SmartPtr<TSrvOptSIPDomain> optSIPDomain= new TSrvOptSIPDomain(*ptrIface->getSIPDomainLst(),this);
+	Options.append((Ptr*)optSIPDomain);
+	newOptionAssigned = true;
+    };
+
+    // --- option: FQDN ---
+    if ( reqOpts->isOption(OPTION_FQDN) && ptrIface->supportFQDN() ) {
+	SmartPtr<TSrvOptFQDN> opt = new TSrvOptFQDN(ptrIface->getFQDN(), this);
+	Options.append((Ptr*)opt);
+	newOptionAssigned = true;
+    };
+
+    // --- option: NIS SERVERS ---
+    if ( reqOpts->isOption(OPTION_NIS_SERVERS) && ptrIface->supportNISServer() ) {
+	SmartPtr<TSrvOptNISServers> opt = new TSrvOptNISServers(*ptrIface->getNISServerLst(),this);
+	Options.append((Ptr*)opt);
+	newOptionAssigned = true;
+    };
+
+    // --- option: NIS DOMAIN ---
+    if ( reqOpts->isOption(OPTION_NIS_DOMAIN_NAME) && ptrIface->supportNISDomain() ) {
+	SmartPtr<TSrvOptNISDomain> opt = new TSrvOptNISDomain(ptrIface->getNISDomain(),this);
+	Options.append((Ptr*)opt);
+	newOptionAssigned = true;
+    };
+
+    // --- option: NISP SERVERS ---
+    if ( reqOpts->isOption(OPTION_NISP_SERVERS) && ptrIface->supportNISPServer() ) {
+	SmartPtr<TSrvOptNISPServers> opt = new TSrvOptNISPServers(*ptrIface->getNISPServerLst(),this);
+	Options.append((Ptr*) opt);
+	newOptionAssigned = true;
+    };
+
+    // --- option: NISP DOMAIN ---
+    if ( reqOpts->isOption(OPTION_NISP_DOMAIN_NAME) && ptrIface->supportNISPDomain() ) {
+	SmartPtr<TSrvOptNISPDomain> opt = new TSrvOptNISPDomain(ptrIface->getNISPDomain(), this);
+	Options.append((Ptr*)opt);
+	newOptionAssigned = true;
+    };
+
+    // --- option: LIFETIME ---
+    if ( newOptionAssigned && ptrIface->supportLifetime() ) {
+	SmartPtr<TSrvOptLifetime> optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
+	Options.append( (Ptr*)optLifetime);
     }
+    
     return newOptionAssigned;
 }

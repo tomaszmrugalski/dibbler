@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.9 2004-09-08 21:22:45 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.10 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/09/08 21:22:45  thomson
+ * Parser improvements, signed/unsigned issues addressed.
+ *
  * Revision 1.8  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
  *
@@ -75,14 +78,14 @@ class TSrvCfgAddrClass
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     virtual ~TSrvCfgAddrClass();
  private:
-    long T1Beg;
-    long T2Beg;
-    long PrefBeg;
-    long ValidBeg;
-    long T1End;
-    long T2End;
-    long PrefEnd;
-    long ValidEnd;
+    unsigned long T1Beg;
+    unsigned long T2Beg;
+    unsigned long PrefBeg;
+    unsigned long ValidBeg;
+    unsigned long T1End;
+    unsigned long T2End;
+    unsigned long PrefEnd;
+    unsigned long ValidEnd;
     
     long chooseTime(long beg, long end, long clntTime);
     

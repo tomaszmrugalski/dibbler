@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.3 2004-06-19 19:51:14 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.4 2004-10-25 20:45:54 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.3  2004/06/19 19:51:14  thomson
+%% Various fixes.
+%%
 %% Revision 1.2  2004/06/19 10:24:59  thomson
 %% Hyperlinks in PDF, building process modified
 %%
@@ -19,14 +22,14 @@ Dibbler website located at \url{http://klub.com.pl/dhcpv6/}.
 \section{Overview}
 
 Dibbler is a portable DHCPv6 solution. It features both server and
-client. Currently there are ports available for WindowsXP
+client. Currently there are ports available for Windows XP and 2003
 and Linux systems. Besides basic functionality specified in RFC3315,
 it also offers serveral enhancements, e.g. DNS servers and doman names
 configuration.
 
 Dibbler is an open source software, distributed under GNU GPL
 licence. It means that it is freely available, free of charge and can
-be used by anyone (including commercial usage). Sources are also
+be used by anyone (including commercial users). Sources are also
 available, so anyone skilled enough can fix bugs or add new features.
 
 As for now, Dibbler offers these features:
@@ -43,6 +46,13 @@ As for now, Dibbler offers these features:
   have 5 addresses configured. Prefered server can only grant 3, so
   client send request for remaining 2 addresses to one of the
   remaining servers.
+\item Unicast communication -- if specific conditions are met, client
+  could send messages directly to a server's unicast address, so
+  additional servers does not need to process those messages. It also
+  improves effciency, as all nodes present in LAN segment receive
+  multicast packets.\footnote{Nodes, which do not belong to specific
+    multicast group, drop those packets silently. However, determining
+    if host belongs or not to a group must be performed on each node.}
 \item Address renewal (RENEW,REBIND and REPLY messages) -- client renews
   addresses at certain time intervals, if server specified so.
 \item Duplicate address detection (DECLINE and REPLY messages) -- client
@@ -55,8 +65,8 @@ As for now, Dibbler offers these features:
   client recovers from crash or power failure, it still can have
   assigned valid addresses. In such circumstances, client uses CONFIRM
   message, to config if those addresses are still valid%
-  \footnote{As for 0.2.0 version, this functionality works on server side only,
-  client side support is in progress.}.
+  \footnote{As for 0.2.1 version, this functionality works on server side only,
+  client side support will be available in 0.2.2.}.
 \item IA Option -- this option is used to carry addresses. Both server
   and client support multiple IAs in one message. Additional feature
   is client capability to ask for a specific address.

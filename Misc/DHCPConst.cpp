@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.3 2004-09-07 17:42:31 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.4 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/07 17:42:31  thomson
+ * Server Unicast implemented.
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -15,69 +18,39 @@
  *                                                                           
  */
 #include "DHCPConst.h"
-/*                                                      Appearance of Options in Message Types
 
-           Client Server IA_NA IA_TA IAAddr Option Pref  Time Relay Auth. Server  Status  Rap. User  Vendor Vendor Inter. Recon. Recon.
-             ID     ID                      Request            Msg.       Unica.   Code  Comm. Class Class  Spec.    ID    Msg.  Accept
-   Solicit   *             *     *             *           *           *                   *     *     *      *                    *
-   Advert.   *      *      *     *                   *                 *             *           *     *      *                    *
-   Request   *      *      *     *             *           *           *                         *     *      *                    *
-   Confirm   *             *     *             *           *           *                         *     *      *
-   Renew     *      *      *     *             *           *           *                         *     *      *                    *
-   Rebind    *             *     *             *           *           *                         *     *      *                    *
-   Decline   *      *      *     *             *           *           *                         *     *      *
-   Release   *      *      *     *             *           *           *                         *     *      *
-   Reply     *      *      *     *                   *                 *     *       *     *     *     *      *                    *
-   Reconf.   *      *                          *                       *                                                    *
-   Inform.   * (see note)                      *           *           *                         *     *      *                    *
-   R-forw.                                                      *     *                          *     *      *      *
-   R-repl.                                                      *     *                          *     *      *      *
 
-*/
-
-bool OptInMsg[13][24] = {
-//         Client Server IA_NA IA_TA IAAddr Option Pref  Time Relay   Empty Auth. Server  Status  Rap. User  Vendor Vendor Inter. Recon. Recon. DNS    Domain NTP    Time
-//           ID     ID                      Request            Msg.   Empty       Unica.   Code  Comm. Class Class  Spec.    ID    Msg.  Accept Server Name   Server Zone
-// Solicit   *             *     *             *           *                   *                   *     *     *      *                    *      *       *     *     *
-         {true , false, true,true, false, true,false,true,false, false,true,false, false,true, true, true, true, false, false,true , true,  true, true, true},
-// Advert.   *      *      *     *                   *                         *             *           *     *      *                    *      *       *     *     *
-         {true , true , true,true, false,false,true ,false,false,false,true,false,true ,false,true, true, true, false, false,true , true,  true, true, true},
-// Request   *      *      *     *             *           *                   *                         *     *      *                    *      *       *     *     *
-         {true , true , true,true, false, true,false,true,false, false,true,false, false,false,true, true, true, false, false,true , true,  true, true, true},                
-// Confirm   *             *     *             *           *                   *                         *     *      *                                         *     *
-         {true ,false , true,true, false, true,false,true,false, false,true,false, false,false,true, true, true, false, false,false, false,false, true, true},
-// Renew     *      *      *     *             *           *                   *                         *     *      *                    *      *       *     *     *
-         {true , true , true,true, false, true,false,true,false, false,true,false, false,false,true, true, true, false, false, true, true,  true, true, true},
-// Rebind    *             *     *             *           *                   *                         *     *      *                    *      *       *     *     *
-         {true ,false , true,true, false,    true,false,true,false, false,true,false, false,false,true, true, true, false, false, true, true,  true, true, true},
-// Reply     *      *      *     *                   *                         *     *       *     *     *     *      *                    *      *       *     *     *
-         {true ,true  , true,true, false,false,true,false,false, false,true, true, true ,true ,true, true, true, false, false,true , true,  true, true, true},
-// Release   *      *      *     *             *           *                   *                         *     *      *
-         {true ,true  , true,true, false, true,false,true,false, false,true,false, false,false,true, true, true, false, false,false, false,false,false,false},
-// Decline   *      *      *     *             *           *                   *                         *     *      *
-         {true ,true  , true,true, false, true,false,true,false, false,true,false, false,false,true, true, true, false, false,false, false,false,false,false},
-// Reconf.   *      *                           *                               *                                                    *
-         {true ,true  ,false,false,false,true,false,false,false, false,true,false,false,false,false,false,false,false, true ,false, false,false,false,false},
-// Inform.   * (see note)                      *           *                   *                         *     *      *                    *      *       *     *     *
-         {true , true,false,false ,false,true ,false,true,false, false,true,false, false,false,true, true, true, false, false,true , true,  true, true, true},
-// R-forw.                                                       *             *                         *     *      *      *
-         {false,false,false,false ,false,false,false,false,true, false,true,false, false,false,true, true, true, true , false,false, false,false,false,false},
-// R-repl.                                                       *             *                      Q   *     *      *      *
-         {false,false,false,false ,false,false,false,false,true, false,true,false, false,false,true, true, true, true , false,false, false,false,false,false},
+// standard options specified in RFC3315, pg. 99
+bool OptInMsg[13][20] = {
+//           Client Server  IA_NA IA_TA IAAddr Option  Pref  Elap  Relay  Empty Auth. Server  Status  Rap. User  Vendor Vendor Inter. Recon. Recon.
+//             ID     ID                       Request       Time  Msg.   Empty       Unica.   Code  Comm. Class Class  Spec.    ID    Msg.  Accept
+/*Solicit */ {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  true, true, true,  true, false, false,true },
+/*Advertise*/{true,  true , true,  true, false, false,true , false,false, false,true, false, true ,  false,true, true,  true, false, false,true },
+/*Request*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,true },                
+/*Confirm*/  {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
+/*Renew*/    {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false, true},
+/*Rebind*/   {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false, true},
+/*Reply*/    {true,  true , true,  true, false, false,true,  false,false, false,true, true,  true ,  true ,true, true,  true, false, false,true },
+/*Release*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
+/*Decline*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
+/*Reconf.*/  {true,  true , false, false,false, true, false, false,false, false,true, false, false,  false,false,false, false,false, true ,false},
+/*Inform.*/  {true,  true,  false, false,false, true ,false, true, false, false,true, false, false,  false,true, true,  true, false, false,true},
+/*R-forw.*/  {false, false, false, false,false, false,false, false,true,  false,true, false, false,  false,true, true,  true, true , false,false},
+/*R-repl.*/  {false, false, false, false,false, false,false, false,true,  false,true, false, false,  false,true, true,  true, true , false,false},
 };
 
-bool canBeOptInMsg(int msgType, int optType)
+bool allowOptInMsg(int msg, int opt)
 {
-    switch (optType)
-    {
-        case OPTION_DNS_RESOLVERS:  optType=21; break;
-        case OPTION_DOMAIN_LIST:    optType=22; break;
-        case OPTION_NTP_SERVERS:    optType=23; break;
-        case OPTION_TIME_ZONE:      optType=24; break;
+    // standard options specified in RFC3315
+    if (opt <=20) {
+	return OptInMsg[msg-1][opt-1];
     }
-    if (optType<11) 
-	return OptInMsg[msgType-1][optType-1];
-    return OptInMsg[msgType-1][optType];
+
+    // additional options
+    if (msg == CONFIRM_MSG || msg == RELEASE_MSG || msg == DECLINE_MSG ||
+	msg == RECONFIGURE_MSG || msg == RELAY_FORW || msg == RELAY_REPL)
+	return false;
+    return true;
 }
 
 /*          Appearance of Options in the Options Field of DHCP Options
@@ -105,33 +78,33 @@ bool canBeOptInMsg(int msgType, int optType)
 20 Reconf. Accept *
 */
 
-bool canBeOptInOpt(int msgType, int optOut, int optIn)
-{
-    if ((msgType==RELAY_FORW)||(msgType==RELAY_REPL))
-    {
-    //FIXME:case OPTION_REL I dont't know what is these Relay Forw and Raly Reply
-    //      There are no such options (there are such messages) so ??????????????
+bool allowOptInOpt(int msgType, int parent, int subopt) {
+
+    // additional options (not specified in RFC3315)
+    if (subopt>20)
+	return true;
+
+    if ((msgType==RELAY_FORW)||(msgType==RELAY_REPL)) {
+	// FIXME: those messages are not supported
+	return true;
     }
-    else
-    {
-        switch (optOut)
-        {
-            case 0: //Option Field
-                if ((optIn!=OPTION_IAADDR)&&
-                    (optIn!=OPTION_RELAY_MSG)&&
-                    (optIn!=OPTION_INTERFACE_ID))
-                    return true;
-                break;
-            case OPTION_IA:
-            case OPTION_IA_TA:
-                if ((optIn==OPTION_IAADDR)||(optIn==OPTION_STATUS_CODE))
-                    return true;
-                break;
-            case OPTION_IAADDR:
-                if (optIn==OPTION_STATUS_CODE)
-                    return true;
-                break;
-        }
+
+    switch (parent) {
+    case 0: //Option Field
+	if ((subopt!=OPTION_IAADDR)&&
+	    (subopt!=OPTION_RELAY_MSG)&&
+	    (subopt!=OPTION_INTERFACE_ID))
+	    return true;
+	break;
+    case OPTION_IA:
+    case OPTION_IA_TA:
+	if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
+	    return true;
+	break;
+    case OPTION_IAADDR:
+	if (subopt==OPTION_STATUS_CODE)
+	    return true;
+	break;
     }
     return false;
 }

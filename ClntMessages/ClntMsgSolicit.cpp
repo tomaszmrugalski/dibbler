@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.10 2004-10-02 13:11:24 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.11 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/10/02 13:11:24  thomson
+ * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
+ * Unicast communication now can be enable on client side (disabled by default).
+ *
  * Revision 1.9  2004/09/07 22:02:32  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -57,84 +61,36 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
                  List(TClntCfgIA) IAs, bool rapid)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,SOLICIT_MSG)
 {
-	IRT=SOL_TIMEOUT;
-	MRT=SOL_MAX_RT;
-	//these both below mean there is no ending condition and transactions
-	//lasts till receiving answer
-	MRC=0;
-	MRD=0;
-	
-	RT=0;
-	
-	// ClientIdentifier option
-	SmartPtr<TOpt> ptr;
-	ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
-	Options.append( ptr );
+    IRT=SOL_TIMEOUT;
+    MRT=SOL_MAX_RT;
 
-	// all IAs provided by checkSolicit
-	SmartPtr<TClntCfgIA> ClntCfgIA;
-	IAs.first();
-	while (ClntCfgIA = IAs.get()) 
-	{
-	    SmartPtr<TClntOptIA_NA> IA_NA;
-	    IA_NA = new TClntOptIA_NA(ClntCfgIA, this);
-	    Options.append((Ptr*)IA_NA);
-	}
-	// what should we ask for (besides addrs)?
-	//SmartPtr<TOpt> ptrOpt;
-	//ptrOpt = new TClntOptOptionRequest(CfgMgr);
-	//Options.append( ptrOpt );
+    //these both below mean there is no ending condition and transactions
+    //lasts till receiving answer
+    MRC=0;
+    MRD=0;
+    RT=0;
+	
+    // ClientIdentifier option
+    SmartPtr<TOpt> ptr;
+    ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
+    Options.append( ptr );
     
-	// include ELAPSED option
-	Options.append(new TClntOptElapsed(this));
-    //Rapid Commit
+    // all IAs provided by checkSolicit
+    SmartPtr<TClntCfgIA> ClntCfgIA;
     IAs.first();
-    ClntCfgIA=IAs.get();
-    //FIXME:whether send solicit with rapid commit option shlould
-    //      be passed by additional parameter in constructor
-    //      why - look at readme.txt file
+    while (ClntCfgIA = IAs.get()) {
+	SmartPtr<TClntOptIA_NA> IA_NA;
+	IA_NA = new TClntOptIA_NA(ClntCfgIA, this);
+	Options.append((Ptr*)IA_NA);
+    }
+    
+    // include ELAPSED option
+    Options.append(new TClntOptElapsed(this));
+
     if(rapid)
         Options.append(new TClntOptRapidCommit(this));
     
-    SmartPtr<TClntOptOptionRequest> ptrOptOptReq=
-        new TClntOptOptionRequest(CfgMgr->getIface(Iface),this);
-    Options.append((Ptr*)ptrOptOptReq);
-
-    SmartPtr<TClntCfgIface> ptrIface;
-    if (ptrIface=CfgMgr->getIface(iface))
-    {
-        if (ptrIface->isReqDNSSrv()&&(ptrIface->getDNSSrvState()==NOTCONFIGURED))
-        {
-            SmartPtr<TClntOptDNSServers> ptrDNSOpt=
-                new TClntOptDNSServers(ptrIface->getProposedDNSSrv(),this);
-            Options.append((Ptr*)ptrDNSOpt);
-        }
-
-        if (ptrIface->isReqNTPSrv()&&(ptrIface->getNTPSrvState()==NOTCONFIGURED))
-        {
-            SmartPtr<TClntOptNTPServers> ptrNTPOpt=
-                new TClntOptNTPServers(ptrIface->getProposedNTPSrv(),this);
-            Options.append((Ptr*)ptrNTPOpt);
-        }
-        
-        if (ptrIface->isReqDomainName()&&(ptrIface->getDomainNameState()==NOTCONFIGURED))
-        {
-            SmartPtr<TClntOptDomainName> ptrDomainOpt=
-                new TClntOptDomainName(ptrIface->getProposedDomainName(),this);
-            Options.append((Ptr*)ptrDomainOpt);
-        }
-
-        if (ptrIface->isReqTimeZone()&&(ptrIface->getTimeZoneState()==NOTCONFIGURED))
-        {
-            SmartPtr<TClntOptTimeZone> ptrTimeOpt=
-                new TClntOptTimeZone(ptrIface->getProposedTimeZone(),this);
-            Options.append((Ptr*)ptrTimeOpt);
-        }
-    }
-
-    //FIXME: If there will be enough time, implement options:
-    //UserClass i ReconfigureAccept should appear in this 
-    //part of code
+    this->appendRequestedOptions();
     
     pkt = new char[getSize()];
 }
@@ -292,7 +248,7 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TMsg> msg) {
     }
 
     // are there any options (requested in REQUEST_OPTION) not yet configured?
-    if ( ptrOptionReqOpt && (ptrOptionReqOpt->getOptCnt()) )
+    if ( ptrOptionReqOpt && (ptrOptionReqOpt->count()) )
     {
 	Log(Notice) << "All IA(s) were supplied, but not all requested options.";
 	clog<<"Sending Information Request" << logger::endl;
@@ -330,35 +286,8 @@ bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TMsg> msg)
     SmartPtr<TClntOptOptionRequest> ptrReqOpt = (Ptr*) getOption(OPTION_ORO);
     SmartPtr<TOpt> ptrAnswOpt;
     SmartPtr<TClntCfgIface> ptrIface=ClntCfgMgr->getIface(this->Iface);
-    //Check required options
-    if (ptrReqOpt&&(ptrReqOpt->countOption()))
-    {
-        for(int i=0;i<ptrReqOpt->countOption();i++)
-        {
-            switch(ptrReqOpt->getReqOpt(i))
-            {
-            case OPTION_DNS_RESOLVERS:
-                if (ptrIface->getDNSReqOpt()==Require)
-                    if (!(msg->getOption(OPTION_DNS_RESOLVERS)))
-                        return true;
-                break;
-            case OPTION_DOMAIN_LIST:
-                if (ptrIface->getDomainReqOpt()==Require)
-                    if (!(msg->getOption(OPTION_DOMAIN_LIST)))
-                        return true;
-                break;
-            case OPTION_NTP_SERVERS:
-                if (ptrIface->getDomainReqOpt()==Require)
-                    if (!(msg->getOption(OPTION_DOMAIN_LIST)))
-                        return true;
-            case OPTION_TIME_ZONE:
-                if (ptrIface->getDomainReqOpt()==Require)
-                    if (!(msg->getOption(OPTION_DOMAIN_LIST)))
-                        return true;
-                break;
-            }
-        };
-    }
+
+
     //check at last for ia inclusion
     msg->firstOption();
     while(ptrAnswOpt=msg->getOption())

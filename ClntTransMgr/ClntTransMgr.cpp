@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.21 2004-09-07 22:02:33 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.22 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.20  2004/09/07 17:42:31  thomson
  * Server Unicast implemented.
  *
@@ -312,7 +315,7 @@ void TClntTransMgr::shutdown()
 {
     this->Shutdown = true;
 
-    std::clog << logger::logNotice << "Shutting down entire client." << LogEnd;
+    Log(Notice) << "Shutting down entire client." << LogEnd;
 
     // delete all transactions
     Transactions.clear();
@@ -371,6 +374,9 @@ void TClntTransMgr::shutdown()
         if (releasedIAs.count()) 
             this->sendRelease(releasedIAs);
     }
+
+    // clean up options
+    this->IfaceMgr->removeAllOpts();
 }
 
 void TClntTransMgr::relayMsg(SmartPtr<TMsg>  msgAnswer)
@@ -437,9 +443,15 @@ void TClntTransMgr::stop()
 {
 }
 // requestOptions list MUST NOT contain server DUID.
-void TClntTransMgr::sendRequest( TContainer< SmartPtr<TOpt> > requestOptions, 
-                                TContainer< SmartPtr<TMsg> > srvlist,int iface)
+void TClntTransMgr::sendRequest(List(TOpt) requestOptions, 
+                                List(TMsg) srvlist,int iface)
 {
+    SmartPtr<TOpt> opt;
+    requestOptions.first();
+    while (opt = requestOptions.get()) {
+	if (!allowOptInMsg(REQUEST_MSG, opt->getOptType()))
+	    requestOptions.del();
+    }
     SmartPtr<TMsg> ptr = new TClntMsgRequest(IfaceMgr,That,CfgMgr, AddrMgr, requestOptions,srvlist,iface);
     Transactions.append( ptr );
 }
@@ -463,26 +475,34 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst)
 }
 
 // Send REBIND message
-void TClntTransMgr::sendRebind( TContainer<SmartPtr<TOpt> > ptrOpts, int iface)
-{
-    SmartPtr<TMsg> ptr =  new TClntMsgRebind(IfaceMgr, That, CfgMgr, AddrMgr, ptrOpts, iface);
-    Transactions.append( ptr );
+void TClntTransMgr::sendRebind(List(TOpt) requestOptions, int iface) {
+    SmartPtr<TOpt> opt;
+    requestOptions.first();
+    while (opt = requestOptions.get()) {
+	if (!allowOptInMsg(REBIND_MSG, opt->getOptType()))
+	    requestOptions.del();
+    }
+
+    SmartPtr<TMsg> ptr =  new TClntMsgRebind(IfaceMgr, That, CfgMgr, AddrMgr, requestOptions, iface);
+    if (!ptr->isDone())
+	Transactions.append( ptr );
 }
 
+void TClntTransMgr::sendInfRequest(List(TOpt) requestOptions, int iface) {
+    SmartPtr<TOpt> opt;
+    requestOptions.first();
+    while (opt = requestOptions.get()) {
+	if (!allowOptInMsg(INFORMATION_REQUEST_MSG, opt->getOptType()))
+	    requestOptions.del();
+    }
 
-void TClntTransMgr::sendInfRequest(
-                                   TContainer< SmartPtr<TOpt> > requestOptions, 
-                                   int iface)
-{
-    SmartPtr<TMsg> ptr = new TClntMsgInfRequest(
-        IfaceMgr,That,CfgMgr,AddrMgr,requestOptions,iface);
+    SmartPtr<TMsg> ptr = new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,requestOptions,iface);
     if (!ptr->isDone())
 	Transactions.append( ptr );    
 }
 
 // should we send SOLICIT ?
-void TClntTransMgr::checkSolicit()
-{
+void TClntTransMgr::checkSolicit() {
     //For every iface, every group in iface in ClntCfgMgr 
     //Enumerate IA's from this group
     SmartPtr<TClntCfgIface> iface;

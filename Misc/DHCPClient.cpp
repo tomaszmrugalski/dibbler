@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.11 2004-09-07 15:37:44 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.12 2004-10-25 20:45:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/09/07 15:37:44  thomson
+ * Socket handling changes.
+ *
  * Revision 1.10  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -29,8 +32,13 @@
 
 volatile int serviceShutdown;
 
+//static void foo() {
+//    SmartPtr<TClntParsGlobalOpt> opt = new TClntParsGlobalOpt();
+//}
+
 TDHCPClient::TDHCPClient(string config)
 {
+    //foo();
     string oldconf = config+"-old";
 
     serviceShutdown = 0;
@@ -90,18 +98,14 @@ void TDHCPClient::run()
 	    int iface = msg->getIface();
 	    SmartPtr<TIfaceIface> ptrIface;
 	    ptrIface = IfaceMgr->getIfaceByID(iface);
-            Log(Notice) << "Received " << msg->getName()
-			<< "(type=" << msg->getType() 
-			<< ") on " << ptrIface->getName() << "/" << iface
-			<< hex << ",TransID=0x" << msg->getTransID() << dec
-			<< ", " << msg->countOption() << " opts:";
-
+            Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
+			<< "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
+			<< dec << ", " << msg->countOption() << " opts:";
             SmartPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
-                std::clog << " " << ptrOpt->getOptType(); 
-                // << "(" << ptrOpt->getSize() << ")";
-            std::clog << logger::endl;
+                Log(Cont) << " " << ptrOpt->getOptType(); 
+            Log(Cont) << logger::endl;
 	    
             TransMgr->relayMsg(msg);
         }

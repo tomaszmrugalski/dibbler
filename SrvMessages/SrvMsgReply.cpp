@@ -6,17 +6,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.11 2004-09-07 22:02:33 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.12 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.10  2004/08/24 22:48:35  thomson
- * *** empty log message ***
- *
- * Revision 1.9  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.8  2004/06/20 21:00:45  thomson
- * Various fixes.
+ * Revision 1.11  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
  * Revision 1.7  2004/06/20 19:29:23  thomson
  * New address assignment finally works.
@@ -272,7 +266,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         case OPTION_STATUS_CODE:
         case OPTION_PREFERENCE:
         case OPTION_UNICAST:
-            std::clog << "Invalid option (" <<ptrOpt->getOptType() << ") received." << logger::endl;
+            Log(Warning) << "Invalid option (" <<ptrOpt->getOptType() << ") received." << logger::endl;
             break;
         default:
             appendDefaultOption(ptrOpt);
@@ -381,12 +375,12 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 							  clntIA->getT1(),clntIA->getT2(),this));
 	    Options.append((Ptr*)ansIA);
 	    ansIA->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
-						   "Not every address had binding",this));
+						   "Not every address had binding.",this));
 	};
     };
     
     Options.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-					 "All IA's in release message were processed",this));
+					 "All IAs in RELEASE message were processed.",this));
     
     pkt = new char[this->getSize()];
     IsDone = false;
@@ -401,8 +395,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
                            SmartPtr<TSrvCfgMgr> CfgMgr, 
                            SmartPtr<TSrvAddrMgr> AddrMgr,
                            SmartPtr<TSrvMsgRenew> renew)
-                           :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
-                           renew->getIface(),renew->getAddr(), REPLY_MSG, renew->getTransID())
+    :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
+	     renew->getIface(),renew->getAddr(), REPLY_MSG, renew->getTransID())
 {
     // uncomment this to test REBIND
     //IsDone = true;
@@ -608,9 +602,6 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     }
     appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
 
-
-
-
     pkt = new char[this->getSize()];
     IsDone = false;
     SmartPtr<TIPv6Addr> ptrAddr;
@@ -618,15 +609,14 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     this->send();
 }
 
-//Information request answer
-TSrvMsgReply::TSrvMsgReply(
-    SmartPtr<TSrvIfaceMgr> ifaceMgr, 
-    SmartPtr<TSrvTransMgr> transMgr, 
-    SmartPtr<TSrvCfgMgr> CfgMgr, 
-    SmartPtr<TSrvAddrMgr> AddrMgr,
-    SmartPtr<TSrvMsgInfRequest> question)
+// INFORMATION-REQUEST answer
+TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
+			   SmartPtr<TSrvTransMgr> transMgr, 
+			   SmartPtr<TSrvCfgMgr> CfgMgr, 
+			   SmartPtr<TSrvAddrMgr> AddrMgr,
+			   SmartPtr<TSrvMsgInfRequest> question)
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,question->getIface(),
-                question->getAddr(),REPLY_MSG,question->getTransID())
+	     question->getAddr(),REPLY_MSG,question->getTransID())
 {
     SmartPtr<TOpt> ptrOpt;
     setOptionsReqOptClntDUID((Ptr*)question);
@@ -655,53 +645,43 @@ TSrvMsgReply::TSrvMsgReply(
             break;
         }
     }
-    if (appendRequestedOptions(duidOpt->getDUID(),question->getAddr(),question->getIface(),reqOpts))
-    {
+    if (appendRequestedOptions(duidOpt->getDUID(),question->getAddr(),question->getIface(),reqOpts)) {
         // include our DUID
         SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
         this->Options.append((Ptr*)srvDUID);
 
         pkt = new char[this->getSize()];
         IsDone = false;
-        //SmartPtr<TIPv6Addr> ptrAddr;
         this->MRT = 330; // FIXME: 
         this->send();
-    }
-    else
-    {
+    } else {
+	Log(Notice) << "No options to send to INF-REQUEST, so REPLY will not be send." << LogEnd;
         IsDone=false;
     }
 }
 
-void TSrvMsgReply::answer(SmartPtr<TMsg> Rep)
-{
+void TSrvMsgReply::answer(SmartPtr<TMsg> Rep) {
     // this should never happen
 }
 
-void TSrvMsgReply::doDuties()
-{
+void TSrvMsgReply::doDuties() {
     IsDone = true;
 }
 
-unsigned long TSrvMsgReply::getTimeout()
-{
-    return 0;
+unsigned long TSrvMsgReply::getTimeout() {
+    unsigned long diff = now() - this->FirstTimeStamp;
+    if (diff>SERVER_REPLY_CACHE_TIMEOUT)
+	return 0;
+    return SERVER_REPLY_CACHE_TIMEOUT-diff;
 }
 
-bool TSrvMsgReply::check()
-{
+bool TSrvMsgReply::check() {
     return false;
 }
 
-//Methods add standard options to options:
-//OPTION_CLIENTID, OPTION_ORO, OPTION_ELAPSED_TIME amd
-//OPTION_DNS_RESOLVERS, OPTION_DOMAIN_LIST, OPTION_NTP_SERVERS, OPTION_TIME_ZONE
-//It requires to set reqOpt and for all the rest, which don't match these
-//options above warning that option is not supported is logged
-//ATTENTION: in order this method work field reqOpts in this class should be set
-void TSrvMsgReply::appendDefaultOption(SmartPtr<TOpt> ptrOpt)
-{
-    switch(ptrOpt->getOptType())
+void TSrvMsgReply::appendDefaultOption(SmartPtr<TOpt> ptrOpt) {
+    int opt = ptrOpt->getOptType();
+    switch(opt)
     {
     case OPTION_CLIENTID :
         this->Options.append(ptrOpt);
@@ -712,28 +692,11 @@ void TSrvMsgReply::appendDefaultOption(SmartPtr<TOpt> ptrOpt)
     case OPTION_ELAPSED_TIME :
         //Ignore - BE PATIENT MY CLIENT!!!
         break;
-        //add options requested by client to option Request Option if
-        //client didn't included them
-    case OPTION_DNS_RESOLVERS:
-        if (!reqOpts->isOption(OPTION_DNS_RESOLVERS))
-            reqOpts->addOption(OPTION_DNS_RESOLVERS);
-        break;
-    case OPTION_DOMAIN_LIST:
-        if (!reqOpts->isOption(OPTION_DOMAIN_LIST))
-            reqOpts->addOption(OPTION_DOMAIN_LIST);
-        break;
-    case OPTION_NTP_SERVERS:
-        if (!reqOpts->isOption(OPTION_NTP_SERVERS))
-            reqOpts->addOption(OPTION_NTP_SERVERS);
-        break;
-    case OPTION_TIME_ZONE:
-        if (!reqOpts->isOption(OPTION_TIME_ZONE))
-            reqOpts->addOption(OPTION_TIME_ZONE);
-        break;
     default:
-        std::clog << logger::logWarning << "Option not supported: type(" 
-            << ptrOpt->getOptType() <<")."<< logger::endl;
-        break;
+	// all other options set in OPTION REQUEST
+	if (!reqOpts->isOption(opt))
+	    reqOpts->addOption(opt);
+	break;
     }
 }
 

@@ -1,6 +1,8 @@
 #ifndef YY_SrvParser_h_included
 #define YY_SrvParser_h_included
 #define YY_USE_CLASS
+
+#line 1 "../bison++/bison.h"
 /* before anything */
 #ifdef c_plusplus
  #ifndef __cplusplus
@@ -8,6 +10,9 @@
  #endif
 #endif
 
+
+ #line 8 "../bison++/bison.h"
+#line 3 "SrvParser.y"
 
 #include <iostream>
 #include <string>
@@ -25,45 +30,43 @@
 #include "Logger.h"
 
 #define YY_USE_CLASS
-#define YY_SrvParser_MEMBERS  FlexLexer * lex;                                               \
-List(TSrvParsGlobalOpt) ParserOptStack;                                        \
-/* List of parsed interfaces/IAs/Addresses, last    */                         \
-/* interface/IA/address is just being parsing or have been just parsed */      \
-/* FIXME:Don't forget to clear this lists in apropriate moment         */      \
-List(TSrvCfgIface)          SrvCfgIfaceLst;                                    \
-List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;                                    \
-/*Pointer to list which should contain either DNS servers or NTPServers*/      \
-List(TIPv6Addr) PresentLst;                                                    \
-/*Pointer to list which should contain: rejected clients, accepted clients */  \
-/*or addressess ranges */                                                      \
-List(TStationRange) PresentRangeLst;                                           \
-/*method check whether interface with id=ifaceNr has been already declared */  \
-bool CheckIsIface(int ifaceNr);                                                \
-/*method check whether interface with id=ifaceName has been already declared*/ \
-bool CheckIsIface(string ifaceName); \
-void StartIfaceDeclaration(); \
-bool EndIfaceDeclaration(); \
-void StartClassDeclaration(); \
-bool EndClassDeclaration(); \
+#define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                     \
+List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
+List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */           \
+List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
+List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
+List(string) PresentStringLst;             /* string list */                         \
+List(TStationRange) PresentRangeLst;                                                 \
+/*method check whether interface with id=ifaceNr has been already declared */        \
+bool CheckIsIface(int ifaceNr);                                                      \
+/*method check whether interface with id=ifaceName has been already declared*/       \
+bool CheckIsIface(string ifaceName);                                                 \
+void StartIfaceDeclaration();                                                        \
+bool EndIfaceDeclaration();                                                          \
+void StartClassDeclaration();                                                        \
+bool EndClassDeclaration();                                                          \
 virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
-#define YY_SrvParser_CONSTRUCTOR_CODE  \
-    ParserOptStack.append(new TSrvParsGlobalOpt()); \
-    ParserOptStack.getLast()->setUnicast(false);    \
-   this->lex = lex;
+#define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
+    ParserOptStack.append(new TSrvParsGlobalOpt());                               \
+    ParserOptStack.getLast()->setUnicast(false);                                  \
+    this->lex = lex;
 
+#line 51 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
-  char                          *strval;
-  struct                        SDuid
-  {
-    int                       length;
-    char*                       duid;
-    }                                   duidval;
-  char                          addrval[16];
+    char *strval;
+    struct SDuid
+    {
+        int length;
+        char* duid;
+    } duidval;
+    char addrval[16];
 } yy_SrvParser_stype;
 #define YY_SrvParser_STYPE yy_SrvParser_stype
+
+#line 21 "../bison++/bison.h"
  /* %{ and %header{ and %union, during decl */
 #ifndef YY_SrvParser_COMPATIBILITY
  #ifndef YY_USE_CLASS
@@ -108,16 +111,32 @@ typedef union
 #endif
 
 #ifndef YY_SrvParser_PURE
+
+ #line 65 "../bison++/bison.h"
+
+#line 65 "../bison++/bison.h"
 /* YY_SrvParser_PURE */
 #endif
 
+
+ #line 68 "../bison++/bison.h"
+
+#line 68 "../bison++/bison.h"
 /* prefix */
 
 #ifndef YY_SrvParser_DEBUG
+
+ #line 71 "../bison++/bison.h"
+
+#line 71 "../bison++/bison.h"
 /* YY_SrvParser_DEBUG */
 #endif
 
 #ifndef YY_SrvParser_LSP_NEEDED
+
+ #line 75 "../bison++/bison.h"
+
+#line 75 "../bison++/bison.h"
  /* YY_SrvParser_LSP_NEEDED*/
 #endif
 
@@ -212,37 +231,48 @@ typedef
   #endif
  #endif
 
-#define	IFACE_	258
-#define	NO_CONFIG_	259
-#define	CLASS_	260
-#define	LOGNAME_	261
-#define	LOGLEVEL_	262
-#define	LOGMODE_	263
-#define	WORKDIR_	264
-#define	OPTION_	265
-#define	NTP_SERVER_	266
-#define	TIME_ZONE_	267
-#define	DNS_SERVER_	268
-#define	DOMAIN_	269
-#define	ACCEPT_ONLY_	270
-#define	REJECT_CLIENTS_	271
-#define	POOL_	272
-#define	T1_	273
-#define	T2_	274
-#define	PREF_TIME_	275
-#define	VALID_TIME_	276
-#define	UNICAST_	277
-#define	PREFERENCE_	278
-#define	RAPID_COMMIT_	279
-#define	IFACE_MAX_LEASE_	280
-#define	CLASS_MAX_LEASE_	281
-#define	CLNT_MAX_LEASE_	282
-#define	STRING_	283
-#define	HEXNUMBER_	284
-#define	INTNUMBER_	285
-#define	IPV6ADDR_	286
-#define	DUID_	287
 
+ #line 169 "../bison++/bison.h"
+#define	IFACE_	258
+#define	CLASS_	259
+#define	LOGNAME_	260
+#define	LOGLEVEL_	261
+#define	LOGMODE_	262
+#define	WORKDIR_	263
+#define	OPTION_	264
+#define	DNS_SERVER_	265
+#define	DOMAIN_	266
+#define	NTP_SERVER_	267
+#define	TIME_ZONE_	268
+#define	SIP_SERVER_	269
+#define	SIP_DOMAIN_	270
+#define	NIS_SERVER_	271
+#define	NIS_DOMAIN_	272
+#define	NISP_SERVER_	273
+#define	NISP_DOMAIN_	274
+#define	FQDN_	275
+#define	LIFETIME_	276
+#define	ACCEPT_ONLY_	277
+#define	REJECT_CLIENTS_	278
+#define	POOL_	279
+#define	T1_	280
+#define	T2_	281
+#define	PREF_TIME_	282
+#define	VALID_TIME_	283
+#define	UNICAST_	284
+#define	PREFERENCE_	285
+#define	RAPID_COMMIT_	286
+#define	IFACE_MAX_LEASE_	287
+#define	CLASS_MAX_LEASE_	288
+#define	CLNT_MAX_LEASE_	289
+#define	STRING_	290
+#define	HEXNUMBER_	291
+#define	INTNUMBER_	292
+#define	IPV6ADDR_	293
+#define	DUID_	294
+
+
+#line 169 "../bison++/bison.h"
  /* #defines token */
 /* after #define tokens, before const tokens S5*/
 #else
@@ -286,18 +316,27 @@ class YY_SrvParser_CLASS YY_SrvParser_INHERIT
 public: 
  #if YY_SrvParser_USE_CONST_TOKEN != 0
   /* static const int token ... */
-  static const int IFACE_;
-static const int NO_CONFIG_;
+  
+ #line 212 "../bison++/bison.h"
+static const int IFACE_;
 static const int CLASS_;
 static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
 static const int WORKDIR_;
 static const int OPTION_;
-static const int NTP_SERVER_;
-static const int TIME_ZONE_;
 static const int DNS_SERVER_;
 static const int DOMAIN_;
+static const int NTP_SERVER_;
+static const int TIME_ZONE_;
+static const int SIP_SERVER_;
+static const int SIP_DOMAIN_;
+static const int NIS_SERVER_;
+static const int NIS_DOMAIN_;
+static const int NISP_SERVER_;
+static const int NISP_DOMAIN_;
+static const int FQDN_;
+static const int LIFETIME_;
 static const int ACCEPT_ONLY_;
 static const int REJECT_CLIENTS_;
 static const int POOL_;
@@ -317,40 +356,53 @@ static const int INTNUMBER_;
 static const int IPV6ADDR_;
 static const int DUID_;
 
+
+#line 212 "../bison++/bison.h"
  /* decl const */
  #else
   enum YY_SrvParser_ENUM_TOKEN { YY_SrvParser_NULL_TOKEN=0
-  	,IFACE_=258
-	,NO_CONFIG_=259
-	,CLASS_=260
-	,LOGNAME_=261
-	,LOGLEVEL_=262
-	,LOGMODE_=263
-	,WORKDIR_=264
-	,OPTION_=265
-	,NTP_SERVER_=266
-	,TIME_ZONE_=267
-	,DNS_SERVER_=268
-	,DOMAIN_=269
-	,ACCEPT_ONLY_=270
-	,REJECT_CLIENTS_=271
-	,POOL_=272
-	,T1_=273
-	,T2_=274
-	,PREF_TIME_=275
-	,VALID_TIME_=276
-	,UNICAST_=277
-	,PREFERENCE_=278
-	,RAPID_COMMIT_=279
-	,IFACE_MAX_LEASE_=280
-	,CLASS_MAX_LEASE_=281
-	,CLNT_MAX_LEASE_=282
-	,STRING_=283
-	,HEXNUMBER_=284
-	,INTNUMBER_=285
-	,IPV6ADDR_=286
-	,DUID_=287
+  
+ #line 215 "../bison++/bison.h"
+	,IFACE_=258
+	,CLASS_=259
+	,LOGNAME_=260
+	,LOGLEVEL_=261
+	,LOGMODE_=262
+	,WORKDIR_=263
+	,OPTION_=264
+	,DNS_SERVER_=265
+	,DOMAIN_=266
+	,NTP_SERVER_=267
+	,TIME_ZONE_=268
+	,SIP_SERVER_=269
+	,SIP_DOMAIN_=270
+	,NIS_SERVER_=271
+	,NIS_DOMAIN_=272
+	,NISP_SERVER_=273
+	,NISP_DOMAIN_=274
+	,FQDN_=275
+	,LIFETIME_=276
+	,ACCEPT_ONLY_=277
+	,REJECT_CLIENTS_=278
+	,POOL_=279
+	,T1_=280
+	,T2_=281
+	,PREF_TIME_=282
+	,VALID_TIME_=283
+	,UNICAST_=284
+	,PREFERENCE_=285
+	,RAPID_COMMIT_=286
+	,IFACE_MAX_LEASE_=287
+	,CLASS_MAX_LEASE_=288
+	,CLNT_MAX_LEASE_=289
+	,STRING_=290
+	,HEXNUMBER_=291
+	,INTNUMBER_=292
+	,IPV6ADDR_=293
+	,DUID_=294
 
+
+#line 215 "../bison++/bison.h"
  /* enum token */
      }; /* end of enum declaration */
  #endif
@@ -403,4 +455,6 @@ public:
 
 #endif
 /* END */
+
+ #line 267 "../bison++/bison.h"
 #endif

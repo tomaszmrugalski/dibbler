@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.3 2004-05-23 22:37:54 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.4 2004-10-25 20:45:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/05/23 22:37:54  thomson
+ * *** empty log message ***
+ *
  *                                                                           
  */
 
@@ -21,10 +24,11 @@ class TClntParsGlobalOpt : public TClntParsIfaceOpt
 {
 public:
     TClntParsGlobalOpt();
-    
+    TClntParsGlobalOpt(TClntParsGlobalOpt *old);
+    ~TClntParsGlobalOpt();
+
     void setWorkDir(string dir);
     string getWorkDir();
-
 
 private:
     string WorkDir;

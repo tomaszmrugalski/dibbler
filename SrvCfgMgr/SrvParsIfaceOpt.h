@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.5 2004-09-03 23:20:23 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.6 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
  * Revision 1.4  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -29,26 +32,6 @@ public:
 
     bool uniAddress();
     void setUniAddress(bool isUni);
-
-    void setAddress(SmartPtr<TIPv6Addr> addr);
-    SmartPtr<TIPv6Addr> getAddress();
-
-    //DNS - oriented routines    
-    void addDNSSrv(SmartPtr<TIPv6Addr> addr);
-    void firstDNSSrv();
-    SmartPtr<TIPv6Addr> getDNSSrv();
-    void setDNSSrv(TContainer<SmartPtr<TIPv6Addr> > *dnsSrv);
-    void setDomain(string domain);
-    string getDomain();
-
-    //NTP - oriented routines
-    void addNTPSrv(SmartPtr<TIPv6Addr> addr);
-    void firstNTPSrv();
-    SmartPtr<TIPv6Addr> getNTPSrv();
-    void setNTPSrv(TContainer<SmartPtr<TIPv6Addr> > *NTPSrv);
-    void setTimeZone(string timeZone);
-    string getTimeZone();
-
     void setClntMaxLease(long maxLeases);
     long getClntMaxLease();
     void setIfaceMaxLease(long maxLease);
@@ -56,24 +39,108 @@ public:
 
     void setPreference(char pref);
     char getPreference();
-    void setUnicast(bool unicast);
-    bool getUnicast();
+
     void setRapidCommit(bool rapidComm);
     bool getRapidCommit();
 
-private:
-    bool UniAddress;
-    char Preference;
-    bool Unicast;
-    bool RapidCommit;
+    void setUnicast(SmartPtr<TIPv6Addr> addr);
+    SmartPtr<TIPv6Addr> getUnicast();
 
+
+    //-- options related methods --
+    // option: DNS Servers
+    List(TIPv6Addr) * getDNSServerLst();
+    void setDNSServerLst(List(TIPv6Addr) *lst);
+    bool supportDNSServer();
+
+    // option: Domain
+    List(string) * getDomainLst();
+    void setDomainLst(List(string) * domains);
+    bool supportDomain();
+
+    // option: NTP servers
+    List(TIPv6Addr) * getNTPServerLst();
+    void setNTPServerLst(List(TIPv6Addr) *lst);
+    bool supportNTPServer();
+
+    // option: Timezone
+    string getTimezone();
+    void setTimezone(string timeZone);
+    bool supportTimezone();
+
+    // option: SIP servers
+    List(TIPv6Addr) * getSIPServerLst();
+    void setSIPServerLst(List(TIPv6Addr) *addr);
+    bool supportSIPServer();
+
+    // option: SIP domains
+    List(string) * getSIPDomainLst();
+    void setSIPDomainLst(List(string) *domainlist);
+    bool supportSIPDomain();
+
+    // option: FQDN
+    string getFQDN();
+    void setFQDN(string fqdn);
+    bool supportFQDN();
+
+    // option: NIS servers
+    List(TIPv6Addr) * getNISServerLst();
+    void setNISServerLst( List(TIPv6Addr) *nislist);
+    bool supportNISServer();
+
+    // option: NIS+ servers
+    List(TIPv6Addr) * getNISPServerLst();
+    void setNISPServerLst( List(TIPv6Addr) *nisplist);
+    bool supportNISPServer();
+
+    // option: NIS domain
+    string getNISDomain();
+    void setNISDomain(string domain);
+    bool supportNISDomain();
+
+    // option: NISP domain
+    string getNISPDomain();
+    void setNISPDomain(string domain);
+    bool supportNISPDomain();
+
+    // option: LIFETIME
+    void setLifetime(unsigned int life);
+    unsigned int getLifetime();
+    bool supportLifetime();
+
+private:
+    char Preference;
+    bool RapidCommit;
     long IfaceMaxLease;
     long ClntMaxLease;
-    SmartPtr<TIPv6Addr> Address;
-    TContainer<SmartPtr<TIPv6Addr> > DNSSrv;		
-    string Domain;			
-    TContainer<SmartPtr<TIPv6Addr> > NTPSrv;		
-    string TimeZone;		
+    SmartPtr<TIPv6Addr> Unicast;
+
+    // options
+    bool DNSServerSupport;
+    bool DomainSupport;
+    bool NTPServerSupport;
+    bool TimezoneSupport;
+    bool SIPServerSupport;
+    bool SIPDomainSupport;
+    bool FQDNSupport;
+    bool NISServerSupport;
+    bool NISDomainSupport;
+    bool NISPServerSupport;
+    bool NISPDomainSupport;
+    bool LifetimeSupport;
+
+    List(TIPv6Addr) DNSServerLst;
+    List(string) DomainLst;			
+    List(TIPv6Addr) NTPServerLst;
+    string Timezone;
+    List(TIPv6Addr) SIPServerLst;
+    List(string) SIPDomainLst;
+    string FQDN;
+    List(TIPv6Addr) NISServerLst;
+    List(TIPv6Addr) NISPServerLst;
+    string NISDomain;
+    string NISPDomain;
+    unsigned int Lifetime;
 };
 
 #endif

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.25 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.26 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.24  2004/07/11 14:04:54  thomson
  * Downed/invalid interface specified in cfg now results in server shutdown (bug #23)
  *
@@ -103,7 +106,7 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     // parse config file
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {
-	std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl;
+	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd;
 	return false;
     }
     yyFlexLexer lexer(&f,&clog);
@@ -114,7 +117,8 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     f.close();
 
     if (result) {
-        Log(Crit) << "Config error." << LogEnd;
+        Log(Crit) << "Fatal error during config parsing." << LogEnd;
+	this->IsDone = true;
         return false;
     }
 
@@ -330,8 +334,8 @@ bool TSrvCfgMgr::checkConfigConsistency() {
     firstIface();
     while(ptrIface=getIface())
     {
-        TTimeZone tzone(ptrIface->getTimeZone());
-        if ((ptrIface->getTimeZone()!="")&&(!tzone.isValid()))
+        TTimeZone tzone(ptrIface->getTimezone());
+        if ((ptrIface->getTimezone()!="")&&(!tzone.isValid()))
         {
             clog<<logger::logCrit
                 << "Not appropiate time zone option for iface(id/name) "

@@ -1,7 +1,5 @@
-/* <Linux> */
 %option noyywrap
 %option yylineno
-/* </Linux> */
 
 %{
 #include "SrvParser.h"
@@ -20,13 +18,16 @@ integer {cipher}+
 curly_op [{]
 curly_cl [}]
 hex1to4  {hexdigit}{1,4}
+CR \r
+LF \n
+EOL (({CR}{LF}?)|{LF})
 
 %{
 using namespace std;
-  unsigned ComBeg; //line, in which comment begins
-  unsigned LftCnt; //how many chars : on the left side of '::' char was interpreted
-  unsigned RgtCnt; //the same as above, but on the right side of '::'
-  char Address[16]; //address, which is analizing right now
+  unsigned ComBeg;    // line, in which comment begins
+  unsigned LftCnt;    // how many chars : on the left side of '::' char was interpreted
+  unsigned RgtCnt;    // the same as above, but on the right side of '::'
+  char Address[16];   // address, which is analizing right now
   char AddrPart[16];
   unsigned intpos,pos;
 
@@ -37,8 +38,10 @@ namespace std{
 
 %%
 
+{EOL}*   ; // ignore end of line
+[ \t]    ; // ignore TABs and spaces
+
 iface               { return SrvParser::IFACE_;}
-no-config           { return SrvParser::NO_CONFIG_;}
 class               { return SrvParser::CLASS_;}
 
 log-name            { return SrvParser::LOGNAME_;}
@@ -46,12 +49,6 @@ log-level           { return SrvParser::LOGLEVEL_;}
 log-mode            { return SrvParser::LOGMODE_; }
 
 work-dir            { return SrvParser::WORKDIR_;}
-
-option              { return SrvParser::OPTION_; }
-dns-server          { return SrvParser::DNS_SERVER_;}
-domain              { return SrvParser::DOMAIN_;}
-ntp-server          { return SrvParser::NTP_SERVER_;}
-time-zone           { return SrvParser::TIME_ZONE_;}
 
 accept-only         { return SrvParser::ACCEPT_ONLY_;}
 reject-clients      { return SrvParser::REJECT_CLIENTS_;}
@@ -69,15 +66,24 @@ iface-max-lease     { return SrvParser::IFACE_MAX_LEASE_; }
 class-max-lease     { return SrvParser::CLASS_MAX_LEASE_; }
 client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;  }
 
-yes {yylval.ival=1; return SrvParser::INTNUMBER_;}
-no         {yylval.ival=0; return SrvParser::INTNUMBER_;}
-true    {yylval.ival=1; return SrvParser::INTNUMBER_;}
-false {yylval.ival=0; return SrvParser::INTNUMBER_;}
+option              { return SrvParser::OPTION_; }
+dns-server          { return SrvParser::DNS_SERVER_;}
+domain              { return SrvParser::DOMAIN_;}
+ntp-server          { return SrvParser::NTP_SERVER_;}
+time-zone           { return SrvParser::TIME_ZONE_;}
+sip-server          { return SrvParser::SIP_SERVER_; }
+sip-domain          { return SrvParser::SIP_DOMAIN_; }
+fqdn                { return SrvParser::FQDN_; }
+nis-server          { return SrvParser::NIS_SERVER_; }
+nis-domain          { return SrvParser::NIS_DOMAIN_; }
+nis\+-server        { return SrvParser::NISP_SERVER_; }
+nis\+-domain        { return SrvParser::NISP_DOMAIN_; }
+lifetime            { return SrvParser::LIFETIME_; }
 
-%{ //[Nn][Ii][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return SrvParser::NIS_SERVER_;}
-%}
-%{ //COMMENTS
-%}
+yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
+no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}
+true                { yylval.ival=1; return SrvParser::INTNUMBER_;}
+false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 #.* ;
 
@@ -99,64 +105,64 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
 %}
 ({hex1to4}:){7}{hex1to4} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        YYABORT; 
     } else {
-	return SrvParser::IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
     }
 }
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        YYABORT; 
     } else {
-	return SrvParser::IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
     }
 }
 
 "::"(({hex1to4}:){1,7})?{hex1to4} { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        YYABORT; 
     } else {
-	return SrvParser::IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
     }
 }
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        YYABORT; 
     } else {
-	return SrvParser::IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
     }
 }
 
 "::" {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        YYABORT; 
     } else {
-	return SrvParser::IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
     }
 }
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        YYABORT; 
     } else {
-	return SrvParser::IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
     }
 }
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	Log(Error) << "Invalid address format: [" << yytext << "]" << LogEnd;
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        YYABORT; 
     } else {
-	return SrvParser::IPV6ADDR_;
+        return SrvParser::IPV6ADDR_;
     }
 }
 
@@ -191,14 +197,12 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
     return SrvParser::STRING_;
 }
 
-%{ 
-//DUID
-%}
 0x{hexdigit}+ {
+    // DUID
     int len;
     char * ptr;
     if (strlen(yytext)%2) {
-        yytext[1]='0'; //if odd than no-meaning zero at the beginning
+        yytext[1]='0'; //if odd then no-meaning zero at the beginning
         len = strlen(yytext)-1;
         ptr = yytext+1;
     } else {
@@ -213,7 +217,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
     {
         yylval.duidval.duid[i>>1]<<=4;
         if (!isxdigit(ptr[i])) { 
-             Log(Error) << "DUID parsing failed." << LogEnd;
+             Log(Crit) << "DUID parsing failed (" << yytext << ")." << LogEnd;
              YYABORT; 
         } 
         if (isalpha(ptr[i])) {
@@ -225,35 +229,27 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
    return SrvParser::DUID_;
 }
 
-%{ //HEXADECIMAL NUMBER (interface id, option's values etc.)
-%}
 {hexnumber} {
+    // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival)))
-      { Log(Error) << "Hex value [" << yytext << " parsing failed." << LogEnd; YYABORT; }
+    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+      Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd; 
+      YYABORT; 
+    }
     return SrvParser::HEXNUMBER_;
 }
 
-%{ //DECIMAL NUMBER (as for HEXNUMBER)
-%}
 {integer} { 
-    //FIXME:Check if number appropriate
-    if(!sscanf(yytext,"%u",&(yylval.ival)))
-      { Log(Error) << "Decimal value [" << yytext << " parsing failed." << LogEnd; YYABORT; }
+    // DECIMAL NUMBER
+    if(!sscanf(yytext,"%u",&(yylval.ival))) { 
+        Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd; 
+        YYABORT; 
+    }
     return SrvParser::INTNUMBER_;
 }
 
-%{ //WHITE CHARS should be omitted
-%}
-[ \n\t] ; 
-
-%{ //OTHER CHARS are directly passed to parser
-%}
-.  {return yytext[0];}
+.  { return yytext[0]; } 
 
 
 %%
-
-/////////////////////////////////////////////////////////////////////////////
-// programs section
 

@@ -1,19 +1,26 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski  <msend@o2.pl>                                   *
- *                                                                           *
- * released under GNU GPL v2 or later licence                                */
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvOptNTPServers.h,v 1.3 2004-10-25 20:45:54 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ */
 
 #ifndef SRVOPTNTPSERVERS_H
 #define SRVOPTNTPSERVERS_H
-#include "OptNTPServers.h"
+#include "OptAddrLst.h"
 
-class TSrvOptNTPServers : public TOptNTPServers
+class TSrvOptNTPServers : public TOptAddrLst
 {
-public:
-    TSrvOptNTPServers(TContainer<SmartPtr< TIPv6Addr> > lst, TMsg* parent);
+ public:
+    TSrvOptNTPServers(List(TIPv6Addr) lst, TMsg* parent);
     TSrvOptNTPServers(char* buf, int size, TMsg* parent);
     bool doDuties();
 };

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.3 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -28,12 +31,12 @@
 #include <cmath>
 
 TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
-    SmartPtr<TClntTransMgr> TransMgr,
-    SmartPtr<TClntCfgMgr> CfgMgr,
-    SmartPtr<TClntAddrMgr> AddrMgr,
-    TContainer<SmartPtr<TAddrIA> > ptrIALst)
+			     SmartPtr<TClntTransMgr> TransMgr,
+			     SmartPtr<TClntCfgMgr> CfgMgr,
+			     SmartPtr<TClntAddrMgr> AddrMgr,
+			     TContainer<SmartPtr<TAddrIA> > ptrIALst)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
-        ptrIALst.getFirst()->getIface(),ptrIALst.getFirst()->getSrvAddr(),RENEW_MSG)
+	      ptrIALst.getFirst()->getIface(),ptrIALst.getFirst()->getSrvAddr(),RENEW_MSG)
 {
    // set transmission parameters
     IRT=REN_TIMEOUT;
@@ -68,6 +71,8 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     ptrIALst.first();
     while(ptrAddrIA= ptrIALst.get())
           Options.append(new TClntOptIA_NA(ptrAddrIA,this));
+
+#if 0
     //Here should be addede option request option and other options, which
     //can be refreshed
     SmartPtr<TClntOptOptionRequest> ptrOptOptReq=
@@ -109,6 +114,8 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
             ptrIface->setTimeZoneState(INPROCESS);
         }
     }
+#endif
+
     pkt = new char[getSize()];
     this->IsDone = false;
     this->send();

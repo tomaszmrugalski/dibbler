@@ -1,3 +1,16 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: Iface.h,v 1.5 2004-10-25 20:45:53 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 #ifndef IFACEIFACE_H
 #define IFACEIFACE_H
 
@@ -49,7 +62,7 @@ class TIfaceIface{
 
     ~TIfaceIface();
 
- private:
+ protected:
     // ---interface data---
     char Name[MAX_IFNAME_LENGTH];
     int ID;

@@ -18,7 +18,7 @@ class TIfaceMgr {
   public:
     friend ostream & operator <<(ostream & strum, TIfaceMgr &x);
 
-    TIfaceMgr();
+    TIfaceMgr(bool getIfaces);
 
     // ---Iface related---
     void firstIface();
@@ -35,9 +35,9 @@ class TIfaceMgr {
 
     ~TIfaceMgr();
 
-  private:
+ protected:
     //Interface list
-    TContainer< SmartPtr<TIfaceIface> > IfaceLst; 
+    List(TIfaceIface) IfaceLst; 
 
     // true if communication with kernel failed
     bool IsDone; 

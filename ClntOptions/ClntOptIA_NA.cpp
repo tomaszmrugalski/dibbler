@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.5 2004-09-07 22:02:33 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.6 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  *
  * Revision 1.3  2004/06/04 19:03:46  thomson
  * Resolved warnings with signed/unisigned
@@ -112,7 +115,7 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
-            if(canBeOptInOpt(parent->getType(),OPTION_IA,code))
+            if(allowOptInOpt(parent->getType(),OPTION_IA,code))
             {
                 SmartPtr<TOpt> opt= SmartPtr<TOpt>();
                 switch (code)
@@ -221,8 +224,8 @@ bool TClntOptIA_NA::doDuties()
     SmartPtr<TAddrIA> ptrIA=AddrMgr->getIA(this->getIAID());
     if (!ptrIA) {
         // unknown IAID, ignore it
-        clog << logger::logWarning << "Received message contains unknown IA (IAID="
-            << this->getIAID() << ").Weird... ignoring it." << logger::endl;
+	Log(Warning) << "Received message contains unknown IA (IAID="
+            << this->getIAID() << ").Weird... ignoring it." << LogEnd;
         return true;
     }
 
@@ -338,36 +341,8 @@ bool TClntOptIA_NA::doDuties()
     SmartPtr<TClntCfgIA> ptrCfgIA;
     ptrCfgIA=CfgMgr->getIA(ptrIA->getIAID());
     
-    enum ESendOpt opt=ptrCfgIA->getT1SendOpt();
-    //if really want to set our, but shorter value
-    if ( (opt==Supersede) && 
-	 (ptrCfgIA->getT1()<this->getT1())) {
-            ptrIA->setT1( ptrCfgIA->getT1() );       
-    } else {
-        //or server allows to set it at our convenience
-        if( (opt==Default)&&(!this->getT1()) )
-            ptrIA->setT1( ptrCfgIA->getT1() );
-        else
-            //or we accept just value returne untill it zero
-            if(this->getT1() )
-                ptrIA->setT1( this->getT1() );
-            else
-                ptrIA->setT1(ptrCfgIA->getT1());
-    }
-
-    //The same for T2
-    opt=ptrCfgIA->getT2SendOpt();
-    if ((opt==Supersede)&&(ptrCfgIA->getT2()<this->getT2()))
-            ptrIA->setT2( ptrCfgIA->getT2() );       
-    else
-        if( (opt==Default)&&(!this->getT2()) )
-            ptrIA->setT2( ptrCfgIA->getT2() );
-        else
-            if(this->getT2() )
-                ptrIA->setT2( this->getT2() );
-            else
-                ptrIA->setT2(ptrCfgIA->getT2());
-
+    ptrIA->setT1( this->getT1() );
+    ptrIA->setT2( this->getT2() );
     ptrIA->setTimestamp();
     ptrIA->setState(CONFIGURED);
     return true;

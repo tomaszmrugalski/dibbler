@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.h,v 1.2 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsgReply.h,v 1.3 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 
@@ -29,69 +32,53 @@ class TSrvMsgReply;
 class TSrvMsgReply : public TSrvMsg
 {
   public:
-/*  Server does not receive REPLY
     TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
 		 SmartPtr<TSrvTransMgr>, 
 		 SmartPtr<TSrvCfgMgr>, 
 		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 int iface,  char* addr);
+		 SmartPtr<TSrvMsgConfirm> question);
     
     TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
 		 SmartPtr<TSrvTransMgr>, 
 		 SmartPtr<TSrvCfgMgr>, 
 		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 int iface, 
-		 char* addr,
-		 char* buf,
-		 int bufSize); */
+		 SmartPtr<TSrvMsgDecline> question);	
     
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		     SmartPtr<TSrvTransMgr>, 
-		     SmartPtr<TSrvCfgMgr>, 
-		     SmartPtr<TSrvAddrMgr> AddrMgr,
-		     SmartPtr<TSrvMsgConfirm> question);
-	
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-	      SmartPtr<TSrvTransMgr>, 
-	      SmartPtr<TSrvCfgMgr>, 
-	      SmartPtr<TSrvAddrMgr> AddrMgr,
-		  SmartPtr<TSrvMsgDecline> question);	
+    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
+		 SmartPtr<TSrvTransMgr>, 
+		 SmartPtr<TSrvCfgMgr>, 
+		 SmartPtr<TSrvAddrMgr> AddrMgr,
+		 SmartPtr<TSrvMsgRebind> question);	
 
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-	      SmartPtr<TSrvTransMgr>, 
-	      SmartPtr<TSrvCfgMgr>, 
-	      SmartPtr<TSrvAddrMgr> AddrMgr,
-		  SmartPtr<TSrvMsgRebind> question);	
-
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-	      SmartPtr<TSrvTransMgr>, 
-	      SmartPtr<TSrvCfgMgr>, 
-	      SmartPtr<TSrvAddrMgr> AddrMgr,
-		  SmartPtr<TSrvMsgRelease> question);	
-
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-	      SmartPtr<TSrvTransMgr>, 
-	      SmartPtr<TSrvCfgMgr>, 
-	      SmartPtr<TSrvAddrMgr> AddrMgr,
-		  SmartPtr<TSrvMsgRenew> question);	
-
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-	      SmartPtr<TSrvTransMgr>, 
-	      SmartPtr<TSrvCfgMgr>, 
-	      SmartPtr<TSrvAddrMgr> AddrMgr,
-		  SmartPtr<TSrvMsgRequest> question);
-
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-	      SmartPtr<TSrvTransMgr>, 
-	      SmartPtr<TSrvCfgMgr>, 
-	      SmartPtr<TSrvAddrMgr> AddrMgr,
-		  SmartPtr<TSrvMsgSolicit> question);
-
-	TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-	      SmartPtr<TSrvTransMgr>, 
-	      SmartPtr<TSrvCfgMgr>, 
-	      SmartPtr<TSrvAddrMgr> AddrMgr,
-          SmartPtr<TSrvMsgInfRequest> question);
+    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
+		 SmartPtr<TSrvTransMgr>, 
+		 SmartPtr<TSrvCfgMgr>, 
+		 SmartPtr<TSrvAddrMgr> AddrMgr,
+		 SmartPtr<TSrvMsgRelease> question);	
+    
+    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
+		 SmartPtr<TSrvTransMgr>, 
+		 SmartPtr<TSrvCfgMgr>, 
+		 SmartPtr<TSrvAddrMgr> AddrMgr,
+		 SmartPtr<TSrvMsgRenew> question);	
+    
+    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
+		 SmartPtr<TSrvTransMgr>, 
+		 SmartPtr<TSrvCfgMgr>, 
+		 SmartPtr<TSrvAddrMgr> AddrMgr,
+		 SmartPtr<TSrvMsgRequest> question);
+    
+    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
+		 SmartPtr<TSrvTransMgr>, 
+		 SmartPtr<TSrvCfgMgr>, 
+		 SmartPtr<TSrvAddrMgr> AddrMgr,
+		 SmartPtr<TSrvMsgSolicit> question);
+    
+    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
+		 SmartPtr<TSrvTransMgr>, 
+		 SmartPtr<TSrvCfgMgr>, 
+		 SmartPtr<TSrvAddrMgr> AddrMgr,
+		 SmartPtr<TSrvMsgInfRequest> question);
 
     void answer(SmartPtr<TMsg> Rep);
     void doDuties();

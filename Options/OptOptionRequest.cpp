@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptOptionRequest.cpp,v 1.3 2004-04-11 18:10:56 thomson Exp $
+ * $Id: OptOptionRequest.cpp,v 1.4 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/04/11 18:10:56  thomson
+ * CRLF fixed.
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -34,12 +37,11 @@ TOptOptionRequest::TOptOptionRequest(TMsg* parent)
     this->OptCnt=0;
 }
 
-int  TOptOptionRequest::getReqOpt(int optNr)
- {
-     if ((!OptCnt)||(optNr>OptCnt))
-         return 0;
-     return this->Options[optNr];
- }
+int  TOptOptionRequest::getReqOpt(int optNr) {
+    if ( (!OptCnt) || (optNr>OptCnt) )
+	return 0;
+    return this->Options[optNr];
+}
 
  int TOptOptionRequest::getSize()
 {
@@ -49,10 +51,10 @@ int  TOptOptionRequest::getReqOpt(int optNr)
 	return mySize+getSubOptSize();
 }
 
- char * TOptOptionRequest::storeSelf( char* buf)
+char * TOptOptionRequest::storeSelf( char* buf)
 {
-	if (!OptCnt) return buf;
-	*(uint16_t*)buf = htons(OptType);
+    if (!OptCnt) return buf;
+    *(uint16_t*)buf = htons(OptType);
     buf+=2;
     *(uint16_t*)buf = htons( getSize()-4 );
     buf+=2;
@@ -63,10 +65,6 @@ int  TOptOptionRequest::getReqOpt(int optNr)
         buf+=2;
         i++;
     }
-	    //memcpy(buf,Options,OptCnt<<1);
-    
-    //buf+=OptCnt<<1;
-	//buf=storeSubOpt(buf); this option doesn't have suboptions
     return buf;
 }
 
@@ -130,22 +128,17 @@ bool TOptOptionRequest::isOption(short optNr)
     return false;
 }
 
-int  TOptOptionRequest::getOptCnt()
-{
+int  TOptOptionRequest::count() {
     return this->OptCnt;
 }
 
-void TOptOptionRequest::clearOptions()
-{
+void TOptOptionRequest::clearOptions() {
     if (this->OptCnt)
-    {
-        delete this->Options;
-        OptCnt=0;
-    }
+        delete [] this->Options;
+    OptCnt=0;
 }
 
-bool TOptOptionRequest::isValid()
-{
+bool TOptOptionRequest::isValid() {
     return this->Valid;
 }
 

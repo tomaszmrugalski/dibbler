@@ -1,6 +1,8 @@
 #ifndef YY_clntParser_h_included
 #define YY_clntParser_h_included
 #define YY_USE_CLASS
+
+#line 1 "../bison++/bison.h"
 /* before anything */
 #ifdef c_plusplus
  #ifndef __cplusplus
@@ -8,6 +10,9 @@
  #endif
 #endif
 
+
+ #line 8 "../bison++/bison.h"
+#line 3 "ClntParser.y"
 
 #include <iostream>
 #include <string>
@@ -26,53 +31,55 @@
     using namespace std;
     
 #define YY_USE_CLASS
-#define YY_clntParser_MEMBERS  yyFlexLexer * lex; \
-/*List of options in scope stack,the most fresh is last in the list*/ \
-TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack; \
-/*List of parsed interfaces/IAs/Addresses, last */ \
-/*interface/IA/address is just being parsing or have been just parsed*/ \
-/*FIXME:Don't forget to clear this lists in apropriate moment*/ \
-TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst; \
-TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst; \
-TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;    \
-TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;  \
-/*Pointer to list which should contain either rejected servers or */ \
-/*preffered servers*/  \
-TContainer<SmartPtr<TStationID> > PresentStationLst;\
-TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst; \
-/*method check whether interface with id=ifaceNr has been */ \
-/*already declared */ \
-bool CheckIsIface(int ifaceNr); \
-/* method check whether interface with id=ifaceName has been already declared */ \
-bool CheckIsIface(string ifaceName); \
-void StartIfaceDeclaration(); \
-bool EndIfaceDeclaration(); \
-void EmptyIface(); \
-void StartIADeclaration(bool aggregation); \
-void EndIADeclaration(long iaCnt); \
-void EmptyIA(); \
-void EmptyAddr(); \
+#define YY_clntParser_MEMBERS  yyFlexLexer * lex;                                          \
+/*List of options in scope stack,the most fresh is last in the list*/       \
+TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
+/*List of parsed interfaces/IAs/Addresses, last */                          \
+/*interface/IA/address is just being parsing or have been just parsed*/     \
+/*FIXME:Don't forget to clear this lists in apropriate moment*/             \
+TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;                       \
+TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;                       \
+TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;                          \
+TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
+/*Pointer to list which should contain either rejected servers or */        \
+/*preffered servers*/                                                       \
+TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
+TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
+TContainer<SmartPtr<string> > PresentStringLst;                             \
+/*method check whether interface with id=ifaceNr has been */                \
+/*already declared */                                                       \
+bool CheckIsIface(int ifaceNr);                                             \
+/* method check if interface with id=ifaceName has been already declared */ \
+bool CheckIsIface(string ifaceName);                                        \
+void StartIfaceDeclaration();                                               \
+bool EndIfaceDeclaration();                                                 \
+void EmptyIface();                                                          \
+void StartIADeclaration(bool aggregation);                                  \
+void EndIADeclaration(long iaCnt);                                          \
+void EmptyIA();                                                             \
+void EmptyAddr();                                                           \
 virtual ~clntParser();
 #define YY_clntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
-#define YY_clntParser_CONSTRUCTOR_CODE  \
-   this->lex = lex; \
-    ParserOptStack.append(new TClntParsGlobalOpt()); \
-    ParserOptStack.getFirst()->setIAIDCnt(1);\
+#define YY_clntParser_CONSTRUCTOR_CODE                                                     \
+    this->lex = lex;                                                        \
+    ParserOptStack.append(new TClntParsGlobalOpt());                        \
+    ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();
 
+#line 65 "ClntParser.y"
 typedef union    
 {
-    int          ival;    
-    char         *strval;  
+    int ival;    
+    char *strval;  
     struct SDuid  {      
-        int         length;    
-        char*     duid;  
+        int length;    
+        char* duid;  
     } duidval;  
-    char    addrval[16];  
-    ESendOpt  SendOpt;  
-    EReqOpt   ReqOpt; 
+    char addrval[16];  
 } yy_clntParser_stype;
 #define YY_clntParser_STYPE yy_clntParser_stype
+
+#line 21 "../bison++/bison.h"
  /* %{ and %header{ and %union, during decl */
 #ifndef YY_clntParser_COMPATIBILITY
  #ifndef YY_USE_CLASS
@@ -117,16 +124,32 @@ typedef union
 #endif
 
 #ifndef YY_clntParser_PURE
+
+ #line 65 "../bison++/bison.h"
+
+#line 65 "../bison++/bison.h"
 /* YY_clntParser_PURE */
 #endif
 
+
+ #line 68 "../bison++/bison.h"
+
+#line 68 "../bison++/bison.h"
 /* prefix */
 
 #ifndef YY_clntParser_DEBUG
+
+ #line 71 "../bison++/bison.h"
+
+#line 71 "../bison++/bison.h"
 /* YY_clntParser_DEBUG */
 #endif
 
 #ifndef YY_clntParser_LSP_NEEDED
+
+ #line 75 "../bison++/bison.h"
+
+#line 75 "../bison++/bison.h"
  /* YY_clntParser_LSP_NEEDED*/
 #endif
 
@@ -221,32 +244,34 @@ typedef
   #endif
  #endif
 
+
+ #line 169 "../bison++/bison.h"
 #define	T1_	258
 #define	T2_	259
 #define	PREF_TIME_	260
 #define	DNS_SERVER_	261
 #define	VALID_TIME_	262
-#define	NTP_SERVER_	263
-#define	DOMAIN_	264
-#define	TIME_ZONE_	265
-#define	UNICAST_	266
-#define	IFACE_	267
-#define	NO_CONFIG_	268
-#define	REJECT_SERVERS_	269
-#define	PREFERRED_SERVERS_	270
-#define	REQUIRE_	271
-#define	REQUEST_	272
-#define	SEND_	273
-#define	DEFAULT_	274
-#define	SUPERSEDE_	275
-#define	APPEND_	276
-#define	PREPEND_	277
+#define	UNICAST_	263
+#define	NTP_SERVER_	264
+#define	DOMAIN_	265
+#define	TIME_ZONE_	266
+#define	SIP_SERVER_	267
+#define	SIP_DOMAIN_	268
+#define	NIS_SERVER_	269
+#define	NISP_SERVER_	270
+#define	NIS_DOMAIN_	271
+#define	NISP_DOMAIN_	272
+#define	FQDN_	273
+#define	IFACE_	274
+#define	NO_CONFIG_	275
+#define	REJECT_SERVERS_	276
+#define	PREFERRED_SERVERS_	277
 #define	IA_	278
 #define	ADDRES_	279
 #define	IPV6ADDR_	280
 #define	WORKDIR_	281
 #define	RAPID_COMMIT_	282
-#define	NOIA_	283
+#define	STATELESS_	283
 #define	OPTION_	284
 #define	LOGNAME_	285
 #define	LOGLEVEL_	286
@@ -256,6 +281,8 @@ typedef
 #define	INTNUMBER_	290
 #define	DUID_	291
 
+
+#line 169 "../bison++/bison.h"
  /* #defines token */
 /* after #define tokens, before const tokens S5*/
 #else
@@ -299,32 +326,34 @@ class YY_clntParser_CLASS YY_clntParser_INHERIT
 public: 
  #if YY_clntParser_USE_CONST_TOKEN != 0
   /* static const int token ... */
-  static const int T1_;
+  
+ #line 212 "../bison++/bison.h"
+static const int T1_;
 static const int T2_;
 static const int PREF_TIME_;
 static const int DNS_SERVER_;
 static const int VALID_TIME_;
+static const int UNICAST_;
 static const int NTP_SERVER_;
 static const int DOMAIN_;
 static const int TIME_ZONE_;
-static const int UNICAST_;
+static const int SIP_SERVER_;
+static const int SIP_DOMAIN_;
+static const int NIS_SERVER_;
+static const int NISP_SERVER_;
+static const int NIS_DOMAIN_;
+static const int NISP_DOMAIN_;
+static const int FQDN_;
 static const int IFACE_;
 static const int NO_CONFIG_;
 static const int REJECT_SERVERS_;
 static const int PREFERRED_SERVERS_;
-static const int REQUIRE_;
-static const int REQUEST_;
-static const int SEND_;
-static const int DEFAULT_;
-static const int SUPERSEDE_;
-static const int APPEND_;
-static const int PREPEND_;
 static const int IA_;
 static const int ADDRES_;
 static const int IPV6ADDR_;
 static const int WORKDIR_;
 static const int RAPID_COMMIT_;
-static const int NOIA_;
+static const int STATELESS_;
 static const int OPTION_;
 static const int LOGNAME_;
 static const int LOGLEVEL_;
@@ -334,35 +363,39 @@ static const int HEXNUMBER_;
 static const int INTNUMBER_;
 static const int DUID_;
 
+
+#line 212 "../bison++/bison.h"
  /* decl const */
  #else
   enum YY_clntParser_ENUM_TOKEN { YY_clntParser_NULL_TOKEN=0
-  	,T1_=258
+  
+ #line 215 "../bison++/bison.h"
+	,T1_=258
 	,T2_=259
 	,PREF_TIME_=260
 	,DNS_SERVER_=261
 	,VALID_TIME_=262
-	,NTP_SERVER_=263
-	,DOMAIN_=264
-	,TIME_ZONE_=265
-	,UNICAST_=266
-	,IFACE_=267
-	,NO_CONFIG_=268
-	,REJECT_SERVERS_=269
-	,PREFERRED_SERVERS_=270
-	,REQUIRE_=271
-	,REQUEST_=272
-	,SEND_=273
-	,DEFAULT_=274
-	,SUPERSEDE_=275
-	,APPEND_=276
-	,PREPEND_=277
+	,UNICAST_=263
+	,NTP_SERVER_=264
+	,DOMAIN_=265
+	,TIME_ZONE_=266
+	,SIP_SERVER_=267
+	,SIP_DOMAIN_=268
+	,NIS_SERVER_=269
+	,NISP_SERVER_=270
+	,NIS_DOMAIN_=271
+	,NISP_DOMAIN_=272
+	,FQDN_=273
+	,IFACE_=274
+	,NO_CONFIG_=275
+	,REJECT_SERVERS_=276
+	,PREFERRED_SERVERS_=277
 	,IA_=278
 	,ADDRES_=279
 	,IPV6ADDR_=280
 	,WORKDIR_=281
 	,RAPID_COMMIT_=282
-	,NOIA_=283
+	,STATELESS_=283
 	,OPTION_=284
 	,LOGNAME_=285
 	,LOGLEVEL_=286
@@ -372,6 +405,8 @@ static const int DUID_;
 	,INTNUMBER_=290
 	,DUID_=291
 
+
+#line 215 "../bison++/bison.h"
  /* enum token */
      }; /* end of enum declaration */
  #endif
@@ -424,4 +459,6 @@ public:
 
 #endif
 /* END */
+
+ #line 267 "../bison++/bison.h"
 #endif

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Container.h,v 1.3 2004-03-29 22:06:49 thomson Exp $
+ * $Id: Container.h,v 1.4 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/03/29 22:06:49  thomson
+ * 0.1.1 version
+ *
  *
  * Released under GNU GPL v2 licence
  *
@@ -18,6 +21,8 @@
 #include <list>
 
 using namespace std;
+
+#define List(x) TContainer< SmartPtr< x > >
 
 template <class TYP>
 class TContainer{

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.15 2004-09-28 17:31:24 thomson Exp $
+ * $Id: layer3.c,v 1.16 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/09/28 17:31:24  thomson
+ * Multicast hops are no longer set.
+ *
  * Revision 1.14  2004/09/07 15:37:45  thomson
  * Socket handling changes.
  *
@@ -392,7 +395,6 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
 {
 	struct addrinfo hints, *res;
 	int result;
-	int lim=1;
 	char cport[10];
 	sprintf(cport,"%d",port);
 	

@@ -10,13 +10,15 @@ libs: libClntCfgMgr.a
 
 ClntLexer.o: ClntLexer.cpp
 	@echo "[CPP    ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) -c ClntLexer.cpp
+	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntLexer.cpp
 
 parser: ClntParser.y ClntLexer.l
 	echo "[BISON++] ClntParser.y"
-	$(BISONPP) -l -d ClntParser.y -o ClntParser.cpp
+	$(BISONPP) -d ClntParser.y -o ClntParser.cpp
+#	$(BISONPP) -l -d ClntParser.y -o ClntParser.cpp
 	echo "[FLEX   ] ClntLexer.l"
 	$(FLEX) -+ -i -L -oClntLexer.cpp ClntLexer.l
-	echo "[CPP    ]  ClntParser.cpp"
-	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntParser.cpp 
+	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
+#	echo "[CPP    ] $(SUBDIR)/ClntParser.cpp"
+#	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntParser.cpp 
 

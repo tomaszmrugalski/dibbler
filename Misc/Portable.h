@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.25 2004-10-03 21:53:15 thomson Exp $
+ * $Id: Portable.h,v 1.26 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/10/03 21:53:15  thomson
+ * strncasecmp macro added (win32)
+ *
  * Revision 1.24  2004/10/03 21:28:45  thomson
  * 0.2.1-RC1 version.
  *
@@ -31,8 +34,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-//#define DIBBLER_VERSION "0.2.0-CVS (" __DATE__ " " __TIME__ ")"
-#define DIBBLER_VERSION "0.2.1-RC1"
+#define DIBBLER_VERSION "0.2.0-RC1-CVS (" __DATE__ " " __TIME__ ")"
+//#define DIBBLER_VERSION "0.2.1-RC1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson@klub.com.pl>,Marek Senderski<msend@o2.pl>"
@@ -67,24 +70,24 @@
 #define SRVCFGMGR_FILE    "server-CfgMgr.xml"
 #define SRVIFACEMGR_FILE  "server-IfaceMgr.xml"
 #define SRVDUID_FILE	  "server-duid"
-#define SRVLOG_FILE	      "server.log"
+#define SRVLOG_FILE       "server.log"
 #define SRVDB_FILE        "server-AddrMgr.xml"
 
 #ifdef WIN32
-#define WORKDIR		      ".\\"
+#define WORKDIR           ".\\"
 #define CLNTCONF_FILE	  "client.conf"
 #define SRVCONF_FILE      "server.conf"
 #define NULLFILE          "nul"
 #endif
 
 #ifdef LINUX
-#define WORKDIR		      "/var/lib/dibbler"
+#define WORKDIR		  "/var/lib/dibbler"
 #define CLNTCONF_FILE	  "/var/lib/dibbler/client.conf"
 #define SRVCONF_FILE      "/var/lib/dibbler/server.conf"
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
 #define CLNTPID_FILE      "client.pid"
 #define SRVPID_FILE       "server.pid"
-#define NULLFILE "/dev/null"
+#define NULLFILE          "/dev/null"
 #endif
 
 // **********************************************************************
@@ -170,15 +173,15 @@ extern int domain_del_all();
 #endif
 
 struct iface {
-    char name[MAX_IFNAME_LENGTH];   //name of interface
-    int  id;                        //interface id
-    int  hardwareType;  //type of hardware (RFC 826)
-    char mac[255];      //link layer address
-    int  maclen;        //length of link layer address
-    char *linkaddr;   //assigned IPv6 link local addresses 
-    int  linkaddrcount; //number of assigned IPv6 link local addresses
-    unsigned int flags;//look IF_xxx in portable.h
-    struct iface* next; //structure describing next iface in system
+    char name[MAX_IFNAME_LENGTH];  // interface name
+    int  id;                       // interface ID (often called ifindex)
+    int  hardwareType;             // type of hardware (see RFC 826)
+    char mac[255];                 // link layer address
+    int  maclen;                   // length of link layer address
+    char *linkaddr;                // assigned IPv6 link local addresses 
+    int  linkaddrcount;            // number of assigned IPv6 link local addresses
+    unsigned int flags;            // look IF_xxx in portable.h
+    struct iface* next;            // structure describing next iface in system
 };
 
 #endif

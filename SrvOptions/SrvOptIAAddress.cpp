@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIAAddress.cpp,v 1.2 2004-06-17 23:53:55 thomson Exp $
+ * $Id: SrvOptIAAddress.cpp,v 1.3 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/17 23:53:55  thomson
+ * Server Address Assignment rewritten.
+ *
  *                                                                           
  */
 
@@ -39,7 +42,7 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
-            if(canBeOptInOpt(parent->getType(),OPTION_IAADDR,code))
+            if(allowOptInOpt(parent->getType(),OPTION_IAADDR,code))
             {
                 SmartPtr<TOpt> opt;
 		opt = SmartPtr<TOpt>();

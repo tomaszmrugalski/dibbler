@@ -59,27 +59,27 @@ bool TClntCfgGroup::isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> du
 
 ostream& operator<<(ostream& out,TClntCfgGroup& group)
 {
-	out << "      <group>" << logger::endl;
+    out << "      <group>" << logger::endl;
     out << "        <!-- prefered servers count="<<group.PrefSrv.count() << " -->" << std::endl;
     
-	SmartPtr<TStationID> StationIDPtr;
-	
-	group.PrefSrv.first();
-	while(StationIDPtr=group.PrefSrv.get())
-		out<<*StationIDPtr << logger::endl;
-
-	out << "        <!-- rejected servers count=" << group.RejedSrv.count() << " -->" << std::endl;
+    SmartPtr<TStationID> StationIDPtr;
+    
+    group.PrefSrv.first();
+    while(StationIDPtr=group.PrefSrv.get())
+	out<<*StationIDPtr << logger::endl;
+    
+    out << "        <!-- rejected servers count=" << group.RejedSrv.count() << " -->" << std::endl;
     group.RejedSrv.first();
-	while(StationIDPtr=group.RejedSrv.get())
-		out << *StationIDPtr << std::endl;
-
-	// out << "      <-- IA count=" << group.ClntCfgIALst.count() << " -->" << std::endl;
-
-	SmartPtr<TClntCfgIA> IA;
-	group.ClntCfgIALst.first();
-	while(IA=group.ClntCfgIALst.get())
-		out << *IA;
-		
-	out << "      </group>" << std::endl;
-	return out;
+    while(StationIDPtr=group.RejedSrv.get())
+	out << *StationIDPtr << std::endl;
+    
+    // out << "      <-- IA count=" << group.ClntCfgIALst.count() << " -->" << std::endl;
+    
+    SmartPtr<TClntCfgIA> IA;
+    group.ClntCfgIALst.first();
+    while(IA=group.ClntCfgIALst.get())
+	out << *IA;
+    
+    out << "      </group>" << std::endl;
+    return out;
 }

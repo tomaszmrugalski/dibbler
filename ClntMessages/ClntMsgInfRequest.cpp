@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.3 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -37,55 +40,22 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr,
 				       SmartPtr<TClntCfgIface> iface)
     :TClntMsg(IfMgr, TransMgr, ConfMgr, AddrMgr, iface->getID(), SmartPtr<TIPv6Addr>() /*NULL*/, 
 	      INFORMATION_REQUEST_MSG) {
-
+    
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
     MRC = 0;
     MRD = 0;
     RT= 0 ;
-
+    
     Iface=iface->getID();
     IsDone=false;
 
     Options.append(new TClntOptClientIdentifier(ClntCfgMgr->getDUID(),this));
     Options.append(new TClntOptElapsed(this));
 
-    SmartPtr<TClntOptOptionRequest> ptrOptReqOpt=new TClntOptOptionRequest(iface,this);
-    Options.append((Ptr*)ptrOptReqOpt);
-    if (iface->isReqDNSSrv()&&(iface->getDNSSrvState()==NOTCONFIGURED))
-    {
-        SmartPtr<TClntOptDNSServers> ptrDNSOpt=
-            new TClntOptDNSServers(iface->getProposedDNSSrv(),this);
-        Options.append((Ptr*)ptrDNSOpt);
-        iface->setDNSSrvState(INPROCESS);
-    }
-    if (iface->isReqNTPSrv()&&(iface->getNTPSrvState()==NOTCONFIGURED))
-    {
-        SmartPtr<TClntOptNTPServers> ptrNTPOpt=
-            new TClntOptNTPServers(iface->getProposedNTPSrv(),this);
-        Options.append((Ptr*)ptrNTPOpt);
-        iface->setNTPSrvState(INPROCESS);
-    }
+    this->appendRequestedOptions();
 
-    if (iface->isReqDomainName()&&(iface->getDomainNameState()==NOTCONFIGURED))
-    {
-        SmartPtr<TClntOptDomainName> ptrDomainOpt=
-            new TClntOptDomainName(iface->getProposedDomainName(),this);
-        Options.append((Ptr*)ptrDomainOpt);
-        iface->setDomainNameState(INPROCESS);
-    }
-
-    if (iface->isReqTimeZone()&&(iface->getTimeZoneState()==NOTCONFIGURED))
-    {
-        SmartPtr<TClntOptTimeZone> ptrTimeOpt=
-            new TClntOptTimeZone(iface->getProposedTimeZone(),this);
-        Options.append((Ptr*)ptrTimeOpt);
-        iface->setTimeZoneState(INPROCESS);
-    }
-    if (!ptrOptReqOpt->getOptCnt())
-        IsDone=true;
-    else
-  	    pkt = new char[getSize()];
+    pkt = new char[getSize()];
 }
 
 //opts - all options list WITHOUT serverDUID including server id
@@ -179,10 +149,10 @@ void TClntMsgInfRequest::answer(SmartPtr<TMsg> msg)
         }
     }
 
-    if (ptrOptionReqOpt&&ptrOptionReqOpt->getOptCnt()&&newOptionAssigned)
+    if (ptrOptionReqOpt && ptrOptionReqOpt->count() && newOptionAssigned)
     {
-        clog<<logger::logNotice<<"Not all options were delivered."
-            <<" Sendding new Inormation Request." << logger::endl;
+	Log(Notice) << "Not all options were delivered."
+		    <<" Sending new Inormation Request." << LogEnd;
         ClntTransMgr->sendInfRequest(Options,Iface);
     }
     if (newOptionAssigned) 

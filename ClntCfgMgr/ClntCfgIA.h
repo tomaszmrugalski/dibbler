@@ -1,5 +1,19 @@
-#ifndef CLNTCFGIA_H_HEADER_INCLUDED_C0FDC1EF
-#define CLNTCFGIA_H_HEADER_INCLUDED_C0FDC1EF
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntCfgIA.h,v 1.5 2004-10-25 20:45:52 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
+#ifndef CLNTCFGIA_H
+#define CLNTCFGIA_H
 
 
 #include "ClntCfgAddr.h"
@@ -18,10 +32,7 @@ class TClntCfgIA
     void setIAID(long iaid);
 
     unsigned long getT1();
-    ESendOpt getT1SendOpt();
-
     unsigned long getT2();
-    ESendOpt getT2SendOpt();
 
     void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
 
@@ -37,14 +48,9 @@ class TClntCfgIA
     enum EState getState();
 
   private:
-    long IAID;
-
-    // FIXME: unsigned
-    long T1;
-    ESendOpt T1SendOpt;
-    
+    unsigned long IAID;
+    unsigned long T1;
     unsigned long T2;
-    ESendOpt T2SendOpt;
     
     EState State;	
     TContainer< SmartPtr<TClntCfgAddr> > ClntCfgAddrLst;

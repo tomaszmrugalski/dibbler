@@ -6,12 +6,15 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptPreference.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: OptPreference.cpp,v 1.3 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
-#ifdef WIN32
+#ifdef WIN32
 #include <winsock2.h>
 #endif
 #ifdef LINUX

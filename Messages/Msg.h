@@ -61,15 +61,11 @@ class TMsg
     
     void setAttribs(int iface, SmartPtr<TIPv6Addr> addr, 
 		    int msgType, long transID);
-
-    // Is this transaction done?
-    bool IsDone;
-    char * pkt;
-    // interface from/to which message was received/should be sent
-    int Iface;
-    // server/client address from/to which message was received/should be sent
-    SmartPtr<TIPv6Addr> PeerAddr;
-
+    
+    bool IsDone; // Is this transaction done?
+    char * pkt;  // buffer where this packet will be build
+    int Iface;   // interface from/to which message was received/should be sent
+    SmartPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
 };
 
 #endif

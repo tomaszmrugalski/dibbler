@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.13 2004-09-28 20:33:57 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.14 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/09/28 20:33:57  thomson
+ * Address check in WIN32 should be disabled.
+ *
  * Revision 1.12  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -52,29 +55,30 @@
 /*
  * creates list of interfaces
  */
-TIfaceMgr::TIfaceMgr()
+TIfaceMgr::TIfaceMgr(bool getIfaces)
 {
     IsDone = false;
     struct iface * ptr;
     struct iface * ifaceList;
-    
+
+    if (!getIfaces)
+	return;
+
     // get interface list
     ifaceList = if_list_get(); // external (C coded) function
     ptr = ifaceList;
     
     if  (!ifaceList) {
-		IsDone = true;
-		std::clog << logger::logCrit << "Unable to read info interfaces. Make sure "
-	    << "you are using proper port (i.e. winxp on winxp and not winxp on win2k)"
-	    << " and you have IPv6 support enabled." << logger::endl;
+	IsDone = true;
+	Log(Crit) << "Unable to read info interfaces. Make sure "
+		  << "you are using proper port (i.e. win32 on WindowsXP or 2003)"
+		  << " and you have IPv6 support enabled." << LogEnd;
 	return;
     }
     
     while (ptr!=NULL) {
-        std::clog << logger::logNotice << "Detected iface " << ptr->name 
-		  << "/id=" << ptr->id << ",flags=" << ptr->flags 
-		  << " maclen=" << ptr->maclen
-		  << logger::endl;
+        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
+		    << ptr->flags << ", maclen=" << ptr->maclen << LogEnd;
 	
         SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,
@@ -86,7 +90,7 @@ TIfaceMgr::TIfaceMgr()
         this->IfaceLst.append(smartptr);
         ptr = ptr->next;
     }
-    if_list_release(ifaceList); // allocated in pure C, and so release is
+    if_list_release(ifaceList); // allocated in pure C, and so release it there
 }
 
 /*
@@ -177,57 +181,57 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     result = ::select(FD_SETSIZE,&fds,NULL, NULL, &czas);
 
     // something received
-    if (result>0) {
-        SmartPtr<TIfaceIface> iface;
-        SmartPtr<TIfaceSocket> sock;
-        bool found = 0;
-        IfaceLst.first();
-        while ( (!found) && (iface = IfaceLst.get()) ) {
-            iface->firstSocket();
-            while ( sock = iface->getSocket() ) {
-                if (FD_ISSET(sock->getFD(),&fds)) {
-                    found = true;
-                    break;
-                }	
-            }
-        }
 
+    if (result<=0) { // timeout, nothing received
+        bufsize = 0;
+        return 0; 
+    }
+
+    SmartPtr<TIfaceIface> iface;
+    SmartPtr<TIfaceSocket> sock;
+    bool found = 0;
+    IfaceLst.first();
+    while ( (!found) && (iface = IfaceLst.get()) ) {
+	iface->firstSocket();
+	while ( sock = iface->getSocket() ) {
+	    if (FD_ISSET(sock->getFD(),&fds)) {
+		found = true;
+		break;
+	    }	
+	}
+    }
+    
     char myPlainAddr[48];   // my plain address
-	char peerPlainAddr[48]; // peer plain address
+    char peerPlainAddr[48]; // peer plain address
+
     // receive data (pure C function used)
     result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
-	// pack data (convert from plain to 16-byte)
     char peerAddrPacked[16];
-	char myAddrPacked[16];
+    char myAddrPacked[16];
     inet_pton6(peerPlainAddr,peerAddrPacked);
     inet_pton6(myPlainAddr,myAddrPacked);
     peer->setAddr(peerAddrPacked);
 
-        if (result==-1) {
-            Log(Error) << "sock_recv(" << sock->getFD() << "," << "...) failed." << LogEnd;
-            bufsize = 0;
-            return -1;
-        }
+    if (result==-1) {
+	Log(Error) << "sock_recv(" << sock->getFD() << "," << "...) failed." << LogEnd;
+	bufsize = 0;
+	return -1;
+    }
 
 #ifndef WIN32
-	// check if we've received data addressed to us. There's problem with sockets binding. 
-	// If there are 2 open sockets (one bound to multicast and one to global address),
-	// each packet sent on multicast address is also received on unicast socket.
-	if (memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)) {
-	    Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
-		       << *sock->getAddr() << ", message ignored." << LogEnd;
-	    bufsize = 0;
-	    return 0;
-	}  
+    // check if we've received data addressed to us. There's problem with sockets binding. 
+    // If there are 2 open sockets (one bound to multicast and one to global address),
+    // each packet sent on multicast address is also received on unicast socket.
+    if (memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)) {
+	Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
+		   << *sock->getAddr() << ", message ignored." << LogEnd;
+	bufsize = 0;
+	return 0;
+    }  
 #endif
 
-        bufsize = result;
-        return sock->getFD();
-
-    } else { // timeout, nothing received
-        bufsize = 0;
-        return 0; 
-    }
+    bufsize = result;
+    return sock->getFD();
 }
 
 /*

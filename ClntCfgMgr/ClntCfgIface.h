@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.4 2004-10-02 13:11:24 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.5 2004-10-25 20:45:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/10/02 13:11:24  thomson
+ * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
+ * Unicast communication now can be enable on client side (disabled by default).
+ *
  * Revision 1.3  2004/05/23 20:13:12  thomson
  * *** empty log message ***
  *
@@ -54,104 +58,143 @@ public:
     void setIfaceID(int ifaceID);
     void setIfaceName(string ifaceName);
     bool noConfig();
-    
-    ESendOpt getDNSSendOpt();
-    EReqOpt  getDNSReqOpt();
-
-    ESendOpt getNTPSendOpt();
-    EReqOpt  getNTPReqOpt();
-    
-    ESendOpt getDomainSendOpt();
-    EReqOpt  getDomainReqOpt();
-    
-    ESendOpt getTimeZoneSendOpt();
-    EReqOpt  getTimeZoneReqOpt();
-    
-    bool isReqDNSSrv();
-    bool isReqNTPSrv();
-    bool isReqDomainName();
-    bool isReqTimeZone();
-    
-    EState getDNSSrvState();
-    EState getNTPSrvState();
-    EState getDomainNameState();
-    EState getTimeZoneState();
-
-    void setDNSSrvState(EState state);
-    void setNTPSrvState(EState state);
-    void setDomainNameState(EState state);
-    void setTimeZoneState(EState state);
-
-    void   setDNSSrv(TContainer<SmartPtr<TIPv6Addr> > newSrvLst,
-                     SmartPtr<TDUID> duid);
-    void   setNTPSrv(TContainer<SmartPtr<TIPv6Addr> > newSrvLst, 
-                     SmartPtr<TDUID> duid);
-    void   setDomainName(string domainName,
-                     SmartPtr<TDUID> duid);
-    void   setTimeZone(string timeZone,
-                     SmartPtr<TDUID> duid);
-    
-    TContainer<SmartPtr<TIPv6Addr> > getProposedDNSSrv();
-    TContainer<SmartPtr<TIPv6Addr> > getProposedNTPSrv();
-    string getProposedDomainName();
-    string getProposedTimeZone();
 
     bool onlyInformationRequest();
     bool getUnicast();
+
+    // --- option: DNS servers ---
+    bool isReqDNSServer();
+    EState getDNSServerState();
+    void setDNSServerState(EState state);
+    unsigned long getDNSServerTimeout();
+    List(TIPv6Addr) * getProposedDNSServerLst();
+
+    // --- option: Domain ---
+    bool isReqDomain();
+    EState getDomainState();
+    unsigned long getDomainTimeout();
+    void setDomainState(EState state);
+    List(string) * getProposedDomainLst();
+
+    // --- option: NTP servers ---
+    bool isReqNTPServer();
+    EState getNTPServerState();
+    unsigned long getNTPServerTimeout();
+    void setNTPServerState(EState state);
+    List(TIPv6Addr) * getProposedNTPServerLst();
+
+    // --- option: Timezone ---
+    bool isReqTimezone();
+    EState getTimezoneState();
+    unsigned long getTimezoneTimeout();
+    void setTimezoneState(EState state);
+    string getProposedTimezone();
+
+    // --- option: SIP servers ---
+    bool isReqSIPServer();
+    EState getSIPServerState();
+    unsigned long getSIPServerTimeout();
+    void setSIPServerState(EState state);
+    List(TIPv6Addr) * getProposedSIPServerLst();
+
+    // --- option: SIP domains ---
+    bool isReqSIPDomain();
+    EState getSIPDomainState();
+    unsigned long getSIPDomainTimeout();
+    void setSIPDomainState(EState state);
+    List(string) * getProposedSIPDomainLst();
+
+    // --- option: FQDN ---
+    bool isReqFQDN();
+    EState getFQDNState();
+    unsigned long getFQDNTimeout();
+    void setFQDNState(EState state);
+    string getProposedFQDN();
+
+    // --- option: NIS servers ---
+    bool isReqNISServer();
+    EState getNISServerState();
+    unsigned long getNISServerTimeout();
+    void setNISServerState(EState state);
+    List(TIPv6Addr) * getProposedNISServerLst();
+
+    // --- option: NIS+ servers ---
+    bool isReqNISPServer();
+    EState getNISPServerState();
+    unsigned long getNISPServerTimeout();
+    void setNISPServerState(EState state);
+    List(TIPv6Addr) * getProposedNISPServerLst();
+
+    // --- option: NIS domains ---
+    bool isReqNISDomain();
+    EState getNISDomainState();
+    unsigned long getNISDomainTimeout();
+    void setNISDomainState(EState state);
+    string getProposedNISDomain();
+
+    // --- option: NIS+ domains ---
+    bool isReqNISPDomain();
+    EState getNISPDomainState();
+    unsigned long getNISPDomainTimeout();
+    void setNISPDomainState(EState state);
+    string getProposedNISPDomain();
+
 private:
-    string      IfaceName;
-    int	        ID;
-    bool        NoConfig;
-    
-    EReqOpt DNSReqOpt;
-    EReqOpt NTPReqOpt;
-    
-    ESendOpt DNSSendOpt;
-    ESendOpt NTPSendOpt;
-    
-    TContainer<SmartPtr<TIPv6Addr> > DNSSrv;
-    TContainer<SmartPtr<TIPv6Addr> > NTPSrv;
-    TContainer<SmartPtr<TIPv6Addr> > AppDNSSrv;
-    TContainer<SmartPtr<TIPv6Addr> > AppNTPSrv;
-    TContainer<SmartPtr<TIPv6Addr> > PrepDNSSrv;
-    TContainer<SmartPtr<TIPv6Addr> > PrepNTPSrv;
-
-    bool        ReqDomainName;
-    bool        ReqTimeZone;
-    bool        ReqDNSSrv;
-    bool        ReqNTPSrv;
-    
-    string      TZone;
-    ESendOpt    TimeZoneSendOpt;
-    EReqOpt	    TimeZoneReqOpt;
-    
-    string	    Domain;
-    ESendOpt    DomainSendOpt;
-    EReqOpt	    DomainReqOpt;
-    
-    EState      TimeZoneState;
-    EState      DomainNameState;
-    EState      DNSSrvState;
-    EState      NTPSrvState;
-
+    string IfaceName;
+    int ID;
+    bool NoConfig;
+    bool isIA;
     bool Unicast;
     
-    TContainer<SmartPtr<TIPv6Addr> > ReceivedDNSSrv;
-    SmartPtr<TDUID>                  GiverDNSSrvDUID;
-    SmartPtr<TIPv6Addr>              GiverDNSSrvAddr;
-    TContainer<SmartPtr<TIPv6Addr> > ReceivedNTPSrv;
-    SmartPtr<TDUID>                  GiverNTPSrvDUID;
-    SmartPtr<TIPv6Addr>              GiverNTPSrvAddr;
-    string                           ReceivedDomainName;
-    SmartPtr<TDUID>                  GiverDomainDUID;
-    SmartPtr<TIPv6Addr>              GiverDomainAddr;
-    string                           ReceivedTimeZone;
-    SmartPtr<TDUID>                  GiverTimeDUID;
-    SmartPtr<TIPv6Addr>              GiverTimeAddr;
+    List(TIPv6Addr) DNSServerLst;
+    List(string) DomainLst;
+    List(TIPv6Addr) NTPServerLst;
+    string Timezone;
+    List(TIPv6Addr) SIPServerLst;
+    List(string) SIPDomainLst;
+    string FQDN;
+    List(TIPv6Addr) NISServerLst;
+    List(TIPv6Addr) NISPServerLst;
+    string NISDomain;
+    string NISPDomain;
     
-    bool isIA;
+    EState DNSServerState;
+    EState DomainState;
+    EState NTPServerState;
+    EState TimezoneState;
+    EState SIPServerState;
+    EState SIPDomainState;
+    EState FQDNState;
+    EState NISServerState;
+    EState NISPServerState;
+    EState NISDomainState;
+    EState NISPDomainState;
+
+    bool ReqDNSServer;
+    bool ReqDomain;
+    bool ReqNTPServer;
+    bool ReqTimezone;
+    bool ReqSIPServer;
+    bool ReqSIPDomain;
+    bool ReqFQDN;
+    bool ReqNISServer;
+    bool ReqNISPServer;
+    bool ReqNISDomain;
+    bool ReqNISPDomain;
+    
+//    TContainer<SmartPtr<TIPv6Addr> > ReceivedDNSSrv;
+//    SmartPtr<TDUID>                  GiverDNSSrvDUID;
+//    SmartPtr<TIPv6Addr>              GiverDNSSrvAddr;
+//    TContainer<SmartPtr<TIPv6Addr> > ReceivedNTPSrv;
+//    SmartPtr<TDUID>                  GiverNTPSrvDUID;
+//    SmartPtr<TIPv6Addr>              GiverNTPSrvAddr;
+//    string                           ReceivedDomainName;
+//    SmartPtr<TDUID>                  GiverDomainDUID;
+//    SmartPtr<TIPv6Addr>              GiverDomainAddr;
+//    string                           ReceivedTimeZone;
+//    SmartPtr<TDUID>                  GiverTimeDUID;
+//    SmartPtr<TIPv6Addr>              GiverTimeAddr;
+    
 };
-
-
 
 #endif 

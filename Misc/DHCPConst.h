@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.10 2004-10-03 21:52:12 thomson Exp $
+ * $Id: DHCPConst.h,v 1.11 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/10/03 21:52:12  thomson
+ * FALSE changed to false
+ *
  * Revision 1.9  2004/10/03 21:21:32  thomson
  * CLIENT_DEFAULT_UNICAST is set to false.
  *
@@ -85,41 +88,57 @@
 
 #define HOP_COUNT_LIMIT 32
 
-// supported options
-#define OPTION_CLIENTID 1
-#define OPTION_SERVERID 2
-#define OPTION_IA       3
-#define OPTION_IAADDR   5
-#define OPTION_ORO      6
-#define OPTION_PREFERENCE 7
-#define OPTION_ELAPSED_TIME 8
-#define OPTION_UNICAST 12
-#define OPTION_STATUS_CODE 13
-#define OPTION_RAPID_COMMIT 14
-// not supported yet
-#define OPTION_IA_TA    4
-#define OPTION_RELAY_MSG 9
-#define OPTION_AUTH_MSG 11
-#define OPTION_USER_CLASS 15
-#define OPTION_VENDOR_CLASS 16
-#define OPTION_VENDOR_OPTS 17
-#define OPTION_INTERFACE_ID 18
-#define OPTION_RECONF_MSG 19
-#define OPTION_RECONF_ACCEPT 20
+// how long does server caches its replies?
+#define SERVER_REPLY_CACHE_TIMEOUT 60
+
+// RFC3315: supported options
+#define OPTION_CLIENTID         1
+#define OPTION_SERVERID         2
+#define OPTION_IA               3
+#define OPTION_IAADDR           5
+#define OPTION_ORO              6
+#define OPTION_PREFERENCE       7
+#define OPTION_ELAPSED_TIME     8
+#define OPTION_UNICAST          12
+#define OPTION_STATUS_CODE      13
+#define OPTION_RAPID_COMMIT     14
+
+// RFC: options not supported yet
+#define OPTION_IA_TA            4
+#define OPTION_RELAY_MSG        9
+#define OPTION_AUTH_MSG         11
+#define OPTION_USER_CLASS       15
+#define OPTION_VENDOR_CLASS     16
+#define OPTION_VENDOR_OPTS      17
+#define OPTION_INTERFACE_ID     18
+#define OPTION_RECONF_MSG       19
+#define OPTION_RECONF_ACCEPT    20
+
+// additional options
+
+// RFC3319
+#define OPTION_SIP_SERVERS      21
+#define OPTION_SIP_DOMAINS      22
 
 // draft-ietf-dhc-dhcpv6-opt-dnsconfig-03.txt
 #define OPTION_DNS_RESOLVERS	23
 #define OPTION_DOMAIN_LIST      24
 
-// draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
-#define OPTION_NTP_SERVERS 40
-#define OPTION_TIME_ZONE   41
-
-// currently not used
+// draft-ietf-dhc-dhcpv6-opt-nisconfig-05.txt
 #define OPTION_NIS_SERVERS	35
 #define OPTION_NISP_SERVERS	36
 #define OPTION_NIS_DOMAIN_NAME  37
 #define OPTION_NISP_DOMAIN_NAME 38
+
+// draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
+#define OPTION_NTP_SERVERS      40
+#define OPTION_TIME_ZONE        41
+
+// draft-ietf-dhc-dhcpv6-fqdn-00.txt
+#define OPTION_FQDN             34
+
+// draft-ietf-dhc-lifetime-02.txt
+#define OPTION_LIFETIME         42
 
 // --- Status Codes --- 
 #define STATUSCODE_SUCCESS       0
@@ -161,24 +180,21 @@
 
 #define CLIENT_DEFAULT_UNICAST false
 
-
-enum ESendOpt {Send,Default,Supersede};
-enum EReqOpt {Request, Require};
 enum ETentative {YES, NO, DONTKNOWYET};
+enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, IGNORE, UNKNOWN, TENTATIVECHECK, TENTATIVE};
 
-enum EState { NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, UNKNOWN, TENTATIVECHECK, TENTATIVE };
+// FQDN option flags
+#define FQDN_N 0x4
+#define FQDN_O 0x2
+#define FQDN_S 0x1
     
-bool canBeOptInOpt(int msgType, int optOut, int optIn);
-bool canBeOptInMsg(int msgType, int optType);
-
-#define List(x) TContainer< SmartPtr< x > > 
+bool allowOptInOpt(int msgType, int optOut, int optIn);
+bool allowOptInMsg(int msgType, int optType);
 
 #ifdef WIN32
 #define uint16_t unsigned short int
 #define uint32_t unsigned int
 #endif
-
-
 
 #endif
 

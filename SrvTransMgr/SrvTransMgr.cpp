@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.17 2004-09-28 21:49:32 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.18 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/09/28 21:49:32  thomson
+ * no message
+ *
  * Revision 1.16  2004/09/07 15:37:44  thomson
  * Socket handling changes.
  *
@@ -233,7 +236,6 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
 	SmartPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
-	// FIXME: INFORMATION-REQUEST not supported
 	break;
     }
     case RECONFIGURE_MSG:

@@ -11,13 +11,10 @@
 
 TClntParsIAOpt::TClntParsIAOpt() : TClntParsAddrOpt()
 {
-
-	T1=ULONG_MAX;
-	T1SendOpt=Send;
-	T2=ULONG_MAX;
-	T2SendOpt=Send;
-	IAIDCnt=0;
-	AddrHint=true;
+    T1=ULONG_MAX;
+    T2=ULONG_MAX;
+    IAIDCnt=0;
+    AddrHint=true;
     this->isRapidCommit=false;
 }
 
@@ -29,15 +26,6 @@ void TClntParsIAOpt::setT1(long T1)
 {
     this->T1=T1;
 }
-ESendOpt TClntParsIAOpt::getT1SendOpt()
-{
-    return this->T1SendOpt;
-}
-
-void TClntParsIAOpt::setT1SendOpt(ESendOpt opt)
-{
-    this->T1SendOpt=opt;
-}
 
 long TClntParsIAOpt::getT2()
 {
@@ -47,16 +35,6 @@ long TClntParsIAOpt::getT2()
 void TClntParsIAOpt::setT2(long T2)
 {
     this->T2=T2;
-}
-
-ESendOpt TClntParsIAOpt::getT2SendOpt()
-{
-    return this->T2SendOpt;
-}
-
-void TClntParsIAOpt::setT2SendOpt(ESendOpt opt)
-{
-    this->T2SendOpt=opt;
 }
 
 long TClntParsIAOpt::getIAIDCnt()

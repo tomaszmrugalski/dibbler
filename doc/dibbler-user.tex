@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-user.tex,v 1.6 2004-07-05 01:04:40 thomson Exp $
+%% $Id: dibbler-user.tex,v 1.7 2004-10-25 20:45:54 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.6  2004/07/05 01:04:40  thomson
+%% Initial version.
+%%
 %% Revision 1.5  2004/07/05 00:53:03  thomson
 %% Various changes.
 %%
@@ -33,14 +36,18 @@
 \usepackage[ps2pdf,colorlinks=true,linkcolor=myLinkColor,urlcolor=myUrlColor]{hyperref}
 
 %\setlength{\topmargin}{-1.0cm}
-
-\addtolength{\textwidth}{4cm}
-\addtolength{\hoffset}{-2cm} 
-\addtolength{\textheight}{3.0 cm}
-\addtolength{\voffset}{-0.5cm}
+\usepackage[twoside=true,
+            left={2cm},
+            right={2cm},
+            top={2cm},
+            bottom={2cm},
+            footskip={1cm},
+            headheight={1cm},
+            twosideshift={0.5cm},
+            headsep={0.5cm}]{geometry}
 
 \author{Tomasz Mrugalski\\ \small{\href{mailto:thomson(at)klub.com.pl}{thomson(at)klub.com.pl}}}
-\date{2004-06-21}
+\date{2004-10-06}
 \title{Dibbler -- a portable DHCPv6\\User's guide}
 
 \definecolor{myBgColor}{rgb}{0.9,0.9,0.9}
@@ -65,6 +72,9 @@
 
 \makeindex
 
+\newcommand{\Q}{ \textbf{Q:} }
+\newcommand{\A}{ \textbf{A:} }
+
 \newcommand{\msg}[1]{ \textbf{#1} }
 \newcommand{\opt}[1]{ \emph{#1} }
 \newcommand{\IA}{ \textbf{\emph{IA}} }
@@ -80,7 +90,7 @@
 \maketitle
 \vspace{-1cm}
 \begin{center}
-version 0.2.0
+version 0.2.1-RC1
 \end{center}
 
 \newpage

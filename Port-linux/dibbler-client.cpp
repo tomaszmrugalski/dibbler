@@ -110,8 +110,6 @@ void init() {
 void die() {
     string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
     unlink(tmp.c_str());
-    dns_del_all();
-    domain_del_all();
 }
 
 int getClientPID() {

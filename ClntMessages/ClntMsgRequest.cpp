@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.6 2004-10-02 13:11:24 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.7 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/10/02 13:11:24  thomson
+ * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
+ * Unicast communication now can be enable on client side (disabled by default).
+ *
  * Revision 1.5  2004/09/07 22:02:32  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -171,11 +175,10 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
 
     // find ORO in received options
     msg->firstOption();
-    SmartPtr<TClntOptOptionRequest> ptrOptionReqOpt = (Ptr*) msg->getOption(OPTION_ORO);
+    SmartPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
 
     msg->firstOption();
-    while (option = msg->getOption() ) 
-    {
+    while (option = msg->getOption() ) {
         switch (option->getOptType()) 
         {
             case OPTION_IA:
@@ -216,21 +219,21 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
             default:
             {
                 option->setParent(this);
-                if (option->doDuties()) 
-                {
-                    SmartPtr<TOpt> requestOpt;
-                    this->Options.first();
-                    while ( requestOpt = this->Options.get()) {
-                        if ( requestOpt->getOptType() == option->getOptType() ) 
-                        {
-                            if (ptrOptionReqOpt&&(ptrOptionReqOpt->isOption(option->getOptType())))
-                                ptrOptionReqOpt->delOption(option->getOptType());
-                            this->Options.del();
-                        }//if
-                    }//while
-                }
+                if (!option->doDuties()) 
+		    break;
+		SmartPtr<TOpt> requestOpt;
+		// find options specified in this message
+		this->Options.first();
+		while ( requestOpt = this->Options.get()) {
+		    if ( requestOpt->getOptType() == option->getOptType() ) 
+		    {
+			if ( optORO && (optORO->isOption(option->getOptType())) )
+			    optORO->delOption(option->getOptType());
+			this->Options.del();
+		    }//if
+		}//while
             }
-        }
+        } // switch
     }
     //Options and IAs serviced by server are removed from requestOptions list
 
@@ -245,13 +248,13 @@ void TClntMsgRequest::answer(SmartPtr<TMsg> msg)
     }
     if (isIA) {
         // send new Request to another server
-        clog<<logger::logNotice<<"There are still some IA to configure" << logger::endl;
+        Log(Notice) << "There are still some IA to configure." << LogEnd;
         ClntTransMgr->sendRequest(this->Options, BackupSrvLst, this->Iface);
     } else {
-        if (ptrOptionReqOpt&&(ptrOptionReqOpt->getOptCnt()))
+        if ( optORO && (optORO->count()) )
         {
-            Log(Notice) << "All IA(s) were supplied, but not all requested options.";
-            clog<<"Sending Information Request" << logger::endl;
+            Log(Notice) << "All IA(s) were supplied, but not all requested options."
+			<< "Sending Information Request" << LogEnd;
             ClntTransMgr->sendInfRequest(this->Options, this->Iface);
         }
     }

@@ -6,10 +6,52 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-arch-clnt.tex,v 1.1 2004-07-05 01:04:40 thomson Exp $
+%% $Id: dibbler-devel-arch-clnt.tex,v 1.2 2004-10-25 20:45:54 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.1  2004/07/05 01:04:40  thomson
+%% Initial version.
+%%
 %%
 
+\section{Common Architecture}
+
+There are 4 managers:
+\begin{itemize}
+\item TIfaceMgr -- Interface Manager. It represents all network interfaces present in the
+  system. They're represented by TIfaceIface objects and stored in
+  IfaceLst. Each interface has list of open sockets, represented with
+  TIfaceSocket objects. There are also a number of auxiliary functions
+  for getting proper interface. 
+\item TAddrMgr -- Address Manager. It is an address database, which
+  stores all informations about clients, IAs and associated addresses.
+\item TCfgMgr -- Config Manager. It is being used to read
+  configuration information from config file and provide those
+  informations while runtime.
+\item TTransMgr -- Transmission Manager, sometimes called Transaction
+  Manager. It is responsible for network interaction and logic. It
+  sends various messages when such need arise, matches received
+  responses with sent messages, retransmits etc. It contains list of
+  messages currently being used.
+\end{itemize}
+
 \section{Client Architecture}
+
+Client is represented by a DHCPClient object. It contains 4 large
+managers, each with its own functions:
+\begin{itemize}
+\item IfaceMgr
+\item AddrMgr
+\item CfgMgr
+\item TransMgr
+
+\end{itemize}
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=1.0\textwidth]{dia/IfaceMgr.eps}
+\caption{\emph{Przemieszczenia w skali mikro oraz makro}}
+\label{micromacro}
+\end{center}
+\end{figure}
 

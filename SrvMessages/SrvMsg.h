@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.4 2004-06-20 17:25:07 thomson Exp $
+ * $Id: SrvMsg.h,v 1.5 2004-10-25 20:45:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
  *
  */
 
@@ -70,9 +73,7 @@ public:
     void doDuties();
     void send();
 protected:
-private:
-    // timestamp of first message transmission
-    unsigned long FirstTimeStamp;
+    unsigned long FirstTimeStamp; // timestamp of first message transmission
     void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
 		    SmartPtr<TSrvTransMgr> TransMgr, 
 		    SmartPtr<TSrvCfgMgr> CfgMgr,

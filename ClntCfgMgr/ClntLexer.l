@@ -1,8 +1,5 @@
-/* <Linux> */
 %option noyywrap
 %option yylineno
-/* </Linux> */
-
 
 %{
 #include "ClntParser.h"
@@ -22,6 +19,10 @@ curly_op [{]
 curly_cl [}]
 hex1to4  {hexdigit}{1,4}
 
+CR \r
+LF \n
+EOL (({CR}{LF}?)|{LF})
+
 %{
   using namespace std;
 
@@ -32,85 +33,50 @@ namespace std {
   char Address[16]; //address, which is analizying right now
   char AddrPart[16];
   unsigned intpos,pos;
-  unsigned analyzeBigPart(char* bigPart, unsigned length, char *dst);
-  int decodeSmallPart(char *src, char* dst,int length);
-  void decodeIntPart(char *src, char *dst);
-  void resetAddress(char *tab);
   yy_clntParser_stype yylval;
 };
 %}
 
 %%
 
+{EOL}*   ; // ignore end of line
+[ \t]    ; // ignore TABs and spaces
 iface     {return clntParser::IFACE_;}
 no-config {return clntParser::NO_CONFIG_;}
 address   {return clntParser::ADDRES_;}
 ia        {return clntParser::IA_;}
-no-ia     {return clntParser::NOIA_;}
+no-ia     {return clntParser::STATELESS_;}
+stateless {return clntParser::STATELESS_;}
 
 log-level {return clntParser::LOGLEVEL_; }
 log-mode  {return clntParser::LOGMODE_; }
 log-name  {return clntParser::LOGNAME_; }
 
 work-dir  {return clntParser::WORKDIR_;}
-option    {return clntParser::OPTION_; }
 
-%{    //KEYWORDS FOR OPTIONS
-  // [-|REQUEST|REQUIRE] OptionName [SEND|DEFAULT|SUPERSEDE|-] Value
-  // [APPEND|PREPEND] OptionName Value
-  
-  //REQUEST - only request of option from a server - messages without will be
-  //                    accepted (default)
-%}
-request {return clntParser::REQUEST_;}     
-%{  //REQUIRE - messages from server must include this option, otherwise its 
-  //                    message will be discarded by client
-%}
-require {return clntParser::REQUIRE_;} 
+prefered-lifetime { return clntParser::PREF_TIME_; }
+valid-lifetime    { return clntParser::VALID_TIME_; }
+t1                { return clntParser::T1_;}
+t2                { return clntParser::T2_;}
 
-%{    //SEND -    only hint of option's value sent to server - if server dosen't 
-    //              include it nothing happens(default)
-%}
-send {return clntParser::SEND_;}                                 
-%{  //DEFAULT - default value of option. If server dosen't include this option 
-  //                    this default value should be used
-%}
-default {return clntParser::DEFAULT_;} 
-%{  //SUPERSEDE - whatever server returns overwrite returned value
-%}
-supersede {return clntParser::SUPERSEDE_;} 
-%{  //APPEND - for options which can have multiple values, ordered in sequence
-    //                 e.g. list of DNS servers, orders append list of options at the
-    //               end of those returned by server
-%}
-append {return clntParser::APPEND_;} 
-%{  //PREPPEND - for options which can have multiple values, ordered in sequence
-  //                 e.g. list of DNS servers, orders append list of options at the
-    //               beginning of those returned by server
-%}
-prepend {return clntParser::PREPEND_;}  
-
-
-%{    //OPTIONS NAMES
-%}
-prefered-lifetime {return clntParser::PREF_TIME_;}
-valid-lifetime  {return clntParser::VALID_TIME_;}
-t1 {return clntParser::T1_;}
-t2 {return clntParser::T2_;}
-
-dns-server {return clntParser::DNS_SERVER_;}
-domain {return clntParser::DOMAIN_;}
-
-ntp-server {return clntParser::NTP_SERVER_;}
-time-zone {return clntParser::TIME_ZONE_;}
+option       {return clntParser::OPTION_; }
+dns-server   { return clntParser::DNS_SERVER_;}
+domain       { return clntParser::DOMAIN_;}
+ntp-server   { return clntParser::NTP_SERVER_;}
+time-zone    { return clntParser::TIME_ZONE_;}
+sip-server   { return clntParser::SIP_SERVER_; }
+sip-domain   { return clntParser::SIP_DOMAIN_; }
+fqdn         { return clntParser::FQDN_; }
+nis-server   { return clntParser::NIS_SERVER_; }
+nis-domain   { return clntParser::NIS_DOMAIN_; }
+nis\+-server { return clntParser::NISP_SERVER_; }
+nis\+-domain { return clntParser::NISP_DOMAIN_; }
 
 reject-server    { return clntParser::REJECT_SERVERS_;}
 prefered-server  { return clntParser::PREFERRED_SERVERS_;}
 rapid-commit     { return clntParser::RAPID_COMMIT_;}
 unicast          { return clntParser::UNICAST_; }
 
-%{ //COMMENTS
-%} 
 #.* ;
 
 "//"(.*) ;
@@ -125,38 +91,43 @@ unicast          { return clntParser::UNICAST_; }
 <COMMENT>.|"\n" ;
 <COMMENT><<EOF>> {
     Log(Crit) << "Comment not closed. (/* in line " << ComBeg << LogEnd;
-  { YYABORT; }
+    { YYABORT; }
 }
 
 %{    //IPv6 address - various forms
 %}
 ({hex1to4}:){7}{hex1to4} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
     } else {
-	return clntParser::IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
     }
 }
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
     } else {
-	return clntParser::IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
     }
 }
 
 "::"(({hex1to4}:){1,7})?{hex1to4} { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
     } else {
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         return clntParser::IPV6ADDR_;
     }
 }
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
     } else {
         return clntParser::IPV6ADDR_;
     }
@@ -164,7 +135,8 @@ unicast          { return clntParser::UNICAST_; }
 
 "::" {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
     } else {
         return clntParser::IPV6ADDR_;
     }
@@ -172,31 +144,30 @@ unicast          { return clntParser::UNICAST_; }
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
     } else {
-	return clntParser::IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
     }
 }
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
     if(!inet_pton6(yytext,yylval.addrval)) { 
-	YYABORT; 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
     } else {
-	return clntParser::IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
     }
 }
 
-%{  //STRING (interface identifier,dns server etc.)
-  //FIXME: Remember to free memory in parser    
-%}
 ('([^']|(''))*')|(\"[^\"]*\") {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
-        return clntParser::STRING_;
+    return clntParser::STRING_;
 }
 
-([a-zA-Z][a-zA-Z0-9\.]+) {
+([a-zA-Z][a-zA-Z0-9\.-]+) {
     int len = strlen(yytext);
     if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
          ( (len>3) && !strncasecmp("true", yytext,4) )
@@ -217,10 +188,6 @@ unicast          { return clntParser::UNICAST_; }
     return clntParser::STRING_;
 }
 
-%{  //FIXME: Remember to free memory in parser
-  //DUID
-%}
-
 0x{hexdigit}+ {
     int len;
     char * ptr;
@@ -240,8 +207,8 @@ unicast          { return clntParser::UNICAST_; }
     {
         yylval.duidval.duid[i>>1]<<=4;
         if (!isxdigit(ptr[i])) { 
-             Log(Error) << "DUID parsing failed." << LogEnd;
-             YYABORT; 
+             Log(Crit) << "DUID parsing failed (" << yytext << ")." << LogEnd;
+             { YYABORT; }
         } 
         if (isalpha(ptr[i])) {
             yylval.duidval.duid[i>>1]|=toupper(ptr[i])-'A'+10;
@@ -252,107 +219,27 @@ unicast          { return clntParser::UNICAST_; }
    return clntParser::DUID_;
 }
 
-%{    //HEXADECIMAL NUMBER (interface id, option's values etc.)
-%}
-{hexnumber} {
+{hexnumber} { 
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival)))
-      { YYABORT; }
+    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+        Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
+        { YYABORT; }
+    }
     return clntParser::HEXNUMBER_;
 }
 
-%{    //DECIMAL NUMBER (as for HEXNUMBER)
-%}
 {integer} { 
-    //FIXME:Check if number appropriate
-    if(!sscanf(yytext,"%u",&(yylval.ival)))
-      { YYABORT; }
+    if(!sscanf(yytext,"%u",&(yylval.ival))) { 
+        Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
+        { YYABORT; }
+    }
     return clntParser::INTNUMBER_;
 }
 
-%{    //WHITE CHARS should be omitted
-%}
-[ \n\t] ; 
 
 
-%{    //OTHER CHARS are direclty passed to parser
-%}
-.  {return yytext[0];}
+.  {return yytext[0];} 
 
-
-%{    // place your Lex rules here
-%}
 
 
 %%
-
-/////////////////////////////////////////////////////////////////////////////
-// programs section
-
- /*void clntLexer::resetAddress(char *tab)
- {
-  int i;
-  for (i=0;i<16;i++) tab[i]=0;
- }
-
- void clntLexer::decodeIntPart(char *src, char *dst)
- {
-  
-  int i,obyte;
-  int ipos=0;
-    for (i=0;i<4;i++)
-    {
-      obyte=src[ipos]-'0';
-      while((src[++ipos]!='.')&&(ipos<strlen(src)))
-      {
-        obyte=obyte*10+src[ipos]-'0';
-        if (obyte>255) { YYABORT; }
-      }
-      Address[12+i]=obyte;
-      ipos++;
-    }
- }
-
- int clntLexer::decodeSmallPart(char *src, char* dst,int length)
- {
-  int int16=0;
-  int i;
-  if (length>4)
-    { YYABORT; }//there is too many digits abort and raise exception
-  for (i=0; i<length; i++) 
-  {
-    if (!isxdigit(src[i])) 
-      return 0; //or raise exeception
-    else
-      if (isalpha(src[i]))
-        int16=(int16<<4)+toupper(src[i])-55;
-      else
-
-        int16=(int16<<4)+src[i]-48;
-  }
-  dst[1]=*((char*)(&int16));
-  dst[0]=*(((char*)(&int16))+1);
-  return 1;
- }
-
- unsigned clntLexer::analyzeBigPart(char* bigPart, unsigned length, char *dst)
- {
-  unsigned srcStart,dstStart,pos;
-  srcStart=pos=0;
-  dstStart=0;
-  resetAddress(dst);
-  do
-  {
-    //extracting part of string to next ':' sign or its end
-    while((pos<length)&&(bigPart[pos]!=':')) pos++;
-    //decode this part to binary form
-    decodeSmallPart(bigPart+srcStart,dst+dstStart,pos-srcStart);
-    //bigPart[pos]!=':'?(pos-srcStart-1):
-    //next two bytes found
-    dstStart+=2;
-    //omission of : sign    
-    srcStart=++pos;
-  }while(pos<=length);
-  return (dstStart)>>1;
- }
-*/

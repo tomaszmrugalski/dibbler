@@ -21,8 +21,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
     TSrvIfaceMgr();
     
     // ---sends messages---
-    bool sendUnicast  (int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
-    bool sendMulticast(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
+    bool send(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
     
     // ---receives messages---
     SmartPtr<TMsg> select(unsigned long timeout);

@@ -164,22 +164,23 @@ VERSION-src:
 	echo >> VERSION
 
 release:
-	echo "There are 3 release targets available:"
+	echo "There are 4 release targets available:"
 	echo "release-linux"
-	echo "release-winxp"
+	echo "release-win32"
 	echo "release-src"
+	echo "release-doc"
 	echo
-	echo "To make release-winxp work, place dibbler-server-winxp.exe and"
-	echo "dibbler-client-winxp.exe in this directory."
+	echo "To make release-win32 work, place dibbler-server-win32.exe and"
+	echo "dibbler-client-win32.exe in this directory."
 
 release-linux: VERSION-linux
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                  \
 		$(SERVERBIN) $(CLIENTBIN) client.conf server.conf \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
 
-release-winxp: VERSION-win
+release-win32: VERSION-win
 	tar czvf dibbler-$(VERSION)-winxp.tar.gz                  \
-		dibbler-server-winxp.exe dibbler-client-winxp.exe \
+		dibbler-server-win32.exe dibbler-client-win32.exe \
                 client.conf server.conf                           \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
 
@@ -211,5 +212,8 @@ tags:
 
 clean-libs:
 	find . -name *.a -exec rm {} \;
+
+links: includes
+clobber: clean
 
 .PHONY: release-winxp release-src release-linux VERSION VERSION-win

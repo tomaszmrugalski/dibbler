@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptNTPServers.cpp,v 1.4 2004-03-29 19:10:06 thomson Exp $
+ * $Id: ClntOptNTPServers.cpp,v 1.5 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/03/29 19:10:06  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  * Revision 1.3  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -16,34 +19,43 @@
  */
 
 #include "ClntOptNTPServers.h"
+#include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
-TClntOptNTPServers::TClntOptNTPServers(TContainer<SmartPtr< TIPv6Addr> > lst, TMsg* parent)
-    :TOptNTPServers(lst, parent)
-{
+TClntOptNTPServers::TClntOptNTPServers(List(TIPv6Addr) * lst, TMsg* parent)
+    :TOptAddrLst(OPTION_NTP_SERVERS, *lst, parent) {
 }
 
 TClntOptNTPServers::TClntOptNTPServers(char* buf, int size, TMsg* parent)
-    :TOptNTPServers(buf,size, parent)
-{
+    :TOptAddrLst(OPTION_NTP_SERVERS, buf, size, parent) {
 }
 
-bool TClntOptNTPServers::doDuties()
-{
-    TClntMsg* parent=(TClntMsg*)Parent;
-    SmartPtr<TClntCfgMgr> cfgMgr=parent->getClntCfgMgr();
-    SmartPtr<TClntCfgIface> ptrIface=cfgMgr->getIface(parent->getIface());
-    //FIXME:Here should be passed also server duid in order to renew parameter
-    //      but how/maybe IP address will be enough
-    //      so duid server should be set before executing doDuties
-    if (this->SrvDUID)
-        ptrIface->setNTPSrv(NTPSrv,SrvDUID);
-    else
-        clog<< logger::logCrit 
-            << "Trying to set new set of NTP servers without setting server DUID"
-	    << logger::endl;
-    return true;}
+bool TClntOptNTPServers::doDuties() {
+    string reason = "trying to set NTP server(s).";
+    int ifindex = this->Parent->getIface();
+    SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
+    TClntMsg * msg = (TClntMsg*)(this->Parent);
+    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    if (!ifaceMgr) {
+	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
+        return false;
+    }
+    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
+		   << " while " << reason << LogEnd;
+        return false;
+    }
+    SmartPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)msg->getOption(OPTION_SERVERID);
+    if (!optSrvID) {
+	Log(Error) << "Unable to find ServerID option while " << reason << LogEnd;
+	return false;
+    }
+    SmartPtr<TDUID> duid = optSrvID->getDUID();
+
+    return iface->setNTPServerLst(duid, addr,this->AddrLst);
+}
 
 void TClntOptNTPServers::setSrvDuid(SmartPtr<TDUID> duid)
 {

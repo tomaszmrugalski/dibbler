@@ -1,3 +1,16 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: Logger.cpp,v 1.9 2004-10-25 20:45:54 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -9,7 +22,7 @@
 namespace logger {
 
     std::streambuf* orig;
-    int logLevel=8;
+    int logLevel=7;
     bool mute = false;
     string logname="Init";
     Elogmode logmode = FULL;

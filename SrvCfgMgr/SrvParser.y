@@ -18,59 +18,52 @@
 
 #define YY_USE_CLASS
 %}
+
 %{
-#include <FlexLexer.h>
-
-
+#include "FlexLexer.h"
 %}
 
 // class definition
-%define MEMBERS FlexLexer * lex;                                               \
-List(TSrvParsGlobalOpt) ParserOptStack;                                        \
-/* List of parsed interfaces/IAs/Addresses, last    */                         \
-/* interface/IA/address is just being parsing or have been just parsed */      \
-/* FIXME:Don't forget to clear this lists in apropriate moment         */      \
-List(TSrvCfgIface)          SrvCfgIfaceLst;                                    \
-List(TSrvCfgAddrClass)  SrvCfgAddrClassLst;                                    \
-/*Pointer to list which should contain either DNS servers or NTPServers*/      \
-List(TIPv6Addr) PresentLst;                                                    \
-/*Pointer to list which should contain: rejected clients, accepted clients */  \
-/*or addressess ranges */                                                      \
-List(TStationRange) PresentRangeLst;                                           \
-/*method check whether interface with id=ifaceNr has been already declared */  \
-bool CheckIsIface(int ifaceNr);                                                \
-/*method check whether interface with id=ifaceName has been already declared*/ \
-bool CheckIsIface(string ifaceName); \
-void StartIfaceDeclaration(); \
-bool EndIfaceDeclaration(); \
-void StartClassDeclaration(); \
-bool EndClassDeclaration(); \
+%define MEMBERS FlexLexer * lex;                                                     \
+List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
+List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */           \
+List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
+List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
+List(string) PresentStringLst;             /* string list */                         \
+List(TStationRange) PresentRangeLst;                                                 \
+/*method check whether interface with id=ifaceNr has been already declared */        \
+bool CheckIsIface(int ifaceNr);                                                      \
+/*method check whether interface with id=ifaceName has been already declared*/       \
+bool CheckIsIface(string ifaceName);                                                 \
+void StartIfaceDeclaration();                                                        \
+bool EndIfaceDeclaration();                                                          \
+void StartClassDeclaration();                                                        \
+bool EndClassDeclaration();                                                          \
 virtual ~SrvParser();
 
 // constructor
-// <Linux>
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
-%define CONSTRUCTOR_CODE \
-    ParserOptStack.append(new TSrvParsGlobalOpt()); \
-    ParserOptStack.getLast()->setUnicast(false);    \
-   this->lex = lex;
-// </Linux>
+%define CONSTRUCTOR_CODE                                                          \
+    ParserOptStack.append(new TSrvParsGlobalOpt());                               \
+    ParserOptStack.getLast()->setUnicast(false);                                  \
+    this->lex = lex;
 
 %union    
 {
     unsigned int ival;
-  char                          *strval;
-  struct                        SDuid
-  {
-    int                       length;
-    char*                       duid;
-    }                                   duidval;
-  char                          addrval[16];
+    char *strval;
+    struct SDuid
+    {
+        int length;
+        char* duid;
+    } duidval;
+    char addrval[16];
 }
 
-%token IFACE_, NO_CONFIG_,CLASS_, 
+%token IFACE_, CLASS_, 
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
-%token OPTION_, NTP_SERVER_,TIME_ZONE_,DNS_SERVER_,DOMAIN_
+%token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
+%token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, LIFETIME_
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
@@ -104,7 +97,7 @@ GlobalDeclarationList
 
 InterfaceDeclaration
 /////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: iface 'eth0' { T1 10 T2 20 ... }
+// iface 'eth0' { T1 10 T2 20 ... }
 /////////////////////////////////////////////////////////////////////////////
 :IFACE_ STRING_ '{' 
 {
@@ -116,12 +109,11 @@ InterfaceDeclarationsList '}'
     //Information about new interface has been read
     //Add it to list of read interfaces
     SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-    //FIXME:used of char * should be always realeased
     delete [] $2;
     EndIfaceDeclaration();
 }
 /////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: iface 5 { T1 10 T2 20 ... }
+//  iface 5 { T1 10 T2 20 ... }
 /////////////////////////////////////////////////////////////////////////////
 |IFACE_ Number '{' 
 {
@@ -144,7 +136,7 @@ InterfaceDeclarationsList
 
 ClassDeclaration:
 /////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: CLASS { T1 10 T2 20 ... }
+// CLASS { T1 10 T2 20 ... }
 /////////////////////////////////////////////////////////////////////////////
 CLASS_ '{'
 { 
@@ -169,38 +161,21 @@ Number
 |  INTNUMBER_ {$$=$1;}
 ;
 
-
-/*ADDRESDUIDList
-  : IPV6ADDR_   
-  {
-  PresentLst.append(SmartPtr<TStationID> (new TStationID($1)));
-  }
-  | DUID_       
-  {
-  PresentLst.append(SmartPtr<TStationID> (new TStationID($1.duid,$1.length))); 
-  delete $1.duid;
-  }
-  | ADDRESDUIDList ',' IPV6ADDR_    
-  {
-  PresentLst.append(SmartPtr<TStationID> (new TStationID($3)));
-  }
-  | ADDRESDUIDList ',' DUID_        
-  {
-  PresentLst.append(SmartPtr<TStationID> (new TStationID($3.duid,$3.length)));
-  delete $3.duid;
-  }
-  ;*/   
-
 ADDRESSList
-  : IPV6ADDR_   
-  {
-    PresentLst.append(new TIPv6Addr($1));
-  }
-  | ADDRESSList ',' IPV6ADDR_   
-  {
-    PresentLst.append(new TIPv6Addr($3));
-  }
-  ;
+: IPV6ADDR_   
+{
+    PresentAddrLst.append(new TIPv6Addr($1));
+}
+| ADDRESSList ',' IPV6ADDR_   
+{
+    PresentAddrLst.append(new TIPv6Addr($3));
+}
+;
+
+StringList
+: STRING_ { PresentStringLst.append(SmartPtr<string> (new string($1))); }
+| StringList ',' STRING_ { PresentStringLst.append(SmartPtr<string> (new string($3))); }
+;
 
 ADDRESSRangeList
     : IPV6ADDR_     
@@ -258,7 +233,6 @@ ADDRESSDUIDRangeList
     else
 	PresentRangeLst.append(new TStationRange(addr2,addr1));
 }
-    
 | DUID_ 
 {
     PresentRangeLst.append(new TStationRange(new TDUID($1.duid,$1.length)));
@@ -270,165 +244,109 @@ ADDRESSDUIDRangeList
     SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
     
     if (*duid1<=*duid2)
-	PresentRangeLst.append(new TStationRange(duid1,duid2));
+        PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
-	PresentRangeLst.append(new TStationRange(duid2,duid1));
+        PresentRangeLst.append(new TStationRange(duid2,duid1));
 }
-    | ADDRESSDUIDRangeList ',' DUID_ 
-    {
-        PresentRangeLst.append(new TStationRange(new TDUID($3.duid,$3.length)));
-        delete $3.duid;
-    }
-    | ADDRESSDUIDRangeList ',' DUID_ '-' DUID_ 
-    {
-        SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
-        SmartPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
-        if (*duid1<=*duid2)
-            PresentRangeLst.append(new TStationRange(duid1,duid2));
-        else
-            PresentRangeLst.append(new TStationRange(duid2,duid1));
-        delete $3.duid;
-        delete $5.duid;
-    }
-    ;
-
+| ADDRESSDUIDRangeList ',' DUID_ 
+{
+    PresentRangeLst.append(new TStationRange(new TDUID($3.duid,$3.length)));
+    delete $3.duid;
+}
+| ADDRESSDUIDRangeList ',' DUID_ '-' DUID_ 
+{
+    SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
+    SmartPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
+    if (*duid1<=*duid2)
+        PresentRangeLst.append(new TStationRange(duid1,duid2));
+    else
+        PresentRangeLst.append(new TStationRange(duid2,duid1));
+    delete $3.duid;
+    delete $5.duid;
+}
+;
 
 RejectClientsOption
-    : REJECT_CLIENTS_ 
-    {
-        PresentRangeLst.clear();    
-    } ADDRESSDUIDRangeList
-    {
-        ParserOptStack.getLast()->setRejedClnt(&PresentRangeLst);
-    }
-  ;  
+: REJECT_CLIENTS_ 
+{
+    PresentRangeLst.clear();    
+} ADDRESSDUIDRangeList
+{
+    ParserOptStack.getLast()->setRejedClnt(&PresentRangeLst);
+}
+;  
 
 AcceptOnlyOption
-    : ACCEPT_ONLY_
-    {
-        PresentRangeLst.clear();    
-    } ADDRESSDUIDRangeList
-    {
-        ParserOptStack.getLast()->setAcceptClnt(&PresentRangeLst);
-    }
-  ;
+: ACCEPT_ONLY_
+{
+    PresentRangeLst.clear();    
+} ADDRESSDUIDRangeList
+{
+    ParserOptStack.getLast()->setAcceptClnt(&PresentRangeLst);
+}
+;
 
 PoolOption
-    : POOL_
-        {
-
-            PresentRangeLst.clear();    
-        } ADDRESSRangeList
-        {
-            ParserOptStack.getLast()->setPool(&PresentRangeLst);
-        }
-    ;
+: POOL_
+{
+    PresentRangeLst.clear();    
+} ADDRESSRangeList
+{
+    ParserOptStack.getLast()->setPool(&PresentRangeLst);
+}
+;
     
 PreferredTimeOption
-    : PREF_TIME_ Number 
-    { 
-        ParserOptStack.getLast()->setPrefBeg($2);
-        ParserOptStack.getLast()->setPrefEnd($2);
-    }
-    | PREF_TIME_ Number '-' Number
-    {
-        ParserOptStack.getLast()->setPrefBeg($2);
-        ParserOptStack.getLast()->setPrefEnd($4);   
-    }
-    ;
-  
+: PREF_TIME_ Number 
+{ 
+    ParserOptStack.getLast()->setPrefBeg($2);
+    ParserOptStack.getLast()->setPrefEnd($2);
+}
+| PREF_TIME_ Number '-' Number
+{
+    ParserOptStack.getLast()->setPrefBeg($2);
+    ParserOptStack.getLast()->setPrefEnd($4);   
+}
+;
+
 ValidTimeOption
-    : VALID_TIME_ Number 
-    { 
-        ParserOptStack.getLast()->setValidBeg($2);
-        ParserOptStack.getLast()->setValidEnd($2);
-    }
-    | VALID_TIME_ Number '-' Number
-    {
-        ParserOptStack.getLast()->setValidBeg($2);
-        ParserOptStack.getLast()->setValidEnd($4);  
-    }
-    ;
+: VALID_TIME_ Number 
+{ 
+    ParserOptStack.getLast()->setValidBeg($2);
+    ParserOptStack.getLast()->setValidEnd($2);
+}
+| VALID_TIME_ Number '-' Number
+{
+    ParserOptStack.getLast()->setValidBeg($2);
+    ParserOptStack.getLast()->setValidEnd($4);  
+}
+;
 
 T1Option
-    : T1_ Number 
-    {
-        ParserOptStack.getLast()->setT1Beg($2); 
-        ParserOptStack.getLast()->setT1End($2); 
-    }
-    | T1_ Number '-' Number
-    {
-        ParserOptStack.getLast()->setT1Beg($2); 
-        ParserOptStack.getLast()->setT1End($4); 
-    }
-    ;
+: T1_ Number 
+{
+    ParserOptStack.getLast()->setT1Beg($2); 
+    ParserOptStack.getLast()->setT1End($2); 
+}
+| T1_ Number '-' Number
+{
+    ParserOptStack.getLast()->setT1Beg($2); 
+    ParserOptStack.getLast()->setT1End($4); 
+}
+;
 
 T2Option
-    : T2_ Number 
-    { 
-        ParserOptStack.getLast()->setT2Beg($2); 
-        ParserOptStack.getLast()->setT2End($2); 
-    }
-    | T2_ Number '-' Number
-    {
-        ParserOptStack.getLast()->setT2Beg($2); 
-        ParserOptStack.getLast()->setT2End($4); 
-    }
-    ;
-
-////////////////////////////////////////////////////////////////////////
-/// DNS-server option //////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-
-DNSServerOption
-:OPTION_ DNS_SERVER_ 
-{
-    PresentLst.clear();
-} ADDRESSList
-{
-    ParserOptStack.getLast()->setDNSSrv(&PresentLst);
-}
-;
-
-////////////////////////////////////////////////////////////////////////
-/// DOMAIN option //////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-DomainOption
-: OPTION_ DOMAIN_ STRING_ 
+: T2_ Number 
 { 
-    ParserOptStack.getLast()->setDomain($3);
+    ParserOptStack.getLast()->setT2Beg($2); 
+    ParserOptStack.getLast()->setT2End($2); 
 }
-;
-
-////////////////////////////////////////////////////////////////////////
-/// NTP-SERVER option //////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-NTPServerOption
-:OPTION_ NTP_SERVER_ 
+| T2_ Number '-' Number
 {
-    PresentLst.clear();
-} ADDRESSList
-{
-    ParserOptStack.getLast()->setNTPSrv(&PresentLst);
+    ParserOptStack.getLast()->setT2Beg($2); 
+    ParserOptStack.getLast()->setT2End($4); 
 }
 ;
-
-////////////////////////////////////////////////////////////////////////
-/// TIME-ZONE option ///////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-TimeZoneOption
-: OPTION_ TIME_ZONE_ STRING_ 
-{ 
-    ParserOptStack.getLast()->setTimeZone($3); 
-}
-;
-
-/*NISServerOption
-  :NIS_SERVER_ STRING_
-  { 
-  ParserOptStack.getLast()->NISServer=$2;
-  }
-  ;*/
 
 ClntMaxLeaseOption
 : CLNT_MAX_LEASE_ Number 
@@ -454,8 +372,7 @@ IfaceMaxLeaseOption
 UnicastAddressOption
 : UNICAST_ IPV6ADDR_
 {
-    ParserOptStack.getLast()->setUnicast(true);
-    ParserOptStack.getLast()->setAddress(new TIPv6Addr($2));
+    ParserOptStack.getLast()->setUnicast(new TIPv6Addr($2));
 }
 ;
 
@@ -463,8 +380,8 @@ RapidCommitOption
 :   RAPID_COMMIT_ Number 
 { 
     if ( ($2!=0) && ($2!=1)) {
-	Log(Error) << "RAPID-COMMIT in line " << lex->lineno() << " must have 0 or 1 value." 
-		   << LogEnd;
+	Log(Crit) << "RAPID-COMMIT  parameter in line " << lex->lineno() << " must have 0 or 1 value." 
+               << LogEnd;
 	YYABORT;
     }
     if (yyvsp[0].ival==1)
@@ -478,7 +395,7 @@ PreferenceOption
 : PREFERENCE_ Number 
 { 
     if (($2<0)||($2>255)) {
-	Log(Error) << "Preference value (" << $2 << ") in line " << lex->lineno() 
+	Log(Crit) << "Preference value (" << $2 << ") in line " << lex->lineno() 
 		   << " is out of range [0..255]." << LogEnd;
 	YYABORT;
     }
@@ -524,12 +441,20 @@ InterfaceOptionDeclaration
 | UnicastAddressOption
 | PreferenceOption
 | RapidCommitOption
-| DNSServerOption
-| NTPServerOption
-| DomainOption
-| TimeZoneOption
 | IfaceMaxLeaseOption
 | ClntMaxLeaseOption
+| DNSServerOption
+| DomainOption
+| NTPServerOption
+| TimeZoneOption
+| SIPServerOption
+| SIPDomainOption
+| FQDNOption
+| NISServerOption
+| NISDomainOption
+| NISPServerOption
+| NISPDomainOption
+| LifetimeOption
 ;
 
 ClassOptionDeclaration
@@ -538,10 +463,146 @@ ClassOptionDeclaration
 | PoolOption
 | T1Option
 | T2Option
-//| NISServerOption
 | RejectClientsOption
 | AcceptOnlyOption
 | ClassMaxLeaseOption
+;
+
+////////////////////////////////////////////////////////////////////////
+/// DNS-server option //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+DNSServerOption
+:OPTION_ DNS_SERVER_ 
+{
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
+}
+;
+
+////////////////////////////////////////////////////////////////////////
+/// DOMAIN option //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+DomainOption
+: OPTION_ DOMAIN_ {
+    PresentStringLst.clear();
+} StringList
+{ 
+    ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
+}
+;
+
+////////////////////////////////////////////////////////////////////////
+/// NTP-SERVER option //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+NTPServerOption
+:OPTION_ NTP_SERVER_ 
+{
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
+}
+;
+
+////////////////////////////////////////////////////////////////////////
+/// TIME-ZONE option ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+TimeZoneOption
+: OPTION_ TIME_ZONE_ STRING_ 
+{ 
+    ParserOptStack.getLast()->setTimezone($3); 
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//SIP-SERVER option///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+SIPServerOption
+:OPTION_ SIP_SERVER_ {
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setSIPServerLst(&PresentAddrLst);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//SIP-DOMAIN option///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+SIPDomainOption
+:OPTION_ SIP_DOMAIN_ {
+    PresentStringLst.clear();
+} StringList
+{
+    ParserOptStack.getLast()->setSIPDomainLst(&PresentStringLst);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//FQDN option/////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+FQDNOption
+:OPTION_ FQDN_ STRING_
+{
+    ParserOptStack.getLast()->setFQDN($3);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//NIS-SERVER option///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+NISServerOption
+:OPTION_ NIS_SERVER_ {
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//NISP-SERVER option//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+NISPServerOption
+: OPTION_ NISP_SERVER_ {
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//NIS-DOMAIN option///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+NISDomainOption
+:OPTION_ NIS_DOMAIN_ STRING_
+{
+    ParserOptStack.getLast()->setNISDomain($3);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//NISP-DOMAIN option//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+NISPDomainOption
+:OPTION_ NISP_DOMAIN_ STRING_ 
+{
+    ParserOptStack.getLast()->setNISPDomain($3);
+}
+;
+
+//////////////////////////////////////////////////////////////////////
+//NISP-DOMAIN option//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+LifetimeOption
+:OPTION_ LIFETIME_ Number
+{
+    ParserOptStack.getLast()->setLifetime($3);
+}
 ;
 
 %%
@@ -557,7 +618,7 @@ bool SrvParser::CheckIsIface(int ifaceNr)
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) {
-	Log(Error) << "Interface with ID=" << ifaceNr << " is already defined." << LogEnd;
+	Log(Crit) << "Interface with ID=" << ifaceNr << " is already defined." << LogEnd;
 	YYABORT;
     }
   return true;
@@ -573,7 +634,7 @@ bool SrvParser::CheckIsIface(string ifaceName)
   {
     string presName=ptr->getName();
     if (presName==ifaceName) {
-	Log(Error) << "Interface " << ifaceName << " is already defined." << LogEnd;
+	Log(Crit) << "Interface " << ifaceName << " is already defined." << LogEnd;
 	YYABORT;
     }
   }
@@ -593,15 +654,14 @@ bool SrvParser::EndIfaceDeclaration()
 {
     SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
     if (!SrvCfgAddrClassLst.count()) {
-	Log(Error) << "No address classes defined." << LogEnd;
-	YYABORT;
+        Log(Crit) << "No address classes defined." << LogEnd;
+        YYABORT;
     }
     SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
-	SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);
+        SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);
     //setting interface options on the basis of just read information
     SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-    
     ParserOptStack.delLast();
     return true;
 }   
@@ -614,7 +674,7 @@ void SrvParser::StartClassDeclaration()
 bool SrvParser::EndClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool()) {
-	Log(Error) << "No pools defined for this interface." << LogEnd;
+        Log(Crit) << "No pools defined for this interface." << LogEnd;
         YYABORT;
     }
     SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
@@ -644,5 +704,5 @@ void SrvParser::yyerror(char *m)
 }
 
 SrvParser::~SrvParser() {
-
+    
 }

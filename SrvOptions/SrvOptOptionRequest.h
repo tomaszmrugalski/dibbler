@@ -1,5 +1,18 @@
-#ifndef SRVOPTIONREQUEST_H_HEADER_INCLUDED_C1123F5A
-#define SRVOPTIONREQUEST_H_HEADER_INCLUDED_C1123F5A
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvOptOptionRequest.h,v 1.2 2004-10-25 20:45:54 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ */
+
+#ifndef SRVOPTOPTIONREQUEST_H
+#define SRVOPTOPTIONREQUEST_H
 
 #include "DHCPConst.h"
 #include "SmartPtr.h"

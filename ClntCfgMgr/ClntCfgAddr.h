@@ -1,5 +1,19 @@
-#ifndef CLNTCFGADDR_H_HEADER_INCLUDED_C0FDAB75
-#define CLNTCFGADDR_H_HEADER_INCLUDED_C0FDAB75
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntCfgAddr.h,v 1.3 2004-10-25 20:45:52 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
+
+#ifndef CLNTCFGADDR_H
+#define CLNTCFGADDR_H
 
 #include "DHCPConst.h"
 #include "ClntParsGlobalOpt.h"
@@ -16,9 +30,9 @@ class TClntCfgAddr
   public:
     SmartPtr<TIPv6Addr> get();
 
-    long getValid();
+    unsigned long getValid();
 
-    long getPref();
+    unsigned long getPref();
 	
     TClntCfgAddr(SmartPtr<TIPv6Addr> addr,long valid,long pref);
     
@@ -31,11 +45,8 @@ class TClntCfgAddr
 
   private:
     SmartPtr<TIPv6Addr> Addr;
-    long Valid;
-    long Pref;
-	
-    ESendOpt ValidSendOpt;
-    ESendOpt PrefSendOpt;
+    unsigned long Valid;
+    unsigned long Pref;
 };
 
 #endif

@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.7 2004-09-05 15:27:49 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.8 2004-10-25 20:45:54 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.7  2004/09/05 15:27:49  thomson
+%% Data receive switched from recvfrom to recvmsg, unicast partially supported.
+%%
 %% Revision 1.6  2004/07/05 00:53:03  thomson
 %% Various changes.
 %%
@@ -39,22 +42,24 @@ Config file parsing is token-based. Here's list of tokens used:
 \item[string] -- string of arbitrary characters enclosed in single or double
   quotes, e.g. 'this is string'. If string contains only a-z, A-Z and
   0-9 characters, quotes can be omited.
-\item[DUID identifier] -- hex number starting with 0x, e.g. 0x12abcd
-\item[IPv6 address list] -- IPv6 addresses separated with commas
-\item[DUID list] -- DUIDs separated with commas
+\item[DUID identifier] -- hex number starting with 0x, e.g. 0x12abcd.
+\item[IPv6 address list] -- IPv6 addresses separated with commas.
+\item[DUID list] -- DUIDs separated with commas.
+\item[Boolean] -- YES, NO, TRUE, FALSE, 0 or 1. Each of them can be
+  used, when user must enable or disable specific option.
 \end{description}
 
 There are also some client or server specified tokens. Here's the list:
 \begin{description}
-\item[client] -- iface, no-config, address, ia, no-ia,
+\item[client] -- iface, address, ia, no-ia,
 log-mode, log-name, log-level, work-dir, prefered-lifetime, valid-lifetime,
 t1, t2, dns-servers, domain, ntp-servers, time-zone, reject-servers,
-prefered-servers, rapid-commit 
-\item[server] -- iface, no-config, class, log-level, log-name,
+prefered-servers, rapid-commit, unicast
+\item[server] -- iface, class, log-level, log-name,
   log-level, work-dir, dns-servers, domain, ntp-server, time-zone, accept-only,
   reject-only, t1, t2, prefered-lifetime, valid-lifetime, unicast,
   preference, pool, rapid-commit, client-max-lease, class-max-lease,
-  iface-max-lease
+  iface-max-lease, rapid-commit
 \end{description}
 
 \subsection{Scopes}
@@ -109,11 +114,11 @@ Every option can be declared in global scope.
 Config file has this form:
 
 \begin{verbatim}
- [interface declaration	 |
-  global options         |
-  interface options      |
-  IA options             |
-  address options        ]
+interface declaration | 
+global options        | 
+interface options     |
+IA options            |
+address options
 \end{verbatim}
 
 \subsubsection{Interface declaration}
@@ -144,15 +149,13 @@ from ,,ip~l'' (Linux) or
 ,,ipv6~if''(Windows). \verb+name_of_this_interface+ is an interface
 name.  Also take a note that name of the interface
 no longer needs to be enclosed in single or double quotes. It is
-necessary only in Windows
-systems, where interface names sometimes contain spaces.
+necessary only in Windows systems, where interface names sometimes
+contain spaces, e.g. ''local network connection''.
 
-It instructs Dibbler that this interface should not be
-configured. Instead of using no-config, user should simply omit this
-interface in config file. 
 If interface does not contain \verb+IA+ keyword, one IA with one address is
 assumed. If client should not request for address on this interface, \opt{no-ia}
-must be used.
+must be used. In such circumstances, only specified options will be
+requested.
 
 \subsubsection{IA declaration}
 
@@ -168,7 +171,7 @@ ia [number]
 }]
 \end{verbatim}
 
-where number is optional number, which describes how many such IAs
+where number is an optional number, which describes how many such IAs
 should be requested. If this number is not equal 1, then address
 options are not allowed. That could come in handy when someone need
 serveral IAs with the same parameters. If IA contains no addresses,
@@ -201,27 +204,32 @@ Every option has a scope it can be used in, default value and
 sometimes allowed range. Parameters denoted with (H) are used as hints
 for the server. Value of \opt{work-dir} option is currently not
 used. In \opt{log-mode} option, \verb+short+ and \verb+full+ values are
-supported. \verb+syslog+ and \verb+eventlog+ will be available in future releases.
+supported. \verb+syslog+ and \verb+eventlog+ will be available in
+future releases. rapid-commit and unicast expect one boolean
+parameter. It can be TRUE, FALSE, YES, NO, 0 or 1. Setting log level
+to too low value (5 or less) can result in mysterious behavior. 6 or 7
+is a recommended value.
 
 \begin{center}
 \begin{tabular}{|c|c|>{\centering}p{1.7cm}<{}|c|p{6cm}|}
 \hline
-Name              & Scope  & Values     & default    & Description \\
-                  &        & (default)  &            & \\
+Name              & Scope   & Values     & default    & Description \\
+                  &         & (default)  &            & \\
 \hline
-valid-lifetime    & address& integer    & 4294967296 & valid lifetime for address (specified in seconds) (H)\\
-prefered-lifetime & address& integer    & 4294967296 & after this amount of time(in seconds) address becomes depreciated (H)\\
-T1                & IA     & integer    & 4294967296 & client should renew addresses after T1 seconds (H)\\
-T2                & IA     & integer    & 4294967296 & client should send REBIND after T2 seconds (H)\\
-reject-servers    & IA     & addrs or
+valid-lifetime    & address & integer    & 4294967296 & valid lifetime for address (specified in seconds) (H)\\
+prefered-lifetime & address & integer    & 4294967296 & after this amount of time(in seconds) address becomes depreciated (H)\\
+T1                & IA      & integer    & 4294967296 & client should renew addresses after T1 seconds (H)\\
+T2                & IA      & integer    & 4294967296 & client should send REBIND after T2 seconds (H)\\
+reject-servers    & IA      & addrs or
                              DUID list  & empty      & list containing servers which should be discarded in configuration of this IA \\
-prefered-servers  & IA     & addrs or 
+prefered-servers  & IA      & addrs or 
                              DUID list  & empty      & Prefered servers list. ADVERTISE messages received by client are sorted according to this list. \\
-rapid-commit      & IA     & 0 or 1     & 0          & should we use Rapid Commit? \\
-work-dir          & global & string     & empty      & working directory \\
-log-level         & global & 1-8        & 8          & log-level (8 is most verbose) \\
-log-name          & global & string     & Client     & Name, which appears in a log file\\
-log-mode          & global &short or full& full      & logging mode: short (date and name suppressed) or full. \\
+rapid-commit      &interface& 0 or 1     & 0          & should we use Rapid Commit? \\
+unicast           &interface& 0 or 1     & 0          & Is unicast communication allowed? \\
+work-dir          & global  & string     & empty      & working directory \\
+log-level         & global  & 1-8        & 8          & log-level (8 is most verbose) \\
+log-name          & global  & string     & Client     & Name, which appears in a log file\\
+log-mode          & global  &short or full& full      & logging mode: short (date and name suppressed) or full. \\
 \hline
 \end{tabular}
 \end{center}
@@ -269,7 +277,51 @@ If you must use DHCPv6 on one of such interfaces (which is not
 recommended and probably will fail), you must explicitly specify this
 interface in config file.
 
-Let's consider more coplicated case. Let's say there are 4 interfaces,
+Simple config config file requesting 1 address and DNS configuration
+on eth0 interface looks like that:
+\begin{verbatim}
+log-mode short
+log-level 7
+iface eth0 {
+  option dns-server
+  ia {
+  }
+}
+\end{verbatim}
+
+Another example is presented below. Client asks for 1 address and
+would like it to be 2000::1:2:3. Rapid-commit is allowed and client
+would like to renew this address once in a 10 minutes:
+
+\begin{verbatim}
+log-mode short
+log-level 7
+iface eth0 {
+  rapid-commit YES
+  ia {
+    address { 
+      2000::1:2:3
+    }
+  }
+}
+\end{verbatim}
+
+Here's yet another example. We would like to obtain 2 addresses on
+,,Local Area Connection'' interface. Unicast communication is ok in
+this scenario. We don't care for details, so keep those log very
+short. Config file looks like that:
+\begin{verbatim}
+log-mode short
+log-level 3
+iface "Local Area Connection" {
+  ia {
+    address
+    address
+  }
+}
+\end{verbatim}
+
+Here is a more coplicated case. Let's say there are 4 interfaces,
 numbered 1 thru 4. Interfaces 1,2 and 3 are not to be
 configured. Interface 4, named eth0 should have 3 IAs. Two of them are
 supposed to contain one address each. Third IA should contain 3
@@ -277,9 +329,7 @@ addresses. Addresses assigned to first and second IA should have
 prefered-lifetime 1 hour and valid-lifetime 2 hours. This IA should
 have 3 specific addresses: 2000::1, 2000::2 and 2000::3. Information
 about NTP servers,our current timezone, available DNS servers and our
-domain should also be retrived,
-
-Here's config file:
+domain should also be retrived. Here's config file:
 
 \begin{verbatim}
 iface eth0
@@ -310,7 +360,7 @@ iface eth0
 
 \subsection{Server config file}
 
-Client config file should be named \verb+server.conf+. After
+Server configuration is stored in \verb+server.conf+ file. After
 successful startup, old version of this file is stored as \verb+server.conf-old+.
 
 \subsubsection{Global scope}
@@ -388,8 +438,7 @@ dns-servers      &interface& addrs list  & empty      & DNS servers list \\
 domain           &interface& domain      & empty      & domain name \\
 ntp-servers      &interface& addrs list  & empty      & NTP servers list \\
 time-zone        &interface& timezone    & empty      & time zone \\
-%% FIXME: implement this: 
-%%unicast        &interface& 0 or 1      & 0          & is unicast communication allowed? \\
+unicast          &interface& address     & empty      & Specify which address should be used. \\
 iface-max-lease  &interface& integer     & 4294967296 & how many addresses can be leased by all clients? \\
 client-max-lease &interface& integer     & 4294967296 & how many addresses can be leased by one client? \\
 rapid-commit     &interface& 0 or 1      & 0          & should we allow Rapid Commit (SOLICIT--REPLY)? \\
@@ -425,10 +474,46 @@ iface eth0
 }
 \end{verbatim}
 
-Let's extend this with additional requirements:
+Another example: Server should support 2000::0/120 class on eth0
+interface. It should not allow any client to obtain more than 5
+addresses and should not grant more then 50 addresses in total. And it
+should have prefence set to 7, accept T1 from 1 to 2 minutes and so
+on. Config file is presented below:
+
+\begin{verbatim}
+log-mode short
+log-level 7
+iface eth0
+{
+   iface-max-lease 50
+   client-max-lease 5
+   preference 7
+   class
+   {
+       pool 2000::1-2000::100
+   }
+}  
+\end{verbatim}
+
+Here's modified previous example. Instead of specified limits, unicast
+communication should be supported.
+
+\begin{verbatim}
+log-level 7
+iface eth0
+{
+   unicast 2000::1234
+   class
+   {
+       pool 2000::1-2000::100
+   }
+}  
+\end{verbatim}
+
+Ok, now let's present last config file with various requirements:
 \begin{itemize}
-\item Add new class on fifth interface named \emph{eth1}, for example 2000::fe00/120, for
-  which Rapit commit will be allowed.
+\item Add new class on fifth interface named \emph{eth1}, for example 2000::fe00/120.
+\item Rapit commit is allowed on eth1.
 \item Server preference on this interface is set to maximum (255).
 \item Assign 2000::20/124 class on fourth interface named
   eth0. Preference value for this interface should be 0.
@@ -443,8 +528,7 @@ Let's extend this with additional requirements:
 \item Do not assign more than 10 addresses from 2000::20/124 class.
 \item Client with fe80::200:39ff:fe4b:1abc link-local address should
   get his static address 2000::2f.
-\item We shall support DNS and NTP servers on interface 5. Timezone
-  and domains information is also supported.
+\item We shall support DNS and NTP servers on interface 5. 
 \item Log level is set to omit debug messages.
 \end{itemize}
 
@@ -476,8 +560,6 @@ iface 5
   dns-server 2000::123:456,2000::456:1234
   ntp-server 2000::1111:2222
   rapid-commit 1
-  time-zone ''EST''
-  domain ''example.com''
   preference 255
   class
   {

@@ -6,20 +6,14 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.13 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.14 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.12  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.11  2004/09/03 20:58:35  thomson
- * *** empty log message ***
- *
- * Revision 1.10  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.9  2004/06/28 22:37:59  thomson
- * Minor changes.
  *
  * Revision 1.8  2004/06/28 21:34:18  thomson
  * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
@@ -29,13 +23,14 @@
  *
  * Revision 1.6  2004/06/06 22:12:29  thomson
  * Preference option has changed scope from class to interface
- *
  *                                                                           
  */
 
 #include "SrvCfgIface.h"
 #include "SrvCfgAddrClass.h"
 #include "Logger.h"
+
+using namespace std;
 
 void TSrvCfgIface::firstAddrClass() {
     this->SrvCfgAddrClassLst.first();
@@ -93,22 +88,19 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid
 }
 
 long TSrvCfgIface::countAddrClass() {
-    return SrvCfgAddrClassLst.count();
+    return this->SrvCfgAddrClassLst.count();
 }
 
 int TSrvCfgIface::getID() {
-	return ID;
+	return this->ID;
 }
 
 string TSrvCfgIface::getName() {
-	return Name;
+	return this->Name;
 }
 
 SmartPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {
-    if (this->Unicast)
-	return this->UniAddress;
-    else
-	return 0;
+	return this->Unicast;
 }
 
 
@@ -116,53 +108,67 @@ TSrvCfgIface::~TSrvCfgIface() {
 }
 
 void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
-    this->isUniAddress  = opt->getUnicast();
-    this->UniAddress    = opt->getAddress();
+    // default options
     this->preference    = opt->getPreference();
-    this->Domain        = opt->getDomain();
-    this->TimeZone      = opt->getTimeZone();
     this->IfaceMaxLease = opt->getIfaceMaxLease();
     this->ClntMaxLease  = opt->getClntMaxLease();
     this->RapidCommit   = opt->getRapidCommit();
     this->Unicast       = opt->getUnicast();
     
-    SmartPtr<TIPv6Addr> stat;
-
-    // copy DNS servers
-    opt->firstDNSSrv();
-    while(stat=opt->getDNSSrv())
-        this->DNSSrv.append(stat);
-
-    // copy NTP servers
-    opt->firstNTPSrv();
-    while(stat=opt->getNTPSrv())
-        this->NTPSrv.append(stat);
+    // option: DNS-SERVERS
+    if (opt->supportDNSServer())  this->setDNSServerLst(opt->getDNSServerLst());
+    if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
+    if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
+    if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
+    if (opt->supportFQDN())       this->setFQDN(opt->getFQDN());
+    if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
+    if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
+    if (opt->supportNISServer())  this->setNISServerLst(opt->getNISServerLst());
+    if (opt->supportNISDomain())  this->setNISDomain(opt->getNISDomain());
+    if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
+    if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
+    if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
 }
-
-
 
 /*
  * default contructor
  */
 TSrvCfgIface::TSrvCfgIface() {
+    this->setDefaults();
+}
+
+TSrvCfgIface::TSrvCfgIface(int ifaceNr) {
+    this->setDefaults();
+    this->ID=ifaceNr;
+}
+
+TSrvCfgIface::TSrvCfgIface(string ifaceName) {
+    this->setDefaults();
+    this->Name=ifaceName;
+}
+
+void TSrvCfgIface::setDefaults() {
+    this->ID = -1;
+    this->NoConfig=false;
     this->Name = "[unknown]";
     this->ID = -1;
     this->NoConfig = false;
     this->preference = 0;
+    
+    this->DNSServerSupport  = false;
+    this->DomainSupport     = false;
+    this->NTPServerSupport  = false;
+    this->TimezoneSupport   = false;
+    this->FQDNSupport       = false;
+    this->SIPServerSupport  = false;
+    this->SIPDomainSupport  = false;
+    this->NISServerSupport  = false;
+    this->NISDomainSupport  = false;
+    this->NISPServerSupport = false;
+    this->NISPDomainSupport = false;
+    this->LifetimeSupport   = false;
 }
 
-TSrvCfgIface::TSrvCfgIface(int ifaceNr) {
-    this->Name="[unknown]";
-    this->ID=ifaceNr;
-    this->NoConfig=false;
-    this->preference = 0;
-}
-
-TSrvCfgIface::TSrvCfgIface(string ifaceName) {
-    this->Name=ifaceName;
-    this->ID = -1;
-    this->NoConfig=false;
-}
 void TSrvCfgIface::setNoConfig() {
     NoConfig=true;
 }
@@ -189,23 +195,6 @@ void TSrvCfgIface::addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass) {
     this->SrvCfgAddrClassLst.append(addrClass);
 }
 
-TContainer<SmartPtr<TIPv6Addr> > TSrvCfgIface::getDNSSrvLst() {
-    return this->DNSSrv;
-}
-
-TContainer<SmartPtr<TIPv6Addr> > TSrvCfgIface::getNTPSrvLst() {
-    return this->NTPSrv;
-}
-
-string TSrvCfgIface::getDomain() {
-    return this->Domain;
-}
-
-string TSrvCfgIface::getTimeZone() {
-    return this->TimeZone;
-}
-
-
 long TSrvCfgIface::getIfaceMaxLease() {
     return this->IfaceMaxLease;
 }
@@ -216,60 +205,274 @@ unsigned long TSrvCfgIface::getClntMaxLease()
 }
 
 // --------------------------------------------------------------------
+// --- options --------------------------------------------------------
+// --------------------------------------------------------------------
+// --- option: DNS servers ---
+void TSrvCfgIface::setDNSServerLst(List(TIPv6Addr) *lst) {
+    this->DNSServerLst = *lst;
+    this->DNSServerSupport = true;
+}
+List(TIPv6Addr) * TSrvCfgIface::getDNSServerLst() {
+    return &this->DNSServerLst;
+}
+bool TSrvCfgIface::supportDNSServer(){
+    return this->DNSServerSupport;
+}
+
+// --- option: DOMAIN ---
+void TSrvCfgIface::setDomainLst(List(string) * lst) {
+    this->DomainLst = *lst;
+    this->DomainSupport = true;
+}
+List(string) * TSrvCfgIface::getDomainLst() {
+    return &this->DomainLst;
+}
+bool TSrvCfgIface::supportDomain(){
+    return this->DomainSupport;
+}
+
+// --- option: NTP-SERVERS ---
+void TSrvCfgIface::setNTPServerLst(List(TIPv6Addr) * lst) {
+    this->NTPServerLst = *lst;
+    this->NTPServerSupport = true;
+}
+List(TIPv6Addr) * TSrvCfgIface::getNTPServerLst() {
+    return &this->NTPServerLst;
+}
+bool TSrvCfgIface::supportNTPServer(){
+    return this->NTPServerSupport;
+}
+
+// --- option: TIMEZONE ---
+void TSrvCfgIface::setTimezone(string timezone) {
+    this->Timezone=timezone;
+    this->TimezoneSupport = true;
+}
+string TSrvCfgIface::getTimezone() {
+    return this->Timezone;
+}
+bool TSrvCfgIface::supportTimezone(){
+    return this->NTPServerSupport;
+}
+
+// --- option: SIP server ---
+void TSrvCfgIface::setSIPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+    this->SIPServerLst = *lst;
+    this->SIPServerSupport = true;
+}
+List(TIPv6Addr) * TSrvCfgIface::getSIPServerLst() {
+    return &this->SIPServerLst;
+}
+bool TSrvCfgIface::supportSIPServer(){
+    return this->SIPServerSupport;
+}
+
+// --- option: SIP domain ---
+List(string) * TSrvCfgIface::getSIPDomainLst() { 
+    return &this->SIPDomainLst;
+}
+void TSrvCfgIface::setSIPDomainLst(List(string) * domain) { 
+    this->SIPDomainLst = *domain;
+    this->SIPDomainSupport = true;
+}
+bool TSrvCfgIface::supportSIPDomain() {
+    return this->SIPDomainSupport;
+}
+
+// --- option: FQDN ---
+void TSrvCfgIface::setFQDN(string fqdn) { 
+    this->FQDN=fqdn;
+    this->FQDNSupport = true;
+}
+string TSrvCfgIface::getFQDN() { 
+    return this->FQDN;
+}
+bool TSrvCfgIface::supportFQDN() {
+    return this->FQDNSupport;
+}
+
+// --- option: NIS server ---
+void TSrvCfgIface::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+    this->NISServerLst     = *lst;
+    this->NISServerSupport = true;
+}
+List(TIPv6Addr) * TSrvCfgIface::getNISServerLst() {
+    return &this->NISServerLst;
+}
+bool TSrvCfgIface::supportNISServer(){
+    return this->NISServerSupport;
+}
+
+// --- option: NIS domain ---
+void TSrvCfgIface::setNISDomain(string domain) { 
+    this->NISDomain=domain;
+    this->NISDomainSupport=true;
+}
+string TSrvCfgIface::getNISDomain() { 
+    return this->NISDomain;
+}
+bool TSrvCfgIface::supportNISDomain() {
+    return this->NISDomainSupport;
+}
+
+// --- option: NIS+ server ---
+void TSrvCfgIface::setNISPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+    this->NISPServerLst = *lst;
+    this->NISPServerSupport = true;
+}
+List(TIPv6Addr) * TSrvCfgIface::getNISPServerLst() {
+    return &this->NISPServerLst;
+}
+bool TSrvCfgIface::supportNISPServer(){
+    return this->NISPServerSupport;
+}
+
+// --- option: NIS+ domain ---
+void TSrvCfgIface::setNISPDomain(string domain) { 
+    this->NISPDomain=domain;
+    this->NISPDomainSupport=true;
+}
+string TSrvCfgIface::getNISPDomain() { 
+    return this->NISPDomain;
+}
+bool TSrvCfgIface::supportNISPDomain() {
+    return this->NISPDomainSupport;
+}
+
+// --- option: LIFETIME ---
+void TSrvCfgIface::setLifetime(unsigned int x) {
+    this->Lifetime = x;
+    this->LifetimeSupport = true;
+}
+unsigned int TSrvCfgIface::getLifetime() {
+    return this->Lifetime;
+}
+
+bool TSrvCfgIface::supportLifetime() {
+    return this->LifetimeSupport;
+}
+
+// --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
 ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     SmartPtr<TStationID> Station;
-    out << "  <SrvCfgIface ";
-    out << "name=\""<<iface.Name << "\" ";
-    out << "id=\""<<iface.ID << "\" ";
-    if (iface.NoConfig) {
-	out << "no-config=\"true\" ";
-    }
-    if (iface.isUniAddress) {
-	out << "uniaddress=\"true\" ";
-    }
-    out << ">" << std::endl;
-    if (iface.isUniAddress) {
-	out << "    <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
-    } else {
-	out << "    <!-- <unicast/> -->" << std::endl;
-    }
+    SmartPtr<TIPv6Addr> addr;
+    SmartPtr<string> str;
 
-    if (iface.RapidCommit) {
-	out << "    <rapid-commit/>" << std::endl;
-    } else {
-	out << "    <!-- <rapid-commit/> -->" << std::endl;
-    }
+    out << "  <SrvCfgIface name=\""<<iface.Name << "\" id=\""<<iface.ID << "\">" << endl;
 
     out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << std::endl;
     out << "    <clntMaxLease>" << iface.ClntMaxLease << "</clntMaxLease>" << std::endl;
-    
-    SmartPtr<TIPv6Addr> stat;
-    out << "    <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << std::endl;
-    iface.NTPSrv.first();
-    while(stat=iface.NTPSrv.get())
-	out << "    <ntp>" << *stat << "</ntp>" << std::endl;
-    
-    out << "    <timezone>" << iface.TimeZone << "</timezone>" << std::endl;
-    
-    out << "    <!-- DNS Resolvers count: " << iface.DNSSrv.count() << "-->" << std::endl;
-    iface.DNSSrv.first();
-    while(stat=iface.DNSSrv.get())
-	out << "    <dns>" << *stat << "</dns>" << std::endl;
-    
-    out << "    <domain>" << iface.Domain << "</domain>" << std::endl;
-    
+       
+    if (iface.Unicast) {
+        out << "    <unicast>" << *(iface.Unicast) << "</unicast>" << endl;
+    } else {
+        out << "    <!-- <unicast/> -->" << endl;
+    }
+
+    if (iface.RapidCommit) {
+        out << "    <rapid-commit/>" << std::endl;
+    } else {
+        out << "    <!-- <rapid-commit/> -->" << std::endl;
+    }
+
     SmartPtr<TSrvCfgAddrClass>	groupPtr;
     iface.SrvCfgAddrClassLst.first();
-    out << "    <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() 
-	<< "-->" << std::endl;
+    out << "    <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() << "-->" << endl;
     while(groupPtr=iface.SrvCfgAddrClassLst.get())
     {	
 	out << *groupPtr;
     }
-    out << "  </SrvCfgIface>" << std::endl;
+    
+    out << "    <!-- options -->" << endl;
+
+    // DNS-SERVERS
+    out << "    <!-- <dns-servers count=\"" << iface.DNSServerLst.count() << "\"> -->" << endl;
+    iface.DNSServerLst.first();
+    while (addr = iface.DNSServerLst.get()) {
+        out << "    <dns-server>" << *addr << "</dns-server>" << endl;
+    }
+
+    // DOMAINS
+    out << "    <!-- <domains count=\"" << iface.DomainLst.count() << "\"> -->" << endl;
+    iface.DomainLst.first();
+    while (str = iface.DomainLst.get()) {
+        out << "    <domain>" << *str << "</domain>" << endl;
+    }
+
+    // NTP-SERVERS
+    out << "    <!-- <ntp-servers count=\"" << iface.NTPServerLst.count() << "\"> -->" << endl;
+    iface.NTPServerLst.first();
+    while (addr = iface.NTPServerLst.get()) {
+        out << "    <ntp-server>" << *addr << "</ntp-server>" << endl;
+    }
+
+    // option: TIMEZONE
+    if (iface.supportTimezone()) {
+        out << "    <timezone>" << iface.Timezone << "</timezone>" << endl;
+    } else {
+        out << "    <!-- <timezone/> -->" << endl;
+    }
+
+    // option: SIP-SERVERS
+    out << "    <!-- <sip-servers count=\"" << iface.SIPServerLst.count() << "\"> -->" << endl;
+    iface.SIPServerLst.first();
+    while (addr = iface.SIPServerLst.get()) {
+        out << "    <sip-server>" << *addr << "</sip-server>" << endl;
+    }
+
+    // option: SIP-DOMAINS
+    out << "    <!-- <sip-domains count=\"" << iface.SIPDomainLst.count() << "\"> -->" << endl;
+    iface.SIPDomainLst.first();
+    while (str = iface.SIPDomainLst.get()) {
+        out << "    <sip-domain>" << *str << "</sip-domain>" << endl;
+    }
+
+    // option: FQDN
+    if (iface.supportFQDN()) {
+        out << "    <fqdn>" << iface.FQDN << "</fqdn>" << endl;
+    } else {
+        out << "    <!-- <fqdn/> -->" << endl;
+    }
+
+    // option: NIS-SERVERS
+    out << "    <!-- <nis-servers count=\"" << iface.NISServerLst.count() << "\"> -->" << endl;
+    iface.NISServerLst.first();
+    while (addr = iface.NISServerLst.get()) {
+        out << "    <nis-server>" << *addr << "</nis-server>" << endl;
+    }
+
+    // option: NIS-DOMAIN
+    if (iface.supportNISDomain()) {
+        out << "    <nis-domain>" << iface.NISDomain << "</nis-domain>" << endl;
+    } else {
+        out << "    <!-- <nis-domain/> -->" << endl;
+    }
+
+    // option: NIS+-SERVERS
+    out << "    <!-- <nisplus-servers count=\"" << iface.NISPServerLst.count() << "\"> -->" << endl;
+    iface.NISPServerLst.first();
+    while (addr = iface.NISPServerLst.get()) {
+        out << "    <nisplus-server>" << *addr << "</nisplus-server>" << endl;
+    }
+
+    // option: NIS+-DOMAIN
+    if (iface.supportNISPDomain()) {
+        out << "    <nisplus-domain>" << iface.FQDN << "</nisplus-domain>" << endl;
+    } else {
+        out << "    <!-- <nisplus-domain/> -->" << endl;
+    }
+
+    // option: LIFETIME
+    if (iface.supportLifetime()) {
+        out << "    <lifetime>" << iface.Lifetime << "</lifetime>" << endl;
+    } else {
+        out << "    <!-- <lifetime/> -->" << endl;
+    }
+    
+    out << "  </SrvCfgIface>" << endl;
     return out;
 }

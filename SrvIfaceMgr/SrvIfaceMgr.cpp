@@ -31,7 +31,7 @@ using namespace logger;
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
  */
 TSrvIfaceMgr::TSrvIfaceMgr() 
-    :TIfaceMgr() {
+    : TIfaceMgr(true) {
 }
 
 /* 
@@ -42,8 +42,8 @@ TSrvIfaceMgr::TSrvIfaceMgr()
  * @param addr - destination address
  * returns true if message was send successfully
  */
-bool TSrvIfaceMgr::sendMulticast  (int iface, char *msg, int size, 
-				   SmartPtr<TIPv6Addr> addr) {
+bool TSrvIfaceMgr::send(int iface, char *msg, int size, 
+			SmartPtr<TIPv6Addr> addr) {
     // find this interface
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
@@ -67,21 +67,6 @@ bool TSrvIfaceMgr::sendMulticast  (int iface, char *msg, int size,
 }
 
 /*
- * sends data to addr address from unicast link-scoped addr
- * @param iface - interface ID
- * @param msg - buffer containing message ready to send
- * @param size - size of message
- * @param addr - destination address
- * returns true if message was send successfully
- */
-bool TSrvIfaceMgr::sendUnicast(int iface, char *msg, 
-			       int size, SmartPtr<TIPv6Addr> addr) {
-    //FIXME: Is this method really needed on server side?
-    //Sure it is. I'm just too lazy to implement Unicast support :)
-    return false;
-}
-
-/*
  * reads messages from all interfaces
  * it's wrapper around IfaceMgr::select(...) method
  * @param timeout - how long can we wait for packets?
@@ -93,12 +78,12 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     static char buf[4096];
     int bufsize=4096;
 
-    SmartPtr<TIPv6Addr> Peer (new TIPv6Addr());
+    SmartPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
     int msgtype;
 
     // read data
-    sockid = TIfaceMgr::select(timeout,buf,bufsize,Peer);
+    sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
     if (sockid>0) {
 	if (bufsize<4) {
 	    Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
@@ -115,54 +100,52 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
 	int ifaceid = ptrIface->getID();
 	Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/" 
-               << ptrIface->getID() << " (socket " << sockid << ") , addr=" << *Peer << "." 
-		       << LogEnd;
+		   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "." 
+		   << ")." << LogEnd;
 
 	// create specific message object
 	switch (msgtype) {
 	case SOLICIT_MSG:
 	    return new TSrvMsgSolicit(That, this->SrvTransMgr, 
 				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, Peer, buf, bufsize);
+				      ifaceid, peer, buf, bufsize);
 	case REQUEST_MSG:
             return new TSrvMsgRequest(That, this->SrvTransMgr, 
 				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, Peer, buf, bufsize);
+				      ifaceid, peer, buf, bufsize);
 	case CONFIRM_MSG:
 	    return new TSrvMsgConfirm(That, this->SrvTransMgr, 
 				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid,  Peer, buf, bufsize);
+				      ifaceid,  peer, buf, bufsize);
 	case RENEW_MSG:
 	    return new TSrvMsgRenew  (That, this->SrvTransMgr, 
 				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid,  Peer, buf, bufsize);
+				      ifaceid,  peer, buf, bufsize);
 	case REBIND_MSG:
 	    return new TSrvMsgRebind (That, this->SrvTransMgr, 
 				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, Peer, buf, bufsize);
+				      ifaceid, peer, buf, bufsize);
 	case RELEASE_MSG:
 	    return new TSrvMsgRelease(That, this->SrvTransMgr, 
 				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, Peer, buf, bufsize);
+				      ifaceid, peer, buf, bufsize);
 	case DECLINE_MSG:
 	    return new TSrvMsgDecline(That, this->SrvTransMgr, 
 				      this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, Peer, buf, bufsize);
+				      ifaceid, peer, buf, bufsize);
 	case INFORMATION_REQUEST_MSG:
 	    return new TSrvMsgInfRequest(That, this->SrvTransMgr, 
 					 this->SrvCfgMgr, this->SrvAddrMgr,
-					 ifaceid, Peer, buf, bufsize);
+					 ifaceid, peer, buf, bufsize);
 	case ADVERTISE_MSG:
 	case REPLY_MSG:
 	case RECONFIGURE_MSG:
-	    std::clog << logger::logWarning << "Illegal message type " 
-		      << msgtype << " received." << logger::endl;
+	    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
 	    return 0; //NULL;;
 	case RELAY_FORW:
 	case RELAY_REPL:
 	default:
-	    std::clog << logger::logWarning << "Message type " 
-		      << msgtype << " not supported. Ignoring." << logger::endl;
+	    Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << logger::endl;
 	    return 0; //NULL
 	}
     } else {

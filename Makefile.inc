@@ -1,6 +1,6 @@
 # === used tools ===
-CPP          = g++-3.3
-CC           = gcc-3.3
+CPP          = g++
+CC           = gcc
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
@@ -30,7 +30,7 @@ SERVERBIN    = dibbler-server-linux
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
-VERSION      = 0.2.0-CVS
+VERSION      = 0.2.1-RC1
 
 PREFIX       = ..
 PORTDIR      = $(PREFIX)/port-linux

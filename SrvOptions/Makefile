@@ -1,11 +1,14 @@
 include ../Makefile.inc
 
-OBJECTS = 	SrvOptClientIdentifier.o	SrvOptElapsed.o 	SrvOptIAAddress.o  \
-		SrvOptInterfaceID.o 		SrvOptPreference.o 	SrvOptRapidCommit.o \
-		SrvOptServerIdentifier.o 	SrvOptServerUnicast.o 	SrvOptStatusCode.o  \
-		SrvOptUserClass.o 		SrvOptVendorClass.o 	SrvOptVendorSpecInfo.o \
-		SrvOptIA_NA.o 			SrvOptOptionRequest.o   SrvOptDNSServers.o \
-		SrvOptDomainName.o              SrvOptNTPServers.o SrvOptTimeZone.o
+OBJECTS = SrvOptClientIdentifier.o	SrvOptElapsed.o 	  SrvOptIAAddress.o      \
+		  SrvOptInterfaceID.o 		SrvOptPreference.o 	  SrvOptRapidCommit.o    \
+		  SrvOptServerIdentifier.o 	SrvOptServerUnicast.o SrvOptStatusCode.o     \
+		  SrvOptUserClass.o 		SrvOptVendorClass.o   SrvOptVendorSpecInfo.o \
+		  SrvOptIA_NA.o 			SrvOptOptionRequest.o SrvOptDNSServers.o     \
+		  SrvOptDomainName.o        SrvOptNTPServers.o    SrvOptTimeZone.o       \
+	          SrvOptSIPServer.o         SrvOptSIPDomain.o     SrvOptFQDN.o           \
+	          SrvOptNISServer.o         SrvOptNISDomain.o     SrvOptNISPServer.o     \
+                  SrvOptNISPDomain.o        SrvOptLifetime.o
 
 objs: $(OBJECTS)
 

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.21 2004-10-02 13:11:24 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.22 2004-10-25 20:45:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/10/02 13:11:24  thomson
+ * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
+ * Unicast communication now can be enable on client side (disabled by default).
+ *
  * Revision 1.20  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -71,7 +75,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 
     if (result) {
         //Result!=0 means config errors. Finish whole DHCPClient 
-        Log(Crit) << "Config error." << LogEnd;
+        Log(Crit) << "Fatal error during config parsing." << LogEnd;
         this->IsDone = true; 
         this->DUID=new TDUID();
         return;
@@ -334,9 +338,9 @@ bool TClntCfgMgr::checkConfigConsistency()
     {
         SmartPtr<TClntCfgGroup> ptrGroup;
         ptrIface->firstGroup();
-        if(ptrIface->isReqTimeZone()&&(ptrIface->getProposedTimeZone()!=""))
+        if(ptrIface->isReqTimezone()&&(ptrIface->getProposedTimezone()!=""))
         {   
-            TTimeZone tmp(ptrIface->getProposedTimeZone());
+            TTimeZone tmp(ptrIface->getProposedTimezone());
             if(!tmp.isValid())
             {
                 this->IsDone=true;

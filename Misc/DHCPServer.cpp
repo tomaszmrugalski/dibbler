@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.14 2004-10-02 13:11:24 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.15 2004-10-25 20:45:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/10/02 13:11:24  thomson
+ * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
+ * Unicast communication now can be enable on client side (disabled by default).
+ *
  * Revision 1.13  2004/09/28 21:49:32  thomson
  * no message
  *
@@ -91,15 +95,14 @@ void TDHCPServer::run()
 	int iface = msg->getIface();
 	SmartPtr<TIfaceIface> ptrIface;
 	ptrIface = IfaceMgr->getIfaceByID(iface);
-	Log(Notice) << "Received " << msg->getName() << "(type=" << msg->getType() 
-		    << ") on " << ptrIface->getName() << "/" << iface
-		    << hex << ",TransID=0x" << msg->getTransID() << dec
-		    << ", " << msg->countOption() << " opts:";
+	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
+		    << "/" << iface << hex << ",TransID=0x" << msg->getTransID() 
+		    << dec << ", " << msg->countOption() << " opts:";
 	SmartPtr<TOpt> ptrOpt;
 	msg->firstOption();
 	while (ptrOpt = msg->getOption() )
-	    std::clog << " " << ptrOpt->getOptType();
-	std::clog << LogEnd;
+	    Log(Cont) << " " << ptrOpt->getOptType();
+	Log(Cont) << LogEnd;
 	TransMgr->relayMsg(msg);
     }
 }

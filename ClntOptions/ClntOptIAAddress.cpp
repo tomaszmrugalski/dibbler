@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIAAddress.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: ClntOptIAAddress.cpp,v 1.3 2004-10-25 20:45:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -40,7 +43,7 @@ TClntOptIAAddress::TClntOptIAAddress( char * buf, int n, TMsg* parent)
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
-            if(canBeOptInOpt(parent->getType(),OPTION_IAADDR,code))
+            if(allowOptInOpt(parent->getType(),OPTION_IAADDR,code))
             {
                 SmartPtr<TOpt> opt;
                 switch (code)
