@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.13 2004-11-29 17:42:33 thomson Exp $
+ * $Id: DHCPConst.h,v 1.14 2004-11-30 00:43:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/11/29 17:42:33  thomson
+ * Update option values to RFC3898
+ *
  * Revision 1.12  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -124,8 +127,8 @@
 // additional options
 
 // RFC3319: SIP servers and domains
-#define OPTION_SIP_SERVERS      21
-#define OPTION_SIP_DOMAINS      22
+#define OPTION_SIP_DOMAINS      21
+#define OPTION_SIP_SERVERS      22
 
 // RFC3646: DNS servers and domains
 #define OPTION_DNS_RESOLVERS	23
@@ -135,7 +138,7 @@
 #define OPTION_IA_PD            25
 #define OPTION_IAPREFIX         26
 
-// RFC3898
+// RFC3898: NIS options
 #define OPTION_NIS_SERVERS	27
 #define OPTION_NISP_SERVERS	28
 #define OPTION_NIS_DOMAIN_NAME  29
@@ -189,6 +192,7 @@
 #define CLIENT_DEFAULT_T2 ULONG_MAX
 
 #define CLIENT_DEFAULT_UNICAST false
+#define CLIENT_DEFAULT_RAPID_COMMIT false
 
 enum ETentative {YES, NO, DONTKNOWYET};
 enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, DISABLED, UNKNOWN, TENTATIVECHECK, TENTATIVE};
