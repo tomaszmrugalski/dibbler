@@ -254,7 +254,8 @@ release-all: release-src release-linux release-doc release-deb release-rpm relea
 deb:
 	@echo "Make sure that this directory is called dibbler-0.4.0 (substitute 0.4.0 with current version)"
 	@echo " and that there is a file ../dibbler_0.4.0.orig.tar.gz"
-	ln $(PORTDIR)/debian debian
+	rm -rf debian
+	cp -r $(PORTDIR)/debian debian
 	dpkg-buildpackage -rfakeroot
 
 release-deb: VERSION-linux server client doc

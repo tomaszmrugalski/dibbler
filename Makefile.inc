@@ -35,9 +35,9 @@ RELAYBIN     = dibbler-relay
 MAKEFLAGS   += -s
 VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
-INST_MANDIR  = $(DESTDIR)'/usr/local/man'
-INST_DOCDIR  = $(DESTDIR)'/usr/local/share/doc'
-INST_BINDIR  = $(DESTDIR)'/usr/local/sbin'
+INST_MANDIR  = $(DESTDIR)'/usr/share/man'
+INST_DOCDIR  = $(DESTDIR)'/usr/share/doc'
+INST_BINDIR  = $(DESTDIR)'/usr/sbin'
 INST_CONFDIR = $(DESTDIR)'/etc/dibbler'
 INSTALL      = 'install'
 MKDIR        = mkdir -p
@@ -102,6 +102,7 @@ clean:
 	find . -name *.o -exec rm {} \;
 	find . -name test? -exec rm {} \;
 	if [ -d bison++/.deps ]; then rm -rf bison++/.deps; fi
+	if [ -d doc ]; then make -C doc clean; fi
 
 # === SUBDIR NAMES ===
 SUBDIR=$(subst $(TOPDIR),,$(CURDIR))
