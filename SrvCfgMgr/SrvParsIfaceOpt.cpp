@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.5 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.6 2005-01-03 21:57:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.4  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
  *
@@ -44,6 +47,11 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     this->NISPServerSupport = false;
     this->NISPDomainSupport = false;
     this->LifetimeSupport   = false;
+
+    this->Relay = false;
+    this->RelayName = "[unknown]";
+    this->RelayID = -1;
+    this->RelayInterfaceID = -1;
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
@@ -92,6 +100,40 @@ void TSrvParsIfaceOpt::setRapidCommit(bool rapidComm) {
 
 bool TSrvParsIfaceOpt::getRapidCommit() {
     return this->RapidCommit;
+}
+
+// --- relay related ---
+void TSrvParsIfaceOpt::setRelayName(string name) {
+    this->Relay      = true;
+    this->RelayName  = name;
+    this->RelayID    = -1;
+}
+
+void TSrvParsIfaceOpt::setRelayID(int id) {
+    this->Relay      = true;
+    this->RelayName  = "[unknown]";
+    this->RelayID    = id;
+}
+
+void TSrvParsIfaceOpt::setRelayInterfaceID(int id) {
+    this->Relay = true;
+    this->RelayInterfaceID= id;
+}
+
+string TSrvParsIfaceOpt::getRelayName() {
+    return this->RelayName;
+}
+
+int TSrvParsIfaceOpt::getRelayID() {
+    return this->RelayID;
+}
+
+int TSrvParsIfaceOpt::getRelayInterfaceID() {
+    return this->RelayInterfaceID;
+}
+
+bool TSrvParsIfaceOpt::isRelay() {
+    return this->Relay;
 }
 
 // --- option: DNS servers ---

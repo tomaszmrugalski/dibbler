@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-OBJECTS = SrvIfaceMgr.o
+OBJECTS = SrvIfaceIface.o SrvIfaceMgr.o
 
 objs: $(OBJECTS)
 

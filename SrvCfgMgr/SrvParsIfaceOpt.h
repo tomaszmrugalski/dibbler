@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.6 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.7 2005-01-03 21:57:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.5  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
  *
@@ -46,6 +49,13 @@ public:
     void setUnicast(SmartPtr<TIPv6Addr> addr);
     SmartPtr<TIPv6Addr> getUnicast();
 
+    void setRelayName(string name);
+    void setRelayID(int ifindex);
+    void setRelayInterfaceID(int id);
+    string getRelayName();
+    int getRelayID();
+    int getRelayInterfaceID();
+    bool isRelay();
 
     //-- options related methods --
     // option: DNS Servers
@@ -114,6 +124,12 @@ private:
     long IfaceMaxLease;
     long ClntMaxLease;
     SmartPtr<TIPv6Addr> Unicast;
+
+    // relay
+    bool Relay;
+    string RelayName;
+    int RelayID;
+    int RelayInterfaceID;
 
     // options
     bool DNSServerSupport;

@@ -48,6 +48,8 @@ namespace std{
 iface               { return SrvParser::IFACE_;}
 class               { return SrvParser::CLASS_;}
 stateless           { return SrvParser::STATELESS_; }
+relay               { return SrvParser::RELAY_; }
+interface-id        { return SrvParser::IFACE_ID_; }
 
 log-name            { return SrvParser::LOGNAME_;}
 log-level           { return SrvParser::LOGLEVEL_;}

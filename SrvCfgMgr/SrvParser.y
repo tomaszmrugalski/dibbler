@@ -60,7 +60,7 @@ virtual ~SrvParser();
     char addrval[16];
 }
 
-%token IFACE_, CLASS_, 
+%token IFACE_, RELAY_, IFACE_ID_, CLASS_, 
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, LIFETIME_
@@ -447,6 +447,8 @@ GlobalOptionDeclaration
 
 InterfaceOptionDeclaration
 : ClassOptionDeclaration
+| RelayOption
+| InterfaceIDOption
 | UnicastAddressOption
 | PreferenceOption
 | RapidCommitOption
@@ -464,6 +466,27 @@ InterfaceOptionDeclaration
 | NISPServerOption
 | NISPDomainOption
 | LifetimeOption
+;
+
+////////////////////////////////////////////////////////////////////////
+/// RELAY //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+RelayOption
+:RELAY_ STRING_
+{
+    ParserOptStack.getLast()->setRelayName($2);
+}
+|RELAY_ Number
+{
+    ParserOptStack.getLast()->setRelayID($2);
+}
+;
+
+InterfaceIDOption
+:IFACE_ID_ Number
+{
+    ParserOptStack.getLast()->setRelayInterfaceID($2);
+}
 ;
 
 ClassOptionDeclaration

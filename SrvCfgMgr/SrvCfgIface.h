@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.8 2004-10-25 20:45:53 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.9 2005-01-03 21:57:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.7  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -69,6 +72,13 @@ public:
     // assigned address functions
     void addClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
     void delClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
+
+    string getRelayName();
+    int getRelayID();
+    int getRelayInterfaceID();
+    bool isRelay();
+    void setRelayName(string name);
+    void setRelayID(int id);
 
     // options
     // option: DNS Servers
@@ -140,9 +150,13 @@ private:
     unsigned long IfaceMaxLease;
     unsigned long ClntMaxLease;
     bool RapidCommit;	
-    
     List(TSrvCfgAddrClass) SrvCfgAddrClassLst;
 
+    // relay
+    bool Relay;
+    string RelayName;     // name of the underlaying physical interface (or other relay)
+    int RelayID;          // ifindex
+    int RelayInterfaceID; // value of interface-id option (optional)
 
     // options
     bool DNSServerSupport;
@@ -170,8 +184,6 @@ private:
     string NISDomain;
     string NISPDomain;
     unsigned int Lifetime;
-
-
 };
 
 #endif /* SRVCONFIFACE_H */

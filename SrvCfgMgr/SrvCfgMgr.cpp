@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.30 2004-12-27 20:48:22 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.31 2005-01-03 21:57:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/12/27 20:48:22  thomson
+ * Problem with absent link local addresses fixed (bugs #90, #91)
+ *
  * Revision 1.29  2004/12/07 22:55:50  thomson
  * Typos corrected.
  *
@@ -79,6 +82,8 @@ using namespace std;
 
 #include "FlexLexer.h"
 #include "SrvParser.h"
+
+int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile)
     :TCfgMgr((Ptr*)ifaceMgr)
@@ -181,6 +186,19 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
     parser->SrvCfgIfaceLst.first();
     while(cfgIface=parser->SrvCfgIfaceLst.get()) {
 	// for each interface from config file
+	
+	// relay interface
+	if (cfgIface->isRelay()) {
+	    cfgIface->setID(this->NextRelayID++);
+	    if (!this->setupRelay(cfgIface)) {
+		return false;
+	    }
+	    this->addIface(cfgIface);
+
+	    continue; // skip physical interface checking part
+	}
+	
+	// physical interface
 	if (cfgIface->getID()==-1) {
 	    // ID==-1 means that user referenced to interface by name
 	    ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
@@ -189,7 +207,6 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 	}
 	if (!ifaceIface) {
 	    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-		      << " specified in " << SRVCONF_FILE 
 		      << " is not present in the system or does not support IPv6."
 		      << LogEnd;
 	    return false;
@@ -456,6 +473,26 @@ bool TSrvCfgMgr::stateless() {
     return this->Stateless;
 }
 
+bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
+    SmartPtr<TIfaceIface> iface;
+    string name = cfgIface->getRelayName();
+    int ifindex = cfgIface->getRelayID();
+
+    iface = IfaceMgr->getIfaceByName(name);
+    if (!iface) {
+	Log(Crit) << "Underlaying interface for " << cfgIface->getName() << "/" << cfgIface->getID()
+		  << " with name " << name << " is missing." << LogEnd;
+	return false;
+    }
+    cfgIface->setRelayID(iface->getID());
+
+    if (!IfaceMgr->setupRelay(cfgIface->getName(), cfgIface->getID(), iface->getID(), cfgIface->getRelayInterfaceID())) {
+	Log(Crit) << "Relay setup for " << cfgIface->getName() << "/" << cfgIface->getID() << " interface failed." << LogEnd;
+	return false;
+    }
+
+    return true;
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

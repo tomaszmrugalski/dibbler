@@ -16,6 +16,7 @@
 #include "SrvMsgInfRequest.h"
 #include "IPv6Addr.h"
 #include "AddrClient.h"
+#include "SrvIfaceIface.h"
 
 /**
  * ServerInterfaceManager - sends and receives messages (server version)
@@ -30,11 +31,53 @@ using namespace std;
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
  */
 TSrvIfaceMgr::TSrvIfaceMgr(string xmlFile) 
-    : TIfaceMgr(xmlFile, true) {
+    : TIfaceMgr(xmlFile, false) {
+
+    struct iface * ptr;
+    struct iface * ifaceList;
+
+    this->XmlFile = xmlFile;
+
+    // get interface list
+    ifaceList = if_list_get(); // external (C coded) function
+    ptr = ifaceList;
+    
+    if  (!ifaceList) {
+	IsDone = true;
+	Log(Crit) << "Unable to read info interfaces. Make sure "
+		  << "you are using proper port (i.e. win32 on WindowsXP or 2003)"
+		  << " and you have IPv6 support enabled." << LogEnd;
+	return;
+    }
+    
+    while (ptr!=NULL) {
+        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
+		    << ptr->flags << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
+	
+        SmartPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
+							ptr->flags,
+							ptr->mac,
+							ptr->maclen,
+							ptr->linkaddr,
+							ptr->linkaddrcount,
+							ptr->hardwareType));
+        this->IfaceLst.append((Ptr*) iface);
+        ptr = ptr->next;
+    }
+    if_list_release(ifaceList); // allocated in pure C, and so release it there
+
 }
 
 TSrvIfaceMgr::~TSrvIfaceMgr() {
     Log(Debug) << "SrvIfaceMgr cleanup." << LogEnd;
+}
+
+void TSrvIfaceMgr::dump()
+{
+    std::ofstream xmlDump;
+    xmlDump.open( this->XmlFile.c_str() );
+    xmlDump << *this;
+    xmlDump.close();
 }
 
 
@@ -157,6 +200,45 @@ SmartPtr<TMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     }
 }
 
+bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int interfaceID) {
+    SmartPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
+    if (!under) {
+	Log(Crit) << "Unable to setup " << name << "/" << ifindex 
+		  << " relay: underlaying interface with id=" << underIfindex 
+		  << " is not present in the system or does not support IPv6." << LogEnd;
+	return false;
+    }
+
+    if (!under->flagUp()) {
+	Log(Crit) << "Unable to setup " << name << "/" << ifindex 
+		  << " relay: underlaying interface " << under->getName() << "/" << underIfindex 
+		  << " is down." << LogEnd;
+	return false;
+    }
+
+    SmartPtr<TSrvIfaceIface> relay = new TSrvIfaceIface((const char*)name.c_str(), ifindex, 
+							0,  // flags
+							0,  // MAC
+							0,  // MAC length
+							0,  // link address
+							0,  // link address count
+							0); // hardware type
+    relay->setUnderlaying(under);
+    this->IfaceLst.append((Ptr*)relay);
+
+    if (!under->appendRelay(relay, interfaceID)) {
+	Log(Crit) << "Unable to setup " << name << "/" << ifindex 
+		  << " relay: underlaying interface " << under->getName() << "/" << underIfindex 
+		  << " already has " << MAX_RELAYS << " relays defined." << LogEnd;
+	return false;
+    }
+
+    Log(Notice) << "Relay " << name << "/" << ifindex << " (underlaying " << under->getName()
+		<< "/" << under->getID() << ") has been configured." << LogEnd;
+
+    return true;
+}
+
 /*
  * remember SmartPtrs to all managers (including this one)
  */
@@ -168,4 +250,15 @@ void TSrvIfaceMgr::setThats(SmartPtr<TSrvIfaceMgr> srvIfaceMgr,
     SrvAddrMgr=srvAddrMgr;
     SrvTransMgr=srvTransMgr;
     That=srvIfaceMgr;
+}
+
+ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
+    strum << "<SrvIfaceMgr>" << std::endl;
+    SmartPtr<TSrvIfaceIface> ptr;
+    x.IfaceLst.first();
+    while ( ptr= (Ptr*) x.IfaceLst.get() ) {
+	strum << *ptr;
+    }
+    strum << "</SrvIfaceMgr>" << std::endl;
+    return strum;
 }

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.7 2004-12-07 00:43:03 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.8 2005-01-03 21:57:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/12/07 00:43:03  thomson
+ * Server no longer support link local addresses (bug #38),
+ * Server now supports stateless mode (bug #71)
+ *
  * Revision 1.6  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -33,6 +37,8 @@ class TSrvCfgMgr;
 #include "FlexLexer.h"
 #include "SrvParser.h"
 
+#define RELAY_MIN_IFINDEX 1024;
+
 class TSrvCfgMgr : public TCfgMgr
 {
 public:  
@@ -49,6 +55,8 @@ public:
     void addIface(SmartPtr<TSrvCfgIface> iface);
 
     void dump();
+
+    bool setupRelay(SmartPtr<TSrvCfgIface> cfgIface);
     
     //Address assignment connected methods
     long countAvailAddrs(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, int iface);
@@ -67,6 +75,7 @@ public:
     // configuration parameters
     string getWorkdir();
     bool stateless();
+    static int NextRelayID;
 
 private:    
     string XmlFile;

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.14 2004-10-25 20:45:53 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.15 2005-01-03 21:57:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.13  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -128,6 +131,13 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
     if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
+
+    if (opt->isRelay()) {
+	this->Relay = true;
+	this->RelayName        = opt->getRelayName();
+	this->RelayID          = opt->getRelayID();
+	this->RelayInterfaceID = opt->getRelayInterfaceID();
+    }
 }
 
 /*
@@ -203,6 +213,31 @@ unsigned long TSrvCfgIface::getClntMaxLease()
 {
     return this->ClntMaxLease;
 }
+
+string TSrvCfgIface::getRelayName() {
+    return this->RelayName;
+}
+
+int TSrvCfgIface::getRelayID() {
+    return this->RelayID;
+}
+
+int TSrvCfgIface::getRelayInterfaceID() {
+    return this->RelayInterfaceID;
+}
+
+bool TSrvCfgIface::isRelay() {
+    return this->Relay;
+}
+
+void TSrvCfgIface::setRelayName(string name) {
+    this->RelayName = name;
+}
+
+void TSrvCfgIface::setRelayID(int id) {
+    this->RelayID = id;
+}
+
 
 // --------------------------------------------------------------------
 // --- options --------------------------------------------------------
@@ -361,7 +396,15 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     SmartPtr<TIPv6Addr> addr;
     SmartPtr<string> str;
 
-    out << "  <SrvCfgIface name=\""<<iface.Name << "\" id=\""<<iface.ID << "\">" << endl;
+    out << dec;
+    out << "  <SrvCfgIface name=\""<<iface.Name << "\" ifindex=\""<<iface.ID << "\">" << endl;
+
+    if (iface.Relay) {
+	out << "    <relay name=\"" << iface.RelayName << "\" ifindex=\"" << iface.RelayID << "\" interfaceid=\""
+	    << iface.RelayInterfaceID << "\"/>" << std::endl;
+    } else {
+	out << "    <!-- <relay/> -->" << std::endl;
+    }
 
     out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << std::endl;
