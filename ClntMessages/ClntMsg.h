@@ -54,6 +54,8 @@ public:
 		    SmartPtr<TClntTransMgr> TransMgr, 
 		    SmartPtr<TClntCfgMgr>   CfgMgr,
 		    SmartPtr<TClntAddrMgr>  AddrMgr);
+    void invalidAllowOptInMsg(int msg, int opt);
+    void invalidAllowOptInOpt(int msg, int parentOpt, int childOpt);
 };
 
 #endif

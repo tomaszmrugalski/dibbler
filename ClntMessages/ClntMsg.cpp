@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.8 2004-11-29 22:46:45 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.9 2004-12-08 01:08:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/11/29 22:46:45  thomson
+ * Lifetime option is only requested if specified in conf file (bug #75)
+ *
  * Revision 1.7  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -67,6 +70,42 @@
 #include "ClntOptLifetime.h"
 #include "Logger.h"
 
+string msgs[] = { "",
+		  "SOLICIT",
+		  "ADVERTISE",
+		  "REQUEST",
+		  "CONFIRM",
+		  "RENEW",
+		  "REBIND",
+		  "REPLY",
+		  "RELEASE",
+		  "DECLINE",
+		  "RECONFIGURE",
+		  "INF-REQUEST",
+		  "RELAY-FORWARD"
+		  "RELAY-REPLY"};
+
+void TClntMsg::invalidAllowOptInMsg(int msg, int opt) {
+    string name;
+    if (msg<=13)
+	name = msgs[msg];
+    Log(Warning) << "Option " << opt << " is not allowed in the " << name
+		 << " message. Ignoring." << LogEnd;
+}
+
+void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
+    string name;
+    if (msg<=13)
+	name = msgs[msg];
+
+    if (parentOpt==0)
+	Log(Warning) << "Option " << childOpt << " is not allowed directly in " << name
+		     << " message. Ignoring." << LogEnd;
+    else
+	Log(Warning) << "Option " << childOpt << " is not allowed in the " << parentOpt
+		     << " in the " << name << " message. Ignoring." << LogEnd;
+}
+
 //Constructor builds message on the basis of buffer
 TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
                    SmartPtr<TClntTransMgr> TransMgr, 
@@ -88,14 +127,12 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
         pos+=2;
 
 	if (!allowOptInMsg(MsgType,code)) {
-            Log(Warning) << "Option " << code << " is not allowed in " << MsgType
-			 << " message. Ignoring." << LogEnd;
+	    this->invalidAllowOptInMsg(MsgType, code);
 	    pos+=length;
 	    continue;
 	}
 	if (!allowOptInOpt(MsgType,0,code)) {
-	    Log(Warning) << "Option " << code << " is not allowed directly in " << MsgType
-			 << " message. Ignoring." << LogEnd;
+	    this->invalidAllowOptInOpt(MsgType, 0, code);
 	    pos+=length;
 	    continue;
 	}
