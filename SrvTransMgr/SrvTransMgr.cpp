@@ -146,8 +146,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
             //construction of reply with rapid commit wasn't successful
             //Maybe it's possible to construct appropriate advertise message
             //and assign some "not rapid" addresses to this client
-            SmartPtr<TSrvMsgAdvertise> x
-                (new TSrvMsgAdvertise(IfaceMgr,That,CfgMgr,AddrMgr,(Ptr*)msg));
+            SmartPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise(IfaceMgr,That,CfgMgr,AddrMgr,(Ptr*)msg);
             this->MsgLst.append((Ptr*)x);
             break;
         }
@@ -213,23 +212,13 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
         default:
         {
             std::clog << logger::logWarning << "Message type " << msg->getType() 
-                << " not supported." << logger::endl;
+		      << " not supported." << logger::endl;
             break;
         }
     }
-
-    // save DB state
-    switch (msg->getType()) 
-    {
-        case REQUEST_MSG:
-        case RELEASE_MSG:
-        case RENEW_MSG:
-        case REBIND_MSG:
-        case DECLINE_MSG:
-            AddrMgr->dbStore();
-        default:
-            break;
-    }
+    
+    // save DB state regardless of action taken
+    AddrMgr->dbStore();
 }	
 
 void TSrvTransMgr::doDuties()
@@ -245,7 +234,7 @@ void TSrvTransMgr::doDuties()
         if ( (!msg->getTimeout()) && (!msg->isDone()) ) 
             msg->doDuties();
 
-    // now delete messages which as done
+    // now delete messages marked as done
     MsgLst.first();
     while (msg = MsgLst.get() ) 
     {
