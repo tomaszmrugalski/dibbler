@@ -204,7 +204,7 @@ release-src: VERSION-src
 	@echo "[RENAME ] dibbler-$(VERSION)-src.tar.gz"
 	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
 
-release-deb: VERSION-linux
+release-deb: VERSION-linux server client doc
 	@echo "[RM     ] dibbler_$(VERSION)_i386.deb"
 	rm -f dibbler_$(VERSION)_i386.deb
 	@echo "[RM     ] port-linux/debian/root"
@@ -260,7 +260,7 @@ release-rpm: VERSION-linux release-src
 	@echo "[CP     ] port-linux/redhat/SOURCES/dibbler-$(VERSION)-src.tar.gz"
 	$(CP) dibbler-$(VERSION)-src.tar.gz port-linux/redhat/SOURCES
 	@echo "[RPM    ] port-linux/redhat/SPEC/dibbler-$(VERSION).spec"
-	rpmbuild --define \'_topdir `pwd`/port-linux/redhat\' -bb port-linux/redhat/SPECS/dibbler-$(VERSION).spec
+	rpmbuild --define "_topdir `pwd`/port-linux/redhat" -bb port-linux/redhat/SPECS/dibbler-$(VERSION).spec
 	cd port-linux/redhat/RPMS/i386; for file in *; do \
 	echo "[CP     ] $$file"; \
 	$(CP) $$file ../../../.. ; \
