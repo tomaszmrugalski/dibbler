@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: SrvService.cpp,v 1.9 2004-05-24 21:16:37 thomson Exp $
+ * $Id: SrvService.cpp,v 1.10 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
  * Revision 1.8  2004/04/15 23:24:43  thomson
  * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
  *
@@ -75,19 +78,19 @@ EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
     if (!dirFound)
 		return INVALID;
 	if (ServiceDir.length()<3) {
-		cout << "Invalid directory [" << ServiceDir << "]: too short. " << endl 
-			 << "Please use full absolute pathname, e.g. C:\\dibbler" << logger::endl;
+	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: too short. " 
+		      << "Please use full absolute pathname, e.g. C:\\dibbler" << LogEnd;
 	    return INVALID;
 	}
 	const char * tmp = ServiceDir.c_str();
 	if ( *(tmp+1)!=':') {
-	    cout << "Invalid directory [" << ServiceDir << "]: second character is not a ':'. " << endl 
-		     << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << logger::endl;
+	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: second character is not a ':'. "
+		      << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << LogEnd;
 	    return INVALID;
 	}
 	if ( *(tmp+2)!='\\' && *(tmp+2)!='/' ) {
-	    cout << "Invalid directory [" << ServiceDir << "]: third character is not a '/' nor '\\'. " << endl 
-		     << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << logger::endl;
+	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: third character is not a '/' nor '\\'. "
+		      << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << LogEnd;
 	    return INVALID;
 	}
 	return status;
@@ -105,8 +108,8 @@ void TSrvService::OnStop()
 void TSrvService::Run()
 {
     if (_chdir(this->ServiceDir.c_str())) {
-	logger::clog << "Unable to change directory to " 
-		     << this->ServiceDir << ". Aborting.\n" << logger::endl;
+	Log(Crit) << "Unable to change directory to " 
+		  << this->ServiceDir << ". Aborting.\n" << LogEnd;
 	return;
     }
     
@@ -116,13 +119,13 @@ void TSrvService::Run()
     string addrfile = SRVDB_FILE;
     string logFile  = SRVLOG_FILE;
     logger::setLogName("Srv");
-	if (this->status != RUN)
-		logger::Initialize((char*)logFile.c_str());
+    if (this->status != RUN)
+	logger::Initialize((char*)logFile.c_str());
     
-    clog << logger::logCrit << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
-    clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;
-    clog << logger::logCrit << DIBBLER_COPYRIGHT3 << endl;
-    clog << logger::logCrit << DIBBLER_COPYRIGHT4 << endl;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER)" << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
     
     TDHCPServer server(confile);
     ptr = &server; // remember address

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.23 2004-10-27 22:07:55 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.24 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.22  2004/10/25 20:45:52  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -309,7 +313,7 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
         if ( ptrIface->getID() == iface ) break;
     }
     if (! ptrIface) {
-        std::clog << logger::logError <<"ClntCfgMgr: Unable to set IA state (id=" << iaid 
+	Log(Error) <<"ClntCfgMgr: Unable to set IA state (id=" << iaid 
             << "):Interface " << iface << " not found." << LogEnd;
         return false;
     }
@@ -328,8 +332,7 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
             }
         }
     }
-    std::clog << logger::logError << "ClntCfgMgr: Unable to set IA state (id=" 
-        << iaid << ")" << LogEnd;
+    Log(Error) << "ClntCfgMgr: Unable to set IA state (id=" << iaid << ")" << LogEnd;
     return false;
 }	    
 
@@ -350,10 +353,8 @@ bool TClntCfgMgr::checkConfigConsistency()
             if(!tmp.isValid())
             {
                 this->IsDone=true;
-                clog<<logger::logCrit
-                    <<"Wrong time zone option for:"
-                    <<"iface(id/name)"<<ptrIface->getID()<<"/"
-                    <<ptrIface->getName() << LogEnd;
+		Log(Crit) << "Wrong time zone option for " << ptrIface->getName() 
+			  << "/" <<ptrIface->getID() << LogEnd;
                 return !(IsDone=true);
             }
         }
@@ -366,10 +367,9 @@ bool TClntCfgMgr::checkConfigConsistency()
             {
                 if ((unsigned long)ptrIA->getT2()<(unsigned long)ptrIA->getT1()) 
                 {
-                    clog<<logger::logCrit
-                        <<"T1 can't be lower than T2 for IA:"<<*ptrIA << LogEnd
-                        <<"in iface(id/name)"<<ptrIface->getID()<<"/"
-                        <<ptrIface->getName() << LogEnd;
+		    Log(Crit) << "T1 can't be lower than T2 for IA "<<*ptrIA << LogEnd
+			      <<"on the "<<ptrIface->getName()<<"/"
+			      <<ptrIface->getID() << " interface." << LogEnd;
                     return !(IsDone=true);
                 }
                 SmartPtr<TClntCfgAddr> ptrAddr;

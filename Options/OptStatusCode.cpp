@@ -6,12 +6,15 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStatusCode.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: OptStatusCode.cpp,v 1.3 2004-12-02 00:51:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
-#include <stdlib.h>
+#include <stdlib.h>
 #include <string>
 #ifdef LINUX
 #include <netinet/in.h>
@@ -83,22 +86,22 @@ bool TOptStatusCode::doDuties()
 {
     switch (StatusCode) {
     case STATUSCODE_SUCCESS:
-	clog << logger::logNotice << "Status SUCCESS :" << Message << logger::endl;
+	Log(Notice) << "Status SUCCESS :" << Message << LogEnd;
 	break;
     case STATUSCODE_UNSPECFAIL:
-	clog << logger::logNotice << "Status UNSPECIFIED FAILURE :" << Message << logger::endl;
+	Log(Notice) << "Status UNSPECIFIED FAILURE :" << Message << LogEnd;
 	break;
     case STATUSCODE_NOADDRSAVAIL:
-	clog << logger::logNotice << "Status NO ADDRS AVAILABLE :" << Message << logger::endl;
+	Log(Notice) << "Status NO ADDRS AVAILABLE :" << Message << LogEnd;
 	break;
     case STATUSCODE_NOBINDING:
-	clog << logger::logNotice << "Status NO BINDING:" << Message << logger::endl;
+	Log(Notice) << "Status NO BINDING:" << Message << LogEnd;
 	break;
     case STATUSCODE_NOTONLINK:
-	clog << logger::logNotice << "Status NOT ON LINK:" << Message << logger::endl;
+	Log(Notice) << "Status NOT ON LINK:" << Message << LogEnd;
 	break;
     case STATUSCODE_USEMULTICAST:
-	clog << logger::logNotice << "Status USE MULTICAST:" << Message << logger::endl;
+	Log(Notice) << "Status USE MULTICAST:" << Message << LogEnd;
 	break;
     }
     return true;

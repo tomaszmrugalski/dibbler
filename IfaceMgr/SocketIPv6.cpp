@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.13 2004-11-25 01:22:22 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.14 2004-12-02 00:51:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/11/25 01:22:22  thomson
+ * Comment tags converted from javadoc to doxygen format.
+ *
  * Revision 1.12  2004/11/01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -198,8 +201,8 @@ int TIfaceSocket::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port) {
     
     switch(result) {
     case -2:
-	clog << logger::logError << "Unable to create a network address structure (addr=" 
-	     << *addr << ")" << logger::endl;
+	Log(Error) << "Unable to create a network address structure (addr=" 
+		   << *addr << ")" << LogEnd;
 	return -1;
     }
     return result;

@@ -6,9 +6,12 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.9 2004-09-28 21:49:32 thomson Exp $
+ * $Id: WinService.cpp,v 1.10 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/09/28 21:49:32  thomson
+ * no message
+ *
  * Revision 1.8  2004/06/21 23:08:49  thomson
  * Minor fixes.
  *
@@ -351,12 +354,12 @@ bool TWinService::isRunning(const char * name) {
 }
 
 void TWinService::showStatus() {
-	bool serverInstalled, clientInstalled;
-	serverInstalled = this->IsInstalled("DHCPv6Server");
-	clientInstalled = this->IsInstalled("DHCPv6Client");
-	std::clog <<  "Dibbler server :" << (serverInstalled?"INSTALLED":"NOT INSTALLED")
-	  		  << logger::endl;
-	std::clog <<  "Dibbler client :" << (clientInstalled?"INSTALLED":"NOT INSTALLED")
-		      << logger::endl;
-	std::clog << "Client running: " << (this->isRunning("DHCPv6Client") ? "YES":"NO") << logger::endl;
+    bool serverInstalled, clientInstalled;
+    serverInstalled = this->IsInstalled("DHCPv6Server");
+    clientInstalled = this->IsInstalled("DHCPv6Client");
+    
+    // FIXME
+    Log(Notice) <<  "Dibbler server :" << (serverInstalled?"INSTALLED":"NOT INSTALLED") << LogEnd;
+    Log(Notice) <<  "Dibbler client :" << (clientInstalled?"INSTALLED":"NOT INSTALLED") << LogEnd;
+    Log(Notice) << "Client running: " << (this->isRunning("DHCPv6Client") ? "YES":"NO") << LogEnd;
 }

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: ClntService.cpp,v 1.13 2004-05-24 21:16:37 thomson Exp $
+ * $Id: ClntService.cpp,v 1.14 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
  * Revision 1.12  2004/04/15 23:24:43  thomson
  * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
  *
@@ -79,20 +82,20 @@ EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 	}
 	
 	if (ServiceDir.length()<3) {
-	    cout << "Invalid directory [" << ServiceDir 
-		 << "]: too short. " << endl << "Please use full absolute pathname, e.g. C:\\dibbler"
-		 << logger::endl;
+	    Log(Crit) << "Invalid directory [" << ServiceDir 
+		      << "]: too short. Please use full absolute pathname, e.g. C:\\dibbler"
+		      << LogEnd;
 	    return INVALID;
 	}
 	const char * tmp = ServiceDir.c_str();
 	if ( *(tmp+1)!=':') {
-	    cout << "Invalid directory [" << ServiceDir << "]: second character is not a ':'. " << endl 
-		     << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << logger::endl;
+	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: second character is not a ':'. " 
+		      << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << LogEnd;
 	    return INVALID;
 	}
 	if ( *(tmp+2)!='\\' && *(tmp+2)!='/' ) {
-	    cout << "Invalid directory [" << ServiceDir << "]: third character is not a '/' nor '\\'. " << endl 
-		     << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << logger::endl;
+	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: third character is not a '/' nor '\\'. "
+		      << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << LogEnd;
 	    return INVALID;
 	}
 	return status;
@@ -108,8 +111,8 @@ void TClntService::OnStop() {
 
 void TClntService::Run() {
     if (_chdir(this->ServiceDir.c_str())) {
-	logger::clog << "Unable to change directory to " 
-		     << this->ServiceDir << ". Aborting.\n" << logger::endl;
+	Log(Crit) << "Unable to change directory to " 
+		  << this->ServiceDir << ". Aborting.\n" << LogEnd;
 	return;
     }
     string confile  = CLNTCONF_FILE;
@@ -121,10 +124,10 @@ void TClntService::Run() {
     if (this->status != RUN)
 	logger::Initialize((char*)logFile.c_str());
     
-    clog << logger::logCrit << DIBBLER_COPYRIGHT1 << "(CLIENT)" << endl;
-    clog << logger::logCrit << DIBBLER_COPYRIGHT2 << endl;
-    clog << logger::logCrit << DIBBLER_COPYRIGHT3 << endl;
-    clog << logger::logCrit << DIBBLER_COPYRIGHT4 << endl;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT)" << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
     
     TDHCPClient client(confile);
     ptr = &client; // remember address

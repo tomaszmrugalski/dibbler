@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.3 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.4 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -218,8 +221,8 @@ void TClntMsgRenew::answer(SmartPtr<TMsg> Reply)
             case OPTION_IAADDR:
             case OPTION_RECONF_MSG:
             {
-                clog << logger::logWarning << "Illegal option (" << opt->getOptType() 
-                    << ") in received REPLY message." << logger::endl;
+                Log(Warning) << "Illegal option (" << opt->getOptType() 
+                    << ") in received REPLY message." << LogEnd;
                 break;
             }
             default:
@@ -262,8 +265,7 @@ void TClntMsgRenew::doDuties()
     // should we send RENEW once more or start sending REBIND
     if (!MRD) 
     {
-        std::clog << logger::logNotice 
-            << "RENEW remains unanswered and timeout T2 reached. " << logger::endl;
+	Log(Notice) << "RENEW remains unanswered and timeout T2 reached. " << LogEnd;
         ClntTransMgr->sendRebind(this->Options,this->getIface());
         IsDone = true;
         return;

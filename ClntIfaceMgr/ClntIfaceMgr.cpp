@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.10 2004-11-02 02:14:20 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.11 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/11/02 02:14:20  thomson
+ * no message
+ *
  * Revision 1.9  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -58,8 +61,7 @@ bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Ad
     // are there any sockets on this interface?
     SmartPtr<TIfaceSocket> sock; 
     if (! Iface->countSocket() ) {
-        std::clog << logError << "Interface " << Iface->getName() 
-            << " has no open sockets." << LogEnd;
+        Log(Error) << "Interface " << Iface->getName() << " has no open sockets." << LogEnd;
         return false;
     }
 

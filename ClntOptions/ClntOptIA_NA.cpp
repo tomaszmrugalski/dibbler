@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.6 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.7 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.5  2004/09/07 22:02:33  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -128,22 +131,22 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
                     SubOptions.append( new TClntOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
-                    clog<< logger::logWarning <<"Option opttype=" << code<< "not supported "
+		    Log(Warning) <<"Option opttype=" << code<< "not supported "
                         <<" in field of message (type="<< parent->getType() 
-                        <<") in this version of server."<<logger::endl;
+                        <<") in this version of server."<<LogEnd;
                     break;
                 }
                 if((opt)&&(opt->isValid()))
                     SubOptions.append(opt);
             }
             else
-                clog << logger::logWarning << "Illegal option received, opttype=" << code 
-                << " in field options of IA_NA option"<<logger::endl;
+		Log(Warning) << "Illegal option received, opttype=" << code 
+                << " in field options of IA_NA option"<<LogEnd;
         }
         else
         {
-            clog << logger::logWarning <<"Unknown option in option IA_NA( optType=" 
-                << code << "). Option ignored." << logger::endl;
+	    Log(Warning) <<"Unknown option in option IA_NA( optType=" 
+			 << code << "). Option ignored." << LogEnd;
         };
         pos+=length;
     }

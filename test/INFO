@@ -12,3 +12,4 @@ test09 - Szablon listy <List> + SmartPrt + tester (DONE)
 test10 - AddrAddr, AddrIA + SmartPtr
 test12 - sprawdzanie, czy dany adres ma ustawiona flage TENTATIVE (DONE)
 test13 - sends packet TYPE 255 on loopback
+test14 - Logger test

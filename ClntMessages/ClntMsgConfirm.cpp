@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.2 2004-06-20 17:51:48 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.3 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
  *
  */
 
@@ -73,8 +76,8 @@ void TClntMsgConfirm::answer(SmartPtr<TMsg> reply)
     case STATUSCODE_NOBINDING:
     case STATUSCODE_USEMULTICAST:
     default:
-	std::clog << logger::logWarning << "REPLY for CONFIRM received with invalid (" 
-		  << ptrOptCode->getCode() << ") status code." << logger::endl;
+	Log(Warning) << "REPLY for CONFIRM received with invalid (" 
+		     << ptrOptCode->getCode() << ") status code." << LogEnd;
 	break;
     }
     return;
@@ -119,8 +122,8 @@ void TClntMsgConfirm::addrsRejected() {
 	SmartPtr<TIfaceIface> ptrIface;
 	ptrIface = ClntIfaceMgr->getIfaceByID(ptrIA->getIface());
 	if (!ptrIface) {
-	    std::clog << logger::logCrit << "We have addresses assigned to non-existing interface."
-		"Help! Somebody stole interface!" << logger::endl;
+	    Log(Crit) << "We have addresses assigned to non-existing interface."
+		"Help! Somebody stole an interface!" << LogEnd;
 	    ptrIA->setState(NOTCONFIGURED);
 	    return;
 	}

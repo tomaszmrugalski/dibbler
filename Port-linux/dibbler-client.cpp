@@ -24,7 +24,7 @@
 TDHCPClient * ptr;
 
 void signal_handler(int n) {
-    std::clog << logger::logEmerg << "Signal received. Shutting down." << logger::endl;
+    Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
 }
 
@@ -35,12 +35,10 @@ void daemon_init() {
     //fclose(stdout);
     //fclose(stderr);
 
-    std::clog << "Switching to background..." << std::endl;
-
-    logger::Initialize(CLNTLOG_FILE);
-
     int childpid;
-    std::clog << logger::logNotice << "Starting daemon..." << logger::endl;
+    Log(Notice) << "Starting daemon..." << LogEnd;
+
+    logger::EchoOff();
 
     if (getppid()!=1) {
 
@@ -54,20 +52,20 @@ void daemon_init() {
 	signal(SIGTSTP, SIG_IGN);
 #endif
 	if ( (childpid = fork()) <0 ) {
-	    std::clog << logger::logError << "Can't fork first child." << logger::endl;
+	    Log(Error) << "Can't fork first child." << LogEnd;
 	    return;
 	} else if (childpid > 0) 
 	    exit(0); // parent process
 	
 	if (setpgrp() == -1) {
-	    std::clog << logger::logError << "Can't change process group." << logger::endl;
+	    Log(Error) << "Can't change process group." << LogEnd;
 	    return;
 	}
 	
 	signal( SIGHUP, SIG_IGN);
 	
 	if ( (childpid = fork()) <0) {
-	    std::clog << logger::logError << "Can't fork second child." << logger::endl;
+	    Log(Error) << "Can't fork second child." << LogEnd;
 	    return;
 	} else if (childpid > 0)
 	    exit(0); // pierwszy potomek
@@ -77,8 +75,7 @@ void daemon_init() {
     string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
     unlink(tmp.c_str());
     ofstream pidfile(tmp.c_str());
-    std::clog << logger::logNotice << "My pid (" << getpid() << ") is stored in " 
-	      << tmp << logger::endl;
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << tmp << LogEnd;
     pidfile << getpid();
     pidfile.close();
 
@@ -86,23 +83,20 @@ void daemon_init() {
 }
 
 void daemon_die() {
-    logger::Terminate();
+    logger::EchoOn();
 }
 
 void init() {
-    unlink(WORKDIR"/tmp-dns");
-    unlink(WORKDIR"/tmp-domain");
 
     string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
     unlink(tmp.c_str());
     ofstream pidfile(tmp.c_str());
-    std::clog << logger::logNotice << "My pid (" << getpid() << ") is stored in " 
-	      << tmp << logger::endl;
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << tmp << LogEnd;
     pidfile << getpid();
     pidfile.close();
 
     if (chdir(WORKDIR)) {
-	std::clog << logger::logError << "Can't change directory to " << WORKDIR << logger::endl;
+	Log(Error) << "Can't change directory to " << WORKDIR << LogEnd;
     }
 
 }
@@ -214,6 +208,11 @@ int main(int argc, char * argv[])
     std::cout << DIBBLER_COPYRIGHT4 << std::endl;
 
     logger::setLogName("Client");
+    logger::Initialize(WORKDIR"/"CLNTLOG_FILE);
+
+    logger::EchoOff();
+    Log(Notice) << DIBBLER_COPYRIGHT1 << " (SERVER)" << LogEnd;
+    logger::EchoOn();
 
     // parse command line parameters
     if (argc>1) {
@@ -251,6 +250,8 @@ int main(int argc, char * argv[])
     if (result!=0) {
 	help();
     }
+
+    logger::Terminate();
 
     return 0;
 

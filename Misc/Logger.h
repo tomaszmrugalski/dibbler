@@ -4,9 +4,13 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.8 2004-10-27 22:07:56 thomson Exp $
+ * $Id: Logger.h,v 1.9 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.7  2004/09/03 20:58:36  thomson
  * *** empty log message ***
  *
@@ -37,8 +41,8 @@
 #include <string>
 #include "DHCPConst.h"
 
-#define Log(X) std::clog << logger:: log##X
-#define LogEnd logger::endl
+#define Log(X) logger :: log##X ()
+#define LogEnd logger :: endl
 
 namespace logger {
 
@@ -50,21 +54,23 @@ namespace logger {
     };
 
     using namespace std;
-    ostream& logCont(ostream & strum);
-    ostream& logEmerg(ostream & strum);
-    ostream& logAlert(ostream & strum);
-    ostream& logCrit(ostream & strum);
-    ostream& logError(ostream & strum);
-    ostream& logWarning(ostream & strum);
-    ostream& logNotice(ostream & strum);
-    ostream& logInfo(ostream & strum);
-    ostream& logDebug(ostream & strum);
+    ostream& logCont();
+    ostream& logEmerg();
+    ostream& logAlert();
+    ostream& logCrit();
+    ostream& logError();
+    ostream& logWarning();
+    ostream& logNotice();
+    ostream& logInfo();
+    ostream& logDebug();
 
     void Initialize(char * file);
     void Terminate();
     void setLogName(string x);
     void setLogLevel(int x);
     void setLogMode(string x);
+    void EchoOff();
+    void EchoOn();
     
     ostream & endl (ostream & strum);
 

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.10 2004-10-27 22:07:56 thomson Exp $
+ * $Id: Logger.cpp,v 1.11 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/10/27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.9  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -18,6 +22,7 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <time.h>
 #include "Logger.h"
 #include "Portable.h"
@@ -25,22 +30,35 @@
 
 namespace logger {
 
-    std::streambuf* orig;
-    int logLevel=7;
-    bool mute = false;
     string logname="Init";
+    int logLevel=7;
     Elogmode logmode = FULL;
-    ofstream logfile;            // file where wanted msgs are stored
-    ofstream nullfile(NULLFILE); // file where unwanted msgs are dumped
-    bool fileMode = false;
+    ofstream logFile;    // file where wanted msgs are stored
+    bool logFileMode = false;
+    bool echo = true;
+    int curLogEntry = 8;
 
+    ostringstream buffer;
+
+    // LogEnd;
     ostream & endl (ostream & strum) {
-	if (!mute)
-	    strum<<std::endl;
+	if (curLogEntry <= logLevel) {
+	    // log on the console
+	    if (echo)
+		std::cout << buffer.str() << std::endl;
+
+	    // log to the file
+	    if (logFileMode)
+		logger::logFile << buffer.str() << std::endl;
+	}
+
+	buffer.str(std::string());
+	buffer.clear();
+
 	return strum;
     }
     
-    ostream & logCommon(ostream & strum,int x) {
+    ostream & logCommon(int x) {
 	static char lv[][10]= {"Emergency",
 			       "Alert    ",
 			       "Critical ",
@@ -48,67 +66,54 @@ namespace logger {
 			       "Warning  ",
 			       "Notice   ",
 			       "Info     ",
-			       "Debug    "
-	};
+			       "Debug    " };
 
-	if ( x==0 )
-	    return strum;
-
-	if ( x > logger::logLevel) {
-	    // ignore this entry
-	    strum.rdbuf(logger::nullfile.rdbuf());
-	    mute = 1;
-	    return strum;
-	} else {
-	    // log this entry
-	    if (fileMode) {
-		strum.rdbuf(logger::logfile.rdbuf());
-	    } else {
-		strum.rdbuf(std::cerr.rdbuf());
-	    }
-	    mute = 0;
-	}
+	logger::curLogEntry = x;
 
 	time_t teraz;
 	teraz = time(NULL);
 	struct tm * czas = localtime( &teraz );
 	if (logmode!=SHORT) {
-	    strum << (1900+czas->tm_year) << ".";
-	    strum.width(2); strum.fill('0'); strum << czas->tm_mon+1 << ".";
-	    strum.width(2); strum.fill('0'); strum << czas->tm_mday  << " ";
-	    strum.width(2); strum.fill('0'); strum << czas->tm_hour  << ":";
+	    buffer << (1900+czas->tm_year) << ".";
+	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mon+1 << ".";
+	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mday  << " ";
+	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_hour  << ":";
 	}
-	strum.width(2);	strum.fill('0'); strum << czas->tm_min   << ":";
-	strum.width(2);	strum.fill('0'); strum << czas->tm_sec;
+	buffer.width(2);	buffer.fill('0'); buffer << czas->tm_min   << ":";
+	buffer.width(2);	buffer.fill('0'); buffer << czas->tm_sec;
 	if (logmode!=SHORT) {
-	    strum << ' ' << logger::logname ;
+	    buffer << ' ' << logger::logname ;
 	}
-	strum << ' ' << lv[x-1] << " ";
-	return strum;
+	buffer << ' ' << lv[x-1] << " ";
+	return buffer;
     }
 
-    ostream& logCont(ostream & strum)    { return logger::logCommon(strum,0); }
-    ostream& logEmerg(ostream & strum)   { return logger::logCommon(strum,1); }
-    ostream& logAlert(ostream & strum)   { return logger::logCommon(strum,2); }
-    ostream& logCrit(ostream & strum)    { return logger::logCommon(strum,3); }
-    ostream& logError(ostream & strum)   { return logger::logCommon(strum,4); }
-    ostream& logWarning(ostream & strum) { return logger::logCommon(strum,5); }
-    ostream& logNotice(ostream & strum)  { return logger::logCommon(strum,6); }
-    ostream& logInfo(ostream & strum)    { return logger::logCommon(strum,7); }
-    ostream& logDebug(ostream & strum)   { return logger::logCommon(strum,8); }
+    ostream& logCont()    { return logger::buffer; }
+    ostream& logEmerg()   { return logger::logCommon(1); }
+    ostream& logAlert()   { return logger::logCommon(2); }
+    ostream& logCrit()    { return logger::logCommon(3); }
+    ostream& logError()   { return logger::logCommon(4); }
+    ostream& logWarning() { return logger::logCommon(5); }
+    ostream& logNotice()  { return logger::logCommon(6); }
+    ostream& logInfo()    { return logger::logCommon(7); }
+    ostream& logDebug()   { return logger::logCommon(8); }
 
     void Initialize(char * file) {
-	fileMode = true;
-	logger::orig = std::clog.rdbuf();
-
-	logger::logfile.open(file);
-  	std::clog.rdbuf(logger::logfile.rdbuf());
-
+	logger::logFileMode = true;
+	logger::logFile.open(file);
     }
 
     void Terminate() {
-	std::clog.rdbuf(logger::orig);
-	fileMode = false;
+	logger::logFileMode = false;
+	logger::logFile.close();
+    }
+
+    void EchoOn() {
+	logger::echo = true;
+    }
+    
+    void EchoOff() {
+	logger::echo = false;
     }
 
     void setLogLevel(int x) {

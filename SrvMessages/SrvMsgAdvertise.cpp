@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.10 2004-09-05 15:27:49 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.11 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
  * Revision 1.9  2004/06/20 21:00:45  thomson
  * Various fixes.
  *
@@ -121,7 +124,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    SmartPtr< TOptStatusCode > ptrStatus = (Ptr*) opt;
 	    Log(Error) << "Receviced STATUS_CODE from client:" 
 		       <<  ptrStatus->getCode() << ", (" << ptrStatus->getText()
-		       << ")" << logger::endl;
+		       << ")" << LogEnd;
 	    break;
 	}
 	    
@@ -164,8 +167,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	case OPTION_RECONF_MSG :
 	case OPTION_RECONF_ACCEPT:
 	default: {
-	    std::clog << logger::logDebug << "Option not supported, opttype=" 
-		      << opt->getOptType() << logger::endl;
+	    Log(Debug) << "Option " << opt->getOptType() << "is not supported." << LogEnd;
 	    break;
 	}
 	} // end of switch

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.3 2004-09-07 22:02:32 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.4 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/07 22:02:32  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -125,8 +128,8 @@ void TClntMsgRebind::answer(SmartPtr<TMsg> Reply)
             case OPTION_IAADDR:
             case OPTION_RECONF_MSG:
             {
-                clog << logger::logWarning << "Illegal option (" << opt->getOptType() 
-                    << ") in received REPLY message." << logger::endl;
+		Log(Warning) << "Illegal option (" << opt->getOptType() 
+                    << ") in received REPLY message." << LogEnd;
                 break;
             }
             default:
@@ -222,8 +225,8 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 	ptrAddrIA->setState(CONFIGURED);
     } else {
 	// unknown IAID, ignore it
-	clog << logger::logWarning << "Received message contains unknown IA (IAID="
-	     << ptrOptIA->getIAID() << "). Ignoring it." << logger::endl;
+	Log(Warning) << "Received message contains unknown IA (IAID="
+	     << ptrOptIA->getIAID() << "). Ignoring it." << LogEnd;
     }
 }
 

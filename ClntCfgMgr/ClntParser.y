@@ -927,8 +927,8 @@ int clntParser::yylex()
 
 void clntParser::yyerror(char *m)
 {
-    std::clog << logger::logCrit << "Config parse error: line " << lex->lineno() 
-	      << ", unexpected [" << lex->YYText() << "] token." << logger::endl;
+    Log(Crit) << "Config parse error: line " << lex->lineno() 
+	      << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
 }
 
 clntParser::~clntParser() {

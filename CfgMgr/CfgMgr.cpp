@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.10 2004-07-05 00:53:03 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.11 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.9  2004/07/01 18:12:12  thomson
  * DUID creation failure results in client/server shutdown (bugs #44, #45)
  *                                                                           
@@ -82,9 +85,9 @@ bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
     }
     else
     {
-        std::clog << logger::logError << "Can't open file " << cfgFile 
-            << ". Config comparision aborted." << logger::endl;
-        //Exception or return false
+	Log(Error) << "Can't open file " << cfgFile 
+            << ". Config comparision aborted." << LogEnd;
+        
     }
     return newConf;
 }
@@ -97,8 +100,8 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
     //try to open input file
     newF.open(cfgFile.c_str(), ios::in|ios::binary);
     if (newF.fail()) 
-        std::clog << logger::logError << "Can't open file "<<cfgFile 
-		  <<", when trying to save new config file." << logger::endl;
+	Log(Error) << "Can't open file "<<cfgFile 
+		  <<", when trying to save new config file." << LogEnd;
     else
     {
         newF.seekg(0,ios::end);
@@ -108,8 +111,8 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
         oOldF.open(oldCfgFile.c_str(),ios::trunc|ios::out|ios::binary);
         if (oOldF.fail()) 
         {
-            std::clog << logger::logError << "Can't open file "<<oldCfgFile
-		      <<", when trying to save new config file"<< logger::endl;
+	    Log(Error) << "Can't open file "<<oldCfgFile
+		       <<", when trying to save new config file"<< LogEnd;
             newF.close();
         }
         else
@@ -207,7 +210,7 @@ bool TCfgMgr::setDUID(const string filename) {
     } 
     
     Log(Crit) << "Cannot generate DUID, because I cannot find interface with "
-		 << "MAC address at least 6 bytes long." << logger::endl;
+		 << "MAC address at least 6 bytes long." << LogEnd;
     this->DUID=new TDUID();
     return false;
 };
@@ -217,7 +220,7 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     ofstream f;
     f.open( duidFile.c_str() );
     if (!f.is_open()) {
-      Log(Crit) << "Unable to write " << duidFile << " file." << logger::endl;
+      Log(Crit) << "Unable to write " << duidFile << " file." << LogEnd;
       return false;
     }
     

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: dibbler-server.cpp,v 1.8 2004-06-04 16:55:27 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.9 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.7  2004/06/04 14:15:53  thomson
  * Command line parsing.
  *
@@ -34,10 +37,9 @@ void daemon_init() {
     //fclose(stdout);
     //fclose(stderr);
 
-    logger::Initialize(SRVLOG_FILE);
-
     int childpid;
     cout << "Starting daemon..." << endl;
+    logger::EchoOff();
 
     if (getppid()!=1) {
 
@@ -84,6 +86,7 @@ void daemon_init() {
 
 void daemon_die() {
     logger::Terminate();
+    logger::EchoOn();
 }
 
 void init() {
@@ -217,11 +220,15 @@ int main(int argc, char * argv[])
     std::cout << DIBBLER_COPYRIGHT4 << std::endl;
 
     logger::setLogName("Server");
+    logger::Initialize(WORKDIR"/"SRVLOG_FILE);
+
+    logger::EchoOff();
+    Log(Emerg) << DIBBLER_COPYRIGHT1 << " (SERVER)" << LogEnd;
+    logger::EchoOn();
 
     // parse command line parameters
     if (argc>1) {
-	strncpy(command,argv[1],strlen(argv[1]));
-    } else {
+	strncpy(command,argv[1],strlen(argv[1]));    } else {
 	memset(command,0,256);
     }
 
@@ -254,6 +261,8 @@ int main(int argc, char * argv[])
     if (result!=0) {
 	help();
     }
+
+    logger::Terminate();
 
     return 0;
 }

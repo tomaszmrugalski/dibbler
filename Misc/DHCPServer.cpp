@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.16 2004-11-01 23:31:24 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.17 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/11/01 23:31:24  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.15  2004/10/25 20:45:52  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -57,7 +60,7 @@ TDHCPServer::TDHCPServer(string config)
     IfaceMgr = new TSrvIfaceMgr();
     
 	if ( IfaceMgr->isDone() ) {
-	  std::clog << logger::logCrit << "Fatal error during IfaceMgr. Aborting." << logger::endl;
+	    Log(Crit) << "Fatal error during IfaceMgr. Aborting." << LogEnd;
 	  this->IsDone = true;
 	  return;
     }
@@ -123,17 +126,8 @@ bool TDHCPServer::checkPrivileges() {
 void TDHCPServer::stop() {
     serviceShutdown = 1;
 	Log(Warning) << "Service SHUTDOWN." << LogEnd;
-#ifdef WIN32
-    // just to break select() in WIN32 systems
-	//std::clog << logger::logWarning << "Service shutdown: Sending SHUTDOWN packet on iface="
-	//	<< TransMgr->getCtrlIface() << "/addr=" << TransMgr->getCtrlAddr() << logger::endl;
-    //   int fd=	sock_add("", TransMgr->getCtrlIface(),"::",0,true); 
-	//char buf = CONTROL_MSG;
-    //   int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
-    //   sock_del(fd);
-#endif
-}
 
+}
 
 TDHCPServer::~TDHCPServer()
 {

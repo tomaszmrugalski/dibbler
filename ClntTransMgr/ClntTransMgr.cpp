@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.26 2004-11-30 00:53:56 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.27 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/11/30 00:53:56  thomson
+ * RapidCommit is now property of the interface, not the group.
+ *
  * Revision 1.25  2004/11/05 09:01:29  thomson
  * Win32 socket initialization error corrected.
  * Thanks to Michal Balcerkiewicz.
@@ -404,7 +407,7 @@ void TClntTransMgr::shutdown()
                     SmartPtr<TIfaceIface> ptrIface;
                     ptrIface = IfaceMgr->getIfaceByID(ptrNextIA->getIface());
                     if (!ptrIface) {
-                        std::clog << logger::logError << "Unable to find " << ptrNextIA->getIface()
+			Log(Error) << "Unable to find " << ptrNextIA->getIface()
                             << " interface while releasing address." << LogEnd;
                         break;
                     }

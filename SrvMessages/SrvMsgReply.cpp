@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.12 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.13 2004-12-02 00:51:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.11  2004/09/07 22:02:33  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -255,8 +258,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		    this->Options.append((Ptr*)optIA_NA);
 		else {
 		    this->IsDone = true;
-		    std::clog << logger::logNotice << "REBIND received with unknown addresses and " 
-			      << "was silently discarded." << logger::endl;
+		    Log(Notice) << "REBIND received with unknown addresses and " 
+			      << "was silently discarded." << LogEnd;
 		    return;
 		}
                 break;
@@ -266,7 +269,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         case OPTION_STATUS_CODE:
         case OPTION_PREFERENCE:
         case OPTION_UNICAST:
-            Log(Warning) << "Invalid option (" <<ptrOpt->getOptType() << ") received." << logger::endl;
+            Log(Warning) << "Invalid option (" <<ptrOpt->getOptType() << ") received." << LogEnd;
             break;
         default:
             appendDefaultOption(ptrOpt);
@@ -335,14 +338,14 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    addr=(Ptr*) subOpt;                
 	    SmartPtr<TAddrClient> ptrClient = AddrMgr->getClient(clntID->getDUID());
 	    if (!ptrClient) {
-		std::clog << logger::logWarning << "Received RELEASE from unknown client." << logger::endl;
+		Log(Warning) << "Received RELEASE from unknown client." << LogEnd;
 		IsDone = true;
 		return;
 	    }
 	    SmartPtr<TAddrIA> ptrIA = ptrClient->getIA(clntIA->getIAID() );
 	    if (!ptrIA) {
-		std::clog << logger::logWarning << "No such IA(" << clntIA->getIAID() 
-			  << ") found for client:" << *clntID->getDUID() << logger::endl;
+		Log(Warning) << "No such IA(" << clntIA->getIAID() 
+			  << ") found for client:" << *clntID->getDUID() << LogEnd;
 		Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,
 						 "No such IA is bound.",this) );
 	    } else {
@@ -433,7 +436,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         case OPTION_RAPID_COMMIT:
         case OPTION_UNICAST:
         case OPTION_STATUS_CODE:
-            std::clog << "Invalid option type("<<ptrOpt->getOptType()<<") received." << logger::endl;
+            Log(Warning) << "Invalid option "<<ptrOpt->getOptType()<<" received." << LogEnd;
             break;
         default:
             appendDefaultOption(ptrOpt);
@@ -506,8 +509,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	case OPTION_IAADDR      :
 	case OPTION_UNICAST     :
 	case OPTION_RAPID_COMMIT:
-	    std::clog << "Invalid option type("
-		      <<opt->getOptType()<<") received." << logger::endl;
+	    Log(Warning) << "Invalid option " << opt->getOptType()<<" received." << LogEnd;
 	    break;
 	default:
 	    appendDefaultOption(opt);
@@ -637,8 +639,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
             case OPTION_RECONF_MSG  :
             case OPTION_IA          : 
             case OPTION_IA_TA       :
-                std::clog << "Invalid option type("
-                    <<ptrOpt->getOptType() <<") received." << logger::endl;
+                Log(Warning) << "Invalid option " << ptrOpt->getOptType() <<" received." << LogEnd;
                 break;
             default:
                 this->appendDefaultOption(ptrOpt);

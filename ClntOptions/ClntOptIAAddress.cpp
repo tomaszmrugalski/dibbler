@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIAAddress.cpp,v 1.3 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntOptIAAddress.cpp,v 1.4 2004-12-02 00:51:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -52,21 +55,22 @@ TClntOptIAAddress::TClntOptIAAddress( char * buf, int n, TMsg* parent)
                     SubOptions.append( new TClntOptStatusCode(buf+pos,length, this->Parent) );
                     break;
                 default:
-                    clog<< logger::logWarning <<"Option opttype=" << code<< "not supported "
-                        <<" in field of message (type="<< parent->getType() <<") in this version of client."<<logger::endl;
+                    Log(Warning) <<"Option opttype=" << code<< "not supported "
+				 <<" in field of message (type="<< parent->getType() 
+				 <<") in this version of client."<<LogEnd;
                     break;
                 }
                 if((opt)&&(opt->isValid()))
                     SubOptions.append(opt);
             }
             else
-                clog << logger::logWarning << "Illegal option received, opttype=" << code 
-                    << " in field options of IA_NA option"<<logger::endl;
+		Log(Warning) << "Illegal option received, opttype=" << code 
+			     << " in field options of IA_NA option"<<LogEnd;
         }
         else
         {
-                clog << logger::logWarning <<"Unknown option in option IA_NA( optType=" 
-                    << code << "). Option ignored." << logger::endl;
+	    Log(Warning) <<"Unknown option in option IA_NA( optType=" 
+			 << code << "). Option ignored." << LogEnd;
         };
 	    pos+=length;
     }

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.26 2004-10-25 20:45:53 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.27 2004-12-02 00:51:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.25  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
@@ -151,7 +154,7 @@ void TSrvCfgMgr::dump() {
 bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
     int cfgIfaceCnt;
     cfgIfaceCnt = parser->SrvCfgIfaceLst.count();
-    Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << logger::endl;
+    Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << LogEnd;
 
     SmartPtr<TSrvCfgIface> cfgIface;
     SmartPtr<TIfaceIface>  ifaceIface;
@@ -337,10 +340,10 @@ bool TSrvCfgMgr::checkConfigConsistency() {
         TTimeZone tzone(ptrIface->getTimezone());
         if ((ptrIface->getTimezone()!="")&&(!tzone.isValid()))
         {
-            clog<<logger::logCrit
+	    Log(Crit)
                 << "Not appropiate time zone option for iface(id/name) "
                 <<ptrIface->getID()<<"/"<<ptrIface->getName()
-                <<" is provided." << logger::endl;
+                <<" is provided." << LogEnd;
             return !(this->IsDone=true);
         }
         
@@ -349,22 +352,22 @@ bool TSrvCfgMgr::checkConfigConsistency() {
         {
             if (ptrClass->getPref(0)>ptrClass->getValid(0x7fffffff))
             {
-                clog<<logger::logCrit
+		Log(Crit)
                     <<"Prefered time upper bound:" <<ptrClass->getPref(0x7fffffff)
                     <<"can't be lower than valid time lower bound:"
                     <<ptrClass->getValid(0)
                     <<"for iface(id/name)"<<ptrIface->getID()<<"/"
-                    <<ptrIface->getName() << logger::endl;
+                    <<ptrIface->getName() << LogEnd;
                 return !(this->IsDone=true);
             }
             if (ptrClass->getT1(0)>ptrClass->getT2(0x7fffffff))
             {
-                clog<<logger::logCrit
+		Log(Crit)
                     <<"T2 timeout upper bound:" <<ptrClass->getPref(0x7fffffff)
                     <<"can't be lower than T2 lower bound:"
                     <<ptrClass->getT2(0)
                     <<"for iface(id/name)"<<ptrIface->getID()<<"/"
-                    <<ptrIface->getName() << logger::endl;
+                    <<ptrIface->getName() << LogEnd;
                 return !(IsDone=true);
             }
         }
