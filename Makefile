@@ -210,6 +210,30 @@ release-doc: VERSION-src doc oxygen
 	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG \
                  doc/*.pdf doc/html doc/rfc doc/rfc-drafts 
 
+install: server client doc
+	$(MKDIR) $(INST_WORKDIR)
+	@echo "[INSTALL] $(SERVERBIN)"
+	$(INSTALL) -m 755 $(SERVERBIN) $(INST_WORKDIR)/
+	@echo "[INSTALL] $(CLIENTBIN)"
+	$(INSTALL) -m 755 $(CLIENTBIN) $(INST_WORKDIR)/
+	@for dir in *.conf; do \
+		(echo "[INSTALL] $$dir" && $(INSTALL) -m 644 $$dir $(INST_WORKDIR)) \
+	done
+	$(MKDIR) $(INST_MANDIR)/man8
+	@for dir in doc/man/*.8; do \
+		(echo "[INSTALL] $$dir" && $(INSTALL) -m 644 $$dir $(INST_MANDIR)/man8) \
+	done
+	$(MKDIR) $(INST_DOCDIR)/dibbler
+	@echo "[INSTALL] /doc/dibbler-user.pdf"
+	$(INSTALL) -m 755 doc/dibbler-user.pdf $(INST_DOCDIR)/dibbler/dibbler-user.pdf
+	@echo "[INSTALL] /doc/dibbler-devel.pdf"
+	$(INSTALL) -m 755 doc/dibbler-devel.pdf $(INST_DOCDIR)/dibbler/dibbler-devel.pdf
+	echo "[LINKS  ] $(SERVERBIN) "
+	ln -sf $(INST_WORKDIR)/$(SERVERBIN) $(INST_BINDIR)
+	echo "[LINKS  ] $(CLIENTBIN) "
+	ln -sf $(INST_WORKDIR)/$(CLIENTBIN) $(INST_BINDIR)
+
+
 fixme:
 	rm -rf FIXME
 	find . -name \*.cpp -exec grep -H "FIXME" {} \; | tee FIXME
