@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.6 2005-01-08 16:52:04 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.7 2005-01-30 22:53:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.5  2005/01/03 23:13:57  thomson
  * Partial relay implementation.
  *
@@ -54,7 +57,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
     void dump();
     
     // ---sends messages---
-    bool send(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
+    bool send(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr, int port);
     
     // ---receives messages---
     SmartPtr<TSrvMsg> select(unsigned long timeout);

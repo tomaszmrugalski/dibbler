@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: dibbler-relay.cpp,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.2 2005-01-30 22:53:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  *                                                                           
  */
 
@@ -68,11 +71,9 @@ void daemon_init() {
     } // getppid()!=1
 
     // store new pid file
-    string tmp;
-    tmp = (string)WORKDIR+"/"+(string)RELPID_FILE;
-    unlink(tmp.c_str());
-    ofstream pidfile(tmp.c_str());
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << tmp << LogEnd;
+    unlink(RELPID_FILE);
+    ofstream pidfile(RELPID_FILE);
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << RELPID_FILE << LogEnd;
     pidfile << getpid();
     pidfile.close();
     umask(0);
@@ -84,12 +85,9 @@ void daemon_die() {
 }
 
 void init() {
-    string tmp;
-    tmp = (string)WORKDIR+"/"+(string)RELPID_FILE;
-    unlink(tmp.c_str());
-    ofstream pidfile(tmp.c_str());
-    cout << "My pid (" << getpid() << ") is stored in " 
-	 << tmp << endl;
+    unlink(RELPID_FILE);
+    ofstream pidfile(RELPID_FILE);
+    cout << "My pid (" << getpid() << ") is stored in " RELPID_FILE << endl;
     pidfile << getpid();
     pidfile.close();
 
@@ -108,9 +106,9 @@ void signal_handler(int n) {
     ptr->stop();
 }
 
+
 int getClientPID() {
-    string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
-    ifstream pidfile(tmp.c_str());
+    ifstream pidfile(CLNTPID_FILE);
     if (!pidfile.is_open()) 
 	return -1;
     int pid;
@@ -119,8 +117,16 @@ int getClientPID() {
 }
 
 int getServerPID() {
-    string tmp = (string)WORKDIR+"/"+(string)SRVPID_FILE;
-    ifstream pidfile(tmp.c_str());
+    ifstream pidfile(SRVPID_FILE);
+    if (!pidfile.is_open()) 
+	return -1;
+    int pid;
+    pidfile >> pid;
+    return pid;
+}
+
+int getRelayPID() {
+    ifstream pidfile(RELPID_FILE);
     if (!pidfile.is_open()) 
 	return -1;
     int pid;
@@ -130,6 +136,7 @@ int getServerPID() {
 
 int status() {
     int pid = getServerPID();
+    int result;
     if (pid==-1) {
 	cout << "Dibbler server: NOT RUNNING." << endl;
     } else {
@@ -143,7 +150,15 @@ int status() {
 	cout << "Dibbler client: RUNNING, pid=" << pid << endl;
     }
 
-    return 0;
+    pid = getRelayPID();
+    result = pid;
+    if (pid==-1) {
+	cout << "Dibbler relay : NOT RUNNING." << endl;
+    } else {
+	cout << "Dibbler relay : RUNNING, pid=" << pid << endl;
+    }
+
+    return result;
 }
 
 int run() {
@@ -174,7 +189,7 @@ int start() {
 int stop() {
     int pid = getServerPID();
     if (pid==-1) {
-	cout << "Server is not running." << endl;
+	cout << "Relay is not running." << endl;
 	return -1;
     }
     cout << "Sending KILL signal to process " << pid << endl;
@@ -207,6 +222,7 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
+    int ret = 0;
 
     std::cout << DIBBLER_COPYRIGHT1 << " (RELAY)" << std::endl;
     std::cout << DIBBLER_COPYRIGHT2 << std::endl;
@@ -222,7 +238,8 @@ int main(int argc, char * argv[])
 
     // parse command line parameters
     if (argc>1) {
-	strncpy(command,argv[1],strlen(argv[1]));    } else {
+	strncpy(command,argv[1],strlen(argv[1])+1);
+    } else {
 	memset(command,0,256);
     }
 
@@ -231,24 +248,27 @@ int main(int argc, char * argv[])
     }
     if (!strncasecmp(command,"run",3) ) {
 	init();
-	result = run();
+	run();
+	result = 0;
     }
     if (!strncasecmp(command,"stop",4)) {
-	result = stop();
+	stop();
+	result = 0;
     }
     if (!strncasecmp(command,"status",6)) {
-	result = status();
+	status();
+	result = 0;
     }
     if (!strncasecmp(command,"help",4)) {
 	help();
 	result = 0;
     }
     if (!strncasecmp(command,"install",7)) {
-	cout << "NOT IMPLEMENTED YET" << endl;
+	cout << "Function not available in Linux/Unix systems." << endl;
 	result = 0;
     }
     if (!strncasecmp(command,"uninstall",9)) {
-	cout << "NOT IMPLEMENTED YET" << endl;
+	cout << "Function not available in Linux/Unix systems." << endl;
 	result = 0;
     }
 
@@ -258,5 +278,5 @@ int main(int argc, char * argv[])
 
     logger::Terminate();
 
-    return 0;
+    return ret;
 }

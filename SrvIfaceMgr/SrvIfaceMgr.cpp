@@ -93,7 +93,7 @@ void TSrvIfaceMgr::dump()
  * returns true if message was send successfully
  */
 bool TSrvIfaceMgr::send(int iface, char *msg, int size, 
-			SmartPtr<TIPv6Addr> addr) {
+			SmartPtr<TIPv6Addr> addr, int port) {
     // find this interface
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
@@ -113,7 +113,7 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 
     // send it!
-    return ptrSocket->send(msg,size,addr,DHCPSERVER_PORT);
+    return ptrSocket->send(msg,size,addr,port);
 }
 
 /**

@@ -72,12 +72,11 @@ void daemon_init() {
 	
     } // getppid()!=1
 
-    string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
-    unlink(tmp.c_str());
-    ofstream pidfile(tmp.c_str());
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << tmp << LogEnd;
+    unlink(CLNTPID_FILE);
+    ofstream pidfile(CLNTPID_FILE);
     pidfile << getpid();
     pidfile.close();
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << CLNTPID_FILE << LogEnd;
 
     umask(0);
 }
@@ -87,28 +86,24 @@ void daemon_die() {
 }
 
 void init() {
-
-    string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
-    unlink(tmp.c_str());
-    ofstream pidfile(tmp.c_str());
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << tmp << LogEnd;
+    unlink(CLNTPID_FILE);
+    ofstream pidfile(CLNTPID_FILE);
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << CLNTPID_FILE << LogEnd;
     pidfile << getpid();
     pidfile.close();
 
     if (chdir(WORKDIR)) {
 	Log(Error) << "Can't change directory to " << WORKDIR << LogEnd;
     }
-
 }
 
 void die() {
-    string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
-    unlink(tmp.c_str());
+    Log(Debug) << "Removing PID file (" << CLNTPID_FILE << ")." << LogEnd;
+    unlink(CLNTPID_FILE);
 }
 
 int getClientPID() {
-    string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
-    ifstream pidfile(tmp.c_str());
+    ifstream pidfile(CLNTPID_FILE);
     if (!pidfile.is_open()) 
 	return -1;
     int pid;
@@ -117,8 +112,16 @@ int getClientPID() {
 }
 
 int getServerPID() {
-    string tmp = (string)WORKDIR+"/"+(string)SRVPID_FILE;
-    ifstream pidfile(tmp.c_str());
+    ifstream pidfile(SRVPID_FILE);
+    if (!pidfile.is_open()) 
+	return -1;
+    int pid;
+    pidfile >> pid;
+    return pid;
+}
+
+int getRelayPID() {
+    ifstream pidfile(RELPID_FILE);
     if (!pidfile.is_open()) 
 	return -1;
     int pid;
@@ -128,6 +131,7 @@ int getServerPID() {
 
 int status() {
     int pid = getServerPID();
+    int result;
     if (pid==-1) {
 	cout << "Dibbler server: NOT RUNNING." << endl;
     } else {
@@ -135,13 +139,21 @@ int status() {
     }
     
     pid = getClientPID();
+    result = pid;
     if (pid==-1) {
 	cout << "Dibbler client: NOT RUNNING." << endl;
     } else {
 	cout << "Dibbler client: RUNNING, pid=" << pid << endl;
     }
 
-    return 0;
+    pid = getRelayPID();
+    if (pid==-1) {
+	cout << "Dibbler relay : NOT RUNNING." << endl;
+    } else {
+	cout << "Dibbler relay : RUNNING, pid=" << pid << endl;
+    }
+
+    return pid;
 }
 
 int run() {
@@ -201,6 +213,7 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
+    int ret=0;
 
     std::cout << DIBBLER_COPYRIGHT1 << " (CLIENT)" << std::endl;
     std::cout << DIBBLER_COPYRIGHT2 << std::endl;
@@ -208,42 +221,46 @@ int main(int argc, char * argv[])
     std::cout << DIBBLER_COPYRIGHT4 << std::endl;
 
     logger::setLogName("Client");
-    logger::Initialize(WORKDIR"/"CLNTLOG_FILE);
+    logger::Initialize(CLNTLOG_FILE);
 
     logger::EchoOff();
-    Log(Notice) << DIBBLER_COPYRIGHT1 << " (SERVER)" << LogEnd;
+    Log(Notice) << DIBBLER_COPYRIGHT1 << " (CLIENT)" << LogEnd;
     logger::EchoOn();
 
     // parse command line parameters
     if (argc>1) {
-	strncpy(command,argv[1],strlen(argv[1]));
+	strncpy(command,argv[1],strlen(argv[1])+1);
     } else {
 	memset(command,0,256);
     }
 
     if (!strncasecmp(command,"start",5) ) {
-	result = start();
+	start();
+	result = 0;
     }
     if (!strncasecmp(command,"run",3) ) {
 	init();
-	result = run();
+	run();
+	result = 0;
     }
     if (!strncasecmp(command,"stop",4)) {
-	result = stop();
+	stop();
+	result = 0;
     }
     if (!strncasecmp(command,"status",6)) {
-	result = status();
+	status();
+	result = 0;
     }
     if (!strncasecmp(command,"help",4)) {
 	help();
 	result = 0;
     }
     if (!strncasecmp(command,"install",7)) {
-	cout << "NOT IMPLEMENTED YET" << endl;
+	cout << "Function not available in Linux/Unix systems." << endl;
 	result = 0;
     }
     if (!strncasecmp(command,"uninstall",9)) {
-	cout << "NOT IMPLEMENTED YET" << endl;
+	cout << "Function not available in Linux/Unix systems." << endl;
 	result = 0;
     }
 
@@ -253,7 +270,6 @@ int main(int argc, char * argv[])
 
     logger::Terminate();
 
-    return 0;
-
+    return ret;
 }
 

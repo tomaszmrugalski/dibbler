@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.9 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.10 2005-01-30 22:53:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.8  2004/12/04 23:43:26  thomson
  * Server no longer crashes after receiving the same INF-REQUEST (bug #84)
  *
@@ -256,6 +259,7 @@ void TSrvMsg::send()
 {
     static char buf[2048];
     int offset = 0;
+    int port;
 
     SmartPtr<TSrvIfaceIface> ptrIface;
     SmartPtr<TSrvIfaceIface> under;
@@ -268,7 +272,9 @@ void TSrvMsg::send()
         Log(Cont) << " " << ptrOpt->getOptType();
     Log(Cont) << ", " << this->Relays << " relays." << LogEnd;
 
+    port = DHCPCLIENT_PORT;
     if (this->Relays>0) {
+	port = DHCPSERVER_PORT;
 	if (this->Relays>HOP_COUNT_LIMIT) {
 	    Log(Error) << "Unable to send message. Got " << this->Relays << " relay entries (" << HOP_COUNT_LIMIT
 		       << " is allowed maximum." << LogEnd;
@@ -314,7 +320,7 @@ void TSrvMsg::send()
     }
 
     this->storeSelf(buf+offset);
-    this->SrvIfaceMgr->send(ptrIface->getID(), buf, offset+this->getSize(), this->PeerAddr);
+    this->SrvIfaceMgr->send(ptrIface->getID(), buf, offset+this->getSize(), this->PeerAddr, port);
 }
 
 void TSrvMsg::copyRelayInfo(SmartPtr<TSrvMsg> q) {

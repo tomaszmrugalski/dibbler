@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.36 2005-01-25 21:14:14 thomson Exp $
+ * $Id: Portable.h,v 1.37 2005-01-30 22:53:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2005/01/25 21:14:14  thomson
+ * *** empty log message ***
+ *
  * Revision 1.35  2005/01/24 00:42:57  thomson
  * no message
  *
@@ -94,32 +97,32 @@
 #define CLNTCFGMGR_FILE   "client-CfgMgr.xml"
 #define CLNTIFACEMGR_FILE "client-IfaceMgr.xml"
 #define CLNTDUID_FILE	  "client-duid"
-#define CLNTLOG_FILE	  "client.log"
 #define CLNTADDRMGR_FILE  "client-AddrMgr.xml"
 #define CLNTTRANSMGR_FILE "client-TransMgr.xml"
 
 #define SRVCFGMGR_FILE    "server-CfgMgr.xml"
 #define SRVIFACEMGR_FILE  "server-IfaceMgr.xml"
 #define SRVDUID_FILE	  "server-duid"
-#define SRVLOG_FILE       "server.log"
 #define SRVADDRMGR_FILE   "server-AddrMgr.xml"
 #define SRVTRANSMGR_FILE  "server-TransMgr.xml"
 
 #define RELCFGMGR_FILE    "relay-CfgMgr.xml"
 #define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
-#define RELLOG_FILE       "relay.log"
 #define RELTRANSMGR_FILE  "relay-TransMgr.xml"
 
 // false - normal operation
 // true - Linux: client and server can be run on the same host, but
 //        there is also a drawback: multiple clients can be run at once.
-#define CLIENT_BIND_REUSE false
+#define CLIENT_BIND_REUSE true
 
 #ifdef WIN32
 #define WORKDIR           ".\\"
 #define CLNTCONF_FILE	  "client.conf"
 #define SRVCONF_FILE      "server.conf"
 #define RELCONF_FILE      "relay.conf"
+#define CLNTLOG_FILE	  "client.log"
+#define CLNTLOG_FILE	  "client.log"
+#define RELLOG_FILE       "relay.log"
 #define NULLFILE          "nul"
 #endif
 
@@ -129,9 +132,12 @@
 #define SRVCONF_FILE      "/etc/dibbler/server.conf"
 #define RELCONF_FILE      "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
-#define CLNTPID_FILE      "client.pid"
-#define SRVPID_FILE       "server.pid"
-#define RELPID_FILE       "relay.pid"
+#define CLNTPID_FILE      "/var/lib/dibbler/client.pid"
+#define SRVPID_FILE       "/var/lib/dibbler/server.pid"
+#define RELPID_FILE       "/var/lib/dibbler/relay.pid"
+#define CLNTLOG_FILE	  "/var/lib/dibbler/dibbler-client.log"
+#define SRVLOG_FILE	  "/var/lib/dibbler/dibbler-server.log"
+#define RELLOG_FILE       "/var/lib/dibbler/dibbler-relay.log"
 #define NULLFILE          "/dev/null"
 #endif
 
