@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel.tex,v 1.5 2004-11-15 21:11:18 thomson Exp $
+%% $Id: dibbler-devel.tex,v 1.6 2004-11-25 01:16:36 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.5  2004/11/15 21:11:18  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.4  2004/11/02 00:02:22  thomson
 %% Documentation improved.
 %%
@@ -28,6 +31,14 @@
 \usepackage{fancyhdr}
 \usepackage{indentfirst}
 \usepackage{longtable}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage[ps2pdf,colorlinks=true,linkcolor=myLinkColor,urlcolor=myUrlColor]{hyperref}
+
+\definecolor{myBgColor}{rgb}{0.9,0.9,0.9}
+\definecolor{myLinkColor}{rgb}{0.0,0.4,0.0}
+\definecolor{myUrlColor}{rgb}{0.7,0.2, 0.4}
+\pagecolor{myBgColor}
 
 %\setlength{\topmargin}{-1.0cm}
 
@@ -78,13 +89,16 @@ version 0.3.0-RC2
 \tableofcontents
 
 This document is currently being written. First full version will be
-included in 0.2.1 release.
+included in 0.3.0 release.
 
 %% INTRO, OVERVIEW
 \input{dibbler-devel-intro.tex}
 
 %% COMPILATION
 \input{dibbler-devel-compile.tex}
+
+%% COMMON INFORMATION (e.g. SmartPtr)
+\input{dibbler-devel-common.tex}
 
 %% CLIENT ARCHITECTURE
 \input{dibbler-devel-arch-clnt.tex}

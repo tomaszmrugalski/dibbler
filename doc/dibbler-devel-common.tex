@@ -1,0 +1,39 @@
+%%
+%% Dibbler - a portable DHCPv6
+%%
+%% authors: Tomasz Mrugalski <thomson@klub.com.pl>
+%%          Marek Senderski <msend@o2.pl>
+%%
+%% released under GNU GPL v2 or later licence
+%%
+
+\section{Basic informations}
+
+In this section various common aspects of the Dibbler internal
+workings are decribed.
+
+\subsection{Option values and filenames}
+
+Dibbler uses several options which are specified in drafts rather than
+RFC documents. IANA organisation does not assign proper, well known
+number to options that are in the draft phase. Some values must be
+choosen arbitrarily. This must be kept in mind, expecially when there
+is an interoperability considered. All values used are specified in the
+\verb+misc/DHCPConst.h+ file. 
+
+In default build, Dibbler stores all information in the
+\verb+/var/lib/dibbler+ directory (Linux) or in the working directory
+(Windows). There are multiple files stored in those
+directories. However, sometime there is a need to build Dibbler which uses
+different directory or filename. To do so, simply edit
+\verb+misc/Portable.h+ file.
+
+\subsection{Memory Manegement using SmartPtr}
+To effectively fight memory leaks, clever mechanism was introduced. 
+
+
+%%
+%% $Id: dibbler-devel-common.tex,v 1.1 2004-11-25 01:16:36 thomson Exp $
+%%
+%% $Log: not supported by cvs2svn $
+%%
