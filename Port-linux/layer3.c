@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.5 2004-06-04 16:55:27 thomson Exp $
+ * $Id: layer3.c,v 1.6 2004-06-04 20:54:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.4  2004/05/23 15:19:29  thomson
  * All comments translated to english.
  *
@@ -91,6 +94,9 @@ void if_list_release(struct iface * list) {
     }
 }
 
+/*
+ * returns interface list with detailed informations
+ */
 struct iface * if_list_get()
 {
     struct nlmsg_list *linfo = NULL;
@@ -153,6 +159,9 @@ struct iface * if_list_get()
     return head;
 }
 
+/*
+ * returns local addresses for specified interface
+ */
 void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list *ainfo) {
     int cnt=0;
     char * buf=0, * tmpbuf=0;
@@ -191,8 +200,11 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
     *bufPtr = buf;
 }
 
+/*
+ * adds or deletes addresses to interface
+ */
 
-int ipaddr_add_or_del(char * addr, char *d,int add)
+int ipaddr_add_or_del(char * addr, char *ifacename,int add)
 {
 	struct rtnl_handle rth;
 	struct {
@@ -233,8 +245,8 @@ int ipaddr_add_or_del(char * addr, char *d,int add)
 	ll_init_map(&rth);
 
 	// is there an interface with this ifindex?
-	if ((req.ifa.ifa_index = ll_name_to_index(d)) == 0) {
-		fprintf(stderr, "Cannot find device \"%s\"\n", d);
+	if ((req.ifa.ifa_index = ll_name_to_index(ifacename)) == 0) {
+		fprintf(stderr, "Cannot find device \"%s\"\n", ifacename);
 		return -1;
 	}
 	rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
