@@ -1,6 +1,6 @@
 # === used tools ===
-CPP          = g++
-CC           = gcc
+CPP          = g++-2.95
+CC           = gcc-2.95
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
@@ -10,7 +10,7 @@ OPTS         = -ftemplate-depth-40 $(COPTS)
 
 # debug info
 DEBUGINFO    = -g
-EFENCE      = -lefence
+#EFENCE       = -lefence
 
 # === Portability ===
 ARCH         = LINUX

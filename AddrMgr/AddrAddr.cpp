@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.3 2004-03-29 18:53:09 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.4 2004-04-10 14:14:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/03/29 18:53:09  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -124,6 +127,6 @@ ostream & operator<<(ostream & strum,TAddrAddr &x) {
 	  << " timestamp=\"" << x.Timestamp << "\""
 	  << " pref=\"" << x.Prefered <<"\""
 	  << " valid=\"" << x.Valid <<  "\""
-	  << ">" << x.Addr->getPlain()<< "\"</AddrAddr>" << std::endl;
+	  << ">" << x.Addr->getPlain()<< "</AddrAddr>" << std::endl;
     return strum;
 }
