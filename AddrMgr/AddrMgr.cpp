@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.7 2004-04-06 23:09:48 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.8 2004-04-09 19:25:04 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/04/06 23:09:48  thomson
+ * dbStore was causing segfaults in rare occasions, so it is commented out.
+ *
  * Revision 1.6  2004/04/06 22:21:05  thomson
  * *** empty log message ***
  *
@@ -59,9 +62,9 @@ void TAddrMgr::dbStore()
     std::clog << "###dbStore(): " << buf << std::endl;
 
     // this was causing problems in some cases, so it was commented out
-//    f.open(buf);
-//    f << *this;
-//    f.close();
+    f.open(buf);
+    f << *this;
+    f.close();
 }
 
 void TAddrMgr::addClient(SmartPtr<TAddrClient> x)
