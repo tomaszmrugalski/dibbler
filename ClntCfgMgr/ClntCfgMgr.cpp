@@ -6,13 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.12 2004-05-23 20:50:38 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.13 2004-05-23 21:02:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.11  2004/05/23 20:41:03  thomson
+ * Revision 1.12  2004/05/23 20:50:38  thomson
  * *** empty log message ***
  *
- *                                                                           
  */
 
 #include <iostream>
@@ -54,7 +53,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     // parse config file
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
-        std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl; 
+	Log(logCrit) << "Unable to open " << cfgFile << " file." << logger::endl; 
 	this->IsDone = true;
         return;
     }
@@ -151,7 +150,6 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	IfaceMgr->firstIface();
 	while ( ifaceIface = IfaceMgr->getIface() ) {
 	    // for each interface present in the system...
-	    // which is supposed to be configured
 	    if (!ifaceIface->flagUp()) {
 		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
 			       << " is down, ignoring." << logger::endl;

@@ -13,6 +13,7 @@
 using namespace std;
 
 TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string oldCfgFile)
+    :TCfgMgr((Ptr*)ifaceMgr)
 {
     int result;
     bool newConf=false;

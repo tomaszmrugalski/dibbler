@@ -37,7 +37,7 @@ void daemon_init() {
 
     logger::Initialize(SRVLOG_FILE);
 
-    int fd,childpid;
+    int childpid;
     std::clog << logger::logNotice << "Starting daemon..." << logger::endl;
 
     if (getppid()!=1) {

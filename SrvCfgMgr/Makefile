@@ -15,12 +15,14 @@ libSrvCfgMgr.a: objs
 objs: SrvParser.o SrvLexer.o SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o \
       SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o
 
-SrvParser.o: SrvParser.y
+parser: SrvParser.y SrvLexer.l
 	$(BISONPP) -d SrvParser.y -o SrvParser.cpp
+	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
+
+SrvParser.o: SrvParser.cpp
 	$(CPP) -c $(OPTS) -I $(INCDIR) SrvParser.cpp 
 
-SrvLexer.o: SrvLexer.l
-	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
+SrvLexer.o: SrvLexer.cpp
 	$(CPP) -c $(OPTS) -I $(INCDIR) SrvLexer.cpp 
 
 SrvCfgAddrClass.o: SrvCfgAddrClass.cpp SrvCfgAddrClass.h
