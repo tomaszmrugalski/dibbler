@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.18 2004-10-25 20:45:54 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.19 2004-11-02 01:37:09 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.17  2004/09/28 21:49:32  thomson
  * no message
  *
@@ -92,7 +95,7 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
 	/* unicast */
 	Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName() 
 		    << "/" << confIface->getID() << " interface." << LogEnd;
-	if (!iface->addSocket( unicast, DHCPSERVER_PORT, true)) {
+	if (!iface->addSocket( unicast, DHCPSERVER_PORT, true, false)) {
 	    Log(Crit) << "Proper socket creation failed." << LogEnd;
 	    return false;
 	}
@@ -101,7 +104,7 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
     /* multicast */
     Log(Notice) << "Creating multicast (ff02::1:2) socket on " << confIface->getName() 
 		<< "/" << confIface->getID() << " interface." << LogEnd;
-    if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true)) {
+    if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true, false)) {
 	Log(Crit) << "Proper socket creation failed." << LogEnd;
 	return false;
     }
