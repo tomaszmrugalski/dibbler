@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.18 2004-11-30 00:54:25 thomson Exp $
+ * $Id: layer3.c,v 1.19 2004-12-04 23:47:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/11/30 00:54:25  thomson
+ * Minor improvements.
+ *
  * Revision 1.17  2004/11/01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -21,17 +24,11 @@
  * Revision 1.14  2004/09/07 15:37:45  thomson
  * Socket handling changes.
  *
- * Revision 1.13  2004/09/05 16:28:25  thomson
- * *** empty log message ***
- *
  * Revision 1.12  2004/09/05 15:27:49  thomson
  * Data receive switched from recvfrom to recvmsg, unicast partially supported.
  *
  * Revision 1.11  2004/09/05 10:45:16  thomson
  * Socket binding fixed.
- *
- * Revision 1.10  2004/07/05 23:04:08  thomson
- * *** empty log message ***
  *
  * Revision 1.9  2004/07/05 00:53:03  thomson
  * Various changes.
@@ -41,12 +38,6 @@
  *
  * Revision 1.7  2004/07/01 18:13:51  thomson
  * Sockets are now bound to specific interface (bug #46)
- *
- * Revision 1.6  2004/06/04 20:54:34  thomson
- * *** empty log message ***
- *
- * Revision 1.5  2004/06/04 16:55:27  thomson
- * *** empty log message ***
  *
  * Revision 1.4  2004/05/23 15:19:29  thomson
  * All comments translated to english.
@@ -76,6 +67,8 @@
 #include "utils.h"
 #include "rt_names.h"
 #include "Portable.h"
+
+// #define LOWLEVEL_DEBUG 1
 
 struct nlmsg_list
 {
@@ -319,9 +312,12 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     else
 	multicast = 0;
 
-    //printf("### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d mcast=%d ###\n",
-    //ifacename,ifaceid, addr, port, thisifaceonly, multicast);
-    //fflush(stdout);
+#ifdef LOWLEVEL_DEBUG
+    printf("### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d reuse=%d###\n",
+    //printf("### sock_add(\"%s\", %d, \"%s\", %d, %d, %d); ###\n",
+    ifacename,ifaceid, addr, port, thisifaceonly, reuse);
+    fflush(stdout);
+#endif
     
     // Open a socket for inbound traffic
     memset(&hints, 0, sizeof(hints));
@@ -352,9 +348,11 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     }
 
     // allow address reuse (this option sucks - why allow running multiple servers?)
-    if ( (reuse!=0) && (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) )  {
-	// Unable to set up socket option SO_REUSEADDR
-	return -9;
+    if (reuse!=0) {
+	if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)  {
+	    // Unable to set up socket option SO_REUSEADDR
+	    return -9;
+	}
     }
 
     // bind socket to a specified port
