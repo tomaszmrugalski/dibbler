@@ -1,8 +1,8 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.11 2005-01-23 23:16:56 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.12 2005-02-01 23:06:48 thomson Exp $
 %%
 
-\section{Config files}
+\section{Configuration files}
 
 This section describes Dibbler server and (optional) client
 configuration. Square brackets denotes optional values: mandatory
@@ -76,7 +76,7 @@ Comments are also allowed. All common comment styles are supported:
 \item bash style one-line comments: \# this is one-line comment
 \end{itemize}
 
-\subsection{Client config file}
+\subsection{Client configuration file}
 
 Client config file should be named \verb+client.conf+. After
 successful startup, old version of this file is stored as
@@ -278,7 +278,7 @@ assumed. If client should not request for address on this interface,
 must be used. In such circumstances, only specified options will be
 requested.
 
-\subsubsection{Example client config file}
+\subsubsection{Client configuration file examples}
 
 In simplest case, client config can be empty. Client will try to
 assign one address for every interface present in the system, except
@@ -375,7 +375,7 @@ iface eth0
 }
 \end{verbatim}
 
-\subsection{Server config file}
+\subsection{Server configuration file}
 
 Server configuration is stored in \verb+server.conf+ file. After
 successful startup, old version of this file is stored as
@@ -506,7 +506,7 @@ Lifetime is a special case. It is not set up by client in a system
 configuration. It is, however, used by the client to know how long
 obtained values are correct.
 
-\subsubsection{Example server config file}
+\subsubsection{Server configuration file examples}
 
 In opposite to client, server uses only interfaces described in config
 file. Let's examine this common situation: server has interface
@@ -646,7 +646,7 @@ iface relay1 {
 \end{verbatim}
 
 
-\subsection{Relay config file}
+\subsection{Relay configuration file}
 
 Relay configuration is stored in \verb+/etc/dibbler/relay.conf+ file.
 
@@ -709,7 +709,7 @@ It is worth mentioning that interface-id should be specified on the
 interface, which is used to receive messages from the clients, not the
 one used to forward packets to server.
 
-\subsubsection{Example relay config file}
+\subsubsection{Relay configuration file examples}
 
 Relay configuration file is fairly simple. Relay forwards DHCPv6
 messages between interfaces. Messages from client are encapsulated and
@@ -774,6 +774,9 @@ iface eth3 {
 \end{verbatim}
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.11  2005/01/23 23:16:56  thomson
+%% Relay related things.
+%%
 %% Revision 1.10  2004/12/01 20:55:49  thomson
 %% Documentation updated.
 %%

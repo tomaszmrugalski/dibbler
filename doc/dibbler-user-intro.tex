@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.5 2005-01-23 23:16:56 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.6 2005-02-01 23:06:48 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.5  2005/01/23 23:16:56  thomson
+%% Relay related things.
+%%
 %% Revision 1.4  2004/10/25 20:45:54  thomson
 %% Option support, parsers rewritten. ClntIfaceMgr now handles options.
 %%
@@ -26,8 +29,10 @@ Dibbler website located at \url{http://klub.com.pl/dhcpv6/}.
 
 Dibbler is a portable DHCPv6 solution. It features server, client and
 relay. Currently there are ports available for Windows XP and 2003
-and Linux systems. Besides basic functionality specified in RFC3315,
-it also offers serveral enhancements, e.g. DNS servers and doman names
+and Linux systems. It supports both stateful (i.e. IPv6 address
+granting) and stateless (i.e. options granting) autoconfiguration.
+Besides basic functionality\footnote{specified in RFC3315}, it also offers
+serveral enhancements, e.g. DNS servers and doman names
 configuration.
 
 Dibbler is an open source software, distributed under GNU GPL
@@ -71,8 +76,8 @@ As for now, Dibbler offers these features:
   client recovers from crash or power failure, it still can have
   assigned valid addresses. In such circumstances, client uses CONFIRM
   message, to config if those addresses are still valid%
-  \footnote{As for 0.3.1 version, this functionality works on server side only,
-  client side support will be available in 0.4.0.}.
+  \footnote{As for 0.4.0 version, this functionality works on server side only,
+  client side support will be available in future releases.}.
 \item IA Option -- this option is used to carry addresses. Both server
   and client support multiple IAs in one message. Additional feature
   is client capability to ask for a specific address.
@@ -106,19 +111,38 @@ time zone it is currently in.
 
 And now some implementation specific details:
 \begin{itemize}
-\item On Server, client and relay, after each modification data is
-  dumped in XML format, so it can be easily processed in an automated
+\item Server, client and relay, after each action dumps state to disk
+  in a XML format, so it can be easily processed in an automated
   manner. Simple example of this advantage is a script, which can generate
   reports about server usage (assigned addresses, clients configured
   and so on);
 \item Dibbler is fully portable. Core logic is system independent and
-  coded in C++ language. There is about dozen low-level functions,
+  coded in C++ language. There are also several low-level functions,
   which are system speficic. They're used for adding addresses,
   retriving information about interfaces, setting DNS servers and so
   on. Porting Dibbler to other systems (and even other architectures)
   would require implementic only those serveral system-specific
   functions.
+\item Although Dibbler was developed on the i386 architecture, there
+  are ports available for other architectures: AMD64, PowerPC, Sparc and
+  Alpha. They are available in the PLD Linux Disctribution 2.0 in test
+  section. You can download them from
+  \url{ftp://ftp.pld-linux.org/dists/2.0/test/}. Keep in mind author
+  has not tested those ports, so there might be some unknown issues
+  present.
 \end{itemize}
 
 See RELEASE-NOTES for details about version-specific upgrades, fixes
 and features.
+
+\section{Requirements}
+
+Dibbler can be run on Linux systems with kernels from 2.4 and 2.6
+series. Obviously, IPv6 (compiled into kernel or as module) support is
+required to run. As DHCPv6 uses UDP ports below 1024, root privileges
+are required. 
+
+Dibbler also runs on Windows XP and 2003. In XP systems, at least
+Service Pack 1 is required. To install various Dibbler parts (server,
+client or relay) as services, administrator privileges might be
+required. 

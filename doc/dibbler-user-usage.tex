@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.8 2005-01-23 23:16:56 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.9 2005-02-01 23:06:48 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.8  2005/01/23 23:16:56  thomson
+%% Relay related things.
+%%
 %% Revision 1.7  2004/12/27 20:44:29  thomson
 %% Date is now generated in an automatic manner, deb/rpm building described
 %%
@@ -22,18 +25,21 @@
 %%
 
 \section{Installation and usage}
-Both client and server are installed in the same way. Installation
+Client, server and relay are installed in the same way. Installation
 method is different in WindowsXP and Linux systems, so they're described
 separately. To simplify installation, it assumes that binary versions
-are used\footnote{Compilation is not
-  required, binary version can be used safely. Compilation can be performed by
-  advanced users, see \emph{Compilation} section for details.}.
+are used\footnote{Compilation is not required, binary version can be
+  used safely. Compilation should be performed by
+  advanced users only, see \emph{Compilation} section for details.}.
 
 \subsection{Linux installation}
-As for 0.3.1, both server and client were provided within one
-packege. Starting with 0.4.0, there will be 3 different packages:
-client, server and relay. For some architectures there will be also
-documentation package provided.
+Starting with 0.4.0, there will are 3 different packages: client,
+server and relay. For some architectures there will be also
+documentation package provided. During writing this documentation,
+Dibbler is already present in the PLD Linux Distribution 2.0 in the
+test section. There are efforts under way to include 
+Dibbler in Debian GNU/Linux distribution as well as in Gentoo
+GNU/Linux distribution.
 
 Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an
 archive, which suits your needs. Currently there are provided RPM packages
@@ -47,10 +53,10 @@ rpm -i dibbler-0.3.1-1.i386.rpm
 
 To install Dibbler on Debian or other system with dpkg management
 system, run $dpkg -i archive.deb$ command. For example, to install
-dibbler 0.4.0, issue following command:
+server, issue following command:
 
 \begin{verbatim}
-dpkg -i dibbler_0.4.0_i386.rpm 
+dpkg -i dibbler-server_0.4.0-1_i386.rpm 
 \end{verbatim}
 
 To install Dibbler in Gentoo systems, download ebuild script and issue
@@ -108,9 +114,10 @@ dibbler-relay status
 \end{verbatim}
 
 \subsection{Windows installation}
-Starting at 0.2.1, Dibbler supports Windows XP and 2003. 
-Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an
-windows installer. After downloading, click on it and follow on screen
+Starting at 0.2.1, Dibbler supports Windows XP and 2003. The easiest
+way it to download clickable windows installer.
+Download it from \url{http://klub.com.pl/dhcpv6/}).
+After downloading, click on it and follow on screen
 instructions. Dibbler will be installed and all required links will be
 placed in the Start menu.
 
@@ -130,8 +137,8 @@ only by experienced users. Perferred method is to use binaries
 provided on Dibbler's website. Issue following commands:
 \begin{verbatim}
 tar zxvf dibbler-0.3.1-src.tar.gz
-cd dibber
-make server client
+cd dibbler
+make server client relay doc
 \end{verbatim}
 That's it. You can also install it in the system by issuing command:
 
@@ -154,7 +161,7 @@ directory. Most simple way to do this is to copy this file to
 \verb+/usr/include+ directory. Additional information about
 compilation can be found in \emph{Dibbler Developer's Guide}.
 
-\subsection{WindowsXP compilation}
+\subsection{WindowsXP/2003 compilation}
 Download dibbler-0.3.0-src.tar.gz and extract it. In Port-winxp there
 will be project files (for server, client and relay) for MS
 Visual C++ 2003. Open one of them and click Build command. That should
