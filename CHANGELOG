@@ -4,6 +4,8 @@
 
  0.4.0 [not-released-yet]
   - Relay implemented
+  - Win32: start/stop command are now working (bug #27)
+  - Win32: status command now shows if service is running (bug #28)
   - Server now supports relays (bug #70)
   - Working directories are not properly stored in the *-CfgMgr.xml files (bug #100)
  
@@ -17,7 +19,7 @@
   - Linux: make install was implemented (bugs #86, #87)
   - Linux: man pages were created (buf #61, #62)
   - Linux: RPM package prepared (bugs #63, #64)
-  - Windows installed (bugs #59, #60)
+  - Windows installer (bugs #59, #60)
   - Client now can handle denied REPLY for RENEW in a sanite way (bug #53)
   - Client now removes expired addresses (bug #15)
   - Server and client no longer supports link local addresses (bug #38, #39)
