@@ -262,10 +262,10 @@ release-gentoo: VERSION-linux
 release-all: release-src release-linux release-doc release-deb release-rpm release-win32
 
 deb:
-	@echo "Make sure that this directory is called dibbler-0.4.0 (substitute 0.4.0 with current version)"
-	@echo " and that there is a file ../dibbler_0.4.0.orig.tar.gz"
-	rm -rf debian
-	cp -r $(PORTDIR)/debian debian
+	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
+	echo " Make sure that there is a file ../dibbler_$(VERSION).orig.tar.gz"; false; fi
+	if [ -d ../dibbler ]; then \
+	echo "[RENAME ] ../dibbler-$(VERSION)" ; mv ../dibbler ../dibbler-$(VERSION); fi
 	dpkg-buildpackage -rfakeroot
 
 release-deb: VERSION-linux server client doc
