@@ -1,7 +1,10 @@
 /*
- * $Id: lowlevel-winxpsp1.c,v 1.7 2004-09-28 16:01:49 thomson Exp $
+ * $Id: lowlevel-winxpsp1.c,v 1.8 2004-09-28 19:43:46 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
+ *  Revision 1.7  2004/09/28 16:01:49  thomson
+ *  Various improvements, socket binding fix in progress.
+ *
  *  Revision 1.6  2004/05/24 21:16:37  thomson
  *  Various fixes.
  *
@@ -257,31 +260,25 @@ extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thi
 	if ((s=socket(AF_INET6,SOCK_DGRAM, 0)) == INVALID_SOCKET)
 		return -2;
 
-//	if (!IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addrpack))
-//		return s;
-//	}
-
 	memset(&bindme, 0, sizeof(bindme));
 	bindme.sin6_family   = AF_INET6;
 	bindme.sin6_port     = htons(port);
+
+	if (IN6_IS_ADDR_LINKLOCAL((IN6_ADDR*)packedAddr))
+		bindme.sin6_scope_id = ifaceid;
+
 	if (!IN6_IS_ADDR_MULTICAST((IN6_ADDR*)packedAddr)) 	{
-		// unicast 
         inet_pton6(addr, (char*)&bindme.sin6_addr);
-	} else {
-		// multicast
-		//bindme.sin6_scope_id = ifaceid;
-	}
+	} 
 
-	if (!mcast) {
-	  mcast = s;
-      if (bind(s, (struct sockaddr*)&bindme, sizeof(bindme))) {
-	      displayError(WSAGetLastError());		
-		  return -4;
-	  }
-	} else {
-      s = mcast;
-	}
+	// REUSEADDR must be before bind() in order to take effect
+	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &hops, sizeof(hops)) !=0 )
+		return -9;
 
+    if (bind(s, (struct sockaddr*)&bindme, sizeof(bindme))) {
+        // displayError(WSAGetLastError());		
+        return -4;
+	}
 
 	if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)packedAddr)) {
 		/* multicast */
@@ -316,7 +313,9 @@ int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
     if(IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)packaddr)
 		||IN6_IS_ADDR_SITELOCAL((struct in6_addr*)packaddr))
 		strcat(strcat(addrStr,"%"),ifaceStr);
-/*	if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addr))
+
+#if 0	
+	/*	if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)addr))
 	{
 		ipmreq.ipv6mr_interface=4;
 		memcpy(&ipmreq.ipv6mr_multiaddr,addr,16);
@@ -326,6 +325,7 @@ int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
 		//if(setsockopt(fd,IPPROTO_IPV6,IPV6_MULTICAST_HOPS,(char*)&hops,sizeof(hops)))
 		//	return -1; //WSAGetLastError();
 	}*/
+#endif
 	
 	memset(&inforemote, 0, sizeof(inforemote));
 	inforemote.ai_flags=AI_NUMERICHOST;
