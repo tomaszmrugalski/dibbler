@@ -1,3 +1,16 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * $Id: DHCPConst.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ */
 #include "DHCPConst.h"
 /*                                                      Appearance of Options in Message Types
 
