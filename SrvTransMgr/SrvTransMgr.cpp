@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.23 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.24 2005-01-12 00:10:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.22  2005/01/03 23:13:38  thomson
  * Relay initialization implemented.
  *
@@ -140,7 +143,7 @@ long TSrvTransMgr::getTimeout()
 {
     unsigned long min = 0xffffffff;
     unsigned long addrTimeout = 0xffffffff;
-    SmartPtr<TMsg> ptrMsg;
+    SmartPtr<TSrvMsg> ptrMsg;
     MsgLst.first();
     while (ptrMsg = MsgLst.get() ) 
     {
@@ -295,7 +298,7 @@ void TSrvTransMgr::doDuties()
         AddrMgr->doDuties();
 
     // for each message on list, let it do its duties, if timeout is reached
-    SmartPtr<TMsg> msg;
+    SmartPtr<TSrvMsg> msg;
     MsgLst.first();
     while (msg=MsgLst.get()) 
         if ( (!msg->getTimeout()) && (!msg->isDone()) ) 

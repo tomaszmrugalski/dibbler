@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.6 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvMsg.h,v 1.7 2005-01-12 00:10:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.5  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -76,14 +79,16 @@ public:
 
     int getRelayCount();
 
-    // maximum retransmission timeout
-    unsigned long MRT;
+    virtual bool check() = 0;
+
 
     unsigned long getTimeout();
     void doDuties();
     void send();
 protected:
     unsigned long FirstTimeStamp; // timestamp of first message transmission
+    unsigned long MRT;            // maximum retransmission timeout
+
     void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
 		    SmartPtr<TSrvTransMgr> TransMgr, 
 		    SmartPtr<TSrvCfgMgr> CfgMgr,

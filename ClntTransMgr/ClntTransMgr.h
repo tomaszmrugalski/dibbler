@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.7 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.8 2005-01-12 00:10:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/01/08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.6  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -78,7 +81,7 @@ class TClntTransMgr
     SmartPtr<TClntAddrMgr>  AddrMgr;
     SmartPtr<TClntTransMgr> That;
 
-    TContainer< SmartPtr<TMsg> > Transactions;
+    List(TClntMsg) Transactions;
     bool IsDone;
     bool Shutdown;
     bool ConfirmEnabled;  // should we send CONFIRM message?

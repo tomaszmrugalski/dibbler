@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.h,v 1.6 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvTransMgr.h,v 1.7 2005-01-12 00:10:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.5  2004/12/07 00:45:10  thomson
  * Manager creation unified and cleaned up.
  *
@@ -59,7 +62,7 @@ class TSrvTransMgr
     void setThat(SmartPtr<TSrvTransMgr> that);
   private:
     string XmlFile;
-    TContainer< SmartPtr<TMsg> > MsgLst;
+    List(TSrvMsg) MsgLst;
     bool IsDone;
 
     SmartPtr<TSrvIfaceMgr> IfaceMgr;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.33 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.34 2005-01-12 00:10:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2005/01/08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.32  2004/12/08 00:18:35  thomson
  * Log message clarified.
  *
@@ -322,7 +325,7 @@ bool TClntTransMgr::openLoopbackSocket() {
 void TClntTransMgr::doDuties()
 {
     // for each message on list, let it do its duties, if timeout is reached
-    SmartPtr <TMsg> msg;
+    SmartPtr <TClntMsg> msg;
     Transactions.first();
     while(msg=Transactions.get())
     {
@@ -492,7 +495,7 @@ unsigned long TClntTransMgr::getTimeout()
 	timeout = tmp;
 
     // Messages timeout
-    SmartPtr<TMsg> ptrMsg;
+    SmartPtr<TClntMsg> ptrMsg;
     Transactions.first();
     tmp = DHCPV6_INFINITY;
     while(ptrMsg=Transactions.get())
@@ -522,7 +525,7 @@ void TClntTransMgr::sendRequest(List(TOpt) requestOptions,
 	if (!allowOptInMsg(REQUEST_MSG, opt->getOptType()))
 	    requestOptions.del();
     }
-    SmartPtr<TMsg> ptr = new TClntMsgRequest(IfaceMgr,That,CfgMgr, AddrMgr, requestOptions,srvlist,iface);
+    SmartPtr<TClntMsg> ptr = new TClntMsgRequest(IfaceMgr,That,CfgMgr, AddrMgr, requestOptions,srvlist,iface);
     Transactions.append( ptr );
 }
 
@@ -539,7 +542,7 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst)
     ptrIA = IALst.get();
     Log(Notice) << "Creating RELEASE for " << IALst.count() << " IA(s)." << LogEnd;
 
-    SmartPtr<TMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, ptrIA->getIface(), 
+    SmartPtr<TClntMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, ptrIA->getIface(), 
         ptrIA->getSrvAddr(), IALst);
     Transactions.append( ptr );
 }
@@ -553,7 +556,7 @@ void TClntTransMgr::sendRebind(List(TOpt) requestOptions, int iface) {
 	    requestOptions.del();
     }
 
-    SmartPtr<TMsg> ptr =  new TClntMsgRebind(IfaceMgr, That, CfgMgr, AddrMgr, requestOptions, iface);
+    SmartPtr<TClntMsg> ptr =  new TClntMsgRebind(IfaceMgr, That, CfgMgr, AddrMgr, requestOptions, iface);
     if (!ptr->isDone())
 	Transactions.append( ptr );
 }
@@ -566,7 +569,7 @@ void TClntTransMgr::sendInfRequest(List(TOpt) requestOptions, int iface) {
 	    requestOptions.del();
     }
 
-    SmartPtr<TMsg> ptr = new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,requestOptions,iface);
+    SmartPtr<TClntMsg> ptr = new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,requestOptions,iface);
     if (!ptr->isDone())
 	Transactions.append( ptr );    
 }
@@ -741,7 +744,7 @@ void TClntTransMgr::checkRenew()
 		Log(Cont) << "." << LogEnd;
 	    }
 	    
-            SmartPtr <TMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst);
+            SmartPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst);
             Transactions.append(ptrRenew);
             AddrMgr->firstIA();
         }
