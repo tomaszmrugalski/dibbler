@@ -1,10 +1,28 @@
- Dibbler README
-----------------
-$Id: INFO-winxp.txt,v 1.9 2004-02-28 15:56:30 thomson Exp $
+ Dibbler WinXP README
+----------------------
+$Id: INFO-winxp.txt,v 1.10 2004-02-28 16:07:19 thomson Exp $
 
 For newest informations, please visit http://klub.com.pl/dhcpv6/
 
-1. Running
+Plase note that WinXP support is preliminary. Consider this as highly
+unstable and absolutely not user-friendly. Sorry, In windows environment
+you have no friends and everything is your enemy.
+
+					        Tomasz Mrugalski
+
+ 1. Installation
+-----------------
+Unpack this archive to some directory, for example c:\devel\dibbler.
+Edit config file to suit your needs. in windows console type:
+dibbler-server-winxp.exe run -d "c:\devel\dibbler"
+Take a look at c:\devel\dibbler\server.log". If server starts
+correctly, you can break (ctrl-c) and issue command:
+dibbler-server-winxp.exe install -d "c:\devel\dibbler"
+
+Repeat this for client.
+
+ 2. Running 
+------------
 
 dibbler-server.exe ACTION -d dirname 
 e.g.: dibbler-client-winxp.exe install -d "c:\devel\dibbler\port-winxp"
@@ -34,8 +52,8 @@ iface 3 no-config
    4, server tries to listen on socket on non-existent interace and
    loops very quickly.
 
- Compilation
--------------
+ 3. Compilation
+----------------
 
 1. flex/bison++ under win32
 To generate ClntParser.cpp and ClntLexer.cpp files, you can use
