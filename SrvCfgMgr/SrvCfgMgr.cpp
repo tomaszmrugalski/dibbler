@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.36 2005-03-07 22:45:14 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.37 2005-03-07 23:36:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2005/03/07 22:45:14  thomson
+ * Fixed problem with non-existent interface name (bug #105)
+ *
  * Revision 1.35  2005/02/07 20:51:56  thomson
  * Server stateless mode fixed (bug #103)
  *
@@ -523,7 +526,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     if (x.DUID)
 	out << "  " << *x.DUID;
     else
-	out << "  <!-- DUID not set -->" << std::end;
+	out << "  <!-- DUID not set -->" << std::endl;
 
     if (x.stateless())
 	out << "  <stateless/>" << std::endl;

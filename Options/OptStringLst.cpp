@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.2 2005-03-07 22:44:22 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.3 2005-03-07 23:36:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/03/07 22:44:22  thomson
+ * DomainList is now stored and parsed approprietly (bug #104)
+ *
  * Revision 1.1  2004/11/02 01:23:13  thomson
  * Initial revision
  *
@@ -99,6 +102,8 @@ char * TOptStringLst::storeSelf(char* buf)
 
         dotpos = -1;
         while (cp.find(".")!=-1) {
+	    if (*cp.c_str()=='.')
+		break;
             Log(Debug) << "TMP: " << cp << LogEnd;
             dotpos = cp.find(".");
             if (dotpos!=-1) {
@@ -113,22 +118,29 @@ char * TOptStringLst::storeSelf(char* buf)
         }
 
         *buf = cp.length(); // length of the string
-	    buf++;
-	    memcpy(buf, cp.c_str(), x->length());
-	    buf+= cp.length();
+        buf++;
+        memcpy(buf, cp.c_str(), x->length());
+	buf+= cp.length();
+	*buf=0;
+	buf++;
     }
-    *buf = 0; // add final 0
-    return buf+1;
+    return buf;
 }
 
 int TOptStringLst::getSize() {
     int len = 0;
+    int tmplen = 0;
     SmartPtr<string> x;
     StringLst.first();
     while ( x = StringLst.get() ) {
-	len += x->length()+1;
+	Log(Debug) << "### GetSize()" << x->length() << LogEnd;
+	const char * c = x->c_str();
+	tmplen = x->length();
+	if (c[tmplen]=='.')
+	    len++;
+	len += x->length()+2;
     }
-    return len+5; // 5=4(std.option header) + 1 (final 0)
+    return len+4; // 5=4(std.option header) + 1 (final 0)
 }
 string TOptStringLst::getString() {
     return *(this->StringLst.get());
