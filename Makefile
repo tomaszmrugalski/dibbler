@@ -197,8 +197,7 @@ release-src: VERSION-src
 	@echo "[RM     ] dibbler-$(VERSION)-src.tar.gz"
 	rm -f dibbler-$(VERSION)-src.tar.gz
 	cd doc; $(MAKE) clean
-	@echo "[CLEAN  ] /bison++"
-	cd bison++; $(MAKE) clean
+	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; cd bison++; $(MAKE) clean; fi
 	@echo "[TAR/GZ ] ../dibbler-tmp.tar.gz"
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler > filelist
@@ -247,8 +246,7 @@ release-deb: VERSION-linux
 	@echo "[LINTIAN] dibbler_$(VERSION)_i386.deb"
 	lintian -i dibbler_$(VERSION)_i386.deb &> port-linux/debian/dibbler_$(VERSION)_i386.log
 
-#release-rpm: VERSION-linux release-src
-release-rpm: VERSION-linux
+release-rpm: VERSION-linux release-src
 	$(MKDIR) port-linux/redhat/BUILD
 	$(MKDIR) port-linux/redhat/RPMS/athlon
 	$(MKDIR) port-linux/redhat/RPMS/i386
