@@ -34,6 +34,7 @@ objs:  		ClntOptClientIdentifier.o 	ClntOptElapsed.o 	ClntOptIAAddress.o      \
 		ClntOptUserClass.o		ClntOptVendorClass.o 	ClntOptVendorSpecInfo.o \
 		ClntOptIA_NA.o			ClntOptOptionRequest.o  ClntOptDNSServers.o     \
 		ClntOptDomainName.o		ClntOptNTPServers.o     ClntOptTimeZone.o
+	cd $(OPTIONS); $(MAKE) objs
 
 ClntOptClientIdentifier.o: ClntOptClientIdentifier.cpp ClntOptClientIdentifier.h
 	$(CPP) $(OPTS) -I $(INCDIR) -c -o $@ $<

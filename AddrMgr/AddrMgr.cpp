@@ -6,20 +6,14 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.8 2004-04-09 19:25:04 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.9 2004-04-09 22:33:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/04/09 19:25:04  thomson
+ * *** empty log message ***
+ *
  * Revision 1.7  2004/04/06 23:09:48  thomson
  * dbStore was causing segfaults in rare occasions, so it is commented out.
- *
- * Revision 1.6  2004/04/06 22:21:05  thomson
- * *** empty log message ***
- *
- * Revision 1.5  2004/04/06 22:18:54  thomson
- * *** empty log message ***
- *
- * Revision 1.4  2004/04/06 21:57:34  thomson
- * *** empty log message ***
  *
  * Revision 1.3  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
@@ -59,8 +53,7 @@ void TAddrMgr::dbStore()
     char buf[128];
     ofstream f;
     strcpy(buf,this->dbfile.c_str());
-    std::clog << "###dbStore(): " << buf << std::endl;
-
+    //std::clog << "###dbStore(): " << buf << std::endl;
     // this was causing problems in some cases, so it was commented out
     f.open(buf);
     f << *this;

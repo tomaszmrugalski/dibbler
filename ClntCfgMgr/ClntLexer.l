@@ -47,6 +47,7 @@ hex1to4  {hexdigit}{1,4}
 [Nn][Oo]-[Ii][Aa] {return clntParser::NOIA_;}
 [Ll][Oo][Gg]-[Ll][Ee][Vv][Ee][Ll] {return clntParser::LOGLEVEL_;}
 [Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return clntParser::WORKDIR_;}
+[Oo][Pp][Tt][Ii][Oo][Nn] { return clntParser::OPTION_; }
 
 %{    //KEYWORDS FOR OPTIONS
   // [-|REQUEST|REQUIRE] OptionName [SEND|DEFAULT|SUPERSEDE|-] Value
@@ -69,7 +70,7 @@ hex1to4  {hexdigit}{1,4}
   //                    this default value should be used
 %}
 [Dd][Ee][Ff][Aa][Uu][Ll][Tt] {return clntParser::DEFAULT_;} 
-%{  //SUPERSEDE - whatever server returns overwritr returned value
+%{  //SUPERSEDE - whatever server returns overwrite returned value
 %}
 [Ss][Uu][Pp][Ee][Rr][Ss][Ee][Dd][Ee] {return clntParser::SUPERSEDE_;} 
 %{  //APPEND - for options which can have multiple values, ordered in sequence
@@ -91,15 +92,15 @@ hex1to4  {hexdigit}{1,4}
 [Tt][1] {return clntParser::T1_;}
 [Tt][2] {return clntParser::T2_;}
 
-[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return clntParser::DNS_SERVER_;}
+[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr] {return clntParser::DNS_SERVER_;}
 [Dd][Oo][Mm][Aa][Ii][Nn] {return clntParser::DOMAIN_;}
 
-[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return clntParser::NTP_SERVER_;}
+[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr] {return clntParser::NTP_SERVER_;}
 [Tt][Ii][Mm][Ee]-[Zz][Oo][Nn][Ee] {return clntParser::TIME_ZONE_;}
 
-[Rr][Ee][Jj][Ee][Cc][Tt]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return clntParser::REJECT_SERVERS_;}
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss]  {return clntParser::PREFERRED_SERVERS_;}
-[Rr][Aa][Pp][Ii][Dd][Cc][Oo][Mm][Mm][Ii][Tt] {return clntParser::RAPID_COMMIT_;}
+[Rr][Ee][Jj][Ee][Cc][Tt]-[Ss][Ee][Rr][Vv][Ee][Rr] {return clntParser::REJECT_SERVERS_;}
+[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ss][Ee][Rr][Vv][Ee][Rr]  {return clntParser::PREFERRED_SERVERS_;}
+[Rr][Aa][Pp][Ii][Dd]-[Cc][Oo][Mm][Mm][Ii][Tt] {return clntParser::RAPID_COMMIT_;}
 
 %{ //COMMENTS
 %} 

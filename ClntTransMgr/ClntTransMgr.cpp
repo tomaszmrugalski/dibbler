@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.6 2004-03-29 18:53:08 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.7 2004-04-09 22:33:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -452,11 +455,15 @@ void TClntTransMgr::checkSolicit()
                     iaAddrMgr->setState(INPROCESS);
                 }
             };
-            if (IALstToConfig.count()) //Are there any IA, which should be configured?
+            if (IALstToConfig.count()) {//Are there any IA, which should be configured?
+		
+		std::clog << logger::logInfo << "Creating SOLICIT message on "
+			  << iface->getName() <<" interface." << logger::endl;
                 Transactions.append(
-                new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
-				    iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
-				    IALstToConfig, group->getRapidCommit()));
+		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
+					iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
+					IALstToConfig, group->getRapidCommit()));
+	    }
         }//for every group
     }//for every iface
 }
