@@ -13,7 +13,6 @@
 #include "SrvParsIfaceOpt.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
-#include "SrvCfgMgr.h"
 #include "DUID.h"
 #include "Logger.h"
 
@@ -45,7 +44,8 @@ bool CheckIsIface(string ifaceName); \
 void StartIfaceDeclaration(); \
 bool EndIfaceDeclaration(); \
 void StartClassDeclaration(); \
-bool EndClassDeclaration();
+bool EndClassDeclaration(); \
+virtual ~SrvParser();
 
 // constructor
 // <Linux>
@@ -571,6 +571,7 @@ bool SrvParser::CheckIsIface(int ifaceNr)
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) YYABORT;
+  return true;
 };
     
 //method check whether interface with id=ifaceName has been
@@ -583,37 +584,32 @@ bool SrvParser::CheckIsIface(string ifaceName)
   {
     string presName=ptr->getName();
     if (presName==ifaceName) YYABORT;
-  };
+  }
+  return true;
 };
 
 //method creates new scope appropriately for interface options and declarations
 //clears all lists except the list of interfaces and adds new group
 void SrvParser::StartIfaceDeclaration()
 {
-  //Interface scope, so parameters associated with global scope are pushed on stack
-  ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
-  SrvCfgAddrClassLst.clear();
-
+    //Interface scope, so parameters associated with global scope are pushed on stack
+    ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+    SrvCfgAddrClassLst.clear();
 }
 
 bool SrvParser::EndIfaceDeclaration()
 {
-
-  SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
-  if (!SrvCfgAddrClassLst.count())
-    YYABORT;
-  SrvCfgAddrClassLst.first();
+    SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
+    if (!SrvCfgAddrClassLst.count())
+	YYABORT;
+    SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
-      SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);
-  //setting interface options on the basis of just read information
-  SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-  //FIXED:Here should be add list of Groups to this iface and here it is
-  
-  //if (groupsCnt==0)
-  //  EmptyIface();  //add one IA with one address to this iface
-  //restore global options
-  ParserOptStack.delLast();
+	SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);
+    //setting interface options on the basis of just read information
+    SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
     
+    ParserOptStack.delLast();
+    return true;
 }   
 
 void SrvParser::StartClassDeclaration()
@@ -626,10 +622,10 @@ bool SrvParser::EndClassDeclaration()
     if (!ParserOptStack.getLast()->countPool())
         YYABORT;
     SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
-  //setting interface options on the basis of just read information
-  SrvCfgAddrClassLst.getLast()->setOptions(ParserOptStack.getLast());
-  //FIXED:Here should be add list of Groups to this iface and here it is
-  ParserOptStack.delLast();
+    //setting interface options on the basis of just read information
+    SrvCfgAddrClassLst.getLast()->setOptions(ParserOptStack.getLast());
+    ParserOptStack.delLast();
+    return true;
 }
 
 namespace std {
@@ -650,4 +646,8 @@ void SrvParser::yyerror(char *m)
     // logging 
     std::clog << logger::logEmerg << "Config parse error: line " << lex->lineno() 
               << ", unexpected [" << lex->YYText() << "] token." << logger::endl;
+}
+
+SrvParser::~SrvParser() {
+
 }

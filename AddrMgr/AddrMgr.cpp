@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.12 2004-04-11 18:04:53 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.13 2004-05-23 21:24:50 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/04/11 18:04:53  thomson
+ * LIBXML2 is now a optional feature
+ *
  * Revision 1.11  2004/04/10 14:14:30  thomson
  * *** empty log message ***
  *
@@ -355,6 +358,10 @@ void TAddrMgr::parseAddrMgr(xmlDocPtr doc,int depth)
      }
 }
 #endif
+
+TAddrMgr::~TAddrMgr() {
+
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

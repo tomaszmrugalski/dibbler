@@ -1,16 +1,36 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvCfgMgr.cpp,v 1.12 2004-05-23 21:24:50 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
+#include <iostream>
 #include <fstream>
 #include <string>
-#include <FlexLexer.h>
-#include "SrvParser.h"
-#include "SrvCfgMgr.h"
-#include "IfaceMgr.h"
-#include "SrvCfgIface.h"
-#include "SrvIfaceMgr.h"
 #include "SmartPtr.h"
+#include "Portable.h"
+#include "SrvCfgMgr.h"
+#include "SrvCfgIface.h"
 #include "Logger.h"
+
+using namespace std;
+
+#include "IfaceMgr.h"
+#include "SrvIfaceMgr.h"
+
 #include "AddrClient.h"
 #include "TimeZone.h"
-using namespace std;
+
+#include "FlexLexer.h"
+#include "SrvParser.h"
 
 TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string oldCfgFile)
     :TCfgMgr((Ptr*)ifaceMgr)
@@ -50,59 +70,8 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 	IsDone = true; 
 	return;
     }
-    //Now parsed information should be place in config manager
-    //in accordance with information provided by interface manager
-    SmartPtr<TIfaceIface> iface;
-    IfaceMgr->firstIface();
-    //so for each iface in the system
-    while(iface=IfaceMgr->getIface())
-	//which is to be configured
-	if ( (iface) &&
-	     (iface->flagUp()) &&
-	     (iface->flagRunning()) &&
-	     (iface->flagMulticast()) )
-	{
-	    //try to find it in parsed config file
-	    SmartPtr<TSrvCfgIface> cfgIface,foundIface;
-	    parser.SrvCfgIfaceLst.first();
-	    while(cfgIface=parser.SrvCfgIfaceLst.get())
-		if((iface->getID()==cfgIface->getID())||
-		   (string(iface->getName())==string(cfgIface->getName())))
-		    //yes - it's provided by user
-		{
-		    if(foundIface) //Oops! He did it again.
-			std::clog << logger::logWarning 
-				  << "Redefinition of interface - last one is valid." << logger::endl;
-		    //So it is memorized and removed from information descirbing config file
-		    foundIface=cfgIface;
-		    parser.SrvCfgIfaceLst.del();
-		};
-	    //Have we found any interface ?
-	    if (foundIface) 
-	    {
-		//Here should be match iface name and iface id from IfaceMgr
-		//there is declaration of this iface in config file
-		if(iface->getID()==foundIface->getID()) {
-		    foundIface->setIfaceName(iface->getName());
-		}
-		else {
-		    foundIface->setIfaceID(iface->getID());
-		}
-		this->addIface(foundIface);
-	    };
-	};
-    //So we configure approprieatly all interfaces in the system
-    //Rest of interfaces described in config file can't be configured
-    //because they don't exist, are not up/running etc.
-    //so appropriate warning should be logged
-    SmartPtr<TSrvCfgIface> cfgIface;
-    parser.SrvCfgIfaceLst.first();
-    while(cfgIface=parser.SrvCfgIfaceLst.get()) {
-	std::clog << logger::logError << "Unable to configure " << cfgIface->getName()<<"/"
-	    << cfgIface->getID() << " interface. Reason: "
-	    << "is loopback, not present in system (IfaceMgr), down, " 
-	    << "not running or is not multicast-capable." << logger::endl;
-    }
+
+    this->matchParsedSystemInterfaces(&parser);
 
     this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
 
@@ -145,6 +114,63 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     xmlDump.close();
 
     IsDone = false;
+}
+
+bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
+    //Now parsed information should be place in config manager
+    //in accordance with information provided by interface manager
+    SmartPtr<TIfaceIface> iface;
+    IfaceMgr->firstIface();
+    //so for each iface in the system
+    while(iface=IfaceMgr->getIface())
+	//which is to be configured
+	if ( (iface) &&
+	     (iface->flagUp()) &&
+	     (iface->flagRunning()) &&
+	     (iface->flagMulticast()) )
+	{
+	    //try to find it in parsed config file
+	    SmartPtr<TSrvCfgIface> cfgIface,foundIface;
+	    parser->SrvCfgIfaceLst.first();
+	    while(cfgIface=parser->SrvCfgIfaceLst.get())
+		if((iface->getID()==cfgIface->getID())||
+		   (string(iface->getName())==string(cfgIface->getName())))
+		    //yes - it's provided by user
+		{
+		    if(foundIface) //Oops! He did it again.
+			std::clog << logger::logWarning 
+				  << "Redefinition of interface - last one is valid." << logger::endl;
+		    //So it is memorized and removed from information descirbing config file
+		    foundIface=cfgIface;
+		    parser->SrvCfgIfaceLst.del();
+		};
+	    //Have we found any interface ?
+	    if (foundIface) 
+	    {
+		//Here should be match iface name and iface id from IfaceMgr
+		//there is declaration of this iface in config file
+		if(iface->getID()==foundIface->getID()) {
+		    foundIface->setIfaceName(iface->getName());
+		}
+		else {
+		    foundIface->setIfaceID(iface->getID());
+		}
+		this->addIface(foundIface);
+	    };
+	};
+    //So we configure approprieatly all interfaces in the system
+    //Rest of interfaces described in config file can't be configured
+    //because they don't exist, are not up/running etc.
+    //so appropriate warning should be logged
+    SmartPtr<TSrvCfgIface> cfgIface;
+    parser->SrvCfgIfaceLst.first();
+    while(cfgIface=parser->SrvCfgIfaceLst.get()) {
+	std::clog << logger::logError << "Unable to configure " << cfgIface->getName()<<"/"
+		  << cfgIface->getID() << " interface. Reason: "
+		  << "is loopback, not present in system (IfaceMgr), down, " 
+		  << "not running or is not multicast-capable." << logger::endl;
+    }
+    return true;
 }
 
 SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIface()

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrMgr.h,v 1.4 2004-04-11 18:04:53 thomson Exp $
+ * $Id: AddrMgr.h,v 1.5 2004-05-23 21:24:50 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/04/11 18:04:53  thomson
+ * LIBXML2 is now a optional feature
+ *
  * Revision 1.3  2004/03/28 19:58:15  thomson
  * no message
  *
@@ -36,6 +39,7 @@ class TAddrMgr
   public:
     friend ostream & operator<<(ostream & strum,TAddrMgr &x);
     TAddrMgr(string addrdb, bool loadfile = false);
+    virtual ~TAddrMgr();
     
     //--- Client container ---
     void addClient(SmartPtr<TAddrClient> x);

@@ -2464,6 +2464,7 @@ void yyfree (void * ptr )
       Address[12+i]=obyte;
       ipos++;
     }
+    return true;
  }
 
  int decodeSmallPart(char *src, char* dst,int length)

@@ -295,6 +295,7 @@ false {yylval.ival=0; return SrvParser::INTNUMBER_;}
       Address[12+i]=obyte;
       ipos++;
     }
+    return true;
  }
 
  int decodeSmallPart(char *src, char* dst,int length)

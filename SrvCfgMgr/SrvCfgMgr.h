@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvCfgMgr.h,v 1.3 2004-05-23 21:24:50 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 class TSrvCfgMgr;
 #ifndef SRVCONFMGR_H
 #define SRVCONFMGR_H
@@ -9,10 +23,13 @@ class TSrvCfgMgr;
 #include "Container.h"
 #include "DUID.h"
 
+#include "FlexLexer.h"
+#include "SrvParser.h"
+
 class TSrvCfgMgr : public TCfgMgr
 {
 public:  
-	friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
+    friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
     TSrvCfgMgr(
         SmartPtr<TSrvIfaceMgr> ifaceMgr, 
         string cfgFile,
@@ -55,9 +72,7 @@ public:
         int iface, bool rapid=false);
     
     bool isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
-
     virtual ~TSrvCfgMgr();
-    
     bool isDone();
 
 private:    
@@ -68,6 +83,7 @@ private:
     string LogLevel;
     List(TSrvCfgIface) SrvCfgIfaceLst;
     SmartPtr<TSrvIfaceMgr> IfaceMgr;
+    bool matchParsedSystemInterfaces(SrvParser *parser);
 };
 
 #endif /* SRVCONFMGR_H */

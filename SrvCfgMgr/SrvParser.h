@@ -26,7 +26,6 @@
 #include "SrvParsIfaceOpt.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
-#include "SrvCfgMgr.h"
 #include "DUID.h"
 #include "Logger.h"
 
@@ -50,7 +49,8 @@ bool CheckIsIface(string ifaceName); \
 void StartIfaceDeclaration(); \
 bool EndIfaceDeclaration(); \
 void StartClassDeclaration(); \
-bool EndClassDeclaration();
+bool EndClassDeclaration(); \
+virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_SrvParser_CONSTRUCTOR_CODE  \
     ParserOptStack.append(new TSrvParsGlobalOpt()); \
