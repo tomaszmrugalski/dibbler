@@ -1,10 +1,12 @@
 
-$Id: TODO,v 1.13 2004-11-02 19:23:25 thomson Exp $
+$Id: TODO,v 1.14 2004-12-04 23:47:29 thomson Exp $
 
 Warning: This TODO may be outdated/out of sync.
 
   Internal TODO
  ---------------
+- IfaceMgr.cpp:232 (wywalic #ifndef WIN32)
+
 - setting up a domain: echo homenetwork > /etc/dnsdomainname
 - IA_TA option support
 - Flex (gentoo: emerge /usr/portage/sys-devel/flex/flex-2.5.31-r1.ebuild)
