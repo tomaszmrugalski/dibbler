@@ -6,9 +6,12 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.10 2004-12-02 00:51:06 thomson Exp $
+ * $Id: WinService.cpp,v 1.11 2005-02-01 18:26:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.9  2004/09/28 21:49:32  thomson
  * no message
  *
@@ -157,21 +160,7 @@ void TWinService::LogEvent(WORD wType, DWORD dwID,
 
 bool TWinService::IsInstalled()
 {
-    bool result = false;
-    // Open the Service Control Manager
-    SC_HANDLE hSCM = ::OpenSCManager(NULL, // local machine
-                                     NULL, // ServicesActive database
-                                     SC_MANAGER_ALL_ACCESS); // full access
-    if (hSCM) {
-        // Try to open the service
-        SC_HANDLE hService = OpenService(hSCM,ServiceName,SERVICE_QUERY_CONFIG);
-        if (hService) {
-            result = true;
-            CloseServiceHandle(hService);
-        }
-        CloseServiceHandle(hSCM);
-    }
-    return result;
+    return this->IsInstalled(this->ServiceName);
 }
 
 bool TWinService::IsInstalled(const char *name)
@@ -196,6 +185,11 @@ bool TWinService::IsInstalled(const char *name)
 
 bool TWinService::Install()
 {
+    if (this->IsInstalled()) {
+        Log(Crit) << "Service " << ServiceName << " is already installed." << LogEnd;
+        return false;
+    }
+
     // Open the Service Control Manager
     SC_HANDLE hSCM = ::OpenSCManager(NULL, // local machine
                                      NULL, // ServicesActive database
@@ -219,6 +213,7 @@ bool TWinService::Install()
     if (!hService) 
     {
         CloseServiceHandle(hSCM);
+        Log(Crit) << "Unable to create " << ServiceName << " service." << LogEnd;
         return FALSE;
     }
 
@@ -227,21 +222,27 @@ bool TWinService::Install()
 	ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION, &sdBuf );
 
     CloseServiceHandle(hService);
-
     CloseServiceHandle(hSCM);
+    Log(Notice) << "Service " << ServiceName << " has been installed." << LogEnd;
     return true;
 }
 
 bool TWinService::Uninstall()
 {
-   // Open the Service Control Manager
+    if (!this->IsInstalled()) {
+        Log(Crit) << "Service " << ServiceName << " is not installed." << LogEnd;
+        return false;
+    }
+
+    // Open the Service Control Manager
     SC_HANDLE hSCM = OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
 	if (!hSCM) {
-		printf("OpenSCManager() failed. Unable to open ServiceControl Manager\n");
+		Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
 		return false;
 	}
     bool result = false;
     SC_HANDLE hService = ::OpenService(hSCM,ServiceName,DELETE);
+
     if (hService) 
 	{
         if (DeleteService(hService)) 
