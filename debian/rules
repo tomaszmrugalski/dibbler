@@ -109,7 +109,6 @@ binary-common:
 #	dh_installemacsen
 #	dh_installpam
 #	dh_installmime
-	dh_installinit --name=dibbler-server --init-script=dibbler-server
 #	dh_installcron
 #	dh_installinfo
 	dh_installman

@@ -5,7 +5,7 @@ Maintainer: Tomasz Mrugalski <thomson@klub.com.pl>
 Build-Depends: debhelper (>= 4.0.0), libstdc++5, libc6, libgcc1, g++
 Standards-Version: 3.6.1
 
-Package: dibbler
+Package: dibbler-server
 Architecture: i386
 Depends: libstdc++5, libc6, libgcc1
 Recommends: dibbler-client, dibbler-relay, dibbler-doc
