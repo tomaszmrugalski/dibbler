@@ -37,7 +37,7 @@ build: build-arch build-indep
 
 build-arch: build-arch-stamp
 build-arch-stamp: configure-stamp 
-	$(MAKE) server client doc
+	$(MAKE) server client relay
 	touch build-arch-stamp
 
 build-indep: build-indep-stamp
