@@ -1,19 +1,20 @@
 
+
 Internet Engineering Task Force                                S. Venaas
-Internet Draft                                                   UNINETT
-Expiration Date: March 2005
+Internet Draft                                 University of Southampton
+Expiration Date: July 2005
                                                                 T. Chown
                                                University of Southampton
 
                                                                  B. Volz
                                                      Cisco Systems, Inc.
 
-                                                          September 2004
+                                                            January 2005
 
 
                Information Refresh Time Option for DHCPv6
 
-                     draft-ietf-dhc-lifetime-02.txt
+                     draft-ietf-dhc-lifetime-03.txt
 
 Status of this Memo
 
@@ -40,7 +41,7 @@ Status of this Memo
 
 Copyright Notice
 
-   Copyright (C) The Internet Society (2004). All Rights Reserved.
+   Copyright (C) The Internet Society (2005). All Rights Reserved.
 
 
 
@@ -50,9 +51,9 @@ Copyright Notice
 
 
 
-Venaas, et al.            [Expires March 2005]                  [Page 1]
+Venaas, et al.             [Expires July 2005]                  [Page 1]
 
-Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
+Internet Draft       draft-ietf-dhc-lifetime-03.txt         January 2005
 
 
 Abstract
@@ -80,7 +81,7 @@ Table of Contents
    6.  Security Considerations  ....................................   6
    7.  References  .................................................   6
      7.1.  Normative References  ...................................   6
-     7.2.  Informative References  .................................   6
+     7.2.  Informative References  .................................   7
    Authors' Addresses  .............................................   7
    Intellectual Property and Copyright Statements  .................   7
 
@@ -106,9 +107,9 @@ Table of Contents
 
 
 
-Venaas, et al.            [Expires March 2005]                  [Page 2]
+Venaas, et al.             [Expires July 2005]                  [Page 2]
 
-Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
+Internet Draft       draft-ietf-dhc-lifetime-03.txt         January 2005
 
 
        - Unstable environments where unexpected changes are likely to
@@ -162,22 +163,21 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
 
 
 
-Venaas, et al.            [Expires March 2005]                  [Page 3]
+Venaas, et al.             [Expires July 2005]                  [Page 3]
 
-Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
+Internet Draft       draft-ietf-dhc-lifetime-03.txt         January 2005
 
 
    current data while attempting to refresh it.  The client is however
-   free to fall back to other mechanisms if it cannot refresh the data
-   within a reasonable amount of time.
+   free to fall back to other mechanisms than DHCPv6 if it cannot
+   refresh the data within a reasonable amount of time.
 
    When a client receives a Reply to an Information-Request that
-   contains configuration information (i.e., does not contain a Status
-   Code option), it should install that new configuration information
-   after removing any previously received configuration information.  It
-   should also remove information that is missing from the new
-   information set, e.g. an option might be left out or contain only a
-   subset of what it did previously.
+   contains configuration information, it should install that new
+   configuration information after removing any previously received
+   configuration information.  It should also remove information that is
+   missing from the new information set, e.g. an option might be left
+   out or contain only a subset of what it did previously.
 
 
 3.1. Constants
@@ -188,7 +188,7 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
      IRT_DEFAULT 86400
           In some cases the client uses a default refresh time
           IRT_DEFAULT.  The recommended value for IRT_DEFAULT is 86400
-          (24 hours).  The client implementation should allow for this
+          (24 hours).  The client implementation SHOULD allow for this
           value to be configurable.
 
      IRT_MINIMUM 600
@@ -197,9 +197,9 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
 
 3.2. Client behaviour
 
-   A client MUST include this option in the Option Request Option (ORO)
+   A client MUST request this option in the Option Request Option (ORO)
    when sending Information-Request messages to the DHCPv6 server.  A
-   client MUST NOT include this option in the ORO in any other messages.
+   client MUST NOT request this option in the ORO in any other messages.
 
    If the Reply to an Information-Request message does not contain this
    option, the client MUST behave as if the option with value
@@ -215,15 +215,14 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
 
    If a client contacts the server to obtain new data or refresh some
    existing data before the refresh time expires, then it SHOULD also
-
-
-
-Venaas, et al.            [Expires March 2005]                  [Page 4]
-
-Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
-
-
    refresh all data covered by this option.
+
+
+
+Venaas, et al.             [Expires July 2005]                  [Page 4]
+
+Internet Draft       draft-ietf-dhc-lifetime-03.txt         January 2005
+
 
    When the client detects that the refresh time has expired, it SHOULD
    try to update its configuration data by sending an Information-
@@ -231,11 +230,21 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
    client MUST delay sending the first Information-Request by a random
    amount of time between 0 and INF_MAX_DELAY.
 
+   A client MAY have a maximum value for the refresh time, where that
+   value is used whenever the client receives this option with a value
+   higher than the maximum.  This also means that the maximum value is
+   used when the received value is "infinity".  A maximum value might
+   make the client less vulnerable to attacks based on forged DHCP
+   messages.  Without a maximum value, a client may be made to use wrong
+   information for a possibly infinite period of time.  There may
+   however be reasons for having a very long refresh time, so it may be
+   useful for this maximum value to be configurable.
+
 
 3.3. Server behaviour
 
    A server sending a Reply to an Information-Request message SHOULD
-   include this option if it is included in the ORO of the Information-
+   include this option if it is requested in the ORO of the Information-
    Request.
 
    The option value MUST NOT be smaller than IRT_MINIMUM.  The server
@@ -263,20 +272,17 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
      option-len
           4
 
+
+
+
+Venaas, et al.             [Expires July 2005]                  [Page 5]
+
+Internet Draft       draft-ietf-dhc-lifetime-03.txt         January 2005
+
+
      information-refresh-time
           Time duration relative to the current time, expressed in units
           of seconds
-
-
-
-
-
-
-
-
-Venaas, et al.            [Expires March 2005]                  [Page 5]
-
-Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
 
 
 4. IANA Considerations
@@ -298,8 +304,10 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
    This option does not change these in any significant way.  An
    attacker could send faked Reply messages with a low information
    refresh time value, which would trigger use of IRT_MINIMUM to
-   minimize this threat, or with a large or infinite value which would
-   be no worse than a client that does not make use of this option.
+   minimize this threat.  Another attack might be to send a very large
+   value, to make the client use forged information for a long period of
+   time.  A possible maximum limit at the client is suggested, which
+   would reduce this problem.
 
 
 7. References
@@ -319,6 +327,15 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
    [RFC 3736]  R. Droms, "Stateless Dynamic Host Configuration Protocol
                (DHCP) Service for IPv6", RFC 3736, April 2004.
 
+
+
+
+
+Venaas, et al.             [Expires July 2005]                  [Page 6]
+
+Internet Draft       draft-ietf-dhc-lifetime-03.txt         January 2005
+
+
 7.2. Informative References
 
    [RENUMREQS] T. Chown, S. Venaas, A.K. Vijayabhaskar, "Renumbering
@@ -326,22 +343,14 @@ Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
                draft-ietf-dhc-stateless-dhcpv6-renumbering-01,
                March 2004.
 
-
-
-
-
-Venaas, et al.            [Expires March 2005]                  [Page 6]
-
-Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
-
-
 Authors' Addresses
 
    Stig Venaas
-   UNINETT
-   NO-7465 Trondheim
-   Norway
-   EMail: venaas@uninett.no
+   University of Southampton
+   School of Electronics and Computer Science
+   Southampton, Hampshire  SO17 1BJ
+   United Kingdom
+   EMail: sv@ecs.soton.ac.uk
 
    Tim Chown
    University of Southampton
@@ -375,20 +384,19 @@ Intellectual Property Statement
    specification can be obtained from the IETF on-line IPR repository at
    http://www.ietf.org/ipr.
 
+
+
+
+Venaas, et al.             [Expires July 2005]                  [Page 7]
+
+Internet Draft       draft-ietf-dhc-lifetime-03.txt         January 2005
+
+
    The IETF invites any interested party to bring to its attention any
    copyrights, patents or patent applications, or other proprietary
    rights that may cover technology that may be required to implement
    this standard.  Please address the information to the IETF at ietf-
    ipr@ietf.org.
-
-
-
-
-
-
-Venaas, et al.            [Expires March 2005]                  [Page 7]
-
-Internet Draft       draft-ietf-dhc-lifetime-02.txt       September 2004
 
 
 Disclaimer of Validity
@@ -403,7 +411,7 @@ Disclaimer of Validity
 
 Copyright Statement
 
-   Copyright (C) The Internet Society (2004).  This document is subject
+   Copyright (C) The Internet Society (2005).  This document is subject
    to the rights, licenses and restrictions contained in BCP 78, and
    except as set forth therein, the authors retain all their rights.
 
@@ -435,12 +443,5 @@ Acknowledgement
 
 
 
-
-
-
-
-
-
-
-Venaas, et al.            [Expires March 2005]                  [Page 8]
+Venaas, et al.             [Expires July 2005]                  [Page 8]
 
