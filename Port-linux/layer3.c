@@ -1,3 +1,8 @@
+/*
+ *  $id$
+ *  $Id: layer3.c,v 1.2 2004-01-22 23:06:07 thomson Exp $
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -31,6 +36,7 @@ struct nlmsg_list
 int print_linkinfo(struct nlmsghdr *n);
 int print_addrinfo(struct nlmsghdr *n);
 int print_selected_addrinfo(int ifindex, struct nlmsg_list *ainfo);
+int ipaddr_local_get(int *count, char **buf, int ifindex, struct nlmsg_list *ainfo);
 void print_link_flags( unsigned flags);
 int default_scope(inet_prefix *lcl);
 
@@ -90,8 +96,6 @@ struct iface * if_list_get()
     int len;
     memset(tb, 0, sizeof(tb));
 
-//    printf("Rozmiar iface=%d \n",sizeof(struct iface));
-
     rtnl_open(&rth, 0);
     rtnl_wilddump_request(&rth, preferred_family, RTM_GETLINK);
     rtnl_dump_filter(&rth, store_nlmsg, &linfo, NULL, NULL);
@@ -118,10 +122,18 @@ struct iface * if_list_get()
 	head=tmp;
 //	printf("C: [%s,%d,%d]\n",tmp->name,tmp->id,tmp->flags);
 
-	// FIXME: get MAC addr, get link-local addr
-	tmp->maclen = 6;
-	tmp->linkaddrcount=1;
-	tmp->linkaddr = malloc(16);
+	{
+	    // This stuff reads MAC addr
+	    tmp->maclen = RTA_PAYLOAD(tb[IFLA_ADDRESS]);
+	    memset(tmp->mac,0,255);
+	    memcpy(tmp->mac,RTA_DATA(tb[IFLA_ADDRESS]), tmp->maclen);
+	}
+
+	ipaddr_local_get(&tmp->linkaddrcount, &tmp->linkaddr, tmp->id, ainfo);
+			 
+	//tmp->linkaddrcount=1;
+	//tmp->linkaddr = malloc(16);
+	//memset(tmp->linkaddr,0,16);
     }
 
     release_nlmsg_list(linfo);
@@ -129,6 +141,46 @@ struct iface * if_list_get()
 
     return head;
 }
+
+int ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list *ainfo) {
+    int cnt=0;
+    char * buf=0, * tmpbuf=0;
+    char addr[16];
+    struct rtattr * rta_tb[IFA_MAX+1];
+    int pos;
+
+    for ( ;ainfo ;  ainfo = ainfo->next) {
+	struct nlmsghdr *n = &ainfo->h;
+	struct ifaddrmsg *ifa = NLMSG_DATA(n);
+	if ( (ifa->ifa_family == AF_INET6) && (ifa->ifa_index == ifindex) ) {
+	    memset(rta_tb, 0, sizeof(rta_tb));
+	    parse_rtattr(rta_tb, IFA_MAX, IFA_RTA(ifa), n->nlmsg_len - NLMSG_LENGTH(sizeof(*ifa)));
+	    if (!rta_tb[IFA_LOCAL])   rta_tb[IFA_LOCAL]   = rta_tb[IFA_ADDRESS];
+	    if (!rta_tb[IFA_ADDRESS]) rta_tb[IFA_ADDRESS] = rta_tb[IFA_LOCAL];
+	    
+	    memcpy(addr,(char*)RTA_DATA(rta_tb[IFLA_ADDRESS]),16);
+	    if (addr[0]!=0xfe || addr[1]!=0x80) {
+		continue; // ignore non link-scoped addrs
+	    }
+	    
+	    // ifa->ifa_flags & 128 - permenent
+	    //printf("flags:%d : ",ifa->ifa_flags);
+
+	    pos = cnt*16;
+	    buf = (char*) malloc( pos + 16);
+	    memcpy(buf,tmpbuf, pos); // copy old addrs
+	    memcpy(buf+pos,addr,16); // copy new addr
+	    
+	    free(tmpbuf);
+	    tmpbuf = buf;
+	    cnt++;
+	}
+    }
+    *count = cnt;
+    *bufPtr = buf;
+    printf("iface: %d ma %d adresow lokalnych\n",ifindex,cnt);
+}
+
 
 int ipaddr_add_or_del(char * addr, char *d,int add)
 {
@@ -150,6 +202,7 @@ int ipaddr_add_or_del(char * addr, char *d,int add)
 	if (add==1) req.n.nlmsg_type = RTM_NEWADDR; /* dodawanie adresu */
 	else req.n.nlmsg_type = RTM_DELADDR;        /* usuwanie adresu */
 	req.ifa.ifa_family = AF_INET6;
+	req.ifa.ifa_flags = 0;
 
 	get_prefix_1(&lcl, addr, AF_INET6);
 
@@ -205,8 +258,9 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     else
 	multicast = 0;
 
-    //printf("iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d mcast=%d\n",
-    //ifacename,ifaceid, addr, port, thisifaceonly, multicast);
+    printf("### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d mcast=%d ###\n",
+    ifacename,ifaceid, addr, port, thisifaceonly, multicast);
+    fflush(stdout);
     
     // Open a socket for inbound traffic
     memset(&hints, 0, sizeof(hints));
