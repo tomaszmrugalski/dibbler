@@ -100,7 +100,7 @@ release:
 	$(CC) --version  >>VERSION
 	echo "Version       : $(VERSION)" >> VERSION
 	echo -n "Date          : " >> VERSION
-	date >> VERSION
+	date +%Y-%m-%d >> VERSION
 #	if [ "$XMLCFLAGS" != "" ]; then
 #	    echo "libxml2       : YES" >> VERSION
 #	else

@@ -12,10 +12,11 @@
   - Client: config file logic changed, no-config is no longer needed. 
   - Client: No more stupid "Interface is loopback, down, not multicast-capable or 
     not present in the system" message.
+  - Linux: Sending through wrong interface problem fixed
   - Linux: build process rewritten
 
  0.1.1
- 
+  - Hmmm... don't remember :) 
  
  0.1.0
- 
+  - First release
