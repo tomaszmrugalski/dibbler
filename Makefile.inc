@@ -1,11 +1,11 @@
 # === used tools ===
-CPP          = g++-2.95
-CC           = gcc-2.95
+CPP          = g++-3.3
+CC           = gcc-3.3
 FLEX         = flex
 BISONPP      = bison++
 
 # === compiler options ===
-COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) -g -O0
+COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) -g
 OPTS         = -ftemplate-depth-40 $(COPTS)
 
 # debug info

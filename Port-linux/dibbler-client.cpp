@@ -82,7 +82,8 @@ void daemon_die() {
 }
 
 void init() {
-    unlink(RESOLVCONF_FILE);
+    unlink(WORKDIR"/tmp-dns");
+    unlink(WORKDIR"/tmp-domain");
 
     string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
     unlink(tmp.c_str());
@@ -96,6 +97,8 @@ void init() {
 void die() {
     string tmp = (string)WORKDIR+"/"+(string)CLNTPID_FILE;
     unlink(tmp.c_str());
+    dns_del_all();
+    domain_del_all();
 }
 
 int main(int argc, char * argv[])

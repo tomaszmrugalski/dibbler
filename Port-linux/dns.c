@@ -12,7 +12,7 @@ int dns_add(const char * ifname, int ifaceid, char * addrPlain) {
     char buf[512];
     memset(buf,0,512);
     if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
-	printf("Unable to open %s file for editing.\n", RESOLVCONF_FILE);
+//	printf("Unable to open %s file for editing.\n", RESOLVCONF_FILE);
 	return -1;
     }
     fseek(f,0,SEEK_SET);
@@ -24,7 +24,7 @@ int dns_add(const char * ifname, int ifaceid, char * addrPlain) {
 	    *c = 0;
 	if (!strncmp("nameserver ",buf,11) && !strcmp(addrPlain,buf+11)) {
 	    // it's out name server
-	    printf("This server is already set\n");
+//	    printf("This server is already set\n");
 	    return 0;
 	}
     }
@@ -46,12 +46,12 @@ int dns_del(const char * ifname, int ifaceid, char *addrPlain) {
     rename(WORKDIR"/tmp-dns",WORKDIR"/tmp-dns.old");
 
     if ( !(f=fopen(WORKDIR"/tmp-dns.old","r"))) {
-	printf("Unable to open %s file for reading.\n", RESOLVCONF_FILE);
+//	printf("Unable to open %s file for reading.\n", RESOLVCONF_FILE);
 	return -1;
     }
 
     if ( !(f2=fopen(WORKDIR"/tmp-dns","w+"))) {
-	printf("Unable to open %s file for writing.\n", RESOLVCONF_FILE);
+//	printf("Unable to open %s file for writing.\n", RESOLVCONF_FILE);
 	return -1;
     }
 
@@ -81,7 +81,7 @@ int dns_del(const char * ifname, int ifaceid, char *addrPlain) {
 	fclose(f);
 	fclose(f2);
     }
-
+    chmod(RESOLVCONF_FILE,12);
 }
 
 int domain_add(const char* ifname, int ifaceid, char* domain) {
@@ -89,7 +89,7 @@ int domain_add(const char* ifname, int ifaceid, char* domain) {
     char buf[512];
     memset(buf,0,512);
     if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
-	printf("Unable to open %s file for editing.\n", RESOLVCONF_FILE);
+//	printf("Unable to open %s file for editing.\n", RESOLVCONF_FILE);
 	return -1;
     }
     fseek(f,0,SEEK_SET);
@@ -123,12 +123,12 @@ int domain_del(const char * ifname, int ifaceid, char *domain) {
     rename(WORKDIR"/tmp-domain",WORKDIR"/tmp-domain.old");
 
     if ( !(f=fopen(WORKDIR"/tmp-domain.old","r"))) {
-	printf("Unable to open %s file for reading.\n", RESOLVCONF_FILE);
+//	printf("Unable to open %s file for reading.\n", RESOLVCONF_FILE);
 	return -1;
     }
 
     if ( !(f2=fopen(WORKDIR"/tmp-domain","w+"))) {
-	printf("Unable to open %s file for writing.\n", RESOLVCONF_FILE);
+//	printf("Unable to open %s file for writing.\n", RESOLVCONF_FILE);
 	return -1;
     }
 
@@ -199,7 +199,7 @@ int domain_del_all() {
 
     for (; i>=0; i--) {
 	if (strlen(buf[i])) {
-	    dns_del("",0,buf[i]);
+	    domain_del("",0,buf[i]);
 	}
     }
 

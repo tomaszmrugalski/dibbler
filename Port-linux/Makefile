@@ -70,16 +70,18 @@ addrpack.o: addrpack.c
 
 test: test1 test2
 
-test1: test1.cpp SrvParser.cpp SrvLexer.o
-	cd $(SRVCFGMGR); $(MAKE) libs
-	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test1.cpp SrvParser.cpp SrvLexer.o \
-	-L. -lSrvParser -L$(SRVCFGMGR) -lSrvCfgMgr ../IPv6Addr.cpp ../DUID.cpp \
-	$(LOWLEVEL)/addrpack.o ../Logger.o
+test1: test1.cpp dns.c
+	$(CPP) $(OPTS) -I $(INCDIR) test1.cpp dns.c -o test1
 
 test2: test2.cpp SrvParser.o SrvLexer.o
 	cd $(SRVCFGMGR); $(MAKE) libs
 	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test2.cpp -L. -lSrvParser -L$(SRVCFGMGR) -lSrvCfgMgr
 
+test3: test1.cpp SrvParser.cpp SrvLexer.o
+	cd $(SRVCFGMGR); $(MAKE) libs
+	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test3.cpp SrvParser.cpp SrvLexer.o \
+	-L. -lSrvParser -L$(SRVCFGMGR) -lSrvCfgMgr ../IPv6Addr.cpp ../DUID.cpp \
+	$(LOWLEVEL)/addrpack.o ../Logger.o
 
 clean:
 	rm -f *.a *.o

@@ -70,7 +70,8 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
     //try to open input file
     newF.open(cfgFile.c_str(), ios::in|ios::binary);
     if (newF.fail()) 
-        std::clog << logger::logError << "Can't open file "<<cfgFile<<", when trying to save new config file." << logger::endl;
+        std::clog << logger::logError << "Can't open file "<<cfgFile 
+		  <<", when trying to save new config file." << logger::endl;
     else
     {
         newF.seekg(0,ios::end);
@@ -80,7 +81,8 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
         oOldF.open(oldCfgFile.c_str(),ios::trunc|ios::out|ios::binary);
         if (oOldF.fail()) 
         {
-            std::clog << logger::logError << "Can't open file "<<oldCfgFile<<", when trying to save new config file"<< logger::endl;
+            std::clog << logger::logError << "Can't open file "<<oldCfgFile
+		      <<", when trying to save new config file"<< logger::endl;
             newF.close();
         }
         else
