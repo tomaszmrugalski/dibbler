@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.10 2005-01-30 22:53:28 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.11 2005-01-30 23:12:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/01/30 22:53:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.9  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -229,7 +232,7 @@ void TSrvMsg::setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 }
 
 void TSrvMsg::doDuties() {
-    if ( (this->FirstTimeStamp+this->MRT) >= now() )
+    if ( !this->getTimeout() )
         this->IsDone = true;
 }
 

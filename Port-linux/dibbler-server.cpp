@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: dibbler-server.cpp,v 1.11 2005-01-30 22:53:28 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.12 2005-01-30 23:12:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/01/30 22:53:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.10  2004/12/07 00:45:42  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -215,12 +218,12 @@ int uninstall() {
 void help() {
     cout << "Usage:" << endl;
     cout << " dibbler-server-linux ACTION" << endl
-	 << " ACTION = status|start|stop|install|uninstall|run" << endl
+	 << " ACTION = status|start|stop|run" << endl
 	 << " status    - show status and exit" << endl
 	 << " start     - start installed service" << endl
 	 << " stop      - stop installed service" << endl
-	 << " install   - install service [NOT IMPLEMENTED YET]" << endl
-	 << " uninstall - uninstall service [NOT IMPLEMENTED YET]" << endl
+	 << " install   - Not available in Linux/Unix systems." << endl
+	 << " uninstall - Not available in Linux/Unix systems." << endl
 	 << " run       - run in the console" << endl
 	 << " help      - displays usage info." << endl;
 }

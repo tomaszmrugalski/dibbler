@@ -197,16 +197,16 @@ int uninstall() {
 }
 
 void help() {
-	cout << "Usage:" << endl;
-	cout << " dibbler-client-linux ACTION" << endl
-	     << " ACTION = status|start|stop|install|uninstall|run" << endl
-	     << " status    - show status and exit" << endl
-	     << " start     - start installed service" << endl
-	     << " stop      - stop installed service" << endl
-	     << " install   - install service [NOT IMPLEMENTED YET]" << endl
-	     << " uninstall - uninstall service [NOT IMPLEMENTED YET]" << endl
-	     << " run       - run in the console" << endl
-	     << " help      - displays usage info." << endl;
+    cout << "Usage:" << endl;
+    cout << " dibbler-client-linux ACTION" << endl
+	 << " ACTION = status|start|stop|install|uninstall|run" << endl
+	 << " status    - show status and exit" << endl
+	 << " start     - start installed service" << endl
+	 << " stop      - stop installed service" << endl
+	 << " install   - Not available in Linux/Unix systems." << endl
+	 << " uninstall - Not available in Linux/Unix systems." << endl
+	 << " run       - run in the console" << endl
+	 << " help      - displays usage info." << endl;
 }
 
 int main(int argc, char * argv[])
