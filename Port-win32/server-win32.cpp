@@ -14,7 +14,7 @@ time_t timer;
 
 void usage() {
 	cout << "Usage:" << endl;
-	cout << " dibbler-server.exe ACTION -d dirname -i ipv6path" << endl
+	cout << " dibbler-server-winxp.exe ACTION -d dirname -i ipv6path" << endl
 		 << " ACTION = status|start|stop|install|uninstall|run" << endl
 		 << " status    - show status and exit" << endl
 		 << " start     - start installed service" << endl

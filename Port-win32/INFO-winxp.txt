@@ -1,3 +1,21 @@
  INFO
 ------
 
+Usage:
+ 
+dibbler-server.exe ACTION -d dirname -i ipv6path
+
+e.g.: dibbler-server.exe run -d "c:\dibbler\\" -i "c:\windows\system32\ipv6.exe\\"
+
+Please note double backslashes at the end of paths.
+	
+where
+	ACTION = status|start|stop|install|uninstall|run
+	status    - show status and exit
+	start     - start installed service
+	stop      - stop installed service
+	install   - install service
+	uninstall - uninstall service
+	run       - run interactively
+	
+

@@ -35,7 +35,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="yld.lib ws2_32.lib Iphlpapi.lib libxml2.lib"
-				OutputFile="$(OutDir)/client-winxp.exe"
+				OutputFile="$(OutDir)/dibbler-client-winxp.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/DHCPClient.pdb"
@@ -694,6 +694,34 @@
 				</File>
 				<File
 					RelativePath="..\sources\ClntMessages\ClntMsgVerifyIA.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="misc"
+				Filter="">
+				<File
+					RelativePath="..\misc\Container.h">
+				</File>
+				<File
+					RelativePath="..\misc\DHCPConst.h">
+				</File>
+				<File
+					RelativePath="..\misc\DUID.h">
+				</File>
+				<File
+					RelativePath="..\misc\IPv6Addr.h">
+				</File>
+				<File
+					RelativePath="..\misc\Logger.h">
+				</File>
+				<File
+					RelativePath="..\misc\Portable.h">
+				</File>
+				<File
+					RelativePath="..\misc\SmartPtr.h">
+				</File>
+				<File
+					RelativePath="..\misc\long128.h">
 				</File>
 			</Filter>
 		</Filter>

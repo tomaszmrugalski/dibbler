@@ -1,4 +1,4 @@
-#include "ClnService.h"
+#include "ClntService.h"
 #include "DHCPClient.h"
 #include "portable.h"
 #include "logger.h"
@@ -13,52 +13,53 @@ TClntService::TClntService() : TWinService("DHCPv6Client","Klient DHCPv6",SERVIC
 {
 }
 
-bool TClntService::ParseStandardArgs(int argc,char* argv[])
+int TClntService::ParseStandardArgs(int argc,char* argv[])
 {    
-    if (argc>1)
+    bool dirFound=false;
+	bool ipFound=true;
+	int status=1;
+	int n=1;
+        
+	while(n<argc)
     {
-        bool dirFound=false;
-        bool ipFound=true;
-        int pres=1;
-        //clog<<logger::logInfo<<"argv["<<pres<<"]="<<argv[pres]<<endl;
-        while(argc>pres)
-        {
-            if (strncmp(argv[pres], "-d\"",3)==0)
-            {
-                char temp[255];
-                temp[0]=0;
-                strcat(temp,argv[pres]+3);
-                while((pres<argc)&&
-                      (argv[pres][strlen(argv[pres])-1]!='"'))
-                {
-                    pres++;
-                    strcat(temp," ");
-                    strcat(temp,argv[pres]);
-                }
-                temp[strlen(temp)-1]=0;                
-                this->ServiceDir=temp;
-                dirFound=true;     
-            }
-            if (strncmp(argv[pres], "-i\"",3)==0)
-            {
-                ipv6Path= new char [255];
-                ipv6Path[0]=0;
-                strcat(ipv6Path,argv[pres]+3);
-                while((pres<argc)&&
-                      (argv[pres][strlen(argv[pres])-1]!='"'))
-                {
-                    pres++;
-                    strcat(ipv6Path," ");
-                    strcat(ipv6Path,argv[pres]);
-                }
-                ipv6Path[strlen(ipv6Path)-1]=0;
-                ipFound=true;
-            }
-            pres++;
+		if (!strncmp(argv[n], "status",6))    {	return 1;}
+		if (!strncmp(argv[n], "start",5))     {	status = 2;	}
+		if (!strncmp(argv[n], "stop",4))      {	status = 3;	}
+		if (!strncmp(argv[n], "install",7))   {	status = 4;	}
+		if (!strncmp(argv[n], "uninstall",9)) {	return 5;}
+		if (!strncmp(argv[n], "run",3))       { status = 6; }
+
+		if (strncmp(argv[n], "-d",2)==0) {
+			if (n+1==argc) {
+				cout << "-d is a last parameter (additional filepath required)" << endl;
+				return -1; // this is last parameter
+			}
+			n++;
+
+			char temp[255];
+			strncpy(temp,argv[n],255);
+            ServiceDir=temp;
+			cout << "workdir found: [" << temp << "]" << endl;
+            dirFound=true;
         }
-        return false;
+
+        if (strncmp(argv[n], "-i",2)==0) {
+           ipv6Path= new char [255];
+           ipv6Path[0]=0;
+		   if (n+1==argc) 
+				return -1; // this is last parameter
+		   n++;
+           strcat(ipv6Path,argv[n]);
+           ipv6Path[strlen(ipv6Path)]=0;
+           ipFound=true;
+		   cout << "ipv6path found: [" << ipv6Path << "]" << endl;
+        }
+		n++;
     }
-    return true;
+	if (ipFound && dirFound)
+		return status;
+	else
+		return -1;
 }
 
 void TClntService::OnShutdown()

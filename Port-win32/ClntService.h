@@ -14,7 +14,7 @@ public:
     void OnStop();
     void OnShutdown();
 	~TClntService(void);
-    bool ParseStandardArgs(int argc,char* argv[]);
+    int ParseStandardArgs(int argc,char* argv[]);
 private:
     string ServiceDir;
 };

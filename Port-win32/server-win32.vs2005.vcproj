@@ -35,7 +35,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="yld.lib ws2_32.lib Iphlpapi.lib libxml2.lib "
-				OutputFile="$(OutDir)/server-winxp.exe"
+				OutputFile="$(OutDir)/dibbler-server-winxp.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
@@ -366,6 +366,9 @@
 					RelativePath="WinService.cpp">
 				</File>
 				<File
+					RelativePath="dns-winxp.c">
+				</File>
+				<File
 					RelativePath="server-winxp.cpp">
 				</File>
 				<File
@@ -401,6 +404,21 @@
 				RelativePath="..\misc\long128.h">
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\FUN">
+		</File>
+		<File
+			RelativePath="..\GUIDELINES">
+		</File>
+		<File
+			RelativePath="INFO-winxp.txt">
+		</File>
+		<File
+			RelativePath="..\README">
+		</File>
+		<File
+			RelativePath="..\TODO">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
