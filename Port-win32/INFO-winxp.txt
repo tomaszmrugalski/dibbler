@@ -1,6 +1,6 @@
  Dibbler WinXP README
 ----------------------
-$Id: INFO-winxp.txt,v 1.10 2004-02-28 16:07:19 thomson Exp $
+$Id: INFO-winxp.txt,v 1.11 2004-03-29 18:36:00 thomson Exp $
 
 For newest informations, please visit http://klub.com.pl/dhcpv6/
 
@@ -9,6 +9,9 @@ unstable and absolutely not user-friendly. Sorry, In windows environment
 you have no friends and everything is your enemy.
 
 					        Tomasz Mrugalski
+					        
+Note: Things seem to stabilize a bit. But it's still like riding a roller
+on a minefield.
 
  1. Installation
 -----------------
@@ -69,3 +72,8 @@ add .\ to include path if you have problem with missing FlexLexer.h.
 Also note that FlexLexer.h is modified (std:: added in several places,
 <fstream.h> is replaced with <fstream> etc.
 
+3. In file ClntParser.cpp, substitute line (around 1860):
+	*++yyvsp = yylval;
+with:
+	*++yyvsp = ::yylval;
+This trick is supposed to fix numerous parser problems.
