@@ -36,7 +36,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib Iphlpapi.lib libxml2.lib "
-				OutputFile="$(OutDir)/dibbler-client-winxp.exe"
+				OutputFile="$(OutDir)/dibbler-client-win32.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/DHCPClient.pdb"
@@ -486,9 +486,6 @@
 					RelativePath="..\misc\addrpack.c">
 				</File>
 				<File
-					RelativePath="dns-winxp.c">
-				</File>
-				<File
 					RelativePath="..\misc\long128.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -517,7 +514,7 @@
 					RelativePath="client-winxp.cpp">
 				</File>
 				<File
-					RelativePath="lowlevel-winxpsp1.c">
+					RelativePath="lowlevel-win32.c">
 				</File>
 			</Filter>
 		</Filter>
@@ -666,40 +663,37 @@
 				Name="Client Messages"
 				Filter="">
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsg.h">
+					RelativePath="..\ClntMessages\ClntMsg.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgAdvertise.h">
+					RelativePath="..\ClntMessages\ClntMsgAdvertise.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgConfirm.h">
+					RelativePath="..\ClntMessages\ClntMsgConfirm.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgDecline.h">
+					RelativePath="..\ClntMessages\ClntMsgDecline.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgInfRequest.h">
+					RelativePath="..\ClntMessages\ClntMsgInfRequest.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgRebind.h">
+					RelativePath="..\ClntMessages\ClntMsgRebind.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgRelease.h">
+					RelativePath="..\ClntMessages\ClntMsgRelease.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgRenew.h">
+					RelativePath="..\ClntMessages\ClntMsgRenew.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgReply.h">
+					RelativePath="..\ClntMessages\ClntMsgReply.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgRequest.h">
+					RelativePath="..\ClntMessages\ClntMsgRequest.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgSolicit.h">
-				</File>
-				<File
-					RelativePath="..\sources\ClntMessages\ClntMsgVerifyIA.h">
+					RelativePath="..\ClntMessages\ClntMsgSolicit.h">
 				</File>
 			</Filter>
 			<Filter

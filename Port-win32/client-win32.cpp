@@ -4,9 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: client-win32.cpp,v 1.13 2004-09-28 21:49:32 thomson Exp $
+ * Released under GNU GPL v2 licence
+ *
+ * $Id: client-win32.cpp,v 1.14 2004-10-03 21:28:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/09/28 21:49:32  thomson
+ * no message
+ *
  * Revision 1.12  2004/07/17 16:02:34  thomson
  * Command line minor modifications.
  *
@@ -21,16 +26,13 @@
  *
  * Revision 1.8  2004/03/29 22:06:49  thomson
  * 0.1.1 version
- *
- *
- * Released under GNU GPL v2 licence
- *
  */
 
 #include <string>
 #include <iostream>
 #include <winsock2.h>
 #include <Ws2tcpip.h> 
+#include <process.h>
 
 #include "WinService.h"
 #include "ClntService.h"
