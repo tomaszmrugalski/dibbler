@@ -34,11 +34,11 @@ RELAYBIN     = dibbler-relay
 # === do not modify anything below ===
 MAKEFLAGS   += -s
 VERSION      = `$(TOPDIR)/test/xtract_version`
-INST_WORKDIR = '/var/lib/dibbler'
-INST_MANDIR  = '/usr/local/man'
-INST_DOCDIR  = '/usr/local/share/doc'
-INST_BINDIR  = '/usr/local/sbin'
-INST_CONFDIR = '/var/lib/dibbler'
+INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
+INST_MANDIR  = $(DESTDIR)'/usr/local/man'
+INST_DOCDIR  = $(DESTDIR)'/usr/local/share/doc'
+INST_BINDIR  = $(DESTDIR)'/usr/local/sbin'
+INST_CONFDIR = $(DESTDIR)'/etc/dibbler'
 INSTALL      = 'install'
 MKDIR        = mkdir -p
 CP           = cp

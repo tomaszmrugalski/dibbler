@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.35 2005-01-24 00:42:57 thomson Exp $
+ * $Id: Portable.h,v 1.36 2005-01-25 21:14:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2005/01/24 00:42:57  thomson
+ * no message
+ *
  * Revision 1.34  2005/01/23 23:17:53  thomson
  * Relay/global address support related improvements.
  *
@@ -122,9 +125,9 @@
 
 #ifdef LINUX
 #define WORKDIR		  "/var/lib/dibbler"
-#define CLNTCONF_FILE	  "/var/lib/dibbler/client.conf"
-#define SRVCONF_FILE      "/var/lib/dibbler/server.conf"
-#define RELCONF_FILE      "/var/lib/dibbler/relay.conf"
+#define CLNTCONF_FILE	  "/etc/dibbler/client.conf"
+#define SRVCONF_FILE      "/etc/dibbler/server.conf"
+#define RELCONF_FILE      "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
 #define CLNTPID_FILE      "client.pid"
 #define SRVPID_FILE       "server.pid"

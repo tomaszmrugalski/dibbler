@@ -10,7 +10,7 @@ libs: libClntCfgMgr.a
 
 ClntLexer.o: ClntLexer.cpp
 	@echo "[CPP    ] $(SUBDIR)/$@"
-	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntLexer.cpp
+	$(CXX) $(OPTS) -c -ftemplate-depth-30 ClntLexer.cpp
 
 parser: ClntParser.y ClntLexer.l
 	echo "[BISON++] ClntParser.y"
