@@ -230,13 +230,23 @@ release-win32: VERSION-win doc
 release-src: VERSION-src 
 	@echo "[RM     ] dibbler-$(VERSION)-src.tar.gz"
 	rm -f dibbler-$(VERSION)-src.tar.gz
-	cd doc; $(MAKE) clean
+	$(MAKE) clean
 	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; $(MAKE) -C bison++ clean; fi
-	@echo "[TAR/GZ ] ../dibbler-tmp.tar.gz"
+	echo "$(VERSION)" > ../dibbler-version
+	cd ..; echo dibbler-`cat dibbler-version`.tar.gz
+	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz"
+	mv ../dibbler ../dibbler-$(VERSION)
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
-        --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler > filelist-src
+        --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler-`cat dibbler-version`
+	mv ../dibbler-`cat ../dibbler-version` ../dibbler
 	@echo "[RENAME ] dibbler-$(VERSION)-src.tar.gz"
 	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
+	rm ../dibbler-version
+
+FOO1:=`$(TOPDIR)/test/xtract_version`
+foo:
+	echo $(FOO1)
+	cd ..; echo "VERSION=[$(F001)]"
 
 release-doc: VERSION-src doc oxygen
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-doc.tar.gz"
