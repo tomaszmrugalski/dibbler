@@ -123,58 +123,10 @@
 					RelativePath="..\Options\Opt.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptAddr.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptAddrLst.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptClientIdentifier.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptElapsed.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptGeneric.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptIAAddress.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptIA_NA.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptInteger4.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptOptionRequest.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptPreference.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptRapidCommit.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptServerIdentifier.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptStatusCode.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptString.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptStringLst.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptUserClass.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptVendorClass.cpp">
-				</File>
-				<File
-					RelativePath="..\Options\OptVendorSpecInfo.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -233,15 +185,6 @@
 				<File
 					RelativePath="..\RelCfgMgr\RelParser.cpp">
 				</File>
-				<File
-					RelativePath="..\CfgMgr\StationID.cpp">
-				</File>
-				<File
-					RelativePath="..\CfgMgr\StationRange.cpp">
-				</File>
-				<File
-					RelativePath="..\CfgMgr\TimeZone.cpp">
-				</File>
 			</Filter>
 			<Filter
 				Name="misc"
@@ -289,24 +232,68 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
 			<Filter
-				Name="AddrMgr"
-				Filter="">
-			</Filter>
-			<Filter
 				Name="IfaceMgr"
 				Filter="">
+				<File
+					RelativePath="..\IfaceMgr\Iface.h">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\IfaceMgr.h">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\SocketIPv6.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Options"
 				Filter="">
+				<File
+					RelativePath="..\Options\Opt.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptGeneric.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptInteger4.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="RelOptions"
 				Filter="">
+				<File
+					RelativePath="..\RelOptions\RelOptGeneric.h">
+				</File>
+				<File
+					RelativePath="..\RelOptions\RelOptInterfaceID.h">
+				</File>
+				<File
+					RelativePath="..\RelOptions\RelOptRelayMsg.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="CfgMgr"
 				Filter="">
+				<File
+					RelativePath="..\CfgMgr\CfgMgr.h">
+				</File>
+				<File
+					RelativePath="..\RelCfgMgr\RelCfgIface.h">
+				</File>
+				<File
+					RelativePath="..\RelCfgMgr\RelCfgMgr.h">
+				</File>
+				<File
+					RelativePath="..\RelCfgMgr\RelLexer.h">
+				</File>
+				<File
+					RelativePath="..\RelCfgMgr\RelParsGlobalOpt.h">
+				</File>
+				<File
+					RelativePath="..\RelCfgMgr\RelParsIfaceOpt.h">
+				</File>
+				<File
+					RelativePath="..\RelCfgMgr\RelParser.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="misc"
@@ -316,6 +303,9 @@
 				</File>
 				<File
 					RelativePath="..\misc\DHCPConst.h">
+				</File>
+				<File
+					RelativePath="..\Misc\DHCPRelay.h">
 				</File>
 				<File
 					RelativePath="..\misc\DUID.h">

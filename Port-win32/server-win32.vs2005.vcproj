@@ -423,6 +423,9 @@
 				Name="CfgMgr"
 				Filter="">
 				<File
+					RelativePath="..\CfgMgr\CfgMgr.h">
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvCfgAddrClass.h">
 				</File>
 				<File

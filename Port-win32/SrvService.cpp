@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: SrvService.cpp,v 1.12 2004-12-13 23:31:30 thomson Exp $
+ * $Id: SrvService.cpp,v 1.13 2005-02-01 01:10:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/12/13 23:31:30  thomson
+ * *DB_FILE renamed to *ADDRMGR_FILE
+ *
  * Revision 1.11  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -43,9 +46,9 @@ TDHCPServer * ptr;
 
 TSrvService::TSrvService() 
  :TWinService("DHCPv6Server","Dibbler - a DHCPv6 server",SERVICE_AUTO_START,
-	"RpcSS\0tcpip6\0winmgmt\0",
-	"Dibbler - a portable DHCPv6. This is DHCPv6 server,"
-    "Windows version.")
+	      "RpcSS\0tcpip6\0winmgmt\0",
+	      "Dibbler - a portable DHCPv6. This is DHCPv6 server, version "
+	      DIBBLER_SERVER ".")
 {
 }
 
@@ -134,6 +137,7 @@ void TSrvService::Run()
     
     TDHCPServer server(confile);
     ptr = &server; // remember address
+    server.setWorkdir(workdir);
     
     if (!server.isDone())
 	server.run();
