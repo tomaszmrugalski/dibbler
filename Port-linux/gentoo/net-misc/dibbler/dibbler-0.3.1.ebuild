@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/dibbler-0.3.1.ebuild,v 1.3 2004-12-29 22:33:37 thomson Exp $
+# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/dibbler-0.3.1.ebuild,v 1.4 2004-12-29 23:29:56 thomson Exp $
 
 inherit eutils
 
@@ -13,7 +13,10 @@ SLOT="0"
 KEYWORDS="x86"
 IUSE="latex"
 
-# tmrugals 2004-12-29 FIXME: repoman complains about invalid IUSE. latex and tex seem not to be working.
+# thomson: latex flag is used to generate User's Guide and Developer's Guide - a nice PDF files.
+# LaTeX system is required to generate them.
+
+# thomson 2004-12-29 FIXME: repoman complains about invalid IUSE. latex and tex seem not to be working.
 # Is there any other USE tag related to the latex? If not, dibbler-user.pdf should be probably
 # ripped from http://klub.com.pl/dhcpv6/dibbler-0.3.1-doc.tar.gz 
 
