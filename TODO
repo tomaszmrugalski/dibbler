@@ -1,10 +1,7 @@
-  TODO
- ------
+  Internal TODO
+ ---------------
 
-- check CVS setup (Th) (Marek)
-- place some copyleft informations in every cpp/h file
 - release first public version, display info about version and compilation time
-- client segfaults when config-file load has failed
 - fill stucture desrcibing iface with link local addresses available on this iface
 - repeated DNS SERVERS Option write redundant information to RESOLVCONF_FILE
 - merge Tentative and State in IAa
@@ -14,10 +11,8 @@
 - finish CONFIRM (db load required)
 - implement useMulticast
 - implement Server Unicast
-- gcc 3.3 support
 - How to update pref/valid?
 - Srv: DECLINE should have addrs with valid=preferred=0 values
-- unified start/stop for WIN/Linux
 - ClntCfgIface.cpp:107: what are "additonal DNS servers"?
 - ClntCfgIface.cpp:157: what are those options?
 - check server's behavior: there isn't any addrs left, and srv receives SOLICIT.

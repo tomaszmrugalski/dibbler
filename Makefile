@@ -114,4 +114,4 @@ clean:
 		(cd $$dir; $(MAKE) clean) || exit 1; \
 	done
 	cd $(LOWLEVEL); $(MAKE) clean
-	rm -f *.o client server
+	rm -f *.o $(CLIENTBIN) $(SERVERBIN)

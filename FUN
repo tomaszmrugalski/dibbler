@@ -1,7 +1,7 @@
 
   Beka
  ------
-Cos takiego bylo w IfaceMgr.h (prosto z Rose'a):x
+I've found this in IfaceMgr.h (just generated from Rational Rose):
 
   int addAddr(void char *iface, void char * addr);
   int delAddr(void int iface, void char *addr);
@@ -17,7 +17,7 @@ In file included from /usr/include/netinet/in.h:23,
  from Msg.cpp:2:
  /usr/include/stdint.h:50: declaration does not declare anything
 
-Przy kompilacji (dir: ClntParser: make parser)
+At compile time I got this: (dir: ClntParser: make parser)
 cc1plus: register name not specified for ` /* decl error */ '
 ../include/Container.h:28: Internal compiler error:
 ../include/Container.h:28: Internal compiler error in `make_decl_rtl', at varasm.c:742
