@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.23 2004-07-05 00:53:03 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.24 2004-07-11 14:04:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
  * Revision 1.22  2004/07/05 00:12:30  thomson
  * Lots of minor changes.
  *
@@ -154,8 +157,9 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 		}
 		if (!ifaceIface) {
 		    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-				 << " specified in " << CLNTCFGMGR_FILE << " is not present in the system."
+				 << " specified in " << SRVCONF_FILE << " is not present in the system or does not support IPv6."
 				 << LogEnd;
+			this->IsDone = true;
 			return false;
 		}
 		cfgIface->setName(ifaceIface->getName());
