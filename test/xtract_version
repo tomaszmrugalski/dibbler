@@ -1,9 +1,9 @@
 #!/bin/bash
-if [ -e misc/Portable.h ]; then
-  VER1=`grep "^\#define DIBBLER_VERSION" misc/Portable.h | awk '{ print $3}'`
+if [ -e Misc/Portable.h ]; then
+  VER1=`grep "^\#define DIBBLER_VERSION" Misc/Portable.h | awk '{ print $3}'`
 else
-  if [ -e ../misc/Portable.h ]; then
-  VER1=`grep "^\#define DIBBLER_VERSION" ../misc/Portable.h | awk '{ print $3}'`
+  if [ -e ../Misc/Portable.h ]; then
+  VER1=`grep "^\#define DIBBLER_VERSION" ../Misc/Portable.h | awk '{ print $3}'`
   fi
 fi
   
