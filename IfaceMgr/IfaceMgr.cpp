@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.17 2004-12-07 00:45:41 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.18 2004-12-15 23:12:37 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.16  2004/12/04 23:45:40  thomson
  * Problem with client and server on the same Linux host fixed (bug #56)
  *
@@ -89,6 +92,11 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
 		    << ptr->flags << ", maclen=" << ptr->maclen << LogEnd;
+        if (!ptr->linkaddrcount) {
+          Log(Crit) << "Interface " << ptr->name << "/" << ptr->id 
+                    << " does not appear to have any link-layer address. Do you have IPv6 enabled in your system?" << LogEnd;
+          this->IsDone = true;
+        }
 	
         SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,

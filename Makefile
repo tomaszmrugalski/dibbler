@@ -249,4 +249,4 @@ clean-libs:
 links: includes
 clobber: clean
 
-.PHONY: release-winxp release-src release-linux VERSION VERSION-win
+.PHONY: release-winxp release-src release-linux VERSION VERSION-win doc
