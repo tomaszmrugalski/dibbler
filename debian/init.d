@@ -12,8 +12,8 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/dibbler-server
-NAME=dibbler
-DESC=dibbler
+NAME=dibbler-server
+DESC=DHCPv6 server
 DAEMON_OPTS=run
 
 test -x $DAEMON || exit 0
@@ -28,7 +28,7 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	dibbler-server start
+	dibbler-server start > /dev/null
 	echo "$NAME."
 	;;
   stop)
