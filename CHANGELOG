@@ -2,7 +2,9 @@
   Dibbler changelog
  ------------------- 
 
- Soon to be released 0.3.0
+ 0.3.0 [2004-12-16]
+  - Linux: RPM package prepared (bugs #63, #64)
+  - Windows installed (bugs #59, #60)
   - Client now can handle denied REPLY for RENEW in a sanite way (bug #53)
   - Client now removes expired addresses (bug #15)
   - Server and client no longer supports link local addresses (bug #38, #39)
