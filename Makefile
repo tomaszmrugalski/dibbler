@@ -212,6 +212,12 @@ release-doc: VERSION-src doc oxygen
 	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG \
                  doc/*.pdf doc/html doc/rfc doc/rfc-drafts > filelist-doc
 
+release-gentoo: VERSION-linux
+	@echo "[TAR/GZ ] dibbler-tmp.tar.gz"
+	cd port-linux/gentoo; tar czvf ../../dibbler-tmp.tar.gz --exclude CVS net-misc
+	@echo "[RENAME ] dibbler-$(VERSION)-gentoo.tar.gz"
+	mv dibbler-tmp.tar.gz dibbler-$(VERSION)-gentoo.tar.gz
+
 release-all: release-src release-linux release-doc release-deb release-rpm release-win32
 
 release-deb: VERSION-linux server client doc
