@@ -15,14 +15,14 @@ class TOptIAAddress : public TOpt
     
     char * storeSelf( char* buf);
     SmartPtr<TIPv6Addr> getAddr();
-    long getPref();
-    long getValid();
+    unsigned long getPref();
+    unsigned long getValid();
     bool isValid();    
  private:
-     SmartPtr<TIPv6Addr> Addr;
-     long Valid;
-     long Pref;
-     bool ValidOpt;
+    SmartPtr<TIPv6Addr> Addr;
+    unsigned long Valid;
+    unsigned long Pref;
+    bool ValidOpt;
 };
 
 #endif

@@ -9,6 +9,8 @@ class TClntCfgMgr;
 #include "ClntCfgIface.h"
 #include "ClntCfgGroup.h"
 #include "CfgMgr.h"
+#include "FlexLexer.h"
+#include "ClntParser.h"
 
 
 class TClntCfgMgr : public TCfgMgr

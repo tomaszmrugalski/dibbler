@@ -6,12 +6,15 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIAAddress.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: OptIAAddress.cpp,v 1.3 2004-05-23 19:12:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
-#ifdef WIN32
+#ifdef WIN32
 #include <winsock2.h>
 #endif
 #ifdef LINUX
@@ -79,12 +82,12 @@ TOptIAAddress::TOptIAAddress( SmartPtr<TIPv6Addr> addr, long pref, long valid, T
 	return this->Addr;
 }
 
- long TOptIAAddress::getPref()
+unsigned long TOptIAAddress::getPref()
 {
 	return this->Pref;
 }
 
- long TOptIAAddress::getValid()
+unsigned long TOptIAAddress::getValid()
 {
 	return this->Valid;
 }

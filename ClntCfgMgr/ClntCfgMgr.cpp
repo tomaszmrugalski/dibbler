@@ -18,6 +18,7 @@ using namespace std;
 
 TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr, 
                          const string cfgFile,const string oldCfgFile)
+    :TCfgMgr((Ptr*)ClntIfaceMgr)
 {
     int result;
     bool newConf=false;

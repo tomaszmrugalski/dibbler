@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: CfgMgr.cpp,v 1.6 2004-05-23 19:12:34 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #ifdef WIN32
 #include <winsock2.h>
 #endif
@@ -13,7 +27,18 @@
 #include "Logger.h"
 #include "Portable.h"
 #include "Logger.h"
+#include "Iface.h"
 
+TCfgMgr::TCfgMgr(SmartPtr<TIfaceMgr> IfaceMgr) {
+    this->IfaceMgr = IfaceMgr;
+}
+
+TCfgMgr::~TCfgMgr() {
+    this->IfaceMgr = 0;
+}
+
+// method compares both files and if differs
+// returns true if files differs and false in the other case
 bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
 {
 	std::ifstream oldF,newF;
@@ -62,6 +87,7 @@ bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
     return newConf;
 }
 
+// replaces copy cfgFile to oldCfgFile
 void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
 {
     ifstream newF;
@@ -134,6 +160,40 @@ void TCfgMgr::setDUID(const string duidFile,char * mac,int macLen, int macType)
     }
 }
 
+bool TCfgMgr::loadDUID() {
+    
+    // --- load DUID ---
+    SmartPtr<TIfaceIface> realIface;
+    ////FIXME:get first iface - and pray it won't be loopback or other shit
+    bool found=false;
+    IfaceMgr->firstIface();
+    while( (!found) && (realIface=IfaceMgr->getIface()) )
+    {
+        realIface->firstLLAddress();
+	char buf[64];
+	memset(buf,0,64);
+        if ( realIface->getLLAddress() && 
+	     (realIface->getMacLen() > 5) &&
+	     memcmp(realIface->getMac(),buf,realIface->getMacLen()) &&
+	     realIface->flagUp() &&
+	     !realIface->flagLoopback() )
+            found=true;
+    }
+
+    if(found) {
+        this->setDUID(this->WorkDir+"/"+(string)CLNTDUID_FILE,
+		      (char*)realIface->getMac(),
+		      (int)realIface->getMacLen(),
+		      (int)realIface->getHardwareType());
+	return true;
+    } 
+	
+    Log(logCrit) << "Cannot generate DUID, because there is no interface with "
+		 << "MAC address." << logger::endl;
+    this->DUID=new TDUID();
+    return false;
+};
+
 void TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macType)
 {
     //FIXME:DUID should be generated on basis of one of the ifaces' mac address
@@ -174,9 +234,3 @@ SmartPtr<TDUID> TCfgMgr::getDUID()
 {
     return DUID;
 }
-
-/*int TCfgMgr::getDUIDlen()
-{
-    return DUIDlen;
-}
-*/
