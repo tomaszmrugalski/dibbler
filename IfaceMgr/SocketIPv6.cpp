@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.16 2005-01-11 22:53:35 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.17 2005-01-31 19:35:18 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  * Revision 1.15  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -207,11 +210,17 @@ int TIfaceSocket::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port) {
     
     switch(result) {
     case -2:
-	Log(Error) << "Unable to create a network address structure (addr=" 
-		   << *addr << ")" << LogEnd;
-	return -1;
+	  Log(Error) << "Unable to create a network address structure (addr=" << *addr << ")" << LogEnd;
+	  return -1;
+    default: {
+
+      }
     }
-    return result;
+
+    /* send success full */
+    if (result>0)
+        return result;
+    return len;
 }
 
 /**
