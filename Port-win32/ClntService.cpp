@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: ClntService.cpp,v 1.15 2004-12-03 20:51:42 thomson Exp $
+ * $Id: ClntService.cpp,v 1.16 2004-12-13 23:31:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.14  2004/12/02 00:51:06  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -120,7 +123,7 @@ void TClntService::Run() {
     }
     string confile  = CLNTCONF_FILE;
     string oldconf  = CLNTCONF_FILE+(string)"-old";
-    string addrfile = CLNTDB_FILE;
+    string addrfile = CLNTADDRMGR_FILE;
     string logFile  = CLNTLOG_FILE;
     
     logger::setLogName("Client");

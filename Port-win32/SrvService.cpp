@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: SrvService.cpp,v 1.11 2004-12-03 20:51:42 thomson Exp $
+ * $Id: SrvService.cpp,v 1.12 2004-12-13 23:31:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.10  2004/12/02 00:51:06  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -119,7 +122,7 @@ void TSrvService::Run()
     string confile  = SRVCONF_FILE;
     string oldconf  = SRVCONF_FILE+(string)"-old";
     string workdir  = this->ServiceDir;
-    string addrfile = SRVDB_FILE;
+    string addrfile = SRVADDRMGR_FILE;
     string logFile  = SRVLOG_FILE;
     logger::setLogName("Srv");
 	logger::Initialize((char*)logFile.c_str());
