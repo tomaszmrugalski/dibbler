@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.35 2005-02-07 20:51:56 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.36 2005-03-07 22:45:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2005/02/07 20:51:56  thomson
+ * Server stateless mode fixed (bug #103)
+ *
  * Revision 1.34  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -517,7 +520,10 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     out << "  <workDir>" << x.getWorkDir()  << "</workDir>" << endl;
     out << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     out << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
-    out << "  " << *x.DUID;
+    if (x.DUID)
+	out << "  " << *x.DUID;
+    else
+	out << "  <!-- DUID not set -->" << std::end;
 
     if (x.stateless())
 	out << "  <stateless/>" << std::endl;

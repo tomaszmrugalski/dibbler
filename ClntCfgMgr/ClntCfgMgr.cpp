@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.30 2005-02-01 00:57:36 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.31 2005-03-07 22:45:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.29  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -500,7 +503,10 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <workdir>" << x.getWorkDir()  << "</workdir>" << endl;
     strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
-    strum << "  " << *x.DUID;
+    if (x.DUID)
+        strum << "  " << *x.DUID;
+    else
+        strum << "  <!-- duid not set -->";
 
     SmartPtr<TClntCfgIface> ptr;
     x.firstIface();
