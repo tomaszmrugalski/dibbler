@@ -2,7 +2,7 @@
 CPP          = g++-3.3
 CC           = gcc-3.3
 FLEX         = flex
-BISONPP      = bison++
+BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
 COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) -g

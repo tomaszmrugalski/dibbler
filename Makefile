@@ -1,10 +1,13 @@
 include Makefile.inc
 PREFIX = .
 
-all: includes libs server client tags
+all: includes bison libs server client tags
 
 includes:
 	cd $(INCDIR); $(MAKE) all 
+
+bison:
+	cd $(PREFIX)/bison++; ./configure; $(MAKE)
 
 client: $(CLIENTBIN)
 
@@ -105,6 +108,7 @@ tags:
 	find . -name \*.h | xargs etags
 
 clean:
+	cd $(PREFIX)/bison++; $(MAKE) clean
 	@for dir in $(SUBDIRS); do \
 		echo "Cleaning in $$dir"; \
 		(cd $$dir; $(MAKE) clean) || exit 1; \
