@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.17 2004-12-07 00:45:41 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.18 2004-12-07 22:56:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.16  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -129,7 +132,7 @@ void TDHCPClient::run()
 	    ptrIface = IfaceMgr->getIfaceByID(iface);
             Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 			<< "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
-			<< dec << ", addr=" << msg->countOption() << " opts:";
+			<< dec << ", " << msg->countOption() << " opts:";
             SmartPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
