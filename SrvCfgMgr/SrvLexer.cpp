@@ -923,7 +923,6 @@ static yyconst flex_int32_t yy_rule_can_match_eol[49] =
 
 #line 25 "SrvLexer.l"
 using namespace std;
-namespace std{
   unsigned ComBeg; //line, in which comment begins
   unsigned LftCnt; //how many chars : on the left side of '::' char was interpreted
   unsigned RgtCnt; //the same as above, but on the right side of '::'
@@ -934,6 +933,7 @@ namespace std{
   int decodeSmallPart(char *src, char* dst,int length);
   bool decodeIntPart(char *src, char *dst);
   void resetAddress(char *tab);
+namespace std{
   yy_SrvParser_stype yylval;
 };
 #line 940 "SrvLexer.cpp"

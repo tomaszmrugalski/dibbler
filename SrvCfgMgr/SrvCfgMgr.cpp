@@ -1,10 +1,6 @@
 #include <fstream>
 #include <string>
-
-#ifdef LINUX
 #include <FlexLexer.h>
-#endif
-
 #include "SrvParser.h"
 #include "SrvCfgMgr.h"
 #include "IfaceMgr.h"
