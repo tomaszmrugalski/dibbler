@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.26 2004-12-07 20:51:35 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.27 2004-12-07 22:55:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/12/07 20:51:35  thomson
+ * Link local safety checks added (bug #39)
+ *
  * Revision 1.25  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -407,7 +410,8 @@ bool TClntCfgMgr::validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfg
 bool TClntCfgMgr::validateAddr(SmartPtr<TClntCfgIface> ptrIface, 
 			       SmartPtr<TClntCfgIA> ptrIA,
 			       SmartPtr<TClntCfgAddr> ptrAddr) {
-    if (ptrAddr->get()->linkLocal()) {
+    SmartPtr<TIPv6Addr> addr = ptrAddr->get();
+    if ( addr && addr->linkLocal()) {
 	Log(Crit) << "Address " << ptrAddr->get()->getPlain() << " specified in IA "
 		  << ptrIA->getIAID() << " on the " << ptrIface->getName() << "/" << ptrIface->getID()
 		  << " interface is link local." << LogEnd;
