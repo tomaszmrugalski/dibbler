@@ -1,6 +1,20 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: ClntCfgMgr.h,v 1.4 2004-05-23 20:41:03 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 class TClntCfgMgr;
-#ifndef CLNTCFGMGR_H_HEADER_INCLUDED_C0FD953F
-#define CLNTCFGMGR_H_HEADER_INCLUDED_C0FD953F
+#ifndef CLNTCFGMGR_H
+#define CLNTCFGMGR_H
 
 #include <string>
 #include "SmartPtr.h"
@@ -12,48 +26,42 @@ class TClntCfgMgr;
 #include "FlexLexer.h"
 #include "ClntParser.h"
 
-
 class TClntCfgMgr : public TCfgMgr
 {
-	friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
-public:
-	TClntCfgMgr(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-		    const string cfgFile,const string oldCfgFile);
-
-	// --- Iface related ---
-	SmartPtr<TClntCfgIA> getIA(long IAID);
-	SmartPtr<TClntCfgIface> getIface();
-    SmartPtr<TClntCfgIface> getIface(int id);
-	void firstIface();
-	void addIface(SmartPtr<TClntCfgIface> x);
-	int countIfaces();
-
-	string getWorkDir();
-	bool getReconfigure();
-	string getLogName();
-	int getLogLevel();
+    friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
+ public:
+    TClntCfgMgr(SmartPtr<TClntIfaceMgr> IfaceMgr, 
+		const string cfgFile,const string oldCfgFile);
     
-	//IA related
-	bool setIAState(int iface, int iaid, enum EState state);
-	int countAddrForIA(long IAID);
+    // --- Iface related ---
+    SmartPtr<TClntCfgIA> getIA(long IAID);
+    SmartPtr<TClntCfgIface> getIface();
+    SmartPtr<TClntCfgIface> getIface(int id);
+    void firstIface();
+    void addIface(SmartPtr<TClntCfgIface> x);
+    int countIfaces();
+
+
+    
+    string getWorkDir();
+    bool getReconfigure();
+    string getLogName();
+    int getLogLevel();
+    
+    //IA related
+    bool setIAState(int iface, int iaid, enum EState state);
+    int countAddrForIA(long IAID);
     
     SmartPtr<TClntCfgGroup> getGroupForIA(long IAID);
     SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid);
     bool isDone();
 
 private:
-	
-	SmartPtr<TClntIfaceMgr> IfaceMgr;
-	
-	
-	TContainer < SmartPtr<TClntCfgIface> >  ClntCfgIfaceLst;
+    SmartPtr<TClntIfaceMgr> IfaceMgr;
+    TContainer < SmartPtr<TClntCfgIface> >  ClntCfgIfaceLst;
 
-	string WorkDir;
-	string LogName;
-	int LogLevel;
-
-	bool IsDone;
     bool checkConfigConsistency();
+    bool matchParsedSystemInterfaces(clntParser *parser);
 };
 
-#endif /* CLNTCFGMGR_H_HEADER_INCLUDED_C0FD953F */
+#endif

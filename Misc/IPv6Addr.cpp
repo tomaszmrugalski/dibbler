@@ -124,7 +124,6 @@ TIPv6Addr TIPv6Addr::operator+(const TIPv6Addr &other)
 //Decreases randomly an address
 TIPv6Addr& TIPv6Addr::operator--()
 {
-    bool freely=false;
     for (int i=15;i>=0;i--)
     {
         int j=i-1;

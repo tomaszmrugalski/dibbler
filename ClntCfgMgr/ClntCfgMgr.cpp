@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: ClntCfgMgr.cpp,v 1.11 2004-05-23 20:41:03 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -6,7 +20,9 @@
 #include "ClntCfgMgr.h"
 #include "ClntCfgIface.h"
 #include "Logger.h"
+
 using namespace std;
+
 #include "IfaceMgr.h"
 #include "ClntIfaceMgr.h"
 
@@ -21,19 +37,18 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     :TCfgMgr((Ptr*)ClntIfaceMgr)
 {
     int result;
-    bool newConf=false;
-    ifstream f,oldF,newF;
+    ifstream f;
     this->IfaceMgr = ClntIfaceMgr;
     this->IsDone=false;
-    //newConf=true if files differs
-    newConf=compareConfigs(cfgFile,oldCfgFile);
 
-    //FIXME:newConf should be returned to Srv/ClntAddrMgr - whether release
-    //addresses 
-    if(newConf) 
-        this->copyFile(cfgFile,oldCfgFile);
-    //if files differs - make copy of new config
-	
+    /* support for config changes between runs - currently disabled */
+    // bool newConf=false; //newConf=true if files differs
+    // newConf=compareConfigs(cfgFile,oldCfgFile);
+    // if(newConf) 
+    //   this->copyFile(cfgFile,oldCfgFile);
+    /* support for config changes between runs - currently disabled */
+
+    // parse config file
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
         std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl; 
@@ -48,131 +63,135 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     f.close();
 
     if (result) {
+        //Result!=0 means config errors. Finish whole DHCPClient 
         std::clog << logger::logCrit << "Config error." << logger::endl;
-        //Finish whole DHCPClient 
         IsDone = true; 
         this->DUID=new TDUID();
         return;
     }
 
-    //Now parsed information should be place in config manager
-    //in accordance with information provided by interface manager
-    SmartPtr<TIfaceIface> iface;
-    IfaceMgr->firstIface();
-    //so for each iface in the system
-    while(iface=IfaceMgr->getIface())
-        //which is supposed to be configured
-        if ( (iface) &&
-            (iface->flagUp()) &&
-            (iface->flagRunning()) &&
-            (iface->flagMulticast()) &&
-			(iface->getMacLen()>5) )
-        {
-            //try to find it in parsed config file
-            SmartPtr<TClntCfgIface> cfgIface,foundIface;
-            parser.ClntCfgIfaceLst.first();
-            while(cfgIface=parser.ClntCfgIfaceLst.get())
-                if((iface->getID()==cfgIface->getID())||
-                    (string(iface->getName())==string(cfgIface->getName())))
-                    //yes - it's provided by user
-                {
-                    if(foundIface) //Oops! He did it again.
-                        clog<<"Defiinition of interface repeated - last one is valid." << logger::endl;
-                    //So it is memorized and removed from information descirbing config file
-                    foundIface=cfgIface;
-                    parser.ClntCfgIfaceLst.del();
-                };
-            //Have we found any interface ?
-            if (foundIface) 
-            {
-                //Here should be match iface name and iface id from IfaceMgr
-                //there is declaration of this iface in config file
-                if(iface->getID()==foundIface->getID()) {
-                    foundIface->setIfaceName(iface->getName());
-                }
-                else {
-                    foundIface->setIfaceID(iface->getID());
-                }
+    // match parsed interfaces with interfaces detected in system
+    matchParsedSystemInterfaces(&parser);
 
-                this->addIface(foundIface);
-            }
-            else
-            {
-                //no declaration, so one IA with one address should be created
-                //with global options
-                foundIface=SmartPtr<TClntCfgIface>(new TClntCfgIface(iface->getID()));
-                SmartPtr<TClntCfgGroup> group(new TClntCfgGroup());
-                group->setOptions(parser.ParserOptStack.getLast());
-                SmartPtr<TClntCfgIA> ia(new TClntCfgIA(parser.ParserOptStack.getLast()->getIncedIAIDCnt()));
-                ia->setOptions(parser.ParserOptStack.getLast());
-                SmartPtr<TClntCfgAddr> addr(new TClntCfgAddr());
-                addr->setOptions(parser.ParserOptStack.getLast());
-                //append created iface, group and address
-                foundIface->addGroup(group);
-                group->addIA(ia);
-                ia->addAddr(addr);
-                this->addIface(foundIface);
-            };
-        };
-    //So we configure approprieatly all interfaces in the system
-    //Rest of interfaces described in config file can't be configured
-    //because they don't exist, are not up/running etc.
-    //so appropriate warning should be logged
-    SmartPtr<TClntCfgIface> cfgIface;
-    parser.ClntCfgIfaceLst.first();
-    while(cfgIface=parser.ClntCfgIfaceLst.get()) {
-        std::clog << logger::logError << "Unable to configure " << cfgIface->getName()<<"/"
-            <<cfgIface->getID() << " interface. Reason: "
-            << "is loopback, not present in system (IfaceMgr), down, " 
-            << "not running or is not multicast-capable." << logger::endl;
-    }
     this->WorkDir = parser.ParserOptStack.getLast()->getWorkDir();
-    
+  
+    // check config consistency
     if(!checkConfigConsistency())
     {
         this->IsDone=true;
         return;
     }
-    //FIXME:I think that all IA's should be set in some state, because new attribute
-    //		state appeared in class TClntCfgIA, but in what state ? (Marek)
 
-    SmartPtr<TIfaceIface> realIface;
-    ////FIXME:get first iface - and pray it won't be loopback or other shit
-    bool found=false;
-    IfaceMgr->firstIface();
-    while( (!found) && (realIface=IfaceMgr->getIface()) )
-    {
-        realIface->firstLLAddress();
-	char buf[64];
-	memset(buf,0,64);
-        if ( realIface->getLLAddress() && 
-	     (realIface->getMacLen() > 5) &&
-	     memcmp(realIface->getMac(),buf,realIface->getMacLen()) &&
-	     realIface->flagUp() &&
-	     !realIface->flagLoopback() )
-            found=true;
+    // load or create DUID
+    if (!loadDUID()) {
+	this->IsDone=true;
+	return;
     }
-
-	if(found) {
-        this->setDUID(this->WorkDir+"/"+(string)CLNTDUID_FILE,
-        (char*)realIface->getMac(),
-        (int)realIface->getMacLen(),
-        (int)realIface->getHardwareType());
-	} else {
-        IsDone=true;
-        std::clog<<logger::logCrit
-            <<"Cannot generate DUID, because there is no appropriate interface." << logger::endl;
-        this->DUID=new TDUID();
-        //this->DUIDlen=0;
-        return;
-    };
-	
-	std::ofstream xmlDump;
-	xmlDump.open(CLNTCFGMGR_FILE);
-	xmlDump << *this;
-	xmlDump.close();
-
+    
+    // store ClntCfgMgr in file
+    std::ofstream xmlDump;
+    xmlDump.open(CLNTCFGMGR_FILE);
+    xmlDump << *this;
+    xmlDump.close();
+    
     IsDone = false;
+}
+
+/*
+  match parsed interfaces with interfaces detected in system. 
+  CfgIface objects are created placed in CfgMgr. 
+*/
+bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
+    int cfgIfaceCnt;
+    cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
+    Log(logDebug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCFGMGR_FILE << logger::endl;
+
+    SmartPtr<TClntCfgIface> cfgIface;
+    SmartPtr<TIfaceIface> ifaceIface;
+
+    if (cfgIfaceCnt) {
+	// user specified some interfaces in config file
+	parser->ClntCfgIfaceLst.first();
+	while(cfgIface = parser->ClntCfgIfaceLst.get()) {
+	    // for each interface (from config file)
+	    if (cfgIface->getID()==-1) {
+		ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
+	    } else {
+		ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
+	    }
+
+	    if (!ifaceIface) {
+		Log(logError) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			      << " specified in " << CLNTCFGMGR_FILE << " is not present in the system."
+			      << logger::endl;
+		continue;
+	    }
+	    if (cfgIface->noConfig()) {
+		Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			       << " has flag no-config set, so it is ignored." << logger::endl;
+		continue;
+	    }
+
+	    cfgIface->setIfaceName(ifaceIface->getName());
+	    cfgIface->setIfaceID(ifaceIface->getID());
+
+	    this->addIface(cfgIface);
+	    Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			 << " has been added." << logger::endl;
+	}
+    } else {
+	// user didn't specified any interfaces in config file, so
+	// we'll try to configure each interface we could find
+	Log(logWarning) << CLNTCFGMGR_FILE << " does not contain any interface definitions."
+			<< logger::endl;
+
+	IfaceMgr->firstIface();
+	while ( ifaceIface = IfaceMgr->getIface() ) {
+	    // for each interface present in the system...
+	    // which is supposed to be configured
+	    if (!ifaceIface->flagUp()) {
+		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			       << " is down, ignoring." << logger::endl;
+		continue;
+	    }
+	    if (!ifaceIface->flagRunning()) {
+		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			       << " has flag RUNNING not set, ignoring." << logger::endl;
+		continue;
+	    }
+	    if (!ifaceIface->flagMulticast()) {
+		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			       << " is not multicast capable, ignoring." << logger::endl;
+		continue;
+	    }
+	    if ( !(ifaceIface->getMacLen() > 5) ) {
+		Log(logNotice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+			       << " has MAC address length " << ifaceIface->getMacLen() 
+			       << ", but greater than 5 is required, ignoring." << logger::endl;
+		continue;
+	    }
+	    
+	    cfgIface = SmartPtr<TClntCfgIface>(new TClntCfgIface(ifaceIface->getID()));
+	    cfgIface->setIfaceName(ifaceIface->getName());
+	    cfgIface->setIfaceID(ifaceIface->getID());
+
+	    SmartPtr<TClntCfgGroup> group(new TClntCfgGroup());
+	    group->setOptions(parser->ParserOptStack.getLast());
+	    SmartPtr<TClntCfgIA> ia(new TClntCfgIA(
+					parser->ParserOptStack.getLast()->getIncedIAIDCnt()));
+	    ia->setOptions(parser->ParserOptStack.getLast());
+	    SmartPtr<TClntCfgAddr> addr(new TClntCfgAddr());
+	    addr->setOptions(parser->ParserOptStack.getLast());
+	    //append created iface, group and address
+	    cfgIface->addGroup(group);
+	    group->addIA(ia);
+	    ia->addAddr(addr);
+	    this->addIface(cfgIface);
+	    Log(logInfo) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+			 << " has been added." << logger::endl;
+	}
+    }
+    return true;
 }
 
 SmartPtr<TClntCfgIface> TClntCfgMgr::getIface()

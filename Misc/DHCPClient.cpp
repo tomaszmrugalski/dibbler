@@ -6,11 +6,11 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.7 2004-03-29 18:53:08 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.8 2004-05-23 20:41:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.6  2004/03/28 19:57:59  thomson
- * no message
+ * Revision 1.7  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
  *                                                                           
  */
 
@@ -70,16 +70,15 @@ void TDHCPClient::run()
     {
 	if (serviceShutdown)
 	    TransMgr->shutdown();
-
-    TransMgr->doDuties();
-
-    unsigned int timeout = TransMgr->getTimeout();
+	
+	TransMgr->doDuties();
+	
+	unsigned int timeout = TransMgr->getTimeout();
 	// FIXME: everything should be unsigned
 	if (timeout == DHCPV6_INFINITY)
 	    timeout = DHCPV6_INFINITY/2;
 	if (timeout == 0)
 	    timeout = 1;
-
 	
         std::clog << logger::logNotice << "Sleeping for " 
 		  << timeout << " seconds." << logger::endl;

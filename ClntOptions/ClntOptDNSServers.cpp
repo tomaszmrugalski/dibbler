@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptDNSServers.cpp,v 1.5 2004-03-29 18:53:08 thomson Exp $
+ * $Id: ClntOptDNSServers.cpp,v 1.6 2004-05-23 20:41:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
 
@@ -30,8 +33,6 @@ TClntOptDNSServers::TClntOptDNSServers(char* buf, int size, TMsg* parent)
 
 bool TClntOptDNSServers::doDuties()
 {
-    TClntMsg* parent=(TClntMsg*)Parent;
-
     SmartPtr<TIPv6Addr> ptrAddr;
     DNSSrv.first();
 
