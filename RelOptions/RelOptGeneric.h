@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: RelOptGeneric.h,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelOptGeneric.h,v 1.2 2005-01-11 23:35:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  */
 
 #ifndef RELOPTGENERIC_H
@@ -22,6 +25,7 @@ class TRelOptGeneric : public TOptGeneric
  public:
     TRelOptGeneric(char* buf, int bufsize, TMsg* parent);
     bool doDuties();
+
 };
 
 #endif /* RELOPTGENERIC_H */

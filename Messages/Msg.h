@@ -24,9 +24,6 @@ class TMsg
     int getSize();
     
     // trasnmit (or retransmit)
-    virtual void doDuties() = 0;
-
-    virtual bool check() = 0;
 
     virtual unsigned long getTimeout();
 

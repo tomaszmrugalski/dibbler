@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.2 2005-01-11 23:35:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  *
  */
 
@@ -18,6 +21,7 @@
 #include "Iface.h"
 #include "SocketIPv6.h"
 #include "RelIfaceMgr.h"
+#include "RelMsgGeneric.h"
 
 /*
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
@@ -127,9 +131,9 @@ SmartPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 	case ADVERTISE_MSG:
 	case REPLY_MSG:
 	case RECONFIGURE_MSG:
-	case RELAY_REPL_MSG:
-	    return this->decodeMsg(iface, peer, data, dataLen);
 	case RELAY_FORW_MSG: 
+	    return this->decodeMsg(iface, peer, data, dataLen);
+	case RELAY_REPL_MSG:
 	    return this->decodeRelayRepl(iface, peer, data, dataLen);
 	}
     } 
@@ -145,6 +149,8 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 SmartPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SmartPtr<TIfaceIface> iface, 
 					  SmartPtr<TIPv6Addr> peer, 
 					  char * buf, int bufsize) {
+    int ifindex = iface->getID();
+    return new TRelMsgGeneric(this->Ctx, ifindex, peer, buf, bufsize);
     return 0;
 }
 

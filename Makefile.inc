@@ -70,6 +70,8 @@ SRVOPTIONS  = $(PREFIX)/SrvOptions
 RELIFACEMGR = $(PREFIX)/RelIfaceMgr
 RELTRANSMGR = $(PREFIX)/RelTransMgr
 RELCFGMGR   = $(PREFIX)/RelCfgMgr
+RELMESSAGES = $(PREFIX)/RelMessages
+RELOPTIONS  = $(PREFIX)/RelOptions
 
 COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include Misc Port-linux
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 

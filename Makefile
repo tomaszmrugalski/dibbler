@@ -86,7 +86,7 @@ $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	-L$(MESSAGES)    -lMsg \
 	-L$(MISC)        -lMisc \
 	-L$(OPTIONS)     -lOptions \
-	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr\
+	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions\
 	 $(XMLLIBS) $(EFENCE) 
 
 objs:	includes

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelMsg.cpp,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelMsg.cpp,v 1.2 2005-01-11 23:35:22 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  *
  */
 
@@ -28,7 +31,7 @@
 #include "RelOptGeneric.h"
 
 //Constructor builds message on the basis of received message
-TRelMsg::TRelMsg(TCtx ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  int dataLen)
+TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  int dataLen)
     :TMsg(iface, addr, data, dataLen) {
     // data+=4, dataLen-=4 is modified in TMsg
     if (dataLen<=0) // avoid decoding of empty messages.

@@ -28,6 +28,8 @@ public:
 
     //answer for a specific message
     virtual void answer(SmartPtr<TClntMsg> Rep) = 0;
+    virtual void doDuties() = 0;
+    virtual bool check() = 0;
 
     void appendRequestedOptions();
     

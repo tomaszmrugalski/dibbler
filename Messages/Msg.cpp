@@ -73,11 +73,6 @@ TContainer< SmartPtr<TOpt> > TMsg::getOptLst()
     return Options;
 }
 
-bool TMsg::check()
-{
-	return false;
-}
-
 /* prepares binary version of this message, returns number of bytes used
 **/
 int TMsg::storeSelf(char * buffer)
