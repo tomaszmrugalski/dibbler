@@ -1,19 +1,14 @@
+/* <Linux> */
+%option noyywrap
+%option yylineno
+/* </Linux> */
+
+
 %{
-/****************************************************************************
-lexer.l
-ParserWizard generated Lex file.
-
-Date: 30 czerwca 2003
-****************************************************************************/
-
 #include "ClntParser.h"
 #include "Portable.h"
-
-
+#define YYABORT yyterminate();
 %}
-
-  /////////////////////////////////////////////////////////////////////////////
-  // declarations section
 
 %x COMMENT
 %x ADDR
@@ -27,11 +22,7 @@ curly_op [{]
 curly_cl [}]
 hex1to4  {hexdigit}{1,4}
 
-  // lexical analyser name
-%name clntLexer
-  // class definition
-
-{
+%{
   unsigned ComBeg; //line, in which comment begins
   unsigned LftCnt; //how many signs : on the left side of :: sign was interpreted
   unsigned RgtCnt; //the same as above, but on the right side of ::
@@ -42,83 +33,76 @@ hex1to4  {hexdigit}{1,4}
   int decodeSmallPart(char *src, char* dst,int length);
   void decodeIntPart(char *src, char *dst);
   void resetAddress(char *tab);
-}
+  yy_clntParser_stype yylval;
 
-  // constructor
-{
-    // place any extra initialisation code here
-}
-
-  // place any declarations here
+%}
 
 %%
 
-  /////////////////////////////////////////////////////////////////////////////
-  // rules section
-
-%{
-// extract yylval for use later on in actions
-YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
-%}
-
   // place your Lex rules here
-[Ii][fF][aA][cC][Ee] {return IFACE_;}
-[Nn][Oo]-[Cc][Oo][Nn][Ff][Ii][Gg] {return NO_CONFIG_;}
-[Aa][Dd][Dd][Rr][Ee][Ss][Ss] {return ADDRES_;}
-[Ii][Aa] {return IA_;}
-[Nn][Oo]-[Ii][Aa] {return NOIA_;}
-  //[Ll][Oo][Gg]-[Nn][aA][Mm][Ee] {return LOGNAME_;}
-[Ll][Oo][Gg]-[Ll][Ee][Vv][Ee][Ll] {return LOGLEVEL_;}
-[Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return WORKDIR_;}
+[Ii][fF][aA][cC][Ee] {return clntParser::IFACE_;}
+[Nn][Oo]-[Cc][Oo][Nn][Ff][Ii][Gg] {return clntParser::NO_CONFIG_;}
+[Aa][Dd][Dd][Rr][Ee][Ss][Ss] {return clntParser::ADDRES_;}
+[Ii][Aa] {return clntParser::IA_;}
+[Nn][Oo]-[Ii][Aa] {return clntParser::NOIA_;}
+[Ll][Oo][Gg]-[Ll][Ee][Vv][Ee][Ll] {return clntParser::LOGLEVEL_;}
+[Ww][Oo][Rr][Kk]-[Dd][Ii][Rr] {return clntParser::WORKDIR_;}
 
-    //KEYWORDS FOR OPTIONS
+%{    //KEYWORDS FOR OPTIONS
   // [-|REQUEST|REQUIRE] OptionName [SEND|DEFAULT|SUPERSEDE|-] Value
   // [APPEND|PREPEND] OptionName Value
   
   //REQUEST - only request of option from a server - messages without will be
   //                    accepted (default)
-[Rr][Ee][Qq][Uu][Ee][Ss][Tt] {return REQUEST_;}     
-  //REQUIRE - messages from server must include this option, otherwise its 
+%}
+[Rr][Ee][Qq][Uu][Ee][Ss][Tt] {return clntParser::REQUEST_;}     
+%{  //REQUIRE - messages from server must include this option, otherwise its 
   //                    message will be discarded by client
-[Rr][Ee][Qq][Uu][Ii][Rr][Ee] {return REQUIRE_;} 
+%}
+[Rr][Ee][Qq][Uu][Ii][Rr][Ee] {return clntParser::REQUIRE_;} 
 
-    //SEND -    only hint of option's value sent to server - if server dosen't 
+%{    //SEND -    only hint of option's value sent to server - if server dosen't 
     //              include it nothing happens(default)
-[Ss][Ee][Nn][Dd] {return SEND_;}                                 
-  //DEFAULT - default value of option. If server dosen't include this option 
+%}
+[Ss][Ee][Nn][Dd] {return clntParser::SEND_;}                                 
+%{  //DEFAULT - default value of option. If server dosen't include this option 
   //                    this default value should be used
-[Dd][Ee][Ff][Aa][Uu][Ll][Tt] {return DEFAULT_;} 
-  //SUPERSEDE - whatever server returns overwritr returned value
-[Ss][Uu][Pp][Ee][Rr][Ss][Ee][Dd][Ee] {return SUPERSEDE_;} 
-  //APPEND - for options which can have multiple values, ordered in sequence
-  //                 e.g. list of DNS servers, orders append list of options at the
+%}
+[Dd][Ee][Ff][Aa][Uu][Ll][Tt] {return clntParser::DEFAULT_;} 
+%{  //SUPERSEDE - whatever server returns overwritr returned value
+%}
+[Ss][Uu][Pp][Ee][Rr][Ss][Ee][Dd][Ee] {return clntParser::SUPERSEDE_;} 
+%{  //APPEND - for options which can have multiple values, ordered in sequence
+    //                 e.g. list of DNS servers, orders append list of options at the
     //               end of those returned by server
-[Aa][Pp][Pp][Ee][Nn][Dd] {return APPEND_;} 
-  //PREPPEND - for options which can have multiple values, ordered in sequence
+%}
+[Aa][Pp][Pp][Ee][Nn][Dd] {return clntParser::APPEND_;} 
+%{  //PREPPEND - for options which can have multiple values, ordered in sequence
   //                 e.g. list of DNS servers, orders append list of options at the
     //               beginning of those returned by server
-[Pp][Rr][Ee][Pp][Ee][Nn][Dd] {return PREPEND_;}  
+%}
+[Pp][Rr][Ee][Pp][Ee][Nn][Dd] {return clntParser::PREPEND_;}  
 
 
-    //OPTIONS NAMES
+%{    //OPTIONS NAMES
+%}
+[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee] {return clntParser::PREF_TIME_;}
+[Vv][Aa][Ll][Ii][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee]  {return clntParser::VALID_TIME_;}
+[Tt][1] {return clntParser::T1_;}
+[Tt][2] {return clntParser::T2_;}
 
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee] {return PREF_TIME_;}
-[Vv][Aa][Ll][Ii][Dd]-[Ll][iI][Ff][Ee][Tt][Ii][Mm][Ee]  {return VALID_TIME_;}
-[Tt][1] {return T1_;}
-[Tt][2] {return T2_;}
+[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return clntParser::DNS_SERVER_;}
+[Dd][Oo][Mm][Aa][Ii][Nn] {return clntParser::DOMAIN_;}
 
-[Dd][Nn][Ss]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return DNS_SERVER_;}
-[Dd][Oo][Mm][Aa][Ii][Nn] {return DOMAIN_;}
+[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return clntParser::NTP_SERVER_;}
+[Tt][Ii][Mm][Ee]-[Zz][Oo][Nn][Ee] {return clntParser::TIME_ZONE_;}
 
-[Nn][Tt][Pp]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return NTP_SERVER_;}
-[Tt][Ii][Mm][Ee]-[Zz][Oo][Nn][Ee] {return TIME_ZONE_;}
+[Rr][Ee][Jj][Ee][Cc][Tt]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return clntParser::REJECT_SERVERS_;}
+[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss]  {return clntParser::PREFERRED_SERVERS_;}
+[Rr][Aa][Pp][Ii][Dd][Cc][Oo][Mm][Mm][Ii][Tt] {return clntParser::RAPID_COMMIT_;}
 
-[Rr][Ee][Jj][Ee][Cc][Tt]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss] {return REJECT_SERVERS_;}
-[Pp][Rr][Ee][Ff][Ee][Rr][Ee][Dd]-[Ss][Ee][Rr][Vv][Ee][Rr][Ss]  {return PREFERRED_SERVERS_;}
-[Rr][Aa][Pp][Ii][Dd][Cc][Oo][Mm][Mm][Ii][Tt] {return RAPID_COMMIT_;}
-
-//COMMENTS
-
+%{ //COMMENTS
+%} 
 #.* ;
 
 "//"(.*) ;
@@ -133,22 +117,23 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
 <COMMENT>.|"\n" ;
 <COMMENT><<EOF>> {
     //printf ("Niezamkniêty komentarz /* w linii:%d\n",ComBeg); 
-  yyabort();
+  { YYABORT; }
 }
 
-    //IPv6 address - various forms
+%{    //IPv6 address - various forms
+%}
 ({hex1to4}:){7}{hexdigit} {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else
     /*analyzeBigPart(yytext,strlen(yytext)-2,Address);
     memcpy(yylval.addrval,Address,16);*/
-        return IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
 }
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
   /*pos=0;
   while ((yytext[pos]!=':')||(yytext[pos+1]!=':')) pos++;
@@ -158,44 +143,44 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
   pos+=2;
     RgtCnt=analyzeBigPart(yytext+pos,strlen(yytext+pos),AddrPart);
     if ((LftCnt+RgtCnt)>8)
-      yyabort(); //to many address parts - raise exception
+      { YYABORT; } //to many address parts - raise exception
     memcpy( Address+16-(RgtCnt<<1), AddrPart,RgtCnt<<1);
     memcpy(yylval.addrval,Address,16);*/
-    return IPV6ADDR_;
+    return clntParser::IPV6ADDR_;
 }
 
 "::"(({hex1to4}:){1,7})?{hex1to4} { 
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
   /*resetAddress(Address);
   RgtCnt=analyzeBigPart(yytext+2,strlen(yytext)-2,AddrPart);
     memcpy(Address+16-(RgtCnt<<1), AddrPart, RgtCnt<<1);
     memcpy(yylval.addrval,Address,16);*/
-        return IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
 }
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
     /*analyzeBigPart(yytext,strlen(yytext)-2,Address);
     memcpy(yylval.addrval,Address,16);*/
-        return IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
 }
 
 "::" {
     /*resetAddress(Address);
     memcpy(yylval.addrval,Address,16);*/
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
-        return IPV6ADDR_;
+        return clntParser::IPV6ADDR_;
 }
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else
   /*pos=0;
   while ((yytext[pos]!=':')||(yytext[pos+1]!=':')) pos++;
@@ -208,18 +193,18 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
     if(intpos>pos)
     {
       RgtCnt=analyzeBigPart(yytext+pos,intpos-pos,AddrPart);
-      if ((RgtCnt+LftCnt)>6) yyabort();
+      if ((RgtCnt+LftCnt)>6) { YYABORT; }
       memcpy(Address+12-(RgtCnt<<1), AddrPart, RgtCnt<<1);  
     }
     decodeIntPart(yytext+intpos+1, Address+12);
     memcpy(yylval.addrval,Address,16);*/
-      return IPV6ADDR_;
+      return clntParser::IPV6ADDR_;
 }
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
 
   if(!inet_pton6(yytext,yylval.addrval))
-      yyabort();
+      { YYABORT; }
     else  
     /*resetAddress(Address);
   intpos=0;
@@ -232,19 +217,21 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
     };
     decodeIntPart(yytext+intpos+1, Address+12);
     memcpy(yylval.addrval,Address,16);*/
-      return IPV6ADDR_;
+      return clntParser::IPV6ADDR_;
 }
 
-  //STRING (interface identifier,dns server etc.)
+%{  //STRING (interface identifier,dns server etc.)
   //FIXME: Remember to free memory in parser    
+%}
 '([^']|(''))*' {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
-        return STRING_;
+        return clntParser::STRING_;
 }
-  //FIXME: Remember to free memory in parser
+%{  //FIXME: Remember to free memory in parser
   //DUID
+%}
 \"{hexdigit}+\" {
     //every hex digit corresponds to half of byte, even at the begining
     //of string
@@ -259,41 +246,46 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
     {
         yylval.duidval.duid[i>>1]<<=4;
         if (!isxdigit(yytext[i])) 
-            yyabort(); //or raise exeception
+            { YYABORT; } //or raise exeception
         else
         if (isalpha(yytext[i]))
             yylval.duidval.duid[i>>1]|=toupper(yytext[i])-'A'+10;
         else
             yylval.duidval.duid[i>>1]|=yytext[i]-'0';
   }
-    return DUID_;
+    return clntParser::DUID_;
 }
 
-    //HEXADECIMAL NUMBER (interface id, option's values etc.)
+%{    //HEXADECIMAL NUMBER (interface id, option's values etc.)
+%}
 {hexnumber} {
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%x",&(yylval.ival)))
-      yyabort();
-    return HEXNUMBER_;
+      { YYABORT; }
+    return clntParser::HEXNUMBER_;
 }
 
-    //DECIMAL NUMBER (as for HEXNUMBER)
+%{    //DECIMAL NUMBER (as for HEXNUMBER)
+%}
 {integer} { 
     //FIXME:Check if number appropriate
     if(!sscanf(yytext,"%u",&(yylval.ival)))
-      yyabort();
-    return INTNUMBER_;
+      { YYABORT; }
+    return clntParser::INTNUMBER_;
 }
 
-    //WHITE CHARS should be omitted
+%{    //WHITE CHARS should be omitted
+%}
 [ \n\t] ; 
 
 
-    //OTHER CHARS are direclty passed to parser
+%{    //OTHER CHARS are direclty passed to parser
+%}
 .  {return yytext[0];}
 
 
-    // place your Lex rules here
+%{    // place your Lex rules here
+%}
 
 
 %%
@@ -318,7 +310,7 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
       while((src[++ipos]!='.')&&(ipos<strlen(src)))
       {
         obyte=obyte*10+src[ipos]-'0';
-        if (obyte>255) yyabort();
+        if (obyte>255) { YYABORT; }
       }
       Address[12+i]=obyte;
       ipos++;
@@ -330,7 +322,7 @@ YYSTYPE& yylval = *(YYSTYPE*)yyparserptr->yylvalptr;
   int int16=0;
   int i;
   if (length>4)
-    yyabort();//there is too many digits abort and raise exception
+    { YYABORT; }//there is too many digits abort and raise exception
   for (i=0; i<length; i++) 
   {
     if (!isxdigit(src[i])) 
