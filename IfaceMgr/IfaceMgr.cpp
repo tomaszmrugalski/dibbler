@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.7 2004-05-23 20:27:23 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.8 2004-05-23 23:45:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/05/23 20:27:23  thomson
+ * *** empty log message ***
+ *
  * Revision 1.6  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -93,19 +96,15 @@ SmartPtr<TIfaceIface> TIfaceMgr::getIface() {
 }
 
 
-SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
-    return getIfaceByName(name.c_str());
-}
-
 /*
  * gets interface by it's name (or NULL if no such inteface exists)
  * @param name - interface name
  */
-SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByName(char * name) {
+SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
     SmartPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {
-	if ( !strcmp(name,ptr->getName()) )
+	if ( !strcmp(name.c_str(),ptr->getName()) )
 	    return ptr;
     }
     return 0; // NULL
