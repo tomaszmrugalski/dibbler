@@ -9,9 +9,9 @@ libs: libSrvCfgMgr.a
 
 parser: SrvParser.y SrvLexer.l
 	echo "[BISON++] SrvParser.y"
-	$(BISONPP) -d SrvParser.y -o SrvParser.cpp
+	$(BISONPP) -l -d SrvParser.y -o SrvParser.cpp
 	echo "[FLEX   ] SrvLexer.l"
-	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
+	$(FLEX) -+ -i -L -oSrvLexer.cpp SrvLexer.l
 	@echo "[CPP    ] $(SUBDIR)/$@"
 	$(CPP) -c $(OPTS) SrvLexer.cpp 
 

@@ -49,6 +49,9 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     //all passed to IA_NA option
     long *clntFreeAddr;
     long totalFreeAddresses;
+    
+    //AddrMgr->dbStore();
+
     getFreeAddressesForClient(clntAllClasses,clntClasses,clntFreeAddr, 
 			      totalFreeAddresses, duidOpt->getDUID(),
 			      solicit->getAddr(), solicit->getIface());

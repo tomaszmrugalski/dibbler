@@ -14,9 +14,9 @@ ClntLexer.o: ClntLexer.cpp
 
 parser: ClntParser.y ClntLexer.l
 	echo "[BISON++] ClntParser.y"
-	$(BISONPP) -d ClntParser.y -o ClntParser.cpp
+	$(BISONPP) -l -d ClntParser.y -o ClntParser.cpp
 	echo "[FLEX   ] ClntLexer.l"
-	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
+	$(FLEX) -+ -i -L -oClntLexer.cpp ClntLexer.l
 	echo "[CPP    ]  ClntParser.cpp"
 	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntParser.cpp 
 

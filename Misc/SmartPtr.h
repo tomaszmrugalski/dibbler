@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: SmartPtr.h,v 1.3 2004-06-04 16:55:27 thomson Exp $
+ * $Id: SmartPtr.h,v 1.4 2004-06-04 19:47:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.2  2004/03/29 22:06:49  thomson
  * 0.1.1 version
  *
@@ -116,7 +119,6 @@ T& SmartPtr<T>::operator*() const {
 template <class T>
 T* SmartPtr<T>::operator->() const {
     if (!ptr) {
-	cout << "### ptr==NULL" << endl;
 	return 0;
     }
     return (T*)(ptr->ptr); //it can return NULL

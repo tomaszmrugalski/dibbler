@@ -30,6 +30,8 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     if (!CfgMgr->isDone())
     {
         AddrMgr = new TSrvAddrMgr( CfgMgr->getWorkDir()+"/"+SRVDB_FILE, loadDB);
+	AddrMgr->dbStore();
+
         // for each interface in CfgMgr, create socket (in IfaceMgr)
         SmartPtr<TSrvCfgIface> confIface;
         CfgMgr->firstIface();
@@ -213,7 +215,6 @@ void TSrvTransMgr::relayMsg(SmartPtr<TMsg> msg)
             break;
         }
     }
-    std::ofstream xmlDump;
     
     // save DB state regardless of action taken
     AddrMgr->dbStore();

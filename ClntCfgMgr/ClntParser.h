@@ -1,8 +1,6 @@
 #ifndef YY_clntParser_h_included
 #define YY_clntParser_h_included
 #define YY_USE_CLASS
-
-#line 1 "../bison++/bison.h"
 /* before anything */
 #ifdef c_plusplus
  #ifndef __cplusplus
@@ -10,9 +8,6 @@
  #endif
 #endif
 
-
- #line 8 "../bison++/bison.h"
-#line 3 "ClntParser.y"
 
 #include <iostream>
 #include <string>
@@ -65,7 +60,6 @@ virtual ~clntParser();
     ParserOptStack.getFirst()->setIAIDCnt(1);\
     ParserOptStack.getLast();
 
-#line 65 "ClntParser.y"
 typedef union    
 {
     int          ival;    
@@ -79,8 +73,6 @@ typedef union
     EReqOpt   ReqOpt; 
 } yy_clntParser_stype;
 #define YY_clntParser_STYPE yy_clntParser_stype
-
-#line 21 "../bison++/bison.h"
  /* %{ and %header{ and %union, during decl */
 #ifndef YY_clntParser_COMPATIBILITY
  #ifndef YY_USE_CLASS
@@ -125,32 +117,16 @@ typedef union
 #endif
 
 #ifndef YY_clntParser_PURE
-
- #line 65 "../bison++/bison.h"
-
-#line 65 "../bison++/bison.h"
 /* YY_clntParser_PURE */
 #endif
 
-
- #line 68 "../bison++/bison.h"
-
-#line 68 "../bison++/bison.h"
 /* prefix */
 
 #ifndef YY_clntParser_DEBUG
-
- #line 71 "../bison++/bison.h"
-
-#line 71 "../bison++/bison.h"
 /* YY_clntParser_DEBUG */
 #endif
 
 #ifndef YY_clntParser_LSP_NEEDED
-
- #line 75 "../bison++/bison.h"
-
-#line 75 "../bison++/bison.h"
  /* YY_clntParser_LSP_NEEDED*/
 #endif
 
@@ -245,8 +221,6 @@ typedef
   #endif
  #endif
 
-
- #line 169 "../bison++/bison.h"
 #define	T1_	258
 #define	T2_	259
 #define	PREF_TIME_	260
@@ -281,8 +255,6 @@ typedef
 #define	INTNUMBER_	289
 #define	DUID_	290
 
-
-#line 169 "../bison++/bison.h"
  /* #defines token */
 /* after #define tokens, before const tokens S5*/
 #else
@@ -326,9 +298,7 @@ class YY_clntParser_CLASS YY_clntParser_INHERIT
 public: 
  #if YY_clntParser_USE_CONST_TOKEN != 0
   /* static const int token ... */
-  
- #line 212 "../bison++/bison.h"
-static const int T1_;
+  static const int T1_;
 static const int T2_;
 static const int PREF_TIME_;
 static const int DNS_SERVER_;
@@ -362,14 +332,10 @@ static const int HEXNUMBER_;
 static const int INTNUMBER_;
 static const int DUID_;
 
-
-#line 212 "../bison++/bison.h"
  /* decl const */
  #else
   enum YY_clntParser_ENUM_TOKEN { YY_clntParser_NULL_TOKEN=0
-  
- #line 215 "../bison++/bison.h"
-	,T1_=258
+  	,T1_=258
 	,T2_=259
 	,PREF_TIME_=260
 	,DNS_SERVER_=261
@@ -403,8 +369,6 @@ static const int DUID_;
 	,INTNUMBER_=289
 	,DUID_=290
 
-
-#line 215 "../bison++/bison.h"
  /* enum token */
      }; /* end of enum declaration */
  #endif
@@ -457,6 +421,4 @@ public:
 
 #endif
 /* END */
-
- #line 267 "../bison++/bison.h"
 #endif

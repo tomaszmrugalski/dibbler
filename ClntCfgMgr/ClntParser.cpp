@@ -8,8 +8,6 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
   */
 
 #define YY_USE_CLASS
-
-#line 1 "../bison++/bison.cc"
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Bob Corbett and Richard Stallman
@@ -98,9 +96,6 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include <stdio.h>
 #define YYBISON 1  
 
- #line 88 "../bison++/bison.cc"
-#line 3 "ClntParser.y"
-
 #include <iostream>
 #include <string>
 #include <malloc.h>
@@ -118,7 +113,6 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
     using namespace std;
     
 #define YY_USE_CLASS
-#line 22 "ClntParser.y"
 
 #include "FlexLexer.h"
 
@@ -156,7 +150,6 @@ virtual ~clntParser();
     ParserOptStack.getFirst()->setIAIDCnt(1);\
     ParserOptStack.getLast();
 
-#line 65 "ClntParser.y"
 typedef union    
 {
     int          ival;    
@@ -170,13 +163,10 @@ typedef union
     EReqOpt   ReqOpt; 
 } yy_clntParser_stype;
 #define YY_clntParser_STYPE yy_clntParser_stype
-#line 78 "ClntParser.y"
 
 	namespace std{
 extern yy_clntParser_stype yylval;
 	};
-
-#line 88 "../bison++/bison.cc"
 /* %{ and %header{ and %union, during decl */
 #define YY_clntParser_BISON 1
 
@@ -219,33 +209,17 @@ extern yy_clntParser_stype yylval;
 #endif
 
 #ifndef YY_clntParser_PURE
-
- #line 130 "../bison++/bison.cc"
-
-#line 130 "../bison++/bison.cc"
 /*  YY_clntParser_PURE */
 #endif
 
 /* section apres lecture def, avant lecture grammaire S2 */
-
- #line 134 "../bison++/bison.cc"
-
-#line 134 "../bison++/bison.cc"
 /* prefix */
 #ifndef YY_clntParser_DEBUG
-
- #line 136 "../bison++/bison.cc"
-
-#line 136 "../bison++/bison.cc"
 /* YY_clntParser_DEBUG */
 #endif
 
 
 #ifndef YY_clntParser_LSP_NEEDED
-
- #line 141 "../bison++/bison.cc"
-
-#line 141 "../bison++/bison.cc"
  /* YY_clntParser_LSP_NEEDED*/
 #endif
 
@@ -368,8 +342,6 @@ typedef
 
 #ifndef YY_USE_CLASS
 /* TOKEN C */
-
- #line 263 "../bison++/bison.cc"
 #define	T1_	258
 #define	T2_	259
 #define	PREF_TIME_	260
@@ -404,8 +376,6 @@ typedef
 #define	INTNUMBER_	289
 #define	DUID_	290
 
-
-#line 263 "../bison++/bison.cc"
  /* #defines tokens */
 #else
 /* CLASS */
@@ -450,8 +420,6 @@ class YY_clntParser_CLASS YY_clntParser_INHERIT
 public: 
 #if YY_clntParser_USE_CONST_TOKEN != 0
 /* static const int token ... */
-
- #line 307 "../bison++/bison.cc"
 static const int T1_;
 static const int T2_;
 static const int PREF_TIME_;
@@ -486,13 +454,9 @@ static const int HEXNUMBER_;
 static const int INTNUMBER_;
 static const int DUID_;
 
-
-#line 307 "../bison++/bison.cc"
  /* decl const */
 #else
 enum YY_clntParser_ENUM_TOKEN { YY_clntParser_NULL_TOKEN=0
-
- #line 310 "../bison++/bison.cc"
 	,T1_=258
 	,T2_=259
 	,PREF_TIME_=260
@@ -527,8 +491,6 @@ enum YY_clntParser_ENUM_TOKEN { YY_clntParser_NULL_TOKEN=0
 	,INTNUMBER_=289
 	,DUID_=290
 
-
-#line 310 "../bison++/bison.cc"
  /* enum token */
      }; /* end of enum declaration */
 #endif
@@ -560,8 +522,6 @@ public:
 };
 /* other declare folow */
 #if YY_clntParser_USE_CONST_TOKEN != 0
-
- #line 341 "../bison++/bison.cc"
 const int YY_clntParser_CLASS::T1_=258;
 const int YY_clntParser_CLASS::T2_=259;
 const int YY_clntParser_CLASS::PREF_TIME_=260;
@@ -596,8 +556,6 @@ const int YY_clntParser_CLASS::HEXNUMBER_=288;
 const int YY_clntParser_CLASS::INTNUMBER_=289;
 const int YY_clntParser_CLASS::DUID_=290;
 
-
-#line 341 "../bison++/bison.cc"
  /* const YY_clntParser_CLASS::token */
 #endif
 /*apres const  */
@@ -609,8 +567,6 @@ YY_clntParser_DEBUG_FLAG=0;
 YY_clntParser_CONSTRUCTOR_CODE;
 };
 #endif
-
- #line 352 "../bison++/bison.cc"
 
 
 #define	YYFINAL		176
@@ -714,19 +670,19 @@ static const short yyrhs[] = {    40,
 
 #if (YY_clntParser_DEBUG != 0) || defined(YY_clntParser_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-   108,   109,   113,   114,   115,   116,   123,   128,   142,   147,
-   156,   167,   177,   189,   202,   203,   204,   205,   212,   216,
-   224,   228,   236,   245,   254,   263,   271,   272,   273,   274,
-   278,   283,   292,   297,   303,   308,   313,   318,   325,   326,
-   327,   338,   352,   353,   354,   355,   356,   360,   361,   362,
-   363,   365,   366,   370,   371,   372,   373,   374,   375,   379,
-   380,   384,   391,   396,   401,   408,   415,   422,   428,   433,
-   440,   446,   454,   464,   469,   477,   482,   490,   495,   507,
-   516,   520,   527,   531,   538,   542,   549,   553,   560,   565,
-   577,   584,   591,   598,   605,   618,   625,   633,   641,   649,
-   662,   670,   673,   679,   682,   688,   691,   697,   700,   706,
-   710,   753,   757,   761,   765,   772,   773,   777,   778,   779,
-   783,   784,   788,   789,   792,   793
+   108,   109,   113,   114,   115,   116,   123,   128,   141,   146,
+   155,   166,   176,   188,   201,   202,   203,   204,   211,   215,
+   223,   227,   235,   244,   253,   262,   270,   271,   272,   273,
+   277,   282,   291,   296,   302,   307,   312,   317,   324,   325,
+   326,   337,   351,   352,   353,   354,   355,   359,   360,   361,
+   362,   364,   365,   369,   370,   371,   372,   373,   374,   378,
+   379,   383,   390,   395,   400,   407,   414,   421,   427,   432,
+   439,   445,   453,   463,   468,   476,   481,   489,   494,   506,
+   515,   519,   526,   530,   537,   541,   548,   552,   559,   564,
+   576,   583,   590,   597,   604,   617,   624,   632,   640,   648,
+   661,   669,   672,   678,   681,   687,   690,   696,   699,   705,
+   709,   752,   756,   760,   764,   771,   772,   776,   777,   778,
+   782,   783,   787,   788,   791,   792
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","T1_","T2_",
@@ -894,8 +850,6 @@ static const short yycheck[] = {     2,
     -1,    -1,    24,    17,    18,    19,    20,    21,    -1,     6,
     24,     8,     9,    10,    32,    33,    34,    17,    18,    19
 };
-
-#line 352 "../bison++/bison.cc"
  /* fattrs + tables */
 
 /* parser code folow  */
@@ -1384,19 +1338,15 @@ YYLABEL(yyreduce)
 #endif
 
 
- #line 839 "../bison++/bison.cc"
-
   switch (yyn) {
 
 case 7:
-#line 124 "ClntParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 8:
-#line 129 "ClntParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1404,25 +1354,21 @@ case 8:
     //FIXME:used of char * should be always realeased
     delete [] yyvsp[-4].strval;
     EndIfaceDeclaration();
-    return true;
 ;
     break;}
 case 9:
-#line 143 "ClntParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 10:
-#line 148 "ClntParser.y"
 {
     ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-4].ival) );
     EndIfaceDeclaration();
 ;
     break;}
 case 11:
-#line 157 "ClntParser.y"
 {
     CheckIsIface(string(yyvsp[-2].strval));
     ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-2].strval));
@@ -1431,7 +1377,6 @@ case 11:
 ;
     break;}
 case 12:
-#line 168 "ClntParser.y"
 {
     CheckIsIface(yyvsp[-2].ival);
     ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-2].ival));
@@ -1439,7 +1384,6 @@ case 12:
 ;
     break;}
 case 13:
-#line 178 "ClntParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval));
     ClntCfgIfaceLst.append(new TClntCfgIface(yyvsp[-1].strval));
@@ -1449,7 +1393,6 @@ case 13:
 ;
     break;}
 case 14:
-#line 190 "ClntParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);
     ClntCfgIfaceLst.append(SmartPtr<TClntCfgIface> (new TClntCfgIface(yyvsp[-1].ival)) );
@@ -1458,66 +1401,56 @@ case 14:
 ;
     break;}
 case 19:
-#line 213 "ClntParser.y"
 { 
     StartIADeclaration(false);
 ;
     break;}
 case 20:
-#line 217 "ClntParser.y"
 {
     EndIADeclaration(1);
 ;
     break;}
 case 21:
-#line 225 "ClntParser.y"
 {
     StartIADeclaration(false);
 ;
     break;}
 case 22:
-#line 229 "ClntParser.y"
 {
     EndIADeclaration(yyvsp[-4].ival);
 ;
     break;}
 case 23:
-#line 237 "ClntParser.y"
 {
     StartIADeclaration(false);
     EndIADeclaration(yyvsp[-2].ival);
 ;
     break;}
 case 24:
-#line 246 "ClntParser.y"
 {
     StartIADeclaration(false);
     EndIADeclaration(yyvsp[0].ival);
 ;
     break;}
 case 25:
-#line 255 "ClntParser.y"
 {
     StartIADeclaration(true);
     EndIADeclaration(1);
 ;
     break;}
 case 26:
-#line 264 "ClntParser.y"
 {
     StartIADeclaration(true);
     EndIADeclaration(1);
 ;
     break;}
 case 31:
-#line 279 "ClntParser.y"
 {
     SmartPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
     ParserOptStack.append(new TClntParsGlobalOpt(*globalOpt));
 ;
     break;}
 case 32:
-#line 284 "ClntParser.y"
 {
     //ClntCfgAddrLst.append(SmartPtr<TClntCfgAddr> (new TClntCfgAddr()));
     //set proper options specific for this Address
@@ -1527,45 +1460,38 @@ case 32:
 ;
     break;}
 case 33:
-#line 293 "ClntParser.y"
 {
     ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
     ParserOptStack.getLast()->setAddrHint(false);
 ;
     break;}
 case 34:
-#line 298 "ClntParser.y"
 {
     for (int i=0;i<yyvsp[-4].ival; i++) EmptyAddr();
     ParserOptStack.delLast();
 ;
     break;}
 case 35:
-#line 304 "ClntParser.y"
 {
     for (int i=0;i<yyvsp[-2].ival; i++) EmptyAddr();
 ;
     break;}
 case 36:
-#line 309 "ClntParser.y"
 {
     EmptyAddr();
 ;
     break;}
 case 37:
-#line 314 "ClntParser.y"
 {
     for (int i=0;i<yyvsp[0].ival; i++) EmptyAddr();
 ;
     break;}
 case 38:
-#line 319 "ClntParser.y"
 {
     EmptyAddr();
 ;
     break;}
 case 41:
-#line 328 "ClntParser.y"
 {
     if (ParserOptStack.getLast()->getAddrHint())
     {
@@ -1578,7 +1504,6 @@ case 41:
 ;
     break;}
 case 42:
-#line 339 "ClntParser.y"
 {
     if (ParserOptStack.getLast()->getAddrHint())
     {
@@ -1591,37 +1516,31 @@ case 42:
 ;
     break;}
 case 62:
-#line 385 "ClntParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
 case 63:
-#line 391 "ClntParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
 case 64:
-#line 396 "ClntParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
 case 65:
-#line 402 "ClntParser.y"
 {
     ParserOptStack.getLast()->setIsIAs(false);
 ;
     break;}
 case 66:
-#line 409 "ClntParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
 case 67:
-#line 416 "ClntParser.y"
 {
     //ParserOptStack.getLast()->clearRejedSrv();
     PresentStationLst.clear();
@@ -1630,13 +1549,11 @@ case 67:
 ;
     break;}
 case 68:
-#line 422 "ClntParser.y"
 {
     ParserOptStack.getLast()->setRejedSrvLst(&PresentStationLst);
 ;
     break;}
 case 69:
-#line 429 "ClntParser.y"
 {
     PresentStationLst.clear();
     if (!(ParserOptStack.getLast()->isNewGroup())) 
@@ -1644,27 +1561,23 @@ case 69:
 ;
     break;}
 case 70:
-#line 433 "ClntParser.y"
 {
     ParserOptStack.getLast()->setPrefSrvLst(&PresentStationLst);
 ;
     break;}
 case 71:
-#line 441 "ClntParser.y"
 {
     ParserOptStack.getLast()->setPref(yyvsp[0].ival);
     ParserOptStack.getLast()->setPrefSendOpt(Send);
 ;
     break;}
 case 72:
-#line 447 "ClntParser.y"
 {
     ParserOptStack.getLast()->setPref(yyvsp[0].ival);
     ParserOptStack.getLast()->setPrefSendOpt(yyvsp[-1].SendOpt);
 ;
     break;}
 case 73:
-#line 455 "ClntParser.y"
 { 
     if ((!(ParserOptStack.getLast()->isNewGroup()))&&
 	(ParserOptStack.getLast()->getRapidCommit()!=(bool)yyvsp[0].ival))
@@ -1673,49 +1586,42 @@ case 73:
 ;
     break;}
 case 74:
-#line 465 "ClntParser.y"
 {
     ParserOptStack.getLast()->setValid(yyvsp[0].ival);
     ParserOptStack.getLast()->setValidSendOpt(Send);
 ;
     break;}
 case 75:
-#line 470 "ClntParser.y"
 {
     ParserOptStack.getLast()->setValid(yyvsp[0].ival);
     ParserOptStack.getLast()->setValidSendOpt(yyvsp[-1].SendOpt);
 ;
     break;}
 case 76:
-#line 478 "ClntParser.y"
 {
     ParserOptStack.getLast()->setT1(yyvsp[0].ival);
     ParserOptStack.getLast()->setT1SendOpt(Send);
 ;
     break;}
 case 77:
-#line 483 "ClntParser.y"
 {
     ParserOptStack.getLast()->setT1(yyvsp[0].ival);
     ParserOptStack.getLast()->setT1SendOpt(yyvsp[-1].SendOpt);
 ;
     break;}
 case 78:
-#line 491 "ClntParser.y"
 {
     ParserOptStack.getLast()->setT2(yyvsp[0].ival);
     ParserOptStack.getLast()->setT2SendOpt(Send);
 ;
     break;}
 case 79:
-#line 496 "ClntParser.y"
 {
     ParserOptStack.getLast()->setT2(yyvsp[0].ival);
     ParserOptStack.getLast()->setT2SendOpt(yyvsp[-1].SendOpt);
 ;
     break;}
 case 80:
-#line 508 "ClntParser.y"
 {
     PresentAddrLst.clear();
     PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
@@ -1726,13 +1632,11 @@ case 80:
 ;
     break;}
 case 81:
-#line 517 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 82:
-#line 520 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setDNSSrvSendOpt(Send);
@@ -1741,13 +1645,11 @@ case 82:
 ;
     break;}
 case 83:
-#line 528 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 84:
-#line 531 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setDNSSrvSendOpt(yyvsp[-2].SendOpt);
@@ -1756,13 +1658,11 @@ case 84:
 ;
     break;}
 case 85:
-#line 539 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 86:
-#line 542 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setDNSSrvSendOpt(Send);
@@ -1771,13 +1671,11 @@ case 86:
 ;
     break;}
 case 87:
-#line 550 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 88:
-#line 553 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDNSSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setDNSSrvSendOpt(yyvsp[-2].SendOpt);
@@ -1786,14 +1684,12 @@ case 88:
 ;
     break;}
 case 89:
-#line 561 "ClntParser.y"
 {
     PresentAddrLst.clear();
     ParserOptStack.getLast()->setReqDNSSrv(true);
 ;
     break;}
 case 90:
-#line 565 "ClntParser.y"
 {
     if (yyvsp[-2].ival)
 	ParserOptStack.getLast()->setAppDNSSrvLst(&PresentAddrLst);
@@ -1802,7 +1698,6 @@ case 90:
 ;
     break;}
 case 91:
-#line 578 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDomainReqOpt(Request); 
     ParserOptStack.getLast()->setDomainSendOpt(Send);
@@ -1811,7 +1706,6 @@ case 91:
 ;
     break;}
 case 92:
-#line 585 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDomainReqOpt(Request); 
     ParserOptStack.getLast()->setDomainSendOpt(Send);
@@ -1820,7 +1714,6 @@ case 92:
 ;
     break;}
 case 93:
-#line 592 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDomainReqOpt(Request);
     ParserOptStack.getLast()->setDomainSendOpt(yyvsp[-1].SendOpt);
@@ -1829,7 +1722,6 @@ case 93:
 ;
     break;}
 case 94:
-#line 599 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDomainReqOpt(yyvsp[-2].ReqOpt);
     ParserOptStack.getLast()->setDomainSendOpt(Send);
@@ -1838,7 +1730,6 @@ case 94:
 ;
     break;}
 case 95:
-#line 606 "ClntParser.y"
 {
     ParserOptStack.getLast()->setDomainReqOpt(yyvsp[-3].ReqOpt);
     ParserOptStack.getLast()->setDomainSendOpt(yyvsp[-1].SendOpt);
@@ -1847,7 +1738,6 @@ case 95:
 ;
     break;}
 case 96:
-#line 619 "ClntParser.y"
 {
     ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
     ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
@@ -1856,7 +1746,6 @@ case 96:
   ;
     break;}
 case 97:
-#line 626 "ClntParser.y"
 {
     ParserOptStack.getLast()->setTimeZoneReqOpt(Request);   
     ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
@@ -1865,7 +1754,6 @@ case 97:
 ;
     break;}
 case 98:
-#line 634 "ClntParser.y"
 {
     ParserOptStack.getLast()->setTimeZoneReqOpt(Request);
     ParserOptStack.getLast()->setTimeZoneSendOpt(yyvsp[-1].SendOpt);
@@ -1874,7 +1762,6 @@ case 98:
 ;
     break;}
 case 99:
-#line 642 "ClntParser.y"
 {
     ParserOptStack.getLast()->setTimeZoneReqOpt(yyvsp[-2].ReqOpt);
     ParserOptStack.getLast()->setTimeZoneSendOpt(Send);
@@ -1883,7 +1770,6 @@ case 99:
 ;
     break;}
 case 100:
-#line 650 "ClntParser.y"
 {
     ParserOptStack.getLast()->setTimeZoneReqOpt(yyvsp[-3].ReqOpt);
     ParserOptStack.getLast()->setTimeZoneSendOpt(yyvsp[-1].SendOpt);
@@ -1892,7 +1778,6 @@ case 100:
 ;
     break;}
 case 101:
-#line 663 "ClntParser.y"
 {
     PresentAddrLst.clear();
     ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
@@ -1902,13 +1787,11 @@ case 101:
 ;
     break;}
 case 102:
-#line 670 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 103:
-#line 673 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
@@ -1917,13 +1800,11 @@ case 103:
 ;
     break;}
 case 104:
-#line 679 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 105:
-#line 682 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setNTPSrvSendOpt(yyvsp[-2].SendOpt);
@@ -1932,13 +1813,11 @@ case 105:
 ;
     break;}
 case 106:
-#line 688 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 107:
-#line 691 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setNTPSrvSendOpt(Send);
@@ -1947,13 +1826,11 @@ case 107:
 ;
     break;}
 case 108:
-#line 697 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 109:
-#line 700 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNTPSrvLst(&PresentAddrLst);
     ParserOptStack.getLast()->setNTPSrvSendOpt(yyvsp[-2].SendOpt);
@@ -1962,14 +1839,12 @@ case 109:
 ;
     break;}
 case 110:
-#line 706 "ClntParser.y"
 {      
     PresentAddrLst.clear(); 
     ParserOptStack.getLast()->setReqNTPSrv(true);
 ;
     break;}
 case 111:
-#line 710 "ClntParser.y"
 {
     if (yyvsp[-2].ival)
 	ParserOptStack.getLast()->setAppNTPSrvLst(&PresentAddrLst);
@@ -1978,76 +1853,59 @@ case 111:
 ;
     break;}
 case 112:
-#line 754 "ClntParser.y"
 {
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
 ;
     break;}
 case 113:
-#line 758 "ClntParser.y"
 {
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
 ;
     break;}
 case 114:
-#line 762 "ClntParser.y"
 {
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
 ;
     break;}
 case 115:
-#line 766 "ClntParser.y"
 {
     PresentStationLst.append(SmartPtr<TStationID> (new TStationID( new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
 ;
     break;}
 case 116:
-#line 772 "ClntParser.y"
 {PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
     break;}
 case 117:
-#line 773 "ClntParser.y"
 {PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
     break;}
 case 118:
-#line 777 "ClntParser.y"
 {yyval.SendOpt=Send;;
     break;}
 case 119:
-#line 778 "ClntParser.y"
 {yyval.SendOpt=Default;;
     break;}
 case 120:
-#line 779 "ClntParser.y"
 {yyval.SendOpt=Supersede;;
     break;}
 case 121:
-#line 783 "ClntParser.y"
 {yyval.ReqOpt=Request;;
     break;}
 case 122:
-#line 784 "ClntParser.y"
 {yyval.ReqOpt=Require;;
     break;}
 case 123:
-#line 788 "ClntParser.y"
 {yyval.ival=1;;
     break;}
 case 124:
-#line 789 "ClntParser.y"
 {yyval.ival=0;;
     break;}
 case 125:
-#line 792 "ClntParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 126:
-#line 793 "ClntParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 }
-
-#line 839 "../bison++/bison.cc"
    /* the action file gets copied in in place of this dollarsign  */
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2248,9 +2106,6 @@ YYLABEL(yyerrhandle)
 
 /* END */
 
- #line 1038 "../bison++/bison.cc"
-#line 796 "ClntParser.y"
-
 
 /////////////////////////////////////////////////////////////////////////////
 // programs section
@@ -2278,6 +2133,7 @@ bool clntParser::CheckIsIface(string ifaceName)
     string presName=ptr->getName();
     if (presName==ifaceName) YYABORT;
   };
+  return true;
 };
 
 //method creates new scope appropriately for interface options and declarations
@@ -2329,7 +2185,7 @@ bool clntParser::EndIfaceDeclaration()
   }
   //restore global options
   ParserOptStack.delLast();
-    
+  return true;
 }   
 
 void clntParser::EmptyIface()

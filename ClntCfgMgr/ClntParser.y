@@ -133,7 +133,6 @@ InterfaceDeclarationsList '}'
     //FIXME:used of char * should be always realeased
     delete [] $2;
     EndIfaceDeclaration();
-    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -821,6 +820,7 @@ bool clntParser::CheckIsIface(string ifaceName)
     string presName=ptr->getName();
     if (presName==ifaceName) YYABORT;
   };
+  return true;
 };
 
 //method creates new scope appropriately for interface options and declarations
@@ -872,7 +872,7 @@ bool clntParser::EndIfaceDeclaration()
   }
   //restore global options
   ParserOptStack.delLast();
-    
+  return true;
 }   
 
 void clntParser::EmptyIface()
