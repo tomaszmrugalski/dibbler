@@ -53,7 +53,8 @@ void EmptyAddr(); \
 %define CONSTRUCTOR_CODE \
    this->lex = lex; \
     ParserOptStack.append(new TClntParsGlobalOpt()); \
-    ParserOptStack.getFirst()->setIAIDCnt(1);
+    ParserOptStack.getFirst()->setIAIDCnt(1);\
+    ParserOptStack.getLast();
 
 %union    
 {
@@ -67,6 +68,10 @@ void EmptyAddr(); \
     ESendOpt  SendOpt;  
     EReqOpt   ReqOpt; 
 }
+
+%{
+extern yy_clntParser_stype yylval;
+%}
 
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_,NTP_SERVER_,DOMAIN_,TIME_ZONE_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
