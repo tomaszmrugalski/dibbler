@@ -217,58 +217,58 @@ void TSrvMsg::send()
     this->SrvIfaceMgr->sendMulticast(this->Iface, this->pkt, this->getSize(), this->PeerAddr);
 }
 
-void TSrvMsg::getFreeAddressesForClient (SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntAllClasses,
-					 SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntClasses,
-					 long* &clntFreeAddr, long &totalFreeAddresses, 
-					 SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface, bool rapid)
-{
-
-    clntAllClasses=SrvCfgMgr->getClassesForClient(duid,addr,iface, rapid);
-
-    totalFreeAddresses=0;
-    clntFreeAddr=NULL;    //FIXME:remember to free
-    long *classAssignAddr=NULL;
-    long *clntAssignAddr=NULL; 
-    long count = clntAllClasses->count();
-
-    clntClasses=new TContainer<SmartPtr<TSrvCfgAddrClass> > ();
-
-    if(count)
-    {
-        classAssignAddr=new long[count];
-        clntAssignAddr=new long[count];
-        clntFreeAddr=new long[count];
-        memset(clntFreeAddr,0,count*sizeof(long));
-
-        SrvAddrMgr->getAddrsCount(clntAllClasses, clntAssignAddr, classAssignAddr, 
-            duid, iface);
-        int i=0;
-        int j=0;
-        SmartPtr<TSrvCfgAddrClass> ptrClass;
-        clntAllClasses->first();
-        while(ptrClass=clntAllClasses->get())
-        {
-            long clntAvail=ptrClass->getMaxClientLease()-clntAssignAddr[i];
-            long allAvail=ptrClass->getMaxLease()-classAssignAddr[i];
-            if (clntAvail>allAvail)
-                clntFreeAddr[j]=allAvail;
-            else
-                clntFreeAddr[j]=clntAvail;
-            if (clntFreeAddr[j])
-            {
-                clntClasses->append(ptrClass);
-                totalFreeAddresses+=clntFreeAddr[j];
-                j++;
-            }
-            i++;
-        }
-        delete[] classAssignAddr;
-        delete[] clntAssignAddr;
-	//delete[] clntFreeAddr;
-    }
-    else
-        clntClasses=clntAllClasses;
-}
+//void TSrvMsg::getFreeAddressesForClient (SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntAllClasses,
+//					 SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntClasses,
+//					 long* &clntFreeAddr, long &totalFreeAddresses, 
+//					 SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface, bool rapid)
+//{
+//
+//    clntAllClasses=SrvCfgMgr->getClassesForClient(duid,addr,iface, rapid);
+//
+//    totalFreeAddresses=0;
+//    clntFreeAddr=NULL;    //FIXME:remember to free
+//    long *classAssignAddr=NULL;
+//    long *clntAssignAddr=NULL; 
+//    long count = clntAllClasses->count();
+//
+//    clntClasses=new TContainer<SmartPtr<TSrvCfgAddrClass> > ();
+//
+//    if(count)
+//    {
+//        classAssignAddr=new long[count];
+//        clntAssignAddr=new long[count];
+//        clntFreeAddr=new long[count];
+//        memset(clntFreeAddr,0,count*sizeof(long));
+//
+//        SrvAddrMgr->getAddrsCount(clntAllClasses, clntAssignAddr, classAssignAddr, 
+//            duid, iface);
+//        int i=0;
+//        int j=0;
+//        SmartPtr<TSrvCfgAddrClass> ptrClass;
+//        clntAllClasses->first();
+//        while(ptrClass=clntAllClasses->get())
+//        {
+//            long clntAvail=ptrClass->getMaxClientLease()-clntAssignAddr[i];
+//            long allAvail=ptrClass->getMaxLease()-classAssignAddr[i];
+//            if (clntAvail>allAvail)
+//                clntFreeAddr[j]=allAvail;
+//            else
+//                clntFreeAddr[j]=clntAvail;
+//            if (clntFreeAddr[j])
+//            {
+//                clntClasses->append(ptrClass);
+//                totalFreeAddresses+=clntFreeAddr[j];
+//                j++;
+//            }
+//            i++;
+//        }
+//        delete[] classAssignAddr;
+//        delete[] clntAssignAddr;
+//	//delete[] clntFreeAddr;
+//    }
+//    else
+//        clntClasses=clntAllClasses;
+//}
 
 bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
         int iface, SmartPtr<TSrvOptOptionRequest> reqOpts)
@@ -276,7 +276,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     bool newOptionAssigned = false;
     if ((reqOpts->getOptCnt())&&(SrvCfgMgr->isClntSupported(duid,addr,iface)))
     {
-        SmartPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr->getIface(iface);
+        SmartPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr->getIfaceByID(iface);
     
         if ((reqOpts->isOption(OPTION_DNS_RESOLVERS))&&ptrIface->getDNSSrvLst().count())
         {

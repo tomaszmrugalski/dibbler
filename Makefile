@@ -109,12 +109,12 @@ release:
 #	else
 #	    echo "libxml2       : NO" >> VERSION
 #	fi
-
-
-
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                  \
 		$(SERVERBIN) $(CLIENTBIN) client.conf server.conf \
 		CHANGELOG RELNOTES LICENSE VERSION doc/*.pdf
+fixme:
+	rm -rf FIXME
+	find . -name \*.cpp -exec grep -H "FIXME" {} \; | tee FIXME
 
 tags:
 	rm -f TAGS

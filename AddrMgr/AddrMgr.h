@@ -6,20 +6,14 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrMgr.h,v 1.7 2004-06-04 19:03:46 thomson Exp $
+ * $Id: AddrMgr.h,v 1.8 2004-06-17 23:53:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.6  2004/05/23 22:37:54  thomson
- * *** empty log message ***
- *
- * Revision 1.5  2004/05/23 21:24:50  thomson
- * *** empty log message ***
+ * Revision 1.7  2004/06/04 19:03:46  thomson
+ * Resolved warnings with signed/unisigned
  *
  * Revision 1.4  2004/04/11 18:04:53  thomson
- * LIBXML2 is now a optional feature
- *
- * Revision 1.3  2004/03/28 19:58:15  thomson
- * no message
+ * LIBXML2 is now an optional feature
  *
  */
 

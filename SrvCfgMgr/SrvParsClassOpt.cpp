@@ -17,7 +17,10 @@ TSrvParsClassOpt::TSrvParsClassOpt(void)
     
     Unicast=false;
     RapidCommit=false;
-    MaxLeases=MaxClientLeases=ULONG_MAX;
+    ClntMaxLease = ULONG_MAX;
+    ClassMaxLease= ULONG_MAX;
+    IfaceMaxLease= ULONG_MAX;
+	
 }
 
 //T1,T2,Valid,Prefered time routines
@@ -199,24 +202,29 @@ bool TSrvParsClassOpt::getRapidCommit()
     return this->RapidCommit;
 }
 
-void TSrvParsClassOpt::setMaxLeases(long maxLeases)
-{
-    this->MaxLeases=maxLeases;
+void TSrvParsClassOpt::setClassMaxLease(long classMaxLease) {
+    this->ClassMaxLease = classMaxLease;
 }
 
-long TSrvParsClassOpt::getMaxLeases()
-{
-    return this->MaxLeases;
+long TSrvParsClassOpt::getClassMaxLease() {
+    return this->ClntMaxLease;
 }
 
-void TSrvParsClassOpt::setMaxClientLease(long maxClntLeases)
-{
-    this->MaxClientLeases=maxClntLeases;
+void TSrvParsClassOpt::setIfaceMaxLease(long maxLease) {
+    this->IfaceMaxLeases=maxLease;
 }
 
-long TSrvParsClassOpt::getMaxClientLease()
+long TSrvParsClassOpt::getIfaceMaxLease() {
+    return this->IfaceMaxLease;
+}
+
+void TSrvParsClassOpt::setClntMaxLease(long clntMaxLease) {
+    this->ClntMaxLease = clntMaxLease;
+}
+
+long TSrvParsClassOpt::getClntMaxLease()
 {
-    return this->MaxClientLeases;
+    return this->ClntMaxLease;
 }
 
 TSrvParsClassOpt::~TSrvParsClassOpt(void)

@@ -352,13 +352,14 @@ typedef
 #define	UNICAST_	277
 #define	PREFERENCE_	278
 #define	RAPID_COMMIT_	279
-#define	MAX_LEASE_	280
-#define	CLNT_MAX_LEASE_	281
-#define	STRING_	282
-#define	HEXNUMBER_	283
-#define	INTNUMBER_	284
-#define	IPV6ADDR_	285
-#define	DUID_	286
+#define	IFACE_MAX_LEASE_	280
+#define	CLASS_MAX_LEASE_	281
+#define	CLNT_MAX_LEASE_	282
+#define	STRING_	283
+#define	HEXNUMBER_	284
+#define	INTNUMBER_	285
+#define	IPV6ADDR_	286
+#define	DUID_	287
 
  /* #defines tokens */
 #else
@@ -426,7 +427,8 @@ static const int VALID_TIME_;
 static const int UNICAST_;
 static const int PREFERENCE_;
 static const int RAPID_COMMIT_;
-static const int MAX_LEASE_;
+static const int IFACE_MAX_LEASE_;
+static const int CLASS_MAX_LEASE_;
 static const int CLNT_MAX_LEASE_;
 static const int STRING_;
 static const int HEXNUMBER_;
@@ -459,13 +461,14 @@ enum YY_SrvParser_ENUM_TOKEN { YY_SrvParser_NULL_TOKEN=0
 	,UNICAST_=277
 	,PREFERENCE_=278
 	,RAPID_COMMIT_=279
-	,MAX_LEASE_=280
-	,CLNT_MAX_LEASE_=281
-	,STRING_=282
-	,HEXNUMBER_=283
-	,INTNUMBER_=284
-	,IPV6ADDR_=285
-	,DUID_=286
+	,IFACE_MAX_LEASE_=280
+	,CLASS_MAX_LEASE_=281
+	,CLNT_MAX_LEASE_=282
+	,STRING_=283
+	,HEXNUMBER_=284
+	,INTNUMBER_=285
+	,IPV6ADDR_=286
+	,DUID_=287
 
  /* enum token */
      }; /* end of enum declaration */
@@ -520,13 +523,14 @@ const int YY_SrvParser_CLASS::VALID_TIME_=276;
 const int YY_SrvParser_CLASS::UNICAST_=277;
 const int YY_SrvParser_CLASS::PREFERENCE_=278;
 const int YY_SrvParser_CLASS::RAPID_COMMIT_=279;
-const int YY_SrvParser_CLASS::MAX_LEASE_=280;
-const int YY_SrvParser_CLASS::CLNT_MAX_LEASE_=281;
-const int YY_SrvParser_CLASS::STRING_=282;
-const int YY_SrvParser_CLASS::HEXNUMBER_=283;
-const int YY_SrvParser_CLASS::INTNUMBER_=284;
-const int YY_SrvParser_CLASS::IPV6ADDR_=285;
-const int YY_SrvParser_CLASS::DUID_=286;
+const int YY_SrvParser_CLASS::IFACE_MAX_LEASE_=280;
+const int YY_SrvParser_CLASS::CLASS_MAX_LEASE_=281;
+const int YY_SrvParser_CLASS::CLNT_MAX_LEASE_=282;
+const int YY_SrvParser_CLASS::STRING_=283;
+const int YY_SrvParser_CLASS::HEXNUMBER_=284;
+const int YY_SrvParser_CLASS::INTNUMBER_=285;
+const int YY_SrvParser_CLASS::IPV6ADDR_=286;
+const int YY_SrvParser_CLASS::DUID_=287;
 
  /* const YY_SrvParser_CLASS::token */
 #endif
@@ -541,18 +545,18 @@ YY_SrvParser_CONSTRUCTOR_CODE;
 #endif
 
 
-#define	YYFINAL		134
+#define	YYFINAL		137
 #define	YYFLAG		-32768
-#define	YYNTBASE	36
+#define	YYNTBASE	37
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 286 ? yytranslate[x] : 78)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 287 ? yytranslate[x] : 80)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,    34,    35,     2,     2,     2,     2,     2,
+     2,     2,     2,    35,    36,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -560,7 +564,7 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,    32,     2,    33,     2,     2,     2,     2,     2,
+     2,     2,    33,     2,    34,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -576,7 +580,7 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
      6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
     16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31
+    26,    27,    28,    29,    30,    31,    32
 };
 
 #if YY_SrvParser_DEBUG != 0
@@ -587,38 +591,38 @@ static const short yyprhs[] = {     0,
     93,    95,    99,   103,   109,   110,   114,   115,   119,   120,
    124,   127,   132,   135,   140,   143,   148,   151,   156,   157,
    162,   166,   167,   172,   176,   179,   182,   185,   188,   191,
-   194,   197,   200,   203,   206,   208,   210,   212,   214,   216,
-   218,   220,   222,   224,   226,   228,   230,   232,   234,   236,
-   238,   240,   242,   244,   246,   248,   250
+   194,   197,   200,   203,   206,   209,   211,   213,   215,   217,
+   219,   221,   223,   225,   227,   229,   231,   233,   235,   237,
+   239,   241,   243,   245,   247,   249,   251,   253,   255
 };
 
-static const short yyrhs[] = {    37,
-     0,     0,    75,     0,    38,     0,    37,    75,     0,    37,
-    38,     0,     0,     3,    27,    32,    39,    41,    33,     0,
-     0,     3,    45,    32,    40,    41,    33,     0,    76,     0,
-    41,    76,     0,    42,     0,    41,    42,     0,     0,     5,
-    32,    43,    44,    33,     0,    77,     0,    44,    77,     0,
-    28,     0,    29,     0,    30,     0,    46,    34,    30,     0,
-    30,     0,    30,    35,    30,     0,    47,    34,    30,     0,
-    47,    34,    30,    35,    30,     0,    30,     0,    30,    35,
-    30,     0,    48,    34,    30,     0,    48,    34,    30,    35,
-    30,     0,    31,     0,    31,    35,    31,     0,    48,    34,
-    31,     0,    48,    34,    31,    35,    31,     0,     0,    16,
-    50,    48,     0,     0,    15,    52,    48,     0,     0,    17,
-    54,    47,     0,    20,    45,     0,    20,    45,    35,    45,
-     0,    21,    45,     0,    21,    45,    35,    45,     0,    18,
-    45,     0,    18,    45,    35,    45,     0,    19,    45,     0,
-    19,    45,    35,    45,     0,     0,    10,    13,    60,    46,
-     0,    10,    14,    27,     0,     0,    10,    11,    63,    46,
-     0,    10,    12,    27,     0,    26,    45,     0,    22,    30,
-     0,    22,    45,     0,    24,    45,     0,    23,    45,     0,
-    25,    45,     0,     7,    45,     0,     8,    27,     0,     6,
-    27,     0,     9,    27,     0,    76,     0,    72,     0,    71,
-     0,    73,     0,    74,     0,    77,     0,    66,     0,    69,
-     0,    59,     0,    62,     0,    61,     0,    64,     0,    55,
-     0,    56,     0,    53,     0,    57,     0,    58,     0,    49,
-     0,    51,     0,    67,     0,    68,     0,    70,     0,    65,
-     0
+static const short yyrhs[] = {    38,
+     0,     0,    77,     0,    39,     0,    38,    77,     0,    38,
+    39,     0,     0,     3,    28,    33,    40,    42,    34,     0,
+     0,     3,    46,    33,    41,    42,    34,     0,    78,     0,
+    42,    78,     0,    43,     0,    42,    43,     0,     0,     5,
+    33,    44,    45,    34,     0,    79,     0,    45,    79,     0,
+    29,     0,    30,     0,    31,     0,    47,    35,    31,     0,
+    31,     0,    31,    36,    31,     0,    48,    35,    31,     0,
+    48,    35,    31,    36,    31,     0,    31,     0,    31,    36,
+    31,     0,    49,    35,    31,     0,    49,    35,    31,    36,
+    31,     0,    32,     0,    32,    36,    32,     0,    49,    35,
+    32,     0,    49,    35,    32,    36,    32,     0,     0,    16,
+    51,    49,     0,     0,    15,    53,    49,     0,     0,    17,
+    55,    48,     0,    20,    46,     0,    20,    46,    36,    46,
+     0,    21,    46,     0,    21,    46,    36,    46,     0,    18,
+    46,     0,    18,    46,    36,    46,     0,    19,    46,     0,
+    19,    46,    36,    46,     0,     0,    10,    13,    61,    47,
+     0,    10,    14,    28,     0,     0,    10,    11,    64,    47,
+     0,    10,    12,    28,     0,    27,    46,     0,    26,    46,
+     0,    25,    46,     0,    22,    31,     0,    22,    46,     0,
+    24,    46,     0,    23,    46,     0,     7,    46,     0,     8,
+    28,     0,     6,    28,     0,     9,    28,     0,    78,     0,
+    74,     0,    73,     0,    75,     0,    76,     0,    79,     0,
+    69,     0,    72,     0,    60,     0,    63,     0,    62,     0,
+    65,     0,    56,     0,    57,     0,    54,     0,    58,     0,
+    59,     0,    50,     0,    52,     0,    70,     0,    71,     0,
+    67,     0,    66,     0,    68,     0
 };
 
 #endif
@@ -630,39 +634,40 @@ static const short yyrline[] = { 0,
    195,   199,   206,   210,   219,   223,   235,   239,   248,   252,
    262,   267,   279,   284,   299,   303,   309,   313,   319,   324,
    330,   335,   343,   348,   356,   361,   369,   374,   386,   390,
-   399,   409,   413,   422,   436,   443,   451,   460,   467,   476,
-   483,   489,   494,   501,   508,   509,   510,   511,   512,   516,
-   517,   518,   519,   520,   521,   522,   526,   527,   528,   529,
-   530,   532,   533,   534,   535,   536,   537
+   399,   409,   413,   422,   436,   443,   450,   457,   465,   474,
+   481,   490,   496,   501,   508,   515,   516,   517,   518,   519,
+   523,   524,   525,   526,   527,   528,   529,   533,   534,   535,
+   536,   537,   539,   540,   541,   542,   543,   544,   545
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","NO_CONFIG_",
 "CLASS_","LOGNAME_","LOGLEVEL_","LOGMODE_","WORKDIR_","OPTION_","NTP_SERVER_",
 "TIME_ZONE_","DNS_SERVER_","DOMAIN_","ACCEPT_ONLY_","REJECT_CLIENTS_","POOL_",
 "T1_","T2_","PREF_TIME_","VALID_TIME_","UNICAST_","PREFERENCE_","RAPID_COMMIT_",
-"MAX_LEASE_","CLNT_MAX_LEASE_","STRING_","HEXNUMBER_","INTNUMBER_","IPV6ADDR_",
-"DUID_","'{'","'}'","','","'-'","Grammar","GlobalDeclarationList","InterfaceDeclaration",
-"@1","@2","InterfaceDeclarationsList","ClassDeclaration","@3","ClassOptionDeclarationsList",
-"Number","ADDRESSList","ADDRESSRangeList","ADDRESSDUIDRangeList","RejectClientsOption",
-"@4","AcceptOnlyOption","@5","PoolOption","@6","PreferredTimeOption","ValidTimeOption",
-"T1Option","T2Option","DNSServerOption","@7","DomainOption","NTPServerOption",
-"@8","TimeZoneOption","ClntMaxLeaseOption","UnicastAddressOption","UnicastOption",
-"RapidCommitOption","PreferenceOption","MaxLeaseOption","LogLevelOption","LogModeOption",
-"LogNameOption","WorkDirOption","GlobalOptionDeclaration","InterfaceOptionDeclaration",
-"ClassOptionDeclaration",""
+"IFACE_MAX_LEASE_","CLASS_MAX_LEASE_","CLNT_MAX_LEASE_","STRING_","HEXNUMBER_",
+"INTNUMBER_","IPV6ADDR_","DUID_","'{'","'}'","','","'-'","Grammar","GlobalDeclarationList",
+"InterfaceDeclaration","@1","@2","InterfaceDeclarationsList","ClassDeclaration",
+"@3","ClassOptionDeclarationsList","Number","ADDRESSList","ADDRESSRangeList",
+"ADDRESSDUIDRangeList","RejectClientsOption","@4","AcceptOnlyOption","@5","PoolOption",
+"@6","PreferredTimeOption","ValidTimeOption","T1Option","T2Option","DNSServerOption",
+"@7","DomainOption","NTPServerOption","@8","TimeZoneOption","ClntMaxLeaseOption",
+"ClassMaxLeaseOption","IfaceMaxLeaseOption","UnicastAddressOption","UnicastOption",
+"RapidCommitOption","PreferenceOption","LogLevelOption","LogModeOption","LogNameOption",
+"WorkDirOption","GlobalOptionDeclaration","InterfaceOptionDeclaration","ClassOptionDeclaration",
+""
 };
 #endif
 
 static const short yyr1[] = {     0,
-    36,    36,    37,    37,    37,    37,    39,    38,    40,    38,
-    41,    41,    41,    41,    43,    42,    44,    44,    45,    45,
-    46,    46,    47,    47,    47,    47,    48,    48,    48,    48,
-    48,    48,    48,    48,    50,    49,    52,    51,    54,    53,
-    55,    55,    56,    56,    57,    57,    58,    58,    60,    59,
-    61,    63,    62,    64,    65,    66,    67,    68,    69,    70,
-    71,    72,    73,    74,    75,    75,    75,    75,    75,    76,
-    76,    76,    76,    76,    76,    76,    77,    77,    77,    77,
-    77,    77,    77,    77,    77,    77,    77
+    37,    37,    38,    38,    38,    38,    40,    39,    41,    39,
+    42,    42,    42,    42,    44,    43,    45,    45,    46,    46,
+    47,    47,    48,    48,    48,    48,    49,    49,    49,    49,
+    49,    49,    49,    49,    51,    50,    53,    52,    55,    54,
+    56,    56,    57,    57,    58,    58,    59,    59,    61,    60,
+    62,    64,    63,    65,    66,    67,    68,    69,    70,    71,
+    72,    73,    74,    75,    76,    77,    77,    77,    77,    77,
+    78,    78,    78,    78,    78,    78,    78,    79,    79,    79,
+    79,    79,    79,    79,    79,    79,    79,    79,    79
 };
 
 static const short yyr2[] = {     0,
@@ -672,103 +677,103 @@ static const short yyr2[] = {     0,
      1,     3,     3,     5,     0,     3,     0,     3,     0,     3,
      2,     4,     2,     4,     2,     4,     2,     4,     0,     4,
      3,     0,     4,     3,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     1,     1,     1,     1,     1,     1,
+     2,     2,     2,     2,     2,     1,     1,     1,     1,     1,
      1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-     1,     1,     1,     1,     1,     1,     1
+     1,     1,     1,     1,     1,     1,     1,     1,     1
 };
 
 static const short yydefact[] = {     2,
      0,     0,     0,     0,     0,     0,    37,    35,    39,     0,
-     0,     0,     0,     0,     0,     0,     0,     0,     1,     4,
-    82,    83,    79,    77,    78,    80,    81,    73,    75,    74,
-    76,    87,    71,    84,    85,    72,    86,    67,    66,    68,
-    69,     3,    65,    70,     0,    19,    20,     0,    63,    61,
-    62,    64,    52,     0,    49,     0,     0,     0,     0,    45,
-    47,    41,    43,    56,    57,    59,    58,    60,    55,     6,
-     5,     7,     9,     0,    54,     0,    51,    27,    31,    38,
-    36,    23,    40,     0,     0,     0,     0,     0,     0,    21,
-    53,    50,     0,     0,     0,     0,     0,    46,    48,    42,
-    44,     0,     0,    13,    11,     0,     0,    28,    32,    29,
-    33,    24,    25,    15,     8,    14,    12,    10,    22,     0,
-     0,     0,     0,    30,    34,    26,     0,     0,    17,    16,
-    18,     0,     0,     0
+     0,     0,     0,     0,     0,     0,     0,     0,     0,     1,
+     4,    83,    84,    80,    78,    79,    81,    82,    74,    76,
+    75,    77,    88,    87,    89,    72,    85,    86,    73,    68,
+    67,    69,    70,     3,    66,    71,     0,    19,    20,     0,
+    64,    62,    63,    65,    52,     0,    49,     0,     0,     0,
+     0,    45,    47,    41,    43,    58,    59,    61,    60,    57,
+    56,    55,     6,     5,     7,     9,     0,    54,     0,    51,
+    27,    31,    38,    36,    23,    40,     0,     0,     0,     0,
+     0,     0,    21,    53,    50,     0,     0,     0,     0,     0,
+    46,    48,    42,    44,     0,     0,    13,    11,     0,     0,
+    28,    32,    29,    33,    24,    25,    15,     8,    14,    12,
+    10,    22,     0,     0,     0,     0,    30,    34,    26,     0,
+     0,    17,    16,    18,     0,     0,     0
 };
 
-static const short yydefgoto[] = {   132,
-    19,    20,    88,    89,   103,   104,   123,   128,    65,    91,
-    83,    80,    21,    58,    22,    57,    23,    59,    24,    25,
-    26,    27,    28,    76,    29,    30,    74,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    42,    43,
-    44
+static const short yydefgoto[] = {   135,
+    20,    21,    91,    92,   106,   107,   126,   131,    67,    94,
+    86,    83,    22,    60,    23,    59,    24,    61,    25,    26,
+    27,    28,    29,    79,    30,    31,    77,    32,    33,    34,
+    35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
+    45,    46
 };
 
-static const short yypact[] = {    53,
-    37,   -24,    52,   -22,    12,    20,-32768,-32768,-32768,    52,
-    52,    52,    52,    60,    52,    52,    52,    52,    53,-32768,
+static const short yypact[] = {    75,
+    -3,   -21,    -8,   -15,     0,    32,-32768,-32768,-32768,    -8,
+    -8,    -8,    -8,    20,    -8,    -8,    -8,    -8,    -8,    75,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,    35,-32768,-32768,    59,-32768,-32768,
--32768,-32768,-32768,    30,-32768,    85,    23,    23,    88,    84,
-    96,   100,   101,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,    90,-32768,    90,-32768,   102,   103,    87,
-    87,   104,   106,    52,    52,    52,    52,    77,    77,-32768,
-   107,   107,   112,   113,    86,   115,   116,-32768,-32768,-32768,
--32768,   111,     3,-32768,-32768,    25,   117,-32768,-32768,   114,
-   118,-32768,   119,-32768,-32768,-32768,-32768,-32768,-32768,   120,
-   121,   125,   108,-32768,-32768,-32768,    52,    89,-32768,-32768,
--32768,   148,   151,-32768
+-32768,-32768,-32768,-32768,-32768,-32768,    39,-32768,-32768,    40,
+-32768,-32768,-32768,-32768,-32768,    41,-32768,    42,    34,    34,
+    43,    44,    68,    69,    70,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,    45,-32768,    45,-32768,
+    71,    73,    76,    76,    74,    77,    -8,    -8,    -8,    -8,
+    98,    98,-32768,    99,    99,    46,    47,    36,   108,   109,
+-32768,-32768,-32768,-32768,   110,    14,-32768,-32768,    37,   113,
+-32768,-32768,   105,   106,-32768,   118,-32768,-32768,-32768,-32768,
+-32768,-32768,   128,   129,   132,   131,-32768,-32768,-32768,    -8,
+   111,-32768,-32768,-32768,   160,   162,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,   137,-32768,-32768,    68,   -99,-32768,-32768,    -1,    82,
--32768,   105,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,    55,-32768,-32768,    72,  -105,-32768,-32768,    -1,    86,
+-32768,   107,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   140,   -51,
-  -122
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   146,
+   -86,  -123
 };
 
 
-#define	YYLAST		163
+#define	YYLAST		167
 
 
-static const short yytable[] = {    48,
-   129,    50,    49,   116,    51,   131,   116,   102,    60,    61,
-    62,    63,     6,    66,    67,    68,    69,     7,     8,     9,
-    10,    11,    12,    13,    14,    15,    16,    17,    18,   102,
-    53,    54,    55,    56,     6,   115,   105,   105,    52,     7,
+static const short yytable[] = {    50,
+   119,    52,   132,   119,   108,   108,    51,   134,    62,    63,
+    64,    65,    53,    68,    69,    70,    71,    72,   105,   120,
+    48,    49,   120,     6,    47,    48,    49,    54,     7,     8,
+     9,    10,    11,    12,    13,    14,    15,    16,    17,    18,
+    19,   105,    55,    56,    57,    58,     6,   118,    48,    49,
+    66,     7,     8,     9,    10,    11,    12,    13,    14,    15,
+    16,    17,    18,    19,    81,    82,   113,   114,    78,    80,
+   121,    75,    76,    85,    73,    93,   111,     1,   112,    87,
+     2,     3,     4,     5,     6,   101,   102,   103,   104,     7,
      8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
-    18,   117,    78,    79,   117,     1,    75,   118,     2,     3,
-     4,     5,     6,    45,    46,    47,    72,     7,     8,     9,
-    10,    11,    12,    13,    14,    15,    16,    17,    18,    46,
-    47,   102,    98,    99,   100,   101,     6,    46,    47,    64,
-    73,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,     7,     8,     9,    10,    11,    12,    13,
-   127,    77,    16,    17,    18,   110,   111,    82,    84,    90,
-    95,   130,     7,     8,     9,    10,    11,    12,    13,   127,
-    85,    16,    17,    18,    86,    87,    93,    94,    96,    97,
-   107,   108,   114,   109,   112,   113,   119,   133,   120,   124,
-   134,   125,   121,   122,   126,    70,   106,    92,    71,     0,
-     0,     0,    81
+    18,    19,   105,    88,    89,    90,    96,     6,    97,    99,
+    98,   100,     7,     8,     9,    10,    11,    12,    13,    14,
+    15,    16,    17,    18,    19,     7,     8,     9,    10,    11,
+    12,    13,   130,   110,    16,    17,    18,    19,   115,   116,
+   123,   124,   117,   122,   133,     7,     8,     9,    10,    11,
+    12,    13,   130,   125,    16,    17,    18,    19,   127,   136,
+   128,   137,   129,   109,    95,    74,    84
 };
 
 static const short yycheck[] = {     1,
-   123,     3,    27,   103,    27,   128,   106,     5,    10,    11,
-    12,    13,    10,    15,    16,    17,    18,    15,    16,    17,
-    18,    19,    20,    21,    22,    23,    24,    25,    26,     5,
-    11,    12,    13,    14,    10,    33,    88,    89,    27,    15,
+   106,     3,   126,   109,    91,    92,    28,   131,    10,    11,
+    12,    13,    28,    15,    16,    17,    18,    19,     5,   106,
+    29,    30,   109,    10,    28,    29,    30,    28,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,     5,    11,    12,    13,    14,    10,    34,    29,    30,
+    31,    15,    16,    17,    18,    19,    20,    21,    22,    23,
+    24,    25,    26,    27,    31,    32,    31,    32,    28,    28,
+    34,    33,    33,    31,    20,    31,    31,     3,    32,    36,
+     6,     7,     8,     9,    10,    87,    88,    89,    90,    15,
     16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,   103,    30,    31,   106,     3,    27,    33,     6,     7,
-     8,     9,    10,    27,    28,    29,    32,    15,    16,    17,
-    18,    19,    20,    21,    22,    23,    24,    25,    26,    28,
-    29,     5,    84,    85,    86,    87,    10,    28,    29,    30,
-    32,    15,    16,    17,    18,    19,    20,    21,    22,    23,
-    24,    25,    26,    15,    16,    17,    18,    19,    20,    21,
-    22,    27,    24,    25,    26,    30,    31,    30,    35,    30,
-    34,    33,    15,    16,    17,    18,    19,    20,    21,    22,
-    35,    24,    25,    26,    35,    35,    35,    35,    35,    34,
-    34,    30,    32,    31,    30,    30,    30,     0,    35,    30,
-     0,    31,    35,    35,    30,    19,    89,    76,    19,    -1,
-    -1,    -1,    58
+    26,    27,     5,    36,    36,    36,    36,    10,    36,    36,
+    35,    35,    15,    16,    17,    18,    19,    20,    21,    22,
+    23,    24,    25,    26,    27,    15,    16,    17,    18,    19,
+    20,    21,    22,    35,    24,    25,    26,    27,    31,    31,
+    36,    36,    33,    31,    34,    15,    16,    17,    18,    19,
+    20,    21,    22,    36,    24,    25,    26,    27,    31,     0,
+    32,     0,    31,    92,    79,    20,    60
 };
  /* fattrs + tables */
 
@@ -1522,55 +1527,60 @@ case 54:
     break;}
 case 55:
 { 
-    ParserOptStack.getLast()->setMaxClientLease(yyvsp[0].ival);    
+    ParserOptStack.getLast()->setClntMaxLease(yyvsp[0].ival);
 ;
     break;}
 case 56:
+{
+    ParserOptStack.getLast()->setClassMaxLease(yyvsp[0].ival);
+;
+    break;}
+case 57:
+{
+    ParserOptStack.getLast()->setIfaceMaxLease(yyvsp[0].ival);
+;
+    break;}
+case 58:
 {
     ParserOptStack.getLast()->setUnicast(true);
     ParserOptStack.getLast()->setAddress(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
-case 57:
+case 59:
 {
     if((yyvsp[0].ival&&(!ParserOptStack.getLast()->getUnicast() ))||(yyvsp[0].ival>1))
 	YYABORT; //there should be declared prior unicast address
     ParserOptStack.getLast()->setUnicast(yyvsp[0].ival);
 ;
     break;}
-case 58:
+case 60:
 { 
     ParserOptStack.getLast()->setRapidCommit(yyvsp[0].ival); 
 ;
     break;}
-case 59:
+case 61:
 { 
     if ((yyvsp[0].ival<0)||(yyvsp[0].ival>255))
 	YYABORT;
     ParserOptStack.getLast()->setPreference(yyvsp[0].ival);    
 ;
     break;}
-case 60:
-{
-    ParserOptStack.getLast()->setMaxLeases(yyvsp[0].ival);
-;
-    break;}
-case 61:
+case 62:
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
-case 62:
+case 63:
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
-case 63:
+case 64:
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
-case 64:
+case 65:
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;

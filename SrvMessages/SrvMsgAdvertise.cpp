@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvMsgAdvertise.cpp,v 1.6 2004-06-17 23:53:54 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #include "SrvMsgAdvertise.h"
 #include "SrvMsg.h"
 #include "Logger.h"
@@ -23,133 +37,124 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
 	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, solicit->getTransID())
 {
-    SmartPtr<TOpt> ptrOpt;
-    SmartPtr<TSrvOptOptionRequest> reqOpts;
-   
-    // remember client's DUID
-    SmartPtr<TSrvOptClientIdentifier> duidOpt;
-    duidOpt=(Ptr*)solicit->getOption(OPTION_CLIENTID);
+    SmartPtr<TOpt>       opt;
+    SmartPtr<TSrvOptClientIdentifier> optClntID;
+    SmartPtr<TDUID>      clntDuid;
+    SmartPtr<TIPv6Addr>  clntAddr;
+    unsigned int         clntIface;
 
-    //remember requested option in order to add number of "hint" options
-    //wich are included in packet but not in Request Option
-    //if Request option wasn't included by client - create new one
-    //in which number of "hint" options could be stored
-    reqOpts=(Ptr*)solicit->getOption(OPTION_ORO);
-    //If there is no option Request it will ba added
-    if (!reqOpts)
-        reqOpts=new TSrvOptOptionRequest(this);
-    //Lists: of already assigned addresses to client - 
-    SmartPtr<TContainer<SmartPtr<TIPv6Addr > > >
-        assAddrLst(new TContainer<SmartPtr<TIPv6Addr> > ());
-    //of all classes, from which client can be assigned addresses
-    SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > clntAllClasses;    
-    //of classes from which addresses can be assigned (limits are kept)
-    SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > clntClasses;
-    //all passed to IA_NA option
-    long *clntFreeAddr;
-    long totalFreeAddresses;
-    
-    getFreeAddressesForClient(clntAllClasses,clntClasses,clntFreeAddr, 
-			      totalFreeAddresses, duidOpt->getDUID(),
-			      solicit->getAddr(), solicit->getIface());
+    opt = solicit->getOption(OPTION_CLIENTID);
+    optClntID = (Ptr*) opt;
+    clntDuid = optClntID->getDUID();
+    clntAddr = solicit->getAddr();
+    clntIface =solicit->getIface();
 
-    //if client should be ignored - it is not supported
-    if(!clntAllClasses->count())
-    {
-        //There is no reply for this client there is no classes
-        //from which addresses/parameters can be assigned to it
+    // is this client supported?
+    if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
+        //No reply for this client 
+	Log(Notice) << "Client with DUID=" << clntDuid << "/addr=" << clntAddr 
+		    << " was rejected (due to accept-only or reject-client)." << LogEnd;
         IsDone=true;
         return;
     }
 
-    //So if we can do something for this client at least set configuration
-    //parameters - let's do it option by option - try to answer to it
+    SmartPtr<TSrvOptOptionRequest> reqOpts;
+
+    //remember requested option in order to add number of "hint" options,
+    //wich are included in this packet (but not in OPTION REQUEST option).
+    //if OPTION REQUEST option wasn't included by client - create new one
+    reqOpts= (Ptr*) solicit->getOption(OPTION_ORO);
+    if (!reqOpts)
+        reqOpts=new TSrvOptOptionRequest(this);
+    
+    // --- process this message ---
     solicit->firstOption();
-    while ( ptrOpt = solicit->getOption())  
-    {
-        switch (ptrOpt->getOptType()) {
-            case OPTION_CLIENTID : {
-                this->Options.append(ptrOpt);
-                break;
-                }
-            case OPTION_IA : {
-                SmartPtr<TSrvOptIA_NA> optIA_NA;
-                optIA_NA=new TSrvOptIA_NA(
-                    AddrMgr, clntClasses, clntFreeAddr, 
-                    totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, 
-                    duidOpt->getDUID(),solicit->getAddr(), solicit->getIface(),
-                    SOLICIT_MSG,this);
+    while ( opt = solicit->getOption()) {
+        switch (opt->getOptType()) {
+	case OPTION_CLIENTID : {
+	    this->Options.append(opt);
+	    break;
+	}
+	case OPTION_IA : {
+	    SmartPtr<TSrvOptIA_NA> optIA_NA;
+	    optIA_NA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt,
+					clntDuid, clntAddr, true, 
+					clntIface, SOLICIT_MSG,this);
+	    this->Options.append((Ptr*)optIA_NA);
+	    break;
+	}
+	case OPTION_RAPID_COMMIT: {
+	    // RAPID COMMIT present, but we're in ADVERTISE, so obviously
+	    // server is configured not to use RAPID COMMIT
+	    Log(Notice) <<"RAPID COMMIT option ignored, ADVERTISE message generated." << LogEnd;
+	    break;
+	}
+	case OPTION_IAADDR: {
+	    Log(Warning) << "Invalid(misplaced) IAADDR option received." << LogEnd;
+	    break;
+	}
+	case OPTION_ORO: 
+	case OPTION_ELAPSED_TIME : {
 
-                this->Options.append((Ptr*)optIA_NA);
-                break;
-                }
-            case OPTION_RAPID_COMMIT :
-                //FIXED:No rapid commit option in generating advertise
-                //      in solicit it's ok and in reply option
-                //      if generating advertise it is just ignores
-                clog<<logger::logNotice
-                    <<"Option Rapid Commit ignored (Advertise generation)."<<logger::endl;
-                break;
-            case OPTION_IAADDR :
-                std::clog << logger::logWarning << "Invalid option (OPTION_IAADDR) received." << logger::endl;
-                break;
-            case OPTION_ORO:
-                break;
-            case OPTION_ELAPSED_TIME :
-                break;
-            case OPTION_STATUS_CODE : {
-                SmartPtr< TOptStatusCode > ptrStatus = (Ptr*) ptrOpt;
-                std::clog << logger::logError << "Receviced STATUS_CODE from client:" 
-			  <<  ptrStatus->getCode() << ", (" << ptrStatus->getText()
-			  << ")" << logger::endl;
-                break;
-                }
+	    break;
+	}
+	case OPTION_STATUS_CODE : {
+	    SmartPtr< TOptStatusCode > ptrStatus = (Ptr*) opt;
+	    Log(Error) << "Receviced STATUS_CODE from client:" 
+		       <<  ptrStatus->getCode() << ", (" << ptrStatus->getText()
+		       << ")" << logger::endl;
+	    break;
+	}
+	    
+        //add options requested by client to option Request Option if
+       //client didn't included them
 
-            //add options requested by client to option Request Option if
-            //client didn't included them
-            case OPTION_DNS_RESOLVERS:
-                if (!reqOpts->isOption(OPTION_DNS_RESOLVERS))
-                    reqOpts->addOption(OPTION_DNS_RESOLVERS);
-                break;
-            case OPTION_DOMAIN_LIST:
-                if (!reqOpts->isOption(OPTION_DOMAIN_LIST))
-                    reqOpts->addOption(OPTION_DOMAIN_LIST);
-                break;
-            case OPTION_NTP_SERVERS:
-                if (!reqOpts->isOption(OPTION_NTP_SERVERS))
-                    reqOpts->addOption(OPTION_NTP_SERVERS);
-                break;
-            case OPTION_TIME_ZONE:
-                if (!reqOpts->isOption(OPTION_TIME_ZONE))
-                    reqOpts->addOption(OPTION_TIME_ZONE);
-                break;
-
-            case OPTION_PREFERENCE :
-            case OPTION_UNICAST :
-            case OPTION_SERVERID :
-                std::clog << logger::logWarning 
-			  << "Invalid option (OPTION_UNICAST) received." << logger::endl;
-                break;
+	case OPTION_DNS_RESOLVERS: {
+	    if (!reqOpts->isOption(OPTION_DNS_RESOLVERS))
+		reqOpts->addOption(OPTION_DNS_RESOLVERS);
+	    break;
+	}
+	case OPTION_DOMAIN_LIST: {
+	    if (!reqOpts->isOption(OPTION_DOMAIN_LIST))
+		reqOpts->addOption(OPTION_DOMAIN_LIST);
+	    break;
+	}
+	case OPTION_NTP_SERVERS:
+	    if (!reqOpts->isOption(OPTION_NTP_SERVERS))
+		reqOpts->addOption(OPTION_NTP_SERVERS);
+	    break;
+	case OPTION_TIME_ZONE:
+	    if (!reqOpts->isOption(OPTION_TIME_ZONE))
+		reqOpts->addOption(OPTION_TIME_ZONE);
+	    break;
+	    
+	case OPTION_PREFERENCE :
+	case OPTION_UNICAST :
+	case OPTION_SERVERID : {
+	    std::clog << logger::logWarning 
+		      << "Invalid option (OPTION_UNICAST) received." << logger::endl;
+	    break;
+	}
                 // options not yet supported 
-            case OPTION_IA_TA    :
-            case OPTION_RELAY_MSG :
-            case OPTION_AUTH_MSG :
-            case OPTION_USER_CLASS :
-            case OPTION_VENDOR_CLASS :
-            case OPTION_VENDOR_OPTS :
-            case OPTION_INTERFACE_ID :
-            case OPTION_RECONF_MSG :
-            case OPTION_RECONF_ACCEPT:
-            default:
-                std::clog << logger::logDebug << "Option not supported, opttype=" 
-			  << ptrOpt->getOptType() << logger::endl;
-                break;
-
-            } // end of switch
-        } // end of while
-
+	case OPTION_IA_TA    :
+	case OPTION_RELAY_MSG :
+	case OPTION_AUTH_MSG :
+	case OPTION_USER_CLASS :
+	case OPTION_VENDOR_CLASS :
+	case OPTION_VENDOR_OPTS :
+	case OPTION_INTERFACE_ID :
+	case OPTION_RECONF_MSG :
+	case OPTION_RECONF_ACCEPT:
+	default: {
+	    std::clog << logger::logDebug << "Option not supported, opttype=" 
+		      << opt->getOptType() << logger::endl;
+	    break;
+	}
+	} // end of switch
+    } // end of while
+    
     //if client requested parameters and policy doesn't forbid from answering
-    appendRequestedOptions(duidOpt->getDUID(),solicit->getAddr(),solicit->getIface(),reqOpts);
+    appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
 
     // include our DUID
     SmartPtr<TSrvOptServerIdentifier> ptrSrvID;
@@ -158,12 +163,11 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 
     // ... and our preference
     SmartPtr<TSrvOptPreference> ptrPreference;
-    unsigned char preference = CfgMgr->getIface(solicit->getIface())->getPreference();
-    Log(Debug) << "Preference set to " << preference << LogEnd;
+    unsigned char preference = CfgMgr->getIfaceByID(solicit->getIface())->getPreference();
+    Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
     ptrPreference = new TSrvOptPreference(preference,this);
     Options.append((Ptr*)ptrPreference);
 
-    delete [] clntFreeAddr;
     pkt = new char[this->getSize()];
     IsDone = false;
     this->MRT = 0;

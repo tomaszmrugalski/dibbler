@@ -24,6 +24,8 @@ public:
     void addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass);
     void firstAddrClass();   
     SmartPtr<TSrvCfgAddrClass> getAddrClass();
+    SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, 
+					      SmartPtr<TIPv6Addr> clntAddr);
     long countAddrClass();
 
     void	setNoConfig();
@@ -46,9 +48,9 @@ private:
     SmartPtr<TIPv6Addr> UniAddress;
     
     TContainer <SmartPtr<TSrvCfgAddrClass> > SrvCfgAddrClassLst;
-    
-    TContainer<SmartPtr<TIPv6Addr> >	 DNSSrv;
-    TContainer<SmartPtr<TIPv6Addr> >	 NTPSrv;    
+    TContainer<SmartPtr<TIPv6Addr> > DNSSrv;
+    TContainer<SmartPtr<TIPv6Addr> > NTPSrv;    
+
     string				Domain;
     string				TimeZone;
 

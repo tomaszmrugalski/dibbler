@@ -74,7 +74,7 @@ virtual ~SrvParser();
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
-%token MAX_LEASE_,CLNT_MAX_LEASE_
+%token IFACE_MAX_LEASE_, CLASS_MAX_LEASE_, CLNT_MAX_LEASE_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -435,7 +435,21 @@ TimeZoneOption
 ClntMaxLeaseOption
 : CLNT_MAX_LEASE_ Number 
 { 
-    ParserOptStack.getLast()->setMaxClientLease($2);    
+    ParserOptStack.getLast()->setClntMaxLease($2);
+}
+;
+
+ClassMaxLeaseOption
+: CLASS_MAX_LEASE_ Number 
+{
+    ParserOptStack.getLast()->setClassMaxLease($2);
+}
+;
+
+IfaceMaxLeaseOption
+: IFACE_MAX_LEASE_ Number
+{
+    ParserOptStack.getLast()->setIfaceMaxLease($2);
 }
 ;
 
@@ -469,13 +483,6 @@ PreferenceOption
     if (($2<0)||($2>255))
 	YYABORT;
     ParserOptStack.getLast()->setPreference($2);    
-}
-;
-
-MaxLeaseOption
-: MAX_LEASE_ Number 
-{
-    ParserOptStack.getLast()->setMaxLeases($2);
 }
 ;
 
@@ -533,8 +540,9 @@ ClassOptionDeclaration
 | AcceptOnlyOption
 | UnicastOption
 | RapidCommitOption
-| MaxLeaseOption
+| ClassMaxLeaseOption
 | ClntMaxLeaseOption
+| IfaceMaxLeaseOption
 ;
 
 %%

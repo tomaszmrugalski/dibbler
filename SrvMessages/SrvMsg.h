@@ -55,13 +55,13 @@ public:
     void doDuties();
     void send();
 protected:
-    void getFreeAddressesForClient(    
-        SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntAllClasses,
-        SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntClasses,
-        long* &clntFreeAddr, long &totalFreeAddresses, 
-        SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface, bool rapid=false);
+//    void getFreeAddressesForClient(    
+//        SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntAllClasses,
+//        SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > &clntClasses,
+//        long* &clntFreeAddr, long &totalFreeAddresses, 
+//        SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface, bool rapid=false);
 private:
-    //##Stempel czasowy pierwszej transmiji wiadomoœci
+    // timestamp of first message transmission
     unsigned long FirstTimeStamp;
 
     void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 

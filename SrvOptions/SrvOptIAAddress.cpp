@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvOptIAAddress.cpp,v 1.2 2004-06-17 23:53:55 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #ifdef WIN32
 #include <winsock2.h>
 #endif
@@ -19,10 +33,9 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
     int pos=0;
     while(pos<bufsize) 
     {
-
-        int code=buf[pos]*256+buf[pos+1];
+        int code=buf[pos]*256+buf[pos+1]; // FIXME: use htons!
         pos+=2;
-        int length=buf[pos]*256+buf[pos+1];
+        int length=buf[pos]*256+buf[pos+1]; // FIXME: use htons!
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
@@ -33,36 +46,32 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
                 switch (code)
                 {
                 case OPTION_STATUS_CODE:
-                    opt =(Ptr*)SmartPtr<TSrvOptStatusCode> (new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt =(Ptr*)SmartPtr<TSrvOptStatusCode> (
+			new TSrvOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
-                    clog<< logger::logWarning <<"Option opttype=" << code<< "not supported "
-                        <<" in field of message (type="<< parent->getType() <<") in this version of server."<<logger::endl;
+		    Log(Warning) << "Option " << code<< " not supported "
+                        <<" in message (type="<< parent->getType() <<")." << LogEnd;
                     break;
                 }
                 if((opt)&&(opt->isValid()))
                     SubOptions.append(opt);
-            }
-            else
-                clog << logger::logWarning << "Illegal option received, opttype=" << code 
-                    << " in field options of IA_NA option"<<logger::endl;
-
-        }
-        else
-        {
-                clog << logger::logWarning <<"Unknown option in option IA_NA( optType=" 
-                    << code << "). Option ignored." << logger::endl;
+            } else {
+		Log(Warning) << "Illegal option received, opttype=" << code 
+			     << " in field options of IA_NA option" << LogEnd;
+	    }
+        } else {
+	    Log(Warning) <<"Unknown option in option IA_NA( optType=" 
+		 << code << "). Option ignored." << LogEnd;
         };
         pos+=length;
     }
 }
 
 TSrvOptIAAddress::TSrvOptIAAddress( SmartPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent)
-	:TOptIAAddress(addr,pref,valid, parent)
-{
+	:TOptIAAddress(addr,pref,valid, parent) {
 
 }
-bool TSrvOptIAAddress::doDuties()
-{
+bool TSrvOptIAAddress::doDuties() {
     return true;
 }

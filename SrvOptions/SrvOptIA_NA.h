@@ -2,6 +2,8 @@
 #define SRVOPTIA_NA_H
 
 #include "OptIA_NA.h"
+#include "SrvOptIA_NA.h"
+#include "SrvOptIAAddress.h"
 #include "SmartPtr.h"
 #include "DUID.h"
 #include "SrvCfgMgr.h"
@@ -22,77 +24,40 @@ class TSrvOptIA_NA : public TOptIA_NA
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent);
 
     TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent);    
-
     TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent);    
-
     TSrvOptIA_NA( long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);    
-
-    TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > clntClasses,
-		 long *clntFreeAddr,
-		 long  &totalFreeAddr,
-		 SmartPtr<TContainer<SmartPtr<TIPv6Addr> > > assignedAddresses,
-		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TDUID> DUID, SmartPtr<TIPv6Addr> clntAddr, int iface,
-		 int msgType, TMsg* parent);
     
-    unsigned long countFreeAddrsForClient(SmartPtr<TSrvCfgMgr> cfgMgr,
-					  SmartPtr<TSrvAddrMgr> addrMgr,
-					  SmartPtr<TDUID> duid,
-					  SmartPtr<TIPv6Addr> clntAddr,int iface);
-
-    void solicit(SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
+/* Constructor used in answers to:
+ * - SOLICIT 
+ * - SOLICIT (with RAPID_COMMIT)
+ * - REQUEST */
+    TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
 		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr,
-		 SmartPtr<TDUID> duid,
-		 int iface,  unsigned long &addrCount);
-    void request(SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr,
-		 SmartPtr<TDUID> duid,
-		 int iface, unsigned long &addrCount);
-
-    void renew(SmartPtr<TSrvCfgMgr> cfgMgr,
-	       SmartPtr<TSrvAddrMgr> addrMgr,
-	       SmartPtr<TSrvOptIA_NA> queryOpt,
-	       SmartPtr<TIPv6Addr> clntAddr,
-	       SmartPtr<TDUID> duid,
-	       int iface,  unsigned long &addrCount);
-
-    void rebind(SmartPtr<TSrvCfgMgr> cfgMgr,
-		SmartPtr<TSrvAddrMgr> addrMgr,
-		SmartPtr<TSrvOptIA_NA> queryOpt,
-		SmartPtr<TIPv6Addr> clntAddr,
-		SmartPtr<TDUID> duid,
-		int iface,  unsigned long &addrCount);
-
-    void release(SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr,
-		 SmartPtr<TDUID> duid,
-		 int iface, unsigned long &addrCount);
-
-    void confirm(SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr,
-		 SmartPtr<TDUID> duid,
-		 int iface, unsigned long &addrCount);
+		 SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
+		 bool doNotAssignAddrs,
+		 int iface, int msgType, TMsg* parent);
     
-    void decline(SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr,
-		 SmartPtr<TDUID> duid,
-		 int iface, unsigned long &addrCount);
-       
+    void releaseAllAddrs();
+
+    void solicit(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void request(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void renew(SmartPtr<TSrvOptIA_NA> queryOpt,   unsigned long &addrCount);
+    void rebind(SmartPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
+    void release(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void confirm(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void decline(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     bool doDuties();
  private:
-    bool isAddrIn(SmartPtr<TIPv6Addr> addr,
-		  SmartPtr<TContainer<SmartPtr<TIPv6Addr> > > addrLst);
+    SmartPtr<TSrvAddrMgr> AddrMgr;
+    SmartPtr<TSrvCfgMgr>  CfgMgr;
+    SmartPtr<TIPv6Addr>   ClntAddr;
+    SmartPtr<TDUID>       ClntDuid;
+    int                   Iface;
+    
+    SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
+					  unsigned long valid, bool doNotAssignAddrs);
+    SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TIPv6Addr> hint);
+    unsigned long countFreeAddrsForClient();
 };
 
 

@@ -68,8 +68,9 @@ unicast             { return SrvParser::UNICAST_;}
 preference          { return SrvParser::PREFERENCE_;}
 pool                { return SrvParser::POOL_;}
 rapid-commit        { return SrvParser::RAPID_COMMIT_;}
-max-lease           { return SrvParser::MAX_LEASE_;}
-client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;}
+iface-max-lease     { return SrvParser::IFACE_MAX_LEASE_; }
+class-max-lease     { return SrvParser::CLASS_MAX_LEASE_; }
+client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;  }
 
 yes {yylval.ival=1; return SrvParser::INTNUMBER_;}
 no         {yylval.ival=0; return SrvParser::INTNUMBER_;}

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.16 2004-06-04 16:55:27 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.17 2004-06-17 23:53:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
  * Revision 1.15  2004/05/24 21:16:37  thomson
  * Various fixes.
  *
@@ -103,7 +106,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 }
 
 /*
- * Now parsed information should be place in config manager
+ * Now parsed information should be placed in config manager
  * in accordance with information provided by interface manager
  */
 bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
@@ -144,121 +147,103 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
     return true;
 }
 
-SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIface()
-{
+SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIface() {
 	return this->SrvCfgIfaceLst.get();
 }
 
-SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIface(int ifaceid)
-{
-    firstIface();
-    SmartPtr<TSrvCfgIface> ptrIface;
-    while(ptrIface=SrvCfgIfaceLst.get())
-        if (ptrIface->getID()==ifaceid)
-            return ptrIface;
-	return SmartPtr<TSrvCfgIface>();
+string TSrvCfgMgr::getWorkDir() {
+    return WorkDir;
 }
 
-
-string TSrvCfgMgr::getWorkDir()
-{
-	return WorkDir;
+void TSrvCfgMgr::addIface(SmartPtr<TSrvCfgIface> ptr) {
+    SrvCfgIfaceLst.append(ptr);
 }
 
-void TSrvCfgMgr::addIface(SmartPtr<TSrvCfgIface> ptr)
-{
-	SrvCfgIfaceLst.append(ptr);
+void TSrvCfgMgr::firstIface() {
+    SrvCfgIfaceLst.first();
 }
 
-void TSrvCfgMgr::firstIface()
-{
-	SrvCfgIfaceLst.first();
+long TSrvCfgMgr::countIface() {
+    return SrvCfgIfaceLst.count();
 }
 
-int TSrvCfgMgr::countIfaces()
-{
-	return SrvCfgIfaceLst.count();
-}
-
-TSrvCfgMgr::~TSrvCfgMgr()
-{
+TSrvCfgMgr::~TSrvCfgMgr() {
+    Log(Debug) << "SrvCfgMgr cleanup." << LogEnd;
 }
 
 
 long TSrvCfgMgr::getMaxAddrsPerClient( SmartPtr<TDUID> duid, 
 						 SmartPtr<TIPv6Addr> clntAddr,  int iface)
 {
-	//FIXME: 
-    //For all classes by which client is supported get MaxAddrPerClient
+    //FIXME: For all classes by which client is supported get MaxAddrPerClient
     //and return sum of this value (it must be smaller then MAX_LONG)
-	return 10;
+    return 10;
 }
 
-long TSrvCfgMgr::getFreeAddrs( SmartPtr<TDUID> duid, 
+long TSrvCfgMgr::getFreeAddrsCount( SmartPtr<TDUID> duid, 
 					 SmartPtr<TIPv6Addr> clntAddr,  int iface)
 {
     //FIXME: I don't know how SrvCfgMgr can count this and what for
-	return 8;
+    return 8;
 }
+
+
 //Can client(DUID,clntAddr) have address addr ?
 bool TSrvCfgMgr::addrIsSupported( SmartPtr<TDUID> duid,
-				   SmartPtr<TIPv6Addr> clntAddr ,  SmartPtr<TIPv6Addr> addr)
-{
-	return true;
+				   SmartPtr<TIPv6Addr> clntAddr ,  SmartPtr<TIPv6Addr> addr) {
+    // FIXME:
+    return true;
 }
 
-
-//it get's IP address and iface and should return class which describes it
+/*
+ * get a class, which address belongs to
+ */ 
 SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6Addr> addr)
 {
-    // FIXME: implement this for real
-    SrvCfgIfaceLst.first();
+    this->firstIface();
     SmartPtr<TSrvCfgIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
 
-    while ( ptrIface = SrvCfgIfaceLst.get() ) {
-	// we got interface, now check classes
-	SmartPtr<TSrvCfgAddrClass> ptrClass;
-    ptrIface->firstAddrClass();
-    return ptrIface->getAddrClass();
+    if (!ptrIface) {
+	Log(Error) << "Trying to find class on unknown (" << iface <<") interface." << LogEnd;
+	return 0; // NULL
     }
-    return SmartPtr<TSrvCfgAddrClass>(); // NULL
+
+    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    ptrIface->firstAddrClass();
+    while (ptrClass = ptrIface->getAddrClass()) {
+	if (ptrClass->addrInPool(addr))
+	    return ptrClass;
+    }
+
+    return 0; // NULL
 }
 
 //on basis of duid/address/iface assign addresss to client
-SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr( SmartPtr<TDUID> duid, 
-				  SmartPtr<TIPv6Addr> clntAddr, long T1,long T2,
-				  long Pref,long Valid)
-{
-    //FIXME:
-    static char addr[] = {0x3f,0xfe,0x83,0x20,0x00,0x3,0x2,0x10, 0,0,0,0,0 ,0x1,0,0x2};
-    for (int i=0; i<16; i++)
-	addr[i] = (char) (rand()%255);
-    return new TIPv6Addr(addr);
-}
-
-SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > TSrvCfgMgr::getClassesForClient(
-        SmartPtr<TDUID> duid, 
-        SmartPtr<TIPv6Addr> clntAddr, 
-        int iface, bool rapid)
-{
-    SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > 
-            ret(new TContainer<SmartPtr<TSrvCfgAddrClass> >);
+SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid, 
+					      SmartPtr<TIPv6Addr> clntAddr,
+					      int iface) {
     SmartPtr<TSrvCfgIface> ptrIface;
-    firstIface();
-    while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
-    if (ptrIface)
-    {
-        SmartPtr<TSrvCfgAddrClass> ptrClass;
-        ptrIface->firstAddrClass();
-        while(ptrClass=ptrIface->getAddrClass())
-            if (ptrClass->clntSupported(duid,clntAddr)&&
-                ((ptrClass->getRapidCommit()==rapid)||!rapid))
-                    ret->append(ptrClass);
+    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    SmartPtr<TIPv6Addr>    any;
+
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+	return 0;
     }
-    return ret;
+
+    any = new TIPv6Addr();
+    ptrIface->firstAddrClass();
+    ptrClass = ptrIface->getAddrClass();
+    return ptrClass->getRandomAddr();
+
+    //FIXME: get addrs from first address only
 }
 
-//Method checks whether client is supported and assigned addresses from any class
+
+/* 
+ * Method checks whether client is supported and assigned addresses from any class
+ */
 bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface)
 {
     SmartPtr<TSrvCfgIface> ptrIface;
@@ -276,13 +261,11 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
     return false;
 }
 
-bool TSrvCfgMgr::isDone()
-{
+bool TSrvCfgMgr::isDone() {
     return IsDone;
 }
 
-bool TSrvCfgMgr::checkConfigConsistency()
-{
+bool TSrvCfgMgr::checkConfigConsistency() {
     SmartPtr<TSrvCfgIface> ptrIface;
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     firstIface();
@@ -325,6 +308,22 @@ bool TSrvCfgMgr::checkConfigConsistency()
     }
     return true;
 }
+
+
+SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
+    SmartPtr<TSrvCfgIface> ptrIface;
+    this->firstIface();
+    while ( ptrIface = this->getIface() ) {
+	if ( ptrIface->getID()==iface )
+	    return ptrIface;
+    }
+    Log(Error) << "Invalid interface (id=" << iface << ") specifed, cannot get address." << LogEnd;
+    return 0; // NULL
+}
+
+// --------------------------------------------------------------------
+// --- operators ------------------------------------------------------
+// --------------------------------------------------------------------
 
 ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
 	out << "<SrvCfgMgr>" << std::endl;

@@ -14,14 +14,10 @@ class TOptClientIdentifier : public TOpt
 
     char * storeSelf(char* buf);
 	
-    //int getDUIDlen();
-    
     SmartPtr<TDUID> getDUID();
     bool isValid();
   private:
     SmartPtr<TDUID> DUID;
-     //int DUIDlen;
-    //char* DUID;
 };
 
 #endif

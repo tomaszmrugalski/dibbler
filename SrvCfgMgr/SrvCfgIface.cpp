@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.6 2004-06-06 22:12:29 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.7 2004-06-17 23:53:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/06 22:12:29  thomson
+ * Preference option has changed scope from class to interface
+ *
  *                                                                           
  */
 
@@ -22,6 +25,13 @@ void TSrvCfgIface::firstAddrClass() {
 
 SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
     return SrvCfgAddrClassLst.get();
+}
+
+SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid, 
+							SmartPtr<TIPv6Addr> clntAddr) {
+    // FIXME: randomize it
+    this->firstAddrClass();
+    return this->getAddrClass();
 }
 
 long TSrvCfgIface::countAddrClass() {
@@ -138,7 +148,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     if (iface.isUniAddress) {
 	out << "  <unicast>" << *(iface.UniAddress) << "</unicast>" << std::endl;
     }
-    out << "  <preference>" << iface.preference << "</preference>" << std::endl;
+    out << "  <preference>" << (int)iface.preference << "</preference>" << std::endl;
     
     SmartPtr<TIPv6Addr> stat;
     out << "  <!-- NTP servers count: " << iface.NTPSrv.count() << "-->" << logger::endl;

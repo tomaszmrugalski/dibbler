@@ -6,20 +6,9 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.15 2004-06-04 21:02:45 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.16 2004-06-17 23:53:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.14  2004/06/04 19:03:46  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.13  2004/05/23 21:24:50  thomson
- * *** empty log message ***
- *
- * Revision 1.12  2004/04/11 18:04:53  thomson
- * LIBXML2 is now a optional feature
- *
- * Revision 1.11  2004/04/10 14:14:30  thomson
- * *** empty log message ***
  *
  * Revision 1.10  2004/04/10 12:18:00  thomson
  * Numerous fixes: LogName, LogMode options added, dns-servers changed to
@@ -28,15 +17,11 @@
  * Revision 1.9  2004/04/09 22:33:11  thomson
  * dns-servers changed to option dns-server
  *
- * Revision 1.8  2004/04/09 19:25:04  thomson
- * *** empty log message ***
- *
  * Revision 1.7  2004/04/06 23:09:48  thomson
  * dbStore was causing segfaults in rare occasions, so it is commented out.
  *
  * Revision 1.3  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
- *
  *
  */
 

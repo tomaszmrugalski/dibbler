@@ -1,3 +1,17 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: SrvMsgReply.cpp,v 1.5 2004-06-17 23:53:54 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *                                                                           
+ */
+
 #include "SmartPtr.h"
 #include "SrvMsgReply.h"
 #include "SrvMsg.h"
@@ -28,10 +42,10 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
 	     confirm->getIface(),confirm->getAddr(), REPLY_MSG, confirm->getTransID())
 {
-    SmartPtr<TSrvCfgIface> ptrIface = CfgMgr->getIface( confirm->getIface() );
+    SmartPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID( confirm->getIface() );
     if (!ptrIface) {
-	std::clog << logger::logCrit << "Msg received through not configured interface. "
-	    "Somebody call an exorcist!" << logger::endl;
+	Log(Crit) << "Msg received through not configured interface. "
+	    "Somebody call an exorcist!" << LogEnd;
 	this->IsDone = true;
 	return;
     }
@@ -430,50 +444,45 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,
 	     request->getIface(),request->getAddr(), REPLY_MSG, request->getTransID())
 {
-    SmartPtr<TOpt> ptrOpt;
-    
+    SmartPtr<TOpt>       opt;
+    SmartPtr<TSrvOptClientIdentifier> optClntID;
+    SmartPtr<TDUID>      clntDuid;
+    SmartPtr<TIPv6Addr>  clntAddr;
+    unsigned int         clntIface;
+
+    opt = request->getOption(OPTION_CLIENTID);
+    optClntID = (Ptr*) opt;
+    clntDuid  = optClntID->getDUID();
+    clntAddr  = request->getAddr();
+    clntIface = request->getIface();
+
     setOptionsReqOptClntDUID((Ptr*)request);
 
-    //Lists: of already assigned addresses to client - 
-    SmartPtr<TContainer<SmartPtr<TIPv6Addr > > >
-        assAddrLst(new TContainer<SmartPtr<TIPv6Addr> > ());
-    //of classes from which addresses can be assigned (limits are kept)
-    SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > clntClasses;
-    //of all classes, from which client can be assigned addresses
-    SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > clntAllClasses;
-    //all passed to IA_NA option
-    long *clntFreeAddr;
-    long totalFreeAddresses;
-    getFreeAddressesForClient(clntAllClasses,clntClasses,clntFreeAddr,
-        totalFreeAddresses,duidOpt->getDUID(),request->getAddr(),
-        request->getIface());
-    //if client should be ignored - it is not supported
-    if(!clntAllClasses->count())
-    {
-        //There is no reply for this client there is no classes
-        //from which addresses/parameters can be assigned to it
-        //the client tries to deceive it requests addresses
-        //or information, while we not authorized to answer it
+    // is this client supported?
+    if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
+        //No reply for this client 
+	Log(Notice) << "Client with DUID=" << clntDuid << "/addr=" << clntAddr 
+		    << " was rejected (due to accept-only or reject-client)." << LogEnd;
         IsDone=true;
         return;
-    }   
+    }
+
     //So if we can do something for this client at least set configuration
     //parameters - let's do  option by option - try to answer to it
     request->firstOption();
-    while (ptrOpt = request->getOption() ) 
+    while ( opt = request->getOption() ) 
     {
-        switch (ptrOpt->getOptType()) 
+        switch (opt->getOptType()) 
         {
 	case OPTION_SERVERID    :
-	    this->Options.append(ptrOpt);
+	    this->Options.append(opt);
 	    break;
 	case OPTION_IA          : 
 	{
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
-	    optIA_NA=new TSrvOptIA_NA(AddrMgr, clntClasses, clntFreeAddr, 
-				      totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, 
-				      duidOpt->getDUID(),request->getAddr(), request->getIface(),
-				      REQUEST_MSG,this);
+	    optIA_NA=new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, 
+				      clntDuid, clntAddr, false, 
+				      clntIface, REQUEST_MSG,this);
 	    this->Options.append((Ptr*)optIA_NA);
 	    break;
 	}
@@ -486,15 +495,14 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	case OPTION_UNICAST     :
 	case OPTION_RAPID_COMMIT:
 	    std::clog << "Invalid option type("
-		      <<ptrOpt->getOptType()<<") received." << logger::endl;
+		      <<opt->getOptType()<<") received." << logger::endl;
 	    break;
 	default:
-	    appendDefaultOption(ptrOpt);
+	    appendDefaultOption(opt);
 	    break;
         }
     }
-    appendRequestedOptions(duidOpt->getDUID(),request->getAddr(),request->getIface(),reqOpts);
-    delete [] clntFreeAddr;
+    appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
     pkt = new char[this->getSize()];
     IsDone = false;
     SmartPtr<TIPv6Addr> ptrAddr;
@@ -511,91 +519,72 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     :TSrvMsg(ifaceMgr,transMgr,CfgMgr,AddrMgr,solicit->getIface(),
 	     solicit->getAddr(),REPLY_MSG,solicit->getTransID())
 {
-    SmartPtr<TOpt> ptrOpt;
+    SmartPtr<TOpt>       opt;
+    SmartPtr<TSrvOptClientIdentifier> optClntID;
+    SmartPtr<TDUID>      clntDuid;
+    SmartPtr<TIPv6Addr>  clntAddr;
+    unsigned int         clntIface;
+
+    opt = solicit->getOption(OPTION_CLIENTID);
+    optClntID = (Ptr*) opt;
+    clntDuid  = optClntID->getDUID();
+    clntAddr  = solicit->getAddr();
+    clntIface = solicit->getIface();
+
     setOptionsReqOptClntDUID((Ptr*)solicit);
-    
-    SmartPtr<TContainer<SmartPtr<TIPv6Addr > > >
-        assAddrLst(new TContainer<SmartPtr<TIPv6Addr> > ());
-    
-    SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > clntClasses;
-    SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > clntAllClasses;
 
-    long *clntFreeAddr;
-    long totalFreeAddresses;
-    getFreeAddressesForClient(clntAllClasses,clntClasses,clntFreeAddr,
-        totalFreeAddresses,duidOpt->getDUID(),solicit->getAddr(),
-        solicit->getIface(),true);
-
-    if(!clntAllClasses->count())
-    {
-        //There is no reply for this client there is no classes
-        //from which addresses/parameters can be assigned to it
-        //the client tries to deceive it requests addresses
-        //or information, while we not authorized to answer it
+    // is this client supported?
+    if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
+        //No reply for this client 
+	Log(Notice) << "Client with DUID=" << clntDuid << "/addr=" << clntAddr 
+		    << " was rejected (due to accept-only or reject-client)." << LogEnd;
         IsDone=true;
         return;
     }
-    
-    //So if we can do something for this client at least set configuration
-    //parameters - let's do it
-    //Option by option - answer to it
-    solicit->firstOption();
-    while (ptrOpt = solicit->getOption() ) 
-    {
-        switch (ptrOpt->getOptType()) 
-        {
-            case OPTION_IA       : 
-            {
-                //if it's possible assign these addresses - so we use constructor
-                //with request option
-                SmartPtr<TSrvOptIA_NA> optIA_NA;
-                optIA_NA=new TSrvOptIA_NA(
-                    AddrMgr, clntClasses, clntFreeAddr, 
-                    totalFreeAddresses, assAddrLst, (Ptr*)ptrOpt, 
-                    duidOpt->getDUID(),solicit->getAddr(), solicit->getIface(),
-                    REQUEST_MSG,this);
-                    //optIA_NA = new TSrvOptIA_NA(CfgMgr,AddrMgr,
-                    //          (Ptr*)ptrOpt,request->getAddr(),duidOpt->getDUID(),
-                    //			request->getIface(),addrCount,REQUEST_MSG);
-                    this->Options.append((Ptr*)optIA_NA);
-                break;
-            }
-            case OPTION_RAPID_COMMIT:
-            {
-                SmartPtr<TSrvOptRapidCommit> optRap=new TSrvOptRapidCommit(this);
-                this->Options.append((Ptr*) optRap);
-                break;
-            }
-            case OPTION_STATUS_CODE : 
-            case OPTION_SERVERID    :
-            case OPTION_PREFERENCE  :
-            case OPTION_UNICAST     :
-            case OPTION_RELAY_MSG   :
-            case OPTION_INTERFACE_ID:
-            case OPTION_RECONF_MSG  :
-            case OPTION_IAADDR      :
-                std::clog << "Invalid option type("
-                    << ptrOpt->getOptType() <<") received." << logger::endl;
-                break;
-            
-            default:
-                appendDefaultOption(ptrOpt);
-            break;
-        }
-    }    
-    appendRequestedOptions(duidOpt->getDUID(),solicit->getAddr(),solicit->getIface(),reqOpts);
-    // include our DUID
-    SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
-    this->Options.append((Ptr*)srvDUID);
 
-    delete clntFreeAddr;
+    //So if we can do something for this client at least set configuration
+    //parameters - let's do  option by option - try to answer to it
+    solicit->firstOption();
+    while ( opt = solicit->getOption() ) 
+    {
+        switch (opt->getOptType()) 
+        {
+	case OPTION_SERVERID    :
+	    this->Options.append(opt);
+	    break;
+	case OPTION_IA          : 
+	{
+	    SmartPtr<TSrvOptIA_NA> optIA_NA;
+	    optIA_NA=new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, 
+				      clntDuid, clntAddr, true, 
+				      clntIface, REQUEST_MSG,this);
+	    this->Options.append((Ptr*)optIA_NA);
+	    break;
+	}
+	case OPTION_STATUS_CODE : 
+	case OPTION_RELAY_MSG   :
+	case OPTION_PREFERENCE  :
+	case OPTION_RECONF_MSG  :
+	case OPTION_INTERFACE_ID:
+	case OPTION_IAADDR      :
+	case OPTION_UNICAST     :
+	case OPTION_RAPID_COMMIT:
+	    std::clog << "Invalid option type("
+		      <<opt->getOptType()<<") received." << logger::endl;
+	    break;
+	default:
+	    appendDefaultOption(opt);
+	    break;
+        }
+    }
+    appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
     pkt = new char[this->getSize()];
     IsDone = false;
     SmartPtr<TIPv6Addr> ptrAddr;
-    assAddrLst->first();
-    this->MRT = 330; // FIXME: 
+    this->MRT = 330; 
     this->send();
 }
+
 //Information request answer
 TSrvMsgReply::TSrvMsgReply(
     SmartPtr<TSrvIfaceMgr> ifaceMgr, 

@@ -6,12 +6,15 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptNTPServers.cpp,v 1.2 2004-03-29 18:53:08 thomson Exp $
+ * $Id: OptNTPServers.cpp,v 1.3 2004-06-17 23:53:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
  *
  */
-#include <stdlib.h>
+#include <stdlib.h>
 #ifdef LINUX
 #include <netinet/in.h>
 #endif

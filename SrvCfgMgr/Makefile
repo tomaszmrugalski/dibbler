@@ -12,7 +12,7 @@ parser: SrvParser.y SrvLexer.l
 	$(BISONPP) -l -d SrvParser.y -o SrvParser.cpp
 	echo "[FLEX   ] SrvLexer.l"
 	$(FLEX) -+ -i -L -oSrvLexer.cpp SrvLexer.l
-	@echo "[CPP    ] $(SUBDIR)/$@"
+	@echo "[CPP    ] $(SUBDIR)/SrvLexer.o"
 	$(CPP) -c $(OPTS) SrvLexer.cpp 
 
 SrvLexer.o: SrvLexer.cpp

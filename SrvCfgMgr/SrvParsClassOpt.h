@@ -59,31 +59,38 @@ public:
     void setUnicast(bool unicast);
     bool getUnicast();
     void setRapidCommit(bool rapidComm);
-	bool getRapidCommit();
-    void setMaxLeases(long maxLeases);
-	long getMaxLeases();
-    void setMaxClientLease(long maxClntLeases);
-	long getMaxClientLease();
+    bool getRapidCommit();
+
+    // leases count
+    void setClntMaxLease(long maxLeases);
+    void setClassMaxLease(long maxClntLeases);
+    void setIfaceMaxLease(long maxClntLeases);
+    long getClntMaxLease();
+    long getClassMaxLease();
+    long getIfaceMaxLease();
 
 private:
     //Ranges of T1 i T2
-	long T1Beg;
-	long T1End;
+    long T1Beg;
+    long T1End;
     long T2End;
     long T2Beg;
-	long PrefBeg;
-	long PrefEnd;
-	long ValidBeg;
-	long ValidEnd;
-	
+    long PrefBeg;
+    long PrefEnd;
+    long ValidBeg;
+    long ValidEnd;
+    
     TContainer<SmartPtr<TStationRange> > RejedClnt;
-	TContainer<SmartPtr<TStationRange> > AcceptClnt;
-	TContainer<SmartPtr<TStationRange> > Pool;
-	
-    char                Preference;
-	bool				Unicast;
-	bool				RapidCommit;
-    long                MaxLeases;
-	long                MaxClientLeases;
+    TContainer<SmartPtr<TStationRange> > AcceptClnt;
+    TContainer<SmartPtr<TStationRange> > Pool;
+    
+    char Preference;
+    bool Unicast;
+    bool RapidCommit;
+    long IfaceMaxLease;
+    long ClassMaxLease;
+    long ClntMaxLease;
+    unsigned long IfaceMaxLeases;
+ 
 };
 #endif

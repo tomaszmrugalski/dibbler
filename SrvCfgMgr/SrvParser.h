@@ -234,13 +234,14 @@ typedef
 #define	UNICAST_	277
 #define	PREFERENCE_	278
 #define	RAPID_COMMIT_	279
-#define	MAX_LEASE_	280
-#define	CLNT_MAX_LEASE_	281
-#define	STRING_	282
-#define	HEXNUMBER_	283
-#define	INTNUMBER_	284
-#define	IPV6ADDR_	285
-#define	DUID_	286
+#define	IFACE_MAX_LEASE_	280
+#define	CLASS_MAX_LEASE_	281
+#define	CLNT_MAX_LEASE_	282
+#define	STRING_	283
+#define	HEXNUMBER_	284
+#define	INTNUMBER_	285
+#define	IPV6ADDR_	286
+#define	DUID_	287
 
  /* #defines token */
 /* after #define tokens, before const tokens S5*/
@@ -307,7 +308,8 @@ static const int VALID_TIME_;
 static const int UNICAST_;
 static const int PREFERENCE_;
 static const int RAPID_COMMIT_;
-static const int MAX_LEASE_;
+static const int IFACE_MAX_LEASE_;
+static const int CLASS_MAX_LEASE_;
 static const int CLNT_MAX_LEASE_;
 static const int STRING_;
 static const int HEXNUMBER_;
@@ -340,13 +342,14 @@ static const int DUID_;
 	,UNICAST_=277
 	,PREFERENCE_=278
 	,RAPID_COMMIT_=279
-	,MAX_LEASE_=280
-	,CLNT_MAX_LEASE_=281
-	,STRING_=282
-	,HEXNUMBER_=283
-	,INTNUMBER_=284
-	,IPV6ADDR_=285
-	,DUID_=286
+	,IFACE_MAX_LEASE_=280
+	,CLASS_MAX_LEASE_=281
+	,CLNT_MAX_LEASE_=282
+	,STRING_=283
+	,HEXNUMBER_=284
+	,INTNUMBER_=285
+	,IPV6ADDR_=286
+	,DUID_=287
 
  /* enum token */
      }; /* end of enum declaration */

@@ -1,5 +1,5 @@
-#ifndef SRVCLIENTIDENTIFIER_H_HEADER_INCLUDED_C10D9EA9
-#define SRVCLIENTIDENTIFIER_H_HEADER_INCLUDED_C10D9EA9
+#ifndef SRVCLIENTIDENTIFIER_H
+#define SRVCLIENTIDENTIFIER_H
 
 #include "OptClientIdentifier.h"
 
@@ -7,10 +7,10 @@ class TOptClientIdentifier;
 
 class TSrvOptClientIdentifier : public TOptClientIdentifier
 {
-  public:
+ public:
     TSrvOptClientIdentifier( SmartPtr<TDUID> duid, TMsg* parent);
     TSrvOptClientIdentifier(char* buf, int bufsize, TMsg* parent);
-	bool doDuties();
+    bool doDuties();
 };
 
-#endif /* CLIENTIDENTIFIER_H_HEADER_INCLUDED_C10D9EA9 */
+#endif
