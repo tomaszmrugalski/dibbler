@@ -1,3 +1,4 @@
+#include <iostream>
 #include <fstream>
 #include <string>
 #include "SmartPtr.h"
@@ -5,7 +6,7 @@
 #include "ClntCfgMgr.h"
 #include "ClntCfgIface.h"
 #include "Logger.h"
-
+using namespace std;
 #include "IfaceMgr.h"
 #include "ClntIfaceMgr.h"
 
@@ -18,8 +19,8 @@
 #endif
 
 #ifdef WIN32
-#include "ClntLexer.h"
 #include "ClntParser.h"
+#include <FlexLexer.h>
 #endif
 
 TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr, 
@@ -39,36 +40,23 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
         this->copyFile(cfgFile,oldCfgFile);
     //if files differs - make copy of new config
 
-#ifdef WIN32
+#ifdef WIN32XX
     clntLexer lexer;
     clntParser parser;
-    
-    // Thomson: ParserGenerator 2.06 has switched from FILE* to ifstream*
-
-    // ParserGeneator 1.6    
     if (parser.yycreate(&lexer)) {
         lexer.yyin = fopen(cfgFile.c_str(),"r");
         if (lexer.yycreate(&parser))
             result = parser.yyparse();
     }
-    
-    // ParserGenerator 2.06
-/*    static ifstream plik(cfgFile.c_str());
-    if (parser.yycreate(&lexer)) {
-        lexer.yyin = &plik;
-        if (lexer.yycreate(&parser))
-            result = parser.yyparse();
-    }*/
 #endif
 
-#ifdef LINUX
+#ifdef WIN32
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
         std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl; 
 	this->IsDone = true;
         return;
     }
-
     yyFlexLexer lexer(&f,&clog);
     clntParser parser(&lexer);
     std::clog << logger::logDebug << "Parsing " << cfgFile << "...";
@@ -461,3 +449,9 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "</TClntCfgMgr>" << endl;
     return strum;
 }
+
+
+//yyFlexLexer::yyFlexLexer(istream *arg_yyin, ostream *arg_yyout) {
+//
+//}
+//
