@@ -1,3 +1,5 @@
-MD5 8ea3249d2c69cd2d70e4c54fce96f169 dibbler-0.3.1.ebuild 911
+MD5 5ffa85c5b9378c27c79824f9bbe32615 dibbler-0.3.1.ebuild 1596
+MD5 97c54f63da2613846008f763b27b3648 ChangeLog 304
+MD5 d4ce9ce404872e1d5e22aa6953d16418 metadata.xml 220
 MD5 d0884f6657a9788f842f6d8dea21bc93 files/digest-dibbler-0.3.1 70
-MD5 d0884f6657a9788f842f6d8dea21bc93 files/digest-dhcpv6-dibbler-0.3.1 70
+MD5 e61e7a9df41a05cdad37bac9ef97c3e9 files/dibbler-0.3.1-security.patch 6876

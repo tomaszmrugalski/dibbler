@@ -1,0 +1,218 @@
+diff -uNr dibbler.orig/ClntCfgMgr/ClntParser.cpp dibbler/ClntCfgMgr/ClntParser.cpp
+--- dibbler.orig/ClntCfgMgr/ClntParser.cpp	2004-12-08 01:13:57.000000000 +0100
++++ dibbler/ClntCfgMgr/ClntParser.cpp	2004-12-29 22:42:07.783913312 +0100
+@@ -2022,9 +2022,9 @@
+ 		       x < (sizeof(yytname) / sizeof(char *)); x++)
+ 		    if (yycheck[x + yyn] == x)
+ 		      {
+-			strcat(msg, count == 0 ? ", expecting `" : " or `");
+-			strcat(msg, yytname[x]);
+-			strcat(msg, "'");
++			strncat(msg, count == 0 ? ", expecting `" : " or `",size+15-strlen(msg));
++			strncat(msg, yytname[x], size+15-strlen(msg));
++			strncat(msg, "'", size+15-strlen(msg));
+ 			count++;
+ 		      }
+ 		}
+diff -uNr dibbler.orig/ClntIfaceMgr/ClntIfaceIface.cpp dibbler/ClntIfaceMgr/ClntIfaceIface.cpp
+--- dibbler.orig/ClntIfaceMgr/ClntIfaceIface.cpp	2004-11-02 00:31:24.000000000 +0100
++++ dibbler/ClntIfaceMgr/ClntIfaceIface.cpp	2004-12-29 22:42:07.810909208 +0100
+@@ -531,7 +531,7 @@
+     FILE *f, *fout;
+     char buf[512];
+     char fileout[512];
+-    sprintf(buf,"%s-old", filename);
++    snprintf(buf,511,"%s-old", filename);
+     unsigned int len = strlen(str);
+     bool found = false;
+ 
+diff -uNr dibbler.orig/DHCPClient.cpp dibbler/DHCPClient.cpp
+--- dibbler.orig/DHCPClient.cpp	2004-12-07 23:56:20.000000000 +0100
++++ dibbler/DHCPClient.cpp	2004-12-29 22:42:07.822907384 +0100
+@@ -62,7 +62,11 @@
+ TDHCPClient::TDHCPClient(string config)
+ {
+     serviceShutdown = 0;
+-    srand(now());
++
++    // This one is just used to delay client startup a bit, so it is not
++    // a security risk.
++    srand(now()); // Flawfinder: ignore
++
+     this->IsDone = false;
+ 
+     IfaceMgr = new TClntIfaceMgr(CLNTIFACEMGR_FILE);
+diff -uNr dibbler.orig/DHCPServer.cpp dibbler/DHCPServer.cpp
+--- dibbler.orig/DHCPServer.cpp	2004-12-07 01:45:09.000000000 +0100
++++ dibbler/DHCPServer.cpp	2004-12-29 22:42:07.824907080 +0100
+@@ -61,7 +61,11 @@
+ TDHCPServer::TDHCPServer(string config)
+ {
+     serviceShutdown = 0;
+-    srand(now());
++
++    // This one is just used to delay client startup a bit, so it is not
++    // a security risk.
++    srand(now()); // Flawfinder: ignore
++
+     this->IsDone = false;
+ 
+     this->IfaceMgr = new TSrvIfaceMgr(SRVIFACEMGR_FILE);
+diff -uNr dibbler.orig/misc/addrpack.c dibbler/misc/addrpack.c
+--- dibbler.orig/misc/addrpack.c	2004-01-14 23:03:07.000000000 +0100
++++ dibbler/misc/addrpack.c	2004-12-29 22:42:07.825906928 +0100
+@@ -134,7 +134,7 @@
+ {
+ 	char tmp[sizeof "255.255.255.255"];
+ 	sprintf(tmp,"%u.%u.%u.%u", src[0], src[1], src[2], src[3]);
+-	return strcpy(dst, tmp);
++	return strncpy(dst, tmp,15);
+ }
+ 
+ 
+@@ -206,7 +206,7 @@
+ 	    (NS_IN6ADDRSZ / NS_INT16SZ))
+ 		*tp++ = ':';
+ 	*tp++ = '\0';
+-	return strcpy(dst, tmp);
++	return strncpy(dst, tmp,48);
+ }
+ 
+ void print_packed(char * addr)
+diff -uNr dibbler.orig/misc/IPv6Addr.cpp dibbler/misc/IPv6Addr.cpp
+--- dibbler.orig/misc/IPv6Addr.cpp	2004-12-07 21:53:14.000000000 +0100
++++ dibbler/misc/IPv6Addr.cpp	2004-12-29 22:42:07.826906776 +0100
+@@ -26,7 +26,7 @@
+ 
+ TIPv6Addr::TIPv6Addr(char* addr, bool plain) {
+     if (plain) {
+-        strcpy(Plain,addr);
++        strncpy(Plain,addr,48);
+         inet_pton6(Plain,Addr);
+     } else {
+         memcpy(Addr,addr,16);
+diff -uNr dibbler.orig/port-linux/addrpack.c dibbler/port-linux/addrpack.c
+--- dibbler.orig/port-linux/addrpack.c	2004-01-14 23:03:07.000000000 +0100
++++ dibbler/port-linux/addrpack.c	2004-12-29 22:42:07.827906624 +0100
+@@ -134,7 +134,7 @@
+ {
+ 	char tmp[sizeof "255.255.255.255"];
+ 	sprintf(tmp,"%u.%u.%u.%u", src[0], src[1], src[2], src[3]);
+-	return strcpy(dst, tmp);
++	return strncpy(dst, tmp,16);
+ }
+ 
+ 
+@@ -206,7 +206,7 @@
+ 	    (NS_IN6ADDRSZ / NS_INT16SZ))
+ 		*tp++ = ':';
+ 	*tp++ = '\0';
+-	return strcpy(dst, tmp);
++	return strncpy(dst, tmp,48);
+ }
+ 
+ void print_packed(char * addr)
+diff -uNr dibbler.orig/port-linux/layer3.c dibbler/port-linux/layer3.c
+--- dibbler.orig/port-linux/layer3.c	2004-12-08 01:20:14.000000000 +0100
++++ dibbler/port-linux/layer3.c	2004-12-29 22:42:07.829906320 +0100
+@@ -171,7 +171,7 @@
+ #endif
+ 
+ 	tmp = malloc(sizeof(struct iface));
+-	snprintf(tmp->name,MAX_IFNAME_LENGTH,(char*)RTA_DATA(tb[IFLA_IFNAME]));
++	snprintf(tmp->name,MAX_IFNAME_LENGTH,"%s",(char*)RTA_DATA(tb[IFLA_IFNAME]));
+ 	tmp->id=ifi->ifi_index;
+ 	tmp->flags=ifi->ifi_flags;
+ 	tmp->next=head;
+diff -uNr dibbler.orig/port-linux/ll_map.c dibbler/port-linux/ll_map.c
+--- dibbler.orig/port-linux/ll_map.c	2004-01-14 23:03:07.000000000 +0100
++++ dibbler/port-linux/ll_map.c	2004-12-29 22:42:07.830906168 +0100
+@@ -81,7 +81,7 @@
+ 		im->alen = 0;
+ 		memset(im->addr, 0, sizeof(im->addr));
+ 	}
+-	strcpy(im->name, RTA_DATA(tb[IFLA_IFNAME]));
++	strncpy(im->name, RTA_DATA(tb[IFLA_IFNAME]), 16);
+ 	return 0;
+ }
+ 
+@@ -150,7 +150,7 @@
+ 		for (im = idxmap[i]; im; im = im->next) {
+ 			if (strcmp(im->name, name) == 0) {
+ 				icache = im->index;
+-				strcpy(ncache, name);
++				strncpy(ncache, name,16);
+ 				return im->index;
+ 			}
+ 		}
+diff -uNr dibbler.orig/port-linux/lowlevel-options-linux.c dibbler/port-linux/lowlevel-options-linux.c
+--- dibbler.orig/port-linux/lowlevel-options-linux.c	2004-11-30 01:54:25.000000000 +0100
++++ dibbler/port-linux/lowlevel-options-linux.c	2004-12-29 22:42:07.831906016 +0100
+@@ -16,7 +16,8 @@
+  */
+ 
+ #include <stdio.h>
+-#include "sys/stat.h"
++#include <sys/stat.h>
++#include <fcntl.h>
+ #include "Portable.h"
+ 
+ #define CR 0x0a
+@@ -50,6 +51,7 @@
+     FILE * f, *f2;
+     char buf[512];
+     int found=0;
++    int fildes;
+     struct stat st;
+     memset(&st,0,sizeof(st));
+     stat(RESOLVCONF_FILE, &st);
+@@ -68,7 +70,11 @@
+     fclose(f);
+     fclose(f2);
+ 
+-    chmod(RESOLVCONF_FILE, st.st_mode);
++    fildes = open(RESOLVCONF_FILE,O_RDWR);
++    if (fildes==-1)
++	return 0;
++    fchmod(fildes, st.st_mode);
++    close(fildes);
+     return 0;
+ }
+ 
+@@ -96,6 +102,7 @@
+     FILE * f, *f2;
+     char buf[512];
+     int found=0;
++    int fildes;
+     struct stat st;
+     memset(&st,0,sizeof(st));
+     stat(RESOLVCONF_FILE, &st);
+@@ -116,7 +123,11 @@
+     fclose(f);
+     fclose(f2);
+ 
+-    chmod(RESOLVCONF_FILE,st.st_mode);
++    fildes = open(RESOLVCONF_FILE,O_RDWR);
++    if (fildes==-1)
++	return 0;
++    fchmod(fildes, st.st_mode);
++    close(fildes);
+     return 0;
+ }
+ 
+diff -uNr dibbler.orig/SrvCfgMgr/SrvParser.cpp dibbler/SrvCfgMgr/SrvParser.cpp
+--- dibbler.orig/SrvCfgMgr/SrvParser.cpp	2004-12-07 01:43:03.000000000 +0100
++++ dibbler/SrvCfgMgr/SrvParser.cpp	2004-12-29 22:42:07.834905560 +0100
+@@ -1921,9 +1921,9 @@
+ 		       x < (sizeof(yytname) / sizeof(char *)); x++)
+ 		    if (yycheck[x + yyn] == x)
+ 		      {
+-			strcat(msg, count == 0 ? ", expecting `" : " or `");
+-			strcat(msg, yytname[x]);
+-			strcat(msg, "'");
++			strncat(msg, count == 0 ? ", expecting `" : " or `", size+15-strlen(msg));
++			strncat(msg, yytname[x], size+15-strlen(msg));
++			strncat(msg, "'", size+15-strlen(msg));
+ 			count++;
+ 		      }
+ 		}

@@ -1,6 +1,6 @@
-# Copyright 2004 Tomasz Mrugalski
+# Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/dibbler-0.3.1.ebuild,v 1.2 2004-12-29 01:49:35 thomson Exp $
+# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/dibbler-0.3.1.ebuild,v 1.3 2004-12-29 22:33:37 thomson Exp $
 
 inherit eutils
 
@@ -13,8 +13,9 @@ SLOT="0"
 KEYWORDS="x86"
 IUSE="latex"
 
-#USE="latex"
-USE="-latex"
+# tmrugals 2004-12-29 FIXME: repoman complains about invalid IUSE. latex and tex seem not to be working.
+# Is there any other USE tag related to the latex? If not, dibbler-user.pdf should be probably
+# ripped from http://klub.com.pl/dhcpv6/dibbler-0.3.1-doc.tar.gz 
 
 DEPEND=""
 MAKEOPTS="client server"
@@ -22,13 +23,14 @@ MAKEOPTS="client server"
 S=${WORKDIR}/${PN}
 
 src_unpack() {
-	unpack dibbler-0.3.1-src.tar.gz
+	unpack ${A}
+	epatch ${FILESDIR}/${P}-security.patch
 	cd ${S}
 }
 
 src_compile() {
 	echo "USE=${USE}"
-	use latex && MAKEOPTS="${MAKEOPTS} doc" 
+	use latex && MAKEOPTS="${MAKEOPTS} doc"
 	echo "MAKEOPTS=[${MAKEOPTS}]"
 	emake || die "Compilation failed"
 }
@@ -37,13 +39,17 @@ src_install() {
 	dosbin dibbler-server
 	dosbin dibbler-client
 	doman doc/man/dibbler-server.8 doc/man/dibbler-client.8
-	dodoc CHANGELOG RELNOTES 
+	dodoc CHANGELOG RELNOTES
 	use latex && dodoc doc/dibbler-user.pdf doc/dibber-devel.pdf
 	dodir /var/lib/dibbler
 	insinto /var/lib/dibbler
 	doins *.conf
+	dodir /etc/dibbler
+	dosym /var/lib/dibbler/client.conf /etc/dibbler/client.conf
+	dosym /var/lib/dibbler/server.conf /etc/dibbler/server.conf
 }
 
 pkg_postinst() {
-	einfo "Sample .conf files are in /var/lib/dibbler/"
+	einfo "Make sure that you modify client.conf and/or server.conf to suit your needs."
+	einfo "They are stored in /var/lib/dibbler along with some examples."
 }
