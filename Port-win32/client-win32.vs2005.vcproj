@@ -36,7 +36,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib Iphlpapi.lib libxml2.lib "
-				OutputFile="$(OutDir)/dibbler-client-win32.exe"
+				OutputFile="$(OutDir)/dibbler-client.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/DHCPClient.pdb"

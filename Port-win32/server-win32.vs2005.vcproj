@@ -35,7 +35,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib Iphlpapi.lib libxml2.lib "
-				OutputFile="$(OutDir)/dibbler-server-win32.exe"
+				OutputFile="$(OutDir)/dibbler-server.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
