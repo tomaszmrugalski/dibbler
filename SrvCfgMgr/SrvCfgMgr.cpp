@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.37 2005-03-07 23:36:14 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.38 2005-03-08 00:43:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2005/03/07 23:36:14  thomson
+ * Minor changes.
+ *
  * Revision 1.36  2005/03/07 22:45:14  thomson
  * Fixed problem with non-existent interface name (bug #105)
  *
@@ -107,6 +110,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string x
     :TCfgMgr((Ptr*)ifaceMgr)
 {
     this->IfaceMgr = ifaceMgr;
+    this->XmlFile = xmlFile;
 
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
@@ -123,7 +127,6 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string x
 
     Log(Info) << "My duid is " << this->DUID->getPlain() << "." << LogEnd;
 
-    this->XmlFile = xmlFile;
     this->dump();
 
     IsDone = false;

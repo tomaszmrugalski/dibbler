@@ -641,28 +641,25 @@
 				Name="Client Options"
 				Filter="">
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptClientIdentifier.h">
+					RelativePath="..\ClntOptions\ClntOptClientIdentifier.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptDNSServers.h">
+					RelativePath="..\ClntOptions\ClntOptDNSServers.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptDomainName.h">
+					RelativePath="..\ClntOptions\ClntOptDomainName.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptElapsed.h">
+					RelativePath="..\ClntOptions\ClntOptElapsed.h">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptFQDN.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptIAAddress.h">
+					RelativePath="..\ClntOptions\ClntOptIAAddress.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptIA_NA.h">
-				</File>
-				<File
-					RelativePath="..\sources\ClntOptions\ClntOptInterfaceID.h">
+					RelativePath="..\ClntOptions\ClntOptIA_NA.h">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptLifetime.h">
@@ -683,16 +680,13 @@
 					RelativePath="..\ClntOptions\ClntOptNTPServers.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptNTPServers.h">
+					RelativePath="..\ClntOptions\ClntOptOptionRequest.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptOptionRequest.h">
+					RelativePath="..\ClntOptions\ClntOptPreference.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptPreference.h">
-				</File>
-				<File
-					RelativePath="..\sources\ClntOptions\ClntOptRapidCommit.h">
+					RelativePath="..\ClntOptions\ClntOptRapidCommit.h">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptSIPDomain.h">
@@ -701,25 +695,25 @@
 					RelativePath="..\ClntOptions\ClntOptSIPServer.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptServerIdentifier.h">
+					RelativePath="..\ClntOptions\ClntOptServerIdentifier.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptServerUnicast.h">
+					RelativePath="..\ClntOptions\ClntOptServerUnicast.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptStatusCode.h">
+					RelativePath="..\ClntOptions\ClntOptStatusCode.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptTimeZone.h">
+					RelativePath="..\ClntOptions\ClntOptTimeZone.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptUserClass.h">
+					RelativePath="..\ClntOptions\ClntOptUserClass.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptVendorClass.h">
+					RelativePath="..\ClntOptions\ClntOptVendorClass.h">
 				</File>
 				<File
-					RelativePath="..\sources\ClntOptions\ClntOptVendorSpecInfo.h">
+					RelativePath="..\ClntOptions\ClntOptVendorSpecInfo.h">
 				</File>
 			</Filter>
 			<Filter

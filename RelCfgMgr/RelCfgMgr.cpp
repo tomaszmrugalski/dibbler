@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.4 2005-02-01 00:57:36 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.5 2005-03-08 00:43:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.3  2005/01/24 00:42:57  thomson
  * no message
  *
@@ -42,6 +45,7 @@ TRelCfgMgr::TRelCfgMgr(TCtx ctx, string cfgFile, string xmlFile)
     :TCfgMgr(ctx.IfaceMgr)
 {
     this->Ctx = ctx;
+    this->XmlFile = xmlFile;
 
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
@@ -49,7 +53,6 @@ TRelCfgMgr::TRelCfgMgr(TCtx ctx, string cfgFile, string xmlFile)
 	return;
     }
 
-    this->XmlFile = xmlFile;
     this->dump();
     this->IsDone = false;
 }

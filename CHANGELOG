@@ -2,7 +2,9 @@
   Dibbler changelog
  ------------------- 
 
- 0.4.0 [NOT-RELEASED-YET]
+ 0.4.0-RC2 [2005-03-08]
+  - Domain List option is now properly built and parsed (bug #104)
+  - Srv/Clnt/Relay no longer crash when invalid interface is specified (bug #105)
   - Server stateless mode fixed (bug #103)
   - /etc/init.d scripts are provided for Debian,PLD and Gentoo (bug #94, #95)
 

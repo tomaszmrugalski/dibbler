@@ -1,13 +1,15 @@
 
-  Dibbler 0.4.0-RC1 release notes [2005-02-03]
+  Dibbler 0.4.0-RC2 release notes [2005-03-08]
  ------------------------------------------
 
- This version is the first one with relay support. Server supports relays. 
- Stand alone relay is also available. Although I have spent many hours 
- testing this and everything worked fine, I cannot guarantee that this will 
- work for you. 
+ This version is the second release candidate for 0.4.0 - a first version with 
+ relay support. Server supports relays. Stand alone relay is also available. 
+ Although I have spent many hours testing this and everything worked fine, I 
+ cannot guarantee that this will work for you. 
 
  Duplicate Address Detection does not work under Windows XP/2003. 
+
+ Special thanks to Bernie Volz for reporting those two bugs.
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 

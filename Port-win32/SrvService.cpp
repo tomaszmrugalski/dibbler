@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: SrvService.cpp,v 1.14 2005-02-01 22:39:20 thomson Exp $
+ * $Id: SrvService.cpp,v 1.15 2005-03-08 00:43:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
  * Revision 1.13  2005/02/01 01:10:29  thomson
  * Files update.
  *
@@ -141,7 +144,7 @@ void TSrvService::Run()
     
     TDHCPServer server(confile);
     ptr = &server; // remember address
-    server.setWorkdir(workdir);
+    server.setWorkdir(this->ServiceDir);
     
     if (!server.isDone())
 	server.run();
