@@ -30,11 +30,13 @@
 // **********************************************************************
 
 #define CLNTCFGMGR_FILE "client-CfgMgr.xml"
-#define SRVDUID_FILE	"server-duid"
 #define CLNTDUID_FILE	"client-duid"
 #define CLNTLOG_FILE	"client.log"
-#define SRVLOG_FILE	    "server.log"
 #define CLNTDB_FILE		"client-addrdb.xml"
+
+#define SRVCFGMGR_FILE  "server-CfgMgr.xml"
+#define SRVDUID_FILE	"server-duid"
+#define SRVLOG_FILE	    "server.log"
 #define SRVDB_FILE      "server-addrdb.xml"
 
 #ifdef WIN32

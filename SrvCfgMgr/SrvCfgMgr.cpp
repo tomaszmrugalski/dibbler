@@ -36,19 +36,7 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
 	this->copyFile(cfgFile,oldCfgFile);
     //if files differs - make copy of new config
 
-#ifdef WIN32
-    SrvLexer lexer;
-    SrvParser parser;
-    
-    if (parser.yycreate(&lexer)) {
-	lexer.yyin = fopen(cfgFile.c_str(),"r");
-	if (lexer.yycreate(&parser))
-	    result = parser.yyparse();
-    }
-
-#endif
-
-#ifdef LINUX
+	// this code is common to Linux and WIN32
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {
 	std::clog << logger::logCrit << "Unable to open " << cfgFile << " file." << logger::endl;
@@ -58,9 +46,8 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
     result = parser.yyparse();
-
     f.close();
-#endif
+	// this code is common to Linux and WIN32
 
     if (result) {
 	clog << "config error" << logger::endl;
@@ -160,6 +147,11 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string o
         std::clog<<logger::logCrit
 		 <<"Cannot generate DUID, because there is no appropriate interface" << logger::endl;
     }
+
+    std::ofstream xmlDump;
+    xmlDump.open(SRVCFGMGR_FILE);
+    xmlDump << *this;
+    xmlDump.close();
 
     IsDone = false;
 }
@@ -344,4 +336,11 @@ bool TSrvCfgMgr::checkConfigConsistency()
         }
     }
     return true;
+}
+
+ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
+	out << "<SrvCfgMgr>" << std::endl;
+
+	out << "</SrvCfgMgr>" << std::endl;
+	return out;
 }
