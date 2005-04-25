@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.h,v 1.2 2005-01-11 23:35:22 thomson Exp $
+ * $Id: RelIfaceMgr.h,v 1.3 2005-04-25 00:19:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/01/11 23:35:22  thomson
+ * *** empty log message ***
+ *
  * Revision 1.1  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -30,13 +33,19 @@ class TRelIfaceMgr: public TIfaceMgr {
     ~TRelIfaceMgr();
     friend ostream & operator <<(ostream & strum, TRelIfaceMgr &x);
 
-    SmartPtr<TRelMsg> decodeRelayRepl(SmartPtr<TIfaceIface> iface, 
-				      SmartPtr<TIPv6Addr> peer, 
-				      char * buf, int bufsize);
     SmartPtr<TRelMsg> decodeMsg(SmartPtr<TIfaceIface> iface, 
 				SmartPtr<TIPv6Addr> peer, 
 				char * buf, int bufsize);
-    
+
+    SmartPtr<TRelMsg> decodeRelayRepl(SmartPtr<TIfaceIface> iface, 
+				      SmartPtr<TIPv6Addr> peer, 
+				      char * buf, int bufsize);
+    SmartPtr<TRelMsg> decodeRelayForw(SmartPtr<TIfaceIface> iface, 
+				      SmartPtr<TIPv6Addr> peer, 
+				      char * buf, int bufsize);
+    SmartPtr<TRelMsg> decodeGeneric(SmartPtr<TIfaceIface> iface, 
+				    SmartPtr<TIPv6Addr> peer, 
+				    char * buf, int bufsize);
     void dump();
     
     // ---sends messages---

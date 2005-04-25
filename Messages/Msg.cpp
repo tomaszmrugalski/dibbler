@@ -14,9 +14,11 @@
 
 TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 {
-    unsigned char * buf2 = (unsigned char *)(buf+1);
     setAttribs(iface, addr, 0, 0);
+    if (bufSize<4)
+	return;
     this->MsgType=buf[0];
+    unsigned char * buf2 = (unsigned char *)(buf+1);
     this->TransID= ((long)buf2[0])<<16 | ((long)buf2[1])<<8 | (long)buf2[2];
     buf+=4; bufSize-=4;
 }

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.4 2005-01-23 23:17:53 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.5 2005-04-25 00:19:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
  * Revision 1.3  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -28,6 +31,7 @@
 #include "SocketIPv6.h"
 #include "RelIfaceMgr.h"
 #include "RelMsgGeneric.h"
+#include "RelMsgRelayForw.h"
 #include "RelOptInterfaceID.h"
 
 /*
@@ -117,34 +121,32 @@ SmartPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 	sock = iface->getSocketByFD(sockid);
 
 	Log(Debug) << "Received " << dataLen << " bytes on the " << iface->getName() << "/" 
-		   << iface->getID() << " interface (socket=" << sockid << ", addr=" << *peer << ", port=" 
-		   << sock->getPort() << ")." << LogEnd;
+		   << iface->getID() << " interface (socket=" << sockid << ", addr=" << peer->getPlain() 
+		   << ", port=" << sock->getPort() << ")." << LogEnd;
 	
 	if (sock->getPort()!=DHCPSERVER_PORT) {
 	    Log(Error) << "Message was received on invalid (" << sock->getPort() << ") port." << LogEnd;
 	    return 0;
 	}
 
-	// create specific message object
-	switch (msgtype) {
-	case SOLICIT_MSG:
-	case REQUEST_MSG:
-	case CONFIRM_MSG:
-	case RENEW_MSG:
-	case REBIND_MSG:
-	case RELEASE_MSG:
-	case DECLINE_MSG:
-	case INFORMATION_REQUEST_MSG:
-	case ADVERTISE_MSG:
-	case REPLY_MSG:
-	case RECONFIGURE_MSG:
-	case RELAY_FORW_MSG: 
-	    return this->decodeMsg(iface, peer, data, dataLen);
-	case RELAY_REPL_MSG:
-	    return this->decodeRelayRepl(iface, peer, data, dataLen);
-	}
+	return this->decodeMsg(iface, peer, data, dataLen);
     } 
     return 0;
+}
+
+SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SmartPtr<TIfaceIface> iface, 
+						SmartPtr<TIPv6Addr> peer, 
+						char * data, int dataLen) {
+    int ifindex = iface->getID();
+    SmartPtr<TRelMsg> msg = new TRelMsgRelayForw(this->Ctx, ifindex, peer, data, dataLen);
+    return msg;
+}
+
+SmartPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SmartPtr<TIfaceIface> iface, 
+					      SmartPtr<TIPv6Addr> peer, 
+					      char * buf, int bufsize) {
+    int ifindex = iface->getID();
+    return new TRelMsgGeneric(this->Ctx, ifindex, peer, buf, bufsize);
 }
 
 SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface, 
@@ -157,7 +159,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     while (bufsize>0 && buf[0]==RELAY_REPL_MSG) {
 	/* decode RELAY_FORW message */
 	if (bufsize < 34) {
-	    Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
+	    Log(Warning) << "Truncated RELAY_REPL message received." << LogEnd;
 	    return 0;
 	}
 
@@ -178,7 +180,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	    switch (code) {
 	    case OPTION_INTERFACE_ID:
 		if (bufsize<8) {
-		    Log(Warning) << "Truncated INTERFACE_ID option in RELAY_FORW message. Message dropped." << LogEnd;
+		    Log(Warning) << "Truncated INTERFACE_ID option in RELAY_REPL message. Message dropped." << LogEnd;
 		    return 0;
 		}
 		ptrIfaceID = new TRelOptInterfaceID(buf, bufsize, 0);
@@ -195,7 +197,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	    }
 	}
 
-	Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
+	Log(Info) << "RELAY_REPL was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
 	if (ptrIfaceID)
 	    Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue();
 	Log(Cont) << LogEnd;
@@ -208,22 +210,43 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     }
 
     // now switch to relay interface
-
     SmartPtr<TRelMsg> msg = this->decodeMsg(iface, peer, buf, bufsize);
 
     // inform that this message should be sent to the peerAddr address on the ptrIface interface.
-
     msg->setDestination(ptrIfaceID->getValue(), peerAddr);
     return (Ptr*)msg;
 }
 
 SmartPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SmartPtr<TIfaceIface> iface, 
 					  SmartPtr<TIPv6Addr> peer, 
-					  char * buf, int bufsize) {
-    int ifindex = iface->getID();
-    return new TRelMsgGeneric(this->Ctx, ifindex, peer, buf, bufsize);
-    return 0;
+					  char * data, int dataLen) {
+    if (dataLen <= 0) 
+	return 0;
+    
+    // create specific message object
+    switch (data[0]) {
+    case SOLICIT_MSG:
+    case REQUEST_MSG:
+    case CONFIRM_MSG:
+    case RENEW_MSG:
+    case REBIND_MSG:
+    case RELEASE_MSG:
+    case DECLINE_MSG:
+    case INFORMATION_REQUEST_MSG:
+    case ADVERTISE_MSG:
+    case REPLY_MSG:
+	return this->decodeGeneric(iface, peer, data, dataLen);
+    case RELAY_FORW_MSG: 
+	return this->decodeRelayForw(iface, peer, data, dataLen);
+    case RELAY_REPL_MSG:
+	return this->decodeRelayRepl(iface, peer, data, dataLen);
+    case RECONFIGURE_MSG:
+    default:
+	Log(Warning) << "Message type " << (int)(data[0]) << " is not supported." << LogEnd;
+	return 0;
+    }
 }
+
 
 ostream & operator <<(ostream & strum, TRelIfaceMgr &x) {
     strum << "<RelIfaceMgr>" << std::endl;

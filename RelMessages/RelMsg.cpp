@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelMsg.cpp,v 1.3 2005-01-13 22:45:55 thomson Exp $
+ * $Id: RelMsg.cpp,v 1.4 2005-04-25 00:19:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.2  2005/01/11 23:35:22  thomson
  * *** empty log message ***
  *
@@ -39,7 +42,10 @@ TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  
     // data+=4, dataLen-=4 is modified in TMsg
     if (dataLen<=0) // avoid decoding of empty messages.
 	return;
+    this->decodeOpts(data, dataLen);
+}
 
+void TRelMsg::decodeOpts(char * data, int dataLen) {
     int pos=0;
     while (pos<dataLen)	{
         short code = ntohs( * ((short*) (data+pos)));
@@ -79,7 +85,6 @@ TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  
 	    Log(Warning) << "Option " << code << " is invalid. Option ignored." << LogEnd;
         pos+=length;
     }
-
 }
 
 void TRelMsg::setDestination(int iface, SmartPtr<TIPv6Addr> dest) {
@@ -93,4 +98,8 @@ int TRelMsg::getDestIface() {
 
 SmartPtr<TIPv6Addr> TRelMsg::getDestAddr() {
     return this->DestAddr;
+}
+
+int TRelMsg::getHopCount() {
+    return this->HopCount;
 }

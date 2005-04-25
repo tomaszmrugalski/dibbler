@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.4 2005-01-24 00:42:57 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.5 2005-04-25 00:19:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/24 00:42:57  thomson
+ * no message
+ *
  * Revision 1.3  2005/01/23 23:17:53  thomson
  * Relay/global address support related improvements.
  *
@@ -116,6 +119,10 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     if (msg->getDestAddr()) {
 	this->relayMsgRepl(msg);
 	return;
+    }
+
+    if (msg->getType() == RELAY_FORW_MSG) {
+	hopCount = msg->getHopCount();
     }
 
     // prepare message
