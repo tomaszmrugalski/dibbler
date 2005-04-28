@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelMsg.h,v 1.4 2005-04-25 00:19:20 thomson Exp $
+ * $Id: RelMsg.h,v 1.5 2005-04-28 21:20:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/04/25 00:19:20  thomson
+ * Changes in progress.
+ *
  * Revision 1.3  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -33,6 +36,7 @@ class TRelMsg : public TMsg
 public:
     TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  int dataLen);
     virtual bool check() = 0;
+    virtual int getSize() = 0;
     void setDestination(int ifindex, SmartPtr<TIPv6Addr> dest);
     int getDestIface();
     SmartPtr<TIPv6Addr> getDestAddr();

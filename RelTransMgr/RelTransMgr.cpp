@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.5 2005-04-25 00:19:20 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.6 2005-04-28 21:20:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/04/25 00:19:20  thomson
+ * Changes in progress.
+ *
  * Revision 1.4  2005/01/24 00:42:57  thomson
  * no message
  *
@@ -122,7 +125,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     }
 
     if (msg->getType() == RELAY_FORW_MSG) {
-	hopCount = msg->getHopCount();
+	hopCount = msg->getHopCount()+1;
     }
 
     // prepare message

@@ -21,7 +21,7 @@ class TMsg
     // used to create TMsg object based on received char[] data
     TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
     
-    int getSize();
+    virtual int getSize();
     
     // trasnmit (or retransmit)
 
