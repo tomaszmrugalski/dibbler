@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.21 2005-01-23 23:17:53 thomson Exp $
+ * $Id: layer3.c,v 1.22 2005-04-28 20:33:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
  * Revision 1.20  2004/12/08 00:20:14  thomson
  * LOWDEBUG printing added, code identiation.
  *
@@ -257,7 +260,8 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 	    if (!rta_tb[IFA_ADDRESS]) rta_tb[IFA_ADDRESS] = rta_tb[IFA_LOCAL];
 	    
 	    memcpy(addr,(char*)RTA_DATA(rta_tb[IFLA_ADDRESS]),16);
-	    if (addr[0]==0xfe || addr[1]==0x80) {
+	    if ( (addr[0]==0xfe && addr[1]==0x80) || /* link local */
+		 (addr[0]==0xff) ) { /* multicast */
 		continue; // ignore non link-scoped addrs
 	    }
 	    
