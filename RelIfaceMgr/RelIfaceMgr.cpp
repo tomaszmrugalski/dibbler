@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.5 2005-04-25 00:19:20 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.6 2005-04-29 00:34:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/04/25 00:19:20  thomson
+ * Changes in progress.
+ *
  * Revision 1.4  2005/01/23 23:17:53  thomson
  * Relay/global address support related improvements.
  *
@@ -152,9 +155,13 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SmartPtr<TIfaceIface> iface,
 SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface, 
 						SmartPtr<TIPv6Addr> peer, 
 						char * buf, int bufsize) {
-    SmartPtr<TIPv6Addr> peerAddr;
+    SmartPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
+    SmartPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
+    SmartPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
+    int hopTbl[HOP_COUNT_LIMIT];
     SmartPtr<TRelOptInterfaceID> ptrIfaceID;
     bool relay;
+    int relays=0;
 
     while (bufsize>0 && buf[0]==RELAY_REPL_MSG) {
 	/* decode RELAY_FORW message */
@@ -164,9 +171,9 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	}
 
 	// char type = buf[0];    // ignore it
-	// int hopCount = buf[1]; // this one is not currently needed either
+	int hopCount = buf[1]; // this one is not currently needed either
 	SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
-	peerAddr = new TIPv6Addr(buf+18, false);
+	SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
 	buf+=34;
 	bufsize-=34;
 
@@ -196,6 +203,12 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 		bufsize -= len;
 	    }
 	}
+
+	linkAddrTbl[relays] = linkAddr;
+	peerAddrTbl[relays] = peerAddr;
+	interfaceIDTbl[relays] = ptrIfaceID;
+	hopTbl[relays] = hopCount;
+	relays++;
 
 	Log(Info) << "RELAY_REPL was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
 	if (ptrIfaceID)
