@@ -198,7 +198,7 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int in
     }
 
     SmartPtr<TSrvIfaceIface> relay = new TSrvIfaceIface((const char*)name.c_str(), ifindex, 
-							0,   // flags
+							IF_UP | IF_RUNNING | IF_MULTICAST,   // flags
 							0,   // MAC
 							0,   // MAC length
 							0,0, // link address
@@ -300,7 +300,10 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
     // now switch to relay interface
 
     SmartPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, buf, bufsize);
-    msg->addRelayInfo(linkAddrTbl[0], peerAddrTbl[0], hopTbl[0], interfaceIDTbl[0]);
+    for (int i=0; i<relays; i++) {
+	Log(Debug) << "### Storing relay info.\n" << LogEnd;
+	msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i]);
+    }
     return (Ptr*)msg;
  }
 

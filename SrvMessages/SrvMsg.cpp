@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.12 2005-02-07 20:51:56 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.13 2005-04-29 00:08:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/02/07 20:51:56  thomson
+ * Server stateless mode fixed (bug #103)
+ *
  * Revision 1.11  2005/01/30 23:12:28  thomson
  * *** empty log message ***
  *
@@ -276,7 +279,7 @@ void TSrvMsg::send()
     this->firstOption();
     while (ptrOpt = this->getOption() )
         Log(Cont) << " " << ptrOpt->getOptType();
-    Log(Cont) << ", " << this->Relays << " relays." << LogEnd;
+    Log(Cont) << ", " << this->Relays << " relay(s)." << LogEnd;
 
     port = DHCPCLIENT_PORT;
     if (this->Relays>0) {

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-server.cpp,v 1.14 2005-02-03 22:06:40 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.15 2005-04-29 00:08:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2005/02/03 22:06:40  thomson
+ * Linux startup/pid checking changed.
+ *
  * Revision 1.13  2005/02/03 20:09:11  thomson
  * *** empty log message ***
  *
@@ -110,6 +113,8 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
+
+    unlink("/var/lib/dibbler/server.pid");
 
     logStart("(SERVER)", "Server", SRVLOG_FILE);
 

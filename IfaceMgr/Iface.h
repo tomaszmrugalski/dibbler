@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.11 2005-01-23 23:17:53 thomson Exp $
+ * $Id: Iface.h,v 1.12 2005-04-29 00:08:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
  * Revision 1.10  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -80,6 +83,7 @@ class TIfaceIface{
     void firstSocket();
     SmartPtr <TIfaceSocket> getSocketByFD(int fd);
     SmartPtr <TIfaceSocket> getSocket();
+    SmartPtr<TIfaceSocket> getSocketByAddr(SmartPtr<TIPv6Addr> addr);
     int countSocket();
 
     ~TIfaceIface();

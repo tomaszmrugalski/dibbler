@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.25 2005-02-01 00:57:36 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.26 2005-04-29 00:08:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.24  2005/01/12 00:10:05  thomson
  * Compilation fixes.
  *
@@ -115,30 +118,25 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
 	}
     } 
 
+    char srvAddr[16];
     if (!confIface->isRelay()) {
-	/* multicast */
-	char srvAddr[16];
 	inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
-	SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
-
-	Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName() 
-		    << "/" << confIface->getID() << " interface." << LogEnd;
-	if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true, false)) {
-	    Log(Crit) << "Proper socket creation failed." << LogEnd;
-	    return false;
-	}
     } else {
-	char srvAddr[16];
 	inet_pton6(ALL_DHCP_SERVERS,srvAddr);
-	SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
-	
-	Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName() 
-		    << "/" << confIface->getID() << " (" << iface->getName() << "/" 
-		    << iface->getID() << ") interface." << LogEnd;
-	if (!iface->addSocket( ipAddr, DHCPSERVER_PORT, true, false)) {
-	    Log(Crit) << "Proper socket creation failed." << LogEnd;
-	    return false;
-	}
+    }
+
+    SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
+    Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName() 
+		<< "/" << confIface->getID() << " (" << iface->getName() << "/" 
+		<< iface->getID() << ") interface." << LogEnd;
+    if (iface->getSocketByAddr(ipAddr)) {
+	Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the " 
+		    << iface->getName() << "." << LogEnd;
+	return true;
+    } ;
+    if (!iface->addSocket(ipAddr, DHCPSERVER_PORT, true, false)) {
+	Log(Crit) << "Proper socket creation failed." << LogEnd;
+	return false;
     }
     return true;
 }

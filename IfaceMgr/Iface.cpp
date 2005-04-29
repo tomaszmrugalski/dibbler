@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.17 2005-01-23 23:17:53 thomson Exp $
+ * $Id: Iface.cpp,v 1.18 2005-04-29 00:08:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
  * Revision 1.16  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -328,6 +331,17 @@ TIfaceIface::~TIfaceIface() {
 	delete this->LLAddr;
     }
 }
+
+SmartPtr<TIfaceSocket> TIfaceIface::getSocketByAddr(SmartPtr<TIPv6Addr> addr) {
+    SmartPtr<TIfaceSocket> ptr;
+    SocketsLst.first();
+    while ( ptr = SocketsLst.get() ) {
+	if ( *ptr->getAddr()==*addr )
+	    return ptr;
+    }
+    return 0; // NULL
+}
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
