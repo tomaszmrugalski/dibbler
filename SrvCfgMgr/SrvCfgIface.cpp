@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.16 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.17 2005-05-02 21:48:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.15  2005/01/03 21:57:08  thomson
  * Relay support added.
  *
@@ -32,6 +35,7 @@
  *                                                                           
  */
 
+#include <sstream>
 #include "SrvCfgIface.h"
 #include "SrvCfgAddrClass.h"
 #include "Logger.h"
@@ -103,6 +107,14 @@ int TSrvCfgIface::getID() {
 
 string TSrvCfgIface::getName() {
 	return this->Name;
+}
+
+string TSrvCfgIface::getFullName() {
+    ostringstream oss;
+    oss << this->ID;
+    return string(this->Name)
+	+"/"
+	+oss.str();
 }
 
 SmartPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {

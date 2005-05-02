@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.9 2005-01-03 21:57:08 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.10 2005-05-02 21:48:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/01/03 21:57:08  thomson
+ * Relay support added.
+ *
  * Revision 1.8  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -48,6 +51,7 @@ public:
     void setID(int ifaceID);
     int	getID();
     string getName();
+    string getFullName();
 
     void addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass);
     void firstAddrClass();
