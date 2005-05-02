@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.7 2005-05-02 20:58:13 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.8 2005-05-02 21:20:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/05/02 20:58:13  thomson
+ * Support for multiple relays added. (bug #107)
+ *
  * Revision 1.6  2005/04/28 21:20:52  thomson
  * Support for multiple relays added.
  *
@@ -198,6 +201,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 }	
 
 void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
+    int port;
     SmartPtr<TRelCfgIface> cfgIface = this->Ctx->CfgMgr->getIfaceByInterfaceID(msg->getDestIface());
     if (!cfgIface) {
 	Log(Error) << "Unable to relay message: Invalid interfaceID value:" << msg->getDestIface() << LogEnd;
@@ -216,10 +220,14 @@ void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
     }
 
     bufLen = msg->storeSelf(buf);
+    if (msg->getType() == RELAY_REPL_MSG)
+	port = DHCPSERVER_PORT;
+    else
+	port = DHCPCLIENT_PORT;
     Log(Notice) << "Relaying " << msg->getName() << " message on the " << iface->getFullName()
-		<< " interface to the " << addr->getPlain() << "." << LogEnd;
+		<< " interface to the " << addr->getPlain() << ", port " << port << "." << LogEnd;
 
-    if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, DHCPSERVER_PORT)) {
+    if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, DHCPCLIENT_PORT)) {
 	Log(Error) << "### Unable to send data." << LogEnd;
     }
     
