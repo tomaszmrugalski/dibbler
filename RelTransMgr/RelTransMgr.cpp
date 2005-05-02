@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.8 2005-05-02 21:20:34 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.9 2005-05-02 21:52:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/05/02 21:20:34  thomson
+ * Issues with invalid port usage have been fixed.
+ *
  * Revision 1.7  2005/05/02 20:58:13  thomson
  * Support for multiple relays added. (bug #107)
  *
@@ -179,7 +182,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 
 	    if (!this->Ctx->IfaceMgr->send(
 		    cfgIface->getID(), buf, offset+bufLen, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
-		Log(Error) << "### Unable to send data." << LogEnd;
+		Log(Error) << "Failed to send data." << LogEnd;
 	    }
 					   
 	}
@@ -189,13 +192,11 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 			<< " interface to multicast (" << addr->getPlain() << ") address." << LogEnd;
 	    if (!this->Ctx->IfaceMgr->send(
 		    cfgIface->getID(), buf, offset+bufLen, addr, DHCPSERVER_PORT)) {
-		Log(Error) << "### Unable to send data." << LogEnd;
+		Log(Error) << "Failed to send data." << LogEnd;
 	    }
 	}
     }
 
-    // FIXME:
-    
     // save DB state regardless of action taken
     this->Ctx->CfgMgr->dump();
 }	
@@ -228,7 +229,7 @@ void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
 		<< " interface to the " << addr->getPlain() << ", port " << port << "." << LogEnd;
 
     if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, DHCPCLIENT_PORT)) {
-	Log(Error) << "### Unable to send data." << LogEnd;
+	Log(Error) << "Failed to send data." << LogEnd;
     }
     
 }

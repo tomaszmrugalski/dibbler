@@ -301,7 +301,6 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 
     SmartPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, buf, bufsize);
     for (int i=0; i<relays; i++) {
-	Log(Debug) << "### Storing relay info.\n" << LogEnd;
 	msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i]);
     }
     return (Ptr*)msg;

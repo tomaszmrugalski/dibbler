@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelMsgRelayForw.cpp,v 1.4 2005-05-02 20:58:13 thomson Exp $
+ * $Id: RelMsgRelayForw.cpp,v 1.5 2005-05-02 21:52:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/05/02 20:58:13  thomson
+ * Support for multiple relays added. (bug #107)
+ *
  * Revision 1.3  2005/04/28 21:20:52  thomson
  * Support for multiple relays added.
  *
@@ -46,8 +49,8 @@ TRelMsgRelayForw::TRelMsgRelayForw(TCtx * ctx, int iface, SmartPtr<TIPv6Addr> ad
 
     this->LinkAddr = new TIPv6Addr(data+2, false);
     this->PeerAddr = new TIPv6Addr(data+18, false);
-    Log(Debug) << "### link=" << LinkAddr->getPlain() << " peer=" << PeerAddr->getPlain() << " hopCount=" 
-	       << this->HopCount << LogEnd;
+    Log(Debug) << "Relaying RELAY_FORW with link:" << LinkAddr->getPlain() << ", peer:" << PeerAddr->getPlain() 
+               << " and  hop count:" << this->HopCount << "." << LogEnd;
     data    += 34;
     dataLen -= 34;
 
