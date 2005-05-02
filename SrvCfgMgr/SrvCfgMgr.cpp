@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.38 2005-03-08 00:43:48 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.39 2005-05-02 21:49:23 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.38  2005/03/08 00:43:48  thomson
+ * 0.4.0-RC2 release.
+ *
  * Revision 1.37  2005/03/07 23:36:14  thomson
  * Minor changes.
  *
@@ -408,15 +411,24 @@ bool TSrvCfgMgr::validateConfig() {
 
 bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
 {
+    bool dummyRelay = false;
+    SmartPtr<TSrvIfaceIface> iface = (Ptr*)this->IfaceMgr->getIfaceByID(ptrIface->getID());
+    if (iface && ptrIface->isRelay() && iface->getRelayCnt())
+	dummyRelay = true;
+
     if (ptrIface->countAddrClass() && this->stateless()) {
-	Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
+	Log(Crit) << "Config problem: Interface " << ptrIface->getFullName() 
 		  << ": Class definitions present, but stateless mode set." << LogEnd;
 	return false;
     }
     if (!ptrIface->countAddrClass() && !this->stateless()) {
-	Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
-		  << ": No class definitions present, but stateless mode not set." << LogEnd;
-	return false;
+	if (!dummyRelay) {
+	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
+		      << ": No class definitions present, but stateless mode not set." << LogEnd;
+	    return false;
+	} else {
+	    Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface." << LogEnd;
+	}
     }
 
     SmartPtr<TSrvCfgAddrClass> ptrClass;
@@ -441,17 +453,17 @@ bool TSrvCfgMgr::validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfg
     
     if ( ptrClass->getPref(0) > ptrClass->getValid(0x7fffffff) )
     {
-	Log(Crit) << "Prefered time upper bound " <<ptrClass->getPref(0x7fffffff)
-		  << " can't be lower than valid time lower bound " << ptrClass->getValid(0)
-		  << "on the "<<ptrIface->getName()<<"/"
+	Log(Crit) << "Prefered time max value (" <<ptrClass->getPref(0x7fffffff)
+		  << ") can't be lower than valid time min. value (" << ptrClass->getValid(0)
+		  << ") on the " << ptrIface->getName() << "/"
 		  << ptrIface->getID() << " interface." << LogEnd;
 	return false;
     }
     if ( ptrClass->getT1(0)>ptrClass->getT2(0x7fffffff) )
     {
-	Log(Crit) << "T2 timeout upper bound:" <<ptrClass->getPref(0x7fffffff)
-		  << " can't be lower than T2 lower bound:" << ptrClass->getT2(0)
-		  << "on the "<<ptrIface->getName()<<"/"
+	Log(Crit) << "T1 timeout upper bound (" <<ptrClass->getPref(0x7fffffff)
+		  << " can't be lower than T2 lower bound (" << ptrClass->getT2(0)
+		  << ") on the "<<ptrIface->getName()<<"/"
 		  << ptrIface->getID() << " interface." << LogEnd;
 	return false;
     }
