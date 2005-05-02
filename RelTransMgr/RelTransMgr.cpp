@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.6 2005-04-28 21:20:52 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.7 2005-05-02 20:58:13 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/04/28 21:20:52  thomson
+ * Support for multiple relays added.
+ *
  * Revision 1.5  2005/04/25 00:19:20  thomson
  * Changes in progress.
  *
@@ -216,9 +219,7 @@ void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
     Log(Notice) << "Relaying " << msg->getName() << " message on the " << iface->getFullName()
 		<< " interface to the " << addr->getPlain() << "." << LogEnd;
 
-    // FIXME: if this is a RELAY_REPL (one RELAY_REPL was already decapsulated, so this would be
-    // SOMETHING in RELAY_REPL in RELAY_REPL) DHCPSERVER_PORT should be used instead
-    if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, DHCPCLIENT_PORT)) {
+    if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, DHCPSERVER_PORT)) {
 	Log(Error) << "### Unable to send data." << LogEnd;
     }
     

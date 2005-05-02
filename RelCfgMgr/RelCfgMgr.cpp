@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.5 2005-03-08 00:43:48 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.6 2005-05-02 20:58:13 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/03/08 00:43:48  thomson
+ * 0.4.0-RC2 release.
+ *
  * Revision 1.4  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -239,7 +242,7 @@ SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) {
 	if ( ptrIface->getInterfaceID()==iface )
 	    return ptrIface;
     }
-    Log(Error) << "There is not interface with interfaceID=" << iface 
+    Log(Error) << "There is no interface with interfaceID=" << iface 
 	       << " in the CfgMgr." << LogEnd;
     return 0; // NULL
 }
