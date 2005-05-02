@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.7 2005-05-02 20:58:13 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.8 2005-05-02 21:08:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/05/02 20:58:13  thomson
+ * Support for multiple relays added. (bug #107)
+ *
  * Revision 1.6  2005/04/29 00:34:16  thomson
  * *** empty log message ***
  *
@@ -161,7 +164,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 						char * buf, int bufsize) {
     SmartPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
     SmartPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
+    SmartPtr<TRelOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
     SmartPtr<TRelOptInterfaceID> ptrIfaceID;
     bool relay;
@@ -199,21 +202,10 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	    relay = true;
 	    break;
 	default:
-	    Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Message dropped.\n" << LogEnd;
-	    }
-	if (!relay) { // check next option
-	    buf     += len;
-	    bufsize -= len;
+	    Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Message dropped." << LogEnd;
 	}
-	ptrIfaceID = new TRelOptInterfaceID(buf, bufsize, 0);
-	break;
-    case OPTION_RELAY_MSG:
-	relay = true;
-	break;
-    default:
-	Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Message dropped." << LogEnd;
     }
-    
+
     linkAddrTbl[relays] = linkAddr;
     peerAddrTbl[relays] = peerAddr;
     interfaceIDTbl[relays] = ptrIfaceID;
