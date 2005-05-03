@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.9 2005-05-02 21:52:39 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.10 2005-05-03 15:36:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/05/02 21:52:39  thomson
+ * Logging cleanup.
+ *
  * Revision 1.8  2005/05/02 21:20:34  thomson
  * Issues with invalid port usage have been fixed.
  *
@@ -79,9 +82,14 @@ bool TRelTransMgr::openSocket(SmartPtr<TRelCfgIface> cfgIface) {
     SmartPtr<TIPv6Addr> addr;
 
     if (cfgIface->getServerMulticast() || srvUnicast) {
-	// FIXME: global or site-scoped address should be used
-	iface->firstLLAddress();
-	addr = new TIPv6Addr(iface->getLLAddress());
+
+	addr = iface->getGlobalAddr();
+	if (!addr) {
+	    Log(Warning) << "No global address defined on the " << iface->getFullName() << " interface."
+			 << " Trying to bind link local address, but expect troubles with relaying." << LogEnd;
+	    iface->firstLLAddress();
+	    addr = new TIPv6Addr(iface->getLLAddress());
+	}
 	Log(Notice) << "Creating srv unicast (" << addr->getPlain() << ") socket on the "
 		    << iface->getName() << "/" << iface->getID() << " interface." << LogEnd;
 	if (!iface->addSocket(addr, DHCPSERVER_PORT, true, false)) {
