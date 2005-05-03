@@ -214,7 +214,7 @@ release:
 	echo "To make release-win32 work, place dibbler-server.exe and"
 	echo "dibbler-client.exe in this directory."
 
-release-linux: VERSION-linux client server relay doc
+release-linux: VERSION-linux
 	@echo "[STRIP  ] $(SERVERBIN)"
 	strip $(SERVERBIN)
 	@echo "[STRIP  ] $(CLIENTBIN)"
@@ -229,8 +229,8 @@ release-linux: VERSION-linux client server relay doc
 release-win32: VERSION-win doc
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-win32.tar.gz"
 	tar czvf dibbler-$(VERSION)-win32.tar.gz                   \
-		 dibbler-server.exe dibbler-client.exe             \
-                 client*.conf server*.conf                         \
+		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe \
+                 *.conf                         \
 		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-win32
 
 release-src: VERSION-src 
