@@ -223,7 +223,7 @@ release-linux: VERSION-linux client server relay doc
 	strip $(RELAYBIN)
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-linux.tar.gz"
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                                   \
-		 $(SERVERBIN) $(CLIENTBIN) $(RELAYBIN) client*.conf server*.conf relay*.conf   \
+		 $(SERVERBIN) $(CLIENTBIN) $(RELAYBIN) *.conf   \
 		 doc/man/* CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-linux
 
 release-win32: VERSION-win doc
