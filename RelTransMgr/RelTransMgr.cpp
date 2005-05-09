@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.10 2005-05-03 15:36:01 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.11 2005-05-09 23:16:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/05/03 15:36:01  thomson
+ * Relay now binds global (or site scoped) address instead of link-local
+ * for srv unicast communication. (bug #113)
+ *
  * Revision 1.9  2005/05/02 21:52:39  thomson
  * Logging cleanup.
  *
@@ -167,20 +171,33 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     addr->storeSelf(buf+offset);
     offset += 16;
 
-    // store InterfaceID option
     SmartPtr<TRelCfgIface> cfgIface;
     cfgIface = this->Ctx->CfgMgr->getIfaceByID(msg->getIface());
     TRelOptInterfaceID ifaceID(cfgIface->getInterfaceID(), 0);
-    ifaceID.storeSelf(buf + offset);
-    offset += ifaceID.getSize();
+    
+#if 0
+    {
+	// store InterfaceID option
+	ifaceID.storeSelf(buf + offset);
+	offset += ifaceID.getSize();
+    }
+#endif
 
     // store relay msg option
     *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
     offset+=2;
     *(short*)(buf+offset) = htons(msg->getSize());
     offset+=2;
-
     bufLen = msg->storeSelf(buf+offset);
+    offset += bufLen;
+
+#if 0
+    {
+	// store InterfaceID option
+	ifaceID.storeSelf(buf + offset);
+	offset += ifaceID.getSize();
+    }
+#endif
 
     this->Ctx->CfgMgr->firstIface();
     while (cfgIface = this->Ctx->CfgMgr->getIface()) {
@@ -188,8 +205,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 	    Log(Notice) << "Relaying message on the " << cfgIface->getName() << "/" << cfgIface->getID()
 			<< " interface to unicast (" << cfgIface->getServerUnicast()->getPlain() << ") address." << LogEnd;
 
-	    if (!this->Ctx->IfaceMgr->send(
-		    cfgIface->getID(), buf, offset+bufLen, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
+	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data." << LogEnd;
 	    }
 					   
@@ -198,8 +214,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 	    addr = new TIPv6Addr(ALL_DHCP_SERVERS, true);
 	    Log(Notice) << "Relaying message on the " << cfgIface->getName() << "/" << cfgIface->getID()
 			<< " interface to multicast (" << addr->getPlain() << ") address." << LogEnd;
-	    if (!this->Ctx->IfaceMgr->send(
-		    cfgIface->getID(), buf, offset+bufLen, addr, DHCPSERVER_PORT)) {
+	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, addr, DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data." << LogEnd;
 	    }
 	}
