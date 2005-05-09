@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.11 2005-05-09 23:16:08 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.12 2005-05-09 23:17:50 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/05/09 23:16:08  thomson
+ * Interface-ID option length check improved.
+ *
  * Revision 1.10  2005/05/03 15:36:01  thomson
  * Relay now binds global (or site scoped) address instead of link-local
  * for srv unicast communication. (bug #113)
@@ -175,7 +178,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     cfgIface = this->Ctx->CfgMgr->getIfaceByID(msg->getIface());
     TRelOptInterfaceID ifaceID(cfgIface->getInterfaceID(), 0);
     
-#if 0
+#if 1
     {
 	// store InterfaceID option
 	ifaceID.storeSelf(buf + offset);
