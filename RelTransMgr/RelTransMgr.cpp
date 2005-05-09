@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.12 2005-05-09 23:17:50 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.13 2005-05-09 23:30:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/05/09 23:17:50  thomson
+ * *** empty log message ***
+ *
  * Revision 1.11  2005/05/09 23:16:08  thomson
  * Interface-ID option length check improved.
  *
@@ -254,7 +257,7 @@ void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
     Log(Notice) << "Relaying " << msg->getName() << " message on the " << iface->getFullName()
 		<< " interface to the " << addr->getPlain() << ", port " << port << "." << LogEnd;
 
-    if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, DHCPCLIENT_PORT)) {
+    if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, port)) {
 	Log(Error) << "Failed to send data." << LogEnd;
     }
     
