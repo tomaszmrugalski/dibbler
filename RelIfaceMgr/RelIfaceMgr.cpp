@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.8 2005-05-02 21:08:53 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.9 2005-05-09 23:33:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/05/02 21:08:53  thomson
+ * Compilation fix.
+ *
  * Revision 1.7  2005/05/02 20:58:13  thomson
  * Support for multiple relays added. (bug #107)
  *
@@ -194,6 +197,11 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	case OPTION_INTERFACE_ID:
 	    if (bufsize<8) {
 		Log(Warning) << "Truncated INTERFACE_ID option in RELAY_REPL message. Message dropped." << LogEnd;
+		return 0;
+	    }
+	    if (len!=4) {
+		Log(Warning) << "Invalid INTERFACE_ID option, expected length " << 4
+			     << ", actual length " << len << "." << LogEnd;
 		return 0;
 	    }
 	    ptrIfaceID = new TRelOptInterfaceID(buf, bufsize, 0);
