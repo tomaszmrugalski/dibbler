@@ -223,14 +223,17 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int in
 SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIface, 
 						SmartPtr<TIPv6Addr> peer, 
 						char * buf, int bufsize) {
-    SmartPtr<TSrvIfaceIface> relayIface;
 
     SmartPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
     SmartPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
     SmartPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
-    int relays=0;
-    
+    SmartPtr<TSrvIfaceIface> relayIface;
+    int relays=0; // number of nested RELAY_FORW messages
+
+    char * relay_buf = buf;
+    int relay_bufsize = bufsize;    
+
     while (bufsize>0 && buf[0]==RELAY_FORW_MSG) {
 	/* decode RELAY_FORW message */
 	if (bufsize < 34) {
@@ -238,68 +241,102 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	    return 0;
 	}
 
+	SmartPtr<TSrvOptInterfaceID> ptrIfaceID;
+	ptrIfaceID = 0;
+
 	char type = buf[0];
 	if (type!=RELAY_FORW_MSG)
 	    return 0;
 	int hopCount = buf[1];
-	bool relay;
+	int optRelayCnt = 0;
+	int optIfaceIDCnt = 0;
+
 	SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
 	SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
 	buf+=34;
 	bufsize-=34;
 
-	SmartPtr<TSrvOptInterfaceID> ptrIfaceID;
-	relay = false;
-	// options: only INTERFACEID and RELAY_MSG are allowed
-	while (!relay && bufsize>=4) {
+	// options: only INTERFACE-ID and RELAY_MSG are allowed
+	while (bufsize>=4) {
 	    short code = ntohs( * ((short*) (buf)));
 	    short len  = ntohs(*((short*)(buf+2)));
 	    buf     += 4;
 	    bufsize -= 4;
 	    switch (code) {
 	    case OPTION_INTERFACE_ID:
-		if (bufsize<8) {
-		    Log(Warning) << "Truncated INTERFACE_ID option in RELAY_FORW message. Message dropped." << LogEnd;
+		if (bufsize<4) {
+		    Log(Warning) << "Truncated INTERFACE_ID option (length: " << bufsize  
+				 << ") in RELAY_FORW message. Message dropped." << LogEnd;
 		    return 0;
 		}
 		ptrIfaceID = new TSrvOptInterfaceID(buf, bufsize, 0);
+		optIfaceIDCnt++;
 		break;
 	    case OPTION_RELAY_MSG:
-		relay = true;
+		relay_buf = buf;
+		relay_bufsize = len;
+		optRelayCnt++;
 		break;
 	    default:
-		Log(Warning) << "Invalid option " << code << " in RELAY_FORW message. Message dropped.\n" << LogEnd;
+		Log(Warning) << "Invalid option (" << code << ") in RELAY_FORW message was ignored." << LogEnd;
 	    }
-	    if (!relay) { // check next option
-		buf     += len;
-		bufsize -= len;
-	    }
+	    buf     += len;
+	    bufsize -= len;
 	}
 
+	// remember those links
 	linkAddrTbl[relays] = linkAddr;
 	peerAddrTbl[relays] = peerAddr;
 	interfaceIDTbl[relays] = ptrIfaceID;
 	hopTbl[relays] = hopCount;
 	relays++;
 
-	Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
-	if (ptrIfaceID)
-	    Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue();
-	Log(Cont) << LogEnd;
-
-	relayIface = ptrIface->getRelayByInterfaceID(ptrIfaceID->getValue());
-	if (!relayIface) {
-	    Log(Warning) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getValue() << " defined on the " 
-			 << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+	if (relays> HOP_COUNT_LIMIT) {
+	    Log(Error) << "Message is nested more than allowed " << HOP_COUNT_LIMIT << " times. Message dropped." << LogEnd;
 	    return 0;
 	}
+
+	if (optRelayCnt!=1) {
+	    Log(Error) << optRelayCnt << " RELAY_MSG options received, but exactly one was expected. Message dropped." << LogEnd;
+	    return 0;
+	}
+	if (optIfaceIDCnt>1) {
+	    Log(Error) << "More than one (" << optIfaceIDCnt 
+		       << ") interface-ID options received, but at most 1 was expected. Message dropped." << LogEnd;
+	    return 0;
+	}
+
+	Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
+
+	if (ptrIfaceID) {
+	    // find relay interface based on the interface-id option
+	    Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue() << LogEnd;
+	    relayIface = ptrIface->getRelayByInterfaceID(ptrIfaceID->getValue());
+	    if (!relayIface) {
+		Log(Error) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getValue() << " defined on the " 
+			   << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+		return 0;
+	    }
+	}
+	else {
+	    // find relay interface based on the link address
+	    Log(Cont) << ", interfaceID option missing." << LogEnd;
+	    Log(Warning) << "InterfaceID option missing, trying to find proper interface using link address: " 
+			 << linkAddr->getPlain() << " (expect troubles)."<< LogEnd;
+	    relayIface = ptrIface->getRelayByLinkAddr(linkAddr);
+	    if (!relayIface) {
+		Log(Error) << "Unable to find relay interface using link address: " << linkAddr->getPlain() << LogEnd;
+		return 0;
+	    }
+	}
+	// now switch to relay interface
 	ptrIface = relayIface;
-
+	buf = relay_buf;
+	bufsize = relay_bufsize;
     }
-
-    // now switch to relay interface
-
-    SmartPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, buf, bufsize);
+    
+    
+    SmartPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, relay_buf, relay_bufsize);
     for (int i=0; i<relays; i++) {
 	msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i]);
     }
