@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.5 2005-01-25 00:32:26 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.6 2005-05-10 00:02:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/01/25 00:32:26  thomson
+ * Global addrs support added.
+ *
  * Revision 1.4  2005/01/11 22:53:36  thomson
  * Relay skeleton implemented.
  *
@@ -23,6 +26,7 @@
  *
  */
 
+#include "Logger.h"
 #include "SrvIfaceIface.h"
 
 /*
@@ -58,11 +62,25 @@ bool TSrvIfaceIface::appendRelay(SmartPtr<TSrvIfaceIface> relay, int interfaceID
 
 SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(int interfaceID) {
     int i=0;
+    if (this->RelaysCnt==0) {
+	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
+	return 0;
+    }
     for (i=0; i<this->RelaysCnt; i++) {
 	if (this->Relays[i].interfaceID == interfaceID)
 	    return this->Relays[i].iface;
     }
     return 0;
+}
+
+SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SmartPtr<TIPv6Addr> addr) {
+    if (this->RelaysCnt==0) {
+	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
+	return 0;
+    }
+    Log(Crit) << "### Finding RELAYs using link address is not implemented yet. Using first relay:" 
+	      << this->Relays[0].iface->getFullName() << LogEnd;
+    return this->Relays[0].iface;
 }
 
 int TSrvIfaceIface::getRelayCnt() {

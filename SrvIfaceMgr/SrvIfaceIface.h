@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.4 2005-01-25 00:32:26 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.5 2005-05-10 00:02:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/25 00:32:26  thomson
+ * Global addrs support added.
+ *
  * Revision 1.3  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -46,6 +49,7 @@ class TSrvIfaceIface: public TIfaceIface {
     bool appendRelay(SmartPtr<TSrvIfaceIface> relay, int interfaceID);
     SmartPtr<TSrvIfaceIface> getUnderlaying();
     SmartPtr<TSrvIfaceIface> getRelayByInterfaceID(int interfaceID);
+    SmartPtr<TSrvIfaceIface> getRelayByLinkAddr(SmartPtr<TIPv6Addr> addr);
     int getRelayCnt();
 
  private:
