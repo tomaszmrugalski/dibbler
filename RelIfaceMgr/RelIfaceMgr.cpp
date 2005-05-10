@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.9 2005-05-09 23:33:03 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.10 2005-05-10 20:15:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/05/09 23:33:03  thomson
+ * Additional check added.
+ *
  * Revision 1.8  2005/05/02 21:08:53  thomson
  * Compilation fix.
  *
@@ -195,7 +198,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	bufsize -= 4;
 	switch (code) {
 	case OPTION_INTERFACE_ID:
-	    if (bufsize<8) {
+	    if (bufsize<4) {
 		Log(Warning) << "Truncated INTERFACE_ID option in RELAY_REPL message. Message dropped." << LogEnd;
 		return 0;
 	    }

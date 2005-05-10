@@ -1,9 +1,11 @@
 
-  Dibbler 0.4.0-CVS release notes [2005-05-03]
+  Dibbler 0.4.0-CVS release notes [2005-05-10]
  ------------------------------------------
 
  This is a development version, provided for verification of the proposed
- bug fixing. 
+ bug fixing. Proposed fixes include:
+ - issues with invalid interface-id length in relays
+ - server segfault, when Cisco relay was used
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 
