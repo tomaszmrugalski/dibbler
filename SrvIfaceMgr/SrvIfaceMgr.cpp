@@ -1,3 +1,20 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvIfaceMgr.cpp,v 1.18 2005-05-10 00:32:33 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ * Revision 1.17 2005/05/10 00:04:27  thomson
+ * RELAY_FORW with other option order are now supported,
+ * Large part of this patch was provided by Andre Stolze from JOIN. Thanks
+ *
+ */
 #include <malloc.h>
 #include <stdio.h>
 #include "Portable.h"
@@ -29,7 +46,7 @@
 using namespace std;
 
 /*
- * constructor. Do nothing particular, just invoke IfaceMgr constructor
+ * constructor. 
  */
 TSrvIfaceMgr::TSrvIfaceMgr(string xmlFile) 
     : TIfaceMgr(xmlFile, false) {
@@ -262,6 +279,13 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	    short len  = ntohs(*((short*)(buf+2)));
 	    buf     += 4;
 	    bufsize -= 4;
+
+	    if (len > bufsize) {
+		Log(Warning) << "Truncated option " << code << ": " << bufsize << " bytes remaining, but length is " << len 
+			     << "." << LogEnd;
+		return 0;
+	    }
+
 	    switch (code) {
 	    case OPTION_INTERFACE_ID:
 		if (bufsize<4) {
