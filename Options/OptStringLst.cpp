@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.5 2005-03-15 23:02:31 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.6 2005-05-10 00:01:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/03/15 23:02:31  thomson
+ * 0.4.0 release.
+ *
  * Revision 1.4  2005/03/07 23:48:16  thomson
  * Typo fix.
  *
@@ -103,7 +106,7 @@ char * TOptStringLst::storeSelf(char* buf)
         len = x->length();
 
         dotpos = -1;
-        while (cp.find(".")!=-1) {
+        while (cp.find(".")!=string::npos) {
 	    if (*cp.c_str()=='.')
 		break;
             dotpos = cp.find(".");
