@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.21 2005-01-23 23:17:53 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.22 2005-05-11 07:30:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
  * Revision 1.20  2004/12/27 20:48:22  thomson
  * Problem with absent link local addresses fixed (bugs #90, #91)
  *
@@ -239,8 +242,9 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     peer->setAddr(peerAddrPacked);
 
     if (result==-1) {
-	Log(Error) << "sock_recv(" << sock->getFD() << "," << "...) failed." << LogEnd;
-	bufsize = 0;
+        Log(Error) << "Send failure detected (probably ICMPv6 Port Unreachable message received). Are you trying to forward message to an invalid or unbound unicast address?" 
+                   << LogEnd;
+        bufsize = 0;
 	return -1;
     }
 
@@ -249,10 +253,10 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     // If there are 2 open sockets (one bound to multicast and one to global address),
     // each packet sent on multicast address is also received on unicast socket.
     if (!iface->flagLoopback() && memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)) {
-	Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
-		   << *sock->getAddr() << ", message ignored." << LogEnd;
-	bufsize = 0;
-	return 0;
+	    Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
+                   << *sock->getAddr() << ", message ignored." << LogEnd;
+	    bufsize = 0;
+	    return 0;
     }  
 #endif
 
@@ -312,7 +316,7 @@ ostream & operator <<(ostream & strum, TIfaceMgr &x)
     SmartPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr=x.IfaceLst.get() ) {
-	strum << *ptr;
+        strum << *ptr;
     }
     
     strum << "</IfaceMgr>" << endl;
