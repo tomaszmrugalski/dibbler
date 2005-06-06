@@ -6,12 +6,11 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.6 2005-05-11 07:30:49 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.7 2005-06-06 22:47:47 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
  *  Revision 1.5  2005/02/01 01:08:44  thomson
  *  Support for global addresses added.
- *
  *
  *  Revision 1.2  2004/10/25 20:45:54  thomson
  *  Option support, parsers rewritten. ClntIfaceMgr now handles options.
@@ -60,13 +59,13 @@ int lowlevelInit()
     int i;
     i = GetEnvironmentVariable("SYSTEMROOT",buf, 256);
     if (!i) {
-	    printf("Environment variable SYSTEMROOT not set.\n");
-	    return 0;
+	printf("Environment variable SYSTEMROOT not set.\n");
+	return 0;
     }
     strcpy(buf+i,"\\system32\\netsh.exe");
     if (!(f=fopen(buf,"r"))) {
-	    printf("Unable to open %s file.\n",buf);
-	    return 0;
+	printf("Unable to open %s file.\n",buf);
+	return 0;
     }
     fclose(f);
     memcpy(netshPath, buf,256);
@@ -116,8 +115,8 @@ extern	struct iface* if_list_get()
 			 NULL, (PIP_ADAPTER_ADDRESSES) buffer, &buflen);
     
     if (!buflen) {
-	    // no interfaces found. Probably IPv6 is not installed.
-	    return NULL;
+	// no interfaces found. Probably IPv6 is not installed.
+	return NULL;
     }
     
     buffer=(char*)malloc(buflen);
@@ -127,78 +126,76 @@ extern	struct iface* if_list_get()
     adaptaddr=(PIP_ADAPTER_ADDRESSES) buffer;
     
     retval=iface=(struct iface*) malloc(sizeof(struct iface));
-    while(adaptaddr)	
-    {
-	//set interface name and id
-	WideCharToMultiByte( CP_ACP, 0, adaptaddr->FriendlyName, -1,
-			     iface->name,MAX_IFNAME_LENGTH, NULL, NULL );
-	iface->id=adaptaddr->IfIndex;
-	iface->id=adaptaddr->Ipv6IfIndex;
+    while(adaptaddr){
+    	//set interface name and id
+    	WideCharToMultiByte( CP_ACP, 0, adaptaddr->FriendlyName, -1,
+				  		     iface->name,MAX_IFNAME_LENGTH, NULL, NULL );
+        iface->id=adaptaddr->IfIndex;
+        iface->id=adaptaddr->Ipv6IfIndex;
         
-	//set hardware type of interface		
-	iface->hardwareType=adaptaddr->IfType;
+        //set hardware type of interface		
+        iface->hardwareType=adaptaddr->IfType;
 	
-	//set physical address - require during DUID generation
-	memcpy(iface->mac,adaptaddr->PhysicalAddress,adaptaddr->PhysicalAddressLength);
+        //set physical address - require during DUID generation
+        memcpy(iface->mac,adaptaddr->PhysicalAddress,adaptaddr->PhysicalAddressLength);
 	
         //set link local addresses available on interface
 	iface->maclen=adaptaddr->PhysicalAddressLength;
 
-	// FIXME: set non-local addrs to a real value
-	iface->globaladdrcount = 0;
-	iface->globaladdr = 0;
+        iface->globaladdrcount = 0;
+        iface->globaladdr = 0;
 	
-	linkaddr=adaptaddr->FirstUnicastAddress;
-	//for evert unicast address on iface
-	linkLocalAddrCnt= 0;
-	globalAddrCnt   = 0;
-	while(linkaddr) {
-	    addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
-	    if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr))))
+        linkaddr=adaptaddr->FirstUnicastAddress;
+        //for evert unicast address on iface
+        linkLocalAddrCnt= 0;
+	    globalAddrCnt   = 0;
+	    while(linkaddr) {
+	        addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
+    		if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr)))) {
                 linkLocalAddrCnt++;
-	    else
-		globalAddrCnt++;
+		    } else {
+    		    globalAddrCnt++;
+	    	}
             linkaddr=linkaddr->Next;
         }
         
         iface->linkaddrcount   = linkLocalAddrCnt;
-	    iface->globaladdrcount = globalAddrCnt;
-        if (linkLocalAddrCnt>0) {
-            iface->linkaddr   = (char*)malloc(linkLocalAddrCnt*16);
-	        iface->globaladdr = (char*) malloc(globalAddrCnt*16);
-	        addr = iface->linkaddr;
-	        gaddr= iface->globaladdr;
+    	iface->globaladdrcount = globalAddrCnt;
+    	iface->linkaddr        = NULL;
+    	iface->globaladdr      = NULL;
+    	iface->linkaddr        = (char*) malloc(linkLocalAddrCnt*16);
+        iface->globaladdr      = (char*) malloc(globalAddrCnt*16);
+        addr = iface->linkaddr;
+        gaddr= iface->globaladdr;
             
-            linkaddr=adaptaddr->FirstUnicastAddress;
-            while(linkaddr) {
-		        addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
-		        if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr)))) {
-                        memcpy(addr,&(addrpck->sin6_addr),16);
-                        addr+=16;
-                    } else {
-		                memcpy(gaddr, &(addrpck->sin6_addr), 16);
-		                gaddr+=16;
-		        }
-                linkaddr=linkaddr->Next;
-            }
+        linkaddr=adaptaddr->FirstUnicastAddress;
+        while(linkaddr) {
+            addrpck=(struct sockaddr_in6*)linkaddr->Address.lpSockaddr;
+     	    if (IN6_IS_ADDR_LINKLOCAL(( (struct in6_addr*) (&addrpck->sin6_addr)))) {
+                memcpy(addr,&(addrpck->sin6_addr),16);
+                addr+=16;
+            } else {
+    		    memcpy(gaddr, &(addrpck->sin6_addr), 16);
+    		    gaddr+=16;
+    		}
+            linkaddr=linkaddr->Next;
         }
-        else
-            iface->linkaddr=NULL;
-	
-        //set interface flags
-	    iface->flags=0;
-	    if (adaptaddr->OperStatus==IfOperStatusUp)
+
+    	//set interface flags
+    	iface->flags=0;
+    	if (adaptaddr->OperStatus==IfOperStatusUp)
 	        iface->flags|=IF_UP|IF_RUNNING|IF_MULTICAST;
 	    if (adaptaddr->IfType==IF_TYPE_SOFTWARE_LOOPBACK)
-	        iface->flags|=IF_LOOPBACK;
+    	    iface->flags|=IF_LOOPBACK;
 	
-	    //go to next returned adapter
-	    if (adaptaddr->Next)
+    	//go to next returned adapter
+    	if (adaptaddr->Next)
 	        iface->next=(struct iface*) malloc(sizeof(struct iface));
 	    else
-	        iface->next=NULL;
-	    adaptaddr=adaptaddr->Next;
-	    iface=iface->next;
+    	    iface->next=NULL;
+
+		adaptaddr=adaptaddr->Next;
+    	iface=iface->next;
     }	
     free(buffer);
     return retval;
@@ -350,21 +347,23 @@ int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
     if(IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)packaddr)
        ||IN6_IS_ADDR_SITELOCAL((struct in6_addr*)packaddr))
 	strcat(strcat(addrStr,"%"),ifaceStr);
-    
+      
     memset(&inforemote, 0, sizeof(inforemote));
     inforemote.ai_flags=AI_NUMERICHOST;
     inforemote.ai_family=PF_INET6;
     inforemote.ai_socktype=SOCK_DGRAM;
     inforemote.ai_protocol=IPPROTO_IPV6;
+    //inet_ntop6(addr,addrStr);
     if(getaddrinfo(addrStr,portStr,&inforemote,&remote))
-	    return 0;
-    if ( i=sendto(fd,buf,buflen,0,remote->ai_addr,remote->ai_addrlen) )
+	return 0;
+    if (i=sendto(fd,buf,buflen,0,remote->ai_addr,remote->ai_addrlen))
     {
-	    freeaddrinfo(remote);
+	freeaddrinfo(remote);
     	if (i<0) displayError(WSAGetLastError());
-	    return 0;
+	return 0;
     }
-
+/*	if((setsockopt(fd,IPPROTO_IPV6,IPV6_DROP_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq))))
+	return WSAGetLastError();*/
     freeaddrinfo(remote);
     return i;
 }
@@ -377,10 +376,10 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
     
     infolen=sizeof(info);
     if(!(readBytes=recvfrom(fd,buf,buflen,0,(SOCKADDR*)&info,&infolen))) {
-	    return -1;
+	return -1;
     } else {
-	    inet_ntop6(info.sin6_addr.u.Byte,peerPlainAddr);
-	    return	readBytes;
+	inet_ntop6(info.sin6_addr.u.Byte,peerPlainAddr);
+	return	readBytes;
     }
 }
 
