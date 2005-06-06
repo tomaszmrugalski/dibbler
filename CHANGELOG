@@ -2,6 +2,11 @@
   Dibbler changelog
  ------------------- 
 
+ 0.4.1 [not released yet]
+  - Dibbler now works with 2 relays
+  - Dibbler now works with Cisco relays
+  - Win32 apps no longer die quietly during interface detection (bug #117)
+
  0.4.0 [2005-03-15]
   - white list (accept-only) works ok (bug #106)
 	
