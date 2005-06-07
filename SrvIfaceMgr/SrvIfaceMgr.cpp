@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.18 2005-05-10 00:32:33 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.19 2005-06-07 21:58:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/05/10 00:32:33  thomson
+ * Minor safety check added.
+ *
  *
  * Revision 1.17 2005/05/10 00:04:27  thomson
  * RELAY_FORW with other option order are now supported,
@@ -69,8 +72,9 @@ TSrvIfaceMgr::TSrvIfaceMgr(string xmlFile)
     }
     
     while (ptr!=NULL) {
-        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
-		    << ptr->flags << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
+        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id 
+                 // << ", flags=" << ptr->flags 
+                    << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
         SmartPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,

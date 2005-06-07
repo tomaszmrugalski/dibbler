@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.4 2005-02-01 22:39:20 thomson Exp $
+ * $Id: RelService.cpp,v 1.5 2005-06-07 21:58:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
  * Revision 1.3  2005/02/01 22:08:04  thomson
  * start, stop commands implemented.
  *
@@ -75,8 +78,11 @@ EServiceState TRelService::ParseStandardArgs(int argc,char* argv[])
     }
 	n++;
     }
-    if (!dirFound)
-		return INVALID;
+    if (!dirFound) {
+     // Log(Notice) << "-d parameter missing. Trying to load relay.conf from current directory." << LogEnd;
+        ServiceDir=".";
+        return status;
+	}
 	if (ServiceDir.length()<3) {
 	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: too short. " 
 		      << "Please use full absolute pathname, e.g. C:\\dibbler" << LogEnd;
@@ -121,9 +127,6 @@ void TRelService::Run()
 	logger::Initialize((char*)logFile.c_str());
     
     Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY)" << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
     
     TDHCPRelay relay(confile);
     ptr = &relay; // remember address

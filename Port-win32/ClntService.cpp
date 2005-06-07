@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: ClntService.cpp,v 1.18 2005-02-01 22:39:20 thomson Exp $
+ * $Id: ClntService.cpp,v 1.19 2005-06-07 21:58:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
  * Revision 1.17  2005/02/01 01:10:52  thomson
  * Working directory fix.
  *
@@ -92,7 +95,9 @@ EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 		n++;
     }
     if (!dirFound) {
-		return INVALID;
+     // Log(Notice) << "-d parameter missing. Trying to load client.conf from current directory." << LogEnd;
+        ServiceDir=".";
+        return status;
 	}
 	
 	if (ServiceDir.length()<3) {
@@ -138,9 +143,9 @@ void TClntService::Run() {
 	logger::Initialize((char*)logFile.c_str());
     
     Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT)" << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
+//    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
+//    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
+//    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
     
     TDHCPClient client(confile);
     ptr = &client; // remember address

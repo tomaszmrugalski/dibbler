@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.17 2005-01-25 00:32:26 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.18 2005-06-07 21:58:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2005/01/25 00:32:26  thomson
+ * Global addrs support added.
+ *
  * Revision 1.16  2005/01/08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -194,8 +197,9 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
     }
     
     while (ptr!=NULL) {
-        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
-		    << ptr->flags << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
+        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id 
+                 // << ", flags=" << ptr->flags 
+                    << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
         SmartPtr<TIfaceIface> iface(new TClntIfaceIface(ptr->name,ptr->id,
 							ptr->flags,

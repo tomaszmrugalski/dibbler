@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.22 2005-05-11 07:30:49 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.23 2005-06-07 21:58:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2005/05/11 07:30:49  thomson
+ * Minor win32 related relay fixes.
+ *
  * Revision 1.21  2005/01/23 23:17:53  thomson
  * Relay/global address support related improvements.
  *
@@ -103,8 +106,9 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
     }
     
     while (ptr!=NULL) {
-        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id << ", flags=" 
-		    << ptr->flags << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
+        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id 
+                 // << ", flags=" << ptr->flags 
+                    << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
         SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,
