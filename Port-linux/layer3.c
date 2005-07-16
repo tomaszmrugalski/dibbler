@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.22 2005-04-28 20:33:59 thomson Exp $
+ * $Id: layer3.c,v 1.23 2005-07-16 14:43:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2005/04/28 20:33:59  thomson
+ * Multicasts are no longer threated as global addrs.
+ *
  * Revision 1.21  2005/01/23 23:17:53  thomson
  * Relay/global address support related improvements.
  *
@@ -360,8 +363,9 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     int Insock;
     int multicast;
     char port_char[6];
-    sprintf(port_char,"%d",port);
     char * tmp;
+    struct sockaddr_in6 bindme;
+    sprintf(port_char,"%d",port);
 
     if (!strncasecmp(addr,"ff",2))
 	multicast = 1;
@@ -412,7 +416,6 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     }
 
     // bind socket to a specified port
-    struct sockaddr_in6 bindme;
     bzero(&bindme, sizeof(struct sockaddr_in6));
     bindme.sin6_family = AF_INET6;
     bindme.sin6_port   = htons(port);
