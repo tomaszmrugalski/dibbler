@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptGeneric.h,v 1.1 2005-01-12 00:01:06 thomson Exp $
+ * $Id: OptGeneric.h,v 1.2 2005-07-17 19:56:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/01/12 00:01:06  thomson
+ * *** empty log message ***
+ *
  *
  */
 

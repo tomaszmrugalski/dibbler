@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptClientIdentifier.cpp,v 1.3 2004-09-07 17:42:31 thomson Exp $
+ * $Id: ClntOptClientIdentifier.cpp,v 1.4 2005-07-17 19:56:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/07 17:42:31  thomson
+ * Server Unicast implemented.
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
