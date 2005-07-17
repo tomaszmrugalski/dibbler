@@ -1,5 +1,15 @@
-#ifndef CLNTIAADDRESS_H_HEADER_INCLUDED_C112313F
-#define CLNTIAADDRESS_H_HEADER_INCLUDED_C112313F
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ */
+
+#ifndef CLNTOPTIAADDRESS_H
+#define CLNTOPTIAADDRESS_H
 
 #include "SmartPtr.h"
 #include "Container.h"
@@ -14,4 +24,11 @@ class TClntOptIAAddress : public TOptIAAddress
     bool isValid();
 };
 
-#endif /* IAADDRESS_H_HEADER_INCLUDED_C112313F */
+#endif /* CLNTOPTIAADDRESS_H */
+
+/*
+ * $Id: ClntOptIAAddress.h,v 1.2 2005-07-17 18:50:48 thomson Exp $
+ *
+ * $Log: not supported by cvs2svn $
+ *
+ */
