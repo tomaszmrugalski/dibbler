@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptString.cpp,v 1.1 2004-11-02 01:23:13 thomson Exp $
+ * $Id: OptString.cpp,v 1.2 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/11/02 01:23:13  thomson
+ * Initial revision
+ *
  * Revision 1.3  2004/04/11 18:10:56  thomson
  * CRLF fixed.
  *
@@ -56,7 +59,7 @@ char * TOptString::storeSelf(char* buf)
     buf[Str.length()]=0;  // null-terminated
     return buf+this->Str.length()+1;
 
-    *buf = Str.length(); // length of a string (with first byte)
+    *buf = (char)Str.length(); // length of a string (with first byte)
     buf++;
     memcpy(buf,this->Str.c_str(),this->Str.length());
     buf += this->Str.length();
@@ -65,7 +68,7 @@ char * TOptString::storeSelf(char* buf)
 }
 
 int TOptString::getSize() {
-    return Str.length()+6; // 4-normal header + 1 (strlen) + 1 (final 0)
+    return (int)(Str.length()+6); // 4-normal header + 1 (strlen) + 1 (final 0)
 }
 
 string TOptString::getString() {

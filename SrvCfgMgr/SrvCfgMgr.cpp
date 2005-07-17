@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.39 2005-05-02 21:49:23 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.40 2005-07-17 21:09:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.39  2005/05/02 21:49:23  thomson
+ * Messages cleanup, relay interface checking relaxed.
+ *
  * Revision 1.38  2005/03/08 00:43:48  thomson
  * 0.4.0-RC2 release.
  *
@@ -142,9 +145,11 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     // parse config file
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {
-	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd;
-	return false;
-    }
+	    Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd;
+	    return false;
+	} else {
+		Log(Notice) << "Config file " << cfgFile << " loaded." << LogEnd;
+	}
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
     Log(Debug) << "Parsing config file..." << LogEnd;

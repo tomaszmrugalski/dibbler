@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: client-win32.cpp,v 1.15 2005-02-01 22:39:20 thomson Exp $
+ * $Id: client-win32.cpp,v 1.16 2005-07-17 21:09:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
  * Revision 1.14  2004/10/03 21:28:44  thomson
  * 0.2.1-RC1 version.
  *
@@ -51,7 +54,7 @@ using namespace std;
 
 void usage() {
 	cout << "Usage:" << endl;
-	cout << " dibbler-client-winxp.exe ACTION -d dirname" << endl
+	cout << " dibbler-client.exe ACTION [-d c:\\path\\to\\config\\file]" << endl
 		 << " ACTION = status|start|stop|install|uninstall|run" << endl
 		 << " status    - show status and exit" << endl
 		 << " start     - start installed service" << endl
@@ -59,7 +62,8 @@ void usage() {
 		 << " install   - install service" << endl
 		 << " uninstall - uninstall service" << endl
 		 << " run       - run interactively" << endl
-		 << " help      - displays usage info." << endl;
+		 << " help      - displays usage info." << endl << endl
+		 << " Note: -d parameter is optional." << endl;
 }
 
 extern TDHCPClient * ptr;

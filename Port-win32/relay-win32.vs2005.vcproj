@@ -1,359 +1,498 @@
-<?xml version="1.0" encoding = "windows-1250"?>
+<?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="8,00"
 	Name="relay-win32"
 	ProjectGUID="{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
-	Keyword="ManagedCProj">
+	Keyword="ManagedCProj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
+			InheritedPropertySheets="UpgradeFromVC70.vsprops"
 			CharacterSet="2"
-			ManagedExtensions="FALSE">
+			ManagedExtensions="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr"
 				PreprocessorDefinitions="WIN32;_DEBUG"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="5"
-				DefaultCharIsUnsigned="TRUE"
-				TreatWChar_tAsBuiltInType="TRUE"
+				RuntimeLibrary="1"
+				DefaultCharIsUnsigned="true"
+				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib Iphlpapi.lib libxml2.lib "
+				AdditionalDependencies="ws2_32.lib Iphlpapi.lib"
 				OutputFile="$(OutDir)/dibbler-relay.exe"
 				LinkIncremental="2"
-				GenerateDebugInformation="TRUE"/>
+				GenerateDebugInformation="true"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="1"
+			InheritedPropertySheets="UpgradeFromVC70.vsprops"
 			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			ManagedExtensions="4"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="WIN32;NDEBUG"
-				MinimalRebuild="FALSE"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="3"
+				MinimalRebuild="false"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/server-win2k.exe"
 				LinkIncremental="1"
-				GenerateDebugInformation="TRUE"/>
+				GenerateDebugInformation="true"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
+			>
 			<File
-				RelativePath="..\RelTransMgr\RelTransMgr.cpp">
+				RelativePath="..\RelTransMgr\RelTransMgr.cpp"
+				>
 			</File>
 			<Filter
 				Name="IfaceMgr"
-				Filter="">
+				>
 				<File
-					RelativePath="..\IfaceMgr\Iface.cpp">
+					RelativePath="..\IfaceMgr\Iface.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\IfaceMgr\IfaceMgr.cpp">
+					RelativePath="..\IfaceMgr\IfaceMgr.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelIfaceMgr\RelIfaceMgr.cpp">
+					RelativePath="..\RelIfaceMgr\RelIfaceMgr.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\IfaceMgr\SocketIPv6.cpp">
+					RelativePath="..\IfaceMgr\SocketIPv6.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Options"
-				Filter="">
+				>
 				<File
-					RelativePath="..\Options\Opt.cpp">
+					RelativePath="..\Options\Opt.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\Options\OptGeneric.cpp">
+					RelativePath="..\Options\OptGeneric.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\Options\OptInteger4.cpp">
+					RelativePath="..\Options\OptInteger4.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="RelOptions"
-				Filter="">
+				>
 				<File
-					RelativePath="..\RelOptions\RelOptGeneric.cpp">
+					RelativePath="..\RelOptions\RelOptGeneric.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelOptions\RelOptInterfaceID.cpp">
+					RelativePath="..\RelOptions\RelOptInterfaceID.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelOptions\RelOptRelayMsg.cpp">
+					RelativePath="..\RelOptions\RelOptRelayMsg.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="RelMessages"
-				Filter="">
+				>
 				<File
-					RelativePath="..\Messages\Msg.cpp">
+					RelativePath="..\Messages\Msg.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelMessages\RelMsg.cpp">
+					RelativePath="..\RelMessages\RelMsg.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelMessages\RelMsgGeneric.cpp">
+					RelativePath="..\RelMessages\RelMsgGeneric.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelMessages\RelMsgRelayForw.cpp">
+					RelativePath="..\RelMessages\RelMsgRelayForw.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelMessages\RelMsgRelayRepl.cpp">
+					RelativePath="..\RelMessages\RelMsgRelayRepl.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="CfgMgr"
-				Filter="">
+				>
 				<File
-					RelativePath="..\CfgMgr\CfgMgr.cpp">
+					RelativePath="..\CfgMgr\CfgMgr.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelCfgIface.cpp">
+					RelativePath="..\RelCfgMgr\RelCfgIface.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelCfgMgr.cpp">
+					RelativePath="..\RelCfgMgr\RelCfgMgr.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelLexer.cpp">
+					RelativePath="..\RelCfgMgr\RelLexer.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelParsGlobalOpt.cpp">
+					RelativePath="..\RelCfgMgr\RelParser.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelParsIfaceOpt.cpp">
+					RelativePath="..\RelCfgMgr\RelParsGlobalOpt.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelParser.cpp">
+					RelativePath="..\RelCfgMgr\RelParsIfaceOpt.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="misc"
-				Filter="">
+				>
 				<File
-					RelativePath="..\misc\DHCPConst.cpp">
+					RelativePath="..\misc\addrpack.c"
+					>
 				</File>
 				<File
-					RelativePath="..\Misc\DHCPRelay.cpp">
+					RelativePath="..\misc\DHCPConst.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\DUID.cpp">
+					RelativePath="..\Misc\DHCPRelay.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\IPv6Addr.cpp">
+					RelativePath="..\misc\DUID.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\Logger.cpp">
+					RelativePath="..\misc\IPv6Addr.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\addrpack.c">
-				</File>
-				<File
-					RelativePath="..\misc\long128.cpp">
+					RelativePath="..\misc\Logger.cpp"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="port-win32"
-				Filter="">
+				>
 				<File
-					RelativePath="RelService.cpp">
+					RelativePath="lowlevel-win32.c"
+					>
 				</File>
 				<File
-					RelativePath="WinService.cpp">
+					RelativePath="relay-win32.cpp"
+					>
 				</File>
 				<File
-					RelativePath="lowlevel-win32.c">
+					RelativePath="RelService.cpp"
+					>
 				</File>
 				<File
-					RelativePath="relay-win32.cpp">
+					RelativePath="WinService.cpp"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc">
+			Filter="h;hpp;hxx;hm;inl;inc"
+			>
 			<Filter
 				Name="IfaceMgr"
-				Filter="">
+				>
 				<File
-					RelativePath="..\IfaceMgr\Iface.h">
+					RelativePath="..\IfaceMgr\Iface.h"
+					>
 				</File>
 				<File
-					RelativePath="..\IfaceMgr\IfaceMgr.h">
+					RelativePath="..\IfaceMgr\IfaceMgr.h"
+					>
 				</File>
 				<File
-					RelativePath="..\IfaceMgr\SocketIPv6.h">
+					RelativePath="..\IfaceMgr\SocketIPv6.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Options"
-				Filter="">
+				>
 				<File
-					RelativePath="..\Options\Opt.h">
+					RelativePath="..\Options\Opt.h"
+					>
 				</File>
 				<File
-					RelativePath="..\Options\OptGeneric.h">
+					RelativePath="..\Options\OptGeneric.h"
+					>
 				</File>
 				<File
-					RelativePath="..\Options\OptInteger4.h">
+					RelativePath="..\Options\OptInteger4.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="RelOptions"
-				Filter="">
+				>
 				<File
-					RelativePath="..\RelOptions\RelOptGeneric.h">
+					RelativePath="..\RelOptions\RelOptGeneric.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelOptions\RelOptInterfaceID.h">
+					RelativePath="..\RelOptions\RelOptInterfaceID.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelOptions\RelOptRelayMsg.h">
+					RelativePath="..\RelOptions\RelOptRelayMsg.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="CfgMgr"
-				Filter="">
+				>
 				<File
-					RelativePath="..\CfgMgr\CfgMgr.h">
+					RelativePath="..\CfgMgr\CfgMgr.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelCfgIface.h">
+					RelativePath="..\RelCfgMgr\RelCfgIface.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelCfgMgr.h">
+					RelativePath="..\RelCfgMgr\RelCfgMgr.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelLexer.h">
+					RelativePath="..\RelCfgMgr\RelLexer.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelParsGlobalOpt.h">
+					RelativePath="..\RelCfgMgr\RelParser.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelParsIfaceOpt.h">
+					RelativePath="..\RelCfgMgr\RelParsGlobalOpt.h"
+					>
 				</File>
 				<File
-					RelativePath="..\RelCfgMgr\RelParser.h">
+					RelativePath="..\RelCfgMgr\RelParsIfaceOpt.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="misc"
-				Filter="">
+				>
 				<File
-					RelativePath="..\misc\Container.h">
+					RelativePath="..\misc\Container.h"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\DHCPConst.h">
+					RelativePath="..\misc\DHCPConst.h"
+					>
 				</File>
 				<File
-					RelativePath="..\Misc\DHCPRelay.h">
+					RelativePath="..\Misc\DHCPRelay.h"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\DUID.h">
+					RelativePath="..\misc\DUID.h"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\IPv6Addr.h">
+					RelativePath="..\misc\IPv6Addr.h"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\Logger.h">
+					RelativePath="..\misc\Logger.h"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\Portable.h">
+					RelativePath="..\misc\Portable.h"
+					>
 				</File>
 				<File
-					RelativePath="..\misc\SmartPtr.h">
-				</File>
-				<File
-					RelativePath="..\misc\long128.h">
+					RelativePath="..\misc\SmartPtr.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="port-win32"
-				Filter="">
+				>
 				<File
-					RelativePath="RelService.h">
+					RelativePath="RelService.h"
+					>
 				</File>
 				<File
-					RelativePath="WinService.h">
+					RelativePath="WinService.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\FUN">
+			RelativePath="..\FUN"
+			>
 		</File>
 		<File
-			RelativePath="..\GUIDELINES">
+			RelativePath="..\GUIDELINES"
+			>
 		</File>
 		<File
-			RelativePath="INFO-winxp.txt">
+			RelativePath="INFO-winxp.txt"
+			>
 		</File>
 		<File
-			RelativePath="..\README">
+			RelativePath="..\README"
+			>
 		</File>
 		<File
-			RelativePath="..\RELNOTES">
+			RelativePath="..\RELNOTES"
+			>
 		</File>
 		<File
-			RelativePath="..\TODO">
+			RelativePath="..\TODO"
+			>
 		</File>
 	</Files>
 	<Globals>

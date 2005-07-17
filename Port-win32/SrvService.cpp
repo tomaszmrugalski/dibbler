@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: SrvService.cpp,v 1.16 2005-06-07 21:58:49 thomson Exp $
+ * $Id: SrvService.cpp,v 1.17 2005-07-17 21:09:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/06/07 21:58:49  thomson
+ * 0.4.1
+ *
  * Revision 1.15  2005/03/08 00:43:48  thomson
  * 0.4.0-RC2 release.
  *
@@ -64,7 +67,7 @@ TSrvService::TSrvService()
 EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
 {
     bool dirFound = false;
-    EServiceState status = STATUS;
+    EServiceState status = INVALID;
     
     int n=1;
     while (n<argc)
@@ -131,9 +134,9 @@ void TSrvService::OnStop()
 void TSrvService::Run()
 {
     if (_chdir(this->ServiceDir.c_str())) {
-	Log(Crit) << "Unable to change directory to " 
-		  << this->ServiceDir << ". Aborting.\n" << LogEnd;
-	return;
+	    Log(Crit) << "Unable to change directory to " 
+		          << this->ServiceDir << ". Aborting.\n" << LogEnd;
+	    return;
     }
     
     string confile  = SRVCONF_FILE;
@@ -149,7 +152,7 @@ void TSrvService::Run()
 //    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
 //    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
     
-    TDHCPServer server(confile);
+    TDHCPServer server(workdir+"\\"+confile);
     ptr = &server; // remember address
     server.setWorkdir(this->ServiceDir);
     

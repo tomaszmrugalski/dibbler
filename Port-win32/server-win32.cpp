@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: server-win32.cpp,v 1.10 2005-02-01 22:39:20 thomson Exp $
+ * $Id: server-win32.cpp,v 1.11 2005-07-17 21:09:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
  * Revision 1.9  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -41,14 +44,15 @@ extern TDHCPServer * ptr;
 
 void usage() {
 	cout << "Usage:" << endl;
-	cout << " dibbler-server-winxp.exe ACTION -d dirname " << endl
+	cout << " dibbler-server.exe ACTION [-d c:\\path\\to\\config\\file]" << endl
 		 << " ACTION = status|start|stop|install|uninstall|run" << endl
 		 << " status    - show status and exit" << endl
 		 << " start     - start installed service" << endl
 		 << " stop      - stop installed service" << endl
 		 << " install   - install service" << endl
 		 << " uninstall - uninstall service" << endl
-		 << " run       - run in console" << endl;
+		 << " run       - run in console" << endl << endl 
+		 << " -d paramters is now optional." << endl;
 
 }
 
@@ -70,7 +74,14 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 }
 
 int main(int argc, char* argv[]) {
-    // get the service object
+    
+    cout << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
+    cout << DIBBLER_COPYRIGHT2 << endl;
+    cout << DIBBLER_COPYRIGHT3 << endl;
+    cout << DIBBLER_COPYRIGHT4 << endl;
+    cout << endl;
+
+	// get the service object
     TSrvService * SrvService = TSrvService::getHandle();
 
 	int i=0;
@@ -88,12 +99,6 @@ int main(int argc, char* argv[]) {
     
     EServiceState status = SrvService->ParseStandardArgs(argc, argv);
     SrvService->setState(status);
-    
-    cout << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
-    cout << DIBBLER_COPYRIGHT2 << endl;
-    cout << DIBBLER_COPYRIGHT3 << endl;
-    cout << DIBBLER_COPYRIGHT4 << endl;
-    cout << endl;
     
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
     

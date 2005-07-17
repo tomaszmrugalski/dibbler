@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.14 2005-02-01 00:57:36 thomson Exp $
+ * $Id: Logger.cpp,v 1.15 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.13  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -41,7 +44,7 @@ namespace logger {
 
     string logname="Init";
     int logLevel=8;
-    Elogmode logmode = FULL;
+    Elogmode logmode = SHORT;
     ofstream logFile;    // file where wanted msgs are stored
     bool logFileMode = false;
     bool echo = true;
@@ -86,8 +89,8 @@ namespace logger {
 	    buffer << (1900+czas->tm_year) << ".";
 	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mon+1 << ".";
 	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mday  << " ";
-	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_hour  << ":";
 	}
+    buffer.width(2);    buffer.fill('0'); buffer << czas->tm_hour  << ":";
 	buffer.width(2);	buffer.fill('0'); buffer << czas->tm_min   << ":";
 	buffer.width(2);	buffer.fill('0'); buffer << czas->tm_sec;
 	if (logmode!=SHORT) {

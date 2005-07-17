@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: ClntService.cpp,v 1.19 2005-06-07 21:58:49 thomson Exp $
+ * $Id: ClntService.cpp,v 1.20 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/06/07 21:58:49  thomson
+ * 0.4.1
+ *
  * Revision 1.18  2005/02/01 22:39:20  thomson
  * Command line service support greatly improved.
  *
@@ -64,7 +67,7 @@ TClntService::TClntService()
 EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 {    
     bool dirFound=false;
-    EServiceState status=STATUS;
+    EServiceState status = INVALID;
     int n=1;
     
     while(n<argc) {
@@ -136,6 +139,7 @@ void TClntService::Run() {
     }
     string confile  = CLNTCONF_FILE;
     string oldconf  = CLNTCONF_FILE+(string)"-old";
+	string workdir  = this->ServiceDir;
     string addrfile = CLNTADDRMGR_FILE;
     string logFile  = CLNTLOG_FILE;
     
@@ -147,7 +151,7 @@ void TClntService::Run() {
 //    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
 //    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
     
-    TDHCPClient client(confile);
+    TDHCPClient client(workdir+"\\"+confile);
     ptr = &client; // remember address
     client.setWorkdir(this->ServiceDir);
 

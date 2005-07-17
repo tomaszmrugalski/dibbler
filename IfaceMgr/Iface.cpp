@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.18 2005-04-29 00:08:20 thomson Exp $
+ * $Id: Iface.cpp,v 1.19 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/04/29 00:08:20  thomson
+ * *** empty log message ***
+ *
  * Revision 1.17  2005/01/23 23:17:53  thomson
  * Relay/global address support related improvements.
  *
@@ -135,21 +138,21 @@ bool TIfaceIface::flagUp() {
  * returns true if interface is RUNNING
  */
 bool TIfaceIface::flagRunning() {
-    return this->Flags & IF_RUNNING;
+    return (bool)(this->Flags & IF_RUNNING);
 }
 
 /*
  * returns true is interface is MULTICAST capable
  */
 bool TIfaceIface::flagMulticast() {
-    return Flags&IF_MULTICAST;
+    return (bool)(this->Flags&IF_MULTICAST);
 }
 
 /*
  * returns true is interface is LOOPBACK
  */
 bool TIfaceIface::flagLoopback() {
-    return Flags&IF_LOOPBACK;
+    return (bool)(this->Flags&IF_LOOPBACK);
 }
 
 /*
@@ -189,8 +192,8 @@ int TIfaceIface::getHardwareType() {
  * (wrapper around pure C function)
  */
 bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid) {
-    return ipaddr_add( this->Name, this->ID, 
-                      addr->getPlain(), pref, valid);
+    return (bool)ipaddr_add(this->Name, this->ID, 
+                            addr->getPlain(), pref, valid);
 }
 
 /*
@@ -198,7 +201,7 @@ bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid) {
  * (wrapper around pure C function)
  */
 bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr) {
-    return ipaddr_del( this->Name, this->ID, addr->getPlain());
+    return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain());
 }
 
 /*
@@ -206,7 +209,7 @@ bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr) {
  */
 bool TIfaceIface::updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
 #ifdef WIN32
-    return ipaddr_add((char *)this->Name, this->ID, 
+    return (bool)ipaddr_add((char *)this->Name, this->ID, 
 		      (char *)addr->getPlain(), pref, valid);
 #endif
 

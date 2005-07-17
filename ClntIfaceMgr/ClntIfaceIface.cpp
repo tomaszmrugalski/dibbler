@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.5 2005-01-25 00:32:26 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.6 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/01/25 00:32:26  thomson
+ * Global addrs support added.
+ *
  * Revision 1.4  2005/01/03 21:55:47  thomson
  * Minor print change.
  *
@@ -536,7 +539,7 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
     char buf[512];
     char fileout[512];
     sprintf(buf,"%s-old", filename);
-    unsigned int len = strlen(str);
+    unsigned int len = (unsigned int)strlen(str);
     bool found = false;
 
     strncpy(fileout,filename,511);

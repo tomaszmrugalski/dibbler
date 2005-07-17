@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.31 2005-03-07 22:45:14 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.32 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2005/03/07 22:45:14  thomson
+ * Fixed problem with non-existent interface name (bug #105)
+ *
  * Revision 1.30  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -90,13 +93,13 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     // parse config file
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
-	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
-	this->IsDone = true;
-        return;
+	     Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
+	     this->IsDone = true;
+         return;
     }
     yyFlexLexer lexer(&f,&clog);
     clntParser parser(&lexer);
-    Log(Debug) << "Parsing " << cfgFile << "..." << LogEnd;
+    Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
@@ -193,7 +196,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
     } else {
 	// user didn't specified any interfaces in config file, so
 	// we'll try to configure each interface we could find
-	Log(Warning) << CLNTCFGMGR_FILE << " does not contain any interface definitions."
+	Log(Warning) << "Config file does not contain any interface definitions."
 			<< LogEnd;
 	
 	IfaceMgr->firstIface();

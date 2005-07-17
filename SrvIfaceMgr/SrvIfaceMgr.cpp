@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.19 2005-06-07 21:58:49 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.20 2005-07-17 21:09:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/06/07 21:58:49  thomson
+ * 0.4.1
+ *
  * Revision 1.18  2005/05/10 00:32:33  thomson
  * Minor safety check added.
  *
@@ -119,8 +122,8 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-	Log(Error)  << "Send failed: No such interface id=" << iface << LogEnd;
-	return false;
+	    Log(Error)  << "Send failed: No such interface id=" << iface << LogEnd;
+	    return false;
     }
 
     // find this socket
@@ -128,13 +131,13 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     ptrIface->firstSocket();
     ptrSocket = ptrIface->getSocket();
     if (!ptrSocket) {
-	Log(Error) << "Send failed: interface " << ptrIface->getName() 
-		   << "/" << iface << " has no open sockets." << LogEnd;
-	return false;
+	     Log(Error) << "Send failed: interface " << ptrIface->getName() 
+		 << "/" << iface << " has no open sockets." << LogEnd;
+         return false;
     }
 
     // send it!
-    return ptrSocket->send(msg,size,addr,port);
+    return (bool)(ptrSocket->send(msg,size,addr,port));
 }
 
 /**

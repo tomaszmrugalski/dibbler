@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.5 2005-06-07 21:58:49 thomson Exp $
+ * $Id: RelService.cpp,v 1.6 2005-07-17 21:09:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/06/07 21:58:49  thomson
+ * 0.4.1
+ *
  * Revision 1.4  2005/02/01 22:39:20  thomson
  * Command line service support greatly improved.
  *
@@ -48,7 +51,7 @@ TRelService::TRelService()
 EServiceState TRelService::ParseStandardArgs(int argc,char* argv[])
 {
     bool dirFound = false;
-    EServiceState status = STATUS;
+    EServiceState status = INVALID;
     
     int n=1;
     while (n<argc)
@@ -128,7 +131,7 @@ void TRelService::Run()
     
     Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY)" << LogEnd;
     
-    TDHCPRelay relay(confile);
+    TDHCPRelay relay(workdir+"\\"+confile);
     ptr = &relay; // remember address
     relay.setWorkdir(this->ServiceDir);
 

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.6 2005-05-10 00:01:46 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.7 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/05/10 00:01:46  thomson
+ * Minor compilation bug fixed.
+ *
  * Revision 1.5  2005/03/15 23:02:31  thomson
  * 0.4.0 release.
  *
@@ -103,7 +106,7 @@ char * TOptStringLst::storeSelf(char* buf)
     StringLst.first();
     while (x = StringLst.get() ) {
         string cp(*x);
-        len = x->length();
+        len = (int)(x->length());
 
         dotpos = -1;
         while (cp.find(".")!=string::npos) {

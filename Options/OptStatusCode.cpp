@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStatusCode.cpp,v 1.3 2004-12-02 00:51:05 thomson Exp $
+ * $Id: OptStatusCode.cpp,v 1.4 2005-07-17 21:09:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/12/02 00:51:05  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.2  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -48,7 +51,7 @@ TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
 
  int TOptStatusCode::getSize()
 {
-    return this->Message.length()+6;
+    return (int)(this->Message.length()+6);
 }
 
  int TOptStatusCode::getCode()
