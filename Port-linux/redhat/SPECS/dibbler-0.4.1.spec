@@ -20,7 +20,7 @@ configured in your network. All infrastructure elements are
 provided: server, client and relay.
 
 %prep
-%setup -n dibbler
+%setup
 
 %build
 make client server relay doc
