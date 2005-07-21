@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.2 2005-02-03 22:42:25 thomson Exp $
+ * $Id: daemon.cpp,v 1.3 2005-07-21 21:40:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/02/03 22:42:25  thomson
+ * *** empty log message ***
+ *
  * Revision 1.1  2005/02/03 22:06:40  thomson
  * Linux startup/pid checking changed.
  *
@@ -104,11 +107,18 @@ void daemon_die() {
 
 int init(char * pidfile, char * workdir) {
     string tmp;
+    char buf[20];
     int pid = getPID(pidfile);
     if (pid != -1) {
-	Log(Crit) << "Process already running (pid=" << pid << ", file " << pidfile 
-		  << " is present)." << LogEnd;
-	return 0;
+	sprintf(buf,"/proc/%d", pid);
+	if (!access(buf, F_OK)) {
+	    Log(Crit) << "Process already running (pid=" << pid << ", file " << pidfile 
+		      << " is present)." << LogEnd;
+	    return 0;
+	} else {
+	    Log(Warning) << "Pid file found (pid=" << pid << ", file " << pidfile 
+			 << "), but process " << pid << " does not exist." << LogEnd;
+	}
     }
 
     unlink(pidfile);
@@ -129,7 +139,9 @@ int init(char * pidfile, char * workdir) {
 }
 
 void die(char * pidfile) {
-    unlink(pidfile);
+    if (unlink(pidfile)) {
+	Log(Warning) << "Unable to delete " << pidfile << "." << LogEnd;
+    }
 }
 
 

@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-relay.cpp,v 1.7 2005-04-28 21:20:52 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.8 2005-07-21 21:40:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/04/28 21:20:52  thomson
+ * Support for multiple relays added.
+ *
  * Revision 1.6  2005/02/03 22:42:25  thomson
  * *** empty log message ***
  *
@@ -103,8 +106,6 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
-
-    unlink("/var/lib/dibbler/relay.pid");
 
     logStart("(RELAY)", "Relay", RELLOG_FILE);
 
