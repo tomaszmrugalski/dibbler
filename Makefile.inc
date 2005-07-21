@@ -5,7 +5,7 @@ FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
-COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall
+COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char
 OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
 CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
@@ -19,9 +19,12 @@ DEBUGINFO    = -g
 #XMLCFLAGS    = `pkg-config libxml-2.0 --cflags` -DLIBXML2
 #XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
-LDFLAGS       = $(XMLLIBS) $(EFENCE)
+LDFLAGS       = $(XMLLIBS) $(EFENCE) $(PORT_LDFLAGS)
 
-# === Portability ===
+# === Portability section ===
+# Make sure that you have uncommented only one section
+
+# === Port: Linux ===
 ARCH         = LINUX
 LOWLEVEL     = $(PREFIX)/$(PORTDIR)
 CLIENTBIN    = dibbler-client
@@ -30,6 +33,22 @@ RELAYBIN     = dibbler-relay
 CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
 SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
 RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
+PORT_LDFLAGS = 
+PORT_CFLAGS  = 
+PORT_SUBDIR  = Port-linux
+
+# === Port: Win2k (mingw) ===
+#ARCH         = WIN2K
+#LOWLEVEL     = $(PREFIX)/$(PORTDIR)
+#CLIENTBIN    = dibbler-client-win2k
+#SERVERBIN    = dibbler-server-win2k
+#RELAYBIN     = dibbler-relay-win2k
+#CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
+#SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
+#RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
+#PORT_LDFLAGS = -lws2_32
+#PORT_CFLAGS  = -DMINGWBUILD
+#PORT_SUBDIR  = Port-win2k
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
@@ -44,7 +63,7 @@ MKDIR        = mkdir -p
 CP           = cp
 
 PREFIX       = ..
-PORTDIR      = $(PREFIX)/Port-linux
+PORTDIR      = $(PREFIX)/$(PORT_SUBDIR)
 INCDIR       = $(PREFIX)/include
 ADDRMGR      = $(PREFIX)/AddrMgr
 CFGMGR       = $(PREFIX)/CfgMgr
@@ -75,7 +94,7 @@ RELCFGMGR   = $(PREFIX)/RelCfgMgr
 RELMESSAGES = $(PREFIX)/RelMessages
 RELOPTIONS  = $(PREFIX)/RelOptions
 
-COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include Misc Port-linux
+COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include Misc $(PORT_SUBDIR)
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
 RELSUBDIRS   = RelTransMgr RelMessages RelOptions  RelIfaceMgr RelCfgMgr
