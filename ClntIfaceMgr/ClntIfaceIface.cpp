@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.6 2005-07-17 21:09:52 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.7 2005-07-21 20:42:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/07/17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.5  2005/01/25 00:32:26  thomson
  * Global addrs support added.
  *
@@ -31,6 +34,9 @@
 #include "ClntIfaceIface.h"
 #include "Portable.h"
 #include "Logger.h"
+#ifdef MINGWBUILD
+#include <io.h>
+#endif
 
 /*
  * stores informations about interface
