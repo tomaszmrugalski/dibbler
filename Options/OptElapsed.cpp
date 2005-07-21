@@ -6,14 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptElapsed.cpp,v 1.4 2005-01-31 18:46:53 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/09/28 20:08:37  thomson
- * Minor changes.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
+ * $Id: OptElapsed.cpp,v 1.5 2005-07-21 20:29:09 thomson Exp $
  */
 
 #include <stdlib.h>
@@ -25,7 +18,6 @@
 #include "DHCPConst.h"
 #include "Portable.h"
 #include "OptElapsed.h"
-
 
 TOptElapsed::TOptElapsed( char * &buf,  int &bufSize, TMsg* parent)
     :TOpt(OPTION_ELAPSED_TIME, parent)
@@ -51,7 +43,22 @@ char * TOptElapsed::storeSelf( char* buf)
     buf+=2;
     *(uint16_t*)buf = htons( getSize()-4 );
     buf+=2;
-    *(uint16_t*)buf = htons( uint16_t(now()-this->Timestamp) );
+    int diff = now() - this->Timestamp;
+    if (diff > 0xffff)
+	diff = 0xffff;
+    *(uint16_t*)buf = htons( short(diff) );
     buf+=2;
     return buf;
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/31 18:46:53  thomson
+ * Win32 project fixes.
+ *
+ * Revision 1.3  2004/09/28 20:08:37  thomson
+ * Minor changes.
+ *
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ */
