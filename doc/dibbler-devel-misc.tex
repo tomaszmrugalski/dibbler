@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-misc.tex,v 1.3 2004-12-04 23:47:57 thomson Exp $
+%% $Id: dibbler-devel-misc.tex,v 1.4 2005-07-21 23:28:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.3  2004/12/04 23:47:57  thomson
+%% Work around for bug #56 described.
+%%
 %% Revision 1.2  2004/12/01 20:55:49  thomson
 %% Documentation updated.
 %%
@@ -22,8 +25,8 @@
 \begin{itemize}
 \item Linux: Running client and server on the same host requires
   client recompilation with specific option enabled. Please edit
-  \verb+misc/Portable.h+ and set \verb+CLIENT\_BIND\_REUSE+ to
-  \verb+true\+. This will allow to receive data from local server, but
+  \verb+misc/Portable.h+ and set \verb+CLIENT_BIND_REUSE+ to
+  \verb+true+. This will allow to receive data from local server, but
   will also disable checking if there is another client running. So
   you can run multiple clients, which is a straight road to
   trouble. You were warned.
@@ -38,9 +41,10 @@
   probably a developer! If you found any bugs (or think you found
   one), go to the
   \href{http://klub.com.pl/bugzilla}{http://klub.com.pl/bugzilla}
-   and report it. If you report was a mistake -- oh well, you just
-  lost 5 minutes. But if it was really a bug, you have just improved
+   and report it. If your report was a mistake -- oh well, you just
+  lost 5 minutes. But if it was really a bug, you have just helped improve
   next Dibbler version.
 \item If you have any questions about Dibbler or DHCPv6, feel free to
-  mail me.
+  mail me, preferably via Dibbler mailing list. All links are provided
+  on the project website.
 \end{itemize}

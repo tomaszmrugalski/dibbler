@@ -1,19 +1,19 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.14 2005-03-15 23:02:31 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.15 2005-07-21 23:28:56 thomson Exp $
 %%
 
 \section{Configuration files}
 
 This section describes Dibbler server and (optional) client
 configuration. Square brackets denotes optional values: mandatory
-[optional]. Alternative is marked as $\mid$. A $\mid$ B means A or B.
-
-Parsers are case-insensitive, so Iface, IfAcE, iface and IFACE mean the
-same. This does not apply to interface names, of course. eth0 and ETH0
-are dwo diffrent interfaces.
+[optional]. Alternative is marked as $\mid$. A $\mid$ B means A or
+B. Parsers are case-insensitive, so Iface, IfAcE, iface and IFACE mean
+the same. This does not apply to interface names, of course. eth0 and
+ETH0 are dwo diffrent interfaces.
 
 \subsection{Tokens and basic informations}
-Config file parsing is token-based. Here's list of tokens used:
+Config file parsing is token-based. Token can be considered a keyword
+or a specific phrase. Here's list of tokens used:
 \begin{description}
 \item[IPv6 address] -- IPv6 address 
 \item[32-bit decimal integer] -- string containing only numbers, e.g. 123456
@@ -24,32 +24,16 @@ Config file parsing is token-based. Here's list of tokens used:
 \item[IPv6 address list] -- IPv6 addresses separated with commas.
 \item[DUID list] -- DUIDs separated with commas.
 \item[string list] -- strings separated with comas.
-\item[Boolean] -- YES, NO, TRUE, FALSE, 0 or 1. Each of them can be
+\item[boolean] -- YES, NO, TRUE, FALSE, 0 or 1. Each of them can be
   used, when user must enable or disable specific option.
 \end{description}
-
-% There are also some client or server specified tokens. Here's the list:
-% \begin{description}
-% \item[client] -- iface, address, ia, no-ia, log-mode, log-name,
-%   log-level, prefered-lifetime, valid-lifetime, t1, t2,
-%   reject-servers, prefered-servers, rapid-commit, unicast, sip-server,
-%   sip-domain, nis-server, nis-domain, nis+-server, nis+-domain,
-%   lifetime, dns-server, domain, ntp-server, time-zone,
-
-% \item[server] -- iface, class, log-level, log-name, log-level,
-%   accept-only, reject-only, t1, t2, prefered-lifetime,
-%   valid-lifetime, unicast, preference, pool, rapid-commit,
-%   client-max-lease, class-max-lease, iface-max-lease, dns-server,
-%   domain, ntp-server, time-zone, sip-server, sip-domain, nis-server,
-%   nis-domain, nis+-server, nis+-domain, lifetime
-% \end{description}
 
 \subsection{Scopes}
 There are four scopes, in which options can be specified: global,
 inteface, IA and address.
 
 Global scope is the largest. It covers the whole config file and
-applies to all intefaces, IAs, and addresses, until some lower scope
+applies to all intefaces, IAs, and addresses, unless some lower scope
 options override it. Next comes inteface scope. Options defined there
 are inteface-specific and apply to this interface, all IAs in this
 interface and addresses in those IAs. Next is IA scope. Options
@@ -73,10 +57,12 @@ Comments are also allowed. All common comment styles are supported:
 
 \subsection{Client configuration file}
 
-Client config file should be named \verb+client.conf+. After
-successful startup, old version of this file is stored as
-\verb+client.conf-old+. One of design requirements for client was
-,,out of the box'' usage. To achieve this, simply use empty
+Client config file should be named \verb+client.conf+. It should be
+placed in the +/etc/dibbler/+ directory (Linux system) or in the
+current directory (Windows systems). After successful startup, old
+version of this file is stored as \verb+client.conf-old+. One of
+design requirements for client was ,,out of the box'' usage. To
+achieve this, simply use empty 
 \verb+client.conf+ file. Client will try to get one address for each up and
 running interface \footnote{Exactly: Client tries to configure each
   up, multicast-capable and running interface, which has link address
@@ -102,7 +88,7 @@ address options
 
 Interface can be declared this way:
 \begin{verbatim}
-iface name_of_this_interface
+iface interface_name
 {
   interface options
   IA options
@@ -123,7 +109,7 @@ iface number
 
 In every case, number denotes interface number. It can be extracted
 from ,,ip~l'' (Linux) or
-,,ipv6~if''(Windows). \verb+name_of_this_interface+ is an interface
+,,ipv6~if''(Windows). \verb+interface_name+ is an interface
 name.  Also take a note that name of the interface
 no longer needs to be enclosed in single or double quotes. It is
 necessary only in Windows systems, where interface names sometimes
@@ -275,7 +261,16 @@ assumed. If client should not request for address on this interface,
 must be used. In such circumstances, only specified options will be
 requested.
 
-\subsubsection{Client configuration file examples}
+\subsubsection{Relay support}
+Usage of the relays is not visible from the client's point of view:
+Client can't distinguigh if it communicates via relay(s) or directly
+with the server. Therefore no special directives on the client side 
+are required to use relays. 
+
+\subsection{Client configuration examples}
+This subsection contains various examples of the most configurations.
+
+\subsubsection{Example 1: Default}
 
 In simplest case, client config can be empty. Client will try to
 assign one address for every interface present in the system, except
@@ -291,26 +286,35 @@ If you must use DHCPv6 on one of such interfaces (which is not
 recommended and probably will fail), you must explicitly specify this
 interface in config file.
 
+\subsubsection{Example 2: DNS}
+
 Simple config config file requesting 1 address and DNS configuration
 on eth0 interface looks like that:
 \begin{verbatim}
+# client.conf
 log-mode short
 log-level 7
 iface eth0 {
   option dns-server
-  ia {
-  }
+  ia
 }
 \end{verbatim}
 
+\subsubsection{Example 3: Timeouts and specific address}
+
 Another example is presented below. Client asks for 1 address and
 would like it to be 2000::1:2:3. Rapid-commit is allowed and client
-would like to renew this address once in a 10 minutes:
+would like to renew this address once in a 10 minutes.
 
 \begin{verbatim}
+# client.conf
 log-mode short
 log-level 7
 iface eth0 {
+  T1 1800
+  T2 2000
+  prefered-lifetime 3600
+  valid-lifetime 7200
   rapid-commit YES
   ia {
     address { 
@@ -320,62 +324,71 @@ iface eth0 {
 }
 \end{verbatim}
 
+\subsubsection{Example 4: Unicast, more than one address}
+
 Here's yet another example. We would like to obtain 2 addresses on
-,,Local Area Connection'' interface. Unicast communication is ok in
-this scenario. We don't care for details, so keep those log very
-short. Config file looks like that:
+,,Local Area Connection'' interface. Note quotation marks around
+interface name. They're necessary since this particular interface name
+contains spaces. Client also would like to accept Unicast
+communication if server supports it. We don't care for
+details, so keep those log very short. Config file looks like that:
+
 \begin{verbatim}
+# client.conf
 log-mode short
 log-level 3
 iface "Local Area Connection" {
-  ia {
-    address
-    address
-  }
+  unicast yes
+  ia 2
 }
 \end{verbatim}
 
-Here is a more coplicated case. Let's say there are 4 interfaces,
-numbered 1 thru 4. Interfaces 1,2 and 3 are not to be
-configured. Interface 4, named eth0 should have 3 IAs. Two of them are
-supposed to contain one address each. Third IA should contain 3
-addresses. Addresses assigned to first and second IA should have
-prefered-lifetime 1 hour and valid-lifetime 2 hours. This IA should
-have 3 specific addresses: 2000::1, 2000::2 and 2000::3. Information
-about NTP servers,our current timezone, available DNS servers and our
-domain should also be retrived. Here's config file:
+\subsubsection{Exmaple 5: Rapid-commit}
+Rapid-commit is a shortened exchange with server. It consists of only
+two messages, instead of the usual four. Instead of using interface
+name, we provide its index. It is worth to know that server must also 
+support rapid-commit.
 
 \begin{verbatim}
+# client.conf
+iface 3 {
+  rapid-commit yes
+  ia 
+  option dns-server
+}
+\end{verbatim}
+
+\subsubsection{Example 6: Stateless mode}
+Client can be configured to work in a stateless mode. It means that it
+will obtain only some configuration parameters, but no
+addresses. Let's assume we want all the details and we want to obtain
+all possible configuration parameters. Here's config file:
+
+\begin{verbatim}
+# client.conf
+log-level 8
+log-mode full
+stateless
 iface eth0
 {
-  valid-lifetime 7200    // default value - 2 hours
-  prefered-lifetime 3600 // default value - 1 hour
-  T1 600                 // request 10 minutes interval
-  T2 1200		 /* trouble begins after 20 minutes
-                            of server's silence */
-  IA 2                   // 2 IAs with just specified values (1h/2h/10min/20min)
-  IA			 // third IA is more specific
-  {
-    valid-lifetime 3600   	// valid lifetime changed to 1 hour
-    prefered-lifetime 1800	// prefered lifetime changed to 30min
-    address
-    {			  
-      2000::1		  // request those addresses
-      2000::2             
-      2000::3
-    }
-  }
-  option ntp-server        // ask for NTP servers
-  option time-zone         // ask for timezone
-  option dns-server        // ask for DNS servers
-  option domain            // ask for domain
+  option dns-server
+  option domain
+  option ntp-server
+  option time-zone
+  option sip-server
+  option sip-domain
+  option nis-server
+  option nis-domain
+  option nis+-server
+  option nis+-domain
 }
 \end{verbatim}
 
 \subsection{Server configuration file}
 
-Server configuration is stored in \verb+server.conf+ file. After
-successful startup, old version of this file is stored as
+Server configuration is stored in \verb+server.conf+ file in the
++/etc/dibbler+ (Linux systems) or in current (Windows systems)
+directory. After successful startup, old version of this file is stored as
 \verb+server.conf-old+.
 
 \subsubsection{Global scope}
@@ -503,7 +516,12 @@ Lifetime is a special case. It is not set up by client in a system
 configuration. It is, however, used by the client to know how long
 obtained values are correct.
 
-\subsubsection{Server configuration file examples}
+\subsection{Server configuration examples}
+
+This subsection contains various examples of the server
+configuration. 
+
+\subsubsection{Example 1: Simple}
 
 In opposite to client, server uses only interfaces described in config
 file. Let's examine this common situation: server has interface
@@ -512,6 +530,7 @@ supposed to assign addresses from 2000::100/124 class. Simplest config
 file looks like that:
 
 \begin{verbatim}
+# server.conf
 iface eth0
 { 
   class
@@ -521,131 +540,177 @@ iface eth0
 }
 \end{verbatim}
 
-Another example: Server should support 2000::0/120 class on eth0
-interface. It should not allow any client to obtain more than 5
-addresses and should not grant more then 50 addresses in total. And it
-should have prefence set to 7, accept T1 from 1 to 2 minutes and so
-on. Config file is presented below:
+\subsubsection{Example 2: Timeouts}
+Server should be configured to deliver specific timer values to the
+clients. This example shows how to instruct client to renew (T1 timer) 
+addresses one in 10 minutes. In case of problems, ask other servers in
+15 minutes (T2 timer), that allowe prefered lifetime range is from 30
+minutes to 2 hours, and valid lifetime is from 1 hour to 1 day. DNS
+server parameter is also provided. Lifetime option is used to make
+clients renew all non-address related options renew once in 2 hours.
 
 \begin{verbatim}
-log-mode short
-log-level 7
-iface eth0
+# server.conf
+iface eth0 
 {
-   iface-max-lease 50
-   client-max-lease 5
-   preference 7
-   class
-   {
-       pool 2000::1-2000::100
-   }
-}  
-\end{verbatim}
-
-Here's modified previous example. Instead of specified limits, unicast
-communication should be supported.
-
-\begin{verbatim}
-log-level 7
-iface eth0
-{
-   unicast 2000::1234
-   class
-   {
-       pool 2000::1-2000::100
-   }
-}  
-\end{verbatim}
-
-Ok, now let's present last config file with various requirements:
-\begin{itemize}
-\item Add new class on fifth interface named \emph{eth1}, for example 2000::fe00/120.
-\item Rapit commit is allowed on eth1.
-\item Server preference on this interface is set to maximum (255).
-\item Assign 2000::20/124 class on fourth interface named
-  eth0. Preference value for this interface should be 0.
-\item Ignore client with DUID ``00001231200adeaaa'' in the class
-  2000::20/124.
-\item Valid and prefered lifetimes are 1 hour and 30 minutes
-  respectively. T1 and T2 set to 10 minutes and 20 minutes.
-\item For class 2000::100/124 valid and prefered lifetimes are 2 hours
-  and 1 hour.
-\item In class 2000::100/124 one client can request up to two
-  addresses.
-\item Do not assign more than 10 addresses from 2000::20/124 class.
-\item Client with fe80::200:39ff:fe4b:1abc link-local address should
-  get his static address 2000::2f.
-\item We shall support DNS and NTP servers on interface 5. 
-\item Log level is set to omit debug messages.
-\end{itemize}
-
-Here's config to do all this stuff:
-
-\begin{verbatim}
-log-level 7
-valid-lifetime 3600
-prefered-lifetime 1800
-T1 600
-T2 1200
-iface eth0
-{
-  preference 0
+  T1 600
+  T2 900
+  prefered-lifetime 1800-3600
+  valid-lifetime 3600-86400
   class
   {
+    pool 2000::100-2000::10f
+  } 
+
+  option dns-server 2000::1234
+  option lifetime 7200
+}
+\end{verbatim}
+
+\subsubsection{Example 3: Limiting amount of addresses}
+Another example: Server should support 2000::0/120 class on eth0
+interface. It should not allow any client to obtain more than 5
+addresses and should not grant more then 50 addresses in total. From
+this specific class only 20 addresses can be assigned. Server
+preference should be set to 7. This means that this server is more
+important than all server with preference set to 6 or less. 
+Config file is presented below:
+
+\begin{verbatim}
+# server.conf
+iface eth0
+{
+  iface-max-lease 50
+  client-max-lease 5
+  preference 7
+  class
+  {
+    class-max-lease 20
+    pool 2000::1-2000::100
+  }
+}  
+\end{verbatim}
+
+\subsubsection{Example 4: Unicast communication}
+Here's modified previous example. Instead of specified limits, unicast
+communication should be supported and server should listen on
+2000::1234 address. Note that default multicast address is still
+supported. 
+
+\begin{verbatim}
+# server.conf
+log-level 7
+iface eth0
+{
+  unicast 2000::1234
+  class
+  {
+    pool 2000::1-2000::100
+  }
+}  
+\end{verbatim}
+
+\subsubsection{Example 5: Rapid-commit}
+This configuration can be called quick. Rapid-commit is a way to shorten exchange to only two messages. It is
+quite useful in networks with heavy load. In case if client does not
+support rapid-commit, another trick is used. Preference is set to
+maximum possible value. 255 has a special meaning: it makes client to
+skip wait phase for possible advertise messages from other servers and
+quickly request addresses.
+
+\begin{verbatim}
+# server.conf
+log-level 7
+iface eth0
+{
+  rapid-commit yes
+  preference 255
+  class
+  {
+    pool 2000::1-2000::100
+  }
+}  
+\end{verbatim}
+
+\subsubsection{Example 6: Access control}
+Administrators can selectively allow certain client to use this
+server (white-list). On the other hand, some clients could be
+explicitly forbidden to use this server (black-list). Specific DUIDs,
+DUID ranges, link-local addresses or the whole address ranges are
+supported. Here is config file:
+
+\begin{verbatim}
+iface eth0
+{
+  class
+  {
+    # duid of the rejected client
     reject-clients ``00001231200adeaaa''
     2000::2f-2000::20  // it's in reverse order, but it works.
                        // just a trick. 
   }
+}
+iface eth1
+{
   class
   {
     accept-only fe80::200:39ff:fe4b:1abc
-    pool 2000::2f 
-  }
-}
-iface 5
-{
-  dns-server 2000::123:456,2000::456:1234
-  ntp-server 2000::1111:2222
-  rapid-commit 1
-  preference 255
-  class
-  {
     pool 2000::fe00-2000::feff
-    class-max-lease 10
   }
-  
-  class
-  {
-    valid-lifetime 7200
-    prefered-lifetime 3600
-    pool 2000::100-2000::10f
-    client-max-lease 2
-  } 
 }
 \end{verbatim}
 
+\subsubsection{Example 7: Relay support}
+
 The last server configuration example explains how to use
-relays. There is some remote relay with will send encapsulated over
+relays. There is some remote relay with will send encapsulated data over
 eth1 interface. It is configured to append interface-id option set to
 5020 value. Let's allow all clients using this relay some addresses
 and information about DNS servers:
 
 \begin{verbatim}
+# server.conf
 iface relay1 {
- relay eth1
- interface-id 5020
-
- class {
-   pool 2000::1-2000::ff
- }
- option dns-server 2000::100,2000::101
+  relay eth1
+  interface-id 5020
+  class {
+    pool 2000::1-2000::ff
+  }
+  option dns-server 2000::100,2000::101
 }
 \end{verbatim}
 
+\subsubsection{Example 8: 2 relays}
+This is advanced configuration. It assumes that client sends data to
+relay1, which encapsulates it and forwards it to relay2, which
+eventually sends it to the server (after additional encapsulation). It
+assumes that first relay adds interface-id option set to 6011 and
+second one adds similar option set to 6021. 
+
+\begin{verbatim}
+# server.conf
+iface relay1
+{
+  relay eth0
+  interface-id 6011
+} 
+
+iface relay2
+{
+  relay relay1
+  interface-id 6021
+  T1 1000
+  T2 2000
+  class {
+    pool 6020::20-6020::ff
+  }
+}
+\end{verbatim}
 
 \subsection{Relay configuration file}
 
-Relay configuration is stored in \verb+/etc/dibbler/relay.conf+ file.
+Relay configuration is stored in +relay.conf+ file in the +/etc/dibbler/+
+(Linux systems) or in current directory (Windows systems).
 
 \subsubsection{Global scope}
 
@@ -708,7 +773,7 @@ It is worth mentioning that interface-id should be specified on the
 interface, which is used to receive messages from the clients, not the
 one used to forward packets to server.
 
-\subsubsection{Relay configuration file examples}
+\subsection{Relay configuration examples}
 
 Relay configuration file is fairly simple. Relay forwards DHCPv6
 messages between interfaces. Messages from client are encapsulated and
@@ -724,6 +789,7 @@ alligned with system interface id (ifindex). Think about it as
 "ethernet segment identifier" if you are using Ethernet network or as
 "bss identifier" if you are using 802.11 network.
 
+\subsubsection{Example 1: Unicast/multicast}
 Let's assume this case: relay has 2 interfaces: eth0 and
 eth1. Clients are located on the eth1 network. Relay should receive
 data on that interface using well-known ALL\_DHCP\_RELAYS\_AND\_SERVER
@@ -732,13 +798,12 @@ address 2000::123. Packets received on the eth1 should be forwarded on
 the eth0 interface, also using multicast address:
 
 \begin{verbatim}
+# relay.conf
 log-level 8
 log-mode short
-
 iface eth0 {
   server multicast yes
 }
-
 iface eth1 {
   client multicast yes
   client unicast 2000::123
@@ -746,32 +811,77 @@ iface eth1 {
 }
 \end{verbatim}
 
+\subsubsection{Example 2: Multiple interfaces}
 Here is another example. This time messages should be forwarded from
 eth1 and eth3 to the eth0 interface (using multicast) and to the eth2
 interface (using server's global address 2000::546). Also clients must
 use multicasts (the default approach):
 
 \begin{verbatim}
+# relay.conf
 iface eth0 {
   server multicast yes
 }
-
 iface eth2 {
   server unicast 2000::456
 }
-
 iface eth1 {
   client multicast yes                    
   interface-id 1000
 }
-
 iface eth3 {
   client multicast yes                    
   interface-id 1001
 }
 \end{verbatim}
 
+\subsubsection{Example 3: 2 relays}
+Those two configuration files correspond to the ,,2 relays'' example
+provided in the server example 8.
+
+log-level 8
+log-mode short
+
+\begin{verbatim}
+# relay.conf - relay 1
+iface eth0 {
+#   server multicast yes     // relay messages on this interface to ff05::1:3
+  server unicast 6011::1     // relay messages on this interface to this global address
+}
+
+# client can send messages to multicast 
+# (or specific link-local addr) on this link
+iface eth1 {
+  client multicast yes       // bind ff02::1:2
+# client unicast 6021::1     // bind this address
+  interface-id 6021
+}
+\end{verbatim}
+
+\begin{verbatim}
+# relay.conf - relay 2
+log-level 8
+log-mode full
+
+# messages will be forwarded on this interface using multicast
+iface eth2 {
+   server multicast yes      // relay messages on this interface to ff05::1:3
+ # server unicast 6000::10   // relay messages on this interface to this global address
+}
+
+iface eth1 {
+#  client multicast yes      // bind ff02::1:2
+  client unicast 6011::1     // bind this address
+  interface-id 6011
+}
+\end{verbatim}
+
+
+
 %% $Log: not supported by cvs2svn $
+%% Revision 1.14  2005/03/15 23:02:31  thomson
+%% 0.4.0 release.
+%%
 %% Revision 1.13  2005/03/07 22:45:51  thomson
 %% Typo fix.
 %%

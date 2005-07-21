@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.10 2005-03-15 23:02:31 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.11 2005-07-21 23:28:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.10  2005/03/15 23:02:31  thomson
+%% 0.4.0 release.
+%%
 %% Revision 1.9  2005/02/01 23:06:48  thomson
 %% *** empty log message ***
 %%
@@ -107,9 +110,11 @@ dibbler-client stop
 dibbler-relay stop
 \end{verbatim}
 
-To see, if client, server or relay are running\footnote{Running status is
-  based on /var/lib/dibbler/*.pid files. In rare
-  occasions, when server crashes, this status will show server status as running.}, type:
+To see, if client, server or relay are running\footnote{Running status
+  in Linux is based on /var/lib/dibbler/*.pid files. In rare
+  occasions, when one of the server,client or relay crashes, this
+  status will show its status as running.}, type:
+
 \begin{verbatim}
 dibbler-server status
 dibbler-client status
@@ -117,15 +122,15 @@ dibbler-relay status
 \end{verbatim}
 
 \subsection{Windows installation}
-Starting at 0.2.1, Dibbler supports Windows XP and 2003. The easiest
-way it to download clickable windows installer.
-Download it from \url{http://klub.com.pl/dhcpv6/}).
-After downloading, click on it and follow on screen
-instructions. Dibbler will be installed and all required links will be
-placed in the Start menu.
+Starting at 0.2.1, Dibbler supports Windows XP and 2003. In version
+0.4.1 exprimental support for Windows 2000 is provided. The easiest
+way is to download clickable windows installer. Download it from
+\url{http://klub.com.pl/dhcpv6/}). After downloading, click on it and
+follow on screen instructions. Dibbler will be installed and all
+required links will be placed in the Start menu.
 
 \section{Compilation}
-Dibbler is distributed in 2 versions: binary and source files. For
+Dibbler is distributed in 2 versions: binary and source. For
 most users, binary version is better choice.  Compilation is
 performed by more experienced users, preferably with programming
 knowledge. It does not offer any advances over binary version, only
@@ -164,9 +169,13 @@ directory. Most simple way to do this is to copy this file to
 \verb+/usr/include+ directory. Additional information about
 compilation can be found in \emph{Dibbler Developer's Guide}.
 
-\subsection{WindowsXP/2003 compilation}
+\subsection{Windows XP/2003 compilation}
 Download dibbler-0.3.0-src.tar.gz and extract it. In Port-winxp there
 will be project files (for server, client and relay) for MS
 Visual C++ 2003. Open one of them and click Build command. That should
 do the trick. Additional information about compilation can be found in
 \emph{Dibbler Developer's Guide}.
+
+\subsection{Windows 2000 compilation}
+Windows 2000 port is considered experimental, but there are reports
+that it works just fine. See Port-win2k/INFO file for details.

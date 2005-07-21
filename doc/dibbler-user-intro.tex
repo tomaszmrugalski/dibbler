@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.6 2005-02-01 23:06:48 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.7 2005-07-21 23:28:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.6  2005/02/01 23:06:48  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.5  2005/01/23 23:16:56  thomson
 %% Relay related things.
 %%
@@ -28,7 +31,7 @@ Dibbler website located at \url{http://klub.com.pl/dhcpv6/}.
 \section{Overview}
 
 Dibbler is a portable DHCPv6 solution. It features server, client and
-relay. Currently there are ports available for Windows XP and 2003
+relay. Currently there are ports available for Windows 2000, XP and 2003
 and Linux systems. It supports both stateful (i.e. IPv6 address
 granting) and stateless (i.e. options granting) autoconfiguration.
 Besides basic functionality\footnote{specified in RFC3315}, it also offers
@@ -139,10 +142,11 @@ and features.
 
 Dibbler can be run on Linux systems with kernels from 2.4 and 2.6
 series. Obviously, IPv6 (compiled into kernel or as module) support is
-required to run. As DHCPv6 uses UDP ports below 1024, root privileges
-are required. 
+required to run. As DHCPv6 uses UDP ports below 1024, so root privileges
+are required. They're also required to add, modify and delete various
+system parameters, e.g. IPv6 addresses.
 
-Dibbler also runs on Windows XP and 2003. In XP systems, at least
+Dibbler also runs on Windows 2000, XP and 2003. In XP systems, at least
 Service Pack 1 is required. To install various Dibbler parts (server,
 client or relay) as services, administrator privileges might be
 required. 
