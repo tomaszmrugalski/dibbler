@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.32 2005-07-17 21:09:52 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.33 2005-07-21 23:29:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2005/07/17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.31  2005/03/07 22:45:14  thomson
  * Fixed problem with non-existent interface name (bug #105)
  *
@@ -93,13 +96,14 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     // parse config file
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
-	     Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
-	     this->IsDone = true;
-         return;
+	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
+	this->IsDone = true;
+	return;
+    } else {
+	Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     }
     yyFlexLexer lexer(&f,&clog);
     clntParser parser(&lexer);
-    Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
