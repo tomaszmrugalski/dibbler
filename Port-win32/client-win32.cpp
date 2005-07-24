@@ -6,32 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: client-win32.cpp,v 1.16 2005-07-17 21:09:53 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.15  2005/02/01 22:39:20  thomson
- * Command line service support greatly improved.
- *
- * Revision 1.14  2004/10/03 21:28:44  thomson
- * 0.2.1-RC1 version.
- *
- * Revision 1.13  2004/09/28 21:49:32  thomson
- * no message
- *
- * Revision 1.12  2004/07/17 16:02:34  thomson
- * Command line minor modifications.
- *
- * Revision 1.11  2004/05/24 21:16:37  thomson
- * Various fixes.
- *
- * Revision 1.10  2004/04/15 23:53:45  thomson
- * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
- *
- * Revision 1.9  2004/04/15 23:24:44  thomson
- * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
- *
- * Revision 1.8  2004/03/29 22:06:49  thomson
- * 0.1.1 version
+ * $Id: client-win32.cpp,v 1.17 2005-07-24 16:00:03 thomson Exp $
  */
 
 #include <string>
@@ -46,7 +21,6 @@
 #include "DHCPClient.h"
 #include "logger.h"
 #include <iostream>
-#include <crtdbg.h>
 
 extern "C" int lowlevelInit();
 
@@ -66,7 +40,7 @@ void usage() {
 		 << " Note: -d parameter is optional." << endl;
 }
 
-extern TDHCPClient * ptr;
+extern TDHCPClient * clntPtr;
 
 /* 
  * Handle the CTRL-C, CTRL-BREAK signal. 
@@ -76,7 +50,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
   switch( fdwCtrlType ) 
   { 
   case CTRL_C_EVENT: {
-	  ptr->stop();
+	  clntPtr->stop();
       return TRUE;
   }
     case CTRL_BREAK_EVENT: 
@@ -90,10 +64,9 @@ int main(int argc, char* argv[])
     // get the service object
     TClntService * Client = TClntService::getHandle();
 
-    int i=0;
     WSADATA wsaData;
 
-	cout << DIBBLER_COPYRIGHT1 << " (CLIENT)" << endl;
+	cout << DIBBLER_COPYRIGHT1 << " (CLIENT, WinXP/2003 port)" << endl;
 	cout << DIBBLER_COPYRIGHT2 << endl;
 	cout << DIBBLER_COPYRIGHT3 << endl;
 	cout << DIBBLER_COPYRIGHT4 << endl;
@@ -155,3 +128,33 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/07/17 21:09:53  thomson
+ * Minor improvements for 0.4.1 release.
+ *
+ * Revision 1.15  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
+ * Revision 1.14  2004/10/03 21:28:44  thomson
+ * 0.2.1-RC1 version.
+ *
+ * Revision 1.13  2004/09/28 21:49:32  thomson
+ * no message
+ *
+ * Revision 1.12  2004/07/17 16:02:34  thomson
+ * Command line minor modifications.
+ *
+ * Revision 1.11  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
+ * Revision 1.10  2004/04/15 23:53:45  thomson
+ * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
+ *
+ * Revision 1.9  2004/04/15 23:24:44  thomson
+ * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
+ *
+ * Revision 1.8  2004/03/29 22:06:49  thomson
+ * 0.1.1 version
+ */

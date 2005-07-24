@@ -4,23 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.5 2005-07-17 21:09:54 thomson Exp $
+ * $Id: relay-win32.cpp,v 1.6 2005-07-24 16:00:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2005/02/01 22:39:20  thomson
- * Command line service support greatly improved.
- *
- * Revision 1.3  2005/02/01 22:08:03  thomson
- * start, stop commands implemented.
- *
- * Revision 1.2  2005/02/01 01:09:34  thomson
- * Cosmetics.
- *
- * Revision 1.1  2005/01/24 00:42:37  thomson
- * no message
- *
  *
  */
 
@@ -37,7 +23,7 @@
 #include "Logger.h"
 
 extern "C" int lowlevelInit();
-extern TDHCPRelay * ptr;
+extern TDHCPRelay * relPtr;
 
 void usage() {
 	cout << "Usage:" << endl;
@@ -61,7 +47,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
   switch( fdwCtrlType ) 
   { 
   case CTRL_C_EVENT: {
-	  ptr->stop();
+	  relPtr->stop();
       return TRUE;
   }
     case CTRL_BREAK_EVENT: 
@@ -72,7 +58,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 
 int main(int argc, char* argv[]) {
 
-    cout << DIBBLER_COPYRIGHT1 << " (RELAY)" << endl;
+    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003 port)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
     cout << DIBBLER_COPYRIGHT3 << endl;
     cout << DIBBLER_COPYRIGHT4 << endl;
@@ -81,7 +67,6 @@ int main(int argc, char* argv[]) {
 	// get the service object
     TRelService * RelService = TRelService::getHandle();
 
-    int i=0;
     WSADATA wsaData;
     if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
 	cout<<"Unable to load WinSock 2.2"<<endl;
@@ -140,4 +125,21 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/07/17 21:09:54  thomson
+ * Minor improvements for 0.4.1 release.
+ *
+ * Revision 1.4  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
+ * Revision 1.3  2005/02/01 22:08:03  thomson
+ * start, stop commands implemented.
+ *
+ * Revision 1.2  2005/02/01 01:09:34  thomson
+ * Cosmetics.
+ *
+ * Revision 1.1  2005/01/24 00:42:37  thomson
+ * no message
+ *
+ */

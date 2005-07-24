@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  *          win2k version by <sob@hisoftware.cz>
  *
- * $Id: RelService.cpp,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: RelService.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *                                                                           
  * Released under GNU GPL v2 licence                                
  *
@@ -17,13 +17,8 @@
 #include "Portable.h"
 #include "Logger.h"
 #include "DHCPConst.h"
-#ifdef  WIN32
-#ifndef MINGWBUILD
-#include <crtdbg.h>
-#endif
-#endif
 
-TDHCPRelay * rlptr;
+TDHCPRelay * relPtr;
 TRelService StaticService;
 
 TRelService::TRelService() 
@@ -37,7 +32,7 @@ TRelService::TRelService()
 EServiceState TRelService::ParseStandardArgs(int argc,char* argv[])
 {
     bool dirFound = false;
-    EServiceState status = STATUS;
+    EServiceState status = INVALID;
     
     int n=1;
     while (n<argc)
@@ -67,8 +62,11 @@ EServiceState TRelService::ParseStandardArgs(int argc,char* argv[])
     }
 	n++;
     }
-    if (!dirFound)
-		return INVALID;
+    if (!dirFound) {
+     // Log(Notice) << "-d parameter missing. Trying to load relay.conf from current directory." << LogEnd;
+        ServiceDir=".";
+        return status;
+	}
 	if (ServiceDir.length()<3) {
 	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: too short. " 
 		      << "Please use full absolute pathname, e.g. C:\\dibbler" << LogEnd;
@@ -94,7 +92,7 @@ TRelService::~TRelService(void)
 
 void TRelService::OnStop()
 {
-    rlptr->stop();
+    relPtr->stop();
 }
 
 bool TRelService::CheckAndInstall() {
@@ -122,13 +120,10 @@ void TRelService::Run()
     logger::setLogName("Rel");
 	logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY)" << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY, WinNT/2000 port)" << LogEnd;
     
     TDHCPRelay relay(confile);
-    rlptr = &relay; // remember address
+    relPtr = &relay; // remember address
     relay.setWorkdir(this->ServiceDir);
 
     if (!relay.isDone())
@@ -141,4 +136,7 @@ void TRelService::setState(EServiceState status) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */

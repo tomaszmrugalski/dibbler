@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.6 2005-07-17 21:09:53 thomson Exp $
+ * $Id: RelService.cpp,v 1.7 2005-07-24 16:00:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/07/17 21:09:53  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.5  2005/06/07 21:58:49  thomson
  * 0.4.1
  *
@@ -33,11 +36,8 @@
 #include "Portable.h"
 #include "Logger.h"
 #include "DHCPConst.h"
-#ifdef  WIN32
-#include <crtdbg.h>
-#endif
 
-TDHCPRelay * ptr;
+TDHCPRelay * relPtr;
 TRelService StaticService;
 
 TRelService::TRelService() 
@@ -111,7 +111,7 @@ TRelService::~TRelService(void)
 
 void TRelService::OnStop()
 {
-    ptr->stop();
+    relPtr->stop();
 }
 
 void TRelService::Run()
@@ -127,12 +127,12 @@ void TRelService::Run()
     string workdir  = this->ServiceDir;
     string logFile  = RELLOG_FILE;
     logger::setLogName("Rel");
-	logger::Initialize((char*)logFile.c_str());
+    logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY)" << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003 port)" << LogEnd;
     
     TDHCPRelay relay(workdir+"\\"+confile);
-    ptr = &relay; // remember address
+    relPtr = &relay; // remember address
     relay.setWorkdir(this->ServiceDir);
 
     if (!relay.isDone())

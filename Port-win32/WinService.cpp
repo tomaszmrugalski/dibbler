@@ -6,33 +6,7 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.14 2005-02-01 22:39:20 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.13  2005/02/01 22:08:04  thomson
- * start, stop commands implemented.
- *
- * Revision 1.12  2005/02/01 18:36:53  thomson
- * IsRunning implemented, Install/Uninstall cleanup.
- *
- * Revision 1.11  2005/02/01 18:26:45  thomson
- * no message
- *
- * Revision 1.10  2004/12/02 00:51:06  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.9  2004/09/28 21:49:32  thomson
- * no message
- *
- * Revision 1.8  2004/06/21 23:08:49  thomson
- * Minor fixes.
- *
- * Revision 1.7  2004/05/24 21:16:37  thomson
- * Various fixes.
- *
- * Revision 1.6  2004/04/15 23:53:45  thomson
- * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
- *
+ * $Id: WinService.cpp,v 1.15 2005-07-24 16:00:03 thomson Exp $
  */
 
 #include <windows.h>
@@ -491,3 +465,34 @@ void TWinService::showStatus() {
     Log(Notice) <<  "Dibbler relay  : " << (relayInst ? "INSTALLED":"NOT INSTALLED") 
                 << ", " << (relayRun  ? "RUNNING":"NOT RUNNING") << LogEnd;
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.14  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
+ * Revision 1.13  2005/02/01 22:08:04  thomson
+ * start, stop commands implemented.
+ *
+ * Revision 1.12  2005/02/01 18:36:53  thomson
+ * IsRunning implemented, Install/Uninstall cleanup.
+ *
+ * Revision 1.11  2005/02/01 18:26:45  thomson
+ * no message
+ *
+ * Revision 1.10  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
+ * Revision 1.9  2004/09/28 21:49:32  thomson
+ * no message
+ *
+ * Revision 1.8  2004/06/21 23:08:49  thomson
+ * Minor fixes.
+ *
+ * Revision 1.7  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
+ * Revision 1.6  2004/04/15 23:53:45  thomson
+ * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
+ *
+ */

@@ -7,7 +7,7 @@
  *
  * based on WinService.cpp,v 1.14 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: WinService.cpp,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: WinService.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *                                                                           
@@ -34,7 +34,7 @@ TWinService::TWinService(const char* serviceName, const char* dispName,
 	this->descr = descr;
     
     // set service status 
-    hServiceStatus = NULL;
+    hServiceStatus = (SERVICE_STATUS_HANDLE)NULL;
     Status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
     Status.dwCurrentState = SERVICE_STOPPED;
     Status.dwControlsAccepted = SERVICE_ACCEPT_STOP;
@@ -61,7 +61,7 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     // Register the control request handler
     pService->Status.dwCurrentState = SERVICE_START_PENDING;
     pService->hServiceStatus = RegisterServiceCtrlHandler(pService->ServiceName,Handler);
-    if (pService->hServiceStatus==NULL)
+    if (pService->hServiceStatus==(SERVICE_STATUS_HANDLE)NULL)
 	{
         return;
     }
@@ -474,4 +474,7 @@ void TWinService::showStatus() {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */

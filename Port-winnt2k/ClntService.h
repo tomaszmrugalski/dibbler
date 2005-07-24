@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  *          win2k version by <sob@hisoftware.cz>
  *
- * $Id: ClntService.h,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: ClntService.h,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *                                                                           
  * Released under GNU GPL v2 licence                                
  *
@@ -40,4 +40,9 @@ private:
 #endif
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */
+ 
+ 

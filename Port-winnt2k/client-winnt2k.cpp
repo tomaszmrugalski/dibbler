@@ -7,7 +7,7 @@
  *
  * based on client-winxp.cpp,v 1.15 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: client-winnt2k.cpp,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: client-winnt2k.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -32,7 +32,7 @@ using namespace std;
 
 void usage() {
 	cout << "Usage:" << endl;
-	cout << " client-winnt2k.exe ACTION -d dirname" << endl
+	cout << " dibbler-client.exe ACTION [-d c:\\path\\to\\config\\file]" << endl
 		 << " ACTION = status|start|stop|install|uninstall|run" << endl
 		 << " status    - show status and exit" << endl
 		 << " start     - start installed service" << endl
@@ -40,10 +40,11 @@ void usage() {
 		 << " install   - install service" << endl
 		 << " uninstall - uninstall service" << endl
 		 << " run       - run interactively" << endl
-		 << " help      - displays usage info." << endl;
+		 << " help      - displays usage info." << endl << endl
+		 << " Note: -d parameter is optional." << endl;
 }
 
-extern TDHCPClient * clptr;
+extern TDHCPClient * clntPtr;
 
 /* 
  * Handle the CTRL-C, CTRL-BREAK signal. 
@@ -53,7 +54,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
   switch( fdwCtrlType ) 
   { 
   case CTRL_C_EVENT: {
-	  clptr->stop();
+	  clntPtr->stop();
       return TRUE;
   }
     case CTRL_BREAK_EVENT: 
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
 
     WSADATA wsaData;
 
-	cout << DIBBLER_COPYRIGHT1 << " (CLIENT)" << endl;
+	cout << DIBBLER_COPYRIGHT1 << " (CLIENT, WinNT/2000 port)" << endl;
 	cout << DIBBLER_COPYRIGHT2 << endl;
 	cout << DIBBLER_COPYRIGHT3 << endl;
 	cout << DIBBLER_COPYRIGHT4 << endl;
@@ -134,4 +135,7 @@ int main(int argc, char* argv[])
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */

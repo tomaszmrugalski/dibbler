@@ -7,7 +7,7 @@
  *
  * based on relay-win32.cpp,v 1.4 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: relay-winnt2k.cpp,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: relay-winnt2k.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -26,19 +26,20 @@
 #include "Logger.h"
 
 extern "C" int lowlevelInit();
-extern TDHCPRelay * rlptr;
+extern TDHCPRelay * relPtr;
 
 void usage() {
 	cout << "Usage:" << endl;
-	cout << " relay-winnt2k.exe ACTION -d dirname " << endl
+	cout << " dibbler-relay.exe ACTION [-d c:\\path\\to\\config\\file]" << endl
 		 << " ACTION = status|start|stop|install|uninstall|run" << endl
 		 << " status    - show status and exit" << endl
 		 << " start     - start installed service" << endl
 		 << " stop      - stop installed service" << endl
 		 << " install   - install service" << endl
 		 << " uninstall - uninstall service" << endl
-		 << " run       - run in console" << endl;
-
+		 << " run       - run in console" << endl 
+		 << endl 
+		 << " -d parameter is optional." << endl;
 }
 
 /* 
@@ -49,7 +50,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
   switch( fdwCtrlType ) 
   { 
   case CTRL_C_EVENT: {
-	  rlptr->stop();
+	  relPtr->stop();
       return TRUE;
   }
     case CTRL_BREAK_EVENT: 
@@ -59,7 +60,14 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 }
 
 int main(int argc, char* argv[]) {
-    // get the service object
+
+    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinNT/2000 port)" << endl;
+    cout << DIBBLER_COPYRIGHT2 << endl;
+    cout << DIBBLER_COPYRIGHT3 << endl;
+    cout << DIBBLER_COPYRIGHT4 << endl;
+    cout << endl;
+	
+	// get the service object
     TRelService * RelService = TRelService::getHandle();
 
     WSADATA wsaData;
@@ -76,13 +84,7 @@ int main(int argc, char* argv[]) {
     
     EServiceState status = RelService->ParseStandardArgs(argc, argv);
     RelService->setState(status);
-    
-    cout << DIBBLER_COPYRIGHT1 << " (RELAY)" << endl;
-    cout << DIBBLER_COPYRIGHT2 << endl;
-    cout << DIBBLER_COPYRIGHT3 << endl;
-    cout << DIBBLER_COPYRIGHT4 << endl;
-    cout << endl;
-    
+        
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
     
     switch (status) {
@@ -128,4 +130,7 @@ int main(int argc, char* argv[]) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */

@@ -4,42 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: ClntService.cpp,v 1.20 2005-07-17 21:09:52 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.19  2005/06/07 21:58:49  thomson
- * 0.4.1
- *
- * Revision 1.18  2005/02/01 22:39:20  thomson
- * Command line service support greatly improved.
- *
- * Revision 1.17  2005/02/01 01:10:52  thomson
- * Working directory fix.
- *
- * Revision 1.16  2004/12/13 23:31:30  thomson
- * *DB_FILE renamed to *ADDRMGR_FILE
- *
- * Revision 1.15  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.14  2004/12/02 00:51:06  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.13  2004/05/24 21:16:37  thomson
- * Various fixes.
- *
- * Revision 1.12  2004/04/15 23:24:43  thomson
- * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
- *
- * Revision 1.11  2004/04/12 22:21:29  thomson
- * setLogname changed to setLogName
- *
- * Revision 1.10  2004/03/29 21:37:07  thomson
- * 0.1.1 version
- *
- * Revision 1.9  2004/03/28 19:50:19  thomson
- * Problem with failed startup solved.
- *
+ * $Id: ClntService.cpp,v 1.21 2005-07-24 16:00:02 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -50,10 +15,9 @@
 #include "portable.h"
 #include "logger.h"
 #include "DHCPConst.h"
-#include <crtdbg.h>
 #include <direct.h>
 
-TDHCPClient * ptr;
+TDHCPClient * clntPtr;
 TClntService StaticService;
 
 TClntService::TClntService() 
@@ -124,11 +88,11 @@ EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 }
 
 void TClntService::OnShutdown() {
-    ptr->stop();
+    clntPtr->stop();
 }
 
 void TClntService::OnStop() {
-	ptr->stop();
+	clntPtr->stop();
 }
 
 void TClntService::Run() {
@@ -139,20 +103,17 @@ void TClntService::Run() {
     }
     string confile  = CLNTCONF_FILE;
     string oldconf  = CLNTCONF_FILE+(string)"-old";
-	string workdir  = this->ServiceDir;
+    string workdir  = this->ServiceDir;
     string addrfile = CLNTADDRMGR_FILE;
     string logFile  = CLNTLOG_FILE;
     
     logger::setLogName("Client");
 	logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT)" << LogEnd;
-//    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
-//    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
-//    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT, WinXP/2003 port)" << LogEnd;
     
     TDHCPClient client(workdir+"\\"+confile);
-    ptr = &client; // remember address
+    clntPtr = &client; // remember address
     client.setWorkdir(this->ServiceDir);
 
     if (!client.isDone()) 
@@ -166,3 +127,43 @@ void TClntService::setState(EServiceState status) {
 TClntService::~TClntService(void)
 {
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.20  2005/07/17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
+ * Revision 1.19  2005/06/07 21:58:49  thomson
+ * 0.4.1
+ *
+ * Revision 1.18  2005/02/01 22:39:20  thomson
+ * Command line service support greatly improved.
+ *
+ * Revision 1.17  2005/02/01 01:10:52  thomson
+ * Working directory fix.
+ *
+ * Revision 1.16  2004/12/13 23:31:30  thomson
+ * *DB_FILE renamed to *ADDRMGR_FILE
+ *
+ * Revision 1.15  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
+ * Revision 1.14  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
+ * Revision 1.13  2004/05/24 21:16:37  thomson
+ * Various fixes.
+ *
+ * Revision 1.12  2004/04/15 23:24:43  thomson
+ * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
+ *
+ * Revision 1.11  2004/04/12 22:21:29  thomson
+ * setLogname changed to setLogName
+ *
+ * Revision 1.10  2004/03/29 21:37:07  thomson
+ * 0.1.1 version
+ *
+ * Revision 1.9  2004/03/28 19:50:19  thomson
+ * Problem with failed startup solved.
+ *
+ */

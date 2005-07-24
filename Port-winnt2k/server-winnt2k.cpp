@@ -7,7 +7,7 @@
  *
  * based on server-winxp.cpp,v 1.10 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: server-winnt2k.cpp,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: server-winnt2k.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -26,7 +26,7 @@
 #include "Logger.h"
 
 extern "C" int lowlevelInit();
-extern TDHCPServer * svptr;
+extern TDHCPServer * srvPtr;
 
 void usage() {
 	cout << "Usage:" << endl;
@@ -49,7 +49,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
   switch( fdwCtrlType ) 
   { 
   case CTRL_C_EVENT: {
-	  svptr->stop();
+	  srvPtr->stop();
       return TRUE;
   }
     case CTRL_BREAK_EVENT: 
@@ -59,29 +59,32 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 }
 
 int main(int argc, char* argv[]) {
+    cout << DIBBLER_COPYRIGHT1 << " (SERVER, WinNT/2000 port)" << endl;
+    cout << DIBBLER_COPYRIGHT2 << endl;
+    cout << DIBBLER_COPYRIGHT3 << endl;
+    cout << DIBBLER_COPYRIGHT4 << endl;
+    cout << endl;
+
     // get the service object
     TSrvService * SrvService = TSrvService::getHandle();
 
+#if 0
     WSADATA wsaData;
     if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
-	cout<<"Unable to load WinSock 2.2"<<endl;
-	return 0;
+        cout<<"Unable to load WinSock 2.2"<<endl;
+	    return 0;
     }
+#endif 
     
     // find ipv6.exe (or netsh.exe in future implementations)
     if (!lowlevelInit()) {
-	cout << "lowlevelInit() failed. Startup aborted.\n";
-	return -1;		
+        cout << "lowlevelInit() failed. Startup aborted.\n";
+        return -1;		
     }
     
     EServiceState status = SrvService->ParseStandardArgs(argc, argv);
     SrvService->setState(status);
     
-    cout << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
-    cout << DIBBLER_COPYRIGHT2 << endl;
-    cout << DIBBLER_COPYRIGHT3 << endl;
-    cout << DIBBLER_COPYRIGHT4 << endl;
-    cout << endl;
     
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
     
@@ -128,4 +131,7 @@ int main(int argc, char* argv[]) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */

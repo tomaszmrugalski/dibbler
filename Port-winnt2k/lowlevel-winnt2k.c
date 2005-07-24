@@ -7,7 +7,7 @@
  *
  * based on code from Dibbler 0.2.0-RC2 and Dibbler 0.4.0
  *
- * $Id: lowlevel-winnt2k.c,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: lowlevel-winnt2k.c,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *
  * released under GNU GPL v2 licence
  *
@@ -21,8 +21,9 @@
 #include <Ws2tcpip.h.>
 #include <Ws2spi.h>
 
-#include <tpipv6.h>
+//#include <tpipv6.h>
 
+#include <stdio.h>
 #include <iphlpapi.h>
 #include <iptypes.h>
 #include <process.h>
@@ -43,21 +44,24 @@ int lowlevelInit()
     char buf[256];
     FILE *f;
     int i;
+    
     i = GetEnvironmentVariable("SYSTEMROOT",buf, 256);
     if (!i) {
-	printf("Environment variable SYSTEMROOT not set.\n");
-	return 0;
+        printf("Environment variable SYSTEMROOT not set.\n");
+        return 0;
     }
     strcpy(buf+i,"\\system32\\ipv6.exe");
     if (!(f=fopen(buf,"r"))) {
-	printf("Unable to open %s file.\n",buf);
-	return 0;
+        printf("Unable to open %s file.\n",buf);
+        return 0;
     }
     fclose(f);
-    memcpy(ipv6Path, buf, 256);
+    strncpy(ipv6Path, buf, 256);
     strcpy(buf+i,"\\system32\\cmd.exe");
-    memcpy(cmdPath, buf, 256);
+    strncpy(cmdPath, buf, 256);
     //
+    
+    // FIXME: Use mktmpfile or something similar
     strcpy(buf+i,"\\dibbler-ipv6.tmp");
     memcpy(tmpFile, buf, 256);
     //
@@ -113,6 +117,7 @@ extern struct iface* if_list_get()
         // Interface 1 (site 1): my network interface
         if (strstr(buf,"Interface ")) {
                 tmp = (struct iface*)malloc(sizeof(struct iface));
+                memset(tmp, 0, sizeof(struct iface));
                 tmp->next = head;
 
                 memset(tmp->mac,0,255);
@@ -158,9 +163,9 @@ extern struct iface* if_list_get()
         if (strstr(buf,"fe80::")) {
                 bufPtr = strstr(buf,",");
                 if (bufPtr) *bufPtr = 0;
-                printf("ADDR=[%s]",strstr(buf,"fe80::")); fflush(stdout);
+                //printf("ADDR=[%s]",strstr(buf,"fe80::")); fflush(stdout);
                 pos = (tmp->linkaddrcount + 1)*16;
-                printf("Alokuje %d pamieci.\n",pos);
+                //printf("Alokuje %d pamieci.\n",pos);
                 tmpbuf = (char*) malloc( pos );
                 memcpy(tmpbuf,tmp->linkaddr, pos - 16);
                 inet_pton6( strstr(buf,"fe80::"), tmpbuf + tmp->linkaddrcount*16);
@@ -336,7 +341,7 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
 		return -1;
 	} else {
 #ifdef MINGWBUILD
-    	        inet_ntop6(info.sin6_addr._S6_un._S6_u8,peerPlainAddr);    	        
+    	        inet_ntop6((const char *)info.sin6_addr._S6_un._S6_u8,peerPlainAddr);    	        
 #else
     	        inet_ntop6(info.sin6_addr.u.Byte,peerPlainAddr);
 #endif    	        
@@ -427,4 +432,7 @@ extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */

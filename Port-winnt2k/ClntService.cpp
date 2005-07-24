@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  *          win2k version by <sob@hisoftware.cz>
  *
- * $Id: ClntService.cpp,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: ClntService.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *                                                                           
  * Released under GNU GPL v2 licence                                
  *
@@ -18,7 +18,7 @@
 #include "DHCPConst.h"
 #include <direct.h>
 
-TDHCPClient * clptr;
+TDHCPClient * clntPtr;
 TClntService StaticService;
 
 TClntService::TClntService() 
@@ -32,7 +32,7 @@ TClntService::TClntService()
 EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 {    
     bool dirFound=false;
-    EServiceState status=STATUS;
+    EServiceState status = INVALID;
     int n=1;
     
     while(n<argc) {
@@ -63,7 +63,9 @@ EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 		n++;
     }
     if (!dirFound) {
-		return INVALID;
+     // Log(Notice) << "-d parameter missing. Trying to load client.conf from current directory." << LogEnd;
+        ServiceDir=".";
+        return status;
 	}
 	
 	if (ServiceDir.length()<3) {
@@ -87,11 +89,11 @@ EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 }
 
 void TClntService::OnShutdown() {
-    clptr->stop();
+    clntPtr->stop();
 }
 
 void TClntService::OnStop() {
-	clptr->stop();
+	clntPtr->stop();
 }
 
 bool TClntService::CheckAndInstall() {
@@ -112,19 +114,17 @@ void TClntService::Run() {
     }
     string confile  = CLNTCONF_FILE;
     string oldconf  = CLNTCONF_FILE+(string)"-old";
+    string workdir  = this->ServiceDir;
     string addrfile = CLNTADDRMGR_FILE;
     string logFile  = CLNTLOG_FILE;
     
     logger::setLogName("Client");
 	logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT)" << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT, WinNT/2000 port)" << LogEnd;
     
-    TDHCPClient client(confile);
-    clptr = &client; // remember address
+    TDHCPClient client(workdir+"\\"+confile);
+    clntPtr = &client; // remember address
     client.setWorkdir(this->ServiceDir);
 
     if (!client.isDone()) 
@@ -141,4 +141,8 @@ TClntService::~TClntService(void)
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */
+ 

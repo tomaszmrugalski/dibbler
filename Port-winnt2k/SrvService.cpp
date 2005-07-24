@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  *          win2k version by <sob@hisoftware.cz>
  *
- * based on SrvService.cpp,v 1.15 2005/03/08 00:43:48 thomson Exp $
+ * based on SrvService.cpp,v 1.15 2005/03/08 00:43:48 thomson Exp
  *
- * $Id: SrvService.cpp,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: SrvService.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -19,7 +19,7 @@
 #include "Logger.h"
 #include "DHCPConst.h"
 
-TDHCPServer * svptr;
+TDHCPServer * srvPtr;
 TSrvService StaticService;
 
 TSrvService::TSrvService() 
@@ -33,7 +33,7 @@ TSrvService::TSrvService()
 EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
 {
     bool dirFound = false;
-    EServiceState status = STATUS;
+    EServiceState status = INVALID;
     
     int n=1;
     while (n<argc)
@@ -54,7 +54,7 @@ EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
 	    }
 	    n++;
 	    char temp[255];
-	    strncpy(temp,argv[n],255);
+	    strncpy(temp,argv[n],254);
 		int endpos = strlen(temp);
 		if (temp[endpos-1]=='\\')
 			temp[endpos-1]=0;
@@ -63,8 +63,12 @@ EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
     }
 	n++;
     }
-    if (!dirFound)
-		return INVALID;
+    if (!dirFound) {
+     // Log(Notice) << "-d parameter missing. Trying to load server.conf from current directory." << LogEnd;
+        ServiceDir=".";
+        return status;
+    }
+
 	if (ServiceDir.length()<3) {
 	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: too short. " 
 		      << "Please use full absolute pathname, e.g. C:\\dibbler" << LogEnd;
@@ -90,7 +94,7 @@ TSrvService::~TSrvService(void)
 
 void TSrvService::OnStop()
 {
-    svptr->stop();
+    srvPtr->stop();
 }
 
 bool TSrvService::CheckAndInstall() {
@@ -106,9 +110,9 @@ bool TSrvService::CheckAndInstall() {
 void TSrvService::Run()
 {
     if (_chdir(this->ServiceDir.c_str())) {
-	Log(Crit) << "Unable to change directory to " 
-		  << this->ServiceDir << ". Aborting.\n" << LogEnd;
-	return;
+        Log(Crit) << "Unable to change directory to " 
+	          << this->ServiceDir << ". Aborting.\n" << LogEnd;
+        return;
     }
     
     string confile  = SRVCONF_FILE;
@@ -119,13 +123,11 @@ void TSrvService::Run()
     logger::setLogName("Srv");
 	logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER)" << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT2 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT3 << LogEnd;
-    Log(Crit) << DIBBLER_COPYRIGHT4 << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER, WinNT/2000 port)" << LogEnd;
     
-    TDHCPServer server(confile);
-    svptr = &server; // remember address
+    string tmp1 = workdir+"\\"+confile;
+    TDHCPServer server(tmp1);
+    srvPtr = &server; // remember address
     server.setWorkdir(this->ServiceDir);
     
     if (!server.isDone())
@@ -138,5 +140,8 @@ void TSrvService::setState(EServiceState status) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */
  

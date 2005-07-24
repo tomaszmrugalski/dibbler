@@ -7,6 +7,13 @@
  during interface detection. That issue is fixed now. Command line
  usage for Windows systems is also simplified.
 
+ There are 3 different ports available: 
+ - Linux
+ - WinXP/2003
+ - WinNT/2000 (experimental)
+
+ Make sure that you use proper port.
+
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 
  project website: http://klub.com.pl/dhcpv6/
