@@ -1,30 +1,30 @@
-# Project: dibbler-server
+# Project: dibbler-relay
 # Makefile created by Dev-C++ 4.9.9.2
 
-CPP  = g++.exe -D__DEBUG__
-CC   = gcc.exe -D__DEBUG__
+CPP  = g++.exe
+CC   = gcc.exe
 WINDRES = windres.exe
 RES  = 
-OBJ  = WinService.o addrpack.o lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../SrvAddrMgr/SrvAddrMgr.o ../SrvCfgMgr/SrvParsIfaceOpt.o ../SrvCfgMgr/SrvCfgAddrClass.o ../SrvCfgMgr/SrvCfgIface.o ../SrvCfgMgr/SrvCfgMgr.o ../SrvCfgMgr/SrvLexer.o ../SrvCfgMgr/SrvParsClassOpt.o ../SrvCfgMgr/SrvParser.o ../SrvCfgMgr/SrvParsGlobalOpt.o ../SrvIfaceMgr/SrvIfaceMgr.o ../SrvIfaceMgr/SrvIfaceIface.o ../AddrMgr/AddrMgr.o ../AddrMgr/AddrAddr.o ../AddrMgr/AddrClient.o ../AddrMgr/AddrIA.o ../SrvTransMgr/SrvTransMgr.o ../Options/OptVendorSpecInfo.o ../Options/Opt.o ../Options/OptAddr.o ../Options/OptAddrLst.o ../Options/OptClientIdentifier.o ../Options/OptElapsed.o ../Options/OptGeneric.o ../Options/OptIA_NA.o ../Options/OptIAAddress.o ../Options/OptInteger4.o ../Options/OptOptionRequest.o ../Options/OptPreference.o ../Options/OptRapidCommit.o ../Options/OptServerIdentifier.o ../Options/OptStatusCode.o ../Options/OptString.o ../Options/OptStringLst.o ../Options/OptUserClass.o ../Options/OptVendorClass.o ../SrvOptions/SrvOptVendorSpecInfo.o ../SrvOptions/SrvOptClientIdentifier.o ../SrvOptions/SrvOptDNSServers.o ../SrvOptions/SrvOptDomainName.o ../SrvOptions/SrvOptElapsed.o ../SrvOptions/SrvOptFQDN.o ../SrvOptions/SrvOptIA_NA.o ../SrvOptions/SrvOptIAAddress.o ../SrvOptions/SrvOptInterfaceID.o ../SrvOptions/SrvOptLifetime.o ../SrvOptions/SrvOptNISDomain.o ../SrvOptions/SrvOptNISPDomain.o ../SrvOptions/SrvOptNISPServer.o ../SrvOptions/SrvOptNISServer.o ../SrvOptions/SrvOptNTPServers.o ../SrvOptions/SrvOptOptionRequest.o ../SrvOptions/SrvOptPreference.o ../SrvOptions/SrvOptRapidCommit.o ../SrvOptions/SrvOptServerIdentifier.o ../SrvOptions/SrvOptServerUnicast.o ../SrvOptions/SrvOptSIPDomain.o ../SrvOptions/SrvOptSIPServer.o ../SrvOptions/SrvOptStatusCode.o ../SrvOptions/SrvOptTimeZone.o ../SrvOptions/SrvOptUserClass.o ../SrvOptions/SrvOptVendorClass.o ../SrvMessages/SrvMsgSolicit.o ../SrvMessages/SrvMsg.o ../SrvMessages/SrvMsgAdvertise.o ../SrvMessages/SrvMsgConfirm.o ../SrvMessages/SrvMsgDecline.o ../SrvMessages/SrvMsgInfRequest.o ../SrvMessages/SrvMsgRebind.o ../SrvMessages/SrvMsgRelease.o ../SrvMessages/SrvMsgRenew.o ../SrvMessages/SrvMsgReply.o ../SrvMessages/SrvMsgRequest.o ../Misc/DHCPServer.o SrvService.o server-winnt2k.o ../CfgMgr/StationRange.o $(RES)
-LINKOBJ  = WinService.o addrpack.o lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../SrvAddrMgr/SrvAddrMgr.o ../SrvCfgMgr/SrvParsIfaceOpt.o ../SrvCfgMgr/SrvCfgAddrClass.o ../SrvCfgMgr/SrvCfgIface.o ../SrvCfgMgr/SrvCfgMgr.o ../SrvCfgMgr/SrvLexer.o ../SrvCfgMgr/SrvParsClassOpt.o ../SrvCfgMgr/SrvParser.o ../SrvCfgMgr/SrvParsGlobalOpt.o ../SrvIfaceMgr/SrvIfaceMgr.o ../SrvIfaceMgr/SrvIfaceIface.o ../AddrMgr/AddrMgr.o ../AddrMgr/AddrAddr.o ../AddrMgr/AddrClient.o ../AddrMgr/AddrIA.o ../SrvTransMgr/SrvTransMgr.o ../Options/OptVendorSpecInfo.o ../Options/Opt.o ../Options/OptAddr.o ../Options/OptAddrLst.o ../Options/OptClientIdentifier.o ../Options/OptElapsed.o ../Options/OptGeneric.o ../Options/OptIA_NA.o ../Options/OptIAAddress.o ../Options/OptInteger4.o ../Options/OptOptionRequest.o ../Options/OptPreference.o ../Options/OptRapidCommit.o ../Options/OptServerIdentifier.o ../Options/OptStatusCode.o ../Options/OptString.o ../Options/OptStringLst.o ../Options/OptUserClass.o ../Options/OptVendorClass.o ../SrvOptions/SrvOptVendorSpecInfo.o ../SrvOptions/SrvOptClientIdentifier.o ../SrvOptions/SrvOptDNSServers.o ../SrvOptions/SrvOptDomainName.o ../SrvOptions/SrvOptElapsed.o ../SrvOptions/SrvOptFQDN.o ../SrvOptions/SrvOptIA_NA.o ../SrvOptions/SrvOptIAAddress.o ../SrvOptions/SrvOptInterfaceID.o ../SrvOptions/SrvOptLifetime.o ../SrvOptions/SrvOptNISDomain.o ../SrvOptions/SrvOptNISPDomain.o ../SrvOptions/SrvOptNISPServer.o ../SrvOptions/SrvOptNISServer.o ../SrvOptions/SrvOptNTPServers.o ../SrvOptions/SrvOptOptionRequest.o ../SrvOptions/SrvOptPreference.o ../SrvOptions/SrvOptRapidCommit.o ../SrvOptions/SrvOptServerIdentifier.o ../SrvOptions/SrvOptServerUnicast.o ../SrvOptions/SrvOptSIPDomain.o ../SrvOptions/SrvOptSIPServer.o ../SrvOptions/SrvOptStatusCode.o ../SrvOptions/SrvOptTimeZone.o ../SrvOptions/SrvOptUserClass.o ../SrvOptions/SrvOptVendorClass.o ../SrvMessages/SrvMsgSolicit.o ../SrvMessages/SrvMsg.o ../SrvMessages/SrvMsgAdvertise.o ../SrvMessages/SrvMsgConfirm.o ../SrvMessages/SrvMsgDecline.o ../SrvMessages/SrvMsgInfRequest.o ../SrvMessages/SrvMsgRebind.o ../SrvMessages/SrvMsgRelease.o ../SrvMessages/SrvMsgRenew.o ../SrvMessages/SrvMsgReply.o ../SrvMessages/SrvMsgRequest.o ../Misc/DHCPServer.o SrvService.o server-winnt2k.o ../CfgMgr/StationRange.o $(RES)
-LIBS =  -L"C:/Dev-Cpp/lib" -lws2_32  -g3 
-INCS =  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../SrvAddrMgr"  -I"../SrvCfgMgr"  -I"../SrvIfaceMgr"  -I"../SrvMessages"  -I"../SrvOptions"  -I"../SrvTransMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../TransMgr" 
-CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../SrvAddrMgr"  -I"../SrvCfgMgr"  -I"../SrvIfaceMgr"  -I"../SrvMessages"  -I"../SrvOptions"  -I"../SrvTransMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../TransMgr" 
-BIN  = dibbler-server.exe
-CXXFLAGS = $(CXXINCS) -DMINGWBUILD -funsigned-char   -g3
-CFLAGS = $(INCS) -DMINGWBUILD -funsigned-char   -g3
+OBJ  = WinService.o addrpack.o lowlevel-winnt2k.o relay-winnt2k.o RelService.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DHCPRelay.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../RelMessages/RelMsgRelayRepl.o ../RelMessages/RelMsg.o ../RelMessages/RelMsgGeneric.o ../RelMessages/RelMsgRelayForw.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../RelIfaceMgr/RelIfaceMgr.o ../RelTransMgr/RelTransMgr.o ../CfgMgr/CfgMgr.o ../RelCfgMgr/RelParsIfaceOpt.o ../RelCfgMgr/RelCfgIface.o ../RelCfgMgr/RelCfgMgr.o ../RelCfgMgr/RelLexer.o ../RelCfgMgr/RelParser.o ../RelCfgMgr/RelParsGlobalOpt.o ../Options/OptInteger4.o ../Options/Opt.o ../RelOptions/RelOptRelayMsg.o ../RelOptions/RelOptGeneric.o ../RelOptions/RelOptInterfaceID.o ../Options/OptGeneric.o $(RES)
+LINKOBJ  = WinService.o addrpack.o lowlevel-winnt2k.o relay-winnt2k.o RelService.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DHCPRelay.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../RelMessages/RelMsgRelayRepl.o ../RelMessages/RelMsg.o ../RelMessages/RelMsgGeneric.o ../RelMessages/RelMsgRelayForw.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../RelIfaceMgr/RelIfaceMgr.o ../RelTransMgr/RelTransMgr.o ../CfgMgr/CfgMgr.o ../RelCfgMgr/RelParsIfaceOpt.o ../RelCfgMgr/RelCfgIface.o ../RelCfgMgr/RelCfgMgr.o ../RelCfgMgr/RelLexer.o ../RelCfgMgr/RelParser.o ../RelCfgMgr/RelParsGlobalOpt.o ../Options/OptInteger4.o ../Options/Opt.o ../RelOptions/RelOptRelayMsg.o ../RelOptions/RelOptGeneric.o ../RelOptions/RelOptInterfaceID.o ../Options/OptGeneric.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -lws2_32  
+INCS =  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
+BIN  = dibbler-relay.exe
+CXXFLAGS = $(CXXINCS) -DMINGWBUILD -funsigned-char  
+CFLAGS = $(INCS) -DMINGWBUILD -funsigned-char  
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before dibbler-server.exe all-after
+all: all-before dibbler-relay.exe all-after
 
 
 clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CPP) $(LINKOBJ) -o "dibbler-server.exe" $(LIBS)
+	$(CPP) $(LINKOBJ) -o "dibbler-relay.exe" $(LIBS)
 
 WinService.o: WinService.cpp
 	$(CPP) -c WinService.cpp -o WinService.o $(CXXFLAGS)
@@ -35,11 +35,20 @@ addrpack.o: addrpack.c
 lowlevel-winnt2k.o: lowlevel-winnt2k.c
 	$(CC) -c lowlevel-winnt2k.c -o lowlevel-winnt2k.o $(CFLAGS)
 
+relay-winnt2k.o: relay-winnt2k.cpp
+	$(CPP) -c relay-winnt2k.cpp -o relay-winnt2k.o $(CXXFLAGS)
+
+RelService.o: RelService.cpp
+	$(CPP) -c RelService.cpp -o RelService.o $(CXXFLAGS)
+
 ../Misc/Logger.o: ../Misc/Logger.cpp
 	$(CPP) -c ../Misc/Logger.cpp -o ../Misc/Logger.o $(CXXFLAGS)
 
 ../Misc/DHCPConst.o: ../Misc/DHCPConst.cpp
 	$(CPP) -c ../Misc/DHCPConst.cpp -o ../Misc/DHCPConst.o $(CXXFLAGS)
+
+../Misc/DHCPRelay.o: ../Misc/DHCPRelay.cpp
+	$(CPP) -c ../Misc/DHCPRelay.cpp -o ../Misc/DHCPRelay.o $(CXXFLAGS)
 
 ../Misc/DUID.o: ../Misc/DUID.cpp
 	$(CPP) -c ../Misc/DUID.cpp -o ../Misc/DUID.o $(CXXFLAGS)
@@ -50,6 +59,18 @@ lowlevel-winnt2k.o: lowlevel-winnt2k.c
 ../Messages/Msg.o: ../Messages/Msg.cpp
 	$(CPP) -c ../Messages/Msg.cpp -o ../Messages/Msg.o $(CXXFLAGS)
 
+../RelMessages/RelMsgRelayRepl.o: ../RelMessages/RelMsgRelayRepl.cpp
+	$(CPP) -c ../RelMessages/RelMsgRelayRepl.cpp -o ../RelMessages/RelMsgRelayRepl.o $(CXXFLAGS)
+
+../RelMessages/RelMsg.o: ../RelMessages/RelMsg.cpp
+	$(CPP) -c ../RelMessages/RelMsg.cpp -o ../RelMessages/RelMsg.o $(CXXFLAGS)
+
+../RelMessages/RelMsgGeneric.o: ../RelMessages/RelMsgGeneric.cpp
+	$(CPP) -c ../RelMessages/RelMsgGeneric.cpp -o ../RelMessages/RelMsgGeneric.o $(CXXFLAGS)
+
+../RelMessages/RelMsgRelayForw.o: ../RelMessages/RelMsgRelayForw.cpp
+	$(CPP) -c ../RelMessages/RelMsgRelayForw.cpp -o ../RelMessages/RelMsgRelayForw.o $(CXXFLAGS)
+
 ../IfaceMgr/SocketIPv6.o: ../IfaceMgr/SocketIPv6.cpp
 	$(CPP) -c ../IfaceMgr/SocketIPv6.cpp -o ../IfaceMgr/SocketIPv6.o $(CXXFLAGS)
 
@@ -59,233 +80,47 @@ lowlevel-winnt2k.o: lowlevel-winnt2k.c
 ../IfaceMgr/IfaceMgr.o: ../IfaceMgr/IfaceMgr.cpp
 	$(CPP) -c ../IfaceMgr/IfaceMgr.cpp -o ../IfaceMgr/IfaceMgr.o $(CXXFLAGS)
 
+../RelIfaceMgr/RelIfaceMgr.o: ../RelIfaceMgr/RelIfaceMgr.cpp
+	$(CPP) -c ../RelIfaceMgr/RelIfaceMgr.cpp -o ../RelIfaceMgr/RelIfaceMgr.o $(CXXFLAGS)
+
+../RelTransMgr/RelTransMgr.o: ../RelTransMgr/RelTransMgr.cpp
+	$(CPP) -c ../RelTransMgr/RelTransMgr.cpp -o ../RelTransMgr/RelTransMgr.o $(CXXFLAGS)
+
 ../CfgMgr/CfgMgr.o: ../CfgMgr/CfgMgr.cpp
 	$(CPP) -c ../CfgMgr/CfgMgr.cpp -o ../CfgMgr/CfgMgr.o $(CXXFLAGS)
 
-../SrvAddrMgr/SrvAddrMgr.o: ../SrvAddrMgr/SrvAddrMgr.cpp
-	$(CPP) -c ../SrvAddrMgr/SrvAddrMgr.cpp -o ../SrvAddrMgr/SrvAddrMgr.o $(CXXFLAGS)
+../RelCfgMgr/RelParsIfaceOpt.o: ../RelCfgMgr/RelParsIfaceOpt.cpp
+	$(CPP) -c ../RelCfgMgr/RelParsIfaceOpt.cpp -o ../RelCfgMgr/RelParsIfaceOpt.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvParsIfaceOpt.o: ../SrvCfgMgr/SrvParsIfaceOpt.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParsIfaceOpt.cpp -o ../SrvCfgMgr/SrvParsIfaceOpt.o $(CXXFLAGS)
+../RelCfgMgr/RelCfgIface.o: ../RelCfgMgr/RelCfgIface.cpp
+	$(CPP) -c ../RelCfgMgr/RelCfgIface.cpp -o ../RelCfgMgr/RelCfgIface.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvCfgAddrClass.o: ../SrvCfgMgr/SrvCfgAddrClass.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvCfgAddrClass.cpp -o ../SrvCfgMgr/SrvCfgAddrClass.o $(CXXFLAGS)
+../RelCfgMgr/RelCfgMgr.o: ../RelCfgMgr/RelCfgMgr.cpp
+	$(CPP) -c ../RelCfgMgr/RelCfgMgr.cpp -o ../RelCfgMgr/RelCfgMgr.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvCfgIface.o: ../SrvCfgMgr/SrvCfgIface.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvCfgIface.cpp -o ../SrvCfgMgr/SrvCfgIface.o $(CXXFLAGS)
+../RelCfgMgr/RelLexer.o: ../RelCfgMgr/RelLexer.cpp
+	$(CPP) -c ../RelCfgMgr/RelLexer.cpp -o ../RelCfgMgr/RelLexer.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvCfgMgr.o: ../SrvCfgMgr/SrvCfgMgr.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvCfgMgr.cpp -o ../SrvCfgMgr/SrvCfgMgr.o $(CXXFLAGS)
+../RelCfgMgr/RelParser.o: ../RelCfgMgr/RelParser.cpp
+	$(CPP) -c ../RelCfgMgr/RelParser.cpp -o ../RelCfgMgr/RelParser.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvLexer.o: ../SrvCfgMgr/SrvLexer.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvLexer.cpp -o ../SrvCfgMgr/SrvLexer.o $(CXXFLAGS)
-
-../SrvCfgMgr/SrvParsClassOpt.o: ../SrvCfgMgr/SrvParsClassOpt.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParsClassOpt.cpp -o ../SrvCfgMgr/SrvParsClassOpt.o $(CXXFLAGS)
-
-../SrvCfgMgr/SrvParser.o: ../SrvCfgMgr/SrvParser.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParser.cpp -o ../SrvCfgMgr/SrvParser.o $(CXXFLAGS)
-
-../SrvCfgMgr/SrvParsGlobalOpt.o: ../SrvCfgMgr/SrvParsGlobalOpt.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParsGlobalOpt.cpp -o ../SrvCfgMgr/SrvParsGlobalOpt.o $(CXXFLAGS)
-
-../SrvIfaceMgr/SrvIfaceMgr.o: ../SrvIfaceMgr/SrvIfaceMgr.cpp
-	$(CPP) -c ../SrvIfaceMgr/SrvIfaceMgr.cpp -o ../SrvIfaceMgr/SrvIfaceMgr.o $(CXXFLAGS)
-
-../SrvIfaceMgr/SrvIfaceIface.o: ../SrvIfaceMgr/SrvIfaceIface.cpp
-	$(CPP) -c ../SrvIfaceMgr/SrvIfaceIface.cpp -o ../SrvIfaceMgr/SrvIfaceIface.o $(CXXFLAGS)
-
-../AddrMgr/AddrMgr.o: ../AddrMgr/AddrMgr.cpp
-	$(CPP) -c ../AddrMgr/AddrMgr.cpp -o ../AddrMgr/AddrMgr.o $(CXXFLAGS)
-
-../AddrMgr/AddrAddr.o: ../AddrMgr/AddrAddr.cpp
-	$(CPP) -c ../AddrMgr/AddrAddr.cpp -o ../AddrMgr/AddrAddr.o $(CXXFLAGS)
-
-../AddrMgr/AddrClient.o: ../AddrMgr/AddrClient.cpp
-	$(CPP) -c ../AddrMgr/AddrClient.cpp -o ../AddrMgr/AddrClient.o $(CXXFLAGS)
-
-../AddrMgr/AddrIA.o: ../AddrMgr/AddrIA.cpp
-	$(CPP) -c ../AddrMgr/AddrIA.cpp -o ../AddrMgr/AddrIA.o $(CXXFLAGS)
-
-../SrvTransMgr/SrvTransMgr.o: ../SrvTransMgr/SrvTransMgr.cpp
-	$(CPP) -c ../SrvTransMgr/SrvTransMgr.cpp -o ../SrvTransMgr/SrvTransMgr.o $(CXXFLAGS)
-
-../Options/OptVendorSpecInfo.o: ../Options/OptVendorSpecInfo.cpp
-	$(CPP) -c ../Options/OptVendorSpecInfo.cpp -o ../Options/OptVendorSpecInfo.o $(CXXFLAGS)
-
-../Options/Opt.o: ../Options/Opt.cpp
-	$(CPP) -c ../Options/Opt.cpp -o ../Options/Opt.o $(CXXFLAGS)
-
-../Options/OptAddr.o: ../Options/OptAddr.cpp
-	$(CPP) -c ../Options/OptAddr.cpp -o ../Options/OptAddr.o $(CXXFLAGS)
-
-../Options/OptAddrLst.o: ../Options/OptAddrLst.cpp
-	$(CPP) -c ../Options/OptAddrLst.cpp -o ../Options/OptAddrLst.o $(CXXFLAGS)
-
-../Options/OptClientIdentifier.o: ../Options/OptClientIdentifier.cpp
-	$(CPP) -c ../Options/OptClientIdentifier.cpp -o ../Options/OptClientIdentifier.o $(CXXFLAGS)
-
-../Options/OptElapsed.o: ../Options/OptElapsed.cpp
-	$(CPP) -c ../Options/OptElapsed.cpp -o ../Options/OptElapsed.o $(CXXFLAGS)
-
-../Options/OptGeneric.o: ../Options/OptGeneric.cpp
-	$(CPP) -c ../Options/OptGeneric.cpp -o ../Options/OptGeneric.o $(CXXFLAGS)
-
-../Options/OptIA_NA.o: ../Options/OptIA_NA.cpp
-	$(CPP) -c ../Options/OptIA_NA.cpp -o ../Options/OptIA_NA.o $(CXXFLAGS)
-
-../Options/OptIAAddress.o: ../Options/OptIAAddress.cpp
-	$(CPP) -c ../Options/OptIAAddress.cpp -o ../Options/OptIAAddress.o $(CXXFLAGS)
+../RelCfgMgr/RelParsGlobalOpt.o: ../RelCfgMgr/RelParsGlobalOpt.cpp
+	$(CPP) -c ../RelCfgMgr/RelParsGlobalOpt.cpp -o ../RelCfgMgr/RelParsGlobalOpt.o $(CXXFLAGS)
 
 ../Options/OptInteger4.o: ../Options/OptInteger4.cpp
 	$(CPP) -c ../Options/OptInteger4.cpp -o ../Options/OptInteger4.o $(CXXFLAGS)
 
-../Options/OptOptionRequest.o: ../Options/OptOptionRequest.cpp
-	$(CPP) -c ../Options/OptOptionRequest.cpp -o ../Options/OptOptionRequest.o $(CXXFLAGS)
+../Options/Opt.o: ../Options/Opt.cpp
+	$(CPP) -c ../Options/Opt.cpp -o ../Options/Opt.o $(CXXFLAGS)
 
-../Options/OptPreference.o: ../Options/OptPreference.cpp
-	$(CPP) -c ../Options/OptPreference.cpp -o ../Options/OptPreference.o $(CXXFLAGS)
+../RelOptions/RelOptRelayMsg.o: ../RelOptions/RelOptRelayMsg.cpp
+	$(CPP) -c ../RelOptions/RelOptRelayMsg.cpp -o ../RelOptions/RelOptRelayMsg.o $(CXXFLAGS)
 
-../Options/OptRapidCommit.o: ../Options/OptRapidCommit.cpp
-	$(CPP) -c ../Options/OptRapidCommit.cpp -o ../Options/OptRapidCommit.o $(CXXFLAGS)
+../RelOptions/RelOptGeneric.o: ../RelOptions/RelOptGeneric.cpp
+	$(CPP) -c ../RelOptions/RelOptGeneric.cpp -o ../RelOptions/RelOptGeneric.o $(CXXFLAGS)
 
-../Options/OptServerIdentifier.o: ../Options/OptServerIdentifier.cpp
-	$(CPP) -c ../Options/OptServerIdentifier.cpp -o ../Options/OptServerIdentifier.o $(CXXFLAGS)
+../RelOptions/RelOptInterfaceID.o: ../RelOptions/RelOptInterfaceID.cpp
+	$(CPP) -c ../RelOptions/RelOptInterfaceID.cpp -o ../RelOptions/RelOptInterfaceID.o $(CXXFLAGS)
 
-../Options/OptStatusCode.o: ../Options/OptStatusCode.cpp
-	$(CPP) -c ../Options/OptStatusCode.cpp -o ../Options/OptStatusCode.o $(CXXFLAGS)
-
-../Options/OptString.o: ../Options/OptString.cpp
-	$(CPP) -c ../Options/OptString.cpp -o ../Options/OptString.o $(CXXFLAGS)
-
-../Options/OptStringLst.o: ../Options/OptStringLst.cpp
-	$(CPP) -c ../Options/OptStringLst.cpp -o ../Options/OptStringLst.o $(CXXFLAGS)
-
-../Options/OptUserClass.o: ../Options/OptUserClass.cpp
-	$(CPP) -c ../Options/OptUserClass.cpp -o ../Options/OptUserClass.o $(CXXFLAGS)
-
-../Options/OptVendorClass.o: ../Options/OptVendorClass.cpp
-	$(CPP) -c ../Options/OptVendorClass.cpp -o ../Options/OptVendorClass.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptVendorSpecInfo.o: ../SrvOptions/SrvOptVendorSpecInfo.cpp
-	$(CPP) -c ../SrvOptions/SrvOptVendorSpecInfo.cpp -o ../SrvOptions/SrvOptVendorSpecInfo.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptClientIdentifier.o: ../SrvOptions/SrvOptClientIdentifier.cpp
-	$(CPP) -c ../SrvOptions/SrvOptClientIdentifier.cpp -o ../SrvOptions/SrvOptClientIdentifier.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptDNSServers.o: ../SrvOptions/SrvOptDNSServers.cpp
-	$(CPP) -c ../SrvOptions/SrvOptDNSServers.cpp -o ../SrvOptions/SrvOptDNSServers.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptDomainName.o: ../SrvOptions/SrvOptDomainName.cpp
-	$(CPP) -c ../SrvOptions/SrvOptDomainName.cpp -o ../SrvOptions/SrvOptDomainName.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptElapsed.o: ../SrvOptions/SrvOptElapsed.cpp
-	$(CPP) -c ../SrvOptions/SrvOptElapsed.cpp -o ../SrvOptions/SrvOptElapsed.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptFQDN.o: ../SrvOptions/SrvOptFQDN.cpp
-	$(CPP) -c ../SrvOptions/SrvOptFQDN.cpp -o ../SrvOptions/SrvOptFQDN.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptIA_NA.o: ../SrvOptions/SrvOptIA_NA.cpp
-	$(CPP) -c ../SrvOptions/SrvOptIA_NA.cpp -o ../SrvOptions/SrvOptIA_NA.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptIAAddress.o: ../SrvOptions/SrvOptIAAddress.cpp
-	$(CPP) -c ../SrvOptions/SrvOptIAAddress.cpp -o ../SrvOptions/SrvOptIAAddress.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptInterfaceID.o: ../SrvOptions/SrvOptInterfaceID.cpp
-	$(CPP) -c ../SrvOptions/SrvOptInterfaceID.cpp -o ../SrvOptions/SrvOptInterfaceID.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptLifetime.o: ../SrvOptions/SrvOptLifetime.cpp
-	$(CPP) -c ../SrvOptions/SrvOptLifetime.cpp -o ../SrvOptions/SrvOptLifetime.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISDomain.o: ../SrvOptions/SrvOptNISDomain.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISDomain.cpp -o ../SrvOptions/SrvOptNISDomain.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISPDomain.o: ../SrvOptions/SrvOptNISPDomain.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISPDomain.cpp -o ../SrvOptions/SrvOptNISPDomain.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISPServer.o: ../SrvOptions/SrvOptNISPServer.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISPServer.cpp -o ../SrvOptions/SrvOptNISPServer.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISServer.o: ../SrvOptions/SrvOptNISServer.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISServer.cpp -o ../SrvOptions/SrvOptNISServer.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNTPServers.o: ../SrvOptions/SrvOptNTPServers.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNTPServers.cpp -o ../SrvOptions/SrvOptNTPServers.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptOptionRequest.o: ../SrvOptions/SrvOptOptionRequest.cpp
-	$(CPP) -c ../SrvOptions/SrvOptOptionRequest.cpp -o ../SrvOptions/SrvOptOptionRequest.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptPreference.o: ../SrvOptions/SrvOptPreference.cpp
-	$(CPP) -c ../SrvOptions/SrvOptPreference.cpp -o ../SrvOptions/SrvOptPreference.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptRapidCommit.o: ../SrvOptions/SrvOptRapidCommit.cpp
-	$(CPP) -c ../SrvOptions/SrvOptRapidCommit.cpp -o ../SrvOptions/SrvOptRapidCommit.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptServerIdentifier.o: ../SrvOptions/SrvOptServerIdentifier.cpp
-	$(CPP) -c ../SrvOptions/SrvOptServerIdentifier.cpp -o ../SrvOptions/SrvOptServerIdentifier.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptServerUnicast.o: ../SrvOptions/SrvOptServerUnicast.cpp
-	$(CPP) -c ../SrvOptions/SrvOptServerUnicast.cpp -o ../SrvOptions/SrvOptServerUnicast.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptSIPDomain.o: ../SrvOptions/SrvOptSIPDomain.cpp
-	$(CPP) -c ../SrvOptions/SrvOptSIPDomain.cpp -o ../SrvOptions/SrvOptSIPDomain.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptSIPServer.o: ../SrvOptions/SrvOptSIPServer.cpp
-	$(CPP) -c ../SrvOptions/SrvOptSIPServer.cpp -o ../SrvOptions/SrvOptSIPServer.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptStatusCode.o: ../SrvOptions/SrvOptStatusCode.cpp
-	$(CPP) -c ../SrvOptions/SrvOptStatusCode.cpp -o ../SrvOptions/SrvOptStatusCode.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptTimeZone.o: ../SrvOptions/SrvOptTimeZone.cpp
-	$(CPP) -c ../SrvOptions/SrvOptTimeZone.cpp -o ../SrvOptions/SrvOptTimeZone.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptUserClass.o: ../SrvOptions/SrvOptUserClass.cpp
-	$(CPP) -c ../SrvOptions/SrvOptUserClass.cpp -o ../SrvOptions/SrvOptUserClass.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptVendorClass.o: ../SrvOptions/SrvOptVendorClass.cpp
-	$(CPP) -c ../SrvOptions/SrvOptVendorClass.cpp -o ../SrvOptions/SrvOptVendorClass.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgSolicit.o: ../SrvMessages/SrvMsgSolicit.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgSolicit.cpp -o ../SrvMessages/SrvMsgSolicit.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsg.o: ../SrvMessages/SrvMsg.cpp
-	$(CPP) -c ../SrvMessages/SrvMsg.cpp -o ../SrvMessages/SrvMsg.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgAdvertise.o: ../SrvMessages/SrvMsgAdvertise.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgAdvertise.cpp -o ../SrvMessages/SrvMsgAdvertise.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgConfirm.o: ../SrvMessages/SrvMsgConfirm.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgConfirm.cpp -o ../SrvMessages/SrvMsgConfirm.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgDecline.o: ../SrvMessages/SrvMsgDecline.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgDecline.cpp -o ../SrvMessages/SrvMsgDecline.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgInfRequest.o: ../SrvMessages/SrvMsgInfRequest.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgInfRequest.cpp -o ../SrvMessages/SrvMsgInfRequest.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRebind.o: ../SrvMessages/SrvMsgRebind.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRebind.cpp -o ../SrvMessages/SrvMsgRebind.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRelease.o: ../SrvMessages/SrvMsgRelease.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRelease.cpp -o ../SrvMessages/SrvMsgRelease.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRenew.o: ../SrvMessages/SrvMsgRenew.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRenew.cpp -o ../SrvMessages/SrvMsgRenew.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgReply.o: ../SrvMessages/SrvMsgReply.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgReply.cpp -o ../SrvMessages/SrvMsgReply.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRequest.o: ../SrvMessages/SrvMsgRequest.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRequest.cpp -o ../SrvMessages/SrvMsgRequest.o $(CXXFLAGS)
-
-../Misc/DHCPServer.o: ../Misc/DHCPServer.cpp
-	$(CPP) -c ../Misc/DHCPServer.cpp -o ../Misc/DHCPServer.o $(CXXFLAGS)
-
-SrvService.o: SrvService.cpp
-	$(CPP) -c SrvService.cpp -o SrvService.o $(CXXFLAGS)
-
-server-winnt2k.o: server-winnt2k.cpp
-	$(CPP) -c server-winnt2k.cpp -o server-winnt2k.o $(CXXFLAGS)
-
-../CfgMgr/StationRange.o: ../CfgMgr/StationRange.cpp
-	$(CPP) -c ../CfgMgr/StationRange.cpp -o ../CfgMgr/StationRange.o $(CXXFLAGS)
+../Options/OptGeneric.o: ../Options/OptGeneric.cpp
+	$(CPP) -c ../Options/OptGeneric.cpp -o ../Options/OptGeneric.o $(CXXFLAGS)

@@ -7,7 +7,7 @@
  *
  * based on WinService.cpp,v 1.14 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: WinService.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
+ * $Id: WinService.cpp,v 1.3 2005-07-26 00:03:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *                                                                           
@@ -472,8 +472,34 @@ void TWinService::showStatus() {
                 << ", " << (relayRun  ? "RUNNING":"NOT RUNNING") << LogEnd;
 }
 
+bool TWinService::verifyPort() {
+    // does this proper Dibbler port for this windows?	
+    OSVERSIONINFO verinfo;
+    verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+    GetVersionEx(&verinfo);
+    bool ok=false;
+    if (verinfo.dwMajorVersion<5) { 
+          Log(Notice) << "Windows NT detected (major=" << verinfo.dwMajorVersion
+          << ", minor=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+          ok = true;
+    }
+    if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==0)) {
+         Log(Notice) << "Windows 2000 detected (major=" << verinfo.dwMajorVersion
+          << ", minor=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+          ok = true;
+    }
+    if (!ok)
+         Log(Warning) << "Unsupported operating system detected (major=" << verinfo.dwMajorVersion
+          << ", minor=" << verinfo.dwMinorVersion << ")." << LogEnd;
+    
+    return ok;
+}
+
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/07/24 16:00:03  thomson
+ * Port WinNT/2000 related changes.
+ *
  * Revision 1.1  2005/07/23 14:33:22  thomson
  * Port for win2k/NT added.
  *

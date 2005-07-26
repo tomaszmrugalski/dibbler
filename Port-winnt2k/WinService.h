@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  *          win2k version by <sob@hisoftware.cz>
  *
- * $Id: WinService.h,v 1.1 2005-07-23 14:33:22 thomson Exp $
+ * $Id: WinService.h,v 1.2 2005-07-26 00:03:03 thomson Exp $
  *                                                                           
  * Released under GNU GPL v2 licence                                
  *
@@ -34,57 +34,58 @@ typedef enum {
 class TWinService
 {
 public:
-	std::string	ServiceDir;
-	TWinService(const char* serviceName, const char* dispName,
-				DWORD deviceType=SERVICE_DEMAND_START,
-				char* dependencies=NULL, char* descr=NULL);
-	static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
-    static void WINAPI Handler(DWORD dwOpcode);
-    void LogEvent(WORD wType, DWORD dwID, const char* pszS1 = NULL,
-                  const char* pszS2 = NULL, const char* pszS3 = NULL);
-    bool IsInstalled();
-	bool IsInstalled(const char *name);
-    bool Install();
-    bool Uninstall();
-    bool StartService(); /* invoked to trigger start */
-    bool RunService();   /* actual service start and run */
-    bool StopService();
-    void SetStatus(DWORD dwState);
-    bool Initialize();
-    
-	virtual void Run();
-	virtual bool OnInit();
-    virtual void OnStop();
-    virtual void OnInterrogate();
-    virtual void OnPause();
-    virtual void OnContinue();
-    virtual void OnShutdown();
-    virtual bool OnUserControl(DWORD dwOpcode);
-	void showStatus();
-
-	int getStatus();
-	bool isRunning(const char * name);
-    bool isRunning();
-
-	~TWinService(void);
-
-protected:
-    SERVICE_STATUS			Status;
-	SERVICE_STATUS_HANDLE	hServiceStatus;
-    BOOL					IsRunning;
-	
-	char					ServiceName[64];
-    int						MajorVersion;
-    int						MinorVersion;
-	DWORD					ServiceType;
-	char*					Dependencies;
-	char*					DisplayName;
-	char*                   descr;
-	static	TWinService*	ServicePtr;
-    HANDLE					EventSource;
+  std::string ServiceDir;
+  TWinService(const char* serviceName, const char* dispName,
+	      DWORD deviceType=SERVICE_DEMAND_START,
+	      char* dependencies=NULL, char* descr=NULL);
+  static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
+  static void WINAPI Handler(DWORD dwOpcode);
+  void LogEvent(WORD wType, DWORD dwID, const char* pszS1 = NULL,
+		const char* pszS2 = NULL, const char* pszS3 = NULL);
+  bool IsInstalled();
+  bool IsInstalled(const char *name);
+  bool Install();
+  bool Uninstall();
+  bool StartService(); /* invoked to trigger start */
+  bool RunService();   /* actual service start and run */
+  bool StopService();
+  void SetStatus(DWORD dwState);
+  bool Initialize();
+  bool verifyPort();
+  
+  virtual void Run();
+  virtual bool OnInit();
+  virtual void OnStop();
+  virtual void OnInterrogate();
+  virtual void OnPause();
+  virtual void OnContinue();
+  virtual void OnShutdown();
+  virtual bool OnUserControl(DWORD dwOpcode);
+  void showStatus();
+  int getStatus();
+  bool isRunning(const char * name);
+  bool isRunning();
+  ~TWinService(void);
+  
+ protected:
+  SERVICE_STATUS Status;
+  SERVICE_STATUS_HANDLE	hServiceStatus;
+  BOOL IsRunning;
+  char ServiceName[64];
+  int MajorVersion;
+  int MinorVersion;
+  DWORD ServiceType;
+  char*	Dependencies;
+  char* DisplayName;
+  char* descr;
+  static TWinService* ServicePtr;
+  HANDLE EventSource;
 };
 #endif
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005/07/23 14:33:22  thomson
+ * Port for win2k/NT added.
+ *
  */

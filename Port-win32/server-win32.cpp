@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: server-win32.cpp,v 1.11 2005-07-17 21:09:54 thomson Exp $
+ * $Id: server-win32.cpp,v 1.12 2005-07-26 00:03:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/07/17 21:09:54  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.10  2005/02/01 22:39:20  thomson
  * Command line service support greatly improved.
  *
@@ -99,6 +102,12 @@ int main(int argc, char* argv[]) {
     
     EServiceState status = SrvService->ParseStandardArgs(argc, argv);
     SrvService->setState(status);
+
+    // is this proper port?
+	if (!RelService->verifyPort()) {
+       Log(Crit) << "Operating system version is not supported by this Dibbler port." << LogEnd;
+       return -1;
+    }
     
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
     

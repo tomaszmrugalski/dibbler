@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.6 2005-07-24 16:00:03 thomson Exp $
+ * $Id: relay-win32.cpp,v 1.7 2005-07-26 00:03:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -81,6 +81,12 @@ int main(int argc, char* argv[]) {
     
     EServiceState status = RelService->ParseStandardArgs(argc, argv);
     RelService->setState(status);
+
+    // is this proper port?
+	if (!RelService->verifyPort()) {
+       Log(Crit) << "Operating system version is not supported by this Dibbler port." << LogEnd;
+       return -1;
+    }
         
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
     
@@ -127,6 +133,9 @@ int main(int argc, char* argv[]) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/07/24 16:00:03  thomson
+ * Port WinNT/2000 related changes.
+ *
  * Revision 1.5  2005/07/17 21:09:54  thomson
  * Minor improvements for 0.4.1 release.
  *

@@ -7,7 +7,7 @@
  *
  * based on client-winxp.cpp,v 1.15 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: client-winnt2k.cpp,v 1.2 2005-07-24 16:00:03 thomson Exp $
+ * $Id: client-winnt2k.cpp,v 1.3 2005-07-26 00:03:03 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -85,6 +85,10 @@ int main(int argc, char* argv[])
 
 	EServiceState status = Client->ParseStandardArgs(argc, argv);
 	Client->setState(status);
+	if (!Client->verifyPort()) {
+       Log(Crit) << "Operating system version is not supported by this Dibbler port." << LogEnd;
+       return -1;
+    }
 	
 	// find ipv6.exe (or netsh.exe in future implementations)
 	if (!lowlevelInit()) {
@@ -135,6 +139,9 @@ int main(int argc, char* argv[])
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/07/24 16:00:03  thomson
+ * Port WinNT/2000 related changes.
+ *
  * Revision 1.1  2005/07/23 14:33:22  thomson
  * Port for win2k/NT added.
  *
