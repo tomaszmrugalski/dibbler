@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: server-win32.cpp,v 1.12 2005-07-26 00:03:03 thomson Exp $
+ * $Id: server-win32.cpp,v 1.13 2005-07-27 21:57:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/07/26 00:03:03  thomson
+ * Preparation for relase 0.4.1
+ *
  * Revision 1.11  2005/07/17 21:09:54  thomson
  * Minor improvements for 0.4.1 release.
  *
@@ -43,7 +46,7 @@
 #include "Logger.h"
 
 extern "C" int lowlevelInit();
-extern TDHCPServer * ptr;
+extern TDHCPServer * srvPtr;
 
 void usage() {
 	cout << "Usage:" << endl;
@@ -67,7 +70,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
   switch( fdwCtrlType ) 
   { 
   case CTRL_C_EVENT: {
-	  ptr->stop();
+	  srvPtr->stop();
       return TRUE;
   }
     case CTRL_BREAK_EVENT: 
@@ -104,7 +107,7 @@ int main(int argc, char* argv[]) {
     SrvService->setState(status);
 
     // is this proper port?
-	if (!RelService->verifyPort()) {
+	if (!SrvService->verifyPort()) {
        Log(Crit) << "Operating system version is not supported by this Dibbler port." << LogEnd;
        return -1;
     }

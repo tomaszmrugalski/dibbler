@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: client-win32.cpp,v 1.18 2005-07-26 00:03:03 thomson Exp $
+ * $Id: client-win32.cpp,v 1.19 2005-07-27 21:57:43 thomson Exp $
  */
 
 #include <string>
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 	Client->setState(status);
 
     // is this proper port?
-	if (!RelService->verifyPort()) {
+	if (!Client->verifyPort()) {
        Log(Crit) << "Operating system version is not supported by this Dibbler port." << LogEnd;
        return -1;
     }
@@ -137,6 +137,9 @@ int main(int argc, char* argv[])
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/07/26 00:03:03  thomson
+ * Preparation for relase 0.4.1
+ *
  * Revision 1.17  2005/07/24 16:00:03  thomson
  * Port WinNT/2000 related changes.
  *
