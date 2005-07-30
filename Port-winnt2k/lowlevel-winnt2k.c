@@ -7,7 +7,7 @@
  *
  * based on code from Dibbler 0.2.0-RC2 and Dibbler 0.4.0
  *
- * $Id: lowlevel-winnt2k.c,v 1.2 2005-07-24 16:00:03 thomson Exp $
+ * $Id: lowlevel-winnt2k.c,v 1.3 2005-07-30 15:07:54 thomson Exp $
  *
  * released under GNU GPL v2 licence
  *
@@ -21,7 +21,7 @@
 #include <Ws2tcpip.h.>
 #include <Ws2spi.h>
 
-//#include <tpipv6.h>
+#include <tpipv6.h>
 
 #include <stdio.h>
 #include <iphlpapi.h>
@@ -59,7 +59,6 @@ int lowlevelInit()
     strncpy(ipv6Path, buf, 256);
     strcpy(buf+i,"\\system32\\cmd.exe");
     strncpy(cmdPath, buf, 256);
-    //
     
     // FIXME: Use mktmpfile or something similar
     strcpy(buf+i,"\\dibbler-ipv6.tmp");
@@ -432,6 +431,9 @@ extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005/07/24 16:00:03  thomson
+ * Port WinNT/2000 related changes.
+ *
  * Revision 1.1  2005/07/23 14:33:22  thomson
  * Port for win2k/NT added.
  *
