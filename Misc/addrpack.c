@@ -95,7 +95,7 @@ int inet_pton6(const char *src, char * dst)
 			continue;
 		}
 		if (ch == '.' && ((tp + NS_INADDRSZ) <= endp) &&
-		    inet_pton4(curtok, tp) > 0) {
+		    inet_pton4(curtok, (char*)tp) > 0) {
 			tp += NS_INADDRSZ;
 			saw_xdigit = 0;
 			break;	/* '\0' was seen by inet_pton4(). */
@@ -194,7 +194,7 @@ char * inet_ntop6(const unsigned char * src, char * dst)
 		/* Is this address an encapsulated IPv4? */
 		if (i == 6 && best.base == 0 &&
 		    (best.len == 6 || (best.len == 5 && words[5] == 0xffff))) {
-			if (!inet_ntop4(src+12, tp))
+			if (!inet_ntop4((char*)src+12, tp))
 				return (NULL);
 			tp += strlen(tp);
 			break;
