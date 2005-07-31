@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.11 2005-07-21 23:28:56 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.12 2005-07-31 15:56:12 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.11  2005/07/21 23:28:56  thomson
+%% Documentation update.
+%%
 %% Revision 1.10  2005/03/15 23:02:31  thomson
 %% 0.4.0 release.
 %%
@@ -121,13 +124,95 @@ dibbler-client status
 dibbler-relay status
 \end{verbatim}
 
+
 \subsection{Windows installation}
 Starting at 0.2.1, Dibbler supports Windows XP and 2003. In version
-0.4.1 exprimental support for Windows 2000 is provided. The easiest
-way is to download clickable windows installer. Download it from
+0.4.1 exprimental support for Windows NT4 and 2000 is provided. The easiest
+way is to download clickable Windows installer. Download it from
 \url{http://klub.com.pl/dhcpv6/}). After downloading, click on it and
 follow on screen instructions. Dibbler will be installed and all
-required links will be placed in the Start menu.
+required links will be placed in the Start menu. Note that there are
+two Windows versions: one for XP/2003 and one for NT4/2000. Make sure
+to use proper port. If you haven't set up IPv6 support, see following
+sections for details.
+
+\subsection{Setting up IPv6 in Linux}
+IPv6 can be enabled in Linux systems in two ways: compiled directly
+into kernel or as a module. To verify if you have IPv6 support, issue
+following command: \verb+ping6 ::1+. If you get replies, you have IPv6
+already installed. If this fails, try to load IPv6 module
+\verb+modprobe ipv6+ (issued as root) and try ping6 once more. If that
+fails, you have to recompile kernel to support IPv6. See any of
+thousands descriptions how to recompile kernel, available in the net.
+
+\subsection{Setting up IPv6 in WindowsXP and 2003}
+If you have already working IPv6 support, you can safely skip this section.
+The easiest way to enable IPv6 support is to right click on the
+\verb+My network place+ on the desktop, select \verb+Properties+, then locate
+your network interface, right click it and select \verb+Properties+. Then
+click \verb+Install...+, choose protocol and then IPv6 (its naming is
+somewhat diffrent depending on what Service Pack you have installed).
+In XP, there's much quicker way to install IPv6. Simply run command
+\verb+ipv6 install+.
+
+\subsection{Setting up IPv6 in Windows 2000}
+If you have already working IPv6 support, you can safely skip this
+section. The following description was provided by Sob 
+\href{mailto:sob(at)hisoftware.cz}{sob(at)hisoftware.cz}. Thanks. This
+description assumes that ServicePack 4 is already installed.
+
+\begin{enumerate}
+  \item Download the file tpipv6-001205.exe from:
+    \href{http://msdn.microsoft.com/downloads/sdks/platform/tpipv6.asp}
+    and save it to a local folder (for example, \verb+C:\IPv6TP+).
+  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Tpipv6-001205.exe+ and extract the
+    files to the same location.
+  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Setup.exe -x+ and extract the files to
+    a subfolder of the current folder (for example, \verb+C:\IPv6TP\files+).
+  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), open the
+    file \verb+Hotfix.inf+ in a text editor.
+  \item In the [Version] section of the Hotfix.inf file, change the line
+    NTServicePackVersion=256 to NTServicePackVersion=1024, and then
+    save changes. \footnote{This defines Service Pack requirement.
+      NTServicePackVersion is a ServicePack version multiplied by 256. If there
+    would be SP5 available, this value should have been changed to the 2048.}
+  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), run
+    \verb+Hotfix.exe+.
+  \item Restart the computer when prompted.
+  \item After the computer is restarted, from the Windows 2000 desktop, click Start,
+    point to Settings, and then click Network and Dial-up Connections. As an
+    alternative, you can right-click My Network Places, and then click Properties.
+  \item Right-click the Ethernet-based connection to which you want to add the IPv6
+    protocol, and then click Properties. Typically, this connection is named
+    Local Area Connection.
+  \item Click Install.
+  \item In the Select Network Component Type dialog box, click Protocol, and then
+    click Add.
+  \item In the Select Network Protocol dialog box, click Microsoft IPv6 Protocol and
+    then click OK.
+  \item Click Close to close the Local Area Connection Properties
+    dialog box.
+\end{enumerate}
+
+\subsection{Setting up IPv6 in Windows NT4}
+If you have already working IPv6 support, you can safely skip this section.
+The following description was provided by The following description was provided by Sob
+\href{mailto:sob(at)hisoftware.cz}{sob(at)hisoftware.cz}. Thanks.
+
+\begin{enumerate}
+  \item Download the file msripv6-bin-1-4.exe from:
+    \href{http://research.microsoft.com/msripv6/msripv6.htm}
+    and save it to a local folder (for example, \verb+C:\IPv6Kit+).
+  \item From the local folder (\verb+C:\IPv6Kit+), run \verb+msripv6-bin-1-4.exe+ and extract the
+    files to the same location.
+  \item Start the Control Panel's "Network" applet (an alternative way to do this is
+    to right-click on "Network Neighborhood" and select "Properties") and select
+    the "Protocols" tab.
+  \item Click the "Add..." button and then "Have Disk...". When it asks you for
+    a disk, give it the full pathname to where you downloaded the binary
+    distribution kit (\verb+C:\IPv6Kit+).
+  \item IPv6 should be installed.
+\end{enumerate}
 
 \section{Compilation}
 Dibbler is distributed in 2 versions: binary and source. For
@@ -176,6 +261,11 @@ Visual C++ 2003. Open one of them and click Build command. That should
 do the trick. Additional information about compilation can be found in
 \emph{Dibbler Developer's Guide}.
 
-\subsection{Windows 2000 compilation}
-Windows 2000 port is considered experimental, but there are reports
-that it works just fine. See Port-win2k/INFO file for details.
+\subsection{Windows NT/2000 compilation}
+Windows NT4/2000 port is considered experimental, but there are reports
+that it works just fine. To compile it, you should download dev-cpp
+(\url{http://www.bloodshed.net/dev/devcpp.html}), a free IDE for
+Windows utilising minGW port of the gcc for Windows. Run dev-cpp,
+click ,,open project...'', and open of the \verb+*.dev+ files located
+in the Port-winnt2k directory, then click compile. You also should
+take a look at \verb+Port-winnt2k/INFO+ file for details.
