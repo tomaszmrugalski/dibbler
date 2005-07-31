@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-client.cpp,v 1.16 2005-02-03 22:50:36 thomson Exp $
+ * $Id: dibbler-client.cpp,v 1.17 2005-07-31 14:39:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/02/03 22:50:36  thomson
+ * *** empty log message ***
+ *
  * Revision 1.15  2005/02/03 22:06:40  thomson
  * Linux startup/pid checking changed.
  *
@@ -90,7 +93,7 @@ int main(int argc, char * argv[])
     char command[256];
     int result=-1;
 
-    logStart("(CLIENT)", "Client", CLNTLOG_FILE);
+    logStart("(CLIENT, Linux port)", "Client", CLNTLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {

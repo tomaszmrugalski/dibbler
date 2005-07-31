@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-server.cpp,v 1.16 2005-07-21 21:40:19 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.17 2005-07-31 14:39:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/07/21 21:40:19  thomson
+ * PID checking process is improved.
+ *
  * Revision 1.15  2005/04/29 00:08:20  thomson
  * *** empty log message ***
  *
@@ -117,7 +120,7 @@ int main(int argc, char * argv[])
     char command[256];
     int result=-1;
 
-    logStart("(SERVER)", "Server", SRVLOG_FILE);
+    logStart("(SERVER, Linux port)", "Server", SRVLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {

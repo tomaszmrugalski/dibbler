@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-relay.cpp,v 1.8 2005-07-21 21:40:19 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.9 2005-07-31 14:39:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/07/21 21:40:19  thomson
+ * PID checking process is improved.
+ *
  * Revision 1.7  2005/04/28 21:20:52  thomson
  * Support for multiple relays added.
  *
@@ -107,7 +110,7 @@ int main(int argc, char * argv[])
     char command[256];
     int result=-1;
 
-    logStart("(RELAY)", "Relay", RELLOG_FILE);
+    logStart("(RELAY, Linux port)", "Relay", RELLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {
