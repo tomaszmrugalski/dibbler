@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.10 2005-05-02 21:48:42 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.11 2005-08-02 00:33:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/05/02 21:48:42  thomson
+ * getFullName() method implemented.
+ *
  * Revision 1.9  2005/01/03 21:57:08  thomson
  * Relay support added.
  *
@@ -55,6 +58,8 @@ public:
 
     void addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass);
     void firstAddrClass();
+    bool getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
+    bool getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
     SmartPtr<TSrvCfgAddrClass> getAddrClass();
     SmartPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
     SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, 

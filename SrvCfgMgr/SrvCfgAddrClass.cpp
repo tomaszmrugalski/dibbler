@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.19 2005-03-15 00:36:22 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.20 2005-08-02 00:33:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/03/15 00:36:22  thomson
+ * 0.4.0 release (win32 commit)
+ *
  * Revision 1.18  2004/12/07 00:43:03  thomson
  * Server no longer support link local addresses (bug #38),
  * Server now supports stateless mode (bug #71)
@@ -102,6 +105,29 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
     }
 }
 
+/*
+ * is client prefered in this class? (= is it in whitelist?)
+ */
+bool TSrvCfgAddrClass::clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr)
+{
+    SmartPtr<TStationRange> range;
+    RejedClnt.first();
+    // is client on black list?
+    while(range=RejedClnt.get())
+        if (range->in(duid,clntAddr))
+            return false;
+            
+    if (AcceptClnt.count()) {
+        AcceptClnt.first();
+        while(range=AcceptClnt.get()) {
+            if (range->in(duid,clntAddr))
+                return true;
+        }
+        return false;
+    } else {
+        return false;
+    }
+}
 
 
 long TSrvCfgAddrClass::chooseTime(long beg, long end, long clntTime)

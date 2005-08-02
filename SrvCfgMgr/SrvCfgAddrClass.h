@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.11 2004-12-07 00:43:03 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.12 2005-08-02 00:33:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/12/07 00:43:03  thomson
+ * Server no longer support link local addresses (bug #38),
+ * Server now supports stateless mode (bug #71)
+ *
  * Revision 1.10  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -61,6 +65,8 @@ class TSrvCfgAddrClass
     
     //Is client with this DUID and IP address supported?
     bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
+    //Is client with this DUID and IP address prefered? (is in accept-only?)
+    bool clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
     
     //checks if the address belongs to the pool
     bool addrInPool(SmartPtr<TIPv6Addr> addr);

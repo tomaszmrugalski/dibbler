@@ -218,26 +218,26 @@ int get_prefix_1(inet_prefix *dst, char *arg, int family)
 	err = get_addr_1(dst, arg, family);
 
 	if (err == 0) {
-		switch(dst->family) {
-			case AF_INET6:
-				dst->bitlen = 128;
-				break;
-			case AF_DECnet:
-				dst->bitlen = 16;
-				break;
-			default:
-			case AF_INET:
-				dst->bitlen = 32;
+	    switch(dst->family) {
+	    case AF_INET6:
+		dst->bitlen = 128;
+		break;
+	    case AF_DECnet:
+		dst->bitlen = 16;
+		break;
+	    default:
+	    case AF_INET:
+		dst->bitlen = 32;
+	    }
+	    if (slash) {
+		if (get_integer((int*)&plen, slash+1, 0) || plen > dst->bitlen) {
+		    err = -1;
+		    goto done;
 		}
-		if (slash) {
-			if (get_integer(&plen, slash+1, 0) || plen > dst->bitlen) {
-				err = -1;
-				goto done;
-			}
-			dst->bitlen = plen;
-		}
+		dst->bitlen = plen;
+	    }
 	}
-done:
+ done:
 	if (slash)
 		*slash = '/';
 	return err;
