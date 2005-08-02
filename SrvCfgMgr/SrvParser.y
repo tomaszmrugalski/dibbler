@@ -39,6 +39,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
+SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                     \
+SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                       \
 virtual ~SrvParser();
 
 // constructor
@@ -187,6 +189,19 @@ ADDRESSRangeList
     {
         SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
         SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
+        if (*addr1<=*addr2)
+            PresentRangeLst.append(new TStationRange(addr1,addr2));
+        else
+            PresentRangeLst.append(new TStationRange(addr2,addr1));
+    }
+    |  IPV6ADDR_ '/' INTNUMBER_
+    {
+	SmartPtr<TIPv6Addr> addr(new TIPv6Addr($1));
+	int prefix = $3;
+	Log(Debug) << "### " << addr->getPlain() << " ... " << $1 << " ... " << $3 << LogEnd;
+	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
+	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
+	Log(Debug) << "### Adding " << addr1->getPlain() << "-" << addr2->getPlain() << LogEnd;
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -733,4 +748,26 @@ void SrvParser::yyerror(char *m)
 
 SrvParser::~SrvParser() {
     
+}
+
+SmartPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
+    char packed[16];
+    memcpy(packed, addrPacked,16);
+    if (prefix%8==0) {
+	for (int i=0;i<prefix/8; i++) {
+	    packed[15-i]=0;
+	}
+    }
+    return new TIPv6Addr(packed, false);
+}
+
+SmartPtr<TIPv6Addr> SrvParser::getRangeMax(char * addrPacked, int prefix){
+    char packed[16];
+    memcpy(packed, addrPacked,16);
+    if (prefix%8==0) {
+	for (int i=0;i<prefix/8; i++) {
+	    packed[15-i]=0xff;
+	}
+    }
+    return new TIPv6Addr(packed, false);
 }

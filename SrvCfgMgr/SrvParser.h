@@ -45,6 +45,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
+SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                     \
+SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                       \
 virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
@@ -52,7 +54,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 51 "SrvParser.y"
+#line 53 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
