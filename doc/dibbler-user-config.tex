@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.15 2005-07-21 23:28:56 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.16 2005-08-02 23:43:27 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -559,7 +559,7 @@ iface eth0
   valid-lifetime 3600-86400
   class
   {
-    pool 2000::100-2000::10f
+    pool 2000::100/80
   } 
 
   option dns-server 2000::1234
@@ -627,7 +627,7 @@ iface eth0
   preference 255
   class
   {
-    pool 2000::1-2000::100
+    pool 2000::1/112
   }
 }  
 \end{verbatim}
@@ -879,6 +879,9 @@ iface eth1 {
 
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.15  2005/07/21 23:28:56  thomson
+%% Documentation update.
+%%
 %% Revision 1.14  2005/03/15 23:02:31  thomson
 %% 0.4.0 release.
 %%

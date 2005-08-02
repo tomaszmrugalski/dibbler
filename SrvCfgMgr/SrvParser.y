@@ -198,10 +198,13 @@ ADDRESSRangeList
     {
 	SmartPtr<TIPv6Addr> addr(new TIPv6Addr($1));
 	int prefix = $3;
-	Log(Debug) << "### " << addr->getPlain() << " ... " << $1 << " ... " << $3 << LogEnd;
+	if ( (prefix<1) || (prefix>128)) {
+	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
+		      << ". Allowed range: 1..128." << LogEnd;
+	    YYABORT;
+	}
 	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
-	Log(Debug) << "### Adding " << addr1->getPlain() << "-" << addr2->getPlain() << LogEnd;
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -750,24 +753,35 @@ SrvParser::~SrvParser() {
     
 }
 
+static char bitMask[] = {255, 127, 63, 31, 15, 7, 3, 1 };
+
 SmartPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     char packed[16];
+    char mask;
     memcpy(packed, addrPacked,16);
-    if (prefix%8==0) {
-	for (int i=0;i<prefix/8; i++) {
-	    packed[15-i]=0;
-	}
+    if (prefix%8!=0) {
+	mask = bitMask[prefix%8];
+	packed[prefix/8] = packed[prefix/8] & mask;
+	prefix = (prefix/8 + 1)*8;
+    }
+    for (int i=prefix/8;i<16; i++) {
+	packed[i]=0;
     }
     return new TIPv6Addr(packed, false);
 }
 
 SmartPtr<TIPv6Addr> SrvParser::getRangeMax(char * addrPacked, int prefix){
     char packed[16];
+    char mask;
     memcpy(packed, addrPacked,16);
-    if (prefix%8==0) {
-	for (int i=0;i<prefix/8; i++) {
-	    packed[15-i]=0xff;
-	}
+    if (prefix%8!=0) {
+	mask = bitMask[prefix%8];
+	packed[prefix/8] = packed[prefix/8] | mask;
+	prefix = (prefix/8 + 1)*8;
     }
+    for (int i=prefix/8;i<16; i++) {
+	packed[i]=0xff;
+    }
+
     return new TIPv6Addr(packed, false);
 }

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.18 2005-08-02 00:33:58 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.19 2005-08-02 23:43:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/08/02 00:33:58  thomson
+ * White-list bug fixed (bug #120),
+ * Minor compilation warnings in gcc 4.0 removed.
+ *
  * Revision 1.17  2005/05/02 21:48:42  thomson
  * getFullName() method implemented.
  *
@@ -49,6 +53,9 @@ void TSrvCfgIface::firstAddrClass() {
     this->SrvCfgAddrClassLst.first();
 }
 
+/*
+ * tries to find if there is a class, where client is on white-list
+ */
 bool TSrvCfgIface::getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     this->SrvCfgAddrClassLst.first();
@@ -61,6 +68,9 @@ bool TSrvCfgIface::getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Ad
     return false;
 }
 
+/*
+ * tries to find a class, which client is allowed to use
+ */
 bool TSrvCfgIface::getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     this->SrvCfgAddrClassLst.first();
@@ -126,19 +136,22 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid
       Log(Debug) << "Found prefered class for client (duid = " << *clntDuid << ", addr = "
   	        << *clntAddr << ")" << LogEnd;
       return this->getClassByID(classid);
-    } else {
-      // FIXME: randomize it
-      Log(Debug) << "Prefered class for client not found, using first available (duid = " << *clntDuid << ", addr = "
-  	         << *clntAddr << ")" << LogEnd;
-      if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
-          return this->getClassByID(classid);
-      } else {
-          Log(Crit) << "No class is available for client (duid = " << *clntDuid << ", addr = "
-  	            << *clntAddr << ")" << LogEnd;
-  	  // FIXME: Can this happen?
-          return 0;
-      }
-    }
+    } 
+
+
+    // FIXME: randomize it
+    // Randomized version
+    Log(Debug) << "Prefered class for client not found, using first available (duid = " << *clntDuid << ", addr = "
+	       << *clntAddr << ")" << LogEnd;
+    if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
+	return this->getClassByID(classid);
+    } 
+
+    // This is some kind of problem...
+    Log(Crit) << "No class is available for client (duid = " << *clntDuid << ", addr = "
+	      << *clntAddr << ")" << LogEnd;
+    // FIXME: Can this happen?
+    return 0;
 }
 
 long TSrvCfgIface::countAddrClass() {
