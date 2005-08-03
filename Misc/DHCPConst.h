@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.15 2005-01-08 16:52:04 thomson Exp $
+ * $Id: DHCPConst.h,v 1.16 2005-08-03 22:47:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.14  2004/11/30 00:43:24  thomson
  * SIP option value mismatch fixed (bug #68)
  *
@@ -190,12 +193,15 @@
 #define SERVER_DEFAULT_MAX_PREF  86400     /* 1 day */
 #define SERVER_DEFAULT_MIN_VALID 3600
 #define SERVER_DEFAULT_MAX_VALID 172800    /* 2 days */
+#define SERVER_DEFAULT_CLASS_SHARE 100
+#define SERVER_DEFAULT_CLASS_MAX_LEASE ULONG_MAX
 
 #define CLIENT_DEFAULT_T1 ULONG_MAX
 #define CLIENT_DEFAULT_T2 ULONG_MAX
 
 #define CLIENT_DEFAULT_UNICAST false
 #define CLIENT_DEFAULT_RAPID_COMMIT false
+
 
 enum ETentative {YES, NO, DONTKNOWYET};
 enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, DISABLED, UNKNOWN, TENTATIVECHECK, TENTATIVE};

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvParsClassOpt.cpp,v 1.6 2004-09-28 20:12:39 thomson Exp $
+ * $Id: SrvParsClassOpt.cpp,v 1.7 2005-08-03 22:47:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/28 20:12:39  thomson
+ * All major values are now unsigned.
+ *
  */
 
 #include <limits.h>
@@ -17,16 +20,16 @@
 
 TSrvParsClassOpt::TSrvParsClassOpt(void)
 {
-    T1Beg    = SERVER_DEFAULT_MIN_T1;
-    T1End    = SERVER_DEFAULT_MAX_T1;
-    T2Beg    = SERVER_DEFAULT_MIN_T2;
-    T2End    = SERVER_DEFAULT_MAX_T2;
-    PrefBeg  = SERVER_DEFAULT_MIN_PREF;
-    PrefEnd  = SERVER_DEFAULT_MAX_PREF;
-    ValidBeg = SERVER_DEFAULT_MIN_VALID;
-    ValidEnd = SERVER_DEFAULT_MAX_VALID;
-
-    ClassMaxLease= ULONG_MAX;
+    this->T1Beg         = SERVER_DEFAULT_MIN_T1;
+    this->T1End         = SERVER_DEFAULT_MAX_T1;
+    this->T2Beg         = SERVER_DEFAULT_MIN_T2;
+    this->T2End         = SERVER_DEFAULT_MAX_T2;
+    this->PrefBeg       = SERVER_DEFAULT_MIN_PREF;
+    this->PrefEnd       = SERVER_DEFAULT_MAX_PREF;
+    this->ValidBeg      = SERVER_DEFAULT_MIN_VALID;
+    this->ValidEnd      = SERVER_DEFAULT_MAX_VALID;
+    this->Share         = SERVER_DEFAULT_CLASS_SHARE;
+    this->ClassMaxLease = SERVER_DEFAULT_CLASS_MAX_LEASE;
 }
 
 //T1,T2,Valid,Prefered time routines
@@ -68,6 +71,14 @@ unsigned long TSrvParsClassOpt::getT2Beg()
 unsigned long TSrvParsClassOpt::getT2End()
 {
     return this->T2End;
+}
+
+void TSrvParsClassOpt::setShare(unsigned long share) {
+    this->Share = share;
+}
+
+unsigned long TSrvParsClassOpt::getShare() {
+    return this->Share;
 }
 
 void TSrvParsClassOpt::setPrefBeg(unsigned long pref)

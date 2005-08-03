@@ -6,40 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.19 2005-08-02 23:43:27 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.18  2005/08/02 00:33:58  thomson
- * White-list bug fixed (bug #120),
- * Minor compilation warnings in gcc 4.0 removed.
- *
- * Revision 1.17  2005/05/02 21:48:42  thomson
- * getFullName() method implemented.
- *
- * Revision 1.16  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.15  2005/01/03 21:57:08  thomson
- * Relay support added.
- *
- * Revision 1.14  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.13  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.12  2004/09/03 23:20:23  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.8  2004/06/28 21:34:18  thomson
- * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
- *
- * Revision 1.7  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- * Revision 1.6  2004/06/06 22:12:29  thomson
- * Preference option has changed scope from class to interface
- *                                                                           
+ * $Id: SrvCfgIface.cpp,v 1.20 2005-08-03 22:47:34 thomson Exp $
  */
 
 #include <sstream>
@@ -72,15 +39,39 @@ bool TSrvCfgIface::getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Ad
  * tries to find a class, which client is allowed to use
  */
 bool TSrvCfgIface::getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+    unsigned int clsid[100];
+    unsigned int share[100];
+    unsigned int cnt = 0;
+    unsigned int sum = 0;
+    unsigned int rnd;
+
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     this->SrvCfgAddrClassLst.first();
-    while(ptrClass=SrvCfgAddrClassLst.get()) {
+    while( (ptrClass=SrvCfgAddrClassLst.get()) && (cnt<100) ) {
         if (ptrClass->clntSupported(duid, clntAddr)) {
-            classid=ptrClass->getID();
-            return true;
+            clsid[cnt]   = ptrClass->getID();
+	    share[cnt]   = ptrClass->getShare();
+	    sum         += ptrClass->getShare();
+	    cnt++;
         }
     }
-    return false;
+
+    if (!cnt) 
+	return false; // this client is not supported by any class
+
+    rnd = rand() % sum;
+
+    unsigned int j=0;
+    
+    for (unsigned int i=0; i<100;i++) {
+	j += share[i];
+	if (j>=rnd) {
+	    classid = clsid[i];
+	    break;
+	}
+    }
+
+    return true;
 }
 
 SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
@@ -129,7 +120,11 @@ void TSrvCfgIface::delClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
 
 SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid, 
 							SmartPtr<TIPv6Addr> clntAddr) {
+
     unsigned long classid;
+
+    // step 1: Is there a class reserved for this client?
+
     // if there is class where client is on whitelist, it should be used rather than any other class 
     // that would be also suitable
     if(this->getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
@@ -138,19 +133,15 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid
       return this->getClassByID(classid);
     } 
 
-
-    // FIXME: randomize it
-    // Randomized version
-    Log(Debug) << "Prefered class for client not found, using first available (duid = " << *clntDuid << ", addr = "
-	       << *clntAddr << ")" << LogEnd;
+    // Get one of the normal classes
     if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
+	Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd; 
 	return this->getClassByID(classid);
     } 
 
     // This is some kind of problem...
-    Log(Crit) << "No class is available for client (duid = " << *clntDuid << ", addr = "
-	      << *clntAddr << ")" << LogEnd;
-    // FIXME: Can this happen?
+    Log(Error) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
+	       << clntAddr->getPlain() << ")." << LogEnd;
     return 0;
 }
 
@@ -159,11 +150,11 @@ long TSrvCfgIface::countAddrClass() {
 }
 
 int TSrvCfgIface::getID() {
-	return this->ID;
+    return this->ID;
 }
 
 string TSrvCfgIface::getName() {
-	return this->Name;
+    return this->Name;
 }
 
 string TSrvCfgIface::getFullName() {
@@ -257,7 +248,7 @@ void TSrvCfgIface::setDefaults() {
 }
 
 void TSrvCfgIface::setNoConfig() {
-    NoConfig=true;
+    this->NoConfig=true;
 }
 
 unsigned char TSrvCfgIface::getPreference() {
@@ -265,15 +256,14 @@ unsigned char TSrvCfgIface::getPreference() {
 }
 
 void TSrvCfgIface::setName(string ifaceName) {
-	this->Name=ifaceName;
+    this->Name=ifaceName;
 }
 
 void TSrvCfgIface::setID(int ifaceID) {
-	this->ID=ifaceID;
+    this->ID=ifaceID;
 }
 
-bool TSrvCfgIface::getRapidCommit()
-{
+bool TSrvCfgIface::getRapidCommit() {
     return this->RapidCommit;
 }
 
@@ -286,8 +276,7 @@ long TSrvCfgIface::getIfaceMaxLease() {
     return this->IfaceMaxLease;
 }
 
-unsigned long TSrvCfgIface::getClntMaxLease()
-{
+unsigned long TSrvCfgIface::getClntMaxLease() {
     return this->ClntMaxLease;
 }
 
@@ -596,3 +585,41 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "  </SrvCfgIface>" << endl;
     return out;
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/08/02 23:43:27  thomson
+ * *** empty log message ***
+ *
+ * Revision 1.18  2005/08/02 00:33:58  thomson
+ * White-list bug fixed (bug #120),
+ * Minor compilation warnings in gcc 4.0 removed.
+ *
+ * Revision 1.17  2005/05/02 21:48:42  thomson
+ * getFullName() method implemented.
+ *
+ * Revision 1.16  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
+ * Revision 1.15  2005/01/03 21:57:08  thomson
+ * Relay support added.
+ *
+ * Revision 1.14  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
+ * Revision 1.13  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
+ * Revision 1.12  2004/09/03 23:20:23  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
+ * Revision 1.8  2004/06/28 21:34:18  thomson
+ * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
+ *
+ * Revision 1.7  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ *
+ * Revision 1.6  2004/06/06 22:12:29  thomson
+ * Preference option has changed scope from class to interface
+ *                                                                           
+ */

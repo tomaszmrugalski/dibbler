@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.20 2005-08-02 00:33:58 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.21 2005-08-03 22:47:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2005/08/02 00:33:58  thomson
+ * White-list bug fixed (bug #120),
+ * Minor compilation warnings in gcc 4.0 removed.
+ *
  * Revision 1.19  2005/03/15 00:36:22  thomson
  * 0.4.0 release (win32 commit)
  *
@@ -100,9 +104,9 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
                 return true;
         }
         return false;
-    } else {
-        return true;
-    }
+    } 
+      
+    return true;
 }
 
 /*
@@ -157,14 +161,15 @@ unsigned long TSrvCfgAddrClass::getValid(long clntValid) {
 
 void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
 {
-    T1Beg=opt->getT1Beg();
-    T2Beg=opt->getT2Beg();
-    T1End=opt->getT1End();
-    T2End=opt->getT2End();
-    PrefBeg=opt->getPrefBeg();
-    PrefEnd=opt->getPrefEnd();
-    ValidBeg=opt->getValidBeg();
-    ValidEnd=opt->getValidEnd();
+    this->T1Beg    = opt->getT1Beg();
+    this->T2Beg    = opt->getT2Beg();
+    this->T1End    = opt->getT1End();
+    this->T2End    = opt->getT2End();
+    this->PrefBeg  = opt->getPrefBeg();
+    this->PrefEnd  = opt->getPrefEnd();
+    this->ValidBeg = opt->getValidBeg();
+    this->ValidEnd = opt->getValidEnd();
+    this->Share    = opt->getShare();
     
     ClassMaxLease = opt->getClassMaxLease();
     
@@ -215,6 +220,10 @@ unsigned long TSrvCfgAddrClass::getID()
     return this->ID;
 }
 
+unsigned long TSrvCfgAddrClass::getShare() {
+    return this->Share;
+}
+
 long TSrvCfgAddrClass::incrAssigned(int count) {
     this->AddrsAssigned += count;
     return this->AddrsAssigned;
@@ -261,7 +270,7 @@ bool TSrvCfgAddrClass::isLinkLocal() {
 
 ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
 {
-    out << "    <class id=\"" << addrClass.ID << "\">" << std::endl;
+    out << "    <class id=\"" << addrClass.ID << "\" share=\"" << addrClass.Share << "\">" << std::endl;
     out << "      <!-- total addrs in class: " << addrClass.AddrsCount 
 	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
     out << "      <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  << "\" />" << endl;

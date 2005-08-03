@@ -66,7 +66,7 @@ virtual ~SrvParser();
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, LIFETIME_
-%token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_
+%token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_, SHARE_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
 %token IFACE_MAX_LEASE_, CLASS_MAX_LEASE_, CLNT_MAX_LEASE_
@@ -341,6 +341,18 @@ ValidTimeOption
 }
 ;
 
+ShareOption
+: SHARE_ Number
+{
+    int x=$2;
+    if ( (x<1) || (x>1000)) {
+	Log(Crit) << "Invalid share value: " << x << " in line " << lex->lineno() 
+		  << ". Allowed range: 1..1000." << LogEnd;
+	YYABORT;
+    }
+    ParserOptStack.getLast()->setShare(x);
+}
+
 T1Option
 : T1_ Number 
 {
@@ -511,6 +523,7 @@ ClassOptionDeclaration
 : PreferredTimeOption
 | ValidTimeOption
 | PoolOption
+| ShareOption
 | T1Option
 | T2Option
 | RejectClientsOption

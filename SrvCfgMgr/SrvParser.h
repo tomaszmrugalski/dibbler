@@ -259,22 +259,23 @@ typedef
 #define	ACCEPT_ONLY_	279
 #define	REJECT_CLIENTS_	280
 #define	POOL_	281
-#define	T1_	282
-#define	T2_	283
-#define	PREF_TIME_	284
-#define	VALID_TIME_	285
-#define	UNICAST_	286
-#define	PREFERENCE_	287
-#define	RAPID_COMMIT_	288
-#define	IFACE_MAX_LEASE_	289
-#define	CLASS_MAX_LEASE_	290
-#define	CLNT_MAX_LEASE_	291
-#define	STATELESS_	292
-#define	STRING_	293
-#define	HEXNUMBER_	294
-#define	INTNUMBER_	295
-#define	IPV6ADDR_	296
-#define	DUID_	297
+#define	SHARE_	282
+#define	T1_	283
+#define	T2_	284
+#define	PREF_TIME_	285
+#define	VALID_TIME_	286
+#define	UNICAST_	287
+#define	PREFERENCE_	288
+#define	RAPID_COMMIT_	289
+#define	IFACE_MAX_LEASE_	290
+#define	CLASS_MAX_LEASE_	291
+#define	CLNT_MAX_LEASE_	292
+#define	STATELESS_	293
+#define	STRING_	294
+#define	HEXNUMBER_	295
+#define	INTNUMBER_	296
+#define	IPV6ADDR_	297
+#define	DUID_	298
 
 
 #line 169 "../bison++/bison.h"
@@ -347,6 +348,7 @@ static const int LIFETIME_;
 static const int ACCEPT_ONLY_;
 static const int REJECT_CLIENTS_;
 static const int POOL_;
+static const int SHARE_;
 static const int T1_;
 static const int T2_;
 static const int PREF_TIME_;
@@ -395,22 +397,23 @@ static const int DUID_;
 	,ACCEPT_ONLY_=279
 	,REJECT_CLIENTS_=280
 	,POOL_=281
-	,T1_=282
-	,T2_=283
-	,PREF_TIME_=284
-	,VALID_TIME_=285
-	,UNICAST_=286
-	,PREFERENCE_=287
-	,RAPID_COMMIT_=288
-	,IFACE_MAX_LEASE_=289
-	,CLASS_MAX_LEASE_=290
-	,CLNT_MAX_LEASE_=291
-	,STATELESS_=292
-	,STRING_=293
-	,HEXNUMBER_=294
-	,INTNUMBER_=295
-	,IPV6ADDR_=296
-	,DUID_=297
+	,SHARE_=282
+	,T1_=283
+	,T2_=284
+	,PREF_TIME_=285
+	,VALID_TIME_=286
+	,UNICAST_=287
+	,PREFERENCE_=288
+	,RAPID_COMMIT_=289
+	,IFACE_MAX_LEASE_=290
+	,CLASS_MAX_LEASE_=291
+	,CLNT_MAX_LEASE_=292
+	,STATELESS_=293
+	,STRING_=294
+	,HEXNUMBER_=295
+	,INTNUMBER_=296
+	,IPV6ADDR_=297
+	,DUID_=298
 
 
 #line 215 "../bison++/bison.h"

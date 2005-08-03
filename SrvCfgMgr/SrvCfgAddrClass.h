@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.12 2005-08-02 00:33:58 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.13 2005-08-03 22:47:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/08/02 00:33:58  thomson
+ * White-list bug fixed (bug #120),
+ * Minor compilation warnings in gcc 4.0 removed.
+ *
  * Revision 1.11  2004/12/07 00:43:03  thomson
  * Server no longer support link local addresses (bug #38),
  * Server now supports stateless mode (bug #71)
@@ -79,6 +83,7 @@ class TSrvCfgAddrClass
     unsigned long getValid(long clntValid);
     unsigned long getClassMaxLease();
     unsigned long getID();
+    unsigned long getShare();
 
     bool isLinkLocal();
 
@@ -97,6 +102,7 @@ class TSrvCfgAddrClass
     unsigned long T2End;
     unsigned long PrefEnd;
     unsigned long ValidEnd;
+    unsigned long Share;
     
     long chooseTime(long beg, long end, long clntTime);
     

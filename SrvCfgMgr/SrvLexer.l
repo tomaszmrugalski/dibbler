@@ -68,6 +68,7 @@ valid-lifetime      { return SrvParser::VALID_TIME_;}
 unicast             { return SrvParser::UNICAST_;}
 preference          { return SrvParser::PREFERENCE_;}
 pool                { return SrvParser::POOL_;}
+share               { return SrvParser::SHARE_;}
 rapid-commit        { return SrvParser::RAPID_COMMIT_;}
 iface-max-lease     { return SrvParser::IFACE_MAX_LEASE_; }
 class-max-lease     { return SrvParser::CLASS_MAX_LEASE_; }

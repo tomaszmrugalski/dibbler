@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsClassOpt.h,v 1.6 2004-09-28 20:12:39 thomson Exp $
+ * $Id: SrvParsClassOpt.h,v 1.7 2005-08-03 22:47:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/28 20:12:39  thomson
+ * All major values are now unsigned.
+ *
  * Revision 1.5  2004/09/03 23:20:23  thomson
  * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
  *
@@ -54,6 +57,9 @@ class TSrvParsClassOpt
     unsigned long getPrefBeg();
     unsigned long getPrefEnd();
 
+    void setShare(unsigned long share);
+    unsigned long getShare();
+
     void setValidEnd(unsigned long valid);
     void setValidBeg(unsigned long valid);
     unsigned long getValidEnd();
@@ -92,6 +98,7 @@ private:
     unsigned long PrefEnd;
     unsigned long ValidBeg;
     unsigned long ValidEnd;
+    unsigned long Share;
     
     TContainer<SmartPtr<TStationRange> > RejedClnt;
     TContainer<SmartPtr<TStationRange> > AcceptClnt;
