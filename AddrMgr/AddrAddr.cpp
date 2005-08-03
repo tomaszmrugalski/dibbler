@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.6 2005-08-03 23:17:11 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.7 2005-08-03 23:23:35 thomson Exp $
  */
 
 #include <iostream>
@@ -15,6 +15,7 @@
 #include "Portable.h"
 #include "AddrAddr.h"
 #include "DHCPConst.h"
+#include "Logger.h"
 
 TAddrAddr::TAddrAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Prefered = pref;
@@ -111,6 +112,9 @@ ostream & operator<<(ostream & strum,TAddrAddr &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/08/03 23:17:11  thomson
+ * Minor changes fixed.
+ *
  * Revision 1.5  2004/06/04 19:03:46  thomson
  * Resolved warnings with signed/unisigned
  *
