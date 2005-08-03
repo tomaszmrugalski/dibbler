@@ -3,6 +3,8 @@
  ------------------- 
 
  0.4.1 [2005-06-08]
+  - Srv: Class/prefix syntax is now supported (bug #121)
+  - White list support improved (bug #120)
   - Win32: -d parameter is now optional
   - Greatly improved relay support: 2 relay cascade connection, Cisco interoperability etc. (bug #107)
   - Win32: apps no longer die quietly during interface detection (bug #117)

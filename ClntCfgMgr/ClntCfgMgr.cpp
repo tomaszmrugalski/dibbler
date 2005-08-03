@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.33 2005-07-21 23:29:32 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.34 2005-08-03 23:17:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2005/07/21 23:29:32  thomson
+ * Logging cleanup.
+ *
  * Revision 1.32  2005/07/17 21:09:52  thomson
  * Minor improvements for 0.4.1 release.
  *
@@ -282,7 +285,7 @@ int TClntCfgMgr::countIfaces()
 
 bool TClntCfgMgr::getReconfigure()
 {
-    //FIXME
+    //FIXME: Implement this in some distant future
     return false;
 }
 

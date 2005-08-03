@@ -6,29 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.10 2004-12-08 00:15:07 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.9  2004/12/07 22:54:35  thomson
- * Typos corrected.
- *
- * Revision 1.8  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.7  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.6  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.5  2004/09/08 21:22:45  thomson
- * Parser improvements, signed/unsigned issues addressed.
- *
- * Revision 1.4  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- *
+ * $Id: ClntAddrMgr.cpp,v 1.11 2005-08-03 23:17:11 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -152,7 +130,6 @@ TClntAddrMgr::~TClntAddrMgr() {
 bool TClntAddrMgr::isIAAssigned(unsigned long IAID)
 {
 	SmartPtr<TAddrIA> ia;
-	//FIXME:maybe it should be also method of TAddrMgr ? (Marek)
 	firstIA();
 	while (ia=getIA())
 		if (ia->getIAID()==IAID) return true;
@@ -169,3 +146,29 @@ SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
     }
     return SmartPtr<TAddrIA>();
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/12/08 00:15:07  thomson
+ * Fixed issues with denied RENEW (bug #53)
+ *
+ * Revision 1.9  2004/12/07 22:54:35  thomson
+ * Typos corrected.
+ *
+ * Revision 1.8  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
+ * Revision 1.7  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
+ * Revision 1.6  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
+ * Revision 1.5  2004/09/08 21:22:45  thomson
+ * Parser improvements, signed/unsigned issues addressed.
+ *
+ * Revision 1.4  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ *
+ */
