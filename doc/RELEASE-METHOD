@@ -1,0 +1,30 @@
+Release process:
+
+Win32:
+0. Modify version in Misc/Portable.h
+1. Build doc under Linux
+2. Copy dibbler-devel.pdf, dibbler-user.pdf into doc/ directory.
+3. Copy client-win32.conf to client.conf
+        server-win32.conf to server.conf
+	relay-win32.conf to relay.conf
+4. Compile all 3 projects in Port-win32/ in MS Visual Studio.
+5. Modify Port-win32/dibber.iss to use proper version.
+6. Run Inno setup on Port-win32/dibbler.iss
+
+WinNT/2000
+7. Compole all 3 projects in Port-winnt2k/ in Dev-cpp.
+8. Modify Port-winnt2k/dibber.iss to use proper version.
+9. Run Inno setup on Port-winnt2k/dibbler.iss
+
+Linux:
+1. make release-src
+2. make release-doc
+3. make server client relay
+4. make release-linux
+
+
+DEB:
+
+RPM:
+
+Gentoo:
