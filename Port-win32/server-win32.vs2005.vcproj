@@ -5,6 +5,7 @@
 	Name="server-win32"
 	ProjectGUID="{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
 	Keyword="ManagedCProj"
+	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -552,7 +553,7 @@
 					>
 				</File>
 				<File
-					RelativePath="server-winxp.cpp"
+					RelativePath=".\server-win32.cpp"
 					>
 				</File>
 				<File
@@ -569,6 +570,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
+			<File
+				RelativePath=".\resource2.h"
+				>
+			</File>
 			<Filter
 				Name="AddrMgr"
 				>
@@ -663,23 +668,19 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\FUN"
-			>
-		</File>
-		<File
 			RelativePath="..\GUIDELINES"
 			>
 		</File>
 		<File
-			RelativePath="INFO-winxp.txt"
-			>
-		</File>
-		<File
-			RelativePath="..\README"
-			>
-		</File>
-		<File
 			RelativePath="..\RELNOTES"
+			>
+		</File>
+		<File
+			RelativePath=".\server-win32.ico"
+			>
+		</File>
+		<File
+			RelativePath=".\server-win32.rc"
 			>
 		</File>
 		<File

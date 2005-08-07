@@ -2,13 +2,15 @@
   Dibbler changelog
  ------------------- 
 
- 0.4.1 [2005-06-08]
+ 0.4.1 [2005-08-07]
+  - Windows NT/2000 added.
+  - Numerous examples added to User's Guide.
   - Srv: Class/prefix syntax is now supported (bug #121)
   - White list support improved (bug #120)
   - Win32: -d parameter is now optional
   - Greatly improved relay support: 2 relay cascade connection, Cisco interoperability etc. (bug #107)
   - Win32: apps no longer die quietly during interface detection (bug #117)
-  - Linux: Stale PID file no longer confuses srv,clnt or relay.
+  - Linux: Stale PID file no longer confuses server,client or relay.
 
  0.4.0 [2005-03-15]
   - white list (accept-only) works ok (bug #106)

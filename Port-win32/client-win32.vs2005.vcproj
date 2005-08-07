@@ -711,10 +711,10 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="port-winxp"
+				Name="port-win32"
 				>
 				<File
-					RelativePath="client-winxp.cpp"
+					RelativePath=".\client-win32.cpp"
 					>
 				</File>
 				<File
@@ -737,6 +737,10 @@
 			>
 			<File
 				RelativePath="FlexLexer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource1.h"
 				>
 			</File>
 			<Filter
@@ -1053,6 +1057,14 @@
 			</Filter>
 		</Filter>
 		<File
+			RelativePath=".\client-win32.ico"
+			>
+		</File>
+		<File
+			RelativePath=".\client-win32.rc"
+			>
+		</File>
+		<File
 			RelativePath="..\FUN"
 			>
 		</File>
@@ -1061,15 +1073,7 @@
 			>
 		</File>
 		<File
-			RelativePath="INFO-winxp.txt"
-			>
-		</File>
-		<File
 			RelativePath="..\TODO"
-			>
-		</File>
-		<File
-			RelativePath="TODO-winxp"
 			>
 		</File>
 	</Files>

@@ -5,6 +5,7 @@
 	Name="relay-win32"
 	ProjectGUID="{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
 	Keyword="ManagedCProj"
+	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
@@ -471,19 +472,15 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\FUN"
-			>
-		</File>
-		<File
 			RelativePath="..\GUIDELINES"
 			>
 		</File>
 		<File
-			RelativePath="INFO-winxp.txt"
+			RelativePath=".\relay-win32.ico"
 			>
 		</File>
 		<File
-			RelativePath="..\README"
+			RelativePath=".\relay-win32.rc"
 			>
 		</File>
 		<File

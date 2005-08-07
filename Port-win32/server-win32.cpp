@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: server-win32.cpp,v 1.13 2005-07-27 21:57:43 thomson Exp $
+ * $Id: server-win32.cpp,v 1.14 2005-08-07 18:10:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005/07/27 21:57:43  thomson
+ * 0.4.1 release, windows related changes.
+ *
  * Revision 1.12  2005/07/26 00:03:03  thomson
  * Preparation for relase 0.4.1
  *
@@ -81,7 +84,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 
 int main(int argc, char* argv[]) {
     
-    cout << DIBBLER_COPYRIGHT1 << " (SERVER)" << endl;
+    cout << DIBBLER_COPYRIGHT1 << " (SERVER, WinXP/2003 port)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
     cout << DIBBLER_COPYRIGHT3 << endl;
     cout << DIBBLER_COPYRIGHT4 << endl;

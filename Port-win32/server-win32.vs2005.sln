@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server-win32", "server-winxp.vcproj", "{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server-win32", "server-win32.vcproj", "{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -6,7 +6,7 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.16 2005-07-26 00:03:02 thomson Exp $
+ * $Id: WinService.cpp,v 1.17 2005-08-07 18:10:59 thomson Exp $
  */
 
 #include <windows.h>
@@ -473,24 +473,27 @@ bool TWinService::verifyPort() {
     GetVersionEx(&verinfo);
     bool ok=false;
 	if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) { 
-          Log(Notice) << "Windows XP detected (major=" << verinfo.dwMajorVersion
-          << ", minor=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+          Log(Notice) << "Windows XP detected (majorVersion=" << verinfo.dwMajorVersion
+          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
           ok = true;
     }
     if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==2)) {
-         Log(Notice) << "Windows 2003 detected (major=" << verinfo.dwMajorVersion
-          << ", minor=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+         Log(Notice) << "Windows 2003 detected (majorVersion=" << verinfo.dwMajorVersion
+          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
           ok = true;
     }
     if (!ok)
-         Log(Warning) << "Unsupported operating system detected (major=" << verinfo.dwMajorVersion
-          << ", minor=" << verinfo.dwMinorVersion << ")." << LogEnd;
+         Log(Warning) << "Unsupported operating system detected (majorVersion=" << verinfo.dwMajorVersion
+          << ", minorVersion=" << verinfo.dwMinorVersion << ")." << LogEnd;
     
     return ok;
 }
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/07/26 00:03:02  thomson
+ * Preparation for relase 0.4.1
+ *
  * Revision 1.15  2005/07/24 16:00:03  thomson
  * Port WinNT/2000 related changes.
  *

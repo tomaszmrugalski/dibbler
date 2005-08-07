@@ -181,7 +181,7 @@ int TTimeZone::getLength()
     if (!Valid)
         return 0;
     else
-        return  TZone.length();
+        return  (int)TZone.length();
 }
 
 string TTimeZone::get()
