@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.8 2005-07-31 15:56:11 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.9 2005-08-07 17:54:52 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.8  2005/07/31 15:56:11  thomson
+%% WinNT/2000 port update, various small changes, typos etc.
+%%
 %% Revision 1.7  2005/07/21 23:28:56  thomson
 %% Documentation update.
 %%
@@ -34,9 +37,9 @@ Dibbler website located at \url{http://klub.com.pl/dhcpv6/}.
 \section{Overview}
 
 Dibbler is a portable DHCPv6 solution. It features server, client and
-relay. Currently there are ports available for XP and 2003
-and Linux systems. There is also experimental port for Windows NT4 and
-2000 systems. It supports both stateful (i.e. IPv6 address
+relay. Currently there are ports available for Windows XP and 2003 (support for
+NT4 and 2000 is considered experimental) and Linux 2.4/2.6 systems. 
+It supports both stateful (i.e. IPv6 address
 granting) and stateless (i.e. options granting) autoconfiguration.
 Besides basic functionality\footnote{specified in RFC3315}, it also offers
 serveral enhancements, e.g. DNS servers and doman names
@@ -45,7 +48,8 @@ configuration.
 Dibbler is an open source software, distributed under GNU GPL
 licence. It means that it is freely available, free of charge and can
 be used by anyone (including commercial users). Sources are also
-available, so anyone skilled enough can fix bugs or add new features.
+available, so anyone skilled enough can fix bugs, add new features and
+release his/her own version.
 
 As for now, Dibbler offers these features:
 \begin{itemize}
@@ -62,7 +66,7 @@ As for now, Dibbler offers these features:
   client send request for remaining 2 addresses to one of the
   remaining servers.
 \item Relay support -- Dibbler server supports indirect
-  communication with clients via relays. Relay implementation is also
+  communication with clients via relays. Stand-alone relay implementation is also
   available. Clients can talk to the server directly or via relays.
 \item Unicast communication -- if specific conditions are met, client
   could send messages directly to a server's unicast address, so
@@ -83,7 +87,7 @@ As for now, Dibbler offers these features:
   client recovers from crash or power failure, it still can have
   assigned valid addresses. In such circumstances, client uses CONFIRM
   message, to config if those addresses are still valid%
-  \footnote{As for 0.4.0 version, this functionality works on server side only,
+  \footnote{As for 0.4.1 version, this functionality works on server side only,
   client side support will be available in future releases.}.
 \item IA Option -- this option is used to carry addresses. Both server
   and client support multiple IAs in one message. Additional feature
@@ -134,7 +138,7 @@ And now some implementation specific details:
   are ports available for other architectures: AMD64, PowerPC, Sparc and
   Alpha. They are available in the PLD Linux Disctribution 2.0 in test
   section. You can download them from
-  \url{ftp://ftp.pld-linux.org/dists/2.0/test/}. Keep in mind author
+  \url{ftp://ftp.pld-linux.org/dists/2.0/test/}. Keep in mind that author
   has not tested those ports, so there might be some unknown issues
   present.
 \end{itemize}
@@ -145,7 +149,7 @@ and features.
 \section{Requirements}
 Dibbler can be run on Linux systems with kernels from 2.4 and 2.6
 series. Obviously, IPv6 (compiled into kernel or as module) support is
-required to run. As DHCPv6 uses UDP ports below 1024, so root privileges
+required to run. DHCPv6 uses UDP ports below 1024, so root privileges
 are required. They're also required to add, modify and delete various
 system parameters, e.g. IPv6 addresses.
 
@@ -156,4 +160,4 @@ required.
 
 Support for Windows NT4 and 2000 is limited and considered
 experimental. Due to lack of support and any kind of informations from
-Microsoft, don't expect this to change.
+Microsoft, don't expect this state to change.

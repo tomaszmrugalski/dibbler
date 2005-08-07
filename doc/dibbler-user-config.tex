@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.16 2005-08-02 23:43:27 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.17 2005-08-07 17:54:52 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -109,7 +109,7 @@ iface number
 
 In every case, number denotes interface number. It can be extracted
 from ,,ip~l'' (Linux) or
-,,ipv6~if''(Windows). \verb+interface_name+ is an interface
+,,ipv6~if'' (Windows). \verb+interface_name+ is an interface
 name.  Also take a note that name of the interface
 no longer needs to be enclosed in single or double quotes. It is
 necessary only in Windows systems, where interface names sometimes
@@ -269,6 +269,8 @@ are required to use relays.
 
 \subsection{Client configuration examples}
 This subsection contains various examples of the most configurations.
+If you are interested in additional examples, download source version
+and look at \verb+*.conf+ files.
 
 \subsubsection{Example 1: Default}
 
@@ -331,12 +333,14 @@ Here's yet another example. We would like to obtain 2 addresses on
 interface name. They're necessary since this particular interface name
 contains spaces. Client also would like to accept Unicast
 communication if server supports it. We don't care for
-details, so keep those log very short. Config file looks like that:
+details, so keep those log very short. Take note that you won't be
+able to what Dibbler is doing with such low log-level. (Preferred
+log-level is 7). Config file looks like that:
 
 \begin{verbatim}
 # client.conf
 log-mode short
-log-level 3
+log-level 5
 iface "Local Area Connection" {
   unicast yes
   ia 2
@@ -436,13 +440,14 @@ Address class is declared as follows:
 class
 {  
      class options |
-     address poll    
+     address pool    
 }
 \end{verbatim}
 
-address poll has this format:
+address pool can be defined in one of the following formats:
 \begin{verbatim}
-poll minaddress-maxaddress
+pool minaddress-maxaddress
+pool address/prefix
 \end{verbatim}
 
 \subsubsection{Options}
@@ -519,7 +524,9 @@ obtained values are correct.
 \subsection{Server configuration examples}
 
 This subsection contains various examples of the server
-configuration. 
+configuration. If you are interested in additional examples, download source version
+and look at \verb+*.conf+ files.
+
 
 \subsubsection{Example 1: Simple}
 
@@ -595,7 +602,8 @@ iface eth0
 Here's modified previous example. Instead of specified limits, unicast
 communication should be supported and server should listen on
 2000::1234 address. Note that default multicast address is still
-supported. 
+supported. You must have this unicast address already configured on 
+server's interface.
 
 \begin{verbatim}
 # server.conf
@@ -660,7 +668,41 @@ iface eth1
 }
 \end{verbatim}
 
-\subsubsection{Example 7: Relay support}
+\subsubsection{Example 7: Multiple classes}
+Although this is not common, a few users have requested support for multiple classes on one interface.
+Dibbler server can be configured to use several classes. When client asks for an address, one of the classes
+is being choosen on a random basis. If not specified otherwise, all classes have equal probability of being chosen.
+However, this behavior can be modified using \verb+share+ parameter. In the following example, server supports
+3 classes with different preference level: class 1 has 100, class 2 has 200 and class 3 has 300. This means that class 1
+gets $\frac{100}{100+200+300} \approx 16\% $ of all requests, class 2 gets $\frac{200}{100+200+300} \approx 33\% $ and class 3 gets the rest 
+($\frac{300}{100+200+300}=50\% $).
+
+\begin{verbatim}
+# server.conf
+log-level 7
+log-mode short
+
+iface eth0 {
+ T1 1000
+ T2 2000
+
+ class {
+   share 100
+   pool 4000::1/80
+ }
+ class {
+   share 200
+   pool 2000::1-2000::ff
+ }
+
+ class {
+   share 300
+   pool 3000::1234:5678/112
+ }
+}
+\end{verbatim}
+
+\subsubsection{Example 8: Relay support}
 
 The last server configuration example explains how to use
 relays. There is some remote relay with will send encapsulated data over
@@ -680,7 +722,7 @@ iface relay1 {
 }
 \end{verbatim}
 
-\subsubsection{Example 8: 2 relays}
+\subsubsection{Example 9: 2 relays}
 This is advanced configuration. It assumes that client sends data to
 relay1, which encapsulates it and forwards it to relay2, which
 eventually sends it to the server (after additional encapsulation). It
@@ -789,6 +831,9 @@ alligned with system interface id (ifindex). Think about it as
 "ethernet segment identifier" if you are using Ethernet network or as
 "bss identifier" if you are using 802.11 network.
 
+If you are interested in additional examples, download source version
+and look at \verb+*.conf+ files.
+
 \subsubsection{Example 1: Unicast/multicast}
 Let's assume this case: relay has 2 interfaces: eth0 and
 eth1. Clients are located on the eth1 network. Relay should receive
@@ -879,6 +924,9 @@ iface eth1 {
 
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.16  2005/08/02 23:43:27  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.15  2005/07/21 23:28:56  thomson
 %% Documentation update.
 %%

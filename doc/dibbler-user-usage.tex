@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.12 2005-07-31 15:56:12 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.13 2005-08-07 17:54:52 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.12  2005/07/31 15:56:12  thomson
+%% WinNT/2000 port update, various small changes, typos etc.
+%%
 %% Revision 1.11  2005/07/21 23:28:56  thomson
 %% Documentation update.
 %%
@@ -35,14 +38,14 @@
 
 \section{Installation and usage}
 Client, server and relay are installed in the same way. Installation
-method is different in WindowsXP and Linux systems, so they're described
+method is different in Windows and Linux systems, so they're described
 separately. To simplify installation, it assumes that binary versions
 are used\footnote{Compilation is not required, binary version can be
   used safely. Compilation should be performed by
   advanced users only, see \emph{Compilation} section for details.}.
 
 \subsection{Linux installation}
-Starting with 0.4.0, there will are 3 different packages: client,
+Starting with 0.4.1, there will are 3 different packages: client,
 server and relay. For some architectures there will be also
 documentation package provided. During writing this documentation,
 Dibbler is already present in the PLD Linux Distribution 2.0 in the
@@ -57,7 +60,7 @@ distribution), DEB packages (suitable for Debian or Knoppix) and
 ebuild (for Gentoo users). To install rpm package, run $rpm -i
 archive.rpm$ command. For example, to install dibbler 0.4.0, issue following command:
 \begin{verbatim}
-rpm -i dibbler-0.4.0-1.i386.rpm 
+rpm -i dibbler-0.4.1-1.i386.rpm 
 \end{verbatim}
 
 To install Dibbler on Debian or other system with dpkg management
@@ -65,14 +68,14 @@ system, run $dpkg -i archive.deb$ command. For example, to install
 server, issue following command:
 
 \begin{verbatim}
-dpkg -i dibbler-server_0.4.0-1_i386.rpm 
+dpkg -i dibbler-server_0.4.1-1_i386.rpm 
 \end{verbatim}
 
 To install Dibbler in Gentoo systems, download ebuild script and issue
 command:
 
 \begin{verbatim}
-emerge dibbler-0.3.1.ebuild
+emerge dibbler-0.4.1.ebuild
 \end{verbatim}
 
 If you would like to install Dibbler from sources, download tar.gz
@@ -82,7 +85,7 @@ client or relay\footnote{To get full target list, type: $make
 example, to build server and relay, type:
 
 \begin{verbatim}
-tar zxvf dibbler-0.4.0-src.tar.gz
+tar zxvf dibbler-0.1.0-src.tar.gz
 make server relay
 make install
 \end{verbatim}
@@ -113,10 +116,7 @@ dibbler-client stop
 dibbler-relay stop
 \end{verbatim}
 
-To see, if client, server or relay are running\footnote{Running status
-  in Linux is based on /var/lib/dibbler/*.pid files. In rare
-  occasions, when one of the server,client or relay crashes, this
-  status will show its status as running.}, type:
+To see, if client, server or relay are running, type:
 
 \begin{verbatim}
 dibbler-server status
@@ -140,10 +140,11 @@ sections for details.
 IPv6 can be enabled in Linux systems in two ways: compiled directly
 into kernel or as a module. To verify if you have IPv6 support, issue
 following command: \verb+ping6 ::1+. If you get replies, you have IPv6
-already installed. If this fails, try to load IPv6 module
+already installed. If this fails, try to load IPv6 module:
 \verb+modprobe ipv6+ (issued as root) and try ping6 once more. If that
-fails, you have to recompile kernel to support IPv6. See any of
-thousands descriptions how to recompile kernel, available in the net.
+fails, you have to recompile kernel to support IPv6. There are 
+numerous descriptions how to recompile kernel available in the net, just
+type "kernel compilation howto" in \href{Google}{http://www.google.com}.
 
 \subsection{Setting up IPv6 in WindowsXP and 2003}
 If you have already working IPv6 support, you can safely skip this section.
@@ -257,7 +258,7 @@ compilation can be found in \emph{Dibbler Developer's Guide}.
 \subsection{Windows XP/2003 compilation}
 Download dibbler-0.3.0-src.tar.gz and extract it. In Port-winxp there
 will be project files (for server, client and relay) for MS
-Visual C++ 2003. Open one of them and click Build command. That should
+Visual Studio. Open one of them and click Build command. That should
 do the trick. Additional information about compilation can be found in
 \emph{Dibbler Developer's Guide}.
 
