@@ -53,6 +53,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/dibbler
 %doc CHANGELOG LICENSE RELNOTES doc/dibbler-user.pdf doc/dibbler-devel.pdf
 /usr/sbin/dibbler-server
 /usr/sbin/dibbler-client
+/usr/sbin/dibbler-relay
 /usr/share/man/man8/dibbler-server.8.gz
 /usr/share/man/man8/dibbler-client.8.gz
 /usr/share/man/man8/dibbler-relay.8.gz
