@@ -12,8 +12,8 @@ BuildRoot: /var/tmp/%{name}-buildroot
 It supports both stateful (i.e. IPv6 address granting) and stateless 
 (i.e. options granting) autoconfiguration modes of DHCPv6 protocol. 
 There are ports available for Linux 2.4/2.6 systems as well as MS 
-Windows XP and 2003. They are freely available under GNU GPL v2 
-or later license. 
+Windows XP,2003 (experimental support for NT4 and 2000). 
+They are freely available under GNU GPL v2 or later license. 
 
 Install Dibbler if you'd like to have IPv6 hosts automatically 
 configured in your network. All infrastructure elements are
@@ -57,8 +57,6 @@ mkdir -p $RPM_BUILD_ROOT/etc/dibbler
 /usr/share/man/man8/dibbler-server.8.gz
 /usr/share/man/man8/dibbler-client.8.gz
 /usr/share/man/man8/dibbler-relay.8.gz
-#/usr/share/doc/dibbler/dibbler-user.pdf
-#/usr/share/doc/dibbler/dibbler-devel.pdf
 /etc/dibbler/client.conf
 /etc/dibbler/client-stateless.conf
 /etc/dibbler/server.conf
