@@ -1,0 +1,20 @@
+#!/sbin/runscript
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/files/dibbler-server,v 1.1 2005-08-25 00:03:26 thomson Exp $
+
+depend() {
+	need net
+}
+
+start() {
+	ebegin "Starting DHCPv6 server: dibbler-server"
+	/usr/sbin/dibbler-server start
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping DHCPv6 server: dibbler-server"
+	/usr/sbin/dibbler-server stop
+	eend $?
+}
