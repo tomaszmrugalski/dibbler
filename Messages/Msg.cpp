@@ -80,11 +80,15 @@ TContainer< SmartPtr<TOpt> > TMsg::getOptLst()
 int TMsg::storeSelf(char * buffer)
 {
     char *start = buffer;
-
+    int tmp = this->TransID;
+    
     *(buffer++) = (char)MsgType;
-    *(buffer++) = * ( ( (char*)&TransID ) + 2);
-    *(buffer++) = * ( ( (char*)&TransID ) + 1);
-    *(buffer++) = * ( ( (char*)&TransID ) + 0);
+    
+    /* ugly 3-byte version of htons/htonl */
+    buffer[2] = tmp%256;  tmp = tmp/256;
+    buffer[1] = tmp%256;  tmp = tmp/256;
+    buffer[0] = tmp%256;  tmp = tmp/256;
+    buffer+=3;
     Options.first();
     SmartPtr<TOpt> Option;
     while( Option = Options.get() )
