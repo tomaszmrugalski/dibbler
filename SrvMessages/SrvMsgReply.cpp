@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.17 2005-03-15 23:02:31 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.18 2005-09-13 23:00:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2005/03/15 23:02:31  thomson
+ * 0.4.0 release.
+ *
  * Revision 1.16  2005/02/07 20:51:56  thomson
  * Server stateless mode fixed (bug #103)
  *
@@ -89,26 +92,29 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     Options.append(ptrOpt);
 
     confirm->firstOption();
-    bool NotOnLink;
-    while (ptrOpt=confirm->getOption() && (!NotOnLink) ) {
+    bool OnLink = true;
+    while (ptrOpt=confirm->getOption() && (OnLink) ) {
 	switch (ptrOpt->getOptType()) {
 	case OPTION_IA: 
 	{
 	    SmartPtr<TSrvOptIA_NA> ptrIA = (Ptr*) ptrOpt;
 	    SmartPtr<TOpt> ptrSubOpt;
 	    ptrIA->firstOption();
-	    while ( ptrSubOpt = ptrIA->getOption() && (!NotOnLink) ) {
+	    while ( ptrSubOpt = ptrIA->getOption() && (OnLink) ) {
 		if (ptrSubOpt->getOptType() == OPTION_IAADDR) {
 		    SmartPtr< TSrvOptIAAddress > ptrAddr = (Ptr*) ptrSubOpt;
 		    // addr found. Now look for class it belongs to
 		    SmartPtr<TSrvCfgAddrClass> ptrClass;
+		    bool Found = false;
+		    // check each class on this interface
 		    ptrIface->firstAddrClass();
-		    NotOnLink = true;
-		    while ( ptrClass = ptrIface->getAddrClass() && (!NotOnLink) ) {
+		    while ( ptrClass = ptrIface->getAddrClass() && (OnLink) ) {
 			if (ptrClass->addrInPool(ptrAddr->getAddr() ) )
-			    NotOnLink = false;
+			    Found = true;
 			
 		    }
+		    if (!Found)
+			OnLink = false;
 		}
 	    }
 	    break;
@@ -118,7 +124,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    continue;
 	}
     }
-    if (NotOnLink) {
+    if (!OnLink) {
 	SmartPtr <TSrvOptStatusCode> ptrCode = 
 	    new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
 				  "Sorry, those addresses are not valid for this link.",
