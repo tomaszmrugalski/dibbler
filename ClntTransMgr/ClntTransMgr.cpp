@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.34 2005-01-12 00:10:05 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.35 2005-09-15 19:46:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2005/01/12 00:10:05  thomson
+ * Compilation fixes.
+ *
  * Revision 1.33  2005/01/08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -453,6 +456,9 @@ void TClntTransMgr::shutdown()
 
 void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
 {
+    SmartPtr<TIfaceIface> ifaceQuestion;
+    SmartPtr<TIfaceIface> ifaceAnswer;
+
     // is message valid?
     if (!msgAnswer->check())
         return ;
@@ -464,6 +470,15 @@ void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
     while(msgQuestion=(Ptr*)Transactions.get()) {
         if (msgQuestion->getTransID()==msgAnswer->getTransID()) {
             found =true;
+	    if (msgQuestion->getIface()!=msgAnswer->getIface()) {
+		ifaceQuestion = this->IfaceMgr->getIfaceByID(msgQuestion->getIface());
+		ifaceAnswer   = this->IfaceMgr->getIfaceByID(msgAnswer->getIface());
+		Log(Warning) << "Reply for transaction 0x" << hex << msgQuestion->getTransID() << dec
+			     << " sent on " << ifaceQuestion->getFullName() << " was received on interface " 
+			     << ifaceAnswer->getFullName() << ". Ignored." << LogEnd;
+		return;
+	    }
+
             msgQuestion->answer(msgAnswer);
             break;
         }
