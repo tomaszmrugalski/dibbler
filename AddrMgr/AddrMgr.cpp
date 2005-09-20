@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.18 2004-12-07 00:45:41 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.19 2005-09-20 20:10:51 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
  * Revision 1.17  2004/07/05 00:53:03  thomson
  * Various changes.
  *
@@ -160,7 +163,7 @@ unsigned long TAddrMgr::getPrefTimeout()
 
 unsigned long TAddrMgr::getValidTimeout()
 {
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
