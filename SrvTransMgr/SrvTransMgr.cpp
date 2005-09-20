@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.26 2005-04-29 00:08:20 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.27 2005-09-20 20:10:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2005/04/29 00:08:20  thomson
+ * *** empty log message ***
+ *
  * Revision 1.25  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -295,6 +298,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 
 void TSrvTransMgr::doDuties()
 {
+    int deletedCnt = 0;
     // are there any outdated addresses? 
     if (!AddrMgr->getTimeout())
         AddrMgr->doDuties();
@@ -313,7 +317,11 @@ void TSrvTransMgr::doDuties()
         if (msg->isDone()) 
         {
             MsgLst.del();
+	    deletedCnt++;
         }
+    }
+    if (deletedCnt) {
+	Log(Debug) << deletedCnt << " message(s) were removed from cache." << LogEnd;
     }
 }
 
