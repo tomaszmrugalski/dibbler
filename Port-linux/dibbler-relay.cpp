@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-relay.cpp,v 1.9 2005-07-31 14:39:40 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.10 2005-10-11 20:52:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/07/31 14:39:40  thomson
+ * Minor changes related to 0.4.1 release.
+ *
  * Revision 1.8  2005/07/21 21:40:19  thomson
  * PID checking process is improved.
  *
@@ -109,12 +112,16 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
+    int len;
 
     logStart("(RELAY, Linux port)", "Relay", RELLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {
-	strncpy(command,argv[1],strlen(argv[1])+1);
+	len = strlen(argv[1])+1;
+	if (len>255)
+	    len = 255;
+	strncpy(command,argv[1],len);
     } else {
 	memset(command,0,256);
     }
