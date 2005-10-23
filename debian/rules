@@ -26,11 +26,20 @@ else
 	CFLAGS += -O2
 endif
 
-configure: configure-stamp
+configure: patch configure-stamp
 configure-stamp:
 	dh_testdir
 	touch configure-stamp
 
+#Patch
+patch: patch-stamp
+patch-stamp:
+	dpatch apply-all
+	touch patch-stamp
+
+unpatch:
+        dpatch deapply-all
+        rm -rf patch-stamp debian/patched
 
 #Architecture 
 build: build-arch build-indep
@@ -45,7 +54,7 @@ build-indep-stamp: configure-stamp
 	$(MAKE) doc
 	touch build-indep-stamp
 
-clean:
+clean: unpatch
 	dh_testdir
 	dh_testroot
 	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
@@ -100,4 +109,4 @@ binary-arch: build-arch install-arch
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
 binary: binary-arch binary-indep
-.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure
+.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure patch unpatch

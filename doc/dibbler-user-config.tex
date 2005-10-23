@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.17 2005-08-07 17:54:52 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.18 2005-10-23 23:33:03 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -233,20 +233,20 @@ are processed and set up in the system. Options supported in Linux and
 Windows environments are presented in the table below.
 
 \begin{center}
-\begin{tabular}{|l|l|l|}
+\begin{tabular}{|l|l|l|l|}
 \hline
-Option & Support (Linux) & Support (winXP/2003)  \\
+Option & Linux & WinXP/2003 & WinNT/2000  \\
 \hline
-dns-server  & system, file & system, file \\
-domain      & file         & system, file \\
-ntp-server  & file         & file \\
-time-zone   & file         & file \\
-sip-server  & file         & file \\
-sip-domain  & file         & file \\
-nis-server  & file         & file \\
-nis-domain  & file         & file \\
-nis+-server & file         & file \\
-nis+-domain & file         & file \\
+dns-server  & system, file & system, file & system,file \\
+domain      & file         & system, file & file \\
+ntp-server  & file         & file & file \\
+time-zone   & file         & file & file \\
+sip-server  & file         & file & file \\
+sip-domain  & file         & file & file \\
+nis-server  & file         & file & file \\
+nis-domain  & file         & file & file \\
+nis+-server & file         & file & file \\
+nis+-domain & file         & file & file \\
 \hline
 \end{tabular}
 \end{center}
@@ -889,22 +889,6 @@ log-mode short
 
 \begin{verbatim}
 # relay.conf - relay 1
-iface eth0 {
-#   server multicast yes     // relay messages on this interface to ff05::1:3
-  server unicast 6011::1     // relay messages on this interface to this global address
-}
-
-# client can send messages to multicast 
-# (or specific link-local addr) on this link
-iface eth1 {
-  client multicast yes       // bind ff02::1:2
-# client unicast 6021::1     // bind this address
-  interface-id 6021
-}
-\end{verbatim}
-
-\begin{verbatim}
-# relay.conf - relay 2
 log-level 8
 log-mode full
 
@@ -921,9 +905,28 @@ iface eth1 {
 }
 \end{verbatim}
 
+\begin{verbatim}
+# relay.conf - relay 2
+iface eth0 {
+#   server multicast yes     // relay messages on this interface to ff05::1:3
+  server unicast 6011::1     // relay messages on this interface to this global address
+}
+
+# client can send messages to multicast 
+# (or specific link-local addr) on this link
+iface eth1 {
+  client multicast yes       // bind ff02::1:2
+# client unicast 6021::1     // bind this address
+  interface-id 6021
+}
+\end{verbatim}
+
 
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.17  2005/08/07 17:54:52  thomson
+%% Minor changes related to 0.4.1 release.
+%%
 %% Revision 1.16  2005/08/02 23:43:27  thomson
 %% *** empty log message ***
 %%
