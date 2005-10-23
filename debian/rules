@@ -26,8 +26,8 @@ else
 	CFLAGS += -O2
 endif
 
-configure: patch configure-stamp
-configure-stamp:
+configure: configure-stamp
+configure-stamp: patch
 	dh_testdir
 	touch configure-stamp
 
@@ -38,8 +38,8 @@ patch-stamp:
 	touch patch-stamp
 
 unpatch:
-        dpatch deapply-all
-        rm -rf patch-stamp debian/patched
+	dpatch deapply-all
+	rm -rf patch-stamp debian/patched
 
 #Architecture 
 build: build-arch build-indep

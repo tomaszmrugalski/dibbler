@@ -2,7 +2,7 @@ Source: dibbler
 Section: admin
 Priority: optional
 Maintainer: Tomasz Mrugalski <thomson@klub.com.pl>
-Build-Depends: ${shlibs:Depends}
+Build-Depends: debhelper (>= 4.0.0), libstdc++5, libc6, libgcc1
 Standards-Version: 3.6.2
 
 Package: dibbler-server
