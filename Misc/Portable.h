@@ -6,84 +6,8 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.44 2005-07-17 21:09:52 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.43  2005/06/07 21:59:24  thomson
- * 0.4.1 release.
- *
- * Revision 1.42  2005/03/15 00:36:22  thomson
- * 0.4.0 release (win32 commit)
- *
- * Revision 1.41  2005/03/08 00:43:48  thomson
- * 0.4.0-RC2 release.
- *
- * Revision 1.40  2005/02/03 19:10:26  thomson
- * *** empty log message ***
- *
- * Revision 1.39  2005/02/01 23:19:43  thomson
- * 0.4.0-RC1 version.
- *
- * Revision 1.38  2005/01/31 18:46:53  thomson
- * Win32 project fixes.
- *
- * Revision 1.37  2005/01/30 22:53:28  thomson
- * *** empty log message ***
- *
- * Revision 1.36  2005/01/25 21:14:14  thomson
- * *** empty log message ***
- *
- * Revision 1.35  2005/01/24 00:42:57  thomson
- * no message
- *
- * Revision 1.34  2005/01/23 23:17:53  thomson
- * Relay/global address support related improvements.
- *
- * Revision 1.33  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
- * Revision 1.32  2004/12/27 20:45:00  thomson
- * 0.3.1 version.
- *
- * Revision 1.31  2004/12/15 22:54:45  thomson
- * no message
- *
- * Revision 1.30  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.29  2004/12/04 23:45:40  thomson
- * Problem with client and server on the same Linux host fixed (bug #56)
- *
- * Revision 1.28  2004/11/15 20:59:12  thomson
- * 0.3.0-RC2
- *
- * Revision 1.27  2004/11/01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.26  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.25  2004/10/03 21:53:15  thomson
- * strncasecmp macro added (win32)
- *
- * Revision 1.24  2004/10/03 21:28:45  thomson
- * 0.2.1-RC1 version.
- *
- * Revision 1.23  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.21  2004/07/11 14:09:11  thomson
- * 0.2.0-RC2
- *
- * Revision 1.18  2004/06/04 19:03:47  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.17  2004/05/23 23:45:45  thomson
- * logLevel works (finally...)
- *
- * Revision 1.15  2004/03/29 22:06:49  thomson
- * 0.1.1 version
- */
+ * $Id: Portable.h,v 1.45 2005-10-23 23:31:42 thomson Exp $
+ */	
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
@@ -142,7 +66,7 @@
 #define SRVCONF_FILE      "server.conf"
 #define RELCONF_FILE      "relay.conf"
 #define CLNTLOG_FILE	  "client.log"
-#define SRVLOG_FILE	      "server.log"
+#define SRVLOG_FILE       "server.log"
 #define RELLOG_FILE       "relay.log"
 #define NULLFILE          "nul"
 #endif
@@ -156,9 +80,9 @@
 #define CLNTPID_FILE      "/var/lib/dibbler/client.pid"
 #define SRVPID_FILE       "/var/lib/dibbler/server.pid"
 #define RELPID_FILE       "/var/lib/dibbler/relay.pid"
-#define CLNTLOG_FILE      "/var/lib/dibbler/dibbler-client.log"
-#define SRVLOG_FILE       "/var/lib/dibbler/dibbler-server.log"
-#define RELLOG_FILE       "/var/lib/dibbler/dibbler-relay.log"
+#define CLNTLOG_FILE      "/var/log/dibbler/dibbler-client.log"
+#define SRVLOG_FILE       "/var/log/dibbler/dibbler-server.log"
+#define RELLOG_FILE       "/var/log/dibbler/dibbler-relay.log"
 #define NULLFILE          "/dev/null"
 #endif
 
@@ -287,3 +211,69 @@ struct iface {
 };
 
 #endif
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.44  2005/07/17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
+ * Revision 1.43  2005/06/07 21:59:24  thomson
+ * 0.4.1 release.
+ *
+ * Revision 1.42  2005/03/15 00:36:22  thomson
+ * 0.4.0 release (win32 commit)
+ *
+ * Revision 1.41  2005/03/08 00:43:48  thomson
+ * 0.4.0-RC2 release.
+ *
+ * Revision 1.39  2005/02/01 23:19:43  thomson
+ * 0.4.0-RC1 version.
+ *
+ * Revision 1.38  2005/01/31 18:46:53  thomson
+ * Win32 project fixes.
+ *
+ * Revision 1.34  2005/01/23 23:17:53  thomson
+ * Relay/global address support related improvements.
+ *
+ * Revision 1.33  2005/01/11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
+ * Revision 1.32  2004/12/27 20:45:00  thomson
+ * 0.3.1 version.
+ *
+ * Revision 1.30  2004/12/07 00:45:41  thomson
+ * Clnt managers creation unified and cleaned up.
+ *
+ * Revision 1.29  2004/12/04 23:45:40  thomson
+ * Problem with client and server on the same Linux host fixed (bug #56)
+ *
+ * Revision 1.28  2004/11/15 20:59:12  thomson
+ * 0.3.0-RC2
+ *
+ * Revision 1.27  2004/11/01 23:31:25  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
+ * Revision 1.26  2004/10/25 20:45:54  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
+ * Revision 1.25  2004/10/03 21:53:15  thomson
+ * strncasecmp macro added (win32)
+ *
+ * Revision 1.24  2004/10/03 21:28:45  thomson
+ * 0.2.1-RC1 version.
+ *
+ * Revision 1.23  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
+ * Revision 1.21  2004/07/11 14:09:11  thomson
+ * 0.2.0-RC2
+ *
+ * Revision 1.18  2004/06/04 19:03:47  thomson
+ * Resolved warnings with signed/unisigned
+ *
+ * Revision 1.17  2004/05/23 23:45:45  thomson
+ * logLevel works (finally...)
+ *
+ * Revision 1.15  2004/03/29 22:06:49  thomson
+ * 0.1.1 version
+ */
