@@ -1,0 +1,17 @@
+Template: dibbler-server/title
+Type: title
+Description: dibbler-server: DHCPv6 server
+
+Template: dibbler-server/start
+Type: boolean
+Default: true
+Description: Do you want dibbler-server to start when system starts?
+ Dibbler server can be configured to start at boot. 
+
+Template: dibbler-server/config
+Type: note
+Description: Modify /etc/dibbler/server.conf before running server.
+ Make sure you that you have modified server.conf configuration file
+ located in the /etc/dibbler directory. Without proper modifications,
+ your server will start offering invalid addresses.
+

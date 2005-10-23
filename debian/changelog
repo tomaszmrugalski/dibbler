@@ -1,4 +1,13 @@
-dibbler (0.4.1) unstable; urgency=low
+dibbler (0.4.1-2) unstable; urgency=low
+
+  * Initial Debian release (closes: #333226)
+  * Command line parsing buffer overflow fixed.
+  * debconf support added.
+  * General DSFG cleanup.
+    
+ -- Tomasz Mrugalski <thomson@klub.com.pl>  Sun, 23 Oct 2005 23:04:33 +0200
+
+dibbler (0.4.1-1) unstable; urgency=low
 
   * Bugfix release, relay support improved, docs clarified.
   

@@ -1,0 +1,17 @@
+Template: dibbler-relay/title
+Type: title
+Description: dibbler-relay: DHCPv6 relay
+
+Template: dibbler-relay/start
+Type: boolean
+Default: true
+Description: Do you want dibbler-relay to start when system starts?
+ Dibbler relay can be configured to start at boot. 
+
+Template: dibbler-relay/config
+Type: note
+Description: Modify /etc/dibbler/relay.conf before running relay.
+ Make sure you that you have modified relay.conf configuration file
+ located in the /etc/dibbler directory. Without proper modifications,
+ your relay probably will refuse to start.
+

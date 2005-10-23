@@ -1,0 +1,116 @@
+#!/bin/sh -e
+
+CONFFILE=client.conf
+PATH=$PATH:.
+
+case "$1" in
+    configure)
+        # continue below
+        ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+        exit 0
+        ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
+
+
+rm -f ${CONFFILE}
+
+if [ -e confmodule ]; then
+	. confmodule                                                     
+else                                                                            
+	. /usr/share/debconf/confmodule                                         
+fi 
+
+db_version 2.0
+#db_capb backup
+db_settitle dibbler-client/title
+
+# Step 1: Do you want dibbler-client to be started?
+db_input critical dibbler-client/start || true
+db_go
+db_get dibbler-client/start
+START="$RET"
+
+# Step 2: What interfaces should be configured?
+db_input high dibbler-client/interfaces || true
+db_go
+db_get dibbler-client/interfaces
+IFACES="$RET"
+
+# Step 3: What addtional options you you want to get?
+db_input high dibbler-client/options || true
+db_go
+db_get dibbler-client/options
+OPTS="$RET"
+
+
+
+
+[ -r "${CONFFILE}" ] || {
+        echo Generating ${CONFFILE}... >&2
+        cat >${CONFFILE} <<'EOFMAGIC'
+# Defaults for dibbler-client.
+# sourced by /etc/init.d/dhcp3-relay
+# installed at /etc/dibbler/client.conf by the maintainer scripts
+
+# 8 (Debug) is most verbose. 7 (Info) is usually the best option
+log-level 7
+
+# To perform stateless (i.e. options only) configuration, uncomment
+# this line below and remove any "ia" keywords from interface definitions
+# stateless
+
+EOFMAGIC
+}
+
+for i in ${IFACES}; do
+    echo "iface $i {" >> ${CONFFILE}
+    echo "# ask for address" >> ${CONFFILE}
+    echo "    ia" >> ${CONFFILE}
+    echo "" >> ${CONFFILE}
+
+# insert options    
+    echo "# ask for options" >> ${CONFFILE}
+    for j in ${OPTS}; do
+    if [ $j == "dns" ]; then
+	echo "    option dns-server" >> ${CONFFILE}
+    else
+	echo "#   option dns-server" >> ${CONFFILE}
+    fi
+    if [ $j == "domain" ]; then
+	echo "    option domain" >> ${CONFFILE}
+    else
+        echo "#   option domain" >> ${CONFFILE}
+    fi
+    done
+    echo "#    option ntp-server"  >> ${CONFFILE}
+    echo "#    option time-zone"   >> ${CONFFILE}
+    echo "#    option sip-server"  >> ${CONFFILE}
+    echo "#    option sip-domain"  >> ${CONFFILE}
+    echo "#    option nis-server"  >> ${CONFFILE}
+    echo "#    option nis-domain"  >> ${CONFFILE}
+    echo "#    option nis+-server" >> ${CONFFILE}
+    echo "#    option nis+-domain" >> ${CONFFILE}
+    echo "}" >> ${CONFFILE}
+    echo "" >> ${CONFFILE}
+done
+
+db_stop
+
+# Start service if necessary
+if [ $START == "true" ]; then
+    if [ -x "/etc/init.d/dibbler-client" ]; then
+	update-rc.d dibbler-client defaults >/dev/null
+	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+		invoke-rc.d dibbler-client start || exit 0
+	else
+		/etc/init.d/dibbler-client start || exit 0
+	fi
+    fi
+fi
