@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
-if [ "$1" = "purge" ] ; then
-	update-rc.d dibbler-client remove >/dev/null || exit 0
-fi
+#if [ "$1" = "purge" ] ; then
+#	update-rc.d dibbler-client remove >/dev/null || exit 0
+#fi
+
+#DEBHELPER#

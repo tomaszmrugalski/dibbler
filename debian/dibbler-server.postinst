@@ -45,12 +45,16 @@ db_go
 db_stop
 
 if [ $START == "true" ]; then
-    if [ -x "/etc/init.d/dibbler-server" ]; then
-	update-rc.d dibbler-server defaults >/dev/null
-	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
-		invoke-rc.d dibbler-server start || exit 0
-	else
-		/etc/init.d/dibbler-server start || exit 0
-	fi
-    fi
+
+#    if [ -x "/etc/init.d/dibbler-server" ]; then
+#	update-rc.d dibbler-server defaults >/dev/null
+#	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+#		invoke-rc.d dibbler-server start || exit 0
+#	else
+#		/etc/init.d/dibbler-server start || exit 0
+#	fi
+#    fi
+
+#DEBHELPER#
+
 fi

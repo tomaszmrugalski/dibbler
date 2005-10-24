@@ -1,7 +1,14 @@
 #!/bin/sh -e
 
-CONFFILE=client.conf
+CONFFILE=/etc/dibbler/client.conf
 PATH=$PATH:.
+
+
+if [ -e confmodule ]; then
+	. confmodule                                                     
+else                                                                            
+	. /usr/share/debconf/confmodule                                         
+fi 
 
 case "$1" in
     configure)
@@ -18,14 +25,8 @@ case "$1" in
         ;;
 esac
 
+mv ${CONFFILE} ${CONFFILE}.dpkg-old
 
-rm -f ${CONFFILE}
-
-if [ -e confmodule ]; then
-	. confmodule                                                     
-else                                                                            
-	. /usr/share/debconf/confmodule                                         
-fi 
 
 db_version 2.0
 #db_capb backup
@@ -105,12 +106,16 @@ db_stop
 
 # Start service if necessary
 if [ $START == "true" ]; then
-    if [ -x "/etc/init.d/dibbler-client" ]; then
-	update-rc.d dibbler-client defaults >/dev/null
-	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
-		invoke-rc.d dibbler-client start || exit 0
-	else
-		/etc/init.d/dibbler-client start || exit 0
-	fi
-    fi
+
+#DEBHELPER#
+
+#    if [ -x "/etc/init.d/dibbler-client" ]; then
+#	update-rc.d dibbler-client defaults >/dev/null
+#	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+#		invoke-rc.d dibbler-client start || exit 0
+#	else
+#		/etc/init.d/dibbler-client start || exit 0
+#	fi
+#    fi
 fi
+
