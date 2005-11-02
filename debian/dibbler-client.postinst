@@ -1,5 +1,6 @@
 #!/bin/sh -e
 
+CONFFILE_NEW=/etc/dibbler/client.conf-dpkg-new
 CONFFILE=/etc/dibbler/client.conf
 PATH=$PATH:.
 
@@ -25,8 +26,9 @@ case "$1" in
         ;;
 esac
 
-mv ${CONFFILE} ${CONFFILE}.dpkg-old
-
+if [ -e ${CONFFILE_NEW} ]; then
+    rm ${CONFFILE_NEW}
+fi
 
 db_version 2.0
 #db_capb backup
@@ -50,14 +52,10 @@ db_go
 db_get dibbler-client/options
 OPTS="$RET"
 
-
-
-
 [ -r "${CONFFILE}" ] || {
-        echo Generating ${CONFFILE}... >&2
-        cat >${CONFFILE} <<'EOFMAGIC'
+        echo Generating ${CONFFILE_NEW}... >&2
+        cat >${CONFFILE_NEW} <<'EOFMAGIC'
 # Defaults for dibbler-client.
-# sourced by /etc/init.d/dhcp3-relay
 # installed at /etc/dibbler/client.conf by the maintainer scripts
 
 # 8 (Debug) is most verbose. 7 (Info) is usually the best option
@@ -71,51 +69,46 @@ EOFMAGIC
 }
 
 for i in ${IFACES}; do
-    echo "iface $i {" >> ${CONFFILE}
-    echo "# ask for address" >> ${CONFFILE}
-    echo "    ia" >> ${CONFFILE}
-    echo "" >> ${CONFFILE}
+    echo "iface $i {" >> ${CONFFILE_NEW}
+    echo "# ask for address" >> ${CONFFILE_NEW}
+    echo "    ia" >> ${CONFFILE_NEW}
+    echo "" >> ${CONFFILE_NEW}
 
 # insert options    
-    echo "# ask for options" >> ${CONFFILE}
+    echo "# ask for options" >> ${CONFFILE_NEW}
     for j in ${OPTS}; do
     if [ $j == "dns" ]; then
-	echo "    option dns-server" >> ${CONFFILE}
+	echo "    option dns-server" >> ${CONFFILE_NEW}
     else
-	echo "#   option dns-server" >> ${CONFFILE}
+	echo "#   option dns-server" >> ${CONFFILE_NEW}
     fi
     if [ $j == "domain" ]; then
-	echo "    option domain" >> ${CONFFILE}
+	echo "    option domain" >> ${CONFFILE_NEW}
     else
-        echo "#   option domain" >> ${CONFFILE}
+        echo "#   option domain" >> ${CONFFILE_NEW}
     fi
     done
-    echo "#    option ntp-server"  >> ${CONFFILE}
-    echo "#    option time-zone"   >> ${CONFFILE}
-    echo "#    option sip-server"  >> ${CONFFILE}
-    echo "#    option sip-domain"  >> ${CONFFILE}
-    echo "#    option nis-server"  >> ${CONFFILE}
-    echo "#    option nis-domain"  >> ${CONFFILE}
-    echo "#    option nis+-server" >> ${CONFFILE}
-    echo "#    option nis+-domain" >> ${CONFFILE}
-    echo "}" >> ${CONFFILE}
-    echo "" >> ${CONFFILE}
+    echo "#    option ntp-server"  >> ${CONFFILE_NEW}
+    echo "#    option time-zone"   >> ${CONFFILE_NEW}
+    echo "#    option sip-server"  >> ${CONFFILE_NEW}
+    echo "#    option sip-domain"  >> ${CONFFILE_NEW}
+    echo "#    option nis-server"  >> ${CONFFILE_NEW}
+    echo "#    option nis-domain"  >> ${CONFFILE_NEW}
+    echo "#    option nis+-server" >> ${CONFFILE_NEW}
+    echo "#    option nis+-domain" >> ${CONFFILE_NEW}
+    echo "}" >> ${CONFFILE_NEW}
+    echo "" >> ${CONFFILE_NEW}
 done
 
 db_stop
+
+# register this config
+ucf ${CONFFILE_NEW} ${CONFFILE} </dev/tty
 
 # Start service if necessary
 if [ $START == "true" ]; then
 
 #DEBHELPER#
 
-#    if [ -x "/etc/init.d/dibbler-client" ]; then
-#	update-rc.d dibbler-client defaults >/dev/null
-#	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
-#		invoke-rc.d dibbler-client start || exit 0
-#	else
-#		/etc/init.d/dibbler-client start || exit 0
-#	fi
-#    fi
-fi
 
+fi

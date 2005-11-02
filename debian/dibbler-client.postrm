@@ -1,8 +1,15 @@
 #!/bin/sh
 set -e
 
-#if [ "$1" = "purge" ] ; then
-#	update-rc.d dibbler-client remove >/dev/null || exit 0
-#fi
+CONFFILE=/etc/dibbler/client.conf
+
+if [ "$1" = "purge" ] ; then
+    if [ -e ${CONFFILE} ]; then
+	rm ${CONFFILE}
+    fi
+    
+    ucf --purge ${CONFFILE}
+fi
+
 
 #DEBHELPER#

@@ -11,7 +11,7 @@ Description: Do you want dibbler-server to start when system starts?
 Template: dibbler-server/config
 Type: note
 Description: Modify /etc/dibbler/server.conf before running server.
- Make sure you that you have modified server.conf configuration file
+ Make sure that you have modified server.conf configuration file
  located in the /etc/dibbler directory. Without proper modifications,
  your server will start offering invalid addresses.
 

@@ -11,7 +11,7 @@ Description: Do you want dibbler-relay to start when system starts?
 Template: dibbler-relay/config
 Type: note
 Description: Modify /etc/dibbler/relay.conf before running relay.
- Make sure you that you have modified relay.conf configuration file
+ Make sure that you have modified relay.conf configuration file
  located in the /etc/dibbler directory. Without proper modifications,
- your relay probably will refuse to start.
+ your relay most likely will refuse to start.
 

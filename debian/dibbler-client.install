@@ -1,3 +1,2 @@
-etc/dibbler/client.conf
 usr/sbin/dibbler-client
 usr/share/man/man8/dibbler-client.8*

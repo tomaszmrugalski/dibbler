@@ -6,9 +6,10 @@ Template: dibbler-client/start
 Type: boolean
 Default: true
 Description: Do you want dibbler-client to start when system starts?
- Dibbler client can be configured to start at boot. This is generaly
- a good idea. However if installed this package to play with DHCPv6
- protocol, you should aswer NO here.
+ Dibbler client can be configured to start at boot, so your host will 
+ have IPv6 set up after boot. This is generally a good idea. However,
+ if you have installed this package to play with DHCPv6 protocol, 
+ you should aswer NO here.
 
 Template: dibbler-client/interfaces
 Type: string
