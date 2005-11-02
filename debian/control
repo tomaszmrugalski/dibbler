@@ -2,7 +2,7 @@ Source: dibbler
 Section: admin
 Priority: optional
 Maintainer: Tomasz Mrugalski <thomson@klub.com.pl>
-Build-Depends: debhelper (>= 4.0.0), libstdc++5, libc6, libgcc1, tetex-extra
+Build-Depends: debhelper, tetex-extra, dpatch
 Standards-Version: 3.6.2
 
 Package: dibbler-server
