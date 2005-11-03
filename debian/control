@@ -2,11 +2,11 @@ Source: dibbler
 Section: admin
 Priority: optional
 Maintainer: Tomasz Mrugalski <thomson@klub.com.pl>
-Build-Depends: debhelper, tetex-extra, dpatch
+Build-Depends: debhelper, tetex-extra, dpatch, gs-common
 Standards-Version: 3.6.2
 
 Package: dibbler-server
-Architecture: i386
+Architecture: any
 Depends: ${shlibs:Depends}
 Recommends: dibbler-client, dibbler-relay, dibbler-doc
 Description: portable DHCPv6 server
@@ -17,7 +17,7 @@ Description: portable DHCPv6 server
  your network.
 
 Package: dibbler-client
-Architecture: i386
+Architecture: any
 Depends: ${shlibs:Depends}
 Recommends: dibbler, dibbler-relay, dibbler-doc
 Description: portable DHCPv6 client
@@ -28,7 +28,7 @@ Description: portable DHCPv6 client
  you want to obtain IPv6 addresses and options from DHCPv6 server.
 
 Package: dibbler-relay
-Architecture: i386
+Architecture: any
 Depends: ${shlibs:Depends}
 Recommends: dibbler, dibbler-client, dibbler-doc
 Description: portable DHCPv6 relay
