@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntCfgAddr.cpp,v 1.3 2004-10-25 20:45:52 thomson Exp $
+ * $Id: ClntCfgAddr.cpp,v 1.4 2005-11-03 21:23:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/10/25 20:45:52  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  *
  */
 
@@ -51,7 +54,7 @@ void TClntCfgAddr::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
 TClntCfgAddr::TClntCfgAddr() {
     this->Valid=ULONG_MAX;
     this->Pref=ULONG_MAX;
-    Addr=0;
+    Addr= new TIPv6Addr();
 }
 
 TClntCfgAddr::TClntCfgAddr(SmartPtr<TIPv6Addr> addr) {
