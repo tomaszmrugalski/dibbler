@@ -12,7 +12,7 @@ Win32:
 6. Run Inno setup on Port-win32/dibbler.iss
 
 WinNT/2000
-7. Compole all 3 projects in Port-winnt2k/ in Dev-cpp.
+7. Compile all 3 projects in Port-winnt2k/ in Dev-cpp.
 8. Modify Port-winnt2k/dibber.iss to use proper version.
 9. Run Inno setup on Port-winnt2k/dibbler.iss
 
@@ -24,6 +24,19 @@ Linux:
 
 
 DEB:
+1. cvs co dibbler
+2. cd dibbler
+3. move debian directory away
+4. make release-src
+5. make orig
+6. cd ..
+7. rm -rf dibbler
+8. tar zxvf dibbler-X.Y.Z.orig.tar.gz
+9. cd dibbler-X.Y.Z 
+10. Copy debian/ directory
+11. Delete CVS/ from debian/ directory
+12. dpkg-buildpackage -rfakeroot
+13. ...
 
 RPM:
 
