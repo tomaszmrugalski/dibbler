@@ -27,16 +27,15 @@ DEB:
 1. cvs co dibbler
 2. cd dibbler
 3. move debian directory away
-4. make release-src
-5. make orig
-6. cd ..
-7. rm -rf dibbler
-8. tar zxvf dibbler-X.Y.Z.orig.tar.gz
-9. cd dibbler-X.Y.Z 
-10. Copy debian/ directory
-11. Delete CVS/ from debian/ directory
-12. dpkg-buildpackage -rfakeroot
-13. ...
+4. make orig
+5. cd ..
+6. rm -rf dibbler
+7. tar zxvf dibbler_X.Y.Z.orig.tar.gz8
+8. cd dibbler-X.Y.Z 
+9. Copy debian/ directory
+10. Delete CVS/ from debian/ directory
+11. dpkg-buildpackage -rfakeroot
+12. ...
 
 RPM:
 
