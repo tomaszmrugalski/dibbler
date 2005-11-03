@@ -252,6 +252,12 @@ release-src: VERSION-src
 orig:   release-src
 	@echo "[RENAME ] ../dibbler_$(VERSION).orig.tar.gz"
 	mv dibbler-$(VERSION)-src.tar.gz ../dibbler_$(VERSION).orig.tar.gz
+	@echo "[RM     ] debian/CVS"
+	rm -rf debian/CVS
+	@echo "[RM     ] debian/DEBIAN/CVS"
+	rm -rf debian/DEBIAN/CVS
+	@echo "[RM     ] debian/patches/CVS"
+	rm -rf debian/patches/CVS
 
 deb:
 	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
