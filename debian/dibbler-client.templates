@@ -7,17 +7,18 @@ Type: boolean
 Default: true
 Description: Do you want dibbler-client to start when system starts?
  Dibbler client can be configured to start at boot, so your host will 
- have IPv6 set up after boot. This is generally a good idea. However,
- if you have installed this package to play with DHCPv6 protocol, 
- you should aswer NO here.
+ have IPv6 set up after boot. This is generally a good idea. Make sure
+ that you have DHCPv6 server available in your network. However, if you 
+ have installed this package to play with DHCPv6 protocol only, you 
+ should answer NO here.
 
 Template: dibbler-client/interfaces
 Type: string
 Default: eth0
-Description: What interfaces should be configured by Dibbler client?
+Description: Which interfaces should be configured by Dibbler client?
  Specify which network interfaces should be configured by Dibbler client.
  .
- If you do not know what network interface you have, specifying 'eth0'
+ If you do not know what network interfaces you have, specifying 'eth0'
  is the most reasonable.
  .
  You can specify more than one interface, just separate the interface
@@ -28,4 +29,6 @@ Type: multiselect
 Choices: dns, domain
 Default: dns
 Description: What additional parameters should be obtained?
- Dibbler client can ask DHCPv6 server for additional parameters.
+ Dibbler client can request DHCPv6 server for additional configuration 
+ parameters. 
+

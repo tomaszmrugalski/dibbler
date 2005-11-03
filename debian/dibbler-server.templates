@@ -6,7 +6,10 @@ Template: dibbler-server/start
 Type: boolean
 Default: true
 Description: Do you want dibbler-server to start when system starts?
- Dibbler server can be configured to start at boot. 
+ Dibbler server can be configured to start at boot. Answer YES, if
+ this node should act as DHCPv6 server, providing IPv6 addresses and
+ additional configuration options to other nodes in the network.
+ Otherwise, answer NO.
 
 Template: dibbler-server/config
 Type: note
