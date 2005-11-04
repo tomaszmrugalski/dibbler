@@ -6,9 +6,8 @@ Template: dibbler-relay/start
 Type: boolean
 Default: true
 Description: Do you want dibbler-relay to start when the system starts?
- Dibbler relay can be configured to start at boot. This node will
- this node should forward DHCPv6 messages between clients, servers 
- and other relays.
+ Dibbler relay can be configured to start at boot. Doing so, this node 
+ will forward DHCPv6 messages between clients, servers and other relays.
 
 Template: dibbler-relay/config
 Type: note
