@@ -14,7 +14,9 @@ Description: portable DHCPv6 server
  granting) as well as stateless (i.e. options granting) autoconfiguration 
  modes of DHCPv6 protocol. Relays are also supported. This package allows
  IPv6 hosts to be automatically configured in your network.
-
+ .
+ Homepage: http://klub.com.pl/dhcpv6/
+ 
 Package: dibbler-client
 Architecture: any
 Depends: ${shlibs:Depends}
@@ -25,6 +27,8 @@ Description: portable DHCPv6 client
  modes of the DHCPv6 protocol. Besides basic capabilities, it supports
  various DHCPv6 extensions, e.g. option renewal. Install Dibber client if
  this host should obtain IPv6 addresses and options from a DHCPv6 server.
+ .
+ Homepage: http://klub.com.pl/dhcpv6/
 
 Package: dibbler-relay
 Architecture: any
@@ -35,6 +39,8 @@ Description: portable DHCPv6 relay
  clients. Their main advantage is the ability to support multiple remote 
  links using only one server. Install Dibbler relay if you want to serve 
  multiple not physically connected links with one DHCPv6 server.
+ .
+ Homepage: http://klub.com.pl/dhcpv6/
 
 Package: dibbler-doc
 Architecture: all
@@ -46,3 +52,5 @@ Description: documentation for dibbler
   - server, client and relay usage and configuration
   - various tips and frequently asked questions
   - internal structure/code description and hints for developers
+ .
+ Homepage: http://klub.com.pl/dhcpv6/
