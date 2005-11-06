@@ -3,6 +3,7 @@ dibbler (0.4.1-4) unstable; urgency=low
   * debconf templates proofread
   * postinst and postrm checks if ucf is installed before using it
   * Possible segfault fixed in the client code (ClnfCfgAddr, g++-4.0 only)
+  * conf files now look ok on 80-line display
 
  -- Tomasz Mrugalski <thomson@klub.com.pl>  Sun,  6 Nov 2005 12:45:00 +0100
 
