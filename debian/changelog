@@ -1,3 +1,11 @@
+dibbler (0.4.1-4) unstable; urgency=low
+
+  * debconf templates proofread
+  * postinst and postrm checks if ucf is installed before using it
+  * Possible segfault fixed in dibbler-client (ClnfCfgAddr)
+
+ --  Tomasz Mrugalski <thomson@klub.com.pl>  Sun,  6 Nov 2005 12:45:00 +0100
+
 dibbler (0.4.1-3) unstable; urgency=low
 
   * pbuilder conformance, control file improved
