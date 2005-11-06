@@ -7,9 +7,7 @@ if [ "$1" = "purge" ] ; then
     if [ -e ${CONFFILE} ]; then
 	rm ${CONFFILE}
     fi
-    
-    ucf --purge ${CONFFILE}
+    test -f /usr/bin/ucf && ucf --purge ${CONFFILE}
 fi
-
 
 #DEBHELPER#

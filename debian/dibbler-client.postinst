@@ -103,12 +103,11 @@ done
 db_stop
 
 # register this config
-ucf ${CONFFILE_NEW} ${CONFFILE} </dev/tty
+test -f /usr/bin/ucf && ucf ${CONFFILE_NEW} ${CONFFILE} </dev/tty
 
 # Start service if necessary
 if [ $START == "true" ]; then
 
 #DEBHELPER#
-
 
 fi

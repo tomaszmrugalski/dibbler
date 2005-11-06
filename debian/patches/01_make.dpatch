@@ -1,8 +1,7 @@
 #!/bin/sh -e
-## 50_gcc4.dpatch by Andreas Jochens
+## 01_make.dpatch by Tomasz Mrugalski
 ##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Get source building with GCC 4  (bug #287923)
+## DP: Make now uses proper paths (i.e. /usr/share/ instead of /usr/local)
 
 if [ $# -lt 1 ]; then
     echo >&2 "`basename $0`: script expects -patch|-unpatch as argument"

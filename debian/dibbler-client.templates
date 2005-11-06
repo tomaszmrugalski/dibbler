@@ -8,7 +8,7 @@ Default: true
 Description: Do you want dibbler-client to start when system starts?
  Dibbler client can be configured to start at boot, so your host will 
  have IPv6 set up after boot. This is generally a good idea. Make sure
- that you have a DHCPv6 server available in your network. 
+ that there is a DHCPv6 server available in your network. 
 
 Template: dibbler-client/interfaces
 Type: string
