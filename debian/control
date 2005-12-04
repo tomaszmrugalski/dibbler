@@ -2,25 +2,26 @@ Source: dibbler
 Section: admin
 Priority: optional
 Maintainer: Tomasz Mrugalski <thomson@klub.com.pl>
-Build-Depends: debhelper, tetex-extra, dpatch, gs-common
+Uploaders: Bartosz Fenski <fenio@debian.org>
+Build-Depends: debhelper (>= 4.0.0), tetex-extra, dpatch, gs-common
 Standards-Version: 3.6.2
 
 Package: dibbler-server
 Architecture: any
 Depends: ${shlibs:Depends}
-Recommends: dibbler-client, dibbler-relay, dibbler-doc
+Recommends: dibbler-doc
 Description: portable DHCPv6 server
  This is a DHCPv6 server. It supports both stateful (i.e. IPv6 address 
  granting) as well as stateless (i.e. options granting) autoconfiguration 
  modes of DHCPv6 protocol. Relays are also supported. This package allows
  IPv6 hosts to be automatically configured in your network.
  .
- Project homepage: http://klub.com.pl/dhcpv6/
+  Homepage: http://klub.com.pl/dhcpv6/
  
 Package: dibbler-client
 Architecture: any
 Depends: ${shlibs:Depends}
-Recommends: dibbler, dibbler-relay, dibbler-doc
+Recommends: dibbler-doc
 Description: portable DHCPv6 client
  This is a DHCPv6 client. It supports both stateful (i.e. IPv6 address
  granting) as well as stateless (i.e. option granting) autoconfiguration
@@ -28,24 +29,24 @@ Description: portable DHCPv6 client
  various DHCPv6 extensions, e.g. option renewal. Install Dibbler client if
  this host should obtain IPv6 addresses and options from a DHCPv6 server.
  .
- Project homepage: http://klub.com.pl/dhcpv6/
+  Homepage: http://klub.com.pl/dhcpv6/
 
 Package: dibbler-relay
 Architecture: any
 Depends: ${shlibs:Depends}
-Recommends: dibbler, dibbler-client, dibbler-doc
+Recommends: dibbler-doc
 Description: portable DHCPv6 relay
  This is a DHCPv6 relay. Relays are used as proxies between servers and
  clients. Their main advantage is the ability to support multiple remote 
  links using only one server. Install Dibbler relay if you want to serve 
  multiple not physically connected links with one DHCPv6 server.
  .
- Project homepage: http://klub.com.pl/dhcpv6/
+  Homepage: http://klub.com.pl/dhcpv6/
 
 Package: dibbler-doc
 Architecture: all
 Depends:
-Recommends:
+Suggests: dibbler-server, dibbler-client, dibbler-relay
 Description: documentation for dibbler
  This package includes both user and developer documentation, covering all
  acpects of the Dibbler DHCPv6 implementation:
@@ -53,4 +54,4 @@ Description: documentation for dibbler
   - various tips and frequently asked questions
   - internal structure/code description and hints for developers
  .
- Project homepage: http://klub.com.pl/dhcpv6/
+  Homepage: http://klub.com.pl/dhcpv6/
