@@ -1,12 +1,13 @@
 
-$Id: TODO,v 1.20 2005-03-15 00:36:22 thomson Exp $
+$Id: TODO,v 1.21 2005-12-18 10:20:07 thomson Exp $
 
   Internal/code TODO
  --------------------
+- FlexLexer.h cleanup
+- License cleanup
 - Statistics: TransMgr->dump() should be implemented.
 - Change Srv/ClntOptServer/ClientIdentifier to use TOptGeneric class.
 - IfaceMgr.cpp:232 (remove #ifndef WIN32)
-- IfaceMgr contains only info about link local addresses.
 
 - Clnt requests for Address and options (receives both and lifetime option). It should send renew only if T1<lifetime
   and renew and inf-request if T1>lifetime.
