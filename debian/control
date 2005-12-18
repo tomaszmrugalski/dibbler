@@ -8,7 +8,7 @@ Standards-Version: 3.6.2
 
 Package: dibbler-server
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, debconf (>= 1.3.22)
 Recommends: dibbler-doc
 Description: portable DHCPv6 server
  This is a DHCPv6 server. It supports both stateful (i.e. IPv6 address 
@@ -20,7 +20,7 @@ Description: portable DHCPv6 server
  
 Package: dibbler-client
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, debconf (>= 1.3.22)
 Recommends: dibbler-doc
 Description: portable DHCPv6 client
  This is a DHCPv6 client. It supports both stateful (i.e. IPv6 address
@@ -33,7 +33,7 @@ Description: portable DHCPv6 client
 
 Package: dibbler-relay
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, debconf (>= 1.3.22)
 Recommends: dibbler-doc
 Description: portable DHCPv6 relay
  This is a DHCPv6 relay. Relays are used as proxies between servers and

@@ -1,3 +1,9 @@
+dibbler (0.4.1-7) unstable; urgency=low
+
+  * debconf dependency added
+
+ -- Tomasz Mrugalski <thomson@klub.com.pl>  Sun, 18 Dec 2005 19:41:53 +0100
+
 dibbler (0.4.1-6) unstable; urgency=low
 
   * copyright file updated
