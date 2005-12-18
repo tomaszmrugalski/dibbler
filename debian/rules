@@ -89,6 +89,7 @@ binary-common:
 	dh_installchangelogs CHANGELOG
 	dh_installdocs
 	dh_installexamples
+	dh_installdebconf
 	dh_installman
 	dh_link
 	dh_strip
