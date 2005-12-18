@@ -37,9 +37,9 @@ exit 0
  INST_CONFDIR = $(DESTDIR)'/etc/dibbler'
  INSTALL      = 'install'
  MKDIR        = mkdir -p
---- Makefile	3 Nov 2005 16:58:23 -0000	1.69
-+++ Makefile	16 Dec 2005 06:16:04 -0000
-@@ -54,7 +54,7 @@ $(SERVERBIN): includes commonlibs srvlib
+--- Makefile.old	2005-11-03 17:58:23.000000000 +0100
++++ Makefile	2005-12-18 12:00:52.000000000 +0100
+@@ -54,10 +54,10 @@
  	-L$(SRVOPTIONS)  -lSrvOptions \
  	-L$(SRVTRANSMGR) -lSrvTransMgr \
  	-L$(SRVCFGMGR)   -lSrvCfgMgr \
@@ -47,8 +47,12 @@ exit 0
 +	-L$(CFGMGR)      -lCfgMgr \
  	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
  	-L$(IFACEMGR)     -lIfaceMgr \
- 	-L$(MISC)        -lMisc\
-@@ -81,10 +81,10 @@ $(RELAYBIN): includes commonlibs relayli
+-	-L$(MISC)        -lMisc\
++	-L$(MISC)        -lMisc \
+ 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
+ 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
+ 	                 -lAddrMgr \
+@@ -81,10 +81,10 @@
  	-L$(RELIFACEMGR) -lRelIfaceMgr \
  	-L$(RELOPTIONS)  -lRelOptions \
  	-L$(RELMESSAGES) -lRelMsg \
