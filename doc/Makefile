@@ -4,6 +4,7 @@ ifndef TOPDIR
 TOPDIR=$(CURDIR)
 endif 
 
+PASS3=NO
 
 all: user devel
 
@@ -19,10 +20,12 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue
 	  dibbler-user-intro.tex dibbler-user-usage.tex version.tex
 	@echo "[LATEX  ] $(SUBDIR)/$@"
 	$(LATEX) dibbler-user.tex &>dibbler-user-1st_pass.log
-	@echo "[LATEX  ] $(SUBDIR)/$@"
-	$(LATEX) dibbler-user.tex &>dibbler-user-2nd_pass.log
-	@echo "[LATEX  ] $(SUBDIR)/$@"
-	$(LATEX) dibbler-user.tex &>dibbler-user-3rd_pass.log
+	if [ $(PASS3) == "YES" ]; then                          \
+	  echo "[LATEX  ] $(SUBDIR)/$@";                        \
+	  $(LATEX) dibbler-user.tex &>dibbler-user-2nd_pass.log;\
+	  echo "[LATEX  ] $(SUBDIR)/$@";                        \
+	  $(LATEX) dibbler-user.tex &>dibbler-user-3rd_pass.log;\
+	fi
 	@echo "[DVIPS  ] $(SUBDIR)/$@"
 	$(DVIPS) -z dibbler-user.dvi -o &>dibbler-user-dvips.log
 	@echo "[PS2PDF ] $(SUBDIR)/$@"
@@ -34,10 +37,12 @@ dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
                    dibbler-devel-misc.tex   version.tex
 	@echo "[LATEX  ] $(SUBDIR)/$@"
 	$(LATEX) dibbler-devel.tex &>dibbler-devel-1st_pass.log
-	@echo "[LATEX  ] $(SUBDIR)/$@"
-	$(LATEX) dibbler-devel.tex &>dibbler-devel-2nd_pass.log
-	@echo "[LATEX  ] $(SUBDIR)/$@"
-	$(LATEX) dibbler-devel.tex &>dibbler-devel-3rd_pass.log
+	if [ $(PASS3) == "YES" ]; then                            \
+	  @echo "[LATEX  ] $(SUBDIR)/$@";                         \
+	  $(LATEX) dibbler-devel.tex &>dibbler-devel-2nd_pass.log;\
+	  @echo "[LATEX  ] $(SUBDIR)/$@";                         \
+	  $(LATEX) dibbler-devel.tex &>dibbler-devel-3rd_pass.log;\
+	fi
 	@echo "[DVIPS  ] $(SUBDIR)/$@"
 	$(DVIPS) -z dibbler-devel.dvi -o &>dibbler-devel-dvips.log
 	@echo "[PS2PDF ] $(SUBDIR)/$@"

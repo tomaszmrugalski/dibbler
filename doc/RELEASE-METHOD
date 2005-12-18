@@ -24,16 +24,23 @@ Linux:
 
 
 DEB:
-1. cvs co dibbler
-2. cd dibbler
-3. move debian directory away
-4. make orig
+A. First release for this upstrem
+  1. cvs co dibbler
+  2. cd dibbler
+  3. move debian directory away
+  4. make orig
+B. Next release for this upstream
+  1. cvs co dibbler
+  2. cd dibbler
+  3. move debian directory away
+  4. download orig.tar.gz
 5. cd ..
 6. rm -rf dibbler
 7. tar zxvf dibbler_X.Y.Z.orig.tar.gz8
 8. cd dibbler-X.Y.Z 
 9. Copy debian/ directory
 10. Delete CVS/ from debian/ directory
+11. Delete debian/patched directory (if it exists)
 11. dpkg-buildpackage -rfakeroot
 12. ...
 
