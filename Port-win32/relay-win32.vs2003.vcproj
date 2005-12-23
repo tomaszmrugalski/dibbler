@@ -355,16 +355,10 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\FUN">
+			RelativePath="..\Changelog">
 		</File>
 		<File
 			RelativePath="..\GUIDELINES">
-		</File>
-		<File
-			RelativePath="INFO-winxp.txt">
-		</File>
-		<File
-			RelativePath="..\README">
 		</File>
 		<File
 			RelativePath=".\relay-win32.vs2003.rc">

@@ -34,7 +34,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib Iphlpapi.lib libxml2.lib "
+				AdditionalDependencies="ws2_32.lib Iphlpapi.lib"
 				OutputFile="$(OutDir)/dibbler-server.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"/>
@@ -404,7 +404,7 @@
 					RelativePath="lowlevel-win32.c">
 				</File>
 				<File
-					RelativePath="server-winxp.cpp">
+					RelativePath=".\server-win32.cpp">
 				</File>
 				<File
 					RelativePath="SrvService.cpp">
@@ -498,19 +498,16 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\FUN">
+			RelativePath="..\Changelog">
 		</File>
 		<File
 			RelativePath="..\GUIDELINES">
 		</File>
 		<File
-			RelativePath="INFO-winxp.txt">
-		</File>
-		<File
-			RelativePath="..\README">
-		</File>
-		<File
 			RelativePath="..\RELNOTES">
+		</File>
+		<File
+			RelativePath=".\server-win32.vs2003.rc">
 		</File>
 		<File
 			RelativePath="..\TODO">

@@ -35,7 +35,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib Iphlpapi.lib libxml2.lib "
+				AdditionalDependencies="ws2_32.lib Iphlpapi.lib"
 				OutputFile="$(OutDir)/dibbler-client.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
@@ -537,10 +537,10 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="port-winxp"
+				Name="port-win32"
 				Filter="">
 				<File
-					RelativePath="client-winxp.cpp">
+					RelativePath=".\client-win32.cpp">
 				</File>
 				<File
 					RelativePath="ClntService.cpp">
@@ -807,19 +807,19 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\FUN">
+			RelativePath="..\Changelog">
 		</File>
 		<File
 			RelativePath="..\GUIDELINES">
 		</File>
 		<File
-			RelativePath="INFO-winxp.txt">
+			RelativePath=".\relay-win32.vs2003.rc">
+		</File>
+		<File
+			RelativePath="..\Relnotes">
 		</File>
 		<File
 			RelativePath="..\TODO">
-		</File>
-		<File
-			RelativePath="TODO-winxp">
 		</File>
 	</Files>
 	<Globals>
