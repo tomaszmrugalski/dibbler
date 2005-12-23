@@ -680,7 +680,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\server-win32.rc"
+			RelativePath=".\server-win32.vs2003.rc"
 			>
 		</File>
 		<File

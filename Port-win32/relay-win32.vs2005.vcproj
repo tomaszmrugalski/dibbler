@@ -480,7 +480,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\relay-win32.rc"
+			RelativePath=".\relay-win32.vs2003.rc"
 			>
 		</File>
 		<File

@@ -1061,7 +1061,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\client-win32.rc"
+			RelativePath=".\client-win32.vs2003.rc"
 			>
 		</File>
 		<File
