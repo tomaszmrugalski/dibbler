@@ -1,17 +1,16 @@
 Template: dibbler-relay/title
 Type: title
-Description: dibbler-relay: DHCPv6 relay
+_Description: dibbler-relay: DHCPv6 relay
 
 Template: dibbler-relay/start
 Type: boolean
 Default: true
-Description: Do you want dibbler-relay to start when the system starts?
- Dibbler relay can be configured to start at boot. This node will then  
+_Description: Do you want dibbler-relay to start when the system starts?
+ Dibbler relay can be configured to start at boot. This node will then
  forward DHCPv6 messages between clients, servers and other relays.
 
 Template: dibbler-relay/config
 Type: note
-Description: Modify /etc/dibbler/relay.conf before running the relay.
- Without proper modifications, the relay will most likely refuse to 
- start or will not forward DHCPv6 messages as expected.
-
+_Description: Modify /etc/dibbler/relay.conf before running the relay.
+ Without proper modifications, the relay will most likely refuse to start
+ or will not forward DHCPv6 messages as expected.

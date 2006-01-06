@@ -3,7 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Tomasz Mrugalski <thomson@klub.com.pl>
 Uploaders: Bartosz Fenski <fenio@debian.org>
-Build-Depends: debhelper (>= 4.0.0), tetex-extra, dpatch, gs-common
+Build-Depends: debhelper (>= 4.0.0), tetex-extra, dpatch, gs-common, po-debconf
 Standards-Version: 3.6.2
 
 Package: dibbler-server

@@ -1,0 +1,163 @@
+#
+#    Translators, if you are not familiar with the PO format, gettext
+#    documentation is worth reading, especially sections dedicated to
+#    this format, e.g. by running:
+#         info -n '(gettext)PO Files'
+#         info -n '(gettext)Header Entry'
+#
+#    Some information specific to po-debconf are available at
+#            /usr/share/doc/po-debconf/README-trans
+#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
+#
+#    Developers do not need to manually edit POT or PO files.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
+"POT-Creation-Date: 2006-01-06 22:32+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: title
+#. Description
+#: ../dibbler-client.templates:3
+msgid "dibbler-client: DHCPv6 client"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../dibbler-client.templates:8
+msgid "Do you want dibbler-client to start when system starts?"
+msgstr "Czy chcesz, aby dibbler-client startowal przy starcie systemu?"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-client.templates:8
+msgid ""
+"Dibbler client can be configured to start at boot, so your host will have "
+"IPv6 set up after boot. This is generally a good idea. Make sure that there "
+"is a DHCPv6 server available in your network."
+msgstr ""
+
+#. Type: string
+#. Default
+#: ../dibbler-client.templates:15
+msgid "eth0"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../dibbler-client.templates:16
+msgid "Interfaces to be configured:"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../dibbler-client.templates:16
+msgid "Dibbler can configure any or all of a computer's network interfaces."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../dibbler-client.templates:16
+msgid ""
+"More than one interface may be specified by separating the interface names "
+"with spaces."
+msgstr ""
+
+#. Type: multiselect
+#. Choices
+#: ../dibbler-client.templates:24
+msgid "dns, domain"
+msgstr ""
+
+#. Type: multiselect
+#. Description
+#: ../dibbler-client.templates:26
+msgid "What additional parameters should be obtained?"
+msgstr ""
+
+#. Type: multiselect
+#. Description
+#: ../dibbler-client.templates:26
+msgid ""
+"The Dibbler client can request that the DHCPv6 server supply additional "
+"configuration parameters."
+msgstr ""
+
+#. Type: title
+#. Description
+#: ../dibbler-relay.templates:3
+msgid "dibbler-relay: DHCPv6 relay"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../dibbler-relay.templates:8
+#, fuzzy
+msgid "Do you want dibbler-relay to start when the system starts?"
+msgstr "Czy chcesz, aby dibbler-client startowal przy starcie systemu?"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-relay.templates:8
+msgid ""
+"Dibbler relay can be configured to start at boot. This node will then "
+"forward DHCPv6 messages between clients, servers and other relays."
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../dibbler-relay.templates:14
+msgid "Modify /etc/dibbler/relay.conf before running the relay."
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../dibbler-relay.templates:14
+msgid ""
+"Without proper modifications, the relay will most likely refuse to start or "
+"will not forward DHCPv6 messages as expected."
+msgstr ""
+
+#. Type: title
+#. Description
+#: ../dibbler-server.templates:3
+msgid "dibbler-server: DHCPv6 server"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../dibbler-server.templates:8
+#, fuzzy
+msgid "Do you want dibbler-server to start when the system starts?"
+msgstr "Czy chcesz, aby dibbler-client startowal przy starcie systemu?"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-server.templates:8
+msgid ""
+"Dibbler server can be configured to start at boot. This node will then act "
+"as a DHCPv6 server. It will provide IPv6 addresses and additional "
+"configuration options to other nodes in the network."
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../dibbler-server.templates:15
+msgid "Modify /etc/dibbler/server.conf before running the server."
+msgstr ""
+
+#. Type: note
+#. Description
+#: ../dibbler-server.templates:15
+msgid ""
+"Without proper modifications, the Dibbler server will most likely offer "
+"invalid addresses and options when started."
+msgstr ""
