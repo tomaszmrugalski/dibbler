@@ -347,7 +347,7 @@ YY_@_CLASS::YY_@_CLASS(YY_@_CONSTRUCTOR_PARAM) YY_@_CONSTRUCTOR_INIT
 YY_@_DEBUG_FLAG=0;
 #endif
 YY_@_CONSTRUCTOR_CODE;
-};
+}
 #endif
 $ /* fattrs + tables */
 
@@ -378,7 +378,7 @@ $ /* fattrs + tables */
 #define YYENDGOTO } } 
 #define YYBEGINDECLARELABEL enum yy_labels {yygotostart
 #define YYDECLARELABEL(lb) ,lb
-#define YYENDDECLARELABEL  };
+#define YYENDDECLARELABEL  }
 #else
 /* macro to keep goto */
 #define YYGOTO(lb) goto lb
@@ -387,7 +387,7 @@ $ /* fattrs + tables */
 #define YYENDGOTO
 #define YYBEGINDECLARELABEL 
 #define YYDECLARELABEL(lb)
-#define YYENDDECLARELABEL 
+#define YYENDDECLARELABEL  
 #endif
 /* LABEL DECLARATION */
 YYBEGINDECLARELABEL
