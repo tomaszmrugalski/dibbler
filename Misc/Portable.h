@@ -6,13 +6,14 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.45 2005-10-23 23:31:42 thomson Exp $
+ * $Id: Portable.h,v 1.46 2006-01-12 00:23:35 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-//#define DIBBLER_VERSION "0.4.1-CVS (" __DATE__ " " __TIME__ ")"
+/* #define DIBBLER_VERSION "0.4.1-CVS (" __DATE__ " " __TIME__ ")" 
+ */
 #define DIBBLER_VERSION "0.4.1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
@@ -35,9 +36,9 @@
 #include <string.h>
 #endif 
 
-// **********************************************************************
-// *** file setup/default paths *****************************************
-// **********************************************************************
+/**********************************************************************/
+/*** file setup/default paths *****************************************/
+/**********************************************************************/
 
 #define CLNTCFGMGR_FILE   "client-CfgMgr.xml"
 #define CLNTIFACEMGR_FILE "client-IfaceMgr.xml"
@@ -55,9 +56,9 @@
 #define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
 #define RELTRANSMGR_FILE  "relay-TransMgr.xml"
 
-// false - normal operation
-// true - Linux: client and server can be run on the same host, but
-//        there is also a drawback: multiple clients can be run at once.
+/* false - normal operation
+   true - Linux: client and server can be run on the same host, but
+   there is also a drawback: multiple clients can be run at once. */
 #define CLIENT_BIND_REUSE true
 
 #ifdef WIN32
@@ -86,7 +87,7 @@
 #define NULLFILE          "/dev/null"
 #endif
 
-// --- options ---
+/* --- options --- */
 #define OPTION_DNS_SERVERS_FILENAME  "option-dns-servers"
 #define OPTION_DOMAINS_FILENAME      "option-domains"
 #define OPTION_NTP_SERVERS_FILENAME  "option-ntp-servers"
@@ -98,9 +99,9 @@
 #define OPTION_NISP_SERVERS_FILENAME "option-nisplus-servers"
 #define OPTION_NISP_DOMAIN_FILENAME  "option-nisplus-domain"
 
-// **********************************************************************
-// *** interface flags **************************************************
-// **********************************************************************
+/* ********************************************************************** */
+/* *** interface flags ************************************************** */
+/* ********************************************************************** */
 
 #ifdef WIN32
 #define MAX_IFNAME_LENGTH 255
@@ -120,9 +121,9 @@
 #define IF_MULTICAST	0x1000
 #endif
 
-// **********************************************************************
-// *** time related functions *******************************************
-// **********************************************************************
+/* ********************************************************************** */
+/* *** time related functions ******************************************* */
+/* ********************************************************************** */
 
 #ifdef WIN32
 #define strncasecmp _strnicmp
@@ -132,9 +133,9 @@
 
 #define now() (unsigned) time(NULL)
 
-// **********************************************************************
-// *** interface/socket low level functions *****************************
-// **********************************************************************
+/* ********************************************************************** */
+/* *** interface/socket low level functions ***************************** */
+/* ********************************************************************** */
 
 #ifdef __cplusplus 
 extern "C" {
@@ -197,23 +198,26 @@ extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain
 #endif
 
 struct iface {
-    char name[MAX_IFNAME_LENGTH];  // interface name
-    int  id;                       // interface ID (often called ifindex)
-    int  hardwareType;             // type of hardware (see RFC 826)
-    char mac[255];                 // link layer address
-    int  maclen;                   // length of link layer address
-    char *linkaddr;                // assigned IPv6 link local addresses 
-    int  linkaddrcount;            // number of assigned IPv6 link local addresses
-    char *globaladdr;              // global IPv6 addresses
-    int  globaladdrcount;          // number of global IPV6 addresses
-    unsigned int flags;            // look IF_xxx in portable.h
-    struct iface* next;            // structure describing next iface in system
+    char name[MAX_IFNAME_LENGTH];  /* interface name */
+    int  id;                       /* interface ID (often called ifindex) */
+    int  hardwareType;             /* type of hardware (see RFC 826) */
+    char mac[255];                 /* link layer address */
+    int  maclen;                   /* length of link layer address */
+    char *linkaddr;                /* assigned IPv6 link local addresses  */
+    int  linkaddrcount;            /* number of assigned IPv6 link local addresses */
+    char *globaladdr;              /* global IPv6 addresses */
+    int  globaladdrcount;          /* number of global IPV6 addresses */
+    unsigned int flags;            /* look IF_xxx in portable.h */
+    struct iface* next;            /* structure describing next iface in system */
 };
 
 #endif
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.45  2005/10/23 23:31:42  thomson
+ * Log directory changed to /var/log/dibbler
+ *
  * Revision 1.44  2005/07/17 21:09:52  thomson
  * Minor improvements for 0.4.1 release.
  *

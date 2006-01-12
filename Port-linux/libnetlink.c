@@ -102,13 +102,17 @@ int rtnl_dump_request(struct rtnl_handle *rth, int type, void *req, int len)
 {
 	struct nlmsghdr nlh;
 	struct sockaddr_nl nladdr;
-	struct iovec iov[2] = { { &nlh, sizeof(nlh) }, { req, len } };
+	struct iovec iov[2];
 	struct msghdr msg = {
 		(void*)&nladdr, sizeof(nladdr),
 		iov,	2,
 		NULL,	0,
 		0
 	};
+	iov[0].iov_base= &nlh;
+	iov[1].iov_len = sizeof(nlh);
+	iov[1].iov_base= req;
+	iov[1].iov_len = len;
 
 	memset(&nladdr, 0, sizeof(nladdr));
 	nladdr.nl_family = AF_NETLINK;

@@ -685,7 +685,7 @@ bool SrvParser::CheckIsIface(int ifaceNr)
 	YYABORT;
     }
   return true;
-};
+}
     
 //method check whether interface with id=ifaceName has been
 //already declared 
@@ -702,7 +702,7 @@ bool SrvParser::CheckIsIface(string ifaceName)
     }
   }
   return true;
-};
+}
 
 //method creates new scope appropriately for interface options and declarations
 //clears all lists except the list of interfaces and adds new group
@@ -744,8 +744,8 @@ bool SrvParser::EndClassDeclaration()
 }
 
 namespace std {
-extern yy_SrvParser_stype yylval;
-};
+    extern yy_SrvParser_stype yylval;
+}
 
 int SrvParser::yylex()
 {

@@ -5,7 +5,7 @@ FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
-COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0
+COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0 -pedantic
 OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
 CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
@@ -54,9 +54,9 @@ PORT_SUBDIR  = Port-linux
 MAKEFLAGS   += -s
 VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
-INST_MANDIR  = $(DESTDIR)'/usr/local/man'
-INST_DOCDIR  = $(DESTDIR)'/usr/local/share/doc'
-INST_BINDIR  = $(DESTDIR)'/usr/local/sbin'
+INST_MANDIR  = $(DESTDIR)'/usr/share/man'
+INST_DOCDIR  = $(DESTDIR)'/usr/share/doc'
+INST_BINDIR  = $(DESTDIR)'/usr/sbin'
 INST_CONFDIR = $(DESTDIR)'/etc/dibbler'
 INSTALL      = 'install'
 MKDIR        = mkdir -p

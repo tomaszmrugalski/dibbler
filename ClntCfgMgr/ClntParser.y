@@ -75,7 +75,7 @@ virtual ~clntParser();
 %{
 	namespace std{
 extern yy_clntParser_stype yylval;
-	};
+	}
 %}
 
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_, UNICAST_
@@ -736,7 +736,7 @@ bool clntParser::CheckIsIface(int ifaceNr)
   while (ptr=ClntCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) YYABORT;
   return true;
-};
+}
     
 //method check whether interface with id=ifaceName has been
 //already declared 
@@ -750,7 +750,7 @@ bool clntParser::CheckIsIface(string ifaceName)
     if (presName==ifaceName) YYABORT;
   };
   return true;
-};
+}
 
 //method creates new scope appropriately for interface options and declarations
 //clears all lists except the list of interfaces and adds new group
@@ -934,5 +934,5 @@ clntParser::~clntParser() {
     this->ClntCfgIfaceLst.clear();
     this->ClntCfgGroupLst.clear();
     this->ClntCfgIALst.clear();
-    this->ClntCfgAddrLst.clear():
+    this->ClntCfgAddrLst.clear();
 }

@@ -38,7 +38,7 @@ namespace std {
   char AddrPart[16];
   unsigned intpos,pos;
   yy_clntParser_stype yylval;
-};
+}
 %}
 
 %%
@@ -226,7 +226,7 @@ unicast          { return clntParser::UNICAST_; }
 
 {hexnumber} { 
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+    if(!sscanf(yytext,"%x",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
@@ -234,7 +234,7 @@ unicast          { return clntParser::UNICAST_; }
 }
 
 {integer} { 
-    if(!sscanf(yytext,"%u",&(yylval.ival))) { 
+    if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }

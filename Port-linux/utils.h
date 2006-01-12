@@ -2,7 +2,6 @@
 #define __UTILS_H__ 1
 
 #include <asm/types.h>
-//#include <asm/bitops.h>
 #include <linux/inetdevice.h>
 #include <resolv.h>
 

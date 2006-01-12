@@ -37,7 +37,7 @@ using namespace std;
 
 namespace std{
   yy_RelParser_stype yylval;
-};
+}
 %}
 
 %%
@@ -194,4 +194,3 @@ false               { yylval.ival=0; return RelParser::INTNUMBER_;}
 
 
 %%
-

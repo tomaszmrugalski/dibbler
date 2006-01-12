@@ -25,7 +25,6 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <resolv.h>
-//#include <linux/pkt_sched.h>
 
 #include "utils.h"
 

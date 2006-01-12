@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.9 2005-02-01 00:57:36 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.10 2006-01-12 00:23:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.8  2005/01/03 21:57:08  thomson
  * Relay support added.
  *
@@ -39,8 +42,6 @@ class TSrvCfgMgr;
 
 #include "FlexLexer.h"
 #include "SrvParser.h"
-
-#define RELAY_MIN_IFINDEX 1024;
 
 class TSrvCfgMgr : public TCfgMgr
 {

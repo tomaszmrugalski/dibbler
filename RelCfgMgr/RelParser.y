@@ -221,7 +221,7 @@ bool RelParser::CheckIsIface(int ifaceNr)
 	YYABORT;
     }
   return true;
-};
+}
     
 //method check whether interface with id=ifaceName has been
 //already declared 
@@ -238,7 +238,7 @@ bool RelParser::CheckIsIface(string ifaceName)
     }
   }
   return true;
-};
+}
 
 //method creates new scope appropriately for interface options and declarations
 //clears all lists except the list of interfaces and adds new group
@@ -257,8 +257,8 @@ bool RelParser::EndIfaceDeclaration()
 }   
 
 namespace std {
-extern yy_RelParser_stype yylval;
-};
+    extern yy_RelParser_stype yylval;
+}
 
 int RelParser::yylex()
 {

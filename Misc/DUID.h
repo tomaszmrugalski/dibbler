@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: DUID.h,v 1.5 2004-09-28 17:30:47 thomson Exp $
+ * $Id: DUID.h,v 1.6 2006-01-12 00:23:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/09/28 17:30:47  thomson
+ * Header #include added.
+ *
  * Revision 1.4  2004/06/20 20:59:30  thomson
  * getPlain() method added.
  *
@@ -35,8 +38,8 @@ class TDUID
     TDUID(char* Plain); // plain
     TDUID(const TDUID &duid);
     TDUID& operator=(const TDUID& duid);
-    bool TDUID::operator==(const TDUID &duid);
-    bool TDUID::operator<=(const TDUID &duid);
+    bool operator==(const TDUID &duid);
+    bool operator<=(const TDUID &duid);
     int getLen();
     char * storeSelf(char* buf);
     const string getPlain();

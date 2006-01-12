@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.23 2005-07-16 14:43:36 thomson Exp $
+ * $Id: layer3.c,v 1.24 2006-01-12 00:23:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2005/07/16 14:43:36  thomson
+ * Compatibility with gcc 2.95 improved (bug #118)
+ * Fix provided by Tomasz Torcz. Thanks.
+ *
  * Revision 1.22  2005/04/28 20:33:59  thomson
  * Multicasts are no longer threated as global addrs.
  *
@@ -80,7 +84,9 @@
 #include "rt_names.h"
 #include "Portable.h"
 
-// #define LOWLEVEL_DEBUG 1
+/*
+#define LOWLEVEL_DEBUG 1
+*/
 
 struct nlmsg_list
 {
@@ -149,7 +155,7 @@ struct iface * if_list_get()
     struct iface * tmp;
     int preferred_family = AF_PACKET;
 
-    // required to display information about interface
+    /* required to display information about interface */
     struct ifinfomsg *ifi;
     struct rtattr * tb[IFLA_MAX+1];
     int len;
@@ -160,13 +166,12 @@ struct iface * if_list_get()
     rtnl_wilddump_request(&rth, preferred_family, RTM_GETLINK);
     rtnl_dump_filter(&rth, store_nlmsg, &linfo, NULL, NULL);
     
-    // 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6
+    /* 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6 */
     rtnl_wilddump_request(&rth, AF_UNSPEC, RTM_GETADDR);
     rtnl_dump_filter(&rth, store_nlmsg, &ainfo, NULL, NULL);
 
-    // build list with interface names
+    /* build list with interface names */
     for (l=linfo; l; l = l->next) {
-	// n = &l->h;
 	ifi = NLMSG_DATA(&l->h);
 	len = (&l->h)->nlmsg_len;
 	len -= NLMSG_LENGTH(sizeof(*ifi));
@@ -183,10 +188,10 @@ struct iface * if_list_get()
 	tmp->flags=ifi->ifi_flags;
 	tmp->next=head;
 	head=tmp;
-//	printf("C: [%s,%d,%d]\n",tmp->name,tmp->id,tmp->flags);
+        /* printf("C: [%s,%d,%d]\n",tmp->name,tmp->id,tmp->flags); */
 
 	{
-	    // This stuff reads MAC addr
+	    /* This stuff reads MAC addr */
 	    tmp->maclen = RTA_PAYLOAD(tb[IFLA_ADDRESS]);
 	    memset(tmp->mac,0,255);
 	    memcpy(tmp->mac,RTA_DATA(tb[IFLA_ADDRESS]), tmp->maclen);
@@ -223,16 +228,16 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
 	    
 	    memcpy(addr,(char*)RTA_DATA(rta_tb[IFLA_ADDRESS]),16);
 	    if (addr[0]!=0xfe || addr[1]!=0x80) {
-		continue; // ignore non link-scoped addrs
+		continue; /* ignore non link-scoped addrs */
 	    }
 	    
-	    // ifa->ifa_flags & 128 - permenent
-	    //printf("flags:%d : ",ifa->ifa_flags);
+	    /* ifa->ifa_flags & 128 - permenent */
+	    /* printf("flags:%d : ",ifa->ifa_flags); */
 
 	    pos = cnt*16;
 	    buf = (char*) malloc( pos + 16);
-	    memcpy(buf,tmpbuf, pos); // copy old addrs
-	    memcpy(buf+pos,addr,16); // copy new addr
+	    memcpy(buf,tmpbuf, pos); /* copy old addrs */
+	    memcpy(buf+pos,addr,16); /* copy new addr */
 	    
 	    free(tmpbuf);
 	    tmpbuf = buf;
@@ -265,16 +270,16 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 	    memcpy(addr,(char*)RTA_DATA(rta_tb[IFLA_ADDRESS]),16);
 	    if ( (addr[0]==0xfe && addr[1]==0x80) || /* link local */
 		 (addr[0]==0xff) ) { /* multicast */
-		continue; // ignore non link-scoped addrs
+		continue; /* ignore non link-scoped addrs */
 	    }
 	    
-	    // ifa->ifa_flags & 128 - permenent
-	    //printf("flags:%d : ",ifa->ifa_flags);
+	    /* ifa->ifa_flags & 128 - permenent */
+	    /* printf("flags:%d : ",ifa->ifa_flags); */
 
 	    pos = cnt*16;
 	    buf = (char*) malloc( pos + 16);
-	    memcpy(buf,tmpbuf, pos); // copy old addrs
-	    memcpy(buf+pos,addr,16); // copy new addr
+	    memcpy(buf,tmpbuf, pos); /* copy old addrs */
+	    memcpy(buf+pos,addr,16); /* copy new addr */
 	    
 	    free(tmpbuf);
 	    tmpbuf = buf;
@@ -333,10 +338,10 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int add)
     rtnl_open(&rth, 0);
     ll_init_map(&rth);
     
-	// is there an interface with this ifindex?
+    /* is there an interface with this ifindex? */
     if ((req.ifa.ifa_index = ll_name_to_index((char*)ifacename)) == 0) {
-	//fprintf(stderr, "Cannot find device \"%s\"\n", ifacename);
-	    return -1;
+	/* fprintf(stderr, "Cannot find device \"%s\"\n", ifacename); */
+	return -1;
     }
     rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
     return 0;
@@ -374,62 +379,61 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 
 #ifdef LOWLEVEL_DEBUG
     printf("### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d reuse=%d###\n",
-    //printf("### sock_add(\"%s\", %d, \"%s\", %d, %d, %d); ###\n",
     ifacename,ifaceid, addr, port, thisifaceonly, reuse);
     fflush(stdout);
 #endif
     
-    // Open a socket for inbound traffic
+    /* Open a socket for inbound traffic */
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = PF_INET6;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
     hints.ai_flags = AI_PASSIVE;
     if( (error = getaddrinfo(NULL,  port_char, &hints, &res)) ){
-	// getaddrinfo failed. Is IPv6 protocol supported by kernel?
+	/* getaddrinfo failed. Is IPv6 protocol supported by kernel? */
 	return -7;
     }
     if( (Insock = socket(AF_INET6, SOCK_DGRAM,0 )) < 0){
-	//printf("socket creation failed. Is IPv6 protocol supported by kernel?\n");
+	/* printf("socket creation failed. Is IPv6 protocol supported by kernel?\n"); */
 	return -1;
     }	
 	
-    // Set the options  to receivce ipv6 traffic
+    /* Set the options  to receivce ipv6 traffic */
     if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof(on)) < 0) {
-	// Unable to set up socket option IPV6_PKTINFO
+	/* Unable to set up socket option IPV6_PKTINFO */
 	return -8;
     }
 
     if (thisifaceonly) {
 	if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
-	    // Unable to bind to interface
+	    /* Unable to bind to interface */
 	    return -2;
 	}
     }
 
-    // allow address reuse (this option sucks - why allow running multiple servers?)
+    /* allow address reuse (this option sucks - why allow running multiple servers?) */
     if (reuse!=0) {
 	if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)  {
-	    // Unable to set up socket option SO_REUSEADDR
+	    /* Unable to set up socket option SO_REUSEADDR */
 	    return -9;
 	}
     }
 
-    // bind socket to a specified port
+    /* bind socket to a specified port */
     bzero(&bindme, sizeof(struct sockaddr_in6));
     bindme.sin6_family = AF_INET6;
     bindme.sin6_port   = htons(port);
     tmp = (char*)(&bindme.sin6_addr);
     inet_pton6(addr, tmp);
-    //if (bind(Insock, res->ai_addr, res->ai_addrlen) < 0) {
+    /* if (bind(Insock, res->ai_addr, res->ai_addrlen) < 0) { */
     if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme)) < 0) {
-	// Unable to bind socket
+	/* Unable to bind socket */
 	return -4;
     }
 
     freeaddrinfo(res);
 
-    // multicast server stuff
+    /* multicast server stuff */
     if (multicast) {
 	hints.ai_flags = 0;
 	if((error = getaddrinfo(addr, port_char, &hints, &res2))){
@@ -440,9 +444,9 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	memcpy(&mreq6.ipv6mr_multiaddr, &((struct sockaddr_in6 *)res2->ai_addr)->sin6_addr,
 	       sizeof(mreq6.ipv6mr_multiaddr));
 	
-	// Add to the all agent multicast address 
+	/* Add to the all agent multicast address */
 	if (setsockopt(Insock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &mreq6, sizeof(mreq6))) {
-	    //printf("Server: Error joining ipv6 group");
+	    /* printf("Server: Error joining ipv6 group"); */
 	    return -6;
 	}
 	freeaddrinfo(res2);
@@ -467,12 +471,13 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
     hints.ai_family = PF_INET6;
     hints.ai_socktype = SOCK_DGRAM;
     if (getaddrinfo(addr, cport, &hints, &res) < 0) {
-	return -1; // Error in transmitting
+	return -1; /* Error in transmitting */
     }
-    
-//	if (setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &lim, sizeof(lim)) < 0) {
-//	    return -2; // Error setting up socket
-//	}
+
+    /*
+    if (setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &lim, sizeof(lim)) < 0) {
+      return -2; // Error setting up socket
+    } */
     
     result = sendto(sock, buf, message_len, 0, res->ai_addr, res->ai_addrlen);
     freeaddrinfo(res);
@@ -484,12 +489,12 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
  */
 int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen)
 {
-    struct msghdr msg;            // message received by recvmsg
-    struct sockaddr_in6 peerAddr; // sender address
-    struct sockaddr_in6 myAddr;   // my address
-    struct iovec iov;             // simple structure containing buffer address and length
+    struct msghdr msg;            /* message received by recvmsg */
+    struct sockaddr_in6 peerAddr; /* sender address */
+    struct sockaddr_in6 myAddr;   /* my address */
+    struct iovec iov;             /* simple structure containing buffer address and length */
 
-    struct cmsghdr *cm;           // control message
+    struct cmsghdr *cm;           /* control message */
     struct in6_pktinfo *pktinfo; 
 
     char control[CMSG_SPACE(sizeof(struct in6_pktinfo))];
@@ -515,10 +520,10 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
 	return -1;
     }
 
-    // get source address
+    /* get source address */
     inet_ntop6((void*)&peerAddr.sin6_addr, peerPlainAddr);
 
-    // get destination address
+    /* get destination address */
     for(cm = (struct cmsghdr *) CMSG_FIRSTHDR(&msg); cm; cm = (struct cmsghdr *) CMSG_NXTHDR(&msg, cm)){
 	if (cm->cmsg_level != IPPROTO_IPV6 || cm->cmsg_type != IPV6_PKTINFO)
 	    continue;
@@ -556,8 +561,8 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 
     rtnl_open(&rth, 0);
 
-    // 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6
-    // rtnl_wilddump_request(&rth, AF_PACKET, RTM_GETLINK);
+    /* 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6 */
+    /* rtnl_wilddump_request(&rth, AF_PACKET, RTM_GETLINK); */
     rtnl_wilddump_request(&rth, AF_INET6, RTM_GETADDR);
     rtnl_dump_filter(&rth, store_nlmsg, &ainfo, NULL, NULL);
 
@@ -576,9 +581,9 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 	    inet_ntop6(RTA_DATA(rta_tb[IFA_LOCAL]), buf /*, sizeof(buf)*/);
 	    memcpy(packed2,RTA_DATA(rta_tb[IFA_LOCAL]),16);
 
-	    // print_packed(packed1); printf(" "); print_packed(packed2); printf("\n");
+	    /* print_packed(packed1); printf(" "); print_packed(packed2); printf("\n"); */
 
-	    // is this addr which are we looking for?
+	    /* is this addr which are we looking for? */
 	    if (!memcmp(packed1,packed2,16) ) {
 		if (ifa->ifa_flags & IFA_F_TENTATIVE)
 		    tentative = 1;
@@ -589,7 +594,7 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 	ainfo = ainfo->next;
     }
 
-    // now delete list
+    /* now delete list */
     while (head) {
 	ainfo = head;
 	head = head->next;

@@ -621,7 +621,7 @@ YY_SrvParser_CLASS::YY_SrvParser_CLASS(YY_SrvParser_CONSTRUCTOR_PARAM) YY_SrvPar
 YY_SrvParser_DEBUG_FLAG=0;
 #endif
 YY_SrvParser_CONSTRUCTOR_CODE;
-};
+}
 #endif
 
  #line 352 "../bison++/bison.cc"
@@ -934,7 +934,7 @@ static const short yycheck[] = {     2,
 #define YYENDGOTO } } 
 #define YYBEGINDECLARELABEL enum yy_labels {yygotostart
 #define YYDECLARELABEL(lb) ,lb
-#define YYENDDECLARELABEL  };
+#define YYENDDECLARELABEL  }
 #else
 /* macro to keep goto */
 #define YYGOTO(lb) goto lb
@@ -943,7 +943,7 @@ static const short yycheck[] = {     2,
 #define YYENDGOTO
 #define YYBEGINDECLARELABEL 
 #define YYDECLARELABEL(lb)
-#define YYENDDECLARELABEL 
+#define YYENDDECLARELABEL  
 #endif
 /* LABEL DECLARATION */
 YYBEGINDECLARELABEL
@@ -2130,7 +2130,7 @@ bool SrvParser::CheckIsIface(int ifaceNr)
 	YYABORT;
     }
   return true;
-};
+}
     
 //method check whether interface with id=ifaceName has been
 //already declared 
@@ -2147,7 +2147,7 @@ bool SrvParser::CheckIsIface(string ifaceName)
     }
   }
   return true;
-};
+}
 
 //method creates new scope appropriately for interface options and declarations
 //clears all lists except the list of interfaces and adds new group
@@ -2189,8 +2189,8 @@ bool SrvParser::EndClassDeclaration()
 }
 
 namespace std {
-extern yy_SrvParser_stype yylval;
-};
+    extern yy_SrvParser_stype yylval;
+}
 
 int SrvParser::yylex()
 {

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.12 2005-02-01 00:57:36 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.13 2006-01-12 00:23:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.11  2004/12/02 00:51:04  thomson
  * Log files are now always created (bugs #34, #36)
  *
@@ -216,7 +219,7 @@ bool TCfgMgr::setDUID(const string filename) {
 		 << "MAC address at least 6 bytes long." << LogEnd;
     this->DUID=new TDUID();
     return false;
-};
+}
 
 bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macType)
 {

@@ -306,7 +306,7 @@ void yyfree (void *  );
 
 /* Begin user sect3 */
 
-#define yywrap(n) 1
+#define yywrap() 1
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -999,7 +999,7 @@ namespace std {
   char AddrPart[16];
   unsigned intpos,pos;
   yy_clntParser_stype yylval;
-};
+}
 #line 1004 "ClntLexer.cpp"
 
 #define INITIAL 0
@@ -1561,7 +1561,7 @@ YY_RULE_SETUP
 #line 227 "ClntLexer.l"
 { 
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+    if(!sscanf(yytext,"%x",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
@@ -1572,7 +1572,7 @@ case 50:
 YY_RULE_SETUP
 #line 236 "ClntLexer.l"
 { 
-    if(!sscanf(yytext,"%u",&(yylval.ival))) { 
+    if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
@@ -2216,7 +2216,7 @@ int yyFlexLexer::yy_get_next_buffer()
 	yyfree((void *) b  );
 }
 
-extern "C" int isatty (int );
+extern "C" int isatty (int ) throw ();
 
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,

@@ -36,7 +36,6 @@
 TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
-/*FIXME:Don't forget to clear this lists in apropriate moment*/             \
 TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;                       \
 TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;                       \
 TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;                          \
@@ -66,7 +65,7 @@ virtual ~clntParser();
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();
 
-#line 65 "ClntParser.y"
+#line 64 "ClntParser.y"
 typedef union    
 {
     int ival;    

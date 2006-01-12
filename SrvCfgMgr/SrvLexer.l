@@ -37,7 +37,7 @@ using namespace std;
 
 namespace std{
   yy_SrvParser_stype yylval;
-};
+}
 %}
 
 %%

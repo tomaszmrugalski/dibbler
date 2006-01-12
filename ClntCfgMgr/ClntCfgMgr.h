@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.8 2005-02-01 00:57:36 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.9 2006-01-12 00:23:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.7  2004/12/07 20:51:35  thomson
  * Link local safety checks added (bug #39)
  *
@@ -63,7 +66,7 @@ class TClntCfgMgr : public TCfgMgr
     int countAddrForIA(long IAID);
     
     SmartPtr<TClntCfgGroup> getGroupForIA(long IAID);
-    SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid);
+    SmartPtr<TClntCfgIface> getIfaceByIAID(int iaid);
     bool isDone();
 
 private:

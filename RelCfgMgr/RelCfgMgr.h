@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.h,v 1.3 2005-02-01 00:57:36 thomson Exp $
+ * $Id: RelCfgMgr.h,v 1.4 2006-01-12 00:23:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.2  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -27,8 +30,6 @@ class TRelCfgMgr;
 
 #include "CfgMgr.h"
 #include "DHCPConst.h"
-
-#define RELAY_MIN_IFINDEX 1024;
 
 class TRelCfgMgr : public TCfgMgr
 {

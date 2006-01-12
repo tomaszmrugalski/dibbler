@@ -12,8 +12,12 @@ SrvLexer.o: SrvLexer.cpp
 	$(CXX) -c $(OPTS) -ftemplate-depth-30 SrvLexer.cpp 
 
 parser: SrvParser.y SrvLexer.l 
-	echo "[BISON++] SrvParser.y"
+	echo "[BISON++] $(SUBDIR)/SrvParser.y"
 	$(BISONPP) -d SrvParser.y -o SrvParser.cpp
 #	$(BISONPP) -l -d SrvParser.y -o SrvParser.cpp
-	echo "[FLEX   ] SrvLexer.l"
+	echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
 	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
+	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"
+	cat SrvLexer.cpp | sed 's/int isatty (int );/int isatty (int ) throw ();/' > SrvLexer.cpp2
+	rm -f SrvLexer.cpp
+	mv SrvLexer.cpp2 SrvLexer.cpp

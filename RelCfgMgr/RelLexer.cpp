@@ -306,7 +306,7 @@ void yyfree (void *  );
 
 /* Begin user sect3 */
 
-#define yywrap(n) 1
+#define yywrap() 1
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -780,7 +780,7 @@ using namespace std;
 
 namespace std{
   yy_RelParser_stype yylval;
-};
+}
 #line 785 "RelLexer.cpp"
 
 #define INITIAL 0
@@ -1878,7 +1878,7 @@ int yyFlexLexer::yy_get_next_buffer()
 	yyfree((void *) b  );
 }
 
-extern "C" int isatty (int );
+extern "C" int isatty (int ) throw ();
 
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
@@ -2156,7 +2156,6 @@ void yyfree (void * ptr )
 #undef YY_DECL
 #endif
 #line 196 "RelLexer.l"
-
 
 
 
