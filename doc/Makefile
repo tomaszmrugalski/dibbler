@@ -4,7 +4,7 @@ ifndef TOPDIR
 TOPDIR=$(CURDIR)
 endif 
 
-PASS3=NO
+PASS3=YES
 
 all: user devel
 
@@ -38,9 +38,9 @@ dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
 	@echo "[LATEX  ] $(SUBDIR)/$@"
 	$(LATEX) dibbler-devel.tex &>dibbler-devel-1st_pass.log
 	if [ $(PASS3) == "YES" ]; then                            \
-	  @echo "[LATEX  ] $(SUBDIR)/$@";                         \
+	  echo "[LATEX  ] $(SUBDIR)/$@";                          \
 	  $(LATEX) dibbler-devel.tex &>dibbler-devel-2nd_pass.log;\
-	  @echo "[LATEX  ] $(SUBDIR)/$@";                         \
+	  echo "[LATEX  ] $(SUBDIR)/$@";                          \
 	  $(LATEX) dibbler-devel.tex &>dibbler-devel-3rd_pass.log;\
 	fi
 	@echo "[DVIPS  ] $(SUBDIR)/$@"

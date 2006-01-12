@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-misc.tex,v 1.4 2005-07-21 23:28:56 thomson Exp $
+%% $Id: dibbler-devel-misc.tex,v 1.5 2006-01-12 00:22:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.4  2005/07/21 23:28:56  thomson
+%% Documentation update.
+%%
 %% Revision 1.3  2004/12/04 23:47:57  thomson
 %% Work around for bug #56 described.
 %%
@@ -19,6 +22,33 @@
 %% Initial version.
 %%
 %%
+
+\section{FAQ}
+This section describes various Dibbler aspects.
+
+\begin{description}
+\item[XML files] -- After performing any action, server, client and
+relay store their internal information into XML files. As for 0.4.1
+version, those files are never read, just written. This feature can be
+used as a debugging tool. However, it's main purpose is the ability to
+process and present internal state in some external form. For example
+using with css styles or after processing via XSLT parsers, server
+statistics can be presented as a web page.
+
+\item[Message building] -- Each TMsg object (see Messages/Msg.h) has
+Options list. Options (TOpt derived objects) are created (usually in
+the constructor). They're stored as objects. For good example, see
+appendRequestedOptions() method in the client messages
+(ClntMessages/ClntMsg.cpp). Each option and message has method
+storeSelf(), which is called just before message is being sent.
+
+You might ask: what about retransmissions? Message is built each time
+it is being resent. That might seem inefficient, but there is one
+option called Estimated. It specifies how long does this particular
+transaction is being processed. So each time retrasmission is in fact
+a slightly different message. It differs in that option, so
+UDP checksum is different, so it has to be rebuilt.
+\end{description}
 
 \section{Tips}
 
@@ -36,7 +66,9 @@
   comformant to RFC3898). To work around that problem, download
   packet-dhcpv6.c from Dibbler homepage and recompile
   Ethereal. Dibbler's author sent patches to the Ethereal team. Those
-  changes should be included in the next Ethereal release.
+  changes should be included in the next Ethereal
+  release. \textbf{NOTE:} This is no longer true. Patch was accepted
+  and now Ethereal prints informations properly.
 \item If you are reading this Developer's Guide, then Hey! You're
   probably a developer! If you found any bugs (or think you found
   one), go to the
