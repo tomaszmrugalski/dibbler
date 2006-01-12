@@ -54,10 +54,10 @@ $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	-L$(SRVOPTIONS)  -lSrvOptions \
 	-L$(SRVTRANSMGR) -lSrvTransMgr \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr \
-	-L$(CFGMGR)      -lCfgMgr\
+	-L$(CFGMGR)      -lCfgMgr \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
 	-L$(IFACEMGR)     -lIfaceMgr \
-	-L$(MISC)        -lMisc\
+	-L$(MISC)        -lMisc \
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr \
 	                 -lAddrMgr \
@@ -81,10 +81,10 @@ $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	-L$(RELIFACEMGR) -lRelIfaceMgr \
 	-L$(RELOPTIONS)  -lRelOptions \
 	-L$(RELMESSAGES) -lRelMsg \
-	-L$(LOWLEVEL)    -lLowLevel\
-	-L$(CFGMGR)      -lCfgMgr\
+	-L$(LOWLEVEL)    -lLowLevel \
+	-L$(CFGMGR)      -lCfgMgr \
 	-L$(IFACEMGR)     -lIfaceMgr \
-	-L$(MISC)        -lMisc\
+	-L$(MISC)        -lMisc \
 	-L$(MESSAGES)    -lMsg \
 	-L$(MISC)        -lMisc \
 	-L$(OPTIONS)     -lOptions \
@@ -396,7 +396,8 @@ help:
 	@echo "release-linux  - prepares tar.gz with Linux binaries"
 	@echo "release-win32  - prepares tar.gz with Windows binaries"
 	@echo "release-src    - prepares tar.gz with sources"
-	@echo "release-doc    - prepares tar.gz with all documentation (LaTeX and Doxygen is required)"
+	@echo "release-doc    - prepares tar.gz with User/Developer documentation (LaTeX is required)"
+	@echo "release-oxygen - prepares tar.gz with detailed Developer documentation (doxygen is required)"
 	@echo "release-rpm    - prepares RPM archive (for RedHat, PLD, Mandrake or Fedora Core) with binaries"
 	@echo "release-deb    - prepares DEB archive (for Debian systems) with binaries"
 	@echo "release-gentoo - prepares ebuild (for Gentoo systems) with building instructions"
