@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.12 2005-04-29 00:08:20 thomson Exp $
+ * $Id: Iface.h,v 1.13 2006-01-24 00:12:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/04/29 00:08:20  thomson
+ * *** empty log message ***
+ *
  * Revision 1.11  2005/01/23 23:17:53  thomson
  * Relay/global address support related improvements.
  *
@@ -69,7 +72,11 @@ class TIfaceIface{
     char* getLLAddress();
     int   countLLAddress();
 
+    void firstGlobalAddr();
     SmartPtr<TIPv6Addr> getGlobalAddr();
+    unsigned int countGlobalAddr();
+    void addGlobalAddr(SmartPtr<TIPv6Addr> addr);
+    void delGlobalAddr(SmartPtr<TIPv6Addr> addr);
 
     // ---address related---
     bool addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
@@ -97,8 +104,11 @@ class TIfaceIface{
     int Maclen;
     char* LLAddr;
     int LLAddrCnt;
-    char * GlobalAddr;
-    int GlobalAddrCnt;
+
+    List(TIPv6Addr) GlobalAddrLst;
+    
+//    char * GlobalAddr;
+//    int GlobalAddrCnt;
     
     int HWType;
 

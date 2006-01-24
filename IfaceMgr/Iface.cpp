@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.19 2005-07-17 21:09:52 thomson Exp $
+ * $Id: Iface.cpp,v 1.20 2006-01-24 00:12:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/07/17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.18  2005/04/29 00:08:20  thomson
  * *** empty log message ***
  *
@@ -87,12 +90,10 @@ TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* ma
     this->PresLLAddr=this->LLAddr;
 
     // store all global addresses
-    this->GlobalAddrCnt = globalCnt;
-    if (globalCnt>0) {
-	this->GlobalAddr = new char[16*globalCnt];
-	memcpy(this->GlobalAddr, globalAddr, 16*globalCnt);
-    } else 
-	this->GlobalAddr = NULL;
+    for (int i=0; i<globalCnt; i++) {
+	SmartPtr<TIPv6Addr> addr = new TIPv6Addr(globalAddr+16*i);
+	this->GlobalAddrLst.append(addr);
+    }
 
     // store hardware type
     this->HWType=hwType;
@@ -169,12 +170,26 @@ char* TIfaceIface::getMac() {
     return this->Mac;
 }
 
-SmartPtr<TIPv6Addr> TIfaceIface::getGlobalAddr() {
-    if (!this->GlobalAddr)
-	return 0;
-    SmartPtr<TIPv6Addr> ptr = new TIPv6Addr(this->GlobalAddr);
-    return ptr;
+void TIfaceIface::firstGlobalAddr() {
+    this->GlobalAddrLst.first();
 }
+
+SmartPtr<TIPv6Addr> TIfaceIface::getGlobalAddr() {
+    return this->GlobalAddrLst.get();
+}
+
+unsigned int TIfaceIface::countGlobalAddr() {
+    return this->GlobalAddrLst.count();
+}
+
+void TIfaceIface::addGlobalAddr(SmartPtr<TIPv6Addr> addr) {
+    this->GlobalAddrLst.append(addr);
+}
+
+void TIfaceIface::delGlobalAddr(SmartPtr<TIPv6Addr> addr) {
+    // FIXME: Implement this
+}
+
 
 /*
  * returns HW type 
@@ -366,11 +381,12 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
 	strum << "    <Addr>" << buf << "</Addr>" << endl;
     }
 
-    strum << "    <!-- " << x.GlobalAddrCnt << " non-local addrs -->" << endl;
+    strum << "    <!-- " << x.countGlobalAddr() << " non-local addrs -->" << endl;
 
-    for (int i=0; i<x.GlobalAddrCnt; i++) {
-	inet_ntop6(x.GlobalAddr+i*16,buf);
-	strum << "    <Addr>" << buf << "</Addr>" << endl;
+    x.firstGlobalAddr();
+    SmartPtr<TIPv6Addr> addr;
+    while (addr = x.getGlobalAddr()) {
+	strum << "    " << *addr;
     }
 
     strum << "    <Mac>";
