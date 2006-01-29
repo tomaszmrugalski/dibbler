@@ -1,9 +1,9 @@
-#ifndef CLNTELAPSED_H_HEADER_INCLUDED_C112034D
-#define CLNTELAPSED_H_HEADER_INCLUDED_C112034D
+#ifndef CLNTOPTELAPSED_H
+#define CLNTOPTELAPSED_H
 
-#include "OptElapsed.h"
+#include "OptInteger4.h"
 
-class TClntOptElapsed : public TOptElapsed
+class TClntOptElapsed : public TOptInteger4
 {
   public:
     TClntOptElapsed(TMsg* parent);
