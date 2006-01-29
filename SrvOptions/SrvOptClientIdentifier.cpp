@@ -5,15 +5,14 @@
 #include "DHCPConst.h"
 #include "SrvOptClientIdentifier.h"
 
-//##ModelId=3EFF0A8E0399
 TSrvOptClientIdentifier::TSrvOptClientIdentifier(
-	 SmartPtr<TDUID> duid, TMsg* parent)
-	:TOptClientIdentifier(duid, parent)
+    SmartPtr<TDUID> duid, TMsg* parent)
+    :TOptDUID(duid, parent)
 {
 }
 
 TSrvOptClientIdentifier::TSrvOptClientIdentifier(char* buf, int bufsize, TMsg* parent)
-    :TOptClientIdentifier(buf,bufsize, parent)
+    :TOptDUID(buf,bufsize, parent)
 {
 }
 

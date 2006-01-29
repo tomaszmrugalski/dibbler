@@ -1,10 +1,10 @@
-#ifndef SRVSERVERIDENTIFIER_H_HEADER_INCLUDED_C10DCE82
-#define SRVSERVERIDENTIFIER_H_HEADER_INCLUDED_C10DCE82
+#ifndef SRVOPTSERVERIDENTIFIER_H
+#define SRVOPTSERVERIDENTIFIER_H
 
 #include "DHCPConst.h"
-#include "OptServerIdentifier.h"
+#include "OptDUID.h"
 
-class TSrvOptServerIdentifier : public TOptServerIdentifier 
+class TSrvOptServerIdentifier : public TOptDUID
 {
   public:
     TSrvOptServerIdentifier( SmartPtr<TDUID> duid, TMsg* parent);
@@ -12,6 +12,4 @@ class TSrvOptServerIdentifier : public TOptServerIdentifier
     bool doDuties();
 };
 
-
-
-#endif /* SERVERIDENTIFIER_H_HEADER_INCLUDED_C10DCE82 */
+#endif 

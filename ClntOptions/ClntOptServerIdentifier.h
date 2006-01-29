@@ -6,18 +6,21 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptServerIdentifier.h,v 1.2 2004-10-25 20:45:53 thomson Exp $
+ * $Id: ClntOptServerIdentifier.h,v 1.3 2006-01-29 10:48:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  */
 
 #ifndef CLNTSERVERIDENTIFIER_H
 #define CLNTSERVERIDENTIFIER_H
 
 #include "DHCPConst.h"
-#include "OptServerIdentifier.h"
+#include "OptDUID.h"
 
-class TClntOptServerIdentifier : public TOptServerIdentifier 
+class TClntOptServerIdentifier : public TOptDUID
 {
   public:
     TClntOptServerIdentifier( char * duid, int n, TMsg* parent);

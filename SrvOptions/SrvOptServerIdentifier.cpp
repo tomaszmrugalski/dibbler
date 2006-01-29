@@ -9,14 +9,13 @@
 #include "DHCPConst.h"
 #include "SrvOptServerIdentifier.h"
 
-//##ModelId=3EFF0A8F00FA
 TSrvOptServerIdentifier::TSrvOptServerIdentifier( SmartPtr<TDUID> duid, TMsg* parent)
-	:TOptServerIdentifier(duid, parent)
+	:TOptDUID(duid, parent)
 {
 }
 
 TSrvOptServerIdentifier::TSrvOptServerIdentifier(char* buf, int bufsize, TMsg* parent)
-    :TOptServerIdentifier(buf,bufsize, parent)
+    :TOptDUID(buf,bufsize, parent)
 {
 }
 

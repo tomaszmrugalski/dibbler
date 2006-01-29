@@ -1,11 +1,11 @@
 #ifndef SRVCLIENTIDENTIFIER_H
 #define SRVCLIENTIDENTIFIER_H
 
-#include "OptClientIdentifier.h"
+#include "OptDUID.h"
 
-class TOptClientIdentifier;
+class TOptDUID;
 
-class TSrvOptClientIdentifier : public TOptClientIdentifier
+class TSrvOptClientIdentifier : public TOptDUID
 {
  public:
     TSrvOptClientIdentifier( SmartPtr<TDUID> duid, TMsg* parent);
