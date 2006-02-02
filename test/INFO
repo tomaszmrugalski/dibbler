@@ -1,4 +1,4 @@
-Those subdirs contain various test code. It was my playground and it is pretty useless.
+Those subdirs contain various test code. It was my playground and it is pretty useless now.
 
 test01 - serwer/klient UDP (DONE) + bindowanie tylko jednego interfejsu
 test02 - serwer/klient TCP (DONE)

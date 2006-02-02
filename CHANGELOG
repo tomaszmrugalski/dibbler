@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+ 0.4.2 [2006-02-03]
+  - No bugfixes or new features
+  - Debian Free Software Guidelines (i.e. headers in source files, removed non-free files)
+  - Unncessary files removed
 
  0.4.1 [2005-08-07]
   - Windows NT/2000 added.

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.h,v 1.4 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvMsgReply.h,v 1.5 2006-02-02 23:18:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.3  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -31,6 +34,8 @@ class TSrvMsgReply;
 #include "SrvMsgRelease.h"
 #include "SrvMsgSolicit.h"
 #include "SrvMsgInfRequest.h"
+
+#include "SrvOptClientIdentifier.h"
 
 class TSrvMsgReply : public TSrvMsg
 {

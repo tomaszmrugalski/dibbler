@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgRelease.cpp,v 1.4 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvMsgRelease.cpp,v 1.5 2006-02-02 23:18:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.3  2004/06/20 21:00:45  thomson
  * Various fixes.
  *
@@ -18,7 +21,7 @@
  *
  */
 #include "SrvMsgRelease.h"
-#include "OptServerIdentifier.h"
+#include "SrvOptServerIdentifier.h"
 #include "AddrClient.h"
 
 TSrvMsgRelease::TSrvMsgRelease(
@@ -54,7 +57,7 @@ bool TSrvMsgRelease::check()
     //-	the	message	does not include a Client Identifier option.
     if(!getOption(OPTION_CLIENTID))
         return false;
-    SmartPtr<TOptServerIdentifier> opt;
+    SmartPtr<TSrvOptServerIdentifier> opt;
     //-	the	message	does not include a Server Identifier option.
     if (!(opt=(Ptr*)getOption(OPTION_SERVERID)))
         return false;

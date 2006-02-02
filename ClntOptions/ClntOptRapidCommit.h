@@ -1,3 +1,12 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ */
+
 #ifndef CLNTRAPIDCOMMIT_H_HEADER_INCLUDED_C112660F
 #define CLNTRAPIDCOMMIT_H_HEADER_INCLUDED_C112660F
 

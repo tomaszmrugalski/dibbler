@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.3 2005-07-21 21:40:19 thomson Exp $
+ * $Id: daemon.cpp,v 1.4 2006-02-02 23:18:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/07/21 21:40:19  thomson
+ * PID checking process is improved.
+ *
  * Revision 1.2  2005/02/03 22:42:25  thomson
  * *** empty log message ***
  *
@@ -175,7 +178,7 @@ int uninstall() {
 
 /** things to do just after started */
 void logStart(char * note, char * logname, char * logfile) {
-    std::cout << DIBBLER_COPYRIGHT1 << note << std::endl;
+    std::cout << DIBBLER_COPYRIGHT1 << " " << note << std::endl;
     std::cout << DIBBLER_COPYRIGHT2 << std::endl;
     std::cout << DIBBLER_COPYRIGHT3 << std::endl;
     std::cout << DIBBLER_COPYRIGHT4 << std::endl;

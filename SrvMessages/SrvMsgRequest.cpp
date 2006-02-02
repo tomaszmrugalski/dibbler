@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgRequest.cpp,v 1.3 2005-01-08 16:52:04 thomson Exp $
+ * $Id: SrvMsgRequest.cpp,v 1.4 2006-02-02 23:18:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.2  2004/06/20 17:25:07  thomson
  * getName() method implemented, clean up
  *
@@ -56,9 +59,9 @@ void TSrvMsgRequest::doDuties()
 
 bool TSrvMsgRequest::check()
 {
-    SmartPtr<TOptServerIdentifier> option;
+    SmartPtr<TSrvOptServerIdentifier> option;
     int clntCnt=0, srvCnt =0;
-    SmartPtr<TOptServerIdentifier> srvDUID;
+    SmartPtr<TSrvOptServerIdentifier> srvDUID;
     Options.first();
     while (option = (Ptr*) Options.get() ) 
     {

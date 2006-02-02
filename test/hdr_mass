@@ -1,0 +1,9 @@
+#!/usr/bin/perl -w
+
+open(FILE, $ARGV[0]) or die "Unable to open '$ARGV[0]' file.\n";
+
+while ($list = <FILE>) {
+    `./hdr_ins $list`;
+}	
+
+close(FILE);

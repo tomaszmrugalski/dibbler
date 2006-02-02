@@ -1,0 +1,27 @@
+#!/usr/bin/perl -w
+
+$name = $ARGV[0];
+
+print "FILE: $name\n";
+
+open(FILE, $name) or die "Unable to open $name file.";
+@tmptable = <FILE>;
+$data = join "", @tmptable;
+close(FILE);
+
+$hdr='/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 or later licence
+ */
+';
+
+unlink("$name") or die "Unable to delete $name file.";
+
+open(RESULT, ">$name") or die "Unable to create $name file\n";
+print RESULT "$hdr\n$data";
+close(RESULT);
+

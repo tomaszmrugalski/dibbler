@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.8 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.9 2006-02-02 23:18:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/01/08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.7  2004/11/30 00:56:31  thomson
  * Inf-Request in now not retransmited indefinetly.
  *
@@ -38,6 +41,7 @@
 #include "ClntIfaceMgr.h"
 #include "ClntMsgAdvertise.h"
 #include "ClntOptServerIdentifier.h"
+#include "ClntOptClientIdentifier.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptElapsed.h"
 #include "Logger.h"
