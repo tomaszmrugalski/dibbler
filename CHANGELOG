@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
- 0.4.2 [2006-02-03]
+ 0.4.2 [2006-02-03] (DSFG cleanup release)
   - No bugfixes or new features
   - Debian Free Software Guidelines (i.e. headers in source files, removed non-free files)
   - Unncessary files removed
