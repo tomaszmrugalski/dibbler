@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.13 2005-08-07 17:54:52 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.14 2006-02-02 23:36:56 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.13  2005/08/07 17:54:52  thomson
+%% Minor changes related to 0.4.1 release.
+%%
 %% Revision 1.12  2005/07/31 15:56:12  thomson
 %% WinNT/2000 port update, various small changes, typos etc.
 %%
@@ -48,17 +51,19 @@ are used\footnote{Compilation is not required, binary version can be
 Starting with 0.4.1, there will are 3 different packages: client,
 server and relay. For some architectures there will be also
 documentation package provided. During writing this documentation,
-Dibbler is already present in the PLD Linux Distribution 2.0 in the
-test section. There are efforts under way to include 
-Dibbler in Debian GNU/Linux distribution as well as in Gentoo
-GNU/Linux distribution.
+Dibbler is already present in:
+\begin{itemize}
+\item the PLD Linux Distribution 2.0 (in the test section)
+\item Gentoo GNU/Linux
+\end{itemize}
+There are efforts under way to include Dibbler in Debian GNU/Linux distribution.
 
 Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an
 archive, which suits your needs. Currently there are provided RPM packages
 (which can be used in RedHat, Fedora Core, Mandrake or PLD
 distribution), DEB packages (suitable for Debian or Knoppix) and
 ebuild (for Gentoo users). To install rpm package, run $rpm -i
-archive.rpm$ command. For example, to install dibbler 0.4.0, issue following command:
+archive.rpm$ command. For example, to install dibbler 0.4.1, issue following command:
 \begin{verbatim}
 rpm -i dibbler-0.4.1-1.i386.rpm 
 \end{verbatim}
@@ -71,11 +76,10 @@ server, issue following command:
 dpkg -i dibbler-server_0.4.1-1_i386.rpm 
 \end{verbatim}
 
-To install Dibbler in Gentoo systems, download ebuild script and issue
-command:
+To install Dibbler in Gentoo systems, just type:
 
 \begin{verbatim}
-emerge dibbler-0.4.1.ebuild
+emerge dibbler
 \end{verbatim}
 
 If you would like to install Dibbler from sources, download tar.gz
