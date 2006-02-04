@@ -253,7 +253,7 @@ orig:
 	@echo "[RM     ] debian/"
 	rm -rf debian/
 	@echo "[RM     ] */CVS"
-	find . -type d -name CVS -exec rm -rf {} \;
+	- find -type d -name CVS -exec rm -rf {} \; &>/dev/null
 	for i in doc/rfc doc/rfc-drafts Port-win32 Port-winnt2k ; do                                      \
 	echo  "[RM     ] $$i" ;                                                                           \
 	rm -f tmp;                                                                                        \

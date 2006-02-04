@@ -54,6 +54,9 @@ version.tex:
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
-	@rm -f *.aux *.idx *.log *.toc *.out *~ *.pdf *.ps *.dvi *.tmp version.tex
+	@rm -f *.aux *.idx *.log *.toc *.out *~ *.ps *.dvi *.tmp version.tex
+
+clobber: clean
+	@rm -f *.pdf
 
 .PHONY: version.tex
