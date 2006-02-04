@@ -249,15 +249,22 @@ release-src: VERSION-src
 	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
 	rm ../dibbler-version
 
-orig:   release-src
-	@echo "[RENAME ] ../dibbler_$(VERSION).orig.tar.gz"
-	mv dibbler-$(VERSION)-src.tar.gz ../dibbler_$(VERSION).orig.tar.gz
-	@echo "[RM     ] debian/CVS"
-	rm -rf debian/CVS
-	@echo "[RM     ] debian/DEBIAN/CVS"
-	rm -rf debian/DEBIAN/CVS
-	@echo "[RM     ] debian/patches/CVS"
-	rm -rf debian/patches/CVS
+orig:
+	@echo "[RM     ] debian/"
+	rm -rf debian/
+	@echo "[RM     ] */CVS"
+	find . -type d -name CVS -exec rm -rf {} \;
+	for i in doc/rfc doc/rfc-drafts Port-win32 Port-winnt2k ; do                                      \
+	echo  "[RM     ] $$i" ;                                                                           \
+	rm -f tmp;                                                                                        \
+	ls -l $$i > tmp ;                                                                                 \
+	rm -f $$i/* ;                                                                                     \
+	echo "Following Win32-related files were removed from the Debian orig package" >  $$i/INFO-DSFG ; \
+	echo "due to possible violation of the Debian Free Software Guidelines:" >> $$i/INFO-DSFG ;       \
+	echo "" >> $$i/INFO-DSFG ;                                                                        \
+	cat tmp >> $$i/INFO-DSFG ;                                                                        \
+	rm -f tmp;                                                                                        \
+	done
 
 deb:
 	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
@@ -279,48 +286,9 @@ release-gentoo: VERSION-linux
 
 release-all: release-src release-linux release-doc release-deb release-rpm release-win32
 
-release-deb: VERSION-linux server client doc
-	@echo "[RM     ] dibbler_$(VERSION)_i386.deb"
-	rm -f dibbler_$(VERSION)_i386.deb
-	@echo "[RM     ] $(PORTDIR)/debian/root"
-	rm -rf $(PORTDIR)/debian/root
-	@echo "[MKDIR  ] $(PORTDIR)/debian/root"
-	$(MKDIR) $(PORTDIR)/debian/root/usr/sbin
-	$(MKDIR) $(PORTDIR)/debian/root/usr/share/doc/dibbler
-	$(MKDIR) $(PORTDIR)/debian/root/usr/share/man/man8
-	$(MKDIR) $(PORTDIR)/debian/root/var/lib/dibbler
-	$(MKDIR) $(PORTDIR)/debian/root/DEBIAN
-	@echo "[CP     ] $(PORTDIR)/debian/root"
-	$(CP) $(PORTDIR)/debian/dibbler-$(VERSION).control $(PORTDIR)/debian/root/DEBIAN/control
-	$(CP) $(SERVERBIN) $(PORTDIR)/debian/root/usr/sbin
-	$(CP) $(CLIENTBIN) $(PORTDIR)/debian/root/usr/sbin
-	$(CP) CHANGELOG $(PORTDIR)/debian/root/usr/share/doc/dibbler/changelog
-	$(CP) RELNOTES $(PORTDIR)/debian/root/usr/share/doc/dibbler
-	$(CP) VERSION $(PORTDIR)/debian/root/usr/share/doc/dibbler
-	$(CP) $(PORTDIR)/debian//copyright $(PORTDIR)/debian/root/usr/share/doc/dibbler
-	$(CP) doc/dibbler-user.pdf $(PORTDIR)/debian/root/usr/share/doc/dibbler
-	$(CP) doc/man/dibbler-server.8 $(PORTDIR)/debian/root/usr/share/man/man8
-	$(CP) doc/man/dibbler-client.8 $(PORTDIR)/debian/root/usr/share/man/man8
-	$(CP) *.conf $(PORTDIR)/debian/root/var/lib/dibbler
-	@echo "[GZIP   ] $(PORTDIR)/debian/root"
-	gzip -9 $(PORTDIR)/debian/root/usr/share/doc/dibbler/changelog
-	gzip -9 $(PORTDIR)/debian/root/usr/share/man/man8/dibbler-server.8
-	gzip -9 $(PORTDIR)/debian/root/usr/share/man/man8/dibbler-client.8
-	@echo "[STRIP  ] $(PORTDIR)/debian/root"
-	strip --remove-section=.comment $(PORTDIR)/debian/root/usr/sbin/dibbler-server
-	strip --remove-section=.comment $(PORTDIR)/debian/root/usr/sbin/dibbler-client
-	@echo "[CHOWN  ] $(PORTDIR)/debian/root"
-	chown -R root:root $(PORTDIR)/debian/root/usr
-	chown -R root:root $(PORTDIR)/debian/root/var
-	@echo "[CHMOD  ] $(PORTDIR)/debian/root"
-	find $(PORTDIR)/debian/root/ -type d -exec chmod 755 {} \;
-	find $(PORTDIR)/debian/root/ -type f -exec chmod 644 {} \;
-	chmod 755 $(PORTDIR)/debian/root/usr/sbin/*
-	@echo "[DPKG   ] dibbler_$(VERSION)_i386.deb"
-	cd $(PORTDIR)/debian; dpkg-deb --build root 1>dpkg-deb.log
-	mv $(PORTDIR)/debian/root.deb dibbler_$(VERSION)_i386.deb
-	@echo "[LINTIAN] dibbler_$(VERSION)_i386.deb"
-	lintian -i dibbler_$(VERSION)_i386.deb &> $(PORTDIR)/debian/dibbler_$(VERSION)_i386.log
+release-deb: VERSION-linux clean
+	cd debian
+	dpkg-buildpackage -rfakeroot
 
 release-rpm: VERSION-linux release-src
 	$(MKDIR) $(PORTDIR)/redhat/BUILD

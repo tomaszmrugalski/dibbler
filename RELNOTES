@@ -1,11 +1,12 @@
 
-  Dibbler 0.4.1 release notes [2005-06-07]
+  Dibbler 0.4.2 release notes [2005-02-04]
  ------------------------------------------
 
- This is a bug fix release. It contains heavy improvements in relay
- support. Previous Windows version in some rare cases died quietly
- during interface detection. That issue is fixed now. Command line
- usage for Windows systems is also simplified.
+ This is a legal cleanup release. No bug fixes or new features were added.
+ The sole purpose of this release is to meet Debian Free Software Guidelines,
+ so Dibbler can be accepted as part of the Debian project.
+
+ If you are using 0.4.1, there is no need to upgrade.
 
  There are 3 different ports available: 
  - Linux
