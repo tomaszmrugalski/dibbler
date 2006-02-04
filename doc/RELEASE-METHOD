@@ -29,8 +29,6 @@ A. First release for this upstrem
   2.  cd dibbler
   3.  move debian directory away
   4.  make orig
-  4a. make release-src
-  4b. mv dibbler-X.Y.Z-src.tar.gz dibbler_X.Y.Z.orig.tar.gz
 B. Next release for this upstream
   1. cvs co dibbler
   2. cd dibbler
