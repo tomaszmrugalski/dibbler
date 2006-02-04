@@ -51,7 +51,6 @@ build-arch-stamp: configure-stamp
 
 build-indep: build-indep-stamp
 build-indep-stamp: configure-stamp 
-	$(MAKE) doc
 	touch build-indep-stamp
 
 clean: unpatch

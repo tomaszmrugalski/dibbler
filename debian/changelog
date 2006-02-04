@@ -1,3 +1,10 @@
+dibbler (0.4.2-1) unstable; urgency=low
+
+  * New upstream release meeting Debian Free Software Guidelines
+  * Improved build system (LaTeX no longer required)
+
+ -- Tomasz Mrugalski <thomson@klub.com.pl>  Sat,  4 Feb 2006 12:21:49 +0100
+
 dibbler (0.4.1-8) unstable; urgency=low
 
   * po-debconf support added

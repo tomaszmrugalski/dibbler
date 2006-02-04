@@ -25,22 +25,22 @@ client: $(CLIENTBIN)
 $(CLIENTBIN): includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
-	-L$(MISC)	  -lMisc \
-	-L$(ADDRMGR)      -lAddrMgr \
-	-L$(CLNTADDRMGR)  -lClntAddrMgr \
-	-L$(LOWLEVEL)    \
-	-L$(CLNTOPTIONS)  -lClntOptions \
-	-L$(OPTIONS)      -lOptions \
+	-L$(MISC)	  -lMisc         \
+	-L$(ADDRMGR)      -lAddrMgr      \
+	-L$(CLNTADDRMGR)  -lClntAddrMgr  \
+	-L$(LOWLEVEL)                    \
+	-L$(CLNTOPTIONS)  -lClntOptions  \
+	-L$(OPTIONS)      -lOptions      \
 	-L$(CLNTTRANSMGR) -lClntTransMgr \
-	-L$(CLNTCFGMGR)   -lClntCfgMgr \
-	-L$(CFGMGR)       -lCfgMgr \
+	-L$(CLNTCFGMGR)   -lClntCfgMgr   \
+	-L$(CFGMGR)       -lCfgMgr       \
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
-	-L$(IFACEMGR)     -lIfaceMgr \
-	-L$(CLNTMESSAGES) -lClntMsg \
-	                  -lClntAddrMgr \
-	                  -lAddrMgr \
-	-L$(MISC)         -lMisc \
-	-L$(MESSAGES)     -lMsg \
+	-L$(IFACEMGR)     -lIfaceMgr     \
+	-L$(CLNTMESSAGES) -lClntMsg      \
+	                  -lClntAddrMgr  \
+	                  -lAddrMgr      \
+	-L$(MISC)         -lMisc         \
+	-L$(MESSAGES)     -lMsg          \
 	-lClntOptions -lOptions -lLowLevel
 
 server: $(SERVERBIN)
@@ -48,27 +48,27 @@ server: $(SERVERBIN)
 $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
-	-L$(SRVADDRMGR)   -lSrvAddrMgr \
-	-L$(ADDRMGR)      -lAddrMgr \
-	-L$(LOWLEVEL)    \
-	-L$(SRVOPTIONS)  -lSrvOptions \
-	-L$(SRVTRANSMGR) -lSrvTransMgr \
-	-L$(SRVCFGMGR)   -lSrvCfgMgr \
-	-L$(CFGMGR)      -lCfgMgr \
-	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
-	-L$(IFACEMGR)     -lIfaceMgr \
-	-L$(MISC)        -lMisc \
+	-L$(SRVADDRMGR)   -lSrvAddrMgr     \
+	-L$(ADDRMGR)      -lAddrMgr        \
+	-L$(LOWLEVEL)                      \
+	-L$(SRVOPTIONS)  -lSrvOptions      \
+	-L$(SRVTRANSMGR) -lSrvTransMgr     \
+	-L$(SRVCFGMGR)   -lSrvCfgMgr       \
+	-L$(CFGMGR)      -lCfgMgr          \
+	-L$(SRVIFACEMGR) -lSrvIfaceMgr     \
+	-L$(IFACEMGR)     -lIfaceMgr       \
+	-L$(MISC)        -lMisc            \
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
-	-L$(SRVADDRMGR)  -lSrvAddrMgr \
-	                 -lAddrMgr \
-	-L$(SRVOPTIONS)  -lSrvOptions \
-	-L$(SRVTRANSMGR) -lSrvTransMgr \
-	-L$(SRVCFGMGR)   -lSrvCfgMgr \
-	-L$(SRVIFACEMGR) -lSrvIfaceMgr \
-	-L$(SRVMESSAGES) -lSrvMsg \
-	-L$(MESSAGES)    -lMsg \
-	-L$(MISC)        -lMisc \
-	-L$(OPTIONS)     -lOptions \
+	-L$(SRVADDRMGR)  -lSrvAddrMgr      \
+	                 -lAddrMgr         \
+	-L$(SRVOPTIONS)  -lSrvOptions      \
+	-L$(SRVTRANSMGR) -lSrvTransMgr     \
+	-L$(SRVCFGMGR)   -lSrvCfgMgr       \
+	-L$(SRVIFACEMGR) -lSrvIfaceMgr     \
+	-L$(SRVMESSAGES) -lSrvMsg          \
+	-L$(MESSAGES)    -lMsg             \
+	-L$(MISC)        -lMisc            \
+	-L$(OPTIONS)     -lOptions         \
 	-L$(LOWLEVEL)    -lLowLevel
 
 relay: $(RELAYBIN)
@@ -76,18 +76,18 @@ relay: $(RELAYBIN)
 $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
-	-L$(RELTRANSMGR) -lRelTransMgr \
-	-L$(RELCFGMGR)   -lRelCfgMgr \
-	-L$(RELIFACEMGR) -lRelIfaceMgr \
-	-L$(RELOPTIONS)  -lRelOptions \
-	-L$(RELMESSAGES) -lRelMsg \
-	-L$(LOWLEVEL)    -lLowLevel \
-	-L$(CFGMGR)      -lCfgMgr \
-	-L$(IFACEMGR)     -lIfaceMgr \
-	-L$(MISC)        -lMisc \
-	-L$(MESSAGES)    -lMsg \
-	-L$(MISC)        -lMisc \
-	-L$(OPTIONS)     -lOptions \
+	-L$(RELTRANSMGR) -lRelTransMgr  \
+	-L$(RELCFGMGR)   -lRelCfgMgr    \
+	-L$(RELIFACEMGR) -lRelIfaceMgr  \
+	-L$(RELOPTIONS)  -lRelOptions   \
+	-L$(RELMESSAGES) -lRelMsg       \
+	-L$(LOWLEVEL)    -lLowLevel     \
+	-L$(CFGMGR)      -lCfgMgr       \
+	-L$(IFACEMGR)     -lIfaceMgr    \
+	-L$(MISC)        -lMisc         \
+	-L$(MESSAGES)    -lMsg          \
+	-L$(MISC)        -lMisc         \
+	-L$(OPTIONS)     -lOptions      \
 	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions
 
 objs:	includes
@@ -259,7 +259,7 @@ orig:
 	rm -f tmp;                                                                                        \
 	ls -l $$i > tmp ;                                                                                 \
 	rm -f $$i/* ;                                                                                     \
-	echo "Following Win32-related files were removed from the Debian orig package" >  $$i/INFO-DSFG ; \
+	echo "Following $$i files were removed from the Debian orig package" >  $$i/INFO-DSFG ;           \
 	echo "due to possible violation of the Debian Free Software Guidelines:" >> $$i/INFO-DSFG ;       \
 	echo "" >> $$i/INFO-DSFG ;                                                                        \
 	cat tmp >> $$i/INFO-DSFG ;                                                                        \
