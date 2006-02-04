@@ -265,7 +265,9 @@ orig:
 	cat tmp >> $$i/INFO-DSFG ;                                                                        \
 	rm -f tmp;                                                                                        \
 	done
-
+	$(MAKE) release-src
+	echo "[MV     ] dibbler_$(VERSION).orig.tar.gz"
+	mv dibbler-$(VERSION)-src.tar.gz dibbler_$(VERSION).orig.tar.gz
 deb:
 	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
 	echo " Make sure that there is a file ../dibbler_$(VERSION).orig.tar.gz"; false; fi
