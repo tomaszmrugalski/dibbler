@@ -25,10 +25,12 @@ Linux:
 
 DEB:
 A. First release for this upstrem
-  1. cvs co dibbler
-  2. cd dibbler
-  3. move debian directory away
-  4. make orig
+  1.  cvs co dibbler
+  2.  cd dibbler
+  3.  move debian directory away
+  4.  make orig
+  4a. make release-src
+  4b. mv dibbler-X.Y.Z-src.tar.gz dibbler_X.Y.Z.orig.tar.gz
 B. Next release for this upstream
   1. cvs co dibbler
   2. cd dibbler
@@ -36,7 +38,7 @@ B. Next release for this upstream
   4. download orig.tar.gz
 5. cd ..
 6. rm -rf dibbler
-7. tar zxvf dibbler_X.Y.Z.orig.tar.gz8
+7. tar zxvf dibbler_X.Y.Z.orig.tar.gz
 8. cd dibbler-X.Y.Z 
 9. Copy debian/ directory
 10. Delete CVS/ from debian/ directory
