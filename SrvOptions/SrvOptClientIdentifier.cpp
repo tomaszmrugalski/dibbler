@@ -16,12 +16,12 @@
 
 TSrvOptClientIdentifier::TSrvOptClientIdentifier(
     SmartPtr<TDUID> duid, TMsg* parent)
-    :TOptDUID(duid, parent)
+    :TOptDUID(OPTION_CLIENTID, duid, parent)
 {
 }
 
 TSrvOptClientIdentifier::TSrvOptClientIdentifier(char* buf, int bufsize, TMsg* parent)
-    :TOptDUID(buf,bufsize, parent)
+    :TOptDUID(OPTION_CLIENTID, buf,bufsize, parent)
 {
 }
 

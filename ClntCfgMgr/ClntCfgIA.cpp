@@ -13,6 +13,13 @@
 #include "Logger.h"
 using namespace std;
 
+TClntCfgIA::TClntCfgIA() {
+    static unsigned long nextIAID=1;
+    this->IAID = nextIAID++;
+    this->T1 = CLIENT_DEFAULT_T1;
+    this->T2 = CLIENT_DEFAULT_T2;
+}
+
 long TClntCfgIA::countAddr()
 {
     return ClntCfgAddrLst.count();
@@ -56,13 +63,6 @@ SmartPtr<TClntCfgAddr> TClntCfgIA::getAddr() {
     return ClntCfgAddrLst.get();
 }
 
-
-TClntCfgIA::TClntCfgIA(long iAID) {
-    IAID=iAID;
-    T1=CLIENT_DEFAULT_T1;
-    T2=CLIENT_DEFAULT_T2;
-}
-
 TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)
     :ClntCfgAddrLst(right->ClntCfgAddrLst)
 {
@@ -82,12 +82,12 @@ ostream& operator<<(ostream& out,TClntCfgIA& ia)
 	<< ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
 
     SmartPtr<TClntCfgAddr> addr;
-
-	ia.ClntCfgAddrLst.first();
+    
+    ia.ClntCfgAddrLst.first();
     while(addr=ia.ClntCfgAddrLst.get())
     {	
         out << "          " << *addr;
     }
-	out << "        </ia>" << std::endl;
+    out << "        </ia>" << std::endl;
     return out;
 }

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.34 2005-08-03 23:17:11 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.34.2.1 2006-02-05 23:38:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2005/08/03 23:17:11  thomson
+ * Minor changes fixed.
+ *
  * Revision 1.33  2005/07/21 23:29:32  thomson
  * Logging cleanup.
  *
@@ -204,30 +207,30 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	// user didn't specified any interfaces in config file, so
 	// we'll try to configure each interface we could find
 	Log(Warning) << "Config file does not contain any interface definitions."
-			<< LogEnd;
+		     << LogEnd;
 	
 	IfaceMgr->firstIface();
 	while ( ifaceIface = IfaceMgr->getIface() ) {
 	    // for each interface present in the system...
 	    if (!ifaceIface->flagUp()) {
 		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			       << " is down, ignoring." << LogEnd;
+			    << " is down, ignoring." << LogEnd;
 		continue;
 	    }
 	    if (!ifaceIface->flagRunning()) {
 		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			       << " has flag RUNNING not set, ignoring." << LogEnd;
+			    << " has flag RUNNING not set, ignoring." << LogEnd;
 		continue;
 	    }
 	    if (!ifaceIface->flagMulticast()) {
 		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			       << " is not multicast capable, ignoring." << LogEnd;
+                            << " is not multicast capable, ignoring." << LogEnd;
 		continue;
 	    }
 	    if ( !(ifaceIface->getMacLen() > 5) ) {
 		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			       << " has MAC address length " << ifaceIface->getMacLen() 
-			       << " (6 or more required), ignoring." << LogEnd;
+                            << " has MAC address length " << ifaceIface->getMacLen() 
+                            << " (6 or more required), ignoring." << LogEnd;
 		continue;
 	    }
 
@@ -236,10 +239,9 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    addr->setOptions(parser->ParserOptStack.getLast());
 
 	    // ... is stored in one IA...
-	    SmartPtr<TClntCfgIA> ia(new TClntCfgIA(parser->ParserOptStack.getLast()->getIncedIAIDCnt()));
+	    SmartPtr<TClntCfgIA> ia = new TClntCfgIA();
 	    ia->setOptions(parser->ParserOptStack.getLast());
 	    ia->addAddr(addr);
-
 	    
 	    // ... which is stored in one group...
 	    SmartPtr<TClntCfgGroup> group(new TClntCfgGroup());
@@ -257,7 +259,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    this->addIface(cfgIface);
 
 	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			 << " has been added." << LogEnd;
+                      << " has been added." << LogEnd;
 	}
     }
     return true;

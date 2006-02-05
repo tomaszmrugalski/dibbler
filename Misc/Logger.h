@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.11 2005-02-01 00:57:36 thomson Exp $
+ * $Id: Logger.h,v 1.11.2.1 2006-02-05 23:38:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.10  2004/12/08 00:17:59  thomson
  * StatusCodeToString function added.
  *
@@ -86,5 +89,6 @@ namespace logger {
 
 std::string StateToString(EState state);
 std::string StatusCodeToString(int status);
+std::string MsgTypeToString(int msgType);
 
 #endif

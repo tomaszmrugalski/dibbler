@@ -11,6 +11,7 @@
 #include "SrvParsGlobalOpt.h"
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
+#include "SrvCfgTA.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
 #include "DUID.h"
@@ -28,6 +29,7 @@
 List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
 List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */           \
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
+List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
 List(TStationRange) PresentRangeLst;                                                 \
@@ -39,8 +41,10 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                     \
-SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                       \
+void StartTAClassDeclaration();                                                      \
+bool EndTAClassDeclaration();                                                        \
+SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
+SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 virtual ~SrvParser();
 
 // constructor
@@ -62,7 +66,7 @@ virtual ~SrvParser();
     char addrval[16];
 }
 
-%token IFACE_, RELAY_, IFACE_ID_, CLASS_, 
+%token IFACE_, RELAY_, IFACE_ID_, CLASS_, TACLASS_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, LIFETIME_
@@ -99,9 +103,7 @@ GlobalDeclarationList
 ;
 
 InterfaceDeclaration
-/////////////////////////////////////////////////////////////////////////////
-// iface 'eth0' { T1 10 T2 20 ... }
-/////////////////////////////////////////////////////////////////////////////
+/* iface eth0 { ... } */
 :IFACE_ STRING_ '{' 
 {
     CheckIsIface(string($2)); //If no - everything is ok
@@ -115,9 +117,7 @@ InterfaceDeclarationsList '}'
     delete [] $2;
     EndIfaceDeclaration();
 }
-/////////////////////////////////////////////////////////////////////////////
-//  iface 5 { T1 10 T2 20 ... }
-/////////////////////////////////////////////////////////////////////////////
+/* iface 5 { ... } */
 |IFACE_ Number '{' 
 {
     CheckIsIface($2);   //If no - everything is ok
@@ -133,14 +133,13 @@ InterfaceDeclarationsList
 : InterfaceOptionDeclaration
 | InterfaceDeclarationsList InterfaceOptionDeclaration
 | ClassDeclaration
+| TAClassDeclaration
+| InterfaceDeclarationsList TAClassDeclaration
 | InterfaceDeclarationsList ClassDeclaration
 ;
 
-
+/* class { ... } */
 ClassDeclaration:
-/////////////////////////////////////////////////////////////////////////////
-// CLASS { T1 10 T2 20 ... }
-/////////////////////////////////////////////////////////////////////////////
 CLASS_ '{'
 { 
     StartClassDeclaration();
@@ -155,6 +154,33 @@ ClassOptionDeclarationsList
 : ClassOptionDeclaration
 | ClassOptionDeclarationsList ClassOptionDeclaration
 ;
+
+/* ta-class { ... } */
+TAClassDeclaration
+:TACLASS_ '{'
+{
+    Log(Debug) << "### Before ta-class parse." << LogEnd;
+    StartTAClassDeclaration();
+} TAClassOptionsList '}'
+{
+    EndTAClassDeclaration();
+    Log(Debug) << "### After ta-class parse." << LogEnd;
+}
+;
+
+TAClassOptionsList
+: TAClassOption
+| TAClassOptionsList TAClassOption
+
+TAClassOption
+: PreferredTimeOption
+| ValidTimeOption
+| PoolOption
+| ClassMaxLeaseOption
+| RejectClientsOption
+| AcceptOnlyOption
+;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
@@ -673,8 +699,13 @@ LifetimeOption
 /////////////////////////////////////////////////////////////////////////////
 // programs section
 
-//method check whether interface with id=ifaceNr has been 
-//already declared
+/** 
+ * method check whether interface with id=ifaceNr has been already declared
+ * 
+ * @param ifaceNr 
+ * 
+ * @return true if interface was not declared, otherwise calls YYABORT macro.
+ */
 bool SrvParser::CheckIsIface(int ifaceNr)
 {
   SmartPtr<TSrvCfgIface> ptr;
@@ -704,24 +735,50 @@ bool SrvParser::CheckIsIface(string ifaceName)
   return true;
 }
 
-//method creates new scope appropriately for interface options and declarations
-//clears all lists except the list of interfaces and adds new group
+/** 
+ * method creates new option for just started interface scope
+ * clears all lists except the list of interfaces and adds new group
+ * 
+ */
 void SrvParser::StartIfaceDeclaration()
 {
-    //Interface scope, so parameters associated with global scope are pushed on stack
+    // create new option (representing this interface) on the parser stack
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
 }
 
+/** 
+ * this method is called after inteface declaration has ended. It creates
+ * new interface representation used in SrvCfgMgr. Also removes corresponding
+ * element from the parser stack
+ * 
+ * @return true if everything is ok, otherwise calls YYABORT macro.
+ */
 bool SrvParser::EndIfaceDeclaration()
 {
+    // get this interface object
+    SmartPtr<TSrvCfgIface> iface = SrvCfgIfaceLst.getLast();
+
+    // set its options
+    SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
+
+    // copy all IA objects
     SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
     SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
-        SrvCfgIfaceLst.getLast()->addAddrClass(ptrAddrClass);
-    //setting interface options on the basis of just read information
-    SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
+        iface->addAddrClass(ptrAddrClass);
+    SrvCfgAddrClassLst.clear();
+
+    // copy all TA objects
+    SmartPtr<TSrvCfgTA> ta;
+    SrvCfgTALst.first();
+    while (ta=SrvCfgTALst.get())
+        iface->addTA(ta);
+    SrvCfgTALst.clear();
+
+    // remove last option (representing this interface) from the parser stack
     ParserOptStack.delLast();
+
     return true;
 }   
 
@@ -730,15 +787,46 @@ void SrvParser::StartClassDeclaration()
   ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
 }
 
-bool SrvParser::EndClassDeclaration()
+/** 
+ * this method is adds new object representig just parsed IA class.
+ * 
+ * @return true if everything works ok, otherwise calls YYABORT macro.
+ */bool SrvParser::EndClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool()) {
-        Log(Crit) << "No pools defined for this interface." << LogEnd;
+        Log(Crit) << "No pools defined for this class." << LogEnd;
         YYABORT;
     }
     SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
     //setting interface options on the basis of just read information
     SrvCfgAddrClassLst.getLast()->setOptions(ParserOptStack.getLast());
+    ParserOptStack.delLast();
+
+    return true;
+}
+
+
+/** 
+ * Just add 
+ * 
+ */
+void SrvParser::StartTAClassDeclaration()
+{
+  ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+}
+
+bool SrvParser::EndTAClassDeclaration()
+{
+    if (!ParserOptStack.getLast()->countPool()) {
+        Log(Crit) << "No pools defined for this ta-class." << LogEnd;
+        YYABORT;
+    }
+    // create new object representing just parsed TA and add it to the list
+    SmartPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
+    ptrTA->setOptions(ParserOptStack.getLast());
+    SrvCfgTALst.append(ptrTA);
+
+    // remove temporary parser object for this (just finished) scope
     ParserOptStack.delLast();
     return true;
 }
@@ -763,7 +851,13 @@ void SrvParser::yyerror(char *m)
 }
 
 SrvParser::~SrvParser() {
-    
+    this->ParserOptStack.clear();
+    this->SrvCfgIfaceLst.clear();
+    this->SrvCfgAddrClassLst.clear();
+    this->SrvCfgTALst.clear();
+    this->PresentAddrLst.clear();
+    this->PresentStringLst.clear();
+    this->PresentRangeLst.clear();
 }
 
 static char bitMask[] = {255, 127, 63, 31, 15, 7, 3, 1 };

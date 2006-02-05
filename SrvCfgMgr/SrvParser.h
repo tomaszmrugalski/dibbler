@@ -24,6 +24,7 @@
 #include "SrvParsGlobalOpt.h"
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
+#include "SrvCfgTA.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
 #include "DUID.h"
@@ -34,6 +35,7 @@
 List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
 List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */           \
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
+List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
 List(TStationRange) PresentRangeLst;                                                 \
@@ -45,8 +47,10 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                     \
-SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                       \
+void StartTAClassDeclaration();                                                      \
+bool EndTAClassDeclaration();                                                        \
+SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
+SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
@@ -54,7 +58,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 53 "SrvParser.y"
+#line 57 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -239,43 +243,44 @@ typedef
 #define	RELAY_	259
 #define	IFACE_ID_	260
 #define	CLASS_	261
-#define	LOGNAME_	262
-#define	LOGLEVEL_	263
-#define	LOGMODE_	264
-#define	WORKDIR_	265
-#define	OPTION_	266
-#define	DNS_SERVER_	267
-#define	DOMAIN_	268
-#define	NTP_SERVER_	269
-#define	TIME_ZONE_	270
-#define	SIP_SERVER_	271
-#define	SIP_DOMAIN_	272
-#define	NIS_SERVER_	273
-#define	NIS_DOMAIN_	274
-#define	NISP_SERVER_	275
-#define	NISP_DOMAIN_	276
-#define	FQDN_	277
-#define	LIFETIME_	278
-#define	ACCEPT_ONLY_	279
-#define	REJECT_CLIENTS_	280
-#define	POOL_	281
-#define	SHARE_	282
-#define	T1_	283
-#define	T2_	284
-#define	PREF_TIME_	285
-#define	VALID_TIME_	286
-#define	UNICAST_	287
-#define	PREFERENCE_	288
-#define	RAPID_COMMIT_	289
-#define	IFACE_MAX_LEASE_	290
-#define	CLASS_MAX_LEASE_	291
-#define	CLNT_MAX_LEASE_	292
-#define	STATELESS_	293
-#define	STRING_	294
-#define	HEXNUMBER_	295
-#define	INTNUMBER_	296
-#define	IPV6ADDR_	297
-#define	DUID_	298
+#define	TACLASS_	262
+#define	LOGNAME_	263
+#define	LOGLEVEL_	264
+#define	LOGMODE_	265
+#define	WORKDIR_	266
+#define	OPTION_	267
+#define	DNS_SERVER_	268
+#define	DOMAIN_	269
+#define	NTP_SERVER_	270
+#define	TIME_ZONE_	271
+#define	SIP_SERVER_	272
+#define	SIP_DOMAIN_	273
+#define	NIS_SERVER_	274
+#define	NIS_DOMAIN_	275
+#define	NISP_SERVER_	276
+#define	NISP_DOMAIN_	277
+#define	FQDN_	278
+#define	LIFETIME_	279
+#define	ACCEPT_ONLY_	280
+#define	REJECT_CLIENTS_	281
+#define	POOL_	282
+#define	SHARE_	283
+#define	T1_	284
+#define	T2_	285
+#define	PREF_TIME_	286
+#define	VALID_TIME_	287
+#define	UNICAST_	288
+#define	PREFERENCE_	289
+#define	RAPID_COMMIT_	290
+#define	IFACE_MAX_LEASE_	291
+#define	CLASS_MAX_LEASE_	292
+#define	CLNT_MAX_LEASE_	293
+#define	STATELESS_	294
+#define	STRING_	295
+#define	HEXNUMBER_	296
+#define	INTNUMBER_	297
+#define	IPV6ADDR_	298
+#define	DUID_	299
 
 
 #line 169 "../bison++/bison.h"
@@ -328,6 +333,7 @@ static const int IFACE_;
 static const int RELAY_;
 static const int IFACE_ID_;
 static const int CLASS_;
+static const int TACLASS_;
 static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
@@ -377,43 +383,44 @@ static const int DUID_;
 	,RELAY_=259
 	,IFACE_ID_=260
 	,CLASS_=261
-	,LOGNAME_=262
-	,LOGLEVEL_=263
-	,LOGMODE_=264
-	,WORKDIR_=265
-	,OPTION_=266
-	,DNS_SERVER_=267
-	,DOMAIN_=268
-	,NTP_SERVER_=269
-	,TIME_ZONE_=270
-	,SIP_SERVER_=271
-	,SIP_DOMAIN_=272
-	,NIS_SERVER_=273
-	,NIS_DOMAIN_=274
-	,NISP_SERVER_=275
-	,NISP_DOMAIN_=276
-	,FQDN_=277
-	,LIFETIME_=278
-	,ACCEPT_ONLY_=279
-	,REJECT_CLIENTS_=280
-	,POOL_=281
-	,SHARE_=282
-	,T1_=283
-	,T2_=284
-	,PREF_TIME_=285
-	,VALID_TIME_=286
-	,UNICAST_=287
-	,PREFERENCE_=288
-	,RAPID_COMMIT_=289
-	,IFACE_MAX_LEASE_=290
-	,CLASS_MAX_LEASE_=291
-	,CLNT_MAX_LEASE_=292
-	,STATELESS_=293
-	,STRING_=294
-	,HEXNUMBER_=295
-	,INTNUMBER_=296
-	,IPV6ADDR_=297
-	,DUID_=298
+	,TACLASS_=262
+	,LOGNAME_=263
+	,LOGLEVEL_=264
+	,LOGMODE_=265
+	,WORKDIR_=266
+	,OPTION_=267
+	,DNS_SERVER_=268
+	,DOMAIN_=269
+	,NTP_SERVER_=270
+	,TIME_ZONE_=271
+	,SIP_SERVER_=272
+	,SIP_DOMAIN_=273
+	,NIS_SERVER_=274
+	,NIS_DOMAIN_=275
+	,NISP_SERVER_=276
+	,NISP_DOMAIN_=277
+	,FQDN_=278
+	,LIFETIME_=279
+	,ACCEPT_ONLY_=280
+	,REJECT_CLIENTS_=281
+	,POOL_=282
+	,SHARE_=283
+	,T1_=284
+	,T2_=285
+	,PREF_TIME_=286
+	,VALID_TIME_=287
+	,UNICAST_=288
+	,PREFERENCE_=289
+	,RAPID_COMMIT_=290
+	,IFACE_MAX_LEASE_=291
+	,CLASS_MAX_LEASE_=292
+	,CLNT_MAX_LEASE_=293
+	,STATELESS_=294
+	,STRING_=295
+	,HEXNUMBER_=296
+	,INTNUMBER_=297
+	,IPV6ADDR_=298
+	,DUID_=299
 
 
 #line 215 "../bison++/bison.h"

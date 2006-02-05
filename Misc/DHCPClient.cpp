@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.20 2005-02-01 00:57:36 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.20.2.1 2006-02-05 23:38:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.19  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -122,8 +125,11 @@ void TDHCPClient::run()
 	TransMgr->doDuties();
 	
 	unsigned int timeout = TransMgr->getTimeout();
+
+#if 1
 	if (timeout == 0)
 	    timeout = 1;
+#endif
 	
         Log(Notice) << "Sleeping for " << timeout << " second(s)." << LogEnd;
         SmartPtr<TClntMsg> msg=IfaceMgr->select(timeout);

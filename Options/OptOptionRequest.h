@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: OptOptionRequest.h,v 1.3 2006-02-02 23:17:17 thomson Exp $
+ * $Id: OptOptionRequest.h,v 1.3.2.1 2006-02-05 23:38:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006/02/02 23:17:17  thomson
+ * 0.4.2 release.
+ *
  * Revision 1.2  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -20,7 +23,6 @@
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Opt.h"
-
 class TClntConfMgr;
 
 class TOptOptionRequest : public TOpt

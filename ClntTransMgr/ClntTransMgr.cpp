@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.35 2005-09-15 19:46:08 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.35.2.1 2006-02-05 23:38:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2005/09/15 19:46:08  thomson
+ * *** empty log message ***
+ *
  * Revision 1.34  2005/01/12 00:10:05  thomson
  * Compilation fixes.
  *
@@ -363,8 +366,8 @@ void TClntTransMgr::doDuties()
         // are there any tentative addrs?
         checkDecline();
 
-        // are there any IAs to configure?
-        checkSolicit();    
+        // are there any IAs or TAs to configure?
+        checkSolicit();
 
         //is there any IA in Address manager, which has not sufficient number 
         //of addresses
@@ -449,6 +452,9 @@ void TClntTransMgr::shutdown()
         if (releasedIAs.count()) 
             this->sendRelease(releasedIAs);
     }
+    
+    //doDuties(); // just to send RELEASE msg
+    //Transactions.clear(); // delete all transactions
 
     // clean up options
     this->IfaceMgr->removeAllOpts();
@@ -475,8 +481,9 @@ void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
 		ifaceAnswer   = this->IfaceMgr->getIfaceByID(msgAnswer->getIface());
 		Log(Warning) << "Reply for transaction 0x" << hex << msgQuestion->getTransID() << dec
 			     << " sent on " << ifaceQuestion->getFullName() << " was received on interface " 
-			     << ifaceAnswer->getFullName() << ". Ignored." << LogEnd;
-		return;
+			     << ifaceAnswer->getFullName() << "." << LogEnd;
+		// return; // don't return, just fix interface ID
+		msgAnswer->setIface(msgQuestion->getIface());
 	    }
 
             msgQuestion->answer(msgAnswer);
@@ -626,7 +633,7 @@ void TClntTransMgr::checkSolicit() {
 		Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
                 Transactions.append(
 		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
-					iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
+					iface->getID(), 0, 
 					IALstToConfig, iface->getRapidCommit()));
 	    }
         }//for every group
@@ -835,61 +842,57 @@ void TClntTransMgr::checkDecline()
 
 void TClntTransMgr::checkRequest()
 {
-    SmartPtr<TAddrIA> firstIA;
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TClntCfgIA> ptrCfgIA;
+    SmartPtr<TAddrIA> ia;
+    SmartPtr<TClntCfgIA> cfgIA;
     SmartPtr<TClntCfgGroup> firstIAGroup;
-//    int result;
-    do
-    {
-        firstIA= SmartPtr<TAddrIA>();
+    SmartPtr<TDUID> duid = 0;
+    List(TAddrIA) requestIALst;
+    int ifaceID = 0;
 
-        TContainer<SmartPtr<TAddrIA> > requestIALst;
+    requestIALst.clear();
+    AddrMgr->firstIA();
+    while( ia=AddrMgr->getIA() ) {
 
-        AddrMgr->firstIA();
-        while((ptrIA=AddrMgr->getIA())&&(!firstIA))
-        {
-            //find first IA which is not in process and all addresses
-            //were checked against duplication and dosen't have assigned
-            //all addresses
-            ptrCfgIA=CfgMgr->getIA(ptrIA->getIAID());
-            if ((ptrIA->getTentative()==NO)&&
-                (ptrIA->getState()!=INPROCESS)&&
-                (ptrIA->countAddr()<ptrCfgIA->countAddr()))
-            {
-                firstIA=ptrIA;
-                firstIAGroup=CfgMgr->getGroupForIA(ptrIA->getIAID());
-            }
-        }
-        if (firstIA)
-        {
-            requestIALst.append(firstIA);
-            firstIA->setState(INPROCESS);
-            while(ptrIA=AddrMgr->getIA())
-            {
-                //find other IA's, which is not in process and all addresses
-                //were checked against DAD, and belong to the same group
-                //were received from one server
-                if(((ptrIA->getTentative()==NO)&&
-                    (ptrIA->getState()!=INPROCESS)&&
-                    (ptrIA->countAddr()<ptrCfgIA->countAddr()))&&
-                    (*ptrIA->getDUID()==*firstIA->getDUID())&&
-                    (&(*firstIAGroup)==&(*CfgMgr->getGroupForIA(ptrIA->getIAID())))
-                  )
-                {
-                    ptrIA->setState(INPROCESS);
-                    requestIALst.append(ptrIA);
-                }
+	cfgIA = CfgMgr->getIA(ia->getIAID());
+	if (!cfgIA) {
+	    Log(Error) << "Internal sanity check failed. Unable to find IA (iaid=" << ia->getIAID()
+		       << ") in the CfgMgr." << LogEnd;
+	    continue;
+	}
 
-            }
+	// find all IAs which should be configured:
+	if ( (ia->getState()!=NOTCONFIGURED) )
+	    continue;
 
-            //Here should be send decline for all tentative addresses in IAs
-            SmartPtr<TClntMsgRequest> request = 
-                new TClntMsgRequest(IfaceMgr, That, CfgMgr, AddrMgr,
-				    requestIALst,firstIA->getDUID(), firstIA->getIface());
-            Transactions.append( (Ptr*) request);
-        }
-    } while(firstIA);
+	// this IA is being serviced by different server
+	if ( (duid) && !((*ia->getDUID()) == (*duid)) ) {
+	    continue;
+	}
+
+	// if we have found one IA, following ones must be on the same interface
+	if ( ifaceID && (ia->getIface()!=ifaceID) ) {
+	    continue;
+	}
+
+	if ( ia->countAddr() < cfgIA->countAddr() ) {
+	    Log(Info) << "IA (iaid=" << ia->getIAID() << ") is configured to get " 
+		      << cfgIA->countAddr() << " addr, but server provided " << ia->countAddr() 
+		      << ", REQUEST will be sent." << LogEnd;
+	}
+
+	requestIALst.append(ia);
+	ia->setState(INPROCESS);
+	duid = ia->getDUID();
+	ifaceID = ia->getIface();
+    }
+
+    if (requestIALst.count()) {
+	// create REQUEST message
+	SmartPtr<TClntMsgRequest> request;
+	request = new TClntMsgRequest(IfaceMgr, That, CfgMgr, AddrMgr,
+				      requestIALst, duid, ifaceID );
+	Transactions.append( (Ptr*) request);
+    } 
 }
 
 bool TClntTransMgr::isDone()

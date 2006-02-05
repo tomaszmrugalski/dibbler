@@ -39,7 +39,9 @@ public:
     virtual void answer(SmartPtr<TClntMsg> Rep) = 0;
     virtual void doDuties() = 0;
     virtual bool check() = 0;
+    void setIface(int iface); // used to override when we have received msg via loopback interface.
 
+    void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
     void appendRequestedOptions();
     
     SmartPtr<TClntTransMgr>  getClntTransMgr();

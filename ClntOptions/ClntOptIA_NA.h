@@ -6,9 +6,8 @@
  *
  * released under GNU GPL v2 or later licence
  */
-
-#ifndef CLNTIA_NA_H_HEADER_INCLUDED_C112064B
-#define CLNTIA_NA_H_HEADER_INCLUDED_C112064B
+#ifndef CLNTOPTIA_NA_H
+#define CLNTOPTIA_NA_H
 
 #include "ClntCfgIA.h"
 #include "OptIA_NA.h"
@@ -35,7 +34,8 @@ class TClntOptIA_NA : public TOptIA_NA
 		  SmartPtr<TClntTransMgr> transMgr, 
 		  SmartPtr<TClntCfgMgr>   cfgMgr, 
 		  SmartPtr<TClntAddrMgr>  addrMgr,
-		  SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface);
+		  SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface);
+    void setIface(int iface);
 
     SmartPtr<TClntOptIAAddress> getAddr();
     SmartPtr<TClntOptIAAddress> getAddr(SmartPtr<TIPv6Addr> addr);
@@ -55,10 +55,11 @@ class TClntOptIA_NA : public TOptIA_NA
     SmartPtr<TDUID> DUID;
     int Iface;
 
+    /* Context */
     SmartPtr<TClntIfaceMgr> IfaceMgr;
     SmartPtr<TClntTransMgr> TransMgr;
-    SmartPtr<TClntCfgMgr> CfgMgr;
-    SmartPtr<TClntAddrMgr> AddrMgr;
+    SmartPtr<TClntCfgMgr>   CfgMgr;
+    SmartPtr<TClntAddrMgr>  AddrMgr;
 };
 
 

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.10 2006-01-12 00:23:35 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.10.2.1 2006-02-05 23:38:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006/01/12 00:23:35  thomson
+ * Cleanup changes. Now -pedantic option works.
+ *
  * Revision 1.9  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -72,6 +75,12 @@ public:
     void delClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
     void addClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
 
+    bool isIAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr);
+    bool isTAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr);
+
+    void addTAAddr(int iface);
+    void delTAAddr(int iface);
+
     bool isDone();
     virtual ~TSrvCfgMgr();
     bool setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt);
@@ -79,9 +88,9 @@ public:
     // configuration parameters
     string getWorkdir();
     bool stateless();
-    static int NextRelayID;
 
 private:    
+    static int NextRelayID;
     string XmlFile;
 
     bool IsDone;

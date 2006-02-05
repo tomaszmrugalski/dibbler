@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.9 2004-12-03 20:51:41 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.9.2.1 2006-02-05 23:38:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/12/03 20:51:41  thomson
+ * Logging issues fixed.
+ *
  * Revision 1.8  2004/10/27 22:07:55  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -36,22 +39,21 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
-TAddrClient::TAddrClient(SmartPtr<TDUID> duid)
-{
+TAddrClient::TAddrClient(SmartPtr<TDUID> duid) {
     this->DUID=duid;
 }
 
-SmartPtr<TDUID> TAddrClient::getDUID()
-{
+SmartPtr<TDUID> TAddrClient::getDUID() {
     return this->DUID;
 }
+
+// --- IA ------------------------------------------------------------
 
 SmartPtr<TAddrIA> TAddrClient::getIA() {
     return IAsLst.get();
 }
 
-SmartPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID)
-{
+SmartPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID) {
     SmartPtr<TAddrIA> ptr;
     IAsLst.first();
 
@@ -82,6 +84,49 @@ bool TAddrClient::delIA(unsigned long IAID) {
     while ( ptr = IAsLst.get() ) {
         if (ptr->getIAID() == IAID) {
             IAsLst.del();
+            return true;
+        }
+    }
+    return false;
+}
+
+// --- TA ------------------------------------------------------------
+
+SmartPtr<TAddrIA> TAddrClient::getTA() {
+    return TALst.get();
+}
+
+SmartPtr<TAddrIA> TAddrClient::getTA(unsigned long IAID) {
+    SmartPtr<TAddrIA> ptr;
+    IAsLst.first();
+
+    while ( ptr = TALst.get() ) {
+        if (ptr->getIAID() == IAID) {
+            return ptr;
+        }
+    }
+    return 0;
+}
+
+void TAddrClient::firstTA() {
+    TALst.first();
+}
+
+void TAddrClient::addTA(SmartPtr<TAddrIA> ia) {
+    TALst.append(ia);
+}
+
+int TAddrClient::countTA() {
+    return TALst.count();
+}
+
+bool TAddrClient::delTA(unsigned long iaid) {
+    SmartPtr<TAddrIA> ptr;
+    IAsLst.first();
+
+    while ( ptr = TALst.get() ) {
+        if (ptr->getIAID() == iaid) {
+            TALst.del();
             return true;
         }
     }
@@ -157,10 +202,17 @@ ostream & operator<<(ostream & strum,TAddrClient &x)
     strum << "  <AddrClient>" << endl;
     if (x.DUID->getLen())
 	strum << "    " << *x.DUID;
-    
+
+    strum << "    <!-- " << x.IAsLst.count() << " IA(s) -->" << endl;
     SmartPtr<TAddrIA> ptr;
     x.IAsLst.first();
     while (ptr = x.IAsLst.get() ) {
+        strum << *ptr;
+    }
+
+    strum << "    <!-- " << x.TALst.count() << " TA(s) -->" << endl;
+    x.TALst.first();
+    while (ptr = x.TALst.get() ) {
         strum << *ptr;
     }
 

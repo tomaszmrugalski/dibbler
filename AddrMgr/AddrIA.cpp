@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.10 2005-02-01 00:57:36 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.10.2.1 2006-02-05 23:38:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.9  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -172,7 +175,13 @@ SmartPtr<TAddrAddr> TAddrIA::getAddr()
     return AddrLst.get();
 }
 
-// returns AddrAddr object 
+/** 
+ * This function returns TAddrAddr object or 0 if such address is not present
+ * 
+ * @param addr 
+ * 
+ * @return 
+ */
 SmartPtr<TAddrAddr> TAddrIA::getAddr(SmartPtr<TIPv6Addr> addr)
 {
     if (!addr)
@@ -183,7 +192,7 @@ SmartPtr<TAddrAddr> TAddrIA::getAddr(SmartPtr<TIPv6Addr> addr)
         if ( (*addr)==(*(ptrAddr->get())) )
             return ptrAddr;
     }
-    return SmartPtr<TAddrAddr>();
+    return 0;
 }
 
 int TAddrIA::countAddr()

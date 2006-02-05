@@ -12,6 +12,7 @@
 #include "ClntCfgIface.h"
 #include "ClntCfgAddr.h"
 #include "ClntCfgIA.h"
+#include "ClntCfgTA.h"
 #include "ClntCfgGroup.h"
 #include "Logger.h"
 
@@ -25,7 +26,6 @@
 %}
 // --- CLASS MEMBERS ---
 
-// <Linux>
 %define MEMBERS yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
 TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
@@ -34,6 +34,7 @@ TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
 TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;                       \
 TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;                       \
 TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;                          \
+TContainer<SmartPtr<TClntCfgTA> >    ClntCfgTALst;                          \
 TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
@@ -49,9 +50,11 @@ void StartIfaceDeclaration();                                               \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
 void StartIADeclaration(bool aggregation);                                  \
-void EndIADeclaration(long iaCnt);                                          \
+void EndIADeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
+bool iaidSet;                                                               \
+unsigned int iaid;                                                          \
 virtual ~clntParser();
 
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
@@ -73,9 +76,10 @@ virtual ~clntParser();
 }
 
 %{
-	namespace std{
-extern yy_clntParser_stype yylval;
-	}
+namespace std
+{
+    extern yy_clntParser_stype yylval;
+}
 %}
 
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_, UNICAST_
@@ -83,7 +87,7 @@ extern yy_clntParser_stype yylval;
 %token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_
 %token LIFETIME_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
-%token IA_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,STATELESS_
+%token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,STATELESS_
 %token OPTION_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_
 %token <strval>     STRING_
@@ -142,7 +146,8 @@ InterfaceDeclarationsList '}'
 InterfaceDeclarationsList '}'
 {
     ClntCfgIfaceLst.append(new TClntCfgIface($2) );
-    EndIfaceDeclaration();
+    if (!EndIfaceDeclaration())
+	YYABORT;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -198,11 +203,56 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList InterfaceOptionDeclaration
 | IADeclaration
 | InterfaceDeclarationsList IADeclaration 
+| TADeclaration
+| InterfaceDeclarationsList TADeclaration
+;
+
+TADeclaration
+/////////////////////////////////////////////////////////////////////////////
+// TA options
+/////////////////////////////////////////////////////////////////////////////
+:TA_
+{ 
+    //Log(Crit) << "TA without params." << LogEnd;
+    this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
+}
+|TA_ '{' 
+{
+    //Log(Crit) << "TA with params started." << LogEnd;
+    this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
+    this->iaidSet = false;
+}
+TADeclarationList
+{
+    if (this->iaidSet)
+	this->ClntCfgTALst.getLast()->setIAID(this->iaid);
+    //Log(Crit) << "TA with params ended." << LogEnd;
+}
+'}'
+|TA_ '{' '}'
+{
+    //Log(Crit) << "TA without params." << LogEnd;
+    this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
+}
+;
+
+TADeclarationList
+:TADeclarationList IAID
+|IAID
+;
+
+IAID
+:IAID_ Number
+{
+    this->iaidSet = true;
+    this->iaid = $2;
+    Log(Crit) << "IAID=" << this->iaid << " parsed." << LogEnd;
+}
 ;
 
 IADeclaration
 /////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: ia { T1 10 T2 20 ... }
+// ia { options-inside }
 /////////////////////////////////////////////////////////////////////////////
 :IA_ '{'   
 { 
@@ -210,55 +260,25 @@ IADeclaration
 }
 IADeclarationList '}'
 {
-    EndIADeclaration(1);
+    EndIADeclaration();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: ia 5 { T1 10 T2 20 ... }
+// ia { }
 /////////////////////////////////////////////////////////////////////////////
-|IA_ Number '{' 
-{
-    StartIADeclaration(false);
-}
-IADeclarationList '}' 
-{
-    EndIADeclaration($2);
-}
-    
-/////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: ia 5 {}
-/////////////////////////////////////////////////////////////////////////////
-|IA_ Number '{' '}'       //deklaracja Number IA z 1 adresem
-{
-    StartIADeclaration(false);
-    EndIADeclaration($2);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: ia 5
-/////////////////////////////////////////////////////////////////////////////
-|IA_ Number           //deklaracja Number IA z 1 adresem
-{
-    StartIADeclaration(false);
-    EndIADeclaration($2);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: ia { }
-/////////////////////////////////////////////////////////////////////////////
-|IA_ '{' '}'          //deklaracja 1 IA z 1 adresem
+|IA_ '{' '}'
 {
     StartIADeclaration(true);
-    EndIADeclaration(1);
+    EndIADeclaration();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-//Deklaracja typu: ia 
+// ia (1 address is added by default)
 /////////////////////////////////////////////////////////////////////////////
-|IA_                  //deklaracja 1 IA z 1 adresem
+|IA_
 {
     StartIADeclaration(true);
-    EndIADeclaration(1);
+    EndIADeclaration();
 }
 ;
 
@@ -727,9 +747,15 @@ LifetimeOption
 // programs section
 /////////////////////////////////////////////////////////////////////////////
 
-//method check whether interface with id=ifaceNr has been 
-//already declared
-bool clntParser::CheckIsIface(int ifaceNr)
+//
+/** 
+ * method check whether interface with id=ifaceNr has been 
+ * already declared. YYABORT macro is called to abort parsing.
+ * 
+ * @param ifaceNr 
+ * 
+ * @return true if not declared.
+ */bool clntParser::CheckIsIface(int ifaceNr)
 {
   SmartPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
@@ -770,38 +796,62 @@ void clntParser::StartIfaceDeclaration()
 
 bool clntParser::EndIfaceDeclaration()
 {
-  //add all identity associations to last group
-  SmartPtr<TClntCfgIA> ptrIA;
-  ClntCfgIALst.first();
-  while (ptrIA=ClntCfgIALst.get())
-      ClntCfgGroupLst.getLast()->addIA(ptrIA);
-   
-  //set interface options on the basis of just read information
-  ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-  //add list of groups to this iface
-  ClntCfgGroupLst.first();
-  SmartPtr<TClntCfgGroup> ptr;
-  int groupsCnt=0;
-  while (ptr=ClntCfgGroupLst.get())
-    if (ptr->countIA()>0)
-    {
-      ClntCfgIfaceLst.getLast()->addGroup(ptr);
-      groupsCnt++;
-    };
+    SmartPtr<TClntCfgIface> iface = ClntCfgIfaceLst.getLast();
+    if (!iface) {
+	Log(Crit) << "Internal error: Interface not found. Something is wrong. Very wrong." << LogEnd;
+	YYABORT;
+    }
+
+    //set interface options on the basis of just read information
+    iface->setOptions(ParserOptStack.getLast());
+
+    if ( (iface->stateless()) && (ClntCfgIALst.count()) ) {
+	Log(Crit) << "Interface " << iface->getID() << " is configured stateless, "
+	    " but has " << ClntCfgIALst.count() << " IA(s) defined." << LogEnd;
+	    YYABORT;
+    }
+
+#if 0    
+    if ( (!iface->stateless()) && (!ClntCfgIALst.count()) ) {
+	Log(Debug) << "IAs not defined on this interface. Assuming 1 IA." << LogEnd;
+	EmptyIface();
+	return true;
+    }
+#endif
+
+#if 0
+    // add all IAs to the group
+    SmartPtr<TClntCfgIA> ia;
+    ClntCfgIALst.first();
+    Log(Debug) << "### " << ClntCfgIALst.count() << " IA(s) to copy" << LogEnd;
+    while (ia=ClntCfgIALst.get()) {
+	ClntCfgGroupLst.getLast()->addIA(ia);
+	Log(Debug) << "### Adding IA with iaid=" << ia->getIAID() << LogEnd;
+    }
+#endif
+
+    // add all non-empty groups
+    Log(Debug) << "### " << ClntCfgGroupLst.count() << " group(s) to copy" << LogEnd;
+    SmartPtr<TClntCfgGroup> group;
+    ClntCfgGroupLst.first();
+    while (group=ClntCfgGroupLst.get()) {
+	Log(Debug) << "### group->countIA()=" << group->countIA() << LogEnd;
+	if (group->countIA()) 
+	    ClntCfgIfaceLst.getLast()->addGroup(group);
+    }
     
-  if ((ClntCfgIfaceLst.getLast())->stateless())
-  {
-    if (groupsCnt) YYABORT;
-  }
-  else
-  {
-    //if only options has changed for this iface
-    if (groupsCnt==0)
-        EmptyIface();  //add one IA with one address to this iface
-  }
-  //restore global options
-  ParserOptStack.delLast();
-  return true;
+    //add all TAs to the interface
+    SmartPtr<TClntCfgTA> ptrTA;
+    ClntCfgTALst.first();
+    while ( ptrTA = ClntCfgTALst.get() ) {
+	iface->addTA(ptrTA);
+    }
+
+    //restore global options
+    ParserOptStack.delLast();
+    ClntCfgIALst.clear();
+    ClntCfgGroupLst.clear();
+    return true;
 }   
 
 void clntParser::EmptyIface()
@@ -814,13 +864,14 @@ void clntParser::EmptyIface()
     ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
     ClntCfgIfaceLst.getLast()->getLastGroup()->
     addIA(ClntCfgIALst.getLast());
-    
 }
 
-//method creates new scope appropriately for interface options and declarations
-//clears list of addresses
-//bool aggregation - whether it is agregated IA option
-void clntParser::StartIADeclaration(bool aggregation)
+/** 
+ * method creates new scope appropriately for interface options and declarations
+ * clears list of addresses
+ * 
+ * @param aggregation - does this IA contains suboptions ( ia { ... } )
+ */void clntParser::StartIADeclaration(bool aggregation)
 {
   ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
   ParserOptStack.getLast()->setNewGroup(false);
@@ -828,85 +879,55 @@ void clntParser::StartIADeclaration(bool aggregation)
   ClntCfgAddrLst.clear();
 }
 
-void clntParser::EndIADeclaration(long iaCnt)
+/** 
+ * Inbelivable piece of crap code. If you read this, rewrite this code immediately.
+ * 
+ */void clntParser::EndIADeclaration()
 {
-  if(ClntCfgAddrLst.count()==0)
-    EmptyIA();
-  else
-  {
-    ClntCfgIALst.append(new TClntCfgIA(ParserOptStack.getFirst()->getIncedIAIDCnt()));
-    SmartPtr<TClntCfgAddr> ptr;
-    ClntCfgAddrLst.first();
-    while(ptr=ClntCfgAddrLst.get())
-          ClntCfgIALst.getLast()->addAddr(ptr);
-  }
-  //set proper options specific for this IA
-  ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
+    if(!ClntCfgAddrLst.count()) {
+	EmptyIA();
+    } else {
+	SmartPtr<TClntCfgIA> ia = new TClntCfgIA();
+	ClntCfgIALst.append(ia);
+	SmartPtr<TClntCfgAddr> ptr;
+	ClntCfgAddrLst.first();
+	while(ptr=ClntCfgAddrLst.get())
+	    ia->addAddr(ptr);
+    }
 
-  //Options change - new group should be created
-  if (ParserOptStack.getLast()->isNewGroup())
-  {
-      //this IA will have its own group, bcse it does't match with previous ones
-      ClntCfgGroupLst.prepend(new TClntCfgGroup());
-      ClntCfgGroupLst.getFirst()->setOptions(ParserOptStack.getLast());
-      ClntCfgGroupLst.first();
-      ClntCfgGroupLst.getFirst()->addIA(ClntCfgIALst.getLast());
-      for (int i=1;i<iaCnt;i++)
-      {
-          SmartPtr<TClntCfgIA> ptr 
-              (new TClntCfgIA(ClntCfgIALst.getLast(),ParserOptStack.getFirst()->getIncedIAIDCnt()));
-          ClntCfgGroupLst.getFirst()->addIA(ptr);
-      }
-      ClntCfgIALst.delLast();
-      ParserOptStack.delLast();
-  }
-  else
-  {
-    //FIXME: increase IAID when copy
-     for (int i=1;i<iaCnt;i++)
-     {
-        SmartPtr<TClntCfgIA> ia(new TClntCfgIA(*ClntCfgIALst.getLast()));
-        ia->setIAID(ParserOptStack.getFirst()->getIncedIAIDCnt());
-        ClntCfgIALst.append(ia);
-     }
-     //this IA matches with previous ones and can be grouped with them
-     //so it's should be left on the list and be appended with them to present list
-     ParserOptStack.delLast();
+    //set proper options specific for this IA
+    ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
 
-     //new IA was found, so should new group be created ??
+    Log(Debug) << "### IA with iaid=" << ClntCfgIALst.getLast()->getIAID() << " parsed." << LogEnd;
 
-     if (ParserOptStack.getLast()->isNewGroup())
-     {
-          //ParserOptStack.delLast();
-            //new IA was found, so should new group be created ??
-        //FIXED: in the case list of IAs has more than iaCnt elements insert them into
-        //the group except the last iaCnt IA, which belongs to the new group
-        while(ClntCfgIALst.count()>iaCnt)
-        {
-             ClntCfgGroupLst.getLast()->addIA(ClntCfgIALst.getFirst());
-             ClntCfgIALst.delFirst();
-        }
-        ClntCfgGroupLst.append(new TClntCfgGroup());
-        //and now we will be waiting for matchin IAs
-        ParserOptStack.getLast()->setNewGroup(false);
-        ClntCfgGroupLst.getLast()->setOptions(ParserOptStack.getLast());
-     };
-  };
+    // FIXME: remove groups completly
+    ClntCfgGroupLst.append(new TClntCfgGroup());
+    ClntCfgGroupLst.getLast()->setOptions(ParserOptStack.getLast());
+    ClntCfgGroupLst.getLast()->addIA(ClntCfgIALst.getLast());
+    ClntCfgAddrLst.clear();
+    ParserOptStack.delLast();
+
+    //this IA matches with previous ones and can be grouped with them
+    //so it's should be left on the list and be appended with them to present list
 }
 
-//metoda dodaje 1 IA do kolejki ClntCfgIAs, a nastepnie adres do 
-//ostatniego IA w kolejce ClntCfgIALst o wlasciwosciach opcji 
-//znajdujacych sie na stosie ParsOptStack
-void clntParser::EmptyIA()
+/** 
+ * method adds 1 IA object (containing 1 address) to the ClntCfgIA list.
+ * Both objects' properties are set to last parsed values
+ * 
+ */void clntParser::EmptyIA()
 {
-      EmptyAddr();
-    ClntCfgIALst.append(new TClntCfgIA(ParserOptStack.getFirst()->getIncedIAIDCnt()));
+    EmptyAddr();
+    ClntCfgIALst.append(new TClntCfgIA());
     ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
     ClntCfgIALst.getLast()->addAddr(ClntCfgAddrLst.getLast());
 }   
 
-//metoda dodaje 1 adres do kolejki ClntCfgAddrLst o wlasciwosciach opcji 
-//znajdujacych sie na stosie ParsOptStack
+/** 
+ * method adds empty address to the ClntCfgAddrList list and sets
+ * its properties to last parsed values
+ * 
+ */
 void clntParser::EmptyAddr()
 {
     ClntCfgAddrLst.append(new TClntCfgAddr());
@@ -923,16 +944,24 @@ int clntParser::yylex()
     return x;
 }
 
-
+/** 
+ * This method is called when parsing error is detected.
+ * 
+ * @param m - first invalid character
+ */
 void clntParser::yyerror(char *m)
 {
     Log(Crit) << "Config parse error: line " << lex->lineno() 
 	      << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
 }
 
-clntParser::~clntParser() {
+/** 
+ * Desctructor. Just cleans things up
+ * 
+ */clntParser::~clntParser() {
     this->ClntCfgIfaceLst.clear();
     this->ClntCfgGroupLst.clear();
     this->ClntCfgIALst.clear();
+    this->ClntCfgTALst.clear();
     this->ClntCfgAddrLst.clear();
 }

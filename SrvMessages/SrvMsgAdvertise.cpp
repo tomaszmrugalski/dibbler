@@ -1,45 +1,20 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 licence                                
  *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 or later licence                                
- *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.14 2005-03-15 23:02:31 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.13  2005/03/15 00:36:22  thomson
- * 0.4.0 release (win32 commit)
- *
- * Revision 1.12  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.11  2004/12/02 00:51:06  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.10  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.9  2004/06/20 21:00:45  thomson
- * Various fixes.
- *
- * Revision 1.8  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
- * Revision 1.7  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
- * Revision 1.6  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
+ * $Id: SrvMsgAdvertise.cpp,v 1.14.2.1 2006-02-05 23:38:08 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
-#include "SrvMsg.h"
 #include "Logger.h"
 #include "SrvOptOptionRequest.h"
 #include "SrvOptClientIdentifier.h"
 #include "SrvOptIA_NA.h"
+#include "SrvOptTA.h"
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptServerIdentifier.h"
@@ -115,6 +90,12 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    this->Options.append((Ptr*)optIA_NA);
 	    break;
 	}
+	case OPTION_IA_TA: {
+	    SmartPtr<TSrvOptTA> optTA;
+	    optTA = new TSrvOptTA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt, 
+				  clntDuid, clntAddr, clntIface, SOLICIT_MSG, this);
+	    this->Options.append( (Ptr*) optTA);
+	}
 	case OPTION_RAPID_COMMIT: {
 	    // RAPID COMMIT present, but we're in ADVERTISE, so obviously
 	    // server is configured not to use RAPID COMMIT
@@ -166,8 +147,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    Log(Warning) << "Invalid option (OPTION_UNICAST) received." << LogEnd;
 	    break;
 	}
-                // options not yet supported 
-	case OPTION_IA_TA    :
+	    // options not yet supported 
 	case OPTION_RELAY_MSG :
 	case OPTION_AUTH_MSG :
 	case OPTION_USER_CLASS :
@@ -208,10 +188,21 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     // this is ADVERTISE only, so we need to release assigned addresses
     this->firstOption();
     while ( opt = this->getOption()) {
-	if ( opt->getOptType()==OPTION_IA) {
+	switch (opt->getOptType()) {
+	case OPTION_IA: {
 	    SmartPtr<TSrvOptIA_NA> ptrOptIA_NA;
 	    ptrOptIA_NA = (Ptr*) opt;
 	    ptrOptIA_NA->releaseAllAddrs(false);
+	    break;
+	}
+	case OPTION_IA_TA: {
+	    SmartPtr<TSrvOptTA> ta;
+	    ta = (Ptr*) opt;
+	    ta->releaseAllAddrs(false);
+	    break;
+	}
+	default:
+	    break;
 	}
     }
 
@@ -239,3 +230,33 @@ void TSrvMsgAdvertise::doDuties() {
 string TSrvMsgAdvertise::getName() {
     return "ADVERTISE";
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.14  2005/03/15 23:02:31  thomson
+ * 0.4.0 release.
+ *
+ * Revision 1.13  2005/03/15 00:36:22  thomson
+ * 0.4.0 release (win32 commit)
+ *
+ * Revision 1.12  2005/01/08 16:52:04  thomson
+ * Relay support implemented.
+ *
+ * Revision 1.11  2004/12/02 00:51:06  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
+ * Revision 1.10  2004/09/05 15:27:49  thomson
+ * Data receive switched from recvfrom to recvmsg, unicast partially supported.
+ *
+ * Revision 1.9  2004/06/20 21:00:45  thomson
+ * Various fixes.
+ *
+ * Revision 1.8  2004/06/20 19:29:23  thomson
+ * New address assignment finally works.
+ *
+ * Revision 1.7  2004/06/20 17:25:07  thomson
+ * getName() method implemented, clean up
+ *
+ * Revision 1.6  2004/06/17 23:53:54  thomson
+ * Server Address Assignment rewritten.
+ */

@@ -6,9 +6,13 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.16 2005-08-03 22:47:34 thomson Exp $
+ * $Id: DHCPConst.h,v 1.16.2.1 2006-02-05 23:38:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/08/03 22:47:34  thomson
+ * Support for 'share' parameter added,
+ * Support for randomization between classes added.
+ *
  * Revision 1.15  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -111,6 +115,7 @@
 #define OPTION_CLIENTID         1
 #define OPTION_SERVERID         2
 #define OPTION_IA               3
+#define OPTION_IA_TA            4
 #define OPTION_IAADDR           5
 #define OPTION_ORO              6
 #define OPTION_PREFERENCE       7
@@ -120,7 +125,6 @@
 #define OPTION_RAPID_COMMIT     14
 
 // RFC: options not supported yet
-#define OPTION_IA_TA            4
 #define OPTION_RELAY_MSG        9
 #define OPTION_AUTH_MSG         11
 #define OPTION_USER_CLASS       15
@@ -195,6 +199,8 @@
 #define SERVER_DEFAULT_MAX_VALID 172800    /* 2 days */
 #define SERVER_DEFAULT_CLASS_SHARE 100
 #define SERVER_DEFAULT_CLASS_MAX_LEASE ULONG_MAX
+#define SERVER_DEFAULT_TA_PREF_LIFETIME 3600
+#define SERVER_DEFAULT_TA_VALID_LIFETIME 7200
 
 #define CLIENT_DEFAULT_T1 ULONG_MAX
 #define CLIENT_DEFAULT_T2 ULONG_MAX

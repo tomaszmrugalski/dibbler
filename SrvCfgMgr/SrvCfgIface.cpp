@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.20 2005-08-03 22:47:34 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.20.2.1 2006-02-05 23:38:08 thomson Exp $
  */
 
 #include <sstream>
@@ -72,6 +72,37 @@ bool TSrvCfgIface::getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Add
     }
 
     return true;
+}
+
+void TSrvCfgIface::addTA(SmartPtr<TSrvCfgTA> ta) {
+    this->SrvCfgTALst.append(ta);
+}
+
+void TSrvCfgIface::firstTA() {
+    this->SrvCfgTALst.first();
+}
+SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA() {
+    return this->SrvCfgTALst.get();
+}
+
+SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr) {
+    SmartPtr<TSrvCfgTA> ta;
+
+    // try to find preferred TA for this client
+    this->SrvCfgTALst.first();
+    while ( ta = this->getTA() ) {
+	if (ta->clntPrefered(clntDuid, clntAddr))
+	    return ta;
+    }
+
+    // prefered not found? Then find first allowed
+    this->SrvCfgTALst.first();
+    while ( ta = this->getTA() ) {
+	if (ta->clntSupported(clntDuid, clntAddr))
+	    return ta;
+    }
+
+    return 0;
 }
 
 SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
@@ -453,6 +484,30 @@ bool TSrvCfgIface::supportLifetime() {
     return this->LifetimeSupport;
 }
 
+void TSrvCfgIface::addTAAddr() {
+    SmartPtr<TSrvCfgTA> ta;
+    this->firstTA();
+    ta=this->getTA();
+    if (!ta) {
+	Log(Error) << "Unable to increase TA usage. TA (temporary addresses) is not found on the " 
+		   << this->getFullName() << " interface." << LogEnd;
+	return;
+    }
+    ta->incrAssigned();
+}
+
+void TSrvCfgIface::delTAAddr() {
+    SmartPtr<TSrvCfgTA> ta;
+    this->firstTA();
+    if (!this->getTA()) {
+	Log(Error) << "Unable to decrease TA usage. TA (temporary addresses) is not found on the " 
+		   << this->getFullName() << " interface." << LogEnd;
+	return;
+    }
+    ta->decrAssigned();
+}
+
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -488,15 +543,26 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <!-- <rapid-commit/> -->" << std::endl;
     }
 
-    SmartPtr<TSrvCfgAddrClass>	groupPtr;
+    out << endl;
+    // print IA objects
+    SmartPtr<TSrvCfgAddrClass>	ia;
     iface.SrvCfgAddrClassLst.first();
-    out << "    <!-- IPv6 addr class count: " << iface.SrvCfgAddrClassLst.count() << "-->" << endl;
-    while(groupPtr=iface.SrvCfgAddrClassLst.get())
+    out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst.count() << "-->" << endl;
+    while( ia=iface.SrvCfgAddrClassLst.get() ) {	
+	out << *ia;
+    }
+
+    out << endl;
+    // print TA objects
+    SmartPtr<TSrvCfgTA> ta;
+    iface.firstTA();
+    out << "    <!-- TA: temporary IPv6 addr class count: " << iface.SrvCfgTALst.count() << "-->" << endl;
+    while( ta=iface.getTA() )
     {	
-	out << *groupPtr;
+	out << *ta;
     }
     
-    out << "    <!-- options -->" << endl;
+    out << endl << "    <!-- options -->" << endl;
 
     // DNS-SERVERS
     out << "    <!-- <dns-servers count=\"" << iface.DNSServerLst.count() << "\"> -->" << endl;
@@ -588,6 +654,10 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2005/08/03 22:47:34  thomson
+ * Support for 'share' parameter added,
+ * Support for randomization between classes added.
+ *
  * Revision 1.19  2005/08/02 23:43:27  thomson
  * *** empty log message ***
  *

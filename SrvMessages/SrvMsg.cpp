@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.13 2005-04-29 00:08:20 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.13.2.1 2006-02-05 23:38:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005/04/29 00:08:20  thomson
+ * *** empty log message ***
+ *
  * Revision 1.12  2005/02/07 20:51:56  thomson
  * Server stateless mode fixed (bug #103)
  *
@@ -55,6 +58,7 @@
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
+#include "SrvOptTA.h"
 // --- options ---
 #include "SrvOptDNSServers.h"
 #include "SrvOptDomainName.h"
@@ -181,8 +185,9 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_LIFETIME:
 	    ptr = new TSrvOptLifetime(buf+pos, length, this);
 	    break;
-
 	case OPTION_IA_TA:
+	    ptr = new TSrvOptTA(buf+pos, length, this);
+	    break;
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
