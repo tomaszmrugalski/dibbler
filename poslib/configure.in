@@ -1,0 +1,308 @@
+dnl This file should be processed with GNU Autoconf to produce a "configure"
+dnl script, with which a user can:
+dnl - check for build requirements/options (headers, libraries, functions,
+dnl   data types);
+dnl - handle user definable build options (compiler flags, extra features);
+dnl - parse the ".in" files into standard files (Makefile's, manpages, etc.).
+dnl
+dnl Portions from this file were taken from the Xine-lib configure script.
+
+dnl --------------------
+dnl AC/AM Initialization
+dnl --------------------
+
+  AC_INIT()
+  DATE=`date +%y%m%d`
+  AM_INIT_AUTOMAKE(poslib, 1.1.0pre-$DATE, no-define)
+#  AM_INIT_AUTOMAKE(poslib, $DATE, no-define)
+  GENVERSION=1.1
+  AC_SUBST(GENVERSION)
+
+  VERINFO=1:0:0
+  AC_SUBST(VERINFO)
+
+  AC_EXEEXT
+  AC_LANG_CPLUSPLUS
+
+dnl -------------------
+dnl Checks for programs
+dnl -------------------
+
+  AC_PROG_CXX
+  AC_PROG_RANLIB
+  AM_PROG_LIBTOOL
+  AC_CHECK_TOOL([STRIP],[strip])
+  AC_HEADER_STDC
+
+dnl -----------------------------
+dnl Debug builds & compiler flags
+dnl -----------------------------
+
+  LIB_CXXFLAGS="-D_REENTRANT"
+
+  AC_ARG_ENABLE(debug,
+     [  --enable-debug          Turn on debugging],
+     [  case "${enableval}" in
+          yes) debug=yes; CXXFLAGS="$CXXFLAGS -ggdb3" ;;
+          no) debug=no ;;
+          *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+        esac
+     ]
+  )
+
+  AM_CONDITIONAL(DEBUG, test x$debug = xyes)
+
+  AC_ARG_ENABLE(ipv6,
+     [  --disable-ipv6          Disable support for IP version 6],
+     [  case "${enableval}" in
+          yes) want_ipv6=1 ;;
+          no) want_ipv6=0 ;;
+          *) AC_MSG_ERROR(bad value ${enableval} for --enable-olddomainfn) ;;
+        esac
+     ],
+     [ want_ipv6=1 ]
+  )
+
+  AC_ARG_ENABLE(ccmalloc,
+     [  --enable-ccmalloc       Turn on ccmalloc memory profiler],
+     [  case "${enableval}" in
+          yes)
+            ccmalloc=true
+            AC_DEFINE(_LEAKCHECK_, 1, [Defines whether leak checking is enabled])
+            CXX="ccmalloc g++"
+            ;;
+          no)
+            ccmalloc=false
+            ;;
+          *)
+            AC_MSG_ERROR(bad value ${enableval} for --enable-ccmalloc)
+            ;;
+        esac],[ccmalloc=false])
+  AM_CONDITIONAL(WITH_CCMALLOC, test x$ccmalloc = xtrue)
+
+  AC_ARG_ENABLE(sqldns,
+     [  --enable-sqldns         Compile SQL-based DNS sever],
+     [  case "${enableval}" in
+          yes) sqldns=true ;;
+          no)  sqldns=false ;;
+          *)   AC_MSG_ERROR(bad value ${enableval} for --enable-sqldns) ;;
+        esac],[sqldns=false])
+  AM_CONDITIONAL(WITH_SQLDNS, test x$sqldns = xtrue)
+
+dnl -----------------------
+dnl Checks for header files
+dnl -----------------------
+
+  dnl create poslib-config.h
+  AM_CONFIG_HEADER(config.h)
+  AC_CHECK_HEADERS(poll.h sys/poll.h stdint.h inttypes.h winsock2.h)
+  AC_CHECK_HEADERS(fcntl.h limits.h unistd.h sys/time.h sys/select.h syslog.h)
+  AC_CHECK_HEADERS(slist ext/slist)
+
+  if test x$ac_cv_header_poll_h = xyes || test x$ac_cv_header_sys_poll_h = xyes; then
+      AC_DEFINE(HAVE_POLL, 1, [Defines whether the poll function is available])
+  fi
+
+dnl -----------------------------------------
+dnl Checks for Socket API and POSIX functions
+dnl -----------------------------------------
+
+  AC_CHECK_FUNCS(select socket inet_aton gethostname gethostbyname)
+
+  if test $ac_cv_func_socket = no; then
+    # socket is not in the default libraries.
+    AC_CHECK_LIB(socket, socket,
+      [ LIB_LIBS="$LIB_LIBS -lsocket" ])
+  fi
+
+  AC_MSG_CHECKING(for vsnprintf)
+  AC_TRY_COMPILE([#include <stdio.h>
+    #include <stdarg.h>
+    ],[char buff[1]; va_list valist; vsnprintf(buff, 1, "", valist);],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_VSNPRINTF, 1, [Defines whether the vsnprintf() function is available])
+    ],[AC_MSG_RESULT(no)])
+  
+
+  AC_MSG_CHECKING(for gettimeofday)
+  AC_TRY_COMPILE([#include <sys/time.h>
+    ],[struct timeval tp;
+     struct timezone zn;
+     int ret = gettimeofday(&tp, &zn);],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_GETTIMEOFDAY, 1, [Defines whether the gettimeofday() function is available])
+    ],[AC_MSG_RESULT(no)])
+
+  if test $ac_cv_func_inet_aton = no; then
+    # inet_aton is not in the default libraries.
+    AC_CHECK_LIB(resolv, inet_aton, LIB_LIBS="$LIB_LIBS -lresolv")
+  fi
+
+  if test $ac_cv_func_gethostname = no; then
+    AC_CHECK_LIB(nsl, gethostname, LIB_LIBS="$LIB_LIBS -lnsl")
+  fi
+
+  dnl May end up with duplicate -lnsl -- oh well
+  if test $ac_cv_func_gethostbyname = no; then
+    AC_CHECK_LIB(nsl, gethostbyname, LIB_LIBS="$LIB_LIBS -lnsl")
+    OLD_LIBS=$LIBS
+    LIBS="$LIB_LIBS $LIBS -lws2_32"
+    AC_TRY_LINK([#include <winsock2.h>], [gethostbyname("test");], LIB_LIBS="$LIB_LIBS -lws2_32")
+    LIBS=$OLD_LIBS
+  fi
+
+
+dnl ---------------------
+dnl Checks for data types
+dnl ---------------------
+
+  if test x$want_ipv6 = x1; then
+    AC_MSG_CHECKING(for struct sockaddr_in6)
+    AC_TRY_COMPILE([#include <sys/types.h>
+    #include <netinet/in.h>
+    #include <sys/socket.h>
+    ],[static struct sockaddr_in6 ac_i;],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_IPV6, 1, [Defines whether IPv6 support is available])
+
+     dnl ------------------
+     dnl Check for sin6_len
+     dnl ------------------
+
+     AC_MSG_CHECKING(whether struct sockaddr_in6 has a sin6_len field)
+     AC_TRY_COMPILE([#include <sys/types.h>
+     #include <netinet/in.h>
+     #include <sys/socket.h>
+     ],[static struct sockaddr_in6 ac_i;int ac_j = sizeof(ac_i.sin6_len);],
+     [AC_MSG_RESULT(yes)
+      AC_DEFINE(HAVE_SIN6_LEN, 1, [Defines whether the sin6_len field should be used])],
+      AC_MSG_RESULT(no))
+
+     dnl ---------------------
+     dnl Check for __ss_family
+     dnl ---------------------
+
+     AC_MSG_CHECKING(whether struct sockaddr_storage has a __ss_family field)
+     AC_TRY_COMPILE([#include <sys/types.h>
+     #include <netinet/in.h>
+     #include <sys/socket.h>
+     ],[static struct sockaddr_storage ac_i;int ac_j = sizeof(ac_i.__ss_family);],
+     [AC_MSG_RESULT(yes)
+      AC_DEFINE(HAVE___SS_FAMILY, 1, [Defines wiether the __ss_family field should be used])],
+      AC_MSG_RESULT(no))     
+    ],
+     AC_MSG_RESULT(no))
+
+    AC_MSG_CHECKING(for struct sockaddr_storage)
+    AC_TRY_COMPILE([
+      #ifdef HAVE_WINSOCK2_H
+      #include <winsock2.h>
+      #else
+      #include <sys/types.h>
+      #include <netinet/in.h>
+      #include <sys/socket.h>
+      #endif
+    ],[static struct sockaddr_storage ac_i;],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_SOCKADDR_STORAGE, 1, [Defines whether sockaddr_storage should be used])],
+     AC_MSG_ERROR(For IPv6 you will need a struct sockaddr_storage!)
+    )
+  fi
+
+  dnl --------------------------------
+  dnl Check for sin_len in sockaddr_in
+  dnl --------------------------------
+
+  AC_MSG_CHECKING(whether struct sockaddr_in has a sin_len field)
+  AC_TRY_COMPILE([#include <sys/types.h>
+  #include <netinet/in.h>
+  ],[static struct sockaddr_in ac_i;int ac_j = sizeof(ac_i.sin_len);],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_SIN_LEN, 1, [Defines whether the sin_len field is available])],
+   AC_MSG_RESULT(no))
+
+  dnl -------------------
+  dnl Check for socklen_t
+  dnl -------------------
+
+  AC_MSG_CHECKING(for socklen_t)
+    AC_EGREP_HEADER(socklen_t, sys/socket.h,
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_SOCKLEN_T, 1, [Defines whether we have the socklen_t field]),
+    AC_MSG_RESULT(no))
+
+dnl ---------------------------------
+dnl Check whether to link to -lstdc++
+dnl ---------------------------------
+
+ORIG_LDFLAGS=$LDFLAGS
+LDFLAGS="$LDFLAGS $LIB_LDFLAGS -lstdc++"
+
+AC_MSG_CHECKING(for -lstdc++)
+AC_TRY_LINK([], [], [AC_MSG_RESULT(yes); LIB_LDFLAGS="$LIB_LDFLAGS -lstdc++"], [AC_MSG_RESULT(no)]);
+LDFLAGS=$ORIG_LDFLAGS
+
+dnl -------------------------------------
+dnl Check for Pthreads (taken from Dillo)
+dnl -------------------------------------
+  system=`uname -s`
+  case $system in
+    MINGW32*)
+      AC_CHECK_LIB(pthreadGC, pthread_create,
+        [ LIB_LDFLAGS="$LIB_LDFLAGS -lpthreadGC" ])
+      ;;
+     
+    Linux|SunOS)
+      AC_CHECK_LIB(pthread, pthread_create,
+        [ LIB_LDFLAGS="$LIB_LDFLAGS -lpthread" ])
+      ;;
+
+    OSF1)
+      AC_MSG_CHECKING(whether pthreads work)
+      LIB_LDFLAGS="$LIB_LDFLAGS -lpthread -lexc -ldb"
+      AC_MSG_WARN(*** _Untested pthreads_ try setting LIB_LDFLAGS manually if it doesn't work ***)
+      ;;
+
+    *)
+      AC_MSG_CHECKING(whether threads work with -pthread)
+      LDSAVEFLAGS=$LDFLAGS
+      LDFLAGS="$LDFLAGS $LIB_LDFLAGS -pthread"
+      AC_TRY_LINK(
+        [#include <pthread.h>],
+        [pthread_t tr; pthread_create(&tr, NULL, NULL, NULL);],
+        pthread_ok=yes,
+        pthread_ok=no)
+      if test "x$pthread_ok" = "xyes"; then
+        AC_MSG_RESULT(yes)
+        LIB_LDFLAGS="$LIB_LDFLAGS -pthread"
+      else
+        AC_MSG_RESULT(no. Now we will try some libraries.)
+        LDFLAGS=$LDSAVEFLAGS
+        AC_CHECK_LIB(pthread, pthread_create, [ LIB_LIBS="$LIB_LIBS -lpthread" ],
+          AC_CHECK_LIB(c_r, pthread_create, [ LIB_LIBS="$LIB_LIBS -lc_r" ],
+          AC_MSG_ERROR(*** Failed to find pthreads)))
+      fi
+      ;;
+  esac
+
+CURDIR=`pwd`
+AC_SUBST(CURDIR)
+
+CXXFLAGS="$CXXFLAGS $LIB_CXXFLAGS"
+AC_SUBST(LIB_CXXFLAGS)
+
+LIBS="$LIBS $LIB_LIBS"
+AC_SUBST(LIB_LIBS)
+
+LDFLAGS="$LDFLAGS $LIB_LDFLAGS"
+AC_SUBST(LIB_LDFLAGS)
+
+dnl -----------------------------------------
+dnl Parse Makefile.in's and other input files
+dnl -----------------------------------------
+
+  AC_OUTPUT([
+    Makefile
+    poslib/Makefile
+    poslib.pc
+  ])

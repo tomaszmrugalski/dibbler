@@ -1,0 +1,99 @@
+-------------
+Poslib README
+-------------
+
+This is the source code for Poslib, a library for DNS servers and clients on
+which the Posadis DNS server will be based.
+
+To compile it, just do a ./configure; make; make install.
+Configure has the following options:
+
+  --with-cxxflags=...     Override default compiler flags
+  --enable-debug          Turn on debugging
+  --disable-ipv6          Disable support for IP version 6
+  --enable-ccmalloc       Turn on ccmalloc memory profiler
+  --enable-sqldns         Compile SQL-based DNS sever
+
+Poslib is by default built without compiler optimisations because they caused
+random crashes on some platforms. On some platforms, including Linux, they
+can be safely turned on, like this:
+
+  ./configure --with-cxxflags="-funsigned-char -O3"
+
+Sqldns does not currently work all that will and requires the dbconnect
+library, which can be found at http://dbconnect.sf.net.
+
+To create your own copy of the docs, go to the docs/ subdirectory and run:
+  doxygen doxygen.conf
+
+If you have any questions, mail me at meilof@users.sourceforge.net
+
+----------------------
+About memory profiling
+----------------------
+
+I use ccmalloc, an excellent piece of software by Armin Biere, for memory leak
+checking in Poslib. To enable this, I use the configure flags --enable-debug
+and --enable-ccmalloc. Additionally, I have the ccmalloc thread-safe patch
+available from its website applied, though it might also work without the
+patch. Additionally, I have tweaked the ccmalloc sources a bit to enable
+malloc(0) calls, which seem to get executed by either Poslib itself or the
+STL malloc_alloc code. The malloc_alloc code, additionally, is very platform-
+specific and will probably require some tweaks in the poslib/sysstl.h file if
+you want it to work correctly. I know it works under Debian 3.0, which is now
+my primary development platform, but it doesn't work under Mandrake 9.0 or
+8.1, which I used previously.
+
+Note that Ccmalloc will probably return results like this:
+
+*100.0% = 1024 Bytes of garbage allocated in 1 allocation
+|       |       0x0805f24c in <address_lookup(sockaddr_storage *,
+|       |                                     char const *, int)>
+|       |                  at socket.cpp:268
+
+This is _not_ a memory leak in Poslib. Rather, it is caused by the fact that the
+libc "gethostbyname()" function returns a pointer to data allocated by libc
+internally, that is freed upon application exit by the operating system
+(similar to the stl allocation system without malloc_alloc).
+
+---------------               
+Platform Issues
+---------------
+
+It is much harder than I expected to create truly portable C++ applications.
+I have tested Poslib on many important Unix systems. Here are my results:
+
+ * Linux: works on any Linux I have tested. Both gcc 2.96 and gcc 3.x. Since I
+   use Linux myself, this will probably remain the best supported platform.
+
+ * FreeBSD: I like FreeBSD. Therefore, it works on FreeBSD quite well as well.
+ * OpenBSD: Works as well.
+ * NetBSD: NetBSD doesn't have Pthreads by default. There is however an
+   "unproven-pthreads" package that implements Pthreads and will thus probably
+   work. I am unable to test that though.
+   
+   Additionally, on 17 January 2002, native pthreads were committed into
+   NetBSD-stable by Jason Thorpe. So, if you download NetBSD-current, you
+   might already be able to build Poslib. Again, I can't test this since I
+   don't run NetBSD.
+
+ * Mac OS X: Works.
+ 
+ * Sun Solaris 8: The Poslib server shared library does not work. To work around
+   this, disable compilation of shared libraries by using "./configure
+   --enable-static --disable-dynamic". Client applications do work correctly
+   with shared libraries.
+
+   NOTE: this information is from January 2003 and might no longer be accurate.
+
+ * Sun Solaris 9
+
+   I had to use "CC=gcc CXX=g++ ./configure" because otherwise the configure
+   script wouldn't detect the compilers.
+
+ * HP Tru64 Unix 5.1: Does not seem to understand "-funsigned-char" since it
+   complains about a sign change when setting a "char" to 128. And it gives an
+   error in libtool. Pity, because for the rest, it compiles just fine. Really
+   close.
+ * HP-UX 11.22: Gives an error message in the pthreads headers. The man pages
+   aren't really helping me here either.

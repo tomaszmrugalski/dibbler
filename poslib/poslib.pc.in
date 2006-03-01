@@ -1,0 +1,8 @@
+prefix=@prefix@
+exec_prefix=@prefix@
+
+Name: Poslib
+Description: DNS client library
+Version: @VERSION@
+Libs: -L@libdir@ -lposlib @LIB_LDFLAGS@ @LIB_LIBS@
+Cflags: -I@includedir@/poslib-@VERSION@ -I@libdir@/poslib-@VERSION@/include/ @LIB_CXXFLAGS@

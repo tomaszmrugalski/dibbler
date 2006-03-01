@@ -1,0 +1,7 @@
+FEATURE ENHANCEMENTS
+ * generate better random bytez
+ * optionally, answer queries directly in server thread
+ 
+ * separately release win32poll.cpp and make it lgpl
+
+ * should have separate build / pkgconfig flags (i.e., no -ggdb3 in pkgconfig)
