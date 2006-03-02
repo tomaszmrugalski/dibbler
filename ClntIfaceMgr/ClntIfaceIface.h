@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.h,v 1.4 2005-01-25 00:32:26 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.5 2006-03-02 00:57:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/01/25 00:32:26  thomson
+ * Global addrs support added.
+ *
  * Revision 1.3  2004/11/01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -27,6 +30,8 @@
 #include "Iface.h"
 #include "SmartPtr.h"
 #include "DUID.h"
+#include "ClntIfaceMgr.h"
+#include "OptFQDN.h"
 
 class TClntIfaceIface: public TIfaceIface {
  public:
@@ -52,6 +57,10 @@ class TClntIfaceIface: public TIfaceIface {
 
     unsigned int getTimeout();
 
+	//Getters for FQDN
+	string getFQDN();
+	List(TIPv6Addr) getDNSServerLst();
+
  private:
 
     void addString(const char * filename, const char * str);
@@ -74,7 +83,9 @@ class TClntIfaceIface: public TIfaceIface {
     SmartPtr<TIPv6Addr> TimezoneAddr;
     SmartPtr<TDUID>     TimezoneDUID;
 
-    // FIXME: FQDN
+    string FQDN;
+    SmartPtr<TIPv6Addr> FQDNAddr;
+    SmartPtr<TDUID>     FQDNDUID;
 
     List(TIPv6Addr)     SIPServerLst;
     SmartPtr<TIPv6Addr> SIPServerLstAddr;

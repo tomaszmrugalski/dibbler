@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-OBJECTS = ClntIfaceMgr.o ClntIfaceIface.o
+OBJECTS = ClntIfaceMgr.o ClntIfaceIface.o UpdateActivity.o
 
 objs: $(OBJECTS)
 

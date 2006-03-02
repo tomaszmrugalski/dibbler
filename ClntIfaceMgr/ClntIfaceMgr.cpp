@@ -6,56 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.18 2005-06-07 21:58:49 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.17  2005/01/25 00:32:26  thomson
- * Global addrs support added.
- *
- * Revision 1.16  2005/01/08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.15  2004/12/27 20:48:22  thomson
- * Problem with absent link local addresses fixed (bugs #90, #91)
- *
- * Revision 1.14  2004/12/15 23:12:37  thomson
- * Minor improvements.
- *
- * Revision 1.13  2004/12/07 20:53:40  thomson
- * *** empty log message ***
- *
- * Revision 1.12  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.11  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.10  2004/11/02 02:14:20  thomson
- * no message
- *
- * Revision 1.9  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.8  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.7  2004/09/27 22:00:32  thomson
- * Sending problem is now verbose.
- *
- * Revision 1.6  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.5  2004/09/07 15:37:44  thomson
- * Socket handling changes.
- *
- * Revision 1.4  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- *
+ * $Id: ClntIfaceMgr.cpp,v 1.19 2006-03-02 00:57:46 thomson Exp $
  */
 
 #include "Portable.h"
@@ -65,6 +16,8 @@
 #include "ClntMsgReply.h"
 #include "ClntMsgAdvertise.h"
 #include "Logger.h"
+#include "UpdateActivity.h"
+
 using namespace logger;
 using namespace std;
 
@@ -256,6 +209,72 @@ unsigned int TClntIfaceMgr::getTimeout() {
 	    min = tmp;
     }
     return min;
+}
+
+bool TClntIfaceMgr::doDuties() {
+	SmartPtr<TClntIfaceIface> iface;
+	SmartPtr<TClntCfgIface> cfgIface;
+	
+	this->firstIface();
+	while (iface = (Ptr*)this->getIface()) {
+		cfgIface = ClntCfgMgr->getIface(iface->getID());
+		if (cfgIface) {
+ 			Log(Debug) << "FQDN State : " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
+			if (cfgIface->getFQDNState() == INPROCESS) {
+				// Here we check if all parameters are set, and do the DNS update if possible
+				List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
+				string fqdn = iface->getFQDN();
+				if (ClntAddrMgr->countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
+					Log(Debug) << "All parameters seem to be set to perform DNS update. Selecting first DNS server" << LogEnd;
+					SmartPtr<TIPv6Addr> DNSAddr;
+					SmartPtr<TIPv6Addr> addr;
+					
+// 					For the moment, we just take the first DNS entry.
+					DNSSrvLst.first();
+					DNSAddr = DNSSrvLst.get();
+					
+// 					And the first IP address
+					SmartPtr<TAddrIA> ptrAddrIA;
+					ClntAddrMgr->firstIA();
+					ptrAddrIA = ClntAddrMgr->getIA();
+					
+					if (ptrAddrIA->countAddr() > 0) {
+						ptrAddrIA->firstAddr();
+						addr = ptrAddrIA->getAddr()->get();
+						
+						Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *addr << ") and FQDN " << fqdn << LogEnd;
+						Log(Notice) << "Sleeping 3 seconds before FQDN update" << LogEnd;
+						sleep(3);
+						Log(Notice) << "Waking up !" << LogEnd;
+						
+						//Test for DNS update
+						unsigned int dotpos = fqdn.find(".");
+						string hostname = "";
+						string domain = "";
+						if (dotpos == string::npos) {
+							Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdn << "] Trying to do the update..." << LogEnd;
+							hostname = fqdn;
+						} else {
+							hostname = fqdn.substr(0, dotpos);
+							domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
+						}
+						UpdateActivity *act = new UpdateActivity(DNSAddr->getPlain(), (char*) domain.c_str(), (char*) hostname.c_str(), addr->getPlain(), "2h");
+						int result = act->run();
+						delete act;
+						
+						if (result == SUCCESS) {
+							cfgIface->setFQDNState(CONFIGURED);
+							Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+						} else {
+							Log(Warning) << "Unable to perform DNS update. Disabling FQDN on " << iface->getFullName() << LogEnd;
+							cfgIface->setFQDNState(DISABLED);
+						}
+					}
+				}
+			}
+		}
+	}
+	return true;
 }
 
 void TClntIfaceMgr::dump()

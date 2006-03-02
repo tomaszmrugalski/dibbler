@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.7 2005-07-21 20:42:42 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.8 2006-03-02 00:57:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/07/21 20:42:42  thomson
+ * Minor change for wingw compatibility in win2k port,
+ * provided by sob@hisoftware.cz.
+ *
  * Revision 1.6  2005/07/17 21:09:52  thomson
  * Minor improvements for 0.4.1 release.
  *
@@ -367,9 +371,14 @@ bool TClntIfaceIface::setSIPDomainLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     return true;
 }
 
+
+
 bool TClntIfaceIface::setFQDN(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string fqdn) {
-    // FIXME: Implement FQDN
-    Log(Error) << "FQDN option is not fully supported yet [" << fqdn << "]" << LogEnd;
+
+	this->FQDN = fqdn;
+	this->FQDNDUID = duid;
+	this->FQDNAddr = srv;
+
     return true;
 }
 
@@ -677,6 +686,14 @@ void TClntIfaceIface::removeAllOpts() {
 		    << this->getName() << "/" << this->getID() <<" interface." << LogEnd;
 	nisplusdomain_del( this->getName(), this->getID(), this->NISPDomain.c_str() );
     }
+}
+
+string TClntIfaceIface::getFQDN() {
+	return FQDN;
+}
+
+List(TIPv6Addr) TClntIfaceIface::getDNSServerLst() {
+	return DNSServerLst;
 }
 
 // --------------------------------------------------------------------

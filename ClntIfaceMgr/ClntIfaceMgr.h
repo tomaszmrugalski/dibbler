@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.6 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.7 2006-03-02 00:57:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/01/08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.5  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -62,6 +65,8 @@ class TClntIfaceMgr : public TIfaceMgr
     void removeAllOpts();
 
     unsigned int getTimeout();
+    
+    bool doDuties();
 
   private:
     string XmlFile;
