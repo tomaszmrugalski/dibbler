@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.35 2005-09-15 19:46:08 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.36 2006-03-02 01:00:00 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2005/09/15 19:46:08  thomson
+ * *** empty log message ***
+ *
  * Revision 1.34  2005/01/12 00:10:05  thomson
  * Compilation fixes.
  *
@@ -381,6 +384,9 @@ void TClntTransMgr::doDuties()
         //Maybe we require only infromations concernig link
         checkInfRequest();
     } 
+    
+    // This method launch the DNS update, so the checkDecline has to be done before to ensure the ip address is valid
+    this->IfaceMgr->doDuties();
 
     if (this->Shutdown && !Transactions.count())
         this->IsDone = true;
