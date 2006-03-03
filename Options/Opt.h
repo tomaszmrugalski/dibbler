@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Opt.h,v 1.6 2006-01-12 00:23:35 thomson Exp $
+ * $Id: Opt.h,v 1.7 2006-03-03 20:25:15 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006/01/12 00:23:35  thomson
+ * Cleanup changes. Now -pedantic option works.
+ *
  * Revision 1.5  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -34,10 +37,33 @@ class TOpt
     TOpt(int optType, TMsg* parent);
     virtual ~TOpt();
 
+	/**
+	 * Return the size of the option, including :
+	 *  - Option number,
+	 *  - Option size
+	 *  - data
+	 * 
+	 * @return the size, I've already said that !
+	 */
     virtual int getSize() = 0;
+    
+    /**
+     * This method transform the instance of the option class into bytecode
+     * ready to be sent to the client or server, conform to the RFC
+     * 
+     * @param buf The address where to store the option
+     * @return The address where the option ends
+     */
     virtual char * storeSelf(char* buf) = 0;
     virtual bool doDuties() = 0;
+    
+    /**
+     * Validate or no the option
+     * 
+     * @return true if the option is valid.
+     */
     virtual bool isValid();
+    
     int getOptType();
     int getSubOptSize();
     
