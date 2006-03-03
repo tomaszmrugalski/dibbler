@@ -1,12 +1,21 @@
-/* Created by Anjuta version 1.2.2 */
-/* This file will not be overwritten */
-
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Adrien CLERC, Bahattin DEMIRPLAK, Gaëtant ELEOUET
+ *          Mickaël GUÉRIN, Lionel GUILMIN, Lauréline PROVOST
+ *          from ENSEEIHT, Toulouse, France
+ *
+ * released under GNU GPL v2 licence
+ *
+ * $Id: UpdateActivity.cpp,v 1.2 2006-03-03 20:47:17 thomson Exp $
+ *
+ */
 
 #include "UpdateActivity.h"
 #include "Logger.h"
 #include <stdio.h>
 
-UpdateActivity::UpdateActivity(char* dns_address,char*zonename,char* hostname,char* hostip,char* ttl){ //Parameter uebergeben
+UpdateActivity::UpdateActivity(char* dns_address,char*zonename,char* hostname,char* hostip,char* ttl){ 
   
   message= NULL;
   /* test
