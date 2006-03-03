@@ -1,5 +1,5 @@
 include ../Makefile.inc
-OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o
+OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o FQDN.o
 
 objs: $(OBJECTS)
 
