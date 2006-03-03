@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.13 2005-04-29 00:08:20 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.14 2006-03-03 21:02:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005/04/29 00:08:20  thomson
+ * *** empty log message ***
+ *
  * Revision 1.12  2005/02/07 20:51:56  thomson
  * Server stateless mode fixed (bug #103)
  *
@@ -399,9 +402,15 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 
     // --- option: FQDN ---
     if ( reqOpts->isOption(OPTION_FQDN) && ptrIface->supportFQDN() ) {
-	SmartPtr<TSrvOptFQDN> opt = new TSrvOptFQDN(ptrIface->getFQDN(), this);
-	Options.append((Ptr*)opt);
-	newOptionAssigned = true;
+	/*
+	 * Unfortunatelly, we need the the option sent by the client to set the flag correctly.
+	 * This cannot be done here...
+	 SmartPtr<TSrvOptFQDN> opt = new TSrvOptFQDN(ptrIface->getFQDNName(duid), this);
+	 Options.append((Ptr*)opt);
+	 newOptionAssigned = true;
+	 
+	 FIXME: This option should be set here, flags should be updated later.
+	*/
     };
 
     // --- option: NIS SERVERS ---

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.14 2005-03-15 23:02:31 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.15 2006-03-03 21:02:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2005/03/15 23:02:31  thomson
+ * 0.4.0 release.
+ *
  * Revision 1.13  2005/03/15 00:36:22  thomson
  * 0.4.0 release (win32 commit)
  *
@@ -102,7 +105,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     // --- process this message ---
     solicit->firstOption();
     while ( opt = solicit->getOption()) {
-        switch (opt->getOptType()) {
+	switch (opt->getOptType()) {
 	case OPTION_CLIENTID : {
 	    this->Options.append(opt);
 	    break;
@@ -127,12 +130,11 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	}
 	case OPTION_ORO: 
 	case OPTION_ELAPSED_TIME : {
-
 	    break;
 	}
 	case OPTION_STATUS_CODE : {
 	    SmartPtr< TOptStatusCode > ptrStatus = (Ptr*) opt;
-	    Log(Error) << "Receviced STATUS_CODE from client:" 
+	    Log(Error) << "Received STATUS_CODE from client:" 
 		       <<  ptrStatus->getCode() << ", (" << ptrStatus->getText()
 		       << ")" << LogEnd;
 	    break;
@@ -140,7 +142,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    
 	    //add options requested by client to option Request Option if
 	    //client didn't included them
-
+	    
 	case OPTION_DNS_RESOLVERS: {
 	    if (!reqOpts->isOption(OPTION_DNS_RESOLVERS))
 		reqOpts->addOption(OPTION_DNS_RESOLVERS);
@@ -166,7 +168,11 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    Log(Warning) << "Invalid option (OPTION_UNICAST) received." << LogEnd;
 	    break;
 	}
-                // options not yet supported 
+	case OPTION_FQDN : {
+	    Log(Debug) << "FQDN option received." << LogEnd;
+	}
+	    
+	    // options not yet supported 
 	case OPTION_IA_TA    :
 	case OPTION_RELAY_MSG :
 	case OPTION_AUTH_MSG :

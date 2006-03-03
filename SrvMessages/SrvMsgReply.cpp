@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.18 2005-09-13 23:00:06 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.19 2006-03-03 21:02:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/09/13 23:00:06  thomson
+ * Compilation warning removed.
+ *
  * Revision 1.17  2005/03/15 23:02:31  thomson
  * 0.4.0 release.
  *
@@ -55,6 +58,7 @@
 #include "SrvOptDomainName.h"
 #include "SrvOptDNSServers.h"
 #include "SrvOptNTPServers.h"
+#include "SrvOptFQDN.h"
 #include "AddrClient.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
@@ -513,15 +517,13 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     //So if we can do something for this client at least set configuration
     //parameters - let's do  option by option - try to answer to it
     request->firstOption();
-    while ( opt = request->getOption() ) 
-    {
-        switch (opt->getOptType()) 
-        {
-	case OPTION_SERVERID    :
+    while ( opt = request->getOption() ) {
+	switch (opt->getOptType()) {
+	case OPTION_SERVERID    : {
 	    this->Options.append(opt);
 	    break;
-	case OPTION_IA          : 
-	{
+	}
+	case OPTION_IA          : {
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA=new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, 
 				      clntDuid, clntAddr,
@@ -529,7 +531,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    this->Options.append((Ptr*)optIA_NA);
 	    break;
 	}
-	case OPTION_STATUS_CODE : 
+	case OPTION_STATUS_CODE :
 	case OPTION_RELAY_MSG   :
 	case OPTION_PREFERENCE  :
 	case OPTION_RECONF_MSG  :
@@ -539,10 +541,38 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	case OPTION_RAPID_COMMIT:
 	    Log(Warning) << "Invalid option " << opt->getOptType()<<" received." << LogEnd;
 	    break;
+	case OPTION_FQDN : {
+	    SmartPtr<TSrvOptFQDN> optOld = (Ptr*) opt;
+	    
+	    if (!optOld->getNFlag()) {
+		Log(Debug) << "Begining FQDN answer, please wait..." << LogEnd;
+		SmartPtr<TSrvOptFQDN> optFQDN;
+		SmartPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID( request->getIface() );
+		if (!ptrIface) {
+		    Log(Crit) << "Msg received through not configured interface. "
+			"Somebody call an exorcist!" << LogEnd;
+		    this->IsDone = true;
+		    return;
+		}
+		// FQDN is chosen, "" if no name for this host is found.
+		Log(Debug) << "Requesting FQDN for client with DUID: " << *clntDuid << LogEnd;
+		string fqdn = ptrIface->getFQDNName(clntDuid);
+		optFQDN = new TSrvOptFQDN(fqdn, this);
+		// For the moment, only the client make the DNS update
+		optFQDN->setSFlag(false);
+		// Setting the O Flag correctly according to the difference between O flags
+		optFQDN->setOFlag(optOld->getSFlag() xor 0);
+		
+		this->Options.append((Ptr*) optFQDN);
+		Log(Debug) << "Adding FQDN Option in REPLY message: " << fqdn << LogEnd;
+	    } else {
+		Log(Notice) << "No DNS Update required by client." << LogEnd;
+	    }
+	}
 	default:
 	    appendDefaultOption(opt);
 	    break;
-        }
+	}
     }
     appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
     pkt = new char[this->getSize()];
