@@ -6,21 +6,23 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptFQDN.cpp,v 1.1 2004-11-02 01:30:54 thomson Exp $
+ * $Id: SrvOptFQDN.cpp,v 1.2 2006-03-03 20:49:54 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/11/02 01:30:54  thomson
+ * Initial version.
+ *
  */
 
 #include "SrvOptFQDN.h"
-#include "DHCPConst.h"
 
 TSrvOptFQDN::TSrvOptFQDN(string fqdn, TMsg* parent)
-    :TOptString(OPTION_FQDN, fqdn, parent) {
-
+    :TOptFQDN(fqdn, parent) {
+	this->setNFlag(false);
 }
 
 TSrvOptFQDN::TSrvOptFQDN(char *buf, int bufsize, TMsg* parent)
-    :TOptString(OPTION_FQDN, buf, bufsize, parent) {
+    :TOptFQDN(buf, bufsize, parent) {
 
 }
 
