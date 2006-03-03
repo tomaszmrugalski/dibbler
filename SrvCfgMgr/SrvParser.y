@@ -15,6 +15,7 @@
 #include "SrvCfgIface.h"
 #include "DUID.h"
 #include "Logger.h"
+#include "FQDN.h"
 
 #define YY_USE_CLASS
 %}
@@ -30,6 +31,9 @@ List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */      
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
+List(TFQDN) PresentFQDNLst;                                                          \
+SmartPtr<TDUID> duidNew;                                                                \
+SmartPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -39,8 +43,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                     \
-SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                       \
+SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
+SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 virtual ~SrvParser();
 
 // constructor
@@ -159,6 +163,48 @@ ClassOptionDeclarationsList
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
 /////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////
+// Parameters for FQDN Options                   //
+///////////////////////////////////////////////////
+
+FQDNList
+: STRING_
+{
+	Log(Notice)<< "FQDN Option : The client "<<$1<<" has no address nor DUID"<<LogEnd;
+    PresentFQDNLst.append(new TFQDN($1,false));
+}
+| STRING_ '-' DUID_
+{
+    duidNew = new TDUID($3.duid,$3.length);
+    Log(Debug)<< "FQDN Option : " << $1 <<" DUID is "<<*duidNew<<LogEnd;
+    PresentFQDNLst.append(new TFQDN(new TDUID($3.duid,$3.length), $1,false));
+} 
+| STRING_ '-' IPV6ADDR_
+{
+    addr = new TIPv6Addr($3);
+    Log(Debug)<< "FQDN Option : " << $1 <<" address is "<<*addr<<LogEnd;
+    PresentFQDNLst.append(new TFQDN(new TIPv6Addr($3), $1,false));
+}
+| FQDNList ',' STRING_
+{
+	Log(Notice)<< "FQDN Option : The client "<<$3<<" has no address nor DUID"<<LogEnd;
+    PresentFQDNLst.append(new TFQDN($3,false));
+}
+| FQDNList ',' STRING_ '-' DUID_
+{
+    duidNew = new TDUID($5.duid,$5.length);
+    Log(Debug)<< "FQDN Option : " << $3 << " DUID is "<<*(new TDUID($5.duid,$5.length))<<LogEnd;
+    PresentFQDNLst.append(new TFQDN(new TDUID($5.duid,$5.length), $3,false));
+}
+| FQDNList ',' STRING_ '-' IPV6ADDR_
+{
+    addr = new TIPv6Addr($5);
+    Log(Debug)<< "FQDN Option : " << $3<<" address is "<<*(new TIPv6Addr($5))<<LogEnd;
+    PresentFQDNLst.append(new TFQDN(new TIPv6Addr($5), $3,false));
+}
+;
+
 Number
 :  HEXNUMBER_ {$$=$1;}
 |  INTNUMBER_ {$$=$1;}
@@ -607,10 +653,17 @@ SIPDomainOption
 //////////////////////////////////////////////////////////////////////
 //FQDN option/////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+
 FQDNOption
-:OPTION_ FQDN_ STRING_
+:OPTION_ FQDN_
 {
-    ParserOptStack.getLast()->setFQDN($3);
+    PresentFQDNLst.clear()
+} FQDNList
+{
+    ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
+    
+    Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
+                 ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
 }
 ;
 

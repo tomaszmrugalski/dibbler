@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.6 2005-01-03 21:57:08 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.7 2006-03-03 21:09:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/01/03 21:57:08  thomson
+ * Relay support added.
+ *
  * Revision 1.5  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -25,6 +28,7 @@
 
 #include "SrvParsIfaceOpt.h"
 #include "DHCPConst.h"
+#include "Logger.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 {
@@ -209,16 +213,96 @@ bool TSrvParsIfaceOpt::supportSIPDomain() {
 }
 
 // --- option: FQDN ---
-void TSrvParsIfaceOpt::setFQDN(string fqdn) { 
-    this->FQDN=fqdn;
+
+void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) *fqdn) {
+    this->FQDNLst = *fqdn;
     this->FQDNSupport = true;
 }
-string TSrvParsIfaceOpt::getFQDN() { 
-    return this->FQDN;
+
+string TSrvParsIfaceOpt::getFQDNName(SmartPtr<TDUID> duid) {
+    int cpt = 1;
+    string res = "";
+    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    FQDNLst.first();
+    foo = FQDNLst.get();
+    while(!(*(*foo).Duid == *duid) && cpt<FQDNLst.count()){
+        foo = FQDNLst.get();	
+ 	cpt++;
+    }
+    if (cpt<FQDNLst.count()) {
+        res = (*foo).Name;
+    } else {
+        if (*(*foo).Duid == *duid) {
+	    res = (*foo).Name;
+	}
+    }
+    return res;
 }
+
+string TSrvParsIfaceOpt::getFQDNName(SmartPtr<TIPv6Addr> addr) {
+    int cpt = 1;
+    string res = "";
+    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    FQDNLst.first();
+    foo = FQDNLst.get();
+    while(!(*(*foo).Addr == *addr) && cpt<FQDNLst.count()){
+        foo = FQDNLst.get();
+ 	cpt++;
+    }
+    if (cpt<FQDNLst.count()) {
+        res = (*foo).Name;
+    } else {
+        if (*(*foo).Addr == *addr) {
+	    res = (*foo).Name;
+	}
+    }
+    return res;
+}
+
+string TSrvParsIfaceOpt::getFQDNName() {
+    int cpt = 1;
+    string res = "";
+    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    FQDNLst.first();
+    foo = FQDNLst.get();
+    Log(Debug)<<"FQDN used ? : "<<(*foo).used<<LogEnd;
+    Log(Debug)<<"FQDN Addr ? : "<<*(*foo).Addr<<LogEnd;
+    Log(Debug)<<"FQDN Duid ? : "<<*(*foo).Duid<<LogEnd;
+    while((!(*(*foo).Addr == *(new TIPv6Addr())) || 
+           !(*(*foo).Duid == *(new TDUID())) ||
+           (*foo).used == true ) &&
+          cpt<FQDNLst.count()){
+        foo = FQDNLst.get();
+        Log(Debug)<<"FQDN <while>used ? : "<<(*foo).used<<LogEnd;
+        cpt++;
+    }
+    if (cpt<FQDNLst.count()) {
+        FQDNLst.getPrev();
+        (*(FQDNLst.get())).used=true;
+        res = (*foo).Name;
+    } else {
+        if (*(*foo).Addr == *(new TIPv6Addr()) && (*(*foo).Duid == *(new TDUID())) &&
+            (*foo).used==false) {
+            (*foo).used=true;
+	    res = (*foo).Name;
+	}
+    }
+    return res;
+}
+
+SmartPtr<TDUID> TSrvParsIfaceOpt::getFQDNDuid(string name) {
+    SmartPtr<TDUID> res = new TDUID();
+    return res;
+}
+
+List(TFQDN) *TSrvParsIfaceOpt::getFQDNLst() {
+    return &this->FQDNLst;
+}
+
 bool TSrvParsIfaceOpt::supportFQDN() {
     return this->FQDNSupport;
 }
+
 
 // --- option: NIS server ---
 void TSrvParsIfaceOpt::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {

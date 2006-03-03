@@ -22,7 +22,7 @@ parser:
 
 client: $(CLIENTBIN)
 
-$(CLIENTBIN): includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
+$(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc         \
@@ -35,17 +35,18 @@ $(CLIENTBIN): includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	-L$(CLNTCFGMGR)   -lClntCfgMgr   \
 	-L$(CFGMGR)       -lCfgMgr       \
 	-L$(CLNTIFACEMGR) -lClntIfaceMgr \
-	-L$(IFACEMGR)     -lIfaceMgr     \
-	-L$(CLNTMESSAGES) -lClntMsg      \
-	                  -lClntAddrMgr  \
-	                  -lAddrMgr      \
-	-L$(MISC)         -lMisc         \
-	-L$(MESSAGES)     -lMsg          \
-	-lClntOptions -lOptions -lLowLevel
+	-L$(IFACEMGR)     -lIfaceMgr       \
+	-L$(CLNTMESSAGES) -lClntMsg        \
+	                  -lClntAddrMgr    \
+	                  -lAddrMgr        \
+	-L$(MISC)         -lMisc           \
+	-L$(MESSAGES)     -lMsg            \
+	-lClntOptions -lOptions -lLowLevel \
+	-L$(POSLIB)       -lposlib
 
 server: $(SERVERBIN)
 
-$(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
+$(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr     \
@@ -56,7 +57,7 @@ $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	-L$(SRVCFGMGR)   -lSrvCfgMgr       \
 	-L$(CFGMGR)      -lCfgMgr          \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr     \
-	-L$(IFACEMGR)     -lIfaceMgr       \
+	-L$(IFACEMGR)    -lIfaceMgr        \
 	-L$(MISC)        -lMisc            \
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr      \
@@ -69,7 +70,8 @@ $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	-L$(MESSAGES)    -lMsg             \
 	-L$(MISC)        -lMisc            \
 	-L$(OPTIONS)     -lOptions         \
-	-L$(LOWLEVEL)    -lLowLevel
+	-L$(LOWLEVEL)    -lLowLevel        \
+	-L$(POSLIB)      -lposlib
 
 relay: $(RELAYBIN)
 
@@ -83,11 +85,12 @@ $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	-L$(RELMESSAGES) -lRelMsg       \
 	-L$(LOWLEVEL)    -lLowLevel     \
 	-L$(CFGMGR)      -lCfgMgr       \
-	-L$(IFACEMGR)     -lIfaceMgr    \
+	-L$(IFACEMGR)    -lIfaceMgr     \
 	-L$(MISC)        -lMisc         \
 	-L$(MESSAGES)    -lMsg          \
 	-L$(MISC)        -lMisc         \
 	-L$(OPTIONS)     -lOptions      \
+
 	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions
 
 objs:	includes
@@ -104,7 +107,7 @@ objs:	includes
 
 # === libs ===
 
-libs:	commonlibs clntlibs srvlibs
+libs:	libposlib commonlibs clntlibs srvlibs
 
 commonlibs:	includes
 	@for dir in $(COMMONSUBDIRS); do \
@@ -120,6 +123,17 @@ srvlibs:	includes
 	@for dir in $(SRVSUBDIRS); do \
 		( cd $$dir; $(MAKE) libs ) || exit 1; \
 	done
+
+libposlib: 
+	@echo "[CONFIG ] /poslib/"
+	cd $(PREFIX)/poslib; test -e "config.h" || ./configure >configure-poslib.log;
+	@echo "[MAKE   ] /poslib/poslib"
+	$(MAKE) -C $(PREFIX)/poslib > poslib.log
+	rm -f $(POSLIB)/*.so*
+
+poslib-configure:
+	@echo "[CONFIG ] /poslib/"
+	cd $(PREFIX)/poslib; ./configure >configure-poslib.log
 
 relaylibs:	includes
 	@for dir in $(RELSUBDIRS); do \
@@ -384,6 +398,7 @@ tags:
 
 clean-libs:
 	find . -name *.a -exec rm {} \;
+	$(MAKE) -C $(PREFIX)/poslib clean
 
 links: includes
 clobber: clean

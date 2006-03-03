@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.20 2005-08-03 22:47:34 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.21 2006-03-03 21:09:34 thomson Exp $
  */
 
 #include <sstream>
@@ -186,7 +186,10 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
     if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
     if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
-    if (opt->supportFQDN())       this->setFQDN(opt->getFQDN());
+    if (opt->supportFQDN()){
+	    this->setFQDNLst(opt->getFQDNLst());
+	    Log(Debug) <<"FQDN Support is enabled on the " << this->getFullName()  << " interface." << LogEnd;
+    }
     if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
     if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
     if (opt->supportNISServer())  this->setNISServerLst(opt->getNISServerLst());
@@ -381,16 +384,98 @@ bool TSrvCfgIface::supportSIPDomain() {
 }
 
 // --- option: FQDN ---
-void TSrvCfgIface::setFQDN(string fqdn) { 
-    this->FQDN=fqdn;
+
+void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
+    this->FQDNLst = *fqdn;
     this->FQDNSupport = true;
 }
-string TSrvCfgIface::getFQDN() { 
-    return this->FQDN;
+
+string TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid) {
+    int cpt = 1;
+    string res = "";
+    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    
+    Log(Debug) << "FQDN : Looking for DUID : "<< *duid << LogEnd;
+    FQDNLst.first();
+
+    foo = FQDNLst.get();
+    while(!(*(*foo).Duid == *duid) && cpt<FQDNLst.count()){
+        foo = FQDNLst.get();	
+ 	cpt++;
+    }
+    
+    if (cpt<FQDNLst.count()) {
+        res = (*foo).Name;
+    } else {
+        if (*(*foo).Duid == *duid) {
+	    res = (*foo).Name;
+	}
+    }
+    Log(Debug) << "FQDN found : " << res << LogEnd;
+    return res;
 }
+
+string TSrvCfgIface::getFQDNName(SmartPtr<TIPv6Addr> addr) {
+    int cpt = 1;
+    string res = "";
+    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    FQDNLst.first();
+    foo = FQDNLst.get();
+    while(!(*(*foo).Addr == *addr) && cpt<FQDNLst.count()){
+        foo = FQDNLst.get();
+ 	cpt++;
+    }
+    if (cpt<FQDNLst.count()) {
+        res = (*foo).Name;
+    } else {
+        if (*(*foo).Addr == *addr) {
+	    res = (*foo).Name;
+	}
+    }
+    return res;
+}
+
+string TSrvCfgIface::getFQDNName() {
+    int cpt = 1;
+    string res = "";
+    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    FQDNLst.first();
+    foo = FQDNLst.get();
+    while((!(*(*foo).Addr == *(new TIPv6Addr())) || 
+           !(*(*foo).Duid == *(new TDUID())) ||
+           (*foo).used == true ) &&
+          cpt<FQDNLst.count()){
+        foo = FQDNLst.get();
+        cpt++;
+    }
+    if (cpt<FQDNLst.count()) {
+        FQDNLst.getPrev();
+        (*(FQDNLst.get())).used=true;
+        res = (*foo).Name;
+    } else {
+        if (*(*foo).Addr == *(new TIPv6Addr()) && (*(*foo).Duid == *(new TDUID())) &&
+            (*foo).used==false) {
+            (*foo).used=true;
+	    res = (*foo).Name;
+	}
+    }
+    return res;
+}
+
+
+SmartPtr<TDUID> TSrvCfgIface::getFQDNDuid(string name) {
+    SmartPtr<TDUID> res = new TDUID();
+    return res;
+}
+
+List(TFQDN) *TSrvCfgIface::getFQDNLst() {
+    return &this->FQDNLst;
+}
+
 bool TSrvCfgIface::supportFQDN() {
     return this->FQDNSupport;
 }
+
 
 // --- option: NIS server ---
 void TSrvCfgIface::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
@@ -542,7 +627,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     // option: FQDN
     if (iface.supportFQDN()) {
-        out << "    <fqdn>" << iface.FQDN << "</fqdn>" << endl;
+        out <<"     <fqdn>" << iface.FQDNLst.count() << "</fqdn>" << endl;
     } else {
         out << "    <!-- <fqdn/> -->" << endl;
     }
@@ -570,7 +655,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     // option: NIS+-DOMAIN
     if (iface.supportNISPDomain()) {
-        out << "    <nisplus-domain>" << iface.FQDN << "</nisplus-domain>" << endl;
+        out << "    <nisplus-domain>" << iface.NISPDomain << "</nisplus-domain>" << endl;
     } else {
         out << "    <!-- <nisplus-domain/> -->" << endl;
     }
@@ -588,6 +673,10 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2005/08/03 22:47:34  thomson
+ * Support for 'share' parameter added,
+ * Support for randomization between classes added.
+ *
  * Revision 1.19  2005/08/02 23:43:27  thomson
  * *** empty log message ***
  *

@@ -6,9 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.11 2005-08-02 00:33:58 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.12 2006-03-03 21:09:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/08/02 00:33:58  thomson
+ * White-list bug fixed (bug #120),
+ * Minor compilation warnings in gcc 4.0 removed.
+ *
  * Revision 1.10  2005/05/02 21:48:42  thomson
  * getFullName() method implemented.
  *
@@ -121,8 +125,12 @@ public:
     bool supportSIPDomain();
 
     // option: FQDN
-    string getFQDN();
-    void setFQDN(string fqdn);
+    List(TFQDN) * getFQDNLst();
+    string getFQDNName(SmartPtr<TDUID> addr);
+    string getFQDNName(SmartPtr<TIPv6Addr> addr);
+    string getFQDNName();
+    SmartPtr<TDUID> getFQDNDuid(string name);
+    void setFQDNLst(List(TFQDN) * fqdn);
     bool supportFQDN();
 
     // option: NIS servers
@@ -187,7 +195,7 @@ private:
     string Timezone;
     List(TIPv6Addr) SIPServerLst;
     List(string) SIPDomainLst;
-    string FQDN;
+    List(TFQDN) FQDNLst;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;

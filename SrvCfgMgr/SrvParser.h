@@ -28,6 +28,7 @@
 #include "SrvCfgIface.h"
 #include "DUID.h"
 #include "Logger.h"
+#include "FQDN.h"
 
 #define YY_USE_CLASS
 #define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                     \
@@ -36,6 +37,9 @@ List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */      
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
+List(TFQDN) PresentFQDNLst;                                                          \
+SmartPtr<TDUID> duidNew;                                                                \
+SmartPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -45,8 +49,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                     \
-SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                       \
+SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
+SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
@@ -54,7 +58,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 53 "SrvParser.y"
+#line 57 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;

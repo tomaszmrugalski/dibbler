@@ -34,7 +34,7 @@ RELAYBIN     = dibbler-relay
 CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
 SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
 RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
-PORT_LDFLAGS = 
+PORT_LDFLAGS =
 PORT_CFLAGS  = 
 PORT_SUBDIR  = Port-linux
 
@@ -95,11 +95,14 @@ RELCFGMGR   = $(PREFIX)/RelCfgMgr
 RELMESSAGES = $(PREFIX)/RelMessages
 RELOPTIONS  = $(PREFIX)/RelOptions
 
+POSLIB	  = $(PREFIX)/poslib/poslib/.libs
+
 COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include Misc $(PORT_SUBDIR)
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
 RELSUBDIRS   = RelTransMgr RelMessages RelOptions  RelIfaceMgr RelCfgMgr
-SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS)
+POSLIBDIRS   = poslib	  poslib/poslib
+SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS) $(POSLIBDIRS)
 
 # === UNIVERSAL TARGETS ===
 
@@ -123,6 +126,7 @@ clean:
 	find . -name test? -exec rm {} \;
 	if [ -d bison++/.deps ]; then rm -rf bison++/.deps; fi
 	if [ -d doc ]; then make -C doc clean; fi
+	if [ -e poslib/Makefile ]; then $(MAKE) -C $(PREFIX)/poslib clean > /dev/null; fi
 
 # === SUBDIR NAMES ===
 SUBDIR=$(subst $(TOPDIR),,$(CURDIR))

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.7 2005-01-03 21:57:08 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.8 2006-03-03 21:09:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/01/03 21:57:08  thomson
+ * Relay support added.
+ *
  * Revision 1.6  2004/10/25 20:45:54  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -26,6 +29,7 @@
 #ifndef TSRCPARSIFACEOPT_H_
 #define TSRCPARSIFACEOPT_H_
 #include "SrvParsClassOpt.h"
+#include "FQDN.h"
 
 class TSrvParsIfaceOpt : public TSrvParsClassOpt
 {
@@ -89,9 +93,14 @@ public:
     bool supportSIPDomain();
 
     // option: FQDN
-    string getFQDN();
-    void setFQDN(string fqdn);
+    List(TFQDN) *getFQDNLst();
+    string getFQDNName(SmartPtr<TDUID> duid);
+    string getFQDNName(SmartPtr<TIPv6Addr> addr);
+    string getFQDNName();
+    SmartPtr<TDUID> getFQDNDuid(string name);
+    void setFQDNLst(List(TFQDN) *fqdn);
     bool supportFQDN();
+
 
     // option: NIS servers
     List(TIPv6Addr) * getNISServerLst();
@@ -151,7 +160,7 @@ private:
     string Timezone;
     List(TIPv6Addr) SIPServerLst;
     List(string) SIPDomainLst;
-    string FQDN;
+    List(TFQDN) FQDNLst;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
