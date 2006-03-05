@@ -6,13 +6,13 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.49 2006-03-05 21:51:28 thomson Exp $
+ * $Id: Portable.h,v 1.50 2006-03-05 21:52:28 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.4.2-CVS(FQDN+TA_support) (" __DATE__ " " __TIME__ ")" 
+#define DIBBLER_VERSION "0.4.2-CVS_FQDN+TA_support (" __DATE__ " " __TIME__ ")" 
 //#define DIBBLER_VERSION "0.4.2"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
@@ -214,6 +214,9 @@ struct iface {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.49  2006/03/05 21:51:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.48  2006/03/05 21:48:08  thomson
  * Version define updated.
  *
