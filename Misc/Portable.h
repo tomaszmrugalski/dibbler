@@ -6,15 +6,14 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.47 2006-02-02 23:18:29 thomson Exp $
+ * $Id: Portable.h,v 1.48 2006-03-05 21:48:08 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-/* #define DIBBLER_VERSION "0.4.1-CVS (" __DATE__ " " __TIME__ ")" 
- */
-#define DIBBLER_VERSION "0.4.2"
+#define DIBBLER_VERSION "0.4.2-CVS(FQDN+TA support) (" __DATE__ " " __TIME__ ")" 
+//#define DIBBLER_VERSION "0.4.2"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -215,6 +214,9 @@ struct iface {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.47  2006/02/02 23:18:29  thomson
+ * 0.4.2 release.
+ *
  * Revision 1.46  2006/01/12 00:23:35  thomson
  * Cleanup changes. Now -pedantic option works.
  *
