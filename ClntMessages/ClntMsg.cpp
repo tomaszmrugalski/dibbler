@@ -6,34 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.10 2005-01-08 16:52:03 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.9  2004/12/08 01:08:23  thomson
- * Warning messages now print proper message names.
- *
- * Revision 1.8  2004/11/29 22:46:45  thomson
- * Lifetime option is only requested if specified in conf file (bug #75)
- *
- * Revision 1.7  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.6  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.5  2004/10/03 21:36:48  thomson
- * Just a typo.
- *
- * Revision 1.4  2004/09/27 22:01:01  thomson
- * Sending is now more verbose.
- *
- * Revision 1.3  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.2  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
+ * $Id: ClntMsg.cpp,v 1.11 2006-03-05 21:39:19 thomson Exp $
  */
 
 #ifdef WIN32
@@ -52,6 +25,7 @@
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptIA_NA.h"
+#include "ClntOptTA.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptPreference.h"
 #include "ClntOptElapsed.h"
@@ -112,8 +86,8 @@ void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
 //Constructor builds message on the basis of buffer
 TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
                    SmartPtr<TClntTransMgr> TransMgr, 
-                   SmartPtr<TClntCfgMgr> CfgMgr,
-                   SmartPtr<TClntAddrMgr> AddrMgr,
+                   SmartPtr<TClntCfgMgr>   CfgMgr,
+                   SmartPtr<TClntAddrMgr>  AddrMgr,
                    int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize)
                    :TMsg(iface, addr, buf, bufSize)
 {
@@ -203,7 +177,12 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_LIFETIME:
 	    ptr = new TClntOptLifetime(buf+pos, length, this);
 	    break;
-	case OPTION_IA_TA:
+	case OPTION_IA_TA: {
+	    SmartPtr<TClntOptTA> ta = new TClntOptTA(buf+pos, length, this);
+	    ta->setContext(AddrMgr, IfaceMgr, CfgMgr, Iface, addr);
+	    ptr = (Ptr*) ta;
+	    break;
+	}
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
@@ -212,8 +191,8 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_RELAY_MSG:
 	case OPTION_AUTH_MSG:
 	case OPTION_INTERFACE_ID:
-	    Log(Warning) << "Option " << code<< "not supported in message " 
-			 << MsgType << ") in this version of client." << LogEnd;
+	    Log(Warning) << "Option " << code<< " in message " 
+			 << MsgType << " is not supported." << LogEnd;
 	    break;
 	default: 
 	    Log(Warning) << "Unknown option: " << code << ", length=" << length 
@@ -240,7 +219,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     this->firstOption();
     SmartPtr<TOpt> opt;
-    while ( opt = getOption())
+    while ( opt = getOption() )
 	opt->setDUID(optSrvID->getDUID());
 }
 
@@ -331,6 +310,28 @@ SmartPtr<TClntCfgMgr> TClntMsg::getClntCfgMgr()
 SmartPtr<TClntIfaceMgr> TClntMsg::getClntIfaceMgr()
 {
     return this->ClntIfaceMgr;
+}
+
+void TClntMsg::setIface(int iface) {
+    this->Iface = iface;
+    SmartPtr<TOpt> opt;
+    this->Options.first();
+    while (opt = Options.get()) {
+	switch ( opt->getOptType() ) {
+	case OPTION_IA: {
+	    SmartPtr<TClntOptIA_NA> ia = (Ptr*) opt;
+	    ia->setIface(iface);
+	    break;
+	}
+	case OPTION_IA_TA: {
+	    SmartPtr<TClntOptTA> ta = (Ptr*) opt;
+	    ta->setIface(iface);
+	    break;
+	}
+	default:
+	    continue;
+	}
+    }
 }
 
 
@@ -493,5 +494,68 @@ void TClntMsg::appendRequestedOptions() {
     // final setup: Did we add any options at all? 
     if ( optORO->count() ) 
 	Options.append( (Ptr*) optORO );
+}
+
+/** 
+ * append all TA options, which are currently in the NOTCONFIGURED state.
+ * 
+ * @param switchToInProcess - switch them to INPROCESS state?
+ */
+void TClntMsg::appendTAOptions(bool switchToInProcess)
+{
+    SmartPtr<TClntCfgIface> ptrIface;
+    SmartPtr<TClntCfgTA> ptrTA;
+    ClntCfgMgr->firstIface();
+    // for each interface...
+    while ( ptrIface = ClntCfgMgr->getIface() ) {
+	ptrIface->firstTA();
+	// ... find TA...
+	while ( ptrTA = ptrIface->getTA() ) {
+	    if (ptrTA->getState()!=NOTCONFIGURED)
+		continue;
+	    // ... which are not yet configured
+	    SmartPtr<TOpt> ptrOpt = new TClntOptTA(ptrTA->getIAID(), this);
+
+	    Options.append ( (Ptr*) ptrOpt);
+	    Log(Debug) << "TA option (IAID=" << ptrTA->getIAID() << ") was added." << LogEnd;
+	    if (switchToInProcess)
+		ptrTA->setState(INPROCESS);
+	}
+    }
 
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ * Revision 1.10.2.1  2006/02/05 23:38:07  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.10  2005/01/08 16:52:03  thomson
+ * Relay support implemented.
+ *
+ * Revision 1.9  2004/12/08 01:08:23  thomson
+ * Warning messages now print proper message names.
+ *
+ * Revision 1.8  2004/11/29 22:46:45  thomson
+ * Lifetime option is only requested if specified in conf file (bug #75)
+ *
+ * Revision 1.7  2004/10/27 22:07:55  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
+ * Revision 1.6  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
+ * Revision 1.5  2004/10/03 21:36:48  thomson
+ * Just a typo.
+ *
+ * Revision 1.4  2004/09/27 22:01:01  thomson
+ * Sending is now more verbose.
+ *
+ * Revision 1.3  2004/09/07 17:42:31  thomson
+ * Server Unicast implemented.
+ *
+ * Revision 1.2  2004/06/04 16:55:27  thomson
+ * *** empty log message ***
+ *
+ */

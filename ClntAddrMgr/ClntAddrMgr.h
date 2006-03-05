@@ -6,9 +6,15 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.h,v 1.6 2004-12-07 22:54:35 thomson Exp $
+ * $Id: ClntAddrMgr.h,v 1.7 2006-03-05 21:39:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6.2.1  2006/02/05 23:38:06  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.6  2004/12/07 22:54:35  thomson
+ * Typos corrected.
+ *
  * Revision 1.5  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -47,12 +53,23 @@ class TClntAddrMgr : public TAddrMgr
 
     unsigned long getTimeout();
     unsigned long getTentativeTimeout();
+
+    // --- IA ---
     void firstIA();
     SmartPtr<TAddrIA> getIA();
     SmartPtr<TAddrIA> getIA(unsigned long IAID);
     void addIA(SmartPtr<TAddrIA> ptr);
     bool delIA(long IAID);
     int countIA();
+
+    // --- TA ---
+    void firstTA();
+    SmartPtr<TAddrIA> getTA();
+    SmartPtr<TAddrIA> getTA(unsigned long iaid);
+    void addTA(SmartPtr<TAddrIA> ptr);
+    bool delTA(unsigned long iaid);
+    int countTA();
+
     ~TClntAddrMgr();
 
     void doDuties();

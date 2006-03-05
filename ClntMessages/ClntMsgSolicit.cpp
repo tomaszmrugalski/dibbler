@@ -6,35 +6,8 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.13 2005-01-08 16:52:03 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.12  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.11  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.10  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.9  2004/09/07 22:02:32  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.8  2004/09/03 23:20:22  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.6  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.5  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
+ * $Id: ClntMsgSolicit.cpp,v 1.14 2006-03-05 21:39:19 thomson Exp $
  */
-
 #include "SmartPtr.h"
 #include "Msg.h"
 
@@ -52,10 +25,6 @@
 #include "ClntOptElapsed.h"
 #include "ClntOptPreference.h"
 #include "ClntOptRapidCommit.h"
-#include "ClntOptDNSServers.h"
-#include "ClntOptNTPServers.h"
-#include "ClntOptDomainName.h"
-#include "ClntOptTimeZone.h"
 #include "ClntOptServerIdentifier.h"
 #include <cmath>
 
@@ -69,11 +38,8 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
 {
     IRT=SOL_TIMEOUT;
     MRT=SOL_MAX_RT;
-
-    //these both below mean there is no ending condition and transactions
-    //lasts till receiving answer
-    MRC=0;
-    MRD=0;
+    MRC=0; //these both below mean there is no ending condition and transactions
+    MRD=0; //lasts till receiving answer
     RT=0;
 	
     // ClientIdentifier option
@@ -95,7 +61,10 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     if(rapid)
         Options.append(new TClntOptRapidCommit(this));
-    
+
+    this->appendTAOptions(false); // append, but don't switch to INPROCESS state
+
+    // append options specified in the config file
     this->appendRequestedOptions();
     
     pkt = new char[getSize()];
@@ -383,3 +352,38 @@ TClntMsgSolicit::~TClntMsgSolicit()
 {
     delete [] pkt;
 }
+
+/*
+ *
+ * $Log: not supported by cvs2svn $
+ * Revision 1.13.2.1  2006/02/05 23:38:07  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.13  2005/01/08 16:52:03  thomson
+ * Relay support implemented.
+ *
+ * Revision 1.12  2004/12/03 20:51:42  thomson
+ * Logging issues fixed.
+ *
+ * Revision 1.11  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
+ * Revision 1.10  2004/10/02 13:11:24  thomson
+ * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
+ * Unicast communication now can be enable on client side (disabled by default).
+ *
+ * Revision 1.9  2004/09/07 22:02:32  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
+ * Revision 1.8  2004/09/03 23:20:22  thomson
+ * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
+ *
+ * Revision 1.6  2004/07/05 00:53:03  thomson
+ * Various changes.
+ *
+ * Revision 1.5  2004/06/20 17:51:48  thomson
+ * getName() method implemented, comment cleanup
+ *
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ */

@@ -18,8 +18,8 @@
 class TOptDUID : public TOpt
 {
   public:
-    TOptDUID(SmartPtr<TDUID> duid, TMsg* parent);
-    TOptDUID(char* &buf, int &bufsize, TMsg* parent);
+    TOptDUID(int type, SmartPtr<TDUID> duid, TMsg* parent);
+    TOptDUID(int type, char* &buf, int &bufsize, TMsg* parent);
     int getSize();
 
     char * storeSelf(char* buf);

@@ -6,9 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.8 2004-11-30 00:42:50 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.9 2006-03-05 21:38:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8.2.1  2006/02/05 23:38:06  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.8  2004/11/30 00:42:50  thomson
+ * Client no longer sends RapidCommit, unless told to do so (bug #55)
+ *
  * Revision 1.7  2004/11/29 21:21:56  thomson
  * Client parser now supports 'option lifetime' directive (bug #75)
  *
@@ -41,6 +47,7 @@
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "ClntCfgGroup.h"
+#include "ClntCfgTA.h"
 #include "ClntParsGlobalOpt.h"
 #include "SmartPtr.h"
 #include "DUID.h"
@@ -55,11 +62,19 @@ public:
     TClntCfgIface(string ifaceName);
     TClntCfgIface(int ifaceNr);
 
+    // IA
     TContainer< SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;
     void firstGroup();
     int countGroup();
     SmartPtr<TClntCfgGroup> getGroup();
     void addGroup(SmartPtr<TClntCfgGroup> ptr);
+    
+    // TA
+    void firstTA();
+    void addTA(SmartPtr<TClntCfgTA> ta);
+    SmartPtr<TClntCfgTA> getTA();
+    int countTA();
+
     string getName(void);
     void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
     SmartPtr<TClntCfgGroup> getLastGroup();
@@ -164,6 +179,8 @@ private:
     bool isIA;
     bool Unicast;
     bool RapidCommit;
+
+    List(TClntCfgTA) ClntCfgTALst;
     
     List(TIPv6Addr) DNSServerLst;
     List(string) DomainLst;

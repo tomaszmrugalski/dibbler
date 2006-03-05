@@ -6,9 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.9 2004-12-07 00:45:10 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.10 2006-03-05 21:35:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.9  2004/12/07 00:45:10  thomson
+ * Manager creation unified and cleaned up.
+ *
  * Revision 1.8  2004/12/03 20:51:42  thomson
  * Logging issues fixed.
  *
@@ -50,9 +56,21 @@ long TSrvAddrMgr::getTimeout() {
     return this->getValidTimeout();
 }
 
-
-/*
+/** 
  * add address for a client. If client o IA is missing, add it, too.
+ * 
+ * @param clntDuid 
+ * @param clntAddr 
+ * @param iface 
+ * @param IAID 
+ * @param T1 
+ * @param T2 
+ * @param addr 
+ * @param pref 
+ * @param valid 
+ * @param quiet 
+ * 
+ * @return 
  */
 bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
 			      int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
@@ -182,6 +200,144 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
 
     return true;
 }
+/** 
+ * adds TA address
+ * 
+ * @param clntDuid 
+ * @param clntAddr 
+ * @param iface 
+ * @param iaid 
+ * @param addr 
+ * @param pref 
+ * @param valid 
+ * 
+ * @return 
+ */
+bool TSrvAddrMgr::addTAAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
+			    int iface, unsigned long iaid, SmartPtr<TIPv6Addr> addr, 
+			    unsigned long pref, unsigned long valid) {
+    // find this client
+    SmartPtr <TAddrClient> ptrClient;
+    this->firstClient();
+    while ( ptrClient = this->getClient() ) {
+        if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
+            break;
+    }
+
+    // have we found this client? 
+    if (!ptrClient) {
+	Log(Debug) << "Adding client (DUID=" << clntDuid->getPlain() << ") to the addrDB." << LogEnd;
+	ptrClient = new TAddrClient(clntDuid);
+	this->addClient(ptrClient);
+    }
+
+    // find this TA
+    SmartPtr <TAddrIA> ta;
+    ptrClient->firstTA();
+    while ( ta = ptrClient->getIA() ) {
+        if ( ta->getIAID() == iaid)
+            break;
+    }
+
+    // have we found this IA?
+    if (!ta) {
+	ta = new TAddrIA(iface, clntAddr, clntDuid, DHCPV6_INFINITY, DHCPV6_INFINITY, iaid);
+	ptrClient->addTA(ta);
+	Log(Debug) << "Adding TA (IAID=" << iaid << ") to the addrDB." << LogEnd;
+    }
+
+    SmartPtr <TAddrAddr> ptrAddr;
+    ta->firstAddr();
+    while ( ptrAddr = ta->getAddr() ) {
+        if (*ptrAddr->get()==*addr)
+            break;
+    }
+
+    // address already exists
+    if (ptrAddr) {
+        Log(Warning) << "Address " << *ptrAddr << " is already assigned to TA (iaid=" 
+		     << iaid << ")." << LogEnd;
+        return false;
+    }
+
+    // add address
+    ptrAddr = new TAddrAddr(addr, pref, valid);
+    ta->addAddr(ptrAddr);
+    Log(Debug) << "Adding " << ptrAddr->get()->getPlain() << " to TA (IAID=" << iaid
+	       << ") to addrDB." << LogEnd;
+    return true;
+}
+
+/** 
+ * Frees address (also deletes IA and/or client, if this was last address)
+ * 
+ * @param clntDuid 
+ * @param iaid 
+ * @param clntAddr 
+ * 
+ * @return 
+ */
+bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid, 
+			      SmartPtr<TIPv6Addr> clntAddr) {
+    // find this client
+    SmartPtr <TAddrClient> ptrClient;
+    this->firstClient();
+    while ( ptrClient = this->getClient() ) {
+        if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
+            break;
+    }
+
+    // have we found this client? 
+    if (!ptrClient) {
+        Log(Warning) << "Client (DUID=" << clntDuid->getPlain() 
+		     << ") not found in addrDB, cannot delete address and/or client." << LogEnd;
+	return false;
+    }
+
+    // find this IA
+    SmartPtr <TAddrIA> ta;
+    ptrClient->firstTA();
+    while ( ta = ptrClient->getTA() ) {
+        if ( ta->getIAID() == iaid)
+            break;
+    }
+
+    // have we found this TA?
+    if (!ta) {
+        Log(Warning) << "TA (IAID=" << iaid << ") not assigned to client, cannot delete address and/or IA."
+		     << LogEnd;
+        return false;
+    }
+
+    SmartPtr <TAddrAddr> ptrAddr;
+    ta->firstAddr();
+    while ( ptrAddr = ta->getAddr() ) {
+        if (*ptrAddr->get()==*clntAddr)
+            break;
+    }
+
+    // address already exists
+    if (!ptrAddr) {
+	Log(Warning) << "Address " << *clntAddr << " not assigned, cannot delete." << LogEnd;
+	return false;
+    }
+
+    ta->delAddr(clntAddr);
+    Log(Debug) << "Deleted address " << *clntAddr << " from addrDB." << LogEnd;
+    
+    if (!ta->countAddr()) {
+	Log(Debug) << "Deleted TA (IAID=" << iaid << ") from addrDB." << LogEnd;
+	ptrClient->delTA(iaid);
+    }
+
+    if (!ptrClient->countIA()) {
+	Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
+		   << ") form addrDB." << LogEnd;
+	this->delClient(clntDuid);
+    }
+    
+    return true;
+}
 
 
 /*
@@ -226,6 +382,31 @@ bool TSrvAddrMgr::addrIsFree(SmartPtr<TIPv6Addr> addr)
         {
             SmartPtr<TAddrAddr> ptrAddr;
             if (ptrAddr = ptrIA->getAddr(addr) )
+                return false;
+        }
+    }
+    return true;
+}
+
+/** 
+ * Verifies if addr is unused
+ * 
+ * @param addr 
+ * 
+ * @return 
+ */
+bool TSrvAddrMgr::taAddrIsFree(SmartPtr<TIPv6Addr> addr)
+{
+    // for each client...
+    SmartPtr <TAddrClient> ptrClient;
+    ClntsLst.first();
+    while ( ptrClient = ClntsLst.get() ) {
+        // look at each client's TAs
+        SmartPtr <TAddrIA> ta;
+        ptrClient->firstTA();
+        while ( ta = ptrClient->getTA() ) 
+        {
+            if (ta->getAddr(addr) )
                 return false;
         }
     }

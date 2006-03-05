@@ -25,6 +25,7 @@
 #include "ClntCfgIface.h"
 #include "ClntCfgAddr.h"
 #include "ClntCfgIA.h"
+#include "ClntCfgTA.h"
 #include "ClntCfgGroup.h"
 #include "Logger.h"
 
@@ -39,6 +40,7 @@ TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
 TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;                       \
 TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;                       \
 TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;                          \
+TContainer<SmartPtr<TClntCfgTA> >    ClntCfgTALst;                          \
 TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
@@ -54,9 +56,11 @@ void StartIfaceDeclaration();                                               \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
 void StartIADeclaration(bool aggregation);                                  \
-void EndIADeclaration(long iaCnt);                                          \
+void EndIADeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
+bool iaidSet;                                                               \
+unsigned int iaid;                                                          \
 virtual ~clntParser();
 #define YY_clntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_clntParser_CONSTRUCTOR_CODE                                                     \
@@ -65,7 +69,7 @@ virtual ~clntParser();
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();
 
-#line 64 "ClntParser.y"
+#line 67 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -267,19 +271,21 @@ typedef
 #define	REJECT_SERVERS_	277
 #define	PREFERRED_SERVERS_	278
 #define	IA_	279
-#define	ADDRES_	280
-#define	IPV6ADDR_	281
-#define	WORKDIR_	282
-#define	RAPID_COMMIT_	283
-#define	STATELESS_	284
-#define	OPTION_	285
-#define	LOGNAME_	286
-#define	LOGLEVEL_	287
-#define	LOGMODE_	288
-#define	STRING_	289
-#define	HEXNUMBER_	290
-#define	INTNUMBER_	291
-#define	DUID_	292
+#define	TA_	280
+#define	IAID_	281
+#define	ADDRES_	282
+#define	IPV6ADDR_	283
+#define	WORKDIR_	284
+#define	RAPID_COMMIT_	285
+#define	STATELESS_	286
+#define	OPTION_	287
+#define	LOGNAME_	288
+#define	LOGLEVEL_	289
+#define	LOGMODE_	290
+#define	STRING_	291
+#define	HEXNUMBER_	292
+#define	INTNUMBER_	293
+#define	DUID_	294
 
 
 #line 169 "../bison++/bison.h"
@@ -350,6 +356,8 @@ static const int NO_CONFIG_;
 static const int REJECT_SERVERS_;
 static const int PREFERRED_SERVERS_;
 static const int IA_;
+static const int TA_;
+static const int IAID_;
 static const int ADDRES_;
 static const int IPV6ADDR_;
 static const int WORKDIR_;
@@ -393,19 +401,21 @@ static const int DUID_;
 	,REJECT_SERVERS_=277
 	,PREFERRED_SERVERS_=278
 	,IA_=279
-	,ADDRES_=280
-	,IPV6ADDR_=281
-	,WORKDIR_=282
-	,RAPID_COMMIT_=283
-	,STATELESS_=284
-	,OPTION_=285
-	,LOGNAME_=286
-	,LOGLEVEL_=287
-	,LOGMODE_=288
-	,STRING_=289
-	,HEXNUMBER_=290
-	,INTNUMBER_=291
-	,DUID_=292
+	,TA_=280
+	,IAID_=281
+	,ADDRES_=282
+	,IPV6ADDR_=283
+	,WORKDIR_=284
+	,RAPID_COMMIT_=285
+	,STATELESS_=286
+	,OPTION_=287
+	,LOGNAME_=288
+	,LOGLEVEL_=289
+	,LOGMODE_=290
+	,STRING_=291
+	,HEXNUMBER_=292
+	,INTNUMBER_=293
+	,DUID_=294
 
 
 #line 215 "../bison++/bison.h"

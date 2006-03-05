@@ -6,9 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.13 2005-01-03 21:53:01 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.14 2006-03-05 21:38:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13.2.1  2006/02/05 23:38:06  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.13  2005/01/03 21:53:01  thomson
+ * id is now called ifindex
+ *
  * Revision 1.12  2004/11/30 00:42:50  thomson
  * Client no longer sends RapidCommit, unless told to do so (bug #55)
  *
@@ -123,12 +129,29 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     if (ReqLifetime)   this->setLifetimeState(NOTCONFIGURED);
 }
 
- void TClntCfgIface::firstGroup()
+void TClntCfgIface::firstTA() {
+    this->ClntCfgTALst.first();
+}
+
+SmartPtr<TClntCfgTA> TClntCfgIface::getTA() {
+    return this->ClntCfgTALst.get();
+}
+
+void  TClntCfgIface::addTA(SmartPtr<TClntCfgTA> ta) {
+    this->ClntCfgTALst.append(ta);
+}
+
+int TClntCfgIface::countTA()
+{
+    return ClntCfgTALst.count();
+}
+
+void TClntCfgIface::firstGroup()
 {
     ClntCfgGroupLst.first();
 }
 
- int TClntCfgIface::countGroup()
+int TClntCfgIface::countGroup()
 {
     return ClntCfgGroupLst.count();
 }
@@ -382,6 +405,12 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     }
     out << "    </groups>" << endl;
 
+    out << "    <!-- temporary addresses -->" << endl;
+    SmartPtr<TClntCfgTA> ta;
+    iface.firstTA();
+    while (ta = iface.getTA() ) {
+	out << *ta;
+    }
 
     out << "    <!-- options -->" << endl;
 

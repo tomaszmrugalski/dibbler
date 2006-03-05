@@ -6,9 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgRequest.cpp,v 1.4 2006-02-02 23:18:30 thomson Exp $
+ * $Id: SrvMsgRequest.cpp,v 1.5 2006-03-05 21:35:15 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.4  2006/02/02 23:18:30  thomson
+ * 0.4.2 release.
+ *
  * Revision 1.3  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -70,7 +76,7 @@ bool TSrvMsgRequest::check()
         if (option->getOptType() == OPTION_SERVERID)
         {
             srvCnt++; 
-            srvDUID=option;
+            srvDUID=(Ptr*)option;
         };
     }
     if (clntCnt!=1) return false;

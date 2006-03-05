@@ -6,74 +6,8 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.36 2006-03-02 01:00:00 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.37 2006-03-05 21:39:19 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.35  2005/09/15 19:46:08  thomson
- * *** empty log message ***
- *
- * Revision 1.34  2005/01/12 00:10:05  thomson
- * Compilation fixes.
- *
- * Revision 1.33  2005/01/08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.32  2004/12/08 00:18:35  thomson
- * Log message clarified.
- *
- * Revision 1.31  2004/12/07 22:57:51  thomson
- * removeExpired() method rewritten.
- *
- * Revision 1.30  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.29  2004/12/04 23:45:40  thomson
- * Problem with client and server on the same Linux host fixed (bug #56)
- *
- * Revision 1.28  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.27  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.26  2004/11/30 00:53:56  thomson
- * RapidCommit is now property of the interface, not the group.
- *
- * Revision 1.25  2004/11/05 09:01:29  thomson
- * Win32 socket initialization error corrected.
- * Thanks to Michal Balcerkiewicz.
- *
- * Revision 1.24  2004/11/01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.23  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.22  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.21  2004/09/07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.20  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.19  2004/09/07 15:37:44  thomson
- * Socket handling changes.
- *
- * Revision 1.16  2004/07/11 14:08:01  thomson
- * Opening additonal socket on loopback is not necessary in WIN32 systems.
- *
- * Revision 1.8  2004/04/10 12:18:01  thomson
- * Numerous fixes: LogName, LogMode options added, dns-servers changed to
- * dns-server, '' around strings are no longer needed.
- *
- * Revision 1.7  2004/04/09 22:33:11  thomson
- * dns-servers changed to option dns-server
- *
- * Revision 1.6  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
  */
 
 #ifdef WIN32
@@ -366,8 +300,8 @@ void TClntTransMgr::doDuties()
         // are there any tentative addrs?
         checkDecline();
 
-        // are there any IAs to configure?
-        checkSolicit();    
+        // are there any IAs or TAs to configure?
+        checkSolicit();
 
         //is there any IA in Address manager, which has not sufficient number 
         //of addresses
@@ -455,6 +389,9 @@ void TClntTransMgr::shutdown()
         if (releasedIAs.count()) 
             this->sendRelease(releasedIAs);
     }
+    
+    //doDuties(); // just to send RELEASE msg
+    //Transactions.clear(); // delete all transactions
 
     // clean up options
     this->IfaceMgr->removeAllOpts();
@@ -481,8 +418,9 @@ void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
 		ifaceAnswer   = this->IfaceMgr->getIfaceByID(msgAnswer->getIface());
 		Log(Warning) << "Reply for transaction 0x" << hex << msgQuestion->getTransID() << dec
 			     << " sent on " << ifaceQuestion->getFullName() << " was received on interface " 
-			     << ifaceAnswer->getFullName() << ". Ignored." << LogEnd;
-		return;
+			     << ifaceAnswer->getFullName() << "." << LogEnd;
+		// return; // don't return, just fix interface ID
+		msgAnswer->setIface(msgQuestion->getIface());
 	    }
 
             msgQuestion->answer(msgAnswer);
@@ -632,7 +570,7 @@ void TClntTransMgr::checkSolicit() {
 		Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
                 Transactions.append(
 		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
-					iface->getID(), SmartPtr<TIPv6Addr>()/*NULL*/, 
+					iface->getID(), 0, 
 					IALstToConfig, iface->getRapidCommit()));
 	    }
         }//for every group
@@ -841,61 +779,57 @@ void TClntTransMgr::checkDecline()
 
 void TClntTransMgr::checkRequest()
 {
-    SmartPtr<TAddrIA> firstIA;
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TClntCfgIA> ptrCfgIA;
+    SmartPtr<TAddrIA> ia;
+    SmartPtr<TClntCfgIA> cfgIA;
     SmartPtr<TClntCfgGroup> firstIAGroup;
-//    int result;
-    do
-    {
-        firstIA= SmartPtr<TAddrIA>();
+    SmartPtr<TDUID> duid = 0;
+    List(TAddrIA) requestIALst;
+    int ifaceID = 0;
 
-        TContainer<SmartPtr<TAddrIA> > requestIALst;
+    requestIALst.clear();
+    AddrMgr->firstIA();
+    while( ia=AddrMgr->getIA() ) {
 
-        AddrMgr->firstIA();
-        while((ptrIA=AddrMgr->getIA())&&(!firstIA))
-        {
-            //find first IA which is not in process and all addresses
-            //were checked against duplication and dosen't have assigned
-            //all addresses
-            ptrCfgIA=CfgMgr->getIA(ptrIA->getIAID());
-            if ((ptrIA->getTentative()==NO)&&
-                (ptrIA->getState()!=INPROCESS)&&
-                (ptrIA->countAddr()<ptrCfgIA->countAddr()))
-            {
-                firstIA=ptrIA;
-                firstIAGroup=CfgMgr->getGroupForIA(ptrIA->getIAID());
-            }
-        }
-        if (firstIA)
-        {
-            requestIALst.append(firstIA);
-            firstIA->setState(INPROCESS);
-            while(ptrIA=AddrMgr->getIA())
-            {
-                //find other IA's, which is not in process and all addresses
-                //were checked against DAD, and belong to the same group
-                //were received from one server
-                if(((ptrIA->getTentative()==NO)&&
-                    (ptrIA->getState()!=INPROCESS)&&
-                    (ptrIA->countAddr()<ptrCfgIA->countAddr()))&&
-                    (*ptrIA->getDUID()==*firstIA->getDUID())&&
-                    (&(*firstIAGroup)==&(*CfgMgr->getGroupForIA(ptrIA->getIAID())))
-                  )
-                {
-                    ptrIA->setState(INPROCESS);
-                    requestIALst.append(ptrIA);
-                }
+	cfgIA = CfgMgr->getIA(ia->getIAID());
+	if (!cfgIA) {
+	    Log(Error) << "Internal sanity check failed. Unable to find IA (iaid=" << ia->getIAID()
+		       << ") in the CfgMgr." << LogEnd;
+	    continue;
+	}
 
-            }
+	// find all IAs which should be configured:
+	if ( (ia->getState()!=NOTCONFIGURED) )
+	    continue;
 
-            //Here should be send decline for all tentative addresses in IAs
-            SmartPtr<TClntMsgRequest> request = 
-                new TClntMsgRequest(IfaceMgr, That, CfgMgr, AddrMgr,
-				    requestIALst,firstIA->getDUID(), firstIA->getIface());
-            Transactions.append( (Ptr*) request);
-        }
-    } while(firstIA);
+	// this IA is being serviced by different server
+	if ( (duid) && !((*ia->getDUID()) == (*duid)) ) {
+	    continue;
+	}
+
+	// if we have found one IA, following ones must be on the same interface
+	if ( ifaceID && (ia->getIface()!=ifaceID) ) {
+	    continue;
+	}
+
+	if ( ia->countAddr() < cfgIA->countAddr() ) {
+	    Log(Info) << "IA (iaid=" << ia->getIAID() << ") is configured to get " 
+		      << cfgIA->countAddr() << " addr, but server provided " << ia->countAddr() 
+		      << ", REQUEST will be sent." << LogEnd;
+	}
+
+	requestIALst.append(ia);
+	ia->setState(INPROCESS);
+	duid = ia->getDUID();
+	ifaceID = ia->getIface();
+    }
+
+    if (requestIALst.count()) {
+	// create REQUEST message
+	SmartPtr<TClntMsgRequest> request;
+	request = new TClntMsgRequest(IfaceMgr, That, CfgMgr, AddrMgr,
+				      requestIALst, duid, ifaceID );
+	Transactions.append( (Ptr*) request);
+    } 
 }
 
 bool TClntTransMgr::isDone()

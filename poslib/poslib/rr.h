@@ -43,7 +43,7 @@ enum _rr_flags {
                            in this Resource Record */
  R_COMPRESS = 2,      /**< Compress domain names in this RR in outgoing DNS
                            messages */
- R_ASPCOMPRESS = 3,   /**< Do both additional section processing and
+ R_ASPCOMPRESS = 3    /**< Do both additional section processing and
                            domain name compression */
 };
 

@@ -6,9 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.6 2004-12-07 00:45:10 thomson Exp $
+ * $Id: SrvAddrMgr.h,v 1.7 2006-03-05 21:35:47 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.6  2004/12/07 00:45:10  thomson
+ * Manager creation unified and cleaned up.
+ *
  * Revision 1.5  2004/09/07 22:02:33  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -37,12 +43,19 @@ class TSrvAddrMgr : public TAddrMgr
     ~TSrvAddrMgr();
 
     long getTimeout();
+    // IA address management
     bool addClntAddr(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
 		     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
 		     SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
 		     bool quiet);
     bool delClntAddr(SmartPtr<TDUID> duid,unsigned long IAID, SmartPtr<TIPv6Addr> addr,
 		     bool quiet);
+
+    // TA address management
+    bool addTAAddr(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
+		   int iface, unsigned long iaid, SmartPtr<TIPv6Addr> addr, 
+		   unsigned long pref, unsigned long valid);
+    bool delTAAddr(SmartPtr<TDUID> duid,unsigned long iaid, SmartPtr<TIPv6Addr> addr);
     
     // how many addresses does this client have?
     unsigned long getAddrCount(SmartPtr<TDUID> duid);
@@ -53,6 +66,7 @@ class TSrvAddrMgr : public TAddrMgr
 		       long *addrCnt, SmartPtr<TDUID> duid, int iface);
 
     bool addrIsFree(SmartPtr<TIPv6Addr> addr);
+    bool taAddrIsFree(SmartPtr<TIPv6Addr> addr);
 };
 
 #endif

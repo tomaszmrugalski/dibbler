@@ -6,41 +6,28 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.8 2004-12-07 20:51:22 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.9 2006-03-05 21:38:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.7  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
+ * Revision 1.8.2.1  2006/02/05 23:38:07  thomson
+ * Devel branch with Temporary addresses support added.
  *
- * Revision 1.6  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.5  2004/09/07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- *
- * Revision 1.3  2004/06/04 19:03:46  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
-
 #include "AddrIA.h"
+#include "ClntCfgIA.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIAAddress.h"
 #include "ClntOptStatusCode.h"
-#include "ClntOptRapidCommit.h"
 #include "Logger.h"
-#include "ClntOptIAAddress.h"
 
+/** 
+ * Used in CONFIRM constructor
+ * 
+ * @param clntAddrIA 
+ * @param zeroTimes 
+ * @param parent 
+ */
 TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* parent)
     :TOptIA_NA(clntAddrIA->getIAID(), zeroTimes?0:clntAddrIA->getT1(),
 	       zeroTimes?0:clntAddrIA->getT2(), parent) 
@@ -56,6 +43,12 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg*
     
 }
 
+/** 
+ * Used in DECLINE, RENEW and RELEASE
+ * 
+ * @param addrIA 
+ * @param parent 
+ */
 TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
     :TOptIA_NA(addrIA->getIAID(),addrIA->getT1(),addrIA->getT2(), parent)
 {
@@ -77,6 +70,13 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
     DUID = SmartPtr<TDUID>(); // NULL
 }
 
+/** 
+ * Used in REQUEST constructor
+ * 
+ * @param ClntCfgIA 
+ * @param ClntaddrIA 
+ * @param parent 
+ */
 TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, SmartPtr<TAddrIA> ClntaddrIA, TMsg* parent)
     :TOptIA_NA(ClntaddrIA->getIAID(),ClntaddrIA->getT1(),ClntaddrIA->getT2(), parent)
 {
@@ -97,11 +97,17 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, SmartPtr<TAddrIA> C
     DUID = SmartPtr<TDUID>(); // NULL
 }
 
-TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
+/** 
+ * Used in SOLICIT constructor
+ * 
+ * @param ClntCfgIA 
+ * @param parent 
+ */TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
     :TOptIA_NA(ClntCfgIA->getIAID(),ClntCfgIA->getT1(),ClntCfgIA->getT2(), parent)
 {
     ClntCfgIA->firstAddr();
     SmartPtr<TClntCfgAddr> ClntCfgAddr;
+    // just copy all addresses defined in the CfgMgr
     while (ClntCfgAddr = ClntCfgIA->getAddr())
         SubOptions.append(new TClntOptIAAddress(ClntCfgAddr->get(),
         ClntCfgAddr->getPref(),
@@ -109,6 +115,13 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
     DUID = SmartPtr<TDUID>(); // NULL
 }
 
+/** 
+ * Used to create object from received message
+ * 
+ * @param buf 
+ * @param bufsize 
+ * @param parent 
+ */
 TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
 :TOptIA_NA(buf,bufsize, parent)
 {
@@ -199,19 +212,19 @@ void TClntOptIA_NA::setThats(SmartPtr<TClntIfaceMgr> ifaceMgr,
                              SmartPtr<TClntTransMgr> transMgr, 
                              SmartPtr<TClntCfgMgr> cfgMgr, 
                              SmartPtr<TClntAddrMgr> addrMgr,
-                             SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, int iface)
+                             SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface)
 {
     this->AddrMgr=addrMgr;
     this->IfaceMgr=ifaceMgr;
     this->TransMgr=transMgr;
     this->CfgMgr=cfgMgr;
-    this->DUID=duid;
-    if (addr) {
+    this->DUID=srvDuid;
+    if (srvAddr) {
         this->Unicast = true;
     } else {
         this->Unicast = false;
     }
-    this->Addr=addr;
+    this->Addr=srvAddr;
     this->Iface = iface;
 }
 
@@ -219,6 +232,7 @@ TClntOptIA_NA::~TClntOptIA_NA()
 {
 
 }
+
 //I don't know whether this method should be invoked everywhere
 //i.e. from Verify\Renew\Rebind
 //it's worth to check whether futher reactions in every message will 
@@ -231,7 +245,7 @@ bool TClntOptIA_NA::doDuties()
     if (!ptrIA) {
         // unknown IAID, ignore it
 	Log(Warning) << "Received message contains unknown IA (IAID="
-            << this->getIAID() << ").Weird... ignoring it." << LogEnd;
+            << this->getIAID() << "). We didn't other it. Weird... ignoring it." << LogEnd;
         return true;
     }
 
@@ -298,6 +312,7 @@ bool TClntOptIA_NA::doDuties()
     if (!ptrIface) 
     {
 	Log(Error) << "Interface " << this->Iface << " not found." << LogEnd;
+	return true;
     }
 
     // for each address in IA option...
@@ -394,7 +409,6 @@ int TClntOptIA_NA::countValidAddrs(SmartPtr<TAddrIA> ptrIA)
         //if (!ptrIA->getAddr(ptrOptIAAddr->getAddr()))
                count++;
     }
-    //and what abou addresses in message but not in DB
     return count;
 }
 
@@ -421,6 +435,11 @@ void TClntOptIA_NA::releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr )
 		     << IAID << ") not present in addrDB." << LogEnd;
 }
 
+void TClntOptIA_NA::setIface(int iface) {
+    this->Iface    = iface;
+}
+
+
 bool TClntOptIA_NA::isValid()
 {
     SmartPtr<TClntOptIAAddress> addr;
@@ -439,3 +458,24 @@ bool TClntOptIA_NA::isValid()
     else
         return false;
 }
+
+/*
+ * Revision 1.8  2004/12/07 20:51:22  thomson
+ * Link local safety checks added (bug #39)
+ *
+ * Revision 1.7  2004/12/02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
+ * Revision 1.6  2004/10/25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
+ * Revision 1.5  2004/09/07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
+ *
+ * Revision 1.3  2004/06/04 19:03:46  thomson
+ * Resolved warnings with signed/unisigned
+ *
+ * Revision 1.2  2004/03/29 18:53:08  thomson
+ * Author/Licence/cvs log/cvs version headers added.
+ */

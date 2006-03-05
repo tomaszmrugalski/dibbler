@@ -6,9 +6,16 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.19 2006-03-03 21:02:16 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.20 2006-03-05 21:35:15 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ *
+ * Revision 1.18.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.19  2006/03/03 21:02:16  thomson
+ * FQDN support implemented.
+ *
  * Revision 1.18  2005/09/13 23:00:06  thomson
  * Compilation warning removed.
  *
@@ -52,6 +59,7 @@
 #include "SrvOptStatusCode.h"
 #include "SrvOptIAAddress.h"
 #include "SrvOptIA_NA.h"
+#include "SrvOptTA.h"
 #include "SrvOptRapidCommit.h"
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptTimeZone.h"
@@ -99,30 +107,35 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     bool OnLink = true;
     while (ptrOpt=confirm->getOption() && (OnLink) ) {
 	switch (ptrOpt->getOptType()) {
-	case OPTION_IA: 
-	{
-	    SmartPtr<TSrvOptIA_NA> ptrIA = (Ptr*) ptrOpt;
-	    SmartPtr<TOpt> ptrSubOpt;
-	    ptrIA->firstOption();
-	    while ( ptrSubOpt = ptrIA->getOption() && (OnLink) ) {
-		if (ptrSubOpt->getOptType() == OPTION_IAADDR) {
-		    SmartPtr< TSrvOptIAAddress > ptrAddr = (Ptr*) ptrSubOpt;
-		    // addr found. Now look for class it belongs to
-		    SmartPtr<TSrvCfgAddrClass> ptrClass;
-		    bool Found = false;
-		    // check each class on this interface
-		    ptrIface->firstAddrClass();
-		    while ( ptrClass = ptrIface->getAddrClass() && (OnLink) ) {
-			if (ptrClass->addrInPool(ptrAddr->getAddr() ) )
-			    Found = true;
-			
-		    }
-		    if (!Found)
-			OnLink = false;
+	case OPTION_IA: {
+	    SmartPtr<TSrvOptIA_NA> ia = (Ptr*) ptrOpt;
+	    SmartPtr<TOpt> subOpt;
+	    ia->firstOption();
+	    while ( subOpt = ia->getOption() && (OnLink) ) {
+		if (subOpt->getOptType() != OPTION_IAADDR)
+		    continue;
+		SmartPtr<TSrvOptIAAddress> optAddr = (Ptr*) subOpt;
+		if (!CfgMgr->isIAAddrSupported(this->Iface, ia->getIAID(), optAddr->getAddr())) {
+		    OnLink = false;
 		}
 	    }
 	    break;
-	}   
+	}
+	case OPTION_IA_TA: {
+	    SmartPtr<TSrvOptTA> ta = (Ptr*) ptrOpt;
+	    SmartPtr<TOpt> subOpt;
+	    ta->firstOption();
+	    while (subOpt = ta->getOption() && (OnLink)) {
+		if (subOpt->getOptType() != OPTION_IAADDR)
+		    continue;
+		SmartPtr<TSrvOptIAAddress> optAddr = (Ptr*) subOpt;
+		if (!CfgMgr->isTAAddrSupported(this->Iface, ta->getIAID(), optAddr->getAddr())) {
+		    OnLink = false;
+		}
+
+	    }
+	    break;
+	}
 	default:
 	    // other options - ignore them
 	    continue;
@@ -242,6 +255,9 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		new TSrvOptStatusCode(STATUSCODE_SUCCESS,tmp+" addrs declined.",this);
 	    replyIA_NA->addOption( (Ptr*) optStatusCode );
 	};
+	case OPTION_IA_TA:
+	    Log(Info) << "TA address declined. Oh well. Since it's temporary, let's ignore it entirely." << LogEnd;
+	    break;
 	default:
 	    break;
 	}
@@ -336,9 +352,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     //Identifier option containing the server's DUID, the Client Identifier
     //option from the client message, and no other options.
 
-    SmartPtr<TSrvOptIA_NA> clntIA;
     SmartPtr<TSrvOptClientIdentifier> clntID;
-    SmartPtr<TOpt> opt;
+    SmartPtr<TOpt> opt, subOpt;
 
     release->firstOption();
     opt = release->getOption(OPTION_SERVERID);
@@ -349,67 +364,91 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     Options.append(opt);
     clntID=(Ptr*) opt;
 
+    SmartPtr<TAddrClient> client = AddrMgr->getClient(clntID->getDUID());
+    if (!client) {
+	Log(Warning) << "Received RELEASE from unknown client." << LogEnd;
+	IsDone = true;
+	return;
+    }
+
     release->firstOption();
     while(opt=release->getOption()) {
-        if (opt->getOptType()!=OPTION_IA)
-	    continue;
-
-	clntIA=(Ptr*) opt;
-	SmartPtr<TSrvOptIAAddress> addr;
-	clntIA->firstOption();
-	SmartPtr<TOpt> subOpt;
-	bool anyDeleted=false;
-	clntIA->firstOption();
-	while(subOpt=clntIA->getOption()) {
-	    if (subOpt->getOptType()!=OPTION_IAADDR)
-		continue;
+	switch (opt->getOptType()) {
+	case OPTION_IA: {
+	    SmartPtr<TSrvOptIA_NA> clntIA = (Ptr*) opt;
+	    SmartPtr<TSrvOptIAAddress> addr;
+	    bool anyDeleted=false;
 	    
-	    addr=(Ptr*) subOpt;                
-	    SmartPtr<TAddrClient> ptrClient = AddrMgr->getClient(clntID->getDUID());
-	    if (!ptrClient) {
-		Log(Warning) << "Received RELEASE from unknown client." << LogEnd;
-		IsDone = true;
-		return;
-	    }
-	    SmartPtr<TAddrIA> ptrIA = ptrClient->getIA(clntIA->getIAID() );
+	    // does this client has IA? (iaid check)
+	    SmartPtr<TAddrIA> ptrIA = client->getIA(clntIA->getIAID() );
 	    if (!ptrIA) {
-		Log(Warning) << "No such IA(" << clntIA->getIAID() 
-			  << ") found for client:" << *clntID->getDUID() << LogEnd;
-		Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,
-						 "No such IA is bound.",this) );
-	    } else {
-		CfgMgr->delClntAddr(this->Iface,addr->getAddr());
-		if (AddrMgr->delClntAddr(clntID->getDUID(),
-					 clntIA->getIAID(),
-					 addr->getAddr(),
-					 false) )
+		Log(Warning) << "No such IA (iaid=" << clntIA->getIAID() << ") found for client:" << *clntID->getDUID() << LogEnd;
+		Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such IA is bound.",this) );
+		continue;
+	    }
+	    
+	    // let's verify each address
+	    clntIA->firstOption();
+	    while(subOpt=clntIA->getOption()) {
+		if (subOpt->getOptType()!=OPTION_IAADDR)
+		    continue;
+		addr = (Ptr*) subOpt;
+		if (AddrMgr->delClntAddr(clntID->getDUID(), clntIA->getIAID(), addr->getAddr(), false) ) {
+		    CfgMgr->delClntAddr(this->Iface,addr->getAddr());
 		    anyDeleted=true;                    
-		else {
-		    Log(Warning) << "No such binding found: "
-				 << "IAID:" <<clntIA->getIAID() 
-				 << "Address:"<< addr->getAddr()->getPlain()
-				 << "DUID:"<< clntID->getDUID()->getPlain()
-				 << LogEnd;
+		} else {
+		    Log(Warning) << "No such binding found: client=" << clntID->getDUID()->getPlain() << ", IA (iaid=" 
+				 << clntIA->getIAID() << "), addr="<< addr->getAddr()->getPlain() << LogEnd;
 		};
 	    };
-	};
-	//After all the addresses have been processed, the server generates a
-	//Reply message and includes a Status Code option with value Success,a
-	//Server Identifier option with the server's DUID, and a Client
-	//Identifier option with the client's DUID.  For each IA in the Release
-	//message for which the server has no binding information, the server
-	//adds an IA option using the IAID from the Release message, and
-	//includes a Status Code option with the value NoBinding in the IA
-	//option.  No other options are included in the IA option.
-	if (!anyDeleted)
-	{
-	    SmartPtr<TSrvOptIA_NA> ansIA(new TSrvOptIA_NA(clntIA->getIAID(),
-							  clntIA->getT1(),clntIA->getT2(),this));
-	    Options.append((Ptr*)ansIA);
-	    ansIA->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
-						   "Not every address had binding.",this));
-	};
-    };
+
+	    // send result to the client
+	    if (!anyDeleted)
+	    {
+		SmartPtr<TSrvOptIA_NA> ansIA(new TSrvOptIA_NA(clntIA->getIAID(), clntIA->getT1(),clntIA->getT2(),this));
+		Options.append((Ptr*)ansIA);
+		ansIA->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
+	    };
+	    break;
+	}
+	case OPTION_IA_TA: {
+	    SmartPtr<TSrvOptTA> ta = (Ptr*) opt;
+	    bool anyDeleted = false;
+	    SmartPtr<TAddrIA> ptrIA = client->getTA(ta->getIAID() );
+	    if (!ptrIA) {
+		Log(Warning) << "No such TA (iaid=" << ta->getIAID() << ") found for client:" << *clntID->getDUID() << LogEnd;
+		Options.append( new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING, "No such IA is bound.", this) );
+		continue;
+	    }
+	    
+	    // let's verify each address
+	    ta->firstOption();
+	    while ( subOpt = ta->getOption() ) {
+		if (subOpt->getOptType()!=OPTION_IAADDR)
+		    continue;
+		SmartPtr<TSrvOptIAAddress> addr = (Ptr*) subOpt;
+		
+		if (AddrMgr->delTAAddr(clntID->getDUID(), ta->getIAID(), addr->getAddr()) ) {
+		    CfgMgr->delTAAddr(this->Iface);
+		    anyDeleted=true;                    
+		} else {
+		    Log(Warning) << "No such binding found: client=" << clntID->getDUID()->getPlain() << ", TA (iaid=" 
+			     << ta->getIAID() << "), addr="<< addr->getAddr()->getPlain() << LogEnd;
+		};
+	    }
+	    
+	    // send results to the client
+	    if (!anyDeleted)
+	    {
+		SmartPtr<TSrvOptTA> answerTA = new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING, "Not every address had binding.", this);
+		Options.append((Ptr*)answerTA);
+	    };
+	    break;
+	}
+	default:
+	    break;
+	}; // switch(...)
+    } // while 
     
     Options.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,
 					 "All IAs in RELEASE message were processed.",this));
@@ -448,15 +487,17 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         case OPTION_SERVERID:
             this->Options.append(ptrOpt);
             break;
-        case OPTION_IA: 
-            {
-                SmartPtr<TSrvOptIA_NA> optIA_NA;
-                optIA_NA = new TSrvOptIA_NA(CfgMgr, AddrMgr, (Ptr*)ptrOpt, 
-                    renew->getAddr(), duidOpt->getDUID(),
-                    renew->getIface(), addrCount, RENEW_MSG, this);
-                this->Options.append((Ptr*)optIA_NA);
-            }
+        case OPTION_IA: {
+	    SmartPtr<TSrvOptIA_NA> optIA_NA;
+	    optIA_NA = new TSrvOptIA_NA(CfgMgr, AddrMgr, (Ptr*)ptrOpt, 
+					renew->getAddr(), duidOpt->getDUID(),
+					renew->getIface(), addrCount, RENEW_MSG, this);
+	    this->Options.append((Ptr*)optIA_NA);
             break;
+	}
+	case OPTION_IA_TA:
+	    Log(Warning) << "TA option present. Temporary addreses cannot be renewed." << LogEnd;
+	    break;
         //Invalid options in RENEW message
         case OPTION_RELAY_MSG :
         case OPTION_INTERFACE_ID :
@@ -524,11 +565,17 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    break;
 	}
 	case OPTION_IA          : {
-	    SmartPtr<TSrvOptIA_NA> optIA_NA;
-	    optIA_NA=new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, 
-				      clntDuid, clntAddr,
-				      clntIface, REQUEST_MSG,this);
-	    this->Options.append((Ptr*)optIA_NA);
+	    SmartPtr<TSrvOptIA_NA> optIA;
+	    optIA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, 
+				     clntAddr, clntIface, REQUEST_MSG,this);
+	    this->Options.append((Ptr*)optIA);
+	    break;
+	}
+	case OPTION_IA_TA: {
+	    SmartPtr<TSrvOptTA> ta;
+	    ta = new TSrvOptTA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, clntAddr,
+			       clntIface, REQUEST_MSG, this);
+	    this->Options.append((Ptr*)ta);
 	    break;
 	}
 	case OPTION_STATUS_CODE :
@@ -635,13 +682,18 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    Log(Warning) << "Solicit message contains ServerID option. Rejecting message. " << LogEnd;
 	    IsDone = true;
 	    return;
-	case OPTION_IA          : 
-	{
+	case OPTION_IA          : {
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
-	    optIA_NA=new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, 
-				      clntDuid, clntAddr, 
-				      clntIface, REQUEST_MSG,this);
+	    optIA_NA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, clntAddr, 
+					clntIface, REQUEST_MSG,this);
 	    this->Options.append((Ptr*)optIA_NA);
+	    break;
+	}
+	case OPTION_IA_TA: {
+	    SmartPtr<TSrvOptTA> ta;
+	    ta = new TSrvOptTA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, clntAddr,
+			       clntIface, REQUEST_MSG, this);
+	    this->Options.append((Ptr*)ta);
 	    break;
 	}
 	case OPTION_STATUS_CODE : 

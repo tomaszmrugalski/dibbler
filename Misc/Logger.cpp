@@ -6,9 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.15 2005-07-17 21:09:52 thomson Exp $
+ * $Id: Logger.cpp,v 1.16 2006-03-05 21:39:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.15  2005/07/17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.14  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -212,4 +218,37 @@ std::string StatusCodeToString(int status) {
 	return "Use multicast";
     }
     return "";
+}
+
+std::string MsgTypeToString(int msgType) {
+    switch (msgType) {
+    case SOLICIT_MSG:
+	return "SOLICIT";
+	break;
+    case ADVERTISE_MSG:
+	return "ADVERTISE";
+    case REQUEST_MSG:
+	return "REQUEST";
+    case REPLY_MSG:
+	return "REPLY";
+    case RELEASE_MSG:
+	return "RELEASE";
+    case CONFIRM_MSG:
+	return "CONFIRM";
+    case DECLINE_MSG:
+	return "DECLINE";
+    case RENEW_MSG:
+	return "RENEW";
+    case REBIND_MSG:
+	return "REBIND";
+    case INFORMATION_REQUEST_MSG:
+	return "INF-REQUEST";
+    case RELAY_FORW_MSG:
+	return "RELAY-FORW";
+    case RELAY_REPL_MSG:
+	return "RELAY-REPL";
+	
+    default:
+	return "?";
+    }
 }

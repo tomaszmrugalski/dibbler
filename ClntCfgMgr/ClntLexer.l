@@ -49,6 +49,8 @@ iface     {return clntParser::IFACE_;}
 no-config {return clntParser::NO_CONFIG_;}
 address   {return clntParser::ADDRES_;}
 ia        {return clntParser::IA_;}
+ta        {return clntParser::TA_; }
+iaid      {return clntParser::IAID_; }
 no-ia     {return clntParser::STATELESS_;}
 stateless {return clntParser::STATELESS_;}
 

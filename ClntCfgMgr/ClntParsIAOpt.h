@@ -32,7 +32,6 @@ class TClntParsIAOpt : public TClntParsAddrOpt
     
     long getIAIDCnt();
     void setIAIDCnt(long cnt);
-    long getIncedIAIDCnt();
     
     bool getAddrHint();
     void setAddrHint(bool addrHint);

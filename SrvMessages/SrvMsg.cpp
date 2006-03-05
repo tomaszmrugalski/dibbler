@@ -6,37 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.14 2006-03-03 21:02:16 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.13  2005/04/29 00:08:20  thomson
- * *** empty log message ***
- *
- * Revision 1.12  2005/02/07 20:51:56  thomson
- * Server stateless mode fixed (bug #103)
- *
- * Revision 1.11  2005/01/30 23:12:28  thomson
- * *** empty log message ***
- *
- * Revision 1.10  2005/01/30 22:53:28  thomson
- * *** empty log message ***
- *
- * Revision 1.9  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.8  2004/12/04 23:43:26  thomson
- * Server no longer crashes after receiving the same INF-REQUEST (bug #84)
- *
- * Revision 1.7  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.6  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.5  2004/06/20 17:25:06  thomson
- * getName() method implemented, clean up
- *
- *
+ * $Id: SrvMsg.cpp,v 1.15 2006-03-05 21:35:15 thomson Exp $
  */
 
 #include <sstream>
@@ -58,6 +28,7 @@
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
+#include "SrvOptTA.h"
 // --- options ---
 #include "SrvOptDNSServers.h"
 #include "SrvOptDomainName.h"
@@ -184,8 +155,9 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_LIFETIME:
 	    ptr = new TSrvOptLifetime(buf+pos, length, this);
 	    break;
-
 	case OPTION_IA_TA:
+	    ptr = new TSrvOptTA(buf+pos, length, this);
+	    break;
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:

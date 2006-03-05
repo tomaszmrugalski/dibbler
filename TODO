@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.23 2006-03-03 21:09:53 thomson Exp $
+$Id: TODO,v 1.24 2006-03-05 21:39:19 thomson Exp $
 
   Internal/code TODO
  --------------------
@@ -28,6 +28,15 @@ $Id: TODO,v 1.23 2006-03-03 21:09:53 thomson Exp $
    are generated in the relayMsg method by differents constructors of the same message.
    Shouldn't it be better to make it homogeneous ? I don't have any preference :)
 2. ClntIfaceMgr: remove ugly sleep(3) instruction.
+3. Server ADVERTISE evaluations. There should be some kind of ranking
+   system, which checks that IAs were provided as well as TAs. And
+   options too.
+4. Suboptions parsing. It's done in lots of places, but should be done
+   in one. e.g. TSrvOptIA_NA, TClntOptIA_NA, TClntOptTA, TSrvOptTA constructors.
+5. {Server|Client}Identifier is added in numerous places in SrvOpt*.cpp. It should be added
+   in TSrvMsg::appendRequestedOptions()
+6. How many addrs can be assigned to the client? Implement counter in the
+   TAddrClient class.
 
   BUGS
  ------

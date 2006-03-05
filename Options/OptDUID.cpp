@@ -6,9 +6,15 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptDUID.cpp,v 1.1 2006-01-29 10:46:46 thomson Exp $
+ * $Id: OptDUID.cpp,v 1.2 2006-03-05 21:37:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.1  2006/01/29 10:46:46  thomson
+ * Opt{Client|Server}Identifier classes removed, OptDUID added.
+ *
  * Revision 1.3  2004/03/29 18:53:08  thomson
  * Author/Licence/cvs log/cvs version headers added.
  *
@@ -27,8 +33,8 @@
 #include "DHCPConst.h"
 #include "OptDUID.h"
 
-TOptDUID::TOptDUID( SmartPtr<TDUID> duid, TMsg* parent)
-    :TOpt(OPTION_SERVERID, parent)
+TOptDUID::TOptDUID(int type, SmartPtr<TDUID> duid, TMsg* parent)
+    :TOpt(type, parent)
 {
     this->DUID=duid;
 }
@@ -49,8 +55,8 @@ TOptDUID::TOptDUID( SmartPtr<TDUID> duid, TMsg* parent)
     return this->DUID->storeSelf(buf);
 }
 
-TOptDUID::TOptDUID(char* &buf, int &bufsize, TMsg* parent)
-    :TOpt(OPTION_SERVERID, parent)
+TOptDUID::TOptDUID(int type, char* &buf, int &bufsize, TMsg* parent)
+    :TOpt(type, parent)
 {
     this->DUID=new TDUID(buf,bufsize);
     buf+=DUID->getLen(); 

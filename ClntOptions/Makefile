@@ -8,7 +8,7 @@ OBJECTS = ClntOptClientIdentifier.o 	ClntOptElapsed.o 	ClntOptIAAddress.o      \
 	  ClntOptDomainName.o		ClntOptNTPServers.o     ClntOptTimeZone.o       \
           ClntOptSIPServer.o            ClntOptSIPDomain.o      ClntOptFQDN.o           \
           ClntOptNISServer.o            ClntOptNISDomain.o      ClntOptNISPServer.o     \
-          ClntOptNISPDomain.o           ClntOptLifetime.o
+          ClntOptNISPDomain.o           ClntOptLifetime.o       ClntOptTA.o
 
 objs: $(OBJECTS)
 

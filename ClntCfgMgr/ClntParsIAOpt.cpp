@@ -41,11 +41,6 @@ long TClntParsIAOpt::getIAIDCnt()
     return this->IAIDCnt;
 }
 
-long TClntParsIAOpt::getIncedIAIDCnt()
-{
-    return this->IAIDCnt++;
-}
-
 void TClntParsIAOpt::setIAIDCnt(long cnt)
 {
     this->IAIDCnt=cnt;
