@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.4 2006-02-02 23:18:29 thomson Exp $
+ * $Id: daemon.cpp,v 1.5 2006-03-05 22:26:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006/02/02 23:18:29  thomson
+ * 0.4.2 release.
+ *
  * Revision 1.3  2005/07/21 21:40:19  thomson
  * PID checking process is improved.
  *
@@ -111,13 +114,28 @@ void daemon_die() {
 int init(char * pidfile, char * workdir) {
     string tmp;
     char buf[20];
+    char cmd[256];
     int pid = getPID(pidfile);
     if (pid != -1) {
 	sprintf(buf,"/proc/%d", pid);
 	if (!access(buf, F_OK)) {
-	    Log(Crit) << "Process already running (pid=" << pid << ", file " << pidfile 
-		      << " is present)." << LogEnd;
-	    return 0;
+	    sprintf(buf, "/proc/%d/exe", pid);
+	    int len=readlink(buf, cmd, sizeof(cmd));
+	    if(len!=-1) {
+	        cmd[len]=0;
+		if(strstr(cmd, "dibbler")==NULL) {
+		    Log(Warning) << "Process is running but it is not Dibbler (pid=" << pid
+				 << ", name " << cmd << ")." << LogEnd;
+		} else {
+    		    Log(Crit) << "Process already running and it seems to be Dibbler (pid=" 
+			      << pid << ", name " << cmd << ")." << LogEnd;
+		    return 0;
+		}
+	    } else {
+    		Log(Crit) << "Process already running (pid=" << pid << ", file " << pidfile 
+		    	  << " is present)." << LogEnd;
+		return 0;
+	    }
 	} else {
 	    Log(Warning) << "Pid file found (pid=" << pid << ", file " << pidfile 
 			 << "), but process " << pid << " does not exist." << LogEnd;
