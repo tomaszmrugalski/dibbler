@@ -47,6 +47,7 @@ namespace std{
 
 iface               { return SrvParser::IFACE_;}
 class               { return SrvParser::CLASS_;}
+ta-class            { return SrvParser::TACLASS_; }
 stateless           { return SrvParser::STATELESS_; }
 relay               { return SrvParser::RELAY_; }
 interface-id        { return SrvParser::IFACE_ID_; }

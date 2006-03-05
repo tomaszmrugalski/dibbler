@@ -6,9 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.41 2005-07-21 23:29:32 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.42 2006-03-05 21:34:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.41.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.41  2005/07/21 23:29:32  thomson
+ * Logging cleanup.
+ *
  * Revision 1.40  2005/07/17 21:09:54  thomson
  * Minor improvements for 0.4.1 release.
  *
@@ -281,6 +287,39 @@ TSrvCfgMgr::~TSrvCfgMgr() {
     Log(Debug) << "SrvCfgMgr cleanup." << LogEnd;
 }
 
+/**
+ * checks if this Addr is already configured in that TA belonging to that client 
+ * (used in CONFIRM message)
+ */
+bool TSrvCfgMgr::isTAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr) {
+    SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface)
+	return false;
+    ptrIface->firstTA();
+    SmartPtr<TSrvCfgTA> ta = ptrIface->getTA();
+    if (!ta)
+	return false;
+    return ta->addrInPool(addr);
+}
+
+/**
+ * checks if this Addr is already configured in that IA belonging to that client 
+ * (used in CONFIRM message)
+ */
+bool TSrvCfgMgr::isIAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr) {
+    SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface)
+	return false;
+    ptrIface->firstAddrClass();
+    SmartPtr<TSrvCfgAddrClass> addrClass;
+    while (addrClass = ptrIface->getAddrClass()) {
+	if (addrClass->addrInPool(addr))
+	    return true;
+    }
+    return false;
+}
+
+
 /*
  * returns how many addresses can be assigned to this client?
  * factors used: 
@@ -510,6 +549,28 @@ void TSrvCfgMgr::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
 	return;
     }
     ptrIface->addClntAddr(addr);
+}
+
+void TSrvCfgMgr::addTAAddr(int iface) {
+    SmartPtr<TSrvCfgIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Error) << "Unable to increase address usage: interface (id=" 
+		   << iface << ") not found." << LogEnd;
+	return;
+    }
+    ptrIface->addTAAddr();
+}
+
+void TSrvCfgMgr::delTAAddr(int iface) {
+    SmartPtr<TSrvCfgIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Error) << "Unable to decrease address usage: interface (id=" 
+		   << iface << ") not found." << LogEnd;
+	return;
+    }
+    ptrIface->delTAAddr();
 }
 
 bool TSrvCfgMgr::stateless() {

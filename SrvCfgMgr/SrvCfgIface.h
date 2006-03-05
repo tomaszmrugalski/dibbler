@@ -6,31 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.12 2006-03-03 21:09:34 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.11  2005/08/02 00:33:58  thomson
- * White-list bug fixed (bug #120),
- * Minor compilation warnings in gcc 4.0 removed.
- *
- * Revision 1.10  2005/05/02 21:48:42  thomson
- * getFullName() method implemented.
- *
- * Revision 1.9  2005/01/03 21:57:08  thomson
- * Relay support added.
- *
- * Revision 1.8  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.7  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.6  2004/09/03 23:20:23  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.5  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
+ * $Id: SrvCfgIface.h,v 1.13 2006-03-05 21:34:05 thomson Exp $
  *                                                                           
  */
 
@@ -39,6 +15,7 @@ class TSrvCfgIface;
 #define SRVCONFIFACE_H
 #include "DHCPConst.h"
 #include "SrvCfgAddrClass.h"
+#include "SrvCfgTA.h"
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
@@ -66,9 +43,13 @@ public:
     bool getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
     SmartPtr<TSrvCfgAddrClass> getAddrClass();
     SmartPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
-    SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, 
-                                              SmartPtr<TIPv6Addr> clntAddr);
+    SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
     long countAddrClass();
+
+    void addTA(SmartPtr<TSrvCfgTA> ta);
+    void firstTA();
+    SmartPtr<TSrvCfgTA> getTA();
+    SmartPtr<TSrvCfgTA> getTA(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr);
 
     SmartPtr<TIPv6Addr> getUnicast();
 
@@ -82,9 +63,13 @@ public:
     long getIfaceMaxLease();
     unsigned long getClntMaxLease();
 
-    // assigned address functions
+    // IA address functions
     void addClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
     void delClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
+
+    // TA address functions
+    void addTAAddr();
+    void delTAAddr();
 
     string getRelayName();
     int getRelayID();
@@ -167,7 +152,8 @@ private:
     unsigned long IfaceMaxLease;
     unsigned long ClntMaxLease;
     bool RapidCommit;	
-    List(TSrvCfgAddrClass) SrvCfgAddrClassLst;
+    List(TSrvCfgAddrClass) SrvCfgAddrClassLst; // IA_NA list (normal addresses)
+    List(TSrvCfgTA) SrvCfgTALst; // IA_TA list (temporary addresses)
 
     // relay
     bool Relay;
