@@ -6,44 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.13 2004-11-15 20:46:11 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.12  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.11  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.10  2004/09/08 21:22:46  thomson
- * Parser improvements, signed/unsigned issues addressed.
- *
- * Revision 1.9  2004/07/05 23:04:08  thomson
- * *** empty log message ***
- *
- * Revision 1.8  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.7  2004/06/28 22:37:59  thomson
- * Minor changes.
- *
- * Revision 1.6  2004/06/21 23:08:49  thomson
- * Minor fixes.
- *
- * Revision 1.5  2004/06/20 21:00:45  thomson
- * Various fixes.
- *
- * Revision 1.4  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
- * Revision 1.3  2004/06/17 23:53:55  thomson
- * Server Address Assignment rewritten.
- *
- * Revision 1.2  2004/06/06 22:31:44  thomson
- * *** empty log message ***
- *
- *                                                                           
+ * $Id: SrvOptIA_NA.cpp,v 1.14 2006-03-05 21:32:28 thomson Exp $
  */
 
 #ifdef WIN32
@@ -246,7 +209,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     }
     SubOptions.append((Ptr*)ptrStatus);
 
-    // --- release addresses if this reply for SOLICIT) ---
+    // if this is a ADVERTISE message, release those addresses in TSrvMsgAdvertise::answer() method
 }
 
 void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
@@ -346,7 +309,13 @@ TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
     }
 }
 
-// generate OPTION_IA based on OPTION_IA received in RENEW message
+// 
+/** 
+ * generate OPTION_IA based on OPTION_IA received in RENEW message
+ * 
+ * @param queryOpt - IA_NA option in the RENEW message
+ * @param addrCount 
+ */
 void TSrvOptIA_NA::renew(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount)
 {
     // find that client in addrdb

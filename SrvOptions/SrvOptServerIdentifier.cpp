@@ -19,12 +19,12 @@
 #include "SrvOptServerIdentifier.h"
 
 TSrvOptServerIdentifier::TSrvOptServerIdentifier( SmartPtr<TDUID> duid, TMsg* parent)
-	:TOptDUID(duid, parent)
+    :TOptDUID(OPTION_SERVERID, duid, parent)
 {
 }
 
 TSrvOptServerIdentifier::TSrvOptServerIdentifier(char* buf, int bufsize, TMsg* parent)
-    :TOptDUID(buf,bufsize, parent)
+    :TOptDUID(OPTION_SERVERID, buf,bufsize, parent)
 {
 }
 

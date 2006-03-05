@@ -6,9 +6,15 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptIA_NA.h,v 1.7 2004-07-05 00:12:30 thomson Exp $
+ * $Id: SrvOptIA_NA.h,v 1.8 2006-03-05 21:32:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7.2.1  2006/02/05 23:38:08  thomson
+ * Devel branch with Temporary addresses support added.
+ *
+ * Revision 1.7  2004/07/05 00:12:30  thomson
+ * Lots of minor changes.
+ *
  * Revision 1.6  2004/06/20 21:00:45  thomson
  * Various fixes.
  *
@@ -26,7 +32,6 @@ class TSrvOptIA_NA;
 #define SRVOPTIA_NA_H
 
 #include "OptIA_NA.h"
-#include "SrvOptIA_NA.h"
 #include "SrvOptIAAddress.h"
 #include "SmartPtr.h"
 #include "DUID.h"
@@ -75,15 +80,10 @@ class TSrvOptIA_NA : public TOptIA_NA
     SmartPtr<TDUID>       ClntDuid;
     int                   Iface;
     
-    SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, 
-					  unsigned long pref,
-					  unsigned long valid,
-					  bool quiet);
+    SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
+					  unsigned long valid, bool quiet);
     SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TIPv6Addr> hint);
 
 };
-
-
-
 
 #endif
