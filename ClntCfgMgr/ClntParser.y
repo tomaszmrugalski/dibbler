@@ -132,7 +132,8 @@ InterfaceDeclarationsList '}'
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
     //FIXME:used of char * should be always realeased
     delete [] $2;
-    EndIfaceDeclaration();
+    if (!EndIfaceDeclaration())
+	YYABORT;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -799,16 +800,22 @@ bool clntParser::EndIfaceDeclaration()
     SmartPtr<TClntCfgIface> iface = ClntCfgIfaceLst.getLast();
     if (!iface) {
 	Log(Crit) << "Internal error: Interface not found. Something is wrong. Very wrong." << LogEnd;
-	YYABORT;
+	return false;
     }
 
     //set interface options on the basis of just read information
     iface->setOptions(ParserOptStack.getLast());
 
     if ( (iface->stateless()) && (ClntCfgIALst.count()) ) {
-	Log(Crit) << "Interface " << iface->getID() << " is configured stateless, "
+	Log(Crit) << "Interface " << iface->getFullName() << " is configured stateless, "
 	    " but has " << ClntCfgIALst.count() << " IA(s) defined." << LogEnd;
-	    YYABORT;
+	return false;
+    }
+
+    if ( (iface->stateless()) && (ClntCfgTALst.count()) ) {
+	Log(Crit) << "Interface " << iface->getFullName() << " is configured stateless, "
+	    " but has TA defined." << LogEnd;
+	return false;
     }
 
 #if 0    
@@ -823,10 +830,10 @@ bool clntParser::EndIfaceDeclaration()
     // add all IAs to the group
     SmartPtr<TClntCfgIA> ia;
     ClntCfgIALst.first();
-    Log(Debug) << "### " << ClntCfgIALst.count() << " IA(s) to copy" << LogEnd;
+    //Log(Debug) << "### " << ClntCfgIALst.count() << " IA(s) to copy" << LogEnd;
     while (ia=ClntCfgIALst.get()) {
 	ClntCfgGroupLst.getLast()->addIA(ia);
-	Log(Debug) << "### Adding IA with iaid=" << ia->getIAID() << LogEnd;
+	//Log(Debug) << "### Adding IA with iaid=" << ia->getIAID() << LogEnd;
     }
 #endif
 
@@ -835,7 +842,7 @@ bool clntParser::EndIfaceDeclaration()
     SmartPtr<TClntCfgGroup> group;
     ClntCfgGroupLst.first();
     while (group=ClntCfgGroupLst.get()) {
-	Log(Debug) << "### group->countIA()=" << group->countIA() << LogEnd;
+	//Log(Debug) << "### group->countIA()=" << group->countIA() << LogEnd;
 	if (group->countIA()) 
 	    ClntCfgIfaceLst.getLast()->addGroup(group);
     }
@@ -898,7 +905,7 @@ void clntParser::EmptyIface()
     //set proper options specific for this IA
     ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
 
-    Log(Debug) << "### IA with iaid=" << ClntCfgIALst.getLast()->getIAID() << " parsed." << LogEnd;
+    //Log(Debug) << "### IA with iaid=" << ClntCfgIALst.getLast()->getIAID() << " parsed." << LogEnd;
 
     // FIXME: remove groups completly
     ClntCfgGroupLst.append(new TClntCfgGroup());

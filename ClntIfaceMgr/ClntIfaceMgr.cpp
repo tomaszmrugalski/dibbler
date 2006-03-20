@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.19 2006-03-02 00:57:46 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.20 2006-03-20 23:04:05 thomson Exp $
  */
 
 #include "Portable.h"
@@ -219,7 +219,7 @@ bool TClntIfaceMgr::doDuties() {
 	while (iface = (Ptr*)this->getIface()) {
 		cfgIface = ClntCfgMgr->getIface(iface->getID());
 		if (cfgIface) {
- 			Log(Debug) << "FQDN State : " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
+ 			// Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
 			if (cfgIface->getFQDNState() == INPROCESS) {
 				// Here we check if all parameters are set, and do the DNS update if possible
 				List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
@@ -242,7 +242,8 @@ bool TClntIfaceMgr::doDuties() {
 						ptrAddrIA->firstAddr();
 						addr = ptrAddrIA->getAddr()->get();
 						
-						Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *addr << ") and FQDN " << fqdn << LogEnd;
+						Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *addr << ") and FQDN " 
+							   << fqdn << LogEnd;
 						Log(Notice) << "Sleeping 3 seconds before FQDN update" << LogEnd;
 						sleep(3);
 						Log(Notice) << "Waking up !" << LogEnd;
@@ -252,13 +253,15 @@ bool TClntIfaceMgr::doDuties() {
 						string hostname = "";
 						string domain = "";
 						if (dotpos == string::npos) {
-							Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdn << "] Trying to do the update..." << LogEnd;
+							Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdn 
+								     << "] Trying to do the update..." << LogEnd;
 							hostname = fqdn;
 						} else {
 							hostname = fqdn.substr(0, dotpos);
 							domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
 						}
-						UpdateActivity *act = new UpdateActivity(DNSAddr->getPlain(), (char*) domain.c_str(), (char*) hostname.c_str(), addr->getPlain(), "2h");
+						UpdateActivity *act = new UpdateActivity(DNSAddr->getPlain(), (char*) domain.c_str(), 
+											 (char*) hostname.c_str(), addr->getPlain(), "2h");
 						int result = act->run();
 						delete act;
 						
@@ -266,7 +269,8 @@ bool TClntIfaceMgr::doDuties() {
 							cfgIface->setFQDNState(CONFIGURED);
 							Log(Notice) << "FQDN Configured successfully !" << LogEnd;
 						} else {
-							Log(Warning) << "Unable to perform DNS update. Disabling FQDN on " << iface->getFullName() << LogEnd;
+							Log(Warning) << "Unable to perform DNS update. Disabling FQDN on " 
+								     << iface->getFullName() << LogEnd;
 							cfgIface->setFQDNState(DISABLED);
 						}
 					}

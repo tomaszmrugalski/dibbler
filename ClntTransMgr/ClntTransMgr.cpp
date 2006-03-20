@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.37 2006-03-05 21:39:19 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.38 2006-03-20 23:04:05 thomson Exp $
  *
  */
 
@@ -535,6 +535,7 @@ void TClntTransMgr::sendInfRequest(List(TOpt) requestOptions, int iface) {
 
 // should we send SOLICIT ?
 void TClntTransMgr::checkSolicit() {
+
     //For every iface, every group in iface in ClntCfgMgr 
     //Enumerate IA's from this group
     SmartPtr<TClntCfgIface> iface;
@@ -543,36 +544,50 @@ void TClntTransMgr::checkSolicit() {
     {
         if (iface->noConfig())
             continue;
-        SmartPtr<TClntCfgGroup> group;
+
+	// step 1: check if there are any IA to be configured
+	List(TClntCfgIA) iaLstToConfig; // list of IA requiring configuration
+	SmartPtr<TClntCfgIA> cfgIA;
+    
+	SmartPtr<TClntCfgGroup> group;
         iface->firstGroup();
         while(group=iface->getGroup())
         {
-            List(TClntCfgIA) IALstToConfig;
-            SmartPtr<TClntCfgIA> ia;
             group->firstIA();
-            while(ia=group->getIA())
+            while(cfgIA=group->getIA())
             {
                 //These not assigned in AddrMgr and configurable and not in trasaction
                 //group and pass to constructor of Solicit message
-                SmartPtr<TAddrIA> iaAddrMgr=AddrMgr->getIA(ia->getIAID());
-                if(iaAddrMgr->getState()==NOTCONFIGURED)
+                SmartPtr<TAddrIA> ia=AddrMgr->getIA(cfgIA->getIAID());
+                if(ia->getState()==NOTCONFIGURED)
                 {
-                    IALstToConfig.append(ia);
-                    iaAddrMgr->setState(INPROCESS);
+                    iaLstToConfig.append(cfgIA);
+                    ia->setState(INPROCESS);
                 }
-            };
-            if (IALstToConfig.count()) {//Are there any IA, which should be configured?
-		
-		Log(Info) << "Creating SOLICIT message ";
-		if (iface->getRapidCommit()) {
-		    Log(Cont) << "(with rapid-commit)";
-		} 
-		Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
-                Transactions.append(
-		    new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
-					iface->getID(), 0, 
-					IALstToConfig, iface->getRapidCommit()));
+            }
+	}
+
+	// step 2: check if TA has to be configured
+	bool taToConfig = false;
+	if (iface->countTA() ) {
+	    iface->firstTA();
+	    SmartPtr<TClntCfgTA> ta = iface->getTA();
+	    if (ta->getState()==NOTCONFIGURED) {
+		taToConfig = true;
+		// don't change set to INPROCESS, this will be done in ClntMsg.cpp, when
+		// TA option will be appended.
 	    }
+	}
+
+	if (iaLstToConfig.count() || taToConfig) {//Are there any IA, which should be configured?
+	    Log(Info) << "Creating SOLICIT message with " << iaLstToConfig.count()
+		      << " IA(s), " << (iface->countTA()?"1":"no") << " TA ";
+	    if (iface->getRapidCommit()) {
+		Log(Cont) << "(with rapid-commit)";
+	    } 
+	    Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
+	    Transactions.append(new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
+						    iface->getID(), 0, iaLstToConfig, iface->getRapidCommit()));
         }//for every group
     }//for every iface
 }

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.9 2006-03-05 21:38:47 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.10 2006-03-20 23:04:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006/03/05 21:38:47  thomson
+ * TA support merged.
+ *
  * Revision 1.8.2.1  2006/02/05 23:38:06  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -40,6 +43,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
 #include "Container.h"
 #include "StationID.h"
@@ -76,6 +80,7 @@ public:
     int countTA();
 
     string getName(void);
+    string getFullName(void);
     void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
     SmartPtr<TClntCfgGroup> getLastGroup();
     int	getID(void);

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.14 2006-03-05 21:39:19 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.15 2006-03-20 23:04:05 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -62,7 +62,7 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
     if(rapid)
         Options.append(new TClntOptRapidCommit(this));
 
-    this->appendTAOptions(false); // append, but don't switch to INPROCESS state
+    this->appendTAOptions(true); // append and switch to INPROCESS state
 
     // append options specified in the config file
     this->appendRequestedOptions();
@@ -356,6 +356,9 @@ TClntMsgSolicit::~TClntMsgSolicit()
 /*
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2006/03/05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.13.2.1  2006/02/05 23:38:07  thomson
  * Devel branch with Temporary addresses support added.
  *

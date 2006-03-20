@@ -13,7 +13,7 @@ REL_LDFLAGS  = $(LDFLAGS)
 
 # debuging parameters
 PEDANTIC     = -pedantic
-#DEBUGINFO    = -g
+DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === libxml2 stuff ===

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.35 2006-03-05 21:38:47 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.36 2006-03-20 23:04:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2006/03/05 21:38:47  thomson
+ * TA support merged.
+ *
  * Revision 1.34.2.1  2006/02/05 23:38:06  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -114,7 +117,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     yyFlexLexer lexer(&f,&clog);
     clntParser parser(&lexer);
     result = parser.yyparse();
-    Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
+    Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << LogEnd;
     f.close();
 
     this->LogLevel = logger::getLogLevel();

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.14 2006-03-05 21:38:47 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.15 2006-03-20 23:04:05 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2006/03/05 21:38:47  thomson
+ * TA support merged.
+ *
  * Revision 1.13.2.1  2006/02/05 23:38:06  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -175,6 +178,15 @@ int TClntCfgIface::countGroup()
 {
     return IfaceName;    
 }
+
+string TClntCfgIface::getFullName() {
+    ostringstream oss;
+    oss << this->ID;
+    return string(this->IfaceName)
+	+"/"
+	+oss.str();
+}
+
 
  int	TClntCfgIface::getID(void)
 {

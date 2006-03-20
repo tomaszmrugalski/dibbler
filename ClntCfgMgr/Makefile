@@ -9,7 +9,7 @@ objs: $(OBJECTS)
 libs: libClntCfgMgr.a
 
 ClntLexer.o: ClntLexer.cpp
-	@echo "[CPP    ] $(SUBDIR)/$@"
+	@echo "[CXX    ] $(SUBDIR)/$@"
 	$(CXX) $(OPTS) -c -ftemplate-depth-30 ClntLexer.cpp
 
 parser: ClntParser.y ClntLexer.l

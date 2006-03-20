@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.24 2006-03-05 21:39:19 thomson Exp $
+$Id: TODO,v 1.25 2006-03-20 23:04:05 thomson Exp $
 
   Internal/code TODO
  --------------------
@@ -37,6 +37,12 @@ $Id: TODO,v 1.24 2006-03-05 21:39:19 thomson Exp $
    in TSrvMsg::appendRequestedOptions()
 6. How many addrs can be assigned to the client? Implement counter in the
    TAddrClient class.
+7. Client default behaviour: request IA
+   cfg: ta -> request ta only
+   cfg: ia,ta -> request ia and ta
+   cfg: stateless -> don't request ia or ta
+   cfg: stateless,ta -> error
+   cfg: stateless,ia -> error
 
   BUGS
  ------
