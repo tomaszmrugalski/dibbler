@@ -37,7 +37,7 @@ namespace std {
   char Address[16]; //address, which is analizying right now
   char AddrPart[16];
   unsigned intpos,pos;
-  yy_clntParser_stype yylval;
+  yy_ClntParser_stype yylval;
 }
 %}
 
@@ -45,44 +45,39 @@ namespace std {
 
 {EOL}*   ; // ignore end of line
 [ \t]    ; // ignore TABs and spaces
-iface     {return clntParser::IFACE_;}
-no-config {return clntParser::NO_CONFIG_;}
-address   {return clntParser::ADDRES_;}
-ia        {return clntParser::IA_;}
-ta        {return clntParser::TA_; }
-iaid      {return clntParser::IAID_; }
-no-ia     {return clntParser::STATELESS_;}
-stateless {return clntParser::STATELESS_;}
-
-log-level {return clntParser::LOGLEVEL_; }
-log-mode  {return clntParser::LOGMODE_; }
-log-name  {return clntParser::LOGNAME_; }
-
-work-dir  {return clntParser::WORKDIR_;}
-
-prefered-lifetime { return clntParser::PREF_TIME_; }
-valid-lifetime    { return clntParser::VALID_TIME_; }
-t1                { return clntParser::T1_;}
-t2                { return clntParser::T2_;}
-
-option       {return clntParser::OPTION_; }
-dns-server   { return clntParser::DNS_SERVER_;}
-domain       { return clntParser::DOMAIN_;}
-ntp-server   { return clntParser::NTP_SERVER_;}
-time-zone    { return clntParser::TIME_ZONE_;}
-sip-server   { return clntParser::SIP_SERVER_; }
-sip-domain   { return clntParser::SIP_DOMAIN_; }
-fqdn         { return clntParser::FQDN_; }
-nis-server   { return clntParser::NIS_SERVER_; }
-nis-domain   { return clntParser::NIS_DOMAIN_; }
-nis\+-server { return clntParser::NISP_SERVER_; }
-nis\+-domain { return clntParser::NISP_DOMAIN_; }
-lifetime     { return clntParser::LIFETIME_; }
-
-reject-server    { return clntParser::REJECT_SERVERS_;}
-prefered-server  { return clntParser::PREFERRED_SERVERS_;}
-rapid-commit     { return clntParser::RAPID_COMMIT_;}
-unicast          { return clntParser::UNICAST_; }
+iface             { return ClntParser::IFACE_;}
+no-config         { return ClntParser::NO_CONFIG_;}
+address           { return ClntParser::ADDRES_;}
+ia                { return ClntParser::IA_;}
+ta                { return ClntParser::TA_; }
+iaid              { return ClntParser::IAID_; }
+no-ia             { return ClntParser::STATELESS_;}
+stateless         { return ClntParser::STATELESS_;}
+log-level         { return ClntParser::LOGLEVEL_; }
+log-mode          { return ClntParser::LOGMODE_; }
+log-name          { return ClntParser::LOGNAME_; }
+work-dir          { return ClntParser::WORKDIR_;}
+prefered-lifetime { return ClntParser::PREF_TIME_; }
+valid-lifetime    { return ClntParser::VALID_TIME_; }
+t1                { return ClntParser::T1_;}
+t2                { return ClntParser::T2_;}
+option            { return ClntParser::OPTION_; }
+dns-server        { return ClntParser::DNS_SERVER_;}
+domain            { return ClntParser::DOMAIN_;}
+ntp-server        { return ClntParser::NTP_SERVER_;}
+time-zone         { return ClntParser::TIME_ZONE_;}
+sip-server        { return ClntParser::SIP_SERVER_; }
+sip-domain        { return ClntParser::SIP_DOMAIN_; }
+fqdn              { return ClntParser::FQDN_; }
+nis-server        { return ClntParser::NIS_SERVER_; }
+nis-domain        { return ClntParser::NIS_DOMAIN_; }
+nis\+-server      { return ClntParser::NISP_SERVER_; }
+nis\+-domain      { return ClntParser::NISP_DOMAIN_; }
+lifetime          { return ClntParser::LIFETIME_; }
+reject-server     { return ClntParser::REJECT_SERVERS_;}
+prefered-server   { return ClntParser::PREFERRED_SERVERS_;}
+rapid-commit      { return ClntParser::RAPID_COMMIT_;}
+unicast           { return ClntParser::UNICAST_; }
 
 #.* ;
 
@@ -108,7 +103,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 
@@ -117,7 +112,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 
@@ -127,7 +122,7 @@ unicast          { return clntParser::UNICAST_; }
         { YYABORT; }
     } else {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 
@@ -136,7 +131,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 
@@ -145,7 +140,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 
@@ -154,7 +149,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 
@@ -163,7 +158,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 
@@ -171,7 +166,7 @@ unicast          { return clntParser::UNICAST_; }
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
-    return clntParser::STRING_;
+    return ClntParser::STRING_;
 }
 
 ([a-zA-Z][a-zA-Z0-9\.-]+) {
@@ -180,19 +175,19 @@ unicast          { return clntParser::UNICAST_; }
          ( (len>3) && !strncasecmp("true", yytext,4) )
        ) {
        yylval.ival = 1;
-       return clntParser::INTNUMBER_;
+       return ClntParser::INTNUMBER_;
    }
     if ( ( (len>1) && !strncasecmp("no",yytext,2) ) ||
          ( (len>4) && !strncasecmp("false",yytext,5) )
        ) {
        yylval.ival = 0;
-       return clntParser::INTNUMBER_;
+       return ClntParser::INTNUMBER_;
     }
 
     yylval.strval=new char[strlen(yytext)+1];
     strncpy(yylval.strval, yytext, strlen(yytext));
     yylval.strval[strlen(yytext)]=0;
-    return clntParser::STRING_;
+    return ClntParser::STRING_;
 }
 
 0x{hexdigit}+ {
@@ -223,7 +218,7 @@ unicast          { return clntParser::UNICAST_; }
             yylval.duidval.duid[i>>1]|=ptr[i]-'0';
         }
    }
-   return clntParser::DUID_;
+   return ClntParser::DUID_;
 }
 
 {hexnumber} { 
@@ -232,7 +227,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
-    return clntParser::HEXNUMBER_;
+    return ClntParser::HEXNUMBER_;
 }
 
 {integer} { 
@@ -240,7 +235,7 @@ unicast          { return clntParser::UNICAST_; }
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
-    return clntParser::INTNUMBER_;
+    return ClntParser::INTNUMBER_;
 }
 
 

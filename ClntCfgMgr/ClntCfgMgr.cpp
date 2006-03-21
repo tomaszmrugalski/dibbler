@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.36 2006-03-20 23:04:05 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.37 2006-03-21 20:02:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2006/03/20 23:04:05  thomson
+ * TA option is now parsed properly and SOLICIT is sent as expected.
+ *
  * Revision 1.35  2006/03/05 21:38:47  thomson
  * TA support merged.
  *
@@ -115,7 +118,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 	Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     }
     yyFlexLexer lexer(&f,&clog);
-    clntParser parser(&lexer);
+    ClntParser parser(&lexer);
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << LogEnd;
     f.close();
@@ -163,7 +166,7 @@ void TClntCfgMgr::dump() {
   match parsed interfaces with interfaces detected in system. 
   CfgIface objects are created placed in CfgMgr. 
 */
-bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
+bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     int cfgIfaceCnt;
     cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCONF_FILE << LogEnd;
@@ -249,16 +252,11 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(clntParser *parser) {
 	    ia->setOptions(parser->ParserOptStack.getLast());
 	    ia->addAddr(addr);
 	    
-	    // ... which is stored in one group...
-	    SmartPtr<TClntCfgGroup> group(new TClntCfgGroup());
-	    group->setOptions(parser->ParserOptStack.getLast());
-	    group->addIA(ia);
-	    
 	    // ... on this newly created interface...
 	    cfgIface = SmartPtr<TClntCfgIface>(new TClntCfgIface(ifaceIface->getID()));
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
-	    cfgIface->addGroup(group);
+	    cfgIface->addIA(ia);
 	    cfgIface->setOptions(parser->ParserOptStack.getLast());
 
 	    // ... which is added to ClntCfgMgr
@@ -299,42 +297,32 @@ bool TClntCfgMgr::getReconfigure()
 
 int TClntCfgMgr::countAddrForIA(long IAID)
 {
-    SmartPtr<TClntCfgIface> ptrIface;
+    SmartPtr<TClntCfgIface> iface;
     firstIface();
-    while (ptrIface = getIface() ) 
+    while (iface = getIface() ) 
     {
-        SmartPtr<TClntCfgGroup> ptrGroup;
-        ptrIface->firstGroup();
-        while (ptrGroup = ptrIface->getGroup() ) 
-        {
-            SmartPtr<TClntCfgIA> ptrIA;
-            ptrGroup->firstIA();
-            while (ptrIA = ptrGroup->getIA())
-                if (ptrIA->getIAID()==IAID)
-                    return ptrIA->countAddr();
-        }
+	SmartPtr<TClntCfgIA> ia;
+	iface->firstIA();
+	while (ia = iface->getIA())
+	    if (ia->getIAID()==IAID)
+		return ia->countAddr();
     }    
     return 0;
 }
 
 SmartPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID)
 {
-    SmartPtr<TClntCfgIface> ptrIface;
+    SmartPtr<TClntCfgIface> iface;
     firstIface();
-    while (ptrIface = getIface() ) 
+    while (iface = getIface() ) 
     {
-        SmartPtr<TClntCfgGroup> ptrGroup;
-        ptrIface->firstGroup();
-        while (ptrGroup = ptrIface->getGroup() ) 
-        {
-            SmartPtr<TClntCfgIA> ptrIA;
-            ptrGroup->firstIA();
-            while (ptrIA = ptrGroup->getIA())
-                if (ptrIA->getIAID()==IAID)
-                    return ptrIA;
-        }
+	SmartPtr<TClntCfgIA> ia;
+	iface->firstIA();
+	while (ia = iface->getIA())
+	    if (ia->getIAID()==IAID)
+		return ia;
     }        
-    return SmartPtr<TClntCfgIA>();
+    return 0;
 }
 
 bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
@@ -350,20 +338,17 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
         return false;
     }
 
-    SmartPtr<TClntCfgGroup> ptrGroup;
-    ptrIface->firstGroup();
+    SmartPtr<TClntCfgIA> ia;
+    ptrIface->firstIA();
 
-    while (ptrGroup = ptrIface->getGroup() ) {
-        SmartPtr<TClntCfgIA> ptrIA;
-        ptrGroup->firstIA();
-        while (ptrIA = ptrGroup->getIA()) 
-        {
-            if ( ptrIA->getIAID() == iaid ) {
-                ptrIA->setState(state);
-                return true;
-            }
-        }
+    while (ia = ptrIface->getIA()) 
+    {
+	if ( ia->getIAID() == iaid ) {
+	    ia->setState(state);
+	    return true;
+	}
     }
+
     Log(Error) << "ClntCfgMgr: Unable to set IA state (id=" << iaid << ")" << LogEnd;
     return false;
 }	    
@@ -385,8 +370,7 @@ bool TClntCfgMgr::validateConfig()
 }
 
 bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
-    SmartPtr<TClntCfgGroup> ptrGroup;
-    ptrIface->firstGroup();
+
     if(ptrIface->isReqTimezone()&&(ptrIface->getProposedTimezone()!=""))
     {   
 	TTimeZone tmp(ptrIface->getProposedTimezone());
@@ -398,16 +382,12 @@ bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
 	}
     }
     
-    while(ptrGroup=ptrIface->getGroup())
+    SmartPtr<TClntCfgIA> ptrIA;
+    ptrIface->firstIA();
+    while(ptrIA=ptrIface->getIA())
     {
-	SmartPtr<TClntCfgIA> ptrIA;
-	ptrGroup->firstIA();
-	while(ptrIA=ptrGroup->getIA())
-	{
-	    if (!this->validateIA(ptrIface, ptrIA)) 
-		return false;
-	}
-	
+	if (!this->validateIA(ptrIface, ptrIA)) 
+	    return false;
     }
     return true;
 }
@@ -457,6 +437,7 @@ bool TClntCfgMgr::validateAddr(SmartPtr<TClntCfgIface> ptrIface,
 }
 
 
+#if 0
 SmartPtr<TClntCfgGroup> TClntCfgMgr::getGroupForIA(long IAID)
 {
     SmartPtr<TClntCfgIface> iface;
@@ -476,6 +457,7 @@ SmartPtr<TClntCfgGroup> TClntCfgMgr::getGroupForIA(long IAID)
     }
     return SmartPtr<TClntCfgGroup>();
 }
+#endif
 
 SmartPtr<TClntCfgIface> TClntCfgMgr::getIface(int id)
 {
@@ -492,16 +474,11 @@ SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
     firstIface();
     while(iface=getIface())
     {
-        SmartPtr<TClntCfgGroup> group;
-        iface->firstGroup();
-        while(group=iface->getGroup())
-        {
-            SmartPtr<TClntCfgIA> ia;
-            group->firstIA();
-            while(ia=group->getIA())
-                if (ia->getIAID()==iaid)
-                    return iface;
-        }
+	SmartPtr<TClntCfgIA> ia;
+	iface->firstIA();
+	while(ia=iface->getIA())
+	    if (ia->getIAID()==iaid)
+		return iface;
     }
     return SmartPtr<TClntCfgIface>();
 }

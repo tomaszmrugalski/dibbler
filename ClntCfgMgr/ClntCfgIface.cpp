@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.15 2006-03-20 23:04:05 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.16 2006-03-21 20:02:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2006/03/20 23:04:05  thomson
+ * TA option is now parsed properly and SOLICIT is sent as expected.
+ *
  * Revision 1.14  2006/03/05 21:38:47  thomson
  * TA support merged.
  *
@@ -130,6 +133,29 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     if (ReqNISPServer) this->setNISPServerState(NOTCONFIGURED);
     if (ReqNISPDomain) this->setNISPDomainState(NOTCONFIGURED);
     if (ReqLifetime)   this->setLifetimeState(NOTCONFIGURED);
+
+    // copy preferred-server list
+    SmartPtr<TStationID> station;
+    opt->firstPrefSrv();
+    while (station = opt->getPrefSrv())
+	this->PrefSrvLst.append(station);
+
+    // copy rejected-server list
+    opt->firstRejedSrv();
+    while (station = opt->getRejedSrv())
+	this->RejectedSrvLst.append(station);
+}
+
+bool TClntCfgIface::isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> duid)
+{
+    this->RejectedSrvLst.first();
+    SmartPtr<TStationID> RejectedSrv;
+    while(RejectedSrv=RejectedSrvLst.get())
+    {
+        if (((*RejectedSrv)==addr)||((*RejectedSrv)==duid))
+            return true;
+    }
+    return false;
 }
 
 void TClntCfgIface::firstTA() {
@@ -149,30 +175,32 @@ int TClntCfgIface::countTA()
     return ClntCfgTALst.count();
 }
 
-void TClntCfgIface::firstGroup()
+void TClntCfgIface::firstIA()
 {
-    ClntCfgGroupLst.first();
+    IALst.first();
 }
 
-int TClntCfgIface::countGroup()
+int TClntCfgIface::countIA()
 {
-    return ClntCfgGroupLst.count();
+    return IALst.count();
 }
 
- SmartPtr<TClntCfgGroup> TClntCfgIface::getGroup()
+ SmartPtr<TClntCfgIA> TClntCfgIface::getIA()
 {
-    return ClntCfgGroupLst.get();
+    return IALst.get();
 }
 
- void TClntCfgIface::addGroup(SmartPtr<TClntCfgGroup> ptr)
+ void TClntCfgIface::addIA(SmartPtr<TClntCfgIA> ptr)
 {
-    ClntCfgGroupLst.append(ptr);
+    IALst.append(ptr);
 }
 
- SmartPtr<TClntCfgGroup> TClntCfgIface::getLastGroup()
+#if 0
+SmartPtr<TClntCfgIA> TClntCfgIface::getLastIA()
 {
-    return ClntCfgGroupLst.getLast();
+    return IALst.getLast();
 }
+#endif
 
  string TClntCfgIface::getName(void)
 {
@@ -408,14 +436,14 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     }
 
     out << "    <!-- addresses -->" << endl;
-    out << "    <groups count=\"" << iface.ClntCfgGroupLst.count() << "\">" << endl;
-    SmartPtr<TClntCfgGroup>	groupPtr;
-    iface.ClntCfgGroupLst.first();
-    while(groupPtr=iface.ClntCfgGroupLst.get())
+    out << "    <iaLst count=\"" << iface.IALst.count() << "\">" << endl;
+    SmartPtr<TClntCfgIA> ia;
+    iface.IALst.first();
+    while(ia=iface.IALst.get())
     {	
-        out << *groupPtr;
+        out << *ia;
     }
-    out << "    </groups>" << endl;
+    out << "    </iaLst>" << endl;
 
     out << "    <!-- temporary addresses -->" << endl;
     SmartPtr<TClntCfgTA> ta;

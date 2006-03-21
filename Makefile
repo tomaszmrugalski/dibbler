@@ -70,8 +70,7 @@ $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	-L$(MESSAGES)    -lMsg             \
 	-L$(MISC)        -lMisc            \
 	-L$(OPTIONS)     -lOptions         \
-	-L$(LOWLEVEL)    -lLowLevel        \
-	-L$(POSLIB)      -lposlib
+	-L$(LOWLEVEL)    -lLowLevel
 
 relay: $(RELAYBIN)
 

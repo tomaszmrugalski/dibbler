@@ -1002,7 +1002,7 @@ namespace std {
   char Address[16]; //address, which is analizying right now
   char AddrPart[16];
   unsigned intpos,pos;
-  yy_clntParser_stype yylval;
+  yy_ClntParser_stype yylval;
 }
 #line 1008 "ClntLexer.cpp"
 
@@ -1216,181 +1216,181 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 48 "ClntLexer.l"
-{return clntParser::IFACE_;}
+{ return ClntParser::IFACE_;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 49 "ClntLexer.l"
-{return clntParser::NO_CONFIG_;}
+{ return ClntParser::NO_CONFIG_;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 50 "ClntLexer.l"
-{return clntParser::ADDRES_;}
+{ return ClntParser::ADDRES_;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 51 "ClntLexer.l"
-{return clntParser::IA_;}
+{ return ClntParser::IA_;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 52 "ClntLexer.l"
-{return clntParser::TA_; }
+{ return ClntParser::TA_; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 53 "ClntLexer.l"
-{return clntParser::IAID_; }
+{ return ClntParser::IAID_; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 54 "ClntLexer.l"
-{return clntParser::STATELESS_;}
+{ return ClntParser::STATELESS_;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 55 "ClntLexer.l"
-{return clntParser::STATELESS_;}
+{ return ClntParser::STATELESS_;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "ClntLexer.l"
-{return clntParser::LOGLEVEL_; }
+#line 56 "ClntLexer.l"
+{ return ClntParser::LOGLEVEL_; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "ClntLexer.l"
-{return clntParser::LOGMODE_; }
+#line 57 "ClntLexer.l"
+{ return ClntParser::LOGMODE_; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 59 "ClntLexer.l"
-{return clntParser::LOGNAME_; }
+#line 58 "ClntLexer.l"
+{ return ClntParser::LOGNAME_; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 61 "ClntLexer.l"
-{return clntParser::WORKDIR_;}
+#line 59 "ClntLexer.l"
+{ return ClntParser::WORKDIR_;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 63 "ClntLexer.l"
-{ return clntParser::PREF_TIME_; }
+#line 60 "ClntLexer.l"
+{ return ClntParser::PREF_TIME_; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 64 "ClntLexer.l"
-{ return clntParser::VALID_TIME_; }
+#line 61 "ClntLexer.l"
+{ return ClntParser::VALID_TIME_; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 65 "ClntLexer.l"
-{ return clntParser::T1_;}
+#line 62 "ClntLexer.l"
+{ return ClntParser::T1_;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 66 "ClntLexer.l"
-{ return clntParser::T2_;}
+#line 63 "ClntLexer.l"
+{ return ClntParser::T2_;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 68 "ClntLexer.l"
-{return clntParser::OPTION_; }
+#line 64 "ClntLexer.l"
+{ return ClntParser::OPTION_; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 69 "ClntLexer.l"
-{ return clntParser::DNS_SERVER_;}
+#line 65 "ClntLexer.l"
+{ return ClntParser::DNS_SERVER_;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 70 "ClntLexer.l"
-{ return clntParser::DOMAIN_;}
+#line 66 "ClntLexer.l"
+{ return ClntParser::DOMAIN_;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 71 "ClntLexer.l"
-{ return clntParser::NTP_SERVER_;}
+#line 67 "ClntLexer.l"
+{ return ClntParser::NTP_SERVER_;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 72 "ClntLexer.l"
-{ return clntParser::TIME_ZONE_;}
+#line 68 "ClntLexer.l"
+{ return ClntParser::TIME_ZONE_;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 73 "ClntLexer.l"
-{ return clntParser::SIP_SERVER_; }
+#line 69 "ClntLexer.l"
+{ return ClntParser::SIP_SERVER_; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 74 "ClntLexer.l"
-{ return clntParser::SIP_DOMAIN_; }
+#line 70 "ClntLexer.l"
+{ return ClntParser::SIP_DOMAIN_; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 75 "ClntLexer.l"
-{ return clntParser::FQDN_; }
+#line 71 "ClntLexer.l"
+{ return ClntParser::FQDN_; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 76 "ClntLexer.l"
-{ return clntParser::NIS_SERVER_; }
+#line 72 "ClntLexer.l"
+{ return ClntParser::NIS_SERVER_; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 77 "ClntLexer.l"
-{ return clntParser::NIS_DOMAIN_; }
+#line 73 "ClntLexer.l"
+{ return ClntParser::NIS_DOMAIN_; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 78 "ClntLexer.l"
-{ return clntParser::NISP_SERVER_; }
+#line 74 "ClntLexer.l"
+{ return ClntParser::NISP_SERVER_; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 79 "ClntLexer.l"
-{ return clntParser::NISP_DOMAIN_; }
+#line 75 "ClntLexer.l"
+{ return ClntParser::NISP_DOMAIN_; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 80 "ClntLexer.l"
-{ return clntParser::LIFETIME_; }
+#line 76 "ClntLexer.l"
+{ return ClntParser::LIFETIME_; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 82 "ClntLexer.l"
-{ return clntParser::REJECT_SERVERS_;}
+#line 77 "ClntLexer.l"
+{ return ClntParser::REJECT_SERVERS_;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 83 "ClntLexer.l"
-{ return clntParser::PREFERRED_SERVERS_;}
+#line 78 "ClntLexer.l"
+{ return ClntParser::PREFERRED_SERVERS_;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 84 "ClntLexer.l"
-{ return clntParser::RAPID_COMMIT_;}
+#line 79 "ClntLexer.l"
+{ return ClntParser::RAPID_COMMIT_;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 85 "ClntLexer.l"
-{ return clntParser::UNICAST_; }
+#line 80 "ClntLexer.l"
+{ return ClntParser::UNICAST_; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 87 "ClntLexer.l"
+#line 82 "ClntLexer.l"
 ;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 89 "ClntLexer.l"
+#line 84 "ClntLexer.l"
 ;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 91 "ClntLexer.l"
+#line 86 "ClntLexer.l"
 {
   BEGIN(COMMENT);
   ComBeg=yylineno;
@@ -1398,17 +1398,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 97 "ClntLexer.l"
+#line 92 "ClntLexer.l"
 BEGIN(INITIAL);
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 98 "ClntLexer.l"
+#line 93 "ClntLexer.l"
 ;
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 99 "ClntLexer.l"
+#line 94 "ClntLexer.l"
 {
     Log(Crit) << "Comment not closed. (/* in line " << ComBeg << LogEnd;
     { YYABORT; }
@@ -1418,127 +1418,127 @@ case YY_STATE_EOF(COMMENT):
 
 case 41:
 YY_RULE_SETUP
-#line 106 "ClntLexer.l"
+#line 101 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 115 "ClntLexer.l"
+#line 110 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 124 "ClntLexer.l"
+#line 119 "ClntLexer.l"
 { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 134 "ClntLexer.l"
+#line 129 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 143 "ClntLexer.l"
+#line 138 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 152 "ClntLexer.l"
+#line 147 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 161 "ClntLexer.l"
+#line 156 "ClntLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        return clntParser::IPV6ADDR_;
+        return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
-#line 170 "ClntLexer.l"
+#line 165 "ClntLexer.l"
 {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
-    return clntParser::STRING_;
+    return ClntParser::STRING_;
 }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 177 "ClntLexer.l"
+#line 172 "ClntLexer.l"
 {
     int len = strlen(yytext);
     if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
          ( (len>3) && !strncasecmp("true", yytext,4) )
        ) {
        yylval.ival = 1;
-       return clntParser::INTNUMBER_;
+       return ClntParser::INTNUMBER_;
    }
     if ( ( (len>1) && !strncasecmp("no",yytext,2) ) ||
          ( (len>4) && !strncasecmp("false",yytext,5) )
        ) {
        yylval.ival = 0;
-       return clntParser::INTNUMBER_;
+       return ClntParser::INTNUMBER_;
     }
 
     yylval.strval=new char[strlen(yytext)+1];
     strncpy(yylval.strval, yytext, strlen(yytext));
     yylval.strval[strlen(yytext)]=0;
-    return clntParser::STRING_;
+    return ClntParser::STRING_;
 }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 198 "ClntLexer.l"
+#line 193 "ClntLexer.l"
 {
     int len;
     char * ptr;
@@ -1567,40 +1567,40 @@ YY_RULE_SETUP
             yylval.duidval.duid[i>>1]|=ptr[i]-'0';
         }
    }
-   return clntParser::DUID_;
+   return ClntParser::DUID_;
 }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 229 "ClntLexer.l"
+#line 224 "ClntLexer.l"
 { 
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%x",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
-    return clntParser::HEXNUMBER_;
+    return ClntParser::HEXNUMBER_;
 }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 238 "ClntLexer.l"
+#line 233 "ClntLexer.l"
 { 
     if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
-    return clntParser::INTNUMBER_;
+    return ClntParser::INTNUMBER_;
 }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 248 "ClntLexer.l"
+#line 243 "ClntLexer.l"
 {return yytext[0];} 
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 252 "ClntLexer.l"
+#line 247 "ClntLexer.l"
 ECHO;
 	YY_BREAK
 #line 1607 "ClntLexer.cpp"
@@ -2507,7 +2507,7 @@ void yyfree (void * ptr )
 #undef YY_DECL_IS_OURS
 #undef YY_DECL
 #endif
-#line 252 "ClntLexer.l"
+#line 247 "ClntLexer.l"
 
 
 

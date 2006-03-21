@@ -1,5 +1,5 @@
-#ifndef YY_clntParser_h_included
-#define YY_clntParser_h_included
+#ifndef YY_ClntParser_h_included
+#define YY_ClntParser_h_included
 #define YY_USE_CLASS
 
 #line 1 "../bison++/bison.h"
@@ -26,19 +26,17 @@
 #include "ClntCfgAddr.h"
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
-#include "ClntCfgGroup.h"
 #include "Logger.h"
 
     using namespace std;
     
 #define YY_USE_CLASS
-#define YY_clntParser_MEMBERS  yyFlexLexer * lex;                                          \
+#define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
 TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
 TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;                       \
-TContainer<SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;                       \
 TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;                          \
 TContainer<SmartPtr<TClntCfgTA> >    ClntCfgTALst;                          \
 TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
@@ -61,15 +59,15 @@ void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
-virtual ~clntParser();
-#define YY_clntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
-#define YY_clntParser_CONSTRUCTOR_CODE                                                     \
+virtual ~ClntParser();
+#define YY_ClntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
+#define YY_ClntParser_CONSTRUCTOR_CODE                                                     \
     this->lex = lex;                                                        \
     ParserOptStack.append(new TClntParsGlobalOpt());                        \
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();
 
-#line 67 "ClntParser.y"
+#line 65 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -79,59 +77,59 @@ typedef union
         char* duid;  
     } duidval;  
     char addrval[16];  
-} yy_clntParser_stype;
-#define YY_clntParser_STYPE yy_clntParser_stype
+} yy_ClntParser_stype;
+#define YY_ClntParser_STYPE yy_ClntParser_stype
 
 #line 21 "../bison++/bison.h"
  /* %{ and %header{ and %union, during decl */
-#ifndef YY_clntParser_COMPATIBILITY
+#ifndef YY_ClntParser_COMPATIBILITY
  #ifndef YY_USE_CLASS
-  #define  YY_clntParser_COMPATIBILITY 1
+  #define  YY_ClntParser_COMPATIBILITY 1
  #else
-  #define  YY_clntParser_COMPATIBILITY 0
+  #define  YY_ClntParser_COMPATIBILITY 0
  #endif
 #endif
 
-#if YY_clntParser_COMPATIBILITY != 0
+#if YY_ClntParser_COMPATIBILITY != 0
 /* backward compatibility */
  #ifdef YYLTYPE
-  #ifndef YY_clntParser_LTYPE
-   #define YY_clntParser_LTYPE YYLTYPE
+  #ifndef YY_ClntParser_LTYPE
+   #define YY_ClntParser_LTYPE YYLTYPE
 /* WARNING obsolete !!! user defined YYLTYPE not reported into generated header */
 /* use %define LTYPE */
   #endif
  #endif
 /*#ifdef YYSTYPE*/
-  #ifndef YY_clntParser_STYPE
-   #define YY_clntParser_STYPE YYSTYPE
+  #ifndef YY_ClntParser_STYPE
+   #define YY_ClntParser_STYPE YYSTYPE
   /* WARNING obsolete !!! user defined YYSTYPE not reported into generated header */
    /* use %define STYPE */
   #endif
 /*#endif*/
  #ifdef YYDEBUG
-  #ifndef YY_clntParser_DEBUG
-   #define  YY_clntParser_DEBUG YYDEBUG
+  #ifndef YY_ClntParser_DEBUG
+   #define  YY_ClntParser_DEBUG YYDEBUG
    /* WARNING obsolete !!! user defined YYDEBUG not reported into generated header */
    /* use %define DEBUG */
   #endif
  #endif 
  /* use goto to be compatible */
- #ifndef YY_clntParser_USE_GOTO
-  #define YY_clntParser_USE_GOTO 1
+ #ifndef YY_ClntParser_USE_GOTO
+  #define YY_ClntParser_USE_GOTO 1
  #endif
 #endif
 
 /* use no goto to be clean in C++ */
-#ifndef YY_clntParser_USE_GOTO
- #define YY_clntParser_USE_GOTO 0
+#ifndef YY_ClntParser_USE_GOTO
+ #define YY_ClntParser_USE_GOTO 0
 #endif
 
-#ifndef YY_clntParser_PURE
+#ifndef YY_ClntParser_PURE
 
  #line 65 "../bison++/bison.h"
 
 #line 65 "../bison++/bison.h"
-/* YY_clntParser_PURE */
+/* YY_ClntParser_PURE */
 #endif
 
 
@@ -140,25 +138,25 @@ typedef union
 #line 68 "../bison++/bison.h"
 /* prefix */
 
-#ifndef YY_clntParser_DEBUG
+#ifndef YY_ClntParser_DEBUG
 
  #line 71 "../bison++/bison.h"
 
 #line 71 "../bison++/bison.h"
-/* YY_clntParser_DEBUG */
+/* YY_ClntParser_DEBUG */
 #endif
 
-#ifndef YY_clntParser_LSP_NEEDED
+#ifndef YY_ClntParser_LSP_NEEDED
 
  #line 75 "../bison++/bison.h"
 
 #line 75 "../bison++/bison.h"
- /* YY_clntParser_LSP_NEEDED*/
+ /* YY_ClntParser_LSP_NEEDED*/
 #endif
 
 /* DEFAULT LTYPE*/
-#ifdef YY_clntParser_LSP_NEEDED
- #ifndef YY_clntParser_LTYPE
+#ifdef YY_ClntParser_LSP_NEEDED
+ #ifndef YY_ClntParser_LTYPE
   #ifndef BISON_YYLTYPE_ISDECLARED
    #define BISON_YYLTYPE_ISDECLARED
 typedef
@@ -174,73 +172,73 @@ typedef
   yyltype;
   #endif
 
-  #define YY_clntParser_LTYPE yyltype
+  #define YY_ClntParser_LTYPE yyltype
  #endif
 #endif
 
 /* DEFAULT STYPE*/
-#ifndef YY_clntParser_STYPE
- #define YY_clntParser_STYPE int
+#ifndef YY_ClntParser_STYPE
+ #define YY_ClntParser_STYPE int
 #endif
 
 /* DEFAULT MISCELANEOUS */
-#ifndef YY_clntParser_PARSE
- #define YY_clntParser_PARSE yyparse
+#ifndef YY_ClntParser_PARSE
+ #define YY_ClntParser_PARSE yyparse
 #endif
 
-#ifndef YY_clntParser_LEX
- #define YY_clntParser_LEX yylex
+#ifndef YY_ClntParser_LEX
+ #define YY_ClntParser_LEX yylex
 #endif
 
-#ifndef YY_clntParser_LVAL
- #define YY_clntParser_LVAL yylval
+#ifndef YY_ClntParser_LVAL
+ #define YY_ClntParser_LVAL yylval
 #endif
 
-#ifndef YY_clntParser_LLOC
- #define YY_clntParser_LLOC yylloc
+#ifndef YY_ClntParser_LLOC
+ #define YY_ClntParser_LLOC yylloc
 #endif
 
-#ifndef YY_clntParser_CHAR
- #define YY_clntParser_CHAR yychar
+#ifndef YY_ClntParser_CHAR
+ #define YY_ClntParser_CHAR yychar
 #endif
 
-#ifndef YY_clntParser_NERRS
- #define YY_clntParser_NERRS yynerrs
+#ifndef YY_ClntParser_NERRS
+ #define YY_ClntParser_NERRS yynerrs
 #endif
 
-#ifndef YY_clntParser_DEBUG_FLAG
- #define YY_clntParser_DEBUG_FLAG yydebug
+#ifndef YY_ClntParser_DEBUG_FLAG
+ #define YY_ClntParser_DEBUG_FLAG yydebug
 #endif
 
-#ifndef YY_clntParser_ERROR
- #define YY_clntParser_ERROR yyerror
+#ifndef YY_ClntParser_ERROR
+ #define YY_ClntParser_ERROR yyerror
 #endif
 
-#ifndef YY_clntParser_PARSE_PARAM
+#ifndef YY_ClntParser_PARSE_PARAM
  #ifndef __STDC__
   #ifndef __cplusplus
    #ifndef YY_USE_CLASS
-    #define YY_clntParser_PARSE_PARAM
-    #ifndef YY_clntParser_PARSE_PARAM_DEF
-     #define YY_clntParser_PARSE_PARAM_DEF
+    #define YY_ClntParser_PARSE_PARAM
+    #ifndef YY_ClntParser_PARSE_PARAM_DEF
+     #define YY_ClntParser_PARSE_PARAM_DEF
     #endif
    #endif
   #endif
  #endif
- #ifndef YY_clntParser_PARSE_PARAM
-  #define YY_clntParser_PARSE_PARAM void
+ #ifndef YY_ClntParser_PARSE_PARAM
+  #define YY_ClntParser_PARSE_PARAM void
  #endif
 #endif
 
 /* TOKEN C */
 #ifndef YY_USE_CLASS
 
- #ifndef YY_clntParser_PURE
+ #ifndef YY_ClntParser_PURE
   #ifndef yylval
-   extern YY_clntParser_STYPE YY_clntParser_LVAL;
+   extern YY_ClntParser_STYPE YY_ClntParser_LVAL;
   #else
-   #if yylval != YY_clntParser_LVAL
-    extern YY_clntParser_STYPE YY_clntParser_LVAL;
+   #if yylval != YY_ClntParser_LVAL
+    extern YY_ClntParser_STYPE YY_ClntParser_LVAL;
    #else
     #warning "Namespace conflict, disabling some functionality (bison++ only)"
    #endif
@@ -292,45 +290,45 @@ typedef
  /* #defines token */
 /* after #define tokens, before const tokens S5*/
 #else
- #ifndef YY_clntParser_CLASS
-  #define YY_clntParser_CLASS clntParser
+ #ifndef YY_ClntParser_CLASS
+  #define YY_ClntParser_CLASS ClntParser
  #endif
 
- #ifndef YY_clntParser_INHERIT
-  #define YY_clntParser_INHERIT
+ #ifndef YY_ClntParser_INHERIT
+  #define YY_ClntParser_INHERIT
  #endif
 
- #ifndef YY_clntParser_MEMBERS
-  #define YY_clntParser_MEMBERS 
+ #ifndef YY_ClntParser_MEMBERS
+  #define YY_ClntParser_MEMBERS 
  #endif
 
- #ifndef YY_clntParser_LEX_BODY
-  #define YY_clntParser_LEX_BODY  
+ #ifndef YY_ClntParser_LEX_BODY
+  #define YY_ClntParser_LEX_BODY  
  #endif
 
- #ifndef YY_clntParser_ERROR_BODY
-  #define YY_clntParser_ERROR_BODY  
+ #ifndef YY_ClntParser_ERROR_BODY
+  #define YY_ClntParser_ERROR_BODY  
  #endif
 
- #ifndef YY_clntParser_CONSTRUCTOR_PARAM
-  #define YY_clntParser_CONSTRUCTOR_PARAM
+ #ifndef YY_ClntParser_CONSTRUCTOR_PARAM
+  #define YY_ClntParser_CONSTRUCTOR_PARAM
  #endif
  /* choose between enum and const */
- #ifndef YY_clntParser_USE_CONST_TOKEN
-  #define YY_clntParser_USE_CONST_TOKEN 0
+ #ifndef YY_ClntParser_USE_CONST_TOKEN
+  #define YY_ClntParser_USE_CONST_TOKEN 0
   /* yes enum is more compatible with flex,  */
   /* so by default we use it */ 
  #endif
- #if YY_clntParser_USE_CONST_TOKEN != 0
-  #ifndef YY_clntParser_ENUM_TOKEN
-   #define YY_clntParser_ENUM_TOKEN yy_clntParser_enum_token
+ #if YY_ClntParser_USE_CONST_TOKEN != 0
+  #ifndef YY_ClntParser_ENUM_TOKEN
+   #define YY_ClntParser_ENUM_TOKEN yy_ClntParser_enum_token
   #endif
  #endif
 
-class YY_clntParser_CLASS YY_clntParser_INHERIT
+class YY_ClntParser_CLASS YY_ClntParser_INHERIT
 {
 public: 
- #if YY_clntParser_USE_CONST_TOKEN != 0
+ #if YY_ClntParser_USE_CONST_TOKEN != 0
   /* static const int token ... */
   
  #line 212 "../bison++/bison.h"
@@ -376,7 +374,7 @@ static const int DUID_;
 #line 212 "../bison++/bison.h"
  /* decl const */
  #else
-  enum YY_clntParser_ENUM_TOKEN { YY_clntParser_NULL_TOKEN=0
+  enum YY_ClntParser_ENUM_TOKEN { YY_ClntParser_NULL_TOKEN=0
   
  #line 215 "../bison++/bison.h"
 	,T1_=258
@@ -423,49 +421,49 @@ static const int DUID_;
      }; /* end of enum declaration */
  #endif
 public:
- int YY_clntParser_PARSE(YY_clntParser_PARSE_PARAM);
- virtual void YY_clntParser_ERROR(char *msg) YY_clntParser_ERROR_BODY;
- #ifdef YY_clntParser_PURE
-  #ifdef YY_clntParser_LSP_NEEDED
-   virtual int  YY_clntParser_LEX(YY_clntParser_STYPE *YY_clntParser_LVAL,YY_clntParser_LTYPE *YY_clntParser_LLOC) YY_clntParser_LEX_BODY;
+ int YY_ClntParser_PARSE(YY_ClntParser_PARSE_PARAM);
+ virtual void YY_ClntParser_ERROR(char *msg) YY_ClntParser_ERROR_BODY;
+ #ifdef YY_ClntParser_PURE
+  #ifdef YY_ClntParser_LSP_NEEDED
+   virtual int  YY_ClntParser_LEX(YY_ClntParser_STYPE *YY_ClntParser_LVAL,YY_ClntParser_LTYPE *YY_ClntParser_LLOC) YY_ClntParser_LEX_BODY;
   #else
-   virtual int  YY_clntParser_LEX(YY_clntParser_STYPE *YY_clntParser_LVAL) YY_clntParser_LEX_BODY;
+   virtual int  YY_ClntParser_LEX(YY_ClntParser_STYPE *YY_ClntParser_LVAL) YY_ClntParser_LEX_BODY;
   #endif
  #else
-  virtual int YY_clntParser_LEX() YY_clntParser_LEX_BODY;
-  YY_clntParser_STYPE YY_clntParser_LVAL;
-  #ifdef YY_clntParser_LSP_NEEDED
-   YY_clntParser_LTYPE YY_clntParser_LLOC;
+  virtual int YY_ClntParser_LEX() YY_ClntParser_LEX_BODY;
+  YY_ClntParser_STYPE YY_ClntParser_LVAL;
+  #ifdef YY_ClntParser_LSP_NEEDED
+   YY_ClntParser_LTYPE YY_ClntParser_LLOC;
   #endif
-  int YY_clntParser_NERRS;
-  int YY_clntParser_CHAR;
+  int YY_ClntParser_NERRS;
+  int YY_ClntParser_CHAR;
  #endif
- #if YY_clntParser_DEBUG != 0
+ #if YY_ClntParser_DEBUG != 0
   public:
-   int YY_clntParser_DEBUG_FLAG;	/*  nonzero means print parse trace	*/
+   int YY_ClntParser_DEBUG_FLAG;	/*  nonzero means print parse trace	*/
  #endif
 public:
- YY_clntParser_CLASS(YY_clntParser_CONSTRUCTOR_PARAM);
+ YY_ClntParser_CLASS(YY_ClntParser_CONSTRUCTOR_PARAM);
 public:
- YY_clntParser_MEMBERS 
+ YY_ClntParser_MEMBERS 
 };
 /* other declare folow */
 #endif
 
 
-#if YY_clntParser_COMPATIBILITY != 0
+#if YY_ClntParser_COMPATIBILITY != 0
  /* backward compatibility */
  /* Removed due to bison problems
  /#ifndef YYSTYPE
- / #define YYSTYPE YY_clntParser_STYPE
+ / #define YYSTYPE YY_ClntParser_STYPE
  /#endif*/
 
  #ifndef YYLTYPE
-  #define YYLTYPE YY_clntParser_LTYPE
+  #define YYLTYPE YY_ClntParser_LTYPE
  #endif
  #ifndef YYDEBUG
-  #ifdef YY_clntParser_DEBUG 
-   #define YYDEBUG YY_clntParser_DEBUG
+  #ifdef YY_ClntParser_DEBUG 
+   #define YYDEBUG YY_ClntParser_DEBUG
   #endif
  #endif
 

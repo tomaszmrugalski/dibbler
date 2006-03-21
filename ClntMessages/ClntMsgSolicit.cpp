@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.15 2006-03-20 23:04:05 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.16 2006-03-21 20:02:02 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -234,49 +234,52 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TClntMsg> msg) {
     return;
 }
 
-
-//Check reveived message against following conditions:
-//  + is received from appropriate server (not rejected)
-//  + contains all require options(see cfg. manager and prefix require) 
-//  i.e..:
-//      - DNS Server Option
-//      - NTP Server Option
-//      - Domain Search List Option
-//      - Time Zone Option
-//
-//  + at least one IA has appropriate number of addresses
-
+/** 
+ * check if received message should be accepted. Following conditions are checked:
+ * - is server on the black-list?
+ * - are all requested options present?
+ * - is there requested IA option?
+ * - is there requested TA option?
+ * 
+ * @param msg 
+ * 
+ * @return 
+ */
 bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TClntMsg> msg)
 {
-    //get option IA_NA it must be included-it's a solicit message
-    SmartPtr<TClntOptIA_NA> ptrSolIA = (Ptr*) this->getOption(OPTION_IA);
-    //find grooup of ia's - it contains information of rejected servers
-    SmartPtr<TClntCfgGroup> ptrCfgGroup = ClntCfgMgr->getGroupForIA(ptrSolIA->getIAID());
-    SmartPtr<TClntOptServerIdentifier> ptrSrvDUID = 
-                                    (Ptr*) msg->getOption(OPTION_SERVERID);
-    //is this server rejected
-    if (ptrCfgGroup->isServerRejected(msg->getAddr(),ptrSrvDUID->getDUID()))
-        return true;
-
-    SmartPtr<TClntOptOptionRequest> ptrReqOpt = (Ptr*) getOption(OPTION_ORO);
-    SmartPtr<TOpt> ptrAnswOpt;
-    SmartPtr<TClntCfgIface> ptrIface=ClntCfgMgr->getIface(this->Iface);
-
-
-    //check at last for ia inclusion
-    msg->firstOption();
-    while(ptrAnswOpt=msg->getOption())
-    {
-        if (ptrAnswOpt->getOptType()==OPTION_IA)
-        {
-            SmartPtr<TClntOptIA_NA> ptrAnswIA=(Ptr*)ptrAnswOpt;
-            SmartPtr<TClntCfgIA> ptrQuestIA = ClntCfgMgr->getIA(ptrAnswIA->getIAID());
-            if (ptrQuestIA->countAddr()<=ptrAnswIA->countAddr())
-                return false;    //there is at least one IA
-        }
+    // this == solicit or request
+    // msg  == reply
+    SmartPtr<TClntOptServerIdentifier> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
+    if (!srvDUID) {
+	Log(Notice) << "No server identifier provided. Message ignored." << LogEnd;
+	return true;
     }
-    //No there is no such a IA
-    return true;
+    
+    //is this server rejected?
+    SmartPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
+    if (!iface) {
+	Log(Error) << "Unable to find iface=" << this->Iface << "." << LogEnd;
+	return false;
+    }
+
+    if (iface->isServerRejected(msg->getAddr(), srvDUID->getDUID())) {
+	Log(Notice) << "Server was rejected (duid=" << srvDUID->getDUID() << ")." << LogEnd;
+        return true;
+    }
+
+    // have we asked for IA?
+    if ( (this->getOption(OPTION_IA)) && (!msg->getOption(OPTION_IA)) ) {
+	Log(Notice) << "IA option requested, but not present in this message. Ignored." << LogEnd;
+	return true;
+    }
+    
+    // have we asked for TA?
+    if ( (this->getOption(OPTION_IA_TA)) && (!msg->getOption(OPTION_IA_TA)) ) {
+	Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
+    }
+	 
+    // everything seems ok
+    return false;
 }
 
 int TClntMsgSolicit::getMaxPreference()
@@ -352,41 +355,3 @@ TClntMsgSolicit::~TClntMsgSolicit()
 {
     delete [] pkt;
 }
-
-/*
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.14  2006/03/05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.13.2.1  2006/02/05 23:38:07  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.13  2005/01/08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.12  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.11  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.10  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.9  2004/09/07 22:02:32  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.8  2004/09/03 23:20:22  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.6  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.5  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- */

@@ -6,36 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.10 2006-03-20 23:04:05 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.9  2006/03/05 21:38:47  thomson
- * TA support merged.
- *
- * Revision 1.8.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.8  2004/11/30 00:42:50  thomson
- * Client no longer sends RapidCommit, unless told to do so (bug #55)
- *
- * Revision 1.7  2004/11/29 21:21:56  thomson
- * Client parser now supports 'option lifetime' directive (bug #75)
- *
- * Revision 1.6  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.5  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.4  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.3  2004/05/23 20:13:12  thomson
- * *** empty log message ***
- *
- *                                                                           
+ * $Id: ClntCfgIface.h,v 1.11 2006-03-21 20:02:01 thomson Exp $
  */
 
 #ifndef CLNTCFGIFACE_H
@@ -50,12 +21,11 @@
 #include "SmartPtr.h"
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
-#include "ClntCfgGroup.h"
 #include "ClntCfgTA.h"
 #include "ClntParsGlobalOpt.h"
 #include "SmartPtr.h"
 #include "DUID.h"
-#include "IPv6Addr.h"
+#include "ClntCfgIA.h"
 
 using namespace std;
 
@@ -66,23 +36,26 @@ public:
     TClntCfgIface(string ifaceName);
     TClntCfgIface(int ifaceNr);
 
+    bool isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> duid);
+
     // IA
-    TContainer< SmartPtr<TClntCfgGroup> > ClntCfgGroupLst;
-    void firstGroup();
-    int countGroup();
-    SmartPtr<TClntCfgGroup> getGroup();
-    void addGroup(SmartPtr<TClntCfgGroup> ptr);
+    void firstIA();
+    int countIA();
+    SmartPtr<TClntCfgIA> getIA();
+    void addIA(SmartPtr<TClntCfgIA> ptr);
     
     // TA
     void firstTA();
     void addTA(SmartPtr<TClntCfgTA> ta);
     SmartPtr<TClntCfgTA> getTA();
     int countTA();
+#if 0
+    SmartPtr<TClntCfgGroup> getLastGroup();
+#endif
 
     string getName(void);
     string getFullName(void);
     void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
-    SmartPtr<TClntCfgGroup> getLastGroup();
     int	getID(void);
     void setNoConfig();
     void setIfaceID(int ifaceID);
@@ -184,6 +157,11 @@ private:
     bool isIA;
     bool Unicast;
     bool RapidCommit;
+
+    List(TClntCfgIA) IALst;
+
+    List(TStationID) PrefSrvLst;
+    List(TStationID) RejectedSrvLst;
 
     List(TClntCfgTA) ClntCfgTALst;
     

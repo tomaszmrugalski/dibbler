@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.38 2006-03-20 23:04:05 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.39 2006-03-21 20:02:02 thomson Exp $
  *
  */
 
@@ -100,16 +100,12 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
     }
 
     // create IAs in AddrMgr corresponding to those specified in CfgMgr.
-    SmartPtr<TClntCfgGroup> group;
-    iface->firstGroup();
-    while(group=iface->getGroup()) {
-	SmartPtr<TClntCfgIA> ia;
-	group->firstIA();
-	while(ia=group->getIA()) {
-	    AddrMgr->addIA(new TAddrIA(iface->getID(),SmartPtr<TIPv6Addr>(), 
-				       SmartPtr<TDUID>(),CLIENT_DEFAULT_T1,CLIENT_DEFAULT_T2,
-				       ia->getIAID()));
-	}
+    SmartPtr<TClntCfgIA> ia;
+    iface->firstIA();
+    while(ia=iface->getIA()) {
+	AddrMgr->addIA(new TAddrIA(iface->getID(),SmartPtr<TIPv6Addr>(), 
+				   SmartPtr<TDUID>(),CLIENT_DEFAULT_T1,CLIENT_DEFAULT_T2,
+				   ia->getIAID()));
     }
 
     // open socket
@@ -549,22 +545,17 @@ void TClntTransMgr::checkSolicit() {
 	List(TClntCfgIA) iaLstToConfig; // list of IA requiring configuration
 	SmartPtr<TClntCfgIA> cfgIA;
     
-	SmartPtr<TClntCfgGroup> group;
-        iface->firstGroup();
-        while(group=iface->getGroup())
-        {
-            group->firstIA();
-            while(cfgIA=group->getIA())
-            {
-                //These not assigned in AddrMgr and configurable and not in trasaction
-                //group and pass to constructor of Solicit message
-                SmartPtr<TAddrIA> ia=AddrMgr->getIA(cfgIA->getIAID());
-                if(ia->getState()==NOTCONFIGURED)
-                {
-                    iaLstToConfig.append(cfgIA);
-                    ia->setState(INPROCESS);
-                }
-            }
+	iface->firstIA();
+	while(cfgIA=iface->getIA())
+	{
+	    //These not assigned in AddrMgr and configurable and not in trasaction
+	    //group and pass to constructor of Solicit message
+	    SmartPtr<TAddrIA> ia=AddrMgr->getIA(cfgIA->getIAID());
+	    if(ia->getState()==NOTCONFIGURED)
+	    {
+		iaLstToConfig.append(cfgIA);
+		ia->setState(INPROCESS);
+	    }
 	}
 
 	// step 2: check if TA has to be configured
@@ -796,7 +787,6 @@ void TClntTransMgr::checkRequest()
 {
     SmartPtr<TAddrIA> ia;
     SmartPtr<TClntCfgIA> cfgIA;
-    SmartPtr<TClntCfgGroup> firstIAGroup;
     SmartPtr<TDUID> duid = 0;
     List(TAddrIA) requestIALst;
     int ifaceID = 0;
