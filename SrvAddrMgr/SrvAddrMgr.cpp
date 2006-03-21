@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.10 2006-03-05 21:35:47 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.11 2006-03-21 20:01:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006/03/05 21:35:47  thomson
+ * TA support merged.
+ *
  * Revision 1.9.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -234,12 +237,12 @@ bool TSrvAddrMgr::addTAAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntA
     // find this TA
     SmartPtr <TAddrIA> ta;
     ptrClient->firstTA();
-    while ( ta = ptrClient->getIA() ) {
+    while ( ta = ptrClient->getTA() ) {
         if ( ta->getIAID() == iaid)
             break;
     }
 
-    // have we found this IA?
+    // have we found this TA?
     if (!ta) {
 	ta = new TAddrIA(iface, clntAddr, clntDuid, DHCPV6_INFINITY, DHCPV6_INFINITY, iaid);
 	ptrClient->addTA(ta);
