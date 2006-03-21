@@ -46,7 +46,7 @@ $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIE
 
 server: $(SERVERBIN)
 
-$(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
+$(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr     \
