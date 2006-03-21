@@ -163,12 +163,10 @@ ClassOptionDeclarationsList
 TAClassDeclaration
 :TACLASS_ '{'
 {
-    Log(Debug) << "### Before ta-class parse." << LogEnd;
     StartTAClassDeclaration();
 } TAClassOptionsList '}'
 {
     EndTAClassDeclaration();
-    Log(Debug) << "### After ta-class parse." << LogEnd;
 }
 ;
 

@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgTA.cpp,v 1.2 2006-03-05 21:34:05 thomson Exp $
+ * $Id: SrvCfgTA.cpp,v 1.3 2006-03-21 19:12:47 thomson Exp $
  */
 
 #include "SrvCfgTA.h"
@@ -175,7 +175,7 @@ bool TSrvCfgTA::addrInPool(SmartPtr<TIPv6Addr> addr) {
 ostream& operator<<(ostream& out,TSrvCfgTA& addrClass)
 {
     out << "    <taClass id=\"" << addrClass.ID << "\" pref=\"" << addrClass.Pref 
-	<< "\" valid=\"" << addrClass.Valid << "\"  />" << endl;
+	<< "\" valid=\"" << addrClass.Valid << "\">" << endl;
     out << "      <!-- total addrs in class: " << addrClass.AddrsCount 
 	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << endl;
@@ -199,6 +199,9 @@ ostream& operator<<(ostream& out,TSrvCfgTA& addrClass)
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2006/03/05 21:34:05  thomson
+ * Temp. addresses support merged to the top branch.
+ *
  * Revision 1.1.2.1  2006/02/05 23:42:33  thomson
  * Initial revision.
  *
