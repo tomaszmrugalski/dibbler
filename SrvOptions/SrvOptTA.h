@@ -46,9 +46,11 @@ class TSrvOptTA : public TOptTA
     void confirm(SmartPtr<TSrvOptTA> queryOpt);
 
     void solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit);
+
+    int OrgMessage; // original message, which we are responding to 
 };
 
 #endif
 /*
- * $Id: SrvOptTA.h,v 1.2 2006-03-05 21:32:28 thomson Exp $
+ * $Id: SrvOptTA.h,v 1.3 2006-03-21 19:11:48 thomson Exp $
  */

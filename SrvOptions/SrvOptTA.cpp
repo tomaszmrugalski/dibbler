@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptTA.cpp,v 1.2 2006-03-05 21:32:28 thomson Exp $
+ * $Id: SrvOptTA.cpp,v 1.3 2006-03-21 19:11:48 thomson Exp $
  */
 
 #ifdef WIN32
@@ -22,6 +22,8 @@
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
+
+#define MAX_TA_RANDOM_TRIES 100
 
 /*
  * Create IA_TA option based on receive buffer
@@ -74,7 +76,7 @@ TSrvOptTA::TSrvOptTA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr
     this->ClntDuid  = clntDuid;
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
-
+    this->OrgMessage= msgType;
     switch (msgType) {
     case SOLICIT_MSG:
 	this->solicit(queryOpt);
@@ -133,7 +135,7 @@ void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
 	willAssign = addrsAvail;
     }
 
-    Log(Info) << "Client has " << addrsAssigned << " addrs," << ", " << addrsAvail 
+    Log(Info) << "Client has " << addrsAssigned << " addrs, " << addrsAvail 
 	      << " is available, limit for client is " << addrsMax << ", " 
 	      << willAssign << " will be assigned." << LogEnd;
     if (!willAssign) {
@@ -210,19 +212,23 @@ SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     SmartPtr<TIPv6Addr> addr;
     int safety=0;
 
-    while (safety<100) {
+    while (safety<MAX_TA_RANDOM_TRIES) {
 	addr = ta->getRandomAddr();
-	Log(Debug) << "Temporary address " << addr->getPlain() << " generated." << LogEnd;
 	if (AddrMgr->taAddrIsFree(addr)) {
-	    AddrMgr->addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface, 
-			       this->IAID, addr, ta->getPref(), ta->getValid());
-	    CfgMgr->addTAAddr(this->Iface);
+	    if ((this->OrgMessage == REQUEST_MSG)) {
+		Log(Debug) << "Temporary address " << addr->getPlain() << " granted." << LogEnd;
+		AddrMgr->addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface, 
+				   this->IAID, addr, ta->getPref(), ta->getValid());
+		CfgMgr->addTAAddr(this->Iface);
+	    } else {
+		Log(Debug) << "Temporary address " << addr->getPlain() << " generated (not granted)." << LogEnd;
+	    }
 	    return new TSrvOptIAAddress(addr, ta->getPref(), ta->getValid(), this->Parent);
 
 	}
 	safety++;
     }
-    Log(Error) << "Unable to randomly choose address after 100 tries." << LogEnd;
+    Log(Error) << "Unable to randomly choose address after " << MAX_TA_RANDOM_TRIES << " tries." << LogEnd;
     return 0;
 }
 
@@ -236,6 +242,9 @@ bool TSrvOptTA::doDuties()
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2006/03/05 21:32:28  thomson
+ * Temp. addresses support merged into main branch.
+ *
  * Revision 1.1.2.1  2006/02/05 23:41:13  thomson
  * Initial revision.
  *
