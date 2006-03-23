@@ -2235,16 +2235,7 @@ bool ClntParser::EndIfaceDeclaration()
 	return false;
     }
 
-#if 0    
-    if ( (!iface->stateless()) && (!ClntCfgIALst.count()) ) {
-	Log(Debug) << "IAs not defined on this interface. Assuming 1 IA." << LogEnd;
-	EmptyIface();
-	return true;
-    }
-#endif
-
     // add all IAs to the interface
-    Log(Debug) << "### " << ClntCfgIALst.count() << " IA(s) to copy." << LogEnd;
     SmartPtr<TClntCfgIA> ia;
     ClntCfgIALst.first();
     while (ia=ClntCfgIALst.get()) {
@@ -2306,7 +2297,6 @@ void ClntParser::EmptyIface()
     //set proper options specific for this IA
     ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
 
-    ClntCfgIfaceLst.getLast()->addIA(ClntCfgIALst.getLast());
     ClntCfgAddrLst.clear();
     ParserOptStack.delLast();
 

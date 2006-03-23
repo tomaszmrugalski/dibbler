@@ -25,10 +25,3 @@ class TClntOptIAAddress : public TOptIAAddress
 };
 
 #endif /* CLNTOPTIAADDRESS_H */
-
-/*
- * $Id: ClntOptIAAddress.h,v 1.2 2005-07-17 18:50:48 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- *
- */

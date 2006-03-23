@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.12 2006-03-05 21:39:19 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.13 2006-03-23 00:12:09 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -161,7 +161,7 @@ SmartPtr<TAddrIA> TClntAddrMgr::getTA(unsigned long iaid)
 {
     SmartPtr<TAddrIA> ta;
     this->Client->firstTA();
-    while (ta = this->Client->getIA() ) {
+    while (ta = this->Client->getTA() ) {
 	if (ta->getIAID() == iaid)
 	    return ta;
     }
@@ -186,6 +186,9 @@ int TClntAddrMgr::countTA()
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006/03/05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.11.2.1  2006/02/05 23:38:06  thomson
  * Devel branch with Temporary addresses support added.
  *

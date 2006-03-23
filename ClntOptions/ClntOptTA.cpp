@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptTA.cpp,v 1.2 2006-03-05 21:38:20 thomson Exp $
+ * $Id: ClntOptTA.cpp,v 1.3 2006-03-23 00:12:09 thomson Exp $
  *
  */
 
@@ -72,6 +72,17 @@ TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
     }
 }
 
+TClntOptTA::TClntOptTA(SmartPtr<TAddrIA> ta, TMsg* parent)
+    :TOptTA(ta->getIAID(), parent) 
+
+{
+    ta->firstAddr();
+    SmartPtr<TAddrAddr> addr;
+    while (addr=ta->getAddr()) {
+	SubOptions.append(new TClntOptIAAddress(addr->get(), 0, 0, parent));
+    }
+}
+
 void TClntOptTA::firstAddr()
 {
     SubOptions.first();
@@ -123,13 +134,13 @@ TClntOptTA::~TClntOptTA()
  * @return 
  */bool TClntOptTA::doDuties()
 {
-    Log(Debug) << "#### ClntOptTA::doDuties() " << LogEnd;
     // find this TA in addrMgr...
     SmartPtr<TAddrIA> ta = AddrMgr->getTA(this->getIAID());
 
     if (!ta) {
 	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB." << LogEnd;
-	ta = new TAddrIA(this->Iface, this->Addr, this->DUID, DHCPV6_INFINITY, DHCPV6_INFINITY, this->getIAID());
+	ta = new TAddrIA(this->Iface, 0 /*if unicast, then this->Addr*/, this->DUID, DHCPV6_INFINITY, 
+			 DHCPV6_INFINITY, this->getIAID());
 	AddrMgr->addTA(ta);
     }
 
@@ -253,6 +264,9 @@ void TClntOptTA::setIface(int iface) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2006/03/05 21:38:20  thomson
+ * TA support merged.
+ *
  * Revision 1.1.2.1  2006/02/05 23:41:13  thomson
  * Initial revision.
  *

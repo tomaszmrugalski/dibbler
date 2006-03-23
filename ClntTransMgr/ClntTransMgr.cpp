@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.39 2006-03-21 20:02:02 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.40 2006-03-23 00:12:09 thomson Exp $
  *
  */
 
@@ -324,18 +324,16 @@ void TClntTransMgr::doDuties()
 
 void TClntTransMgr::shutdown()
 {
-    this->Shutdown = true;
-
-    Log(Notice) << "Shutting down entire client." << LogEnd;
-
-    // delete all transactions
-    Transactions.clear();
-
-    List(TAddrIA) releasedIAs;
-
     SmartPtr<TAddrIA> ptrFirstIA;
     SmartPtr<TAddrIA> ptrNextIA;
+    SmartPtr<TAddrIA> ta;
+    SmartPtr<TClntCfgIface> iface;
+    List(TAddrIA) releasedIAs;
 
+    Transactions.clear(); // delete all transactions
+    this->Shutdown = true;
+    Log(Notice) << "Shutting down entire client." << LogEnd;
+	
     // delete all weird-state and address-free IAs 
     AddrMgr->firstIA();
     while (ptrFirstIA = AddrMgr->getIA()) {
@@ -382,8 +380,41 @@ void TClntTransMgr::shutdown()
                     AddrMgr->delIA( ptrNextIA->getIAID() );
                 }
         }
-        if (releasedIAs.count()) 
-            this->sendRelease(releasedIAs);
+
+	ta = 0;
+        if (releasedIAs.count()) { 
+	    // check if there are TA to release
+	    releasedIAs.first();
+	    iface = CfgMgr->getIface(releasedIAs.get()->getIface());
+	    if (iface && iface->countTA()) {
+		iface->firstTA();
+		SmartPtr<TClntCfgTA> cfgTA = iface->getTA();
+		ta = AddrMgr->getTA(cfgTA->getIAID());
+		cfgTA->setState(DISABLED);
+	    }
+
+            this->sendRelease(releasedIAs,ta);
+	}
+    }
+
+    // now check if there are any TA left
+    CfgMgr->firstIface();
+    while (iface = CfgMgr->getIface()) {
+	if (iface->countTA()) {
+	    iface->firstTA();
+	    SmartPtr<TClntCfgTA> cfgTA = iface->getTA();
+	    ta = AddrMgr->getTA(cfgTA->getIAID());
+	    releasedIAs.clear();
+	    if (!ta) {
+		Log(Warning) << "#### Unable to find TA" << LogEnd;
+		continue;
+	    }
+	    if (cfgTA->getState()==CONFIGURED) {
+		this->sendRelease(releasedIAs, ta);
+		cfgTA->setState(DISABLED);
+	    }
+	}
+
     }
     
     //doDuties(); // just to send RELEASE msg
@@ -485,20 +516,39 @@ void TClntTransMgr::sendRequest(List(TOpt) requestOptions,
 }
 
 // Send RELEASE message
-void TClntTransMgr::sendRelease( List(TAddrIA) IALst)
+void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta)
 {
-    if (!IALst.count()) {
-        Log(Error) << "Unable to send RELEASE with empty IAs list." << LogEnd;
+    if (!IALst.count() && !ta) {
+        Log(Error) << "Unable to send RELEASE with empty IAs list and without TA." << LogEnd;
         return;
     }
 
+    // find interface and srv address
+    int iface;
+    SmartPtr<TIPv6Addr> addr;
     SmartPtr<TAddrIA> ptrIA;
-    IALst.first();
-    ptrIA = IALst.get();
-    Log(Notice) << "Creating RELEASE for " << IALst.count() << " IA(s)." << LogEnd;
+    if (IALst.count()) {
+	IALst.first();
+	ptrIA = IALst.get();
+	iface = ptrIA->getIface();
+	addr  = ptrIA->getSrvAddr();
+    } else {
+	iface = ta->getIface();
+	addr  = ta->getSrvAddr();
+    }
 
-    SmartPtr<TClntMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, ptrIA->getIface(), 
-        ptrIA->getSrvAddr(), IALst);
+    SmartPtr<TClntCfgIface> ptrIface = CfgMgr->getIface(iface);
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
+	return;
+    }
+	
+    Log(Notice) << "Creating RELEASE for " << IALst.count() << " IA(s)" 
+		<< (ta?" and TA":" (no TA)") << " on the " << ptrIface->getFullName() 
+		<< " interface." << LogEnd;
+
+    SmartPtr<TClntMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, iface, 
+						 addr, IALst, ta);
     Transactions.append( ptr );
 }
 
@@ -572,9 +622,9 @@ void TClntTransMgr::checkSolicit() {
 
 	if (iaLstToConfig.count() || taToConfig) {//Are there any IA, which should be configured?
 	    Log(Info) << "Creating SOLICIT message with " << iaLstToConfig.count()
-		      << " IA(s), " << (iface->countTA()?"1":"no") << " TA ";
+		      << " IA(s), " << (iface->countTA()?"1":"no") << " TA";
 	    if (iface->getRapidCommit()) {
-		Log(Cont) << "(with rapid-commit)";
+		Log(Cont) << " (with rapid-commit)";
 	    } 
 	    Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
 	    Transactions.append(new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,

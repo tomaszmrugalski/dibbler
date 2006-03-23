@@ -78,8 +78,8 @@ void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)
 
 ostream& operator<<(ostream& out,TClntCfgIA& ia)
 {
-    out << "        <ia iaid=\"" << ia.IAID << "\" t1=\"" << ia.T1 << "\" t2=\"" 
-	<< ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
+    out << "        <ia iaid=\"" << ia.IAID << "\" state=\"" << StateToString(ia.State) << "\" t1=\"" 
+	<< ia.T1 << "\" t2=\"" << ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
 
     SmartPtr<TClntCfgAddr> addr;
     

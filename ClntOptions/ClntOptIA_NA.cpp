@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.9 2006-03-05 21:38:20 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.10 2006-03-23 00:12:09 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006/03/05 21:38:20  thomson
+ * TA support merged.
+ *
  * Revision 1.8.2.1  2006/02/05 23:38:07  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -302,7 +305,7 @@ bool TClntOptIA_NA::doDuties()
         AddrMgr->addIA(new TAddrIA(ptrIA->getIface(), SmartPtr<TIPv6Addr>(), SmartPtr<TDUID>(),
 				   0x7fffffff,0x7fffffff,ptrIA->getIAID()));
         if (ptrIA->getAddrCount())
-            TransMgr->sendRelease(list);
+            TransMgr->sendRelease(list,0);
         return false;
     }
 

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptTA.h,v 1.2 2006-03-05 21:38:20 thomson Exp $
+ * $Id: ClntOptTA.h,v 1.3 2006-03-23 00:12:09 thomson Exp $
  *
  */
 
@@ -30,6 +30,7 @@ class TClntOptTA : public TOptTA
  public:
     TClntOptTA(unsigned int iaid, TMsg* parent);
     TClntOptTA(char * buf, int bufsize, TMsg* parent);
+    TClntOptTA(SmartPtr<TAddrIA> ta, TMsg* parent);
     ~TClntOptTA();    
 
     bool doDuties();

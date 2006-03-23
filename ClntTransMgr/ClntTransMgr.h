@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.8 2005-01-12 00:10:05 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.9 2006-03-23 00:12:09 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/01/12 00:10:05  thomson
+ * Compilation fixes.
+ *
  * Revision 1.7  2005/01/08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -53,7 +56,7 @@ class TClntTransMgr
 		     TContainer< SmartPtr<TMsg> > srvlist,int iface);
     void sendInfRequest(TContainer< SmartPtr<TOpt> > requestOptions, int iface);
     void sendRebind( TContainer<SmartPtr<TOpt> > ptrIA, int iface);
-    void sendRelease(List(TAddrIA) ptrIA);
+    void sendRelease(List(TAddrIA) iaLst, SmartPtr<TAddrIA> ta);
     void shutdown();
     bool isDone();
     void setThat(SmartPtr<TClntTransMgr> that);
