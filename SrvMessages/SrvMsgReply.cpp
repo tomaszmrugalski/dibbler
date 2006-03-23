@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.20 2006-03-05 21:35:15 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.21 2006-03-23 00:53:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2006/03/05 21:35:15  thomson
+ * TA support merged.
+ *
  *
  * Revision 1.18.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
@@ -423,11 +426,10 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    
 	    // let's verify each address
 	    ta->firstOption();
-	    while ( subOpt = ta->getOption() ) {
+	    while ( subOpt = (Ptr*) ta->getOption() ) {
 		if (subOpt->getOptType()!=OPTION_IAADDR)
 		    continue;
 		SmartPtr<TSrvOptIAAddress> addr = (Ptr*) subOpt;
-		
 		if (AddrMgr->delTAAddr(clntID->getDUID(), ta->getIAID(), addr->getAddr()) ) {
 		    CfgMgr->delTAAddr(this->Iface);
 		    anyDeleted=true;                    

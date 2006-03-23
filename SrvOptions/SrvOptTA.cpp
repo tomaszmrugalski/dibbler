@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptTA.cpp,v 1.3 2006-03-21 19:11:48 thomson Exp $
+ * $Id: SrvOptTA.cpp,v 1.4 2006-03-23 00:53:26 thomson Exp $
  */
 
 #ifdef WIN32
@@ -40,11 +40,11 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
 	SmartPtr<TOpt> opt;
 	switch (code) {
 	case OPTION_IAADDR:
-	    opt = (Ptr*) new TSrvOptIAAddress(buf+pos,length,this->Parent);
+	    opt = (Ptr*) SmartPtr<TSrvOptIAAddress>(new TSrvOptIAAddress(buf+pos,length,this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	case OPTION_STATUS_CODE:
-	    opt = (Ptr*) new TSrvOptStatusCode(buf+pos,length,this->Parent);
+	    opt = (Ptr*) SmartPtr<TSrvOptStatusCode>(new TSrvOptStatusCode(buf+pos,length,this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	default:
@@ -55,8 +55,6 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
 	}
         pos+=length;
     }
-
-    Log(Debug) << "### TA option (iaid=" << this->IAID << ") received." << LogEnd;
 }
 
 /*
@@ -232,20 +230,7 @@ SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     return 0;
 }
 
-
-
 bool TSrvOptTA::doDuties()
 {
     return true;
 }
-
-
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2006/03/05 21:32:28  thomson
- * Temp. addresses support merged into main branch.
- *
- * Revision 1.1.2.1  2006/02/05 23:41:13  thomson
- * Initial revision.
- *
- */

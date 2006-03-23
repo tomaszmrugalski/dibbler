@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.40 2006-03-23 00:12:09 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.41 2006-03-23 00:53:26 thomson Exp $
  *
  */
 
@@ -406,7 +406,7 @@ void TClntTransMgr::shutdown()
 	    ta = AddrMgr->getTA(cfgTA->getIAID());
 	    releasedIAs.clear();
 	    if (!ta) {
-		Log(Warning) << "#### Unable to find TA" << LogEnd;
+		Log(Warning) << "Unable to find TA(taid=" << cfgTA->getIAID() <<"). " << LogEnd;
 		continue;
 	    }
 	    if (cfgTA->getState()==CONFIGURED) {

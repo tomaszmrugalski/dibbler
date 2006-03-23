@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.11 2006-03-21 20:01:36 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.12 2006-03-23 00:53:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006/03/21 20:01:36  thomson
+ * TA possible segfault removed.
+ *
  * Revision 1.10  2006/03/05 21:35:47  thomson
  * TA support merged.
  *
@@ -194,7 +197,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
 	ptrClient->delIA(IAID);
     }
 
-    if (!ptrClient->countIA()) {
+    if (!ptrClient->countIA() && !ptrClient->countTA()) {
 	if (!quiet)
 	    Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
 		      << ") form addrDB." << LogEnd;
@@ -321,19 +324,19 @@ bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid,
 
     // address already exists
     if (!ptrAddr) {
-	Log(Warning) << "Address " << *clntAddr << " not assigned, cannot delete." << LogEnd;
+	Log(Warning) << "Temp. address " << *clntAddr << " not assigned, cannot delete." << LogEnd;
 	return false;
     }
 
     ta->delAddr(clntAddr);
-    Log(Debug) << "Deleted address " << *clntAddr << " from addrDB." << LogEnd;
+    Log(Debug) << "Deleted temp. address " << *clntAddr << " from addrDB." << LogEnd;
     
     if (!ta->countAddr()) {
 	Log(Debug) << "Deleted TA (IAID=" << iaid << ") from addrDB." << LogEnd;
 	ptrClient->delTA(iaid);
     }
 
-    if (!ptrClient->countIA()) {
+    if (!ptrClient->countIA() && !ptrClient->countTA()) {
 	Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
 		   << ") form addrDB." << LogEnd;
 	this->delClient(clntDuid);

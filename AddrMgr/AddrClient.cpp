@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.10 2006-03-05 21:39:19 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.11 2006-03-23 00:53:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006/03/05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.9.2.1  2006/02/05 23:38:06  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -101,7 +104,7 @@ SmartPtr<TAddrIA> TAddrClient::getTA() {
 
 SmartPtr<TAddrIA> TAddrClient::getTA(unsigned long IAID) {
     SmartPtr<TAddrIA> ptr;
-    IAsLst.first();
+    TALst.first();
 
     while ( ptr = TALst.get() ) {
         if (ptr->getIAID() == IAID) {
@@ -125,8 +128,7 @@ int TAddrClient::countTA() {
 
 bool TAddrClient::delTA(unsigned long iaid) {
     SmartPtr<TAddrIA> ptr;
-    IAsLst.first();
-
+    TALst.first();
     while ( ptr = TALst.get() ) {
         if (ptr->getIAID() == iaid) {
             TALst.del();

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.22 2006-03-05 21:34:05 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.23 2006-03-23 00:53:26 thomson Exp $
  */
 
 #include <sstream>
@@ -584,7 +584,8 @@ void TSrvCfgIface::addTAAddr() {
 void TSrvCfgIface::delTAAddr() {
     SmartPtr<TSrvCfgTA> ta;
     this->firstTA();
-    if (!this->getTA()) {
+    ta = this->getTA();
+    if (!ta) {
 	Log(Error) << "Unable to decrease TA usage. TA (temporary addresses) is not found on the " 
 		   << this->getFullName() << " interface." << LogEnd;
 	return;
