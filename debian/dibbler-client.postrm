@@ -2,10 +2,14 @@
 set -e
 
 CONFFILE=/etc/dibbler/client.conf
+TMP=${CONFFILE}-dpkg-new
 
 if [ "$1" = "purge" ] ; then
     if [ -e ${CONFFILE} ]; then
 	rm ${CONFFILE}
+    fi
+    if [ -e ${TMP} ]; then
+	rm {$TMP}
     fi
     test -f /usr/bin/ucf && ucf --purge ${CONFFILE}
 fi
