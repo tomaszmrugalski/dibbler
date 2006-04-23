@@ -1,25 +1,16 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#    Translators, if you are not familiar with the PO format, gettext
-#    documentation is worth reading, especially sections dedicated to
-#    this format, e.g. by running:
-#         info -n '(gettext)PO Files'
-#         info -n '(gettext)Header Entry'
-#
-#    Some information specific to po-debconf are available at
-#            /usr/share/doc/po-debconf/README-trans
-#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
-#
-#    Developers do not need to manually edit POT or PO files.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: dibbler\n"
 "Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
 "POT-Creation-Date: 2006-01-06 22:32+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2006-03-31 22:55+0200\n"
+"Last-Translator: Miroslav Kure <kurem@debian.cz>\n"
+"Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,13 +19,13 @@ msgstr ""
 #. Description
 #: ../dibbler-client.templates:3
 msgid "dibbler-client: DHCPv6 client"
-msgstr ""
+msgstr "dibbler-client: klient DHCPv6"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-client.templates:8
 msgid "Do you want dibbler-client to start when system starts?"
-msgstr "Czy chcesz, aby dibbler-client by≥ uruchamiany przy starcie systemu?"
+msgstr "Chcete spustit dibbler-client p≈ôi zav√°dƒõn√≠ syst√©mu?"
 
 #. Type: boolean
 #. Description
@@ -44,11 +35,9 @@ msgid ""
 "IPv6 set up after boot. This is generally a good idea. Make sure that there "
 "is a DHCPv6 server available in your network."
 msgstr ""
-"Klient Dibbler moøe byÊ skonfigurowany tak, øeby by≥ uruchamiany "
-"przy starcie systemu po to, øeby TwÛj komputer mia≥ skonfigurowane "
-"IPv6 od razu po zabootowaniu. Zwykle jest to dobry pomys≥. Upewnij siÍ jednak, "
-"øe w Twojej sieci jest dostÍpny serwer DHCPv6."
-
+"Klient Dibbler m≈Ø≈æe b√Ωt nastaven tak, aby se spou≈°tƒõl p≈ôi startu syst√©mu, "
+"tak≈æe po zaveden√≠ syst√©mu bude IPv6 nastaveno. To je jistƒõ dobr√Ω n√°pad. "
+"Ujistƒõte se v≈°ak, ≈æe je na va≈°√≠ s√≠ti tak√© DHCPv6 server."
 
 #. Type: string
 #. Default
@@ -60,13 +49,13 @@ msgstr "eth0"
 #. Description
 #: ../dibbler-client.templates:16
 msgid "Interfaces to be configured:"
-msgstr "Interfejsy do skonfigurowania:"
+msgstr "Rozhran√≠, kter√° se maj√≠ nastavit:"
 
 #. Type: string
 #. Description
 #: ../dibbler-client.templates:16
 msgid "Dibbler can configure any or all of a computer's network interfaces."
-msgstr "Dibbler moøe skonfigurowaÊ ktÛre∂ lub wszystkie interfejsy sieciowe komputera."
+msgstr "Dibbler um√≠ nastavit v≈°echna nebo jen nƒõkter√° s√≠≈•ov√° rozhran√≠."
 
 #. Type: string
 #. Description
@@ -74,20 +63,19 @@ msgstr "Dibbler moøe skonfigurowaÊ ktÛre∂ lub wszystkie interfejsy sieciowe komp
 msgid ""
 "More than one interface may be specified by separating the interface names "
 "with spaces."
-msgstr "WiÍcej niø jeden interfejs sieciowy moøe byÊ podany poprzed odzielenie "
-"nazw interejsÛw spacjami."
+msgstr "V√≠ce rozhran√≠ m≈Ø≈æete zadat tak, ≈æe jejich n√°zvy oddƒõl√≠te mezerami."
 
 #. Type: multiselect
 #. Choices
 #: ../dibbler-client.templates:24
 msgid "dns, domain"
-msgstr "dns, domain"
+msgstr "dns, dom√©na"
 
 #. Type: multiselect
 #. Description
 #: ../dibbler-client.templates:26
 msgid "What additional parameters should be obtained?"
-msgstr "Jakie dodatkowe parametry powinny byÊ skonfigurowane?"
+msgstr "Kter√© dal≈°√≠ parametry se maj√≠ z√≠skat?"
 
 #. Type: multiselect
 #. Description
@@ -95,21 +83,21 @@ msgstr "Jakie dodatkowe parametry powinny byÊ skonfigurowane?"
 msgid ""
 "The Dibbler client can request that the DHCPv6 server supply additional "
 "configuration parameters."
-msgstr "Klient Dibbler moøe poprosiÊ serwer o dostarczenie dodatkowych "
-"parametrÛw konfiguracyjnych."
+msgstr ""
+"Dibbler um√≠ po≈æ√°dat DHCPv6 server, aby mu poslal dodateƒçn√© parametry pro "
+"nastaven√≠ s√≠tƒõ."
 
 #. Type: title
 #. Description
 #: ../dibbler-relay.templates:3
 msgid "dibbler-relay: DHCPv6 relay"
-msgstr "dibbler-relay: przekaºnik DHCPv6"
+msgstr "dibbler-relay: DHCPv6 relay"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-relay.templates:8
-#, fuzzy
 msgid "Do you want dibbler-relay to start when the system starts?"
-msgstr "Czy chcesz, aby dibbler-relay startowa≥ przy starcie systemu?"
+msgstr "Chcete spustit dibbler-relay p≈ôi zav√°dƒõn√≠ syst√©mu?"
 
 #. Type: boolean
 #. Description
@@ -118,15 +106,15 @@ msgid ""
 "Dibbler relay can be configured to start at boot. This node will then "
 "forward DHCPv6 messages between clients, servers and other relays."
 msgstr ""
-"Przekaºnik Dibbler moøe zostaÊ skonfigurowany tak, aby by≥ uruchamiany "
-"podczas startu systemu. Ten wÍz≥e bÍdzie w takim przypadku przekazywa≥ "
-"wiadomo∂ci DHCPv6 pomiÍdzy klientami, serwerami i innymi przekaºnikami."
+"Dibbler relay m≈Ø≈æe b√Ωt nastavena tak, aby se spou≈°tƒõla p≈ôi startu syst√©mu. "
+"Tento uzel pak bude p≈ôepos√≠lat zpr√°vy protokolu DHCPv6 mezi klienty, "
+"servery a ostatn√≠mi relay uzly."
 
 #. Type: note
 #. Description
 #: ../dibbler-relay.templates:14
 msgid "Modify /etc/dibbler/relay.conf before running the relay."
-msgstr "Zmodyfikuj plik /etc/dibbler/relay.conf zanim uruchomisz przekaºnik."
+msgstr "P≈ôed spu≈°tƒõn√≠m relay uzlu upravte /etc/dibbler/relay.conf."
 
 #. Type: note
 #. Description
@@ -134,21 +122,21 @@ msgstr "Zmodyfikuj plik /etc/dibbler/relay.conf zanim uruchomisz przekaºnik."
 msgid ""
 "Without proper modifications, the relay will most likely refuse to start or "
 "will not forward DHCPv6 messages as expected."
-msgstr "Bez odpowiednich modyfikacji, przekaºnik najprawdopodobniej nie uruchomi "
-"siÍ lub nie bÍdzie przekazywa≥ wiadomo∂ci, jak siÍ od niego oczekuje."
+msgstr ""
+"Bez spr√°vn√Ωch √∫prav se relay nejsp√≠≈° odm√≠tne spustit, nebo nebude "
+"p≈ôepos√≠lat DHCPv6 zpr√°vy dle oƒçek√°v√°n√≠."
 
 #. Type: title
 #. Description
 #: ../dibbler-server.templates:3
 msgid "dibbler-server: DHCPv6 server"
-msgstr "dibbler-server: serwer DHCPv6"
+msgstr "dibbler-server: server DHCPv6"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-server.templates:8
-#, fuzzy
 msgid "Do you want dibbler-server to start when the system starts?"
-msgstr "Czy chcesz, aby dibbler-server startowa≥ przy starcie systemu?"
+msgstr "Chcete spustit dibbler-server p≈ôi zav√°dƒõn√≠ syst√©mu?"
 
 #. Type: boolean
 #. Description
@@ -158,16 +146,16 @@ msgid ""
 "as a DHCPv6 server. It will provide IPv6 addresses and additional "
 "configuration options to other nodes in the network."
 msgstr ""
-"Serwer Dibbler moøe zostaÊ skonfigurowany tak, aby by≥ uruchamiany przy "
-"starcie systemu. Ten wÍze≥ bÍdzie wtedy dzia≥a≥ jako serwer DHCPv6. BÍdzie "
-"dostarcza≥ adresÛw IPv6 oraz dodatkowych parametrÛw konfiguracyjnych innym "
-"wÍz≥om w sieci."
+"Dibbler server m≈Ø≈æe b√Ωt nastaven tak, aby se spou≈°tƒõl p≈ôi startu syst√©mu. "
+"Tento uzel pak bude slou≈æit jako DHCPv6 server a ostatn√≠m uzl≈Øm na s√≠ti "
+"bude p≈ôidƒõlovat adresy protokolu IPv6 a p≈ô√≠padn√© dal≈°√≠ informace pro "
+"nastaven√≠ s√≠tƒõ."
 
 #. Type: note
 #. Description
 #: ../dibbler-server.templates:15
 msgid "Modify /etc/dibbler/server.conf before running the server."
-msgstr "Zmodyfikuj /etc/dibbler/server.conf zanim uruchomisz serwer."
+msgstr "P≈ôed spu≈°tƒõn√≠m serveru upravte /etc/dibbler/server.conf."
 
 #. Type: note
 #. Description
@@ -175,5 +163,6 @@ msgstr "Zmodyfikuj /etc/dibbler/server.conf zanim uruchomisz serwer."
 msgid ""
 "Without proper modifications, the Dibbler server will most likely offer "
 "invalid addresses and options when started."
-msgstr "Bez odpowiednich modyfikacji, serwer Dibbler najprawdopodobniej "
-"bÍdzie oferowa≥ niepoprawne adresy i opcje, kiedy zostanie uruchomiony."
+msgstr ""
+"Bez p≈ô√≠slu≈°n√Ωch √∫prav bude server Dibbler nejsp√≠≈°e nab√≠zet chybn√© adresy a "
+"parametry."
