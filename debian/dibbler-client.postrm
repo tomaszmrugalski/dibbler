@@ -6,10 +6,10 @@ TMP=${CONFFILE}-dpkg-new
 
 if [ "$1" = "purge" ] ; then
     if [ -e ${CONFFILE} ]; then
-	rm ${CONFFILE}
+	rm -f ${CONFFILE}
     fi
     if [ -e ${TMP} ]; then
-	rm {$TMP}
+	rm -f ${TMP}
     fi
     test -f /usr/bin/ucf && ucf --purge ${CONFFILE}
 fi
