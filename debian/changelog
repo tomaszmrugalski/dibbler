@@ -1,4 +1,12 @@
-dibbler (0.4.2-1) unstable; urgency=low
+dibbler (0.4.2.dfsg-2) unstable; urgency=low
+
+  * Czech, French, Polish translations added (closes: #360273, #355895)
+  * All files are removed during purge from /etc/dibbler (closes: #355429)
+  * stop command in init.d scripts now work ok (closes: #357806)
+
+ -- Tomasz Mrugalski <thomson@klub.com.pl>  Wed, 26 Apr 2006 21:50:33 +0200
+
+dibbler (0.4.2.dfsg-1) unstable; urgency=low
 
   * New upstream release meeting Debian Free Software Guidelines
   * Improved build system (LaTeX no longer required)
