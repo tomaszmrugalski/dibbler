@@ -66,7 +66,7 @@ msgstr "Interfejsy do skonfigurowania:"
 #. Description
 #: ../dibbler-client.templates:16
 msgid "Dibbler can configure any or all of a computer's network interfaces."
-msgstr "Dibbler mo¿e skonfigurowaæ które¶ lub wszystkie interfejsy sieciowe komputera."
+msgstr "Dibbler mo¿e skonfigurowaæ niektóre lub wszystkie interfejsy sieciowe komputera."
 
 #. Type: string
 #. Description
