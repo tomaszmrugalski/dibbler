@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.21 2006-03-23 00:53:26 thomson Exp $
+ * $Id: SrvMsgReply.cpp,v 1.22 2006-04-30 17:32:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2006/03/23 00:53:26  thomson
+ * TA support fixed on the server side.
+ *
  * Revision 1.20  2006/03/05 21:35:15  thomson
  * TA support merged.
  *
@@ -610,7 +613,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		// For the moment, only the client make the DNS update
 		optFQDN->setSFlag(false);
 		// Setting the O Flag correctly according to the difference between O flags
-		optFQDN->setOFlag(optOld->getSFlag() xor 0);
+		optFQDN->setOFlag(optOld->getSFlag() /*xor 0*/);
 		
 		this->Options.append((Ptr*) optFQDN);
 		Log(Debug) << "Adding FQDN Option in REPLY message: " << fqdn << LogEnd;

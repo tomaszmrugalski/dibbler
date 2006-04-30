@@ -7,7 +7,7 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.h,v 1.1 2006-03-03 20:37:55 thomson Exp $
+* $Id: OptFQDN.h,v 1.2 2006-04-30 17:32:35 thomson Exp $
 *
 */
  
@@ -21,7 +21,6 @@ class TOptFQDN;
 #define OPTFQDN_H
 
 #include <string>
-#include <pthread.h>
 
 #include "Opt.h"
 #include "DHCPConst.h"

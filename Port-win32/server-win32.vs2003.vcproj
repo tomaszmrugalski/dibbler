@@ -165,10 +165,13 @@
 					RelativePath="..\Options\OptAddrLst.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptClientIdentifier.cpp">
+					RelativePath="..\Options\OptDUID.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptElapsed.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptFQDN.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptIA_NA.cpp">
@@ -189,9 +192,6 @@
 					RelativePath="..\Options\OptRapidCommit.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptServerIdentifier.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptStatusCode.cpp">
 				</File>
 				<File
@@ -199,6 +199,9 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptStringLst.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptTA.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptUserClass.cpp">
@@ -280,6 +283,9 @@
 					RelativePath="..\SrvOptions\SrvOptStatusCode.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvOptions\SrvOptTA.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvOptions\SrvOptTimeZone.cpp">
 				</File>
 				<File
@@ -348,6 +354,9 @@
 					RelativePath="..\SrvCfgMgr\SrvCfgMgr.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgTA.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvLexer.cpp">
 				</File>
 				<File
@@ -386,6 +395,9 @@
 				</File>
 				<File
 					RelativePath="..\misc\DUID.cpp">
+				</File>
+				<File
+					RelativePath="..\Misc\FQDN.cpp">
 				</File>
 				<File
 					RelativePath="..\misc\IPv6Addr.cpp">
