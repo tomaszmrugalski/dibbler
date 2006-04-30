@@ -3,7 +3,7 @@
 #define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the <ext/slist> header file. */
-#define HAVE_EXT_SLIST 1
+/* commented out by thomson #define HAVE_EXT_SLIST 1 */
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
@@ -21,7 +21,7 @@
 #define HAVE_INET_ATON 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
+/* commented out for win32 by thomson #define HAVE_INTTYPES_H 1 */
 
 /* Defines whether IPv6 support is available */
 #define HAVE_IPV6 1
@@ -60,7 +60,7 @@
 #define HAVE_SOCKLEN_T 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 1
+/* commented out for win32 by thomson #define HAVE_STDINT_H 1 */
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1

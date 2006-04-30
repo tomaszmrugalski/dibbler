@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..;.;include;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
+				AdditionalIncludeDirectories="..;.;include;..\poslib\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;YYDEBUG; "
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -178,10 +178,13 @@
 					RelativePath="..\Options\OptAddrLst.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptClientIdentifier.cpp">
+					RelativePath="..\Options\OptDUID.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptElapsed.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptFQDN.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptIA_NA.cpp">
@@ -214,9 +217,6 @@
 					RelativePath="..\Options\OptRapidCommit.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptServerIdentifier.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptStatusCode.cpp">
 				</File>
 				<File
@@ -224,6 +224,9 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptStringLst.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptTA.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptUserClass.cpp">
@@ -302,6 +305,9 @@
 					RelativePath="..\ClntOptions\ClntOptStatusCode.cpp">
 				</File>
 				<File
+					RelativePath="..\ClntOptions\ClntOptTA.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntOptions\ClntOptTimeZone.cpp">
 				</File>
 				<File
@@ -362,9 +368,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntCfgMgr\ClntCfgAddr.cpp">
-				</File>
-				<File
-					RelativePath="..\ClntCfgMgr\ClntCfgGroup.cpp">
 				</File>
 				<File
 					RelativePath="..\ClntCfgMgr\ClntCfgIA.cpp">
@@ -796,10 +799,13 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="port-winxp"
+				Name="port-win32"
 				Filter="">
 				<File
 					RelativePath="ClntService.h">
+				</File>
+				<File
+					RelativePath=".\config.h">
 				</File>
 				<File
 					RelativePath="WinService.h">

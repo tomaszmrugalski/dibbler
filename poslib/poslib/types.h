@@ -44,7 +44,7 @@
 #include <stdint.h>
 #endif
 
-#if !defined(HAVE_INTTYPES_H) && !defined(HAVE_STDINT_H)
+#if !defined(HAVE_INTTYPES_H) && !defined(HAVE_STDINT_H) && !defined(uint16_t) 
 #  define uint16_t unsigned short
 #  define uint32_t unsigned int
 #endif
