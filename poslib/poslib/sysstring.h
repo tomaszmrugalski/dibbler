@@ -33,7 +33,7 @@
 #define strncmpi strncasecmp
 #endif
 
-#ifndef LINUX
+#ifdef WIN32
 #define strncmpi _strnicmp
 #endif
 
