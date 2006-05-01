@@ -27,10 +27,14 @@
 #include <ctype.h>
 
 /* linux & bloodshed string comp functions have other names than the win32 ones */
-#ifndef __BORLANDC__
+#if !defined(__BORLANDC__) && !defined(WIN32)
 #define stricmp strcasecmp
 #define strcmpi strcasecmp
 #define strncmpi strncasecmp
+#endif
+
+#ifndef LINUX
+#define strncmpi _strnicmp
 #endif
 
 #include "vsnprintf.h"
