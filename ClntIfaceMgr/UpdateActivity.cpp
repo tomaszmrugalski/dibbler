@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: UpdateActivity.cpp,v 1.2 2006-03-03 20:47:17 thomson Exp $
+ * $Id: UpdateActivity.cpp,v 1.3 2006-05-01 13:35:40 thomson Exp $
  *
  */
 
@@ -48,10 +48,10 @@ UpdateActivity::~UpdateActivity() {
 
 /** main method for updating 
 
-return     SUCCESS(0)	no errors
-		   ERROR(1) 	not specified error
-		   CONNFAIL(2)  server isn't available
-		   SRVNOTAUTH(3) 	server is not authoritve for zone
+return     DNSUPDATE_SUCCESS(0) no errors
+		   DNSUPDATE_ERROR(1) not specified error
+		   DNSUPDATE_CONNFAIL(2) server isn't available
+		   DNSUPDATE_SRVNOTAUTH(3) server is not authoritve for zone
   
 */
 u_int UpdateActivity::run(){
@@ -76,23 +76,23 @@ u_int UpdateActivity::run(){
 	if (!strcmp(p.message,"Could not connect TCP socket") ){
 // 		printf("Error: %s\n",p.message);
 		Log(Error) << "DNS update : " << p.message << LogEnd;
-		return CONNFAIL;	
+		return DNSUPDATE_CONNFAIL;	
 	}
 	else if (!strcmp(p.message,"NOTAUTH")){
 // 		printf("Nameserver is not authoritative for this zone %s\n", p.message);
 		Log(Error) << "DNS update : Nameserver is not authoritative for this zone (" << p.message << ")" << LogEnd;	
-		return SRVNOTAUTH;
+		return DNSUPDATE_SRVNOTAUTH;
     }
 	else
 	{		
 //    		printf("Not specified error: %s \n",p.message);
 		Log(Error) << "DNS update : error not specified (" << p.message << ")" << LogEnd;
-		return ERROR;
+		return DNSUPDATE_ERROR;
     } 
 	
   }
    
-  return SUCCESS;
+  return DNSUPDATE_SUCCESS;
 }
 
 /** create new message for Dns Update*/
@@ -143,8 +143,7 @@ void UpdateActivity::addinMsg_delOldRR(){
 bool UpdateActivity::DnsRR_avail(DnsMessage *msg, DnsRR& RemoteDnsRR){
   
   //check axfr_message 
-  bool flagSOA;
-  
+  bool flagSOA = false;
   
   if (msg->answers.empty()) { delete msg; return false; }
   

@@ -7,18 +7,22 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: UpdateActivity.h,v 1.2 2006-03-03 20:47:17 thomson Exp $
+ * $Id: UpdateActivity.h,v 1.3 2006-05-01 13:35:39 thomson Exp $
  *
  */
+
+#ifdef WIN32
+#include <winsock2.h>
+#endif
 
 #include "poslib.h"
 
 /* return values of method run*/
 
-#define SUCCESS	        0
-#define ERROR	        1
-#define CONNFAIL        2
-#define SRVNOTAUTH      3
+#define DNSUPDATE_SUCCESS	      0
+#define DNSUPDATE_ERROR	          1
+#define DNSUPDATE_CONNFAIL        2
+#define DNSUPDATE_SRVNOTAUTH      3
 
 class UpdateActivity {
     
