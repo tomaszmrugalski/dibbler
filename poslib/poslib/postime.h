@@ -21,8 +21,20 @@
 #ifndef __POSLIB_POSTIME_H
 #define __POSLIB_POSTIME_H
 
+#ifndef WIN32
 #include <pthread.h>
+#endif
 #include "types.h"
+
+#ifdef WIN32
+#include <time.h>
+struct timespec
+  {
+    time_t tv_sec;            /* Seconds.  */
+    long int tv_nsec;           /* Nanoseconds.  */
+  };
+#endif
+
 
 /*! \file poslib/postime.h
  * \brief Posadis time functions
@@ -142,6 +154,7 @@ class postime_t {
      * \sa postimespec()
      */
     bool operator>(const timespec &t);
+
 
     /*!
      * \brief Number of milliseconds after t
