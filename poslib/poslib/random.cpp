@@ -18,7 +18,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifndef WIN32
 #include <pthread.h>
+#endif
 #include <time.h>
 #include <stdlib.h>
 #ifdef __BORLANDC__
@@ -27,13 +29,11 @@
 
 #include "random.h"
 
-pthread_mutex_t rand_mutex;
 char randomstate[256];
 
 class _random_system {
  public:
   _random_system() {
-    pthread_mutex_init(&rand_mutex, NULL);
 #ifndef _WIN32
     initstate(time(NULL), randomstate, sizeof(randomstate));
     setstate(randomstate);
@@ -43,18 +43,15 @@ class _random_system {
 #endif
   }
   ~_random_system() {
-    pthread_mutex_destroy(&rand_mutex);
   }
 } __random_system;
 
 int posrandom() {
-  pthread_mutex_lock(&rand_mutex);
 #ifdef _WIN32
   int ret = rand();
 #else
   int ret = random();
 #endif
-  pthread_mutex_unlock(&rand_mutex);
   return ret;
 }
 
