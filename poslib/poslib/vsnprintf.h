@@ -28,4 +28,8 @@
 int vsnprintf(char *, size_t, const char *, va_list);
 #endif
 
+#ifdef WIN32
+#define vsnprintf _vsnprintf
+#endif
+
 #endif /* __POSLIB_VSNPRINTF_H */
