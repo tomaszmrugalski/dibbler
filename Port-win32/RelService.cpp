@@ -6,30 +6,10 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.7 2005-07-24 16:00:03 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2005/07/17 21:09:53  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.5  2005/06/07 21:58:49  thomson
- * 0.4.1
- *
- * Revision 1.4  2005/02/01 22:39:20  thomson
- * Command line service support greatly improved.
- *
- * Revision 1.3  2005/02/01 22:08:04  thomson
- * start, stop commands implemented.
- *
- * Revision 1.2  2005/02/01 01:11:10  thomson
- * Working directory fix.
- *
- * Revision 1.1  2005/01/24 00:42:37  thomson
- * no message
- *
- *                                                                           
+ * $Id: RelService.cpp,v 1.8 2006-05-01 14:03:28 thomson Exp $
  */
 
+#include <winsock2.h>
 #include <direct.h>
 #include "RelService.h"
 #include "DHCPRelay.h"

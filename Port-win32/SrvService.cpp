@@ -6,9 +6,10 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: SrvService.cpp,v 1.18 2005-07-24 16:00:03 thomson Exp $
+ * $Id: SrvService.cpp,v 1.19 2006-05-01 14:03:28 thomson Exp $
  */
 
+#include <winsock2.h>
 #include <direct.h>
 #include "SrvService.h"
 #include "DHCPClient.h"
@@ -125,6 +126,9 @@ void TSrvService::setState(EServiceState status) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/07/24 16:00:03  thomson
+ * Port WinNT/2000 related changes.
+ *
  * Revision 1.17  2005/07/17 21:09:53  thomson
  * Minor improvements for 0.4.1 release.
  *
