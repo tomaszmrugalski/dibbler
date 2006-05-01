@@ -23,7 +23,7 @@
 #include "postime.h"
 
 #include <sys/types.h>
-#if defined(__BORLANDC__) && defined(_WIN32)
+#if defined(__BORLANDC__) && defined(_WIN32) || defined(WIN32)
 struct timeval {
   int tv_sec;
   int tv_usec;
