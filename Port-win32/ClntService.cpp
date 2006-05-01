@@ -4,12 +4,13 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: ClntService.cpp,v 1.22 2005-08-07 18:10:59 thomson Exp $
+ * $Id: ClntService.cpp,v 1.23 2006-05-01 13:56:28 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
  */
 
+#include <winsock2.h>
 #include "ClntService.h"
 #include "DHCPClient.h"
 #include "portable.h"
@@ -130,6 +131,9 @@ TClntService::~TClntService(void)
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2005/08/07 18:10:59  thomson
+ * 0.4.1 release.
+ *
  * Revision 1.21  2005/07/24 16:00:02  thomson
  * Port WinNT/2000 related changes.
  *
