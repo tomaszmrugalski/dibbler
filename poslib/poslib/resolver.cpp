@@ -27,9 +27,9 @@
 #include "postime.h"
 
 #include <stdio.h>
-#include <pthread.h>
 
 #ifndef _WIN32
+#include <pthread.h>
 #include <unistd.h>
 #endif
 
