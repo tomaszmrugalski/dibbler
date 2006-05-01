@@ -22,11 +22,13 @@
 #include "exception.h"
 #include "rr.h"
 #include "lexfn.h"
+#include "sysstring.h"
 
 #include <sys/stat.h>
 
 #ifdef WIN32
 const char pathdelim = '\\';
+#define S_ISREG(x) 1 /* always return 1 */
 #else
 const char pathdelim = '/';
 #endif
