@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.51 2006-03-05 22:26:36 thomson Exp $
+ * $Id: Portable.h,v 1.52 2006-05-01 13:36:08 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -126,6 +126,7 @@
 
 #ifdef WIN32
 #define strncasecmp _strnicmp
+#include <winsock2.h>
 #include <windows.h>
 #include <time.h>
 #endif
@@ -214,6 +215,9 @@ struct iface {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.51  2006/03/05 22:26:36  thomson
+ * Authors file added, compilation warning removed.
+ *
  * Revision 1.50  2006/03/05 21:52:28  thomson
  * *** empty log message ***
  *
