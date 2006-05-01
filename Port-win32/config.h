@@ -15,7 +15,7 @@
 #define HAVE_GETHOSTNAME 1
 
 /* Defines whether the gettimeofday() function is available */
-#define HAVE_GETTIMEOFDAY 1
+/* #define HAVE_GETTIMEOFDAY 1 */
 
 /* Define to 1 if you have the `inet_aton' function. */
 #define HAVE_INET_ATON 1
@@ -33,7 +33,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Defines whether the poll function is available */
-#define HAVE_POLL 1
+/* #define HAVE_POLL 1 */
 
 /* Define to 1 if you have the <poll.h> header file. */
 #define HAVE_POLL_H 1
@@ -93,7 +93,7 @@
 #define HAVE_UNISTD_H 1
 
 /* Defines whether the vsnprintf() function is available */
-#define HAVE_VSNPRINTF 1
+/* #define HAVE_VSNPRINTF 1 */
 
 /* Define to 1 if you have the <winsock2.h> header file. */
 /* #undef HAVE_WINSOCK2_H */
