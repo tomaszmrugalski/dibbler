@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.20 2006-03-20 23:04:05 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.21 2006-05-01 13:36:54 thomson Exp $
  */
 
 #include "Portable.h"
@@ -244,9 +244,15 @@ bool TClntIfaceMgr::doDuties() {
 						
 						Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *addr << ") and FQDN " 
 							   << fqdn << LogEnd;
-						Log(Notice) << "Sleeping 3 seconds before FQDN update" << LogEnd;
+						Log(Warning) << "FIXME: Sleeping 3 seconds before FQDN update" << LogEnd;
+						/* FIXME: sleep cannot be performed here. What if client has to perform other 
+						   action during those 3 seconds? */
+#ifdef WIN32
+						Sleep(3);
+#else
 						sleep(3);
-						Log(Notice) << "Waking up !" << LogEnd;
+#endif
+						Log(Warning) << "FIXME: Waking up !" << LogEnd;
 						
 						//Test for DNS update
 						unsigned int dotpos = fqdn.find(".");
@@ -265,7 +271,7 @@ bool TClntIfaceMgr::doDuties() {
 						int result = act->run();
 						delete act;
 						
-						if (result == SUCCESS) {
+						if (result == DNSUPDATE_SUCCESS) {
 							cfgIface->setFQDNState(CONFIGURED);
 							Log(Notice) << "FQDN Configured successfully !" << LogEnd;
 						} else {
