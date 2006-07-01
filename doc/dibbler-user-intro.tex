@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.9 2005-08-07 17:54:52 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.10 2006-07-01 12:46:09 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.9  2005/08/07 17:54:52  thomson
+%% Minor changes related to 0.4.1 release.
+%%
 %% Revision 1.8  2005/07/31 15:56:11  thomson
 %% WinNT/2000 port update, various small changes, typos etc.
 %%
@@ -87,11 +90,15 @@ As for now, Dibbler offers these features:
   client recovers from crash or power failure, it still can have
   assigned valid addresses. In such circumstances, client uses CONFIRM
   message, to config if those addresses are still valid%
-  \footnote{As for 0.4.1 version, this functionality works on server side only,
+  \footnote{As for 0.4.2 version, this functionality works on server side only,
   client side support will be available in future releases.}.
 \item IA Option -- this option is used to carry addresses. Both server
   and client support multiple IAs in one message. Additional feature
   is client capability to ask for a specific address.
+\item TA Option -- this option is used to carry temporary
+  addresses. Both server and client supports this. Note that it is
+  better to use non-temporary, normal (ia) addresses. If you don't
+  know, what TA option is, you definetely don't need it.
 \item Rapid Commit Option (SOLICIT and REPLY messages) -- if both
   client and server are configured to use rapid commit, address
   assignment procedure can be shortened to 2 messages. Major
@@ -102,7 +109,7 @@ Except RFC3315-specified behavior, Dibbler also support several enhancements:
 
 \begin{itemize}
 \item DNS Servers Option -- client can ask for information about DNS
-  servers.
+  servers. DHCPv6 server will provide those addresses.
 \item Domain Name Option -- client can ask for information about
   domain name it is connected in.
 \item Time Zone Option -- client can ask for information about 
@@ -118,6 +125,11 @@ time zone it is currently in.
   passed to clients.
 \item Option renewal mechanism (Lifetime Option) -- options obtained
   from server can be updated periodically.
+\item Dynamic DNS Updates -- server can assign a fully qualified
+  domain name for a client. Client is able to perform DNS Update,
+  i.e. inform DNS server about its name. Currently server is able to
+  provide such names, but does not support the DNS Update procedure by
+  itself and 
 \end{itemize}
 
 And now some implementation specific details:
@@ -135,12 +147,13 @@ And now some implementation specific details:
   would require implementic only those serveral system-specific
   functions.
 \item Although Dibbler was developed on the i386 architecture, there
-  are ports available for other architectures: AMD64, PowerPC, Sparc and
-  Alpha. They are available in the PLD Linux Disctribution 2.0 in test
-  section. You can download them from
-  \url{ftp://ftp.pld-linux.org/dists/2.0/test/}. Keep in mind that author
-  has not tested those ports, so there might be some unknown issues
-  present.
+  are ports available for other architectures: IA64, AMD64, PowerPC,
+  HPPA, Sparc, MIPS, S/390 and Alpha. They are available in the PLD
+  Linux Distribution 2.0 as well as well as in Debian GNU/Linux. You
+  can download them from \url{http://www.pld-linux.org/} or
+  \url{http://www.debian.org}. Keep in mind
+  that author has not tested those ports, so there might be some
+  unknown issues present.
 \end{itemize}
 
 See RELEASE-NOTES for details about version-specific upgrades, fixes

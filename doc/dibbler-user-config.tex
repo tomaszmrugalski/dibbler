@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.18 2005-10-23 23:33:03 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.19 2006-07-01 12:46:09 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -366,7 +366,7 @@ iface 3 {
 Client can be configured to work in a stateless mode. It means that it
 will obtain only some configuration parameters, but no
 addresses. Let's assume we want all the details and we want to obtain
-all possible configuration parameters. Here's config file:
+all possible configuration parameters. Here is a configuration file:
 
 \begin{verbatim}
 # client.conf
@@ -387,6 +387,53 @@ iface eth0
   option nis+-domain
 }
 \end{verbatim}
+
+\subsubsection{Example 7: Dynamic DNS (FQDN)}
+Dibbler client is able to request fully qualified domain name,
+i.e. name, which is fully resolvable using DNS. After receiving such
+name, it can perform DNS Update procedure. Client can ask for any
+name, without any preferrence. Here is an example how to configure
+client to perform such task:
+\begin{verbatim}
+log-level 7
+iface eth0 {
+# ask for address
+    ia
+
+# ask for options
+   option dns-server
+   option domain
+   option fqdn
+}
+\end{verbatim}
+In this case, client will mention that it is interested in FQDN by
+using Option Request. Server upon receiving such request (if it is
+configured to support it), will provide FQDN option containing domain
+name.
+
+It is also possible for client to provide its name as a hint for
+server. Server might take it into consideration when it will choose a
+name for this client. Example of a configuration file for such
+configuration is provided below:
+
+\begin{verbatim}
+log-level 7
+iface eth0 {
+# ask for address
+    ia
+
+# ask for options
+   option dns-server
+   option domain
+   option fqdn
+}
+\end{verbatim}
+
+Note that to successfully perform DNS Update, address must be assigned
+and dns server address must be known. So ,,ia'' and ,,option
+dns-server'' is required for ,,option fqdn'' to work properly. Also if
+DHCPv6 server provides more than one DNS server addresses, update will
+be attempted only to the first one on the list.
 
 \subsection{Server configuration file}
 
@@ -464,7 +511,6 @@ Name             & Scope   & Values      & default    & Description \\
 work-dir         & global  & string      & empty      & working directory \\
 log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
 log-name         & global  & string      & Client     & Name, which appears in a log file\\
-log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
 
 preference       &interface& 0-255       & 0          & server preference value (higher is more prefered) \\
 unicast          &interface& address     & empty      & Specify which address should be used. \\
@@ -485,6 +531,14 @@ accept-only      & class   & addrs or
 class-max-lease  & class   & integer     & 4294967296 & how many addresses can be leased from this class? \\
 \hline
 \end{tabular}
+
+\begin{itemize}
+\item[log-mode] -- defines logging level. Currently supported options
+  are: full (daemon name, date and time), short (minutes and seconds), precise
+  (seconds and microseconds, used mainly for finding bottlenecks). In
+  future releases, syslog (unix only) and eventlog (windows only) will
+  be supported. Default is full.
+\end{itemize}
 
 \subsubsection{Addional options}
 Server supports additonal options, not specified in RFC3315. They have
@@ -749,6 +803,39 @@ iface relay2
 }
 \end{verbatim}
 
+\subsubsection{Example 10: Dynamic DNS (FQDN)}
+
+Support for Dynamid DNS Updates was added recently. To configure it
+on the server side, list of available names must be defined. Each name
+can be reserved for a certain address or DUID. When no reservation is
+specified, it will available to everyone, i.e. the first client asks
+for FQDN will get this name. In following example, name 'zebuline' is
+reserved for address 2000::1, kael is reserved for 2000::2 and
+test.example.com is reserved for client using DUID
+00:01:00:00:43:ce:25:b4:00:13:d4:02:4b:f5.
+
+\begin{verbatim}
+log-level 8
+log-mode precise
+iface "eth1" {
+ prefered-lifetime 3600
+ valid-lifetime 7200
+ class {
+   pool 2000::1-2000::ff
+ }
+
+ option dns-server 2000::100,2000::101
+ option domain example.com, test1.example.com
+ option fqdn zebuline - 2000::1,
+	     kael - 2000::2,
+	     test.example.com - 0x0001000043ce25b40013d4024bf5,
+	     zoe,
+	     malcolm,
+	     kaylee,
+	     jayne
+}
+\end{verbatim}
+
 \subsection{Relay configuration file}
 
 Relay configuration is stored in +relay.conf+ file in the +/etc/dibbler/+
@@ -924,6 +1011,9 @@ iface eth1 {
 
 
 %% $Log: not supported by cvs2svn $
+%% Revision 1.18  2005/10/23 23:33:03  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.17  2005/08/07 17:54:52  thomson
 %% Minor changes related to 0.4.1 release.
 %%

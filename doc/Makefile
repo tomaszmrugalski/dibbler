@@ -51,6 +51,8 @@ dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
 version.tex:
 	@echo "[GREP   ] $(SUBDIR)/$@"
 	@../test/xtract_version > $@
+	@echo "[PERL   ] $(SUBDIR)/$@"
+	perl -i -pe 's/_/\\_/g' version.tex
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"

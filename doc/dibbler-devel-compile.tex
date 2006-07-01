@@ -6,9 +6,12 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-compile.tex,v 1.9 2005-01-23 23:16:56 thomson Exp $
+%% $Id: dibbler-devel-compile.tex,v 1.10 2006-07-01 12:46:09 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.9  2005/01/23 23:16:56  thomson
+%% Relay related things.
+%%
 %% Revision 1.8  2004/12/27 20:53:31  thomson
 %% root privileges mentioned in RPM/DEB section.
 %%
@@ -73,11 +76,14 @@ Select project name (server-winxp or client-winxp), click properties,
 choose ,,Debugging'' from ,,Configuration Properties''. Adjust ,,Command
 arguments'' to meet your directory.
 
-If you are using MS Visual Studio 2003, there might be a problem with
+Previous versions were also compiled using MS Visual Studio 2002, but
+it is not used anymore and is not supported. If you are using MS
+Visual Studio 2002, there might be a problem with
 lowlevel-win32.c file compilation. Compiler might complain about
 missing Ipv6IfIndex in \_IP\_ADDAPTER\_ADDRESSES structure. There is a simple way
-to bypass this.  In \verb+Program Files/Microsoft Visual Studio .NET/Vc7/PlatformSDK/Include/+ directory, there is \verb+IPTypes.h+
-file. It contains structure:
+to bypass this.  In 
+\verb+Program Files/Microsoft Visual Studio.NET/Vc7/PlatformSDK/Include/+ 
+directory, there is \verb+IPTypes.h+ file. It contains structure:
 
 \begin{verbatim}
 typedef struct _IP_ADAPTER_ADDRESSES {
@@ -194,3 +200,13 @@ Dibbler is available in \href{http://www.pld-linux.org}{PLD GNU/Linux}
 distributions. Author also performs necessary steps to include Dibbler
 in \href{http://www.gentoo.org}{Gentoo} and
 \href{http://www.debian.org}{Debian} GNU/Linux distributions.
+
+\subsection{Customised builds}
+Custom builds might be prepared with different than default
+compilation options. Here is a list of features, which can be
+customised:
+\begin{itemize}
+\item Default log level -- please modify LOGMODE\_DEFAULT define in
+  \verb+Mish/Logger.h+.
+\item 
+\end{itemize}
