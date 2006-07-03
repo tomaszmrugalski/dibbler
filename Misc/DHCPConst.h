@@ -6,9 +6,12 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.17 2006-03-05 21:39:19 thomson Exp $
+ * $Id: DHCPConst.h,v 1.18 2006-07-03 18:01:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2006/03/05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.16.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -157,15 +160,15 @@
 #define OPTION_NIS_DOMAIN_NAME  29
 #define OPTION_NISP_DOMAIN_NAME 30
 
+// draft-ietf-dhc-lifetime-02.txt
+#define OPTION_LIFETIME         32
+
+// draft-ietf-dhc-dhcpv6-fqdn-00.txt
+#define OPTION_FQDN             34
+
 // draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
 #define OPTION_NTP_SERVERS      40
 #define OPTION_TIME_ZONE        41
-
-// draft-ietf-dhc-lifetime-02.txt
-#define OPTION_LIFETIME         42
-
-// draft-ietf-dhc-dhcpv6-fqdn-00.txt
-#define OPTION_FQDN             43
 
 // --- Status Codes --- 
 #define STATUSCODE_SUCCESS       0
