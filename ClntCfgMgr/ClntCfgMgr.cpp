@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.37 2006-03-21 20:02:01 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.38 2006-07-03 18:15:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2006-03-21 20:02:01  thomson
+ * ClntCfgGroup removed (at last!)
+ *
  * Revision 1.36  2006/03/20 23:04:05  thomson
  * TA option is now parsed properly and SOLICIT is sent as expected.
  *
@@ -435,29 +438,6 @@ bool TClntCfgMgr::validateAddr(SmartPtr<TClntCfgIface> ptrIface,
     
     return true;
 }
-
-
-#if 0
-SmartPtr<TClntCfgGroup> TClntCfgMgr::getGroupForIA(long IAID)
-{
-    SmartPtr<TClntCfgIface> iface;
-    firstIface();
-    while(iface=getIface())
-    {
-        SmartPtr<TClntCfgGroup> group;
-        iface->firstGroup();
-        while(group=iface->getGroup())
-        {
-            SmartPtr<TClntCfgIA> ia;
-            group->firstIA();
-            while(ia=group->getIA())
-                if (ia->getIAID()==IAID)
-                    return group;
-        }
-    }
-    return SmartPtr<TClntCfgGroup>();
-}
-#endif
 
 SmartPtr<TClntCfgIface> TClntCfgMgr::getIface(int id)
 {
