@@ -195,36 +195,40 @@ TAClassOption
 FQDNList
 : STRING_
 {
-	Log(Notice)<< "FQDN Option : The client "<<$1<<" has no address nor DUID"<<LogEnd;
+    Log(Notice)<< "FQDN: The client "<<$1<<" has no address nor DUID"<<LogEnd;
     PresentFQDNLst.append(new TFQDN($1,false));
 }
 | STRING_ '-' DUID_
 {
     duidNew = new TDUID($3.duid,$3.length);
-    Log(Debug)<< "FQDN Option : " << $1 <<" DUID is "<<*duidNew<<LogEnd;
+    Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID "<<duidNew->getPlain()<<LogEnd;
+    // FIXME: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID($3.duid,$3.length), $1,false));
 } 
 | STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($3);
-    Log(Debug)<< "FQDN Option : " << $1 <<" address is "<<*addr<<LogEnd;
+    Log(Debug)<< "FQDN:" << $1 <<" reserved for address "<<*addr<<LogEnd;
+    // FIXME: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($3), $1,false));
 }
 | FQDNList ',' STRING_
 {
-	Log(Notice)<< "FQDN Option : The client "<<$3<<" has no address nor DUID"<<LogEnd;
+	Log(Notice)<< "FQDN:"<<$3<<" has no reservations (is available to everyone)."<<LogEnd;
     PresentFQDNLst.append(new TFQDN($3,false));
 }
 | FQDNList ',' STRING_ '-' DUID_
 {
     duidNew = new TDUID($5.duid,$5.length);
-    Log(Debug)<< "FQDN Option : " << $3 << " DUID is "<<*(new TDUID($5.duid,$5.length))<<LogEnd;
+    Log(Debug)<< "FQDN:" << $3 << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
+    // FIXME: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID($5.duid,$5.length), $3,false));
 }
 | FQDNList ',' STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($5);
-    Log(Debug)<< "FQDN Option : " << $3<<" address is "<<*(new TIPv6Addr($5))<<LogEnd;
+    Log(Debug)<< "FQDN:" << $3<<" reserved for address "<< addr->getPlain() << LogEnd;
+    // FIXME: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($5), $3,false));
 }
 ;
@@ -685,9 +689,6 @@ FQDNOption
 } FQDNList
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
-    
-    Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
-                 ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
 }
 ;
 
