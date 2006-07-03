@@ -46,18 +46,15 @@ $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIE
 
 server: $(SERVERBIN)
 
-$(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
+$(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr     \
 	-L$(ADDRMGR)      -lAddrMgr        \
 	-L$(LOWLEVEL)                      \
-	-L$(SRVOPTIONS)  -lSrvOptions      \
-	-L$(SRVTRANSMGR) -lSrvTransMgr     \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr       \
 	-L$(CFGMGR)      -lCfgMgr          \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr     \
-	-L$(IFACEMGR)    -lIfaceMgr        \
 	-L$(MISC)        -lMisc            \
 	-lSrvIfaceMgr -lSrvMsg -lSrvCfgMgr \
 	-L$(SRVADDRMGR)  -lSrvAddrMgr      \
@@ -65,12 +62,14 @@ $(SERVERBIN): includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	-L$(SRVOPTIONS)  -lSrvOptions      \
 	-L$(SRVTRANSMGR) -lSrvTransMgr     \
 	-L$(SRVCFGMGR)   -lSrvCfgMgr       \
-	-L$(SRVIFACEMGR) -lSrvIfaceMgr     \
 	-L$(SRVMESSAGES) -lSrvMsg          \
+	-L$(SRVIFACEMGR) -lSrvIfaceMgr     \
 	-L$(MESSAGES)    -lMsg             \
 	-L$(MISC)        -lMisc            \
 	-L$(OPTIONS)     -lOptions         \
-	-L$(LOWLEVEL)    -lLowLevel
+	-L$(LOWLEVEL)    -lLowLevel        \
+	-L$(IFACEMGR)    -lIfaceMgr        \
+	-L$(POSLIB)      -lposlib
 
 relay: $(RELAYBIN)
 
