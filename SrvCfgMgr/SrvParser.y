@@ -685,11 +685,27 @@ SIPDomainOption
 FQDNOption
 :OPTION_ FQDN_
 {
-    PresentFQDNLst.clear()
+    PresentFQDNLst.clear();
+    Log(Debug) << "No FQDNMode found, setting default mode 2 (all updates executed by server)."<< LogEnd;
+    ParserOptStack.getLast()->setFQDNMode(2);
 } FQDNList
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 }
+|OPTION_ FQDN_ INTNUMBER_
+{
+    PresentFQDNLst.clear();
+    Log(Debug) << "FQDNMode found, setting value "<< $3 <<LogEnd;
+    ParserOptStack.getLast()->setFQDNMode($3);
+} FQDNList
+{
+
+    ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
+    
+    Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
+                 ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
+}
+
 ;
 
 //////////////////////////////////////////////////////////////////////
