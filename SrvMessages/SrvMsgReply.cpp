@@ -6,54 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.cpp,v 1.22 2006-04-30 17:32:35 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.21  2006/03/23 00:53:26  thomson
- * TA support fixed on the server side.
- *
- * Revision 1.20  2006/03/05 21:35:15  thomson
- * TA support merged.
- *
- *
- * Revision 1.18.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.19  2006/03/03 21:02:16  thomson
- * FQDN support implemented.
- *
- * Revision 1.18  2005/09/13 23:00:06  thomson
- * Compilation warning removed.
- *
- * Revision 1.17  2005/03/15 23:02:31  thomson
- * 0.4.0 release.
- *
- * Revision 1.16  2005/02/07 20:51:56  thomson
- * Server stateless mode fixed (bug #103)
- *
- * Revision 1.15  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.14  2004/12/04 23:43:26  thomson
- * Server no longer crashes after receiving the same INF-REQUEST (bug #84)
- *
- * Revision 1.13  2004/12/02 00:51:06  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.12  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.11  2004/09/07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.7  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
- * Revision 1.6  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
- * Revision 1.5  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
+ * $Id: SrvMsgReply.cpp,v 1.23 2006-07-03 18:21:23 thomson Exp $
  *                                                                           
  */
 
@@ -77,8 +30,7 @@
 #include "AddrIA.h"
 #include "AddrAddr.h"
 #include "Logger.h"
-#include "OptStatusCode.h"
-
+#include "DNSUpdate.h"
 
 // used as CONFIRM reply
 TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
@@ -542,6 +494,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     SmartPtr<TDUID>      clntDuid;
     SmartPtr<TIPv6Addr>  clntAddr;
     unsigned int         clntIface;
+    int	 currentIAID;
 
     opt = request->getOption(OPTION_CLIENTID);
     optClntID = (Ptr*) opt;
@@ -574,6 +527,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    optIA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, 
 				     clntAddr, clntIface, REQUEST_MSG,this);
 	    this->Options.append((Ptr*)optIA);
+	    currentIAID = optIA->getIAID();
 	    break;
 	}
 	case OPTION_IA_TA: {
@@ -609,11 +563,135 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		// FQDN is chosen, "" if no name for this host is found.
 		Log(Debug) << "Requesting FQDN for client with DUID: " << *clntDuid << LogEnd;
 		string fqdn = ptrIface->getFQDNName(clntDuid);
+		int FQDNMode = ptrIface->getFQDNMode();
 		optFQDN = new TSrvOptFQDN(fqdn, this);
 		// For the moment, only the client make the DNS update
-		optFQDN->setSFlag(false);
-		// Setting the O Flag correctly according to the difference between O flags
-		optFQDN->setOFlag(optOld->getSFlag() /*xor 0*/);
+		if (FQDNMode > 0 && FQDNMode < 3){
+		    Log(Debug) << "Server configuration allow DNS updates for " << *clntDuid << LogEnd;
+		    
+		    if (FQDNMode == 1){
+			optFQDN->setSFlag(false); // letting client update his AAAA
+			// Setting the O Flag correctly according to the difference between O flags
+			optFQDN->setOFlag(optOld->getSFlag() xor 0);
+			// Here we check if all parameters are set, and do the DNS update if possible
+			List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
+			//if ( DNSSrvLst.count() > 0 && fqdn.size() > 0) {
+			Log(Debug) << "All parameters are set to perform DNS update.for client PTR. Selecting first DNS server" << LogEnd;
+			SmartPtr<TIPv6Addr> DNSAddr;
+			
+                        // For the moment, we just take the first DNS entry.
+			DNSSrvLst.first();
+			DNSAddr = DNSSrvLst.get();
+			
+			SmartPtr<TAddrClient> ptrAddrClient = AddrMgr->getClient(clntDuid);	
+			if (!ptrAddrClient) { Log(Warning) << "Unable to find client."; return; }			
+			SmartPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA(currentIAID);
+			if (!ptrAddrIA) { Log(Warning) << "Unable to find IA=" << currentIAID << " for this client." << LogEnd; return; }
+			ptrAddrIA->firstAddr();
+			SmartPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
+			SmartPtr<TIPv6Addr> IPv6Addr = addr->get();
+			
+			Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *IPv6Addr << ") and FQDN " 
+				   << fqdn << LogEnd;
+			
+			//Test for DNS update
+			unsigned int dotpos = fqdn.find(".");
+			string hostname = "";
+			string domain = "";
+			if (dotpos == string::npos) {
+			    Log(Warning) << "Name provided for DNS update s not a FQDN. [" << fqdn 
+					 << "] Trying to do the  update..." << LogEnd;
+			    hostname = fqdn;
+			}
+			else {
+			    hostname = fqdn.substr(0, dotpos);
+			    domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
+			}
+			
+			DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
+						       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", 1);
+			int result = act->run();
+			delete act;
+			
+			if (result == DNSUPDATE_SUCCESS) {
+			    //cfgIface->setFQDNState(CONFIGURED);
+			    Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+			}
+			else {
+			    Log(Warning) << "DNS Update failed." << LogEnd;
+			    //cfgIface->setFQDNState(DISABLED);
+			}
+			
+			
+		    } // this means server is configured to update one record
+		    if (FQDNMode == 2){
+			optFQDN->setSFlag(true); // taking responosobility for AAAA 
+			// Setting the O Flag correctly according to the difference between O flags
+			optFQDN->setOFlag(optOld->getSFlag() xor 0);
+			// Here we check if all parameters are set, and do the DNS update if possible
+			List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
+			if ( DNSSrvLst.count() > 0 && fqdn.size() > 0) {
+			    Log(Debug) << "All parameters are set to perform DNS update. for client PTR and AAAA. "
+				       << "Selecting first DNS server" << LogEnd;
+			    SmartPtr<TIPv6Addr> DNSAddr;
+			    
+                            // For the moment, we just take the first DNS entry.
+			    // SmartPtr<TIPv6Addr> DNSAddr;
+			    
+                            // For the moment, we just take the first DNS entry.
+			    //DNSSrvLst.first();
+			    //DNSAddr = DNSSrvLst.get();
+			    
+			    SmartPtr<TAddrClient> ptrAddrClient = AddrMgr->getClient(clntDuid);	
+			    if (!ptrAddrClient) { Log(Warning) << "Unable to find client."; return; }			
+			    SmartPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA(currentIAID);
+			    if (!ptrAddrIA) { 
+				Log(Warning) << "Unable to find IA=" << currentIAID << " for this client." << LogEnd; 
+				return; 
+			    }
+			    ptrAddrIA->firstAddr();
+			    SmartPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
+			    SmartPtr<TIPv6Addr> IPv6Addr = addr->get();
+			    
+			    if (ptrAddrIA->countAddr() > 0) {
+				ptrAddrIA->firstAddr();
+				SmartPtr<TIPv6Addr> addr = ptrAddrIA->getAddr()->get();
+				
+				//Test for DNS update
+				unsigned int dotpos = fqdn.find(".");
+				string hostname = "";
+				string domain = "";
+				if (dotpos == string::npos) {
+				    Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdn 
+						 << "] Trying to do the update..." << LogEnd;
+				    hostname = fqdn;
+				} else {
+				    hostname = fqdn.substr(0, dotpos);
+				    domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
+				}
+				DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
+							       (char*) hostname.c_str(), addr->getPlain(), "2h",2);
+				int result = act->run();
+				delete act;
+				
+				if (result == DNSUPDATE_SUCCESS) {
+				    //cfgIface->setFQDNState(CONFIGURED);
+				    Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+				} else {
+				    Log(Warning) << "Unable to perform DNS update."<< LogEnd;
+				    //cfgIface->setFQDNState(DISABLED);
+				}
+			    }  
+			} // if dns list and fqdn is not empty
+			
+		    } // this means server is configured to update one record
+
+		} // flag N is not zero  
+		else {
+			Log(Debug) << "Server configuration NOT allow DNS updates for " << *clntDuid << LogEnd;
+			 optFQDN->setNFlag(true);
+		}
+		
 		
 		this->Options.append((Ptr*) optFQDN);
 		Log(Debug) << "Adding FQDN Option in REPLY message: " << fqdn << LogEnd;
