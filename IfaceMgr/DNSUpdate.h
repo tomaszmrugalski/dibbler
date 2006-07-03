@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.h,v 1.1 2006-07-03 18:08:57 thomson Exp $
+ * $Id: DNSUpdate.h,v 1.2 2006-07-03 20:15:56 thomson Exp $
  *
  */
 
@@ -19,10 +19,13 @@
 
 /* return values of method run*/
 
-#define DNSUPDATE_SUCCESS	      0
-#define DNSUPDATE_ERROR	          1
-#define DNSUPDATE_CONNFAIL        2
-#define DNSUPDATE_SRVNOTAUTH      3
+enum DnsUpdateResult {
+    DNSUPDATE_SUCCESS=0,
+    DNSUPDATE_ERROR=1,
+    DNSUPDATE_CONNFAIL=2,
+    DNSUPDATE_SRVNOTAUTH=3,
+    DNSUPDATE_SKIP=4
+};
 
 class DNSUpdate {
     
@@ -44,5 +47,5 @@ private:
  public:
     DNSUpdate(char* dns_address,char*zonename,char* hostname,char* hostip,char* ttl, int mode);
     ~DNSUpdate();
-    u_int run();
+    DnsUpdateResult run();
 };

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.h,v 1.5 2006-02-02 23:18:30 thomson Exp $
+ * $Id: SrvMsgReply.h,v 1.6 2006-07-03 20:15:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/02/02 23:18:30  thomson
+ * 0.4.2 release.
+ *
  * Revision 1.4  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -34,6 +37,7 @@ class TSrvMsgReply;
 #include "SrvMsgRelease.h"
 #include "SrvMsgSolicit.h"
 #include "SrvMsgInfRequest.h"
+#include "SrvOptFQDN.h"
 
 #include "SrvOptClientIdentifier.h"
 
@@ -97,12 +101,10 @@ class TSrvMsgReply : public TSrvMsg
 private:
     SmartPtr<TSrvOptOptionRequest> reqOpts;
     SmartPtr<TSrvOptClientIdentifier> duidOpt;
-
     void appendDefaultOption(SmartPtr<TOpt> ptrOpt);
-
     void setOptionsReqOptClntDUID(SmartPtr<TMsg> msg);
-
-
+    SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
+				  SPtr<TIPv6Addr> clntAddr, bool doRealUpdate);
 };
 
 

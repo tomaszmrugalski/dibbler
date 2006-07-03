@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.15 2006-07-03 18:13:45 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.16 2006-07-03 20:15:56 thomson Exp $
  *                                                                           
  */
 
@@ -115,6 +115,7 @@ public:
     SmartPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) * fqdn);
     int getFQDNMode();
+    string getFQDNModeString();
     void setFQDNMode(int FQDNMode);
     bool supportFQDN();
 

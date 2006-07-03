@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: FQDN.cpp,v 1.2 2006-07-03 17:59:38 thomson Exp $
+ * $Id: FQDN.cpp,v 1.3 2006-07-03 20:15:56 thomson Exp $
  *
  */
 
@@ -19,29 +19,29 @@
 
 
 TFQDN::TFQDN() {
-    this->Duid = new TDUID();
-    this->Addr = new TIPv6Addr();
+    this->Duid = 0;
+    this->Addr = 0;
     this->Name = "";
     this->used = false;
 }
 
 TFQDN::TFQDN(TDUID *duid_, string name_,bool used_) {
-    this->Addr = new TIPv6Addr();
+    this->Addr = 0;
     this->Duid = duid_;
     this->Name = name_;
     this->used = used_;
 }
 
 TFQDN::TFQDN(TIPv6Addr *addr_, string name_,bool used_) {
-    this->Duid = new TDUID();
+    this->Duid = 0;
     this->Addr = addr_;
     this->Name = name_;
     this->used = used_;
 }
 
 TFQDN::TFQDN(string name_,bool used_) {
-    this->Duid = new TDUID();
-    this->Addr = new TIPv6Addr();
+    this->Duid = 0;
+    this->Addr = 0;
     this->Name = name_;
     this->used = used_;
 }

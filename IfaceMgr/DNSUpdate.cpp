@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.1 2006-07-03 18:08:57 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.2 2006-07-03 20:15:56 thomson Exp $
  *
  */
 
@@ -54,11 +54,8 @@ return     DNSUPDATE_SUCCESS(0) no errors
 		   DNSUPDATE_SRVNOTAUTH(3) server is not authoritve for zone
   
 */
-u_int DNSUpdate::run(){
-  
-      
+DnsUpdateResult DNSUpdate::run(){
   try {
-      
    this->createSOAMsg();
    
    // method delete OldRR

@@ -758,8 +758,8 @@ static const short yyrline[] = { 0,
    566,   567,   568,   569,   570,   571,   572,   579,   583,   590,
    597,   598,   599,   600,   601,   602,   603,   604,   605,   613,
    617,   626,   629,   638,   642,   651,   661,   664,   673,   676,
-   686,   692,   695,   701,   715,   718,   727,   730,   739,   749,
-   759
+   686,   692,   695,   701,   713,   716,   725,   728,   737,   747,
+   757
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","RELAY_",
@@ -1990,51 +1990,49 @@ case 133:
 case 134:
 #line 701 "SrvParser.y"
 {
-
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
-    
-    Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
-                 ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
+    //Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
+    //ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
 ;
     break;}
 case 135:
-#line 715 "SrvParser.y"
+#line 713 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 136:
-#line 718 "SrvParser.y"
+#line 716 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 ;
     break;}
 case 137:
-#line 727 "SrvParser.y"
+#line 725 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 138:
-#line 730 "SrvParser.y"
+#line 728 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 ;
     break;}
 case 139:
-#line 740 "SrvParser.y"
+#line 738 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISDomain(yyvsp[0].strval);
 ;
     break;}
 case 140:
-#line 750 "SrvParser.y"
+#line 748 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPDomain(yyvsp[0].strval);
 ;
     break;}
 case 141:
-#line 760 "SrvParser.y"
+#line 758 "SrvParser.y"
 {
     ParserOptStack.getLast()->setLifetime(yyvsp[0].ival);
 ;
@@ -2243,7 +2241,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 765 "SrvParser.y"
+#line 763 "SrvParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -6,6 +6,7 @@
   - Support for temporary addresses (TA) added
   - log-mode PRECISE added
   - log entries are appended (previously log files were overwritten at startup)
+  - Documentation update and cleanup
 
  0.4.2 [2006-02-03] (DSFG cleanup release)
   - No bugfixes or new features
@@ -13,7 +14,7 @@
   - Unnecessary files removed
 
  0.4.1 [2005-08-07]
-  - Windows NT/2000 added.
+  - Windows NT/2000 support added.
   - Numerous examples added to User's Guide.
   - Srv: Class/prefix syntax is now supported (bug #121)
   - White list support improved (bug #120)

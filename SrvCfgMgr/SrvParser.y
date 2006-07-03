@@ -699,11 +699,9 @@ FQDNOption
     ParserOptStack.getLast()->setFQDNMode($3);
 } FQDNList
 {
-
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
-    
-    Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
-                 ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
+    //Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
+    //ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
 }
 
 ;
