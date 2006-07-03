@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.16 2006-03-05 21:39:19 thomson Exp $
+ * $Id: Logger.cpp,v 1.17 2006-07-03 17:56:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2006/03/05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.15.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -50,7 +53,7 @@ namespace logger {
 
     string logname="Init";
     int logLevel=8;
-    Elogmode logmode = SHORT;
+    Elogmode logmode = LOGMODE_DEFAULT; /* default logmode */
     ofstream logFile;    // file where wanted msgs are stored
     bool logFileMode = false;
     bool echo = true;
@@ -91,17 +94,33 @@ namespace logger {
 	time_t teraz;
 	teraz = time(NULL);
 	struct tm * czas = localtime( &teraz );
-	if (logmode!=SHORT) {
+	switch(logmode) {
+	case LOGMODE_FULL:
 	    buffer << (1900+czas->tm_year) << ".";
 	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mon+1 << ".";
 	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mday  << " ";
+	    buffer.width(2);    buffer.fill('0'); buffer << czas->tm_hour  << ":";
+	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_min   << ":";
+	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_sec;
+	    break;
+	case LOGMODE_SHORT:
+	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_min   << ":";
+	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_sec;
+	    break;
+	case LOGMODE_PRECISE:
+	    struct timeval preciseTime;
+	    gettimeofday(&preciseTime, NULL);
+	    buffer.width(4); buffer.fill('0'); buffer << preciseTime.tv_sec%3600 << "s,";
+	    buffer.width(6); buffer.fill('0'); buffer << preciseTime.tv_usec << "us ";
+	    break;
+	case LOGMODE_SYSLOG:
+	    buffer << "SYSLOG logging mode not supported yet.";
+	    break;
+	case LOGMODE_EVENTLOG:
+	    buffer << "SYSLOG logging mode not supported yet.";
+	    break;
 	}
-    buffer.width(2);    buffer.fill('0'); buffer << czas->tm_hour  << ":";
-	buffer.width(2);	buffer.fill('0'); buffer << czas->tm_min   << ":";
-	buffer.width(2);	buffer.fill('0'); buffer << czas->tm_sec;
-	if (logmode!=SHORT) {
-	    buffer << ' ' << logger::logname ;
-	}
+	buffer << ' ' << logger::logname ;
 	buffer << ' ' << lv[x-1] << " ";
 	return buffer;
     }
@@ -118,7 +137,7 @@ namespace logger {
 
     void Initialize(char * file) {
 	logger::logFileMode = true;
-	logger::logFile.open(file);
+	logger::logFile.open(file, ofstream::out | ofstream::app);
     }
 
     void Terminate() {
@@ -154,20 +173,23 @@ namespace logger {
 
     void setLogMode(string x) {
 	if (x=="short") {
-	    logger::logmode = SHORT;
+	    logger::logmode = LOGMODE_SHORT;
 	}
 	if (x=="full") {
-	    logger::logmode = FULL;
+	    logger::logmode = LOGMODE_FULL;
+	}
+	if (x=="precise") {
+	    logger::logmode = LOGMODE_PRECISE;
 	}
 
 #ifdef LINUX
 	if (x=="syslog") {
-	    logger::logmode = SYSLOG;
+	    logger::logmode = LOGMODE_SYSLOG;
 	}
 #endif 
 #ifdef WIN32
 	if (x=="eventlog") {
-	    logger::logmode = EVENTLOG;
+	    logger::logmode = LOGMODE_EVENTLOG;
 	}
 #endif
     }

@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Logger.h,v 1.12 2006-03-05 21:39:19 thomson Exp $
+ * $Id: Logger.h,v 1.13 2006-07-03 17:56:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006/03/05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.11.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -56,13 +59,16 @@
 #define Log(X) logger :: log##X ()
 #define LogEnd logger :: endl
 
+#define LOGMODE_DEFAULT LOGMODE_FULL
+
 namespace logger {
 
     enum Elogmode {
-	FULL,
-	SHORT,
-	SYSLOG,
-	EVENTLOG
+	LOGMODE_FULL,
+	LOGMODE_SHORT,
+	LOGMODE_SYSLOG,
+	LOGMODE_EVENTLOG, /* unix only */
+	LOGMODE_PRECISE   /* windows only */
     };
 
     using namespace std;
