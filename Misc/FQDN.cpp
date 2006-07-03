@@ -1,7 +1,22 @@
+/*                                                                           
+ * Dibbler - a portable DHCPv6                                               
+ *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ *          Marek Senderski <msend@o2.pl>                                    
+ *                                                                           
+ * released under GNU GPL v2 or later licence                                
+ *                                                                           
+ * $Id: FQDN.cpp,v 1.2 2006-07-03 17:59:38 thomson Exp $
+ *
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include "FQDN.h"
 #include "Portable.h"
+
+// FIXME: TFQDN should be implemented using SmartPtr()
+
 
 TFQDN::TFQDN() {
     this->Duid = new TDUID();
@@ -45,4 +60,8 @@ string TFQDN::getName() {
 
 bool TFQDN::isUsed() {
     return this->used;
+}
+
+void TFQDN::setUsed(bool used) {
+    this->used = used;
 }

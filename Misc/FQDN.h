@@ -21,6 +21,7 @@ public:
     TIPv6Addr getAddr();
     string getName();
     bool isUsed();
+    void setUsed(bool used);
 
     TDUID *Duid;
     TIPv6Addr *Addr;
