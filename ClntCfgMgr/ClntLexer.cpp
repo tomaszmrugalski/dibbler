@@ -9,13 +9,16 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 31
+#define YY_FLEX_SUBMINOR_VERSION 33
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
 
     /* The c++ scanner is a mess. The FlexLexer.h header file relies on the
-     * following macro.
+     * following macro. This is required in order to pass the c++-multiple-scanners
+     * test in the regression suite. We get reports that it breaks inheritance.
+     * We will address this in a future release of flex, or omit the C++ scanner
+     * altogether.
      */
     #define yyFlexLexer yyFlexLexer
 
@@ -32,7 +35,15 @@
 
 /* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
 
-#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
+#if __STDC_VERSION__ >= 199901L
+
+/* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
+ * if you want the limit (max/min) macros for int types. 
+ */
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS 1
+#endif
+
 #include <inttypes.h>
 typedef int8_t flex_int8_t;
 typedef uint8_t flex_uint8_t;
@@ -142,6 +153,10 @@ typedef unsigned int flex_uint32_t;
 #ifndef YY_BUF_SIZE
 #define YY_BUF_SIZE 16384
 #endif
+
+/* The state buf must be large enough to hold one state per character in the main buffer.
+ */
+#define YY_STATE_BUF_SIZE   ((YY_BUF_SIZE + 2) * sizeof(yy_state_type))
 
 #ifndef YY_TYPEDEF_YY_BUFFER_STATE
 #define YY_TYPEDEF_YY_BUFFER_STATE
@@ -1004,7 +1019,7 @@ namespace std {
   unsigned intpos,pos;
   yy_ClntParser_stype yylval;
 }
-#line 1008 "ClntLexer.cpp"
+#line 1023 "ClntLexer.cpp"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -1109,11 +1124,11 @@ YY_DECL
 #line 44 "ClntLexer.l"
 
 
-#line 1113 "ClntLexer.cpp"
+#line 1128 "ClntLexer.cpp"
 
-	if ( (yy_init) )
+	if ( !(yy_init) )
 		{
-		(yy_init) = 0;
+		(yy_init) = 1;
 
 #ifdef YY_USER_INIT
 		YY_USER_INIT;
@@ -1603,7 +1618,7 @@ YY_RULE_SETUP
 #line 247 "ClntLexer.l"
 ECHO;
 	YY_BREAK
-#line 1607 "ClntLexer.cpp"
+#line 1622 "ClntLexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ADDR):
 	yyterminate();
@@ -1742,7 +1757,7 @@ yyFlexLexer::yyFlexLexer( std::istream* arg_yyin, std::ostream* arg_yyout )
 	yyin = arg_yyin;
 	yyout = arg_yyout;
 	yy_c_buf_p = 0;
-	yy_init = 1;
+	yy_init = 0;
 	yy_start = 0;
 	yy_flex_debug = 0;
 	yylineno = 1;	// this will only get updated if %option yylineno
@@ -1755,7 +1770,7 @@ yyFlexLexer::yyFlexLexer( std::istream* arg_yyin, std::ostream* arg_yyout )
 	yy_more_offset = yy_prev_more_offset = 0;
 
 	yy_start_stack_ptr = yy_start_stack_depth = 0;
-	yy_start_stack = 0;
+	yy_start_stack = NULL;
 
     (yy_buffer_stack) = 0;
     (yy_buffer_stack_top) = 0;
@@ -1763,13 +1778,6 @@ yyFlexLexer::yyFlexLexer( std::istream* arg_yyin, std::ostream* arg_yyout )
 
 	yy_state_buf = 0;
 
-}
-
-yyFlexLexer::~yyFlexLexer()
-{
-	delete [] yy_state_buf;
-	yyfree(yy_start_stack  );
-	yy_delete_buffer( YY_CURRENT_BUFFER );
 }
 
 void yyFlexLexer::switch_streams( std::istream* new_in, std::ostream* new_out )
@@ -1872,7 +1880,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 	else
 		{
-			size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -1917,7 +1925,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), num_to_read );
+			(yy_n_chars), (size_t) num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -2447,6 +2455,25 @@ void yyFlexLexer::LexerError( yyconst char msg[] )
 
 /* Accessor  methods (get/set functions) to struct members. */
 
+yyFlexLexer::~yyFlexLexer()
+{
+    
+    /* Pop the buffer stack, destroying each element. */
+	while(YY_CURRENT_BUFFER){
+		yy_delete_buffer( YY_CURRENT_BUFFER  );
+		YY_CURRENT_BUFFER_LVALUE = NULL;
+		yypop_buffer_state();
+	}
+
+	/* Destroy the stack itself. */
+	yyfree((yy_buffer_stack) );
+	(yy_buffer_stack) = NULL;
+
+	delete [] (yy_state_buf);
+	yyfree((yy_start_stack)  );
+
+}
+
 /*
  * Internal utility routines.
  */
@@ -2455,7 +2482,7 @@ void yyFlexLexer::LexerError( yyconst char msg[] )
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
 	register int i;
-    	for ( i = 0; i < n; ++i )
+	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
@@ -2464,7 +2491,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 static int yy_flex_strlen (yyconst char * s )
 {
 	register int n;
-    	for ( n = 0; s[n]; ++n )
+	for ( n = 0; s[n]; ++n )
 		;
 
 	return n;
@@ -2495,18 +2522,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#undef YY_NEW_FILE
-#undef YY_FLUSH_BUFFER
-#undef yy_set_bol
-#undef yy_new_buffer
-#undef yy_set_interactive
-#undef yytext_ptr
-#undef YY_DO_BEFORE_ACTION
-
-#ifdef YY_DECL_IS_OURS
-#undef YY_DECL_IS_OURS
-#undef YY_DECL
-#endif
 #line 247 "ClntLexer.l"
 
 
