@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.14 2006-07-03 17:59:00 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.15 2006-07-03 18:13:45 thomson Exp $
  *                                                                           
  */
 
@@ -114,6 +114,8 @@ public:
     SPtr<TFQDN> getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr);
     SmartPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) * fqdn);
+    int getFQDNMode();
+    void setFQDNMode(int FQDNMode);
     bool supportFQDN();
 
     // option: NIS servers
@@ -180,6 +182,7 @@ private:
     List(TIPv6Addr) SIPServerLst;
     List(string) SIPDomainLst;
     List(TFQDN) FQDNLst;
+    int FQDNMode;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;

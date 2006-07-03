@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.24 2006-07-03 17:59:00 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.25 2006-07-03 18:13:45 thomson Exp $
  */
 
 #include <sstream>
@@ -219,7 +219,9 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
     if (opt->supportFQDN()){
 	this->setFQDNLst(opt->getFQDNLst());
-	Log(Debug) <<"FQDN Support is enabled on the " << this->getName()  << " interface." << LogEnd;
+	this->setFQDNMode(opt->getFQDNMode());
+	Log(Debug) <<"FQDN Support is enabled on the " << this->getFullName()  << " interface." << LogEnd;
+	Log(Debug) <<"FQDN Mode setted to" << this->getFQDNMode()<<LogEnd;
     }
     if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
     if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
@@ -460,6 +462,12 @@ bool TSrvCfgIface::supportFQDN() {
     return this->FQDNSupport;
 }
 
+void TSrvCfgIface::setFQDNMode(int FQDNMode) {
+    this->FQDNMode = FQDNMode;
+}
+int TSrvCfgIface::getFQDNMode(){
+    return this->FQDNMode;
+}
 
 // --- option: NIS server ---
 void TSrvCfgIface::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
