@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.7 2006-03-23 00:53:26 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.8 2006-07-03 18:20:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-03-23 00:53:26  thomson
+ * TA support fixed on the server side.
+ *
  * Revision 1.6  2005/05/10 00:02:39  thomson
  * getRelayByLinkAddr() implemented.
  *
@@ -81,6 +84,7 @@ SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SmartPtr<TIPv6Addr> 
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
 	return 0;
     }
+    /// FIXME: Implement finding RELAYs using link address
     Log(Crit) << "#### Finding RELAYs using link address is not implemented yet. Using first relay:" 
 	      << this->Relays[0].iface->getFullName() << LogEnd;
     return this->Relays[0].iface;
