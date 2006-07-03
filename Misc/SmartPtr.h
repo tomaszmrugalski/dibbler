@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: SmartPtr.h,v 1.4 2004-06-04 19:47:06 thomson Exp $
+ * $Id: SmartPtr.h,v 1.5 2006-07-03 18:01:51 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/04 19:47:06  thomson
+ * Various fixes.
+ *
  * Revision 1.3  2004/06/04 16:55:27  thomson
  * *** empty log message ***
  *
@@ -22,6 +25,8 @@
 #define SMARTPTR_H
 
 #include <iostream>
+
+#define SPtr SmartPtr
 
 class Ptr {
 public:
