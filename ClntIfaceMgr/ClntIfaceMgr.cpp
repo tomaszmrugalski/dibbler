@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.21 2006-05-01 13:36:54 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.22 2006-07-03 18:07:51 thomson Exp $
  */
 
 #include "Portable.h"
@@ -16,7 +16,7 @@
 #include "ClntMsgReply.h"
 #include "ClntMsgAdvertise.h"
 #include "Logger.h"
-#include "UpdateActivity.h"
+#include "DNSUpdate.h"
 
 using namespace logger;
 using namespace std;
@@ -212,79 +212,79 @@ unsigned int TClntIfaceMgr::getTimeout() {
 }
 
 bool TClntIfaceMgr::doDuties() {
-	SmartPtr<TClntIfaceIface> iface;
-	SmartPtr<TClntCfgIface> cfgIface;
-	
-	this->firstIface();
-	while (iface = (Ptr*)this->getIface()) {
-		cfgIface = ClntCfgMgr->getIface(iface->getID());
-		if (cfgIface) {
- 			// Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
-			if (cfgIface->getFQDNState() == INPROCESS) {
-				// Here we check if all parameters are set, and do the DNS update if possible
-				List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
-				string fqdn = iface->getFQDN();
-				if (ClntAddrMgr->countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
-					Log(Debug) << "All parameters seem to be set to perform DNS update. Selecting first DNS server" << LogEnd;
-					SmartPtr<TIPv6Addr> DNSAddr;
-					SmartPtr<TIPv6Addr> addr;
-					
-// 					For the moment, we just take the first DNS entry.
-					DNSSrvLst.first();
-					DNSAddr = DNSSrvLst.get();
-					
+    SmartPtr<TClntIfaceIface> iface;
+    SmartPtr<TClntCfgIface> cfgIface;
+    
+    this->firstIface();
+    while (iface = (Ptr*)this->getIface()) {
+	cfgIface = ClntCfgMgr->getIface(iface->getID());
+	if (cfgIface) {
+	    // Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
+	    if (cfgIface->getFQDNState() == INPROCESS) {
+		// Here we check if all parameters are set, and do the DNS update if possible
+		List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
+		string fqdn = iface->getFQDN();
+		if (ClntAddrMgr->countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
+		    Log(Debug) << "All parameters seem to be set to perform DNS update. Selecting first DNS server" << LogEnd;
+		    SmartPtr<TIPv6Addr> DNSAddr;
+		    SmartPtr<TIPv6Addr> addr;
+		    
+                    // For the moment, we just take the first DNS entry.
+		    DNSSrvLst.first();
+		    DNSAddr = DNSSrvLst.get();
+		    
 // 					And the first IP address
-					SmartPtr<TAddrIA> ptrAddrIA;
-					ClntAddrMgr->firstIA();
-					ptrAddrIA = ClntAddrMgr->getIA();
-					
-					if (ptrAddrIA->countAddr() > 0) {
-						ptrAddrIA->firstAddr();
-						addr = ptrAddrIA->getAddr()->get();
-						
-						Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *addr << ") and FQDN " 
-							   << fqdn << LogEnd;
-						Log(Warning) << "FIXME: Sleeping 3 seconds before FQDN update" << LogEnd;
-						/* FIXME: sleep cannot be performed here. What if client has to perform other 
-						   action during those 3 seconds? */
+		    SmartPtr<TAddrIA> ptrAddrIA;
+		    ClntAddrMgr->firstIA();
+		    ptrAddrIA = ClntAddrMgr->getIA();
+		    
+		    if (ptrAddrIA->countAddr() > 0) {
+			ptrAddrIA->firstAddr();
+			addr = ptrAddrIA->getAddr()->get();
+			
+			Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *addr << ") and FQDN " 
+				   << fqdn << LogEnd;
+			Log(Warning) << "FIXME: Sleeping 3 seconds before FQDN update" << LogEnd;
+			/* FIXME: sleep cannot be performed here. What if client has to perform other 
+			   action during those 3 seconds? */
 #ifdef WIN32
-						Sleep(3);
+			Sleep(3);
 #else
-						sleep(3);
+			sleep(3);
 #endif
-						Log(Warning) << "FIXME: Waking up !" << LogEnd;
-						
-						//Test for DNS update
-						unsigned int dotpos = fqdn.find(".");
-						string hostname = "";
-						string domain = "";
-						if (dotpos == string::npos) {
-							Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdn 
-								     << "] Trying to do the update..." << LogEnd;
-							hostname = fqdn;
-						} else {
-							hostname = fqdn.substr(0, dotpos);
-							domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
-						}
-						UpdateActivity *act = new UpdateActivity(DNSAddr->getPlain(), (char*) domain.c_str(), 
-											 (char*) hostname.c_str(), addr->getPlain(), "2h");
-						int result = act->run();
-						delete act;
-						
-						if (result == DNSUPDATE_SUCCESS) {
-							cfgIface->setFQDNState(CONFIGURED);
-							Log(Notice) << "FQDN Configured successfully !" << LogEnd;
-						} else {
-							Log(Warning) << "Unable to perform DNS update. Disabling FQDN on " 
-								     << iface->getFullName() << LogEnd;
-							cfgIface->setFQDNState(DISABLED);
-						}
-					}
-				}
+			Log(Warning) << "FIXME: Waking up !" << LogEnd;
+			
+			//Test for DNS update
+			unsigned int dotpos = fqdn.find(".");
+			string hostname = "";
+			string domain = "";
+			if (dotpos == string::npos) {
+			    Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdn 
+					 << "] Trying to do the update..." << LogEnd;
+			    hostname = fqdn;
+			} else {
+			    hostname = fqdn.substr(0, dotpos);
+			    domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
 			}
+			DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
+						       (char*) hostname.c_str(), addr->getPlain(), "2h",1);
+			int result = act->run();
+			delete act;
+			
+			if (result == DNSUPDATE_SUCCESS) {
+			    cfgIface->setFQDNState(CONFIGURED);
+			    Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+			} else {
+			    Log(Warning) << "Unable to perform DNS update. Disabling FQDN on " 
+					 << iface->getFullName() << LogEnd;
+			    cfgIface->setFQDNState(DISABLED);
+			}
+		    }
 		}
+	    }
 	}
-	return true;
+    }
+    return true;
 }
 
 void TClntIfaceMgr::dump()
