@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.7 2006-03-03 21:09:34 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.8 2006-07-03 18:19:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-03-03 21:09:34  thomson
+ * FQDN support added.
+ *
  * Revision 1.6  2005/01/03 21:57:08  thomson
  * Relay support added.
  *
@@ -299,6 +302,12 @@ List(TFQDN) *TSrvParsIfaceOpt::getFQDNLst() {
     return &this->FQDNLst;
 }
 
+int TSrvParsIfaceOpt::getFQDNMode(){
+	return this->FQDNMode;
+}
+void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode){
+	this->FQDNMode=FQDNMode;
+}
 bool TSrvParsIfaceOpt::supportFQDN() {
     return this->FQDNSupport;
 }

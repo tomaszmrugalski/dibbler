@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.8 2006-03-03 21:09:34 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.9 2006-07-03 18:19:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006-03-03 21:09:34  thomson
+ * FQDN support added.
+ *
  * Revision 1.7  2005/01/03 21:57:08  thomson
  * Relay support added.
  *
@@ -101,6 +104,8 @@ public:
     void setFQDNLst(List(TFQDN) *fqdn);
     bool supportFQDN();
 
+    int getFQDNMode();
+    void setFQDNMode(int FQDNMode);
 
     // option: NIS servers
     List(TIPv6Addr) * getNISServerLst();
@@ -165,6 +170,7 @@ private:
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
     string NISPDomain;
+    int FQDNMode;
     unsigned int Lifetime;
 };
 
