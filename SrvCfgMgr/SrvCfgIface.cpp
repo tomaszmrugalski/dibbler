@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.23 2006-03-23 00:53:26 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.24 2006-07-03 17:59:00 thomson Exp $
  */
 
 #include <sstream>
@@ -218,8 +218,8 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
     if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
     if (opt->supportFQDN()){
-	    this->setFQDNLst(opt->getFQDNLst());
-	    Log(Debug) <<"FQDN Support is enabled on the " << this->getFullName()  << " interface." << LogEnd;
+	this->setFQDNLst(opt->getFQDNLst());
+	Log(Debug) <<"FQDN Support is enabled on the " << this->getName()  << " interface." << LogEnd;
     }
     if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
     if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
@@ -421,78 +421,31 @@ void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
     this->FQDNSupport = true;
 }
 
-string TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid) {
-    int cpt = 1;
-    string res = "";
-    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
-    
-    Log(Debug) << "FQDN : Looking for DUID : "<< *duid << LogEnd;
+SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr) {
+    Log(Debug) << "FQDN : Looking for DUID : "<< duid->getPlain() << LogEnd;
     FQDNLst.first();
 
-    foo = FQDNLst.get();
-    while(!(*(*foo).Duid == *duid) && cpt<FQDNLst.count()){
-        foo = FQDNLst.get();	
- 	cpt++;
-    }
-    
-    if (cpt<FQDNLst.count()) {
-        res = (*foo).Name;
-    } else {
-        if (*(*foo).Duid == *duid) {
-	    res = (*foo).Name;
+    SPtr<TFQDN> foo = FQDNLst.getFirst();
+    while (foo=this->FQDNLst.get()) {
+	if (foo->isUsed())
+	    continue;
+	if (duid && *(foo->Duid)== *duid) {
+	    Log(Debug) << "FQDN found: " << foo->Name << " using duid " << duid->getPlain() << LogEnd;
+	    return foo;
+	}
+	if (addr && *(foo->Addr)==*addr) {
+	    Log(Debug) << "FQDN found: " << foo->Name << " using address " << addr->getPlain() << LogEnd;
+	    return foo;
+	}
+	if (!foo->Addr && !foo->Duid) {
+	    Log(Debug) << "Not reserved FQDN found: " << foo->Name << LogEnd;
+	    return foo;
 	}
     }
-    Log(Debug) << "FQDN found : " << res << LogEnd;
-    return res;
-}
 
-string TSrvCfgIface::getFQDNName(SmartPtr<TIPv6Addr> addr) {
-    int cpt = 1;
-    string res = "";
-    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
-    FQDNLst.first();
-    foo = FQDNLst.get();
-    while(!(*(*foo).Addr == *addr) && cpt<FQDNLst.count()){
-        foo = FQDNLst.get();
- 	cpt++;
-    }
-    if (cpt<FQDNLst.count()) {
-        res = (*foo).Name;
-    } else {
-        if (*(*foo).Addr == *addr) {
-	    res = (*foo).Name;
-	}
-    }
-    return res;
+    // not found
+    return 0;
 }
-
-string TSrvCfgIface::getFQDNName() {
-    int cpt = 1;
-    string res = "";
-    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
-    FQDNLst.first();
-    foo = FQDNLst.get();
-    while((!(*(*foo).Addr == *(new TIPv6Addr())) || 
-           !(*(*foo).Duid == *(new TDUID())) ||
-           (*foo).used == true ) &&
-          cpt<FQDNLst.count()){
-        foo = FQDNLst.get();
-        cpt++;
-    }
-    if (cpt<FQDNLst.count()) {
-        FQDNLst.getPrev();
-        (*(FQDNLst.get())).used=true;
-        res = (*foo).Name;
-    } else {
-        if (*(*foo).Addr == *(new TIPv6Addr()) && (*(*foo).Duid == *(new TDUID())) &&
-            (*foo).used==false) {
-            (*foo).used=true;
-	    res = (*foo).Name;
-	}
-    }
-    return res;
-}
-
 
 SmartPtr<TDUID> TSrvCfgIface::getFQDNDuid(string name) {
     SmartPtr<TDUID> res = new TDUID();
