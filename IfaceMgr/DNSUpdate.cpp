@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.4 2006-07-03 22:15:52 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.5 2006-07-03 23:45:05 thomson Exp $
  *
  */
 
@@ -44,8 +44,7 @@ DNSUpdate::~DNSUpdate() {
 }
 
 DnsUpdateResult DNSUpdate::run(){
-    Log(Debug) << "#### numberOfRecords=" << this->numberOfRecords << LogEnd;
-    
+  
    if (this->numberOfRecords == 1){    
   try {
    printf("Updating only one record !!! \n");   
@@ -84,8 +83,11 @@ DnsUpdateResult DNSUpdate::run(){
    } // number of records 1 
  else if (this->numberOfRecords == 2){    
   try {
-   printf("Updating TWO RECORDS !!! \n");   
-   printf("Starting from PTR \n");
+   Log(Debug) << "Performing DNS Update: Both (AAAA and PTR) records." << LogEnd;
+   Log(Debug) << "Updating PTR record: not supported yet, skipped." << LogEnd;
+
+#if 0
+   // for a while this is not working ... 
    this->createSOAMsg();
    // method delete OldRR
    this->addinMsg_delOldRR();   
@@ -94,8 +96,10 @@ DnsUpdateResult DNSUpdate::run(){
    this->addinMsg_newPTR();
    //sendmessage
    this->sendMsg();
-	// Adding AAAA record
-	printf("Now AAAA \n");
+#endif
+
+   // Adding AAAA record
+   Log(Debug) << "Updating AAAA record." << LogEnd;
    this->createSOAMsg();
    this->addinMsg_delOldRR();   
    this->addinMsg_newAAAA();
@@ -123,8 +127,39 @@ DnsUpdateResult DNSUpdate::run(){
   	}// exeption catch
 
    } // number of records 2
-  
-  return DNSUPDATE_SUCCESS;
+ else if (this->numberOfRecords == 3){    
+     // used on the client side. Perform AAAA update only
+     try {
+	 
+	 this->createSOAMsg();
+	 this->addinMsg_delOldRR();   
+	 this->addinMsg_newAAAA();
+	 this->sendMsg();
+     } catch (PException p) {
+	 
+	 //printf("Failed to start update operation\n");
+	 if (!strcmp(p.message,"Could not connect TCP socket") ){
+// 		printf("Error: %s\n",p.message);
+	     Log(Error) << "DNS update : " << p.message << LogEnd;
+	     return DNSUPDATE_CONNFAIL;
+	 }
+	 else if (!strcmp(p.message,"NOTAUTH")){
+// 		printf("Nameserver is not authoritative for this zone %s\n", p.message);
+	     Log(Error) << "DNS update : Nameserver is not authoritative for this zone (" << p.message << ")" << LogEnd;	
+	     return DNSUPDATE_SRVNOTAUTH;
+    }
+	 else
+	 {		
+//    		printf("Not specified error: %s \n",p.message);
+	     Log(Error) << "DNS update : error not specified (" << p.message << ")" << LogEnd;
+	     return DNSUPDATE_ERROR;
+	 } 
+	 
+     }// exeption catch
+     
+ } // number of records 2
+   
+   return DNSUPDATE_SUCCESS;
 }
 
 /** create new message for Dns Update*/
@@ -284,56 +319,52 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
    delete q; 
    q = NULL;  
    delete q;   
-       
+   
    if (sockid != -1) tcpclose(sockid);
-    
+   
    return RemoteDnsRR;
    
   } catch (PException p) {
-      
-	   //printf("Error: %s\n", p.message);
-	   if (q) delete q;
-	   if (a) delete a;     
-	   if (sockid != -1) tcpclose(sockid);
-	   if (RemoteDnsRR) delete RemoteDnsRR;
-	   throw PException(p);
+      //printf("Error: %s\n", p.message);
+      if (q) delete q;
+      if (a) delete a;     
+      if (sockid != -1) tcpclose(sockid);
+      if (RemoteDnsRR) delete RemoteDnsRR;
+      throw PException(p);
   } 
 }
  
 /** send Update Message to server*/
 void DNSUpdate::sendMsg(){
-   
- DnsMessage *a = NULL;
-   int sockid = -1;
-
-   try {
-	   //printf("Connecting...send update message\n");
-	   pos_cliresolver res;
-	   sockid = res.tcpconnect(&server);
-	   //printf("Connected to server; sending message...\n");
-	   res.tcpsendmessage(message, sockid);
-	   //printf("Message sent; waiting for answer...\n");
-	   res.tcpwaitanswer(a, sockid);
-	   if (a->RCODE != RCODE_NOERROR){
-			//printf("Zone transfer returned error code: %s\n", str_rcode(a->RCODE).c_str());
-			throw PException((char*)str_rcode(a->RCODE).c_str());
-	   }
-	   else{			
-			//printf("Zone succesfully updated.\n");
-	   }		
-	} catch (PException p) {
-	    	
-			//printf(("Error: %s\n", p.message));
-			
-			if (a) delete a;
-			if (sockid != -1) tcpclose(sockid);
-			
-			throw PException(p.message);
-			
+    DnsMessage *a = NULL;
+    int sockid = -1;
+    
+    try {
+	//printf("Connecting...send update message\n");
+	pos_cliresolver res;
+	sockid = res.tcpconnect(&server);
+	//printf("Connected to server; sending message...\n");
+	res.tcpsendmessage(message, sockid);
+	//printf("Message sent; waiting for answer...\n");
+	res.tcpwaitanswer(a, sockid);
+	if (a->RCODE != RCODE_NOERROR){
+	    //printf("Zone transfer returned error code: %s\n", str_rcode(a->RCODE).c_str());
+	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
+	else{			
+	    //printf("Zone succesfully updated.\n");
+	}		
+    } catch (PException p) {
+	
+	//printf(("Error: %s\n", p.message));
 	
 	if (a) delete a;
 	if (sockid != -1) tcpclose(sockid);
 	
+	throw PException(p.message);
 	
+    }
+	
+    if (a) delete a;
+    if (sockid != -1) tcpclose(sockid);
 }

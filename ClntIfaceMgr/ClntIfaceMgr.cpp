@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.22 2006-07-03 18:07:51 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.23 2006-07-03 23:45:05 thomson Exp $
  */
 
 #include "Portable.h"
@@ -267,7 +267,7 @@ bool TClntIfaceMgr::doDuties() {
 			    domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
 			}
 			DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
-						       (char*) hostname.c_str(), addr->getPlain(), "2h",1);
+						       (char*) hostname.c_str(), addr->getPlain(), "2h",3);
 			int result = act->run();
 			delete act;
 			

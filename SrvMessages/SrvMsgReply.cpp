@@ -835,7 +835,8 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
     if ( FQDNMode==1 || FQDNMode==2 ) {
 	Log(Debug) << "Server configuration allow DNS updates for " << clntDuid->getPlain() << LogEnd;
 	
-	optFQDN->setSFlag(false); // letting client update his AAAA
+	if (FQDNMode == 1) optFQDN->setSFlag(false);
+	else if (FQDNMode == 2)  optFQDN->setSFlag(true); // letting client update his AAAA
 	// Setting the O Flag correctly according to the difference between O flags
 	optFQDN->setOFlag(requestFQDN->getSFlag() xor 0);
 	// Here we check if all parameters are set, and do the DNS update if possible
