@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.h,v 1.2 2006-07-03 20:15:56 thomson Exp $
+ * $Id: DNSUpdate.h,v 1.3 2006-07-03 20:42:51 thomson Exp $
  *
  */
 
@@ -36,16 +36,19 @@ private:
     char* hostip;
     domainname* zoneroot;
     char* ttl;
+    int numberOfRecords;
     
     void createSOAMsg();
-    void addinMsg_newRR();
+    void addinMsg_newPTR();
+    void addinMsg_newAAAA();
     void addinMsg_delOldRR();
     bool DnsRR_avail(DnsMessage *msg, DnsRR& RemoteDnsRR);
     DnsRR* get_oldDnsRR();
     void sendMsg();
     
  public:
-    DNSUpdate(char* dns_address,char*zonename,char* hostname,char* hostip,char* ttl, int mode);
+    DNSUpdate(char* dns_address, char*zonename, char* hostname, char* hostip, char* ttl, 
+	      int numberOfRecords);
     ~DNSUpdate();
     DnsUpdateResult run();
 };
