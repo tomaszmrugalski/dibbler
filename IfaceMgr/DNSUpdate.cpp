@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.3 2006-07-03 20:42:51 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.4 2006-07-03 22:15:52 thomson Exp $
  *
  */
 
@@ -44,20 +44,21 @@ DNSUpdate::~DNSUpdate() {
 }
 
 DnsUpdateResult DNSUpdate::run(){
-  
+    Log(Debug) << "#### numberOfRecords=" << this->numberOfRecords << LogEnd;
+    
    if (this->numberOfRecords == 1){    
   try {
    printf("Updating only one record !!! \n");   
-   //this->createSOAMsg();
+   this->createSOAMsg();
    
    // method delete OldRR
-   //this->addinMsg_delOldRR();   
+   this->addinMsg_delOldRR();   
    
    /// methode add
-   //this->addinMsg_newPTR();
+   this->addinMsg_newPTR();
             
    //sendmessage
-   //this->sendMsg();
+   this->sendMsg();
    
   } catch (PException p) {
 	

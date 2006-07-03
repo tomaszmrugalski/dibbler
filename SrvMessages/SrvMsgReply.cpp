@@ -882,7 +882,7 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
 	
 	DnsUpdateResult result = DNSUPDATE_SKIP;
 	DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
-				       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", 1);
+				       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
 	result = act->run();
 	delete act;
 
