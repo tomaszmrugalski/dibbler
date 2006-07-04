@@ -838,7 +838,7 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
 	if (FQDNMode == 1) optFQDN->setSFlag(false);
 	else if (FQDNMode == 2)  optFQDN->setSFlag(true); // letting client update his AAAA
 	// Setting the O Flag correctly according to the difference between O flags
-	optFQDN->setOFlag(requestFQDN->getSFlag() xor 0);
+	optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
 	// Here we check if all parameters are set, and do the DNS update if possible
 	List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
 	//if ( DNSSrvLst.count() > 0 && fqdn.size() > 0) {

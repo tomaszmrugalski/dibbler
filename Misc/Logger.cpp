@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.17 2006-07-03 17:56:58 thomson Exp $
+ * $Id: Logger.cpp,v 1.18 2006-07-04 21:19:51 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2006-07-03 17:56:58  thomson
+ * Precise logmode added.
+ *
  * Revision 1.16  2006/03/05 21:39:19  thomson
  * TA support merged.
  *
@@ -93,25 +96,37 @@ namespace logger {
 
 	time_t teraz;
 	teraz = time(NULL);
-	struct tm * czas = localtime( &teraz );
+	struct tm * now = localtime( &teraz );
 	switch(logmode) {
 	case LOGMODE_FULL:
-	    buffer << (1900+czas->tm_year) << ".";
-	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mon+1 << ".";
-	    buffer.width(2); buffer.fill('0'); buffer << czas->tm_mday  << " ";
-	    buffer.width(2);    buffer.fill('0'); buffer << czas->tm_hour  << ":";
-	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_min   << ":";
-	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_sec;
+	    buffer << (1900+now->tm_year) << ".";
+	    buffer.width(2); buffer.fill('0'); buffer << now->tm_mon+1 << ".";
+	    buffer.width(2); buffer.fill('0'); buffer << now->tm_mday  << " ";
+	    buffer.width(2);    buffer.fill('0'); buffer << now->tm_hour  << ":";
+	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_min   << ":";
+	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_sec;
 	    break;
 	case LOGMODE_SHORT:
-	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_min   << ":";
-	    buffer.width(2);	buffer.fill('0'); buffer << czas->tm_sec;
+	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_min   << ":";
+	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_sec;
 	    break;
 	case LOGMODE_PRECISE:
-	    struct timeval preciseTime;
+		int sec, usec;
+#ifndef WIN32
+		/* get time, Unix style */
+		struct timeval preciseTime;
 	    gettimeofday(&preciseTime, NULL);
-	    buffer.width(4); buffer.fill('0'); buffer << preciseTime.tv_sec%3600 << "s,";
-	    buffer.width(6); buffer.fill('0'); buffer << preciseTime.tv_usec << "us ";
+		sec  = preciseTime.tv_sec%3600;
+		usec = preciseTime.tv_usec; 
+#else
+		/* get time, Windws style */
+		SYSTEMTIME now;
+		GetSystemTime(&now);
+		sec = now.wMinute*60 + now.wSecond;
+		usec= now.wMilliseconds*1000;
+#endif
+		buffer.width(4); buffer.fill('0'); buffer << sec  << "s,";
+	    buffer.width(6); buffer.fill('0'); buffer << usec << "us ";
 	    break;
 	case LOGMODE_SYSLOG:
 	    buffer << "SYSLOG logging mode not supported yet.";

@@ -156,6 +156,9 @@
 					RelativePath="..\ClntIfaceMgr\ClntIfaceMgr.cpp">
 				</File>
 				<File
+					RelativePath="..\IfaceMgr\DNSUpdate.cpp">
+				</File>
+				<File
 					RelativePath="..\IfaceMgr\Iface.cpp">
 				</File>
 				<File
@@ -163,9 +166,6 @@
 				</File>
 				<File
 					RelativePath="..\IfaceMgr\SocketIPv6.cpp">
-				</File>
-				<File
-					RelativePath="..\ClntIfaceMgr\UpdateActivity.cpp">
 				</File>
 			</Filter>
 			<Filter
