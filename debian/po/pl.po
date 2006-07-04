@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
 "POT-Creation-Date: 2006-01-06 22:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Tomasz Mrugalski <thomson@klub.com.pl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,7 +34,7 @@ msgstr ""
 #. Description
 #: ../dibbler-client.templates:8
 msgid "Do you want dibbler-client to start when system starts?"
-msgstr "Czy chcesz, aby dibbler-client by³ uruchamiany przy starcie systemu?"
+msgstr "Czy chcesz, aby dibbler-client byÅ‚ uruchamiany przy starcie systemu?"
 
 #. Type: boolean
 #. Description
@@ -44,10 +44,10 @@ msgid ""
 "IPv6 set up after boot. This is generally a good idea. Make sure that there "
 "is a DHCPv6 server available in your network."
 msgstr ""
-"Klient Dibbler mo¿e byæ skonfigurowany tak, ¿eby by³ uruchamiany "
-"przy starcie systemu po to, ¿eby Twój komputer mia³ skonfigurowane "
-"IPv6 od razu po zabootowaniu. Zwykle jest to dobry pomys³. Upewnij siê jednak, "
-"¿e w Twojej sieci jest dostêpny serwer DHCPv6."
+"Klient Dibbler moÅ¼e byÄ‡ skonfigurowany tak, Å¼eby byÅ‚ uruchamiany "
+"przy starcie systemu po to, Å¼eby TwÃ³j komputer miaÅ‚ skonfigurowane "
+"IPv6 od razu po zabootowaniu. Zwykle jest to dobry pomysÅ‚. Upewnij siÄ™ jednak, "
+"Å¼e w Twojej sieci jest dostÄ™pny serwer DHCPv6."
 
 
 #. Type: string
@@ -66,7 +66,7 @@ msgstr "Interfejsy do skonfigurowania:"
 #. Description
 #: ../dibbler-client.templates:16
 msgid "Dibbler can configure any or all of a computer's network interfaces."
-msgstr "Dibbler mo¿e skonfigurowaæ niektóre lub wszystkie interfejsy sieciowe komputera."
+msgstr "Dibbler moÅ¼e skonfigurowaÄ‡ niektÃ³re lub wszystkie interfejsy sieciowe komputera."
 
 #. Type: string
 #. Description
@@ -74,8 +74,8 @@ msgstr "Dibbler mo¿e skonfigurowaæ niektóre lub wszystkie interfejsy sieciowe ko
 msgid ""
 "More than one interface may be specified by separating the interface names "
 "with spaces."
-msgstr "Wiêcej ni¿ jeden interfejs sieciowy mo¿e byæ podany poprzed odzielenie "
-"nazw interejsów spacjami."
+msgstr "WiÄ™cej niÅ¼ jeden interfejs sieciowy moÅ¼e byÄ‡ podany poprzed odzielenie "
+"nazw interejsÃ³w spacjami."
 
 #. Type: multiselect
 #. Choices
@@ -87,7 +87,7 @@ msgstr "dns, domain"
 #. Description
 #: ../dibbler-client.templates:26
 msgid "What additional parameters should be obtained?"
-msgstr "Jakie dodatkowe parametry powinny byæ skonfigurowane?"
+msgstr "Jakie dodatkowe parametry powinny byÄ‡ skonfigurowane?"
 
 #. Type: multiselect
 #. Description
@@ -95,21 +95,21 @@ msgstr "Jakie dodatkowe parametry powinny byæ skonfigurowane?"
 msgid ""
 "The Dibbler client can request that the DHCPv6 server supply additional "
 "configuration parameters."
-msgstr "Klient Dibbler mo¿e poprosiæ serwer o dostarczenie dodatkowych "
-"parametrów konfiguracyjnych."
+msgstr "Klient Dibbler moÅ¼e poprosiÄ‡ serwer o dostarczenie dodatkowych "
+"parametrÃ³w konfiguracyjnych."
 
 #. Type: title
 #. Description
 #: ../dibbler-relay.templates:3
 msgid "dibbler-relay: DHCPv6 relay"
-msgstr "dibbler-relay: przeka¼nik DHCPv6"
+msgstr "dibbler-relay: przekaÅºnik DHCPv6"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-relay.templates:8
 #, fuzzy
 msgid "Do you want dibbler-relay to start when the system starts?"
-msgstr "Czy chcesz, aby dibbler-relay startowa³ przy starcie systemu?"
+msgstr "Czy chcesz, aby dibbler-relay startowaÅ‚ przy starcie systemu?"
 
 #. Type: boolean
 #. Description
@@ -118,15 +118,15 @@ msgid ""
 "Dibbler relay can be configured to start at boot. This node will then "
 "forward DHCPv6 messages between clients, servers and other relays."
 msgstr ""
-"Przeka¼nik Dibbler mo¿e zostaæ skonfigurowany tak, aby by³ uruchamiany "
-"podczas startu systemu. Ten wêz³e bêdzie w takim przypadku przekazywa³ "
-"wiadomo¶ci DHCPv6 pomiêdzy klientami, serwerami i innymi przeka¼nikami."
+"PrzekaÅºnik Dibbler moÅ¼e zostaÄ‡ skonfigurowany tak, aby byÅ‚ uruchamiany "
+"podczas startu systemu. Ten wÄ™zeÅ‚ bÄ™dzie w takim przypadku przekazywaÅ‚ "
+"wiadomoÅ›ci DHCPv6 pomiÄ™dzy klientami, serwerami i innymi przekaÅºnikami."
 
 #. Type: note
 #. Description
 #: ../dibbler-relay.templates:14
 msgid "Modify /etc/dibbler/relay.conf before running the relay."
-msgstr "Zmodyfikuj plik /etc/dibbler/relay.conf zanim uruchomisz przeka¼nik."
+msgstr "Zmodyfikuj plik /etc/dibbler/relay.conf zanim uruchomisz przekaÅºnik."
 
 #. Type: note
 #. Description
@@ -134,8 +134,8 @@ msgstr "Zmodyfikuj plik /etc/dibbler/relay.conf zanim uruchomisz przeka¼nik."
 msgid ""
 "Without proper modifications, the relay will most likely refuse to start or "
 "will not forward DHCPv6 messages as expected."
-msgstr "Bez odpowiednich modyfikacji, przeka¼nik najprawdopodobniej nie uruchomi "
-"siê lub nie bêdzie przekazywa³ wiadomo¶ci, jak siê od niego oczekuje."
+msgstr "Bez odpowiednich modyfikacji, przekaÅºnik najprawdopodobniej nie uruchomi "
+"siÄ™ lub nie bÄ™dzie przekazywaÅ‚ wiadomoÅ›ci, jak siÄ™ od niego oczekuje."
 
 #. Type: title
 #. Description
@@ -148,7 +148,7 @@ msgstr "dibbler-server: serwer DHCPv6"
 #: ../dibbler-server.templates:8
 #, fuzzy
 msgid "Do you want dibbler-server to start when the system starts?"
-msgstr "Czy chcesz, aby dibbler-server startowa³ przy starcie systemu?"
+msgstr "Czy chcesz, aby dibbler-server startowaÅ‚ przy starcie systemu?"
 
 #. Type: boolean
 #. Description
@@ -158,10 +158,10 @@ msgid ""
 "as a DHCPv6 server. It will provide IPv6 addresses and additional "
 "configuration options to other nodes in the network."
 msgstr ""
-"Serwer Dibbler mo¿e zostaæ skonfigurowany tak, aby by³ uruchamiany przy "
-"starcie systemu. Ten wêze³ bêdzie wtedy dzia³a³ jako serwer DHCPv6. Bêdzie "
-"dostarcza³ adresów IPv6 oraz dodatkowych parametrów konfiguracyjnych innym "
-"wêz³om w sieci."
+"Serwer Dibbler moÅ¼e zostaÄ‡ skonfigurowany tak, aby byÅ‚ uruchamiany przy "
+"starcie systemu. Ten wÄ™zeÅ‚ bÄ™dzie wtedy dziaÅ‚aÅ‚ jako serwer DHCPv6. BÄ™dzie "
+"dostarczaÅ‚ adresÃ³w IPv6 oraz dodatkowych parametrÃ³w konfiguracyjnych innym "
+"wÄ™zÅ‚om w sieci."
 
 #. Type: note
 #. Description
@@ -176,4 +176,4 @@ msgid ""
 "Without proper modifications, the Dibbler server will most likely offer "
 "invalid addresses and options when started."
 msgstr "Bez odpowiednich modyfikacji, serwer Dibbler najprawdopodobniej "
-"bêdzie oferowa³ niepoprawne adresy i opcje, kiedy zostanie uruchomiony."
+"bÄ™dzie oferowaÅ‚ niepoprawne adresy i opcje, kiedy zostanie uruchomiony."
