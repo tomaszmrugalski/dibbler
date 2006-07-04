@@ -1,0 +1,71 @@
+\section{How to setup features}
+This recently added section will contain information about setting up
+various Dibbler features.
+
+\subsection{DNS Update}
+During normal operation, DHCPv6 client receives one or more IPv6 address(es)
+from DHCPv6 server. If configured to do so, it can also receive
+information about DNS server addresses. As an additional service, DNS
+Update can be performed. This feature, sometimes known as Dynamic DNS,
+keeps DNS entries up to date. When client boots, it gets its fully
+qualified domain name and this name can be used to reach this
+particular client.
+
+There are two types of the DNS Updates. First is a so called forward
+resolving. It allows to change a node's name into its address,
+e.g. malcolm.example.com can be translated into 2000::123. Other kind
+of record, which can be updated is a so called reverse resolving. It
+allows to obtain full name of a node with know address, e.g. 2000::124
+can be translated into zoe.example.com.
+
+To configure this feature, following steps must be executed:
+
+\begin{enumerate}
+\item Configure DNS server. DNS server supporting IPv6 and dynamic
+  updates must be configured. One example of such server is a BIND
+  9.3. It is necessary to allow listening on the IPv6 sockets and
+  define that specific domain can be updated. See example below.
+\item Configure Dibbler server to provide DNS server informations for
+  clients. DNS Updates will be sent to the first DNS server on the
+  list of available servers.
+\item Configure Dibbler server to work in stateful mode, i.e. that it
+  can provide addresses for the clients. This is a default mode, so
+  unless configuration was altered, this step is already done. Make
+  sure that there is no ,,stateless'' keyword in the
+  \verb+server.conf+ file.
+\item Define list of the available names in the server configuration
+  file. Make sure to use fully qualified domain names
+  (e.g. malcolm.example.com), not the hostnames only. 
+\item Configure dibbler client to request for DNS Update. Use ,,option
+  fqdn'' to achieve this. 
+\end{enumerate}
+  
+\begin{verbatim}
+options {
+        listen-on-v6 { any; };
+        listen-on { any; };
+
+        // other options here
+        // ...
+};
+
+zone "example.com" {
+          type master;
+          file "pri/example.com";
+          allow-update { any; };
+          allow-transfer { any; };
+          allow-query { "any"; };
+          notify yes;
+
+      // other options follow
+      // ...
+};
+
+\end{verbatim}
+
+Also see example server and client configuration files described in a
+later sections of this document. Also note that Dibbler distribution
+should be accompanied with several example configuration files. Some
+of them include FQDN usage examples.
+
+TODO: Provide more details.
