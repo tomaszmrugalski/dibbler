@@ -25,16 +25,16 @@ set -e
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
-	$DAEMON start > /dev/null
+	$DAEMON start 2>&1 > /dev/null
 	echo "$NAME."
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-	$DAEMON stop > /dev/null
+	($DAEMON stop 2>&1 > /dev/null; true)
 	echo "$NAME."
 	;;
   status)
-	echo -n "Status $DESC: $NAME"
+	echo "Status $DESC: $NAME"
 	$DAEMON status
 	;;
   #reload)
@@ -56,9 +56,9 @@ case "$1" in
 	#	just the same as "restart".
 	#
 	echo -n "Restarting $DESC: "
-	$DAEMON stop > /dev/null
+	($DAEMON stop 2>&1 > /dev/null; true)
 	sleep 1
-	$DAEMON start > /dev/null
+	$DAEMON start 2>&1 > /dev/null
 	echo "$NAME."
 	;;
   *)
