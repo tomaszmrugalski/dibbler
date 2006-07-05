@@ -20,7 +20,7 @@ Description: portable DHCPv6 server
  
 Package: dibbler-client
 Architecture: any
-Depends: ${shlibs:Depends}, debconf (>= 1.3.22)
+Depends: ${shlibs:Depends}, debconf (>= 1.3.22), ucf
 Recommends: dibbler-doc
 Description: portable DHCPv6 client
  This is a DHCPv6 client. It supports both stateful (i.e. IPv6 address

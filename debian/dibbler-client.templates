@@ -23,6 +23,6 @@ Template: dibbler-client/options
 Type: multiselect
 _Choices: dns, domain
 Default: dns
-_Description: What additional parameters should be obtained?
+_Description: What additional parameters should be obtained:
  The Dibbler client can request that the DHCPv6 server supply additional
  configuration parameters.

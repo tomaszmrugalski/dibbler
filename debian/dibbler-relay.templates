@@ -11,6 +11,6 @@ _Description: Do you want dibbler-relay to start when the system starts?
 
 Template: dibbler-relay/config
 Type: note
-_Description: Modify /etc/dibbler/relay.conf before running the relay.
+_Description: Modify /etc/dibbler/relay.conf before running the relay
  Without proper modifications, the relay will most likely refuse to start
  or will not forward DHCPv6 messages as expected.
