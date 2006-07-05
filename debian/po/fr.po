@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dibbler\n"
 "Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
-"POT-Creation-Date: 2006-01-06 22:32+0100\n"
+"POT-Creation-Date: 2006-07-05 02:41+0200\n"
 "PO-Revision-Date: 2006-03-01 16:19+0100\n"
 "Last-Translator: Jean-Luc Coulon (f5ibh) <jean-luc.coulon@wanadoo.fr>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
@@ -19,20 +19,20 @@ msgstr ""
 
 #. Type: title
 #. Description
-#: ../dibbler-client.templates:3
+#: ../dibbler-client.templates:1001
 msgid "dibbler-client: DHCPv6 client"
 msgstr "dibbler-client : client DHCPv6"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-client.templates:8
+#: ../dibbler-client.templates:2001
 msgid "Do you want dibbler-client to start when system starts?"
 msgstr ""
 "Faut-il lancer automatiquement dibbler-client au démarrage du système ?"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-client.templates:8
+#: ../dibbler-client.templates:2002
 msgid ""
 "Dibbler client can be configured to start at boot, so your host will have "
 "IPv6 set up after boot. This is generally a good idea. Make sure that there "
@@ -45,19 +45,19 @@ msgstr ""
 
 #. Type: string
 #. Default
-#: ../dibbler-client.templates:15
+#: ../dibbler-client.templates:3001
 msgid "eth0"
 msgstr "eth0"
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:16
+#: ../dibbler-client.templates:3002
 msgid "Interfaces to be configured:"
 msgstr "Interfaces à configurer :"
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:16
+#: ../dibbler-client.templates:3003
 msgid "Dibbler can configure any or all of a computer's network interfaces."
 msgstr ""
 "Dibbler peut configurer une interface particulière ou l'ensemble des "
@@ -65,7 +65,7 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:16
+#: ../dibbler-client.templates:3004
 msgid ""
 "More than one interface may be specified by separating the interface names "
 "with spaces."
@@ -75,19 +75,20 @@ msgstr ""
 
 #. Type: multiselect
 #. Choices
-#: ../dibbler-client.templates:24
+#: ../dibbler-client.templates:4001
 msgid "dns, domain"
 msgstr "dns, domaine"
 
 #. Type: multiselect
 #. Description
-#: ../dibbler-client.templates:26
-msgid "What additional parameters should be obtained?"
+#: ../dibbler-client.templates:4002
+#, fuzzy
+msgid "What additional parameters should be obtained:"
 msgstr "Paramètres supplémentaires à obtenir :"
 
 #. Type: multiselect
 #. Description
-#: ../dibbler-client.templates:26
+#: ../dibbler-client.templates:4003
 msgid ""
 "The Dibbler client can request that the DHCPv6 server supply additional "
 "configuration parameters."
@@ -97,23 +98,22 @@ msgstr ""
 
 #. Type: title
 #. Description
-#: ../dibbler-relay.templates:3
+#: ../dibbler-relay.templates:1001
 msgid "dibbler-relay: DHCPv6 relay"
 msgstr "dibbler-relay : relais DHCPv6"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-relay.templates:8
+#: ../dibbler-relay.templates:2001
 msgid "Do you want dibbler-relay to start when the system starts?"
-msgstr ""
-"Faut-il lancer automatiquement dibbler-relay au démarrage du système ?"
+msgstr "Faut-il lancer automatiquement dibbler-relay au démarrage du système ?"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-relay.templates:8
+#: ../dibbler-relay.templates:2002
 msgid ""
-"Dibbler relay can be configured to start at boot. This node will then forward "
-"DHCPv6 messages between clients, servers and other relays."
+"Dibbler relay can be configured to start at boot. This node will then "
+"forward DHCPv6 messages between clients, servers and other relays."
 msgstr ""
 "Le relais Dibbler peut être configuré pour être lancé automatiquement au "
 "démarrage du système. Ce noeud transmettra alors les messages DHCPV6 entre "
@@ -121,13 +121,14 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../dibbler-relay.templates:14
-msgid "Modify /etc/dibbler/relay.conf before running the relay."
+#: ../dibbler-relay.templates:3001
+#, fuzzy
+msgid "Modify /etc/dibbler/relay.conf before running the relay"
 msgstr "Modifiez le fichier /etc/dibbler/relay.conf avant de lancer le relais."
 
 #. Type: note
 #. Description
-#: ../dibbler-relay.templates:14
+#: ../dibbler-relay.templates:3002
 msgid ""
 "Without proper modifications, the relay will most likely refuse to start or "
 "will not forward DHCPv6 messages as expected."
@@ -137,24 +138,24 @@ msgstr ""
 
 #. Type: title
 #. Description
-#: ../dibbler-server.templates:3
+#: ../dibbler-server.templates:1001
 msgid "dibbler-server: DHCPv6 server"
 msgstr "dibbler-server : serveur DHCPv6"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-server.templates:8
+#: ../dibbler-server.templates:2001
 msgid "Do you want dibbler-server to start when the system starts?"
 msgstr ""
 "Faut-il lancer automatiquement dibbler-server au démarrage du système ?"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-server.templates:8
+#: ../dibbler-server.templates:2002
 msgid ""
-"Dibbler server can be configured to start at boot. This node will then act as "
-"a DHCPv6 server. It will provide IPv6 addresses and additional configuration "
-"options to other nodes in the network."
+"Dibbler server can be configured to start at boot. This node will then act "
+"as a DHCPv6 server. It will provide IPv6 addresses and additional "
+"configuration options to other nodes in the network."
 msgstr ""
 "Le serveur Dibbler peut être configuré pour être lancé automatiquement au "
 "démarrage du système. Ce noeud servira alors de serveur DHCPV6. Il fournira "
@@ -163,14 +164,15 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../dibbler-server.templates:15
-msgid "Modify /etc/dibbler/server.conf before running the server."
+#: ../dibbler-server.templates:3001
+#, fuzzy
+msgid "Modify /etc/dibbler/server.conf before running the server"
 msgstr ""
 "Modifiez le fichier /etc/dibbler/server.conf avant de lancer le serveur."
 
 #. Type: note
 #. Description
-#: ../dibbler-server.templates:15
+#: ../dibbler-server.templates:3002
 msgid ""
 "Without proper modifications, the Dibbler server will most likely offer "
 "invalid addresses and options when started."
