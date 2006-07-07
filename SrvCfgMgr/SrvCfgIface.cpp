@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.26 2006-07-03 20:15:56 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.27 2006-07-07 21:52:47 thomson Exp $
  */
 
 #include <sstream>
@@ -426,9 +426,8 @@ void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
 SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr) {
     FQDNLst.first();
 
-    SPtr<TFQDN> foo = FQDNLst.getFirst();
+    SPtr<TFQDN> foo;
     while (foo=this->FQDNLst.get()) {
-	Log(Debug) << "#### Name=" << foo->Name << ", used=" << (foo->isUsed()?"TRUE":"FALSE") << LogEnd;
 	if (foo->isUsed())
 	    continue;
 	if (duid && (foo->Duid) && *(foo->Duid)== *duid) {
@@ -468,6 +467,8 @@ void TSrvCfgIface::setFQDNMode(int FQDNMode) {
 int TSrvCfgIface::getFQDNMode(){
     return this->FQDNMode;
 }
+
+
 string TSrvCfgIface::getFQDNModeString() {
     switch (this->FQDNMode) {
     case 0:  return "updates disabled";
@@ -661,13 +662,6 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <sip-domain>" << *str << "</sip-domain>" << endl;
     }
 
-    // option: FQDN
-    if (iface.supportFQDN()) {
-        out <<"     <fqdn>" << iface.FQDNLst.count() << "</fqdn>" << endl;
-    } else {
-        out << "    <!-- <fqdn/> -->" << endl;
-    }
-
     // option: NIS-SERVERS
     out << "    <!-- <nis-servers count=\"" << iface.NISServerLst.count() << "\"> -->" << endl;
     iface.NISServerLst.first();
@@ -701,6 +695,20 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <lifetime>" << iface.Lifetime << "</lifetime>" << endl;
     } else {
         out << "    <!-- <lifetime/> -->" << endl;
+    }
+
+    // option: FQDN
+    if (iface.supportFQDN()) {
+      SPtr<TFQDN> f;
+      List(TFQDN) * lst = iface.getFQDNLst();
+      out << "    <fqdnOptions count=\"" << lst->count() << "\">" << endl;
+      lst->first();
+      while (f=lst->get()) {
+	    out << "       " << *f;
+      }
+      out << "    </fqdnOptions>" << endl;
+    } else { 
+      out << "    <!-- <fqdnOptions/> -->" << endl;
     }
     
     out << "  </SrvCfgIface>" << endl;

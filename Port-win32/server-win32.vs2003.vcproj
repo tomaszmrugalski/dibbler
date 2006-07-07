@@ -520,6 +520,9 @@
 					RelativePath="..\misc\DUID.h">
 				</File>
 				<File
+					RelativePath="..\Misc\FQDN.h">
+				</File>
+				<File
 					RelativePath="..\misc\IPv6Addr.h">
 				</File>
 				<File

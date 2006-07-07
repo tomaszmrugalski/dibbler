@@ -6,29 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.8 2006-07-03 18:20:11 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2006-03-23 00:53:26  thomson
- * TA support fixed on the server side.
- *
- * Revision 1.6  2005/05/10 00:02:39  thomson
- * getRelayByLinkAddr() implemented.
- *
- * Revision 1.5  2005/01/25 00:32:26  thomson
- * Global addrs support added.
- *
- * Revision 1.4  2005/01/11 22:53:36  thomson
- * Relay skeleton implemented.
- *
- * Revision 1.3  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2005/01/03 23:13:57  thomson
- * Partial relay implementation.
- *
- * Revision 1.1  2005/01/03 21:56:27  thomson
- * Initial version.
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.9 2006-07-07 21:52:47 thomson Exp $
  *
  */
 

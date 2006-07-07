@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: FQDN.cpp,v 1.3 2006-07-03 20:15:56 thomson Exp $
+ * $Id: FQDN.cpp,v 1.4 2006-07-07 21:52:47 thomson Exp $
  *
  */
 
@@ -64,4 +64,21 @@ bool TFQDN::isUsed() {
 
 void TFQDN::setUsed(bool used) {
     this->used = used;
+}
+
+// --------------------------------------------------------------------
+// --- operators ------------------------------------------------------
+// --------------------------------------------------------------------
+
+ostream& operator<<(ostream& out, TFQDN& fqdn) {
+  out << "<fqdn ";
+  if (fqdn.Duid) {
+    out << " duid=\"" << fqdn.Duid->getPlain() << "\"";
+  }
+  if (fqdn.Addr) {
+    out << " addr=\"" << fqdn.Addr->getPlain() << "\"";
+  }
+
+  out << " used=\"" << (fqdn.used?"TRUE":"FALSE") << "\">" << fqdn.getName() << "</fqdn>" << endl;
+  return out;
 }
