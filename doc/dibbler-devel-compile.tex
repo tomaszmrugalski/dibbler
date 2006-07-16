@@ -6,36 +6,7 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-compile.tex,v 1.10 2006-07-01 12:46:09 thomson Exp $
-%%
-%% $Log: not supported by cvs2svn $
-%% Revision 1.9  2005/01/23 23:16:56  thomson
-%% Relay related things.
-%%
-%% Revision 1.8  2004/12/27 20:53:31  thomson
-%% root privileges mentioned in RPM/DEB section.
-%%
-%% Revision 1.7  2004/12/27 20:44:29  thomson
-%% Date is now generated in an automatic manner, deb/rpm building described
-%%
-%% Revision 1.6  2004/12/01 21:58:43  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.5  2004/11/30 00:52:05  thomson
-%% Minor changes.
-%%
-%% Revision 1.4  2004/11/25 01:16:36  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.3  2004/10/25 20:45:54  thomson
-%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
-%%
-%% Revision 1.2  2004/09/28 16:02:09  thomson
-%% no message
-%%
-%% Revision 1.1  2004/07/05 01:04:40  thomson
-%% Initial version.
-%%
+%% $Id: dibbler-devel-compile.tex,v 1.11 2006-07-16 11:24:51 thomson Exp $
 %%
 
 \section{Compilation}
@@ -51,18 +22,13 @@ make server
 \end{verbatim}
 to build client and server. Although parser files are generated using
 flex and bison++ and those generated sources are included, so there is
-no need to generate them. To generate it if someone wants to generate it by hand
-instead of using those supplied versions, here are appropriate commands:
+no need to generate them. To generate it if someone wants to generate it
+by hand instead of using those supplied versions, here are appropriate
+commands:
 \begin{verbatim}
-cd ClntCfgMgr
 make parser
 \end{verbatim}
-to generate client parser, and:
-\begin{verbatim}
-cd SrvCfgMgr
-make parser
-\end{verbatim}
-to generate server parser.
+to generate client, server and relay parsers.
 
 There occassionaly might be problem with compilation, when different
 flex version is installed in the system. Proper FlexLexer.h is
@@ -74,14 +40,14 @@ used. Project files are provided in the CVS and source archives.
 
 Select project name (server-winxp or client-winxp), click properties,
 choose ,,Debugging'' from ,,Configuration Properties''. Adjust ,,Command
-arguments'' to meet your directory.
+arguments'' to match your directory.
 
 Previous versions were also compiled using MS Visual Studio 2002, but
 it is not used anymore and is not supported. If you are using MS
 Visual Studio 2002, there might be a problem with
 lowlevel-win32.c file compilation. Compiler might complain about
 missing Ipv6IfIndex in \_IP\_ADDAPTER\_ADDRESSES structure. There is a simple way
-to bypass this.  In 
+to bypass this.  In \\
 \verb+Program Files/Microsoft Visual Studio.NET/Vc7/PlatformSDK/Include/+ 
 directory, there is \verb+IPTypes.h+ file. It contains structure:
 
@@ -196,17 +162,72 @@ There is also ebuild script prepared for Gentoo users. It is located
 in the Port-linux/gentoo directory. 
 
 \subsection{Dibbler in Linux distributions}
-Dibbler is available in \href{http://www.pld-linux.org}{PLD GNU/Linux}
-distributions. Author also performs necessary steps to include Dibbler
-in \href{http://www.gentoo.org}{Gentoo} and
-\href{http://www.debian.org}{Debian} GNU/Linux distributions.
+Dibbler is available in several distributions:
 
-\subsection{Customised builds}
+\begin{itemize}
+ \item[\href{http://debian.org}{Debian GNU/Linux}] -- use standard tools
+ (apt-get, aptitude) to install dibbler-client, dibbler-server,
+ dibbler-relay or dibbler-doc packages (e.g. apt-get install dibbler-client)
+ \item[\href{http://www.gentoo.org}{Gentoo Linux}] -- use emerge to
+ install dibbler (e.g. emerge dibbler).
+ \item[\href{http://www.pld-linux.org}{PLD GNU/Linux}] -- use standard
+  PLD's poldek tool to install dibbler package.
+\end{itemize}
+
+\subsection{Compilation environment}
+When compilation is being performed in non-standard envrionment, it is a
+good idea to examine and modify \verb+Makefile.inc+ file. Compiler name,
+compilation and link options, used libraries and debugging options can
+be modified there.
+
+\subsection{Changing default values}
 Custom builds might be prepared with different than default
 compilation options. Here is a list of features, which can be
 customised:
 \begin{itemize}
 \item Default log level -- please modify LOGMODE\_DEFAULT define in
   \verb+Mish/Logger.h+.
-\item 
+\item FIXME - describe remaining parameters
 \end{itemize}
+
+\subsection{Modular features}
+\label{modular-features}
+In the 0.5.0 release, so called \emph{modular features} were
+introduced. It is now possible to enable or disable of the Dibbler
+features. To set, which optional features should be compiled, modify
+\verb+Makefile.inc+ file before starting compilation\footnote{In Windows
+builds, which use MS Visual Studio, those flags must be defined in the
+project options window}. Following flags are available:
+
+\begin{description}
+ \item[MOD\_CLNT\_EMBEDDED\_CFG] -- If this flag is set, client will use
+  hardcoded configuration, instead of reading configuration file. To
+  reasonably use this feature, hardcoded configuration should be
+  modified to match specific needs. See \verb+ClntCfgMgr/ClntCfgMgr.cpp+
+  file for details.
+ \item[MOD\_CLNT\_DISABLE\_DNSUPDATE] -- If this flag is set, client will
+  be compiled without DNS Update support, used in FQDN feature. This
+  will make client binary file smaller and will skip the whole poslib
+  library, but client will not be able to perform DNS Updates on its own
+  and will ask server to perform such updates. When DNS Updates are
+  disabled, extra care should be used during server configuration, so
+  all updates will performed on the server side.
+ \item[MOD\_CLNT\_BIND\_REUSE] -- Normally it does not make sense to
+  execute server and client on the same machine. It is also not
+  reasonable to execute several client instances on the same host. To
+  prevent such situations, client open normal sockets (without reuse
+  flag). If second client instance is executed, it will fail to create
+  and bind sockets, because required address/port combination is already
+  used by the first instance. However, in some situations this safety
+  check can be unwanted and situation to allow to execute several
+  clients in parallel should be allowed. To allow this, enable flag
+  MOD\_CLNT\_BIND\_REUSE. Note that feature will also make possible to
+  execute server and client on the same node.
+ \item[MOD\_SRV\_DISABLE\_DNSUPDATE] -- If this flag is set, server will
+  be compiled without DNS Update support, used in FQDN feature. This
+  will make server binary file smaller and will skip the whole poslib
+  library, but server will not be able to perform DNS Updates on client
+  behalf. According to FQDN standard \cite{draft-fqdn}, only server is allowed
+  to execute reverse resolve (PTR record) DNS updates, so in such setup
+  only forward resoling (AAAA record) will be executed be the client.
+\end{description}

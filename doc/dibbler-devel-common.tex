@@ -6,6 +6,9 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
+%%
+%% $Id: dibbler-devel-common.tex,v 1.7 2006-07-16 11:24:51 thomson Exp $
+%%
 
 \section{Documentation}
 There are three parts of the documentation: User's Guide, Developer's
@@ -24,7 +27,7 @@ make doc oxygen
 In this section various common aspects of the Dibbler internal
 workings are decribed.
 
-\section{Basic informations}
+\section{Basic source code informations}
 This section describes various aspects of Dibbler compilation, usage
 and internal design.
 
@@ -208,7 +211,25 @@ Also note that class function names start with small letters
 (e.g. \verb+bool TOpt::isValid();+) and class variables start with capital
 letters (e.g. \verb+bool TOpt::IsValid;+).
 
-\section{Parsers}
+\section{Configuration file parsers}
+\textbf{Note:} Similar approach is used in server, client and
+relay. In following section when reference to a specific file is needed,
+client files are used. To find corresponding files related to server and
+relay, substitute \verb+Clnt+ with \verb+Srv+ or \verb+Rel+.
+
+Dibbler uses standard lexer/parser. Lexer is generated using flex. Parser is
+generated with bison++ (full source code for bison++ is provided with
+Dibbler sources). See \verb+ClntCfgMgr/ClntParser.y+ and
+ClntCfgMgr/ClntLexer.l for details. Make sure that you have flex installed
+(bison++ is provided with the dibbler source code). To generate parser
+and lexer code, type:
+
+\begin{verbatim}
+make bison (just once, to compile bison++)
+make parser (each time you modify *.l or *.y files)
+\end{verbatim}
+
+\subsection{Parsing}
 Configuration file reading is done using Flex and bison++ tools. Flex
 is so called lexer. Its responsibility is to read config file and
 translate it into stream of tokens. \footnote{To be precise, Flex
@@ -259,25 +280,45 @@ bool SrvParser::EndIfaceDeclaration()
 \end{verbatim}
 
 
-%%
-%% $Id: dibbler-devel-common.tex,v 1.6 2006-03-05 21:39:19 thomson Exp $
-%%
-%% $Log: not supported by cvs2svn $
-%% Revision 1.5.2.1  2006/02/05 23:38:08  thomson
-%% Devel branch with Temporary addresses support added.
-%%
-%% Revision 1.5  2005/01/23 23:16:56  thomson
-%% Relay related things.
-%%
-%% Revision 1.4  2004/12/27 20:44:29  thomson
-%% Date is now generated in an automatic manner, deb/rpm building described
-%%
-%% Revision 1.3  2004/12/01 21:58:43  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.2  2004/12/01 20:55:49  thomson
-%% Documentation updated.
-%%
-%% Revision 1.1  2004/11/25 01:16:36  thomson
-%% *** empty log message ***
-%%
+\subsection{Using parsed values}
+
+Lexer and parser are created in the Client Configuration Manager. See
+ClntCfgMgr/ClntCfgMgr.cpp. Following code is executed in the ClntCfgMgr
+constructor\footnote{Actual code is much more complicated, but
+unnecessary lines were removed for a clarification reasons.}
+
+\begin{verbatim}
+yyFlexLexer lexer(\&f,\&clog);
+ClntParser parser(\&lexer);
+result = parser.yyparse();
+matchParsedSystemInterfaces(\&parser);
+validateConfig();
+\end{verbatim}
+
+f and clog are normal C++ ifstream and ofstrem objects, associated with
+configuration file or a standard output. Configuration file is passed to
+the constructor of the entire TDHCPClient object, which is usually
+located in the main() function.
+
+Example mentioned above works as follows:
+
+\begin{itemize}
+ \item Read all interfaces from the system (using System API). This is done in
+       Interface Manager and is not important right now.
+ \item Create lexer object (it will read configuration file and convert it into stream
+       of tokens)
+ \item create parser, which will interpret stream of tokens.
+ \item Match interfaces present in system with those specified in the configuration
+       file.
+ \item Validate configuration file to check if there are no logical errors, like T1>T2,
+       specified both stateless and request for ia, etc.
+\end{itemize}
+
+\subsection{Embedded configuration}
+
+\textbf{Note:} This feature applies to the client only.
+
+Another way of defining client configuration was introduced in 0.5.0
+release. Instead of reading configuration file, configuration can be
+hardcoded in the binary file itself. See MOD\_CLNT\_EMBEDDED\_CFG flag
+description in section \ref{modular-features}.

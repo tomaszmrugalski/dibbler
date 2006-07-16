@@ -6,41 +6,27 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-arch.tex,v 1.2 2005-01-23 23:16:56 thomson Exp $
-%%
-%% $Log: not supported by cvs2svn $
-%% Revision 1.1  2004/12/01 20:55:49  thomson
-%% Documentation updated.
-%%
-%% Revision 1.3  2004/11/25 01:16:36  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.2  2004/10/25 20:45:54  thomson
-%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
-%%
-%% Revision 1.1  2004/07/05 01:04:40  thomson
-%% Initial version.
-%%
+%% $Id: dibbler-devel-arch.tex,v 1.3 2006-07-16 11:24:51 thomson Exp $
 %%
 
-\section{Common Architecture}
+\section{Architecture}
 
-General architecture is common between server and client. In both
-cases, all classes are divided into several major groups:
-\begin{itemize}
+General architecture is common between server, client and (to some extent)
+relay. In all cases, classes are divided into several major groups:
+\begin{description}
 \item[IfaceMgr] -- Interface Manager. It represents all network interfaces present in the
   system. They're represented by TIfaceIface objects and stored in
   IfaceLst. Each interface has list of open sockets, represented with
   TIfaceSocket objects. There are also a number of auxiliary functions
   for getting proper interface. IfaceIface objects  also provide
   methods to add, update and remove addresses.
-\item [AddrMgr] -- Address Manager. It is an address database, which
+\item[AddrMgr] -- Address Manager. It is an address database, which
   stores all informations about clients, IAs and associated addresses.
-\item [CfgMgr] -- Config Manager. It is being used to read
+\item[CfgMgr] -- Config Manager. It is being used to read
   configuration information from config file and provide those
   informations while runtime. Common mechanisms shared between server
   and client are scarce, so this base class is almost empty.
-\item [TransMgr] -- Transmission Manager, sometimes called Transaction
+\item[TransMgr] -- Transmission Manager, sometimes called Transaction
   Manager. It is responsible for network interaction and core DHCPv6
   logic. It sends various messages when such need arise, matches received
   responses with sent messages, retransmits messages etc. It contains
@@ -54,7 +40,7 @@ cases, all classes are divided into several major groups:
   servers option). 
 \item[Misc] -- This cathegory (or rather directory) contains various
   miscellanous classes and functions.
-\end{itemize}
+\end{description}
 
 None of those classes is used directly. Client, server and
 relay uses derived classes.
@@ -63,13 +49,13 @@ They are all created within DHCPClient or DHCPServer objects in client
 or server, respectively. DHCPRelay object will perform similar
 function for relays.
 
-\section{Client Architecture}
+\subsection{Client Architecture}
 
 Client is represented by a DHCPClient object. It contains 4 large
 managers, each with its own functions. Also messages and options are
 defined:
 
-\begin{itemize}
+\begin{description}
 \item[TClntIfaceMgr] -- contains client version of the IfaceMgr. Major
   difference is a TClntIfaceIface class, an enhanced version of the
   IfaceIface. It provides methods to set up various options on the
@@ -99,14 +85,14 @@ defined:
   option was received in a proper reply message from the server. It
   calls appropriate methods in TClntIfagrMgr which set specific options
   in the system.
-\end{itemize}
+\end{description}
 
-\section{Server Architecture}
+\subsection{Server Architecture}
 
 Server is represented by a DHCPServer object. It contains 4 large
 managers, each with its own functions. Also SrvMessages and SrvOptions
 are defined:
-\begin{itemize}
+\begin{description}
 \item[TSrvIfaceMgr] -- contains server version of the IfaceMgr. There
   are almost no modificiation compared to common version.
 
@@ -131,12 +117,12 @@ are defined:
 \item[TSrvOpt] -- Server version of the Option representing
   objects. They are just used to store data, so they are considerably
   simpler than client versions.
-\end{itemize}
+\end{description}
 
-\section{Relay Architecture}
+\subsection{Relay Architecture}
 Preliminary relay version was available in the 0.4.0 release. It
 consists of serveral simple blocks:
-\begin{itemize}
+\begin{description}
 \item[TRelIfaceMgr] -- contains relayr version of the IfaceMgr. There
   are almost no modificiation compared to common version, execept
   decodeMsg() and decodeRelayRepl() methods.
@@ -155,4 +141,4 @@ consists of serveral simple blocks:
   RELAY\_MSG option (which contains relayed message) and interface-id
   option (which contains identifier of the interface), all options are
   threated as generic options, which are handled transparently.
-\end{itemize}
+\end{description}
