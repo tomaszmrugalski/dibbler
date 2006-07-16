@@ -73,7 +73,7 @@ $(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVE
 
 relay: $(RELAYBIN)
 
-$(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
+$(RELAYBIN): poslib-configure includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	@echo "[LINK   ] $(SUBDIR)/$@"
 	$(CXX) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
 	-L$(RELTRANSMGR) -lRelTransMgr  \
@@ -121,16 +121,14 @@ srvlibs:	includes
 		( cd $$dir; $(MAKE) libs ) || exit 1; \
 	done
 
-libposlib: 
-	@echo "[CONFIG ] /poslib/"
-	cd $(PREFIX)/poslib; test -e "config.h" || ./configure >configure-poslib.log;
+libposlib: poslib-configure
 	@echo "[MAKE   ] /poslib/poslib"
 	$(MAKE) -C $(PREFIX)/poslib > poslib.log
 	rm -f $(POSLIB)/*.so*
 
 poslib-configure:
 	@echo "[CONFIG ] /poslib/"
-	cd $(PREFIX)/poslib; ./configure >configure-poslib.log
+	cd $(PREFIX)/poslib; test -e "config.h" || ./configure >configure-poslib.log;
 
 relaylibs:	includes
 	@for dir in $(RELSUBDIRS); do \

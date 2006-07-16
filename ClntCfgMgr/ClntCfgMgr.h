@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.10 2006-03-21 20:02:01 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.11 2006-07-16 11:38:24 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -61,5 +61,7 @@ private:
 
     bool matchParsedSystemInterfaces(ClntParser *parser);
 };
+
+typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);
 
 #endif

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.41 2006-03-23 00:53:26 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.42 2006-07-16 11:38:24 thomson Exp $
  *
  */
 
@@ -39,14 +39,18 @@
 
 using namespace std;
 
-
 TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
 			     SmartPtr<TClntAddrMgr> addrMgr,
 			     SmartPtr<TClntCfgMgr> cfgMgr,
                              string config)
 {
     // should we set REUSE option during binding sockets?
-    this->BindReuse = CLIENT_BIND_REUSE;
+#ifdef MOD_CLNT_BIND_REUSE
+    this->BindReuse = true;
+#else
+    this->BindReuse = false;
+#endif
+
     this->IsDone = true;
 
     this->IfaceMgr = ifaceMgr;
@@ -54,9 +58,9 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
     this->CfgMgr   = cfgMgr;
 
     if (this->BindReuse)
-	Log(Info) << "Bind reuse enabled." << LogEnd;
+	Log(Debug) << "Bind reuse enabled (multiple instances allowed)." << LogEnd;
     else
-	Log(Info) << "Bind reuse disabled." << LogEnd;
+	Log(Debug) << "Bind reuse disabled (multiple instances not allowed)." << LogEnd;
 
     if (!this->openLoopbackSocket()) {
 	return;

@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.52 2006-05-01 13:36:08 thomson Exp $
+ * $Id: Portable.h,v 1.53 2006-07-16 11:38:24 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -54,11 +54,6 @@
 #define RELCFGMGR_FILE    "relay-CfgMgr.xml"
 #define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
 #define RELTRANSMGR_FILE  "relay-TransMgr.xml"
-
-/* false - normal operation
-   true - Linux: client and server can be run on the same host, but
-   there is also a drawback: multiple clients can be run at once. */
-#define CLIENT_BIND_REUSE true
 
 #ifdef WIN32
 #define WORKDIR           ".\\"
@@ -215,6 +210,9 @@ struct iface {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.52  2006-05-01 13:36:08  thomson
+ * winsock2.h added for WIN32
+ *
  * Revision 1.51  2006/03/05 22:26:36  thomson
  * Authors file added, compilation warning removed.
  *

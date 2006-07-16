@@ -6,73 +6,8 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.38 2006-07-03 18:15:42 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.39 2006-07-16 11:38:24 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.37  2006-03-21 20:02:01  thomson
- * ClntCfgGroup removed (at last!)
- *
- * Revision 1.36  2006/03/20 23:04:05  thomson
- * TA option is now parsed properly and SOLICIT is sent as expected.
- *
- * Revision 1.35  2006/03/05 21:38:47  thomson
- * TA support merged.
- *
- * Revision 1.34.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.34  2005/08/03 23:17:11  thomson
- * Minor changes fixed.
- *
- * Revision 1.33  2005/07/21 23:29:32  thomson
- * Logging cleanup.
- *
- * Revision 1.32  2005/07/17 21:09:52  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.31  2005/03/07 22:45:14  thomson
- * Fixed problem with non-existent interface name (bug #105)
- *
- * Revision 1.30  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.29  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.28  2004/12/27 20:48:22  thomson
- * Problem with absent link local addresses fixed (bugs #90, #91)
- *
- * Revision 1.27  2004/12/07 22:55:14  thomson
- * Problem with null pointer solved.
- *
- * Revision 1.26  2004/12/07 20:51:35  thomson
- * Link local safety checks added (bug #39)
- *
- * Revision 1.25  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.24  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.23  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.22  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.21  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.20  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.19  2004/07/11 14:08:39  thomson
- * Missing/invalid interface specifed in cfg, results in client shutdown
- *
- * Revision 1.18  2004/07/05 00:53:03  thomson
- * Various changes.
  */
 
 #include <iostream>
@@ -95,12 +30,14 @@ using namespace std;
 #include "FlexLexer.h"
 #include "ClntParser.h"
 
+#ifdef MOD_CLNT_EMBEDDED_CFG
+static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
+#endif
+
 TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr, 
-                         const string cfgFile,const string oldCfgFile)
+                         const string cfgFile, const string oldCfgFile)
     :TCfgMgr((Ptr*)ClntIfaceMgr)
 {
-    int result;
-    ifstream f;
     this->IfaceMgr = ClntIfaceMgr;
     this->IsDone=false;
 
@@ -111,7 +48,11 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     //   this->copyFile(cfgFile,oldCfgFile);
     /* support for config changes between runs - currently disabled */
 
+#ifndef MOD_CLNT_EMBEDDED_CFG
+    // --- normal operation: read config. file ---
+
     // parse config file
+    ifstream f;
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
 	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
@@ -122,12 +63,9 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     }
     yyFlexLexer lexer(&f,&clog);
     ClntParser parser(&lexer);
-    result = parser.yyparse();
+    int result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << LogEnd;
     f.close();
-
-    this->LogLevel = logger::getLogLevel();
-    this->LogName  = logger::getLogName();
 
     if (result) {
         //Result!=0 means config errors. Finish whole DHCPClient 
@@ -139,6 +77,17 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 
     // match parsed interfaces with interfaces detected in system
     matchParsedSystemInterfaces(&parser);
+#else
+    // --- use hardcoded config ---
+    // use your favourite configuration generator function here
+    HardcodedCfgFunc *cfgMaker = &HardcodedCfgExample;
+
+    // call your function here
+    cfgMaker(this, cfgFile);
+
+#endif
+    this->LogLevel = logger::getLogLevel();
+    this->LogName  = logger::getLogName();
   
     // check config consistency
     if(!validateConfig()) {
@@ -495,3 +444,60 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
 }
 
 
+#ifdef MOD_CLNT_EMBEDDED_CFG
+/** 
+ * this is example hardcoded configuration file
+ * 
+ * @param cfgMgr 
+ * @param params 
+ * 
+ * @return 
+ */
+bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params)
+{
+    Log(Info) << "Using hardcoded config. file." << LogEnd;
+
+    // there's no way to set some parameters directly, to fake ClntParsGlobalOpt
+    // must be created. 
+    SPtr<TClntParsGlobalOpt> opt = new TClntParsGlobalOpt();
+
+    // Pretend to have parsed empty DNS list (i.e. request DNS server configuration, but don't
+    // provide any hints)
+    List(TIPv6Addr) dnsList;
+    dnsList.clear();
+    opt->setDNSServerLst(&dnsList);
+    // Pretend to have parsed rapid-commit request
+    opt->setRapidCommit(true);
+
+    // Create interface, which will be configured
+    SPtr<TClntCfgIface> iface = new TClntCfgIface("eth0");
+    iface->setIfaceID(3);
+
+    // set all "parsed" options on this interface
+    iface->setOptions(opt);
+
+    // Create one IA 
+    SPtr<TClntCfgIA> ia = new TClntCfgIA();
+    ia->setIAID(123);
+
+    // set parameters in the "parsed" objects
+    opt->setT1(900);
+    opt->setT2(1200);
+    ia->setOptions(opt);
+
+    // optional: add a requested address to IA
+    // request for a 2000::123:456 address with preferred lifetime set to 1800
+    // and valid lifetime set to 3600
+    SPtr<TIPv6Addr> addr = new TIPv6Addr("2000::123:456", true);
+    SPtr<TClntCfgAddr> cfgAddr = new TClntCfgAddr(addr, 3600, 1800);
+    ia->addAddr(cfgAddr);
+
+    // add IA to a interface
+    iface->addIA(ia);
+
+    // add interface to a CfgMgr
+    cfgMgr->addIface(iface);
+
+    return true;
+}
+#endif

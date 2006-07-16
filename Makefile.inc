@@ -7,20 +7,28 @@ BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREF
 # === compiler options ===
 COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0 $(PEDANTIC)
 OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
+
+# === linker options ===
+LDFLAGS      = $(XMLLIBS) $(EFENCE) $(PORT_LDFLAGS)
 CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
 REL_LDFLAGS  = $(LDFLAGS)
 
-# debuging parameters
+# === debuging parameters ===
 PEDANTIC     = -pedantic
 DEBUGINFO    = -g
 #EFENCE       = -lefence
 
-# === libxml2 stuff ===
-#XMLCFLAGS    = `pkg-config libxml-2.0 --cflags` -DLIBXML2
-#XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
-LDFLAGS       = $(XMLLIBS) $(EFENCE) $(PORT_LDFLAGS)
+# === modular features ===
+
+# See Developer's Guide, section named "Modular features" for
+# detailed description of those parameters
+
+#MOD_CLNT_EMBEDDED_CFG      = y
+MOD_CLNT_DISABLE_DNSUPDATE = y
+MOD_CLNT_BIND_REUSE        = y
+MOD_SRV_DISABLE_DNSUPDATE  = y
 
 # === Portability section ===
 # Make sure that you have uncommented only one section
@@ -50,6 +58,10 @@ PORT_SUBDIR  = Port-linux
 #PORT_LDFLAGS = -lws2_32
 #PORT_CFLAGS  = -DMINGWBUILD
 #PORT_SUBDIR  = Port-win2k
+
+# === libxml2 stuff ===
+#XMLCFLAGS    = `pkg-config libxml-2.0 --cflags` -DLIBXML2
+#XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
 # === do not modify anything below ===
 MAKEFLAGS   += -s
@@ -134,3 +146,21 @@ SUBDIR=$(subst $(TOPDIR),,$(CURDIR))
 ifndef TOPDIR
 TOPDIR=$(CURDIR)
 endif 
+
+
+# === translate Makefile defines into C/C++ defines ===
+ifdef MOD_CLNT_EMBEDDED_CFG
+COPTS += -DMOD_CLNT_EMBEDDED_CFG
+endif
+
+ifdef MOD_CLNT_DISABLE_DNSUPDATE
+COPTS += -DMOD_CLNT_DISABLE_DNSUPDATE
+endif
+
+ifdef MOD_CLNT_BIND_REUSE
+COPTS += -DMOD_CLNT_BIND_REUSE
+endif
+
+ifdef MOD_SRV_DISABLE_DNSUPDATE
+COPTS += -DMOD_SRV_DISABLE_DNSUPDATE
+endif

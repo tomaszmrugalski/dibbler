@@ -6,23 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.9 2006-03-23 00:12:09 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.8  2005/01/12 00:10:05  thomson
- * Compilation fixes.
- *
- * Revision 1.7  2005/01/08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.6  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.5  2004/12/04 23:45:40  thomson
- * Problem with client and server on the same Linux host fixed (bug #56)
- *
- * Revision 1.4  2004/09/07 15:37:44  thomson
- * Socket handling changes.
+ * $Id: ClntTransMgr.h,v 1.10 2006-07-16 11:38:24 thomson Exp $
  *
  */
 class TClntTransMgr;
@@ -94,5 +78,10 @@ class TClntTransMgr
     int ctrlIface;
     char ctrlAddr[48];
 };
+
+/* false - normal operation
+   true - Linux: client and server can be run on the same host, but
+   there is also a drawback: multiple clients can be run at once. */
+
 #endif
 
