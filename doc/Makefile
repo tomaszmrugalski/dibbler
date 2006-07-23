@@ -8,7 +8,7 @@ PASS3=YES
 
 all: user devel
 
-LATEX=latex
+LATEX=pdflatex
 DVIPS=dvips
 PS2PDF=ps2pdf
 
@@ -28,10 +28,10 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue
 	  echo "[LATEX  ] $(SUBDIR)/$@";                                     \
 	  $(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-3rd_pass.log; \
 	fi
-	@echo "[DVIPS  ] $(SUBDIR)/$@"
-	$(DVIPS) -z dibbler-user.dvi -o &>dibbler-user-dvips.log
-	@echo "[PS2PDF ] $(SUBDIR)/$@"
-	$(PS2PDF) dibbler-user.ps &>dibbler-user-ps2pdf.log
+#	@echo "[DVIPS  ] $(SUBDIR)/$@"
+#	$(DVIPS) -z dibbler-user.dvi -o &>dibbler-user-dvips.log
+#	@echo "[PS2PDF ] $(SUBDIR)/$@"
+#	$(PS2PDF) dibbler-user.ps &>dibbler-user-ps2pdf.log
 
 dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
                    dibbler-devel-common.tex dibbler-devel-compile.tex \
@@ -45,10 +45,10 @@ dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
 	  echo "[LATEX  ] $(SUBDIR)/$@";                                        \
 	  $(LATEX) $(LATEXOPTS) dibbler-devel.tex > dibbler-devel-3rd_pass.log; \
 	fi
-	@echo "[DVIPS  ] $(SUBDIR)/$@"
-	$(DVIPS) -z dibbler-devel.dvi -o &>dibbler-devel-dvips.log
-	@echo "[PS2PDF ] $(SUBDIR)/$@"
-	$(PS2PDF) dibbler-devel.ps
+#	@echo "[DVIPS  ] $(SUBDIR)/$@"
+#	$(DVIPS) -z dibbler-devel.dvi -o &>dibbler-devel-dvips.log
+#	@echo "[PS2PDF ] $(SUBDIR)/$@"
+#	$(PS2PDF) dibbler-devel.ps
 
 version.tex:
 	@echo "[GREP   ] $(SUBDIR)/$@"
