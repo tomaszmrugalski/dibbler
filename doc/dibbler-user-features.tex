@@ -1,8 +1,98 @@
-\section{How to setup features}
-This recently added section will contain information about setting up
+\section{Features HOWTO}
+This recently added section contains information about setting up
 various Dibbler features.
 
+\subsection{Stateless vs stateful and IA, TA options}
+\label{features-stateless-stateful}
+This section explains the difference between stateless and stateful
+configurations. IA and TA options usage is also described.
+
+\Note Usually, normal stateful configuration based on non-temporary
+addresses should be used. If you don't know, what temporary addresses
+are, you don't need them.
+
+There are two kinds of configurations in DHCPv6 (\cite{rfc3315}, \cite{rfc3736}):
+\begin{description}
+  \item[stateful] -- when addresses (and possibly other parameters)
+    are assigned to a client. To perform this kind of configuration,
+    four messages are exchanged: \msg{SOLICIT}, \msg{ADVERTISE},
+    \msg{REQUEST} and \msg{REPLY}.
+  \item[stateless] -- when only parameters are configured (without
+    assigning addresses to a client). During execution of this type of
+    configuration, only two messages are exchanged: \msg{INF-REQUEST}
+    and \msg{REPLY}.
+\end{description}
+
+During normal operation, client works in a stateful mode. If not
+instructed otherwise, it will request normal (i.e. non-temporary)
+addresses. It will use \opt{IA} (Identity Association for
+Non-temporary Addresses, see \cite{rfc3315} for details) to request
+and retrieve addresses. Since this is a default behavior, it does not
+have to be explicitely mentioned in the client configuration
+file. Nevertheless, it can be provided:
+
+\begin{Verbatim}
+# client.conf
+iface eth0 {
+  ia
+  option dns-server
+}
+\end{Verbatim}
+
+In a specific circustances, client might be interested in obtaining
+only temporary addresses. Although this is still a stateful mode, its
+configuration is sligtly different. There is a special option called \opt{TA}
+(Identity Association for Temporary Addresses, see \cite{rfc3315} for
+details). This option will be used to request and receive temporary
+addresses from the client. To force client to request temporary
+addresses instead of permanent ones, \verb+ta+ keyword must be used in
+client.conf file. If this option is defined, only temporary address
+will be requested.
+
+\begin{Verbatim}
+# client.conf
+iface eth0 {
+  ta
+  option dns-server
+}
+\end{Verbatim}
+
+It is also possible to instruct client to work in a stateless mode. It
+will not ask for any type of addresses, but will ask for specific
+non-adress related configuration parameters, e.g. DNS Servers
+information. This can be achieved by using \verb+stateless+
+keyword. Since this is a global parameter, it is not defined on an
+interface, but as a global option.
+
+\begin{Verbatim}
+# client.conf
+stateless
+iface eth0
+{
+  option dns-server
+}
+\end{Verbatim}
+
+Some of the cases mentioned above can be used together. However,
+several combinations are illegal. Here is a complete list:
+\begin{description}
+\item[none] -- Same as \verb+ia+. Client will send \verb+ia+ option
+  (stateful autoconfiguration).
+\item[ia] -- Client will send \verb+ia+ option (stateful
+  autoconfiguration).
+\item[ia,ta] -- When both options are specified, client will request
+  for both - Non-temporary as well as Temporary addresses (stateful
+  autoconfiguration).
+\item[stateless] -- Client will request additional configration
+  parameters only and will not ask for addresses (stateless
+  autoconfiguration).
+\item[stateless,ia] -- This combination is not allowed.
+\item[stateless,ta] -- This combination is not allowed.
+\item[stateless,ia,ta] -- This combination is not allowed.
+\end{description}
+
 \subsection{DNS Update}
+\label{features-fqdn}
 During normal operation, DHCPv6 client receives one or more IPv6 address(es)
 from DHCPv6 server. If configured to do so, it can also receive
 information about DNS server addresses. As an additional service, DNS
@@ -40,7 +130,7 @@ To configure this feature, following steps must be executed:
   fqdn'' to achieve this. 
 \end{enumerate}
   
-\begin{verbatim}
+\begin{Verbatim}
 options {
         listen-on-v6 { any; };
         listen-on { any; };
@@ -60,12 +150,32 @@ zone "example.com" {
       // other options follow
       // ...
 };
+\end{Verbatim}
 
-\end{verbatim}
+See example server and client configuration files described in a
+sections \ref{example-client-fqdn} and \ref{example-server-fqdn}. Also
+note that Dibbler distribution should be accompanied with several
+example configuration files. Some of them include FQDN usage examples.
 
-Also see example server and client configuration files described in a
-later sections of this document. Also note that Dibbler distribution
-should be accompanied with several example configuration files. Some
-of them include FQDN usage examples.
+\subsection{Relays}
+\label{features-relays}
+TODO: Provide description and maybe a figure.
 
-TODO: Provide more details.
+\subsection{XML files}
+During its execution, all dibbler components (client, server and
+relay) store its internal information in the XML files. In Linux
+systems, they are stored in the \verb+/var/lib/dibbler+ directory. In
+Windows, current directory (i.e. directory where exe files are
+located) is used instead. There are several xml files generated. Since
+they are similar for each component, following list provides
+description for client only:
+
+\begin{itemize}
+\item client-CfgMgr.xml - Represents information read from a
+  configuration file as its associated status (e.g. CONFIGURED or
+  FAILED).
+\item client-IfaceMgr.xml - Represens detected interfaces in the
+  operating system, as well as bound sockets and similar information.
+\item client-AddrMgr.xml - This is database, which contains identity
+  associations with associated addresses.
+\end{itemize}
