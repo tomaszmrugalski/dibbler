@@ -152,6 +152,47 @@ zone "example.com" {
 };
 \end{Verbatim}
 
+\Note Make sure that unix user, which runs BIND, is able to create and
+write file pri/example.com.jnl. 
+
+After configuration, client should log following line, which informs
+that Dynamic DNS Update was completed successfully.
+
+\begin{verbatim}
+2006.07.24 01:52:51 Client Notice    FQDN Configured successfully !
+\end{verbatim}
+
+DNS Update can now be verified using dig command line tool (a part of
+the dnsutils package). Command syntex is as follows: \verb+dig @(dns-server-address) name record-type+. In the following example,
+this query checks for name jayne.example.com at a server located at
+2000::1 address. Record type AAAA (standard record for resolving name
+into IPv6 address) is requested. dig tool provides server's response
+in the \verb+ANSWER SECTION:+ below:
+
+\begin{Verbatim}
+v13:/var# dig @2000::1 jayne.example.com AAAA
+; <<>> DiG 9.3.2 <<>> @2000::1 jayne.example.com AAAA
+; (1 server found)
+;; global options:  printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 33416
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+;; QUESTION SECTION:
+;jayne.example.com.             IN      AAAA
+
+;; ANSWER SECTION:
+jayne.example.com.      7200    IN      AAAA    2001::e4
+
+;; AUTHORITY SECTION:
+example.com.            86400   IN      NS      v13.klub.com.pl.
+
+;; Query time: 6 msec
+;; SERVER: 2000::1#53(2000::1)
+;; WHEN: Mon Jul 24 01:38:13 2006
+;; MSG SIZE  rcvd: 136
+\end{Verbatim}
+
 See example server and client configuration files described in a
 sections \ref{example-client-fqdn} and \ref{example-server-fqdn}. Also
 note that Dibbler distribution should be accompanied with several
