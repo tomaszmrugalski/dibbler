@@ -7,6 +7,7 @@
   - log-mode PRECISE added
   - log entries are appended (previously log files were overwritten at startup)
   - Documentation update and cleanup
+  - Modular features (optional compilation of additional features) added
 
  0.4.2 [2006-02-03] (DSFG cleanup release)
   - No bugfixes or new features
