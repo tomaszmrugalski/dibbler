@@ -6,39 +6,8 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.13 2005-08-03 22:47:34 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.14 2006-07-30 22:34:09 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.12  2005/08/02 00:33:58  thomson
- * White-list bug fixed (bug #120),
- * Minor compilation warnings in gcc 4.0 removed.
- *
- * Revision 1.11  2004/12/07 00:43:03  thomson
- * Server no longer support link local addresses (bug #38),
- * Server now supports stateless mode (bug #71)
- *
- * Revision 1.10  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.9  2004/09/08 21:22:45  thomson
- * Parser improvements, signed/unsigned issues addressed.
- *
- * Revision 1.8  2004/09/03 23:20:23  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.7  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.6  2004/06/29 22:03:36  thomson
- * *MaxLease option partialy implemented/fixed.
- *
- * Revision 1.5  2004/06/28 22:37:59  thomson
- * Minor changes.
- *
- * Revision 1.4  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- *                                                                           
  */
 
 class TSrvCfgAddrClass;
@@ -77,10 +46,10 @@ class TSrvCfgAddrClass
     unsigned long countAddrInPool();
     SmartPtr<TIPv6Addr> getRandomAddr();
     
-    unsigned long getT1(long clntT1);
-    unsigned long getT2(long clntT2);
-    unsigned long getPref(long clntPref);
-    unsigned long getValid(long clntValid);
+    unsigned long getT1(unsigned long clntT1);
+    unsigned long getT2(unsigned long clntT2);
+    unsigned long getPref(unsigned long clntPref);
+    unsigned long getValid(unsigned long clntValid);
     unsigned long getClassMaxLease();
     unsigned long getID();
     unsigned long getShare();
@@ -104,7 +73,7 @@ class TSrvCfgAddrClass
     unsigned long ValidEnd;
     unsigned long Share;
     
-    long chooseTime(long beg, long end, long clntTime);
+    long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
     
     unsigned long ID;
     static unsigned long staticID;

@@ -881,6 +881,7 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
 	    domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
 	}
 	
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
 	DnsUpdateResult result = DNSUPDATE_SKIP;
 	DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
 				       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
@@ -904,6 +905,10 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
 	    Log(Notice) << "DNS Update was skipped." << LogEnd;
 	    break;
 	}
+#else
+	Log(Error) << "This server is compiled without DNS Update support." << LogEnd;
+#endif
+
     } else {
 	Log(Debug) << "Server configuration does NOT allow DNS updates for " << *clntDuid << LogEnd;
 	optFQDN->setNFlag(true);

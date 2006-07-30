@@ -1,8 +1,11 @@
 
-$Id: TODO,v 1.27 2006-07-03 17:56:22 thomson Exp $
+$Id: TODO,v 1.28 2006-07-30 22:34:09 thomson Exp $
 
   Internal/code TODO
  --------------------
+- BUG: when FQDN is assigned, client performs update first, then verifies tentative status.
+       It should be done in reverse order.
+- BUG: option fqdn - does not work, option fqdn some.name.com must be used
 - BUG: domain format in /etc/resolv.conf must be fixed
 - DOC: Describe dumping XML files, option files
 - Statistics: TransMgr->dump() should be implemented.
@@ -36,15 +39,6 @@ $Id: TODO,v 1.27 2006-07-03 17:56:22 thomson Exp $
    in TSrvMsg::appendRequestedOptions()
 6. How many addrs can be assigned to the client? Implement counter in the
    TAddrClient class.
-
- Put this into docs
---------------------
-1. Client default behaviour: request IA
-   cfg: ta -> request ta only
-   cfg: ia,ta -> request ia and ta
-   cfg: stateless -> don't request ia or ta
-   cfg: stateless,ta -> error
-   cfg: stateless,ia -> error
 
   BUGS
  ------

@@ -42,7 +42,11 @@ $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIE
 	-L$(MISC)         -lMisc           \
 	-L$(MESSAGES)     -lMsg            \
 	-lClntOptions -lOptions -lLowLevel \
-	-L$(POSLIB)       -lposlib
+	-L$(POSLIB)       $(CLNTPOSLIB)
+
+ifndef MOD_CLNT_DISABLE_DNSUPDATE
+CLNTPOSLIB=-lposlib	
+endif
 
 server: $(SERVERBIN)
 
@@ -69,7 +73,11 @@ $(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVE
 	-L$(OPTIONS)     -lOptions         \
 	-L$(LOWLEVEL)    -lLowLevel        \
 	-L$(IFACEMGR)    -lIfaceMgr        \
-	-L$(POSLIB)      -lposlib
+	-L$(POSLIB)      $(SRVPOSLIB)
+
+ifndef MOD_SRV_DISABLE_DNSUPDATE
+SRVPOSLIB=-lposlib	
+endif
 
 relay: $(RELAYBIN)
 

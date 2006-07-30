@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.23 2006-07-03 23:45:05 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.24 2006-07-30 22:34:09 thomson Exp $
  */
 
 #include "Portable.h"
@@ -242,8 +242,8 @@ bool TClntIfaceMgr::doDuties() {
 			ptrAddrIA->firstAddr();
 			addr = ptrAddrIA->getAddr()->get();
 			
-			Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *addr << ") and FQDN " 
-				   << fqdn << LogEnd;
+			Log(Notice) << "About to perform DNS Update: DNS server=" << *DNSAddr << ", IP (" << *addr 
+				    << ") and FQDN=" << fqdn << LogEnd;
 			Log(Warning) << "FIXME: Sleeping 3 seconds before FQDN update" << LogEnd;
 			/* FIXME: sleep cannot be performed here. What if client has to perform other 
 			   action during those 3 seconds? */
@@ -266,6 +266,7 @@ bool TClntIfaceMgr::doDuties() {
 			    hostname = fqdn.substr(0, dotpos);
 			    domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
 			}
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
 			DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
 						       (char*) hostname.c_str(), addr->getPlain(), "2h",3);
 			int result = act->run();
@@ -279,6 +280,9 @@ bool TClntIfaceMgr::doDuties() {
 					 << iface->getFullName() << LogEnd;
 			    cfgIface->setFQDNState(DISABLED);
 			}
+#else
+			Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+#endif
 		    }
 		}
 	    }
