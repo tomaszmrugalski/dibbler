@@ -7,10 +7,26 @@
 %% released under GNU GPL v2 or later licence
 %%
 %%
-%% $Id: dibbler-devel-common.tex,v 1.8 2006-07-23 23:02:50 thomson Exp $
+%% $Id: dibbler-devel-common.tex,v 1.9 2006-07-31 02:10:07 thomson Exp $
 %%
 
-\section{Documentation}
+\section{General information}
+This section covers several loosely related topics.
+
+\subsection{Release cycle}
+Dibbler is being released as a one product, i.e. client, server and
+relay are always released together. Each version is being designated
+with three numbers, separated by periods, e.g. 0.4.2. Every time a new
+significant functionality is added, the middle number is being
+increased. When new release contains only fixes and small
+improvements, only the minor number is changed. Leftmost number is
+currently set to 0 as not all features mentioned in base DHCPv6
+document (RFC3315, \cite{rfc3315}) are implemented. When this
+implementation will be complete, release number will reach
+1.0.0. Since DHCPv6 specification is extensive, don't expect this to
+happen anytime soon.
+
+\subsection{Documentation}
 \label{doc}
 There are three parts of the documentation: User's Guide, Developer's
 Guide and a Code documentation. Both guides are written in \LaTeX
@@ -27,6 +43,65 @@ make doc oxygen
 
 In this section various common aspects of the Dibbler internal
 workings are decribed.
+
+\subsection{Memory/CPU usage}
+This section provides basic insight about memory and CPU requirements
+for the dibbler components. 
+
+Folowing paragraphs describe memory and CPU usage measurements. They
+were taken on a AMD Athlon 2800+ (actual clock speed: 2083MHz),
+running under Linux 2.6.17.3. Dibbler was compiled by gcc 4.1.2
+(exact version number printed by \verb+gcc --version+ command: \\
+\verb+gcc (GCC) 4.1.2 20060715 (prerelease) (Debian 4.1.1-9)+).
+
+Every Dibbler component (client, server or relay) is event driven. It
+means that it does nothing unless some data was received or a specific
+timeout has been reached. Each component most of the time spends in a
+\verb+select()+ system call. This means that (unless lots of traffic
+is being received) actual CPU usage is 0. During tests, author was
+unable to observe any CPU consumption above 0,0\%. 
+
+In the 0.5.0 release, a compilation options called Modular features
+was added (see section \ref{modular-features}). One of the possible
+way of compiling Dibbler is to disable poslib - a library used to
+perform DNS Updates. Dibbler binaries compiled without poslib are
+designated as -wo-poslib. It is possible to compile Dibbler with
+various compilation options. In particular (enabled by default)
+\verb+-g+ option includes debugging information in the binary file
+(this greatly affects binary file size, but does not affect memory
+usage), -O0 (disably any kind of optimisation) or -Os (produce
+smallest possible code). Debugging informations can be removed using
+\verb+strip+ command (designated below as -stripped). Linux command
+line tool called \verb+top+ was used to measure memory usage. VIRT is
+a virtual memory size, RES denotes size of actual physical memory used
+and SHR is a size of a shared memory. See top manual page for details.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|l|l|}
+\hline
+VIRT & RES& SHR & \%CPU &\%MEM&Optim.&filesize&COMMAND \\
+\hline
+3416&1564&1416 &  0.0 & 0.2 & -O0 & 7123510 & dibbler-server\\
+3416&1560&1416 &  0.0 & 0.2 & -O0 & 751948  & dibbler-server-stripped\\
+3328&1544&1400 &  0.0 & 0.2 & -O0 & 6533375 & dibbler-server-wo-poslib\\
+3328&1548&1400 &  0.0 & 0.2 & -O0 & 663592  & dibbler-server-wo-poslib-stripped\\
+3220&1436&1292 &  0.0 & 0.2 & -Os & 4596760 & dibbler-server run\\
+3140&1424&1276 &  0.0 & 0.2 & -Os & 468776  & dibbler-server-wo-poslib\\
+3388&1636&1496 &  0.0 & 0.2 & -O0 & 9771605 & dibbler-client\\
+3392&1644&1496 &  0.0 & 0.2 & -O0 & 725352  & dibbler-client-stripped\\
+3296&1608&1472 &  0.0 & 0.2 & -O0 & 9183726 & dibbler-client-wo-poslib\\
+3300&1612&1472 &  0.0 & 0.2 & -O0 & 639240  & dibbler-client-wo-poslib-stripped\\
+3212&1472&1336 &  0.0 & 0.2 & -Os & 5901734 & dibbler-client-wo-poslib\\
+3120&1456&1320 &  0.0 & 0.2 & -Os & 458984  & dibbler-client-wo-poslib\\
+\hline
+\end{tabular}
+\end{center}
+
+Dibbler stores data internally in lists. This means that server's
+memory and CPU usage is a linearly proportional to a number of clients
+it currently supports.
+
+FIXME: Long/performance tests are required.
 
 \section{Basic source code informations}
 This section describes various aspects of Dibbler compilation, usage
@@ -212,7 +287,7 @@ Also note that class function names start with small letters
 (e.g. \verb+bool TOpt::isValid();+) and class variables start with capital
 letters (e.g. \verb+bool TOpt::IsValid;+).
 
-\section{Configuration file parsers}
+\subsection{Configuration file parsers}
 \textbf{Note:} Similar approach is used in server, client and
 relay. In following section when reference to a specific file is needed,
 client files are used. To find corresponding files related to server and
@@ -230,7 +305,7 @@ make bison (just once, to compile bison++)
 make parser (each time you modify *.l or *.y files)
 \end{verbatim}
 
-\subsection{Parsing}
+\subsubsection{Parsing}
 Configuration file reading is done using Flex and bison++ tools. Flex
 is so called lexer. Its responsibility is to read config file and
 translate it into stream of tokens. \footnote{To be precise, Flex
@@ -281,7 +356,7 @@ bool SrvParser::EndIfaceDeclaration()
 \end{verbatim}
 
 
-\subsection{Using parsed values}
+\subsubsection{Using parsed values}
 
 Lexer and parser are created in the Client Configuration Manager. See
 ClntCfgMgr/ClntCfgMgr.cpp. Following code is executed in the ClntCfgMgr
@@ -315,11 +390,11 @@ Example mentioned above works as follows:
        specified both stateless and request for ia, etc.
 \end{itemize}
 
-\subsection{Embedded configuration}
+\subsubsection{Embedded configuration}
 
 \textbf{Note:} This feature applies to the client only.
 
-Another way of defining client configuration was introduced in 0.5.0
+Another way of defining client configuration was introduced in the 0.5.0
 release. Instead of reading configuration file, configuration can be
 hardcoded in the binary file itself. See MOD\_CLNT\_EMBEDDED\_CFG flag
 description in section \ref{modular-features}.
