@@ -26,7 +26,7 @@ DEBUGINFO    = -g
 # detailed description of those parameters
 
 #MOD_CLNT_EMBEDDED_CFG      = y
-MOD_CLNT_DISABLE_DNSUPDATE = y
+#MOD_CLNT_DISABLE_DNSUPDATE = y
 MOD_CLNT_BIND_REUSE        = y
 #MOD_SRV_DISABLE_DNSUPDATE  = y
 
