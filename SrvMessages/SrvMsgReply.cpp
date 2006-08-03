@@ -30,7 +30,15 @@
 #include "Logger.h"
 #include "DNSUpdate.h"
 
-// used as CONFIRM reply
+/** 
+ * this constructor is used to create REPLY message as a response for CONFIRM message
+ * 
+ * @param ifaceMgr 
+ * @param transMgr 
+ * @param CfgMgr 
+ * @param AddrMgr 
+ * @param confirm 
+ */
 TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
 			   SmartPtr<TSrvTransMgr> transMgr, 
 			   SmartPtr<TSrvCfgMgr> CfgMgr, 
@@ -117,8 +125,15 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     this->send();
 }
 	
-// used as DECLINE reply
-TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
+/** 
+ * this constructor is used to create REPLY message as a response for DECLINE message
+ * 
+ * @param ifaceMgr 
+ * @param transMgr 
+ * @param CfgMgr 
+ * @param AddrMgr 
+ * @param decline 
+ */TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
 			   SmartPtr<TSrvTransMgr> transMgr, 
 			   SmartPtr<TSrvCfgMgr> CfgMgr, 
 			   SmartPtr<TSrvAddrMgr> AddrMgr,
@@ -225,8 +240,15 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     this->send();
 }
 
-// used as REBIND reply
-TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
+/** 
+ * this constructor is used to create REPLY message as a response for REBIND message
+ * 
+ * @param ifaceMgr 
+ * @param transMgr 
+ * @param CfgMgr 
+ * @param AddrMgr 
+ * @param rebind 
+ */TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
 			   SmartPtr<TSrvTransMgr> transMgr, 
 			   SmartPtr<TSrvCfgMgr> CfgMgr, 
 			   SmartPtr<TSrvAddrMgr> AddrMgr,
@@ -289,8 +311,15 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
 }
 
-// used as RELEASE replay
-TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
+/** 
+ * this constructor is used to create REPLY message as a response for RELEASE message
+ * 
+ * @param ifaceMgr 
+ * @param transMgr 
+ * @param CfgMgr 
+ * @param AddrMgr 
+ * @param release 
+ */TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
 			   SmartPtr<TSrvTransMgr> transMgr, 
 			   SmartPtr<TSrvCfgMgr> CfgMgr, 
 			   SmartPtr<TSrvAddrMgr> AddrMgr,
@@ -341,6 +370,23 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		Log(Warning) << "No such IA (iaid=" << clntIA->getIAID() << ") found for client:" << *clntID->getDUID() << LogEnd;
 		Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such IA is bound.",this) );
 		continue;
+	    }
+
+	    // if there was DNS Update performed, execute deleting Update
+	    SPtr<TFQDN> fqdn = ptrIA->getFQDN();
+	    if (fqdn) {
+		SPtr<TIPv6Addr> dns = ptrIA->getFQDNDnsServer();
+		if (dns) {
+		    ptrIA->firstAddr();
+		    SPtr<TAddrAddr> addrAddr = ptrIA->getAddr();
+		    SPtr<TIPv6Addr> clntAddr;
+		    if (addrAddr)
+			clntAddr = addrAddr->get();
+		    Log(Notice) << "About to perform DNS Update: DNS Server=" << *dns << ", IP=" << *clntAddr 
+				<< " and FQDN=" << fqdn->getName() << LogEnd;
+		    Log(Notice) << "#### FIXME: " << __FILE__ << ", line " << __LINE__ << LogEnd;
+		    fqdn->setUsed(false);
+		}
 	    }
 	    
 	    // let's verify each address
@@ -864,7 +910,7 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
 	SmartPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
 	SmartPtr<TIPv6Addr> IPv6Addr = addr->get();
 	
-	Log(Debug) << "Here I get : DNS server (" << *DNSAddr << "), IP (" << *IPv6Addr << ") and FQDN " 
+	Log(Notice) << "About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *IPv6Addr << " and FQDN=" 
 		   << fqdnName << LogEnd;
 	
 	//Test for DNS update
@@ -872,7 +918,7 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
 	string hostname = "";
 	string domain = "";
 	if (dotpos == string::npos) {
-	    Log(Warning) << "Name provided for DNS update s not a FQDN. [" << fqdnName
+	    Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
 			 << "] Trying to do the  update..." << LogEnd;
 	    hostname = fqdnName;
 	}
@@ -887,6 +933,10 @@ SPtr<TSrvOptFQDN> TSrvMsgReply::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<
 				       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
 	result = act->run();
 	delete act;
+
+	// regardless of the result, store the info
+	ptrAddrIA->setFQDN(fqdn);
+	ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
 	switch (result) {
 	case DNSUPDATE_SUCCESS:
