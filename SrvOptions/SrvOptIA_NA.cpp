@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.15 2006-07-30 22:34:09 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.16 2006-08-03 00:45:16 thomson Exp $
  */
 
 #ifdef WIN32
@@ -248,7 +248,6 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
 	      << " (IAID=" << this->IAID << ", pref=" << pref << ",valid=" << valid << ")." << LogEnd;
 
     // configure this IA
-    Log(Debug) << "this->T1=" << this->T1 << ", this->T2=" << this->T2 << LogEnd;
     this->T1= ptrClass->getT1(this->T1);
     this->T2= ptrClass->getT2(this->T2);
     
