@@ -5,9 +5,12 @@
  *          Marek Senderski  <msend@o2.pl>
  *
  * released under GNU GPL v2 or later licence
- * $Id: AddrAddr.h,v 1.4 2004-06-20 19:36:46 thomson Exp $
+ * $Id: AddrAddr.h,v 1.5 2006-08-03 00:43:15 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004-06-20 19:36:46  thomson
+ * Minor fixes.
+ *
  */
 
 #ifndef ADDRADDR_H
@@ -55,7 +58,4 @@ class TAddrAddr
     SmartPtr<TIPv6Addr> Addr;
     long Timestamp;
 };
-
-
 #endif
-

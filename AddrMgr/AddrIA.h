@@ -6,11 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.h,v 1.4 2004-10-27 22:07:55 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/09/07 22:02:32  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ * $Id: AddrIA.h,v 1.5 2006-08-03 00:43:15 thomson Exp $
  *
  */
 
@@ -24,6 +20,7 @@ class TAddrIA;
 #include "Container.h"
 #include "AddrAddr.h"
 #include "DUID.h"
+#include "FQDN.h"
 
 using namespace std;
 
@@ -82,6 +79,13 @@ class TAddrIA
     unsigned long getTentativeTimeout();
     enum ETentative getTentative();
     void setTentative();
+
+    //---DNS Updates---
+    void setFQDNDnsServer(SPtr<TIPv6Addr> srvAddr);
+    SPtr<TIPv6Addr> getFQDNDnsServer();
+    void setFQDN(SPtr<TFQDN> fqdn);
+    SPtr<TFQDN> getFQDN();
+
 private:
     TContainer< SmartPtr<TAddrAddr> > AddrLst;
 
@@ -103,6 +107,8 @@ private:
     // Iface ID
     int Iface;
 
+    SPtr<TIPv6Addr> fqdnDnsServer; // DNS Updates was performed to that server
+    SPtr<TFQDN> fqdn;              // this FQDN object was used to perform update
 };
 
 #endif 

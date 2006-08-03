@@ -6,37 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.11 2006-03-05 21:39:19 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.10.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.10  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.9  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.8  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.7  2004/09/07 22:02:32  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.6  2004/06/21 23:08:48  thomson
- * Minor fixes.
- *
- * Revision 1.5  2004/06/04 19:03:46  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.4  2004/03/29 22:06:49  thomson
- * 0.1.1 version
- *
- * Revision 1.3  2004/03/29 18:53:09  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: AddrIA.cpp,v 1.12 2006-08-03 00:43:15 thomson Exp $
  *
  */
 
@@ -415,6 +385,47 @@ void TAddrIA::setTentative()
     }
 }
 
+/** 
+ * stores DNS server address, at which DNSUpdate was performed
+ * 
+ * @param srvAddr 
+ */
+void TAddrIA::setFQDNDnsServer(SPtr<TIPv6Addr> srvAddr)
+{
+    this->fqdnDnsServer = srvAddr;
+}
+
+/** 
+ * return DNS server address, where the DNSUpdate was performed
+ * 
+ * 
+ * @return 
+ */
+SPtr<TIPv6Addr> TAddrIA::getFQDNDnsServer()
+{
+    return this->fqdnDnsServer;
+}
+
+/** 
+ * stores FQDN information
+ * 
+ * @param fqdn 
+ */
+void TAddrIA::setFQDN(SPtr<TFQDN> fqdn)
+{
+    this->fqdn = fqdn;
+}
+
+/** 
+ * returns stored FQDN information
+ * 
+ * @return 
+ */
+SPtr<TFQDN> TAddrIA::getFQDN()
+{
+    return this->fqdn;
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -436,12 +447,25 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
     if (x.getDUID() && x.getDUID()->getLen())
         strum << "      " << *x.DUID;
 
+    // Address list
     x.AddrLst.first();
-
     while (ptr = x.AddrLst.get()) {
 	if (ptr)
 	    strum << "      " << *ptr;
     }
+
+    // FQDN
+    if (x.fqdnDnsServer) {
+	strum << "      <fqdnDnsServer>" << x.fqdnDnsServer->getPlain() << "</fqdnDnsServer>" << endl;
+    } else {
+	strum << "      <!--<fqdnDnsServer>-->" << endl;
+    }
+    if (x.fqdn) {
+	strum << "      " << *x.fqdn << endl;
+    } else {
+	strum << "      <!-- <fqdn>-->" << endl;
+    }
+
     strum << "    </AddrIA>" << dec << endl;
     return strum;
 }
