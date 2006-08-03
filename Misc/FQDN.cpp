@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: FQDN.cpp,v 1.4 2006-07-07 21:52:47 thomson Exp $
+ * $Id: FQDN.cpp,v 1.5 2006-08-03 00:43:40 thomson Exp $
  *
  */
 
@@ -71,7 +71,7 @@ void TFQDN::setUsed(bool used) {
 // --------------------------------------------------------------------
 
 ostream& operator<<(ostream& out, TFQDN& fqdn) {
-  out << "<fqdn ";
+  out << "<fqdn";
   if (fqdn.Duid) {
     out << " duid=\"" << fqdn.Duid->getPlain() << "\"";
   }
