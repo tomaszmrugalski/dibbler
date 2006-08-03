@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.5 2006-03-23 00:12:09 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.6 2006-08-03 00:46:12 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -59,7 +59,6 @@ TClntMsgRelease::TClntMsgRelease(
 	iaLst.first();
 	ia=iaLst.get();
     }
-    Log(Debug) << "ia=" << ia << ", ta=" << ta << LogEnd;
     if (!ia)
 	ia = ta;
     if (!ia) {
@@ -86,6 +85,26 @@ TClntMsgRelease::TClntMsgRelease(
 		       << " address released from " << ptrIface->getName() << "/" 
 		       << ptrIface->getID() << " interface." << LogEnd;
 	}
+
+	// --- DNS Update ---
+	SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
+	if (dns) {
+	    // let's do deleting update
+	    SmartPtr<TIPv6Addr> clntAddr;
+	    ia->firstAddr();
+	    SPtr<TAddrAddr> tmpAddr = ia->getAddr();
+	    SPtr<TIPv6Addr> myAddr = tmpAddr->get();
+
+	    SmartPtr<TClntIfaceIface> ptrIface = (Ptr*)ClntIfaceMgr->getIfaceByID(iface);
+	    string fqdn = ptrIface->getFQDN();
+
+	    Log(Debug) << "About to perform DNS Update:DNS Server=" << *dns << ", IP=" << *myAddr
+		       << " and FQDN=" << fqdn << LogEnd;
+	    Log(Notice) << "#### FIXME: " << __FILE__ << ", line " << __LINE__ << LogEnd;
+	}
+
+	// --- DNS Update ---
+
     }
 
     if (ta)
