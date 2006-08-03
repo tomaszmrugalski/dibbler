@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.24 2006-07-30 22:34:09 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.25 2006-08-03 00:46:59 thomson Exp $
  */
 
 #include "Portable.h"
@@ -242,11 +242,15 @@ bool TClntIfaceMgr::doDuties() {
 			ptrAddrIA->firstAddr();
 			addr = ptrAddrIA->getAddr()->get();
 			
-			Log(Notice) << "About to perform DNS Update: DNS server=" << *DNSAddr << ", IP (" << *addr 
-				    << ") and FQDN=" << fqdn << LogEnd;
+			Log(Notice) << "About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *addr 
+				    << " and FQDN=" << fqdn << LogEnd;
 			Log(Warning) << "FIXME: Sleeping 3 seconds before FQDN update" << LogEnd;
 			/* FIXME: sleep cannot be performed here. What if client has to perform other 
 			   action during those 3 seconds? */
+
+			// remember DNS Address (used during address release)
+			ptrAddrIA->setFQDNDnsServer(DNSAddr);
+			
 #ifdef WIN32
 			Sleep(3);
 #else
@@ -288,6 +292,8 @@ bool TClntIfaceMgr::doDuties() {
 	    }
 	}
     }
+    ClntAddrMgr->dump();
+    this->dump();
     return true;
 }
 
