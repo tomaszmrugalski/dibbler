@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.5 2006-07-03 23:45:05 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.6 2006-08-03 00:44:44 thomson Exp $
  *
  */
 
@@ -24,12 +24,12 @@ DNSUpdate::DNSUpdate(char* dns_address,char*zonename,char* hostname,char* hostip
   message= NULL;
 	
   txt_to_addr(&server,dns_address);
-  this->hostip = new char(sizeof(hostip));
+  this->hostip = new char[strlen(hostip)+1];
   strcpy(this->hostip,hostip);
-  this->hostname=new char(sizeof(hostname));
+  this->hostname=new char[strlen(hostname)+1];
   strcpy(this->hostname,hostname);
   zoneroot = new domainname(zonename);
-  this->ttl=new char(sizeof(ttl));
+  this->ttl=new char[strlen(ttl)+1];
   strcpy(this->ttl,ttl);
   this->numberOfRecords = numberOfRecords;
   
@@ -38,9 +38,9 @@ DNSUpdate::DNSUpdate(char* dns_address,char*zonename,char* hostname,char* hostip
 DNSUpdate::~DNSUpdate() {
   delete message;
   delete zoneroot;
-  delete hostip;
-  delete hostname;
-  delete ttl;
+  delete [] hostip;
+  delete [] hostname;
+  delete [] ttl;
 }
 
 DnsUpdateResult DNSUpdate::run(){
