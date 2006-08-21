@@ -6,22 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.7 2004-11-01 23:31:25 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2004/06/28 21:34:18  thomson
- * DUID is now parsed properly and SrvCfgMgr dumps valid xml file.
- *
- * Revision 1.5  2004/06/20 20:59:30  thomson
- * getPlain() method added.
- *
- * Revision 1.4  2004/06/06 22:31:44  thomson
- * *** empty log message ***
- *
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- *
+ * $Id: DUID.cpp,v 1.8 2006-08-21 21:03:44 thomson Exp $
  */
 
 #include <iostream>
@@ -38,7 +23,7 @@ TDUID::TDUID()
 }
 
 // packed
-TDUID::TDUID(char* DUID,int DUIDlen)
+TDUID::TDUID(const char* DUID,int DUIDlen)
 {
     if ((DUID)&&(DUIDlen))
     {
@@ -69,7 +54,7 @@ void TDUID::plainToPacked() {
 }
 
 // plain
-TDUID::TDUID(char* Plain)
+TDUID::TDUID(const char* Plain)
 {
     if (!Plain) {
 	this->DUID=NULL;
@@ -82,15 +67,21 @@ TDUID::TDUID(char* Plain)
     int DUIDlen = strlen((char*)Plain);
     this->DUID = new char[DUIDlen>>1];
     unsigned char digit;
-    for (int i=0;i<DUIDlen; i++)	
+    int i=0, j=0;
+    while (i<DUIDlen)
     {
+	if (Plain[i]==':') {
+	    i++;
+	    j++;
+	}
 	digit = Plain[i];
 	if (isalpha(digit))
 	    digit=toupper(digit)-'A'+10;
 	else
 	    digit-='0';
-	DUID[i>>1]<<=4;
-	DUID[i>>1]|=digit;
+	DUID[j]<<=4;
+	DUID[j]|=digit;
+	i++;
     }
     DUIDlen>>=1;
     this->len = DUIDlen;

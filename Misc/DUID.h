@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: DUID.h,v 1.6 2006-01-12 00:23:35 thomson Exp $
+ * $Id: DUID.h,v 1.7 2006-08-21 21:03:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006/01/12 00:23:35  thomson
+ * Cleanup changes. Now -pedantic option works.
+ *
  * Revision 1.5  2004/09/28 17:30:47  thomson
  * Header #include added.
  *
@@ -34,8 +37,8 @@ class TDUID
     friend std::ostream& operator<<(std::ostream& out,TDUID &range);
  public:
     TDUID();
-    TDUID(char* DUID,int DUIDlen); // packed
-    TDUID(char* Plain); // plain
+    TDUID(const char* DUID,int DUIDlen); // packed
+    TDUID(const char* Plain); // plain
     TDUID(const TDUID &duid);
     TDUID& operator=(const TDUID& duid);
     bool operator==(const TDUID &duid);
