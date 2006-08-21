@@ -156,7 +156,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     duidOpt=(Ptr*)ptrOpt;
     SmartPtr<TAddrClient> ptrClient = AddrMgr->getClient(duidOpt->getDUID());
     if (!ptrClient) {
-	Log(Warning) << "Received DECLINE from unknown client, DUID=" << *duidOpt->getDUID() << LogEnd;
+	Log(Warning) << "Received DECLINE from unknown client, DUID=" << *duidOpt->getDUID() << ". Ignored." << LogEnd;
 	IsDone = true;
 	return;
     }
@@ -572,7 +572,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	case OPTION_IA          : {
 	    SmartPtr<TSrvOptIA_NA> optIA;
 	    optIA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, 
-				     clntAddr, clntIface, REQUEST_MSG,this);
+				     clntAddr, clntIface, REQUEST_MSG, this);
 	    this->Options.append((Ptr*)optIA);
 	    break;
 	}
