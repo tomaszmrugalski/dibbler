@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.27 2005-09-20 20:10:28 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.28 2006-08-21 22:51:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2005/09/20 20:10:28  thomson
+ * Addtional log message.
+ *
  * Revision 1.26  2005/04/29 00:08:20  thomson
  * *** empty log message ***
  *
@@ -92,6 +95,8 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    break;
 	}
     }
+
+    this->AddrMgr->setCacheSize(this->CfgMgr->getCacheSize());
 }
 
 /*

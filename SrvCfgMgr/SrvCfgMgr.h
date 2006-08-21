@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.11 2006-03-05 21:34:05 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.12 2006-08-21 22:50:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006/03/05 21:34:05  thomson
+ * Temp. addresses support merged to the top branch.
+ *
  * Revision 1.10.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -92,6 +95,8 @@ public:
     string getWorkdir();
     bool stateless();
 
+    int getCacheSize();
+
 private:    
     static int NextRelayID;
     string XmlFile;
@@ -106,6 +111,7 @@ private:
 
     // global options
     bool Stateless;
+    int  CacheSize;
 };
 
 #endif /* SRVCONFMGR_H */

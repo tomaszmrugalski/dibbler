@@ -6,36 +6,25 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.7 2006-03-05 21:35:47 thomson Exp $
+ * $Id: SrvAddrMgr.h,v 1.8 2006-08-21 22:49:59 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.6.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.6  2004/12/07 00:45:10  thomson
- * Manager creation unified and cleaned up.
- *
- * Revision 1.5  2004/09/07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.4  2004/06/21 23:08:48  thomson
- * Minor fixes.
- *
- * Revision 1.3  2004/06/20 21:00:26  thomson
- * quiet flag added.
- *
- * Revision 1.2  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- *                                                                           
  */
 
 class TSrvAddrMgr;
+class TSrvCacheEntry;
 #ifndef SRVADDRMGR_H
 #define SRVADDRMGR_H
 
 #include "AddrMgr.h"
 #include "SrvCfgAddrClass.h"
+
+class TSrvCacheEntry
+{
+ public:
+    SPtr<TIPv6Addr> Addr;       // cached address, previously assigned to a client
+    SPtr<TDUID>     Duid;       // client's duid    
+};
+
 class TSrvAddrMgr : public TAddrMgr
 {
   public:
@@ -67,6 +56,24 @@ class TSrvAddrMgr : public TAddrMgr
 
     bool addrIsFree(SmartPtr<TIPv6Addr> addr);
     bool taAddrIsFree(SmartPtr<TIPv6Addr> addr);
+
+    // address caching
+    SPtr<TIPv6Addr> getCachedAddr(SPtr<TDUID> clntDuid);
+    bool delCachedAddr(SPtr<TIPv6Addr> addr);
+    bool delCachedAddr(SPtr<TDUID> clntDuid);
+    void addCachedAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> cachedAddr);
+    void setCacheSize(int bytes);
+    void dump();
+
+ protected:
+    void print(ostream & out);
+
+ private:
+    void cacheRead();
+    void cacheDump();
+    void checkCacheSize();
+    List(TSrvCacheEntry) Cache; // list of cached addresses
+    int CacheMaxSize;           // maximum number of cached elements
 };
 
 #endif

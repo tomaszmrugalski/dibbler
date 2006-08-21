@@ -79,6 +79,7 @@ virtual ~SrvParser();
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
 %token IFACE_MAX_LEASE_, CLASS_MAX_LEASE_, CLNT_MAX_LEASE_
 %token STATELESS_
+%token CACHE_SIZE_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -540,6 +541,12 @@ StatelessOption
 }
 ;
 
+CacheSizeOption
+: CACHE_SIZE_ Number
+{
+    ParserOptStack.getLast()->setCacheSize($2);
+}
+
 GlobalOptionDeclaration
 : InterfaceOptionDeclaration
 | LogModeOption
@@ -547,6 +554,7 @@ GlobalOptionDeclaration
 | LogNameOption
 | WorkDirOption
 | StatelessOption
+| CacheSizeOption
 ;
 
 InterfaceOptionDeclaration

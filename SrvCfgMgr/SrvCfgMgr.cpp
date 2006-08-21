@@ -6,97 +6,8 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.42 2006-03-05 21:34:05 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.43 2006-08-21 22:50:31 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.41.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.41  2005/07/21 23:29:32  thomson
- * Logging cleanup.
- *
- * Revision 1.40  2005/07/17 21:09:54  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.39  2005/05/02 21:49:23  thomson
- * Messages cleanup, relay interface checking relaxed.
- *
- * Revision 1.38  2005/03/08 00:43:48  thomson
- * 0.4.0-RC2 release.
- *
- * Revision 1.37  2005/03/07 23:36:14  thomson
- * Minor changes.
- *
- * Revision 1.36  2005/03/07 22:45:14  thomson
- * Fixed problem with non-existent interface name (bug #105)
- *
- * Revision 1.35  2005/02/07 20:51:56  thomson
- * Server stateless mode fixed (bug #103)
- *
- * Revision 1.34  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.33  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.32  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.31  2005/01/03 21:57:08  thomson
- * Relay support added.
- *
- * Revision 1.30  2004/12/27 20:48:22  thomson
- * Problem with absent link local addresses fixed (bugs #90, #91)
- *
- * Revision 1.29  2004/12/07 22:55:50  thomson
- * Typos corrected.
- *
- * Revision 1.28  2004/12/07 00:43:03  thomson
- * Server no longer support link local addresses (bug #38),
- * Server now supports stateless mode (bug #71)
- *
- * Revision 1.27  2004/12/02 00:51:05  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.26  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.25  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.24  2004/07/11 14:04:54  thomson
- * Downed/invalid interface specified in cfg now results in server shutdown (bug #23)
- *
- * Revision 1.23  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.22  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.21  2004/07/01 18:12:46  thomson
- * Minor clean up.
- *
- * Revision 1.20  2004/06/29 22:03:36  thomson
- * *MaxLease option partialy implemented/fixed.
- *
- * Revision 1.19  2004/06/28 22:37:59  thomson
- * Minor changes.
- *
- * Revision 1.18  2004/06/20 21:00:45  thomson
- * Various fixes.
- *
- * Revision 1.17  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- * Revision 1.16  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.15  2004/05/24 21:16:37  thomson
- * Various fixes.
- *
- * Revision 1.14  2004/05/23 23:46:02  thomson
- * *** empty log message ***
- *                                                                           
  */
 
 #include <iostream>
@@ -139,8 +50,6 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string x
 		this->IsDone=true;
 		return;
     }
-
-    Log(Info) << "My duid is " << this->DUID->getPlain() << "." << LogEnd;
 
     this->dump();
 
@@ -208,6 +117,7 @@ void TSrvCfgMgr::dump() {
 bool TSrvCfgMgr::setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->Workdir   = opt->getWorkDir();
     this->Stateless = opt->getStateless();
+    this->CacheSize = opt->getCacheSize();
     return true;
 }
 
@@ -595,6 +505,16 @@ bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
     }
 
     return true;
+}
+
+/** 
+ * returns size (in bytes of the configured cache size 
+ * 
+ * 
+ * @return 
+ */
+int TSrvCfgMgr::getCacheSize() {
+    return this->CacheSize;
 }
 
 // --------------------------------------------------------------------

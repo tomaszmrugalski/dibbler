@@ -33,3 +33,12 @@ void TSrvParsGlobalOpt::setStateless(bool stateless) {
 bool TSrvParsGlobalOpt::getStateless() {
     return this->Stateless;
 }
+
+void TSrvParsGlobalOpt::setCacheSize(int bytes) {
+    this->CacheSize = bytes;
+}
+
+int  TSrvParsGlobalOpt::getCacheSize() {
+    return this->CacheSize;
+}
+

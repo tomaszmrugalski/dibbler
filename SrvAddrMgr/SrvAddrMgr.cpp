@@ -6,40 +6,8 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.12 2006-03-23 00:53:26 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.13 2006-08-21 22:49:59 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.11  2006/03/21 20:01:36  thomson
- * TA possible segfault removed.
- *
- * Revision 1.10  2006/03/05 21:35:47  thomson
- * TA support merged.
- *
- * Revision 1.9.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.9  2004/12/07 00:45:10  thomson
- * Manager creation unified and cleaned up.
- *
- * Revision 1.8  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.7  2004/09/07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.6  2004/06/21 23:08:48  thomson
- * Minor fixes.
- *
- * Revision 1.5  2004/06/20 21:00:26  thomson
- * quiet flag added.
- *
- * Revision 1.4  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
- * Revision 1.3  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- *                                                                           
  */
 
 #include "SrvAddrMgr.h"
@@ -48,10 +16,12 @@
 #include "AddrAddr.h"
 #include "Logger.h"
 #include "SrvCfgAddrClass.h"
+#include "Portable.h"
 
 TSrvAddrMgr::TSrvAddrMgr(string xmlfile) 
     :TAddrMgr(xmlfile, false) {
-    
+    this->CacheMaxSize = 999999999;
+    this->cacheRead();
 }
 
 TSrvAddrMgr::~TSrvAddrMgr() {
@@ -63,7 +33,7 @@ long TSrvAddrMgr::getTimeout() {
 }
 
 /** 
- * add address for a client. If client o IA is missing, add it, too.
+ * add address for a client. If client's IA is missing, add it, too.
  * 
  * @param clntDuid 
  * @param clntAddr 
@@ -188,6 +158,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
     }
 
     ptrIA->delAddr(clntAddr);
+    this->addCachedAddr(clntDuid, clntAddr);
     if (!quiet)
 	Log(Debug) << "Deleted address " << *clntAddr << " from addrDB." << LogEnd;
     
@@ -200,7 +171,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
     if (!ptrClient->countIA() && !ptrClient->countTA()) {
 	if (!quiet)
 	    Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
-		      << ") form addrDB." << LogEnd;
+		      << ") from addrDB." << LogEnd;
 	this->delClient(clntDuid);
     }
 
@@ -338,7 +309,7 @@ bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid,
 
     if (!ptrClient->countIA() && !ptrClient->countTA()) {
 	Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
-		   << ") form addrDB." << LogEnd;
+		   << ") from addrDB." << LogEnd;
 	this->delClient(clntDuid);
     }
     
@@ -464,7 +435,14 @@ void TSrvAddrMgr::getAddrsCount(
     }
 }
 
-// remove outdated addresses 
+/* ******************************************************************************** */
+/* *** ADDRESS CACHE ************************************************************** */
+/* ******************************************************************************** */
+
+/** 
+ * remove outdated addresses 
+ * 
+ */
 void TSrvAddrMgr::doDuties()
 {
     SmartPtr<TAddrClient> ptrClient;
@@ -517,4 +495,248 @@ void TSrvAddrMgr::doDuties()
     }
     if (anyDeleted) 
         this->dump();
+}
+
+/** 
+ * returns address cached for this client. 
+ * 
+ * @param clntDuid 
+ * @param clntAddr 
+ * 
+ * @return cached address. 0 if cached address is not found.
+ */
+SPtr<TIPv6Addr> TSrvAddrMgr::getCachedAddr(SPtr<TDUID> clntDuid) {
+    if (!this->CacheMaxSize)
+	return 0;
+    SPtr<TSrvCacheEntry> entry;
+    this->Cache.first();
+
+    while (entry = this->Cache.get()) {
+	if (!entry->Duid)
+	    continue; // something is wrong. VERY wrong. But shut up and continue.
+	if (*entry->Duid == *clntDuid) {
+	    Log(Debug) << "Cache: Cached address for client (DUID=" << clntDuid->getPlain() << ") found: " 
+		       << entry->Addr->getPlain() << LogEnd;
+	    return entry->Addr;
+	}
+    }
+
+    Log(Debug) << "Cache: There are no cached entries for client (DUID=" << clntDuid->getPlain() << ")." << LogEnd;
+    return 0;
+}
+
+/** 
+ * this function deletes cache entry
+ * 
+ * @param addr 
+ * 
+ * @return 
+ */
+bool TSrvAddrMgr::delCachedAddr(SPtr<TIPv6Addr> addr) {
+    if (!this->CacheMaxSize)
+	return false;
+    
+    this->Cache.first();
+    SPtr<TSrvCacheEntry> entry;
+    while (entry = this->Cache.get()) {
+	if (!entry->Addr)
+	    continue; // something is wrong. VERY wrong. But shut up and continue.
+	if ( *(entry->Addr) == *addr) {
+	    this->Cache.del();
+	    this->Cache.first();
+	    Log(Debug) << "Cache: Address " << *addr << " was deleted." << LogEnd;
+	    return true;
+	}
+    }
+    Log(Debug) << "Cache: Attempt to delete " << *addr << " failed." << LogEnd;
+    return false;
+}
+
+/** 
+ * this function deletes cache entry
+ * 
+ * @param clntDuid 
+ * 
+ * @return 
+ */
+bool TSrvAddrMgr::delCachedAddr(SPtr<TDUID> clntDuid) {
+    if (!this->CacheMaxSize)
+	return false;
+    
+    this->Cache.first();
+    SPtr<TSrvCacheEntry> entry;
+    while (entry = this->Cache.get()) {
+	if (!entry->Duid)
+	    continue; // something is wrong. VERY wrong. But shut up and continue.
+	if ( *(entry->Duid) == *clntDuid) {
+	    this->Cache.del();
+	    this->Cache.first();
+	    Log(Debug) << "Cache: Entry for client (DUID=" << clntDuid->getPlain() << ") was deleted." << LogEnd;
+	    return true;
+	}
+    }
+    // delete attempt is done on multiple occasions as a safety precausion, so don't warn if it is missing
+    // Log(Debug) << "Cache: Attempt to delete entry for client (DUID=" << clntDuid->getPlain() << ") failed." << LogEnd;
+    return false;
+}
+
+/** 
+ * this function adds an address to a cache. If there is entry for this client, updates it
+ * 
+ * @param clntDuid 
+ * @param cachedAddr 
+ */
+void TSrvAddrMgr::addCachedAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> cachedAddr) {
+    if (!this->CacheMaxSize)
+	return;
+    SPtr<TSrvCacheEntry> entry;
+
+    // is there an entry for this client, delete it. New entry will be added at the end
+    this->delCachedAddr(clntDuid);
+    
+    entry = new TSrvCacheEntry();
+    entry->Duid      = clntDuid;
+    entry->Addr      = cachedAddr;
+    Log(Debug) << "Cache: Address " << cachedAddr->getPlain() << " added for client (DUID=" << clntDuid->getPlain() << "). " << LogEnd; 
+    this->Cache.append(entry);
+    this->checkCacheSize();
+}
+
+void TSrvAddrMgr::setCacheSize(int bytes) {
+    int entrySize = sizeof(TSrvCacheEntry) + sizeof(TIPv6Addr) + sizeof(TDUID);
+    this->CacheMaxSize = bytes/entrySize;
+    Log(Debug) << "Cache: size set to " << bytes << " bytes, 1 cache entry size is " << entrySize 
+	       << " bytes, so maximum " << this->CacheMaxSize << " address-client pair(s) may be cached." << LogEnd;
+    this->checkCacheSize();
+}
+
+/** 
+ * this function checks if the cache size was not exceeded. If that is so, oldest entries are removed
+ * 
+ */
+void TSrvAddrMgr::checkCacheSize() {
+    if (this->Cache.count() <= this->CacheMaxSize)
+	return;
+
+    // there are too many cached elements, delete some
+    while (this->Cache.count() > this->CacheMaxSize) {
+	this->Cache.delFirst();
+    }
+}
+
+void TSrvAddrMgr::print(ostream & out) {
+    out << "  <cache size=\"" << this->Cache.count() << "/\">" << endl;
+}
+
+void TSrvAddrMgr::dump() {
+    TAddrMgr::dump(); // perform normal dump of the AddrMgr
+    cacheDump();
+}
+
+/** 
+ * dumps address cache into a file specified by SRVCACHE_FILE
+ * 
+ */
+void TSrvAddrMgr::cacheDump() {
+    std::ofstream f;
+    f.open(SRVCACHE_FILE);
+    if (!f.is_open()) {
+	Log(Error) << "Cache: File " << SRVCACHE_FILE << " creation failed." << LogEnd;
+	return;
+    }
+    f << "<cache size=\"" << this->Cache.count() << "\">" << endl;
+    SPtr<TSrvCacheEntry> x;
+    this->Cache.first();
+    while (x=this->Cache.get()) {
+	
+	f << "  <entry duid=\"";
+	if (x->Duid)
+	    f << x->Duid->getPlain();
+	f << "\">";
+	if (x->Addr)
+	    f << x->Addr->getPlain();
+	f << "</entry>" << endl;
+    }
+    f << "</cache>" << endl;
+    f.close();
+}
+
+/** 
+ * dumps address cache into a file specified by SRVCACHE_FILE
+ * 
+ */
+void TSrvAddrMgr::cacheRead() {
+
+    this->Cache.clear();
+    bool started = false;
+    bool ended = false;
+    bool parsed = false;
+    int lineno = 0;
+    int entries = 0;
+    std::ifstream f;
+    string s;
+    f.open(SRVCACHE_FILE);
+    if (!f.is_open()) {
+	Log(Warning) << "Cache: Unable to open cache file " << SRVCACHE_FILE << "." << LogEnd;
+	return;
+    }
+
+    while (!f.eof()) {
+	parsed = false;
+	getline(f,s);
+	string::size_type pos=0;
+	if ( (pos = s.find("<cache")!=string::npos) ) {
+	    // parse beginning
+
+	    started = true;
+	    if ( (pos = s.find("size=\""))!=string::npos ) {
+		s = s.substr(pos+6);
+		entries = atoi(s.c_str());
+		Log(Debug) << "Cache:" << SRVCACHE_FILE << " file: parsing started, expecting " << entries << " entries." << LogEnd;
+	    } else {
+		Log(Debug) << "Cache:" << SRVCACHE_FILE << " file:unable to find entries count. size=\"...\" missing in line " 
+			   << lineno << "." << LogEnd;
+		return;
+	    }
+	}
+	
+	if (s.find("<entry")!=string::npos) {
+	    if (!started) {
+		Log(Error) << "Cache:" << SRVCACHE_FILE << " file: opening tag <cache> missing." << LogEnd;
+		return;
+	    }
+	    if ( (pos=s.find("duid=\""))!=string::npos) {
+		s = s.substr(pos+6);
+		string duid = s.substr(0, s.find("\""));
+		s = s.substr(s.find("\"")+2);
+		string addr = s.substr(0, s.find("<"));
+
+		SPtr<TIPv6Addr> tmp2 = new TIPv6Addr(addr.c_str(), true);
+		SPtr<TDUID>     tmp1 = new TDUID(duid.c_str());
+		this->addCachedAddr(tmp1, tmp2);
+
+	    } else {
+		Log(Error) << "Cache: " << SRVCACHE_FILE << " file: missing duid=\"...\" in line " << lineno
+			   << "." << LogEnd;
+		return;
+	    }
+	}
+	
+	if (s.find("</cache>")!=string::npos) {
+	    if (!started) {
+		Log(Error) << "Cache: Reading file " << SRVCACHE_FILE << " failed: closing tag </cache> found at line " << lineno
+			   << ", but opening tag is missing." << LogEnd;
+		f.close();
+		return;
+	    }
+	    parsed = true;
+	    ended = true;
+	}
+    }
+    f.close();
+
+    if (this->Cache.count() != entries) {
+	Log(Warning) << "Cache: " << SRVCACHE_FILE << " file: " << entries << " entries expected, but " 
+		     << this->Cache.count() << " found." << LogEnd;
+    }
 }

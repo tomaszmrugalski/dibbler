@@ -88,6 +88,7 @@ nis-domain          { return SrvParser::NIS_DOMAIN_; }
 nis\+-server        { return SrvParser::NISP_SERVER_; }
 nis\+-domain        { return SrvParser::NISP_DOMAIN_; }
 lifetime            { return SrvParser::LIFETIME_; }
+cache-size          { return SrvParser::CACHE_SIZE_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}
