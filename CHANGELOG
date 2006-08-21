@@ -8,6 +8,7 @@
   - log entries are appended (previously log files were overwritten at startup)
   - Documentation update and cleanup
   - Modular features (optional compilation of additional features) added
+  - Clnt: Addresses are added with /64 prefix by default (use strict-rfc-no-routing to use previous behavior, i.e. /128 prefix)
 
  0.4.2 [2006-02-03] (DSFG cleanup release)
   - No bugfixes or new features

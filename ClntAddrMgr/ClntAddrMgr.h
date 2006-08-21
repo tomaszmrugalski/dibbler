@@ -6,27 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.h,v 1.7 2006-03-05 21:39:19 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.6  2004/12/07 22:54:35  thomson
- * Typos corrected.
- *
- * Revision 1.5  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.4  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.3  2004/09/08 21:22:45  thomson
- * Parser improvements, signed/unsigned issues addressed.
- *
- * Revision 1.2  2004/09/07 22:02:32  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ * $Id: ClntAddrMgr.h,v 1.8 2006-08-21 22:54:08 thomson Exp $
  *
  */
 
@@ -75,6 +55,8 @@ class TClntAddrMgr : public TAddrMgr
     void doDuties();
     
     bool isIAAssigned(unsigned long IAID);
+ protected:
+    void print(ostream &x);
  private:
     SmartPtr<TAddrClient> Client;
 };

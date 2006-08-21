@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.13 2006-03-23 00:12:09 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.14 2006-08-21 22:54:08 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -183,9 +183,15 @@ int TClntAddrMgr::countTA()
     return Client->countTA();
 }
 
+void TClntAddrMgr::print(ostream &x) {
+    
+}
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006/03/23 00:12:09  thomson
+ * TA support on the client side finished.
+ *
  * Revision 1.12  2006/03/05 21:39:19  thomson
  * TA support merged.
  *
