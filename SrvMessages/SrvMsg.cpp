@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.17 2006-08-21 21:57:02 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.18 2006-08-21 22:22:52 thomson Exp $
  */
 
 #include <sstream>
@@ -536,9 +536,10 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	    hostname = fqdnName.substr(0, dotpos);
 	    domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
 	}
-	
+	string revdomain = "ip6.arpa";
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 	DnsUpdateResult result = DNSUPDATE_SKIP;
+	Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
 	DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
 				       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
 	result = act->run();

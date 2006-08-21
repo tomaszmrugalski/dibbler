@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.6 2006-08-03 00:46:12 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.7 2006-08-21 22:22:52 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -25,6 +25,7 @@
 #include "AddrMgr.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
+#include "DNSUpdate.h"
 
 /** 
  * create RELEASE emssage
@@ -97,16 +98,44 @@ TClntMsgRelease::TClntMsgRelease(
 
 	    SmartPtr<TClntIfaceIface> ptrIface = (Ptr*)ClntIfaceMgr->getIfaceByID(iface);
 	    string fqdn = ptrIface->getFQDN();
-
-	    Log(Debug) << "About to perform DNS Update:DNS Server=" << *dns << ", IP=" << *myAddr
+  		
+	    Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
 		       << " and FQDN=" << fqdn << LogEnd;
-	    Log(Notice) << "#### FIXME: " << __FILE__ << ", line " << __LINE__ << LogEnd;
+	    unsigned int dotpos = fqdn.find(".");
+	    string hostname = "";
+	    string domain = "";
+	    if (dotpos == string::npos) {
+		Log(Warning) << "FQDN: Name provided for DNS update is not a FQDN. [" << fqdn
+			     << "] Trying to do the cleanup..." << LogEnd;
+		hostname = fqdn;
+	    }
+	    else {
+		hostname = fqdn.substr(0, dotpos);
+		domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
+	    }
+	    
+	    Log(Debug) << "FQDN: Domain name set to " << (char*) domain.c_str() << "." << LogEnd;
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
+	    DNSUpdate *act = new DNSUpdate(dns->getPlain(), (char*) domain.c_str(), (char*) hostname.c_str(), 
+					   myAddr->getPlain(), "2h",4);
+	    int result = act->run();
+	    delete act;
+	    
+	    if (result == DNSUPDATE_SUCCESS) {
+		
+		Log(Notice) << "FQDN: delete procedure succesful." << LogEnd;
+	    } else {
+		Log(Warning) << "Unable to perform DNS update. Clean up Disabling FQDN on " 
+			     << ptrIface->getFullName() << LogEnd;
+		
+	    }
+#else
+	    Log(Error) << "This Dibbler version is compiled without DNS Update support." << LogEnd;
+#endif
 	}
-
 	// --- DNS Update ---
-
     }
-
+    
     if (ta)
 	Options.append(new TClntOptTA(ta, this));
 

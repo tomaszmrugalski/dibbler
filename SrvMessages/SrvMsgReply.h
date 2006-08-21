@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.h,v 1.7 2006-08-21 21:33:21 thomson Exp $
+ * $Id: SrvMsgReply.h,v 1.8 2006-08-21 22:22:52 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-08-21 21:33:21  thomson
+ * prepareFQDN() moved from SrvMgrReply to SrvMsg,
+ * unnecessary constructors removed.
+ *
  * Revision 1.6  2006-07-03 20:15:57  thomson
  * FQDN support partially supported (still does not work properly).
  *
@@ -105,6 +109,7 @@ private:
     SmartPtr<TSrvOptClientIdentifier> duidOpt;
     void appendDefaultOption(SmartPtr<TOpt> ptrOpt);
     void setOptionsReqOptClntDUID(SmartPtr<TMsg> msg);
+    void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
 };
 
 

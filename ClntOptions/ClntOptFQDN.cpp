@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: ClntOptFQDN.cpp,v 1.4 2006-07-03 23:45:05 thomson Exp $
+ * $Id: ClntOptFQDN.cpp,v 1.5 2006-08-21 22:22:52 thomson Exp $
  *
  */
 
@@ -66,7 +66,7 @@ bool TClntOptFQDN::doDuties() {
 	return false;
     }
     
-    return iface->setFQDN(this->DUID, addr,getFQDN());
+    return iface->setFQDN(this->DUID, addr,getFQDN()); // this runs only when client is gonna update DNS server 
 }
 
 void TClntOptFQDN::setSrvDuid(SmartPtr<TDUID> duid)

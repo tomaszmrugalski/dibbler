@@ -28,6 +28,7 @@
 #include "AddrIA.h"
 #include "AddrAddr.h"
 #include "Logger.h"
+#include "DNSUpdate.h"
 
 /** 
  * this constructor is used to create REPLY message as a response for CONFIRM message
@@ -355,6 +356,14 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	return;
     }
 
+    SmartPtr<TSrvCfgIface> ptrIface = SrvCfgMgr->getIfaceByID( this->Iface );
+    if (!ptrIface) {
+	Log(Crit) << "Msg received through not configured interface. "
+	    "Somebody call an exorcist!" << LogEnd;
+	IsDone = true;
+	return;
+    }
+
     release->firstOption();
     while(opt=release->getOption()) {
 	switch (opt->getOptType()) {
@@ -374,20 +383,9 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    // if there was DNS Update performed, execute deleting Update
 	    SPtr<TFQDN> fqdn = ptrIA->getFQDN();
 	    if (fqdn) {
-		SPtr<TIPv6Addr> dns = ptrIA->getFQDNDnsServer();
-		if (dns) {
-		    ptrIA->firstAddr();
-		    SPtr<TAddrAddr> addrAddr = ptrIA->getAddr();
-		    SPtr<TIPv6Addr> clntAddr;
-		    if (addrAddr)
-			clntAddr = addrAddr->get();
-		    Log(Notice) << "About to perform DNS Update: DNS Server=" << *dns << ", IP=" << *clntAddr 
-				<< " and FQDN=" << fqdn->getName() << LogEnd;
-		    Log(Notice) << "#### FIXME: " << __FILE__ << ", line " << __LINE__ << LogEnd;
-		    fqdn->setUsed(false);
-		}
+		this->fqdnRelease(ptrIface, ptrIA, fqdn);
 	    }
-	    
+
 	    // let's verify each address
 	    clntIA->firstOption();
 	    while(subOpt=clntIA->getOption()) {
@@ -829,4 +827,62 @@ TSrvMsgReply::~TSrvMsgReply()
 
 string TSrvMsgReply::getName() {
     return "REPLY";
+}
+
+void TSrvMsgReply::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn)
+{
+    string fqdnName = fqdn->getName();
+    int FQDNMode = ptrIface->getFQDNMode();
+
+		SPtr<TIPv6Addr> dns = ptrIA->getFQDNDnsServer();
+		if (dns) {
+		    ptrIA->firstAddr();
+		    SPtr<TAddrAddr> addrAddr = ptrIA->getAddr();
+		    SPtr<TIPv6Addr> clntAddr;
+		    if (addrAddr)
+			clntAddr = addrAddr->get();
+			// checking who was doing update 
+			if (FQDNMode == 1 ){
+				Log(Notice) << "Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
+				Log(Notice) << "#### FIXME: " << __FILE__ << ", line " << __LINE__ << LogEnd;
+			}
+			else if (FQDNMode == 2){
+				Log(Notice) << "Attempting to clean up AAAA and PTR record in DNS Server " << * dns << ", IP = " << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
+				Log(Notice) << "#### FIXME PTR clenup not yet impelemented: " << __FILE__ << ", line " << __LINE__ << LogEnd;
+			
+			unsigned int dotpos = fqdnName.find(".");
+	    		string hostname = "";
+	    		string domain = "";
+	    		
+			if (dotpos == string::npos) {
+	        		Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
+			 		<< "] Trying to do the cleanup..." << LogEnd;
+   	          		hostname = fqdnName;
+	    		}
+	    		else {
+	     	  		hostname = fqdnName.substr(0, dotpos);
+	          		domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
+	    		}
+			// AAAA Cleanup first (4 as a parameter in DNSUpdate->run() method)
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
+			
+			DNSUpdate *act = new DNSUpdate(dns->getPlain(), (char*) domain.c_str(),(char*) hostname.c_str(), clntAddr->getPlain(), "2h",4);
+			int result = act->run();
+			delete act;
+			
+			if (result == DNSUPDATE_SUCCESS) {
+			    
+			    Log(Notice) << "FQDN Cleaned up succesfully !" << LogEnd;
+			} else {
+			    Log(Warning) << "Unable to perform DNS update. Clean up Disabling FQDN on " 
+					 << ptrIface->getFullName() << LogEnd;
+			    
+			}
+#else
+			Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+#endif
+		    	}
+			
+		} // have have dns name 
+		fqdn->setUsed(false);
 }
