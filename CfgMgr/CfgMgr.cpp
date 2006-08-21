@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.13 2006-01-12 00:23:34 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.14 2006-08-21 21:02:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006/01/12 00:23:34  thomson
+ * Cleanup changes. Now -pedantic option works.
+ *
  * Revision 1.12  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -142,34 +145,22 @@ bool TCfgMgr::loadDUID(const string duidFile)
 	return false;
     }
 
-    f.seekg(0,ios::end);
-    long DUIDlen = f.tellg();
-    f.seekg(0,ios::beg);
-    char *DUID = new char[DUIDlen>>1];
-    char digit;
-    for (int i=0;i<DUIDlen; i++)	
-    {
-	f.read(&digit,1);
-	if (isalpha(digit))
-	    digit=toupper(digit)-'A'+10;
-	else
-	    digit-='0';
-	DUID[i>>1]<<=4;
-	DUID[i>>1]|=digit;
-    }
-    DUIDlen>>=1;
-    this->DUID=new TDUID(DUID,DUIDlen);
-    
-    delete [] DUID;
+    string s;
+    getline(f,s);
     f.close();
+
+    this->DUID = new TDUID(s.c_str());
+
     return true;
 }
 
 bool TCfgMgr::setDUID(const string filename) {
     
     // --- load DUID ---
-    if (this->loadDUID(filename))
+    if (this->loadDUID(filename)) {
+	Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
 	return true;
+    }
 
     SmartPtr<TIfaceIface> realIface;
 
@@ -211,8 +202,14 @@ bool TCfgMgr::setDUID(const string filename) {
     }
 
     if(found) {
-      return this->generateDUID(filename, realIface->getMac(),
-				realIface->getMacLen(), realIface->getHardwareType());
+	if ( this->generateDUID(filename, realIface->getMac(),
+				realIface->getMacLen(), realIface->getHardwareType())) {
+	    Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
+	    return true;
+	} else {
+	    Log(Crit) << "DUID creation: generation attempt based on " << realIface->getFullName() << " interface failed." << LogEnd;
+	    return false;
+	}
     } 
     
     Log(Crit) << "Cannot generate DUID, because there is no up and running interface with "
@@ -233,22 +230,21 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     int DUIDlen=macLen+8;
     char *DUID = new char[DUIDlen];
     
-    f << "0001"<<setfill('0')<<setw(4)<<hex<<macType;
     *((u_short*)DUID)=htons(0x0001);
     *((u_short*)(DUID+2))=htons((short)macType);
 
     long cur_time=now();
     *(((u_long*)(DUID+4)))=htonl(cur_time);
-    f <<cur_time;
 
     for (int i=0;i<macLen; i++)
     {
-        f<<setw(2)<<(int)mac[i];
         DUID[i+8]=mac[i];
     }
 
     this->DUID=new TDUID(DUID,DUIDlen);
-    delete DUID;
+    delete [] DUID;
+
+    f << this->DUID->getPlain();
 
     f.close();
     return true;
