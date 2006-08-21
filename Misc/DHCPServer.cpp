@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.24 2005-07-21 20:00:12 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.25 2006-08-21 22:52:40 thomson Exp $
  */
       
 #include "DHCPServer.h"
@@ -134,6 +134,9 @@ TDHCPServer::~TDHCPServer()
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2005/07/21 20:00:12  thomson
+ * Obsolete header file removed.
+ *
  * Revision 1.23  2005/02/07 20:51:56  thomson
  * Server stateless mode fixed (bug #103)
  *

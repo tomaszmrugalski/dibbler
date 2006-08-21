@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: IPv6Addr.h,v 1.4 2004-12-07 20:53:14 thomson Exp $
+ * $Id: IPv6Addr.h,v 1.5 2006-08-21 22:52:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/12/07 20:53:14  thomson
+ * Link local safety checks added (bug #39)
+ *
  * Revision 1.3  2004/03/29 22:06:49  thomson
  * 0.1.1 version
  *
@@ -27,7 +30,7 @@ class TIPv6Addr
 	friend std::ostream& operator<<(std::ostream& out,TIPv6Addr& group);
 public:
     TIPv6Addr();    //Creates any address
-    TIPv6Addr(char* addr, bool plain=false);
+    TIPv6Addr(const char* addr, bool plain=false);
     char* getAddr();
     void setAddr(char* addr);
     char* getPlain();

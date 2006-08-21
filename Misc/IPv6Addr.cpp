@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IPv6Addr.cpp,v 1.4 2004-12-07 20:53:14 thomson Exp $
+ * $Id: IPv6Addr.cpp,v 1.5 2006-08-21 22:52:40 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/12/07 20:53:14  thomson
+ * Link local safety checks added (bug #39)
+ *
  */
 
 #include <stdlib.h>
@@ -21,7 +24,7 @@ TIPv6Addr::TIPv6Addr() {
     inet_ntop6(Addr,Plain);
 }
 
-TIPv6Addr::TIPv6Addr(char* addr, bool plain) {
+TIPv6Addr::TIPv6Addr(const char* addr, bool plain) {
     if (plain) {
         strcpy(Plain,addr);
         inet_pton6(Plain,Addr);

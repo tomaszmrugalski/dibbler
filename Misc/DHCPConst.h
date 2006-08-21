@@ -6,59 +6,6 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: DHCPConst.h,v 1.18 2006-07-03 18:01:31 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.17  2006/03/05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.16.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.16  2005/08/03 22:47:34  thomson
- * Support for 'share' parameter added,
- * Support for randomization between classes added.
- *
- * Revision 1.15  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.14  2004/11/30 00:43:24  thomson
- * SIP option value mismatch fixed (bug #68)
- *
- * Revision 1.13  2004/11/29 17:42:33  thomson
- * Update option values to RFC3898
- *
- * Revision 1.12  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.11  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.10  2004/10/03 21:52:12  thomson
- * FALSE changed to false
- *
- * Revision 1.9  2004/10/03 21:21:32  thomson
- * CLIENT_DEFAULT_UNICAST is set to false.
- *
- * Revision 1.8  2004/09/28 21:49:32  thomson
- * no message
- *
- * Revision 1.7  2004/09/07 22:02:34  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.6  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.5  2004/09/03 23:20:23  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.4  2004/06/04 19:03:47  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.3  2004/03/29 22:06:49  thomson
- * 0.1.1 version
- *
  */
 
 #ifndef DHCPCONST_H
@@ -207,13 +154,14 @@
 #define SERVER_DEFAULT_CLASS_MAX_LEASE ULONG_MAX
 #define SERVER_DEFAULT_TA_PREF_LIFETIME 3600
 #define SERVER_DEFAULT_TA_VALID_LIFETIME 7200
-
+#define SERVER_DEFAULT_CACHE_SIZE 1048576   /* cache size, specified in bytes */
 #define CLIENT_DEFAULT_T1 ULONG_MAX
 #define CLIENT_DEFAULT_T2 ULONG_MAX
 
 #define CLIENT_DEFAULT_UNICAST false
 #define CLIENT_DEFAULT_RAPID_COMMIT false
 
+#define CLIENT_DEFAULT_PREFIX_LENGTH 64
 
 enum ETentative {YES, NO, DONTKNOWYET};
 enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, DISABLED, UNKNOWN, TENTATIVECHECK, TENTATIVE};
