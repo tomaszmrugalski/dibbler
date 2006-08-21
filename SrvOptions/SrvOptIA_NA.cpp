@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.16 2006-08-03 00:45:16 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.17 2006-08-21 22:44:36 thomson Exp $
  */
 
 #ifdef WIN32
@@ -83,11 +83,17 @@ TSrvOptIA_NA::TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent)
     }
 }
 
-/*
- * Constructor used in aswers to:
- * - SOLICIT 
- * - SOLICIT (with RAPID_COMMIT)
- * - REQUEST
+/** 
+ * This constructor is used to create IA option as an aswer to a SOLICIT, SOLICIT (RAPID_COMMIT) or REQUEST
+ * 
+ * @param addrMgr 
+ * @param cfgMgr 
+ * @param queryOpt 
+ * @param clntDuid 
+ * @param clntAddr 
+ * @param iface 
+ * @param msgType 
+ * @param parent 
  */
 TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
 			   SmartPtr<TSrvOptIA_NA> queryOpt,
@@ -110,7 +116,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 		     << LogEnd;
 	
 	SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
-	assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
+	this->assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
 	
        	// include status code
         SmartPtr<TSrvOptStatusCode> ptrStatus;
@@ -438,9 +444,9 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
 		   << this->Iface << LogEnd;
 	return 0; // NULL
     }
-
+    
     // check if this address is ok
-
+    
     // is it anyaddress (::)?
     SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
     if (*anyaddr==*hint) {
@@ -448,7 +454,7 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
 		   << ") address. Hint ignored." << LogEnd;
 	invalidAddr = true;
     }
-
+    
     // is it multicast address (ff...)?
     if ((*(hint->getAddr()))==0xff) {
 	Log(Debug) << "Client requested multicast (" << *hint 
@@ -488,11 +494,22 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
 		do {
 		    addr = ptrClass->getRandomAddr();
 		} while (!AddrMgr->addrIsFree(addr));
-	    return addr;
+		return addr;
 	    }
 	}
     }
 
+    // do we have a cached address for that client?
+    if (addr = AddrMgr->getCachedAddr(this->ClntDuid)) {
+	if (this->CfgMgr->getClassByAddr(this->Iface, addr)) {
+	    Log(Info) << "Cache: Cached address " << *addr << " found. Welcome back." << LogEnd;
+	    return addr;
+	} else {
+	    Log(Warning) << "Cache: Cached address " << *addr << " found, but it is no longer valid." << LogEnd;
+	    AddrMgr->delCachedAddr(addr);
+	}
+    }
+    
     // worst case: address does not belong to supported class
     // or specified hint is invalid
     SmartPtr<TSrvCfgAddrClass> ptrClass;

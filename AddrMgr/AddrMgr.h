@@ -48,7 +48,7 @@ class TAddrMgr
     
     // --- backup/restore ---
     void dbLoad();
-    void dump();
+    virtual void dump();
     bool isDone();
 
 #ifdef LIBXML2
@@ -60,6 +60,8 @@ class TAddrMgr
 #endif
 
 protected:
+    virtual void print(ostream & out) = 0;
+
     bool IsDone;
     List(TAddrClient) ClntsLst;
     string XmlFile;
@@ -67,9 +69,12 @@ protected:
 
 #endif
 /*
- * $Id: AddrMgr.h,v 1.10 2006-03-05 21:39:19 thomson Exp $
+ * $Id: AddrMgr.h,v 1.11 2006-08-21 22:44:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006/03/05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.9.2.1  2006/02/05 23:38:06  thomson
  * Devel branch with Temporary addresses support added.
  *

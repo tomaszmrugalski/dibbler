@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.19 2005-09-20 20:10:51 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.20 2006-08-21 22:44:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005/09/20 20:10:51  thomson
+ * Max. timeout changed from LONG_MAX to ULONG_MAX
+ *
  * Revision 1.18  2004/12/07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -372,8 +375,10 @@ TAddrMgr::~TAddrMgr() {
 
 ostream & operator<<(ostream & strum,TAddrMgr &x) {
     strum << "<AddrMgr>" << endl;
-    SmartPtr<TAddrClient> ptr;
 
+    x.print(strum);
+
+    SmartPtr<TAddrClient> ptr;
     x.ClntsLst.first();
 
     while ( ptr = x.ClntsLst.get() ) {
