@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.16 2006-08-21 21:33:19 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.17 2006-08-21 21:57:02 thomson Exp $
  */
 
 #include <sstream>
@@ -453,10 +453,6 @@ string TSrvMsg::showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro) {
  */
 SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
 				       SPtr<TIPv6Addr> clntAddr, bool doRealUpdate) {
-    if (requestFQDN->getNFlag()) {
-	Log(Notice) << "No DNS Update required by client." << LogEnd;
-	return 0;
-    }
 
     SmartPtr<TSrvOptFQDN> optFQDN;
     SmartPtr<TSrvCfgIface> ptrIface = SrvCfgMgr->getIfaceByID( this->Iface );
@@ -483,11 +479,17 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     string fqdnName = fqdn->getName();
     
     fqdn->setUsed(true);
+
+    if (requestFQDN->getNFlag()) {
+	Log(Notice) << "FQDN: No DNS Update required." << LogEnd;
+	return optFQDN;
+    }
+
     int FQDNMode = ptrIface->getFQDNMode();
-    Log(Debug) << "#### Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode=" << FQDNMode << LogEnd;
+    Log(Debug) << "FQDN: Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode=" << FQDNMode << LogEnd;
 
     if ( FQDNMode==1 || FQDNMode==2 ) {
-	Log(Debug) << "Server configuration allow DNS updates for " << clntDuid->getPlain() << LogEnd;
+	Log(Debug) << "FQDN: Server configuration allow DNS updates for " << clntDuid->getPlain() << LogEnd;
 	
 	if (FQDNMode == 1) optFQDN->setSFlag(false);
 	else if (FQDNMode == 2)  optFQDN->setSFlag(true); // letting client update his AAAA

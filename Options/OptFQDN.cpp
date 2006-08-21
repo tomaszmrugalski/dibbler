@@ -7,7 +7,7 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.1 2006-03-03 20:37:55 thomson Exp $
+* $Id: OptFQDN.cpp,v 1.2 2006-08-21 21:57:02 thomson Exp $
 *
 */
 
@@ -39,9 +39,9 @@ TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
     // Extracting flags...
     //TODO some checks from flags.
     char flags = *buf;
-    this->flag_N = flags && FQDN_N;
-    this->flag_S = flags && FQDN_S;
-    this->flag_O = flags && FQDN_O;
+    this->flag_N = flags & FQDN_N;
+    this->flag_S = flags & FQDN_S;
+    this->flag_O = flags & FQDN_O;
     buf += 1;
     bufsize -= 1;
 
@@ -64,7 +64,7 @@ TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
 	bufsize--;
 	Valid = true;
     }
-
+    //Log(Debug) << "FQDN: FQDN option received, bits N=" << this->flag_N << ", O=" << this->flag_O << ",S=" << this->flag_S << LogEnd;
 }
 
 TOptFQDN::~TOptFQDN() {
