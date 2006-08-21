@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.11 2006-03-05 21:39:19 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.12 2006-08-21 21:34:50 thomson Exp $
  */
 
 #ifdef WIN32
@@ -432,7 +432,10 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_FQDN);
 
 	string fqdn = iface->getProposedFQDN();
-	if (fqdn.length()) {
+#if 0
+	if (fqdn.length()) 
+#endif
+	{
 	    SmartPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
 	    Options.append( (Ptr*)opt );
 	}
@@ -527,6 +530,9 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006-03-05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.10.2.1  2006/02/05 23:38:07  thomson
  * Devel branch with Temporary addresses support added.
  *
