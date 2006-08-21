@@ -198,9 +198,35 @@ sections \ref{example-client-fqdn} and \ref{example-server-fqdn}. Also
 note that Dibbler distribution should be accompanied with several
 example configuration files. Some of them include FQDN usage examples.
 
+\subsection{Address caching}
+Previous Dibbler versions assigned a random address from a available
+address pool, so the same client received different address each time it
+asked for one. In the 0.5.0 release, two new mechanisms were introduced
+to make sure that the same client gets the same address each time.
+
+FIXME:
+
+Below is the algorithm used by the server to assign an address to the client.
+
+\begin{itemize}
+ \item if the client provided hint, it is valid (i.e. is part of the
+       supported address pool) and not used, then assign requested address.
+ \item if the client provided hint, it is valid (i.e. is part of the 
+       supported address pool) but used, then assign free address from
+       the same pool.
+ \item if the client provided hint, but it is not valid (i.e. is not
+       part of the supported address pool, is link-local or a multicast
+       address), then ignore the hint completety.
+ \item if the did not provide valid hint, try to assign address
+       previously assigned to this client (address caching)
+ \item if this is the first time the client is seen, assign any address
+       available.
+\begin{itemize}
+%% see SrvOptions/SrvOptIA_NA.cpp, TSrvOptIA_NA::getFreeAddr() method
+
 \subsection{Relays}
 \label{features-relays}
-TODO: Provide description and maybe a figure.
+FIXME: Provide description and maybe a figure.
 
 \subsection{XML files}
 During its execution, all dibbler components (client, server and

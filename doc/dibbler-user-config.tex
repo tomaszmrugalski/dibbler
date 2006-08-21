@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.21 2006-07-23 23:11:25 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.22 2006-08-21 22:43:12 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -514,6 +514,8 @@ Name             & Scope   & Values      & default    & Description \\
 work-dir         & global  & string      & empty      & working directory \\
 log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
 log-name         & global  & string      & Client     & Name, which appears in a log file\\
+cache-size       & global  & integer     & 1048576    & size of the
+address cache, specified in bytes \\
 
 preference       &interface& 0-255       & 0          & server preference value (higher is more prefered) \\
 unicast          &interface& address     & empty      & Specify which address should be used. \\
