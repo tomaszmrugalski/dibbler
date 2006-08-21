@@ -22,8 +22,16 @@ parser:
 
 client: $(CLIENTBIN)
 
+ifdef EFENCE
+LINKPRINT += " efence"
+endif
+
+ifdef DEBUGINFO
+LINKPRINT += " debug"
+endif
+
 $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
-	@echo "[LINK   ] $(SUBDIR)/$@"
+	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
 	-L$(MISC)	  -lMisc         \
 	-L$(ADDRMGR)      -lAddrMgr      \
@@ -51,7 +59,7 @@ endif
 server: $(SERVERBIN)
 
 $(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
-	@echo "[LINK   ] $(SUBDIR)/$@"
+	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr     \
 	-L$(ADDRMGR)      -lAddrMgr        \
@@ -82,7 +90,7 @@ endif
 relay: $(RELAYBIN)
 
 $(RELAYBIN): poslib-configure includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
-	@echo "[LINK   ] $(SUBDIR)/$@"
+	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
 	-L$(RELTRANSMGR) -lRelTransMgr  \
 	-L$(RELCFGMGR)   -lRelCfgMgr    \
@@ -402,8 +410,9 @@ tags:
 clean-libs:
 	find . -name *.a -exec rm {} \;
 	$(MAKE) -C $(PREFIX)/poslib clean
+	if [ -e poslib/Makefile ]; then $(MAKE) -C $(PREFIX)/poslib clean > /dev/null; fi
 
 links: includes
-clobber: clean
+clobber: clean clean-libs
 
 .PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser snapshot help

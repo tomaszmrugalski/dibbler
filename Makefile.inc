@@ -17,7 +17,7 @@ REL_LDFLAGS  = $(LDFLAGS)
 # === debuging parameters ===
 PEDANTIC     = -pedantic
 DEBUGINFO    = -g
-#EFENCE       = -lefence
+EFENCE       = -lefence
 
 
 # === modular features ===
@@ -128,17 +128,18 @@ SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS) $(POS
 
 all: libs
 
+FINDOPTS = -path './poslib/*' -prune -o
+
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
 	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) TAGS
-	find . -type l -exec rm {} \;
-	find . -name *.a -exec rm {} \;
-	find . -name *~ -exec rm {} \;
-	find . -name *.o -exec rm {} \;
-	find . -name test? -exec rm {} \;
+	find . $(FINDOPTS) -type l -exec rm {} \;
+	find . $(FINDOPTS) -name *.a -exec rm {} \;
+	find . $(FINDOPTS) -name *~ -exec rm {} \;
+	find . $(FINDOPTS) -name *.o -exec rm {} \;
+	find . $(FINDOPTS) -name test? -exec rm {} \;
 	if [ -d bison++/.deps ]; then rm -rf bison++/.deps; fi
 	if [ -d doc ]; then make -C doc clean; fi
-	if [ -e poslib/Makefile ]; then $(MAKE) -C $(PREFIX)/poslib clean > /dev/null; fi
 
 # === SUBDIR NAMES ===
 SUBDIR=$(subst $(TOPDIR),,$(CURDIR))
