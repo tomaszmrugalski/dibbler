@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.h,v 1.3 2006-07-03 20:42:51 thomson Exp $
+ * $Id: DNSUpdate.h,v 1.4 2006-08-21 22:16:17 thomson Exp $
  *
  */
 
@@ -42,6 +42,7 @@ private:
     void addinMsg_newPTR();
     void addinMsg_newAAAA();
     void addinMsg_delOldRR();
+    void deleteRecordFromRRSet(string type);
     bool DnsRR_avail(DnsMessage *msg, DnsRR& RemoteDnsRR);
     DnsRR* get_oldDnsRR();
     void sendMsg();

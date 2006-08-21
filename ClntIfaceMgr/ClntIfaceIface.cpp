@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.9 2006-08-03 00:46:59 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.10 2006-08-21 22:18:27 thomson Exp $
  *
  */
 
@@ -347,14 +347,10 @@ bool TClntIfaceIface::setSIPDomainLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     return true;
 }
 
-
-
 bool TClntIfaceIface::setFQDN(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string fqdn) {
-
-	this->FQDN = fqdn;
-	this->FQDNDUID = duid;
-	this->FQDNAddr = srv;
-
+    this->FQDN = fqdn;
+    this->FQDNDUID = duid;
+    this->FQDNAddr = srv;
     return true;
 }
 
@@ -363,7 +359,7 @@ bool TClntIfaceIface::setNISServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     SmartPtr<TIPv6Addr> old, addr;
     this->NISServerLst.first();
     while (old = this->NISServerLst.get()) {
-	// for each already set server...
+        // for each already set server...
 	addrs.first();
 	bool found = false;
 	while (addr = addrs.get()) {

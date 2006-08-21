@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.h,v 1.5 2006-03-02 00:57:46 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.6 2006-08-21 22:18:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-03-02 00:57:46  thomson
+ * FQDN support initial checkin.
+ *
  * Revision 1.4  2005/01/25 00:32:26  thomson
  * Global addrs support added.
  *
@@ -54,13 +57,11 @@ class TClntIfaceIface: public TIfaceIface {
     bool setNISPDomain(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string domain);
     bool setLifetime(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, unsigned int life);
     void removeAllOpts();
-
     unsigned int getTimeout();
 
-	//Getters for FQDN
-	string getFQDN();
-	List(TIPv6Addr) getDNSServerLst();
-
+    //Getters for FQDN
+    string getFQDN();
+    List(TIPv6Addr) getDNSServerLst();
  private:
 
     void addString(const char * filename, const char * str);
