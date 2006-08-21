@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.8 2005-02-07 20:51:56 thomson Exp $
+ * $Id: SrvMsg.h,v 1.9 2006-08-21 21:33:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005-02-07 20:51:56  thomson
+ * Server stateless mode fixed (bug #103)
+ *
  * Revision 1.7  2005/01/12 00:10:05  thomson
  * Compilation fixes.
  *
@@ -38,48 +41,36 @@ class TSrvMsg;
 #include "IPv6Addr.h"
 #include "SrvOptOptionRequest.h"
 #include "SrvOptInterfaceID.h"
-#include "SmartPtr.h"
+#include "SrvOptFQDN.h"
 
 class TSrvMsg : public TMsg
 {
 public:
-	TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-		SmartPtr<TSrvTransMgr> TransMgr, 
-		SmartPtr<TSrvCfgMgr> CfgMgr,
-		SmartPtr<TSrvAddrMgr> AddrMgr,
-		int iface,  SmartPtr<TIPv6Addr> addr, char* buf,  int bufSize);
+	TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, SPtr<TSrvTransMgr> TransMgr, 
+		SPtr<TSrvCfgMgr> CfgMgr,     SPtr<TSrvAddrMgr> AddrMgr,
+		int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
 	
-	TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-		SmartPtr<TSrvTransMgr> TransMgr, 
-		SmartPtr<TSrvCfgMgr> CfgMgr,
-		SmartPtr<TSrvAddrMgr> AddrMgr,
-		int iface, SmartPtr<TIPv6Addr> addr,  int msgType);
+	TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, SPtr<TSrvTransMgr> TransMgr, 
+		SPtr<TSrvCfgMgr> CfgMgr,     SPtr<TSrvAddrMgr> AddrMgr,
+		int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
 
-	TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-		SmartPtr<TSrvTransMgr> TransMgr, 
-		SmartPtr<TSrvCfgMgr> CfgMgr,
-		SmartPtr<TSrvAddrMgr> AddrMgr,
-		int iface, SmartPtr<TIPv6Addr> addr, int msgType, long transID);
-
-	TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-		SmartPtr<TSrvTransMgr> TransMgr, 
-		SmartPtr<TSrvCfgMgr> CfgMgr,
-		SmartPtr<TSrvAddrMgr> AddrMgr);
+	TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, SPtr<TSrvTransMgr> TransMgr, 
+		SPtr<TSrvCfgMgr> CfgMgr,     SPtr<TSrvAddrMgr> AddrMgr);
 	
-    SmartPtr<TSrvTransMgr>  SrvTransMgr;
-    SmartPtr<TSrvAddrMgr>   SrvAddrMgr;
-    SmartPtr<TSrvCfgMgr>    SrvCfgMgr;
-    SmartPtr<TSrvIfaceMgr>  SrvIfaceMgr;
+    SPtr<TSrvTransMgr>  SrvTransMgr;
+    SPtr<TSrvAddrMgr>   SrvAddrMgr;
+    SPtr<TSrvCfgMgr>    SrvCfgMgr;
+    SPtr<TSrvIfaceMgr>  SrvIfaceMgr;
     
-    void copyRelayInfo(SmartPtr<TSrvMsg> q);
-    bool appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
-				int iface, SmartPtr<TSrvOptOptionRequest> reqOpt);
-    string showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro);
+    void copyRelayInfo(SPtr<TSrvMsg> q);
+    bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
+				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
+    string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
 
-    void addRelayInfo(SmartPtr<TIPv6Addr> linkAddr,
-		      SmartPtr<TIPv6Addr> peerAddr,
+    void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
+		      SPtr<TIPv6Addr> peerAddr,
 		      int hop,
-		      SmartPtr<TSrvOptInterfaceID> interfaceID);
+		      SPtr<TSrvOptInterfaceID> interfaceID);
 
     int getRelayCount();
 
@@ -93,16 +84,19 @@ protected:
     unsigned long FirstTimeStamp; // timestamp of first message transmission
     unsigned long MRT;            // maximum retransmission timeout
 
-    void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-		    SmartPtr<TSrvTransMgr> TransMgr, 
-		    SmartPtr<TSrvCfgMgr> CfgMgr,
-		    SmartPtr<TSrvAddrMgr> AddrMgr);
+    void setAttribs(SPtr<TSrvIfaceMgr> IfaceMgr, 
+		    SPtr<TSrvTransMgr> TransMgr, 
+		    SPtr<TSrvCfgMgr> CfgMgr,
+		    SPtr<TSrvAddrMgr> AddrMgr);
+    SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
+				  SPtr<TIPv6Addr> clntAddr, bool doRealUpdate);
 
-    SmartPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
+    SPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
     int HopTbl[HOP_COUNT_LIMIT];
     int Relays;
+    int Parent; // type of the parent message (used in ADVERTISE and REPLY)
 };
 
 #endif

@@ -6,21 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgRequest.cpp,v 1.5 2006-03-05 21:35:15 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.4  2006/02/02 23:18:30  thomson
- * 0.4.2 release.
- *
- * Revision 1.3  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
+ * $Id: SrvMsgRequest.cpp,v 1.6 2006-08-21 21:33:21 thomson Exp $
  *                                                                           
  */
 
@@ -32,20 +18,6 @@
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptIA_NA.h"
 #include "AddrClient.h"
-
-// opts - options list WITHOUT serverDUID
-TSrvMsgRequest::TSrvMsgRequest(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-                               SmartPtr<TSrvTransMgr> TransMgr,
-                               SmartPtr<TSrvCfgMgr>   CfgMgr, 
-                               SmartPtr<TSrvAddrMgr> AddrMgr, 
-                               int iface)
-                               :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,
-					SmartPtr<TIPv6Addr>(),REQUEST_MSG)
-{
-    MRT = REQ_MAX_RT;
-    Iface=iface;
-    IsDone=false;
-}
 
 TSrvMsgRequest::TSrvMsgRequest(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
                                SmartPtr<TSrvTransMgr> TransMgr,

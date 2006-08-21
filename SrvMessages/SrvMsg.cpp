@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.15 2006-03-05 21:35:15 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.16 2006-08-21 21:33:19 thomson Exp $
  */
 
 #include <sstream>
@@ -42,12 +42,25 @@
 #include "SrvOptNISPServer.h"
 #include "SrvOptNISPDomain.h"
 #include "SrvOptLifetime.h"
+#include "DNSUpdate.h"
 
 #include "Logger.h"
 #include "SrvIfaceMgr.h"
 #include "AddrClient.h"
 
-//Constructor builds message on the basis of received message
+/** 
+ * this constructor is used to build message as a reply to the received message
+ * (i.e. it is used to contruct ADVERTISE or REPLY)
+ * 
+ * @param IfaceMgr 
+ * @param TransMgr 
+ * @param CfgMgr 
+ * @param AddrMgr 
+ * @param iface 
+ * @param addr 
+ * @param msgType 
+ * @param transID 
+ */
 TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
                  SmartPtr<TSrvTransMgr> TransMgr, 
                  SmartPtr<TSrvCfgMgr> CfgMgr,
@@ -59,7 +72,19 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     this->Relays = 0;
 }
 
-//Constructor builds message on the basis of buffer
+/** 
+ * this constructor builds message based on the buffer 
+ * (i.e. SOLICIT, REQUEST, RENEW, REBIND, RELEASE, INF-REQUEST, DECLINE)
+ * 
+ * @param IfaceMgr 
+ * @param TransMgr 
+ * @param CfgMgr 
+ * @param AddrMgr 
+ * @param iface 
+ * @param addr 
+ * @param buf 
+ * @param bufSize 
+ */
 TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
                  SmartPtr<TSrvTransMgr> TransMgr, 
                  SmartPtr<TSrvCfgMgr> CfgMgr,
@@ -177,18 +202,6 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 
 }
 
-TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-                 SmartPtr<TSrvTransMgr> TransMgr, 
-                 SmartPtr<TSrvCfgMgr> CfgMgr,
-                 SmartPtr<TSrvAddrMgr> AddrMgr,
-                 int iface, 
-                 SmartPtr<TIPv6Addr> addr,  int msgType)
-                 :TMsg(iface,addr,msgType)
-{
-    setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
-    this->Relays = 0;
-}
-
 void TSrvMsg::setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
                          SmartPtr<TSrvTransMgr> TransMgr, 
                          SmartPtr<TSrvCfgMgr> CfgMgr,
@@ -200,16 +213,6 @@ void TSrvMsg::setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     SrvAddrMgr=AddrMgr;
     FirstTimeStamp = now();
     this->MRT=0;
-
-    /*    			
-    LastTimeStamp  = now();			
-
-    RC = 0;
-    RT = 0;
-    IRT = 0;
-    MRT = 0;
-    MRC = 0;
-    MRD = 0;*/
 }
 
 void TSrvMsg::doDuties() {
@@ -435,4 +438,139 @@ string TSrvMsg::showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro) {
 	x << " " << oro->getReqOpt(i);
     }
     return x.str();
+}
+
+/** 
+ * This function creates FQDN option and executes DNS Update procedure (if necessary)
+ * 
+ * @param requestFQDN 
+ * @param clntDuid 
+ * @param clntAddr 
+ * @param doRealUpdate - should the real update be performed (for example if response for
+ *                       SOLICIT is prepare, this should be set to false)
+ * 
+ * @return 
+ */
+SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
+				       SPtr<TIPv6Addr> clntAddr, bool doRealUpdate) {
+    if (requestFQDN->getNFlag()) {
+	Log(Notice) << "No DNS Update required by client." << LogEnd;
+	return 0;
+    }
+
+    SmartPtr<TSrvOptFQDN> optFQDN;
+    SmartPtr<TSrvCfgIface> ptrIface = SrvCfgMgr->getIfaceByID( this->Iface );
+    if (!ptrIface) {
+	Log(Crit) << "Msg received through not configured interface. "
+	    "Somebody call an exorcist!" << LogEnd;
+	this->IsDone = true;
+	return 0;
+    }
+    // FQDN is chosen, "" if no name for this host is found.
+
+    Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr=" << clntAddr->getPlain() << LogEnd;
+    SPtr<TFQDN> fqdn = ptrIface->getFQDNName(clntDuid,clntAddr);
+    if (!fqdn) {
+	Log(Debug) << "Unable to find FQDN for this client." << LogEnd;
+	return 0;
+    } 
+
+    optFQDN = new TSrvOptFQDN(fqdn->getName(), this);
+    // FIXME: For the moment, only the client make the DNS update
+    optFQDN->setSFlag(false);
+    // Setting the O Flag correctly according to the difference between O flags
+    optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
+    string fqdnName = fqdn->getName();
+    
+    fqdn->setUsed(true);
+    int FQDNMode = ptrIface->getFQDNMode();
+    Log(Debug) << "#### Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode=" << FQDNMode << LogEnd;
+
+    if ( FQDNMode==1 || FQDNMode==2 ) {
+	Log(Debug) << "Server configuration allow DNS updates for " << clntDuid->getPlain() << LogEnd;
+	
+	if (FQDNMode == 1) optFQDN->setSFlag(false);
+	else if (FQDNMode == 2)  optFQDN->setSFlag(true); // letting client update his AAAA
+	// Setting the O Flag correctly according to the difference between O flags
+	optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
+	// Here we check if all parameters are set, and do the DNS update if possible
+	List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
+	//if ( DNSSrvLst.count() > 0 && fqdn.size() > 0) {
+	Log(Debug) << "All parameters are set to perform DNS update.for client PTR. Selecting first DNS server" << LogEnd;
+	SmartPtr<TIPv6Addr> DNSAddr;
+	
+	// For the moment, we just take the first DNS entry.
+	DNSSrvLst.first();
+	DNSAddr = DNSSrvLst.get();
+	
+	SmartPtr<TAddrClient> ptrAddrClient = SrvAddrMgr->getClient(clntDuid);	
+	if (!ptrAddrClient) { 
+	    Log(Warning) << "Unable to find client."; 
+	    return 0;
+	}
+	ptrAddrClient->firstIA();
+	SmartPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
+	if (!ptrAddrIA) { 
+	    Log(Warning) << "Client does not have any addresses assigned." << LogEnd; 
+	    return 0;
+	}
+	ptrAddrIA->firstAddr();
+	SmartPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
+	SmartPtr<TIPv6Addr> IPv6Addr = addr->get();
+	
+	Log(Notice) << "About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *IPv6Addr << " and FQDN=" 
+		   << fqdnName << LogEnd;
+	
+	//Test for DNS update
+	unsigned int dotpos = fqdnName.find(".");
+	string hostname = "";
+	string domain = "";
+	if (dotpos == string::npos) {
+	    Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
+			 << "] Trying to do the  update..." << LogEnd;
+	    hostname = fqdnName;
+	}
+	else {
+	    hostname = fqdnName.substr(0, dotpos);
+	    domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
+	}
+	
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
+	DnsUpdateResult result = DNSUPDATE_SKIP;
+	DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
+				       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
+	result = act->run();
+	delete act;
+
+	// regardless of the result, store the info
+	ptrAddrIA->setFQDN(fqdn);
+	ptrAddrIA->setFQDNDnsServer(DNSAddr);
+
+	switch (result) {
+	case DNSUPDATE_SUCCESS:
+	    Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+	    break;
+	case DNSUPDATE_ERROR:
+	    Log(Warning) << "DNS Update failed." << LogEnd;
+	    break;
+	case DNSUPDATE_CONNFAIL:
+	    Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
+	    break;
+	case DNSUPDATE_SRVNOTAUTH:
+	    Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
+	    break;
+	case DNSUPDATE_SKIP:
+	    Log(Notice) << "DNS Update was skipped." << LogEnd;
+	    break;
+	}
+#else
+	Log(Error) << "This server is compiled without DNS Update support." << LogEnd;
+#endif
+
+    } else {
+	Log(Debug) << "Server configuration does NOT allow DNS updates for " << *clntDuid << LogEnd;
+	optFQDN->setNFlag(true);
+    }
+    
+    return optFQDN;
 }

@@ -6,15 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgInfRequest.cpp,v 1.4 2006-02-02 23:18:30 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
+ * $Id: SrvMsgInfRequest.cpp,v 1.5 2006-08-21 21:33:20 thomson Exp $
  *
  */
 
@@ -27,27 +19,15 @@
 #include "SrvOptIA_NA.h"
 #include "AddrClient.h"
 
-// opts - options list WITHOUT serverDUID
-TSrvMsgInfRequest::TSrvMsgInfRequest(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-				     SmartPtr<TSrvTransMgr> TransMgr,
-				     SmartPtr<TSrvCfgMgr>   CfgMgr, 
-				     SmartPtr<TSrvAddrMgr> AddrMgr, 
-				     int iface)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, SmartPtr<TIPv6Addr>()/*NULL*/,REQUEST_MSG)
-{
-    MRT = REQ_MAX_RT;
-    Iface=iface;
-    IsDone=false;
-}
-
-TSrvMsgInfRequest::TSrvMsgInfRequest(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-                               SmartPtr<TSrvTransMgr> TransMgr,
-                               SmartPtr<TSrvCfgMgr>   ConfMgr, 
-                               SmartPtr<TSrvAddrMgr>  AddrMgr, 
-                               int iface,  SmartPtr<TIPv6Addr> addr,
-                               char* buf,
-                               int bufSize)
-                               :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize)
+TSrvMsgInfRequest::TSrvMsgInfRequest(SPtr<TSrvIfaceMgr> IfaceMgr, 
+				     SPtr<TSrvTransMgr> TransMgr,
+				     SPtr<TSrvCfgMgr>   ConfMgr, 
+				     SPtr<TSrvAddrMgr>  AddrMgr, 
+				     int iface,  
+				     SPtr<TIPv6Addr> addr,
+				     char* buf,
+				     int bufSize)
+    :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize)
 {
 }
 

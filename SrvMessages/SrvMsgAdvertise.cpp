@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.16 2006-03-05 21:35:15 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.17 2006-08-21 21:33:20 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -23,7 +23,8 @@
 #include "SrvOptNTPServers.h"
 #include "SrvOptTimeZone.h"
 #include "SrvOptDomainName.h"
-#include "AddrClient.h"
+#include "SrvOptFQDN.h"
+//#include "AddrClient.h"
 
 #include "Logger.h"
 
@@ -147,7 +148,12 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	case OPTION_FQDN : {
-	    Log(Debug) << "FQDN option received." << LogEnd;
+	    SmartPtr<TSrvOptFQDN> requestFQDN = (Ptr*) opt;
+	    SmartPtr<TSrvOptFQDN> optFQDN;
+	    optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, true);
+	    if (optFQDN) {
+		this->Options.append((Ptr*) optFQDN);
+	    }
 	    break;
 	}
 	    // options not yet supported 
@@ -236,6 +242,9 @@ string TSrvMsgAdvertise::getName() {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2006-03-05 21:35:15  thomson
+ * TA support merged.
+ *
  * Revision 1.14.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *

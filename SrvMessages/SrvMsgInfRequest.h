@@ -6,12 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgInfRequest.h,v 1.3 2005-01-08 16:52:04 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
+ * $Id: SrvMsgInfRequest.h,v 1.4 2006-08-21 21:33:20 thomson Exp $
  *
  */
 
@@ -28,12 +23,6 @@
 class TSrvMsgInfRequest : public TSrvMsg
 {
   public:
-    TSrvMsgInfRequest(SmartPtr<TSrvIfaceMgr> IfMgr, 
-		   SmartPtr<TSrvTransMgr> TransMgr,
-		   SmartPtr<TSrvCfgMgr>   ConfMgr, 
-		   SmartPtr<TSrvAddrMgr>  AddrMgr, 
-		   int iface);
-
     TSrvMsgInfRequest(SmartPtr<TSrvIfaceMgr> IfMgr, 
 		      SmartPtr<TSrvTransMgr> TransMgr,
 		      SmartPtr<TSrvCfgMgr>   ConfMgr, 
