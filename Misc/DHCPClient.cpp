@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.21 2006-03-05 21:39:19 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.22 2006-08-22 00:11:49 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2006-03-05 21:39:19  thomson
+ * TA support merged.
+ *
  * Revision 1.20.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -134,16 +137,16 @@ void TDHCPClient::run()
 	    timeout = 1;
 #endif
 	
-        Log(Notice) << "Sleeping for " << timeout << " second(s)." << LogEnd;
+        Log(Info) << "Sleeping for " << timeout << " second(s)." << LogEnd;
         SmartPtr<TClntMsg> msg=IfaceMgr->select(timeout);
 	
         if (msg) {
 	    int iface = msg->getIface();
 	    SmartPtr<TIfaceIface> ptrIface;
 	    ptrIface = IfaceMgr->getIfaceByID(iface);
-            Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
-			<< "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
-			<< dec << ", " << msg->countOption() << " opts:";
+            Log(Info) << "Received " << msg->getName() << " on " << ptrIface->getName() 
+		      << "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
+		      << dec << ", " << msg->countOption() << " opts:";
             SmartPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
