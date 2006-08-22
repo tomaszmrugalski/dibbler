@@ -500,6 +500,9 @@
 					RelativePath="..\misc\DUID.cpp">
 				</File>
 				<File
+					RelativePath="..\Misc\FQDN.cpp">
+				</File>
+				<File
 					RelativePath="..\misc\IPv6Addr.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
