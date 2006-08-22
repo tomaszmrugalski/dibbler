@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.7 2005-06-06 22:47:47 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.8 2006-08-22 00:01:20 thomson Exp $
  *
  *  $Log: not supported by cvs2svn $
+ *  Revision 1.7  2005-06-06 22:47:47  thomson
+ *  Fixed problem when Win32 apps died quietly (bug #117)
+ *
  *  Revision 1.5  2005/02/01 01:08:44  thomson
  *  Support for global addresses added.
  *
@@ -29,8 +32,16 @@
  *  Problem with missing IPv6 stack solved.
  */
 
-/* this file contains lowlevel functions for M$ WindowsXP/2003. It uses netsh.exe to perform
-   various low level tasks. */
+/**
+ * @file   lowlevel-win32.c
+ * @author 
+ * @date   Sat Aug  5 17:09:07 2006
+ * 
+ * @brief  this file contains lowlevel functions for M$ WindowsXP/2003. It uses netsh.exe to perform
+ 8         various low level tasks.
+ * 
+ * 
+ */
 
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
@@ -243,7 +254,7 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     return 0; /* not tentative */
 }
 extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, 
-                      unsigned long pref, unsigned long valid)
+                      unsigned long pref, unsigned long valid, int prefixLen)
 {
     // netsh interface ipv6 add address interface="eth0" address=2000::123 validlifetime=120 preferredlifetime=60
     char arg1[]="interface";

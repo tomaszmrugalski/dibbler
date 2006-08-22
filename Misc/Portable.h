@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.54 2006-08-21 22:52:40 thomson Exp $
+ * $Id: Portable.h,v 1.55 2006-08-22 00:01:20 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -143,7 +143,7 @@ extern void if_list_release(struct iface * list);
 /* add address to interface */
 extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
 		      unsigned long pref, unsigned long valid, int prefixLength);
-extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr);
+extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
 
 /* add socket to interface */
 extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse);

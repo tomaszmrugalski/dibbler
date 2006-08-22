@@ -93,6 +93,7 @@ namespace std
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
+%token STRICT_RFC_NO_ROUTING_
     
 %type  <ival> Number
 
@@ -369,6 +370,7 @@ GlobalOptionDeclaration
 | LogNameOption
 | LogLevelOption
 | WorkDirOption
+| StrictRfcNoRoutingOption
 ;
 
 InterfaceOptionDeclaration
@@ -431,6 +433,15 @@ WorkDirOption
 :   WORKDIR_ STRING_
 {
     ParserOptStack.getLast()->setWorkDir($2);
+}
+;
+
+StrictRfcNoRoutingOption
+: STRICT_RFC_NO_ROUTING_
+{
+    Log(Notice) << "Strict-rfc-no-routing directive set: addresses will be added with 128 prefix." << LogEnd;
+    ParserOptStack.getLast()->setPrefixLength(128);
+    // by default prefix is set to 128
 }
 ;
 
@@ -794,6 +805,8 @@ bool ClntParser::EndIfaceDeclaration()
     // set interface options on the basis of just read information
     // preferred-server and rejected-servers are also copied here
     iface->setOptions(ParserOptStack.getLast());
+
+    iface->setPrefixLength(ParserOptStack.getLast()->getPrefixLength());
 
     if ( (iface->stateless()) && (ClntCfgIALst.count()) ) {
 	Log(Crit) << "Interface " << iface->getFullName() << " is configured stateless, "

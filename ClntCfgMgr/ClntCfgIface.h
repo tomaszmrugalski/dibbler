@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.11 2006-03-21 20:02:01 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.12 2006-08-22 00:01:19 thomson Exp $
  */
 
 #ifndef CLNTCFGIFACE_H
@@ -150,6 +150,9 @@ public:
     EState getLifetimeState();
     void setLifetimeState(EState state);
 
+    void setPrefixLength(int len);
+    int  getPrefixLength();
+
 private:
     string IfaceName;
     int ID;
@@ -157,6 +160,7 @@ private:
     bool isIA;
     bool Unicast;
     bool RapidCommit;
+    int  PrefixLength; // default prefix length of the configured addresses
 
     List(TClntCfgIA) IALst;
 

@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.16 2006-03-21 20:02:01 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.17 2006-08-22 00:01:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2006-03-21 20:02:01  thomson
+ * ClntCfgGroup removed (at last!)
+ *
  * Revision 1.15  2006/03/20 23:04:05  thomson
  * TA option is now parsed properly and SOLICIT is sent as expected.
  *
@@ -408,6 +411,14 @@ void TClntCfgIface::setNISPDomainState(EState state) {
 }
 void TClntCfgIface::setLifetimeState(EState state) {
     this->LifetimeState=state;
+}
+
+void TClntCfgIface::setPrefixLength(int len) {
+    this->PrefixLength = len;
+}
+
+int  TClntCfgIface::getPrefixLength() {
+    return this->PrefixLength;
 }
 
 // --------------------------------------------------------------------

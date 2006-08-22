@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.24 2006-01-12 00:23:35 thomson Exp $
+ * $Id: layer3.c,v 1.25 2006-08-22 00:01:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2006-01-12 00:23:35  thomson
+ * Cleanup changes. Now -pedantic option works.
+ *
  * Revision 1.23  2005/07/16 14:43:36  thomson
  * Compatibility with gcc 2.95 improved (bug #118)
  * Fix provided by Tomasz Torcz. Thanks.
@@ -294,7 +297,7 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
  * adds or deletes addresses to interface
  */
 
-int ipaddr_add_or_del(const char * addr, const char *ifacename, int add)
+int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, int add)
 {
     struct rtnl_handle rth;
     struct {
@@ -307,7 +310,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int add)
     int local_len = 0;
     int peer_len = 0;
     int scoped = 0;
-    
+
 #ifdef LOWLEVEL_DEBUG
     printf("### iface=%s, addr=%s, add=%d ###\n", ifacename, addr, add);
 #endif
@@ -319,6 +322,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int add)
     else req.n.nlmsg_type = RTM_DELADDR;        /* del address */
     req.ifa.ifa_family = AF_INET6;
     req.ifa.ifa_flags = 0;
+    req.ifa.ifa_prefixlen = prefixLen;
     
     get_prefix_1(&lcl, (char*)addr, AF_INET6);
     
@@ -348,14 +352,14 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int add)
 }
 
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
-	       unsigned long valid)
+	       unsigned long valid, int prefixLength)
 {
-    return ipaddr_add_or_del(addr,ifacename,1);
+    return ipaddr_add_or_del(addr,ifacename, prefixLength, 1);
 }
 
-int ipaddr_del(const char * ifacename, int ifaceid, const char * addr)
+int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefixLength)
 {
-    return ipaddr_add_or_del(addr,ifacename,0);
+    return ipaddr_add_or_del(addr,ifacename, prefixLength, 0);
 }
 
 int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly, int reuse)

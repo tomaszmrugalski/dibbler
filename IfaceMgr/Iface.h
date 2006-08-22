@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.13 2006-01-24 00:12:43 thomson Exp $
+ * $Id: Iface.h,v 1.14 2006-08-22 00:01:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006-01-24 00:12:43  thomson
+ * Global addresses support improved.
+ *
  * Revision 1.12  2005/04/29 00:08:20  thomson
  * *** empty log message ***
  *
@@ -82,6 +85,7 @@ class TIfaceIface{
     bool addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
     bool delAddr(SmartPtr<TIPv6Addr> addr);
     bool updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
+    void setPrefixLength(int len);
     
     // ---socket related---
     bool addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);
@@ -115,6 +119,8 @@ class TIfaceIface{
     // sockets
     List(TIfaceSocket) SocketsLst;
     char*   PresLLAddr;
+
+    int PrefixLen; // used during address adding
 };
 
 #endif

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.h,v 1.6 2006-08-21 22:18:27 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.7 2006-08-22 00:01:20 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006-08-21 22:18:27  thomson
+ * Changes by Krzysiek Wnuk
+ *
  * Revision 1.5  2006-03-02 00:57:46  thomson
  * FQDN support initial checkin.
  *
@@ -62,6 +65,7 @@ class TClntIfaceIface: public TIfaceIface {
     //Getters for FQDN
     string getFQDN();
     List(TIPv6Addr) getDNSServerLst();
+
  private:
 
     void addString(const char * filename, const char * str);
@@ -114,6 +118,7 @@ class TClntIfaceIface: public TIfaceIface {
     
     unsigned int LifetimeTimeout;
     unsigned int LifetimeTimestamp;
+
 };
 
 #endif

@@ -45,39 +45,40 @@ namespace std {
 
 {EOL}*   ; // ignore end of line
 [ \t]    ; // ignore TABs and spaces
-iface             { return ClntParser::IFACE_;}
-no-config         { return ClntParser::NO_CONFIG_;}
-address           { return ClntParser::ADDRES_;}
-ia                { return ClntParser::IA_;}
-ta                { return ClntParser::TA_; }
-iaid              { return ClntParser::IAID_; }
-no-ia             { return ClntParser::STATELESS_;}
-stateless         { return ClntParser::STATELESS_;}
-log-level         { return ClntParser::LOGLEVEL_; }
-log-mode          { return ClntParser::LOGMODE_; }
-log-name          { return ClntParser::LOGNAME_; }
-work-dir          { return ClntParser::WORKDIR_;}
-prefered-lifetime { return ClntParser::PREF_TIME_; }
-valid-lifetime    { return ClntParser::VALID_TIME_; }
-t1                { return ClntParser::T1_;}
-t2                { return ClntParser::T2_;}
-option            { return ClntParser::OPTION_; }
-dns-server        { return ClntParser::DNS_SERVER_;}
-domain            { return ClntParser::DOMAIN_;}
-ntp-server        { return ClntParser::NTP_SERVER_;}
-time-zone         { return ClntParser::TIME_ZONE_;}
-sip-server        { return ClntParser::SIP_SERVER_; }
-sip-domain        { return ClntParser::SIP_DOMAIN_; }
-fqdn              { return ClntParser::FQDN_; }
-nis-server        { return ClntParser::NIS_SERVER_; }
-nis-domain        { return ClntParser::NIS_DOMAIN_; }
-nis\+-server      { return ClntParser::NISP_SERVER_; }
-nis\+-domain      { return ClntParser::NISP_DOMAIN_; }
-lifetime          { return ClntParser::LIFETIME_; }
-reject-server     { return ClntParser::REJECT_SERVERS_;}
-prefered-server   { return ClntParser::PREFERRED_SERVERS_;}
-rapid-commit      { return ClntParser::RAPID_COMMIT_;}
-unicast           { return ClntParser::UNICAST_; }
+iface                 { return ClntParser::IFACE_;}
+no-config             { return ClntParser::NO_CONFIG_;}
+address               { return ClntParser::ADDRES_;}
+ia                    { return ClntParser::IA_;}
+ta                    { return ClntParser::TA_; }
+iaid                  { return ClntParser::IAID_; }
+no-ia                 { return ClntParser::STATELESS_;}
+stateless             { return ClntParser::STATELESS_;}
+log-level             { return ClntParser::LOGLEVEL_; }
+log-mode              { return ClntParser::LOGMODE_; }
+log-name              { return ClntParser::LOGNAME_; }
+work-dir              { return ClntParser::WORKDIR_;}
+prefered-lifetime     { return ClntParser::PREF_TIME_; }
+valid-lifetime        { return ClntParser::VALID_TIME_; }
+t1                    { return ClntParser::T1_;}
+t2                    { return ClntParser::T2_;}
+option                { return ClntParser::OPTION_; }
+dns-server            { return ClntParser::DNS_SERVER_;}
+domain                { return ClntParser::DOMAIN_;}
+ntp-server            { return ClntParser::NTP_SERVER_;}
+time-zone             { return ClntParser::TIME_ZONE_;}
+sip-server            { return ClntParser::SIP_SERVER_; }
+sip-domain            { return ClntParser::SIP_DOMAIN_; }
+fqdn                  { return ClntParser::FQDN_; }
+nis-server            { return ClntParser::NIS_SERVER_; }
+nis-domain            { return ClntParser::NIS_DOMAIN_; }
+nis\+-server          { return ClntParser::NISP_SERVER_; }
+nis\+-domain          { return ClntParser::NISP_DOMAIN_; }
+lifetime              { return ClntParser::LIFETIME_; }
+reject-server         { return ClntParser::REJECT_SERVERS_;}
+prefered-server       { return ClntParser::PREFERRED_SERVERS_;}
+rapid-commit          { return ClntParser::RAPID_COMMIT_;}
+unicast               { return ClntParser::UNICAST_; }
+strict-rfc-no-routing { return ClntParser::STRICT_RFC_NO_ROUTING_; }
 
 #.* ;
 

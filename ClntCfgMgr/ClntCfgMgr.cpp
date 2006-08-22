@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.39 2006-07-16 11:38:24 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.40 2006-08-22 00:01:19 thomson Exp $
  *
  */
 
@@ -139,8 +139,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 
 	    if (!ifaceIface) {
 		Log(Error) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			      << " specified in " << CLNTCONF_FILE << " is not present or does not support IPv6."
-			      << LogEnd;
+			   << " specified in " << CLNTCONF_FILE << " is not present or does not support IPv6."
+			   << LogEnd;
 		this->IsDone = true;
 		continue;
 	    }
@@ -152,6 +152,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
+
+	    ifaceIface->setPrefixLength(cfgIface->getPrefixLength());
 
 	    if (!ifaceIface->countLLAddress()) {
 		Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 

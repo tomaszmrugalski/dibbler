@@ -284,6 +284,7 @@ typedef
 #define	HEXNUMBER_	292
 #define	INTNUMBER_	293
 #define	DUID_	294
+#define	STRICT_RFC_NO_ROUTING_	295
 
 
 #line 169 "../bison++/bison.h"
@@ -369,6 +370,7 @@ static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
 static const int DUID_;
+static const int STRICT_RFC_NO_ROUTING_;
 
 
 #line 212 "../bison++/bison.h"
@@ -414,6 +416,7 @@ static const int DUID_;
 	,HEXNUMBER_=292
 	,INTNUMBER_=293
 	,DUID_=294
+	,STRICT_RFC_NO_ROUTING_=295
 
 
 #line 215 "../bison++/bison.h"

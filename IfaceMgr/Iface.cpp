@@ -6,48 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.20 2006-01-24 00:12:43 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.19  2005/07/17 21:09:52  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.18  2005/04/29 00:08:20  thomson
- * *** empty log message ***
- *
- * Revision 1.17  2005/01/23 23:17:53  thomson
- * Relay/global address support related improvements.
- *
- * Revision 1.16  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.15  2005/01/03 21:53:41  thomson
- * const modifier added.
- *
- * Revision 1.14  2004/12/27 20:48:22  thomson
- * Problem with absent link local addresses fixed (bugs #90, #91)
- *
- * Revision 1.13  2004/11/01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.12  2004/09/07 15:37:44  thomson
- * Socket handling changes.
- *
- * Revision 1.11  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.10  2004/09/03 20:58:35  thomson
- * *** empty log message ***
- *
- * Revision 1.9  2004/07/05 00:12:29  thomson
- * Lots of minor changes.
- *
- * Revision 1.8  2004/05/24 00:02:58  thomson
- * *** empty log message ***
- *
- * Revision 1.7  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: Iface.cpp,v 1.21 2006-08-22 00:01:20 thomson Exp $
  *
  */
 
@@ -207,8 +166,8 @@ int TIfaceIface::getHardwareType() {
  * (wrapper around pure C function)
  */
 bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid) {
-    return (bool)ipaddr_add(this->Name, this->ID, 
-                            addr->getPlain(), pref, valid);
+    return (bool)ipaddr_add(this->Name, this->ID, addr->getPlain(), 
+			    pref, valid, this->PrefixLen);
 }
 
 /*
@@ -216,7 +175,7 @@ bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid) {
  * (wrapper around pure C function)
  */
 bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr) {
-    return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain());
+    return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain(), this->PrefixLen);
 }
 
 /*
@@ -224,8 +183,8 @@ bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr) {
  */
 bool TIfaceIface::updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
 #ifdef WIN32
-    return (bool)ipaddr_add((char *)this->Name, this->ID, 
-		      (char *)addr->getPlain(), pref, valid);
+    return (bool)ipaddr_add((char *)this->Name, this->ID, (char *)addr->getPlain(), 
+			    pref, valid, this->PrefixLen);
 #endif
 
 #ifdef LINUX
@@ -360,6 +319,13 @@ SmartPtr<TIfaceSocket> TIfaceIface::getSocketByAddr(SmartPtr<TIPv6Addr> addr) {
     return 0; // NULL
 }
 
+void TIfaceIface::setPrefixLength(int len) {
+    if (len>128 || len<0) {
+	Log(Error) << "Invalid length " << len << " set attempt was ignored on the " << this->getFullName() << " interface." << LogEnd;
+	return;
+    }
+    this->PrefixLen = len;
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
@@ -374,6 +340,7 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
     strum << " name=\"" << x.Name << "\"";
     strum << " id=\"" << x.ID << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
+    strum << "    <!-- PrefixLength configured to " << x.PrefixLen << " -->" << endl;
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
     for (int i=0; i<x.LLAddrCnt; i++) {
