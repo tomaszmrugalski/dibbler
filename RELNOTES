@@ -1,19 +1,17 @@
 
-  Dibbler 0.4.2 release notes [2005-02-04]
- ------------------------------------------
+  Dibbler 0.5.0 alpha snapshot release notes [2006-08-22]
+ ---------------------------------------------------------
 
- This is a legal cleanup release. No bug fixes or new features were added.
- The sole purpose of this release is to meet Debian Free Software Guidelines,
- so Dibbler can be accepted as part of the Debian project.
+ This is NOT a release. It is a merely a snapshot of the current work, which contains
+ preview of the features, which will be available in the final 0.5.0 release.
 
- If you are using 0.4.1, there is no need to upgrade.
+ New features are:
+ - DNS Updates support, also know as FQDN
+ - Temporary addresses support
+ - Server cache 
 
- There are 3 different ports available: 
- - Linux
- - WinXP/2003
- - WinNT/2000 (experimental)
-
- Make sure that you use proper port.
+ Since this is only a snapshot, it is not complete and does not have all of the
+ features fully functional. Also the documentation is not complete.
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 
