@@ -23,11 +23,11 @@ parser:
 client: $(CLIENTBIN)
 
 ifdef EFENCE
-LINKPRINT += " efence"
+LINKPRINT += efence
 endif
 
 ifdef DEBUGINFO
-LINKPRINT += " debug"
+LINKPRINT += debug
 endif
 
 $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
