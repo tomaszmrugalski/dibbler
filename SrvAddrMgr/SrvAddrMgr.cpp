@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.13 2006-08-21 22:49:59 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.14 2006-08-24 01:12:29 thomson Exp $
  *
  */
 
@@ -434,6 +434,29 @@ void TSrvAddrMgr::getAddrsCount(
         }            
     }
 }
+
+SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
+{
+    SmartPtr<TAddrClient> ptrAddrClient = this->getClient(clntDuid);	
+    if (!ptrAddrClient) { 
+	Log(Warning) << "Unable to find client in the addrDB."; 
+	return 0;
+    }
+    ptrAddrClient->firstIA();
+    SmartPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
+    if (!ptrAddrIA) { 
+	Log(Warning) << "Client does not have any addresses assigned." << LogEnd; 
+	return 0;
+    }
+    ptrAddrIA->firstAddr();
+    SmartPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
+    if (!addr) {
+	return 0;
+    }
+    return addr->get();
+}
+
+
 
 /* ******************************************************************************** */
 /* *** ADDRESS CACHE ************************************************************** */

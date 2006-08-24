@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.16 2006-07-03 20:15:56 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.17 2006-08-24 01:12:29 thomson Exp $
  *                                                                           
  */
 
@@ -111,7 +111,7 @@ public:
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
-    SPtr<TFQDN> getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr);
+    SPtr<TFQDN> getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, string hint);
     SmartPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) * fqdn);
     int getFQDNMode();

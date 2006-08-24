@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.18 2006-08-21 22:22:52 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.19 2006-08-24 01:12:29 thomson Exp $
  */
 
 #include <sstream>
@@ -452,7 +452,7 @@ string TSrvMsg::showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro) {
  * @return 
  */
 SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
-				       SPtr<TIPv6Addr> clntAddr, bool doRealUpdate) {
+				       SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate) {
 
     SmartPtr<TSrvOptFQDN> optFQDN;
     SmartPtr<TSrvCfgIface> ptrIface = SrvCfgMgr->getIfaceByID( this->Iface );
@@ -465,7 +465,8 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     // FQDN is chosen, "" if no name for this host is found.
 
     Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr=" << clntAddr->getPlain() << LogEnd;
-    SPtr<TFQDN> fqdn = ptrIface->getFQDNName(clntDuid,clntAddr);
+	
+    SPtr<TFQDN> fqdn = ptrIface->getFQDNName(clntDuid,clntAddr, hint);
     if (!fqdn) {
 	Log(Debug) << "Unable to find FQDN for this client." << LogEnd;
 	return 0;

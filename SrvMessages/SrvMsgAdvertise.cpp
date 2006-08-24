@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.18 2006-08-21 21:57:02 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.19 2006-08-24 01:12:29 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -149,9 +149,16 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	}
 	case OPTION_FQDN : {
 	    SmartPtr<TSrvOptFQDN> requestFQDN = (Ptr*) opt;
+	    SmartPtr<TOptFQDN> anotherFQDN = (Ptr*) opt;
+	    string hint = anotherFQDN->getFQDN();
 	    SmartPtr<TSrvOptFQDN> optFQDN;
-	    Log(Debug) << "#### requestFQDN->getNFlag()=" << (requestFQDN->getNFlag()?"1":"0") << LogEnd;
-	    optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, true);
+
+	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr->getFirstAddr(clntDuid);
+	    if (clntAssignedAddr)
+		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAssignedAddr, hint, true);
+	    else
+		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, hint, true);
+
 	    if (optFQDN) {
 		this->Options.append((Ptr*) optFQDN);
 	    }
@@ -243,6 +250,9 @@ string TSrvMsgAdvertise::getName() {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2006-08-21 21:57:02  thomson
+ * FQDN fixes.
+ *
  * Revision 1.17  2006-08-21 21:33:20  thomson
  * prepareFQDN() moved from SrvMgrReply to SrvMsg,
  * unnecessary constructors removed.

@@ -11,8 +11,9 @@
 #include "Portable.h"
 
 TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
-    this->WorkDir  = WORKDIR;
+    this->WorkDir   = WORKDIR;
     this->Stateless = false;
+    this->CacheSize = SERVER_DEFAULT_CACHE_SIZE;
 }
 
 TSrvParsGlobalOpt::~TSrvParsGlobalOpt(void) {

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.27 2006-07-07 21:52:47 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.28 2006-08-24 01:12:29 thomson Exp $
  */
 
 #include <sstream>
@@ -423,8 +423,20 @@ void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
     this->FQDNSupport = true;
 }
 
-SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr) {
+/** 
+ * this method tries to find a name for a client. It check client's hint, and possible reservations
+ * by duid or by address
+ * 
+ * @param duid 
+ * @param addr 
+ * @param hint 
+ * 
+ * @return 
+ */
+SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, string hint) {
     FQDNLst.first();
+
+    SPtr<TFQDN> bestFound=0; // best FQDN found for that client
 
     SPtr<TFQDN> foo;
     while (foo=this->FQDNLst.get()) {
@@ -438,10 +450,24 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 	    Log(Debug) << "FQDN found: " << foo->Name << " using address " << addr->getPlain() << LogEnd;
 	    return foo;
 	}
+	
+	if (foo->Name == hint){
+	    // client asked for this name. Let's check if client is allowed to get this name.
+	    if ( (!foo->Duid) && (!foo->Addr) ) {
+		Log(Debug) << "Client's hint: " << hint << " found in fqdn list, setting fqdn to "<< foo->Name << LogEnd;
+		return foo;
+	    }
+	}
 	if (!foo->Addr && !foo->Duid) {
-	    Log(Debug) << "Not reserved FQDN found: " << foo->Name << LogEnd;
+	    if (!bestFound)
+		bestFound = foo;
 	    return foo;
 	}
+    }
+    
+    if (bestFound) {
+	Log(Debug) << "Not reserved FQDN found: " << foo->Name << LogEnd;
+	return bestFound;
     }
 
     // not found

@@ -595,8 +595,16 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    break;
 	case OPTION_FQDN : {
 	    SmartPtr<TSrvOptFQDN> requestFQDN = (Ptr*) opt;
+	    SmartPtr<TOptFQDN> anotherFQDN = (Ptr*) opt;
 	    SmartPtr<TSrvOptFQDN> optFQDN;
-	    optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, true);
+
+	    string hint = anotherFQDN->getFQDN();
+		
+	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr->getFirstAddr(clntDuid);
+	    if (clntAssignedAddr)
+		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAssignedAddr, hint, true);
+	    else
+		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, hint, true);
 	    if (optFQDN) {
 		this->Options.append((Ptr*) optFQDN);
 	    }

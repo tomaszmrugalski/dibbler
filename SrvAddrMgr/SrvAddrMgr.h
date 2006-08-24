@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.8 2006-08-21 22:49:59 thomson Exp $
+ * $Id: SrvAddrMgr.h,v 1.9 2006-08-24 01:12:29 thomson Exp $
  *
  */
 
@@ -56,6 +56,8 @@ class TSrvAddrMgr : public TAddrMgr
 
     bool addrIsFree(SmartPtr<TIPv6Addr> addr);
     bool taAddrIsFree(SmartPtr<TIPv6Addr> addr);
+
+    SPtr<TIPv6Addr> getFirstAddr(SPtr<TDUID> clntDuid);
 
     // address caching
     SPtr<TIPv6Addr> getCachedAddr(SPtr<TDUID> clntDuid);
