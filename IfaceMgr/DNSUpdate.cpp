@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.7 2006-08-21 22:16:17 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.8 2006-08-25 01:10:49 thomson Exp $
  *
  */
 
@@ -250,37 +250,17 @@ void DNSUpdate::addinMsg_newPTR(){
 // this things in here are not working at all :(
 	
   DnsRR rr;
-  rr.NAME = domainname ( hostname,*zoneroot); 
- stl_string dupa = rr.NAME.tostring();
+  rr.NAME = domainname ( "3.3.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.", *zoneroot);  // .0.0..0.0.0.0.0.2.ip6.arpa.
+  stl_string dupa = rr.NAME.tostring();
+  Log(Debug) << "rr.NAME=" << dupa << LogEnd;
 
   rr.TYPE = qtype_getcode("PTR", false);
   rr.TTL = txt_to_int(ttl);
-  string data = rr_fromstring(rr.TYPE, hostip, *zoneroot); 
+  string data = rr_fromstring(rr.TYPE, "troi.example.com.", *zoneroot); 
+
+  Log(Debug) << "rr.RDATA=" << data << LogEnd;
                                          
   rr.RDLENGTH = data.size();
-/** 
-    Here is the problem i think because code is executing without any exeption but DNS query for PTR record
-    like nslookup -type=PTR <address> does't return any values. I am not sure is data field is correct ??
-*/
-
-/*!
- * \brief convert a string to binary RR data
- *
- * This function converts a string describing a Resource Record to binary RR
- * data. The string should be in master file format - that is, if multiple
- * arguments are to be put in the RR data, they should be separated by any
- * number of spaces and tabs. For example, MX data might be "10 mail.yo.net.".
- * You can specify an origin to which domain names are considered relative by
- * means of the origin parameter.
- * \param RRTYTPE Type of the RR
- * \param data The text describing the RR
- * \param origin If given, the domain name relative domain names are considered
-                 relative to. This should be a binary domain name, like the
-                 domainname::domain field. If not given, domain names are
-                 considered relative to the root domain.
- * \return Binary data describing the RR
- * \sa rr_tostring()
- */
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
   message->authority.push_back(rr);
 }
