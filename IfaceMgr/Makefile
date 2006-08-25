@@ -6,3 +6,6 @@ objs: $(OBJECTS)
 
 libs: libIfaceMgr.a
 
+
+test1: test1.cpp DNSUpdate.cpp
+	g++ -o test1 -I../include test1.cpp DNSUpdate.o ../Misc/Logger.o -L../poslib/poslib/.libs -lposlib -lpthread

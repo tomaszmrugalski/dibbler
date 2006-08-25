@@ -1,10 +1,13 @@
-#include "IfaceMgr.h"
+#include <iostream>
+#include "DNSUpdate.h"
 
 using namespace std;
 int main() {
-    TIfaceMgr mgr;
 
-    cout << mgr << endl;
-    ipaddr_add("eth0", 2, "2000::1234", 100, 200);
-    ipaddr_add("eth0", 2, "2000::1234", 100, 200);
+    int numOfRecords = 4;
+
+    DNSUpdate *act = new DNSUpdate("2000::1", "fqdn.example.com.", "fqdn", "2000::123", "2h", numOfRecords);
+    int result = act->run();
+    delete act;
+
 }
