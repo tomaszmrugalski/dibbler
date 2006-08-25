@@ -4,9 +4,13 @@
 using namespace std;
 int main() {
 
-    int numOfRecords = 4;
+    char * dnsAddr   = "2000::1";
+    char * zonename  = "0.0.00.0.0.ip6.arpa";
+    char * hostname  = "fqdn";
+    char * hostip    = "2000::123";
+    int numOfRecords = 1;
 
-    DNSUpdate *act = new DNSUpdate("2000::1", "fqdn.example.com.", "fqdn", "2000::123", "2h", numOfRecords);
+    DNSUpdate *act = new DNSUpdate(dnsAddr, zonename, hostname, hostip, "2h", numOfRecords);
     int result = act->run();
     delete act;
 
