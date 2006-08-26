@@ -55,6 +55,8 @@ version.tex:
 	@../test/xtract_version > $@
 	@echo "[PERL   ] $(SUBDIR)/$@"
 	perl -i -pe 's/_/\\_/g' version.tex
+	perl -i -pe 's/^/\\newcommand{\\version}{/' version.tex
+	perl -i -pe 's/$$/ }/' version.tex
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"

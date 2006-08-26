@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.14 2006-02-02 23:36:56 thomson Exp $
+%% $Id: dibbler-user-usage.tex,v 1.15 2006-08-26 11:17:12 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.14  2006-02-02 23:36:56  thomson
+%% 0.4.2 release.
+%%
 %% Revision 1.13  2005/08/07 17:54:52  thomson
 %% Minor changes related to 0.4.1 release.
 %%
@@ -246,12 +249,12 @@ make install
 
 If there are problems with missing/different compiler
 version, take a look at the beginning of the Makefile.inc
-file. Dibbler was compiled using gcc 2.95, 3.0, 3.2, 3.3 and 3.4
-versions. Lexer files were generated using flex 2.5.31. Parser file
+file. Dibbler was compiled using gcc 2.95, 3.0, 3.2, 3.3, 3.4 and 4.1
+versions. Note that 2.95 is now considered obsolete and was not tested
+for some time. Lexer files were generated using flex 2.5.31. Parser file
 were created using bison++ 1.21.9\footnote{flex and bison++ tools are
   not required to compile Dibbler. Generated files are placed in CVS
-  and in tar.gz archives}. Everything was developed under Debian
-GNU/Linux system.
+  and in tar.gz archives}. 
 
 If there are problems with \verb+SrvLexer.cpp+ and
 \verb+ClntLexer.cpp+ files, please use FlexLexer.h in Port-linux/

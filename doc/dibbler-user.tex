@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-user.tex,v 1.16 2006-07-23 23:11:25 thomson Exp $
+%% $Id: dibbler-user.tex,v 1.17 2006-08-26 11:17:13 thomson Exp $
 %%
 
 \documentclass[11pt]{article}
@@ -84,9 +84,11 @@
 \newcommand{\CfgEnd}{\end{Verbatim} }
 \RecustomVerbatimEnvironment{Verbatim}{Verbatim}{frame=single,framesep=3mm}
 
+%% include auto-generated version number
+\input{version.tex}
 
-%% pakiety wypisuj tak: \msgt{SOLICIT}
-%% opcje wypisuj tak:   \opt{Option Request}
+%% message names should be printed this way: \msg{SOLICIT}
+%% options should be printed this way:       \opt{Option Request}
 
 \begin{document}
 
@@ -95,7 +97,7 @@
 \vspace{-1cm}
 
 \begin{center}
-  \input{version.tex}
+\version
 \end{center}
 
 \newpage
