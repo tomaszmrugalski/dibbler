@@ -209,21 +209,68 @@ char * inet_ntop6(const unsigned char * src, char * dst)
 	return strcpy(dst, tmp);
 }
 
+/** 
+ * converts packed address to a reverse string used in DNS Updates
+ * 
+ * @param src - packed address
+ * @param dst - output buffer (e.g. 1.2.3.0.0.0.0.0.0.0.0.0.0.e.f.f.3.ip6.arpa)
+ */
+void doRevDnsAddress( char * src,  char * dst){
+	int i=0;
+	dst[0]=0;
+	
+	for(i=15;i>=0;i--) {
+	    sprintf(dst + strlen(dst), "%x.%x.", (src[i] & 0x0f), ( (src[i] & 0xf0 ) >> 4 ) );
+	}
+	sprintf(dst + strlen(dst), "ip6.arpa");
+}
+
+/** 
+ * function converts address to a DNS zone root with specified length
+ * 
+ * @param src - packed address, e.g. 3ffe::123
+ * @param dst - dns zone root, e.g. 0.0.0.0.e.f.f.3.ip6.arpa
+ * @param length - zone length, e.g. 96
+ */
+void doRevDnsZoneRoot( char * src,  char * dst, int length){
+    int i=0;
+    dst[0]=0;
+
+    i = 15 - length/8; /* skip whole bytes */
+    /* FIXME: what to do with prefixes which do not divide by 4? */
+    switch (length%8) {
+    case 1:
+	break;
+    case 2:
+	break;
+    case 3:
+	break;
+    case 4:
+	sprintf(dst + strlen(dst), "%x.", (src[i]&0xf0) >> 4);
+	break;
+    case 5:
+	break;
+    case 6:
+	break;
+    case 7:
+    default:
+	break;
+    }
+    if (length%8) i--;
+    
+    /* print the rest */
+    for(; i>=0 ; i--) {
+	sprintf(dst + strlen(dst), "%x.%x.", (src[i] & 0x0f), ( (src[i] & 0xf0 ) >> 4 ) );
+    }
+    sprintf(dst + strlen(dst), "ip6.arpa");
+}
 void print_packed(char * addr)
 {
-
-/*    for (int i=0; i<16;i++)
-    {
-        cout.fill('0');
-        cout.width(2);
-        cout  << hex << (int)(unsigned char)addr[i];
-        if (i%2==1 && i!=15) cout << ":";
-	}*/
-
     int i=0;
     for (;i<16;i++) {
 	printf("%02x",*(unsigned char*)(addr+i));
 	if ((i%2) && i<15) 
 	    printf(":");
     }
+   printf("\n");
 } 

@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.56 2006-08-22 00:25:26 thomson Exp $
+ * $Id: Portable.h,v 1.57 2006-08-27 20:48:14 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -158,6 +158,8 @@ extern int inet_pton6(const char* src, char* dst);
 extern char * inet_ntop4(const char* src, char* dst);
 extern char * inet_ntop6(const char* src, char* dst);
 extern void print_packed(char * addr);
+extern void doRevDnsAddress( char * src, char *dst);
+extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
 extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
 /* microsleep(int microsecs) */
 extern void microsleep(int microsecs);
