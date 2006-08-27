@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.11 2006-08-26 11:17:12 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.12 2006-08-27 12:54:31 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.11  2006-08-26 11:17:12  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.10  2006-07-01 12:46:09  thomson
 %% Docs updates, precise log-mode added, TA, FQDN options described.
 %%
@@ -34,135 +37,172 @@
 \section{Intro}
 First of all, as an author I would like to thank you for your interest
 in this DHCPv6 implementation. If this documentation doesn't answer
-your question or you have any suggestions, feel free to contact
-me. See \emph{Contact} section for details. Also be sure to check out
-Dibbler website located at \url{http://klub.com.pl/dhcpv6/}.
+your questions or you have any suggestions, feel free to contact
+me. See \hyperlink{contact}{Contact} section for details. Also be sure
+to check out Dibbler website: \url{http://klub.com.pl/dhcpv6/}.
+
+\begin{flushright}
+\emph{Tomasz Mrugalski}
+\end{flushright}
 
 %%\href{http://klub.com.pl/dhcpv6/}{Dibbler's website}.
 
-\section{Overview}
+\subsection{Overview}
 
-Dibbler is a portable DHCPv6 solution. It features server, client and
+Dibbler is a portable DHCPv6 solution, which features server, client and
 relay. Currently there are ports available for Windows XP and 2003 (support for
 NT4 and 2000 is considered experimental) and Linux 2.4/2.6 systems. 
-It supports both stateful (i.e. IPv6 address
-granting) and stateless (i.e. options granting) autoconfiguration.
-Besides basic functionality\footnote{specified in RFC3315}, it also offers
-serveral enhancements, e.g. DNS servers and doman names
+It supports both stateful (i.e. IPv6 address granting) and stateless
+(i.e. options granting) autoconfiguration. Besides basic
+functionality (specified in basic DHCPv6 spec, RFC3315 \cite{rfc3315}),
+it also offers serveral enhancements, e.g. DNS servers and domain names
 configuration.
 
 Dibbler is an open source software, distributed under GNU GPL
 licence. It means that it is freely available, free of charge and can
-be used by anyone (including commercial users). Sources are also
-available, so anyone skilled enough can fix bugs, add new features and
+be used by anyone (including commercial users). Source code is also
+provided, so anyone skilled enough can fix bugs, add new features and
 release his/her own version.
 
-As for now, Dibbler offers these features:
+%% FIXME: Insert picture here
+
+As for now, Dibbler support following features:
 \begin{itemize}
-\item Basic server discovery and address assignment (SOLICIT,
-  ADVERTISE, REQUEST and REPLY messages) -- simplest case possible:
-  client discovers server, then asks for an address, which is granted
-  by a~server.
-\item Best server discovery -- when client receives more than one
-  ADVERTISE messages from different servers, it chooses the best one
-  and remembers remaining ones as a backup.
-\item Many servers support -- client is capable of discovering and
-  dealing with multiple servers. For example, client would like to
-  have 5 addresses configured. Prefered server can only grant 3, so
-  client send request for remaining 2 addresses to one of the
-  remaining servers.
-\item Relay support -- Dibbler server supports indirect
-  communication with clients via relays. Stand-alone relay implementation is also
-  available. Clients can talk to the server directly or via relays.
+\item Basic server discovery and address assignment (\msg{SOLICIT},
+      \msg{ADVERTISE}, \msg{REQUEST} and \msg{REPLY} messages) -- This
+      is a most common case: client discovers servers available in the
+      local network, then asks for an address (and possibly additional
+      options like DNS configuration), which is granted by a~server.
+\item Best server discovery -- when client detects more than one
+      server available (by receiving more than one \msg{ADVERTISE}
+      message), it chooses the best one and remembers remaining
+      ones as a backup.
+\item Multiple servers support -- Client is capable of discovering and
+      maintaning communication with several servers. For example, client
+      would like to have 5 addresses configured. Prefered server can
+      only grant 3, so client send request for remaining 2 addresses to
+      one of the remaining servers.
+\item Relay support -- In a larger network, which contains several
+      Ethernet segments and/or wireless areas, sometimes centrally
+      located DHCPv6 server might not be directly reachable. In such
+      cace, additional proxies, so called relays, might be deployed to
+      relay communication between clients and a remote server. Dibbler
+      server supports indirect communication with clients via
+      relays. Stand-alone, lightweight relay implementation is also
+      available. Clients are capable of talking to the server directly
+      or via relays.
+\item Address renewal -- After receiving address from a server, client
+      might be instructed to renew its address at regular
+      intervals. Client periodically sends \msg{RENEW} messege to a
+      server, which granted its address. In case of communication
+      failure, client is also able to attempt emergency address renewal
+      (i.e. it sends \msg{REBIND} message to any server).
 \item Unicast communication -- if specific conditions are met, client
-  could send messages directly to a server's unicast address, so
-  additional servers does not need to process those messages. It also
-  improves effciency, as all nodes present in LAN segment receive
-  multicast packets.\footnote{Nodes, which do not belong to specific
-    multicast group, drop those packets silently. However, determining
-    if host belongs or not to a group must be performed on each node.}
-\item Address renewal (RENEW,REBIND and REPLY messages) -- client renews
-  addresses at certain time intervals, if server specified so.
-\item Duplicate address detection (DECLINE and REPLY messages) -- client
-  can detect and properly handle faulty situation, when server grants
-  address which is illegaly used by some other host. It will inform
-  server of such circumstances, and request for another
-  address. Server will mark this address as used by unknown host, and
-  will assign another address to a client.
-\item Power failure/crash support (CONFIRM and REPLY messages) -- after
-  client recovers from crash or power failure, it still can have
-  assigned valid addresses. In such circumstances, client uses CONFIRM
-  message, to config if those addresses are still valid%
-  \footnote{As for \version version, this functionality works on server side only,
-  client side support will be available in future releases.}.
-\item IA Option -- this option is used to carry addresses. Both server
-  and client support multiple IAs in one message. Additional feature
-  is client capability to ask for a specific address.
-\item TA Option -- this option is used to carry temporary
-  addresses. Both server and client supports this. Note that it is
-  better to use non-temporary, normal (ia) addresses. If you don't
-  know, what TA option is, you definetely don't need it.
-\item Rapid Commit Option (SOLICIT and REPLY messages) -- if both
-  client and server are configured to use rapid commit, address
-  assignment procedure can be shortened to 2 messages. Major
-  advantage is lesser network usage and quicker client startup time.
+      could send messages directly to a server's unicast address, so
+      additional servers does not need to process those messages. It also
+      improves effciency, as all nodes present in LAN segment receive
+      multicast packets.\footnote{Nodes, which do not belong to specific
+      multicast group, drop those packets silently. However, determining
+      if host belongs or not to a group must be performed on each
+      node. Also using multicast communication increases the network load.}
+\item Duplicate address detection -- Client is able to detect and
+      properly handle faulty situation, when server grants an address
+      which is illegaly used by some other host. It will inform
+      server of such circumstances (using \msg{DECLINE} message), and
+      request another address. Server will mark this address as used by
+      unknown host, and will assign another address to a client.
+\item Power failure/crash support -- After client recovers from a crash or
+      a power failure, it still can have valid addresses assigned. In such
+      circumstances, client uses \msg{CONFIRM} message, to config if
+      those addresses are still valid. \footnote{As for \version
+      version, this functionality works on the server side only,
+      client side support will be available in future releases.}.
+\item Normal and temporary addresses -- Depending on its purpose,
+      client can be configured to ask for normal (\opt{IA\_NA} option)
+      or temporary (\opt{IA\_TA} option). Although use of temporary
+      addresses is rather uncommon, both dibbler server and client
+      support it.
+\item Hint system -- Client can be configured to send various parameters
+      and addresses in the \msg{REQUEST} message. It will be treated as
+      a hint by the server. If such hint is valid, it will be granted
+      for this client.
+\item Server caching -- Server can cache granted addresses, so the same
+      client will receive the same address each time it asks. Size of
+      this cache can be configured.
+\item Stateless mode -- Client can be configured to not ask for any
+      addresses, but the configuration options only. In such case, when
+      no addresses are granted, such configuration is called stateless
+      (\msg{INFORMATION-REQUEST} message is used instead of normal
+      \msg{REQUEST}).
+\item Rapid Commit -- Sometimes it is desirable to quicken configuration
+      process. If both client and server are configured to use rapid
+      commit, address assignment procedure can be shortened to 2
+      messages, instead of usual 4. Major advantage is lesser network
+      usage and quicker client startup time.
 \end{itemize}
 
-Except RFC3315-specified behavior, Dibbler also support several enhancements:
+\subsection{Supported parameters}
+Except RFC3315-specified behavior \cite{rfc3315}, Dibbler also supports
+several enhancements:
 
 \begin{itemize}
-\item DNS Servers Option -- client can ask for information about DNS
-  servers. DHCPv6 server will provide those addresses.
-\item Domain Name Option -- client can ask for information about
-  domain name it is connected in.
-\item Time Zone Option -- client can ask for information about 
-time zone it is currently in.
-\item NTP Servers Option -- client can ask for Network Time Protocol
-  Servers to synchronize its clock.
-\item SIP Servers Option -- SIP servers IPv6 address information can
-  be passed to clients.
-\item SIP domain name - SIP domain name can be passed to clients.
-\item NIS, NIS+ server Option -- Both NIS and NIS+ server adresses
-  can be passed to clients.
-\item NIS, NIS+ domain name Option -- NIS or NIS+ domain names can be
-  passed to clients.
-\item Option renewal mechanism (Lifetime Option) -- options obtained
-  from server can be updated periodically.
-\item Dynamic DNS Updates -- server can assign a fully qualified
-  domain name for a client. Client is able to perform DNS Update,
-  i.e. inform DNS server about its name. Currently server is able to
-  provide such names, but does not support the DNS Update procedure by
-  itself and 
+\item DNS Servers -- During normal operation, almost all hosts require
+      constant use of the DNS servers. It is necessary for event basic
+      operations, like web surfing. DHCPv6 client can ask for
+      information about DNS servers and DHCPv6 server will provide
+      necessary information. \cite{rfc3646}
+\item Domain Name -- Client might be interested in obtaining information
+      about its domain. Properly configured domain allow reference to a
+      different hosts in the same domain using hostname only, not the
+      full domain name, e.g. alice.example.com with properly configured
+      domain can refer to another host in the same domain by using 'bob'
+      only, instead of full name bob.example.com. \cite{rfc3646}
+\item NTP Servers -- To prevent clock misconfiguration and drift, NTP
+      protocol \cite{ntp} can be used to synchronize clocks. However, to
+      successful use it, location of near NTP servers must be
+      known. Dibbler is able to configure this information. \cite{draft-timezone}
+\item Time Zone -- To avoid time-related ambiguation, each host should
+      have timezone set properly. Dibbler is able to pass this parameter
+      to all clients, who request it. \cite{draft-timezone}
+\item SIP Servers -- Session Initiation Protocol (SIP) \cite{sip} is
+      commonly used in VoIP solutions. One of the necessary information
+      is SIP server addresses. This information can be passed to
+      the clients. \cite{3319}
+\item SIP Domain Name -- SIP domain name is another important parameter
+      of the VoIP capable nodes. This parameter can be passed to all
+      clients, who ask for it. \cite{3319}
+\item NIS, NIS+ Server -- Network Information Service is a protocol for
+      sharing authentication parameters between multiple Unix or Linux
+      nodes. Both NIS and NIS+ server adresses can be passed to the
+      clients. \cite{3898}
+\item NIS, NIS+ Domain Name -- NIS or NIS+ domain name is another necessary
+      parameter for NIS or NIS+. It can be obtained from the DHCPv6
+      server to all clients, who require it. \cite{rfc3898}
+\item Option Renewal Mechanism (Lifetime option)-- All of the options
+      mentioned on this list can be refreshed periodically. This might
+      be handy if one of those parameters change. \cite{draft-lifetime}
+\item Dynamic DNS Updates -- Server can assign a fully qualified
+      domain name for a client. To make such name useful, DNS servers
+      must be informed that such name is bound to a specific IPv6
+      address. This procedure is called DNS Update. There are two kinds
+      of the DNS Updates: forward and reverse. First is used to
+      translate domain name to an address. The second one is used to
+      obtain full domain name of a known address. See section
+      \ref{features-fqdn} for details. \cite{draft-fqdn}
 \end{itemize}
 
-And now some implementation specific details:
+\subsection{Not supported features}
+Although list of the supported features increases with each release,
+some parts of the spec are not implemented yet. Below is a list of such
+features:
+
 \begin{itemize}
-\item Server, client and relay, after each action dumps state to disk
-  in a XML format, so it can be easily processed in an automated
-  manner. Simple example of this advantage is a script, which can generate
-  reports about server usage (assigned addresses, clients configured
-  and so on);
-\item Dibbler is fully portable. Core logic is system independent and
-  coded in C++ language. There are also several low-level functions,
-  which are system speficic. They're used for adding addresses,
-  retriving information about interfaces, setting DNS servers and so
-  on. Porting Dibbler to other systems (and even other architectures)
-  would require implementic only those serveral system-specific
-  functions.
-\item Although Dibbler was developed on the i386 architecture, there
-  are ports available for other architectures: IA64, AMD64, PowerPC,
-  HPPA, Sparc, MIPS, S/390 and Alpha. They are available in the PLD
-  Linux Distribution 2.0 as well as well as in Debian GNU/Linux. You
-  can download them from \url{http://www.pld-linux.org/} or
-  \url{http://www.debian.org}. Keep in mind
-  that author has not tested those ports, so there might be some
-  unknown issues present.
+ \item Prefix Delegation \cite{prefix-del}
+ \item Authorization \cite{rfc3315}
+ \item Reconfigure mechanism \cite{rfc3315}
 \end{itemize}
 
-See RELEASE-NOTES for details about version-specific upgrades, fixes
-and features.
-
-\section{Requirements}
+\subsection{Requirements}
 Dibbler can be run on Linux systems with kernels from 2.4 and 2.6
 series. Obviously, IPv6 (compiled into kernel or as module) support is
 required to run. DHCPv6 uses UDP ports below 1024, so root privileges
@@ -177,3 +217,26 @@ required.
 Support for Windows NT4 and 2000 is limited and considered
 experimental. Due to lack of support and any kind of informations from
 Microsoft, don't expect this state to change.
+
+See RELEASE-NOTES for details about version-specific upgrades, fixes
+and features.
+
+\subsection{Supported platforms}
+Although Dibbler was developed on the i386 architecture, there
+are ports available for other architectures: IA64, AMD64, PowerPC,
+HPPA, Sparc, MIPS, S/390 and Alpha. They are available in the PLD,
+Gentoo and Debian Linux distributions. You can download system and
+distribution specficic packages from \url{http://www.pld-linux.org/},
+\url{http://www.gentoo.org} or \url{http://www.debian.org}. Keep in mind
+that author has not tested those ports, so there might be some
+unknown issues present. If this is the case, be sure to note package
+maintainers. 
+
+If your system is not on the list, don't despair. Dibbler is fully
+portable. Core logic is system independent and coded in C++
+language. There are also several low-level functions, which are system
+speficic. They're used for adding addresses, retriving information about
+interfaces, setting DNS servers and so on. Porting Dibbler to other
+systems (and even other architectures) would require implementic only
+those serveral system-specific functions. See Developer's Guide for
+details.
