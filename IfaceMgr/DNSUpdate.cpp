@@ -7,11 +7,12 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.8 2006-08-25 01:10:49 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.9 2006-08-27 21:24:35 thomson Exp $
  *
  */
 
 #include "DNSUpdate.h"
+#include "Portable.h"
 #include "Logger.h"
 #include <stdio.h>
 
@@ -46,14 +47,8 @@ DnsUpdateResult DNSUpdate::run(){
 Log(Debug) << "Performing DNS Update: Only PTR record." << LogEnd;   
   try {
    this->createSOAMsg();
-   
-   // method delete OldRR
    this->addinMsg_delOldRR();   
-   
-   /// methode add
    this->addinMsg_newPTR();
-            
-   //sendmessage
    this->sendMsg();
    
   } catch (PException p) {
@@ -79,57 +74,46 @@ Log(Debug) << "Performing DNS Update: Only PTR record." << LogEnd;
   }
    } // number of records 1 
  else if (this->numberOfRecords == 2){    
-  try {
-   Log(Debug) << "Performing DNS Update: Both (AAAA and PTR) records." << LogEnd;
-   Log(Debug) << "Updating PTR record: not supported yet, skipped." << LogEnd;
-
-   // for a while this is not working ... 
-   this->createSOAMsg();
-   // method delete OldRR
-   this->addinMsg_delOldRR();   
-   
-   /// methode add
-   this->addinMsg_newPTR();
-   //sendmessage
-   this->sendMsg();
-
-   // Adding AAAA record
-   Log(Debug) << "Updating AAAA record." << LogEnd;
-   this->createSOAMsg();
-   this->addinMsg_delOldRR();   
-   this->addinMsg_newAAAA();
-   this->sendMsg();
-  } catch (PException p) {
+  
+     Log(Debug) << "Performing DNS Cleanup: Only PTR record." << LogEnd;   
+     try {
+	 
+	 this->createSOAMsg();
+	 this->addinMsg_delOldRR();   
+	 this->deletePTRRecordFromRRSet();
+        
+	 this->sendMsg();
+     } catch (PException p) {
+	 
 	
-	if (!strcmp(p.message,"Could not connect TCP socket") ){
+	 if (!strcmp(p.message,"Could not connect TCP socket") ){
 
-		Log(Error) << "DNS update : " << p.message << LogEnd;
-		return DNSUPDATE_CONNFAIL;
-	}
-	else if (!strcmp(p.message,"NOTAUTH")){
+	     Log(Error) << "DNS update cleaning up PTR record: " << p.message << LogEnd;
+	     return DNSUPDATE_CONNFAIL;
+	 }
+	 else if (!strcmp(p.message,"NOTAUTH")){
 
-		Log(Error) << "DNS update : Nameserver is not authoritative for this zone (" << p.message << ")" << LogEnd;	
-		return DNSUPDATE_SRVNOTAUTH;
+	     Log(Error) << "DNS update cleaning up PTR record: Nameserver is not authoritative for this zone (" << p.message << ")" << LogEnd;	
+	     return DNSUPDATE_SRVNOTAUTH;
     }
-	else
-	{		
+	 else
+	 {		
 
-		Log(Error) << "DNS update : error not specified (" << p.message << ")" << LogEnd;
-		return DNSUPDATE_ERROR;
-    	} 
-	
-  	}// exeption catch
+	     Log(Error) << "DNS update cleaning up PTR record: error not specified (" << p.message << ")" << LogEnd;
+	     return DNSUPDATE_ERROR;
+	 } 
+	 
+     }// exeption catch
 
    } // number of records 2
  else if (this->numberOfRecords == 3){    
-     // used on the client side. Perform AAAA update only
+  
      Log(Debug) << "Performing DNS Update: Only AAAA record." << LogEnd;   
      try {
 	 
 	 this->createSOAMsg();
 	 this->addinMsg_delOldRR();   
-	
-        this->addinMsg_newAAAA();
+	 this->addinMsg_newAAAA();
 	 this->sendMsg();
      } catch (PException p) {
 	 
@@ -157,13 +141,13 @@ Log(Debug) << "Performing DNS Update: Only PTR record." << LogEnd;
 
 
 else if (this->numberOfRecords == 4){    
-     // used on the client side. Perform AAAA cleanup only 
+    
      Log(Debug) << "Performing DNS Cleanup: Only AAAA record." << LogEnd;   
      try {
 	 
 	 this->createSOAMsg();
 	 this->addinMsg_delOldRR();   
-	 this->deleteRecordFromRRSet("AAAA");
+	 this->deleteAAAARecordFromRRSet();
         //this->addinMsg_newAAAA();
 	 this->sendMsg();
      } catch (PException p) {
@@ -188,7 +172,7 @@ else if (this->numberOfRecords == 4){
 	 
      }// exeption catch
      
- } // number of records 3
+ } // number of records 4
    
 
 
@@ -222,14 +206,14 @@ void DNSUpdate::addinMsg_newAAAA(){
     Log(Debug) << "FQDN: Building AAAA record." << LogEnd;
 }
 
-/** delete a single rr from rrset 
-If no such RRs exist, then this Update RR will be
-silently ignored by the primary master.
-*/
+/** 
+ * delete a single rr from rrset. If no such RRs exist, then this Update RR will be
+ * silently ignored by the primary master.
+ * 
+ */
+void DNSUpdate::deleteAAAARecordFromRRSet(){
 
-void DNSUpdate::deleteRecordFromRRSet(string type){
-
-
+  
   DnsRR rr;
   rr.NAME = domainname(hostname, *zoneroot);
   rr.TYPE = qtype_getcode("AAAA", false);
@@ -243,6 +227,26 @@ void DNSUpdate::deleteRecordFromRRSet(string type){
 
 }
 
+void DNSUpdate::deletePTRRecordFromRRSet(){
+
+  
+  DnsRR rr;
+  rr.NAME = domainname ( "3.3.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.", *zoneroot);  // .0.0..0.0.0.0.0.2.ip6.arpa.
+  stl_string dupa = rr.NAME.tostring();
+  Log(Debug) << "rr.NAME=" << dupa << LogEnd;
+  rr.CLASS=254;
+  rr.TYPE = qtype_getcode("PTR", false);
+  rr.TTL = 0;
+  string data = rr_fromstring(rr.TYPE, "troi.example.com.", *zoneroot); 
+
+  Log(Debug) << "rr.RDATA=" << data << LogEnd;
+                                         
+  rr.RDLENGTH = data.size();
+  rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
+  message->authority.push_back(rr);
+
+}
+		
 /** insert a new-PTR entry in message*/
 void DNSUpdate::addinMsg_newPTR(){
  
@@ -250,7 +254,16 @@ void DNSUpdate::addinMsg_newPTR(){
 // this things in here are not working at all :(
 	
   DnsRR rr;
-  rr.NAME = domainname ( "3.3.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.", *zoneroot);  // .0.0..0.0.0.0.0.2.ip6.arpa.
+  const int bufSize = 128;
+  char destination[16];
+  char result[bufSize];
+  memset(result, 0, bufSize);
+  inet_pton6(hostip, destination);
+  //print_packed(destination);
+  doRevDnsAddress(destination,result);
+
+  rr.NAME = domainname ( result /*"3.3.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa."*/, *zoneroot);  
+                         // .0.0..0.0.0.0.0.2.ip6.arpa.
   stl_string dupa = rr.NAME.tostring();
   Log(Debug) << "rr.NAME=" << dupa << LogEnd;
 
@@ -258,7 +271,7 @@ void DNSUpdate::addinMsg_newPTR(){
   rr.TTL = txt_to_int(ttl);
   string data = rr_fromstring(rr.TYPE, "troi.example.com.", *zoneroot); 
 
-  Log(Debug) << "rr.RDATA=" << data << LogEnd;
+  Log(Debug) << "#### rr.RDATA=" << data << LogEnd;
                                          
   rr.RDLENGTH = data.size();
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
