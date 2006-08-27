@@ -852,11 +852,45 @@ void TSrvMsgReply::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA,
 			// checking who was doing update 
 			if (FQDNMode == 1 ){
 				Log(Notice) << "Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
-				Log(Notice) << "#### FIXME: " << __FILE__ << ", line " << __LINE__ << LogEnd;
+				
+			
+			unsigned int dotpos = fqdnName.find(".");
+	    		string hostname = "";
+	    		string domain = "";
+	    		
+			if (dotpos == string::npos) {
+	        		Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
+			 		<< "] Trying to do the cleanup..." << LogEnd;
+   	          		hostname = fqdnName;
+	    		}
+	    		else {
+	     	  		hostname = fqdnName.substr(0, dotpos);
+	          		domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
+	    		}
+			// AAAA Cleanup first (4 as a parameter in DNSUpdate->run() method)
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
+			string revdomain ="0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa";
+			DNSUpdate *act = new DNSUpdate(dns->getPlain(), (char*) revdomain.c_str(),(char*) hostname.c_str(), clntAddr->getPlain(), "2h",2);
+			int result = act->run();
+			delete act;
+			
+			if (result == DNSUPDATE_SUCCESS) {
+			    
+			    Log(Notice) << "FQDN Cleaned up succesfully !" << LogEnd;
+			} else {
+			    Log(Warning) << "Unable to perform DNS update. Clean up Disabling FQDN on " 
+					 << ptrIface->getFullName() << LogEnd;
+			    
 			}
+#else
+			Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+#endif
+		    	} // fqdn mode 2 
+			
 			else if (FQDNMode == 2){
-				Log(Notice) << "Attempting to clean up AAAA and PTR record in DNS Server " << * dns << ", IP = " << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
-				Log(Notice) << "#### FIXME PTR clenup not yet impelemented: " << __FILE__ << ", line " << __LINE__ << LogEnd;
+			
+			Log(Notice) << "Attempting to clean up AAAA and PTR record in DNS Server " << * dns << ", IP = " << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
+				
 			
 			unsigned int dotpos = fqdnName.find(".");
 	    		string hostname = "";
@@ -886,10 +920,27 @@ void TSrvMsgReply::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA,
 					 << ptrIface->getFullName() << LogEnd;
 			    
 			}
+
+			Log(Notice) << "Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
+				
+			string revdomain ="0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa";
+			DNSUpdate *act2 = new DNSUpdate(dns->getPlain(), (char*) revdomain.c_str(),(char*) hostname.c_str(), clntAddr->getPlain(), "2h",2);
+			int result2 = act2->run();
+			delete act2;
+			
+			if (result2 == DNSUPDATE_SUCCESS) {
+			    
+			    Log(Notice) << "FQDN Cleaned up succesfully !" << LogEnd;
+			} else {
+			    Log(Warning) << "Unable to perform DNS update. Clean up Disabling FQDN on " 
+					 << ptrIface->getFullName() << LogEnd;
+			    
+			}
+
 #else
 			Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
 #endif
-		    	}
+		    	} // fqdn mode 2 
 			
 		} // have have dns name 
 		fqdn->setUsed(false);

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.19 2006-08-24 01:12:29 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.20 2006-08-27 21:18:08 thomson Exp $
  */
 
 #include <sstream>
@@ -478,7 +478,8 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     // Setting the O Flag correctly according to the difference between O flags
     optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
     string fqdnName = fqdn->getName();
-    
+
+    Log(Debug) << "#### FQDNREVZONE LENGTH " << ptrIface->getRevDNSZoneRootLength()<<LogEnd;
     fqdn->setUsed(true);
 
     if (requestFQDN->getNFlag()) {
@@ -537,36 +538,100 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	    hostname = fqdnName.substr(0, dotpos);
 	    domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
 	}
-	string revdomain = "ip6.arpa";
+	string revdomain = "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.";
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
-	DnsUpdateResult result = DNSUPDATE_SKIP;
-	Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
-	DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
-				       (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
-	result = act->run();
-	delete act;
 
-	// regardless of the result, store the info
-	ptrAddrIA->setFQDN(fqdn);
-	ptrAddrIA->setFQDNDnsServer(DNSAddr);
-
-	switch (result) {
-	case DNSUPDATE_SUCCESS:
-	    Log(Notice) << "FQDN Configured successfully !" << LogEnd;
-	    break;
-	case DNSUPDATE_ERROR:
-	    Log(Warning) << "DNS Update failed." << LogEnd;
-	    break;
-	case DNSUPDATE_CONNFAIL:
-	    Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
-	    break;
-	case DNSUPDATE_SRVNOTAUTH:
-	    Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
-	    break;
-	case DNSUPDATE_SKIP:
-	    Log(Notice) << "DNS Update was skipped." << LogEnd;
-	    break;
-	}
+	if (FQDNMode==1){
+	    DnsUpdateResult result = DNSUPDATE_SKIP;
+	    Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
+					   (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
+	    result = act->run();
+	    delete act;
+	    
+	    // regardless of the result, store the info
+	    ptrAddrIA->setFQDN(fqdn);
+	    ptrAddrIA->setFQDNDnsServer(DNSAddr);
+	    
+	    switch (result) {
+	    case DNSUPDATE_SUCCESS:
+		Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+		break;
+	    case DNSUPDATE_ERROR:
+		Log(Warning) << "DNS Update failed." << LogEnd;
+		break;
+	    case DNSUPDATE_CONNFAIL:
+		Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
+		break;
+	    case DNSUPDATE_SRVNOTAUTH:
+		Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
+		break;
+	    case DNSUPDATE_SKIP:
+		Log(Notice) << "DNS Update was skipped." << LogEnd;
+		break;
+	    }
+	} // fqdnMode == 1
+	else if (FQDNMode==2){
+	    string revdomain ="0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa";
+	    DnsUpdateResult result = DNSUPDATE_SKIP;
+	    
+	    Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
+					   (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode-1);
+	    result = act->run();
+	    delete act;
+	    
+	    // regardless of the result, store the info
+	    ptrAddrIA->setFQDN(fqdn);
+	    ptrAddrIA->setFQDNDnsServer(DNSAddr);
+	    
+	    switch (result) {
+	    case DNSUPDATE_SUCCESS:
+		Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+		break;
+	    case DNSUPDATE_ERROR:
+		Log(Warning) << "DNS Update failed." << LogEnd;
+		break;
+	    case DNSUPDATE_CONNFAIL:
+		Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
+		break;
+	    case DNSUPDATE_SRVNOTAUTH:
+		Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
+		break;
+	    case DNSUPDATE_SKIP:
+		Log(Notice) << "DNS Update was skipped." << LogEnd;
+		break;
+	    }
+	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
+	    Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
+	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
+					    (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode+1);
+	    result2 = act2->run();
+	    delete act;
+	    
+	    // regardless of the result, store the info
+	    ptrAddrIA->setFQDN(fqdn);
+	    ptrAddrIA->setFQDNDnsServer(DNSAddr);
+	    
+	    switch (result2) {
+	    case DNSUPDATE_SUCCESS:
+		Log(Notice) << "FQDN Configured successfully !" << LogEnd;
+		break;
+	    case DNSUPDATE_ERROR:
+		Log(Warning) << "DNS Update failed." << LogEnd;
+		break;
+	    case DNSUPDATE_CONNFAIL:
+		Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
+		break;
+	    case DNSUPDATE_SRVNOTAUTH:
+		Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
+		break;
+	    case DNSUPDATE_SKIP:
+		Log(Notice) << "DNS Update was skipped." << LogEnd;
+		break;
+	    }
+	} // fqdnMode == 2
+	
 #else
 	Log(Error) << "This server is compiled without DNS Update support." << LogEnd;
 #endif
