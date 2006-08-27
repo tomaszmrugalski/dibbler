@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.8 2006-07-03 18:19:12 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.9 2006-08-27 21:16:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006-07-03 18:19:12  thomson
+ * FQDN support added.
+ *
  * Revision 1.7  2006-03-03 21:09:34  thomson
  * FQDN support added.
  *
@@ -308,10 +311,17 @@ int TSrvParsIfaceOpt::getFQDNMode(){
 void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode){
 	this->FQDNMode=FQDNMode;
 }
+int TSrvParsIfaceOpt::getRevDNSZoneRootLength(){
+	return this->revDNSZoneRootLength;
+}
+void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength){
+	this->revDNSZoneRootLength = revDNSZoneRootLength;
+}
+
+
 bool TSrvParsIfaceOpt::supportFQDN() {
     return this->FQDNSupport;
 }
-
 
 // --- option: NIS server ---
 void TSrvParsIfaceOpt::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {

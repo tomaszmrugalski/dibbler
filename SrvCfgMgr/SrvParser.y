@@ -694,8 +694,10 @@ FQDNOption
 :OPTION_ FQDN_
 {
     PresentFQDNLst.clear();
-    Log(Debug) << "No FQDNMode found, setting default mode 2 (all updates executed by server)."<< LogEnd;
+    Log(Debug)   << "No FQDNMode found, setting default mode 2 (all updates executed by server)." << LogEnd;
+    Log(Warning) << "revDNS zoneroot lenght not found, dynamic revDNS update will not be possible." << LogEnd;
     ParserOptStack.getLast()->setFQDNMode(2);
+    ParserOptStack.getLast()->setRevDNSZoneRootLength(0);
 } FQDNList
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
@@ -703,15 +705,27 @@ FQDNOption
 |OPTION_ FQDN_ INTNUMBER_
 {
     PresentFQDNLst.clear();
-    Log(Debug) << "FQDNMode found, setting value "<< $3 <<LogEnd;
+    Log(Debug)  << "FQDNMode found, setting value"<< $3 <<LogEnd;
+    Log(Warning)<< "revDNS zoneroot lenght not specified, dynamic revDNS update will not be possible." << LogEnd;
     ParserOptStack.getLast()->setFQDNMode($3);
+    ParserOptStack.getLast()->setRevDNSZoneRootLength(0);
 } FQDNList
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
-    //Log(Debug)<<"DUID "<<*duidNew<<" is known as "<<
-    //ParserOptStack.getLast()->getFQDNName(duidNew)<<LogEnd;
+  
 }
-
+|OPTION_ FQDN_ INTNUMBER_ INTNUMBER_ 
+{
+    PresentFQDNLst.clear();
+    Log(Debug) << "FQDNMode found, setting value " << $3 <<LogEnd;
+    Log(Debug) << "revDNS zoneroot lenght found, setting value " << $4 <<LogEnd;
+    ParserOptStack.getLast()->setFQDNMode($3);
+    ParserOptStack.getLast()->setRevDNSZoneRootLength($4);
+} FQDNList
+{
+    ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
+  
+}
 ;
 
 //////////////////////////////////////////////////////////////////////

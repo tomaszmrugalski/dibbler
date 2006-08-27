@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.17 2006-08-24 01:12:29 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.18 2006-08-27 21:16:36 thomson Exp $
  *                                                                           
  */
 
@@ -116,6 +116,8 @@ public:
     void setFQDNLst(List(TFQDN) * fqdn);
     int getFQDNMode();
     string getFQDNModeString();
+    int  getRevDNSZoneRootLength();
+    void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     void setFQDNMode(int FQDNMode);
     bool supportFQDN();
 
@@ -183,7 +185,8 @@ private:
     List(TIPv6Addr) SIPServerLst;
     List(string) SIPDomainLst;
     List(TFQDN) FQDNLst;
-    int FQDNMode;
+    int FQDNMode; 
+    int revDNSZoneRootLength;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;

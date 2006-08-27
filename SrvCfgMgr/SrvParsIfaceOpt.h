@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.9 2006-07-03 18:19:12 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.10 2006-08-27 21:16:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006-07-03 18:19:12  thomson
+ * FQDN support added.
+ *
  * Revision 1.8  2006-03-03 21:09:34  thomson
  * FQDN support added.
  *
@@ -100,6 +103,9 @@ public:
     string getFQDNName(SmartPtr<TDUID> duid);
     string getFQDNName(SmartPtr<TIPv6Addr> addr);
     string getFQDNName();
+    int getRevDNSZoneRootLength();
+    void setRevDNSZoneRootLength(int revDNSZoneRootLength);
+
     SmartPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) *fqdn);
     bool supportFQDN();
@@ -171,6 +177,7 @@ private:
     string NISDomain;
     string NISPDomain;
     int FQDNMode;
+    int revDNSZoneRootLength;
     unsigned int Lifetime;
 };
 

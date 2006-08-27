@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.28 2006-08-24 01:12:29 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.29 2006-08-27 21:16:36 thomson Exp $
  */
 
 #include <sstream>
@@ -220,8 +220,10 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportFQDN()){
 	this->setFQDNLst(opt->getFQDNLst());
 	this->setFQDNMode(opt->getFQDNMode());
+	this->setRevDNSZoneRootLength(opt->getRevDNSZoneRootLength());
 	Log(Debug) <<"FQDN Support is enabled on the " << this->getName()  << " interface." << LogEnd;
-	Log(Debug) <<"FQDN Mode set to " << this->getFQDNMode() << " (" << this->getFQDNModeString() << ")." << LogEnd;
+	Log(Debug) <<"FQDN Mode set to " << this->getFQDNMode() << " " << LogEnd;
+    	Log(Debug) <<"revDNS zoneroot lenght set to " << this->getRevDNSZoneRootLength()<< LogEnd;
     }
     if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
     if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
@@ -493,7 +495,12 @@ void TSrvCfgIface::setFQDNMode(int FQDNMode) {
 int TSrvCfgIface::getFQDNMode(){
     return this->FQDNMode;
 }
-
+int TSrvCfgIface::getRevDNSZoneRootLength(){
+	return this->revDNSZoneRootLength;
+}
+void TSrvCfgIface::setRevDNSZoneRootLength(int revDNSZoneRootLength){
+	this->revDNSZoneRootLength=revDNSZoneRootLength;
+}
 
 string TSrvCfgIface::getFQDNModeString() {
     switch (this->FQDNMode) {
@@ -727,7 +734,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     if (iface.supportFQDN()) {
       SPtr<TFQDN> f;
       List(TFQDN) * lst = iface.getFQDNLst();
-      out << "    <fqdnOptions count=\"" << lst->count() << "\">" << endl;
+      out << "    <fqdnOptions count=\"" << lst->count() << "\" prefix=\"" << iface.getRevDNSZoneRootLength() << "\">" << endl;
       lst->first();
       while (f=lst->get()) {
 	    out << "       " << *f;
