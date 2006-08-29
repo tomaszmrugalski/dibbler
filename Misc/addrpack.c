@@ -262,7 +262,7 @@ void doRevDnsZoneRoot( char * src,  char * dst, int length){
     for(; i>=0 ; i--) {
 	sprintf(dst + strlen(dst), "%x.%x.", (src[i] & 0x0f), ( (src[i] & 0xf0 ) >> 4 ) );
     }
-    sprintf(dst + strlen(dst), "ip6.arpa");
+    sprintf(dst + strlen(dst), "ip6.arpa.");
 }
 void print_packed(char * addr)
 {
