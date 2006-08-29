@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.10 2006-08-28 23:56:52 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.11 2006-08-29 00:54:29 thomson Exp $
  *
  */
 
@@ -138,7 +138,7 @@ void DNSUpdate::deleteAAAARecordFromRRSet(){
   DnsRR rr;
   rr.NAME = domainname(hostname, *zoneroot);
   rr.TYPE = qtype_getcode("AAAA", false);
-  rr.CLASS = 254; // none 
+  rr.CLASS = QCLASS_NONE; /* 254 */
   rr.TTL = 0;
   string data = rr_fromstring(rr.TYPE, hostip, *zoneroot);
   rr.RDLENGTH = data.size();
@@ -157,6 +157,7 @@ void DNSUpdate::deletePTRRecordFromRRSet(){
   doRevDnsAddress(destination,result);
   rr.NAME = result;
   rr.TYPE = qtype_getcode("PTR", false);
+  rr.CLASS = QCLASS_NONE;
   rr.TTL = 0;
   string tmp  = hostname;
   string data = rr_fromstring(rr.TYPE, tmp.c_str()); 
