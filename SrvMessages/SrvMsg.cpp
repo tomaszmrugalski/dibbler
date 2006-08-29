@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.20 2006-08-27 21:18:08 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.21 2006-08-29 00:17:29 thomson Exp $
  */
 
 #include <sstream>
@@ -543,9 +543,8 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 
 	if (FQDNMode==1){
 	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
 	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
-					   (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
+					   (char*) fqdnName.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
 	    result = act->run();
 	    delete act;
 	    
@@ -603,9 +602,9 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 		break;
 	    }
 	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
-	    Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
+	    Log(Notice) << "#### " << __FILE__ << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
 	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
-					    (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode+1);
+					    (char*) fqdnName.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode+1);
 	    result2 = act2->run();
 	    delete act;
 	    
