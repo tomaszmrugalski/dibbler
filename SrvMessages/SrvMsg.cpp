@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.21 2006-08-29 00:17:29 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.22 2006-08-29 00:53:34 thomson Exp $
  */
 
 #include <sstream>
@@ -479,7 +479,6 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
     string fqdnName = fqdn->getName();
 
-    Log(Debug) << "#### FQDNREVZONE LENGTH " << ptrIface->getRevDNSZoneRootLength()<<LogEnd;
     fqdn->setUsed(true);
 
     if (requestFQDN->getNFlag()) {
@@ -538,12 +537,15 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	    hostname = fqdnName.substr(0, dotpos);
 	    domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
 	}
-	string revdomain = "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.";
+
+	char zoneroot[128];
+	doRevDnsZoneRoot(IPv6Addr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
+
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 
 	if (FQDNMode==1){
 	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, 
 					   (char*) fqdnName.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
 	    result = act->run();
 	    delete act;
@@ -571,11 +573,8 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	    }
 	} // fqdnMode == 1
 	else if (FQDNMode==2){
-	    string revdomain ="0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa";
 	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    
-	    Log(Notice) << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, 
 					   (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode-1);
 	    result = act->run();
 	    delete act;
@@ -602,8 +601,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 		break;
 	    }
 	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
-	    Log(Notice) << "#### " << __FILE__ << "DOMAIN " << domain << " hostname  " << hostname << LogEnd;
-	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), (char*) revdomain.c_str(), 
+	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), zoneroot, 
 					    (char*) fqdnName.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode+1);
 	    result2 = act2->run();
 	    delete act;
