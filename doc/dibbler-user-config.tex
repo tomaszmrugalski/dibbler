@@ -1,5 +1,5 @@
 %%
-%% $Id: dibbler-user-config.tex,v 1.23 2006-08-22 00:01:21 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.24 2006-08-30 01:25:43 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -430,7 +430,7 @@ iface eth0 {
 # ask for options
    option dns-server
    option domain
-   option fqdn
+   option fqdn zoe.example.com
 }
 \end{Verbatim}
 
@@ -819,12 +819,12 @@ Support for Dynamid DNS Updates was added recently. To configure it
 on the server side, list of available names must be defined. Each name
 can be reserved for a certain address or DUID. When no reservation is
 specified, it will available to everyone, i.e. the first client asks
-for FQDN will get this name. In following example, name 'zebuline' is
-reserved for address 2000::1, kael is reserved for 2000::2 and
+for FQDN will get this name. In following example, name 'zebuline.example.com' is
+reserved for address 2000::1, kael.example.com is reserved for 2000::2 and
 test.example.com is reserved for client using DUID
 00:01:00:00:43:ce:25:b4:00:13:d4:02:4b:f5. 
 
-Also note that is possible to define, which side can perform updates.
+Also note that is required to define, which side can perform updates.
 This is done using single number after ,,option fqdn'' phrase. Server
 can perform two kinds of DNS Updates: AAAA (forward resolving,
 i.e. name to address) and PTR (reverse resolving, i.e. address to
@@ -832,7 +832,13 @@ name). To configure server to execute both updates, specify 2. This is
 a default behavior. If this value will be skipped, server will attempt
 to perform both updates. When 1 will be specified, server will update
 PTR record only and will leave updating AAAA record to the
-client. When this value is set to 0, server will not perform any updates.
+client. When this value is set to 0, server will not perform any
+updates.
+
+The last parameter (64 in the following example) is a prefix length of
+the reverse domain supported by the DNS server, i.e. if this is set to
+64, and 2000::/64 addresses are used, DNS server must support
+0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa. zone.
 
 \begin{Verbatim}
 # server.conf
@@ -847,7 +853,7 @@ iface "eth1" {
 
  option dns-server 2000::100,2000::101
  option domain example.com, test1.example.com
- option fqdn 2
+ option fqdn 2 64
         zebuline.example.com - 2000::1,
 	kael.example.com - 2000::2,
 	test.example.com - 0x0001000043ce25b40013d4024bf5,
