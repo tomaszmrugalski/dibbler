@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.11 2006-08-29 00:54:29 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.12 2006-08-30 01:10:38 thomson Exp $
  *
  */
 
@@ -30,58 +30,81 @@
  * - SrvMsg.cpp (prepareFQDN method):  547, 579, 607
  */
 
-DNSUpdate::DNSUpdate(char* dns_address,char*zonename,char* hostname,char* hostip,char* ttl, 
-		     int numberOfRecords) { 
-  message= NULL;
-	
-  txt_to_addr(&server,dns_address);
-  this->hostip = new char[strlen(hostip)+1];
-  strcpy(this->hostip,hostip);
-  this->hostname=new char[strlen(hostname)+1];
-  strcpy(this->hostname,hostname);
-  zoneroot = new domainname(zonename);
-  this->ttl=new char[strlen(ttl)+1];
-  strcpy(this->ttl,ttl);
-  this->numberOfRecords = numberOfRecords;
-  
+DNSUpdate::DNSUpdate(string dns_address, string zonename,string hostname,string hostip,
+		     DnsUpdateMode updateMode) { 
+    message= NULL;
+    char *ttl = DNSUPDATE_DEFAULT_TTL;
+    
+    if (updateMode==DNSUPDATE_AAAA || updateMode==DNSUPDATE_AAAA_CLEANUP) {
+	this->splitHostDomain(hostname);
+    } else {
+	this->hostname=new char[hostname.length()+1];
+	strcpy(this->hostname,hostname.c_str());
+	zoneroot = new domainname(zonename.c_str());
+    }
+    
+    txt_to_addr(&server,dns_address.c_str());
+    this->hostip = new char[hostip.length()+1];
+    strcpy(this->hostip,hostip.c_str());
+    this->ttl=new char[strlen(ttl)+1];
+    strcpy(this->ttl,ttl);
+    this->updateMode = updateMode;
 }
  
 DNSUpdate::~DNSUpdate() {
-  delete message;
-  delete zoneroot;
-  delete [] hostip;
-  delete [] hostname;
-  delete [] ttl;
+    delete message;
+    delete zoneroot;
+    delete [] hostip;
+    delete [] hostname;
+    delete [] ttl;
 }
+
+void DNSUpdate::splitHostDomain(string fqdnName) {
+    unsigned int dotpos = fqdnName.find(".");
+    string hostname = "";
+    string domain = "";
+    if (dotpos == string::npos) {
+	Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
+		     << "]." << LogEnd;
+	this->hostname = new char[fqdnName.length()+1];
+	strcpy(this->hostname, fqdnName.c_str());
+    }
+    else {
+	string hostname = fqdnName.substr(0, dotpos);
+	string domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
+	this->hostname = new char[hostname.length()];
+	strcpy(this->hostname, hostname.c_str());
+	this->zoneroot = new domainname(domain.c_str());
+    }
+}
+
 
 DnsUpdateResult DNSUpdate::run(){
 
-    switch (this->numberOfRecords) {
-    case 1:
-	Log(Debug) << "Performing DNS Update: Only PTR record." << LogEnd;   
+    switch (this->updateMode) {
+    case DNSUPDATE_PTR:
+	Log(Debug) << "FQDN: Performing DNS Update: Only PTR record." << LogEnd;   
 	this->createSOAMsg();
 	this->addinMsg_delOldRR();   
 	this->addinMsg_newPTR();
 	break;
-    case 2:
-	// FIXME: This does not work
-	Log(Debug) << "Performing DNS Cleanup: Only PTR record." << LogEnd;   
+    case DNSUPDATE_PTR_CLEANUP:
+	Log(Debug) << "FQDN: Performing DNS Cleanup: Only PTR record." << LogEnd;   
 	this->createSOAMsg();
 	this->addinMsg_delOldRR();   
 	this->deletePTRRecordFromRRSet();
 	break;
-    case 3:
-	Log(Debug) << "Performing DNS Update: Only AAAA record." << LogEnd;   
+    case DNSUPDATE_AAAA:
+	Log(Debug) << "FQDN: Performing DNS Update: Only AAAA record." << LogEnd;   
 	this->createSOAMsg();
 	this->addinMsg_delOldRR();   
 	this->addinMsg_newAAAA();
 	break;
-    case 4:
-	Log(Debug) << "Performing DNS Cleanup: Only AAAA record." << LogEnd;   
+    case DNSUPDATE_AAAA_CLEANUP:
+	Log(Debug) << "FQDN: Performing DNS Cleanup: Only AAAA record." << LogEnd;   
 	this->createSOAMsg();
 	this->addinMsg_delOldRR();   
 	this->deleteAAAARecordFromRRSet();
-        //this->addinMsg_newAAAA();
 	break;
     }
     
@@ -89,15 +112,15 @@ DnsUpdateResult DNSUpdate::run(){
 	this->sendMsg();
     } catch (PException p) {
 	if (!strcmp(p.message,"Could not connect TCP socket") ){
-	    Log(Error) << "DNS update : " << p.message << LogEnd;
+	    Log(Error) << "FQDN: Unable to establish connection to DNS server:" << p.message << LogEnd;
 	    return DNSUPDATE_CONNFAIL;
 	}
 	if (!strcmp(p.message,"NOTAUTH")){
-	    Log(Error) << "DNS update : Nameserver is not authoritative for this zone (" << p.message << ")" << LogEnd;	
+	    Log(Error) << "FQDN: Nameserver is not authoritative for this zone (" << p.message << ")" << LogEnd;	
 	    return DNSUPDATE_SRVNOTAUTH;
 	}
 
-	Log(Error) << "DNS update : error not specified (" << p.message << ")" << LogEnd;
+	Log(Error) << "FQDN: Error not specified (" << p.message << ")" << LogEnd;
 	return DNSUPDATE_ERROR;
      }// exeption catch
 
@@ -144,6 +167,8 @@ void DNSUpdate::deleteAAAARecordFromRRSet(){
   rr.RDLENGTH = data.size();
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
   message->authority.push_back(rr);
+
+  Log(Debug) << "FQDN: AAAA record created:" << rr.NAME.tostring() << " -> " << hostip << LogEnd;
 }
 
 void DNSUpdate::deletePTRRecordFromRRSet(){
@@ -332,4 +357,28 @@ void DNSUpdate::sendMsg(){
 	
     if (a) delete a;
     if (sockid != -1) tcpclose(sockid);
+}
+
+void DNSUpdate::showResult(int result)
+{
+    switch (result) {
+    case DNSUPDATE_SUCCESS:
+	if (this->updateMode == DNSUPDATE_AAAA || this->updateMode == DNSUPDATE_PTR)
+	    Log(Notice) << "FQDN: DNS Update (add) successful." << LogEnd;
+	else
+	    Log(Notice) << "FQDN: DNS Update (delete) successful." << LogEnd;
+	break;
+    case DNSUPDATE_ERROR:
+	Log(Warning) << "FQDN: DNS Update failed." << LogEnd;
+	break;
+    case DNSUPDATE_CONNFAIL:
+	Log(Warning) << "FQDN: Unable to establish connection to the DNS server." << LogEnd;
+	break;
+    case DNSUPDATE_SRVNOTAUTH:
+	Log(Warning) << "FQDN: DNS Update failed: server is not not authoritative." << LogEnd;
+	break;
+    case DNSUPDATE_SKIP:
+	Log(Notice) << "FQDN: DNS Update was skipped." << LogEnd;
+	break;
+    }
 }

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.25 2006-08-03 00:46:59 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.26 2006-08-30 01:10:38 thomson Exp $
  */
 
 #include "Portable.h"
@@ -225,69 +225,17 @@ bool TClntIfaceMgr::doDuties() {
 		List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
 		string fqdn = iface->getFQDN();
 		if (ClntAddrMgr->countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
-		    Log(Debug) << "All parameters seem to be set to perform DNS update. Selecting first DNS server" << LogEnd;
-		    SmartPtr<TIPv6Addr> DNSAddr;
-		    SmartPtr<TIPv6Addr> addr;
-		    
-                    // For the moment, we just take the first DNS entry.
-		    DNSSrvLst.first();
-		    DNSAddr = DNSSrvLst.get();
-		    
-// 					And the first IP address
-		    SmartPtr<TAddrIA> ptrAddrIA;
-		    ClntAddrMgr->firstIA();
-		    ptrAddrIA = ClntAddrMgr->getIA();
-		    
-		    if (ptrAddrIA->countAddr() > 0) {
-			ptrAddrIA->firstAddr();
-			addr = ptrAddrIA->getAddr()->get();
-			
-			Log(Notice) << "About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *addr 
-				    << " and FQDN=" << fqdn << LogEnd;
-			Log(Warning) << "FIXME: Sleeping 3 seconds before FQDN update" << LogEnd;
-			/* FIXME: sleep cannot be performed here. What if client has to perform other 
-			   action during those 3 seconds? */
 
-			// remember DNS Address (used during address release)
-			ptrAddrIA->setFQDNDnsServer(DNSAddr);
-			
+		    Log(Warning) << "FIXME: Sleeping 3 seconds before performing DNS Update." << LogEnd;
+		    /* FIXME: sleep cannot be performed here. What if client has to perform other 
+		       action during those 3 seconds? */
 #ifdef WIN32
-			Sleep(3);
+		    Sleep(3);
 #else
-			sleep(3);
+		    sleep(3);
 #endif
-			Log(Warning) << "FIXME: Waking up !" << LogEnd;
-			
-			//Test for DNS update
-			unsigned int dotpos = fqdn.find(".");
-			string hostname = "";
-			string domain = "";
-			if (dotpos == string::npos) {
-			    Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdn 
-					 << "] Trying to do the update..." << LogEnd;
-			    hostname = fqdn;
-			} else {
-			    hostname = fqdn.substr(0, dotpos);
-			    domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
-			}
-#ifndef MOD_CLNT_DISABLE_DNSUPDATE
-			DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), (char*) domain.c_str(), 
-						       (char*) hostname.c_str(), addr->getPlain(), "2h",3);
-			int result = act->run();
-			delete act;
-			
-			if (result == DNSUPDATE_SUCCESS) {
-			    cfgIface->setFQDNState(CONFIGURED);
-			    Log(Notice) << "FQDN Configured successfully !" << LogEnd;
-			} else {
-			    Log(Warning) << "Unable to perform DNS update. Disabling FQDN on " 
-					 << iface->getFullName() << LogEnd;
-			    cfgIface->setFQDNState(DISABLED);
-			}
-#else
-			Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
-#endif
-		    }
+		    this->fqdnAdd(iface, fqdn);
+
 		}
 	    }
 	}
@@ -295,6 +243,89 @@ bool TClntIfaceMgr::doDuties() {
     ClntAddrMgr->dump();
     this->dump();
     return true;
+}
+
+bool TClntIfaceMgr::fqdnAdd(SmartPtr<TClntIfaceIface> iface, string fqdn)
+{
+    SmartPtr<TIPv6Addr> DNSAddr;
+    SmartPtr<TIPv6Addr> addr;
+
+    SmartPtr<TClntCfgIface> cfgIface;
+    cfgIface = ClntCfgMgr->getIface(iface->getID());
+    if (!cfgIface) {
+	Log(Error) << "Unable to find interface with ifindex=" << iface->getID() << "." << LogEnd;
+	return false;
+    }
+    
+    // For the moment, we just take the first DNS entry.
+    List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
+    if (!DNSSrvLst.count()) {
+	Log(Error) << "Unable to find DNS Server. FQDN add failed." << LogEnd;
+	return false;
+    }
+    DNSSrvLst.first();
+    DNSAddr = DNSSrvLst.get();
+    
+    // And the first IP address
+    SmartPtr<TAddrIA> ptrAddrIA;
+    ClntAddrMgr->firstIA();
+    ptrAddrIA = ClntAddrMgr->getIA();
+    
+    if (ptrAddrIA->countAddr() > 0) {
+	ptrAddrIA->firstAddr();
+	addr = ptrAddrIA->getAddr()->get();
+	
+	Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *addr 
+		    << " and FQDN=" << fqdn << LogEnd;
+	
+			// remember DNS Address (used during address release)
+	ptrAddrIA->setFQDNDnsServer(DNSAddr);
+	
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
+	/* add AAAA record */
+	DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(), DNSUPDATE_AAAA);
+	int result = act->run();
+	act->showResult(result);
+	delete act;
+
+#else
+	Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+	return false;
+#endif
+    }
+    return true;
+}
+
+bool TClntIfaceMgr::fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> ia, string fqdn)
+{
+    SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
+    
+    // let's do deleting update
+    SmartPtr<TIPv6Addr> clntAddr;
+    ia->firstAddr();
+    SPtr<TAddrAddr> tmpAddr = ia->getAddr();
+    if (!tmpAddr) {
+	Log(Error) << "FQDN: Unable to delete FQDN: IA (IAID=" << ia->getIAID() << ") does not have any addresses." 
+		   << LogEnd;
+	return false;
+    }
+    SPtr<TIPv6Addr> myAddr = tmpAddr->get();
+    
+    SmartPtr<TClntCfgIface> ptrIface = ClntCfgMgr->getIface(iface->getID());
+    
+    Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
+	       << " and FQDN=" << fqdn << LogEnd;
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
+    DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdn, myAddr->getPlain(), DNSUPDATE_AAAA_CLEANUP);
+    int result = act->run();
+    act->showResult(result);
+    delete act;
+    
+#else
+    Log(Error) << "This Dibbler version is compiled without DNS Update support." << LogEnd;
+#endif
+
+    return false;
 }
 
 void TClntIfaceMgr::dump()

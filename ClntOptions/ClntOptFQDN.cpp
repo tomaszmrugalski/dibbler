@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: ClntOptFQDN.cpp,v 1.5 2006-08-21 22:22:52 thomson Exp $
+ * $Id: ClntOptFQDN.cpp,v 1.6 2006-08-30 01:10:38 thomson Exp $
  *
  */
 
@@ -36,14 +36,13 @@ TClntOptFQDN::TClntOptFQDN(char *buf, int bufsize, TMsg* parent)
 
 bool TClntOptFQDN::doDuties() {
     if (getSFlag()) {
-	Log(Notice) << "DHCPv6 server made the DNS update for my name: " << getFQDN() << " ." << LogEnd;
+	Log(Notice) << "FQDN: DHCPv6 server made the DNS update for my name: " << getFQDN() << " ." << LogEnd;
 	//TODO Check the DNS server with the given name.
 	return true;
     }
 	
     string reason = "trying to set FQDN.";
     int ifindex = this->Parent->getIface();
-    Log(Debug) << "FQDN option : IfaceID = " << ifindex << LogEnd;
     SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
     SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();

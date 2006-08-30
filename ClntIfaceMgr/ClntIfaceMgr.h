@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.7 2006-03-02 00:57:46 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.8 2006-08-30 01:10:38 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-03-02 00:57:46  thomson
+ * FQDN support initial checkin.
+ *
  * Revision 1.6  2005/01/08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -30,6 +33,7 @@
 
 class TClntIfaceMgr;
 class TClntMsg;
+class TClntIfaceIface;
 #ifndef CLNTIFACEMGR_H
 #define CLNTIFACEMGR_H
 
@@ -60,6 +64,9 @@ class TClntIfaceMgr : public TIfaceMgr
 		  SmartPtr<TClntTransMgr> clntTransMgr,
 		  SmartPtr<TClntCfgMgr>   clntCfgMgr,
 		  SmartPtr<TClntAddrMgr>  clntAddrMgr);
+
+    bool fqdnAdd(SmartPtr<TClntIfaceIface> iface, string domainname);
+    bool fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> ia, string domainname);
 
     // --- option related ---
     void removeAllOpts();

@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.57 2006-08-27 20:48:14 thomson Exp $
+ * $Id: Portable.h,v 1.58 2006-08-30 01:10:39 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -55,6 +55,8 @@
 #define RELCFGMGR_FILE    "relay-CfgMgr.xml"
 #define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
 #define RELTRANSMGR_FILE  "relay-TransMgr.xml"
+
+#define DNSUPDATE_DEFAULT_TTL "2h"
 
 #ifdef WIN32
 #define WORKDIR           ".\\"

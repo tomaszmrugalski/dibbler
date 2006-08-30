@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.7 2006-08-21 22:22:52 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.8 2006-08-30 01:10:38 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -77,8 +77,8 @@ TClntMsgRelease::TClntMsgRelease(
     while(ia=iaLst.get()) {
         Options.append(new TClntOptIA_NA(ia,this));
 	SmartPtr<TAddrAddr> ptrAddr;
-	SmartPtr<TIfaceIface> ptrIface;
-	ptrIface = IfaceMgr->getIfaceByID(ia->getIface());
+	SmartPtr<TClntIfaceIface> ptrIface;
+	ptrIface = (Ptr*)IfaceMgr->getIfaceByID(ia->getIface());
 	ia->firstAddr();
 	while (ptrAddr = ia->getAddr()) {
 	    ptrIface->delAddr(ptrAddr->get());
@@ -90,48 +90,8 @@ TClntMsgRelease::TClntMsgRelease(
 	// --- DNS Update ---
 	SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
 	if (dns) {
-	    // let's do deleting update
-	    SmartPtr<TIPv6Addr> clntAddr;
-	    ia->firstAddr();
-	    SPtr<TAddrAddr> tmpAddr = ia->getAddr();
-	    SPtr<TIPv6Addr> myAddr = tmpAddr->get();
-
-	    SmartPtr<TClntIfaceIface> ptrIface = (Ptr*)ClntIfaceMgr->getIfaceByID(iface);
 	    string fqdn = ptrIface->getFQDN();
-  		
-	    Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
-		       << " and FQDN=" << fqdn << LogEnd;
-	    unsigned int dotpos = fqdn.find(".");
-	    string hostname = "";
-	    string domain = "";
-	    if (dotpos == string::npos) {
-		Log(Warning) << "FQDN: Name provided for DNS update is not a FQDN. [" << fqdn
-			     << "] Trying to do the cleanup..." << LogEnd;
-		hostname = fqdn;
-	    }
-	    else {
-		hostname = fqdn.substr(0, dotpos);
-		domain = fqdn.substr(dotpos + 1, fqdn.length() - dotpos - 1);
-	    }
-	    
-	    Log(Debug) << "FQDN: Domain name set to " << (char*) domain.c_str() << "." << LogEnd;
-#ifndef MOD_CLNT_DISABLE_DNSUPDATE
-	    DNSUpdate *act = new DNSUpdate(dns->getPlain(), (char*) domain.c_str(), (char*) hostname.c_str(), 
-					   myAddr->getPlain(), "2h",4);
-	    int result = act->run();
-	    delete act;
-	    
-	    if (result == DNSUPDATE_SUCCESS) {
-		
-		Log(Notice) << "FQDN: delete procedure succesful." << LogEnd;
-	    } else {
-		Log(Warning) << "Unable to perform DNS update. Clean up Disabling FQDN on " 
-			     << ptrIface->getFullName() << LogEnd;
-		
-	    }
-#else
-	    Log(Error) << "This Dibbler version is compiled without DNS Update support." << LogEnd;
-#endif
+	    IfaceMgr->fqdnDel(ptrIface, ia, fqdn);
 	}
 	// --- DNS Update ---
     }

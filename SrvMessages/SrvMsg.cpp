@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.22 2006-08-29 00:53:34 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.23 2006-08-30 01:10:39 thomson Exp $
  */
 
 #include <sstream>
@@ -498,8 +498,6 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
 	// Here we check if all parameters are set, and do the DNS update if possible
 	List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
-	//if ( DNSSrvLst.count() > 0 && fqdn.size() > 0) {
-	Log(Debug) << "All parameters are set to perform DNS update.for client PTR. Selecting first DNS server" << LogEnd;
 	SmartPtr<TIPv6Addr> DNSAddr;
 	
 	// For the moment, we just take the first DNS entry.
@@ -521,113 +519,38 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	SmartPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
 	SmartPtr<TIPv6Addr> IPv6Addr = addr->get();
 	
-	Log(Notice) << "About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *IPv6Addr << " and FQDN=" 
-		   << fqdnName << LogEnd;
+	Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *IPv6Addr << " and FQDN=" 
+                    << fqdnName << LogEnd;
 	
 	//Test for DNS update
-	unsigned int dotpos = fqdnName.find(".");
-	string hostname = "";
-	string domain = "";
-	if (dotpos == string::npos) {
-	    Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
-			 << "] Trying to do the  update..." << LogEnd;
-	    hostname = fqdnName;
-	}
-	else {
-	    hostname = fqdnName.substr(0, dotpos);
-	    domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
-	}
-
 	char zoneroot[128];
 	doRevDnsZoneRoot(IPv6Addr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
-
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
-
 	if (FQDNMode==1){
+	    /* add PTR only */
 	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, 
-					   (char*) fqdnName.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode);
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), DNSUPDATE_PTR);
 	    result = act->run();
+	    act->showResult(result);
 	    delete act;
-	    
-	    // regardless of the result, store the info
-	    ptrAddrIA->setFQDN(fqdn);
-	    ptrAddrIA->setFQDNDnsServer(DNSAddr);
-	    
-	    switch (result) {
-	    case DNSUPDATE_SUCCESS:
-		Log(Notice) << "FQDN Configured successfully !" << LogEnd;
-		break;
-	    case DNSUPDATE_ERROR:
-		Log(Warning) << "DNS Update failed." << LogEnd;
-		break;
-	    case DNSUPDATE_CONNFAIL:
-		Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
-		break;
-	    case DNSUPDATE_SRVNOTAUTH:
-		Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
-		break;
-	    case DNSUPDATE_SKIP:
-		Log(Notice) << "DNS Update was skipped." << LogEnd;
-		break;
-	    }
 	} // fqdnMode == 1
 	else if (FQDNMode==2){
 	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, 
-					   (char*) hostname.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode-1);
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), DNSUPDATE_PTR);
 	    result = act->run();
+	    act->showResult(result);
 	    delete act;
 	    
-	    // regardless of the result, store the info
-	    ptrAddrIA->setFQDN(fqdn);
-	    ptrAddrIA->setFQDNDnsServer(DNSAddr);
-	    
-	    switch (result) {
-	    case DNSUPDATE_SUCCESS:
-		Log(Notice) << "FQDN Configured successfully !" << LogEnd;
-		break;
-	    case DNSUPDATE_ERROR:
-		Log(Warning) << "DNS Update failed." << LogEnd;
-		break;
-	    case DNSUPDATE_CONNFAIL:
-		Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
-		break;
-	    case DNSUPDATE_SRVNOTAUTH:
-		Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
-		break;
-	    case DNSUPDATE_SKIP:
-		Log(Notice) << "DNS Update was skipped." << LogEnd;
-		break;
-	    }
 	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
-	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), zoneroot, 
-					    (char*) fqdnName.c_str(), IPv6Addr->getPlain(), "2h", FQDNMode+1);
+	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), "", fqdnName, IPv6Addr->getPlain(), DNSUPDATE_AAAA);
 	    result2 = act2->run();
+	    act2->showResult(result);
 	    delete act;
-	    
-	    // regardless of the result, store the info
-	    ptrAddrIA->setFQDN(fqdn);
-	    ptrAddrIA->setFQDNDnsServer(DNSAddr);
-	    
-	    switch (result2) {
-	    case DNSUPDATE_SUCCESS:
-		Log(Notice) << "FQDN Configured successfully !" << LogEnd;
-		break;
-	    case DNSUPDATE_ERROR:
-		Log(Warning) << "DNS Update failed." << LogEnd;
-		break;
-	    case DNSUPDATE_CONNFAIL:
-		Log(Warning) << "Unable to establish conntection to the DNS server." << LogEnd;
-		break;
-	    case DNSUPDATE_SRVNOTAUTH:
-		Log(Warning) << "DNS Update failed: no authorisation." << LogEnd;
-		break;
-	    case DNSUPDATE_SKIP:
-		Log(Notice) << "DNS Update was skipped." << LogEnd;
-		break;
-	    }
 	} // fqdnMode == 2
+
+	// regardless of the result, store the info
+	ptrAddrIA->setFQDN(fqdn);
+	ptrAddrIA->setFQDNDnsServer(DNSAddr);
 	
 #else
 	Log(Error) << "This server is compiled without DNS Update support." << LogEnd;
@@ -639,4 +562,65 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     }
     
     return optFQDN;
+}
+
+void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn)
+{
+#ifdef MOD_CLNT_DISABLE_DNSUPDATE
+    Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+    return;
+#else
+
+    string fqdnName = fqdn->getName();
+    int FQDNMode = ptrIface->getFQDNMode();
+    fqdn->setUsed(false);
+    int result;
+
+    SPtr<TIPv6Addr> dns = ptrIA->getFQDNDnsServer();
+    if (!dns) {
+	Log(Warning) << "Unable to find DNS Server for IA=" << ptrIA->getIAID() << LogEnd;
+	return;
+    }
+
+    ptrIA->firstAddr();
+    SPtr<TAddrAddr> addrAddr = ptrIA->getAddr();
+    SPtr<TIPv6Addr> clntAddr;
+    if (!addrAddr) {
+	Log(Error) << "Client does not have any addresses asigned to IA (IAID=" << ptrIA->getIAID() << ")." << LogEnd;
+	return;
+    }
+    clntAddr = addrAddr->get();
+
+    char zoneroot[128];
+    doRevDnsZoneRoot(clntAddr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
+
+    if (FQDNMode == 1 ){
+	/* PTR cleanup */
+	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
+		    << " and FQDN=" << fqdn->getName() << LogEnd;
+	DNSUpdate *act = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), DNSUPDATE_PTR_CLEANUP);
+	result = act->run();
+	act->showResult(result);
+	delete act;
+	
+    } // fqdn mode 2 
+    else if (FQDNMode == 2){
+	/* AAAA Cleanup */
+	Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server " << * dns << ", IP = " 
+		    << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
+	
+	DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdnName, clntAddr->getPlain(), DNSUPDATE_AAAA_CLEANUP);
+	result = act->run();
+	act->showResult(result);
+	delete act;
+	
+	/* PTR cleanup */
+	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
+		    << " and FQDN=" << fqdn->getName() << LogEnd;
+	DNSUpdate *act2 = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), DNSUPDATE_PTR_CLEANUP);
+	result = act2->run();
+	act2->showResult(result);
+	delete act2;
+    } // fqdn mode 2 
+#endif
 }

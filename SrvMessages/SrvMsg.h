@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.10 2006-08-24 01:12:29 thomson Exp $
+ * $Id: SrvMsg.h,v 1.11 2006-08-30 01:10:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006-08-24 01:12:29  thomson
+ * FQDN hint implementation by Krzysiek Wnuk, fixes by Thomson.
+ *
  * Revision 1.9  2006-08-21 21:33:20  thomson
  * prepareFQDN() moved from SrvMgrReply to SrvMsg,
  * unnecessary constructors removed.
@@ -92,8 +95,10 @@ protected:
 		    SPtr<TSrvTransMgr> TransMgr, 
 		    SPtr<TSrvCfgMgr> CfgMgr,
 		    SPtr<TSrvAddrMgr> AddrMgr);
+
     SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
-				  SPtr<TIPv6Addr> clntAddr, string hint,bool doRealUpdate);
+				  SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate);
+    void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
 
     SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];

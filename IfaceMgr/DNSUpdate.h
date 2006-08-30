@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.h,v 1.5 2006-08-27 21:24:35 thomson Exp $
+ * $Id: DNSUpdate.h,v 1.6 2006-08-30 01:10:39 thomson Exp $
  *
  */
 
@@ -27,6 +27,13 @@ enum DnsUpdateResult {
     DNSUPDATE_SKIP=4
 };
 
+enum DnsUpdateMode {
+    DNSUPDATE_PTR=1,
+    DNSUPDATE_PTR_CLEANUP=2,
+    DNSUPDATE_AAAA=3,
+    DNSUPDATE_AAAA_CLEANUP=4
+};
+
 class DNSUpdate {
     
 private:
@@ -36,8 +43,10 @@ private:
     char* hostip;
     domainname* zoneroot;
     char* ttl;
-    int numberOfRecords;
+    DnsUpdateMode updateMode;
     
+    void splitHostDomain(string fqdnName);
+
     void createSOAMsg();
     void addinMsg_newPTR();
     void addinMsg_newAAAA();
@@ -47,12 +56,12 @@ private:
     bool DnsRR_avail(DnsMessage *msg, DnsRR& RemoteDnsRR);
     DnsRR* get_oldDnsRR();
     void sendMsg();
-    
+  
     
  public:
-    DNSUpdate(char* dns_address, char*zonename, char* hostname, char* hostip, char* ttl, 
-	      int numberOfRecords);
+    DNSUpdate(string dns_address, string zonename, string hostname, string hostip,
+	      DnsUpdateMode updateMode);
     ~DNSUpdate();
     DnsUpdateResult run();
-
+    void showResult(int result);
 };
