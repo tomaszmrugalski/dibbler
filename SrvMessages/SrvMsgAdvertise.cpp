@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.19 2006-08-24 01:12:29 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.20 2006-08-30 01:33:32 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -155,9 +155,9 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 
 	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr->getFirstAddr(clntDuid);
 	    if (clntAssignedAddr)
-		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAssignedAddr, hint, true);
+		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAssignedAddr, hint, false);
 	    else
-		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, hint, true);
+		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, hint, false);
 
 	    if (optFQDN) {
 		this->Options.append((Ptr*) optFQDN);
@@ -250,6 +250,9 @@ string TSrvMsgAdvertise::getName() {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2006-08-24 01:12:29  thomson
+ * FQDN hint implementation by Krzysiek Wnuk, fixes by Thomson.
+ *
  * Revision 1.18  2006-08-21 21:57:02  thomson
  * FQDN fixes.
  *

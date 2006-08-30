@@ -1,17 +1,18 @@
 
-  Dibbler 0.5.0 alpha snapshot release notes [2006-08-22]
+  Dibbler 0.5.0-RC1 release notes [2006-08-30]
  ---------------------------------------------------------
 
- This is NOT a release. It is a merely a snapshot of the current work, which contains
- preview of the features, which will be available in the final 0.5.0 release.
+ This is Release Candidate 1 for 0.5.0 release. It contains preview of the features, 
+ which will be available in the final 0.5.0 release.
 
- New features are:
- - DNS Updates support, also know as FQDN
+ New features:
+ - DNS Updates support, also know as FQDN (both server and client side updates are
+   supported, AAAA as well as PTR records are updated).
  - Temporary addresses support
  - Server cache 
 
- Since this is only a snapshot, it is not complete and does not have all of the
- features fully functional. Also the documentation is not complete.
+ Missing features:
+ - Doc is not updated (it will be in final 0.5.0 release)
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 

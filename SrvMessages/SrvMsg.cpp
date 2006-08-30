@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.23 2006-08-30 01:10:39 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.24 2006-08-30 01:33:32 thomson Exp $
  */
 
 #include <sstream>
@@ -479,12 +479,17 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
     string fqdnName = fqdn->getName();
 
-    fqdn->setUsed(true);
-
     if (requestFQDN->getNFlag()) {
 	Log(Notice) << "FQDN: No DNS Update required." << LogEnd;
 	return optFQDN;
     }
+
+    if (!doRealUpdate) {
+	Log(Debug) << "FQDN: Skipping update." << LogEnd;
+	return optFQDN;
+    }
+
+    fqdn->setUsed(true);
 
     int FQDNMode = ptrIface->getFQDNMode();
     Log(Debug) << "FQDN: Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode=" << FQDNMode << LogEnd;

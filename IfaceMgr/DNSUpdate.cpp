@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.13 2006-08-30 01:17:41 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.14 2006-08-30 01:33:32 thomson Exp $
  *
  */
 
@@ -209,7 +209,7 @@ void DNSUpdate::addinMsg_newPTR(){
 }
 
 /** 
- * insert a delete-RR entry in message for deleting old entry */
+ * insert a delete-RR entry in message for deleting old entry
  * 
  */
 void DNSUpdate::addinMsg_delOldRR(){
