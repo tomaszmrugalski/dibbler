@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.12 2006-08-30 01:10:38 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.13 2006-08-30 01:17:41 thomson Exp $
  *
  */
 
@@ -15,20 +15,6 @@
 #include "Portable.h"
 #include "Logger.h"
 #include <stdio.h>
-
-/**
- * @file   DNSUpdate.cpp
- * @author 
- * @date   Tue Aug 29 00:59:35 2006
- * 
- * @brief  
- * 
- * this object is created in following places:
- * - ClntIfaceMgr.cpp:274
- * - ClntMsgRelease.cpp:119
- * - SrvMsgReply.cpp: (fqdnRelease method): 873, 911, 927
- * - SrvMsg.cpp (prepareFQDN method):  547, 579, 607
- */
 
 DNSUpdate::DNSUpdate(string dns_address, string zonename,string hostname,string hostip,
 		     DnsUpdateMode updateMode) { 
@@ -59,6 +45,11 @@ DNSUpdate::~DNSUpdate() {
     delete [] ttl;
 }
 
+/** 
+ * this function splits fqdn (e.g. malcolm.example.com) into hostname (e.g. malcolm) and domain (e.g. example.com)
+ * 
+ * @param fqdnName 
+ */
 void DNSUpdate::splitHostDomain(string fqdnName) {
     unsigned int dotpos = fqdnName.find(".");
     string hostname = "";
@@ -217,8 +208,10 @@ void DNSUpdate::addinMsg_newPTR(){
   Log(Debug) << "FQDN: PTR record created: " << result << " -> " << tmp << LogEnd;
 }
 
-/** insert a delete-RR entry in message for deleting old entry */
-
+/** 
+ * insert a delete-RR entry in message for deleting old entry */
+ * 
+ */
 void DNSUpdate::addinMsg_delOldRR(){
     //get old, available DnsRR from Dns Server
     DnsRR* oldDnsRR=this->get_oldDnsRR();
@@ -359,6 +352,11 @@ void DNSUpdate::sendMsg(){
     if (sockid != -1) tcpclose(sockid);
 }
 
+/** 
+ * prints status reported by result
+ * 
+ * @param result 
+ */
 void DNSUpdate::showResult(int result)
 {
     switch (result) {
