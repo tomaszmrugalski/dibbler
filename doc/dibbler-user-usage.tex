@@ -1,7 +1,275 @@
 %%
-%% $Id: dibbler-user-usage.tex,v 1.16 2006-08-27 12:54:31 thomson Exp $
+%% Dibbler - a portable DHCPv6
+%%
+%% authors: Tomasz Mrugalski <thomson@klub.com.pl>
+%%
+%%
+%% released under GNU GPL v2 licence
+%%
+%% $Id: dibbler-user-usage.tex,v 1.17 2006-09-03 09:49:08 thomson Exp $
+%%
+
+\section{Installation and usage}
+Client, server and relay are installed in the same way. Installation
+method is different in Windows and Linux systems, so each system
+installation is described separately. To simplify installation, it
+assumes that binary versions are used\footnote{Compilation is not
+required, usually binary version can be used. Compilation should be
+performed by advanced users only, see \emph{Compilation} section for
+details.}.
+
+\subsection{Linux installation}
+Starting with 0.4.0, Dibbler consists of 3 different elements: client,
+server and relay. During writing this documentation, Dibbler is already
+present in following Linux distributions:
+\begin{description}
+ \item[\href{http://debian.org}{Debian GNU/Linux}] -- use standard tools
+ (apt-get, aptitude) to install dibbler-client, dibbler-server,
+ dibbler-relay or dibbler-doc packages (e.g. apt-get install dibbler-client)
+ \item[\href{http://www.gentoo.org}{Gentoo Linux}] -- use emerge to
+ install dibbler (e.g. emerge dibbler).
+ \item[\href{http://www.pld-linux.org}{PLD GNU/Linux}] -- use standard
+  PLD's poldek tool to install dibbler package.
+\end{description}
+
+If you are using other Linux distribution, obtain (e.g. download from
+\url{http://klub.com.pl/dhcpv6/}) an archive, which suits your
+needs. Currently there are available RPM packages
+(which can be used in RedHat, Fedora Core, Mandrake or PLD
+distribution), DEB packages (suitable for Debian, Ubuntu or Knoppix) and
+ebuild (for Gentoo users). To install rpm package, execute 
+\verb+rpm -i archive.rpm+ command. For example, to install dibbler 0.4.1,
+issue following command:
+
+\begin{verbatim}
+rpm -i dibbler-0.4.1-1.i386.rpm 
+\end{verbatim}
+
+To install Dibbler on Debian or other system with dpkg management
+system, run $dpkg -i archive.deb$ command. For example, to install
+server, issue following command:
+
+\begin{verbatim}
+dpkg -i dibbler-server_0.4.1-1_i386.deb
+\end{verbatim}
+
+To install Dibbler in Gentoo systems, just type:
+
+\begin{verbatim}
+emerge dibbler
+\end{verbatim}
+
+If you would like to install Dibbler from sources, please download tar.gz
+source archive, extract it, type make followed by target (e.g. server,
+client or relay\footnote{To get full target list, type: make help.}). 
+After successful compilation type make install. For example, to build
+server and relay, type:
+
+\begin{verbatim}
+tar zxvf dibbler-0.4.0-src.tar.gz
+make server relay
+make install
+mkdir -p /var/lib/dibbler
+\end{verbatim}
+
+Depending what functionality do you want to use (server,client or relay),
+you should edit configuration file (\verb+client.conf+ for client, \verb+server.conf+
+for server and \verb+relay.conf+ for relay). All configuration files should
+be placed in the \verb+/etc/dibbler+ directory. Also make sure that 
+\verb+/var/lib/dibbler+ directory is present and is writeable. After
+editing configuration files, issue one of the following commands:
+
+\begin{verbatim}
+dibbler-server start
+dibbler-client start
+dibbler-relay start
+\end{verbatim}
+
+\verb+start+ parameter requires little explanation. It
+instructs Dibbler to run in daemon mode -- detach from console and run
+in the background. During configuration files fine-tuning, it is ofter better
+to watch Dibbler's bahavior instantly. In this case, use \verb+run+
+instead of \verb+start+ parameter. Dibbler will present its messages on
+your console instead of log files. To finish it, press ctrl-c.
+
+To stop server, client or relay running in daemon mode, type:
+\begin{verbatim}
+dibbler-server stop
+dibbler-client stop
+dibbler-relay stop
+\end{verbatim}
+
+To see, if client, server or relay are running, type:
+
+\begin{verbatim}
+dibbler-server status
+dibbler-client status
+dibbler-relay status
+\end{verbatim}
+
+To see full list of available commands, type \verb+dibbler-server+, 
+\verb+dibbler-client+ or \verb+dibbler-relay+ without any parameters.
+
+\subsection{Windows installation}
+Since the 0.2.1-RC1 release, Dibbler supports Windows XP and 2003. In version
+0.4.1 exprimental support for Windows NT4 and 2000 was added. The easiest
+way of Windows installation is to download clickable Windows installer. It can be downloaded from
+\url{http://klub.com.pl/dhcpv6/}. After downloading, click on it and
+follow on screen instructions. Dibbler will be installed and all
+required links will be placed in the Start menu. Note that there are
+two Windows versions: one for XP/2003 and one for NT4/2000. Make sure
+to use proper port. If you haven't set up IPv6 support, see following
+sections for details.
+
+\subsection{IPv6 support}
+Some systems does not have IPv6 enabled by default. In that is the case,
+you can skip following subsections safely. If you are not sure, here is
+an easy way to check it. To verify if you have IPv6 support, execute
+following command: \verb+ping6 ::1+ (Linux) or \verb+ping ::1+
+(Windows). If you get replies, you have IPv6 already installed.
+
+\subsubsection{Setting up IPv6 in Linux}
+IPv6 can be enabled in Linux systems in two ways: compiled directly
+into kernel or as a module. If you don't have IPv6 enabled, try to load IPv6 module:
+\verb+modprobe ipv6+ (command executed as root) and try ping6 once more. If that
+fails, you have to recompile kernel to support IPv6. There are 
+numerous descriptions how to recompile kernel available on the web, just
+type "kernel compilation howto" in \href{http://www.google.com}{Google}.
+
+\subsubsection{Setting up IPv6 in WindowsXP and 2003}
+If you have already working IPv6 support, you can safely skip this section.
+The easiest way to enable IPv6 support is to right click on the
+\verb+My network place+ on the desktop, select \verb+Properties+, then locate
+your network interface, right click it and select \verb+Properties+. Then
+click \verb+Install...+, choose protocol and then IPv6 (its naming is
+somewhat diffrent depending on what Service Pack you have installed).
+In XP, there's much quicker way to install IPv6. Simply run command
+\verb+ipv6 install+ (i.e. hit Start..., choose run... and then type 
+\verb+ipv6 install+). Also make sure that you have built-in firewall
+disabled. See \emph{Frequently Asked Question} section for details.
+
+\subsubsection{Setting up IPv6 in Windows 2000}
+If you have already working IPv6 support, you can safely skip this
+section. The following description was provided by Sob (
+(\href{mailto:sob(at)hisoftware.cz}{sob(at)hisoftware.cz}). Thanks. This
+description assumes that ServicePack 4 is already installed.
+
+\begin{enumerate}
+  \item Download the file tpipv6-001205.exe from:
+    \url{http://msdn.microsoft.com/downloads/sdks/platform/tpipv6.asp}
+    and save it to a local folder (for example, \verb+C:\IPv6TP+).
+  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Tpipv6-001205.exe+ and extract the
+    files to the same location.
+  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Setup.exe -x+ and extract the files to
+    a subfolder of the current folder (for example, \verb+C:\IPv6TP\files+).
+  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), open the
+    file \verb+Hotfix.inf+ in a text editor.
+  \item In the [Version] section of the Hotfix.inf file, change the line
+    NTServicePackVersion=256 to NTServicePackVersion=1024, and then
+    save changes. \footnote{This defines Service Pack requirement.
+      NTServicePackVersion is a ServicePack version multiplied by 256. If there
+    would be SP5 available, this value should have been changed to the 2048.}
+  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), run
+    \verb+Hotfix.exe+.
+  \item Restart the computer when prompted.
+  \item After the computer is restarted, from the Windows 2000 desktop, click Start,
+    point to Settings, and then click Network and Dial-up Connections. As an
+    alternative, you can right-click My Network Places, and then click Properties.
+  \item Right-click the Ethernet-based network interface to which you want to add the IPv6
+    protocol, and then click Properties. Typically, this network interface is named
+    Local Area Connection.
+  \item Click Install.
+  \item In the Select Network Component Type dialog box, click Protocol, and then
+    click Add.
+  \item In the Select Network Protocol dialog box, click Microsoft IPv6 Protocol and
+    then click OK.
+  \item Click Close to close the Local Area Connection Properties
+    dialog box.
+\end{enumerate}
+
+\subsubsection{Setting up IPv6 in Windows NT4}
+If you have already working IPv6 support, you can safely skip this section.
+The following description was provided by The following description was provided by Sob
+(\href{mailto:sob(at)hisoftware.cz}{sob(at)hisoftware.cz}). Thanks.
+
+\begin{enumerate}
+  \item Download the file msripv6-bin-1-4.exe from:
+    \url{http://research.microsoft.com/msripv6/msripv6.htm}{Microsoft}
+    and save it to a local folder (for example, \verb+C:\IPv6Kit+).
+  \item From the local folder (\verb+C:\IPv6Kit+), run \verb+msripv6-bin-1-4.exe+ and extract the
+    files to the same location.
+  \item Start the Control Panel's "Network" applet (an alternative way to do this is
+    to right-click on "Network Neighborhood" and select "Properties") and select
+    the "Protocols" tab.
+  \item Click the "Add..." button and then "Have Disk...". When it asks you for
+    a disk, give it the full pathname to where you downloaded the binary
+    distribution kit (\verb+C:\IPv6Kit+).
+  \item IPv6 is now installed.
+\end{enumerate}
+
+\subsection{Compilation}
+Dibbler is distributed in 2 versions: binary and source code. For
+most users, binary version is better choice.  Compilation is
+performed by more experienced users, preferably with programming
+knowledge. It does not offer significant advantages over binary version,
+only allows to understand internal Dibbler workings. You probably want
+just install and use Dibbler. If that is your case, read section
+named \emph{Installation}. However, if you are skilled enough, you might
+want to tune several Dibbler aspects during compilation. See \emph{
+Dibbler Developer's Guide} for information about various compilation parameters.
+
+\subsubsection{Linux compilation}
+
+Compilation in most cases is not necessary and should be performed
+only by experienced users. To compile dibbler, issue following commands:
+\begin{verbatim}
+tar zxvf dibbler-0.4.0-src.tar.gz
+cd dibbler
+make server client relay doc
+\end{verbatim}
+That's it. You can also install it in the system by issuing command:
+
+\begin{verbatim}
+make install
+\end{verbatim}
+
+If there are problems with missing/different compiler
+version, take a look at the beginning of the Makefile.inc
+file. Dibbler was compiled using gcc 2.95, 3.0, 3.2, 3.3, 3.4, 4.0 and 4.1
+versions. Note that 2.95 is now considered obsolete and was not tested
+for some time. Lexer files were generated using flex 2.5.33. Parser file
+were created using bison++ 1.21.9\footnote{flex and bison++ tools are
+  not required to compile Dibbler. Generated files are placed in CVS
+  and in tar.gz archives}. 
+
+If there are problems with \verb+SrvLexer.cpp+ and
+\verb+ClntLexer.cpp+ files, please use FlexLexer.h in Port-linux/
+directory. Most simple way to do this is to copy this file to
+\verb+/usr/include+ directory. 
+
+\subsubsection{Windows XP/2003 compilation}
+Download dibbler-\version-src.tar.gz and extract it. In \verb+Port-win32+ there
+are several project files (for server, client and relay) for MS
+Visual Studio 2003. Previous dibbler releases were compiled using MS
+Visual Studio .NET (sometimes called 2002). It might work with newest
+dibber version, but there are no guarantee. Open one of the project
+files and click Build command. That should start compilation. After a
+while, binary exe files will be stored in the \verb+Debug/+ directory.
+
+\subsubsection{Windows NT/2000 compilation}
+Windows NT4/2000 port is considered experimental, but there are reports
+that it works just fine. To compile it, you should download dev-cpp
+(\url{http://www.bloodshed.net/dev/devcpp.html}), a free IDE for
+Windows utilising minGW port of the gcc for Windows. Run dev-cpp,
+click ,,open project...'', and open one of the \verb+*.dev+ files located
+in the Port-winnt2k directory, then click compile. You also should
+take a look at \verb+Port-winnt2k/INFO+ file for details.
+
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.16  2006-08-27 12:54:31  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.15  2006-08-26 11:17:12  thomson
 %% *** empty log message ***
 %%
@@ -44,239 +312,3 @@
 %% Revision 1.2  2004/06/19 10:24:59  thomson
 %% Hyperlinks in PDF, building process modified
 %%
-
-\section{Installation and usage}
-Client, server and relay are installed in the same way. Installation
-method is different in Windows and Linux systems, so they're described
-separately. To simplify installation, it assumes that binary versions
-are used\footnote{Compilation is not required, binary version can be
-  used safely. Compilation should be performed by
-  advanced users only, see \emph{Compilation} section for details.}.
-
-\subsection{Linux installation}
-Starting with 0.4.1, there will are 3 different packages: client,
-server and relay. For some architectures there will be also
-documentation package provided. During writing this documentation,
-Dibbler is already present in:
-\begin{itemize}
-\item the PLD Linux Distribution 2.0 (in the test section)
-\item Gentoo GNU/Linux
-\end{itemize}
-There are efforts under way to include Dibbler in Debian GNU/Linux distribution.
-
-Obtain (e.g. download from \url{http://klub.com.pl/dhcpv6/}) an
-archive, which suits your needs. Currently there are provided RPM packages
-(which can be used in RedHat, Fedora Core, Mandrake or PLD
-distribution), DEB packages (suitable for Debian or Knoppix) and
-ebuild (for Gentoo users). To install rpm package, run $rpm -i
-archive.rpm$ command. For example, to install dibbler 0.4.1, issue following command:
-\begin{verbatim}
-rpm -i dibbler-0.4.1-1.i386.rpm 
-\end{verbatim}
-
-To install Dibbler on Debian or other system with dpkg management
-system, run $dpkg -i archive.deb$ command. For example, to install
-server, issue following command:
-
-\begin{verbatim}
-dpkg -i dibbler-server_0.4.1-1_i386.rpm 
-\end{verbatim}
-
-To install Dibbler in Gentoo systems, just type:
-
-\begin{verbatim}
-emerge dibbler
-\end{verbatim}
-
-If you would like to install Dibbler from sources, download tar.gz
-source archive, extract it, type make followed by target (e.g. server,
-client or relay\footnote{To get full target list, type: $make
-  help$}). After successful compilation type make install. For
-example, to build server and relay, type:
-
-\begin{verbatim}
-tar zxvf dibbler-0.1.0-src.tar.gz
-make server relay
-make install
-\end{verbatim}
-
-Depending what functionality do you want to use (server,client or relay),
-you should edit config file (\verb+client.conf+ for client, \verb+server.conf+
-for server and \verb+relay.conf+ for relay). All config files should
-be placed in the \verb+/etc/dibbler+ directory. After editing, issue one of
-the following commands:
-
-\begin{verbatim}
-dibbler-server start
-dibbler-client start
-dibbler-relay start
-\end{verbatim}
-
-\verb+start+ parameter needs a little comment. It
-instructs Dibbler to run in daemon mode -- detach from console and run
-in the background. During config files fine-tuning, it is ofter better
-to watch Dibbler's bahavior instantly. In this case, use \verb+run+
-instead of \verb+start+ parameter. Dibbler will present its messages on
-your console. To finish it, press ctrl-c.
-
-To stop server, client or relay running in daemon mode, type:
-\begin{verbatim}
-dibbler-server stop
-dibbler-client stop
-dibbler-relay stop
-\end{verbatim}
-
-To see, if client, server or relay are running, type:
-
-\begin{verbatim}
-dibbler-server status
-dibbler-client status
-dibbler-relay status
-\end{verbatim}
-
-
-\subsection{Windows installation}
-Starting at 0.2.1, Dibbler supports Windows XP and 2003. In version
-0.4.1 exprimental support for Windows NT4 and 2000 is provided. The easiest
-way is to download clickable Windows installer. Download it from
-\url{http://klub.com.pl/dhcpv6/}). After downloading, click on it and
-follow on screen instructions. Dibbler will be installed and all
-required links will be placed in the Start menu. Note that there are
-two Windows versions: one for XP/2003 and one for NT4/2000. Make sure
-to use proper port. If you haven't set up IPv6 support, see following
-sections for details.
-
-\subsection{Setting up IPv6 in Linux}
-IPv6 can be enabled in Linux systems in two ways: compiled directly
-into kernel or as a module. To verify if you have IPv6 support, issue
-following command: \verb+ping6 ::1+. If you get replies, you have IPv6
-already installed. If this fails, try to load IPv6 module:
-\verb+modprobe ipv6+ (issued as root) and try ping6 once more. If that
-fails, you have to recompile kernel to support IPv6. There are 
-numerous descriptions how to recompile kernel available in the net, just
-type "kernel compilation howto" in \href{Google}{http://www.google.com}.
-
-\subsection{Setting up IPv6 in WindowsXP and 2003}
-If you have already working IPv6 support, you can safely skip this section.
-The easiest way to enable IPv6 support is to right click on the
-\verb+My network place+ on the desktop, select \verb+Properties+, then locate
-your network interface, right click it and select \verb+Properties+. Then
-click \verb+Install...+, choose protocol and then IPv6 (its naming is
-somewhat diffrent depending on what Service Pack you have installed).
-In XP, there's much quicker way to install IPv6. Simply run command
-\verb+ipv6 install+.
-
-\subsection{Setting up IPv6 in Windows 2000}
-If you have already working IPv6 support, you can safely skip this
-section. The following description was provided by Sob 
-\href{mailto:sob(at)hisoftware.cz}{sob(at)hisoftware.cz}. Thanks. This
-description assumes that ServicePack 4 is already installed.
-
-\begin{enumerate}
-  \item Download the file tpipv6-001205.exe from:
-    \href{http://msdn.microsoft.com/downloads/sdks/platform/tpipv6.asp}
-    and save it to a local folder (for example, \verb+C:\IPv6TP+).
-  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Tpipv6-001205.exe+ and extract the
-    files to the same location.
-  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Setup.exe -x+ and extract the files to
-    a subfolder of the current folder (for example, \verb+C:\IPv6TP\files+).
-  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), open the
-    file \verb+Hotfix.inf+ in a text editor.
-  \item In the [Version] section of the Hotfix.inf file, change the line
-    NTServicePackVersion=256 to NTServicePackVersion=1024, and then
-    save changes. \footnote{This defines Service Pack requirement.
-      NTServicePackVersion is a ServicePack version multiplied by 256. If there
-    would be SP5 available, this value should have been changed to the 2048.}
-  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), run
-    \verb+Hotfix.exe+.
-  \item Restart the computer when prompted.
-  \item After the computer is restarted, from the Windows 2000 desktop, click Start,
-    point to Settings, and then click Network and Dial-up Connections. As an
-    alternative, you can right-click My Network Places, and then click Properties.
-  \item Right-click the Ethernet-based connection to which you want to add the IPv6
-    protocol, and then click Properties. Typically, this connection is named
-    Local Area Connection.
-  \item Click Install.
-  \item In the Select Network Component Type dialog box, click Protocol, and then
-    click Add.
-  \item In the Select Network Protocol dialog box, click Microsoft IPv6 Protocol and
-    then click OK.
-  \item Click Close to close the Local Area Connection Properties
-    dialog box.
-\end{enumerate}
-
-\subsection{Setting up IPv6 in Windows NT4}
-If you have already working IPv6 support, you can safely skip this section.
-The following description was provided by The following description was provided by Sob
-\href{mailto:sob(at)hisoftware.cz}{sob(at)hisoftware.cz}. Thanks.
-
-\begin{enumerate}
-  \item Download the file msripv6-bin-1-4.exe from:
-    \href{http://research.microsoft.com/msripv6/msripv6.htm}
-    and save it to a local folder (for example, \verb+C:\IPv6Kit+).
-  \item From the local folder (\verb+C:\IPv6Kit+), run \verb+msripv6-bin-1-4.exe+ and extract the
-    files to the same location.
-  \item Start the Control Panel's "Network" applet (an alternative way to do this is
-    to right-click on "Network Neighborhood" and select "Properties") and select
-    the "Protocols" tab.
-  \item Click the "Add..." button and then "Have Disk...". When it asks you for
-    a disk, give it the full pathname to where you downloaded the binary
-    distribution kit (\verb+C:\IPv6Kit+).
-  \item IPv6 should be installed.
-\end{enumerate}
-
-\subsection{Compilation}
-Dibbler is distributed in 2 versions: binary and source. For
-most users, binary version is better choice.  Compilation is
-performed by more experienced users, preferably with programming
-knowledge. It does not offer any advances over binary version, only
-allows to understand internal Dibbler workings. You probably want just
-install and use Dibbler. If that is your case, read section
-named \emph{Installation}.
-
-\subsubsection{Linux compilation}
-
-Compilation in most cases is not necessary and should be performed
-only by experienced users. Perferred method is to use binaries
-provided on Dibbler's website. Issue following commands:
-\begin{verbatim}
-tar zxvf dibbler-0.4.0-src.tar.gz
-cd dibbler
-make server client relay doc
-\end{verbatim}
-That's it. You can also install it in the system by issuing command:
-
-\begin{verbatim}
-make install
-\end{verbatim}
-
-If there are problems with missing/different compiler
-version, take a look at the beginning of the Makefile.inc
-file. Dibbler was compiled using gcc 2.95, 3.0, 3.2, 3.3, 3.4 and 4.1
-versions. Note that 2.95 is now considered obsolete and was not tested
-for some time. Lexer files were generated using flex 2.5.31. Parser file
-were created using bison++ 1.21.9\footnote{flex and bison++ tools are
-  not required to compile Dibbler. Generated files are placed in CVS
-  and in tar.gz archives}. 
-
-If there are problems with \verb+SrvLexer.cpp+ and
-\verb+ClntLexer.cpp+ files, please use FlexLexer.h in Port-linux/
-directory. Most simple way to do this is to copy this file to
-\verb+/usr/include+ directory. Additional information about
-compilation can be found in \emph{Dibbler Developer's Guide}.
-
-\subsubsection{Windows XP/2003 compilation}
-Download dibbler-0.3.0-src.tar.gz and extract it. In Port-winxp there
-will be project files (for server, client and relay) for MS
-Visual Studio. Open one of them and click Build command. That should
-do the trick. Additional information about compilation can be found in
-\emph{Dibbler Developer's Guide}.
-
-\subsubsection{Windows NT/2000 compilation}
-Windows NT4/2000 port is considered experimental, but there are reports
-that it works just fine. To compile it, you should download dev-cpp
-(\url{http://www.bloodshed.net/dev/devcpp.html}), a free IDE for
-Windows utilising minGW port of the gcc for Windows. Run dev-cpp,
-click ,,open project...'', and open of the \verb+*.dev+ files located
-in the Port-winnt2k directory, then click compile. You also should
-take a look at \verb+Port-winnt2k/INFO+ file for details.

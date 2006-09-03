@@ -1,19 +1,20 @@
 \section{Features HOWTO}
-This recently added section contains information about setting up
-various Dibbler features.
+This section contains information about setting up various Dibbler
+features. Since this section was added recently, it is not yet
+comprehensive. That is expected to change.
 
 \subsection{Stateless vs stateful and IA, TA options}
 \label{features-stateless-stateful}
 This section explains the difference between stateless and stateful
 configurations. IA and TA options usage is also described.
 
-\Note Usually, normal stateful configuration based on non-temporary
+Usually, normal stateful configuration based on non-temporary
 addresses should be used. If you don't know, what temporary addresses
 are, you don't need them.
 
 There are two kinds of configurations in DHCPv6 (\cite{rfc3315}, \cite{rfc3736}):
 \begin{description}
-  \item[stateful] -- when addresses (and possibly other parameters)
+  \item[stateful] -- it assumes that addresses (and possibly other parameters)
     are assigned to a client. To perform this kind of configuration,
     four messages are exchanged: \msg{SOLICIT}, \msg{ADVERTISE},
     \msg{REQUEST} and \msg{REPLY}.
@@ -24,11 +25,11 @@ There are two kinds of configurations in DHCPv6 (\cite{rfc3315}, \cite{rfc3736})
 \end{description}
 
 During normal operation, client works in a stateful mode. If not
-instructed otherwise, it will request normal (i.e. non-temporary)
-addresses. It will use \opt{IA} (Identity Association for
+instructed otherwise, it will request one or more normal (i.e. non-temporary)
+address. It will use \opt{IA} option (Identity Association for
 Non-temporary Addresses, see \cite{rfc3315} for details) to request
 and retrieve addresses. Since this is a default behavior, it does not
-have to be explicitely mentioned in the client configuration
+have to be mentioned in the client configuration
 file. Nevertheless, it can be provided:
 
 \begin{Verbatim}
@@ -47,7 +48,8 @@ details). This option will be used to request and receive temporary
 addresses from the client. To force client to request temporary
 addresses instead of permanent ones, \verb+ta+ keyword must be used in
 client.conf file. If this option is defined, only temporary address
-will be requested.
+will be requested. Keep in mind that temporary addresses are not
+renewed.
 
 \begin{Verbatim}
 # client.conf
@@ -61,7 +63,7 @@ It is also possible to instruct client to work in a stateless mode. It
 will not ask for any type of addresses, but will ask for specific
 non-adress related configuration parameters, e.g. DNS Servers
 information. This can be achieved by using \verb+stateless+
-keyword. Since this is a global parameter, it is not defined on an
+keyword. Since this is a global parameter, it is not defined on any
 interface, but as a global option.
 
 \begin{Verbatim}
@@ -76,8 +78,9 @@ iface eth0
 Some of the cases mentioned above can be used together. However,
 several combinations are illegal. Here is a complete list:
 \begin{description}
-\item[none] -- Same as \verb+ia+. Client will send \verb+ia+ option
-  (stateful autoconfiguration).
+\item[none] -- When no option is specified, client will assume one IA
+	   with one address should be requested. Client will send
+	   \verb+ia+ option (stateful autoconfiguration).
 \item[ia] -- Client will send \verb+ia+ option (stateful
   autoconfiguration).
 \item[ia,ta] -- When both options are specified, client will request
@@ -93,13 +96,18 @@ several combinations are illegal. Here is a complete list:
 
 \subsection{DNS Update}
 \label{features-fqdn}
+\Note In this section, we will assume that hostnames will be used
+from the example.com domain and that addresses will be provided from the
+2000::/64 pool. 
+
 During normal operation, DHCPv6 client receives one or more IPv6 address(es)
 from DHCPv6 server. If configured to do so, it can also receive
 information about DNS server addresses. As an additional service, DNS
 Update can be performed. This feature, sometimes known as Dynamic DNS,
 keeps DNS entries up to date. When client boots, it gets its fully
 qualified domain name and this name can be used to reach this
-particular client.
+particular client by other nodes. Details of this mechanism is described
+in \cite{draft-fqdn}.
 
 There are two types of the DNS Updates. First is a so called forward
 resolving. It allows to change a node's name into its address,
@@ -108,7 +116,7 @@ of record, which can be updated is a so called reverse resolving. It
 allows to obtain full name of a node with know address, e.g. 2000::124
 can be translated into zoe.example.com.
 
-To configure this feature, following steps must be executed:
+To configure this feature, following steps must be performed:
 
 \begin{enumerate}
 \item Configure DNS server. DNS server supporting IPv6 and dynamic
@@ -128,46 +136,216 @@ To configure this feature, following steps must be executed:
   (e.g. malcolm.example.com), not the hostnames only. 
 \item Configure dibbler client to request for DNS Update. Use ,,option
   fqdn'' to achieve this. 
+\item Server can be configured to execute 
+      \begin{itemize}
+       \item both (AAAA and PTR) updates by itself
+       \item execute PTR only by itself and let client execute AAAA
+	     update
+       \item don't perform any updates and let client perform AAAA
+	     update.
+      \end{itemize}
 \end{enumerate}
-  
-\begin{Verbatim}
-options {
-        listen-on-v6 { any; };
-        listen-on { any; };
 
-        // other options here
-        // ...
-};
-
-zone "example.com" {
-          type master;
-          file "pri/example.com";
-          allow-update { any; };
-          allow-transfer { any; };
-          allow-query { "any"; };
-          notify yes;
-
-      // other options follow
-      // ...
-};
-\end{Verbatim}
-
-\Note Make sure that unix user, which runs BIND, is able to create and
-write file pri/example.com.jnl. 
-
-After configuration, client should log following line, which informs
-that Dynamic DNS Update was completed successfully.
+Note that only server is allowed to execute PTR updates. After
+configuration, client and/or server should log following line, which
+informs that Dynamic DNS Update was completed successfully.
 
 \begin{verbatim}
 2006.07.24 01:52:51 Client Notice    FQDN Configured successfully !
 \end{verbatim}
 
-DNS Update can now be verified using dig command line tool (a part of
-the dnsutils package). Command syntex is as follows: \verb+dig @(dns-server-address) name record-type+. In the following example,
-this query checks for name jayne.example.com at a server located at
-2000::1 address. Record type AAAA (standard record for resolving name
-into IPv6 address) is requested. dig tool provides server's response
-in the \verb+ANSWER SECTION:+ below:
+
+
+\subsubsection{Example BIND configuration}
+Below are example configuration files for the BIND 9.3. First is a
+relevant part of the /etc/bind/named.conf configuration file. Generally,
+support for IPv6 in BIND is enabled (listen-on-v6) and there are two
+zones added: example.com (normal domain) and
+0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa (reverse
+mapping). Corresponding files are stored in \verb+example.com+ and
+\verb+rev-2000+ files. For details about meaning of those directives,
+please consult \emph{BIND 9 Administrator Reference Manual}.
+
+\Note Provided configuration is not safe from the security point of
+view. See next subsection for details.
+  
+\begin{Verbatim}
+// part of the /etc/bind/named.conf configuration file
+options {
+    listen-on-v6 { any; };
+    listen-on    { any; };
+
+    // other global options here
+    // ...
+};
+
+zone "example.com" {
+    type master;
+    file "example.com";
+    allow-update   { any; };
+    allow-transfer { any; };
+    allow-query    { any; };
+
+    // other example.com domain-specific 
+    // options follow
+    // ...
+};
+
+zone "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa" {
+    type master;
+    file "rev-2000";
+    allow-update   { any; };
+    allow-transfer { any; };
+    allow-query    { any; };
+
+   // other 2000::/64 reverse domain related 
+   // options follow
+   // ...
+};
+\end{Verbatim}
+
+% \vspace{-0.3cm}
+% \begin{center}
+% BIND's named.conf example
+% \end{center}
+
+Below are examples of two files: forward and reverse zone. First example
+presents how to configure normal domain. As an example there is entry
+provided for zoe.example.com host, which has 2000::123 address. Note
+that you do not have to manually configure such entries -- dibbler will
+do this automatically. It was merely provided as an example, what kind
+of mapping will be done in this zone.
+
+\begin{Verbatim}
+; 
+$ORIGIN .
+$TTL 86400      ; 1 day
+example.com             IN SOA  v13.klub.com.pl. root.v13.klub.com.pl. (
+                                129        ; serial
+                                7200       ; refresh (2 hours)
+                                3600       ; retry (1 hour)
+                                604800     ; expire (1 week)
+                                86400      ; minimum (1 day)
+                                )
+                        NS      v13.klub.com.pl.
+                        A       1.2.3.4
+                        TXT     "Fake domain used for Dibbler tests."
+$ORIGIN example.com.
+$TTL 7200       ; 2 hours
+zoe                     AAAA    2000::123
+\end{Verbatim}
+
+Second example presents zone file for reverse mapping. It contains
+entries for a special zone called
+0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa. This zone represents 2000::/64
+address space. As an example there is a static entry, which maps address
+2000::999 to a canonical name kaylee.example.com. Note that you do not
+have to manually configure such entries -- dibbler will do this
+automatically. It was merely provided as an example, what kind
+of mapping will be done in this zone.
+
+\begin{Verbatim}
+; rev-2000 example file
+$ORIGIN .
+$TTL 259200     ; 3 days
+
+; this line below is split in two due to page with limitation
+0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa IN 
+      SOA 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa. hostmaster.ep.net. (
+; this line above is split in two due to page with limitation
+                                200608268  ; serial
+                                86400      ; refresh (1 day)
+                                1800       ; retry (30 minutes)
+                                172800     ; expire (2 days)
+                                259200     ; minimum (3 days)
+                                )
+                        NS      klub.com.pl.
+$ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
+$TTL 86200      ; 23 hours 56 minutes 40 seconds
+3.2.1                   PTR     picard.example.com.
+
+; this line below is split in two due to page with limitation
+9.9.9                   PTR     kaylee.example.com.
+$ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
+
+; example entry: 2000::999 -> troi.example.com.
+; this line below is split in two due to page with limitation
+9.9.9.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa 
+      PTR troi.example.com.
+; this line above is split in two due to page with limitation
+\end{Verbatim}
+\Note Due to page width limitation, if the example above, two lines were
+split. 
+
+\subsubsection{Dynamic DNS Testing and tips}
+Proper configuration of the DNS Update mechanism is not an easy
+task. Therefore this section provides description of several methods of
+testing and tuning BIND configuration. Please review following steps
+before reporting issues to the author or on the mailing list.
+
+\begin{itemize}
+\item See example server and client configuration files described in a
+      sections \ref{example-client-fqdn} and \ref{example-server-fqdn}. Also
+      note that Dibbler distribution should be accompanied with several
+      example configuration files. Some of them include FQDN usage examples.
+\item Make sure that unix user, which runs BIND, is able to create and
+      write file example.com.jnl. When BIND is unable to create this
+      journal file, it will fail to accept updates from dibbler and will
+      report failure. Check BIND log files, which are usually stored in the
+      \verb+/var/log/+ directory.
+\item Make sure that you have routing configured properly on a host,
+      which will attempt to perform DNS Update. Use ping6 command to
+      verify that DNS server is reachable from this host.
+\item Make sure that your DNS server is configured properly. To do so,
+      you might want to use \verb+nsupdate+ tool. It is part of the BIND
+      distribution, but it is sometimes distributed separated as part of
+      the dnsutils package. After executing nsupdate tool, specify
+      address of the DNS server (\verb+server+ command), specify update
+      parameters (\verb+update+ command) and then type \verb+send+. If
+      nsupdate return a command prompt, then the update was
+      successful. Otherwise nsupdate will print DNS server's response,
+      e.g. NOTAUTH of SRVFAIL. See below for examples of successful
+      forward (AAAA record) and reverse (PTR record) updates.
+\item After DNS Update is performed, DNS records can be verified using
+      dig command line tool (a part of the dnsutils package). Command
+      syntax is: 
+      \verb+dig @(dns-server-address) name record-type+. 
+      In the following example, this query checks for name
+      jayne.example.com at a server located at 2000::1 address. Record
+      type AAAA (standard record for resolving name into IPv6 address)
+      is requested. dig tool provides server's response in the
+      \verb+ANSWER SECTION:+. See example log below.
+\item In example BIND configuration above, zone transfers, queries and
+      updates are allowed from anywhere. To make this configuration more
+      secure, it might be a good idea to allow updates only from a
+      certain range of addresses or even one (DHCPv6 server's) address
+      only.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To manually make AAAA record update, type:
+\begin{Verbatim}
+nsupdate
+>server 2000::1
+>update add worf.example.com 7200 IN AAAA 2000::567
+>send
+\end{Verbatim}
+
+To manually make PTR record update, type:
+\begin{Verbatim}
+nsupdate
+>server 2000::1
+>update add 
+3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
+86200 IN PTR picard.example.com. 
+>send
+\end{Verbatim}
+
+\Note Everything between "update" and "picard.example.com" must be typed in one line.
+
+And here is an example dig session:
 
 \begin{Verbatim}
 v13:/var# dig @2000::1 jayne.example.com AAAA
@@ -193,18 +371,12 @@ example.com.            86400   IN      NS      v13.klub.com.pl.
 ;; MSG SIZE  rcvd: 136
 \end{Verbatim}
 
-See example server and client configuration files described in a
-sections \ref{example-client-fqdn} and \ref{example-server-fqdn}. Also
-note that Dibbler distribution should be accompanied with several
-example configuration files. Some of them include FQDN usage examples.
-
-\subsection{Address caching}
-Previous Dibbler versions assigned a random address from a available
+\subsection{Server address caching}
+Previous Dibbler versions assigned a random address from the available
 address pool, so the same client received different address each time it
-asked for one. In the 0.5.0 release, two new mechanisms were introduced
-to make sure that the same client gets the same address each time.
-
-FIXME:
+asked for one. In the 0.5.0 release, new mechanism was introduced
+to make sure that the same client gets the same address each time. It is
+called \emph{Server caching}.
 
 Below is the algorithm used by the server to assign an address to the client.
 
@@ -217,8 +389,8 @@ Below is the algorithm used by the server to assign an address to the client.
  \item if the client provided hint, but it is not valid (i.e. is not
        part of the supported address pool, is link-local or a multicast
        address), then ignore the hint completety.
- \item if the did not provide valid hint, try to assign address
-       previously assigned to this client (address caching)
+ \item if the did not provide valid hint (or provided invalid one), try
+       to assign address previously assigned to this client (address caching)
  \item if this is the first time the client is seen, assign any address
        available.
 \end{itemize}
@@ -235,14 +407,17 @@ systems, they are stored in the \verb+/var/lib/dibbler+ directory. In
 Windows, current directory (i.e. directory where exe files are
 located) is used instead. There are several xml files generated. Since
 they are similar for each component, following list provides
-description for client only:
+description for server only:
 
 \begin{itemize}
-\item client-CfgMgr.xml - Represents information read from a
-  configuration file as its associated status (e.g. CONFIGURED or
-  FAILED).
-\item client-IfaceMgr.xml - Represens detected interfaces in the
+\item server-CfgMgr.xml -- Represents information read from a
+  configuration file, e.g. available address pool or DNS server
+      configuration.
+\item server-IfaceMgr.xml -- Represens detected interfaces in the
   operating system, as well as bound sockets and similar information.
-\item client-AddrMgr.xml - This is database, which contains identity
+\item server-AddrMgr.xml -- This is database, which contains identity
   associations with associated addresses.
+ \item server-cache.xml -- Since caching is implemented by the server
+      only, this file is only created by the server. It contains
+      information about previously assigned addresses. 
 \end{itemize}

@@ -1,40 +1,12 @@
 %%
-%% $Id: dibbler-user-intro.tex,v 1.13 2006-08-30 01:43:55 thomson Exp $
+%% Dibbler - a portable DHCPv6
 %%
-%% $Log: not supported by cvs2svn $
-%% Revision 1.12  2006-08-27 12:54:31  thomson
-%% *** empty log message ***
+%% authors: Tomasz Mrugalski <thomson@klub.com.pl>
 %%
-%% Revision 1.11  2006-08-26 11:17:12  thomson
-%% *** empty log message ***
 %%
-%% Revision 1.10  2006-07-01 12:46:09  thomson
-%% Docs updates, precise log-mode added, TA, FQDN options described.
+%% released under GNU GPL v2 licence
 %%
-%% Revision 1.9  2005/08/07 17:54:52  thomson
-%% Minor changes related to 0.4.1 release.
-%%
-%% Revision 1.8  2005/07/31 15:56:11  thomson
-%% WinNT/2000 port update, various small changes, typos etc.
-%%
-%% Revision 1.7  2005/07/21 23:28:56  thomson
-%% Documentation update.
-%%
-%% Revision 1.6  2005/02/01 23:06:48  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.5  2005/01/23 23:16:56  thomson
-%% Relay related things.
-%%
-%% Revision 1.4  2004/10/25 20:45:54  thomson
-%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
-%%
-%% Revision 1.3  2004/06/19 19:51:14  thomson
-%% Various fixes.
-%%
-%% Revision 1.2  2004/06/19 10:24:59  thomson
-%% Hyperlinks in PDF, building process modified
-%%
+%% $Id: dibbler-user-intro.tex,v 1.14 2006-09-03 09:49:08 thomson Exp $
 %%
 
 \section{Intro}
@@ -161,23 +133,23 @@ several enhancements:
       domain can refer to another host in the same domain by using 'bob'
       only, instead of full name bob.example.com. \cite{rfc3646}
 \item NTP Servers -- To prevent clock misconfiguration and drift, NTP
-      protocol \cite{ntp} can be used to synchronize clocks. However, to
+      protocol \cite{rfc2030} can be used to synchronize clocks. However, to
       successful use it, location of near NTP servers must be
-      known. Dibbler is able to configure this information. \cite{draft-timezone}
+      known. Dibbler is able to configure this information. \cite{rfc4075}
 \item Time Zone -- To avoid time-related ambiguation, each host should
       have timezone set properly. Dibbler is able to pass this parameter
       to all clients, who request it. \cite{draft-timezone}
-\item SIP Servers -- Session Initiation Protocol (SIP) \cite{sip} is
+\item SIP Servers -- Session Initiation Protocol (SIP) \cite{rfc3263} is
       commonly used in VoIP solutions. One of the necessary information
       is SIP server addresses. This information can be passed to
-      the clients. \cite{3319}
+      the clients. \cite{rfc3319}
 \item SIP Domain Name -- SIP domain name is another important parameter
       of the VoIP capable nodes. This parameter can be passed to all
-      clients, who ask for it. \cite{3319}
+      clients, who ask for it. \cite{rfc3319}
 \item NIS, NIS+ Server -- Network Information Service is a protocol for
       sharing authentication parameters between multiple Unix or Linux
       nodes. Both NIS and NIS+ server adresses can be passed to the
-      clients. \cite{3898}
+      clients. \cite{rfc3898}
 \item NIS, NIS+ Domain Name -- NIS or NIS+ domain name is another necessary
       parameter for NIS or NIS+. It can be obtained from the DHCPv6
       server to all clients, who require it. \cite{rfc3898}
@@ -200,16 +172,16 @@ some parts of the spec are not implemented yet. Below is a list of such
 features:
 
 \begin{itemize}
- \item Prefix Delegation \cite{prefix-del}
+ \item Prefix Delegation \cite{rfc3633}
  \item Authorization \cite{rfc3315}
  \item Reconfigure mechanism \cite{rfc3315}
- \item DNSSec (Key authentication) in DNS Updates
+ \item DNSSec (DNS Security Extensions) \cite{rfc4033} in DNS Updates \cite{draft-fqdn}
 \end{itemize}
 
 \subsection{Requirements}
 Dibbler can be run on Linux systems with kernels from 2.4 and 2.6
-series. Obviously, IPv6 (compiled into kernel or as module) support is
-required to run. DHCPv6 uses UDP ports below 1024, so root privileges
+series. IPv6 (compiled into kernel or as module) support is necessary
+to run dibbler. DHCPv6 uses UDP ports below 1024, so root privileges
 are required. They're also required to add, modify and delete various
 system parameters, e.g. IPv6 addresses.
 
@@ -220,7 +192,7 @@ required.
 
 Support for Windows NT4 and 2000 is limited and considered
 experimental. Due to lack of support and any kind of informations from
-Microsoft, don't expect this state to change.
+Microsoft, this is not expect to change.
 
 See RELEASE-NOTES for details about version-specific upgrades, fixes
 and features.
@@ -244,3 +216,42 @@ interfaces, setting DNS servers and so on. Porting Dibbler to other
 systems (and even other architectures) would require implementic only
 those serveral system-specific functions. See Developer's Guide for
 details.
+
+%%
+%% $Log: not supported by cvs2svn $
+%% Revision 1.13  2006-08-30 01:43:55  thomson
+%% *** empty log message ***
+%%
+%% Revision 1.12  2006-08-27 12:54:31  thomson
+%% *** empty log message ***
+%%
+%% Revision 1.11  2006-08-26 11:17:12  thomson
+%% *** empty log message ***
+%%
+%% Revision 1.10  2006-07-01 12:46:09  thomson
+%% Docs updates, precise log-mode added, TA, FQDN options described.
+%%
+%% Revision 1.9  2005/08/07 17:54:52  thomson
+%% Minor changes related to 0.4.1 release.
+%%
+%% Revision 1.8  2005/07/31 15:56:11  thomson
+%% WinNT/2000 port update, various small changes, typos etc.
+%%
+%% Revision 1.7  2005/07/21 23:28:56  thomson
+%% Documentation update.
+%%
+%% Revision 1.6  2005/02/01 23:06:48  thomson
+%% *** empty log message ***
+%%
+%% Revision 1.5  2005/01/23 23:16:56  thomson
+%% Relay related things.
+%%
+%% Revision 1.4  2004/10/25 20:45:54  thomson
+%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
+%%
+%% Revision 1.3  2004/06/19 19:51:14  thomson
+%% Various fixes.
+%%
+%% Revision 1.2  2004/06/19 10:24:59  thomson
+%% Hyperlinks in PDF, building process modified
+%%
