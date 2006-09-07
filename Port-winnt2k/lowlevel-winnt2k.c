@@ -7,7 +7,7 @@
  *
  * based on code from Dibbler 0.2.0-RC2 and Dibbler 0.4.0
  *
- * $Id: lowlevel-winnt2k.c,v 1.3 2005-07-30 15:07:54 thomson Exp $
+ * $Id: lowlevel-winnt2k.c,v 1.4 2006-09-07 05:53:07 thomson Exp $
  *
  * released under GNU GPL v2 licence
  *
@@ -31,6 +31,27 @@
 #include <stdlib.h>
 
 #include "Portable.h"
+
+/*
+From the net:
+
+The header files distributed in the MSDN Technology Preview define ipv6_mreq so that it is 2 byte aligned,
+while wship6.dll and tcpip6.sys were compiled with header files that defined mreq_size as 8 byte aligned.
+This makes a difference in the size of ipv6_mreq because the 4 byte ipv6mr_interface field (u_int) is
+allocated 8 bytes and therefore the size of ipv6_mreq increases from 20 to 24 bytes. The problem can be fixed
+by forcing ipv6_mreq in tpipv6.h to 8 byte alignment.
+
+Additional comments by Sob:
+
+- I don't know if this is proper solution of "forcing to 8 byte alignment", but it works ;)
+- changing the definition in tpipv6.h has no effect, probably definition from ws2tcpip.h is used
+  and it seems like very bad idea to change it there -> that's the reason for own definition here
+*/
+typedef struct w2k_ipv6_mreq {
+    struct in6_addr ipv6mr_multiaddr;  // IPv6 multicast address.
+    unsigned int    ipv6mr_interface;  // Interface index.
+    char padding[4];
+} W2K_IPV6_MREQ;
 
 char ipv6Path[256];
 char cmdPath[256];
@@ -233,7 +254,7 @@ extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thi
 {
     SOCKET s;
     struct sockaddr_in6 bindme;
-    struct ipv6_mreq ipmreq; 
+    struct w2k_ipv6_mreq ipmreq; 
     int	hops=1;
     char packedAddr[16];
     //char multiAddr[16] = { 0xff,2, 0,0, 0,0, 0,0, 0,0, 0,0, 0,1, 0,2};
@@ -431,6 +452,10 @@ extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005-07-30 15:07:54  thomson
+ * Additional headers are now included.
+ * This fixes problem with running that code on NT/2k.
+ *
  * Revision 1.2  2005/07/24 16:00:03  thomson
  * Port WinNT/2000 related changes.
  *
