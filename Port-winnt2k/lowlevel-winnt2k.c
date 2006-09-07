@@ -7,7 +7,7 @@
  *
  * based on code from Dibbler 0.2.0-RC2 and Dibbler 0.4.0
  *
- * $Id: lowlevel-winnt2k.c,v 1.4 2006-09-07 05:53:07 thomson Exp $
+ * $Id: lowlevel-winnt2k.c,v 1.5 2006-09-07 06:34:43 thomson Exp $
  *
  * released under GNU GPL v2 licence
  *
@@ -227,7 +227,7 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
 }
 
 extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
-		      unsigned long pref, unsigned long valid)
+		      unsigned long pref, unsigned long valid, int prefixLength)
 {
     char addr2[128];
     char buf[64];
@@ -243,9 +243,10 @@ extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
 	return 0;
 }
 
-extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr)
+extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr,
+                      int prefixLength)
 {
-	return ipaddr_add(ifacename, ifindex, addr, 0, 0);
+	return ipaddr_add(ifacename, ifindex, addr, 0, 0, prefixLength);
 }
 
 SOCKET mcast=0;
@@ -452,6 +453,9 @@ extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006-09-07 05:53:07  thomson
+ * Multicast patch by Sob.
+ *
  * Revision 1.3  2005-07-30 15:07:54  thomson
  * Additional headers are now included.
  * This fixes problem with running that code on NT/2k.
