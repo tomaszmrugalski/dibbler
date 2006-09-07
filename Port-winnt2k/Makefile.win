@@ -1,30 +1,30 @@
-# Project: dibbler-server
+# Project: dibbler-client
 # Makefile created by Dev-C++ 4.9.9.2
 
 CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
-RES  = dibbler-server_private.res
-OBJ  = WinService.o lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../SrvAddrMgr/SrvAddrMgr.o ../SrvCfgMgr/SrvParsIfaceOpt.o ../SrvCfgMgr/SrvCfgAddrClass.o ../SrvCfgMgr/SrvCfgIface.o ../SrvCfgMgr/SrvCfgMgr.o ../SrvCfgMgr/SrvLexer.o ../SrvCfgMgr/SrvParsClassOpt.o ../SrvCfgMgr/SrvParser.o ../SrvCfgMgr/SrvParsGlobalOpt.o ../SrvIfaceMgr/SrvIfaceMgr.o ../SrvIfaceMgr/SrvIfaceIface.o ../AddrMgr/AddrMgr.o ../AddrMgr/AddrAddr.o ../AddrMgr/AddrClient.o ../AddrMgr/AddrIA.o ../SrvTransMgr/SrvTransMgr.o ../Options/OptVendorSpecInfo.o ../Options/Opt.o ../Options/OptAddr.o ../Options/OptAddrLst.o ../Options/OptElapsed.o ../Options/OptGeneric.o ../Options/OptIA_NA.o ../Options/OptIAAddress.o ../Options/OptInteger4.o ../Options/OptOptionRequest.o ../Options/OptPreference.o ../Options/OptRapidCommit.o ../Options/OptStatusCode.o ../Options/OptString.o ../Options/OptStringLst.o ../Options/OptUserClass.o ../Options/OptVendorClass.o ../SrvOptions/SrvOptVendorSpecInfo.o ../SrvOptions/SrvOptClientIdentifier.o ../SrvOptions/SrvOptDNSServers.o ../SrvOptions/SrvOptDomainName.o ../SrvOptions/SrvOptElapsed.o ../SrvOptions/SrvOptFQDN.o ../SrvOptions/SrvOptIA_NA.o ../SrvOptions/SrvOptIAAddress.o ../SrvOptions/SrvOptInterfaceID.o ../SrvOptions/SrvOptLifetime.o ../SrvOptions/SrvOptNISDomain.o ../SrvOptions/SrvOptNISPDomain.o ../SrvOptions/SrvOptNISPServer.o ../SrvOptions/SrvOptNISServer.o ../SrvOptions/SrvOptNTPServers.o ../SrvOptions/SrvOptOptionRequest.o ../SrvOptions/SrvOptPreference.o ../SrvOptions/SrvOptRapidCommit.o ../SrvOptions/SrvOptServerIdentifier.o ../SrvOptions/SrvOptServerUnicast.o ../SrvOptions/SrvOptSIPDomain.o ../SrvOptions/SrvOptSIPServer.o ../SrvOptions/SrvOptStatusCode.o ../SrvOptions/SrvOptTimeZone.o ../SrvOptions/SrvOptUserClass.o ../SrvOptions/SrvOptVendorClass.o ../SrvMessages/SrvMsgSolicit.o ../SrvMessages/SrvMsg.o ../SrvMessages/SrvMsgAdvertise.o ../SrvMessages/SrvMsgConfirm.o ../SrvMessages/SrvMsgDecline.o ../SrvMessages/SrvMsgInfRequest.o ../SrvMessages/SrvMsgRebind.o ../SrvMessages/SrvMsgRelease.o ../SrvMessages/SrvMsgRenew.o ../SrvMessages/SrvMsgReply.o ../SrvMessages/SrvMsgRequest.o ../Misc/DHCPServer.o SrvService.o server-winnt2k.o ../CfgMgr/StationRange.o ../Options/OptDUID.o ../SrvCfgMgr/SrvCfgTA.o ../Options/OptFQDN.o ../SrvOptions/SrvOptTA.o ../Misc/FQDN.o ../IfaceMgr/DNSUpdate.o ../Misc/addrpack.o ../Options/OptTA.o ../poslib/poslib/socket.o ../poslib/poslib/dnsmessage.o ../poslib/poslib/domainfn.o ../poslib/poslib/exception.o ../poslib/poslib/lexfn.o ../poslib/poslib/masterfile.o ../poslib/poslib/postime.o ../poslib/poslib/random.o ../poslib/poslib/resolver.o ../poslib/poslib/rr.o $(RES)
-LINKOBJ  = WinService.o lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../SrvAddrMgr/SrvAddrMgr.o ../SrvCfgMgr/SrvParsIfaceOpt.o ../SrvCfgMgr/SrvCfgAddrClass.o ../SrvCfgMgr/SrvCfgIface.o ../SrvCfgMgr/SrvCfgMgr.o ../SrvCfgMgr/SrvLexer.o ../SrvCfgMgr/SrvParsClassOpt.o ../SrvCfgMgr/SrvParser.o ../SrvCfgMgr/SrvParsGlobalOpt.o ../SrvIfaceMgr/SrvIfaceMgr.o ../SrvIfaceMgr/SrvIfaceIface.o ../AddrMgr/AddrMgr.o ../AddrMgr/AddrAddr.o ../AddrMgr/AddrClient.o ../AddrMgr/AddrIA.o ../SrvTransMgr/SrvTransMgr.o ../Options/OptVendorSpecInfo.o ../Options/Opt.o ../Options/OptAddr.o ../Options/OptAddrLst.o ../Options/OptElapsed.o ../Options/OptGeneric.o ../Options/OptIA_NA.o ../Options/OptIAAddress.o ../Options/OptInteger4.o ../Options/OptOptionRequest.o ../Options/OptPreference.o ../Options/OptRapidCommit.o ../Options/OptStatusCode.o ../Options/OptString.o ../Options/OptStringLst.o ../Options/OptUserClass.o ../Options/OptVendorClass.o ../SrvOptions/SrvOptVendorSpecInfo.o ../SrvOptions/SrvOptClientIdentifier.o ../SrvOptions/SrvOptDNSServers.o ../SrvOptions/SrvOptDomainName.o ../SrvOptions/SrvOptElapsed.o ../SrvOptions/SrvOptFQDN.o ../SrvOptions/SrvOptIA_NA.o ../SrvOptions/SrvOptIAAddress.o ../SrvOptions/SrvOptInterfaceID.o ../SrvOptions/SrvOptLifetime.o ../SrvOptions/SrvOptNISDomain.o ../SrvOptions/SrvOptNISPDomain.o ../SrvOptions/SrvOptNISPServer.o ../SrvOptions/SrvOptNISServer.o ../SrvOptions/SrvOptNTPServers.o ../SrvOptions/SrvOptOptionRequest.o ../SrvOptions/SrvOptPreference.o ../SrvOptions/SrvOptRapidCommit.o ../SrvOptions/SrvOptServerIdentifier.o ../SrvOptions/SrvOptServerUnicast.o ../SrvOptions/SrvOptSIPDomain.o ../SrvOptions/SrvOptSIPServer.o ../SrvOptions/SrvOptStatusCode.o ../SrvOptions/SrvOptTimeZone.o ../SrvOptions/SrvOptUserClass.o ../SrvOptions/SrvOptVendorClass.o ../SrvMessages/SrvMsgSolicit.o ../SrvMessages/SrvMsg.o ../SrvMessages/SrvMsgAdvertise.o ../SrvMessages/SrvMsgConfirm.o ../SrvMessages/SrvMsgDecline.o ../SrvMessages/SrvMsgInfRequest.o ../SrvMessages/SrvMsgRebind.o ../SrvMessages/SrvMsgRelease.o ../SrvMessages/SrvMsgRenew.o ../SrvMessages/SrvMsgReply.o ../SrvMessages/SrvMsgRequest.o ../Misc/DHCPServer.o SrvService.o server-winnt2k.o ../CfgMgr/StationRange.o ../Options/OptDUID.o ../SrvCfgMgr/SrvCfgTA.o ../Options/OptFQDN.o ../SrvOptions/SrvOptTA.o ../Misc/FQDN.o ../IfaceMgr/DNSUpdate.o ../Misc/addrpack.o ../Options/OptTA.o ../poslib/poslib/socket.o ../poslib/poslib/dnsmessage.o ../poslib/poslib/domainfn.o ../poslib/poslib/exception.o ../poslib/poslib/lexfn.o ../poslib/poslib/masterfile.o ../poslib/poslib/postime.o ../poslib/poslib/random.o ../poslib/poslib/resolver.o ../poslib/poslib/rr.o $(RES)
+RES  = dibbler-client_private.res
+OBJ  = WinService.o lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../ClntAddrMgr/ClntAddrMgr.o ../ClntCfgMgr/ClntParsIfaceOpt.o ../ClntCfgMgr/ClntCfgAddr.o ../ClntCfgMgr/ClntCfgIA.o ../ClntCfgMgr/ClntCfgIface.o ../ClntCfgMgr/ClntCfgMgr.o ../ClntCfgMgr/ClntLexer.o ../ClntCfgMgr/ClntParsAddrOpt.o ../ClntCfgMgr/ClntParser.o ../ClntCfgMgr/ClntParsGlobalOpt.o ../ClntCfgMgr/ClntParsIAOpt.o ../ClntTransMgr/ClntTransMgr.o ../ClntIfaceMgr/ClntIfaceMgr.o ../ClntIfaceMgr/ClntIfaceIface.o ../ClntMessages/ClntMsgSolicit.o ../ClntMessages/ClntMsg.o ../ClntMessages/ClntMsgAdvertise.o ../ClntMessages/ClntMsgConfirm.o ../ClntMessages/ClntMsgDecline.o ../ClntMessages/ClntMsgInfRequest.o ../ClntMessages/ClntMsgRebind.o ../ClntMessages/ClntMsgRelease.o ../ClntMessages/ClntMsgRenew.o ../ClntMessages/ClntMsgReply.o ../ClntMessages/ClntMsgRequest.o ../ClntOptions/ClntOptVendorSpecInfo.o ../ClntOptions/ClntOptClientIdentifier.o ../ClntOptions/ClntOptDNSServers.o ../ClntOptions/ClntOptDomainName.o ../ClntOptions/ClntOptElapsed.o ../ClntOptions/ClntOptFQDN.o ../ClntOptions/ClntOptIA_NA.o ../ClntOptions/ClntOptIAAddress.o ../ClntOptions/ClntOptLifetime.o ../ClntOptions/ClntOptNISDomain.o ../ClntOptions/ClntOptNISPDomain.o ../ClntOptions/ClntOptNISPServer.o ../ClntOptions/ClntOptNISServer.o ../ClntOptions/ClntOptNTPServers.o ../ClntOptions/ClntOptOptionRequest.o ../ClntOptions/ClntOptPreference.o ../ClntOptions/ClntOptRapidCommit.o ../ClntOptions/ClntOptServerIdentifier.o ../ClntOptions/ClntOptServerUnicast.o ../ClntOptions/ClntOptSIPDomain.o ../ClntOptions/ClntOptSIPServer.o ../ClntOptions/ClntOptStatusCode.o ../ClntOptions/ClntOptTimeZone.o ../ClntOptions/ClntOptUserClass.o ../ClntOptions/ClntOptVendorClass.o ../AddrMgr/AddrMgr.o ../AddrMgr/AddrAddr.o ../AddrMgr/AddrClient.o ../AddrMgr/AddrIA.o ../Options/OptVendorSpecInfo.o ../Options/Opt.o ../Options/OptAddr.o ../Options/OptAddrLst.o ../Options/OptElapsed.o ../Options/OptGeneric.o ../Options/OptIA_NA.o ../Options/OptIAAddress.o ../Options/OptInteger4.o ../Options/OptOptionRequest.o ../Options/OptPreference.o ../Options/OptRapidCommit.o ../Options/OptStatusCode.o ../Options/OptString.o ../Options/OptStringLst.o ../Options/OptUserClass.o ../Options/OptVendorClass.o client-winnt2k.o ClntService.o ../Misc/DHCPClient.o ../CfgMgr/StationID.o ../CfgMgr/TimeZone.o ../IfaceMgr/DNSUpdate.o ../Misc/FQDN.o ../Misc/addrpack.o ../poslib/poslib/socket.o ../poslib/poslib/dnsmessage.o ../poslib/poslib/domainfn.o ../poslib/poslib/exception.o ../poslib/poslib/lexfn.o ../poslib/poslib/masterfile.o ../poslib/poslib/postime.o ../poslib/poslib/random.o ../poslib/poslib/resolver.o ../poslib/poslib/rr.o ../ClntCfgMgr/ClntCfgTA.o ../Options/OptDUID.o ../Options/OptFQDN.o ../ClntOptions/ClntOptTA.o ../Options/OptTA.o $(RES)
+LINKOBJ  = WinService.o lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../ClntAddrMgr/ClntAddrMgr.o ../ClntCfgMgr/ClntParsIfaceOpt.o ../ClntCfgMgr/ClntCfgAddr.o ../ClntCfgMgr/ClntCfgIA.o ../ClntCfgMgr/ClntCfgIface.o ../ClntCfgMgr/ClntCfgMgr.o ../ClntCfgMgr/ClntLexer.o ../ClntCfgMgr/ClntParsAddrOpt.o ../ClntCfgMgr/ClntParser.o ../ClntCfgMgr/ClntParsGlobalOpt.o ../ClntCfgMgr/ClntParsIAOpt.o ../ClntTransMgr/ClntTransMgr.o ../ClntIfaceMgr/ClntIfaceMgr.o ../ClntIfaceMgr/ClntIfaceIface.o ../ClntMessages/ClntMsgSolicit.o ../ClntMessages/ClntMsg.o ../ClntMessages/ClntMsgAdvertise.o ../ClntMessages/ClntMsgConfirm.o ../ClntMessages/ClntMsgDecline.o ../ClntMessages/ClntMsgInfRequest.o ../ClntMessages/ClntMsgRebind.o ../ClntMessages/ClntMsgRelease.o ../ClntMessages/ClntMsgRenew.o ../ClntMessages/ClntMsgReply.o ../ClntMessages/ClntMsgRequest.o ../ClntOptions/ClntOptVendorSpecInfo.o ../ClntOptions/ClntOptClientIdentifier.o ../ClntOptions/ClntOptDNSServers.o ../ClntOptions/ClntOptDomainName.o ../ClntOptions/ClntOptElapsed.o ../ClntOptions/ClntOptFQDN.o ../ClntOptions/ClntOptIA_NA.o ../ClntOptions/ClntOptIAAddress.o ../ClntOptions/ClntOptLifetime.o ../ClntOptions/ClntOptNISDomain.o ../ClntOptions/ClntOptNISPDomain.o ../ClntOptions/ClntOptNISPServer.o ../ClntOptions/ClntOptNISServer.o ../ClntOptions/ClntOptNTPServers.o ../ClntOptions/ClntOptOptionRequest.o ../ClntOptions/ClntOptPreference.o ../ClntOptions/ClntOptRapidCommit.o ../ClntOptions/ClntOptServerIdentifier.o ../ClntOptions/ClntOptServerUnicast.o ../ClntOptions/ClntOptSIPDomain.o ../ClntOptions/ClntOptSIPServer.o ../ClntOptions/ClntOptStatusCode.o ../ClntOptions/ClntOptTimeZone.o ../ClntOptions/ClntOptUserClass.o ../ClntOptions/ClntOptVendorClass.o ../AddrMgr/AddrMgr.o ../AddrMgr/AddrAddr.o ../AddrMgr/AddrClient.o ../AddrMgr/AddrIA.o ../Options/OptVendorSpecInfo.o ../Options/Opt.o ../Options/OptAddr.o ../Options/OptAddrLst.o ../Options/OptElapsed.o ../Options/OptGeneric.o ../Options/OptIA_NA.o ../Options/OptIAAddress.o ../Options/OptInteger4.o ../Options/OptOptionRequest.o ../Options/OptPreference.o ../Options/OptRapidCommit.o ../Options/OptStatusCode.o ../Options/OptString.o ../Options/OptStringLst.o ../Options/OptUserClass.o ../Options/OptVendorClass.o client-winnt2k.o ClntService.o ../Misc/DHCPClient.o ../CfgMgr/StationID.o ../CfgMgr/TimeZone.o ../IfaceMgr/DNSUpdate.o ../Misc/FQDN.o ../Misc/addrpack.o ../poslib/poslib/socket.o ../poslib/poslib/dnsmessage.o ../poslib/poslib/domainfn.o ../poslib/poslib/exception.o ../poslib/poslib/lexfn.o ../poslib/poslib/masterfile.o ../poslib/poslib/postime.o ../poslib/poslib/random.o ../poslib/poslib/resolver.o ../poslib/poslib/rr.o ../ClntCfgMgr/ClntCfgTA.o ../Options/OptDUID.o ../Options/OptFQDN.o ../ClntOptions/ClntOptTA.o ../Options/OptTA.o $(RES)
 LIBS =  -L"C:/Dev-Cpp/lib" -lws2_32  
-INCS =  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../SrvAddrMgr"  -I"../SrvCfgMgr"  -I"../SrvIfaceMgr"  -I"../SrvMessages"  -I"../SrvOptions"  -I"../SrvTransMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../TransMgr"  -I"../poslib/poslib"  -I"../Port-winnt2k"  -I"../Port-winnt2k/CVS" 
-CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../SrvAddrMgr"  -I"../SrvCfgMgr"  -I"../SrvIfaceMgr"  -I"../SrvMessages"  -I"../SrvOptions"  -I"../SrvTransMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../TransMgr"  -I"../poslib/poslib"  -I"../Port-winnt2k"  -I"../Port-winnt2k/CVS" 
-BIN  = dibbler-server.exe
+INCS =  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../ClntAddrMgr"  -I"../ClntCfgMgr"  -I"../ClntIfaceMgr"  -I"../ClntMessages"  -I"../ClntOptions"  -I"../ClntTransMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr"  -I"../Port-winnt2k/CVS"  -I"../poslib/poslib" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../ClntAddrMgr"  -I"../ClntCfgMgr"  -I"../ClntIfaceMgr"  -I"../ClntMessages"  -I"../ClntOptions"  -I"../ClntTransMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr"  -I"../Port-winnt2k/CVS"  -I"../poslib/poslib" 
+BIN  = dibbler-client.exe
 CXXFLAGS = $(CXXINCS) -DMINGWBUILD -funsigned-char  
 CFLAGS = $(INCS) -DMINGWBUILD -funsigned-char  
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before dibbler-server.exe all-after
+all: all-before dibbler-client.exe all-after
 
 
 clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CPP) $(LINKOBJ) -o "dibbler-server.exe" $(LIBS)
+	$(CPP) $(LINKOBJ) -o "dibbler-client.exe" $(LIBS)
 
 WinService.o: WinService.cpp
 	$(CPP) -c WinService.cpp -o WinService.o $(CXXFLAGS)
@@ -59,38 +59,155 @@ lowlevel-winnt2k.o: lowlevel-winnt2k.c
 ../CfgMgr/CfgMgr.o: ../CfgMgr/CfgMgr.cpp
 	$(CPP) -c ../CfgMgr/CfgMgr.cpp -o ../CfgMgr/CfgMgr.o $(CXXFLAGS)
 
-../SrvAddrMgr/SrvAddrMgr.o: ../SrvAddrMgr/SrvAddrMgr.cpp
-	$(CPP) -c ../SrvAddrMgr/SrvAddrMgr.cpp -o ../SrvAddrMgr/SrvAddrMgr.o $(CXXFLAGS)
+../ClntAddrMgr/ClntAddrMgr.o: ../ClntAddrMgr/ClntAddrMgr.cpp
+	$(CPP) -c ../ClntAddrMgr/ClntAddrMgr.cpp -o ../ClntAddrMgr/ClntAddrMgr.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvParsIfaceOpt.o: ../SrvCfgMgr/SrvParsIfaceOpt.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParsIfaceOpt.cpp -o ../SrvCfgMgr/SrvParsIfaceOpt.o $(CXXFLAGS)
+../ClntCfgMgr/ClntParsIfaceOpt.o: ../ClntCfgMgr/ClntParsIfaceOpt.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntParsIfaceOpt.cpp -o ../ClntCfgMgr/ClntParsIfaceOpt.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvCfgAddrClass.o: ../SrvCfgMgr/SrvCfgAddrClass.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvCfgAddrClass.cpp -o ../SrvCfgMgr/SrvCfgAddrClass.o $(CXXFLAGS)
+../ClntCfgMgr/ClntCfgAddr.o: ../ClntCfgMgr/ClntCfgAddr.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntCfgAddr.cpp -o ../ClntCfgMgr/ClntCfgAddr.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvCfgIface.o: ../SrvCfgMgr/SrvCfgIface.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvCfgIface.cpp -o ../SrvCfgMgr/SrvCfgIface.o $(CXXFLAGS)
+../ClntCfgMgr/ClntCfgIA.o: ../ClntCfgMgr/ClntCfgIA.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntCfgIA.cpp -o ../ClntCfgMgr/ClntCfgIA.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvCfgMgr.o: ../SrvCfgMgr/SrvCfgMgr.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvCfgMgr.cpp -o ../SrvCfgMgr/SrvCfgMgr.o $(CXXFLAGS)
+../ClntCfgMgr/ClntCfgIface.o: ../ClntCfgMgr/ClntCfgIface.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntCfgIface.cpp -o ../ClntCfgMgr/ClntCfgIface.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvLexer.o: ../SrvCfgMgr/SrvLexer.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvLexer.cpp -o ../SrvCfgMgr/SrvLexer.o $(CXXFLAGS)
+../ClntCfgMgr/ClntCfgMgr.o: ../ClntCfgMgr/ClntCfgMgr.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntCfgMgr.cpp -o ../ClntCfgMgr/ClntCfgMgr.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvParsClassOpt.o: ../SrvCfgMgr/SrvParsClassOpt.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParsClassOpt.cpp -o ../SrvCfgMgr/SrvParsClassOpt.o $(CXXFLAGS)
+../ClntCfgMgr/ClntLexer.o: ../ClntCfgMgr/ClntLexer.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntLexer.cpp -o ../ClntCfgMgr/ClntLexer.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvParser.o: ../SrvCfgMgr/SrvParser.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParser.cpp -o ../SrvCfgMgr/SrvParser.o $(CXXFLAGS)
+../ClntCfgMgr/ClntParsAddrOpt.o: ../ClntCfgMgr/ClntParsAddrOpt.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntParsAddrOpt.cpp -o ../ClntCfgMgr/ClntParsAddrOpt.o $(CXXFLAGS)
 
-../SrvCfgMgr/SrvParsGlobalOpt.o: ../SrvCfgMgr/SrvParsGlobalOpt.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvParsGlobalOpt.cpp -o ../SrvCfgMgr/SrvParsGlobalOpt.o $(CXXFLAGS)
+../ClntCfgMgr/ClntParser.o: ../ClntCfgMgr/ClntParser.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntParser.cpp -o ../ClntCfgMgr/ClntParser.o $(CXXFLAGS)
 
-../SrvIfaceMgr/SrvIfaceMgr.o: ../SrvIfaceMgr/SrvIfaceMgr.cpp
-	$(CPP) -c ../SrvIfaceMgr/SrvIfaceMgr.cpp -o ../SrvIfaceMgr/SrvIfaceMgr.o $(CXXFLAGS)
+../ClntCfgMgr/ClntParsGlobalOpt.o: ../ClntCfgMgr/ClntParsGlobalOpt.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntParsGlobalOpt.cpp -o ../ClntCfgMgr/ClntParsGlobalOpt.o $(CXXFLAGS)
 
-../SrvIfaceMgr/SrvIfaceIface.o: ../SrvIfaceMgr/SrvIfaceIface.cpp
-	$(CPP) -c ../SrvIfaceMgr/SrvIfaceIface.cpp -o ../SrvIfaceMgr/SrvIfaceIface.o $(CXXFLAGS)
+../ClntCfgMgr/ClntParsIAOpt.o: ../ClntCfgMgr/ClntParsIAOpt.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntParsIAOpt.cpp -o ../ClntCfgMgr/ClntParsIAOpt.o $(CXXFLAGS)
+
+../ClntTransMgr/ClntTransMgr.o: ../ClntTransMgr/ClntTransMgr.cpp
+	$(CPP) -c ../ClntTransMgr/ClntTransMgr.cpp -o ../ClntTransMgr/ClntTransMgr.o $(CXXFLAGS)
+
+../ClntIfaceMgr/ClntIfaceMgr.o: ../ClntIfaceMgr/ClntIfaceMgr.cpp
+	$(CPP) -c ../ClntIfaceMgr/ClntIfaceMgr.cpp -o ../ClntIfaceMgr/ClntIfaceMgr.o $(CXXFLAGS)
+
+../ClntIfaceMgr/ClntIfaceIface.o: ../ClntIfaceMgr/ClntIfaceIface.cpp
+	$(CPP) -c ../ClntIfaceMgr/ClntIfaceIface.cpp -o ../ClntIfaceMgr/ClntIfaceIface.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgSolicit.o: ../ClntMessages/ClntMsgSolicit.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgSolicit.cpp -o ../ClntMessages/ClntMsgSolicit.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsg.o: ../ClntMessages/ClntMsg.cpp
+	$(CPP) -c ../ClntMessages/ClntMsg.cpp -o ../ClntMessages/ClntMsg.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgAdvertise.o: ../ClntMessages/ClntMsgAdvertise.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgAdvertise.cpp -o ../ClntMessages/ClntMsgAdvertise.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgConfirm.o: ../ClntMessages/ClntMsgConfirm.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgConfirm.cpp -o ../ClntMessages/ClntMsgConfirm.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgDecline.o: ../ClntMessages/ClntMsgDecline.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgDecline.cpp -o ../ClntMessages/ClntMsgDecline.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgInfRequest.o: ../ClntMessages/ClntMsgInfRequest.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgInfRequest.cpp -o ../ClntMessages/ClntMsgInfRequest.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgRebind.o: ../ClntMessages/ClntMsgRebind.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgRebind.cpp -o ../ClntMessages/ClntMsgRebind.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgRelease.o: ../ClntMessages/ClntMsgRelease.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgRelease.cpp -o ../ClntMessages/ClntMsgRelease.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgRenew.o: ../ClntMessages/ClntMsgRenew.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgRenew.cpp -o ../ClntMessages/ClntMsgRenew.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgReply.o: ../ClntMessages/ClntMsgReply.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgReply.cpp -o ../ClntMessages/ClntMsgReply.o $(CXXFLAGS)
+
+../ClntMessages/ClntMsgRequest.o: ../ClntMessages/ClntMsgRequest.cpp
+	$(CPP) -c ../ClntMessages/ClntMsgRequest.cpp -o ../ClntMessages/ClntMsgRequest.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptVendorSpecInfo.o: ../ClntOptions/ClntOptVendorSpecInfo.cpp
+	$(CPP) -c ../ClntOptions/ClntOptVendorSpecInfo.cpp -o ../ClntOptions/ClntOptVendorSpecInfo.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptClientIdentifier.o: ../ClntOptions/ClntOptClientIdentifier.cpp
+	$(CPP) -c ../ClntOptions/ClntOptClientIdentifier.cpp -o ../ClntOptions/ClntOptClientIdentifier.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptDNSServers.o: ../ClntOptions/ClntOptDNSServers.cpp
+	$(CPP) -c ../ClntOptions/ClntOptDNSServers.cpp -o ../ClntOptions/ClntOptDNSServers.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptDomainName.o: ../ClntOptions/ClntOptDomainName.cpp
+	$(CPP) -c ../ClntOptions/ClntOptDomainName.cpp -o ../ClntOptions/ClntOptDomainName.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptElapsed.o: ../ClntOptions/ClntOptElapsed.cpp
+	$(CPP) -c ../ClntOptions/ClntOptElapsed.cpp -o ../ClntOptions/ClntOptElapsed.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptFQDN.o: ../ClntOptions/ClntOptFQDN.cpp
+	$(CPP) -c ../ClntOptions/ClntOptFQDN.cpp -o ../ClntOptions/ClntOptFQDN.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptIA_NA.o: ../ClntOptions/ClntOptIA_NA.cpp
+	$(CPP) -c ../ClntOptions/ClntOptIA_NA.cpp -o ../ClntOptions/ClntOptIA_NA.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptIAAddress.o: ../ClntOptions/ClntOptIAAddress.cpp
+	$(CPP) -c ../ClntOptions/ClntOptIAAddress.cpp -o ../ClntOptions/ClntOptIAAddress.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptLifetime.o: ../ClntOptions/ClntOptLifetime.cpp
+	$(CPP) -c ../ClntOptions/ClntOptLifetime.cpp -o ../ClntOptions/ClntOptLifetime.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptNISDomain.o: ../ClntOptions/ClntOptNISDomain.cpp
+	$(CPP) -c ../ClntOptions/ClntOptNISDomain.cpp -o ../ClntOptions/ClntOptNISDomain.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptNISPDomain.o: ../ClntOptions/ClntOptNISPDomain.cpp
+	$(CPP) -c ../ClntOptions/ClntOptNISPDomain.cpp -o ../ClntOptions/ClntOptNISPDomain.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptNISPServer.o: ../ClntOptions/ClntOptNISPServer.cpp
+	$(CPP) -c ../ClntOptions/ClntOptNISPServer.cpp -o ../ClntOptions/ClntOptNISPServer.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptNISServer.o: ../ClntOptions/ClntOptNISServer.cpp
+	$(CPP) -c ../ClntOptions/ClntOptNISServer.cpp -o ../ClntOptions/ClntOptNISServer.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptNTPServers.o: ../ClntOptions/ClntOptNTPServers.cpp
+	$(CPP) -c ../ClntOptions/ClntOptNTPServers.cpp -o ../ClntOptions/ClntOptNTPServers.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptOptionRequest.o: ../ClntOptions/ClntOptOptionRequest.cpp
+	$(CPP) -c ../ClntOptions/ClntOptOptionRequest.cpp -o ../ClntOptions/ClntOptOptionRequest.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptPreference.o: ../ClntOptions/ClntOptPreference.cpp
+	$(CPP) -c ../ClntOptions/ClntOptPreference.cpp -o ../ClntOptions/ClntOptPreference.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptRapidCommit.o: ../ClntOptions/ClntOptRapidCommit.cpp
+	$(CPP) -c ../ClntOptions/ClntOptRapidCommit.cpp -o ../ClntOptions/ClntOptRapidCommit.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptServerIdentifier.o: ../ClntOptions/ClntOptServerIdentifier.cpp
+	$(CPP) -c ../ClntOptions/ClntOptServerIdentifier.cpp -o ../ClntOptions/ClntOptServerIdentifier.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptServerUnicast.o: ../ClntOptions/ClntOptServerUnicast.cpp
+	$(CPP) -c ../ClntOptions/ClntOptServerUnicast.cpp -o ../ClntOptions/ClntOptServerUnicast.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptSIPDomain.o: ../ClntOptions/ClntOptSIPDomain.cpp
+	$(CPP) -c ../ClntOptions/ClntOptSIPDomain.cpp -o ../ClntOptions/ClntOptSIPDomain.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptSIPServer.o: ../ClntOptions/ClntOptSIPServer.cpp
+	$(CPP) -c ../ClntOptions/ClntOptSIPServer.cpp -o ../ClntOptions/ClntOptSIPServer.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptStatusCode.o: ../ClntOptions/ClntOptStatusCode.cpp
+	$(CPP) -c ../ClntOptions/ClntOptStatusCode.cpp -o ../ClntOptions/ClntOptStatusCode.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptTimeZone.o: ../ClntOptions/ClntOptTimeZone.cpp
+	$(CPP) -c ../ClntOptions/ClntOptTimeZone.cpp -o ../ClntOptions/ClntOptTimeZone.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptUserClass.o: ../ClntOptions/ClntOptUserClass.cpp
+	$(CPP) -c ../ClntOptions/ClntOptUserClass.cpp -o ../ClntOptions/ClntOptUserClass.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptVendorClass.o: ../ClntOptions/ClntOptVendorClass.cpp
+	$(CPP) -c ../ClntOptions/ClntOptVendorClass.cpp -o ../ClntOptions/ClntOptVendorClass.o $(CXXFLAGS)
 
 ../AddrMgr/AddrMgr.o: ../AddrMgr/AddrMgr.cpp
 	$(CPP) -c ../AddrMgr/AddrMgr.cpp -o ../AddrMgr/AddrMgr.o $(CXXFLAGS)
@@ -103,9 +220,6 @@ lowlevel-winnt2k.o: lowlevel-winnt2k.c
 
 ../AddrMgr/AddrIA.o: ../AddrMgr/AddrIA.cpp
 	$(CPP) -c ../AddrMgr/AddrIA.cpp -o ../AddrMgr/AddrIA.o $(CXXFLAGS)
-
-../SrvTransMgr/SrvTransMgr.o: ../SrvTransMgr/SrvTransMgr.cpp
-	$(CPP) -c ../SrvTransMgr/SrvTransMgr.cpp -o ../SrvTransMgr/SrvTransMgr.o $(CXXFLAGS)
 
 ../Options/OptVendorSpecInfo.o: ../Options/OptVendorSpecInfo.cpp
 	$(CPP) -c ../Options/OptVendorSpecInfo.cpp -o ../Options/OptVendorSpecInfo.o $(CXXFLAGS)
@@ -158,152 +272,29 @@ lowlevel-winnt2k.o: lowlevel-winnt2k.c
 ../Options/OptVendorClass.o: ../Options/OptVendorClass.cpp
 	$(CPP) -c ../Options/OptVendorClass.cpp -o ../Options/OptVendorClass.o $(CXXFLAGS)
 
-../SrvOptions/SrvOptVendorSpecInfo.o: ../SrvOptions/SrvOptVendorSpecInfo.cpp
-	$(CPP) -c ../SrvOptions/SrvOptVendorSpecInfo.cpp -o ../SrvOptions/SrvOptVendorSpecInfo.o $(CXXFLAGS)
+client-winnt2k.o: client-winnt2k.cpp
+	$(CPP) -c client-winnt2k.cpp -o client-winnt2k.o $(CXXFLAGS)
 
-../SrvOptions/SrvOptClientIdentifier.o: ../SrvOptions/SrvOptClientIdentifier.cpp
-	$(CPP) -c ../SrvOptions/SrvOptClientIdentifier.cpp -o ../SrvOptions/SrvOptClientIdentifier.o $(CXXFLAGS)
+ClntService.o: ClntService.cpp
+	$(CPP) -c ClntService.cpp -o ClntService.o $(CXXFLAGS)
 
-../SrvOptions/SrvOptDNSServers.o: ../SrvOptions/SrvOptDNSServers.cpp
-	$(CPP) -c ../SrvOptions/SrvOptDNSServers.cpp -o ../SrvOptions/SrvOptDNSServers.o $(CXXFLAGS)
+../Misc/DHCPClient.o: ../Misc/DHCPClient.cpp
+	$(CPP) -c ../Misc/DHCPClient.cpp -o ../Misc/DHCPClient.o $(CXXFLAGS)
 
-../SrvOptions/SrvOptDomainName.o: ../SrvOptions/SrvOptDomainName.cpp
-	$(CPP) -c ../SrvOptions/SrvOptDomainName.cpp -o ../SrvOptions/SrvOptDomainName.o $(CXXFLAGS)
+../CfgMgr/StationID.o: ../CfgMgr/StationID.cpp
+	$(CPP) -c ../CfgMgr/StationID.cpp -o ../CfgMgr/StationID.o $(CXXFLAGS)
 
-../SrvOptions/SrvOptElapsed.o: ../SrvOptions/SrvOptElapsed.cpp
-	$(CPP) -c ../SrvOptions/SrvOptElapsed.cpp -o ../SrvOptions/SrvOptElapsed.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptFQDN.o: ../SrvOptions/SrvOptFQDN.cpp
-	$(CPP) -c ../SrvOptions/SrvOptFQDN.cpp -o ../SrvOptions/SrvOptFQDN.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptIA_NA.o: ../SrvOptions/SrvOptIA_NA.cpp
-	$(CPP) -c ../SrvOptions/SrvOptIA_NA.cpp -o ../SrvOptions/SrvOptIA_NA.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptIAAddress.o: ../SrvOptions/SrvOptIAAddress.cpp
-	$(CPP) -c ../SrvOptions/SrvOptIAAddress.cpp -o ../SrvOptions/SrvOptIAAddress.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptInterfaceID.o: ../SrvOptions/SrvOptInterfaceID.cpp
-	$(CPP) -c ../SrvOptions/SrvOptInterfaceID.cpp -o ../SrvOptions/SrvOptInterfaceID.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptLifetime.o: ../SrvOptions/SrvOptLifetime.cpp
-	$(CPP) -c ../SrvOptions/SrvOptLifetime.cpp -o ../SrvOptions/SrvOptLifetime.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISDomain.o: ../SrvOptions/SrvOptNISDomain.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISDomain.cpp -o ../SrvOptions/SrvOptNISDomain.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISPDomain.o: ../SrvOptions/SrvOptNISPDomain.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISPDomain.cpp -o ../SrvOptions/SrvOptNISPDomain.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISPServer.o: ../SrvOptions/SrvOptNISPServer.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISPServer.cpp -o ../SrvOptions/SrvOptNISPServer.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNISServer.o: ../SrvOptions/SrvOptNISServer.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNISServer.cpp -o ../SrvOptions/SrvOptNISServer.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptNTPServers.o: ../SrvOptions/SrvOptNTPServers.cpp
-	$(CPP) -c ../SrvOptions/SrvOptNTPServers.cpp -o ../SrvOptions/SrvOptNTPServers.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptOptionRequest.o: ../SrvOptions/SrvOptOptionRequest.cpp
-	$(CPP) -c ../SrvOptions/SrvOptOptionRequest.cpp -o ../SrvOptions/SrvOptOptionRequest.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptPreference.o: ../SrvOptions/SrvOptPreference.cpp
-	$(CPP) -c ../SrvOptions/SrvOptPreference.cpp -o ../SrvOptions/SrvOptPreference.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptRapidCommit.o: ../SrvOptions/SrvOptRapidCommit.cpp
-	$(CPP) -c ../SrvOptions/SrvOptRapidCommit.cpp -o ../SrvOptions/SrvOptRapidCommit.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptServerIdentifier.o: ../SrvOptions/SrvOptServerIdentifier.cpp
-	$(CPP) -c ../SrvOptions/SrvOptServerIdentifier.cpp -o ../SrvOptions/SrvOptServerIdentifier.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptServerUnicast.o: ../SrvOptions/SrvOptServerUnicast.cpp
-	$(CPP) -c ../SrvOptions/SrvOptServerUnicast.cpp -o ../SrvOptions/SrvOptServerUnicast.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptSIPDomain.o: ../SrvOptions/SrvOptSIPDomain.cpp
-	$(CPP) -c ../SrvOptions/SrvOptSIPDomain.cpp -o ../SrvOptions/SrvOptSIPDomain.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptSIPServer.o: ../SrvOptions/SrvOptSIPServer.cpp
-	$(CPP) -c ../SrvOptions/SrvOptSIPServer.cpp -o ../SrvOptions/SrvOptSIPServer.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptStatusCode.o: ../SrvOptions/SrvOptStatusCode.cpp
-	$(CPP) -c ../SrvOptions/SrvOptStatusCode.cpp -o ../SrvOptions/SrvOptStatusCode.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptTimeZone.o: ../SrvOptions/SrvOptTimeZone.cpp
-	$(CPP) -c ../SrvOptions/SrvOptTimeZone.cpp -o ../SrvOptions/SrvOptTimeZone.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptUserClass.o: ../SrvOptions/SrvOptUserClass.cpp
-	$(CPP) -c ../SrvOptions/SrvOptUserClass.cpp -o ../SrvOptions/SrvOptUserClass.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptVendorClass.o: ../SrvOptions/SrvOptVendorClass.cpp
-	$(CPP) -c ../SrvOptions/SrvOptVendorClass.cpp -o ../SrvOptions/SrvOptVendorClass.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgSolicit.o: ../SrvMessages/SrvMsgSolicit.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgSolicit.cpp -o ../SrvMessages/SrvMsgSolicit.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsg.o: ../SrvMessages/SrvMsg.cpp
-	$(CPP) -c ../SrvMessages/SrvMsg.cpp -o ../SrvMessages/SrvMsg.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgAdvertise.o: ../SrvMessages/SrvMsgAdvertise.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgAdvertise.cpp -o ../SrvMessages/SrvMsgAdvertise.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgConfirm.o: ../SrvMessages/SrvMsgConfirm.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgConfirm.cpp -o ../SrvMessages/SrvMsgConfirm.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgDecline.o: ../SrvMessages/SrvMsgDecline.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgDecline.cpp -o ../SrvMessages/SrvMsgDecline.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgInfRequest.o: ../SrvMessages/SrvMsgInfRequest.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgInfRequest.cpp -o ../SrvMessages/SrvMsgInfRequest.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRebind.o: ../SrvMessages/SrvMsgRebind.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRebind.cpp -o ../SrvMessages/SrvMsgRebind.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRelease.o: ../SrvMessages/SrvMsgRelease.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRelease.cpp -o ../SrvMessages/SrvMsgRelease.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRenew.o: ../SrvMessages/SrvMsgRenew.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRenew.cpp -o ../SrvMessages/SrvMsgRenew.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgReply.o: ../SrvMessages/SrvMsgReply.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgReply.cpp -o ../SrvMessages/SrvMsgReply.o $(CXXFLAGS)
-
-../SrvMessages/SrvMsgRequest.o: ../SrvMessages/SrvMsgRequest.cpp
-	$(CPP) -c ../SrvMessages/SrvMsgRequest.cpp -o ../SrvMessages/SrvMsgRequest.o $(CXXFLAGS)
-
-../Misc/DHCPServer.o: ../Misc/DHCPServer.cpp
-	$(CPP) -c ../Misc/DHCPServer.cpp -o ../Misc/DHCPServer.o $(CXXFLAGS)
-
-SrvService.o: SrvService.cpp
-	$(CPP) -c SrvService.cpp -o SrvService.o $(CXXFLAGS)
-
-server-winnt2k.o: server-winnt2k.cpp
-	$(CPP) -c server-winnt2k.cpp -o server-winnt2k.o $(CXXFLAGS)
-
-../CfgMgr/StationRange.o: ../CfgMgr/StationRange.cpp
-	$(CPP) -c ../CfgMgr/StationRange.cpp -o ../CfgMgr/StationRange.o $(CXXFLAGS)
-
-../Options/OptDUID.o: ../Options/OptDUID.cpp
-	$(CPP) -c ../Options/OptDUID.cpp -o ../Options/OptDUID.o $(CXXFLAGS)
-
-../SrvCfgMgr/SrvCfgTA.o: ../SrvCfgMgr/SrvCfgTA.cpp
-	$(CPP) -c ../SrvCfgMgr/SrvCfgTA.cpp -o ../SrvCfgMgr/SrvCfgTA.o $(CXXFLAGS)
-
-../Options/OptFQDN.o: ../Options/OptFQDN.cpp
-	$(CPP) -c ../Options/OptFQDN.cpp -o ../Options/OptFQDN.o $(CXXFLAGS)
-
-../SrvOptions/SrvOptTA.o: ../SrvOptions/SrvOptTA.cpp
-	$(CPP) -c ../SrvOptions/SrvOptTA.cpp -o ../SrvOptions/SrvOptTA.o $(CXXFLAGS)
-
-../Misc/FQDN.o: ../Misc/FQDN.cpp
-	$(CPP) -c ../Misc/FQDN.cpp -o ../Misc/FQDN.o $(CXXFLAGS)
+../CfgMgr/TimeZone.o: ../CfgMgr/TimeZone.cpp
+	$(CPP) -c ../CfgMgr/TimeZone.cpp -o ../CfgMgr/TimeZone.o $(CXXFLAGS)
 
 ../IfaceMgr/DNSUpdate.o: ../IfaceMgr/DNSUpdate.cpp
 	$(CPP) -c ../IfaceMgr/DNSUpdate.cpp -o ../IfaceMgr/DNSUpdate.o $(CXXFLAGS)
 
+../Misc/FQDN.o: ../Misc/FQDN.cpp
+	$(CPP) -c ../Misc/FQDN.cpp -o ../Misc/FQDN.o $(CXXFLAGS)
+
 ../Misc/addrpack.o: ../Misc/addrpack.c
 	$(CC) -c ../Misc/addrpack.c -o ../Misc/addrpack.o $(CFLAGS)
-
-../Options/OptTA.o: ../Options/OptTA.cpp
-	$(CPP) -c ../Options/OptTA.cpp -o ../Options/OptTA.o $(CXXFLAGS)
 
 ../poslib/poslib/socket.o: ../poslib/poslib/socket.cpp
 	$(CPP) -c ../poslib/poslib/socket.cpp -o ../poslib/poslib/socket.o $(CXXFLAGS)
@@ -335,5 +326,20 @@ server-winnt2k.o: server-winnt2k.cpp
 ../poslib/poslib/rr.o: ../poslib/poslib/rr.cpp
 	$(CPP) -c ../poslib/poslib/rr.cpp -o ../poslib/poslib/rr.o $(CXXFLAGS)
 
-dibbler-server_private.res: dibbler-server_private.rc 
-	$(WINDRES) -i dibbler-server_private.rc --input-format=rc -o dibbler-server_private.res -O coff 
+../ClntCfgMgr/ClntCfgTA.o: ../ClntCfgMgr/ClntCfgTA.cpp
+	$(CPP) -c ../ClntCfgMgr/ClntCfgTA.cpp -o ../ClntCfgMgr/ClntCfgTA.o $(CXXFLAGS)
+
+../Options/OptDUID.o: ../Options/OptDUID.cpp
+	$(CPP) -c ../Options/OptDUID.cpp -o ../Options/OptDUID.o $(CXXFLAGS)
+
+../Options/OptFQDN.o: ../Options/OptFQDN.cpp
+	$(CPP) -c ../Options/OptFQDN.cpp -o ../Options/OptFQDN.o $(CXXFLAGS)
+
+../ClntOptions/ClntOptTA.o: ../ClntOptions/ClntOptTA.cpp
+	$(CPP) -c ../ClntOptions/ClntOptTA.cpp -o ../ClntOptions/ClntOptTA.o $(CXXFLAGS)
+
+../Options/OptTA.o: ../Options/OptTA.cpp
+	$(CPP) -c ../Options/OptTA.cpp -o ../Options/OptTA.o $(CXXFLAGS)
+
+dibbler-client_private.res: dibbler-client_private.rc 
+	$(WINDRES) -i dibbler-client_private.rc --input-format=rc -o dibbler-client_private.res -O coff 
