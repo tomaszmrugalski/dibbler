@@ -18,6 +18,6 @@ parser: SrvParser.y SrvLexer.l
 	echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
 	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
 	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"
-	cat SrvLexer.cpp | sed 's/int isatty (int );/int isatty (int ) throw ();/' > SrvLexer.cpp2
+	cat SrvLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > SrvLexer.cpp2
 	rm -f SrvLexer.cpp
 	mv SrvLexer.cpp2 SrvLexer.cpp

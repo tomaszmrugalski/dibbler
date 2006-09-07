@@ -20,6 +20,6 @@ parser: ClntParser.y ClntLexer.l
 	$(FLEX) -+ -i -L -oClntLexer.cpp ClntLexer.l
 	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
 	@echo "[SED    ] $(SUBDIR)/ClntLexer.cpp"
-	cat ClntLexer.cpp | sed 's/int isatty (int );/int isatty (int ) throw ();/' > ClntLexer.cpp2
+	cat ClntLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > ClntLexer.cpp2
 	rm -f ClntLexer.cpp
 	mv ClntLexer.cpp2 ClntLexer.cpp
