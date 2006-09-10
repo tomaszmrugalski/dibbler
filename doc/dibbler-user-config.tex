@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.26 2006-09-04 01:28:35 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.27 2006-09-10 23:36:20 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -127,7 +127,6 @@ from ,,ip~l'' (Linux) or
 name.  Name of the interface does not have to be enclosed in single or
 double quotes. It is necessary only in Windows systems, where interface
 names sometimes contain spaces, e.g. ''local network connection''.
-
 Interface scoped options can be used here. IA-scoped as well as address
 scoped options can also be used. They will be treated as a default
 values for future definitions of the IA and address instantations.
@@ -137,7 +136,6 @@ IA is an acronym for Identity Association. It is a logical entity
 representing address or addresses used to perform some
 functions. IA-options can be defined, e.g. T1. IPv6 addresses can be
 defined here. All those values will be used as hints for a server.
-
 Almost always, each DHCPv6 client will have exactly one IA on each
 interface. IA is declared using following syntax:
 
@@ -158,7 +156,6 @@ ia number
 { 
   IA-options
   address-options
-  address-declaration
 }
 \end{verbatim}
 Number is an optional number, which describes how many such IAs
@@ -166,18 +163,15 @@ should be requested. Number is optional. If it is not specified, 1 is
 used. If this number is not equal 1, then address options are not
 allowed. That could come in handy when someone need serveral IAs with
 the same parameters. If IA contains no addresses, client assumes that
-one address should be configured.
-
-IA scoped as well as address options can be defined here. IA scoped
-options will be applied directly, while address scoped options will be
-used as default values for all addresses that will be defined in this
-IA. 
+one address should be configured. IA scoped as well as address options
+can be defined here. IA scoped options will be applied directly, while
+address scoped options will be used as default values for all addresses
+that will be defined in this IA. 
 
 \subsubsection{Address declaration}
 When IA is defined, it is sometimes useful to define its address. Its
-value will be used as a hint for the server.
-
-Address is declared in the following way:
+value will be used as a hint for the server. Address is declared in the
+following way:
 
 \begin{verbatim}
 address number
@@ -188,13 +182,11 @@ address number
 \end{verbatim}
 where number denotes how many addresses with those values should be
 requested. If it is diffrent than 1, then IPv6 address options are not
-allowed.
-
-Only address scoped options can be used here.
+allowed. Only address scoped options can be used here.
 
 \subsubsection{Standard options}
-So called standard options are defined by the basic DHCPv6
-specification, a so called RFC 3315 \cite{rfc3315}. Those options are
+So called standard options are defined by the base DHCPv6
+specification, a so called RFC 3315 document \cite{rfc3315}. Those options are
 called standard, because all DHCPv6 implementations, should properly
 handle them. Standard options are declared in the following way:
 
@@ -273,43 +265,114 @@ sometimes allowed range.
 	    there client will send requests.
 \end{description}
 
-\subsubsection{Addional options}
-Additional options are the options specified in external drafts and in RFC
-documents. They are declared with \verb+option+ keyword:
+\subsubsection{Extension options}
+Extension options are the options specified in external drafts and RFC
+documents, but not in the base spec \cite{rfc3315}. To easily
+distinguish if an option is part of the base standard or one of the
+multiple extensions, \verb+option+ keyword was added in the extension
+options declaration. Therfore extension options are declared as follows:
 
 \begin{verbatim}
-option OptionName option-value
+option option-name
 \end{verbatim}
 
-where OptionName is one of possible values listed below:
+or
 
-\begin{center}
-\begin{tabular}{|c|c|>{\centering}p{1.7cm}<{}|c|p{6cm}|}
-\hline
-OptionName     & Scope    & Values      &default& Description \\
-               &          & (default)   &       & \\
-\hline
-dns-server     & interface& addrs list  & not defined & preferred DNS servers list (H) \\
-domain         & interface&domains list & not defined & preferred domain (H)\\
-ntp-server     & interface& addrs list  & not defined & preferred NTP servers list (H)\\
-time-zone      & interface& timezone    & not defined & preferred time zone (H)\\
-sip-server     & interface& addrs list  & not defined & preferred SIP servers list (H)\\
-sip-domain     & interface&domains list & not defined & preferred SIP domain (H)\\
-nis-server     & interface& addrs list  & not defined & preferred NIS servers list (H)\\
-nis-domain     & interface& domain      & not defined & preferred NIS domain (H)\\
-nis+-server    & interface& addrs list  & not defined & preferred NIS+ servers list (H)\\
-nis+-domain    & interface& domain      & not defined & preferred NIS+ domain (H)\\
-lifetime       & interface& YES/NO      & no    & Should client request lifetime option? \\
-\hline
-\end{tabular}
-\end{center}
+\begin{verbatim}
+option option-name option-value
+\end{verbatim}
+
+where option-name is name of the options. First approach instructs
+dibbler client to just ask for this particular option. Second approach
+includes requested values. When sent by the client, server will use
+those values as hints during those options assignment. Since those
+options are defined per interface, thus every extension option has an
+interface scope, i.e. it is defined once per interface. As for the
+\version release, currently supported options are:
+
+\begin{description}
+ \item[dns-server] -- (scope: interface, type: address list, default:
+	    none). This option conveys information about DNS servers
+	    available. After retriving this information, client will be
+	    able to resolve domain names into IP (both IPv4 and IPv6)
+	    addresses. Without setting up DNS servers, host's network
+	    capability is greatly reduced, as user can't use domain
+	    names (e.g. http://wp.pl/), but must use IP addresses
+	    directly (e.g. http://212.77.100.101/ or
+	    http://3ffe:1234::456/). Defined in \cite{rfc3596}.
+ \item[domain] -- (scope: interface, type: domain list, default:
+	    none). This option is used for retriving domain or domains
+	    names, which the client is connected in. For example, if
+	    client's hostname is \verb+alice.mylab.example.com+ and it wants to
+	    contact \verb+bob.mylab.example.com+ it can simply refer to it as
+	    \verb+bob+. Without domain name configured, it would have to
+	    use full domain name. After successful configuration, this
+	    useful shortcut is being used by all services available: web
+	    browsing, mail sending, news reading etc. Defined in
+	    \cite{rfc3596}.
+ \item[ntp-server] -- (scope: interface, type: address list, default:
+	    none). This option defines information about available NTP
+	    servers. Network Time Protocol \cite{ntp} is a protocol used
+	    for time synchronisation, so all hosts in the network has
+	    the same proper time set. Defined in \cite{rfc4075}.
+ \item[time-zone] -- (scope: interface, type: timezone, default:
+	    none). It is possible to retrieve timezone from the
+	    server. If client is interested in this information, it
+	    should ask for this option. Note that this option is
+	    considered obsolete as it is mentioned in draft version only
+	    \cite{timezone-draft}. Work on this draft seems to be
+	    abandoned as similar functionality is provided in now
+	    standard \cite{rfc4075}.
+ \item[sip-server] -- (scope: interface, type: address list, default:
+	    none). Session Initiation Protocol \cite{rfc3263} is an
+	    control protocol for creating, modifying, and terminating
+	    sessions with one or more participants. These sessions
+	    include Internet telephone calls, multimedia distribution,
+	    and multimedia conferences. Its most common usage is
+	    VoIP. Format of this option is defined in \cite{rfc3319}.
+ \item[sip-domain] -- (scope: interface, type: domain list, default:
+	    none). It is possible to define domain names for Session
+	    Initiation Protocol \cite{rfc3263}. Configuration of this
+	    parameter will ease usage of domain names in the SIP
+	    protocol. Format of this option is defined in
+	    \cite{rfc3319}.
+ \item[nis-server] -- (scope: interface, type: address list, default:
+	    none). Network Information Service (NIS) is a Unix-based
+	    system designed to use common login and user information on
+	    multiple systems, e.g. universities, where students can log
+	    on to ther accounts from any host. To use this
+	    functionality, a host needs information about NIS server's
+	    address. This can be retrieved with this option. Its format
+	    is defined in \cite{rfc3898}.
+ \item[nis-domain] -- (scope: interface, type: domain list, default:
+	    none). Network Information Service (NIS) can albo specify
+	    domain names. It can be configured with this option. It is
+	    defined in \cite{rfc3898}.
+ \item[nis+-server] -- (scope: interface, type: address list, default:
+	    none). Network Information Service Plus (NIS+) is an
+	    improved version of the NIS protocol. This option is defined
+	    in \cite{rfc3898}.
+ \item[nis+-domain] -- (scope: interface, type: domain list, default:
+	    none). Similar to nis-domain, it defines domains for
+	    NIS+. This option is defined in \cite{rfc3898}.
+ \item[lifetime] -- (scope: interface, type: boolean, default: no). Base
+	    spec of the DHCPv6 protocol does offers way of refreshing
+	    addresses only, but not the options. Lifetime defines, how
+	    often client would like to renew all its options. By default
+	    client will not send such option, but it will accept it and
+	    act accordingly if the server sends it on its own. Format of
+	    this option is defined in \cite{draft-lifetime}.
+\end{description}
 
 Note that timezone format is described in file \verb+draft-ietf-dhc-dhcpv6-opt-tz-00.txt+
 and domain format is described in RFC 3646. After receiving options
-values from a server, client stores them in separate files in the
-working directory, e.g. \verb+option-dns-server+. Several options
-are processed and set up in the system. Options supported in Linux and
-Windows environments are presented in the table below.
+values from a server, client stores values of those options in separate
+files in the working directory (\verb+/var/lib/dibbler+ in Linux and
+current directory in Windows). File names start with the option word,
+e.g. \verb+option-dns-server+. Several options are also processed and
+set up in the system. Options supported in Linux and Windows
+environments are presented in the table below.
+
 
 \begin{center}
 \begin{tabular}{|l|l|l|l|}
@@ -317,7 +380,7 @@ Windows environments are presented in the table below.
 Option & Linux & WinXP/2003 & WinNT/2000  \\
 \hline
 dns-server  & system, file & system, file & system,file \\
-domain      & file         & system, file & file \\
+domain      & file         & file & file \\
 ntp-server  & file         & file & file \\
 time-zone   & file         & file & file \\
 sip-server  & file         & file & file \\
@@ -332,60 +395,69 @@ nis+-domain & file         & file & file \\
 
 \subsubsection{Stateless configuration}
 
-If interface does not contain \verb+IA+ keyword, one IA with one address is
-assumed. If client should not request for address on this interface,
+If interface does not contain \verb+IA+ or \verb+TA+ keywords, client
+will ask for one address (one IA with one address request will be sent).
+If client should not request any addresses on this interface,
 \opt{stateless}\footnote{In the version 0.2.1-RC1 and earlier, this
   directive was called no-ia. This depreciated name is valid for now,
-  but might be removed in future releases.}
-must be used. In such circumstances, only specified options will be
-requested.
+  but might be removed in future releases.} keyword must be used. In
+such circumstances, only specified options will be requested.
 
 \subsubsection{Relay support}
 Usage of the relays is not visible from the client's point of view:
-Client can't distinguigh if it communicates via relay(s) or directly
+Client can't detect if it communicates via relay(s) or directly
 with the server. Therefore no special directives on the client side 
 are required to use relays. 
 
 \subsection{Client configuration examples}
-This subsection contains various examples of the most configurations.
-If you are interested in additional examples, download source version
-and look at \verb+*.conf+ files.
+This subsection contains various examples of the most popular
+configurations. Several additional examples are provided with the source
+code. Please download it and look at \verb+*.conf+ files.
 
 \subsubsection{Example 1: Default}
-
-In simplest case, client config can be empty. Client will try to
+In the most simple case, client configuration file can be empty. Client will try to
 assign one address for every interface present in the system, except
-interfaces:
+interfaces, which are:
 \begin{itemize}
-\item which are down (flag UP not set)
+\item down (flag UP not set)
 \item loopback (flag LOOPBACK set)
-\item which are not running (flag RUNNING not set)
-\item which are not multicast capable (flag MULTICAST not set)
+\item not running (flag RUNNING not set)
+\item not multicast capable (flag MULTICAST not set)
+\item have link-layer address less than 6 bytes long (this requirement
+      should skip all tunnels and virtual interfaces)
 \end{itemize}
 
 If you must use DHCPv6 on one of such interfaces (which is not
-recommended and probably will fail), you must explicitly specify this
-interface in config file.
+recommended and such attempt probably will fail), you must explicitly
+specify this interface in the configuration file.
 
 \subsubsection{Example 2: DNS}
-
-Simple config config file requesting 1 address and DNS configuration
-on eth0 interface looks like that:
+Configuration mentioned in previous subsection is a minimal one and in a
+real life will be used rarely. The most common usage of the DHCPv6
+protocol is to request for an address and DNS configuration. Client
+configuration file achieving those goals is presented below:
 \begin{Verbatim}
 # client.conf
 log-mode short
 log-level 7
 iface eth0 {
-  option dns-server
   ia
+  option dns-server
 }
 \end{Verbatim}
 
 \subsubsection{Example 3: Timeouts and specific address}
 
-Another example is presented below. Client asks for 1 address and
-would like it to be 2000::1:2:3. Rapid-commit is allowed and client
-would like to renew this address once in a 10 minutes.
+Automatic configuration is being driven by several timers, which define,
+what action should be performed at various intervals. Since all
+values are provided by the server, client can only define values, which
+will be sent to a server as hints. Server might take them into
+consideration, but might also ignore them
+completely. Following example shows how to ask for a specific address
+and provide hints for a server. Client would like to get 2000::1:2:3
+address, it would like to renew addresses once in 30 minutes (T1 timer
+is set to 1800 seconds). Client also would like to have address, which
+is prefered for an hour and is valid for 2 hours. 
 
 \begin{Verbatim}
 # client.conf
@@ -396,7 +468,6 @@ iface eth0 {
   T2 2000
   prefered-lifetime 3600
   valid-lifetime 7200
-  rapid-commit YES
   ia {
     address { 
       2000::1:2:3
@@ -407,14 +478,14 @@ iface eth0 {
 
 \subsubsection{Example 4: Unicast, more than one address}
 
-Here's yet another example. We would like to obtain 2 addresses on
+Another example: client like to obtain 2 addresses on
 ,,Local Area Connection'' interface. Note quotation marks around
-interface name. They're necessary since this particular interface name
+interface name. They are necessary since this particular interface name
 contains spaces. Client also would like to accept Unicast
-communication if server supports it. We don't care for
+communication if server supports it. User don't care for
 details, so keep those log very short. Take note that you won't be
-able to what Dibbler is doing with such low log-level. (Preferred
-log-level is 7). Config file looks like that:
+able see to what Dibbler is doing with such low log-level. (Usually
+log-level should be set to 7, which is also a default value).
 
 \begin{Verbatim}
 # client.conf
@@ -426,15 +497,15 @@ iface "Local Area Connection" {
 }
 \end{Verbatim}
 
-\subsubsection{Exmaple 5: Rapid-commit}
+\subsubsection{Example 5: Quick configuration using Rapid-commit}
 Rapid-commit is a shortened exchange with server. It consists of only
-two messages, instead of the usual four. Instead of using interface
-name, we provide its index. It is worth to know that server must also 
-support rapid-commit.
+two messages, instead of the usual four. It is worth to know that both sides (client
+and server) must also support rapid-commit to use this fast
+configuration. 
 
 \begin{Verbatim}
 # client.conf
-iface 3 {
+iface eth1 {
   rapid-commit yes
   ia 
   option dns-server
@@ -487,10 +558,14 @@ iface eth0 {
    option fqdn
 }
 \end{Verbatim}
+
 In this case, client will mention that it is interested in FQDN by
-using Option Request. Server upon receiving such request (if it is
+using Option Request and empty FQDN option, as specified in
+\cite{draft-fqdn}. Server upon receiving such request (if it is
 configured to support it), will provide FQDN option containing domain
-name.
+name. Depending on the server's configuration, all DNS Updates will be
+performed by the server, forward will be performed by client and reverse
+by the server, or only forward will be done by a client.
 
 It is also possible for client to provide its name as a hint for
 server. Server might take it into consideration when it will choose a
@@ -501,21 +576,39 @@ configuration is provided below:
 # client.conf
 log-level 7
 iface eth0 {
-# ask for address
+    # ask for address
     ia
 
-# ask for options
-   option dns-server
-   option domain
-   option fqdn zoe.example.com
+    # ask for options
+    option dns-server
+    option domain
+    option fqdn zoe.example.com
 }
 \end{Verbatim}
 
 Note that to successfully perform DNS Update, address must be assigned
 and dns server address must be known. So ,,ia'' and ,,option
-dns-server'' is required for ,,option fqdn'' to work properly. Also if
-DHCPv6 server provides more than one DNS server addresses, update will
+dns-server'' are required for ,,option fqdn'' to work properly. Also if
+DHCPv6 server provides more than one DNS server address, update will
 be attempted only to the first one on the list.
+
+
+\subsubsection{Example 8: Interface indexes}
+Usually, interface names are referred to by names, e.g. eth0 or Local
+Area Connection. Every system also provides unique number associated
+with each infterface, usually called ifindex or interface index. It is
+possible to read the number using \verb+ip l+ command (Linux) or
+\verb+ipv6 ifx+. Below is an example, which demonstrate how to use
+interface indexes:
+
+\begin{Verbatim}
+# client.conf
+log-mode short
+log-level 5
+iface 5 {
+  ia
+}
+\end{Verbatim}
 
 \subsection{Server configuration file}
 
@@ -530,10 +623,10 @@ Every option can be declared in global scope.
 Config file has this form:
 
 \begin{verbatim}
- interface declaration  |
- global options         |
- interface options      |
- class options          
+ interface-declaration
+ global-options
+ interface-options
+ class-options          
 \end{verbatim}
 
 \subsubsection{Interface declaration}
@@ -542,8 +635,8 @@ Interface can be declared this way:
 \begin{verbatim}
 iface name_of_this_interface
 {
-  interface options      |
-  class options        
+  interface-options
+  class-options        
 }
 \end{verbatim}
 
@@ -552,8 +645,8 @@ or
 \begin{verbatim}
 iface number 
 {
-  interface options      |
-  class options        
+  interface-options
+  class-options        
 }
 \end{verbatim}
 
@@ -592,7 +685,7 @@ Name             & Scope   & Values      & default    & Description \\
 \hline
 work-dir         & global  & string      & empty      & working directory \\
 log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
-log-name         & global  & string      & Client     & Name, which appears in a log file\\
+log-name         & global  & string      & Server     & Name, which appears in a log file\\
 cache-size       & global  & integer     & 1048576    & size of the
 address cache, specified in bytes \\
 
@@ -990,7 +1083,7 @@ Name             & Scope   & Values      & default    & Description \\
 \hline
 %%work-dir         & global  & string      & empty      & working directory \\
 log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
-log-name         & global  & string      & Client     & Name, which appears in a log file\\
+log-name         & global  & string      & Relay      & Name, which appears in a log file\\
 log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
 
 client multicast &interface& boolean     &            & Client's messages should be received on the multicast address.\\
