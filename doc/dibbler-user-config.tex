@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.27 2006-09-10 23:36:20 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.28 2006-09-11 00:05:23 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -515,8 +515,9 @@ iface eth1 {
 \subsubsection{Example 6: Stateless mode}
 Client can be configured to work in a stateless mode. It means that it
 will obtain only some configuration parameters, but no
-addresses. Let's assume we want all the details and we want to obtain
-all possible configuration parameters. Here is a configuration file:
+addresses. Let's assume we want all the details stored in a log file and
+we want to obtain all possible configuration parameters. Here is a
+configuration file:
 
 \begin{Verbatim}
 # client.conf
@@ -590,7 +591,7 @@ Note that to successfully perform DNS Update, address must be assigned
 and dns server address must be known. So ,,ia'' and ,,option
 dns-server'' are required for ,,option fqdn'' to work properly. Also if
 DHCPv6 server provides more than one DNS server address, update will
-be attempted only to the first one on the list.
+be attempted only forthe first address on the list.
 
 
 \subsubsection{Example 8: Interface indexes}
@@ -614,26 +615,26 @@ iface 5 {
 
 Server configuration is stored in \verb+server.conf+ file in the
 +/etc/dibbler+ (Linux systems) or in current (Windows systems)
-directory. After successful startup, old version of this file is stored as
-\verb+server.conf-old+.
+directory. 
 
 \subsubsection{Global scope}
 
-Every option can be declared in global scope.
-Config file has this form:
+Every option can be declared in a global scope. Global options can be
+defined here. Also options of a smaller scopes can be defined here --
+they will be used as a default values. Config file has following syntax:
 
 \begin{verbatim}
- interface-declaration
  global-options
  interface-options
  class-options          
+ interface-declaration
 \end{verbatim}
 
 \subsubsection{Interface declaration}
-
-Interface can be declared this way:
+Each network interface, which should be serviced by the server, must be
+mentioned in the configuration file. Network interface is defined like this:
 \begin{verbatim}
-iface name_of_this_interface
+iface interface-name
 {
   interface-options
   class-options        
@@ -650,45 +651,74 @@ iface number
 }
 \end{verbatim}
 
-where name\_of\_this\_interface denotes name of the interface and
-number denotes it's number. It no longer needs to be enclosed in
-single or double quotes (except windows cases, when interface name
-contains spaces).
+where \verb+interface-name+ denotes name of the interface and
+\verb+interface-number+ denotes its number. Name no longer needs to be
+enclosed in single or double quotes (except Windows systems, when
+interface name contains spaces). Note that virtual interfaces, used
+to setup relay support are also declared in this way.
 
 \subsubsection{Class scope}
-Address class is declared as follows:
-
+Class is a smallest scope used in the server configuration file. It
+contains definition of the addresses, which will be provided to
+clients. Only class scoped parameters can be defined here. Address class
+is declared as follows:
 \begin{verbatim}
 class
 {  
-     class options |
-     address pool    
+  class-options
+  address-pool    
 }
 \end{verbatim}
 
-address pool can be defined in one of the following formats:
+Address pool defines range of the addresses, which can be assigned to the
+clients. It can be defined in one of the following formats:
 \begin{verbatim}
 pool minaddress-maxaddress
 pool address/prefix
 \end{verbatim}
 
-\subsubsection{Options}
+\subsubsection{Standard options}
+
+So called standard options are defined by the base DHCPv6 specification,
+a so called RFC 3315 document \cite{rfc3315}. Those options are
+called standard, because all DHCPv6 implementations, should properly
+handle them. Each option has a specific scope it belongs to. 
+
+Standard options are declared in the following way:
+
+\begin{verbatim}
+OptionName option-value
+\end{verbatim}
+
+\begin{description}
+ \item[work-dir] -- (scope: global, type: string, default: .) Defines working
+	    directory.
+ \item[log-level] -- (scope: global, type: integer, default: 7) Defines
+	    verbose level of the log messages. The valid range if
+	    from 1 (Emergency) to 8 (Debug). The higher the logging
+	    level is set, the more messages dibbler will print.
+ \item[log-name] -- (scope: global, type: string, default: Server). Defines 
+	    name, which should be used during logging.
+ \item[log-mode] -- (scope: global, type: short, full or precise,
+	    default value: full) Defines logging mode. In the
+	    default, full mode, name, date and time in the h:m:s format
+	    will be printed. In short mode, only minutes and
+	    seconds will be printed (this mode is useful on
+	    terminals with limited width). Recently added precise
+	    mode logs information with seconds and microsecond
+	    precision. It is a useful for finding bottlenecks in
+	    the DHCPv6 autoconfiguration process.
+ \item[cache-size] -- (scope: global, type: integer, default:
+	    1048576). It defines a size of the memory which can se used
+	    to store cached entries.
+
+\end{description}
 
 Every option has a scope it can be used in, default value and
 sometimes allowed range.
-
 %% FIXME: this table must be sanitized
-\begin{tabular}{|c|c|>{\centering}p{1.7cm}<{}|c|p{6cm}|}
-\hline
-Name             & Scope   & Values      & default    & Description \\
-                 &         & (default)   &  & \\
-\hline
-work-dir         & global  & string      & empty      & working directory \\
-log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
-log-name         & global  & string      & Server     & Name, which appears in a log file\\
-cache-size       & global  & integer     & 1048576    & size of the
-address cache, specified in bytes \\
 
+\begin{tabular}{c|c|c|c|c|}
 preference       &interface& 0-255       & 0          & server preference value (higher is more prefered) \\
 unicast          &interface& address     & empty      & Specify which address should be used. \\
 iface-max-lease  &interface& integer     & 4294967296 & how many addresses can be leased by all clients? \\
