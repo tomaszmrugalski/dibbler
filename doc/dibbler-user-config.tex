@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.28 2006-09-11 00:05:23 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.29 2006-09-12 22:57:19 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -711,16 +711,27 @@ OptionName option-value
  \item[cache-size] -- (scope: global, type: integer, default:
 	    1048576). It defines a size of the memory which can se used
 	    to store cached entries.
+ \item[preference] -- (scope: interface, type: 0-255, default:
+	    none). Eech server can be configured to a specific
+	    preference level. When client receives several
+	    \msg{ADVERTISE} messages, it should choose that server,
+	    which has the highest preference level. It is also worth
+	    noting that client, upon reception of the \msg{ADVERTISE}
+	    message with preference set to 255 should skip wait phase
+	    for possible other \msg{ADVERTISE} messages.
+ \item[unicast] -- (scope: interface, type: address,
+	    default:none). Normally clients sends data to a well known
+	    multicast address. This is easy to achieve, but it wastes
+	    network resources as all nodes in the network must process
+	    such messages and also network load is increased. To prevent
+	    this, server might be configured to inform clients about its
+	    unicast address, so clients, which accept it, will switch to
+	    a unicast communication.
+ \item[rapid-commit] -- (scope: interface, type: boolean, default: 0). 
 
 \end{description}
 
-Every option has a scope it can be used in, default value and
-sometimes allowed range.
-%% FIXME: this table must be sanitized
-
 \begin{tabular}{c|c|c|c|c|}
-preference       &interface& 0-255       & 0          & server preference value (higher is more prefered) \\
-unicast          &interface& address     & empty      & Specify which address should be used. \\
 iface-max-lease  &interface& integer     & 4294967296 & how many addresses can be leased by all clients? \\
 client-max-lease &interface& integer     & 4294967296 & how many addresses can be leased by one client? \\
 rapid-commit     &interface& 0 or 1      & 0          & should we allow Rapid Commit (SOLICIT--REPLY)? \\
@@ -736,16 +747,7 @@ reject-clients   & class   & addrs or
 accept-only      & class   & addrs or
                              DUID list   & empty      & these are the only clients allowed to use this class\\
 class-max-lease  & class   & integer     & 4294967296 & how many addresses can be leased from this class? \\
-\hline
 \end{tabular}
-
-\begin{itemize}
-\item[log-mode] -- defines logging level. Currently supported options
-  are: full (daemon name, date and time), short (minutes and seconds), precise
-  (seconds and microseconds, used mainly for finding bottlenecks). In
-  future releases, syslog (unix only) and eventlog (windows only) will
-  be supported. Default is full.
-\end{itemize}
 
 \subsubsection{Addional options}
 Server supports additonal options, not specified in RFC3315. They have
