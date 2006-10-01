@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.h,v 1.6 2006-08-30 01:10:39 thomson Exp $
+ * $Id: DNSUpdate.h,v 1.7 2006-10-01 20:47:17 thomson Exp $
  *
  */
 
@@ -18,6 +18,12 @@
 #include "poslib.h"
 
 /* return values of method run*/
+
+enum DnsUpdateCfg {
+    DNSUPDATE_NONE = 0,
+    DNSUPDATE_PTR  = 1,
+    DNSUPDATE_BOTH = 2
+}
 
 enum DnsUpdateResult {
     DNSUPDATE_SUCCESS=0,

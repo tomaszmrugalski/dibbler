@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.24 2006-08-30 01:33:32 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.25 2006-10-01 20:47:18 thomson Exp $
  */
 
 #include <sstream>
@@ -485,7 +485,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     }
 
     if (!doRealUpdate) {
-	Log(Debug) << "FQDN: Skipping update." << LogEnd;
+	Log(Debug) << "FQDN: Skipping update (probably a SOLICIT message)." << LogEnd;
 	return optFQDN;
     }
 

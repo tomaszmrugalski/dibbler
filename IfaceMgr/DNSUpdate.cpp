@@ -7,7 +7,7 @@
  * changes: Krzysztof Wnuk keczi@poczta.onet.pl
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.14 2006-08-30 01:33:32 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.15 2006-10-01 20:47:17 thomson Exp $
  *
  */
 
@@ -103,7 +103,7 @@ DnsUpdateResult DNSUpdate::run(){
 	this->sendMsg();
     } catch (PException p) {
 	if (!strcmp(p.message,"Could not connect TCP socket") ){
-	    Log(Error) << "FQDN: Unable to establish connection to DNS server:" << p.message << LogEnd;
+	    Log(Error) << "FQDN: Unable to establish connection to the DNS server:" << p.message << LogEnd;
 	    return DNSUPDATE_CONNFAIL;
 	}
 	if (!strcmp(p.message,"NOTAUTH")){
@@ -118,8 +118,10 @@ DnsUpdateResult DNSUpdate::run(){
     return DNSUPDATE_SUCCESS;
 }
 
-/** create new message for Dns Update*/
-
+/** 
+ * create new message for Dns Update
+ * 
+ */
 void DNSUpdate::createSOAMsg(){
     message = new DnsMessage();
     message->OPCODE = OPCODE_UPDATE;
@@ -276,13 +278,11 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
   int sockid = -1;
     
   try {
-	  
    q = create_query(*zoneroot, QTYPE_AXFR);
    
    pos_cliresolver res;   
    sockid = res.tcpconnect(&server);  
    res.tcpsendmessage(q, sockid);
-   
    
    res.tcpwaitanswer(a, sockid);
    if (a->RCODE != RCODE_NOERROR){    
@@ -298,24 +298,27 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
      RemoteDnsRR = NULL;
     }
    }
-  
-   
-   a = NULL;
-   delete q; 
-   q = NULL;  
-   delete q;   
+
+   if (a) {
+       //delete a;
+       a = 0;
+   }
+   if (q) {
+       delete q;
+       q = 0;
+   }
    
    if (sockid != -1) tcpclose(sockid);
    
    return RemoteDnsRR;
    
   } catch (PException p) {
-    
       if (q) delete q;
       if (a) delete a;     
       if (sockid != -1) tcpclose(sockid);
       if (RemoteDnsRR) delete RemoteDnsRR;
-      throw PException(p);
+      Log(Error) << "FQDN: Attempt to get old DNS record failed." << LogEnd;
+      return 0;
   } 
 }
  

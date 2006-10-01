@@ -6,12 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.29 2006-08-27 21:16:36 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.30 2006-10-01 20:47:18 thomson Exp $
  */
 
 #include <sstream>
 #include "SrvCfgIface.h"
 #include "SrvCfgAddrClass.h"
+#include "DNSUpdate.h"
 #include "Logger.h"
 
 using namespace std;
@@ -221,9 +222,20 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
 	this->setFQDNLst(opt->getFQDNLst());
 	this->setFQDNMode(opt->getFQDNMode());
 	this->setRevDNSZoneRootLength(opt->getRevDNSZoneRootLength());
-	Log(Debug) <<"FQDN Support is enabled on the " << this->getName()  << " interface." << LogEnd;
-	Log(Debug) <<"FQDN Mode set to " << this->getFQDNMode() << " " << LogEnd;
-    	Log(Debug) <<"revDNS zoneroot lenght set to " << this->getRevDNSZoneRootLength()<< LogEnd;
+	Log(Debug) <<"FQDN: Support is enabled on the " << this->getName()  << " interface." << LogEnd;
+	Log(Debug) <<"FQDN: Mode set to " << this->getFQDNMode() << ": ";
+	switch (this->getFQDNMode()) {
+	case DNSUPDATE_NONE:
+	    Log(Cont) << "server will not perform any updates." << LogEnd;
+	    break;
+	case DNSUPRATE_PTR:
+	    Log(Cont) << "server will perform reverse (PTR) update only." << LogEnd;
+	    break;
+	case DNSUPDATE_BOTH:
+	    Log(Cont) << "server will perform both (AAAA and PTR) updates." << LogEnd;
+	    break;
+	}
+    	Log(Debug) <<"FQDN: revDNS zoneroot lenght set to " << this->getRevDNSZoneRootLength()<< "." << LogEnd;
     }
     if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
     if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
