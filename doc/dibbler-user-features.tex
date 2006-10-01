@@ -276,6 +276,7 @@ $ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
 \end{Verbatim}
 \Note Due to page width limitation, if the example above, two lines were
 split. 
+%% $
 
 \subsubsection{Dynamic DNS Testing and tips}
 Proper configuration of the DNS Update mechanism is not an easy
@@ -370,6 +371,7 @@ example.com.            86400   IN      NS      v13.klub.com.pl.
 ;; WHEN: Mon Jul 24 01:38:13 2006
 ;; MSG SIZE  rcvd: 136
 \end{Verbatim}
+%% >>
 
 \subsection{Server address caching}
 Previous Dibbler versions assigned a random address from the available
@@ -398,6 +400,14 @@ Below is the algorithm used by the server to assign an address to the client.
 
 \subsection{Relays}
 \label{features-relays}
+In small networks, all nodes (server, hosts and routers) are connected
+to the same network segment -- usually Ethernet segment or a single
+access point or hotspot. This is very convenient as all clients can
+reach server directly. However, larger networks usually are connected
+via routers, so direct communication is not always possible. On the
+other hand it is useful to have one server, which supports multiple
+links -- some connected directly and some remotely.
+
 FIXME: Provide description and maybe a figure.
 
 \subsection{XML files}

@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.29 2006-09-12 22:57:19 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.30 2006-10-01 22:37:33 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -18,7 +18,7 @@ B. Parsers are case-insensitive, so Iface, IfAcE, iface and IFACE mean
 the same. This does not apply to interface names. eth0 and
 ETH0 are dwo diffrent interfaces.
 
-\subsection{Tokens and basic informations}
+\subsection{Data types}
 Config file parsing is token-based. Token can be considered a keyword
 or a specific phrase. Here's list of tokens used:
 \begin{description}
@@ -45,7 +45,7 @@ defined.
 For example, T1 is defined for
 IA scope. However, it can be also used in more common scopes. In this
 case -- in interface or global. Defining T1 in interface scope means:
-,,for this interface default value for T1 is ...''. The same applies
+,,for this interface the default T1 value is ...''. The same applies
 to global scope. Options can be used multiple times. In that case
 value defined later is used.
 
@@ -312,7 +312,7 @@ interface scope, i.e. it is defined once per interface. As for the
 	    \cite{rfc3596}.
  \item[ntp-server] -- (scope: interface, type: address list, default:
 	    none). This option defines information about available NTP
-	    servers. Network Time Protocol \cite{ntp} is a protocol used
+	    servers. Network Time Protocol \cite{rfc2030} is a protocol used
 	    for time synchronisation, so all hosts in the network has
 	    the same proper time set. Defined in \cite{rfc4075}.
  \item[time-zone] -- (scope: interface, type: timezone, default:
@@ -320,7 +320,7 @@ interface scope, i.e. it is defined once per interface. As for the
 	    server. If client is interested in this information, it
 	    should ask for this option. Note that this option is
 	    considered obsolete as it is mentioned in draft version only
-	    \cite{timezone-draft}. Work on this draft seems to be
+	    \cite{draft-timezone}. Work on this draft seems to be
 	    abandoned as similar functionality is provided in now
 	    standard \cite{rfc4075}.
  \item[sip-server] -- (scope: interface, type: address list, default:
@@ -621,7 +621,7 @@ directory.
 
 Every option can be declared in a global scope. Global options can be
 defined here. Also options of a smaller scopes can be defined here --
-they will be used as a default values. Config file has following syntax:
+they will be used as a default values. Configuration file has following syntax:
 
 \begin{verbatim}
  global-options
@@ -709,8 +709,8 @@ OptionName option-value
 	    precision. It is a useful for finding bottlenecks in
 	    the DHCPv6 autoconfiguration process.
  \item[cache-size] -- (scope: global, type: integer, default:
-	    1048576). It defines a size of the memory which can se used
-	    to store cached entries.
+	    1048576). It defines a size of the memory (specified in
+            bytes) which can se used to store cached entries.
  \item[preference] -- (scope: interface, type: 0-255, default:
 	    none). Eech server can be configured to a specific
 	    preference level. When client receives several
@@ -727,58 +727,143 @@ OptionName option-value
 	    this, server might be configured to inform clients about its
 	    unicast address, so clients, which accept it, will switch to
 	    a unicast communication.
- \item[rapid-commit] -- (scope: interface, type: boolean, default: 0). 
-
+ \item[rapid-commit] -- (scope: interface, type: boolean, default:
+            0). This option allows rapid commit procedure to be
+            performed. Note that enabling rapid commit on the server
+            side is not enough. Client must be configured to allow
+	    rapid commit, too.
+\item[iface-max-lease] -- (scope: interface, type: integer, default:
+            $2^{32}-1$). This parameter defines, how many normal
+            addresses can be granted on this interface.
+\item[client-max-lease] -- (scope: interface, type: interger,
+            default:$2^{32}-1$). This parameter defines, how many
+            addresses one client can get. Main purpose of this
+            parameter is to limit number of used addresses by
+            misbehaving (malicious or restarting) clients.
+\item[relay] -- (scope: interface, type: string, default: not
+            defined). Used in relay definition.
+            It specifies name of the physical (or name of
+            another relay, if cascade relaying is used) interface,
+            which is used to receive and transmit relayed data. See
+            \ref{features-relays}, \ref{example-server-relay1} and
+            \ref{example-server-relay2} for details.
+\item[interface-id] -- (scope: interface, type: integer, default: not
+            defined). Used in relay definition. Each relay interface
+            should have defined its unique identified. It will be sent
+            in the \opt{interface-id} option. Note that this value
+            must be the same as configured in the dibbler-relay. See
+            \ref{features-relays}, \ref{example-server-relay1} and
+            \ref{example-relay} for details.
+ \item[T1] -- (scope: class, type: integer or integer range: default:
+            $2^{32}-1$). This value
+	    defines after what time client should start renew
+	    process. Exact value or accepted range can be
+            specified. When exact value is defined, client's hints are
+            ignored completely. 
+ \item[T2] -- (scope: class, type: integer or integer range, default:$2^{32}-1$). This value
+	    defines after what time client will start emergency rebind
+	    procedure if renew process fails. Exact value or accepted range can be
+            specified. When exact value is defined, client's hints are
+            ignored completely.
+\item[valid-lifetime] (scope: class, type: integer or integer range,
+	    default:$2^{32}-1$). This parameter defines valid lifetime of
+	    the granted addresses. If range is specified, client's
+            hints from that range are accepted.
+\item[prefered-lifetime] (scope: class, type: integer or integer range,
+	    default:$2^{32}-1$). This parameter defines prefered
+            lifetime of the granted addresses. If range is specified,
+            client's hits from that range will be accepted.
+\item[class-max-lease]  -- (scope: interface, type: interger,
+            default:$2^{32}-1$). This parameter defines, how many
+            addresses can be assigned from that class.
+\item[reject-clients] -- (scope: class, type: address or DUID list,
+            default: none). This parameter is sometimes called
+            black-list. It is a list of a clients, which should not be
+            supported. Clients can be identified by theirs link-local
+            addresses or DUIDs.
+\item[accept-only] -- (scope: class, type: address or DUID list,
+            default: none). This parameter is sometimes called
+            white-list. It is a list of supported clients. When this
+            list is not defined, by default all clients (except
+            mentioned in reject-clients) are supported. When
+            accept-only list is defined, only client from that list
+            will be supported.
 \end{description}
 
-\begin{tabular}{c|c|c|c|c|}
-iface-max-lease  &interface& integer     & 4294967296 & how many addresses can be leased by all clients? \\
-client-max-lease &interface& integer     & 4294967296 & how many addresses can be leased by one client? \\
-rapid-commit     &interface& 0 or 1      & 0          & should we allow Rapid Commit (SOLICIT--REPLY)? \\
-relay            &interface& string      & not defined& Name of the physical interface used to reach this relay \\
-interface-id     &interface& integer     & not defined& ID of the relay interface. Must be unique \\
-
-valid-lifetime   & class   & integer     & 4294967296 & valid lifetime for address (specified in seconds)\\
-prefered-lifetime& class   & integer     & 4294967296 & after this amount of time(in seconds) address becomes depreciated\\
-T1               & class   & integer     & 4294967296 & client should renew addresses after T1 seconds \\
-T2               & class   & integer     & 4294967296 & client should send REBIND after T2 seconds\\
-reject-clients   & class   & addrs or 
-                             DUID list   & empty      & list containing servers which should be discarded in configuration of this IA \\
-accept-only      & class   & addrs or
-                             DUID list   & empty      & these are the only clients allowed to use this class\\
-class-max-lease  & class   & integer     & 4294967296 & how many addresses can be leased from this class? \\
-\end{tabular}
-
 \subsubsection{Addional options}
-Server supports additonal options, not specified in RFC3315. They have
-generic form:
+Server supports additonal options, not specified in \cite{rfc3315}. They have
+following generic form:
 
 \begin{verbatim}
 option OptionName OptionsValue
 \end{verbatim}
 
-All supported options are specified in the table below:
+All supported options are specified below:
 
-\begin{center}
-\begin{tabular}{|l|l|c|c|l|}
-\hline
-OptionName       & OptionsValue& Default    & Description \\ \hline
-dns-server       & addrs list  & empty      & DNS servers list \\
-domain           & string list & empty      & domain names list \\
-ntp-server       & addrs list  & empty      & NTP servers list \\
-time-zone        & timezone    & empty      & time zone \\
-sip-server       & addrs list  & empty      & SIP servers list \\
-sip-domain       & string list & empty      & domain names list \\
-
-nis-server       & addrs list  & empty      & NIS servers list \\
-nis-domain       & string      & empty      & domain name \\
-
-nisplus-server   & addrs list  & empty      & NIS+ servers list \\
-nis-domain       & string      & empty      & domain name \\
-lifetime         & integer     & empty      & how often renew options? \\
-\hline
-\end{tabular}
-\end{center}
+\begin{description}
+ \item[dns-server] -- (scope: interface, type: address list, default:
+	    none). This option conveys information about DNS servers
+	    available. After retriving this information, clients will be
+	    able to resolve domain names into IP (both IPv4 and IPv6)
+	    addresses. Defined in \cite{rfc3596}.
+ \item[domain] -- (scope: interface, type: domain list, default:
+	    none). This option is used for configuring one or more domain 
+	    names, which clients are connected in. For example, if
+	    client's hostname is \verb+alice.mylab.example.com+ and it wants to
+	    contact \verb+bob.mylab.example.com+, it can simply refer to it as
+	    \verb+bob+. Without domain name configured, it would have to
+	    use full domain name. Defined in \cite{rfc3596}.
+ \item[ntp-server] -- (scope: interface, type: address list, default:
+	    none). This option defines information about available NTP
+	    servers. Network Time Protocol \cite{rfc2030} is a protocol used
+	    for time synchronisation, so all hosts in the network has
+	    the same proper time set. Defined in \cite{rfc4075}.
+ \item[time-zone] -- (scope: interface, type: timezone, default:
+	    none). It is possible to configure timezone, which is
+            provided by the server. Note that this option is
+	    considered obsolete as it is mentioned in draft version only
+	    \cite{draft-timezone}. Work on this draft seems to be
+	    abandoned as similar functionality is provided by now
+	    standard \cite{rfc4075}.
+ \item[sip-server] -- (scope: interface, type: address list, default:
+	    none). Session Initiation Protocol \cite{rfc3263} is an
+	    control protocol for creating, modifying, and terminating
+	    sessions with one or more participants. These sessions
+	    include Internet telephone calls, multimedia distribution,
+	    and multimedia conferences. Its most common usage is
+	    VoIP. Format of this option is defined in \cite{rfc3319}.
+ \item[sip-domain] -- (scope: interface, type: domain list, default:
+	    none). It is possible to define domain names for Session
+	    Initiation Protocol \cite{rfc3263}. Configuration of this
+	    parameter will ease usage of domain names in the SIP
+	    protocol. Format of this option is defined in
+	    \cite{rfc3319}.
+ \item[nis-server] -- (scope: interface, type: address list, default:
+	    none). Network Information Service (NIS) is a Unix-based
+	    system designed to use common login and user information on
+	    multiple systems, e.g. universities, where students can log
+	    on to ther accounts from any host. Its format is defined
+            in \cite{rfc3898}.
+ \item[nis-domain] -- (scope: interface, type: domain list, default:
+	    none). Network Information Service (NIS) can albo specify
+	    domain names. It can be configured with this option. It is
+	    defined in \cite{rfc3898}.
+ \item[nis+-server] -- (scope: interface, type: address list, default:
+	    none). Network Information Service Plus (NIS+) is an
+	    improved version of the NIS protocol. This option is defined
+	    in \cite{rfc3898}.
+ \item[nis+-domain] -- (scope: interface, type: domain list, default:
+	    none). Similar to nis-domain, it defines domains for
+	    NIS+. This option is defined in \cite{rfc3898}.
+ \item[lifetime] -- (scope: interface, type: boolean, default: no). Base
+	    spec of the DHCPv6 protocol does offers way of refreshing
+	    addresses only, but not the options. Lifetime defines, how
+	    often client should renew all its options. When defined,
+            lifetime option will be appended to all replies, which
+            server sends to a client. If client does not support it,
+            it should ignore this option. Format of
+	    this option is defined in \cite{draft-lifetime}.
+\end{description}
 
 Lifetime is a special case. It is not set up by client in a system
 configuration. It is, however, used by the client to know how long
@@ -968,6 +1053,7 @@ iface eth0 {
 \end{Verbatim}
 
 \subsubsection{Example 8: Relay support}
+\label{example-server-relay1}
 To get more informations about relay configuration, see section \ref{features-relays}.
 Following server configuration example explains how to use
 relays. There is some remote relay with will send encapsulated data over
@@ -988,6 +1074,7 @@ iface relay1 {
 \end{Verbatim}
 
 \subsubsection{Example 9: 2 relays}
+\label{example-server-relay2}
 This is advanced configuration. It assumes that client sends data to
 relay1, which encapsulates it and forwards it to relay2, which
 eventually sends it to the server (after additional encapsulation). It
@@ -1133,6 +1220,7 @@ interface, which is used to receive messages from the clients, not the
 one used to forward packets to server.
 
 \subsection{Relay configuration examples}
+\label{example-relay}
 
 Relay configuration file is fairly simple. Relay forwards DHCPv6
 messages between interfaces. Messages from client are encapsulated and
