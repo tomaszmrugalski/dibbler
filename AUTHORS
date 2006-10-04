@@ -4,7 +4,7 @@
  
  Primary authors: 
   - Tomasz Mrugalski
-  - Marek Senderski (inactive)
+  - Marek Senderski (inactive since 2003)
    
  Contributors:
   - NIIBE Yutaka
@@ -15,3 +15,11 @@
     Mickaël GUÉRIN, Lionel GUILMIN, Lauréline PROVOST
     from the ENSEEIHT University, Toulouse, France.
     2006-03: DNS Updates (FQDN) support
+  - Krzysztof Wnuk: Reverse DNS Updates, lots of enhancements
+    2006-05
+  - Krzysztof Wnuk: Initial prefix delegation support
+    2006-09
+
+  Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
+  Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
+  
