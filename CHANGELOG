@@ -1,13 +1,16 @@
 
   Dibbler changelog
  ------------------- 
+ 0.5.0 [2006-10-05]
+  - FQDN fixes
+  - Documentation update and cleanup
+
  0.5.0-RC1 [2006-08-30]
   - FQDN Support (DNS Updates) support added
   - Support for temporary addresses (TA) added
   - Server cache added
   - log-mode PRECISE added
   - log entries are appended (previously log files were overwritten at startup)
-  - Documentation update and cleanup
   - Modular features (optional compilation of additional features) added
   - Clnt: Addresses are added with /64 prefix by default (use strict-rfc-no-routing to use previous behavior, i.e. /128 prefix)
 
