@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.14 2006-08-24 01:12:29 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.15 2006-10-04 22:04:10 thomson Exp $
  *
  */
 
@@ -759,7 +759,7 @@ void TSrvAddrMgr::cacheRead() {
     f.close();
 
     if (this->Cache.count() != entries) {
-	Log(Warning) << "Cache: " << SRVCACHE_FILE << " file: " << entries << " entries expected, but " 
-		     << this->Cache.count() << " found." << LogEnd;
+	Log(Debug) << "Cache: " << SRVCACHE_FILE << " file: " << entries << " entries expected, but " 
+		   << this->Cache.count() << " found." << LogEnd;
     }
 }
