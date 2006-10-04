@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.30 2006-10-01 20:47:18 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.31 2006-10-04 21:43:56 thomson Exp $
  */
 
 #include <sstream>
@@ -225,13 +225,13 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
 	Log(Debug) <<"FQDN: Support is enabled on the " << this->getName()  << " interface." << LogEnd;
 	Log(Debug) <<"FQDN: Mode set to " << this->getFQDNMode() << ": ";
 	switch (this->getFQDNMode()) {
-	case DNSUPDATE_NONE:
+	case DNSUPDATE_MODE_NONE:
 	    Log(Cont) << "server will not perform any updates." << LogEnd;
 	    break;
-	case DNSUPRATE_PTR:
+	case DNSUPDATE_MODE_PTR:
 	    Log(Cont) << "server will perform reverse (PTR) update only." << LogEnd;
 	    break;
-	case DNSUPDATE_BOTH:
+	case DNSUPDATE_MODE_BOTH:
 	    Log(Cont) << "server will perform both (AAAA and PTR) updates." << LogEnd;
 	    break;
 	}

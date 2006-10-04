@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.h,v 1.7 2006-10-01 20:47:17 thomson Exp $
+ * $Id: DNSUpdate.h,v 1.8 2006-10-04 21:43:56 thomson Exp $
  *
  */
 
@@ -17,14 +17,15 @@
 
 #include "poslib.h"
 
+
+/* used in config. file */
+enum DnsUpdateModeCfg {
+    DNSUPDATE_MODE_NONE = 0,
+    DNSUPDATE_MODE_PTR  = 1,
+    DNSUPDATE_MODE_BOTH = 2
+};
+
 /* return values of method run*/
-
-enum DnsUpdateCfg {
-    DNSUPDATE_NONE = 0,
-    DNSUPDATE_PTR  = 1,
-    DNSUPDATE_BOTH = 2
-}
-
 enum DnsUpdateResult {
     DNSUPDATE_SUCCESS=0,
     DNSUPDATE_ERROR=1,
@@ -33,6 +34,7 @@ enum DnsUpdateResult {
     DNSUPDATE_SKIP=4
 };
 
+/* used in DNSUpdate constructor */
 enum DnsUpdateMode {
     DNSUPDATE_PTR=1,
     DNSUPDATE_PTR_CLEANUP=2,
