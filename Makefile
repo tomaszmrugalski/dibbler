@@ -215,6 +215,32 @@ VERSION-win:
 	date +%Y-%m-%d >> VERSION
 	echo >> VERSION
 
+VERSION-winnt:
+	echo " Operating system " >  VERSION
+	echo "------------------" >> VERSION
+	echo " Windows NT/2000"   >> VERSION
+	echo >> VERSION
+
+	echo " Version " >> VERSION
+	echo "---------" >> VERSION
+	echo "$(VERSION)" >> VERSION
+	echo >> VERSION
+
+	echo " C++ compiler used " >> VERSION
+	echo "-------------------" >> VERSION
+	echo "dev-cpp 4.9.9.2" >> VERSION
+	echo >> VERSION
+
+	echo " C compiler used " >> VERSION
+	echo "-----------------" >> VERSION
+	echo "dev-cpp 4.9.9.2" >> VERSION
+	echo >> VERSION
+
+	echo " Date " >> VERSION
+	echo "------" >> VERSION
+	date +%Y-%m-%d >> VERSION
+	echo >> VERSION
+
 VERSION-src:
 	echo " Version " > VERSION
 	echo "---------" >> VERSION
@@ -257,6 +283,13 @@ release-win32: VERSION-win doc
 		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe \
                  *.conf                         \
 		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-win32
+
+release-winnt: VERSION-winnt doc
+	@echo "[TAR/GZ ] dibbler-$(VERSION)-winnt2k.tar.gz"
+	tar czvf dibbler-$(VERSION)-winnt2k.tar.gz                   \
+		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe \
+                 *.conf                         \
+		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-winnt
 
 release-src: VERSION-src 
 	@echo "[RM     ] dibbler-$(VERSION)-src.tar.gz"
