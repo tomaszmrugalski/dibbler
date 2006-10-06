@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.18 2006-08-27 21:16:36 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.19 2006-10-06 00:35:26 thomson Exp $
  *                                                                           
  */
 
@@ -16,6 +16,7 @@ class TSrvCfgIface;
 #include "DHCPConst.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgTA.h"
+#include "SrvCfgPD.h"
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
@@ -45,11 +46,26 @@ public:
     SmartPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
     SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
     long countAddrClass();
+    
+    void addPDClass(SmartPtr<TSrvCfgPD> PDClass);
+    //bool getPreferedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
+    //bool getAllowedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
+    
+    SmartPtr<TSrvCfgPD> getPDByID(unsigned long id);
+    SmartPtr<TSrvCfgPD> getRandomPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
+    long countPD();
+
+
 
     void addTA(SmartPtr<TSrvCfgTA> ta);
     void firstTA();
     SmartPtr<TSrvCfgTA> getTA();
     SmartPtr<TSrvCfgTA> getTA(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr);
+
+    void addPD(SmartPtr<TSrvCfgPD> pd);
+    void firstPD();
+    SmartPtr<TSrvCfgPD> getPD();
+    //SmartPtr<TSrvCfgTA> getTA(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr);
 
     SmartPtr<TIPv6Addr> getUnicast();
 
@@ -67,6 +83,10 @@ public:
     void addClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
     void delClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
 
+    // PD prefixes functions
+    void addClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
+    void delClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
+    bool supportPrefixDelegation();
     // TA address functions
     void addTAAddr();
     void delTAAddr();
@@ -157,6 +177,7 @@ private:
     bool RapidCommit;	
     List(TSrvCfgAddrClass) SrvCfgAddrClassLst; // IA_NA list (normal addresses)
     List(TSrvCfgTA) SrvCfgTALst; // IA_TA list (temporary addresses)
+    List(TSrvCfgPD) SrvCfgPDLst;
 
     // relay
     bool Relay;
@@ -177,6 +198,7 @@ private:
     bool NISPServerSupport;
     bool NISPDomainSupport;
     bool LifetimeSupport;
+    bool PrefixDelegationSupport;
 
     List(TIPv6Addr) DNSServerLst;
     List(string) DomainLst;			
@@ -192,6 +214,7 @@ private:
     string NISDomain;
     string NISPDomain;
     unsigned int Lifetime;
+    unsigned int PrefixLength;
 };
 
 #endif /* SRVCONFIFACE_H */

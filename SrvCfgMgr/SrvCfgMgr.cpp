@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.43 2006-08-21 22:50:31 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.44 2006-10-06 00:35:26 thomson Exp $
  *
  */
 
@@ -298,6 +298,32 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6A
 
     return 0; // NULL
 }
+
+/*
+* get a class which prefix belongs to
+*/
+
+SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> addr)
+{
+    this->firstIface();
+    SmartPtr<TSrvCfgIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+
+    if (!ptrIface) {
+	Log(Error) << "Trying to find class on unknown (" << iface <<") interface." << LogEnd;
+	return 0; // NULL
+    }
+
+    SmartPtr<TSrvCfgPD> ptrClass;
+    ptrIface->firstPD();
+    while (ptrClass = ptrIface->getPD()) {
+	if (ptrClass->prefixInPool(addr))
+	    return ptrClass;
+    }
+
+    return 0; // NULL
+}
+
 
 //on basis of duid/address/iface assign addresss to client
 SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid, 

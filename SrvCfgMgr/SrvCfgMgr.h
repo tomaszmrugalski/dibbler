@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.12 2006-08-21 22:50:31 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.13 2006-10-06 00:35:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006-08-21 22:50:31  thomson
+ * Cache support added.
+ *
  * Revision 1.11  2006/03/05 21:34:05  thomson
  * Temp. addresses support merged to the top branch.
  *
@@ -74,6 +77,7 @@ public:
     //Address assignment connected methods
     long countAvailAddrs(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, int iface);
     SmartPtr<TSrvCfgAddrClass> getClassByAddr(int iface, SmartPtr<TIPv6Addr> addr);
+    SmartPtr<TSrvCfgPD> getClassByPrefix(int iface, SmartPtr<TIPv6Addr> prefix);
     SmartPtr<TIPv6Addr> getRandomAddr(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
     bool isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
 

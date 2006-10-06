@@ -1,7 +1,8 @@
 include ../Makefile.inc
 
 OBJECTS =  SrvParser.o SrvLexer.o SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o \
-           SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o SrvCfgTA.o
+           SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o SrvCfgTA.o \
+	   SrvCfgPD.o
 
 objs: $(OBJECTS)
 
@@ -13,7 +14,7 @@ SrvLexer.o: SrvLexer.cpp
 
 parser: SrvParser.y SrvLexer.l 
 	echo "[BISON++] $(SUBDIR)/SrvParser.y"
-	$(BISONPP) -d SrvParser.y -o SrvParser.cpp
+	$(BISONPP) -v --debug --defines -d SrvParser.y -o SrvParser.cpp
 #	$(BISONPP) -l -d SrvParser.y -o SrvParser.cpp
 	echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
 	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l

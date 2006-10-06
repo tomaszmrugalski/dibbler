@@ -25,6 +25,7 @@
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
 #include "SrvCfgTA.h"
+#include "SrvCfgPD.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
 #include "DUID.h"
@@ -37,12 +38,15 @@ List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addr
 List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */           \
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
+List(TSrvCfgPD) SrvCfgPDLst;		   /* list of SrvCfg PD objects */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
 List(TFQDN) PresentFQDNLst;                                                          \
 SmartPtr<TDUID> duidNew;                                                             \
 SmartPtr<TIPv6Addr> addr;                                                            \
 List(TStationRange) PresentRangeLst;                                                 \
+List(TStationRange) PDLst;                                                          \
+int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
 /*method check whether interface with id=ifaceName has been already declared*/       \
@@ -55,6 +59,8 @@ SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                 
 SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 void StartTAClassDeclaration();                                                      \
 bool EndTAClassDeclaration();                                                        \
+void StartPDDeclaration();                                                           \
+bool EndPDDeclaration();                                                             \
 virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
@@ -62,7 +68,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 61 "SrvParser.y"
+#line 67 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -137,6 +143,7 @@ typedef union
 #ifndef YY_SrvParser_DEBUG
 
  #line 71 "../bison++/bison.h"
+#define YY_SrvParser_DEBUG 1
 
 #line 71 "../bison++/bison.h"
 /* YY_SrvParser_DEBUG */
@@ -281,11 +288,14 @@ typedef
 #define	CLNT_MAX_LEASE_	293
 #define	STATELESS_	294
 #define	CACHE_SIZE_	295
-#define	STRING_	296
-#define	HEXNUMBER_	297
-#define	INTNUMBER_	298
-#define	IPV6ADDR_	299
-#define	DUID_	300
+#define	PDCLASS_	296
+#define	PD_LENGTH_	297
+#define	PD_POOL_	298
+#define	STRING_	299
+#define	HEXNUMBER_	300
+#define	INTNUMBER_	301
+#define	IPV6ADDR_	302
+#define	DUID_	303
 
 
 #line 169 "../bison++/bison.h"
@@ -372,6 +382,9 @@ static const int CLASS_MAX_LEASE_;
 static const int CLNT_MAX_LEASE_;
 static const int STATELESS_;
 static const int CACHE_SIZE_;
+static const int PDCLASS_;
+static const int PD_LENGTH_;
+static const int PD_POOL_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -423,11 +436,14 @@ static const int DUID_;
 	,CLNT_MAX_LEASE_=293
 	,STATELESS_=294
 	,CACHE_SIZE_=295
-	,STRING_=296
-	,HEXNUMBER_=297
-	,INTNUMBER_=298
-	,IPV6ADDR_=299
-	,DUID_=300
+	,PDCLASS_=296
+	,PD_LENGTH_=297
+	,PD_POOL_=298
+	,STRING_=299
+	,HEXNUMBER_=300
+	,INTNUMBER_=301
+	,IPV6ADDR_=302
+	,DUID_=303
 
 
 #line 215 "../bison++/bison.h"

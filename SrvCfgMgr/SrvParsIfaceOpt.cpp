@@ -3,12 +3,15 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.9 2006-08-27 21:16:36 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.10 2006-10-06 00:35:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006-08-27 21:16:36  thomson
+ * ZoneRoot length parameter added (by Krzysiek Wnuk)
+ *
  * Revision 1.8  2006-07-03 18:19:12  thomson
  * FQDN support added.
  *

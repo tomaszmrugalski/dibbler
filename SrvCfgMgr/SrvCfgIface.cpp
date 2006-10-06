@@ -6,12 +6,13 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.31 2006-10-04 21:43:56 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.32 2006-10-06 00:35:26 thomson Exp $
  */
 
 #include <sstream>
 #include "SrvCfgIface.h"
 #include "SrvCfgAddrClass.h"
+#include "SrvCfgPD.h"
 #include "DNSUpdate.h"
 #include "Logger.h"
 
@@ -75,6 +76,68 @@ bool TSrvCfgIface::getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Add
     return true;
 }
 
+
+void TSrvCfgIface::firstPD() {
+    this->SrvCfgPDLst.first();
+}
+
+/*
+ * tries to find if there is a prefix class, where client is on white-list -- so far hashed 
+ 
+bool TSrvCfgIface::getPreferedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+    SmartPtr<TSrvCfgPD> ptrPD;
+    this->SrvCfgPDLst.first();
+    while(ptrPD=SrvCfgPDLst.get()) {
+        if (ptrPD->clntPrefered(duid, clntAddr)) { 
+            classid=ptrPD->getID();
+            return true;
+        }
+    }
+    return false;
+}
+*/
+/*
+ * tries to find a class, which client is allowed to use -- so far hashed
+ 
+bool TSrvCfgIface::getAllowedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+    unsigned int clsid[100];
+    unsigned int share[100];
+    unsigned int cnt = 0;
+    unsigned int sum = 0;
+    unsigned int rnd;
+
+    SmartPtr<TSrvCfgPD> ptrPD;
+    this->SrvCfgPDLst.first();
+    while( (ptrPD=SrvCfgPDLst.get()) && (cnt<100) ) {
+        if (ptrPD->clntSupported(duid, clntAddr)) {
+            clsid[cnt]   = ptrPD->getID();
+	    share[cnt]   = ptrPD->getShare();
+	    sum         += ptrPD->getShare();
+	    cnt++;
+        }
+    }
+
+    if (!cnt) 
+	return false; // this client is not supported by any class
+
+    rnd = rand() % sum;
+
+    unsigned int j=0;
+    
+    for (unsigned int i=0; i<100;i++) {
+	j += share[i];
+	if (j>=rnd) {
+	    classid = clsid[i];
+	    break;
+	}
+    }
+
+    return true;
+}
+
+*/
+
+
 void TSrvCfgIface::addTA(SmartPtr<TSrvCfgTA> ta) {
     this->SrvCfgTALst.append(ta);
 }
@@ -84,6 +147,10 @@ void TSrvCfgIface::firstTA() {
 }
 SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA() {
     return this->SrvCfgTALst.get();
+}
+
+void TSrvCfgIface::addPD(SmartPtr<TSrvCfgPD> pd) {
+    this->SrvCfgPDLst.append(pd);
 }
 
 SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr) {
@@ -181,6 +248,89 @@ long TSrvCfgIface::countAddrClass() {
     return this->SrvCfgAddrClassLst.count();
 }
 
+
+
+/** Prefix delegation functions 
+
+*/
+
+SmartPtr<TSrvCfgPD> TSrvCfgIface::getPD() {
+    return SrvCfgPDLst.get();
+}
+
+SmartPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
+    this->firstPD();
+    SmartPtr<TSrvCfgPD> ptrPD;
+    while (ptrPD = this->getPD()) {
+	if (ptrPD->getID() == id)
+	    return ptrPD;
+    }
+    return 0;
+}
+
+void TSrvCfgIface::addClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
+    SmartPtr<TSrvCfgPD> ptrPD;
+    this->firstPD();
+    while (ptrPD = this->getPD() ) {
+	if (ptrPD->prefixInPool(ptrAddr)) {
+	    Log(Debug) << "Prefix usage for class " << ptrPD->getID()
+		       << " increased by 1." << LogEnd;
+	    ptrPD->incrAssigned();
+	    return;
+	}
+    }
+    Log(Warning) << "Unable to increase prefix usage: no prefix found for " 
+		 << *ptrAddr << LogEnd;
+}
+
+void TSrvCfgIface::delClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
+    SmartPtr<TSrvCfgPD> ptrPD;
+    this->firstPD();
+    while (ptrPD = this->getPD() ) {
+	if (ptrPD->prefixInPool(ptrAddr)) {
+	    ptrPD->decrAssigned();
+	    Log(Debug) << "Prefix usage for class " << ptrPD->getID()
+		       << " decreased by 1." << LogEnd;
+	    return;
+	}
+    }
+    Log(Warning) << "Unable to decrease address usage: no class found for " 
+		 << *ptrAddr << LogEnd;
+}
+
+SmartPtr<TSrvCfgPD> TSrvCfgIface::getRandomPrefix(SmartPtr<TDUID> clntDuid, 
+							SmartPtr<TIPv6Addr> clntAddr) {
+/* this method is not used currently 
+   
+      unsigned long classid;
+
+    // step 1: Is there a class reserved for this client?
+
+    // if there is class where client is on whitelist, it should be used rather than any other class 
+    // that would be also suitable
+    if(this->getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
+      Log(Debug) << "Found prefered class for client (duid = " << *clntDuid << ", addr = "
+  	        << *clntAddr << ")" << LogEnd;
+      return this->getClassByID(classid);
+    } 
+
+    // Get one of the normal classes
+    if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
+	Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd; 
+	return this->getClassByID(classid);
+    } 
+
+    // This is some kind of problem...
+    Log(Error) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
+	       << clntAddr->getPlain() << ")." << LogEnd;*/
+    return 0;
+}
+
+long TSrvCfgIface::countPD() {
+    return this->SrvCfgPDLst.count();
+}
+
+
 int TSrvCfgIface::getID() {
     return this->ID;
 }
@@ -244,7 +394,7 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
     if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
-
+  
     if (opt->isRelay()) {
 	this->Relay = true;
 	this->RelayName        = opt->getRelayName();
@@ -295,6 +445,7 @@ void TSrvCfgIface::setDefaults() {
     this->NISPServerSupport = false;
     this->NISPDomainSupport = false;
     this->LifetimeSupport   = false;
+    this->PrefixDelegationSupport = false;
 }
 
 void TSrvCfgIface::setNoConfig() {
@@ -584,6 +735,10 @@ bool TSrvCfgIface::supportLifetime() {
     return this->LifetimeSupport;
 }
 
+
+bool TSrvCfgIface::supportPrefixDelegation() {
+    return this->PrefixDelegationSupport;
+}
 void TSrvCfgIface::addTAAddr() {
     SmartPtr<TSrvCfgTA> ta;
     this->firstTA();
@@ -651,6 +806,15 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst.count() << "-->" << endl;
     while( ia=iface.SrvCfgAddrClassLst.get() ) {	
 	out << *ia;
+    }
+
+    out << endl;
+    // print PD objects
+    SmartPtr<TSrvCfgPD>	pd;
+    iface.SrvCfgPDLst.first();
+    out << "    <!-- PD: prefix delegation class count: " << iface.SrvCfgPDLst.count() << "-->" << endl;
+    while( pd=iface.SrvCfgPDLst.get() ) {	
+	out << *pd;
     }
 
     out << endl;

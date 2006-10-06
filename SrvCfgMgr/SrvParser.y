@@ -12,6 +12,7 @@
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
 #include "SrvCfgTA.h"
+#include "SrvCfgPD.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
 #include "DUID.h"
@@ -31,12 +32,15 @@ List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addr
 List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */           \
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
+List(TSrvCfgPD) SrvCfgPDLst;		   /* list of SrvCfg PD objects */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
 List(TFQDN) PresentFQDNLst;                                                          \
 SmartPtr<TDUID> duidNew;                                                             \
 SmartPtr<TIPv6Addr> addr;                                                            \
 List(TStationRange) PresentRangeLst;                                                 \
+List(TStationRange) PDLst;                                                          \
+int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
 /*method check whether interface with id=ifaceName has been already declared*/       \
@@ -49,6 +53,8 @@ SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                 
 SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 void StartTAClassDeclaration();                                                      \
 bool EndTAClassDeclaration();                                                        \
+void StartPDDeclaration();                                                           \
+bool EndPDDeclaration();                                                             \
 virtual ~SrvParser();
 
 // constructor
@@ -80,6 +86,7 @@ virtual ~SrvParser();
 %token IFACE_MAX_LEASE_, CLASS_MAX_LEASE_, CLNT_MAX_LEASE_
 %token STATELESS_
 %token CACHE_SIZE_
+%token PDCLASS_, PD_LENGTH_, PD_POOL_ 
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -182,6 +189,29 @@ TAClassOption
 | ClassMaxLeaseOption
 | RejectClientsOption
 | AcceptOnlyOption
+;
+
+ PDDeclaration
+:PDCLASS_ '{'
+{
+    StartPDDeclaration();
+} PDOptionsList '}'
+{
+    EndPDDeclaration();
+}
+;
+
+PDOptionsList
+: PDOptions
+| PDOptions PDOptionsList
+
+PDOptions
+: PDLength
+| PDPoolOption
+| ValidTimeOption
+| PreferredTimeOption
+| T1Option
+| T2Option
 ;
 
 
@@ -300,6 +330,33 @@ ADDRESSRangeList
     }
 ;
 
+PDRangeList
+    : IPV6ADDR_     
+    {
+        PDLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
+    }
+    |  IPV6ADDR_ '/' INTNUMBER_
+    {
+	SmartPtr<TIPv6Addr> addr(new TIPv6Addr($1));
+	int prefix = $3;
+	if ( (prefix<1) || (prefix>128)) {
+	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
+		      << ". Allowed range: 1..128." << LogEnd;
+	    YYABORT;
+	}
+ 	
+	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
+	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
+        Log(Debug) << "PD-range: min: " <<*addr1 << ", max: " << *addr2 << LogEnd;
+	//Log(Debug) << "#### before PDLst.length=" << PDLst.count() << LogEnd;
+	if (*addr1<=*addr2)
+            PDLst.append(new TStationRange(addr1,addr2));
+        else
+            PDLst.append(new TStationRange(addr2,addr1));
+	// Log(Debug) << "#### after PDLst.length=" << PDLst.count() << LogEnd;
+    }
+;
+
 ADDRESSDUIDRangeList
 : IPV6ADDR_     
 {
@@ -387,6 +444,23 @@ PoolOption
 } ADDRESSRangeList
 {
     ParserOptStack.getLast()->setPool(&PresentRangeLst);
+}
+;
+PDPoolOption
+: PD_POOL_ 
+{
+    PDLst.clear();    
+} PDRangeList
+{
+    ParserOptStack.getLast()->setPool(&PresentRangeLst/*PDList*/);
+}
+;
+PDLength
+: PD_LENGTH_ Number
+{
+ 
+   this->PDPrefix = $2;
+   Log(Debug) << "pd-length set to " << $2 << LogEnd;
 }
 ;
     
@@ -546,6 +620,7 @@ CacheSizeOption
 {
     ParserOptStack.getLast()->setCacheSize($2);
 }
+;
 
 GlobalOptionDeclaration
 : InterfaceOptionDeclaration
@@ -578,6 +653,7 @@ InterfaceOptionDeclaration
 | NISPServerOption
 | NISPDomainOption
 | LifetimeOption
+| PDDeclaration
 ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -864,6 +940,12 @@ bool SrvParser::EndIfaceDeclaration()
         iface->addTA(ta);
     SrvCfgTALst.clear();
 
+    SmartPtr<TSrvCfgPD> pd;
+    SrvCfgPDLst.first();
+    while (pd=SrvCfgPDLst.get())
+        iface->addPD(pd);
+    SrvCfgPDLst.clear();
+
     // remove last option (representing this interface) from the parser stack
     ParserOptStack.delLast();
 
@@ -913,6 +995,35 @@ bool SrvParser::EndTAClassDeclaration()
     SmartPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
     ptrTA->setOptions(ParserOptStack.getLast());
     SrvCfgTALst.append(ptrTA);
+
+    // remove temporary parser object for this (just finished) scope
+    ParserOptStack.delLast();
+    return true;
+}
+
+void SrvParser::StartPDDeclaration()
+{
+    ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+    //this->PDLst.clear();
+    //this->PDPrefix = 0;
+}
+
+bool SrvParser::EndPDDeclaration()
+{
+    if (!this->PDLst.count()) {
+        Log(Crit) << "No PD pools defined ." << LogEnd;
+        YYABORT;
+    }
+    if (!this->PDPrefix) {
+	Log(Crit) << "PD prefix not defined or set to 0." << LogEnd;
+	YYABORT;
+    }
+	
+    SmartPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
+    ParserOptStack.getLast()->setPool(&this->PDLst);
+    ptrPD->setOptions(ParserOptStack.getLast(), this->PDPrefix);
+    
+    SrvCfgPDLst.append(ptrPD);
 
     // remove temporary parser object for this (just finished) scope
     ParserOptStack.delLast();
