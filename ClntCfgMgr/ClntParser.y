@@ -13,6 +13,7 @@
 #include "ClntCfgAddr.h"
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
+#include "ClntCfgPD.h"
 #include "Logger.h"
 
     using namespace std;
@@ -94,6 +95,7 @@ namespace std
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
 %token STRICT_RFC_NO_ROUTING_
+%token PD_
     
 %type  <ival> Number
 
@@ -391,6 +393,7 @@ InterfaceOptionDeclaration
 | LifetimeOption
 | RejectServersOption
 | PreferServersOption
+| PrefixDelegationOption
 ;
 
 IAOptionDeclaration
@@ -498,6 +501,15 @@ T2Option
 :T2_ Number
 {
     ParserOptStack.getLast()->setT2($2);
+}
+;
+
+PrefixDelegationOption
+:OPTION_ PD_
+{
+    Log(Debug) << "Prefix delegation option found" << LogEnd;
+    Log(Debug) << "No hint value for prefix found" <<LogEnd;
+    ParserOptStack.getLast()->setPrefixDelegation();
 }
 ;
 

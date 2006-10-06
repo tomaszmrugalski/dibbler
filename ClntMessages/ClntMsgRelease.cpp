@@ -3,10 +3,10 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- *
+ * chanmges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.8 2006-08-30 01:10:38 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.9 2006-10-06 00:43:28 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -19,6 +19,7 @@
 #include "ClntCfgMgr.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptTA.h"
+#include "ClntOptIA_PD.h"
 #include <cmath>
 #include "Logger.h"
 #include "ClntAddrMgr.h"
@@ -46,7 +47,8 @@ TClntMsgRelease::TClntMsgRelease(
 	SmartPtr<TClntAddrMgr>  AddrMgr, 
 	int iface, SmartPtr<TIPv6Addr> addr,
 	List(TAddrIA) iaLst,
-	SmartPtr<TAddrIA> ta)
+	SmartPtr<TAddrIA> ta,
+	List(TAddrIA) pdLst)
 	:TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface, addr, RELEASE_MSG)
 {
     IRT=REL_TIMEOUT;
@@ -98,6 +100,16 @@ TClntMsgRelease::TClntMsgRelease(
     
     if (ta)
 	Options.append(new TClntOptTA(ta, this));
+
+    // prefix delegation release
+
+    SmartPtr<TAddrIA> pd = 0;
+    
+    pdLst.first();
+    while(pd=pdLst.get()) {
+        Options.append(new TClntOptIA_PD(pd,this));
+	AddrMgr->delPD(pd->getIAID() );
+    }
 
     pkt = new char[getSize()];
     IsDone = false;

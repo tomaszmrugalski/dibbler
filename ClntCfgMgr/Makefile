@@ -1,8 +1,9 @@
 include ../Makefile.inc
 
 OBJECTS = ClntParser.o        ClntLexer.o     ClntCfgIA.o        ClntCfgMgr.o      \
-	  ClntCfgIface.o                      ClntCfgAddr.o      ClntParsAddrOpt.o \
-          ClntParsGlobalOpt.o ClntParsIAOpt.o ClntParsIfaceOpt.o ClntCfgTA.o
+	  ClntCfgIface.o      		      ClntCfgAddr.o      ClntParsAddrOpt.o \
+          ClntParsGlobalOpt.o ClntParsIAOpt.o ClntParsIfaceOpt.o ClntCfgTA.o       \
+	  ClntCfgPD.o        ClntCfgPrefix.o
 
 objs: $(OBJECTS)
 

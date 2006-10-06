@@ -3,12 +3,15 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                      
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.h,v 1.6 2004-11-30 00:42:50 thomson Exp $
+ * $Id: ClntParsIfaceOpt.h,v 1.7 2006-10-06 00:33:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004-11-30 00:42:50  thomson
+ * Client no longer sends RapidCommit, unless told to do so (bug #55)
+ *
  * Revision 1.5  2004/11/29 21:21:56  thomson
  * Client parser now supports 'option lifetime' directive (bug #75)
  *
@@ -115,6 +118,11 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     void setLifetime();
     bool getReqLifetime();
 
+    // option: Prefix Delegation
+    void setPrefixDelegation();
+    bool getReqPrefixDelegation();
+
+
 private:
     bool NewGroup;//indicates whether new group should be created
     bool NoIAs;
@@ -146,6 +154,7 @@ private:
     bool ReqNISDomain;
     bool ReqNISPDomain;
     bool ReqLifetime;
+    bool ReqPrefixDelegation;
 };
 
 

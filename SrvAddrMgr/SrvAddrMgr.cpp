@@ -3,10 +3,10 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.15 2006-10-04 22:04:10 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.16 2006-10-06 00:39:12 thomson Exp $
  *
  */
 
@@ -168,7 +168,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
 	ptrClient->delIA(IAID);
     }
 
-    if (!ptrClient->countIA() && !ptrClient->countTA()) {
+    if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD()) {
 	if (!quiet)
 	    Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
 		      << ") from addrDB." << LogEnd;
@@ -177,6 +177,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
 
     return true;
 }
+
 /** 
  * adds TA address
  * 
@@ -307,7 +308,7 @@ bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid,
 	ptrClient->delTA(iaid);
     }
 
-    if (!ptrClient->countIA() && !ptrClient->countTA()) {
+    if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD()) {
 	Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
 		   << ") from addrDB." << LogEnd;
 	this->delClient(clntDuid);
@@ -315,7 +316,6 @@ bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid,
     
     return true;
 }
-
 
 /*
  * how many addresses does this client have?

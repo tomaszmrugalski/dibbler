@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.h,v 1.5 2006-08-03 00:43:15 thomson Exp $
+ * $Id: AddrClient.h,v 1.6 2006-10-06 00:30:17 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-08-03 00:43:15  thomson
+ * FQDN support added.
+ *
  * Revision 1.4  2006-03-05 21:39:19  thomson
  * TA support merged.
  *
@@ -45,6 +48,14 @@ public:
     bool delIA(unsigned long IAID);
     int countIA();
 
+    //--- PD list ---
+    void firstPD();
+    SmartPtr<TAddrIA> getPD();
+    SmartPtr<TAddrIA> getPD(unsigned long IAID);
+    void addPD(SmartPtr<TAddrIA> ia);
+    bool delPD(unsigned long IAID);
+    int countPD();
+
     //--- TA list ---
     void firstTA();
     SmartPtr<TAddrIA> getTA();
@@ -62,6 +73,7 @@ public:
 private:
     List(TAddrIA) IAsLst;
     List(TAddrIA) TALst;
+    List(TAddrIA) PDLst;
     SmartPtr<TDUID> DUID;
 };
 

@@ -3,12 +3,15 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- *
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.20 2006-08-21 22:44:58 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.21 2006-10-06 00:30:17 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2006-08-21 22:44:58  thomson
+ * Cache support added.
+ *
  * Revision 1.19  2005/09/20 20:10:51  thomson
  * Max. timeout changed from LONG_MAX to ULONG_MAX
  *
@@ -178,8 +181,173 @@ unsigned long TAddrMgr::getValidTimeout()
 
 unsigned long TAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
 {
+    // FIXME
     return 1;
 }
+
+/* PD-starts */
+
+/** 
+ * addx prefix for a client. If client's IA is missing, add it, too.
+ * 
+ * @param clntDuid 
+ * @param clntAddr 
+ * @param iface 
+ * @param IAID 
+ * @param T1 
+ * @param T2 
+ * @param addr 
+ * @param pref 
+ * @param valid 
+ * @param quiet 
+ * 
+ * @return 
+ */
+bool TAddrMgr::addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
+			 int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+			 SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			 int length, bool quiet) {
+
+    if (!prefix) {
+	Log(Error) << "Attempt to add null prefix failed." << LogEnd;
+	return false;
+    }
+
+    // find this client
+    SmartPtr <TAddrClient> ptrClient;
+    this->firstClient();
+    while ( ptrClient = this->getClient() ) {
+        if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
+            break;
+    }
+
+    // have we found this client? 
+    if (!ptrClient) {
+	if (!quiet) Log(Debug) << "Adding client (DUID=" << clntDuid->getPlain()
+			       << ") to addrDB." << LogEnd;
+	ptrClient = new TAddrClient(clntDuid);
+	this->addClient(ptrClient);
+    }
+
+    // find this PD
+    SmartPtr <TAddrIA> ptrPD;
+    ptrClient->firstPD();
+    while ( ptrPD = ptrClient->getPD() ) {
+        if ( ptrPD->getIAID() == IAID)
+            break;
+    }
+
+    // have we found this PD?
+    if (!ptrPD) {
+	ptrPD = new TAddrIA(iface, clntAddr, clntDuid, T1, T2, IAID);
+	ptrClient->addPD(ptrPD);
+	if (!quiet)
+	    Log(Debug) << "Adding PD (PDID=" << IAID << ") to addrDB." << LogEnd;
+    }
+
+    SmartPtr <TAddrPrefix> ptrPrefix;
+    ptrPD->firstPrefix();
+    while ( ptrPrefix = ptrPD->getPrefix() ) {
+        if (*ptrPrefix->get()==*prefix)
+            break;
+    }
+
+    // address already exists
+    if (ptrPrefix) {
+        Log(Warning) << "Prefix " << *ptrPrefix
+		             << " is already assigned to this PD." << LogEnd;
+        return false;
+    }
+
+    // add address
+    ptrPD->addPrefix(prefix, pref, valid, length);
+    if (!quiet)
+	Log(Debug) << "Adding " << prefix->getPlain() 
+		   << " prefix to PD (PDID=" << IAID 
+		   << ") to addrDB." << LogEnd;
+    return true;
+}
+
+/*
+ *  Frees address (also deletes IA and/or client, if this was last address)
+ */
+bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
+			    unsigned long IAID, SmartPtr<TIPv6Addr> prefix,
+			    bool quiet) {
+
+    Log(Debug) << "#### Trying to delete PD: duid=" << clntDuid->getPlain() << ", PDID=" << IAID << ", prefix=" << prefix->getPlain() << LogEnd;
+    // find this client
+    SmartPtr <TAddrClient> ptrClient;
+    this->firstClient();
+    while ( ptrClient = this->getClient() ) {
+        if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
+            break;
+    }
+
+    // have we found this client? 
+    if (!ptrClient) {
+        Log(Warning) << "Client (DUID=" << clntDuid->getPlain() 
+		     << ") not found in addrDB, cannot delete address and/or client." << LogEnd;
+	return false;
+    }
+
+    // find this IA
+    SmartPtr <TAddrIA> ptrPD;
+    ptrClient->firstPD();
+    while ( ptrPD = ptrClient->getPD() ) {
+        if ( ptrPD->getIAID() == IAID)
+            break;
+    }
+
+    // have we found this IA?
+    if (!ptrPD) {
+        Log(Warning) << "PD (PDID=" << IAID << ") not assigned to client, cannot delete address and/or IA."
+		     << LogEnd;
+        return false;
+    }
+
+    SmartPtr <TAddrPrefix> ptrPrefix;
+    ptrPD->firstPrefix();
+    while ( ptrPrefix = ptrPD->getPrefix() ) {
+        if (*ptrPrefix->get()==*prefix)
+            break;
+    }
+
+    // address already exists
+    if (!ptrPrefix) {
+	Log(Warning) << "Prefix " << *prefix << " not assigned, cannot delete." << LogEnd;
+	return false;
+    }
+
+    ptrPD->delPrefix(prefix);
+
+    // FIXME: Cache for prefixes this->addCachedAddr(clntDuid, clntAddr);
+    if (!quiet)
+	Log(Debug) << "Deleted prefix " << *prefix << " from addrDB." << LogEnd;
+    
+    if (!ptrPD->getPrefixCount()) {
+	if (!quiet)
+	    Log(Debug) << "Deleted PD (PDID=" << IAID << ") from addrDB." << LogEnd;
+	ptrClient->delPD(IAID);
+    }
+
+    if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD()) {
+	if (!quiet)
+	    Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
+		      << ") from addrDB." << LogEnd;
+	this->delClient(clntDuid);
+    }
+
+    return true;
+}
+
+bool TAddrMgr::prefixIsFree(SPtr<TIPv6Addr> prefix)
+{
+    // FIXME: impement this
+    return true;
+}
+
+/* PD-ends */
 
 // --------------------------------------------------------------------
 // --- XML-related methods --------------------------------------------

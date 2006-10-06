@@ -3,10 +3,10 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- *
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.60 2006-10-01 20:47:17 thomson Exp $
+ * $Id: Portable.h,v 1.61 2006-10-06 00:25:53 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -75,6 +75,7 @@
 #define SRVCONF_FILE      "/etc/dibbler/server.conf"
 #define RELCONF_FILE      "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
+#define RADVD_FILE        "/etc/dibbler/radvd.conf"
 #define CLNTPID_FILE      "/var/lib/dibbler/client.pid"
 #define SRVPID_FILE       "/var/lib/dibbler/server.pid"
 #define RELPID_FILE       "/var/lib/dibbler/relay.pid"
@@ -162,6 +163,7 @@ extern char * inet_ntop6(const char* src, char* dst);
 extern void print_packed(char * addr);
 extern void doRevDnsAddress( char * src, char *dst);
 extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
+extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
 extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
 /* microsleep(int microsecs) */
 extern void microsleep(int microsecs);

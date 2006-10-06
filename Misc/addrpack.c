@@ -209,6 +209,22 @@ char * inet_ntop6(const unsigned char * src, char * dst)
 	return strcpy(dst, tmp);
 }
 
+void truncatePrefixFromConfig( char * src,  char * dst, char length){
+
+	int i=0;
+	dst[0]=0;
+	
+	for(i=0;i<length/8;i++) {
+	    sprintf(dst + strlen(dst), "%02x", src[i]);
+	    if (i && (i%2))
+		sprintf(dst+strlen(dst), ":");
+	}
+	if (i%2)
+	    sprintf(dst+strlen(dst), "::");
+	else
+	    sprintf(dst+strlen(dst), ":");
+}
+
 /** 
  * converts packed address to a reverse string used in DNS Updates
  * 
@@ -222,7 +238,7 @@ void doRevDnsAddress( char * src,  char * dst){
 	for(i=15;i>=0;i--) {
 	    sprintf(dst + strlen(dst), "%x.%x.", (src[i] & 0x0f), ( (src[i] & 0xf0 ) >> 4 ) );
 	}
-	sprintf(dst + strlen(dst), "ip6.arpa");
+	sprintf(dst + strlen(dst), "ip6.arpa.");
 }
 
 /** 
@@ -264,6 +280,7 @@ void doRevDnsZoneRoot( char * src,  char * dst, int length){
     }
     sprintf(dst + strlen(dst), "ip6.arpa.");
 }
+
 void print_packed(char * addr)
 {
     int i=0;

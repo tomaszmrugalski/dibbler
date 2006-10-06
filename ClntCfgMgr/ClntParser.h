@@ -26,6 +26,7 @@
 #include "ClntCfgAddr.h"
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
+#include "ClntCfgPD.h"
 #include "Logger.h"
 
     using namespace std;
@@ -67,7 +68,7 @@ virtual ~ClntParser();
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();
 
-#line 65 "ClntParser.y"
+#line 66 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -285,6 +286,7 @@ typedef
 #define	INTNUMBER_	293
 #define	DUID_	294
 #define	STRICT_RFC_NO_ROUTING_	295
+#define	PD_	296
 
 
 #line 169 "../bison++/bison.h"
@@ -371,6 +373,7 @@ static const int HEXNUMBER_;
 static const int INTNUMBER_;
 static const int DUID_;
 static const int STRICT_RFC_NO_ROUTING_;
+static const int PD_;
 
 
 #line 212 "../bison++/bison.h"
@@ -417,6 +420,7 @@ static const int STRICT_RFC_NO_ROUTING_;
 	,INTNUMBER_=293
 	,DUID_=294
 	,STRICT_RFC_NO_ROUTING_=295
+	,PD_=296
 
 
 #line 215 "../bison++/bison.h"

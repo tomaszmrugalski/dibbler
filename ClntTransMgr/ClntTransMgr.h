@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.10 2006-07-16 11:38:24 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.11 2006-10-06 00:39:44 thomson Exp $
  *
  */
 class TClntTransMgr;
@@ -40,7 +40,7 @@ class TClntTransMgr
 		     TContainer< SmartPtr<TMsg> > srvlist,int iface);
     void sendInfRequest(TContainer< SmartPtr<TOpt> > requestOptions, int iface);
     void sendRebind( TContainer<SmartPtr<TOpt> > ptrIA, int iface);
-    void sendRelease(List(TAddrIA) iaLst, SmartPtr<TAddrIA> ta);
+    void sendRelease(List(TAddrIA) iaLst, SmartPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     void shutdown();
     bool isDone();
     void setThat(SmartPtr<TClntTransMgr> that);

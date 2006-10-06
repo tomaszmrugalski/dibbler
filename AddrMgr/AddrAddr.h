@@ -5,9 +5,12 @@
  *          Marek Senderski  <msend@o2.pl>
  *
  * released under GNU GPL v2 or later licence
- * $Id: AddrAddr.h,v 1.5 2006-08-03 00:43:15 thomson Exp $
+ * $Id: AddrAddr.h,v 1.6 2006-10-06 00:30:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-08-03 00:43:15  thomson
+ * FQDN support added.
+ *
  * Revision 1.4  2004-06-20 19:36:46  thomson
  * Minor fixes.
  *
@@ -50,7 +53,7 @@ class TAddrAddr
     enum ETentative getTentative();
     void setTentative(enum ETentative state);
 
-  private:
+  protected:
     enum ETentative Tentative;
 
     long Prefered;

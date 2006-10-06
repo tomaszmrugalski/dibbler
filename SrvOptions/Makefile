@@ -8,8 +8,8 @@ OBJECTS = SrvOptClientIdentifier.o	SrvOptElapsed.o 	  SrvOptIAAddress.o      \
 	  SrvOptDomainName.o        SrvOptNTPServers.o    SrvOptTimeZone.o       \
           SrvOptSIPServer.o         SrvOptSIPDomain.o     SrvOptFQDN.o           \
           SrvOptNISServer.o         SrvOptNISDomain.o     SrvOptNISPServer.o     \
-          SrvOptNISPDomain.o        SrvOptLifetime.o      SrvOptTA.o
-
+          SrvOptNISPDomain.o        SrvOptLifetime.o      SrvOptTA.o            \
+	  SrvOptIA_PD.o             SrvOptIAPrefix.o
 objs: $(OBJECTS)
 
 libs: libSrvOptions.a

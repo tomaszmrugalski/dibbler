@@ -3,12 +3,15 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski  <msend@o2.pl>
- *
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.11 2006-03-23 00:53:25 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.12 2006-10-06 00:30:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006-03-23 00:53:25  thomson
+ * TA support fixed on the server side.
+ *
  * Revision 1.10  2006/03/05 21:39:19  thomson
  * TA support merged.
  *
@@ -90,6 +93,49 @@ bool TAddrClient::delIA(unsigned long IAID) {
     while ( ptr = IAsLst.get() ) {
         if (ptr->getIAID() == IAID) {
             IAsLst.del();
+            return true;
+        }
+    }
+    return false;
+}
+
+// --- PD ------------------------------------------------------------
+
+SmartPtr<TAddrIA> TAddrClient::getPD() {
+    return PDLst.get();
+}
+
+SmartPtr<TAddrIA> TAddrClient::getPD(unsigned long IAID) {
+    SmartPtr<TAddrIA> ptr;
+    PDLst.first();
+
+    while ( ptr = PDLst.get() ) {
+        if (ptr->getIAID() == IAID) {
+            return ptr;
+        }
+    }
+    return 0;
+}
+
+void TAddrClient::firstPD() {
+    PDLst.first();
+}
+
+void TAddrClient::addPD(SmartPtr<TAddrIA> pd) {
+    PDLst.append(pd);
+}
+
+int TAddrClient::countPD() {
+    return PDLst.count();
+}
+
+bool TAddrClient::delPD(unsigned long IAID) {
+    SmartPtr<TAddrIA> ptr;
+    PDLst.first();
+
+    while ( ptr = PDLst.get() ) {
+        if (ptr->getIAID() == IAID) {
+            PDLst.del();
             return true;
         }
     }
@@ -218,6 +264,12 @@ ostream & operator<<(ostream & strum,TAddrClient &x)
     strum << "    <!-- " << x.TALst.count() << " TA(s) -->" << endl;
     x.TALst.first();
     while (ptr = x.TALst.get() ) {
+        strum << *ptr;
+    }
+
+    strum << "    <!-- " << x.PDLst.count() << " PD(s) -->" << endl;
+    x.PDLst.first();
+    while (ptr = x.PDLst.get() ) {
         strum << *ptr;
     }
 

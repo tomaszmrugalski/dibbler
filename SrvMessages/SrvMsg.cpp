@@ -3,10 +3,10 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- *
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.25 2006-10-01 20:47:18 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.26 2006-10-06 00:42:58 thomson Exp $
  */
 
 #include <sstream>
@@ -22,6 +22,7 @@
 #include "SrvOptClientIdentifier.h"
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptIA_NA.h"
+#include "SrvOptIA_PD.h"
 #include "SrvOptOptionRequest.h"
 #include "SrvOptPreference.h"
 #include "SrvOptElapsed.h"
@@ -95,7 +96,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->Relays = 0;
-
+	
     int pos=0;
     while (pos<bufSize)	{
         short code = ntohs( * ((short*) (buf+pos)));
@@ -146,7 +147,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    break;
 	case OPTION_DNS_RESOLVERS:
 	    ptr = new TSrvOptDNSServers(buf+pos,length,this);
-                    break;
+            break;
 	case OPTION_NTP_SERVERS:
 	    ptr = new TSrvOptNTPServers(buf+pos,length,this);
 	    break;
@@ -183,6 +184,9 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_IA_TA:
 	    ptr = new TSrvOptTA(buf+pos, length, this);
 	    break;
+       case OPTION_IA_PD:
+	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
+	    break;
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
@@ -191,6 +195,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_AUTH_MSG:
 	case OPTION_RELAY_MSG:
 	default:
+	    Log(Warning) << "Option " << code << " not supported, so it was ignored." << LogEnd;
 	    break;
 	}
 	if ( (ptr) && (ptr->isValid()) )
@@ -421,7 +426,16 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	SmartPtr<TSrvOptLifetime> optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
 	Options.append( (Ptr*)optLifetime);
     }
-    
+    // --- option: PREFIX DELEGATION ---
+    if ( newOptionAssigned && ptrIface->supportPrefixDelegation() ) {
+	//SmartPtr<TSrvOptIA_PD> optPrefixDelegation = new TSrvOptIA_PD(ptrIface->getPD(), this);
+	SmartPtr<TSrvOptIA_PD> optPrefixDelegation = new TSrvOptIA_PD(1,2000,3000, this);
+	Options.append( (Ptr*)optPrefixDelegation);
+        newOptionAssigned = true;
+    	
+    }    
+
+
     return newOptionAssigned;
 }
 

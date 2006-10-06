@@ -3,10 +3,10 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- *
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.42 2006-07-16 11:38:24 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.43 2006-10-06 00:39:44 thomson Exp $
  *
  */
 
@@ -23,6 +23,7 @@
 #include "ClntTransMgr.h"
 #include "ClntAddrMgr.h"
 #include "ClntCfgMgr.h"
+#include "ClntCfgPD.h"
 #include "Msg.h"
 #include "ClntMsgRequest.h"
 #include "ClntMsgRenew.h"
@@ -331,8 +332,10 @@ void TClntTransMgr::shutdown()
     SmartPtr<TAddrIA> ptrFirstIA;
     SmartPtr<TAddrIA> ptrNextIA;
     SmartPtr<TAddrIA> ta;
+    SPtr<TAddrIA> pd;
     SmartPtr<TClntCfgIface> iface;
     List(TAddrIA) releasedIAs;
+    List(TAddrIA) releasedPDs;
 
     Transactions.clear(); // delete all transactions
     this->Shutdown = true;
@@ -397,8 +400,17 @@ void TClntTransMgr::shutdown()
 		cfgTA->setState(DISABLED);
 	    }
 
-            this->sendRelease(releasedIAs,ta);
 	}
+	pd = 0;
+	Log(Debug) << "#### About to release PDs. Client has " << AddrMgr->countPD() << " PD(s)." << LogEnd;
+	AddrMgr->firstPD();
+	while (pd = AddrMgr->getPD()) {
+	    releasedPDs.append(pd);
+	    SPtr<TClntCfgPD> cfgPD = CfgMgr->getPD(pd->getIAID());
+	    if (cfgPD)
+		cfgPD->setState(DISABLED);
+	}
+	this->sendRelease(releasedIAs,ta, releasedPDs);
     }
 
     // now check if there are any TA left
@@ -414,7 +426,7 @@ void TClntTransMgr::shutdown()
 		continue;
 	    }
 	    if (cfgTA->getState()==CONFIGURED) {
-		this->sendRelease(releasedIAs, ta);
+		this->sendRelease(releasedIAs, ta, releasedPDs);
 		cfgTA->setState(DISABLED);
 	    }
 	}
@@ -520,7 +532,7 @@ void TClntTransMgr::sendRequest(List(TOpt) requestOptions,
 }
 
 // Send RELEASE message
-void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta)
+void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta, List(TAddrIA) pdLst)
 {
     if (!IALst.count() && !ta) {
         Log(Error) << "Unable to send RELEASE with empty IAs list and without TA." << LogEnd;
@@ -547,12 +559,13 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta)
 	return;
     }
 	
-    Log(Notice) << "Creating RELEASE for " << IALst.count() << " IA(s)" 
+    Log(Notice) << "Creating RELEASE for " << IALst.count() << " IA(s), " 
+		<< pdLst.count() << " PD(s), "
 		<< (ta?" and TA":" (no TA)") << " on the " << ptrIface->getFullName() 
 		<< " interface." << LogEnd;
 
     SmartPtr<TClntMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, iface, 
-						 addr, IALst, ta);
+						 addr, IALst, ta, pdLst);
     Transactions.append( ptr );
 }
 

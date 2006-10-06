@@ -3,10 +3,10 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ *  cjanges: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.11 2006-07-16 11:38:24 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.12 2006-10-06 00:33:01 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -32,6 +32,7 @@ class TClntCfgMgr : public TCfgMgr
     
     // --- Iface related ---
     SmartPtr<TClntCfgIA> getIA(long IAID);
+    SmartPtr<TClntCfgPD> getPD(long IAID);
     SmartPtr<TClntCfgIface> getIface();
     SmartPtr<TClntCfgIface> getIface(int id);
     void firstIface();

@@ -16,6 +16,7 @@
 #include "SrvOptStatusCode.h"
 #include "SrvOptIAAddress.h"
 #include "SrvOptIA_NA.h"
+#include "SrvOptIA_PD.h"
 #include "SrvOptTA.h"
 #include "SrvOptRapidCommit.h"
 #include "SrvOptServerIdentifier.h"
@@ -443,6 +444,44 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    };
 	    break;
 	}
+
+	case OPTION_IA_PD: {
+	    Log(Debug) << "#### Trying to release PD." << LogEnd;
+	    SmartPtr<TSrvOptIA_PD> pd = (Ptr*) opt;
+	    SmartPtr<TSrvOptIAPrefix> prefix;
+	    bool anyDeleted=false;
+	    
+	    // does this client has PD? (iaid check)
+	    SmartPtr<TAddrIA> ptrPD = client->getPD( pd->getIAID() );
+	    if (!ptrPD) {
+		Log(Warning) << "No such PD (iaid=" << pd->getIAID() << ") found for client:" << *clntID->getDUID() << LogEnd;
+		Options.append( new TSrvOptIA_PD(pd->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such PD is bound.",this) );
+		continue;
+	    }
+
+	    // let's verify each address
+	    pd->firstOption();
+	    while(subOpt=pd->getOption()) {
+		if (subOpt->getOptType()!=OPTION_IAPREFIX)
+		    continue;
+		prefix = (Ptr*) subOpt;
+		if (AddrMgr->delPrefix(clntID->getDUID(), pd->getIAID(), prefix->getPrefix(), false) ) {
+		    anyDeleted=true;                    
+		} else {
+		    Log(Warning) << "PD: No such binding found: client=" << clntID->getDUID()->getPlain() << ", PD (pdid=" 
+				 << pd->getIAID() << "), addr="<< prefix->getPrefix()->getPlain() << LogEnd;
+		};
+	    };
+
+	    // send result to the client
+	    if (!anyDeleted)
+	    {
+		SmartPtr<TSrvOptIA_PD> ansPD(new TSrvOptIA_PD(pd->getIAID(), 0, 0, this));
+		Options.append((Ptr*)ansPD);
+		ansPD->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
+	    };
+	    break;
+	}
 	default:
 	    break;
 	}; // switch(...)
@@ -581,6 +620,14 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    ta = new TSrvOptTA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, clntAddr,
 			       clntIface, REQUEST_MSG, this);
 	    this->Options.append((Ptr*)ta);
+	    break;
+	}
+
+	case OPTION_IA_PD: {
+	    SmartPtr<TSrvOptIA_PD> pd;
+	    pd = new TSrvOptIA_PD(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, clntAddr,
+			       clntIface, REQUEST_MSG, this);
+	    this->Options.append((Ptr*)pd);
 	    break;
 	}
 	case OPTION_STATUS_CODE :

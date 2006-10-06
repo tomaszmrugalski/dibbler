@@ -39,6 +39,16 @@ class TAddrMgr
     int countClient();
     bool delClient(SmartPtr<TDUID> duid);
 
+    // --- prefix related ---
+    bool addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
+		   int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+		   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+		   int length, bool quiet);
+    bool delPrefix(SmartPtr<TDUID> clntDuid,
+		   unsigned long IAID, SmartPtr<TIPv6Addr> prefix,
+		   bool quiet);
+    bool prefixIsFree(SPtr<TIPv6Addr> prefix);
+
     //--- Time related methods ---
     unsigned long getT1Timeout();
     unsigned long getT2Timeout();
@@ -69,9 +79,12 @@ protected:
 
 #endif
 /*
- * $Id: AddrMgr.h,v 1.11 2006-08-21 22:44:58 thomson Exp $
+ * $Id: AddrMgr.h,v 1.12 2006-10-06 00:30:17 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006-08-21 22:44:58  thomson
+ * Cache support added.
+ *
  * Revision 1.10  2006/03/05 21:39:19  thomson
  * TA support merged.
  *

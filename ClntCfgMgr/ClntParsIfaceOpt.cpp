@@ -3,12 +3,15 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.7 2004-11-30 00:42:50 thomson Exp $
+ * $Id: ClntParsIfaceOpt.cpp,v 1.8 2006-10-06 00:33:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004-11-30 00:42:50  thomson
+ * Client no longer sends RapidCommit, unless told to do so (bug #55)
+ *
  * Revision 1.6  2004/11/29 21:21:56  thomson
  * Client parser now supports 'option lifetime' directive (bug #75)
  *
@@ -107,6 +110,7 @@ TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
     ReqNISDomain  = false;
     ReqNISPDomain = false;
     ReqLifetime   = false;
+    ReqPrefixDelegation = false;
 }
 
 TClntParsIfaceOpt::~TClntParsIfaceOpt() {
@@ -197,6 +201,15 @@ bool TClntParsIfaceOpt::getReqFQDN() {
 string TClntParsIfaceOpt::getFQDN() { 
     return this->FQDN;
 }
+
+// --- option: Prefix Delegation ---
+void TClntParsIfaceOpt::setPrefixDelegation() { 
+    this->ReqPrefixDelegation=true;
+}
+bool TClntParsIfaceOpt::getReqPrefixDelegation() {
+    return this->ReqPrefixDelegation;
+}
+
 
 // --- option: NIS server ---
 List(TIPv6Addr) * TClntParsIfaceOpt::getNISServerLst() {

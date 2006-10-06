@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IPv6Addr.cpp,v 1.5 2006-08-21 22:52:40 thomson Exp $
+ * $Id: IPv6Addr.cpp,v 1.6 2006-10-06 00:25:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-08-21 22:52:40  thomson
+ * Various fixes.
+ *
  * Revision 1.4  2004/12/07 20:53:14  thomson
  * Link local safety checks added (bug #39)
  *
@@ -30,7 +33,7 @@ TIPv6Addr::TIPv6Addr(const char* addr, bool plain) {
         inet_pton6(Plain,Addr);
     } else {
         memcpy(Addr,addr,16);
-        inet_ntop6(Addr,Plain);
+	inet_ntop6(Addr,Plain);
     }
 }
 

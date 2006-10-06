@@ -1,4 +1,4 @@
-/*
+	/*
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgReply.cpp,v 1.4 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntMsgReply.cpp,v 1.5 2006-10-06 00:43:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005-01-08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.3  2004/07/05 23:04:08  thomson
  * *** empty log message ***
  *
@@ -38,7 +41,6 @@ TClntMsgReply::TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr,
 			     int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize)
 {
-    
 }
 
 void TClntMsgReply::answer(SmartPtr<TClntMsg> Rep) {

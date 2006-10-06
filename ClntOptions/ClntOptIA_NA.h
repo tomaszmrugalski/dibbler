@@ -17,6 +17,7 @@
 #include "ClntCfgMgr.h"
 #include "ClntAddrMgr.h"
 #include "IPv6Addr.h"
+
 class TOptIA_NA;
 
 class TClntOptIA_NA : public TOptIA_NA

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.h,v 1.8 2006-08-21 22:54:08 thomson Exp $
+ * $Id: ClntAddrMgr.h,v 1.9 2006-10-06 00:31:18 thomson Exp $
  *
  */
 
@@ -18,8 +18,6 @@
 #include "AddrIA.h"
 #include "AddrMgr.h"
 #include "ClntCfgMgr.h"
-
-class TClntCfgMgr;
 
 class TClntAddrMgr : public TAddrMgr
 {
@@ -42,6 +40,14 @@ class TClntAddrMgr : public TAddrMgr
     bool delIA(long IAID);
     int countIA();
 
+    // --- PD --- 
+    void firstPD();
+    SmartPtr<TAddrIA> getPD();
+    SmartPtr<TAddrIA> getPD(unsigned long IAID);
+    void addPD(SmartPtr<TAddrIA> ptr);
+    bool delPD(long IAID);
+    int countPD();
+
     // --- TA ---
     void firstTA();
     SmartPtr<TAddrIA> getTA();
@@ -55,6 +61,7 @@ class TClntAddrMgr : public TAddrMgr
     void doDuties();
     
     bool isIAAssigned(unsigned long IAID);
+    bool isPDAssigned(unsigned long IAID);
  protected:
     void print(ostream &x);
  private:

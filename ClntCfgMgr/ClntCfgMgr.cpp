@@ -3,10 +3,10 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ *  chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.40 2006-08-22 00:01:19 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.41 2006-10-06 00:33:01 thomson Exp $
  *
  */
 
@@ -275,6 +275,21 @@ SmartPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID)
 	while (ia = iface->getIA())
 	    if (ia->getIAID()==IAID)
 		return ia;
+    }        
+    return 0;
+}
+
+SmartPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID)
+{
+    SmartPtr<TClntCfgIface> iface;
+    firstIface();
+    while (iface = getIface() ) 
+    {
+	SmartPtr<TClntCfgPD> pd;
+	iface->firstPD();
+	while (pd = iface->getPD())
+	    if (pd->getIAID()==IAID)
+		return pd;
     }        
     return 0;
 }

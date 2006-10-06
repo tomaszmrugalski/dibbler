@@ -1,11 +1,11 @@
 /*                                                                           
  * Dibbler - a portable DHCPv6                                               
  *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+ * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: FQDN.h,v 1.3 2006-07-07 21:52:47 thomson Exp $
+ * $Id: FQDN.h,v 1.4 2006-10-06 00:25:53 thomson Exp $
  */
 
 #ifndef FQDN_H

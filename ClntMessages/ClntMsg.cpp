@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.12 2006-08-21 21:34:50 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.13 2006-10-06 00:43:28 thomson Exp $
  */
 
 #ifdef WIN32
@@ -25,6 +25,7 @@
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptIA_NA.h"
+#include "ClntOptIA_PD.h"
 #include "ClntOptTA.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptPreference.h"
@@ -32,6 +33,7 @@
 #include "ClntOptServerUnicast.h"
 #include "ClntOptStatusCode.h"
 #include "ClntOptRapidCommit.h"
+
 
 #include "ClntOptDNSServers.h"
 #include "ClntOptDomainName.h"
@@ -102,7 +104,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
         pos+=2;
         short length = ntohs(*((short*) (buf+pos)));
         pos+=2;
-
+	
 	if (!allowOptInMsg(MsgType,code)) {
 	    this->invalidAllowOptInMsg(MsgType, code);
 	    pos+=length;
@@ -122,6 +124,9 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    break;
 	case OPTION_IA:
 	    ptr = new TClntOptIA_NA(buf+pos,length,this);
+	    break;
+	case OPTION_IA_PD:
+	    ptr = new TClntOptIA_PD(buf+pos,length,this);
 	    break;
 	case OPTION_ORO:
 	    ptr = new TClntOptOptionRequest(buf+pos,length,this);
@@ -490,6 +495,17 @@ void TClntMsg::appendRequestedOptions() {
 	iface->setNISPDomainState(INPROCESS);
     }
 
+  // --- option: Prefix Delegation ---
+    if ( iface->isReqPrefixDelegation() && (iface->getPrefixDelegationState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_IA_PD);
+	   
+	   SmartPtr<TClntCfgPD> ptrPD;
+	    SmartPtr<TClntOptIA_PD> opt = new TClntOptIA_PD(ptrPD ,this );
+	    Options.append( (Ptr*)opt );
+	
+	iface->setPrefixDelegationState(INPROCESS);
+    }
+
     // --- option: LIFETIME ---
     if ( iface->isReqLifetime() && (this->MsgType == INFORMATION_REQUEST_MSG) && optORO->count() )
 	optORO->addOption(OPTION_LIFETIME);
@@ -527,9 +543,21 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
     }
 
 }
+void TClntMsg::preparePrefixConfigFile() 
+
+{
+	//SPtr<TClntOptIA_PD> option;
+	//return option;
+}
+
+
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006-08-21 21:34:50  thomson
+ * Client must send FQDN option even when it has no special preference about
+ * its domain name.
+ *
  * Revision 1.11  2006-03-05 21:39:19  thomson
  * TA support merged.
  *

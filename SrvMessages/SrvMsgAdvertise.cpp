@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.20 2006-08-30 01:33:32 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.21 2006-10-06 00:42:58 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -24,8 +24,7 @@
 #include "SrvOptTimeZone.h"
 #include "SrvOptDomainName.h"
 #include "SrvOptFQDN.h"
-//#include "AddrClient.h"
-
+#include "SrvOptIA_PD.h"
 #include "Logger.h"
 
 TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
@@ -97,6 +96,13 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 				  clntDuid, clntAddr, clntIface, SOLICIT_MSG, this);
 	    this->Options.append( (Ptr*) optTA);
 	}
+	case OPTION_IA_PD: {
+	    SmartPtr<TSrvOptIA_PD> optPD;
+	    optPD = new TSrvOptIA_PD(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt, 
+				  clntDuid, clntAddr, clntIface, SOLICIT_MSG, this);
+	    this->Options.append( (Ptr*) optPD);
+	    break;
+	}
 	case OPTION_RAPID_COMMIT: {
 	    // RAPID COMMIT present, but we're in ADVERTISE, so obviously
 	    // server is configured not to use RAPID COMMIT
@@ -105,6 +111,10 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	}
 	case OPTION_IAADDR: {
 	    Log(Warning) << "Invalid(misplaced) IAADDR option received." << LogEnd;
+	    break;
+	}
+	case OPTION_IAPREFIX: {
+	    Log(Warning) << "Invalid(misplaced) IAPREFIX option received." << LogEnd;
 	    break;
 	}
 	case OPTION_ORO: 
@@ -250,6 +260,9 @@ string TSrvMsgAdvertise::getName() {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2006-08-30 01:33:32  thomson
+ * *** empty log message ***
+ *
  * Revision 1.19  2006-08-24 01:12:29  thomson
  * FQDN hint implementation by Krzysiek Wnuk, fixes by Thomson.
  *

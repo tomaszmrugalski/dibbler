@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.h,v 1.4 2006-03-23 00:12:09 thomson Exp $
+ * $Id: ClntMsgRelease.h,v 1.5 2006-10-06 00:43:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006-03-23 00:12:09  thomson
+ * TA support on the client side finished.
+ *
  * Revision 1.3  2005/01/08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -38,7 +41,8 @@ class TClntMsgRelease : public TClntMsg
 		    SmartPtr<TClntAddrMgr>  AddrMgr, 
 		    int iface, SmartPtr<TIPv6Addr> addr,
 		    List(TAddrIA) iaLst, 
-		    SmartPtr<TAddrIA> ta);
+		    SmartPtr<TAddrIA> ta,
+		    List(TAddrIA) pdLst);
 
     void answer(SmartPtr<TClntMsg> Rep);
     void doDuties();

@@ -104,6 +104,22 @@ SmartPtr<TIPv6Addr> TStationRange::getRandomAddr()
         return new TIPv6Addr();
 }
 
+SmartPtr<TIPv6Addr> TStationRange::getRandomPrefix()
+{
+    if(isAddrRange)
+    {
+
+        SmartPtr<TIPv6Addr> diff(new TIPv6Addr());
+        *diff=(*AddrR)-(*AddrL);
+        --(*diff);
+        *diff=*diff+*AddrL;
+        return diff;
+    }
+    else
+        return new TIPv6Addr();
+}
+
+
 
 unsigned long TStationRange::rangeCount()
 {

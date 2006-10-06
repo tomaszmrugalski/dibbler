@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.12 2006-08-03 00:43:15 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.13 2006-10-06 00:30:17 thomson Exp $
  *
  */
 
@@ -191,6 +191,67 @@ int TAddrIA::delAddr(SmartPtr<TIPv6Addr> addr)
 int TAddrIA::getAddrCount()
 {
     return this->AddrLst.count();
+}
+
+// --------------------------------------------------------------------
+// --- prefix related methods -----------------------------------------
+// --------------------------------------------------------------------
+void TAddrIA::firstPrefix() 
+{
+    this->PrefixLst.first();
+}
+SPtr<TAddrPrefix> TAddrIA::getPrefix()
+{
+    return this->PrefixLst.get();
+}
+
+void TAddrIA::addPrefix(SPtr<TAddrPrefix> x)
+{
+    this->PrefixLst.append(x);
+}
+
+void TAddrIA::addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
+	       int length)
+{
+    SmartPtr<TAddrPrefix> ptr = new TAddrPrefix(addr, pref, valid, length);
+    PrefixLst.append(ptr);
+}
+
+int TAddrIA::getPrefixCount()
+{
+    return this->PrefixLst.count();
+}
+
+bool TAddrIA::delPrefix(SPtr<TAddrPrefix> x)
+{
+    SmartPtr<TAddrPrefix> ptr;
+    PrefixLst.first();
+
+    while (ptr = PrefixLst.get())
+    {
+	// FIXME: should we compare prefix length, too?
+        if (*(ptr->get())==(*x->get())) {
+            PrefixLst.del();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TAddrIA::delPrefix(SPtr<TIPv6Addr> x)
+{
+    SmartPtr<TAddrPrefix> ptr;
+    PrefixLst.first();
+
+    while (ptr = PrefixLst.get())
+    {
+	// FIXME: should we compare prefix length, too?
+        if (*(ptr->get())==(*x)) {
+            PrefixLst.del();
+            return true;
+        }
+    }
+    return false;
 }
 
 // --------------------------------------------------------------------
@@ -433,6 +494,7 @@ SPtr<TFQDN> TAddrIA::getFQDN()
 ostream & operator<<(ostream & strum,TAddrIA &x) {
 
     SmartPtr<TAddrAddr> ptr;
+    SPtr<TAddrPrefix> prefix;
 
 	strum << "    <AddrIA unicast=\"";
     if (x.Unicast)
@@ -452,6 +514,12 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
     while (ptr = x.AddrLst.get()) {
 	if (ptr)
 	    strum << "      " << *ptr;
+    }
+
+    // Prefix list
+    x.PrefixLst.first();
+    while (prefix = x.PrefixLst.get()) {
+	    strum << "      " << *prefix;
     }
 
     // FQDN

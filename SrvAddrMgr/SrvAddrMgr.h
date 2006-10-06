@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.9 2006-08-24 01:12:29 thomson Exp $
+ * $Id: SrvAddrMgr.h,v 1.10 2006-10-06 00:39:12 thomson Exp $
  *
  */
 
@@ -17,6 +17,7 @@ class TSrvCacheEntry;
 
 #include "AddrMgr.h"
 #include "SrvCfgAddrClass.h"
+#include "SrvCfgPD.h"
 
 class TSrvCacheEntry
 {
@@ -45,7 +46,7 @@ class TSrvAddrMgr : public TAddrMgr
 		   int iface, unsigned long iaid, SmartPtr<TIPv6Addr> addr, 
 		   unsigned long pref, unsigned long valid);
     bool delTAAddr(SmartPtr<TDUID> duid,unsigned long iaid, SmartPtr<TIPv6Addr> addr);
-    
+
     // how many addresses does this client have?
     unsigned long getAddrCount(SmartPtr<TDUID> duid);
 

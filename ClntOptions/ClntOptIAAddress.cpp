@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIAAddress.cpp,v 1.4 2004-12-02 00:51:04 thomson Exp $
+ * $Id: ClntOptIAAddress.cpp,v 1.5 2006-10-06 00:42:13 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004-12-02 00:51:04  thomson
+ * Log files are now always created (bugs #34, #36)
+ *
  * Revision 1.3  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
@@ -37,7 +40,8 @@
 TClntOptIAAddress::TClntOptIAAddress( char * buf, int n, TMsg* parent)
 	:TOptIAAddress(buf, n, parent)
 {
-    int pos=0;
+ 
+	int pos=0;
     while(pos<n) 
     {
         int code   = ntohs( *(short*)buf);

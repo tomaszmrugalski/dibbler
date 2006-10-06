@@ -18,6 +18,7 @@
 #include "SmartPtr.h"
 #include "Opt.h"
 
+
 class TClntMsg : public TMsg
 {
 public:
@@ -42,8 +43,9 @@ public:
     void setIface(int iface); // used to override when we have received msg via loopback interface.
 
     void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
+//    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
     void appendRequestedOptions();
-    
+    void preparePrefixConfigFile();
     SmartPtr<TClntTransMgr>  getClntTransMgr();
     SmartPtr<TClntAddrMgr>   getClntAddrMgr();
     SmartPtr<TClntCfgMgr>    getClntCfgMgr();

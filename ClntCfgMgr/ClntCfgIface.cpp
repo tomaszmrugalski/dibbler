@@ -3,12 +3,15 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.17 2006-08-22 00:01:19 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.18 2006-10-06 00:33:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2006-08-22 00:01:19  thomson
+ * Client /64 prefix, strict-rfc-no-routing feature added.
+ *
  * Revision 1.16  2006-03-21 20:02:01  thomson
  * ClntCfgGroup removed (at last!)
  *
@@ -72,6 +75,7 @@ TClntCfgIface::TClntCfgIface(string ifaceName) {
     this->NISDomainState  = DISABLED;
     this->NISPDomainState = DISABLED;
     this->LifetimeState   = DISABLED;
+    this->PrefixDelegationState = DISABLED;
 }
 
 TClntCfgIface::TClntCfgIface(int ifaceNr) {
@@ -90,6 +94,7 @@ TClntCfgIface::TClntCfgIface(int ifaceNr) {
     this->NISDomainState  = DISABLED;
     this->NISPDomainState = DISABLED;
     this->LifetimeState   = DISABLED;
+    this->PrefixDelegationState = DISABLED;
 }
 
 void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
@@ -110,6 +115,8 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     ReqNISPServer= opt->getReqNISPServer();
     ReqNISPDomain= opt->getReqNISPDomain();
     ReqLifetime  = opt->getReqLifetime();
+    ReqPrefixDelegation = opt->getReqPrefixDelegation();
+
 
     // copy parameters
     this->DNSServerLst = *opt->getDNSServerLst();
@@ -123,6 +130,7 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     this->NISDomain    = opt->getNISDomain();
     this->NISPServerLst= *opt->getNISPServerLst();
     this->NISPDomain   = opt->getNISPDomain();
+    
 
     if (ReqDNSServer)  this->setDNSServerState(NOTCONFIGURED);
     if (ReqDomain)     this->setDomainState(NOTCONFIGURED);
@@ -136,7 +144,7 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     if (ReqNISPServer) this->setNISPServerState(NOTCONFIGURED);
     if (ReqNISPDomain) this->setNISPDomainState(NOTCONFIGURED);
     if (ReqLifetime)   this->setLifetimeState(NOTCONFIGURED);
-
+    if (ReqPrefixDelegation) this->setPrefixDelegationState(NOTCONFIGURED);
     // copy preferred-server list
     SmartPtr<TStationID> station;
     opt->firstPrefSrv();
@@ -197,6 +205,27 @@ int TClntCfgIface::countIA()
 {
     IALst.append(ptr);
 }
+
+void TClntCfgIface::firstPD()
+{
+    PDLst.first();
+}
+
+int TClntCfgIface::countPD()
+{
+    return PDLst.count();
+}
+
+ SmartPtr<TClntCfgPD> TClntCfgIface::getPD()
+{
+    return PDLst.get();
+}
+
+ void TClntCfgIface::addPD(SmartPtr<TClntCfgPD> ptr)
+{
+    PDLst.append(ptr);
+}
+
 
 #if 0
 SmartPtr<TClntCfgIA> TClntCfgIface::getLastIA()
@@ -261,6 +290,9 @@ bool TClntCfgIface::getRapidCommit() {
 // --------------------------------------------------------------------------------
 bool TClntCfgIface::isReqDNSServer() {
     return this->ReqDNSServer;
+}
+bool TClntCfgIface::isReqPrefixDelegation() {
+    return this->ReqPrefixDelegation;
 }
 bool TClntCfgIface::isReqDomain() {
     return this->ReqDomain;
@@ -335,7 +367,9 @@ EState TClntCfgIface::getNISPDomainState() {
 EState TClntCfgIface::getLifetimeState() {
     return LifetimeState;
 }
-
+EState TClntCfgIface::getPrefixDelegationState() {
+    return PrefixDelegationState;
+}
 // --------------------------------------------------------------------
 // --- options: get option --------------------------------------------
 // --------------------------------------------------------------------
@@ -411,6 +445,9 @@ void TClntCfgIface::setNISPDomainState(EState state) {
 }
 void TClntCfgIface::setLifetimeState(EState state) {
     this->LifetimeState=state;
+}
+void TClntCfgIface::setPrefixDelegationState(EState state) {
+    this->PrefixDelegationState=state;
 }
 
 void TClntCfgIface::setPrefixLength(int len) {

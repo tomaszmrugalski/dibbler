@@ -3,10 +3,10 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.12 2006-08-22 00:01:19 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.13 2006-10-06 00:33:01 thomson Exp $
  */
 
 #ifndef CLNTCFGIFACE_H
@@ -26,7 +26,7 @@
 #include "SmartPtr.h"
 #include "DUID.h"
 #include "ClntCfgIA.h"
-
+#include "ClntCfgPD.h"
 using namespace std;
 
 class TClntCfgIface
@@ -43,6 +43,12 @@ public:
     int countIA();
     SmartPtr<TClntCfgIA> getIA();
     void addIA(SmartPtr<TClntCfgIA> ptr);
+
+    // PD
+    void firstPD();
+    int countPD();
+    SmartPtr<TClntCfgPD> getPD();
+    void addPD(SmartPtr<TClntCfgPD> ptr);
     
     // TA
     void firstTA();
@@ -150,6 +156,10 @@ public:
     EState getLifetimeState();
     void setLifetimeState(EState state);
 
+    // --- option: Prefix Delegation ---
+    bool isReqPrefixDelegation();
+    EState getPrefixDelegationState();
+    void setPrefixDelegationState(EState state);
     void setPrefixLength(int len);
     int  getPrefixLength();
 
@@ -163,7 +173,7 @@ private:
     int  PrefixLength; // default prefix length of the configured addresses
 
     List(TClntCfgIA) IALst;
-
+    List(TClntCfgPD) PDLst;
     List(TStationID) PrefSrvLst;
     List(TStationID) RejectedSrvLst;
 
@@ -181,6 +191,7 @@ private:
     string NISDomain;
     string NISPDomain;
     
+    
     EState DNSServerState;
     EState DomainState;
     EState NTPServerState;
@@ -193,6 +204,7 @@ private:
     EState NISDomainState;
     EState NISPDomainState;
     EState LifetimeState;
+    EState PrefixDelegationState;
 
     bool ReqDNSServer;
     bool ReqDomain;
@@ -206,6 +218,7 @@ private:
     bool ReqNISDomain;
     bool ReqNISPDomain;
     bool ReqLifetime;
+    bool ReqPrefixDelegation;
 };
 
 #endif 

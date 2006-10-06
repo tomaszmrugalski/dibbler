@@ -3,10 +3,10 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                          
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgRequest.h,v 1.4 2006-08-21 21:33:21 thomson Exp $
+ * $Id: SrvMsgRequest.h,v 1.5 2006-10-06 00:42:58 thomson Exp $
  *                                                                           
  */
 

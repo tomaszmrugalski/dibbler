@@ -3,12 +3,15 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- *
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgReply.h,v 1.9 2006-08-30 01:10:39 thomson Exp $
+ * $Id: SrvMsgReply.h,v 1.10 2006-10-06 00:42:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006-08-30 01:10:39  thomson
+ * DNSUpdate general cleanup.
+ *
  * Revision 1.8  2006-08-21 22:22:52  thomson
  * Changes by Krzysiek Wnuk, several fixes by thomson.
  *

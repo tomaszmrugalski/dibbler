@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.6 2005-01-08 16:52:04 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.7 2006-10-06 00:25:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005-01-08 16:52:04  thomson
+ * Relay support implemented.
+ *
  * Revision 1.5  2004/12/08 01:08:51  thomson
  * OptInMsg value corrected.
  *
@@ -52,10 +55,7 @@ bool allowOptInMsg(int msg, int opt)
 	return OptInMsg[msg-1][opt-1];
     }
 
-    // additional options
-    if (msg == CONFIRM_MSG || msg == RELEASE_MSG || msg == DECLINE_MSG ||
-	msg == RECONFIGURE_MSG || msg == RELAY_FORW_MSG || msg == RELAY_REPL_MSG)
-	return false;
+    // additional options: allow them
     return true;
 }
 

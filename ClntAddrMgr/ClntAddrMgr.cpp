@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.14 2006-08-21 22:54:08 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.15 2006-10-06 00:31:18 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -147,6 +147,51 @@ SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
     return 0;
 }
 
+// pd functions 
+
+void TClntAddrMgr::firstPD() {
+    Client->firstPD();
+}
+
+SmartPtr<TAddrIA> TClntAddrMgr::getPD() {
+    return Client->getPD();
+}
+
+bool TClntAddrMgr::delPD(long IAID) {
+    return Client->delPD(IAID);
+}
+
+void TClntAddrMgr::addPD(SmartPtr<TAddrIA> ptr) {
+    Client->addPD(ptr);
+}
+
+int TClntAddrMgr::countPD() {
+    return Client->countPD();
+}
+
+bool TClntAddrMgr::isPDAssigned(unsigned long IAID)
+{
+	SmartPtr<TAddrIA> pd;
+	Client->firstPD();
+	while (pd=Client->getPD())
+		if (pd->getIAID()==IAID) return true;
+	return false;
+}	
+
+SmartPtr<TAddrIA> TClntAddrMgr::getPD(unsigned long IAID)
+{
+    SmartPtr<TAddrIA> ptrPD;
+    this->Client->firstPD();
+    while (ptrPD = this->Client->getPD() ) {
+	if (ptrPD->getIAID() == IAID)
+	    return ptrPD;
+    }
+    return 0;
+}
+
+
+
+
 void TClntAddrMgr::firstTA() 
 {
     Client->firstTA();
@@ -189,6 +234,9 @@ void TClntAddrMgr::print(ostream &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2006-08-21 22:54:08  thomson
+ * *** empty log message ***
+ *
  * Revision 1.13  2006/03/23 00:12:09  thomson
  * TA support on the client side finished.
  *

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.h,v 1.5 2006-08-03 00:43:15 thomson Exp $
+ * $Id: AddrIA.h,v 1.6 2006-10-06 00:30:17 thomson Exp $
  *
  */
 
@@ -19,6 +19,7 @@ class TAddrIA;
 #include "SmartPtr.h"
 #include "Container.h"
 #include "AddrAddr.h"
+#include "AddrPrefix.h"
 #include "DUID.h"
 #include "FQDN.h"
 
@@ -53,10 +54,21 @@ class TAddrIA
     void setMulticast();
     SmartPtr<TIPv6Addr> getSrvAddr();
 
-    //---list related methods---
+    //--- address list related methods---
     void addAddr(SmartPtr<TAddrAddr> x);
     void addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid);
     int getAddrCount();
+
+    //--- prefix list related methods ---
+    void firstPrefix();
+    SPtr<TAddrPrefix> getPrefix();
+
+    void addPrefix(SPtr<TAddrPrefix> x);
+    void addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
+		   int length);
+    int getPrefixCount();
+    bool delPrefix(SPtr<TAddrPrefix> x);
+    bool delPrefix(SPtr<TIPv6Addr> x);
 
     // --- address management ---
     void firstAddr();
@@ -87,7 +99,8 @@ class TAddrIA
     SPtr<TFQDN> getFQDN();
 
 private:
-    TContainer< SmartPtr<TAddrAddr> > AddrLst;
+    List(TAddrAddr) AddrLst;
+    List(TAddrPrefix) PrefixLst;
 
     unsigned long IAID;
     unsigned long T1;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.10 2006-03-23 00:12:09 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.11 2006-10-06 00:42:13 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006-03-23 00:12:09  thomson
+ * TA support on the client side finished.
+ *
  * Revision 1.9  2006/03/05 21:38:20  thomson
  * TA support merged.
  *
@@ -105,7 +108,8 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, SmartPtr<TAddrIA> C
  * 
  * @param ClntCfgIA 
  * @param parent 
- */TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
+ */
+TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
     :TOptIA_NA(ClntCfgIA->getIAID(),ClntCfgIA->getT1(),ClntCfgIA->getT2(), parent)
 {
     ClntCfgIA->firstAddr();
@@ -304,8 +308,11 @@ bool TClntOptIA_NA::doDuties()
         AddrMgr->delIA(ptrIA->getIAID() );
         AddrMgr->addIA(new TAddrIA(ptrIA->getIface(), SmartPtr<TIPv6Addr>(), SmartPtr<TDUID>(),
 				   0x7fffffff,0x7fffffff,ptrIA->getIAID()));
+
+	List(TAddrIA) pdLst;
+	pdLst.clear();
         if (ptrIA->getAddrCount())
-            TransMgr->sendRelease(list,0);
+            TransMgr->sendRelease(list,0,pdLst);
         return false;
     }
 
