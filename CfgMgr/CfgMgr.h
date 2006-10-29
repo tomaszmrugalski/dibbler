@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.h,v 1.7 2006-01-12 00:23:34 thomson Exp $
+ * $Id: CfgMgr.h,v 1.8 2006-10-29 12:58:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-01-12 00:23:34  thomson
+ * Cleanup changes. Now -pedantic option works.
+ *
  * Revision 1.6  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -38,23 +41,32 @@ class TCfgMgr;
 /* shared by server and relay */
 #define RELAY_MIN_IFINDEX 1024
 
+/* Defined DUID types */
 using namespace std;
+
+enum EDUIDType{
+    DUID_TYPE_NOT_DEFINED = 0,
+    DUID_TYPE_LLT = 1,
+    DUID_TYPE_EN  = 2,
+    DUID_TYPE_LL  = 3  /* not supported */
+};
+
 class TCfgMgr
 {
  public:
-    TCfgMgr(SmartPtr<TIfaceMgr> IfaceMgr);
+    TCfgMgr(SPtr<TIfaceMgr> IfaceMgr);
     virtual ~TCfgMgr();
 
     bool compareConfigs(const string cfgFile, const string oldCfgFile);
     void copyFile(const string cfgFile, const string oldCfgFile);
-    SmartPtr<TDUID> getDUID();
+    SPtr<TDUID> getDUID();
     void setWorkdir(std::string workdir);
     int getLogLevel();
     string getWorkDir();
     string getLogName();
     
  protected:
-    SmartPtr<TDUID> DUID;
+    SPtr<TDUID> DUID;
     bool setDUID(const string duidFile);
     bool loadDUID(const string filename);
     bool generateDUID(const string duidFile,char * mac,int macLen, int macType);
@@ -62,7 +74,8 @@ class TCfgMgr
     string LogName;
     int LogLevel;
     bool IsDone;
-    SmartPtr<TIfaceMgr> IfaceMgr;
+    SPtr<TIfaceMgr> IfaceMgr;
+    EDUIDType DUIDType;
  private:
     
 };

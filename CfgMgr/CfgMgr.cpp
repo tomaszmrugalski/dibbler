@@ -6,24 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.14 2006-08-21 21:02:56 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.13  2006/01/12 00:23:34  thomson
- * Cleanup changes. Now -pedantic option works.
- *
- * Revision 1.12  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.11  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.10  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.9  2004/07/01 18:12:12  thomson
- * DUID creation failure results in client/server shutdown (bugs #44, #45)
- *                                                                           
+ * $Id: CfgMgr.cpp,v 1.15 2006-10-29 12:58:32 thomson Exp $
  */
 
 #ifdef WIN32
@@ -45,6 +28,7 @@
 
 TCfgMgr::TCfgMgr(SmartPtr<TIfaceMgr> IfaceMgr) {
     this->IfaceMgr = IfaceMgr;
+    this->DUIDType = DUID_TYPE_LLT; /* default DUID type: LLT */
 }
 
 TCfgMgr::~TCfgMgr() {
@@ -205,6 +189,7 @@ bool TCfgMgr::setDUID(const string filename) {
 	if ( this->generateDUID(filename, realIface->getMac(),
 				realIface->getMacLen(), realIface->getHardwareType())) {
 	    Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
+	    Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
 	    return true;
 	} else {
 	    Log(Crit) << "DUID creation: generation attempt based on " << realIface->getFullName() << " interface failed." << LogEnd;
@@ -223,29 +208,46 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     ofstream f;
     f.open( duidFile.c_str() );
     if (!f.is_open()) {
-      Log(Crit) << "Unable to write " << duidFile << " file." << LogEnd;
+      Log(Crit) << "Unable to create/write " << duidFile << " file." << LogEnd;
       return false;
     }
+    string duidType;
+    int DUIDlen = 0;
+    char *DUID  = 0;
     
-    int DUIDlen=macLen+8;
-    char *DUID = new char[DUIDlen];
-    
-    *((u_short*)DUID)=htons(0x0001);
-    *((u_short*)(DUID+2))=htons((short)macType);
-
-    long cur_time=now();
-    *(((u_long*)(DUID+4)))=htonl(cur_time);
-
-    for (int i=0;i<macLen; i++)
-    {
-        DUID[i+8]=mac[i];
+    switch (this->DUIDType) {
+    case DUID_TYPE_LLT:
+	duidType = "link-local+time (duid-llt)";
+	DUIDlen=macLen+8;
+	DUID = new char[DUIDlen];
+	*((u_short*)DUID)=htons(this->DUIDType);
+	*((u_short*)(DUID+2))=htons((short)macType);
+	long cur_time=now();
+	*(((u_long*)(DUID+4)))=htonl(cur_time);
+	for (int i=0;i<macLen; i++)
+	    DUID[i+8]=mac[i];
+	break;
+    case DUID_TYPE_LL:
+	duidType= "link-local (duid-ll)";
+	DUIDlen = macLen+4;
+	DUID = new char[DUIDlen];
+	*((u_short*)DUID)=htons(this->DUIDType);
+	*((u_short*)(DUID+2))=htons((short)macType);
+	for (int i=0;i<macLen; i++)
+	    DUID[i+4]=mac[i];
+	break;
+    case DUID_TYPE_EN:
+	Log(Error) << "Enterprise number-based DUID (duid-en) is not supported yet." << LogEnd;
+	return false;
+    default:
+	Log(Error) << "Invalid DUID type." << LogEnd;
+	return false;
     }
 
+    Log(Notice) << "DUID creation: Generating " << DUIDlen << "-bytes long " << duidType << " DUID." << LogEnd;
     this->DUID=new TDUID(DUID,DUIDlen);
     delete [] DUID;
-
     f << this->DUID->getPlain();
-
     f.close();
     return true;
 }
