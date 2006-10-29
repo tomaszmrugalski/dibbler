@@ -80,6 +80,10 @@ rapid-commit          { return ClntParser::RAPID_COMMIT_;}
 unicast               { return ClntParser::UNICAST_; }
 strict-rfc-no-routing { return ClntParser::STRICT_RFC_NO_ROUTING_; }
 prefix-delegation     { return ClntParser::PD_; }
+duid-type             { return ClntParser::DUID_TYPE_; }
+DUID-LL               { return ClntParser::DUID_TYPE_LL_; }
+DUID-LLT              { return ClntParser::DUID_TYPE_LLT_; }
+DUID-EN               { return ClntParser::DUID_TYPE_EN_; }
 #.* ;
 
 "//"(.*) ;

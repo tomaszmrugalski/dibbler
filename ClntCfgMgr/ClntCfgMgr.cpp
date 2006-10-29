@@ -3,10 +3,10 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *  chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.41 2006-10-06 00:33:01 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.42 2006-10-29 13:08:35 thomson Exp $
  *
  */
 
@@ -120,6 +120,14 @@ void TClntCfgMgr::dump() {
 */
 bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     int cfgIfaceCnt;
+
+    // copy global options here
+    
+    // user has specified DUID type, just in case if new DUID will be generated
+    if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
+	this->DUIDType = parser->DUIDType;
+	//Log(Debug) << "DUID type set to " << parser->DUIDType << "." << LogEnd;
+    }
     cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCONF_FILE << LogEnd;
 

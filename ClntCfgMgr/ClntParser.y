@@ -14,6 +14,7 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
+#include "CfgMgr.h"
 #include "Logger.h"
 
     using namespace std;
@@ -54,14 +55,17 @@ void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
-virtual ~ClntParser();
+virtual ~ClntParser();                                                      \
+EDUIDType DUIDType;
+
 
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
 %define CONSTRUCTOR_CODE                                                    \
     this->lex = lex;                                                        \
     ParserOptStack.append(new TClntParsGlobalOpt());                        \
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
-    ParserOptStack.getLast();
+    ParserOptStack.getLast();                                               \
+    DUIDType = DUID_TYPE_NOT_DEFINED;
 
 %union    
 {
@@ -96,6 +100,7 @@ namespace std
 %token <duidval>    DUID_
 %token STRICT_RFC_NO_ROUTING_
 %token PD_
+%token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
     
 %type  <ival> Number
 
@@ -372,6 +377,7 @@ GlobalOptionDeclaration
 | LogNameOption
 | LogLevelOption
 | WorkDirOption
+| DuidTypeOption
 | StrictRfcNoRoutingOption
 ;
 
@@ -424,6 +430,21 @@ LogNameOption
 : LOGNAME_ STRING_ {
     logger::setLogName($2);
 }
+
+DuidTypeOption
+: DUID_TYPE_ Number   
+{ 
+    if ( (($2)>DUID_TYPE_NOT_DEFINED) && (($2)<=DUID_TYPE_LL) ) {
+	this->DUIDType=(EDUIDType)($2); 
+    } else {
+	Log(Error) << "Invalid DUID type (" << $2 << ") specifed in the configuration file." << LogEnd;
+	YYABORT;
+    }
+}
+| DUID_TYPE_ DUID_TYPE_LLT_  { this->DUIDType  = DUID_TYPE_LLT;}
+| DUID_TYPE_ DUID_TYPE_LL_   { this->DUIDType  = DUID_TYPE_LL; }
+| DUID_TYPE_ DUID_TYPE_EN_   { this->DUIDType  = DUID_TYPE_EN; }
+;
 
 NoIAsOptions
 :   STATELESS_

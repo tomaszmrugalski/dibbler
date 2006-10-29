@@ -27,6 +27,7 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
+#include "CfgMgr.h"
 #include "Logger.h"
 
     using namespace std;
@@ -60,15 +61,17 @@ void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
-virtual ~ClntParser();
+virtual ~ClntParser();                                                      \
+EDUIDType DUIDType;
 #define YY_ClntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_ClntParser_CONSTRUCTOR_CODE                                                     \
     this->lex = lex;                                                        \
     ParserOptStack.append(new TClntParsGlobalOpt());                        \
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
-    ParserOptStack.getLast();
+    ParserOptStack.getLast();                                               \
+    DUIDType = DUID_TYPE_NOT_DEFINED;
 
-#line 66 "ClntParser.y"
+#line 70 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -287,6 +290,10 @@ typedef
 #define	DUID_	294
 #define	STRICT_RFC_NO_ROUTING_	295
 #define	PD_	296
+#define	DUID_TYPE_	297
+#define	DUID_TYPE_LLT_	298
+#define	DUID_TYPE_LL_	299
+#define	DUID_TYPE_EN_	300
 
 
 #line 169 "../bison++/bison.h"
@@ -374,6 +381,10 @@ static const int INTNUMBER_;
 static const int DUID_;
 static const int STRICT_RFC_NO_ROUTING_;
 static const int PD_;
+static const int DUID_TYPE_;
+static const int DUID_TYPE_LLT_;
+static const int DUID_TYPE_LL_;
+static const int DUID_TYPE_EN_;
 
 
 #line 212 "../bison++/bison.h"
@@ -421,6 +432,10 @@ static const int PD_;
 	,DUID_=294
 	,STRICT_RFC_NO_ROUTING_=295
 	,PD_=296
+	,DUID_TYPE_=297
+	,DUID_TYPE_LLT_=298
+	,DUID_TYPE_LL_=299
+	,DUID_TYPE_EN_=300
 
 
 #line 215 "../bison++/bison.h"
