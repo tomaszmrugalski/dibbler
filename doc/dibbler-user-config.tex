@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.31 2006-10-04 22:03:35 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.32 2006-10-29 12:34:10 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -227,6 +227,15 @@ sometimes allowed range.
 	    able to communicate with other hosts, which have
 	    obtained address from the same server. If you don't
 	    like this behavior, you might want to use this option.
+ \item[duid-type] -- (scope: global, type: DUID-LLT, DUID-LL or DUID-EN,
+	    default: DUID-LLT). This parameter defines, what type of
+	    DUID should be generated if there is no DUID already
+	    present. If there is a file containing DUID, this directive
+	    has no effect. DUID-LLT means that DUID will be based on
+	    link layer address as well as time. DUID-LL means that only
+	    link layer address will be used. The last value -- DUID-EN
+	    -- Enterprise Number-based generation is not currently
+	    supported.
  \item[rapid-commit] -- (scope: interface, type: boolean, default:
 	    0). This option allows rapid commit procedure to be
 	    performed. Note that enabling rapid commit on the client
