@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.15 2006-10-29 12:58:32 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.16 2006-10-29 23:05:10 thomson Exp $
  */
 
 #ifdef WIN32
@@ -214,6 +214,7 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     string duidType;
     int DUIDlen = 0;
     char *DUID  = 0;
+    long cur_time = 0;
     
     switch (this->DUIDType) {
     case DUID_TYPE_LLT:
@@ -222,7 +223,7 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
 	DUID = new char[DUIDlen];
 	*((u_short*)DUID)=htons(this->DUIDType);
 	*((u_short*)(DUID+2))=htons((short)macType);
-	long cur_time=now();
+	cur_time=now();
 	*(((u_long*)(DUID+4)))=htonl(cur_time);
 	for (int i=0;i<macLen; i++)
 	    DUID[i+8]=mac[i];

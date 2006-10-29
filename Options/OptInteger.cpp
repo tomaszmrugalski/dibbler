@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptInteger.cpp,v 1.1 2006-10-29 13:11:46 thomson Exp $
+ * $Id: OptInteger.cpp,v 1.2 2006-10-29 23:05:10 thomson Exp $
  *
  */
 
@@ -78,11 +78,13 @@ char * TOptInteger::storeSelf(char* buf)
 	*(short int*)buf = htons(this->Value);
 	break;
     case 3:
+    {
 	int tmp = this->Value;
 	buf[0] = tmp%256; tmp = tmp/256;
 	buf[1] = tmp%256; tmp = tmp/256;
 	buf[2] = tmp%256; tmp = tmp/256;
 	break;
+    }
     case 4:
 	*(int*)buf = htonl(this->Value);
 	break;
