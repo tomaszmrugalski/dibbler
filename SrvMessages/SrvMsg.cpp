@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.26 2006-10-06 00:42:58 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.27 2006-10-29 13:10:13 thomson Exp $
  */
 
 #include <sstream>
@@ -325,8 +325,15 @@ void TSrvMsg::copyRelayInfo(SmartPtr<TSrvMsg> q) {
     }
 }
 
-/*
+/** 
  * this function appends all standard options
+ * 
+ * @param duid 
+ * @param addr 
+ * @param iface 
+ * @param reqOpts 
+ * 
+ * @return true, if any options (conveying configuration paramter) has been appended
  */
 bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, 
 				     int iface, SmartPtr<TSrvOptOptionRequest> reqOpts)
@@ -425,22 +432,21 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     if ( newOptionAssigned && ptrIface->supportLifetime() ) {
 	SmartPtr<TSrvOptLifetime> optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
 	Options.append( (Ptr*)optLifetime);
+	newOptionAssigned = true;
     }
     // --- option: PREFIX DELEGATION ---
     if ( newOptionAssigned && ptrIface->supportPrefixDelegation() ) {
-	//SmartPtr<TSrvOptIA_PD> optPrefixDelegation = new TSrvOptIA_PD(ptrIface->getPD(), this);
+	// FIXME: T1, T2 is hardcoded
 	SmartPtr<TSrvOptIA_PD> optPrefixDelegation = new TSrvOptIA_PD(1,2000,3000, this);
 	Options.append( (Ptr*)optPrefixDelegation);
         newOptionAssigned = true;
-    	
     }    
-
 
     return newOptionAssigned;
 }
 
 /**
- * this function enumerates all options specified in the ORO option
+ * this function prints all options specified in the ORO option
  */
 string TSrvMsg::showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro) {
     ostringstream x;
@@ -613,7 +619,7 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
     char zoneroot[128];
     doRevDnsZoneRoot(clntAddr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
 
-    if (FQDNMode == 1 ){
+    if (FQDNMode == DNSUPDATE_MODE_PTR){
 	/* PTR cleanup */
 	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
 		    << " and FQDN=" << fqdn->getName() << LogEnd;
@@ -622,8 +628,8 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
 	act->showResult(result);
 	delete act;
 	
-    } // fqdn mode 2 
-    else if (FQDNMode == 2){
+    } // fqdn mode 1 (PTR only)
+    else if (FQDNMode == DNSUPDATE_MODE_BOTH){
 	/* AAAA Cleanup */
 	Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server " << * dns << ", IP = " 
 		    << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
@@ -640,6 +646,6 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
 	result = act2->run();
 	act2->showResult(result);
 	delete act2;
-    } // fqdn mode 2 
+    } // fqdn mode 2 (AAAA and PTR)
 #endif
 }
