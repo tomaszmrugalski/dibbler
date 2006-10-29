@@ -10,9 +10,9 @@
 #ifndef CLNTOPTELAPSED_H
 #define CLNTOPTELAPSED_H
 
-#include "OptInteger4.h"
+#include "OptInteger.h"
 
-class TClntOptElapsed : public TOptInteger4
+class TClntOptElapsed : public TOptInteger
 {
   public:
     TClntOptElapsed(TMsg* parent);

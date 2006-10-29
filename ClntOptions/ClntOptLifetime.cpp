@@ -6,15 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptLifetime.cpp,v 1.2 2004-10-27 22:07:56 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: ClntOptLifetime.cpp,v 1.3 2006-10-29 13:11:46 thomson Exp $
  *
  */
 #include "DHCPConst.h"
@@ -23,12 +15,12 @@
 #include "ClntMsg.h"
 
 TClntOptLifetime::TClntOptLifetime(char * buf,  int n, TMsg* parent)
-	:TOptInteger4(OPTION_LIFETIME, buf,n, parent){
+	:TOptInteger(OPTION_LIFETIME, OPTION_LIFETIME_LEN, buf,n, parent){
 
 }
 
 TClntOptLifetime::TClntOptLifetime( char pref, TMsg* parent)
-	:TOptInteger4(OPTION_LIFETIME, pref, parent) {
+	:TOptInteger(OPTION_LIFETIME, OPTION_LIFETIME_LEN, pref, parent) {
 }
 
 bool TClntOptLifetime::doDuties()

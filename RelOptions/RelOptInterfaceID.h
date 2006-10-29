@@ -6,16 +6,15 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelOptInterfaceID.h,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelOptInterfaceID.h,v 1.2 2006-10-29 13:11:46 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
  */
 
 #ifndef RELOPTIONINTERFACEID_H
 #define RELOPTIONINTERFACEID_H
-#include "OptInteger4.h"
+#include "OptInteger.h"
 
-class TRelOptInterfaceID : public TOptInteger4
+class TRelOptInterfaceID : public TOptInteger
 {
   public:
     TRelOptInterfaceID(char * data, int dataLen, TMsg* parent);

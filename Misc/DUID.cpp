@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.8 2006-08-21 21:03:44 thomson Exp $
+ * $Id: DUID.cpp,v 1.9 2006-10-29 13:11:46 thomson Exp $
  */
 
 #include <iostream>
@@ -169,7 +169,7 @@ char * TDUID::storeSelf(char* buf) {
 
 ostream& operator<<(ostream& out,TDUID&  duid) {
     if ( (duid.DUID && duid.len) ) {
-	out << "<duid length=\"" << duid.len << "\">0x"
+	out << "<duid length=\"" << duid.len << "\">"
 	    << duid.Plain << "</duid>" << std::endl;
     } else {
         out << "<duid length=\"0\"></duid>" << std::endl;

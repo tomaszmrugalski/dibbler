@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptInteger4.h,v 1.1 2004-11-02 01:23:13 thomson Exp $
+ * $Id: OptInteger.h,v 1.1 2006-10-29 13:11:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004-11-02 01:23:13  thomson
+ * Initial revision
+ *
  */
 
 #ifndef OPTINTEGER4_H
@@ -20,11 +23,11 @@
 
 using namespace std;
 
-class TOptInteger4 : public TOpt
+class TOptInteger : public TOpt
 {
 public:
-    TOptInteger4(int type, unsigned int value, TMsg* parent);
-    TOptInteger4(int type, char *&buf, int &bufsize, TMsg* parent);
+    TOptInteger(int type, unsigned int len/*0-4*/, unsigned int value, TMsg* parent);
+    TOptInteger(int type, unsigned int len/*0-4*/, char *&buf, int &bufsize, TMsg* parent);
     char * storeSelf( char* buf);
     int getSize();
     unsigned int getValue();
@@ -32,6 +35,7 @@ public:
 protected:
     unsigned int Value;
     bool Valid;
+    int Len;    /* length in bytes of the integer field: 0-4 */
 };
 
 #endif

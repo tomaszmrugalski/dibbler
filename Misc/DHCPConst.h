@@ -117,6 +117,11 @@
 #define OPTION_NTP_SERVERS      40
 #define OPTION_TIME_ZONE        41
 
+// --- Option lengths --
+// (value of the len field, so actual option length is +4 bytes)
+#define OPTION_ELAPSED_TIME_LEN     2
+#define OPTION_LIFETIME_LEN         4
+
 // --- Status Codes --- 
 #define STATUSCODE_SUCCESS       0
 #define STATUSCODE_UNSPECFAIL    1

@@ -6,24 +6,19 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptElapsed.cpp,v 1.3 2006-01-29 20:03:20 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
+ * $Id: SrvOptElapsed.cpp,v 1.4 2006-10-29 13:11:47 thomson Exp $
  */
 
 #include "DHCPConst.h"
 #include "SrvOptElapsed.h"
 
 TSrvOptElapsed::TSrvOptElapsed( char * buf,  int n, TMsg* parent)
-    :TOptInteger4(OPTION_ELAPSED_TIME, buf,n, parent) {
+    :TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf,n, parent) {
     
 }
 
 TSrvOptElapsed::TSrvOptElapsed(TMsg* parent)
-    :TOptInteger4(OPTION_ELAPSED_TIME, 0, parent) {
+    :TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, 0, parent) {
 
 }
 

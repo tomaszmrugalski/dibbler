@@ -6,9 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptLifetime.h,v 1.1 2004-10-25 20:45:53 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
+ * $Id: ClntOptLifetime.h,v 1.2 2006-10-29 13:11:46 thomson Exp $
  *
  */
 
@@ -16,9 +14,9 @@
 #define CLNTOPTLIFETIME_H
 
 #include "DHCPConst.h"
-#include "OptInteger4.h"
+#include "OptInteger.h"
 
-class TClntOptLifetime : public TOptInteger4
+class TClntOptLifetime : public TOptInteger
 {
  public:
     TClntOptLifetime(char * buf,  int n, TMsg* parent);
