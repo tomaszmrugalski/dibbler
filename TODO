@@ -1,8 +1,10 @@
 
-$Id: TODO,v 1.32 2006-10-29 13:11:01 thomson Exp $
+$Id: TODO,v 1.33 2006-10-30 00:57:18 thomson Exp $
 
   Internal/code TODO
  --------------------
+- SRV/CLI: Implement vendor-class support.
+- ALL: Fix linux low-level interface (don't use PKTINFO anymore).
 - CLI: Elapsed time is not recalculated
 - SRV/REL: Support InterfaceID option with length other than 4
 - ALL: Migrate SmartPtr -> SPtr, TIPv6Addr -> TAddr
