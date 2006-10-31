@@ -6,7 +6,7 @@
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvAddrMgr.cpp,v 1.16 2006-10-06 00:39:12 thomson Exp $
+ * $Id: SrvAddrMgr.cpp,v 1.17 2006-10-31 20:22:01 thomson Exp $
  *
  */
 
@@ -648,7 +648,7 @@ void TSrvAddrMgr::checkCacheSize() {
 }
 
 void TSrvAddrMgr::print(ostream & out) {
-    out << "  <cache size=\"" << this->Cache.count() << "/\">" << endl;
+    out << "  <cache size=\"" << this->Cache.count() << "\"/>" << endl;
 }
 
 void TSrvAddrMgr::dump() {
@@ -667,7 +667,7 @@ void TSrvAddrMgr::cacheDump() {
 	Log(Error) << "Cache: File " << SRVCACHE_FILE << " creation failed." << LogEnd;
 	return;
     }
-    f << "<cache size=\"" << this->Cache.count() << "\">" << endl;
+    f << "<cache size=\"" << this->Cache.count() << "\"/>" << endl;
     SPtr<TSrvCacheEntry> x;
     this->Cache.first();
     while (x=this->Cache.get()) {

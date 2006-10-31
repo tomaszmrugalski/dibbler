@@ -7,6 +7,8 @@
   - Marek Senderski (inactive since 2003)
    
  Contributors:
+  - Tomasz Torcz
+    2005-07: Compatibility with gcc 2.x fixed
   - NIIBE Yutaka
     2005-12: Makefile improvements
   - Sob
@@ -15,10 +17,12 @@
     Mickaël GUÉRIN, Lionel GUILMIN, Lauréline PROVOST
     from the ENSEEIHT University, Toulouse, France.
     2006-03: DNS Updates (FQDN) support
-  - Krzysztof Wnuk: Reverse DNS Updates, lots of enhancements
-    2006-05
-  - Krzysztof Wnuk: Initial prefix delegation support
-    2006-09
+  - Krzysztof Wnuk
+    2006-05: Reverse DNS Updates, lots of enhancements
+  - Krzysztof Wnuk
+    2006-09: Initial prefix delegation support
+  - Arne Bernin <arne(at)stollmann.de>
+    2006-10: XML fixes
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
