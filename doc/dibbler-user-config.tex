@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.32 2006-10-29 12:34:10 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.33 2006-11-03 22:42:55 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -256,6 +256,13 @@ sometimes allowed range.
  \item[reject-servers] -- (scope: interface, type: address or duid list, default:
 	    empty) This list defines which server must be ignored. It
 	    has negative meaning to the prefered-servers list.
+ \item[vendor-spec] -- (scope: interface, type: integer+hexstring,
+	    default: empty). This option allow requesting for a vendor
+	    specific configuration option. It does not any good in
+	    itself as there are no dibbler-specific options to
+	    configure. It can be, however, used to test some other
+	    DHCPv6 server implementations. In short words: if you don't
+	    know what that is, you don't need it.
  \item[T1] -- (scope: IA, type: integer: default: $2^{32}-1$). This value
 	    defines after what time client should start renew
 	    process. This is only a hint for the server. Actual value
@@ -620,6 +627,35 @@ iface 5 {
 }
 \end{Verbatim}
 
+\subsubsection{Example 9: Vendor-specific options}
+It is possible to configure dibbler-client to ask for a vendor specific
+options. Although there are no dibbler-specific features to configure,
+it is possible to use this option to test other server
+implementations. This option will rather be used by network engineers
+and power network admins, rather than normal end users. 
+
+There are 3 ways to define, how dibbler-client can request
+vendor-specific options. First choice: It can just ask for this option (only 
+\opt{option request option} will be sent). Second choice: it can ask for
+vendor-spec option by adding such option with enterprise number set, but
+no actual data. Third choice: send this option and include both
+enterprise number and actual data. In the following configuration file
+example, uncomment appropriate line to obtain desired bahavior:
+
+\begin{Verbatim}
+# client.conf
+log-level 8
+iface eth0 {
+# ask for address
+    ia
+
+# uncomment only one of the following lines:
+   option vendor-spec
+#   option vendor-spec 1234
+#   option vendor-spec 1234 0x0002abcd
+}
+\end{Verbatim}
+
 \subsection{Server configuration file}
 
 Server configuration is stored in \verb+server.conf+ file in the
@@ -763,6 +799,13 @@ OptionName option-value
             must be the same as configured in the dibbler-relay. See
             \ref{features-relays}, \ref{example-server-relay1} and
             \ref{example-relay} for details.
+ \item[vendor-spec] -- (scope: interface, type: integer+hexstring,
+	    default: not defined). This parameter can be used to
+	    configure some vendor-specific information option. Since
+	    there are no dibbler-specific options, this implementation
+	    is flexible. User can specify in the configuration file,
+	    how should this option look like. See
+	    \ref{example-server-vendor-spec} section for details.
  \item[T1] -- (scope: class, type: integer or integer range: default:
             $2^{32}-1$). This value
 	    defines after what time client should start renew
@@ -1159,6 +1202,26 @@ iface "eth1" {
 	malcolm.example.com,
 	kaylee.example.com,
 	jayne.example.com
+}
+\end{Verbatim}
+
+\subsubsection{Example 11: Vendor-specific Information option}
+\label{example-server-vendor-spec}
+It is possible to configure dibbler-server to provide vendor-specific
+information options. Since there are no dibbler-specific parameters,
+this implementation is quite flexible. Enterprise number as well as
+content of the option itself can be configured. 
+
+\begin{Verbatim}
+# server.conf
+log-level 8
+log-mode precise
+iface "eth1" {
+ class {
+   pool 2000::1-2000::ff
+ }
+
+ option vendor-spec 1234 0x00002fedc
 }
 \end{Verbatim}
 
