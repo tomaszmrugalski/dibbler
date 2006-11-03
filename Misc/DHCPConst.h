@@ -97,7 +97,7 @@
 #define OPTION_DNS_RESOLVERS	23
 #define OPTION_DOMAIN_LIST      24
 
-// RFC3633: Prefix options (not supported yet)
+// RFC3633: Prefix options
 #define OPTION_IA_PD            25
 #define OPTION_IAPREFIX         26
 
