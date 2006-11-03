@@ -6,7 +6,7 @@
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.17 2006-10-06 00:43:28 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.18 2006-11-03 23:14:40 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -27,6 +27,7 @@
 #include "ClntOptRapidCommit.h"
 #include "ClntOptServerIdentifier.h"
 #include <cmath>
+#include "Logger.h"
 
 TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 				 SmartPtr<TClntTransMgr> TransMgr,

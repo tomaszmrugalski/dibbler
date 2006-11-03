@@ -118,7 +118,7 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include "CfgMgr.h"
 #include "Logger.h"
 
-    using namespace std;
+using namespace std;
     
 #define YY_USE_CLASS
 #line 26 "ClntParser.y"

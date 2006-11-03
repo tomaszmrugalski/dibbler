@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.42 2006-10-29 13:08:35 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.43 2006-11-03 23:14:39 thomson Exp $
  *
  */
 
@@ -18,6 +18,7 @@
 #include "ClntCfgMgr.h"
 #include "ClntCfgIface.h"
 #include "Logger.h"
+#include "FlexLexer.h"
 
 using namespace std;
 

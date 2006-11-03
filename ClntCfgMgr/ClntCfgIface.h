@@ -6,9 +6,10 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.14 2006-11-03 00:42:49 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.15 2006-11-03 23:14:39 thomson Exp $
  */
 
+class TClntCfgIface;
 #ifndef CLNTCFGIFACE_H
 #define CLNTCFGIFACE_H
 
@@ -28,7 +29,6 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
 #include "ClntOptVendorSpec.h"
-using namespace std;
 
 class TClntCfgIface
 {
@@ -56,9 +56,6 @@ public:
     void addTA(SmartPtr<TClntCfgTA> ta);
     SmartPtr<TClntCfgTA> getTA();
     int countTA();
-#if 0
-    SmartPtr<TClntCfgGroup> getLastGroup();
-#endif
 
     string getName(void);
     string getFullName(void);

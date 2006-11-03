@@ -18,7 +18,7 @@
 #include "CfgMgr.h"
 #include "Logger.h"
 
-    using namespace std;
+using namespace std;
     
 #define YY_USE_CLASS
 %}

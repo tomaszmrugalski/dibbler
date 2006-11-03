@@ -6,21 +6,22 @@
  *  cjanges: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.12 2006-10-06 00:33:01 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.13 2006-11-03 23:14:39 thomson Exp $
  */
 
 class TClntCfgMgr;
+class TClntCfgIface;
+class ClntParser;
 #ifndef CLNTCFGMGR_H
 #define CLNTCFGMGR_H
 
 #include <string>
 #include "SmartPtr.h"
 #include "Container.h"
-#include "ClntIfaceMgr.h"
 #include "ClntCfgIface.h"
+#include "ClntIfaceMgr.h"
+#include "ClntCfgPD.h"
 #include "CfgMgr.h"
-#include "FlexLexer.h"
-#include "ClntParser.h"
 
 class TClntCfgMgr : public TCfgMgr
 {
