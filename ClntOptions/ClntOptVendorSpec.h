@@ -6,12 +6,14 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptVendorSpec.h,v 1.2 2006-11-03 20:07:06 thomson Exp $
+ * $Id: ClntOptVendorSpec.h,v 1.3 2006-11-03 22:23:15 thomson Exp $
  */
 
+class TClntOptVendorSpec;
 #ifndef CLNTOPTVENDORSPEC_H
 #define CLNTOPTVENDORSPEC_H
 
+#include "ClntIfaceMgr.h"
 #include "OptVendorSpecInfo.h"
 #include "DHCPConst.h"
 
@@ -21,7 +23,9 @@ public:
     TClntOptVendorSpec(int enterprise, char * data, int dataLen, TMsg* parent);
     TClntOptVendorSpec(char * buf,  int n, TMsg* parent);
     bool doDuties();
-    
+    void setIfaceMgr(SPtr<TClntIfaceMgr> ifaceMgr);
+ private:
+    SPtr<TClntIfaceMgr> IfaceMgr;
 };
 
 #endif /* CLNTOPTVENDORSPECINFO_H */

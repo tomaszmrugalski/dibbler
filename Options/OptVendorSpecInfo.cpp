@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.4 2006-11-03 00:42:50 thomson Exp $
+ * $Id: OptVendorSpecInfo.cpp,v 1.5 2006-11-03 22:23:15 thomson Exp $
  *
  */
 
@@ -47,7 +47,7 @@ TOptVendorSpecInfo::~TOptVendorSpecInfo()
 
 int TOptVendorSpecInfo::getSize()
 {
-    return 4+this->VendorDataLen;
+    return 8+this->VendorDataLen; /* normal header(4) + enterprise(4) */
 }
 
 char * TOptVendorSpecInfo::storeSelf( char* buf)
@@ -56,8 +56,8 @@ char * TOptVendorSpecInfo::storeSelf( char* buf)
     buf+=2;
     *(uint16_t*)buf = htons( getSize()-4 );
     buf+=2;
-    *(uint16_t*)buf = htons(this->Vendor);
-    buf+=2;
+    *(uint32_t*)buf = htonl(this->Vendor);
+    buf+=4;
     memmove(buf, this->VendorData, this->VendorDataLen);
     buf+=this->VendorDataLen;
     return buf;

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.13 2006-10-06 00:43:28 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.14 2006-11-03 22:23:15 thomson Exp $
  */
 
 #ifdef WIN32
@@ -188,10 +188,15 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    ptr = (Ptr*) ta;
 	    break;
 	}
+	case OPTION_VENDOR_OPTS: {
+	    SmartPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
+	    ptr = (Ptr*) vendor;
+	    vendor->setIfaceMgr(IfaceMgr);
+	    break;
+	}
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
-	case OPTION_VENDOR_OPTS:
 	case OPTION_RECONF_MSG:
 	case OPTION_RELAY_MSG:
 	case OPTION_AUTH_MSG:
@@ -499,9 +504,9 @@ void TClntMsg::appendRequestedOptions() {
     if ( iface->isReqPrefixDelegation() && (iface->getPrefixDelegationState()==NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_IA_PD);
 	   
-	   SmartPtr<TClntCfgPD> ptrPD;
-	    SmartPtr<TClntOptIA_PD> opt = new TClntOptIA_PD(ptrPD ,this );
-	    Options.append( (Ptr*)opt );
+	SmartPtr<TClntCfgPD> ptrPD;
+	SmartPtr<TClntOptIA_PD> opt = new TClntOptIA_PD(ptrPD ,this );
+	Options.append( (Ptr*)opt );
 	
 	iface->setPrefixDelegationState(INPROCESS);
     }
@@ -509,6 +514,17 @@ void TClntMsg::appendRequestedOptions() {
     // --- option: LIFETIME ---
     if ( iface->isReqLifetime() && (this->MsgType == INFORMATION_REQUEST_MSG) && optORO->count() )
 	optORO->addOption(OPTION_LIFETIME);
+
+    // --- option: VENDOR-SPEC ---
+    Log(Debug) << "#### vendorSpec iface->isReqVendorSpec()==" << ((iface->getVendorSpecState()==NOTCONFIGURED)?"YES":"NO") << LogEnd;
+    if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==NOTCONFIGURED) ) {
+	optORO->addOption(OPTION_VENDOR_OPTS);
+	iface->setVendorSpecState(INPROCESS);
+
+	SPtr<TClntOptVendorSpec> optVendor = iface->getVendorSpec();
+	if (optVendor)
+	    Options.append( (Ptr*) optVendor);
+    }
 
     // final setup: Did we add any options at all? 
     if ( optORO->count() ) 
@@ -554,6 +570,9 @@ void TClntMsg::preparePrefixConfigFile()
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006-10-06 00:43:28  thomson
+ * Initial PD support.
+ *
  * Revision 1.12  2006-08-21 21:34:50  thomson
  * Client must send FQDN option even when it has no special preference about
  * its domain name.

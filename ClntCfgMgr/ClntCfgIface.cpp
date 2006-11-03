@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.19 2006-11-03 00:42:49 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.20 2006-11-03 22:23:15 thomson Exp $
  *
  */
 
@@ -249,11 +249,14 @@ bool TClntCfgIface::getRapidCommit() {
 void TClntCfgIface::vendorSpecSupported(bool support)
 {
     this->ReqVendorSpec = support;
+    this->VendorSpecState = NOTCONFIGURED;
 }
 
 void TClntCfgIface::setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec)
 {
     this->VendorSpec = vendorSpec;
+    this->ReqVendorSpec = true;
+    this->VendorSpecState = NOTCONFIGURED;
 }
 
 // --------------------------------------------------------------------------------

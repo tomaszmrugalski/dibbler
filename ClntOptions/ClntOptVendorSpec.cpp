@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptVendorSpec.cpp,v 1.1 2006-11-03 19:42:41 thomson Exp $
+ * $Id: ClntOptVendorSpec.cpp,v 1.2 2006-11-03 22:23:15 thomson Exp $
  *
  */
 
@@ -25,4 +25,9 @@ TClntOptVendorSpec::TClntOptVendorSpec(int enterprise, char * data, int dataLen,
 
 bool TClntOptVendorSpec::doDuties() {
     return true;
+}
+
+void TClntOptVendorSpec::setIfaceMgr(SPtr<TClntIfaceMgr> ifaceMgr)
+{
+    this->IfaceMgr = IfaceMgr;
 }

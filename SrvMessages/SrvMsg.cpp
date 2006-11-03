@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.27 2006-10-29 13:10:13 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.28 2006-11-03 22:23:15 thomson Exp $
  */
 
 #include <sstream>
@@ -184,13 +184,15 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_IA_TA:
 	    ptr = new TSrvOptTA(buf+pos, length, this);
 	    break;
-       case OPTION_IA_PD:
+	case OPTION_IA_PD:
 	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
+	    break;
+	case OPTION_VENDOR_OPTS:
+	    ptr = new TSrvOptVendorSpec(buf+pos, length, this);
 	    break;
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
-	case OPTION_VENDOR_OPTS:
 	case OPTION_RECONF_MSG:
 	case OPTION_AUTH_MSG:
 	case OPTION_RELAY_MSG:
@@ -428,19 +430,28 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	newOptionAssigned = true;
     };
 
-    // --- option: LIFETIME ---
-    if ( newOptionAssigned && ptrIface->supportLifetime() ) {
-	SmartPtr<TSrvOptLifetime> optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
-	Options.append( (Ptr*)optLifetime);
-	newOptionAssigned = true;
-    }
+
     // --- option: PREFIX DELEGATION ---
-    if ( newOptionAssigned && ptrIface->supportPrefixDelegation() ) {
+    if ( reqOpts->isOption(OPTION_IA_PD) && ptrIface->supportPrefixDelegation() ) {
 	// FIXME: T1, T2 is hardcoded
 	SmartPtr<TSrvOptIA_PD> optPrefixDelegation = new TSrvOptIA_PD(1,2000,3000, this);
 	Options.append( (Ptr*)optPrefixDelegation);
         newOptionAssigned = true;
     }    
+
+    // --- option: VENDOR SPEC ---
+    if ( reqOpts->isOption(OPTION_VENDOR_OPTS) && ptrIface->supportVendorSpec()) {
+	Options.append( (Ptr*)ptrIface->getVendorSpec());
+	newOptionAssigned = true;
+    }
+
+    // --- option: LIFETIME ---
+    // this option should be checked last 
+    if ( newOptionAssigned && ptrIface->supportLifetime() ) {
+	SmartPtr<TSrvOptLifetime> optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
+	Options.append( (Ptr*)optLifetime);
+	newOptionAssigned = true;
+    }
 
     return newOptionAssigned;
 }
