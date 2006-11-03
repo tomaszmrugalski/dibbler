@@ -27,6 +27,7 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
+#include "ClntOptVendorSpec.h"
 #include "CfgMgr.h"
 #include "Logger.h"
 
@@ -47,6 +48,8 @@ TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
 TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SmartPtr<string> > PresentStringLst;                             \
+bool VendorSpecEnabled;                                                     \
+SPtr<TClntOptVendorSpec> VendorSpec;                                        \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -71,7 +74,7 @@ EDUIDType DUIDType;
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;
 
-#line 70 "ClntParser.y"
+#line 73 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -268,32 +271,33 @@ typedef
 #define	NISP_DOMAIN_	272
 #define	FQDN_	273
 #define	LIFETIME_	274
-#define	IFACE_	275
-#define	NO_CONFIG_	276
-#define	REJECT_SERVERS_	277
-#define	PREFERRED_SERVERS_	278
-#define	IA_	279
-#define	TA_	280
-#define	IAID_	281
-#define	ADDRES_	282
-#define	IPV6ADDR_	283
-#define	WORKDIR_	284
-#define	RAPID_COMMIT_	285
-#define	STATELESS_	286
-#define	OPTION_	287
-#define	LOGNAME_	288
-#define	LOGLEVEL_	289
-#define	LOGMODE_	290
-#define	STRING_	291
-#define	HEXNUMBER_	292
-#define	INTNUMBER_	293
-#define	DUID_	294
-#define	STRICT_RFC_NO_ROUTING_	295
-#define	PD_	296
-#define	DUID_TYPE_	297
-#define	DUID_TYPE_LLT_	298
-#define	DUID_TYPE_LL_	299
-#define	DUID_TYPE_EN_	300
+#define	VENDOR_SPEC_	275
+#define	IFACE_	276
+#define	NO_CONFIG_	277
+#define	REJECT_SERVERS_	278
+#define	PREFERRED_SERVERS_	279
+#define	IA_	280
+#define	TA_	281
+#define	IAID_	282
+#define	ADDRES_	283
+#define	IPV6ADDR_	284
+#define	WORKDIR_	285
+#define	RAPID_COMMIT_	286
+#define	STATELESS_	287
+#define	OPTION_	288
+#define	LOGNAME_	289
+#define	LOGLEVEL_	290
+#define	LOGMODE_	291
+#define	STRING_	292
+#define	HEXNUMBER_	293
+#define	INTNUMBER_	294
+#define	DUID_	295
+#define	STRICT_RFC_NO_ROUTING_	296
+#define	PD_	297
+#define	DUID_TYPE_	298
+#define	DUID_TYPE_LLT_	299
+#define	DUID_TYPE_LL_	300
+#define	DUID_TYPE_EN_	301
 
 
 #line 169 "../bison++/bison.h"
@@ -359,6 +363,7 @@ static const int NIS_DOMAIN_;
 static const int NISP_DOMAIN_;
 static const int FQDN_;
 static const int LIFETIME_;
+static const int VENDOR_SPEC_;
 static const int IFACE_;
 static const int NO_CONFIG_;
 static const int REJECT_SERVERS_;
@@ -410,32 +415,33 @@ static const int DUID_TYPE_EN_;
 	,NISP_DOMAIN_=272
 	,FQDN_=273
 	,LIFETIME_=274
-	,IFACE_=275
-	,NO_CONFIG_=276
-	,REJECT_SERVERS_=277
-	,PREFERRED_SERVERS_=278
-	,IA_=279
-	,TA_=280
-	,IAID_=281
-	,ADDRES_=282
-	,IPV6ADDR_=283
-	,WORKDIR_=284
-	,RAPID_COMMIT_=285
-	,STATELESS_=286
-	,OPTION_=287
-	,LOGNAME_=288
-	,LOGLEVEL_=289
-	,LOGMODE_=290
-	,STRING_=291
-	,HEXNUMBER_=292
-	,INTNUMBER_=293
-	,DUID_=294
-	,STRICT_RFC_NO_ROUTING_=295
-	,PD_=296
-	,DUID_TYPE_=297
-	,DUID_TYPE_LLT_=298
-	,DUID_TYPE_LL_=299
-	,DUID_TYPE_EN_=300
+	,VENDOR_SPEC_=275
+	,IFACE_=276
+	,NO_CONFIG_=277
+	,REJECT_SERVERS_=278
+	,PREFERRED_SERVERS_=279
+	,IA_=280
+	,TA_=281
+	,IAID_=282
+	,ADDRES_=283
+	,IPV6ADDR_=284
+	,WORKDIR_=285
+	,RAPID_COMMIT_=286
+	,STATELESS_=287
+	,OPTION_=288
+	,LOGNAME_=289
+	,LOGLEVEL_=290
+	,LOGMODE_=291
+	,STRING_=292
+	,HEXNUMBER_=293
+	,INTNUMBER_=294
+	,DUID_=295
+	,STRICT_RFC_NO_ROUTING_=296
+	,PD_=297
+	,DUID_TYPE_=298
+	,DUID_TYPE_LLT_=299
+	,DUID_TYPE_LL_=300
+	,DUID_TYPE_EN_=301
 
 
 #line 215 "../bison++/bison.h"

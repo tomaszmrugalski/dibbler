@@ -14,6 +14,7 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
+#include "ClntOptVendorSpec.h"
 #include "CfgMgr.h"
 #include "Logger.h"
 
@@ -41,6 +42,8 @@ TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
 TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SmartPtr<string> > PresentStringLst;                             \
+bool VendorSpecEnabled;                                                     \
+SPtr<TClntOptVendorSpec> VendorSpec;                                        \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -88,7 +91,7 @@ namespace std
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_, UNICAST_
 %token NTP_SERVER_, DOMAIN_, TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_
-%token LIFETIME_
+%token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,STATELESS_
 %token OPTION_
@@ -397,6 +400,7 @@ InterfaceOptionDeclaration
 | NISDomainOption
 | NISPDomainOption
 | LifetimeOption
+| VendorSpecOption
 | RejectServersOption
 | PreferServersOption
 | PrefixDelegationOption
@@ -777,6 +781,26 @@ LifetimeOption
 }
 ;
 
+VendorSpecOption
+:OPTION_ VENDOR_SPEC_
+{
+    Log(Debug) << "#### VendorSpec (no details)" << LogEnd;
+    this->VendorSpecEnabled = true;
+
+}
+|OPTION_ VENDOR_SPEC_ Number
+{
+    Log(Debug) << "#### VendorSpec (enterprise=" << $3 << ", no data)" << LogEnd;
+    this->VendorSpecEnabled = true;
+    this->VendorSpec = new TClntOptVendorSpec($3, 0, 0, 0);
+}
+|OPTION_ VENDOR_SPEC_ Number DUID_
+{
+    Log(Debug) << "#### VendorSpec (enterprise=" << $3 << ", len=" << $4.length << ")" << LogEnd;
+    this->VendorSpecEnabled = true;
+    this->VendorSpec= new TClntOptVendorSpec($3, $4.duid, $4.length, 0);
+};
+
 %%
 
 /////////////////////////////////////////////////////////////////////////////
@@ -825,6 +849,8 @@ void ClntParser::StartIfaceDeclaration()
   ParserOptStack.getLast()->setNewGroup(false);
   ClntCfgIALst.clear();
   ClntCfgAddrLst.clear();
+  this->VendorSpec = 0;
+  this->VendorSpecEnabled = 0;
 }
 
 bool ClntParser::EndIfaceDeclaration()
@@ -838,8 +864,10 @@ bool ClntParser::EndIfaceDeclaration()
     // set interface options on the basis of just read information
     // preferred-server and rejected-servers are also copied here
     iface->setOptions(ParserOptStack.getLast());
-
     iface->setPrefixLength(ParserOptStack.getLast()->getPrefixLength());
+    iface->vendorSpecSupported(this->VendorSpecEnabled);
+    if (this->VendorSpec)
+	iface->setVendorSpec(this->VendorSpec);
 
     if ( (iface->stateless()) && (ClntCfgIALst.count()) ) {
 	Log(Crit) << "Interface " << iface->getFullName() << " is configured stateless, "

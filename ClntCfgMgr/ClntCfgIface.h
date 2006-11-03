@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.13 2006-10-06 00:33:01 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.14 2006-11-03 00:42:49 thomson Exp $
  */
 
 #ifndef CLNTCFGIFACE_H
@@ -27,6 +27,7 @@
 #include "DUID.h"
 #include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
+#include "ClntOptVendorSpec.h"
 using namespace std;
 
 class TClntCfgIface
@@ -163,6 +164,14 @@ public:
     void setPrefixLength(int len);
     int  getPrefixLength();
 
+    // --- option: VendorSpec ---
+    bool isReqVendorSpec();
+    void vendorSpecSupported(bool support);
+    EState getVendorSpecState();
+    void setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec);
+    void setVendorSpecState(EState state);
+    SPtr<TClntOptVendorSpec> getVendorSpec();
+
 private:
     string IfaceName;
     int ID;
@@ -190,7 +199,7 @@ private:
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
     string NISPDomain;
-    
+    SPtr<TClntOptVendorSpec> VendorSpec;
     
     EState DNSServerState;
     EState DomainState;
@@ -205,6 +214,7 @@ private:
     EState NISPDomainState;
     EState LifetimeState;
     EState PrefixDelegationState;
+    EState VendorSpecState;
 
     bool ReqDNSServer;
     bool ReqDomain;
@@ -219,6 +229,7 @@ private:
     bool ReqNISPDomain;
     bool ReqLifetime;
     bool ReqPrefixDelegation;
+    bool ReqVendorSpec;
 };
 
 #endif 

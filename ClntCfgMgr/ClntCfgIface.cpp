@@ -6,50 +6,8 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.18 2006-10-06 00:33:01 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.19 2006-11-03 00:42:49 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.17  2006-08-22 00:01:19  thomson
- * Client /64 prefix, strict-rfc-no-routing feature added.
- *
- * Revision 1.16  2006-03-21 20:02:01  thomson
- * ClntCfgGroup removed (at last!)
- *
- * Revision 1.15  2006/03/20 23:04:05  thomson
- * TA option is now parsed properly and SOLICIT is sent as expected.
- *
- * Revision 1.14  2006/03/05 21:38:47  thomson
- * TA support merged.
- *
- * Revision 1.13.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.13  2005/01/03 21:53:01  thomson
- * id is now called ifindex
- *
- * Revision 1.12  2004/11/30 00:42:50  thomson
- * Client no longer sends RapidCommit, unless told to do so (bug #55)
- *
- * Revision 1.11  2004/11/29 21:21:56  thomson
- * Client parser now supports 'option lifetime' directive (bug #75)
- *
- * Revision 1.10  2004/11/01 23:31:24  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.9  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.8  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.7  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.6  2004/07/05 00:53:03  thomson
- * Various changes.
- *                                                                           
  */
 
 #include <iostream>
@@ -57,6 +15,7 @@
 #include "ClntCfgIface.h"
 #include "Logger.h"
 #include "Portable.h"
+#include "ClntOptVendorSpec.h"
 using namespace std;
 
 TClntCfgIface::TClntCfgIface(string ifaceName) {
@@ -76,6 +35,7 @@ TClntCfgIface::TClntCfgIface(string ifaceName) {
     this->NISPDomainState = DISABLED;
     this->LifetimeState   = DISABLED;
     this->PrefixDelegationState = DISABLED;
+    this->VendorSpecState = DISABLED;
 }
 
 TClntCfgIface::TClntCfgIface(int ifaceNr) {
@@ -95,6 +55,7 @@ TClntCfgIface::TClntCfgIface(int ifaceNr) {
     this->NISPDomainState = DISABLED;
     this->LifetimeState   = DISABLED;
     this->PrefixDelegationState = DISABLED;
+    this->VendorSpecState = DISABLED;
 }
 
 void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
@@ -248,22 +209,22 @@ string TClntCfgIface::getFullName() {
 }
 
 
- int	TClntCfgIface::getID(void)
+int TClntCfgIface::getID(void)
 {
     return ID;
 }
 
- void TClntCfgIface::setIfaceID(int ifaceID)
+void TClntCfgIface::setIfaceID(int ifaceID)
 {
     ID=ifaceID;
 }
 
- void TClntCfgIface::setIfaceName(string ifaceName)
+void TClntCfgIface::setIfaceName(string ifaceName)
 {
     this->IfaceName=ifaceName;
 }
 
- void TClntCfgIface::setNoConfig()
+void TClntCfgIface::setNoConfig()
 {
     NoConfig=true;
 }
@@ -283,6 +244,16 @@ bool TClntCfgIface::getUnicast() {
 
 bool TClntCfgIface::getRapidCommit() {
     return this->RapidCommit;
+}
+
+void TClntCfgIface::vendorSpecSupported(bool support)
+{
+    this->ReqVendorSpec = support;
+}
+
+void TClntCfgIface::setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec)
+{
+    this->VendorSpec = vendorSpec;
 }
 
 // --------------------------------------------------------------------------------
@@ -327,6 +298,9 @@ bool TClntCfgIface::isReqNISPDomain() {
 bool TClntCfgIface::isReqLifetime() {
     return this->ReqLifetime;
 }
+bool TClntCfgIface::isReqVendorSpec() {
+    return this->ReqVendorSpec;
+}
 
 // --------------------------------------------------------------------------------
 // --- options: state -------------------------------------------------------------
@@ -370,6 +344,9 @@ EState TClntCfgIface::getLifetimeState() {
 EState TClntCfgIface::getPrefixDelegationState() {
     return PrefixDelegationState;
 }
+EState TClntCfgIface::getVendorSpecState() {
+    return VendorSpecState;
+}
 // --------------------------------------------------------------------
 // --- options: get option --------------------------------------------
 // --------------------------------------------------------------------
@@ -405,6 +382,9 @@ string TClntCfgIface::getProposedNISDomain() {
 }
 string TClntCfgIface::getProposedNISPDomain() {
     return this->NISPDomain;
+}
+SPtr<TClntOptVendorSpec> TClntCfgIface::getVendorSpec() {
+    return this->VendorSpec;
 }
 
 // --------------------------------------------------------------------
@@ -449,6 +429,9 @@ void TClntCfgIface::setLifetimeState(EState state) {
 void TClntCfgIface::setPrefixDelegationState(EState state) {
     this->PrefixDelegationState=state;
 }
+void TClntCfgIface::setVendorSpecState(EState state) {
+    this->VendorSpecState = state;
+}
 
 void TClntCfgIface::setPrefixLength(int len) {
     this->PrefixLength = len;
@@ -457,6 +440,8 @@ void TClntCfgIface::setPrefixLength(int len) {
 int  TClntCfgIface::getPrefixLength() {
     return this->PrefixLength;
 }
+
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
@@ -618,6 +603,22 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	out << "    <lifetime/>" << endl;
     } else {
 	out << "    <!-- <lifetime/> -->" << endl;
+    }
+
+    // --- option: Vendor-spec ---
+    if (iface.isReqVendorSpec()) {
+	out << "    <vendorSpec";
+	SPtr<TClntOptVendorSpec> opt = iface.getVendorSpec();
+	if (opt) {
+	    out << " vendor=\"" << opt->getVendor() << "\" length=\"" << opt->getVendorDataLen() << "\"";
+	}
+	out << ">";
+	if (opt) {
+	    out << opt->getVendorDataPlain();
+	}
+	out << "<vendorSpec/>" << endl;
+    } else {
+	out << "<!-- <vendorSpec/> -->" << endl;
     }
 
     out << "  </ClntCfgIface>" << endl;

@@ -84,6 +84,7 @@ duid-type             { return ClntParser::DUID_TYPE_; }
 DUID-LL               { return ClntParser::DUID_TYPE_LL_; }
 DUID-LLT              { return ClntParser::DUID_TYPE_LLT_; }
 DUID-EN               { return ClntParser::DUID_TYPE_EN_; }
+vendor-spec           { return ClntParser::VENDOR_SPEC_; }
 #.* ;
 
 "//"(.*) ;

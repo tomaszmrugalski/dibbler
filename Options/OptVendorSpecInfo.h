@@ -7,8 +7,8 @@
  * released under GNU GPL v2 or later licence
  */
 
-#ifndef VENDORSPECINFO_H
-#define VENDORSPECINFO_H
+#ifndef OPTVENDORSPECINFO_H
+#define OPTVENDORSPECINFO_H
 
 #include "Opt.h"
 #include "DHCPConst.h"
@@ -17,9 +17,20 @@ class TOptVendorSpecInfo : public TOpt
 {
   public:
     TOptVendorSpecInfo( char * &buf,  int &n,TMsg* parent);
+    TOptVendorSpecInfo(int enterprise, char *data, int dataLen, TMsg* parent);
     int getSize();
     char * storeSelf( char* buf);
     bool isValid();
+
+    int getVendor();
+    char * getVendorData();      // returns vendor data (binary)
+    string getVendorDataPlain(); // returns vendor data (as a printable string)
+    int getVendorDataLen();      // returns vendor data length
+protected:
+    int Vendor;
+    char * VendorData;
+    int VendorDataLen;
+    ~TOptVendorSpecInfo();
 };
 
-#endif
+#endif /* OPTVENDORSPECINFO_H */

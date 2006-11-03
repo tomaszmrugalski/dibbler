@@ -6,37 +6,90 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.3 2005-07-17 19:56:55 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
+ * $Id: OptVendorSpecInfo.cpp,v 1.4 2006-11-03 00:42:50 thomson Exp $
  *
  */
 
-#include "OptVendorSpecInfo.h"
+#include <iostream>
+#include <sstream>
+#include "OptVendorSpecInfo.h"
 #include "DHCPConst.h"
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+#ifdef LINUX
+#include <netinet/in.h>
+#endif 
 
 TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
-	:TOpt(OPTION_VENDOR_OPTS, parent)
+    :TOpt(OPTION_VENDOR_OPTS, parent)
 {
-
+    // FIXME: Implement this
+    this->Vendor = 0;
+    this->VendorData = 0;
+    this->VendorDataLen = 0;
 }
 
-
- int TOptVendorSpecInfo::getSize()
+TOptVendorSpecInfo::TOptVendorSpecInfo(int enterprise, char *data, int dataLen, TMsg* parent)
+    :TOpt(OPTION_VENDOR_OPTS, parent)
 {
-	return 0;
+    this->Vendor = enterprise;
+    this->VendorData = new char[dataLen];
+    memmove(this->VendorData, data, dataLen);
+    this->VendorDataLen = dataLen;
 }
 
-
-
- char * TOptVendorSpecInfo::storeSelf( char* buf)
+TOptVendorSpecInfo::~TOptVendorSpecInfo() 
 {
-	return 0;
+    if (this->VendorData)
+	delete [] VendorData;
+}
+
+int TOptVendorSpecInfo::getSize()
+{
+    return 4+this->VendorDataLen;
+}
+
+char * TOptVendorSpecInfo::storeSelf( char* buf)
+{
+    *(uint16_t*)buf = htons(OptType);
+    buf+=2;
+    *(uint16_t*)buf = htons( getSize()-4 );
+    buf+=2;
+    *(uint16_t*)buf = htons(this->Vendor);
+    buf+=2;
+    memmove(buf, this->VendorData, this->VendorDataLen);
+    buf+=this->VendorDataLen;
+    return buf;
 }
 
 bool TOptVendorSpecInfo::isValid()
 {
     return true;
 }
+
+int TOptVendorSpecInfo::getVendor()
+{
+    return this->Vendor;
+}
+
+char * TOptVendorSpecInfo::getVendorData()
+{
+    return this->VendorData;
+}
+
+string TOptVendorSpecInfo::getVendorDataPlain()
+{
+    ostringstream tmp;
+    tmp << "0x";
+    for (int i=0; i<this->VendorDataLen; i++) {
+	tmp << setfill('0') << setw(2) << hex << (unsigned int) this->VendorData[i];
+    }
+    return tmp.str();
+}
+
+int TOptVendorSpecInfo::getVendorDataLen()
+{
+    return this->VendorDataLen;
+}
+    
