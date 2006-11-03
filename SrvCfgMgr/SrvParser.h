@@ -31,7 +31,7 @@
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
-
+#include "SrvOptVendorSpec.h"
 #define YY_USE_CLASS
 #define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                     \
 List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
@@ -45,7 +45,9 @@ List(TFQDN) PresentFQDNLst;                                                     
 SmartPtr<TDUID> duidNew;                                                             \
 SmartPtr<TIPv6Addr> addr;                                                            \
 List(TStationRange) PresentRangeLst;                                                 \
-List(TStationRange) PDLst;                                                          \
+List(TStationRange) PDLst;                                                           \
+int VendorEnterpriseNumber;                                                          \
+SmartPtr<TSrvOptVendorSpec> VendorSpec;                                              \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -68,7 +70,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 67 "SrvParser.y"
+#line 69 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -291,11 +293,12 @@ typedef
 #define	PDCLASS_	296
 #define	PD_LENGTH_	297
 #define	PD_POOL_	298
-#define	STRING_	299
-#define	HEXNUMBER_	300
-#define	INTNUMBER_	301
-#define	IPV6ADDR_	302
-#define	DUID_	303
+#define	VENDOR_SPEC_	299
+#define	STRING_	300
+#define	HEXNUMBER_	301
+#define	INTNUMBER_	302
+#define	IPV6ADDR_	303
+#define	DUID_	304
 
 
 #line 169 "../bison++/bison.h"
@@ -385,6 +388,7 @@ static const int CACHE_SIZE_;
 static const int PDCLASS_;
 static const int PD_LENGTH_;
 static const int PD_POOL_;
+static const int VENDOR_SPEC_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -439,11 +443,12 @@ static const int DUID_;
 	,PDCLASS_=296
 	,PD_LENGTH_=297
 	,PD_POOL_=298
-	,STRING_=299
-	,HEXNUMBER_=300
-	,INTNUMBER_=301
-	,IPV6ADDR_=302
-	,DUID_=303
+	,VENDOR_SPEC_=299
+	,STRING_=300
+	,HEXNUMBER_=301
+	,INTNUMBER_=302
+	,IPV6ADDR_=303
+	,DUID_=304
 
 
 #line 215 "../bison++/bison.h"

@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.1 2006-10-06 00:35:26 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.2 2006-11-03 20:07:07 thomson Exp $
  *
  */
 
@@ -79,7 +79,7 @@ void TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int PDPrefix)
 	*/
     opt->firstPool();
     this->PD_Pool = opt->getPool();
-    Log(Debug) << "#### Pool used for PD: " << *this->PD_Pool << LogEnd;
+    Log(Debug) << "Pool used for PD: " << *this->PD_Pool << LogEnd;
     if (opt->getPool()) {
 	Log(Warning) << "Two or more pool defined. Only one is used." << LogEnd;
     }

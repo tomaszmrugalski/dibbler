@@ -5,10 +5,12 @@
  *          Marek Senderski <msend@o2.pl>
  *
  * released under GNU GPL v2 or later licence
+ *
+ * $Id: ClntOptVendorSpec.h,v 1.2 2006-11-03 20:07:06 thomson Exp $
  */
 
-#ifndef CLNTVENDORSPEC_H
-#define CLNTVENDORSPEC_H
+#ifndef CLNTOPTVENDORSPEC_H
+#define CLNTOPTVENDORSPEC_H
 
 #include "OptVendorSpecInfo.h"
 #include "DHCPConst.h"
@@ -22,4 +24,4 @@ public:
     
 };
 
-#endif /* VENDORSPECINFO_H */
+#endif /* CLNTOPTVENDORSPECINFO_H */

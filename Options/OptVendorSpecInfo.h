@@ -16,6 +16,7 @@
 class TOptVendorSpecInfo : public TOpt
 {
   public:
+    TOptVendorSpecInfo(int number, char * data, int dataLen);
     TOptVendorSpecInfo( char * &buf,  int &n,TMsg* parent);
     TOptVendorSpecInfo(int enterprise, char *data, int dataLen, TMsg* parent);
     int getSize();

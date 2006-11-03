@@ -18,7 +18,7 @@
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
-
+#include "SrvOptVendorSpec.h"
 #define YY_USE_CLASS
 %}
 
@@ -39,7 +39,9 @@ List(TFQDN) PresentFQDNLst;                                                     
 SmartPtr<TDUID> duidNew;                                                             \
 SmartPtr<TIPv6Addr> addr;                                                            \
 List(TStationRange) PresentRangeLst;                                                 \
-List(TStationRange) PDLst;                                                          \
+List(TStationRange) PDLst;                                                           \
+int VendorEnterpriseNumber;                                                          \
+SmartPtr<TSrvOptVendorSpec> VendorSpec;                                              \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -87,6 +89,7 @@ virtual ~SrvParser();
 %token STATELESS_
 %token CACHE_SIZE_
 %token PDCLASS_, PD_LENGTH_, PD_POOL_ 
+%token VENDOR_SPEC_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -348,12 +351,10 @@ PDRangeList
 	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
         Log(Debug) << "PD-range: min: " <<*addr1 << ", max: " << *addr2 << LogEnd;
-	//Log(Debug) << "#### before PDLst.length=" << PDLst.count() << LogEnd;
 	if (*addr1<=*addr2)
             PDLst.append(new TStationRange(addr1,addr2));
         else
             PDLst.append(new TStationRange(addr2,addr1));
-	// Log(Debug) << "#### after PDLst.length=" << PDLst.count() << LogEnd;
     }
 ;
 
@@ -654,6 +655,7 @@ InterfaceOptionDeclaration
 | NISPDomainOption
 | LifetimeOption
 | PDDeclaration
+| VendorSpecOption
 ;
 
 ////////////////////////////////////////////////////////////////////////
@@ -858,6 +860,13 @@ LifetimeOption
 }
 ;
 
+VendorSpecOption
+:OPTION_ VENDOR_SPEC_ Number DUID_
+{
+    Log(Debug) << "#### Vendor-spec defined: Number: " << $3 << ", valuelen=" << $4.length << LogEnd;
+    this->VendorSpec = new TSrvOptVendorSpec($3, $4.duid, $4.length, 0);
+};
+
 %%
 
 /////////////////////////////////////////////////////////////////////////////
@@ -909,6 +918,7 @@ void SrvParser::StartIfaceDeclaration()
     // create new option (representing this interface) on the parser stack
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
+    this->VendorSpec = 0;
 }
 
 /** 
@@ -925,6 +935,8 @@ bool SrvParser::EndIfaceDeclaration()
 
     // set its options
     SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
+    if (this->VendorSpec)
+	iface->setVendorSpec(this->VendorSpec);
 
     // copy all IA objects
     SmartPtr<TSrvCfgAddrClass> ptrAddrClass;

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.h,v 1.19 2006-10-06 00:35:26 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.20 2006-11-03 20:07:07 thomson Exp $
  *                                                                           
  */
 
@@ -20,6 +20,7 @@ class TSrvCfgIface;
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
+#include "SrvOptVendorSpec.h"
 using namespace std;
 
 class TSrvCfgIface
@@ -165,7 +166,11 @@ public:
     void setLifetime(unsigned int life);
     unsigned int getLifetime();
     bool supportLifetime();
-    
+
+    // option: VENDOR-SPEC
+    void setVendorSpec(SPtr<TSrvOptVendorSpec> vendor);
+    bool supportVendorSpec();
+    SPtr<TSrvOptVendorSpec> getVendorSpec();
 private:
     unsigned char preference;
     int	ID;
@@ -201,13 +206,13 @@ private:
     bool PrefixDelegationSupport;
 
     List(TIPv6Addr) DNSServerLst;
-    List(string) DomainLst;			
+    List(string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
     string Timezone;
     List(TIPv6Addr) SIPServerLst;
     List(string) SIPDomainLst;
     List(TFQDN) FQDNLst;
-    int FQDNMode; 
+    int FQDNMode;
     int revDNSZoneRootLength;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
@@ -215,6 +220,7 @@ private:
     string NISPDomain;
     unsigned int Lifetime;
     unsigned int PrefixLength;
+    SPtr<TSrvOptVendorSpec> VendorSpec;
 };
 
 #endif /* SRVCONFIFACE_H */

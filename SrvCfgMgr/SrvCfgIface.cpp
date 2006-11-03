@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.32 2006-10-06 00:35:26 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.33 2006-11-03 20:07:07 thomson Exp $
  */
 
 #include <sstream>
@@ -735,10 +735,24 @@ bool TSrvCfgIface::supportLifetime() {
     return this->LifetimeSupport;
 }
 
-
 bool TSrvCfgIface::supportPrefixDelegation() {
     return this->PrefixDelegationSupport;
 }
+
+bool TSrvCfgIface::supportVendorSpec() {
+    if (this->VendorSpec)
+	return true;
+    return false;
+}
+
+SPtr<TSrvOptVendorSpec> TSrvCfgIface::getVendorSpec() {
+    return this->VendorSpec;
+}
+
+void TSrvCfgIface::setVendorSpec(SPtr<TSrvOptVendorSpec> vendor) {
+    this->VendorSpec = vendor;
+}
+
 void TSrvCfgIface::addTAAddr() {
     SmartPtr<TSrvCfgTA> ta;
     this->firstTA();
@@ -904,6 +918,15 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <lifetime>" << iface.Lifetime << "</lifetime>" << endl;
     } else {
         out << "    <!-- <lifetime/> -->" << endl;
+    }
+
+    // option: VENDOR-SPEC
+    if (iface.supportVendorSpec()) {
+	SPtr<TSrvOptVendorSpec> v = iface.getVendorSpec();
+	out << "    <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen() 
+	    << "\">" << v->getVendorDataPlain() << "</vendorSpec>" << endl;
+    } else {
+	out << "    <!-- <vendorSpec/> -->" << endl;
     }
 
     // option: FQDN
