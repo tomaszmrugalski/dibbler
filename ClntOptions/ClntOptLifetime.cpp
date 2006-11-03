@@ -6,13 +6,14 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptLifetime.cpp,v 1.3 2006-10-29 13:11:46 thomson Exp $
+ * $Id: ClntOptLifetime.cpp,v 1.4 2006-11-03 23:21:47 thomson Exp $
  *
  */
 #include "DHCPConst.h"
 #include "ClntOptLifetime.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
+#include "Logger.h"
 
 TClntOptLifetime::TClntOptLifetime(char * buf,  int n, TMsg* parent)
 	:TOptInteger(OPTION_LIFETIME, OPTION_LIFETIME_LEN, buf,n, parent){
