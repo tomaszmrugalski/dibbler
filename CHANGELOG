@@ -1,6 +1,12 @@
 
   Dibbler changelog
  ------------------- 
+ 0.5.0-CVS [development snapshot,not-released-yet]
+  - All: Prefix-delegation is now supported (still some work is needed, e.g. docs and bugfixes)
+  - Clnt: DUID type can be configured (e.g. "duid-type duid-ll" in client.conf file)
+  - All: Elapsed option has now correct length
+  - Vendor-spec information option is now supported
+ 
  0.5.0 [2006-10-05]
   - FQDN fixes
   - Documentation update and cleanup
