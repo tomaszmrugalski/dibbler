@@ -140,7 +140,7 @@
 					RelativePath="..\Options\OptGeneric.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptInteger4.cpp">
+					RelativePath="..\Options\OptInteger.cpp">
 				</File>
 			</Filter>
 			<Filter

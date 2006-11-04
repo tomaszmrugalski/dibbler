@@ -77,7 +77,7 @@ char * TOptIAPrefix::storeSelf( char* buf)
     buf+=4;
     *(uint32_t*)buf = htonl(Valid);
     buf+=4;
-    *(uint8_t*)buf = PrefixLength;
+    *(char*)buf = PrefixLength;
     buf+=1;
     memcpy(buf,Prefix->getAddr(),16);
     buf+=16;

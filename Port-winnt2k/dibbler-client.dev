@@ -1,7 +1,7 @@
 [Project]
 FileName=dibbler-client.dev
 Name=dibbler-client
-UnitCount=105
+UnitCount=112
 Type=1
 Ver=1
 ObjFiles=
@@ -378,16 +378,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit37]
-FileName=..\ClntOptions\ClntOptVendorSpecInfo.cpp
-CompileCpp=1
-Folder=ClntOptions
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit38]
 FileName=..\ClntOptions\ClntOptClientIdentifier.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -397,7 +387,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit39]
+[Unit38]
 FileName=..\ClntOptions\ClntOptDNSServers.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -407,7 +397,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit40]
+[Unit39]
 FileName=..\ClntOptions\ClntOptDomainName.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -417,7 +407,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit41]
+[Unit40]
 FileName=..\ClntOptions\ClntOptElapsed.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -427,7 +417,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit42]
+[Unit41]
 FileName=..\ClntOptions\ClntOptFQDN.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -437,7 +427,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit43]
+[Unit42]
 FileName=..\ClntOptions\ClntOptIA_NA.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -447,7 +437,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit44]
+[Unit43]
 FileName=..\ClntOptions\ClntOptIAAddress.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -457,7 +447,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit45]
+[Unit44]
 FileName=..\ClntOptions\ClntOptLifetime.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -467,7 +457,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit46]
+[Unit45]
 FileName=..\ClntOptions\ClntOptNISDomain.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -477,7 +467,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit47]
+[Unit46]
 FileName=..\ClntOptions\ClntOptNISPDomain.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -487,7 +477,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit48]
+[Unit47]
 FileName=..\ClntOptions\ClntOptNISPServer.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -497,7 +487,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit49]
+[Unit48]
 FileName=..\ClntOptions\ClntOptNISServer.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -507,7 +497,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit50]
+[Unit49]
 FileName=..\ClntOptions\ClntOptNTPServers.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -517,7 +507,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit51]
+[Unit50]
 FileName=..\ClntOptions\ClntOptOptionRequest.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -527,7 +517,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit52]
+[Unit51]
 FileName=..\ClntOptions\ClntOptPreference.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -537,7 +527,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit53]
+[Unit52]
 FileName=..\ClntOptions\ClntOptRapidCommit.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -547,7 +537,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit54]
+[Unit53]
 FileName=..\ClntOptions\ClntOptServerIdentifier.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -557,7 +547,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit55]
+[Unit54]
 FileName=..\ClntOptions\ClntOptServerUnicast.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -567,7 +557,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit56]
+[Unit55]
 FileName=..\ClntOptions\ClntOptSIPDomain.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -577,7 +567,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit57]
+[Unit56]
 FileName=..\ClntOptions\ClntOptSIPServer.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -587,7 +577,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit58]
+[Unit57]
 FileName=..\ClntOptions\ClntOptStatusCode.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -597,7 +587,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit59]
+[Unit58]
 FileName=..\ClntOptions\ClntOptTimeZone.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -607,7 +597,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit60]
+[Unit59]
 FileName=..\ClntOptions\ClntOptUserClass.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -617,7 +607,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit61]
+[Unit60]
 FileName=..\ClntOptions\ClntOptVendorClass.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -627,7 +617,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit62]
+[Unit61]
 FileName=..\AddrMgr\AddrMgr.cpp
 CompileCpp=1
 Folder=AddrMgr
@@ -637,7 +627,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit63]
+[Unit62]
 FileName=..\AddrMgr\AddrAddr.cpp
 CompileCpp=1
 Folder=AddrMgr
@@ -647,7 +637,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit64]
+[Unit63]
 FileName=..\AddrMgr\AddrClient.cpp
 CompileCpp=1
 Folder=AddrMgr
@@ -657,7 +647,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit65]
+[Unit64]
 FileName=..\AddrMgr\AddrIA.cpp
 CompileCpp=1
 Folder=AddrMgr
@@ -667,8 +657,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit66]
+[Unit65]
 FileName=..\Options\OptVendorSpecInfo.cpp
+CompileCpp=1
+Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit66]
+FileName=..\Options\Opt.cpp
 CompileCpp=1
 Folder=Options
 Compile=1
@@ -688,16 +688,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit67]
-FileName=..\Options\Opt.cpp
-CompileCpp=1
-Folder=Options
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit68]
 FileName=..\Options\OptAddr.cpp
 CompileCpp=1
 Folder=Options
@@ -707,7 +697,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit69]
+[Unit68]
 FileName=..\Options\OptAddrLst.cpp
 CompileCpp=1
 Folder=Options
@@ -717,7 +707,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit70]
+[Unit69]
 FileName=..\Options\OptElapsed.cpp
 CompileCpp=1
 Folder=Options
@@ -727,7 +717,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit71]
+[Unit70]
 FileName=..\Options\OptGeneric.cpp
 CompileCpp=1
 Folder=Options
@@ -737,7 +727,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit72]
+[Unit71]
 FileName=..\Options\OptIA_NA.cpp
 CompileCpp=1
 Folder=Options
@@ -747,7 +737,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit73]
+[Unit72]
 FileName=..\Options\OptIAAddress.cpp
 CompileCpp=1
 Folder=Options
@@ -757,17 +747,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit74]
-FileName=..\Options\OptInteger4.cpp
-CompileCpp=1
-Folder=Options
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit75]
+[Unit73]
 FileName=..\Options\OptOptionRequest.cpp
 CompileCpp=1
 Folder=Options
@@ -777,7 +757,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit76]
+[Unit74]
 FileName=..\Options\OptPreference.cpp
 CompileCpp=1
 Folder=Options
@@ -787,7 +767,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit77]
+[Unit75]
 FileName=..\Options\OptRapidCommit.cpp
 CompileCpp=1
 Folder=Options
@@ -797,7 +777,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit78]
+[Unit76]
 FileName=..\Options\OptStatusCode.cpp
 CompileCpp=1
 Folder=Options
@@ -807,7 +787,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit79]
+[Unit77]
 FileName=..\Options\OptString.cpp
 CompileCpp=1
 Folder=Options
@@ -817,7 +797,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit80]
+[Unit78]
 FileName=..\Options\OptStringLst.cpp
 CompileCpp=1
 Folder=Options
@@ -827,7 +807,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit81]
+[Unit79]
 FileName=..\Options\OptUserClass.cpp
 CompileCpp=1
 Folder=Options
@@ -837,7 +817,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit82]
+[Unit80]
 FileName=..\Options\OptVendorClass.cpp
 CompileCpp=1
 Folder=Options
@@ -847,7 +827,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit83]
+[Unit81]
 FileName=client-winnt2k.cpp
 CompileCpp=1
 Folder=Port-winnt2k
@@ -857,7 +837,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit84]
+[Unit82]
 FileName=ClntService.cpp
 CompileCpp=1
 Folder=Port-winnt2k
@@ -867,7 +847,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit85]
+[Unit83]
 FileName=..\Misc\DHCPClient.cpp
 CompileCpp=1
 Folder=Misc
@@ -877,7 +857,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit86]
+[Unit84]
 FileName=..\CfgMgr\StationID.cpp
 CompileCpp=1
 Folder=CfgMgr
@@ -887,7 +867,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit87]
+[Unit85]
 FileName=..\CfgMgr\TimeZone.cpp
 CompileCpp=1
 Folder=CfgMgr
@@ -897,7 +877,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit88]
+[Unit86]
 FileName=..\IfaceMgr\DNSUpdate.cpp
 CompileCpp=1
 Folder=IfaceMgr
@@ -906,6 +886,26 @@ Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+
+[Unit87]
+FileName=..\Misc\FQDN.cpp
+CompileCpp=1
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit88]
+FileName=..\Misc\addrpack.c
+CompileCpp=0
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=$(CC) -c addrpack.c -o addrpack.o $(CFLAGS)
 
 [Unit6]
 FileName=..\Misc\IPv6Addr.cpp
@@ -918,9 +918,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit89]
-FileName=..\Misc\FQDN.cpp
+FileName=..\poslib\poslib\socket.cpp
 CompileCpp=1
-Folder=Misc
+Folder=poslib
 Compile=1
 Link=1
 Priority=1000
@@ -928,17 +928,17 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit90]
-FileName=..\Misc\addrpack.c
-CompileCpp=0
-Folder=Misc
+FileName=..\poslib\poslib\dnsmessage.cpp
+CompileCpp=1
+Folder=poslib
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=$(CC) -c addrpack.c -o addrpack.o $(CFLAGS)
+BuildCmd=
 
 [Unit91]
-FileName=..\poslib\poslib\socket.cpp
+FileName=..\poslib\poslib\domainfn.cpp
 CompileCpp=1
 Folder=poslib
 Compile=1
@@ -958,26 +958,6 @@ OverrideBuildCmd=0
 BuildCmd=$(CC) -c lowlevel-winnt2k.c -o lowlevel-winnt2k.o $(CFLAGS)
 
 [Unit92]
-FileName=..\poslib\poslib\dnsmessage.cpp
-CompileCpp=1
-Folder=poslib
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit93]
-FileName=..\poslib\poslib\domainfn.cpp
-CompileCpp=1
-Folder=poslib
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit94]
 FileName=..\poslib\poslib\exception.cpp
 CompileCpp=1
 Folder=poslib
@@ -987,7 +967,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit95]
+[Unit93]
 FileName=..\poslib\poslib\lexfn.cpp
 CompileCpp=1
 Folder=poslib
@@ -997,7 +977,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit96]
+[Unit94]
 FileName=..\poslib\poslib\masterfile.cpp
 CompileCpp=1
 Folder=poslib
@@ -1007,7 +987,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit97]
+[Unit95]
 FileName=..\poslib\poslib\postime.cpp
 CompileCpp=1
 Folder=poslib
@@ -1017,7 +997,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit98]
+[Unit96]
 FileName=..\poslib\poslib\random.cpp
 CompileCpp=1
 Folder=poslib
@@ -1027,7 +1007,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit99]
+[Unit97]
 FileName=..\poslib\poslib\resolver.cpp
 CompileCpp=1
 Folder=poslib
@@ -1037,7 +1017,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit100]
+[Unit98]
 FileName=..\poslib\poslib\rr.cpp
 CompileCpp=1
 Folder=poslib
@@ -1047,7 +1027,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit101]
+[Unit99]
 FileName=..\ClntCfgMgr\ClntCfgTA.cpp
 CompileCpp=1
 Folder=ClntCfgMgr
@@ -1057,7 +1037,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit102]
+[Unit100]
 FileName=..\Options\OptDUID.cpp
 CompileCpp=1
 Folder=Options
@@ -1067,7 +1047,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit103]
+[Unit101]
 FileName=..\Options\OptFQDN.cpp
 CompileCpp=1
 Folder=Options
@@ -1077,7 +1057,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit104]
+[Unit102]
 FileName=..\ClntOptions\ClntOptTA.cpp
 CompileCpp=1
 Folder=ClntOptions
@@ -1087,10 +1067,100 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit105]
+[Unit103]
 FileName=..\Options\OptTA.cpp
 CompileCpp=1
 Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit104]
+FileName=..\Options\OptIA_PD.cpp
+CompileCpp=1
+Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit105]
+FileName=..\Options\OptIAPrefix.cpp
+CompileCpp=1
+Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit106]
+FileName=..\Options\OptInteger.cpp
+CompileCpp=1
+Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit107]
+FileName=..\ClntCfgMgr\ClntCfgPD.cpp
+CompileCpp=1
+Folder=ClntCfgMgr
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit108]
+FileName=..\ClntCfgMgr\ClntCfgPrefix.cpp
+CompileCpp=1
+Folder=ClntCfgMgr
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit109]
+FileName=..\ClntOptions\ClntOptIA_PD.cpp
+CompileCpp=1
+Folder=ClntOptions
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit110]
+FileName=..\ClntOptions\ClntOptVendorSpec.cpp
+CompileCpp=1
+Folder=ClntOptions
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit111]
+FileName=..\ClntOptions\ClntOptIAPrefix.cpp
+CompileCpp=1
+Folder=ClntOptions
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit112]
+FileName=..\AddrMgr\AddrPrefix.cpp
+CompileCpp=1
+Folder=AddrMgr
 Compile=1
 Link=1
 Priority=1000

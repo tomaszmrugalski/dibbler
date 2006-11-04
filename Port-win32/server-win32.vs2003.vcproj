@@ -130,6 +130,9 @@
 					RelativePath="..\AddrMgr\AddrMgr.cpp">
 				</File>
 				<File
+					RelativePath="..\AddrMgr\AddrPrefix.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvAddrMgr\SrvAddrMgr.cpp">
 				</File>
 			</Filter>
@@ -180,10 +183,16 @@
 					RelativePath="..\Options\OptIA_NA.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptIA_PD.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptIAAddress.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptInteger4.cpp">
+					RelativePath="..\Options\OptIAPrefix.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptInteger.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
@@ -238,7 +247,13 @@
 					RelativePath="..\SrvOptions\SrvOptIA_NA.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvOptions\SrvOptIA_PD.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvOptions\SrvOptIAAddress.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptIAPrefix.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptInterfaceID.cpp">
@@ -298,7 +313,7 @@
 					RelativePath="..\SrvOptions\SrvOptVendorClass.cpp">
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptVendorSpecInfo.cpp">
+					RelativePath="..\SrvOptions\SrvOptVendorSpec.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -348,40 +363,10 @@
 					RelativePath="..\CfgMgr\CfgMgr.cpp">
 				</File>
 				<File
-					RelativePath="..\SrvCfgMgr\SrvCfgAddrClass.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvCfgIface.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvCfgMgr.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvCfgTA.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvLexer.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvParsClassOpt.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvParser.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvParsGlobalOpt.cpp">
-				</File>
-				<File
-					RelativePath="..\SrvCfgMgr\SrvParsIfaceOpt.cpp">
-				</File>
-				<File
 					RelativePath="..\CfgMgr\StationID.cpp">
 				</File>
 				<File
 					RelativePath="..\CfgMgr\StationRange.cpp">
-				</File>
-				<File
-					RelativePath="..\CfgMgr\TimeZone.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -460,6 +445,40 @@
 				</File>
 				<File
 					RelativePath="..\poslib\poslib\socket.cpp">
+				</File>
+			</Filter>
+			<Filter
+				Name="SrvCfgMgr"
+				Filter="">
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgAddrClass.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgIface.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgMgr.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgPD.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgTA.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvLexer.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvParsClassOpt.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvParser.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvParsGlobalOpt.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvParsIfaceOpt.cpp">
 				</File>
 			</Filter>
 		</Filter>

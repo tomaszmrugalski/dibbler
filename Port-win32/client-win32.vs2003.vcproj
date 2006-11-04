@@ -143,6 +143,9 @@
 					RelativePath="..\AddrMgr\AddrMgr.cpp">
 				</File>
 				<File
+					RelativePath="..\AddrMgr\AddrPrefix.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntAddrMgr\ClntAddrMgr.cpp">
 				</File>
 			</Filter>
@@ -193,10 +196,16 @@
 					RelativePath="..\Options\OptIA_NA.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptIA_PD.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptIAAddress.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptInteger4.cpp">
+					RelativePath="..\Options\OptIAPrefix.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptInteger.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
@@ -263,7 +272,13 @@
 					RelativePath="..\ClntOptions\ClntOptIA_NA.cpp">
 				</File>
 				<File
+					RelativePath="..\ClntOptions\ClntOptIA_PD.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntOptions\ClntOptIAAddress.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptIAPrefix.cpp">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptLifetime.cpp">
@@ -320,12 +335,18 @@
 					RelativePath="..\ClntOptions\ClntOptVendorClass.cpp">
 				</File>
 				<File
-					RelativePath="..\ClntOptions\ClntOptVendorSpecInfo.cpp">
+					RelativePath="..\ClntOptions\ClntOptVendorSpec.cpp">
 				</File>
 			</Filter>
 			<Filter
 				Name="ClntMessages"
 				Filter="">
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgPD.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgPrefix.cpp">
+				</File>
 				<File
 					RelativePath="..\ClntMessages\ClntMsg.cpp">
 				</File>
@@ -650,9 +671,6 @@
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptIAAddress.h">
-				</File>
-				<File
-					RelativePath="..\Options\OptInteger4.h">
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptInterfaceID.h">

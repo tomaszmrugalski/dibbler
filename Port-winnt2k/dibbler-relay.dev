@@ -40,17 +40,17 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=addrpack.c
+FileName=lowlevel-winnt2k.c
 CompileCpp=0
 Folder=Port-winnt2k
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=$(CC) -c addrpack.c -o addrpack.o $(CFLAGS)
+BuildCmd=$(CC) -c lowlevel-winnt2k.c -o lowlevel-winnt2k.o $(CFLAGS)
 
 [Unit4]
-FileName=relay-winnt2k.cpp
+FileName=RelService.cpp
 CompileCpp=1
 Folder=Port-winnt2k
 Compile=1
@@ -60,7 +60,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=..\Misc\Logger.cpp
+FileName=..\Misc\DHCPConst.cpp
 CompileCpp=1
 Folder=Misc
 Compile=1
@@ -70,7 +70,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit8]
-FileName=..\Misc\DHCPRelay.cpp
+FileName=..\Misc\DUID.cpp
 CompileCpp=1
 Folder=Misc
 Compile=1
@@ -98,17 +98,7 @@ ProductVersion=
 AutoIncBuildNr=0
 
 [Unit3]
-FileName=lowlevel-winnt2k.c
-CompileCpp=0
-Folder=Port-winnt2k
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=$(CC) -c lowlevel-winnt2k.c -o lowlevel-winnt2k.o $(CFLAGS)
-
-[Unit5]
-FileName=RelService.cpp
+FileName=relay-winnt2k.cpp
 CompileCpp=1
 Folder=Port-winnt2k
 Compile=1
@@ -117,8 +107,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
-FileName=..\Misc\IPv6Addr.cpp
+[Unit5]
+FileName=..\Misc\Logger.cpp
 CompileCpp=1
 Folder=Misc
 Compile=1
@@ -127,7 +117,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
+[Unit10]
 FileName=..\Messages\Msg.cpp
 CompileCpp=1
 Folder=Messages
@@ -137,7 +127,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
+[Unit11]
 FileName=..\RelMessages\RelMsgRelayRepl.cpp
 CompileCpp=1
 Folder=RelMessages
@@ -147,27 +137,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit7]
-FileName=..\Misc\DHCPConst.cpp
-CompileCpp=1
-Folder=Misc
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit9]
-FileName=..\Misc\DUID.cpp
-CompileCpp=1
-Folder=Misc
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit13]
+[Unit12]
 FileName=..\RelMessages\RelMsg.cpp
 CompileCpp=1
 Folder=RelMessages
@@ -177,7 +147,27 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit7]
+FileName=..\Misc\DHCPRelay.cpp
+CompileCpp=1
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit9]
+FileName=..\Misc\IPv6Addr.cpp
+CompileCpp=1
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit13]
 FileName=..\RelMessages\RelMsgGeneric.cpp
 CompileCpp=1
 Folder=RelMessages
@@ -187,7 +177,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit14]
 FileName=..\RelMessages\RelMsgRelayForw.cpp
 CompileCpp=1
 Folder=RelMessages
@@ -197,7 +187,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit15]
 FileName=..\IfaceMgr\SocketIPv6.cpp
 CompileCpp=1
 Folder=IfaceMgr
@@ -207,7 +197,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit16]
 FileName=..\IfaceMgr\Iface.cpp
 CompileCpp=1
 Folder=IfaceMgr
@@ -217,7 +207,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit17]
 FileName=..\IfaceMgr\IfaceMgr.cpp
 CompileCpp=1
 Folder=IfaceMgr
@@ -227,7 +217,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit18]
 FileName=..\RelIfaceMgr\RelIfaceMgr.cpp
 CompileCpp=1
 Folder=RelIfaceMgr
@@ -237,7 +227,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit20]
+[Unit19]
 FileName=..\RelTransMgr\RelTransMgr.cpp
 CompileCpp=1
 Folder=RelTransMgr
@@ -247,7 +237,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit21]
+[Unit20]
 FileName=..\CfgMgr\CfgMgr.cpp
 CompileCpp=1
 Folder=CfgMgr
@@ -257,7 +247,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
+[Unit21]
 FileName=..\RelCfgMgr\RelParsIfaceOpt.cpp
 CompileCpp=1
 Folder=RelCfgMgr
@@ -267,7 +257,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
+[Unit22]
 FileName=..\RelCfgMgr\RelCfgIface.cpp
 CompileCpp=1
 Folder=RelCfgMgr
@@ -277,7 +267,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit23]
 FileName=..\RelCfgMgr\RelCfgMgr.cpp
 CompileCpp=1
 Folder=RelCfgMgr
@@ -287,7 +277,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
+[Unit24]
 FileName=..\RelCfgMgr\RelLexer.cpp
 CompileCpp=1
 Folder=RelCfgMgr
@@ -297,7 +287,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit26]
+[Unit25]
 FileName=..\RelCfgMgr\RelParser.cpp
 CompileCpp=1
 Folder=RelCfgMgr
@@ -307,7 +297,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit27]
+[Unit26]
 FileName=..\RelCfgMgr\RelParsGlobalOpt.cpp
 CompileCpp=1
 Folder=RelCfgMgr
@@ -317,17 +307,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit28]
-FileName=..\Options\OptInteger4.cpp
-CompileCpp=1
-Folder=Options
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit29]
+[Unit27]
 FileName=..\Options\Opt.cpp
 CompileCpp=1
 Folder=Options
@@ -337,7 +317,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit30]
+[Unit28]
 FileName=..\RelOptions\RelOptRelayMsg.cpp
 CompileCpp=1
 Folder=RelOptions
@@ -347,7 +327,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit29]
 FileName=..\RelOptions\RelOptGeneric.cpp
 CompileCpp=1
 Folder=RelOptions
@@ -357,7 +337,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit32]
+[Unit30]
 FileName=..\RelOptions\RelOptInterfaceID.cpp
 CompileCpp=1
 Folder=RelOptions
@@ -367,10 +347,30 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit33]
+[Unit31]
 FileName=..\Options\OptGeneric.cpp
 CompileCpp=1
 Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit32]
+FileName=..\Misc\addrpack.c
+CompileCpp=0
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=$(CC) -c addrpack.c -o addrpack.o $(CFLAGS)
+
+[Unit33]
+FileName=..\Options\OptInteger.cpp
+CompileCpp=1
+Folder=dibbler-relay
 Compile=1
 Link=1
 Priority=1000
