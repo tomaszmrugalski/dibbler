@@ -6,16 +6,8 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgSolicit.h,v 1.4 2006-10-06 00:42:58 thomson Exp $
+ * $Id: SrvMsgSolicit.h,v 1.5 2006-11-11 06:56:27 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2005-01-08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
- *                                                                           
  */
 
 class TSrvMsgSolicit;
@@ -46,13 +38,11 @@ class TSrvMsgSolicit : public TSrvMsg
     bool check();
     ~TSrvMsgSolicit();
 
-private:
-	void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-	   SmartPtr<TSrvTransMgr> TransMgr, 
-	   SmartPtr<TSrvCfgMgr> CfgMgr,
-	   SmartPtr<TSrvAddrMgr> AddrMgr,
-	    int iface, 
-	    char* addr, 
-	    int msgType);
+ private:
+    void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
+		    SmartPtr<TSrvTransMgr> TransMgr, 
+		    SmartPtr<TSrvCfgMgr> CfgMgr,
+		    SmartPtr<TSrvAddrMgr> AddrMgr,
+		    int iface, char* addr, int msgType);
 };
 #endif /* SRVMSGSOLICIT_H*/

@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgRequest.cpp,v 1.7 2006-10-06 00:42:58 thomson Exp $
+ * $Id: SrvMsgRequest.cpp,v 1.8 2006-11-11 06:56:27 thomson Exp $
  *                                                                           
  */
 
@@ -26,49 +26,22 @@ TSrvMsgRequest::TSrvMsgRequest(SmartPtr<TSrvIfaceMgr> IfaceMgr,
                                int iface,  SmartPtr<TIPv6Addr> addr,
                                char* buf,
                                int bufSize)
-                               :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize)
-{
+    :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize) {
 }
 
-void TSrvMsgRequest::doDuties()
-{
+void TSrvMsgRequest::doDuties() {
     return;
 }
 
-bool TSrvMsgRequest::check()
-{
-    SmartPtr<TSrvOptServerIdentifier> option;
-    int clntCnt=0, srvCnt =0;
-    SmartPtr<TSrvOptServerIdentifier> srvDUID;
-    Options.first();
-    while (option = (Ptr*) Options.get() ) 
-    {
-        if (option->getOptType() == OPTION_CLIENTID)
-            clntCnt++;
-        if (option->getOptType() == OPTION_SERVERID)
-        {
-            srvCnt++; 
-            srvDUID=(Ptr*)option;
-        };
-    }
-    if (clntCnt!=1) return false;
-    if (srvCnt!=1) 
-        return false;
-    else
-    {
-        if (!((*srvDUID->getDUID())==(*SrvCfgMgr->getDUID())))
-            return false;
-    };
-    return true;
+bool TSrvMsgRequest::check() {
+    return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
 }
 
-unsigned long TSrvMsgRequest::getTimeout()
-{
+unsigned long TSrvMsgRequest::getTimeout() {
     return 0;
 }
 
-TSrvMsgRequest::~TSrvMsgRequest()
-{
+TSrvMsgRequest::~TSrvMsgRequest() {
 
 }
 

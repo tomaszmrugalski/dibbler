@@ -6,20 +6,10 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgRelease.cpp,v 1.5 2006-02-02 23:18:30 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.3  2004/06/20 21:00:45  thomson
- * Various fixes.
- *
- * Revision 1.2  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
+ * $Id: SrvMsgRelease.cpp,v 1.6 2006-11-11 06:56:27 thomson Exp $
  *
  */
+
 #include "SrvMsgRelease.h"
 #include "SrvOptServerIdentifier.h"
 #include "AddrClient.h"
@@ -37,40 +27,20 @@ TSrvMsgRelease::TSrvMsgRelease(
 {
 }
 
-void TSrvMsgRelease::doDuties()
-{
-    //On server side nothing to do
-    //there shouldn't be such a transaction
+void TSrvMsgRelease::doDuties() {
 }
 
-unsigned long TSrvMsgRelease::getTimeout()
-{
-    //On server side nothing to do
-    //there shouldn't be such a transaction
-    return 0x7fffffff;
+unsigned long TSrvMsgRelease::getTimeout() {
+    return 0;
 }
 
-bool TSrvMsgRelease::check()
-{
-    //Servers MUST discard any received Release message that	meets any of
-    //the following conditions:
-    //-	the	message	does not include a Client Identifier option.
-    if(!getOption(OPTION_CLIENTID))
-        return false;
-    SmartPtr<TSrvOptServerIdentifier> opt;
-    //-	the	message	does not include a Server Identifier option.
-    if (!(opt=(Ptr*)getOption(OPTION_SERVERID)))
-        return false;
-    //-	the	contents of	the	Server Identifier option does not match	the
-    //	server's identifier.
-    else
-        return *(opt->getDUID())==*(SrvCfgMgr->getDUID());
+bool TSrvMsgRelease::check() {
+    return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
 }
 
 string TSrvMsgRelease::getName() {
     return "RELEASE";
 }
 
-TSrvMsgRelease::~TSrvMsgRelease()
-{
+TSrvMsgRelease::~TSrvMsgRelease() {
 }

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgInfRequest.cpp,v 1.5 2006-08-21 21:33:20 thomson Exp $
+ * $Id: SrvMsgInfRequest.cpp,v 1.6 2006-11-11 06:56:27 thomson Exp $
  *
  */
 
@@ -16,8 +16,6 @@
 #include "SrvIfaceMgr.h"
 #include "SrvMsgAdvertise.h"
 #include "SrvOptServerIdentifier.h"
-#include "SrvOptIA_NA.h"
-#include "AddrClient.h"
 
 TSrvMsgInfRequest::TSrvMsgInfRequest(SPtr<TSrvIfaceMgr> IfaceMgr, 
 				     SPtr<TSrvTransMgr> TransMgr,
@@ -27,31 +25,19 @@ TSrvMsgInfRequest::TSrvMsgInfRequest(SPtr<TSrvIfaceMgr> IfaceMgr,
 				     SPtr<TIPv6Addr> addr,
 				     char* buf,
 				     int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize)
-{
+    :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize) {
 }
 
-void TSrvMsgInfRequest::doDuties()
-{
+void TSrvMsgInfRequest::doDuties() {
     return;
 }
 
-bool TSrvMsgInfRequest::check()
-{
-    SmartPtr<TSrvOptServerIdentifier> option;
-    int clntCnt=0;
-    Options.first();
-    while (option = (Ptr*) Options.get() ) 
-    {
-        if (option->getOptType() == OPTION_CLIENTID)
-            clntCnt++;
-    }
-    if (clntCnt!=1) return false;
+bool TSrvMsgInfRequest::check() {
+    /* client is not required (but is allowed) to include ClientID option, also ServerID is optional */
     return true;
 }
 
-unsigned long TSrvMsgInfRequest::getTimeout()
-{
+unsigned long TSrvMsgInfRequest::getTimeout() {
     return 0;
 }
 
@@ -60,7 +46,5 @@ string TSrvMsgInfRequest::getName() {
 }
 
 
-TSrvMsgInfRequest::~TSrvMsgInfRequest()
-{
-
+TSrvMsgInfRequest::~TSrvMsgInfRequest(){
 }

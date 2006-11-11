@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.21 2006-10-06 00:42:58 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.22 2006-11-11 06:56:27 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -257,52 +257,3 @@ void TSrvMsgAdvertise::doDuties() {
 string TSrvMsgAdvertise::getName() {
     return "ADVERTISE";
 }
-
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.20  2006-08-30 01:33:32  thomson
- * *** empty log message ***
- *
- * Revision 1.19  2006-08-24 01:12:29  thomson
- * FQDN hint implementation by Krzysiek Wnuk, fixes by Thomson.
- *
- * Revision 1.18  2006-08-21 21:57:02  thomson
- * FQDN fixes.
- *
- * Revision 1.17  2006-08-21 21:33:20  thomson
- * prepareFQDN() moved from SrvMgrReply to SrvMsg,
- * unnecessary constructors removed.
- *
- * Revision 1.16  2006-03-05 21:35:15  thomson
- * TA support merged.
- *
- * Revision 1.14.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.14  2005/03/15 23:02:31  thomson
- * 0.4.0 release.
- *
- * Revision 1.13  2005/03/15 00:36:22  thomson
- * 0.4.0 release (win32 commit)
- *
- * Revision 1.12  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.11  2004/12/02 00:51:06  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.10  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.9  2004/06/20 21:00:45  thomson
- * Various fixes.
- *
- * Revision 1.8  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
- * Revision 1.7  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
- * Revision 1.6  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- */

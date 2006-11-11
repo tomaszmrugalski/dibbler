@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgAdvertise.cpp,v 1.3 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntMsgAdvertise.cpp,v 1.4 2006-11-11 06:56:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005-01-08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -24,9 +27,7 @@ TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
 				     SmartPtr<TClntCfgMgr> CfgMgr,
 				     SmartPtr<TClntAddrMgr> AddrMgr,
 				     int iface, SmartPtr<TIPv6Addr> addr)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,ADVERTISE_MSG)
-{
-    pkt=NULL;
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,ADVERTISE_MSG) {
 }
 
 /* 
@@ -38,37 +39,14 @@ TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
 				     SmartPtr<TClntAddrMgr> AddrMgr,
 				     int iface, SmartPtr<TIPv6Addr> addr, 
 				     char* buf, int buflen)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,buflen)
-{
-    pkt=NULL;
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,buflen) {
 }
 
-bool TClntMsgAdvertise::check()
-{
-    //Clients MUST discard any received Advertise messages that meet any of
-    //the following conditions:
-
-    //-  the message does not include a Server Identifier option.
-    if (!this->getOption(OPTION_SERVERID))
-        return false;
-    //-  the message does not include a Client Identifier option.
-    SmartPtr<TClntOptClientIdentifier> clnID;
-    if (!(clnID=(Ptr*)this->getOption(OPTION_CLIENTID)))
-        return false;
-    //-  the contents of the Client Identifier option does not match the
-    //   client's DUID.
-    if (!(*(clnID->getDUID())==(*(this->ClntCfgMgr->getDUID())) ))
-        return false;
-    //-  the "transaction-id" field value does not match the value the
-    //   client used in its Solicit me - it was checked outside this function
-    return true;
+bool TClntMsgAdvertise::check() {
+    return TClntMsg::check(true /* clientID mandatory */, true /* serverID mandatory */ );
 }
 
-int TClntMsgAdvertise::getPreference()
-{
-    // FIXME: here we can implement more sophisticated pointing scheme, not just 
-    //        pure PREFERENCE OPTION value. Number of SUCCESS IAs for example 
-    //        could be taken into account
+int TClntMsgAdvertise::getPreference() {
     SmartPtr<TOptPreference> ptr;
     ptr = (Ptr*) this->getOption(OPTION_PREFERENCE);
     if (!ptr)
@@ -76,13 +54,11 @@ int TClntMsgAdvertise::getPreference()
     return ptr->getPreference();
 }
 
-void TClntMsgAdvertise::answer(SmartPtr<TClntMsg> Rep)
-{
+void TClntMsgAdvertise::answer(SmartPtr<TClntMsg> Rep) {
     // this should never happen
 }
 
-void TClntMsgAdvertise::doDuties()
-{
+void TClntMsgAdvertise::doDuties() {
     // this should never happen
 }
 
@@ -90,7 +66,6 @@ string TClntMsgAdvertise::getName() {
     return "ADVERTISE";
 }
 
-TClntMsgAdvertise::~TClntMsgAdvertise()
-{
+TClntMsgAdvertise::~TClntMsgAdvertise() {
 }
 

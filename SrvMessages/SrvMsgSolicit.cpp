@@ -6,12 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgSolicit.cpp,v 1.3 2005-01-08 16:52:04 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
+ * $Id: SrvMsgSolicit.cpp,v 1.4 2006-11-11 06:56:27 thomson Exp $
  *
  */
 
@@ -33,8 +28,7 @@ TSrvMsgSolicit::TSrvMsgSolicit(SmartPtr<TSrvIfaceMgr>	ifaceMgr,
 			       SmartPtr<TSrvAddrMgr>	addrMgr,
 			       int iface, SmartPtr<TIPv6Addr> addr,
 			       char* buf, int bufSize)
-    :TSrvMsg(ifaceMgr,transMgr,cfgMgr,addrMgr,iface,addr,buf,bufSize)
-{
+    :TSrvMsg(ifaceMgr,transMgr,cfgMgr,addrMgr,iface,addr,buf,bufSize) {
 }
 
 void TSrvMsgSolicit::doDuties() {
@@ -45,29 +39,13 @@ string TSrvMsgSolicit::getName() {
     return "SOLICIT";
 }
 
-bool TSrvMsgSolicit::check()
-{
-	SmartPtr<TOpt> option;
-	int cnt=0;
-	Options.first();
-	while (option = Options.get() ) 
-	{
-		if (option->getOptType() == OPTION_CLIENTID)
-			cnt++;
-		if (option->getOptType() == OPTION_SERVERID)
-			return false;
-	}
-		if (cnt!=1) return false;
-	return true;
+bool TSrvMsgSolicit::check() {
+    return TSrvMsg::check(true /* ClientID required */, false /* ServerID not allowed */);
 }
 
-unsigned long TSrvMsgSolicit::getTimeout()
-{
+unsigned long TSrvMsgSolicit::getTimeout() {
 	return 0;
 }
 
-TSrvMsgSolicit::~TSrvMsgSolicit()
-{
-	delete pkt;
-    pkt=NULL;
+TSrvMsgSolicit::~TSrvMsgSolicit() {
 }

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.14 2006-11-03 22:23:15 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.15 2006-11-11 06:56:26 thomson Exp $
  */
 
 #ifdef WIN32
@@ -516,7 +516,6 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_LIFETIME);
 
     // --- option: VENDOR-SPEC ---
-    Log(Debug) << "#### vendorSpec iface->isReqVendorSpec()==" << ((iface->getVendorSpecState()==NOTCONFIGURED)?"YES":"NO") << LogEnd;
     if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_VENDOR_OPTS);
 	iface->setVendorSpecState(INPROCESS);
@@ -525,6 +524,9 @@ void TClntMsg::appendRequestedOptions() {
 	if (optVendor)
 	    Options.append( (Ptr*) optVendor);
     }
+
+    // include ELAPSED option
+    Options.append(new TClntOptElapsed(this));
 
     // final setup: Did we add any options at all? 
     if ( optORO->count() ) 
@@ -559,56 +561,17 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
     }
 
 }
-void TClntMsg::preparePrefixConfigFile() 
 
-{
-	//SPtr<TClntOptIA_PD> option;
-	//return option;
+bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
+    bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
+
+    SmartPtr<TClntOptClientIdentifier> clnID;
+
+    if ( (clnID=(Ptr*)this->getOption(OPTION_CLIENTID)) &&
+	 !( *(clnID->getDUID())==(*(this->ClntCfgMgr->getDUID())) ) ) {
+	Log(Warning) << "Message " << this->getName() << " received with mismatched ClientID option. Message dropped." << LogEnd;
+	return false;
+    }
+
+    return status;
 }
-
-
-
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.13  2006-10-06 00:43:28  thomson
- * Initial PD support.
- *
- * Revision 1.12  2006-08-21 21:34:50  thomson
- * Client must send FQDN option even when it has no special preference about
- * its domain name.
- *
- * Revision 1.11  2006-03-05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.10.2.1  2006/02/05 23:38:07  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.10  2005/01/08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.9  2004/12/08 01:08:23  thomson
- * Warning messages now print proper message names.
- *
- * Revision 1.8  2004/11/29 22:46:45  thomson
- * Lifetime option is only requested if specified in conf file (bug #75)
- *
- * Revision 1.7  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.6  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.5  2004/10/03 21:36:48  thomson
- * Just a typo.
- *
- * Revision 1.4  2004/09/27 22:01:01  thomson
- * Sending is now more verbose.
- *
- * Revision 1.3  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.2  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- */

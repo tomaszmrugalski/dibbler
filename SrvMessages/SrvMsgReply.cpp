@@ -831,6 +831,7 @@ unsigned long TSrvMsgReply::getTimeout() {
 }
 
 bool TSrvMsgReply::check() {
+    /* not used on the server side */
     return false;
 }
 

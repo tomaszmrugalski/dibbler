@@ -6,7 +6,7 @@
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.18 2006-11-03 23:14:40 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.19 2006-11-11 06:56:26 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -57,9 +57,6 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	Options.append((Ptr*)IA_NA);
     }
     
-    // include ELAPSED option
-    Options.append(new TClntOptElapsed(this));
-
     if(rapid)
         Options.append(new TClntOptRapidCommit(this));
 

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgDecline.cpp,v 1.4 2006-08-21 21:33:20 thomson Exp $
+ * $Id: SrvMsgDecline.cpp,v 1.5 2006-11-11 06:56:27 thomson Exp $
  *                                                                           
  */
 
@@ -20,45 +20,21 @@ TSrvMsgDecline::TSrvMsgDecline(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 			       SmartPtr<TSrvAddrMgr> AddrMgr,
 			       int iface, SmartPtr<TIPv6Addr> addr,
 			       char* buf, int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,bufSize)
-{
-	pkt=NULL;
+    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,bufSize) {
 }
 
 void TSrvMsgDecline::doDuties() {
 }
 
-unsigned long TSrvMsgDecline::getTimeout()
-{
-	return 0;
+unsigned long TSrvMsgDecline::getTimeout() {
+    return 0;
 }
 
-bool TSrvMsgDecline::check()
-{
-    
-//   Servers MUST discard any received Decline message that meets any of
-//   the following conditions:
-//    -  the message does not include a Server Identifier option.
-    SmartPtr<TOpt> ptrOpt = getOption(OPTION_SERVERID);
-    if (!ptrOpt)
-	return false;
-
-//   -  the contents of the Server Identifier option does not match the
-//      server's identifier.
-    SmartPtr<TSrvOptServerIdentifier> optSrvDUID = (Ptr*) ptrOpt;
-    if ( !( *(SrvCfgMgr->getDUID()) == *(optSrvDUID->getDUID()) ) )
-	return false;
-
-//   -  the message does not include a Client Identifier option.
-    ptrOpt = getOption(OPTION_CLIENTID);
-    if (!ptrOpt)
-	return false;
-
-    return true;
+bool TSrvMsgDecline::check() {
+    return TSrvMsg::check(true /* ClientID required */, true /* ServerID mandatory */);
 }
 
-TSrvMsgDecline::~TSrvMsgDecline()
-{
+TSrvMsgDecline::~TSrvMsgDecline() {
 }
 
 

@@ -30,12 +30,14 @@ TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
     unsigned char * buf2 = (unsigned char *)(buf+1);
     this->TransID= ((long)buf2[0])<<16 | ((long)buf2[1])<<8 | (long)buf2[2];
     buf+=4; bufSize-=4;
+    this->pkt = 0;
 }
 
 TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
+    this->pkt = 0;
 }
 
 TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType,  long transID)
@@ -146,3 +148,56 @@ bool TMsg::isDone() {
     return IsDone;
 }
 
+/** 
+ * checks if appropriate number of server/client IDs has been attached
+ * 
+ * @param srvIDmandatory - is ServerID option mandatory? (false==ServerID not allowed)
+ * @param clntIDmandatory - is ClientID option mandatory?(false==ClientID is optional)
+ * 
+ * @return 
+ */
+bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
+{
+    SmartPtr<TOpt> option;
+    int clntCnt=0;
+    int srvCnt =0;
+    bool status = true;
+
+    Options.first();
+    while (option = Options.get() ) 
+    {
+	switch (option->getOptType()) {
+	case OPTION_CLIENTID:
+	    clntCnt++;
+	    break;
+	case OPTION_SERVERID:
+	    srvCnt++;
+	    break;
+	default:
+	    break;
+	    /* ignore the rest */
+	}
+    }
+
+    if (clntIDmandatory && (clntCnt!=1) ) {
+	Log(Warning) << "Exactly 1 ClientID option required in the " << this->getName() 
+		     << " message, but " << clntCnt << " received.";
+	status = false;
+    }
+
+    if (srvIDmandatory && (srvCnt!=1) ) {
+	Log(Warning) << "Exactly 1 ServerID option required in the " << this->getName() 
+		     << " message, but " << srvCnt << " received.";
+	status = false;
+    }
+    
+    if (!srvIDmandatory && (srvCnt)) {
+	Log(Warning) << "No ServerID option is allowed in the " << this->getName()
+		     << " message, but " << srvCnt << " received.";
+    }
+
+    if (!status)
+	Log(Cont) << "Message dropped." << LogEnd;
+
+    return status;
+}

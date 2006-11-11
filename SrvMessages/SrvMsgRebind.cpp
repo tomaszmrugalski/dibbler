@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgRebind.cpp,v 1.4 2006-08-21 21:33:20 thomson Exp $
+ * $Id: SrvMsgRebind.cpp,v 1.5 2006-11-11 06:56:27 thomson Exp $
  *
  */
 #include "SmartPtr.h"
@@ -18,41 +18,25 @@ TSrvMsgRebind::TSrvMsgRebind(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 			     SmartPtr<TSrvTransMgr> TransMgr, 
 			     SmartPtr<TSrvCfgMgr> CfgMgr, 
 			     SmartPtr<TSrvAddrMgr> AddrMgr,
-			     int iface, 
-			     SmartPtr<TIPv6Addr> addr,
-			     char* buf,
-			     int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize)
-{
+			     int iface, SmartPtr<TIPv6Addr> addr,
+			     char* buf, int bufSize)
+    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize) {
 }
 
-void TSrvMsgRebind::doDuties()
-{
+void TSrvMsgRebind::doDuties() {
 }
 
-unsigned long TSrvMsgRebind::getTimeout()
-{
-	return 0;
+unsigned long TSrvMsgRebind::getTimeout() {
+    return 0;
 }
 
-bool TSrvMsgRebind::check()
-{
-    //   Servers MUST discard any received Rebind messages that do not include
-    // a Client Identifier option or that do include a Server Identifier
-    // option.
-    SmartPtr<TOpt> ptrOpt = (Ptr*) getOption(OPTION_CLIENTID);
-    if (!ptrOpt) return false;
-    
-    ptrOpt = (Ptr*) getOption(OPTION_SERVERID);
-    if (ptrOpt) return false;
-
-    return true;
+bool TSrvMsgRebind::check() {
+    return TSrvMsg::check(true /* ClientID required */, false /* ServerID not allowed */);
 }
 
 string TSrvMsgRebind::getName() {
     return "REBIND";
 }
 
-TSrvMsgRebind::~TSrvMsgRebind()
-{
+TSrvMsgRebind::~TSrvMsgRebind() {
 }

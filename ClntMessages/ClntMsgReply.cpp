@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgReply.cpp,v 1.5 2006-10-06 00:43:28 thomson Exp $
+ * $Id: ClntMsgReply.cpp,v 1.6 2006-11-11 06:56:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-10-06 00:43:28  thomson
+ * Initial PD support.
+ *
  * Revision 1.4  2005-01-08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -43,7 +46,7 @@ TClntMsgReply::TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr,
 {
 }
 
-void TClntMsgReply::answer(SmartPtr<TClntMsg> Rep) {
+void TClntMsgReply::answer(SmartPtr<TClntMsg> Reply) {
     // this should never happen. After receiving REPLY for e.g. REQUEST,
     // request->answer(reply) is called. Client nevers sends reply msg, so
     // this method will never be called.
@@ -53,25 +56,8 @@ void TClntMsgReply::doDuties() {
 }
 
 
-bool TClntMsgReply::check()
-{
-    //Clients MUST discard any received Reply message that meets any of the
-    //following conditions:
-    //-  the message does not include a Server Identifier option.
-    if (!getOption(OPTION_SERVERID))
-        return false;
-    //-  the "transaction-id" field in the message does not match the value
-    //   used in the original message. (should be checked before)
-    
-    //FIXME: If the client included a Client Identifier option in the original
-    //message, the Reply message MUST include a Client Identifier option
-    //and the contents of the Client Identifier option MUST match the DUID
-    //of the client;OR, if the client did not include a Client Identifier
-    //option in the original message, the Reply message MUST NOT include a
-    //Client Identifier option.
-
-    //Servers and relay agents MUST discard any received Reply messages. 
-    return true;
+bool TClntMsgReply::check() {
+    return TClntMsg::check(true /* clientID mandatory */, true /* serverID mandatory */ );
 }
 
 
@@ -79,6 +65,5 @@ string TClntMsgReply::getName() {
     return "REPLY";
 }
 
-TClntMsgReply::~TClntMsgReply()
-{
+TClntMsgReply::~TClntMsgReply() {
 }

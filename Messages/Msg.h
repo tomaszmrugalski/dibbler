@@ -64,6 +64,7 @@ class TMsg
     
     void setAttribs(int iface, SmartPtr<TIPv6Addr> addr, 
 		    int msgType, long transID);
+    virtual bool check(bool clntIDmandatory, bool srvIDmandatory);
     
     bool IsDone; // Is this transaction done?
     char * pkt;  // buffer where this packet will be build

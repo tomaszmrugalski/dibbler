@@ -45,7 +45,6 @@ public:
     void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
 //    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
     void appendRequestedOptions();
-    void preparePrefixConfigFile();
     SmartPtr<TClntTransMgr>  getClntTransMgr();
     SmartPtr<TClntAddrMgr>   getClntAddrMgr();
     SmartPtr<TClntCfgMgr>    getClntCfgMgr();
@@ -54,6 +53,8 @@ public:
     virtual string getName() = 0;
 
  protected:
+    bool check(bool clntIDmandatory, bool srvIDmandatory);
+    
     long IRT;           // Initial Retransmission Time
     long MRT;           // Maximum Retransmission Time
     long MRC;           // Maximum Retransmission Count
@@ -66,6 +67,7 @@ public:
     SmartPtr<TClntAddrMgr>   ClntAddrMgr;
     SmartPtr<TClntCfgMgr>    ClntCfgMgr;
     SmartPtr<TClntIfaceMgr>  ClntIfaceMgr;
+
  private:
     void setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 		    SmartPtr<TClntTransMgr> TransMgr, 

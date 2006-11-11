@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.28 2006-11-03 22:23:15 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.29 2006-11-11 06:56:27 thomson Exp $
  */
 
 #include <sstream>
@@ -660,3 +660,18 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
     } // fqdn mode 2 (AAAA and PTR)
 #endif
 }
+
+bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
+    bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
+
+    SPtr<TSrvOptServerIdentifier> optSrvID = (Ptr*) this->getOption(OPTION_SERVERID);
+    if (optSrvID) {
+	if ( !( *(SrvCfgMgr->getDUID()) == *(optSrvID->getDUID()) ) ) {
+	    Log(Debug) << "Wrong ServerID value detected. This message is not for me. Message ignored." << LogEnd;
+	    return false;
+	}
+    }
+
+    return status;
+}
+
