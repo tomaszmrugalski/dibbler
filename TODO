@@ -1,9 +1,11 @@
 
-$Id: TODO,v 1.35 2006-11-11 06:56:26 thomson Exp $
+$Id: TODO,v 1.36 2006-11-11 14:44:14 thomson Exp $
 
   Internal/code TODO
  --------------------
-- SRV: Crashes when not configured to support prefix-delegation, but client sends pd option.
+- CLI: When server is not configured to support PD and client requests PD, server sends PD with status code
+  set to NOADDRSAVAIL (that is ok). However, client should complain about it (and maybe try to do something with it). 
+  Right now it prints information that "PD set successfully."
 - ALL: Fix linux low-level interface (don't use PKTINFO anymore).
 - CLI: Elapsed time is not recalculated when SOLICIT is resent
 - SRV/REL: Support InterfaceID option with length other than 4
@@ -58,6 +60,7 @@ $Id: TODO,v 1.35 2006-11-11 06:56:26 thomson Exp $
 
   DONE
  ------
+- SRV: Crashes when not configured to support prefix-delegation, but client sends pd option.
 - DOC: Describe strict-rfc-no-routing on the client side
 
   Rewrite
