@@ -116,8 +116,10 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 	
     bool fake  = false; // is this assignment for real?
 
-    if (msgType == SOLICIT_MSG)    // FIXME: SOLICIT without RAPID COMMIT should set this to true
+    if (msgType == SOLICIT_MSG)
 	fake = true;
+    if (parent->getOption(OPTION_RAPID_COMMIT))
+	fake = false;
 
     // --- Is the PD supported? ---
     SPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID(iface);
@@ -152,36 +154,8 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 
 	return;
     }
-	
-    // --- check prefixes counts, how many we've got, how many assigned etc. ---
-    unsigned long prefixesAssigned  = 0; // already assigned
-    unsigned long prefixesRequested = 0; // how many requested in this IA
-    unsigned long prefixesAvail     = 0; // how many are allowed for client?
-    unsigned long prefixesMax       = 0; // clnt-max-lease
-    unsigned long willAssign        = 0; // how many will be assigned?
 
-    prefixesAssigned = 0;/*addrMgr->getAddrCount(clntDuid);*/
-    prefixesRequested= 0; /*queryOpt->countAddrs();*/
-    prefixesAvail    = cfgMgr->countAvailAddrs(clntDuid, clntAddr, iface);
-    prefixesMax      = cfgMgr->getIfaceByID(iface)->getClntMaxLease();
-    willAssign = prefixesRequested;
-
-    if (willAssign > prefixesMax - prefixesAssigned) {
-	Log(Notice) << "Client got " << prefixesAssigned << " and requested " 
-		    << prefixesRequested << " more, but limit for a client is "
-		    << prefixesMax << LogEnd;
-	willAssign = prefixesMax - prefixesAssigned;
-    }
-
-    if (willAssign > prefixesAvail) {
-	Log(Notice) << willAssign << " addrs would be assigned, but only" << prefixesAssigned
-		    << " is available." << LogEnd;
-	willAssign = prefixesAvail;
-    }
-
-    Log(Info) << "Client has " << prefixesAssigned << " addrs, asks for " 
-	      << prefixesRequested << ", " << prefixesAvail << " is available, limit for client is "
-	      << prefixesMax << ", " << willAssign << " will be assigned." << LogEnd;
+    // FIXME: implement support for prefixes sent by client
 }
 
 void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
@@ -202,7 +176,6 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
 SmartPtr<TSrvOptIAPrefix> TSrvOptIA_PD::assignPrefix(SmartPtr<TIPv6Addr> hint,int length, unsigned long pref,
 						    unsigned long valid,
 						    bool fake) {
-	
     // Assign one prefix
     SmartPtr<TIPv6Addr> prefix;
     SmartPtr<TSrvOptIAPrefix> optPrefix;
@@ -212,12 +185,12 @@ SmartPtr<TSrvOptIAPrefix> TSrvOptIA_PD::assignPrefix(SmartPtr<TIPv6Addr> hint,in
     prefix = this->getFreePrefix(hint);
     ptrPD = this->CfgMgr->getClassByPrefix(this->Iface, prefix);
     Log(Debug) << "Assigned prefix: "<< prefix->getPlain() << LogEnd;
-    //pref = ptrClass->getPref(pref);
-    //valid= ptrClass->getValid(valid);
-   pref = 60000;
-   valid = 120000;
-	 //length=ptrClass->getLength(length);
 
+    // FIXME: PD: remove those hardcoded values
+    pref = 60000;
+    valid = 120000;
+    //length=ptrClass->getLength(length);
+    
    // remember assigned prefix in addrMgr
    if (!fake)
        AddrMgr->addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
@@ -228,17 +201,10 @@ SmartPtr<TSrvOptIAPrefix> TSrvOptIA_PD::assignPrefix(SmartPtr<TIPv6Addr> hint,in
    
    Log(Info) << "Client requested " << *hint <<", got " << *prefix 
 	     << " (PDID=" << this->IAID << ", pref=" << pref << ",valid=" << valid << " length of prefix is "<< length << LogEnd;
-   
-
 
     // configure this PD
     this->T1= ptrPD->getPD_T1(this->T1);
     this->T2= ptrPD->getPD_T2(this->T2);
-    
-    // register this address as used by this client
-    //this->AddrMgr->addClntAddr(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, // not sure about that 
-			      // this->T1, this->T2, prefix, pref, valid, quiet); // we need to change this also 
-    //this->CfgMgr->addClntAddr(this->Iface, prefix);
     
     return optPrefix;
 }
@@ -252,6 +218,8 @@ TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent)
     :TOptIA_PD(queryOpt->getIAID(),0x7fffffff,0x7fffffff, parent)
 {
+    // FIXME: addrCount is obsolete
+
     this->AddrMgr   = addrMgr;
     this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
@@ -269,19 +237,19 @@ TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
         break;
     
     case RENEW_MSG:
-        this->renew(queryOpt, addrCount);
+        this->renew(queryOpt);
         break;
     case REBIND_MSG:
-        this->rebind(queryOpt, addrCount);
+        this->rebind(queryOpt);
         break;
     case RELEASE_MSG:
-        this->release(queryOpt, addrCount);
+        this->release(queryOpt);
         break;
     case CONFIRM_MSG:
-        this->confirm(queryOpt, addrCount);
+        this->confirm(queryOpt);
         break;
     case DECLINE_MSG:
-        this->decline(queryOpt, addrCount);
+        this->decline(queryOpt);
         break;
     default: {
 	Log(Warning) << "Unknown message type (" << msgType 
@@ -297,114 +265,30 @@ TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
 /** 
  * generate OPTION_PD based on OPTION_PD received in RENEW message
  * 
- * @param queryOpt - IA_NA option in the RENEW message
+ * @param queryOpt - IA_PD option in the RENEW message
  * @param addrCount 
  */
-void TSrvOptIA_PD::renew(SmartPtr<TSrvOptIA_PD> queryOpt, unsigned long &addrCount)
-{
-    // find that client in addrdb
-   /* SmartPtr <TAddrClient> ptrClient;
-    ptrClient = this->AddrMgr->getClient(this->ClntDuid);
-    if (!ptrClient) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
-						this->Parent));
-        return;
-    }
-
-    // find that IA
-    SmartPtr <TAddrIA> ptrIA;
-    ptrIA = ptrClient->getIA(this->IAID);
-    if (!ptrIA) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
-						this->Parent ));
-        return;
-    }
-
-    // everything seems ok, update data in addrdb
-    ptrIA->setTimestamp();
-    this->T1 = ptrIA->getT1();
-    this->T2 = ptrIA->getT2();
-
-    // send addr info to client
-    SmartPtr<TAddrAddr> ptrAddr;
-    ptrIA->firstAddr();
-    while ( ptrAddr = ptrIA->getAddr() ) {
-        SmartPtr<TOptIAAddress> optAddr;
-        ptrAddr->setTimestamp();
-        optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),ptrAddr->getValid(),
-				       this->Parent);
-        SubOptions.append( (Ptr*)optAddr );
-    }
-
-    // finally send greetings and happy OK status code
-    SmartPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",this->Parent);
-    SubOptions.append( (Ptr*)ptrStatus );*/
+void TSrvOptIA_PD::renew(SmartPtr<TSrvOptIA_PD> queryOpt) {
+    // FIXME: support PD in RENEW message.
 }
 
-void TSrvOptIA_PD::rebind(SmartPtr<TSrvOptIA_PD> queryOpt,
-                          unsigned long &addrCount)
-{
-    // find that client in addrdb
-  /*  SmartPtr <TAddrClient> ptrClient;
-    ptrClient = this->AddrMgr->getClient(this->ClntDuid);
-    if (!ptrClient) {
-        // hmmm, that's not our client
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
-						"Who are you? Do I know you?",this->Parent ));
-        return;
-    }
-
-    // find that IA
-    SmartPtr <TAddrIA> ptrIA;
-    ptrIA = ptrClient->getIA(this->IAID);
-    if (!ptrClient) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
-						"I see this IAID first time.",this->Parent ));
-        return;
-    }
-
-    // FIXME: 18.2.4 par. 3 (check if addrs are appropriate for this link)
-
-    // everything seems ok, update data in addrdb
-    ptrIA->setTimestamp();
-    this->T1 = ptrIA->getT1();
-    this->T2 = ptrIA->getT2();
-
-    // send addr info to client
-    SmartPtr<TAddrAddr> ptrAddr;
-    ptrIA->firstAddr();
-    while ( ptrAddr = ptrIA->getAddr() ) {
-        SmartPtr<TOptIAAddress> optAddr;
-        optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),
-				       ptrAddr->getValid(),this->Parent);
-        SubOptions.append( (Ptr*)optAddr );
-    }
-
-    // finally send greetings and happy OK status code
-    SmartPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
-				      this->Parent);
-    SubOptions.append( (Ptr*)ptrStatus );*/
+void TSrvOptIA_PD::rebind(SmartPtr<TSrvOptIA_PD> queryOpt) {
+    // FIXME: implement PD support in REBIND message
 }
 
-void TSrvOptIA_PD::release(SmartPtr<TSrvOptIA_PD> queryOpt,
-                           unsigned long &addrCount)
-{
+void TSrvOptIA_PD::release(SmartPtr<TSrvOptIA_PD> queryOpt) {
+    // FIXME: implement PD support in RELEASE message
 }
 
-void TSrvOptIA_PD::confirm(SmartPtr<TSrvOptIA_PD> queryOpt,
-                           unsigned long &addrCount)
-{
+void TSrvOptIA_PD::confirm(SmartPtr<TSrvOptIA_PD> queryOpt) {
+    // FIXME: implement PD support in CONFIRM message
 }
 
-void TSrvOptIA_PD::decline(SmartPtr<TSrvOptIA_PD> queryOpt,
-                           unsigned long &addrCount)
-{
+void TSrvOptIA_PD::decline(SmartPtr<TSrvOptIA_PD> queryOpt) {
+    // FIXME: implement PD support in DECLINE message
 }
 
-bool TSrvOptIA_PD::doDuties()
-{
+bool TSrvOptIA_PD::doDuties() {
     return true;
 }
 
@@ -464,8 +348,10 @@ SmartPtr<TIPv6Addr> TSrvOptIA_PD::getFreePrefix(SmartPtr<TIPv6Addr> hint) {
 	    Log(Debug) << "Requested prefix (" << *hint << ") is free, great!" << LogEnd;
 	    return hint;
 	} 
-/*
-	// medium case: addess belongs to supported class, but is used
+
+	// FIXME: Implement support for client's hints
+
+/*      // medium case: addess belongs to supported class, but is used
 	if ( ptrClass ) {
 	    if (ptrClass->getAssignedCount()>=ptrClass->getClassMaxLease()) {
 		Log(Debug) << "Requested address (" << *hint 
@@ -492,8 +378,7 @@ SmartPtr<TIPv6Addr> TSrvOptIA_PD::getFreePrefix(SmartPtr<TIPv6Addr> hint) {
 	    Log(Warning) << "Cache: Cached address " << *addr << " found, but it is no longer valid." << LogEnd;
 	    AddrMgr->delCachedAddr(addr);
 	}
-    }
-    */
+    } */
 
     // worst case: address does not belong to supported class
     // or specified hint is invalid

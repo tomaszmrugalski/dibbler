@@ -47,13 +47,13 @@ class TSrvOptIA_PD : public TOptIA_PD
     
     void releaseAllPrefixes(bool quiet);
 
-    void solicit(SmartPtr<TSrvOptIA_PD> queryOpt, unsigned long &addrCount);
-    void request(SmartPtr<TSrvOptIA_PD> queryOpt, unsigned long &addrCount);
-    void renew(SmartPtr<TSrvOptIA_PD> queryOpt,   unsigned long &addrCount);
-    void rebind(SmartPtr<TSrvOptIA_PD> queryOpt,  unsigned long &addrCount);
-    void release(SmartPtr<TSrvOptIA_PD> queryOpt, unsigned long &addrCount);
-    void confirm(SmartPtr<TSrvOptIA_PD> queryOpt, unsigned long &addrCount);
-    void decline(SmartPtr<TSrvOptIA_PD> queryOpt, unsigned long &addrCount);
+    void solicit(SmartPtr<TSrvOptIA_PD> queryOpt);
+    void request(SmartPtr<TSrvOptIA_PD> queryOpt);
+    void renew(SmartPtr<TSrvOptIA_PD> queryOpt);
+    void rebind(SmartPtr<TSrvOptIA_PD> queryOpt);
+    void release(SmartPtr<TSrvOptIA_PD> queryOpt);
+    void confirm(SmartPtr<TSrvOptIA_PD> queryOpt);
+    void decline(SmartPtr<TSrvOptIA_PD> queryOpt);
     bool doDuties();
  private:
     SmartPtr<TSrvAddrMgr> AddrMgr;
