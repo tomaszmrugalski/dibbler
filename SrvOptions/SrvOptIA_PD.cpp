@@ -119,6 +119,22 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     if (msgType == SOLICIT_MSG)    // FIXME: SOLICIT without RAPID COMMIT should set this to true
 	fake = true;
 
+    // --- Is the PD supported? ---
+    SPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID(iface);
+    if (!iface) {
+	Log(Error) << "Unable to find interface " << iface << ". Something is wrong, VERY wrong." << LogEnd;
+	return;
+    }
+
+    // is the prefix delegation supported?
+    if ( !ptrIface->supportPrefixDelegation() ) {
+        SmartPtr<TSrvOptStatusCode> ptrStatus;
+        ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+					  "Server support for prefix delegation is not enabled. Sorry.",this->Parent);
+        this->SubOptions.append((Ptr*)ptrStatus);
+	return;
+    }
+
     // --- Is this PD without IAPREFIX options? ---
     if (!queryOpt->countPrefixes()) {
 	Log(Warning) << "PD option (with IAPREFIX suboptions missing) received. Assigning one prefix."
@@ -142,7 +158,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     unsigned long prefixesRequested = 0; // how many requested in this IA
     unsigned long prefixesAvail     = 0; // how many are allowed for client?
     unsigned long prefixesMax       = 0; // clnt-max-lease
-    unsigned long willAssign     = 0; // how many will be assigned?
+    unsigned long willAssign        = 0; // how many will be assigned?
 
     prefixesAssigned = 0;/*addrMgr->getAddrCount(clntDuid);*/
     prefixesRequested= 0; /*queryOpt->countAddrs();*/
@@ -166,66 +182,6 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     Log(Info) << "Client has " << prefixesAssigned << " addrs, asks for " 
 	      << prefixesRequested << ", " << prefixesAvail << " is available, limit for client is "
 	      << prefixesMax << ", " << willAssign << " will be assigned." << LogEnd;
-	
-    // --- ok, let's assign those damn addresses ---
-   /* SmartPtr<TOpt> opt;
-    SmartPtr<TIPv6Addr> hint = new TIPv6Addr(addr, false);
-    SmartPtr<TOptIAPrefix> optPrefix; // was TOptIAAddress   and optAddr
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
-    bool ok=true; */
-   // queryOpt->firstOption();
-   // while ( opt = queryOpt->getOption() ) {
-//	switch ( opt->getOptType() ) {
-//	case OPTION_IAPREFIX: {
-//	    optPrefix = (Ptr*) opt;
-//	    hint    = optPrefix->getPrefix();
-//	    cout << hint;
-	    //if (willAssign) { // was commented 
-		// we've got free addrs left, assign one of them
-		// always register this address as used by this client
-		// (if this is solicit, this addr will be released later)
-		//unsigned long pref  = optPrefix->getPref();
-		//unsigned long valid = optPrefix->getValid();
-		//this->assignPrefix(hint, 64,40000, 50000, quiet);
-	//this->assignPrefix(hint, 64,pref, valid, quiet);
-		
-	//willAssign--;
-		//prefixesAssigned++;
-
-	    //} else {               WAS UNCOMMENTED 
-	//	ok = false;
-	 //   }
-	    //break; WAS UNCOMENTED ALSO 
-	/*} WAS ALSO UNCOMMENTED 
-	case OPTION_STATUS_CODE: {
-	    SmartPtr<TOptStatusCode> ptrStatus = (Ptr*) opt;
-	    Log(Notice) << "Receviced STATUS_CODE code=" 
-			<<  ptrStatus->getCode() << ", message=(" << ptrStatus->getText()
-			<< ")" << LogEnd;
-	    break;
-	}
-	default: {
-	    Log(Warning) << "Invalid suboption (" << opt->getOptType() 
-			 << ") in an OPTION_PD option received. Option ignored." << LogEnd;
-	    break;
-	}
-	}
-    }*/
-
-    // --- now include STATUS CODE ---
-    /*
-    SmartPtr<TSrvOptStatusCode> ptrStatus;
-    if (ok) {
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-					  "All prefixes were assigned.",this->Parent);
-	// FIXME: if this is solicit, place "all addrs would be assigned."
-    } else {
-	string tmp = prefixesRequested+" prefixes requested, but assigned only "+prefixesAssigned;
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFAVAIL,tmp.c_str(), this->Parent);
-    }
-    SubOptions.append((Ptr*)ptrStatus);
-	*/ 
-    // if this is a ADVERTISE message, release those addresses in TSrvMsgAdvertise::answer() method
 }
 
 void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
@@ -465,6 +421,12 @@ SmartPtr<TIPv6Addr> TSrvOptIA_PD::getFreePrefix(SmartPtr<TIPv6Addr> hint) {
 	Log(Error) << "Trying to find free prefix on non-existent interface (id=%d)\n" 
 		   << this->Iface << LogEnd;
 	return 0; // NULL
+    }
+
+    if (!ptrIface->supportPrefixDelegation()) {
+	// this method should not be called anyway
+	Log(Error) << "Prefix delegation is not supported on the " << ptrIface->getFullName() << "." << LogEnd;
+	return 0;
     }
     
     // check if this prefix is ok
