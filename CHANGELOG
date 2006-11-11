@@ -6,6 +6,7 @@
   - Clnt: DUID type can be configured (e.g. "duid-type duid-ll" in client.conf file)
   - All: Elapsed option has now correct length
   - Vendor-spec information option is now supported
+  - Required/not allowed options check improved (now you will know why message is dropped)
  
  0.5.0 [2006-10-05]
   - FQDN fixes
