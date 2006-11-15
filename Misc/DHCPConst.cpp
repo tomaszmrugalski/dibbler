@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.7 2006-10-06 00:25:53 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.8 2006-11-15 02:58:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-10-06 00:25:53  thomson
+ * Initial PD support.
+ *
  * Revision 1.6  2005-01-08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -48,15 +51,15 @@ bool OptInMsg[13][20] = {
 /*R-repl.*/  {false, false, false, false,false, false,false, false,true,  false,true, false, false,  false,true, true,  true, true , false,false},
 };
 
-bool allowOptInMsg(int msg, int opt)
+int allowOptInMsg(int msg, int opt)
 {
     // standard options specified in RFC3315
     if (opt <=20) {
-	return OptInMsg[msg-1][opt-1];
+	    return OptInMsg[msg-1][opt-1];
     }
 
     // additional options: allow them
-    return true;
+    return 1;
 }
 
 /*          Appearance of Options in the Options Field of DHCP Options
@@ -84,16 +87,16 @@ bool allowOptInMsg(int msg, int opt)
 20 Reconf. Accept *
 */
 
-bool allowOptInOpt(int msgType, int parent, int subopt) {
+int allowOptInOpt(int msgType, int parent, int subopt) {
 
     // additional options (not specified in RFC3315)
     if (subopt>20)
-	return true;
+	return 1;
 
     if ((msgType==RELAY_FORW_MSG)||(msgType==RELAY_REPL_MSG)) {
-	if ( (subopt==OPTION_INTERFACE_ID) || (subopt=OPTION_RELAY_MSG))
-	    return true;
-	return false;
+	    if ( (subopt==OPTION_INTERFACE_ID) || (subopt=OPTION_RELAY_MSG))
+	        return 1;
+	    return 0;
     }
 
     switch (parent) {
@@ -101,17 +104,17 @@ bool allowOptInOpt(int msgType, int parent, int subopt) {
 	if ((subopt!=OPTION_IAADDR)&&
 	    (subopt!=OPTION_RELAY_MSG)&&
 	    (subopt!=OPTION_INTERFACE_ID))
-	    return true;
+	    return 1;
 	break;
     case OPTION_IA:
     case OPTION_IA_TA:
-	if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
-	    return true;
-	break;
+	    if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
+	        return 1;
+	    break;
     case OPTION_IAADDR:
-	if (subopt==OPTION_STATUS_CODE)
-	    return true;
-	break;
+	    if (subopt==OPTION_STATUS_CODE)
+	        return 1;
+	    break;
     }
-    return false;
+    return 0;
 }

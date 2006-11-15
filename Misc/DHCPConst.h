@@ -168,7 +168,12 @@
 
 #define CLIENT_DEFAULT_PREFIX_LENGTH 64
 
-enum ETentative {YES, NO, DONTKNOWYET};
+enum ETentative {
+    TENTATIVE_UNKNOWN = -1,
+    TENTATIVE_NO      = 0,
+    TENTATIVE_YES     = 1
+};
+
 enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, DISABLED, UNKNOWN, TENTATIVECHECK, TENTATIVE};
 
 // FQDN option flags
@@ -176,8 +181,8 @@ enum EState {NOTCONFIGURED, INPROCESS, CONFIGURED, FAILED, DISABLED, UNKNOWN, TE
 #define FQDN_O 0x2
 #define FQDN_S 0x1
     
-bool allowOptInOpt(int msgType, int optOut, int optIn);
-bool allowOptInMsg(int msgType, int optType);
+int allowOptInOpt(int msgType, int optOut, int optIn);
+int allowOptInMsg(int msgType, int optType);
 
 #ifdef WIN32
 #define uint16_t unsigned short int

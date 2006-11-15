@@ -6,41 +6,8 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.8 2006-08-22 00:01:20 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.9 2006-11-15 02:58:46 thomson Exp $
  *
- *  $Log: not supported by cvs2svn $
- *  Revision 1.7  2005-06-06 22:47:47  thomson
- *  Fixed problem when Win32 apps died quietly (bug #117)
- *
- *  Revision 1.5  2005/02/01 01:08:44  thomson
- *  Support for global addresses added.
- *
- *  Revision 1.2  2004/10/25 20:45:54  thomson
- *  Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- *  Revision 1.1  2004/10/03 22:21:16  thomson
- *  lowlevel-winxp.c renamed to lowlevel-win32.c due to huge changes, e.g.
- *  switch from ipv6.exe to netsh.exe, different binding sockets method.
- *
- *  Revision 1.8  2004/09/28 19:43:46  thomson
- *  Sockets now can be bound on multiple interfaces.
- *
- *  Revision 1.7  2004/09/28 16:01:49  thomson
- *  Various improvements, socket binding fix in progress.
- *
- *  Revision 1.4  2004/03/28 19:48:10  thomson
- *  Problem with missing IPv6 stack solved.
- */
-
-/**
- * @file   lowlevel-win32.c
- * @author 
- * @date   Sat Aug  5 17:09:07 2006
- * 
- * @brief  this file contains lowlevel functions for M$ WindowsXP/2003. It uses netsh.exe to perform
- 8         various low level tasks.
- * 
- * 
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -55,10 +22,18 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "portable.h"
+#include "Portable.h"
+#include "DHCPConst.h"
 
 char netshPath[256];
 char cmdPath[256];
+
+
+#define ERROR_MESSAGE_SIZE 1024
+static char Message[ERROR_MESSAGE_SIZE];
+
+static void error_message_set(int errCode);
+static void error_message_set_string(char *str);
 
 /* 
   Find netsh.exe
@@ -70,13 +45,13 @@ int lowlevelInit()
     int i;
     i = GetEnvironmentVariable("SYSTEMROOT",buf, 256);
     if (!i) {
-	printf("Environment variable SYSTEMROOT not set.\n");
-	return 0;
+        error_message_set_string("Environment variable SYSTEMROOT not set.\n");
+	    return 0;
     }
     strcpy(buf+i,"\\system32\\netsh.exe");
     if (!(f=fopen(buf,"r"))) {
-	printf("Unable to open %s file.\n",buf);
-	return 0;
+        sprintf(Message, "Unable to open %s file.\n",buf);
+	    return 0;
     }
     fclose(f);
     memcpy(netshPath, buf,256);
@@ -85,15 +60,22 @@ int lowlevelInit()
     return 1;
 }
 
-char * displayError(int errCode) {
-    static char Message[1024];
-    printf("Error %d:",errCode);
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |
+char * error_message()
+{
+	return Message;
+}
+
+void error_message_set(int errCode) {
+	char tmp[ERROR_MESSAGE_SIZE-10];
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |
                   FORMAT_MESSAGE_MAX_WIDTH_MASK,
                   NULL, errCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  (LPSTR)Message, 1024, NULL);
-    printf("%s\n",Message);
-    return Message;
+                  (LPSTR)tmp, ERROR_MESSAGE_SIZE-10, NULL);
+	sprintf(Message, "Error %d: %s\n", errCode, tmp);
+}
+
+void error_message_set_string(char *str) {
+    strncpy(Message, str, ERROR_MESSAGE_SIZE);
 }
 
 void if_list_release(struct iface * list) {
@@ -123,11 +105,11 @@ extern	struct iface* if_list_get()
 
     buflen=0;
     GetAdaptersAddresses(AF_INET6, GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST|GAA_FLAG_SKIP_DNS_SERVER,
-			 NULL, (PIP_ADAPTER_ADDRESSES) buffer, &buflen);
+                         NULL, (PIP_ADAPTER_ADDRESSES) buffer, &buflen);
     
     if (!buflen) {
-	// no interfaces found. Probably IPv6 is not installed.
-	return NULL;
+        // no interfaces found. Probably IPv6 is not installed.
+        return NULL;
     }
     
     buffer=(char*)malloc(buflen);
@@ -151,7 +133,7 @@ extern	struct iface* if_list_get()
         memcpy(iface->mac,adaptaddr->PhysicalAddress,adaptaddr->PhysicalAddressLength);
 	
         //set link local addresses available on interface
-	iface->maclen=adaptaddr->PhysicalAddressLength;
+        iface->maclen=adaptaddr->PhysicalAddressLength;
 
         iface->globaladdrcount = 0;
         iface->globaladdr = 0;
@@ -248,10 +230,11 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     
     free(buffer);
     if (!found)
-        return -1; /* not found */
+        return TENTATIVE_UNKNOWN; /* not found */
     if (found->DadState==IpDadStateDuplicate)
-        return 1; /* tentative */
-    return 0; /* not tentative */
+        return TENTATIVE_YES;     /* tentative */
+    else
+        return TENTATIVE_NO;      /* not tentative */
 }
 extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, 
                       unsigned long pref, unsigned long valid, int prefixLen)
@@ -270,11 +253,12 @@ extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
     sprintf(arg6,"address=%s", addr);
     sprintf(arg7,"validlifetime=%d", valid);
     sprintf(arg8,"preferredlifetime=%d", pref);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,NULL);
+    // use _P_DETACH to speed things up, (but the tentative detection will surely fail)
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,NULL);
     return i;
 }
 
-extern int ipaddr_del(const char * ifacename, int ifaceid, const char * addr)
+int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefixLength)
 {
     // netsh interface ipv6 add address interface=eth0 address=2000::123 validlifetime=120 preferredlifetime=60
     char arg1[]="interface";
@@ -317,22 +301,28 @@ extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thi
     } 
     
     // REUSEADDR must be before bind() in order to take effect
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char*)&hops, sizeof(hops)))
-	return -9;
+	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char*)&hops, sizeof(hops))) {
+		error_message_set(WSAGetLastError());
+        return LOWLEVEL_ERROR_REUSE_FAILED;
+	}
 
     if (bind(s, (struct sockaddr*)&bindme, sizeof(bindme))) {
-        // displayError(WSAGetLastError());		
-        return -4;
+        error_message_set(WSAGetLastError());
+        return LOWLEVEL_ERROR_BIND_FAILED;
     }
     
     if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)packedAddr)) {
-	/* multicast */
-	ipmreq.ipv6mr_interface=ifaceid;
-	memcpy(&ipmreq.ipv6mr_multiaddr,packedAddr,16);
-	if(setsockopt(s,IPPROTO_IPV6,IPV6_ADD_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq)))
-	    return -6;
-	if(setsockopt(s,IPPROTO_IPV6,IPV6_MULTICAST_HOPS,(char*)&hops,sizeof(hops)))
-	    return -5;
+        /* multicast */
+        ipmreq.ipv6mr_interface=ifaceid;
+        memcpy(&ipmreq.ipv6mr_multiaddr,packedAddr,16);
+        if(setsockopt(s,IPPROTO_IPV6,IPV6_ADD_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq))) {
+            error_message_set(WSAGetLastError());
+            return LOWLEVEL_ERROR_MCAST_MEMBERSHIP;
+        }
+        if(setsockopt(s,IPPROTO_IPV6,IPV6_MULTICAST_HOPS,(char*)&hops,sizeof(hops))) {
+            error_message_set(WSAGetLastError());
+	        return LOWLEVEL_ERROR_MCAST_HOPS;
+        }
     } 
     return s;
 }
@@ -367,15 +357,13 @@ int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
     //inet_ntop6(addr,addrStr);
     if(getaddrinfo(addrStr,portStr,&inforemote,&remote))
 	return 0;
-    if (i=sendto(fd,buf,buflen,0,remote->ai_addr,remote->ai_addrlen))
-    {
+    i=sendto(fd,buf,buflen,0,remote->ai_addr,remote->ai_addrlen);
 	freeaddrinfo(remote);
-    	if (i<0) displayError(WSAGetLastError());
-	return 0;
+	if (i==SOCKET_ERROR)
+    {
+		error_message_set(WSAGetLastError());
+        return LOWLEVEL_ERROR_UNSPEC;
     }
-/*	if((setsockopt(fd,IPPROTO_IPV6,IPV6_DROP_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq))))
-	return WSAGetLastError();*/
-    freeaddrinfo(remote);
     return i;
 }
 
@@ -387,10 +375,11 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
     
     infolen=sizeof(info);
     if(!(readBytes=recvfrom(fd,buf,buflen,0,(SOCKADDR*)&info,&infolen))) {
-	return -1;
+        sprintf(Message, "socket reception failed (recvfrom() function returned 0 bytes read)\n");
+        return LOWLEVEL_ERROR_UNSPEC;
     } else {
-	inet_ntop6(info.sin6_addr.u.Byte,peerPlainAddr);
-	return	readBytes;
+        inet_ntop6(info.sin6_addr.u.Byte,peerPlainAddr);
+        return	readBytes;
     }
 }
 
@@ -423,7 +412,6 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
     return i;
-    return 0;
 }
 
 extern int domain_add(const char* ifname, int ifaceid, const char* domain) {

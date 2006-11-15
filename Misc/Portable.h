@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.62 2006-10-06 00:50:16 thomson Exp $
+ * $Id: Portable.h,v 1.63 2006-11-15 02:58:46 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -103,21 +103,30 @@
 
 #ifdef WIN32
 #define MAX_IFNAME_LENGTH 255
-#define LOGLEVEL	0
-#define IF_RUNNING	0x1
-#define IF_UP		0x1
-#define IF_MULTICAST	0x4
-#define IF_LOOPBACK	0x8
+#define LOGLEVEL          0
+#define IF_RUNNING        0x1
+#define IF_UP             0x1
+#define IF_MULTICAST      0x4
+#define IF_LOOPBACK       0x8
 #endif
 
 #ifdef LINUX
 #define MAX_IFNAME_LENGTH 64
-#define LOGLEVEL	0
-#define IF_UP		0x1
-#define IF_LOOPBACK	0x8  
-#define IF_RUNNING	0x40
-#define IF_MULTICAST	0x1000
+#define LOGLEVEL	      0
+#define IF_UP		      0x1
+#define IF_LOOPBACK	      0x8
+#define IF_RUNNING	      0x40
+#define IF_MULTICAST	  0x1000
 #endif
+
+/* ********************************************************************** */
+/* *** low-level error codes ******************************************** */
+/* ********************************************************************** */
+#define LOWLEVEL_ERROR_UNSPEC           -1
+#define LOWLEVEL_ERROR_BIND_FAILED      -4
+#define LOWLEVEL_ERROR_MCAST_HOPS       -5
+#define LOWLEVEL_ERROR_MCAST_MEMBERSHIP -6
+#define LOWLEVEL_ERROR_REUSE_FAILED     -9
 
 /* ********************************************************************** */
 /* *** time related functions ******************************************* */
@@ -145,7 +154,7 @@ extern void if_list_release(struct iface * list);
     
 /* add address to interface */
 extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
-		      unsigned long pref, unsigned long valid, int prefixLength);
+                      unsigned long pref, unsigned long valid, int prefixLength);
 extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
 
 /* add socket to interface */
@@ -167,6 +176,7 @@ extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
 extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
 /* microsleep(int microsecs) */
 extern void microsleep(int microsecs);
+extern char * error_message();
 
 /* DNS */
 extern int dns_add(const char* ifname, int ifindex, const char* addrPlain);

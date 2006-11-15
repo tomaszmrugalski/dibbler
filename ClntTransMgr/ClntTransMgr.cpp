@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.43 2006-10-06 00:39:44 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.44 2006-11-15 02:58:46 thomson Exp $
  *
  */
 
@@ -739,7 +739,7 @@ void TClntTransMgr::checkRenew()
     if (AddrMgr->getT1Timeout() > 0 ) 
 	return;
 
-    // yes, there are. Find them!
+    // TENTATIVE_YES, there are. Find them!
     AddrMgr->firstIA();
     SmartPtr < TAddrIA> ptrIA;
     while (ptrIA = AddrMgr->getIA() ) 
@@ -747,7 +747,7 @@ void TClntTransMgr::checkRenew()
         if ( (ptrIA->getT1Timeout() == 0) && (ptrIA->getState()==CONFIGURED) ) 
         {
             // to avoid race conditions (RENEW vs DECLINE)
-            if (ptrIA->getTentative()==DONTKNOWYET)
+            if (ptrIA->getTentative()==TENTATIVE_UNKNOWN)
                 continue;
 
             TContainer<SmartPtr<TAddrIA> > iaLst;
@@ -799,7 +799,7 @@ void TClntTransMgr::checkDecline()
         AddrMgr->firstIA();
         while((ptrIA=AddrMgr->getIA())&&(!firstIA))
         {
-            if (ptrIA->getTentative()==YES)
+            if (ptrIA->getTentative()==TENTATIVE_YES)
                 firstIA=ptrIA;
         }
         if (firstIA)
@@ -807,7 +807,7 @@ void TClntTransMgr::checkDecline()
             declineIALst.append(firstIA);
             while(ptrIA=AddrMgr->getIA())
             {
-                if ((ptrIA->getTentative()==YES)&&
+                if ((ptrIA->getTentative()==TENTATIVE_YES)&&
                     (*ptrIA->getDUID()==*firstIA->getDUID()))
                 {
                     declineIALst.append(ptrIA);
@@ -831,7 +831,7 @@ void TClntTransMgr::checkDecline()
 		Log(Info) << "Sending DECLINE for IA(IAID=" << ptrIA->getIAID() << "): ";
 
                 while ( ptrAddr= ptrIA->getAddr() ) {
-                    if (ptrAddr->getTentative() == YES) {
+                    if (ptrAddr->getTentative() == TENTATIVE_YES) {
                         // remove this address from interface
                         Log(Cont) << "(" << ptrAddr->get()->getPlain();
                         result = ptrIface->delAddr(ptrAddr->get());

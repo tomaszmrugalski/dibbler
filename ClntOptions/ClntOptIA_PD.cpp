@@ -55,7 +55,7 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
     addrPD->firstPrefix();
     while ( ptrPrefix = addrPD->getPrefix() )
     {
-	if ( !decline || (ptrPrefix->getTentative()==YES) )
+	if ( !decline || (ptrPrefix->getTentative()==TENTATIVE_YES) )
 	    SubOptions.append(new TClntOptIAPrefix(ptrPrefix->get(), ptrPrefix->getPref(), 
 						    ptrPrefix->getValid(),64,this->Parent) );
     }

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.13 2006-10-06 00:30:17 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.14 2006-11-15 02:58:45 thomson Exp $
  *
  */
 
@@ -29,7 +29,7 @@ TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid,
     this->T1 = T1;
     this->T2 = T2;
     this->IAID = ID;
-    this->Tentative = DONTKNOWYET;
+    this->Tentative = TENTATIVE_UNKNOWN;
     this->State = NOTCONFIGURED;
     this->Timestamp = now();
     this->Unicast = false;
@@ -74,14 +74,14 @@ void TAddrIA::setT2(unsigned long T2)
 void TAddrIA::addAddr(SmartPtr<TAddrAddr> x)
 {
     AddrLst.append(x);
-    Tentative = DONTKNOWYET;
+    Tentative = TENTATIVE_UNKNOWN;
 }
 
 void TAddrIA::addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid)
 {
     SmartPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid);
     AddrLst.append(ptr);
-    Tentative = DONTKNOWYET;
+    Tentative = TENTATIVE_UNKNOWN;
 }
 
 enum EState TAddrIA::getState()
@@ -348,16 +348,16 @@ unsigned long TAddrIA::getTentativeTimeout()
     unsigned long min = DHCPV6_INFINITY;
     switch (this->getTentative()) 
     {
-    case YES:
+    case TENTATIVE_YES:
         return 0;
-    case NO:
+    case TENTATIVE_NO:
         return DHCPV6_INFINITY;
-    case DONTKNOWYET:
+    case TENTATIVE_UNKNOWN:
         SmartPtr <TAddrAddr> ptrAddr;
         AddrLst.first();
         while ( ptrAddr = AddrLst.get() )
         {
-            if (ptrAddr->getTentative()==DONTKNOWYET)
+            if (ptrAddr->getTentative()==TENTATIVE_UNKNOWN)
                 if (min > ptrAddr->getTimestamp()+DADTIMEOUT-now() ) 
                 {
                     min = ptrAddr->getTimestamp()+DADTIMEOUT-now();
@@ -367,13 +367,13 @@ unsigned long TAddrIA::getTentativeTimeout()
     return min;
 }
 
-// returns Tentative status (YES/NO/DONTKNOWYET)
+// returns Tentative status (TENTATIVE_YES/TENTATIVE_NO/TENTATIVE_UNKNOWN)
 enum ETentative TAddrIA::getTentative()
 {
-    if (Tentative != DONTKNOWYET)
+    if (Tentative != TENTATIVE_UNKNOWN)
     	return Tentative;
     //if (Timestamp+DADTIMEOUT > now() )
-	//    return DONTKNOWYET;
+	//    return TENTATIVE_UNKNOWN;
 
     SmartPtr<TAddrAddr> ptrAddr;
     AddrLst.first();
@@ -382,45 +382,44 @@ enum ETentative TAddrIA::getTentative()
     
     while ( ptrAddr = AddrLst.get() ) {
 	switch (ptrAddr->getTentative()) {
-	case YES:
+	case TENTATIVE_YES:
 	    Log(Warning) << "DAD failed. Address " << ptrAddr->get()->getPlain() 
 			 << " was detected as tentative." << LogEnd;
-	    this->Tentative = YES;
-	    return YES;
-	case NO:
+	    this->Tentative = TENTATIVE_YES;
+	    return TENTATIVE_YES;
+	case TENTATIVE_NO:
 	    continue;
-	case DONTKNOWYET:
+	case TENTATIVE_UNKNOWN:
         if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
         {
 
             switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
             {
                 case    1:  
-                    ptrAddr->setTentative(YES);
-                    this->Tentative=YES;
-                    return YES;
+                    ptrAddr->setTentative(TENTATIVE_YES);
+                    this->Tentative=TENTATIVE_YES;
+                    return TENTATIVE_YES;
                 case    0:
-                    ptrAddr->setTentative(NO);
+                    ptrAddr->setTentative(TENTATIVE_NO);
                     Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
 			       << " is not tentative." << LogEnd;
                     break;
                 default:
                     Log(Error) << "DAD inconclusive. Unable to dermine " << ptrAddr->get()->getPlain() 
                                << " address state. Assuming NOT TENTATIVE." << LogEnd;
-                    ptrAddr->setTentative(NO);
+                    ptrAddr->setTentative(TENTATIVE_NO);
                     break;
             }
         } 
         else 
             allChecked = false;
-
 	}
     }
     if (allChecked) {
-        this->Tentative = NO;
-	    return NO;
+        this->Tentative = TENTATIVE_NO;
+	    return TENTATIVE_NO;
     } else {
-	    return DONTKNOWYET;
+	    return TENTATIVE_UNKNOWN;
     }
 }
 
@@ -428,19 +427,19 @@ void TAddrIA::setTentative()
 {
     SmartPtr<TAddrAddr> ptrAddr;
     AddrLst.first();
-    Tentative = NO;
+    Tentative = TENTATIVE_NO;
 
     while ( ptrAddr = AddrLst.get() ) 
     {
         switch (ptrAddr->getTentative()) 
         {
-            case YES:
-                Tentative = YES;
+            case TENTATIVE_YES:
+                Tentative = TENTATIVE_YES;
                 return;
-            case NO:
+            case TENTATIVE_NO:
                 continue;
-            case DONTKNOWYET:
-                Tentative = DONTKNOWYET;
+            case TENTATIVE_UNKNOWN:
+                Tentative = TENTATIVE_UNKNOWN;
                 break;
         }
     }

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.7 2005-08-03 23:23:35 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.8 2006-11-15 02:58:45 thomson Exp $
  */
 
 #include <iostream>
@@ -22,7 +22,7 @@ TAddrAddr::TAddrAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Valid = valid;
     this->Addr=addr;
     this->Timestamp = now();
-    this->Tentative = DONTKNOWYET;
+    this->Tentative = TENTATIVE_UNKNOWN;
 
     if (pref>valid) {
 	Log(Warning) << "Trying to store " << this->Addr->getPlain() << " with prefered(" << pref << ")>valid("
@@ -112,6 +112,9 @@ ostream & operator<<(ostream & strum,TAddrAddr &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/08/03 23:23:35  thomson
+ * Minor fix.
+ *
  * Revision 1.6  2005/08/03 23:17:11  thomson
  * Minor changes fixed.
  *

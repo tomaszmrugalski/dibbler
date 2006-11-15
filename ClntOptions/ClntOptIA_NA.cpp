@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.11 2006-10-06 00:42:13 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.12 2006-11-15 02:58:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006-10-06 00:42:13  thomson
+ * Initial PD support.
+ *
  * Revision 1.10  2006-03-23 00:12:09  thomson
  * TA support on the client side finished.
  *
@@ -69,7 +72,7 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
     addrIA->firstAddr();
     while ( ptrAddr = addrIA->getAddr() )
     {
-	if ( !decline || (ptrAddr->getTentative()==YES) )
+	if ( !decline || (ptrAddr->getTentative()==TENTATIVE_YES) )
 	    SubOptions.append(new TClntOptIAAddress(ptrAddr->get(), ptrAddr->getPref(), 
 						    ptrAddr->getValid(),this->Parent) );
     }
