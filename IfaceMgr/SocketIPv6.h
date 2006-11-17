@@ -51,6 +51,7 @@ class TIfaceSocket {
     // adds socket to this interface
     int createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 
 		     int port, bool ifaceonly, bool reuse);
+    void printError(int error, char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port);
 
     // FileDescriptor
     int FD;

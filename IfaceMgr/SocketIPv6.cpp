@@ -6,46 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.17 2005-01-31 19:35:18 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.16  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
- * Revision 1.15  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.14  2004/12/02 00:51:05  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.13  2004/11/25 01:22:22  thomson
- * Comment tags converted from javadoc to doxygen format.
- *
- * Revision 1.12  2004/11/01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.11  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.10  2004/09/07 15:37:44  thomson
- * Socket handling changes.
- *
- * Revision 1.9  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.8  2004/09/03 20:58:35  thomson
- * *** empty log message ***
- *
- * Revision 1.7  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.6  2004/04/10 12:18:01  thomson
- * Numerous fixes: LogName, LogMode options added, dns-servers changed to
- * dns-server, '' around strings are no longer needed.
- *
- * Revision 1.5  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
+ * $Id: SocketIPv6.cpp,v 1.18 2006-11-17 00:38:12 thomson Exp $
  *
  */
 
@@ -55,13 +16,6 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "Logger.h"
-
-/**
- * IfaceSocketIPv6 - represents network socket 
- * @date 2003-10-26
- * @author Tomasz Mrugalski <admin@klub.com.pl>
- * @licence GNU GPL v2 or later
- */
 
 /**
  * static elements of TIfaceSocket class
@@ -140,49 +94,10 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
     sock = sock_add(this->Iface, this->IfaceID, addr->getPlain(), 
 		    this->Port, ifaceonly?1:0, reuse?1:0);
 
-    // detect errors
-    switch (sock) {
-    case -1:
-        Log(Error) << "Unable to create socket. Is IPv6 protocol supported in your system?" 
-		   << LogEnd;
-        break;
-    case -2:
-        Log(Error) << "Unable to bind socket to interface " << this->Iface << "/" 
-		   << this->IfaceID << "." << LogEnd;
-        break;
-    case -3: // this error no longer could occur in Linux version
-        Log(Error) << "Unable to create a network address structure (addr=" 
-		  << addr->getPlain() << ")" << LogEnd;
-    case -4:
-        Log(Error) << "Unable to bind socket (iface=" << iface << "/" << ifaceid 
-		   << ", addr=" << addr->getPlain() << ", port=" 
-		   << this->Port << ")." << LogEnd;
-        break;
-    case -5:
-        Log(Error) << "Unable to getaddrinfo() of multicast group. (iface= " << iface << "/" << ifaceid  
-		   << ", addr=" << *this->Addr << ", port=" << this->Port << ")" << LogEnd;
-        break;
-    case -6:
-        Log(Error) << "Unable to join multicast group." << LogEnd;
-	break;
-        break;
-    case -7:
-        Log(Error) << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" << LogEnd;
-        break;
-    case -8:
-        Log(Error) << "Unable to set up socket option IPV6_PKTINFO" << LogEnd;
-        break;
-    case -9:
-        Log(Error) << "Unable to set up socket option SO_REUSEADDR" << LogEnd;
-        break;
-    default:
-        break;
-    }
-
-    // set status
-    if (sock < 0) {
-        this->Status = FAILED;
-        return -3;
+    if (sock<0) {
+	printError(sock, iface, ifaceid, addr, port);
+	this->Status = FAILED;
+	return -3;
     }
 
     this->FD = sock;
@@ -201,26 +116,20 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
  * @param port - to which port
  * returns number of bytes sent or -1 if something went wrong
  */
-int TIfaceSocket::send(char * buf,int len,SmartPtr<TIPv6Addr> addr,int port) {
+int TIfaceSocket::send(char * buf,int len, SmartPtr<TIPv6Addr> addr,int port) {
 
     int result;
     
     //extern "C" int sock_send(int fd, char * addr, char * buf, int buflen, int port, int ifaceID);
     result = sock_send(this->FD, addr->getPlain(), buf, len, port, this->IfaceID);
-    
-    switch(result) {
-    case -2:
-	  Log(Error) << "Unable to create a network address structure (addr=" << *addr << ")" << LogEnd;
-	  return -1;
-    default: {
 
-      }
+    if (result<0) {
+	printError(result, this->Iface, this->IfaceID, addr, port);
+	return -1;
     }
 
     /* send success full */
-    if (result>0)
-        return result;
-    return len;
+    return result;
 }
 
 /**
@@ -238,7 +147,7 @@ int TIfaceSocket::recv(char * buf, SmartPtr<TIPv6Addr> addr) {
     len = sock_recv(this->FD, myPlainAddr, peerPlainAddr, buf, len);
 
     if ( len  < 0 ) {
-        Log(Error) << "Error during sock_recv() on socket " << this->FD << LogEnd;
+	printError(len, this->Iface, this->IfaceID, addr, this->Port);
         return -1;
     }
 
@@ -299,6 +208,47 @@ TIfaceSocket::~TIfaceSocket() {
     FD_CLR(this->FD,getFDS());
 
     this->Count--;
+}
+
+void TIfaceSocket::printError(int error, char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port)
+{
+    // detect errors
+    switch (error) {
+    case LOWLEVEL_ERROR_UNSPEC:
+        Log(Error) << "Unable to create socket. Is IPv6 protocol supported in your system?" 
+		   << LogEnd;
+        break;
+    case LOWLEVEL_ERROR_BIND_IFACE:
+        Log(Error) << "Unable to bind socket to interface " << this->Iface << "/" 
+		   << this->IfaceID << "." << LogEnd;
+        break;
+    case LOWLEVEL_ERROR_BIND_FAILED:
+        Log(Error) << "Unable to bind socket (iface=" << iface << "/" << ifaceid 
+		   << ", addr=" << addr->getPlain() << ", port=" 
+		   << this->Port << ")." << LogEnd;
+        break;
+    case LOWLEVEL_ERROR_MCAST_HOPS:
+        Log(Error) << "Unable to set multicast hops. (iface= " << iface << "/" << ifaceid  
+		   << ", addr=" << *this->Addr << ", port=" << this->Port << ")" << LogEnd;
+        break;
+    case LOWLEVEL_ERROR_MCAST_MEMBERSHIP:
+        Log(Error) << "Unable to perform multicast group operation." << LogEnd;
+        break;
+    case LOWLEVEL_ERROR_GETADDRINFO:
+        Log(Error) << "getaddrinfo() failed. Is IPv6 protocol supported by your system?" << LogEnd;
+        break;
+    case LOWLEVEL_ERROR_SOCK_OPTS:
+        Log(Error) << "Unable to set up socket options." << LogEnd;
+        break;
+    case LOWLEVEL_ERROR_REUSE_FAILED:
+        Log(Error) << "Unable to set up socket option SO_REUSEADDR" << LogEnd;
+        break;
+    default:
+        break;
+    }
+    if (error_message()) {
+	Log(Error) << "Low-level layer error message: " << error_message() << LogEnd;
+    }
 }
 
 // --------------------------------------------------------------------
