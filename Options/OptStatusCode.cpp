@@ -6,15 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStatusCode.cpp,v 1.4 2005-07-17 21:09:52 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/12/02 00:51:05  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: OptStatusCode.cpp,v 1.5 2006-11-17 00:37:16 thomson Exp $
  *
  */
 #include <stdlib.h>
@@ -45,7 +37,7 @@ TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
     memcpy(Message,buf,len);
     Message[len]=0;
 	this->Message=(string)Message;
-    delete Message;
+    delete [] Message;
 }
 
 
@@ -65,7 +57,7 @@ string TOptStatusCode::getText()
 }
 
 
- char * TOptStatusCode::storeSelf( char* buf)
+char * TOptStatusCode::storeSelf( char* buf)
 {
     *(short*)buf = htons(OptType);
     buf+=2;
@@ -80,10 +72,9 @@ string TOptStatusCode::getText()
 TOptStatusCode::TOptStatusCode(int status,string message, TMsg* parent)
 	:TOpt(OPTION_STATUS_CODE, parent)
 {
-	this->StatusCode = status;
+    this->StatusCode = status;
     this->Message = message;
 }
-
 
 bool TOptStatusCode::doDuties()
 {

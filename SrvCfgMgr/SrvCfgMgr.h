@@ -6,39 +6,8 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.13 2006-10-06 00:35:26 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.14 2006-11-17 00:44:33 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.12  2006-08-21 22:50:31  thomson
- * Cache support added.
- *
- * Revision 1.11  2006/03/05 21:34:05  thomson
- * Temp. addresses support merged to the top branch.
- *
- * Revision 1.10.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.10  2006/01/12 00:23:35  thomson
- * Cleanup changes. Now -pedantic option works.
- *
- * Revision 1.9  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.8  2005/01/03 21:57:08  thomson
- * Relay support added.
- *
- * Revision 1.7  2004/12/07 00:43:03  thomson
- * Server no longer support link local addresses (bug #38),
- * Server now supports stateless mode (bug #71)
- *
- * Revision 1.6  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.5  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.4  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
  */
 
 class TSrvCfgMgr;
@@ -116,6 +85,7 @@ private:
     // global options
     bool Stateless;
     int  CacheSize;
+    List(DigestTypes) DigestLst;
 };
 
 #endif /* SRVCONFMGR_H */

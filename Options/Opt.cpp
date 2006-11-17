@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.6 2004-10-27 22:07:56 thomson Exp $
+ * $Id: Opt.cpp,v 1.7 2006-11-17 00:37:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004-10-27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.5  2004/05/23 16:40:12  thomson
  * *** empty log message ***
  *
@@ -21,6 +25,7 @@
  */
 
 #include "Opt.h"
+
 int TOpt::getOptType()
 {
     return OptType;

@@ -3,10 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.26 2006-08-30 01:10:38 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.27 2006-11-17 00:45:26 thomson Exp $
  */
 
 #include "Portable.h"
@@ -99,6 +100,8 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case ADVERTISE_MSG:
             ptr = new TClntMsgAdvertise(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
                 ifaceid,peer,buf,bufsize);
+            if (!ptr->validateAuthInfo(buf, bufsize))
+                    return 0;
             return ptr;
         case SOLICIT_MSG:
         case REQUEST_MSG:
@@ -113,6 +116,8 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case REPLY_MSG:
             ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
                 ifaceid, peer, buf, bufsize);
+            if (!ptr->validateAuthInfo(buf, bufsize))
+                    return 0;
             return ptr;
 
         case RECONFIGURE_MSG:

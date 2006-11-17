@@ -6,13 +6,15 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsGlobalOpt.h,v 1.5 2006-08-21 22:50:32 thomson Exp $
+ * $Id: SrvParsGlobalOpt.h,v 1.6 2006-11-17 00:44:34 thomson Exp $
  *
  */
 
 #ifndef TSRVPARSGLOBALOPT_H_
 #define TSRVPARSGLOBALOPT_H_
+
 #include "SrvParsIfaceOpt.h"
+#include "DHCPConst.h"
 
 class TSrvParsGlobalOpt : public TSrvParsIfaceOpt
 {
@@ -26,10 +28,13 @@ public:
     bool getStateless();
     void setCacheSize(int bytes);
     int  getCacheSize();
-	
+    void addDigest(DigestTypes x);
+    List(DigestTypes) getDigest();
+    
 private:
     string WorkDir;
     bool   Stateless;
     int    CacheSize;
+    List(DigestTypes) DigestLst;
 };
 #endif

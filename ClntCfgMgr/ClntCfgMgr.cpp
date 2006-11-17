@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.43 2006-11-03 23:14:39 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.44 2006-11-17 00:39:55 thomson Exp $
  *
  */
 
@@ -36,66 +36,17 @@ static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
 #endif
 
 TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr, 
-                         const string cfgFile, const string oldCfgFile)
+                         const string cfgFile)
     :TCfgMgr((Ptr*)ClntIfaceMgr)
 {
     this->IfaceMgr = ClntIfaceMgr;
     this->IsDone=false;
 
-    /* support for config changes between runs - currently disabled */
-    // bool newConf=false; //newConf=true if files differs
-    // newConf=compareConfigs(cfgFile,oldCfgFile);
-    // if(newConf) 
-    //   this->copyFile(cfgFile,oldCfgFile);
-    /* support for config changes between runs - currently disabled */
-
-#ifndef MOD_CLNT_EMBEDDED_CFG
-    // --- normal operation: read config. file ---
-
-    // parse config file
-    ifstream f;
-    f.open(cfgFile.c_str());
-    if ( ! f.is_open()  ) {
-	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
+    if (!parseConfigFile(cfgFile)) {
 	this->IsDone = true;
 	return;
-    } else {
-	Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     }
-    yyFlexLexer lexer(&f,&clog);
-    ClntParser parser(&lexer);
-    int result = parser.yyparse();
-    Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << LogEnd;
-    f.close();
-
-    if (result) {
-        //Result!=0 means config errors. Finish whole DHCPClient 
-        Log(Crit) << "Fatal error during config parsing." << LogEnd;
-        this->IsDone = true; 
-        this->DUID=new TDUID();
-        return;
-    }
-
-    // match parsed interfaces with interfaces detected in system
-    matchParsedSystemInterfaces(&parser);
-#else
-    // --- use hardcoded config ---
-    // use your favourite configuration generator function here
-    HardcodedCfgFunc *cfgMaker = &HardcodedCfgExample;
-
-    // call your function here
-    cfgMaker(this, cfgFile);
-
-#endif
-    this->LogLevel = logger::getLogLevel();
-    this->LogName  = logger::getLogName();
-  
-    // check config consistency
-    if(!validateConfig()) {
-        this->IsDone=true;
-        return;
-    }
-
+ 
     // load or create DUID
     string duidFile = (string)CLNTDUID_FILE;
     if (!setDUID(duidFile)) {
@@ -115,10 +66,67 @@ void TClntCfgMgr::dump() {
     xmlDump.close();
 }
 
-/*
-  match parsed interfaces with interfaces detected in system. 
-  CfgIface objects are created placed in CfgMgr. 
-*/
+bool TClntCfgMgr::parseConfigFile(string cfgFile)
+{
+    #ifndef MOD_CLNT_EMBEDDED_CFG
+    // --- normal operation: read config. file ---
+
+    // parse config file
+    ifstream f;
+    f.open(cfgFile.c_str());
+    if ( ! f.is_open()  ) {
+	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
+	return false;
+    } else {
+	Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
+    }
+    yyFlexLexer lexer(&f,&clog);
+    ClntParser parser(&lexer);
+    int result = parser.yyparse();
+    Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << LogEnd;
+    f.close();
+
+    if (result) {
+        //Result!=0 means config errors. Finish whole DHCPClient 
+        Log(Crit) << "Fatal error during config parsing." << LogEnd;
+        this->DUID=new TDUID();
+        return false;
+    }
+
+    if (!setGlobalOpts(parser.ParserOptStack.getLast())) {
+	return false;
+    }
+
+    // match parsed interfaces with interfaces detected in system
+    if (!matchParsedSystemInterfaces(&parser)) {
+	return false;
+    }
+#else
+    // --- use hardcoded config ---
+    // use your favourite configuration generator function here
+    HardcodedCfgFunc *cfgMaker = &HardcodedCfgExample;
+
+    // call your function here
+    cfgMaker(this, cfgFile);
+
+#endif
+    
+    // check config consistency
+    if(!validateConfig()) {
+        return false;
+    }
+
+    return true;
+}
+
+/** 
+ * match parsed interfaces with interfaces detected in system.  
+ * ClntCfgIface objects copied to CfgMgr. 
+ *
+ * @param parser 
+ * 
+ * @return 
+ */
 bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     int cfgIfaceCnt;
 
@@ -150,8 +158,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 		Log(Error) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
 			   << " specified in " << CLNTCONF_FILE << " is not present or does not support IPv6."
 			   << LogEnd;
-		this->IsDone = true;
-		continue;
+		return false;
 	    }
 	    if (cfgIface->noConfig()) {
 		Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
@@ -162,13 +169,13 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
 
+	    // setup default prefix length (used when IPv6 address is added to the interface)
 	    ifaceIface->setPrefixLength(cfgIface->getPrefixLength());
 
 	    if (!ifaceIface->countLLAddress()) {
 		Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
 			  << " is down or doesn't have any link-layer address." << LogEnd;
-		this->IsDone = true;
-		continue;
+		return false;
 	    }
 
 	    this->addIface(cfgIface);
@@ -438,6 +445,20 @@ SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
     return SmartPtr<TClntCfgIface>();
 }
 
+bool TClntCfgMgr::setGlobalOpts(SmartPtr<TClntParsGlobalOpt> opt)
+{
+    this->Digest = opt->getDigest();
+    this->LogLevel = logger::getLogLevel();
+    this->LogName  = logger::getLogName();
+
+    return true;
+}
+
+DigestTypes TClntCfgMgr::getDigest()
+{
+    return this->Digest;
+}
+
 bool TClntCfgMgr::isDone() {
     return this->IsDone;
 }
@@ -453,6 +474,19 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <workdir>" << x.getWorkDir()  << "</workdir>" << endl;
     strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
+    strum << "  <digest>";
+    switch (x.getDigest()) {
+    case DIGEST_NONE:
+	strum << "digest-none";
+	break;
+    case DIGEST_HMAC_SHA1:
+	strum << "digest-hmac-sha1";
+	break;
+    default:
+	strum << x.getDigest();
+	break;
+    };
+    strum << "</digest>" << endl;
     if (x.DUID)
         strum << "  " << *x.DUID;
     else

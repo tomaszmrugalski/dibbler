@@ -90,6 +90,7 @@ virtual ~SrvParser();
 %token CACHE_SIZE_
 %token PDCLASS_, PD_LENGTH_, PD_POOL_ 
 %token VENDOR_SPEC_
+%token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -115,6 +116,42 @@ GlobalDeclarationList
 | InterfaceDeclaration
 | GlobalDeclarationList GlobalOptionDeclaration
 | GlobalDeclarationList InterfaceDeclaration
+;
+
+GlobalOptionDeclaration
+: InterfaceOptionDeclaration
+| LogModeOption
+| LogLevelOption
+| LogNameOption
+| WorkDirOption
+| StatelessOption
+| CacheSizeOption
+| AuthOption
+;
+
+InterfaceOptionDeclaration
+: ClassOptionDeclaration
+| RelayOption
+| InterfaceIDOption
+| UnicastAddressOption
+| PreferenceOption
+| RapidCommitOption
+| IfaceMaxLeaseOption
+| ClntMaxLeaseOption
+| DNSServerOption
+| DomainOption
+| NTPServerOption
+| TimeZoneOption
+| SIPServerOption
+| SIPDomainOption
+| FQDNOption
+| NISServerOption
+| NISDomainOption
+| NISPServerOption
+| NISPDomainOption
+| LifetimeOption
+| PDDeclaration
+| VendorSpecOption
 ;
 
 InterfaceDeclaration
@@ -221,6 +258,10 @@ PDOptions
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
 /////////////////////////////////////////////////////////////////////////////
+
+AuthOption
+: AUTH_ DIGEST_NONE_      { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
+| AUTH_ DIGEST_HMAC_SHA1_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); }
 
 ///////////////////////////////////////////////////
 // Parameters for FQDN Options                   //
@@ -623,40 +664,6 @@ CacheSizeOption
 }
 ;
 
-GlobalOptionDeclaration
-: InterfaceOptionDeclaration
-| LogModeOption
-| LogLevelOption
-| LogNameOption
-| WorkDirOption
-| StatelessOption
-| CacheSizeOption
-;
-
-InterfaceOptionDeclaration
-: ClassOptionDeclaration
-| RelayOption
-| InterfaceIDOption
-| UnicastAddressOption
-| PreferenceOption
-| RapidCommitOption
-| IfaceMaxLeaseOption
-| ClntMaxLeaseOption
-| DNSServerOption
-| DomainOption
-| NTPServerOption
-| TimeZoneOption
-| SIPServerOption
-| SIPDomainOption
-| FQDNOption
-| NISServerOption
-| NISDomainOption
-| NISPServerOption
-| NISPDomainOption
-| LifetimeOption
-| PDDeclaration
-| VendorSpecOption
-;
 
 ////////////////////////////////////////////////////////////////////////
 /// RELAY //////////////////////////////////////////////////////////////
@@ -863,7 +870,7 @@ LifetimeOption
 VendorSpecOption
 :OPTION_ VENDOR_SPEC_ Number DUID_
 {
-    Log(Debug) << "#### Vendor-spec defined: Number: " << $3 << ", valuelen=" << $4.length << LogEnd;
+    Log(Debug) << "Vendor-spec defined: Number: " << $3 << ", valuelen=" << $4.length << LogEnd;
     this->VendorSpec = new TSrvOptVendorSpec($3, $4.duid, $4.length, 0);
 };
 

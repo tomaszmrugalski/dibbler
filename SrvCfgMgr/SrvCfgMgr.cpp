@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.44 2006-10-06 00:35:26 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.45 2006-11-17 00:44:33 thomson Exp $
  *
  */
 
@@ -118,6 +118,7 @@ bool TSrvCfgMgr::setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->Workdir   = opt->getWorkDir();
     this->Stateless = opt->getStateless();
     this->CacheSize = opt->getCacheSize();
+    this->DigestLst = opt->getDigest();
     return true;
 }
 
@@ -556,6 +557,24 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
 	out << "  " << *x.DUID;
     else
 	out << "  <!-- DUID not set -->" << std::endl;
+    out << "  <auth count=\"" << x.DigestLst.count() << "\">";
+    x.DigestLst.first();
+    SPtr<DigestTypes> dig;
+    while (dig=x.DigestLst.get()) {
+	switch (*dig) {
+	case DIGEST_NONE:
+	    out << "digest-none ";
+	    break;
+	case DIGEST_HMAC_SHA1:
+	    out << "digest-hmac-sha1";
+	    break;
+	default:
+	    break;
+	}
+	out << "X";
+    }
+
+    out << "</auth>" << endl;
 
     if (x.stateless())
 	out << "  <stateless/>" << std::endl;

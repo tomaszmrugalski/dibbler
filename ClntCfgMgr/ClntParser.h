@@ -298,6 +298,9 @@ typedef
 #define	DUID_TYPE_LLT_	299
 #define	DUID_TYPE_LL_	300
 #define	DUID_TYPE_EN_	301
+#define	AUTH_	302
+#define	DIGEST_NONE_	303
+#define	DIGEST_HMAC_SHA1_	304
 
 
 #line 169 "../bison++/bison.h"
@@ -390,6 +393,9 @@ static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
 static const int DUID_TYPE_LL_;
 static const int DUID_TYPE_EN_;
+static const int AUTH_;
+static const int DIGEST_NONE_;
+static const int DIGEST_HMAC_SHA1_;
 
 
 #line 212 "../bison++/bison.h"
@@ -442,6 +448,9 @@ static const int DUID_TYPE_EN_;
 	,DUID_TYPE_LLT_=299
 	,DUID_TYPE_LL_=300
 	,DUID_TYPE_EN_=301
+	,AUTH_=302
+	,DIGEST_NONE_=303
+	,DIGEST_HMAC_SHA1_=304
 
 
 #line 215 "../bison++/bison.h"

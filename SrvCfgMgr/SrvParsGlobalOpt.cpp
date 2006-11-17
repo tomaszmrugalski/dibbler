@@ -14,6 +14,8 @@ TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
     this->WorkDir   = WORKDIR;
     this->Stateless = false;
     this->CacheSize = SERVER_DEFAULT_CACHE_SIZE;
+
+    this->DigestLst.clear();
 }
 
 TSrvParsGlobalOpt::~TSrvParsGlobalOpt(void) {
@@ -43,3 +45,10 @@ int  TSrvParsGlobalOpt::getCacheSize() {
     return this->CacheSize;
 }
 
+void TSrvParsGlobalOpt::addDigest(DigestTypes x) {
+    this->DigestLst.append(x);
+}
+
+List(DigestTypes) TSrvParsGlobalOpt::getDigest() {
+    return this->DigestLst;
+}

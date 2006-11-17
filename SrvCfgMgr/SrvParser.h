@@ -294,11 +294,14 @@ typedef
 #define	PD_LENGTH_	297
 #define	PD_POOL_	298
 #define	VENDOR_SPEC_	299
-#define	STRING_	300
-#define	HEXNUMBER_	301
-#define	INTNUMBER_	302
-#define	IPV6ADDR_	303
-#define	DUID_	304
+#define	AUTH_	300
+#define	DIGEST_NONE_	301
+#define	DIGEST_HMAC_SHA1_	302
+#define	STRING_	303
+#define	HEXNUMBER_	304
+#define	INTNUMBER_	305
+#define	IPV6ADDR_	306
+#define	DUID_	307
 
 
 #line 169 "../bison++/bison.h"
@@ -389,6 +392,9 @@ static const int PDCLASS_;
 static const int PD_LENGTH_;
 static const int PD_POOL_;
 static const int VENDOR_SPEC_;
+static const int AUTH_;
+static const int DIGEST_NONE_;
+static const int DIGEST_HMAC_SHA1_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -444,11 +450,14 @@ static const int DUID_;
 	,PD_LENGTH_=297
 	,PD_POOL_=298
 	,VENDOR_SPEC_=299
-	,STRING_=300
-	,HEXNUMBER_=301
-	,INTNUMBER_=302
-	,IPV6ADDR_=303
-	,DUID_=304
+	,AUTH_=300
+	,DIGEST_NONE_=301
+	,DIGEST_HMAC_SHA1_=302
+	,STRING_=303
+	,HEXNUMBER_=304
+	,INTNUMBER_=305
+	,IPV6ADDR_=306
+	,DUID_=307
 
 
 #line 215 "../bison++/bison.h"

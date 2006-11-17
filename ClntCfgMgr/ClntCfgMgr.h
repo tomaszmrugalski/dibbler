@@ -3,10 +3,10 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *  cjanges: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
+ * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.13 2006-11-03 23:14:39 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.14 2006-11-17 00:39:55 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -27,8 +27,7 @@ class TClntCfgMgr : public TCfgMgr
 {
     friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
  public:
-    TClntCfgMgr(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-		const string cfgFile,const string oldCfgFile);
+    TClntCfgMgr(SmartPtr<TClntIfaceMgr> IfaceMgr, const string cfgFile);
     ~TClntCfgMgr();
     
     // --- Iface related ---
@@ -50,18 +49,22 @@ class TClntCfgMgr : public TCfgMgr
     SmartPtr<TClntCfgIface> getIfaceByIAID(int iaid);
     bool isDone();
 
-private:
-    SmartPtr<TClntIfaceMgr> IfaceMgr;
-    List(TClntCfgIface) ClntCfgIfaceLst;
+    DigestTypes getDigest();
 
+private:
+    bool setGlobalOpts(SmartPtr<TClntParsGlobalOpt> opt);
     bool validateConfig();
     bool validateIface(SmartPtr<TClntCfgIface> iface);
     bool validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA);
     bool validateAddr(SmartPtr<TClntCfgIface> ptrIface, 
 		      SmartPtr<TClntCfgIA> ptrIA,
 		      SmartPtr<TClntCfgAddr> ptrAddr);
-
+    bool parseConfigFile(string cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
+
+    SmartPtr<TClntIfaceMgr> IfaceMgr;
+    List(TClntCfgIface) ClntCfgIfaceLst;
+    DigestTypes Digest;
 };
 
 typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);

@@ -85,6 +85,9 @@ DUID-LL               { return ClntParser::DUID_TYPE_LL_; }
 DUID-LLT              { return ClntParser::DUID_TYPE_LLT_; }
 DUID-EN               { return ClntParser::DUID_TYPE_EN_; }
 vendor-spec           { return ClntParser::VENDOR_SPEC_; }
+auth                  { return ClntParser::AUTH_; }
+digest-none           { return ClntParser::DIGEST_NONE_; }
+digest-hmac-sha1      { return ClntParser::DIGEST_HMAC_SHA1_; }
 #.* ;
 
 "//"(.*) ;

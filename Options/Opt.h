@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Opt.h,v 1.7 2006-03-03 20:25:15 thomson Exp $
+ * $Id: Opt.h,v 1.8 2006-11-17 00:37:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-03-03 20:25:15  thomson
+ * Comment added.
+ *
  * Revision 1.6  2006/01/12 00:23:35  thomson
  * Cleanup changes. Now -pedantic option works.
  *
@@ -55,6 +58,7 @@ class TOpt
      * @return The address where the option ends
      */
     virtual char * storeSelf(char* buf) = 0;
+//    char * storeSelfPtr(char* buf, char* msg_start);
     virtual bool doDuties() = 0;
     
     /**

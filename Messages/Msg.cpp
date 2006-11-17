@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  */
@@ -20,6 +21,7 @@
 #include "Msg.h"
 #include "Opt.h"
 #include "Logger.h"
+#include "sha1.h"
 
 TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 {
@@ -54,6 +56,8 @@ void TMsg::setAttribs(int iface, SmartPtr<TIPv6Addr> addr, int msgType, long tra
     IsDone=false;
     MsgType=msgType;
     this->pkt=NULL;
+    DigestType = DIGEST_NONE; /* by default digest is none */
+    AuthInfoPtr = NULL;
 }
 
 int TMsg::getSize()
@@ -93,6 +97,7 @@ int TMsg::storeSelf(char * buffer)
     char *start = buffer;
     int tmp = this->TransID;
     
+    //pkt_start = start;
     *(buffer++) = (char)MsgType;
     
     /* ugly 3-byte version of htons/htonl */
@@ -107,6 +112,19 @@ int TMsg::storeSelf(char * buffer)
         Option->storeSelf(buffer);
         buffer += Option->getSize();
     }
+
+    if (AuthInfoPtr && getOption(OPTION_AUTH) && DigestType != DIGEST_NONE)
+            switch (DigestType) {
+                    case DIGEST_HMAC_SHA1:
+                        // [s] zmieniæ klucz i jego rozmiar na co¶ sensownego
+                        hmac_sha1(start, buffer-start, "testkey", 7, (char *)AuthInfoPtr);
+                        cout << "sending digest: ";
+                        printhex(AuthInfoPtr, getDigestSize(DigestType));
+                        break;
+                    default:
+                        break;
+            }
+
     return buffer-start;
 }
 
@@ -146,6 +164,52 @@ int TMsg::getIface() {
 
 bool TMsg::isDone() {
     return IsDone;
+}
+
+void TMsg::setAuthInfoPtr(char* ptr) {
+    AuthInfoPtr = ptr;
+}
+
+bool TMsg::validateAuthInfo(char *buf, int bufSize) {
+    bool ok = false;
+
+    if (AuthInfoPtr && DigestType != DIGEST_NONE) {
+            unsigned AuthInfoLen = getDigestSize(DigestType);
+            char *rcvdAuthInfo = new char[AuthInfoLen];
+            char *goodAuthInfo = new char[AuthInfoLen];
+
+            switch (DigestType) {
+                    case DIGEST_NONE:
+                        ok = true;
+                        break;
+                    case DIGEST_HMAC_SHA1:
+
+                        cout << bufSize << endl;
+                        memmove(rcvdAuthInfo, AuthInfoPtr, AuthInfoLen);
+                        memset(AuthInfoPtr, 0, AuthInfoLen);
+                        // [s] zmieniæ klucz i jego rozmiar na co¶ sensownego
+                        hmac_sha1(buf, bufSize, "testkey", 7, goodAuthInfo);
+                        cout << "received digest: ";
+                        printhex(rcvdAuthInfo, AuthInfoLen);
+                        cout << "  proper digest: ";
+                        printhex(goodAuthInfo, AuthInfoLen);
+                        if (0 == strncmp(goodAuthInfo, rcvdAuthInfo, AuthInfoLen))
+                                ok = true;
+                        break;
+                    default:
+                        break;
+            }
+
+            delete [] rcvdAuthInfo;
+            delete [] goodAuthInfo;
+    }
+
+    if (ok)
+        Log(Info) << "Authentication Information correct." << LogEnd;
+    else
+        Log(Error) << "Authentication Information incorrect." << LogEnd;
+
+    return ok;
 }
 
 /** 

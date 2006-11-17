@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  */
@@ -32,7 +33,7 @@ class TMsg
     
     virtual int getSize();
     
-    // trasnmit (or retransmit)
+    // transmit (or retransmit)
 
     virtual unsigned long getTimeout();
 
@@ -54,6 +55,10 @@ class TMsg
     int getIface();
     virtual ~TMsg();
     bool isDone();
+    void setAuthInfoPtr(char* ptr);
+    bool validateAuthInfo(char *buf, int bufSize);
+    
+    enum DigestTypes DigestType;
 
   protected:
     int MsgType;
@@ -70,6 +75,7 @@ class TMsg
     char * pkt;  // buffer where this packet will be build
     int Iface;   // interface from/to which message was received/should be sent
     SmartPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
+    char * AuthInfoPtr; // pointer to Authentication Information field of OPTION AUTH
 };
 
 #endif

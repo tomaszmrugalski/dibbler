@@ -93,6 +93,9 @@ pd-class	    { return SrvParser::PDCLASS_; }
 pd-length	    { return SrvParser::PD_LENGTH_; }
 pd-pool             { return SrvParser::PD_POOL_;}
 vendor-spec         { return SrvParser::VENDOR_SPEC_; }
+auth                { return SrvParser::AUTH_; }
+digest-none         { return SrvParser::DIGEST_NONE_; }
+digest-hmac-sha1    { return SrvParser::DIGEST_HMAC_SHA1_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}

@@ -6,9 +6,12 @@
  *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                      
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.h,v 1.7 2006-10-06 00:33:01 thomson Exp $
+ * $Id: ClntParsIfaceOpt.h,v 1.8 2006-11-17 00:39:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-10-06 00:33:01  thomson
+ * Initial PD support.
+ *
  * Revision 1.6  2004-11-30 00:42:50  thomson
  * Client no longer sends RapidCommit, unless told to do so (bug #55)
  *
@@ -52,8 +55,8 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getUnicast();
     bool getRapidCommit();
     void setRapidCommit(bool rapid);
-    bool isNewGroup();
-    void setNewGroup(bool newGr);
+/*     bool isNewGroup(); */
+/*     void setNewGroup(bool newGr); */
     bool getIsIAs();
     void setIsIAs(bool state);
     
@@ -124,7 +127,6 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
 
 
 private:
-    bool NewGroup;//indicates whether new group should be created
     bool NoIAs;
     bool Unicast; // do we accept unicast?
     bool RapidCommit;

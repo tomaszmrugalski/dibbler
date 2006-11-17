@@ -6,28 +6,9 @@
  *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.8 2006-10-06 00:33:01 thomson Exp $
+ * $Id: ClntParsIfaceOpt.cpp,v 1.9 2006-11-17 00:39:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.7  2004-11-30 00:42:50  thomson
- * Client no longer sends RapidCommit, unless told to do so (bug #55)
- *
- * Revision 1.6  2004/11/29 21:21:56  thomson
- * Client parser now supports 'option lifetime' directive (bug #75)
- *
- * Revision 1.5  2004/11/01 23:31:24  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.4  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.3  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.2  2004/05/23 22:37:54  thomson
- * *** empty log message ***
- *
  *                                                                           
  */
 
@@ -38,14 +19,39 @@
 
 using namespace std;
 
-bool TClntParsIfaceOpt::isNewGroup() 
-{ 
-    return this->NewGroup;
-}
+TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
+{
+    DNSServerLst.clear();
+    DomainLst.clear();
+    NTPServerLst.clear();
+    Timezone="";
+    SIPServerLst.clear();
+    SIPDomainLst.clear();
+    FQDN    ="";
+    NISServerLst.clear();
+    NISDomain = "";
+    NISPServerLst.clear();
+    NISPDomain = "";
+    Lifetime = false;
+    
+    NoIAs   = false;
 
-void TClntParsIfaceOpt::setNewGroup(bool newGr) 
-{ 
-    this->NewGroup=newGr;
+    this->Unicast     = CLIENT_DEFAULT_UNICAST;
+    this->RapidCommit = CLIENT_DEFAULT_RAPID_COMMIT;
+    
+    ReqDNSServer  = false;
+    ReqDomain     = false;
+    ReqNTPServer  = false;
+    ReqTimezone   = false;
+    ReqSIPServer  = false;
+    ReqSIPDomain  = false;
+    ReqFQDN       = false;
+    ReqNISServer  = false;
+    ReqNISPServer = false;
+    ReqNISDomain  = false;
+    ReqNISPDomain = false;
+    ReqLifetime   = false;
+    ReqPrefixDelegation = false;
 }
 
 bool TClntParsIfaceOpt::getIsIAs()
@@ -75,42 +81,6 @@ bool TClntParsIfaceOpt::getRapidCommit()
 void TClntParsIfaceOpt::setRapidCommit(bool rapCom)
 {
     this->RapidCommit=rapCom;
-}
-
-TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
-{
-    DNSServerLst.clear();
-    DomainLst.clear();
-    NTPServerLst.clear();
-    Timezone="";
-    SIPServerLst.clear();
-    SIPDomainLst.clear();
-    FQDN    ="";
-    NISServerLst.clear();
-    NISDomain = "";
-    NISPServerLst.clear();
-    NISPDomain = "";
-    Lifetime = false;
-    
-    NewGroup=false;
-    NoIAs   = false;
-
-    this->Unicast     = CLIENT_DEFAULT_UNICAST;
-    this->RapidCommit = CLIENT_DEFAULT_RAPID_COMMIT;
-    
-    ReqDNSServer  = false;
-    ReqDomain     = false;
-    ReqNTPServer  = false;
-    ReqTimezone   = false;
-    ReqSIPServer  = false;
-    ReqSIPDomain  = false;
-    ReqFQDN       = false;
-    ReqNISServer  = false;
-    ReqNISPServer = false;
-    ReqNISDomain  = false;
-    ReqNISPDomain = false;
-    ReqLifetime   = false;
-    ReqPrefixDelegation = false;
 }
 
 TClntParsIfaceOpt::~TClntParsIfaceOpt() {

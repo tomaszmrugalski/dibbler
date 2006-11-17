@@ -104,6 +104,7 @@ namespace std
 %token STRICT_RFC_NO_ROUTING_
 %token PD_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
+%token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
     
 %type  <ival> Number
 
@@ -119,11 +120,51 @@ Grammar
 ;
 
 GlobalDeclarationList
-    : GlobalOptionDeclaration
-    | InterfaceDeclaration
-    | GlobalDeclarationList GlobalOptionDeclaration
-    | GlobalDeclarationList InterfaceDeclaration
-    ;
+: GlobalOptionDeclaration
+| InterfaceDeclaration
+| GlobalDeclarationList GlobalOptionDeclaration
+| GlobalDeclarationList InterfaceDeclaration
+;
+
+GlobalOptionDeclaration
+: InterfaceOptionDeclaration
+| LogModeOption
+| LogNameOption
+| LogLevelOption
+| WorkDirOption
+| DuidTypeOption
+| StrictRfcNoRoutingOption
+| AuthOption
+;
+
+InterfaceOptionDeclaration
+: IAOptionDeclaration 
+| NoIAsOptions
+| UnicastOption
+| DNSServerOption
+| DomainOption
+| NTPServerOption
+| TimeZoneOption
+| SIPServerOption
+| SIPDomainOption
+| FQDNOption
+| NISServerOption
+| NISPServerOption
+| NISDomainOption
+| NISPDomainOption
+| LifetimeOption
+| VendorSpecOption
+| RejectServersOption
+| PreferServersOption
+| PrefixDelegationOption
+;
+
+IAOptionDeclaration
+: T1Option
+| T2Option
+| RapidCommitOption
+| ADDRESOptionDeclaration
+;
 
 InterfaceDeclaration
 /////////////////////////////////////////////////////////////////////////////
@@ -374,45 +415,6 @@ ADDRESDeclarationList
 }
 ;
 
-GlobalOptionDeclaration
-: InterfaceOptionDeclaration
-| LogModeOption
-| LogNameOption
-| LogLevelOption
-| WorkDirOption
-| DuidTypeOption
-| StrictRfcNoRoutingOption
-;
-
-InterfaceOptionDeclaration
-: IAOptionDeclaration 
-| NoIAsOptions
-| UnicastOption
-| DNSServerOption
-| DomainOption
-| NTPServerOption
-| TimeZoneOption
-| SIPServerOption
-| SIPDomainOption
-| FQDNOption
-| NISServerOption
-| NISPServerOption
-| NISDomainOption
-| NISPDomainOption
-| LifetimeOption
-| VendorSpecOption
-| RejectServersOption
-| PreferServersOption
-| PrefixDelegationOption
-;
-
-IAOptionDeclaration
-: T1Option
-| T2Option
-| RapidCommitOption
-| ADDRESOptionDeclaration
-;
-
 ADDRESOptionDeclaration
 : PreferredTimeOption
 | ValidTimeOption
@@ -472,6 +474,10 @@ StrictRfcNoRoutingOption
     // by default prefix is set to 128
 }
 ;
+
+AuthOption
+: AUTH_ DIGEST_NONE_      { ParserOptStack.getLast()->setDigest(DIGEST_NONE); }
+| AUTH_ DIGEST_HMAC_SHA1_ { ParserOptStack.getLast()->setDigest(DIGEST_HMAC_SHA1); }
 
 RejectServersOption
 :REJECT_SERVERS_ 
@@ -846,7 +852,6 @@ void ClntParser::StartIfaceDeclaration()
 {
   //Interface scope, so parameters associated with global scope are pushed on stack
   ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
-  ParserOptStack.getLast()->setNewGroup(false);
   ClntCfgIALst.clear();
   ClntCfgAddrLst.clear();
   this->VendorSpec = 0;
@@ -919,7 +924,6 @@ void ClntParser::EmptyIface()
  */void ClntParser::StartIADeclaration(bool aggregation)
 {
   ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
-  ParserOptStack.getLast()->setNewGroup(false);
   ParserOptStack.getLast()->setAddrHint(!aggregation);
   ClntCfgAddrLst.clear();
 }
