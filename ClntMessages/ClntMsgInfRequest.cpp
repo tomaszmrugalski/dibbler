@@ -3,12 +3,16 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.9 2006-02-02 23:18:29 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.10 2006-11-17 00:51:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006-02-02 23:18:29  thomson
+ * 0.4.2 release.
+ *
  * Revision 1.8  2005/01/08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -131,11 +135,12 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
             case OPTION_RAPID_COMMIT:
             case OPTION_INTERFACE_ID:
             case OPTION_RECONF_MSG:
+            case OPTION_AUTH:
                 Options.del();
                 break;        
         }
         //The other options can be included in Information request option
-        //CLIENTID,ORO,ELAPSED_TIME,AUTH_MSG,USER_CLASS,VENDOR_CLASS,
+        //CLIENTID,ORO,ELAPSED_TIME,USER_CLASS,VENDOR_CLASS,
         //VENDOR_OPTS,DNS_RESOLVERS,DOMAIN_LIST,NTP_SERVERS,TIME_ZONE,
         //RECONF_ACCEPT - maybe also SERVERID if information request
         //is answer to reconfigure message

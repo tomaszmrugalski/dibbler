@@ -4,11 +4,16 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.13 2006-10-06 00:43:28 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.14 2006-11-17 00:51:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006-10-06 00:43:28  thomson
+ * Initial PD support.
+ *
  * Revision 1.12  2005-01-08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -105,6 +110,11 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     // copy whole list from SOLICIT ...
     Options = opts;
+	// set proper Parent in copied options
+	Options.first();
+	SmartPtr<TOpt> opt;
+	while (opt = Options.get())
+        opt->setParent(this);
 
     // does this server support unicast?
     SmartPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(iface);
@@ -234,31 +244,31 @@ void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
                 }
                 break;
             }
-	    case OPTION_IA_PD:
-	    {
-		SPtr<TClntOptIA_PD> pd = (Ptr*) option;
-		pd->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-			     ptrDUID->getDUID(), 0, this->Iface);
-		if (pd->doDuties()) {
-		    Log(Notice) << "PD set successfully." << LogEnd;
-		    
-		    SmartPtr<TOpt> requestOpt;
-		    if ( optORO && (optORO->isOption(option->getOptType())) )
-			optORO->delOption(option->getOptType());
-		    
-		    // find options specified in this message
-		    this->Options.first();
-		    while ( requestOpt = this->Options.get()) {
-			if ( requestOpt->getOptType() == option->getOptType() ) 
-			{
-			    this->Options.del();
-			}//if
-		    }
-		} else {
-		    Log(Warning) << "PD setup failed." << LogEnd;
-		}
-		break;
-	    }
+            case OPTION_IA_PD:
+            {
+            SPtr<TClntOptIA_PD> pd = (Ptr*) option;
+            pd->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+                     ptrDUID->getDUID(), 0, this->Iface);
+            if (pd->doDuties()) {
+                Log(Notice) << "PD set successfully." << LogEnd;
+                
+                SmartPtr<TOpt> requestOpt;
+                if ( optORO && (optORO->isOption(option->getOptType())) )
+                optORO->delOption(option->getOptType());
+                
+                // find options specified in this message
+                this->Options.first();
+                while ( requestOpt = this->Options.get()) {
+                if ( requestOpt->getOptType() == option->getOptType() ) 
+                {
+                    this->Options.del();
+                }//if
+                }
+            } else {
+                Log(Warning) << "PD setup failed." << LogEnd;
+            }
+            break;
+            }
             case OPTION_IAADDR:
                 Log(Warning) << "Option OPTION_IAADDR misplaced." << LogEnd;
                 break;

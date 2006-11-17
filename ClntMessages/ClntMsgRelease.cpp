@@ -6,7 +6,7 @@
  * chanmges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.9 2006-10-06 00:43:28 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.10 2006-11-17 00:51:25 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -29,7 +29,7 @@
 #include "DNSUpdate.h"
 
 /** 
- * create RELEASE emssage
+ * create RELEASE message
  * 
  * @param IfaceMgr 
  * @param TransMgr 

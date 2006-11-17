@@ -3,10 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.15 2006-11-11 06:56:26 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.16 2006-11-17 00:51:25 thomson Exp $
  */
 
 #ifdef WIN32
@@ -47,6 +48,7 @@
 #include "ClntOptNISPServer.h"
 #include "ClntOptNISPDomain.h"
 #include "ClntOptLifetime.h"
+#include "ClntOptAuthentication.h"
 #include "Logger.h"
 
 string msgs[] = { "",
@@ -85,7 +87,18 @@ void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
 		     << " in the " << name << " message. Ignoring." << LogEnd;
 }
 
-//Constructor builds message on the basis of buffer
+/** 
+ * creates message, based on a received buffer
+ * 
+ * @param IfaceMgr 
+ * @param TransMgr 
+ * @param CfgMgr 
+ * @param AddrMgr 
+ * @param iface 
+ * @param addr 
+ * @param buf 
+ * @param bufSize 
+ */
 TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
                    SmartPtr<TClntTransMgr> TransMgr, 
                    SmartPtr<TClntCfgMgr>   CfgMgr,
@@ -188,6 +201,11 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    ptr = (Ptr*) ta;
 	    break;
 	}
+	case OPTION_AUTH:
+	    ptr = new TClntOptAuthentication(buf+pos, length, this);
+	    // FIXME: set this->Digest = ...
+	    Log(Warning) << "[s] parsed OPTION_AUTH in message" << LogEnd;
+	    break;
 	case OPTION_VENDOR_OPTS: {
 	    SmartPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
 	    ptr = (Ptr*) vendor;
@@ -199,7 +217,6 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_VENDOR_CLASS:
 	case OPTION_RECONF_MSG:
 	case OPTION_RELAY_MSG:
-	case OPTION_AUTH_MSG:
 	case OPTION_INTERFACE_ID:
 	    Log(Warning) << "Option " << code<< " in message " 
 			 << MsgType << " is not supported." << LogEnd;
@@ -242,6 +259,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
                    :TMsg(iface,addr,msgType)
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
+    this->DigestType = CfgMgr->getDigest();
 }
 
 void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr, 
@@ -249,16 +267,16 @@ void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr,
                           SmartPtr<TClntCfgMgr> CfgMgr,
                           SmartPtr<TClntAddrMgr> AddrMgr)
 {
-    ClntTransMgr=TransMgr;	
-    ClntIfaceMgr=IfaceMgr;	
-    ClntCfgMgr=CfgMgr;
-    ClntAddrMgr=AddrMgr;
+    this->ClntTransMgr = TransMgr;	
+    this->ClntIfaceMgr = IfaceMgr;	
+    this->ClntCfgMgr   = CfgMgr;
+    this->ClntAddrMgr  = AddrMgr;
 
     FirstTimeStamp = now();			
     LastTimeStamp  = now();			
 
-    RC = 0;
-    RT = 0;
+    RC  = 0;
+    RT  = 0;
     IRT = 0;
     MRT = 0;
     MRC = 0;
@@ -515,6 +533,10 @@ void TClntMsg::appendRequestedOptions() {
     if ( iface->isReqLifetime() && (this->MsgType == INFORMATION_REQUEST_MSG) && optORO->count() )
 	optORO->addOption(OPTION_LIFETIME);
 
+    // --- option: AUTH [s] ---
+	//SmartPtr<TClntOptAuthentication> opt = new TClntOptAuthentication(this);
+	//Options.append( (Ptr*)opt );
+
     // --- option: VENDOR-SPEC ---
     if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_VENDOR_OPTS);
@@ -528,6 +550,13 @@ void TClntMsg::appendRequestedOptions() {
     // include ELAPSED option
     Options.append(new TClntOptElapsed(this));
 
+    // --- option: AUTH ---
+    if (ClntCfgMgr->getDigest()!=DIGEST_NONE) {
+	Log(Debug) << "#### Adding AUTH option." << LogEnd;
+	Options.append(new TClntOptAuthentication(this));
+    } else {
+	Log(Debug) << "#### AUTH option disabled." << LogEnd;
+    }
     // final setup: Did we add any options at all? 
     if ( optORO->count() ) 
 	Options.append( (Ptr*) optORO );
