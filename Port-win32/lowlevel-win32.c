@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.9 2006-11-15 02:58:46 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.10 2006-11-17 00:51:59 thomson Exp $
  *
  */
 
@@ -30,7 +30,7 @@ char cmdPath[256];
 
 
 #define ERROR_MESSAGE_SIZE 1024
-static char Message[ERROR_MESSAGE_SIZE];
+static char Message[ERROR_MESSAGE_SIZE] = {0};
 
 static void error_message_set(int errCode);
 static void error_message_set_string(char *str);
