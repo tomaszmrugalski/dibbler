@@ -33,7 +33,7 @@ endif
 $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
-	-L$(MISC)	  -lMisc         \
+	-L$(MISC)         -lMisc         \
 	-L$(ADDRMGR)      -lAddrMgr      \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr  \
 	-L$(LOWLEVEL)                    \
@@ -47,9 +47,9 @@ $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIE
 	-L$(CLNTMESSAGES) -lClntMsg        \
 	                  -lClntAddrMgr    \
 	                  -lAddrMgr        \
-	-L$(MISC)         -lMisc           \
 	-L$(MESSAGES)     -lMsg            \
 	-lClntOptions -lOptions -lLowLevel \
+	-L$(MISC)         -lMisc           \
 	-L$(POSLIB)       $(CLNTPOSLIB)
 
 ifndef MOD_CLNT_DISABLE_DNSUPDATE
@@ -77,8 +77,8 @@ $(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVE
 	-L$(SRVMESSAGES) -lSrvMsg          \
 	-L$(SRVIFACEMGR) -lSrvIfaceMgr     \
 	-L$(MESSAGES)    -lMsg             \
-	-L$(MISC)        -lMisc            \
 	-L$(OPTIONS)     -lOptions         \
+	-L$(MISC)        -lMisc            \
 	-L$(LOWLEVEL)    -lLowLevel        \
 	-L$(IFACEMGR)    -lIfaceMgr        \
 	-L$(POSLIB)      $(SRVPOSLIB)

@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptAuthentication.cpp,v 1.1 2006-11-17 00:37:16 thomson Exp $
+ * $Id: OptAuthentication.cpp,v 1.2 2006-11-17 01:28:38 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2006-11-17 00:37:16  thomson
+ * Partial AUTH support by Sammael, fixes by thomson
+ *
  *
  *
  */
@@ -21,8 +24,8 @@
 #include <stdlib.h>
 #include "OptAuthentication.h"
 #include "DHCPConst.h"
+#include "Portable.h"
 #include "Logger.h"
-#include "htonll.h"
 #include "Msg.h"
 
 TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
