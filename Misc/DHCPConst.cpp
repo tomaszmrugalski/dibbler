@@ -3,10 +3,14 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.8 2006-11-15 02:58:46 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.9 2006-11-17 01:07:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006-11-15 02:58:46  thomson
+ * lowlevel-win32.c cleanup, enums added.
+ *
  * Revision 1.7  2006-10-06 00:25:53  thomson
  * Initial PD support.
  *
@@ -117,4 +121,14 @@ int allowOptInOpt(int msgType, int parent, int subopt) {
 	    break;
     }
     return 0;
+}
+
+/* see Misc/DHCPConst.h */
+unsigned DIGESTSIZE[] = {
+        0, //NONE
+        20 //HMAC-SHA1
+};
+
+unsigned getDigestSize(enum DigestTypes type) {
+        return DIGESTSIZE[type];
 }

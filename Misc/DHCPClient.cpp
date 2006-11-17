@@ -6,51 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.22 2006-08-22 00:11:49 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.21  2006-03-05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.20.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.20  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.19  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.18  2004/12/07 22:56:20  thomson
- * Typo corrected.
- *
- * Revision 1.17  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.16  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.15  2004/11/02 02:13:49  thomson
- * no message
- *
- * Revision 1.14  2004/11/01 23:31:24  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.13  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.12  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.11  2004/09/07 15:37:44  thomson
- * Socket handling changes.
- *
- * Revision 1.10  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.7  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
+ * $Id: DHCPClient.cpp,v 1.23 2006-11-17 01:07:46 thomson Exp $
  *                                                                           
  */
 
@@ -80,7 +36,7 @@ TDHCPClient::TDHCPClient(string config)
 	  return;
     }
 
-    this->CfgMgr = new TClntCfgMgr(IfaceMgr, config, CLNTCFGMGR_FILE);
+    this->CfgMgr = new TClntCfgMgr(IfaceMgr, config);
     if ( this->CfgMgr->isDone() ) {
 	Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
 	this->IsDone = true;

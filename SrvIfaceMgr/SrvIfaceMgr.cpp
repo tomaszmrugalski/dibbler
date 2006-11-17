@@ -3,12 +3,16 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.20 2005-07-17 21:09:54 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.21 2006-11-17 01:08:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2005-07-17 21:09:54  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.19  2005/06/07 21:58:49  thomson
  * 0.4.1
  *
@@ -166,7 +170,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	
 	// check message type
 	msgtype = buf[0];
-	SmartPtr<TMsg> ptr;
+	//SmartPtr<TMsg> ptr;
 	SmartPtr<TSrvIfaceIface> ptrIface;
 
 	// get interface
@@ -177,6 +181,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 		   << ")." << LogEnd;
 
 	// create specific message object
+    SmartPtr<TSrvMsg> ptr;
 	switch (msgtype) {
 	case SOLICIT_MSG:
 	case REQUEST_MSG:
@@ -186,10 +191,15 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	case RELEASE_MSG:
 	case DECLINE_MSG:
 	case INFORMATION_REQUEST_MSG:
-	    return this->decodeMsg(ptrIface, peer, buf, bufsize);
-	case RELAY_FORW_MSG: {
-	    return this->decodeRelayForw(ptrIface, peer, buf, bufsize);
-	}
+	    ptr = this->decodeMsg(ptrIface, peer, buf, bufsize);
+        if (!ptr->validateAuthInfo(buf, bufsize))
+            return 0;
+        return ptr;
+	case RELAY_FORW_MSG:
+	    ptr = this->decodeRelayForw(ptrIface, peer, buf, bufsize);
+        if (!ptr->validateAuthInfo(buf, bufsize))
+            return 0;
+        return ptr;
 	case ADVERTISE_MSG:
 	case REPLY_MSG:
 	case RECONFIGURE_MSG:

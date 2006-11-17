@@ -1,6 +1,29 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * some of those functions are taken form GNU libc6 library
+ *
+ * $Id: addrpack.c,v 1.6 2006-11-17 01:07:46 thomson Exp $
+ */
+
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+#ifdef LINUX
+#include <netinet/in.h>
+#endif
 
 void print_packed(char addr[]);
 
@@ -291,3 +314,19 @@ void print_packed(char * addr)
     }
    printf("\n");
 } 
+
+uint64_t htonll(uint64_t n) {
+#if __BYTE_ORDER == __BIG_ENDIAN
+    return n;
+#else
+    return (((uint64_t)htonl(n)) << 32) + htonl(n >> 32);
+#endif
+}
+
+uint64_t ntohll(uint64_t n) {
+#if __BYTE_ORDER == __BIG_ENDIAN
+    return n;
+#else
+    return (((uint64_t)ntohl(n)) << 32) + ntohl(n >> 32);
+#endif
+}

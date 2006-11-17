@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * Released under GNU GPL v2 licence
  *
@@ -79,7 +80,7 @@
 
 // RFC: options not supported yet
 #define OPTION_RELAY_MSG        9
-#define OPTION_AUTH_MSG         11
+#define OPTION_AUTH             11
 #define OPTION_USER_CLASS       15
 #define OPTION_VENDOR_CLASS     16
 #define OPTION_VENDOR_OPTS      17
@@ -167,6 +168,7 @@
 #define CLIENT_DEFAULT_RAPID_COMMIT false
 
 #define CLIENT_DEFAULT_PREFIX_LENGTH 64
+#define CLIENT_DEFAULT_DIGEST DIGEST_NONE
 
 enum ETentative {
     TENTATIVE_UNKNOWN = -1,
@@ -188,6 +190,16 @@ int allowOptInMsg(int msgType, int optType);
 #define uint16_t unsigned short int
 #define uint32_t unsigned int
 #endif
+
+enum DigestTypes {
+        DIGEST_NONE = 0,
+        DIGEST_HMAC_SHA1 = 1
+};
+
+unsigned getDigestSize(enum DigestTypes type);
+        
+// for debugging purposes:
+#define printhex(buf, len) { unsigned j; for (j = 0; j < len; j++) printf("%02x ", (unsigned char) *(buf+j)); printf("\n"); }
 
 #endif
 

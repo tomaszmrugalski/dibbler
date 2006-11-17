@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.63 2006-11-15 02:58:46 thomson Exp $
+ * $Id: Portable.h,v 1.64 2006-11-17 01:07:46 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -123,9 +123,12 @@
 /* *** low-level error codes ******************************************** */
 /* ********************************************************************** */
 #define LOWLEVEL_ERROR_UNSPEC           -1
+#define LOWLEVEL_ERROR_BIND_IFACE       -2
 #define LOWLEVEL_ERROR_BIND_FAILED      -4
 #define LOWLEVEL_ERROR_MCAST_HOPS       -5
 #define LOWLEVEL_ERROR_MCAST_MEMBERSHIP -6
+#define LOWLEVEL_ERROR_GETADDRINFO      -7
+#define LOWLEVEL_ERROR_SOCK_OPTS        -8
 #define LOWLEVEL_ERROR_REUSE_FAILED     -9
 
 /* ********************************************************************** */
@@ -200,6 +203,9 @@ extern int nisplusserver_add(const char* ifname, int ifindex, const char* addrPl
 extern int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain);
 extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
 extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
+
+extern uint64_t htonll(uint64_t n);
+extern uint64_t ntohll(uint64_t n);
 
 #ifdef __cplusplus
 }
