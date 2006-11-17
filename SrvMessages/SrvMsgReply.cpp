@@ -784,6 +784,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     question->firstOption();
     while (ptrOpt = question->getOption() ) 
     {
+        Log(Debug) << ptrOpt->getOptType() << LogEnd;
         switch (ptrOpt->getOptType()) 
         {
 
@@ -797,6 +798,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
             case OPTION_RECONF_MSG  :
             case OPTION_IA          : 
             case OPTION_IA_TA       :
+            case OPTION_AUTH        :
                 Log(Warning) << "Invalid option " << ptrOpt->getOptType() <<" received." << LogEnd;
                 break;
             default:

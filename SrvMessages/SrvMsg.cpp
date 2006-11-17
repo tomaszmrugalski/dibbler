@@ -4,9 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.29 2006-11-11 06:56:27 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.30 2006-11-17 01:00:24 thomson Exp $
  */
 
 #include <sstream>
@@ -44,6 +46,7 @@
 #include "SrvOptNISPDomain.h"
 #include "SrvOptLifetime.h"
 #include "DNSUpdate.h"
+#include "SrvOptAuthentication.h"
 
 #include "Logger.h"
 #include "SrvIfaceMgr.h"
@@ -187,6 +190,9 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_IA_PD:
 	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
 	    break;
+	case OPTION_AUTH:
+	    ptr = new TSrvOptAuthentication(buf+pos, length, this);
+	    break;
 	case OPTION_VENDOR_OPTS:
 	    ptr = new TSrvOptVendorSpec(buf+pos, length, this);
 	    break;
@@ -194,7 +200,6 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
 	case OPTION_RECONF_MSG:
-	case OPTION_AUTH_MSG:
 	case OPTION_RELAY_MSG:
 	default:
 	    Log(Warning) << "Option " << code << " not supported, so it was ignored." << LogEnd;
@@ -451,6 +456,17 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	SmartPtr<TSrvOptLifetime> optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
 	Options.append( (Ptr*)optLifetime);
 	newOptionAssigned = true;
+    }
+
+    // --- option: AUTH ---
+    // FIXME: implement some logic here
+    // if server is configured to allow DIGEST_NONE and client didn't send AUTH - don't send
+    // if server is configured to allow DIGEST_HMAC_SHA1 only, then send it
+    // if ...
+    // tips: use SrvCfgMgr->getDigest() 
+    if ( reqOpts->isOption(OPTION_AUTH) ) { // [s] - co¶ takiego jeszcze do³o¿yæ trzeba do tego if'a: && ptrIface->supportLifetime() ) {
+	SmartPtr<TSrvOptAuthentication> optAuthentication = new TSrvOptAuthentication(this);
+	Options.append( (Ptr*)optAuthentication);
     }
 
     return newOptionAssigned;

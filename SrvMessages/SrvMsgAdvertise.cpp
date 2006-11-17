@@ -3,10 +3,11 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.22 2006-11-11 06:56:27 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.23 2006-11-17 01:00:24 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -117,6 +118,12 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    Log(Warning) << "Invalid(misplaced) IAPREFIX option received." << LogEnd;
 	    break;
 	}
+	case OPTION_AUTH : {
+	    // FIXME: should be done in SrvMsg::appendRequestedOptions()
+	    Log(Warning) << "[s] Advertise option " << opt->getOptType() << "." << LogEnd;
+		reqOpts->addOption(OPTION_AUTH);
+    	break;
+    }                 
 	case OPTION_ORO: 
 	case OPTION_ELAPSED_TIME : {
 	    break;
@@ -176,7 +183,6 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	}
 	    // options not yet supported 
 	case OPTION_RELAY_MSG :
-	case OPTION_AUTH_MSG :
 	case OPTION_USER_CLASS :
 	case OPTION_VENDOR_CLASS :
 	case OPTION_VENDOR_OPTS :
