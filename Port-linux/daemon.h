@@ -3,12 +3,16 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.h,v 1.1 2005-02-03 22:06:40 thomson Exp $
+ * $Id: daemon.h,v 1.2 2006-11-24 01:25:17 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005-02-03 22:06:40  thomson
+ * Linux startup/pid checking changed.
+ *
  */
 
 #ifndef DAEMON_H
@@ -22,17 +26,17 @@
 #define SIGINT 2
 #endif
 
-int start(char * pidfile, char * workdir);
-int stop(char * pidfile);
+int start(const char * pidfile, const char * workdir);
+int stop(const char * pidfile);
 
-int init(char * pidfile, char * workdir);
+int init(const char * pidfile, const char * workdir);
 int getPID(char * pidfile);
 int getServerPID();
 int getClientPID();
 int getRelayPID();
-int die(char * pidfile);
+int die(const char * pidfile);
 
-void logStart(char * note, char * logname, char * logfile);
+void logStart(const char * note, const char * logname, const char * logfile);
 void logEnd();
 
 #endif

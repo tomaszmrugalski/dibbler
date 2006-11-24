@@ -3,12 +3,16 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.5 2006-03-05 22:26:14 thomson Exp $
+ * $Id: daemon.cpp,v 1.6 2006-11-24 01:25:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-03-05 22:26:14  thomson
+ * Better dibbler status checking (thanks for the patch, Sob)
+ *
  * Revision 1.4  2006/02/02 23:18:29  thomson
  * 0.4.2 release.
  *
@@ -39,7 +43,7 @@ extern int run();
 
 using namespace std;
 
-int getPID(char * file) {
+int getPID(const char * file) {
     ifstream pidfile(file);
     if (!pidfile.is_open()) 
 	return -1;
@@ -111,7 +115,7 @@ void daemon_die() {
     logger::EchoOn();
 }
 
-int init(char * pidfile, char * workdir) {
+int init(const char * pidfile, const char * workdir) {
     string tmp;
     char buf[20];
     char cmd[256];
@@ -159,7 +163,7 @@ int init(char * pidfile, char * workdir) {
     return 1;
 }
 
-void die(char * pidfile) {
+void die(const char * pidfile) {
     if (unlink(pidfile)) {
 	Log(Warning) << "Unable to delete " << pidfile << "." << LogEnd;
     }
@@ -167,7 +171,7 @@ void die(char * pidfile) {
 
 
 
-int start(char * pidfile, char * workdir) {
+int start(const char * pidfile, const char * workdir) {
     int result;
     daemon_init();
     result = run();
@@ -175,7 +179,7 @@ int start(char * pidfile, char * workdir) {
     return result;
 }
 
-int stop(char * pidfile) {
+int stop(const char * pidfile) {
     int pid = getPID(pidfile);
     if (pid==-1) {
 	cout << "Process is not running." << endl;
@@ -195,7 +199,7 @@ int uninstall() {
 }
 
 /** things to do just after started */
-void logStart(char * note, char * logname, char * logfile) {
+void logStart(const char * note, const char * logname, const char * logfile) {
     std::cout << DIBBLER_COPYRIGHT1 << " " << note << std::endl;
     std::cout << DIBBLER_COPYRIGHT2 << std::endl;
     std::cout << DIBBLER_COPYRIGHT3 << std::endl;
