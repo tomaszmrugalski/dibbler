@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.16 2006-11-17 00:51:25 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.17 2006-11-24 01:32:55 thomson Exp $
  */
 
 #ifdef WIN32
@@ -202,9 +202,11 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    break;
 	}
 	case OPTION_AUTH:
+	    // FIXME: set this->DigestType to real DigestType
+        if (ClntCfgMgr->getDigest()!=DIGEST_NONE)
+            this->DigestType = DIGEST_HMAC_SHA1;
 	    ptr = new TClntOptAuthentication(buf+pos, length, this);
-	    // FIXME: set this->Digest = ...
-	    Log(Warning) << "[s] parsed OPTION_AUTH in message" << LogEnd;
+	    Log(Notice) << "[s] parsed OPTION_AUTH in message" << LogEnd;
 	    break;
 	case OPTION_VENDOR_OPTS: {
 	    SmartPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
@@ -533,10 +535,6 @@ void TClntMsg::appendRequestedOptions() {
     if ( iface->isReqLifetime() && (this->MsgType == INFORMATION_REQUEST_MSG) && optORO->count() )
 	optORO->addOption(OPTION_LIFETIME);
 
-    // --- option: AUTH [s] ---
-	//SmartPtr<TClntOptAuthentication> opt = new TClntOptAuthentication(this);
-	//Options.append( (Ptr*)opt );
-
     // --- option: VENDOR-SPEC ---
     if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_VENDOR_OPTS);
@@ -553,7 +551,7 @@ void TClntMsg::appendRequestedOptions() {
     // --- option: AUTH ---
     if (ClntCfgMgr->getDigest()!=DIGEST_NONE) {
 	Log(Debug) << "#### Adding AUTH option." << LogEnd;
-	Options.append(new TClntOptAuthentication(this));
+	Options.append(new TClntOptAuthentication(0, this));
     } else {
 	Log(Debug) << "#### AUTH option disabled." << LogEnd;
     }
