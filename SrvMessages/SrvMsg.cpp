@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.30 2006-11-17 01:00:24 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.31 2006-11-24 01:32:02 thomson Exp $
  */
 
 #include <sstream>
@@ -191,6 +191,8 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
 	    break;
 	case OPTION_AUTH:
+	    // FIXME: Detect digest type
+            this->DigestType = DIGEST_HMAC_SHA1;
 	    ptr = new TSrvOptAuthentication(buf+pos, length, this);
 	    break;
 	case OPTION_VENDOR_OPTS:
@@ -465,6 +467,8 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     // if ...
     // tips: use SrvCfgMgr->getDigest() 
     if ( reqOpts->isOption(OPTION_AUTH) ) { // [s] - co¶ takiego jeszcze do³o¿yæ trzeba do tego if'a: && ptrIface->supportLifetime() ) {
+    // FIXME: change to real DigestType
+    this->DigestType = DIGEST_HMAC_SHA1;
 	SmartPtr<TSrvOptAuthentication> optAuthentication = new TSrvOptAuthentication(this);
 	Options.append( (Ptr*)optAuthentication);
     }
