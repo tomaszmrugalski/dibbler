@@ -21,7 +21,7 @@
 #include "Msg.h"
 #include "Opt.h"
 #include "Logger.h"
-#include "sha1.h"
+#include "hmac.h"
 
 TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 {
@@ -94,6 +94,7 @@ TContainer< SmartPtr<TOpt> > TMsg::getOptLst()
 **/
 int TMsg::storeSelf(char * buffer)
 {
+    char *key = (char *)"testkey";
     char *start = buffer;
     int tmp = this->TransID;
     
@@ -113,17 +114,36 @@ int TMsg::storeSelf(char * buffer)
         buffer += Option->getSize();
     }
 
-    if (AuthInfoPtr && getOption(OPTION_AUTH) && DigestType != DIGEST_NONE)
+    if (AuthInfoPtr && getOption(OPTION_AUTH) && DigestType != DIGEST_NONE) {
+            // [s] change the key to something that make sense
             switch (DigestType) {
+                    case DIGEST_PLAIN:
+                        memcpy(AuthInfoPtr, "This is 32-byte plain testkey...", getDigestSize(DigestType));
+                        break;
+                    case DIGEST_HMAC_MD5:
+                        hmac_md5(start, buffer-start, key, 7, (char *)AuthInfoPtr);
+                        break;
                     case DIGEST_HMAC_SHA1:
-                        // [s] zmieniæ klucz i jego rozmiar na co¶ sensownego
-                        hmac_sha1(start, buffer-start, "testkey", 7, (char *)AuthInfoPtr);
-                        cout << "sending digest: ";
-                        printhex(AuthInfoPtr, getDigestSize(DigestType));
+                        hmac_sha(start, buffer-start, key, 7, (char *)AuthInfoPtr, 1);
+                        break;
+                    case DIGEST_HMAC_SHA224:
+                        hmac_sha(start, buffer-start, key, 7, (char *)AuthInfoPtr, 224);
+                        break;
+                    case DIGEST_HMAC_SHA256:
+                        hmac_sha(start, buffer-start, key, 7, (char *)AuthInfoPtr, 256);
+                        break;
+                    case DIGEST_HMAC_SHA384:
+                        hmac_sha(start, buffer-start, key, 7, (char *)AuthInfoPtr, 384);
+                        break;
+                    case DIGEST_HMAC_SHA512:
+                        hmac_sha(start, buffer-start, key, 7, (char *)AuthInfoPtr, 512);
                         break;
                     default:
                         break;
             }
+            cout << "#### sending digest: ";
+            printhex(AuthInfoPtr, getDigestSize(DigestType));
+    }
 
     return buffer-start;
 }
@@ -172,43 +192,57 @@ void TMsg::setAuthInfoPtr(char* ptr) {
 
 bool TMsg::validateAuthInfo(char *buf, int bufSize) {
     bool ok = false;
+    char *key = (char *)"testkey";
 
-    if (AuthInfoPtr && DigestType != DIGEST_NONE) {
+    if (DigestType == DIGEST_NONE) {
+            ok = true;
+            Log(Debug) << "Authentication is disabled." << LogEnd;
+    } else if (AuthInfoPtr) {
             unsigned AuthInfoLen = getDigestSize(DigestType);
             char *rcvdAuthInfo = new char[AuthInfoLen];
             char *goodAuthInfo = new char[AuthInfoLen];
 
-            switch (DigestType) {
-                    case DIGEST_NONE:
-                        ok = true;
-                        break;
-                    case DIGEST_HMAC_SHA1:
+            cout << "#### " << bufSize << endl;
+            memmove(rcvdAuthInfo, AuthInfoPtr, AuthInfoLen);
+            memset(AuthInfoPtr, 0, AuthInfoLen);
 
-                        cout << bufSize << endl;
-                        memmove(rcvdAuthInfo, AuthInfoPtr, AuthInfoLen);
-                        memset(AuthInfoPtr, 0, AuthInfoLen);
-                        // [s] zmieniæ klucz i jego rozmiar na co¶ sensownego
-                        hmac_sha1(buf, bufSize, "testkey", 7, goodAuthInfo);
-                        cout << "received digest: ";
-                        printhex(rcvdAuthInfo, AuthInfoLen);
-                        cout << "  proper digest: ";
-                        printhex(goodAuthInfo, AuthInfoLen);
-                        if (0 == strncmp(goodAuthInfo, rcvdAuthInfo, AuthInfoLen))
-                                ok = true;
-                        break;
+            switch (DigestType) {
+                    // [s] change the key to something that make sense
+                    case DIGEST_PLAIN:
+                        memcpy(goodAuthInfo, "This is 32-byte plain testkey...", 32); break;
+                    case DIGEST_HMAC_MD5:
+                        hmac_md5(buf, bufSize, key, 7, goodAuthInfo); break;
+                    case DIGEST_HMAC_SHA1:
+                        hmac_sha(buf, bufSize, key, 7, goodAuthInfo, 1); break;
+                    case DIGEST_HMAC_SHA224:
+                        hmac_sha(buf, bufSize, key, 7, goodAuthInfo, 224); break;
+                    case DIGEST_HMAC_SHA256:
+                        hmac_sha(buf, bufSize, key, 7, goodAuthInfo, 256); break;
+                    case DIGEST_HMAC_SHA384:
+                        hmac_sha(buf, bufSize, key, 7, goodAuthInfo, 384); break;
+                    case DIGEST_HMAC_SHA512:
+                        hmac_sha(buf, bufSize, key, 7, goodAuthInfo, 512); break;
                     default:
                         break;
             }
+            if (0 == strncmp(goodAuthInfo, rcvdAuthInfo, AuthInfoLen))
+                ok = true;
+
+            cout << "#### received digest: ";
+            printhex(rcvdAuthInfo, AuthInfoLen);
+            cout << "####   proper digest: ";
+            printhex(goodAuthInfo, AuthInfoLen);
 
             delete [] rcvdAuthInfo;
             delete [] goodAuthInfo;
+
+            if (ok)
+                Log(Info) << "Authentication Information correct." << LogEnd;
+            else
+                Log(Error) << "Authentication Information incorrect." << LogEnd;
+
     }
-
-    if (ok)
-        Log(Info) << "Authentication Information correct." << LogEnd;
-    else
-        Log(Error) << "Authentication Information incorrect." << LogEnd;
-
+    
     return ok;
 }
 
