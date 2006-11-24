@@ -1,5 +1,3 @@
-/* -*- buffer-read-only: t -*- vi: set ro: */
-/* DO NOT EDIT! GENERATED AUTOMATICALLY! */
 /* sha1.c - Functions to compute SHA1 message digest of files or
    memory blocks according to the NIST specification FIPS-180-1.
 
@@ -329,47 +327,4 @@ sha1_process_block (const void *buffer, size_t len, struct sha1_ctx *ctx)
       d = ctx->D += d;
       e = ctx->E += e;
     }
-}
-
-/* Take buffer and key (and their lengths), generate HMAC-SHA1
-   and write the result to RESBUF
-
-   author: Michal Kowalczuk <michal@kowalczuk.eu>  */
-void *
-hmac_sha1 (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf) {
-  char Ki[SHA_BLOCKSIZE];
-  char Ko[SHA_BLOCKSIZE];
-  char tmpbuf[SHA_DIGESTSIZE];
-  int i;
-  struct sha1_ctx ctx;
-
-  if (key_len > SHA_BLOCKSIZE) {
-          sha1_init_ctx (&ctx);
-          sha1_process_bytes (key, key_len, &ctx);
-          sha1_finish_ctx (&ctx, Ki);
-          key_len = SHA_DIGESTSIZE;
-          memcpy(Ko, Ki, key_len);
-  } else {
-          memcpy(Ki, key, key_len);
-          memcpy(Ko, key, key_len);
-  }
-  for (i = 0; i < key_len; i++) {
-          Ki[i] ^= 0x36;
-          Ko[i] ^= 0x5c;
-  }
-
-  for (; i < SHA_BLOCKSIZE; i++) {
-          Ki[i] = 0x36;
-          Ko[i] = 0x5c;
-  }
-
-  sha1_init_ctx (&ctx);
-  sha1_process_bytes (Ki, SHA_BLOCKSIZE, &ctx);
-  sha1_process_bytes (buffer, len, &ctx);
-  sha1_finish_ctx (&ctx, tmpbuf);
-
-  sha1_init_ctx (&ctx);
-  sha1_process_bytes (Ko, SHA_BLOCKSIZE, &ctx);
-  sha1_process_bytes (tmpbuf, SHA_DIGESTSIZE, &ctx);
-  return sha1_finish_ctx (&ctx, resbuf);
 }

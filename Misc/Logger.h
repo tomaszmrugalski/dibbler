@@ -3,10 +3,14 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *
- * $Id: Logger.h,v 1.13 2006-07-03 17:56:58 thomson Exp $
+ * $Id: Logger.h,v 1.14 2006-11-24 01:24:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006-07-03 17:56:58  thomson
+ * Precise logmode added.
+ *
  * Revision 1.12  2006/03/05 21:39:19  thomson
  * TA support merged.
  *
@@ -82,7 +86,7 @@ namespace logger {
     ostream& logInfo();
     ostream& logDebug();
 
-    void Initialize(char * file);
+    void Initialize(const char * file);
     void Terminate();
     void setLogName(string x);
     void setLogLevel(int x);

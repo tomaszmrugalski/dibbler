@@ -4,9 +4,10 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.64 2006-11-17 01:07:46 thomson Exp $
+ * $Id: Portable.h,v 1.65 2006-11-24 01:24:16 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -180,6 +181,8 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
 /* microsleep(int microsecs) */
 extern void microsleep(int microsecs);
 extern char * error_message();
+uint64_t htonll(uint64_t n);
+uint64_t ntohll(uint64_t n);
 
 /* DNS */
 extern int dns_add(const char* ifname, int ifindex, const char* addrPlain);

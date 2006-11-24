@@ -5,9 +5,12 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.9 2006-11-17 01:07:46 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.10 2006-11-24 01:24:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006-11-17 01:07:46  thomson
+ * Partial AUTH support by Sammael, fixes by thomson
+ *
  * Revision 1.8  2006-11-15 02:58:46  thomson
  * lowlevel-win32.c cleanup, enums added.
  *
@@ -125,8 +128,14 @@ int allowOptInOpt(int msgType, int parent, int subopt) {
 
 /* see Misc/DHCPConst.h */
 unsigned DIGESTSIZE[] = {
-        0, //NONE
-        20 //HMAC-SHA1
+        0,  //NONE
+        32, //PLAIN
+        16, //MD5
+        20, //HMAC-SHA1
+        28, //HMAC-SHA224
+        32, //HMAC-SHA256
+        48, //HMAC-SHA384
+        64  //HMAC-SHA512
 };
 
 unsigned getDigestSize(enum DigestTypes type) {

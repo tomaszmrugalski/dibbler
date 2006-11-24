@@ -3,12 +3,16 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
+ * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.18 2006-07-04 21:19:51 thomson Exp $
+ * $Id: Logger.cpp,v 1.19 2006-11-24 01:24:16 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2006-07-04 21:19:51  thomson
+ * Win32 compilation problems resolved.
+ *
  * Revision 1.17  2006-07-03 17:56:58  thomson
  * Precise logmode added.
  *
@@ -150,7 +154,7 @@ namespace logger {
     ostream& logInfo()    { return logger::logCommon(7); }
     ostream& logDebug()   { return logger::logCommon(8); }
 
-    void Initialize(char * file) {
+    void Initialize(const char * file) {
 	logger::logFileMode = true;
 	logger::logFile.open(file, ofstream::out | ofstream::app);
     }

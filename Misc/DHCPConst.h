@@ -193,7 +193,13 @@ int allowOptInMsg(int msgType, int optType);
 
 enum DigestTypes {
         DIGEST_NONE = 0,
-        DIGEST_HMAC_SHA1 = 1
+        DIGEST_PLAIN = 1,
+        DIGEST_HMAC_MD5 = 2,
+        DIGEST_HMAC_SHA1 = 3,
+        DIGEST_HMAC_SHA224 = 4,
+        DIGEST_HMAC_SHA256 = 5,
+        DIGEST_HMAC_SHA384 = 6,
+        DIGEST_HMAC_SHA512 = 7
 };
 
 unsigned getDigestSize(enum DigestTypes type);
