@@ -4,10 +4,12 @@
  * authors: Adrien CLERC, Bahattin DEMIRPLAK, Gaëtant ELEOUET
  *          Mickaël GUÉRIN, Lionel GUILMIN, Lauréline PROVOST
  *          from ENSEEIHT, Toulouse, France
- * changes: Krzysztof Wnuk keczi@poczta.onet.pl
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Micha³ Kowalczuk <michal@kowalczuk.eu>
+ *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.15 2006-10-01 20:47:17 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.16 2006-11-24 01:27:16 thomson Exp $
  *
  */
 
@@ -19,7 +21,6 @@
 DNSUpdate::DNSUpdate(string dns_address, string zonename,string hostname,string hostip,
 		     DnsUpdateMode updateMode) { 
     message= NULL;
-    char *ttl = DNSUPDATE_DEFAULT_TTL;
     
     if (updateMode==DNSUPDATE_AAAA || updateMode==DNSUPDATE_AAAA_CLEANUP) {
 	this->splitHostDomain(hostname);
@@ -32,8 +33,8 @@ DNSUpdate::DNSUpdate(string dns_address, string zonename,string hostname,string 
     txt_to_addr(&server,dns_address.c_str());
     this->hostip = new char[hostip.length()+1];
     strcpy(this->hostip,hostip.c_str());
-    this->ttl=new char[strlen(ttl)+1];
-    strcpy(this->ttl,ttl);
+    this->ttl=new char[strlen(DNSUPDATE_DEFAULT_TTL)+1];
+    strcpy(this->ttl,DNSUPDATE_DEFAULT_TTL);
     this->updateMode = updateMode;
 }
  
