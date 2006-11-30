@@ -6,10 +6,11 @@
  *          from ENSEEIHT, Toulouse, France
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Micha³ Kowalczuk <michal@kowalczuk.eu>
+ *          Micha³ Kowalczuk <michal@kowalczuk.eu>
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.16 2006-11-24 01:27:16 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.17 2006-11-30 03:18:46 thomson Exp $
  *
  */
 
