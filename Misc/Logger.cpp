@@ -4,50 +4,8 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
- * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
- *                                                                           
- * $Id: Logger.cpp,v 1.20 2006-11-30 03:22:10 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.19  2006-11-24 01:24:16  thomson
- * Various SHA, MD5 added by Sammael.
- *
- * Revision 1.18  2006-07-04 21:19:51  thomson
- * Win32 compilation problems resolved.
- *
- * Revision 1.17  2006-07-03 17:56:58  thomson
- * Precise logmode added.
- *
- * Revision 1.16  2006/03/05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.15.2.1  2006/02/05 23:38:08  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.15  2005/07/17 21:09:52  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.14  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.13  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
- * Revision 1.12  2004/12/08 00:17:59  thomson
- * StatusCodeToString function added.
- *
- * Revision 1.11  2004/12/02 00:51:06  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.10  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.9  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
  */
 
 #include <iostream>
