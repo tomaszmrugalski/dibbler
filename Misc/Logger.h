@@ -4,10 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
+ * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *
- * $Id: Logger.h,v 1.14 2006-11-24 01:24:16 thomson Exp $
+ * $Id: Logger.h,v 1.15 2006-11-30 03:21:51 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2006-11-24 01:24:16  thomson
+ * Various SHA, MD5 added by Sammael.
+ *
  * Revision 1.13  2006-07-03 17:56:58  thomson
  * Precise logmode added.
  *

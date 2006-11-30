@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.32 2006-11-30 03:14:13 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.33 2006-11-30 03:16:54 thomson Exp $
  */
 
 #include <sstream>
@@ -191,6 +191,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
 	    break;
 	case OPTION_AUTH:
+        this->DigestType = DIGEST_HMAC_SHA1;
 	    // FIXME: Detect digest type
             this->DigestType = DIGEST_HMAC_SHA1;
 	    ptr = new TSrvOptAuthentication(buf+pos, length, this);
@@ -465,6 +466,8 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     // FIXME: implement some logic here
     // if server is configured to allow DIGEST_NONE and client didn't send AUTH - don't send
     // if server is configured to allow DIGEST_HMAC_SHA1 only, then send it
+    // FIXME: change to real DigestType
+    this->DigestType = DIGEST_HMAC_SHA1;
     // if ...
     // tips: use SrvCfgMgr->getDigest() 
     if ( reqOpts->isOption(OPTION_AUTH) ) { // [s] - co¶ takiego jeszcze do³o¿yæ trzeba do tego if'a: && ptrIface->supportLifetime() ) {

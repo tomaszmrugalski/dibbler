@@ -4,12 +4,16 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
+ * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Logger.cpp,v 1.19 2006-11-24 01:24:16 thomson Exp $
+ * $Id: Logger.cpp,v 1.20 2006-11-30 03:22:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2006-11-24 01:24:16  thomson
+ * Various SHA, MD5 added by Sammael.
+ *
  * Revision 1.18  2006-07-04 21:19:51  thomson
  * Win32 compilation problems resolved.
  *

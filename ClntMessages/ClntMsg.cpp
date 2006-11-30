@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.17 2006-11-24 01:32:55 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.18 2006-11-30 03:18:29 thomson Exp $
  */
 
 #ifdef WIN32
@@ -202,6 +202,9 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    break;
 	}
 	case OPTION_AUTH:
+	    // FIXME: set this->DigestType to real DigestType
+        if (ClntCfgMgr->getDigest()!=DIGEST_NONE)
+            this->DigestType = DIGEST_HMAC_SHA1;
 	    // FIXME: set this->DigestType to real DigestType
         if (ClntCfgMgr->getDigest()!=DIGEST_NONE)
             this->DigestType = DIGEST_HMAC_SHA1;
