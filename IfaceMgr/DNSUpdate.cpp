@@ -10,7 +10,7 @@
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.17 2006-11-30 03:18:46 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.18 2006-11-30 03:32:42 thomson Exp $
  *
  */
 
@@ -103,7 +103,8 @@ DnsUpdateResult DNSUpdate::run(){
     
     try {
 	this->sendMsg();
-    } catch (PException p) {
+    } 
+    catch (PException p) {
 	if (!strcmp(p.message,"Could not connect TCP socket") ){
 	    Log(Error) << "FQDN: Unable to establish connection to the DNS server:" << p.message << LogEnd;
 	    return DNSUPDATE_CONNFAIL;
@@ -251,7 +252,6 @@ bool DNSUpdate::DnsRR_avail(DnsMessage *msg, DnsRR& RemoteDnsRR){
 
    if (it->TYPE == DNS_TYPE_SOA) {
        flagSOA = !flagSOA;
-       //printf("There was a SOA flag in the answer !!!!!!, changed to on SOA \n");
    } 
    else {
     if (!flagSOA) {

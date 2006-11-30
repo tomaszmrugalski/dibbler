@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStatusCode.cpp,v 1.5 2006-11-17 00:37:16 thomson Exp $
+ * $Id: OptStatusCode.cpp,v 1.6 2006-11-30 03:33:36 thomson Exp $
  *
  */
 #include <stdlib.h>
@@ -96,6 +96,9 @@ bool TOptStatusCode::doDuties()
 	break;
     case STATUSCODE_USEMULTICAST:
 	Log(Notice) << "Status USE MULTICAST:" << Message << LogEnd;
+	break;
+    case STATUSCODE_NOPREFIXAVAIL:
+	Log(Notice) << "Status NO PREFIX AVAILABLE :" << Message << LogEnd;
 	break;
     }
     return true;
