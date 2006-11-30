@@ -130,13 +130,12 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 
     // is the prefix delegation supported?
     if ( !ptrIface->supportPrefixDelegation() ) {
-        SmartPtr<TSrvOptStatusCode> ptrStatus;
-        ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-					  "Server support for prefix delegation is not enabled. Sorry.",this->Parent);
+	SmartPtr<TSrvOptStatusCode> ptrStatus;
+	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+					  "Server support for prefix delegation is not enabled. Sorry buddy.",this->Parent);
         this->SubOptions.append((Ptr*)ptrStatus);
 	return;
     }
-
     // --- Is this PD without IAPREFIX options? ---
     if (!queryOpt->countPrefixes()) {
 	Log(Warning) << "PD option (with IAPREFIX suboptions missing) received. Assigning one prefix."

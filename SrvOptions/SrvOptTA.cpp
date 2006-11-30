@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptTA.cpp,v 1.4 2006-03-23 00:53:26 thomson Exp $
+ * $Id: SrvOptTA.cpp,v 1.5 2006-11-30 03:33:17 thomson Exp $
  */
 
 #ifdef WIN32
@@ -109,7 +109,7 @@ void TSrvOptTA::solicit(SmartPtr<TSrvOptTA> queryOpt) {
 }
 
 void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
-
+	
     // --- check address counts, how many we've got, how many assigned etc. ---
     unsigned long addrsAssigned  = 0; // already assigned
     unsigned long addrsAvail     = 0; // how many are allowed for client?
@@ -145,10 +145,14 @@ void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
 
     // --- ok, let's assign those damn addresses ---
     SmartPtr<TSrvOptIAAddress> optAddr;
-
+    
     optAddr = this->assignAddr();
     if (!optAddr) {
-	Log(Error) << "No temporary address found. Probably bug in the server logic." << LogEnd;
+	Log(Error) << "No temporary address found. Server is NOT configured with TA option." << LogEnd;
+	SmartPtr<TSrvOptStatusCode> ptrStatus;
+	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+					  "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
+        this->SubOptions.append((Ptr*)ptrStatus);
 	return;
     }
     SubOptions.append((Ptr*) optAddr);
@@ -205,7 +209,8 @@ SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     if (!ta) {
 	Log(Warning) << "TA option (temporary addresses) is not configured on the " 
 		     << ptrIface->getFullName() << LogEnd;
-    }
+    	return 0;
+     }
 
     SmartPtr<TIPv6Addr> addr;
     int safety=0;
