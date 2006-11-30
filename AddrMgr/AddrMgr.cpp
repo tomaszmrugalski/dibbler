@@ -4,39 +4,10 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.21 2006-10-06 00:30:17 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.20  2006-08-21 22:44:58  thomson
- * Cache support added.
- *
- * Revision 1.19  2005/09/20 20:10:51  thomson
- * Max. timeout changed from LONG_MAX to ULONG_MAX
- *
- * Revision 1.18  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.17  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.16  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- *
- * Revision 1.10  2004/04/10 12:18:00  thomson
- * Numerous fixes: LogName, LogMode options added, dns-servers changed to
- * dns-server, '' around strings are no longer needed.
- *
- * Revision 1.9  2004/04/09 22:33:11  thomson
- * dns-servers changed to option dns-server
- *
- * Revision 1.7  2004/04/06 23:09:48  thomson
- * dbStore was causing segfaults in rare occasions, so it is commented out.
- *
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
+ * $Id: AddrMgr.cpp,v 1.22 2006-11-30 03:30:54 thomson Exp $
  *
  */
 
@@ -269,13 +240,14 @@ bool TAddrMgr::addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr
 }
 
 /*
- *  Frees address (also deletes IA and/or client, if this was last address)
+ *  Frees prefix (also deletes IA and/or client, if this was last address)
  */
 bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
 			    unsigned long IAID, SmartPtr<TIPv6Addr> prefix,
 			    bool quiet) {
 
-    Log(Debug) << "#### Trying to delete PD: duid=" << clntDuid->getPlain() << ", PDID=" << IAID << ", prefix=" << prefix->getPlain() << LogEnd;
+    Log(Debug) << "Trying to delete PD: duid=" << clntDuid->getPlain() << ", PDID=" << IAID << ", prefix=" 
+	       << prefix->getPlain() << LogEnd;
     // find this client
     SmartPtr <TAddrClient> ptrClient;
     this->firstClient();
