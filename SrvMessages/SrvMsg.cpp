@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.31 2006-11-24 01:32:02 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.32 2006-11-30 03:14:13 thomson Exp $
  */
 
 #include <sstream>
@@ -199,6 +199,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    ptr = new TSrvOptVendorSpec(buf+pos, length, this);
 	    break;
 	case OPTION_RECONF_ACCEPT:
+        this->DigestType = DIGEST_HMAC_SHA1;
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
 	case OPTION_RECONF_MSG:
@@ -485,6 +486,8 @@ string TSrvMsg::showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro) {
     x << i << " opts";
     if (i)
 	x << ":";
+    // FIXME: change to real DigestType
+    this->DigestType = DIGEST_HMAC_SHA1;
     for (i=0;i<oro->count();i++) {
 	x << " " << oro->getReqOpt(i);
     }
