@@ -5,10 +5,10 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
- *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.66 2006-11-30 03:22:49 thomson Exp $
+ * $Id: Portable.h,v 1.67 2006-11-30 03:39:29 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
