@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IPv6Addr.cpp,v 1.6 2006-10-06 00:25:53 thomson Exp $
+ * $Id: IPv6Addr.cpp,v 1.7 2006-12-02 14:54:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006-10-06 00:25:53  thomson
+ * Initial PD support.
+ *
  * Revision 1.5  2006-08-21 22:52:40  thomson
  * Various fixes.
  *
@@ -21,6 +24,7 @@
 #include <string.h>
 #include "IPv6Addr.h"
 #include "Portable.h"
+#include "Logger.h"
 
 TIPv6Addr::TIPv6Addr() {
     memset(Addr,0,16);
@@ -65,6 +69,37 @@ char* TIPv6Addr::storeSelf(char *buf) {
 
 bool TIPv6Addr::operator==(const TIPv6Addr &other) {
     return !memcmp(this->Addr,other.Addr,16);
+}
+
+void TIPv6Addr::truncate(int minPrefix, int maxPrefix) {
+    char truncLeft[] = { 0, 0xff, 0x7f, 0x3f, 0x1f, 0xf,  0x7,  0x3,  0x1 };
+    char truncRight[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
+
+    if (minPrefix>128 || minPrefix<0 || maxPrefix>128 || maxPrefix<0) {
+	Log(Error) << "Unable to truncate address: invalid prefix lengths: minPrefix=" << minPrefix << ", maxPrefix=" << maxPrefix << LogEnd;
+	return;
+    }
+
+    // truncating from the left 
+    int x = minPrefix/8;
+    memset(this->Addr, 0, x);
+    if (minPrefix%8) {
+	this->Addr[x] = this->Addr[x] & truncLeft[minPrefix%8];
+    }
+
+    // truncating from the right
+    x = maxPrefix/8;
+    if (maxPrefix%8)
+	x++;
+    memset(this->Addr+x, 0, 16-x);
+    x = maxPrefix/8;
+    Log(Debug) << "x=" << x << LogEnd;
+    if (maxPrefix%8) {
+	this->Addr[x] = this->Addr[x] & truncRight[maxPrefix%8];
+    }
+
+    // update plain form
+    inet_ntop6(Addr,Plain);
 }
 
 ostream& operator<<(ostream& out,TIPv6Addr& addr)
@@ -137,7 +172,13 @@ TIPv6Addr TIPv6Addr::operator+(const TIPv6Addr &other)
     }
     return TIPv6Addr(result);
 }
-//Decreases randomly an address
+
+/** 
+ *  Decreases randomly an address
+ *  
+ * 
+ * @return 
+ */
 TIPv6Addr& TIPv6Addr::operator--()
 {
     for (int i=15;i>=0;i--)

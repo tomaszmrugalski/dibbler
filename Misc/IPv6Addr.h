@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: IPv6Addr.h,v 1.5 2006-08-21 22:52:40 thomson Exp $
+ * $Id: IPv6Addr.h,v 1.6 2006-12-02 14:54:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-08-21 22:52:40  thomson
+ * Various fixes.
+ *
  * Revision 1.4  2004/12/07 20:53:14  thomson
  * Link local safety checks added (bug #39)
  *
@@ -41,6 +44,7 @@ public:
     TIPv6Addr& operator--();
     bool operator==(const TIPv6Addr &other);
     bool operator<=(const TIPv6Addr &other);
+    void truncate(int minPrefix, int maxPrefix);
 private:
     char Addr[16];
     char Plain[sizeof("0000:0000:0000:0000:0000:0000:0000.000.000.000.000")];

@@ -10,7 +10,7 @@
  *
  * some of those functions are taken form GNU libc6 library
  *
- * $Id: addrpack.c,v 1.6 2006-11-17 01:07:46 thomson Exp $
+ * $Id: addrpack.c,v 1.7 2006-12-02 14:54:45 thomson Exp $
  */
 
 
@@ -214,6 +214,8 @@ char * inet_ntop6(const unsigned char * src, char * dst)
 		/* Are we following an initial run of 0x00s or any real hex? */
 		if (i != 0)
 			*tp++ = ':';
+#if 0
+		// encapsulated IPv4 addresses are no concern in Dibbler
 		/* Is this address an encapsulated IPv4? */
 		if (i == 6 && best.base == 0 &&
 		    (best.len == 6 || (best.len == 5 && words[5] == 0xffff))) {
@@ -222,6 +224,7 @@ char * inet_ntop6(const unsigned char * src, char * dst)
 			tp += strlen(tp);
 			break;
 		}
+#endif
 		tp += sprintf(tp, "%x", words[i]);
 	}
 	/* Was it a trailing run of 0x00's? */
