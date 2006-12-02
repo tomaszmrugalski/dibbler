@@ -1,13 +1,14 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 or later licence                                
- *                                                                           
- * $Id: SrvCfgIface.h,v 1.20 2006-11-03 20:07:07 thomson Exp $
- *                                                                           
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Krzysztof Wnuk
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvCfgIface.h,v 1.21 2006-12-02 14:52:29 thomson Exp $
+ *
  */
 
 class TSrvCfgIface;
@@ -39,6 +40,7 @@ public:
     string getName();
     string getFullName();
 
+    // permanent address management (IA_NA)
     void addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass);
     void firstAddrClass();
     bool getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
@@ -47,29 +49,24 @@ public:
     SmartPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
     SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
     long countAddrClass();
-    
-    void addPDClass(SmartPtr<TSrvCfgPD> PDClass);
-    //bool getPreferedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
-    //bool getAllowedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
-    
-    SmartPtr<TSrvCfgPD> getPDByID(unsigned long id);
-    SmartPtr<TSrvCfgPD> getRandomPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
-    long countPD();
 
-
-
+    // temporary address management (IA_TA)
     void addTA(SmartPtr<TSrvCfgTA> ta);
     void firstTA();
     SmartPtr<TSrvCfgTA> getTA();
     SmartPtr<TSrvCfgTA> getTA(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr);
 
+    // prefix management (IA_PD)
+    void addPDClass(SmartPtr<TSrvCfgPD> PDClass);
+    SmartPtr<TSrvCfgPD> getPDByID(unsigned long id);
+    SmartPtr<TSrvCfgPD> getRandomPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
+    long countPD();
     void addPD(SmartPtr<TSrvCfgPD> pd);
     void firstPD();
     SmartPtr<TSrvCfgPD> getPD();
-    //SmartPtr<TSrvCfgTA> getTA(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr);
 
+    // other
     SmartPtr<TIPv6Addr> getUnicast();
-
     void setNoConfig();
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     
@@ -84,14 +81,16 @@ public:
     void addClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
     void delClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
 
-    // PD prefixes functions
-    void addClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
-    void delClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
-    bool supportPrefixDelegation();
     // TA address functions
     void addTAAddr();
     void delTAAddr();
 
+    // PD prefixes functions
+    void addClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
+    void delClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
+    bool supportPrefixDelegation();
+
+    // relays
     string getRelayName();
     int getRelayID();
     int getRelayInterfaceID();
@@ -100,6 +99,7 @@ public:
     void setRelayID(int id);
 
     // options
+
     // option: DNS Servers
     List(TIPv6Addr) * getDNSServerLst();
     void setDNSServerLst(List(TIPv6Addr) *lst);
