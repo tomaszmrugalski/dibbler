@@ -172,7 +172,8 @@ InterfaceDeclarationsList '}'
 /* iface 5 { ... } */
 |IFACE_ Number '{' 
 {
-    CheckIsIface($2);   //If no - everything is ok
+    if (!CheckIsIface($2))
+	YYABORT;
     StartIfaceDeclaration();
 }
 InterfaceDeclarationsList '}'
@@ -198,7 +199,8 @@ CLASS_ '{'
 }
 ClassOptionDeclarationsList '}'
 {
-    EndClassDeclaration();
+    if (!EndClassDeclaration())
+	YYABORT;
 }
 ;
 
@@ -214,7 +216,8 @@ TAClassDeclaration
     StartTAClassDeclaration();
 } TAClassOptionsList '}'
 {
-    EndTAClassDeclaration();
+    if (!EndTAClassDeclaration())
+	YYABORT;
 }
 ;
 
@@ -237,7 +240,8 @@ TAClassOption
     StartPDDeclaration();
 } PDOptionsList '}'
 {
-    EndPDDeclaration();
+    if (!EndPDDeclaration())
+	YYABORT;
 }
 ;
 
@@ -375,11 +379,7 @@ ADDRESSRangeList
 ;
 
 PDRangeList
-    : IPV6ADDR_     
-    {
-        PDLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
-    }
-    |  IPV6ADDR_ '/' INTNUMBER_
+:   IPV6ADDR_ '/' INTNUMBER_
     {
 	SmartPtr<TIPv6Addr> addr(new TIPv6Addr($1));
 	int prefix = $3;
@@ -391,11 +391,13 @@ PDRangeList
  	
 	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
-        Log(Debug) << "PD-range: min: " <<*addr1 << ", max: " << *addr2 << LogEnd;
+	SPtr<TStationRange> range = 0;
 	if (*addr1<=*addr2)
-            PDLst.append(new TStationRange(addr1,addr2));
+            range = new TStationRange(addr1,addr2);
         else
-            PDLst.append(new TStationRange(addr2,addr1));
+            range = new TStationRange(addr2,addr1);
+	range->setPrefixLength(prefix);
+	PDLst.append(range);
     }
 ;
 
@@ -488,10 +490,10 @@ PoolOption
     ParserOptStack.getLast()->setPool(&PresentRangeLst);
 }
 ;
+
 PDPoolOption
 : PD_POOL_ 
 {
-    PDLst.clear();    
 } PDRangeList
 {
     ParserOptStack.getLast()->setPool(&PresentRangeLst/*PDList*/);
@@ -884,7 +886,7 @@ VendorSpecOption
  * 
  * @param ifaceNr 
  * 
- * @return true if interface was not declared, otherwise calls YYABORT macro.
+ * @return true if interface was not declared
  */
 bool SrvParser::CheckIsIface(int ifaceNr)
 {
@@ -893,7 +895,7 @@ bool SrvParser::CheckIsIface(int ifaceNr)
   while (ptr=SrvCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) {
 	Log(Crit) << "Interface with ID=" << ifaceNr << " is already defined." << LogEnd;
-	YYABORT;
+	return false;
     }
   return true;
 }
@@ -909,7 +911,7 @@ bool SrvParser::CheckIsIface(string ifaceName)
     string presName=ptr->getName();
     if (presName==ifaceName) {
 	Log(Crit) << "Interface " << ifaceName << " is already defined." << LogEnd;
-	YYABORT;
+	return false;
     }
   }
   return true;
@@ -933,7 +935,7 @@ void SrvParser::StartIfaceDeclaration()
  * new interface representation used in SrvCfgMgr. Also removes corresponding
  * element from the parser stack
  * 
- * @return true if everything is ok, otherwise calls YYABORT macro.
+ * @return true if everything is ok
  */
 bool SrvParser::EndIfaceDeclaration()
 {
@@ -979,12 +981,12 @@ void SrvParser::StartClassDeclaration()
 /** 
  * this method is adds new object representig just parsed IA class.
  * 
- * @return true if everything works ok, otherwise calls YYABORT macro.
+ * @return true if everything works ok.
  */bool SrvParser::EndClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool()) {
         Log(Crit) << "No pools defined for this class." << LogEnd;
-        YYABORT;
+        return false;
     }
     SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
     //setting interface options on the basis of just read information
@@ -1008,7 +1010,7 @@ bool SrvParser::EndTAClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool()) {
         Log(Crit) << "No pools defined for this ta-class." << LogEnd;
-        YYABORT;
+        return false;
     }
     // create new object representing just parsed TA and add it to the list
     SmartPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
@@ -1023,25 +1025,40 @@ bool SrvParser::EndTAClassDeclaration()
 void SrvParser::StartPDDeclaration()
 {
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
-    //this->PDLst.clear();
-    //this->PDPrefix = 0;
+    this->PDLst.clear();
+    this->PDPrefix = 0;
 }
 
 bool SrvParser::EndPDDeclaration()
 {
     if (!this->PDLst.count()) {
         Log(Crit) << "No PD pools defined ." << LogEnd;
-        YYABORT;
+        return false;
     }
     if (!this->PDPrefix) {
-	Log(Crit) << "PD prefix not defined or set to 0." << LogEnd;
-	YYABORT;
+	Log(Crit) << "PD prefix length not defined or set to 0." << LogEnd;
+	return false;
     }
 	
+    int len = 0;
+    this->PDLst.first();
+    while ( SPtr<TStationRange> pool = PDLst.get() ) {
+	if (!len)
+	    len = pool->getPrefixLength();
+	if (len!=pool->getPrefixLength()) {
+	    Log(Crit) << "Prefix pools with different lengths are not supported. Make sure that all 'pd-pool' uses the same prefix length." << LogEnd;
+	    return false;
+	}
+    }
+    if (len>=PDPrefix) {
+	Log(Crit) << "Clients are supposed to get /" << this->PDPrefix << " prefixes, but pd-pool(s) are only /" << len << " long." << LogEnd;
+	return false;
+    }
+
     SmartPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
     ParserOptStack.getLast()->setPool(&this->PDLst);
-    ptrPD->setOptions(ParserOptStack.getLast(), this->PDPrefix);
-    
+    if (!ptrPD->setOptions(ParserOptStack.getLast(), this->PDPrefix))
+	return false;
     SrvCfgPDLst.append(ptrPD);
 
     // remove temporary parser object for this (just finished) scope
