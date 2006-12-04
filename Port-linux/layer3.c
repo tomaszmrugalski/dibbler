@@ -7,9 +7,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.26 2006-11-17 00:38:23 thomson Exp $
+ * $Id: layer3.c,v 1.27 2006-12-04 23:38:38 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2006-11-17 00:38:23  thomson
+ * Low level bug printing cleanup.
+ *
  * Revision 1.25  2006-08-22 00:01:20  thomson
  * Client /64 prefix, strict-rfc-no-routing feature added.
  *
@@ -349,7 +352,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, i
     
     /* is there an interface with this ifindex? */
     if ((req.ifa.ifa_index = ll_name_to_index((char*)ifacename)) == 0) {
-	sprintf(Message, "Cannot find device: %s\n", ifacename);
+	sprintf(Message, "Cannot find device: %s", ifacename);
 	return LOWLEVEL_ERROR_UNSPEC;
     }
     rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
@@ -399,11 +402,11 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     hints.ai_protocol = IPPROTO_UDP;
     hints.ai_flags = AI_PASSIVE;
     if( (error = getaddrinfo(NULL,  port_char, &hints, &res)) ){
-	sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?\n");
+	sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
 	return LOWLEVEL_ERROR_GETADDRINFO;
     }
     if( (Insock = socket(AF_INET6, SOCK_DGRAM,0 )) < 0){
-	sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?\n");
+	sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
 	return LOWLEVEL_ERROR_UNSPEC;
     }	
 	
@@ -413,13 +416,13 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 #else
     if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof(on)) < 0) {
 #endif
-	sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.\n");
+	sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
 	return LOWLEVEL_ERROR_SOCK_OPTS;
     }
 
     if (thisifaceonly) {
 	if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
-	    sprintf(Message, "Unable to bind socket to interface %s\n", ifacename);
+	    sprintf(Message, "Unable to bind socket to interface %s.", ifacename);
 	    return LOWLEVEL_ERROR_BIND_IFACE;
 	}
     }
@@ -427,7 +430,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     /* allow address reuse (this option sucks - why allow running multiple servers?) */
     if (reuse!=0) {
 	if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)  {
-	    sprintf(Message, "Unable to set up socket option SO_REUSEADDR.\n");
+	    sprintf(Message, "Unable to set up socket option SO_REUSEADDR.");
 	    return LOWLEVEL_ERROR_REUSE_FAILED;
 	}
     }
@@ -439,7 +442,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     tmp = (char*)(&bindme.sin6_addr);
     inet_pton6(addr, tmp);
     if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme)) < 0) {
-	sprintf(Message, "Unable to bind socket\n");
+	sprintf(Message, "Unable to bind socket.");
 	return LOWLEVEL_ERROR_BIND_FAILED;
     }
 
@@ -449,7 +452,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     if (multicast) {
 	hints.ai_flags = 0;
 	if((error = getaddrinfo(addr, port_char, &hints, &res2))){
-	    sprintf(Message, "Failed to obtain getaddrinfo\n");
+	    sprintf(Message, "Failed to obtain getaddrinfo");
 	    return LOWLEVEL_ERROR_GETADDRINFO;
 	}
 	memset(&mreq6, 0, sizeof(mreq6));
@@ -459,7 +462,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	
 	/* Add to the all agent multicast address */
 	if (setsockopt(Insock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &mreq6, sizeof(mreq6))) {
-	    sprintf(Message, "error joining ipv6 group\n");
+	    sprintf(Message, "error joining ipv6 group");
 	    return LOWLEVEL_ERROR_MCAST_MEMBERSHIP;
 	}
 	freeaddrinfo(res2);
