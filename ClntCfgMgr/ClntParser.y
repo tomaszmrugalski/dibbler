@@ -790,19 +790,19 @@ LifetimeOption
 VendorSpecOption
 :OPTION_ VENDOR_SPEC_
 {
-    Log(Debug) << "#### VendorSpec (no details)" << LogEnd;
+    Log(Debug) << "VendorSpec defined (no details)." << LogEnd;
     this->VendorSpecEnabled = true;
 
 }
 |OPTION_ VENDOR_SPEC_ Number
 {
-    Log(Debug) << "#### VendorSpec (enterprise=" << $3 << ", no data)" << LogEnd;
+    Log(Debug) << "VendorSpec defined (enterprise=" << $3 << ", no data)." << LogEnd;
     this->VendorSpecEnabled = true;
     this->VendorSpec = new TClntOptVendorSpec($3, 0, 0, 0);
 }
 |OPTION_ VENDOR_SPEC_ Number DUID_
 {
-    Log(Debug) << "#### VendorSpec (enterprise=" << $3 << ", len=" << $4.length << ")" << LogEnd;
+    Log(Debug) << "VendorSpec defined (enterprise=" << $3 << ", hint data length=" << $4.length << ")." << LogEnd;
     this->VendorSpecEnabled = true;
     this->VendorSpec= new TClntOptVendorSpec($3, $4.duid, $4.length, 0);
 };

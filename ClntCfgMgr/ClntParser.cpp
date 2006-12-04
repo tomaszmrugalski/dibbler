@@ -2073,7 +2073,7 @@ case 144:
 case 145:
 #line 792 "ClntParser.y"
 {
-    Log(Debug) << "#### VendorSpec (no details)" << LogEnd;
+    Log(Debug) << "VendorSpec defined (no details)." << LogEnd;
     this->VendorSpecEnabled = true;
 
 ;
@@ -2081,7 +2081,7 @@ case 145:
 case 146:
 #line 798 "ClntParser.y"
 {
-    Log(Debug) << "#### VendorSpec (enterprise=" << yyvsp[0].ival << ", no data)" << LogEnd;
+    Log(Debug) << "VendorSpec defined (enterprise=" << yyvsp[0].ival << ", no data)." << LogEnd;
     this->VendorSpecEnabled = true;
     this->VendorSpec = new TClntOptVendorSpec(yyvsp[0].ival, 0, 0, 0);
 ;
@@ -2089,7 +2089,7 @@ case 146:
 case 147:
 #line 804 "ClntParser.y"
 {
-    Log(Debug) << "#### VendorSpec (enterprise=" << yyvsp[-1].ival << ", len=" << yyvsp[0].duidval.length << ")" << LogEnd;
+    Log(Debug) << "VendorSpec defined (enterprise=" << yyvsp[-1].ival << ", hint data length=" << yyvsp[0].duidval.length << ")." << LogEnd;
     this->VendorSpecEnabled = true;
     this->VendorSpec= new TClntOptVendorSpec(yyvsp[-1].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0);
 ;
