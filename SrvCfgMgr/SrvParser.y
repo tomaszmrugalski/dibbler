@@ -502,9 +502,7 @@ PDPoolOption
 PDLength
 : PD_LENGTH_ Number
 {
- 
    this->PDPrefix = $2;
-   Log(Debug) << "pd-length set to " << $2 << LogEnd;
 }
 ;
     
@@ -1095,7 +1093,7 @@ SrvParser::~SrvParser() {
     this->PresentRangeLst.clear();
 }
 
-static char bitMask[] = {255, 127, 63, 31, 15, 7, 3, 1 };
+static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 
 SmartPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     char packed[16];
