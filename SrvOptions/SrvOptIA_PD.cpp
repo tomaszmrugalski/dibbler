@@ -4,6 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                          
+ *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
  */
@@ -15,6 +16,7 @@
 #include <netinet/in.h>
 #endif 
 
+#include <sstream>
 #include "SrvOptIA_PD.h"
 #include "SrvOptIAPrefix.h" 
 #include "SrvOptStatusCode.h"
@@ -41,8 +43,6 @@ TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, int Code, string Text, 
 TSrvOptIA_PD::TSrvOptIA_PD( char * buf, int bufsize, TMsg* parent)
     :TOptIA_PD(buf,bufsize, parent) {
     int pos=0;
-
-
 	
     while(pos<bufsize) 
     {
@@ -108,14 +108,13 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 			   int iface, int msgType, TMsg* parent)
     :TOptIA_PD(queryOpt->getIAID(), queryOpt->getT1(), queryOpt->getT2(), parent) {
     
-    this->AddrMgr   = addrMgr; // in next version this should be PrefixMgr // TODO 
+    this->AddrMgr   = addrMgr;
     this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
 	
     bool fake  = false; // is this assignment for real?
-
     if (msgType == SOLICIT_MSG)
 	fake = true;
     if (parent->getOption(OPTION_RAPID_COMMIT))
@@ -136,25 +135,37 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
         this->SubOptions.append((Ptr*)ptrStatus);
 	return;
     }
-    // --- Is this PD without IAPREFIX options? ---
-    if (!queryOpt->countPrefixes()) {
-	Log(Warning) << "PD option (with IAPREFIX suboptions missing) received. Assigning one prefix."
-		     << LogEnd;
-	
-	SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr(); 
-	this->assignPrefix(anyaddr,64 ,DHCPV6_INFINITY, DHCPV6_INFINITY, fake); // this should be checked 
-	
-       	// include status code
-        SmartPtr<TSrvOptStatusCode> ptrStatus;
-        ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-					  "1 prefix granted. Next time you might consider including "
-					  "IAPREFIX in IA_PD option.",this->Parent);
-        this->SubOptions.append((Ptr*)ptrStatus);
 
-	return;
+    // --- Is this PD without IAPREFIX options? ---
+    SPtr<TIPv6Addr> hint = 0;
+    if (!queryOpt->countPrefixes()) {
+	Log(Notice) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
+	hint  = new TIPv6Addr(); /* :: - any address */
+	this->Prefered = DHCPV6_INFINITY;
+	this->Valid    = DHCPV6_INFINITY;
+    } else {
+	SPtr<TSrvOptIAPrefix> hintPrefix = (Ptr*) queryOpt->getOption(OPTION_IAPREFIX);
+	Log(Info) << "PD: PD option with " << hint->getPlain() << " as a hint received." << LogEnd;
+	hint  = hintPrefix->getPrefix();
+	this->Prefered  = hintPrefix->getPref();
+	this->Valid     = hintPrefix->getValid();
     }
 
-    // FIXME: implement support for prefixes sent by client
+    // assign prefixes
+    int status = this->assignPrefix(hint, fake);
+    
+    // include status code
+    SmartPtr<TSrvOptStatusCode> ptrStatus;
+    if (status) {
+	ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
+					  "1 prefix granted. Next time you might consider including "
+					  "IAPREFIX in IA_PD option.", this->Parent);
+    } else {
+	ptrStatus = new TSrvOptStatusCode(status,
+					  "Unable to provide any prefixes. Sorry.", this->Parent);
+    }
+    this->SubOptions.append((Ptr*)ptrStatus);
+    return;
 }
 
 void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
@@ -172,43 +183,46 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
     }
 }
 
-SmartPtr<TSrvOptIAPrefix> TSrvOptIA_PD::assignPrefix(SmartPtr<TIPv6Addr> hint,int length, unsigned long pref,
-						    unsigned long valid,
-						    bool fake) {
-    // Assign one prefix
+/** 
+ * gets one (or more) prefix for requested 
+ * 
+ * @param hint 
+ * @param length 
+ * @param pref 
+ * @param valid 
+ * @param fake 
+ * 
+ * @return status, if it was possible to assign something (STATUSCODE_SUCCESS)
+ */
+int TSrvOptIA_PD::assignPrefix(SmartPtr<TIPv6Addr> hint, bool fake) {
     SmartPtr<TIPv6Addr> prefix;
     SmartPtr<TSrvOptIAPrefix> optPrefix;
     SmartPtr<TSrvCfgPD> ptrPD;
+    List(TIPv6Addr) prefixLst;
     
     // get address
-    prefix = this->getFreePrefix(hint);
-    ptrPD = this->CfgMgr->getClassByPrefix(this->Iface, prefix);
-    Log(Debug) << "Assigned prefix: "<< prefix->getPlain() << LogEnd;
+    prefixLst.clear();
+    prefixLst = this->getFreePrefixes(hint);
+    prefixLst.first();
+    ostringstream buf;
+    while (prefix = prefixLst.get()) {
+	buf << prefix->getPlain() << "/" << this->PDLength << " ";
+	optPrefix = new TSrvOptIAPrefix(prefix, this->PDLength, this->Prefered, this->Valid, this->Parent);
+	SubOptions.append((Ptr*)optPrefix);
+	
+	if (!fake)
+	    AddrMgr->addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
+			       prefix, this->Prefered, this->Valid, this->PDLength, false);
+    }
+    Log(Info) << "PD:" << (fake?"(would be)":"") << " assigned prefix(es):" << buf.str() << LogEnd;
 
-    // FIXME: PD: remove those hardcoded values
-    pref = 60000;
-    valid = 120000;
-    //length=ptrClass->getLength(length);
-    
-   // remember assigned prefix in addrMgr
-   if (!fake)
-       AddrMgr->addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
-			  prefix, pref, valid, length, false);
-
-   optPrefix = new TSrvOptIAPrefix( prefix,length, pref, valid, this->Parent); // 64 is a prefix length
-   SubOptions.append((Ptr*)optPrefix);
-   
-   Log(Info) << "Client requested " << *hint <<", got " << *prefix 
-	     << " (PDID=" << this->IAID << ", pref=" << pref << ",valid=" << valid << " length of prefix is "<< length << LogEnd;
-
-    // configure this PD
-    this->T1= ptrPD->getPD_T1(this->T1);
-    this->T2= ptrPD->getPD_T2(this->T2);
-    
-    return optPrefix;
+    if (prefixLst.count()) {
+	return STATUSCODE_SUCCESS;
+    } else
+	return STATUSCODE_NOPREFIXAVAIL;
 }
 
-// so far it is enought here 
+// so far it is enough here 
 // constructor used only in RENEW, REBIND, DECLINE and RELEASE
 TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
 		 SmartPtr<TSrvAddrMgr> addrMgr,
@@ -291,25 +305,41 @@ bool TSrvOptIA_PD::doDuties() {
     return true;
 }
 
-/*
- * gets free address for a client
+/** 
+ * return free prefixes for a client. There are several ways that method may work:
+ * 1 - client didn't provide any hints: 
+ *     => one prefix from each pool will be granted
+ * 2 - client has provided hint and that is valid (supported and unused): 
+ *     => requested prefix will be granted
+ * 3 - client has provided hint, which belongs to supported pool, but this prefix is used: 
+ *     => other prefix from that pool will be asigned
+ * 4 - client has provided hint, but it is invalid (not beloninging to a supported pool,
+ *     multicast or link-local): 
+ *     => see 1
+ * 
+ * @param hint - hint provided by client (or ::)
+ * 
+ * @return - list of prefixes
  */
-SmartPtr<TIPv6Addr> TSrvOptIA_PD::getFreePrefix(SmartPtr<TIPv6Addr> hint) {
+List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SmartPtr<TIPv6Addr> hint) {
     
-    bool invalidPrefix = false;
     SmartPtr<TSrvCfgIface> ptrIface;
-    SmartPtr<TIPv6Addr>   prefix;
+    SmartPtr<TIPv6Addr>    prefix;
+    SmartPtr<TSrvCfgPD>    ptrPD;
+    bool validHint = true;
+    List(TIPv6Addr) lst;
+
+    lst.clear();
     ptrIface = this->CfgMgr->getIfaceByID(this->Iface);
     if (!ptrIface) {
-	Log(Error) << "Trying to find free prefix on non-existent interface (id=%d)\n" 
-		   << this->Iface << LogEnd;
-	return 0; // NULL
+	Log(Error) << "PD: Trying to find free prefix on non-existent interface (ifindex=" << this->Iface << ")." << LogEnd;
+	return lst;
     }
 
     if (!ptrIface->supportPrefixDelegation()) {
 	// this method should not be called anyway
-	Log(Error) << "Prefix delegation is not supported on the " << ptrIface->getFullName() << "." << LogEnd;
-	return 0;
+	Log(Error) << "PD: Prefix delegation is not supported on the " << ptrIface->getFullName() << "." << LogEnd;
+	return lst;
     }
     
     // check if this prefix is ok
@@ -317,82 +347,78 @@ SmartPtr<TIPv6Addr> TSrvOptIA_PD::getFreePrefix(SmartPtr<TIPv6Addr> hint) {
     // is it anyaddress (::)?
     SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
     if (*anyaddr==*hint) {
-	Log(Debug) << "Client requested unspecified (" << *hint 
+	Log(Debug) << "PD: Client requested unspecified (" << *hint 
 		   << ") prefix. Hint ignored." << LogEnd;
-	invalidPrefix = true;
+	validHint = false;
     }
     
     // is it multicast address (ff...)?
     if ((*(hint->getAddr()))==0xff) {
-	Log(Debug) << "Client requested multicast (" << *hint 
+	Log(Debug) << "PD: Client requested multicast (" << *hint 
 		   << ") prefix. Hint ignored." << LogEnd;
-	invalidPrefix = true;
+	validHint = false;
     }
 
     // is it link-local address (fe80::...)?
     char linklocal[]={0xfe, 0x80};
     if (!memcmp(hint->getAddr(),linklocal,2)) {
-	Log(Debug) << "Client requested link-local (" << *hint << ") prefix. Hint ignored." << LogEnd;
-	invalidPrefix = true;
+	Log(Debug) << "PD: Client requested link-local (" << *hint << ") prefix. Hint ignored." << LogEnd;
+	validHint = false;
     }
  
-    if ( !invalidPrefix ) {
+    if ( validHint ) {
 	// hint is valid, try to use it
-	
-	SmartPtr<TSrvCfgPD> ptrPD;
 	ptrPD = this->CfgMgr->getClassByPrefix(this->Iface, hint);
-
-	// best case: address belongs to supported class, and is free
+	
+	// case 2: address belongs to supported class, and is free
 	if ( ptrPD && AddrMgr->prefixIsFree(hint) ) {
-	    Log(Debug) << "Requested prefix (" << *hint << ") is free, great!" << LogEnd;
-	    return hint;
+	    Log(Debug) << "PD: Requested prefix (" << *hint << ") is free, great!" << LogEnd;
+	    this->PDLength = ptrPD->getPD_Length();
+	    this->Prefered = ptrPD->getPrefered(this->Prefered);
+	    this->Valid    = ptrPD->getValid(this->Valid);
+	    this->T1       = ptrPD->getT1(this->T1);
+	    this->T2       = ptrPD->getT2(this->T2);
+	    lst.append(hint);
+	    return lst;
 	} 
+	
+	// case 3: hint is used, but we can assign another prefix from the same pool
+	if (ptrPD) {
+	    do {
+		prefix=ptrPD->getRandomPrefix();
+	    } while (!this->AddrMgr->prefixIsFree(prefix));
+	    lst.append(prefix);
 
-	// FIXME: Implement support for client's hints
-
-/*      // medium case: addess belongs to supported class, but is used
-	if ( ptrClass ) {
-	    if (ptrClass->getAssignedCount()>=ptrClass->getClassMaxLease()) {
-		Log(Debug) << "Requested address (" << *hint 
-			   << ") belongs to supported class, which has reached its limit (" 
-			   << ptrClass->getAssignedCount() << " assigned, " 
-			   << ptrClass->getClassMaxLease() << " max lease)." << LogEnd;
-	    } else {
-		Log(Debug) << "Requested address (" << *hint 
-			   << ") belongs to supported class, but is used." << LogEnd;
-		do {
-		    addr = ptrClass->getRandomAddr();
-		} while (!AddrMgr->addrIsFree(addr));
-		return addr;
-	    }
+	    this->PDLength = ptrPD->getPD_Length();
+	    this->Prefered = ptrPD->getPrefered(this->Prefered);
+	    this->Valid    = ptrPD->getValid(this->Valid);
+	    this->T1       = ptrPD->getT1(this->T1);
+	    this->T2       = ptrPD->getT2(this->T2);
+	    return lst;
 	}
-    }
+    } 
 
-    // do we have a cached address for that client?
-    if (addr = AddrMgr->getCachedAddr(this->ClntDuid)) {
-	if (this->CfgMgr->getClassByAddr(this->Iface, addr)) {
-	    Log(Info) << "Cache: Cached address " << *addr << " found. Welcome back." << LogEnd;
-	    return addr;
-	} else {
-	    Log(Warning) << "Cache: Cached address " << *addr << " found, but it is no longer valid." << LogEnd;
-	    AddrMgr->delCachedAddr(addr);
-	}
-    } */
-
-    // worst case: address does not belong to supported class
-    // or specified hint is invalid
-	}
-        SmartPtr<TSrvCfgPD> ptrPD;
-        ptrPD = ptrIface->getPD();
-        if (!ptrPD) {
-	     ptrIface->firstPD();
-	     ptrPD = ptrIface->getPD();
-    }
+    // case 1: no hint provided, assign one prefix from each pool
+    // case 4: provided hint does not belong to supported class or is useless (multicast,link-local, ::)
+    ptrIface->firstPD();
+    ptrPD = ptrIface->getPD();
     
-	do {
-	    prefix=ptrPD->getRandomPrefix();
-	} while (!this->AddrMgr->prefixIsFree(prefix));
-
-    return prefix;
-
+    while (true) {
+	List(TIPv6Addr) lst;
+	lst = ptrPD->getRandomList();
+	lst.first();
+	bool allFree = true;
+	while (prefix = lst.get()) {
+	    if (!AddrMgr->prefixIsFree(prefix))
+		allFree = false;
+	}
+	if (allFree) {
+	    this->PDLength = ptrPD->getPD_Length();
+	    this->Prefered = ptrPD->getPrefered(this->Prefered);
+	    this->Valid    = ptrPD->getValid(this->Valid);
+	    this->T1       = ptrPD->getT1(this->T1);
+	    this->T2       = ptrPD->getT2(this->T2);
+	    return lst;
+	}
+    };
 }

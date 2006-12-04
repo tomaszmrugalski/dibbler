@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.33 2006-11-03 20:07:07 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.34 2006-12-04 23:37:53 thomson Exp $
  */
 
 #include <sstream>
@@ -150,6 +150,7 @@ SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA() {
 }
 
 void TSrvCfgIface::addPD(SmartPtr<TSrvCfgPD> pd) {
+    this->PrefixDelegationSupport = true;
     this->SrvCfgPDLst.append(pd);
 }
 
@@ -433,18 +434,18 @@ void TSrvCfgIface::setDefaults() {
     this->NoConfig = false;
     this->preference = 0;
     
-    this->DNSServerSupport  = false;
-    this->DomainSupport     = false;
-    this->NTPServerSupport  = false;
-    this->TimezoneSupport   = false;
-    this->FQDNSupport       = false;
-    this->SIPServerSupport  = false;
-    this->SIPDomainSupport  = false;
-    this->NISServerSupport  = false;
-    this->NISDomainSupport  = false;
-    this->NISPServerSupport = false;
-    this->NISPDomainSupport = false;
-    this->LifetimeSupport   = false;
+    this->DNSServerSupport        = false;
+    this->DomainSupport           = false;
+    this->NTPServerSupport        = false;
+    this->TimezoneSupport         = false;
+    this->FQDNSupport             = false;
+    this->SIPServerSupport        = false;
+    this->SIPDomainSupport        = false;
+    this->NISServerSupport        = false;
+    this->NISDomainSupport        = false;
+    this->NISPServerSupport       = false;
+    this->NISPDomainSupport       = false;
+    this->LifetimeSupport         = false;
     this->PrefixDelegationSupport = false;
 }
 

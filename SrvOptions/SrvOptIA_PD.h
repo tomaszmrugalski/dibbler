@@ -62,9 +62,12 @@ class TSrvOptIA_PD : public TOptIA_PD
     SmartPtr<TDUID>       ClntDuid;
     int                   Iface;
     
-    SmartPtr<TSrvOptIAPrefix> assignPrefix(SmartPtr<TIPv6Addr> hint, int length, unsigned long pref,
-					  unsigned long valid, bool quiet);
-    SmartPtr<TIPv6Addr> getFreePrefix(SmartPtr<TIPv6Addr> hint);
+    int assignPrefix(SmartPtr<TIPv6Addr> hint, bool quiet);
+    List(TIPv6Addr) getFreePrefixes(SmartPtr<TIPv6Addr> hint);
+
+    unsigned long Prefered;
+    unsigned long Valid;
+    unsigned long PDLength;
 
 };
 

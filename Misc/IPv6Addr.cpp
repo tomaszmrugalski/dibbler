@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IPv6Addr.cpp,v 1.7 2006-12-02 14:54:45 thomson Exp $
+ * $Id: IPv6Addr.cpp,v 1.8 2006-12-04 23:33:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-12-02 14:54:45  thomson
+ * IPv6Addr::truncate implemented, inet_pton6 does not use IPv4-eccapsulated form
+ *
  * Revision 1.6  2006-10-06 00:25:53  thomson
  * Initial PD support.
  *
@@ -26,6 +29,9 @@
 #include "Portable.h"
 #include "Logger.h"
 
+static char truncLeft[] = { 0, 0xff, 0x7f, 0x3f, 0x1f, 0xf,  0x7,  0x3,  0x1 };
+static char truncRight[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
+
 TIPv6Addr::TIPv6Addr() {
     memset(Addr,0,16);
     inet_ntop6(Addr,Plain);
@@ -39,6 +45,22 @@ TIPv6Addr::TIPv6Addr(const char* addr, bool plain) {
         memcpy(Addr,addr,16);
 	inet_ntop6(Addr,Plain);
     }
+}
+
+TIPv6Addr::TIPv6Addr(const char* prefix, const char* host, int prefixLength) {
+
+    int offset = prefixLength/8;
+    if (prefixLength%8==0) {
+	memmove(Addr, host, 16);
+	memmove(Addr, prefix, offset);
+	inet_ntop6(Addr, Plain);
+	return;
+    }
+
+    memmove(Addr, host, 16);  // copy whole host address, but...
+    memmove(Addr, prefix, offset); // overwrite first bits with prefix...
+    Addr[offset+1] = (prefix[offset+1] & truncRight[prefixLength%8]) || (host[offset+1] & truncLeft[prefixLength%8]);
+    inet_ntop6(Addr, Plain);
 }
 
 bool TIPv6Addr::linkLocal() {
@@ -72,8 +94,6 @@ bool TIPv6Addr::operator==(const TIPv6Addr &other) {
 }
 
 void TIPv6Addr::truncate(int minPrefix, int maxPrefix) {
-    char truncLeft[] = { 0, 0xff, 0x7f, 0x3f, 0x1f, 0xf,  0x7,  0x3,  0x1 };
-    char truncRight[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 
     if (minPrefix>128 || minPrefix<0 || maxPrefix>128 || maxPrefix<0) {
 	Log(Error) << "Unable to truncate address: invalid prefix lengths: minPrefix=" << minPrefix << ", maxPrefix=" << maxPrefix << LogEnd;
@@ -92,9 +112,8 @@ void TIPv6Addr::truncate(int minPrefix, int maxPrefix) {
     if (maxPrefix%8)
 	x++;
     memset(this->Addr+x, 0, 16-x);
-    x = maxPrefix/8;
-    Log(Debug) << "x=" << x << LogEnd;
     if (maxPrefix%8) {
+	x = maxPrefix/8;
 	this->Addr[x] = this->Addr[x] & truncRight[maxPrefix%8];
     }
 

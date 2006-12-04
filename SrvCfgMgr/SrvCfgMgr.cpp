@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.45 2006-11-17 00:44:33 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.46 2006-12-04 23:37:53 thomson Exp $
  *
  */
 
@@ -300,10 +300,14 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6A
     return 0; // NULL
 }
 
-/*
-* get a class which prefix belongs to
-*/
-
+/** 
+ * get a class, which prefix belongs to
+ * 
+ * @param iface 
+ * @param addr 
+ * 
+ * @return class (or 0 if no class is found)
+ */
 SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> addr)
 {
     this->firstIface();
@@ -312,7 +316,7 @@ SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> 
 
     if (!ptrIface) {
 	Log(Error) << "Trying to find class on unknown (" << iface <<") interface." << LogEnd;
-	return 0; // NULL
+	return 0;
     }
 
     SmartPtr<TSrvCfgPD> ptrClass;
@@ -322,7 +326,7 @@ SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> 
 	    return ptrClass;
     }
 
-    return 0; // NULL
+    return 0;
 }
 
 

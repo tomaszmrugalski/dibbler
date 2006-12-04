@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.2 2006-11-03 20:07:07 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.3 2006-12-04 23:37:53 thomson Exp $
  *
  */
 
@@ -19,7 +19,6 @@
  * static field initialization
  */
 unsigned long TSrvCfgPD::staticID=0;
-
  
 TSrvCfgPD::TSrvCfgPD() {
     this->PD_T1Beg    = 0;
@@ -35,10 +34,7 @@ TSrvCfgPD::TSrvCfgPD() {
 TSrvCfgPD::~TSrvCfgPD() {
 }
 
-
-
-
-long TSrvCfgPD::chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime)
+unsigned long TSrvCfgPD::chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime)
 {
     if (clntTime < beg)
 	return beg;
@@ -47,27 +43,47 @@ long TSrvCfgPD::chooseTime(unsigned long beg, unsigned long end, unsigned long c
     return clntTime;
 }
 
-unsigned long TSrvCfgPD::getPD_T1(unsigned long clntT1) {
-    return chooseTime(PD_T1Beg,PD_T1End,clntT1);
+unsigned long TSrvCfgPD::getT1(unsigned long hintT1) {
+    return chooseTime(PD_T1Beg, PD_T1End, hintT1);
 }
 
-unsigned long TSrvCfgPD::getPD_T2(unsigned long clntT2) {
-    return chooseTime(PD_T2Beg,PD_T2End,clntT2);
+unsigned long TSrvCfgPD::getT2(unsigned long hintT2) {
+    return chooseTime(PD_T2Beg, PD_T2End, hintT2);
 }
 
+unsigned long TSrvCfgPD::getPrefered(unsigned long hintPref) {
+    return chooseTime(PD_PrefBeg, PD_PrefEnd, hintPref);
+}
 
-void TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int PDPrefix)
+unsigned long TSrvCfgPD::getValid(unsigned long hintValid) {
+    return chooseTime(PD_ValidBeg, PD_ValidEnd, hintValid);
+}
+
+unsigned long TSrvCfgPD::getPD_Length() {
+    return this->PD_Length;
+}
+
+bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 {
-    Log(Debug) << "Set options for PD T1: " << opt->getT1Beg() << " T2: " << opt->getT2Beg()<< " Prefix Lenght: "<<PDPrefix <<LogEnd; 
+    int poolLength;
+    int cnt = 0;
+    Log(Debug) << "PD: Client will receive /" << prefixLength << " prefixes (T1=" << opt->getT1Beg() 
+	       << ".." << opt->getT1End() << ", T2=" << opt->getT2Beg() << ".." << opt->getT2End()
+	       << ")." <<LogEnd; 
     this->PD_T1Beg    = opt->getT1Beg();
     this->PD_T2Beg    = opt->getT2Beg();
     this->PD_T1End    = opt->getT1End();
     this->PD_T2End    = opt->getT2End();
-    this->PD_Share    = opt->getShare();
-    this->PD_Prefix   = PDPrefix;
+    this->PD_PrefBeg  = opt->getPrefBeg();
+    this->PD_PrefEnd  = opt->getPrefEnd();
+    this->PD_ValidBeg = opt->getValidBeg();
+    this->PD_ValidEnd = opt->getValidEnd();
+    
+    this->PD_Length   = prefixLength;
     PD_MaxLease = opt->getClassMaxLease();
     
     SmartPtr<TStationRange> PD_Range;
+    // FIXME: Implement white-list, black-list support
     /* For a while white and black list will be not used
 	opt->firstRejedClnt();
     while(PD_Range=opt->getRejedClnt())
@@ -77,39 +93,102 @@ void TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int PDPrefix)
     while(PD_Range=opt->getAcceptClnt())
         this->AcceptClnt.append(PD_Range);
 	*/
+
+    this->PD_Count = DHCPV6_INFINITY;
+    SPtr<TStationRange> pool = 0;
     opt->firstPool();
-    this->PD_Pool = opt->getPool();
-    Log(Debug) << "Pool used for PD: " << *this->PD_Pool << LogEnd;
-    if (opt->getPool()) {
-	Log(Warning) << "Two or more pool defined. Only one is used." << LogEnd;
+    while ( pool = opt->getPool() ) {
+	poolLength = pool->getPrefixLength();
+	PoolLst.append(pool);
+	Log(Debug) << "PD: Pool " << pool->getAddrL()->getPlain() << " - " 
+		   << pool->getAddrR()->getPlain() << ", pool length: " 
+		   << pool->getPrefixLength() << "." << LogEnd;
+	if (this->PD_Count > pool->rangeCount())
+	    this->PD_Count = pool->rangeCount();
+	cnt++;
     }
 
+    if (!cnt) {
+	Log(Error) << "Unable to find any prefix pools. Please define at least one using 'pd-pool' keyword." << LogEnd;
+	return false;
+    }
+
+    // calculate common section
+    PoolLst.first();
+    pool = PoolLst.get();
+    if (!pool) {
+	Log(Crit) << "Unable to find first prefix pool. Something is wrong, very wrong." << LogEnd;
+	return false;
+    }
+    CommonPool = new TStationRange( new TIPv6Addr(*pool->getAddrL()), new TIPv6Addr(*pool->getAddrR()));
+    CommonPool->truncate(pool->getPrefixLength(), prefixLength);
+    CommonPool->setPrefixLength(poolLength);
+
+    /* Log(Debug) << "PD: Common part is " << CommonPool->getAddrL()->getPlain() << " - " 
+       << CommonPool->getAddrR()->getPlain() << ", pool length: " 
+       << CommonPool->getPrefixLength() << "." << LogEnd; */
+
     // set up prefix counter counts
-    this->PD_Count = this->PD_Pool->rangeCount();
     this->PD_Assigned = 0;
-    Log(Debug) << "Range of pool "/* << this->PD_Pool.getPlain()<<  */" is: " << this->PD_Count << LogEnd;
     if (this->PD_MaxLease > this->PD_Count)
 	this->PD_MaxLease = this->PD_Count;
+    Log(Debug) << "PD: Up to " << this->PD_Count << " prefixes may be assigned." << LogEnd;
+    return true;
 }
 
 bool TSrvCfgPD::prefixInPool(SmartPtr<TIPv6Addr> prefix)
 {
-    return PD_Pool->in(prefix);
+    SPtr<TStationRange> pool = 0;
+    PoolLst.first();
+    while ( pool=PoolLst.get() ) {
+	if (pool->in(prefix))
+	    return true;
+    }
+    return false;
 }
 
-//unsigned long TSrvCfgPD::countPrefixesInPool()
-//{
-//    return this->PD_Count;
-//}
-
+/** 
+ * returns random prefix from a first pool
+ * 
+ * @return 
+ */
 SmartPtr<TIPv6Addr> TSrvCfgPD::getRandomPrefix()
 {
-    return PD_Pool->getRandomPrefix();
+    SPtr<TStationRange> pool;
+    PoolLst.first();
+    pool = PoolLst.get();
+    if (pool)
+	return pool->getRandomPrefix();
+    return 0;
 }
 
-SmartPtr<TIPv6Addr> TSrvCfgPD::getFirstAddrInPrefix()
-{
-    return PD_Pool->getAddrL();
+/** 
+ * gets random prefix from the common part (b) and 
+ * returns a list of prefixes generated by contatenation
+ * of the common part and pool-specific prefix
+ * 
+ * @param TIPv6Addr 
+ * 
+ * @return 
+ */
+List(TIPv6Addr) TSrvCfgPD::getRandomList() {
+    SPtr<TIPv6Addr> commonPart,tmp;
+    SPtr<TStationRange> range;
+
+    List(TIPv6Addr) lst;
+    lst.clear();
+
+    commonPart = this->CommonPool->getRandomPrefix();
+    commonPart->truncate(0, this->getPD_Length());
+    PoolLst.first();
+    while (range = PoolLst.get()) {
+	tmp = range->getAddrL();
+        //Log(Debug) << " #### prefix=" << tmp->getPlain() << ", host=" << commonPart->getPlain() << ", prefixLength=" 
+        //           << this->CommonPool->getPrefixLength() << LogEnd;
+	lst.append( new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(), this->CommonPool->getPrefixLength()) );
+	
+    }
+    return lst;
 }
 
 unsigned long TSrvCfgPD::getPD_MaxLease() {
@@ -119,10 +198,6 @@ unsigned long TSrvCfgPD::getPD_MaxLease() {
 unsigned long TSrvCfgPD::getID()
 {
     return this->ID;
-}
-
-unsigned long TSrvCfgPD::getShare() {
-    return this->PD_Share;
 }
 
 long TSrvCfgPD::incrAssigned(int count) {
@@ -139,48 +214,24 @@ unsigned long TSrvCfgPD::getAssignedCount() {
     return this->PD_Assigned;
 }
 
-bool TSrvCfgPD::isLinkLocal() {
-    SmartPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::",true);
-    if (this->prefixInPool(addr)) {
-	Log(Crit) << "Link local address (fe80::) belongs to the class." << LogEnd;
-	return true;
-    }
-
-    addr = new TIPv6Addr("fe80:ffff:ffff:ffff:ffff:ffff:ffff:ffff", true);
-    if (this->prefixInPool(addr)) {
-	Log(Crit) << "Link local address (fe80:ffff:ffff:ffff:ffff:ffff:ffff:ffff) belongs to the class." << LogEnd;
-	return true;
-    }
-
-    addr = this->PD_Pool->getAddrL();
-    char linklocal[] = { 0xfe, 0x80};
-
-    if (!memcmp(addr->getAddr(), linklocal,2)) {
-	Log(Crit) << "Staring address " << addr->getPlain() << " is link-local." << LogEnd;
-	return true;
-    }
-    
-    addr = this->PD_Pool->getAddrR();
-    if (!memcmp(addr->getAddr(), linklocal,2)) {
-	Log(Crit) << "Ending address " << addr->getPlain() << " is link-local." << LogEnd;
-	return true;
-    }
-
-    return false;
-}
-
-ostream& operator<<(ostream& out,TSrvCfgPD& PD_Class)
+ostream& operator<<(ostream& out,TSrvCfgPD& prefix)
 {
-    out << "    <PD id=\"" << PD_Class.ID << "\" share=\"" << PD_Class.PD_Share << "\">" << std::endl;
-    out << "      <!-- total prefixes in class: " << PD_Class.PD_Count 
-	<< ", prefixes assigned: " << PD_Class.PD_Assigned << " -->" << endl;
-    out << "      <T1 min=\"" << PD_Class.PD_T1Beg << "\" max=\"" << PD_Class.PD_T1End  << "\" />" << endl;
-    out << "      <T2 min=\"" << PD_Class.PD_T2Beg << "\" max=\"" << PD_Class.PD_T2End  << "\" />" << endl;
-    out << "      <PDMaxLease>" << PD_Class.PD_MaxLease << "</PDMaxLease>" << endl;
+    out << "    <PD id=\"" << prefix.ID << "\">" << std::endl;
+    out << "      <!-- total prefixes in class: " << prefix.PD_Count 
+	<< ", prefixes assigned: " << prefix.PD_Assigned << " -->" << endl;
+    out << "      <T1 min=\"" << prefix.PD_T1Beg << "\" max=\"" << prefix.PD_T1End  << "\" />" << endl;
+    out << "      <T2 min=\"" << prefix.PD_T2Beg << "\" max=\"" << prefix.PD_T2End  << "\" />" << endl;
+    out << "      <prefered-lifetime min=\"" << prefix.PD_PrefBeg << "\" max=\"" << prefix.PD_PrefEnd  << "\" />" << endl;
+    out << "      <valid-lifetime min=\"" << prefix.PD_ValidBeg << "\" max=\"" << prefix.PD_ValidEnd  << "\" />" << endl;
+    out << "      <PDMaxLease>" << prefix.PD_MaxLease << "</PDMaxLease>" << endl;
         
     SmartPtr<TStationRange> statRange;
     out << "      <!-- prefix range -->" << endl;
-    out << *PD_Class.PD_Pool;
+    SPtr<TStationRange> pool;
+    prefix.PoolLst.first();
+    while (pool = prefix.PoolLst.get()) {
+	out << *pool;
+    }
     
     /*out << "      <!-- reject-clients ranges:" << addrClass.RejedClnt.count() << " -->" << endl;
     addrClass.RejedClnt.first();

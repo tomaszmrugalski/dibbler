@@ -5,9 +5,25 @@
  *                              
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgPD.h,v 1.1 2006-10-06 00:35:26 thomson Exp $
+ * $Id: SrvCfgPD.h,v 1.2 2006-12-04 23:37:53 thomson Exp $
  *
  */
+
+
+/*
+  Generally prefixes can be divided into 3 parts:
+  - constant prefix (a)
+  - variable section (b) 
+  - zeroed tail (c)
+
+       (a)            (b)          (c)  
+  aaaa:aaaa:aaaa:bbbb:bbbb:bbbb:0000:0000
+
+  When there are several prefix pools defined, 
+  (a) becomes pool-specific prefix
+  (b) becomes common part
+  (c) stays zeroed tail
+*/
 
 class TSrvCfgPD;
 #ifndef SRVCONFPD_H
@@ -44,14 +60,16 @@ class TSrvCfgPD
     bool prefixInPool(SmartPtr<TIPv6Addr> prefix);
     unsigned long countPrefixesInPool();
     SmartPtr<TIPv6Addr> getRandomPrefix();
-    SmartPtr<TIPv6Addr>	getFirstAddrInPrefix();
+    List(TIPv6Addr) getRandomList();
     
-    unsigned long getPD_T1(unsigned long clntT1);
-    unsigned long getPD_T2(unsigned long clntT2);
+    unsigned long getT1(unsigned long hintT1);
+    unsigned long getT2(unsigned long hintT2);
+    unsigned long getPrefered(unsigned long hintPrefered);
+    unsigned long getValid(unsigned long hintValid);
+
     unsigned long getPD_Length(); // length of prefix 
     unsigned long getPD_MaxLease();
     unsigned long getID();
-    unsigned long getShare();
 
     bool isLinkLocal();
 
@@ -59,25 +77,27 @@ class TSrvCfgPD
     long incrAssigned(int count=1);
     long decrAssigned(int count=1);
 
-    void setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int PDPrefix);
+    bool setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int PDPrefix);
     virtual ~TSrvCfgPD();
  private:
     unsigned long PD_T1Beg;
     unsigned long PD_T2Beg;
     unsigned long PD_T1End;
     unsigned long PD_T2End;
-    unsigned long PD_Share;
-    unsigned long PD_Length;
-    unsigned long PD_Prefix;
+    unsigned long PD_Length;     // (shorter) prefix, assigned to the user, e.g. 64
+    //unsigned long PD_PoolLength; // (longer) pool length, e.g. 48
+    unsigned long PD_PrefBeg;
+    unsigned long PD_PrefEnd;
+    unsigned long PD_ValidBeg;
+    unsigned long PD_ValidEnd;
     
-    long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
+    unsigned long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
     
     unsigned long ID;
     static unsigned long staticID;
 
-    //TContainer<SmartPtr<TStationRange> > RejedClnt;
-    //TContainer<SmartPtr<TStationRange> > AcceptClnt;
-    SmartPtr<TStationRange> PD_Pool;
+    List(TStationRange) PoolLst;
+    SPtr<TStationRange> CommonPool; /* common part of all available prefix pools (section b in the description above) */
     unsigned long PD_MaxLease;
     unsigned long PD_Assigned;
     unsigned long PD_Count;

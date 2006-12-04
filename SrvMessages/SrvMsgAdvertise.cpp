@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.23 2006-11-17 01:00:24 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.24 2006-12-04 23:35:12 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -96,6 +96,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    optTA = new TSrvOptTA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt, 
 				  clntDuid, clntAddr, clntIface, SOLICIT_MSG, this);
 	    this->Options.append( (Ptr*) optTA);
+	    break;
 	}
 	case OPTION_IA_PD: {
 	    SmartPtr<TSrvOptIA_PD> optPD;

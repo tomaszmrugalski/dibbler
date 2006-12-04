@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.33 2006-11-30 03:16:54 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.34 2006-12-04 23:35:12 thomson Exp $
  */
 
 #include <sstream>
@@ -438,15 +438,6 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	Options.append((Ptr*)opt);
 	newOptionAssigned = true;
     };
-
-
-    // --- option: PREFIX DELEGATION ---
-    if ( reqOpts->isOption(OPTION_IA_PD) && ptrIface->supportPrefixDelegation() ) {
-	// FIXME: T1, T2 is hardcoded
-	SmartPtr<TSrvOptIA_PD> optPrefixDelegation = new TSrvOptIA_PD(1,2000,3000, this);
-	Options.append( (Ptr*)optPrefixDelegation);
-        newOptionAssigned = true;
-    }    
 
     // --- option: VENDOR SPEC ---
     if ( reqOpts->isOption(OPTION_VENDOR_OPTS) && ptrIface->supportVendorSpec()) {

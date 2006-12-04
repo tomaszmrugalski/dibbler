@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: IPv6Addr.h,v 1.6 2006-12-02 14:54:45 thomson Exp $
+ * $Id: IPv6Addr.h,v 1.7 2006-12-04 23:33:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006-12-02 14:54:45  thomson
+ * IPv6Addr::truncate implemented, inet_pton6 does not use IPv4-eccapsulated form
+ *
  * Revision 1.5  2006-08-21 22:52:40  thomson
  * Various fixes.
  *
@@ -34,6 +37,7 @@ class TIPv6Addr
 public:
     TIPv6Addr();    //Creates any address
     TIPv6Addr(const char* addr, bool plain=false);
+    TIPv6Addr(const char* prefix, const char* host, int prefixLength); /* creates address from prefix+host */
     char* getAddr();
     void setAddr(char* addr);
     char* getPlain();
