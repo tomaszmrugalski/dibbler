@@ -140,6 +140,17 @@ unsigned long TStationRange::rangeCount()
         return 0;
 }
 
+int TStationRange::getPrefixLength()
+{
+    return PrefixLength;
+}
+
+void TStationRange::setPrefixLength(int len)
+{
+    this->PrefixLength = len;
+}
+
+
 TStationRange::~TStationRange(void) {
 }
 
@@ -149,6 +160,18 @@ SmartPtr<TIPv6Addr> TStationRange::getAddrL() {
 
 SmartPtr<TIPv6Addr> TStationRange::getAddrR() {
     return this->AddrR;
+}
+
+void TStationRange::truncate(int minPrefix, int maxPrefix)
+{
+    if (!isAddrRange) {
+	Log(Error) << "Unable to truncace this pool: this is DUID pool, not address pool." << LogEnd;
+	return;
+    }
+    // if the L and R addresses are not at the prefix boundaries, then we are
+    // pretty f%%%ed up
+    AddrL->truncate(minPrefix, maxPrefix);
+    AddrR->truncate(minPrefix, maxPrefix);
 }
 
 ostream& operator<<(ostream& out,TStationRange&  range)

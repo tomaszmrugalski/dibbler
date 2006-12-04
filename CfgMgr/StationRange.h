@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: StationRange.h,v 1.5 2006-10-06 00:30:46 thomson Exp $
+ * $Id: StationRange.h,v 1.6 2006-12-04 23:30:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-10-06 00:30:46  thomson
+ * Initial PD support.
+ *
  * Revision 1.4  2004-12-07 00:45:41  thomson
  * Clnt managers creation unified and cleaned up.
  *
@@ -49,12 +52,17 @@ class TStationRange
     unsigned long rangeCount();
     SmartPtr<TIPv6Addr> getAddrL();
     SmartPtr<TIPv6Addr> getAddrR();
+    int getPrefixLength();
+    void setPrefixLength(int len);
+    void truncate(int minPrefix, int maxPrefix);
  private:
     bool isAddrRange;
     SmartPtr<TDUID> DUIDL;
     SmartPtr<TDUID> DUIDR;
     SmartPtr<TIPv6Addr> AddrL;
     SmartPtr<TIPv6Addr> AddrR;
+
+    int PrefixLength;
 };
 
 #endif
