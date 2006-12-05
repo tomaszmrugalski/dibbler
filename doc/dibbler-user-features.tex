@@ -431,3 +431,30 @@ description for server only:
       only, this file is only created by the server. It contains
       information about previously assigned addresses. 
 \end{itemize}
+
+\subsection{Prefix delegation}
+
+FIXME
+
+Algorithm:
+
+ return free prefixes for a client. There are several ways that method may work:
+ 1 - client didn't provide any hints:
+     => one prefix from each pool will be granted
+ 2 - client has provided hint and that is valid (supported and unused):
+     => requested prefix will be granted
+ 3 - client has provided hint, which belongs to supported pool, but this prefix is used:
+     => other prefix from that pool will be asigned
+ 4 - client has provided hint, but it is invalid (not beloninging to a supported pool,
+     multicast or link-local):
+     => see 1
+
+ server.conf
+
+ pd-class {
+        pd-pool 2222:2222:2222:2222:2222::/80
+        pd-pool 1111:1111:1111:1111:1111::/80
+        pd-length 112
+        T1 11111
+        T2 22222
+    }
