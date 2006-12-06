@@ -45,11 +45,9 @@ class TClntOptIA_PD : public TOptIA_PD
 		  SmartPtr<TAddrIA> ClntaddrPD, 
 		  TMsg* parent);
     bool isValid();
-    bool createCfgFile();
 
  private:
     void releasePrefix(long IAID, SmartPtr<TIPv6Addr> prefix );
-    int countValidPrefixes(SmartPtr<TAddrIA> ptrAddrPD);
 
     SmartPtr<TIPv6Addr> Prefix;
     bool Unicast;
@@ -63,5 +61,4 @@ class TClntOptIA_PD : public TOptIA_PD
     SmartPtr<TClntAddrMgr>  AddrMgr;
 };
 
-
-#endif /* IA_PD_H_HEADER_INCLUDED_C112064B */
+#endif /* CLNTOPTIA_PD_H */

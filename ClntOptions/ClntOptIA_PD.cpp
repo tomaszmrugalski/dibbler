@@ -1,23 +1,23 @@
 /*
  * Dibbler - a portable DHCPv6
  *
- * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ * author:  Krzysztof Wnuk <keczi@poczta.onet.pl>
+ * changes: Tomasz Mrugalski <thomson@klub.com.pl>
  *
  * released under GNU GPL v2 or later licence
  */
+
 #include "AddrIA.h"
-//#include "AddrPD.h"
 #include "ClntCfgPD.h"
 #include "ClntOptIA_PD.h"
 #include "ClntOptIAPrefix.h"
 #include "ClntOptStatusCode.h"
 #include "ClntIfaceMgr.h"
 #include "Logger.h"
-
-
+#include "Portable.h"
 
 /** 
- * Used in CONFIRM constructor
+ * 
  * 
  * @param clntAddrIA 
  * @param zeroTimes 
@@ -72,22 +72,22 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
 TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, SmartPtr<TAddrIA> ClntaddrPD, TMsg* parent)
     :TOptIA_PD(ClntaddrPD->getIAID(),ClntaddrPD->getT1(),ClntaddrPD->getT2(), parent)
 {
-  
-	  //checkRequestConstructor
+    
+    //checkRequestConstructor
     /*ClntCfgPD->firstPD();
-   SmartPtr<TClntCfgPrefix> ClntCfgPrefix;
-    while ((ClntCfgPrefix = ClntCfgPD->getPrefix())
-     //   &&((ClntCfgPD->countPrefixes()-ClntaddrPD->getPrefixCount())>this->countPrefixes() ))
-    {
-        SmartPtr<TAddrPrefix> ptrPrefix=ClntaddrPD->getPrefix(ClntCfgPrefix->get());
+      SmartPtr<TClntCfgPrefix> ClntCfgPrefix;
+      while ((ClntCfgPrefix = ClntCfgPD->getPrefix())
+      //   &&((ClntCfgPD->countPrefixes()-ClntaddrPD->getPrefixCount())>this->countPrefixes() ))
+      {
+      SmartPtr<TAddrPrefix> ptrPrefix=ClntaddrPD->getPrefix(ClntCfgPrefix->get());
         if(!ptrPrefix)
-            SubOptions.append(new TClntOptIAPrefix(
-            ClntCfgPrefix->get(),
-            ClntCfgPrefix->getPref(),
+	SubOptions.append(new TClntOptIAPrefix(
+	ClntCfgPrefix->get(),
+	ClntCfgPrefix->getPref(),
             ClntCfgPrefix->getValid(),
 	    64,
             this->Parent));
-    }*/
+	    }*/
     //DUID = SmartPtr<TDUID>(); // NULL
 }
 
@@ -100,6 +100,8 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, SmartPtr<TAddrIA> C
 TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
     :TOptIA_PD(1, 0, 0, parent) // no hint support implemented yet, will be 
 {
+    // FIXME: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
+
     //SmartPtr<TIPv6Addr> prefix ;
     //SmartPtr<TClntCfgPrefix> ClntCfgPrefix();
 
@@ -121,8 +123,7 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
 TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
 :TOptIA_PD(buf,bufsize, parent)
 {
-	 
-   int pos=0;
+    int pos=0;
     while(pos<bufsize) 
     {
         int code=buf[pos]*256+buf[pos+1];
@@ -131,11 +132,10 @@ TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
 	pos+=2;
         if ((code>0)&&(code<=26))
         {                
-
-	       if(allowOptInOpt(parent->getType(),OPTION_IA_PD,code))
+	    
+	    if(allowOptInOpt(parent->getType(),OPTION_IA_PD,code))
             {
-              	
-		  SmartPtr<TOpt> opt= SmartPtr<TOpt>();
+		SmartPtr<TOpt> opt= SmartPtr<TOpt>();
                 switch (code)
                 {
                 case OPTION_IAPREFIX:
@@ -239,35 +239,25 @@ TClntOptIA_PD::~TClntOptIA_PD()
 //addresses
 bool TClntOptIA_PD::doDuties()
 {
-    //TODO this method should be platform independent. 
     SmartPtr<TClntOptIAPrefix> prefix;
     this->firstPrefix();
+    SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
+
     while (prefix = this->getPrefix()) {
+	Log(Info) << "PD: Received prefix: " << prefix->getPrefix()->getPlain() << "/" << this->Prefix << LogEnd;
 	AddrMgr->addPrefix(CfgMgr->getDUID(), this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
 			   prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), true);
-	
+
+	int status = prefix_add(cfgIface->getName().c_str(), this->Iface, prefix->getPrefix()->getPlain(), prefix->getPrefixLength());
+	if (status<0) {
+	    // FIXME: Implement banine checks
+	}
     }
 
-    if (!this->createCfgFile()) {
-	Log(Warning) << "Unable to generate config. file for router Adv. daemon" << LogEnd;
-	return false;
-    }
-
-    
-    SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
     cfgIface->setPrefixDelegationState(CONFIGURED);
 
     return true;
 } 
-
-//Counts all valid and diffrent addresses in sum of
-//addresses received in IA from server and addresses contained
-//in its counterpart IA in address manager
-int TClntOptIA_PD::countValidPrefixes(SmartPtr<TAddrIA> ptrPD)
-{
-    int count=0;
-   return count;
-}
 
 SmartPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SmartPtr<TIPv6Addr> prefix)
 {
@@ -315,43 +305,3 @@ bool TClntOptIA_PD::isValid()
     else
         return false;
 }
-
-bool TClntOptIA_PD::createCfgFile(){
-
-#ifdef LINUX
-	SmartPtr<TClntOptIAPrefix> prefix;
-	// FIXME: what if there are several prefixes granted?
-	this->firstPrefix();
-   	while (prefix = this->getPrefix()) {
-		cout<<"Generating config file for prefix "<<*prefix->getPrefix()<< "on interface \n";
-		cout<<"Prefix length is " << (int)prefix->getPrefixLength() << "  so we have to truncate it a little bit\n" ; 
-    	char truncatedPrefix[128];
-
-		// FIXME: generate subprefixes for each local interface
-		truncatePrefixFromConfig((prefix->getPrefix())->getAddr(), truncatedPrefix, prefix->getPrefixLength());
-
-		SmartPtr<TClntIfaceMgr> clntIfaceMgr = new TClntIfaceMgr(CLNTIFACEMGR_FILE);
-    	
-		ofstream radvdConfigFile;
-		radvdConfigFile.open(RADVD_FILE);
-		radvdConfigFile<<"# Router Advertisement config file generated by Dibbler \n";
-		radvdConfigFile<<"interface eth0 \n";
-		radvdConfigFile<<"{ \n";
-		radvdConfigFile<<"AdvSendAdvert on; \n";
-		radvdConfigFile<<"prefix "<<truncatedPrefix<<"/"<<(int)prefix->getPrefixLength()<<" \n";
-		radvdConfigFile<<"	 { \n";
-		radvdConfigFile<<"		AdvOnLink on;\n";
-		radvdConfigFile<<"              AdvAutonomous on;\n";
-		radvdConfigFile<<"	};\n";
-		radvdConfigFile<<"};\n";
-		radvdConfigFile.close();
-	}
-#endif
-
-#ifdef WIN32
-	// FIXME: Implement prefix-delegation in WIN32
-	Log(Error) << "Prefix delegation support in WIN32 is not implemented yet." << LogEnd;
-#endif
-	return true;
-}
-

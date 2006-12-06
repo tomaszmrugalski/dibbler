@@ -1,8 +1,9 @@
 
-$Id: TODO,v 1.36 2006-11-11 14:44:14 thomson Exp $
+$Id: TODO,v 1.37 2006-12-06 00:19:05 thomson Exp $
 
   Internal/code TODO
  --------------------
+- CLI: Implement client side prefix delegation hints.
 - CLI: When server is not configured to support PD and client requests PD, server sends PD with status code
   set to NOADDRSAVAIL (that is ok). However, client should complain about it (and maybe try to do something with it). 
   Right now it prints information that "PD set successfully."

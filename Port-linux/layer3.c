@@ -7,9 +7,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.27 2006-12-04 23:38:38 thomson Exp $
+ * $Id: layer3.c,v 1.28 2006-12-06 00:19:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2006-12-04 23:38:38  thomson
+ * PD-related small fixes.
+ *
  * Revision 1.26  2006-11-17 00:38:23  thomson
  * Low level bug printing cleanup.
  *
@@ -97,7 +100,7 @@
 #define LOWLEVEL_DEBUG 1
 */
 
-static char Message[1024] = {0};
+char Message[1024] = {0};
 
 struct nlmsg_list
 {

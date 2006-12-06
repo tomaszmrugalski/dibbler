@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.67 2006-11-30 03:39:29 thomson Exp $
+ * $Id: Portable.h,v 1.68 2006-12-06 00:19:05 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -36,6 +36,28 @@
 #include <stdarg.h>
 #include <string.h>
 #endif 
+
+/**********************************************************************/
+/*** data structures **************************************************/
+/**********************************************************************/
+
+#ifndef MAX_IFNAME_LENGTH 
+#define MAX_IFNAME_LENGTH 255
+#endif
+
+struct iface {
+    char name[MAX_IFNAME_LENGTH];  /* interface name */
+    int  id;                       /* interface ID (often called ifindex) */
+    int  hardwareType;             /* type of hardware (see RFC 826) */
+    char mac[255];                 /* link layer address */
+    int  maclen;                   /* length of link layer address */
+    char *linkaddr;                /* assigned IPv6 link local addresses  */
+    int  linkaddrcount;            /* number of assigned IPv6 link local addresses */
+    char *globaladdr;              /* global IPv6 addresses */
+    int  globaladdrcount;          /* number of global IPV6 addresses */
+    unsigned int flags;            /* look IF_xxx in portable.h */
+    struct iface* next;            /* structure describing next iface in system */
+};
 
 /**********************************************************************/
 /*** file setup/default paths *****************************************/
@@ -104,7 +126,6 @@
 /* ********************************************************************** */
 
 #ifdef WIN32
-#define MAX_IFNAME_LENGTH 255
 #define LOGLEVEL          0
 #define IF_RUNNING        0x1
 #define IF_UP             0x1
@@ -113,7 +134,6 @@
 #endif
 
 #ifdef LINUX
-#define MAX_IFNAME_LENGTH 64
 #define LOGLEVEL	      0
 #define IF_UP		      0x1
 #define IF_LOOPBACK	      0x8
@@ -132,6 +152,7 @@
 #define LOWLEVEL_ERROR_GETADDRINFO      -7
 #define LOWLEVEL_ERROR_SOCK_OPTS        -8
 #define LOWLEVEL_ERROR_REUSE_FAILED     -9
+#define LOWLEVEL_ERROR_FILE             -10
 
 /* ********************************************************************** */
 /* *** time related functions ******************************************* */
@@ -153,86 +174,66 @@
 #ifdef __cplusplus 
 extern "C" {
 #endif
-
-extern struct iface * if_list_get();
-extern void if_list_release(struct iface * list);
     
-/* add address to interface */
-extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
-                      unsigned long pref, unsigned long valid, int prefixLength);
-extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
+    extern struct iface * if_list_get();
+    extern void if_list_release(struct iface * list);
+    
+    /* add address to interface */
+    extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
+			  unsigned long pref, unsigned long valid, int prefixLength);
+    extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
+    
+    /* add socket to interface */
+    extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse);
+    extern int sock_del(int fd);
+    extern int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface);
+    extern int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen);
+    
+    /* pack/unpack address */
+    extern void print_packed(char addr[]);
+    extern int inet_pton4(const char* src, char* dst);
+    extern int inet_pton6(const char* src, char* dst);
+    extern char * inet_ntop4(const char* src, char* dst);
+    extern char * inet_ntop6(const char* src, char* dst);
+    extern void print_packed(char * addr);
+    extern void doRevDnsAddress( char * src, char *dst);
+    extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
+    extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
+    extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
+    /* microsleep(int microsecs) */
+    extern void microsleep(int microsecs);
+    uint64_t htonll(uint64_t n);
+    uint64_t ntohll(uint64_t n);
+    extern char * error_message();
 
-/* add socket to interface */
-extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse);
-extern int sock_del(int fd);
-extern int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface);
-extern int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen);
+    /* options */
+    extern int dns_add(const char* ifname, int ifindex, const char* addrPlain);
+    extern int dns_del(const char* ifname, int ifindex, const char* addrPlain);
+    extern int domain_add(const char* ifname, int ifindex, const char* domain);
+    extern int domain_del(const char* ifname, int ifindex, const char* domain);
+    extern int ntp_add(const char* ifname, int ifindex, const char* addrPlain);
+    extern int ntp_del(const char* ifname, int ifindex, const char* addrPlain);
+    extern int timezone_set(const char* ifname, int ifindex, const char* timezone);
+    extern int timezone_del(const char* ifname, int ifindex, const char* timezone);
+    extern int sipserver_add(const char* ifname, int ifindex, const char* addrPlain);
+    extern int sipserver_del(const char* ifname, int ifindex, const char* addrPlain);
+    extern int sipdomain_add(const char* ifname, int ifindex, const char* domain);
+    extern int sipdomain_del(const char* ifname, int ifindex, const char* domain);
+    extern int nisserver_add(const char* ifname, int ifindex, const char* addrPlain);
+    extern int nisserver_del(const char* ifname, int ifindex, const char* addrPlain);
+    extern int nisdomain_set(const char* ifname, int ifindex, const char* domain);
+    extern int nisdomain_del(const char* ifname, int ifindex, const char* domain);
+    
+    extern int nisplusserver_add(const char* ifname, int ifindex, const char* addrPlain);
+    extern int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain);
+    extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
+    extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
 
-/* pack/unpack address */
-extern void print_packed(char addr[]);
-extern int inet_pton4(const char* src, char* dst);
-extern int inet_pton6(const char* src, char* dst);
-extern char * inet_ntop4(const char* src, char* dst);
-extern char * inet_ntop6(const char* src, char* dst);
-extern void print_packed(char * addr);
-extern void doRevDnsAddress( char * src, char *dst);
-extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
-extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
-extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
-/* microsleep(int microsecs) */
-extern void microsleep(int microsecs);
-uint64_t htonll(uint64_t n);
-uint64_t ntohll(uint64_t n);
-extern char * error_message();
-uint64_t htonll(uint64_t n);
-uint64_t ntohll(uint64_t n);
-
-/* DNS */
-extern int dns_add(const char* ifname, int ifindex, const char* addrPlain);
-extern int dns_del(const char* ifname, int ifindex, const char* addrPlain);
-extern int domain_add(const char* ifname, int ifindex, const char* domain);
-extern int domain_del(const char* ifname, int ifindex, const char* domain);
-extern int ntp_add(const char* ifname, int ifindex, const char* addrPlain);
-extern int ntp_del(const char* ifname, int ifindex, const char* addrPlain);
-extern int timezone_set(const char* ifname, int ifindex, const char* timezone);
-extern int timezone_del(const char* ifname, int ifindex, const char* timezone);
-extern int sipserver_add(const char* ifname, int ifindex, const char* addrPlain);
-extern int sipserver_del(const char* ifname, int ifindex, const char* addrPlain);
-extern int sipdomain_add(const char* ifname, int ifindex, const char* domain);
-extern int sipdomain_del(const char* ifname, int ifindex, const char* domain);
-extern int nisserver_add(const char* ifname, int ifindex, const char* addrPlain);
-extern int nisserver_del(const char* ifname, int ifindex, const char* addrPlain);
-extern int nisdomain_set(const char* ifname, int ifindex, const char* domain);
-extern int nisdomain_del(const char* ifname, int ifindex, const char* domain);
-
-extern int nisplusserver_add(const char* ifname, int ifindex, const char* addrPlain);
-extern int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain);
-extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
-extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
-
-extern uint64_t htonll(uint64_t n);
-extern uint64_t ntohll(uint64_t n);
-
+    extern int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
+    extern int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
+    
 #ifdef __cplusplus
 }
 #endif
-
-#ifndef MAX_IFNAME_LENGTH 
-#define MAX_IFNAME_LENGTH 255
-#endif
-
-struct iface {
-    char name[MAX_IFNAME_LENGTH];  /* interface name */
-    int  id;                       /* interface ID (often called ifindex) */
-    int  hardwareType;             /* type of hardware (see RFC 826) */
-    char mac[255];                 /* link layer address */
-    int  maclen;                   /* length of link layer address */
-    char *linkaddr;                /* assigned IPv6 link local addresses  */
-    int  linkaddrcount;            /* number of assigned IPv6 link local addresses */
-    char *globaladdr;              /* global IPv6 addresses */
-    int  globaladdrcount;          /* number of global IPV6 addresses */
-    unsigned int flags;            /* look IF_xxx in portable.h */
-    struct iface* next;            /* structure describing next iface in system */
-};
 
 #endif
