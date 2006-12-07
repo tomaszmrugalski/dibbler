@@ -10,7 +10,7 @@
  *
  * some of those functions are taken form GNU libc6 library
  *
- * $Id: addrpack.c,v 1.7 2006-12-02 14:54:45 thomson Exp $
+ * $Id: addrpack.c,v 1.8 2006-12-07 21:57:09 thomson Exp $
  */
 
 
@@ -24,6 +24,7 @@
 #ifdef LINUX
 #include <netinet/in.h>
 #endif
+#include "Portable.h"
 
 void print_packed(char addr[]);
 

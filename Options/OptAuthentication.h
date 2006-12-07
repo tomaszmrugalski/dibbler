@@ -11,6 +11,7 @@
 
 #include "DHCPConst.h"
 #include "Opt.h"
+#include "Portable.h"
 
 class TOptAuthentication : public TOpt
 {

@@ -171,6 +171,9 @@
 					RelativePath="..\Options\OptAddrLst.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptAuthentication.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptDUID.cpp">
 				</File>
 				<File
@@ -228,6 +231,9 @@
 			<Filter
 				Name="SrvOptions"
 				Filter="">
+				<File
+					RelativePath="..\SrvOptions\SrvOptAuthentication.cpp">
+				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptClientIdentifier.cpp">
 				</File>
@@ -388,6 +394,9 @@
 					RelativePath="..\Misc\FQDN.cpp">
 				</File>
 				<File
+					RelativePath="..\Misc\hmac-sha-md5.c">
+				</File>
+				<File
 					RelativePath="..\misc\IPv6Addr.cpp">
 				</File>
 				<File
@@ -395,6 +404,18 @@
 				</File>
 				<File
 					RelativePath="..\misc\long128.cpp">
+				</File>
+				<File
+					RelativePath="..\Misc\md5.c">
+				</File>
+				<File
+					RelativePath="..\Misc\sha1.c">
+				</File>
+				<File
+					RelativePath="..\Misc\sha256.c">
+				</File>
+				<File
+					RelativePath="..\Misc\sha512.c">
 				</File>
 			</Filter>
 			<Filter
@@ -488,18 +509,204 @@
 			<Filter
 				Name="AddrMgr"
 				Filter="">
+				<File
+					RelativePath="..\AddrMgr\AddrAddr.h">
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrClient.h">
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrIA.h">
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrMgr.h">
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrPrefix.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="IfaceMgr"
 				Filter="">
+				<File
+					RelativePath="..\IfaceMgr\DNSUpdate.h">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\Iface.h">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\IfaceMgr.h">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\SocketIPv6.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Options"
 				Filter="">
+				<File
+					RelativePath="..\Options\Opt.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptAddr.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptAddrLst.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptAuthentication.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptDUID.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptElapsed.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptFQDN.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptGeneric.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptIA_NA.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptIA_PD.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptIAAddress.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptIAPrefix.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptInteger.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptOptionRequest.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptPreference.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptRapidCommit.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptStatusCode.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptString.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptStringLst.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptTA.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptUserClass.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorClass.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorSpecInfo.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="SrvOptions"
 				Filter="">
+				<File
+					RelativePath="..\SrvOptions\SrvOptAuthentication.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptClientIdentifier.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptDNSServers.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptDomainName.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptElapsed.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptFQDN.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptIA_NA.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptIA_PD.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptIAAddress.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptIAPrefix.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptInterfaceID.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptLifetime.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISDomain.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISPDomain.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISPServer.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNISServer.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptNTPServers.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptOptionRequest.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptPreference.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptRapidCommit.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptServerIdentifier.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptServerUnicast.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptSIPDomain.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptSIPServer.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptStatusCode.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptTA.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptTimeZone.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptUserClass.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptVendorClass.h">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptVendorSpec.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="CfgMgr"
@@ -564,7 +771,30 @@
 					RelativePath="SrvService.h">
 				</File>
 				<File
+					RelativePath=".\stdint.h">
+				</File>
+				<File
+					RelativePath=".\unistd.h">
+				</File>
+				<File
 					RelativePath="WinService.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="SrvIfaceMgr"
+				Filter="">
+				<File
+					RelativePath="..\SrvIfaceMgr\SrvIfaceIface.h">
+				</File>
+				<File
+					RelativePath="..\SrvIfaceMgr\SrvIfaceMgr.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="SrvAddrMgr"
+				Filter="">
+				<File
+					RelativePath="..\SrvAddrMgr\SrvAddrMgr.h">
 				</File>
 			</Filter>
 		</Filter>

@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.68 2006-12-06 00:19:05 thomson Exp $
+ * $Id: Portable.h,v 1.69 2006-12-07 21:57:09 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -36,6 +36,11 @@
 #include <stdarg.h>
 #include <string.h>
 #endif 
+
+#ifdef WIN32
+typedef unsigned char           uint8_t;
+typedef unsigned long long int  uint64_t;
+#endif
 
 /**********************************************************************/
 /*** data structures **************************************************/

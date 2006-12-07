@@ -184,6 +184,9 @@
 					RelativePath="..\Options\OptAddrLst.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptAuthentication.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptDUID.cpp">
 				</File>
 				<File
@@ -253,6 +256,9 @@
 			<Filter
 				Name="ClntOptions"
 				Filter="">
+				<File
+					RelativePath="..\ClntOptions\ClntOptAuthentication.cpp">
+				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptClientIdentifier.cpp">
 				</File>
@@ -524,6 +530,9 @@
 					RelativePath="..\Misc\FQDN.cpp">
 				</File>
 				<File
+					RelativePath="..\Misc\hmac-sha-md5.c">
+				</File>
+				<File
 					RelativePath="..\misc\IPv6Addr.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -567,6 +576,18 @@
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\Misc\md5.c">
+				</File>
+				<File
+					RelativePath="..\Misc\sha1.c">
+				</File>
+				<File
+					RelativePath="..\Misc\sha256.c">
+				</File>
+				<File
+					RelativePath="..\Misc\sha512.c">
 				</File>
 			</Filter>
 			<Filter
@@ -627,19 +648,15 @@
 				RelativePath="FlexLexer.h">
 			</File>
 			<Filter
-				Name="Address Manager"
+				Name="AddrMgr"
 				Filter="">
 			</Filter>
 			<Filter
-				Name="Interface Manager"
+				Name="IfaceMgr"
 				Filter="">
 			</Filter>
 			<Filter
-				Name="Configuration Manager"
-				Filter="">
-			</Filter>
-			<Filter
-				Name="Parser"
+				Name="CfgMgr"
 				Filter="">
 			</Filter>
 			<Filter
@@ -716,7 +733,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Client Options"
+				Name="ClntOptions"
 				Filter="">
 				<File
 					RelativePath="..\ClntOptions\ClntOptClientIdentifier.h">
@@ -795,7 +812,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Client Messages"
+				Name="ClntMessages"
 				Filter="">
 				<File
 					RelativePath="..\ClntMessages\ClntMsg.h">
