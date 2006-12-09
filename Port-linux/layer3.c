@@ -7,69 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.28 2006-12-06 00:19:06 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.27  2006-12-04 23:38:38  thomson
- * PD-related small fixes.
- *
- * Revision 1.26  2006-11-17 00:38:23  thomson
- * Low level bug printing cleanup.
- *
- * Revision 1.25  2006-08-22 00:01:20  thomson
- * Client /64 prefix, strict-rfc-no-routing feature added.
- *
- * Revision 1.24  2006-01-12 00:23:35  thomson
- * Cleanup changes. Now -pedantic option works.
- *
- * Revision 1.23  2005/07/16 14:43:36  thomson
- * Compatibility with gcc 2.95 improved (bug #118)
- * Fix provided by Tomasz Torcz. Thanks.
- *
- * Revision 1.22  2005/04/28 20:33:59  thomson
- * Multicasts are no longer threated as global addrs.
- *
- * Revision 1.21  2005/01/23 23:17:53  thomson
- * Relay/global address support related improvements.
- *
- * Revision 1.20  2004/12/08 00:20:14  thomson
- * LOWDEBUG printing added, code identiation.
- *
- * Revision 1.19  2004/12/04 23:47:01  thomson
- * sock_add() now supports low debug info.
- *
- * Revision 1.18  2004/11/30 00:54:25  thomson
- * Minor improvements.
- *
- * Revision 1.17  2004/11/01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.16  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.15  2004/09/28 17:31:24  thomson
- * Multicast hops are no longer set.
- *
- * Revision 1.14  2004/09/07 15:37:45  thomson
- * Socket handling changes.
- *
- * Revision 1.12  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.11  2004/09/05 10:45:16  thomson
- * Socket binding fixed.
- *
- * Revision 1.9  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.8  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.7  2004/07/01 18:13:51  thomson
- * Sockets are now bound to specific interface (bug #46)
- *
- * Revision 1.4  2004/05/23 15:19:29  thomson
- * All comments translated to english.
+ * $Id: layer3.c,v 1.29 2006-12-09 09:50:23 thomson Exp $
  *
  */
 

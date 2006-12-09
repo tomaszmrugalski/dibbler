@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.69 2006-12-07 21:57:09 thomson Exp $
+ * $Id: Portable.h,v 1.70 2006-12-09 09:50:23 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -196,7 +196,6 @@ extern "C" {
     
     /* pack/unpack address */
     extern void print_packed(char addr[]);
-    extern int inet_pton4(const char* src, char* dst);
     extern int inet_pton6(const char* src, char* dst);
     extern char * inet_ntop4(const char* src, char* dst);
     extern char * inet_ntop6(const char* src, char* dst);

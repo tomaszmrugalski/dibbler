@@ -10,7 +10,7 @@
  *
  * some of those functions are taken form GNU libc6 library
  *
- * $Id: addrpack.c,v 1.8 2006-12-07 21:57:09 thomson Exp $
+ * $Id: addrpack.c,v 1.9 2006-12-09 09:50:23 thomson Exp $
  */
 
 
@@ -24,7 +24,8 @@
 #ifdef LINUX
 #include <netinet/in.h>
 #endif
-#include "Portable.h"
+
+#include "stdint.h"
 
 void print_packed(char addr[]);
 
@@ -216,7 +217,7 @@ char * inet_ntop6(const unsigned char * src, char * dst)
 		if (i != 0)
 			*tp++ = ':';
 #if 0
-		// encapsulated IPv4 addresses are no concern in Dibbler
+		/* encapsulated IPv4 addresses are no concern in Dibbler */
 		/* Is this address an encapsulated IPv4? */
 		if (i == 6 && best.base == 0 &&
 		    (best.len == 6 || (best.len == 5 && words[5] == 0xffff))) {

@@ -6,12 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: lowlevel-options-linux.c,v 1.4 2006-12-06 00:19:06 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004-11-30 00:54:25  thomson
- * Minor improvements.
- *
+ * $Id: lowlevel-options-linux.c,v 1.5 2006-12-09 09:50:23 thomson Exp $
  *
  */
 
