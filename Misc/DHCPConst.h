@@ -108,14 +108,16 @@
 #define OPTION_NIS_DOMAIN_NAME  29
 #define OPTION_NISP_DOMAIN_NAME 30
 
+// RFC4075: Simple Network Time Protocol (SNTP)
+#define OPTION_NTP_SERVERS      31
+
 // draft-ietf-dhc-lifetime-02.txt
 #define OPTION_LIFETIME         32
 
 // draft-ietf-dhc-dhcpv6-fqdn-00.txt
 #define OPTION_FQDN             34
 
-// draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
-#define OPTION_NTP_SERVERS      40
+// (obsolete) draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
 #define OPTION_TIME_ZONE        41
 
 // --- Option lengths --
