@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: SmartPtr.h,v 1.5 2006-07-03 18:01:51 thomson Exp $
+ * $Id: SmartPtr.h,v 1.6 2006-12-25 20:47:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-07-03 18:01:51  thomson
+ * SPtr define added.
+ *
  * Revision 1.4  2004/06/04 19:47:06  thomson
  * Various fixes.
  *
@@ -82,6 +85,7 @@ public:
 
     //bool operator==(SmartPtr& right);
     //SmartPtr& operator=(const SmartPtr& old);
+    int refCount();
     ~SmartPtr();
     T& operator*() const;
     T* operator->() const;
@@ -90,10 +94,14 @@ public:
     Ptr * ptr;
 };
 
-template <class T>
-
-SmartPtr<T>::SmartPtr() {
+template <class T> SmartPtr<T>::SmartPtr() {
     ptr = new Ptr();
+}
+
+template <class T> int SmartPtr<T>::refCount() {
+    if (this->ptr)
+	return this->ptr->refcount;
+    return 0;
 }
 
 template <class T>

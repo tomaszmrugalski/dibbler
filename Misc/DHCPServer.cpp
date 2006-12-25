@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.25 2006-08-21 22:52:40 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.26 2006-12-25 20:47:01 thomson Exp $
  */
       
 #include "DHCPServer.h"
@@ -130,63 +130,10 @@ void TDHCPServer::setWorkdir(std::string workdir) {
 
 TDHCPServer::~TDHCPServer()
 {
+    this->TransMgr->setThat(0);
+    this->TransMgr = 0;
+    this->AddrMgr  = 0;
+    this->CfgMgr   = 0;
+    this->IfaceMgr = 0;
 }
 
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.24  2005/07/21 20:00:12  thomson
- * Obsolete header file removed.
- *
- * Revision 1.23  2005/02/07 20:51:56  thomson
- * Server stateless mode fixed (bug #103)
- *
- * Revision 1.22  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.21  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
- * Revision 1.20  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.19  2005/01/03 21:54:49  thomson
- * Mgr dumps added.
- *
- * Revision 1.18  2004/12/07 00:45:09  thomson
- * Manager creation unified and cleaned up.
- *
- * Revision 1.17  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.16  2004/11/01 23:31:24  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.15  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.14  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.13  2004/09/28 21:49:32  thomson
- * no message
- *
- * Revision 1.12  2004/07/05 00:12:29  thomson
- * Lots of minor changes.
- *
- * Revision 1.11  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
- * Revision 1.10  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.9  2004/05/24 21:16:37  thomson
- * Various fixes.
- *
- * Revision 1.8  2004/04/23 20:51:09  thomson
- * Changes informational message. (closes bug #21)
- *
- * Revision 1.7  2004/03/28 19:57:59  thomson
- * no message
- *
- */

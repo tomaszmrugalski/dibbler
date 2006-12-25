@@ -1,9 +1,18 @@
 
-$Id: TODO,v 1.37 2006-12-06 00:19:05 thomson Exp $
+$Id: TODO,v 1.38 2006-12-25 20:47:00 thomson Exp $
+
+New tasks should be done to the TODO list. After task is implemented, it should be moved to the
+'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.
 
   Internal/code TODO
  --------------------
-- CLI: Implement client side prefix delegation hints.
+- CLI: Implement client side prefix delegation hints. It must be possible to define, what prefix(es) client
+       will send as hints.
+- SRV: Prefixes stored in server's AddrMgr for too long (i.e. after its valid lifetime has expired) should be
+       removed from the server's database (see SrvAddrMgr::doDuties())
+- CLI: Linux: prefixes should be moved to Port-linux.
+- CLI: Win32: prefix delegation low-level support is not implemented.
+- CLI/SRV: Prefixes should be renewable.
 - CLI: When server is not configured to support PD and client requests PD, server sends PD with status code
   set to NOADDRSAVAIL (that is ok). However, client should complain about it (and maybe try to do something with it). 
   Right now it prints information that "PD set successfully."
@@ -49,6 +58,7 @@ $Id: TODO,v 1.37 2006-12-06 00:19:05 thomson Exp $
 
   DONE/Not validated
  --------------------
+- SRV: Prefix hint analysis. (client support for hints is required)
 - SRV/CLI: Implement vendor-class support.
 - CLNT: Add address with /64 prefix, add option to ClntParser strict-rfc-no-routing
   to disable this.

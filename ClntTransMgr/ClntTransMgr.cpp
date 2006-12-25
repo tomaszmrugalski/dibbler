@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.44 2006-11-15 02:58:46 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.45 2006-12-25 20:47:00 thomson Exp $
  *
  */
 
@@ -924,4 +924,9 @@ int  TClntTransMgr::getCtrlIface() {
 
 TClntTransMgr::~TClntTransMgr() {
     Log(Debug) << "ClntTransMgr cleanup." << LogEnd;
+    this->IfaceMgr->setThats(0,0,0,0);
+    this->IfaceMgr  = 0;
+    this->That      = 0;
+    this->CfgMgr    = 0;
+    this->AddrMgr   = 0;
 }

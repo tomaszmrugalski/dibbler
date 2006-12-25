@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.20 2006-11-03 22:23:15 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.21 2006-12-25 20:47:00 thomson Exp $
  *
  */
 
@@ -76,8 +76,10 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     ReqNISPServer= opt->getReqNISPServer();
     ReqNISPDomain= opt->getReqNISPDomain();
     ReqLifetime  = opt->getReqLifetime();
-    ReqPrefixDelegation = opt->getReqPrefixDelegation();
 
+    ReqVendorSpec= false; // if defined in cfg. file, then it is set in ClntParser::EndIfaceDeclaration() (ClntCfgMgr/ClntParser.y)
+
+    ReqPrefixDelegation = opt->getReqPrefixDelegation();
 
     // copy parameters
     this->DNSServerLst = *opt->getDNSServerLst();
@@ -248,14 +250,14 @@ bool TClntCfgIface::getRapidCommit() {
 
 void TClntCfgIface::vendorSpecSupported(bool support)
 {
-    this->ReqVendorSpec = support;
+    this->ReqVendorSpec   = support;
     this->VendorSpecState = NOTCONFIGURED;
 }
 
 void TClntCfgIface::setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec)
 {
-    this->VendorSpec = vendorSpec;
-    this->ReqVendorSpec = true;
+    this->VendorSpec      = vendorSpec;
+    this->ReqVendorSpec   = true;
     this->VendorSpecState = NOTCONFIGURED;
 }
 

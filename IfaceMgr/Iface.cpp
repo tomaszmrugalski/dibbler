@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.21 2006-08-22 00:01:20 thomson Exp $
+ * $Id: Iface.cpp,v 1.22 2006-12-25 20:47:01 thomson Exp $
  *
  */
 
@@ -305,8 +305,9 @@ int TIfaceIface::countSocket() {
  */
 TIfaceIface::~TIfaceIface() {
     if (this->LLAddrCnt>0) {
-	delete this->LLAddr;
+	delete [] this->LLAddr;
     }
+    delete [] Mac;
 }
 
 SmartPtr<TIfaceSocket> TIfaceIface::getSocketByAddr(SmartPtr<TIPv6Addr> addr) {

@@ -6,24 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.h,v 1.8 2005-02-01 00:57:36 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2005/01/12 00:10:05  thomson
- * Compilation fixes.
- *
- * Revision 1.6  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.5  2004/12/07 00:45:10  thomson
- * Manager creation unified and cleaned up.
- *
- * Revision 1.4  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.3  2004/09/03 20:58:36  thomson
- * *** empty log message ***
- *
+ * $Id: SrvTransMgr.h,v 1.9 2006-12-25 20:47:01 thomson Exp $
  *
  */
 

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.15 2006-10-06 00:31:18 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.16 2006-12-25 20:47:00 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -124,6 +124,7 @@ int TClntAddrMgr::countIA() {
 }
 
 TClntAddrMgr::~TClntAddrMgr() {
+    this->Client = 0;
     Log(Debug) << "ClntAddrMgr cleanup." << LogEnd;
 }
 
@@ -234,6 +235,9 @@ void TClntAddrMgr::print(ostream &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2006-10-06 00:31:18  thomson
+ * Initial PD support.
+ *
  * Revision 1.14  2006-08-21 22:54:08  thomson
  * *** empty log message ***
  *

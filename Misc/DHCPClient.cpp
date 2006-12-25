@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.23 2006-11-17 01:07:46 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.24 2006-12-25 20:47:01 thomson Exp $
  *                                                                           
  */
 
@@ -132,4 +132,9 @@ void TDHCPClient::setWorkdir(std::string workdir) {
 
 TDHCPClient::~TDHCPClient()
 {
+    this->TransMgr->setThat(0);
+    this->TransMgr = 0;
+    this->AddrMgr  = 0;
+    this->CfgMgr   = 0;
+    this->IfaceMgr = 0;
 }

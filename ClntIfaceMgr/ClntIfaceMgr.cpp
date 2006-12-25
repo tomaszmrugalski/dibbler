@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.27 2006-11-17 00:45:26 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.28 2006-12-25 20:47:00 thomson Exp $
  */
 
 #include "Portable.h"
@@ -159,7 +159,7 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
                  // << ", flags=" << ptr->flags 
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
-        SmartPtr<TIfaceIface> iface(new TClntIfaceIface(ptr->name,ptr->id,
+        SmartPtr<TIfaceIface> iface = new TClntIfaceIface(ptr->name,ptr->id,
 							ptr->flags,
 							ptr->mac,
 							ptr->maclen,
@@ -167,7 +167,7 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
 							ptr->linkaddrcount,
 							ptr->globaladdr,
 							ptr->globaladdrcount,
-							ptr->hardwareType));
+							ptr->hardwareType);
         this->IfaceLst.append((Ptr*) iface);
         ptr = ptr->next;
     }
@@ -187,6 +187,12 @@ void TClntIfaceMgr::setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
 }
 
 TClntIfaceMgr::~TClntIfaceMgr() {
+    SPtr<TIfaceIface> ptr;
+    IfaceLst.first();
+    while (ptr = IfaceLst.get()) {
+	// Log(Debug) << "#### Iface: " << ptr->getFullName() << " refcnt=" << ptr.refCount() << LogEnd;
+    }
+    this->IfaceLst.clear();
     Log(Debug) << "ClntIfaceMgr cleanup." << LogEnd;
 }
 

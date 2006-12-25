@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.28 2006-08-21 22:51:26 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.29 2006-12-25 20:47:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2006-08-21 22:51:26  thomson
+ * Cache support added.
+ *
  * Revision 1.27  2005/09/20 20:10:28  thomson
  * Addtional log message.
  *
@@ -363,6 +366,8 @@ void TSrvTransMgr::dump() {
 }
 
 TSrvTransMgr::~TSrvTransMgr() {
+    this->That = 0;
+    IfaceMgr->setThats(0,0,0,0);
     Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
 }
 
