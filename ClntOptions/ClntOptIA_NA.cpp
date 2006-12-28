@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.12 2006-11-15 02:58:45 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.13 2006-12-28 22:45:00 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006-11-15 02:58:45  thomson
+ * lowlevel-win32.c cleanup, enums added.
+ *
  * Revision 1.11  2006-10-06 00:42:13  thomson
  * Initial PD support.
  *
@@ -255,7 +258,7 @@ bool TClntOptIA_NA::doDuties()
     if (!ptrIA) {
         // unknown IAID, ignore it
 	Log(Warning) << "Received message contains unknown IA (IAID="
-            << this->getIAID() << "). We didn't other it. Weird... ignoring it." << LogEnd;
+            << this->getIAID() << "). We didn't order it. Weird... ignoring it." << LogEnd;
         return true;
     }
 

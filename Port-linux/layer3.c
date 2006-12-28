@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: layer3.c,v 1.29 2006-12-09 09:50:23 thomson Exp $
+ * $Id: layer3.c,v 1.30 2006-12-28 22:45:00 thomson Exp $
  *
  */
 
@@ -138,6 +138,7 @@ struct iface * if_list_get()
 	snprintf(tmp->name,MAX_IFNAME_LENGTH,(char*)RTA_DATA(tb[IFLA_IFNAME]));
 	tmp->id=ifi->ifi_index;
 	tmp->flags=ifi->ifi_flags;
+	tmp->hardwareType = ifi->ifi_type;
 	tmp->next=head;
 	head=tmp;
         /* printf("C: [%s,%d,%d]\n",tmp->name,tmp->id,tmp->flags); */

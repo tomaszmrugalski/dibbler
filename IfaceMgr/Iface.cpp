@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.22 2006-12-25 20:47:01 thomson Exp $
+ * $Id: Iface.cpp,v 1.23 2006-12-28 22:45:00 thomson Exp $
  *
  */
 
@@ -339,7 +339,8 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
 
     strum << "  <IfaceIface";
     strum << " name=\"" << x.Name << "\"";
-    strum << " id=\"" << x.ID << "\"";
+    strum << " ifindex=\"" << x.ID << "\"";
+    strum << " hwType=\"" << x.getHardwareType() << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
     strum << "    <!-- PrefixLength configured to " << x.PrefixLen << " -->" << endl;
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;

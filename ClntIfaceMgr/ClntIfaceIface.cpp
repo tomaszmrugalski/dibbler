@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.10 2006-08-21 22:18:27 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.11 2006-12-28 22:45:00 thomson Exp $
  *
  */
 
@@ -683,6 +683,7 @@ ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
     strum << "  <ClntIfaceIface";
     strum << " name=\"" << x.Name << "\"";
     strum << " ifindex=\"" << x.ID << "\"";
+    strum << " hwType=\"" << x.getHardwareType() << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 

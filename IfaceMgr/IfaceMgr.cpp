@@ -6,60 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.23 2005-06-07 21:58:49 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.22  2005/05/11 07:30:49  thomson
- * Minor win32 related relay fixes.
- *
- * Revision 1.21  2005/01/23 23:17:53  thomson
- * Relay/global address support related improvements.
- *
- * Revision 1.20  2004/12/27 20:48:22  thomson
- * Problem with absent link local addresses fixed (bugs #90, #91)
- *
- * Revision 1.19  2004/12/16 22:00:58  thomson
- * *** empty log message ***
- *
- * Revision 1.18  2004/12/15 23:12:37  thomson
- * Minor improvements.
- *
- * Revision 1.17  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.16  2004/12/04 23:45:40  thomson
- * Problem with client and server on the same Linux host fixed (bug #56)
- *
- * Revision 1.15  2004/11/01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.14  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.13  2004/09/28 20:33:57  thomson
- * Address check in WIN32 should be disabled.
- *
- * Revision 1.12  2004/09/07 15:37:44  thomson
- * Socket handling changes.
- *
- * Revision 1.11  2004/09/05 15:37:44  thomson
- * Linux server now properly supports unicast.
- *
- * Revision 1.10  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.9  2004/05/24 21:16:37  thomson
- * Various fixes.
- *
- * Revision 1.8  2004/05/23 23:45:19  thomson
- * getInterfaceByName bug fixed.
- *
- * Revision 1.7  2004/05/23 20:27:23  thomson
- * *** empty log message ***
- *
- * Revision 1.6  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: IfaceMgr.cpp,v 1.24 2006-12-28 22:45:00 thomson Exp $
  *
  */
 

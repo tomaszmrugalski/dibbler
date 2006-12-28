@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.44 2006-11-17 00:39:55 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.45 2006-12-28 22:45:00 thomson Exp $
  *
  */
 
@@ -185,31 +185,36 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     } else {
 	// user didn't specified any interfaces in config file, so
 	// we'll try to configure each interface we could find
-	Log(Warning) << "Config file does not contain any interface definitions."
+	Log(Warning) << "Config file does not contain any interface definitions. Trying to autodetect."
 		     << LogEnd;
 	
 	IfaceMgr->firstIface();
 	while ( ifaceIface = IfaceMgr->getIface() ) {
 	    // for each interface present in the system...
 	    if (!ifaceIface->flagUp()) {
-		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			    << " is down, ignoring." << LogEnd;
+		Log(Notice) << "Interface " << ifaceIface->getFullName() << " is down, ignoring." << LogEnd;
 		continue;
 	    }
 	    if (!ifaceIface->flagRunning()) {
-		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+		Log(Notice) << "Interface " << ifaceIface->getFullName()
 			    << " has flag RUNNING not set, ignoring." << LogEnd;
 		continue;
 	    }
 	    if (!ifaceIface->flagMulticast()) {
-		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+		Log(Notice) << "Interface " << ifaceIface->getFullName()
                             << " is not multicast capable, ignoring." << LogEnd;
 		continue;
 	    }
 	    if ( !(ifaceIface->getMacLen() > 5) ) {
-		Log(Notice) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+		Log(Notice) << "Interface " << ifaceIface->getFullName() 
                             << " has MAC address length " << ifaceIface->getMacLen() 
                             << " (6 or more required), ignoring." << LogEnd;
+		continue;
+	    }
+	    ifaceIface->firstLLAddress();
+	    if (!ifaceIface->getLLAddress()) {
+		Log(Notice) << "Interface " << ifaceIface->getFullName()
+			    << " has no link-local address, ignoring. (Is it not associated wifi?)" << LogEnd;
 		continue;
 	    }
 
