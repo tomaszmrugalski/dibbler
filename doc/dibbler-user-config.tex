@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.33 2006-11-03 22:42:55 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.34 2006-12-30 23:24:44 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -256,7 +256,7 @@ sometimes allowed range.
  \item[reject-servers] -- (scope: interface, type: address or duid list, default:
 	    empty) This list defines which server must be ignored. It
 	    has negative meaning to the prefered-servers list.
- \item[vendor-spec] -- (scope: interface, type: integer+hexstring,
+ \item[vendor-spec] -- (scope: interface, type: integer-hexstring,
 	    default: empty). This option allow requesting for a vendor
 	    specific configuration option. It does not any good in
 	    itself as there are no dibbler-specific options to
@@ -799,13 +799,18 @@ OptionName option-value
             must be the same as configured in the dibbler-relay. See
             \ref{features-relays}, \ref{example-server-relay1} and
             \ref{example-relay} for details.
- \item[vendor-spec] -- (scope: interface, type: integer+hexstring,
+ \item[vendor-spec] -- (scope: interface, type: integer-hexstring,
 	    default: not defined). This parameter can be used to
 	    configure some vendor-specific information option. Since
 	    there are no dibbler-specific options, this implementation
 	    is flexible. User can specify in the configuration file,
 	    how should this option look like. See
-	    \ref{example-server-vendor-spec} section for details.
+	    \ref{example-server-vendor-spec} section for details. It
+            is uncommon, but possible to define several vendor
+            specific options for different vendors. In such case,
+            administrator must specify coma separated list. Each list
+            entry is a vendor (enterprise number), ,,--'' sign and a
+            hex dump (similar to DUID).
  \item[T1] -- (scope: class, type: integer or integer range: default:
             $2^{32}-1$). This value
 	    defines after what time client should start renew
@@ -1221,9 +1226,32 @@ iface "eth1" {
    pool 2000::1-2000::ff
  }
 
- option vendor-spec 1234 0x00002fedc
+ option vendor-spec 1234-0x00002fedc
 }
 \end{Verbatim}
+
+In some rare cases, several different options for different vendors
+may be specifed. In the folloging example 2 different values are
+defined, depending on which vendor client will specify in \msg{SOLICIT} or
+\msg{REQUEST} message. If client will only mention that it is interested in
+any vendor specific into (i.e. did not sent \opt{VENDOR-SPEC} option, but
+only mentioned in in \opt{OPTION REQUEST} option, it will receive
+first vendor option defined (in the following example, that would be a
+1234 and 0002fedc).
+
+\begin{Verbatim}
+# server.conf
+log-level 8
+log-mode precise
+iface "eth1" {
+ class {
+   pool 2000::1-2000::ff
+ }
+
+ option vendor-spec 1234-0x00002fedc,5678-0x0002aaaa
+}
+\end{Verbatim}
+
 
 \subsection{Relay configuration file}
 

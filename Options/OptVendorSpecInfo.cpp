@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.5 2006-11-03 22:23:15 thomson Exp $
+ * $Id: OptVendorSpecInfo.cpp,v 1.6 2006-12-30 23:24:41 thomson Exp $
  *
  */
 
@@ -21,13 +21,31 @@
 #include <netinet/in.h>
 #endif 
 
+#include "Logger.h"
 TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
     :TOpt(OPTION_VENDOR_OPTS, parent)
 {
-    // FIXME: Implement this
-    this->Vendor = 0;
-    this->VendorData = 0;
-    this->VendorDataLen = 0;
+    if (n<2) {
+	Log(Error) << "Unable to parse vendor-spec info option." << LogEnd;
+	this->Vendor = 0;
+	this->VendorData = 0;
+	this->VendorDataLen = 0;
+	return;
+    }
+
+    this->Vendor = ntohl(*(int*)buf);
+    buf += 4;
+    n   -= 4;
+
+    if (!n)
+	return;
+
+    this->VendorData = new char[n];
+    memmove(this->VendorData, buf, n);
+    this->VendorDataLen = n;
+
+    buf += n;
+    n    = 0;
 }
 
 TOptVendorSpecInfo::TOptVendorSpecInfo(int enterprise, char *data, int dataLen, TMsg* parent)

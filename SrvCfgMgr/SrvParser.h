@@ -47,7 +47,7 @@ SmartPtr<TIPv6Addr> addr;                                                       
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
-SmartPtr<TSrvOptVendorSpec> VendorSpec;                                              \
+List(TSrvOptVendorSpec) VendorSpec;			                             \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \

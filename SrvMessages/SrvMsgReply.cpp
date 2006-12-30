@@ -657,6 +657,13 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    }
 	    break;
 	}
+	case OPTION_VENDOR_OPTS:
+	{
+	    SPtr<TSrvOptVendorSpec> v = (Ptr*) opt;
+	    appendVendorSpec(clntDuid, clntIface, v->getVendor(), reqOpts);
+	    break;
+	}
+
 	default:
 	    appendDefaultOption(opt);
 	    break;

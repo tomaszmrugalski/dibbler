@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.34 2006-12-04 23:37:53 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.35 2006-12-30 23:24:41 thomson Exp $
  */
 
 #include <sstream>
@@ -741,16 +741,33 @@ bool TSrvCfgIface::supportPrefixDelegation() {
 }
 
 bool TSrvCfgIface::supportVendorSpec() {
-    if (this->VendorSpec)
+    if (this->VendorSpec.count())
 	return true;
     return false;
 }
 
-SPtr<TSrvOptVendorSpec> TSrvCfgIface::getVendorSpec() {
-    return this->VendorSpec;
+SPtr<TSrvOptVendorSpec> TSrvCfgIface::getVendorSpec(int vendor) {
+    SPtr<TSrvOptVendorSpec> x = 0;
+    if (!VendorSpec.count())
+	return 0;
+    
+    // enterprise number not specified => return first one
+    VendorSpec.first();
+    if (vendor==0)
+	return VendorSpec.get();
+
+    // search for requested enterprise number
+    while (x=VendorSpec.get()) {
+	if (x->getVendor()==vendor)
+	    return x;
+    }
+
+    // enterprise number not found, return first one
+    VendorSpec.first();
+    return VendorSpec.get();
 }
 
-void TSrvCfgIface::setVendorSpec(SPtr<TSrvOptVendorSpec> vendor) {
+void TSrvCfgIface::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
     this->VendorSpec = vendor;
 }
 
@@ -923,9 +940,14 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     // option: VENDOR-SPEC
     if (iface.supportVendorSpec()) {
-	SPtr<TSrvOptVendorSpec> v = iface.getVendorSpec();
-	out << "    <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen() 
+	out << "    <vendorSpecList count=\"" << iface.VendorSpec.count() << "\">" << endl;
+	iface.VendorSpec.first();
+        SPtr<TSrvOptVendorSpec> v;
+	while (v = iface.VendorSpec.get()) {
+	    out << "      <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen() 
 	    << "\">" << v->getVendorDataPlain() << "</vendorSpec>" << endl;
+	}
+	out << "    </vendorSpecList>" << endl;
     } else {
 	out << "    <!-- <vendorSpec/> -->" << endl;
     }

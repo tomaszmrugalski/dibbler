@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.13 2006-11-11 06:56:27 thomson Exp $
+ * $Id: SrvMsg.h,v 1.14 2006-12-30 23:24:42 thomson Exp $
  *
  */
 
@@ -49,6 +49,7 @@ public:
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
     string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
+    bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt);
 
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
 		      SPtr<TIPv6Addr> peerAddr,

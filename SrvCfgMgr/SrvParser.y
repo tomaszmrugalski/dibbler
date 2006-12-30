@@ -41,7 +41,7 @@ SmartPtr<TIPv6Addr> addr;                                                       
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
-SmartPtr<TSrvOptVendorSpec> VendorSpec;                                              \
+List(TSrvOptVendorSpec) VendorSpec;			                             \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -325,6 +325,19 @@ ADDRESSList
 | ADDRESSList ',' IPV6ADDR_   
 {
     PresentAddrLst.append(new TIPv6Addr($3));
+}
+;
+
+VendorSpecList
+: Number '-' DUID_
+{
+    Log(Debug) << "Vendor-spec defined: Number: " << $1 << ", valuelen=" << $3.length << LogEnd;
+    VendorSpec.append(new TSrvOptVendorSpec($1, $3.duid, $3.length, 0));
+}
+| VendorSpecList ',' Number '-' DUID_
+{
+    Log(Debug) << "Vendor-spec defined: Number: " << $3 << ", valuelen=" << $5.length << LogEnd;
+    VendorSpec.append(new TSrvOptVendorSpec($3, $5.duid, $5.length, 0));
 }
 ;
 
@@ -868,10 +881,11 @@ LifetimeOption
 ;
 
 VendorSpecOption
-:OPTION_ VENDOR_SPEC_ Number DUID_
+:OPTION_ VENDOR_SPEC_ {
+    VendorSpec.clear();
+} VendorSpecList
 {
-    Log(Debug) << "Vendor-spec defined: Number: " << $3 << ", valuelen=" << $4.length << LogEnd;
-    this->VendorSpec = new TSrvOptVendorSpec($3, $4.duid, $4.length, 0);
+    // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
 };
 
 %%
@@ -925,7 +939,7 @@ void SrvParser::StartIfaceDeclaration()
     // create new option (representing this interface) on the parser stack
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
-    this->VendorSpec = 0;
+    VendorSpec.clear();
 }
 
 /** 
@@ -942,7 +956,7 @@ bool SrvParser::EndIfaceDeclaration()
 
     // set its options
     SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-    if (this->VendorSpec)
+    if (this->VendorSpec.count())
 	iface->setVendorSpec(this->VendorSpec);
 
     // copy all IA objects

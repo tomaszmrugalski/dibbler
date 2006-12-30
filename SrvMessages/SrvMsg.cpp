@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.34 2006-12-04 23:35:12 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.35 2006-12-30 23:24:42 thomson Exp $
  */
 
 #include <sstream>
@@ -441,8 +441,8 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 
     // --- option: VENDOR SPEC ---
     if ( reqOpts->isOption(OPTION_VENDOR_OPTS) && ptrIface->supportVendorSpec()) {
-	Options.append( (Ptr*)ptrIface->getVendorSpec());
-	newOptionAssigned = true;
+	if (appendVendorSpec(duid, iface, 0, reqOpts))
+	    newOptionAssigned = true;
     }
 
     // --- option: LIFETIME ---
@@ -462,8 +462,8 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     // if ...
     // tips: use SrvCfgMgr->getDigest() 
     if ( reqOpts->isOption(OPTION_AUTH) ) { // [s] - co¶ takiego jeszcze do³o¿yæ trzeba do tego if'a: && ptrIface->supportLifetime() ) {
-    // FIXME: change to real DigestType
-    this->DigestType = DIGEST_HMAC_SHA1;
+	// FIXME: change to real DigestType
+	this->DigestType = DIGEST_HMAC_SHA1;
 	SmartPtr<TSrvOptAuthentication> optAuthentication = new TSrvOptAuthentication(this);
 	Options.append( (Ptr*)optAuthentication);
     }
@@ -692,3 +692,23 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     return status;
 }
 
+bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt)
+{
+    SmartPtr<TSrvCfgIface> ptrIface=SrvCfgMgr->getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
+	return false;
+    }
+
+    Log(Debug) << "Client requested vendor-spec. info (vendor=" << vendor << ")." << LogEnd;
+    SPtr<TSrvOptVendorSpec> v = ptrIface->getVendorSpec(vendor);
+    if (v) {
+	Log(Debug) << "Found vendor-spec. info (vendor=" << v->getVendor() << ")." << LogEnd;
+	Options.append( (Ptr*)v);
+	reqOpt->delOption(OPTION_VENDOR_OPTS);
+	return true;
+    }
+
+    Log(Debug) << "Unable to find any vendor-specific option." << LogEnd;
+    return false;
+}

@@ -22,7 +22,7 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue
 	  dibbler-user-intro.tex dibbler-user-usage.tex version.tex
 	@echo "[LATEX  ] $(SUBDIR)/$@"
 	$(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-1st_pass.log
-	if [ $(PASS3) == "YES" ]; then                                       \
+	if [ $(PASS3)=="YES" ]; then                                       \
 	  echo "[LATEX  ] $(SUBDIR)/$@";                                     \
 	  $(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-2nd_pass.log; \
 	  echo "[LATEX  ] $(SUBDIR)/$@";                                     \
@@ -39,7 +39,7 @@ dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
                    dibbler-devel-misc.tex   version.tex
 	@echo "[LATEX  ] $(SUBDIR)/$@"
 	$(LATEX) $(LATEXOPTS) dibbler-devel.tex > dibbler-devel-1st_pass.log
-	if [ $(PASS3) == "YES" ]; then                                          \
+	if [ $(PASS3)=="YES" ]; then                                          \
 	  echo "[LATEX  ] $(SUBDIR)/$@";                                        \
 	  $(LATEX) $(LATEXOPTS) dibbler-devel.tex > dibbler-devel-2nd_pass.log; \
 	  echo "[LATEX  ] $(SUBDIR)/$@";                                        \

@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.24 2006-12-04 23:35:12 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.25 2006-12-30 23:24:42 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -182,11 +182,17 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    }
 	    break;
 	}
-	    // options not yet supported 
+	case OPTION_VENDOR_OPTS:
+	{
+	    SPtr<TSrvOptVendorSpec> v = (Ptr*) opt;
+	    appendVendorSpec(clntDuid, clntIface, v->getVendor(), reqOpts);
+	    break;
+	}
+	
+	// options not yet supported 
 	case OPTION_RELAY_MSG :
 	case OPTION_USER_CLASS :
-	case OPTION_VENDOR_CLASS :
-	case OPTION_VENDOR_OPTS :
+	case OPTION_VENDOR_CLASS:
 	case OPTION_INTERFACE_ID :
 	case OPTION_RECONF_MSG :
 	case OPTION_RECONF_ACCEPT:

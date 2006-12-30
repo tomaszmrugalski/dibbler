@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgIface.h,v 1.21 2006-12-02 14:52:29 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.22 2006-12-30 23:24:41 thomson Exp $
  *
  */
 
@@ -168,9 +168,9 @@ public:
     bool supportLifetime();
 
     // option: VENDOR-SPEC
-    void setVendorSpec(SPtr<TSrvOptVendorSpec> vendor);
+    void setVendorSpec(List(TSrvOptVendorSpec) vendor);
     bool supportVendorSpec();
-    SPtr<TSrvOptVendorSpec> getVendorSpec();
+    SPtr<TSrvOptVendorSpec> getVendorSpec(int num=0);
 private:
     unsigned char preference;
     int	ID;
@@ -220,7 +220,7 @@ private:
     string NISPDomain;
     unsigned int Lifetime;
     unsigned int PrefixLength;
-    SPtr<TSrvOptVendorSpec> VendorSpec;
+    List(TSrvOptVendorSpec) VendorSpec;
 };
 
 #endif /* SRVCONFIFACE_H */
