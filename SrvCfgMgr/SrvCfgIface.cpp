@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.36 2006-12-31 11:46:09 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.37 2006-12-31 16:00:26 thomson Exp $
  */
 
 #include <sstream>
@@ -17,6 +17,26 @@
 #include "Logger.h"
 
 using namespace std;
+
+void TSrvCfgIface::addClientExceptionsLst(List(TSrvCfgOptions) exLst)
+{
+    Log(Debug) << exLst.count() << " per-client configurations (exceptions) added." << LogEnd;
+    ExceptionsLst = exLst;
+}
+
+SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, bool quiet)
+{
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst.first();
+    while (x=ExceptionsLst.get()) {
+	if (*(x->getDuid()) == *duid) {
+	    if (!quiet)
+		Log(Debug) << "Found per-client configuration (exception) for client with DUID=" << x->getDuid()->getPlain() << LogEnd;
+	    return x;
+	}
+    }
+    return 0;
+}
 
 void TSrvCfgIface::firstAddrClass() {
     this->SrvCfgAddrClassLst.first();
@@ -368,11 +388,6 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->RapidCommit   = opt->getRapidCommit();
     this->Unicast       = opt->getUnicast();
     
-    // option: DNS-SERVERS
-    if (opt->supportDNSServer())  this->setDNSServerLst(opt->getDNSServerLst());
-    if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
-    if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
-    if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
     if (opt->supportFQDN()){
 	this->setFQDNLst(opt->getFQDNLst());
 	this->setFQDNMode(opt->getFQDNMode());
@@ -392,13 +407,6 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
 	}
     	Log(Debug) <<"FQDN: revDNS zoneroot lenght set to " << this->getRevDNSZoneRootLength()<< "." << LogEnd;
     }
-    if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
-    if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
-    if (opt->supportNISServer())  this->setNISServerLst(opt->getNISServerLst());
-    if (opt->supportNISDomain())  this->setNISDomain(opt->getNISDomain());
-    if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
-    if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
-    if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
   
     if (opt->isRelay()) {
 	this->Relay = true;
@@ -411,6 +419,8 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
 	this->RelayID = 0;
 	this->RelayInterfaceID = 0;
     }
+
+    TSrvCfgOptions::setOptions(opt);
 }
 
 /*
@@ -682,14 +692,14 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     
     out << endl << "    <!-- options -->" << endl;
 
-    // DNS-SERVERS
+    // option: DNS-SERVERS
     out << "    <!-- <dns-servers count=\"" << iface.DNSServerLst.count() << "\"> -->" << endl;
     iface.DNSServerLst.first();
     while (addr = iface.DNSServerLst.get()) {
         out << "    <dns-server>" << *addr << "</dns-server>" << endl;
     }
 
-    // DOMAINS
+    // option: DOMAINS
     out << "    <!-- <domains count=\"" << iface.DomainLst.count() << "\"> -->" << endl;
     iface.DomainLst.first();
     while (str = iface.DomainLst.get()) {
@@ -785,6 +795,14 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
       out << "    </fqdnOptions>" << endl;
     } else { 
       out << "    <!-- <fqdnOptions/> -->" << endl;
+    }
+
+
+    SPtr<TSrvCfgOptions> ex;
+    out << "    <!-- " << iface.ExceptionsLst.count() << " per-client parameters (exceptions) -->" << endl;
+    iface.ExceptionsLst.first();
+    while (ex = iface.ExceptionsLst.get()) {
+	out << *ex;
     }
     
     out << "  </SrvCfgIface>" << endl;

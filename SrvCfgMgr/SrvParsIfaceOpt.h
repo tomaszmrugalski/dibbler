@@ -6,37 +6,14 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.11 2006-10-06 00:35:26 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.10  2006-08-27 21:16:36  thomson
- * ZoneRoot length parameter added (by Krzysiek Wnuk)
- *
- * Revision 1.9  2006-07-03 18:19:12  thomson
- * FQDN support added.
- *
- * Revision 1.8  2006-03-03 21:09:34  thomson
- * FQDN support added.
- *
- * Revision 1.7  2005/01/03 21:57:08  thomson
- * Relay support added.
- *
- * Revision 1.6  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.5  2004/09/03 23:20:23  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.4  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.3  2004/06/28 22:37:59  thomson
- * Minor changes.
+ * $Id: SrvParsIfaceOpt.h,v 1.12 2006-12-31 16:00:27 thomson Exp $
  *
  */
 
 #ifndef TSRCPARSIFACEOPT_H_
 #define TSRCPARSIFACEOPT_H_
+
+#include "SrvOptVendorSpec.h"
 #include "SrvParsClassOpt.h"
 #include "FQDN.h"
 
@@ -141,6 +118,11 @@ public:
     unsigned int getLifetime();
     bool supportLifetime();
 
+    // option: VENDOR-SPEC INFO
+    void setVendorSpec(List(TSrvOptVendorSpec) vendor);
+    bool supportVendorSpec();
+    List(TSrvOptVendorSpec) getVendorSpec();
+
 private:
     char Preference;
     bool RapidCommit;
@@ -167,6 +149,7 @@ private:
     bool NISPServerSupport;
     bool NISPDomainSupport;
     bool LifetimeSupport;
+    bool VendorSpecSupport;
 
     List(TIPv6Addr) DNSServerLst;
     List(string) DomainLst;			
@@ -182,6 +165,8 @@ private:
     int FQDNMode;
     int revDNSZoneRootLength;
     unsigned int Lifetime;
+
+    List(TSrvOptVendorSpec) VendorSpec;
 };
 
 #endif

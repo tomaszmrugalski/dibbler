@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.6 2006-12-30 23:24:41 thomson Exp $
+ * $Id: OptVendorSpecInfo.cpp,v 1.7 2006-12-31 16:00:26 thomson Exp $
  *
  */
 
@@ -20,8 +20,8 @@
 #ifdef LINUX
 #include <netinet/in.h>
 #endif 
-
 #include "Logger.h"
+
 TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
     :TOpt(OPTION_VENDOR_OPTS, parent)
 {
@@ -37,8 +37,11 @@ TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
     buf += 4;
     n   -= 4;
 
-    if (!n)
+    if (!n) {
+	this->VendorData = 0;
+	this->VendorDataLen = 0;
 	return;
+    }
 
     this->VendorData = new char[n];
     memmove(this->VendorData, buf, n);
@@ -59,7 +62,7 @@ TOptVendorSpecInfo::TOptVendorSpecInfo(int enterprise, char *data, int dataLen, 
 
 TOptVendorSpecInfo::~TOptVendorSpecInfo() 
 {
-    if (this->VendorData)
+    if (this->VendorDataLen)
 	delete [] VendorData;
 }
 

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.9 2006-10-29 13:11:46 thomson Exp $
+ * $Id: DUID.cpp,v 1.10 2006-12-31 16:00:26 thomson Exp $
  */
 
 #include <iostream>
@@ -17,7 +17,7 @@
 
 TDUID::TDUID()
 {
-    DUID=NULL;
+    DUID=0;
     len=0;
     Plain="";
 }
@@ -25,6 +25,9 @@ TDUID::TDUID()
 // packed
 TDUID::TDUID(const char* DUID,int DUIDlen)
 {
+    Log(Debug) << "#### adding new DUID, len=" << DUIDlen << LogEnd;
+    this->DUID = 0;
+
     if ((DUID)&&(DUIDlen))
     {
         this->DUID=new char[DUIDlen];
@@ -46,11 +49,43 @@ void TDUID::packedToPlain() {
 	if (i) tmp << ":";
 	tmp << setfill('0')<<setw(2)<<hex<< (unsigned int) this->DUID[i];
     }
+    tmp << dec;
     this->Plain = tmp.str();
+    Log(Debug) << "#### PackedToPlain plain.length()=" << len << ", packed.length()=" << Plain.length() << LogEnd;
 }
 
 void TDUID::plainToPacked() {
+    int DUIDlen = Plain.length();
+    char * tmp = new char[DUIDlen>>1];
+    unsigned char digit;
+    int i=0, j=0;
+    bool twonibbles = false;
+    while (i<DUIDlen)
+    {
+	if (Plain[i]==':') {
+	    i++;
+	}
+	digit = Plain[i];
+	if (isalpha(digit))
+	    digit=toupper(digit)-'A'+10;
+	else
+	    digit-='0';
+	tmp[j]<<=4;
+	tmp[j]|=digit;
+	i++;
+	if (twonibbles) {
+	    twonibbles = false;
+	    j++;
+	} else 
+	    twonibbles = true;
+    }
 
+    DUID = new char[j];
+    memmove(DUID, tmp, j);
+    delete [] tmp;
+    this->len = j;
+
+    Log(Debug) << "#### plainToPacked plain.length()=" << DUIDlen << ", packed.length()=" << j << LogEnd;
 }
 
 // plain
@@ -64,27 +99,7 @@ TDUID::TDUID(const char* Plain)
 
     this->Plain = Plain;
 
-    int DUIDlen = strlen((char*)Plain);
-    this->DUID = new char[DUIDlen>>1];
-    unsigned char digit;
-    int i=0, j=0;
-    while (i<DUIDlen)
-    {
-	if (Plain[i]==':') {
-	    i++;
-	    j++;
-	}
-	digit = Plain[i];
-	if (isalpha(digit))
-	    digit=toupper(digit)-'A'+10;
-	else
-	    digit-='0';
-	DUID[j]<<=4;
-	DUID[j]|=digit;
-	i++;
-    }
-    DUIDlen>>=1;
-    this->len = DUIDlen;
+    plainToPacked();
 }
 
 TDUID::~TDUID() {
@@ -93,7 +108,7 @@ TDUID::~TDUID() {
 }
 
 TDUID::TDUID(const TDUID &duid) {
-    this->DUID=new char [duid.len];
+    this->DUID=new char[duid.len];
     memcpy(this->DUID,duid.DUID,duid.len);
     this->len=duid.len;
     this->Plain = duid.Plain;

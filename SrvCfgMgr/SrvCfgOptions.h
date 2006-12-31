@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.h,v 1.1 2006-12-31 11:46:09 thomson Exp $
+ * $Id: SrvCfgOptions.h,v 1.2 2006-12-31 16:00:26 thomson Exp $
  *
  */
 
@@ -21,16 +21,20 @@
 #include "SmartPtr.h"
 #include "Container.h"
 #include "IPv6Addr.h"
-
+#include "SrvParsGlobalOpt.h"
 
 class TSrvCfgIface;
 
 class TSrvCfgOptions 
 {
     friend std::ostream& operator<<(std::ostream& out,TSrvCfgIface& iface);
+    friend std::ostream& operator<<(std::ostream& out,TSrvCfgOptions& opt);
 
 public:
     TSrvCfgOptions();
+    TSrvCfgOptions(SPtr<TDUID> duid);
+    bool setOptions(SPtr<TSrvParsGlobalOpt> opt);
+    SPtr<TDUID> getDuid();
 
     // option: DNS Servers
     List(TIPv6Addr) * getDNSServerLst();
@@ -106,6 +110,7 @@ private:
     bool NISPServerSupport;
     bool NISPDomainSupport;
     bool LifetimeSupport;
+    bool VendorSpecSupport;
 
     List(TIPv6Addr) DNSServerLst;
     List(string) DomainLst;
@@ -120,9 +125,8 @@ private:
     List(TSrvOptVendorSpec) VendorSpec;
     unsigned int Lifetime;
 
-
-
-
+    void SetDefaults();
+    SPtr<TDUID> Duid; // used during per-client configuration (exceptions)
 };
 
 #endif

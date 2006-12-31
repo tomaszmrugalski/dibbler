@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsgSolicit.cpp,v 1.4 2006-11-11 06:56:27 thomson Exp $
+ * $Id: SrvMsgSolicit.cpp,v 1.5 2006-12-31 16:00:27 thomson Exp $
  *
  */
 
@@ -48,4 +48,5 @@ unsigned long TSrvMsgSolicit::getTimeout() {
 }
 
 TSrvMsgSolicit::~TSrvMsgSolicit() {
+
 }

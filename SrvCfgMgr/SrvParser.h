@@ -28,6 +28,7 @@
 #include "SrvCfgPD.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
+#include "SrvCfgOptions.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
@@ -48,6 +49,7 @@ List(TStationRange) PresentRangeLst;                                            
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
 List(TSrvOptVendorSpec) VendorSpec;			                             \
+List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -70,7 +72,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 69 "SrvParser.y"
+#line 71 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -297,11 +299,12 @@ typedef
 #define	AUTH_	300
 #define	DIGEST_NONE_	301
 #define	DIGEST_HMAC_SHA1_	302
-#define	STRING_	303
-#define	HEXNUMBER_	304
-#define	INTNUMBER_	305
-#define	IPV6ADDR_	306
-#define	DUID_	307
+#define	CLIENT_	303
+#define	STRING_	304
+#define	HEXNUMBER_	305
+#define	INTNUMBER_	306
+#define	IPV6ADDR_	307
+#define	DUID_	308
 
 
 #line 169 "../bison++/bison.h"
@@ -395,6 +398,7 @@ static const int VENDOR_SPEC_;
 static const int AUTH_;
 static const int DIGEST_NONE_;
 static const int DIGEST_HMAC_SHA1_;
+static const int CLIENT_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -453,11 +457,12 @@ static const int DUID_;
 	,AUTH_=300
 	,DIGEST_NONE_=301
 	,DIGEST_HMAC_SHA1_=302
-	,STRING_=303
-	,HEXNUMBER_=304
-	,INTNUMBER_=305
-	,IPV6ADDR_=306
-	,DUID_=307
+	,CLIENT_=303
+	,STRING_=304
+	,HEXNUMBER_=305
+	,INTNUMBER_=306
+	,IPV6ADDR_=307
+	,DUID_=308
 
 
 #line 215 "../bison++/bison.h"

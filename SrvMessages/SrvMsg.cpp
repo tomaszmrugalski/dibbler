@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.35 2006-12-30 23:24:42 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.36 2006-12-31 16:00:27 thomson Exp $
  */
 
 #include <sstream>
@@ -32,6 +32,8 @@
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
 #include "SrvOptTA.h"
+#include "SrvCfgOptions.h"
+
 // --- options ---
 #include "SrvOptDNSServers.h"
 #include "SrvOptDomainName.h"
@@ -355,86 +357,122 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	return false;
 
     SmartPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr->getIfaceByID(iface);
-    
+    if (!ptrIface) {
+	Log(Error) << "Unable to find interface (ifindex=" << iface << "). Something is wrong." << LogEnd;
+	return false;
+    }
+
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, false/* false = verbose */);
+
     // --- option: DNS resolvers ---
     if ( reqOpts->isOption(OPTION_DNS_RESOLVERS) && ptrIface->supportDNSServer() ) {
-	SmartPtr<TSrvOptDNSServers> optDNS = new TSrvOptDNSServers(*ptrIface->getDNSServerLst(),this);
+	SmartPtr<TSrvOptDNSServers> optDNS;
+	if (ex && ex->supportDNSServer())
+	    optDNS = new TSrvOptDNSServers(*ex->getDNSServerLst(), this);
+	else
+	    optDNS = new TSrvOptDNSServers(*ptrIface->getDNSServerLst(),this);
 	Options.append((Ptr*)optDNS);
 	newOptionAssigned = true;
     };
 
     // --- option: DOMAIN LIST ---
     if ( reqOpts->isOption(OPTION_DOMAIN_LIST) && ptrIface->supportDomain() ) {
-	SmartPtr<TSrvOptDomainName> optDomain= new TSrvOptDomainName(*ptrIface->getDomainLst(),this);
+	SmartPtr<TSrvOptDomainName> optDomain;
+	if (ex && ex->supportDomain())
+	    optDomain = new TSrvOptDomainName(*ex->getDomainLst(),this);
+	else
+	    optDomain = new TSrvOptDomainName(*ptrIface->getDomainLst(),this);
 	Options.append((Ptr*)optDomain);
 	newOptionAssigned = true;
     };
     
     // --- option: NTP servers ---
     if ( reqOpts->isOption(OPTION_NTP_SERVERS) && ptrIface->supportNTPServer() ) {
-	SmartPtr<TSrvOptNTPServers> optNTP = new TSrvOptNTPServers(*ptrIface->getNTPServerLst(),this);
+	SmartPtr<TSrvOptNTPServers> optNTP;
+	if (ex && ex->supportNTPServer())
+	    optNTP = new TSrvOptNTPServers(*ex->getNTPServerLst(),this);
+	else
+	    optNTP = new TSrvOptNTPServers(*ptrIface->getNTPServerLst(),this);
 	Options.append((Ptr*)optNTP);
 	newOptionAssigned = true;
     };
     
     // --- option: TIMEZONE --- 
     if ( reqOpts->isOption(OPTION_TIME_ZONE) && ptrIface->supportTimezone() ) {
-	SmartPtr<TSrvOptTimeZone> optTimezone = new TSrvOptTimeZone(ptrIface->getTimezone(),this);
+	SmartPtr<TSrvOptTimeZone> optTimezone;
+	if (ex && ex->supportTimezone())
+	    optTimezone = new TSrvOptTimeZone(ex->getTimezone(),this);
+	else
+	    optTimezone = new TSrvOptTimeZone(ptrIface->getTimezone(),this);
 	Options.append((Ptr*)optTimezone);
 	newOptionAssigned = true;
     };
 
     // --- option: SIP SERVERS ---
     if ( reqOpts->isOption(OPTION_SIP_SERVERS) && ptrIface->supportSIPServer() ) {
-	SmartPtr<TSrvOptSIPServers> optSIPServer = new TSrvOptSIPServers(*ptrIface->getSIPServerLst(),this);
+	SmartPtr<TSrvOptSIPServers> optSIPServer;
+	if (ex && ex->supportSIPServer())
+	    optSIPServer = new TSrvOptSIPServers(*ex->getSIPServerLst(),this);
+	else
+	    optSIPServer = new TSrvOptSIPServers(*ptrIface->getSIPServerLst(),this);
 	Options.append((Ptr*)optSIPServer);
 	newOptionAssigned = true;
     };
 
     // --- option: SIP DOMAINS ---
     if ( reqOpts->isOption(OPTION_SIP_DOMAINS) && ptrIface->supportSIPDomain() ) {
-	SmartPtr<TSrvOptSIPDomain> optSIPDomain= new TSrvOptSIPDomain(*ptrIface->getSIPDomainLst(),this);
+	SmartPtr<TSrvOptSIPDomain> optSIPDomain;
+	if (ex && ex->supportSIPDomain())
+	    optSIPDomain= new TSrvOptSIPDomain(*ex->getSIPDomainLst(),this);
+	else
+	    optSIPDomain= new TSrvOptSIPDomain(*ptrIface->getSIPDomainLst(),this);
 	Options.append((Ptr*)optSIPDomain);
 	newOptionAssigned = true;
     };
 
     // --- option: FQDN ---
-    if ( reqOpts->isOption(OPTION_FQDN) && ptrIface->supportFQDN() ) {
-	/*
-	 * Unfortunatelly, we need the the option sent by the client to set the flag correctly.
-	 * This cannot be done here...
-	 SmartPtr<TSrvOptFQDN> opt = new TSrvOptFQDN(ptrIface->getFQDNName(duid), this);
-	 Options.append((Ptr*)opt);
-	 newOptionAssigned = true;
-	 
-	 FIXME: This option should be set here, flags should be updated later.
-	*/
-    };
+    // see prepareFQDN() method
 
     // --- option: NIS SERVERS ---
     if ( reqOpts->isOption(OPTION_NIS_SERVERS) && ptrIface->supportNISServer() ) {
-	SmartPtr<TSrvOptNISServers> opt = new TSrvOptNISServers(*ptrIface->getNISServerLst(),this);
+	SmartPtr<TSrvOptNISServers> opt;
+	if (ex && ex->supportNISServer())
+	    opt = new TSrvOptNISServers(*ex->getNISServerLst(),this);
+	else
+	    opt = new TSrvOptNISServers(*ptrIface->getNISServerLst(),this);
 	Options.append((Ptr*)opt);
 	newOptionAssigned = true;
     };
 
     // --- option: NIS DOMAIN ---
     if ( reqOpts->isOption(OPTION_NIS_DOMAIN_NAME) && ptrIface->supportNISDomain() ) {
-	SmartPtr<TSrvOptNISDomain> opt = new TSrvOptNISDomain(ptrIface->getNISDomain(),this);
+	SmartPtr<TSrvOptNISDomain> opt;
+	if (ex && ex->supportNISDomain())
+	    opt = new TSrvOptNISDomain(ex->getNISDomain(),this);
+	else
+	    opt = new TSrvOptNISDomain(ptrIface->getNISDomain(),this);
 	Options.append((Ptr*)opt);
 	newOptionAssigned = true;
     };
 
     // --- option: NISP SERVERS ---
     if ( reqOpts->isOption(OPTION_NISP_SERVERS) && ptrIface->supportNISPServer() ) {
-	SmartPtr<TSrvOptNISPServers> opt = new TSrvOptNISPServers(*ptrIface->getNISPServerLst(),this);
+	SmartPtr<TSrvOptNISPServers> opt;
+	if (ex && ex->supportNISPServer())
+	    opt = new TSrvOptNISPServers(*ex->getNISPServerLst(),this);
+	else
+	    opt = new TSrvOptNISPServers(*ptrIface->getNISPServerLst(),this);
 	Options.append((Ptr*) opt);
 	newOptionAssigned = true;
     };
 
     // --- option: NISP DOMAIN ---
     if ( reqOpts->isOption(OPTION_NISP_DOMAIN_NAME) && ptrIface->supportNISPDomain() ) {
-	SmartPtr<TSrvOptNISPDomain> opt = new TSrvOptNISPDomain(ptrIface->getNISPDomain(), this);
+	SmartPtr<TSrvOptNISPDomain> opt;
+	if (ex && ex->supportNISPDomain())
+	    opt = new TSrvOptNISPDomain(ex->getNISPDomain(), this);
+	else
+	    opt = new TSrvOptNISPDomain(ptrIface->getNISPDomain(), this);
 	Options.append((Ptr*)opt);
 	newOptionAssigned = true;
     };
@@ -448,7 +486,11 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     // --- option: LIFETIME ---
     // this option should be checked last 
     if ( newOptionAssigned && ptrIface->supportLifetime() ) {
-	SmartPtr<TSrvOptLifetime> optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
+	SmartPtr<TSrvOptLifetime> optLifetime;
+	if (ex && ex->supportLifetime())
+	    optLifetime = new TSrvOptLifetime(ex->getLifetime(), this);
+	else
+	    optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
 	Options.append( (Ptr*)optLifetime);
 	newOptionAssigned = true;
     }
@@ -699,9 +741,25 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSr
 	Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
 	return false;
     }
+    if (!ptrIface->supportVendorSpec()) {
+	Log(Debug) << "Client requeste VendorSpec info, but is not configured on the " << ptrIface->getFullName() << " interface." << LogEnd;
+	return false;
+    }
 
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, true);
+    SPtr<TSrvOptVendorSpec> v;
     Log(Debug) << "Client requested vendor-spec. info (vendor=" << vendor << ")." << LogEnd;
-    SPtr<TSrvOptVendorSpec> v = ptrIface->getVendorSpec(vendor);
+    if (ex && ex->supportVendorSpec()) {
+	v = ex->getVendorSpec(vendor);
+	if (v) {
+	    Log(Debug) << "Found (client specific) vendor-spec. info (vendor=" << v->getVendor() << ")." << LogEnd;
+	    Options.append( (Ptr*)v);
+	    reqOpt->delOption(OPTION_VENDOR_OPTS);
+	    return true;
+	}
+    }
+
+    v= ptrIface->getVendorSpec(vendor);
     if (v) {
 	Log(Debug) << "Found vendor-spec. info (vendor=" << v->getVendor() << ")." << LogEnd;
 	Options.append( (Ptr*)v);

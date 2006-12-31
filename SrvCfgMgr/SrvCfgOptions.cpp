@@ -7,14 +7,26 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.cpp,v 1.1 2006-12-31 11:46:09 thomson Exp $
+ * $Id: SrvCfgOptions.cpp,v 1.2 2006-12-31 16:00:26 thomson Exp $
  *
  */
 
 #include "SrvCfgOptions.h"
 
 TSrvCfgOptions::TSrvCfgOptions() {
+    SetDefaults();
+}
 
+TSrvCfgOptions::TSrvCfgOptions(SPtr<TDUID> duid) {
+    SetDefaults();
+    Duid = duid;
+}
+
+SPtr<TDUID> TSrvCfgOptions::getDuid() {
+    return Duid;
+}
+
+void TSrvCfgOptions::SetDefaults() {
     this->DNSServerSupport        = false;
     this->DomainSupport           = false;
     this->NTPServerSupport        = false;
@@ -26,6 +38,7 @@ TSrvCfgOptions::TSrvCfgOptions() {
     this->NISPServerSupport       = false;
     this->NISPDomainSupport       = false;
     this->LifetimeSupport         = false;
+    this->VendorSpecSupport       = false;
 }
 
 // --------------------------------------------------------------------
@@ -194,4 +207,131 @@ SPtr<TSrvOptVendorSpec> TSrvCfgOptions::getVendorSpec(int vendor) {
 
 void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
     this->VendorSpec = vendor;
+}
+
+bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
+{
+    if (opt->supportDNSServer())  this->setDNSServerLst(opt->getDNSServerLst());
+    if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
+    if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
+    if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
+    if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
+    if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
+    if (opt->supportNISServer())  this->setNISServerLst(opt->getNISServerLst());
+    if (opt->supportNISDomain())  this->setNISDomain(opt->getNISDomain());
+    if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
+    if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
+    if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
+    if (opt->supportVendorSpec()) this->setVendorSpec(opt->getVendorSpec());
+
+    return true;
+}
+
+// --------------------------------------------------------------------
+// --- operators ------------------------------------------------------
+// --------------------------------------------------------------------
+ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
+
+    SPtr<TIPv6Addr> addr;
+    SmartPtr<string> str;
+
+    out << "    <client>" << endl;
+    if (iface.Duid)
+	out << "      " << *iface.Duid;
+
+    // option: DNS-SERVERS
+    out << "      <!-- <dns-servers count=\"" << iface.DNSServerLst.count() << "\"> -->" << endl;
+    iface.DNSServerLst.first();
+    while (addr = iface.DNSServerLst.get()) {
+        out << "      <dns-server>" << *addr << "</dns-server>" << endl;
+    }
+
+    // option: DOMAINS
+    out << "      <!-- <domains count=\"" << iface.DomainLst.count() << "\"> -->" << endl;
+    iface.DomainLst.first();
+    while (str = iface.DomainLst.get()) {
+        out << "      <domain>" << *str << "</domain>" << endl;
+    }
+
+    // NTP-SERVERS
+    out << "      <!-- <ntp-servers count=\"" << iface.NTPServerLst.count() << "\"> -->" << endl;
+    iface.NTPServerLst.first();
+    while (addr = iface.NTPServerLst.get()) {
+        out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;
+    }
+
+    // option: TIMEZONE
+    if (iface.supportTimezone()) {
+        out << "      <timezone>" << iface.Timezone << "</timezone>" << endl;
+    } else {
+        out << "      <!-- <timezone/> -->" << endl;
+    }
+
+    // option: SIP-SERVERS
+    out << "      <!-- <sip-servers count=\"" << iface.SIPServerLst.count() << "\"> -->" << endl;
+    iface.SIPServerLst.first();
+    while (addr = iface.SIPServerLst.get()) {
+        out << "      <sip-server>" << *addr << "</sip-server>" << endl;
+    }
+
+    // option: SIP-DOMAINS
+    out << "      <!-- <sip-domains count=\"" << iface.SIPDomainLst.count() << "\"> -->" << endl;
+    iface.SIPDomainLst.first();
+    while (str = iface.SIPDomainLst.get()) {
+        out << "      <sip-domain>" << *str << "</sip-domain>" << endl;
+    }
+
+    // option: NIS-SERVERS
+    out << "      <!-- <nis-servers count=\"" << iface.NISServerLst.count() << "\"> -->" << endl;
+    iface.NISServerLst.first();
+    while (addr = iface.NISServerLst.get()) {
+        out << "      <nis-server>" << *addr << "</nis-server>" << endl;
+    }
+
+    // option: NIS-DOMAIN
+    if (iface.supportNISDomain()) {
+        out << "      <nis-domain>" << iface.NISDomain << "</nis-domain>" << endl;
+    } else {
+        out << "      <!-- <nis-domain/> -->" << endl;
+    }
+
+    // option: NIS+-SERVERS
+    out << "      <!-- <nisplus-servers count=\"" << iface.NISPServerLst.count() << "\"> -->" << endl;
+    iface.NISPServerLst.first();
+    while (addr = iface.NISPServerLst.get()) {
+        out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;
+    }
+
+    // option: NIS+-DOMAIN
+    if (iface.supportNISPDomain()) {
+        out << "      <nisplus-domain>" << iface.NISPDomain << "</nisplus-domain>" << endl;
+    } else {
+        out << "      <!-- <nisplus-domain/> -->" << endl;
+    }
+
+    // option: LIFETIME
+    if (iface.supportLifetime()) {
+        out << "      <lifetime>" << iface.Lifetime << "</lifetime>" << endl;
+    } else {
+        out << "      <!-- <lifetime/> -->" << endl;
+    }
+
+
+    // option: VENDOR-SPEC
+    if (iface.supportVendorSpec()) {
+	out << "      <vendorSpecList count=\"" << iface.VendorSpec.count() << "\">" << endl;
+	iface.VendorSpec.first();
+        SPtr<TSrvOptVendorSpec> v;
+	while (v = iface.VendorSpec.get()) {
+	    out << "        <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen() 
+	    << "\">" << v->getVendorDataPlain() << "</vendorSpec>" << endl;
+	}
+	out << "      </vendorSpecList>" << endl;
+    } else {
+	out << "      <!-- <vendorSpec/> -->" << endl;
+    }
+
+    out << "    </client>" << endl;
+
+    return out;
 }

@@ -15,6 +15,7 @@
 #include "SrvCfgPD.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
+#include "SrvCfgOptions.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
@@ -42,6 +43,7 @@ List(TStationRange) PresentRangeLst;                                            
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
 List(TSrvOptVendorSpec) VendorSpec;			                             \
+List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -91,6 +93,7 @@ virtual ~SrvParser();
 %token PDCLASS_, PD_LENGTH_, PD_POOL_ 
 %token VENDOR_SPEC_
 %token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
+%token CLIENT_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -152,6 +155,7 @@ InterfaceOptionDeclaration
 | LifetimeOption
 | PDDeclaration
 | VendorSpecOption
+| Client
 ;
 
 InterfaceDeclaration
@@ -189,6 +193,40 @@ InterfaceDeclarationsList
 | TAClassDeclaration
 | InterfaceDeclarationsList TAClassDeclaration
 | InterfaceDeclarationsList ClassDeclaration
+;
+
+Client
+: CLIENT_ DUID_ '{'
+{
+    ParserOptStack.append(new TSrvParsGlobalOpt());
+    SPtr<TDUID> duid = new TDUID($2.duid,$2.length);
+    ClientLst.append(new TSrvCfgOptions(duid));
+} ClientOptions
+'}'
+{
+    // copy all defined options
+    ClientLst.getLast()->setOptions(ParserOptStack.getLast());
+    ParserOptStack.delLast();
+}
+
+ClientOptions
+: ClientOption
+| ClientOptions ClientOption
+;
+
+ClientOption
+: DNSServerOption
+| DomainOption
+| NTPServerOption
+| TimeZoneOption
+| SIPServerOption
+| SIPDomainOption
+| NISServerOption
+| NISDomainOption
+| NISPServerOption
+| NISPDomainOption
+| LifetimeOption
+| VendorSpecOption
 ;
 
 /* class { ... } */
@@ -331,12 +369,12 @@ ADDRESSList
 VendorSpecList
 : Number '-' DUID_
 {
-    Log(Debug) << "Vendor-spec defined: Number: " << $1 << ", valuelen=" << $3.length << LogEnd;
+    // Log(Debug) << "Vendor-spec defined: Number: " << $1 << ", valuelen=" << $3.length << LogEnd;
     VendorSpec.append(new TSrvOptVendorSpec($1, $3.duid, $3.length, 0));
 }
 | VendorSpecList ',' Number '-' DUID_
 {
-    Log(Debug) << "Vendor-spec defined: Number: " << $3 << ", valuelen=" << $5.length << LogEnd;
+    // Log(Debug) << "Vendor-spec defined: Number: " << $3 << ", valuelen=" << $5.length << LogEnd;
     VendorSpec.append(new TSrvOptVendorSpec($3, $5.duid, $5.length, 0));
 }
 ;
@@ -885,6 +923,7 @@ VendorSpecOption
     VendorSpec.clear();
 } VendorSpecList
 {
+    ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
 };
 
@@ -940,6 +979,7 @@ void SrvParser::StartIfaceDeclaration()
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
     VendorSpec.clear();
+    ClientLst.clear();
 }
 
 /** 
@@ -956,8 +996,6 @@ bool SrvParser::EndIfaceDeclaration()
 
     // set its options
     SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
-    if (this->VendorSpec.count())
-	iface->setVendorSpec(this->VendorSpec);
 
     // copy all IA objects
     SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
@@ -978,6 +1016,8 @@ bool SrvParser::EndIfaceDeclaration()
     while (pd=SrvCfgPDLst.get())
         iface->addPD(pd);
     SrvCfgPDLst.clear();
+
+    iface->addClientExceptionsLst(ClientLst);
 
     // remove last option (representing this interface) from the parser stack
     ParserOptStack.delLast();

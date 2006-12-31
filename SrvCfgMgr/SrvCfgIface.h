@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgIface.h,v 1.23 2006-12-31 11:46:09 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.24 2006-12-31 16:00:26 thomson Exp $
  *
  */
 
@@ -100,8 +100,9 @@ public:
     void setRelayName(string name);
     void setRelayID(int id);
 
-    // options
-
+    // per-client parameters (exceptions)
+    void addClientExceptionsLst(List(TSrvCfgOptions) exLst);
+    SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, bool quiet=true);
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
@@ -145,6 +146,9 @@ private:
     int revDNSZoneRootLength;
     unsigned int PrefixLength;
     bool FQDNSupport;
+
+    // --- per-client parameters (exceptions) ---
+    List(TSrvCfgOptions) ExceptionsLst;
 };
 
 #endif /* SRVCONFIFACE_H */
