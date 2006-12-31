@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgIface.h,v 1.22 2006-12-30 23:24:41 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.23 2006-12-31 11:46:09 thomson Exp $
  *
  */
 
@@ -22,9 +22,11 @@ class TSrvCfgIface;
 #include <iostream>
 #include <string>
 #include "SrvOptVendorSpec.h"
+#include "SrvCfgOptions.h"
+
 using namespace std;
 
-class TSrvCfgIface
+class TSrvCfgIface: public TSrvCfgOptions
 {
     friend ostream& operator<<(ostream& out,TSrvCfgIface& iface);
 public:
@@ -100,35 +102,6 @@ public:
 
     // options
 
-    // option: DNS Servers
-    List(TIPv6Addr) * getDNSServerLst();
-    void setDNSServerLst(List(TIPv6Addr) *lst);
-    bool supportDNSServer();
-
-    // option: Domain
-    List(string) * getDomainLst();
-    void setDomainLst(List(string) * domains);
-    bool supportDomain();
-
-    // option: NTP servers
-    List(TIPv6Addr) * getNTPServerLst();
-    void setNTPServerLst(List(TIPv6Addr) *lst);
-    bool supportNTPServer();
-
-    // option: Timezone
-    string getTimezone();
-    void setTimezone(string timeZone);
-    bool supportTimezone();
-
-    // option: SIP servers
-    List(TIPv6Addr) * getSIPServerLst();
-    void setSIPServerLst(List(TIPv6Addr) *addr);
-    bool supportSIPServer();
-
-    // option: SIP domains
-    List(string) * getSIPDomainLst();
-    void setSIPDomainLst(List(string) *domainlist);
-    bool supportSIPDomain();
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
@@ -142,35 +115,6 @@ public:
     void setFQDNMode(int FQDNMode);
     bool supportFQDN();
 
-    // option: NIS servers
-    List(TIPv6Addr) * getNISServerLst();
-    void setNISServerLst( List(TIPv6Addr) *nislist);
-    bool supportNISServer();
-
-    // option: NIS+ servers
-    List(TIPv6Addr) * getNISPServerLst();
-    void setNISPServerLst( List(TIPv6Addr) *nisplist);
-    bool supportNISPServer();
-
-    // option: NIS domain
-    string getNISDomain();
-    void setNISDomain(string domain);
-    bool supportNISDomain();
-
-    // option: NISP domain
-    string getNISPDomain();
-    void setNISPDomain(string domain);
-    bool supportNISPDomain();
-
-    // option: LIFETIME
-    void setLifetime(unsigned int life);
-    unsigned int getLifetime();
-    bool supportLifetime();
-
-    // option: VENDOR-SPEC
-    void setVendorSpec(List(TSrvOptVendorSpec) vendor);
-    bool supportVendorSpec();
-    SPtr<TSrvOptVendorSpec> getVendorSpec(int num=0);
 private:
     unsigned char preference;
     int	ID;
@@ -181,46 +125,26 @@ private:
     unsigned long ClntMaxLease;
     bool RapidCommit;	
     List(TSrvCfgAddrClass) SrvCfgAddrClassLst; // IA_NA list (normal addresses)
-    List(TSrvCfgTA) SrvCfgTALst; // IA_TA list (temporary addresses)
-    List(TSrvCfgPD) SrvCfgPDLst;
 
-    // relay
+    // --- Temporary Addresses ---
+    List(TSrvCfgTA) SrvCfgTALst; // IA_TA list (temporary addresses)
+
+    // --- Prefix Delegation ---
+    List(TSrvCfgPD) SrvCfgPDLst;
+    bool PrefixDelegationSupport;
+
+    // --- relay ---
     bool Relay;
     string RelayName;     // name of the underlaying physical interface (or other relay)
     int RelayID;          // ifindex
     int RelayInterfaceID; // value of interface-id option (optional)
 
-    // options
-    bool DNSServerSupport;
-    bool DomainSupport;
-    bool NTPServerSupport;
-    bool TimezoneSupport;
-    bool SIPServerSupport;
-    bool SIPDomainSupport;
-    bool FQDNSupport;
-    bool NISServerSupport;
-    bool NISDomainSupport;
-    bool NISPServerSupport;
-    bool NISPDomainSupport;
-    bool LifetimeSupport;
-    bool PrefixDelegationSupport;
-
-    List(TIPv6Addr) DNSServerLst;
-    List(string) DomainLst;
-    List(TIPv6Addr) NTPServerLst;
-    string Timezone;
-    List(TIPv6Addr) SIPServerLst;
-    List(string) SIPDomainLst;
+    // --- option: FQDN ---
     List(TFQDN) FQDNLst;
     int FQDNMode;
     int revDNSZoneRootLength;
-    List(TIPv6Addr) NISServerLst;
-    List(TIPv6Addr) NISPServerLst;
-    string NISDomain;
-    string NISPDomain;
-    unsigned int Lifetime;
     unsigned int PrefixLength;
-    List(TSrvOptVendorSpec) VendorSpec;
+    bool FQDNSupport;
 };
 
 #endif /* SRVCONFIFACE_H */

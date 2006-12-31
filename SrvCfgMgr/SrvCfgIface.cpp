@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.35 2006-12-30 23:24:41 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.36 2006-12-31 11:46:09 thomson Exp $
  */
 
 #include <sstream>
@@ -79,6 +79,10 @@ bool TSrvCfgIface::getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Add
 
 void TSrvCfgIface::firstPD() {
     this->SrvCfgPDLst.first();
+}
+
+bool TSrvCfgIface::supportPrefixDelegation() {
+    return this->PrefixDelegationSupport;
 }
 
 /*
@@ -433,19 +437,8 @@ void TSrvCfgIface::setDefaults() {
     this->ID = -1;
     this->NoConfig = false;
     this->preference = 0;
-    
-    this->DNSServerSupport        = false;
-    this->DomainSupport           = false;
-    this->NTPServerSupport        = false;
-    this->TimezoneSupport         = false;
+   
     this->FQDNSupport             = false;
-    this->SIPServerSupport        = false;
-    this->SIPDomainSupport        = false;
-    this->NISServerSupport        = false;
-    this->NISDomainSupport        = false;
-    this->NISPServerSupport       = false;
-    this->NISPDomainSupport       = false;
-    this->LifetimeSupport         = false;
     this->PrefixDelegationSupport = false;
 }
 
@@ -506,84 +499,7 @@ void TSrvCfgIface::setRelayID(int id) {
     this->RelayID = id;
 }
 
-
-// --------------------------------------------------------------------
-// --- options --------------------------------------------------------
-// --------------------------------------------------------------------
-// --- option: DNS servers ---
-void TSrvCfgIface::setDNSServerLst(List(TIPv6Addr) *lst) {
-    this->DNSServerLst = *lst;
-    this->DNSServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgIface::getDNSServerLst() {
-    return &this->DNSServerLst;
-}
-bool TSrvCfgIface::supportDNSServer(){
-    return this->DNSServerSupport;
-}
-
-// --- option: DOMAIN ---
-void TSrvCfgIface::setDomainLst(List(string) * lst) {
-    this->DomainLst = *lst;
-    this->DomainSupport = true;
-}
-List(string) * TSrvCfgIface::getDomainLst() {
-    return &this->DomainLst;
-}
-bool TSrvCfgIface::supportDomain(){
-    return this->DomainSupport;
-}
-
-// --- option: NTP-SERVERS ---
-void TSrvCfgIface::setNTPServerLst(List(TIPv6Addr) * lst) {
-    this->NTPServerLst = *lst;
-    this->NTPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgIface::getNTPServerLst() {
-    return &this->NTPServerLst;
-}
-bool TSrvCfgIface::supportNTPServer(){
-    return this->NTPServerSupport;
-}
-
-// --- option: TIMEZONE ---
-void TSrvCfgIface::setTimezone(string timezone) {
-    this->Timezone=timezone;
-    this->TimezoneSupport = true;
-}
-string TSrvCfgIface::getTimezone() {
-    return this->Timezone;
-}
-bool TSrvCfgIface::supportTimezone(){
-    return this->NTPServerSupport;
-}
-
-// --- option: SIP server ---
-void TSrvCfgIface::setSIPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
-    this->SIPServerLst = *lst;
-    this->SIPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgIface::getSIPServerLst() {
-    return &this->SIPServerLst;
-}
-bool TSrvCfgIface::supportSIPServer(){
-    return this->SIPServerSupport;
-}
-
-// --- option: SIP domain ---
-List(string) * TSrvCfgIface::getSIPDomainLst() { 
-    return &this->SIPDomainLst;
-}
-void TSrvCfgIface::setSIPDomainLst(List(string) * domain) { 
-    this->SIPDomainLst = *domain;
-    this->SIPDomainSupport = true;
-}
-bool TSrvCfgIface::supportSIPDomain() {
-    return this->SIPDomainSupport;
-}
-
 // --- option: FQDN ---
-
 void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
     this->FQDNLst = *fqdn;
     this->FQDNSupport = true;
@@ -675,101 +591,6 @@ string TSrvCfgIface::getFQDNModeString() {
     }
 }
 
-// --- option: NIS server ---
-void TSrvCfgIface::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
-    this->NISServerLst     = *lst;
-    this->NISServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgIface::getNISServerLst() {
-    return &this->NISServerLst;
-}
-bool TSrvCfgIface::supportNISServer(){
-    return this->NISServerSupport;
-}
-
-// --- option: NIS domain ---
-void TSrvCfgIface::setNISDomain(string domain) { 
-    this->NISDomain=domain;
-    this->NISDomainSupport=true;
-}
-string TSrvCfgIface::getNISDomain() { 
-    return this->NISDomain;
-}
-bool TSrvCfgIface::supportNISDomain() {
-    return this->NISDomainSupport;
-}
-
-// --- option: NIS+ server ---
-void TSrvCfgIface::setNISPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
-    this->NISPServerLst = *lst;
-    this->NISPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgIface::getNISPServerLst() {
-    return &this->NISPServerLst;
-}
-bool TSrvCfgIface::supportNISPServer(){
-    return this->NISPServerSupport;
-}
-
-// --- option: NIS+ domain ---
-void TSrvCfgIface::setNISPDomain(string domain) { 
-    this->NISPDomain=domain;
-    this->NISPDomainSupport=true;
-}
-string TSrvCfgIface::getNISPDomain() { 
-    return this->NISPDomain;
-}
-bool TSrvCfgIface::supportNISPDomain() {
-    return this->NISPDomainSupport;
-}
-
-// --- option: LIFETIME ---
-void TSrvCfgIface::setLifetime(unsigned int x) {
-    this->Lifetime = x;
-    this->LifetimeSupport = true;
-}
-unsigned int TSrvCfgIface::getLifetime() {
-    return this->Lifetime;
-}
-
-bool TSrvCfgIface::supportLifetime() {
-    return this->LifetimeSupport;
-}
-
-bool TSrvCfgIface::supportPrefixDelegation() {
-    return this->PrefixDelegationSupport;
-}
-
-bool TSrvCfgIface::supportVendorSpec() {
-    if (this->VendorSpec.count())
-	return true;
-    return false;
-}
-
-SPtr<TSrvOptVendorSpec> TSrvCfgIface::getVendorSpec(int vendor) {
-    SPtr<TSrvOptVendorSpec> x = 0;
-    if (!VendorSpec.count())
-	return 0;
-    
-    // enterprise number not specified => return first one
-    VendorSpec.first();
-    if (vendor==0)
-	return VendorSpec.get();
-
-    // search for requested enterprise number
-    while (x=VendorSpec.get()) {
-	if (x->getVendor()==vendor)
-	    return x;
-    }
-
-    // enterprise number not found, return first one
-    VendorSpec.first();
-    return VendorSpec.get();
-}
-
-void TSrvCfgIface::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
-    this->VendorSpec = vendor;
-}
 
 void TSrvCfgIface::addTAAddr() {
     SmartPtr<TSrvCfgTA> ta;
