@@ -232,11 +232,6 @@ TClntOptIA_PD::~TClntOptIA_PD()
 
 }
 
-//I don't know whether this method should be invoked everywhere
-//i.e. from Verify\Renew\Rebind
-//it's worth to check whether futher reactions in every message will 
-//be the same e.g. detection of duplicate address, lack of enough
-//addresses
 bool TClntOptIA_PD::doDuties()
 {
     SmartPtr<TClntOptIAPrefix> prefix;
@@ -247,15 +242,17 @@ bool TClntOptIA_PD::doDuties()
 	Log(Info) << "PD: Received prefix: " << prefix->getPrefix()->getPlain() << "/" << this->Prefix << LogEnd;
 	AddrMgr->addPrefix(CfgMgr->getDUID(), this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
 			   prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), true);
-
+	
 	int status = prefix_add(cfgIface->getName().c_str(), this->Iface, prefix->getPrefix()->getPlain(), prefix->getPrefixLength());
 	if (status<0) {
-	    // FIXME: Implement banine checks
+	    string tmp = error_message();
+	    Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
+	    cfgIface->setPrefixDelegationState(FAILED);
+	    return true;
 	}
     }
 
     cfgIface->setPrefixDelegationState(CONFIGURED);
-
     return true;
 } 
 
@@ -269,7 +266,7 @@ SmartPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SmartPtr<TIPv6Addr> prefix)
         if ((*prefix)==(*optPrefix->getPrefix()))
             return optPrefix;
     }
-    return SmartPtr<TClntOptIAPrefix>();
+    return 0;
 }
 
 void TClntOptIA_PD::releasePrefix(long IAID, SmartPtr<TIPv6Addr> prefix )

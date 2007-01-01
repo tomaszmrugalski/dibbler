@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-OBJECTS = layer3.o libnetlink.o ll_map.o ll_types.o utils.o lowlevel-options-linux.o daemon.o
+OBJECTS = lowlevel-linux.o libnetlink.o ll_map.o ll_types.o utils.o lowlevel-options-linux.o daemon.o iproute.o
 
 objs: $(OBJECTS)
 
@@ -10,13 +10,13 @@ libs: objs libLowLevel.a
 # ============================================================
 # === C low level stuff ======================================
 # ============================================================
-layer3.o: layer3.c 
+lowlevel-linux.o: lowlevel-linux.c 
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -I. -c layer3.c 
+	$(CC) $(COPTS) -I. -c lowlevel-linux.c 
 
 libnetlink.o: libnetlink.c
-	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c libnetlink.c
+	@echo "[CC     ] $(SUBDIR)/$@ (warnings)"
+	$(CC) $(COPTS) -c libnetlink.c 2> libnetlink.c-warnings
 
 ll_map.o: ll_map.c 
 	@echo "[CC     ] $(SUBDIR)/$@"
@@ -27,12 +27,16 @@ ll_types.o: ll_types.c
 	$(CC) $(COPTS) -c ll_types.c
 
 utils.o: utils.c
-	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c utils.c
+	@echo "[CC     ] $(SUBDIR)/$@ (warnings)"
+	$(CC) $(COPTS) -c utils.c 2> utils.c-warnings
 
 lowlevel-options-linux.o: lowlevel-options-linux.c	
 	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(COPTS) -c $<
+
+iproute.o: iproute.c
+	@echo "[CC     ] $(SUBDIR)/$@ (warnings)"
+	$(CC) $(COPTS) -c iproute.c 2> iproute.c-warnings
 
 # ============================================================
 # === tests ==================================================
@@ -40,8 +44,8 @@ lowlevel-options-linux.o: lowlevel-options-linux.c
 
 test: test1 test2
 
-test1: test1.cpp dns.c
-	$(CXX) $(OPTS) test1.cpp dns.c -o test1
+test1: test1.cpp ../Misc/addrpack.o libLowLevel.a
+	$(CXX) $(OPTS) test1.cpp ../Misc/addrpack.o libLowLevel.a -o test1
 
 test2: test2.cpp libLowLevel.a
 	cd $(SRVCFGMGR); $(MAKE) libs

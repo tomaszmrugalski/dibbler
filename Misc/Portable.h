@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.70 2006-12-09 09:50:23 thomson Exp $
+ * $Id: Portable.h,v 1.71 2007-01-01 23:51:16 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -158,6 +158,7 @@ struct iface {
 #define LOWLEVEL_ERROR_SOCK_OPTS        -8
 #define LOWLEVEL_ERROR_REUSE_FAILED     -9
 #define LOWLEVEL_ERROR_FILE             -10
+#define LOWLEVEL_ERROR_SOCKET           -11
 
 /* ********************************************************************** */
 /* *** time related functions ******************************************* */
@@ -179,6 +180,9 @@ struct iface {
 #ifdef __cplusplus 
 extern "C" {
 #endif
+
+    int lowlevelInit();
+    int lowlevelExit();
     
     extern struct iface * if_list_get();
     extern void if_list_release(struct iface * list);
@@ -233,6 +237,7 @@ extern "C" {
     extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
     extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
 
+    extern int prefix_forwarding_enabled();
     extern int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
     extern int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
     

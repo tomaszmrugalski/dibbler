@@ -1,13 +1,17 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
- *                                                                           
- * released under GNU GPL v2 or later licence                                
- *                                                                           
- * $Id: layer3.c,v 1.30 2006-12-28 22:45:00 thomson Exp $
+ * 
+ * This file is a based on the ip/ipaddress.c file from iproute2
+ * ipaddress.c authors (note: those folks are not involved in Dibbler development):
+ * Authors: Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+ * Changes: Laszlo Valko <valko@linux.karinthy.hu>
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: lowlevel-linux.c,v 1.1 2007-01-01 23:51:16 thomson Exp $
  *
  */
 
@@ -38,7 +42,23 @@
 #define LOWLEVEL_DEBUG 1
 */
 
+struct rtnl_handle rth;
 char Message[1024] = {0};
+
+int lowlevelInit()
+{
+    if (rtnl_open(&rth, 0) < 0) {
+	sprintf(Message, "Cannot open rtnetlink\n");
+	return LOWLEVEL_ERROR_SOCKET;
+    }
+    return 0;
+}
+
+int lowlevelExit()
+{
+    rtnl_close(&rth);
+    return 0;
+}
 
 struct nlmsg_list
 {
@@ -54,7 +74,7 @@ void ipaddr_global_get(int *count, char **buf, int ifindex, struct nlmsg_list *a
 void print_link_flags( unsigned flags);
 int default_scope(inet_prefix *lcl);
 
-int store_nlmsg(struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
+int store_nlmsg(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 {
     struct nlmsg_list **linfo = (struct nlmsg_list**)arg;
     struct nlmsg_list *h;
@@ -563,3 +583,28 @@ char * error_message()
 {
     return Message;
 }
+
+
+/* iproute.c dummy link section */
+int show_stats = 0; /* to disable iproute.c messages */
+int preferred_family = AF_INET6;
+char* rtnl_rtntype_n2a(int id, char *buf, int len) { return 0;}
+char* rtnl_dsfield_n2a(int id, char *buf, int len) { return 0;}
+char* rtnl_rttable_n2a(int id, char *buf, int len) { return 0;}
+char* rtnl_rtprot_n2a(int id, char *buf, int len)  { return 0;}
+char* rtnl_rtscope_n2a(int id, char *buf, int len) { return 0;}
+char* rtnl_rtrealm_n2a(int id, char *buf, int len) { return 0;}
+
+int rtnl_rtprot_a2n(__u32 *id, char *arg)  { return 0; }
+int rtnl_rtscope_a2n(__u32 *id, char *arg) { return 0; }
+int rtnl_rttable_a2n(__u32 *id, char *arg) { return 0; }
+int rtnl_rtrealm_a2n(__u32 *id, char *arg) { return 0; }
+int rtnl_dsfield_a2n(__u32 *id, char *arg) { return 0; }
+int rtnl_rtntype_a2n(int *id, char *arg)   { return 0; }
+int get_rt_realms(__u32 *realms, char *arg){ return 0; }
+int default_scope(inet_prefix *lcl)        { return 0; }
+char * _SL_; 
+
+int dnet_pton(int af, const char *src, void *addr) { return 0; }
+const char *dnet_ntop(int af, const void *addr, char *str, size_t len){ return 0; }
+const char *ipx_ntop(int af, const void *addr, char *str, size_t len) { return 0; }
