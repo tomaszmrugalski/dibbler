@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.28 2006-12-25 20:47:00 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.29 2007-01-02 01:39:18 thomson Exp $
  */
 
 #include "Portable.h"
@@ -160,15 +160,16 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
         SmartPtr<TIfaceIface> iface = new TClntIfaceIface(ptr->name,ptr->id,
-							ptr->flags,
-							ptr->mac,
-							ptr->maclen,
-							ptr->linkaddr,
-							ptr->linkaddrcount,
-							ptr->globaladdr,
-							ptr->globaladdrcount,
-							ptr->hardwareType);
-        this->IfaceLst.append((Ptr*) iface);
+							  ptr->flags,
+							  ptr->mac,
+							  ptr->maclen,
+							  ptr->linkaddr,
+							  ptr->linkaddrcount,
+							  ptr->globaladdr,
+							  ptr->globaladdrcount,
+							  ptr->hardwareType);
+        this->IfaceLst.append(iface);
+	
         ptr = ptr->next;
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
@@ -187,10 +188,17 @@ void TClntIfaceMgr::setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
 }
 
 TClntIfaceMgr::~TClntIfaceMgr() {
-    SPtr<TIfaceIface> ptr;
+
+    /* that is an ugly workaround for SmartPtr() deficiency. IfaceLst contains pointers
+       to the TIfaceIface objects. When TClntIfaceIface object is stored, and then deleted
+       it is being destroyed in a wrong way, i.e. treated as IfaceIface objects, so only
+       ~TIfaceIface() will be called, and not ~TClntIfaceIface() and then ~TIfaceIface(). */
+    SPtr<TClntIfaceIface> ptr;
     IfaceLst.first();
-    while (ptr = IfaceLst.get()) {
-	// Log(Debug) << "#### Iface: " << ptr->getFullName() << " refcnt=" << ptr.refCount() << LogEnd;
+    while (ptr = (Ptr*)IfaceLst.get()) {
+	IfaceLst.del();
+	IfaceLst.first();
+	// last SmartPtr() pointing to an object is of proper type
     }
     this->IfaceLst.clear();
     Log(Debug) << "ClntIfaceMgr cleanup." << LogEnd;

@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.1 2007-01-01 23:51:16 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.2 2007-01-02 01:39:18 thomson Exp $
  *
  */
 
@@ -109,6 +109,8 @@ void if_list_release(struct iface * list) {
         tmp = list->next;
 	if (list->linkaddrcount)
 	    free(list->linkaddr);
+	if (list->globaladdrcount)
+	    free(list->globaladdr);
         free(list);
         list = tmp;
     }
