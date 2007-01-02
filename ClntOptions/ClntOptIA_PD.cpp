@@ -15,6 +15,7 @@
 #include "ClntIfaceMgr.h"
 #include "Logger.h"
 #include "Portable.h"
+#include "DHCPConst.h"
 
 /** 
  * 
@@ -234,25 +235,10 @@ TClntOptIA_PD::~TClntOptIA_PD()
 
 bool TClntOptIA_PD::doDuties()
 {
-    SmartPtr<TClntOptIAPrefix> prefix;
-    this->firstPrefix();
-    SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
-
-    while (prefix = this->getPrefix()) {
-	Log(Info) << "PD: Received prefix: " << prefix->getPrefix()->getPlain() << "/" << this->Prefix << LogEnd;
-	AddrMgr->addPrefix(CfgMgr->getDUID(), this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
-			   prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), true);
-	
-	int status = prefix_add(cfgIface->getName().c_str(), this->Iface, prefix->getPrefix()->getPlain(), prefix->getPrefixLength());
-	if (status<0) {
-	    string tmp = error_message();
-	    Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
-	    cfgIface->setPrefixDelegationState(FAILED);
-	    return true;
-	}
-    }
-
-    cfgIface->setPrefixDelegationState(CONFIGURED);
+    if (Parent->getType()==REQUEST_MSG)
+	return addPrefixes();
+    if (Parent->getType()==RELEASE_MSG)
+	return delPrefixes();
     return true;
 } 
 
@@ -269,14 +255,50 @@ SmartPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SmartPtr<TIPv6Addr> prefix)
     return 0;
 }
 
-void TClntOptIA_PD::releasePrefix(long IAID, SmartPtr<TIPv6Addr> prefix )
+bool TClntOptIA_PD::addPrefixes()
 {
-    /*SmartPtr<TAddrIA> ptrPD = AddrMgr->getPD(IAID);
-    if (ptrPD)
-        ptrPD->delPrefix(prefix);
-    else
-	Log(Warning) << "Unable to release addr: IA (" 
-		     << IAID << ") not present in addrDB." << LogEnd;*/
+    SmartPtr<TClntOptIAPrefix> prefix;
+    this->firstPrefix();
+    SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
+    
+    while (prefix = this->getPrefix()) {
+	Log(Info) << "PD: Received prefix: " << prefix->getPrefix()->getPlain() << "/" << this->Prefix << LogEnd;
+	AddrMgr->addPrefix(CfgMgr->getDUID(), this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
+			   prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
+	
+	int status = prefix_add(cfgIface->getName().c_str(), this->Iface, prefix->getPrefix()->getPlain(), prefix->getPrefixLength());
+	if (status<0) {
+	    string tmp = error_message();
+	    Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
+	    cfgIface->setPrefixDelegationState(FAILED);
+	    return true;
+	}
+    }
+    
+    cfgIface->setPrefixDelegationState(CONFIGURED);
+    return true;
+}
+
+bool TClntOptIA_PD::delPrefixes()
+{
+    SmartPtr<TClntOptIAPrefix> prefix;
+    this->firstPrefix();
+    SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
+
+    while (prefix = this->getPrefix()) {
+	Log(Info) << "PD: Deleting prefix: " << prefix->getPrefix()->getPlain() << "/" << this->Prefix << LogEnd;
+	AddrMgr->delPrefix(CfgMgr->getDUID(), this->IAID, prefix->getPrefix(), false);
+	
+	int status = prefix_del(cfgIface->getName().c_str(), this->Iface, prefix->getPrefix()->getPlain(), prefix->getPrefixLength());
+	if (status<0) {
+	    string tmp = error_message();
+	    Log(Error) << "Prefix error encountered during delete operation: " << tmp << LogEnd;
+	    cfgIface->setPrefixDelegationState(FAILED);
+	    return true;
+	}
+    }
+    cfgIface->setPrefixDelegationState(DISABLED);
+    return true;
 }
 
 void TClntOptIA_PD::setIface(int iface) {

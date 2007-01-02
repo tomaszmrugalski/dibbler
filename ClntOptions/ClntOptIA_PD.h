@@ -47,7 +47,8 @@ class TClntOptIA_PD : public TOptIA_PD
     bool isValid();
 
  private:
-    void releasePrefix(long IAID, SmartPtr<TIPv6Addr> prefix );
+    bool addPrefixes();
+    bool delPrefixes();
 
     SmartPtr<TIPv6Addr> Prefix;
     bool Unicast;

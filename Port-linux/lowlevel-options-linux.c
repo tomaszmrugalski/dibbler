@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.6 2007-01-01 23:51:16 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.7 2007-01-02 00:04:39 thomson Exp $
  *
  */
 
@@ -79,7 +79,6 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     int found = 0;
     unsigned char c;
     struct stat st;
-    int i;
 
     memset(&st,0,sizeof(st));
     stat(RESOLVCONF_FILE, &st);
