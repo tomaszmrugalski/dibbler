@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.3 2006-12-04 23:37:53 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.4 2007-01-02 22:24:52 thomson Exp $
  *
  */
 
@@ -94,8 +94,17 @@ bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
         this->AcceptClnt.append(PD_Range);
 	*/
 
-    this->PD_Count = DHCPV6_INFINITY;
+    opt->firstPool();
     SPtr<TStationRange> pool = 0;
+    if (!(pool=opt->getPool())) {
+	Log(Error) << "Unable to find any prefix pools. Please define at least one using 'pd-pool' keyword." << LogEnd;
+	return false;
+    }
+    this->PD_Count = prefixLength - pool->getPrefixLength();
+    if (this->PD_Count > 31)
+	this->PD_Count = DHCPV6_INFINITY;
+    this->PD_Count = 2 << (this->PD_Count-1);
+
     opt->firstPool();
     while ( pool = opt->getPool() ) {
 	poolLength = pool->getPrefixLength();
@@ -106,11 +115,6 @@ bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 	if (this->PD_Count > pool->rangeCount())
 	    this->PD_Count = pool->rangeCount();
 	cnt++;
-    }
-
-    if (!cnt) {
-	Log(Error) << "Unable to find any prefix pools. Please define at least one using 'pd-pool' keyword." << LogEnd;
-	return false;
     }
 
     // calculate common section
