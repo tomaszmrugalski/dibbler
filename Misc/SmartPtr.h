@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: SmartPtr.h,v 1.6 2006-12-25 20:47:01 thomson Exp $
+ * $Id: SmartPtr.h,v 1.7 2007-01-02 01:39:01 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006-12-25 20:47:01  thomson
+ * Some memory leaks fixes, valgrind info added.
+ *
  * Revision 1.5  2006-07-03 18:01:51  thomson
  * SPtr define added.
  *
@@ -33,22 +36,22 @@
 
 class Ptr {
 public:
-	//constructor used in case of NULL SmartPtr
-	Ptr() {
-		ptr=NULL;
-		refcount=1;
-	}
-	//Constructor used in case of non NULL SmartPtr
-	Ptr(void* sth) {
-	    ptr=sth;
-	    refcount=1;
-	}
-
-	~Ptr() {
-	    //if(ptr) delete ptr;
-	}
-	int refcount; //refrence counter
-	void * ptr;	  //pointer to the real object
+    //constructor used in case of NULL SmartPtr
+    Ptr() {
+	ptr=NULL;
+	refcount=1;
+    }
+    //Constructor used in case of non NULL SmartPtr
+    Ptr(void* sth) {
+	ptr=sth;
+	refcount=1;
+    }
+    
+    ~Ptr() {
+	//if(ptr) delete ptr;
+    }
+    int refcount; //refrence counter
+    void * ptr;	  //pointer to the real object
 };
 
 template <class T>
@@ -76,15 +79,13 @@ public:
 	SmartPtr(int onlyNull);
 	SmartPtr& operator=(const SmartPtr& old);
 
-	operator Ptr*() {if (this->ptr->ptr) 
-						return this->ptr;
-					else
-						return (Ptr*)NULL;
-					}
-	//operator int() {return ptr->ptr?1:NULL;};
+	operator Ptr*() {
+	    if (this->ptr->ptr) 
+		return this->ptr;
+	    else
+		return (Ptr*)NULL;
+	}
 
-    //bool operator==(SmartPtr& right);
-    //SmartPtr& operator=(const SmartPtr& old);
     int refCount();
     ~SmartPtr();
     T& operator*() const;
