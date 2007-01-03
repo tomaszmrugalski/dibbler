@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.2 2007-01-02 01:39:18 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.3 2007-01-03 01:26:18 thomson Exp $
  *
  */
 
@@ -41,6 +41,10 @@
 /*
 #define LOWLEVEL_DEBUG 1
 */
+
+#ifndef IPV6_RECVPKTINFO
+#define IPV6_RECVPKTINFO IPV6_PKTINFO
+#endif
 
 struct rtnl_handle rth;
 char Message[1024] = {0};
@@ -375,11 +379,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     }	
 	
     /* Set the options  to receivce ipv6 traffic */
-#ifdef IPV6_RECVPKTINFO
     if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof(on)) < 0) {
-#else
-    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof(on)) < 0) {
-#endif
 	sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
 	return LOWLEVEL_ERROR_SOCK_OPTS;
     }

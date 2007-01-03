@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.7 2007-01-02 00:04:39 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.8 2007-01-03 01:26:18 thomson Exp $
  *
  */
 
@@ -250,7 +250,8 @@ int prefix_forwarding_enabled()
  * 
  * @return 
  */
-int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength) 
+int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+	       unsigned long prefered, unsigned long valid)
 {
     char *argv[3];
     int result;
@@ -299,6 +300,14 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     return 0;
 }
 
+int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+		  unsigned long prefered, unsigned long valid)
+{
+    /* update is not supported in Linux */
+    return 0;
+}
+
+
 int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength) {
 
     int result;
@@ -329,7 +338,6 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
 	    continue;
 	}
 
-	printf("[%s]", buf);
 	if (!found)
 	    fprintf(f2,"%s",buf);
     }

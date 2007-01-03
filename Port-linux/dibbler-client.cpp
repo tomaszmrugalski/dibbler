@@ -6,17 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-client.cpp,v 1.18 2005-10-11 20:52:47 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.17  2005/07/31 14:39:40  thomson
- * Minor changes related to 0.4.1 release.
- *
- * Revision 1.16  2005/02/03 22:50:36  thomson
- * *** empty log message ***
- *
- * Revision 1.15  2005/02/03 22:06:40  thomson
- * Linux startup/pid checking changed.
+ * $Id: dibbler-client.cpp,v 1.19 2007-01-03 01:26:18 thomson Exp $
  *
  */
 
@@ -64,6 +54,11 @@ int run() {
 	return -1;
     }
 
+    if (lowlevelInit()<0) {
+	cout << "Lowlevel init failed:" << error_message() << endl;
+	return -1;
+    }
+
     TDHCPClient client(CLNTCONF_FILE);
     ptr = &client;
 
@@ -73,7 +68,10 @@ int run() {
 
     ptr->run();
 
+    lowlevelExit();
+
     die(CLNTPID_FILE);
+
     return 0;
 }
 
