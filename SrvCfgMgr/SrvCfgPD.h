@@ -5,7 +5,7 @@
  *                              
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgPD.h,v 1.2 2006-12-04 23:37:53 thomson Exp $
+ * $Id: SrvCfgPD.h,v 1.3 2007-01-03 01:25:32 thomson Exp $
  *
  */
 
@@ -85,7 +85,6 @@ class TSrvCfgPD
     unsigned long PD_T1End;
     unsigned long PD_T2End;
     unsigned long PD_Length;     // (shorter) prefix, assigned to the user, e.g. 64
-    //unsigned long PD_PoolLength; // (longer) pool length, e.g. 48
     unsigned long PD_PrefBeg;
     unsigned long PD_PrefEnd;
     unsigned long PD_ValidBeg;

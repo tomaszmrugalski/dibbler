@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.4 2007-01-02 22:24:52 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.5 2007-01-03 01:25:32 thomson Exp $
  *
  */
 
@@ -187,8 +187,6 @@ List(TIPv6Addr) TSrvCfgPD::getRandomList() {
     PoolLst.first();
     while (range = PoolLst.get()) {
 	tmp = range->getAddrL();
-        //Log(Debug) << " #### prefix=" << tmp->getPlain() << ", host=" << commonPart->getPlain() << ", prefixLength=" 
-        //           << this->CommonPool->getPrefixLength() << LogEnd;
 	lst.append( new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(), this->CommonPool->getPrefixLength()) );
 	
     }
