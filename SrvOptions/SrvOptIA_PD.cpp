@@ -156,10 +156,10 @@ TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     
     // include status code
     SmartPtr<TSrvOptStatusCode> ptrStatus;
-    if (status) {
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-					  "1 prefix granted. Next time you might consider including "
-					  "IAPREFIX in IA_PD option.", this->Parent);
+    if (status==STATUSCODE_SUCCESS) {
+	ostringstream tmp;
+	tmp << countPrefixes() << " prefix(es) granted.";
+	ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS, tmp.str(),  this->Parent);
     } else {
 	ptrStatus = new TSrvOptStatusCode(status,
 					  "Unable to provide any prefixes. Sorry.", this->Parent);
