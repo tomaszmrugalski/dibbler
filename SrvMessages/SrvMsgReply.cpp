@@ -446,7 +446,6 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	}
 
 	case OPTION_IA_PD: {
-	    Log(Debug) << "#### Trying to release PD." << LogEnd;
 	    SmartPtr<TSrvOptIA_PD> pd = (Ptr*) opt;
 	    SmartPtr<TSrvOptIAPrefix> prefix;
 	    bool anyDeleted=false;
