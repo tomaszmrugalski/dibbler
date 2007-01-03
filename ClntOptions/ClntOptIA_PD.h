@@ -23,10 +23,9 @@ class TClntOptIA_PD : public TOptIA_PD
 {
  public:
     TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent);
-    TClntOptIA_PD(SmartPtr<TAddrIA> AddrPD, TMsg* parent);
-    TClntOptIA_PD(SmartPtr<TAddrIA> clntAddrPD, bool zeroTimes, TMsg* parent);
+    TClntOptIA_PD(SmartPtr<TAddrIA> clntAddrPD, TMsg* parent);
     TClntOptIA_PD(char * buf, int bufsize, TMsg* parent);
-    ~TClntOptIA_PD();    
+    ~TClntOptIA_PD();
 
     bool doDuties();
     int getStatusCode();
@@ -34,7 +33,7 @@ class TClntOptIA_PD : public TOptIA_PD
 		  SmartPtr<TClntTransMgr> transMgr, 
 		  SmartPtr<TClntCfgMgr>   cfgMgr, 
 		  SmartPtr<TClntAddrMgr>  addrMgr,
-		  SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface);
+		  SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
     void setIface(int iface);
 
     SmartPtr<TClntOptIAPrefix> getPrefix();
@@ -46,9 +45,9 @@ class TClntOptIA_PD : public TOptIA_PD
 		  TMsg* parent);
     bool isValid();
 
- private:
     bool addPrefixes();
     bool delPrefixes();
+ private:
 
     SmartPtr<TIPv6Addr> Prefix;
     bool Unicast;
@@ -60,6 +59,7 @@ class TClntOptIA_PD : public TOptIA_PD
     SmartPtr<TClntTransMgr> TransMgr;
     SmartPtr<TClntCfgMgr>   CfgMgr;
     SmartPtr<TClntAddrMgr>  AddrMgr;
+    TMsg * OriginalMsg;
 };
 
 #endif /* CLNTOPTIA_PD_H */

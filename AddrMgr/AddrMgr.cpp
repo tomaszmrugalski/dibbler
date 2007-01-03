@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.23 2006-12-04 23:36:26 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.24 2007-01-03 01:27:01 thomson Exp $
  *
  */
 
@@ -246,8 +246,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
 			    unsigned long IAID, SmartPtr<TIPv6Addr> prefix,
 			    bool quiet) {
 
-    Log(Debug) << "PD: Trying to delete PD: duid=" << clntDuid->getPlain() << ", PDID=" << IAID << ", prefix=" 
-	       << prefix->getPlain() << LogEnd;
+    Log(Debug) << "PD: Deleting prefix " << prefix->getPlain() << ", DUID=" << clntDuid->getPlain() << ", PDID=" << IAID << LogEnd;
     // find this client
     SmartPtr <TAddrClient> ptrClient;
     this->firstClient();

@@ -6,7 +6,7 @@
  * chanmges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.10 2006-11-17 00:51:25 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.11 2007-01-03 01:27:02 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -37,8 +37,9 @@
  * @param AddrMgr 
  * @param iface 
  * @param addr 
- * @param iaLst - TAddrIA list, which are served by on server on one link
- * @param ta 
+ * @param iaLst - IA_NA list, which are served by on server on one link
+ * @param ta    - IA_TA to be released
+ * @param pdLst - IA_PD list to be released
  */
 TClntMsgRelease::TClntMsgRelease(
 	SmartPtr<TClntIfaceMgr> IfaceMgr, 
@@ -51,38 +52,48 @@ TClntMsgRelease::TClntMsgRelease(
 	List(TAddrIA) pdLst)
 	:TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface, addr, RELEASE_MSG)
 {
+    SPtr<TDUID> srvDUID;
+    
     IRT=REL_TIMEOUT;
     MRT=0;
     MRC=REL_MAX_RC;
     MRD=0;
     RT=0;
 
-    SmartPtr<TAddrIA> ia = 0;
+    // obtain IA, TA or PD, so server DUID can be obtained
+    SmartPtr<TAddrIA> x = 0;
     if (iaLst.count()) {
 	iaLst.first();
-	ia=iaLst.get();
+	x=iaLst.get();
     }
-    if (!ia)
-	ia = ta;
-    if (!ia) {
+    if (!x)
+	x = ta;
+    if (!x) {
+	pdLst.first();
+	x = pdLst.get();
+    }
+    if (!x) {
 	Log(Error) << "Unable to send RELEASE. No IA and no TA provided." << LogEnd;
 	this->IsDone = true;
 	return;
     }
-    if (!ia->getDUID()) {
+    if (!x->getDUID()) {
 	Log(Error) << "Unable to send RELEASE. Unable to find DUID. " << LogEnd;
     }
+    srvDUID = x->getDUID();
 
-    Options.append(new TClntOptServerIdentifier( ia->getDUID(),this));
+    Options.append(new TClntOptServerIdentifier( srvDUID,this));
     Options.append(new TClntOptClientIdentifier( CfgMgr->getDUID(),this));
+
+    // --- RELEASE IA ---
     iaLst.first();
-    while(ia=iaLst.get()) {
-        Options.append(new TClntOptIA_NA(ia,this));
+    while(x=iaLst.get()) {
+        Options.append(new TClntOptIA_NA(x,this));
 	SmartPtr<TAddrAddr> ptrAddr;
 	SmartPtr<TClntIfaceIface> ptrIface;
-	ptrIface = (Ptr*)IfaceMgr->getIfaceByID(ia->getIface());
-	ia->firstAddr();
-	while (ptrAddr = ia->getAddr()) {
+	ptrIface = (Ptr*)IfaceMgr->getIfaceByID(x->getIface());
+	x->firstAddr();
+	while (ptrAddr = x->getAddr()) {
 	    ptrIface->delAddr(ptrAddr->get());
 	    Log(Notice)<< ptrAddr->get()->getPlain() 
 		       << " address released from " << ptrIface->getName() << "/" 
@@ -90,24 +101,29 @@ TClntMsgRelease::TClntMsgRelease(
 	}
 
 	// --- DNS Update ---
-	SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
+	SPtr<TIPv6Addr> dns = x->getFQDNDnsServer();
 	if (dns) {
 	    string fqdn = ptrIface->getFQDN();
-	    IfaceMgr->fqdnDel(ptrIface, ia, fqdn);
+	    IfaceMgr->fqdnDel(ptrIface, x, fqdn);
 	}
 	// --- DNS Update ---
     }
     
+    // --- RELEASE TA ---
     if (ta)
 	Options.append(new TClntOptTA(ta, this));
 
-    // prefix delegation release
+    // --- RELEASE PD ---
 
     SmartPtr<TAddrIA> pd = 0;
     
     pdLst.first();
     while(pd=pdLst.get()) {
-        Options.append(new TClntOptIA_PD(pd,this));
+	SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
+        Options.append( (Ptr*)pdOpt);
+	pdOpt->setThats(IfaceMgr, TransMgr, CfgMgr, AddrMgr, srvDUID, addr, this);
+	pdOpt->delPrefixes();
+
 	AddrMgr->delPD(pd->getIAID() );
     }
 

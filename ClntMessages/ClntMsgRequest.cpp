@@ -8,43 +8,8 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.14 2006-11-17 00:51:25 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.15 2007-01-03 01:27:02 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.13  2006-10-06 00:43:28  thomson
- * Initial PD support.
- *
- * Revision 1.12  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.11  2004/11/30 00:55:58  thomson
- * Not improtant log message commented out.
- *
- * Revision 1.10  2004/11/15 20:47:07  thomson
- * Minor printing bug fixed.
- *
- * Revision 1.9  2004/11/01 23:31:24  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.8  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.7  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.6  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.5  2004/09/07 22:02:32  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.4  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
  */
 
 #include "ClntMsgRequest.h"
@@ -216,59 +181,62 @@ void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
             {
                 SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
                 clntOpt->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-				  ptrDUID->getDUID(), SmartPtr<TIPv6Addr>()/*NULL*/, this->Iface);
-
+				  ptrDUID->getDUID(), 0/* srvAddr used in unicast */, this->Iface);
                 clntOpt->doDuties();
 
-                if (clntOpt->getStatusCode()==STATUSCODE_SUCCESS)
-                {
-                    // if we have received enough addresses,
-		    // remove assigned IA's by server from request message
-                    SmartPtr<TOpt> requestOpt;
-                    this->Options.first();
-                    while (requestOpt = this->Options.get())
-                    {
-                        if (requestOpt->getOptType()==OPTION_IA)
-                        {
-                            SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
-                            if ((ptrIA->getIAID() == clntOpt->getIAID() ) &&
-                                (ClntCfgMgr->countAddrForIA(ptrIA->getIAID()) == ptrIA->countAddr()) )	
-                            {
-                                //found this IA, it has enough addresses and everything is ok.
-                                //Shortly, we have this IA configured.
-                                this->Options.del();
-                                break;
-                            }
-                        } //if
-                    } //while
-                }
+                if (clntOpt->getStatusCode()!=STATUSCODE_SUCCESS)
+		    break;
+
+		// if we have received enough addresses,
+		// remove assigned IA's by server from request message
+		SmartPtr<TOpt> requestOpt;
+		this->Options.first();
+		while (requestOpt = this->Options.get())
+		{
+		    if (requestOpt->getOptType()!=OPTION_IA)
+			continue;
+		    
+		    SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
+		    if ((ptrIA->getIAID() == clntOpt->getIAID() ) 
+			/* && (ClntCfgMgr->countAddrForIA(ptrIA->getIAID()) == ptrIA->countAddr()) 
+			   skip this check: even if we wanted more, that number of addresses must be enough */
+			)
+		    {
+			//found this IA, it has enough addresses and everything is ok.
+			//Shortly, we have this IA configured.
+			this->Options.del();
+			break;
+		    }
+		} //while
                 break;
             }
             case OPTION_IA_PD:
             {
-            SPtr<TClntOptIA_PD> pd = (Ptr*) option;
-            pd->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-                     ptrDUID->getDUID(), 0, this->Iface);
-            if (pd->doDuties()) {
-                Log(Notice) << "PD set successfully." << LogEnd;
-                
-                SmartPtr<TOpt> requestOpt;
-                if ( optORO && (optORO->isOption(option->getOptType())) )
-                optORO->delOption(option->getOptType());
-                
-                // find options specified in this message
-                this->Options.first();
-                while ( requestOpt = this->Options.get()) {
-                if ( requestOpt->getOptType() == option->getOptType() ) 
-                {
-                    this->Options.del();
-                }//if
-                }
-            } else {
-                Log(Warning) << "PD setup failed." << LogEnd;
-            }
-            break;
-            }
+		SPtr<TClntOptIA_PD> pd = (Ptr*) option;
+		pd->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+			     ptrDUID->getDUID(), 0/* srvAddr used in unicast */, this);
+		pd->doDuties();
+
+		if (pd->getStatusCode()!=STATUSCODE_SUCCESS)
+		    break;
+		
+		if ( optORO && optORO->isOption(OPTION_IA_PD) )
+		    optORO->delOption(OPTION_IA_PD);
+		
+		SmartPtr<TOpt> requestOpt;
+		this->Options.first();
+		while (requestOpt = this->Options.get()) {
+		    if (requestOpt->getOptType() != OPTION_IA_PD)
+			continue;
+		    SPtr<TClntOptIA_PD> reqPD = (Ptr*) requestOpt;
+		    if (pd->getIAID() == reqPD->getIAID())
+		    {
+			this->Options.del();
+			break;
+		    }
+		}
+		break;
+	    }
             case OPTION_IAADDR:
                 Log(Warning) << "Option OPTION_IAADDR misplaced." << LogEnd;
                 break;

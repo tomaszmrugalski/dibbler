@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.71 2007-01-01 23:51:16 thomson Exp $
+ * $Id: Portable.h,v 1.72 2007-01-03 01:27:02 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -190,6 +190,8 @@ extern "C" {
     /* add address to interface */
     extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
 			  unsigned long pref, unsigned long valid, int prefixLength);
+    extern int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
+			     unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
     
     /* add socket to interface */
@@ -238,7 +240,10 @@ extern "C" {
     extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
 
     extern int prefix_forwarding_enabled();
-    extern int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
+    extern int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+			  unsigned long prefered, unsigned long valid);
+    extern int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+			     unsigned long prefered, unsigned long valid);
     extern int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
     
 #ifdef __cplusplus

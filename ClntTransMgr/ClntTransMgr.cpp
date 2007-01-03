@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.45 2006-12-25 20:47:00 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.46 2007-01-03 01:27:02 thomson Exp $
  *
  */
 
@@ -402,7 +402,6 @@ void TClntTransMgr::shutdown()
 
 	}
 	pd = 0;
-	Log(Debug) << "#### About to release PDs. Client has " << AddrMgr->countPD() << " PD(s)." << LogEnd;
 	AddrMgr->firstPD();
 	while (pd = AddrMgr->getPD()) {
 	    releasedPDs.append(pd);
@@ -534,8 +533,8 @@ void TClntTransMgr::sendRequest(List(TOpt) requestOptions,
 // Send RELEASE message
 void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta, List(TAddrIA) pdLst)
 {
-    if (!IALst.count() && !ta) {
-        Log(Error) << "Unable to send RELEASE with empty IAs list and without TA." << LogEnd;
+    if ( !IALst.count() && !ta && !pdLst.count() ) {
+        Log(Error) << "Unable to send RELEASE with empty IA list, PD list and no TA." << LogEnd;
         return;
     }
 

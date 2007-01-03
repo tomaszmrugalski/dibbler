@@ -6,23 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.13 2006-12-28 22:45:00 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.12  2006-11-15 02:58:45  thomson
- * lowlevel-win32.c cleanup, enums added.
- *
- * Revision 1.11  2006-10-06 00:42:13  thomson
- * Initial PD support.
- *
- * Revision 1.10  2006-03-23 00:12:09  thomson
- * TA support on the client side finished.
- *
- * Revision 1.9  2006/03/05 21:38:20  thomson
- * TA support merged.
- *
- * Revision 1.8.2.1  2006/02/05 23:38:07  thomson
- * Devel branch with Temporary addresses support added.
+ * $Id: ClntOptIA_NA.cpp,v 1.14 2007-01-03 01:27:02 thomson Exp $
  *
  */
 
@@ -474,24 +458,3 @@ bool TClntOptIA_NA::isValid()
     else
         return false;
 }
-
-/*
- * Revision 1.8  2004/12/07 20:51:22  thomson
- * Link local safety checks added (bug #39)
- *
- * Revision 1.7  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.6  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.5  2004/09/07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- *
- * Revision 1.3  2004/06/04 19:03:46  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- */

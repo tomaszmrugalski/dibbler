@@ -18,26 +18,7 @@
 #include "DHCPConst.h"
 
 /** 
- * 
- * 
- * @param clntAddrIA 
- * @param zeroTimes 
- * @param parent 
- */
-TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> clntAddrPD, bool zeroTimes, TMsg* parent)
-    :TOptIA_PD(clntAddrPD->getIAID(), zeroTimes?0:clntAddrPD->getT1(),
-	       zeroTimes?0:clntAddrPD->getT2(), parent) 
-{
-    SmartPtr <TIPv6Addr> prefix;
-    clntAddrPD->firstPrefix();
-    //while ( prefix = clntAddrPD->getPrefix() ) {
-	//SubOptions.append( new TClntOptIAPrefix(prefix,3000, 6000,64, parent) );
-   // }
-    
-}
-
-/** 
- * Used in DECLINE, RENEW and RELEASE
+ * Used in REQUEST, RENEW, REBIND, DECLINE and RELEASE
  * 
  * @param addrIA 
  * @param parent 
@@ -45,22 +26,24 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> clntAddrPD, bool zeroTimes, TMsg*
 TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
     :TOptIA_PD(addrPD->getIAID(),addrPD->getT1(),addrPD->getT2(), parent)
 {
-    // should we include all addrs or tentative ones only?
-    bool decline;
-    if (parent->getType()==DECLINE_MSG)
-	decline = true;
-    else
-	decline = false;
+
+    bool zeroTimes = false;
+    if ( (parent->getType()==RELEASE_MSG) || (parent->getType()==RELEASE_MSG)) {
+	this->T1 = 0;
+	this->T2 = 0;
+	zeroTimes = true;
+    }
+
+    DUID = 0;
 
     SmartPtr<TAddrPrefix> ptrPrefix;
     addrPD->firstPrefix();
     while ( ptrPrefix = addrPD->getPrefix() )
     {
-	if ( !decline || (ptrPrefix->getTentative()==TENTATIVE_YES) )
-	    SubOptions.append(new TClntOptIAPrefix(ptrPrefix->get(), ptrPrefix->getPref(), 
-						    ptrPrefix->getValid(),64,this->Parent) );
+	SubOptions.append(new TClntOptIAPrefix(ptrPrefix->get(), zeroTimes?0:ptrPrefix->getPref(), 
+					       zeroTimes?0:ptrPrefix->getValid(), 
+					       ptrPrefix->getLength(), this->Parent) );
     }
-    DUID = SmartPtr<TDUID>(); // NULL
 }
 
 /** 
@@ -212,7 +195,8 @@ void TClntOptIA_PD::setThats(SmartPtr<TClntIfaceMgr> ifaceMgr,
                              SmartPtr<TClntTransMgr> transMgr, 
                              SmartPtr<TClntCfgMgr> cfgMgr, 
                              SmartPtr<TClntAddrMgr> addrMgr,
-                             SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface)
+                             SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, 
+			     TMsg * originalMsg)
 {
     this->AddrMgr=addrMgr;
     this->IfaceMgr=ifaceMgr;
@@ -225,7 +209,8 @@ void TClntOptIA_PD::setThats(SmartPtr<TClntIfaceMgr> ifaceMgr,
         this->Unicast = false;
     }
     this->Prefix=srvAddr;
-    this->Iface = iface;
+    this->OriginalMsg = originalMsg;
+    this->Iface = Parent->getIface();
 }
 
 TClntOptIA_PD::~TClntOptIA_PD()
@@ -235,9 +220,14 @@ TClntOptIA_PD::~TClntOptIA_PD()
 
 bool TClntOptIA_PD::doDuties()
 {
-    if (Parent->getType()==REQUEST_MSG)
+    if (!OriginalMsg) {
+	Log(Error) << "Internal error. Unable to set prefixes: setThats() not called." << LogEnd;
+	return false;
+    }
+	
+    if (OriginalMsg->getType()==REQUEST_MSG)
 	return addPrefixes();
-    if (Parent->getType()==RELEASE_MSG)
+    if (OriginalMsg->getType()==RELEASE_MSG)
 	return delPrefixes();
     return true;
 } 
@@ -262,16 +252,14 @@ bool TClntOptIA_PD::addPrefixes()
     SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
     
     while (prefix = this->getPrefix()) {
-	Log(Info) << "PD: Received prefix: " << prefix->getPrefix()->getPlain() << "/" << this->Prefix << LogEnd;
 	AddrMgr->addPrefix(CfgMgr->getDUID(), this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
 			   prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
-	
-	int status = prefix_add(cfgIface->getName().c_str(), this->Iface, prefix->getPrefix()->getPlain(), prefix->getPrefixLength());
-	if (status<0) {
+
+	if (!IfaceMgr->addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(), prefix->getPref(), prefix->getValid())) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
 	    cfgIface->setPrefixDelegationState(FAILED);
-	    return true;
+	    return false;
 	}
     }
     
@@ -286,17 +274,16 @@ bool TClntOptIA_PD::delPrefixes()
     SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
 
     while (prefix = this->getPrefix()) {
-	Log(Info) << "PD: Deleting prefix: " << prefix->getPrefix()->getPlain() << "/" << this->Prefix << LogEnd;
 	AddrMgr->delPrefix(CfgMgr->getDUID(), this->IAID, prefix->getPrefix(), false);
 	
-	int status = prefix_del(cfgIface->getName().c_str(), this->Iface, prefix->getPrefix()->getPlain(), prefix->getPrefixLength());
-	if (status<0) {
+	if (!IfaceMgr->delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() )) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during delete operation: " << tmp << LogEnd;
 	    cfgIface->setPrefixDelegationState(FAILED);
 	    return true;
 	}
     }
+
     cfgIface->setPrefixDelegationState(DISABLED);
     return true;
 }

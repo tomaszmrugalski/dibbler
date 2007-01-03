@@ -5,34 +5,8 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.10 2006-11-24 01:24:16 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.11 2007-01-03 01:27:02 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.9  2006-11-17 01:07:46  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- * Revision 1.8  2006-11-15 02:58:46  thomson
- * lowlevel-win32.c cleanup, enums added.
- *
- * Revision 1.7  2006-10-06 00:25:53  thomson
- * Initial PD support.
- *
- * Revision 1.6  2005-01-08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.5  2004/12/08 01:08:51  thomson
- * OptInMsg value corrected.
- *
- * Revision 1.4  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.3  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
  */
@@ -115,13 +89,16 @@ int allowOptInOpt(int msgType, int parent, int subopt) {
 	break;
     case OPTION_IA:
     case OPTION_IA_TA:
-	    if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
-	        return 1;
-	    break;
+	if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
+	    return 1;
+	break;
     case OPTION_IAADDR:
-	    if (subopt==OPTION_STATUS_CODE)
-	        return 1;
-	    break;
+	if (subopt==OPTION_STATUS_CODE)
+	    return 1;
+	break;
+    case OPTION_IA_PD:
+	if ( (subopt==OPTION_IAPREFIX) || (subopt==OPTION_STATUS_CODE))
+	    return 1;
     }
     return 0;
 }

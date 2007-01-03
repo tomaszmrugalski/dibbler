@@ -1,11 +1,12 @@
 
-$Id: TODO,v 1.38 2006-12-25 20:47:00 thomson Exp $
+$Id: TODO,v 1.39 2007-01-03 01:27:01 thomson Exp $
 
 New tasks should be done to the TODO list. After task is implemented, it should be moved to the
 'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.
 
   Internal/code TODO
  --------------------
+- CLI: PD: radvd.conf is invalid if there were more than one prefix added to the same interface
 - CLI: Implement client side prefix delegation hints. It must be possible to define, what prefix(es) client
        will send as hints.
 - SRV: Prefixes stored in server's AddrMgr for too long (i.e. after its valid lifetime has expired) should be
@@ -27,9 +28,8 @@ New tasks should be done to the TODO list. After task is implemented, it should 
   white-list and cache-function)
 - CLNT/BUG: when FQDN is assigned, client performs update first, then verifies tentative status.
        It should be done in reverse order.
-- CLNT/BUG: domain format in /etc/resolv.conf must be fixed
 - SRV: When client does not send RELEASE (crash, went out of range), server does not perform FQDN delete.
-- When server shutdowns, it does not perform FQDN delete.
+- When server shuts down, it does not perform FQDN delete.
 - DOC: Describe dumping XML files, option files
 - Statistics: TransMgr->dump() should be implemented.
 - IfaceMgr.cpp:232 (remove #ifndef WIN32)
@@ -59,20 +59,21 @@ New tasks should be done to the TODO list. After task is implemented, it should 
   DONE/Not validated
  --------------------
 - SRV: Prefix hint analysis. (client support for hints is required)
-- SRV/CLI: Implement vendor-class support.
-- CLNT: Add address with /64 prefix, add option to ClntParser strict-rfc-no-routing
-  to disable this.
-- SRV: Add cache. SrvAddrMgr - cachedLst. 
-- SRV: Add to SrvParser options: cache-size
-- SRV: Store cache on disk. Read cache during startup.
 - SRV: Perform DNS Update delete, when RELEASE is sent (SrvMsgReply.cpp:387)
 - CLNT: Perform DNS Update delete, when RELEASE is sent (ClntMsgRelease.cpp:102)
-- CLNT/BUG: option fqdn - does not work, option fqdn some.name.com must be used in client.conf file
+- CLNT/BUG: domain format in /etc/resolv.conf must be fixed
 
   DONE
  ------
 - SRV: Crashes when not configured to support prefix-delegation, but client sends pd option.
 - DOC: Describe strict-rfc-no-routing on the client side
+- CLNT/BUG: option fqdn - does not work, option fqdn some.name.com must be used in client.conf file
+- SRV: Add cache. SrvAddrMgr - cachedLst. 
+- SRV: Add to SrvParser options: cache-size
+- SRV: Store cache on disk. Read cache during startup.
+- SRV/CLI: Implement vendor-class support.
+- CLNT: Add address with /64 prefix, add option to ClntParser strict-rfc-no-routing
+  to disable this.
 
   Rewrite
  ---------

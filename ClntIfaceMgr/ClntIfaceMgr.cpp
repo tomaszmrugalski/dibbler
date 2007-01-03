@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.29 2007-01-02 01:39:18 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.30 2007-01-03 01:27:01 thomson Exp $
  */
 
 #include "Portable.h"
@@ -353,6 +353,70 @@ void TClntIfaceMgr::dump()
     xmlDump.open( this->XmlFile.c_str() );
     xmlDump << *this;
     xmlDump.close();
+}
+
+/** 
+ * configures prefix in the operating system
+ * 
+ * @param iface 
+ * @param prefix 
+ * @param prefixLen 
+ * @param pref 
+ * @param valid 
+ * 
+ * @return true if operation was successful, false otherwise
+ */
+bool TClntIfaceMgr::addPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid)
+{
+    SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Error) << "Unable to find interface with ifindex=" << iface << ", prefix add operation failed." << LogEnd;
+	return false;
+    }
+
+    // FIXME: Implement split between interfaces if forwarding (i.e. this computer is a router) is enabled
+
+    Log(Notice) << "Prefix " << prefix->getPlain() << "/" << (int)prefixLen << " added on the "
+		<< ptrIface->getFullName() << " interface." << LogEnd;
+    int status = prefix_add(ptrIface->getName(), iface, prefix->getPlain(), prefixLen, pref, valid);
+    if (status<0) {
+	string tmp = error_message();
+	Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
+	return false;
+    }
+
+    return true;
+}
+
+/** 
+ * deletes prefix from the operating system
+ * 
+ * @param iface 
+ * @param prefix 
+ * @param prefixLen 
+ * 
+ * @return true if operation was successful, false otherwise
+ */
+bool TClntIfaceMgr::delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen)
+{
+    SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Error) << "Unable to find interface with ifindex=" << iface << ", prefix add operation failed." << LogEnd;
+	return false;
+    }
+
+    // FIXME: Implement split between interfaces if forwarding (i.e. this computer is a router) is enabled
+
+    Log(Notice) << "Prefix " << prefix->getPlain() << "/" << (int)prefixLen << " removed from the "
+		<< ptrIface->getFullName() << " interface." << LogEnd;
+    int status = prefix_del(ptrIface->getName(), iface, prefix->getPlain(), prefixLen);
+    if (status<0) {
+	string tmp = error_message();
+	Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
+	return false;
+    }
+
+    return true;
 }
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {

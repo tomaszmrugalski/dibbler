@@ -6,28 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.8 2006-08-30 01:10:38 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2006-03-02 00:57:46  thomson
- * FQDN support initial checkin.
- *
- * Revision 1.6  2005/01/08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.5  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.4  2004/12/01 20:55:17  thomson
- * Obsolete definitions removed.
- *
- * Revision 1.3  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.2  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
+ * $Id: ClntIfaceMgr.h,v 1.9 2007-01-03 01:27:02 thomson Exp $
  *
  */
 
@@ -67,6 +46,9 @@ class TClntIfaceMgr : public TIfaceMgr
 
     bool fqdnAdd(SmartPtr<TClntIfaceIface> iface, string domainname);
     bool fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> ia, string domainname);
+
+    bool addPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
+    bool delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen);
 
     // --- option related ---
     void removeAllOpts();
