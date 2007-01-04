@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.17 2006-08-21 22:44:36 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.18 2007-01-04 00:25:40 thomson Exp $
  */
 
 #ifdef WIN32
@@ -112,8 +112,8 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 
     // --- Is this IA without IAADDR options? ---
     if (!queryOpt->countAddrs()) {
-	Log(Warning) << "IA option (with IAADDR suboptions missing) received. Assigning one address."
-		     << LogEnd;
+	Log(Notice) << "IA option (with IAADDR suboptions missing) received. Assigning one address."
+		    << LogEnd;
 	
 	SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
 	this->assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
@@ -503,7 +503,9 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
     if (addr = AddrMgr->getCachedAddr(this->ClntDuid)) {
 	if (this->CfgMgr->getClassByAddr(this->Iface, addr)) {
 	    Log(Info) << "Cache: Cached address " << *addr << " found. Welcome back." << LogEnd;
-	    return addr;
+	    if (AddrMgr->addrIsFree(addr))
+		return addr;
+	    Log(Info) << "Unfortunately, " << addr->getPlain() << " is used." << LogEnd;
 	} else {
 	    Log(Warning) << "Cache: Cached address " << *addr << " found, but it is no longer valid." << LogEnd;
 	    AddrMgr->delCachedAddr(addr);
