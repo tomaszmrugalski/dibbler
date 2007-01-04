@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.35 2006-12-31 00:29:21 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.36 2007-01-04 00:38:01 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -492,24 +492,39 @@ iface eth0 {
 }
 \end{Verbatim}
 
-\subsubsection{Example 4: Unicast, more than one address}
+\subsubsection{Example 4: More than one address}
 
-Another example: client like to obtain 2 addresses on
-,,Local Area Connection'' interface. Note quotation marks around
-interface name. They are necessary since this particular interface name
-contains spaces. Client also would like to accept Unicast
-communication if server supports it. User don't care for
-details, so keep those log very short. Take note that you won't be
-able see to what Dibbler is doing with such low log-level. (Usually
-log-level should be set to 7, which is also a default value).
+Another example: client would like to obtain 2 addresses on
+wifi0 interface. They are necessary since this particular interface name
+contains spaces. It is possible to do this in two ways. First is to
+sent 2 Identity Associations (IA for short). Identity Association is a
+nice name for a addresses container. This appears to be a most common
+way of telling server that this client is interested in more than one
+address. 
 
 \begin{Verbatim}
 # client.conf
 log-mode short
 log-level 5
-iface "Local Area Connection" {
-  unicast yes
-  ia 2
+iface wifi0 {
+  ia
+  ia
+}
+\end{Verbatim}
+
+Another way it to send one IA, but include two address hints in
+it. Server may take them into consideration (dibbler server does), but
+some other DHCPv6 implementations may ignore those hints.
+
+\begin{Verbatim}
+# client.conf
+log-mode short
+log-level 5
+iface wifi0 {
+  ia {
+     address
+     address
+  }
 }
 \end{Verbatim}
 
@@ -654,6 +669,28 @@ iface eth0 {
    option vendor-spec
 #   option vendor-spec 1234
 #   option vendor-spec 1234 0x0002abcd
+}
+\end{Verbatim}
+
+\subsubsection{Example 10: Unicast communication}
+
+Client would like to obtain an address on ,,Local Area Connection''
+interface. Note quotation marks around
+interface name. They are necessary since this particular interface name
+contains spaces. Client also would like to accept Unicast
+communication if server supports it. User don't care about
+details, so keep those log very short. Take note that you won't be
+able see to what Dibbler is doing with such low log-level. (Usually
+log-level should be set to 7, which is also a default value).
+
+\begin{Verbatim}
+# client.conf
+log-mode short
+log-level 5
+iface "Local Area Connection" {
+  unicast yes
+  ia
+  ia
 }
 \end{Verbatim}
 

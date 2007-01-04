@@ -2,12 +2,12 @@
   Dibbler changelog
  ------------------- 
  0.5.0-CVS [development snapshot,not-released-yet]
-  - All: DUID bug fixed (resulted in changing duid in each srv/cli execution)
-  - Srv: Per-client configuration is now possible (so called exceptions)
   - All: Prefix-delegation is now supported (still some work is needed, e.g. docs and bugfixes)
-  - Clnt: DUID type can be configured (e.g. "duid-type duid-ll" in client.conf file)
-  - All: Elapsed option has now correct length
   - Vendor-spec information option is now supported
+  - Srv: Per-client configuration is now possible (so called exceptions)
+  - Clnt: DUID type can be configured (e.g. "duid-type duid-ll" in client.conf file)
+  - All: DUID bug fixed (resulted in changing duid in each srv/cli execution)
+  - All: Elapsed option has now correct length
   - Required/not allowed options check improved (now you will know why message is dropped)
   - Linux: iproute2 package update to version 20051007 (latest stable available in Debian and Ubuntu)
   - Lots of memory fixes (Valgrind)
