@@ -481,6 +481,9 @@
 					RelativePath="..\SrvCfgMgr\SrvCfgMgr.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgOptions.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvCfgPD.cpp">
 				</File>
 				<File
