@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-compile.tex,v 1.13 2006-07-31 02:10:07 thomson Exp $
+%% $Id: dibbler-devel-compile.tex,v 1.14 2007-01-06 17:34:04 thomson Exp $
 %%
 
 \section{Compilation}
@@ -227,7 +227,7 @@ project options window}. Following flags are available:
   be compiled without DNS Update support, used in FQDN feature. This
   will make server binary file smaller and will skip the whole poslib
   library, but server will not be able to perform DNS Updates on client
-  behalf. According to FQDN standard \cite{draft-fqdn}, only server is allowed
+  behalf. According to FQDN standard \cite{rfc4704}, only server is allowed
   to execute reverse resolve (PTR record) DNS updates, so in such setup
   only forward resoling (AAAA record) will be executed be the client.
 \end{description}

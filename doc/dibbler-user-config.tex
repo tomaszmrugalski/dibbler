@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.37 2007-01-06 17:14:46 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.38 2007-01-06 17:34:04 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -594,7 +594,7 @@ iface eth0 {
 
 In this case, client will mention that it is interested in FQDN by
 using Option Request and empty FQDN option, as specified in
-\cite{draft-fqdn}. Server upon receiving such request (if it is
+\cite{rfc4704}. Server upon receiving such request (if it is
 configured to support it), will provide FQDN option containing domain
 name. Depending on the server's configuration, all DNS Updates will be
 performed by the server, forward will be performed by client and reverse
@@ -1339,6 +1339,7 @@ vendor specific information. See section \ref{features-exceptions} for
 background information.
 
 \begin{lstlisting}
+# server.conf
 iface "eth0" {
 
  class {
