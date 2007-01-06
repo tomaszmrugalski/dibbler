@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.36 2007-01-04 00:38:01 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.37 2007-01-06 17:14:46 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -423,7 +423,8 @@ such circumstances, only specified options will be requested.
 Usage of the relays is not visible from the client's point of view:
 Client can't detect if it communicates via relay(s) or directly
 with the server. Therefore no special directives on the client side 
-are required to use relays. 
+are required to use relays. See section \ref{features-relays} for
+details related to relay deployment.
 
 \subsection{Client configuration examples}
 This subsection contains various examples of the most popular
@@ -452,7 +453,7 @@ Configuration mentioned in previous subsection is a minimal one and in a
 real life will be used rarely. The most common usage of the DHCPv6
 protocol is to request for an address and DNS configuration. Client
 configuration file achieving those goals is presented below:
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-mode short
 log-level 7
@@ -460,7 +461,7 @@ iface eth0 {
   ia
   option dns-server
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 3: Timeouts and specific address}
 
@@ -475,7 +476,7 @@ address, it would like to renew addresses once in 30 minutes (T1 timer
 is set to 1800 seconds). Client also would like to have address, which
 is prefered for an hour and is valid for 2 hours. 
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-mode short
 log-level 7
@@ -490,7 +491,7 @@ iface eth0 {
     }
   }
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 4: More than one address}
 
@@ -502,7 +503,7 @@ nice name for a addresses container. This appears to be a most common
 way of telling server that this client is interested in more than one
 address. 
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-mode short
 log-level 5
@@ -510,13 +511,13 @@ iface wifi0 {
   ia
   ia
 }
-\end{Verbatim}
+\end{lstlisting}
 
 Another way it to send one IA, but include two address hints in
 it. Server may take them into consideration (dibbler server does), but
 some other DHCPv6 implementations may ignore those hints.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-mode short
 log-level 5
@@ -526,7 +527,7 @@ iface wifi0 {
      address
   }
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 5: Quick configuration using Rapid-commit}
 Rapid-commit is a shortened exchange with server. It consists of only
@@ -534,14 +535,14 @@ two messages, instead of the usual four. It is worth to know that both sides (cl
 and server) must also support rapid-commit to use this fast
 configuration. 
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 iface eth1 {
   rapid-commit yes
   ia 
   option dns-server
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 6: Stateless mode}
 Client can be configured to work in a stateless mode. It means that it
@@ -550,7 +551,7 @@ addresses. Let's assume we want all the details stored in a log file and
 we want to obtain all possible configuration parameters. Here is a
 configuration file:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-level 8
 log-mode full
@@ -568,7 +569,7 @@ iface eth0
   option nis+-server
   option nis+-domain
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 7: Dynamic DNS (FQDN)}
 \label{example-client-fqdn}
@@ -577,7 +578,7 @@ i.e. name, which is fully resolvable using DNS. After receiving such
 name, it can perform DNS Update procedure. Client can ask for any
 name, without any preferrence. Here is an example how to configure
 client to perform such task:
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-level 7
 iface eth0 {
@@ -589,7 +590,7 @@ iface eth0 {
    option domain
    option fqdn
 }
-\end{Verbatim}
+\end{lstlisting}
 
 In this case, client will mention that it is interested in FQDN by
 using Option Request and empty FQDN option, as specified in
@@ -604,7 +605,7 @@ server. Server might take it into consideration when it will choose a
 name for this client. Example of a configuration file for such
 configuration is provided below:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-level 7
 iface eth0 {
@@ -616,7 +617,7 @@ iface eth0 {
     option domain
     option fqdn zoe.example.com
 }
-\end{Verbatim}
+\end{lstlisting}
 
 Note that to successfully perform DNS Update, address must be assigned
 and dns server address must be known. So ,,ia'' and ,,option
@@ -633,14 +634,14 @@ possible to read the number using \verb+ip l+ command (Linux) or
 \verb+ipv6 ifx+. Below is an example, which demonstrate how to use
 interface indexes:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-mode short
 log-level 5
 iface 5 {
   ia
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 9: Vendor-specific options}
 \label{example-client-vendor-spec}
@@ -658,7 +659,7 @@ no actual data. Third choice: send this option and include both
 enterprise number and actual data. In the following configuration file
 example, uncomment appropriate line to obtain desired bahavior:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-level 8
 iface eth0 {
@@ -670,7 +671,7 @@ iface eth0 {
 #   option vendor-spec 1234
 #   option vendor-spec 1234 0x0002abcd
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 10: Unicast communication}
 
@@ -683,7 +684,7 @@ details, so keep those log very short. Take note that you won't be
 able see to what Dibbler is doing with such low log-level. (Usually
 log-level should be set to 7, which is also a default value).
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 log-mode short
 log-level 5
@@ -692,7 +693,25 @@ iface "Local Area Connection" {
   ia
   ia
 }
-\end{Verbatim}
+\end{lstlisting}
+
+\subsection{Example 11: Prefix delegation}
+\label{example-client-prefix}
+From the client's point of view, configuration is quite simple. It is
+required to specify that this client is interested in prefix
+delegation. See section \ref{features-prefix} for background
+information related to prefix delegation and sections
+\ref{example-server-prefix} and \ref{example-server-prefixes} for
+details about server configuration.
+
+\begin{lstlisting}
+iface "eth0" {
+  ia
+  option dns-server
+  option domain
+  option prefix-delegation 
+}
+\end{lstlisting}
 
 \subsection{Server configuration file}
 
@@ -828,8 +847,9 @@ OptionName option-value
             It specifies name of the physical (or name of
             another relay, if cascade relaying is used) interface,
             which is used to receive and transmit relayed data. See
-            \ref{features-relays}, \ref{example-server-relay1} and
-            \ref{example-server-relay2} for details.
+            \ref{features-relays} for details of relay deployment and
+            sections \ref{example-server-relay1} and
+            \ref{example-server-relay2} for configuration examples. 
 \item[interface-id] -- (scope: interface, type: integer, default: not
             defined). Used in relay definition. Each relay interface
             should have defined its unique identified. It will be sent
@@ -979,7 +999,7 @@ named \emph{eth0} (which is fourth interface in the system) and is
 supposed to assign addresses from 2000::100/124 class. Simplest config
 file looks like that:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 iface eth0
 { 
@@ -988,7 +1008,7 @@ iface eth0
     pool 2000::100-2000::10f
   } 
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 2: Timeouts}
 Server should be configured to deliver specific timer values to the
@@ -999,7 +1019,7 @@ minutes to 2 hours, and valid lifetime is from 1 hour to 1 day. DNS
 server parameter is also provided. Lifetime option is used to make
 clients renew all non-address related options renew once in 2 hours.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 iface eth0 
 {
@@ -1015,7 +1035,7 @@ iface eth0
   option dns-server 2000::1234
   option lifetime 7200
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 3: Limiting amount of addresses}
 Another example: Server should support 2000::0/120 class on eth0
@@ -1026,7 +1046,7 @@ preference should be set to 7. This means that this server is more
 important than all server with preference set to 6 or less. 
 Config file is presented below:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 iface eth0
 {
@@ -1039,7 +1059,7 @@ iface eth0
     pool 2000::1-2000::100
   }
 }  
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 4: Unicast communication}
 Here's modified previous example. Instead of specified limits, unicast
@@ -1048,7 +1068,7 @@ communication should be supported and server should listen on
 supported. You must have this unicast address already configured on 
 server's interface.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 log-level 7
 iface eth0
@@ -1059,7 +1079,7 @@ iface eth0
     pool 2000::1-2000::100
   }
 }  
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 5: Rapid-commit}
 This configuration can be called quick. Rapid-commit is a way to shorten exchange to only two messages. It is
@@ -1069,7 +1089,7 @@ maximum possible value. 255 has a special meaning: it makes client to
 skip wait phase for possible advertise messages from other servers and
 quickly request addresses.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 log-level 7
 iface eth0
@@ -1081,7 +1101,7 @@ iface eth0
     pool 2000::1/112
   }
 }  
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 6: Access control}
 Administrators can selectively allow certain client to use this
@@ -1090,7 +1110,7 @@ explicitly forbidden to use this server (black-list). Specific DUIDs,
 DUID ranges, link-local addresses or the whole address ranges are
 supported. Here is config file:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 iface eth0
 {
@@ -1110,7 +1130,7 @@ iface eth1
     pool 2000::fe00-2000::feff
   }
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 7: Multiple classes}
 Although this is not common, a few users have requested support for multiple classes on one interface.
@@ -1122,7 +1142,7 @@ gets $\frac{100}{100+200+300} \approx 16\% $ of all requests, class 2
 gets $\frac{200}{100+200+300} \approx 33\% $ and class 3 gets the rest 
 ($\frac{300}{100+200+300}=50\% $).
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 log-level 7
 log-mode short
@@ -1145,7 +1165,7 @@ iface eth0 {
    pool 3000::1234:5678/112
  }
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 8: Relay support}
 \label{example-server-relay1}
@@ -1154,9 +1174,19 @@ Following server configuration example explains how to use
 relays. There is some remote relay with will send encapsulated data over
 eth1 interface. It is configured to append interface-id option set to
 5020 value. Let's allow all clients using this relay some addresses
-and information about DNS servers:
+and information about DNS servers. Also see section
+\ref{example-relay-1} for corresponding relay configuration. 
 
-\begin{Verbatim}
+Note that although eth1 interface is mentioned in the configuration file,
+direct traffic from clients located on the eth1 interface will not be
+supported. In this example, eth1 is used only to support requests
+relayed from remote link identified with interface-id value 5020.
+Of course it is possible to support both local and remote traffic. In
+such case, normal eth1 definition should be present in the server
+configuration file. Also note that real (physical) interfaces should
+be specified before logical ones.
+
+\begin{lstlisting}
 # server.conf
 iface relay1 {
   relay eth1
@@ -1166,17 +1196,20 @@ iface relay1 {
   }
   option dns-server 2000::100,2000::101
 }
-\end{Verbatim}
+\end{lstlisting}
 
-\subsubsection{Example 9: 2 relays}
+\subsubsection{Example 9: Cascade 2 relays}
 \label{example-server-relay2}
-This is advanced configuration. It assumes that client sends data to
+This is an advanced configuration. It assumes that client sends data to
 relay1, which encapsulates it and forwards it to relay2, which
 eventually sends it to the server (after additional encapsulation). It
 assumes that first relay adds interface-id option set to 6011 and
-second one adds similar option set to 6021. 
+second one adds similar option set to 6021. For details about relays
+in general and cascade setup in particular, see section
+\ref{features-relays}. Also see section \ref{example-relay-cascade}
+for corresponding relays configuration.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 iface relay1
 {
@@ -1194,7 +1227,7 @@ iface relay2
     pool 6020::20-6020::ff
   }
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 10: Dynamic DNS (FQDN)}
 \label{example-server-fqdn}
@@ -1224,7 +1257,7 @@ the reverse domain supported by the DNS server, i.e. if this is set to
 64, and 2000::/64 addresses are used, DNS server must support
 0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa. zone.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 log-level 8
 log-mode precise
@@ -1246,7 +1279,7 @@ iface "eth1" {
 	kaylee.example.com,
 	jayne.example.com
 }
-\end{Verbatim}
+\end{lstlisting}
 
 \subsubsection{Example 11: Vendor-specific Information option}
 \label{example-server-vendor-spec}
@@ -1255,7 +1288,7 @@ information options. Since there are no dibbler-specific parameters,
 this implementation is quite flexible. Enterprise number as well as
 content of the option itself can be configured. 
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 log-level 8
 log-mode precise
@@ -1266,7 +1299,7 @@ iface "eth1" {
 
  option vendor-spec 1234-0x00002fedc
 }
-\end{Verbatim}
+\end{lstlisting}
 
 In some rare cases, several different options for different vendors
 may be specifed. In the folloging example 2 different values are
@@ -1277,7 +1310,7 @@ only mentioned in in \opt{option request} option, it will receive
 first vendor option defined (in the following example, that would be a
 1234 and 0002fedc).
 
-\begin{Verbatim}
+\begin{lstlisting}
 # server.conf
 log-level 8
 log-mode precise
@@ -1288,8 +1321,118 @@ iface "eth1" {
 
  option vendor-spec 1234-0x00002fedc,5678-0x0002aaaa
 }
-\end{Verbatim}
+\end{lstlisting}
 
+\subsubsection{Example 12: Per client configuration}
+\label{example-server-exceptions}
+Usually all clients receive the same configuration options, e.g. all
+clients will use the same DNS server. However, it is possible to
+specify that particular clients should receive different options them
+others. Following example set DNS server to 2000::1, domain
+to example.com and vendor specific information is for vendors 5678.
+However, if requesting client has DUID 00:01:02:03:04:05:06:07:08, it
+will receive different parameters (second.client.biz domain,
+1234::5678:abcd as a DNS server and finally different vendor-specific
+information). Also client with DUID 0x0001000044e8ef3400085404a324
+will receives normal domain and DNS server, but different (vendor=2)
+vendor specific information. See section \ref{features-exceptions} for
+background information.
+
+\begin{lstlisting}
+iface "eth0" {
+
+ class {
+   pool 2000::1/64
+ }
+
+# common configuration options, provided for all clients
+ option dns-server 2000::1
+ option domain example.com
+ option vendor-spec 5678-0x0002aaaa
+ 
+  client 0x000102030406 {
+# special parameters for client with DUID 00:01:02:03:04:06      
+	option domain second.client.biz
+	option dns-server 1234::5678:abcd
+	option vendor-spec 2-0x000122
+  }
+
+  client 0x0001000044e8ef3400085404a324
+  {
+# this client should receive default domain and dns-server, 
+# but different vendor-specific info
+	option vendor-spec 1111-0x00029999
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 13: Prefix delegation}
+\label{example-server-prefix}
+
+Prefix delegation works quite similar to normal address granting.
+Administrator defines pool and server provides prefixes from that
+pool. Before using prefix delegation, please read section
+\ref{features-prefix}. Client configuration example is described in section 
+\ref{example-client-prefix}.
+
+\begin{lstlisting}
+# server.conf
+log-mode precise
+
+iface "eth0" {
+ 
+ # the following lines instruct server to grant each client
+ # prefix for this pool. For example, client might get
+ # 2222:2222:2222:2222:2222:993f::/96
+ pd-class {
+        pd-pool 2222:2222:2222:2222:2222::/80
+        pd-length 96
+        T1 11111
+        T2 22222
+    }
+ 
+}
+\end{lstlisting}
+
+\subsubsection{Example 14: Multiple prefixes}
+\label{example-server-prefixes}
+It is possible to define more than one pool, so each client will
+receive several prefixes. It is necessary to define each pool with the
+same length, i.e. it is not possible to mix different pool lengths.
+See section \ref{features-prefix} for prefix delegation background
+information. Client configuration example is described in section 
+\ref{example-client-prefix}.
+
+\begin{lstlisting}
+# server.conf
+log-mode precise
+
+iface "eth0" {
+
+ T1 1800
+ T2 2700
+ prefered-lifetime 3600
+ valid-lifetime 7200
+
+ # provide addresses from this pool 
+ class {
+   pool 5000::/48
+ }
+
+ # the following lines instruct server to grant each client
+ # 2 prefixes. For example, client might get
+ # 2222:2222:2222:2222:2222:993f:6485::/96 and 
+ # 1111:1111:1111:1111:1111:993f:6485::/96
+ pd-class {
+        pd-pool 2222:2222:2222:2222:2222::/80
+        pd-pool 1111:1111:1111:1111:1111::/80
+        pd-length 96
+        T1 11111
+        T2 22222
+    }
+ 
+}
+\end{lstlisting}
 
 \subsection{Relay configuration file}
 
@@ -1378,15 +1521,38 @@ alligned with system interface id (ifindex). Think about it as
 If you are interested in additional examples, download source version
 and look at \verb+*.conf+ files.
 
-\subsubsection{Example 1: Unicast/multicast}
+\subsubsection{Example 1: Simple}
+\label{example-relay-1}
 Let's assume this case: relay has 2 interfaces: eth0 and
 eth1. Clients are located on the eth1 network. Relay should receive
 data on that interface using well-known ALL\_DHCP\_RELAYS\_AND\_SERVER
-multicast address (ff02::1:2). Relay also listens on its global
-address 2000::123. Packets received on the eth1 should be forwarded on
-the eth0 interface, also using multicast address:
+multicast address (ff02::1:2). Note that all clients use multicast
+addresses by default. Packets received on the eth1 should be
+forwarded on the eth0 interface, using multicast address. See section
+\ref{example-server-relay1} for corresponding server configuration.
 
-\begin{Verbatim}
+\begin{lstlisting}
+# relay.conf
+log-level 8
+log-mode short
+iface eth0 {
+  server multicast yes
+}
+iface eth1 {
+  client multicast yes
+  interface-id 5020
+}
+\end{lstlisting}
+
+\subsubsection{Example 2: Unicast/multicast}
+It is possible to use unicast addresses instead/besides of default
+multicast addresses. Following example allows message reception from
+clients on the 2000::123 address. It is also possible to instruct
+relay to send encapulated messages to the server using unicast
+addresess. This feature is configured in the next section
+(\ref{example-relay-multiple}). 
+
+\begin{lstlisting}
 # relay.conf
 log-level 8
 log-mode short
@@ -1396,17 +1562,18 @@ iface eth0 {
 iface eth1 {
   client multicast yes
   client unicast 2000::123
-  interface-id 1000
+  interface-id 5020
 }
-\end{Verbatim}
+\end{lstlisting}
 
-\subsubsection{Example 2: Multiple interfaces}
+\subsubsection{Example 3: Multiple interfaces}
+\label{example-relay-multiple}
 Here is another example. This time messages should be forwarded from
 eth1 and eth3 to the eth0 interface (using multicast) and to the eth2
 interface (using server's global address 2000::546). Also clients must
 use multicasts (the default approach):
 
-\begin{Verbatim}
+\begin{lstlisting}
 # relay.conf
 iface eth0 {
   server multicast yes
@@ -1422,13 +1589,15 @@ iface eth3 {
   client multicast yes                    
   interface-id 1001
 }
-\end{Verbatim}
+\end{lstlisting}
 
-\subsubsection{Example 3: 2 relays}
+\subsubsection{Example 4: 2 relays}
+\label{example-relay-cascade}
 Those two configuration files correspond to the ,,2 relays'' example
-provided in the server example 8. See \ref{features-relays} for details.
+provided in section \ref{example-server-relay2}. See section
+\ref{features-relays} for detailed exmplanations.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # relay.conf - relay 1
 log-level 8
 log-mode full
@@ -1444,9 +1613,9 @@ iface eth1 {
   client unicast 6011::1   // bind this address
   interface-id 6011
 }
-\end{Verbatim}
+\end{lstlisting}
 
-\begin{Verbatim}
+\begin{lstlisting}
 # relay.conf - relay 2
 iface eth0 {
 #   server multicast yes  // relay messages on this interface to ff05::1:3
@@ -1460,4 +1629,4 @@ iface eth1 {
 # client unicast 6021::1  // bind this address
   interface-id 6021
 }
-\end{Verbatim}
+\end{lstlisting}

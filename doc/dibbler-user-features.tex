@@ -32,13 +32,13 @@ and retrieve addresses. Since this is a default behavior, it does not
 have to be mentioned in the client configuration
 file. Nevertheless, it can be provided:
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 iface eth0 {
   ia
   option dns-server
 }
-\end{Verbatim}
+\end{lstlisting}
 
 In a specific circustances, client might be interested in obtaining
 only temporary addresses. Although this is still a stateful mode, its
@@ -51,13 +51,13 @@ client.conf file. If this option is defined, only temporary address
 will be requested. Keep in mind that temporary addresses are not
 renewed.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 iface eth0 {
   ta
   option dns-server
 }
-\end{Verbatim}
+\end{lstlisting}
 
 It is also possible to instruct client to work in a stateless mode. It
 will not ask for any type of addresses, but will ask for specific
@@ -66,14 +66,14 @@ information. This can be achieved by using \verb+stateless+
 keyword. Since this is a global parameter, it is not defined on any
 interface, but as a global option.
 
-\begin{Verbatim}
+\begin{lstlisting}
 # client.conf
 stateless
 iface eth0
 {
   option dns-server
 }
-\end{Verbatim}
+\end{lstlisting}
 
 Some of the cases mentioned above can be used together. However,
 several combinations are illegal. Here is a complete list:
@@ -99,6 +99,13 @@ several combinations are illegal. Here is a complete list:
 \Note In this section, we will assume that hostnames will be used
 from the example.com domain and that addresses will be provided from the
 2000::/64 pool. 
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{dibbler-fqdn-srv-update}
+\caption{\emph{DNS Update (performed by server)}}
+\end{center}
+\end{figure}
 
 During normal operation, DHCPv6 client receives one or more IPv6 address(es)
 from DHCPv6 server. If configured to do so, it can also receive
@@ -154,7 +161,12 @@ informs that Dynamic DNS Update was completed successfully.
 2006.07.24 01:52:51 Client Notice    FQDN Configured successfully !
 \end{verbatim}
 
-
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{dibbler-fqdn-cli-update}
+\caption{\emph{DNS Update (performed by client)}}
+\end{center}
+\end{figure}
 
 \subsubsection{Example BIND configuration}
 Below are example configuration files for the BIND 9.3. First is a
@@ -169,7 +181,7 @@ please consult \emph{BIND 9 Administrator Reference Manual}.
 \Note Provided configuration is not safe from the security point of
 view. See next subsection for details.
   
-\begin{Verbatim}
+\begin{lstlisting}
 // part of the /etc/bind/named.conf configuration file
 options {
     listen-on-v6 { any; };
@@ -202,7 +214,7 @@ zone "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa" {
    // options follow
    // ...
 };
-\end{Verbatim}
+\end{lstlisting}
 
 % \vspace{-0.3cm}
 % \begin{center}
@@ -216,7 +228,7 @@ that you do not have to manually configure such entries -- dibbler will
 do this automatically. It was merely provided as an example, what kind
 of mapping will be done in this zone.
 
-\begin{Verbatim}
+\begin{lstlisting}
 ; 
 $ORIGIN .
 $TTL 86400      ; 1 day
@@ -233,7 +245,7 @@ example.com             IN SOA  v13.klub.com.pl. root.v13.klub.com.pl. (
 $ORIGIN example.com.
 $TTL 7200       ; 2 hours
 zoe                     AAAA    2000::123
-\end{Verbatim}
+\end{lstlisting}
 
 Second example presents zone file for reverse mapping. It contains
 entries for a special zone called
@@ -244,7 +256,7 @@ have to manually configure such entries -- dibbler will do this
 automatically. It was merely provided as an example, what kind
 of mapping will be done in this zone.
 
-\begin{Verbatim}
+\begin{lstlisting}
 ; rev-2000 example file
 $ORIGIN .
 $TTL 259200     ; 3 days
@@ -273,7 +285,7 @@ $ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
 9.9.9.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa 
       PTR troi.example.com.
 ; this line above is split in two due to page with limitation
-\end{Verbatim}
+\end{lstlisting}
 \Note Due to page width limitation, if the example above, two lines were
 split. 
 %% $
@@ -327,28 +339,28 @@ before reporting issues to the author or on the mailing list.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To manually make AAAA record update, type:
-\begin{Verbatim}
+\begin{lstlisting}
 nsupdate
 >server 2000::1
 >update add worf.example.com 7200 IN AAAA 2000::567
 >send
-\end{Verbatim}
+\end{lstlisting}
 
 To manually make PTR record update, type:
-\begin{Verbatim}
+\begin{lstlisting}
 nsupdate
 >server 2000::1
 >update add 
 3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
 86200 IN PTR picard.example.com. 
 >send
-\end{Verbatim}
+\end{lstlisting}
 
 \Note Everything between "update" and "picard.example.com" must be typed in one line.
 
 And here is an example dig session:
 
-\begin{Verbatim}
+\begin{lstlisting}
 v13:/var# dig @2000::1 jayne.example.com AAAA
 ; <<>> DiG 9.3.2 <<>> @2000::1 jayne.example.com AAAA
 ; (1 server found)
@@ -370,7 +382,7 @@ example.com.            86400   IN      NS      v13.klub.com.pl.
 ;; SERVER: 2000::1#53(2000::1)
 ;; WHEN: Mon Jul 24 01:38:13 2006
 ;; MSG SIZE  rcvd: 136
-\end{Verbatim}
+\end{lstlisting}
 %% >>
 
 \subsection{Server address caching}
@@ -408,9 +420,56 @@ via routers, so direct communication is not always possible. On the
 other hand it is useful to have one server, which supports multiple
 links -- some connected directly and some remotely.
 
-FIXME: Provide description and maybe a figure.
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{dibbler-relay}
+\caption{\emph{Relay deployment}}
+\end{center}
+\end{figure}
+
+Very nice feature of the relays that they appear as actual servers
+from the client's point of view. Therefore no special arrangement or
+configuration on the client side is required. On the other hand, from
+the administrator point of view it is much easier to manage one DHCPv6
+server and deploy several relays than manage several servers on remote
+links. 
+
+It is important to understand that relays not simply forward DHCPv6
+messages. Each message forwarded from client to the server is
+encapsulated. Also each message forwarded from server to a client is
+decapsulated. Therefore additional server configuration is required to
+deal with encapsulated traffic.
+
+To avoid confusion during reference to a specific link (i.e. eth0 on
+the relay may be different link than eth0 on the server), each link
+must be referred to using its unique interface-id. For simplicity
+reasons, Dibbler uses 4 bytes long identifiers, which are specified as
+numbers. It is essential to use the same indentifier in the relay
+configuration as well as in the server, so both will refer to the same
+link using the same number. See section \ref{example-server-relay1} for
+example how to configure server and section \ref{example-relay-1} for 
+corresponding relay configuration.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{dibbler-relay}
+\caption{\emph{Cascade relays}}
+\label{fig-cascade-relays}
+\end{center}
+\end{figure}
+
+In larger networks it is sometimes useful to connect multiple
+relays. Assuming there are 2 relays connecting server and client. Such
+scenario is depicted on figure \ref{fig-cascade-relays}. Requests from
+client are received by relay2, which encapsulates and sends them to
+relay1. Relay1 further encapsulates those messages and sends them to
+the server. Since server receives double encapsulated messages, it
+must be properly configured to support such traffic. See section
+\ref{example-server-relay2} for details about server configuration and 
+section \ref{example-relay-cascade} for example relays configuration.
 
 \subsection{XML files}
+\label{features-xml}
 During its execution, all dibbler components (client, server and
 relay) store its internal information in the XML files. In Linux
 systems, they are stored in the \verb+/var/lib/dibbler+ directory. In
@@ -433,31 +492,112 @@ description for server only:
 \end{itemize}
 
 \subsection{Prefix delegation}
+\label{features-prefix}
+According to \cite{rfc3633}: 
 
-FIXME
+\begin{quote}
+   The prefix delegation mechanism is
+   intended for simple delegation of prefixes from a delegating router
+   to requesting routers.  It is appropriate for situations in which the
+   delegating router does not have knowledge about the topology of the
+   networks to which the requesting router is attached, and the
+   delegating router does not require other information aside from the
+   identity of the requesting router to choose a prefix for delegation.
+   For example, these options would be used by a service provider to
+   assign a prefix to a Customer Premise Equipment (CPE) device acting
+   as a router between the subscriber's internal network and the service
+   provider's core network.
+\end{quote}
 
-Algorithm:
+\begin{figure}[ht]
+\begin{center}
+\label{fig-prefixes-host}
+\includegraphics[width=0.7\textwidth]{dibbler-prefixes-host}
+\caption{\emph{Prefix delegation (host behaviour)}}
+\end{center}
+\end{figure}
 
- return free prefixes for a client. There are several ways that method may work:
- 1 - client didn't provide any hints:
-     => one prefix from each pool will be granted
- 2 - client has provided hint and that is valid (supported and unused):
-     => requested prefix will be granted
- 3 - client has provided hint, which belongs to supported pool, but this prefix is used:
-     => other prefix from that pool will be asigned
- 4 - client has provided hint, but it is invalid (not beloninging to a supported pool,
-     multicast or link-local):
-     => see 1
+To configure server to provide prefixes, a pool must be defined and
+also client prefixes' length. For example section below assigns
+2000:1234::/32 pool to be managed by this server. From this pool,
+server will assign /48 prefixes to the clients. For example, client
+can receive prefix 2000:1234:7c34::/48. 
 
- server.conf
+\begin{lstlisting}
+pd-class {
+    pd-pool 2000:1234::/32
+    pd-length 48
+}
+\end{lstlisting}
 
- pd-class {
-        pd-pool 2222:2222:2222:2222:2222::/80
-        pd-pool 1111:1111:1111:1111:1111::/80
-        pd-length 112
-        T1 11111
-        T2 22222
-    }
+As a general rule, server will provide random prefix to a client,
+unless client provided a hint. The full prefix assignment algorithm is
+as follows:
+
+\begin{enumerate}
+\item client didn't provide any hints: one prefix from each pool will
+  be granted
+\item client has provided hint and that is valid (supported and
+  unused): requested prefix will be granted
+\item client has provided hint, which belongs to supported pool, but this prefix is used:
+  other prefix from that pool will be asigned
+\item client has provided hint, but it is invalid (not beloninging to
+  a supported pool, multicast or link-local): see point 1
+\end{enumerate}
+
+Dibbler implementation supports prefix delegation, but it also
+extends it. From the server point of view, everything works according
+to specs \cite{rfc3633}. However, client is able to meaningfully use
+received prefix, even when packet forwarding is not enabled
+(i.e. client is a host, not a router). In fact, this is simpler
+scenario, therefore it will be explained first. This scenario is
+depicted on Fig. \ref{fig-prefixes-host}. When dibbler client receives
+prefix and detects that packet forwarding in not enabled, it will
+configure received prefix on the interface, which data has been
+received on.
+
+Client's behavior is radically different if packet forwarding is
+enabled (i.e. client is a router, not a host). In such scenario, when
+client receives prefix on one interface (e.g. prefix
+2000:1234:7c34::/48 received on eth0) it will generate subprefixes for
+all other interfaces, which are up, running, non-loopback and
+multicast capable. In the example depicted on
+Fig. \ref{fig-prefixes-router}, received prefix was split into 3
+prefixes: 2000:1234:7c34:1000::/56 for eth1, 2000:1234:7c34:2000::/56 for eth2
+and 2000:1234:7c34:3000::/56 for eth3.
+
+\begin{figure}[ht]
+\begin{center}
+\label{fig-prefixes-router}
+\includegraphics[width=0.7\textwidth]{dibbler-prefixes-router}
+\caption{\emph{Prefix delegation (router behaviour)}}
+\end{center}
+\end{figure}
+
+It is also possible to define multiple prefix pools. See section
+\ref{example-server-prefix} for simple prefix delegation configuration
+for server or section \ref{example-server-prefixes} for multiple
+prefixes configuration. Also section \ref{example-client-prefix}
+provides information related to client configuration.
+
+\subsection{Exceptions: per client configuration}
+\label{features-exceptions}
+All configuration parameters (except FQDN) are the same for all
+clients, e.g. all clients will receive the same domain name and the
+same DNS servers information. 
+
+However, it is sometimes useful to provide some clients with different
+configuration parameters. For example computers from the accouting
+department in a corporate network may be configured to be in a
+different subdomain. Is is possible to specify that for particular
+client different configuration options should be provided. Each client
+is identified by its DUID. This mechanism is called \emph{per client
+  configuration}, but it is sometimes referred to as \emph{exceptions}.
+
+Note: This mechanism does not apply to address and prefix granting,
+because each client receives unique addresses and unique prefixes anyway.
+
+See section \ref{example-server-exceptions} for server configuration examples.
 
 \subsection{Vendor specific information}
 Dibbler supports vendor specific information options. As the name
@@ -465,9 +605,9 @@ suggests, that option is specific to a particular vendor. To be able
 to support any vendor in a flexible manner, values are specified in a
 hex format in \verb+server.conf+. For example:
 
-\begin{Verbatim}
+\begin{lstlisting}
  option vendor-spec 1234-0x00002fedc
-\end{Verbatim}
+\end{lstlisting}
 
 When client asks for a vendor-specific info, server will send
 vendor-specific info option with enterprise number set to 1234 and
@@ -476,9 +616,9 @@ value option-data will be 00002fedc.
 Although uncommon, it is also possible to specify multiple vendor
 options. Another \verb+server.conf+ example:
 
-\begin{Verbatim}
+\begin{lstlisting}
  option vendor-spec 1234-0x00002fedc,5678-0x0002aaaa
-\end{Verbatim}
+\end{lstlisting}
 
 Server algorithm for choosing, which vendor option should be sent,
 works as follows:
@@ -498,7 +638,7 @@ works as follows:
 It is possible to configure Dibbler client to ask for vendor-specific
 info. Granted value will not be used, so from the client's point of
 view this feature may be used as testing tool for the server. Client
-can request \opt{vendor-spec info} in one of the following ways:
+can request \opt{vendor-specific information} option in one of the following ways:
 
 \begin{description}
 \item[option vendor-spec] -- Only \opt{option request} option will be sent

@@ -3,10 +3,9 @@
 %%
 %% authors: Tomasz Mrugalski <thomson@klub.com.pl>
 %%
-%%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-intro.tex,v 1.15 2006-10-01 22:37:33 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.16 2007-01-06 17:14:47 thomson Exp $
 %%
 
 \section{Intro}
@@ -20,9 +19,15 @@ to check out Dibbler website: \url{http://klub.com.pl/dhcpv6/}.
 \emph{Tomasz Mrugalski}
 \end{flushright}
 
-%%\href{http://klub.com.pl/dhcpv6/}{Dibbler's website}.
-
 \subsection{Overview}
+
+\emph{Dynamic Host Configuration Protocol for IPv6}, often called
+DHCPv6 is a protocol, which is used to automatically configure IPv6
+capable computers and other equipment located in a local network. This
+protocol defines clients (i.e. nodes, which should be configured),
+servers (i.e. nodes, which provide configuration to clients) and
+relays (i.e. nodes, which are connected to more than one network and
+are able to forward traffic between local clients and remote servers).
 
 Dibbler is a portable DHCPv6 solution, which features server, client and
 relay. Currently there are ports available for Windows XP and 2003 (support for
@@ -33,25 +38,47 @@ functionality (specified in basic DHCPv6 spec, RFC3315 \cite{rfc3315}),
 it also offers serveral enhancements, e.g. DNS servers and domain names
 configuration.
 
-Dibbler is an open source software, distributed under GNU GPL
-licence. It means that it is freely available, free of charge and can
-be used by anyone (including commercial users). Source code is also
-provided, so anyone skilled enough can fix bugs, add new features and
-release his/her own version.
+Dibbler is an open source software, distributed under
+\href{http://www.gnu.org/copyleft/gpl.html}{GNU GPL} licence. It means 
+that it is freely available, free of charge and can be used by anyone
+(including commercial users). Source code is also provided, so anyone
+skilled enough can fix bugs, add new features and distribute his/her
+own version.
 
-%% FIXME: Insert picture here
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{dibbler-srv-cli}
+\caption{\emph{General DHCPv6 operation}}
+\end{center}
+\end{figure}
 
-As for now, Dibbler support following features:
+As for now, Dibbler supports following features:
 \begin{itemize}
 \item Basic server discovery and address assignment (\msg{SOLICIT},
       \msg{ADVERTISE}, \msg{REQUEST} and \msg{REPLY} messages) -- This
       is a most common case: client discovers servers available in the
       local network, then asks for an address (and possibly additional
       options like DNS configuration), which is granted by a~server.
-\item Best server discovery -- when client detects more than one
-      server available (by receiving more than one \msg{ADVERTISE}
-      message), it chooses the best one and remembers remaining
-      ones as a backup.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{dibbler-multiple-cli}
+\caption{\emph{Several clients supported by one server}}
+\end{center}
+\end{figure}
+
+\item Server redundancy/Best server discovery -- when client detects
+      more than one server available (by receiving more than one
+      \msg{ADVERTISE} message), it chooses the best one and remembers
+      remaining ones as a backup.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{dibbler-multiple-srv}
+\caption{\emph{Redundancy: several servers}}
+\end{center}
+\end{figure}
+
 \item Multiple servers support -- Client is capable of discovering and
       maintaning communication with several servers. For example, client
       would like to have 5 addresses configured. Prefered server can
@@ -164,6 +191,12 @@ several enhancements:
       translate domain name to an address. The second one is used to
       obtain full domain name of a known address. See section
       \ref{features-fqdn} for details. \cite{draft-fqdn}
+\item Prefix Delegation -- Server can be configured to manage a prefix
+      pool, i.e. clients will be assigned whole pools instead on
+      single addresses. This is very useful, when clients are not
+      simple end users (e.g. desktop computers or laptops), but rather
+      are routers (e.g. cable modems). This functionality is often
+      used for remote configuration of IPv6 routers. \cite{rfc3633}
 \end{itemize}
 
 \subsection{Not supported features}
@@ -172,7 +205,6 @@ some parts of the spec are not implemented yet. Below is a list of such
 features:
 
 \begin{itemize}
- \item Prefix Delegation \cite{rfc3633}
  \item Authorization \cite{rfc3315}
  \item Reconfigure mechanism \cite{rfc3315}
  \item DNSSec (DNS Security Extensions) \cite{rfc4033} in DNS Updates \cite{draft-fqdn}
@@ -211,50 +243,8 @@ maintainers and possibly the author.
 If your system is not on the list, don't despair. Dibbler is fully
 portable. Core logic is system independent and coded in C++
 language. There are also several low-level functions, which are system
-speficic. They're used for adding addresses, retriving information about
+specific. They're used for adding addresses, retrieving information about
 interfaces, setting DNS servers and so on. Porting Dibbler to other
 systems (and even other architectures) would require implementic only
 those serveral system-specific functions. See Developer's Guide for
 details.
-
-%%
-%% $Log: not supported by cvs2svn $
-%% Revision 1.14  2006-09-03 09:49:08  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.13  2006-08-30 01:43:55  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.12  2006-08-27 12:54:31  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.11  2006-08-26 11:17:12  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.10  2006-07-01 12:46:09  thomson
-%% Docs updates, precise log-mode added, TA, FQDN options described.
-%%
-%% Revision 1.9  2005/08/07 17:54:52  thomson
-%% Minor changes related to 0.4.1 release.
-%%
-%% Revision 1.8  2005/07/31 15:56:11  thomson
-%% WinNT/2000 port update, various small changes, typos etc.
-%%
-%% Revision 1.7  2005/07/21 23:28:56  thomson
-%% Documentation update.
-%%
-%% Revision 1.6  2005/02/01 23:06:48  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.5  2005/01/23 23:16:56  thomson
-%% Relay related things.
-%%
-%% Revision 1.4  2004/10/25 20:45:54  thomson
-%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
-%%
-%% Revision 1.3  2004/06/19 19:51:14  thomson
-%% Various fixes.
-%%
-%% Revision 1.2  2004/06/19 10:24:59  thomson
-%% Hyperlinks in PDF, building process modified
-%%
