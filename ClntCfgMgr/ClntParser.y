@@ -399,8 +399,7 @@ ADDRESDeclarationList
         ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
     }
     else
-	//here is agregated version of IA
-	YYABORT; 
+	YYABORT;  //this is aggregated version of IA
 }
 |  ADDRESDeclarationList IPV6ADDR_
 {
@@ -410,8 +409,7 @@ ADDRESDeclarationList
 	ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
     }
     else
-	//here is agregated version of IA
-	YYABORT;
+	YYABORT; //here is agregated version of IA
 }
 ;
 
@@ -423,6 +421,9 @@ ADDRESOptionDeclaration
 LogLevelOption
 : LOGLEVEL_ Number 
 {
+    if ( ($2<1) || ($2>8) ) {
+	Log(Crit) << "Invalid loglevel specified: " << $2 << ". Allowed range: 1-8." << LogEnd;
+    }
     logger::setLogLevel($2);
 }
 ;

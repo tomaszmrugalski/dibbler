@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.47 2007-01-07 20:18:46 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.48 2007-01-07 23:31:00 thomson Exp $
  *
  */
 
@@ -739,47 +739,61 @@ void TClntTransMgr::checkRenew()
 	return;
 
     // TENTATIVE_YES, there are. Find them!
+    
+    // Find all IAs
+    List(TAddrIA) iaLst;
+    SmartPtr<TAddrIA> ia;
+    SmartPtr<TAddrIA> iaPattern;
     AddrMgr->firstIA();
-    SmartPtr<TAddrIA> ptrIA;
-    while (ptrIA = AddrMgr->getIA() ) 
+    while (ia = AddrMgr->getIA() ) 
     {
-        if ( (ptrIA->getT1Timeout() != 0) || (ptrIA->getState()!=STATE_CONFIGURED) )
+        if ( (ia->getT1Timeout()!=0) || 
+	     (ia->getState()!=STATE_CONFIGURED) ||
+	     (ia->getTentative()==TENTATIVE_UNKNOWN) )
 	    continue;
+	
+	if (!iaPattern) {
+	    iaPattern = ia;
+	    iaLst.append(ia);
+	    ia->setState(STATE_INPROCESS);
+	    continue;
+	}
 
-	// to avoid race conditions (RENEW vs DECLINE)
-	if (ptrIA->getTentative()==TENTATIVE_UNKNOWN)
+	if ( (ia->getIface() == iaPattern->getIface()) &&
+	     (ia->getDUID()  == iaPattern->getDUID()) )
+	{
+		iaLst.append(ia);
+		ia->setState(STATE_INPROCESS);
+	}
+    }
+
+    // Find all PDs
+    List(TAddrIA) pdLst;
+    AddrMgr->firstPD();
+    while (ia = AddrMgr->getPD()) {
+        if ( (ia->getT1Timeout()!=0) || 
+	     (ia->getState()!=STATE_CONFIGURED) ||
+	     (ia->getTentative()==TENTATIVE_UNKNOWN) )
 	    continue;
 	
-	List(TAddrIA) iaLst;
-	Log(Notice) << "IA (IAID=" << ptrIA->getIAID() 
-		    << ") needs RENEW. Trying to group with other IA(s) requiring renewal:";
-	SmartPtr<TAddrIA> iaPattern=ptrIA;
-	iaLst.append(ptrIA);
-	ptrIA->setState(STATE_INPROCESS);
-	while(ptrIA = AddrMgr->getIA())
+	if (!iaPattern) {
+	    iaPattern = ia;
+	    pdLst.append(ia);
+	    ia->setState(STATE_INPROCESS);
+	    continue;
+	}
+
+	if ( (ia->getIface() == iaPattern->getIface()) &&
+	     (ia->getDUID()  == iaPattern->getDUID()) )
 	{
-	    //the same diffrence between T1(which has just elapsed
-	    //for both IAs) and T2
-	    if (((ptrIA->getT2()-ptrIA->getT1())==
-		 (iaPattern->getT2()-iaPattern->getT1()))&&
-		(ptrIA->getIface()==iaPattern->getIface())&&
-		(ptrIA->getDUID()==iaPattern->getDUID()))
-	    {
-		Log(Cont) << ptrIA->getIAID() << " ";
-		iaLst.append(ptrIA);
-		ptrIA->setState(STATE_INPROCESS);
-	    }
+		pdLst.append(ia);
+		ia->setState(STATE_INPROCESS);
 	}
-	if (iaLst.count()==1) {
-	    Log(Cont) << "none found." << LogEnd;
-	} else {
-	    Log(Cont) << "." << LogEnd;
-	}
-	
-	SmartPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst);
-	Transactions.append(ptrRenew);
-	AddrMgr->firstIA();
     }
+	 
+    Log(Notice) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
+    SmartPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst, pdLst);
+    Transactions.append(ptrRenew);
 }
 
 void TClntTransMgr::checkDecline()

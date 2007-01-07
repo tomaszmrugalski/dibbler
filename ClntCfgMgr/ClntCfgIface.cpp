@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.22 2007-01-07 20:18:44 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.23 2007-01-07 23:30:59 thomson Exp $
  *
  */
 
@@ -492,6 +492,15 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     out << "    <!-- options -->" << endl;
 
+    out << "    <!-- prefix delegation -->" << endl;
+    out << "    <pdLst count=\"" << iface.countPD() << "\">" << endl;
+    SmartPtr<TClntCfgPD> pd;
+    iface.firstPD();
+    while (pd = iface.getPD()) {
+	out << *pd;
+    }
+    out << "    </pdLst>" << endl;
+
     // --- option: DNS-servers ---
     if (iface.isReqDNSServer()) {
 	out << "    <dns-servers state=\"" << StateToString(iface.getDNSServerState())
@@ -621,9 +630,9 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	if (opt) {
 	    out << opt->getVendorDataPlain();
 	}
-	out << "<vendorSpec/>" << endl;
+	out << "    <vendorSpec/>" << endl;
     } else {
-	out << "<!-- <vendorSpec/> -->" << endl;
+	out << "    <!-- <vendorSpec/> -->" << endl;
     }
 
     out << "  </ClntCfgIface>" << endl;

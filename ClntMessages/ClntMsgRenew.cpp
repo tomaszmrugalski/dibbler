@@ -6,30 +6,14 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.7 2006-10-06 00:43:28 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.5  2004/12/08 00:15:49  thomson
- * Issues with denied RENEW (bug #53), code clean up
- *
- * Revision 1.4  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.3  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
+ * $Id: ClntMsgRenew.cpp,v 1.8 2007-01-07 23:31:00 thomson Exp $
  *
  */
 
 #include "ClntMsgRenew.h"
 #include "DHCPConst.h"
 #include "ClntOptIA_NA.h"
+#include "ClntOptIA_PD.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptOptionRequest.h"
@@ -43,9 +27,10 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 			     SmartPtr<TClntTransMgr> TransMgr,
 			     SmartPtr<TClntCfgMgr> CfgMgr,
 			     SmartPtr<TClntAddrMgr> AddrMgr,
-			     TContainer<SmartPtr<TAddrIA> > ptrIALst)
+			     List(TAddrIA) IALst,
+			     List(TAddrIA) PDLst)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
-	      ptrIALst.getFirst()->getIface(),ptrIALst.getFirst()->getSrvAddr(),RENEW_MSG)
+	      IALst.getFirst()->getIface(),IALst.getFirst()->getSrvAddr(),RENEW_MSG)
 {
    // set transmission parameters
     IRT=REN_TIMEOUT;
@@ -55,17 +40,10 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     // retransmit until T2 has been reached or any address has expired
     //it shhould be the same for all IAs
-    MRD= ptrIALst.getFirst()->getT2Timeout();  
+    unsigned int timeout = DHCPV6_INFINITY;
+    IALst.first();
+    MRD= IALst.getFirst()->getT2Timeout();  
     
-    // I don't think checking whether address expired is neccessary here
-    // (address will be removed from iface by address manager automatically
-    // Worth checking could be checking, whether valid time expired for all
-    // addresses in any of IAs - in such a case (for all addresses should be 
-    // valid<T2) and if it happens IA should be put in state NOTCONFIGURED
-    // So MRD should be set to the value of T2 timeout
-    // but RT in send method should be change in order to take into
-    // consideration elapsing valid timeouts of addresses in IAs
-    // in such a case doDuties 
     if (RT>MRD) 
         RT=MRD;
 
@@ -73,13 +51,23 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Options.append(new TClntOptClientIdentifier(CfgMgr->getDUID(),this));
 
     // and say who's this message is for
-    Options.append( new TClntOptServerIdentifier(ptrIALst.getFirst()->getDUID(),this));
+    Options.append( new TClntOptServerIdentifier(IALst.getFirst()->getDUID(),this));
     
     //Store all IAs to renew
-    SmartPtr<TAddrIA> ptrAddrIA;
-    ptrIALst.first();
-    while(ptrAddrIA= ptrIALst.get())
-          Options.append(new TClntOptIA_NA(ptrAddrIA,this));
+    SmartPtr<TAddrIA> ia;
+    IALst.first();
+    while(ia=IALst.get()) {
+	if (timeout > ia->getT2Timeout())
+	    timeout = ia->getT2Timeout();
+	Options.append(new TClntOptIA_NA(ia,this));
+    }
+
+    PDLst.first();
+    while (ia=PDLst.get()) {
+	if (timeout > ia->getT2Timeout())
+	    timeout = ia->getT2Timeout();
+	Options.append(new TClntOptIA_PD(ia, this));
+    }
 
     pkt = new char[getSize()];
     this->IsDone = false;

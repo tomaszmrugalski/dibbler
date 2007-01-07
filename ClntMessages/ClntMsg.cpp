@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.19 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.20 2007-01-07 23:31:00 thomson Exp $
  */
 
 #ifdef WIN32
@@ -527,7 +527,8 @@ void TClntMsg::appendRequestedOptions() {
     if ( iface->isReqPrefixDelegation() && (iface->getPrefixDelegationState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_IA_PD);
 	   
-	SmartPtr<TClntCfgPD> ptrPD;
+	iface->firstPD();
+	SmartPtr<TClntCfgPD> ptrPD = iface->getPD();
 	SmartPtr<TClntOptIA_PD> opt = new TClntOptIA_PD(ptrPD ,this );
 	Options.append( (Ptr*)opt );
 	

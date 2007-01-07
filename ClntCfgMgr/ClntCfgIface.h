@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.15 2006-11-03 23:14:39 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.16 2007-01-07 23:30:59 thomson Exp $
  */
 
 class TClntCfgIface;
@@ -168,6 +168,7 @@ public:
     void setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec);
     void setVendorSpecState(EState state);
     SPtr<TClntOptVendorSpec> getVendorSpec();
+    int getVendorSpecCount();
 
 private:
     string IfaceName;
