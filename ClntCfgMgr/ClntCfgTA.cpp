@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: ClntCfgTA.cpp,v 1.2 2006-03-05 21:38:47 thomson Exp $
+ * $Id: ClntCfgTA.cpp,v 1.3 2007-01-07 20:18:44 thomson Exp $
  */
 
 #include "ClntCfgTA.h"
@@ -17,7 +17,7 @@ using namespace std;
 TClntCfgTA::TClntCfgTA() {
     static unsigned long lastIAID = 1;
     this->iaid = lastIAID++;
-    this->State = NOTCONFIGURED;
+    this->State = STATE_NOTCONFIGURED;
 }
 
 void TClntCfgTA::setState(enum EState state) {

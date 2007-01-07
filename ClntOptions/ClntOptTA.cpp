@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptTA.cpp,v 1.3 2006-03-23 00:12:09 thomson Exp $
+ * $Id: ClntOptTA.cpp,v 1.4 2007-01-07 20:18:46 thomson Exp $
  *
  */
 
@@ -203,9 +203,9 @@ TClntOptTA::~TClntOptTA()
     }
     cfgIface->firstTA();
     cfgTA = cfgIface->getTA();
-    cfgTA->setState(CONFIGURED);
+    cfgTA->setState(STATE_CONFIGURED);
 
-    ta->setState(CONFIGURED);
+    ta->setState(STATE_CONFIGURED);
     return true;
 } 
 
@@ -264,6 +264,9 @@ void TClntOptTA::setIface(int iface) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006-03-23 00:12:09  thomson
+ * TA support on the client side finished.
+ *
  * Revision 1.2  2006/03/05 21:38:20  thomson
  * TA support merged.
  *

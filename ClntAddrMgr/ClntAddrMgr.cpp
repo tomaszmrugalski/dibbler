@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.16 2006-12-25 20:47:00 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.17 2007-01-07 20:18:44 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -96,7 +96,7 @@ void TClntAddrMgr::doDuties()
 		Log(Warning) << "Address " << ptrAddr->get()->getPlain() 
 			     << " from IA " << ptrIA->getIAID() 
 			     << " has been removed from addrDB." << LogEnd;
-		ptrIA->setState(NOTCONFIGURED);
+		ptrIA->setState(STATE_NOTCONFIGURED);
 	    }
 	}
     }
@@ -235,6 +235,9 @@ void TClntAddrMgr::print(ostream &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2006-12-25 20:47:00  thomson
+ * Some memory leaks fixes, valgrind info added.
+ *
  * Revision 1.15  2006-10-06 00:31:18  thomson
  * Initial PD support.
  *

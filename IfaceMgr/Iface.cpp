@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.23 2006-12-28 22:45:00 thomson Exp $
+ * $Id: Iface.cpp,v 1.24 2007-01-07 20:18:46 thomson Exp $
  *
  */
 
@@ -230,7 +230,7 @@ bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, b
     // Log(Debug) << "Creating socket on " << *addr << " address." << LogEnd;
     SmartPtr<TIfaceSocket> ptr = 
 	new TIfaceSocket(this->Name, this->ID, port, addr, ifaceonly, reuse);
-    if (ptr->getStatus()!=CONFIGURED) {
+    if (ptr->getStatus()!=STATE_CONFIGURED) {
 	return false;
     }
     SocketsLst.append(ptr);
@@ -243,7 +243,7 @@ bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, b
 bool TIfaceIface::addSocket(int port, bool ifaceonly, bool reuse) {
     SmartPtr<TIfaceSocket> ptr = 
 	new TIfaceSocket(this->Name, this->ID, port, ifaceonly, reuse);
-    if (ptr->getStatus()!=CONFIGURED) {
+    if (ptr->getStatus()!=STATE_CONFIGURED) {
 	return false;
     }
     SocketsLst.append(ptr);

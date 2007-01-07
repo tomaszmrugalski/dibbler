@@ -6,9 +6,12 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.12 2006-10-06 00:30:16 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.13 2007-01-07 20:18:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006-10-06 00:30:16  thomson
+ * Initial PD support.
+ *
  * Revision 1.11  2006-03-23 00:53:25  thomson
  * TA support fixed on the server side.
  *
@@ -194,7 +197,7 @@ unsigned long TAddrClient::getT1Timeout() {
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
-        if (ptr->getState()!=CONFIGURED)
+        if (ptr->getState()!=STATE_CONFIGURED)
             continue;
         if (ts > ptr->getT1Timeout())
             ts = ptr->getT1Timeout();
@@ -208,7 +211,7 @@ unsigned long TAddrClient::getT2Timeout() {
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
-        if (ptr->getState()!=CONFIGURED)
+        if (ptr->getState()!=STATE_CONFIGURED)
             continue;
         if (ts > ptr->getT2Timeout())
             ts = ptr->getT2Timeout();
@@ -222,7 +225,7 @@ unsigned long TAddrClient::getPrefTimeout() {
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
-        if (ptr->getState()!=CONFIGURED)
+        if (ptr->getState()!=STATE_CONFIGURED)
             continue;
         if (ts > ptr->getPrefTimeout())
             ts = ptr->getPrefTimeout();

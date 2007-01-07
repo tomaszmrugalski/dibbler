@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.15 2007-01-03 01:27:02 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.16 2007-01-07 20:18:45 thomson Exp $
  *
  */
 
@@ -302,7 +302,7 @@ void TClntMsgRequest::doDuties()
 	    {
 		if (option->getOptType() == OPTION_IA)
 		{
-		    ClntCfgMgr->setIAState(Iface,( (SmartPtr<TOptIA_NA>)option )->getIAID(),FAILED);
+		    ClntCfgMgr->setIAState(Iface,( (SmartPtr<TOptIA_NA>)option )->getIAID(), STATE_FAILED);
 		}
 	    }
 	    IsDone = true;

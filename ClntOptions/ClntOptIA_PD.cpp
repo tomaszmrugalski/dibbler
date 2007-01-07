@@ -258,12 +258,12 @@ bool TClntOptIA_PD::addPrefixes()
 	if (!IfaceMgr->addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(), prefix->getPref(), prefix->getValid())) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
-	    cfgIface->setPrefixDelegationState(FAILED);
+	    cfgIface->setPrefixDelegationState(STATE_FAILED);
 	    return false;
 	}
     }
     
-    cfgIface->setPrefixDelegationState(CONFIGURED);
+    cfgIface->setPrefixDelegationState(STATE_CONFIGURED);
     return true;
 }
 
@@ -279,12 +279,12 @@ bool TClntOptIA_PD::delPrefixes()
 	if (!IfaceMgr->delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() )) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during delete operation: " << tmp << LogEnd;
-	    cfgIface->setPrefixDelegationState(FAILED);
+	    cfgIface->setPrefixDelegationState(STATE_FAILED);
 	    return true;
 	}
     }
 
-    cfgIface->setPrefixDelegationState(DISABLED);
+    cfgIface->setPrefixDelegationState(STATE_DISABLED);
     return true;
 }
 

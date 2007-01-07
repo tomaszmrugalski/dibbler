@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.h,v 1.4 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntMsgRenew.h,v 1.5 2007-01-07 20:18:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005-01-08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.3  2004/09/07 22:02:32  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -29,7 +32,7 @@ class TClntMsgRenew : public TClntMsg
 		  SmartPtr<TClntTransMgr> TransMgr,
 		  SmartPtr<TClntCfgMgr> CfgMgr,
 		  SmartPtr<TClntAddrMgr> AddrMgr,
-		  TContainer<SmartPtr<TAddrIA> > ptrLstIA);
+		  List(TAddrIA) ptrLstIA);
 
     void answer(SmartPtr<TClntMsg> Rep);
     void doDuties();

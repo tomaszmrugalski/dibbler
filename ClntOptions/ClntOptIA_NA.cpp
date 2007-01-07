@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.14 2007-01-03 01:27:02 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.15 2007-01-07 20:18:45 thomson Exp $
  *
  */
 
@@ -365,7 +365,7 @@ bool TClntOptIA_NA::doDuties()
     ptrIA->setT1( this->getT1() );
     ptrIA->setT2( this->getT2() );
     ptrIA->setTimestamp();
-    ptrIA->setState(CONFIGURED);
+    ptrIA->setState(STATE_CONFIGURED);
     return true;
 } 
 

@@ -6,7 +6,7 @@
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.21 2006-11-24 01:32:55 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.22 2007-01-07 20:18:45 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -213,7 +213,7 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TClntMsg> msg) {
         if (solicitOpt->getOptType() == OPTION_IA) {
 	    SmartPtr<TClntOptIA_NA> optIA = (Ptr*) solicitOpt;
 	    SmartPtr<TAddrIA> addrIA = ClntAddrMgr->getIA(optIA->getIAID());
-	    addrIA->setState(NOTCONFIGURED);
+	    addrIA->setState(STATE_NOTCONFIGURED);
 	    Log(Info) << "IA (IAID=" << addrIA->getIAID() << ") still not configured." << LogEnd;
 	    IAsToConfigure = true;
             break;

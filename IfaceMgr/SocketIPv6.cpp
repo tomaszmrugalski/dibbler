@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SocketIPv6.cpp,v 1.18 2006-11-17 00:38:12 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.19 2007-01-07 20:18:46 thomson Exp $
  *
  */
 
@@ -81,7 +81,7 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
     this->IfaceID = ifaceid;
     this->Port = port;
     this->IfaceOnly = ifaceonly;
-    this->Status = UNKNOWN;
+    this->Status = STATE_NOTCONFIGURED;
     this->Addr   = addr;
     
     // is this address multicast? So the socket is.
@@ -96,12 +96,12 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
 
     if (sock<0) {
 	printError(sock, iface, ifaceid, addr, port);
-	this->Status = FAILED;
+	this->Status = STATE_FAILED;
 	return -3;
     }
 
     this->FD = sock;
-    this->Status = CONFIGURED;
+    this->Status = STATE_CONFIGURED;
 
     // add FileDescriptior fd_set using FD_SET macro
     FD_SET(this->FD,this->getFDS());
@@ -200,9 +200,10 @@ SmartPtr<TIPv6Addr> TIfaceSocket::getAddr() {
  * closes socket, and removes its number from FDS
  */
 TIfaceSocket::~TIfaceSocket() {
-    if (Status!=CONFIGURED) return;
+    if (Status!=STATE_CONFIGURED) 
+	return;
 
-    //pure C function
+    //execute low-level function
     sock_del(this->FD);
 
     FD_CLR(this->FD,getFDS());

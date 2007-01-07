@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.18 2006-11-30 03:18:29 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.19 2007-01-07 20:18:45 thomson Exp $
  */
 
 #ifdef WIN32
@@ -369,7 +369,7 @@ void TClntMsg::setIface(int iface) {
 
 
 /*
- * this method adds requested (which have status==NOTCONFIGURED) options
+ * this method adds requested (which have status==STATE_NOTCONFIGURED) options
  */
 void TClntMsg::appendRequestedOptions() {
 
@@ -383,7 +383,7 @@ void TClntMsg::appendRequestedOptions() {
     SmartPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
 
     // --- option: DNS-SERVERS ---
-    if ( iface->isReqDNSServer() && (iface->getDNSServerState()==NOTCONFIGURED) ) {
+    if ( iface->isReqDNSServer() && (iface->getDNSServerState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_DNS_RESOLVERS);
 	
 	List(TIPv6Addr) * dnsLst = iface->getProposedDNSServerLst();
@@ -392,11 +392,11 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptDNSServers> opt = new TClntOptDNSServers(dnsLst,this);
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setDNSServerState(INPROCESS);
+	iface->setDNSServerState(STATE_INPROCESS);
     }
 
     // --- option: DOMAINS --
-    if ( iface->isReqDomain() && (iface->getDomainState()==NOTCONFIGURED) ) {
+    if ( iface->isReqDomain() && (iface->getDomainState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_DOMAIN_LIST);
 
 	List(string) * domainsLst = iface->getProposedDomainLst();
@@ -405,11 +405,11 @@ void TClntMsg::appendRequestedOptions() {
             SmartPtr<TClntOptDomainName> opt = new TClntOptDomainName(domainsLst,this);
             Options.append( (Ptr*)opt );
 	}
-	iface->setDomainState(INPROCESS);
+	iface->setDomainState(STATE_INPROCESS);
     }
 
     // --- option: NTP SERVER ---
-    if ( iface->isReqNTPServer() && (iface->getNTPServerState()==NOTCONFIGURED) ) {
+    if ( iface->isReqNTPServer() && (iface->getNTPServerState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_NTP_SERVERS);
 
 	List(TIPv6Addr) * ntpLst = iface->getProposedNTPServerLst();
@@ -418,11 +418,11 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNTPServers> opt = new TClntOptNTPServers(ntpLst,this);
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setNTPServerState(INPROCESS);
+	iface->setNTPServerState(STATE_INPROCESS);
     }
         
     // --- option: TIMEZONE ---
-    if ( iface->isReqTimezone() && (iface->getTimezoneState()==NOTCONFIGURED) ) {
+    if ( iface->isReqTimezone() && (iface->getTimezoneState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_TIME_ZONE);
 
 	string timezone = iface->getProposedTimezone();
@@ -431,11 +431,11 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptTimeZone> opt = new TClntOptTimeZone(timezone,this);
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setTimezoneState(INPROCESS);
+	iface->setTimezoneState(STATE_INPROCESS);
     }
 
     // --- option: SIP-SERVERS ---
-    if ( iface->isReqSIPServer() && (iface->getSIPServerState()==NOTCONFIGURED) ) {
+    if ( iface->isReqSIPServer() && (iface->getSIPServerState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_SIP_SERVERS);
 	
 	List(TIPv6Addr) * lst = iface->getProposedSIPServerLst();
@@ -444,11 +444,11 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptSIPServers> opt = new TClntOptSIPServers( lst, this );
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setSIPServerState(INPROCESS);
+	iface->setSIPServerState(STATE_INPROCESS);
     }
 
     // --- option: SIP-DOMAINS ---
-    if ( iface->isReqSIPDomain() && (iface->getSIPDomainState()==NOTCONFIGURED) ) {
+    if ( iface->isReqSIPDomain() && (iface->getSIPDomainState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_SIP_DOMAINS);
 
 	List(string) * domainsLst = iface->getProposedSIPDomainLst();
@@ -457,11 +457,11 @@ void TClntMsg::appendRequestedOptions() {
             SmartPtr<TClntOptSIPDomain> opt = new TClntOptSIPDomain( domainsLst,this );
             Options.append( (Ptr*)opt );
 	}
-	iface->setSIPDomainState(INPROCESS);
+	iface->setSIPDomainState(STATE_INPROCESS);
     }
 
     // --- option: FQDN ---
-    if ( iface->isReqFQDN() && (iface->getFQDNState()==NOTCONFIGURED) ) {
+    if ( iface->isReqFQDN() && (iface->getFQDNState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_FQDN);
 
 	string fqdn = iface->getProposedFQDN();
@@ -472,11 +472,11 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setFQDNState(INPROCESS);
+	iface->setFQDNState(STATE_INPROCESS);
     }
 
     // --- option: NIS-SERVERS ---
-    if ( iface->isReqNISServer() && (iface->getNISServerState()==NOTCONFIGURED) ) {
+    if ( iface->isReqNISServer() && (iface->getNISServerState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_NIS_SERVERS);
 	
 	List(TIPv6Addr) * lst = iface->getProposedNISServerLst();
@@ -485,22 +485,22 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNISServers> opt = new TClntOptNISServers( lst,this );
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setNISServerState(INPROCESS);
+	iface->setNISServerState(STATE_INPROCESS);
     }
 
     // --- option: NIS-DOMAIN ---
-    if ( iface->isReqNISDomain() && (iface->getNISDomainState()==NOTCONFIGURED) ) {
+    if ( iface->isReqNISDomain() && (iface->getNISDomainState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_NIS_DOMAIN_NAME);
 	string domain = iface->getProposedNISDomain();
 	if (domain.length()) {
 	    SmartPtr<TClntOptNISDomain> opt = new TClntOptNISDomain( domain,this );
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setNISDomainState(INPROCESS);
+	iface->setNISDomainState(STATE_INPROCESS);
     }
 
     // --- option: NIS+-SERVERS ---
-    if ( iface->isReqNISPServer() && (iface->getNISPServerState()==NOTCONFIGURED) ) {
+    if ( iface->isReqNISPServer() && (iface->getNISPServerState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_NISP_SERVERS);
 	
 	List(TIPv6Addr) * lst = iface->getProposedNISPServerLst();
@@ -509,29 +509,29 @@ void TClntMsg::appendRequestedOptions() {
 	    SmartPtr<TClntOptNISPServers> opt = new TClntOptNISPServers( lst,this );
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setNISPServerState(INPROCESS);
+	iface->setNISPServerState(STATE_INPROCESS);
     }
 
     // --- option: NIS+-DOMAIN ---
-    if ( iface->isReqNISPDomain() && (iface->getNISPDomainState()==NOTCONFIGURED) ) {
+    if ( iface->isReqNISPDomain() && (iface->getNISPDomainState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_NISP_DOMAIN_NAME);
 	string domain = iface->getProposedNISPDomain();
 	if (domain.length()) {
 	    SmartPtr<TClntOptNISPDomain> opt = new TClntOptNISPDomain( domain,this );
 	    Options.append( (Ptr*)opt );
 	}
-	iface->setNISPDomainState(INPROCESS);
+	iface->setNISPDomainState(STATE_INPROCESS);
     }
 
   // --- option: Prefix Delegation ---
-    if ( iface->isReqPrefixDelegation() && (iface->getPrefixDelegationState()==NOTCONFIGURED) ) {
+    if ( iface->isReqPrefixDelegation() && (iface->getPrefixDelegationState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_IA_PD);
 	   
 	SmartPtr<TClntCfgPD> ptrPD;
 	SmartPtr<TClntOptIA_PD> opt = new TClntOptIA_PD(ptrPD ,this );
 	Options.append( (Ptr*)opt );
 	
-	iface->setPrefixDelegationState(INPROCESS);
+	iface->setPrefixDelegationState(STATE_INPROCESS);
     }
 
     // --- option: LIFETIME ---
@@ -539,9 +539,9 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_LIFETIME);
 
     // --- option: VENDOR-SPEC ---
-    if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==NOTCONFIGURED) ) {
+    if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_VENDOR_OPTS);
-	iface->setVendorSpecState(INPROCESS);
+	iface->setVendorSpecState(STATE_INPROCESS);
 
 	SPtr<TClntOptVendorSpec> optVendor = iface->getVendorSpec();
 	if (optVendor)
@@ -564,9 +564,9 @@ void TClntMsg::appendRequestedOptions() {
 }
 
 /** 
- * append all TA options, which are currently in the NOTCONFIGURED state.
+ * append all TA options, which are currently in the STATE_NOTCONFIGURED state.
  * 
- * @param switchToInProcess - switch them to INPROCESS state?
+ * @param switchToInProcess - switch them to STATE_INPROCESS state?
  */
 void TClntMsg::appendTAOptions(bool switchToInProcess)
 {
@@ -578,7 +578,7 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
 	ptrIface->firstTA();
 	// ... find TA...
 	while ( ptrTA = ptrIface->getTA() ) {
-	    if (ptrTA->getState()!=NOTCONFIGURED)
+	    if (ptrTA->getState()!=STATE_NOTCONFIGURED)
 		continue;
 	    // ... which are not yet configured
 	    SmartPtr<TOpt> ptrOpt = new TClntOptTA(ptrTA->getIAID(), this);
@@ -586,7 +586,7 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
 	    Options.append ( (Ptr*) ptrOpt);
 	    Log(Debug) << "TA option (IAID=" << ptrTA->getIAID() << ") was added." << LogEnd;
 	    if (switchToInProcess)
-		ptrTA->setState(INPROCESS);
+		ptrTA->setState(STATE_INPROCESS);
 	}
     }
 

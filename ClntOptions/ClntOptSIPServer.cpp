@@ -6,12 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptSIPServer.cpp,v 1.2 2004-11-01 23:31:25 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
+ * $Id: ClntOptSIPServer.cpp,v 1.3 2007-01-07 20:18:46 thomson Exp $
  */
 
 #include "ClntOptSIPServer.h"
@@ -51,7 +46,7 @@ bool TClntOptSIPServers::doDuties() {
 
     SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
     SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
-    cfgIface->setSIPServerState(CONFIGURED);
+    cfgIface->setSIPServerState(STATE_CONFIGURED);
 
     return iface->setSIPServerLst(this->DUID, addr,this->AddrLst);
 }

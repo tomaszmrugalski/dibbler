@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.21 2006-12-25 20:47:00 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.22 2007-01-07 20:18:44 thomson Exp $
  *
  */
 
@@ -22,40 +22,40 @@ TClntCfgIface::TClntCfgIface(string ifaceName) {
     NoConfig=false;
     IfaceName=ifaceName;
     ID=-1;
-    this->DNSServerState  = DISABLED;
-    this->DomainState     = DISABLED;
-    this->NTPServerState  = DISABLED;
-    this->TimezoneState   = DISABLED;
-    this->SIPServerState  = DISABLED;
-    this->SIPDomainState  = DISABLED;
-    this->FQDNState       = DISABLED;
-    this->NISServerState  = DISABLED;
-    this->NISPServerState = DISABLED;
-    this->NISDomainState  = DISABLED;
-    this->NISPDomainState = DISABLED;
-    this->LifetimeState   = DISABLED;
-    this->PrefixDelegationState = DISABLED;
-    this->VendorSpecState = DISABLED;
+    this->DNSServerState  = STATE_DISABLED;
+    this->DomainState     = STATE_DISABLED;
+    this->NTPServerState  = STATE_DISABLED;
+    this->TimezoneState   = STATE_DISABLED;
+    this->SIPServerState  = STATE_DISABLED;
+    this->SIPDomainState  = STATE_DISABLED;
+    this->FQDNState       = STATE_DISABLED;
+    this->NISServerState  = STATE_DISABLED;
+    this->NISPServerState = STATE_DISABLED;
+    this->NISDomainState  = STATE_DISABLED;
+    this->NISPDomainState = STATE_DISABLED;
+    this->LifetimeState   = STATE_DISABLED;
+    this->PrefixDelegationState = STATE_DISABLED;
+    this->VendorSpecState = STATE_DISABLED;
 }
 
 TClntCfgIface::TClntCfgIface(int ifaceNr) {
     NoConfig=false;
     ID=ifaceNr;
     IfaceName="[unknown]";
-    this->DNSServerState  = DISABLED;
-    this->DomainState     = DISABLED;
-    this->NTPServerState  = DISABLED;
-    this->TimezoneState   = DISABLED;
-    this->SIPServerState  = DISABLED;
-    this->SIPDomainState  = DISABLED;
-    this->FQDNState       = DISABLED;
-    this->NISServerState  = DISABLED;
-    this->NISPServerState = DISABLED;
-    this->NISDomainState  = DISABLED;
-    this->NISPDomainState = DISABLED;
-    this->LifetimeState   = DISABLED;
-    this->PrefixDelegationState = DISABLED;
-    this->VendorSpecState = DISABLED;
+    this->DNSServerState  = STATE_DISABLED;
+    this->DomainState     = STATE_DISABLED;
+    this->NTPServerState  = STATE_DISABLED;
+    this->TimezoneState   = STATE_DISABLED;
+    this->SIPServerState  = STATE_DISABLED;
+    this->SIPDomainState  = STATE_DISABLED;
+    this->FQDNState       = STATE_DISABLED;
+    this->NISServerState  = STATE_DISABLED;
+    this->NISPServerState = STATE_DISABLED;
+    this->NISDomainState  = STATE_DISABLED;
+    this->NISPDomainState = STATE_DISABLED;
+    this->LifetimeState   = STATE_DISABLED;
+    this->PrefixDelegationState = STATE_DISABLED;
+    this->VendorSpecState = STATE_DISABLED;
 }
 
 void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
@@ -95,19 +95,19 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     this->NISPDomain   = opt->getNISPDomain();
     
 
-    if (ReqDNSServer)  this->setDNSServerState(NOTCONFIGURED);
-    if (ReqDomain)     this->setDomainState(NOTCONFIGURED);
-    if (ReqNTPServer)  this->setNTPServerState(NOTCONFIGURED);
-    if (ReqTimezone)   this->setTimezoneState(NOTCONFIGURED);
-    if (ReqSIPServer)  this->setSIPServerState(NOTCONFIGURED);
-    if (ReqSIPDomain)  this->setSIPDomainState(NOTCONFIGURED);
-    if (ReqFQDN)       this->setFQDNState(NOTCONFIGURED);
-    if (ReqNISServer)  this->setNISServerState(NOTCONFIGURED);
-    if (ReqNISDomain)  this->setNISDomainState(NOTCONFIGURED);
-    if (ReqNISPServer) this->setNISPServerState(NOTCONFIGURED);
-    if (ReqNISPDomain) this->setNISPDomainState(NOTCONFIGURED);
-    if (ReqLifetime)   this->setLifetimeState(NOTCONFIGURED);
-    if (ReqPrefixDelegation) this->setPrefixDelegationState(NOTCONFIGURED);
+    if (ReqDNSServer)  this->setDNSServerState(STATE_NOTCONFIGURED);
+    if (ReqDomain)     this->setDomainState(STATE_NOTCONFIGURED);
+    if (ReqNTPServer)  this->setNTPServerState(STATE_NOTCONFIGURED);
+    if (ReqTimezone)   this->setTimezoneState(STATE_NOTCONFIGURED);
+    if (ReqSIPServer)  this->setSIPServerState(STATE_NOTCONFIGURED);
+    if (ReqSIPDomain)  this->setSIPDomainState(STATE_NOTCONFIGURED);
+    if (ReqFQDN)       this->setFQDNState(STATE_NOTCONFIGURED);
+    if (ReqNISServer)  this->setNISServerState(STATE_NOTCONFIGURED);
+    if (ReqNISDomain)  this->setNISDomainState(STATE_NOTCONFIGURED);
+    if (ReqNISPServer) this->setNISPServerState(STATE_NOTCONFIGURED);
+    if (ReqNISPDomain) this->setNISPDomainState(STATE_NOTCONFIGURED);
+    if (ReqLifetime)   this->setLifetimeState(STATE_NOTCONFIGURED);
+    if (ReqPrefixDelegation) this->setPrefixDelegationState(STATE_NOTCONFIGURED);
     // copy preferred-server list
     SmartPtr<TStationID> station;
     opt->firstPrefSrv();
@@ -251,14 +251,14 @@ bool TClntCfgIface::getRapidCommit() {
 void TClntCfgIface::vendorSpecSupported(bool support)
 {
     this->ReqVendorSpec   = support;
-    this->VendorSpecState = NOTCONFIGURED;
+    this->VendorSpecState = STATE_NOTCONFIGURED;
 }
 
 void TClntCfgIface::setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec)
 {
     this->VendorSpec      = vendorSpec;
     this->ReqVendorSpec   = true;
-    this->VendorSpecState = NOTCONFIGURED;
+    this->VendorSpecState = STATE_NOTCONFIGURED;
 }
 
 // --------------------------------------------------------------------------------

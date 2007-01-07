@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.46 2007-01-03 01:27:02 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.47 2007-01-07 20:18:46 thomson Exp $
  *
  */
 
@@ -221,7 +221,7 @@ void TClntTransMgr::checkDB()
             ptrIA->firstAddr();
             while (ptrAddr = ptrIA->getAddr())
                 ptrIA->delAddr( ptrAddr->get() );
-            ptrIA->setState(NOTCONFIGURED);
+            ptrIA->setState(STATE_NOTCONFIGURED);
         }
     }
 }
@@ -308,7 +308,7 @@ void TClntTransMgr::doDuties()
         //of addresses
         checkRequest();
 
-        // are there any aging IAs?
+        // are there any aging IAs or PDs?
         checkRenew();
 
         // did we switched links lately?
@@ -344,7 +344,7 @@ void TClntTransMgr::shutdown()
     // delete all weird-state and address-free IAs 
     AddrMgr->firstIA();
     while (ptrFirstIA = AddrMgr->getIA()) {
-        if ( (ptrFirstIA->getState() != CONFIGURED && ptrFirstIA->getState() != INPROCESS) ||
+        if ( (ptrFirstIA->getState() != STATE_CONFIGURED && ptrFirstIA->getState() != STATE_INPROCESS) ||
             !ptrFirstIA->countAddr() )
             AddrMgr->delIA(ptrFirstIA->getIAID()); 
     }
@@ -397,7 +397,7 @@ void TClntTransMgr::shutdown()
 		iface->firstTA();
 		SmartPtr<TClntCfgTA> cfgTA = iface->getTA();
 		ta = AddrMgr->getTA(cfgTA->getIAID());
-		cfgTA->setState(DISABLED);
+		cfgTA->setState(STATE_DISABLED);
 	    }
 
 	}
@@ -407,7 +407,7 @@ void TClntTransMgr::shutdown()
 	    releasedPDs.append(pd);
 	    SPtr<TClntCfgPD> cfgPD = CfgMgr->getPD(pd->getIAID());
 	    if (cfgPD)
-		cfgPD->setState(DISABLED);
+		cfgPD->setState(STATE_DISABLED);
 	}
 	this->sendRelease(releasedIAs,ta, releasedPDs);
     }
@@ -424,9 +424,9 @@ void TClntTransMgr::shutdown()
 		Log(Warning) << "Unable to find TA(taid=" << cfgTA->getIAID() <<"). " << LogEnd;
 		continue;
 	    }
-	    if (cfgTA->getState()==CONFIGURED) {
+	    if (cfgTA->getState()==STATE_CONFIGURED) {
 		this->sendRelease(releasedIAs, ta, releasedPDs);
-		cfgTA->setState(DISABLED);
+		cfgTA->setState(STATE_DISABLED);
 	    }
 	}
 
@@ -617,10 +617,10 @@ void TClntTransMgr::checkSolicit() {
 	    //These not assigned in AddrMgr and configurable and not in trasaction
 	    //group and pass to constructor of Solicit message
 	    SmartPtr<TAddrIA> ia=AddrMgr->getIA(cfgIA->getIAID());
-	    if(ia->getState()==NOTCONFIGURED)
+	    if(ia->getState()==STATE_NOTCONFIGURED)
 	    {
 		iaLstToConfig.append(cfgIA);
-		ia->setState(INPROCESS);
+		ia->setState(STATE_INPROCESS);
 	    }
 	}
 
@@ -629,9 +629,9 @@ void TClntTransMgr::checkSolicit() {
 	if (iface->countTA() ) {
 	    iface->firstTA();
 	    SmartPtr<TClntCfgTA> ta = iface->getTA();
-	    if (ta->getState()==NOTCONFIGURED) {
+	    if (ta->getState()==STATE_NOTCONFIGURED) {
 		taToConfig = true;
-		// don't change set to INPROCESS, this will be done in ClntMsg.cpp, when
+		// don't change set to STATE_INPROCESS, this will be done in ClntMsg.cpp, when
 		// TA option will be appended.
 	    }
 	}
@@ -667,7 +667,7 @@ void TClntTransMgr::checkConfirm()
             if(ptrIA->getIface()==ptrIface->getID())
             {
                 IALst.append(ptrIA);
-                ptrIA->setState(INPROCESS);
+                ptrIA->setState(STATE_INPROCESS);
             }
         }
         if (IALst.count())
@@ -690,41 +690,41 @@ void TClntTransMgr::checkInfRequest()
 	    continue;
 	}
 	if (!ifaceIface->getTimeout()) {
-	    if (iface->getDNSServerState()  == CONFIGURED) 
-		iface->setDNSServerState(NOTCONFIGURED);
-	    if (iface->getDomainState()     == CONFIGURED) 
-		iface->setDomainState(NOTCONFIGURED);
-	    if (iface->getNTPServerState()  == CONFIGURED) 
-		iface->setNTPServerState(NOTCONFIGURED);
-            if (iface->getTimezoneState()   == CONFIGURED) 
-		iface->setTimezoneState (NOTCONFIGURED);
-	    if (iface->getSIPServerState()  == CONFIGURED) 
-		iface->setSIPServerState(NOTCONFIGURED);
-	    if (iface->getSIPDomainState()  == CONFIGURED) 
-		iface->setSIPDomainState(NOTCONFIGURED);
-	    if (iface->getFQDNState()       == CONFIGURED) 
-		iface->setFQDNState(NOTCONFIGURED);
-	    if (iface->getNISServerState()  == CONFIGURED) 
-		iface->setNISServerState(NOTCONFIGURED);
-	    if (iface->getNISDomainState()  == CONFIGURED) 
-		iface->setNISDomainState(NOTCONFIGURED);
-	    if (iface->getNISPServerState() == CONFIGURED) 
-		iface->setNISPServerState(NOTCONFIGURED);
-	    if (iface->getNISPDomainState() == CONFIGURED) 
-		iface->setNISPDomainState(NOTCONFIGURED);
+	    if (iface->getDNSServerState()  == STATE_CONFIGURED) 
+		iface->setDNSServerState(STATE_NOTCONFIGURED);
+	    if (iface->getDomainState()     == STATE_CONFIGURED) 
+		iface->setDomainState(STATE_NOTCONFIGURED);
+	    if (iface->getNTPServerState()  == STATE_CONFIGURED) 
+		iface->setNTPServerState(STATE_NOTCONFIGURED);
+            if (iface->getTimezoneState()   == STATE_CONFIGURED) 
+		iface->setTimezoneState (STATE_NOTCONFIGURED);
+	    if (iface->getSIPServerState()  == STATE_CONFIGURED) 
+		iface->setSIPServerState(STATE_NOTCONFIGURED);
+	    if (iface->getSIPDomainState()  == STATE_CONFIGURED) 
+		iface->setSIPDomainState(STATE_NOTCONFIGURED);
+	    if (iface->getFQDNState()       == STATE_CONFIGURED) 
+		iface->setFQDNState(STATE_NOTCONFIGURED);
+	    if (iface->getNISServerState()  == STATE_CONFIGURED) 
+		iface->setNISServerState(STATE_NOTCONFIGURED);
+	    if (iface->getNISDomainState()  == STATE_CONFIGURED) 
+		iface->setNISDomainState(STATE_NOTCONFIGURED);
+	    if (iface->getNISPServerState() == STATE_CONFIGURED) 
+		iface->setNISPServerState(STATE_NOTCONFIGURED);
+	    if (iface->getNISPDomainState() == STATE_CONFIGURED) 
+		iface->setNISPDomainState(STATE_NOTCONFIGURED);
 	}
 
-	if ( (iface->getDNSServerState()  == NOTCONFIGURED) ||
-	     (iface->getDomainState()     == NOTCONFIGURED) ||
-	     (iface->getNTPServerState()  == NOTCONFIGURED) ||
-	     (iface->getTimezoneState()   == NOTCONFIGURED) ||
-	     (iface->getSIPServerState()  == NOTCONFIGURED) ||
-	     (iface->getSIPDomainState()  == NOTCONFIGURED) ||
-	     (iface->getFQDNState()       == NOTCONFIGURED) ||
-	     (iface->getNISServerState()  == NOTCONFIGURED) ||
-	     (iface->getNISDomainState()  == NOTCONFIGURED) ||
-	     (iface->getNISPServerState() == NOTCONFIGURED) ||
-	     (iface->getNISPDomainState() == NOTCONFIGURED) ) {
+	if ( (iface->getDNSServerState()  == STATE_NOTCONFIGURED) ||
+	     (iface->getDomainState()     == STATE_NOTCONFIGURED) ||
+	     (iface->getNTPServerState()  == STATE_NOTCONFIGURED) ||
+	     (iface->getTimezoneState()   == STATE_NOTCONFIGURED) ||
+	     (iface->getSIPServerState()  == STATE_NOTCONFIGURED) ||
+	     (iface->getSIPDomainState()  == STATE_NOTCONFIGURED) ||
+	     (iface->getFQDNState()       == STATE_NOTCONFIGURED) ||
+	     (iface->getNISServerState()  == STATE_NOTCONFIGURED) ||
+	     (iface->getNISDomainState()  == STATE_NOTCONFIGURED) ||
+	     (iface->getNISPServerState() == STATE_NOTCONFIGURED) ||
+	     (iface->getNISPDomainState() == STATE_NOTCONFIGURED) ) {
 	    Log(Info) << "Creating INFORMATION-REQUEST message on "
 		      << iface->getName() << "/" << iface->getID() << " interface." << LogEnd;
             Transactions.append(new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,iface));
@@ -740,45 +740,45 @@ void TClntTransMgr::checkRenew()
 
     // TENTATIVE_YES, there are. Find them!
     AddrMgr->firstIA();
-    SmartPtr < TAddrIA> ptrIA;
+    SmartPtr<TAddrIA> ptrIA;
     while (ptrIA = AddrMgr->getIA() ) 
     {
-        if ( (ptrIA->getT1Timeout() == 0) && (ptrIA->getState()==CONFIGURED) ) 
-        {
-            // to avoid race conditions (RENEW vs DECLINE)
-            if (ptrIA->getTentative()==TENTATIVE_UNKNOWN)
-                continue;
+        if ( (ptrIA->getT1Timeout() != 0) || (ptrIA->getState()!=STATE_CONFIGURED) )
+	    continue;
 
-            TContainer<SmartPtr<TAddrIA> > iaLst;
-            Log(Notice) << "IA (IAID=" << ptrIA->getIAID() 
-                << ") needs RENEW. Trying to group with other IA(s) requiring renewal:";
-            SmartPtr<TAddrIA> iaPattern=ptrIA;
-            iaLst.append(ptrIA);
-            ptrIA->setState(INPROCESS);
-            while(ptrIA = AddrMgr->getIA())
-            {
-                //the same diffrence between T1(which has just elapsed
-                //for both IAs) and T2
-                if (((ptrIA->getT2()-ptrIA->getT1())==
-                    (iaPattern->getT2()-iaPattern->getT1()))&&
-                    (ptrIA->getIface()==iaPattern->getIface())&&
-                    (ptrIA->getDUID()==iaPattern->getDUID()))
-                {
-		    Log(Cont) << ptrIA->getIAID() << " ";
-                    iaLst.append(ptrIA);
-                    ptrIA->setState(INPROCESS);
-                }
-            }
-	    if (iaLst.count()==1) {
-		Log(Cont) << "none found." << LogEnd;
-	    } else {
-		Log(Cont) << "." << LogEnd;
+	// to avoid race conditions (RENEW vs DECLINE)
+	if (ptrIA->getTentative()==TENTATIVE_UNKNOWN)
+	    continue;
+	
+	List(TAddrIA) iaLst;
+	Log(Notice) << "IA (IAID=" << ptrIA->getIAID() 
+		    << ") needs RENEW. Trying to group with other IA(s) requiring renewal:";
+	SmartPtr<TAddrIA> iaPattern=ptrIA;
+	iaLst.append(ptrIA);
+	ptrIA->setState(STATE_INPROCESS);
+	while(ptrIA = AddrMgr->getIA())
+	{
+	    //the same diffrence between T1(which has just elapsed
+	    //for both IAs) and T2
+	    if (((ptrIA->getT2()-ptrIA->getT1())==
+		 (iaPattern->getT2()-iaPattern->getT1()))&&
+		(ptrIA->getIface()==iaPattern->getIface())&&
+		(ptrIA->getDUID()==iaPattern->getDUID()))
+	    {
+		Log(Cont) << ptrIA->getIAID() << " ";
+		iaLst.append(ptrIA);
+		ptrIA->setState(STATE_INPROCESS);
 	    }
-	    
-            SmartPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst);
-            Transactions.append(ptrRenew);
-            AddrMgr->firstIA();
-        }
+	}
+	if (iaLst.count()==1) {
+	    Log(Cont) << "none found." << LogEnd;
+	} else {
+	    Log(Cont) << "." << LogEnd;
+	}
+	
+	SmartPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst);
+	Transactions.append(ptrRenew);
+	AddrMgr->firstIA();
     }
 }
 
@@ -869,7 +869,7 @@ void TClntTransMgr::checkRequest()
 	}
 
 	// find all IAs which should be configured:
-	if ( (ia->getState()!=NOTCONFIGURED) )
+	if ( (ia->getState()!=STATE_NOTCONFIGURED) )
 	    continue;
 
 	// this IA is being serviced by different server
@@ -889,7 +889,7 @@ void TClntTransMgr::checkRequest()
 	}
 
 	requestIALst.append(ia);
-	ia->setState(INPROCESS);
+	ia->setState(STATE_INPROCESS);
 	duid = ia->getDUID();
 	ifaceID = ia->getIface();
     }

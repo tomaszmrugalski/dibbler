@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.6 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.7 2007-01-07 20:18:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005-01-08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.5  2004/12/08 00:15:49  thomson
  * Issues with denied RENEW (bug #53), code clean up
  *
@@ -228,7 +231,7 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 	ptrAddrIA->setT1( ptrOptIA->getT1() );
 	ptrAddrIA->setT2( ptrOptIA->getT2() );
 	ptrAddrIA->setTimestamp();
-	ptrAddrIA->setState(CONFIGURED);
+	ptrAddrIA->setState(STATE_CONFIGURED);
     } else {
 	// unknown IAID, ignore it
 	Log(Warning) << "Received message contains unknown IA (IAID="
@@ -281,7 +284,7 @@ void TClntMsgRebind::releaseIA(int IAID)
         //and from db
         ptrAddrIA->delAddr(ptrAddr->get());
     }
-    ptrAddrIA->setState(NOTCONFIGURED);
+    ptrAddrIA->setState(STATE_NOTCONFIGURED);
 }
 
 bool TClntMsgRebind::check() {

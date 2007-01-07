@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.30 2007-01-03 01:27:01 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.31 2007-01-07 20:18:44 thomson Exp $
  */
 
 #include "Portable.h"
@@ -239,7 +239,7 @@ bool TClntIfaceMgr::doDuties() {
 	cfgIface = ClntCfgMgr->getIface(iface->getID());
 	if (cfgIface) {
 	    // Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
-	    if (cfgIface->getFQDNState() == INPROCESS) {
+	    if (cfgIface->getFQDNState() == STATE_INPROCESS) {
 		// Here we check if all parameters are set, and do the DNS update if possible
 		List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
 		string fqdn = iface->getFQDN();

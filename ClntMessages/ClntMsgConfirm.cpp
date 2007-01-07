@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.5 2006-11-11 06:56:26 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.6 2007-01-07 20:18:45 thomson Exp $
  *
  */
 
@@ -95,7 +95,7 @@ void TClntMsgConfirm::addrsAccepted() {
 	// set them to RENEW timeout
 	unsigned long ts =now()-ptrIA->getT1();
 	ptrIA->setTimestamp(ts);
-	ptrIA->setState(CONFIGURED);
+	ptrIA->setState(STATE_CONFIGURED);
     }
     ClntAddrMgr->firstIA();
 }
@@ -119,7 +119,7 @@ void TClntMsgConfirm::addrsRejected() {
 	if (!ptrIface) {
 	    Log(Crit) << "We have addresses assigned to non-existing interface."
 		"Help! Somebody stole an interface!" << LogEnd;
-	    ptrIA->setState(NOTCONFIGURED);
+	    ptrIA->setState(STATE_NOTCONFIGURED);
 	    return;
 	}
 	SmartPtr<TAddrAddr> ptrAddr;
@@ -130,7 +130,7 @@ void TClntMsgConfirm::addrsRejected() {
 	    // ... and from DB
 	    ptrIA->delAddr( ptrAddr->get() );
 	}
-	ptrIA->setState(NOTCONFIGURED);
+	ptrIA->setState(STATE_NOTCONFIGURED);
     }
     ClntAddrMgr->firstIA();
 }

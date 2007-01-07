@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptDNSServers.cpp,v 1.10 2004-11-01 23:31:24 thomson Exp $
+ * $Id: ClntOptDNSServers.cpp,v 1.11 2007-01-07 20:18:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004-11-01 23:31:24  thomson
+ * New options,option handling mechanism and option renewal implemented.
+ *
  * Revision 1.9  2004/10/27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -71,7 +74,7 @@ bool TClntOptDNSServers::doDuties()
 
     SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
     SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
-    cfgIface->setDNSServerState(CONFIGURED);
+    cfgIface->setDNSServerState(STATE_CONFIGURED);
 
     return iface->setDNSServerLst(this->DUID, addr, this->AddrLst);
 }

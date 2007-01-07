@@ -6,7 +6,7 @@
  * chanmges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.11 2007-01-03 01:27:02 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.12 2007-01-07 20:18:45 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -95,9 +95,8 @@ TClntMsgRelease::TClntMsgRelease(
 	x->firstAddr();
 	while (ptrAddr = x->getAddr()) {
 	    ptrIface->delAddr(ptrAddr->get());
-	    Log(Notice)<< ptrAddr->get()->getPlain() 
-		       << " address released from " << ptrIface->getName() << "/" 
-		       << ptrIface->getID() << " interface." << LogEnd;
+	    Log(Notice)<< "Address " << ptrAddr->get()->getPlain() 
+		       << " removed from " << ptrIface->getFullName() << " interface." << LogEnd;
 	}
 
 	// --- DNS Update ---

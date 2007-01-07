@@ -6,18 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptNISPServer.cpp,v 1.2 2004-11-01 23:31:25 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.4  2004/03/29 19:10:06  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: ClntOptNISPServer.cpp,v 1.3 2007-01-07 20:18:46 thomson Exp $
  *
  */
 
@@ -58,7 +47,7 @@ bool TClntOptNISPServers::doDuties() {
 
     SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
     SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
-    cfgIface->setNISPServerState(CONFIGURED);
+    cfgIface->setNISPServerState(STATE_CONFIGURED);
 
     return iface->setNISPServerLst(this->DUID, addr,this->AddrLst);
 }

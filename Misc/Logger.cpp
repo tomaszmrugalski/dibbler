@@ -179,25 +179,22 @@ namespace logger {
 
 std::string StateToString(EState state) {
     switch (state) {
-    case NOTCONFIGURED:
+    case STATE_NOTCONFIGURED:
 	return "NOTCONFIGURED";
 	break;
-    case INPROCESS:
+    case STATE_INPROCESS:
 	return "INPROCESS";
 	break;
-    case CONFIGURED:
+    case STATE_CONFIGURED:
 	return "CONFIGURED";
 	break;
-    case FAILED:
+    case STATE_FAILED:
 	return "FAILED";
 	break;
-    case UNKNOWN:
-	return "UNKNOWN";
-	break;
-    case TENTATIVECHECK:
+    case STATE_TENTATIVECHECK:
 	return "TENTATIVECHECK";
 	break;
-    case TENTATIVE:
+    case STATE_TENTATIVE:
 	return "TENTATIVE";
 	break;
     default:

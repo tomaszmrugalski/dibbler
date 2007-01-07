@@ -18,7 +18,7 @@ TClntCfgIA::TClntCfgIA() {
     this->IAID = nextIAID++;
     this->T1 = CLIENT_DEFAULT_T1;
     this->T2 = CLIENT_DEFAULT_T2;
-    this->State = NOTCONFIGURED;
+    this->State = STATE_NOTCONFIGURED;
 }
 
 long TClntCfgIA::countAddr()
@@ -70,7 +70,7 @@ TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)
     IAID=iAID;
     T1=right->getT1();
     T2=right->getT2();
-    this->State = NOTCONFIGURED;
+    this->State = STATE_NOTCONFIGURED;
 }
 
 void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)
