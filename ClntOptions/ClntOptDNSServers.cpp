@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptDNSServers.cpp,v 1.11 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntOptDNSServers.cpp,v 1.12 2007-01-21 19:17:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2007-01-07 20:18:45  thomson
+ * State enum names changed.
+ *
  * Revision 1.10  2004-11-01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -38,13 +41,13 @@
 #include "Logger.h"
 
 TClntOptDNSServers::TClntOptDNSServers(List(TIPv6Addr) * lst, TMsg* parent)
-    :TOptAddrLst(OPTION_DNS_RESOLVERS, *lst, parent)
+    :TOptAddrLst(OPTION_DNS_SERVERS, *lst, parent)
 {
     
 }
 
 TClntOptDNSServers::TClntOptDNSServers(char* buf, int size, TMsg* parent)
-    :TOptAddrLst(OPTION_DNS_RESOLVERS, buf,size, parent)
+    :TOptAddrLst(OPTION_DNS_SERVERS, buf,size, parent)
 {
 
 }

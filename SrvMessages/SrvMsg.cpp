@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.36 2006-12-31 16:00:27 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.37 2007-01-21 19:17:58 thomson Exp $
  */
 
 #include <sstream>
@@ -129,7 +129,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_SERVERID:
 	    ptr =new TSrvOptServerIdentifier(buf+pos,length,this);
 	    break;
-	case OPTION_IA:
+	case OPTION_IA_NA:
 	    ptr = new TSrvOptIA_NA(buf+pos,length,this);
 	    break;
 	case OPTION_ORO:
@@ -150,10 +150,10 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_RAPID_COMMIT:
 	    ptr = new TSrvOptRapidCommit(buf+pos,length,this);
 	    break;
-	case OPTION_DNS_RESOLVERS:
+	case OPTION_DNS_SERVERS:
 	    ptr = new TSrvOptDNSServers(buf+pos,length,this);
             break;
-	case OPTION_NTP_SERVERS:
+	case OPTION_SNTP_SERVERS:
 	    ptr = new TSrvOptNTPServers(buf+pos,length,this);
 	    break;
 	case OPTION_DOMAIN_LIST:
@@ -162,10 +162,10 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_TIME_ZONE:
 	    ptr = new TSrvOptTimeZone(buf+pos, length,this);
 	    break;
-	case OPTION_SIP_SERVERS:
+	case OPTION_SIP_SERVER_A:
 	    ptr = new TSrvOptSIPServers(buf+pos, length, this);
 	    break;
-	case OPTION_SIP_DOMAINS:
+	case OPTION_SIP_SERVER_D:
 	    ptr = new TSrvOptSIPDomain(buf+pos, length, this);
 	    break;
 	case OPTION_NIS_SERVERS:
@@ -183,7 +183,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_FQDN:
 	    ptr = new TSrvOptFQDN(buf+pos, length, this);
 	    break;
-	case OPTION_LIFETIME:
+	case OPTION_INFORMATION_REFRESH_TIME:
 	    ptr = new TSrvOptLifetime(buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA:
@@ -365,7 +365,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, false/* false = verbose */);
 
     // --- option: DNS resolvers ---
-    if ( reqOpts->isOption(OPTION_DNS_RESOLVERS) && ptrIface->supportDNSServer() ) {
+    if ( reqOpts->isOption(OPTION_DNS_SERVERS) && ptrIface->supportDNSServer() ) {
 	SmartPtr<TSrvOptDNSServers> optDNS;
 	if (ex && ex->supportDNSServer())
 	    optDNS = new TSrvOptDNSServers(*ex->getDNSServerLst(), this);
@@ -387,7 +387,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     };
     
     // --- option: NTP servers ---
-    if ( reqOpts->isOption(OPTION_NTP_SERVERS) && ptrIface->supportNTPServer() ) {
+    if ( reqOpts->isOption(OPTION_SNTP_SERVERS) && ptrIface->supportNTPServer() ) {
 	SmartPtr<TSrvOptNTPServers> optNTP;
 	if (ex && ex->supportNTPServer())
 	    optNTP = new TSrvOptNTPServers(*ex->getNTPServerLst(),this);
@@ -409,7 +409,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     };
 
     // --- option: SIP SERVERS ---
-    if ( reqOpts->isOption(OPTION_SIP_SERVERS) && ptrIface->supportSIPServer() ) {
+    if ( reqOpts->isOption(OPTION_SIP_SERVER_A) && ptrIface->supportSIPServer() ) {
 	SmartPtr<TSrvOptSIPServers> optSIPServer;
 	if (ex && ex->supportSIPServer())
 	    optSIPServer = new TSrvOptSIPServers(*ex->getSIPServerLst(),this);
@@ -420,7 +420,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     };
 
     // --- option: SIP DOMAINS ---
-    if ( reqOpts->isOption(OPTION_SIP_DOMAINS) && ptrIface->supportSIPDomain() ) {
+    if ( reqOpts->isOption(OPTION_SIP_SERVER_D) && ptrIface->supportSIPDomain() ) {
 	SmartPtr<TSrvOptSIPDomain> optSIPDomain;
 	if (ex && ex->supportSIPDomain())
 	    optSIPDomain= new TSrvOptSIPDomain(*ex->getSIPDomainLst(),this);
@@ -483,7 +483,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	    newOptionAssigned = true;
     }
 
-    // --- option: LIFETIME ---
+    // --- option: INFORMATION_REFRESH_TIME ---
     // this option should be checked last 
     if ( newOptionAssigned && ptrIface->supportLifetime() ) {
 	SmartPtr<TSrvOptLifetime> optLifetime;

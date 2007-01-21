@@ -7,9 +7,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.10 2006-11-17 00:51:25 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.11 2007-01-21 19:17:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006-11-17 00:51:25  thomson
+ * Partial AUTH support by Sammael, fixes by thomson
+ *
  * Revision 1.9  2006-02-02 23:18:29  thomson
  * 0.4.2 release.
  *
@@ -130,7 +133,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
             case OPTION_IA_TA:
             case OPTION_RELAY_MSG:
             case OPTION_SERVERID:
-            case OPTION_IA:
+            case OPTION_IA_NA:
             case OPTION_IAADDR:
             case OPTION_RAPID_COMMIT:
             case OPTION_INTERFACE_ID:
@@ -178,7 +181,7 @@ void TClntMsgInfRequest::answer(SmartPtr<TClntMsg> msg)
 	}//while
     }
 
-    ptrORO->delOption(OPTION_LIFETIME);
+    ptrORO->delOption(OPTION_INFORMATION_REFRESH_TIME);
     if (ptrORO && ptrORO->count())
     {
 	Log(Notice) << "Not all options were assigned (";

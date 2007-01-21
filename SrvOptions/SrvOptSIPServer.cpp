@@ -6,22 +6,25 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptSIPServer.cpp,v 1.1 2004-11-02 01:30:54 thomson Exp $
+ * $Id: SrvOptSIPServer.cpp,v 1.2 2007-01-21 19:17:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004-11-02 01:30:54  thomson
+ * Initial version.
+ *
  */
 
 #include "SrvOptSIPServer.h"
 #include "DHCPConst.h"
 
 TSrvOptSIPServers::TSrvOptSIPServers(List(TIPv6Addr) lst, TMsg* parent)
-    :TOptAddrLst(OPTION_SIP_SERVERS, lst, parent)
+    :TOptAddrLst(OPTION_SIP_SERVER_A, lst, parent)
 {
 
 }
 
 TSrvOptSIPServers::TSrvOptSIPServers(char* buf, int size, TMsg* parent)
-    :TOptAddrLst(OPTION_SIP_SERVERS, buf,size, parent)
+    :TOptAddrLst(OPTION_SIP_SERVER_A, buf,size, parent)
 {
     
 }

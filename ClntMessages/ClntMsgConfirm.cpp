@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.6 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.7 2007-01-21 19:17:57 thomson Exp $
  *
  */
 
@@ -84,7 +84,7 @@ void TClntMsgConfirm::addrsAccepted() {
     SmartPtr<TOpt> ptrOpt;
     this->firstOption();
     while ( ptrOpt = this->getOption() ) {
-	if (ptrOpt->getOptType()!=OPTION_IA)
+	if (ptrOpt->getOptType()!=OPTION_IA_NA)
 	    continue;
 
 	SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
@@ -105,7 +105,7 @@ void TClntMsgConfirm::addrsRejected() {
     SmartPtr<TOpt> ptrOpt;
     this->firstOption();
     while ( ptrOpt = this->getOption() ) {
-	if (ptrOpt->getOptType()!=OPTION_IA)
+	if (ptrOpt->getOptType()!=OPTION_IA_NA)
 	    continue;
 
 	SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;

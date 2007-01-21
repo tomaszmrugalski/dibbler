@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.16 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.17 2007-01-21 19:17:57 thomson Exp $
  *
  */
 
@@ -97,7 +97,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	SmartPtr<TOpt> opt;
 	// set this unicast address in each IA in AddrMgr
 	while (opt = Options.get()) {
-	    if (opt->getOptType()!=OPTION_IA)
+	    if (opt->getOptType()!=OPTION_IA_NA)
 		continue;
 	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
 	    SmartPtr<TAddrIA> ptrAddrIA = AddrMgr->getIA(ptrOptIA->getIAID());
@@ -177,7 +177,7 @@ void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
     while (option = msg->getOption() ) {
         switch (option->getOptType()) 
         {
-            case OPTION_IA:
+            case OPTION_IA_NA:
             {
                 SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
                 clntOpt->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
@@ -193,7 +193,7 @@ void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
 		this->Options.first();
 		while (requestOpt = this->Options.get())
 		{
-		    if (requestOpt->getOptType()!=OPTION_IA)
+		    if (requestOpt->getOptType()!=OPTION_IA_NA)
 			continue;
 		    
 		    SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
@@ -266,7 +266,7 @@ void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
     this->Options.first();
     bool isIA = false;
     while ( requestOpt = this->Options.get()) {
-        if (requestOpt->getOptType() == OPTION_IA) {
+        if (requestOpt->getOptType() == OPTION_IA_NA) {
             isIA = true;
             break;
         }
@@ -300,7 +300,7 @@ void TClntMsgRequest::doDuties()
 	    Options.first();
 	    while (option = Options.get()) 
 	    {
-		if (option->getOptType() == OPTION_IA)
+		if (option->getOptType() == OPTION_IA_NA)
 		{
 		    ClntCfgMgr->setIAState(Iface,( (SmartPtr<TOptIA_NA>)option )->getIAID(), STATE_FAILED);
 		}

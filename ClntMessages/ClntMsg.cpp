@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.21 2007-01-21 18:06:59 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.22 2007-01-21 19:17:56 thomson Exp $
  */
 
 #ifdef WIN32
@@ -135,7 +135,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_SERVERID:
 	    ptr =new TClntOptServerIdentifier(buf+pos,length,this);
 	    break;
-	case OPTION_IA:
+	case OPTION_IA_NA:
 	    ptr = new TClntOptIA_NA(buf+pos,length,this);
 	    break;
 	case OPTION_IA_PD:
@@ -159,10 +159,10 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_RAPID_COMMIT:
 	    ptr = new TClntOptRapidCommit(buf+pos,length,this);
 	    break;
-	case OPTION_DNS_RESOLVERS:
+	case OPTION_DNS_SERVERS:
 	    ptr = new TClntOptDNSServers(buf+pos,length,this);
 	    break;
-	case OPTION_NTP_SERVERS:
+	case OPTION_SNTP_SERVERS:
 	    ptr = new TClntOptNTPServers(buf+pos,length,this);
 	    break;
 	case OPTION_DOMAIN_LIST:
@@ -171,10 +171,10 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_TIME_ZONE:
 	    ptr = new TClntOptTimeZone(buf+pos, length,this);
 	    break;
-	case OPTION_SIP_SERVERS:
+	case OPTION_SIP_SERVER_A:
 	    ptr = new TClntOptSIPServers(buf+pos, length, this);
 	    break;
-	case OPTION_SIP_DOMAINS:
+	case OPTION_SIP_SERVER_D:
 	    ptr = new TClntOptSIPDomain(buf+pos, length, this);
 	    break;
 	case OPTION_NIS_SERVERS:
@@ -192,7 +192,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_FQDN:
 	    ptr = new TClntOptFQDN(buf+pos, length, this);
 	    break;
-	case OPTION_LIFETIME:
+	case OPTION_INFORMATION_REFRESH_TIME:
 	    ptr = new TClntOptLifetime(buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA: {
@@ -351,7 +351,7 @@ void TClntMsg::setIface(int iface) {
     this->Options.first();
     while (opt = Options.get()) {
 	switch ( opt->getOptType() ) {
-	case OPTION_IA: {
+	case OPTION_IA_NA: {
 	    SmartPtr<TClntOptIA_NA> ia = (Ptr*) opt;
 	    ia->setIface(iface);
 	    break;
@@ -384,7 +384,7 @@ void TClntMsg::appendRequestedOptions() {
 
     // --- option: DNS-SERVERS ---
     if ( iface->isReqDNSServer() && (iface->getDNSServerState()==STATE_NOTCONFIGURED) ) {
-	optORO->addOption(OPTION_DNS_RESOLVERS);
+	optORO->addOption(OPTION_DNS_SERVERS);
 	
 	List(TIPv6Addr) * dnsLst = iface->getProposedDNSServerLst();
 	if (dnsLst->count()) {
@@ -410,7 +410,7 @@ void TClntMsg::appendRequestedOptions() {
 
     // --- option: NTP SERVER ---
     if ( iface->isReqNTPServer() && (iface->getNTPServerState()==STATE_NOTCONFIGURED) ) {
-	optORO->addOption(OPTION_NTP_SERVERS);
+	optORO->addOption(OPTION_SNTP_SERVERS);
 
 	List(TIPv6Addr) * ntpLst = iface->getProposedNTPServerLst();
 	if (ntpLst->count()) {
@@ -436,7 +436,7 @@ void TClntMsg::appendRequestedOptions() {
 
     // --- option: SIP-SERVERS ---
     if ( iface->isReqSIPServer() && (iface->getSIPServerState()==STATE_NOTCONFIGURED) ) {
-	optORO->addOption(OPTION_SIP_SERVERS);
+	optORO->addOption(OPTION_SIP_SERVER_A);
 	
 	List(TIPv6Addr) * lst = iface->getProposedSIPServerLst();
 	if ( lst->count()) {
@@ -449,7 +449,7 @@ void TClntMsg::appendRequestedOptions() {
 
     // --- option: SIP-DOMAINS ---
     if ( iface->isReqSIPDomain() && (iface->getSIPDomainState()==STATE_NOTCONFIGURED) ) {
-	optORO->addOption(OPTION_SIP_DOMAINS);
+	optORO->addOption(OPTION_SIP_SERVER_D);
 
 	List(string) * domainsLst = iface->getProposedSIPDomainLst();
 	if ( domainsLst->count() ) {
@@ -537,7 +537,7 @@ void TClntMsg::appendRequestedOptions() {
 
     // --- option: LIFETIME ---
     if ( iface->isReqLifetime() && (this->MsgType == INFORMATION_REQUEST_MSG) && optORO->count() )
-	optORO->addOption(OPTION_LIFETIME);
+	optORO->addOption(OPTION_INFORMATION_REFRESH_TIME);
 
     // --- option: VENDOR-SPEC ---
     if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==STATE_NOTCONFIGURED) ) {

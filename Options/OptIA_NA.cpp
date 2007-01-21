@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIA_NA.cpp,v 1.6 2004-09-07 22:02:33 thomson Exp $
+ * $Id: OptIA_NA.cpp,v 1.7 2007-01-21 19:17:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004-09-07 22:02:33  thomson
+ * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
+ *
  * Revision 1.5  2004/06/17 23:53:54  thomson
  * Server Address Assignment rewritten.
  *
@@ -33,7 +36,7 @@
 //#include "OptRapidCommit.h"
 
 TOptIA_NA::TOptIA_NA( long IAID, long t1,  long t2, TMsg* parent)
-	:TOpt(OPTION_IA, parent) {
+	:TOpt(OPTION_IA_NA, parent) {
     this->IAID = IAID;
     this->T1   = t1;
     this->T2   = t2;
@@ -52,7 +55,7 @@ unsigned long TOptIA_NA::getT2() {
 }
 
 TOptIA_NA::TOptIA_NA( char * &buf, int &bufsize, TMsg* parent)
-    :TOpt(OPTION_IA, parent) {
+    :TOpt(OPTION_IA_NA, parent) {
     if (bufsize<12) {
         Valid=false;
         bufsize=0;

@@ -68,7 +68,7 @@
 // RFC3315: supported options
 #define OPTION_CLIENTID         1
 #define OPTION_SERVERID         2
-#define OPTION_IA               3
+#define OPTION_IA_NA            3
 #define OPTION_IA_TA            4
 #define OPTION_IAADDR           5
 #define OPTION_ORO              6
@@ -78,7 +78,7 @@
 #define OPTION_STATUS_CODE      13
 #define OPTION_RAPID_COMMIT     14
 
-// RFC: options not supported yet
+// RFC3315: options not supported yet
 #define OPTION_RELAY_MSG        9
 #define OPTION_AUTH             11
 #define OPTION_USER_CLASS       15
@@ -91,11 +91,11 @@
 // additional options
 
 // RFC3319: SIP servers and domains
-#define OPTION_SIP_DOMAINS      21
-#define OPTION_SIP_SERVERS      22
+#define OPTION_SIP_SERVER_D      21
+#define OPTION_SIP_SERVER_A      22
 
 // RFC3646: DNS servers and domains
-#define OPTION_DNS_RESOLVERS	23
+#define OPTION_DNS_SERVERS	23
 #define OPTION_DOMAIN_LIST      24
 
 // RFC3633: Prefix options
@@ -109,21 +109,39 @@
 #define OPTION_NISP_DOMAIN_NAME 30
 
 // RFC4075: Simple Network Time Protocol (SNTP)
-#define OPTION_NTP_SERVERS      31
+#define OPTION_SNTP_SERVERS     31
 
-// draft-ietf-dhc-lifetime-02.txt
-#define OPTION_LIFETIME         32
+// RFC4242: Information Refresh Time Option
+#define OPTION_INFORMATION_REFRESH_TIME     32
 
-// draft-ietf-dhc-dhcpv6-fqdn-00.txt
-#define OPTION_FQDN             34
+// RFC4280: Broadcast and Multicast Control Servers
+#define OPTION_BCMCS_SERVER_D   33
+#define OPTION_BCMCS_SERVER_A   34
 
+// RFC4776: Option for Civic Addresses Configuration Information
+#define OPTION_GEOCONF_CIVIC    36
+
+// RFC4649: Relay Agent Remote-ID Option
+#define OPTION_REMOTE_ID        37
+
+// RFC4580: Relay Agent Subscriber-ID Option
+#define OPTION_SUBSCRIBER_ID    38
+
+// RFC4704: Client Fully Qualified Domain Name (FQDN) Option
+#define OPTION_FQDN             39
+
+// The following option numbers are not yet standardized and
+// won't interoperate with other implementations
 // (obsolete) draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
-#define OPTION_TIME_ZONE        41
+#define OPTION_TIME_ZONE            252
+// draft-ietf-dhc-dhcpv6-opt-timeconfig-05.txt
+#define OPTION_NEW_POSIX_TIMEZONE   253
+#define OPTION_NEW_TZDB_TIMEZONE    254
 
 // --- Option lengths --
 // (value of the len field, so actual option length is +4 bytes)
 #define OPTION_ELAPSED_TIME_LEN     2
-#define OPTION_LIFETIME_LEN         4
+#define OPTION_INFORMATION_REFRESH_TIME_LEN         4
 
 // --- Status Codes --- 
 #define STATUSCODE_SUCCESS       0

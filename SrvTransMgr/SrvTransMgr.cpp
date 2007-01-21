@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.29 2006-12-25 20:47:01 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.30 2007-01-21 19:17:58 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2006-12-25 20:47:01  thomson
+ * Some memory leaks fixes, valgrind info added.
+ *
  * Revision 1.28  2006-08-21 22:51:26  thomson
  * Cache support added.
  *
@@ -208,7 +211,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 		answRep->firstOption();
 		bool found=false;
 		while( (ptrOpt=answRep->getOption()) && (!found) ) {
-		    if (ptrOpt->getOptType()==OPTION_IA) {
+		    if (ptrOpt->getOptType()==OPTION_IA_NA) {
 			SmartPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
 			SmartPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
 			    ptrIA->getOption(OPTION_STATUS_CODE);

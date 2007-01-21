@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.15 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.16 2007-01-21 19:17:57 thomson Exp $
  *
  */
 
@@ -131,7 +131,7 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
-            if(allowOptInOpt(parent->getType(),OPTION_IA,code))
+            if(allowOptInOpt(parent->getType(),OPTION_IA_NA,code))
             {
                 SmartPtr<TOpt> opt= SmartPtr<TOpt>();
                 switch (code)
@@ -344,7 +344,7 @@ bool TClntOptIA_NA::doDuties()
                 ptrIA->delAddr(ptrOptAddr->getAddr());
                 // delete address from IfaceMgr
                 ptrIface->delAddr(ptrOptAddr->getAddr());
-                break; // analyze next option OPTION_IA
+                break; // analyze next option OPTION_IA_NA
             }
 
             // set up new options in IfaceMgr

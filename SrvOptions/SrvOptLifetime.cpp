@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptLifetime.cpp,v 1.2 2006-10-29 13:11:47 thomson Exp $
+ * $Id: SrvOptLifetime.cpp,v 1.3 2007-01-21 19:17:58 thomson Exp $
  *
  */
 
@@ -14,12 +14,12 @@
 #include "SrvOptLifetime.h"
 
 TSrvOptLifetime::TSrvOptLifetime(char * buf,  int n, TMsg* parent)
-	:TOptInteger(OPTION_LIFETIME, OPTION_LIFETIME_LEN, buf,n, parent){
+	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf,n, parent){
 
 }
 
 TSrvOptLifetime::TSrvOptLifetime( unsigned int lifetime, TMsg* parent)
-	:TOptInteger(OPTION_LIFETIME, OPTION_LIFETIME_LEN, lifetime, parent) {
+	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, lifetime, parent) {
 }
 
 bool TSrvOptLifetime::doDuties()

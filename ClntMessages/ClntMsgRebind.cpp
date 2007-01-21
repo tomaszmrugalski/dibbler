@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.7 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.8 2007-01-21 19:17:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007-01-07 20:18:45  thomson
+ * State enum names changed.
+ *
  * Revision 1.6  2005-01-08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -67,7 +70,7 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
     firstOption();
     while(ptrOpt=getOption())
     {
-        if (ptrOpt->getOptType()==OPTION_IA)
+        if (ptrOpt->getOptType()==OPTION_IA_NA)
         {
             SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*) ptrOpt;
             SmartPtr<TAddrIA> ptrAddrIA=
@@ -99,7 +102,7 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
     {
         switch (opt->getOptType()) 
         {
-            case OPTION_IA:
+            case OPTION_IA_NA:
             {
                 SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
                 ptrOptIA->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
@@ -115,7 +118,7 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
                     Options.first();
                     while (requestOpt = Options.get())
                     {
-                        if (requestOpt->getOptType()==OPTION_IA)
+                        if (requestOpt->getOptType()==OPTION_IA_NA)
                         {
                             SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
                             if ((ptrIA->getIAID() == ptrOptIA->getIAID() ) &&
@@ -212,7 +215,7 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 	    } else {
 		if ( (ptrOptAddr->getPref() == 0) || (ptrOptAddr->getValid() == 0) ) {
 		    releaseIA( ptrOptIA->getIAID() );
-		    break; // analyze next option OPTION_IA
+		    break; // analyze next option OPTION_IA_NA
 		}
 		// set up new options
 		if (ptrOptAddr->getPref() != ptrAddrAddr->getPref() )
@@ -241,7 +244,7 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 
 void TClntMsgRebind::doDuties()
 {
-    SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)getOption(OPTION_IA);
+    SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)getOption(OPTION_IA_NA);
     SmartPtr<TAddrIA> ptrAddrIA = ClntAddrMgr->getIA(ptrIA->getIAID());
     SmartPtr<TIfaceIface> iface = ClntIfaceMgr->getIfaceByID(this->Iface);
 
@@ -252,7 +255,7 @@ void TClntMsgRebind::doDuties()
 	Log(Warning) << "REBIND for the IA:";
         while(ptrOpt=getOption())
         {
-            if (ptrOpt->getOptType()!=OPTION_IA)
+            if (ptrOpt->getOptType()!=OPTION_IA_NA)
                 continue;
             SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
 	    Log(Cont) << ptrIA->getIAID() << " ";

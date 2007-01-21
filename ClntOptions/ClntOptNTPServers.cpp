@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptNTPServers.cpp,v 1.7 2007-01-07 20:18:46 thomson Exp $
+ * $Id: ClntOptNTPServers.cpp,v 1.8 2007-01-21 19:17:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007-01-07 20:18:46  thomson
+ * State enum names changed.
+ *
  * Revision 1.6  2004-11-01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -30,11 +33,11 @@
 #include "Logger.h"
 
 TClntOptNTPServers::TClntOptNTPServers(List(TIPv6Addr) * lst, TMsg* parent)
-    :TOptAddrLst(OPTION_NTP_SERVERS, *lst, parent) {
+    :TOptAddrLst(OPTION_SNTP_SERVERS, *lst, parent) {
 }
 
 TClntOptNTPServers::TClntOptNTPServers(char* buf, int size, TMsg* parent)
-    :TOptAddrLst(OPTION_NTP_SERVERS, buf, size, parent) {
+    :TOptAddrLst(OPTION_SNTP_SERVERS, buf, size, parent) {
 }
 
 bool TClntOptNTPServers::doDuties() {

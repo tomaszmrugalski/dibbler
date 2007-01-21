@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.8 2007-01-07 23:31:00 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.9 2007-01-21 19:17:57 thomson Exp $
  *
  */
 
@@ -89,7 +89,7 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
     // separate RENEW for each IA, but we check all options anyway)
     while ( opt = Reply->getOption() ) {
         switch (opt->getOptType()) {
-	case OPTION_IA: {
+	case OPTION_IA_NA: {
 	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
 	    if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
 		SmartPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);

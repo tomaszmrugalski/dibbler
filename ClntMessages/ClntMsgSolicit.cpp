@@ -6,7 +6,7 @@
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.22 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.23 2007-01-21 19:17:57 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -150,7 +150,7 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TClntMsg> msg) {
     {
         switch (option->getOptType()) 
         {
-            case OPTION_IA:
+            case OPTION_IA_NA:
             {
                 SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
                 clntOpt->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
@@ -166,7 +166,7 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TClntMsg> msg) {
                     this->Options.first();
                     while (requestOpt = this->Options.get())
                     {
-                        if (requestOpt->getOptType()==OPTION_IA)
+                        if (requestOpt->getOptType()==OPTION_IA_NA)
                         {
                             SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
                             if ((ptrIA->getIAID() == clntOpt->getIAID() ) &&
@@ -210,7 +210,7 @@ void TClntMsgSolicit::replyReceived(SmartPtr<TClntMsg> msg) {
     this->Options.first();
     bool IAsToConfigure = false;
     while ( solicitOpt = this->Options.get()) {
-        if (solicitOpt->getOptType() == OPTION_IA) {
+        if (solicitOpt->getOptType() == OPTION_IA_NA) {
 	    SmartPtr<TClntOptIA_NA> optIA = (Ptr*) solicitOpt;
 	    SmartPtr<TAddrIA> addrIA = ClntAddrMgr->getIA(optIA->getIAID());
 	    addrIA->setState(STATE_NOTCONFIGURED);
@@ -266,8 +266,8 @@ bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TClntMsg> msg)
     }
 
     // have we asked for IA?
-    if ( (this->getOption(OPTION_IA)) && (!msg->getOption(OPTION_IA)) ) {
-	Log(Notice) << "IA option requested, but not present in this message. Ignored." << LogEnd;
+    if ( (this->getOption(OPTION_IA_NA)) && (!msg->getOption(OPTION_IA_NA)) ) {
+	Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
 	return true;
     }
     

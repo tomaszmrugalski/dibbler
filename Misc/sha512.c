@@ -24,7 +24,6 @@
 /* This file is taken from coreutils-6.2 (lib/sha512.c) and adapted for dibbler
  * by Michal Kowalczuk <michal@kowalczuk.eu> */
 
-#include <config.h>
 
 #include "sha512.h"
 

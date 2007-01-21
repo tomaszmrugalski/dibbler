@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptLifetime.cpp,v 1.4 2006-11-03 23:21:47 thomson Exp $
+ * $Id: ClntOptLifetime.cpp,v 1.5 2007-01-21 19:17:57 thomson Exp $
  *
  */
 #include "DHCPConst.h"
@@ -16,12 +16,12 @@
 #include "Logger.h"
 
 TClntOptLifetime::TClntOptLifetime(char * buf,  int n, TMsg* parent)
-	:TOptInteger(OPTION_LIFETIME, OPTION_LIFETIME_LEN, buf,n, parent){
+	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf,n, parent){
 
 }
 
 TClntOptLifetime::TClntOptLifetime( char pref, TMsg* parent)
-	:TOptInteger(OPTION_LIFETIME, OPTION_LIFETIME_LEN, pref, parent) {
+	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, pref, parent) {
 }
 
 bool TClntOptLifetime::doDuties()

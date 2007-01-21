@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.25 2006-12-30 23:24:42 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.26 2007-01-21 19:17:58 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -83,7 +83,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    this->Options.append(opt);
 	    break;
 	}
-	case OPTION_IA : {
+	case OPTION_IA_NA : {
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA = new TSrvOptIA_NA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt,
 					clntDuid, clntAddr, 
@@ -140,9 +140,9 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	//add options requested by client to option Request Option if
 	//client didn't included them
 	    
-	case OPTION_DNS_RESOLVERS: {
-	    if (!reqOpts->isOption(OPTION_DNS_RESOLVERS))
-		reqOpts->addOption(OPTION_DNS_RESOLVERS);
+	case OPTION_DNS_SERVERS: {
+	    if (!reqOpts->isOption(OPTION_DNS_SERVERS))
+		reqOpts->addOption(OPTION_DNS_SERVERS);
 	    break;
 	}
 	case OPTION_DOMAIN_LIST: {
@@ -150,9 +150,9 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 		reqOpts->addOption(OPTION_DOMAIN_LIST);
 	    break;
 	}
-	case OPTION_NTP_SERVERS:
-	    if (!reqOpts->isOption(OPTION_NTP_SERVERS))
-		reqOpts->addOption(OPTION_NTP_SERVERS);
+	case OPTION_SNTP_SERVERS:
+	    if (!reqOpts->isOption(OPTION_SNTP_SERVERS))
+		reqOpts->addOption(OPTION_SNTP_SERVERS);
 	    break;
 	case OPTION_TIME_ZONE:
 	    if (!reqOpts->isOption(OPTION_TIME_ZONE))
@@ -229,7 +229,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     this->firstOption();
     while ( opt = this->getOption()) {
 	switch (opt->getOptType()) {
-	case OPTION_IA: {
+	case OPTION_IA_NA: {
 	    SmartPtr<TSrvOptIA_NA> ptrOptIA_NA;
 	    ptrOptIA_NA = (Ptr*) opt;
 	    ptrOptIA_NA->releaseAllAddrs(false);

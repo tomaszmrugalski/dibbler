@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptSIPDomain.cpp,v 1.3 2007-01-07 20:18:46 thomson Exp $
+ * $Id: ClntOptSIPDomain.cpp,v 1.4 2007-01-21 19:17:57 thomson Exp $
  *
  */
 
@@ -17,11 +17,11 @@
 #include "Logger.h"
 
 TClntOptSIPDomain::TClntOptSIPDomain(List(string) *domains, TMsg* parent)    
-    :TOptStringLst(OPTION_SIP_DOMAINS, *domains, parent) {
+    :TOptStringLst(OPTION_SIP_SERVER_D, *domains, parent) {
 }
 
 TClntOptSIPDomain::TClntOptSIPDomain(char *buf, int bufsize, TMsg* parent)
-    :TOptStringLst(OPTION_SIP_DOMAINS, buf,bufsize, parent) {
+    :TOptStringLst(OPTION_SIP_SERVER_D, buf,bufsize, parent) {
 }
 
 bool TClntOptSIPDomain::doDuties() {

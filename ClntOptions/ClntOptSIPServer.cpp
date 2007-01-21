@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptSIPServer.cpp,v 1.3 2007-01-07 20:18:46 thomson Exp $
+ * $Id: ClntOptSIPServer.cpp,v 1.4 2007-01-21 19:17:57 thomson Exp $
  */
 
 #include "ClntOptSIPServer.h"
@@ -15,11 +15,11 @@
 #include "Logger.h"
 
 TClntOptSIPServers::TClntOptSIPServers(List(TIPv6Addr) *lst, TMsg* parent)
-    :TOptAddrLst(OPTION_SIP_SERVERS, *lst, parent) {
+    :TOptAddrLst(OPTION_SIP_SERVER_A, *lst, parent) {
 }
 
 TClntOptSIPServers::TClntOptSIPServers(char* buf, int size, TMsg* parent)
-    :TOptAddrLst(OPTION_SIP_SERVERS, buf, size, parent) {
+    :TOptAddrLst(OPTION_SIP_SERVER_A, buf, size, parent) {
 }
 
 bool TClntOptSIPServers::doDuties() {

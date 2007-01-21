@@ -72,7 +72,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     bool OnLink = true;
     while (ptrOpt=confirm->getOption() && (OnLink) ) {
 	switch (ptrOpt->getOptType()) {
-	case OPTION_IA: {
+	case OPTION_IA_NA: {
 	    SmartPtr<TSrvOptIA_NA> ia = (Ptr*) ptrOpt;
 	    SmartPtr<TOpt> subOpt;
 	    ia->firstOption();
@@ -174,7 +174,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     {
         switch (ptrOpt->getOptType()) 
 	{
-        case OPTION_IA: 
+        case OPTION_IA_NA: 
 	{
 	    SmartPtr<TSrvOptIA_NA> ptrIA_NA = (Ptr*) ptrOpt;
 	    SmartPtr<TAddrIA> ptrIA = ptrClient->getIA(ptrIA_NA->getIAID());
@@ -269,7 +269,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     {
         switch (ptrOpt->getOptType()) 
         {
-        case OPTION_IA: 
+        case OPTION_IA_NA: 
             {
                SmartPtr<TSrvOptIA_NA> optIA_NA;
                 optIA_NA = new TSrvOptIA_NA(CfgMgr, AddrMgr, (Ptr*)ptrOpt, 
@@ -368,7 +368,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     release->firstOption();
     while(opt=release->getOption()) {
 	switch (opt->getOptType()) {
-	case OPTION_IA: {
+	case OPTION_IA_NA: {
 	    SmartPtr<TSrvOptIA_NA> clntIA = (Ptr*) opt;
 	    SmartPtr<TSrvOptIAAddress> addr;
 	    bool anyDeleted=false;
@@ -523,7 +523,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         case OPTION_SERVERID:
             this->Options.append(ptrOpt);
             break;
-        case OPTION_IA: {
+        case OPTION_IA_NA: {
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA = new TSrvOptIA_NA(CfgMgr, AddrMgr, (Ptr*)ptrOpt, 
 					renew->getAddr(), duidOpt->getDUID(),
@@ -607,7 +607,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    this->Options.append(opt);
 	    break;
 	}
-	case OPTION_IA          : {
+	case OPTION_IA_NA: {
 	    SmartPtr<TSrvOptIA_NA> optIA;
 	    optIA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, 
 				     clntAddr, clntIface, REQUEST_MSG, this);
@@ -730,7 +730,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    Log(Warning) << "Solicit message contains ServerID option. Rejecting message. " << LogEnd;
 	    IsDone = true;
 	    return;
-	case OPTION_IA          : {
+	case OPTION_IA_NA       : {
 	    SmartPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA = new TSrvOptIA_NA(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, clntAddr, 
 					clntIface, REQUEST_MSG,this);
@@ -802,7 +802,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
             case OPTION_PREFERENCE  :
             case OPTION_UNICAST     :
             case OPTION_RECONF_MSG  :
-            case OPTION_IA          : 
+            case OPTION_IA_NA       : 
             case OPTION_IA_TA       :
             case OPTION_AUTH        :
                 Log(Warning) << "Invalid option " << ptrOpt->getOptType() <<" received." << LogEnd;

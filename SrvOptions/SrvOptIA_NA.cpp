@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.18 2007-01-04 00:25:40 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.19 2007-01-21 19:17:58 thomson Exp $
  */
 
 #ifdef WIN32
@@ -48,7 +48,7 @@ TSrvOptIA_NA::TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent)
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
-            if(allowOptInOpt(parent->getType(),OPTION_IA,code)) {
+            if(allowOptInOpt(parent->getType(),OPTION_IA_NA,code)) {
                 SmartPtr<TOpt> opt;
 		opt = SmartPtr<TOpt>(); /* NULL */
                 switch (code)
@@ -197,7 +197,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 	}
 	default: {
 	    Log(Warning) << "Invalid suboption (" << opt->getOptType() 
-			 << ") in an OPTION_IA option received. Option ignored." << LogEnd;
+			 << ") in an OPTION_IA_NA option received. Option ignored." << LogEnd;
 	    break;
 	}
 	}
@@ -307,7 +307,7 @@ TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
         break;
     default: {
 	Log(Warning) << "Unknown message type (" << msgType 
-		     << "). Cannot generate OPTION_IA."<< LogEnd;
+		     << "). Cannot generate OPTION_IA_NA."<< LogEnd;
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL,
 						"Unknown message type.",this->Parent));
         break;
@@ -317,7 +317,7 @@ TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
 
 // 
 /** 
- * generate OPTION_IA based on OPTION_IA received in RENEW message
+ * generate OPTION_IA_NA based on OPTION_IA_NA received in RENEW message
  * 
  * @param queryOpt - IA_NA option in the RENEW message
  * @param addrCount 
