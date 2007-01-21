@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.38 2007-01-06 17:34:04 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.39 2007-01-21 18:44:15 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -670,8 +670,16 @@ iface eth0 {
    option vendor-spec
 #   option vendor-spec 1234
 #   option vendor-spec 1234 0x0002abcd
+
+# To ask for multiple vendor-spec options, uncomment:
+#   option vendor-spec 123,456
 }
 \end{lstlisting}
+
+Although that is almost never needed, it is possible to configure
+client to request multiple vendor-specific options at the same
+time. That feature is mainly used as a test tool for the server. To
+use it, uncomment last line in the example above.
 
 \subsubsection{Example 10: Unicast communication}
 

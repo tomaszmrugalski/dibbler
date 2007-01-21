@@ -652,5 +652,15 @@ can request \opt{vendor-specific information} option in one of the following way
 option-data will be sent.
 \end{description}
 
+Although that is almost never needed, it is possible to configure
+client to request multiple vendor-specific options at the same
+time. That is also supported by the server. See
+\ref{example-client-vendor-spec} for examples.
+
+
+However, if client sends requests for multiple vendor-specific
+options, which are not supported by the server, for each sent option,
+server will assign one default vendor-spec option.
+
 See \ref{example-client-vendor-spec} for client example and
 \ref{example-server-vendor-spec} for server examples.
