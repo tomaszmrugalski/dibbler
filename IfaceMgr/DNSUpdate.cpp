@@ -10,7 +10,7 @@
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.18 2006-11-30 03:32:42 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.19 2007-01-21 21:29:45 thomson Exp $
  *
  */
 
@@ -53,7 +53,7 @@ DNSUpdate::~DNSUpdate() {
  * @param fqdnName 
  */
 void DNSUpdate::splitHostDomain(string fqdnName) {
-    unsigned int dotpos = fqdnName.find(".");
+    std::string::size_type dotpos = fqdnName.find(".");
     string hostname = "";
     string domain = "";
     if (dotpos == string::npos) {

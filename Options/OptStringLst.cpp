@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.7 2005-07-17 21:09:52 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.8 2007-01-21 21:29:45 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005-07-17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.6  2005/05/10 00:01:46  thomson
  * Minor compilation bug fixed.
  *
@@ -101,7 +104,7 @@ char * TOptStringLst::storeSelf(char* buf)
     *(short*)buf = htons(getSize()-4);
     buf+=2;
     int len = 0;
-    int dotpos;
+    std::string::size_type dotpos;
    
     StringLst.first();
     while (x = StringLst.get() ) {
@@ -113,7 +116,7 @@ char * TOptStringLst::storeSelf(char* buf)
 	    if (*cp.c_str()=='.')
 		break;
             dotpos = cp.find(".");
-            if (dotpos!=-1) {
+            if (dotpos!=string::npos) {
                 *buf = dotpos;
                 buf++;
                 memcpy(buf, cp.c_str(), dotpos);

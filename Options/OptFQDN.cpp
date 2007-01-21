@@ -7,7 +7,7 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.2 2006-08-21 21:57:02 thomson Exp $
+* $Id: OptFQDN.cpp,v 1.3 2007-01-21 21:29:45 thomson Exp $
 *
 */
 
@@ -118,8 +118,7 @@ char * TOptFQDN::storeSelf(char *buffer) {
 	if ( fqdn.length() != 0 ) {
 		string copy = "";
 		copy += fqdn;
-		unsigned int dotpos = copy.find('.', 0);
-
+	        std::string::size_type dotpos = copy.find('.', 0);
 		while(dotpos != string::npos) {
 			*buffer = dotpos;
 			buffer++;

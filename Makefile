@@ -144,7 +144,7 @@ libposlib: poslib-configure
 
 poslib-configure:
 	@echo "[CONFIG ] /poslib/"
-	cd $(PREFIX)/poslib; test -e "config.h" || ./configure >configure-poslib.log;
+	cd $(PREFIX)/poslib; test -e "config.h" || ./configure --host=$(HOST) >configure-poslib.log;
 
 relaylibs:	includes
 	@for dir in $(RELSUBDIRS); do \
