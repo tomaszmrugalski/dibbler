@@ -6,7 +6,7 @@
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.14 2006-11-17 00:39:55 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.15 2007-01-21 18:06:58 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -20,6 +20,7 @@ class ClntParser;
 #include "Container.h"
 #include "ClntCfgIface.h"
 #include "ClntIfaceMgr.h"
+#include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
 #include "CfgMgr.h"
 

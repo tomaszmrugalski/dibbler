@@ -6,9 +6,10 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntCfgIA.h,v 1.6 2006-03-05 21:38:47 thomson Exp $
+ * $Id: ClntCfgIA.h,v 1.7 2007-01-21 18:06:57 thomson Exp $
  */
 
+class TClntCfgIA;
 #ifndef CLNTCFGIA_H
 #define CLNTCFGIA_H
 
@@ -58,6 +59,9 @@ class TClntCfgIA
 /*
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006-03-05 21:38:47  thomson
+ * TA support merged.
+ *
  * Revision 1.5.2.1  2006/02/05 23:38:06  thomson
  * Devel branch with Temporary addresses support added.
  *

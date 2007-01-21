@@ -6,33 +6,13 @@
  *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                      
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.h,v 1.8 2006-11-17 00:39:56 thomson Exp $
+ * $Id: ClntParsIfaceOpt.h,v 1.9 2007-01-21 18:06:58 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2006-10-06 00:33:01  thomson
- * Initial PD support.
- *
- * Revision 1.6  2004-11-30 00:42:50  thomson
- * Client no longer sends RapidCommit, unless told to do so (bug #55)
- *
- * Revision 1.5  2004/11/29 21:21:56  thomson
- * Client parser now supports 'option lifetime' directive (bug #75)
- *
- * Revision 1.4  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.3  2004/10/02 13:11:24  thomson
- * Boolean options in config file now can be specified with YES/NO/TRUE/FALSE.
- * Unicast communication now can be enable on client side (disabled by default).
- *
- * Revision 1.2  2004/05/23 22:37:54  thomson
- * *** empty log message ***
- *
- *                                                                           
  */
 
-#ifndef TPARSEIFACEOPT_H
-#define TPARSEIFACEOPT_H
+class TClntParsIfaceOpt;
+#ifndef CLNTPARSEIFACEOPT_H
+#define CLNTPARSEIFACEOPT_H
 
 #include "DHCPConst.h"
 #include "Container.h"
@@ -40,6 +20,7 @@
 #include "ClntParsIAOpt.h"
 #include "StationID.h"
 #include "IPv6Addr.h"
+class TClntOptVendorSpec;
 
 #include <iostream>
 #include <string>
@@ -125,6 +106,11 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     void setPrefixDelegation();
     bool getReqPrefixDelegation();
 
+    // option: vendor-spec
+    void setVendorSpec(List(TClntOptVendorSpec) vendorSpec);
+    void setVendorSpec();
+    bool getReqVendorSpec();
+    List(TClntOptVendorSpec) getVendorSpec();
 
 private:
     bool NoIAs;
@@ -143,6 +129,7 @@ private:
     string NISDomain;
     string NISPDomain;
     bool Lifetime;
+    List(TClntOptVendorSpec) VendorSpec;
 
     bool ReqDNSServer;
     bool ReqDomain;
@@ -157,6 +144,7 @@ private:
     bool ReqNISPDomain;
     bool ReqLifetime;
     bool ReqPrefixDelegation;
+    bool ReqVendorSpec;
 };
 
 

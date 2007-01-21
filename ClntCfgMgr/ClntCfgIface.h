@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.16 2007-01-07 23:30:59 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.17 2007-01-21 18:06:58 thomson Exp $
  */
 
 class TClntCfgIface;
@@ -165,8 +165,8 @@ public:
     bool isReqVendorSpec();
     void vendorSpecSupported(bool support);
     EState getVendorSpecState();
-    void setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec);
     void setVendorSpecState(EState state);
+    void firstVendorSpec();
     SPtr<TClntOptVendorSpec> getVendorSpec();
     int getVendorSpecCount();
 
@@ -197,7 +197,7 @@ private:
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
     string NISPDomain;
-    SPtr<TClntOptVendorSpec> VendorSpec;
+    List(TClntOptVendorSpec) VendorSpec;
     
     EState DNSServerState;
     EState DomainState;

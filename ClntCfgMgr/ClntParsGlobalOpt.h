@@ -6,10 +6,11 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.6 2006-11-17 00:39:56 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.7 2007-01-21 18:06:58 thomson Exp $
  *
  */
 
+class TClntParsGlobalOpt;
 #ifndef PARSGLOBALOPT_H
 #define PARSGLOBALOPT_H
 

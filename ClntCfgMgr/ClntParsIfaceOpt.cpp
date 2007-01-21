@@ -6,16 +6,15 @@
  *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.9 2006-11-17 00:39:56 thomson Exp $
+ * $Id: ClntParsIfaceOpt.cpp,v 1.10 2007-01-21 18:06:58 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- *                                                                           
  */
 
 #include "ClntParsIfaceOpt.h"
 #include <iostream>
 #include <iomanip>
 #include "Logger.h"
+#include "ClntOptVendorSpec.h"
 
 using namespace std;
 
@@ -33,6 +32,7 @@ TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
     NISPServerLst.clear();
     NISPDomain = "";
     Lifetime = false;
+    VendorSpec.clear();
     
     NoIAs   = false;
 
@@ -52,6 +52,7 @@ TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
     ReqNISPDomain = false;
     ReqLifetime   = false;
     ReqPrefixDelegation = false;
+    ReqVendorSpec = false;
 }
 
 bool TClntParsIfaceOpt::getIsIAs()
@@ -238,4 +239,26 @@ void TClntParsIfaceOpt::setLifetime() {
 }
 bool TClntParsIfaceOpt::getReqLifetime() {
     return this->ReqLifetime;
+}
+
+// --- option: vendor-spec ---
+void TClntParsIfaceOpt::setVendorSpec(List(TClntOptVendorSpec) vendorSpec)
+{
+    VendorSpec = vendorSpec;
+    ReqVendorSpec = true;
+}
+
+void TClntParsIfaceOpt::setVendorSpec()
+{
+    ReqVendorSpec = true;
+}
+
+bool TClntParsIfaceOpt::getReqVendorSpec()
+{
+    return ReqVendorSpec;
+}
+
+List(TClntOptVendorSpec) TClntParsIfaceOpt::getVendorSpec()
+{
+    return VendorSpec;
 }

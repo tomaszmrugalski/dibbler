@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.20 2007-01-07 23:31:00 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.21 2007-01-21 18:06:59 thomson Exp $
  */
 
 #ifdef WIN32
@@ -544,9 +544,11 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_VENDOR_OPTS);
 	iface->setVendorSpecState(STATE_INPROCESS);
 
-	SPtr<TClntOptVendorSpec> optVendor = iface->getVendorSpec();
-	if (optVendor)
+	SPtr<TClntOptVendorSpec> optVendor;
+	iface->firstVendorSpec();
+	while (optVendor = iface->getVendorSpec()) {
 	    Options.append( (Ptr*) optVendor);
+	}
     }
 
     // include ELAPSED option

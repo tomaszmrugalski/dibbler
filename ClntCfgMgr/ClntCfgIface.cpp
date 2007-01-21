@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.23 2007-01-07 23:30:59 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.24 2007-01-21 18:06:57 thomson Exp $
  *
  */
 
@@ -76,10 +76,8 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     ReqNISPServer= opt->getReqNISPServer();
     ReqNISPDomain= opt->getReqNISPDomain();
     ReqLifetime  = opt->getReqLifetime();
-
-    ReqVendorSpec= false; // if defined in cfg. file, then it is set in ClntParser::EndIfaceDeclaration() (ClntCfgMgr/ClntParser.y)
-
     ReqPrefixDelegation = opt->getReqPrefixDelegation();
+    ReqVendorSpec= opt->getReqVendorSpec();
 
     // copy parameters
     this->DNSServerLst = *opt->getDNSServerLst();
@@ -93,7 +91,7 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     this->NISDomain    = opt->getNISDomain();
     this->NISPServerLst= *opt->getNISPServerLst();
     this->NISPDomain   = opt->getNISPDomain();
-    
+    this->VendorSpec   = opt->getVendorSpec();
 
     if (ReqDNSServer)  this->setDNSServerState(STATE_NOTCONFIGURED);
     if (ReqDomain)     this->setDomainState(STATE_NOTCONFIGURED);
@@ -108,6 +106,7 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     if (ReqNISPDomain) this->setNISPDomainState(STATE_NOTCONFIGURED);
     if (ReqLifetime)   this->setLifetimeState(STATE_NOTCONFIGURED);
     if (ReqPrefixDelegation) this->setPrefixDelegationState(STATE_NOTCONFIGURED);
+    if (ReqVendorSpec) this->setVendorSpecState(STATE_NOTCONFIGURED);
     // copy preferred-server list
     SmartPtr<TStationID> station;
     opt->firstPrefSrv();
@@ -254,13 +253,6 @@ void TClntCfgIface::vendorSpecSupported(bool support)
     this->VendorSpecState = STATE_NOTCONFIGURED;
 }
 
-void TClntCfgIface::setVendorSpec(SPtr<TClntOptVendorSpec> vendorSpec)
-{
-    this->VendorSpec      = vendorSpec;
-    this->ReqVendorSpec   = true;
-    this->VendorSpecState = STATE_NOTCONFIGURED;
-}
-
 // --------------------------------------------------------------------------------
 // --- options below --------------------------------------------------------------
 // --------------------------------------------------------------------------------
@@ -388,8 +380,13 @@ string TClntCfgIface::getProposedNISDomain() {
 string TClntCfgIface::getProposedNISPDomain() {
     return this->NISPDomain;
 }
+
+void TClntCfgIface::firstVendorSpec() {
+    VendorSpec.first();
+}
+
 SPtr<TClntOptVendorSpec> TClntCfgIface::getVendorSpec() {
-    return this->VendorSpec;
+    return this->VendorSpec.get();
 }
 
 // --------------------------------------------------------------------
@@ -621,18 +618,16 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: Vendor-spec ---
     if (iface.isReqVendorSpec()) {
-	out << "    <vendorSpec";
-	SPtr<TClntOptVendorSpec> opt = iface.getVendorSpec();
-	if (opt) {
-	    out << " vendor=\"" << opt->getVendor() << "\" length=\"" << opt->getVendorDataLen() << "\"";
+	SPtr<TClntOptVendorSpec> opt;
+	out << "    <vendorSpecLst count=\"" << iface.VendorSpec.count() << "\">" << endl;
+	iface.VendorSpec.first();
+	while (opt = iface.VendorSpec.get()) {
+	    out << "      <vendor enterprise=\"" << opt->getVendor() << "\" length=\"" << opt->getVendorDataLen() << "\">"
+		<< opt->getVendorDataPlain() << "</vendor>" << endl;
 	}
-	out << ">";
-	if (opt) {
-	    out << opt->getVendorDataPlain();
-	}
-	out << "    <vendorSpec/>" << endl;
+	out << "    <vendorSpecLst/>" << endl;
     } else {
-	out << "    <!-- <vendorSpec/> -->" << endl;
+	out << "    <!-- <vendorSpecLst/> -->" << endl;
     }
 
     out << "  </ClntCfgIface>" << endl;

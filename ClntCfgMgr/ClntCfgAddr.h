@@ -6,15 +6,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntCfgAddr.h,v 1.4 2004-12-07 20:51:35 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
+ * $Id: ClntCfgAddr.h,v 1.5 2007-01-21 18:06:57 thomson Exp $
  *
  */
 
+class TClntCfgAddr;
 #ifndef CLNTCFGADDR_H
 #define CLNTCFGADDR_H
 

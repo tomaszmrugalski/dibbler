@@ -48,8 +48,7 @@ TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
 TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SmartPtr<string> > PresentStringLst;                             \
-bool VendorSpecEnabled;                                                     \
-SPtr<TClntOptVendorSpec> VendorSpec;                                        \
+List(TClntOptVendorSpec) VendorSpec;					    \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -74,7 +73,7 @@ EDUIDType DUIDType;
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;
 
-#line 73 "ClntParser.y"
+#line 72 "ClntParser.y"
 typedef union    
 {
     int ival;    

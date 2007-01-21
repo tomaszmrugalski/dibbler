@@ -42,8 +42,7 @@ TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
 TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SmartPtr<string> > PresentStringLst;                             \
-bool VendorSpecEnabled;                                                     \
-SPtr<TClntOptVendorSpec> VendorSpec;                                        \
+List(TClntOptVendorSpec) VendorSpec;					    \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -792,21 +791,33 @@ VendorSpecOption
 :OPTION_ VENDOR_SPEC_
 {
     Log(Debug) << "VendorSpec defined (no details)." << LogEnd;
-    this->VendorSpecEnabled = true;
-
+    ParserOptStack.getLast()->setVendorSpec();
+    this->VendorSpec.clear();
 }
 |OPTION_ VENDOR_SPEC_ Number
 {
     Log(Debug) << "VendorSpec defined (enterprise=" << $3 << ", no data)." << LogEnd;
-    this->VendorSpecEnabled = true;
-    this->VendorSpec = new TClntOptVendorSpec($3, 0, 0, 0);
+    ParserOptStack.getLast()->setVendorSpec();
+    this->VendorSpec.append(new TClntOptVendorSpec($3, 0, 0, 0));
 }
 |OPTION_ VENDOR_SPEC_ Number DUID_
 {
     Log(Debug) << "VendorSpec defined (enterprise=" << $3 << ", hint data length=" << $4.length << ")." << LogEnd;
-    this->VendorSpecEnabled = true;
-    this->VendorSpec= new TClntOptVendorSpec($3, $4.duid, $4.length, 0);
-};
+    ParserOptStack.getLast()->setVendorSpec();
+    this->VendorSpec.append(new TClntOptVendorSpec($3, $4.duid, $4.length, 0));
+}
+|OPTION_ VENDOR_SPEC_ VendorSpecList
+{
+    ParserOptStack.getLast()->setVendorSpec();
+    Log(Debug) << "VendorSpec defined (multiple times)." << LogEnd;
+} 
+;
+
+VendorSpecList
+: Number                     { VendorSpec.append( new TClntOptVendorSpec($1,0,0,0) ); }
+| VendorSpecList ',' Number  { VendorSpec.append( new TClntOptVendorSpec($3,0,0,0) ); }
+;
+
 
 %%
 
@@ -855,8 +866,7 @@ void ClntParser::StartIfaceDeclaration()
   ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
   ClntCfgIALst.clear();
   ClntCfgAddrLst.clear();
-  this->VendorSpec = 0;
-  this->VendorSpecEnabled = 0;
+  this->VendorSpec.clear();
 }
 
 bool ClntParser::EndIfaceDeclaration()
@@ -869,11 +879,10 @@ bool ClntParser::EndIfaceDeclaration()
 
     // set interface options on the basis of just read information
     // preferred-server and rejected-servers are also copied here
+    if (VendorSpec.count())
+	ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     iface->setOptions(ParserOptStack.getLast());
     iface->setPrefixLength(ParserOptStack.getLast()->getPrefixLength());
-    iface->vendorSpecSupported(this->VendorSpecEnabled);
-    if (this->VendorSpec)
-	iface->setVendorSpec(this->VendorSpec);
 
     if ( (iface->stateless()) && (ClntCfgIALst.count()) ) {
 	Log(Crit) << "Interface " << iface->getFullName() << " is configured stateless, "
