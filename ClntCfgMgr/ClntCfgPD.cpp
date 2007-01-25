@@ -18,6 +18,7 @@ TClntCfgPD::TClntCfgPD() {
     this->T1 = CLIENT_DEFAULT_T1;
     this->T2 = CLIENT_DEFAULT_T2;
     this->prefixLength = 64; // default value;
+    this->State = STATE_NOTCONFIGURED;
 }
 
 long TClntCfgPD::countPrefixes()

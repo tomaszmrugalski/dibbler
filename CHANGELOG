@@ -10,7 +10,7 @@
   - All: Elapsed option has now correct length
   - Required/not allowed options check improved (now you will know why message is dropped)
   - Linux: iproute2 package update to version 20051007 (latest stable available in Debian and Ubuntu)
-  - Lots of memory fixes (Valgrind)
+  - Lots of memory fixes (found by using Valgrind)
   - Linux: multiple domains are now added and removed properly to /etc/resolv.conf
  
  0.5.0 [2006-10-05]

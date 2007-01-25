@@ -178,27 +178,26 @@ namespace logger {
 
 
 std::string StateToString(EState state) {
+    std::stringstream tmp;
+
     switch (state) {
     case STATE_NOTCONFIGURED:
 	return "NOTCONFIGURED";
-	break;
     case STATE_INPROCESS:
 	return "INPROCESS";
-	break;
     case STATE_CONFIGURED:
 	return "CONFIGURED";
-	break;
     case STATE_FAILED:
 	return "FAILED";
-	break;
+    case STATE_DISABLED:
+	return "DISABLED";
     case STATE_TENTATIVECHECK:
 	return "TENTATIVECHECK";
-	break;
     case STATE_TENTATIVE:
 	return "TENTATIVE";
-	break;
     default:
-	return "???";
+	tmp << "UNKNOWN(" << state << ")";
+	return tmp.str();
     }
 }
 
@@ -216,6 +215,8 @@ std::string StatusCodeToString(int status) {
 	return "Not on link";
     case STATUSCODE_USEMULTICAST:
 	return "Use multicast";
+    case STATUSCODE_NOPREFIXAVAIL:
+	return "No prefix available";
     }
     return "";
 }

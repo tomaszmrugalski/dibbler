@@ -36,13 +36,14 @@ using namespace std;
 #define YY_USE_CLASS
 #define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
+List(TClntParsGlobalOpt) ParserOptStack;			            \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
-TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;                       \
-TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;                          \
-TContainer<SmartPtr<TClntCfgTA> >    ClntCfgTALst;                          \
-TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
+List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
+List(TClntCfgIA)    ClntCfgIALst;		                            \
+List(TClntCfgTA)    ClntCfgTALst;                                           \
+List(TClntCfgPD)    ClntCfgPDLst;                                           \
+List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
@@ -59,6 +60,8 @@ bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
 void StartIADeclaration(bool aggregation);                                  \
 void EndIADeclaration();                                                    \
+void StartPDDeclaration();                                                  \
+bool EndPDDeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
 bool iaidSet;                                                               \
@@ -73,7 +76,7 @@ EDUIDType DUIDType;
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;
 
-#line 72 "ClntParser.y"
+#line 75 "ClntParser.y"
 typedef union    
 {
     int ival;    

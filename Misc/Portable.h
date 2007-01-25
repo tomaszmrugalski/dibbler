@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.72 2007-01-03 01:27:02 thomson Exp $
+ * $Id: Portable.h,v 1.73 2007-01-25 23:26:42 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -171,7 +171,7 @@ struct iface {
 #include <time.h>
 #endif
 
-#define now() (unsigned) time(NULL)
+#define now() (unsigned long) time(NULL)
 
 /* ********************************************************************** */
 /* *** interface/socket low level functions ***************************** */

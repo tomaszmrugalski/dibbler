@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntCfgPD.h,v 1.1 2006-10-06 00:33:01 thomson Exp $
+ * $Id: ClntCfgPD.h,v 1.2 2007-01-25 23:26:41 thomson Exp $
  */
 
 #ifndef CLNTCFGPD_H
@@ -51,7 +51,7 @@ class TClntCfgPD
     char prefixLength;
     
     EState State;	
-    TContainer< SmartPtr<TClntCfgPrefix> > ClntCfgPrefixLst;
+    List(TClntCfgPrefix) ClntCfgPrefixLst;
 };
 
 #endif 

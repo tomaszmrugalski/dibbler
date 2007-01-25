@@ -30,13 +30,14 @@ using namespace std;
 
 %define MEMBERS yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-TContainer<SmartPtr<TClntParsGlobalOpt> > ParserOptStack;                   \
+List(TClntParsGlobalOpt) ParserOptStack;			            \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
-TContainer<SmartPtr<TClntCfgIface> > ClntCfgIfaceLst;                       \
-TContainer<SmartPtr<TClntCfgIA> >    ClntCfgIALst;                          \
-TContainer<SmartPtr<TClntCfgTA> >    ClntCfgTALst;                          \
-TContainer<SmartPtr<TClntCfgAddr> >  ClntCfgAddrLst;                        \
+List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
+List(TClntCfgIA)    ClntCfgIALst;		                            \
+List(TClntCfgTA)    ClntCfgTALst;                                           \
+List(TClntCfgPD)    ClntCfgPDLst;                                           \
+List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
@@ -53,6 +54,8 @@ bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
 void StartIADeclaration(bool aggregation);                                  \
 void EndIADeclaration();                                                    \
+void StartPDDeclaration();                                                  \
+bool EndPDDeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
 bool iaidSet;                                                               \
@@ -155,7 +158,6 @@ InterfaceOptionDeclaration
 | VendorSpecOption
 | RejectServersOption
 | PreferServersOption
-| PrefixDelegationOption
 ;
 
 IAOptionDeclaration
@@ -255,6 +257,8 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList IADeclaration 
 | TADeclaration
 | InterfaceDeclarationsList TADeclaration
+| PDDeclaration
+| InterfaceDeclarationsList PDDeclaration
 ;
 
 TADeclaration
@@ -535,13 +539,37 @@ T2Option
 }
 ;
 
-PrefixDelegationOption
-:OPTION_ PD_
+PDDeclaration
+:PD_
 {
-    Log(Debug) << "Prefix delegation option found" << LogEnd;
-    Log(Debug) << "No hint value for prefix found" <<LogEnd;
-    ParserOptStack.getLast()->setPrefixDelegation();
+    Log(Debug) << "Prefix delegation option found." << LogEnd;
+    StartPDDeclaration();
+    EndPDDeclaration();
 }
+|PD_ '{' '}'
+{
+    Log(Debug) << "Prefix delegation option found." << LogEnd;
+    StartPDDeclaration();
+    EndPDDeclaration();
+}
+|PD_ '{'
+{
+    StartPDDeclaration();
+}
+PDOptionsList '}'
+{
+    EndPDDeclaration();
+}
+;
+
+PDOptionsList
+: PDOption
+| PDOptionsList PDOption
+;
+
+PDOption
+:T1Option
+|T2Option
 ;
 
 UnicastOption
@@ -794,12 +822,6 @@ VendorSpecOption
     ParserOptStack.getLast()->setVendorSpec();
     this->VendorSpec.clear();
 }
-|OPTION_ VENDOR_SPEC_ Number
-{
-    Log(Debug) << "VendorSpec defined (enterprise=" << $3 << ", no data)." << LogEnd;
-    ParserOptStack.getLast()->setVendorSpec();
-    this->VendorSpec.append(new TClntOptVendorSpec($3, 0, 0, 0));
-}
 |OPTION_ VENDOR_SPEC_ Number DUID_
 {
     Log(Debug) << "VendorSpec defined (enterprise=" << $3 << ", hint data length=" << $4.length << ")." << LogEnd;
@@ -910,6 +932,13 @@ bool ClntParser::EndIfaceDeclaration()
 	iface->addTA(ptrTA);
     }
 
+    //add all PDs to the interface
+    SPtr<TClntCfgPD> pd;
+    ClntCfgPDLst.first();
+    while (pd = ClntCfgPDLst.get() ) {
+	iface->addPD(pd);
+    }
+
     //restore global options
     ParserOptStack.delLast();
     ClntCfgIALst.clear();
@@ -931,7 +960,8 @@ void ClntParser::EmptyIface()
  * clears list of addresses
  * 
  * @param aggregation - does this IA contains suboptions ( ia { ... } )
- */void ClntParser::StartIADeclaration(bool aggregation)
+ */
+void ClntParser::StartIADeclaration(bool aggregation)
 {
   ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
   ParserOptStack.getLast()->setAddrHint(!aggregation);
@@ -941,7 +971,8 @@ void ClntParser::EmptyIface()
 /** 
  * Inbelivable piece of crap code. If you read this, rewrite this code immediately.
  * 
- */void ClntParser::EndIADeclaration()
+ */
+void ClntParser::EndIADeclaration()
 {
     if(!ClntCfgAddrLst.count()) {
 	EmptyIA();
@@ -962,6 +993,23 @@ void ClntParser::EmptyIface()
 
     //this IA matches with previous ones and can be grouped with them
     //so it's should be left on the list and be appended with them to present list
+}
+
+void ClntParser::StartPDDeclaration()
+{
+  ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
+  ClntCfgAddrLst.clear();
+}
+
+bool ClntParser::EndPDDeclaration()
+{
+    SPtr<TClntCfgPD> pd = new TClntCfgPD();
+    pd->setOptions(ParserOptStack.getLast());
+    ClntCfgPDLst.append(pd);
+    Log(Debug) << "#### PD with PDID=" << pd->getIAID() << " added." << LogEnd;
+
+    ParserOptStack.delLast();
+    return true;
 }
 
 /** 
