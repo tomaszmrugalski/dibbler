@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.27 2006-12-30 23:24:41 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.28 2007-01-27 17:07:04 thomson Exp $
  */
       
 #include "DHCPServer.h"
@@ -54,7 +54,7 @@ TDHCPServer::TDHCPServer(string config)
     this->IfaceMgr->dump(); // dump it once more (important, if relay interfaces were added)
     this->TransMgr->dump(); 
     
-    TransMgr->setThat(TransMgr);
+    TransMgr->setContext(TransMgr);
 }
 
 void TDHCPServer::run()
@@ -131,7 +131,7 @@ void TDHCPServer::setWorkdir(std::string workdir) {
 TDHCPServer::~TDHCPServer()
 {
     if (TransMgr)
-	TransMgr->setThat(0);
+	TransMgr->setContext(0);
     this->TransMgr = 0;
     this->AddrMgr  = 0;
     this->CfgMgr   = 0;

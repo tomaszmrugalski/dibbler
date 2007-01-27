@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.25 2006-12-30 23:24:41 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.26 2007-01-27 17:07:04 thomson Exp $
  *                                                                           
  */
 
@@ -57,7 +57,7 @@ TDHCPClient::TDHCPClient(string config)
 	return;
     }
 
-    TransMgr->setThat(TransMgr);
+    TransMgr->setContext(TransMgr);
 }
 
 void TDHCPClient::stop() {
@@ -93,7 +93,7 @@ void TDHCPClient::run()
 	    timeout = 1;
 #endif
 	
-        Log(Info) << "Sleeping for " << timeout << " second(s)." << LogEnd;
+        Log(Debug) << "Sleeping for " << timeout << " second(s)." << LogEnd;
         SmartPtr<TClntMsg> msg=IfaceMgr->select(timeout);
 	
         if (msg) {
@@ -133,7 +133,7 @@ void TDHCPClient::setWorkdir(std::string workdir) {
 TDHCPClient::~TDHCPClient()
 {
     if (TransMgr)
-	TransMgr->setThat(0);
+	TransMgr->setContext(0);
     this->TransMgr = 0;
     this->AddrMgr  = 0;
     this->CfgMgr   = 0;
