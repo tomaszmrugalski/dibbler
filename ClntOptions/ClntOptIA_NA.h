@@ -31,11 +31,11 @@ class TClntOptIA_NA : public TOptIA_NA
 
     bool doDuties();
     int getStatusCode();
-    void setThats(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-		  SmartPtr<TClntTransMgr> transMgr, 
-		  SmartPtr<TClntCfgMgr>   cfgMgr, 
-		  SmartPtr<TClntAddrMgr>  addrMgr,
-		  SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface);
+    void setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
+		    SPtr<TClntTransMgr> transMgr, 
+		    SPtr<TClntCfgMgr>   cfgMgr, 
+		    SPtr<TClntAddrMgr>  addrMgr,
+		    SPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface);
     void setIface(int iface);
 
     SmartPtr<TClntOptIAAddress> getAddr();

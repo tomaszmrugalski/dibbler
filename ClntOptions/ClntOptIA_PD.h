@@ -30,25 +30,24 @@ class TClntOptIA_PD : public TOptIA_PD
 
     bool doDuties();
     int getStatusCode();
-    void setThats(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-		  SmartPtr<TClntTransMgr> transMgr, 
-		  SmartPtr<TClntCfgMgr>   cfgMgr, 
-		  SmartPtr<TClntAddrMgr>  addrMgr,
-		  SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
+    void setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
+		    SPtr<TClntTransMgr> transMgr, 
+		    SPtr<TClntCfgMgr>   cfgMgr, 
+		    SPtr<TClntAddrMgr>  addrMgr,
+		    SPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
     void setIface(int iface);
 
     SmartPtr<TClntOptIAPrefix> getPrefix();
     SmartPtr<TClntOptIAPrefix> getPrefix(SmartPtr<TIPv6Addr> prefix);
     void firstPrefix();
     int countPrefix();
-    TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, 
-		  SmartPtr<TAddrIA> ClntaddrPD, 
-		  TMsg* parent);
     bool isValid();
 
     bool addPrefixes();
     bool delPrefixes();
+    bool updatePrefixes();
  private:
+    void setState(EState state);
 
     SmartPtr<TIPv6Addr> Prefix;
     bool Unicast;

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.16 2007-01-21 19:17:57 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.17 2007-01-27 17:11:51 thomson Exp $
  *
  */
 
@@ -55,13 +55,20 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
     else
 	decline = false;
 
+    bool zeroTimes = false;
+    if ( (parent->getType()==RELEASE_MSG) || (parent->getType()==DECLINE_MSG)) {
+	this->T1 = 0;
+	this->T2 = 0;
+	zeroTimes = true;
+    }
+
     SmartPtr<TAddrAddr> ptrAddr;
     addrIA->firstAddr();
     while ( ptrAddr = addrIA->getAddr() )
     {
 	if ( !decline || (ptrAddr->getTentative()==TENTATIVE_YES) )
-	    SubOptions.append(new TClntOptIAAddress(ptrAddr->get(), ptrAddr->getPref(), 
-						    ptrAddr->getValid(),this->Parent) );
+	    SubOptions.append(new TClntOptIAAddress(ptrAddr->get(), zeroTimes?0:ptrAddr->getPref(), 
+						    zeroTimes?0:ptrAddr->getValid(),this->Parent) );
     }
     DUID = SmartPtr<TDUID>(); // NULL
 }
@@ -205,11 +212,11 @@ int TClntOptIA_NA::getStatusCode()
     return STATUSCODE_SUCCESS;
 }
 
-void TClntOptIA_NA::setThats(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-                             SmartPtr<TClntTransMgr> transMgr, 
-                             SmartPtr<TClntCfgMgr> cfgMgr, 
-                             SmartPtr<TClntAddrMgr> addrMgr,
-                             SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface)
+void TClntOptIA_NA::setContext(SmartPtr<TClntIfaceMgr> ifaceMgr, 
+                               SmartPtr<TClntTransMgr> transMgr, 
+                               SmartPtr<TClntCfgMgr> cfgMgr, 
+                               SmartPtr<TClntAddrMgr> addrMgr,
+                               SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface)
 {
     this->AddrMgr=addrMgr;
     this->IfaceMgr=ifaceMgr;
@@ -250,6 +257,7 @@ bool TClntOptIA_NA::doDuties()
     SmartPtr<TAddrAddr> ptrAddrAddr;
     SmartPtr<TClntOptIAAddress> ptrOptAddr;
 
+#if 0
     //if not we don't like this server, cause
     //WE WANT IA WITH AT LEAST NUMBER OF ADDRESSES
     //and we release the whole IA with addresses just received and those in AddrMgr
@@ -305,13 +313,13 @@ bool TClntOptIA_NA::doDuties()
             TransMgr->sendRelease(list,0,pdLst);
         return false;
     }
+#endif /* if 0 */
 
-    //In other case, we have appropriate number of addresses and all is ok
     SmartPtr<TIfaceIface> ptrIface;
     ptrIface = IfaceMgr->getIfaceByID(this->Iface);
     if (!ptrIface) 
     {
-	Log(Error) << "Interface " << this->Iface << " not found." << LogEnd;
+	Log(Error) << "Interface with ifindex=" << this->Iface << " not found." << LogEnd;
 	return true;
     }
 
@@ -333,10 +341,9 @@ bool TClntOptIA_NA::doDuties()
 			    << " interface." << LogEnd;
             } 
             else {
-                Log(Warning) << "Server send new addr with valid=0." << LogEnd;
+                Log(Warning) << "Server send new addr with valid lifetime 0." << LogEnd;
             }
-        } 
-        else {
+        } else {
             // we have this addr in DB
             if ( ptrOptAddr->getValid() == 0 ) {
                 // valid=0, release this address
@@ -366,6 +373,7 @@ bool TClntOptIA_NA::doDuties()
     ptrIA->setT2( this->getT2() );
     ptrIA->setTimestamp();
     ptrIA->setState(STATE_CONFIGURED);
+    ptrCfgIA->setState(STATE_CONFIGURED);
     return true;
 } 
 

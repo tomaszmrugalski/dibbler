@@ -26,9 +26,9 @@
 TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
     :TOptIA_PD(addrPD->getIAID(),addrPD->getT1(),addrPD->getT2(), parent)
 {
-
+    
     bool zeroTimes = false;
-    if ( (parent->getType()==RELEASE_MSG) || (parent->getType()==RELEASE_MSG)) {
+    if ( (parent->getType()==RELEASE_MSG) || (parent->getType()==DECLINE_MSG)) {
 	this->T1 = 0;
 	this->T2 = 0;
 	zeroTimes = true;
@@ -47,54 +47,15 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
 }
 
 /** 
- * Used in REQUEST constructor
- * 
- * @param ClntCfgIA 
- * @param ClntaddrIA 
- * @param parent 
- */
-TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, SmartPtr<TAddrIA> ClntaddrPD, TMsg* parent)
-    :TOptIA_PD(ClntaddrPD->getIAID(),ClntaddrPD->getT1(),ClntaddrPD->getT2(), parent)
-{
-    
-    //checkRequestConstructor
-    /*ClntCfgPD->firstPD();
-      SmartPtr<TClntCfgPrefix> ClntCfgPrefix;
-      while ((ClntCfgPrefix = ClntCfgPD->getPrefix())
-      //   &&((ClntCfgPD->countPrefixes()-ClntaddrPD->getPrefixCount())>this->countPrefixes() ))
-      {
-      SmartPtr<TAddrPrefix> ptrPrefix=ClntaddrPD->getPrefix(ClntCfgPrefix->get());
-        if(!ptrPrefix)
-	SubOptions.append(new TClntOptIAPrefix(
-	ClntCfgPrefix->get(),
-	ClntCfgPrefix->getPref(),
-            ClntCfgPrefix->getValid(),
-	    64,
-            this->Parent));
-	    }*/
-    //DUID = SmartPtr<TDUID>(); // NULL
-}
-
-/** 
  * Used in SOLICIT constructor
  * 
  * @param ClntCfgPD 
  * @param parent 
  */
 TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
-    :TOptIA_PD(1, 0, 0, parent) // no hint support implemented yet, will be 
+    :TOptIA_PD(1, ClntCfgPD->getT1(), ClntCfgPD->getT2(), parent)
 {
     // FIXME: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
-
-    //SmartPtr<TIPv6Addr> prefix ;
-    //SmartPtr<TClntCfgPrefix> ClntCfgPrefix();
-
-    // just copy all addresses defined in the CfgMgr
-   // while (ClntCfgPrefix = ClntCfgPD->getPrefix())
-       // SubOptions.append(new TClntOptIAPrefix(prefix,
-       // 64,
-       // 4000,5000,this->Parent) ); 
-    DUID = SmartPtr<TDUID>(); // NULL
 }
 
 /** 
@@ -191,12 +152,12 @@ int TClntOptIA_PD::getStatusCode()
     return STATUSCODE_SUCCESS;
 }
 
-void TClntOptIA_PD::setThats(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-                             SmartPtr<TClntTransMgr> transMgr, 
-                             SmartPtr<TClntCfgMgr> cfgMgr, 
-                             SmartPtr<TClntAddrMgr> addrMgr,
-                             SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, 
-			     TMsg * originalMsg)
+void TClntOptIA_PD::setContext(SmartPtr<TClntIfaceMgr> ifaceMgr, 
+                               SmartPtr<TClntTransMgr> transMgr, 
+                               SmartPtr<TClntCfgMgr> cfgMgr, 
+                               SmartPtr<TClntAddrMgr> addrMgr,
+                               SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, 
+			       TMsg * originalMsg)
 {
     this->AddrMgr=addrMgr;
     this->IfaceMgr=ifaceMgr;
@@ -221,14 +182,22 @@ TClntOptIA_PD::~TClntOptIA_PD()
 bool TClntOptIA_PD::doDuties()
 {
     if (!OriginalMsg) {
-	Log(Error) << "Internal error. Unable to set prefixes: setThats() not called." << LogEnd;
+	Log(Error) << "Internal error. Unable to set prefixes: setContext() not called." << LogEnd;
 	return false;
     }
 	
-    if (OriginalMsg->getType()==REQUEST_MSG)
+    switch(OriginalMsg->getType()) {
+    case REQUEST_MSG:
+    case SOLICIT_MSG:
 	return addPrefixes();
-    if (OriginalMsg->getType()==RELEASE_MSG)
+    case RELEASE_MSG:
 	return delPrefixes();
+    case RENEW_MSG:
+	return updatePrefixes();
+    default:
+	break;
+    }
+    
     return true;
 } 
 
@@ -249,21 +218,20 @@ bool TClntOptIA_PD::addPrefixes()
 {
     SmartPtr<TClntOptIAPrefix> prefix;
     this->firstPrefix();
-    SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
     
     while (prefix = this->getPrefix()) {
-	AddrMgr->addPrefix(CfgMgr->getDUID(), this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
+	AddrMgr->addPrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
 			   prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
-
+	
 	if (!IfaceMgr->addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(), prefix->getPref(), prefix->getValid())) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
-	    cfgIface->setPrefixDelegationState(STATE_FAILED);
+	    setState(STATE_FAILED);
 	    return false;
 	}
     }
-    
-    cfgIface->setPrefixDelegationState(STATE_CONFIGURED);
+
+    setState(STATE_CONFIGURED);
     return true;
 }
 
@@ -279,12 +247,30 @@ bool TClntOptIA_PD::delPrefixes()
 	if (!IfaceMgr->delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() )) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during delete operation: " << tmp << LogEnd;
-	    cfgIface->setPrefixDelegationState(STATE_FAILED);
+	    setState(STATE_FAILED);
 	    return true;
 	}
     }
 
-    cfgIface->setPrefixDelegationState(STATE_DISABLED);
+    setState(STATE_DISABLED);
+    return true;
+}
+
+bool TClntOptIA_PD::updatePrefixes()
+{
+    SmartPtr<TClntOptIAPrefix> prefix;
+    this->firstPrefix();
+
+    SPtr<TAddrIA> pd = AddrMgr->getPD(getIAID());
+    if (!pd) {
+	Log(Error) << "Unable to find PD (iaid=" << getIAID() << "). PD renewal failed." << LogEnd;
+	return false;
+    }
+
+    // FIXME: Implement AddrMgr/IfaceMgr PD update
+    Log(Error) << "#### Implement AddrMgr/IfaceMgr PD update" << LogEnd;
+
+    setState(STATE_CONFIGURED);
     return true;
 }
 
@@ -310,4 +296,27 @@ bool TClntOptIA_PD::isValid()
         return this->T1<=this->T2;
     else
         return false;
+}
+
+void TClntOptIA_PD::setState(EState state)
+{
+    SmartPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(this->Iface);
+
+    SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(getIAID());
+    if (!cfgPD) {
+	Log(Error) << "Unable to find PD with iaid=" << getIAID() << " on the "
+		   << cfgIface->getFullName() << " interface (CfgMgr)." << LogEnd;
+	return;
+    }
+    cfgPD->setState(STATE_CONFIGURED);
+
+    SPtr<TAddrIA> addrPD = AddrMgr->getPD(getIAID());
+    if (!addrPD) {
+	/* Log(Error) << "Unable to find PD with iaid=" << getIAID() << " on the "
+	   << cfgIface->getFullName() << " interface (AddrMgr)." << LogEnd; */
+	/* Don't complain about it. It is normal that IA is being deleted when there
+	   are no more prefixes in it */
+	return;
+    }
+    addrPD->setState(STATE_CONFIGURED);
 }
