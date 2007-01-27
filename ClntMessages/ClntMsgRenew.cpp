@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.9 2007-01-21 19:17:57 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.10 2007-01-27 17:12:24 thomson Exp $
  *
  */
 
@@ -93,15 +93,28 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
 	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
 	    if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
 		SmartPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
-		Log(Warning) << "IA with status code " << 
+		Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code " << 
 		    StatusCodeToString(status->getCode()) << ": " 
 			     << status->getText() << LogEnd;
 		break;
 	    }
-	    ptrOptIA->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-			       ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
+	    ptrOptIA->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+			         ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
 
 	    ptrOptIA->doDuties();
+	    break;
+	}
+	case OPTION_IA_PD: {
+	    SPtr<TClntOptIA_PD> pd = (Ptr*) opt;
+	    if (pd->getStatusCode() != STATUSCODE_SUCCESS) {
+		SmartPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
+		Log(Warning) << "Received PD (iaid=" << pd->getIAID() << ") with status code " << 
+		    StatusCodeToString(status->getCode()) << ": " 
+			     << status->getText() << LogEnd;
+		break;
+	    }
+	    pd->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr, ptrDUID->getDUID(), 0, (TMsg*)this);
+	    pd->doDuties();
 	    break;
 	}
 	case OPTION_ORO:

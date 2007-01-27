@@ -6,7 +6,7 @@
  * chanmges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.12 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.13 2007-01-27 17:12:24 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -120,7 +120,7 @@ TClntMsgRelease::TClntMsgRelease(
     while(pd=pdLst.get()) {
 	SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
         Options.append( (Ptr*)pdOpt);
-	pdOpt->setThats(IfaceMgr, TransMgr, CfgMgr, AddrMgr, srvDUID, addr, this);
+	pdOpt->setContext(IfaceMgr, TransMgr, CfgMgr, AddrMgr, srvDUID, addr, this);
 	pdOpt->delPrefixes();
 
 	AddrMgr->delPD(pd->getIAID() );

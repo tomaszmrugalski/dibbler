@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.8 2007-01-21 19:17:57 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.9 2007-01-27 17:12:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2007-01-21 19:17:57  thomson
+ * Option name constants updated (by Jyrki Soini)
+ *
  * Revision 1.7  2007-01-07 20:18:45  thomson
  * State enum names changed.
  *
@@ -105,8 +108,8 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
             case OPTION_IA_NA:
             {
                 SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
-                ptrOptIA->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-                    ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/,Reply->getIface());
+                ptrOptIA->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+                                     ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/,Reply->getIface());
                 //FIXME: replace this NULL with something meaningfull
                 //       (required for Unicast to work correctly)
                 ptrOptIA->doDuties();

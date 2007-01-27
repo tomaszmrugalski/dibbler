@@ -37,7 +37,6 @@ public:
     void send();
 
     //answer for a specific message
-    virtual void answer(SmartPtr<TClntMsg> Rep) = 0;
     virtual void doDuties() = 0;
     virtual bool check() = 0;
     void setIface(int iface); // used to override when we have received msg via loopback interface.
@@ -51,10 +50,12 @@ public:
     SmartPtr<TClntIfaceMgr>  getClntIfaceMgr();
 
     virtual string getName() = 0;
+    virtual void answer(SPtr<TClntMsg> reply);
 
  protected:
     bool check(bool clntIDmandatory, bool srvIDmandatory);
-    
+    bool appendClientID();
+
     long IRT;           // Initial Retransmission Time
     long MRT;           // Maximum Retransmission Time
     long MRC;           // Maximum Retransmission Count

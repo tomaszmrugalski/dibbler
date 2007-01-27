@@ -6,9 +6,12 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.h,v 1.4 2006-10-06 00:43:28 thomson Exp $
+ * $Id: ClntMsgRequest.h,v 1.5 2007-01-27 17:12:24 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006-10-06 00:43:28  thomson
+ * Initial PD support.
+ *
  * Revision 1.3  2005-01-08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -37,7 +40,6 @@ class TClntMsgRequest : public TClntMsg
 		    SmartPtr<TClntCfgMgr>   ConfMgr, 
 		    SmartPtr<TClntAddrMgr>  AddrMgr, 
 		    TContainer< SmartPtr<TOpt> > opts, 
-		    TContainer< SmartPtr<TMsg> > advs,
 		    int iface);
     TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 				 SmartPtr<TClntTransMgr> TransMgr,
@@ -53,9 +55,8 @@ class TClntMsgRequest : public TClntMsg
     string getName();
     ~TClntMsgRequest();
   private:
+    void setFailedState(List(TOpt) opts);
     SmartPtr<TClntAddrMgr> AddrMgr;
-    TContainer< SmartPtr<TMsg> > BackupSrvLst;
-
 };
 
 #endif /* CLNTMSGREQUEST_H */

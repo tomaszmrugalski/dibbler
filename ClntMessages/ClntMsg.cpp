@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.22 2007-01-21 19:17:56 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.23 2007-01-27 17:12:23 thomson Exp $
  */
 
 #ifdef WIN32
@@ -465,9 +465,6 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_FQDN);
 
 	string fqdn = iface->getProposedFQDN();
-#if 0
-	if (fqdn.length()) 
-#endif
 	{
 	    SmartPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
 	    Options.append( (Ptr*)opt );
@@ -523,17 +520,9 @@ void TClntMsg::appendRequestedOptions() {
 	iface->setNISPDomainState(STATE_INPROCESS);
     }
 
-  // --- option: Prefix Delegation ---
-    if ( iface->isReqPrefixDelegation() && (iface->getPrefixDelegationState()==STATE_NOTCONFIGURED) ) {
-	optORO->addOption(OPTION_IA_PD);
-	   
-	iface->firstPD();
-	SmartPtr<TClntCfgPD> ptrPD = iface->getPD();
-	SmartPtr<TClntOptIA_PD> opt = new TClntOptIA_PD(ptrPD ,this );
-	Options.append( (Ptr*)opt );
-	
-	iface->setPrefixDelegationState(STATE_INPROCESS);
-    }
+    // --- option: Prefix Delegation ---
+    // prefix delegation is supported in a similar way to IA and TA
+    // see ClntTransMgr::checkSolicit() for details
 
     // --- option: LIFETIME ---
     if ( iface->isReqLifetime() && (this->MsgType == INFORMATION_REQUEST_MSG) && optORO->count() )
@@ -595,6 +584,16 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
 
 }
 
+bool TClntMsg::appendClientID()
+{
+    if (!ClntCfgMgr)
+	return false;
+    SmartPtr<TOpt> ptr;
+    ptr = new TClntOptClientIdentifier( ClntCfgMgr->getDUID(), this );
+    Options.append( ptr );
+    return true;
+}
+
 bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
 
@@ -608,3 +607,174 @@ bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 
     return status;
 }
+
+/** 
+ * method is used to process received REPLY message (as an answer for REQUEST or
+ * as an answer for SOLICIT with RAPID COMMIT option)
+ * 
+ * @param reply 
+ */
+
+void TClntMsg::answer(SPtr<TClntMsg> reply)
+{
+    SmartPtr<TClntOptServerIdentifier> ptrDUID;
+    ptrDUID = (Ptr*) this->getOption(OPTION_SERVERID);
+    if (!ptrDUID) {
+	Log(Warning) << "Received REPLY message without SERVER ID option. Message ignored." << LogEnd;
+	return;
+    }
+    
+    // analyse all options received
+    SmartPtr<TOpt> option;
+
+    // find ORO in received options
+    reply->firstOption();
+    SmartPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
+
+    reply->firstOption();
+    while (option = reply->getOption() ) {
+        switch (option->getOptType()) 
+        {
+
+	case OPTION_IA_NA:
+	{
+	    SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
+	    if (clntOpt->getStatusCode()!=STATUSCODE_SUCCESS) {
+		Log(Warning) << "Received IA (IAID=" << clntOpt->getIAID() << ") with non-success status:"
+			     << clntOpt->getStatusCode() << ", IA ignored." << LogEnd;
+		break;
+	    }
+	    
+	    // configure received IA
+	    clntOpt->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+			        ptrDUID->getDUID(), 0/* srvAddr used is unicast */, this->Iface);
+	    clntOpt->doDuties();
+	    
+	    // delete that IA from request list
+	    SmartPtr<TOpt> requestOpt;
+	    Options.first();
+	    while (requestOpt = Options.get())
+	    {
+		if (requestOpt->getOptType()!=OPTION_IA_NA)
+		    continue;
+		
+		SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
+		if ( ptrIA->getIAID() == clntOpt->getIAID() ) 
+		{
+		    this->Options.del();
+		    break;
+		}
+	    } //while
+
+	    // delete request for IA, if it was mentioned in Option Request
+	    if ( optORO && optORO->isOption(OPTION_IA_NA) )
+		optORO->delOption(OPTION_IA_NA);
+
+	    break;
+	}
+	case OPTION_IA_TA:
+	{
+	    SPtr<TClntOptTA> ta = (Ptr*) option;
+	    if (ta->getStatusCode()!=STATUSCODE_SUCCESS) {
+		Log(Warning) << "Received TA (IAID=" << ta->getIAID() << ") with non-success status:"
+			     << ta->getStatusCode() << ", TA ignored." << LogEnd;
+		break;
+	    }
+
+	    ta->setIface(Iface);
+	    ta->doDuties();
+	    break;
+	}
+
+	case OPTION_IA_PD:
+	{
+	    SPtr<TClntOptIA_PD> pd = (Ptr*) option;
+
+	    if (pd->getStatusCode()!=STATUSCODE_SUCCESS) {
+		Log(Warning) << "Received PD (PDAID=" << pd->getIAID() << ") with non-success status:"
+			     << pd->getStatusCode() << ", PD ignored." << LogEnd;
+		break;
+	    }
+
+	    // configure received PD
+	    pd->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
+			   ptrDUID->getDUID(), 0/* srvAddr used in unicast */, this);
+	    pd->doDuties();
+	    
+	    // delete that PD from request list
+	    SmartPtr<TOpt> requestOpt;
+	    this->Options.first();
+	    while (requestOpt = this->Options.get()) {
+		if (requestOpt->getOptType() != OPTION_IA_PD)
+		    continue;
+		SPtr<TClntOptIA_PD> reqPD = (Ptr*) requestOpt;
+		if (pd->getIAID() == reqPD->getIAID())
+		{
+		    this->Options.del();
+		    break;
+		}
+	    }
+
+	    // delete request for PD, if it was mentioned in Option Request
+	    if ( optORO && optORO->isOption(OPTION_IA_PD) )
+		optORO->delOption(OPTION_IA_PD);
+	    
+	    break;
+	    }
+
+	case OPTION_IAADDR:
+	    Log(Warning) << "Option OPTION_IAADDR misplaced." << LogEnd;
+	    break;
+
+	default:
+	{
+	    //Log(Debug) << "Setting up option " << option->getOptType() << "." << LogEnd;
+	    if (!option->doDuties()) 
+		break;
+	    SmartPtr<TOpt> requestOpt;
+	    if ( optORO && (optORO->isOption(option->getOptType())) )
+		optORO->delOption(option->getOptType());
+	    
+	    // find options specified in this message
+	    this->Options.first();
+	    while ( requestOpt = this->Options.get()) {
+		if ( requestOpt->getOptType() == option->getOptType() ) 
+		{
+		    this->Options.del();
+		}//if
+	    }//while
+	}
+        } // switch
+    }
+    //Options and IAs serviced by server are removed from requestOptions list
+
+    SmartPtr<TOpt> requestOpt;
+    this->Options.first();
+    bool iaLeft = false;
+    bool taLeft = false;
+    bool pdLeft = false;
+    while ( requestOpt = this->Options.get()) {
+        if (requestOpt->getOptType() == OPTION_IA_NA) iaLeft = true;
+	if (requestOpt->getOptType() == OPTION_IA_TA) taLeft = true;
+	if (requestOpt->getOptType() == OPTION_IA_PD) pdLeft = true;
+    }
+
+    if (iaLeft || taLeft || pdLeft) {
+        // send new Request to another server
+        Log(Notice) << "There are still " << (iaLeft?"some IA(s)":"") 
+		    << (taLeft?"TA":"") << (pdLeft?"some PD(s)":"") << " to configure." << LogEnd;
+	ClntTransMgr->sendRequest(this->Options, this->Iface);
+    } else {
+        if ( optORO && (optORO->count()) )
+        {
+	    Log(Notice) << "All IA(s), TA and PD(s) has been configured, but there som options (";
+	    for (int i=0; i< optORO->count(); i++)
+		Log(Cont) << optORO->getReqOpt(i) << " ";
+	    Log(Cont) << ") were not assigned. Sending new INFORMATION-REQUEST." << LogEnd;
+            ClntTransMgr->sendInfRequest(this->Options, this->Iface);
+        }
+    }
+    IsDone = true;
+    return;
+}
+

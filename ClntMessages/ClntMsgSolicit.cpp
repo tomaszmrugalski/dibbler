@@ -6,7 +6,7 @@
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.23 2007-01-21 19:17:57 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.24 2007-01-27 17:12:24 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -20,6 +20,8 @@
 #include "ClntMsgAdvertise.h"
 
 #include "ClntOptIA_NA.h"
+#include "ClntOptTA.h"
+#include "ClntOptIA_PD.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptElapsed.h"
@@ -33,8 +35,11 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
 				 SmartPtr<TClntTransMgr> TransMgr,
 				 SmartPtr<TClntCfgMgr>   CfgMgr,
 				 SmartPtr<TClntAddrMgr>  AddrMgr,
-				 int iface, SmartPtr<TIPv6Addr> addr, 
-                 List(TClntCfgIA) IAs, bool rapid)
+				 int iface, SmartPtr<TIPv6Addr> addr,
+				 List(TClntCfgIA) iaLst, 
+				 SPtr<TClntCfgTA> ta,
+				 List(TClntCfgPD) pdLst, 
+				 bool rapid)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,SOLICIT_MSG)
 {
     IRT=SOL_TIMEOUT;
@@ -44,23 +49,39 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
     RT=0;
 	
     // ClientIdentifier option
-    SmartPtr<TOpt> ptr;
-    ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
-    Options.append( ptr );
+    appendClientID();
     
-    // all IAs provided by checkSolicit
-    SmartPtr<TClntCfgIA> ClntCfgIA;
-    IAs.first();
-    while (ClntCfgIA = IAs.get()) {
-	SmartPtr<TClntOptIA_NA> IA_NA;
-	IA_NA = new TClntOptIA_NA(ClntCfgIA, this);
-	Options.append((Ptr*)IA_NA);
+    // all IAs are provided by ClntTransMgr::checkSolicit()
+    SmartPtr<TClntCfgIA> ia;
+    iaLst.first();
+    while (ia = iaLst.get()) {
+	SmartPtr<TClntOptIA_NA> iaOpt;
+	iaOpt = new TClntOptIA_NA(ia, this);
+	Options.append( (Ptr*)iaOpt );
+	ia->setState(STATE_INPROCESS);
+    }
+
+    // TA is provided by ClntTransMgr::checkSolicit()
+    if (ta) {
+	SPtr<TClntOptTA> taOpt = new TClntOptTA(ta->getIAID(), this);
+	Options.append( (Ptr*) taOpt);
+	ta->setState(STATE_INPROCESS);
+    }
+
+    // all PDs are provided by ClntTransMgr::checkSolicit()
+    SPtr<TClntCfgPD> pd;
+    pdLst.first();
+    while ( pd = pdLst.get() ) {
+	SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd, this);
+	Options.append( (Ptr*)pdOpt );
+	pd->setState(STATE_INPROCESS);
     }
     
     if(rapid)
         Options.append(new TClntOptRapidCommit(this));
 
-    this->appendTAOptions(true); // append and switch to INPROCESS state
+    // append and switch to INPROCESS state
+    this->appendTAOptions(true); 
 
     // append options specified in the config file
     this->appendRequestedOptions();
@@ -80,21 +101,19 @@ void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
 	    Log(Info) << "Server responded with ADVERTISE instead of REPLY, probably does not support"
 		" RAPID-COMMIT." << LogEnd;
 	}
-	AnswersLst.append((Ptr*)msg);
+	ClntTransMgr->addAdvertise((Ptr*)msg);
 	SmartPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
 	if (prefOpt && (prefOpt->getPreference() == 255) )
 	{
 	    Log(Info) << "ADVERTISE message with prefrence set to 255 received, so wait time for"
 		" other possible ADVERTISE messages is skipped." << LogEnd;
-	    sortAnswers();
-	    ClntTransMgr->sendRequest(Options,AnswersLst,Iface);
+	    ClntTransMgr->sendRequest(Options,Iface);
 	    IsDone = true;
 	    return;
 	}
 	if (this->RC > 1)
 	{
-	    sortAnswers();
-	    ClntTransMgr->sendRequest(Options,AnswersLst,Iface);
+	    ClntTransMgr->sendRequest(Options,Iface);
 	    IsDone = true;
 	    return;
 	}
@@ -113,8 +132,7 @@ void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
 	    return;
 	}
 
-	this->replyReceived(msg);
-	IsDone=true;
+	TClntMsg::answer(msg);
 	break;
     }
     default:
@@ -124,113 +142,6 @@ void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
     }
  }
 
-/*
- * use REPLY provided in rapid-commit situation
- */
-void TClntMsgSolicit::replyReceived(SmartPtr<TClntMsg> msg) {
-    SmartPtr<TClntOptServerIdentifier> ptrDUID;
-    ptrDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
-
-    if (!ptrDUID) {
-	Log(Warning) << "REPLY (for SOLICIT with rapid-commit) recevied without SERVER-ID option." 
-		     << LogEnd;
-	this->IsDone = true;
-	return;
-    }
-    
-    // analyse all options received
-    SmartPtr<TOpt> option;
-
-    // find ORO in received options
-    msg->firstOption();
-    SmartPtr<TClntOptOptionRequest> ptrOptionReqOpt = (Ptr*) msg->getOption(OPTION_ORO);
-
-    msg->firstOption();
-    while (option = msg->getOption() ) 
-    {
-        switch (option->getOptType()) 
-        {
-            case OPTION_IA_NA:
-            {
-                SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
-                clntOpt->setThats(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-				  ptrDUID->getDUID(), SmartPtr<TIPv6Addr>()/*NULL*/, this->Iface);
-
-                clntOpt->doDuties();
-
-                if (clntOpt->getStatusCode()==STATUSCODE_SUCCESS)
-                {
-                    // if we have received enough addresses,
-		    // remove assigned IA's from request message
-                    SmartPtr<TOpt> requestOpt;
-                    this->Options.first();
-                    while (requestOpt = this->Options.get())
-                    {
-                        if (requestOpt->getOptType()==OPTION_IA_NA)
-                        {
-                            SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
-                            if ((ptrIA->getIAID() == clntOpt->getIAID() ) &&
-                                (ClntCfgMgr->countAddrForIA(ptrIA->getIAID()) == ptrIA->countAddr()) )	
-                            {
-                                //found this IA, it has enough addresses and everything is ok.
-                                //Shortly, we have this IA configured.
-                                this->Options.del();
-                                break;
-                            }
-                        } //if
-                    } //while
-                }
-                break;
-            }
-            case OPTION_IAADDR:
-                Log(Warning) << "Option OPTION_IAADDR misplaced." << LogEnd;
-                break;
-            default:
-            {
-                option->setParent(this);
-                if (option->doDuties()) 
-                {
-                    SmartPtr<TOpt> requestOpt;
-                    this->Options.first();
-                    while ( requestOpt = this->Options.get()) {
-                        if ( requestOpt->getOptType() == option->getOptType() ) 
-                        {
-                            if (ptrOptionReqOpt&&(ptrOptionReqOpt->isOption(option->getOptType())))
-                                ptrOptionReqOpt->delOption(option->getOptType());
-                            this->Options.del();
-                        }//if
-                    }//while
-                }
-            }
-        }
-    }
-    //Options and IAs serviced by server are removed from requestOptions list
-
-    SmartPtr<TOpt> solicitOpt;
-    this->Options.first();
-    bool IAsToConfigure = false;
-    while ( solicitOpt = this->Options.get()) {
-        if (solicitOpt->getOptType() == OPTION_IA_NA) {
-	    SmartPtr<TClntOptIA_NA> optIA = (Ptr*) solicitOpt;
-	    SmartPtr<TAddrIA> addrIA = ClntAddrMgr->getIA(optIA->getIAID());
-	    addrIA->setState(STATE_NOTCONFIGURED);
-	    Log(Info) << "IA (IAID=" << addrIA->getIAID() << ") still not configured." << LogEnd;
-	    IAsToConfigure = true;
-            break;
-        }
-    }
-
-    // are there any options (requested in REQUEST_OPTION) not yet configured?
-    if ( ptrOptionReqOpt && (ptrOptionReqOpt->count()) )
-    {
-	Log(Notice) << "All IA(s) were supplied, but not all requested options."
-	  << "Sending Information Request" << LogEnd;
-	ClntTransMgr->sendInfRequest(this->Options, this->Iface);
-    }
-
-    IsDone = true;
-    return;
-}
 
 /** 
  * check if received message should be accepted. Following conditions are checked:
@@ -280,63 +191,22 @@ bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TClntMsg> msg)
     return false;
 }
 
-int TClntMsgSolicit::getMaxPreference()
-{
-    if (AnswersLst.count() == 0)
-	return -1;
-    int max = 0;
-    
-    SmartPtr<TClntMsgAdvertise> ptr;
-    AnswersLst.first();
-    while ( ptr = (Ptr*) AnswersLst.get() ) {
-	if ( max < ptr->getPreference() )
-	    max = ptr->getPreference();
-    }
-    return max;
-}
-
-void TClntMsgSolicit::sortAnswers()
-{
-    // we'll store all ADVERTISE here 
-    List(TMsg) sorted;
-
-    // sort ADVERTISE by the PREFERENCE value
-    SmartPtr<TClntMsgAdvertise> ptr;
-    while (AnswersLst.count()) {
-	int max = getMaxPreference();
-	AnswersLst.first();
-	while ( ptr = (Ptr*) AnswersLst.get() ) {
-	    if (ptr->getPreference() == max) 
-		break;
-	}
-	
-	// did we find it? Then append it on the end of sorted list, and delete from this new.
-	if (ptr) {
-	    sorted.append( (Ptr*) ptr );
-	    AnswersLst.del();
-	}
-    }
-
-    // now copy sorted list to AnswersLst
-    AnswersLst = sorted;
-}
-
 void TClntMsgSolicit::doDuties()
 {
-	if (AnswersLst.count()) 
-	{ // there is a timeout, but we have already answers and all is ok
-		sortAnswers();
-		ClntTransMgr->sendRequest(Options,AnswersLst,Iface);
-		IsDone = true;
-		return;
-	}
-	// there is a timeout and there is no still answer
-	//is it a final timeout for this message
+    if ( ClntTransMgr->getAdvertiseLstCount() ) 
+    { // there is a timeout, but we have already answers and all is ok
+	ClntTransMgr->sendRequest(Options, Iface);
+	IsDone = true;
+	return;
+    }
 
-	// first transmission
-	//if (RC == 0) ;
-		//microsleep(rand()%1000000);
-	send();
+    // there is a timeout and there is no still answer
+    //is it a final timeout for this message
+    
+    // first transmission
+    //if (RC == 0) ;
+    //microsleep(rand()%1000000);
+    send();
 }
 
 
