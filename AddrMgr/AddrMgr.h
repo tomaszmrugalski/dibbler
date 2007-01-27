@@ -40,10 +40,10 @@ class TAddrMgr
     bool delClient(SmartPtr<TDUID> duid);
 
     // --- prefix related ---
-    bool addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
-		   int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-		   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-		   int length, bool quiet);
+    virtual bool addPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
+			   int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+			   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			   int length, bool quiet);
     bool delPrefix(SmartPtr<TDUID> clntDuid,
 		   unsigned long IAID, SmartPtr<TIPv6Addr> prefix,
 		   bool quiet);
@@ -71,6 +71,10 @@ class TAddrMgr
 
 protected:
     virtual void print(ostream & out) = 0;
+    bool addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartPtr<TIPv6Addr> clntAddr,
+		   int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+		   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+		   int length, bool quiet);
 
     bool IsDone;
     List(TAddrClient) ClntsLst;
@@ -78,29 +82,3 @@ protected:
 };
 
 #endif
-/*
- * $Id: AddrMgr.h,v 1.12 2006-10-06 00:30:17 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.11  2006-08-21 22:44:58  thomson
- * Cache support added.
- *
- * Revision 1.10  2006/03/05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.9.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.9  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.8  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- * Revision 1.7  2004/06/04 19:03:46  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.4  2004/04/11 18:04:53  thomson
- * LIBXML2 is now an optional feature
- *
- */

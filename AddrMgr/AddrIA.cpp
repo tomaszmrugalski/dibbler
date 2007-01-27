@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.15 2007-01-07 20:18:44 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.16 2007-01-27 17:09:32 thomson Exp $
  *
  */
 
@@ -258,19 +258,21 @@ bool TAddrIA::delPrefix(SPtr<TIPv6Addr> x)
 // --- time related methods -------------------------------------------
 // --------------------------------------------------------------------
 unsigned long TAddrIA::getT1Timeout() {
-    unsigned long ts;
-    ts = (this->Timestamp) + (this->T1) - now();
-    if (ts>0) 
-        return ts;
+    unsigned long ts, x;
+    ts = Timestamp + T1;
+    x  = now();
+    if (ts>x) 
+        return ts-x;
     else 
         return 0;
 }
 
 unsigned long TAddrIA::getT2Timeout() {
-    unsigned long ts;
-    ts = (this->Timestamp) + (this->T2) - now();
-    if (ts>0) 
-        return ts;
+    unsigned long ts, x;
+    ts = Timestamp + T2;
+    x  = now();
+    if (ts>x) 
+        return ts-x;
     else 
         return 0;
 }
@@ -498,9 +500,7 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
 	strum << "    <AddrIA unicast=\"";
     if (x.Unicast)
 	strum << x.SrvAddr->getPlain();
-    strum << "\"" << endl;
-    
-    strum  << "            T1=\"" << x.T1 << "\""
+    strum << "\" T1=\"" << x.T1 << "\""
 	   << " T2=\"" << x.T2 << "\""
 	   << " IAID=\"" << x.IAID << "\""
 	   << " state=\"" << StateToString(x.State) 

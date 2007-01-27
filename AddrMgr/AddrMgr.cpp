@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.24 2007-01-03 01:27:01 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.25 2007-01-27 17:09:32 thomson Exp $
  *
  */
 
@@ -104,7 +104,7 @@ bool TAddrMgr::delClient(SmartPtr<TDUID> duid)
 
 unsigned long TAddrMgr::getT1Timeout()
 {
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -116,7 +116,7 @@ unsigned long TAddrMgr::getT1Timeout()
 
 unsigned long TAddrMgr::getT2Timeout()
 {
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -128,7 +128,7 @@ unsigned long TAddrMgr::getT2Timeout()
 
 unsigned long TAddrMgr::getPrefTimeout()
 {
-    unsigned long ts = LONG_MAX;
+    unsigned long ts = ULONG_MAX;
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -152,7 +152,7 @@ unsigned long TAddrMgr::getValidTimeout()
 
 unsigned long TAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
 {
-    // FIXME
+    // FIXME: implement getAddrCount()
     return 1;
 }
 
@@ -178,12 +178,6 @@ bool TAddrMgr::addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr
 			 int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
 			 SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			 int length, bool quiet) {
-
-    if (!prefix) {
-	Log(Error) << "Attempt to add null prefix failed." << LogEnd;
-	return false;
-    }
-
     // find this client
     SmartPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -199,21 +193,37 @@ bool TAddrMgr::addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr
 	ptrClient = new TAddrClient(clntDuid);
 	this->addClient(ptrClient);
     }
+    return addPrefix(ptrClient, clntDuid, clntAddr, iface, IAID, T1, T2, prefix, pref, valid, length, quiet);
+}
+
+bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartPtr<TIPv6Addr> addr,
+			 int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+			 SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			 int length, bool quiet) {
+    if (!prefix) {
+	Log(Error) << "Attempt to add null prefix failed." << LogEnd;
+	return false;
+    }
+
+    if (!client) {
+	Log(Error) << "Unable to add prefix, client not defined." << LogEnd;
+	return false;
+    }
 
     // find this PD
     SmartPtr <TAddrIA> ptrPD;
-    ptrClient->firstPD();
-    while ( ptrPD = ptrClient->getPD() ) {
+    client->firstPD();
+    while ( ptrPD = client->getPD() ) {
         if ( ptrPD->getIAID() == IAID)
             break;
     }
 
     // have we found this PD?
     if (!ptrPD) {
-	ptrPD = new TAddrIA(iface, clntAddr, clntDuid, T1, T2, IAID);
-	ptrClient->addPD(ptrPD);
+	ptrPD = new TAddrIA(iface, addr, duid, T1, T2, IAID);
+	client->addPD(ptrPD);
 	if (!quiet)
-	    Log(Debug) << "PD: Adding PD (PDID=" << IAID << ") to addrDB." << LogEnd;
+	    Log(Debug) << "PD: Adding PD (iaid=" << IAID << ") to addrDB." << LogEnd;
     }
 
     SmartPtr <TAddrPrefix> ptrPrefix;
@@ -234,7 +244,7 @@ bool TAddrMgr::addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr
     ptrPD->addPrefix(prefix, pref, valid, length);
     if (!quiet)
 	Log(Debug) << "PD: Adding " << prefix->getPlain() 
-		   << " prefix to PD (PDID=" << IAID 
+		   << " prefix to PD (iaid=" << IAID 
 		   << ") to addrDB." << LogEnd;
     return true;
 }
@@ -246,7 +256,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
 			    unsigned long IAID, SmartPtr<TIPv6Addr> prefix,
 			    bool quiet) {
 
-    Log(Debug) << "PD: Deleting prefix " << prefix->getPlain() << ", DUID=" << clntDuid->getPlain() << ", PDID=" << IAID << LogEnd;
+    Log(Debug) << "PD: Deleting prefix " << prefix->getPlain() << ", DUID=" << clntDuid->getPlain() << ", iaid=" << IAID << LogEnd;
     // find this client
     SmartPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -272,7 +282,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
 
     // have we found this IA?
     if (!ptrPD) {
-        Log(Warning) << "PD: PDID=" << IAID << " not assigned to client, cannot delete address and/or PD."
+        Log(Warning) << "PD: iaid=" << IAID << " not assigned to client, cannot delete address and/or PD."
 		     << LogEnd;
         return false;
     }
@@ -298,7 +308,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
     
     if (!ptrPD->getPrefixCount()) {
 	if (!quiet)
-	    Log(Debug) << "PD: Deleted PD (PDID=" << IAID << ") from addrDB." << LogEnd;
+	    Log(Debug) << "PD: Deleted PD (iaid=" << IAID << ") from addrDB." << LogEnd;
 	ptrClient->delPD(IAID);
     }
 

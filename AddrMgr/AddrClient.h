@@ -6,20 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.h,v 1.6 2006-10-06 00:30:17 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.5  2006-08-03 00:43:15  thomson
- * FQDN support added.
- *
- * Revision 1.4  2006-03-05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.3.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.3  2004/09/08 21:22:45  thomson
- * Parser improvements, signed/unsigned issues addressed.
+ * $Id: AddrClient.h,v 1.7 2007-01-27 17:09:31 thomson Exp $
  *
  */
 

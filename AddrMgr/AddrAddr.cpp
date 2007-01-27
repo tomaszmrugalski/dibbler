@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.8 2006-11-15 02:58:45 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.9 2007-01-27 17:09:31 thomson Exp $
  */
 
 #include <iostream>
@@ -45,9 +45,10 @@ SmartPtr<TIPv6Addr> TAddrAddr::get() {
 // return Prefered time left
 unsigned long TAddrAddr::getPrefTimeout()
 {
-    long ts = this->Timestamp + this->Prefered - now();
-    if (ts>0) 
-        return ts;
+    unsigned long ts = Timestamp + Prefered;
+    unsigned long x  = now();
+    if (ts>x) 
+        return ts-x;
     else 
         return 0;
 }
@@ -55,9 +56,10 @@ unsigned long TAddrAddr::getPrefTimeout()
 // return Valid time left
 unsigned long TAddrAddr::getValidTimeout()
 {
-    long ts = (this->Timestamp) + (this->Valid) - now();
-    if (ts>0) 
-        return ts;
+    unsigned long ts = Timestamp + Valid;
+    unsigned long x  = now();
+    if (ts>x) 
+        return ts-x;
     else 
         return 0;
 }
@@ -112,6 +114,9 @@ ostream & operator<<(ostream & strum,TAddrAddr &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006-11-15 02:58:45  thomson
+ * lowlevel-win32.c cleanup, enums added.
+ *
  * Revision 1.7  2005/08/03 23:23:35  thomson
  * Minor fix.
  *
