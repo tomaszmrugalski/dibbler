@@ -30,30 +30,20 @@ class TSrvOptIA_PD : public TOptIA_PD
 		 SmartPtr<TSrvAddrMgr> addrMgr,
 		 SmartPtr<TSrvOptIA_PD> queryOpt,
 		 SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TDUID> duid,
-		 int iface, unsigned long &addrCount, int msgType , TMsg* parent);
+		 int iface, int msgType , TMsg* parent);
 
     TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent);    
     TSrvOptIA_PD(long IAID, long T1, long T2, TMsg* parent);    
     TSrvOptIA_PD(long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);
 
-/* Constructor used in answers to:
- * - SOLICIT 
- * - SOLICIT (with RAPID_COMMIT)
- * - REQUEST */
-    TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvOptIA_PD> queryOpt,
-		 SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
-		 int iface, int msgType, TMsg* parent);
-    
     void releaseAllPrefixes(bool quiet);
 
-    void solicit(SmartPtr<TSrvOptIA_PD> queryOpt);
-    void request(SmartPtr<TSrvOptIA_PD> queryOpt);
-    void renew(SmartPtr<TSrvOptIA_PD> queryOpt);
-    void rebind(SmartPtr<TSrvOptIA_PD> queryOpt);
-    void release(SmartPtr<TSrvOptIA_PD> queryOpt);
-    void confirm(SmartPtr<TSrvOptIA_PD> queryOpt);
-    void decline(SmartPtr<TSrvOptIA_PD> queryOpt);
+    void solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface, bool fake);
+    void renew         (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
+    void rebind        (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
+    void release       (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
+    void confirm       (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
+    void decline       (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
     bool doDuties();
  private:
     SmartPtr<TSrvAddrMgr> AddrMgr;

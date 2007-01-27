@@ -90,84 +90,6 @@ TSrvOptIA_PD::TSrvOptIA_PD( char * buf, int bufsize, TMsg* parent)
 	
 }
 
-/** 
- * This constructor is used to create PD option as an aswer to a SOLICIT, SOLICIT (RAPID_COMMIT) or REQUEST
- * 
- * @param addrMgr 
- * @param cfgMgr 
- * @param queryOpt 
- * @param clntDuid 
- * @param clntAddr 
- * @param iface 
- * @param msgType 
- * @param parent 
- */
-TSrvOptIA_PD::TSrvOptIA_PD(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
-			   SmartPtr<TSrvOptIA_PD> queryOpt,
-			   SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
-			   int iface, int msgType, TMsg* parent)
-    :TOptIA_PD(queryOpt->getIAID(), queryOpt->getT1(), queryOpt->getT2(), parent) {
-    
-    this->AddrMgr   = addrMgr;
-    this->CfgMgr    = cfgMgr;
-    this->ClntDuid  = clntDuid;
-    this->ClntAddr  = clntAddr;
-    this->Iface     = iface;
-	
-    bool fake  = false; // is this assignment for real?
-    if (msgType == SOLICIT_MSG)
-	fake = true;
-    if (parent->getOption(OPTION_RAPID_COMMIT))
-	fake = false;
-
-    // --- Is the PD supported? ---
-    SPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID(iface);
-    if (!iface) {
-	Log(Error) << "Unable to find interface " << iface << ". Something is wrong, VERY wrong." << LogEnd;
-	return;
-    }
-
-    // is the prefix delegation supported?
-    if ( !ptrIface->supportPrefixDelegation() ) {
-	SmartPtr<TSrvOptStatusCode> ptrStatus;
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
-					  "Server support for prefix delegation is not enabled. Sorry buddy.",this->Parent);
-        this->SubOptions.append((Ptr*)ptrStatus);
-	return;
-    }
-
-    // --- Is this PD without IAPREFIX options? ---
-    SPtr<TIPv6Addr> hint = 0;
-    if (!queryOpt->countPrefixes()) {
-	Log(Notice) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
-	hint  = new TIPv6Addr(); /* :: - any address */
-	this->Prefered = DHCPV6_INFINITY;
-	this->Valid    = DHCPV6_INFINITY;
-    } else {
-	SPtr<TSrvOptIAPrefix> hintPrefix = (Ptr*) queryOpt->getOption(OPTION_IAPREFIX);
-	Log(Info) << "PD: PD option with " << hint->getPlain() << " as a hint received." << LogEnd;
-	hint  = hintPrefix->getPrefix();
-	this->Prefered  = hintPrefix->getPref();
-	this->Valid     = hintPrefix->getValid();
-    }
-
-    // assign prefixes
-    int status = this->assignPrefix(hint, fake);
-    
-    // include status code
-    SmartPtr<TSrvOptStatusCode> ptrStatus;
-    if (status==STATUSCODE_SUCCESS) {
-	ostringstream tmp;
-	tmp << countPrefixes() << " prefix(es) granted.";
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS, tmp.str(),  this->Parent);
-    } else {
-	ptrStatus = new TSrvOptStatusCode(status,
-					  "Unable to provide any prefixes. Sorry.", this->Parent);
-    }
-    this->SubOptions.append((Ptr*)ptrStatus);
-    return;
-}
-
 void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
     SmartPtr<TOpt> opt;
     SmartPtr<TIPv6Addr> prefix;
@@ -228,41 +150,57 @@ TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
 		 SmartPtr<TSrvAddrMgr> addrMgr,
 		 SmartPtr<TSrvOptIA_PD> queryOpt,
 		 SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TDUID> clntDuid,
-		 int iface, unsigned long &addrCount, int msgType , TMsg* parent)
-    :TOptIA_PD(queryOpt->getIAID(),0x7fffffff,0x7fffffff, parent)
+		 int iface, int msgType , TMsg* parent)
+    :TOptIA_PD(queryOpt->getIAID(), 0x7fffffff, 0x7fffffff, parent)
 {
-    // FIXME: addrCount is obsolete
-
     this->AddrMgr   = addrMgr;
     this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
 
-    this->IAID = queryOpt->getIAID();
+    SPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID(Iface);
+    if (!ptrIface) {
+	Log(Error) << "Unable to find interface with ifindex=" << Iface << ". Something is wrong, VERY wrong." << LogEnd;
+	return;
+    }
+
+    // is the prefix delegation supported?
+    if ( !ptrIface->supportPrefixDelegation() ) {
+	SmartPtr<TSrvOptStatusCode> ptrStatus;
+	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+					  "Server support for prefix delegation is not enabled. Sorry buddy.",this->Parent);
+        this->SubOptions.append((Ptr*)ptrStatus);
+	return;
+    }
+
+    bool fake  = false; // is this assignment for real?
+    if (msgType == SOLICIT_MSG)
+	fake = true;
+    if (parent->getOption(OPTION_RAPID_COMMIT))
+	fake = false;
 
     switch (msgType) {
     case SOLICIT_MSG:
-        //this->solicit(cfgMgr, addrMgr, queryOpt, clntAddr, clntDuid,iface, addrCount);
+        this->solicitRequest(queryOpt, ptrIface, fake);
         break;
     case REQUEST_MSG:
-        //this->request(cfgMgr, addrMgr, queryOpt, clntAddr, clntDUID, iface, addrCount);
+        this->solicitRequest(queryOpt, ptrIface, fake);
         break;
-    
     case RENEW_MSG:
-        this->renew(queryOpt);
+        this->renew(queryOpt, ptrIface);
         break;
     case REBIND_MSG:
-        this->rebind(queryOpt);
+        this->rebind(queryOpt, ptrIface);
         break;
     case RELEASE_MSG:
-        this->release(queryOpt);
+        this->release(queryOpt, ptrIface);
         break;
     case CONFIRM_MSG:
-        this->confirm(queryOpt);
+        this->confirm(queryOpt, ptrIface);
         break;
     case DECLINE_MSG:
-        this->decline(queryOpt);
+        this->decline(queryOpt, ptrIface);
         break;
     default: {
 	Log(Warning) << "Unknown message type (" << msgType 
@@ -274,30 +212,99 @@ TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
     }
 }
 
-// 
+void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> ptrIface, bool fake) {
+
+    // --- Is this PD without IAPREFIX options? ---
+    SPtr<TIPv6Addr> hint = 0;
+    if (!queryOpt->countPrefixes()) {
+	Log(Notice) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
+	hint  = new TIPv6Addr(); /* :: - any address */
+	this->Prefered = DHCPV6_INFINITY;
+	this->Valid    = DHCPV6_INFINITY;
+    } else {
+	SPtr<TSrvOptIAPrefix> hintPrefix = (Ptr*) queryOpt->getOption(OPTION_IAPREFIX);
+	Log(Info) << "PD: PD option with " << hint->getPlain() << " as a hint received." << LogEnd;
+	hint  = hintPrefix->getPrefix();
+	this->Prefered  = hintPrefix->getPref();
+	this->Valid     = hintPrefix->getValid();
+    }
+
+    // assign prefixes
+    int status = this->assignPrefix(hint, fake);
+    
+    // include status code
+    SmartPtr<TSrvOptStatusCode> ptrStatus;
+    if (status==STATUSCODE_SUCCESS) {
+	ostringstream tmp;
+	tmp << countPrefixes() << " prefix(es) granted.";
+	ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS, tmp.str(),  this->Parent);
+    } else {
+	ptrStatus = new TSrvOptStatusCode(status,
+					  "Unable to provide any prefixes. Sorry.", this->Parent);
+    }
+    this->SubOptions.append((Ptr*)ptrStatus);
+    return;
+}
+
 /** 
  * generate OPTION_PD based on OPTION_PD received in RENEW message
  * 
  * @param queryOpt - IA_PD option in the RENEW message
  * @param addrCount 
  */
-void TSrvOptIA_PD::renew(SmartPtr<TSrvOptIA_PD> queryOpt) {
-    // FIXME: support PD in RENEW message.
+void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
+    SmartPtr <TAddrClient> ptrClient;
+    ptrClient = this->AddrMgr->getClient(this->ClntDuid);
+    if (!ptrClient) {
+        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
+						this->Parent));
+        return;
+    }
+
+    // find that IA
+    SmartPtr <TAddrIA> ptrIA;
+    ptrIA = ptrClient->getPD(this->IAID);
+    if (!ptrIA) {
+        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
+						this->Parent ));
+        return;
+    }
+
+    // everything seems ok, update data in addrdb
+    ptrIA->setTimestamp();
+    this->T1 = ptrIA->getT1();
+    this->T2 = ptrIA->getT2();
+
+    // send addr info to client
+    SmartPtr<TAddrPrefix> prefix;
+    ptrIA->firstPrefix();
+    while ( prefix = ptrIA->getPrefix() ) {
+        SmartPtr<TSrvOptIAPrefix> optPrefix;
+        prefix->setTimestamp();
+	optPrefix = new TSrvOptIAPrefix(prefix->get(), prefix->getLength(), prefix->getPref(),
+					prefix->getValid(), this->Parent);
+        SubOptions.append( (Ptr*)optPrefix );
+    }
+
+    // finally send greetings and happy OK status code
+    SmartPtr<TSrvOptStatusCode> ptrStatus;
+    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Prefix(es) renewed.", this->Parent);
+    SubOptions.append( (Ptr*)ptrStatus );
 }
 
-void TSrvOptIA_PD::rebind(SmartPtr<TSrvOptIA_PD> queryOpt) {
+void TSrvOptIA_PD::rebind(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
     // FIXME: implement PD support in REBIND message
 }
 
-void TSrvOptIA_PD::release(SmartPtr<TSrvOptIA_PD> queryOpt) {
+void TSrvOptIA_PD::release(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
     // FIXME: implement PD support in RELEASE message
 }
 
-void TSrvOptIA_PD::confirm(SmartPtr<TSrvOptIA_PD> queryOpt) {
+void TSrvOptIA_PD::confirm(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
     // FIXME: implement PD support in CONFIRM message
 }
 
-void TSrvOptIA_PD::decline(SmartPtr<TSrvOptIA_PD> queryOpt) {
+void TSrvOptIA_PD::decline(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
     // FIXME: implement PD support in DECLINE message
 }
 
