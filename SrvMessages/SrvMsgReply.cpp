@@ -274,7 +274,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
                SmartPtr<TSrvOptIA_NA> optIA_NA;
                 optIA_NA = new TSrvOptIA_NA(CfgMgr, AddrMgr, (Ptr*)ptrOpt, 
                     rebind->getAddr(), duidOpt->getDUID(),
-                    rebind->getIface(), addrCount, RENEW_MSG,
+                    rebind->getIface(), addrCount, REBIND_MSG,
                     this);
 		if (optIA_NA->getStatusCode() != STATUSCODE_NOBINDING )
 		    this->Options.append((Ptr*)optIA_NA);
@@ -467,7 +467,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		if (AddrMgr->delPrefix(clntID->getDUID(), pd->getIAID(), prefix->getPrefix(), false) ) {
 		    anyDeleted=true;                    
 		} else {
-		    Log(Warning) << "PD: No such binding found: client=" << clntID->getDUID()->getPlain() << ", PD (pdid=" 
+		    Log(Warning) << "PD: No such binding found: client=" << clntID->getDUID()->getPlain() << ", PD (iaid=" 
 				 << pd->getIAID() << "), addr="<< prefix->getPrefix()->getPlain() << LogEnd;
 		};
 	    };
@@ -530,6 +530,14 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 					renew->getIface(), addrCount, RENEW_MSG, this);
 	    this->Options.append((Ptr*)optIA_NA);
             break;
+	}
+	case OPTION_IA_PD: {
+	    SPtr<TSrvOptIA_PD> optPD;
+	    optPD = new TSrvOptIA_PD(CfgMgr, AddrMgr, (Ptr*)ptrOpt,
+				     renew->getAddr(), duidOpt->getDUID(),
+				     renew->getIface(), RENEW_MSG, this);
+	    Options.append( (Ptr*) optPD);
+	    break;
 	}
 	case OPTION_IA_TA:
 	    Log(Warning) << "TA option present. Temporary addreses cannot be renewed." << LogEnd;
@@ -624,7 +632,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
 	case OPTION_IA_PD: {
 	    SmartPtr<TSrvOptIA_PD> pd;
-	    pd = new TSrvOptIA_PD(AddrMgr, CfgMgr, (Ptr*) opt, clntDuid, clntAddr,
+	    pd = new TSrvOptIA_PD(CfgMgr, AddrMgr, (Ptr*) opt, clntAddr, clntDuid, 
 			       clntIface, REQUEST_MSG, this);
 	    this->Options.append((Ptr*)pd);
 	    break;
