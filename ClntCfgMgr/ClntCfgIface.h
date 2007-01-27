@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.17 2007-01-21 18:06:58 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.18 2007-01-27 17:11:10 thomson Exp $
  */
 
 class TClntCfgIface;
@@ -42,13 +42,15 @@ public:
     // IA
     void firstIA();
     int countIA();
-    SmartPtr<TClntCfgIA> getIA();
+    SPtr<TClntCfgIA> getIA();
+    SPtr<TClntCfgIA> getIA(int iaid);
     void addIA(SmartPtr<TClntCfgIA> ptr);
 
     // PD
     void firstPD();
     int countPD();
-    SmartPtr<TClntCfgPD> getPD();
+    SPtr<TClntCfgPD> getPD();
+    SPtr<TClntCfgPD> getPD(int iaid);
     void addPD(SmartPtr<TClntCfgPD> ptr);
     
     // TA
@@ -156,8 +158,6 @@ public:
 
     // --- option: Prefix Delegation ---
     bool isReqPrefixDelegation();
-    EState getPrefixDelegationState();
-    void setPrefixDelegationState(EState state);
     void setPrefixLength(int len);
     int  getPrefixLength();
 

@@ -7,9 +7,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.21 2006-11-17 01:08:53 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.22 2007-01-27 17:14:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2006-11-17 01:08:53  thomson
+ * Partial AUTH support by Sammael, fixes by thomson
+ *
  * Revision 1.20  2005-07-17 21:09:54  thomson
  * Minor improvements for 0.4.1 release.
  *
@@ -432,10 +435,10 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SmartPtr<TSrvIfaceIface> ptrIface,
 /*
  * remember SmartPtrs to all managers (including this one)
  */
-void TSrvIfaceMgr::setThats(SmartPtr<TSrvIfaceMgr> srvIfaceMgr,
-			    SmartPtr<TSrvTransMgr> srvTransMgr,
-			    SmartPtr<TSrvCfgMgr> srvCfgMgr,
-			    SmartPtr<TSrvAddrMgr> srvAddrMgr) {
+void TSrvIfaceMgr::setContext(SmartPtr<TSrvIfaceMgr> srvIfaceMgr,
+			      SmartPtr<TSrvTransMgr> srvTransMgr,
+			      SmartPtr<TSrvCfgMgr> srvCfgMgr,
+			      SmartPtr<TSrvAddrMgr> srvAddrMgr) {
     SrvCfgMgr=srvCfgMgr;
     SrvAddrMgr=srvAddrMgr;
     SrvTransMgr=srvTransMgr;

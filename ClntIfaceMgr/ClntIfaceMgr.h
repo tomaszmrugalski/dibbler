@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.9 2007-01-03 01:27:02 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.10 2007-01-27 17:14:10 thomson Exp $
  *
  */
 
@@ -39,16 +39,17 @@ class TClntIfaceMgr : public TIfaceMgr
     
     SmartPtr<TClntMsg> select(unsigned int timeout);
 
-    void setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
-		  SmartPtr<TClntTransMgr> clntTransMgr,
-		  SmartPtr<TClntCfgMgr>   clntCfgMgr,
-		  SmartPtr<TClntAddrMgr>  clntAddrMgr);
+    void setContext(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
+		    SmartPtr<TClntTransMgr> clntTransMgr,
+		    SmartPtr<TClntCfgMgr>   clntCfgMgr,
+		    SmartPtr<TClntAddrMgr>  clntAddrMgr);
 
     bool fqdnAdd(SmartPtr<TClntIfaceIface> iface, string domainname);
     bool fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> ia, string domainname);
 
-    bool addPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
-    bool delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen);
+    bool addPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
+    bool updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
+    bool delPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen);
 
     // --- option related ---
     void removeAllOpts();

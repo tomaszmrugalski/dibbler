@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.31 2007-01-07 20:18:44 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.32 2007-01-27 17:14:10 thomson Exp $
  */
 
 #include "Portable.h"
@@ -176,10 +176,10 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
 
 }
 
-void TClntIfaceMgr::setThats(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
-                             SmartPtr<TClntTransMgr> clntTransMgr,
-                             SmartPtr<TClntCfgMgr> clntCfgMgr,
-                             SmartPtr<TClntAddrMgr> clntAddrMgr)
+void TClntIfaceMgr::setContext(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
+                               SmartPtr<TClntTransMgr> clntTransMgr,
+                               SmartPtr<TClntCfgMgr> clntCfgMgr,
+                               SmartPtr<TClntAddrMgr> clntAddrMgr)
 {
     ClntCfgMgr=clntCfgMgr;
     ClntAddrMgr=clntAddrMgr;

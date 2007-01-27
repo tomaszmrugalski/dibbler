@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.7 2005-01-30 22:53:28 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.8 2007-01-27 17:14:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005-01-30 22:53:28  thomson
+ * *** empty log message ***
+ *
  * Revision 1.6  2005/01/08 16:52:04  thomson
  * Relay support implemented.
  *
@@ -63,10 +66,10 @@ class TSrvIfaceMgr :public TIfaceMgr {
     SmartPtr<TSrvMsg> select(unsigned long timeout);
 
     // ---remember SmartPtrs to all menagers---
-    void setThats(SmartPtr<TSrvIfaceMgr> srvIfaceMgr,
-		  SmartPtr<TSrvTransMgr> srvTransMgr,
-		  SmartPtr<TSrvCfgMgr> srvCfgMgr,
-		  SmartPtr<TSrvAddrMgr> srvAddrMgr);
+    void setContext(SPtr<TSrvIfaceMgr> srvIfaceMgr,
+		    SPtr<TSrvTransMgr> srvTransMgr,
+		    SPtr<TSrvCfgMgr> srvCfgMgr,
+		    SPtr<TSrvAddrMgr> srvAddrMgr);
 
   private:
     string XmlFile;

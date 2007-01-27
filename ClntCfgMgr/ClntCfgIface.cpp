@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.24 2007-01-21 18:06:57 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.25 2007-01-27 17:11:10 thomson Exp $
  *
  */
 
@@ -105,7 +105,6 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     if (ReqNISPServer) this->setNISPServerState(STATE_NOTCONFIGURED);
     if (ReqNISPDomain) this->setNISPDomainState(STATE_NOTCONFIGURED);
     if (ReqLifetime)   this->setLifetimeState(STATE_NOTCONFIGURED);
-    if (ReqPrefixDelegation) this->setPrefixDelegationState(STATE_NOTCONFIGURED);
     if (ReqVendorSpec) this->setVendorSpecState(STATE_NOTCONFIGURED);
     // copy preferred-server list
     SmartPtr<TStationID> station;
@@ -163,6 +162,18 @@ int TClntCfgIface::countIA()
     return IALst.get();
 }
 
+SPtr<TClntCfgIA> TClntCfgIface::getIA(int iaid)
+{
+    SPtr<TClntCfgIA> ia;
+    IALst.first();
+    while (ia = IALst.get() ) {
+	if (ia->getIAID() == iaid)
+	    return ia;
+    }
+    return 0;
+}
+
+
  void TClntCfgIface::addIA(SmartPtr<TClntCfgIA> ptr)
 {
     IALst.append(ptr);
@@ -183,7 +194,18 @@ int TClntCfgIface::countPD()
     return PDLst.get();
 }
 
- void TClntCfgIface::addPD(SmartPtr<TClntCfgPD> ptr)
+SPtr<TClntCfgPD> TClntCfgIface::getPD(int iaid)
+{
+    SPtr<TClntCfgPD> ia;
+    PDLst.first();
+    while (ia = PDLst.get() ) {
+	if (ia->getIAID() == iaid)
+	    return ia;
+    }
+    return 0;
+}
+
+void TClntCfgIface::addPD(SmartPtr<TClntCfgPD> ptr)
 {
     PDLst.append(ptr);
 }
@@ -338,9 +360,7 @@ EState TClntCfgIface::getNISPDomainState() {
 EState TClntCfgIface::getLifetimeState() {
     return LifetimeState;
 }
-EState TClntCfgIface::getPrefixDelegationState() {
-    return PrefixDelegationState;
-}
+
 EState TClntCfgIface::getVendorSpecState() {
     return VendorSpecState;
 }
@@ -428,9 +448,7 @@ void TClntCfgIface::setNISPDomainState(EState state) {
 void TClntCfgIface::setLifetimeState(EState state) {
     this->LifetimeState=state;
 }
-void TClntCfgIface::setPrefixDelegationState(EState state) {
-    this->PrefixDelegationState=state;
-}
+
 void TClntCfgIface::setVendorSpecState(EState state) {
     this->VendorSpecState = state;
 }

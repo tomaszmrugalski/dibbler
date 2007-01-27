@@ -1,3 +1,10 @@
+/*
+ * InterfaceManager - provides access to all network interfaces present in the system
+ * @date 2003-10-26
+ * @author Tomasz Mrugalski <admin@klub.com.pl>
+ * @licence GNU GPL v2 or later
+ */
+
 class TIfaceMgr;
 #ifndef IFACEMGR_H
 #define IFACEMGR_H
@@ -7,12 +14,6 @@ class TIfaceMgr;
 
 #include "Iface.h"
 
-/*
- * InterfaceManager - provides access to all network interfaces present in the system
- * @date 2003-10-26
- * @author Tomasz Mrugalski <admin@klub.com.pl>
- * @licence GNU GPL v2 or later
- */
 
 class TIfaceMgr {
   public:

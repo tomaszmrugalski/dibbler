@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  0.5.0-CVS [development snapshot,not-released-yet]
+  - Client: renewal works ok, if client wakes up "late" (bug #125)
   - All: Prefix-delegation is now supported (still some work is needed, e.g. docs and bugfixes)
   - Vendor-spec information option is now supported
   - Srv: Per-client configuration is now possible (so called exceptions)

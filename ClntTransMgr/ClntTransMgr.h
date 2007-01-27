@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.11 2006-10-06 00:39:44 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.12 2007-01-27 17:14:10 thomson Exp $
  *
  */
 class TClntTransMgr;
@@ -36,17 +36,26 @@ class TClntTransMgr
     void relayMsg(SmartPtr<TClntMsg> msg);
     unsigned long getTimeout();
     void stop();
-    void sendRequest(TContainer< SmartPtr<TOpt> > requestOptions, 
-		     TContainer< SmartPtr<TMsg> > srvlist,int iface);
+    void sendRequest(List(TOpt) requestOptions, int iface);
     void sendInfRequest(TContainer< SmartPtr<TOpt> > requestOptions, int iface);
     void sendRebind( TContainer<SmartPtr<TOpt> > ptrIA, int iface);
     void sendRelease(List(TAddrIA) iaLst, SmartPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     void shutdown();
     bool isDone();
-    void setThat(SmartPtr<TClntTransMgr> that);
+    void setContext(SmartPtr<TClntTransMgr> that);
 
     char * getCtrlAddr();
     int    getCtrlIface();
+
+    // Backup server list management
+    void addAdvertise(SPtr<TMsg> advertise); // adds ADVERTISE to the list
+    void firstAdvertise();
+    SPtr<TMsg> getAdvertise();
+    SPtr<TOpt> getAdvertiseDUID(); // returns server DUID of the best advertise on the list
+    void sortAdvertise(); // sorts advertise messages
+    void delFirstAdvertise(); // deletes first advertise
+    int getMaxPreference();
+    int getAdvertiseLstCount();
     
  protected:
     void removeExpired();
@@ -61,7 +70,7 @@ class TClntTransMgr
   private:
     bool openLoopbackSocket();
     bool openSocket(SmartPtr<TClntCfgIface> iface);
-
+    void sortAdvertiseLst();
     // managers
     SmartPtr<TClntCfgMgr>   CfgMgr;
     SmartPtr<TClntIfaceMgr> IfaceMgr;
@@ -69,19 +78,17 @@ class TClntTransMgr
     SmartPtr<TClntTransMgr> That;
 
     List(TClntMsg) Transactions;
-    bool IsDone;
-    bool Shutdown;
-    bool ConfirmEnabled;  // should we send CONFIRM message?
+    bool IsDone;         // isDone = true - client operation is finished
+    bool Shutdown;       // is shutdown in progress?
+    bool ConfirmEnabled; // should we send CONFIRM message?
 
     bool BindReuse; // Bug #56. Shall we allow running client and server on the same machine?
 
     int ctrlIface;
     char ctrlAddr[48];
-};
 
-/* false - normal operation
-   true - Linux: client and server can be run on the same host, but
-   there is also a drawback: multiple clients can be run at once. */
+    List(TMsg) AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
+};
 
 #endif
 

@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.48 2007-01-07 23:31:00 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.49 2007-01-27 17:14:10 thomson Exp $
  *
  */
 
@@ -25,6 +25,7 @@
 #include "ClntCfgMgr.h"
 #include "ClntCfgPD.h"
 #include "Msg.h"
+#include "ClntMsgAdvertise.h"
 #include "ClntMsgRequest.h"
 #include "ClntMsgRenew.h"
 #include "ClntMsgRebind.h"
@@ -473,6 +474,7 @@ void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
     if (!found) 
         Log(Warning) << "Message with wrong transID (" << hex << msgAnswer->getTransID() << dec
 		     << ") received. Ignoring." << LogEnd;
+    CfgMgr->dump();
     AddrMgr->dump();
 }
 
@@ -517,8 +519,7 @@ void TClntTransMgr::stop()
 /**
  * Note: requestOptions list MUST NOT contain server DUID.
  */
-void TClntTransMgr::sendRequest(List(TOpt) requestOptions, 
-                                List(TMsg) srvlist,int iface)
+void TClntTransMgr::sendRequest(List(TOpt) requestOptions, int iface)
 {
     SmartPtr<TOpt> opt;
     requestOptions.first();
@@ -526,8 +527,8 @@ void TClntTransMgr::sendRequest(List(TOpt) requestOptions,
 	if (!allowOptInMsg(REQUEST_MSG, opt->getOptType()))
 	    requestOptions.del();
     }
-    SmartPtr<TClntMsg> ptr = new TClntMsgRequest(IfaceMgr,That,CfgMgr, AddrMgr, requestOptions,srvlist,iface);
-    Transactions.append( ptr );
+    SmartPtr<TClntMsg> ptr = new TClntMsgRequest(IfaceMgr,That,CfgMgr, AddrMgr, requestOptions, iface);
+    Transactions.append( (Ptr*)ptr );
 }
 
 // Send RELEASE message
@@ -608,44 +609,54 @@ void TClntTransMgr::checkSolicit() {
             continue;
 
 	// step 1: check if there are any IA to be configured
-	List(TClntCfgIA) iaLstToConfig; // list of IA requiring configuration
+	List(TClntCfgIA) iaLst; // list of IA requiring configuration
 	SmartPtr<TClntCfgIA> cfgIA;
     
 	iface->firstIA();
 	while(cfgIA=iface->getIA())
 	{
-	    //These not assigned in AddrMgr and configurable and not in trasaction
-	    //group and pass to constructor of Solicit message
-	    SmartPtr<TAddrIA> ia=AddrMgr->getIA(cfgIA->getIAID());
-	    if(ia->getState()==STATE_NOTCONFIGURED)
-	    {
-		iaLstToConfig.append(cfgIA);
-		ia->setState(STATE_INPROCESS);
-	    }
+	    // These not assigned in AddrMgr and configurable and not in 
+	    // trasaction group and pass to constructor of Solicit message
+	    if(cfgIA->getState()==STATE_NOTCONFIGURED)
+		iaLst.append(cfgIA);
 	}
 
 	// step 2: check if TA has to be configured
-	bool taToConfig = false;
+	SmartPtr<TClntCfgTA> ta;
 	if (iface->countTA() ) {
 	    iface->firstTA();
-	    SmartPtr<TClntCfgTA> ta = iface->getTA();
-	    if (ta->getState()==STATE_NOTCONFIGURED) {
-		taToConfig = true;
-		// don't change set to STATE_INPROCESS, this will be done in ClntMsg.cpp, when
-		// TA option will be appended.
+	    ta = iface->getTA();
+	    if (ta->getState()==STATE_NOTCONFIGURED)
+		ta->setState(STATE_INPROCESS);
+	    else
+		ta = 0;
+	}
+
+	// step 3: check if there are any PD to be configured
+	List(TClntCfgPD) pdLst;
+	SPtr<TClntCfgPD> pd;
+
+	iface->firstPD();
+	while ( pd = iface->getPD() ) {
+	    if (pd->getState()==STATE_NOTCONFIGURED) {
+		pdLst.append(pd);
 	    }
 	}
 
-	if (iaLstToConfig.count() || taToConfig) {//Are there any IA, which should be configured?
-	    Log(Info) << "Creating SOLICIT message with " << iaLstToConfig.count()
-		      << " IA(s), " << (iface->countTA()?"1":"no") << " TA";
+	//Are there any IA, TA or PD which should be configured?
+	if (iaLst.count() || ta || pdLst.count()) {
+	    Log(Info) << "Creating SOLICIT message with " << iaLst.count()
+		      << " IA(s), " << (ta?"1":"no") << " TA and " << pdLst.count()
+		      << " PD(s)";
 	    if (iface->getRapidCommit()) {
 		Log(Cont) << " (with rapid-commit)";
 	    } 
-	    Log(Cont) << " on " << iface->getName() <<" interface." << LogEnd;
+	    Log(Cont) << " on " << iface->getFullName() <<" interface." << LogEnd;
 	    Transactions.append(new TClntMsgSolicit(IfaceMgr,That,CfgMgr,AddrMgr,
-						    iface->getID(), 0, iaLstToConfig, iface->getRapidCommit()));
-        }//for every group
+						    iface->getID(), 0, iaLst, ta, pdLst, 
+						    iface->getRapidCommit()));
+        }
+
     }//for every iface
 }
 
@@ -772,8 +783,7 @@ void TClntTransMgr::checkRenew()
     AddrMgr->firstPD();
     while (ia = AddrMgr->getPD()) {
         if ( (ia->getT1Timeout()!=0) || 
-	     (ia->getState()!=STATE_CONFIGURED) ||
-	     (ia->getTentative()==TENTATIVE_UNKNOWN) )
+	     (ia->getState()!=STATE_CONFIGURED) )
 	    continue;
 	
 	if (!iaPattern) {
@@ -883,11 +893,11 @@ void TClntTransMgr::checkRequest()
 	}
 
 	// find all IAs which should be configured:
-	if ( (ia->getState()!=STATE_NOTCONFIGURED) )
+	if ( (cfgIA->getState()!=STATE_CONFIGURED) )
 	    continue;
 
 	// this IA is being serviced by different server
-	if ( (duid) && !((*ia->getDUID()) == (*duid)) ) {
+	if ( (duid) && ia->getDUID() && !((*ia->getDUID()) == (*duid)) ) {
 	    continue;
 	}
 
@@ -896,11 +906,14 @@ void TClntTransMgr::checkRequest()
 	    continue;
 	}
 
-	if ( ia->countAddr() < cfgIA->countAddr() ) {
-	    Log(Info) << "IA (iaid=" << ia->getIAID() << ") is configured to get " 
-		      << cfgIA->countAddr() << " addr, but server provided " << ia->countAddr() 
-		      << ", REQUEST will be sent." << LogEnd;
-	}
+	// do we have enough addresses?
+	// cfgIA - specified in conf file, ia - actually asigned by the server
+	if ( ia->countAddr() >= cfgIA->countAddr() ) 
+	    continue;
+	
+	Log(Info) << "IA (iaid=" << ia->getIAID() << ") is configured to get " 
+		  << cfgIA->countAddr() << " addr, but server provided " << ia->countAddr() 
+		  << ", REQUEST will be sent." << LogEnd;
 
 	requestIALst.append(ia);
 	ia->setState(STATE_INPROCESS);
@@ -922,10 +935,10 @@ bool TClntTransMgr::isDone()
     return IsDone;
 }
 
-void TClntTransMgr::setThat(SmartPtr<TClntTransMgr> that)
+void TClntTransMgr::setContext(SmartPtr<TClntTransMgr> that)
 {
     this->That=that;
-    IfaceMgr->setThats(IfaceMgr,That,CfgMgr,AddrMgr);
+    IfaceMgr->setContext(IfaceMgr,That,CfgMgr,AddrMgr);
 }
 
 char* TClntTransMgr::getCtrlAddr() {
@@ -937,9 +950,85 @@ int  TClntTransMgr::getCtrlIface() {
 
 TClntTransMgr::~TClntTransMgr() {
     Log(Debug) << "ClntTransMgr cleanup." << LogEnd;
-    this->IfaceMgr->setThats(0,0,0,0);
+    this->IfaceMgr->setContext(0,0,0,0);
     this->IfaceMgr  = 0;
     this->That      = 0;
     this->CfgMgr    = 0;
     this->AddrMgr   = 0;
+}
+
+void TClntTransMgr::addAdvertise(SPtr<TMsg> advertise)
+{
+    AdvertiseLst.append( advertise );
+}
+
+void TClntTransMgr::firstAdvertise()
+{
+    AdvertiseLst.first();
+}
+
+SPtr<TMsg> TClntTransMgr::getAdvertise()
+{
+    return AdvertiseLst.get();
+}
+
+SPtr<TOpt> TClntTransMgr::getAdvertiseDUID()
+{
+    if (!AdvertiseLst.count())
+	return 0;
+    AdvertiseLst.first();
+    SPtr<TMsg> msg = AdvertiseLst.get();
+    return msg->getOption(OPTION_SERVERID);
+}
+
+void TClntTransMgr::delFirstAdvertise()
+{
+    AdvertiseLst.first();
+    AdvertiseLst.delFirst();
+} 
+
+int TClntTransMgr::getAdvertiseLstCount()
+{
+    return AdvertiseLst.count();
+}
+
+int TClntTransMgr::getMaxPreference()
+{
+    if (AdvertiseLst.count() == 0)
+	return -1;
+    int max = 0;
+    
+    SmartPtr<TClntMsgAdvertise> ptr;
+    AdvertiseLst.first();
+    while ( ptr = (Ptr*) AdvertiseLst.get() ) {
+	if ( max < ptr->getPreference() )
+	    max = ptr->getPreference();
+    }
+    return max;
+}
+
+void TClntTransMgr::sortAdvertiseLst()
+{
+    // we'll store all ADVERTISE here 
+    List(TMsg) sorted;
+
+    // sort ADVERTISE by the PREFERENCE value
+    SmartPtr<TClntMsgAdvertise> ptr;
+    while (AdvertiseLst.count()) {
+	int max = getMaxPreference();
+	AdvertiseLst.first();
+	while ( ptr = (Ptr*) AdvertiseLst.get() ) {
+	    if (ptr->getPreference() == max) 
+		break;
+	}
+	
+	// did we find it? Then append it on the end of sorted list, and delete from this new.
+	if (ptr) {
+	    sorted.append( (Ptr*) ptr );
+	    AdvertiseLst.del();
+	}
+    }
+
+    // now copy sorted list to AnswersLst
+    AdvertiseLst = sorted;
 }

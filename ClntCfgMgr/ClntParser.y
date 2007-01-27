@@ -1006,8 +1006,6 @@ bool ClntParser::EndPDDeclaration()
     SPtr<TClntCfgPD> pd = new TClntCfgPD();
     pd->setOptions(ParserOptStack.getLast());
     ClntCfgPDLst.append(pd);
-    Log(Debug) << "#### PD with PDID=" << pd->getIAID() << " added." << LogEnd;
-
     ParserOptStack.delLast();
     return true;
 }

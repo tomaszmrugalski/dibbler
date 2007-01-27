@@ -82,7 +82,7 @@ void TClntCfgPD::addPrefix(SmartPtr<TClntCfgPrefix> prefix)
 
 ostream& operator<<(ostream& out,TClntCfgPD& pd)
 {
-    out << "        <pd pdid=\"" << pd.IAID << "\" state=\"" << StateToString(pd.State) << "\" t1=\"" 
+    out << "        <pd iaid=\"" << pd.IAID << "\" state=\"" << StateToString(pd.State) << "\" t1=\"" 
 	<< pd.T1 << "\" t2=\"" << pd.T2 << "\" prefixes=\"" << pd.ClntCfgPrefixLst.count() << "\">" << std::endl;
 
     SmartPtr<TClntCfgPrefix> prefix;
