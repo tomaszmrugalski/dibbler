@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.30 2007-01-21 19:17:58 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.31 2007-01-27 17:13:44 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2007-01-21 19:17:58  thomson
+ * Option name constants updated (by Jyrki Soini)
+ *
  * Revision 1.29  2006-12-25 20:47:01  thomson
  * Some memory leaks fixes, valgrind info added.
  *
@@ -347,10 +350,10 @@ bool TSrvTransMgr::isDone()
     return IsDone;
 }
 
-void TSrvTransMgr::setThat(SmartPtr<TSrvTransMgr> that)
+void TSrvTransMgr::setContext(SmartPtr<TSrvTransMgr> that)
 {
     this->That=that;
-    IfaceMgr->setThats(IfaceMgr,That,CfgMgr,AddrMgr);
+    IfaceMgr->setContext(IfaceMgr,That,CfgMgr,AddrMgr);
 }
 
 char* TSrvTransMgr::getCtrlAddr() {
@@ -370,7 +373,7 @@ void TSrvTransMgr::dump() {
 
 TSrvTransMgr::~TSrvTransMgr() {
     this->That = 0;
-    IfaceMgr->setThats(0,0,0,0);
+    IfaceMgr->setContext(0,0,0,0);
     Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
 }
 
