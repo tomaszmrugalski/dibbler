@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.h,v 1.9 2006-10-06 00:31:18 thomson Exp $
+ * $Id: ClntAddrMgr.h,v 1.10 2007-01-27 17:10:04 thomson Exp $
  *
  */
 
@@ -47,6 +47,10 @@ class TClntAddrMgr : public TAddrMgr
     void addPD(SmartPtr<TAddrIA> ptr);
     bool delPD(long IAID);
     int countPD();
+    bool addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> clntAddr,
+		   int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+		   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+		   int length, bool quiet);
 
     // --- TA ---
     void firstTA();

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.17 2007-01-07 20:18:44 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.18 2007-01-27 17:10:04 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -233,49 +233,21 @@ void TClntAddrMgr::print(ostream &x) {
     
 }
 
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.16  2006-12-25 20:47:00  thomson
- * Some memory leaks fixes, valgrind info added.
- *
- * Revision 1.15  2006-10-06 00:31:18  thomson
- * Initial PD support.
- *
- * Revision 1.14  2006-08-21 22:54:08  thomson
- * *** empty log message ***
- *
- * Revision 1.13  2006/03/23 00:12:09  thomson
- * TA support on the client side finished.
- *
- * Revision 1.12  2006/03/05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.11.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.11  2005/08/03 23:17:11  thomson
- * Minor changes fixed.
- *
- * Revision 1.10  2004/12/08 00:15:07  thomson
- * Fixed issues with denied RENEW (bug #53)
- *
- * Revision 1.9  2004/12/07 22:54:35  thomson
- * Typos corrected.
- *
- * Revision 1.8  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.7  2004/12/03 20:51:42  thomson
- * Logging issues fixed.
- *
- * Revision 1.6  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.5  2004/09/08 21:22:45  thomson
- * Parser improvements, signed/unsigned issues addressed.
- *
- * Revision 1.4  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- */
+bool TClntAddrMgr::addPrefix(SmartPtr<TDUID> srvDuid , SmartPtr<TIPv6Addr> srvAddr,
+			     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+			     SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			     int length, bool quiet) {
+
+    if (!prefix) {
+	Log(Error) << "Attempt to add null prefix failed." << LogEnd;
+	return false;
+    }
+
+    // find this client
+    SmartPtr <TAddrClient> ptrClient;
+    this->firstClient();
+    ptrClient = getClient();
+
+    return TAddrMgr::addPrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix, 
+			       pref, valid, length, quiet);
+}
