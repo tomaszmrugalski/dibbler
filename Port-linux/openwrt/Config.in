@@ -1,0 +1,22 @@
+config BR2_PACKAGE_DIBBLER
+	tristate
+	depends BR2_PACKAGE_DIBBLER_SERVER || BR2_PACKAGE_DIBBLER_CLIENT || BR2_PACKAGE_DIBBLER_RELAY
+	default n
+
+config BR2_PACKAGE_DIBBLER_SERVER
+	prompt "dibbler-server"
+	tristate "dibbler server"
+	default m if CONFIG_DEVEL
+    select BR2_PACKAGE_DIBBLER
+
+config BR2_PACKAGE_DIBBLER_CLIENT
+	prompt "dibbler-client"
+	tristate "dibbler client"
+	default m if CONFIG_DEVEL
+    select BR2_PACKAGE_DIBBLER
+
+config BR2_PACKAGE_DIBBLER_RELAY
+	prompt "dibbler-relay"
+	tristate "dibbler relay"
+	default m if CONFIG_DEVEL
+    select BR2_PACKAGE_DIBBLER

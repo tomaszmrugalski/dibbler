@@ -1,0 +1,12 @@
+diff -ur dibbler-0.5.0.orig/Makefile dibbler-0.5.0/Makefile
+--- dibbler-0.5.0.orig/Makefile	2006-10-06 00:58:22.000000000 +0200
++++ dibbler-0.5.0/Makefile	2007-01-30 16:15:08.000000000 +0100
+@@ -144,7 +144,7 @@
+ 
+ poslib-configure:
+ 	@echo "[CONFIG ] /poslib/"
+-	cd $(PREFIX)/poslib; test -e "config.h" || ./configure >configure-poslib.log;
++	cd $(PREFIX)/poslib; test -e "config.h" || ./configure $(POSLIB_HOST) >configure-poslib.log;
+ 
+ relaylibs:	includes
+ 	@for dir in $(RELSUBDIRS); do \

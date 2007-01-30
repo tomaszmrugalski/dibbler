@@ -1,0 +1,6 @@
+Package: dibbler-server
+Priority: optional
+Section: net
+Description: Dibbler, a portable DHCPv6 implementation (server)
+Maintainer: Michal Kowalczuk <michal@kowalczuk.eu>
+Source: http://klub.com.pl/dhcpv6/

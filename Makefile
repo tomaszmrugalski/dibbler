@@ -277,7 +277,7 @@ release-linux: VERSION-linux
 		 $(SERVERBIN) $(CLIENTBIN) $(RELAYBIN) *.conf   \
 		 doc/man/* CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-linux
 
-release-win32: VERSION-win doc
+release-win32: VERSION-win
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-win32.tar.gz"
 	tar czvf dibbler-$(VERSION)-win32.tar.gz                   \
 		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe \
