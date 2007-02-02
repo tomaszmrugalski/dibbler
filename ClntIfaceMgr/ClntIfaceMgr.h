@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.10 2007-01-27 17:14:10 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.11 2007-02-02 00:52:03 thomson Exp $
  *
  */
 
@@ -24,6 +24,12 @@ class TClntIfaceIface;
 #include "ClntIfaceIface.h"
 #include "IPv6Addr.h"
 #include "ClntMsg.h"
+
+typedef enum {
+    PREFIX_MODIFY_ADD,
+    PREFIX_MODIFY_UPDATE,
+    PREFIX_MODIFY_DEL
+} PrefixModifyMode;
 
 class TClntIfaceMgr : public TIfaceMgr
 {
@@ -59,6 +65,8 @@ class TClntIfaceMgr : public TIfaceMgr
     bool doDuties();
 
   private:
+    bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid, PrefixModifyMode mode);
+
     string XmlFile;
     SmartPtr<TClntCfgMgr> ClntCfgMgr;
     SmartPtr<TClntAddrMgr> ClntAddrMgr;

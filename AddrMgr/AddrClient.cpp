@@ -6,9 +6,12 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.13 2007-01-07 20:18:44 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.14 2007-02-02 00:52:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2007-01-07 20:18:44  thomson
+ * State enum names changed.
+ *
  * Revision 1.12  2006-10-06 00:30:16  thomson
  * Initial PD support.
  *
@@ -194,11 +197,19 @@ bool TAddrClient::delTA(unsigned long iaid) {
 unsigned long TAddrClient::getT1Timeout() {
     SmartPtr<TAddrIA> ptr;
     unsigned long ts = ULONG_MAX;
-    IAsLst.first();
 
+    IAsLst.first();
     while ( ptr = IAsLst.get() ) {
         if (ptr->getState()!=STATE_CONFIGURED)
             continue;
+        if (ts > ptr->getT1Timeout())
+            ts = ptr->getT1Timeout();
+    }
+
+    PDLst.first();
+    while ( ptr = PDLst.get() ) {
+	if (ptr->getState()!=STATE_CONFIGURED)
+	    continue;
         if (ts > ptr->getT1Timeout())
             ts = ptr->getT1Timeout();
     }
@@ -216,32 +227,57 @@ unsigned long TAddrClient::getT2Timeout() {
         if (ts > ptr->getT2Timeout())
             ts = ptr->getT2Timeout();
     }
+
+    PDLst.first();
+    while ( ptr = PDLst.get() ) {
+	if (ptr->getState()!=STATE_CONFIGURED)
+	    continue;
+        if (ts > ptr->getT2Timeout())
+            ts = ptr->getT2Timeout();
+    }
+
     return ts;
 }
 
 unsigned long TAddrClient::getPrefTimeout() {
     SmartPtr<TAddrIA> ptr;
     unsigned long ts = ULONG_MAX;
-    IAsLst.first();
 
+    IAsLst.first();
     while ( ptr = IAsLst.get() ) {
         if (ptr->getState()!=STATE_CONFIGURED)
             continue;
         if (ts > ptr->getPrefTimeout())
             ts = ptr->getPrefTimeout();
     }
+
+    PDLst.first();
+    while ( ptr = PDLst.get() ) {
+	if (ptr->getState()!=STATE_CONFIGURED)
+	    continue;
+        if (ts > ptr->getPrefTimeout())
+            ts = ptr->getPrefTimeout();
+    }
+
     return ts;
 }
 
 unsigned long TAddrClient::getValidTimeout() {
     SmartPtr<TAddrIA> ptr;
     unsigned long ts = ULONG_MAX;
-    IAsLst.first();
 
+    IAsLst.first();
     while ( ptr = IAsLst.get() ) {
         if (ts > ptr->getValidTimeout())
             ts = ptr->getValidTimeout();
     }
+
+    PDLst.first();
+    while ( ptr = PDLst.get() ) {
+        if (ts > ptr->getValidTimeout())
+            ts = ptr->getValidTimeout();
+    }
+
     return ts;
 }
 

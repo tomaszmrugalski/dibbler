@@ -216,61 +216,73 @@ SmartPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SmartPtr<TIPv6Addr> prefix)
 
 bool TClntOptIA_PD::addPrefixes()
 {
-    SmartPtr<TClntOptIAPrefix> prefix;
-    this->firstPrefix();
-    
-    while (prefix = this->getPrefix()) {
-	AddrMgr->addPrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
-			   prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
-	
-	if (!IfaceMgr->addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(), prefix->getPref(), prefix->getValid())) {
-	    string tmp = error_message();
-	    Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
-	    setState(STATE_FAILED);
-	    return false;
-	}
-    }
-
-    setState(STATE_CONFIGURED);
-    return true;
+    return modifyPrefixes(PREFIX_MODIFY_ADD);
 }
 
 bool TClntOptIA_PD::delPrefixes()
 {
+    return modifyPrefixes(PREFIX_MODIFY_DEL);
+}
+
+bool TClntOptIA_PD::updatePrefixes()
+{
+    return modifyPrefixes(PREFIX_MODIFY_UPDATE);
+}
+
+bool TClntOptIA_PD::modifyPrefixes(PrefixModifyMode mode)
+{
+    bool status;
+    EState state;
     SmartPtr<TClntOptIAPrefix> prefix;
     this->firstPrefix();
-    SmartPtr<TClntCfgIface> cfgIface = this->CfgMgr->getIface(this->Iface);
+    string action;
+    switch(mode) {
+    case PREFIX_MODIFY_ADD:
+	action = "addition";
+	state = STATE_CONFIGURED;
+	break;
+    case PREFIX_MODIFY_UPDATE:
+	action = "update";
+	state = STATE_CONFIGURED;
+	break;
+    case PREFIX_MODIFY_DEL:
+	action = "delete";
+	state = STATE_NOTCONFIGURED;
+	break;
+    }
 
-    while (prefix = this->getPrefix()) {
-	AddrMgr->delPrefix(CfgMgr->getDUID(), this->IAID, prefix->getPrefix(), false);
+    while (prefix = this->getPrefix() ) {
+	switch (mode) {
+	case PREFIX_MODIFY_ADD:
+	    AddrMgr->addPrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
+			       prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
+	    status = IfaceMgr->addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
+					 prefix->getPref(), prefix->getValid());
+	    action = "addition";
+	    break;
+	case PREFIX_MODIFY_UPDATE:
+	    AddrMgr->updatePrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
+				  prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
+	    status = IfaceMgr->updatePrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
+					    prefix->getPref(), prefix->getValid());
+	    action = "update";
+	    break;
+	case PREFIX_MODIFY_DEL:
+	    AddrMgr->delPrefix(CfgMgr->getDUID(), this->IAID, prefix->getPrefix(), false);
+	    status = IfaceMgr->delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() );
+	    action = "delete";
+	    break;
+	}
 	
-	if (!IfaceMgr->delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() )) {
+	if (!status) {
 	    string tmp = error_message();
-	    Log(Error) << "Prefix error encountered during delete operation: " << tmp << LogEnd;
+	    Log(Error) << "Prefix error encountered during prefix " << action << " operation: " << tmp << LogEnd;
 	    setState(STATE_FAILED);
 	    return true;
 	}
     }
 
-    setState(STATE_DISABLED);
-    return true;
-}
-
-bool TClntOptIA_PD::updatePrefixes()
-{
-    SmartPtr<TClntOptIAPrefix> prefix;
-    this->firstPrefix();
-
-    SPtr<TAddrIA> pd = AddrMgr->getPD(getIAID());
-    if (!pd) {
-	Log(Error) << "Unable to find PD (iaid=" << getIAID() << "). PD renewal failed." << LogEnd;
-	return false;
-    }
-
-    // FIXME: Implement AddrMgr/IfaceMgr PD update
-    Log(Error) << "#### Implement AddrMgr/IfaceMgr PD update" << LogEnd;
-
-    setState(STATE_CONFIGURED);
+    setState(state);
     return true;
 }
 

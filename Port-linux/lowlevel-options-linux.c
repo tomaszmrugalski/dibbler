@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.8 2007-01-03 01:26:18 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.9 2007-02-02 00:52:03 thomson Exp $
  *
  */
 
@@ -223,14 +223,13 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
  */
 int prefix_forwarding_enabled()
 {
-    char buf[1];
-    char * returnCode;
+    char returnCode;
     int router = 0; /* is packet forwarding enabled on this machine? */
     
     FILE *f = fopen("/proc/sys/net/ipv6/conf/all/forwarding", "r");
     if (f) {
-	returnCode = fgets(buf, 1, f); /* read exacltly one byte */
-	if (returnCode && buf[0]=='1')
+	returnCode = fgetc(f); /* read exactly one byte */
+	if (returnCode=='1')
 	    router = 1;
     }
     fclose(f);

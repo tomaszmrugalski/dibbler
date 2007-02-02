@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.32 2007-01-27 17:14:10 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.33 2007-02-02 00:52:03 thomson Exp $
  */
 
 #include "Portable.h"
@@ -368,24 +368,12 @@ void TClntIfaceMgr::dump()
  */
 bool TClntIfaceMgr::addPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid)
 {
-    SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
-    if (!ptrIface) {
-	Log(Error) << "Unable to find interface with ifindex=" << iface << ", prefix add operation failed." << LogEnd;
-	return false;
-    }
+    return modifyPrefix(iface, prefix, prefixLen, pref, valid, PREFIX_MODIFY_ADD);
+}
 
-    // FIXME: Implement split between interfaces if forwarding (i.e. this computer is a router) is enabled
-
-    Log(Notice) << "Prefix " << prefix->getPlain() << "/" << (int)prefixLen << " added on the "
-		<< ptrIface->getFullName() << " interface." << LogEnd;
-    int status = prefix_add(ptrIface->getName(), iface, prefix->getPlain(), prefixLen, pref, valid);
-    if (status<0) {
-	string tmp = error_message();
-	Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
-	return false;
-    }
-
-    return true;
+bool TClntIfaceMgr::updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid)
+{
+    return modifyPrefix(iface, prefix, prefixLen, pref, valid, PREFIX_MODIFY_UPDATE);
 }
 
 /** 
@@ -399,25 +387,132 @@ bool TClntIfaceMgr::addPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, 
  */
 bool TClntIfaceMgr::delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen)
 {
+    return modifyPrefix(iface, prefix, prefixLen, 0, 0, PREFIX_MODIFY_DEL);
+}
+
+bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid,
+    PrefixModifyMode mode)
+{
     SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Unable to find interface with ifindex=" << iface << ", prefix add operation failed." << LogEnd;
 	return false;
     }
 
-    // FIXME: Implement split between interfaces if forwarding (i.e. this computer is a router) is enabled
+    string action;
+    bool status;
 
-    Log(Notice) << "Prefix " << prefix->getPlain() << "/" << (int)prefixLen << " removed from the "
-		<< ptrIface->getFullName() << " interface." << LogEnd;
-    int status = prefix_del(ptrIface->getName(), iface, prefix->getPlain(), prefixLen);
-    if (status<0) {
-	string tmp = error_message();
-	Log(Error) << "Prefix error encountered during add operation: " << tmp << LogEnd;
+    switch (mode) {
+    case PREFIX_MODIFY_ADD:
+	action = "Adding";
+	break;
+    case PREFIX_MODIFY_UPDATE:
+	action = "Updating";
+	break;
+    case PREFIX_MODIFY_DEL:
+	action = "Deleting";
+	break;
+    }
+
+    if (!prefix_forwarding_enabled()) {
+	Log(Debug) << "PD: IPv6 forwarding disabled, so prefix operation will apply to this (" << ptrIface->getFullName() 
+		   << ") interface only." << LogEnd;
+	// option 1: add/update/delete this prefix to this interface only
+	Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << (int)prefixLen << " on the "
+		    << ptrIface->getFullName() << " interface." << LogEnd;
+	switch (mode) {
+	case PREFIX_MODIFY_ADD:
+	    status = prefix_add(ptrIface->getName(), iface, prefix->getPlain(), prefixLen, pref, valid);
+	    break;
+	case PREFIX_MODIFY_UPDATE:
+	    status = prefix_update(ptrIface->getName(), iface, prefix->getPlain(), prefixLen, pref, valid);
+	    break;
+	case PREFIX_MODIFY_DEL:
+	    status = prefix_del(ptrIface->getName(), iface, prefix->getPlain(), prefixLen);
+	    break;
+	}
+
+	if (status<0) {
+	    string tmp = error_message();
+	    Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
+	    return false;
+	}
+	return true;
+    }
+    // option 2: split this prefix and add it to all interfaces
+    Log(Notice) << "PD: IPv6 forwarding enabled, so prefix operation will apply to all interfaces." << LogEnd;
+    Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << (int)prefixLen 
+		<< " to all interfaces (prefix will be split to /" << int(prefixLen+8) << " prefixes)." << LogEnd;
+
+    if (prefixLen>120) {
+	Log(Error) << "PD: Unable to perform prefix operation: prefix /" << prefixLen 
+		   << " can't be split. At least /120 prefix is required." << LogEnd;
 	return false;
     }
 
+    char buf[16];
+    memmove(buf, prefix->getAddr(), 16);
+    int offset = prefixLen/8;
+    if (prefixLen%8)
+	offset++;
+
+    SPtr<TClntIfaceIface> x;
+    firstIface();
+    while ( x = (Ptr*)getIface() ) {
+	    // for each interface present in the system...
+	    if (!x->flagUp()) {
+		Log(Debug) << "PD: Interface " << x->getFullName() << " is down, ignoring." << LogEnd;
+		continue;
+	    }
+	    if (!x->flagRunning()) {
+		Log(Debug) << "PD: Interface " << x->getFullName()
+			   << " has flag RUNNING not set, ignoring." << LogEnd;
+		continue;
+	    }
+	    if (!x->flagMulticast()) {
+		Log(Debug) << "PD: Interface " << x->getFullName()
+			   << " is not multicast capable, ignoring." << LogEnd;
+		continue;
+	    }
+	    if ( !(x->getMacLen() > 5) ) {
+		Log(Debug) << "PD: Interface " << x->getFullName() 
+			   << " has MAC address length " << x->getMacLen() 
+			   << " (6 or more required), ignoring." << LogEnd;
+		continue;
+	    }
+	    x->firstLLAddress();
+	    if (!x->getLLAddress()) {
+		Log(Debug) << "PD: Interface " << x->getFullName()
+			   << " has no link-local address, ignoring. (Is it not associated wifi?)" << LogEnd;
+		continue;
+	    }
+	    buf[offset] = x->getID();
+	    SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);
+
+	    Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << int(prefixLen+8) << " on the "
+			<< ptrIface->getFullName() << " interface." << LogEnd;
+	    
+	    switch (mode) {
+	    case PREFIX_MODIFY_ADD:
+		status = prefix_add(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
+		break;
+	    case PREFIX_MODIFY_UPDATE:
+		status = prefix_update(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
+		break;
+	    case PREFIX_MODIFY_DEL:
+		status = prefix_del(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8);
+		break;
+	    }
+	    if (status<0) {
+		string tmp = error_message();
+		Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
+		return false;
+	    }
+    }
     return true;
 }
+
+
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "<ClntIfaceMgr>" << std::endl;

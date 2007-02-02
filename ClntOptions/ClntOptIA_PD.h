@@ -44,9 +44,10 @@ class TClntOptIA_PD : public TOptIA_PD
     bool isValid();
 
     bool addPrefixes();
-    bool delPrefixes();
     bool updatePrefixes();
+    bool delPrefixes();
  private:
+    bool modifyPrefixes(PrefixModifyMode mode);
     void setState(EState state);
 
     SmartPtr<TIPv6Addr> Prefix;

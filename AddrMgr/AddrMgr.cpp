@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.25 2007-01-27 17:09:32 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.26 2007-02-02 00:52:03 thomson Exp $
  *
  */
 
@@ -246,6 +246,76 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartP
 	Log(Debug) << "PD: Adding " << prefix->getPlain() 
 		   << " prefix to PD (iaid=" << IAID 
 		   << ") to addrDB." << LogEnd;
+    return true;
+}
+
+bool TAddrMgr::updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
+			    int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+			    SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			    int length, bool quiet)
+{
+    // find client...
+    SmartPtr <TAddrClient> client;
+    this->firstClient();
+    while ( client = this->getClient() ) {
+        if ( (*client->getDUID()) == (*duid) ) 
+            break;
+    }
+    if (!client) {
+	Log(Error) << "Unable to update prefix " << prefix->getPlain() << "/" << (int)length << ": DUID=" << duid->getPlain() << " not found." << LogEnd;
+	return false;
+    }
+
+    return updatePrefix(client, duid, addr, iface, IAID, T1, T2, prefix, pref, valid, length, quiet);
+}
+
+bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartPtr<TIPv6Addr> clntAddr,
+			    int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+			    SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			    int length, bool quiet)
+{
+    if (!prefix) {
+	Log(Error) << "Attempt to update null prefix failed." << LogEnd;
+	return false;
+    }
+    if (!client) {
+	Log(Error) << "Unable to update prefix, client not defined." << LogEnd;
+	return false;
+    }
+    
+    // for that client, find IA
+    SmartPtr <TAddrIA> pd;
+    client->firstPD();
+    while ( pd = client->getPD() ) {
+        if ( pd->getIAID() == IAID)
+            break;
+    }
+    // have we found this PD?
+    if (!pd) {
+	Log(Error) << "Unable to find PD (iaid=" << IAID << ") for client " << duid->getPlain() << "." << LogEnd;
+	return false;
+    }
+    pd->setTimestamp();
+    pd->setT1(T1);
+    pd->setT2(T2);
+
+    SmartPtr <TAddrPrefix> ptrPrefix;
+    pd->firstPrefix();
+    while ( ptrPrefix = pd->getPrefix() ) {
+        if (*ptrPrefix->get()==*prefix)
+            break;
+    }
+
+    // address already exists
+    if (!ptrPrefix) {
+        Log(Warning) << "PD: Prefix " << prefix->getPlain() << " is not known. Unable to update." << LogEnd;
+        return false;
+    }
+
+    ptrPrefix->setTimestamp();
+    ptrPrefix->setPref(pref);
+    ptrPrefix->setValid(pref);
+    
     return true;
 }
 

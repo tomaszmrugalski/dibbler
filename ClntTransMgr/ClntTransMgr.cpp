@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.49 2007-01-27 17:14:10 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.50 2007-02-02 00:52:03 thomson Exp $
  *
  */
 
@@ -432,6 +432,20 @@ void TClntTransMgr::shutdown()
 	}
 
     }
+
+    // are there any PDs left to release?
+    pd = 0;
+    AddrMgr->firstPD();
+    releasedIAs.clear();
+    releasedPDs.clear();
+    while (pd = AddrMgr->getPD()) {
+	releasedPDs.append(pd);
+	SPtr<TClntCfgPD> cfgPD = CfgMgr->getPD(pd->getIAID());
+	if (cfgPD)
+	    cfgPD->setState(STATE_DISABLED);
+    }
+    if (releasedPDs.count())
+	this->sendRelease(releasedIAs, 0, releasedPDs);
     
     //doDuties(); // just to send RELEASE msg
     //Transactions.clear(); // delete all transactions
@@ -548,9 +562,17 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta, List
 	ptrIA = IALst.get();
 	iface = ptrIA->getIface();
 	addr  = ptrIA->getSrvAddr();
-    } else {
+    } else if (pdLst.count()) {
+	pdLst.first();
+	ptrIA = pdLst.get();
+	iface = ptrIA->getIface();
+	addr  = ptrIA->getSrvAddr();
+    } else if (ta) {
 	iface = ta->getIface();
 	addr  = ta->getSrvAddr();
+    } else {
+	Log(Error) << "Unable to send RELEASE message. No IA, PD or TA defined." << LogEnd;
+	return;
     }
 
     SmartPtr<TClntCfgIface> ptrIface = CfgMgr->getIface(iface);

@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.10 2007-01-27 17:12:24 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.11 2007-02-02 00:52:03 thomson Exp $
  *
  */
 
@@ -30,8 +30,10 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 			     List(TAddrIA) IALst,
 			     List(TAddrIA) PDLst)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
-	      IALst.getFirst()->getIface(),IALst.getFirst()->getSrvAddr(),RENEW_MSG)
+	      IALst.count()?IALst.getFirst()->getIface():PDLst.getFirst()->getIface(), 
+	      IALst.count()?IALst.getFirst()->getSrvAddr():PDLst.getFirst()->getSrvAddr(), RENEW_MSG)
 {
+
    // set transmission parameters
     IRT=REN_TIMEOUT;
     MRT=REN_MAX_RT;
@@ -51,7 +53,10 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Options.append(new TClntOptClientIdentifier(CfgMgr->getDUID(),this));
 
     // and say who's this message is for
-    Options.append( new TClntOptServerIdentifier(IALst.getFirst()->getDUID(),this));
+    if (IALst.count())
+	Options.append( new TClntOptServerIdentifier(IALst.getFirst()->getDUID(),this));
+    else
+	Options.append( new TClntOptServerIdentifier(PDLst.getFirst()->getDUID(),this));
     
     //Store all IAs to renew
     SmartPtr<TAddrIA> ia;

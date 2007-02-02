@@ -1,16 +1,14 @@
 
-$Id: TODO,v 1.40 2007-01-07 23:30:59 thomson Exp $
+$Id: TODO,v 1.41 2007-02-02 00:52:03 thomson Exp $
 
 New tasks should be done to the TODO list. After task is implemented, it should be moved to the
 'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.
 
   Internal/code TODO
  --------------------
-- CLI: PD: this cfg: "iface eth0 { pd }" does not work
-- CLI: PD: this should be possible "iface eth0 { pd pd }"
+- CLI: PD: Rebind attempt segfaults
 - CLI: PD: this should be possible "iface eth0 { pd { prefix 2000::/64 } }"
 - CLI: PD: this should be possible "iface eth0 { pd { prefix prefix } }"
-- CLI: PD: RENEW does not work
 - CLI: PD: prefixes are not removed if valid goes to 0.
 - SRV: PD: prefixes are not removed from db if valid goes to 0.
 - CLI: PD: radvd.conf is invalid if there were more than one prefix added to the same interface
@@ -60,7 +58,9 @@ New tasks should be done to the TODO list. After task is implemented, it should 
 
   DONE/Not validated
  --------------------
-- CLI: Linux: prefixes should be moved to Port-linux.
+- CLI: PD: this cfg: "iface eth0 { pd }" does not work
+- CLI: PD: this should be possible "iface eth0 { pd pd }"
+- CLI: PD: RENEW does not work
 - ALL: Fix linux low-level interface (don't use PKTINFO anymore).
 - SRV: Prefix hint analysis. (client support for hints is required)
 - SRV: Perform DNS Update delete, when RELEASE is sent (SrvMsgReply.cpp:387)
@@ -69,6 +69,7 @@ New tasks should be done to the TODO list. After task is implemented, it should 
 
   DONE
  ------
+- CLI: Linux: prefixes should be moved to Port-linux.
 - DOC: Describe dumping XML files, option files
 - SRV: Crashes when not configured to support prefix-delegation, but client sends pd option.
 - DOC: Describe strict-rfc-no-routing on the client side

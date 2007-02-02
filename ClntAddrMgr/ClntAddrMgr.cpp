@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.18 2007-01-27 17:10:04 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.19 2007-02-02 00:52:03 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -236,8 +236,8 @@ void TClntAddrMgr::print(ostream &x) {
 bool TClntAddrMgr::addPrefix(SmartPtr<TDUID> srvDuid , SmartPtr<TIPv6Addr> srvAddr,
 			     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
 			     SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-			     int length, bool quiet) {
-
+			     int length, bool quiet) 
+{
     if (!prefix) {
 	Log(Error) << "Attempt to add null prefix failed." << LogEnd;
 	return false;
@@ -250,4 +250,23 @@ bool TClntAddrMgr::addPrefix(SmartPtr<TDUID> srvDuid , SmartPtr<TIPv6Addr> srvAd
 
     return TAddrMgr::addPrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix, 
 			       pref, valid, length, quiet);
+}
+
+bool TClntAddrMgr::updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
+				int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+				SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+				int length, bool quiet)
+{
+    if (!prefix) {
+	Log(Error) << "Attempt to update null prefix failed." << LogEnd;
+	return false;
+    }
+
+    // find this client
+    SmartPtr <TAddrClient> ptrClient;
+    this->firstClient();
+    ptrClient = getClient();
+
+    return TAddrMgr::updatePrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix, 
+				  pref, valid, length, quiet);
 }

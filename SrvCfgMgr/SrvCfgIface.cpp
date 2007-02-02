@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.37 2006-12-31 16:00:26 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.38 2007-02-02 00:52:04 thomson Exp $
  */
 
 #include <sstream>
@@ -104,63 +104,6 @@ void TSrvCfgIface::firstPD() {
 bool TSrvCfgIface::supportPrefixDelegation() {
     return this->PrefixDelegationSupport;
 }
-
-/*
- * tries to find if there is a prefix class, where client is on white-list -- so far hashed 
- 
-bool TSrvCfgIface::getPreferedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
-    SmartPtr<TSrvCfgPD> ptrPD;
-    this->SrvCfgPDLst.first();
-    while(ptrPD=SrvCfgPDLst.get()) {
-        if (ptrPD->clntPrefered(duid, clntAddr)) { 
-            classid=ptrPD->getID();
-            return true;
-        }
-    }
-    return false;
-}
-*/
-/*
- * tries to find a class, which client is allowed to use -- so far hashed
- 
-bool TSrvCfgIface::getAllowedPD_ID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
-    unsigned int clsid[100];
-    unsigned int share[100];
-    unsigned int cnt = 0;
-    unsigned int sum = 0;
-    unsigned int rnd;
-
-    SmartPtr<TSrvCfgPD> ptrPD;
-    this->SrvCfgPDLst.first();
-    while( (ptrPD=SrvCfgPDLst.get()) && (cnt<100) ) {
-        if (ptrPD->clntSupported(duid, clntAddr)) {
-            clsid[cnt]   = ptrPD->getID();
-	    share[cnt]   = ptrPD->getShare();
-	    sum         += ptrPD->getShare();
-	    cnt++;
-        }
-    }
-
-    if (!cnt) 
-	return false; // this client is not supported by any class
-
-    rnd = rand() % sum;
-
-    unsigned int j=0;
-    
-    for (unsigned int i=0; i<100;i++) {
-	j += share[i];
-	if (j>=rnd) {
-	    classid = clsid[i];
-	    break;
-	}
-    }
-
-    return true;
-}
-
-*/
-
 
 void TSrvCfgIface::addTA(SmartPtr<TSrvCfgTA> ta) {
     this->SrvCfgTALst.append(ta);
