@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.33 2007-02-02 00:52:03 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.34 2007-02-02 00:55:16 thomson Exp $
  */
 
 #include "Portable.h"
@@ -459,60 +459,64 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     SPtr<TClntIfaceIface> x;
     firstIface();
     while ( x = (Ptr*)getIface() ) {
-	    // for each interface present in the system...
-	    if (!x->flagUp()) {
-		Log(Debug) << "PD: Interface " << x->getFullName() << " is down, ignoring." << LogEnd;
+	if (x->getID() == ptrIface->getID()) {
+	    Log(Debug) << "PD: Interface " << x->getFullName() << " is the interface, where prefix has been obtained, skipping." 
+		       << LogEnd;
+	    continue;
+	}
+	
+	// for each interface present in the system...
+	if (!x->flagUp()) {
+	    Log(Debug) << "PD: Interface " << x->getFullName() << " is down, ignoring." << LogEnd;
+	    continue;
+	}
+	if (!x->flagRunning()) {
+	    Log(Debug) << "PD: Interface " << x->getFullName()
+		       << " has flag RUNNING not set, ignoring." << LogEnd;
+	    continue;
+	}
+	if (!x->flagMulticast()) {
+	    Log(Debug) << "PD: Interface " << x->getFullName()
+		       << " is not multicast capable, ignoring." << LogEnd;
+	    continue;
+	}
+	if ( !(x->getMacLen() > 5) ) {
+	    Log(Debug) << "PD: Interface " << x->getFullName() 
+		       << " has MAC address length " << x->getMacLen() 
+		       << " (6 or more required), ignoring." << LogEnd;
 		continue;
-	    }
-	    if (!x->flagRunning()) {
-		Log(Debug) << "PD: Interface " << x->getFullName()
-			   << " has flag RUNNING not set, ignoring." << LogEnd;
-		continue;
-	    }
-	    if (!x->flagMulticast()) {
-		Log(Debug) << "PD: Interface " << x->getFullName()
-			   << " is not multicast capable, ignoring." << LogEnd;
-		continue;
-	    }
-	    if ( !(x->getMacLen() > 5) ) {
-		Log(Debug) << "PD: Interface " << x->getFullName() 
-			   << " has MAC address length " << x->getMacLen() 
-			   << " (6 or more required), ignoring." << LogEnd;
-		continue;
-	    }
-	    x->firstLLAddress();
-	    if (!x->getLLAddress()) {
-		Log(Debug) << "PD: Interface " << x->getFullName()
-			   << " has no link-local address, ignoring. (Is it not associated wifi?)" << LogEnd;
-		continue;
-	    }
-	    buf[offset] = x->getID();
-	    SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);
+	}
+	x->firstLLAddress();
+	if (!x->getLLAddress()) {
+	    Log(Debug) << "PD: Interface " << x->getFullName()
+		       << " has no link-local address, ignoring. (Is it not associated wifi?)" << LogEnd;
+	    continue;
+	}
+	buf[offset] = x->getID();
+	SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);
 
-	    Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << int(prefixLen+8) << " on the "
-			<< ptrIface->getFullName() << " interface." << LogEnd;
+	Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << int(prefixLen+8) << " on the "
+		    << ptrIface->getFullName() << " interface." << LogEnd;
 	    
-	    switch (mode) {
-	    case PREFIX_MODIFY_ADD:
-		status = prefix_add(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
+	switch (mode) {
+	case PREFIX_MODIFY_ADD:
+	    status = prefix_add(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
 		break;
-	    case PREFIX_MODIFY_UPDATE:
-		status = prefix_update(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
-		break;
-	    case PREFIX_MODIFY_DEL:
-		status = prefix_del(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8);
-		break;
-	    }
-	    if (status<0) {
-		string tmp = error_message();
-		Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
-		return false;
-	    }
+	case PREFIX_MODIFY_UPDATE:
+	    status = prefix_update(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
+	    break;
+	case PREFIX_MODIFY_DEL:
+	    status = prefix_del(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8);
+	    break;
+	}
+	if (status<0) {
+	    string tmp = error_message();
+	    Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
+	    return false;
+	}
     }
     return true;
 }
-
-
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "<ClntIfaceMgr>" << std::endl;
