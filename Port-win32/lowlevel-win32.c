@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.12 2007-02-03 17:50:42 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.13 2007-02-03 19:07:01 thomson Exp $
  *
  */
 
@@ -254,7 +254,7 @@ extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
     sprintf(arg7,"validlifetime=%d", valid);
     sprintf(arg8,"preferredlifetime=%d", pref);
     // use _P_DETACH to speed things up, (but the tentative detection will surely fail)
-    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,NULL);
+    i=_spawnl(_P_WAIT, netshPath, netshPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, NULL);
     return i;
 }
 
@@ -270,7 +270,8 @@ int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefi
     intptr_t i;
     sprintf(arg5,"interface=\"%s\"", ifacename);
     sprintf(arg6,"address=%s", addr);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
+    i=_spawnl(_P_WAIT, netshPath, netshPath, arg1, arg2, arg3, arg4, arg5, arg6, NULL);
+
     return i;
 }
 
@@ -364,7 +365,8 @@ int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
 		error_message_set(WSAGetLastError());
         return LOWLEVEL_ERROR_UNSPEC;
     }
-    return i;
+
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen)
@@ -397,7 +399,8 @@ extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
     sprintf(arg5,"interface=\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
-    return i;
+
+    return LOWLEVEL_NO_ERROR;
 }
 extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     // netsh interface ipv6 add dns interface="eth0" address=2000::123
@@ -411,99 +414,151 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     sprintf(arg5,"interface=\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
-    return i;
+
+    // FIXME: check status
+    return LOWLEVEL_NO_ERROR;
 }
 
 extern int domain_add(const char* ifname, int ifaceid, const char* domain) {
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 extern int domain_del(const char* ifname, int ifaceid, const char* domain) {
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int ntp_add(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int ntp_del(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int timezone_set(const char* ifname, int ifindex, const char* timezone){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int timezone_del(const char* ifname, int ifindex, const char* timezone){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipserver_add(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipserver_del(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipdomain_add(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipdomain_del(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisserver_add(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisserver_del(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisdomain_set(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisdomain_del(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusserver_add(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusdomain_set(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
                unsigned long prefered, unsigned long valid)
 {
+    // netsh interface ipv6 add route 2000::/64 "eth1" preferredlifetime=1000 validlifetime=2000 store=active [publish=age]
+    char arg1[]="interface";
+    char arg2[]="ipv6";
+    char arg3[]="add";
+    char arg4[]="route";
+    char arg5[256]; // prefix
+    char arg6[256]; // interface=...
+    char arg7[256]; // preferredlifetime=...
+    char arg8[256]; // validlifetime=...
+    char arg9[]="store=active";
+    char arg10[]="publish=age";
+    intptr_t i;
+    char buf[2000];
+    
+    sprintf(arg5, "%s/%d", prefixPlain, prefixLength);
+    sprintf(arg6,"interface=\"%s\"", ifname);
+    sprintf(arg7,"preferredlifetime=%d", prefered);
+    sprintf(arg8,"validlifetime=%d", valid);
 
+    sprintf(buf, "%s %s %s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+    printf("#### %s ####\n", buf);
+    if (prefix_forwarding_enabled())
+        i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
+    else
+        i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9, NULL);
+
+    if (i==-1) {
+        // FIXME: some better error support
+        return -1;
+    }
+
+    return LOWLEVEL_NO_ERROR;
 }
 
 int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
                   unsigned long prefered, unsigned long valid)
 {
-
+    return prefix_add(ifname, ifindex, prefixPlain, prefixLength, prefered, valid);
 }
 
 int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength)
 {
+    // netsh interface ipv6 del route 2000::/64 "eth1"
+    char arg1[]="interface";
+    char arg2[]="ipv6";
+    char arg3[]="delete";
+    char arg4[]="route";
+    char arg5[256]; // prefix
+    char arg6[256]; // interface=...
+    intptr_t i;
+    
+    sprintf(arg5, "%s/%d", prefixPlain, prefixLength);
+    sprintf(arg6,"interface=\"%s\"", ifname);
+    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6, NULL);
 
+    if (i==-1) {
+        // FIXME: some better error support
+        return -1;
+    }
+
+    return LOWLEVEL_NO_ERROR;
 }
 
 int prefix_forwarding_enabled()
 {
+    // FIXME: Detect if IPv6 forwarding is enabled or not
     return 0;
 }

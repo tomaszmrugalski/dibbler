@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.9 2007-02-02 00:52:03 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.10 2007-02-03 19:07:01 thomson Exp $
  *
  */
 
@@ -152,67 +152,67 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
 }
 
 int ntp_add(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int ntp_del(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int timezone_set(const char* ifname, int ifindex, const char* timezone){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int timezone_del(const char* ifname, int ifindex, const char* timezone){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipserver_add(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipserver_del(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipdomain_add(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int sipdomain_del(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisserver_add(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisserver_del(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisdomain_set(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisdomain_del(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusserver_add(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusserver_del(const char* ifname, const int ifindex, const char* addrPlain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusdomain_set(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 /** 
@@ -295,15 +295,14 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     result = iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_EXCL, 3, argv);
 
     /* FIXME: Parse result */
-
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
 		  unsigned long prefered, unsigned long valid)
 {
     /* update is not supported in Linux */
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 
@@ -351,5 +350,5 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     result = iproute_modify(RTM_DELROUTE, 0, 3, argv);
     /* FIXME: Parse result */
 
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }

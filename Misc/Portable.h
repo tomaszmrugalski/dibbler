@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.74 2007-02-03 15:37:15 thomson Exp $
+ * $Id: Portable.h,v 1.75 2007-02-03 19:07:01 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -149,6 +149,7 @@ struct iface {
 /* ********************************************************************** */
 /* *** low-level error codes ******************************************** */
 /* ********************************************************************** */
+#define LOWLEVEL_NO_ERROR                0
 #define LOWLEVEL_ERROR_UNSPEC           -1
 #define LOWLEVEL_ERROR_BIND_IFACE       -2
 #define LOWLEVEL_ERROR_BIND_FAILED      -4

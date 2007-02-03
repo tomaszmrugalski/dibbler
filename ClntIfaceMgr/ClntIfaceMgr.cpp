@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.35 2007-02-03 17:50:43 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.36 2007-02-03 19:07:01 thomson Exp $
  */
 
 #include "Portable.h"
@@ -400,7 +400,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     }
 
     string action;
-    bool status;
+    int status;
 
     switch (mode) {
     case PREFIX_MODIFY_ADD:
@@ -433,7 +433,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	        break;
         }
 
-        if (!status) {
+        if (status!=LOWLEVEL_NO_ERROR) {
             string tmp = error_message();
             Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
             return false;
@@ -511,7 +511,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	    status = prefix_del(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8);
 	    break;
 	}
-	if (!status) {
+	if (status!=LOWLEVEL_NO_ERROR) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
 	    return false;

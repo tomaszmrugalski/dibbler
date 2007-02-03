@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.11 2007-02-02 00:52:03 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.12 2007-02-03 19:07:01 thomson Exp $
  *
  */
 
@@ -40,11 +40,23 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     MRC=0;
     RT=0;
 
+    if (IALst.count() + PDLst.count() == 0) {
+        Log(Error) << "Unable to send RENEW. No IAs and no PDs defined." << LogEnd;
+        IsDone = true;
+        return;
+    }
+
     // retransmit until T2 has been reached or any address has expired
     //it shhould be the same for all IAs
     unsigned int timeout = DHCPV6_INFINITY;
-    IALst.first();
-    MRD= IALst.getFirst()->getT2Timeout();  
+
+    if (IALst.count()) {
+        IALst.first();
+        MRD = IALst.get()->getT2Timeout();  
+    } else {
+        PDLst.first();
+        MRD = PDLst.get()->getT2Timeout();
+    }
     
     if (RT>MRD) 
         RT=MRD;
