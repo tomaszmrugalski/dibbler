@@ -124,7 +124,7 @@ SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS) $(POS
 
 %.a: objs
 	@echo "[LIB    ] $(SUBDIR)/$@"	
-	ar cr $@ $(OBJECTS)
+	$(AR) cr $@ $(OBJECTS)
 
 all: libs
 

@@ -3,6 +3,7 @@
 
 #include <asm/types.h>
 #include <resolv.h>
+#include <linux/types.h>
 
 #include "libnetlink.h"
 #include "ll_map.h"
