@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.12 2007-02-03 19:07:01 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.13 2007-02-03 19:40:47 thomson Exp $
  *
  */
 
@@ -194,6 +194,6 @@ string TClntMsgRenew::getName() {
 
 TClntMsgRenew::~TClntMsgRenew()
 {
-    delete pkt;
+    delete [] pkt;
     pkt = NULL;
 }

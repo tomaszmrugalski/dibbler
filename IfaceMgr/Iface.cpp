@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.24 2007-01-07 20:18:46 thomson Exp $
+ * $Id: Iface.cpp,v 1.25 2007-02-03 19:40:48 thomson Exp $
  *
  */
 
@@ -166,6 +166,9 @@ int TIfaceIface::getHardwareType() {
  * (wrapper around pure C function)
  */
 bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid) {
+    Log(Notice) << "Address " << addr->getPlain() << " added to "
+		<< getFullName() << " interface." << LogEnd;
+
     return (bool)ipaddr_add(this->Name, this->ID, addr->getPlain(), 
 			    pref, valid, this->PrefixLen);
 }
@@ -175,6 +178,8 @@ bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid) {
  * (wrapper around pure C function)
  */
 bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr) {
+    Log(Notice) << "Address " << addr->getPlain() << " deleted from "
+		<< getFullName() << " interface." << LogEnd;
     return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain(), this->PrefixLen);
 }
 
@@ -182,14 +187,16 @@ bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr) {
  * update address prefered- and valid-lifetime
  */
 bool TIfaceIface::updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
-#ifdef WIN32
-    return (bool)ipaddr_add((char *)this->Name, this->ID, (char *)addr->getPlain(), 
-			    pref, valid, this->PrefixLen);
-#endif
+    int result;
+    Log(Notice) << "Address " << addr->getPlain() << " updated on "
+		<< getFullName() << " interface." << LogEnd;
 
-#ifdef LINUX
-  // FIXME: Linux kernel currently does not provide API for dynamic adresses
-#endif
+    result = ipaddr_update((char *)this->Name, this->ID, (char *)addr->getPlain(), 
+			   pref, valid, this->PrefixLen);
+
+    if (result!=LOWLEVEL_NO_ERROR)
+	return false;
+
     return true;
 }
 

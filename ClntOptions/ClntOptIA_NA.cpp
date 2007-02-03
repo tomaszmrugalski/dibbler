@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.17 2007-01-27 17:11:51 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.18 2007-02-03 19:40:47 thomson Exp $
  *
  */
 
@@ -336,9 +336,6 @@ bool TClntOptIA_NA::doDuties()
                 ptrIA->setDUID(this->DUID);
                 // ... and in IfaceMgr - 
                 ptrIface->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid());
-		Log(Notice) << "Address " << *ptrOptAddr->getAddr() << " added to "
-			    << ptrIface->getName() << "/" << ptrIface->getID() 
-			    << " interface." << LogEnd;
             } 
             else {
                 Log(Warning) << "Server send new addr with valid lifetime 0." << LogEnd;

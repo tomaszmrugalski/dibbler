@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.50 2007-02-02 00:52:03 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.51 2007-02-03 19:40:48 thomson Exp $
  *
  */
 
@@ -823,7 +823,7 @@ void TClntTransMgr::checkRenew()
 	}
     }
 	 
-    Log(Notice) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
+    Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
     SmartPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst, pdLst);
     Transactions.append(ptrRenew);
 }
@@ -897,6 +897,9 @@ void TClntTransMgr::checkDecline()
 
 void TClntTransMgr::checkRequest()
 {
+    // FIXME: Reimplement check request support.
+    return;
+
     SmartPtr<TAddrIA> ia;
     SmartPtr<TClntCfgIA> cfgIA;
     SmartPtr<TDUID> duid = 0;

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.13 2007-02-03 19:07:01 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.14 2007-02-03 19:40:48 thomson Exp $
  *
  */
 
@@ -256,6 +256,12 @@ extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
     // use _P_DETACH to speed things up, (but the tentative detection will surely fail)
     i=_spawnl(_P_WAIT, netshPath, netshPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, NULL);
     return i;
+}
+
+int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
+		  unsigned long pref, unsigned long valid, int prefixLength)
+{
+    return ipaddr_update(ifacename, ifindex, addr, pref, valid, prefixLength);
 }
 
 int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefixLength)

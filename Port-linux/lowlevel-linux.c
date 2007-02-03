@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.3 2007-01-03 01:26:18 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.4 2007-02-03 19:40:48 thomson Exp $
  *
  */
 
@@ -324,7 +324,8 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, i
 	return LOWLEVEL_ERROR_UNSPEC;
     }
     rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
-    return 0;
+
+    return LOWLEVEL_NO_ERROR;
 }
 
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
@@ -332,6 +333,14 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned 
 {
     return ipaddr_add_or_del(addr,ifacename, prefixLength, 1);
 }
+
+int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
+		  unsigned long pref, unsigned long valid, int prefixLength)
+{
+    /* FIXME: Linux kernel currently does not provide API for dynamic adresses */
+    return LOWLEVEL_NO_ERROR;
+}
+
 
 int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefixLength)
 {
