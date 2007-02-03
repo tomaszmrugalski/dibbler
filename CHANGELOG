@@ -2,13 +2,15 @@
   Dibbler changelog
  ------------------- 
  0.5.0-CVS [development snapshot,not-released-yet]
-  - Client: renewal works ok, if client wakes up "late" (bug #125)
   - All: Prefix-delegation is now supported (still some work is needed, e.g. docs and bugfixes)
+  - All: Support for multiple prefixes has been added
   - Vendor-spec information option is now supported
+  - Clnt: renewal works ok, if client wakes up "late" (bug #125)
   - Srv: Per-client configuration is now possible (so called exceptions)
   - Clnt: DUID type can be configured (e.g. "duid-type duid-ll" in client.conf file)
   - All: DUID bug fixed (resulted in changing duid in each srv/cli execution)
-  - All: Elapsed option has now correct length
+  - All: Elapsed option has now correct length (issue introduced in 0.5.0) (bug #127)
+  - Clnt: Elapsed option increases its value, when message is retransmitted.
   - Required/not allowed options check improved (now you will know why message is dropped)
   - Linux: iproute2 package update to version 20051007 (latest stable available in Debian and Ubuntu)
   - Lots of memory fixes (found by using Valgrind)
@@ -104,7 +106,7 @@
 
  0.2.1-RC1
   - Windows2003 is now supported.
-  - WIN32: netsh.exe is used instead depreciated ipv6.exe (bug #24, #48)
+  - WIN32: netsh.exe is used instead of depreciated ipv6.exe (bug #24, #48)
   - First version of Developer's guide is included (bug #42, #43)
   - WIN32: DNS is now properly added to interface. (Adv.NetworkingPack or SP2 might be necessary)
   - Unicast communication support (bug #30,#31)

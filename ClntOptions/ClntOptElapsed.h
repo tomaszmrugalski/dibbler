@@ -17,6 +17,10 @@ class TClntOptElapsed : public TOptInteger
   public:
     TClntOptElapsed(TMsg* parent);
     TClntOptElapsed( char * buf,  int n, TMsg* parent);
+
+    char * storeSelf(char* buf);
     bool doDuties();
+private:
+    unsigned long Timestamp;
 };
 #endif

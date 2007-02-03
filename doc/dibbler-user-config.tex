@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.39 2007-01-21 18:44:15 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.40 2007-02-03 15:37:16 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -710,21 +710,31 @@ required to specify that this client is interested in prefix
 delegation. See section \ref{features-prefix} for background
 information related to prefix delegation and sections
 \ref{example-server-prefix} and \ref{example-server-prefixes} for
-details about server configuration.
+details about server configuration. To ask for prefix delegation, 
+emph{prefix-delegation} (or \emph{pd}) should be used.
 
 \begin{lstlisting}
 iface "eth0" {
-  ia
-  option dns-server
-  option domain
-  option prefix-delegation 
+  ia  // ask for address
+  pd  // ask for prefix
+}
+\end{lstlisting}
+
+It is possible to define additional parameters for a prefix:
+
+\begin{lstlisting}
+iface eth0 {
+  pd {
+    t1 1000
+    t2 2000
+  }
 }
 \end{lstlisting}
 
 \subsection{Server configuration file}
 
 Server configuration is stored in \verb+server.conf+ file in the
-+/etc/dibbler+ (Linux systems) or in current (Windows systems)
+\verb+/etc/dibbler+ (Linux systems) or in current (Windows systems)
 directory. 
 
 \subsubsection{Global scope}
@@ -1335,9 +1345,9 @@ iface "eth1" {
 \label{example-server-exceptions}
 Usually all clients receive the same configuration options, e.g. all
 clients will use the same DNS server. However, it is possible to
-specify that particular clients should receive different options them
+specify that particular clients should receive different options than
 others. Following example set DNS server to 2000::1, domain
-to example.com and vendor specific information is for vendors 5678.
+to example.com and vendor specific information for vendor 5678.
 However, if requesting client has DUID 00:01:02:03:04:05:06:07:08, it
 will receive different parameters (second.client.biz domain,
 1234::5678:abcd as a DNS server and finally different vendor-specific

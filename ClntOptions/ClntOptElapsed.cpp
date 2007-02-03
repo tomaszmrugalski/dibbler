@@ -6,22 +6,34 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptElapsed.cpp,v 1.6 2006-10-29 13:11:46 thomson Exp $
+ * $Id: ClntOptElapsed.cpp,v 1.7 2007-02-03 15:37:15 thomson Exp $
  *
  */
 
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "ClntOptElapsed.h"
+#include "Logger.h"
 
 TClntOptElapsed::TClntOptElapsed( char * buf,  int n, TMsg* parent)
     :TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf,n, parent)
 {
+    Timestamp = now();
 }
 
 TClntOptElapsed::TClntOptElapsed(TMsg* parent)
-    :TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, 0, parent){
+    :TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, 0, parent)
+{
+    Timestamp = now();
 }
+
 bool TClntOptElapsed::doDuties()
 {
     return false;
+}
+
+char * TClntOptElapsed::storeSelf(char* buf)
+{
+    Value = (unsigned int)(now() - Timestamp)*100;
+    return TOptInteger::storeSelf(buf);
 }

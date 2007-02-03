@@ -2520,7 +2520,7 @@ bool ClntParser::EndPDDeclaration()
     EmptyAddr();
     ClntCfgIALst.append(new TClntCfgIA());
     ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
-    ClntCfgIALst.getLast()->addAddr(ClntCfgAddrLst.getLast());
+    //ClntCfgIALst.getLast()->addAddr(ClntCfgAddrLst.getLast());
 }   
 
 /** 
