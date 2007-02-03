@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.45 2006-12-28 22:45:00 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.46 2007-02-03 17:50:42 thomson Exp $
  *
  */
 
@@ -482,14 +482,14 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <digest>";
     switch (x.getDigest()) {
     case DIGEST_NONE:
-	strum << "digest-none";
-	break;
+        strum << "digest-none";
+	    break;
     case DIGEST_HMAC_SHA1:
-	strum << "digest-hmac-sha1";
-	break;
+	    strum << "digest-hmac-sha1";
+	    break;
     default:
-	strum << x.getDigest();
-	break;
+    	strum << x.getDigest();
+	    break;
     };
     strum << "</digest>" << endl;
     if (x.DUID)

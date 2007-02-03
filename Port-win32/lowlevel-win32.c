@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.11 2006-12-07 23:38:43 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.12 2007-02-03 17:50:42 thomson Exp $
  *
  */
 
@@ -486,12 +486,24 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
     return 0;
 }
 
-int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength) {
-    // FIXME: Implement prefix addition
-    return 0;
+int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+               unsigned long prefered, unsigned long valid)
+{
+
 }
 
-int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength) {
-    // FIXME: Implement prefix removal
+int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+                  unsigned long prefered, unsigned long valid)
+{
+
+}
+
+int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength)
+{
+
+}
+
+int prefix_forwarding_enabled()
+{
     return 0;
 }

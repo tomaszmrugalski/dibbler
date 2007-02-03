@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.28 2007-01-27 17:07:04 thomson Exp $
+ * $Id: DHCPServer.cpp,v 1.29 2007-02-03 17:50:43 thomson Exp $
  */
       
 #include "DHCPServer.h"
@@ -123,9 +123,10 @@ void TDHCPServer::stop() {
 }
 
 void TDHCPServer::setWorkdir(std::string workdir) {
-    if (this->CfgMgr)
+    if (this->CfgMgr) {
         this->CfgMgr->setWorkdir(workdir);
-    this->CfgMgr->dump();
+        this->CfgMgr->dump();
+    }
 }
 
 TDHCPServer::~TDHCPServer()

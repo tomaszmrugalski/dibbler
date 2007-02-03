@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.26 2007-01-27 17:07:04 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.27 2007-02-03 17:50:43 thomson Exp $
  *                                                                           
  */
 
@@ -125,9 +125,10 @@ bool TDHCPClient::checkPrivileges() {
 }
 
 void TDHCPClient::setWorkdir(std::string workdir) {
-    if (this->CfgMgr)
+    if (this->CfgMgr) {
         this->CfgMgr->setWorkdir(workdir);
-    this->CfgMgr->dump();
+        this->CfgMgr->dump();
+    }
 }
 
 TDHCPClient::~TDHCPClient()

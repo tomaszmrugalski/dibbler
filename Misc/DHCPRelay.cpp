@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPRelay.cpp,v 1.3 2005-02-01 00:57:36 thomson Exp $
+ * $Id: DHCPRelay.cpp,v 1.4 2007-02-03 17:50:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/02/01 00:57:36  thomson
+ * no message
+ *
  * Revision 1.2  2005/01/13 22:45:55  thomson
  * Relays implemented.
  *
@@ -125,9 +128,10 @@ void TDHCPRelay::stop() {
 }
 
 void TDHCPRelay::setWorkdir(std::string workdir) {
-    if (this->Ctx.CfgMgr)
+    if (this->Ctx.CfgMgr) {
         this->Ctx.CfgMgr->setWorkdir(workdir);
-    this->Ctx.CfgMgr->dump();
+        this->Ctx.CfgMgr->dump();
+    }
 }
 
 TDHCPRelay::~TDHCPRelay() {
