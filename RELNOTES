@@ -1,15 +1,16 @@
 
-  Dibbler 0.5.0 release notes [2006-10-05]
+  Dibbler 0.6.0-RC1 release notes [2007-02-03]
  ---------------------------------------------------------
 
- This is a 0.5.0 release. 
+ This is a Release Candidate 1 for 0.6.0 release. 
 
- New features:
- - DNS Updates support, also know as FQDN (both server and client side updates are
-   supported, AAAA as well as PTR records are updated).
- - Temporary addresses support
- - Server cache 
- - Updated documentation
+ Main new features:
+ - Prefix delegation support
+ - Vendor specific information support
+ - Elapsed option fixes and improvements
+ - DUID type is now configurable
+ - Lots of bug fixes
+ - Documentation update (now with pictures)
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 

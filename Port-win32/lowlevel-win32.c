@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.14 2007-02-03 19:40:48 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.15 2007-02-04 02:21:20 thomson Exp $
  *
  */
 
@@ -261,7 +261,7 @@ extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 		  unsigned long pref, unsigned long valid, int prefixLength)
 {
-    return ipaddr_update(ifacename, ifindex, addr, pref, valid, prefixLength);
+    return ipaddr_add(ifacename, ifindex, addr, pref, valid, prefixLength);
 }
 
 int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefixLength)
