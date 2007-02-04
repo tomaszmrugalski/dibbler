@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
- 0.5.0-CVS [development snapshot,not-released-yet]
+ 0.6.0-RC1 [2007-02-03]
   - All: Server, client and relay no longer crash, when run on Windows with IPv6 disabled. (Bug #134)
   - All: Prefix-delegation is now supported (still some work is needed, e.g. docs and bugfixes)
   - All: Support for multiple prefixes has been added
