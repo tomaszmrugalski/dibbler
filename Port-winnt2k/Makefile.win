@@ -5,8 +5,8 @@ CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
 RES  = dibbler-relay_private.res
-OBJ  = WinService.o lowlevel-winnt2k.o relay-winnt2k.o RelService.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DHCPRelay.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../RelMessages/RelMsgRelayRepl.o ../RelMessages/RelMsg.o ../RelMessages/RelMsgGeneric.o ../RelMessages/RelMsgRelayForw.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../RelIfaceMgr/RelIfaceMgr.o ../RelTransMgr/RelTransMgr.o ../CfgMgr/CfgMgr.o ../RelCfgMgr/RelParsIfaceOpt.o ../RelCfgMgr/RelCfgIface.o ../RelCfgMgr/RelCfgMgr.o ../RelCfgMgr/RelLexer.o ../RelCfgMgr/RelParser.o ../RelCfgMgr/RelParsGlobalOpt.o ../Options/Opt.o ../RelOptions/RelOptRelayMsg.o ../RelOptions/RelOptGeneric.o ../RelOptions/RelOptInterfaceID.o ../Options/OptGeneric.o ../Misc/addrpack.o ../Options/OptInteger.o $(RES)
-LINKOBJ  = WinService.o lowlevel-winnt2k.o relay-winnt2k.o RelService.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DHCPRelay.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../RelMessages/RelMsgRelayRepl.o ../RelMessages/RelMsg.o ../RelMessages/RelMsgGeneric.o ../RelMessages/RelMsgRelayForw.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../RelIfaceMgr/RelIfaceMgr.o ../RelTransMgr/RelTransMgr.o ../CfgMgr/CfgMgr.o ../RelCfgMgr/RelParsIfaceOpt.o ../RelCfgMgr/RelCfgIface.o ../RelCfgMgr/RelCfgMgr.o ../RelCfgMgr/RelLexer.o ../RelCfgMgr/RelParser.o ../RelCfgMgr/RelParsGlobalOpt.o ../Options/Opt.o ../RelOptions/RelOptRelayMsg.o ../RelOptions/RelOptGeneric.o ../RelOptions/RelOptInterfaceID.o ../Options/OptGeneric.o ../Misc/addrpack.o ../Options/OptInteger.o $(RES)
+OBJ  = WinService.o lowlevel-winnt2k.o relay-winnt2k.o RelService.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DHCPRelay.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../RelMessages/RelMsgRelayRepl.o ../RelMessages/RelMsg.o ../RelMessages/RelMsgGeneric.o ../RelMessages/RelMsgRelayForw.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../RelIfaceMgr/RelIfaceMgr.o ../RelTransMgr/RelTransMgr.o ../CfgMgr/CfgMgr.o ../RelCfgMgr/RelParsIfaceOpt.o ../RelCfgMgr/RelCfgIface.o ../RelCfgMgr/RelCfgMgr.o ../RelCfgMgr/RelLexer.o ../RelCfgMgr/RelParser.o ../RelCfgMgr/RelParsGlobalOpt.o ../Options/Opt.o ../RelOptions/RelOptRelayMsg.o ../RelOptions/RelOptGeneric.o ../RelOptions/RelOptInterfaceID.o ../Options/OptGeneric.o ../Misc/addrpack.o ../Options/OptInteger.o ../Misc/sha512.o ../Misc/hmac-sha-md5.o ../Misc/md5.o ../Misc/sha1.o ../Misc/sha256.o $(RES)
+LINKOBJ  = WinService.o lowlevel-winnt2k.o relay-winnt2k.o RelService.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DHCPRelay.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../RelMessages/RelMsgRelayRepl.o ../RelMessages/RelMsg.o ../RelMessages/RelMsgGeneric.o ../RelMessages/RelMsgRelayForw.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../RelIfaceMgr/RelIfaceMgr.o ../RelTransMgr/RelTransMgr.o ../CfgMgr/CfgMgr.o ../RelCfgMgr/RelParsIfaceOpt.o ../RelCfgMgr/RelCfgIface.o ../RelCfgMgr/RelCfgMgr.o ../RelCfgMgr/RelLexer.o ../RelCfgMgr/RelParser.o ../RelCfgMgr/RelParsGlobalOpt.o ../Options/Opt.o ../RelOptions/RelOptRelayMsg.o ../RelOptions/RelOptGeneric.o ../RelOptions/RelOptInterfaceID.o ../Options/OptGeneric.o ../Misc/addrpack.o ../Options/OptInteger.o ../Misc/sha512.o ../Misc/hmac-sha-md5.o ../Misc/md5.o ../Misc/sha1.o ../Misc/sha256.o $(RES)
 LIBS =  -L"C:/Dev-Cpp/lib" -lws2_32  
 INCS =  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
@@ -124,6 +124,21 @@ RelService.o: RelService.cpp
 
 ../Options/OptInteger.o: ../Options/OptInteger.cpp
 	$(CPP) -c ../Options/OptInteger.cpp -o ../Options/OptInteger.o $(CXXFLAGS)
+
+../Misc/sha512.o: ../Misc/sha512.c
+	$(CC) -c ../Misc/sha512.c -o ../Misc/sha512.o $(CFLAGS)
+
+../Misc/hmac-sha-md5.o: ../Misc/hmac-sha-md5.c
+	$(CPP) -c ../Misc/hmac-sha-md5.c -o ../Misc/hmac-sha-md5.o $(CXXFLAGS)
+
+../Misc/md5.o: ../Misc/md5.c
+	$(CC) -c ../Misc/md5.c -o ../Misc/md5.o $(CFLAGS)
+
+../Misc/sha1.o: ../Misc/sha1.c
+	$(CC) -c ../Misc/sha1.c -o ../Misc/sha1.o $(CFLAGS)
+
+../Misc/sha256.o: ../Misc/sha256.c
+	$(CC) -c ../Misc/sha256.c -o ../Misc/sha256.o $(CFLAGS)
 
 dibbler-relay_private.res: dibbler-relay_private.rc 
 	$(WINDRES) -i dibbler-relay_private.rc --input-format=rc -o dibbler-relay_private.res -O coff 

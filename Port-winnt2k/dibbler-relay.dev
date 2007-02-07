@@ -1,7 +1,7 @@
 [Project]
 FileName=dibbler-relay.dev
 Name=dibbler-relay
-UnitCount=33
+UnitCount=38
 Type=1
 Ver=1
 ObjFiles=
@@ -376,4 +376,54 @@ Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+
+[Unit34]
+FileName=..\Misc\sha512.c
+CompileCpp=0
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=$(CC) -c sha512.c -o sha512.o $(CFLAGS)
+
+[Unit35]
+FileName=..\Misc\hmac-sha-md5.c
+CompileCpp=1
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit36]
+FileName=..\Misc\md5.c
+CompileCpp=0
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=$(CC) -c md5.c -o md5.o $(CFLAGS)
+
+[Unit37]
+FileName=..\Misc\sha1.c
+CompileCpp=0
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=$(CC) -c sha1.c -o sha1.o $(CFLAGS)
+
+[Unit38]
+FileName=..\Misc\sha256.c
+CompileCpp=0
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=$(CC) -c sha256.c -o sha256.o $(CFLAGS)
 

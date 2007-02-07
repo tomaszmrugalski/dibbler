@@ -7,7 +7,7 @@
  *
  * based on code from Dibbler 0.2.0-RC2 and Dibbler 0.4.0
  *
- * $Id: lowlevel-winnt2k.c,v 1.5 2006-09-07 06:34:43 thomson Exp $
+ * $Id: lowlevel-winnt2k.c,v 1.6 2007-02-07 21:14:55 thomson Exp $
  *
  * released under GNU GPL v2 licence
  *
@@ -31,6 +31,26 @@
 #include <stdlib.h>
 
 #include "Portable.h"
+
+#define ERROR_MESSAGE_SIZE 1024
+static char Message[ERROR_MESSAGE_SIZE] = {0};
+
+static void error_message_set(int errCode);
+static void error_message_set_string(char *str);
+
+char * error_message()
+{
+	return Message;
+}
+
+void error_message_set(int errCode) {
+	char tmp[ERROR_MESSAGE_SIZE-10];
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |
+                  FORMAT_MESSAGE_MAX_WIDTH_MASK,
+                  NULL, errCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  (LPSTR)tmp, ERROR_MESSAGE_SIZE-10, NULL);
+	sprintf(Message, "Error %d: %s\n", errCode, tmp);
+}
 
 /*
 From the net:
@@ -226,7 +246,7 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     return 0; // address ok
 }
 
-extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
+int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
 		      unsigned long pref, unsigned long valid, int prefixLength)
 {
     char addr2[128];
@@ -243,7 +263,13 @@ extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
 	return 0;
 }
 
-extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr,
+int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
+		  unsigned long pref, unsigned long valid, int prefixLength)
+{
+    return ipaddr_add(ifacename, ifindex, addr, pref, valid, prefixLength);
+}
+
+int ipaddr_del(const char* ifacename, int ifindex, const char* addr,
                       int prefixLength)
 {
 	return ipaddr_add(ifacename, ifindex, addr, 0, 0, prefixLength);
@@ -451,19 +477,49 @@ extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain
     return 0;
 }
 
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2006-09-07 05:53:07  thomson
- * Multicast patch by Sob.
- *
- * Revision 1.3  2005-07-30 15:07:54  thomson
- * Additional headers are now included.
- * This fixes problem with running that code on NT/2k.
- *
- * Revision 1.2  2005/07/24 16:00:03  thomson
- * Port WinNT/2000 related changes.
- *
- * Revision 1.1  2005/07/23 14:33:22  thomson
- * Port for win2k/NT added.
- *
- */
+int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+               unsigned long prefered, unsigned long valid)
+{
+    // ipv6 rtu 2000::/64 4 life 1800/900 publish
+    char arg1[]="rtu";
+    char arg2[256];   // 2000::/64
+    char arg3[256];   // ifindex
+    char arg4[]="life";
+    char arg5[256];   // 1800/900
+    char arg6[]="age";
+    char arg7[]="publish"; // publish
+    int i;
+    
+    sprintf(arg2, "%s/%d", prefixPlain, prefixLength);
+    sprintf(arg3,"%d", ifindex);
+    sprintf(arg5,"%d/%d", valid, prefered);
+
+    if (prefix_forwarding_enabled())
+        i=_spawnl(_P_WAIT,cmdPath,cmdPath, "/C", ipv6Path, arg1, arg2, arg3, arg4, arg5, arg6, arg7, NULL);
+    else
+        i=_spawnl(_P_WAIT,cmdPath,cmdPath, "/C", ipv6Path, arg1, arg2, arg3, arg4, arg5, arg6, NULL);
+
+    if (i==-1) {
+        // FIXME: some better error support
+        return LOWLEVEL_ERROR_UNSPEC;
+    }
+
+    return LOWLEVEL_NO_ERROR;
+}
+
+int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+                  unsigned long prefered, unsigned long valid)
+{
+    return prefix_add(ifname, ifindex, prefixPlain, prefixLength, prefered, valid);
+}
+
+int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength)
+{
+    return prefix_add(ifname, ifindex, prefixPlain, prefixLength, 0, 0);
+}
+
+int prefix_forwarding_enabled()
+{
+    // FIXME: Detect if IPv6 forwarding is enabled or not
+    return 1;
+}
