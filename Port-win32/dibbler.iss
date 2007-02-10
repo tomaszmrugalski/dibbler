@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.4.1 (WinXP/2003 port)
-OutputBaseFilename=dibbler-0.4.1-win32
+AppVerName=Dibbler 0.6.0-RC1 (WinXP/2003 port)
+OutputBaseFilename=dibbler-0.6.0-RC1-win32
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
@@ -44,6 +44,7 @@ Source: "..\RELNOTES"; DestDir: "{app}"; Components: Documentation;
 
 [Icons]
 Name: "{group}\User's Guide"; Filename: "{app}\dibbler-user.pdf"
+Name: "{group}\Release notes"; Filename: "notepad.exe"; Parameters: "{app}\RELNOTES"
 
 Name: "{group}\Client Run in the console"; Filename: "{app}\dibbler-client.exe";Parameters: "run -d {app}";
 Name: "{group}\Client Install as service"; Filename: "{app}\dibbler-client.exe";Parameters: "install -d {app}";
