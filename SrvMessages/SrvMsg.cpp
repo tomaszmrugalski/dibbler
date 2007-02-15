@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.37 2007-01-21 19:17:58 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.38 2007-02-15 21:49:45 thomson Exp $
  */
 
 #include <sstream>
@@ -202,13 +202,13 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    ptr = new TSrvOptVendorSpec(buf+pos, length, this);
 	    break;
 	case OPTION_RECONF_ACCEPT:
-        this->DigestType = DIGEST_HMAC_SHA1;
+	  //this->DigestType = DIGEST_HMAC_SHA1;
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
 	case OPTION_RECONF_MSG:
 	case OPTION_RELAY_MSG:
 	default:
-	    Log(Warning) << "Option " << code << " not supported, so it was ignored." << LogEnd;
+	    Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
 	    break;
 	}
 	if ( (ptr) && (ptr->isValid()) )

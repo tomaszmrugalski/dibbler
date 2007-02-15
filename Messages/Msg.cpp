@@ -239,8 +239,11 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize) {
             if (ok)
                 Log(Info) << "Authentication Information correct." << LogEnd;
             else
-                Log(Error) << "Authentication Information incorrect." << LogEnd;
+                Log(Error) << "Authentication Information incorrect. Message dropped." << LogEnd;
 
+    } else {
+      Log(Error) << "Auth: Digest mode set to " << DigestType << ", but AUTH option not set. Probably internal error." << LogEnd;
+      return true;
     }
     
     return ok;
