@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.10 2007-02-03 19:07:01 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.11 2007-02-15 22:35:03 thomson Exp $
  *
  */
 
@@ -32,7 +32,7 @@ int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
     FILE * f;
     unsigned char c;
     if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
-	return -1;
+	return LOWLEVEL_ERROR_FILE;
     }
 
     fseek(f, -1, SEEK_END);
@@ -44,7 +44,7 @@ int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
 
     fprintf(f,"nameserver %s\n",addrPlain);
     fclose(f);
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
@@ -70,7 +70,7 @@ int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
     fclose(f2);
 
     chmod(RESOLVCONF_FILE, st.st_mode);
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int domain_add(const char* ifname, int ifaceid, const char* domain) {
@@ -86,9 +86,9 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     unlink(RESOLVCONF_FILE".old");
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
     if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
-	return -1;
+	return LOWLEVEL_ERROR_FILE;
     if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
-	return -1;
+	return LOWLEVEL_ERROR_FILE;
     while (fgets(buf,511,f)) {
 	if ( (!found) && (strstr(buf, "search")) ) {
 	    if (strlen(buf))
@@ -114,7 +114,7 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     fclose(f2);
     chmod(RESOLVCONF_FILE,st.st_mode);
 
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int domain_del(const char * ifname, int ifaceid, const char *domain) {
@@ -129,9 +129,9 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
     unlink(RESOLVCONF_FILE".old");
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
     if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
-	return -1;
+	return LOWLEVEL_ERROR_FILE;
     if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
-	return -1;
+	return LOWLEVEL_ERROR_FILE;
     while (fgets(buf,511,f)) {
 	if ( (!found) && (strstr(buf, domain)) ) {
 	    found = 1;
@@ -148,14 +148,51 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
     fclose(f2);
 
     chmod(RESOLVCONF_FILE,st.st_mode);
-    return 0;
+    return LOWLEVEL_NO_ERROR;
 }
 
 int ntp_add(const char* ifname, const int ifindex, const char* addrPlain){
+    FILE * f;
+    unsigned char c;
+    if ( !(f=fopen(NTPCONF_FILE,"a+"))) {
+	return LOWLEVEL_ERROR_FILE;
+    }
+
+    fseek(f, -1, SEEK_END);
+    c = fgetc(f);
+    fseek(f,0, SEEK_END);
+    if ( (c!=CR) && (c!=LF) ) {
+	fprintf(f,"\n");
+    }
+
+    fprintf(f,"server %s\n",addrPlain);
+    fclose(f);
     return LOWLEVEL_NO_ERROR;
 }
 
 int ntp_del(const char* ifname, const int ifindex, const char* addrPlain){
+    FILE * f, *f2;
+    char buf[512];
+    int found=0;
+    struct stat st;
+    memset(&st,0,sizeof(st));
+    stat(NTPCONF_FILE, &st);
+
+    unlink(NTPCONF_FILE".old");
+    rename(NTPCONF_FILE, NTPCONF_FILE".old");
+    f = fopen(NTPCONF_FILE".old","r");
+    f2 = fopen(NTPCONF_FILE,"w"); 
+    while (fgets(buf,511,f)) {
+	if ( (!found) && (strstr(buf, addrPlain)) ) {
+	    found = 1;
+	    continue;
+	}
+	fprintf(f2,"%s",buf);
+    }
+    fclose(f);
+    fclose(f2);
+
+    chmod(NTPCONF_FILE, st.st_mode);
     return LOWLEVEL_NO_ERROR;
 }
 
