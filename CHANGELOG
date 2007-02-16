@@ -8,7 +8,7 @@
   - Vendor-spec information option is now supported
   - Clnt: renewal works ok, if client wakes up "late" (bug #125)
   - Srv: Per-client configuration is now possible (so called exceptions)
-  - Clnt: DUID type can be configured (e.g. "duid-type duid-ll" in client.conf file)
+  - Clnt: DUID type change (preliminary support)
   - All: DUID bug fixed (resulted in changing duid in each srv/cli execution)
   - All: Elapsed option has now correct length (issue introduced in 0.5.0) (bug #127)
   - Clnt: Elapsed option increases its value, when message is retransmitted.
@@ -16,6 +16,8 @@
   - Linux: iproute2 package update to version 20051007 (latest stable available in Debian and Ubuntu)
   - Lots of memory fixes (found by using Valgrind)
   - Linux: multiple domains are now added and removed properly to /etc/resolv.conf
+  - Linux: NTP servers are now set up properly. (bug #138, #139)
+  - All: Messages with reconfigure-accept or vendor-class options are now accepted
  
  0.5.0 [2006-10-05]
   - FQDN fixes
