@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.76 2007-02-15 21:52:00 thomson Exp $
+ * $Id: Portable.h,v 1.77 2007-02-21 20:09:54 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -104,6 +104,7 @@ struct iface {
 #define SRVCONF_FILE      "/etc/dibbler/server.conf"
 #define RELCONF_FILE      "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE   "/etc/resolv.conf"
+#define NTPCONF_FILE      "/etc/ntp.conf"
 #define RADVD_FILE        "/etc/dibbler/radvd.conf"
 #define CLNTPID_FILE      "/var/lib/dibbler/client.pid"
 #define SRVPID_FILE       "/var/lib/dibbler/server.pid"

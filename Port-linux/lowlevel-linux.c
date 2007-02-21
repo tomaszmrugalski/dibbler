@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.4 2007-02-03 19:40:48 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.5 2007-02-21 20:09:54 thomson Exp $
  *
  */
 
@@ -169,11 +169,19 @@ struct iface * if_list_get()
 	head=tmp;
         /* printf("C: [%s,%d,%d]\n",tmp->name,tmp->id,tmp->flags); */
 
-	{
-	    /* This stuff reads MAC addr */
-	    tmp->maclen = RTA_PAYLOAD(tb[IFLA_ADDRESS]);
-	    memset(tmp->mac,0,255);
+        memset(tmp->mac,0,255);
+	/* This stuff reads MAC addr */
+	/* Does inetface has LL_ADDR? */
+	if (tb[IFLA_ADDRESS]) {
+  	    tmp->maclen = RTA_PAYLOAD(tb[IFLA_ADDRESS]);
 	    memcpy(tmp->mac,RTA_DATA(tb[IFLA_ADDRESS]), tmp->maclen);
+	}
+	/* Tunnels can have no LL_ADDR. RTA_PAYLOAD doesn't check it and try to
+	 * dereference it in this manner
+	 * #define RTA_PAYLOAD(rta) ((int)((rta)->rta_len) - RTA_LENGTH(0))
+	 * */
+	else {
+	    tmp->maclen=0;
 	}
 
 	ipaddr_local_get(&tmp->linkaddrcount, &tmp->linkaddr, tmp->id, ainfo);

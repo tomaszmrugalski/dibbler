@@ -4,30 +4,10 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
- * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.7 2006-11-30 03:17:22 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2006-11-24 01:25:16  thomson
- * consts added by Sammael.
- *
- * Revision 1.5  2006-03-05 22:26:14  thomson
- * Better dibbler status checking (thanks for the patch, Sob)
- *
- * Revision 1.4  2006/02/02 23:18:29  thomson
- * 0.4.2 release.
- *
- * Revision 1.3  2005/07/21 21:40:19  thomson
- * PID checking process is improved.
- *
- * Revision 1.2  2005/02/03 22:42:25  thomson
- * *** empty log message ***
- *
- * Revision 1.1  2005/02/03 22:06:40  thomson
- * Linux startup/pid checking changed.
+ * $Id: daemon.cpp,v 1.8 2007-02-21 20:09:54 thomson Exp $
  *
  */
 
