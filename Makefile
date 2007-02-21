@@ -397,10 +397,12 @@ install:
 	$(INSTALL) -m 644 CHANGELOG $(INST_DOCDIR)/dibbler/changelog
 	gzip -9 $(INST_DOCDIR)/dibbler/changelog
 
+DIR=`basename $(PWD)`
+
 snapshot: clean
 	cvs update -d
 	rm -f dibbler-`date +%Y%m%d`-CVS.tar.gz
-	cd ..; tar czf dibbler-CVS.tar.gz dibbler
+	cd ..; tar czf dibbler-CVS.tar.gz $(DIR)
 	mv ../dibbler-CVS.tar.gz dibbler-`date +%Y%m%d`-CVS.tar.gz
 	echo "Snapshot has been stored in the dibbler-`date +%Y%m%d`-CVS.tar.gz file."
 
