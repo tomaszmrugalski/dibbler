@@ -1,3 +1,9 @@
+dibbler (0.6.0RC1.dfsg-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Tomasz Mrugalski <thomson@klub.com.pl>  Sun, 25 Feb 2007 00:54:59 +0100
+
 dibbler (0.4.2.dfsg-2) unstable; urgency=low
 
   * Czech, French, Polish translations added (closes: #360273, #355895)
