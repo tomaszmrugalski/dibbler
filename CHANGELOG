@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+ 0.6.0-RC2 [2007-02-25]
+  - Linux: fixed segfault on interfaces with no link-local addresses, e.g. tun devices (bug #136, #140)
+  - Linux: NTP servers are now set up properly (bug #138, #139)
+
  0.6.0-RC1 [2007-02-03]
   - All: Server, client and relay no longer crash, when run on Windows with IPv6 disabled. (Bug #134)
   - All: Prefix-delegation is now supported (still some work is needed, e.g. docs and bugfixes)

@@ -12,7 +12,7 @@ _Description: Do you want dibbler-client to start when system starts?
 
 Template: dibbler-client/interfaces
 Type: string
-_Default: eth0
+Default: eth0
 _Description: Interfaces to be configured:
  Dibbler can configure any or all of a computer's network interfaces.
  .

@@ -24,16 +24,15 @@ Linux:
 
 
 DEB:
+1. cvs co -d dibbler-cvs dibbler (CVS version available in dibbler-cvs)
 A. First release for this upstrem
-  1.  cvs co dibbler
+  1.  cvs co dibbler (or extract dibbler-X.Y.Z.src.tar.gz)
   2.  cd dibbler
-  3.  move debian directory away
-  4.  make orig
+  3.  make orig
 B. Next release for this upstream
-  1. cvs co dibbler
+  1. cvs co dibbler (or extract dibbler-X.Y.Z.src.tar.gz)
   2. cd dibbler
-  3. move debian directory away
-  4. download orig.tar.gz
+  3. download orig.tar.gz
 5. cd ..
 6. rm -rf dibbler
 7. tar zxvf dibbler_X.Y.Z.orig.tar.gz
