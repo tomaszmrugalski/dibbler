@@ -299,7 +299,9 @@ release-src: VERSION-src
 	echo "$(VERSION)" > ../dibbler-version
 	cd ..; echo dibbler-`cat dibbler-version`.tar.gz
 	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz DIR=$(DIR)"
-	mv ../$(DIR) ../dibbler-$(VERSION)
+	if [ "$(DIR)" != "dibbler-$(VERSION)" ]; then   \
+		mv ../$(DIR) ../dibbler-$(VERSION)      \
+	fi
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler-`cat dibbler-version`
 	mv ../dibbler-`cat ../dibbler-version` ../$(DIR)
