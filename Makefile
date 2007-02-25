@@ -299,10 +299,10 @@ release-src: VERSION-src
 	echo "$(VERSION)" > ../dibbler-version
 	cd ..; echo dibbler-`cat dibbler-version`.tar.gz
 	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz"
-	mv ../dibbler ../dibbler-$(VERSION)
+	mv $(DIR) ../dibbler-$(VERSION)
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler-`cat dibbler-version`
-	mv ../dibbler-`cat ../dibbler-version` ../dibbler
+	mv ../dibbler-`cat ../dibbler-version` ../$(DIR)
 	@echo "[RENAME ] dibbler-$(VERSION)-src.tar.gz"
 	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
 	rm ../dibbler-version
@@ -330,7 +330,7 @@ deb:
 	if [ ! -e ../dibbler_$(VERSION).orig.tar.gz ]; then                 \
 	echo " Make sure that there is a file ../dibbler_$(VERSION).orig.tar.gz"; false; fi
 	if [ -d ../dibbler ]; then \
-	echo "[RENAME ] ../dibbler-$(VERSION)" ; mv ../dibbler ../dibbler-$(VERSION); fi
+	echo "[RENAME ] ../dibbler-$(VERSION)" ; mv ../$(DIR) ../dibbler-$(VERSION); fi
 	dpkg-buildpackage -rfakeroot
 
 release-doc: VERSION-src doc oxygen
