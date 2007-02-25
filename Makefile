@@ -305,7 +305,8 @@ release-src: VERSION-src
 	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz"
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler-`cat dibbler-version`
-	mv ../dibbler-`cat ../dibbler-version` ../$(DIR)
+	@echo "[MV     ] ../dibbler-`cat ../dibbler-version` ../$(DIR) (ignore errors)"
+	-mv ../dibbler-`cat ../dibbler-version` ../$(DIR)
 	@echo "[RENAME ] dibbler-$(VERSION)-src.tar.gz"
 	mv ../dibbler-tmp.tar.gz dibbler-$(VERSION)-src.tar.gz
 	rm ../dibbler-version
