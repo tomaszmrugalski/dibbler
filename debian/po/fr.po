@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dibbler\n"
 "Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
-"POT-Creation-Date: 2006-07-05 02:41+0200\n"
+"POT-Creation-Date: 2007-02-25 17:06+0100\n"
 "PO-Revision-Date: 2006-03-01 16:19+0100\n"
 "Last-Translator: Jean-Luc Coulon (f5ibh) <jean-luc.coulon@wanadoo.fr>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
@@ -32,7 +32,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dibbler-client.templates:2002
+#: ../dibbler-client.templates:2001
 msgid ""
 "Dibbler client can be configured to start at boot, so your host will have "
 "IPv6 set up after boot. This is generally a good idea. Make sure that there "
@@ -44,20 +44,14 @@ msgstr ""
 "réseau."
 
 #. Type: string
-#. Default
-#: ../dibbler-client.templates:3001
-msgid "eth0"
-msgstr "eth0"
-
-#. Type: string
 #. Description
-#: ../dibbler-client.templates:3002
+#: ../dibbler-client.templates:3001
 msgid "Interfaces to be configured:"
 msgstr "Interfaces à configurer :"
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3003
+#: ../dibbler-client.templates:3001
 msgid "Dibbler can configure any or all of a computer's network interfaces."
 msgstr ""
 "Dibbler peut configurer une interface particulière ou l'ensemble des "
@@ -65,7 +59,7 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3004
+#: ../dibbler-client.templates:3001
 msgid ""
 "More than one interface may be specified by separating the interface names "
 "with spaces."
@@ -88,7 +82,7 @@ msgstr "Paramètres supplémentaires à obtenir :"
 
 #. Type: multiselect
 #. Description
-#: ../dibbler-client.templates:4003
+#: ../dibbler-client.templates:4002
 msgid ""
 "The Dibbler client can request that the DHCPv6 server supply additional "
 "configuration parameters."
@@ -110,7 +104,7 @@ msgstr "Faut-il lancer automatiquement dibbler-relay au démarrage du système ?"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-relay.templates:2002
+#: ../dibbler-relay.templates:2001
 msgid ""
 "Dibbler relay can be configured to start at boot. This node will then "
 "forward DHCPv6 messages between clients, servers and other relays."
@@ -128,7 +122,7 @@ msgstr "Modifiez le fichier /etc/dibbler/relay.conf avant de lancer le relais."
 
 #. Type: note
 #. Description
-#: ../dibbler-relay.templates:3002
+#: ../dibbler-relay.templates:3001
 msgid ""
 "Without proper modifications, the relay will most likely refuse to start or "
 "will not forward DHCPv6 messages as expected."
@@ -151,7 +145,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../dibbler-server.templates:2002
+#: ../dibbler-server.templates:2001
 msgid ""
 "Dibbler server can be configured to start at boot. This node will then act "
 "as a DHCPv6 server. It will provide IPv6 addresses and additional "
@@ -172,10 +166,13 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../dibbler-server.templates:3002
+#: ../dibbler-server.templates:3001
 msgid ""
 "Without proper modifications, the Dibbler server will most likely offer "
 "invalid addresses and options when started."
 msgstr ""
 "Sans une configuration adaptée, les adresses et les options fournies par le "
 "serveur Dibbler lors de son démarrage ne seront probablement pas valables."
+
+#~ msgid "eth0"
+#~ msgstr "eth0"

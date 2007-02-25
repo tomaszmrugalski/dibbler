@@ -59,6 +59,7 @@ clean: unpatch
 	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
 	$(MAKE) clean
 	dh_clean 
+	debconf-updatepo
 
 install: install-indep install-arch
 install-indep:
