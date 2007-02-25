@@ -298,8 +298,8 @@ release-src: VERSION-src
 	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; $(MAKE) -C bison++ clean; fi
 	echo "$(VERSION)" > ../dibbler-version
 	cd ..; echo dibbler-`cat dibbler-version`.tar.gz
-	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz"
-	mv $(DIR) ../dibbler-$(VERSION)
+	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz DIR=$(DIR)"
+	mv ../$(DIR) ../dibbler-$(VERSION)
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler-`cat dibbler-version`
 	mv ../dibbler-`cat ../dibbler-version` ../$(DIR)
