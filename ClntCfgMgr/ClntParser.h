@@ -287,22 +287,23 @@ typedef
 #define	RAPID_COMMIT_	286
 #define	STATELESS_	287
 #define	OPTION_	288
-#define	LOGNAME_	289
-#define	LOGLEVEL_	290
-#define	LOGMODE_	291
-#define	STRING_	292
-#define	HEXNUMBER_	293
-#define	INTNUMBER_	294
-#define	DUID_	295
-#define	STRICT_RFC_NO_ROUTING_	296
-#define	PD_	297
-#define	DUID_TYPE_	298
-#define	DUID_TYPE_LLT_	299
-#define	DUID_TYPE_LL_	300
-#define	DUID_TYPE_EN_	301
-#define	AUTH_	302
-#define	DIGEST_NONE_	303
-#define	DIGEST_HMAC_SHA1_	304
+#define	SCRIPTS_DIR_	289
+#define	LOGNAME_	290
+#define	LOGLEVEL_	291
+#define	LOGMODE_	292
+#define	STRING_	293
+#define	HEXNUMBER_	294
+#define	INTNUMBER_	295
+#define	DUID_	296
+#define	STRICT_RFC_NO_ROUTING_	297
+#define	PD_	298
+#define	DUID_TYPE_	299
+#define	DUID_TYPE_LLT_	300
+#define	DUID_TYPE_LL_	301
+#define	DUID_TYPE_EN_	302
+#define	AUTH_	303
+#define	DIGEST_NONE_	304
+#define	DIGEST_HMAC_SHA1_	305
 
 
 #line 169 "../bison++/bison.h"
@@ -382,6 +383,7 @@ static const int WORKDIR_;
 static const int RAPID_COMMIT_;
 static const int STATELESS_;
 static const int OPTION_;
+static const int SCRIPTS_DIR_;
 static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
@@ -437,22 +439,23 @@ static const int DIGEST_HMAC_SHA1_;
 	,RAPID_COMMIT_=286
 	,STATELESS_=287
 	,OPTION_=288
-	,LOGNAME_=289
-	,LOGLEVEL_=290
-	,LOGMODE_=291
-	,STRING_=292
-	,HEXNUMBER_=293
-	,INTNUMBER_=294
-	,DUID_=295
-	,STRICT_RFC_NO_ROUTING_=296
-	,PD_=297
-	,DUID_TYPE_=298
-	,DUID_TYPE_LLT_=299
-	,DUID_TYPE_LL_=300
-	,DUID_TYPE_EN_=301
-	,AUTH_=302
-	,DIGEST_NONE_=303
-	,DIGEST_HMAC_SHA1_=304
+	,SCRIPTS_DIR_=289
+	,LOGNAME_=290
+	,LOGLEVEL_=291
+	,LOGMODE_=292
+	,STRING_=293
+	,HEXNUMBER_=294
+	,INTNUMBER_=295
+	,DUID_=296
+	,STRICT_RFC_NO_ROUTING_=297
+	,PD_=298
+	,DUID_TYPE_=299
+	,DUID_TYPE_LLT_=300
+	,DUID_TYPE_LL_=301
+	,DUID_TYPE_EN_=302
+	,AUTH_=303
+	,DIGEST_NONE_=304
+	,DIGEST_HMAC_SHA1_=305
 
 
 #line 215 "../bison++/bison.h"

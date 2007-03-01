@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.7 2006-11-17 00:39:55 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.8 2007-03-01 01:00:33 thomson Exp $
  *
  */
 
@@ -19,6 +19,7 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->WorkDir      = WORKDIR;
     this->PrefixLength = CLIENT_DEFAULT_PREFIX_LENGTH;
     this->Digest       = CLIENT_DEFAULT_DIGEST;
+    this->ScriptsDir   = DEFAULT_SCRIPTSDIR;
 }
 
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
@@ -48,3 +49,10 @@ DigestTypes TClntParsGlobalOpt::getDigest() {
     return this->Digest;
 }
 
+void TClntParsGlobalOpt::setScriptsDir(string dir) {
+    this->ScriptsDir=dir;
+}
+
+string TClntParsGlobalOpt::getScriptsDir() {
+    return this->ScriptsDir;
+}

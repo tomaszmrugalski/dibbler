@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.7 2007-01-21 18:06:58 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.8 2007-03-01 01:00:33 thomson Exp $
  *
  */
 
@@ -29,11 +29,14 @@ public:
     int getPrefixLength();
     void setDigest(DigestTypes digest);
     DigestTypes getDigest();
+    void setScriptsDir(string dir);
+    string getScriptsDir();
 
 private:
     string WorkDir;
     int PrefixLength;
     DigestTypes Digest;
+    string ScriptsDir;
 };
 
 #endif

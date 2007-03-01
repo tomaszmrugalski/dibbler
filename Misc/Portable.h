@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.78 2007-02-25 00:02:16 thomson Exp $
+ * $Id: Portable.h,v 1.79 2007-03-01 01:00:34 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -88,31 +88,33 @@ struct iface {
 #define DNSUPDATE_DEFAULT_TTL "2h"
 
 #ifdef WIN32
-#define WORKDIR           ".\\"
-#define CLNTCONF_FILE	  "client.conf"
-#define SRVCONF_FILE      "server.conf"
-#define RELCONF_FILE      "relay.conf"
-#define CLNTLOG_FILE	  "dibbler-client.log"
-#define SRVLOG_FILE       "dibbler-server.log"
-#define RELLOG_FILE       "dibbler-relay.log"
-#define NULLFILE          "nul"
+#define WORKDIR            ".\\"
+#define DEFAULT_SCRIPTSDIR ".\\scritps"
+#define CLNTCONF_FILE 	   "client.conf"
+#define SRVCONF_FILE       "server.conf"
+#define RELCONF_FILE       "relay.conf"
+#define CLNTLOG_FILE       "dibbler-client.log"
+#define SRVLOG_FILE        "dibbler-server.log"
+#define RELLOG_FILE        "dibbler-relay.log"
+#define NULLFILE           "nul"
 #endif
 
 #ifdef LINUX
-#define WORKDIR           "/var/lib/dibbler"
-#define CLNTCONF_FILE     "/etc/dibbler/client.conf"
-#define SRVCONF_FILE      "/etc/dibbler/server.conf"
-#define RELCONF_FILE      "/etc/dibbler/relay.conf"
-#define RESOLVCONF_FILE   "/etc/resolv.conf"
-#define NTPCONF_FILE      "/etc/ntp.conf"
-#define RADVD_FILE        "/etc/dibbler/radvd.conf"
-#define CLNTPID_FILE      "/var/lib/dibbler/client.pid"
-#define SRVPID_FILE       "/var/lib/dibbler/server.pid"
-#define RELPID_FILE       "/var/lib/dibbler/relay.pid"
-#define CLNTLOG_FILE      "/var/log/dibbler/dibbler-client.log"
-#define SRVLOG_FILE       "/var/log/dibbler/dibbler-server.log"
-#define RELLOG_FILE       "/var/log/dibbler/dibbler-relay.log"
-#define NULLFILE          "/dev/null"
+#define WORKDIR            "/var/lib/dibbler"
+#define DEFAULT_SCRIPTSDIR "/var/lib/dibbler/scripts"
+#define CLNTCONF_FILE      "/etc/dibbler/client.conf"
+#define SRVCONF_FILE       "/etc/dibbler/server.conf"
+#define RELCONF_FILE       "/etc/dibbler/relay.conf"
+#define RESOLVCONF_FILE    "/etc/resolv.conf"
+#define NTPCONF_FILE       "/etc/ntp.conf"
+#define RADVD_FILE         "/etc/dibbler/radvd.conf"
+#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
+#define SRVPID_FILE        "/var/lib/dibbler/server.pid"
+#define RELPID_FILE        "/var/lib/dibbler/relay.pid"
+#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
+#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
+#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
+#define NULLFILE           "/dev/null"
 #endif
 
 /* --- options --- */

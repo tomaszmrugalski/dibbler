@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.46 2007-02-03 17:50:42 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.47 2007-03-01 01:00:32 thomson Exp $
  *
  */
 
@@ -452,9 +452,10 @@ SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
 
 bool TClntCfgMgr::setGlobalOpts(SmartPtr<TClntParsGlobalOpt> opt)
 {
-    this->Digest = opt->getDigest();
-    this->LogLevel = logger::getLogLevel();
-    this->LogName  = logger::getLogName();
+    this->Digest     = opt->getDigest();
+    this->LogLevel   = logger::getLogLevel();
+    this->LogName    = logger::getLogName();
+    this->ScriptsDir = opt->getScriptsDir();
 
     return true;
 }
@@ -468,6 +469,11 @@ bool TClntCfgMgr::isDone() {
     return this->IsDone;
 }
 
+string TClntCfgMgr::getScriptsDir()
+{
+    return ScriptsDir;
+}
+
 TClntCfgMgr::~TClntCfgMgr() {
     Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;
 }
@@ -477,6 +483,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
 {
     strum << "<ClntCfgMgr>" << endl;
     strum << "  <workdir>" << x.getWorkDir()  << "</workdir>" << endl;
+    strum << "  <scriptsDir>" << x.getScriptsDir() << "</scriptsDir>" << endl;
     strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
     strum << "  <digest>";

@@ -96,7 +96,7 @@ namespace std
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,STATELESS_
-%token OPTION_
+%token OPTION_, SCRIPTS_DIR_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -136,6 +136,7 @@ GlobalOptionDeclaration
 | WorkDirOption
 | DuidTypeOption
 | StrictRfcNoRoutingOption
+| ScriptsDir
 | AuthOption
 ;
 
@@ -478,6 +479,12 @@ StrictRfcNoRoutingOption
     // by default prefix is set to 128
 }
 ;
+
+ScriptsDir
+: SCRIPTS_DIR_ STRING_
+{
+    ParserOptStack.getLast()->setScriptsDir($2);
+}
 
 AuthOption
 : AUTH_ DIGEST_NONE_      { ParserOptStack.getLast()->setDigest(DIGEST_NONE); }
