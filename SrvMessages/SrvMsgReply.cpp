@@ -798,7 +798,6 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     question->firstOption();
     while (ptrOpt = question->getOption() ) 
     {
-        Log(Debug) << ptrOpt->getOptType() << LogEnd;
         switch (ptrOpt->getOptType()) 
         {
 

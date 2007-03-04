@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.38 2007-02-15 21:49:45 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.39 2007-03-04 21:00:17 thomson Exp $
  */
 
 #include <sstream>
@@ -553,6 +553,15 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	return 0;
     }
     // FQDN is chosen, "" if no name for this host is found.
+    if (!ptrIface->supportFQDN()) {
+	Log(Error) << "FQDN is not defined on " << ptrIface->getFullName() << " interface." << LogEnd;
+	return 0;
+    }
+
+    if (!ptrIface->supportDNSServer()) {
+	Log(Error) << "DNS server is not supported on " << ptrIface->getFullName() << " interface. DNS Update aborted." << LogEnd;
+	return 0;
+    }
 
     Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr=" << clntAddr->getPlain() << LogEnd;
 	
