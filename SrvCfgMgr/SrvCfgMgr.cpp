@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.46 2006-12-04 23:37:53 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.47 2007-03-04 20:59:41 thomson Exp $
  *
  */
 
@@ -414,8 +414,15 @@ bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
 		      << ": No class definitions present, but stateless mode not set." << LogEnd;
 	    return false;
 	} else {
-	    Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface." << LogEnd;
+	    Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface." 
+			 << LogEnd;
 	}
+    }
+
+    if (ptrIface->supportFQDN() && !ptrIface->supportDNSServer()) {
+	Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined." 
+		  << " Please disable FQDN support or add DNS servers." << LogEnd;
+	return false;
     }
 
     SmartPtr<TSrvCfgAddrClass> ptrClass;
