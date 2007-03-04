@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.13 2007-02-03 19:40:47 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.14 2007-03-04 20:58:26 thomson Exp $
  *
  */
 
@@ -29,11 +29,8 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 			     SmartPtr<TClntAddrMgr> AddrMgr,
 			     List(TAddrIA) IALst,
 			     List(TAddrIA) PDLst)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
-	      IALst.count()?IALst.getFirst()->getIface():PDLst.getFirst()->getIface(), 
-	      IALst.count()?IALst.getFirst()->getSrvAddr():PDLst.getFirst()->getSrvAddr(), RENEW_MSG)
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, 0, 0, RENEW_MSG)
 {
-
    // set transmission parameters
     IRT=REN_TIMEOUT;
     MRT=REN_MAX_RT;
@@ -50,14 +47,19 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     //it shhould be the same for all IAs
     unsigned int timeout = DHCPV6_INFINITY;
 
+    SPtr<TAddrIA> ia;
     if (IALst.count()) {
         IALst.first();
-        MRD = IALst.get()->getT2Timeout();  
+	ia = IALst.get();
     } else {
         PDLst.first();
-        MRD = PDLst.get()->getT2Timeout();
+	ia = PDLst.get();
     }
-    
+
+    MRD      = ia->getT2Timeout();  
+    Iface    = ia->getIface();
+    PeerAddr = ia->getSrvAddr();
+
     if (RT>MRD) 
         RT=MRD;
 
@@ -71,7 +73,6 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	Options.append( new TClntOptServerIdentifier(PDLst.getFirst()->getDUID(),this));
     
     //Store all IAs to renew
-    SmartPtr<TAddrIA> ia;
     IALst.first();
     while(ia=IALst.get()) {
 	if (timeout > ia->getT2Timeout())

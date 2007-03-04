@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.24 2007-02-03 15:37:14 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.25 2007-03-04 20:58:26 thomson Exp $
  */
 
 #ifdef WIN32
@@ -768,7 +768,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     } else {
         if ( optORO && (optORO->count()) )
         {
-	    Log(Notice) << "All IA(s), TA and PD(s) has been configured, but there som options (";
+	    Log(Notice) << "All IA(s), TA and PD(s) has been configured, but there some options (";
 	    for (int i=0; i< optORO->count(); i++)
 		Log(Cont) << optORO->getReqOpt(i) << " ";
 	    Log(Cont) << ") were not assigned. Sending new INFORMATION-REQUEST." << LogEnd;

@@ -6,30 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.9 2007-01-27 17:12:24 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.8  2007-01-21 19:17:57  thomson
- * Option name constants updated (by Jyrki Soini)
- *
- * Revision 1.7  2007-01-07 20:18:45  thomson
- * State enum names changed.
- *
- * Revision 1.6  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.5  2004/12/08 00:15:49  thomson
- * Issues with denied RENEW (bug #53), code clean up
- *
- * Revision 1.4  2004/12/02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.3  2004/09/07 22:02:32  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
+ * $Id: ClntMsgRebind.cpp,v 1.10 2007-03-04 20:58:26 thomson Exp $
  *
  */
 
@@ -44,6 +21,7 @@
 #include "Logger.h"
 #include "ClntOptOptionRequest.h"
 #include <cmath>
+#include <iostream>
 
 TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr, 
 			       SmartPtr<TClntTransMgr> TransMgr, 
@@ -253,19 +231,21 @@ void TClntMsgRebind::doDuties()
 
     if (!MRD)
     {
+	stringstream tmp;
         SmartPtr<TOpt> ptrOpt;
         firstOption();
-	Log(Warning) << "REBIND for the IA:";
         while(ptrOpt=getOption())
         {
             if (ptrOpt->getOptType()!=OPTION_IA_NA)
                 continue;
             SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
-	    Log(Cont) << ptrIA->getIAID() << " ";
+	    tmp << ptrIA->getIAID() << " ";
             releaseIA(ptrIA->getIAID());
         }
-	Log(Cont) << " failed on the " << iface->getName() << "/" 
-		  << iface->getID() << " interface." << LogEnd;
+	Log(Warning) << "REBIND for the IA:" << tmp.str()
+		     << " failed on the " << iface->getName() << "/" 
+		     << iface->getID() << " interface." << LogEnd;
+	Log(Warning) << "Restarting server discovery process." << LogEnd;
         IsDone=true;
     }
     else
@@ -291,6 +271,11 @@ void TClntMsgRebind::releaseIA(int IAID)
         ptrAddrIA->delAddr(ptrAddr->get());
     }
     ptrAddrIA->setState(STATE_NOTCONFIGURED);
+
+    SPtr<TClntCfgIA> cfgIA = ClntCfgMgr->getIA(IAID);
+    if (!cfgIA)
+	return;
+    cfgIA->setState(STATE_NOTCONFIGURED);
 }
 
 bool TClntMsgRebind::check() {
