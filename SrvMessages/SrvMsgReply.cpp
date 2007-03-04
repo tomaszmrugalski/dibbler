@@ -145,6 +145,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     this->copyRelayInfo((Ptr*)decline);
 
     SmartPtr<TOpt> ptrOpt;
+
+    // FIXME: Implement DECLINE support for client-id and option request as in other messages
     // include our DUID
     ptrOpt = decline->getOption(OPTION_SERVERID);
     Options.append(ptrOpt);
@@ -152,6 +154,11 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     // copy client's DUID
     SmartPtr<TSrvOptClientIdentifier> ptrClntDUID;
     ptrOpt = decline->getOption(OPTION_CLIENTID);
+    if (!ptrOpt) {
+	Log(Warning) << "Received DECLINE message without client-id option. Message ignored." << LogEnd;
+	IsDone = true;
+	return;
+    }
     ptrClntDUID = (Ptr*) ptrOpt;
     Options.append(ptrOpt);
     duidOpt=(Ptr*)ptrOpt;
@@ -263,6 +270,11 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     SmartPtr<TOpt> ptrOpt;
 
     setOptionsReqOptClntDUID((Ptr*)rebind);
+    if (!duidOpt) {
+	Log(Warning) << "REBIND message without client-id option received, message dropped." << LogEnd;
+	IsDone = true;
+	return;
+    }
     
     rebind->firstOption();
     while (ptrOpt = rebind->getOption() ) 
@@ -514,6 +526,11 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     unsigned long addrCount=0;
     SmartPtr<TOpt> ptrOpt;
     setOptionsReqOptClntDUID((Ptr*)renew);
+    if (!duidOpt) {
+	Log(Warning) << "RENEW message without client-id option received, message dropped." << LogEnd;
+	IsDone = true;
+	return;
+    }
     
     renew->firstOption();
     while (ptrOpt = renew->getOption() ) 
@@ -597,6 +614,12 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     clntIface = request->getIface();
 
     setOptionsReqOptClntDUID((Ptr*)request);
+    if (!duidOpt) {
+	Log(Warning) << "REQUEST message without client-id option received, message dropped." << LogEnd;
+	IsDone = true;
+	return;
+    }
+
 
     // is this client supported?
     if (!CfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
@@ -709,6 +732,12 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     clntIface = solicit->getIface();
 
     setOptionsReqOptClntDUID((Ptr*)solicit);
+    if (!duidOpt) {
+	Log(Warning) << "SOLICIT message without client-id option received, message dropped." << LogEnd;
+	IsDone = true;
+	return;
+    }
+
 
     // include our DUID 
     SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
@@ -819,7 +848,13 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
             break;
         }
     }
-    if (appendRequestedOptions(duidOpt->getDUID(),question->getAddr(),question->getIface(),reqOpts)) {
+    SPtr<TDUID> duid;
+    if (duidOpt)
+	duid = duidOpt->getDUID();
+    else
+	duid = new TDUID();
+    
+    if (appendRequestedOptions(duid, question->getAddr(),question->getIface(),reqOpts)) {
         // include our DUID
         SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
         this->Options.append((Ptr*)srvDUID);

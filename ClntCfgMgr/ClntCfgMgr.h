@@ -6,7 +6,7 @@
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.16 2007-03-01 01:00:32 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.17 2007-03-04 22:34:04 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -53,6 +53,8 @@ class TClntCfgMgr : public TCfgMgr
     DigestTypes getDigest();
     string getScriptsDir();
 
+    bool anonInfRequest();
+
 private:
     bool setGlobalOpts(SmartPtr<TClntParsGlobalOpt> opt);
     bool validateConfig();
@@ -68,6 +70,7 @@ private:
     List(TClntCfgIface) ClntCfgIfaceLst;
     DigestTypes Digest;
     string ScriptsDir;
+    bool AnonInfRequest;
 };
 
 typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);

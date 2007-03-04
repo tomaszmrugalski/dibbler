@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.47 2007-03-01 01:00:32 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.48 2007-03-04 22:34:04 thomson Exp $
  *
  */
 
@@ -452,10 +452,11 @@ SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
 
 bool TClntCfgMgr::setGlobalOpts(SmartPtr<TClntParsGlobalOpt> opt)
 {
-    this->Digest     = opt->getDigest();
-    this->LogLevel   = logger::getLogLevel();
-    this->LogName    = logger::getLogName();
-    this->ScriptsDir = opt->getScriptsDir();
+    this->Digest         = opt->getDigest();
+    this->LogLevel       = logger::getLogLevel();
+    this->LogName        = logger::getLogName();
+    this->ScriptsDir     = opt->getScriptsDir();
+    this->AnonInfRequest = opt->getAnonInfRequest();
 
     return true;
 }
@@ -474,6 +475,11 @@ string TClntCfgMgr::getScriptsDir()
     return ScriptsDir;
 }
 
+bool TClntCfgMgr::anonInfRequest()
+{
+    return AnonInfRequest;
+}
+
 TClntCfgMgr::~TClntCfgMgr() {
     Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;
 }
@@ -486,6 +492,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <scriptsDir>" << x.getScriptsDir() << "</scriptsDir>" << endl;
     strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
+    strum << "  <AnonInfRequest>" << (x.anonInfRequest()?1:0) << "</AnonInfRequest>" << endl;
     strum << "  <digest>";
     switch (x.getDigest()) {
     case DIGEST_NONE:

@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  [not released yet]
+  - All: Support for anonymous INF-REQUEST added
   - Server: Does not crash during DNS Update, when DNS are not defined (bug #142)
   - Client: Large timeouts does not confuse client anymore (bug #141)
   - Client: Prefix deletation support in REBING improved

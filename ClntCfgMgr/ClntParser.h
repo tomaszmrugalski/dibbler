@@ -286,24 +286,25 @@ typedef
 #define	WORKDIR_	285
 #define	RAPID_COMMIT_	286
 #define	STATELESS_	287
-#define	OPTION_	288
-#define	SCRIPTS_DIR_	289
-#define	LOGNAME_	290
-#define	LOGLEVEL_	291
-#define	LOGMODE_	292
-#define	STRING_	293
-#define	HEXNUMBER_	294
-#define	INTNUMBER_	295
-#define	DUID_	296
-#define	STRICT_RFC_NO_ROUTING_	297
-#define	PD_	298
-#define	DUID_TYPE_	299
-#define	DUID_TYPE_LLT_	300
-#define	DUID_TYPE_LL_	301
-#define	DUID_TYPE_EN_	302
-#define	AUTH_	303
-#define	DIGEST_NONE_	304
-#define	DIGEST_HMAC_SHA1_	305
+#define	ANON_INF_REQUEST_	288
+#define	OPTION_	289
+#define	SCRIPTS_DIR_	290
+#define	LOGNAME_	291
+#define	LOGLEVEL_	292
+#define	LOGMODE_	293
+#define	STRING_	294
+#define	HEXNUMBER_	295
+#define	INTNUMBER_	296
+#define	DUID_	297
+#define	STRICT_RFC_NO_ROUTING_	298
+#define	PD_	299
+#define	DUID_TYPE_	300
+#define	DUID_TYPE_LLT_	301
+#define	DUID_TYPE_LL_	302
+#define	DUID_TYPE_EN_	303
+#define	AUTH_	304
+#define	DIGEST_NONE_	305
+#define	DIGEST_HMAC_SHA1_	306
 
 
 #line 169 "../bison++/bison.h"
@@ -382,6 +383,7 @@ static const int IPV6ADDR_;
 static const int WORKDIR_;
 static const int RAPID_COMMIT_;
 static const int STATELESS_;
+static const int ANON_INF_REQUEST_;
 static const int OPTION_;
 static const int SCRIPTS_DIR_;
 static const int LOGNAME_;
@@ -438,24 +440,25 @@ static const int DIGEST_HMAC_SHA1_;
 	,WORKDIR_=285
 	,RAPID_COMMIT_=286
 	,STATELESS_=287
-	,OPTION_=288
-	,SCRIPTS_DIR_=289
-	,LOGNAME_=290
-	,LOGLEVEL_=291
-	,LOGMODE_=292
-	,STRING_=293
-	,HEXNUMBER_=294
-	,INTNUMBER_=295
-	,DUID_=296
-	,STRICT_RFC_NO_ROUTING_=297
-	,PD_=298
-	,DUID_TYPE_=299
-	,DUID_TYPE_LLT_=300
-	,DUID_TYPE_LL_=301
-	,DUID_TYPE_EN_=302
-	,AUTH_=303
-	,DIGEST_NONE_=304
-	,DIGEST_HMAC_SHA1_=305
+	,ANON_INF_REQUEST_=288
+	,OPTION_=289
+	,SCRIPTS_DIR_=290
+	,LOGNAME_=291
+	,LOGLEVEL_=292
+	,LOGMODE_=293
+	,STRING_=294
+	,HEXNUMBER_=295
+	,INTNUMBER_=296
+	,DUID_=297
+	,STRICT_RFC_NO_ROUTING_=298
+	,PD_=299
+	,DUID_TYPE_=300
+	,DUID_TYPE_LLT_=301
+	,DUID_TYPE_LL_=302
+	,DUID_TYPE_EN_=303
+	,AUTH_=304
+	,DIGEST_NONE_=305
+	,DIGEST_HMAC_SHA1_=306
 
 
 #line 215 "../bison++/bison.h"

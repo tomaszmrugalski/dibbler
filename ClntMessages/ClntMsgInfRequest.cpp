@@ -7,37 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.11 2007-01-21 19:17:57 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.10  2006-11-17 00:51:25  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- * Revision 1.9  2006-02-02 23:18:29  thomson
- * 0.4.2 release.
- *
- * Revision 1.8  2005/01/08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.7  2004/11/30 00:56:31  thomson
- * Inf-Request in now not retransmited indefinetly.
- *
- * Revision 1.6  2004/11/29 22:47:08  thomson
- * Minor fix in memory management.
- *
- * Revision 1.5  2004/11/01 23:31:24  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.4  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.3  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
+ * $Id: ClntMsgInfRequest.cpp,v 1.12 2007-03-04 22:34:06 thomson Exp $
  *
  */
 
@@ -68,9 +38,6 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     :TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface->getID(), SmartPtr<TIPv6Addr>() /*NULL*/, 
 	      INFORMATION_REQUEST_MSG) {
 
-    Log(Debug) << "Creating INF-REQUEST on the " << iface->getName()
-	       << "/" << iface->getID() << "." << LogEnd;
-    
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
     MRC = 0;
@@ -80,8 +47,8 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface->getID();
     IsDone=false;
 
-    Options.append(new TClntOptClientIdentifier(ClntCfgMgr->getDUID(),this));
-    Options.append(new TClntOptElapsed(this));
+    if (!CfgMgr->anonInfRequest())
+	Options.append(new TClntOptClientIdentifier(ClntCfgMgr->getDUID(),this));
 
     this->appendRequestedOptions();
 
@@ -198,8 +165,7 @@ void TClntMsgInfRequest::answer(SmartPtr<TClntMsg> msg)
 
 void TClntMsgInfRequest::doDuties()
 {
-    // mamy timeout i nadal nie ma odpowiedzi, retransmisja
-    //uplynal ostateczny timeout dla wiadomosci
+    //timeout is reached, so let's retrasmit this message
     send();
     return;
 }

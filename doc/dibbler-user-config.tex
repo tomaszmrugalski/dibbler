@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.41 2007-03-01 01:00:36 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.42 2007-03-04 22:34:08 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -239,6 +239,14 @@ sometimes allowed range.
             define other location of the scripts. Take note that
             directory should be defined in single or double quotes.
             (" sign).
+\item[anonymous-inf-request] -- (scope: global, type: boolean,
+            default: false). When running in a stateless mode, client
+            does not ask for addresses or prefixes, but rather
+            requests some general options. By default, it sends its
+            client identifier (DUID) to the server. However, it is
+            possible to omit this identifier, so the \msg{INF-REQUEST}
+            messages will be anonymous. This global option causes
+            client to act in such anonymous way.
  \item[duid-type] -- (scope: global, type: DUID-LLT, DUID-LL or DUID-EN,
 	    default: DUID-LLT). This parameter defines, what type of
 	    DUID should be generated if there is no DUID already

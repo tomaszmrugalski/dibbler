@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgReply.cpp,v 1.6 2006-11-11 06:56:26 thomson Exp $
+ * $Id: ClntMsgReply.cpp,v 1.7 2007-03-04 22:34:06 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006-11-11 06:56:26  thomson
+ * Improved required/not allowed options checking.
+ *
  * Revision 1.5  2006-10-06 00:43:28  thomson
  * Initial PD support.
  *
@@ -57,7 +60,8 @@ void TClntMsgReply::doDuties() {
 
 
 bool TClntMsgReply::check() {
-    return TClntMsg::check(true /* clientID mandatory */, true /* serverID mandatory */ );
+    bool anonInfReq = ClntCfgMgr->anonInfRequest();
+    return TClntMsg::check(!anonInfReq /* clientID mandatory */, true /* serverID mandatory */ );
 }
 
 

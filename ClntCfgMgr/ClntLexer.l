@@ -90,6 +90,7 @@ vendor-spec           { return ClntParser::VENDOR_SPEC_; }
 auth                  { return ClntParser::AUTH_; }
 digest-none           { return ClntParser::DIGEST_NONE_; }
 digest-hmac-sha1      { return ClntParser::DIGEST_HMAC_SHA1_; }
+anonymous-inf-request { return ClntParser::ANON_INF_REQUEST_; }
 #.* ;
 
 "//"(.*) ;

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.8 2007-03-01 01:00:33 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.9 2007-03-04 22:34:05 thomson Exp $
  *
  */
 
@@ -16,10 +16,11 @@
 
 TClntParsGlobalOpt::TClntParsGlobalOpt() 
     :TClntParsIfaceOpt() {
-    this->WorkDir      = WORKDIR;
-    this->PrefixLength = CLIENT_DEFAULT_PREFIX_LENGTH;
-    this->Digest       = CLIENT_DEFAULT_DIGEST;
-    this->ScriptsDir   = DEFAULT_SCRIPTSDIR;
+    this->WorkDir        = WORKDIR;
+    this->PrefixLength   = CLIENT_DEFAULT_PREFIX_LENGTH;
+    this->Digest         = CLIENT_DEFAULT_DIGEST;
+    this->ScriptsDir     = DEFAULT_SCRIPTSDIR;
+    this->AnonInfRequest = false;
 }
 
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
@@ -55,4 +56,12 @@ void TClntParsGlobalOpt::setScriptsDir(string dir) {
 
 string TClntParsGlobalOpt::getScriptsDir() {
     return this->ScriptsDir;
+}
+
+void TClntParsGlobalOpt::setAnonInfRequest(bool anonymous) {
+    this->AnonInfRequest = anonymous;
+}
+
+bool TClntParsGlobalOpt::getAnonInfRequest() {
+    return this->AnonInfRequest;
 }

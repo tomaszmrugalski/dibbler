@@ -95,7 +95,7 @@ namespace std
 %token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
-%token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,STATELESS_
+%token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_,STATELESS_, ANON_INF_REQUEST_
 %token OPTION_, SCRIPTS_DIR_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_
 %token <strval>     STRING_
@@ -138,6 +138,7 @@ GlobalOptionDeclaration
 | StrictRfcNoRoutingOption
 | ScriptsDir
 | AuthOption
+| AnonInfRequest
 ;
 
 InterfaceOptionDeclaration
@@ -489,6 +490,12 @@ ScriptsDir
 AuthOption
 : AUTH_ DIGEST_NONE_      { ParserOptStack.getLast()->setDigest(DIGEST_NONE); }
 | AUTH_ DIGEST_HMAC_SHA1_ { ParserOptStack.getLast()->setDigest(DIGEST_HMAC_SHA1); }
+
+AnonInfRequest
+: ANON_INF_REQUEST_
+{
+    ParserOptStack.getLast()->setAnonInfRequest(true);
+};
 
 RejectServersOption
 :REJECT_SERVERS_ 
