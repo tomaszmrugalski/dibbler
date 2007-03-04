@@ -171,7 +171,7 @@ void TClntOptIA_PD::setContext(SmartPtr<TClntIfaceMgr> ifaceMgr,
     }
     this->Prefix=srvAddr;
     this->OriginalMsg = originalMsg;
-    this->Iface = Parent->getIface();
+    this->Iface = originalMsg->getIface();
 }
 
 TClntOptIA_PD::~TClntOptIA_PD()
@@ -320,7 +320,7 @@ void TClntOptIA_PD::setState(EState state)
 		   << cfgIface->getFullName() << " interface (CfgMgr)." << LogEnd;
 	return;
     }
-    cfgPD->setState(STATE_CONFIGURED);
+    cfgPD->setState(state);
 
     SPtr<TAddrIA> addrPD = AddrMgr->getPD(getIAID());
     if (!addrPD) {
@@ -330,5 +330,5 @@ void TClntOptIA_PD::setState(EState state)
 	   are no more prefixes in it */
 	return;
     }
-    addrPD->setState(STATE_CONFIGURED);
+    addrPD->setState(state);
 }

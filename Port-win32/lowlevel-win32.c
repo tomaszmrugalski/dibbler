@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.15 2007-02-04 02:21:20 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.16 2007-03-04 21:48:55 thomson Exp $
  *
  */
 
@@ -566,5 +566,5 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
 int prefix_forwarding_enabled()
 {
     // FIXME: Detect if IPv6 forwarding is enabled or not
-    return 0;
+    return 1;
 }

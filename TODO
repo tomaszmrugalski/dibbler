@@ -1,26 +1,22 @@
 
-$Id: TODO,v 1.41 2007-02-02 00:52:03 thomson Exp $
+$Id: TODO,v 1.42 2007-03-04 21:48:55 thomson Exp $
 
 New tasks should be done to the TODO list. After task is implemented, it should be moved to the
 'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.
 
   Internal/code TODO
  --------------------
-- CLI: PD: Rebind attempt segfaults
 - CLI: PD: this should be possible "iface eth0 { pd { prefix 2000::/64 } }"
 - CLI: PD: this should be possible "iface eth0 { pd { prefix prefix } }"
-- CLI: PD: prefixes are not removed if valid goes to 0.
 - SRV: PD: prefixes are not removed from db if valid goes to 0.
 - CLI: PD: radvd.conf is invalid if there were more than one prefix added to the same interface
 - CLI: Implement client side prefix delegation hints. It must be possible to define, what prefix(es) client
        will send as hints.
 - SRV: Prefixes stored in server's AddrMgr for too long (i.e. after its valid lifetime has expired) should be
        removed from the server's database (see SrvAddrMgr::doDuties())
-- CLI: Win32: prefix delegation low-level support is not implemented.
 - CLI: When server is not configured to support PD and client requests PD, server sends PD with status code
   set to NOADDRSAVAIL (that is ok). However, client should complain about it (and maybe try to do something with it). 
   Right now it prints information that "PD set successfully."
-- CLI: Elapsed time is not recalculated when SOLICIT is resent
 - SRV/REL: Support InterfaceID option with length other than 4
 - ALL: Migrate SmartPtr -> SPtr, TIPv6Addr -> TAddr
 - ALL: Make TAddrAddr a derived class from TAddr
@@ -58,6 +54,10 @@ New tasks should be done to the TODO list. After task is implemented, it should 
 
   DONE/Not validated
  --------------------
+- CLI: Elapsed time is not recalculated when SOLICIT is resent
+- CLI: Win32: prefix delegation low-level support is not implemented.
+- CLI: PD: prefixes are not removed if valid goes to 0.
+- CLI: PD: Rebind attempt segfaults
 - CLI: PD: this cfg: "iface eth0 { pd }" does not work
 - CLI: PD: this should be possible "iface eth0 { pd pd }"
 - CLI: PD: RENEW does not work

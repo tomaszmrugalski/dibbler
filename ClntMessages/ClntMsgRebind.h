@@ -6,12 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.h,v 1.3 2005-01-08 16:52:03 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
+ * $Id: ClntMsgRebind.h,v 1.4 2007-03-04 21:48:55 thomson Exp $
  *
  */
 
@@ -44,6 +39,7 @@ class TClntMsgRebind : public TClntMsg
 		  SmartPtr<TClntOptServerIdentifier> optSrvDUID, 
 		  SmartPtr<TClntOptServerUnicast> optUnicast);
     void releaseIA(int IAID);
+    void releasePD(int IAID);
 
 
 };

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.10 2007-03-04 20:58:26 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.11 2007-03-04 21:48:55 thomson Exp $
  *
  */
 
@@ -14,6 +14,7 @@
 #include "ClntMsg.h"
 #include "ClntMsgRebind.h"
 #include "ClntOptIA_NA.h"
+#include "ClntOptIA_PD.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptServerUnicast.h"
@@ -28,7 +29,7 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
 			       SmartPtr<TClntCfgMgr> CfgMgr, 
 			       SmartPtr<TClntAddrMgr> AddrMgr,
 			       TContainer<SmartPtr<TOpt> > ptrOpts, int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, 
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, iface, 
 	      SmartPtr<TIPv6Addr>() /*NULL*/, REBIND_MSG)
 {
     Options=ptrOpts;
@@ -231,18 +232,31 @@ void TClntMsgRebind::doDuties()
 
     if (!MRD)
     {
-	stringstream tmp;
+	stringstream iaLst;
+	stringstream pdLst;
         SmartPtr<TOpt> ptrOpt;
         firstOption();
         while(ptrOpt=getOption())
         {
-            if (ptrOpt->getOptType()!=OPTION_IA_NA)
-                continue;
-            SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
-	    tmp << ptrIA->getIAID() << " ";
-            releaseIA(ptrIA->getIAID());
+	    switch( ptrOpt->getOptType()) {
+	    case OPTION_IA_NA:
+	    {
+		SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
+		iaLst << ptrIA->getIAID() << " ";
+		releaseIA(ptrIA->getIAID());
+		break;
+	    }
+	    case OPTION_IA_PD:
+	    {
+		SPtr<TClntOptIA_PD> ptrPD = (Ptr*)ptrOpt;
+		ptrPD->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr, 0, 0, this);
+		ptrPD->delPrefixes();
+		break;
+	    }
+	    };
         }
-	Log(Warning) << "REBIND for the IA:" << tmp.str()
+	Log(Warning) << "REBIND for the IA(s):" << iaLst.str()
+		     << ", PD(s):" << pdLst.str()
 		     << " failed on the " << iface->getName() << "/" 
 		     << iface->getID() << " interface." << LogEnd;
 	Log(Warning) << "Restarting server discovery process." << LogEnd;
