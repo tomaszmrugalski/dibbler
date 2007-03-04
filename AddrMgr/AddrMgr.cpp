@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.26 2007-02-02 00:52:03 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.27 2007-03-04 20:56:44 thomson Exp $
  *
  */
 
@@ -594,7 +594,7 @@ TAddrMgr::~TAddrMgr() {
 
 ostream & operator<<(ostream & strum,TAddrMgr &x) {
     strum << "<AddrMgr>" << endl;
-
+    strum << "  <timestamp>" << now() << "</timestamp>" << endl;
     x.print(strum);
 
     SmartPtr<TAddrClient> ptr;

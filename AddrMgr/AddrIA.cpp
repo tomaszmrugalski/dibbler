@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.16 2007-01-27 17:09:32 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.17 2007-03-04 20:56:44 thomson Exp $
  *
  */
 
@@ -260,16 +260,24 @@ bool TAddrIA::delPrefix(SPtr<TIPv6Addr> x)
 unsigned long TAddrIA::getT1Timeout() {
     unsigned long ts, x;
     ts = Timestamp + T1;
+    if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
+	return DHCPV6_INFINITY;
+    }
+    
     x  = now();
-    if (ts>x) 
+    if (ts>x)  
         return ts-x;
-    else 
+    else
         return 0;
 }
 
 unsigned long TAddrIA::getT2Timeout() {
     unsigned long ts, x;
     ts = Timestamp + T2;
+    if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
+	return DHCPV6_INFINITY;
+    }
+
     x  = now();
     if (ts>x) 
         return ts-x;
@@ -291,7 +299,7 @@ unsigned long TAddrIA::getPrefTimeout() {
 }
 
 unsigned long TAddrIA::getMaxValidTimeout() {
-    unsigned long ts = 0;
+    unsigned long ts = 0; // should be 0
 
     SmartPtr<TAddrAddr> ptr;
     this->AddrLst.first();

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.9 2007-01-27 17:09:31 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.10 2007-03-04 20:56:44 thomson Exp $
  */
 
 #include <iostream>
@@ -47,6 +47,9 @@ unsigned long TAddrAddr::getPrefTimeout()
 {
     unsigned long ts = Timestamp + Prefered;
     unsigned long x  = now();
+    if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
+	return DHCPV6_INFINITY;
+    }
     if (ts>x) 
         return ts-x;
     else 
@@ -58,6 +61,10 @@ unsigned long TAddrAddr::getValidTimeout()
 {
     unsigned long ts = Timestamp + Valid;
     unsigned long x  = now();
+    if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
+	return DHCPV6_INFINITY;
+    }
+
     if (ts>x) 
         return ts-x;
     else 
@@ -114,6 +121,9 @@ ostream & operator<<(ostream & strum,TAddrAddr &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2007-01-27 17:09:31  thomson
+ * Negative timeout now works ok.
+ *
  * Revision 1.8  2006-11-15 02:58:45  thomson
  * lowlevel-win32.c cleanup, enums added.
  *
