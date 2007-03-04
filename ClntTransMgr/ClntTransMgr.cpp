@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.51 2007-02-03 19:40:48 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.52 2007-03-04 21:00:50 thomson Exp $
  *
  */
 
@@ -113,7 +113,7 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
 				   SmartPtr<TDUID>(),CLIENT_DEFAULT_T1,CLIENT_DEFAULT_T2,
 				   ia->getIAID()));
     }
-
+    
     // open socket
     SmartPtr<TIfaceIface> realIface = IfaceMgr->getIfaceByID(iface->getID());
     if (!realIface) {
@@ -821,6 +821,12 @@ void TClntTransMgr::checkRenew()
 		pdLst.append(ia);
 		ia->setState(STATE_INPROCESS);
 	}
+    }
+
+    if (iaLst.count() + pdLst.count() == 0) {
+	// FIXME: something is wrong
+	Log(Error) << "RENEW send attempted, but there are no IA(s) or PD(s) to send." << LogEnd;
+	return;
     }
 	 
     Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
