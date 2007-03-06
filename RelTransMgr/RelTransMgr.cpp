@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.13 2005-05-09 23:30:20 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.14 2007-03-06 13:36:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005-05-09 23:30:20  thomson
+ *
+ * Port issues fixed.
+ *
  * Revision 1.12  2005/05/09 23:17:50  thomson
  * *** empty log message ***
  *
@@ -93,6 +97,7 @@ bool TRelTransMgr::openSocket(SmartPtr<TRelCfgIface> cfgIface) {
 
     if (cfgIface->getServerMulticast() || srvUnicast) {
 
+	iface->firstGlobalAddr();
 	addr = iface->getGlobalAddr();
 	if (!addr) {
 	    Log(Warning) << "No global address defined on the " << iface->getFullName() << " interface."
