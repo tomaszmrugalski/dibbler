@@ -2,40 +2,10 @@
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
- *          Marek Senderski <msend@o2.pl>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.10 2005-05-10 20:15:53 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.9  2005/05/09 23:33:03  thomson
- * Additional check added.
- *
- * Revision 1.8  2005/05/02 21:08:53  thomson
- * Compilation fix.
- *
- * Revision 1.7  2005/05/02 20:58:13  thomson
- * Support for multiple relays added. (bug #107)
- *
- * Revision 1.6  2005/04/29 00:34:16  thomson
- * *** empty log message ***
- *
- * Revision 1.5  2005/04/25 00:19:20  thomson
- * Changes in progress.
- *
- * Revision 1.4  2005/01/23 23:17:53  thomson
- * Relay/global address support related improvements.
- *
- * Revision 1.3  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.2  2005/01/11 23:35:22  thomson
- * *** empty log message ***
- *
- * Revision 1.1  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
+ * $Id: RelIfaceMgr.cpp,v 1.11 2007-03-07 02:37:11 thomson Exp $
  *
  */
 
@@ -45,6 +15,7 @@
 #include "Iface.h"
 #include "SocketIPv6.h"
 #include "RelIfaceMgr.h"
+#include "RelCfgMgr.h"
 #include "RelMsgGeneric.h"
 #include "RelMsgRelayForw.h"
 #include "RelMsgRelayRepl.h"
@@ -68,7 +39,6 @@ void TRelIfaceMgr::dump()
     xmlDump << *this;
     xmlDump.close();
 }
-
 
 /**
  * sends data to client. Uses multicast address as source
@@ -182,7 +152,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	return 0;
     }
 
-    // char type = buf[0];    // ignore it
+    // char type = buf[0]; // ignore it
     int hopCount = buf[1]; // this one is not currently needed either
     SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
     SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
@@ -217,21 +187,40 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	}
     }
 
-    linkAddrTbl[relays] = linkAddr;
-    peerAddrTbl[relays] = peerAddr;
-    interfaceIDTbl[relays] = ptrIfaceID;
-    hopTbl[relays] = hopCount;
-    relays++;
     
     Log(Info) << "RELAY_REPL was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
     if (ptrIfaceID)
 	Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue();
     Log(Cont) << LogEnd;
-    
+
     if (!ptrIfaceID) {
-	Log(Warning) << "InterfaceID option is missing, unable to forward. Packet dropped." << LogEnd;
-	return 0;
+	if (!Ctx->CfgMgr->guessMode()) {
+	    /* guessMode disabled */
+	    Log(Warning) << "InterfaceID option is missing, guessMode disabled, unable to forward. Packet dropped." << LogEnd;
+	    return 0;
+	}
+
+	/* guess mode enabled, let's find any interface */
+	SmartPtr<TRelCfgIface> tmp;
+	Ctx->CfgMgr->firstIface();
+	while (tmp = Ctx->CfgMgr->getIface()) {
+	    if (tmp->getID() == iface->getID()) 
+		continue; // skip the interface we've received the data on
+	    break;
+	}
+	if (!tmp) {
+	    Log(Error) << "Guess-mode failed. Unable to find any interface the message can be relayed on. Please send interface-id option in server replies." << LogEnd;
+	    return 0;
+	}
+	Log(Notice) << "Guess-mode successful. Using " << tmp->getFullName() << " as destination interface." << LogEnd;
+	ptrIfaceID = new TRelOptInterfaceID(tmp->getID(), 0);
     }
+
+    linkAddrTbl[relays] = linkAddr;
+    peerAddrTbl[relays] = peerAddr;
+    interfaceIDTbl[relays] = ptrIfaceID;
+    hopTbl[relays] = hopCount;
+    relays++;
 
     SmartPtr<TRelMsg> msg;
     switch (buf[0]) {

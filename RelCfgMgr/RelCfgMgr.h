@@ -6,18 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.h,v 1.4 2006-01-12 00:23:35 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.2  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.1  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
+ * $Id: RelCfgMgr.h,v 1.5 2007-03-07 02:37:11 thomson Exp $
  *
  */
 
@@ -57,6 +46,8 @@ public:
     // configuration parameters
     string getWorkdir();
 
+    bool guessMode();
+
 private:    
     TCtx Ctx;
     string XmlFile;
@@ -72,6 +63,7 @@ private:
 
     // global options
     string Workdir;
+    bool GuessMode;
 };
 
 #endif /* RELCONFMGR_H */

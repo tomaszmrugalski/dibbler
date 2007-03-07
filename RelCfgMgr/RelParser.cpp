@@ -348,10 +348,11 @@ typedef
 #define	LOGLEVEL_	265
 #define	LOGMODE_	266
 #define	WORKDIR_	267
-#define	STRING_	268
-#define	HEXNUMBER_	269
-#define	INTNUMBER_	270
-#define	IPV6ADDR_	271
+#define	GUESS_MODE_	268
+#define	STRING_	269
+#define	HEXNUMBER_	270
+#define	INTNUMBER_	271
+#define	IPV6ADDR_	272
 
 
 #line 263 "../bison++/bison.cc"
@@ -411,6 +412,7 @@ static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
 static const int WORKDIR_;
+static const int GUESS_MODE_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -433,10 +435,11 @@ enum YY_RelParser_ENUM_TOKEN { YY_RelParser_NULL_TOKEN=0
 	,LOGLEVEL_=265
 	,LOGMODE_=266
 	,WORKDIR_=267
-	,STRING_=268
-	,HEXNUMBER_=269
-	,INTNUMBER_=270
-	,IPV6ADDR_=271
+	,GUESS_MODE_=268
+	,STRING_=269
+	,HEXNUMBER_=270
+	,INTNUMBER_=271
+	,IPV6ADDR_=272
 
 
 #line 310 "../bison++/bison.cc"
@@ -483,10 +486,11 @@ const int YY_RelParser_CLASS::LOGNAME_=264;
 const int YY_RelParser_CLASS::LOGLEVEL_=265;
 const int YY_RelParser_CLASS::LOGMODE_=266;
 const int YY_RelParser_CLASS::WORKDIR_=267;
-const int YY_RelParser_CLASS::STRING_=268;
-const int YY_RelParser_CLASS::HEXNUMBER_=269;
-const int YY_RelParser_CLASS::INTNUMBER_=270;
-const int YY_RelParser_CLASS::IPV6ADDR_=271;
+const int YY_RelParser_CLASS::GUESS_MODE_=268;
+const int YY_RelParser_CLASS::STRING_=269;
+const int YY_RelParser_CLASS::HEXNUMBER_=270;
+const int YY_RelParser_CLASS::INTNUMBER_=271;
+const int YY_RelParser_CLASS::IPV6ADDR_=272;
 
 
 #line 341 "../bison++/bison.cc"
@@ -505,11 +509,11 @@ YY_RelParser_CONSTRUCTOR_CODE;
  #line 352 "../bison++/bison.cc"
 
 
-#define	YYFINAL		54
+#define	YYFINAL		56
 #define	YYFLAG		-32768
-#define	YYNTBASE	19
+#define	YYNTBASE	20
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 271 ? yytranslate[x] : 39)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 272 ? yytranslate[x] : 41)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -524,7 +528,7 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,    17,     2,    18,     2,     2,     2,     2,     2,
+     2,     2,    18,     2,    19,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -539,110 +543,111 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
      6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16
+    16,    17
 };
 
 #if YY_RelParser_DEBUG != 0
 static const short yyprhs[] = {     0,
      0,     2,     5,     7,    10,    12,    14,    16,    18,    20,
-    23,    25,    28,    30,    32,    34,    36,    38,    39,    46,
-    47,    54,    56,    58,    62,    66,    70,    73,    77,    80,
-    83,    86,    89,    92
+    22,    25,    27,    30,    32,    34,    36,    38,    40,    41,
+    48,    49,    56,    58,    60,    64,    68,    72,    75,    79,
+    82,    85,    88,    91,    94,    96
 };
 
-static const short yyrhs[] = {    20,
-     0,    21,    23,     0,    22,     0,    21,    22,     0,    35,
-     0,    34,     0,    36,     0,    37,     0,    26,     0,    23,
-    26,     0,    25,     0,    24,    25,     0,    31,     0,    30,
-     0,    33,     0,    32,     0,    38,     0,     0,     3,    13,
-    17,    27,    24,    18,     0,     0,     3,    29,    17,    28,
-    24,    18,     0,    14,     0,    15,     0,     5,     6,    16,
-     0,     4,     6,    16,     0,     5,     7,    29,     0,     5,
-     7,     0,     4,     7,    29,     0,     4,     7,     0,    10,
-    29,     0,    11,    13,     0,     9,    13,     0,    12,    13,
-     0,     8,    29,     0
+static const short yyrhs[] = {    21,
+     0,    22,    24,     0,    23,     0,    22,    23,     0,    36,
+     0,    35,     0,    37,     0,    38,     0,    39,     0,    27,
+     0,    24,    27,     0,    26,     0,    25,    26,     0,    32,
+     0,    31,     0,    34,     0,    33,     0,    40,     0,     0,
+     3,    14,    18,    28,    25,    19,     0,     0,     3,    30,
+    18,    29,    25,    19,     0,    15,     0,    16,     0,     5,
+     6,    17,     0,     4,     6,    17,     0,     5,     7,    30,
+     0,     5,     7,     0,     4,     7,    30,     0,     4,     7,
+     0,    10,    30,     0,    11,    14,     0,     9,    14,     0,
+    12,    14,     0,    13,     0,     8,    30,     0
 };
 
 #endif
 
 #if (YY_RelParser_DEBUG != 0) || defined(YY_RelParser_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    67,    71,    75,    76,    80,    81,    82,    83,    87,    88,
-    92,    93,    97,    98,    99,   100,   101,   105,   110,   118,
-   123,   134,   135,   139,   146,   153,   157,   164,   168,   175,
-   181,   186,   193,   200
+    68,    72,    76,    77,    81,    82,    83,    84,    85,    89,
+    90,    94,    95,    99,   100,   101,   102,   103,   107,   112,
+   120,   125,   136,   137,   141,   148,   155,   159,   166,   170,
+   177,   183,   188,   195,   202,   208
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","CLIENT_",
 "SERVER_","UNICAST_","MULTICAST_","IFACE_ID_","LOGNAME_","LOGLEVEL_","LOGMODE_",
-"WORKDIR_","STRING_","HEXNUMBER_","INTNUMBER_","IPV6ADDR_","'{'","'}'","Grammar",
-"GlobalList","GlobalOptionsList","GlobalOption","IfaceList","IfaceOptionList",
-"IfaceOptions","Iface","@1","@2","Number","ServerUnicastOption","ClientUnicastOption",
-"ServerMulticastOption","ClientMulticastOption","LogLevelOption","LogModeOption",
-"LogNameOption","WorkDirOption","IfaceIDOption",""
+"WORKDIR_","GUESS_MODE_","STRING_","HEXNUMBER_","INTNUMBER_","IPV6ADDR_","'{'",
+"'}'","Grammar","GlobalList","GlobalOptionsList","GlobalOption","IfaceList",
+"IfaceOptionList","IfaceOptions","Iface","@1","@2","Number","ServerUnicastOption",
+"ClientUnicastOption","ServerMulticastOption","ClientMulticastOption","LogLevelOption",
+"LogModeOption","LogNameOption","WorkDirOption","GuessMode","IfaceIDOption",
+""
 };
 #endif
 
 static const short yyr1[] = {     0,
-    19,    20,    21,    21,    22,    22,    22,    22,    23,    23,
-    24,    24,    25,    25,    25,    25,    25,    27,    26,    28,
-    26,    29,    29,    30,    31,    32,    32,    33,    33,    34,
-    35,    36,    37,    38
+    20,    21,    22,    22,    23,    23,    23,    23,    23,    24,
+    24,    25,    25,    26,    26,    26,    26,    26,    28,    27,
+    29,    27,    30,    30,    31,    32,    33,    33,    34,    34,
+    35,    36,    37,    38,    39,    40
 };
 
 static const short yyr2[] = {     0,
-     1,     2,     1,     2,     1,     1,     1,     1,     1,     2,
-     1,     2,     1,     1,     1,     1,     1,     0,     6,     0,
-     6,     1,     1,     3,     3,     3,     2,     3,     2,     2,
-     2,     2,     2,     2
+     1,     2,     1,     2,     1,     1,     1,     1,     1,     1,
+     2,     1,     2,     1,     1,     1,     1,     1,     0,     6,
+     0,     6,     1,     1,     3,     3,     3,     2,     3,     2,
+     2,     2,     2,     2,     1,     2
 };
 
 static const short yydefact[] = {     0,
-     0,     0,     0,     0,     1,     0,     3,     6,     5,     7,
-     8,    32,    22,    23,    30,    31,    33,     0,     4,     2,
-     9,     0,     0,    10,    18,    20,     0,     0,     0,     0,
-     0,     0,    11,    14,    13,    16,    15,    17,     0,     0,
-    29,     0,    27,    34,    19,    12,    21,    25,    28,    24,
-    26,     0,     0,     0
+     0,     0,     0,     0,    35,     1,     0,     3,     6,     5,
+     7,     8,     9,    33,    23,    24,    31,    32,    34,     0,
+     4,     2,    10,     0,     0,    11,    19,    21,     0,     0,
+     0,     0,     0,     0,    12,    15,    14,    17,    16,    18,
+     0,     0,    30,     0,    28,    36,    20,    13,    22,    26,
+    29,    25,    27,     0,     0,     0
 };
 
-static const short yydefgoto[] = {    52,
-     5,     6,     7,    20,    32,    33,    21,    27,    28,    15,
-    34,    35,    36,    37,     8,     9,    10,    11,    38
+static const short yydefgoto[] = {    54,
+     6,     7,     8,    22,    34,    35,    23,    29,    30,    17,
+    36,    37,    38,    39,     9,    10,    11,    12,    13,    40
 };
 
-static const short yypact[] = {    17,
-    -7,    20,    -5,    11,-32768,     9,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,    18,-32768,    19,
--32768,    13,    23,-32768,-32768,-32768,     6,     6,    30,    32,
-    20,    -3,-32768,-32768,-32768,-32768,-32768,-32768,    -1,    25,
-    20,    26,    20,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,    43,    44,-32768
+static const short yypact[] = {    22,
+    -8,    25,    -5,    -2,-32768,-32768,    17,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    23,
+-32768,    14,-32768,     1,    18,-32768,-32768,-32768,     6,     6,
+    15,    36,    25,    -3,-32768,-32768,-32768,-32768,-32768,-32768,
+    -1,     7,    25,    27,    25,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,    45,    46,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,-32768,    39,-32768,    21,   -23,    27,-32768,-32768,   -18,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768
+-32768,-32768,    40,-32768,    19,   -26,    26,-32768,-32768,   -20,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768
 };
 
 
 #define	YYLAST		49
 
 
-static const short yytable[] = {    23,
-    29,    30,    29,    30,    31,    12,    31,    16,    46,    29,
-    30,    18,    44,    31,    45,    46,    47,     1,     2,     3,
-     4,    18,    49,    17,    51,     1,     2,     3,     4,    25,
-    22,    13,    14,    13,    14,    40,    41,    42,    43,    26,
-    48,    50,    53,    54,    19,     0,    24,     0,    39
+static const short yytable[] = {    25,
+    31,    32,    31,    32,    33,    14,    33,    48,    18,    31,
+    32,    19,    46,    33,    48,    47,    20,    49,    27,    20,
+    42,    43,    51,    50,    53,     1,     2,     3,     4,     5,
+     1,     2,     3,     4,     5,    28,    24,    15,    16,    15,
+    16,    44,    45,    52,    55,    56,    21,    26,    41
 };
 
-static const short yycheck[] = {    18,
-     4,     5,     4,     5,     8,    13,     8,    13,    32,     4,
-     5,     3,    31,     8,    18,    39,    18,     9,    10,    11,
-    12,     3,    41,    13,    43,     9,    10,    11,    12,    17,
-    13,    14,    15,    14,    15,     6,     7,     6,     7,    17,
-    16,    16,     0,     0,     6,    -1,    20,    -1,    28
+static const short yycheck[] = {    20,
+     4,     5,     4,     5,     8,    14,     8,    34,    14,     4,
+     5,    14,    33,     8,    41,    19,     3,    19,    18,     3,
+     6,     7,    43,    17,    45,     9,    10,    11,    12,    13,
+     9,    10,    11,    12,    13,    18,    14,    15,    16,    15,
+    16,     6,     7,    17,     0,     0,     7,    22,    30
 };
 
 #line 352 "../bison++/bison.cc"
@@ -1138,15 +1143,15 @@ YYLABEL(yyreduce)
 
   switch (yyn) {
 
-case 18:
-#line 106 "RelParser.y"
+case 19:
+#line 108 "RelParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
-case 19:
-#line 111 "RelParser.y"
+case 20:
+#line 113 "RelParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1155,90 +1160,96 @@ case 19:
     EndIfaceDeclaration();
 ;
     break;}
-case 20:
-#line 119 "RelParser.y"
+case 21:
+#line 121 "RelParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
-case 21:
-#line 124 "RelParser.y"
+case 22:
+#line 126 "RelParser.y"
 {
     RelCfgIfaceLst.append(new TRelCfgIface(yyvsp[-4].ival));
     EndIfaceDeclaration();
 ;
     break;}
-case 22:
-#line 134 "RelParser.y"
-{yyval.ival=yyvsp[0].ival;;
-    break;}
 case 23:
-#line 135 "RelParser.y"
+#line 136 "RelParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 24:
-#line 140 "RelParser.y"
+#line 137 "RelParser.y"
+{yyval.ival=yyvsp[0].ival;;
+    break;}
+case 25:
+#line 142 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
-case 25:
-#line 147 "RelParser.y"
+case 26:
+#line 149 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
-case 26:
-#line 154 "RelParser.y"
+case 27:
+#line 156 "RelParser.y"
 { 
     ParserOptStack.getLast()->setServerMulticast(yyvsp[0].ival);
 ;
     break;}
-case 27:
-#line 158 "RelParser.y"
+case 28:
+#line 160 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerMulticast(true);
 ;
     break;}
-case 28:
-#line 165 "RelParser.y"
+case 29:
+#line 167 "RelParser.y"
 { 
     ParserOptStack.getLast()->setClientMulticast(yyvsp[0].ival);
 ;
     break;}
-case 29:
-#line 169 "RelParser.y"
+case 30:
+#line 171 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientMulticast(true);
 ;
     break;}
-case 30:
-#line 175 "RelParser.y"
+case 31:
+#line 177 "RelParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
-case 31:
-#line 181 "RelParser.y"
+case 32:
+#line 183 "RelParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
-case 32:
-#line 187 "RelParser.y"
+case 33:
+#line 189 "RelParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
-case 33:
-#line 194 "RelParser.y"
+case 34:
+#line 196 "RelParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
-case 34:
-#line 201 "RelParser.y"
+case 35:
+#line 203 "RelParser.y"
+{
+    ParserOptStack.getLast()->setGuessMode(true);
+;
+    break;}
+case 36:
+#line 209 "RelParser.y"
 {
     ParserOptStack.getLast()->setInterfaceID(yyvsp[0].ival);
 ;
@@ -1447,7 +1458,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 207 "RelParser.y"
+#line 215 "RelParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

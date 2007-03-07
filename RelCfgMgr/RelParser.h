@@ -231,10 +231,11 @@ typedef
 #define	LOGLEVEL_	265
 #define	LOGMODE_	266
 #define	WORKDIR_	267
-#define	STRING_	268
-#define	HEXNUMBER_	269
-#define	INTNUMBER_	270
-#define	IPV6ADDR_	271
+#define	GUESS_MODE_	268
+#define	STRING_	269
+#define	HEXNUMBER_	270
+#define	INTNUMBER_	271
+#define	IPV6ADDR_	272
 
 
 #line 169 "../bison++/bison.h"
@@ -293,6 +294,7 @@ static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
 static const int WORKDIR_;
+static const int GUESS_MODE_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -315,10 +317,11 @@ static const int IPV6ADDR_;
 	,LOGLEVEL_=265
 	,LOGMODE_=266
 	,WORKDIR_=267
-	,STRING_=268
-	,HEXNUMBER_=269
-	,INTNUMBER_=270
-	,IPV6ADDR_=271
+	,GUESS_MODE_=268
+	,STRING_=269
+	,HEXNUMBER_=270
+	,INTNUMBER_=271
+	,IPV6ADDR_=272
 
 
 #line 215 "../bison++/bison.h"

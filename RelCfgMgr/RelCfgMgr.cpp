@@ -2,34 +2,10 @@
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
- *          Marek Senderski <msend@o2.pl>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.8 2005-07-21 23:29:33 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2005/07/17 21:09:54  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.6  2005/05/02 20:58:13  thomson
- * Support for multiple relays added. (bug #107)
- *
- * Revision 1.5  2005/03/08 00:43:48  thomson
- * 0.4.0-RC2 release.
- *
- * Revision 1.4  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.3  2005/01/24 00:42:57  thomson
- * no message
- *
- * Revision 1.2  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.1  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
+ * $Id: RelCfgMgr.cpp,v 1.9 2007-03-07 02:37:11 thomson Exp $
  *
  */
 
@@ -105,6 +81,11 @@ bool TRelCfgMgr::parseConfigFile(string cfgFile) {
     if(!this->validateConfig()) {
         return false;
     }
+
+    if (guessMode())
+	Log(Debug) << "Guess-mode enabled. RELAY-REPL from the server without interface-id option will be accepted." << LogEnd;
+    else
+	Log(Debug) << "Guess-mode enabled. RELAY-REPL from the server without interface-id option will be dropped." << LogEnd;
     
     return true;
 }
@@ -118,6 +99,7 @@ void TRelCfgMgr::dump() {
 
 bool TRelCfgMgr::setupGlobalOpts(SmartPtr<TRelParsGlobalOpt> opt) {
     this->Workdir   = opt->getWorkDir();
+    this->GuessMode = opt->getGuessMode();
     return true;
 }
 
@@ -189,6 +171,10 @@ bool TRelCfgMgr::isDone() {
     return IsDone;
 }
 
+bool TRelCfgMgr::guessMode() {
+    return GuessMode;
+}
+
 bool TRelCfgMgr::validateConfig() {
     SmartPtr<TRelCfgIface> ptrIface;
 
@@ -213,8 +199,7 @@ bool TRelCfgMgr::validateIface(SmartPtr<TRelCfgIface> ptrIface)
 {
     if ( (ptrIface->getInterfaceID() == (signed int)DHCPV6_INFINITY) &&
 	(ptrIface->getClientUnicast() || ptrIface->getClientMulticast()) ) {
-	Log(Crit) << "Client addresse defined without Interface-ID on the " << ptrIface->getName() << "/" << ptrIface->getID()
-		  << " interface." << LogEnd;
+	Log(Crit) << "Client address defined without Interface-ID on the " << ptrIface->getFullName() <<  " interface." << LogEnd;
 	return false;
     }
     if ( !ptrIface->getServerUnicast() && !ptrIface->getServerMulticast() &&

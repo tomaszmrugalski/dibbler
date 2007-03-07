@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.42 2007-03-04 22:34:08 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.43 2007-03-07 02:37:12 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -1525,6 +1525,7 @@ Name             & Scope   & Values      & default    & Description \\
 log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
 log-name         & global  & string      & Relay      & Name, which appears in a log file\\
 log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
+guess-mode       & global  & none        & no         & switches relay into guess-mode \\
 
 client multicast &interface& boolean     &            & Client's messages should be received on the multicast address.\\
 client unicast   &interface& address     &not defined & Client's messages should be received on the specified multicast address. \\
@@ -1667,5 +1668,36 @@ iface eth1 {
   client multicast yes    // bind ff02::1:2
 # client unicast 6021::1  // bind this address
   interface-id 6021
+}
+\end{lstlisting}
+
+\subsubsection{Example 5: Guess-mode}
+In the 0.6.0 release, a new feature called guess-mode has been
+added. When client sends some data and relay forwards it to the
+server, it always adds interface-id option to specify, which link
+the data has been originally received on. Server, when responding to
+such request, should include the same interface-id option in the
+reply. However, in some poor implementations, server fails to do
+that. When relay receives such poorly formed response from the server,
+it can't decide which interface should be used to relay this
+message. 
+
+Normally such packets are dropped. However, it is possible to switch
+relay into a guess-mode. It tries to find any suitable interface,
+which it can forward data on. It is not very reliable, but sometimes
+it is better than dropping the message altogether.
+
+\begin{lstlisting}
+# relay.conf
+log-level 8
+log-mode short
+guess-mode
+
+iface eth0 {
+  server multicast yes
+}
+iface eth1 {
+  client multicast yes
+  interface-id 5020
 }
 \end{lstlisting}

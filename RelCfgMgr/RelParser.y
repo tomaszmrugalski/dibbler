@@ -50,6 +50,7 @@ virtual ~RelParser();
 
 %token IFACE_, CLIENT_, SERVER_, UNICAST_, MULTICAST_, IFACE_ID_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
+%token GUESS_MODE_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -81,6 +82,7 @@ GlobalOption
 | LogLevelOption
 | LogNameOption
 | WorkDirOption
+| GuessMode
 ;
 
 IfaceList
@@ -195,6 +197,12 @@ WorkDirOption
     ParserOptStack.getLast()->setWorkDir($2);
 }
 ;
+
+GuessMode
+: GUESS_MODE_
+{
+    ParserOptStack.getLast()->setGuessMode(true);
+};
 
 IfaceIDOption
 :IFACE_ID_ Number

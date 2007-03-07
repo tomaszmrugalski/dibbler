@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelParsGlobalOpt.h,v 1.2 2005-07-16 14:46:32 thomson Exp $
+ * $Id: RelParsGlobalOpt.h,v 1.3 2007-03-07 02:37:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005-07-16 14:46:32  thomson
+ * Compatilibility with gcc 2.95 improved (bug #119)
+ * Fix was provided by Tomasz Torcz. Thanks.
+ *
  * Revision 1.1  2005/01/11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -27,8 +31,12 @@ class TRelParsGlobalOpt : public TRelParsIfaceOpt
     
     string getWorkDir();
     void setWorkDir(string dir);
+
+    void setGuessMode(bool guess);
+    bool getGuessMode();
     
 private:
     string WorkDir;
+    bool GuessMode;
 };
 #endif

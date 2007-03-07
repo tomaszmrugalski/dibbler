@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgIface.h,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelCfgIface.h,v 1.2 2007-03-07 02:37:10 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005-01-11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  *
  */
 
@@ -35,6 +38,7 @@ public:
     void setID(int ifaceID);
     int	getID();
     string getName();
+    string getFullName();
 
     SmartPtr<TIPv6Addr> getServerUnicast();
     SmartPtr<TIPv6Addr> getClientUnicast();

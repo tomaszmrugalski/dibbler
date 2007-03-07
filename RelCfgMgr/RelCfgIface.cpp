@@ -2,19 +2,14 @@
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
- *          Marek Senderski <msend@o2.pl>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgIface.cpp,v 1.2 2005-02-01 00:57:36 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
+ * $Id: RelCfgIface.cpp,v 1.3 2007-03-07 02:37:10 thomson Exp $
  *
  */
 
+#include <sstream>
 #include "RelCfgIface.h"
 #include "Logger.h"
 
@@ -46,6 +41,14 @@ int TRelCfgIface::getID() {
 
 string TRelCfgIface::getName() {
 	return this->Name;
+}
+
+string TRelCfgIface::getFullName() {
+    ostringstream oss;
+    oss << this->ID;
+    return string(this->Name)
+	+"/"
+	+oss.str();
 }
 
 TRelCfgIface::~TRelCfgIface() {
