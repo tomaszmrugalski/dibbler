@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPRelay.cpp,v 1.4 2007-02-03 17:50:43 thomson Exp $
+ * $Id: DHCPRelay.cpp,v 1.5 2007-03-10 01:42:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2007-02-03 17:50:43  thomson
+ * Win32 fixes.
+ *
  * Revision 1.3  2005/02/01 00:57:36  thomson
  * no message
  *
@@ -45,6 +48,7 @@ TDHCPRelay::TDHCPRelay(string config)
 	this->IsDone = true;
 	return;
     }
+    this->Ctx.IfaceMgr->setContext(&this->Ctx);
     this->Ctx.IfaceMgr->dump();
 
     this->Ctx.CfgMgr = new TRelCfgMgr(this->Ctx, config, RELCFGMGR_FILE);
@@ -77,7 +81,7 @@ void TDHCPRelay::run()
 	if (serviceShutdown)     timeout = 0;
 	
 	if (!silent)
-	    Log(Notice) << "Accepting messages." << LogEnd;
+	    Log(Debug) << "Accepting messages." << LogEnd;
 
 #ifdef WIN32
 	// There's no easy way to break select, so just don't sleep for too long.

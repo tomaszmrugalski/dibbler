@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.5 2007-02-21 20:09:54 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.6 2007-03-10 01:42:32 thomson Exp $
  *
  */
 
@@ -473,7 +473,12 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
 
     result = sendto(sock, buf, message_len, 0, res->ai_addr, res->ai_addrlen);
     freeaddrinfo(res);
-    return result;
+
+    if (result<0) {
+	sprintf(Message, "Unable to send data (dst addr: %s)", addr);
+	return LOWLEVEL_ERROR_SOCKET;
+    }
+    return LOWLEVEL_NO_ERROR;
 }
 
 /*

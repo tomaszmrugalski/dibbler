@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.9 2007-03-07 02:37:11 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.10 2007-03-10 01:42:32 thomson Exp $
  *
  */
 
@@ -85,7 +85,7 @@ bool TRelCfgMgr::parseConfigFile(string cfgFile) {
     if (guessMode())
 	Log(Debug) << "Guess-mode enabled. RELAY-REPL from the server without interface-id option will be accepted." << LogEnd;
     else
-	Log(Debug) << "Guess-mode enabled. RELAY-REPL from the server without interface-id option will be dropped." << LogEnd;
+	Log(Debug) << "Guess-mode disabled. RELAY-REPL from the server without interface-id option will be dropped." << LogEnd;
     
     return true;
 }

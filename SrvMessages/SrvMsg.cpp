@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.39 2007-03-04 21:00:17 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.40 2007-03-10 01:42:32 thomson Exp $
  */
 
 #include <sstream>
@@ -309,10 +309,14 @@ void TSrvMsg::send()
 	    this->LinkAddrTbl[i]->storeSelf(buf+offset);
 	    this->PeerAddrTbl[i]->storeSelf(buf+offset+16);
 	    offset +=32;
+
+	    /* comment out this section to send RELAY-REPL without interfaceID options */
 	    if (this->InterfaceIDTbl[i]) {
 		this->InterfaceIDTbl[i]->storeSelf(buf+offset);
 		offset += this->InterfaceIDTbl[i]->getSize();
 	    }
+	    /* comment out this section to send RELAY-REPL without interfaceID options */
+
 	    *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
 	    offset+=2;
 	    *(short*)(buf+offset) = htons(len[i]);

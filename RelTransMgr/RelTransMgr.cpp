@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.14 2007-03-06 13:36:56 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.15 2007-03-10 01:42:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2007-03-06 13:36:56  thomson
+ * Global address is now bound properly in Relay (bug #143)
+ *
  * Revision 1.13  2005-05-09 23:30:20  thomson
  *
  * Port issues fixed.
@@ -217,7 +220,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 			<< " interface to unicast (" << cfgIface->getServerUnicast()->getPlain() << ") address." << LogEnd;
 
 	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
-		Log(Error) << "Failed to send data." << LogEnd;
+		Log(Error) << "Failed to send data to server unicast address." << LogEnd;
 	    }
 					   
 	}
@@ -226,7 +229,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 	    Log(Notice) << "Relaying message on the " << cfgIface->getName() << "/" << cfgIface->getID()
 			<< " interface to multicast (" << addr->getPlain() << ") address." << LogEnd;
 	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, addr, DHCPSERVER_PORT)) {
-		Log(Error) << "Failed to send data." << LogEnd;
+		Log(Error) << "Failed to send data to server multicast address." << LogEnd;
 	    }
 	}
     }
@@ -259,11 +262,11 @@ void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
 	port = DHCPSERVER_PORT;
     else
 	port = DHCPCLIENT_PORT;
-    Log(Notice) << "Relaying " << msg->getName() << " message on the " << iface->getFullName()
+    Log(Notice) << "Relaying decapsulated " << msg->getName() << " message on the " << iface->getFullName()
 		<< " interface to the " << addr->getPlain() << ", port " << port << "." << LogEnd;
 
     if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, port)) {
-	Log(Error) << "Failed to send data." << LogEnd;
+	Log(Error) << "Failed to decapsulated data." << LogEnd;
     }
     
 }

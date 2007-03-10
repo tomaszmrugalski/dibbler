@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.11 2007-03-07 02:37:11 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.12 2007-03-10 01:42:32 thomson Exp $
  *
  */
 
@@ -68,7 +68,9 @@ bool TRelIfaceMgr::send(int ifindex, char *data, int dataLen,
     }
 
     // send it!
-    return ptrSocket->send(data, dataLen, addr, port);
+    if (ptrSocket->send(data, dataLen, addr, port) < 0)
+	return false;
+    return true;
 }
 
 /**
@@ -213,7 +215,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	    return 0;
 	}
 	Log(Notice) << "Guess-mode successful. Using " << tmp->getFullName() << " as destination interface." << LogEnd;
-	ptrIfaceID = new TRelOptInterfaceID(tmp->getID(), 0);
+	ptrIfaceID = new TRelOptInterfaceID(tmp->getInterfaceID(), 0);
     }
 
     linkAddrTbl[relays] = linkAddr;
@@ -269,6 +271,10 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SmartPtr<TIfaceIface> iface,
     }
 }
 
+void TRelIfaceMgr::setContext(TCtx *ctx)
+{
+    this->Ctx = ctx;
+}
 
 ostream & operator <<(ostream & strum, TRelIfaceMgr &x) {
     strum << "<RelIfaceMgr>" << std::endl;

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.h,v 1.3 2005-04-25 00:19:20 thomson Exp $
+ * $Id: RelIfaceMgr.h,v 1.4 2007-03-10 01:42:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005-04-25 00:19:20  thomson
+ * Changes in progress.
+ *
  * Revision 1.2  2005/01/11 23:35:22  thomson
  * *** empty log message ***
  *
@@ -53,6 +56,7 @@ class TRelIfaceMgr: public TIfaceMgr {
     
     // ---receives messages---
     SmartPtr<TRelMsg> select(unsigned long timeout);
+    void setContext(TCtx *ctx);
 
   private:
     TCtx * Ctx;
