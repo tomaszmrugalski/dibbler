@@ -28,7 +28,7 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <linux/in_route.h>
-#include <linux/ip_mp_alg.h>
+//#include <linux/ip_mp_alg.h>
 
 #include "rt_names.h"
 #include "utils.h"
@@ -95,6 +95,7 @@ static struct
 	inet_prefix msrc;
 } filter;
 
+#if 0
 static char *mp_alg_names[IP_MP_ALG_MAX+1] = {
 	[IP_MP_ALG_NONE] = "none",
 	[IP_MP_ALG_RR] = "rr",
@@ -102,6 +103,7 @@ static char *mp_alg_names[IP_MP_ALG_MAX+1] = {
 	[IP_MP_ALG_RANDOM] = "random",
 	[IP_MP_ALG_WRANDOM] = "wrandom"
 };
+#endif
 
 static int flush_update(void)
 {
@@ -335,6 +337,7 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 		fprintf(fp, "tos %s ", rtnl_dsfield_n2a(r->rtm_tos, b1, sizeof(b1)));
 	}
 
+#if 0
 	if (tb[RTA_MP_ALGO]) {
 		__u32 mp_alg = *(__u32*) RTA_DATA(tb[RTA_MP_ALGO]);
 		if (mp_alg > IP_MP_ALG_NONE) {
@@ -342,6 +345,7 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 			    mp_alg < IP_MP_ALG_MAX ? mp_alg_names[mp_alg] : "unknown");
 		}
 	}
+#endif
 
 	if (tb[RTA_GATEWAY] && filter.rvia.bitlen != host_len) {
 		fprintf(fp, "via %s ", 
@@ -848,8 +852,9 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			d = *argv;
 		} else if (strcmp(*argv, "mpath") == 0 ||
 			   strcmp(*argv, "mp") == 0) {
+#if 0
 			int i;
-			__u32 mp_alg = IP_MP_ALG_NONE;
+			__u32 mp_alg = 0; /*IP_MP_ALG_NONE;*/
 
 			NEXT_ARG();
 			for (i = 1; i < ARRAY_SIZE(mp_alg_names); i++)
@@ -858,6 +863,7 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			if (mp_alg == IP_MP_ALG_NONE)
 				invarg("\"mpath\" value is invalid\n", *argv);
 			addattr_l(&req.n, sizeof(req), RTA_MP_ALGO, &mp_alg, sizeof(mp_alg));
+#endif
 		} else {
 			int type;
 			inet_prefix dst;
