@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+ [not-released-yet]
+  - Server: No longer crashes when is unable to find relay (bug #144)
+  - Relay: Global peer-addr field was not set properly in RELAY-FORw (bug #143)
+
  0.6.0RC3 [2007-03-14]
   - Relay: Global address fix
   - Relay: Guess mode implemented
