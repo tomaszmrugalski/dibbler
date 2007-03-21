@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.15 2007-03-10 01:42:32 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.16 2007-03-21 00:30:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2007-03-10 01:42:32  thomson
+ * Guess-mode (and related segfault fix) added to relay.
+ *
  * Revision 1.14  2007-03-06 13:36:56  thomson
  * Global address is now bound properly in Relay (bug #143)
  *
@@ -172,6 +175,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     buf[offset++] = hopCount;
 
     // store link-addr 
+    iface->firstGlobalAddr();
     addr = iface->getGlobalAddr();
     if (!addr) {
 	Log(Warning) << "Interface " << iface->getFullName() << " does not have global address." << LogEnd;
