@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.19 2007-01-21 19:17:58 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.20 2007-03-21 00:36:29 thomson Exp $
  */
 
 #ifdef WIN32
@@ -520,7 +520,8 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
 	ptrIface->firstAddrClass();
 	ptrClass = ptrIface->getAddrClass();
     }
-    
+
+    // FIXME: Check if there are any addresses available at all?
     do {
 	addr = ptrClass->getRandomAddr();
     } while (!AddrMgr->addrIsFree(hint));
