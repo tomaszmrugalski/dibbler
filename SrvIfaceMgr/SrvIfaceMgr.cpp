@@ -7,9 +7,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.22 2007-01-27 17:14:10 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.23 2007-03-21 00:21:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2007-01-27 17:14:10  thomson
+ * *** empty log message ***
+ *
  * Revision 1.21  2006-11-17 01:08:53  thomson
  * Partial AUTH support by Sammael, fixes by thomson
  *
@@ -200,6 +203,8 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         return ptr;
 	case RELAY_FORW_MSG:
 	    ptr = this->decodeRelayForw(ptrIface, peer, buf, bufsize);
+	if (!ptr)
+	    return 0;
         if (!ptr->validateAuthInfo(buf, bufsize))
             return 0;
         return ptr;
