@@ -28,7 +28,7 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <linux/in_route.h>
-//#include <linux/ip_mp_alg.h>
+/* #include <linux/ip_mp_alg.h> */
 
 #include "rt_names.h"
 #include "utils.h"
@@ -94,6 +94,7 @@ static struct
 	inet_prefix rsrc;
 	inet_prefix msrc;
 } filter;
+
 
 #if 0
 static char *mp_alg_names[IP_MP_ALG_MAX+1] = {
@@ -346,7 +347,6 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 		}
 	}
 #endif
-
 	if (tb[RTA_GATEWAY] && filter.rvia.bitlen != host_len) {
 		fprintf(fp, "via %s ", 
 			format_host(r->rtm_family,
@@ -854,7 +854,7 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			   strcmp(*argv, "mp") == 0) {
 #if 0
 			int i;
-			__u32 mp_alg = 0; /*IP_MP_ALG_NONE;*/
+			__u32 mp_alg = 0 /* IP_MP_ALG_NONE */;
 
 			NEXT_ARG();
 			for (i = 1; i < ARRAY_SIZE(mp_alg_names); i++)
