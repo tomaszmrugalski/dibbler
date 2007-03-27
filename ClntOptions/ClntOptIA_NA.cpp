@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.18 2007-02-03 19:40:47 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.19 2007-03-27 23:08:19 thomson Exp $
  *
  */
 
@@ -365,9 +365,23 @@ bool TClntOptIA_NA::doDuties()
     }
     SmartPtr<TClntCfgIA> ptrCfgIA;
     ptrCfgIA=CfgMgr->getIA(ptrIA->getIAID());
-    
-    ptrIA->setT1( this->getT1() );
-    ptrIA->setT2( this->getT2() );
+
+    if (getT1() && getT2()) {
+	ptrIA->setT1( this->getT1() );
+	ptrIA->setT2( this->getT2() );
+	Log(Debug) << "RENEW will be sent (T1) after " << ptrIA->getT1() << ", REBIND (T2) after " << ptrIA->getT2() << " seconds." << LogEnd;
+    } else {
+	this->firstAddr();
+	ptrOptAddr = this->getAddr();
+	if (ptrOptAddr) {
+	    ptrIA->setT1( ptrOptAddr->getPref()/2);
+	    ptrIA->setT2( (int)((ptrOptAddr->getPref())*0.7) );
+	    Log(Notice) << "Server set T1 and T2 to 0. Choosing default (50%, 70% * prefered-lifetime): T1=" << ptrIA->getT1() 
+			<< ", T2=" << ptrIA->getT2() << LogEnd;
+	}
+
+    }
+
     ptrIA->setTimestamp();
     ptrIA->setState(STATE_CONFIGURED);
     ptrCfgIA->setState(STATE_CONFIGURED);
