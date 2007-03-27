@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  [not-released-yet]
+  - Server: Does not complain anymore, when receives message addressed to a different server (bug #157)
   - Client: Prefixes are split properly when forwarding is enabled
   - Client: /etc/resolv.conf update improved
   - All: Time is now used properly during DUID-LLT creation (bug #149)

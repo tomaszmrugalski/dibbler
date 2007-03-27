@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.31 2007-01-27 17:13:44 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.32 2007-03-27 23:58:11 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2007-01-27 17:13:44  thomson
+ * SetThats() is now called setContext()
+ *
  * Revision 1.30  2007-01-21 19:17:58  thomson
  * Option name constants updated (by Jyrki Soini)
  *
@@ -177,7 +180,8 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 {	
     if (!msg->check())
     {
-	Log(Warning) << "Invalid message received." << LogEnd;
+        // proper warnings will be printed in the check() method, if necessary.
+        // Log(Warning) << "Invalid message received." << LogEnd;
         return;
     }
     // Do we have ready answer for this?
