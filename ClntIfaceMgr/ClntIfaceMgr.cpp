@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.36 2007-02-03 19:07:01 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.37 2007-03-27 22:29:28 thomson Exp $
  */
 
 #include "Portable.h"
@@ -494,21 +494,23 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 		       << " has no link-local address, ignoring. (Is it not associated wifi?)" << LogEnd;
 	    continue;
 	}
+
+
 	buf[offset] = x->getID();
 	SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);
 
-	Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << int(prefixLen+8) << " on the "
-		    << ptrIface->getFullName() << " interface." << LogEnd;
+	Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << int(prefixLen) << " on the "
+		    << x->getFullName() << " interface." << LogEnd;
 	    
 	switch (mode) {
 	case PREFIX_MODIFY_ADD:
-	    status = prefix_add(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
+	    status = prefix_add(x->getName(), x->getID(), prefix->getPlain(), prefixLen, pref, valid);
 		break;
 	case PREFIX_MODIFY_UPDATE:
-	    status = prefix_update(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8, pref, valid);
+	    status = prefix_update(x->getName(), x->getID(), prefix->getPlain(), prefixLen, pref, valid);
 	    break;
 	case PREFIX_MODIFY_DEL:
-	    status = prefix_del(ptrIface->getName(), iface, tmpAddr->getPlain(), prefixLen+8);
+	    status = prefix_del(x->getName(), x->getID(), prefix->getPlain(), prefixLen);
 	    break;
 	}
 	if (status!=LOWLEVEL_NO_ERROR) {

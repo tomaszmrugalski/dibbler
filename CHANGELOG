@@ -2,6 +2,9 @@
   Dibbler changelog
  ------------------- 
  [not-released-yet]
+  - Client: Prefixes are split properly when forwarding is enabled
+  - Client: /etc/resolv.conf update improved
+  - All: Time is now used properly during DUID-LLT creation (bug #149)
   - Server: No longer crashes when is unable to find relay (bug #144)
   - Relay: Global peer-addr field was not set properly in RELAY-FORw (bug #143)
 
