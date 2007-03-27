@@ -2665,9 +2665,12 @@ bool SrvParser::EndPDDeclaration()
 	    return false;
 	}
     }
-    if (len>=PDPrefix) {
+    if (len>PDPrefix) {
 	Log(Crit) << "Clients are supposed to get /" << this->PDPrefix << " prefixes, but pd-pool(s) are only /" << len << " long." << LogEnd;
 	return false;
+    }
+    if (len==PDPRefix) {
+        Log(Warning) << "Prefix pool /" << PDPrefix << " defined and clients are supposed to get /" << len << " prefixes. Only ONE client will get prefix" << LogEnd;
     }
 
     SmartPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
