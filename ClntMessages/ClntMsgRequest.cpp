@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.18 2007-01-27 17:12:24 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.19 2007-03-27 23:44:56 thomson Exp $
  *
  */
 
@@ -59,6 +59,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     }
     Log(Info) << "Creating REQUEST. Backup server list contains " 
 	      << backupCount << " server(s)." << LogEnd;
+    TransMgr->printAdvertiseLst();
 
     // get server DUID from the first advertise
     SPtr<TOpt> srvDUID = TransMgr->getAdvertiseDUID();

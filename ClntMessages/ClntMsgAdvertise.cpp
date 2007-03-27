@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgAdvertise.cpp,v 1.4 2006-11-11 06:56:26 thomson Exp $
+ * $Id: ClntMsgAdvertise.cpp,v 1.5 2007-03-27 23:44:56 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006-11-11 06:56:26  thomson
+ * Improved required/not allowed options checking.
+ *
  * Revision 1.3  2005-01-08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -21,6 +24,8 @@
 #include "ClntMsgAdvertise.h"
 #include "OptPreference.h"
 #include "ClntOptClientIdentifier.h"
+#include "ClntOptServerIdentifier.h"
+#include "ClntOptPreference.h"
 
 TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
 				     SmartPtr<TClntTransMgr> TransMgr,
@@ -64,6 +69,30 @@ void TClntMsgAdvertise::doDuties() {
 
 string TClntMsgAdvertise::getName() {
     return "ADVERTISE";
+}
+
+string TClntMsgAdvertise::getInfo()
+{
+    ostringstream tmp;
+    SPtr<TClntOptPreference> pref;
+    SPtr<TClntOptServerIdentifier> srvID;
+
+    pref  = (Ptr*) getOption(OPTION_PREFERENCE);
+    srvID = (Ptr*) getOption(OPTION_SERVERID);
+
+    if (srvID) {
+	tmp << "Server ID=" << srvID->getDUID()->getPlain();
+    } else {
+	tmp << "malformed (Server ID option missing)";
+    }
+
+    if (pref) {
+	tmp << ", preference=" << pref->getPreference();
+    } else {
+	tmp << ", no preference option, assumed 0";
+    }
+    
+    return tmp.str();
 }
 
 TClntMsgAdvertise::~TClntMsgAdvertise() {
