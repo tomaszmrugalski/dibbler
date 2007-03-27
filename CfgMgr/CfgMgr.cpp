@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.16 2006-10-29 23:05:10 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.17 2007-03-27 21:30:43 thomson Exp $
  */
 
 #ifdef WIN32
@@ -224,7 +224,14 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
 	*((u_short*)DUID)=htons(this->DUIDType);
 	*((u_short*)(DUID+2))=htons((short)macType);
 	cur_time=now();
-	*(((u_long*)(DUID+4)))=htonl(cur_time);
+
+	*(((u_long*)(DUID+4)))=htonl((cur_time-946684800) & 0xFFFFFFFF);
+        /* 946684800=Number of seconds between midnight (UTC), January
+           2000 and midnight (UTC), January 1970. It is 30 years.
+           7 leap years of 366 days. 23 years of 365 days.
+           Modified by Eric Gamess (UCV)
+        */
+
 	for (int i=0;i<macLen; i++)
 	    DUID[i+8]=mac[i];
 	break;
