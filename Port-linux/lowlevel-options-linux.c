@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.11 2007-02-15 22:35:03 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.12 2007-03-27 22:16:18 thomson Exp $
  *
  */
 
@@ -93,7 +93,7 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
 	if ( (!found) && (strstr(buf, "search")) ) {
 	    if (strlen(buf))
 		buf[strlen(buf)-1]=0;
-	    fprintf(f2, "%s %s", buf, domain);
+	    fprintf(f2, "%s %s\n", buf, domain);
 	    found = 1;
 	    continue;
 	}
