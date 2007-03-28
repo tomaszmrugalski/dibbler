@@ -6,7 +6,7 @@
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.17 2007-03-04 22:34:04 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.18 2007-03-28 19:53:06 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -56,7 +56,7 @@ class TClntCfgMgr : public TCfgMgr
     bool anonInfRequest();
 
 private:
-    bool setGlobalOpts(SmartPtr<TClntParsGlobalOpt> opt);
+    bool setGlobalOptions(ClntParser * parser);
     bool validateConfig();
     bool validateIface(SmartPtr<TClntCfgIface> iface);
     bool validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA);

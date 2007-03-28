@@ -6,28 +6,8 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.h,v 1.8 2006-10-29 12:58:32 thomson Exp $
+ * $Id: CfgMgr.h,v 1.9 2007-03-28 19:53:05 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2006-01-12 00:23:34  thomson
- * Cleanup changes. Now -pedantic option works.
- *
- * Revision 1.6  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.5  2004/07/05 00:53:03  thomson
- * Various changes.
- *
- * Revision 1.4  2004/07/01 18:12:12  thomson
- * DUID creation failure results in client/server shutdown (bugs #44, #45)
- *
- * Revision 1.3  2004/05/23 21:35:31  thomson
- * *** empty log message ***
- *
- * Revision 1.2  2004/05/23 19:12:34  thomson
- * *** empty log message ***
- *
- *                                                                           
  */
 
 class TCfgMgr;
@@ -76,6 +56,8 @@ class TCfgMgr
     bool IsDone;
     SPtr<TIfaceMgr> IfaceMgr;
     EDUIDType DUIDType;
+    int DUIDEnterpriseNumber;
+    SPtr<TDUID> DUIDEnterpriseID;
  private:
     
 };

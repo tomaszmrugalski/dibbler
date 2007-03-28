@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.17 2007-03-27 21:30:43 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.18 2007-03-28 19:53:05 thomson Exp $
  */
 
 #ifdef WIN32
@@ -149,7 +149,18 @@ bool TCfgMgr::setDUID(const string filename) {
     SmartPtr<TIfaceIface> realIface;
 
     bool found=false;
+    
+
     IfaceMgr->firstIface();
+    if (this->DUIDType == DUID_TYPE_EN) {
+      realIface = IfaceMgr->getIface(); // use the first interface. It will be ignored anyway
+      found = true; 
+
+      if (!realIface) {
+        Log(Error) << "Unable to find any interfaces. Can't generate DUID" << LogEnd;
+        return false;
+      }
+    }
     while( (!found) && (realIface=IfaceMgr->getIface()) )
     {
         realIface->firstLLAddress();
@@ -188,9 +199,10 @@ bool TCfgMgr::setDUID(const string filename) {
     if(found) {
 	if ( this->generateDUID(filename, realIface->getMac(),
 				realIface->getMacLen(), realIface->getHardwareType())) {
-	    Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
-	    Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
-	    return true;
+        if (this->DUIDType!=DUID_TYPE_EN)
+	      Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
+        Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
+        return true;
 	} else {
 	    Log(Crit) << "DUID creation: generation attempt based on " << realIface->getFullName() << " interface failed." << LogEnd;
 	    return false;
@@ -217,41 +229,48 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
     long cur_time = 0;
     
     switch (this->DUIDType) {
-    case DUID_TYPE_LLT:
-	duidType = "link-local+time (duid-llt)";
-	DUIDlen=macLen+8;
-	DUID = new char[DUIDlen];
-	*((u_short*)DUID)=htons(this->DUIDType);
-	*((u_short*)(DUID+2))=htons((short)macType);
-	cur_time=now();
-
-	*(((u_long*)(DUID+4)))=htonl((cur_time-946684800) & 0xFFFFFFFF);
+      case DUID_TYPE_LLT:
+        duidType = "link-local+time (duid-llt)";
+        DUIDlen=macLen+8;
+        DUID = new char[DUIDlen];
+        *((u_short*)DUID)=htons(this->DUIDType);
+        *((u_short*)(DUID+2))=htons((short)macType);
+        cur_time=now();
+        
+        *(((u_long*)(DUID+4)))=htonl((cur_time-946684800) & 0xFFFFFFFF);
         /* 946684800=Number of seconds between midnight (UTC), January
            2000 and midnight (UTC), January 1970. It is 30 years.
            7 leap years of 366 days. 23 years of 365 days.
            Modified by Eric Gamess (UCV)
         */
-
-	for (int i=0;i<macLen; i++)
-	    DUID[i+8]=mac[i];
-	break;
-    case DUID_TYPE_LL:
-	duidType= "link-local (duid-ll)";
-	DUIDlen = macLen+4;
-	DUID = new char[DUIDlen];
-	*((u_short*)DUID)=htons(this->DUIDType);
-	*((u_short*)(DUID+2))=htons((short)macType);
-	for (int i=0;i<macLen; i++)
-	    DUID[i+4]=mac[i];
-	break;
-    case DUID_TYPE_EN:
-	Log(Error) << "Enterprise number-based DUID (duid-en) is not supported yet." << LogEnd;
-	return false;
-    default:
-	Log(Error) << "Invalid DUID type." << LogEnd;
-	return false;
+        
+        for (int i=0;i<macLen; i++)
+          DUID[i+8]=mac[i];
+        break;
+      case DUID_TYPE_LL:
+        duidType= "link-local (duid-ll)";
+        DUIDlen = macLen+4;
+        DUID = new char[DUIDlen];
+        *((u_short*)DUID)=htons(this->DUIDType);
+        *((u_short*)(DUID+2))=htons((short)macType);
+        for (int i=0;i<macLen; i++)
+          DUID[i+4]=mac[i];
+        break;
+      case DUID_TYPE_EN:
+        Log(Debug) << "DUID creation: EN: EnterpriseNumber=" << DUIDEnterpriseNumber << ", Enterprise ID=" <<
+          DUIDEnterpriseID->getPlain() << LogEnd;
+        duidType="Enterprise Number (duid-en)";
+        DUIDlen = 6 + DUIDEnterpriseID->getLen();
+        DUID = new char[DUIDlen];
+        *((u_short*)DUID)=htons(this->DUIDType);
+        *(((u_long*)(DUID+2)))=htonl(this->DUIDEnterpriseNumber);
+        this->DUIDEnterpriseID->storeSelf(DUID+6);
+        break;
+      default:
+        Log(Error) << "Invalid DUID type." << LogEnd;
+        return false;
     }
-
+    
     Log(Notice) << "DUID creation: Generating " << DUIDlen << "-bytes long " << duidType << " DUID." << LogEnd;
     this->DUID=new TDUID(DUID,DUIDlen);
     delete [] DUID;

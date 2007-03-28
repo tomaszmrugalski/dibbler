@@ -67,16 +67,19 @@ void EmptyAddr();                                                           \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
 virtual ~ClntParser();                                                      \
-EDUIDType DUIDType;
+EDUIDType DUIDType;                                                         \
+int DUIDEnterpriseNumber;                                                   \
+SPtr<TDUID> DUIDEnterpriseID;
 #define YY_ClntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_ClntParser_CONSTRUCTOR_CODE                                                     \
     this->lex = lex;                                                        \
     ParserOptStack.append(new TClntParsGlobalOpt());                        \
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
-    DUIDType = DUID_TYPE_NOT_DEFINED;
+    DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
+    DUIDEnterpriseID = 0;
 
-#line 75 "ClntParser.y"
+#line 78 "ClntParser.y"
 typedef union    
 {
     int ival;    

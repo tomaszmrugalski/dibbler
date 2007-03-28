@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.48 2007-03-04 22:34:04 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.49 2007-03-28 19:53:05 thomson Exp $
  *
  */
 
@@ -93,7 +93,7 @@ bool TClntCfgMgr::parseConfigFile(string cfgFile)
         return false;
     }
 
-    if (!setGlobalOpts(parser.ParserOptStack.getLast())) {
+    if (!setGlobalOptions(&parser)) {
 	return false;
     }
 
@@ -130,13 +130,6 @@ bool TClntCfgMgr::parseConfigFile(string cfgFile)
 bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     int cfgIfaceCnt;
 
-    // copy global options here
-    
-    // user has specified DUID type, just in case if new DUID will be generated
-    if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
-	this->DUIDType = parser->DUIDType;
-	//Log(Debug) << "DUID type set to " << parser->DUIDType << "." << LogEnd;
-    }
     cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCONF_FILE << LogEnd;
 
@@ -450,13 +443,22 @@ SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
     return SmartPtr<TClntCfgIface>();
 }
 
-bool TClntCfgMgr::setGlobalOpts(SmartPtr<TClntParsGlobalOpt> opt)
+bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
 {
+    SmartPtr<TClntParsGlobalOpt> opt = parser->ParserOptStack.getLast();
     this->Digest         = opt->getDigest();
     this->LogLevel       = logger::getLogLevel();
     this->LogName        = logger::getLogName();
     this->ScriptsDir     = opt->getScriptsDir();
     this->AnonInfRequest = opt->getAnonInfRequest();
+    
+    // user has specified DUID type, just in case if new DUID will be generated
+    if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
+      this->DUIDType = parser->DUIDType;
+      //Log(Debug) << "DUID type set to " << parser->DUIDType << "." << LogEnd;
+      this->DUIDEnterpriseNumber = parser->DUIDEnterpriseNumber;
+      this->DUIDEnterpriseID     = parser->DUIDEnterpriseID;
+    }
 
     return true;
 }

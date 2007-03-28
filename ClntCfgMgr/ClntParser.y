@@ -61,7 +61,9 @@ void EmptyAddr();                                                           \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
 virtual ~ClntParser();                                                      \
-EDUIDType DUIDType;
+EDUIDType DUIDType;                                                         \
+int DUIDEnterpriseNumber;                                                   \
+SPtr<TDUID> DUIDEnterpriseID;
 
 
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
@@ -70,7 +72,8 @@ EDUIDType DUIDType;
     ParserOptStack.append(new TClntParsGlobalOpt());                        \
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
-    DUIDType = DUID_TYPE_NOT_DEFINED;
+    DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
+    DUIDEnterpriseID = 0;
 
 %union    
 {
@@ -444,18 +447,13 @@ LogNameOption
 }
 
 DuidTypeOption
-: DUID_TYPE_ Number   
-{ 
-    if ( (($2)>DUID_TYPE_NOT_DEFINED) && (($2)<=DUID_TYPE_LL) ) {
-	this->DUIDType=(EDUIDType)($2); 
-    } else {
-	Log(Error) << "Invalid DUID type (" << $2 << ") specifed in the configuration file." << LogEnd;
-	YYABORT;
-    }
-}
-| DUID_TYPE_ DUID_TYPE_LLT_  { this->DUIDType  = DUID_TYPE_LLT;}
+: DUID_TYPE_ DUID_TYPE_LLT_  { this->DUIDType  = DUID_TYPE_LLT;}
 | DUID_TYPE_ DUID_TYPE_LL_   { this->DUIDType  = DUID_TYPE_LL; }
-| DUID_TYPE_ DUID_TYPE_EN_   { this->DUIDType  = DUID_TYPE_EN; }
+| DUID_TYPE_ DUID_TYPE_EN_ Number DUID_ { 
+  this->DUIDType       = DUID_TYPE_EN; 
+  this->DUIDEnterpriseNumber = $3;
+  this->DUIDEnterpriseID     = new TDUID($4.duid, $4.length); 
+}
 ;
 
 NoIAsOptions

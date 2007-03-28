@@ -2,7 +2,6 @@
   Dibbler changelog
  ------------------- 
  [not-released-yet]
-  - Clnt: T1=T2=0 is now handled properly (bug #145)
   - Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
   - Clnt: Received advertise(s) + preference are now printed (sorted).
   - Clnt: No longer gets confused if there is no reply to REQUEST message (bug #147)
