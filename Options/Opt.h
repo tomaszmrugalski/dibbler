@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Opt.h,v 1.8 2006-11-17 00:37:16 thomson Exp $
+ * $Id: Opt.h,v 1.9 2007-03-28 00:39:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006-11-17 00:37:16  thomson
+ * Partial AUTH support by Sammael, fixes by thomson
+ *
  * Revision 1.7  2006-03-03 20:25:15  thomson
  * Comment added.
  *
@@ -79,6 +82,7 @@ class TOpt
     SmartPtr<TOpt> getOption();
     void addOption(SmartPtr<TOpt> opt);
     int countOption();
+    void delAllOptions();
     void setParent(TMsg* Parent);
 
     SmartPtr<TDUID> getDUID();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.7 2006-11-17 00:37:16 thomson Exp $
+ * $Id: Opt.cpp,v 1.8 2007-03-28 00:39:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-11-17 00:37:16  thomson
+ * Partial AUTH support by Sammael, fixes by thomson
+ *
  * Revision 1.6  2004-10-27 22:07:56  thomson
  * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
  * message is now sent properly. Valid lifetime granted by server fixed.
@@ -87,6 +90,11 @@ void TOpt::addOption(SmartPtr<TOpt> opt)
 void TOpt::setParent(TMsg* Parent)
 {
     this->Parent=Parent;
+}
+
+void TOpt::delAllOptions()
+{
+    SubOptions.clear();
 }
 
 bool TOpt::isValid()

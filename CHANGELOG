@@ -2,13 +2,15 @@
   Dibbler changelog
  ------------------- 
  [not-released-yet]
-  - Client: No longer gets confused if there is no reply to REQUEST message (bug #147)
-  - Server: Does not complain anymore, when receives message addressed to a different server (bug #157)
-  - Client: Chooses server properly when there are more then one server (bug #151)
-  - Client: Prefixes are split properly when forwarding is enabled
-  - Client: /etc/resolv.conf update improved
-  - All: Time is now used properly during DUID-LLT creation (bug #149)
-  - Server: No longer crashes when is unable to find relay (bug #144)
+  - Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
+  - Clnt: Received advertise(s) + preference are now printed (sorted).
+  - Clnt: No longer gets confused if there is no reply to REQUEST message (bug #147)
+  - Clnt: Chooses server properly when there are more then one server (bug #151)
+  - Clnt: Prefixes are split properly when forwarding is enabled
+  - Clnt: /etc/resolv.conf update improved
+  - Clnt/Srv: Time is now used properly during DUID-LLT creation (bug #149)
+  - Srv: Does not complain anymore, when receives message addressed to a different server (bug #157)
+  - Srv: No longer crashes when is unable to find relay (bug #144)
   - Relay: Global peer-addr field was not set properly in RELAY-FORw (bug #143)
 
  0.6.0RC3 [2007-03-14]
@@ -34,7 +36,7 @@
   - All: DUID bug fixed (resulted in changing duid in each srv/cli execution)
   - All: Elapsed option has now correct length (issue introduced in 0.5.0) (bug #127)
   - Clnt: Elapsed option increases its value, when message is retransmitted.
-  - Required/not allowed options check improved (now you will know why message is dropped)
+  - All: Required/not allowed options check improved (now you will know why message is dropped)
   - Linux: iproute2 package update to version 20051007 (latest stable available in Debian and Ubuntu)
   - Lots of memory fixes (found by using Valgrind)
   - Linux: multiple domains are now added and removed properly to /etc/resolv.conf

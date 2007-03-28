@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.20 2007-03-28 00:13:53 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.21 2007-03-28 00:39:46 thomson Exp $
  *
  */
 
@@ -77,6 +77,9 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     SmartPtr<TOpt> opt;
     while (opt = Options.get())
         opt->setParent(this);
+
+    // copy addresses offered in ADVERTISE
+    copyAddrsFromAdvertise((Ptr*) advertise);
 
     // does this server support unicast?
     SmartPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(iface);
@@ -240,6 +243,39 @@ void TClntMsgRequest::setState(List(TOpt) opts, EState state)
 	    continue;
 	}
     }
+}
+
+void TClntMsgRequest::copyAddrsFromAdvertise(SPtr<TClntMsg> adv)
+{
+    SPtr<TOpt> opt1, opt2, opt3;
+    SPtr<TClntOptIA_NA> ia1, ia2;
+
+    Options.first();
+    while (opt1 = Options.get()) {
+	if (opt1->getOptType()!=OPTION_IA_NA)
+	    continue; // ignore all options except IA_NA
+	adv->firstOption();
+	while (opt2 = adv->getOption()) {
+	    if (opt2->getOptType() != OPTION_IA_NA)
+		continue;
+	    ia1 = (Ptr*) opt1;
+	    ia2 = (Ptr*) opt2;
+	    if (ia1->getIAID() != ia2->getIAID())
+		continue;
+
+	    // found IA in ADVERTISE, now copy all addrs
+
+	    ia1->delAllOptions();
+	    ia2->firstOption();
+	    while (opt3 = ia2->getOption()) {
+		if (opt3->getOptType() == OPTION_IAADDR)
+		    ia1->addOption(opt3);
+	    }
+
+	}
+    }
+    
+
 }
 
 TClntMsgRequest::~TClntMsgRequest()

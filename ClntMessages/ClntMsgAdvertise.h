@@ -6,15 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgAdvertise.h,v 1.4 2007-03-27 23:44:56 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
+ * $Id: ClntMsgAdvertise.h,v 1.5 2007-03-28 00:39:46 thomson Exp $
  *
  */
 

@@ -6,9 +6,12 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.h,v 1.6 2007-03-28 00:13:53 thomson Exp $
+ * $Id: ClntMsgRequest.h,v 1.7 2007-03-28 00:39:46 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2007-03-28 00:13:53  thomson
+ * No longer gets confused if there is no reply to REQUEST message (bug #147)
+ *
  * Revision 1.5  2007-01-27 17:12:24  thomson
  * Huge cleanup, prefix delegation support improved.
  *
@@ -59,6 +62,7 @@ class TClntMsgRequest : public TClntMsg
     ~TClntMsgRequest();
   private:
     void setState(List(TOpt) opts, EState state);
+    void copyAddrsFromAdvertise(SPtr<TClntMsg> adv);
     SmartPtr<TClntAddrMgr> AddrMgr;
 };
 
