@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.19 2007-03-27 23:44:56 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.20 2007-03-28 00:13:53 thomson Exp $
  *
  */
 
@@ -52,7 +52,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     if (!backupCount) 
     {
 	Log(Error) << "Unable to send REQUEST. There are no backup servers left." << LogEnd;
-	setFailedState( opts );
+	setState( opts, STATE_NOTCONFIGURED);
 
         this->IsDone = true;
         return;
@@ -191,7 +191,7 @@ string TClntMsgRequest::getName() {
  * 
  * @param List 
  */
-void TClntMsgRequest::setFailedState(List(TOpt) opts)
+void TClntMsgRequest::setState(List(TOpt) opts, EState state)
 {
     SPtr<TOpt>          opt;
     SPtr<TClntOptIA_NA> ia;
@@ -216,7 +216,7 @@ void TClntMsgRequest::setFailedState(List(TOpt) opts)
 	    ia = (Ptr*) opt;
 	    cfgIa = iface->getIA(ia->getIAID());
 	    if (cfgIa)
-		cfgIa->setState(STATE_FAILED);
+		cfgIa->setState(state);
 	    break;
 	}
 	case OPTION_IA_TA:
@@ -225,7 +225,7 @@ void TClntMsgRequest::setFailedState(List(TOpt) opts)
 	    iface->firstTA();
 	    cfgTa = iface->getTA();
 	    if (cfgTa)
-		cfgTa->setState(STATE_FAILED);
+		cfgTa->setState(state);
 	    break;
 	}
 	case OPTION_IA_PD:
@@ -233,7 +233,7 @@ void TClntMsgRequest::setFailedState(List(TOpt) opts)
 	    pd = (Ptr*) opt;
 	    cfgPd = iface->getPD(pd->getIAID());
 	    if (cfgPd)
-		cfgPd->setState(STATE_FAILED);
+		cfgPd->setState(state);
 	    break;
 	}
 	default:

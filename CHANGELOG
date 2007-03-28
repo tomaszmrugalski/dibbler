@@ -2,7 +2,9 @@
   Dibbler changelog
  ------------------- 
  [not-released-yet]
+  - Client: No longer gets confused if there is no reply to REQUEST message (bug #147)
   - Server: Does not complain anymore, when receives message addressed to a different server (bug #157)
+  - Client: Chooses server properly when there are more then one server (bug #151)
   - Client: Prefixes are split properly when forwarding is enabled
   - Client: /etc/resolv.conf update improved
   - All: Time is now used properly during DUID-LLT creation (bug #149)

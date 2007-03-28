@@ -6,9 +6,12 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.h,v 1.5 2007-01-27 17:12:24 thomson Exp $
+ * $Id: ClntMsgRequest.h,v 1.6 2007-03-28 00:13:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2007-01-27 17:12:24  thomson
+ * Huge cleanup, prefix delegation support improved.
+ *
  * Revision 1.4  2006-10-06 00:43:28  thomson
  * Initial PD support.
  *
@@ -55,7 +58,7 @@ class TClntMsgRequest : public TClntMsg
     string getName();
     ~TClntMsgRequest();
   private:
-    void setFailedState(List(TOpt) opts);
+    void setState(List(TOpt) opts, EState state);
     SmartPtr<TClntAddrMgr> AddrMgr;
 };
 
