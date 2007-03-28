@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.52 2007-03-04 21:00:50 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.53 2007-03-28 00:15:14 thomson Exp $
  *
  */
 
@@ -535,6 +535,8 @@ void TClntTransMgr::stop()
  */
 void TClntTransMgr::sendRequest(List(TOpt) requestOptions, int iface)
 {
+    sortAdvertiseLst();
+
     SmartPtr<TOpt> opt;
     requestOptions.first();
     while (opt = requestOptions.get()) {
@@ -1038,6 +1040,18 @@ int TClntTransMgr::getMaxPreference()
     return max;
 }
 
+
+void TClntTransMgr::printLst(List(TMsg) lst)
+{
+    SPtr<TMsg> x;
+    SPtr<TClntMsgAdvertise> adv;
+    lst.first();
+    while (x = lst.get()) {
+	adv = (Ptr*) x;
+	Log(Debug) << "Advertise from " << adv->getInfo() << "." << LogEnd;
+    }
+}
+
 void TClntTransMgr::sortAdvertiseLst()
 {
     // we'll store all ADVERTISE here 
@@ -1062,4 +1076,9 @@ void TClntTransMgr::sortAdvertiseLst()
 
     // now copy sorted list to AnswersLst
     AdvertiseLst = sorted;
+
+}
+
+void TClntTransMgr::printAdvertiseLst() {
+    printLst(AdvertiseLst);
 }

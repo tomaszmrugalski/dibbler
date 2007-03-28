@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.12 2007-01-27 17:14:10 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.13 2007-03-28 00:15:14 thomson Exp $
  *
  */
 class TClntTransMgr;
@@ -56,6 +56,7 @@ class TClntTransMgr
     void delFirstAdvertise(); // deletes first advertise
     int getMaxPreference();
     int getAdvertiseLstCount();
+    void printAdvertiseLst();
     
  protected:
     void removeExpired();
@@ -71,6 +72,7 @@ class TClntTransMgr
     bool openLoopbackSocket();
     bool openSocket(SmartPtr<TClntCfgIface> iface);
     void sortAdvertiseLst();
+    void printLst(List(TMsg) lst);
     // managers
     SmartPtr<TClntCfgMgr>   CfgMgr;
     SmartPtr<TClntIfaceMgr> IfaceMgr;
