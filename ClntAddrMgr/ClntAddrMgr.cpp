@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.19 2007-02-02 00:52:03 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.20 2007-03-28 00:15:41 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -93,7 +93,7 @@ void TClntAddrMgr::doDuties()
 	    if(!ptrAddr->getValidTimeout())
 	    {
 		ptrIA->delAddr(ptrAddr->get());
-		Log(Warning) << "Address " << ptrAddr->get()->getPlain() 
+		Log(Notice) << "Address " << ptrAddr->get()->getPlain() 
 			     << " from IA " << ptrIA->getIAID() 
 			     << " has been removed from addrDB." << LogEnd;
 		ptrIA->setState(STATE_NOTCONFIGURED);
