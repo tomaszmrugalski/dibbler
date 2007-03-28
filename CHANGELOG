@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  [not-released-yet]
+  - Clnt: Support for DUID type 2 (Enterprise number) added (bug #148)
   - Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
   - Clnt: Received advertise(s) + preference are now printed (sorted).
   - Clnt: No longer gets confused if there is no reply to REQUEST message (bug #147)
