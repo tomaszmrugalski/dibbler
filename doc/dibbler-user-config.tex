@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.44 2007-04-01 04:53:20 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.45 2007-04-01 19:22:26 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -259,18 +259,21 @@ sometimes allowed range.
             this mode, client will accept inactive interfaces, will
             add them to inactive list and will periodically monitor
             its state. When the interface finally goes on-line, client
-            will try to configure it.
+            will try to configure it. See section
+            \ref{feature-inactive-mode} for details.
  \item[insist-mode] -- (scope: global, type: present or absent,
             default: absent). Client can be instructed to obtain
             several configuration options, like DNS server
             configuration or domain name. It is possible that server
-            will not provide all requested options. Older version of
+            will not provide all requested options. Older versions of
             the dibbler client had been very aggressive in such
-            case. It did send INF-REQUEST to obtain such option. This
+            case. It tried very hard to obtain such options. To do so,
+            it did send \msg{INF-REQUEST} to obtain such option. This
             behavior has changed. Right now when client does not
             receive all requested options, it will complain, but will
             take no action. To enable old behavior, so called
-            insist-mode has been added.
+            insist-mode has been added. See section
+            \ref{feature-insist-mode} for details.
  \item[duid-type] -- (scope: global, type: DUID-LLT, DUID-LL or DUID-EN,
 	    default: DUID-LLT). This parameter defines, what type of
 	    DUID should be generated if there is no DUID already
@@ -278,8 +281,13 @@ sometimes allowed range.
 	    has no effect. DUID-LLT means that DUID will be based on
 	    link layer address as well as time. DUID-LL means that only
 	    link layer address will be used. The last value -- DUID-EN
-	    -- Enterprise Number-based generation is not currently
-	    supported.
+	    -- Enterprise Number-based generation has a slightly
+            different syntax: duid-type duid-en enterprise-number
+            enterprise-id. For example: duid-type duid-en 1234 0x6789abcd
+            means that enterprise number is set to 1234 and unique
+            number from that company's pool is 67:89:ab:cd
+            (hexadecimal value of arbitrary length). See section
+            \ref{feature-duid-types} for details.
  \item[rapid-commit] -- (scope: interface, type: boolean, default:
 	    0). This option allows rapid commit procedure to be
 	    performed. Note that enabling rapid commit on the client

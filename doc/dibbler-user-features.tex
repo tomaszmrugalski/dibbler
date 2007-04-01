@@ -664,3 +664,125 @@ server will assign one default vendor-spec option.
 
 See \ref{example-client-vendor-spec} for client example and
 \ref{example-server-vendor-spec} for server examples.
+
+\subsection{Not connected interfaces (inactive-mode)}
+\label{feature-inactive-mode}
+During normal startup, client tries to bind all interfaces defined in
+a configuration file. If such attempt fails, client reports an error
+and gives up. Usually that is best action. However, in some cases it
+is possible that interface is not ready yet, e.g. WLAN interface did
+not complete association. Dibbler attempt to detect link-local
+addresses, bind any sockets or initiate any kind of communication will
+fail. To work around this disadvantage, a new mode has been
+introduced in the 0.6.0RC4 version. It is possible to modify client
+behavior, so it will accept downed and not running interfaces. To do
+so, \emph{inactive-mode} keyword must be added to client.conf file. In
+this mode, client will accept inactive interfaces, will add them to
+inactive list and will periodically monitor its state. When the
+interface finally goes on-line, client will try to configure it.
+
+\begin{lstlisting}
+#client.conf
+inactive-mode
+
+iface wifi0 {
+  ia
+  option dns-server
+}
+\end{lstlisting}
+
+To test this mode, you can simulate deassociation using normal
+Ethernet interface. Issue following commands:
+
+\begin{itemize}
+\item ifconfig eth0 down
+\item edit \verb+client.conf+ to enable inactive-mode
+\item execute client: \verb+dibbler-client run+
+\item client will print information related to not ready interface,
+  and will periodically (once in 3 seconds) check interface state.
+\item in a separate console, issue \verb+ifconfig eth0 up+ to bring
+  the interface up.
+\item dibbler-client will detect this and will initiate normal
+  configuration process.
+\end{itemize}
+
+\subsection{Parameters not supported by server (insist-mode)}
+\label{feature-insist-mode}
+
+Client can be instructed to obtain several configuration options, for
+example DNS server configuration or domain name. It is possible that server
+will not provide all requested options. Older versions of
+the dibbler client had been very aggressive in such case. It tried
+very hard to obtain such options. To do so, it did send
+\msg{INF-REQUEST} to obtain such option. It is possible that some
+other DHCPv6 servers will receive this message and will reply with
+valid configuration parameters. This behavior has
+changed in the 0.6.0RC4 release. Right now when client does not
+receive all requested options, it will complain, but will
+take no action. To enable old behavior, so called insist-mode has been
+added. To enable this mode, add \verb+insist-mode+ at the global
+section of the \verb+client.conf+ file. For example:
+
+\begin{lstlisting}
+log-mode short
+insist-mode
+
+iface eth0 {
+   ia
+   option dns-server
+   option domain
+   option ntp-server
+}
+
+
+\end{lstlisting}
+
+\subsection{Different DUID types}
+\label{feature-duid-types}
+There are 3 different types of the DUID (DHCP Unique Identifier):
+\begin{itemize}
+\item type 1 (link-layer + time) -- this DUID is based on Link-layer
+  address and a current timestamp. According to spec \cite{rfc3315},
+  that is a default type.
+\item type 2 (enterprise number) -- this DUID is based on the Private
+  Enterprise Number assigned to larger companies. Each vendor should
+  maintain its own space of unique identifiers.
+\item type 3 (link-layer) -- this DUID is based on link-layer address
+  only.
+\end{itemize}
+
+According to spec \cite{rfc3315}, it is recommended to use link-layer
++ time, if possible. That DUID type provides most uniqueness. It has
+one major drawback -- it is impossible to know DUID before it is
+actually generated. That poses significant disadvantage to sysadmins,
+who want to specify different configuration for each client. In such
+cases, it is recommended to switch to link-layer only (type 3) DUIDs.
+
+During first executing dibbler-client will generate its DUID and store
+it in \verb+client-duid+ file on disk. During next startup DUID will
+be read from the file, not generated. 
+
+It is possible to specify, what DUID format should be used. It is
+worth noting that such definition is taken into consideration during
+DUID generation only, i.e. during first client execution. To specify
+DUID type, put only one of the following lines in the
+\verb+client.conf+ file:
+
+\begin{lstlisting}
+
+# uncommend only ONE of the lines below
+duid-type duid-llt
+#duid-type duid-en 1234 0x56789abcde
+#duid-type duid-ll
+
+iface eth0 {
+   ia
+   option dns-server
+}
+\end{lstlisting}
+
+When using link-layer+time or link-layer DUID types, dibbler will
+autodetect addresses. To generate enterprise number-based DUID,
+specific data must be provided: enterprise-number (a 32-bit integer,
+1234 in the example above) and a enterprise-specific indentifier of
+arbitrary length (56:78:9a:bc:de in the example above).
