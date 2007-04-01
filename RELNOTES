@@ -1,16 +1,10 @@
 
-  Dibbler 0.6.0RC3 release notes [2007-03-14]
+  Dibbler 0.6.0RC4 release notes [2007-03-31]
  ---------------------------------------------------------
 
- This is a Release Candidate 3 for 0.6.0 release. 
+ This is a Release Candidate 4 for 0.6.0 release. 
 
- Changes since 0.6.0RC1 version (0.6.0RC2 was release for Debian only):
- - Reconfigure accept and vendor class fix
- - No link-local address no longer causes a segfault
- - NTP patched
- - Large timeout no longer confuse client
- - Relay global address fix
- - Relay support for srv replies without interface-id (so called guess-mode) implemented
+ Changes since 0.6.0RC3 version are mentioned in CHANGELOG.
 
  Main new features in 0.6.0 branch:
  - Prefix delegation support
