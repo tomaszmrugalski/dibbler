@@ -5,6 +5,7 @@
   - Clnt: Preliminary support for inactive-mode (bug #133)
   - Clnt: Preliminary support for insist-mode (bug #146)
   - Clnt: Support for DUID type 2 (Enterprise number) added (bug #148)
+  - Clnt: T1=T2=0 is now handled properly (bug #145)
   - Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
   - Clnt: Received advertise(s) + preference are now printed (sorted).
   - Clnt: No longer gets confused if there is no reply to REQUEST message (bug #147)
