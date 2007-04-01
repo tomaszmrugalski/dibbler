@@ -337,7 +337,7 @@ deb:
 	echo "[RENAME ] ../dibbler-$(VERSION)" ; mv ../$(DIR) ../dibbler-$(VERSION); fi
 	dpkg-buildpackage -rfakeroot
 
-release-doc: VERSION-src doc oxygen
+release-doc: VERSION-src doc
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-doc.tar.gz"
 	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG \
                  doc/*.pdf doc/html doc/rfc doc/rfc-drafts > filelist-doc
