@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.25 2007-02-03 19:40:48 thomson Exp $
+ * $Id: Iface.cpp,v 1.26 2007-04-01 04:53:19 thomson Exp $
  *
  */
 
@@ -23,12 +23,8 @@ using namespace std;
 TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
 			 int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType)
 {
-#ifdef LINUX
     snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
-#endif
-#ifdef WIN32
-    _snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
-#endif
+
     this->ID = id;
     this->Flags = flags;
 
@@ -86,6 +82,35 @@ string TIfaceIface::getFullName() {
 unsigned int TIfaceIface::getFlags() {
     return this->Flags;
 }
+
+void TIfaceIface::updateState(struct iface *x)
+{
+    this->Flags = x->flags;
+    free(this->Mac);
+    Maclen = x->maclen;
+    this->Mac = new char[Maclen];
+    memcpy(Mac, x->mac, Maclen);
+
+    if (LLAddrCnt && LLAddr)
+	free(LLAddr);
+    LLAddrCnt = x->linkaddrcount;
+    if (LLAddrCnt) {
+	LLAddr = new char[16*LLAddrCnt];
+	memcpy(LLAddr, x->linkaddr, 16*LLAddrCnt);
+    }
+    PresLLAddr = LLAddr;
+
+    GlobalAddrLst.clear();
+
+    // store all global addresses
+    for (int i=0; i<x->globaladdrcount; i++) {
+	SmartPtr<TIPv6Addr> addr = new TIPv6Addr(x->globaladdr+16*i);
+	this->GlobalAddrLst.append(addr);
+    }
+
+    HWType = x->hardwareType;
+}
+
 
 /*
  * returns true if interface is UP

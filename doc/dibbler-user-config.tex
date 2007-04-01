@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.43 2007-03-07 02:37:12 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.44 2007-04-01 04:53:20 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -239,14 +239,38 @@ sometimes allowed range.
             define other location of the scripts. Take note that
             directory should be defined in single or double quotes.
             (" sign).
-\item[anonymous-inf-request] -- (scope: global, type: boolean,
-            default: false). When running in a stateless mode, client
+\item[anonymous-inf-request] -- (scope: global, type: present or absent,
+            default: absent). When running in a stateless mode, client
             does not ask for addresses or prefixes, but rather
             requests some general options. By default, it sends its
             client identifier (DUID) to the server. However, it is
             possible to omit this identifier, so the \msg{INF-REQUEST}
             messages will be anonymous. This global option causes
             client to act in such anonymous way.
+ \item[inactive-mode] -- (scope: global, type: present or absent,
+            default: absent). Normally (with inactive-mode disable)
+            client tries to bind all interfaces defined in
+            configuration file. If such attempt fails, client reports
+            an error and gives up. In some cases it is possible that
+            interface is not ready yet, e.g. WLAN interface did not
+            complete association. It is possible to modify client
+            behavior, so it will accept downed and not running
+            interfaces. To do so, inactive-mode must be enabled. In
+            this mode, client will accept inactive interfaces, will
+            add them to inactive list and will periodically monitor
+            its state. When the interface finally goes on-line, client
+            will try to configure it.
+ \item[insist-mode] -- (scope: global, type: present or absent,
+            default: absent). Client can be instructed to obtain
+            several configuration options, like DNS server
+            configuration or domain name. It is possible that server
+            will not provide all requested options. Older version of
+            the dibbler client had been very aggressive in such
+            case. It did send INF-REQUEST to obtain such option. This
+            behavior has changed. Right now when client does not
+            receive all requested options, it will complain, but will
+            take no action. To enable old behavior, so called
+            insist-mode has been added.
  \item[duid-type] -- (scope: global, type: DUID-LLT, DUID-LL or DUID-EN,
 	    default: DUID-LLT). This parameter defines, what type of
 	    DUID should be generated if there is no DUID already

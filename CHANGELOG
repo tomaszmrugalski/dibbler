@@ -2,6 +2,8 @@
   Dibbler changelog
  ------------------- 
  [not-released-yet]
+  - Clnt: Preliminary support for inactive-mode (bug #133)
+  - Clnt: Preliminary support for insist-mode (bug #146)
   - Clnt: Support for DUID type 2 (Enterprise number) added (bug #148)
   - Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
   - Clnt: Received advertise(s) + preference are now printed (sorted).

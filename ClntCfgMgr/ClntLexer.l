@@ -91,6 +91,8 @@ auth                  { return ClntParser::AUTH_; }
 digest-none           { return ClntParser::DIGEST_NONE_; }
 digest-hmac-sha1      { return ClntParser::DIGEST_HMAC_SHA1_; }
 anonymous-inf-request { return ClntParser::ANON_INF_REQUEST_; }
+insist-mode           { return ClntParser::INSIST_MODE_; }
+inactive-mode         { return ClntParser::INACTIVE_MODE_; }
 #.* ;
 
 "//"(.*) ;

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.9 2007-03-04 22:34:05 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.10 2007-04-01 04:53:18 thomson Exp $
  *
  */
 
@@ -21,6 +21,8 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->Digest         = CLIENT_DEFAULT_DIGEST;
     this->ScriptsDir     = DEFAULT_SCRIPTSDIR;
     this->AnonInfRequest = false;
+    this->InactiveMode   = false;
+    this->InsistMode     = false;
 }
 
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
@@ -64,4 +66,24 @@ void TClntParsGlobalOpt::setAnonInfRequest(bool anonymous) {
 
 bool TClntParsGlobalOpt::getAnonInfRequest() {
     return this->AnonInfRequest;
+}
+
+void TClntParsGlobalOpt::setInsistMode(bool insist)
+{
+    InsistMode = insist;
+}
+
+bool TClntParsGlobalOpt::getInsistMode()
+{
+    return InsistMode;
+}
+
+void TClntParsGlobalOpt::setInactiveMode(bool flex)
+{
+    InactiveMode = flex;
+}
+
+bool TClntParsGlobalOpt::getInactiveMode()
+{
+    return InactiveMode;
 }

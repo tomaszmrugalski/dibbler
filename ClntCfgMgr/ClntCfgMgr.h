@@ -6,7 +6,7 @@
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.18 2007-03-28 19:53:06 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.19 2007-04-01 04:53:17 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -38,6 +38,7 @@ class TClntCfgMgr : public TCfgMgr
     SmartPtr<TClntCfgIface> getIface(int id);
     void firstIface();
     void addIface(SmartPtr<TClntCfgIface> x);
+    void makeInactiveIface(int ifindex, bool inactive);
     int countIfaces();
     void dump();
     
@@ -54,6 +55,12 @@ class TClntCfgMgr : public TCfgMgr
     string getScriptsDir();
 
     bool anonInfRequest();
+    bool insistMode();
+    bool inactiveMode();
+
+    int inactiveIfacesCnt();
+    SPtr<TClntCfgIface> checkInactiveIfaces();
+    bool openSocket(SPtr<TClntCfgIface> iface);
 
 private:
     bool setGlobalOptions(ClntParser * parser);
@@ -68,9 +75,12 @@ private:
 
     SmartPtr<TClntIfaceMgr> IfaceMgr;
     List(TClntCfgIface) ClntCfgIfaceLst;
+    List(TClntCfgIface) InactiveLst;
     DigestTypes Digest;
     string ScriptsDir;
     bool AnonInfRequest;
+    bool InsistMode;
+    bool InactiveMode;
 };
 
 typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);

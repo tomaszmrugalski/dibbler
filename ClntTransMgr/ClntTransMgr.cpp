@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.53 2007-03-28 00:15:14 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.54 2007-04-01 04:53:19 thomson Exp $
  *
  */
 
@@ -90,21 +90,6 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
     if (iface->noConfig())       
 	return true;
 
-    SmartPtr<TIfaceIface> loopback;
-    SmartPtr<TIfaceIface> ptrIface;
-    IfaceMgr->firstIface();
-    while (ptrIface=IfaceMgr->getIface()) {
-        if (!ptrIface->flagLoopback()) {
-            continue;
-	}
-	loopback = ptrIface;
-	break;
-    }
-    if (!loopback) {
-	Log(Error) << "Loopback interface not found!" << LogEnd;
-	return false;
-    }
-
     // create IAs in AddrMgr corresponding to those specified in CfgMgr.
     SmartPtr<TClntCfgIA> ia;
     iface->firstIA();
@@ -146,6 +131,21 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
 
 #if 0
 #ifndef WIN32
+    SmartPtr<TIfaceIface> loopback;
+    SmartPtr<TIfaceIface> ptrIface;
+    IfaceMgr->firstIface();
+    while (ptrIface=IfaceMgr->getIface()) {
+        if (!ptrIface->flagLoopback()) {
+            continue;
+	}
+	loopback = ptrIface;
+	break;
+    }
+    if (!loopback) {
+	Log(Error) << "Loopback interface not found!" << LogEnd;
+	return false;
+    }
+
     // required to be able to receive data from server on the same machine
     // (data is sent via the lo interface)
     Log(Notice) << "Creating socket (addr=" << *addr << ") on the " << loopback->getName() 
@@ -289,6 +289,14 @@ void TClntTransMgr::doDuties()
     while (msg = Transactions.get() ) {
         if (msg->isDone())
             Transactions.del();
+    }
+
+    if (CfgMgr->inactiveMode())
+    {
+	SPtr<TClntCfgIface> x;
+	x = CfgMgr->checkInactiveIfaces();
+	if (x)
+	    openSocket(x);
     }
 
     this->removeExpired();
@@ -522,6 +530,11 @@ unsigned long TClntTransMgr::getTimeout()
     }
     if (timeout > tmp)
 	timeout = tmp;
+
+    if (CfgMgr->inactiveIfacesCnt()) {
+	if (timeout>INACTIVE_MODE_INTERVAL)
+	    timeout=INACTIVE_MODE_INTERVAL;
+    }
 
     return timeout;
 }

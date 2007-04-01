@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.81 2007-03-13 23:59:16 thomson Exp $
+ * $Id: Portable.h,v 1.82 2007-04-01 04:53:19 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -40,6 +40,8 @@
 #ifdef WIN32
 typedef unsigned char           uint8_t;
 typedef unsigned long long int  uint64_t;
+
+#define snprintf _snprintf
 #endif
 
 /**********************************************************************/
@@ -86,6 +88,7 @@ struct iface {
 #define RELTRANSMGR_FILE  "relay-TransMgr.xml"
 
 #define DNSUPDATE_DEFAULT_TTL "2h"
+#define INACTIVE_MODE_INTERVAL 3 /* 3 seconds */
 
 #ifdef WIN32
 #define WORKDIR            ".\\"

@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.25 2007-03-04 20:58:26 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.26 2007-04-01 04:53:19 thomson Exp $
  */
 
 #ifdef WIN32
@@ -768,11 +768,18 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     } else {
         if ( optORO && (optORO->count()) )
         {
-	    Log(Notice) << "All IA(s), TA and PD(s) has been configured, but there some options (";
+	    Log(Warning) << "All IA(s), TA and PD(s) has been configured, but some options (";
 	    for (int i=0; i< optORO->count(); i++)
 		Log(Cont) << optORO->getReqOpt(i) << " ";
-	    Log(Cont) << ") were not assigned. Sending new INFORMATION-REQUEST." << LogEnd;
-            ClntTransMgr->sendInfRequest(this->Options, this->Iface);
+	    Log(Cont) << ") were not assigned." << LogEnd;
+	    
+	    if (ClntCfgMgr->insistMode()) {
+		Log(Notice) << "Insist-mode enabled, sending INF-REQUEST." << LogEnd;
+		ClntTransMgr->sendInfRequest(this->Options, this->Iface);
+	    } else {
+		Log(Notice) << "Insist-mode disabled, giving up (not sending INF-REQUEST)." << LogEnd;
+		// FIXME: set proper options to FAILED state
+	    }
         }
     }
     IsDone = true;

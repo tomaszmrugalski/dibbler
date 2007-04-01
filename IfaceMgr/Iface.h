@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.14 2006-08-22 00:01:20 thomson Exp $
+ * $Id: Iface.h,v 1.15 2007-04-01 04:53:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2006-08-22 00:01:20  thomson
+ * Client /64 prefix, strict-rfc-no-routing feature added.
+ *
  * Revision 1.13  2006-01-24 00:12:43  thomson
  * Global addresses support improved.
  *
@@ -66,6 +69,7 @@ class TIfaceIface{
     bool flagRunning();
     bool flagMulticast();
     bool flagLoopback();
+    void updateState(struct iface * x);
 
     // ---layer-2 related---
     int   getMacLen();

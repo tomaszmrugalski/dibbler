@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.37 2007-03-27 22:29:28 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.38 2007-04-01 04:53:18 thomson Exp $
  */
 
 #include "Portable.h"
@@ -520,6 +520,30 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	}
     }
     return true;
+}
+
+void TClntIfaceMgr::redetectIfaces() {
+    struct iface  * ptr;
+    struct iface  * ifaceList;
+    SPtr<TIfaceIface> iface;
+    ifaceList = if_list_get(); // external (C coded) function
+    ptr = ifaceList;
+    
+    if  (!ifaceList) {
+	Log(Error) << "Unable to read interface info. Inactive mode failed." << LogEnd;
+	return;
+    }
+    while (ptr!=NULL) {
+	iface = getIfaceByID(ptr->id);
+	if (iface && (ptr->flags!=iface->getFlags())) {
+	    Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old=" << hex <<iface->getFlags()
+			<< ", new=" << ptr->flags << ")." << dec << LogEnd;
+	    iface->updateState(ptr);
+	}
+	ptr = ptr->next;
+    }
+
+    if_list_release(ifaceList); // allocated in pure C, and so release it there
 }
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {

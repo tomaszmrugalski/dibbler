@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.11 2007-02-02 00:52:03 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.12 2007-04-01 04:53:19 thomson Exp $
  *
  */
 
@@ -63,6 +63,8 @@ class TClntIfaceMgr : public TIfaceMgr
     unsigned int getTimeout();
     
     bool doDuties();
+
+    void redetectIfaces();
 
   private:
     bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid, PrefixModifyMode mode);

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.9 2007-03-04 22:34:05 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.10 2007-04-01 04:53:18 thomson Exp $
  *
  */
 
@@ -33,6 +33,10 @@ public:
     string getScriptsDir();
     void setAnonInfRequest(bool anonymous);
     bool getAnonInfRequest();
+    void setInsistMode(bool insist);
+    bool getInsistMode();
+    void setInactiveMode(bool flex);
+    bool getInactiveMode();
 
 private:
     string WorkDir;
@@ -40,6 +44,8 @@ private:
     DigestTypes Digest;
     string ScriptsDir;
     bool   AnonInfRequest;
+    bool   InactiveMode;
+    bool   InsistMode;
 };
 
 #endif

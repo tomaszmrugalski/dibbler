@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.27 2007-02-03 17:50:43 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.28 2007-04-01 04:53:19 thomson Exp $
  *                                                                           
  */
 
@@ -88,10 +88,8 @@ void TDHCPClient::run()
 	
 	unsigned int timeout = TransMgr->getTimeout();
 
-#if 1
 	if (timeout == 0)
 	    timeout = 1;
-#endif
 	
         Log(Debug) << "Sleeping for " << timeout << " second(s)." << LogEnd;
         SmartPtr<TClntMsg> msg=IfaceMgr->select(timeout);

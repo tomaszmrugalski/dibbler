@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.49 2007-03-28 19:53:05 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.50 2007-04-01 04:53:17 thomson Exp $
  *
  */
 
@@ -166,8 +166,16 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	    ifaceIface->setPrefixLength(cfgIface->getPrefixLength());
 
 	    if (!ifaceIface->countLLAddress()) {
+		if (this->inactiveMode()) {
+		    Log(Notice) << "Interface " << ifaceIface->getFullName() 
+				<< " is not operational yet (does not have link-local address), skipping it for now." << LogEnd;
+		    addIface(cfgIface);
+		    makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+		    return true;
+		}
+
 		Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
-			  << " is down or doesn't have any link-layer address." << LogEnd;
+			  << " is down or doesn't have any link-local address." << LogEnd;
 		return false;
 	    }
 
@@ -245,6 +253,39 @@ SmartPtr<TClntCfgIface> TClntCfgMgr::getIface()
 void TClntCfgMgr::addIface(SmartPtr<TClntCfgIface> ptr)
 {
     ClntCfgIfaceLst.append(ptr);
+}
+
+void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive)
+{
+    SmartPtr<TClntCfgIface> x;
+
+    if (inactive)
+    {
+	ClntCfgIfaceLst.first();
+	while (x= ClntCfgIfaceLst.get()) {
+	    if (x->getID() == ifindex) {
+		Log(Info) << "Switching " << x->getFullName() << " to inactive-mode." << LogEnd;
+		ClntCfgIfaceLst.del();
+		InactiveLst.append(x);
+		return;
+	    }
+	}
+	Log(Error) << "Unable to switch interface ifindex=" << ifindex << " to inactive-mode: interface not found." << LogEnd;
+	return;
+    }
+
+    InactiveLst.first();
+    while (x= InactiveLst.get()) {
+	if (x->getID() == ifindex) {
+	    Log(Info) << "Switching " << x->getFullName() << " to normal mode." << LogEnd;
+	    InactiveLst.del();
+	    InactiveLst.first();
+	    addIface(x);
+	    return;
+	}
+    }
+
+    Log(Error) << "Unable to switch interface ifindex=" << ifindex << " from inactive-mode to normal operation: interface not found." << LogEnd;
 }
 
 void TClntCfgMgr::firstIface()
@@ -451,6 +492,9 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     this->LogName        = logger::getLogName();
     this->ScriptsDir     = opt->getScriptsDir();
     this->AnonInfRequest = opt->getAnonInfRequest();
+    this->InsistMode     = opt->getInsistMode();   // should the client insist on receiving all options
+                                                   // i.e. sending INF-REQUEST if REQUEST did not grant required opts
+    this->InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
     
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
@@ -482,10 +526,48 @@ bool TClntCfgMgr::anonInfRequest()
     return AnonInfRequest;
 }
 
+bool TClntCfgMgr::inactiveMode()
+{
+    return InactiveMode;
+}
+
+bool TClntCfgMgr::insistMode()
+{
+    return InsistMode;
+}
+
+int TClntCfgMgr::inactiveIfacesCnt()
+{
+    return InactiveLst.count();
+}
+
+SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
+{
+    if (!InactiveLst.count())
+	return 0;
+
+    IfaceMgr->redetectIfaces();
+    SPtr<TClntCfgIface> x;
+    SPtr<TIfaceIface> iface;
+    InactiveLst.first();
+    while (x = InactiveLst.get()) {
+	iface = IfaceMgr->getIfaceByID(x->getID());
+	if (!iface) {
+	    Log(Error) << "Unable to find interface with ifindex=" << x->getID() << LogEnd;
+	    continue;
+	}
+	if (iface->flagUp() && iface->flagRunning()) {
+	    makeInactiveIface(x->getID(), false); // move it to InactiveLst
+	    return x;
+	}
+    }
+
+    return 0;
+}
+
 TClntCfgMgr::~TClntCfgMgr() {
     Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;
 }
-
 
 ostream & operator<<(ostream &strum, TClntCfgMgr &x)
 {
@@ -495,6 +577,8 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
     strum << "  <AnonInfRequest>" << (x.anonInfRequest()?1:0) << "</AnonInfRequest>" << endl;
+    strum << "  <InsistMode>" << (x.InsistMode?1:0) << "</InsistMode>" << endl;
+    strum << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</FlexMode>" << endl;
     strum << "  <digest>";
     switch (x.getDigest()) {
     case DIGEST_NONE:
