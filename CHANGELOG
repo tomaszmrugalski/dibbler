@@ -2,6 +2,8 @@
   Dibbler changelog
  ------------------- 
  0.6.0 [not released yet]
+  - Clnt: Cause of bind failure is now reported in Linux
+  - Clnt: Another fix for not operational interface (bug #133)
   - Clnt: client-CfgMgr.xml is now formed properly (bug #158)
 
  0.6.0RC4 [2007-03-31]

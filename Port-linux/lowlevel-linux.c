@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.7 2007-04-10 22:00:05 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.8 2007-04-10 23:25:06 thomson Exp $
  *
  */
 
@@ -31,6 +31,7 @@
 #include <string.h>
 #include <fnmatch.h>
 #include <time.h>
+#include <errno.h>
 
 #include "libnetlink.h"
 #include "ll_map.h"
@@ -423,7 +424,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     tmp = (char*)(&bindme.sin6_addr);
     inet_pton6(addr, tmp);
     if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme)) < 0) {
-	sprintf(Message, "Unable to bind socket.");
+	sprintf(Message, "Unable to bind socket: %s", strerror(errno) );
 	return LOWLEVEL_ERROR_BIND_FAILED;
     }
 
