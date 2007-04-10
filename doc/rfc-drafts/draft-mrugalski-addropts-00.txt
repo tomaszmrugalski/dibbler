@@ -1,0 +1,54 @@
+
+
+
+
+
+
+2. Address parameters option
+
+   The Preference option is sent by a server to a client to affect the
+   selection of a server by the client.
+
+   The format of the Preference option is:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |       OPTION_ADDRPARAMS       |          option-len           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  prefix-len   |   flags       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      option-code   OPTION_ADDRPARAMS (TBD).
+
+      option-len    2.
+
+      prefix-len    Prefix length. Allowed values are: 0-128
+
+      flags         Defines type of the address and additional
+                    information. See following subsection for details.
+
+2.1.  The Flags Field
+
+   The format of the Flags field is:
+
+        0 1 2 3 4 5 6 7
+       +-+-+-+-+-+-+-+-+
+       |  MBZ    |M|A|P|
+       +-+-+-+-+-+-+-+-+
+
+       MBZ - reserved field (must be zero)
+       M   - is this a multicast address? (1 = yes, 0 = no)
+       A   - is this anycast address? (1 = yes, 0 = no)
+       P   - should prefix information be ignored? (1 = ignore, 0 =
+             prefix field contains valid information)
+
+   Values are choosen, so during most use scenarios, flags field will
+   remain set to 0.
+
+5. Open issues
+
+5.1 Address scope
+ Would it be useful to add 4-bit field, which describes scope of the
+ address (link, site or global)? (host scope would not be allowed, 
+ organisation scope is depreciated).
