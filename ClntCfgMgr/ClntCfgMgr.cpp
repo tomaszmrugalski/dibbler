@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.50 2007-04-01 04:53:17 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.51 2007-04-10 19:41:10 thomson Exp $
  *
  */
 
@@ -578,7 +578,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
     strum << "  <AnonInfRequest>" << (x.anonInfRequest()?1:0) << "</AnonInfRequest>" << endl;
     strum << "  <InsistMode>" << (x.InsistMode?1:0) << "</InsistMode>" << endl;
-    strum << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</FlexMode>" << endl;
+    strum << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</InactiveMode>" << endl;
     strum << "  <digest>";
     switch (x.getDigest()) {
     case DIGEST_NONE:

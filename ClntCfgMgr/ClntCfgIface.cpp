@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.25 2007-01-27 17:11:10 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.26 2007-04-10 19:41:10 thomson Exp $
  *
  */
 
@@ -519,7 +519,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     // --- option: DNS-servers ---
     if (iface.isReqDNSServer()) {
 	out << "    <dns-servers state=\"" << StateToString(iface.getDNSServerState())
-	    << "\" state=\"" << iface.DNSServerLst.count() << "\" />" << endl;
+	    << "\" hints=\"" << iface.DNSServerLst.count() << "\" />" << endl;
 
 	iface.DNSServerLst.first();
 	while(addr=iface.DNSServerLst.get())
