@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.51 2007-04-10 19:41:10 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.52 2007-04-10 22:00:05 thomson Exp $
  *
  */
 
@@ -174,9 +174,31 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 		    return true;
 		}
 
-		Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID() 
+		Log(Crit) << "Interface " << ifaceIface->getFullName()
 			  << " is down or doesn't have any link-local address." << LogEnd;
 		return false;
+	    }
+
+	    // Check if the interface is during bring-up phase (i.e. DAD procedure for link-local addr is not complete yet)
+	    char tmp[64];
+	    ifaceIface->firstLLAddress();
+	    inet_ntop6(ifaceIface->getLLAddress(), tmp); 
+	    if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp) == LOWLEVEL_TENTATIVE_YES) {
+		Log(Notice) << "Interface " << ifaceIface->getFullName() << " has link-local address " << tmp 
+			    << ", but it is currently tentative." << LogEnd;
+
+		if (this->inactiveMode()) {
+		    Log(Notice) << "Interface " << ifaceIface->getFullName() 
+				<< " is not operational yet (link-local address is not ready), skipping it for now." << LogEnd;
+		    addIface(cfgIface);
+		    makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+		    return true;
+		}
+
+		Log(Crit) << "Interface " << ifaceIface->getFullName()
+			  << " has tentative link-local address (and inactive-mode is disabled)." << LogEnd;
+		return false;
+
 	    }
 
 	    this->addIface(cfgIface);
@@ -556,7 +578,19 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
 	    Log(Error) << "Unable to find interface with ifindex=" << x->getID() << LogEnd;
 	    continue;
 	}
-	if (iface->flagUp() && iface->flagRunning()) {
+	iface->firstLLAddress();
+	if (iface->flagUp() && iface->flagRunning() && iface->getLLAddress()) {
+	    // check if its link-local address is not tentative
+	    char tmp[64];
+	    iface->firstLLAddress();
+	    inet_ntop6(iface->getLLAddress(), tmp);
+	    if (is_addr_tentative(iface->getName(), iface->getID(), tmp)==LOWLEVEL_TENTATIVE_YES) {
+		Log(Debug) << "Interface " << iface->getFullName() << " is up and running, but link-local address " << tmp
+			   << " is currently tentative." << LogEnd;
+		continue;
+	    }
+
+
 	    makeInactiveIface(x->getID(), false); // move it to InactiveLst
 	    return x;
 	}

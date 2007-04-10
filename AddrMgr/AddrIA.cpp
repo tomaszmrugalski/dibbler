@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.17 2007-03-04 20:56:44 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.18 2007-04-10 22:00:05 thomson Exp $
  *
  */
 
@@ -405,11 +405,11 @@ enum ETentative TAddrIA::getTentative()
 
             switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
             {
-                case    1:  
+                case    LOWLEVEL_TENTATIVE_YES:  
                     ptrAddr->setTentative(TENTATIVE_YES);
                     this->Tentative=TENTATIVE_YES;
                     return TENTATIVE_YES;
-                case    0:
+                case    LOWLEVEL_TENTATIVE_NO:
                     ptrAddr->setTentative(TENTATIVE_NO);
                     Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
 			       << " is not tentative." << LogEnd;

@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.6 2007-03-10 01:42:32 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.7 2007-04-10 22:00:05 thomson Exp $
  *
  */
 
@@ -552,7 +552,7 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
     struct nlmsg_list *head = NULL;
     struct rtnl_handle rth;
 
-    int tentative=-1;
+    int tentative = LOWLEVEL_TENTATIVE_DONT_KNOW;
 
     inet_pton6(addr,packed1);
 
@@ -583,9 +583,9 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 	    /* is this addr which are we looking for? */
 	    if (!memcmp(packed1,packed2,16) ) {
 		if (ifa->ifa_flags & IFA_F_TENTATIVE)
-		    tentative = 1;
+		    tentative = LOWLEVEL_TENTATIVE_YES;
 		else
-		    tentative = 0;
+		    tentative = LOWLEVEL_TENTATIVE_NO;
 	    }
 	}
 	ainfo = ainfo->next;

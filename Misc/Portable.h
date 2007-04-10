@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.83 2007-04-01 16:10:10 thomson Exp $
+ * $Id: Portable.h,v 1.84 2007-04-10 22:00:05 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -166,6 +166,10 @@ struct iface {
 #define LOWLEVEL_ERROR_REUSE_FAILED     -9
 #define LOWLEVEL_ERROR_FILE             -10
 #define LOWLEVEL_ERROR_SOCKET           -11
+
+#define LOWLEVEL_TENTATIVE_YES 1
+#define LOWLEVEL_TENTATIVE_NO  0
+#define LOWLEVEL_TENTATIVE_DONT_KNOW -1
 
 /* ********************************************************************** */
 /* *** time related functions ******************************************* */
