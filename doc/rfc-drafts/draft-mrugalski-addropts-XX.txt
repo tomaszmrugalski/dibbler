@@ -16,17 +16,18 @@ Status of this memo
 
 Copyright Notice
 
-   No copyright yet. Feel free to contribute.
+   No copyright yet. Feel free to distribute and/or contribute.
 
 Abstract
 
-   DHCPv6 protocol offers the capability of grantins IPv6 addresses to
-   all intrested clients. However, there is no way to specify
-   additional parameters related to such addresses. When several 
-   clients located on the same link, receive addresses from the same
-   prefix, without additional mechanisms they can't communicate.
-   Upon IPv6 address reception, prefix is not known, so clients can
-   assign that address only or guess prefix length (e.g. /64). 
+   DHCPv6 protocol offers the capability of automatic allocation of
+   reusable IPv6 addresses to all interested clients. Unfortunately,
+   there is no way to specify additional parameters related to such
+   addresses, like prefix length they belong to. When several clients 
+   located on the same link receive addresses from the same prefix,
+   without additional mechanisms they can't communicate. Upon IPv6
+   address reception, prefix is not known, so clients can assign that
+   address only or guess prefix length (e.g. /64). 
 
    Another limitation is an inability to grant addresses of types
    other than unicast. It is also not possible to define scope of an
@@ -85,8 +86,10 @@ Table of Contents
 
    The Address Parameters option is sent by a server to a client to
    provide additional informations about granted addresses. Address 
-   Parameters option can only be sent by the server as an suboption of
-   the IAADDR option. 
+   Parameters Option can only be sent as a suboption of the IAADDR
+   option. It can be sent by the server to define addtional address
+   parameters. It can also be sent by the client in SOLICIT or REQUEST
+   messages as a hint for the server.
 
    The format of the Preference option is:
 
