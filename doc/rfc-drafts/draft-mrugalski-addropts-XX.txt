@@ -38,7 +38,7 @@ Table of Contents
 
    By using Address Parameters option, server is able to specify
    prefix length of the granted address, so besides configuring the
-   address itself, corresponding route entry can also be configured.
+   address itself, client is able to configure corresponding route as well.
    
    It is also possible for server to assign addresses with types other
    than normal unicast. Server can grant multicast or anycast
