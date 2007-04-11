@@ -6,10 +6,11 @@
  *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.11 2006-12-31 16:00:27 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.12 2007-04-11 07:51:03 thomson Exp $
  *
  */
 
+#include <climits>
 #include "SrvParsIfaceOpt.h"
 #include "DHCPConst.h"
 #include "Logger.h"

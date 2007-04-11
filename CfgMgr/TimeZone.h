@@ -10,6 +10,7 @@
 #ifndef TIMEZONE_H
 #define TIMEZONE_H
 
+#include <cstdlib>
 #include <iostream>
 #include <string>
 

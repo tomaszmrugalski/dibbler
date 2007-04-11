@@ -6,9 +6,10 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.38 2007-02-02 00:52:04 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.39 2007-04-11 07:51:03 thomson Exp $
  */
 
+#include <cstdlib>
 #include <sstream>
 #include "SrvCfgIface.h"
 #include "SrvCfgAddrClass.h"

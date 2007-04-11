@@ -8,6 +8,7 @@
  */
 
 #include "ClntCfgIA.h"
+#include <climits>
 #include <iostream>
 #include <iomanip>
 #include "Logger.h"
