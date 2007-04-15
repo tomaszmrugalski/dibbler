@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.10 2007-03-04 20:56:44 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.11 2007-04-15 17:48:58 thomson Exp $
  */
 
 #include <iostream>
@@ -16,6 +16,8 @@
 #include "AddrAddr.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+
+// test
 
 TAddrAddr::TAddrAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Prefered = pref;
@@ -121,6 +123,9 @@ ostream & operator<<(ostream & strum,TAddrAddr &x) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2007-03-04 20:56:44  thomson
+ * Large timeout does are not confusing anymore (bug #141), timestamp printed.
+ *
  * Revision 1.9  2007-01-27 17:09:31  thomson
  * Negative timeout now works ok.
  *
