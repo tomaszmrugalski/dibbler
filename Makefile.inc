@@ -17,7 +17,7 @@ REL_LDFLAGS  = $(LDFLAGS)
 # === debuging parameters ===
 PEDANTIC     = -pedantic
 DEBUGINFO    = -g
-#EFENCE       = -lefence
+EFENCE       = -lefence
 
 
 # === modular features ===

@@ -9,7 +9,8 @@ OBJECTS = SrvOptClientIdentifier.o	SrvOptElapsed.o       SrvOptIAAddress.o      
           SrvOptSIPServer.o         	SrvOptSIPDomain.o     SrvOptFQDN.o           \
           SrvOptNISServer.o         	SrvOptNISDomain.o     SrvOptNISPServer.o     \
           SrvOptNISPDomain.o        	SrvOptLifetime.o      SrvOptTA.o             \
-	  SrvOptIA_PD.o             SrvOptIAPrefix.o          SrvOptAuthentication.o
+	  SrvOptIA_PD.o             SrvOptIAPrefix.o          SrvOptAuthentication.o \
+          SrvOptAddrParams.o
 objs: $(OBJECTS)
 
 libs: libSrvOptions.a

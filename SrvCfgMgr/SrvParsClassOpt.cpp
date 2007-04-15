@@ -6,11 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvParsClassOpt.cpp,v 1.7 2005-08-03 22:47:34 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2004/09/28 20:12:39  thomson
- * All major values are now unsigned.
+ * $Id: SrvParsClassOpt.cpp,v 1.7.4.1 2007-04-15 19:26:32 thomson Exp $
  *
  */
 
@@ -207,4 +203,14 @@ TSrvParsClassOpt::~TSrvParsClassOpt(void)
 long TSrvParsClassOpt::countPool()
 {
     return this->Pool.count();
+}
+
+void TSrvParsClassOpt::setAddrParams(int prefix, int bitfield)
+{
+    AddrParams = new TSrvOptAddrParams(prefix, bitfield, 0 /* parent */);
+}
+
+SPtr<TSrvOptAddrParams> TSrvParsClassOpt::getAddrParams()
+{
+    return AddrParams;
 }

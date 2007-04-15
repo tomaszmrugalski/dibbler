@@ -14,6 +14,7 @@ TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
     this->WorkDir   = WORKDIR;
     this->Stateless = false;
     this->CacheSize = SERVER_DEFAULT_CACHE_SIZE;
+    this->Experimental = false;
 
     this->DigestLst.clear();
 }
@@ -35,6 +36,14 @@ void TSrvParsGlobalOpt::setStateless(bool stateless) {
 
 bool TSrvParsGlobalOpt::getStateless() {
     return this->Stateless;
+}
+
+void TSrvParsGlobalOpt::setExperimental(bool exper) {
+    this->Experimental = exper;
+}
+
+bool TSrvParsGlobalOpt::getExperimental() {
+    return this->Experimental;
 }
 
 void TSrvParsGlobalOpt::setCacheSize(int bytes) {

@@ -138,6 +138,8 @@
 #define OPTION_NEW_POSIX_TIMEZONE   253
 #define OPTION_NEW_TZDB_TIMEZONE    254
 
+#define OPTION_ADDRPARAMS           251
+
 // --- Option lengths --
 // (value of the len field, so actual option length is +4 bytes)
 #define OPTION_ELAPSED_TIME_LEN     2

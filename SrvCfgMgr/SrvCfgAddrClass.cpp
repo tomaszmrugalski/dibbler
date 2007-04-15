@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.22 2006-07-30 22:34:09 thomson Exp $
+ * $Id: SrvCfgAddrClass.cpp,v 1.22.2.1 2007-04-15 19:26:31 thomson Exp $
  *
  */
 
@@ -15,6 +15,7 @@
 #include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+#include "SrvOptAddrParams.h"
 
 /*
  * static field initialization
@@ -150,6 +151,8 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
 
     if (this->ClassMaxLease > this->AddrsCount)
 	this->ClassMaxLease = this->AddrsCount;
+
+    AddrParams = opt->getAddrParams();
 }
 
 bool TSrvCfgAddrClass::addrInPool(SmartPtr<TIPv6Addr> addr)
@@ -224,6 +227,12 @@ bool TSrvCfgAddrClass::isLinkLocal() {
     return false;
 }
 
+SPtr<TSrvOptAddrParams> TSrvCfgAddrClass::getAddrParams()
+{
+    return AddrParams;
+}
+
+
 ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
 {
     out << "    <class id=\"" << addrClass.ID << "\" share=\"" << addrClass.Share << "\">" << std::endl;
@@ -248,6 +257,10 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     addrClass.AcceptClnt.first();
     while(statRange=addrClass.AcceptClnt.get())
 	out << *statRange;
+
+    if (addrClass.AddrParams) 
+	out << "      <AddrParams prefix=\"" << addrClass.AddrParams->getPrefix() << "\" bitfield=\"" 
+	    << addrClass.AddrParams->getBitfield() << "\"/>" << endl;
     out << "    </class>" << std::endl;
     return out;
 }

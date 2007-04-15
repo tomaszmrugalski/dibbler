@@ -6,20 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsClassOpt.h,v 1.7 2005-08-03 22:47:34 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2004/09/28 20:12:39  thomson
- * All major values are now unsigned.
- *
- * Revision 1.5  2004/09/03 23:20:23  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
- *
- * Revision 1.4  2004/07/05 00:12:30  thomson
- * Lots of minor changes.
- *
- * Revision 1.3  2004/06/28 22:37:59  thomson
- * Minor changes.
+ * $Id: SrvParsClassOpt.h,v 1.7.4.1 2007-04-15 19:26:32 thomson Exp $
  *
  */
 
@@ -34,6 +21,7 @@ class TSrvParsClassOpt;
 #include "SmartPtr.h"
 #include "StationRange.h"
 #include "IPv6Addr.h"
+#include "SrvOptAddrParams.h"
 
 class TSrvParsClassOpt
 {
@@ -88,6 +76,9 @@ class TSrvParsClassOpt
     void setClassMaxLease(unsigned long maxClntLeases);
     unsigned long getClassMaxLease();
 
+    void setAddrParams(int prefix, int bitfield);
+    SPtr<TSrvOptAddrParams> getAddrParams();
+
 private:
     //Ranges of T1 i T2
     unsigned long T1Beg;
@@ -105,5 +96,8 @@ private:
     TContainer<SmartPtr<TStationRange> > Pool;
     
     unsigned long ClassMaxLease;
+
+    // AddrParams fields
+    SPtr<TSrvOptAddrParams> AddrParams;
 };
 #endif
