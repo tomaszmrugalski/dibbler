@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.12 2007-01-21 19:17:57 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.12.2.1 2007-04-15 21:23:32 thomson Exp $
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
@@ -94,6 +94,8 @@ int allowOptInOpt(int msgType, int parent, int subopt) {
 	break;
     case OPTION_IAADDR:
 	if (subopt==OPTION_STATUS_CODE)
+	    return 1;
+	if (subopt==OPTION_ADDRPARAMS)
 	    return 1;
 	break;
     case OPTION_IA_PD:

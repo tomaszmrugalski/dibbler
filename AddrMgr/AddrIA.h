@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.h,v 1.6 2006-10-06 00:30:17 thomson Exp $
+ * $Id: AddrIA.h,v 1.6.2.1 2007-04-15 21:23:28 thomson Exp $
  *
  */
 
@@ -57,6 +57,7 @@ class TAddrIA
     //--- address list related methods---
     void addAddr(SmartPtr<TAddrAddr> x);
     void addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid);
+    void addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix);
     int getAddrCount();
 
     //--- prefix list related methods ---

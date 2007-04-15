@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.26 2007-04-01 04:53:19 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.26.2.1 2007-04-15 21:23:31 thomson Exp $
  */
 
 #ifdef WIN32
@@ -540,6 +540,17 @@ void TClntMsg::appendRequestedOptions() {
 	}
     }
 
+    // --- option: ADDRPARAMS ---
+    SPtr<TClntCfgIA> ia;
+    iface->firstIA();
+    bool addrParams = false;
+    while (ia = iface->getIA()) {
+	if (ia->getAddrParams())
+	    addrParams = true;
+    }
+    if (addrParams)
+	optORO->addOption(OPTION_ADDRPARAMS);
+
     // include ELAPSED option
     Options.append(new TClntOptElapsed(this));
 
@@ -766,6 +777,9 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 		    << (taLeft?"TA":"") << (pdLeft?"some PD(s)":"") << " to configure." << LogEnd;
 	ClntTransMgr->sendRequest(this->Options, this->Iface);
     } else {
+	if (optORO)
+	    optORO->delOption(OPTION_ADDRPARAMS); // don't insist on getting ADDR-PARAMS
+
         if ( optORO && (optORO->count()) )
         {
 	    Log(Warning) << "All IA(s), TA and PD(s) has been configured, but some options (";

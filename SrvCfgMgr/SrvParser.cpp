@@ -2040,7 +2040,7 @@ case 139:
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
 	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled. Add 'experimental' "
-		  << "in global section to enable them." << LogEnd;
+		  << "in global section of server.conf to enable it." << LogEnd;
 	YYABORT;
     }
     int bitfield = ADDRPARAMS_MASK_PREFIX;

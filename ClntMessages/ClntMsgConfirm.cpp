@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.7 2007-01-21 19:17:57 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.7.2.1 2007-04-15 21:23:31 thomson Exp $
  *
  */
 
@@ -126,7 +126,7 @@ void TClntMsgConfirm::addrsRejected() {
 	ptrIA->firstAddr();
 	while (ptrAddr = ptrIA->getAddr() ) {
 	    // remove addr from ...
-	    ptrIface->delAddr( ptrAddr->get() );
+	    ptrIface->delAddr( ptrAddr->get(), ptrIface->getPrefixLength() );
 	    // ... and from DB
 	    ptrIA->delAddr( ptrAddr->get() );
 	}

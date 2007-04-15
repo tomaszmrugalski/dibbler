@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptTA.cpp,v 1.5 2007-01-27 17:11:51 thomson Exp $
+ * $Id: ClntOptTA.cpp,v 1.5.2.1 2007-04-15 21:23:32 thomson Exp $
  *
  */
 
@@ -170,7 +170,7 @@ TClntOptTA::~TClntOptTA()
 	    ta->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
 	    ta->setDUID(this->DUID);
 	    // ... and in IfaceMgr - 
-	    ptrIface->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
+	    ptrIface->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid(), ptrIface->getPrefixLength());
 	    Log(Notice) << "Temp. address " << *optAddr->getAddr() << " has been added to "
 			<< ptrIface->getName() << "/" << ptrIface->getID() 
 			<< " interface." << LogEnd;
@@ -181,7 +181,7 @@ TClntOptTA::~TClntOptTA()
                 // valid=0, release this address and delete address from addrDB
                 ta->delAddr(optAddr->getAddr());
                 // delete address from IfaceMgr
-                ptrIface->delAddr(optAddr->getAddr());
+                ptrIface->delAddr(optAddr->getAddr(), ptrIface->getPrefixLength());
                 continue; // analyze next option OPTION_IA
             }
 

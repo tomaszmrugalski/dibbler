@@ -70,7 +70,7 @@ Table of Contents
 3.1 Client operation
 
    If client is configured to use Address Parameters option, it MUST
-   attach OPTION_ADDRPARAMS to Option Request Option. Client CAN send
+   attach OPTION_ADDRPARAMS to Option Request Option list. Client CAN
    ask for ADDRPARAMS option in the SOLICIT, REQUEST, RENEW and REBIND
    messages only. Client MUST NOT use ADDRPARAMS option in the ORO in
    any other messages.

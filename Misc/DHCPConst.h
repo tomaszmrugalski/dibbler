@@ -154,6 +154,8 @@
 #define STATUSCODE_USEMULTICAST  5
 #define STATUSCODE_NOPREFIXAVAIL 6 
 
+
+
 // INFINITY + 1 is 0. Hih, cool
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
 
@@ -212,6 +214,12 @@ enum EState {
 #define FQDN_N 0x4
 #define FQDN_O 0x2
 #define FQDN_S 0x1
+
+// --- Bitfield in ADDRPARAMS option ---
+#define ADDRPARAMS_MASK_PREFIX    0x01
+#define ADDRPARAMS_MASK_ANYCAST   0x02
+#define ADDRPARAMS_MASK_MULTICAST 0x04
+
     
 int allowOptInOpt(int msgType, int optOut, int optIn);
 int allowOptInMsg(int msgType, int optType);

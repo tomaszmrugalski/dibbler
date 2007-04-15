@@ -93,6 +93,8 @@ digest-hmac-sha1      { return ClntParser::DIGEST_HMAC_SHA1_; }
 anonymous-inf-request { return ClntParser::ANON_INF_REQUEST_; }
 insist-mode           { return ClntParser::INSIST_MODE_; }
 inactive-mode         { return ClntParser::INACTIVE_MODE_; }
+experimental          { return ClntParser::EXPERIMENTAL_; }
+addr-params           { return ClntParser::ADDR_PARAMS_; }
 #.* ;
 
 "//"(.*) ;

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.18 2007-04-10 22:00:05 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.18.2.1 2007-04-15 21:23:28 thomson Exp $
  *
  */
 
@@ -80,6 +80,13 @@ void TAddrIA::addAddr(SmartPtr<TAddrAddr> x)
 void TAddrIA::addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid)
 {
     SmartPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid);
+    AddrLst.append(ptr);
+    Tentative = TENTATIVE_UNKNOWN;
+}
+
+void TAddrIA::addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix)
+{
+    SmartPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid, prefix);
     AddrLst.append(ptr);
     Tentative = TENTATIVE_UNKNOWN;
 }

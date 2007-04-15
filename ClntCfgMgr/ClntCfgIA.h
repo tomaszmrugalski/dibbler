@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntCfgIA.h,v 1.7 2007-01-21 18:06:57 thomson Exp $
+ * $Id: ClntCfgIA.h,v 1.7.2.1 2007-04-15 21:23:28 thomson Exp $
  */
 
 class TClntCfgIA;
@@ -44,29 +44,18 @@ class TClntCfgIA
 
     void setState(enum EState state);
     enum EState getState();
-
+    bool getAddrParams();
+    
   private:
     unsigned long IAID;
     unsigned long T1;
     unsigned long T2;
     
     EState State;	
-    TContainer< SmartPtr<TClntCfgAddr> > ClntCfgAddrLst;
+    List(TClntCfgAddr) ClntCfgAddrLst;
+
+    bool AddrParams;
 };
 
 #endif 
 
-/*
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2006-03-05 21:38:47  thomson
- * TA support merged.
- *
- * Revision 1.5.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.5  2004/10/25 20:45:52  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- *
- */

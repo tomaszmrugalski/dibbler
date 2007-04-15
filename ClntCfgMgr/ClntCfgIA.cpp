@@ -20,6 +20,7 @@ TClntCfgIA::TClntCfgIA() {
     this->T1 = CLIENT_DEFAULT_T1;
     this->T2 = CLIENT_DEFAULT_T2;
     this->State = STATE_NOTCONFIGURED;
+    this->AddrParams = false;
 }
 
 long TClntCfgIA::countAddr()
@@ -54,6 +55,8 @@ void TClntCfgIA::setIAID(long iaid) {
 void TClntCfgIA::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     this->T1=opt->getT1();
     this->T2=opt->getT2();
+    
+    this->AddrParams = opt->getAddrParams();
 }
 
 void TClntCfgIA::firstAddr()
@@ -79,6 +82,11 @@ void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)
     this->ClntCfgAddrLst.append(addr);    
 }
 
+bool TClntCfgIA::getAddrParams()
+{
+    return AddrParams;
+}
+
 ostream& operator<<(ostream& out,TClntCfgIA& ia)
 {
     out << "        <ia iaid=\"" << ia.IAID << "\" state=\"" << StateToString(ia.State) << "\" t1=\"" 
@@ -91,6 +99,8 @@ ostream& operator<<(ostream& out,TClntCfgIA& ia)
     {	
         out << "          " << *addr;
     }
+    if (ia.AddrParams)
+	out << "          <addrParams/>" << endl;
     out << "        </ia>" << std::endl;
     return out;
 }
