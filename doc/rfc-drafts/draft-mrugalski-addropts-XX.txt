@@ -35,6 +35,8 @@ Abstract
 
 Table of Contents
 
+ ...
+
 1. Introduction
 
    By using Address Parameters option, server is able to specify
@@ -57,9 +59,9 @@ Table of Contents
    OPTION_ADDRPARAMS in the Option Request Option in SOLICIT, REQUEST,
    RENEW and REBIND messages.
 
-   Server, upon receiving such message, if configured to support
-   Address Parameters Option, SHOULD attach that option as a suboption
-   to every granted address. Due to backward compatibility, server 
+   Server, upon receiving such message SHOULD attach that option as a
+   suboption to every granted address, if configured to support
+   Address Parameters Option. Due to backward compatibility, server 
    MUST NOT attach Address Parametere Option, unless client asked for
    it explicely in ORO.
 
@@ -149,6 +151,12 @@ Table of Contents
  REQUEST messages as a hint. Client could use this feature to ask for
  a specific type of the address. Server could honor or ignore this
  hint. 
+
+6.3 Multicast addresses
+ 
+ Multicast flag is only meaningful in client request. When server
+ assigns an address, it is trivial to detect if granted address is
+ multicast or not (multicast addresses begin with 0xff byte).
 
 7. Security Considerations
 
