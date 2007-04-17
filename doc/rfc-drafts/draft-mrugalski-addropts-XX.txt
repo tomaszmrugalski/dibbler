@@ -5,41 +5,66 @@ Expires [publish-date+6 months]                    [not-published-yet]
 
 
                   Address Parameters Option for DHCPv6
+                   <draft-mrugalski-addropts-XX.txt>
 
-Status of this memo
+Status of this Memo
 
-   This is an unofficial "draft of a draft". If the informal feedback
-   is encouraging, it will be expanded into -00 version and will be
-   formally registed as individual submission.
+   By submitting this Internet-Draft, each author represents that any
+   applicable patent or other IPR claims of which he or she is aware
+   have been or will be disclosed, and any of which he or she becomes
+   aware will be disclosed, in accordance with Section 6 of BCP 79.
 
-   [add links and reference to Section 10 of RFC2026 here]
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as Internet-
+   Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   The list of current Internet-Drafts can be accessed at
+      http://www.ietf.org/ietf/1id-abstracts.txt
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+      http://www.ietf.org/shadow.html.
+      
+   This Internet-Draft will expire on May 6, 2007.
 
 Copyright Notice
 
-   No copyright yet. Feel free to distribute and/or contribute.
+   Copyright (C) The Internet Society (2006). 
 
 Abstract
 
    DHCPv6 protocol offers the capability of automatic allocation of
    reusable IPv6 addresses to all interested clients. Unfortunately,
    there is no way to specify additional parameters related to such
-   addresses, like prefix length they belong to. When several clients 
-   located on the same link receive addresses from the same prefix,
-   without additional mechanisms they can't communicate. Upon IPv6
-   address reception, prefix is not known, so clients can assign that
-   address only or guess prefix length (e.g. /64). 
+   addresses, like prefix length they belong to. Without such data,
+   clients located on the same link can't communicate.
 
-   Another limitation is an inability to grant addresses of types
-   other than unicast. It is also not possible to define scope of an
-   address. This document proposes a way to solve all those problems.
+   This document defines methods for providing additional address
+   parameters to the clients, so appropriate routing to link-local
+   prefix can be configured. Mechanism for requesting and providing
+   anycast and multicast addresses is also proposed.
 
 Table of Contents
 
 1. Introduction
 
+   During normal DHCPv6 [RFC3315] operation, server assigns addresses
+   to all interested clients. Unfortunately, clients located on the
+   same link and receiving addresses from the same server are able to
+   configure IPv6 addresses only. The information about prefix length
+   is not available, so clients are not able to configure routing to
+   local prefixes. Without such routing configured, clients are not
+   able to exchange IPv6 datagrams.
+
    By using Address Parameters option, server is able to specify
-   prefix length of the granted address, so besides configuring the
-   address itself, client is able to configure corresponding route as well.
+   prefix length of the granted address, so besides of configuring the
+   address itself, client is able to configure corresponding route as 
+   well.
    
    It is also possible for server to assign addresses with types other
    than normal unicast. Server can grant multicast or anycast
@@ -47,9 +72,9 @@ Table of Contents
 
 2. Requirements
 
-   Implementation of the DHCPv6 protocol, which supports Address
-   Parameters Option. [If initial version of this draft is accepted,
-   author will provide example implementation of this mechanism.]
+   To take advantage of Address Parameters mechanism, implementation
+   of the DHCPv6 protocol, which supports Address Parameters Option is
+   required.
 
 3. Operation overview
 
@@ -140,15 +165,15 @@ Table of Contents
 6.1 Address scope
 
  Would it be useful to add 4-bit field, which describes scope of the
- address (link, site or global)? (host scope would not be allowed, 
- organisation scope is depreciated).
+ address (link, site or global)? Host scope MUST NOT be allowed.
+ organisation scope is depreciated, so it SHOULD NOT be used.
 
 6.2 Client hints
 
  It may be useful to allow client to send ADDRPARAMS in SOLICIT and
  REQUEST messages as a hint. Client could use this feature to ask for
  a specific type of the address. Server could honor or ignore this
- hint. 
+ hint. Client should include ADDRPARAMS option in the IA_NA option.
 
 7. Security Considerations
 
@@ -158,6 +183,11 @@ Table of Contents
 
 9. References
 
+9.1 Normative References
+
+   [RFC3315]  Bound, J., Carney, M., Perkins, C., Lemon, T., Volz, B. 
+              and R. Droms (ed.), "Dynamic Host Configuration Protocol
+              for IPv6 (DHCPv6)", RFC 3315, May 2003.
 
 10. Acknowledgements
 
@@ -174,3 +204,43 @@ Table of Contents
 
    Phone: +48 698 088 272
    EMail: tomasz.mrugalski@klub.com.pl
+
+Full Copyright Statement
+
+   Copyright (C) The IETF Trust (2007).
+
+   This document is subject to the rights, licenses and restrictions
+   contained in BCP 78, and except as set forth therein, the authors
+   retain all their rights."
+
+   "This document and the information contained herein are provided on
+   an "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE
+   REPRESENTS OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY, THE
+   IETF TRUST AND THE INTERNET ENGINEERING TASK FORCE DISCLAIM ALL
+   WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY
+   WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY
+   RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
+   PARTICULAR PURPOSE."
+
+Intellectual Property
+
+   By submitting this Internet-Draft, each author represents that any
+   applicable patent or other IPR claims of which he or she is aware
+   have been or will be disclosed, and any of which he or she becomes
+   aware will be disclosed, in accordance with Section 6 of BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as Internet-
+   Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/1id-abstracts.html
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+   http://www.ietf.org/shadow.html
