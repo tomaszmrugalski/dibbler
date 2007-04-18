@@ -5,11 +5,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.12 2007-03-27 22:16:18 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.13 2007-04-18 19:10:25 thomson Exp $
  *
  */
 
 #include <stdio.h>
+#include <linux/types.h>
 #include <sys/socket.h>
 #include <linux/rtnetlink.h>
 #include "sys/stat.h"
