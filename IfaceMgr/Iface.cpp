@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.26 2007-04-01 04:53:19 thomson Exp $
+ * $Id: Iface.cpp,v 1.27 2007-04-22 21:19:29 thomson Exp $
  *
  */
 
@@ -190,22 +190,22 @@ int TIfaceIface::getHardwareType() {
  * adds address to this interface with prefered- and valid-lifetime
  * (wrapper around pure C function)
  */
-bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid) {
-    Log(Notice) << "Address " << addr->getPlain() << " added to "
+bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid, int prefixLen) {
+    Log(Notice) << "Address " << addr->getPlain() << "/" << prefixLen << " added to "
 		<< getFullName() << " interface." << LogEnd;
 
     return (bool)ipaddr_add(this->Name, this->ID, addr->getPlain(), 
-			    pref, valid, this->PrefixLen);
+			    pref, valid, prefixLen);
 }
 
 /*
  * deletes address from interface
  * (wrapper around pure C function)
  */
-bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr) {
-    Log(Notice) << "Address " << addr->getPlain() << " deleted from "
+bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr, int prefixLen) {
+    Log(Notice) << "Address " << addr->getPlain() << "/" << prefixLen << " deleted from "
 		<< getFullName() << " interface." << LogEnd;
-    return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain(), this->PrefixLen);
+    return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain(), prefixLen);
 }
 
 /*
@@ -358,6 +358,10 @@ void TIfaceIface::setPrefixLength(int len) {
 	return;
     }
     this->PrefixLen = len;
+}
+
+int TIfaceIface::getPrefixLength() {
+    return PrefixLen;
 }
 
 // --------------------------------------------------------------------

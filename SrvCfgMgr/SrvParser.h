@@ -33,6 +33,7 @@
 #include "Logger.h"
 #include "FQDN.h"
 #include "SrvOptVendorSpec.h"
+#include "SrvOptAddrParams.h"
 #define YY_USE_CLASS
 #define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                     \
 List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
@@ -72,7 +73,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 71 "SrvParser.y"
+#line 72 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -300,11 +301,13 @@ typedef
 #define	DIGEST_NONE_	301
 #define	DIGEST_HMAC_SHA1_	302
 #define	CLIENT_	303
-#define	STRING_	304
-#define	HEXNUMBER_	305
-#define	INTNUMBER_	306
-#define	IPV6ADDR_	307
-#define	DUID_	308
+#define	EXPERIMENTAL_	304
+#define	ADDR_PARAMS_	305
+#define	STRING_	306
+#define	HEXNUMBER_	307
+#define	INTNUMBER_	308
+#define	IPV6ADDR_	309
+#define	DUID_	310
 
 
 #line 169 "../bison++/bison.h"
@@ -399,6 +402,8 @@ static const int AUTH_;
 static const int DIGEST_NONE_;
 static const int DIGEST_HMAC_SHA1_;
 static const int CLIENT_;
+static const int EXPERIMENTAL_;
+static const int ADDR_PARAMS_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -458,11 +463,13 @@ static const int DUID_;
 	,DIGEST_NONE_=301
 	,DIGEST_HMAC_SHA1_=302
 	,CLIENT_=303
-	,STRING_=304
-	,HEXNUMBER_=305
-	,INTNUMBER_=306
-	,IPV6ADDR_=307
-	,DUID_=308
+	,EXPERIMENTAL_=304
+	,ADDR_PARAMS_=305
+	,STRING_=306
+	,HEXNUMBER_=307
+	,INTNUMBER_=308
+	,IPV6ADDR_=309
+	,DUID_=310
 
 
 #line 215 "../bison++/bison.h"

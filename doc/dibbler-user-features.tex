@@ -786,3 +786,73 @@ autodetect addresses. To generate enterprise number-based DUID,
 specific data must be provided: enterprise-number (a 32-bit integer,
 1234 in the example above) and a enterprise-specific indentifier of
 arbitrary length (56:78:9a:bc:de in the example above).
+
+\subsection{Address Parameters (Experimental)}
+
+\textbf{Note: This feature is experimental, i.e. it is not described
+by any RFC or even internet draft. Don't use it, unless you exactly
+know what you are doing.}
+
+There is process undergoing to register and publish internet draft,
+which describes this operation. As of 2007-04-15, informal version of
+such draft is available at:
+\url{http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX.txt}.
+
+
+RFC3315 (\cite{rfc3315}) defines means of allocating IPv6 addresses to
+all interested clients. Clients are able to obtains IPv6 addresses and
+other configuration parameters from the servers. Unfortunately, client
+after obtaining an address, are not able to communicate each other due
+to missing prefix information. That property of the DHCPv6 procotol is
+sometimes perceived as a major disadvantage. To overcome this
+deficiency, an extension to the protocol has been proposed.
+
+It is possible to attach additional option conveyed in normal IAADDR
+option. That additional option, called ADDRPARAMS option, contains
+additional information related to that address. To maintain backward
+compatibility, server does not send such option by default, even when
+configured to support it. To make server send this option, client must
+explicitly ask for it. 
+
+Below are example configuration files for server and client. Note that
+since that is an non-standard feature, user must explicitly allow
+experimental options before configuring it (thus ,,experimental''
+keyword is required).
+
+Example \verb+client.conf+ configuration file:
+
+\begin{lstlisting}
+#client.conf
+log-mode short
+log-level 8
+
+
+iface "eth0" {
+  ia { 
+     addr-params 
+  }
+}
+\end{lstlisting}
+
+Example \verb+server.conf+ configuration file:
+
+\begin{lstlisting}
+#server.conf
+log-level 8
+
+experimental
+log-mode short
+
+iface eth0 {
+
+ t1 60
+ t2 96
+ prefered-lifetime 120
+ valid-lifetime 180
+
+ class {
+   addr-params 80
+   pool 2001:458:ff01:ff03::/80
+ }
+}
+\end{lstlisting}

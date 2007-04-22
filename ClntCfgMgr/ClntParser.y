@@ -111,6 +111,7 @@ namespace std
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
+%token EXPERIMENTAL_, ADDR_PARAMS_
 %type  <ival> Number
 
 %%
@@ -142,8 +143,9 @@ GlobalOptionDeclaration
 | ScriptsDir
 | AuthOption
 | AnonInfRequest
-| FlexMode
+| InactiveMode
 | InsistMode
+| Experimental
 ;
 
 InterfaceOptionDeclaration
@@ -172,6 +174,7 @@ IAOptionDeclaration
 | T2Option
 | RapidCommitOption
 | ADDRESOptionDeclaration
+| AddrParams
 ;
 
 InterfaceDeclaration
@@ -497,7 +500,7 @@ AnonInfRequest
     ParserOptStack.getLast()->setAnonInfRequest(true);
 };
 
-FlexMode
+InactiveMode
 : INACTIVE_MODE_
 {
     ParserOptStack.getLast()->setInactiveMode(true);
@@ -507,6 +510,13 @@ InsistMode
 : INSIST_MODE_
 {
     ParserOptStack.getLast()->setInsistMode(true);
+};
+
+Experimental
+: EXPERIMENTAL_
+{
+    Log(Crit) << "Experimental features are allowed." << LogEnd;
+    ParserOptStack.getLast()->setExperimental();
 };
 
 RejectServersOption
@@ -543,6 +553,17 @@ RapidCommitOption
     ParserOptStack.getLast()->setRapidCommit($2);
 }
 ;
+
+AddrParams
+:   ADDR_PARAMS_ 
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled."
+		  << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+    ParserOptStack.getLast()->setAddrParams(true);
+};
 
 ValidTimeOption
 :VALID_TIME_ Number

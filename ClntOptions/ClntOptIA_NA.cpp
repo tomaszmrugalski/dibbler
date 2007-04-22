@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.19 2007-03-27 23:08:19 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.20 2007-04-22 21:19:29 thomson Exp $
  *
  */
 
@@ -15,6 +15,7 @@
 #include "ClntOptIA_NA.h"
 #include "ClntOptIAAddress.h"
 #include "ClntOptStatusCode.h"
+#include "ClntOptAddrParams.h"
 #include "Logger.h"
 
 /** 
@@ -331,11 +332,20 @@ bool TClntOptIA_NA::doDuties()
         // no such address in DB ??
         if (!ptrAddrAddr) {
             if (ptrOptAddr->getValid()) {
+
+		int prefixLen = ptrIface->getPrefixLength();
+		if (ptrOptAddr->getOption(OPTION_ADDRPARAMS)) {
+		    Log(Debug) << "Experimental addr-params found." << LogEnd;
+		    SPtr<TClntOptAddrParams> optAddrParams = (Ptr*) ptrOptAddr->getOption(OPTION_ADDRPARAMS);
+		    prefixLen = optAddrParams->getPrefix();
+		}
+
                 // add this address in addrDB...
-                ptrIA->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid());
+                ptrIA->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid(), prefixLen);
                 ptrIA->setDUID(this->DUID);
+
                 // ... and in IfaceMgr - 
-                ptrIface->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid());
+                ptrIface->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid(), prefixLen);
             } 
             else {
                 Log(Warning) << "Server send new addr with valid lifetime 0." << LogEnd;
@@ -347,7 +357,7 @@ bool TClntOptIA_NA::doDuties()
                 // delete address from addrDB
                 ptrIA->delAddr(ptrOptAddr->getAddr());
                 // delete address from IfaceMgr
-                ptrIface->delAddr(ptrOptAddr->getAddr());
+                ptrIface->delAddr(ptrOptAddr->getAddr(), ptrIface->getPrefixLength());
                 break; // analyze next option OPTION_IA_NA
             }
 

@@ -6,38 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.15 2007-04-01 04:53:19 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.14  2006-08-22 00:01:20  thomson
- * Client /64 prefix, strict-rfc-no-routing feature added.
- *
- * Revision 1.13  2006-01-24 00:12:43  thomson
- * Global addresses support improved.
- *
- * Revision 1.12  2005/04/29 00:08:20  thomson
- * *** empty log message ***
- *
- * Revision 1.11  2005/01/23 23:17:53  thomson
- * Relay/global address support related improvements.
- *
- * Revision 1.10  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.9  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
- * Revision 1.8  2005/01/03 21:53:41  thomson
- * const modifier added.
- *
- * Revision 1.7  2004/12/27 20:48:22  thomson
- * Problem with absent link local addresses fixed (bugs #90, #91)
- *
- * Revision 1.6  2004/11/01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.5  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ * $Id: Iface.h,v 1.16 2007-04-22 21:19:29 thomson Exp $
  *
  */
 
@@ -86,10 +55,11 @@ class TIfaceIface{
     void delGlobalAddr(SmartPtr<TIPv6Addr> addr);
 
     // ---address related---
-    bool addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
-    bool delAddr(SmartPtr<TIPv6Addr> addr);
+    bool addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid, int prefixLen);
+    bool delAddr(SmartPtr<TIPv6Addr> addr, int prefixLen);
     bool updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
     void setPrefixLength(int len);
+    int getPrefixLength();
     
     // ---socket related---
     bool addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);

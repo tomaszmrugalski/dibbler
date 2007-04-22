@@ -310,6 +310,8 @@ typedef
 #define	ANON_INF_REQUEST_	306
 #define	INSIST_MODE_	307
 #define	INACTIVE_MODE_	308
+#define	EXPERIMENTAL_	309
+#define	ADDR_PARAMS_	310
 
 
 #line 169 "../bison++/bison.h"
@@ -409,6 +411,8 @@ static const int STATELESS_;
 static const int ANON_INF_REQUEST_;
 static const int INSIST_MODE_;
 static const int INACTIVE_MODE_;
+static const int EXPERIMENTAL_;
+static const int ADDR_PARAMS_;
 
 
 #line 212 "../bison++/bison.h"
@@ -468,6 +472,8 @@ static const int INACTIVE_MODE_;
 	,ANON_INF_REQUEST_=306
 	,INSIST_MODE_=307
 	,INACTIVE_MODE_=308
+	,EXPERIMENTAL_=309
+	,ADDR_PARAMS_=310
 
 
 #line 215 "../bison++/bison.h"

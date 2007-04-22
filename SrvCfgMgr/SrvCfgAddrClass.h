@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.14 2006-07-30 22:34:09 thomson Exp $
+ * $Id: SrvCfgAddrClass.h,v 1.15 2007-04-22 21:19:29 thomson Exp $
  *
  */
 
@@ -25,7 +25,7 @@ class TSrvCfgAddrClass;
 #include "IPv6Addr.h"
 #include "DUID.h"
 #include "SmartPtr.h"
-
+#include "SrvOptAddrParams.h"
 
 using namespace std;
 
@@ -61,6 +61,8 @@ class TSrvCfgAddrClass
     long decrAssigned(int count=1);
 
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
+    SPtr<TSrvOptAddrParams> getAddrParams();
+    
     virtual ~TSrvCfgAddrClass();
  private:
     unsigned long T1Beg;
@@ -84,6 +86,8 @@ class TSrvCfgAddrClass
     unsigned long ClassMaxLease;
     unsigned long AddrsAssigned;
     unsigned long AddrsCount;
+
+    SPtr<TSrvOptAddrParams> AddrParams; // AddrParams - experimental option
 };
 
 #endif

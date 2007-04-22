@@ -47,14 +47,19 @@ class TClntParsIAOpt : public TClntParsAddrOpt
     SmartPtr<TStationID> getRejedSrv();
     void clearRejedSrv();
     void setRejedSrvLst(TContainer<SmartPtr<TStationID> > *lst);
+
+    void setAddrParams(bool useAddrParams);
+    bool getAddrParams();
 private:
     long T1;
     long T2;
     
     long IAIDCnt;
     bool AddrHint;
-    TContainer<SmartPtr<TStationID> > PrefSrv;
-    TContainer<SmartPtr<TStationID> > RejedSrv;
+    List(TStationID) PrefSrv;
+    List(TStationID) RejedSrv;
+
+    bool AddrParams;
 };
 
 #endif

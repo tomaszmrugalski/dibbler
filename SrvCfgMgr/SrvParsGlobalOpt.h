@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsGlobalOpt.h,v 1.6 2006-11-17 00:44:34 thomson Exp $
+ * $Id: SrvParsGlobalOpt.h,v 1.7 2007-04-22 21:19:30 thomson Exp $
  *
  */
 
@@ -30,8 +30,11 @@ public:
     int  getCacheSize();
     void addDigest(DigestTypes x);
     List(DigestTypes) getDigest();
+    bool getExperimental(); // is experimental stuff allowed?
+    void setExperimental(bool exper);
     
 private:
+    bool   Experimental;
     string WorkDir;
     bool   Stateless;
     int    CacheSize;

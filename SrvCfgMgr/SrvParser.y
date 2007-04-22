@@ -20,6 +20,7 @@
 #include "Logger.h"
 #include "FQDN.h"
 #include "SrvOptVendorSpec.h"
+#include "SrvOptAddrParams.h"
 #define YY_USE_CLASS
 %}
 
@@ -94,6 +95,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
 %token CLIENT_
+%token EXPERIMENTAL_, ADDR_PARAMS_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -130,6 +132,7 @@ GlobalOptionDeclaration
 | StatelessOption
 | CacheSizeOption
 | AuthOption
+| Experimental
 ;
 
 InterfaceOptionDeclaration
@@ -635,6 +638,19 @@ ClassMaxLeaseOption
 }
 ;
 
+AddrParams
+: ADDR_PARAMS_ Number
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled. Add 'experimental' "
+		  << "in global section of server.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+    int bitfield = ADDRPARAMS_MASK_PREFIX;
+    Log(Warning) << "Experimental addr-params added (prefix=" << $2 << ", bitfield=" << bitfield << ")." << LogEnd;
+    ParserOptStack.getLast()->setAddrParams($2,bitfield);
+};
+
 IfaceMaxLeaseOption
 : IFACE_MAX_LEASE_ Number
 {
@@ -708,6 +724,14 @@ StatelessOption
 }
 ;
 
+Experimental
+: EXPERIMENTAL_
+{
+    Log(Crit) << "Experimental features are allowed." << LogEnd;
+    ParserOptStack.getLast()->setExperimental(true);
+};
+
+
 CacheSizeOption
 : CACHE_SIZE_ Number
 {
@@ -747,6 +771,7 @@ ClassOptionDeclaration
 | RejectClientsOption
 | AcceptOnlyOption
 | ClassMaxLeaseOption
+| AddrParams
 ;
 
 ////////////////////////////////////////////////////////////////////////

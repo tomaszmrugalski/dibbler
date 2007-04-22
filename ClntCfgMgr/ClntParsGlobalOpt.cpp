@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.10 2007-04-01 04:53:18 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.11 2007-04-22 21:19:27 thomson Exp $
  *
  */
 
@@ -23,6 +23,7 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->AnonInfRequest = false;
     this->InactiveMode   = false;
     this->InsistMode     = false;
+    this->Experimental   = false;
 }
 
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
@@ -86,4 +87,14 @@ void TClntParsGlobalOpt::setInactiveMode(bool flex)
 bool TClntParsGlobalOpt::getInactiveMode()
 {
     return InactiveMode;
+}
+
+void TClntParsGlobalOpt::setExperimental()
+{
+    Experimental = true;
+}
+
+bool TClntParsGlobalOpt::getExperimental()
+{
+    return Experimental;
 }

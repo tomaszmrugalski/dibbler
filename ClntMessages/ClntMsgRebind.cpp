@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.11 2007-03-04 21:48:55 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.12 2007-04-22 21:19:28 thomson Exp $
  *
  */
 
@@ -280,7 +280,12 @@ void TClntMsgRebind::releaseIA(int IAID)
     while(ptrAddr=ptrAddrIA->getAddr())
     {
         //remove outdated address from interface
-        ClntIfaceMgr->getIfaceByID(ptrAddrIA->getIface())->delAddr(ptrAddr->get());
+	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr->getIfaceByID(ptrAddrIA->getIface());
+	if (!ptrIface) {
+	    Log(Error) << "Unable to find interface with ifindex " << ptrAddrIA->getIface() << LogEnd;
+	    continue;
+	}
+	ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
         //and from db
         ptrAddrIA->delAddr(ptrAddr->get());
     }

@@ -6,18 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIAAddress.cpp,v 1.5 2004-10-27 22:07:56 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2004/09/07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.3  2004/05/23 19:12:34  thomson
- * *** empty log message ***
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: OptIAAddress.cpp,v 1.6 2007-04-22 21:19:29 thomson Exp $
  *
  */
 #ifdef WIN32

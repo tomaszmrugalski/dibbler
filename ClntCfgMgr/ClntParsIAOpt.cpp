@@ -15,6 +15,7 @@ TClntParsIAOpt::TClntParsIAOpt() : TClntParsAddrOpt()
     T2=ULONG_MAX;
     IAIDCnt=0;
     AddrHint=true;
+    AddrParams = false;
 }
 
 long TClntParsIAOpt::getT1()
@@ -110,4 +111,14 @@ void TClntParsIAOpt::setRejedSrvLst(TContainer<SmartPtr<TStationID> > *lst)
 SmartPtr<TStationID> TClntParsIAOpt::getRejedSrv()
 {
     return this->RejedSrv.get();
+}
+
+void TClntParsIAOpt::setAddrParams(bool useAddrParams)
+{
+    AddrParams = useAddrParams;
+}
+
+bool TClntParsIAOpt::getAddrParams()
+{
+    return AddrParams;
 }

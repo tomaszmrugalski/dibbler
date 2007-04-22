@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.54 2007-04-01 04:53:19 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.55 2007-04-22 21:19:29 thomson Exp $
  *
  */
 
@@ -203,7 +203,7 @@ void TClntTransMgr::removeExpired() {
 			 << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
 
 	    // remove that address from the physical interace
-	    ptrIface->delAddr(ptrAddr->get());
+	    ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
 	}
     }
 }
@@ -900,7 +900,7 @@ void TClntTransMgr::checkDecline()
                     if (ptrAddr->getTentative() == TENTATIVE_YES) {
                         // remove this address from interface
                         Log(Cont) << "(" << ptrAddr->get()->getPlain();
-                        result = ptrIface->delAddr(ptrAddr->get());
+                        result = ptrIface->delAddr(ptrAddr->get(), ptrAddr->getPrefix());
                         Log(Cont) << " Iface removal=" << result;
 
                         // remove this address from addrDB

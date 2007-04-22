@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.20 2007-03-21 00:36:29 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.21 2007-04-22 21:19:31 thomson Exp $
  */
 
 #ifdef WIN32
@@ -248,6 +248,10 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
     pref = ptrClass->getPref(pref);
     valid= ptrClass->getValid(valid);
     optAddr = new TSrvOptIAAddress(addr, pref, valid, this->Parent);
+    if (ptrClass->getAddrParams()) {
+	Log(Debug) << "Experimental: addr-params subotion added." << LogEnd;
+	optAddr->addOption((Ptr*)ptrClass->getAddrParams());
+    }
     SubOptions.append((Ptr*)optAddr);
 
     Log(Info) << "Client requested " << *hint <<", got " << *addr 
