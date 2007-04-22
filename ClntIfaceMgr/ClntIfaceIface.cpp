@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.11 2006-12-28 22:45:00 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.12 2007-04-22 21:28:27 thomson Exp $
  *
  */
 
@@ -598,7 +598,7 @@ void TClntIfaceIface::removeAllOpts() {
 	Log(Notice) << "NTP server " << *addr << " removed from the "
 		    << this->getName() << "/" << this->getID() <<" interface." << LogEnd;
 	this->NTPServerLst.del();
-	dns_del(this->getName(), this->getID(), addr->getPlain());
+	ntp_del(this->getName(), this->getID(), addr->getPlain());
     }
 
     // --- option: TIMEZONE ---
@@ -614,7 +614,7 @@ void TClntIfaceIface::removeAllOpts() {
 	Log(Notice) << "SIP server " << *addr << " removed from the "
 		    << this->getName() << "/" << this->getID() <<" interface." << LogEnd;
 	this->SIPServerLst.del();
-	dns_del(this->getName(), this->getID(), addr->getPlain());
+	sipserver_del(this->getName(), this->getID(), addr->getPlain());
     }
 
     // --- option: SIP-DOMAIN ---
@@ -632,7 +632,7 @@ void TClntIfaceIface::removeAllOpts() {
 	Log(Notice) << "NIS server " << *addr << " removed from the "
 		    << this->getName() << "/" << this->getID() <<" interface." << LogEnd;
 	this->NISServerLst.del();
-	dns_del(this->getName(), this->getID(), addr->getPlain());
+	nisserver_del(this->getName(), this->getID(), addr->getPlain());
     }
 
     // --- option: NIS-DOMAIN ---
