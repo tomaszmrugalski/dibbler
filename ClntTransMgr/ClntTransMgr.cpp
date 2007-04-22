@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.55 2007-04-22 21:19:29 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.56 2007-04-22 23:03:18 thomson Exp $
  *
  */
 
@@ -889,29 +889,35 @@ void TClntTransMgr::checkDecline()
 
             // decline sent, now remove those addrs from IfaceMgr
             SmartPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(firstIA->getIface());
+	    SPtr<TDUID> duid;
 
             declineIALst.first();
             while (ptrIA = declineIALst.get() ) {
                 SmartPtr<TAddrAddr> ptrAddr;
                 ptrIA->firstAddr();
-		Log(Info) << "Sending DECLINE for IA(IAID=" << ptrIA->getIAID() << "): ";
+		Log(Info) << "Sending DECLINE for IA(IAID=" << ptrIA->getIAID() << ")" << LogEnd;
 
                 while ( ptrAddr= ptrIA->getAddr() ) {
                     if (ptrAddr->getTentative() == TENTATIVE_YES) {
+			Log(Cont) << ptrAddr->get()->getPlain() << " ";
                         // remove this address from interface
-                        Log(Cont) << "(" << ptrAddr->get()->getPlain();
                         result = ptrIface->delAddr(ptrAddr->get(), ptrAddr->getPrefix());
-                        Log(Cont) << " Iface removal=" << result;
 
                         // remove this address from addrDB
                         result = ptrIA->delAddr(ptrAddr->get());
-                        Log(Cont) << " AddrDB removal=" << result << ")";
                     }
                 }
 		Log(Cont) << LogEnd;
-		
+		duid = ptrIA->getDUID();
                 ptrIA->setTentative();
             }
+
+	    // create REQUEST message
+	    SmartPtr<TClntMsgRequest> request;
+	    request = new TClntMsgRequest(IfaceMgr, That, CfgMgr, AddrMgr,
+					  declineIALst, duid, firstIA->getIface() );
+	    Transactions.append( (Ptr*) request);
+
         }
     } while(firstIA);
 }

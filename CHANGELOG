@@ -2,6 +2,8 @@
   Dibbler changelog
  ------------------- 
  0.6.0 [not released yet]
+  - Decline procedure is now working as expected
+  - NTP is now removed properly (bug #159)
   - Fix for compilation in RedHat Enterprise Linux 4
   - Fixes for gcc 4.3 compilation
   - Clnt: Cause of bind failure is now reported in Linux

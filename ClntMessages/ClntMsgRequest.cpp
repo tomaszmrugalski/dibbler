@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.21 2007-03-28 00:39:46 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.22 2007-04-22 23:03:18 thomson Exp $
  *
  */
 
@@ -137,6 +137,12 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     SmartPtr<TOpt> ptr;
     ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
     Options.append( ptr );
+
+    if (!srvDUID) {
+	Log(Error) << "Unable to send REQUEST: ServerId not specified.\n" << LogEnd;
+	IsDone = true;
+	return;
+    }
     
     ptr = (Ptr*) SmartPtr<TClntOptServerIdentifier> (new TClntOptServerIdentifier(srvDUID,this));
     // all IAs provided by checkSolicit
