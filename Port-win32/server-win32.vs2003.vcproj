@@ -621,6 +621,9 @@
 				Name="SrvOptions"
 				Filter="">
 				<File
+					RelativePath="..\SrvOptions\SrvOptAddrParams.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvOptions\SrvOptAuthentication.h">
 				</File>
 				<File

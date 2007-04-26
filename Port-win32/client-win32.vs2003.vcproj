@@ -257,6 +257,9 @@
 				Name="ClntOptions"
 				Filter="">
 				<File
+					RelativePath="..\ClntOptions\ClntOptAddrParams.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntOptions\ClntOptAuthentication.cpp">
 				</File>
 				<File
