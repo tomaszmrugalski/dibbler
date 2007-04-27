@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.24 2006-12-28 22:45:00 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.25 2007-04-27 11:46:31 thomson Exp $
  *
  */
 
@@ -243,6 +243,7 @@ TIfaceMgr::~TIfaceMgr()
 string TIfaceMgr::printMac(char * mac, int macLen) {
     ostringstream tmp;
     int i;
+    unsigned char x;
 
     for (i=0; i<macLen; i++) {
 	if (i)
@@ -250,7 +251,8 @@ string TIfaceMgr::printMac(char * mac, int macLen) {
 	tmp << hex;
 	tmp.fill('0');
 	tmp.width(2);
-	tmp << (int)mac[i];
+	x = (unsigned char) mac[i];
+	tmp << (unsigned int)x;
     }
     return tmp.str();
 }
