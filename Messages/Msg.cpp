@@ -196,13 +196,12 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize) {
 
     if (DigestType == DIGEST_NONE) {
             ok = true;
-            Log(Debug) << "Authentication is disabled." << LogEnd;
     } else if (AuthInfoPtr) {
+            Log(Debug) << "Authentication enabled." << LogEnd;
             unsigned AuthInfoLen = getDigestSize(DigestType);
             char *rcvdAuthInfo = new char[AuthInfoLen];
             char *goodAuthInfo = new char[AuthInfoLen];
 
-            cout << "#### " << bufSize << endl;
             memmove(rcvdAuthInfo, AuthInfoPtr, AuthInfoLen);
             memset(AuthInfoPtr, 0, AuthInfoLen);
 

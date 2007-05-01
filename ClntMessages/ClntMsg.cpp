@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.27 2007-04-22 21:19:28 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.28 2007-05-01 14:16:47 thomson Exp $
  */
 
 #ifdef WIN32
@@ -557,10 +557,8 @@ void TClntMsg::appendRequestedOptions() {
     // --- option: AUTH ---
     // FIXME: Implement authorisation for real
     if (ClntCfgMgr->getDigest()!=DIGEST_NONE) {
-	// Log(Debug) << "#### Adding AUTH option." << LogEnd;
 	Options.append(new TClntOptAuthentication(0, this));
     } else {
-	// Log(Debug) << "#### AUTH option disabled." << LogEnd;
     }
     // final setup: Did we add any options at all? 
     if ( optORO->count() ) 
