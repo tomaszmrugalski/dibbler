@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  0.6.0 [not released yet]
+  - Srv: Support for more than 1 relay fixed (bug #156)
   - Srv: interface-id option location in the RELAY-REPL is now configurable
   - Relay: interface-id option parsing improved
   - Relay: interface-id option location in the RELAY-FORW is now configurable
