@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.13 2007-05-01 12:03:14 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.14 2007-05-01 14:10:20 thomson Exp $
  *
  */
 
@@ -145,7 +145,8 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     SmartPtr<TRelOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
     SmartPtr<TRelOptInterfaceID> ptrIfaceID;
-    bool relay;
+    char * relayBuf=0;
+    int relayLen = 0;
     int relays=0;
 
     /* decode RELAY_FORW message */
@@ -161,9 +162,8 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     buf+=34;
     bufsize-=34;
     
-    relay = false;
     // options: only INTERFACEID and RELAY_MSG are allowed
-    while (!relay && bufsize>=4) {
+    while (bufsize>=4) {
 	short code = ntohs( * ((short*) (buf)));
 	short len  = ntohs(*((short*)(buf+2)));
 	buf     += 4;
@@ -181,17 +181,20 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	    }
 
 	    ptrIfaceID = new TRelOptInterfaceID(buf, bufsize, 0);
-	    // buf and bufsize is modified in TRelOptInterfaceID (TOptInteger) constructors
+	    buf     += ptrIfaceID->getSize()-4;
+	    bufsize -= ptrIfaceID->getSize()-4;
 	    break;
 	case OPTION_RELAY_MSG:
-	    relay = true;
+	    relayBuf = buf;
+	    relayLen = len;
+	    buf     += relayLen;
+	    bufsize -= relayLen;
 	    break;
 	default:
 	    Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Message dropped." << LogEnd;
 	    return 0;
 	}
     }
-
     
     Log(Info) << "RELAY_REPL was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
     if (ptrIfaceID)
@@ -231,13 +234,13 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     switch (buf[0]) {
     case RELAY_REPL_MSG:
 	//msg = this->decodeRelayRepl(iface, peer, buf, bufsize);
-	msg = new TRelMsgRelayRepl(this->Ctx, iface->getID(), peer, buf, bufsize);
+	msg = new TRelMsgRelayRepl(this->Ctx, iface->getID(), peer, relayBuf, relayLen);
 	break;
     case RELAY_FORW_MSG:
 	Log(Error) << "RELAY_REPL contains RELAY_FORW message." << LogEnd;
 	return 0;
     default:
-	msg = this->decodeGeneric(iface, peer, buf, bufsize);
+	msg = this->decodeGeneric(iface, peer, relayBuf, relayLen);
     };
     // inform that this message should be sent to the peerAddr address on the ptrIface interface.
     msg->setDestination(ptrIfaceID->getValue(), peerAddr);

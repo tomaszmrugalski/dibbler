@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  0.6.0 [not released yet]
+  - Relay: interface-id option parsing improved
   - Relay: interface-id option location in the RELAY-FORW is now configurable
   - Fix for print invalid MAC addresses.
   - Decline procedure is now working as expected
