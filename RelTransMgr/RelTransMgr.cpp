@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.17 2007-05-01 12:03:14 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.18 2007-05-01 19:29:47 thomson Exp $
  *
  */
 
@@ -177,8 +177,9 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     this->Ctx->CfgMgr->firstIface();
     while (cfgIface = this->Ctx->CfgMgr->getIface()) {
 	if (cfgIface->getServerUnicast()) {
-	    Log(Notice) << "Relaying message on the " << cfgIface->getName() << "/" << cfgIface->getID()
-			<< " interface to unicast (" << cfgIface->getServerUnicast()->getPlain() << ") address." << LogEnd;
+	    Log(Notice) << "Relaying encapsulated " << msg->getName() << " message on the " << cfgIface->getFullName()
+			<< " interface to unicast (" << cfgIface->getServerUnicast()->getPlain() << ") address, port " 
+			<< DHCPSERVER_PORT << "." << LogEnd;
 
 	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data to server unicast address." << LogEnd;
@@ -187,8 +188,9 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 	}
 	if (cfgIface->getServerMulticast()) {
 	    addr = new TIPv6Addr(ALL_DHCP_SERVERS, true);
-	    Log(Notice) << "Relaying message on the " << cfgIface->getName() << "/" << cfgIface->getID()
-			<< " interface to multicast (" << addr->getPlain() << ") address." << LogEnd;
+	    Log(Notice) << "Relaying encapsulated " << msg->getName() << " message on the " << cfgIface->getFullName()
+			<< " interface to multicast (" << addr->getPlain() << ") address, port " 
+			<< DHCPSERVER_PORT << "." << LogEnd;
 	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, addr, DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data to server multicast address." << LogEnd;
 	    }
