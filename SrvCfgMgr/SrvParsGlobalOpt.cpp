@@ -61,3 +61,11 @@ void TSrvParsGlobalOpt::addDigest(DigestTypes x) {
 List(DigestTypes) TSrvParsGlobalOpt::getDigest() {
     return this->DigestLst;
 }
+
+void TSrvParsGlobalOpt::setInterfaceIDOrder(ESrvIfaceIdOrder order) {
+    InterfaceIDOrder = order;
+}
+
+ESrvIfaceIdOrder TSrvParsGlobalOpt::getInterfaceIDOrder() {
+    return InterfaceIDOrder;
+}

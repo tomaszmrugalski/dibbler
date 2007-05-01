@@ -51,6 +51,7 @@ ta-class            { return SrvParser::TACLASS_; }
 stateless           { return SrvParser::STATELESS_; }
 relay               { return SrvParser::RELAY_; }
 interface-id        { return SrvParser::IFACE_ID_; }
+interface-id-order  { return SrvParser::IFACE_ID_ORDER_; }
 
 log-name            { return SrvParser::LOGNAME_;}
 log-level           { return SrvParser::LOGLEVEL_;}

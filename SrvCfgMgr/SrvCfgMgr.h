@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.14 2006-11-17 00:44:33 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.15 2007-05-01 14:18:14 thomson Exp $
  *
  */
 
@@ -67,7 +67,7 @@ public:
     // configuration parameters
     string getWorkdir();
     bool stateless();
-
+    ESrvIfaceIdOrder getInterfaceIDOrder();
     int getCacheSize();
 
 private:    
@@ -86,6 +86,7 @@ private:
     bool Stateless;
     int  CacheSize;
     List(DigestTypes) DigestLst;
+    ESrvIfaceIdOrder InterfaceIDOrder;
 };
 
 #endif /* SRVCONFMGR_H */

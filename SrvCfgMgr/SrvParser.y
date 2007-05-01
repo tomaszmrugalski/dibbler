@@ -81,7 +81,7 @@ virtual ~SrvParser();
     char addrval[16];
 }
 
-%token IFACE_, RELAY_, IFACE_ID_, CLASS_, TACLASS_
+%token IFACE_, RELAY_, IFACE_ID_, IFACE_ID_ORDER_, CLASS_, TACLASS_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, LIFETIME_
@@ -117,13 +117,13 @@ Grammar
 ;
 
 GlobalDeclarationList
-: GlobalOptionDeclaration
+: GlobalOption
 | InterfaceDeclaration
-| GlobalDeclarationList GlobalOptionDeclaration
+| GlobalDeclarationList GlobalOption
 | GlobalDeclarationList InterfaceDeclaration
 ;
 
-GlobalOptionDeclaration
+GlobalOption
 : InterfaceOptionDeclaration
 | LogModeOption
 | LogLevelOption
@@ -133,6 +133,7 @@ GlobalOptionDeclaration
 | CacheSizeOption
 | AuthOption
 | Experimental
+| IfaceIDOrder
 ;
 
 InterfaceOptionDeclaration
@@ -731,6 +732,26 @@ Experimental
     ParserOptStack.getLast()->setExperimental(true);
 };
 
+IfaceIDOrder
+:IFACE_ID_ORDER_ STRING_
+{
+    if (!strncasecmp($2,"before",6)) 
+    {
+	ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_BEFORE);
+    } else 
+    if (!strncasecmp($2,"after",5)) 
+    {
+	ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_AFTER);
+    } else
+    if (!strncasecmp($2,"omit",4)) 
+    {
+	ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_NONE);
+    } else 
+    {
+	Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, none" << LogEnd;
+	YYABORT;
+    }
+};
 
 CacheSizeOption
 : CACHE_SIZE_ Number

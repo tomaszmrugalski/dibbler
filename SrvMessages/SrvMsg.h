@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.14 2006-12-30 23:24:42 thomson Exp $
+ * $Id: SrvMsg.h,v 1.15 2007-05-01 14:18:16 thomson Exp $
  *
  */
 
@@ -72,13 +72,17 @@ protected:
     SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
 				  SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate);
     void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
-    
+    int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
+
+    // relay
     SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
+    int len[HOP_COUNT_LIMIT];
+    int HopTbl[HOP_COUNT_LIMIT];
+
     unsigned long FirstTimeStamp; // timestamp of first message transmission
     unsigned long MRT;            // maximum retransmission timeout
-    int HopTbl[HOP_COUNT_LIMIT];
     int Relays;
     int Parent; // type of the parent message (used in ADVERTISE and REPLY)
 };

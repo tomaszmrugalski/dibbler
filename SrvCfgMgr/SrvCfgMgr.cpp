@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.47 2007-03-04 20:59:41 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.48 2007-05-01 14:18:14 thomson Exp $
  *
  */
 
@@ -115,10 +115,11 @@ void TSrvCfgMgr::dump() {
 }
 
 bool TSrvCfgMgr::setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt) {
-    this->Workdir   = opt->getWorkDir();
-    this->Stateless = opt->getStateless();
-    this->CacheSize = opt->getCacheSize();
-    this->DigestLst = opt->getDigest();
+    this->Workdir          = opt->getWorkDir();
+    this->Stateless        = opt->getStateless();
+    this->CacheSize        = opt->getCacheSize();
+    this->DigestLst        = opt->getDigest();
+    this->InterfaceIDOrder = opt->getInterfaceIDOrder();
     return true;
 }
 
@@ -555,6 +556,11 @@ int TSrvCfgMgr::getCacheSize() {
     return this->CacheSize;
 }
 
+ESrvIfaceIdOrder TSrvCfgMgr::getInterfaceIDOrder()
+{
+    return InterfaceIDOrder;
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -568,6 +574,24 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
 	out << "  " << *x.DUID;
     else
 	out << "  <!-- DUID not set -->" << std::endl;
+
+    out << "  <InterfaceIDOrder>";
+    switch (x.InterfaceIDOrder) {
+    case SRV_IFACE_ID_ORDER_BEFORE:
+	out << "before";
+	break;
+    case SRV_IFACE_ID_ORDER_AFTER:
+	out << "after";
+	break;
+    case SRV_IFACE_ID_ORDER_NONE:
+	out << "none";
+	break;
+    default:
+	out << "unknown(" << x.InterfaceIDOrder << ")";
+	break;
+    }
+    out << "</InterfaceIDOrder>" << endl;
+
     out << "  <auth count=\"" << x.DigestLst.count() << "\">";
     x.DigestLst.first();
     SPtr<DigestTypes> dig;

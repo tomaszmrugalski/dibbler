@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsGlobalOpt.h,v 1.7 2007-04-22 21:19:30 thomson Exp $
+ * $Id: SrvParsGlobalOpt.h,v 1.8 2007-05-01 14:18:15 thomson Exp $
  *
  */
 
@@ -15,6 +15,12 @@
 
 #include "SrvParsIfaceOpt.h"
 #include "DHCPConst.h"
+
+typedef enum {
+    SRV_IFACE_ID_ORDER_BEFORE,
+    SRV_IFACE_ID_ORDER_AFTER,
+    SRV_IFACE_ID_ORDER_NONE
+} ESrvIfaceIdOrder;
 
 class TSrvParsGlobalOpt : public TSrvParsIfaceOpt
 {
@@ -32,6 +38,8 @@ public:
     List(DigestTypes) getDigest();
     bool getExperimental(); // is experimental stuff allowed?
     void setExperimental(bool exper);
+    void setInterfaceIDOrder(ESrvIfaceIdOrder order);
+    ESrvIfaceIdOrder getInterfaceIDOrder();
     
 private:
     bool   Experimental;
@@ -39,5 +47,6 @@ private:
     bool   Stateless;
     int    CacheSize;
     List(DigestTypes) DigestLst;
+    ESrvIfaceIdOrder InterfaceIDOrder;
 };
 #endif
