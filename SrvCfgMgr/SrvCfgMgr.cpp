@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.48 2007-05-01 14:18:14 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.49 2007-05-01 19:31:56 thomson Exp $
  *
  */
 
@@ -366,13 +366,21 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
     if (this->stateless())
 	return true;
 
+    int classCnt = 0;
     if (ptrIface)
     {
         SmartPtr<TSrvCfgAddrClass> ptrClass;
         ptrIface->firstAddrClass();
-        while(ptrClass=ptrIface->getAddrClass())
+        while(ptrClass=ptrIface->getAddrClass()) {
             if (ptrClass->clntSupported(duid,clntAddr))
                 return true;
+	    classCnt++;
+	}
+    }
+    if (!classCnt) {
+	Log(Warning) << "There are no address class defined on the " << ptrIface->getFullName() 
+		     << ". Maybe you are trying to configure clients on cascade relay interface? "
+		     << "If that is so, please define separate class on this interface, too." << LogEnd;
     }
     return false;
 }

@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.41 2007-05-01 14:18:15 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.42 2007-05-01 19:31:57 thomson Exp $
  */
 
 #include <sstream>
@@ -285,42 +285,18 @@ void TSrvMsg::send()
 		       << " is allowed maximum." << LogEnd;
 	    return;
 	}
+
 	// calculate lengths of all relays
-	len[this->Relays-1]=this->getSize();
+	len[Relays-1]=this->getSize();
 	for (int i=this->Relays-1; i>0; i--) {
-	    len[i-1]= len[i] + 34;
-	    if (this->InterfaceIDTbl[i] && (SrvCfgMgr->getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE))
+	    len[i-1]= len[i] + 38; // 34 bytes (relay header) + 4 bytes (relay-msg option header)
+	    if (this->InterfaceIDTbl[i] && (SrvCfgMgr->getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
 		len[i-1]+=this->InterfaceIDTbl[i]->getSize();
-	}
-
-	offset += storeSelfRelay(buf, 0, SrvCfgMgr->getInterfaceIDOrder() );
-
-#if 0	
-	// FIXME: remove this old code
-	for (int i=0; i < this->Relays; i++) {
-
-	    buf[offset++]=RELAY_REPL_MSG;
-	    buf[offset++]=this->HopTbl[i];
-	    this->LinkAddrTbl[i]->storeSelf(buf+offset);
-	    this->PeerAddrTbl[i]->storeSelf(buf+offset+16);
-	    offset +=32;
-
-	    if (SrvCfgMgr->getInterfaceIDOrder()==SRV_IFACE_ID_ORDER_BEFORE)
-	    {
-		if (this->InterfaceIDTbl[i]) {
-		    this->InterfaceIDTbl[i]->storeSelf(buf+offset);
-		    offset += this->InterfaceIDTbl[i]->getSize();
-		}
 	    }
-
-	    *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
-	    offset+=2;
-	    *(short*)(buf+offset) = htons(len[i]);
-	    offset+=2;
-	    Log(Debug) << "RELAY_REPL header has been built (" << offset << " bytes)." << LogEnd;
 	}
-	offset += this->storeSelf(buf+offset);
-#endif
+
+	// recursive storeSelf
+	offset += storeSelfRelay(buf, 0, SrvCfgMgr->getInterfaceIDOrder() );
 
 	// check if there are underlaying interfaces
 	for (int i=0; i < this->Relays; i++) {
@@ -363,8 +339,9 @@ void TSrvMsg::copyRelayInfo(SmartPtr<TSrvMsg> q) {
 int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
 {
     int offset = 0;
-    if (relayDepth == this->Relays)
+    if (relayDepth == this->Relays) {
 	return storeSelf(buf);
+    }
     buf[offset++] = RELAY_REPL_MSG;
     buf[offset++] = HopTbl[relayDepth];
     LinkAddrTbl[relayDepth]->storeSelf(buf+offset);
@@ -383,7 +360,7 @@ int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
     offset+=2;
     *(short*)(buf+offset) = htons(len[relayDepth]);
     offset+=2;
-    Log(Debug) << "RELAY_REPL header has been built (" << offset << " bytes)." << LogEnd;
+    
     offset += storeSelfRelay(buf+offset, relayDepth+1, order);
 
     if (order == SRV_IFACE_ID_ORDER_AFTER)

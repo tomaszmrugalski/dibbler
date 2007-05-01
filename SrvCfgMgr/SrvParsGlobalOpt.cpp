@@ -11,10 +11,11 @@
 #include "Portable.h"
 
 TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
-    this->WorkDir   = WORKDIR;
-    this->Stateless = false;
-    this->CacheSize = SERVER_DEFAULT_CACHE_SIZE;
-    this->Experimental = false;
+    this->WorkDir          = WORKDIR;
+    this->Stateless        = false;
+    this->CacheSize        = SERVER_DEFAULT_CACHE_SIZE;
+    this->Experimental     = false;
+    this->InterfaceIDOrder = SRV_IFACE_ID_ORDER_BEFORE;
 
     this->DigestLst.clear();
 }
