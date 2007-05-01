@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelParsGlobalOpt.cpp,v 1.2 2007-03-07 02:37:11 thomson Exp $
+ * $Id: RelParsGlobalOpt.cpp,v 1.3 2007-05-01 12:03:13 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2007-03-07 02:37:11  thomson
+ * Experimental support for guess-mode.
+ *
  * Revision 1.1  2005-01-11 22:53:35  thomson
  * Relay skeleton implemented.
  *
@@ -20,6 +23,7 @@
 TRelParsGlobalOpt::TRelParsGlobalOpt(void) {
     this->WorkDir   = WORKDIR;
     this->GuessMode = false;
+    this->InterfaceIDOrder = REL_IFACE_ID_ORDER_BEFORE;
 }
 
 TRelParsGlobalOpt::~TRelParsGlobalOpt(void) {
@@ -40,4 +44,12 @@ void TRelParsGlobalOpt::setGuessMode(bool guess) {
 
 bool TRelParsGlobalOpt::getGuessMode() {
     return GuessMode;
+}
+
+void TRelParsGlobalOpt::setInterfaceIDOrder(ERelIfaceIdOrder order) {
+    InterfaceIDOrder = order;
+}
+
+ERelIfaceIdOrder TRelParsGlobalOpt::getInterfaceIDOrder() {
+    return InterfaceIDOrder;
 }

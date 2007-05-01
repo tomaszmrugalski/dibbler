@@ -51,6 +51,7 @@ server              { return RelParser::SERVER_; }
 unicast             { return RelParser::UNICAST_; }
 multicast           { return RelParser::MULTICAST_; }
 interface-id        { return RelParser::IFACE_ID_; }
+interface-id-order  { return RelParser::IFACE_ID_ORDER_; }
 guess-mode          { return RelParser::GUESS_MODE_; }
 
 log-name            { return RelParser::LOGNAME_;}

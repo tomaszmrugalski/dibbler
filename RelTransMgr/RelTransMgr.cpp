@@ -6,55 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.16 2007-03-21 00:30:29 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.15  2007-03-10 01:42:32  thomson
- * Guess-mode (and related segfault fix) added to relay.
- *
- * Revision 1.14  2007-03-06 13:36:56  thomson
- * Global address is now bound properly in Relay (bug #143)
- *
- * Revision 1.13  2005-05-09 23:30:20  thomson
- *
- * Port issues fixed.
- *
- * Revision 1.12  2005/05/09 23:17:50  thomson
- * *** empty log message ***
- *
- * Revision 1.11  2005/05/09 23:16:08  thomson
- * Interface-ID option length check improved.
- *
- * Revision 1.10  2005/05/03 15:36:01  thomson
- * Relay now binds global (or site scoped) address instead of link-local
- * for srv unicast communication. (bug #113)
- *
- * Revision 1.9  2005/05/02 21:52:39  thomson
- * Logging cleanup.
- *
- * Revision 1.8  2005/05/02 21:20:34  thomson
- * Issues with invalid port usage have been fixed.
- *
- * Revision 1.7  2005/05/02 20:58:13  thomson
- * Support for multiple relays added. (bug #107)
- *
- * Revision 1.6  2005/04/28 21:20:52  thomson
- * Support for multiple relays added.
- *
- * Revision 1.5  2005/04/25 00:19:20  thomson
- * Changes in progress.
- *
- * Revision 1.4  2005/01/24 00:42:57  thomson
- * no message
- *
- * Revision 1.3  2005/01/23 23:17:53  thomson
- * Relay/global address support related improvements.
- *
- * Revision 1.2  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.1  2005/01/11 22:53:36  thomson
- * Relay skeleton implemented.
+ * $Id: RelTransMgr.cpp,v 1.17 2007-05-01 12:03:14 thomson Exp $
  *
  */
 
@@ -192,14 +144,14 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     SmartPtr<TRelCfgIface> cfgIface;
     cfgIface = this->Ctx->CfgMgr->getIfaceByID(msg->getIface());
     TRelOptInterfaceID ifaceID(cfgIface->getInterfaceID(), 0);
-    
-#if 1
+
+    if (Ctx->CfgMgr->getInterfaceIDOrder()==REL_IFACE_ID_ORDER_BEFORE)
     {
 	// store InterfaceID option
 	ifaceID.storeSelf(buf + offset);
 	offset += ifaceID.getSize();
+	Log(Debug) << "Interface-id option added before relayed message." << LogEnd;
     }
-#endif
 
     // store relay msg option
     *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
@@ -209,14 +161,19 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     bufLen = msg->storeSelf(buf+offset);
     offset += bufLen;
 
-#if 0
+    if (Ctx->CfgMgr->getInterfaceIDOrder()==REL_IFACE_ID_ORDER_AFTER)
     {
 	// store InterfaceID option
 	ifaceID.storeSelf(buf + offset);
 	offset += ifaceID.getSize();
+	Log(Debug) << "Interface-id option added after relayed message." << LogEnd;
     }
-#endif
 
+    if (Ctx->CfgMgr->getInterfaceIDOrder()==REL_IFACE_ID_ORDER_NONE)
+    {
+	Log(Warning) << "Interface-id option not added (interface-id-order omit used in relay.conf). "
+		     << "That is a debugging feature and violates RFC3315. Use with caution." << LogEnd;
+    }
     this->Ctx->CfgMgr->firstIface();
     while (cfgIface = this->Ctx->CfgMgr->getIface()) {
 	if (cfgIface->getServerUnicast()) {

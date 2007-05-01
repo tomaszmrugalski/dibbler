@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.12 2007-03-10 01:42:32 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.13 2007-05-01 12:03:14 thomson Exp $
  *
  */
 
@@ -179,13 +179,16 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 			     << ", actual length " << len << "." << LogEnd;
 		return 0;
 	    }
+
 	    ptrIfaceID = new TRelOptInterfaceID(buf, bufsize, 0);
+	    // buf and bufsize is modified in TRelOptInterfaceID (TOptInteger) constructors
 	    break;
 	case OPTION_RELAY_MSG:
 	    relay = true;
 	    break;
 	default:
 	    Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Message dropped." << LogEnd;
+	    return 0;
 	}
     }
 

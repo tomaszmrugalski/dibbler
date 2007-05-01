@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.10 2007-03-10 01:42:32 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.11 2007-05-01 12:03:13 thomson Exp $
  *
  */
 
@@ -98,8 +98,9 @@ void TRelCfgMgr::dump() {
 }
 
 bool TRelCfgMgr::setupGlobalOpts(SmartPtr<TRelParsGlobalOpt> opt) {
-    this->Workdir   = opt->getWorkDir();
-    this->GuessMode = opt->getGuessMode();
+    this->Workdir          = opt->getWorkDir();
+    this->GuessMode        = opt->getGuessMode();
+    this->InterfaceIDOrder = opt->getInterfaceIDOrder();
     return true;
 }
 
@@ -216,7 +217,8 @@ bool TRelCfgMgr::validateIface(SmartPtr<TRelCfgIface> ptrIface)
     return true;
 }
 
-SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface) {
+SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface) 
+{
     SmartPtr<TRelCfgIface> ptrIface;
     this->firstIface();
     while ( ptrIface = this->getIface() ) {
@@ -224,11 +226,12 @@ SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface) {
 	    return ptrIface;
     }
     Log(Error) << "There is no interface with ifindex=" << iface << " in the CfgMgr." << LogEnd;
-    return 0; // NULL
+    return 0;
 }
 
 
-SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) {
+SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) 
+{
     SmartPtr<TRelCfgIface> ptrIface;
     this->firstIface();
     while ( ptrIface = this->getIface() ) {
@@ -237,7 +240,12 @@ SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) {
     }
     Log(Error) << "There is no interface with interfaceID=" << iface 
 	       << " in the CfgMgr." << LogEnd;
-    return 0; // NULL
+    return 0;
+}
+
+ERelIfaceIdOrder TRelCfgMgr::getInterfaceIDOrder()
+{
+    return InterfaceIDOrder;
 }
 
 // --------------------------------------------------------------------
@@ -249,6 +257,23 @@ ostream & operator<<(ostream &out, TRelCfgMgr &x) {
     out << "  <workdir>" << x.getWorkDir()  << "</workdir>" << endl;
     out << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     out << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
+    out << "  <InterfaceIDOrder>";
+    
+    switch (x.InterfaceIDOrder) {
+    case REL_IFACE_ID_ORDER_BEFORE:
+	out << "before";
+	break;
+    case REL_IFACE_ID_ORDER_AFTER:
+	out << "after";
+	break;
+    case REL_IFACE_ID_ORDER_NONE:
+	out << "none";
+	break;
+    default:
+	out << "unknown(" << x.InterfaceIDOrder << ")";
+	break;
+    }
+    out << "</InterfaceIDOrder>" << endl;
     
     SmartPtr<TRelCfgIface> ptrIface;
     x.firstIface();

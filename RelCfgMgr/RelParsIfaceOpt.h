@@ -6,9 +6,8 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelParsIfaceOpt.h,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelParsIfaceOpt.h,v 1.2 2007-05-01 12:03:13 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
  */
 
 #ifndef RELPARSIFACEOPT_H_

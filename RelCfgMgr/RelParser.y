@@ -48,7 +48,7 @@ virtual ~RelParser();
     char addrval[16];
 }
 
-%token IFACE_, CLIENT_, SERVER_, UNICAST_, MULTICAST_, IFACE_ID_
+%token IFACE_, CLIENT_, SERVER_, UNICAST_, MULTICAST_, IFACE_ID_, IFACE_ID_ORDER_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
 %token GUESS_MODE_
 
@@ -83,6 +83,7 @@ GlobalOption
 | LogNameOption
 | WorkDirOption
 | GuessMode
+| IfaceIDOrder
 ;
 
 IfaceList
@@ -99,8 +100,8 @@ IfaceOptions
 : ClientUnicastOption
 | ServerUnicastOption
 | ClientMulticastOption
-| ServerMulticastOption
-| IfaceIDOption
+| ServerMulticast
+| IfaceID
 ;
 
 Iface
@@ -151,7 +152,7 @@ ClientUnicastOption
 }
 ;
 
-ServerMulticastOption
+ServerMulticast
 : SERVER_ MULTICAST_ Number
 { 
     ParserOptStack.getLast()->setServerMulticast($3);
@@ -204,12 +205,33 @@ GuessMode
     ParserOptStack.getLast()->setGuessMode(true);
 };
 
-IfaceIDOption
+IfaceID
 :IFACE_ID_ Number
 {
     ParserOptStack.getLast()->setInterfaceID($2);
 }
 ;
+
+IfaceIDOrder
+:IFACE_ID_ORDER_ STRING_
+{
+    if (!strncasecmp($2,"before",6)) 
+    {
+	ParserOptStack.getLast()->setInterfaceIDOrder(REL_IFACE_ID_ORDER_BEFORE);
+    } else 
+    if (!strncasecmp($2,"after",5)) 
+    {
+	ParserOptStack.getLast()->setInterfaceIDOrder(REL_IFACE_ID_ORDER_AFTER);
+    } else
+    if (!strncasecmp($2,"omit",4)) 
+    {
+	ParserOptStack.getLast()->setInterfaceIDOrder(REL_IFACE_ID_ORDER_NONE);
+    } else 
+    {
+	Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, none" << LogEnd;
+	YYABORT;
+    }
+};
 
 
 %%

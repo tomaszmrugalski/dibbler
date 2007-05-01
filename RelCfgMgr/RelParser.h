@@ -227,15 +227,16 @@ typedef
 #define	UNICAST_	261
 #define	MULTICAST_	262
 #define	IFACE_ID_	263
-#define	LOGNAME_	264
-#define	LOGLEVEL_	265
-#define	LOGMODE_	266
-#define	WORKDIR_	267
-#define	GUESS_MODE_	268
-#define	STRING_	269
-#define	HEXNUMBER_	270
-#define	INTNUMBER_	271
-#define	IPV6ADDR_	272
+#define	IFACE_ID_ORDER_	264
+#define	LOGNAME_	265
+#define	LOGLEVEL_	266
+#define	LOGMODE_	267
+#define	WORKDIR_	268
+#define	GUESS_MODE_	269
+#define	STRING_	270
+#define	HEXNUMBER_	271
+#define	INTNUMBER_	272
+#define	IPV6ADDR_	273
 
 
 #line 169 "../bison++/bison.h"
@@ -290,6 +291,7 @@ static const int SERVER_;
 static const int UNICAST_;
 static const int MULTICAST_;
 static const int IFACE_ID_;
+static const int IFACE_ID_ORDER_;
 static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
@@ -313,15 +315,16 @@ static const int IPV6ADDR_;
 	,UNICAST_=261
 	,MULTICAST_=262
 	,IFACE_ID_=263
-	,LOGNAME_=264
-	,LOGLEVEL_=265
-	,LOGMODE_=266
-	,WORKDIR_=267
-	,GUESS_MODE_=268
-	,STRING_=269
-	,HEXNUMBER_=270
-	,INTNUMBER_=271
-	,IPV6ADDR_=272
+	,IFACE_ID_ORDER_=264
+	,LOGNAME_=265
+	,LOGLEVEL_=266
+	,LOGMODE_=267
+	,WORKDIR_=268
+	,GUESS_MODE_=269
+	,STRING_=270
+	,HEXNUMBER_=271
+	,INTNUMBER_=272
+	,IPV6ADDR_=273
 
 
 #line 215 "../bison++/bison.h"

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptInteger.cpp,v 1.2 2006-10-29 23:05:10 thomson Exp $
+ * $Id: OptInteger.cpp,v 1.3 2007-05-01 12:03:13 thomson Exp $
  *
  */
 
@@ -60,6 +60,7 @@ TOptInteger::TOptInteger(int type, unsigned int len, char *&buf, int &bufsize, T
 	return;
     }
     buf += this->Len;
+    bufsize -= this->Len;
 }
 
 char * TOptInteger::storeSelf(char* buf)

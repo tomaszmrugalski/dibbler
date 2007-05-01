@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelParsIfaceOpt.cpp,v 1.1 2005-01-11 22:53:35 thomson Exp $
+ * $Id: RelParsIfaceOpt.cpp,v 1.2 2007-05-01 12:03:13 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2005-01-11 22:53:35  thomson
+ * Relay skeleton implemented.
+ *
  */
 
 #include "RelParsIfaceOpt.h"
@@ -65,3 +68,4 @@ void TRelParsIfaceOpt::setInterfaceID(int id) {
 int TRelParsIfaceOpt::getInterfaceID() {
     return this->InterfaceID;
 }
+

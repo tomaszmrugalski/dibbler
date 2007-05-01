@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.h,v 1.5 2007-03-07 02:37:11 thomson Exp $
+ * $Id: RelCfgMgr.h,v 1.6 2007-05-01 12:03:13 thomson Exp $
  *
  */
 
@@ -45,8 +45,8 @@ public:
 
     // configuration parameters
     string getWorkdir();
-
     bool guessMode();
+    ERelIfaceIdOrder getInterfaceIDOrder();
 
 private:    
     TCtx Ctx;
@@ -64,6 +64,7 @@ private:
     // global options
     string Workdir;
     bool GuessMode;
+    ERelIfaceIdOrder InterfaceIDOrder;
 };
 
 #endif /* RELCONFMGR_H */
