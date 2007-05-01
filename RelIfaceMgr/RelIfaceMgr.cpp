@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.14 2007-05-01 14:10:20 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.15 2007-05-01 19:22:14 thomson Exp $
  *
  */
 
@@ -231,7 +231,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     relays++;
 
     SmartPtr<TRelMsg> msg;
-    switch (buf[0]) {
+    switch (relayBuf[0]) {
     case RELAY_REPL_MSG:
 	//msg = this->decodeRelayRepl(iface, peer, buf, bufsize);
 	msg = new TRelMsgRelayRepl(this->Ctx, iface->getID(), peer, relayBuf, relayLen);
