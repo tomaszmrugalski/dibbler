@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.15 2007-05-01 14:18:14 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.16 2007-05-03 23:16:29 thomson Exp $
  *
  */
 
@@ -49,6 +49,10 @@ public:
     SmartPtr<TSrvCfgPD> getClassByPrefix(int iface, SmartPtr<TIPv6Addr> prefix);
     SmartPtr<TIPv6Addr> getRandomAddr(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
     bool isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
+
+    // prefix-related
+    bool incrPrefixCount(int iface, SPtr<TIPv6Addr> prefix);
+    bool decrPrefixCount(int iface, SPtr<TIPv6Addr> prefix);
 
     // class' usage management
     void delClntAddr(int iface, SmartPtr<TIPv6Addr> addr);

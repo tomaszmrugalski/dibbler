@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.39 2007-04-11 07:51:03 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.40 2007-05-03 23:16:29 thomson Exp $
  */
 
 #include <cstdlib>
@@ -237,36 +237,39 @@ SmartPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
     return 0;
 }
 
-void TSrvCfgIface::addClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
+bool TSrvCfgIface::addClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
     SmartPtr<TSrvCfgPD> ptrPD;
     this->firstPD();
     while (ptrPD = this->getPD() ) {
 	if (ptrPD->prefixInPool(ptrAddr)) {
-	    Log(Debug) << "Prefix usage for class " << ptrPD->getID()
+	    Log(Debug) << "PD: Prefix usage for class " << ptrPD->getID()
 		       << " increased by 1." << LogEnd;
 	    ptrPD->incrAssigned();
-	    return;
+	    return true;
 	}
     }
     Log(Warning) << "Unable to increase prefix usage: no prefix found for " 
 		 << *ptrAddr << LogEnd;
+    return false;
 }
 
-void TSrvCfgIface::delClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
+bool TSrvCfgIface::delClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
     SmartPtr<TSrvCfgPD> ptrPD;
     this->firstPD();
     while (ptrPD = this->getPD() ) {
 	if (ptrPD->prefixInPool(ptrAddr)) {
 	    ptrPD->decrAssigned();
-	    Log(Debug) << "Prefix usage for class " << ptrPD->getID()
+	    Log(Debug) << "PD: Prefix usage for class " << ptrPD->getID()
 		       << " decreased by 1." << LogEnd;
-	    return;
+	    return true;
 	}
     }
     Log(Warning) << "Unable to decrease address usage: no class found for " 
 		 << *ptrAddr << LogEnd;
+    return false;
 }
 
+#if 0
 SmartPtr<TSrvCfgPD> TSrvCfgIface::getRandomPrefix(SmartPtr<TDUID> clntDuid, 
 							SmartPtr<TIPv6Addr> clntAddr) {
 /* this method is not used currently 
@@ -294,6 +297,7 @@ SmartPtr<TSrvCfgPD> TSrvCfgIface::getRandomPrefix(SmartPtr<TDUID> clntDuid,
 	       << clntAddr->getPlain() << ")." << LogEnd;*/
     return 0;
 }
+#endif
 
 long TSrvCfgIface::countPD() {
     return this->SrvCfgPDLst.count();

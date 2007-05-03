@@ -477,6 +477,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		    continue;
 		prefix = (Ptr*) subOpt;
 		if (AddrMgr->delPrefix(clntID->getDUID(), pd->getIAID(), prefix->getPrefix(), false) ) {
+		    CfgMgr->decrPrefixCount(Iface, prefix->getPrefix());
 		    anyDeleted=true;                    
 		} else {
 		    Log(Warning) << "PD: No such binding found: client=" << clntID->getDUID()->getPlain() << ", PD (iaid=" 

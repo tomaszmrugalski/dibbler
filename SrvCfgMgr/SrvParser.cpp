@@ -2801,7 +2801,7 @@ SmartPtr<TIPv6Addr> SrvParser::getRangeMax(char * addrPacked, int prefix){
     memcpy(packed, addrPacked,16);
     if (prefix%8!=0) {
 	mask = bitMask[prefix%8];
-	packed[prefix/8] = packed[prefix/8] | mask;
+	packed[prefix/8] = packed[prefix/8] | ~mask;
 	prefix = (prefix/8 + 1)*8;
     }
     for (int i=prefix/8;i<16; i++) {

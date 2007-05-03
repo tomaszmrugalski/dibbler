@@ -100,8 +100,8 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
 	    continue;
 	optPrefix = (Ptr*) opt;
 	prefix = optPrefix->getPrefix();
-	this->AddrMgr->delClntAddr(this->ClntDuid, this->IAID, prefix, quiet); // not sure about that 
-	this->CfgMgr->delClntAddr(this->Iface, prefix);
+	//AddrMgr->delClntAddr(this->ClntDuid, this->IAID, prefix, quiet); // not sure about that 
+	CfgMgr->decrPrefixCount(this->Iface, prefix);
     }
 }
 
@@ -121,20 +121,29 @@ int TSrvOptIA_PD::assignPrefix(SmartPtr<TIPv6Addr> hint, bool fake) {
     SmartPtr<TSrvOptIAPrefix> optPrefix;
     SmartPtr<TSrvCfgPD> ptrPD;
     List(TIPv6Addr) prefixLst;
-    
+
     // get address
     prefixLst.clear();
     prefixLst = this->getFreePrefixes(hint);
     prefixLst.first();
     ostringstream buf;
+    bool alreadyIncreased = false;
     while (prefix = prefixLst.get()) {
 	buf << prefix->getPlain() << "/" << this->PDLength << " ";
 	optPrefix = new TSrvOptIAPrefix(prefix, this->PDLength, this->Prefered, this->Valid, this->Parent);
 	SubOptions.append((Ptr*)optPrefix);
 	
-	if (!fake)
+	if (!fake) {
+	    // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
+	    // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
 	    AddrMgr->addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
 			       prefix, this->Prefered, this->Valid, this->PDLength, false);
+	    if (!alreadyIncreased) {
+		// but CfgMgr has to increase usage only once. Don't ask my why :)
+		CfgMgr->incrPrefixCount(Iface, prefix);
+		alreadyIncreased = true;
+	    }
+	}
     }
     Log(Info) << "PD:" << (fake?"(would be)":"") << " assigned prefix(es):" << buf.str() << LogEnd;
 
@@ -212,6 +221,14 @@ TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
     }
 }
 
+/** 
+ * this method is used to prepare response to IA_PD received in SOLICIT and REQUEST messages
+ * (i.e. it tries to assign prefix as requested by client)
+ * 
+ * @param queryOpt 
+ * @param ptrIface 
+ * @param fake 
+ */
 void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> ptrIface, bool fake) {
 
     // --- Is this PD without IAPREFIX options? ---
@@ -416,9 +433,13 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SmartPtr<TIPv6Addr> hint) {
 	lst.first();
 	bool allFree = true;
 	while (prefix = lst.get()) {
-	    if (!AddrMgr->prefixIsFree(prefix))
+	    //Log(Debug) << "#### Checking if " << prefix->getPlain() << " is free." << LogEnd;
+	    if (!AddrMgr->prefixIsFree(prefix)) {
+		// Log(Debug) << "#### No, it's not free" << LogEnd;
 		allFree = false;
+	    }
 	}
+	//Log(Debug) << "#### allFree" << LogEnd;
 	if (allFree) {
 	    this->PDLength = ptrPD->getPD_Length();
 	    this->Prefered = ptrPD->getPrefered(this->Prefered);

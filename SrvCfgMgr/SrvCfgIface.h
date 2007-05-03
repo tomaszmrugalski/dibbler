@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgIface.h,v 1.24 2006-12-31 16:00:26 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.25 2007-05-03 23:16:29 thomson Exp $
  *
  */
 
@@ -61,11 +61,14 @@ public:
     // prefix management (IA_PD)
     void addPDClass(SmartPtr<TSrvCfgPD> PDClass);
     SmartPtr<TSrvCfgPD> getPDByID(unsigned long id);
-    SmartPtr<TSrvCfgPD> getRandomPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
+    //SmartPtr<TSrvCfgPD> getRandomPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
     long countPD();
     void addPD(SmartPtr<TSrvCfgPD> pd);
     void firstPD();
     SmartPtr<TSrvCfgPD> getPD();
+    bool addClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
+    bool delClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
+    bool supportPrefixDelegation();
 
     // other
     SmartPtr<TIPv6Addr> getUnicast();
@@ -86,11 +89,6 @@ public:
     // TA address functions
     void addTAAddr();
     void delTAAddr();
-
-    // PD prefixes functions
-    void addClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
-    void delClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
-    bool supportPrefixDelegation();
 
     // relays
     string getRelayName();

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.49 2007-05-01 19:31:56 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.50 2007-05-03 23:16:29 thomson Exp $
  *
  */
 
@@ -568,6 +568,38 @@ ESrvIfaceIdOrder TSrvCfgMgr::getInterfaceIDOrder()
 {
     return InterfaceIDOrder;
 }
+
+/** 
+ * decreases prefix usage count (i.e. decreases prefix-pool usage by one)
+ * actual prefix is deleted in AddrMgr
+ * 
+ * @param iface 
+ * @param prefix 
+ * 
+ * @return 
+ */
+bool TSrvCfgMgr::decrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
+{
+    SmartPtr<TSrvCfgIface> iface;
+    iface = getIfaceByID(ifindex);
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << ifindex << ", prefix deletion aborted." << LogEnd;
+	return false;
+    }
+    return iface->delClntPrefix(prefix);
+}
+
+bool TSrvCfgMgr::incrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
+{
+    SmartPtr<TSrvCfgIface> iface;
+    iface = getIfaceByID(ifindex);
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << ifindex << ", prefix increase count aborted." << LogEnd;
+	return false;
+    }
+    return iface->addClntPrefix(prefix);
+}
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

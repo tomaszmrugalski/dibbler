@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.5 2007-01-03 01:25:32 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.6 2007-05-03 23:16:29 thomson Exp $
  *
  */
 
@@ -184,11 +184,19 @@ List(TIPv6Addr) TSrvCfgPD::getRandomList() {
 
     commonPart = this->CommonPool->getRandomPrefix();
     commonPart->truncate(0, this->getPD_Length());
+
+    // FIXME: it's just workaround. It should be implemented for real.
+    //Log(Debug) << "#### Count=" << PD_Count << " Assigned=" << PD_Assigned << LogEnd;
+    if (PD_Count == PD_Assigned+1) {
+	commonPart = new TIPv6Addr(*CommonPool->getAddrR());
+    }
+
     PoolLst.first();
     while (range = PoolLst.get()) {
 	tmp = range->getAddrL();
-	lst.append( new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(), this->CommonPool->getPrefixLength()) );
-	
+	SPtr<TIPv6Addr> x = new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(), this->CommonPool->getPrefixLength());
+	//Log(Debug) << "#### getRandomList() Generated: " << x->getPlain() << LogEnd;
+	lst.append( x );
     }
     return lst;
 }

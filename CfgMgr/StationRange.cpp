@@ -93,30 +93,32 @@ SmartPtr<TIPv6Addr> TStationRange::getRandomAddr()
 {
     if(isAddrRange)
     {
-
-        SmartPtr<TIPv6Addr> diff(new TIPv6Addr());
+        SmartPtr<TIPv6Addr> diff = new TIPv6Addr();
         *diff=(*AddrR)-(*AddrL);
         --(*diff);
         *diff=*diff+*AddrL;
         return diff;
     }
     else
-        return new TIPv6Addr();
+        return 0;
 }
 
 SmartPtr<TIPv6Addr> TStationRange::getRandomPrefix()
 {
     if(isAddrRange)
     {
-
-        SmartPtr<TIPv6Addr> diff(new TIPv6Addr());
+        SmartPtr<TIPv6Addr> diff = new TIPv6Addr();
+	//Log(Debug) << "#### Generating random prefix: range=<" << AddrL->getPlain() << "-"<< AddrR->getPlain() << ">" << LogEnd;
         *diff=(*AddrR)-(*AddrL);
+	//Log(Debug) << "#### diff=" << diff->getPlain() << LogEnd;
         --(*diff);
+	//Log(Debug) << "#### --diff=" << diff->getPlain() << LogEnd;
         *diff=*diff+*AddrL;
+	//Log(Debug) << "#### diff+addrL= " << diff->getPlain() << LogEnd;
         return diff;
     }
     else
-        return new TIPv6Addr();
+        return 0;
 }
 
 

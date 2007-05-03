@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: IPv6Addr.h,v 1.7 2006-12-04 23:33:11 thomson Exp $
+ * $Id: IPv6Addr.h,v 1.8 2007-05-03 23:16:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006-12-04 23:33:11  thomson
+ * Prefix delegation related fixes
+ *
  * Revision 1.6  2006-12-02 14:54:45  thomson
  * IPv6Addr::truncate implemented, inet_pton6 does not use IPv4-eccapsulated form
  *
@@ -49,6 +52,8 @@ public:
     bool operator==(const TIPv6Addr &other);
     bool operator<=(const TIPv6Addr &other);
     void truncate(int minPrefix, int maxPrefix);
+    void shiftL(int bits);
+    void shiftR(int bits);
 private:
     char Addr[16];
     char Plain[sizeof("0000:0000:0000:0000:0000:0000:0000.000.000.000.000")];

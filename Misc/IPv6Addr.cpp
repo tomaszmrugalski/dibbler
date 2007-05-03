@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IPv6Addr.cpp,v 1.8 2006-12-04 23:33:11 thomson Exp $
+ * $Id: IPv6Addr.cpp,v 1.9 2007-05-03 23:16:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006-12-04 23:33:11  thomson
+ * Prefix delegation related fixes
+ *
  * Revision 1.7  2006-12-02 14:54:45  thomson
  * IPv6Addr::truncate implemented, inet_pton6 does not use IPv4-eccapsulated form
  *
@@ -119,6 +122,16 @@ void TIPv6Addr::truncate(int minPrefix, int maxPrefix) {
 
     // update plain form
     inet_ntop6(Addr,Plain);
+}
+
+void TIPv6Addr::shiftL(int bits)
+{
+
+}
+
+void TIPv6Addr::shiftR(int bits)
+{
+
 }
 
 ostream& operator<<(ostream& out,TIPv6Addr& addr)

@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.27 2007-03-04 20:56:44 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.28 2007-05-03 23:16:29 thomson Exp $
  *
  */
 
@@ -392,9 +392,33 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
     return true;
 }
 
-bool TAddrMgr::prefixIsFree(SPtr<TIPv6Addr> prefix)
+
+/** 
+ * checks if a specific prefix is used
+ * 
+ * @param x 
+ * 
+ * @return true - used, false - free
+ */
+bool TAddrMgr::prefixIsFree(SPtr<TIPv6Addr> x)
 {
-    // FIXME: impement this
+    SPtr<TAddrClient> client;
+    SPtr<TAddrIA> pd;
+    SPtr<TAddrPrefix> prefix;
+
+    firstClient();
+    while (client = getClient()) {
+	client->firstPD();
+	while (pd = client->getPD()) {
+	    pd->firstPrefix();
+	    while (prefix = pd->getPrefix()) {
+		if (*prefix->get()==*x)
+		    return false;
+	    }
+	}
+    }
+
+    /* prefix not found, so it's free */
     return true;
 }
 
