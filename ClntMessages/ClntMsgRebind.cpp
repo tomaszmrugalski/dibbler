@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.12 2007-04-22 21:19:28 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.13 2007-05-04 17:22:49 thomson Exp $
  *
  */
 
@@ -25,12 +25,11 @@
 #include <iostream>
 
 TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-			       SmartPtr<TClntTransMgr> TransMgr, 
-			       SmartPtr<TClntCfgMgr> CfgMgr, 
-			       SmartPtr<TClntAddrMgr> AddrMgr,
-			       TContainer<SmartPtr<TOpt> > ptrOpts, int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, iface, 
-	      SmartPtr<TIPv6Addr>() /*NULL*/, REBIND_MSG)
+                               SmartPtr<TClntTransMgr> TransMgr, 
+                               SmartPtr<TClntCfgMgr> CfgMgr, 
+                               SmartPtr<TClntAddrMgr> AddrMgr,
+                               List(TOpt) ptrOpts, int iface)
+  :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, iface, 0, REBIND_MSG)
 {
     Options=ptrOpts;
     IRT=REB_TIMEOUT;
@@ -38,29 +37,40 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
     MRC=0;
     RT=0;
 
-    SmartPtr<TOpt> ptrOpt;
+    // there are options copied from RENEW. Get rid of some of them
+    SmartPtr<TOpt> opt;
     firstOption();
-    while(ptrOpt=getOption())
+    while(opt=getOption())
     {
-        if (ptrOpt->getOptType()==OPTION_ELAPSED_TIME)
+        if (opt->getOptType()==OPTION_ELAPSED_TIME)
             Options.del();
-        if (ptrOpt->getOptType()==OPTION_SERVERID)
+        if (opt->getOptType()==OPTION_SERVERID)
             Options.del();
     };
-    
+
+    // calculate timeout (how long should be the REBIND message transmitted)
     unsigned long maxMRD=0;    
     firstOption();
-    while(ptrOpt=getOption())
+    while(opt=getOption())
     {
-        if (ptrOpt->getOptType()==OPTION_IA_NA)
-        {
-            SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*) ptrOpt;
-            SmartPtr<TAddrIA> ptrAddrIA=
-                this->ClntAddrMgr->getIA(ptrIA->getIAID());
-
-            if (maxMRD<ptrAddrIA->getMaxValidTimeout())
-                maxMRD=ptrAddrIA->getMaxValidTimeout();
-        }
+      switch (opt->getOptType()) {
+        case OPTION_IA_NA:
+          {
+            SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*) opt;
+            SmartPtr<TAddrIA> ptrAddrIA= ClntAddrMgr->getIA(ptrIA->getIAID());
+            if (ptrAddrIA && maxMRD<ptrAddrIA->getMaxValidTimeout())
+              maxMRD=ptrAddrIA->getMaxValidTimeout();
+            break;
+          }
+        case OPTION_IA_PD:
+          {
+            SPtr<TClntOptIA_PD> pd = (Ptr*) opt;
+            SPtr<TAddrIA> addrPd = ClntAddrMgr->getPD(pd->getIAID());
+            if (addrPd && maxMRD<addrPd->getMaxValidTimeout())
+              maxMRD=addrPd->getMaxValidTimeout();
+            break;
+          }
+      }
     }
     MRD= maxMRD;
     pkt = new char[getSize()];
@@ -69,6 +79,10 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
 void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
 {
+  TClntMsg::answer(Reply);
+  return;
+
+#if 0
         SmartPtr<TOpt> opt;
     
     // get DUID
@@ -116,6 +130,10 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
                 }
                 break;
             }
+            case OPTION_IA_PD:
+            {
+              break;
+            }
             case OPTION_ORO:
             case OPTION_RELAY_MSG:
             case OPTION_INTERFACE_ID:
@@ -147,6 +165,7 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
         }
     }
     IsDone = true;
+#endif
 }
 
 void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
@@ -226,8 +245,6 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 
 void TClntMsgRebind::doDuties()
 {
-    SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)getOption(OPTION_IA_NA);
-    SmartPtr<TAddrIA> ptrAddrIA = ClntAddrMgr->getIA(ptrIA->getIAID());
     SmartPtr<TIfaceIface> iface = ClntIfaceMgr->getIfaceByID(this->Iface);
 
     if (!MRD)
@@ -257,8 +274,8 @@ void TClntMsgRebind::doDuties()
         }
 	Log(Warning) << "REBIND for the IA(s):" << iaLst.str()
 		     << ", PD(s):" << pdLst.str()
-		     << " failed on the " << iface->getName() << "/" 
-		     << iface->getID() << " interface." << LogEnd;
+		     << " failed on the " << iface->getFullName() 
+		     << " interface." << LogEnd;
 	Log(Warning) << "Restarting server discovery process." << LogEnd;
         IsDone=true;
     }

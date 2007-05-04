@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.14 2007-03-04 20:58:26 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.15 2007-05-04 17:22:49 thomson Exp $
  *
  */
 
@@ -174,11 +174,6 @@ void TClntMsgRenew::doDuties()
         IsDone = true;
         return;
     }
-    //In other case
-    //FIXME:IF
-    //      in any of renewed IAs all addresses expired (before reaching T2 timeout)
-    //      in such Server didn't want IAs to be rebind in other server
-    //ELSE
     send();
 }
 

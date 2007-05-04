@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.28 2007-05-01 14:16:47 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.29 2007-05-04 17:22:49 thomson Exp $
  */
 
 #ifdef WIN32
@@ -628,10 +628,10 @@ bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 void TClntMsg::answer(SPtr<TClntMsg> reply)
 {
     SmartPtr<TClntOptServerIdentifier> ptrDUID;
-    ptrDUID = (Ptr*) this->getOption(OPTION_SERVERID);
+    ptrDUID = (Ptr*) reply->getOption(OPTION_SERVERID);
     if (!ptrDUID) {
-	Log(Warning) << "Received REPLY message without SERVER ID option. Message ignored." << LogEnd;
-	return;
+      Log(Warning) << "Received REPLY message without SERVER ID option. Message ignored." << LogEnd;
+      return;
     }
     
     // analyse all options received

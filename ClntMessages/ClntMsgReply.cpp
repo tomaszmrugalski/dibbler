@@ -6,24 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgReply.cpp,v 1.7 2007-03-04 22:34:06 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2006-11-11 06:56:26  thomson
- * Improved required/not allowed options checking.
- *
- * Revision 1.5  2006-10-06 00:43:28  thomson
- * Initial PD support.
- *
- * Revision 1.4  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.3  2004/07/05 23:04:08  thomson
- * *** empty log message ***
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
+ * $Id: ClntMsgReply.cpp,v 1.8 2007-05-04 17:22:49 thomson Exp $
  *
  */
 
