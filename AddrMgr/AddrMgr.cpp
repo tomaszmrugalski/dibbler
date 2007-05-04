@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.28 2007-05-03 23:16:29 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.29 2007-05-04 17:19:16 thomson Exp $
  *
  */
 
@@ -26,6 +26,8 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     
     if (loadfile)
 	dbLoad();
+
+    DeleteEmptyClient = true;
 }
 
 void TAddrMgr::dbLoad()
@@ -152,11 +154,11 @@ unsigned long TAddrMgr::getValidTimeout()
 
 unsigned long TAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
 {
-    // FIXME: implement getAddrCount()
+    // Not used on the client side, server side uses SrvAddrMgr::getAddrCount()
     return 1;
 }
 
-/* PD-starts */
+/* Prefix Delegation-related method starts here */
 
 /** 
  * addx prefix for a client. If client's IA is missing, add it, too.
@@ -174,10 +176,10 @@ unsigned long TAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
  * 
  * @return 
  */
-bool TAddrMgr::addPrefix(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
-			 int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-			 SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-			 int length, bool quiet) {
+bool TAddrMgr::addPrefix(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
+                         int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+                         SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+                         int length, bool quiet) {
     // find this client
     SmartPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -382,11 +384,11 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
 	ptrClient->delPD(IAID);
     }
 
-    if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD()) {
-	if (!quiet)
+    if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD() && DeleteEmptyClient) {
+      if (!quiet)
 	    Log(Debug) << "PD: Deleted client (DUID=" << clntDuid->getPlain()
-		      << ") from addrDB." << LogEnd;
-	this->delClient(clntDuid);
+                   << ") from addrDB." << LogEnd;
+      this->delClient(clntDuid);
     }
 
     return true;

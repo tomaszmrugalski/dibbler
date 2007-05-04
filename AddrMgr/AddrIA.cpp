@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.19 2007-04-22 21:19:27 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.20 2007-05-04 17:19:16 thomson Exp $
  *
  */
 
@@ -310,11 +310,18 @@ unsigned long TAddrIA::getMaxValidTimeout() {
 
     SmartPtr<TAddrAddr> ptr;
     this->AddrLst.first();
-
     while (ptr = this->AddrLst.get() ) {
         if (ts < ptr->getValidTimeout()) 
             ts = ptr->getValidTimeout();
     }
+    
+    SPtr<TAddrPrefix> prefix;
+    firstPrefix();
+    while (prefix = getPrefix()) {
+      if (ts < prefix->getValidTimeout())
+          ts = prefix->getValidTimeout();
+    }
+
     return ts;
 }
 

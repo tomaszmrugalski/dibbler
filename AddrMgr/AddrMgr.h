@@ -86,6 +86,8 @@ protected:
     bool IsDone;
     List(TAddrClient) ClntsLst;
     string XmlFile;
+
+    bool DeleteEmptyClient; // should the client without any IA, TA or PDs be deleted? (srv = yes, client = no)
 };
 
 #endif
