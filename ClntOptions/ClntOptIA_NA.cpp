@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.20 2007-04-22 21:19:29 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.21 2007-05-04 17:29:35 thomson Exp $
  *
  */
 
@@ -377,19 +377,18 @@ bool TClntOptIA_NA::doDuties()
     ptrCfgIA=CfgMgr->getIA(ptrIA->getIAID());
 
     if (getT1() && getT2()) {
-	ptrIA->setT1( this->getT1() );
-	ptrIA->setT2( this->getT2() );
-	Log(Debug) << "RENEW will be sent (T1) after " << ptrIA->getT1() << ", REBIND (T2) after " << ptrIA->getT2() << " seconds." << LogEnd;
+      ptrIA->setT1( this->getT1() );
+      ptrIA->setT2( this->getT2() );
+      Log(Debug) << "RENEW will be sent (T1) after " << ptrIA->getT1() << ", REBIND (T2) after " << ptrIA->getT2() << " seconds." << LogEnd;
     } else {
-	this->firstAddr();
-	ptrOptAddr = this->getAddr();
-	if (ptrOptAddr) {
+      this->firstAddr();
+      ptrOptAddr = this->getAddr();
+      if (ptrOptAddr) {
 	    ptrIA->setT1( ptrOptAddr->getPref()/2);
 	    ptrIA->setT2( (int)((ptrOptAddr->getPref())*0.7) );
 	    Log(Notice) << "Server set T1 and T2 to 0. Choosing default (50%, 70% * prefered-lifetime): T1=" << ptrIA->getT1() 
-			<< ", T2=" << ptrIA->getT2() << LogEnd;
-	}
-
+                    << ", T2=" << ptrIA->getT2() << LogEnd;
+      }
     }
 
     ptrIA->setTimestamp();

@@ -49,6 +49,7 @@ class TClntOptIA_PD : public TOptIA_PD
  private:
     bool modifyPrefixes(PrefixModifyMode mode);
     void setState(EState state);
+    void clearContext();
 
     SmartPtr<TIPv6Addr> Prefix;
     bool Unicast;
@@ -61,6 +62,7 @@ class TClntOptIA_PD : public TOptIA_PD
     SmartPtr<TClntCfgMgr>   CfgMgr;
     SmartPtr<TClntAddrMgr>  AddrMgr;
     TMsg * OriginalMsg;
+    /* Context */
 };
 
 #endif /* CLNTOPTIA_PD_H */

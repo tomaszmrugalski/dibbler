@@ -29,12 +29,12 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
     
     bool zeroTimes = false;
     if ( (parent->getType()==RELEASE_MSG) || (parent->getType()==DECLINE_MSG)) {
-	this->T1 = 0;
-	this->T2 = 0;
-	zeroTimes = true;
+        this->T1 = 0;
+        this->T2 = 0;
+	    zeroTimes = true;
     }
 
-    DUID = 0;
+    clearContext();
 
     SmartPtr<TAddrPrefix> ptrPrefix;
     addrPD->firstPrefix();
@@ -56,6 +56,7 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
     :TOptIA_PD(1, ClntCfgPD->getT1(), ClntCfgPD->getT2(), parent)
 {
     // FIXME: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
+    clearContext();
 }
 
 /** 
@@ -110,6 +111,8 @@ TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
         };
         pos+=length;
     }
+
+    clearContext();
 }
 
 void TClntOptIA_PD::firstPrefix()
@@ -157,7 +160,7 @@ void TClntOptIA_PD::setContext(SmartPtr<TClntIfaceMgr> ifaceMgr,
                                SmartPtr<TClntCfgMgr> cfgMgr, 
                                SmartPtr<TClntAddrMgr> addrMgr,
                                SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, 
-			       TMsg * originalMsg)
+                               TMsg * originalMsg)
 {
     this->AddrMgr=addrMgr;
     this->IfaceMgr=ifaceMgr;
@@ -193,6 +196,7 @@ bool TClntOptIA_PD::doDuties()
     case RELEASE_MSG:
 	return delPrefixes();
     case RENEW_MSG:
+    case REBIND_MSG:
 	return updatePrefixes();
     default:
 	break;
@@ -234,30 +238,43 @@ bool TClntOptIA_PD::modifyPrefixes(PrefixModifyMode mode)
     bool status;
     EState state;
     SmartPtr<TClntOptIAPrefix> prefix;
-    this->firstPrefix();
     string action;
     switch(mode) {
-    case PREFIX_MODIFY_ADD:
-	action = "addition";
-	state = STATE_CONFIGURED;
-	break;
-    case PREFIX_MODIFY_UPDATE:
-	action = "update";
-	state = STATE_CONFIGURED;
-	break;
-    case PREFIX_MODIFY_DEL:
-	action = "delete";
-	state = STATE_NOTCONFIGURED;
-	break;
+      case PREFIX_MODIFY_ADD:
+        action = "addition";
+        state = STATE_CONFIGURED;
+        break;
+      case PREFIX_MODIFY_UPDATE:
+        action = "update";
+        state = STATE_CONFIGURED;
+        break;
+      case PREFIX_MODIFY_DEL:
+        action = "delete";
+        state = STATE_NOTCONFIGURED;
+        break;
+    }
+    
+    if ( (mode==PREFIX_MODIFY_ADD) || (mode==PREFIX_MODIFY_UPDATE) ) {
+      if ( (T1==0) && (T2==0) ) {
+        firstPrefix();
+        if (prefix = getPrefix()) {
+          T1 = prefix->getPref()/2;
+          T2 = (int)((prefix->getPref())*0.7);
+          Log(Notice) << "Server set T1 and T2 to 0. Choosing default (50%, 70% * prefered-lifetime): T1=" << T1 
+                      << ", T2=" << T2 << LogEnd;
+        }
+      }
     }
 
+    this->firstPrefix();
     while (prefix = this->getPrefix() ) {
 	switch (mode) {
 	case PREFIX_MODIFY_ADD:
 	    AddrMgr->addPrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
-			       prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
+                           prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
 	    status = IfaceMgr->addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
-					 prefix->getPref(), prefix->getValid());
+                                     prefix->getPref(), prefix->getValid());
+        Log(Debug) << "RENEW will be sent (T1) after " << T1 << ", REBIND (T2) after " << T2 << " seconds." << LogEnd;
 	    action = "addition";
 	    break;
 	case PREFIX_MODIFY_UPDATE:
@@ -265,6 +282,7 @@ bool TClntOptIA_PD::modifyPrefixes(PrefixModifyMode mode)
 				  prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
 	    status = IfaceMgr->updatePrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
 					    prefix->getPref(), prefix->getValid());
+        Log(Debug) << "RENEW will be sent (T1) after " << T1 << ", REBIND (T2) after " << T2 << " seconds." << LogEnd;
 	    action = "update";
 	    break;
 	case PREFIX_MODIFY_DEL:
@@ -331,4 +349,14 @@ void TClntOptIA_PD::setState(EState state)
 	return;
     }
     addrPD->setState(state);
+}
+
+void TClntOptIA_PD::clearContext()
+{
+    DUID = 0;
+    AddrMgr = 0;
+    IfaceMgr = 0;
+    TransMgr = 0;
+    CfgMgr = 0;
+    OriginalMsg = 0;
 }
