@@ -27,6 +27,8 @@
     2007-03: Prefix during prefix delegation is now split properly
   - Petr Pisar <petr.pisar(at)atlas.cz>
     2007-03: Various fixes (ntp_add, xml syntax, tun support improved)
+  - David Minodier <david.minodier(at)orange-ftgroup.com>
+    2007-04: Fixes in prefix delegation
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

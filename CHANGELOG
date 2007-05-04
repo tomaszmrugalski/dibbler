@@ -2,7 +2,11 @@
   Dibbler changelog
  ------------------- 
  0.6.0 [not released yet]
+  - Documentation update (Dibbler User's Guide is now 60 pages long)
   - Clnt: false positive DECLINE fixed (bug #153)
+  - Srv: Does not go into infinite loop when there are no more prefixes to assign
+  - Clnt: supports REBIND with prefixes (IA_PD) included
+  - Srv: supports REBIND with prefixes (IA_PD) included
   - Srv: Sends the same addresses if client still has valid bindings (i.e. REQUEST retransmission) (bug #154)
   - Srv: Prefix delegation now supports more than one client properly
   - Srv: Support for more than 1 relay fixed (bug #156)
