@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.38 2007-04-01 04:53:18 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.39 2007-05-04 17:21:37 thomson Exp $
  */
 
 #include "Portable.h"
@@ -188,19 +188,7 @@ void TClntIfaceMgr::setContext(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
 }
 
 TClntIfaceMgr::~TClntIfaceMgr() {
-
-    /* that is an ugly workaround for SmartPtr() deficiency. IfaceLst contains pointers
-       to the TIfaceIface objects. When TClntIfaceIface object is stored, and then deleted
-       it is being destroyed in a wrong way, i.e. treated as IfaceIface objects, so only
-       ~TIfaceIface() will be called, and not ~TClntIfaceIface() and then ~TIfaceIface(). */
-    SPtr<TClntIfaceIface> ptr;
-    IfaceLst.first();
-    while (ptr = (Ptr*)IfaceLst.get()) {
-	IfaceLst.del();
-	IfaceLst.first();
-	// last SmartPtr() pointing to an object is of proper type
-    }
-    this->IfaceLst.clear();
+    IfaceLst.clear();
     Log(Debug) << "ClntIfaceMgr cleanup." << LogEnd;
 }
 
