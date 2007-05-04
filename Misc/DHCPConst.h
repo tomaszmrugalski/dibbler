@@ -160,7 +160,7 @@
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
 
 // how long should we wait before we assume that OS detected duplicated addresses (in secs)
-#define DADTIMEOUT (unsigned) 1
+#define DADTIMEOUT (unsigned) 3
 
 // addresses reported ad DECLINED are not used for 2 hours
 #define DECLINED_TIMEOUT (unsigned) 7200
@@ -174,12 +174,12 @@
 #define SERVER_DEFAULT_RAPIDCOMMIT false
 
 #define SERVER_DEFAULT_MIN_T1    5
-#define SERVER_DEFAULT_MAX_T1    ULONG_MAX
+#define SERVER_DEFAULT_MAX_T1    3600      /* 1 hour */
 #define SERVER_DEFAULT_MIN_T2    10
-#define SERVER_DEFAULT_MAX_T2    ULONG_MAX
-#define SERVER_DEFAULT_MIN_PREF  1800
+#define SERVER_DEFAULT_MAX_T2    5400      /* 1,5 hour */
+#define SERVER_DEFAULT_MIN_PREF  7200      /* 2 hours */
 #define SERVER_DEFAULT_MAX_PREF  86400     /* 1 day */
-#define SERVER_DEFAULT_MIN_VALID 3600
+#define SERVER_DEFAULT_MIN_VALID 10800     /* 3 hours */
 #define SERVER_DEFAULT_MAX_VALID 172800    /* 2 days */
 #define SERVER_DEFAULT_CLASS_SHARE 100
 #define SERVER_DEFAULT_CLASS_MAX_LEASE ULONG_MAX
