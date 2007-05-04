@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.45 2007-04-01 19:22:26 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.46 2007-05-04 17:13:38 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -755,7 +755,7 @@ iface "Local Area Connection" {
 }
 \end{lstlisting}
 
-\subsection{Example 11: Prefix delegation}
+\subsubsection{Example 11: Prefix delegation}
 \label{example-client-prefix}
 From the client's point of view, configuration is quite simple. It is
 required to specify that this client is interested in prefix
@@ -883,6 +883,17 @@ OptionName option-value
  \item[cache-size] -- (scope: global, type: integer, default:
 	    1048576). It defines a size of the memory (specified in
             bytes) which can se used to store cached entries.
+\item[interface-id-order] -- (scope: global, type: before, after or omit, 
+        default: before) During relay support defines placement of the
+        interface-id option. Options can be placed in the \msg{RELAY-REPL}
+        message is arbitrary order. This option has been specified to control
+        that order. \opt{interface-id} option can be placed before or after
+        \opt{relay-message} option. There is also possibility to instruct
+        server to omit the \opt{interface-id} option altogether, but since 
+        this violates \cite{rfc3315}, it should not be used. In general, this
+        configuration parameter is only useful when dealing with buggy relays,
+        which can't handle all option orders properly. Consider this parameter
+        a debugging feature. Note: similar parameter is available in the dibbler-relay. 
  \item[preference] -- (scope: interface, type: 0-255, default:
 	    none). Eech server can be configured to a specific
 	    preference level. When client receives several
@@ -1132,6 +1143,8 @@ iface eth0
 \end{lstlisting}
 
 \subsubsection{Example 4: Unicast communication}
+\label{example-server-unicast}
+
 Here's modified previous example. Instead of specified limits, unicast
 communication should be supported and server should listen on
 2000::1234 address. Note that default multicast address is still
@@ -1547,31 +1560,72 @@ contains spaces).
 Every option has a scope it can be used in, default value and
 sometimes allowed range.
 
-%% FIXME: this table must be sanitized
-\begin{tabular}{|c|c|>{\centering}p{1.7cm}<{}|c|p{6cm}|}
-\hline
-Name             & Scope   & Values      & default    & Description \\
-                 &         & (default)   &  & \\
-\hline
-%%work-dir         & global  & string      & empty      & working directory \\
-log-level        & global  & 1-8         & 8          & log-level (8 is most verbose) \\
-log-name         & global  & string      & Relay      & Name, which appears in a log file\\
-log-mode         & global  &short or full& full       & logging mode: short (date and name suppressed) or full \\
-guess-mode       & global  & none        & no         & switches relay into guess-mode \\
+\begin{description}
+ \item[log-level] -- (scope: global, type: integer, default: 7) Defines
+	    verbose level of the log messages. The valid range if
+	    from 1 (Emergency) to 8 (Debug). The higher the logging
+	    level is set, the more messages dibbler will print.
+ \item[log-name] -- (scope: global, type: string, default: Client). Defines 
+	    name, which should be used during logging.
+ \item[log-mode] -- (scope: global, type: short, full or precise,
+	    default value: full) Defines logging mode. In the
+	    default, full mode, name, date and time in the h:m:s format
+	    will be printed. In short mode, only minutes and
+	    seconds will be printed (this mode is useful on
+	    terminals with limited width). Recently added precise
+	    mode logs information with seconds and microsecond
+	    precision. It is a useful for finding bottlenecks in
+	    the DHCPv6 autoconfiguration process.
+\item[interface-id-order] -- (scope: global, type: before, after or omit, 
+        default: before) During relay support defines placement of the
+        interface-id option. Options can be placed in the \msg{RELAY-REPL}
+        message is arbitrary order. This option has been specified to control
+        that order. \opt{interface-id} option can be placed before or after
+        \opt{relay-message} option. There is also possibility to instruct
+        server to omit the \opt{interface-id} option altogether, but since 
+        this violates \cite{rfc3315}, it should not be used. In general, this
+        configuration parameter is only useful when dealing with buggy relays,
+        which can't handle all option orders properly. Consider this parameter
+        a debugging feature. Note: similar parameter is available in the dibbler-server. 
 
-client multicast &interface& boolean     &            & Client's messages should be received on the multicast address.\\
-client unicast   &interface& address     &not defined & Client's messages should be received on the specified multicast address. \\
-server multicast &interface& boolean     &            & Forwarded messages should be sent to the multicast address. \\
-server unicast   &interface& address     &not defined & Forwarded messages should be send to the specified address. \\
-interface-id     &interface& integer     &not defined & Identifier of that particular interface. Used for interface-id option. \\
-\hline
-\end{tabular}
-
-\vspace{0.5cm}
-
-It is worth mentioning that interface-id should be specified on the
-interface, which is used to receive messages from the clients, not the
-one used to forward packets to server.
+\item[client multicast] -- (scope: interface, type: boolean, default: false) 
+        This command instructs dibbler-relay to listen on this particular interface
+        for client messages sent to multicast (ff02::1:2) address.
+\item[client unicast] -- (scope: interface, type: address, default: not defined)
+        This command instructs dibbler-relay to listen to messages sent to a specific
+        unicast address. This feature is usually used to connect multiple relays
+        together. 
+\item[server multicast] -- (scope: interface, type: boolean, default: false)
+        This command instructs dibbler-relay to send messages (received on any interface)
+        to the server multicast (ff05::1:3) address. Note that this is not the same
+        multicast address as the server usually listens to (ff02::1:2). Server must be 
+        specifically configured to be able to receive relayed messages.
+\item[server unicast] -- (scope: interface, type: address, default: none)
+        This command instructs dibbler-relay to send message (received on any interface)
+        to speficied unicast address. Server must be properly configured to to be able to 
+        receive unicast traffic. See \emph{unicast} command in the \ref{example-server-unicast} 
+        section.
+\item[interface-id] -- (scope: interface, type: integer, default: none)
+        This specifies identifier of a particular interface. It is used to generate 
+        \opt{interface-id} option, when relaying message to the server. This option
+        is then used by the server to detect, which interface the message originates from.
+        It is essential to have consistent interface-id defined on the relay side and
+        server side. It is worth mentioning that interface-id should be specified on the
+        interface, which is used to receive messages from the clients, not the 
+        one used to forward packets to server.
+\item[guess-mode] -- (scope: global, type: boolean, default: no)
+        Switches relay into so called guess-mode. Under normal operation, client sends
+        messages, which are encapsulated and sent to the server. During this encapsulation
+        relay appends \opt{interface-id} option and expects that server will use the same
+        \opt{interface-id} option in its replies. Relay then uses those \opt{interface-id}
+        values to detect, which the original request came from and sends reply to the same
+        interface. Unfortunately, some servers does not sent \opt{interface-id} option.
+        Normally in such case, dibbler-relay drops such server messages as there is no
+        easy way to determine where such messages should be relayed to. However, when 
+        guess-mode is enabled, dibbler-relay tries to guess the destination interface.
+        Luckily, it is often trivial to guess as there are usually 2 interfaces: one
+        connected to server and second connected to the clients.
+\end{description}
 
 \subsection{Relay configuration examples}
 \label{example-relay}
@@ -1727,6 +1781,36 @@ guess-mode
 
 iface eth0 {
   server multicast yes
+}
+iface eth1 {
+  client multicast yes
+  interface-id 5020
+}
+\end{lstlisting}
+
+\subsubsection{Example 6: Relaying to multicast}
+During normal operation, relay sends forwarded messages to a 
+\emph{All\_DHCP\_Servers} (FF05::1:3) multicast address.
+
+Although author does not consider this an elegant solution, it is also 
+possible to instruct relay to forward message to a \emph{All\_DHCP\_Relay\_Agents\_and\_Servers}
+(ff02::1:2) multicast address. That is quite convenient when there are several 
+relays connected in a cascade way (server -- relay1 -- relay2 -- clients).
+
+For details regarding DHCPv6-related multicast addresses and relay operation, see \cite{rfc3315}.
+
+To achieve this behavior, \emph{server unicast} can be used. Note that
+name of such parameter is a bit misleading (``server unicast'' used to specify
+multicast address). That parameter should be rather called ``destination address'', 
+but to maintain backward compatibility, it has its current name.
+
+\begin{lstlisting}
+# relay.conf
+log-level 8
+log-mode short
+
+iface eth0 {
+  server unicast ff02::1:2
 }
 iface eth1 {
   client multicast yes

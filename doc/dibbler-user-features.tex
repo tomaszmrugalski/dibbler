@@ -102,7 +102,7 @@ from the example.com domain and that addresses will be provided from the
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.7\textwidth]{dibbler-fqdn-srv-update}
+\includegraphics[width=0.65\textwidth]{dibbler-fqdn-srv-update}
 \caption{\emph{DNS Update (performed by server)}}
 \end{center}
 \end{figure}
@@ -163,7 +163,7 @@ informs that Dynamic DNS Update was completed successfully.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.7\textwidth]{dibbler-fqdn-cli-update}
+\includegraphics[width=0.65\textwidth]{dibbler-fqdn-cli-update}
 \caption{\emph{DNS Update (performed by client)}}
 \end{center}
 \end{figure}
@@ -422,15 +422,15 @@ links -- some connected directly and some remotely.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.7\textwidth]{dibbler-relay}
+\includegraphics[width=0.65\textwidth]{dibbler-relay}
 \caption{\emph{Relay deployment}}
 \end{center}
 \end{figure}
 
-Very nice feature of the relays that they appear as actual servers
+Very nice feature of the relays is that they appear as actual servers
 from the client's point of view. Therefore no special arrangement or
 configuration on the client side is required. On the other hand, from
-the administrator point of view it is much easier to manage one DHCPv6
+the administrator point of view, it is much easier to manage one DHCPv6
 server and deploy several relays than manage several servers on remote
 links. 
 
@@ -438,7 +438,7 @@ It is important to understand that relays not simply forward DHCPv6
 messages. Each message forwarded from client to the server is
 encapsulated. Also each message forwarded from server to a client is
 decapsulated. Therefore additional server configuration is required to
-deal with encapsulated traffic.
+deal with encapsulated (i.e. relayed) traffic.
 
 To avoid confusion during reference to a specific link (i.e. eth0 on
 the relay may be different link than eth0 on the server), each link
@@ -452,7 +452,7 @@ corresponding relay configuration.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.7\textwidth]{dibbler-cascade-relays}
+\includegraphics[width=0.4\textwidth]{dibbler-cascade-relays}
 \caption{\emph{Cascade relays}}
 \label{fig-cascade-relays}
 \end{center}
@@ -512,7 +512,7 @@ According to \cite{rfc3633}:
 \begin{figure}[ht]
 \begin{center}
 \label{fig-prefixes-host}
-\includegraphics[width=0.7\textwidth]{dibbler-prefixes-host}
+\includegraphics[width=0.65\textwidth]{dibbler-prefixes-host}
 \caption{\emph{Prefix delegation (host behaviour)}}
 \end{center}
 \end{figure}
@@ -569,7 +569,7 @@ and 2000:1234:7c34:3000::/56 for eth3.
 \begin{figure}[ht]
 \begin{center}
 \label{fig-prefixes-router}
-\includegraphics[width=0.7\textwidth]{dibbler-prefixes-router}
+\includegraphics[width=0.65\textwidth]{dibbler-prefixes-router}
 \caption{\emph{Prefix delegation (router behaviour)}}
 \end{center}
 \end{figure}
