@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.h,v 1.16 2007-04-22 21:19:29 thomson Exp $
+ * $Id: Iface.h,v 1.17 2007-05-04 17:15:14 thomson Exp $
  *
  */
 
@@ -71,7 +71,7 @@ class TIfaceIface{
     SmartPtr<TIfaceSocket> getSocketByAddr(SmartPtr<TIPv6Addr> addr);
     int countSocket();
 
-    ~TIfaceIface();
+    virtual ~TIfaceIface();
 
  protected:
     // ---interface data---
