@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.21 2007-04-22 21:19:31 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.22 2007-05-04 17:39:00 thomson Exp $
  */
 
 #ifdef WIN32
@@ -110,22 +110,31 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     // FIXME: SOLICIT without RAPID COMMIT should set this to true
     bool quiet = false;
 
+
+    // --- check if client already has binding
+    if (renew(queryOpt, false)) {
+      Log(Info) << "Previous binding for client " << ClntDuid->getPlain() << ", IA(iaid=" 
+                << queryOpt->getIAID() << ") found and renewed." << LogEnd;
+      return;
+    }
+
+
     // --- Is this IA without IAADDR options? ---
     if (!queryOpt->countAddrs()) {
-	Log(Notice) << "IA option (with IAADDR suboptions missing) received. Assigning one address."
-		    << LogEnd;
-	
-	SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
-	this->assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
-	
-       	// include status code
-        SmartPtr<TSrvOptStatusCode> ptrStatus;
-        ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-					  "1 addr granted. Next time you might consider including "
-					  "IAADDR in IA option.",this->Parent);
-        this->SubOptions.append((Ptr*)ptrStatus);
-	
-	return;
+      Log(Notice) << "IA option (with IAADDR suboptions missing) received. Assigning one address."
+                  << LogEnd;
+      
+      SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
+      this->assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
+      
+      // include status code
+      SmartPtr<TSrvOptStatusCode> ptrStatus;
+      ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
+                                        "1 addr granted. Next time you might consider including "
+                                        "IAADDR in IA option.",this->Parent);
+      this->SubOptions.append((Ptr*)ptrStatus);
+      
+      return;
     }
 
     // --- check address counts, how many we've got, how many assigned etc. ---
@@ -143,21 +152,21 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     willAssign = addrsRequested;
 
     if (willAssign > addrsMax - addrsAssigned) {
-	Log(Notice) << "Client got " << addrsAssigned << " and requested " 
-		    << addrsRequested << " more, but limit for a client is "
-		    << addrsMax << LogEnd;
-	willAssign = addrsMax - addrsAssigned;
+      Log(Notice) << "Client got " << addrsAssigned << " and requested " 
+                  << addrsRequested << " more, but limit for a client is "
+                  << addrsMax << LogEnd;
+      willAssign = addrsMax - addrsAssigned;
     }
 
     if (willAssign > addrsAvail) {
-	Log(Notice) << willAssign << " addrs would be assigned, but only" << addrsAssigned
-		    << " is available." << LogEnd;
-	willAssign = addrsAvail;
+      Log(Notice) << willAssign << " addrs would be assigned, but only" << addrsAssigned
+                  << " is available." << LogEnd;
+      willAssign = addrsAvail;
     }
 
     Log(Info) << "Client has " << addrsAssigned << " addrs, asks for " 
-	      << addrsRequested << ", " << addrsAvail << " is available, limit for client is "
-	      << addrsMax << ", " << willAssign << " will be assigned." << LogEnd;
+              << addrsRequested << ", " << addrsAvail << " is available, limit for client is "
+              << addrsMax << ", " << willAssign << " will be assigned." << LogEnd;
 
     // --- ok, let's assign those damn addresses ---
     SmartPtr<TOpt> opt;
@@ -169,11 +178,11 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     queryOpt->firstOption();
     while ( opt = queryOpt->getOption() ) {
 	switch ( opt->getOptType() ) {
-	case OPTION_IAADDR: {
-	    optAddr = (Ptr*) opt;
-	    hint    = optAddr->getAddr();
-	    
-	    if (willAssign) {
+      case OPTION_IAADDR: {
+      optAddr = (Ptr*) opt;
+      hint    = optAddr->getAddr();
+	  
+      if (willAssign) {
 		// we've got free addrs left, assign one of them
 		// always register this address as used by this client
 		// (if this is solicit, this addr will be released later)
@@ -182,39 +191,39 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 		this->assignAddr(hint, pref, valid, quiet);
 		willAssign--;
 		addrsAssigned++;
-
-	    } else {
+        
+      } else {
 		ok = false;
-	    }
-	    break;
-	}
-	case OPTION_STATUS_CODE: {
+      }
+      break;
+      }
+      case OPTION_STATUS_CODE: {
 	    SmartPtr<TOptStatusCode> ptrStatus = (Ptr*) opt;
 	    Log(Notice) << "Receviced STATUS_CODE code=" 
-			<<  ptrStatus->getCode() << ", message=(" << ptrStatus->getText()
-			<< ")" << LogEnd;
+                    <<  ptrStatus->getCode() << ", message=(" << ptrStatus->getText()
+                    << ")" << LogEnd;
 	    break;
-	}
-	default: {
+      }
+      default: {
 	    Log(Warning) << "Invalid suboption (" << opt->getOptType() 
-			 << ") in an OPTION_IA_NA option received. Option ignored." << LogEnd;
+                     << ") in an OPTION_IA_NA option received. Option ignored." << LogEnd;
 	    break;
-	}
+      }
 	}
     }
-
+    
     // --- now include STATUS CODE ---
     SmartPtr<TSrvOptStatusCode> ptrStatus;
     if (ok) {
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-					  "All addresses were assigned.",this->Parent);
-	// FIXME: if this is solicit, place "all addrs would be assigned."
+      ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
+                                        "All addresses were assigned.",this->Parent);
+      // FIXME: if this is solicit, place "all addrs would be assigned."
     } else {
-	string tmp = addrsRequested+" addrs requested, but assigned only "+addrsAssigned;
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,tmp.c_str(), this->Parent);
+      string tmp = addrsRequested+" addrs requested, but assigned only "+addrsAssigned;
+      ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,tmp.c_str(), this->Parent);
     }
     SubOptions.append((Ptr*)ptrStatus);
-
+    
     // if this is a ADVERTISE message, release those addresses in TSrvMsgAdvertise::answer() method
 }
 
@@ -295,7 +304,7 @@ TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
         break;
     
     case RENEW_MSG:
-        this->renew(queryOpt, addrCount);
+        this->renew(queryOpt, true);
         break;
     case REBIND_MSG:
         this->rebind(queryOpt, addrCount);
@@ -325,32 +334,42 @@ TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
  * 
  * @param queryOpt - IA_NA option in the RENEW message
  * @param addrCount 
+ *
+ * @return true - if binding was renewed, false - if not found or invalid
  */
-void TSrvOptIA_NA::renew(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount)
+bool TSrvOptIA_NA::renew(SmartPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
 {
     // find that client in addrdb
     SmartPtr <TAddrClient> ptrClient;
     ptrClient = this->AddrMgr->getClient(this->ClntDuid);
     if (!ptrClient) {
+      if (complainIfMissing) {
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
-						this->Parent));
-        return;
+                                                this->Parent));
+        Log(Info) << "Unable to RENEW binding for IA(iaid=" << queryOpt->getIAID() << ", client="
+                  << ClntDuid->getPlain() << ": No such client." << LogEnd;
+      }
+      return false;
     }
 
     // find that IA
     SmartPtr <TAddrIA> ptrIA;
     ptrIA = ptrClient->getIA(this->IAID);
     if (!ptrIA) {
+      if (complainIfMissing) {
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
-						this->Parent ));
-        return;
+                                                this->Parent ));
+        Log(Info) << "Unable to RENEW binding for IA(iaid=" << queryOpt->getIAID() << ", client="
+                  << ClntDuid->getPlain() << ": No such IA." << LogEnd;
+      }
+      return false;
     }
 
     // everything seems ok, update data in addrdb
     ptrIA->setTimestamp();
     this->T1 = ptrIA->getT1();
     this->T2 = ptrIA->getT2();
-
+    
     // send addr info to client
     SmartPtr<TAddrAddr> ptrAddr;
     ptrIA->firstAddr();
@@ -364,8 +383,10 @@ void TSrvOptIA_NA::renew(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCou
 
     // finally send greetings and happy OK status code
     SmartPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",this->Parent);
+    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
     SubOptions.append( (Ptr*)ptrStatus );
+
+    return true;
 }
 
 void TSrvOptIA_NA::rebind(SmartPtr<TSrvOptIA_NA> queryOpt,
