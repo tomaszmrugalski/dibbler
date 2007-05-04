@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptIA_NA.h,v 1.8 2006-03-05 21:32:28 thomson Exp $
+ * $Id: SrvOptIA_NA.h,v 1.9 2007-05-04 17:47:25 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006-03-05 21:32:28  thomson
+ * Temp. addresses support merged into main branch.
+ *
  * Revision 1.7.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -67,7 +70,7 @@ class TSrvOptIA_NA : public TOptIA_NA
 
     void solicit(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     void request(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
-    void renew(SmartPtr<TSrvOptIA_NA> queryOpt,   unsigned long &addrCount);
+    bool renew(SmartPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing);
     void rebind(SmartPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
     void release(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     void confirm(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
