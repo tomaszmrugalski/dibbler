@@ -108,13 +108,9 @@ SmartPtr<TIPv6Addr> TStationRange::getRandomPrefix()
     if(isAddrRange)
     {
         SmartPtr<TIPv6Addr> diff = new TIPv6Addr();
-	//Log(Debug) << "#### Generating random prefix: range=<" << AddrL->getPlain() << "-"<< AddrR->getPlain() << ">" << LogEnd;
         *diff=(*AddrR)-(*AddrL);
-	//Log(Debug) << "#### diff=" << diff->getPlain() << LogEnd;
         --(*diff);
-	//Log(Debug) << "#### --diff=" << diff->getPlain() << LogEnd;
         *diff=*diff+*AddrL;
-	//Log(Debug) << "#### diff+addrL= " << diff->getPlain() << LogEnd;
         return diff;
     }
     else
