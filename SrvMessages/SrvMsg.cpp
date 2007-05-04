@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.42 2007-05-01 19:31:57 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.43 2007-05-04 17:46:13 thomson Exp $
  */
 
 #include <sstream>
@@ -539,8 +539,11 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     this->DigestType = DIGEST_HMAC_SHA1;
     // if ...
     // tips: use SrvCfgMgr->getDigest() 
-    if ( reqOpts->isOption(OPTION_AUTH) ) { // [s] - co¶ takiego jeszcze do³o¿yæ trzeba do tego if'a: && ptrIface->supportLifetime() ) {
-	// FIXME: change to real DigestType
+    if ( reqOpts->isOption(OPTION_AUTH) ) { 
+      // [s] - something like that has to be added'a: && ptrIface->supportLifetime() ) {
+      // [thomson] Note1: Sammael, don't use polish comments
+      // [thomson] Note2: supportLifetime() has nothing to do with AUTH
+      // FIXME: change to real DigestType
 	this->DigestType = DIGEST_HMAC_SHA1;
 	SmartPtr<TSrvOptAuthentication> optAuthentication = new TSrvOptAuthentication(this);
 	Options.append( (Ptr*)optAuthentication);
@@ -608,7 +611,6 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
     } 
 
     optFQDN = new TSrvOptFQDN(fqdn->getName(), this);
-    // FIXME: For the moment, only the client make the DNS update
     optFQDN->setSFlag(false);
     // Setting the O Flag correctly according to the difference between O flags
     optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);

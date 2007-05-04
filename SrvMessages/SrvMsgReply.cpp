@@ -271,9 +271,9 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
     setOptionsReqOptClntDUID((Ptr*)rebind);
     if (!duidOpt) {
-	Log(Warning) << "REBIND message without client-id option received, message dropped." << LogEnd;
-	IsDone = true;
-	return;
+      Log(Warning) << "REBIND message without client-id option received, message dropped." << LogEnd;
+      IsDone = true;
+      return;
     }
     
     rebind->firstOption();
@@ -282,22 +282,30 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         switch (ptrOpt->getOptType()) 
         {
         case OPTION_IA_NA: 
-            {
-               SmartPtr<TSrvOptIA_NA> optIA_NA;
-                optIA_NA = new TSrvOptIA_NA(CfgMgr, AddrMgr, (Ptr*)ptrOpt, 
-                    rebind->getAddr(), duidOpt->getDUID(),
-                    rebind->getIface(), addrCount, REBIND_MSG,
-                    this);
-		if (optIA_NA->getStatusCode() != STATUSCODE_NOBINDING )
-		    this->Options.append((Ptr*)optIA_NA);
-		else {
-		    this->IsDone = true;
-		    Log(Notice) << "REBIND received with unknown addresses and " 
-			      << "was silently discarded." << LogEnd;
-		    return;
-		}
-                break;
+          {
+            SmartPtr<TSrvOptIA_NA> optIA_NA;
+            optIA_NA = new TSrvOptIA_NA(CfgMgr, AddrMgr, (Ptr*)ptrOpt, 
+                                        rebind->getAddr(), duidOpt->getDUID(),
+                                        rebind->getIface(), addrCount, REBIND_MSG,
+                                        this);
+            if (optIA_NA->getStatusCode() != STATUSCODE_NOBINDING )
+              this->Options.append((Ptr*)optIA_NA);
+            else {
+              this->IsDone = true;
+              Log(Notice) << "REBIND received with unknown addresses and " 
+                          << "was silently discarded." << LogEnd;
+              return;
             }
+            break;
+          }
+        case OPTION_IA_PD: {
+          SmartPtr<TSrvOptIA_PD> pd;
+          pd = new TSrvOptIA_PD(CfgMgr, AddrMgr, (Ptr*) ptrOpt, rebind->getAddr(), 
+                                duidOpt->getDUID(), rebind->getIface(), REQUEST_MSG, this);
+          this->Options.append((Ptr*)pd);
+          break;
+        }
+
         case OPTION_IAADDR:
         case OPTION_RAPID_COMMIT:
         case OPTION_STATUS_CODE:
