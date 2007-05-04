@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.6 2007-05-03 23:16:29 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.7 2007-05-04 17:34:56 thomson Exp $
  *
  */
 
@@ -185,8 +185,7 @@ List(TIPv6Addr) TSrvCfgPD::getRandomList() {
     commonPart = this->CommonPool->getRandomPrefix();
     commonPart->truncate(0, this->getPD_Length());
 
-    // FIXME: it's just workaround. It should be implemented for real.
-    //Log(Debug) << "#### Count=" << PD_Count << " Assigned=" << PD_Assigned << LogEnd;
+    // FIXME: it's just workaround. Prefix random generation should be implemented for real.
     if (PD_Count == PD_Assigned+1) {
 	commonPart = new TIPv6Addr(*CommonPool->getAddrR());
     }
@@ -195,7 +194,6 @@ List(TIPv6Addr) TSrvCfgPD::getRandomList() {
     while (range = PoolLst.get()) {
 	tmp = range->getAddrL();
 	SPtr<TIPv6Addr> x = new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(), this->CommonPool->getPrefixLength());
-	//Log(Debug) << "#### getRandomList() Generated: " << x->getPlain() << LogEnd;
 	lst.append( x );
     }
     return lst;
@@ -223,6 +221,11 @@ long TSrvCfgPD::decrAssigned(int count) {
 unsigned long TSrvCfgPD::getAssignedCount() {
     return this->PD_Assigned;
 }
+
+unsigned long TSrvCfgPD::getTotalCount() {
+    return this->PD_Count;
+}
+
 
 ostream& operator<<(ostream& out,TSrvCfgPD& prefix)
 {

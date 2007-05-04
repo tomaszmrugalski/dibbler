@@ -5,7 +5,7 @@
  *                              
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgPD.h,v 1.3 2007-01-03 01:25:32 thomson Exp $
+ * $Id: SrvCfgPD.h,v 1.4 2007-05-04 17:34:56 thomson Exp $
  *
  */
 
@@ -74,6 +74,7 @@ class TSrvCfgPD
     bool isLinkLocal();
 
     unsigned long getAssignedCount();
+    unsigned long getTotalCount();
     long incrAssigned(int count=1);
     long decrAssigned(int count=1);
 
