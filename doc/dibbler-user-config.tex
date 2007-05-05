@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.46 2007-05-04 17:13:38 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.47 2007-05-05 13:23:18 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -784,7 +784,7 @@ iface eth0 {
 \end{lstlisting}
 
 \subsection{Server configuration file}
-
+\label{server-conf}
 Server configuration is stored in \verb+server.conf+ file in the
 \verb+/etc/dibbler+ (Linux systems) or in current (Windows systems)
 directory. 
@@ -884,8 +884,8 @@ OptionName option-value
 	    1048576). It defines a size of the memory (specified in
             bytes) which can se used to store cached entries.
 \item[interface-id-order] -- (scope: global, type: before, after or omit, 
-        default: before) During relay support defines placement of the
-        interface-id option. Options can be placed in the \msg{RELAY-REPL}
+        default: before) This parameter defines placement of the
+        interface-id option. During message relaying options can be placed in the \msg{RELAY-REPL}
         message is arbitrary order. This option has been specified to control
         that order. \opt{interface-id} option can be placed before or after
         \opt{relay-message} option. There is also possibility to instruct
@@ -1519,7 +1519,7 @@ iface "eth0" {
 \end{lstlisting}
 
 \subsection{Relay configuration file}
-
+\label{relay-conf}
 Relay configuration is stored in \verb+relay.conf+ file in the
 \verb+/etc/dibbler/+ directory (Linux systems) or in current directory
 (Windows systems).
@@ -1577,8 +1577,8 @@ sometimes allowed range.
 	    precision. It is a useful for finding bottlenecks in
 	    the DHCPv6 autoconfiguration process.
 \item[interface-id-order] -- (scope: global, type: before, after or omit, 
-        default: before) During relay support defines placement of the
-        interface-id option. Options can be placed in the \msg{RELAY-REPL}
+        default: before) Defines placement of the
+        interface-id option. Options can be placed in the \msg{RELAY-FORW}
         message is arbitrary order. This option has been specified to control
         that order. \opt{interface-id} option can be placed before or after
         \opt{relay-message} option. There is also possibility to instruct

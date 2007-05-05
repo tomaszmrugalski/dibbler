@@ -1,13 +1,13 @@
 DHCPv6 and DHCPv6 options - per [RFC3315]
 
-(last updated 2006-08-30)
+(last updated 2007-04-26)
 
 - Message types
 - Option codes
 - Status codes
 - DUID
 
-For the Civic Address Types Registry [RFC-ietf-geopriv-dhcp-civil-09.txt], please see:
+For the Civic Address Types Registry [RFC4776], please see:
 http://www.iana.org/assignments/civic-address-types-registry
 
 DHCP Message types
@@ -63,13 +63,16 @@ Value     Description                      Reference
    29     OPTION_NIS_DOMAIN_NAME           [RFC3898]
    30     OPTION_NISP_DOMAIN_NAME          [RFC3898]
    31     OPTION_SNTP_SERVERS              [RFC4075]
-   32     OPTION_INFORMATION_REFRESH_TIME  [RFC-ietf-dhc-lifetime-03.txt]
+   32     OPTION_INFORMATION_REFRESH_TIME  [RFC4242]
    33     OPTION_BCMCS_SERVER_D            [RFC4280]         
    34     OPTION_BCMCS_SERVER_A            [RFC4280]
-   36     OPTION_GEOCONF_CIVIC             [RFC-ietf-geopriv-dhcp-civil-09.txt]
+   36     OPTION_GEOCONF_CIVIC             [RFC4776]
    37     OPTION_REMOTE_ID                 [RFC4649]
    38     OPTION_SUBSCRIBER_ID             [RFC4580]
-   39     OPTION_CLIENT_FQDN               [RFC-ietf-dhc-dhcpv6-fqdn-05.txt]
+   39     OPTION_CLIENT_FQDN               [RFC4704]
+   40     OPTION_PANA_AGENT                [RFC-ietf-dhc-paa-option-05.txt]   
+   41     OPTION_NEW_POSIX_TIMEZONE        [RFC4833]
+   42     OPTION_NEW_TZDB_TIMEZONE         [RFC4833]       
    
 Status Codes
 
@@ -115,20 +118,24 @@ References
 [RFC4280]  K. Chowdhury, P. Yegani and L. Madour, "DHCP Options for Broadcast 
            and Multicast Control Servers", RFC 4280, November 2005.
 
-[RFC-ietf-dhc-lifetime-03.txt]
-           S. Venaas, T. Chown, and B. Volz, "Information Refresh Time Option for 
-           DHCPv6", RFC XXXX, Month Year.
+[RFC4242]  S. Venaas, T. Chown, and B. Volz, "Information Refresh Time Option for 
+           DHCPv6", RFC 4242, November 2005.
 
-[RFC-ietf-geopriv-dhcp-civil-09.txt]
-           H. Schulzrinne, "Dynamic Host Configuration Protocol (DHCPv4 and DHCPv6) 
-           Option for Civic Addresses Configuration Information", RFC XXXX, Month Year.
+[RFC4776]  H. Schulzrinne, "Dynamic Host Configuration Protocol (DHCPv4 and DHCPv6) 
+           Option for Civic Addresses Configuration Information", RFC 4776, November 2006.
 
 [RFC4649]  B. Volz, "DHCPv6 Relay Agent Remote ID Option", RFC 4649, August 2006.
 
 [RFC4580]  B. Volz, "DHCPv6 Relay Agent Subscriber-ID Option", RFC 4580, June 2006.
  
-[RFC-ietf-dhc-dhcpv6-fqdn-05.txt]
-           B. Volz, "The DHCPv6 Client FQDN Option", RFC XXXX, Month Year.
+[RFC4704]  B. Volz, "The DHCPv6 Client FQDN Option", RFC 4704, October 2006.
+
+[RFC-ietf-dhc-paa-option-05.txt]
+           L. Morand, A. Yegin, S. Kumar, S. Madanapalli, "DHCP options for PANA 
+           Authentication Agents", RFC XXXX, Month, Year.
+
+[RFC4833]  E. Lear, P. Eggert, "A Timezone Option for DHCP", RFC 4833,
+		    April 2007.
 
 
 (registry created 03 November 2003)

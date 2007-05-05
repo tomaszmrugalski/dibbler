@@ -787,17 +787,92 @@ specific data must be provided: enterprise-number (a 32-bit integer,
 1234 in the example above) and a enterprise-specific indentifier of
 arbitrary length (56:78:9a:bc:de in the example above).
 
-\subsection{Address Parameters (Experimental)}
+\subsection{Debugging/compatibility features}
+During interoperability test session, it has been discovered that
+sometimes various different implementations of the DHCPv6 protocol has
+problem to interact with each other. As the protocol itself does not
+specify all aspects and details, some things can ba done differently
+and there is no only one ,,proper way''. It also happens that some
+implementations may have problems with different than its authors
+expected behaviors. To allow better interoperation between such
+implementation, dibbler has some features, which cause different
+behaviors. This could result in a successful operation with other
+servers, clients and relays.
+
+Normal users don't have to worry about those options, unless they are
+using different servers, clients and relays. Those options also may be
+useful for other vendors, who want to test their
+implementations. Therefore those options can be perceived as a
+debugging or testing features.
+
+\subsubsection{Interface-id option}
+
+During message relaying (done by relays), options can be placed in the \msg{RELAY-FORW}
+message is arbitrary order. In general, there are two options used:
+\opt{interface-id} option and \opt{relay-message} option. The former
+defines interface identifier, which the original data has been
+received from, while the later contains the whole original
+message. When several relays are used, such message-in-option
+encapsulation can occur multiple times.
+
+It is possible to instruct relay to store \opt{interface-id} before
+\opt{relay-message} option or after. There is also possibility to instruct
+server to omit the \opt{interface-id} option altogether, but since 
+this violates \cite{rfc3315}, it should not be used. In general, this
+configuration parameter is only useful when dealing with buggy relays,
+which can't handle all option orders properly. Consider this parameter
+a debugging feature.
+
+Similar parameter is defined for the server. Server uses it during
+\msg{RELAY-REPL} generation. 
+
+See description of the \emph{interface-id-order} parameters in Server
+configuation (section \ref{server-conf}) and Relay configuration
+(section \ref{relay-conf}).
+
+\subsubsection{Non-empty IA\_NA option}
+When client is interested in receiving an address, it sends
+\opt{IA\_NA} option. In this option it may (but don't have to) include
+addresses (using \opt{IAADDR} suboption) as hints for the server.
+
+It has been detected that some servers does not support properly
+(perfectly valid) empty \opt{IA\_NA} options. To work around this
+problem, dibbler-client can be instructed to include \opt{IAADDR} in
+the \opt{IA\_NA} option. Here is minimal example config. file, which
+achieves that:
+
+\begin{lstlisting}
+iface eth0 {
+  ia {
+     address
+  } 
+}
+\end{lstlisting}
+
+\subsection{Experimental features}
+
+This section contains experimental features. Besides serving as a
+general purpose DHCPv6 solution, dibbler is also used as a research
+tool for new ideas. \footnote{Since my (Tomasz Mrugalski) Ph.D finally
+started to take shape, some of my research topics will be examined and
+verified in the dibbler.} Normal users are recommended NOT to use any
+of those features. Advanced users should take extra caution. Also be
+aware that those options may not work as expected, may be incomplete
+and not documented properly. You have been warned.
+
+Since those mechanisms are non-standard, they are disabled by
+default. To enable them, ,,experimental'' keyword must be placed in
+the \verb+client.conf+ or \verb+server.conf+ files.
+
+\subsubsection{Address Parameters}
 
 \textbf{Note: This feature is experimental, i.e. it is not described
 by any RFC or even internet draft. Don't use it, unless you exactly
 know what you are doing.}
 
-There is process undergoing to register and publish internet draft,
-which describes this operation. As of 2007-04-15, informal version of
-such draft is available at:
-\url{http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX.txt}.
-
+There is ongoing process to register and publish internet draft,
+which describes this operation. Latest versions of this draft will be
+availabe at \url{http://klub.com.pl/dhcpv6/doc/}.
 
 RFC3315 (\cite{rfc3315}) defines means of allocating IPv6 addresses to
 all interested clients. Clients are able to obtains IPv6 addresses and
