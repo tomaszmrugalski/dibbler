@@ -305,7 +305,8 @@ release-src: VERSION-src
 	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz"
 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' --exclude 'debian' --exclude 'doc/rfc' \
-	--exclude 'doc/rfc-drafts/draft-ietf*' --exclude 'doc/iana' dibbler-`cat dibbler-version`
+	--exclude 'doc/rfc-drafts/draft-ietf*' --exclude 'doc/iana' --exclude 'Port-winnt2k/tpipv6.h' \
+	--exclude 'Port-winnt2k/wspiapi.h' dibbler-`cat dibbler-version`
 	@echo "[MV     ] ../dibbler-`cat ../dibbler-version` ../$(DIR) (ignore errors)"
 	-mv ../dibbler-`cat ../dibbler-version` ../$(DIR)
 	@echo "[RENAME ] dibbler-$(VERSION)-src.tar.gz"
