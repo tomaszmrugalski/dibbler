@@ -35,6 +35,10 @@
 #include "SrvOptVendorSpec.h"
 #include "SrvOptAddrParams.h"
 #define YY_USE_CLASS
+
+#ifdef WIN32
+#define strncasecmp strnicmp
+#endif
 #define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                     \
 List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
 List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */           \
@@ -73,7 +77,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 72 "SrvParser.y"
+#line 76 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;

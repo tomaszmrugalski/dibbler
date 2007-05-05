@@ -22,6 +22,10 @@
 #include "SrvOptVendorSpec.h"
 #include "SrvOptAddrParams.h"
 #define YY_USE_CLASS
+
+#ifdef WIN32
+#define strncasecmp strnicmp
+#endif
 %}
 
 %{
