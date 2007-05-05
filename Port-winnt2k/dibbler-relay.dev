@@ -11,7 +11,7 @@ PrivateResource=dibbler-relay_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=-DMINGWBUILD -funsigned-char_@@_
-CppCompiler=-DMINGWBUILD -funsigned-char_@@_
+CppCompiler=-D_GLIBCXX_USE_C99_DYNAMIC -DMINGWBUILD -funsigned-char_@@_
 Linker=-lws2_32_@@_
 IsCpp=1
 Icon=dibbler-relay.ico
@@ -370,7 +370,7 @@ BuildCmd=$(CC) -c addrpack.c -o addrpack.o $(CFLAGS)
 [Unit33]
 FileName=..\Options\OptInteger.cpp
 CompileCpp=1
-Folder=dibbler-relay
+Folder=
 Compile=1
 Link=1
 Priority=1000

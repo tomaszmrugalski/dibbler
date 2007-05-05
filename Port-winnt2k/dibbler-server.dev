@@ -1,7 +1,7 @@
 [Project]
 FileName=dibbler-server.dev
 Name=dibbler-server
-UnitCount=117
+UnitCount=118
 Type=1
 Ver=1
 ObjFiles=
@@ -1211,6 +1211,16 @@ BuildCmd=
 FileName=..\Options\OptAuthentication.cpp
 CompileCpp=1
 Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit118]
+FileName=..\SrvOptions\SrvOptAddrParams.cpp
+CompileCpp=1
+Folder=SrvOptions
 Compile=1
 Link=1
 Priority=1000

@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.6.0-RC1 (WinNT/2000 port)
-OutputBaseFilename=dibbler-0.6.0-RC1-winnt2k
+AppVerName=Dibbler 0.6.0 (WinNT/2000 port)
+OutputBaseFilename=dibbler-0.6.0-winnt2k
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler

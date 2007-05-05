@@ -11,7 +11,7 @@ LIBS =  -L"C:/Dev-Cpp/lib" -lws2_32
 INCS =  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
 CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
 BIN  = dibbler-relay.exe
-CXXFLAGS = $(CXXINCS) -DMINGWBUILD -funsigned-char  
+CXXFLAGS = $(CXXINCS) -D_GLIBCXX_USE_C99_DYNAMIC -DMINGWBUILD -funsigned-char  
 CFLAGS = $(INCS) -DMINGWBUILD -funsigned-char  
 RM = rm -f
 

@@ -7,7 +7,7 @@
  *
  * based on relay-win32.cpp,v 1.4 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: relay-winnt2k.cpp,v 1.3 2005-07-26 00:03:03 thomson Exp $
+ * $Id: relay-winnt2k.cpp,v 1.4 2007-05-05 15:40:33 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -134,12 +134,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2005/07/24 16:00:03  thomson
- * Port WinNT/2000 related changes.
- *
- * Revision 1.1  2005/07/23 14:33:22  thomson
- * Port for win2k/NT added.
- *
- */
+/* ugly workaround for some weird dev-cpp/mingw 3.4.2 problem */
+void md5_init_ctx (struct md5_ctx *ctx) { }
+void md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx) { }
+void *md5_finish_ctx (struct md5_ctx *ctx, void *resbuf) { }

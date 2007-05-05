@@ -13,8 +13,8 @@ LeftChar=1
 Open=0
 Top=0
 [Editors]
-Focused=1
-Order=
+Focused=-1
+Order=-1
 [Editor_0]
 Open=0
 Top=0
@@ -453,6 +453,13 @@ Top=0
 [Editor_115]
 Open=0
 Top=0
+CursorCol=1
+CursorRow=1
+TopLine=1
+LeftChar=1
 [Editor_116]
+Open=0
+Top=0
+[Editor_117]
 Open=0
 Top=0

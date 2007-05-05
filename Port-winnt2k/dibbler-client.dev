@@ -1,7 +1,7 @@
 [Project]
 FileName=dibbler-client.dev
 Name=dibbler-client
-UnitCount=119
+UnitCount=122
 Type=1
 Ver=1
 ObjFiles=
@@ -11,7 +11,7 @@ PrivateResource=dibbler-client_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=-DMINGWBUILD -funsigned-char_@@_
-CppCompiler=-DMINGWBUILD -funsigned-char_@@_
+CppCompiler=-D_GLIBCXX_USE_C99_DYNAMIC -DMINGWBUILD -funsigned-char_@@_
 Linker=-lws2_32_@@_
 IsCpp=1
 Icon=dibbler-client.ico
@@ -1231,6 +1231,36 @@ BuildCmd=
 FileName=..\Options\OptAuthentication.cpp
 CompileCpp=1
 Folder=Options
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit120]
+FileName=..\Messages\Msg.h
+CompileCpp=1
+Folder=Messages
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit121]
+FileName=..\Misc\SmartPtr.h
+CompileCpp=1
+Folder=Misc
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit122]
+FileName=..\ClntOptions\ClntOptAddrParams.cpp
+CompileCpp=1
+Folder=ClntOptions
 Compile=1
 Link=1
 Priority=1000
