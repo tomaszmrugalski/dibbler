@@ -733,6 +733,9 @@
 					RelativePath="..\SrvCfgMgr\SrvParsClassOpt.h">
 				</File>
 				<File
+					RelativePath="..\SrvCfgMgr\SrvParser.h">
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvParsGlobalOpt.h">
 				</File>
 				<File
