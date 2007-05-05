@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.39 2007-05-04 17:21:37 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.40 2007-05-05 12:31:59 thomson Exp $
  */
 
 #include "Portable.h"
@@ -479,7 +479,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	x->firstLLAddress();
 	if (!x->getLLAddress()) {
 	    Log(Debug) << "PD: Interface " << x->getFullName()
-		       << " has no link-local address, ignoring. (Is it not associated wifi?)" << LogEnd;
+		       << " has no link-local address, ignoring. (Disconnected? Not associated? No-link?)" << LogEnd;
 	    continue;
 	}
 

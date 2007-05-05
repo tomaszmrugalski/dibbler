@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.52 2007-04-10 22:00:05 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.53 2007-05-05 12:31:58 thomson Exp $
  *
  */
 
@@ -237,7 +237,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	    ifaceIface->firstLLAddress();
 	    if (!ifaceIface->getLLAddress()) {
 		Log(Notice) << "Interface " << ifaceIface->getFullName()
-			    << " has no link-local address, ignoring. (Is it not associated wifi?)" << LogEnd;
+			    << " has no link-local address, ignoring. (Disconnected? Not associated? No-link?)" << LogEnd;
 		continue;
 	    }
 
