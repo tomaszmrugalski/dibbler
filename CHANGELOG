@@ -45,7 +45,7 @@
   - All: Support for anonymous INF-REQUEST added
   - Server: Does not crash during DNS Update, when DNS are not defined (bug #142)
   - Client: Large timeouts does not confuse client anymore (bug #141)
-  - Client: Prefix deletation support in REBING improved
+  - Client: Prefix deletation support in REBIND improved
 
  0.6.0RC2 [2007-02-25]
   - Linux: fixed segfault on interfaces with no link-local addresses, e.g. tun devices (bug #136, #140)
