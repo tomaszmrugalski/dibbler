@@ -113,9 +113,10 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include "RelCfgIface.h"
 #include "DUID.h"
 #include "Logger.h"
+#include "Portable.h"
 
 #define YY_USE_CLASS
-#line 20 "RelParser.y"
+#line 21 "RelParser.y"
 
 #include "FlexLexer.h"
 #define YY_RelParser_MEMBERS  FlexLexer * lex;                                                     \
@@ -135,7 +136,7 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 44 "RelParser.y"
+#line 45 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -576,10 +577,10 @@ static const short yyrhs[] = {    22,
 
 #if (YY_RelParser_DEBUG != 0) || defined(YY_RelParser_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    68,    72,    76,    77,    81,    82,    83,    84,    85,    86,
-    90,    91,    95,    96,   100,   101,   102,   103,   104,   108,
-   113,   121,   126,   137,   138,   142,   149,   156,   160,   167,
-   171,   178,   184,   189,   196,   203,   209,   216
+    69,    73,    77,    78,    82,    83,    84,    85,    86,    87,
+    91,    92,    96,    97,   101,   102,   103,   104,   105,   109,
+   114,   122,   127,   138,   139,   143,   150,   157,   161,   168,
+   172,   179,   185,   190,   197,   204,   210,   217
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","CLIENT_",
@@ -1153,14 +1154,14 @@ YYLABEL(yyreduce)
   switch (yyn) {
 
 case 20:
-#line 109 "RelParser.y"
+#line 110 "RelParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 21:
-#line 114 "RelParser.y"
+#line 115 "RelParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1170,101 +1171,101 @@ case 21:
 ;
     break;}
 case 22:
-#line 122 "RelParser.y"
+#line 123 "RelParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 23:
-#line 127 "RelParser.y"
+#line 128 "RelParser.y"
 {
     RelCfgIfaceLst.append(new TRelCfgIface(yyvsp[-4].ival));
     EndIfaceDeclaration();
 ;
     break;}
 case 24:
-#line 137 "RelParser.y"
-{yyval.ival=yyvsp[0].ival;;
-    break;}
-case 25:
 #line 138 "RelParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
+case 25:
+#line 139 "RelParser.y"
+{yyval.ival=yyvsp[0].ival;;
+    break;}
 case 26:
-#line 143 "RelParser.y"
+#line 144 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 27:
-#line 150 "RelParser.y"
+#line 151 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 28:
-#line 157 "RelParser.y"
+#line 158 "RelParser.y"
 { 
     ParserOptStack.getLast()->setServerMulticast(yyvsp[0].ival);
 ;
     break;}
 case 29:
-#line 161 "RelParser.y"
+#line 162 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerMulticast(true);
 ;
     break;}
 case 30:
-#line 168 "RelParser.y"
+#line 169 "RelParser.y"
 { 
     ParserOptStack.getLast()->setClientMulticast(yyvsp[0].ival);
 ;
     break;}
 case 31:
-#line 172 "RelParser.y"
+#line 173 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientMulticast(true);
 ;
     break;}
 case 32:
-#line 178 "RelParser.y"
+#line 179 "RelParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
 case 33:
-#line 184 "RelParser.y"
+#line 185 "RelParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
 case 34:
-#line 190 "RelParser.y"
+#line 191 "RelParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
 case 35:
-#line 197 "RelParser.y"
+#line 198 "RelParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
 case 36:
-#line 204 "RelParser.y"
+#line 205 "RelParser.y"
 {
     ParserOptStack.getLast()->setGuessMode(true);
 ;
     break;}
 case 37:
-#line 210 "RelParser.y"
+#line 211 "RelParser.y"
 {
     ParserOptStack.getLast()->setInterfaceID(yyvsp[0].ival);
 ;
     break;}
 case 38:
-#line 217 "RelParser.y"
+#line 218 "RelParser.y"
 {
     if (!strncasecmp(yyvsp[0].strval,"before",6)) 
     {
@@ -1488,7 +1489,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 237 "RelParser.y"
+#line 238 "RelParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

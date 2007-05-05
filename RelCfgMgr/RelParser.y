@@ -13,6 +13,7 @@
 #include "RelCfgIface.h"
 #include "DUID.h"
 #include "Logger.h"
+#include "Portable.h"
 
 #define YY_USE_CLASS
 %}

@@ -26,6 +26,7 @@
 #include "RelCfgIface.h"
 #include "DUID.h"
 #include "Logger.h"
+#include "Portable.h"
 
 #define YY_USE_CLASS
 #define YY_RelParser_MEMBERS  FlexLexer * lex;                                                     \
@@ -45,7 +46,7 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 44 "RelParser.y"
+#line 45 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
