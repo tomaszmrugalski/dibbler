@@ -21,11 +21,8 @@
 #include "FQDN.h"
 #include "SrvOptVendorSpec.h"
 #include "SrvOptAddrParams.h"
+#include "Portable.h"
 #define YY_USE_CLASS
-
-#ifdef WIN32
-#define strncasecmp strnicmp
-#endif
 %}
 
 %{
