@@ -1,32 +1,32 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Portuguese translations for dibbler package.
+# Copyright (C) 2007 Miguel Figueiredo
+# This file is distributed under the same license as the dibbler package.
+# Miguel Figueiredo <elmig@debianpt.org>, 2007.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
-"POT-Creation-Date: 2007-02-25 17:06+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: dibbler\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-01-13 19:00+0100\n"
+"PO-Revision-Date: 2007-05-02 21:50+0100\n"
+"Last-Translator: Miguel Figueiredo <elmig@debianpt.org>\n"
+"Language-Team: Portuguese <traduz@debianpt.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Type: title
 #. Description
 #: ../dibbler-client.templates:1001
 msgid "dibbler-client: DHCPv6 client"
-msgstr ""
+msgstr "dibbler-client: cliente DHCPv6 "
 
 #. Type: boolean
 #. Description
 #: ../dibbler-client.templates:2001
 msgid "Do you want dibbler-client to start when system starts?"
-msgstr ""
+msgstr "Deseja que o dibbler-client inicie quando o sistema arrancar?"
 
 #. Type: boolean
 #. Description
@@ -36,58 +36,72 @@ msgid ""
 "IPv6 set up after boot. This is generally a good idea. Make sure that there "
 "is a DHCPv6 server available in your network."
 msgstr ""
+"O cliente Dibbler pode ser configurado para iniciar no arranque, assim a sua "
+"máquina terá IPv6 instalado após o arranque. Isto é geralmente uma boa "
+"ideia. Assegure-se que existe um servidor de DHCPv6 disponível na sua rede."
+
+#. Type: string
+#. Default
+#: ../dibbler-client.templates:3001
+msgid "eth0"
+msgstr "eth0"
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3001
+#: ../dibbler-client.templates:3002
 msgid "Interfaces to be configured:"
-msgstr ""
+msgstr "Interfaces a serem configurados:"
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3001
+#: ../dibbler-client.templates:3002
 msgid "Dibbler can configure any or all of a computer's network interfaces."
-msgstr ""
+msgstr "O dibbler pode configurar qualquer um ou todos os interfaces de rede "
+"de um computador."
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3001
+#: ../dibbler-client.templates:3002
 msgid ""
 "More than one interface may be specified by separating the interface names "
 "with spaces."
 msgstr ""
+"Pode ser especificado mais do que um interface separando os nomes dos "
+"interfaces com espaços."
 
 #. Type: multiselect
 #. Choices
 #: ../dibbler-client.templates:4001
 msgid "dns, domain"
-msgstr ""
+msgstr "dns, domínio"
 
 #. Type: multiselect
 #. Description
 #: ../dibbler-client.templates:4002
 msgid "What additional parameters should be obtained:"
-msgstr ""
+msgstr "Que parâmetros adicionais devem ser obtidos:"
 
 #. Type: multiselect
 #. Description
 #: ../dibbler-client.templates:4002
 msgid ""
-"The Dibbler client can request that the DHCPv6 server supplies additional "
+"The Dibbler client can request that the DHCPv6 server supply additional "
 "configuration parameters."
 msgstr ""
+"O cliente dibbler pode requisitar ao servidor DHCPv6 par fornecer parâmetros "
+"adicionais de configuração."
 
 #. Type: title
 #. Description
 #: ../dibbler-relay.templates:1001
 msgid "dibbler-relay: DHCPv6 relay"
-msgstr ""
+msgstr "dibbler-relay: relay DHCPv6"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-relay.templates:2001
 msgid "Do you want dibbler-relay to start when the system starts?"
-msgstr ""
+msgstr "Deseja que o dibbler-relay inicie quando o sistema arrancar?"
 
 #. Type: boolean
 #. Description
@@ -96,12 +110,14 @@ msgid ""
 "Dibbler relay can be configured to start at boot. This node will then "
 "forward DHCPv6 messages between clients, servers and other relays."
 msgstr ""
+"O relay Dibbler pode ser configurado para iniciar no arranque. Este nó irá "
+"então encaminhar as mensagens DHCPv6 entre clientes, servidores e outros relays."
 
 #. Type: note
 #. Description
 #: ../dibbler-relay.templates:3001
 msgid "Modify /etc/dibbler/relay.conf before running the relay"
-msgstr ""
+msgstr "Modifique /etc/dibbler/relay.conf antes de correr o relay"
 
 #. Type: note
 #. Description
@@ -110,18 +126,20 @@ msgid ""
 "Without proper modifications, the relay will most likely refuse to start or "
 "will not forward DHCPv6 messages as expected."
 msgstr ""
+"Sem as modificações devidas, o relay irá muito provavelmente recusar-se a "
+"iniciar ou não irá encaminhar as mensagens DHCPv6 conforme é esperado."
 
 #. Type: title
 #. Description
 #: ../dibbler-server.templates:1001
 msgid "dibbler-server: DHCPv6 server"
-msgstr ""
+msgstr "dibbler-server: servidor DHCPv6"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-server.templates:2001
 msgid "Do you want dibbler-server to start when the system starts?"
-msgstr ""
+msgstr "Deseja que o dibbler-server inicie quando o sistema arrancar?"
 
 #. Type: boolean
 #. Description
@@ -131,17 +149,22 @@ msgid ""
 "as a DHCPv6 server. It will provide IPv6 addresses and additional "
 "configuration options to other nodes in the network."
 msgstr ""
+"O servidor dibbler pode ser configurado para iniciar no arranque. O nó irá "
+"então actuar como um servidor DHCPv6. Irá disponibilizar endereços IPv6 e "
+"opções adicionais de configuração a outros nós na rede."
 
 #. Type: note
 #. Description
 #: ../dibbler-server.templates:3001
 msgid "Modify /etc/dibbler/server.conf before running the server"
-msgstr ""
+msgstr "Modificar /etc/dibbler/server.conf antes de correr o servidor"
 
 #. Type: note
 #. Description
 #: ../dibbler-server.templates:3001
 msgid ""
-"Without proper modifications, Dibbler server will most likely offer "
+"Without proper modifications, the Dibbler server will most likely offer "
 "invalid addresses and options when started."
 msgstr ""
+"Sem as devidas modificações, o servidor Dibbler irá muito provavelmente "
+"oferecer endereços e opções inválidos quando iniciado."

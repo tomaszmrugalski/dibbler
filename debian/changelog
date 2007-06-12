@@ -1,3 +1,14 @@
+dibbler (0.6.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Proper SOLICIT are now sent (closes: #416803)
+  * Missing header files are no longer referenced (closes: 427277)
+  * debconf templates updated (closes: #426025)
+  * "Invalid option 8" error fixed (closes: #412664)
+  * German and portuguese translations added (closes: 422487, 426024)
+
+ -- Tomasz Mrugalski <thomson@klub.com.pl>  Tue, 12 Jun 2007 22:49:38 +0200
+
 dibbler (0.6.0RC2.dfsg-1) unstable; urgency=low
 
   * New upstream release
