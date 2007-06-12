@@ -1,9 +1,25 @@
 #! /bin/sh
-#		Written by Miquel van Smoorenburg <miquels@cistron.nl>.
-#		Modified for Debian 
-#		by Ian Murdock <imurdock@gnu.ai.mit.edu>.
 #
-# Version:	1.9  2005-01-27 Tomasz Mrugalski<thomson@klub.com.pl>
+# Starts/stops dibbler-relay
+#
+### BEGIN INIT INFO
+# Provides:          dibbler-relay
+# Required-Start:    $network
+# Required-Stop:     $network
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts DHCPv6 relay
+# Description:       By starting dibbler-relay, this node
+#                    will start relaying DHCPv6 messages between
+#                    server and clients located on different links.
+### END INIT INFO
+#
+#		Based on a script written by Miquel van Smoorenburg <miquels@cistron.nl>.
+#		Modified for Debian by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+#
+# Version:	2007-06-12 Tomasz Mrugalski <thomson@klub.com.pl>
 #
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin

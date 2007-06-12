@@ -1,10 +1,25 @@
 #! /bin/sh
 #
-#		Written by Miquel van Smoorenburg <miquels@cistron.nl>.
-#		Modified for Debian 
-#		by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+# Starts/stops dibbler-client
 #
-# Version:	2005-01-27 Tomasz Mrugalski<thomson@klub.com.pl>
+### BEGIN INIT INFO
+# Provides:          dibbler-client
+# Required-Start:    $network
+# Required-Stop:     $network
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts DHCPv6 client
+# Description:       By starting dibbler-client, this host
+#                    will try to obtain IPv6 address and other
+#                    configuration parameters from DHCPv6 server.
+### END INIT INFO
+#
+#		Based on a script written by Miquel van Smoorenburg <miquels@cistron.nl>.
+#		Modified for Debian by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+#
+# Version:	2007-06-12 Tomasz Mrugalski <thomson@klub.com.pl>
 #
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
