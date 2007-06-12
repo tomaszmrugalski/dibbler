@@ -45,6 +45,7 @@ Description: portable DHCPv6 relay
 
 Package: dibbler-doc
 Architecture: all
+Section: doc
 Depends:
 Suggests: dibbler-server, dibbler-client, dibbler-relay
 Description: documentation for dibbler
