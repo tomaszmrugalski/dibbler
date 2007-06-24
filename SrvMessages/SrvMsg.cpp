@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.43 2007-05-04 17:46:13 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.44 2007-06-24 10:11:35 thomson Exp $
  */
 
 #include <sstream>
@@ -699,7 +699,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 #endif
 
     } else {
-	Log(Debug) << "Server configuration does NOT allow DNS updates for " << *clntDuid << LogEnd;
+	Log(Debug) << "Server configuration does NOT allow DNS updates for " << clntDuid->getPlain() << LogEnd;
 	optFQDN->setNFlag(true);
     }
     
