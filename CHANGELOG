@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+ CVS [not-released]
+  - Security: invalid length field parsing fixed (bug #164)
+  - Security: world writable are no longer created (bug #160)
+
  0.6.0 [2007-05-05]
   - Configuration file examples are now described better
   - Documentation update (Dibbler User's Guide is now 60+ pages long)
