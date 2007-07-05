@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: OptOptionRequest.h,v 1.4 2006-03-05 21:37:46 thomson Exp $
+ * $Id: OptOptionRequest.h,v 1.5 2007-07-05 00:17:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006-03-05 21:37:46  thomson
+ * TA support merged.
+ *
  * Revision 1.3.2.1  2006/02/05 23:38:08  thomson
  * Devel branch with Temporary addresses support added.
  *
@@ -32,11 +35,11 @@ class TOptOptionRequest : public TOpt
 {
   public:
     TOptOptionRequest(TMsg* parent);
-    TOptOptionRequest(char * &buf,  int &n, TMsg* parent);
+    TOptOptionRequest(char * &buf,  int &bufSize, TMsg* parent);
     
-    void addOption(short optNr);
-    void delOption(short optNr);
-    bool isOption(short optNr);
+    void addOption(unsigned short optNr);
+    void delOption(unsigned short optNr);
+    bool isOption(unsigned short optNr);
     int  count();
     void clearOptions();
 
@@ -47,7 +50,7 @@ class TOptOptionRequest : public TOpt
      ~TOptOptionRequest();	
   protected:
     bool Valid;
-    short *Options;
+    unsigned short *Options;
     int	OptCnt;
 };
 

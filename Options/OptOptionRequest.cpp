@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptOptionRequest.cpp,v 1.4 2004-10-25 20:45:53 thomson Exp $
+ * $Id: OptOptionRequest.cpp,v 1.5 2007-07-05 00:17:41 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004-10-25 20:45:53  thomson
+ * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ *
  * Revision 1.3  2004/04/11 18:10:56  thomson
  * CRLF fixed.
  *
@@ -25,9 +28,9 @@
 #include <netinet/in.h>
 #endif 
 #include "SmartPtr.h"
-//#include "ClntCfgMgr.h"
 #include "OptOptionRequest.h"
 #include "DHCPConst.h"
+#include "Logger.h"
 
 TOptOptionRequest::TOptOptionRequest(TMsg* parent)
 	:TOpt(OPTION_ORO, parent)
@@ -68,33 +71,32 @@ char * TOptOptionRequest::storeSelf( char* buf)
     return buf;
 }
 
-TOptOptionRequest::TOptOptionRequest( char * &buf,  int &n, TMsg* parent)
+TOptOptionRequest::TOptOptionRequest( char * &buf,  int &bufSize, TMsg* parent)
 	:TOpt(OPTION_ORO, parent)
 {
-	Options = new short[n>>1];
-	int pos=0;
-	while (pos<(n>>1))
-    {
-        Options[pos]=ntohs(*(short*)buf);
-        buf+=2;
-        pos++;
-    }
-	OptCnt=n>>1;
-    if (n%2)
+    if (bufSize/2) {
+	Log(Error) << "OPTION REQUEST option malformed: odd number of bytes (" << bufSize << ")." << LogEnd;
         Valid=false;
-    else
-        Valid=true;
+	return;
+    }
+    int totalOpts = bufSize/2;
+    Options = new unsigned short[totalOpts]; // allocate memory for all options
+
+    int i=0;
+    for (i=0; i<totalOpts; i++) {
+	Options[i] = ntohs(*(unsigned short*) (buf+i*2) );
+    }
 }
 
-void TOptOptionRequest::addOption(short optNr)
+void TOptOptionRequest::addOption(unsigned short optNr)
 {
     //Is option already included
     if (isOption(optNr))
         return; //if it is no need to include once more
     //store for a while old options
-    short *oldOptions=Options;
+    unsigned short *oldOptions=Options;
     //assign memort for additional option
-    Options=new short[++OptCnt];
+    Options=new unsigned short[++OptCnt];
     //If there were options before
     if (oldOptions)
     {
@@ -107,7 +109,7 @@ void TOptOptionRequest::addOption(short optNr)
     Options[OptCnt-1]=optNr;
 }
 
-void TOptOptionRequest::delOption(short optNr)
+void TOptOptionRequest::delOption(unsigned short optNr)
 {
     //find option if any
     if (!OptCnt) return;
@@ -120,7 +122,7 @@ void TOptOptionRequest::delOption(short optNr)
     OptCnt--;
 }
 
-bool TOptOptionRequest::isOption(short optNr)
+bool TOptOptionRequest::isOption(unsigned short optNr)
 {
     for(int i=0;i<OptCnt;i++)
         if (Options[i]==optNr)

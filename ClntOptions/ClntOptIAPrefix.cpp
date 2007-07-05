@@ -23,47 +23,49 @@
 #include "IPv6Addr.h"
 #include "Msg.h"
 
-TClntOptIAPrefix::TClntOptIAPrefix( char * buf, int n, TMsg* parent)
-	:TOptIAPrefix(buf, n, parent)
+TClntOptIAPrefix::TClntOptIAPrefix( char * buf, int bufSize, TMsg* parent)
+	:TOptIAPrefix(buf, bufSize, parent)
 {
+    SmartPtr<TOpt> opt = 0;
+    int pos=0;
+    int MsgType = 0;
+    if (parent)
+	MsgType = parent->getType();
 
-   int pos=0;
-   while(pos<n) 
+    while(pos<bufSize) 
     {
-        int code   = ntohs( *(short*)buf);
+	if (pos+4>bufSize) {
+	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos) 
+		       << " bytes left to parse. Bytes ignored." << LogEnd;
+	    break;
+	}
+        unsigned short code   = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
-	int length = ntohs( *(short*)buf);
+        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
-        if ((code>0)&&(code<=26))// was 24 but new options were declared IAPrefix is 26
-        {                
-            if(allowOptInOpt(parent->getType(),OPTION_IAPREFIX,code))
-            {
-                printf("Got option IA_PREFIX\n");
-		 SmartPtr<TOpt> opt;
-                switch (code)
-                {
-                case OPTION_STATUS_CODE:
-                    SubOptions.append( new TClntOptStatusCode(buf+pos,length, this->Parent) );
-                    break;
-                default:
-                    Log(Warning) <<"Option opttype=" << code<< "not supported "
-				 <<" in field of message (type="<< parent->getType() 
-				 <<") in this version of client."<<LogEnd;
-                    break;
-                }
-                if((opt)&&(opt->isValid()))
-                    SubOptions.append(opt);
-            }
-            else
-		Log(Warning) << "Illegal option received, opttype=" << code 
-			     << " in field options of IA_Prefix option"<<LogEnd;
-        }
-        else
-        {
-	    Log(Warning) <<"Unknown option in option IA_Prefix( optType=" 
-			 << code << "). Option ignored." << LogEnd;
-        };
-	    pos+=length;
+	if (pos+length>bufSize) {
+	    Log(Error) << "Invalid option (type=" << code << ", len=" << length 
+		       << " received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
+	    return;
+	}
+	
+	if (allowOptInOpt(parent->getType(),OPTION_IAPREFIX,code))
+	{
+	    switch (code)
+	    {
+	    case OPTION_STATUS_CODE:
+		opt = new TClntOptStatusCode(buf+pos,length, this->Parent);
+		break;
+	    default:
+		Log(Warning) <<"Option opttype=" << code<< "not supported "
+			     <<" in field of message (type="<< parent->getType() 
+			     <<") in this version of client."<<LogEnd;
+		break;
+	    }
+	    if((opt)&&(opt->isValid()))
+		SubOptions.append(opt);
+	}
+	pos += length;
     }
 }
 

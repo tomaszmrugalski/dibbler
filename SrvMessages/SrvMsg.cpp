@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.44 2007-06-24 10:11:35 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.45 2007-07-05 00:17:42 thomson Exp $
  */
 
 #include <sstream>
@@ -104,20 +104,32 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	
     int pos=0;
     while (pos<bufSize)	{
-        short code = ntohs( * ((short*) (buf+pos)));
+	if (pos+4>bufSize) {
+	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos) 
+		       << " bytes left to parse. Bytes ignored." << LogEnd;
+	    break;
+	}
+        unsigned short code   = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
-        short length = ntohs(*((short*)(buf+pos)));
+        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
+	if (pos+length>bufSize) {
+	    Log(Error) << "Invalid option (type=" << code << ", len=" << length 
+		       << " received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
+	    IsDone = true;
+	    return;
+	}
+
         SmartPtr<TOpt> ptr;
 
 	if (!allowOptInMsg(MsgType,code)) {
-	    Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Ignoring." << LogEnd;
+	    Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Option ignored." << LogEnd;
 	    pos+=length;
 	    continue;
 	}
 	if (!allowOptInOpt(MsgType,0,code)) {
 	    Log(Warning) <<"Option " << code << " can't be present in message (type="
-			 << MsgType <<") directly. Ignoring." << LogEnd;
+			 << MsgType <<") directly. Option ignored." << LogEnd;
 	    pos+=length;
 	    continue;
 	}

@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.8 2007-02-21 20:09:54 thomson Exp $
+ * $Id: daemon.cpp,v 1.9 2007-07-05 00:17:42 thomson Exp $
  *
  */
 
@@ -91,7 +91,7 @@ void daemon_init() {
 	
     } // getppid()!=1
 
-    umask(0);
+    umask(DEFAULT_UMASK);
 }
 
 void daemon_die() {
@@ -144,6 +144,9 @@ int init(const char * pidfile, const char * workdir) {
 	Log(Crit) << "Unable to change directory to " << workdir << "." << LogEnd;
 	return 0;
     }
+
+    umask(DEFAULT_UMASK);
+
     return 1;
 }
 

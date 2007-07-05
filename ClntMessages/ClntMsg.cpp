@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.29 2007-05-04 17:22:49 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.30 2007-07-05 00:17:41 thomson Exp $
  */
 
 #ifdef WIN32
@@ -112,11 +112,21 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
     int pos=0;
     SmartPtr<TOpt> ptr;
     while (pos<bufSize) {
-	ptr = 0;
-        short code = ntohs( *((short*) (buf+pos)));
+	if (pos+4>bufSize) {
+	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos) 
+		       << " bytes left to parse. Bytes ignored." << LogEnd;
+	    break;
+	}
+        unsigned short code   = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
-        short length = ntohs(*((short*) (buf+pos)));
+        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
+	if (pos+length>bufSize) {
+	    Log(Error) << "Invalid option (type=" << code << ", len=" << length 
+		       << " received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
+	    IsDone = true;
+	    return;
+	}
 	
 	if (!allowOptInMsg(MsgType,code)) {
 	    this->invalidAllowOptInMsg(MsgType, code);
@@ -128,6 +138,8 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    pos+=length;
 	    continue;
 	}
+	ptr = 0;
+
 	switch (code) {
 	case OPTION_CLIENTID:
 	    ptr = new TClntOptClientIdentifier(buf+pos,length,this);

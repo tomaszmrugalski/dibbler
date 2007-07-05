@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.15 2007-05-01 19:22:14 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.16 2007-07-05 00:17:42 thomson Exp $
  *
  */
 
@@ -164,8 +164,14 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     
     // options: only INTERFACEID and RELAY_MSG are allowed
     while (bufsize>=4) {
-	short code = ntohs( * ((short*) (buf)));
-	short len  = ntohs(*((short*)(buf+2)));
+
+	unsigned short code = ntohs( *((unsigned short*) (buf)));
+	unsigned short len  = ntohs( *((unsigned short*) (buf+2)));
+	if (len>bufsize) {
+	    Log(Error) << "Message RELAY-REPL truncated. There are " << (bufsize-len) 
+		       << " bytes left to parse. Message dropped." << LogEnd;
+	    return 0;
+	}
 	buf     += 4;
 	bufsize -= 4;
 	switch (code) {

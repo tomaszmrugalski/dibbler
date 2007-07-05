@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.85 2007-04-22 21:19:29 thomson Exp $
+ * $Id: Portable.h,v 1.86 2007-07-05 00:17:41 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -43,6 +43,8 @@ typedef unsigned long long int  uint64_t;
 
 #define snprintf _snprintf
 #endif
+
+#define DEFAULT_UMASK 027
 
 /**********************************************************************/
 /*** data structures **************************************************/

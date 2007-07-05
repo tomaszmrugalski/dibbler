@@ -7,9 +7,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.23 2007-03-21 00:21:11 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.24 2007-07-05 00:17:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2007-03-21 00:21:11  thomson
+ * Server no longer crash when relay interface is not found (bug #144)
+ *
  * Revision 1.22  2007-01-27 17:14:10  thomson
  * *** empty log message ***
  *
@@ -300,11 +303,11 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 
 	// options: only INTERFACE-ID and RELAY_MSG are allowed
 	while (bufsize>=4) {
-	    short code = ntohs( * ((short*) (buf)));
-	    short len  = ntohs(*((short*)(buf+2)));
+	    unsigned short code = ntohs( *((unsigned short*)(buf)));
+	    unsigned short len  = ntohs( *((unsigned short*)(buf+2)));
 	    buf     += 4;
 	    bufsize -= 4;
-
+	    
 	    if (len > bufsize) {
 		Log(Warning) << "Truncated option " << code << ": " << bufsize << " bytes remaining, but length is " << len 
 			     << "." << LogEnd;

@@ -6,24 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIAAddress.cpp,v 1.6 2007-04-22 21:19:28 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.5.2.1  2007-04-15 21:23:31  thomson
- * AddrParams implemented (prefix part)
- *
- * Revision 1.5  2006-10-06 00:42:13  thomson
- * Initial PD support.
- *
- * Revision 1.4  2004-12-02 00:51:04  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.3  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: ClntOptIAAddress.cpp,v 1.7 2007-07-05 00:17:41 thomson Exp $
  *
  */
 
@@ -44,33 +27,48 @@
 #include "IPv6Addr.h"
 #include "Msg.h"
 
-TClntOptIAAddress::TClntOptIAAddress( char * buf, int n, TMsg* parent)
-	:TOptIAAddress(buf, n, parent)
+TClntOptIAAddress::TClntOptIAAddress( char * buf, int bufSize, TMsg* parent)
+	:TOptIAAddress(buf, bufSize, parent)
 {
- 
-	int pos=0;
-    while(pos<n) 
+    SmartPtr<TOpt> opt = 0;
+    int MsgType = 0;
+    if (parent)
+	parent->getType();
+    
+    int pos=0;
+    while(pos<bufSize) 
     {
-        int code   = ntohs( *(short*)buf);
+	if (pos+4>bufSize) {
+	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos) 
+		       << " bytes left to parse. Bytes ignored." << LogEnd;
+	    break;
+	}
+        unsigned short code   = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
-        int length = ntohs( *(short*)buf);
+        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
+	if (pos+length>bufSize) {
+	    Log(Error) << "Invalid option (type=" << code << ", len=" << length 
+		       << " received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
+	    return;
+	}
+
 	if(allowOptInOpt(parent->getType(),OPTION_IAADDR,code))
 	{
-	    SmartPtr<TOpt> opt;
+	    opt = 0;
 	    switch (code)
 	    {
 	    case OPTION_STATUS_CODE:
-		SubOptions.append( new TClntOptStatusCode(buf+pos,length, this->Parent) );
+		opt = new TClntOptStatusCode(buf+pos,length, this->Parent);
 		break;
 	    case OPTION_ADDRPARAMS:
-		SubOptions.append( new TClntOptAddrParams(buf+pos, length, this->Parent));
+		opt = new TClntOptAddrParams(buf+pos, length, this->Parent);
 		Log(Debug) << "AddrParams option received." << LogEnd;
 		break;
 	    default:
-		Log(Warning) <<"Option opttype=" << code<< "not supported "
-			     <<" in field of message (type="<< parent->getType() 
-			     <<") in this version of client."<<LogEnd;
+		Log(Warning) <<"Suboption (type=" << code<< ") not supported "
+			     <<" in IAADDR option in message (type="<< parent->getType() 
+			     <<")." << LogEnd;
 		break;
 	    }
 	    if((opt)&&(opt->isValid()))

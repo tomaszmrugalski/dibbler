@@ -6,18 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelMsg.cpp,v 1.4 2005-04-25 00:19:20 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.2  2005/01/11 23:35:22  thomson
- * *** empty log message ***
- *
- * Revision 1.1  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
+ * $Id: RelMsg.cpp,v 1.5 2007-07-05 00:17:42 thomson Exp $
  *
  */
 
@@ -45,14 +34,26 @@ TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  
     this->decodeOpts(data, dataLen);
 }
 
-void TRelMsg::decodeOpts(char * data, int dataLen) {
+void TRelMsg::decodeOpts(char * buf, int bufSize) {
     int pos=0;
-    while (pos<dataLen)	{
-        short code = ntohs( * ((short*) (data+pos)));
+    SmartPtr<TOpt> ptr;
+
+    while (pos<bufSize)	{
+	if (pos+4>bufSize) {
+	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos) 
+		       << " bytes left to parse. Bytes ignored." << LogEnd;
+	    break;
+	}
+        unsigned short code   = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
-        short length = ntohs(*((short*)(data+pos)));
+        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
-        SmartPtr<TOpt> ptr;
+	if (pos+length>bufSize) {
+	    Log(Error) << "Invalid option (type=" << code << ", len=" << length 
+		       << " received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
+	    IsDone = true;
+	    return;
+	}
 
 	if (!allowOptInMsg(this->MsgType,code)) {
 	    Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Ignoring." << LogEnd;
@@ -66,16 +67,16 @@ void TRelMsg::decodeOpts(char * data, int dataLen) {
 	    continue;
 	}
 
-	ptr= 0;
+	ptr = 0;
 	switch (code) {
 	case OPTION_RELAY_MSG:
-	    ptr = new TRelOptRelayMsg(data+pos,length,this);
+	    ptr = new TRelOptRelayMsg(buf+pos,length,this);
 	    break;
 	case OPTION_INTERFACE_ID:
-	    ptr = new TRelOptInterfaceID(data+pos,length,this);
+	    ptr = new TRelOptInterfaceID(buf+pos,length,this);
 	    break;
 	default:
-	    ptr = new TRelOptGeneric(code, data+pos, length, this);
+	    ptr = new TRelOptGeneric(code, buf+pos, length, this);
 	    break;
 	}
 
