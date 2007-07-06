@@ -6,18 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptOptionRequest.cpp,v 1.5 2007-07-05 00:17:41 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2004-10-25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.3  2004/04/11 18:10:56  thomson
- * CRLF fixed.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
+ * $Id: OptOptionRequest.cpp,v 1.6 2007-07-06 11:26:54 thomson Exp $
  *
  */
 #include <stdlib.h>
@@ -35,15 +24,15 @@
 TOptOptionRequest::TOptOptionRequest(TMsg* parent)
 	:TOpt(OPTION_ORO, parent)
 {
-    //FIXME: appropriate options should be set in parent constructor
     this->Options=NULL;
     this->OptCnt=0;
 }
 
 int  TOptOptionRequest::getReqOpt(int optNr) {
     if ( (!OptCnt) || (optNr>OptCnt) )
-	return 0;
-    return this->Options[optNr];
+      return 0;
+    return 
+      this->Options[optNr];
 }
 
  int TOptOptionRequest::getSize()
@@ -56,7 +45,8 @@ int  TOptOptionRequest::getReqOpt(int optNr) {
 
 char * TOptOptionRequest::storeSelf( char* buf)
 {
-    if (!OptCnt) return buf;
+    if (!OptCnt) 
+        return buf;
     *(uint16_t*)buf = htons(OptType);
     buf+=2;
     *(uint16_t*)buf = htons( getSize()-4 );
@@ -74,17 +64,19 @@ char * TOptOptionRequest::storeSelf( char* buf)
 TOptOptionRequest::TOptOptionRequest( char * &buf,  int &bufSize, TMsg* parent)
 	:TOpt(OPTION_ORO, parent)
 {
-    if (bufSize/2) {
-	Log(Error) << "OPTION REQUEST option malformed: odd number of bytes (" << bufSize << ")." << LogEnd;
-        Valid=false;
-	return;
+    if (bufSize%2) {
+        Log(Error) << "OPTION REQUEST option malformed: odd number of bytes (" << bufSize << ")." << LogEnd;
+        Valid   = false;
+        Options = NULL;
+        OptCnt  = 0;
+        return;
     }
     int totalOpts = bufSize/2;
     Options = new unsigned short[totalOpts]; // allocate memory for all options
-
+    
     int i=0;
     for (i=0; i<totalOpts; i++) {
-	Options[i] = ntohs(*(unsigned short*) (buf+i*2) );
+        Options[i] = ntohs(*(unsigned short*) (buf+i*2) );
     }
 }
 
@@ -146,5 +138,6 @@ bool TOptOptionRequest::isValid() {
 
 TOptOptionRequest::~TOptOptionRequest()
 {
+  if (Options)
     delete [] Options;
 }
