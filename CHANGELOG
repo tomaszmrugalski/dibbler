@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  CVS [not-released]
+  - Security: Option Request Option possible segfault (bug #167)
   - Security: invalid length field parsing fixed (bug #164)
   - Security: world writable are no longer created (bug #160)
 
