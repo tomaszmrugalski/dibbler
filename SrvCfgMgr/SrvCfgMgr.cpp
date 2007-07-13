@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.50 2007-05-03 23:16:29 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.51 2007-07-13 00:34:51 thomson Exp $
  *
  */
 
@@ -203,7 +203,7 @@ TSrvCfgMgr::~TSrvCfgMgr() {
  * checks if this Addr is already configured in that TA belonging to that client 
  * (used in CONFIRM message)
  */
-bool TSrvCfgMgr::isTAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr) {
+bool TSrvCfgMgr::isTAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
     SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
     if (!ptrIface)
 	return false;
@@ -218,7 +218,7 @@ bool TSrvCfgMgr::isTAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr
  * checks if this Addr is already configured in that IA belonging to that client 
  * (used in CONFIRM message)
  */
-bool TSrvCfgMgr::isIAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr) {
+bool TSrvCfgMgr::isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
     SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
     if (!ptrIface)
 	return false;

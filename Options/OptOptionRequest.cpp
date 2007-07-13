@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptOptionRequest.cpp,v 1.6 2007-07-06 11:26:54 thomson Exp $
+ * $Id: OptOptionRequest.cpp,v 1.7 2007-07-13 00:34:51 thomson Exp $
  *
  */
 #include <stdlib.h>
@@ -78,6 +78,8 @@ TOptOptionRequest::TOptOptionRequest( char * &buf,  int &bufSize, TMsg* parent)
     for (i=0; i<totalOpts; i++) {
         Options[i] = ntohs(*(unsigned short*) (buf+i*2) );
     }
+    OptCnt = totalOpts;
+    Valid = true;
 }
 
 void TOptOptionRequest::addOption(unsigned short optNr)
@@ -88,7 +90,7 @@ void TOptOptionRequest::addOption(unsigned short optNr)
     //store for a while old options
     unsigned short *oldOptions=Options;
     //assign memort for additional option
-    Options=new unsigned short[++OptCnt];
+    Options = new unsigned short[++OptCnt];
     //If there were options before
     if (oldOptions)
     {

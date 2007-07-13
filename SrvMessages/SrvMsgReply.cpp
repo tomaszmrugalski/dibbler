@@ -58,31 +58,41 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	return;
     }
 
-    // copy client's DUID
-    SmartPtr<TOpt> ptrOpt;
-    SmartPtr<TSrvOptClientIdentifier> ptrClntDUID;
-    ptrOpt = confirm->getOption(OPTION_CLIENTID);
-    ptrClntDUID = (Ptr*) ptrOpt;
+    setOptionsReqOptClntDUID((Ptr*)confirm);
+    if (!duidOpt) {
+	Log(Warning) << "CONFIRM message without client-id option received, message dropped." << LogEnd;
+	IsDone = true;
+	return;
+    }
 
-    // include our DUID
+    // copy client's ID
+    SmartPtr<TOpt> ptrOpt;
     ptrOpt = confirm->getOption(OPTION_CLIENTID);
     Options.append(ptrOpt);
 
     confirm->firstOption();
     bool OnLink = true;
-    while (ptrOpt=confirm->getOption() && (OnLink) ) {
+    int checkCnt = 0;
+
+    while ( (ptrOpt = confirm->getOption()) && OnLink ) {
 	switch (ptrOpt->getOptType()) {
 	case OPTION_IA_NA: {
 	    SmartPtr<TSrvOptIA_NA> ia = (Ptr*) ptrOpt;
 	    SmartPtr<TOpt> subOpt;
 	    ia->firstOption();
-	    while ( subOpt = ia->getOption() && (OnLink) ) {
+	    while ( (subOpt = ia->getOption()) && (OnLink) ) {
 		if (subOpt->getOptType() != OPTION_IAADDR)
 		    continue;
 		SmartPtr<TSrvOptIAAddress> optAddr = (Ptr*) subOpt;
-		if (!CfgMgr->isIAAddrSupported(this->Iface, ia->getIAID(), optAddr->getAddr())) {
+		Log(Debug) << "CONFIRM message: checking if " << optAddr->getAddr()->getPlain() << " is supported:";
+		if (!CfgMgr->isIAAddrSupported(this->Iface, optAddr->getAddr())) {
+		    Log(Cont) << "no." << LogEnd;
 		    OnLink = false;
+		} else {
+		    // TODO check if it is bound or not. If it is, then check if it is bound to this client
+		    Log(Cont) << "yes." << LogEnd;
 		}
+		checkCnt++;
 	    }
 	    break;
 	}
@@ -94,10 +104,10 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		if (subOpt->getOptType() != OPTION_IAADDR)
 		    continue;
 		SmartPtr<TSrvOptIAAddress> optAddr = (Ptr*) subOpt;
-		if (!CfgMgr->isTAAddrSupported(this->Iface, ta->getIAID(), optAddr->getAddr())) {
+		if (!CfgMgr->isTAAddrSupported(this->Iface, optAddr->getAddr())) {
 		    OnLink = false;
 		}
-
+		checkCnt++;
 	    }
 	    break;
 	}
@@ -106,19 +116,35 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    continue;
 	}
     }
+    if (!checkCnt) {
+	// no check
+	SmartPtr <TSrvOptStatusCode> ptrCode = 
+	    new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
+				  "No addresses checked. Did you send any?",
+				  this);
+	this->Options.append( (Ptr*) ptrCode );
+    } else
     if (!OnLink) {
+	// not-on-link
 	SmartPtr <TSrvOptStatusCode> ptrCode = 
 	    new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
 				  "Sorry, those addresses are not valid for this link.",
 				  this);
 	this->Options.append( (Ptr*) ptrCode );
     } else {
+	// success
 	SmartPtr <TSrvOptStatusCode> ptrCode = 
 	    new TSrvOptStatusCode(STATUSCODE_SUCCESS,
 				  "Your addresses are valid! Yahoo!",
 				  this);
 	this->Options.append( (Ptr*) ptrCode);
     }
+
+    // include our ServerID
+    SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
+    this->Options.append((Ptr*)srvDUID);
+
+    appendRequestedOptions(duidOpt->getDUID(), confirm->getAddr(), confirm->getIface(), reqOpts);
 
     pkt = new char[this->getSize()];
     IsDone = false;
@@ -746,7 +772,6 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	IsDone = true;
 	return;
     }
-
 
     // include our DUID 
     SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);

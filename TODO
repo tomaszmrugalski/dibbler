@@ -1,8 +1,12 @@
 
-$Id: TODO,v 1.42 2007-03-04 21:48:55 thomson Exp $
+$Id: TODO,v 1.43 2007-07-13 00:34:51 thomson Exp $
 
 New tasks should be done to the TODO list. After task is implemented, it should be moved to the
 'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.
+
+- CLI: link-change detection: part of the log file.
+ kernel: ADDRCONF(NETDEV_UP): eth1: link is not ready                                                              
+ kernel: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready                
 
   Internal/code TODO
  --------------------

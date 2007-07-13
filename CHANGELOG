@@ -2,6 +2,9 @@
   Dibbler changelog
  ------------------- 
  CVS [not-released]
+  - Srv: CONFIRM message contents are now validated properly (bug #165)
+  - Security: Vendor-specific information Option possible segfault
+  - Srv: Option Request Option parsing fixed (bug #166)
   - Security: Option Request Option possible segfault (bug #167)
   - Security: invalid length field parsing fixed (bug #164)
   - Security: world writable are no longer created (bug #160)

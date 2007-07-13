@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.16 2007-05-03 23:16:29 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.17 2007-07-13 00:34:52 thomson Exp $
  *
  */
 
@@ -58,8 +58,8 @@ public:
     void delClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
     void addClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
 
-    bool isIAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr);
-    bool isTAAddrSupported(int iface, int iaid, SmartPtr<TIPv6Addr> addr);
+    bool isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr);
+    bool isTAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr);
 
     void addTAAddr(int iface);
     void delTAAddr(int iface);

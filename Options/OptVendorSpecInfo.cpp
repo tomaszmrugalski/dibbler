@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.7 2006-12-31 16:00:26 thomson Exp $
+ * $Id: OptVendorSpecInfo.cpp,v 1.8 2007-07-13 00:34:51 thomson Exp $
  *
  */
 
@@ -25,7 +25,7 @@
 TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
     :TOpt(OPTION_VENDOR_OPTS, parent)
 {
-    if (n<2) {
+    if (n<4) {
 	Log(Error) << "Unable to parse vendor-spec info option." << LogEnd;
 	this->Vendor = 0;
 	this->VendorData = 0;
@@ -33,7 +33,7 @@ TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
 	return;
     }
 
-    this->Vendor = ntohl(*(int*)buf);
+    this->Vendor = ntohl(*(int*)buf); // enterprise number
     buf += 4;
     n   -= 4;
 
@@ -43,8 +43,12 @@ TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
 	return;
     }
 
-    this->VendorData = new char[n];
-    memmove(this->VendorData, buf, n);
+    if (n) {
+	this->VendorData = new char[n];
+	memmove(this->VendorData, buf, n);
+    } else {
+	this->VendorData = 0;
+    }
     this->VendorDataLen = n;
 
     buf += n;
