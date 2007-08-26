@@ -2,6 +2,8 @@
   Dibbler changelog
  ------------------- 
  CVS [not-released]
+  - gcc 4.3.0 conformance
+  - Srv: Possible segfault in REBIND processing fix
   - Srv: CONFIRM message contents are now validated properly (bug #165)
   - Security: Vendor-specific information Option possible segfault
   - Srv: Option Request Option parsing fixed (bug #166)

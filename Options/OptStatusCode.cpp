@@ -6,17 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStatusCode.cpp,v 1.6 2006-11-30 03:33:36 thomson Exp $
+ * $Id: OptStatusCode.cpp,v 1.7 2007-08-26 10:26:19 thomson Exp $
  *
  */
 #include <stdlib.h>
 #include <string>
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-#ifdef WIN32
-#include <winsock2.h>
-#endif
+#include "Portable.h"
 #include "OptStatusCode.h"
 #include "Logger.h"
 

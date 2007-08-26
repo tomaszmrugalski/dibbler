@@ -6,20 +6,15 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.8 2007-07-13 00:34:51 thomson Exp $
+ * $Id: OptVendorSpecInfo.cpp,v 1.9 2007-08-26 10:26:19 thomson Exp $
  *
  */
 
 #include <iostream>
 #include <sstream>
+#include "Portable.h"
 #include "OptVendorSpecInfo.h"
 #include "DHCPConst.h"
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
 #include "Logger.h"
 
 TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)

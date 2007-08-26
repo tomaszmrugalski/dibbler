@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptString.cpp,v 1.2 2005-07-17 21:09:52 thomson Exp $
+ * $Id: OptString.cpp,v 1.3 2007-08-26 10:26:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005-07-17 21:09:52  thomson
+ * Minor improvements for 0.4.1 release.
+ *
  * Revision 1.1  2004/11/02 01:23:13  thomson
  * Initial revision
  *
@@ -21,12 +24,7 @@
 
 #include <stdlib.h>
 #include <iostream>
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-#ifdef WIN32
-#include <winsock2.h>
-#endif
+#include "Portable.h"
 #include "OptString.h"
 #include "DHCPConst.h"
 

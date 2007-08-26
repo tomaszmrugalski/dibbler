@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.22 2007-05-04 17:39:00 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.23 2007-08-26 10:26:19 thomson Exp $
  */
 
 #ifdef WIN32
@@ -405,7 +405,7 @@ void TSrvOptIA_NA::rebind(SmartPtr<TSrvOptIA_NA> queryOpt,
     // find that IA
     SmartPtr <TAddrIA> ptrIA;
     ptrIA = ptrClient->getIA(this->IAID);
-    if (!ptrClient) {
+    if (!ptrIA) {
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
 						"I see this IAID first time.",this->Parent ));
         return;

@@ -6,11 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: DUID.cpp,v 1.11 2006-12-31 16:21:05 thomson Exp $
+ * $Id: DUID.cpp,v 1.12 2007-08-26 10:26:18 thomson Exp $
  */
 
 #include <iostream>
 #include <sstream>
+#include <string.h>
 
 #include "DUID.h"
 #include "Logger.h"

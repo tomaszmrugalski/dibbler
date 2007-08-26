@@ -6,17 +6,11 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptOptionRequest.cpp,v 1.7 2007-07-13 00:34:51 thomson Exp $
+ * $Id: OptOptionRequest.cpp,v 1.8 2007-08-26 10:26:19 thomson Exp $
  *
  */
 #include <stdlib.h>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
-#include "SmartPtr.h"
+#include "Portable.h"
 #include "OptOptionRequest.h"
 #include "DHCPConst.h"
 #include "Logger.h"

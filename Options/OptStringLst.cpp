@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.9 2007-05-01 12:06:50 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.10 2007-08-26 10:26:19 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2007-05-01 12:06:50  thomson
+ * Fix for possible misalignment in strings.
+ *
  * Revision 1.8  2007-01-21 21:29:45  thomson
  * Portability fixes (MIPSEL and 64bits)
  *
@@ -43,12 +46,7 @@
  */
 
 #include <stdlib.h>
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-#ifdef WIN32
-#include <winsock2.h>
-#endif
+#include "Portable.h"
 #include "OptStringLst.h"
 #include "DHCPConst.h"
 #include "Logger.h"

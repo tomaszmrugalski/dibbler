@@ -6,16 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIAAddress.cpp,v 1.6 2007-04-22 21:19:29 thomson Exp $
+ * $Id: OptIAAddress.cpp,v 1.7 2007-08-26 10:26:19 thomson Exp $
  *
  */
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
 
+#include <string.h>
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "Opt.h"
 #include "OptIAAddress.h"

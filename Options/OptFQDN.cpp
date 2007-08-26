@@ -7,17 +7,11 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.3 2007-01-21 21:29:45 thomson Exp $
+* $Id: OptFQDN.cpp,v 1.4 2007-08-26 10:26:18 thomson Exp $
 *
 */
 
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-
+#include "Portable.h"
 #include "OptFQDN.h"
 #include "Logger.h"
 

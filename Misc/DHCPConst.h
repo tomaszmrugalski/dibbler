@@ -9,6 +9,8 @@
  *
  */
 
+#include "limits.h"
+
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
 

@@ -6,15 +6,8 @@
  * released under GNU GPL v2 or later licence
  *
  */
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 #include "DHCPConst.h"
-#include "Opt.h"
 #include "OptIAPrefix.h"
 
 TOptIAPrefix::TOptIAPrefix( char * &buf, int &n, TMsg* parent)
