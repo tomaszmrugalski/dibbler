@@ -914,8 +914,8 @@ EOF
     old_convenience=
     deplibs=
     old_deplibs=
-    compiler_flags=
-    linker_flags=
+    compiler_flags="$CFLAGS"
+    linker_flags="$LDFLAGS"
     dllsearchpath=
     lib_search_path=`pwd`
     inst_prefix_dir=

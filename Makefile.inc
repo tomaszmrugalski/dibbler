@@ -1,6 +1,6 @@
 # === used tools ===
-CXX          = g++
-CC           = gcc
+CXX          ?= g++
+CC           ?= gcc
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
@@ -9,7 +9,7 @@ COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -
 OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
 
 # === linker options ===
-LDFLAGS      = $(XMLLIBS) $(EFENCE) $(PORT_LDFLAGS)
+LDFLAGS      += $(XMLLIBS) $(EFENCE) $(PORT_LDFLAGS)
 CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
 REL_LDFLAGS  = $(LDFLAGS)

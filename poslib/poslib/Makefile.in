@@ -215,6 +215,7 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
+export CFLAGS LDFLAGS
 libposlib.la: $(libposlib_la_OBJECTS) $(libposlib_la_DEPENDENCIES)
 	$(CXXLINK) -rpath $(libdir) $(libposlib_la_LDFLAGS) $(libposlib_la_OBJECTS) $(libposlib_la_LIBADD) $(LIBS)
 .cpp.o:

@@ -4,14 +4,14 @@ export TOPDIR=$(CURDIR)
 
 all: server client relay
 
-includes:
+includes: poslib-configure
 	cd $(INCDIR); $(MAKE) links
 
 bison: bison/bison++
 
 bison/bison++:
 	@echo "[CONFIG ] /bison++/"
-	cd $(PREFIX)/bison++; ./configure >configure.log
+	cd $(PREFIX)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
 	@echo "[MAKE   ] /bison++/bison++"
 	$(MAKE) -C $(PREFIX)/bison++
 
@@ -29,6 +29,13 @@ endif
 ifdef DEBUGINFO
 LINKPRINT += debug
 endif
+
+$(MISC)/DHCPClient.o: includes
+
+$(MISC)/DHCPServer.o: includes
+
+$(MISC)/DHCPRelay.o: includes
+
 
 $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
@@ -144,7 +151,8 @@ libposlib: poslib-configure
 
 poslib-configure:
 	@echo "[CONFIG ] /poslib/"
-	cd $(PREFIX)/poslib; test -e "config.h" || ./configure --host=$(HOST) >configure-poslib.log;
+	cd $(PREFIX)/poslib; test -e "config.h" || \
+		./configure --host=$(CHOST) --build=$(CBUILD) >configure-poslib.log;
 
 relaylibs:	includes
 	@for dir in $(RELSUBDIRS); do \
