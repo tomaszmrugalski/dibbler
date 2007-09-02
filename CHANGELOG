@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  CVS [not-released]
+  - Srv: proper status code is returned when temporary addresses are not supported
   - cross-compilation is now possible (bug #169)
   - Make -j2 now works (bug #130)
   - gcc 4.3.0 conformance

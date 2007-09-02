@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptTA.cpp,v 1.5 2006-11-30 03:33:17 thomson Exp $
+ * $Id: SrvOptTA.cpp,v 1.6 2007-09-02 22:54:12 thomson Exp $
  */
 
 #ifdef WIN32
@@ -150,7 +150,7 @@ void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
     if (!optAddr) {
 	Log(Error) << "No temporary address found. Server is NOT configured with TA option." << LogEnd;
 	SmartPtr<TSrvOptStatusCode> ptrStatus;
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
 					  "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
         this->SubOptions.append((Ptr*)ptrStatus);
 	return;
