@@ -1,7 +1,10 @@
 %%
-%% $Id: dibbler-user-faq.tex,v 1.10 2006-10-04 22:03:35 thomson Exp $
+%% $Id: dibbler-user-faq.tex,v 1.11 2007-09-06 23:10:40 thomson Exp $
 %%
 %% $Log: not supported by cvs2svn $
+%% Revision 1.10  2006-10-04 22:03:35  thomson
+%% *** empty log message ***
+%%
 %% Revision 1.9  2005-08-07 17:54:52  thomson
 %% Minor changes related to 0.4.1 release.
 %%
@@ -51,6 +54,20 @@ Important note: This behaviour has changed in the 0.5.0 release. See
 section. 
 
 %% Q2
+\Q Dibbler server receives SOLICIT message, prints information about
+ADVERTISE/REPLY transmission, but nothing is actually transmitted. Is
+this a bug?
+
+\A Are you sure that your client is behaving properly? Before any IPv6
+packet (that includes DHCPv6 message) is transmitted, recipient
+reachabity is checked (using Neighbor Discovery protocol 
+\cite{rfc2461}). Server sends Neighbor Solicititation message and
+waits for client's Neighbor Advertisement. If that is not transmitted,
+even after 3 retries, server gives up and doesn't transmit IPv6 packet
+(DHCPv6 reply, that is) at all. Being not able to respond to the
+Neighbor Discovery packets may indicate invalid client behavior. 
+
+%% Q3
 \Q Dibbler sends some options which have values not recognized by the
 Ethereal/Wireshark or by other implementations. What's wrong?
 
@@ -90,7 +107,7 @@ assigned (in parenthesis are numbers used in Dibbler):
 \opt{NTP\_SERVERS} (40), \opt{TIME\_ZONE} (41), \opt{LIFETIME} (42),
 \opt{FQDN} (43).
 
-%% Q3
+%% Q4
 \Q I can't get (insert your trouble causing feature here) to
 work. What's wrong? 
 
@@ -148,3 +165,12 @@ at least 6 bytes long MAC address. Simple ethernet or WIFI card
 matches those requirements. Note that network cable must be plugged
 (or in case of wifi card -- associated with access point), otherwise
 interface is marked as down.
+
+%% Q3
+\Q Is Microsoft Vista supported?
+
+\A Unfortunately, Vista is not supported yet. There is a DHCPv6 client
+already available in the Microsoft Vista. If time permits, next (0.6.2
+probably) version will have support for Vista.
+
+

@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-compile.tex,v 1.14 2007-01-06 17:34:04 thomson Exp $
+%% $Id: dibbler-devel-compile.tex,v 1.15 2007-09-06 23:10:39 thomson Exp $
 %%
 
 \section{Compilation}
@@ -232,3 +232,60 @@ project options window}. Following flags are available:
   only forward resoling (AAAA record) will be executed be the client.
 \end{description}
 
+\subsection{Cross-compilation}
+Since 0.6.1 version, dibbler supports cross-compilation. It was
+possible in previous versions, but with considerable amount of work.
+
+Following description has been provided by Petr
+Pisar\footnote{petr.pisar(at)atlas(dot)cz. Thanks!}
+
+In general, a toolchain has to be specified.
+
+For autotools compilation driven (e.g. poslib), you need to call the
+configure script with --chost and --cbuild parameters describing
+toolchains used for compilation of binaries for platform where dibbler
+is supposted to run and for platform where compilation will be
+proceeded. configure should derive names of compiler for C (CC), C++
+(CXX), name of binutils (e.g. strip) etc. automatically.
+
+If you don't use autotools (like dibbler partially) or you want your own
+compilers, you need to export this variables manually (CC, CXX). If you
+want specify compiler for producing local binaries, use CC\_FOR\_BUILD and
+CXX\_FOR\_BUILD.
+
+Next, if you want to optimize the binaries or to use some non-standard
+paths to header files or libraries, you need to export variables CFLAGS
+and LDFLAGS for C language and CXXFLAGS and LDFLAGS for C++. These
+variables apply for compilation for target platform. If you want tweak
+compilation of binaries for local building machine, use
+CFLAGS\_FOR\_BUILD, LDFLAGS\_FOR\_BUILD and CXXFLAGS\_FOR\_BUILD.
+
+If you have all cross-compiled libraries under one directory (lets say
+image of root file system), you can use gcc argument --sysroot which
+allows to specify alternate directory tree, where all headers and
+libraries live.
+
+Finally, you should tell to make by DESTDIR variable, where you want to
+install dibbler.
+
+For example, the following command can be used to cross-compile dibbler for
+mipsel-softfloat-linux-gnu on i586-pc-linux-gnu having MIPS system
+installed under /var/tftp/mips32el-linux-gnu and all tool-chain utilities in PATH:
+
+\begin{lstlisting}
+CBUILD=i586-pc-linux-gnu \
+CC=mipsel-softfloat-linux-gnu-gcc \
+CXX=mipsel-softfloat-linux-gnu-g++ \
+CFLAGS='-march=4kc -msoft-float -Os -pipe -fomit-frame-pointer
+--sysroot=/var/tftp/mips32el-linux-gnu' \
+CXXFLAGS='-march=4kc -msoft-float -Os -pipe -fomit-frame-pointer
+--sysroot=/var/tftp/mips32el-linux-gnu' \
+LDFLAGS=--sysroot=/var/tftp/mips32el-linux-gnu \
+CHOST=mipsel-softfloat-linux-gnu \
+CC_FOR_BUILD=i586-pc-linux-gnu-gcc \
+CFLAGS_FOR_BUILD='-march=k6-2 -O2 -pipe -fomit-frame-pointer' \
+CXXFLAGS_FOR_BUILD='-march=k6-2 -O2 -pipe -fomit-frame-pointer' \
+CXX_FOR_BUILD=i586-pc-linux-gnu-g++ \
+LDFLAGS_FOR_BUILD= \
+make -j1
+\end{lstlisting}

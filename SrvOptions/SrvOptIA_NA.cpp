@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.23 2007-08-26 10:26:19 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.24 2007-09-06 23:10:39 thomson Exp $
  */
 
 #ifdef WIN32
@@ -219,8 +219,14 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
                                         "All addresses were assigned.",this->Parent);
       // FIXME: if this is solicit, place "all addrs would be assigned."
     } else {
-      string tmp = addrsRequested+" addrs requested, but assigned only "+addrsAssigned;
-      ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,tmp.c_str(), this->Parent);
+	char buf[60];
+	sprintf(buf, "%lu addr(s) requested, but assigned only %lu.",addrsRequested, addrsAssigned);
+	if (addrsAssigned) {
+	    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,buf, this->Parent);
+	} else {
+	    ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,buf, this->Parent);
+	}
+
     }
     SubOptions.append((Ptr*)ptrStatus);
     

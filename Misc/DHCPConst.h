@@ -34,6 +34,10 @@
 #define INFORMATION_REQUEST_MSG 11
 #define RELAY_FORW_MSG 12
 #define RELAY_REPL_MSG 13
+// unimplemented messages
+#define LEASEQUERY     14
+#define LEASEQUERY_REPLY 15
+// implementation specific
 #define CONTROL_MSG    255
 
 // timers, timeouts
@@ -132,15 +136,37 @@
 // RFC4704: Client Fully Qualified Domain Name (FQDN) Option
 #define OPTION_FQDN             39
 
-// The following option numbers are not yet standardized and
-// won't interoperate with other implementations
-// (obsolete) draft-ietf-dhc-dhcpv6-opt-timeconfig-02.txt
-#define OPTION_TIME_ZONE            252
-// draft-ietf-dhc-dhcpv6-opt-timeconfig-05.txt
-#define OPTION_NEW_POSIX_TIMEZONE   253
-#define OPTION_NEW_TZDB_TIMEZONE    254
+// RFC-ietf-dhc-paa-option-05.txt
+#define OPTION_PANA_AGENT       40
 
+// RFC4833: Timezone options for DHCP 
+#define OPTION_NEW_POSIX_TIMEZONE 41
+#define OPTION_NEW_TZDB_TIMEZONE  42
+// old implementation define
+#define OPTION_TIME_ZONE          41
+
+// RFC-ietf-dhc-dhcpv6-ero-01.txt
+#define OPTION_ERO              43
+
+// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
+#define OPTION_LQ_QUERY         44
+
+// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
+#define OPTION_CLIENT_DATA      45
+
+// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
+#define OPTION_CLT_TIME         46
+#define OPTION_LQ_RELAY_DATA    47
+#define OPTION_LQ_CLIENT_LINK   48
+
+// Experimental implementation for address prefix length information
+// See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251
+
+// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
+// -- Query types --
+#define QUERY_BY_ADDRESS  1
+#define QUERY_BY_CLIENTID 2
 
 // --- Option lengths --
 // (value of the len field, so actual option length is +4 bytes)
@@ -155,8 +181,11 @@
 #define STATUSCODE_NOTONLINK     4
 #define STATUSCODE_USEMULTICAST  5
 #define STATUSCODE_NOPREFIXAVAIL 6 
-
-
+// unimplemented codes
+#define STATUSCODE_UNKNOWNQUERYTYPE 7
+#define STATUSCODE_MALFORMEDQUERY 8
+#define STATUSCODE_NOTCONFIGURED 9
+#define STATUSCODE_NOTALLOWED    10
 
 // INFINITY + 1 is 0. Hih, cool
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
