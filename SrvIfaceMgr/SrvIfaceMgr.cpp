@@ -4,36 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
+ *          Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.24 2007-07-05 00:17:42 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.23  2007-03-21 00:21:11  thomson
- * Server no longer crash when relay interface is not found (bug #144)
- *
- * Revision 1.22  2007-01-27 17:14:10  thomson
- * *** empty log message ***
- *
- * Revision 1.21  2006-11-17 01:08:53  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- * Revision 1.20  2005-07-17 21:09:54  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.19  2005/06/07 21:58:49  thomson
- * 0.4.1
- *
- * Revision 1.18  2005/05/10 00:32:33  thomson
- * Minor safety check added.
- *
- *
- * Revision 1.17 2005/05/10 00:04:27  thomson
- * RELAY_FORW with other option order are now supported,
- * Large part of this patch was provided by Andre Stolze from JOIN. Thanks
+ * $Id: SrvIfaceMgr.cpp,v 1.25 2007-09-07 08:31:21 thomson Exp $
  *
  */
+
 #include <malloc.h>
 #include <stdio.h>
 #include "Portable.h"
@@ -451,6 +429,34 @@ void TSrvIfaceMgr::setContext(SmartPtr<TSrvIfaceMgr> srvIfaceMgr,
     SrvAddrMgr=srvAddrMgr;
     SrvTransMgr=srvTransMgr;
     That=srvIfaceMgr;
+}
+
+/**
+ * Compares current flags of interfaces with old flags. If change is detected,
+ * stored flags of the interface are updated
+ */
+void TSrvIfaceMgr::redetectIfaces() {
+    struct iface  * ptr;
+    struct iface  * ifaceList;
+    SPtr<TIfaceIface> iface;
+    ifaceList = if_list_get(); // external (C coded) function
+    ptr = ifaceList;
+    
+    if  (!ifaceList) {
+	Log(Error) << "Unable to read interface info. Inactive mode failed." << LogEnd;
+	return;
+    }
+    while (ptr!=NULL) {
+	iface = getIfaceByID(ptr->id);
+	if (iface && (ptr->flags!=iface->getFlags())) {
+	    Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old=" << hex <<iface->getFlags()
+			<< ", new=" << ptr->flags << ")." << dec << LogEnd;
+	    iface->updateState(ptr);
+	}
+	ptr = ptr->next;
+    }
+
+    if_list_release(ifaceList); // allocated in pure C, and so release it there
 }
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {

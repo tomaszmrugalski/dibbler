@@ -3,23 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.8 2007-01-27 17:14:11 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2005-01-30 22:53:28  thomson
- * *** empty log message ***
- *
- * Revision 1.6  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.5  2005/01/03 23:13:57  thomson
- * Partial relay implementation.
- *
- * Revision 1.4  2005/01/03 21:56:09  thomson
- * Relay support added.
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.9 2007-09-07 08:31:21 thomson Exp $
  *
  */
 
@@ -70,6 +58,8 @@ class TSrvIfaceMgr :public TIfaceMgr {
 		    SPtr<TSrvTransMgr> srvTransMgr,
 		    SPtr<TSrvCfgMgr> srvCfgMgr,
 		    SPtr<TSrvAddrMgr> srvAddrMgr);
+
+    void redetectIfaces();
 
   private:
     string XmlFile;

@@ -96,6 +96,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
 %token CLIENT_
+%token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_
 
 %token <strval>     STRING_
@@ -161,6 +162,7 @@ InterfaceOptionDeclaration
 | PDDeclaration
 | VendorSpecOption
 | Client
+| InactiveMode
 ;
 
 InterfaceDeclaration
@@ -725,6 +727,12 @@ StatelessOption
     ParserOptStack.getLast()->setStateless(true);
 }
 ;
+
+InactiveMode
+: INACTIVE_MODE_
+{
+    ParserOptStack.getLast()->setInactiveMode(true);
+};
 
 Experimental
 : EXPERIMENTAL_

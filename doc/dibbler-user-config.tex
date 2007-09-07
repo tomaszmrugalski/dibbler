@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.47 2007-05-05 13:23:18 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.48 2007-09-07 08:31:22 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -893,7 +893,15 @@ OptionName option-value
         this violates \cite{rfc3315}, it should not be used. In general, this
         configuration parameter is only useful when dealing with buggy relays,
         which can't handle all option orders properly. Consider this parameter
-        a debugging feature. Note: similar parameter is available in the dibbler-relay. 
+        a debugging feature. Note: similar parameter is available in the dibbler-relay.
+\item[inactive-mode] -- (scope: global, type: present or missing,
+  default: missing). This enables so called inactive mode. When server
+  begins operation and it detects that required interfaces are not
+  ready, error message is printed and server exits. However, if
+  inactive mode is enabled, server sleeps instead and wait for
+  required interfaces to become operational. That is a useful feature,
+  when using wireless interfaces, which take some time to initialize
+  as associate.
  \item[preference] -- (scope: interface, type: 0-255, default:
 	    none). Eech server can be configured to a specific
 	    preference level. When client receives several
@@ -1517,6 +1525,9 @@ iface "eth0" {
  
 }
 \end{lstlisting}
+
+\subsubsection{Example 15: Inactive mode}
+
 
 \subsection{Relay configuration file}
 \label{relay-conf}

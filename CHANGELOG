@@ -1,8 +1,9 @@
 
   Dibbler changelog
  ------------------- 
- CVS [not-released]
-  - Srv: When assigning fewer than request address, status is now set to success
+ 0.6.1 [2007-09-07]
+  - Srv: Inactive mode implemented (bug #168)
+  - Srv: When assigning fewer address than requested, status is now set to success
   - Srv: proper status code is returned when temporary addresses are not supported
   - cross-compilation is now possible (bug #169)
   - Make -j2 now works (bug #130)
@@ -13,7 +14,7 @@
   - Srv: Option Request Option parsing fixed (bug #166)
   - Security: Option Request Option possible segfault (bug #167)
   - Security: invalid length field parsing fixed (bug #164)
-  - Security: world writable are no longer created (bug #160)
+  - Security: world writable files are no longer created (bug #160)
 
  0.6.0 [2007-05-05]
   - Configuration file examples are now described better

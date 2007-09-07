@@ -9,26 +9,38 @@
  Contributors:
   - Tomasz Torcz
     2005-07: Compatibility with gcc 2.x fixed
+
   - NIIBE Yutaka
     2005-12: Makefile improvements
+
   - Sob
     2006-01: Process checking in Linux
+
   - Adrien CLERC, Bahattin DEMIRPLAK, Gaëtant ELEOUET, 
     Mickaël GUÉRIN, Lionel GUILMIN, Lauréline PROVOST
     from the ENSEEIHT University, Toulouse, France.
     2006-03: DNS Updates (FQDN) support
+
   - Krzysztof Wnuk
     2006-05: Reverse DNS Updates, lots of enhancements
+
   - Krzysztof Wnuk
     2006-09: Initial prefix delegation support
+
   - Arne Bernin <arne(at)stollmann.de>
     2006-10: XML fixes
+
   - David Minodier  <david.minodier(at)orange-ftgroup.com>
     2007-03: Prefix during prefix delegation is now split properly
+
   - Petr Pisar <petr.pisar(at)atlas.cz>
     2007-03: Various fixes (ntp_add, xml syntax, tun support improved)
+
   - David Minodier <david.minodier(at)orange-ftgroup.com>
     2007-04: Fixes in prefix delegation
+
+  - Petr Pisar <petr.pisar(at)atlas(dot)cz>
+    2007-08: Inactive mode for server
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

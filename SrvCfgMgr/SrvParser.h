@@ -303,13 +303,14 @@ typedef
 #define	DIGEST_NONE_	302
 #define	DIGEST_HMAC_SHA1_	303
 #define	CLIENT_	304
-#define	EXPERIMENTAL_	305
-#define	ADDR_PARAMS_	306
-#define	STRING_	307
-#define	HEXNUMBER_	308
-#define	INTNUMBER_	309
-#define	IPV6ADDR_	310
-#define	DUID_	311
+#define	INACTIVE_MODE_	305
+#define	EXPERIMENTAL_	306
+#define	ADDR_PARAMS_	307
+#define	STRING_	308
+#define	HEXNUMBER_	309
+#define	INTNUMBER_	310
+#define	IPV6ADDR_	311
+#define	DUID_	312
 
 
 #line 169 "../bison++/bison.h"
@@ -405,6 +406,7 @@ static const int AUTH_;
 static const int DIGEST_NONE_;
 static const int DIGEST_HMAC_SHA1_;
 static const int CLIENT_;
+static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int STRING_;
@@ -467,13 +469,14 @@ static const int DUID_;
 	,DIGEST_NONE_=302
 	,DIGEST_HMAC_SHA1_=303
 	,CLIENT_=304
-	,EXPERIMENTAL_=305
-	,ADDR_PARAMS_=306
-	,STRING_=307
-	,HEXNUMBER_=308
-	,INTNUMBER_=309
-	,IPV6ADDR_=310
-	,DUID_=311
+	,INACTIVE_MODE_=305
+	,EXPERIMENTAL_=306
+	,ADDR_PARAMS_=307
+	,STRING_=308
+	,HEXNUMBER_=309
+	,INTNUMBER_=310
+	,IPV6ADDR_=311
+	,DUID_=312
 
 
 #line 215 "../bison++/bison.h"

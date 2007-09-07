@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.17 2007-07-13 00:34:52 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.18 2007-09-07 08:31:19 thomson Exp $
  *
  */
 
@@ -38,6 +38,9 @@ public:
     SmartPtr<TSrvCfgIface> getIfaceByID(int iface);
     long countIface();
     void addIface(SmartPtr<TSrvCfgIface> iface);
+    void makeInactiveIface(int ifindex, bool inactive);
+    int inactiveIfacesCnt();
+    SPtr<TSrvCfgIface> checkInactiveIfaces();
 
     void dump();
 
@@ -71,6 +74,7 @@ public:
     // configuration parameters
     string getWorkdir();
     bool stateless();
+    bool inactiveMode();
     ESrvIfaceIdOrder getInterfaceIDOrder();
     int getCacheSize();
 
@@ -83,11 +87,13 @@ private:
     bool validateIface(SmartPtr<TSrvCfgIface> ptrIface);
     bool validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfgAddrClass> ptrClass);
     List(TSrvCfgIface) SrvCfgIfaceLst;
+    List(TSrvCfgIface) InactiveLst;
     SmartPtr<TSrvIfaceMgr> IfaceMgr;
     bool matchParsedSystemInterfaces(SrvParser *parser);
 
     // global options
     bool Stateless;
+    bool InactiveMode;
     int  CacheSize;
     List(DigestTypes) DigestLst;
     ESrvIfaceIdOrder InterfaceIDOrder;

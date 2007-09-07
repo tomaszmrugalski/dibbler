@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsGlobalOpt.h,v 1.8 2007-05-01 14:18:15 thomson Exp $
+ * $Id: SrvParsGlobalOpt.h,v 1.9 2007-09-07 08:31:20 thomson Exp $
  *
  */
 
@@ -40,11 +40,14 @@ public:
     void setExperimental(bool exper);
     void setInterfaceIDOrder(ESrvIfaceIdOrder order);
     ESrvIfaceIdOrder getInterfaceIDOrder();
+    void setInactiveMode(bool flex);
+    bool getInactiveMode();
     
 private:
     bool   Experimental;
     string WorkDir;
     bool   Stateless;
+    bool   InactiveMode;
     int    CacheSize;
     List(DigestTypes) DigestLst;
     ESrvIfaceIdOrder InterfaceIDOrder;

@@ -100,6 +100,7 @@ digest-none         { return SrvParser::DIGEST_NONE_; }
 digest-hmac-sha1    { return SrvParser::DIGEST_HMAC_SHA1_; }
 addr-params         { return SrvParser::ADDR_PARAMS_; }
 experimental        { return SrvParser::EXPERIMENTAL_; }
+inactive-mode       { return SrvParser::INACTIVE_MODE_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}

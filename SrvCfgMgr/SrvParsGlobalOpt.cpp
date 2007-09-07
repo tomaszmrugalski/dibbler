@@ -16,6 +16,7 @@ TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
     this->CacheSize        = SERVER_DEFAULT_CACHE_SIZE;
     this->Experimental     = false;
     this->InterfaceIDOrder = SRV_IFACE_ID_ORDER_BEFORE;
+    this->InactiveMode     = false;
 
     this->DigestLst.clear();
 }
@@ -70,3 +71,14 @@ void TSrvParsGlobalOpt::setInterfaceIDOrder(ESrvIfaceIdOrder order) {
 ESrvIfaceIdOrder TSrvParsGlobalOpt::getInterfaceIDOrder() {
     return InterfaceIDOrder;
 }
+
+void TSrvParsGlobalOpt::setInactiveMode(bool flex)
+{
+    InactiveMode = flex;
+}
+
+bool TSrvParsGlobalOpt::getInactiveMode()
+{
+    return InactiveMode;
+}
+

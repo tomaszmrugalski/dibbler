@@ -3,10 +3,11 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
+ * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.51 2007-07-13 00:34:51 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.52 2007-09-07 08:31:19 thomson Exp $
  *
  */
 
@@ -120,6 +121,7 @@ bool TSrvCfgMgr::setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->CacheSize        = opt->getCacheSize();
     this->DigestLst        = opt->getDigest();
     this->InterfaceIDOrder = opt->getInterfaceIDOrder();
+    this->InactiveMode     = opt->getInactiveMode(); // should the client accept not ready interfaces?
     return true;
 }
 
@@ -164,14 +166,51 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 	    return false;
 	}
 
+	// Complete name and ID (one of them usually misses depending on
+	// identifier used in config file.
+	// FIXME: Client's class uses setIface{Name,ID}(). We should unite the
+	// method names.
+	cfgIface->setName(ifaceIface->getName());
+	cfgIface->setID(ifaceIface->getID());
+
+
+	// Check for link scope address presence
         if (!ifaceIface->countLLAddress()) {
+            if (this->inactiveMode()) {
+                Log(Notice) << "Interface " << ifaceIface->getFullName() 
+                            << " is not operational yet (does not have link scope address), skipping it for now." << LogEnd;
+                this->addIface(cfgIface);
+                this->makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+		continue;
+            }
+
 	    Log(Crit) << "Interface " << ifaceIface->getName() << "/" << ifaceIface->getID()
-		      << " is down or doesn't have any link-layer address." << LogEnd;
+		      << " is down or doesn't have any link scope address." << LogEnd;
 	    return false;
         }
 
-	cfgIface->setName(ifaceIface->getName());
-	cfgIface->setID(ifaceIface->getID());
+	// Check if the interface is during bring-up phase (i.e. DAD procedure for link-local addr is not complete yet)
+	char tmp[64];
+	ifaceIface->firstLLAddress();
+	inet_ntop6(ifaceIface->getLLAddress(), tmp); 
+	if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp) == LOWLEVEL_TENTATIVE_YES) {
+	    Log(Notice) << "Interface " << ifaceIface->getFullName() << " has link-scope address " << tmp 
+			<< ", but it is currently tentative." << LogEnd;
+
+	    if (this->inactiveMode()) {
+		Log(Notice) << "Interface " << ifaceIface->getFullName() 
+			    << " is not operational yet (link-scope address is not ready), skipping it for now." << LogEnd;
+		addIface(cfgIface);
+		makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+		continue;
+	    }
+
+	    Log(Crit) << "Interface " << ifaceIface->getFullName()
+		      << " has tentative link-scope address (and inactive-mode is disabled)." << LogEnd;
+	    return false;
+
+	}
+
 	this->addIface(cfgIface);
 	Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
 		  << " configuration has been loaded." << LogEnd;
@@ -187,6 +226,54 @@ void TSrvCfgMgr::addIface(SmartPtr<TSrvCfgIface> ptr) {
     SrvCfgIfaceLst.append(ptr);
 }
 
+/**
+ * Moves interface identified by ifindex between SrvCfgIfaceLst and InactiveLst.
+ *
+ * @param ifindex Index of the moving interface
+ * @param inactive true for makeing inactive, false for makeing active
+ */
+void TSrvCfgMgr::makeInactiveIface(int ifindex, bool inactive) {
+    SmartPtr<TSrvCfgIface> x;
+
+    if (inactive)
+    {
+	SrvCfgIfaceLst.first();
+	while (x= SrvCfgIfaceLst.get()) {
+	    if (x->getID() == ifindex) {
+		Log(Info) << "Switching " << x->getFullName() << " to inactive-mode." << LogEnd;
+		SrvCfgIfaceLst.del();
+		InactiveLst.append(x);
+		return;
+	    }
+	}
+	Log(Error) << "Unable to switch interface ifindex=" << ifindex << " to inactive-mode: interface not found." << LogEnd;
+	// something is wrong, VERY wrong
+    }
+
+    else 
+    {
+        InactiveLst.first();
+        while (x= InactiveLst.get()) {
+            if (x->getID() == ifindex) {
+                Log(Info) << "Switching " << x->getFullName() << " to normal mode." << LogEnd;
+                InactiveLst.del();
+                InactiveLst.first();
+                addIface(x);
+                return;
+            }
+        }
+
+        Log(Error) << "Unable to switch interface ifindex=" << ifindex << " from inactive-mode to normal operation: interface not found." << LogEnd;
+    }
+}
+
+/**
+ * Returns number of inactive interfaces
+ */
+int TSrvCfgMgr::inactiveIfacesCnt() {
+    return InactiveLst.count();
+}
+
 void TSrvCfgMgr::firstIface() {
     SrvCfgIfaceLst.first();
 }
@@ -194,6 +281,52 @@ void TSrvCfgMgr::firstIface() {
 long TSrvCfgMgr::countIface() {
     return SrvCfgIfaceLst.count();
 }
+
+/**
+ *
+ * Tryies to find interface in list of inactive interfaces which becames
+ * ready. In positive case such an interface is moved back into standard list.
+ * Only first matching interface is processed.
+ *
+ * @returns Interface that becomes ready and has been moved out of inactive list.
+ * If no such interface exists, 0 will be returned.
+ */
+SPtr<TSrvCfgIface> TSrvCfgMgr::checkInactiveIfaces() {
+    if (!InactiveLst.count())
+	return 0;
+
+    IfaceMgr->redetectIfaces();
+    SPtr<TSrvCfgIface> x;
+    SPtr<TIfaceIface> iface;
+    InactiveLst.first();
+    while (x = InactiveLst.get()) {
+	iface = IfaceMgr->getIfaceByID(x->getID());
+	if (!iface) {
+	    Log(Error) << "TSrvCfgMgr::checkInactiveIfaces(): " <<
+		"Unable to find interface with ifindex=" << x->getID() << LogEnd;
+	    continue;
+	}
+	iface->firstLLAddress();
+	if (iface->flagUp() && iface->flagRunning() && iface->getLLAddress()) {
+	    // check if its link-local address is not tentative
+	    char tmp[64];
+	    iface->firstLLAddress();
+	    inet_ntop6(iface->getLLAddress(), tmp);
+	    if (is_addr_tentative(iface->getName(), iface->getID(), tmp)==LOWLEVEL_TENTATIVE_YES) {
+		Log(Debug) << "Interface " << iface->getFullName() << " is up and running, but link-scope address " << tmp
+			   << " is currently tentative." << LogEnd;
+		continue;
+	    }
+
+
+	    makeInactiveIface(x->getID(), false); // move it to InactiveLst
+	    return x;
+	}
+    }
+
+    return 0;
+}
+
 
 TSrvCfgMgr::~TSrvCfgMgr() {
     Log(Debug) << "SrvCfgMgr cleanup." << LogEnd;
@@ -392,7 +525,7 @@ bool TSrvCfgMgr::isDone() {
 bool TSrvCfgMgr::validateConfig() {
     SmartPtr<TSrvCfgIface> ptrIface;
 
-    if (!this->countIface()) {
+    if (0 == (this->countIface() + this->inactiveIfacesCnt())) {
 	Log(Crit) << "Config problem: No interface defined." << LogEnd;
 	return false;
     }
@@ -534,6 +667,12 @@ bool TSrvCfgMgr::stateless() {
     return this->Stateless;
 }
 
+bool TSrvCfgMgr::inactiveMode()
+{
+    return InactiveMode;
+}
+
+
 bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
     SmartPtr<TIfaceIface> iface;
     string name = cfgIface->getRelayName();
@@ -610,6 +749,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     out << "  <workDir>" << x.getWorkDir()  << "</workDir>" << endl;
     out << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     out << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
+    out << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</InactiveMode>" << endl;
     if (x.DUID)
 	out << "  " << *x.DUID;
     else

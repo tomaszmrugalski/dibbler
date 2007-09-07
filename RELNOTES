@@ -1,28 +1,26 @@
 
-  Dibbler 0.6.0 release notes [2007-05-05]
+  Dibbler 0.6.1 release notes [2007-09-07]
  ---------------------------------------------------------
 
- This is a 0.6.0 release. 
+ This is a 0.6.1 release. 
 
- Changes since 0.5.0 are rather huge: Full list is described in CHANGELOG.
+ Changes since 0.6.0 are mainly related to security fixes. Most of the
+ issues has been reported by Mu Security. Thanks.
 
- Main new features in 0.6.0 (compared to 0.5.0):
- - Support for anonymous INF-REQUEST messages
- - Support for inactive (e.g. not associated wifi) interfaces
- - Interoperability improved (as a result of 2 day interop test session)
- - Client is now able to properly choose between several servers available
- - Support for cascade relays is now working properly
- - Prefix delegation support
- - Vendor specific information support
- - Elapsed option fixes and improvements
- - DUID type is now configurable
- - Lots of bug fixes and smaller improvements
- - Documentation update (now 60+ pages long, with pictures)
-
- That is also first release with experimental feature called Address
- Parameters. It allows clients to configure IPv6 addresses with appropriate
- prefixes, so routing is configured properly. Ssee Address Parameters in 
- Dibbler User's Guide for details.
+ Changes:
+  - Srv: Inactive mode implemented (bug #168)
+  - Srv: When assigning fewer address than requested, status is now set to success
+  - Srv: proper status code is returned when temporary addresses are not supported
+  - cross-compilation is now possible (bug #169)
+  - Make -j2 now works (bug #130)
+  - gcc 4.3.0 conformance
+  - Srv: CONFIRM message contents are now validated properly (bug #165)
+  - Security: Option Request Option parsing fixed (bug #166)
+  - Security: Possible segfault in REBIND processing fix
+  - Security: Vendor-specific information Option possible segfault
+  - Security: Option Request Option possible segfault (bug #167)
+  - Security: invalid length field parsing fixed (bug #164)
+  - Security: world writable files are no longer created (bug #160)
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 

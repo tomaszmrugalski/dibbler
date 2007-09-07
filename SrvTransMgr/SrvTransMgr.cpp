@@ -3,65 +3,12 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.32 2007-03-27 23:58:11 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.33 2007-09-07 08:31:21 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.31  2007-01-27 17:13:44  thomson
- * SetThats() is now called setContext()
- *
- * Revision 1.30  2007-01-21 19:17:58  thomson
- * Option name constants updated (by Jyrki Soini)
- *
- * Revision 1.29  2006-12-25 20:47:01  thomson
- * Some memory leaks fixes, valgrind info added.
- *
- * Revision 1.28  2006-08-21 22:51:26  thomson
- * Cache support added.
- *
- * Revision 1.27  2005/09/20 20:10:28  thomson
- * Addtional log message.
- *
- * Revision 1.26  2005/04/29 00:08:20  thomson
- * *** empty log message ***
- *
- * Revision 1.25  2005/02/01 00:57:36  thomson
- * no message
- *
- * Revision 1.24  2005/01/12 00:10:05  thomson
- * Compilation fixes.
- *
- * Revision 1.23  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.22  2005/01/03 23:13:38  thomson
- * Relay initialization implemented.
- *
- * Revision 1.21  2004/12/07 00:45:10  thomson
- * Manager creation unified and cleaned up.
- *
- * Revision 1.20  2004/11/29 23:25:13  thomson
- * Server now properly retransmits messages.
- *
- * Revision 1.19  2004/11/02 01:37:09  thomson
- * *** empty log message ***
- *
- * Revision 1.18  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.17  2004/09/28 21:49:32  thomson
- * no message
- *
- * Revision 1.16  2004/09/07 15:37:44  thomson
- * Socket handling changes.
- *
- * Revision 1.15  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.14  2004/09/03 23:20:23  thomson
- * RAPID-COMMIT support fixed. (bugs #50, #51, #52)
  */
 
 #include <limits.h>
@@ -161,9 +108,16 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
     return true;
 }
 
+/**
+ * Computes number of seconds when next event is expected or a job is
+ * supposted to be proceeded.
+ *
+ * @returns Number of seconds when something should happend
+ */
 long TSrvTransMgr::getTimeout()
 {
     unsigned long min = 0xffffffff;
+    unsigned long ifaceRecheckPeriod = 10;
     unsigned long addrTimeout = 0xffffffff;
     SmartPtr<TSrvMsg> ptrMsg;
     MsgLst.first();
@@ -172,6 +126,8 @@ long TSrvTransMgr::getTimeout()
         if (ptrMsg->getTimeout() < min) 
             min = ptrMsg->getTimeout();
     }
+    if (CfgMgr->inactiveIfacesCnt() && ifaceRecheckPeriod<min)
+	min = ifaceRecheckPeriod;
     addrTimeout = AddrMgr->getTimeout();
     return min<addrTimeout?min:addrTimeout;
 }
@@ -341,6 +297,16 @@ void TSrvTransMgr::doDuties()
     if (deletedCnt) {
 	Log(Debug) << deletedCnt << " message(s) were removed from cache." << LogEnd;
     }
+
+    // Open socket on interface which becames ready during server run
+    if (CfgMgr->inactiveMode())
+    {
+	SPtr<TSrvCfgIface> x;
+	x = CfgMgr->checkInactiveIfaces();
+	if (x)
+	    openSocket(x);
+    }
+
 }
 
 void TSrvTransMgr::shutdown()
@@ -388,3 +354,5 @@ ostream & operator<<(ostream &s, TSrvTransMgr &x)
     s << "</TSrvTransMgr>" << endl;
     return s;
 }
+
+// vim:ts=8 noexpandtab
