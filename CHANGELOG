@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
- 0.6.1 [2007-09-07]
+ 0.6.1 [2007-09-09]
   - Srv: Inactive mode implemented (bug #168)
   - Srv: When assigning fewer address than requested, status is now set to success
   - Srv: proper status code is returned when temporary addresses are not supported
