@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.6.0RC3 (WinXP/2003 port)
-OutputBaseFilename=dibbler-0.6.0-win32
+AppVerName=Dibbler 0.6.1 (WinXP/2003 port)
+OutputBaseFilename=dibbler-0.6.1-win32
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
@@ -46,22 +46,22 @@ Source: "..\RELNOTES"; DestDir: "{app}"; Components: Documentation;
 Name: "{group}\User's Guide"; Filename: "{app}\dibbler-user.pdf"
 Name: "{group}\Release notes"; Filename: "notepad.exe"; Parameters: "{app}\RELNOTES"
 
-Name: "{group}\Client Run in the console"; Filename: "{app}\dibbler-client.exe";Parameters: "run -d {app}";
-Name: "{group}\Client Install as service"; Filename: "{app}\dibbler-client.exe";Parameters: "install -d {app}";
-Name: "{group}\Client Remove service"; Filename: "{app}\dibbler-client.exe";     Parameters: "uninstall";
-Name: "{group}\Client View log file"; Filename: "notepad.exe"; Parameters: "{app}\client.log"
-Name: "{group}\Client Edit config file"; Filename: "notepad.exe"; Parameters: "{app}\client.conf"
+Name: "{group}\Client Run in the console"; Filename: "{app}\dibbler-client.exe"; WorkingDir: "{app}"; Parameters: " run -d ""{app}"" ";
+Name: "{group}\Client Install as service"; Filename: "{app}\dibbler-client.exe"; WorkingDir: "{app}"; Parameters: "install -d ""{app}"" ";
+Name: "{group}\Client Remove service"; Filename: "{app}\dibbler-client.exe";     WorkingDir: "{app}"; Parameters: "uninstall";
+Name: "{group}\Client View log file"; Filename: "notepad.exe"; WorkingDir: "{app}";  Parameters: "{app}\dibbler-client.log"
+Name: "{group}\Client Edit config file"; Filename: "notepad.exe"; WorkingDir: "{app}"; Parameters: "{app}\client.conf"
 
-Name: "{group}\Server Run in the console"; Filename: "{app}\dibbler-server.exe"; Parameters: "run -d {app}";
-Name: "{group}\Server Install as service"; Filename: "{app}\dibbler-server.exe"; Parameters: "install -d {app}";
+Name: "{group}\Server Run in the console"; Filename: "{app}\dibbler-server.exe"; WorkingDir: "{app}";  Parameters: "run -d ""{app}"" ";
+Name: "{group}\Server Install as service"; Filename: "{app}\dibbler-server.exe"; Parameters: "install -d ""{app}"" ";
 Name: "{group}\Server Remove service"; Filename: "{app}\dibbler-server.exe";     Parameters: "uninstall";
-Name: "{group}\Server View log file"; Filename: "{win}\notepad.exe"; Parameters: "{app}\server.log"
+Name: "{group}\Server View log file"; Filename: "{win}\notepad.exe"; Parameters: "{app}\dibbler-server.log"
 Name: "{group}\Server Edit config file"; Filename: "{win}\notepad.exe"; Parameters: "{app}\server.conf"
 
-Name: "{group}\Relay Run in the console"; Filename: "{app}\dibbler-relay.exe";Parameters: "run -d {app}";
-Name: "{group}\Relay Install as service"; Filename: "{app}\dibbler-relay.exe";Parameters: "install -d {app}";
+Name: "{group}\Relay Run in the console"; Filename: "{app}\dibbler-relay.exe";Parameters: "run -d ""{app}"" ";
+Name: "{group}\Relay Install as service"; Filename: "{app}\dibbler-relay.exe";Parameters: "install -d ""{app}"" ";
 Name: "{group}\Relay Remove service"; Filename: "{app}\dibbler-relay.exe";     Parameters: "uninstall";
-Name: "{group}\Relay View log file"; Filename: "notepad.exe"; Parameters: "{app}\relay.log"
+Name: "{group}\Relay View log file"; Filename: "notepad.exe"; Parameters: "{app}\dibbler-relay.log"
 Name: "{group}\Relay Edit config file"; Filename: "notepad.exe"; Parameters: "{app}\relay.conf"
 
 Name: "{group}\Remove Dibbler"; Filename: {app}\unins000.exe
