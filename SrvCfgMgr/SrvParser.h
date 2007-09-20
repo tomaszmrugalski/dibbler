@@ -299,18 +299,26 @@ typedef
 #define	PD_LENGTH_	298
 #define	PD_POOL_	299
 #define	VENDOR_SPEC_	300
-#define	AUTH_	301
-#define	DIGEST_NONE_	302
-#define	DIGEST_HMAC_SHA1_	303
-#define	CLIENT_	304
-#define	INACTIVE_MODE_	305
-#define	EXPERIMENTAL_	306
-#define	ADDR_PARAMS_	307
-#define	STRING_	308
-#define	HEXNUMBER_	309
-#define	INTNUMBER_	310
-#define	IPV6ADDR_	311
-#define	DUID_	312
+#define	CLIENT_	301
+#define	INACTIVE_MODE_	302
+#define	EXPERIMENTAL_	303
+#define	ADDR_PARAMS_	304
+#define	AUTH_METHOD_	305
+#define	AUTH_LIFETIME_	306
+#define	AUTH_KEY_LEN_	307
+#define	DIGEST_NONE_	308
+#define	DIGEST_PLAIN_	309
+#define	DIGEST_HMAC_MD5_	310
+#define	DIGEST_HMAC_SHA1_	311
+#define	DIGEST_HMAC_SHA224_	312
+#define	DIGEST_HMAC_SHA256_	313
+#define	DIGEST_HMAC_SHA384_	314
+#define	DIGEST_HMAC_SHA512_	315
+#define	STRING_	316
+#define	HEXNUMBER_	317
+#define	INTNUMBER_	318
+#define	IPV6ADDR_	319
+#define	DUID_	320
 
 
 #line 169 "../bison++/bison.h"
@@ -402,13 +410,21 @@ static const int PDCLASS_;
 static const int PD_LENGTH_;
 static const int PD_POOL_;
 static const int VENDOR_SPEC_;
-static const int AUTH_;
-static const int DIGEST_NONE_;
-static const int DIGEST_HMAC_SHA1_;
 static const int CLIENT_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
+static const int AUTH_METHOD_;
+static const int AUTH_LIFETIME_;
+static const int AUTH_KEY_LEN_;
+static const int DIGEST_NONE_;
+static const int DIGEST_PLAIN_;
+static const int DIGEST_HMAC_MD5_;
+static const int DIGEST_HMAC_SHA1_;
+static const int DIGEST_HMAC_SHA224_;
+static const int DIGEST_HMAC_SHA256_;
+static const int DIGEST_HMAC_SHA384_;
+static const int DIGEST_HMAC_SHA512_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -465,18 +481,26 @@ static const int DUID_;
 	,PD_LENGTH_=298
 	,PD_POOL_=299
 	,VENDOR_SPEC_=300
-	,AUTH_=301
-	,DIGEST_NONE_=302
-	,DIGEST_HMAC_SHA1_=303
-	,CLIENT_=304
-	,INACTIVE_MODE_=305
-	,EXPERIMENTAL_=306
-	,ADDR_PARAMS_=307
-	,STRING_=308
-	,HEXNUMBER_=309
-	,INTNUMBER_=310
-	,IPV6ADDR_=311
-	,DUID_=312
+	,CLIENT_=301
+	,INACTIVE_MODE_=302
+	,EXPERIMENTAL_=303
+	,ADDR_PARAMS_=304
+	,AUTH_METHOD_=305
+	,AUTH_LIFETIME_=306
+	,AUTH_KEY_LEN_=307
+	,DIGEST_NONE_=308
+	,DIGEST_PLAIN_=309
+	,DIGEST_HMAC_MD5_=310
+	,DIGEST_HMAC_SHA1_=311
+	,DIGEST_HMAC_SHA224_=312
+	,DIGEST_HMAC_SHA256_=313
+	,DIGEST_HMAC_SHA384_=314
+	,DIGEST_HMAC_SHA512_=315
+	,STRING_=316
+	,HEXNUMBER_=317
+	,INTNUMBER_=318
+	,IPV6ADDR_=319
+	,DUID_=320
 
 
 #line 215 "../bison++/bison.h"

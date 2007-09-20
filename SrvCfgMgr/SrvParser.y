@@ -94,10 +94,12 @@ virtual ~SrvParser();
 %token CACHE_SIZE_
 %token PDCLASS_, PD_LENGTH_, PD_POOL_ 
 %token VENDOR_SPEC_
-%token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
 %token CLIENT_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_
+%token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
+%token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
+%token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -133,7 +135,9 @@ GlobalOption
 | WorkDirOption
 | StatelessOption
 | CacheSizeOption
-| AuthOption
+| AuthMethod
+| AuthLifetime
+| AuthKeyGenNonceLen
 | Experimental
 | IfaceIDOrder
 ;
@@ -307,10 +311,19 @@ PDOptions
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
 /////////////////////////////////////////////////////////////////////////////
+AuthMethod
+: AUTH_METHOD_ DIGEST_NONE_      { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
+| AUTH_METHOD_ DIGEST_HMAC_MD5_  { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_MD5); }
+| AUTH_METHOD_ DIGEST_HMAC_SHA1_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); }
+;
 
-AuthOption
-: AUTH_ DIGEST_NONE_      { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
-| AUTH_ DIGEST_HMAC_SHA1_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); }
+AuthLifetime
+: AUTH_LIFETIME_ Number { ParserOptStack.getLast()->setAuthLifetime($2); }
+;
+
+AuthKeyGenNonceLen
+: AUTH_KEY_LEN_ Number { ParserOptStack.getLast()->setAuthKeyLen($2); }
+;
 
 ///////////////////////////////////////////////////
 // Parameters for FQDN Options                   //

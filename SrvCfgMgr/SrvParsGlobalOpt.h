@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsGlobalOpt.h,v 1.9 2007-09-07 08:31:20 thomson Exp $
+ * $Id: SrvParsGlobalOpt.h,v 1.10 2007-09-20 23:40:59 thomson Exp $
  *
  */
 
@@ -42,6 +42,11 @@ public:
     ESrvIfaceIdOrder getInterfaceIDOrder();
     void setInactiveMode(bool flex);
     bool getInactiveMode();
+
+    void setAuthLifetime(unsigned int lifetime);
+    unsigned int getAuthLifetime();
+    void setAuthKeyLen(unsigned int len);
+    unsigned int getAuthKeyLen();
     
 private:
     bool   Experimental;
@@ -49,6 +54,8 @@ private:
     bool   Stateless;
     bool   InactiveMode;
     int    CacheSize;
+    unsigned int AuthLifetime;
+    unsigned int AuthKeyLen;
     List(DigestTypes) DigestLst;
     ESrvIfaceIdOrder InterfaceIDOrder;
 };

@@ -9,6 +9,7 @@
 
 #include "SrvParsGlobalOpt.h"
 #include "Portable.h"
+#include "Logger.h"
 
 TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
     this->WorkDir          = WORKDIR;
@@ -17,6 +18,8 @@ TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
     this->Experimental     = false;
     this->InterfaceIDOrder = SRV_IFACE_ID_ORDER_BEFORE;
     this->InactiveMode     = false;
+    this->AuthLifetime     = DHCPV6_INFINITY;
+    this->AuthKeyLen       = 16;
 
     this->DigestLst.clear();
 }
@@ -58,6 +61,7 @@ int  TSrvParsGlobalOpt::getCacheSize() {
 
 void TSrvParsGlobalOpt::addDigest(DigestTypes x) {
     this->DigestLst.append(x);
+    Log(Debug) << "AUTH: New digest type added (" << DigestLst.count() << " already set)." << LogEnd;
 }
 
 List(DigestTypes) TSrvParsGlobalOpt::getDigest() {
@@ -80,5 +84,27 @@ void TSrvParsGlobalOpt::setInactiveMode(bool flex)
 bool TSrvParsGlobalOpt::getInactiveMode()
 {
     return InactiveMode;
+}
+
+void TSrvParsGlobalOpt::setAuthLifetime(unsigned int lifetime)
+{
+    AuthLifetime = lifetime;
+    Log(Debug) << "AUTH: Authorisation lifetime set to " << lifetime << "." << LogEnd;
+}
+
+unsigned int TSrvParsGlobalOpt::getAuthLifetime()
+{
+    return AuthLifetime;
+}
+
+void TSrvParsGlobalOpt::setAuthKeyLen(unsigned int len)
+{
+    AuthKeyLen = len;
+    Log(Debug) << "AUTH: Key gen nonce length set to " << len << "." << LogEnd;
+}
+
+unsigned int TSrvParsGlobalOpt::getAuthKeyLen()
+{
+    return AuthKeyLen;
 }
 
