@@ -38,6 +38,7 @@ List(TClntCfgIA)    ClntCfgIALst;		                            \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
+List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
@@ -109,7 +110,9 @@ namespace std
 %token STRICT_RFC_NO_ROUTING_
 %token PD_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
-%token AUTH_, DIGEST_NONE_, DIGEST_HMAC_SHA1_
+%token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
+%token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
+%token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_
 %type  <ival> Number
@@ -141,7 +144,8 @@ GlobalOptionDeclaration
 | DuidTypeOption
 | StrictRfcNoRoutingOption
 | ScriptsDir
-| AuthOption
+| AuthEnabledOption
+| AuthAcceptOption
 | AnonInfRequest
 | InactiveMode
 | InsistMode
@@ -191,7 +195,6 @@ InterfaceDeclarationsList '}'
     //Information about new interface has been read
     //Add it to list of read interfaces
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
-    //FIXME:used of char * should be always realeased
     delete [] $2;
     if (!EndIfaceDeclaration())
 	YYABORT;
@@ -490,9 +493,30 @@ ScriptsDir
     ParserOptStack.getLast()->setScriptsDir($2);
 }
 
-AuthOption
-: AUTH_ DIGEST_NONE_      { ParserOptStack.getLast()->setDigest(DIGEST_NONE); }
-| AUTH_ DIGEST_HMAC_SHA1_ { ParserOptStack.getLast()->setDigest(DIGEST_HMAC_SHA1); }
+AuthEnabledOption
+: AUTH_ENABLED_ Number    { ParserOptStack.getLast()->setAuthEnabled($2); }
+
+AuthAcceptOption
+: AUTH_ACCEPT_METHODS_
+{
+    DigestLst.clear();
+} DigestList { 
+    ParserOptStack.getLast()->setAuthAcceptMethods(DigestLst); 
+}
+
+DigestList
+: Digest
+| DigestList ',' Digest
+;
+
+Digest
+: DIGEST_HMAC_MD5_    { DigestLst.append(DIGEST_HMAC_MD5); }
+| DIGEST_HMAC_SHA1_   { DigestLst.append(DIGEST_HMAC_SHA1); }
+| DIGEST_HMAC_SHA224_ { DigestLst.append(DIGEST_HMAC_SHA224); }
+| DIGEST_HMAC_SHA256_ { DigestLst.append(DIGEST_HMAC_SHA256); }
+| DIGEST_HMAC_SHA384_ { DigestLst.append(DIGEST_HMAC_SHA384); }
+| DIGEST_HMAC_SHA512_ { DigestLst.append(DIGEST_HMAC_SHA512); }
+; 
 
 AnonInfRequest
 : ANON_INF_REQUEST_

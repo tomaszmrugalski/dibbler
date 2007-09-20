@@ -6,13 +6,14 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.11 2007-04-22 21:19:27 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.12 2007-09-20 23:06:55 thomson Exp $
  *
  */
 
 #include "ClntParsGlobalOpt.h"
 #include "Portable.h"
 #include "DHCPConst.h"
+#include "Logger.h"
 
 TClntParsGlobalOpt::TClntParsGlobalOpt() 
     :TClntParsIfaceOpt() {
@@ -24,6 +25,9 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->InactiveMode   = false;
     this->InsistMode     = false;
     this->Experimental   = false;
+
+    this->AuthEnabled    = false;
+    this->AuthAcceptMethods.clear();
 }
 
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
@@ -97,4 +101,26 @@ void TClntParsGlobalOpt::setExperimental()
 bool TClntParsGlobalOpt::getExperimental()
 {
     return Experimental;
+}
+
+void TClntParsGlobalOpt::setAuthAcceptMethods(List(DigestTypes) lst)
+{
+    AuthAcceptMethods = lst;
+    Log(Debug) << "AUTH: " << lst.count() << " method(s) accepted." << LogEnd;
+}
+
+List(DigestTypes) TClntParsGlobalOpt::getAuthAccessMethods()
+{
+    return AuthAcceptMethods;
+}
+
+void TClntParsGlobalOpt::setAuthEnabled(bool enabled)
+{
+    AuthEnabled = enabled;
+    Log(Debug) << "AUTH: Authentication " << (enabled?"enabled":"disabled") << "." << LogEnd;
+}
+
+bool TClntParsGlobalOpt::getAuthEnabled()
+{
+    return AuthEnabled;
 }

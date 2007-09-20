@@ -44,6 +44,7 @@ List(TClntCfgIA)    ClntCfgIALst;		                            \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
+List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
@@ -79,7 +80,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;
 
-#line 78 "ClntParser.y"
+#line 79 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -303,15 +304,22 @@ typedef
 #define	DUID_TYPE_LLT_	299
 #define	DUID_TYPE_LL_	300
 #define	DUID_TYPE_EN_	301
-#define	AUTH_	302
-#define	DIGEST_NONE_	303
-#define	DIGEST_HMAC_SHA1_	304
-#define	STATELESS_	305
-#define	ANON_INF_REQUEST_	306
-#define	INSIST_MODE_	307
-#define	INACTIVE_MODE_	308
-#define	EXPERIMENTAL_	309
-#define	ADDR_PARAMS_	310
+#define	AUTH_ENABLED_	302
+#define	AUTH_ACCEPT_METHODS_	303
+#define	DIGEST_NONE_	304
+#define	DIGEST_PLAIN_	305
+#define	DIGEST_HMAC_MD5_	306
+#define	DIGEST_HMAC_SHA1_	307
+#define	DIGEST_HMAC_SHA224_	308
+#define	DIGEST_HMAC_SHA256_	309
+#define	DIGEST_HMAC_SHA384_	310
+#define	DIGEST_HMAC_SHA512_	311
+#define	STATELESS_	312
+#define	ANON_INF_REQUEST_	313
+#define	INSIST_MODE_	314
+#define	INACTIVE_MODE_	315
+#define	EXPERIMENTAL_	316
+#define	ADDR_PARAMS_	317
 
 
 #line 169 "../bison++/bison.h"
@@ -404,9 +412,16 @@ static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
 static const int DUID_TYPE_LL_;
 static const int DUID_TYPE_EN_;
-static const int AUTH_;
+static const int AUTH_ENABLED_;
+static const int AUTH_ACCEPT_METHODS_;
 static const int DIGEST_NONE_;
+static const int DIGEST_PLAIN_;
+static const int DIGEST_HMAC_MD5_;
 static const int DIGEST_HMAC_SHA1_;
+static const int DIGEST_HMAC_SHA224_;
+static const int DIGEST_HMAC_SHA256_;
+static const int DIGEST_HMAC_SHA384_;
+static const int DIGEST_HMAC_SHA512_;
 static const int STATELESS_;
 static const int ANON_INF_REQUEST_;
 static const int INSIST_MODE_;
@@ -465,15 +480,22 @@ static const int ADDR_PARAMS_;
 	,DUID_TYPE_LLT_=299
 	,DUID_TYPE_LL_=300
 	,DUID_TYPE_EN_=301
-	,AUTH_=302
-	,DIGEST_NONE_=303
-	,DIGEST_HMAC_SHA1_=304
-	,STATELESS_=305
-	,ANON_INF_REQUEST_=306
-	,INSIST_MODE_=307
-	,INACTIVE_MODE_=308
-	,EXPERIMENTAL_=309
-	,ADDR_PARAMS_=310
+	,AUTH_ENABLED_=302
+	,AUTH_ACCEPT_METHODS_=303
+	,DIGEST_NONE_=304
+	,DIGEST_PLAIN_=305
+	,DIGEST_HMAC_MD5_=306
+	,DIGEST_HMAC_SHA1_=307
+	,DIGEST_HMAC_SHA224_=308
+	,DIGEST_HMAC_SHA256_=309
+	,DIGEST_HMAC_SHA384_=310
+	,DIGEST_HMAC_SHA512_=311
+	,STATELESS_=312
+	,ANON_INF_REQUEST_=313
+	,INSIST_MODE_=314
+	,INACTIVE_MODE_=315
+	,EXPERIMENTAL_=316
+	,ADDR_PARAMS_=317
 
 
 #line 215 "../bison++/bison.h"
