@@ -1,7 +1,8 @@
 dibbler (0.6.1-1) unstable; urgency=low
 
   * New upstream release 
-  * security fix:CVE-2007-5028, CVE-2007-5029,CVE-2007-5028 (closes #444002)
+  * security fix:CVE-2007-5028, CVE-2007-5029,CVE-2007-5028 (closes: #444002)
+  * gcc 4.3 compatibility (closes: #417156)
 
  -- Tomasz Mrugalski <thomson@klub.com.pl>  Wed, 26 Sep 2007 22:45:33 +0200
 
