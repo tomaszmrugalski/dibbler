@@ -58,7 +58,6 @@ clean: unpatch
 	dh_testroot
 	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
 	$(MAKE) clobber
-	$(MAKE) clean
 	dh_clean 
 	debconf-updatepo
 

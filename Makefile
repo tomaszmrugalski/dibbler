@@ -458,7 +458,6 @@ tags:
 
 clean-libs:
 	find . -name *.a -exec rm {} \;
-	$(MAKE) -C $(PREFIX)/poslib clean
 	if [ -e poslib/Makefile ]; then $(MAKE) -C $(PREFIX)/poslib clean > /dev/null; fi
 
 links: includes
