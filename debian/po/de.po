@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: dibbler 0.4.2.dfsg-2\n"
-"Report-Msgid-Bugs-To: dibbler@packages.debian.org\n"
-"POT-Creation-Date: 2007-01-13 19:00+0100\n"
-"PO-Revision-Date: 2007-05-25 18:46+0200\n"
+"Project-Id-Version: dibbler 0.6.0-3\n"
+"Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
+"POT-Creation-Date: 2007-07-11 19:57+0200\n"
+"PO-Revision-Date: 2007-07-11 21:42+0200\n"
 "Last-Translator: Helge Kreutzmann <debian@helgefjell.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,44 +16,39 @@ msgstr ""
 
 #. Type: title
 #. Description
-#: ../dibbler-client.templates:1001
+#: ../dibbler-client.templates:2001
 msgid "dibbler-client: DHCPv6 client"
 msgstr "Dibbler-client: DHCPv6-Client"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-client.templates:2001
-msgid "Do you want dibbler-client to start when system starts?"
-msgstr "Möchten Sie beim Systemstart auch Dibbler-client starten?"
+#: ../dibbler-client.templates:3001
+msgid "Should the Dibbler client be launched when the system starts?"
+msgstr "Soll beim Systemstart auch der Dibbler-Client starten?"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-client.templates:2001
-msgid ""
-"Dibbler client can be configured to start at boot, so your host will have "
-"IPv6 set up after boot. This is generally a good idea. Make sure that there "
-"is a DHCPv6 server available in your network."
-msgstr ""
-"Dibbler-Client kann so konfiguriert werden, dass er beim Systemstart auch "
-"startet, so dass Ihr Rechner nach dem Booten über IPv6 verfügt. Im "
-"Allgemeinen ist dies eine gute Idee. Stellen Sie sicher, dass in Ihrem Netz "
-"ein DHCPv6-Server verfügbar ist."
-
-#. Type: string
-#. Default
 #: ../dibbler-client.templates:3001
-msgid "eth0"
-msgstr "eth0"
+msgid ""
+"The Dibbler client can be configured to be launched when the system is "
+"started. If you choose this option, this host will have a correct IPv6 setup "
+"after booting. Please ensure that a DHCPv6 server is available on the "
+"network."
+msgstr ""
+"Der Dibbler-Client kann so konfiguriert werden, dass er beim Systemstart "
+"auch startet. Falls Sie diese Option wählen, verfügt Ihr Rechner nach dem "
+"Booten über ein korrekt konfiguriertes IPv6. Stellen Sie bitte sicher, dass "
+"in Ihrem Netz ein DHCPv6-Server verfügbar ist."
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3002
+#: ../dibbler-client.templates:4001
 msgid "Interfaces to be configured:"
 msgstr "Schnittstellen, die konfiguriert werden sollen:"
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3002
+#: ../dibbler-client.templates:4001
 msgid "Dibbler can configure any or all of a computer's network interfaces."
 msgstr ""
 "Dibbler kann beliebige (auch alle) Netzschnittstellen Ihres Rechners "
@@ -61,7 +56,7 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../dibbler-client.templates:3002
+#: ../dibbler-client.templates:4001
 msgid ""
 "More than one interface may be specified by separating the interface names "
 "with spaces."
@@ -71,21 +66,27 @@ msgstr ""
 
 #. Type: multiselect
 #. Choices
-#: ../dibbler-client.templates:4001
-msgid "dns, domain"
-msgstr "dns, domain"
+#: ../dibbler-client.templates:5001
+msgid "dns"
+msgstr "DNS"
+
+#. Type: multiselect
+#. Choices
+#: ../dibbler-client.templates:5001
+msgid "domain"
+msgstr "Domain"
 
 #. Type: multiselect
 #. Description
-#: ../dibbler-client.templates:4002
-msgid "What additional parameters should be obtained:"
-msgstr "Welche zusätzlichen Parameter sollen abgefragt werden:"
+#: ../dibbler-client.templates:5002
+msgid "Additional parameters to obtain:"
+msgstr "Zusätzlichen Parameter die abgefragt werden sollen:"
 
 #. Type: multiselect
 #. Description
-#: ../dibbler-client.templates:4002
+#: ../dibbler-client.templates:5002
 msgid ""
-"The Dibbler client can request that the DHCPv6 server supply additional "
+"The Dibbler client can request that the DHCPv6 server supplies additional "
 "configuration parameters."
 msgstr ""
 "Der Dibbler-Client kann den DHCPv6-Server bitten, zusätzliche "
@@ -93,80 +94,74 @@ msgstr ""
 
 #. Type: title
 #. Description
-#: ../dibbler-relay.templates:1001
+#: ../dibbler-relay.templates:2001
 msgid "dibbler-relay: DHCPv6 relay"
 msgstr "dibbler-relay: DHCPv6-Weiterleitung"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-relay.templates:2001
-msgid "Do you want dibbler-relay to start when the system starts?"
-msgstr "Möchten Sie beim Systemstart auch Dibbler-Relay starten?"
+#: ../dibbler-relay.templates:3001
+msgid "Should the Dibbler relay be launched when the system starts?"
+msgstr "Soll beim Systemstart auch Dibbler-Relay starten?"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-relay.templates:2001
-msgid ""
-"Dibbler relay can be configured to start at boot. This node will then "
-"forward DHCPv6 messages between clients, servers and other relays."
-msgstr ""
-"Dibbler-Relay kann so konfiguriert werden, dass es beim Systemstart auch "
-"startet. Dieser Knoten wird dann DHCPv6-Nachrichten zwischen Clients, "
-"Servern und anderen Relays (Weiterleitern) weitergeben."
-
-#. Type: note
-#. Description
-#: ../dibbler-relay.templates:3001
-msgid "Modify /etc/dibbler/relay.conf before running the relay"
-msgstr "Anpassung von /etc/dibbler/relay.conf vor Start des Relay nötig"
-
-#. Type: note
-#. Description
 #: ../dibbler-relay.templates:3001
 msgid ""
-"Without proper modifications, the relay will most likely refuse to start or "
-"will not forward DHCPv6 messages as expected."
+"The Dibbler relay can be configured to be launched when the system is "
+"started. If you choose this option, this node will forward DHCPv6 messages "
+"between clients, servers and other relays."
 msgstr ""
-"Ohne angemessene Änderungen wird die Weiterleitung (Relay) wahrscheinlich "
-"nicht starten oder DHCPv6-Nachrichten nicht wie erwartet weiterleiten."
+"Der Dibbler-Relay kann so konfiguriert werden, dass es beim Systemstart auch "
+"startet. Falls Sie diese Option wählen, wird dieser Knoten wird DHCPv6-"
+"Nachrichten zwischen Clients, Servern und anderen Relays (Weiterleitern) "
+"weitergeben."
 
 #. Type: title
 #. Description
-#: ../dibbler-server.templates:1001
+#: ../dibbler-server.templates:2001
 msgid "dibbler-server: DHCPv6 server"
 msgstr "Dibbler-Server: DHCPv6-Server"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-server.templates:2001
-msgid "Do you want dibbler-server to start when the system starts?"
-msgstr "Möchten Sie beim Systemstart auch Dibbler-server starten?"
+#: ../dibbler-server.templates:3001
+msgid "Should the Dibbler server be launched when the system starts?"
+msgstr "Soll beim Systemstart auch Dibbler-Server starten?"
 
 #. Type: boolean
 #. Description
-#: ../dibbler-server.templates:2001
-msgid ""
-"Dibbler server can be configured to start at boot. This node will then act "
-"as a DHCPv6 server. It will provide IPv6 addresses and additional "
-"configuration options to other nodes in the network."
-msgstr ""
-"Dibbler-Server kann so konfiguriert werden, dass er beim Systemstart auch "
-"startet. Dieser Knoten wird dann als DHCPv6-Server agieren. Er wird IPv6-"
-"Adressen und zusätzliche Konfigurationsoptionen für andere Knoten im Netz "
-"bereitstellen."
-
-#. Type: note
-#. Description
-#: ../dibbler-server.templates:3001
-msgid "Modify /etc/dibbler/server.conf before running the server"
-msgstr "Anpassung von /etc/dibbler/server.conf vor Start des Relay nötig"
-
-#. Type: note
-#. Description
 #: ../dibbler-server.templates:3001
 msgid ""
-"Without proper modifications, the Dibbler server will most likely offer "
-"invalid addresses and options when started."
+"The Dibbler server can be configured to be launched when the system is "
+"started. If you choose this option, this node will act as a DHCPv6 server. "
+"It will provide IPv6 addresses and additional configuration options to other "
+"nodes in the network."
 msgstr ""
-"Ohne angemessene Änderungen wird der Dibbler-Server wahrscheinlich "
-"ungültige Adressen und Optionen nach dem Starten anbieten."
+"Der Dibbler-Server kann so konfiguriert werden, dass er beim Systemstart "
+"auch startet. Falls Sie diese Option wählen, wird dieser Knoten dann als "
+"DHCPv6-Server agieren. Er wird IPv6-Adressen und zusätzliche "
+"Konfigurationsoptionen für andere Knoten im Netz bereitstellen."
+
+#~ msgid "Modify /etc/dibbler/relay.conf before running the relay"
+#~ msgstr "Anpassung von /etc/dibbler/relay.conf vor Start des Relay nötig"
+
+#~ msgid ""
+#~ "Without proper modifications, the relay will most likely refuse to start "
+#~ "or will not forward DHCPv6 messages as expected."
+#~ msgstr ""
+#~ "Ohne angemessene Änderungen wird die Weiterleitung (Relay) wahrscheinlich "
+#~ "nicht starten oder DHCPv6-Nachrichten nicht wie erwartet weiterleiten."
+
+#~ msgid "Modify /etc/dibbler/server.conf before running the server"
+#~ msgstr "Anpassung von /etc/dibbler/server.conf vor Start des Relay nötig"
+
+#~ msgid ""
+#~ "Without proper modifications, the Dibbler server will most likely offer "
+#~ "invalid addresses and options when started."
+#~ msgstr ""
+#~ "Ohne angemessene Änderungen wird der Dibbler-Server wahrscheinlich "
+#~ "ungültige Adressen und Optionen nach dem Starten anbieten."
+
+#~ msgid "eth0"
+#~ msgstr "eth0"
