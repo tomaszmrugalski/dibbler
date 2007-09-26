@@ -43,6 +43,9 @@ B. Next release for this upstream
 11. dpkg-buildpackage -rfakeroot
 12. ...
 
+Useful commands:
+Create new debian/changelog entry: dch -b -v 0.6.0-1
+
 RPM:
 
 Gentoo:
