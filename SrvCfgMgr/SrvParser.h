@@ -314,11 +314,12 @@ typedef
 #define	DIGEST_HMAC_SHA256_	313
 #define	DIGEST_HMAC_SHA384_	314
 #define	DIGEST_HMAC_SHA512_	315
-#define	STRING_	316
-#define	HEXNUMBER_	317
-#define	INTNUMBER_	318
-#define	IPV6ADDR_	319
-#define	DUID_	320
+#define	ACCEPT_LEASEQUERY_	316
+#define	STRING_	317
+#define	HEXNUMBER_	318
+#define	INTNUMBER_	319
+#define	IPV6ADDR_	320
+#define	DUID_	321
 
 
 #line 169 "../bison++/bison.h"
@@ -425,6 +426,7 @@ static const int DIGEST_HMAC_SHA224_;
 static const int DIGEST_HMAC_SHA256_;
 static const int DIGEST_HMAC_SHA384_;
 static const int DIGEST_HMAC_SHA512_;
+static const int ACCEPT_LEASEQUERY_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -496,11 +498,12 @@ static const int DUID_;
 	,DIGEST_HMAC_SHA256_=313
 	,DIGEST_HMAC_SHA384_=314
 	,DIGEST_HMAC_SHA512_=315
-	,STRING_=316
-	,HEXNUMBER_=317
-	,INTNUMBER_=318
-	,IPV6ADDR_=319
-	,DUID_=320
+	,ACCEPT_LEASEQUERY_=316
+	,STRING_=317
+	,HEXNUMBER_=318
+	,INTNUMBER_=319
+	,IPV6ADDR_=320
+	,DUID_=321
 
 
 #line 215 "../bison++/bison.h"

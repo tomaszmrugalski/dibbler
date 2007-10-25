@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.12 2006-12-31 16:00:27 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.13 2007-10-25 07:00:52 thomson Exp $
  *
  */
 
@@ -46,6 +46,10 @@ public:
     int getRelayID();
     int getRelayInterfaceID();
     bool isRelay();
+
+    // leasequery support
+    void setLeaseQuerySupport(bool support);
+    bool getLeaseQuerySupport();
 
     //-- options related methods --
     // option: DNS Servers
@@ -129,6 +133,7 @@ private:
     long IfaceMaxLease;
     long ClntMaxLease;
     SmartPtr<TIPv6Addr> Unicast;
+    bool LeaseQuery; // support for leasequery
 
     // relay
     bool Relay;

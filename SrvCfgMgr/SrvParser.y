@@ -100,6 +100,7 @@ virtual ~SrvParser();
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
+%token ACCEPT_LEASEQUERY_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -146,6 +147,7 @@ InterfaceOptionDeclaration
 : ClassOptionDeclaration
 | RelayOption
 | InterfaceIDOption
+| AcceptLeaseQuery
 | UnicastAddressOption
 | PreferenceOption
 | RapidCommitOption
@@ -770,7 +772,7 @@ IfaceIDOrder
 	ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_NONE);
     } else 
     {
-	Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, none" << LogEnd;
+	Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, omit" << LogEnd;
 	YYABORT;
     }
 };
@@ -782,6 +784,27 @@ CacheSizeOption
 }
 ;
 
+AcceptLeaseQuery
+: ACCEPT_LEASEQUERY_
+{
+    ParserOptStack.getLast()->setLeaseQuerySupport(true);
+
+}
+| ACCEPT_LEASEQUERY_ Number
+{
+    switch ($2) {
+    case 0:
+	ParserOptStack.getLast()->setLeaseQuerySupport(false);
+	break;
+    case 1:
+	ParserOptStack.getLast()->setLeaseQuerySupport(true);
+	break;
+    default:
+	Log(Crit) << "Invalid value of accept-leasequery specifed. Allowed values: 0, 1, yes, no, true, false" << LogEnd;
+	YYABORT;
+    }
+
+};
 
 ////////////////////////////////////////////////////////////////////////
 /// RELAY //////////////////////////////////////////////////////////////

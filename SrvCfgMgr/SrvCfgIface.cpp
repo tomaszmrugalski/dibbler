@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.40 2007-05-03 23:16:29 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.41 2007-10-25 07:00:52 thomson Exp $
  */
 
 #include <cstdlib>
@@ -24,6 +24,12 @@ void TSrvCfgIface::addClientExceptionsLst(List(TSrvCfgOptions) exLst)
     Log(Debug) << exLst.count() << " per-client configurations (exceptions) added." << LogEnd;
     ExceptionsLst = exLst;
 }
+
+bool TSrvCfgIface::leaseQuerySupport()
+{
+    return LeaseQuery;
+}
+
 
 SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, bool quiet)
 {
@@ -335,6 +341,7 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->ClntMaxLease  = opt->getClntMaxLease();
     this->RapidCommit   = opt->getRapidCommit();
     this->Unicast       = opt->getUnicast();
+    this->LeaseQuery    = opt->getLeaseQuerySupport();
     
     if (opt->supportFQDN()){
 	this->setFQDNLst(opt->getFQDNLst());
@@ -597,6 +604,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << std::endl;
     out << "    <clntMaxLease>" << iface.ClntMaxLease << "</clntMaxLease>" << std::endl;
+    out << "    <LeaseQuery>" << (iface.LeaseQuery?"1":"0") << "</LeaseQuery>" << std::endl;
        
     if (iface.Unicast) {
         out << "    <unicast>" << *(iface.Unicast) << "</unicast>" << endl;

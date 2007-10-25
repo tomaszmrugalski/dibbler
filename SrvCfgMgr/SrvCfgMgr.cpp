@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.52 2007-09-07 08:31:19 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.53 2007-10-25 07:00:52 thomson Exp $
  *
  */
 
@@ -85,7 +85,7 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     }
 
     // setup global options
-    this->setupGlobalOpts(parser.ParserOptStack.getLast());
+    this->setGlobalOptions(parser.ParserOptStack.getLast());
     
     // analyse interfaces mentioned in config file
     if (!this->matchParsedSystemInterfaces(&parser)) {
@@ -115,13 +115,13 @@ void TSrvCfgMgr::dump() {
     xmlDump.close();
 }
 
-bool TSrvCfgMgr::setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt) {
+bool TSrvCfgMgr::setGlobalOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->Workdir          = opt->getWorkDir();
     this->Stateless        = opt->getStateless();
     this->CacheSize        = opt->getCacheSize();
     this->DigestLst        = opt->getDigest();
     this->InterfaceIDOrder = opt->getInterfaceIDOrder();
-    this->InactiveMode     = opt->getInactiveMode(); // should the client accept not ready interfaces?
+    this->InactiveMode     = opt->getInactiveMode(); // should the server accept not ready interfaces?
     return true;
 }
 

@@ -6,7 +6,7 @@
  *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.12 2007-04-11 07:51:03 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.13 2007-10-25 07:00:52 thomson Exp $
  *
  */
 
@@ -22,7 +22,8 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     this->RapidCommit   = SERVER_DEFAULT_RAPIDCOMMIT;
     this->ClntMaxLease  = SERVER_DEFAULT_CLNTMAXLEASE;
     this->IfaceMaxLease = SERVER_DEFAULT_IFACEMAXLEASE;
-    
+    this->LeaseQuery    = false; // don't support leasequery unless explicitly configured to do so
+
     // options
     this->DNSServerSupport  = false;
     this->DomainSupport     = false;
@@ -45,6 +46,16 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
+}
+
+void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support)
+{
+    this->LeaseQuery = support;
+}
+
+bool TSrvParsIfaceOpt::getLeaseQuerySupport()
+{
+    return LeaseQuery;
 }
 
 // --- unicast ---

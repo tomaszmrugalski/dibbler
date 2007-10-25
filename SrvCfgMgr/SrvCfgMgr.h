@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.18 2007-09-07 08:31:19 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.19 2007-10-25 07:00:52 thomson Exp $
  *
  */
 
@@ -69,7 +69,7 @@ public:
 
     bool isDone();
     virtual ~TSrvCfgMgr();
-    bool setupGlobalOpts(SmartPtr<TSrvParsGlobalOpt> opt);
+    bool setGlobalOptions(SmartPtr<TSrvParsGlobalOpt> opt);
 
     // configuration parameters
     string getWorkdir();

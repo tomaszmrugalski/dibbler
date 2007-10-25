@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgIface.h,v 1.25 2007-05-03 23:16:29 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.26 2007-10-25 07:00:52 thomson Exp $
  *
  */
 
@@ -113,6 +113,7 @@ public:
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     void setFQDNMode(int FQDNMode);
     bool supportFQDN();
+    bool leaseQuerySupport();
 
 private:
     unsigned char preference;
@@ -124,6 +125,7 @@ private:
     unsigned long ClntMaxLease;
     bool RapidCommit;	
     List(TSrvCfgAddrClass) SrvCfgAddrClassLst; // IA_NA list (normal addresses)
+    bool LeaseQuery;
 
     // --- Temporary Addresses ---
     List(TSrvCfgTA) SrvCfgTALst; // IA_TA list (temporary addresses)

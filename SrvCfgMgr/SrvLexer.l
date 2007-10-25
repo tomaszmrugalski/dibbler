@@ -104,6 +104,7 @@ auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
 digest-none         { return SrvParser::DIGEST_NONE_; }
 digest-hmac-md5     { return SrvParser::DIGEST_HMAC_MD5_; }
 digest-hmac-sha1    { return SrvParser::DIGEST_HMAC_SHA1_; }
+accept-leasequery   { return SrvParser::ACCEPT_LEASEQUERY_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}
