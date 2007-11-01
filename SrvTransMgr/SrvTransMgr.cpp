@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.33 2007-09-07 08:31:21 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.34 2007-11-01 08:11:18 thomson Exp $
  *
  */
 
@@ -28,6 +28,8 @@
 #include "SrvMsgRebind.h"
 #include "SrvMsgRenew.h"
 #include "SrvMsgRelease.h"
+#include "SrvMsgLeaseQuery.h"
+#include "SrvMsgLeaseQueryReply.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptStatusCode.h"
 
@@ -245,6 +247,18 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 	SmartPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
+	break;
+    }
+    case LEASEQUERY_MSG:
+    {
+	int iface = msg->getIface();
+	if (!CfgMgr->getIfaceByID(iface) || !CfgMgr->getIfaceByID(iface)->leaseQuerySupport()) {
+	    Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
+	    return;
+	}
+	SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
+	answ = new TSrvMsgLeaseQueryReply(IfaceMgr, That, CfgMgr, AddrMgr, lq);
+	MsgLst.append( (Ptr*) answ);
 	break;
     }
     case RECONFIGURE_MSG:

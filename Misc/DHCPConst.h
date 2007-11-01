@@ -34,9 +34,9 @@
 #define INFORMATION_REQUEST_MSG 11
 #define RELAY_FORW_MSG 12
 #define RELAY_REPL_MSG 13
-// unimplemented messages
-#define LEASEQUERY     14
-#define LEASEQUERY_REPLY 15
+#define LEASEQUERY_MSG       14
+#define LEASEQUERY_REPLY_MSG 15
+
 // implementation specific
 #define CONTROL_MSG    255
 
@@ -148,13 +148,9 @@
 // RFC-ietf-dhc-dhcpv6-ero-01.txt
 #define OPTION_ERO              43
 
-// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
+// RFC5007: Leasequery
 #define OPTION_LQ_QUERY         44
-
-// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
 #define OPTION_CLIENT_DATA      45
-
-// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
 #define OPTION_CLT_TIME         46
 #define OPTION_LQ_RELAY_DATA    47
 #define OPTION_LQ_CLIENT_LINK   48
@@ -163,8 +159,8 @@
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251
 
-// RFC-ietf-dhc-dhcpv6-leasequery-01.txt
-// -- Query types --
+
+// -- Query types (RFC5007) --
 #define QUERY_BY_ADDRESS  1
 #define QUERY_BY_CLIENTID 2
 

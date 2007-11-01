@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.25 2007-09-07 08:31:21 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.26 2007-11-01 08:11:18 thomson Exp $
  *
  */
 
@@ -28,6 +28,7 @@
 #include "SrvMsgRelease.h"
 #include "SrvMsgDecline.h"
 #include "SrvMsgInfRequest.h"
+#include "SrvMsgLeaseQuery.h"
 #include "SrvOptInterfaceID.h"
 #include "IPv6Addr.h"
 #include "AddrClient.h"
@@ -178,6 +179,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	case RELEASE_MSG:
 	case DECLINE_MSG:
 	case INFORMATION_REQUEST_MSG:
+	case LEASEQUERY_MSG:
 	    ptr = this->decodeMsg(ptrIface, peer, buf, bufsize);
         if (!ptr->validateAuthInfo(buf, bufsize))
             return 0;
@@ -193,8 +195,9 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	case REPLY_MSG:
 	case RECONFIGURE_MSG:
 	case RELAY_REPL_MSG:
+	case LEASEQUERY_REPLY_MSG:
 	    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-	    return 0; //NULL;;
+	    return 0; //NULL;
 	default:
 	    Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
 	    return 0; //NULL
@@ -412,6 +415,9 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SmartPtr<TSrvIfaceIface> ptrIface,
 	return new TSrvMsgInfRequest(That, this->SrvTransMgr, 
 				     this->SrvCfgMgr, this->SrvAddrMgr,
 				     ifaceid, peer, buf, bufsize);
+    case LEASEQUERY_MSG:
+	return new TSrvMsgLeaseQuery(That, SrvCfgMgr, SrvAddrMgr, ifaceid, 
+				     peer, buf, bufsize);
     default:
 	Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
 	return 0; //NULL;;
