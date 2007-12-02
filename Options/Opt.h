@@ -6,9 +6,12 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: Opt.h,v 1.9 2007-03-28 00:39:46 thomson Exp $
+ * $Id: Opt.h,v 1.10 2007-12-02 10:31:59 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2007-03-28 00:39:46  thomson
+ * Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
+ *
  * Revision 1.8  2006-11-17 00:37:16  thomson
  * Partial AUTH support by Sammael, fixes by thomson
  *
@@ -61,11 +64,10 @@ class TOpt
      * @return The address where the option ends
      */
     virtual char * storeSelf(char* buf) = 0;
-//    char * storeSelfPtr(char* buf, char* msg_start);
     virtual bool doDuties() = 0;
     
     /**
-     * Validate or no the option
+     * Validate the option
      * 
      * @return true if the option is valid.
      */

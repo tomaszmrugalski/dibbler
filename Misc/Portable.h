@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.88 2007-09-02 22:54:12 thomson Exp $
+ * $Id: Portable.h,v 1.89 2007-12-02 10:31:59 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -89,8 +89,12 @@ struct iface {
 #define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
 #define RELTRANSMGR_FILE  "relay-TransMgr.xml"
 
+#define REQIFACEMGR_FILE  "requestor-IfaceMgr.xml"
+
 #define DNSUPDATE_DEFAULT_TTL "2h"
 #define INACTIVE_MODE_INTERVAL 3 /* 3 seconds */
+
+#define REQLOG_FILE        "dibbler-requestor.log"
 
 #ifdef WIN32
 #define WORKDIR            ".\\"

@@ -657,6 +657,15 @@
 			<Filter
 				Name="IfaceMgr"
 				Filter="">
+				<File
+					RelativePath="..\IfaceMgr\Iface.h">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\IfaceMgr.h">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\SocketIPv6.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="CfgMgr"
