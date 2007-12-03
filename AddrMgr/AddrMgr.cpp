@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.29 2007-05-04 17:19:16 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.30 2007-12-03 16:54:35 thomson Exp $
  *
  */
 
@@ -67,7 +67,7 @@ SmartPtr<TAddrClient> TAddrMgr::getClient()
     return ClntsLst.get();
 }
 
-SmartPtr<TAddrClient> TAddrMgr::getClient(SmartPtr<TDUID> duid)
+SPtr<TAddrClient> TAddrMgr::getClient(SmartPtr<TDUID> duid)
 {
     SmartPtr<TAddrClient> ptr;
     ClntsLst.first();
@@ -77,6 +77,23 @@ SmartPtr<TAddrClient> TAddrMgr::getClient(SmartPtr<TDUID> duid)
             return ptr;
     }
     return SmartPtr<TAddrClient>();
+}
+
+SPtr<TAddrClient> TAddrMgr::getClient(SPtr<TIPv6Addr> leasedAddr)
+{
+    SPtr<TAddrClient> cli;
+    ClntsLst.first();
+    while (cli = ClntsLst.get() ) 
+    {
+	SPtr<TAddrIA> ia;
+	cli->firstIA();
+	while (ia = cli->getIA()) {
+	    if ( ia->getAddr(leasedAddr) )
+		return cli;
+	}
+    }
+
+    return 0;
 }
 
 int TAddrMgr::countClient()
