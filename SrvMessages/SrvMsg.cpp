@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.45 2007-07-05 00:17:42 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.46 2007-12-03 16:58:06 thomson Exp $
  */
 
 #include <sstream>
@@ -31,6 +31,7 @@
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
+#include "SrvOptLQ.h"
 #include "SrvOptTA.h"
 #include "SrvCfgOptions.h"
 
@@ -204,6 +205,10 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_IA_PD:
 	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
 	    break;
+	case OPTION_LQ_QUERY:
+	    ptr = new TSrvOptLQ(buf+pos, length, this);
+	    break;
+	    // remaining LQ options are not supported to be received by server
 	case OPTION_AUTH:
         this->DigestType = DIGEST_HMAC_SHA1;
 	    // FIXME: Detect digest type
