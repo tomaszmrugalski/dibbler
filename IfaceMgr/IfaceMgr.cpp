@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.25 2007-04-27 11:46:31 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.26 2007-12-03 16:56:35 thomson Exp $
  *
  */
 
@@ -193,8 +193,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     peer->setAddr(peerAddrPacked);
 
     if (result==-1) {
-        Log(Error) << "Send failure detected (probably ICMPv6 Port Unreachable message received). Are you trying to forward message to an invalid or unbound unicast address?" 
-                   << LogEnd;
+        Log(Error) << "Socket recv() failure detected." << LogEnd;
         bufsize = 0;
 	return -1;
     }
