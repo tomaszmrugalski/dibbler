@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.13 2007-04-22 21:19:29 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.14 2007-12-03 16:57:17 thomson Exp $
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
@@ -19,7 +19,7 @@ bool OptInMsg[13][20] = {
 //             ID     ID                       Request       Time  Msg.   Empty       Unica.   Code  Comm. Class Class  Spec.    ID    Msg.  Accept
 /*Solicit */ {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  true, true, true,  true, false, false,true },
 /*Advertise*/{true,  true , true,  true, false, false,true , false,false, false,true, true,  true ,  false,true, true,  true, false, false,true },
-/*Request*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,true },                
+/*Request*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,true },
 /*Confirm*/  {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
 /*Renew*/    {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false, true},
 /*Rebind*/   {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false, true},
@@ -35,6 +35,8 @@ bool OptInMsg[13][20] = {
 int allowOptInMsg(int msg, int opt)
 {
     // standard options specified in RFC3315
+    if (msg>13)
+	return 1; // allow everthing in new messages
     if (opt <=20) {
 	    return OptInMsg[msg-1][opt-1];
     }
@@ -101,6 +103,9 @@ int allowOptInOpt(int msgType, int parent, int subopt) {
     case OPTION_IA_PD:
 	if ( (subopt==OPTION_IAPREFIX) || (subopt==OPTION_STATUS_CODE))
 	    return 1;
+    case OPTION_LQ_QUERY:
+      if ( (subopt == OPTION_IAADDR) || (subopt==OPTION_CLIENTID) )
+	return 1;
     }
     return 0;
 }

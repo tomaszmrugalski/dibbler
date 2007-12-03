@@ -161,8 +161,10 @@
 
 
 // -- Query types (RFC5007) --
-#define QUERY_BY_ADDRESS  1
-#define QUERY_BY_CLIENTID 2
+typedef enum {
+    QUERY_BY_ADDRESS = 1,
+    QUERY_BY_CLIENTID = 2
+} ELeaseQueryType;
 
 // --- Option lengths --
 // (value of the len field, so actual option length is +4 bytes)
