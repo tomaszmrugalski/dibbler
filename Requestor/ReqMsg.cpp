@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqMsg.cpp,v 1.1 2007-12-02 10:31:59 thomson Exp $
+ * $Id: ReqMsg.cpp,v 1.2 2007-12-03 16:59:17 thomson Exp $
  */
 
 #include <string>
@@ -43,3 +43,4 @@ void TReqMsg::addOption(SPtr<TOpt> opt)
 {
     Options.append(opt);
 }
+

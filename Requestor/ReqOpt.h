@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ReqOpt.h,v 1.1 2007-12-02 10:32:00 thomson Exp $
+ * $Id: ReqOpt.h,v 1.2 2007-12-03 16:59:17 thomson Exp $
  *
  */
 
@@ -13,11 +13,11 @@
 #define REQOPT_H
 
 #include "Opt.h"
-#include "OptAddr.h"
+#include "OptIAAddress.h"
 #include "OptDUID.h"
 #include "OptGeneric.h"
 
-class TReqOptAddr : public TOptAddr
+class TReqOptAddr : public TOptIAAddress
 {
 public:
     TReqOptAddr(int type, SmartPtr<TIPv6Addr> addr, TMsg * parent);

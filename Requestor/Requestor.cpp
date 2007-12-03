@@ -5,18 +5,20 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Requestor.cpp,v 1.1 2007-12-02 10:32:00 thomson Exp $
+ * $Id: Requestor.cpp,v 1.2 2007-12-03 16:59:17 thomson Exp $
  */
 
-#include "Logger.h"
 #include "Portable.h"
 #include "ReqCfgMgr.h"
 #include "Portable.h"
 #include "IfaceMgr.h"
 #include "ReqTransMgr.h"
+#include "Logger.h"
 
+#ifdef WIN32
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+#endif
 
 using namespace std;
 
@@ -100,21 +102,25 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 
 int initWin()
 {
+#ifdef WIN32
     WSADATA wsaData;
 	if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
         cout << "Unable to load WinSock 2.2 library." << endl;
 		return -1;
 	}
+#endif
     return 0;
 }
 
 int main(int argc, char *argv[])
 {
-    int status = 0;
+    // int status = 0;
     ReqCfgMgr a;
     memset(&a, sizeof(a), 0);
 
     initWin();
+
+    srandom(time(NULL));
 
     logger::setLogName("Requestor");
 	logger::Initialize((char*)REQLOG_FILE);
@@ -160,3 +166,5 @@ extern "C"
     void *hmac_sha (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf, int type) { return 0; }
     void *hmac_md5 (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf) { return 0; }
 }
+
+unsigned getDigestSize(enum DigestTypes type) { return 0; }

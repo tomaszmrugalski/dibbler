@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.h,v 1.1 2007-12-02 10:32:00 thomson Exp $
+ * $Id: ReqTransMgr.h,v 1.2 2007-12-03 16:59:17 thomson Exp $
  */
 
 #ifndef REQIFACEMGR_H

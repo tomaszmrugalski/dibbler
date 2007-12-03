@@ -5,13 +5,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ReqOpt.cpp,v 1.1 2007-12-02 10:32:00 thomson Exp $
+ * $Id: ReqOpt.cpp,v 1.2 2007-12-03 16:59:17 thomson Exp $
  *
  */
 #include "ReqOpt.h"
 
 TReqOptAddr::TReqOptAddr(int type, SmartPtr<TIPv6Addr> addr, TMsg * parent)
-    :TOptAddr(type, addr, parent)
+  :TOptIAAddress(addr, 0x33333333, 0x88888888, parent)
 {
 }
 

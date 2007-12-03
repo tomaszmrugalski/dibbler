@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ReqMsg.h,v 1.1 2007-12-02 10:31:59 thomson Exp $
+ * $Id: ReqMsg.h,v 1.2 2007-12-03 16:59:17 thomson Exp $
  *
  */
+
+#ifndef REQMSG_H
+#define REQMSG_H
 
 #include <string>
 #include "Msg.h"
@@ -23,3 +26,5 @@ public:
 
     string getName();
 };
+
+#endif

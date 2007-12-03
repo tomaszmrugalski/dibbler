@@ -38,6 +38,7 @@ LOWLEVEL     = $(PREFIX)/$(PORTDIR)
 CLIENTBIN    = dibbler-client
 SERVERBIN    = dibbler-server
 RELAYBIN     = dibbler-relay
+REQUESTORBIN = dibbler-requestor
 CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
 SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
 RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
@@ -112,6 +113,7 @@ COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      incl
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
 SRVSUBDIRS   = SrvOptions  SrvIfaceMgr  SrvAddrMgr  SrvCfgMgr  SrvTransMgr  SrvMessages  
 RELSUBDIRS   = RelTransMgr RelMessages RelOptions  RelIfaceMgr RelCfgMgr
+REQUESTORDIRS= Requestor   Options Misc IfaceMgr Messages Port-linux
 POSLIBDIRS   = poslib	  poslib/poslib
 SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS) $(POSLIBDIRS)
 

@@ -36,7 +36,6 @@ $(MISC)/DHCPServer.o: includes
 
 $(MISC)/DHCPRelay.o: includes
 
-
 $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
@@ -112,6 +111,17 @@ $(RELAYBIN): poslib-configure includes commonlibs relaylibs $(MISC)/DHCPRelay.o 
 	-L$(MISC)        -lMisc         \
 	-L$(OPTIONS)     -lOptions      \
 	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions
+
+requestor: $(REQUESTORBIN)
+$(REQUESTORBIN): includes Requestor $(REQUESTORDIRS)
+	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
+	$(CXX) $(LDFLAGS) $(OPTS) -I $(INCDIR) -o dibbler-requestor \
+	-L./Requestor -lRequestor \
+	-L./Options -lOptions \
+	-L./Misc -lMisc \
+	-L./IfaceMgr -lIfaceMgr \
+	-L./Messages -lMsg \
+	-L./Port-linux -lLowLevel
 
 objs:	includes
 	@for dir in $(COMMONSUBDIRS); do \

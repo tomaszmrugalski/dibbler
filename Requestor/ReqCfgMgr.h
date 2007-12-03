@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqCfgMgr.h,v 1.1 2007-12-02 10:31:59 thomson Exp $
+ * $Id: ReqCfgMgr.h,v 1.2 2007-12-03 16:59:17 thomson Exp $
  */
 
 #ifndef REQCFGMGR_H
