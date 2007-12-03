@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.21 2007-05-04 17:29:35 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.22 2007-12-03 16:55:15 thomson Exp $
  *
  */
 
@@ -133,6 +133,10 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
     int pos=0;
     while(pos<bufsize) 
     {
+	if (pos+4>bufsize) {
+	    Log(Warning) << "Truncated IA_NA option received." << LogEnd;
+	    return;
+	}
         int code=buf[pos]*256+buf[pos+1];
         pos+=2;
         int length=buf[pos]*256+buf[pos+1];
