@@ -5,9 +5,10 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.2 2007-12-03 16:59:17 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.3 2007-12-04 08:57:05 thomson Exp $
  */
 
+#include <strstream>
 #include "SocketIPv6.h"
 #include "ReqTransMgr.h"
 #include "ReqMsg.h"
@@ -169,35 +170,115 @@ bool ReqTransMgr::SendMsg()
 bool ReqTransMgr::WaitForRsp()
 {
     char buf[1024];
-    int bufLen;
+    int bufLen = 1024;
+    memset(buf, bufLen, 0);
     SPtr<TIPv6Addr> sender = new TIPv6Addr();
 
     int sockFD;
     Log(Debug) << "Waiting " << CfgMgr->timeout << " seconds for reply reception." << LogEnd;
     sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender);
     
-    Log(Debug) << "Returned sockedID=" << sockFD << LogEnd;
-
-    SPtr<TIfaceSocket> sock;
+    Log(Debug) << "Returned socketID=" << sockFD << LogEnd;
     if (sockFD>0) {
-        sock = Iface->getSocketByFD(sockFD);
-        if (!sock) {
-            Log(Error) << "Internal error. Unable to obtain socket." << LogEnd;
-            return false;
-        }
-        bufLen = sock->recv(buf, sender);
-
+        Log(Info) << "Received " << bufLen << " bytes response." << LogEnd;
         PrintRsp(buf, bufLen);
-        return true;
     } else {
         Log(Error) << "Response not received. Timeout or socket error." << LogEnd;
         return false;
     }
     
+    return true;
 }
 
-void ReqTransMgr::PrintRsp(char * buf, int bufLen)
+bool ReqTransMgr::PrintRsp(char * buf, int bufLen)
 {
-    Log(Notice) << bufLen << " bytes received." << LogEnd;
-    printhex(buf, (unsigned) bufLen);
+    if (bufLen < 4) {
+        Log(Error) << "Unable to print message: truncated (min. len=4 required)." << LogEnd;
+    }
+
+    // TODO: use stream    
+    Log(Info) << "Message hex dump:" << LogEnd;
+    for (unsigned j = 0; j < bufLen; j++) {
+        printf("%02x ", (unsigned char) *(buf+j)); 
+        if (j && !(j%16)) printf("\n"); 
+    }
+    printf("\n");
+    
+    int msgType = buf[0];
+    int transId = buf[1] + 256*buf[2] + 256*256*buf[3];
+    int pos = 4;
+
+    Log(Info) << "MsgType: " << msgType << ", transID=0x" << hex << transId << dec << LogEnd;
+
+    SmartPtr<TOpt> ptr;
+    while (pos<bufLen) {
+	    if (pos+4>bufLen) {
+	        Log(Error) << "Message " << msgType << " truncated. There are " << (bufLen-pos) 
+		               << " bytes left to parse. Bytes ignored." << LogEnd;
+	        break;
+	    }
+        unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
+        pos+=2;
+        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
+        pos+=2;
+	    if (pos+length>bufLen) {
+	        Log(Error) << "Invalid option (type=" << code << ", len=" << length 
+		               << " received (msgtype=" << msgType << "). Option ignored." << LogEnd;
+            pos += length;
+	        continue;
+	    }
+	
+	    if (!allowOptInMsg(msgType,code)) {
+	        Log(Warning) << "Invalid option received: Option " << code << " not allowed in message type "<< msgType 
+                        << ". Ignored." << LogEnd;
+	        pos+=length;
+	        continue;
+	    }
+	    if (!allowOptInOpt(msgType,0,code)) {
+	        Log(Warning) << "Invalid option received: Option " << code << " not allowed in message type "<< msgType 
+                        << " as a base option (as suboption only permitted). Ignored." << LogEnd;
+	        pos+=length;
+	        continue;
+	    }
+    
+        string name, o;
+        o = "";
+        name = "";
+
+	    switch (code) {
+        case OPTION_STATUS_CODE:
+            {
+                name ="Status Code";
+                unsigned int st = buf[pos]*256 + buf[pos+1];
+
+                char *Message = new char[length+10];
+                memcpy(Message,buf+pos+2,length-2);
+                sprintf(Message+length-2, "(%d)", st);
+                o = string(Message);
+                delete [] Message;
+                break;
+            }
+	    case OPTION_LQ_QUERY:
+            name = "LQ Query Option";
+	        break;
+	    case OPTION_CLIENT_DATA:
+            name = "LQ Client Data Option";
+	        break;
+	    case OPTION_CLT_TIME:
+            name = "LQ Client Last Transmission Time Option";
+	        break;
+	    case OPTION_LQ_RELAY_DATA:
+            name = "LQ Relay Data";
+	        break;
+	    case OPTION_LQ_CLIENT_LINK:
+            name = "LQ Client Link Option";
+	        break;
+	    default:
+	        break;
+	    }
+        Log(Info) << "Option " << name << ", length=" << length << ": " << o << LogEnd;
+        pos+=length;
+    }
+
+    return true;
 }

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.16 2007-03-04 21:48:55 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.17 2007-12-04 08:57:04 thomson Exp $
  *
  */
 
@@ -520,7 +520,6 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     sprintf(arg8,"validlifetime=%d", valid);
 
     sprintf(buf, "%s %s %s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-    printf("#### %s ####\n", buf);
     if (prefix_forwarding_enabled())
         i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
     else

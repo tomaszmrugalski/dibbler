@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IfaceMgr.cpp,v 1.26 2007-12-03 16:56:35 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.27 2007-12-04 08:57:05 thomson Exp $
  *
  */
 
@@ -179,6 +179,11 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 		break;
 	    }	
 	}
+    }
+
+    if (!found) {
+        Log(Error) << "Seems like internal error. Unable to find any socket with incoming data." << LogEnd;
+        return 0;
     }
     
     char myPlainAddr[48];   // my plain address

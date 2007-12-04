@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQueryReply.cpp,v 1.2 2007-12-03 16:58:06 thomson Exp $
+ * $Id: SrvMsgLeaseQueryReply.cpp,v 1.3 2007-12-04 08:57:05 thomson Exp $
  */
 
 #include "SrvMsgLeaseQueryReply.h"
@@ -29,12 +29,11 @@ TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	     query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
 	     query->getTransID())
 {
-  Log(Debug) << "#### About to generate LQ-REPLY" << LogEnd;
   if (!answer(query)) {
-    Log(Debug) << "#### LQ-QUERY Generation failed." << LogEnd;
+    Log(Error) << "LQ: LQ-QUERY response generation failed." << LogEnd;
 	IsDone = true;
   } else {
-    Log(Debug) << "#### LQ-QUERY Generation successful." << LogEnd;
+    Log(Debug) << "LQ: LQ-QUERY response generation successful." << LogEnd;
     IsDone = false;
   }
 }

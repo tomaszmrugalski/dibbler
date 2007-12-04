@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.30 2007-07-05 00:17:41 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.31 2007-12-04 08:57:04 thomson Exp $
  */
 
 #ifdef WIN32
@@ -64,11 +64,13 @@ string msgs[] = { "",
 		  "RECONFIGURE",
 		  "INF-REQUEST",
 		  "RELAY-FORWARD"
-		  "RELAY-REPLY"};
+		  "RELAY-REPLY",
+          "LEASEQUERY",
+          "LEASEQUERY-REPLY"};
 
 void TClntMsg::invalidAllowOptInMsg(int msg, int opt) {
     string name;
-    if (msg<=13)
+    if (msg<=15)
 	name = msgs[msg];
     Log(Warning) << "Option " << opt << " is not allowed in the " << name
 		 << " message. Ignoring." << LogEnd;
@@ -76,7 +78,7 @@ void TClntMsg::invalidAllowOptInMsg(int msg, int opt) {
 
 void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
     string name;
-    if (msg<=13)
+    if (msg<=15)
 	name = msgs[msg];
 
     if (parentOpt==0)

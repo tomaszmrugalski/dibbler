@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQuery.cpp,v 1.1 2007-11-01 08:10:34 thomson Exp $
+ * $Id: SrvMsgLeaseQuery.cpp,v 1.2 2007-12-04 08:57:05 thomson Exp $
  *                                                                           
  */
 
@@ -36,10 +36,6 @@ bool TSrvMsgLeaseQuery::check() {
     // TODO: validation
     return true;
 }
-
-// unsigned long TSrvMsgLeaseQuery::getTimeout() {
-//     return 0;
-// }
 
 TSrvMsgLeaseQuery::~TSrvMsgLeaseQuery() {
 

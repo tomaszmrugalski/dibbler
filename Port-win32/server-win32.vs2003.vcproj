@@ -183,6 +183,9 @@
 					RelativePath="..\Options\OptFQDN.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptGeneric.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptIA_NA.cpp">
 				</File>
 				<File
@@ -268,6 +271,9 @@
 					RelativePath="..\SrvOptions\SrvOptLifetime.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvOptions\SrvOptLQ.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvOptions\SrvOptNISDomain.cpp">
 				</File>
 				<File
@@ -342,6 +348,12 @@
 				</File>
 				<File
 					RelativePath="..\SrvMessages\SrvMsgInfRequest.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgLeaseQuery.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgLeaseQueryReply.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvMessages\SrvMsgRebind.cpp">

@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Requestor.cpp,v 1.2 2007-12-03 16:59:17 thomson Exp $
+ * $Id: Requestor.cpp,v 1.3 2007-12-04 08:57:05 thomson Exp $
  */
 
 #include "Portable.h"
@@ -120,7 +120,8 @@ int main(int argc, char *argv[])
 
     initWin();
 
-    srandom(time(NULL));
+    // srandom(time(NULL)); // Linux
+    srand(time(NULL));      // Windows
 
     logger::setLogName("Requestor");
 	logger::Initialize((char*)REQLOG_FILE);
@@ -160,11 +161,14 @@ int main(int argc, char *argv[])
     return LOWLEVEL_NO_ERROR;
 }
 
-/* dummy functions */
+
+/* linker workarounds: dummy functions */
 extern "C"
 {
     void *hmac_sha (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf, int type) { return 0; }
     void *hmac_md5 (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf) { return 0; }
 }
 
+#ifndef WIN32
 unsigned getDigestSize(enum DigestTypes type) { return 0; }
+#endif

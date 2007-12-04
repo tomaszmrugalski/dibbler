@@ -139,19 +139,6 @@
 				<File
 					RelativePath="..\Requestor\Requestor.cpp">
 				</File>
-				<Filter
-					Name="IfaceMgr"
-					Filter="">
-					<File
-						RelativePath="..\IfaceMgr\Iface.cpp">
-					</File>
-					<File
-						RelativePath="..\IfaceMgr\IfaceMgr.cpp">
-					</File>
-					<File
-						RelativePath="..\IfaceMgr\SocketIPv6.cpp">
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Misc"
@@ -186,16 +173,29 @@
 					RelativePath="..\Options\Opt.cpp">
 				</File>
 				<File
-					RelativePath="..\Options\OptAddr.cpp">
-				</File>
-				<File
 					RelativePath="..\Options\OptDUID.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptGeneric.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptIAAddress.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptInteger.cpp">
+				</File>
+			</Filter>
+			<Filter
+				Name="IfaceMgr"
+				Filter="">
+				<File
+					RelativePath="..\IfaceMgr\Iface.cpp">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\IfaceMgr.cpp">
+				</File>
+				<File
+					RelativePath="..\IfaceMgr\SocketIPv6.cpp">
 				</File>
 			</Filter>
 		</Filter>
