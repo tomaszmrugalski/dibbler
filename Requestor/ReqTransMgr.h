@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.h,v 1.3 2007-12-04 08:57:05 thomson Exp $
+ * $Id: ReqTransMgr.h,v 1.4 2007-12-05 10:20:20 thomson Exp $
  */
 
 #ifndef REQIFACEMGR_H
@@ -24,7 +24,7 @@ public:
 
 private:
     bool PrintRsp(char * buf, int bufLen);
-
+    string ParseLQCLientData(char * buf, int bufLen);
     TIfaceMgr * IfaceMgr;
     SPtr<TIfaceIface> Iface;
     ReqCfgMgr * CfgMgr;

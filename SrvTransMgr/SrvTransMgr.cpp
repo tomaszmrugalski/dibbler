@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvTransMgr.cpp,v 1.34 2007-11-01 08:11:18 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.35 2007-12-05 10:20:20 thomson Exp $
  *
  */
 
@@ -256,6 +256,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 	    Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
 	    return;
 	}
+	Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
 	SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
 	answ = new TSrvMsgLeaseQueryReply(IfaceMgr, That, CfgMgr, AddrMgr, lq);
 	MsgLst.append( (Ptr*) answ);

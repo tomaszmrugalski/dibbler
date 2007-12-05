@@ -5,10 +5,10 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.3 2007-12-04 08:57:05 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.4 2007-12-05 10:20:20 thomson Exp $
  */
 
-#include <strstream>
+#include <sstream>
 #include "SocketIPv6.h"
 #include "ReqTransMgr.h"
 #include "ReqMsg.h"
@@ -41,29 +41,6 @@ bool ReqTransMgr::BindSockets()
         return false;
         this->Iface = Iface;
     }
-
-    // get link-local address
-    char* llAddr = 0;
-    Iface->firstLLAddress();
-    llAddr=Iface->getLLAddress();
-    if (!llAddr) {
-    	Log(Error) << "Interface " << Iface->getFullName() << " does not have link-layer address. Weird." << LogEnd;
-    	return false;
-    }
-
-    SmartPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
-
-    if (!Iface->addSocket(ll, DHCPCLIENT_PORT, true, true)) {
-        Log(Crit) << "Socket creation or binding failed." << LogEnd;
-        return false;
-    }
-    Iface->firstSocket();
-    Socket = Iface->getSocket();
-    if (!Socket) {
-        Log(Crit) << "No socket found. Something is wrong." << LogEnd;
-        return false;
-    }
-    Log(Debug) << "Socket " << Socket->getFD() << " created on the " << Iface->getFullName() << " interface." << LogEnd;
 
 #ifndef WIN32
     Log(Info) << "Binding socket on loopback interface." << LogEnd;
@@ -102,6 +79,29 @@ bool ReqTransMgr::BindSockets()
 
 
 #endif
+
+    // get link-local address
+    char* llAddr = 0;
+    Iface->firstLLAddress();
+    llAddr=Iface->getLLAddress();
+    if (!llAddr) {
+    	Log(Error) << "Interface " << Iface->getFullName() << " does not have link-layer address. Weird." << LogEnd;
+    	return false;
+    }
+
+    SmartPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
+
+    if (!Iface->addSocket(ll, DHCPCLIENT_PORT, true, true)) {
+        Log(Crit) << "Socket creation or binding failed." << LogEnd;
+        return false;
+    }
+    Iface->firstSocket();
+    Socket = Iface->getSocket();
+    if (!Socket) {
+        Log(Crit) << "No socket found. Something is wrong." << LogEnd;
+        return false;
+    }
+    Log(Debug) << "Socket " << Socket->getFD() << " created on the " << Iface->getFullName() << " interface." << LogEnd;
 
     return true;    
 }
@@ -198,7 +198,7 @@ bool ReqTransMgr::PrintRsp(char * buf, int bufLen)
 
     // TODO: use stream    
     Log(Info) << "Message hex dump:" << LogEnd;
-    for (unsigned j = 0; j < bufLen; j++) {
+    for (int j = 0; j < bufLen; j++) {
         printf("%02x ", (unsigned char) *(buf+j)); 
         if (j && !(j%16)) printf("\n"); 
     }
@@ -217,14 +217,14 @@ bool ReqTransMgr::PrintRsp(char * buf, int bufLen)
 		               << " bytes left to parse. Bytes ignored." << LogEnd;
 	        break;
 	    }
-        unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
-        pos+=2;
-        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
-        pos+=2;
+	    unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
+	    unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
 	    if (pos+length>bufLen) {
-	        Log(Error) << "Invalid option (type=" << code << ", len=" << length 
+	        Log(Error) << "Truncated option (type=" << code << ", len=" << length 
 		               << " received (msgtype=" << msgType << "). Option ignored." << LogEnd;
-            pos += length;
+		pos += length;
 	        continue;
 	    }
 	
@@ -259,10 +259,11 @@ bool ReqTransMgr::PrintRsp(char * buf, int bufLen)
                 break;
             }
 	    case OPTION_LQ_QUERY:
-            name = "LQ Query Option";
+		name = "LQ Query Option";
 	        break;
 	    case OPTION_CLIENT_DATA:
-            name = "LQ Client Data Option";
+		name = "LQ Client Data Option";
+	        o = ParseLQCLientData(buf+pos, length);
 	        break;
 	    case OPTION_CLT_TIME:
             name = "LQ Client Last Transmission Time Option";
@@ -282,3 +283,41 @@ bool ReqTransMgr::PrintRsp(char * buf, int bufLen)
 
     return true;
 }
+
+string ReqTransMgr::ParseLQCLientData(char * buf, int bufLen)
+{
+    std::ostringstream o;
+
+    for (int j = 0; j < bufLen; j++) {
+        printf("%02x ", (unsigned char) *(buf+j)); 
+        if (j && !(j%16)) printf("\n"); 
+    }
+    printf("\n");
+    int pos = 0;
+
+    while (pos<bufLen) {
+	    if (pos+4>bufLen) {
+	        o << "Message truncated. There are " << (bufLen-pos) 
+		  << " bytes left to parse. Bytes ignored." << LogEnd;
+	        return o.str();
+	    }
+	    unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
+	    unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
+	    if (pos+length>bufLen) {
+	        o << "Truncated option (type=" << code << ", len=" << length 
+		  << " received). Option ignored." << LogEnd;
+		pos += length;
+	        return o.str();
+	    }
+	    o << " code=" << code << ", length=" << length << ".";
+
+	    // TODO
+
+	    pos += length;
+    }
+
+    return o.str();
+}
+

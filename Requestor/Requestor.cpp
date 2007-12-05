@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Requestor.cpp,v 1.3 2007-12-04 08:57:05 thomson Exp $
+ * $Id: Requestor.cpp,v 1.4 2007-12-05 10:20:20 thomson Exp $
  */
 
 #include "Portable.h"
@@ -170,5 +170,5 @@ extern "C"
 }
 
 #ifndef WIN32
-unsigned getDigestSize(enum DigestTypes type) { return 0; }
+//unsigned getDigestSize(enum DigestTypes type) { return 0; }
 #endif

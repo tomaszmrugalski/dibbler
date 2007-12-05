@@ -97,9 +97,6 @@ char * TSrvOptLQ::storeSelf(char* buf)
 TSrvOptLQClientData::TSrvOptLQClientData(TMsg * parent) 
     :TOpt(OPTION_CLIENT_DATA, parent)
 {
-
-    Log(Crit) << "#### OPTION_LQ_CLIENT_DATA not implemented." << LogEnd;
-
 }
 
 int TSrvOptLQClientData::getSize()
@@ -110,7 +107,7 @@ int TSrvOptLQClientData::getSize()
     while ( x=SubOptions.get() ) {
 	cnt += x->getSize();
     }
-    return cnt;
+    return cnt+4;
 }
 
 char* TSrvOptLQClientData::storeSelf(char* buf)
