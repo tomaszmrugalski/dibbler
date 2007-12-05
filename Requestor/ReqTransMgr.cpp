@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.4 2007-12-05 10:20:20 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.5 2007-12-05 10:26:05 thomson Exp $
  */
 
 #include <sstream>
@@ -277,7 +277,7 @@ bool ReqTransMgr::PrintRsp(char * buf, int bufLen)
 	    default:
 	        break;
 	    }
-        Log(Info) << "Option " << name << ", length=" << length << ": " << o << LogEnd;
+	    Log(Info) << "Option " << name << ", length=" << length << " contains: " << endl << o << LogEnd;
         pos+=length;
     }
 
@@ -311,8 +311,20 @@ string ReqTransMgr::ParseLQCLientData(char * buf, int bufLen)
 		pos += length;
 	        return o.str();
 	    }
-	    o << " code=" << code << ", length=" << length << ".";
-
+	    o << " code=" << code << ", length=" << length << ":";
+	    switch (code) {
+	    case OPTION_IAADDR:
+	    {
+		TIPv6Addr * addr = new TIPv6Addr(buf+pos, false);
+		unsigned int pref  = ntohl(*((long*)(buf+pos+16)));
+		unsigned int valid = ntohl(*((long*)(buf+pos+20)));
+		
+		o << "addr=" << addr->getPlain() << ", pref=" << pref << ", valid=" << valid << endl;
+		break;
+	    }
+	    default:
+		o << "[unknown]" << endl;
+	    }
 	    // TODO
 
 	    pos += length;
