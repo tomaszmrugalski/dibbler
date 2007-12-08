@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Requestor.cpp,v 1.4 2007-12-05 10:20:20 thomson Exp $
+ * $Id: Requestor.cpp,v 1.5 2007-12-08 04:14:03 thomson Exp $
  */
 
 #include "Portable.h"
@@ -28,14 +28,16 @@ void printHelp()
          << "-i IFACE - send query using iface inteface, e.g. -i eth0" << endl
          << "-addr ADDR - query about address, e.g. -addr 2000::43" << endl
          << "-duid DUID - query about DUID, e.g. -duid 00:11:22:33:44:55:66:77:88" << endl
-         << "-timeout 10 - query timeout, specified in seconds" << endl;
+         << "-timeout 10 - query timeout, specified in seconds" << endl
+	 << "-dstaddr 2000::1 - destination address (by default it is ff02::1:2)" << endl;
 }
 
 bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 {
-    char * addr  = 0;
-    char * duid  = 0;
-    char * iface = 0;
+    char * addr    = 0;
+    char * duid    = 0;
+    char * iface   = 0;
+    char * dstaddr = 0;
     int timeout  = 60; // default timeout value
     for (int i=1; i<argc; i++) {
         if (!strncmp(argv[i],"-addr", 5)) {
@@ -70,6 +72,13 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             timeout = atoi(argv[++i]);            
             continue;
         }
+	if (!strncmp(argv[i],"-dstaddr", 7)) {
+	    if (argc==i) {
+		Log(Error) << "Unable to parse command-line. -dstaddr used, but actual destination address is missing." << LogEnd;
+	    }
+	    dstaddr = argv[++i];
+	    continue;
+	}
         if (!strncmp(argv[i], "-help", 5) || !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
             printHelp();
             return false;
@@ -97,6 +106,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     a->duid  = duid;
     a->iface = iface;
     a->timeout= timeout;
+    a->dstaddr = dstaddr;
     return true;
 }
 

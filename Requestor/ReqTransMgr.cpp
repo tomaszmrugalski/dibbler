@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.6 2007-12-08 03:37:13 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.7 2007-12-08 04:14:03 thomson Exp $
  */
 
 #include <sstream>
@@ -109,7 +109,12 @@ bool ReqTransMgr::BindSockets()
 bool ReqTransMgr::SendMsg()
 {
     // TODO
-    SPtr<TIPv6Addr> dstAddr = new TIPv6Addr("ff02::1:2", true);
+
+    SPtr<TIPv6Addr> dstAddr;
+    if (!CfgMgr->addr)
+	dstAddr = new TIPv6Addr("ff02::1:2", true);
+    else
+	dstAddr = new TIPv6Addr(CfgMgr->addr, true);
     
     Log(Debug) << "Transmitting data on the " << Iface->getFullName() << " interface to " << dstAddr->getPlain() << " address." << LogEnd;
     TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, LEASEQUERY_MSG);
