@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQuery.cpp,v 1.2 2007-12-04 08:57:05 thomson Exp $
+ * $Id: SrvMsgLeaseQuery.cpp,v 1.3 2007-12-08 03:37:13 thomson Exp $
  *                                                                           
  */
 
@@ -34,6 +34,11 @@ void TSrvMsgLeaseQuery::doDuties() {
 
 bool TSrvMsgLeaseQuery::check() {
     // TODO: validation
+    if (!getOption(OPTION_CLIENTID)) {
+	Log(Warning) << "LQ: Lease Query message does not contain required CLIENT-ID option." << LogEnd;
+	return false;
+    }
+
     return true;
 }
 

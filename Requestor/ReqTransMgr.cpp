@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.5 2007-12-05 10:26:05 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.6 2007-12-08 03:37:13 thomson Exp $
  */
 
 #include <sstream>
@@ -142,13 +142,22 @@ bool ReqTransMgr::SendMsg()
         bufLen = 17;
 
         printhex(buf, 48);
+
         SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
         TReqOptDUID * optDuid = new TReqOptDUID(OPTION_CLIENTID, duid, msg);
         optDuid->storeSelf(buf+bufLen);
+	Log(Debug) << "#### Opt size=" << optDuid->getSize() << LogEnd;
         bufLen += optDuid->getSize();
+
+	printhex(buf, bufLen);
         free(optDuid);
     }
-    SPtr<TOpt> opt = new TReqOptGeneric(OPTION_LQ_QUERY, buf, bufLen, msg);
+
+    SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");
+    SPtr<TOpt> opt = new TReqOptDUID(OPTION_CLIENTID, clientDuid, msg);
+    msg->addOption(opt);
+
+    opt = new TReqOptGeneric(OPTION_LQ_QUERY, buf, bufLen, msg);
     msg->addOption(opt);
     
     char msgbuf[1024];

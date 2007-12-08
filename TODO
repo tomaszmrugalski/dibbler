@@ -1,5 +1,27 @@
 
-$Id: TODO,v 1.43 2007-07-13 00:34:51 thomson Exp $
+$Id: TODO,v 1.44 2007-12-08 03:37:13 thomson Exp $
+
+
+ Leasequery HOWTO
+------------------
+
+To compile requestor, type:
+make -C Requestor; make requestor
+
+(Yeah, I know. There's a dependency bug in the makefiles)
+
+To send Lease Query request, issue following command:
+./dibbler-requestor -i eth0 -addr 00::01:02:03:04:05
+or
+./dibbler-requestor -i eth0 -duid 00:01:02:03:04:05
+
+CLIENT_ID sent by the requestor is hardcoded at this time.
+
+ Vancouver bakeoff BUGS
+------------------------
+1. Zero padding in DUID parsing (e.g. in requestor cmd-line, but the TDUID constructor is messed up) 
+   is wrong: 0:1:2:3:4:5 parsed as: 012345
+
 
 New tasks should be done to the TODO list. After task is implemented, it should be moved to the
 'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.

@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQueryReply.cpp,v 1.3 2007-12-04 08:57:05 thomson Exp $
+ * $Id: SrvMsgLeaseQueryReply.cpp,v 1.4 2007-12-08 03:37:13 thomson Exp $
  */
 
 #include "SrvMsgLeaseQueryReply.h"
@@ -111,7 +111,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
-	Options.append( new TSrvOptStatusCode(STATUSCODE_NOBINDING, "No binding found.", this) );
+	Options.append( new TSrvOptStatusCode(STATUSCODE_NOBINDING, "No binding for this address found.", this) );
 	return true;
     }
     
@@ -142,7 +142,7 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain() << " not found." << LogEnd;
-	Options.append( new TSrvOptStatusCode(STATUSCODE_UNKNOWNQUERYTYPE, "Invalid Query type.", this) );
+	Options.append( new TSrvOptStatusCode(STATUSCODE_NOBINDING, "No binding for thid DUID found.", this) );
 	return true;
     }
     
