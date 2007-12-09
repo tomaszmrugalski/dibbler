@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.h,v 1.7 2007-01-27 17:09:31 thomson Exp $
+ * $Id: AddrClient.h,v 1.8 2007-12-09 04:08:35 thomson Exp $
  *
  */
 
@@ -56,6 +56,7 @@ public:
     unsigned long getT2Timeout();
     unsigned long getPrefTimeout();
     unsigned long getValidTimeout();
+    unsigned long getLastTimestamp();
     
 private:
     List(TAddrIA) IAsLst;

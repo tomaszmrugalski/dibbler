@@ -6,45 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.14 2007-02-02 00:52:03 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.13  2007-01-07 20:18:44  thomson
- * State enum names changed.
- *
- * Revision 1.12  2006-10-06 00:30:16  thomson
- * Initial PD support.
- *
- * Revision 1.11  2006-03-23 00:53:25  thomson
- * TA support fixed on the server side.
- *
- * Revision 1.10  2006/03/05 21:39:19  thomson
- * TA support merged.
- *
- * Revision 1.9.2.1  2006/02/05 23:38:06  thomson
- * Devel branch with Temporary addresses support added.
- *
- * Revision 1.9  2004/12/03 20:51:41  thomson
- * Logging issues fixed.
- *
- * Revision 1.8  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.7  2004/09/08 21:22:45  thomson
- * Parser improvements, signed/unsigned issues addressed.
- *
- * Revision 1.6  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
- * Revision 1.5  2004/06/04 19:03:46  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.4  2004/03/29 18:53:09  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- * Revision 1.3  2004/03/28 19:57:59  thomson
- * no message
+ * $Id: AddrClient.cpp,v 1.15 2007-12-09 04:08:35 thomson Exp $
  *
  */
 
@@ -278,6 +240,33 @@ unsigned long TAddrClient::getValidTimeout() {
             ts = ptr->getValidTimeout();
     }
 
+    return ts;
+}
+
+unsigned long TAddrClient::getLastTimestamp() {
+
+    unsigned long ts = 0;
+    SmartPtr<TAddrIA> ptr;
+
+    IAsLst.first();
+    while ( ptr = IAsLst.get() ) {
+        if (ts < ptr->getTimestamp())
+            ts = ptr->getTimestamp();
+    }
+
+    firstTA();
+    while ( ptr = getTA() ) {
+        if (ts < ptr->getTimestamp())
+            ts = ptr->getTimestamp();
+    }
+
+
+    PDLst.first();
+    while ( ptr = PDLst.get() ) {
+        if (ts > ptr->getTimestamp())
+            ts = ptr->getTimestamp();
+    }
+    
     return ts;
 }
 

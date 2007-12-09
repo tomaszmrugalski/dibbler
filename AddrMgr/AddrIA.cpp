@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.20 2007-05-04 17:19:16 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.21 2007-12-09 04:08:35 thomson Exp $
  *
  */
 
@@ -365,6 +365,11 @@ void TAddrIA::setTimestamp(unsigned long ts)
 
 void TAddrIA::setTimestamp() {
     this->setTimestamp(now());
+}
+
+unsigned long TAddrIA::getTimestamp()
+{
+    return Timestamp;
 }
 
 unsigned long TAddrIA::getTentativeTimeout()

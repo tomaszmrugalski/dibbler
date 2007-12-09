@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.h,v 1.7 2007-04-22 21:19:27 thomson Exp $
+ * $Id: AddrIA.h,v 1.8 2007-12-09 04:08:35 thomson Exp $
  *
  */
 
@@ -87,7 +87,8 @@ class TAddrIA
     unsigned long getValidTimeout();
     unsigned long getMaxValidTimeout();
     unsigned long getMaxValid();
-
+    unsigned long getTimestamp();
+    
     //---tentative---
     unsigned long getTentativeTimeout();
     enum ETentative getTentative();
