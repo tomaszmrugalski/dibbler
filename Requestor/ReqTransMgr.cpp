@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.7 2007-12-08 04:14:03 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.8 2007-12-09 04:10:52 thomson Exp $
  */
 
 #include <sstream>
@@ -114,7 +114,7 @@ bool ReqTransMgr::SendMsg()
     if (!CfgMgr->addr)
 	dstAddr = new TIPv6Addr("ff02::1:2", true);
     else
-	dstAddr = new TIPv6Addr(CfgMgr->addr, true);
+	dstAddr = new TIPv6Addr(CfgMgr->dstaddr, true);
     
     Log(Debug) << "Transmitting data on the " << Iface->getFullName() << " interface to " << dstAddr->getPlain() << " address." << LogEnd;
     TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, LEASEQUERY_MSG);
@@ -124,7 +124,7 @@ bool ReqTransMgr::SendMsg()
     memset(buf, 1024, 0xff);
 
     if (CfgMgr->addr) {
-        Log(Debug) << "Creating ADDRESS-based query." << LogEnd;
+        Log(Debug) << "Creating ADDRESS-based query. Asking for " << CfgMgr->addr << " address." << LogEnd;
         // Address based query
         buf[0] = QUERY_BY_ADDRESS;
         // buf[1..16] - link address, leave as ::
@@ -139,7 +139,7 @@ bool ReqTransMgr::SendMsg()
         free(optAddr);
         
     } else {
-        Log(Debug) << "Creating DUID-based query." << LogEnd;
+        Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
         // DUID based query
         buf[0] = QUERY_BY_CLIENTID;
         // buf[1..16] - link address, leave as ::
