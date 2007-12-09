@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.22 2007-04-22 23:03:18 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.23 2007-12-09 17:44:09 thomson Exp $
  *
  */
 
@@ -83,8 +83,11 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     // does this server support unicast?
     SmartPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(iface);
-    if (!cfgIface)
+    if (!cfgIface) {
 	Log(Error) << "Unable to find interface with ifindex " << iface << "." << LogEnd;    
+	IsDone = true;
+	return;
+    }
     SmartPtr<TClntOptServerUnicast> unicast = (Ptr*) advertise->getOption(OPTION_UNICAST);
     if (unicast && !cfgIface->getUnicast()) {
 	Log(Info) << "Server offers unicast (" << *unicast->getAddr() 
@@ -92,7 +95,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     }
     if (unicast && cfgIface->getUnicast()) {
 	Log(Debug) << "Server supports unicast on address " << *unicast->getAddr() << "." << LogEnd;
-	this->PeerAddr = unicast->getAddr();
+	//this->PeerAddr = unicast->getAddr();
 	Options.first();
 	SmartPtr<TOpt> opt;
 	// set this unicast address in each IA in AddrMgr

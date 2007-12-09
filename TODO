@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.45 2007-12-09 04:11:01 thomson Exp $
+$Id: TODO,v 1.46 2007-12-09 17:44:09 thomson Exp $
 
 
  Leasequery HOWTO
@@ -17,8 +17,12 @@ or
 
 CLIENT_ID sent by the requestor is hardcoded at this time.
 
+
+
  Vancouver bakeoff BUGS
 ------------------------
++ Windows client tested.
+
 1. Zero padding in DUID parsing (e.g. in requestor cmd-line, but the TDUID constructor is messed up) 
    is wrong: 0:1:2:3:4:5 parsed as: 012345
 2. Cli gets addr from SRV1, SRV1 goes down, CLI rebinds to SRV2 and gets addr from it.
@@ -31,7 +35,7 @@ CLIENT_ID sent by the requestor is hardcoded at this time.
    and then goes for RENEW. (should go SOLICIT)
 7. SRV configured to pref: 60 valid: 120, CLI asks for 7200/10800 and SRV grants 7200/10800.
    (CLI behind double relay, looks like messing pools, i.e. using pool on the eth0, not relay2 interface).
-8. SRV: Query (by address) about PD should check if the address is contained within the prefix.
+8. SRV: LeaseQuery (by address) about PD should check if the address is contained within the prefix.
 
 
 New tasks should be done to the TODO list. After task is implemented, it should be moved to the

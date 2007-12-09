@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.31 2007-12-04 08:57:04 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.32 2007-12-09 17:44:09 thomson Exp $
  */
 
 #ifdef WIN32
@@ -395,6 +395,11 @@ void TClntMsg::appendRequestedOptions() {
     }
     
     SmartPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
+
+    if (iface->getUnicast()) {
+	optORO->addOption(OPTION_UNICAST);
+	Log(Debug) << "#### Adding UNICAST to ORO." << LogEnd;
+    }
 
     // --- option: DNS-SERVERS ---
     if ( iface->isReqDNSServer() && (iface->getDNSServerState()==STATE_NOTCONFIGURED) ) {
