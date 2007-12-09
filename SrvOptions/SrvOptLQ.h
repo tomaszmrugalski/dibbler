@@ -57,6 +57,7 @@ class TSrvOptLQClientTime : public TOptInteger
 {
 public:
     TSrvOptLQClientTime(unsigned int value, TMsg* parent);
+    bool doDuties();
 };
 
 // not supported

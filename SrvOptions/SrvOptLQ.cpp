@@ -134,6 +134,11 @@ TSrvOptLQClientTime::TSrvOptLQClientTime(unsigned int value, TMsg* parent)
 
 }
 
+bool TSrvOptLQClientTime::doDuties()
+{
+    return true;
+}
+
 // -----------------------------------------------------------------------------------
 
 TSrvOptLQRelayData::TSrvOptLQRelayData(SPtr<TIPv6Addr> addr, TMsg* parent)
