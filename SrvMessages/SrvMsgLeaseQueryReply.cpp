@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQueryReply.cpp,v 1.4 2007-12-08 03:37:13 thomson Exp $
+ * $Id: SrvMsgLeaseQueryReply.cpp,v 1.5 2007-12-09 04:10:06 thomson Exp $
  */
 
 #include "SrvMsgLeaseQueryReply.h"
@@ -15,6 +15,7 @@
 #include "SrvOptLQ.h"
 #include "SrvOptStatusCode.h" 
 #include "SrvOptIAAddress.h"
+#include "SrvOptServerIdentifier.h"
 #include "SrvOptIAPrefix.h"
 #include "SrvOptClientIdentifier.h"
 #include "AddrClient.h"
@@ -58,6 +59,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     while ( opt = queryMsg->getOption()) {
 	switch (opt->getOptType()) {
 	case OPTION_LQ_QUERY:
+	{
 	    count++;
 	    SPtr<TSrvOptLQ> q = (Ptr*) opt;
 	    switch (q->getQueryType()) {
@@ -78,6 +80,11 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 	    }
 	    break;
 	}
+	case OPTION_CLIENTID:
+	    // copy the client-id option
+	    Options.append(opt);
+	    break;
+	}
 
     }
     if (!count) {
@@ -85,6 +92,12 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 	return true;
     }
 
+    // append SERVERID
+    SmartPtr<TSrvOptServerIdentifier> ptrSrvID;
+    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr->getDUID(),this);
+    Options.append((Ptr*)ptrSrvID);
+
+    // allocate buffer
     pkt = new char[getSize()];
     this->send();
 
@@ -111,7 +124,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
-	Options.append( new TSrvOptStatusCode(STATUSCODE_NOBINDING, "No binding for this address found.", this) );
+	Options.append( new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
 	return true;
     }
     
@@ -142,7 +155,7 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain() << " not found." << LogEnd;
-	Options.append( new TSrvOptStatusCode(STATUSCODE_NOBINDING, "No binding for thid DUID found.", this) );
+	Options.append( new TSrvOptStatusCode(STATUSCODE_NOBINDING, "No binding for this DUID found.", this) );
 	return true;
     }
     
@@ -160,12 +173,24 @@ void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {
     SPtr<TAddrAddr> addr;
     SPtr<TAddrPrefix> prefix;
 
+    unsigned long nowTs = now();
+    unsigned long cliTs = cli->getLastTimestamp();
+    unsigned long diff = nowTs - cliTs;
+
+    Log(Debug) << "LQ: modifying the lifetimes (client last seen " << diff << "secs ago)." << LogEnd;
+
     // add all assigned addresses
     cli->firstIA();
     while ( ia = cli->getIA() ) {
 	ia->firstAddr();
 	while ( addr=ia->getAddr() ) {
-	    cliData->addOption( new TSrvOptIAAddress(addr->get(), addr->getPref(), addr->getValid(), this) );
+	    unsigned long a = addr->getPref();
+	    if (a>diff)
+		a = 0;
+	    unsigned long b = addr->getValid();
+	    if (b>diff)
+		b = 0;
+	    cliData->addOption( new TSrvOptIAAddress(addr->get(), a, b, this) );
 	}
     }
 
@@ -178,6 +203,19 @@ void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {
 						     prefix->getValid(), this));
 	}
     }
+
+    cliData->addOption(new TSrvOptClientIdentifier(cli->getDUID(), this));
+
+    // TODO: add all temporary addresses
+
+    // add CLT_TIME
+    unsigned int ts = now();
+    unsigned int clntTs = cli->getLastTimestamp();
+
+    Log(Debug) << "LQ: Adding CLT_TIME option: client timestamp=" << clntTs << ", now=" << ts << ", sending " << (ts - clntTs) << LogEnd;
+    ts = ts - clntTs;
+
+    cliData->addOption( new TSrvOptLQClientTime(ts, this));
 
     Options.append((Ptr*)cliData);
 }
