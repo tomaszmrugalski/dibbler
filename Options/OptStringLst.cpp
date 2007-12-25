@@ -6,9 +6,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.10 2007-08-26 10:26:19 thomson Exp $
+ * $Id: OptStringLst.cpp,v 1.11 2007-12-25 08:11:57 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2007-08-26 10:26:19  thomson
+ * Possible segfault in REBIND processing,
+ * gcc 4.3.0 conformance
+ *
  * Revision 1.9  2007-05-01 12:06:50  thomson
  * Fix for possible misalignment in strings.
  *
@@ -128,7 +132,7 @@ char * TOptStringLst::storeSelf(char* buf)
 
         *buf = cp.length(); // length of the string
         buf++;
-        memcpy(buf, cp.c_str(), x->length());
+        memcpy(buf, cp.c_str(), cp.length());
 	buf+= cp.length();
 	*buf=0;
 	buf++;

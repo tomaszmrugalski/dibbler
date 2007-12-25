@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.46 2007-12-09 17:44:09 thomson Exp $
+$Id: TODO,v 1.47 2007-12-25 08:11:57 thomson Exp $
 
 
  Leasequery HOWTO
@@ -19,15 +19,15 @@ CLIENT_ID sent by the requestor is hardcoded at this time.
 
 
 
- Vancouver bakeoff BUGS
-------------------------
+ Vancouver bakeoff BUGS/OBSERVATIONS
+-------------------------------------
 + Windows client tested.
 
 1. Zero padding in DUID parsing (e.g. in requestor cmd-line, but the TDUID constructor is messed up) 
    is wrong: 0:1:2:3:4:5 parsed as: 012345
 2. Cli gets addr from SRV1, SRV1 goes down, CLI rebinds to SRV2 and gets addr from it.
    CLI sends renew for both addrs: the one it got from SRV1 and SRV2.
-3. Client does not request for a UNICAST option (does not send the ORO with unicast).
+3. Client does not request for a UNICAST option (does not send the ORO with unicast). [done]
 4. Unicast over 2 relays does not work. Cli send Solicit, Srv sends ADV, CLI send REQ using unicast address,
    but that REQ is not seen by the SRV.
 5. CLI should send REQ to multicast (because it does not have address with sufficient scope).
@@ -36,7 +36,11 @@ CLIENT_ID sent by the requestor is hardcoded at this time.
 7. SRV configured to pref: 60 valid: 120, CLI asks for 7200/10800 and SRV grants 7200/10800.
    (CLI behind double relay, looks like messing pools, i.e. using pool on the eth0, not relay2 interface).
 8. SRV: LeaseQuery (by address) about PD should check if the address is contained within the prefix.
-
+9. Implement insist-mode off in stateless autoconf.
+10. Windows client does not set DNS server in the stateless mode.
+11. DAD does not work on Windows.
+12. FQDN does not start if rapid-commit is used.
+13. No log created (no directory) silently omitted.
 
 New tasks should be done to the TODO list. After task is implemented, it should be moved to the
 'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.

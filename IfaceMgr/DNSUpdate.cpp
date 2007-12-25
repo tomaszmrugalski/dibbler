@@ -10,7 +10,7 @@
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.19 2007-01-21 21:29:45 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.20 2007-12-25 08:11:57 thomson Exp $
  *
  */
 
@@ -40,7 +40,8 @@ DNSUpdate::DNSUpdate(string dns_address, string zonename,string hostname,string 
 }
  
 DNSUpdate::~DNSUpdate() {
-    delete message;
+    if (message)
+	delete message;
     delete zoneroot;
     delete [] hostip;
     delete [] hostname;

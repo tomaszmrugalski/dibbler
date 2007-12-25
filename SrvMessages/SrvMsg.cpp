@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.46 2007-12-03 16:58:06 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.47 2007-12-25 08:11:57 thomson Exp $
  */
 
 #include <sstream>
@@ -704,7 +704,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), "", fqdnName, IPv6Addr->getPlain(), DNSUPDATE_AAAA);
 	    result2 = act2->run();
 	    act2->showResult(result);
-	    delete act;
+	    delete act2;
 	} // fqdnMode == 2
 
 	// regardless of the result, store the info

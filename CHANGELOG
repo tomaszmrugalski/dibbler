@@ -1,6 +1,12 @@
 
   Dibbler changelog
  ------------------- 
+ 0.7.0 [not-released-yet]
+  - Leasequery support (new entity: requestor added)
+  - Numerous fixes after Vancover 2nd bakeoff meeting
+  - Fix in all string options (like domain name or nis domain)
+  - Fix in DNS Update (memory corruption fixed)
+
  0.6.1 [2007-09-09]
   - Srv: Inactive mode implemented (bug #168)
   - Srv: When assigning fewer address than requested, status is now set to success
