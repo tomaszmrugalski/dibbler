@@ -12,11 +12,13 @@ SrvLexer.o: SrvLexer.cpp
 	@echo "[CXX    ] $(SUBDIR)/$@"
 	$(CXX) -c $(OPTS) -ftemplate-depth-30 SrvLexer.cpp 
 
-SrvParser.cpp: SrvParser.y 
+# APPROACH 1: ignore .y .l dependency
+# After modifying .y and .l files, you have to manually rebuild .cpp files by issuing: make parser
+# Pros: Proven and working
+# Cons: 
+parser: SrvParser.y SrvLexer.l 
 	echo "[BISON++] $(SUBDIR)/SrvParser.y"
 	$(BISONPP) -v --debug --defines -d SrvParser.y -o SrvParser.cpp
-
-SrvLexer.cpp: SrvLexer.l
 	echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
 	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
 	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"
@@ -24,4 +26,22 @@ SrvLexer.cpp: SrvLexer.l
 	rm -f SrvLexer.cpp
 	mv SrvLexer.cpp2 SrvLexer.cpp
 
-parser: SrvParser.cpp SrvLexer.cpp 
+# APPROACH 2: .l .y dependency
+# Proper dependency chain .l->.cpp->.o and .y->.cpp->.o
+# Pros:
+# Cons: - bison++ and flex required during every build
+
+#SrvParser.cpp: SrvParser.y 
+#	echo "[BISON++] $(SUBDIR)/SrvParser.y"
+#	$(BISONPP) -v --debug --defines -d SrvParser.y -o SrvParser.cpp
+
+#SrvLexer.cpp: SrvLexer.l
+#	echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
+#	$(FLEX) -+ -i -oSrvLexer.cpp SrvLexer.l
+#	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"
+#	cat SrvLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > SrvLexer.cpp2
+#	rm -f SrvLexer.cpp
+#	mv SrvLexer.cpp2 SrvLexer.cpp
+
+#parser: SrvParser.cpp SrvLexer.cpp 
+
