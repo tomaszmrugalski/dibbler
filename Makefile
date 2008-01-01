@@ -297,20 +297,20 @@ release-linux: VERSION-linux
 	strip $(RELAYBIN)
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-linux.tar.gz"
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                                   \
-		 $(SERVERBIN) $(CLIENTBIN) $(RELAYBIN) *.conf   \
+		 $(SERVERBIN) $(CLIENTBIN) $(RELAYBIN) $(REQUESTORBIN) *.conf   \
 		 doc/man/* CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-linux
 
 release-win32: VERSION-win
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-win32.tar.gz"
 	tar czvf dibbler-$(VERSION)-win32.tar.gz                   \
-		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe \
+		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe dibbler-requestor.exe\
                  *.conf                         \
 		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-win32
 
 release-winnt: VERSION-winnt doc
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-winnt2k.tar.gz"
 	tar czvf dibbler-$(VERSION)-winnt2k.tar.gz                   \
-		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe \
+		 dibbler-server.exe dibbler-client.exe dibbler-relay.exe dibbler-requestor.exe\
                  *.conf                         \
 		 CHANGELOG RELNOTES LICENSE VERSION doc/dibbler-user.pdf > filelist-winnt
 
