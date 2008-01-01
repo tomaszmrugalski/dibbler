@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.10 2008-01-01 20:21:14 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.9 2008-01-01 18:24:09 thomson Exp $
  */
 
 #include <sstream>
@@ -146,6 +146,8 @@ bool ReqTransMgr::SendMsg()
         memset(buf+1, 16, 0);
         bufLen = 17;
 
+        printhex(buf, 48);
+
         SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
         TReqOptDUID * optDuid = new TReqOptDUID(OPTION_CLIENTID, duid, msg);
         optDuid->storeSelf(buf+bufLen);
@@ -200,142 +202,144 @@ bool ReqTransMgr::WaitForRsp()
     return true;
 }
 
-void ReqTransMgr::PrintRsp(char * buf, int bufLen)
+bool ReqTransMgr::PrintRsp(char * buf, int bufLen)
 {
     if (bufLen < 4) {
         Log(Error) << "Unable to print message: truncated (min. len=4 required)." << LogEnd;
     }
+
+    // TODO: use stream    
+    Log(Info) << "Message hex dump:" << LogEnd;
+    for (int j = 0; j < bufLen; j++) {
+        printf("%02x ", (unsigned char) *(buf+j)); 
+        if (j && !(j%16)) printf("\n"); 
+    }
+    printf("\n");
     
     int msgType = buf[0];
     int transId = buf[1] + 256*buf[2] + 256*256*buf[3];
+    int pos = 4;
 
     Log(Info) << "MsgType: " << msgType << ", transID=0x" << hex << transId << dec << LogEnd;
 
-    ParseOpts(msgType, 0, buf+4, bufLen-4);
-}
-
-bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLen)
-{
-    std::ostringstream o;
-    for (int i=0; i<recurseLevel; i++)
-	o << "  ";
-    string linePrefix = o.str();
-
-    int pos = 0;
     SmartPtr<TOpt> ptr;
-    bool print = true;
     while (pos<bufLen) {
-	if (pos+4>bufLen) {
-	    Log(Error) << linePrefix << "Message " << msgType << " truncated. There are " << (bufLen-pos) 
-		       << " bytes left to parse. Bytes ignored." << LogEnd;
-	    return false;
-	}
-	unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
-	pos+=2;
-	unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
-	pos+=2;
-	if (pos+length>bufLen) {
-	    Log(Error) << linePrefix << "Truncated option (type=" << code << ", len=" << length 
-		       << " received in message << " << msgType << ". Option ignored." << LogEnd;
-	    pos += length;
-	    continue;
-	}
+	    if (pos+4>bufLen) {
+	        Log(Error) << "Message " << msgType << " truncated. There are " << (bufLen-pos) 
+		               << " bytes left to parse. Bytes ignored." << LogEnd;
+	        break;
+	    }
+	    unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
+	    unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
+	    if (pos+length>bufLen) {
+	        Log(Error) << "Truncated option (type=" << code << ", len=" << length 
+		               << " received (msgtype=" << msgType << "). Option ignored." << LogEnd;
+		pos += length;
+	        continue;
+	    }
 	
-	if (!allowOptInMsg(msgType,code)) {
-	    Log(Warning) << linePrefix << "Invalid option received: Option " << code << " not allowed in message type " 
-			 << msgType << ". Ignored." << LogEnd;
-	    pos+=length;
-	    continue;
-	}
-	if (!recurseLevel && !allowOptInOpt(msgType,0,code)) {
-	    Log(Warning) << "Invalid option received: Option " << code << " not allowed in message type "<< msgType 
-			 << " as a base option (as suboption only permitted). Ignored." << LogEnd;
+	    if (!allowOptInMsg(msgType,code)) {
+	        Log(Warning) << "Invalid option received: Option " << code << " not allowed in message type "<< msgType 
+                        << ". Ignored." << LogEnd;
 	        pos+=length;
 	        continue;
-	}
-	
+	    }
+	    if (!allowOptInOpt(msgType,0,code)) {
+	        Log(Warning) << "Invalid option received: Option " << code << " not allowed in message type "<< msgType 
+                        << " as a base option (as suboption only permitted). Ignored." << LogEnd;
+	        pos+=length;
+	        continue;
+	    }
+    
         string name, o;
         o = "";
         name = "";
-	
-	switch (code) {
-        case OPTION_STATUS_CODE:
-	{
-	    name ="Status Code";
-	    unsigned int st = buf[pos]*256 + buf[pos+1];
-	    
-	    char *Message = new char[length+10];
-	    memcpy(Message,buf+pos+2,length-2);
-	    sprintf(Message+length-2, "(%d)", st);
-	    o = string(Message);
-	    delete [] Message;
-	    break;
-	}
-	case OPTION_CLIENTID:
-	    name = "ClientID";
-	    o = BinToString(buf+pos, length);
-	    break;
-	case OPTION_SERVERID:
-	    name = "ServerID";
-	    o = BinToString(buf+pos, length);
-	    break;
-	case OPTION_LQ_QUERY:
-	    name = "LQ Query Option";
-	    break;
-	case OPTION_CLIENT_DATA:
-	    name = "LQ Client Data Option";
-	    Log(Info) << linePrefix << "Option " << name << "(code=" << code << "), len=" << length << LogEnd;
-	    ParseOpts(msgType, recurseLevel+1, buf+pos, length);
-	    print = false;
-	    break;
-	case OPTION_CLT_TIME:
-	{
-            name = "LQ Client Last Transmission Time";
-	    unsigned int t = ntohl( *((unsigned int*)(buf+pos)));
-	    ostringstream out;
-	    out << t << " second(s)";
-	    o = out.str();
-	    break;
-	}
-	case OPTION_LQ_RELAY_DATA:
-            name = "LQ Relay Data";
-	    break;
-	case OPTION_LQ_CLIENT_LINK:
-            name = "LQ Client Link";
-	    break;
-	case OPTION_IAADDR:
-	{
-	    TIPv6Addr * addr = new TIPv6Addr(buf+pos, false);
-	    unsigned int pref  = ntohl(*((long*)(buf+pos+16)));
-	    unsigned int valid = ntohl(*((long*)(buf+pos+20)));
-	    name = "IAADDR";
-	    ostringstream out;
-	    out << "addr=" << addr->getPlain() << ", pref=" << pref << ", valid=" << valid;
-	    o = out.str();
-	    break;
-	}
 
-	default:
-	    break;
-	}
-	if (print)
-	    Log(Info) << linePrefix << "Option " << name << "(code=" << code << "), len=" << length << ": " << o << LogEnd;
-	print = true;
+	    switch (code) {
+        case OPTION_STATUS_CODE:
+            {
+                name ="Status Code";
+                unsigned int st = buf[pos]*256 + buf[pos+1];
+
+                char *Message = new char[length+10];
+                memcpy(Message,buf+pos+2,length-2);
+                sprintf(Message+length-2, "(%d)", st);
+                o = string(Message);
+                delete [] Message;
+                break;
+            }
+	    case OPTION_LQ_QUERY:
+		name = "LQ Query Option";
+	        break;
+	    case OPTION_CLIENT_DATA:
+		name = "LQ Client Data Option";
+	        o = ParseLQCLientData(buf+pos, length);
+	        break;
+	    case OPTION_CLT_TIME:
+            name = "LQ Client Last Transmission Time Option";
+	        break;
+	    case OPTION_LQ_RELAY_DATA:
+            name = "LQ Relay Data";
+	        break;
+	    case OPTION_LQ_CLIENT_LINK:
+            name = "LQ Client Link Option";
+	        break;
+	    default:
+	        break;
+	    }
+	    Log(Info) << "Option " << name << ", length=" << length << " contains: " << endl << o << LogEnd;
         pos+=length;
     }
-    
+
     return true;
 }
 
-string ReqTransMgr::BinToString(char * buf, int bufLen)
+string ReqTransMgr::ParseLQCLientData(char * buf, int bufLen)
 {
     std::ostringstream o;
-    o << setfill('0');
-    for (int i=0; i<bufLen; i++) {
-	o << setw(2) << hex << (unsigned int)buf[i];
-	if (i+1!=bufLen) {
-	    o << ":";
-	}
+
+    for (int j = 0; j < bufLen; j++) {
+        printf("%02x ", (unsigned char) *(buf+j)); 
+        if (j && !(j%16)) printf("\n"); 
+    }
+    printf("\n");
+    int pos = 0;
+
+    while (pos<bufLen) {
+	    if (pos+4>bufLen) {
+	        o << "Message truncated. There are " << (bufLen-pos) 
+		  << " bytes left to parse. Bytes ignored." << LogEnd;
+	        return o.str();
+	    }
+	    unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
+	    unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
+	    pos+=2;
+	    if (pos+length>bufLen) {
+	        o << "Truncated option (type=" << code << ", len=" << length 
+		  << " received). Option ignored." << LogEnd;
+		pos += length;
+	        return o.str();
+	    }
+	    o << " code=" << code << ", length=" << length << ":";
+	    switch (code) {
+	    case OPTION_IAADDR:
+	    {
+		TIPv6Addr * addr = new TIPv6Addr(buf+pos, false);
+		unsigned int pref  = ntohl(*((long*)(buf+pos+16)));
+		unsigned int valid = ntohl(*((long*)(buf+pos+20)));
+		
+		o << "addr=" << addr->getPlain() << ", pref=" << pref << ", valid=" << valid << endl;
+		break;
+	    }
+	    default:
+		o << "[unknown]" << endl;
+	    }
+	    // TODO
+
+	    pos += length;
     }
 
     return o.str();

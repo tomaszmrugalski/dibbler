@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.h,v 1.5 2008-01-01 20:21:14 thomson Exp $
+ * $Id: ReqTransMgr.h,v 1.4 2007-12-05 10:20:20 thomson Exp $
  */
 
 #ifndef REQIFACEMGR_H
@@ -23,9 +23,8 @@ public:
     bool WaitForRsp();
 
 private:
-    void PrintRsp(char * buf, int bufLen);
-    bool ParseOpts(int msgType, int recurseLevel, char * buf, int bufLen);
-    string BinToString(char * buf, int bufLen);
+    bool PrintRsp(char * buf, int bufLen);
+    string ParseLQCLientData(char * buf, int bufLen);
     TIfaceMgr * IfaceMgr;
     SPtr<TIfaceIface> Iface;
     ReqCfgMgr * CfgMgr;
