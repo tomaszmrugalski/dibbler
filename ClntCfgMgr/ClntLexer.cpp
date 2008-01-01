@@ -1856,12 +1856,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 266 "ClntLexer.l"
+#line 264 "ClntLexer.l"
 {return yytext[0];} 
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 270 "ClntLexer.l"
+#line 266 "ClntLexer.l"
 ECHO;
 	YY_BREAK
 #line 1868 "ClntLexer.cpp"
@@ -2768,7 +2768,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 270 "ClntLexer.l"
+#line 266 "ClntLexer.l"
 
 
 

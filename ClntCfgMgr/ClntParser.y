@@ -926,7 +926,8 @@ VendorSpecList
  * @param ifaceNr 
  * 
  * @return true if not declared.
- */bool ClntParser::CheckIsIface(int ifaceNr)
+ */
+bool ClntParser::CheckIsIface(int ifaceNr)
 {
   SmartPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();

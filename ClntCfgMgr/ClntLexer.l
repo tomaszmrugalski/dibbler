@@ -261,10 +261,6 @@ digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
     return ClntParser::INTNUMBER_;
 }
 
-
-
 .  {return yytext[0];} 
-
-
 
 %%
