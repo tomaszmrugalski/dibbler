@@ -8,14 +8,14 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.89 2007-12-02 10:31:59 thomson Exp $
+ * $Id: Portable.h,v 1.90 2008-01-01 22:21:14 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
 /* #define DIBBLER_VERSION "0.6.0-CVS (" __DATE__ " " __TIME__ ")" */
-#define DIBBLER_VERSION "0.6.1"
+#define DIBBLER_VERSION "0.7.0RC1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"

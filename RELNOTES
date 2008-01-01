@@ -1,26 +1,21 @@
 
-  Dibbler 0.6.1 release notes [2007-09-09]
+  Dibbler 0.7.0RC1 release notes [2007-09-09]
  ---------------------------------------------------------
 
- This is a 0.6.1 release. 
+ This is a first release candidate for 0.7.0 release. 
 
- Changes since 0.6.0 are mainly related to security fixes. Most of the
- issues has been reported by Mu Security. Thanks.
+ Biggest improvement since 0.6.1 is support for lease query.
+ As usual, numerous bugs were fixed and documentation has been updated
+ once again.
 
  Changes:
-  - Srv: Inactive mode implemented (bug #168)
-  - Srv: When assigning fewer address than requested, status is now set to success
-  - Srv: proper status code is returned when temporary addresses are not supported
-  - cross-compilation is now possible (bug #169)
-  - Make -j2 now works (bug #130)
-  - gcc 4.3.0 conformance
-  - Srv: CONFIRM message contents are now validated properly (bug #165)
-  - Security: Option Request Option parsing fixed (bug #166)
-  - Security: Possible segfault in REBIND processing fix
-  - Security: Vendor-specific information Option possible segfault
-  - Security: Option Request Option possible segfault (bug #167)
-  - Security: invalid length field parsing fixed (bug #164)
-  - Security: world writable files are no longer created (bug #160)
+  - Leasequery support (new entity: requestor added)
+  - Numerous fixes after Vancover 2nd bakeoff meeting
+  - CLI: REQUEST is sent to multicast when unicast option is supported
+    (because client does not have address with sufficient scope)
+  - Fix in all string options (like domain name or nis domain)
+  - Fix in DNS Update (memory corruption fixed)
+  - Documentation updated.
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 

@@ -8,6 +8,7 @@
     (because client does not have address with sufficient scope)
   - Fix in all string options (like domain name or nis domain)
   - Fix in DNS Update (memory corruption fixed)
+  - Documentation updated.
 
  0.6.1 [2007-09-09]
   - Srv: Inactive mode implemented (bug #168)
