@@ -1,4 +1,3 @@
-TMP
 #line 2 "ClntLexer.cpp"
 
 #line 4 "ClntLexer.cpp"
