@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Requestor.cpp,v 1.5 2007-12-08 04:14:03 thomson Exp $
+ * $Id: Requestor.cpp,v 1.6 2008-01-01 18:24:09 thomson Exp $
  */
 
 #include "Portable.h"
@@ -79,7 +79,8 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 	    dstaddr = argv[++i];
 	    continue;
 	}
-        if (!strncmp(argv[i], "-help", 5) || !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
+        if (!strncmp(argv[i], "-help", 5) || !strncmp(argv[i], "/help", 5) || 
+	    !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
             printHelp();
             return false;
         }

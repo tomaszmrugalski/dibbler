@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.8 2007-12-09 04:10:52 thomson Exp $
+ * $Id: ReqTransMgr.cpp,v 1.9 2008-01-01 18:24:09 thomson Exp $
  */
 
 #include <sstream>
@@ -111,7 +111,7 @@ bool ReqTransMgr::SendMsg()
     // TODO
 
     SPtr<TIPv6Addr> dstAddr;
-    if (!CfgMgr->addr)
+    if (!CfgMgr->dstaddr)
 	dstAddr = new TIPv6Addr("ff02::1:2", true);
     else
 	dstAddr = new TIPv6Addr(CfgMgr->dstaddr, true);
@@ -151,10 +151,8 @@ bool ReqTransMgr::SendMsg()
         SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
         TReqOptDUID * optDuid = new TReqOptDUID(OPTION_CLIENTID, duid, msg);
         optDuid->storeSelf(buf+bufLen);
-	Log(Debug) << "#### Opt size=" << optDuid->getSize() << LogEnd;
         bufLen += optDuid->getSize();
 
-	printhex(buf, bufLen);
         free(optDuid);
     }
 
@@ -171,7 +169,7 @@ bool ReqTransMgr::SendMsg()
 
     msgbufLen = msg->storeSelf(msgbuf);
 
-    Log(Debug) << msg->getSize() << "-byte long message prepared." << LogEnd;
+    Log(Debug) << msg->getSize() << "-byte long LQ_QUERY message prepared." << LogEnd;
 
     if (this->Socket->send(msgbuf, msgbufLen, dstAddr, DHCPSERVER_PORT)<0) {
         Log(Error) << "Message transmission failed." << LogEnd;

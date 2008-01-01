@@ -4,7 +4,9 @@ export TOPDIR=$(CURDIR)
 
 all: server client relay
 
-includes: poslib-configure
+includes: poslib-configure includes-only
+
+includes-only:
 	cd $(INCDIR); $(MAKE) links
 
 bison: bison/bison++
@@ -113,7 +115,7 @@ $(RELAYBIN): poslib-configure includes commonlibs relaylibs $(MISC)/DHCPRelay.o 
 	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions
 
 requestor: $(REQUESTORBIN)
-$(REQUESTORBIN): includes Requestor $(REQUESTORDIRS)
+$(REQUESTORBIN): includes-only commonlibs Requestor $(REQUESTORDIRS)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(LDFLAGS) $(OPTS) -I $(INCDIR) -o dibbler-requestor \
 	-L./Requestor -lRequestor \
@@ -122,6 +124,9 @@ $(REQUESTORBIN): includes Requestor $(REQUESTORDIRS)
 	-L./IfaceMgr -lIfaceMgr \
 	-L./Messages -lMsg \
 	-L./Port-linux -lLowLevel
+
+Requestor:
+	cd Requestor; $(MAKE) all
 
 objs:	includes
 	@for dir in $(COMMONSUBDIRS); do \
@@ -139,7 +144,7 @@ objs:	includes
 
 libs:	libposlib commonlibs clntlibs srvlibs
 
-commonlibs:	includes
+commonlibs:	includes-only
 	@for dir in $(COMMONSUBDIRS); do \
 		( cd $$dir; $(MAKE) libs ) || exit 1; \
 	done
@@ -473,4 +478,4 @@ clean-libs:
 links: includes
 clobber: clean clean-libs
 
-.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser snapshot help
+.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser snapshot help Requestor
