@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.47 2007-12-25 08:11:57 thomson Exp $
+$Id: TODO,v 1.48 2008-01-01 17:39:05 thomson Exp $
 
 
  Leasequery HOWTO
@@ -30,7 +30,7 @@ CLIENT_ID sent by the requestor is hardcoded at this time.
 3. Client does not request for a UNICAST option (does not send the ORO with unicast). [done]
 4. Unicast over 2 relays does not work. Cli send Solicit, Srv sends ADV, CLI send REQ using unicast address,
    but that REQ is not seen by the SRV.
-5. CLI should send REQ to multicast (because it does not have address with sufficient scope).
+5. CLI should send REQ to multicast (because it does not have address with sufficient scope). [done]
 6. CLI gets addr from SRV, SRV goes down and up, SRV ignores RENEW, then goes REBIND,
    and then goes for RENEW. (should go SOLICIT)
 7. SRV configured to pref: 60 valid: 120, CLI asks for 7200/10800 and SRV grants 7200/10800.
