@@ -159,7 +159,6 @@
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251
 
-
 // -- Query types (RFC5007) --
 typedef enum {
     QUERY_BY_ADDRESS = 1,
@@ -179,19 +178,19 @@ typedef enum {
 #define STATUSCODE_NOTONLINK     4
 #define STATUSCODE_USEMULTICAST  5
 #define STATUSCODE_NOPREFIXAVAIL 6 
-// unimplemented codes
+// Leasequery status codes
 #define STATUSCODE_UNKNOWNQUERYTYPE 7
 #define STATUSCODE_MALFORMEDQUERY 8
 #define STATUSCODE_NOTCONFIGURED 9
 #define STATUSCODE_NOTALLOWED    10
 
-// INFINITY + 1 is 0. Hih, cool
+// INFINITY + 1 is 0. Hihi, cool
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
 
-// how long should we wait before we assume that OS detected duplicated addresses (in secs)
+// How long should we wait before we assume that OS detected duplicated addresses (in secs)
 #define DADTIMEOUT (unsigned) 3
 
-// addresses reported ad DECLINED are not used for 2 hours
+// addresses reported as DECLINED are not used for 2 hours
 #define DECLINED_TIMEOUT (unsigned) 7200
 
 // DHCPv6 server default values
