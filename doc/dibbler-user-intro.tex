@@ -5,7 +5,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-intro.tex,v 1.17 2007-01-06 17:34:04 thomson Exp $
+%% $Id: dibbler-user-intro.tex,v 1.18 2008-01-01 22:20:18 thomson Exp $
 %%
 
 \section{Intro}
@@ -24,10 +24,19 @@ to check out Dibbler website: \url{http://klub.com.pl/dhcpv6/}.
 \emph{Dynamic Host Configuration Protocol for IPv6}, often called
 DHCPv6 is a protocol, which is used to automatically configure IPv6
 capable computers and other equipment located in a local network. This
-protocol defines clients (i.e. nodes, which should be configured),
-servers (i.e. nodes, which provide configuration to clients) and
-relays (i.e. nodes, which are connected to more than one network and
+protocol defines \emph{clients} (i.e. nodes, which should be configured),
+\emph{servers} (i.e. nodes, which provide configuration to clients) and
+\emph{relays} (i.e. nodes, which are connected to more than one network and
 are able to forward traffic between local clients and remote servers).
+
+
+\emph{Requestor} support has been added in version 0.7.0RC1. Requestor
+is a separate entity, which sends queries to the server regarding
+leases to a specific clients. It is possible to ask a server, who has
+specific address or what addresses are assigned to a specific client. 
+This feature is part of the lease query mechanism defined in
+\cite{rfc5007} and is considered advanced topic. If you don't know
+what lease query is, you definetely don't need it.
 
 Dibbler is a portable DHCPv6 solution, which features server, client and
 relay. Currently there are ports available for Windows XP and 2003 (support for

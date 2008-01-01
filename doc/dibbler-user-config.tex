@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.48 2007-09-07 08:31:22 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.49 2008-01-01 22:20:18 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -766,6 +766,7 @@ details about server configuration. To ask for prefix delegation,
 emph{prefix-delegation} (or \emph{pd}) should be used.
 
 \begin{lstlisting}
+# client.conf
 iface "eth0" {
   ia  // ask for address
   pd  // ask for prefix
@@ -775,11 +776,48 @@ iface "eth0" {
 It is possible to define additional parameters for a prefix:
 
 \begin{lstlisting}
+# client.conf
 iface eth0 {
   pd {
     t1 1000
     t2 2000
   }
+}
+\end{lstlisting}
+
+\subsubsection{Example 12: Insist mode}
+\label{example-client-insistmode}
+During normal operation, when client asks for an option, but does not
+receive it from the server, it complain, but takes no action. To force
+client to insist (i.e. ask over and over again), so called insist mode
+has been introduced. See section \ref{feature-insist-mode} for
+extended explanation.
+
+\begin{lstlisting}
+insist-mode
+iface "eth0" {
+   ia
+   option dns-server
+   option domain
+   option ntp-server
+}
+\end{lstlisting}
+
+\subsubsection{Example 13: Inactive mode}
+\label{example-client-inactivemode}
+Usually client starts when network interfaces are
+operational. Normally downed or nonexisting interfaces mentioned in
+the configuration file are considered misconfiguration and client
+refuses to start. However, sometimes that is not the case, e.g. still
+waiting to be associated wireless interfaces. To allow operation in
+such circumstances, inactive mode has been added. See
+\ref{feature-inactive-mode} for detailed explanation.
+interfaces are spec
+
+\begin{lstlisting}
+inactive-mode
+iface "eth0" {
+  ia
 }
 \end{lstlisting}
 
@@ -1527,7 +1565,45 @@ iface "eth0" {
 \end{lstlisting}
 
 \subsubsection{Example 15: Inactive mode}
+\label{example-server-inactivemode}
+See sections \ref{example-client-inactivemode} and 
+\ref{feature-inactive-mode} for inactive mode explanation.
+The same behavior has been added for server. 
 
+\begin{lstlisting}
+#server.conf
+
+log-level 8
+
+inactive-mode
+
+iface "eth0" {
+
+ class {
+   pool 2000::/64
+ }
+}
+\end{lstlisting}
+
+\subsubsection{Example 16: Leasequery}
+A separate entity
+called requestor can send queries regarding assigned addresses and
+prefixes. Server can be configured to support such lease queries. 
+See section \ref{features-leasequery} for detailed explanation.
+
+\begin{lstlisting}
+#server.conf
+
+log-level 8
+
+iface "eth0" {
+ accept-leasequery
+
+ class {
+   pool 2000::/64
+ }
+}
+\end{lstlisting}
 
 \subsection{Relay configuration file}
 \label{relay-conf}
@@ -1828,3 +1904,8 @@ iface eth1 {
   interface-id 5020
 }
 \end{lstlisting}
+
+\subsection{Requestor configuration}
+Requestor (entity used for leasequery) does not use configuration
+files. All parameters are specified by command-line switches. See
+section \ref{features-leasequery} for details.

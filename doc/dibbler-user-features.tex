@@ -3,6 +3,51 @@ This section contains information about setting up various Dibbler
 features. Since this section was added recently, it is not yet
 comprehensive. That is expected to change.
 
+\subsection{Leasequery}
+\label{features-leasequery}
+Servers provide addresses, prefixes and other configuration options to
+the clients. Sometime administrators may want to obtain information
+regarding certain leases, e.g. who has been given a specific address
+or what addresses have been assigned to a specific client. This
+mechanism is called Leasequery \cite{rfc5007}. New DHCPv6 participant
+called requestor has been defined. Its sole purpose is to send queries
+and receive responses. Dibbler provides example implementation. To
+define a query, command line parameters are used. 
+
+There are two types of queries: by address (who leases this address?)
+and by client identifier (what addresses has this client?). To specify
+one of such types, \verb+-addr+ or \verb+duid+ command-line switches
+can be used. It is also mandatory to specify (using \verb+-i IFACE+),
+which interface should be used to transmit the query.
+
+Here is a complete list of all command-line switches:
+
+\begin{description}
+\item[-i IFACE] -- defines thru which interface should the query be sent
+\item[-addr ADDR] -- sets query type to query by address. Also defines
+  address, which the query will be about.
+\item[-duid DUID] -- sets query type to query by client
+  indentifier. Also defines client intentifier.
+\item[-timeout SECS] -- specifies time, which requestor should wait
+  for response.
+\item[-dstaddr ADDR] -- destination address of the lease query
+  message. By default messages are sent to the multicast address
+  (ff02::1:2). To transmit query to an unicast addres, use this option.
+\end{description}
+
+Example query 1: Who has 2000::1 address?
+
+\begin{lstlisting}
+dibbler-requestor -i eth0 -addr 2000::1
+\end{lstlisting}
+
+Example query 2: Which addresses are assigned to client with specific client
+identifier?
+
+\begin{lstlisting}
+dibbler-requestor -i eth0 -duid 00:01:00:01:0e:8d:a2:d7:00:08:54:04:a3:24
+\end{lstlisting}
+
 \subsection{Stateless vs stateful and IA, TA options}
 \label{features-stateless-stateful}
 This section explains the difference between stateless and stateful
@@ -681,21 +726,11 @@ this mode, client will accept inactive interfaces, will add them to
 inactive list and will periodically monitor its state. When the
 interface finally goes on-line, client will try to configure it.
 
-\begin{lstlisting}
-#client.conf
-inactive-mode
-
-iface wifi0 {
-  ia
-  option dns-server
-}
-\end{lstlisting}
-
 To test this mode, you can simulate deassociation using normal
 Ethernet interface. Issue following commands:
 
 \begin{itemize}
-\item ifconfig eth0 down
+\item Bring down your interface (e.g. ifconfig eth0 down)
 \item edit \verb+client.conf+ to enable inactive-mode
 \item execute client: \verb+dibbler-client run+
 \item client will print information related to not ready interface,
@@ -707,7 +742,8 @@ Ethernet interface. Issue following commands:
 \end{itemize}
 
 In the 0.6.1 version, similar feature has been introduced on the
-server side.
+server side. See sections \ref{example-client-inactivemode} and
+\ref{example-server-inactivemode} for configuration examples.
 
 \subsection{Parameters not supported by server (insist-mode)}
 \label{feature-insist-mode}
@@ -724,21 +760,8 @@ changed in the 0.6.0RC4 release. Right now when client does not
 receive all requested options, it will complain, but will
 take no action. To enable old behavior, so called insist-mode has been
 added. To enable this mode, add \verb+insist-mode+ at the global
-section of the \verb+client.conf+ file. For example:
-
-\begin{lstlisting}
-log-mode short
-insist-mode
-
-iface eth0 {
-   ia
-   option dns-server
-   option domain
-   option ntp-server
-}
-
-
-\end{lstlisting}
+section of the \verb+client.conf+ file. Example configuration file is
+provided in the \ref{example-client-insistmode}.
 
 \subsection{Different DUID types}
 \label{feature-duid-types}
