@@ -22,8 +22,6 @@ ClntLexer.cpp: ClntLexer.l
 	rm -f ClntLexer.cpp
 	mv ClntLexer.cpp2 ClntLexer.cpp
 
-parser: ClntParser.cpp ClntLexer.cpp
-
 objs: $(OBJECTS)
 
 libs: libClntCfgMgr.a

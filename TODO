@@ -1,14 +1,12 @@
 
-$Id: TODO,v 1.48 2008-01-01 17:39:05 thomson Exp $
+$Id: TODO,v 1.49 2008-01-01 20:09:24 thomson Exp $
 
 
  Leasequery HOWTO
 ------------------
 
 To compile requestor, type:
-make -C Requestor; make requestor
-
-(Yeah, I know. There's a dependency bug in the makefiles)
+make requestor
 
 To send Lease Query request, issue following command:
 ./dibbler-requestor -i eth0 -addr 00::01:02:03:04:05
@@ -26,7 +24,8 @@ CLIENT_ID sent by the requestor is hardcoded at this time.
 1. Zero padding in DUID parsing (e.g. in requestor cmd-line, but the TDUID constructor is messed up) 
    is wrong: 0:1:2:3:4:5 parsed as: 012345
 2. Cli gets addr from SRV1, SRV1 goes down, CLI rebinds to SRV2 and gets addr from it.
-   CLI sends renew for both addrs: the one it got from SRV1 and SRV2.
+   CLI sends renew for both addrs: the one it got from SRV1 and
+   SRV2. [nobug. That is proper behavior. First address is still valid.]
 3. Client does not request for a UNICAST option (does not send the ORO with unicast). [done]
 4. Unicast over 2 relays does not work. Cli send Solicit, Srv sends ADV, CLI send REQ using unicast address,
    but that REQ is not seen by the SRV.
@@ -34,7 +33,8 @@ CLIENT_ID sent by the requestor is hardcoded at this time.
 6. CLI gets addr from SRV, SRV goes down and up, SRV ignores RENEW, then goes REBIND,
    and then goes for RENEW. (should go SOLICIT)
 7. SRV configured to pref: 60 valid: 120, CLI asks for 7200/10800 and SRV grants 7200/10800.
-   (CLI behind double relay, looks like messing pools, i.e. using pool on the eth0, not relay2 interface).
+   (CLI behind double relay, looks like messing pools, i.e. using pool
+   on the eth0, not relay2 interface). [rootcause: server misconfiguration]
 8. SRV: LeaseQuery (by address) about PD should check if the address is contained within the prefix.
 9. Implement insist-mode off in stateless autoconf.
 10. Windows client does not set DNS server in the stateless mode.
