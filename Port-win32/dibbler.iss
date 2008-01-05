@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.6.1 (WinXP/2003 port)
-OutputBaseFilename=dibbler-0.6.1-win32
+AppVerName=Dibbler 0.7.0RC1 (WinXP/2003 port)
+OutputBaseFilename=dibbler-0.7.1RC1-win32
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
@@ -36,6 +36,7 @@ Source: "Debug\dibbler-relay.exe"; DestDir: "{app}"; Components: Relay;
 Source: "..\relay*.conf"; DestDir: "{app}"; Components: Relay;
 Source: "relay.log"; DestDir: "{app}"; Components: Relay;
 Source: "Debug\dibbler-server.exe"; DestDir: "{app}"; Components: Server;
+Source: "Debug\dibbler-requestor.exe"; DestDir: "{app}"; Components: Server;
 Source: "..\server*.conf"; DestDir: "{app}"; Components: Server;
 Source: "server.log"; DestDir: "{app}"; Components: Server;
 Source: "..\doc\dibbler-user.pdf"; DestDir: "{app}"; Components: Documentation;

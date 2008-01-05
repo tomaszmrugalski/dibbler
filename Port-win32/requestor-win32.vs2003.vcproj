@@ -203,6 +203,12 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\resource-requestor.h">
+			</File>
+			<File
+				RelativePath=".\resource.h">
+			</File>
 			<Filter
 				Name="Requestor"
 				Filter="">
@@ -269,11 +275,12 @@
 				</File>
 			</Filter>
 		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
-		</Filter>
+		<File
+			RelativePath=".\dibbler-requestor.rc">
+		</File>
+		<File
+			RelativePath=".\server-win32.ico">
+		</File>
 		<File
 			RelativePath="..\Requestor\TODO.txt">
 		</File>
