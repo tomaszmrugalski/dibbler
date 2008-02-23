@@ -1,6 +1,9 @@
 
   Dibbler changelog
  ------------------- 
+ 0.7.0 [2008-02-23]
+  - no significant changes to 0.7.0RC1
+  
  0.7.0RC1 [2007-12-31]
   - Leasequery support (new entity: requestor added)
   - Numerous fixes after Vancover 2nd bakeoff meeting

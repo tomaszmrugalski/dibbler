@@ -1,8 +1,8 @@
 
-  Dibbler 0.7.0RC1 release notes [2007-12-31]
+  Dibbler 0.7.0 release notes [2008-02-23]
  ---------------------------------------------------------
 
- This is a first release candidate for 0.7.0 release. 
+ This is a final 0.7.0 release. 
 
  Biggest improvement since 0.6.1 is support for lease query.
  As usual, numerous bugs were fixed and documentation has been updated
