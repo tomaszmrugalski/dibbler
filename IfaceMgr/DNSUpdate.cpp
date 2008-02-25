@@ -5,12 +5,11 @@
  *          Mickaël GUÉRIN, Lionel GUILMIN, Lauréline PROVOST
  *          from ENSEEIHT, Toulouse, France
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
- *          Micha³ Kowalczuk <michal@kowalczuk.eu>
- *          Micha³ Kowalczuk <michal@kowalczuk.eu>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.20 2007-12-25 08:11:57 thomson Exp $
+ * $Id: DNSUpdate.cpp,v 1.21 2008-02-25 17:49:08 thomson Exp $
  *
  */
 

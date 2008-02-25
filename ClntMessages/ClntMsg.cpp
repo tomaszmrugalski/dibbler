@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.32 2007-12-09 17:44:09 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.33 2008-02-25 17:49:07 thomson Exp $
  */
 
 #ifdef WIN32
@@ -48,6 +48,8 @@
 #include "ClntOptNISPServer.h"
 #include "ClntOptNISPDomain.h"
 #include "ClntOptLifetime.h"
+#include "ClntOptAAAAuthentication.h"
+#include "ClntOptKeyGeneration.h"
 #include "ClntOptAuthentication.h"
 #include "Logger.h"
 
@@ -215,15 +217,17 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    ptr = (Ptr*) ta;
 	    break;
 	}
+	case OPTION_AAAAUTH:
+	    Log(Warning) << "Option OPTION_AAAAUTH received by client is invalid, ignoring." << LogEnd;
+	    break;
+	case OPTION_KEYGEN:
+	    ptr = new TClntOptKeyGeneration(buf+pos, length, this);
+	    break;
 	case OPTION_AUTH:
-	    // FIXME: set this->DigestType to real DigestType
-        if (ClntCfgMgr->getDigest()!=DIGEST_NONE)
-            this->DigestType = DIGEST_HMAC_SHA1;
-	    // FIXME: set this->DigestType to real DigestType
-        if (ClntCfgMgr->getDigest()!=DIGEST_NONE)
-            this->DigestType = DIGEST_HMAC_SHA1;
-	    ptr = new TClntOptAuthentication(buf+pos, length, this);
-	    Log(Notice) << "[s] parsed OPTION_AUTH in message" << LogEnd;
+	    if (ClntCfgMgr->getAuthEnabled()) {
+                this->DigestType = ClntCfgMgr->getDigest();
+                ptr = new TClntOptAuthentication(buf+pos, length, this);
+	    }
 	    break;
 	case OPTION_VENDOR_OPTS: {
 	    SmartPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
@@ -279,6 +283,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->DigestType = CfgMgr->getDigest();
+    this->AuthKeys = CfgMgr->AuthKeys;
 }
 
 void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr, 
@@ -300,6 +305,10 @@ void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr,
     MRT = 0;
     MRC = 0;
     MRD = 0;
+
+    this->AuthKeys = CfgMgr->AuthKeys;
+    this->KeyGenNonce = NULL;
+    this->KeyGenNonceLen = 0;
 }
 
 unsigned long TClntMsg::getTimeout()
@@ -337,6 +346,12 @@ void TClntMsg::send()
 	ClntIfaceMgr->sendMulticast(Iface, pkt, getSize());
     }
     LastTimeStamp = now();
+}
+
+void TClntMsg::copyAAASPI(SmartPtr<TClntMsg> q) {
+    this->AAASPI = q->getAAASPI();
+    this->SPI = q->getSPI();
+    this->AuthInfoKey = q->getAuthInfoKey();
 }
 
 SmartPtr<TClntTransMgr> TClntMsg::getClntTransMgr()
@@ -381,6 +396,39 @@ void TClntMsg::setIface(int iface) {
     }
 }
 
+/** 
+ * this function appends authentication option
+ * 
+ * @param duid 
+ * @param addr 
+ * @param iface 
+ * @param reqOpts 
+ * 
+ */
+void TClntMsg::appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr)
+{
+    if (!ClntCfgMgr->getAuthEnabled() || ClntCfgMgr->getDigest() == DIGEST_NONE) {
+        Log(Debug) << "Authentication is disabled, not including auth options in message." << LogEnd;
+        this->DigestType = DIGEST_NONE;
+        return;
+    }
+
+    this->DigestType = ClntCfgMgr->getDigest();
+
+    if (!getOption(OPTION_AUTH)) {
+        ClntAddrMgr->firstClient();
+        SmartPtr<TAddrClient> client = ClntAddrMgr->getClient();
+        if (client && client->getSPI())
+            this->setSPI(client->getSPI());
+        if (client)
+            this->ReplayDetection = client->getNextReplayDetectionSent();
+        else
+            this->ReplayDetection = 1;
+        Options.append(new TClntOptAuthentication(this));
+        if (client)
+            client->setSPI(this->getSPI());
+    }
+}
 
 /*
  * this method adds requested (which have status==STATE_NOTCONFIGURED) options
@@ -573,12 +621,31 @@ void TClntMsg::appendRequestedOptions() {
     // include ELAPSED option
     Options.append(new TClntOptElapsed(this));
 
-    // --- option: AUTH ---
-    // FIXME: Implement authorisation for real
-    if (ClntCfgMgr->getDigest()!=DIGEST_NONE) {
-	Options.append(new TClntOptAuthentication(0, this));
+    if (this->MsgType == SOLICIT_MSG) {
+            if (ClntCfgMgr->getAuthEnabled()) {
+                    // --- option: AAAAUTH ---
+                    Options.append(new TClntOptAAAAuthentication(this));
+
+                    // request KeyGeneration
+                    optORO->addOption(OPTION_KEYGEN);
+                    // request Authentication
+                    optORO->addOption(OPTION_AUTH);
+            }
     } else {
+        /*
+            // --- option: AUTH ---
+            if (ClntCfgMgr->getAuthEnabled() && ClntCfgMgr->getDigest()!=DIGEST_NONE) {
+                    Log(Debug) << "Authentication enabled, adding AUTH option." << LogEnd;
+                    ClntAddrMgr->firstClient();
+                    SmartPtr<TAddrClient> client = ClntAddrMgr->getClient();
+                    if (client && client->getSPI())
+                        this->setSPI(client->getSPI());
+                    Options.append(new TClntOptAuthentication(this));
+                    client->setSPI(this->getSPI());
+            }
+            */
     }
+
     // final setup: Did we add any options at all? 
     if ( optORO->count() ) 
 	Options.append( (Ptr*) optORO );
@@ -817,3 +884,35 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     return;
 }
 
+bool TClntMsg::validateReplayDetection() {
+    if (this->MsgType == SOLICIT_MSG)
+        return true;
+
+    ClntAddrMgr->firstClient();
+    SmartPtr<TAddrClient> client = ClntAddrMgr->getClient();
+
+    if (!client) {
+        Log(Debug) << "Something is wrong, VERY wrong. Info about this client (myself) is not found." << LogEnd;
+        return true;
+    }
+
+    if (!client->getReplayDetectionRcvd() && !this->ReplayDetection)
+        return true;
+
+    if (client->getReplayDetectionRcvd() < this->ReplayDetection) {
+        Log(Debug)
+            << "Replay detection field should be greater than "
+            << client->getReplayDetectionRcvd()
+            << " and it actually is "
+            << this->ReplayDetection << LogEnd;
+        client->setReplayDetectionRcvd(this->ReplayDetection);
+        return true;
+    } else {
+        Log(Warning) << "Replayed message detected: Replay detection field should be greater than "
+		     << client->getReplayDetectionRcvd()
+		     << ", but "
+		     << this->ReplayDetection
+		     << " received." << LogEnd;
+        return false;
+    }
+}

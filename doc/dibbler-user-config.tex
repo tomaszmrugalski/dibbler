@@ -2,11 +2,12 @@
 %% Dibbler - a portable DHCPv6
 %%
 %% authors: Tomasz Mrugalski <thomson@klub.com.pl>
+%%          Michal Kowalczuk <michal@kowalczuk.eu>
 %%
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.49 2008-01-01 22:20:18 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.50 2008-02-25 17:49:13 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -334,6 +335,7 @@ sometimes allowed range.
 \end{description}
 
 \subsubsection{Extension options}
+\label{client-conf-extension}
 Extension options are the options specified in external drafts and RFC
 documents, but not in the base spec \cite{rfc3315}. To easily
 distinguish if an option is part of the base standard or one of the
@@ -430,6 +432,24 @@ interface scope, i.e. it is defined once per interface. As for the
 	    client will not send such option, but it will accept it and
 	    act accordingly if the server sends it on its own. Format of
 	    this option is defined in \cite{draft-lifetime}.
+ \item[auth-enabled] -- (scope: global, type: boolean, default: no). This
+            option enables authentication and authorization. When set
+            to true, server support must also be enabled, otherwise
+            all messages will be dropped.
+ \item[auth-accept-methods] -- (scope: global, type: string, default: empty).
+            Comma separated list of authentication methods that client will
+            accept from server. If this list is empty, any method will be
+            accepted. Possible values are:
+            \begin{itemize}
+             \item \texttt{none}
+             \item \texttt{digest\_plain}
+             \item \texttt{digest\_hmac\_md5}
+             \item \texttt{digest\_hmac\_sha1}
+             \item \texttt{digest\_hmac\_sha224}
+             \item \texttt{digest\_hmac\_sha256}
+             \item \texttt{digest\_hmac\_sha384}
+             \item \texttt{digest\_hmac\_sha512}
+            \end{itemize}
 \end{description}
 
 Note that timezone format is described in file \verb+draft-ietf-dhc-dhcpv6-opt-tz-00.txt+
@@ -821,6 +841,24 @@ iface "eth0" {
 }
 \end{lstlisting}
 
+\subsubsection{Example 11: Authentication}
+\label{example-client-auth}
+Authentication is enabled. Client will accept HMAC-SHA-512, HMAC-MD5
+and HMAC-SHA-256 as an authentication method.
+
+\begin{lstlisting}
+# client.conf
+
+log-mode short
+log-level 7
+
+auth-enabled true
+auth-accept-methods digest-hmac-sha512, digest-hmac-md5, digest-hmac-sha256
+
+iface eth0 {
+}
+\end{lstlisting}
+
 \subsection{Server configuration file}
 \label{server-conf}
 Server configuration is stored in \verb+server.conf+ file in the
@@ -1032,8 +1070,8 @@ OptionName option-value
             will be supported.
 \end{description}
 
-\subsubsection{Addional options}
-Server supports additonal options, not specified in \cite{rfc3315}. They have
+\subsubsection{Additional options}
+Server supports additional options, not specified in \cite{rfc3315}. They have
 following generic form:
 
 \begin{verbatim}
@@ -1105,6 +1143,25 @@ All supported options are specified below:
             server sends to a client. If client does not support it,
             it should ignore this option. Format of
 	    this option is defined in \cite{draft-lifetime}.
+ \item[auth-method] -- (scope: global, type: string, default: empty). Set
+            it to one of the following values to enable authentication
+            on ther server side, using selected method of generating
+            authentication information:
+            \begin{itemize}
+             \item \texttt{none}
+             \item \texttt{digest\_plain}
+             \item \texttt{digest\_hmac\_md5}
+             \item \texttt{digest\_hmac\_sha1}
+             \item \texttt{digest\_hmac\_sha224}
+             \item \texttt{digest\_hmac\_sha256}
+             \item \texttt{digest\_hmac\_sha384}
+             \item \texttt{digest\_hmac\_sha512}
+            \end{itemize}
+ \item[auth-lifetime] -- (scope: global, type: integer, default: 0). Authentication
+            lifetime. Currently not supported.
+ \item[auth-key-len] -- (scope: global, type: integes, default: 32). Key generation nonce
+            length (see \cite{draft-aaa} for details).
+
 \end{description}
 
 Lifetime is a special case. It is not set up by client in a system
@@ -1116,7 +1173,6 @@ obtained values are correct.
 This subsection contains various examples of the server
 configuration. If you are interested in additional examples, download source version
 and look at \verb+*.conf+ files.
-
 
 \subsubsection{Example 1: Simple}
 
@@ -1604,6 +1660,29 @@ iface "eth0" {
  }
 }
 \end{lstlisting}
+
+
+\subsubsection{Example 17: Authentication}
+\label{example-server-auth}
+It is possible to configure server to require authentication. In this
+example, HMAC-SHA-512 will be used as an authentication method.
+Key Generation Nonce will have 64 bytes.
+
+\begin{lstlisting}
+# server.conf
+
+auth-method digest-hmac-sha512
+auth-key-len 64
+
+iface eth0
+{ 
+  class
+  {
+    pool 2000::100-2000::10f
+  } 
+}
+\end{lstlisting}
+
 
 \subsection{Relay configuration file}
 \label{relay-conf}

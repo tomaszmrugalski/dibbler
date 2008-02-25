@@ -3,10 +3,12 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.26 2007-04-10 19:41:10 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.27 2008-02-25 17:49:06 thomson Exp $
  *
  */
 
@@ -364,6 +366,12 @@ EState TClntCfgIface::getLifetimeState() {
 EState TClntCfgIface::getVendorSpecState() {
     return VendorSpecState;
 }
+EState TClntCfgIface::getKeyGenerationState() {
+    return KeyGenerationState;
+}
+EState TClntCfgIface::getAuthenticationState() {
+    return AuthenticationState;
+}
 // --------------------------------------------------------------------
 // --- options: get option --------------------------------------------
 // --------------------------------------------------------------------
@@ -451,6 +459,14 @@ void TClntCfgIface::setLifetimeState(EState state) {
 
 void TClntCfgIface::setVendorSpecState(EState state) {
     this->VendorSpecState = state;
+}
+
+void TClntCfgIface::setKeyGenerationState(EState state) {
+    this->KeyGenerationState = state;
+}
+
+void TClntCfgIface::setAuthenticationState(EState state) {
+    this->AuthenticationState = state;
 }
 
 void TClntCfgIface::setPrefixLength(int len) {

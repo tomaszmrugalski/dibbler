@@ -34,8 +34,9 @@ class TAddrMgr
     //--- Client container ---
     void addClient(SmartPtr<TAddrClient> x);
     void firstClient();
-    SPtr<TAddrClient> getClient();
-    SPtr<TAddrClient> getClient(SmartPtr<TDUID> duid);
+    SmartPtr<TAddrClient> getClient();
+    SmartPtr<TAddrClient> getClient(SmartPtr<TDUID> duid);
+    SmartPtr<TAddrClient> getClient(uint32_t SPI);
     SPtr<TAddrClient> getClient(SPtr<TIPv6Addr> leasedAddr);
     int countClient();
     bool delClient(SmartPtr<TDUID> duid);

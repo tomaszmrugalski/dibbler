@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.12 2007-03-04 22:34:06 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.13 2008-02-25 17:49:07 thomson Exp $
  *
  */
 
@@ -51,6 +51,8 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	Options.append(new TClntOptClientIdentifier(ClntCfgMgr->getDUID(),this));
 
     this->appendRequestedOptions();
+
+    appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];
 }
@@ -106,6 +108,8 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
             case OPTION_INTERFACE_ID:
             case OPTION_RECONF_MSG:
             case OPTION_AUTH:
+            case OPTION_AAAAUTH:
+            case OPTION_KEYGEN:
                 Options.del();
                 break;        
         }
@@ -115,6 +119,9 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
         //RECONF_ACCEPT - maybe also SERVERID if information request
         //is answer to reconfigure message
     }
+
+    appendAuthenticationOption(AddrMgr);
+
     pkt = new char[getSize()];
 }
 

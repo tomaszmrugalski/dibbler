@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.27 2007-01-27 17:12:56 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.28 2008-02-25 17:49:11 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -38,6 +38,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	     solicit->getTransID())
 {
     this->copyRelayInfo((Ptr*)solicit);
+    this->copyAAASPI((Ptr*)solicit);
     if (!this->answer(solicit)) {
 	this->IsDone = true;
 	return;
@@ -57,6 +58,8 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     clntDuid = optClntID->getDUID();
     clntAddr = solicit->getAddr();
     clntIface =solicit->getIface();
+
+    this->copyAAASPI((Ptr*)solicit);
 
     // is this client supported?
     if (!SrvCfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
@@ -120,8 +123,6 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	case OPTION_AUTH : {
-	    // FIXME: should be done in SrvMsg::appendRequestedOptions()
-	    Log(Warning) << "[s] Advertise option " << opt->getOptType() << "." << LogEnd;
 		reqOpts->addOption(OPTION_AUTH);
     	break;
     }                 
@@ -189,6 +190,12 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	
+    case OPTION_AAAAUTH:
+	{
+	    Log(Debug) << "Auth: Option AAAAuthentication received." << LogEnd;
+	    break;
+	}
+	
 	// options not yet supported 
 	case OPTION_RELAY_MSG :
 	case OPTION_USER_CLASS :
@@ -197,7 +204,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	case OPTION_RECONF_MSG :
 	case OPTION_RECONF_ACCEPT:
 	default: {
-	    Log(Debug) << "Option " << opt->getOptType() << "is not supported." << LogEnd;
+	    Log(Debug) << "Option " << opt->getOptType() << " is not supported." << LogEnd;
 	    break;
 	}
 	} // end of switch
@@ -245,6 +252,8 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
     }
+
+    appendAuthenticationOption(clntDuid);
 
     pkt = new char[this->getSize()];
     this->MRT = 0;

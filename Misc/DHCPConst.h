@@ -10,6 +10,7 @@
  */
 
 #include "limits.h"
+//#include "SmartPtr.h"
 
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
@@ -155,6 +156,13 @@
 #define OPTION_LQ_RELAY_DATA    47
 #define OPTION_LQ_CLIENT_LINK   48
 
+// The following option numbers are not yet standardized and
+// won't interoperate with other implementations
+// option formats taken from:
+// draft-ram-dhc-dhcpv6-aakey-01.txt
+#define OPTION_AAAAUTH              240
+#define OPTION_KEYGEN               241
+
 // Experimental implementation for address prefix length information
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251
@@ -253,8 +261,28 @@ int allowOptInOpt(int msgType, int optOut, int optIn);
 int allowOptInMsg(int msgType, int optType);
 
 #ifdef WIN32
+//#define uint8_t  unsigned char
+//#define uint16_t unsigned short int
+//#define uint32_t unsigned int
+
+#ifndef uint8_t
+#define uint8_t  unsigned char
+#endif
+
+#ifndef uint16_t
 #define uint16_t unsigned short int
+#endif
+
+#ifndef uint32_t
 #define uint32_t unsigned int
+#endif
+
+#ifndef uint64_t
+#define uint64_t unsigned long long int
+#endif
+
+#else
+#include <stdint.h>
 #endif
 
 enum DigestTypes {
@@ -265,13 +293,24 @@ enum DigestTypes {
         DIGEST_HMAC_SHA224 = 4,
         DIGEST_HMAC_SHA256 = 5,
         DIGEST_HMAC_SHA384 = 6,
-        DIGEST_HMAC_SHA512 = 7
+        DIGEST_HMAC_SHA512 = 7,
+        //this must be last, increase it if necessary
+        DIGEST_INVALID = 8
 };
 
 unsigned getDigestSize(enum DigestTypes type);
+char *getDigestName(enum DigestTypes type);
         
-// for debugging purposes:
-#define printhex(buf, len) { unsigned j; for (j = 0; j < len; j++) printf("%02x ", (unsigned char) *(buf+j)); printf("\n"); }
+// key is generated this way:
+// key = HMAC-SHA1 (AAA-key, {Key Generation Nonce || client identifier})
+// so it's size is always size of HMAC-SHA1 result which is 160bits = 20bytes
+#define AUTHKEYLEN 20
 
+// for debugging purposes
+void printHex(char *message, char *buf, unsigned len);
+
+#ifndef WIN32
+void print_trace(void);
 #endif
 
+#endif

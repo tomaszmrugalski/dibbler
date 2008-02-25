@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.40 2007-05-05 12:31:59 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.41 2008-02-25 17:49:07 thomson Exp $
  */
 
 #include "Portable.h"
@@ -100,8 +100,10 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case ADVERTISE_MSG:
             ptr = new TClntMsgAdvertise(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
                 ifaceid,peer,buf,bufsize);
-            if (!ptr->validateAuthInfo(buf, bufsize))
+            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr->getAuthAcceptMethods())) {
+                    Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
                     return 0;
+            }
             return ptr;
         case SOLICIT_MSG:
         case REQUEST_MSG:
@@ -116,8 +118,10 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case REPLY_MSG:
             ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
                 ifaceid, peer, buf, bufsize);
-            if (!ptr->validateAuthInfo(buf, bufsize))
+            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr->getAuthAcceptMethods())) {
+                    Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
                     return 0;
+            }
             return ptr;
 
         case RECONFIGURE_MSG:
@@ -126,7 +130,7 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case RELAY_FORW_MSG: // those two msgs should not be visible for client
         case RELAY_REPL_MSG:
         default:
-            Log(Warning) << "Message type " << msgtype << " must not be recevied by client. Check your relay/server configuration." << LogEnd;
+            Log(Warning) << "Message type " << msgtype << " is not supposed to be received by client. Check your relay/server configuration." << LogEnd;
             return 0;
         }
     } else {

@@ -1,16 +1,16 @@
 include ../Makefile.inc
 
-OBJECTS = ClntOptClientIdentifier.o 	ClntOptElapsed.o 	ClntOptIAAddress.o      \
-	  ClntOptPreference.o      	ClntOptRapidCommit.o                            \
-	  ClntOptServerIdentifier.o 	ClntOptServerUnicast.o 	ClntOptStatusCode.o 	\
-	  ClntOptUserClass.o 		ClntOptVendorClass.o 	ClntOptVendorSpec.o     \
-	  ClntOptIA_PD.o		ClntOptOptionRequest.o  ClntOptDNSServers.o     \
-	  ClntOptDomainName.o		ClntOptNTPServers.o     ClntOptTimeZone.o       \
-          ClntOptSIPServer.o            ClntOptSIPDomain.o      ClntOptFQDN.o           \
-          ClntOptNISServer.o            ClntOptNISDomain.o      ClntOptNISPServer.o     \
-          ClntOptNISPDomain.o           ClntOptLifetime.o       ClntOptTA.o             \
-	  ClntOptIAPrefix.o             ClntOptIA_NA.o		ClntOptAuthentication.o \
-	  ClntOptAddrParams.o
+OBJECTS = ClntOptClientIdentifier.o ClntOptElapsed.o 	       ClntOptIAAddress.o      \
+	  ClntOptPreference.o       ClntOptRapidCommit.o       ClntOptAddrParams.o     \
+	  ClntOptServerIdentifier.o ClntOptServerUnicast.o     ClntOptStatusCode.o     \
+	  ClntOptUserClass.o 	    ClntOptVendorClass.o       ClntOptVendorSpec.o     \
+	  ClntOptIA_PD.o	    ClntOptOptionRequest.o     ClntOptDNSServers.o     \
+	  ClntOptDomainName.o	    ClntOptNTPServers.o        ClntOptTimeZone.o       \
+          ClntOptSIPServer.o        ClntOptSIPDomain.o         ClntOptFQDN.o           \
+          ClntOptNISServer.o        ClntOptNISDomain.o         ClntOptNISPServer.o     \
+          ClntOptNISPDomain.o       ClntOptLifetime.o          ClntOptTA.o             \
+	  ClntOptIAPrefix.o         ClntOptIA_NA.o	       ClntOptAuthentication.o \
+	  ClntOptKeyGeneration.o    ClntOptAAAAuthentication.o
 
 objs: $(OBJECTS)
 

@@ -430,12 +430,7 @@ void smallset_t::check() {
 void smallset_t::runpoll(int msecs) {
   int ret;
   while (1) {
-#ifndef WIN32
 	  ret = poll(items, nitems, (msecs >= 1000) ? 1000 : msecs);
-#else
-	  printf("FIXME: poll support in Windows seems to be missing: poslib\\socket.cpp");
-	  exit(-1);
-#endif
 	  if (ret < 0 && errno != EINTR) {
       throw PException(true, "Error during poll: %d->%d", ret, errno);
     }

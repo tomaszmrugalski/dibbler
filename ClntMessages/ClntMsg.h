@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  */
@@ -41,13 +42,17 @@ public:
     virtual bool check() = 0;
     void setIface(int iface); // used to override when we have received msg via loopback interface.
 
+    void copyAAASPI(SmartPtr<TClntMsg> q);
     void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
 //    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
+    void appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr);
     void appendRequestedOptions();
     SmartPtr<TClntTransMgr>  getClntTransMgr();
     SmartPtr<TClntAddrMgr>   getClntAddrMgr();
     SmartPtr<TClntCfgMgr>    getClntCfgMgr();
     SmartPtr<TClntIfaceMgr>  getClntIfaceMgr();
+
+    bool validateReplayDetection();
 
     virtual string getName() = 0;
     virtual void answer(SPtr<TClntMsg> reply);

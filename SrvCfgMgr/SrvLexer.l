@@ -98,13 +98,19 @@ vendor-spec         { return SrvParser::VENDOR_SPEC_; }
 addr-params         { return SrvParser::ADDR_PARAMS_; }
 experimental        { return SrvParser::EXPERIMENTAL_; }
 inactive-mode       { return SrvParser::INACTIVE_MODE_; }
+accept-leasequery   { return SrvParser::ACCEPT_LEASEQUERY_; }
+
 auth-method         { return SrvParser::AUTH_METHOD_; }
 auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
 auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
 digest-none         { return SrvParser::DIGEST_NONE_; }
+digest-plain        { return SrvParser::DIGEST_PLAIN_; }
 digest-hmac-md5     { return SrvParser::DIGEST_HMAC_MD5_; }
 digest-hmac-sha1    { return SrvParser::DIGEST_HMAC_SHA1_; }
-accept-leasequery   { return SrvParser::ACCEPT_LEASEQUERY_; }
+digest-hmac-sha224  { return SrvParser::DIGEST_HMAC_SHA224_; }
+digest-hmac-sha256  { return SrvParser::DIGEST_HMAC_SHA256_; }
+digest-hmac-sha384  { return SrvParser::DIGEST_HMAC_SHA384_; }
+digest-hmac-sha512  { return SrvParser::DIGEST_HMAC_SHA512_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}

@@ -33,11 +33,16 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+# define SWAP(n) \
+    (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
+#else
 #if __BYTE_ORDER == __BIG_ENDIAN
 # define SWAP(n) (n)
 #else
 # define SWAP(n) \
     (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
+#endif
 #endif
 
 #define BLOCKSIZE 4096

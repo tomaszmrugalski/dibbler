@@ -3,7 +3,7 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  */

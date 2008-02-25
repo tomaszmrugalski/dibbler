@@ -19,8 +19,7 @@ public:
     TOptAuthentication(TMsg* parent);
     TOptAuthentication(char * &buf,  int &n,TMsg* parent);
     void setRDM(uint8_t value);
-    void setReplayDet(uint64_t value);
-    void setSPI(uint32_t value);
+    uint32_t getSPI();
     void setAuthInfoLen(uint16_t len);
     void setDigestType(enum DigestTypes type);
     int getSize();
@@ -28,8 +27,6 @@ public:
 
 private:
     uint8_t RDM;
-    uint64_t ReplayDet;
-    uint32_t SPI;
     uint16_t AuthInfoLen;
 
     bool Valid;

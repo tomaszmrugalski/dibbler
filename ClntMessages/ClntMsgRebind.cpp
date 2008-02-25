@@ -3,10 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.13 2007-05-04 17:22:49 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.14 2008-02-25 17:49:07 thomson Exp $
  *
  */
 
@@ -73,6 +74,9 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
       }
     }
     MRD= maxMRD;
+
+    appendAuthenticationOption(AddrMgr);
+
     pkt = new char[getSize()];
     this->IsDone = false;    
 }

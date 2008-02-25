@@ -4,10 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Micha³ Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.30 2007-12-03 16:54:35 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.31 2008-02-25 17:49:06 thomson Exp $
  *
  */
 
@@ -74,6 +75,18 @@ SPtr<TAddrClient> TAddrMgr::getClient(SmartPtr<TDUID> duid)
     while (ptr = ClntsLst.get() ) 
     {
         if ( *(ptr->getDUID()) == (*duid) )
+            return ptr;
+    }
+    return SmartPtr<TAddrClient>();
+}
+
+SmartPtr<TAddrClient> TAddrMgr::getClient(uint32_t SPI)
+{
+    SmartPtr<TAddrClient> ptr;
+    ClntsLst.first();
+    while (ptr = ClntsLst.get() ) 
+    {
+        if ( ptr->getSPI() == SPI )
             return ptr;
     }
     return SmartPtr<TAddrClient>();

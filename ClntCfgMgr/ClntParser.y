@@ -510,12 +510,12 @@ DigestList
 ;
 
 Digest
-: DIGEST_HMAC_MD5_    { DigestLst.append(DIGEST_HMAC_MD5); }
-| DIGEST_HMAC_SHA1_   { DigestLst.append(DIGEST_HMAC_SHA1); }
-| DIGEST_HMAC_SHA224_ { DigestLst.append(DIGEST_HMAC_SHA224); }
-| DIGEST_HMAC_SHA256_ { DigestLst.append(DIGEST_HMAC_SHA256); }
-| DIGEST_HMAC_SHA384_ { DigestLst.append(DIGEST_HMAC_SHA384); }
-| DIGEST_HMAC_SHA512_ { DigestLst.append(DIGEST_HMAC_SHA512); }
+: DIGEST_HMAC_MD5_    { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA1_   { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA224_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA256_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA384_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA512_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); }
 ; 
 
 AnonInfRequest

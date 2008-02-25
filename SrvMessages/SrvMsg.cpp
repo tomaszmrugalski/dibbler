@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.47 2007-12-25 08:11:57 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.48 2008-02-25 17:49:11 thomson Exp $
  */
 
 #include <sstream>
@@ -49,6 +49,8 @@
 #include "SrvOptNISPDomain.h"
 #include "SrvOptLifetime.h"
 #include "DNSUpdate.h"
+#include "SrvOptAAAAuthentication.h"
+#include "SrvOptKeyGeneration.h"
 #include "SrvOptAuthentication.h"
 
 #include "Logger.h"
@@ -77,6 +79,8 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->Relays = 0;
+    this->DigestType = CfgMgr->getDigest();
+    this->AuthKeys = CfgMgr->AuthKeys;
 }
 
 /** 
@@ -102,6 +106,8 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->Relays = 0;
+    this->AuthKeys = CfgMgr->AuthKeys;
+    this->DigestType = CfgMgr->getDigest();
 	
     int pos=0;
     while (pos<bufSize)	{
@@ -209,17 +215,33 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    ptr = new TSrvOptLQ(buf+pos, length, this);
 	    break;
 	    // remaining LQ options are not supported to be received by server
-	case OPTION_AUTH:
-        this->DigestType = DIGEST_HMAC_SHA1;
-	    // FIXME: Detect digest type
+	case OPTION_AAAAUTH:
+        if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
             this->DigestType = DIGEST_HMAC_SHA1;
-	    ptr = new TSrvOptAuthentication(buf+pos, length, this);
+    	    ptr = new TSrvOptAAAAuthentication(buf+pos, length, this);
+        }
 	    break;
+    case OPTION_KEYGEN:
+	    Log(Warning) << "Option OPTION_KEYGEN received by server is invalid, ignoring." << LogEnd;
+	    break;
+	case OPTION_AUTH:
+        if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
+           this->DigestType = SrvCfgMgr->getDigest();
+
+           ptr = new TSrvOptAuthentication(buf+pos, length, this);
+           SmartPtr<TOptDUID> optDUID = (SmartPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
+           if (optDUID) {
+               SmartPtr<TAddrClient> client = SrvAddrMgr->getClient(optDUID->getDUID());
+               if (client)
+                   client->setSPI(SPI);
+           }
+        }
+	    
+        break;
 	case OPTION_VENDOR_OPTS:
 	    ptr = new TSrvOptVendorSpec(buf+pos, length, this);
 	    break;
 	case OPTION_RECONF_ACCEPT:
-	  //this->DigestType = DIGEST_HMAC_SHA1;
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
 	case OPTION_RECONF_MSG:
@@ -248,6 +270,8 @@ void TSrvMsg::setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     SrvAddrMgr=AddrMgr;
     FirstTimeStamp = now();
     this->MRT=0;
+    KeyGenNonce = NULL;
+    KeyGenNonceLen = 0;
 }
 
 void TSrvMsg::doDuties() {
@@ -333,6 +357,12 @@ void TSrvMsg::send()
     this->SrvIfaceMgr->send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
 }
 
+void TSrvMsg::copyAAASPI(SmartPtr<TSrvMsg> q) {
+    this->AAASPI = q->getAAASPI();
+    this->SPI = q->getSPI();
+    this->AuthInfoKey = q->getAuthInfoKey();
+}
+
 void TSrvMsg::copyRelayInfo(SmartPtr<TSrvMsg> q) {
     this->Relays = q->Relays;
     for (int i=0; i < this->Relays; i++) {
@@ -389,6 +419,38 @@ int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
     }
     
     return offset;
+}
+
+/** 
+ * this function appends authentication option
+ * 
+ */
+void TSrvMsg::appendAuthenticationOption(SmartPtr<TDUID> duid)
+{
+    if (!duid) {
+        Log(Error) << "Auth: No duid! Probably internal error. Authentication option not appended." << LogEnd;
+        return;
+    }
+
+    DigestType = SrvCfgMgr->getDigest();
+    if (DigestType == DIGEST_NONE) {
+        Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
+        return;
+    }
+
+    Log(Debug) << "Auth: Setting DigestType to: " << this->DigestType << LogEnd;
+
+    if (!getOption(OPTION_AUTH)) {
+        SmartPtr<TAddrClient> client = SrvAddrMgr->getClient(duid);
+        if (client && !client->getSPI() && this->getSPI())
+            client->setSPI(this->getSPI());
+
+        if (client)
+            this->ReplayDetection = client->getNextReplayDetectionSent();
+        else
+            this->ReplayDetection = 1;
+        Options.append(new TSrvOptAuthentication(this));
+    }
 }
 
 /** 
@@ -548,23 +610,26 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	newOptionAssigned = true;
     }
 
-    // --- option: AUTH ---
-    // FIXME: implement some logic here
-    // if server is configured to allow DIGEST_NONE and client didn't send AUTH - don't send
-    // if server is configured to allow DIGEST_HMAC_SHA1 only, then send it
-    // FIXME: change to real DigestType
-    this->DigestType = DIGEST_HMAC_SHA1;
-    // if ...
-    // tips: use SrvCfgMgr->getDigest() 
-    if ( reqOpts->isOption(OPTION_AUTH) ) { 
-      // [s] - something like that has to be added'a: && ptrIface->supportLifetime() ) {
-      // [thomson] Note1: Sammael, don't use polish comments
-      // [thomson] Note2: supportLifetime() has nothing to do with AUTH
-      // FIXME: change to real DigestType
-	this->DigestType = DIGEST_HMAC_SHA1;
-	SmartPtr<TSrvOptAuthentication> optAuthentication = new TSrvOptAuthentication(this);
-	Options.append( (Ptr*)optAuthentication);
+    // --- option: KEYGEN ---
+    if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr->getDigest() != DIGEST_NONE ) { // && this->MsgType == ADVERTISE_MSG ) {
+        	SmartPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
+        	Options.append( (Ptr*)optKeyGeneration);
     }
+
+    // --- option: AUTH ---
+
+    /*
+    if ( reqOpts->isOption(OPTION_AUTH)  && SrvCfgMgr->getDigest() != DIGEST_NONE ) {
+        this->DigestType = SrvCfgMgr->getDigest();
+        
+        if (SrvAddrMgr->getClient(duid) && SrvAddrMgr->getClient(duid)->getSPI())
+            this->setSPI(SrvAddrMgr->getClient(duid)->getSPI());
+        SmartPtr<TSrvOptAuthentication> optAuthentication = new TSrvOptAuthentication(this);
+        Options.append( (Ptr*)optAuthentication);
+        
+        SrvAddrMgr->getClient(duid)->setSPI(this->getSPI());
+    }
+    */
 
     return newOptionAssigned;
 }
@@ -578,8 +643,6 @@ string TSrvMsg::showRequestedOptions(SmartPtr<TSrvOptOptionRequest> oro) {
     x << i << " opts";
     if (i)
 	x << ":";
-    // FIXME: change to real DigestType
-    this->DigestType = DIGEST_HMAC_SHA1;
     for (i=0;i<oro->count();i++) {
 	x << " " << oro->getReqOpt(i);
     }
@@ -833,4 +896,31 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSr
 
     Log(Debug) << "Unable to find any vendor-specific option." << LogEnd;
     return false;
+}
+
+SmartPtr<TSrvTransMgr> TSrvMsg::getSrvTransMgr()
+{
+    return this->SrvTransMgr;
+}
+
+bool TSrvMsg::validateReplayDetection() {
+    if (this->MsgType == SOLICIT_MSG)
+        return true;
+
+    SmartPtr<TAddrClient> client = SrvAddrMgr->getClient(SPI);
+    if (!client) {
+        Log(Debug) << "Auth: Unable to find client with SPI=" << SPI << "." << LogEnd;
+        return true;
+    }
+
+    if (!client->getReplayDetectionRcvd() && !this->ReplayDetection)
+        return true;
+
+    if (client->getReplayDetectionRcvd() < this->ReplayDetection) {
+        client->setReplayDetectionRcvd(this->ReplayDetection);
+        return true;
+    } else {
+        Log(Warning) << "Auth: Replayed message detected, message dropped." << LogEnd;
+        return false;
+    }
 }

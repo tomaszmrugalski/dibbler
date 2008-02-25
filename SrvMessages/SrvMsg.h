@@ -4,9 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.15 2007-05-01 14:18:16 thomson Exp $
+ * $Id: SrvMsg.h,v 1.16 2008-02-25 17:49:11 thomson Exp $
  *
  */
 
@@ -46,6 +48,8 @@ public:
     SPtr<TSrvIfaceMgr>  SrvIfaceMgr;
     
     void copyRelayInfo(SPtr<TSrvMsg> q);
+    void copyAAASPI(SPtr<TSrvMsg> q);
+    void appendAuthenticationOption(SmartPtr<TDUID> duid);
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
     string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
@@ -57,6 +61,10 @@ public:
 		      SPtr<TSrvOptInterfaceID> interfaceID);
 
     int getRelayCount();
+
+    bool validateReplayDetection();
+
+    SmartPtr<TSrvTransMgr> getSrvTransMgr();
 
     virtual bool check() = 0;
 

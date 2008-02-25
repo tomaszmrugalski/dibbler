@@ -222,6 +222,9 @@
 					RelativePath="..\misc\IPv6Addr.cpp">
 				</File>
 				<File
+					RelativePath="..\Misc\KeyList.cpp">
+				</File>
+				<File
 					RelativePath="..\misc\Logger.cpp">
 				</File>
 				<File
@@ -344,6 +347,9 @@
 				</File>
 				<File
 					RelativePath="..\misc\IPv6Addr.h">
+				</File>
+				<File
+					RelativePath="..\Misc\KeyList.h">
 				</File>
 				<File
 					RelativePath="..\misc\Logger.h">

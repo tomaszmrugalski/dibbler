@@ -3,11 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.cpp,v 1.9 2007-07-05 00:17:42 thomson Exp $
+ * $Id: daemon.cpp,v 1.10 2008-02-25 17:49:09 thomson Exp $
  *
  */
 

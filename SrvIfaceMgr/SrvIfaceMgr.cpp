@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.26 2007-11-01 08:11:18 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.27 2008-02-25 17:49:11 thomson Exp $
  *
  */
 
@@ -181,15 +181,21 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	case INFORMATION_REQUEST_MSG:
 	case LEASEQUERY_MSG:
 	    ptr = this->decodeMsg(ptrIface, peer, buf, bufsize);
-        if (!ptr->validateAuthInfo(buf, bufsize))
+        if (!ptr->validateReplayDetection() ||
+            !ptr->validateAuthInfo(buf, bufsize)) {
+            Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
             return 0;
+        }
         return ptr;
 	case RELAY_FORW_MSG:
 	    ptr = this->decodeRelayForw(ptrIface, peer, buf, bufsize);
-	if (!ptr)
-	    return 0;
-        if (!ptr->validateAuthInfo(buf, bufsize))
+        if (!ptr)
             return 0;
+        if (!ptr->validateReplayDetection() ||
+            !ptr->validateAuthInfo(buf, bufsize)) {
+            Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
+            return 0;
+        }
         return ptr;
 	case ADVERTISE_MSG:
 	case REPLY_MSG:

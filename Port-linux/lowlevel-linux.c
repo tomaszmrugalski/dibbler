@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.8 2007-04-10 23:25:06 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.9 2008-02-25 17:49:10 thomson Exp $
  *
  */
 
@@ -23,6 +23,8 @@
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <linux/netdevice.h>
 #include <linux/if_arp.h>
 #include <linux/sockios.h>
@@ -32,6 +34,7 @@
 #include <fnmatch.h>
 #include <time.h>
 #include <errno.h>
+
 
 #include "libnetlink.h"
 #include "ll_map.h"
@@ -602,6 +605,76 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
     rtnl_close(&rth);
 
     return tentative;
+}
+
+uint32_t getAAASPIfromFile() {
+    char filename[1024];
+    struct stat st;
+    uint32_t ret;
+    FILE *file;
+
+    strcpy(filename, "/var/lib/dibbler/AAA/AAA-SPI");
+
+    if (stat(filename, &st))
+        return 0;
+
+    file = fopen(filename, "r");
+    if (!file)
+        return 0;
+
+    fscanf(file, "%x", &ret);
+    fclose(file);
+
+    return ret;
+}
+
+char * getAAAKeyFilename(uint32_t SPI)
+{
+    static char filename[1024];
+    if (SPI != 0)
+        snprintf(filename, 1024, "%s%s%x", "/var/lib/dibbler/AAA/", "AAA-key-", SPI);
+    else
+        strcpy(filename, "/var/lib/dibbler/AAA/AAA-key");
+    return filename;
+}
+
+char * getAAAKey(uint32_t SPI, unsigned *len) {
+    char * filename = 0;
+    struct stat st;
+    char * retval;
+    int offset = 0;
+    int fd;
+    int ret;
+
+    filename = getAAAKeyFilename(SPI);
+
+    if (stat(filename, &st))
+        return NULL;
+
+    fd = open(filename, O_RDONLY);
+    if (0 > fd)
+        return NULL;
+
+    /* FIXME should be freed somewhere */
+    retval = malloc(st.st_size);
+    if (!retval)
+        return NULL;
+
+    while (offset < st.st_size) {
+        ret = read(fd, retval + offset, st.st_size - offset);
+        if (!ret) break;
+        if (ret < 0) {
+            return NULL;
+        }
+        offset += ret;
+    }
+    close(fd);
+
+    if (offset != st.st_size)
+        return NULL;
+
+    *len = st.st_size;
+    return retval;
 }
 
 char * error_message()

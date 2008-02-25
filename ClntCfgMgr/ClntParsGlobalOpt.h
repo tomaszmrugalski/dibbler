@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.12 2007-09-20 23:06:55 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.13 2008-02-25 17:49:06 thomson Exp $
  *
  */
 
@@ -39,7 +39,7 @@ public:
     bool getInactiveMode();
 
     void setAuthAcceptMethods(List(DigestTypes) lst);
-    List(DigestTypes) getAuthAccessMethods();
+    List(DigestTypes) getAuthAcceptMethods();
     void setAuthEnabled(bool enabled);
     bool getAuthEnabled();
 

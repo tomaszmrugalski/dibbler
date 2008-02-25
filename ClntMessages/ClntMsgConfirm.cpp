@@ -3,10 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.8 2007-04-22 21:19:28 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.9 2008-02-25 17:49:07 thomson Exp $
  *
  */
 
@@ -50,6 +51,9 @@ TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr,
     iaLst.first();
     while(ia=iaLst.get())
         Options.append(new TClntOptIA_NA(ia,true,this));
+
+    appendAuthenticationOption(AddrMgr);
+
     pkt = new char[getSize()];
 }           
 
@@ -66,7 +70,7 @@ void TClntMsgConfirm::answer(SmartPtr<TClntMsg> reply)
 	this->addrsRejected();
 	this->IsDone = true;
 	break;
-    case  STATUSCODE_UNSPECFAIL:
+    case STATUSCODE_UNSPECFAIL:
     case STATUSCODE_NOADDRSAVAIL:
     case STATUSCODE_NOBINDING:
     case STATUSCODE_USEMULTICAST:

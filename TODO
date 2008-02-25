@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.49 2008-01-01 20:09:24 thomson Exp $
+$Id: TODO,v 1.50 2008-02-25 17:49:05 thomson Exp $
 
 
  Leasequery HOWTO
@@ -51,6 +51,7 @@ New tasks should be done to the TODO list. After task is implemented, it should 
 
   Internal/code TODO
  --------------------
+- CLI: AUTH: set ClntCfgIface->getKeyGenerationState() somewhere
 - CLI: PD: this should be possible "iface eth0 { pd { prefix 2000::/64 } }"
 - CLI: PD: this should be possible "iface eth0 { pd { prefix prefix } }"
 - SRV: PD: prefixes are not removed from db if valid goes to 0.

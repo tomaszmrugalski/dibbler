@@ -7,15 +7,12 @@
  *
  * dummy wrapper for WIN32 compilation
  *
- * $Id: stdint.h,v 1.1 2006-12-07 21:57:10 thomson Exp $
+ * $Id: stdint.h,v 1.2 2008-02-25 17:49:10 thomson Exp $
  */
 
 #ifdef WIN32
 
 /* uint64_t, uint_t definitions */
 #include "Portable.h"
-
-typedef unsigned long uint32_t;
-
 
 #endif

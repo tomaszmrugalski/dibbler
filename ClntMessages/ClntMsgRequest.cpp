@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.23 2007-12-09 17:44:09 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.24 2008-02-25 17:49:08 thomson Exp $
  *
  */
 
@@ -66,6 +66,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     TransMgr->firstAdvertise();
     SPtr<TClntMsgAdvertise> advertise = (Ptr*) TransMgr->getAdvertise();
+    this->copyAAASPI((SmartPtr<TClntMsg>)advertise);
 
     // remove just used server
     TransMgr->delFirstAdvertise();
@@ -75,8 +76,25 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     // set proper Parent in copied options
     Options.first();
     SmartPtr<TOpt> opt;
-    while (opt = Options.get())
-        opt->setParent(this);
+    while (opt = Options.get()) {
+        // delete OPTION_AAAAUTH (needed only in SOLICIT)
+        if (opt->getOptType() == OPTION_AAAAUTH)
+            Options.del();
+        else
+            opt->setParent(this);
+    }
+
+    // delete OPTION_KEYGEN from OPTION_ORO (needed only once)
+    // FIXME: shouldn't it be done when receiving OPTION_KEYGEN in ADVERTISE?
+    SmartPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
+    if (optORO) {
+        if (advertise->getOption(OPTION_KEYGEN))
+            optORO->delOption(OPTION_KEYGEN);
+        // delete also OPTION_AUTH from OPTION_ORO
+        // FIXME: shouldn't it be done when receiving OPTION_AUTH in ADVERTISE?
+        if (advertise->getOption(OPTION_AUTH))
+            optORO->delOption(OPTION_AUTH);
+    }
 
     // copy addresses offered in ADVERTISE
     copyAddrsFromAdvertise((Ptr*) advertise);
@@ -117,6 +135,8 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     // ... and append server's DUID from ADVERTISE
     Options.append( srvDUID );
     
+    appendAuthenticationOption(AddrMgr);
+
     pkt = new char[getSize()];
 
 }
@@ -162,6 +182,9 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	Options.append((Ptr*)IA_NA);
     }
     Options.append(new TClntOptElapsed(this));
+
+    appendAuthenticationOption(AddrMgr);
+
     pkt = new char[getSize()];
 }
 
@@ -170,6 +193,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
  */
 void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
 {
+    this->copyAAASPI(msg);
     TClntMsg::answer(msg);
 }
 
@@ -258,6 +282,8 @@ void TClntMsgRequest::copyAddrsFromAdvertise(SPtr<TClntMsg> adv)
 {
     SPtr<TOpt> opt1, opt2, opt3;
     SPtr<TClntOptIA_NA> ia1, ia2;
+
+    this->copyAAASPI(adv);
 
     Options.first();
     while (opt1 = Options.get()) {

@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.15 2007-12-09 04:08:35 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.16 2008-02-25 17:49:06 thomson Exp $
  *
  */
 
@@ -18,6 +18,9 @@
 
 TAddrClient::TAddrClient(SmartPtr<TDUID> duid) {
     this->DUID=duid;
+    this->SPI = 0;
+    this->ReplayDetectionRcvd = 0;
+    this->ReplayDetectionSent = 1;
 }
 
 SmartPtr<TDUID> TAddrClient::getDUID() {
@@ -268,6 +271,30 @@ unsigned long TAddrClient::getLastTimestamp() {
     }
     
     return ts;
+}
+
+// --------------------------------------------------------------------
+// --- authentication related methods ---------------------------------
+// --------------------------------------------------------------------
+
+uint32_t TAddrClient::getSPI() {
+    return this->SPI;
+}
+
+void TAddrClient::setSPI(uint32_t val) {
+    SPI = val;
+}
+
+uint64_t TAddrClient::getReplayDetectionRcvd() {
+    return this->ReplayDetectionRcvd;
+}
+
+void TAddrClient::setReplayDetectionRcvd(uint64_t val) {
+    ReplayDetectionRcvd = val;
+}
+
+uint64_t TAddrClient::getNextReplayDetectionSent() {
+    return ++ReplayDetectionSent;
 }
 
 // --------------------------------------------------------------------

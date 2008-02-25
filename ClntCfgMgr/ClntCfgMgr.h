@@ -4,9 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.19 2007-04-01 04:53:17 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.20 2008-02-25 17:49:06 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -23,6 +25,7 @@ class ClntParser;
 #include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
 #include "CfgMgr.h"
+#include "KeyList.h"
 
 class TClntCfgMgr : public TCfgMgr
 {
@@ -52,6 +55,7 @@ class TClntCfgMgr : public TCfgMgr
     bool isDone();
 
     DigestTypes getDigest();
+    void setDigest(DigestTypes value);
     string getScriptsDir();
 
     bool anonInfRequest();
@@ -61,6 +65,12 @@ class TClntCfgMgr : public TCfgMgr
     int inactiveIfacesCnt();
     SPtr<TClntCfgIface> checkInactiveIfaces();
     bool openSocket(SPtr<TClntCfgIface> iface);
+
+    // Authorization
+    uint32_t getAAASPI();
+    List(DigestTypes) getAuthAcceptMethods();
+    bool getAuthEnabled();
+    SmartPtr<KeyList> AuthKeys;
 
 private:
     bool setGlobalOptions(ClntParser * parser);
@@ -81,6 +91,11 @@ private:
     bool AnonInfRequest;
     bool InsistMode;
     bool InactiveMode;
+
+    bool AuthEnabled;
+    List(DigestTypes) AuthAcceptMethods;
+
+    uint32_t AAASPI;
 };
 
 typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);

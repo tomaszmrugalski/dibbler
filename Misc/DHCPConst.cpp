@@ -5,12 +5,14 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.14 2007-12-03 16:57:17 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.15 2008-02-25 17:49:08 thomson Exp $
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
  */
 #include "DHCPConst.h"
+#include "Logger.h"
+#include "SmartPtr.h"
 
 
 // standard options specified in RFC3315, pg. 99
@@ -110,18 +112,71 @@ int allowOptInOpt(int msgType, int parent, int subopt) {
     return 0;
 }
 
-/* see Misc/DHCPConst.h */
 unsigned DIGESTSIZE[] = {
         0,  //NONE
         32, //PLAIN
-        16, //MD5
+        16, //HMAC-MD5
         20, //HMAC-SHA1
         28, //HMAC-SHA224
         32, //HMAC-SHA256
         48, //HMAC-SHA384
-        64  //HMAC-SHA512
+        64, //HMAC-SHA512
+        0   //_END_
+};
+
+char *DIGESTNAME[] = {
+        "NONE",
+        "PLAIN",
+        "HMAC-MD5",
+        "HMAC-SHA-1",
+        "HMAC-SHA-224",
+        "HMAC-SHA-256",
+        "HMAC-SHA-384",
+        "HMAC-SHA-512",
+        ""   //_END_
 };
 
 unsigned getDigestSize(enum DigestTypes type) {
+        if (type >= DIGEST_INVALID) {
+                Log(Error) << "Invalid digest type: " << type << LogEnd;
+                return 0;
+        }
         return DIGESTSIZE[type];
 }
+
+char *getDigestName(enum DigestTypes type) {
+    return DIGESTNAME[type];
+}
+
+void printHex(char *message, char *buffer, unsigned len) {
+    unsigned j;
+    char *buf = new char[len*3+1];
+
+    if (len) {
+        for (j = 0; j < len; j++) {
+            sprintf(buf + j*3, "%02x ", (unsigned char) *(buffer+j));
+        }
+
+        Log(Debug) << message << buf << LogEnd;
+    } else 
+        Log(Debug) << message << "N/A (zero length)" << LogEnd;
+
+    delete buf;
+}
+
+#ifndef WIN32
+#include <execinfo.h>
+
+
+/*
+  [Thomson: very clever function. It prints backtrace. Done by Michal Kowalczuk.]
+ */ 
+void print_trace(void)
+{
+  void *array[10];
+  size_t size;
+
+  size = backtrace (array, 10);
+  backtrace_symbols_fd (array, size, 1);
+}
+#endif

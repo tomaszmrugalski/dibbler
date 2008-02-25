@@ -4,9 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgIface.h,v 1.18 2007-01-27 17:11:10 thomson Exp $
+ * $Id: ClntCfgIface.h,v 1.19 2008-02-25 17:49:06 thomson Exp $
  */
 
 class TClntCfgIface;
@@ -170,6 +172,14 @@ public:
     SPtr<TClntOptVendorSpec> getVendorSpec();
     int getVendorSpecCount();
 
+    // --- option: KeyGeneration ---
+    EState getKeyGenerationState();
+    void setKeyGenerationState(EState state);
+
+    // --- option: Authentication ---
+    EState getAuthenticationState();
+    void setAuthenticationState(EState state);
+
 private:
     string IfaceName;
     int ID;
@@ -213,6 +223,8 @@ private:
     EState LifetimeState;
     EState PrefixDelegationState;
     EState VendorSpecState;
+    EState KeyGenerationState;
+    EState AuthenticationState;
 
     bool ReqDNSServer;
     bool ReqDomain;

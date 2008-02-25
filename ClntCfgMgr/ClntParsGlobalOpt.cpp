@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.12 2007-09-20 23:06:55 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.13 2008-02-25 17:49:06 thomson Exp $
  *
  */
 
@@ -109,7 +109,7 @@ void TClntParsGlobalOpt::setAuthAcceptMethods(List(DigestTypes) lst)
     Log(Debug) << "AUTH: " << lst.count() << " method(s) accepted." << LogEnd;
 }
 
-List(DigestTypes) TClntParsGlobalOpt::getAuthAccessMethods()
+List(DigestTypes) TClntParsGlobalOpt::getAuthAcceptMethods()
 {
     return AuthAcceptMethods;
 }

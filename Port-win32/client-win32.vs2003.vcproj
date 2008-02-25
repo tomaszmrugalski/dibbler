@@ -178,6 +178,9 @@
 					RelativePath="..\Options\Opt.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptAAAAuthentication.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptAddr.cpp">
 				</File>
 				<File
@@ -209,6 +212,9 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptInteger.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptKeyGeneration.cpp">
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
@@ -257,6 +263,9 @@
 				Name="ClntOptions"
 				Filter="">
 				<File
+					RelativePath="..\ClntOptions\ClntOptAAAAuthentication.cpp">
+				</File>
+				<File
 					RelativePath="..\ClntOptions\ClntOptAddrParams.cpp">
 				</File>
 				<File
@@ -288,6 +297,9 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptIAPrefix.cpp">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptKeyGeneration.cpp">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptLifetime.cpp">
@@ -551,6 +563,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\Misc\KeyList.cpp">
+				</File>
+				<File
 					RelativePath="..\misc\Logger.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -678,6 +693,9 @@
 					RelativePath="..\sources\Options\Opt.h">
 				</File>
 				<File
+					RelativePath="..\Options\OptAAAAuthentication.h">
+				</File>
+				<File
 					RelativePath="..\Options\OptAddr.h">
 				</File>
 				<File
@@ -703,6 +721,9 @@
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptInterfaceID.h">
+				</File>
+				<File
+					RelativePath="..\Options\OptKeyGeneration.h">
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptNTPServers.h">
@@ -748,6 +769,9 @@
 				Name="ClntOptions"
 				Filter="">
 				<File
+					RelativePath="..\ClntOptions\ClntOptAAAAuthentication.h">
+				</File>
+				<File
 					RelativePath="..\ClntOptions\ClntOptClientIdentifier.h">
 				</File>
 				<File
@@ -767,6 +791,9 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptIAAddress.h">
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptKeyGeneration.h">
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptLifetime.h">
@@ -876,13 +903,28 @@
 					RelativePath="..\misc\IPv6Addr.h">
 				</File>
 				<File
+					RelativePath="..\Misc\KeyList.h">
+				</File>
+				<File
 					RelativePath="..\misc\Logger.h">
 				</File>
 				<File
 					RelativePath="..\misc\long128.h">
 				</File>
 				<File
+					RelativePath="..\Misc\md5.h">
+				</File>
+				<File
 					RelativePath="..\misc\Portable.h">
+				</File>
+				<File
+					RelativePath="..\Misc\sha1.h">
+				</File>
+				<File
+					RelativePath="..\Misc\sha256.h">
+				</File>
+				<File
+					RelativePath="..\Misc\sha512.h">
 				</File>
 				<File
 					RelativePath="..\misc\SmartPtr.h">

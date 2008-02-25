@@ -4,10 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.53 2007-10-25 07:00:52 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.54 2008-02-25 17:49:10 thomson Exp $
  *
  */
 
@@ -53,6 +54,8 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string x
     }
 
     this->dump();
+
+    AuthKeys = new KeyList();
 
     IsDone = false;
 }
@@ -121,7 +124,10 @@ bool TSrvCfgMgr::setGlobalOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->CacheSize        = opt->getCacheSize();
     this->DigestLst        = opt->getDigest();
     this->InterfaceIDOrder = opt->getInterfaceIDOrder();
-    this->InactiveMode     = opt->getInactiveMode(); // should the server accept not ready interfaces?
+    this->InactiveMode     = opt->getInactiveMode(); // should the client accept not ready interfaces?
+
+    this->AuthKeyGenNonceLen = opt->getAuthKeyLen();
+    this->AuthLifetime = opt->getAuthLifetime();
     return true;
 }
 
@@ -739,6 +745,32 @@ bool TSrvCfgMgr::incrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
     return iface->addClntPrefix(prefix);
 }
 
+List(DigestTypes) TSrvCfgMgr::getDigestLst() {
+    return this->DigestLst;
+}
+
+enum DigestTypes TSrvCfgMgr::getDigest() {
+    SmartPtr<DigestTypes> dt;
+
+    if (0 == DigestLst.count())
+        return DIGEST_NONE;
+
+    dt = DigestLst.getFirst();
+    if (!dt || *dt >= DIGEST_INVALID)
+        return DIGEST_NONE;
+
+    return *dt;
+}
+
+unsigned int TSrvCfgMgr::getAuthLifetime()
+{
+    return AuthLifetime;
+}
+
+unsigned int TSrvCfgMgr::getAuthKeyGenNonceLen()
+{
+    return AuthKeyGenNonceLen;
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

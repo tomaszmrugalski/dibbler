@@ -3,12 +3,16 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgDecline.cpp,v 1.3 2005-01-08 16:52:03 thomson Exp $
+ * $Id: ClntMsgDecline.cpp,v 1.4 2008-02-25 17:49:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005-01-08 16:52:03  thomson
+ * Relay support implemented.
+ *
  * Revision 1.2  2004/06/20 17:51:48  thomson
  * getName() method implemented, comment cleanup
  *
@@ -52,6 +56,9 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
     while ( ptrIA = IALst.get() ) {
 	Options.append( new TClntOptIA_NA(ptrIA,this));
     }
+
+    appendAuthenticationOption(AddrMgr);
+
     pkt = new char[getSize()];
 
 }

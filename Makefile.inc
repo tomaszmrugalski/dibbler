@@ -133,7 +133,7 @@ FINDOPTS = -path './poslib/*' -prune -o
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
-	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) TAGS
+	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) $(REQUESTORBIN) TAGS
 	find . $(FINDOPTS) -type l -exec rm {} \;
 	find . $(FINDOPTS) -name *.a -exec rm {} \;
 	find . $(FINDOPTS) -name *~ -exec rm {} \;

@@ -3,12 +3,16 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgAdvertise.cpp,v 1.5 2007-03-27 23:44:56 thomson Exp $
+ * $Id: ClntMsgAdvertise.cpp,v 1.6 2008-02-25 17:49:07 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2007-03-27 23:44:56  thomson
+ * Client now chooses server properly (bug #151)
+ *
  * Revision 1.4  2006-11-11 06:56:26  thomson
  * Improved required/not allowed options checking.
  *
@@ -25,6 +29,7 @@
 #include "OptPreference.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
+#include "ClntOptKeyGeneration.h"
 #include "ClntOptPreference.h"
 
 TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
@@ -76,9 +81,11 @@ string TClntMsgAdvertise::getInfo()
     ostringstream tmp;
     SPtr<TClntOptPreference> pref;
     SPtr<TClntOptServerIdentifier> srvID;
+    SPtr<TClntOptKeyGeneration> keyGen;
 
-    pref  = (Ptr*) getOption(OPTION_PREFERENCE);
-    srvID = (Ptr*) getOption(OPTION_SERVERID);
+    pref   = (Ptr*) getOption(OPTION_PREFERENCE);
+    srvID  = (Ptr*) getOption(OPTION_SERVERID);
+    keyGen = (Ptr*) getOption(OPTION_KEYGEN);
 
     if (srvID) {
 	tmp << "Server ID=" << srvID->getDUID()->getPlain();
@@ -90,6 +97,13 @@ string TClntMsgAdvertise::getInfo()
 	tmp << ", preference=" << pref->getPreference();
     } else {
 	tmp << ", no preference option, assumed 0";
+    }
+    
+    if (keyGen) {
+	tmp << ", keygen (AlgorithmId=" << keyGen->getAlgorithmId() << ")";
+    DigestType = (DigestTypes)keyGen->getAlgorithmId();
+    } else {
+	tmp << ", no auth info";
     }
     
     return tmp.str();

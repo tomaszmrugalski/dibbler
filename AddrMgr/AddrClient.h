@@ -3,10 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski  <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.h,v 1.8 2007-12-09 04:08:35 thomson Exp $
+ * $Id: AddrClient.h,v 1.9 2008-02-25 17:49:06 thomson Exp $
  *
  */
 
@@ -56,6 +57,14 @@ public:
     unsigned long getT2Timeout();
     unsigned long getPrefTimeout();
     unsigned long getValidTimeout();
+
+    //authentication
+    uint32_t getSPI();
+    void setSPI(uint32_t val);
+    uint64_t getReplayDetectionRcvd();
+    void setReplayDetectionRcvd(uint64_t val);
+    uint64_t getNextReplayDetectionSent();
+
     unsigned long getLastTimestamp();
     
 private:
@@ -63,6 +72,10 @@ private:
     List(TAddrIA) TALst;
     List(TAddrIA) PDLst;
     SmartPtr<TDUID> DUID;
+
+    uint32_t SPI;
+    uint64_t ReplayDetectionRcvd;
+    uint64_t ReplayDetectionSent;
 };
 
 

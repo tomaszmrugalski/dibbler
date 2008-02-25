@@ -16,7 +16,7 @@ class TClntOptAuthentication : public TOptAuthentication
 {
   public:
     TClntOptAuthentication( char * buf,  int n, TMsg* parent);
-    TClntOptAuthentication(uint64_t ReplayDet, TMsg* parent);
+    TClntOptAuthentication(TMsg* parent);
 	bool doDuties();
 };
 

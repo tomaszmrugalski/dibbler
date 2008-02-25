@@ -60,8 +60,11 @@ int  TSrvParsGlobalOpt::getCacheSize() {
 }
 
 void TSrvParsGlobalOpt::addDigest(DigestTypes x) {
-    this->DigestLst.append(x);
-    Log(Debug) << "AUTH: New digest type added (" << DigestLst.count() << " already set)." << LogEnd;
+    SmartPtr<DigestTypes> dt = new DigestTypes;
+    *dt = x;
+
+    this->DigestLst.append(dt);
+    Log(Debug) << "Auth: New digest type " << getDigestName(x) << " added." << LogEnd;
 }
 
 List(DigestTypes) TSrvParsGlobalOpt::getDigest() {

@@ -3,10 +3,12 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- * chanmges: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.15 2007-04-22 21:19:28 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.16 2008-02-25 17:49:07 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -123,6 +125,8 @@ TClntMsgRelease::TClntMsgRelease(
 
 	AddrMgr->delPD(pd->getIAID() );
     }
+
+    appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];
     IsDone = false;

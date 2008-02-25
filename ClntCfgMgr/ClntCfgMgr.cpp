@@ -4,9 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.53 2007-05-05 12:31:58 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.54 2008-02-25 17:49:06 thomson Exp $
  *
  */
 
@@ -54,7 +56,9 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 	return;
     }
     this->dump();
-    
+
+    AuthKeys = new KeyList();
+
     IsDone = false;
 }
 
@@ -526,7 +530,22 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
       this->DUIDEnterpriseID     = parser->DUIDEnterpriseID;
     }
 
+    this->AuthEnabled = opt->getAuthEnabled();
+    if (this->AuthEnabled)
+        this->AuthAcceptMethods = opt->getAuthAcceptMethods();
+    else
+        this->AuthAcceptMethods.clear();
+    this->AAASPI = getAAASPIfromFile();
+
     return true;
+}
+
+void TClntCfgMgr::setDigest(DigestTypes type)
+{
+    if (type >= DIGEST_INVALID)
+        this->Digest = DIGEST_NONE;
+    else
+        this->Digest = type;
 }
 
 DigestTypes TClntCfgMgr::getDigest()
@@ -597,6 +616,20 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
     }
 
     return 0;
+}
+
+uint32_t TClntCfgMgr::getAAASPI() {
+    return AAASPI;
+}
+
+List(DigestTypes) TClntCfgMgr::getAuthAcceptMethods()
+{
+    return AuthAcceptMethods;
+}
+
+bool TClntCfgMgr::getAuthEnabled()
+{
+    return AuthEnabled;
 }
 
 TClntCfgMgr::~TClntCfgMgr() {

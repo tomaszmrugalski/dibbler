@@ -4,9 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.56 2007-04-22 23:03:18 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.57 2008-02-25 17:49:08 thomson Exp $
  *
  */
 
@@ -760,21 +762,27 @@ void TClntTransMgr::checkInfRequest()
 		iface->setNISPServerState(STATE_NOTCONFIGURED);
 	    if (iface->getNISPDomainState() == STATE_CONFIGURED) 
 		iface->setNISPDomainState(STATE_NOTCONFIGURED);
+	    if (iface->getKeyGenerationState() == STATE_CONFIGURED) 
+		iface->setKeyGenerationState(STATE_NOTCONFIGURED);
+	    if (iface->getAuthenticationState() == STATE_CONFIGURED) 
+		iface->setAuthenticationState(STATE_NOTCONFIGURED);
 	}
 
-	if ( (iface->getDNSServerState()  == STATE_NOTCONFIGURED) ||
-	     (iface->getDomainState()     == STATE_NOTCONFIGURED) ||
-	     (iface->getNTPServerState()  == STATE_NOTCONFIGURED) ||
-	     (iface->getTimezoneState()   == STATE_NOTCONFIGURED) ||
-	     (iface->getSIPServerState()  == STATE_NOTCONFIGURED) ||
-	     (iface->getSIPDomainState()  == STATE_NOTCONFIGURED) ||
-	     (iface->getFQDNState()       == STATE_NOTCONFIGURED) ||
-	     (iface->getNISServerState()  == STATE_NOTCONFIGURED) ||
-	     (iface->getNISDomainState()  == STATE_NOTCONFIGURED) ||
-	     (iface->getNISPServerState() == STATE_NOTCONFIGURED) ||
-	     (iface->getNISPDomainState() == STATE_NOTCONFIGURED) ) {
+	if ( (iface->getDNSServerState()     == STATE_NOTCONFIGURED) ||
+	     (iface->getDomainState()        == STATE_NOTCONFIGURED) ||
+	     (iface->getNTPServerState()     == STATE_NOTCONFIGURED) ||
+	     (iface->getTimezoneState()      == STATE_NOTCONFIGURED) ||
+	     (iface->getSIPServerState()     == STATE_NOTCONFIGURED) ||
+	     (iface->getSIPDomainState()     == STATE_NOTCONFIGURED) ||
+	     (iface->getFQDNState()          == STATE_NOTCONFIGURED) ||
+	     (iface->getNISServerState()     == STATE_NOTCONFIGURED) ||
+	     (iface->getNISDomainState()     == STATE_NOTCONFIGURED) ||
+	     (iface->getNISPServerState()    == STATE_NOTCONFIGURED) ||
+	     (iface->getNISPDomainState()    == STATE_NOTCONFIGURED)
+         )
+        {
 	    Log(Info) << "Creating INFORMATION-REQUEST message on "
-		      << iface->getName() << "/" << iface->getID() << " interface." << LogEnd;
+		      << iface->getFullName() << " interface." << LogEnd;
             Transactions.append(new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,iface));
 	}
     }

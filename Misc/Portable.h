@@ -8,14 +8,14 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.91 2008-02-23 20:06:31 thomson Exp $
+ * $Id: Portable.h,v 1.92 2008-02-25 17:49:09 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-/* #define DIBBLER_VERSION "0.6.0-CVS (" __DATE__ " " __TIME__ ")" */
-#define DIBBLER_VERSION "0.7.0"
+#define DIBBLER_VERSION "0.7.0+AUTH-CVS (" __DATE__ " " __TIME__ ")"
+/* #define DIBBLER_VERSION "0.7.0" */
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -38,8 +38,21 @@
 #endif 
 
 #ifdef WIN32
-typedef unsigned char           uint8_t;
-typedef unsigned long long int  uint64_t;
+#ifndef uint8_t
+#define uint8_t  unsigned char
+#endif
+
+#ifndef uint16_t
+#define uint16_t unsigned short int
+#endif
+
+#ifndef uint32_t
+#define uint32_t unsigned int
+#endif
+
+#ifndef uint64_t
+#define uint64_t unsigned long long int
+#endif
 
 #define snprintf _snprintf
 #endif
@@ -262,6 +275,10 @@ extern "C" {
     extern int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
 			     unsigned long prefered, unsigned long valid);
     extern int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
+
+    char * getAAAKey(uint32_t SPI, uint32_t *len); /* reads AAA key from a file */
+    char * getAAAKeyFilename(uint32_t SPI); /* which file? use this function to find out */
+    uint32_t getAAASPIfromFile();
     
 #ifdef __cplusplus
 }

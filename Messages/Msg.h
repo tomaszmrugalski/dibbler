@@ -19,6 +19,7 @@ class TMsg;
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "Opt.h"
+#include "KeyList.h"
 
 // Hey! It's grampa of all messages
 class TMsg
@@ -55,10 +56,25 @@ class TMsg
     int getIface();
     virtual ~TMsg();
     bool isDone();
+
+    // auth stuff below
     void setAuthInfoPtr(char* ptr);
+    int setAuthInfoKey();
+    void setAuthInfoKey(char *ptr);
+    char * getAuthInfoKey();
+    bool validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst);
     bool validateAuthInfo(char *buf, int bufSize);
-    
+    uint32_t getAAASPI();
+    void setAAASPI(uint32_t val);
+    uint32_t getSPI();
+    void setSPI(uint32_t val);
+    uint64_t getReplayDetection();
+    void setReplayDetection(uint64_t val);
+    void setKeyGenNonce(char *value, unsigned len);
+    char* getKeyGenNonce();
+    unsigned getKeyGenNonceLen();
     enum DigestTypes DigestType;
+    SmartPtr<KeyList> AuthKeys;
 
   protected:
     int MsgType;
@@ -75,7 +91,15 @@ class TMsg
     char * pkt;  // buffer where this packet will be build
     int Iface;   // interface from/to which message was received/should be sent
     SmartPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
-    char * AuthInfoPtr; // pointer to Authentication Information field of OPTION AUTH
+
+    // auth stuff below
+    char * AuthInfoPtr; // pointer to Authentication Information field of OPTION AUTH and OPTION AAAAUTH
+    char * AuthInfoKey; // pointer to key used do calculate Authentication information
+    uint32_t SPI; // SPI sent by server in OPTION_KEYGEN
+    uint64_t ReplayDetection;
+    uint32_t AAASPI; // AAA-SPI sent by client in OPTION_AAAAUTH
+    char *KeyGenNonce;
+    unsigned KeyGenNonceLen;
 };
 
 #endif

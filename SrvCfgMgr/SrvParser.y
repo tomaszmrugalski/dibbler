@@ -314,9 +314,14 @@ PDOptions
 // Now Options and their parameters
 /////////////////////////////////////////////////////////////////////////////
 AuthMethod
-: AUTH_METHOD_ DIGEST_NONE_      { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
-| AUTH_METHOD_ DIGEST_HMAC_MD5_  { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_MD5); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA1_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); }
+: AUTH_METHOD_ DIGEST_NONE_        { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
+| AUTH_METHOD_ DIGEST_PLAIN_       { ParserOptStack.getLast()->addDigest(DIGEST_PLAIN); }
+| AUTH_METHOD_ DIGEST_HMAC_MD5_    { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_MD5); }
+| AUTH_METHOD_ DIGEST_HMAC_SHA1_   { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); }
+| AUTH_METHOD_ DIGEST_HMAC_SHA224_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA224); }
+| AUTH_METHOD_ DIGEST_HMAC_SHA256_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA256); }
+| AUTH_METHOD_ DIGEST_HMAC_SHA384_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA384); }
+| AUTH_METHOD_ DIGEST_HMAC_SHA512_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA512); }
 ;
 
 AuthLifetime

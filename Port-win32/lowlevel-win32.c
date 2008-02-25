@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.17 2007-12-04 08:57:04 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.18 2008-02-25 17:49:10 thomson Exp $
  *
  */
 
@@ -21,6 +21,9 @@
 #include <process.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include "Portable.h"
 #include "DHCPConst.h"
@@ -58,6 +61,77 @@ int lowlevelInit()
     strcpy(buf+i,"\\system32\\cmd.exe");
     memcpy(cmdPath, buf,256);
     return 1;
+}
+
+uint32_t getAAASPIfromFile() {
+    char filename[1024];
+    struct stat st;
+    uint32_t ret;
+    FILE *file;
+
+    strcpy(filename, "AAA-SPI");
+
+    if (stat(filename, &st))
+        return 0;
+
+    file = fopen(filename, "r");
+    if (!file)
+        return 0;
+
+    fscanf(file, "%x", &ret);
+    fclose(file);
+
+    return ret;
+}
+
+char * getAAAKeyFilename(uint32_t *SPI)
+{
+    static char filename[1024];
+    if (SPI)
+        snprintf(filename, 1024, "%s%s%x", "", "AAA-key-", *SPI);
+    else
+        strcpy(filename, "AAA-key");
+    return filename;
+}
+
+char * getAAAKey(uint32_t *SPI, uint32_t *len) {
+    /* FIXME change buffer size */
+    char filename[1024];
+    struct stat st;
+    char * retval;
+    int offset = 0;
+    int fd;
+    int ret;
+
+    filename = getAAAKeyFilename(SPI);
+
+    if (stat(filename, &st))
+        return NULL;
+
+    fd = open(filename, O_RDONLY);
+    if (0 > fd)
+        return NULL;
+
+    /* FIXME should be freed somewhere */
+    retval = malloc(st.st_size);
+    if (!retval)
+        return NULL;
+
+    while (offset < st.st_size) {
+        ret = read(fd, retval + offset, st.st_size - offset);
+        if (!ret) break;
+        if (ret < 0) {
+            return NULL;
+        }
+        offset += ret;
+    }
+    close(fd);
+
+    if (offset != st.st_size)
+        return NULL;
+
+    *len = st.st_size;
+    return retval;
 }
 
 char * error_message()

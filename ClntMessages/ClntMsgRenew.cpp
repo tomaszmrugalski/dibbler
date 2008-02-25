@@ -4,9 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.15 2007-05-04 17:22:49 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.16 2008-02-25 17:49:07 thomson Exp $
  *
  */
 
@@ -86,6 +88,8 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    timeout = ia->getT2Timeout();
 	Options.append(new TClntOptIA_PD(ia, this));
     }
+
+    appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];
     this->IsDone = false;

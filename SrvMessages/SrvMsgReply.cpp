@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *                                                                           
@@ -50,6 +51,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     confirm->getTransID())
 {
     this->copyRelayInfo((Ptr*)confirm);
+    this->copyAAASPI((Ptr*)confirm);
     SmartPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID( confirm->getIface() );
     if (!ptrIface) {
 	Log(Crit) << "Msg received through not configured interface. "
@@ -146,6 +148,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
     appendRequestedOptions(duidOpt->getDUID(), confirm->getAddr(), confirm->getIface(), reqOpts);
 
+    appendAuthenticationOption(duidOpt->getDUID());
+
     pkt = new char[this->getSize()];
     IsDone = false;
     this->MRT = 31;
@@ -169,6 +173,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     decline->getIface(),decline->getAddr(), REPLY_MSG, decline->getTransID())
 {
     this->copyRelayInfo((Ptr*)decline);
+    this->copyAAASPI((Ptr*)decline);
 
     SmartPtr<TOpt> ptrOpt;
 
@@ -268,6 +273,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	}
     }
 
+    appendAuthenticationOption(duidOpt->getDUID());
+
     pkt = new char[this->getSize()];
     IsDone = false;
     this->MRT = 31;
@@ -291,6 +298,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     rebind->getIface(),rebind->getAddr(), REPLY_MSG, rebind->getTransID())
 {
     this->copyRelayInfo((Ptr*)rebind);
+    this->copyAAASPI((Ptr*)rebind);
 
     unsigned long addrCount=0;
     SmartPtr<TOpt> ptrOpt;
@@ -350,6 +358,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
     this->Options.append((Ptr*)srvDUID);
     
+    appendAuthenticationOption(duidOpt->getDUID());
+
     pkt = new char[this->getSize()];
     IsDone = false;
     this->MRT = 0;
@@ -376,6 +386,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     release->getTransID())
 {
     this->copyRelayInfo((Ptr*)release);
+    this->copyAAASPI((Ptr*)release);
 
      //FIXME:When the server receives a Release message via unicast from a client
     //to which the server has not sent a unicast option, the server
@@ -410,6 +421,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	IsDone = true;
 	return;
     }
+
+    appendAuthenticationOption(clntID->getDUID());
 
     release->firstOption();
     while(opt=release->getOption()) {
@@ -553,6 +566,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     renew->getIface(),renew->getAddr(), REPLY_MSG, renew->getTransID())
 {
     this->copyRelayInfo((Ptr*)renew);
+    this->copyAAASPI((Ptr*)renew);
+
     // uncomment this to test REBIND
     //IsDone = true;
     //return;
@@ -611,6 +626,9 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         }
     }
     appendRequestedOptions(duidOpt->getDUID(),renew->getAddr(),renew->getIface(),reqOpts);
+
+    appendAuthenticationOption(duidOpt->getDUID());
+
     pkt = new char[this->getSize()];
     IsDone = false;
     this->MRT = 0;
@@ -635,6 +653,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     request->getIface(),request->getAddr(), REPLY_MSG, request->getTransID())
 {
     this->copyRelayInfo((Ptr*)request);
+    this->copyAAASPI((Ptr*)request);
 
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
@@ -736,6 +755,9 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     }
 
     appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
+
+    appendAuthenticationOption(clntDuid);
+
     pkt = new char[this->getSize()];
     IsDone = false;
     SmartPtr<TIPv6Addr> ptrAddr;
@@ -753,6 +775,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     solicit->getAddr(),REPLY_MSG,solicit->getTransID())
 {
     this->copyRelayInfo((Ptr*)solicit);
+    this->copyAAASPI((Ptr*)solicit);
 
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
@@ -835,6 +858,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     }
     appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
 
+    appendAuthenticationOption(clntDuid);
+
     pkt = new char[this->getSize()];
     IsDone = false;
     SmartPtr<TIPv6Addr> ptrAddr;
@@ -852,6 +877,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	     question->getAddr(),REPLY_MSG,question->getTransID())
 {
     this->copyRelayInfo((Ptr*)question);
+    this->copyAAASPI((Ptr*)question);
 
     SmartPtr<TOpt> ptrOpt;
     setOptionsReqOptClntDUID((Ptr*)question);
@@ -874,7 +900,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
             case OPTION_RECONF_MSG  :
             case OPTION_IA_NA       : 
             case OPTION_IA_TA       :
-            case OPTION_AUTH        :
+            case OPTION_AAAAUTH     :
+            case OPTION_KEYGEN      :
                 Log(Warning) << "Invalid option " << ptrOpt->getOptType() <<" received." << LogEnd;
                 break;
             default:
@@ -892,6 +919,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
         // include our DUID
         SmartPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(CfgMgr->getDUID(),this);
         this->Options.append((Ptr*)srvDUID);
+
+        appendAuthenticationOption(duid);
 
         pkt = new char[this->getSize()];
         IsDone = false;

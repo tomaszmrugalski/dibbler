@@ -3,10 +3,11 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.19 2007-10-25 07:00:52 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.20 2008-02-25 17:49:10 thomson Exp $
  *
  */
 
@@ -20,6 +21,7 @@ class TSrvCfgMgr;
 #include "DHCPConst.h"
 #include "Container.h"
 #include "DUID.h"
+#include "KeyList.h"
 
 #include "FlexLexer.h"
 #include "SrvParser.h"
@@ -78,6 +80,13 @@ public:
     ESrvIfaceIdOrder getInterfaceIDOrder();
     int getCacheSize();
 
+    //Authentication
+    SmartPtr<KeyList> AuthKeys;
+    unsigned int getAuthLifetime();
+    unsigned int getAuthKeyGenNonceLen();
+    List(DigestTypes) getDigestLst();
+    enum DigestTypes getDigest();
+
 private:    
     static int NextRelayID;
     string XmlFile;
@@ -95,8 +104,11 @@ private:
     bool Stateless;
     bool InactiveMode;
     int  CacheSize;
-    List(DigestTypes) DigestLst;
     ESrvIfaceIdOrder InterfaceIDOrder;
+
+    unsigned int AuthLifetime;
+    unsigned int AuthKeyGenNonceLen;
+    List(DigestTypes) DigestLst;
 };
 
 #endif /* SRVCONFMGR_H */

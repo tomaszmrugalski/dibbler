@@ -3,14 +3,16 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
- * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
- * changes: Micha³ Kowalczuk <michal@kowalczuk.eu>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: daemon.h,v 1.3 2006-11-30 03:17:23 thomson Exp $
+ * $Id: daemon.h,v 1.4 2008-02-25 17:49:09 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006-11-30 03:17:23  thomson
+ * Auth related changes by Sammael.
+ *
  * Revision 1.2  2006-11-24 01:25:17  thomson
  * consts added by Sammael.
  *

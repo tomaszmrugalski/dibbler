@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.12 2007-04-22 21:28:27 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.13 2008-02-25 17:49:07 thomson Exp $
  *
  */
 
@@ -699,7 +699,7 @@ ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
 	strum << (hex) << (int) x.Mac[i];
 	if (i<x.Maclen-1) strum  << ":";
     }
-    strum << "</Mac>" << endl;
+    strum << "</Mac>" << dec << endl;
 
     SmartPtr<TIfaceSocket> sock;
     x.firstSocket();

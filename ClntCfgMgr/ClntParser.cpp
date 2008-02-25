@@ -1863,27 +1863,27 @@ case 102:
     break;}
 case 105:
 #line 513 "ClntParser.y"
-{ DigestLst.append(DIGEST_HMAC_MD5); ;
+{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); ;
     break;}
 case 106:
 #line 514 "ClntParser.y"
-{ DigestLst.append(DIGEST_HMAC_SHA1); ;
+{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); ;
     break;}
 case 107:
 #line 515 "ClntParser.y"
-{ DigestLst.append(DIGEST_HMAC_SHA224); ;
+{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); ;
     break;}
 case 108:
 #line 516 "ClntParser.y"
-{ DigestLst.append(DIGEST_HMAC_SHA256); ;
+{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); ;
     break;}
 case 109:
 #line 517 "ClntParser.y"
-{ DigestLst.append(DIGEST_HMAC_SHA384); ;
+{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); ;
     break;}
 case 110:
 #line 518 "ClntParser.y"
-{ DigestLst.append(DIGEST_HMAC_SHA512); ;
+{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); ;
     break;}
 case 111:
 #line 523 "ClntParser.y"
