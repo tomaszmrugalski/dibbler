@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.48 2008-02-25 17:49:11 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.49 2008-03-02 19:21:25 thomson Exp $
  */
 
 #include <sstream>
@@ -289,11 +289,13 @@ unsigned long TSrvMsg::getTimeout() {
 void TSrvMsg::addRelayInfo(SmartPtr<TIPv6Addr> linkAddr,
 			   SmartPtr<TIPv6Addr> peerAddr,
 			   int hop,
-			   SmartPtr<TSrvOptInterfaceID> interfaceID) {
+			   SmartPtr<TSrvOptInterfaceID> interfaceID,
+                           List(TSrvOptGeneric) echolist) {
     this->LinkAddrTbl[this->Relays] = linkAddr;
     this->PeerAddrTbl[this->Relays] = peerAddr;
     this->HopTbl[this->Relays]      = hop;
     this->InterfaceIDTbl[this->Relays] = interfaceID;
+    this->EchoListTbl[this->Relays]    = echolist;
     this->Relays++;
 }
 
@@ -307,6 +309,7 @@ void TSrvMsg::send()
     int offset = 0;
     int port;
 
+    SPtr<TSrvOptGeneric> gen;
     SmartPtr<TSrvIfaceIface> ptrIface;
     SmartPtr<TSrvIfaceIface> under;
     ptrIface = (Ptr*) SrvIfaceMgr->getIfaceByID(this->Iface);
@@ -333,6 +336,12 @@ void TSrvMsg::send()
 	    len[i-1]= len[i] + 38; // 34 bytes (relay header) + 4 bytes (relay-msg option header)
 	    if (this->InterfaceIDTbl[i] && (SrvCfgMgr->getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
 		len[i-1]+=this->InterfaceIDTbl[i]->getSize();
+
+		EchoListTbl[i].first();
+		while (gen = EchoListTbl[i].get()) {
+		    len[i-1] += gen->getSize();
+		}
+
 	    }
 	}
 
@@ -363,6 +372,10 @@ void TSrvMsg::copyAAASPI(SmartPtr<TSrvMsg> q) {
     this->AuthInfoKey = q->getAuthInfoKey();
 }
 
+void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
+  this->RemoteID = q->getRemoteID();
+}
+
 void TSrvMsg::copyRelayInfo(SmartPtr<TSrvMsg> q) {
     this->Relays = q->Relays;
     for (int i=0; i < this->Relays; i++) {
@@ -370,6 +383,7 @@ void TSrvMsg::copyRelayInfo(SmartPtr<TSrvMsg> q) {
 	this->PeerAddrTbl[i]   = q->PeerAddrTbl[i];
 	this->InterfaceIDTbl[i]= q->InterfaceIDTbl[i];
 	this->HopTbl[i]        = q->HopTbl[i];
+	this->EchoListTbl[i]   = q->EchoListTbl[i];
     }
 }
 
@@ -416,6 +430,14 @@ int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
 	    InterfaceIDTbl[relayDepth]->storeSelf(buf+offset);
 	    offset += InterfaceIDTbl[relayDepth]->getSize();
 	}
+    }
+
+    SPtr<TSrvOptGeneric> gen;
+    EchoListTbl[relayDepth].first();
+    while (gen = EchoListTbl[relayDepth].get()) {
+	Log(Debug) << "Echoing back option " << gen->getOptType() << ", length " << gen->getSize() << LogEnd;
+	gen->storeSelf(buf+offset);
+	offset += gen->getSize();
     }
     
     return offset;
@@ -477,7 +499,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	return false;
     }
 
-    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, false/* false = verbose */);
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, getRemoteID(), false/* false = verbose */);
 
     // --- option: DNS resolvers ---
     if ( reqOpts->isOption(OPTION_DNS_SERVERS) && ptrIface->supportDNSServer() ) {
@@ -923,4 +945,14 @@ bool TSrvMsg::validateReplayDetection() {
         Log(Warning) << "Auth: Replayed message detected, message dropped." << LogEnd;
         return false;
     }
+}
+
+void TSrvMsg::setRemoteID(SPtr<TSrvOptRemoteID> remoteID)
+{
+    RemoteID = remoteID;
+}
+
+SPtr<TSrvOptRemoteID> TSrvMsg::getRemoteID()
+{
+    return RemoteID;
 }

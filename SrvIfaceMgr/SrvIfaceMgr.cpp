@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.27 2008-02-25 17:49:11 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.28 2008-03-02 19:21:58 thomson Exp $
  *
  */
 
@@ -33,6 +33,8 @@
 #include "IPv6Addr.h"
 #include "AddrClient.h"
 #include "SrvIfaceIface.h"
+#include "SrvOptEcho.h"
+#include "SrvOptGeneric.h"
 
 /**
  * ServerInterfaceManager - sends and receives messages (server version)
@@ -260,11 +262,18 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
     SmartPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
     SmartPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
+    List(TSrvOptGeneric) echoListTbl[HOP_COUNT_LIMIT];
     SmartPtr<TSrvIfaceIface> relayIface;
     int relays=0; // number of nested RELAY_FORW messages
+    SPtr<TSrvOptRemoteID> remoteID = 0;
+    SPtr<TSrvOptEcho> echo = 0;
+    SPtr<TSrvOptGeneric> gen = 0;
 
     char * relay_buf = buf;
-    int relay_bufsize = bufsize;    
+    int relay_bufsize = bufsize;
+
+    for (int j=0;j<HOP_COUNT_LIMIT; j++)
+	echoListTbl[j].clear();
 
     while (bufsize>0 && buf[0]==RELAY_FORW_MSG) {
 	/* decode RELAY_FORW message */
@@ -308,7 +317,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 				 << ") in RELAY_FORW message. Message dropped." << LogEnd;
 		    return 0;
 		}
-		ptrIfaceID = new TSrvOptInterfaceID(buf, bufsize, 0);
+		ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
 		optIfaceIDCnt++;
 		break;
 	    case OPTION_RELAY_MSG:
@@ -316,12 +325,39 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 		relay_bufsize = len;
 		optRelayCnt++;
 		break;
+	    case OPTION_REMOTE_ID:
+		remoteID = new TSrvOptRemoteID(buf, len, 0);
+		break;
+	    case OPTION_ERO:
+		Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
+		echo = new TSrvOptEcho(buf, len, 0);
+		break;
 	    default:
-		Log(Warning) << "Invalid option (" << code << ") in RELAY_FORW message was ignored." << LogEnd;
+		gen = new TSrvOptGeneric(code, buf, len, 0);
+		echoListTbl[relays].append(gen);
+
 	    }
 	    buf     += len;
 	    bufsize -= len;
 	}
+
+	// remember options to be echoed
+	echoListTbl[relays].first();
+	while (gen = echoListTbl[relays].get()) {
+	    if (!echo) {
+		Log(Warning) << "Invalid option (" << gen->getOptType() << ") in RELAY_FORW message was ignored." << LogEnd;
+		echoListTbl[relays].del();
+	    } else {
+		if (!echo->isOption(gen->getOptType())) {
+		    Log(Warning) << "Invalid option (" << gen->getOptType() << ") in RELAY_FORW message was ignored." << LogEnd;
+		    echoListTbl[relays].del();
+		} else {
+		    Log(Info) << "Option " << gen->getOptType() << " will be echoed back." << LogEnd;
+		}
+	    }
+	    
+	}
+
 
 	// remember those links
 	linkAddrTbl[relays] = linkAddr;
@@ -374,11 +410,18 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	bufsize = relay_bufsize;
     }
     
-    
     SmartPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, relay_buf, relay_bufsize);
     for (int i=0; i<relays; i++) {
-	msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i]);
+	msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i], echoListTbl[i]);
     }
+    if (remoteID) {
+	Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor() << ", length=" << remoteID->getVendorDataLen() << "." << LogEnd;
+	msg->setRemoteID(remoteID);
+	remoteID = 0;
+	remoteID = msg->getRemoteID();
+	printHex("RemoteID:", remoteID->getVendorData(), remoteID->getVendorDataLen());
+    }
+
     return (Ptr*)msg;
  }
 

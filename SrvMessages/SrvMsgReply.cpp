@@ -52,6 +52,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)confirm);
     this->copyAAASPI((Ptr*)confirm);
+    this->copyRemoteID((Ptr*)confirm);
+
     SmartPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID( confirm->getIface() );
     if (!ptrIface) {
 	Log(Crit) << "Msg received through not configured interface. "
@@ -174,6 +176,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)decline);
     this->copyAAASPI((Ptr*)decline);
+    this->copyRemoteID((Ptr*)decline);
+
 
     SmartPtr<TOpt> ptrOpt;
 
@@ -299,6 +303,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)rebind);
     this->copyAAASPI((Ptr*)rebind);
+    this->copyRemoteID((Ptr*)rebind);
 
     unsigned long addrCount=0;
     SmartPtr<TOpt> ptrOpt;
@@ -387,6 +392,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)release);
     this->copyAAASPI((Ptr*)release);
+    this->copyRemoteID((Ptr*)release);
 
      //FIXME:When the server receives a Release message via unicast from a client
     //to which the server has not sent a unicast option, the server
@@ -567,6 +573,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)renew);
     this->copyAAASPI((Ptr*)renew);
+    this->copyRemoteID((Ptr*)renew);
 
     // uncomment this to test REBIND
     //IsDone = true;
@@ -654,6 +661,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)request);
     this->copyAAASPI((Ptr*)request);
+    this->copyRemoteID((Ptr*)request);
 
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
@@ -776,6 +784,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)solicit);
     this->copyAAASPI((Ptr*)solicit);
+    this->copyRemoteID((Ptr*)solicit);
 
     SmartPtr<TOpt>       opt;
     SmartPtr<TSrvOptClientIdentifier> optClntID;
@@ -878,6 +887,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 {
     this->copyRelayInfo((Ptr*)question);
     this->copyAAASPI((Ptr*)question);
+    this->copyRemoteID((Ptr*)question);
 
     SmartPtr<TOpt> ptrOpt;
     setOptionsReqOptClntDUID((Ptr*)question);

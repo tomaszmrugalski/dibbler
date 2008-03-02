@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.16 2008-02-25 17:49:11 thomson Exp $
+ * $Id: SrvMsg.h,v 1.17 2008-03-02 19:21:25 thomson Exp $
  *
  */
 
@@ -27,6 +27,8 @@ class TSrvMsg;
 #include "SrvOptOptionRequest.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvOptFQDN.h"
+#include "SrvOptRemoteID.h"
+#include "SrvOptGeneric.h"
 
 class TSrvMsg : public TMsg
 {
@@ -49,6 +51,7 @@ public:
     
     void copyRelayInfo(SPtr<TSrvMsg> q);
     void copyAAASPI(SPtr<TSrvMsg> q);
+    void copyRemoteID(SPtr<TSrvMsg> q);
     void appendAuthenticationOption(SmartPtr<TDUID> duid);
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
@@ -58,7 +61,8 @@ public:
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
 		      SPtr<TIPv6Addr> peerAddr,
 		      int hop,
-		      SPtr<TSrvOptInterfaceID> interfaceID);
+		      SPtr<TSrvOptInterfaceID> interfaceID,
+		      List(TSrvOptGeneric) echoList);
 
     int getRelayCount();
 
@@ -67,6 +71,9 @@ public:
     SmartPtr<TSrvTransMgr> getSrvTransMgr();
 
     virtual bool check() = 0;
+
+    void setRemoteID(SPtr<TSrvOptRemoteID> remoteID);
+    SPtr<TSrvOptRemoteID> getRemoteID();
 
     unsigned long getTimeout();
     void doDuties();
@@ -86,12 +93,15 @@ protected:
     SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
+    List(TSrvOptGeneric) EchoListTbl[HOP_COUNT_LIMIT];  // list of options to be
     int len[HOP_COUNT_LIMIT];
     int HopTbl[HOP_COUNT_LIMIT];
 
     unsigned long FirstTimeStamp; // timestamp of first message transmission
     unsigned long MRT;            // maximum retransmission timeout
     int Relays;
+
+    SPtr<TSrvOptRemoteID> RemoteID; // this MAY be set, if message was recevied via relay AND relay appended this RemoteID
     int Parent; // type of the parent message (used in ADVERTISE and REPLY)
 };
 
