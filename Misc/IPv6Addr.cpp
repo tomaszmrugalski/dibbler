@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: IPv6Addr.cpp,v 1.9 2007-05-03 23:16:29 thomson Exp $
+ * $Id: IPv6Addr.cpp,v 1.10 2008-03-02 21:59:53 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2007-05-03 23:16:29  thomson
+ * Fix for assigning the same prefix several times.
+ *
  * Revision 1.8  2006-12-04 23:33:11  thomson
  * Prefix delegation related fixes
  *
@@ -32,7 +35,7 @@
 #include "Portable.h"
 #include "Logger.h"
 
-static char truncLeft[] = { 0, 0xff, 0x7f, 0x3f, 0x1f, 0xf,  0x7,  0x3,  0x1 };
+static char truncLeft[] = { 0xff, 0x7f, 0x3f, 0x1f, 0xf,  0x7,  0x3,  0x1, 0 };
 static char truncRight[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 
 TIPv6Addr::TIPv6Addr() {
@@ -62,7 +65,7 @@ TIPv6Addr::TIPv6Addr(const char* prefix, const char* host, int prefixLength) {
 
     memmove(Addr, host, 16);  // copy whole host address, but...
     memmove(Addr, prefix, offset); // overwrite first bits with prefix...
-    Addr[offset+1] = (prefix[offset+1] & truncRight[prefixLength%8]) || (host[offset+1] & truncLeft[prefixLength%8]);
+    Addr[offset] = (prefix[offset] & truncRight[prefixLength%8]) | (host[offset] & truncLeft[prefixLength%8]);
     inet_ntop6(Addr, Plain);
 }
 
