@@ -76,6 +76,9 @@ iface-max-lease     { return SrvParser::IFACE_MAX_LEASE_; }
 class-max-lease     { return SrvParser::CLASS_MAX_LEASE_; }
 client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;  }
 client              { return SrvParser::CLIENT_; }
+duid                { return SrvParser::DUID_KEYWORD_; }
+remote-id           { return SrvParser::REMOTE_ID_; }
+address             { return SrvParser::ADDRESS_;}
 
 option              { return SrvParser::OPTION_; }
 dns-server          { return SrvParser::DNS_SERVER_;}

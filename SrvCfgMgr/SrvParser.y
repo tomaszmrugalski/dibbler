@@ -94,7 +94,7 @@ virtual ~SrvParser();
 %token CACHE_SIZE_
 %token PDCLASS_, PD_LENGTH_, PD_POOL_ 
 %token VENDOR_SPEC_
-%token CLIENT_
+%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
@@ -209,18 +209,33 @@ InterfaceDeclarationsList
 ;
 
 Client
-: CLIENT_ DUID_ '{'
+: CLIENT_ DUID_KEYWORD_ DUID_ '{'
 {
     ParserOptStack.append(new TSrvParsGlobalOpt());
-    SPtr<TDUID> duid = new TDUID($2.duid,$2.length);
+    SPtr<TDUID> duid = new TDUID($3.duid,$3.length);
     ClientLst.append(new TSrvCfgOptions(duid));
 } ClientOptions
 '}'
 {
+    Log(Debug) << "Exception: DUID-based exception specified." << LogEnd;
     // copy all defined options
     ClientLst.getLast()->setOptions(ParserOptStack.getLast());
     ParserOptStack.delLast();
 }
+
+| CLIENT_ REMOTE_ID_ Number '-' DUID_ '{'
+{
+    ParserOptStack.append(new TSrvParsGlobalOpt());
+    SPtr<TSrvOptRemoteID> remoteid = new TSrvOptRemoteID($3, $5.duid, $5.length, 0);
+    ClientLst.append(new TSrvCfgOptions(remoteid));
+} ClientOptions
+'}'
+{
+    Log(Debug) << "Exception: RemoteID-based exception specified." << LogEnd;
+    // copy all defined options
+    ClientLst.getLast()->setOptions(ParserOptStack.getLast());
+    ParserOptStack.delLast();
+};
 
 ClientOptions
 : ClientOption
@@ -240,7 +255,16 @@ ClientOption
 | NISPDomainOption
 | LifetimeOption
 | VendorSpecOption
+| AddressReservation
 ;
+
+AddressReservation:
+ADDRESS_ IPV6ADDR_
+{
+    addr = new TIPv6Addr($2);
+    Log(Info) << "Exception: Address " << addr->getPlain() << " reserved." << LogEnd;
+    ClientLst.getLast()->setAddr(addr);
+};
 
 /* class { ... } */
 ClassDeclaration:

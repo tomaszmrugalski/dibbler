@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.h,v 1.2 2006-12-31 16:00:26 thomson Exp $
+ * $Id: SrvCfgOptions.h,v 1.3 2008-03-02 19:27:21 thomson Exp $
  *
  */
 
@@ -18,6 +18,8 @@
 #include <string>
 
 #include "SrvOptVendorSpec.h"
+#include "SrvOptRemoteID.h"
+
 #include "SmartPtr.h"
 #include "Container.h"
 #include "IPv6Addr.h"
@@ -33,8 +35,14 @@ class TSrvCfgOptions
 public:
     TSrvCfgOptions();
     TSrvCfgOptions(SPtr<TDUID> duid);
+    TSrvCfgOptions(SPtr<TSrvOptRemoteID> remoteid);
     bool setOptions(SPtr<TSrvParsGlobalOpt> opt);
     SPtr<TDUID> getDuid();
+    SPtr<TSrvOptRemoteID> getRemoteID();
+
+    // address reservation
+    void setAddr(SPtr<TIPv6Addr> addr);
+    SPtr<TIPv6Addr> getAddr();
 
     // option: DNS Servers
     List(TIPv6Addr) * getDNSServerLst();
@@ -112,6 +120,10 @@ private:
     bool LifetimeSupport;
     bool VendorSpecSupport;
 
+    // address reservation
+    SPtr<TIPv6Addr> Addr;
+
+    // options reservation
     List(TIPv6Addr) DNSServerLst;
     List(string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
@@ -126,7 +138,9 @@ private:
     unsigned int Lifetime;
 
     void SetDefaults();
-    SPtr<TDUID> Duid; // used during per-client configuration (exceptions)
+
+    SPtr<TSrvOptRemoteID> RemoteID;
+    SPtr<TDUID> Duid;
 };
 
 #endif

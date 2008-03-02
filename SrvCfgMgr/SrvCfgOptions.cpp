@@ -7,10 +7,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.cpp,v 1.2 2006-12-31 16:00:26 thomson Exp $
+ * $Id: SrvCfgOptions.cpp,v 1.3 2008-03-02 19:27:21 thomson Exp $
  *
  */
 
+#include "Logger.h"
 #include "SrvCfgOptions.h"
 
 TSrvCfgOptions::TSrvCfgOptions() {
@@ -22,8 +23,17 @@ TSrvCfgOptions::TSrvCfgOptions(SPtr<TDUID> duid) {
     Duid = duid;
 }
 
+TSrvCfgOptions::TSrvCfgOptions(SPtr<TSrvOptRemoteID> remoteID) {
+    SetDefaults();
+    RemoteID = remoteID;
+}
+
 SPtr<TDUID> TSrvCfgOptions::getDuid() {
     return Duid;
+}
+
+SPtr<TSrvOptRemoteID> TSrvCfgOptions::getRemoteID() {
+    return RemoteID;
 }
 
 void TSrvCfgOptions::SetDefaults() {
@@ -39,6 +49,9 @@ void TSrvCfgOptions::SetDefaults() {
     this->NISPDomainSupport       = false;
     this->LifetimeSupport         = false;
     this->VendorSpecSupport       = false;
+
+    Duid = 0;
+    RemoteID = 0;
 }
 
 // --------------------------------------------------------------------
@@ -205,6 +218,14 @@ SPtr<TSrvOptVendorSpec> TSrvCfgOptions::getVendorSpec(int vendor) {
     return VendorSpec.get();
 }
 
+void TSrvCfgOptions::setAddr(SPtr<TIPv6Addr> addr) {
+    Addr = addr;
+}
+
+SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() {
+    return Addr;
+}
+
 void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
     this->VendorSpec = vendor;
 }
@@ -238,6 +259,21 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     out << "    <client>" << endl;
     if (iface.Duid)
 	out << "      " << *iface.Duid;
+    else
+	out << "      <!-- <duid/> -->" << endl;
+    if (iface.RemoteID)
+	out << "      <RemoteID enterprise=\"" << iface.RemoteID->getVendor() << "\" length=\""
+	    << iface.RemoteID->getVendorDataLen() << "\">" << iface.RemoteID->getVendorDataPlain() << "</RemoteID>" << endl;
+    else
+	out << "      <!-- <RemoteID/> -->" << endl;
+
+    out << "      <!-- paramteres start here -->" << endl;
+
+    if (iface.Addr) {
+	out << "      <addr>" << iface.Addr->getPlain() << "</addr>" << endl;
+    } else {
+	out << "      <!-- <addr/> -->" << endl;
+    }
 
     // option: DNS-SERVERS
     out << "      <!-- <dns-servers count=\"" << iface.DNSServerLst.count() << "\"> -->" << endl;

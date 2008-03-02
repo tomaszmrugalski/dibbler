@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.41 2007-10-25 07:00:52 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.42 2008-03-02 19:27:21 thomson Exp $
  */
 
 #include <cstdlib>
@@ -31,14 +31,23 @@ bool TSrvCfgIface::leaseQuerySupport()
 }
 
 
-SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, bool quiet)
+SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TSrvOptRemoteID> remoteID, bool quiet)
 {
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst.first();
     while (x=ExceptionsLst.get()) {
-	if (*(x->getDuid()) == *duid) {
+	if ( duid && x->getDuid() && (*(x->getDuid()) == *duid) ) {
 	    if (!quiet)
 		Log(Debug) << "Found per-client configuration (exception) for client with DUID=" << x->getDuid()->getPlain() << LogEnd;
+	    return x;
+	}
+	SPtr<TSrvOptRemoteID> id;
+	id = x->getRemoteID();
+
+	if ( remoteID && id && (remoteID->getVendor() == id->getVendor()) && (id->getVendorDataLen() == remoteID->getVendorDataLen())
+	     && !memcmp(id->getVendorData(), remoteID->getVendorData(), id->getVendorDataLen()) ) {
+		Log(Debug) << "Found per-client configuration (exception) for client with RemoteID: vendor=" << id->getVendor()
+			   << ", data=" << id->getVendorDataPlain() << "." << LogEnd;
 	    return x;
 	}
     }

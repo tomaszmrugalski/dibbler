@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgIface.h,v 1.26 2007-10-25 07:00:52 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.27 2008-03-02 19:27:21 thomson Exp $
  *
  */
 
@@ -22,6 +22,7 @@ class TSrvCfgIface;
 #include <iostream>
 #include <string>
 #include "SrvOptVendorSpec.h"
+#include "SrvOptRemoteID.h"
 #include "SrvCfgOptions.h"
 
 using namespace std;
@@ -100,7 +101,7 @@ public:
 
     // per-client parameters (exceptions)
     void addClientExceptionsLst(List(TSrvCfgOptions) exLst);
-    SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, bool quiet=true);
+    SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, SPtr<TSrvOptRemoteID> remoteID, bool quiet=true);
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
