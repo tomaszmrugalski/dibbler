@@ -907,12 +907,12 @@ static const short yyrline[] = { 0,
    521,   525,   534,   539,   549,   554,   568,   572,   578,   582,
    588,   592,   598,   601,   606,   613,   618,   626,   631,   639,
    651,   656,   664,   669,   677,   684,   691,   704,   711,   718,
-   733,   745,   751,   756,   763,   770,   777,   783,   789,   796,
-   817,   824,   829,   849,   853,   860,   867,   868,   869,   870,
-   871,   872,   873,   874,   875,   876,   884,   888,   897,   900,
-   909,   913,   922,   932,   935,   944,   947,   957,   965,   968,
-   976,   980,   988,   998,  1001,  1010,  1013,  1022,  1032,  1042,
-  1049,  1052
+   733,   745,   751,   756,   763,   770,   777,   784,   790,   797,
+   818,   825,   830,   850,   854,   861,   868,   869,   870,   871,
+   872,   873,   874,   875,   876,   877,   885,   889,   898,   901,
+   910,   914,   923,   933,   936,   945,   948,   958,   966,   969,
+   977,   981,   989,   999,  1002,  1011,  1014,  1023,  1033,  1043,
+  1050,  1053
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","RELAY_",
@@ -2287,24 +2287,25 @@ case 166:
 case 167:
 #line 778 "SrvParser.y"
 {
+    Log(Info) << "Guess-mode enabled: relay interfaces may be loosely defined (matching interface-id is not mandatory)." << LogEnd;
     ParserOptStack.getLast()->setGuessMode(true);
 ;
     break;}
 case 168:
-#line 784 "SrvParser.y"
+#line 785 "SrvParser.y"
 {
     ParserOptStack.getLast()->setInactiveMode(true);
 ;
     break;}
 case 169:
-#line 790 "SrvParser.y"
+#line 791 "SrvParser.y"
 {
     Log(Crit) << "Experimental features are allowed." << LogEnd;
     ParserOptStack.getLast()->setExperimental(true);
 ;
     break;}
 case 170:
-#line 797 "SrvParser.y"
+#line 798 "SrvParser.y"
 {
     if (!strncasecmp(yyvsp[0].strval,"before",6)) 
     {
@@ -2325,20 +2326,20 @@ case 170:
 ;
     break;}
 case 171:
-#line 818 "SrvParser.y"
+#line 819 "SrvParser.y"
 {
     ParserOptStack.getLast()->setCacheSize(yyvsp[0].ival);
 ;
     break;}
 case 172:
-#line 825 "SrvParser.y"
+#line 826 "SrvParser.y"
 {
     ParserOptStack.getLast()->setLeaseQuerySupport(true);
 
 ;
     break;}
 case 173:
-#line 830 "SrvParser.y"
+#line 831 "SrvParser.y"
 {
     switch (yyvsp[0].ival) {
     case 0:
@@ -2355,91 +2356,91 @@ case 173:
 ;
     break;}
 case 174:
-#line 850 "SrvParser.y"
+#line 851 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayName(yyvsp[0].strval);
 ;
     break;}
 case 175:
-#line 854 "SrvParser.y"
+#line 855 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayID(yyvsp[0].ival);
 ;
     break;}
 case 176:
-#line 861 "SrvParser.y"
+#line 862 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayInterfaceID(yyvsp[0].ival);
 ;
     break;}
 case 187:
-#line 885 "SrvParser.y"
+#line 886 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 188:
-#line 888 "SrvParser.y"
+#line 889 "SrvParser.y"
 {
     ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 ;
     break;}
 case 189:
-#line 897 "SrvParser.y"
+#line 898 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 190:
-#line 900 "SrvParser.y"
+#line 901 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 ;
     break;}
 case 191:
-#line 910 "SrvParser.y"
+#line 911 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 192:
-#line 913 "SrvParser.y"
+#line 914 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
 ;
     break;}
 case 193:
-#line 923 "SrvParser.y"
+#line 924 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setTimezone(yyvsp[0].strval); 
 ;
     break;}
 case 194:
-#line 932 "SrvParser.y"
+#line 933 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 195:
-#line 935 "SrvParser.y"
+#line 936 "SrvParser.y"
 {
     ParserOptStack.getLast()->setSIPServerLst(&PresentAddrLst);
 ;
     break;}
 case 196:
-#line 944 "SrvParser.y"
+#line 945 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 197:
-#line 947 "SrvParser.y"
+#line 948 "SrvParser.y"
 {
     ParserOptStack.getLast()->setSIPDomainLst(&PresentStringLst);
 ;
     break;}
 case 198:
-#line 958 "SrvParser.y"
+#line 959 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)   << "No FQDNMode found, setting default mode 2 (all updates executed by server)." << LogEnd;
@@ -2449,13 +2450,13 @@ case 198:
 ;
     break;}
 case 199:
-#line 965 "SrvParser.y"
+#line 966 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 ;
     break;}
 case 200:
-#line 969 "SrvParser.y"
+#line 970 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)  << "FQDNMode found, setting value"<< yyvsp[0].ival <<LogEnd;
@@ -2465,14 +2466,14 @@ case 200:
 ;
     break;}
 case 201:
-#line 976 "SrvParser.y"
+#line 977 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
   
 ;
     break;}
 case 202:
-#line 981 "SrvParser.y"
+#line 982 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug) << "FQDNMode found, setting value " << yyvsp[-1].ival <<LogEnd;
@@ -2482,62 +2483,62 @@ case 202:
 ;
     break;}
 case 203:
-#line 988 "SrvParser.y"
+#line 989 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
   
 ;
     break;}
 case 204:
-#line 998 "SrvParser.y"
+#line 999 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 205:
-#line 1001 "SrvParser.y"
+#line 1002 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 ;
     break;}
 case 206:
-#line 1010 "SrvParser.y"
+#line 1011 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 207:
-#line 1013 "SrvParser.y"
+#line 1014 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 ;
     break;}
 case 208:
-#line 1023 "SrvParser.y"
+#line 1024 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISDomain(yyvsp[0].strval);
 ;
     break;}
 case 209:
-#line 1033 "SrvParser.y"
+#line 1034 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPDomain(yyvsp[0].strval);
 ;
     break;}
 case 210:
-#line 1043 "SrvParser.y"
+#line 1044 "SrvParser.y"
 {
     ParserOptStack.getLast()->setLifetime(yyvsp[0].ival);
 ;
     break;}
 case 211:
-#line 1049 "SrvParser.y"
+#line 1050 "SrvParser.y"
 {
     VendorSpec.clear();
 ;
     break;}
 case 212:
-#line 1052 "SrvParser.y"
+#line 1053 "SrvParser.y"
 {
     ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
@@ -2747,7 +2748,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 1057 "SrvParser.y"
+#line 1058 "SrvParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

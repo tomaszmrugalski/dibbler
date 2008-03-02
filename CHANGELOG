@@ -2,7 +2,14 @@
   Dibbler changelog
  ------------------- 
  0.7.0-CVS [not-released-yet]
+  - Srv: RemoteID support added
+  - Rel: RemoteID support added
+  - Srv: Echo Request Option support added
+  - Rel: Echo Request Option support added
+  - Srv: Prefixes with lengths not divisible by 8 are now supported properly
+  - Srv: Guess-mode implemented (relay's interface-id don't have to be specified anymore)
   - authentication and authorization added
+  - Cli: FQDN S bit is now configurable
 
  0.7.0 [2008-02-23]
   - no significant changes to 0.7.0RC1
