@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.9 2007-08-26 10:26:19 thomson Exp $
+ * $Id: OptVendorSpecInfo.cpp,v 1.10 2008-03-02 19:19:43 thomson Exp $
  *
  */
 
@@ -17,8 +17,8 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
-    :TOpt(OPTION_VENDOR_OPTS, parent)
+TOptVendorSpecInfo::TOptVendorSpecInfo(int type, char * &buf,  int &n, TMsg* parent)
+    :TOpt(type, parent)
 {
     if (n<4) {
 	Log(Error) << "Unable to parse vendor-spec info option." << LogEnd;
@@ -50,8 +50,8 @@ TOptVendorSpecInfo::TOptVendorSpecInfo( char * &buf,  int &n, TMsg* parent)
     n    = 0;
 }
 
-TOptVendorSpecInfo::TOptVendorSpecInfo(int enterprise, char *data, int dataLen, TMsg* parent)
-    :TOpt(OPTION_VENDOR_OPTS, parent)
+TOptVendorSpecInfo::TOptVendorSpecInfo(int type, int enterprise, char *data, int dataLen, TMsg* parent)
+    :TOpt(type, parent)
 {
     this->Vendor = enterprise;
     this->VendorData = new char[dataLen];
