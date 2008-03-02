@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.7 2007-05-04 17:34:56 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.8 2008-03-02 22:06:05 thomson Exp $
  *
  */
 
@@ -124,8 +124,11 @@ bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 	Log(Crit) << "Unable to find first prefix pool. Something is wrong, very wrong." << LogEnd;
 	return false;
     }
+
+    //Log(Debug) << "#### pool->getAddrL() = " << pool->getAddrL()->getPlain() << LogEnd;
+    //Log(Debug) << "#### pool->getAddrR() = " << pool->getAddrR()->getPlain() << LogEnd;
     CommonPool = new TStationRange( new TIPv6Addr(*pool->getAddrL()), new TIPv6Addr(*pool->getAddrR()));
-    CommonPool->truncate(pool->getPrefixLength(), prefixLength);
+    CommonPool->truncate(pool->getPrefixLength()+1, prefixLength);
     CommonPool->setPrefixLength(poolLength);
 
     /* Log(Debug) << "PD: Common part is " << CommonPool->getAddrL()->getPlain() << " - " 
