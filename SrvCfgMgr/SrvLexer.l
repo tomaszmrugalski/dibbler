@@ -79,6 +79,7 @@ client              { return SrvParser::CLIENT_; }
 duid                { return SrvParser::DUID_KEYWORD_; }
 remote-id           { return SrvParser::REMOTE_ID_; }
 address             { return SrvParser::ADDRESS_;}
+guess-mode          { return SrvParser::GUESS_MODE_; }
 
 option              { return SrvParser::OPTION_; }
 dns-server          { return SrvParser::DNS_SERVER_;}

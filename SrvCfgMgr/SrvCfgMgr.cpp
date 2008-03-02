@@ -8,7 +8,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.54 2008-02-25 17:49:10 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.55 2008-03-02 22:06:20 thomson Exp $
  *
  */
 
@@ -125,9 +125,11 @@ bool TSrvCfgMgr::setGlobalOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->DigestLst        = opt->getDigest();
     this->InterfaceIDOrder = opt->getInterfaceIDOrder();
     this->InactiveMode     = opt->getInactiveMode(); // should the client accept not ready interfaces?
+    this->GuessMode        = opt->getGuessMode();
 
     this->AuthKeyGenNonceLen = opt->getAuthKeyLen();
     this->AuthLifetime = opt->getAuthLifetime();
+
     return true;
 }
 
@@ -678,6 +680,10 @@ bool TSrvCfgMgr::inactiveMode()
     return InactiveMode;
 }
 
+bool TSrvCfgMgr::guessMode()
+{
+    return GuessMode;
+}
 
 bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
     SmartPtr<TIfaceIface> iface;
@@ -782,6 +788,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     out << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
     out << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
     out << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</InactiveMode>" << endl;
+    out << "  <GuessMode>" << (x.GuessMode?1:0) << "</GuessMode>" << endl;
     if (x.DUID)
 	out << "  " << *x.DUID;
     else

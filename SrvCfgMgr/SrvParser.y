@@ -94,7 +94,7 @@ virtual ~SrvParser();
 %token CACHE_SIZE_
 %token PDCLASS_, PD_LENGTH_, PD_POOL_ 
 %token VENDOR_SPEC_
-%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_
+%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
@@ -141,6 +141,7 @@ GlobalOption
 | AuthKeyGenNonceLen
 | Experimental
 | IfaceIDOrder
+| GuessMode
 ;
 
 InterfaceOptionDeclaration
@@ -771,6 +772,13 @@ StatelessOption
     ParserOptStack.getLast()->setStateless(true);
 }
 ;
+
+GuessMode
+: GUESS_MODE_
+{
+    Log(Info) << "Guess-mode enabled: relay interfaces may be loosely defined (matching interface-id is not mandatory)." << LogEnd;
+    ParserOptStack.getLast()->setGuessMode(true);
+};
 
 InactiveMode
 : INACTIVE_MODE_

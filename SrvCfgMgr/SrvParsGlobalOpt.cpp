@@ -18,6 +18,7 @@ TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
     this->Experimental     = false;
     this->InterfaceIDOrder = SRV_IFACE_ID_ORDER_BEFORE;
     this->InactiveMode     = false;
+    this->GuessMode        = false;
     this->AuthLifetime     = DHCPV6_INFINITY;
     this->AuthKeyLen       = 16;
 
@@ -111,3 +112,11 @@ unsigned int TSrvParsGlobalOpt::getAuthKeyLen()
     return AuthKeyLen;
 }
 
+void TSrvParsGlobalOpt::setGuessMode(bool guess)
+{
+    GuessMode = guess;
+}
+bool TSrvParsGlobalOpt::getGuessMode()
+{
+    return GuessMode;
+}

@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.20 2008-02-25 17:49:10 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.21 2008-03-02 22:06:20 thomson Exp $
  *
  */
 
@@ -77,6 +77,7 @@ public:
     string getWorkdir();
     bool stateless();
     bool inactiveMode();
+    bool guessMode();
     ESrvIfaceIdOrder getInterfaceIDOrder();
     int getCacheSize();
 
@@ -103,6 +104,7 @@ private:
     // global options
     bool Stateless;
     bool InactiveMode;
+    bool GuessMode;
     int  CacheSize;
     ESrvIfaceIdOrder InterfaceIDOrder;
 
