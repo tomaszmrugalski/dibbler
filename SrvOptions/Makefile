@@ -11,7 +11,8 @@ OBJECTS = SrvOptClientIdentifier.o	SrvOptElapsed.o       SrvOptIAAddress.o      
           SrvOptNISPDomain.o        	SrvOptLifetime.o      SrvOptTA.o             \
 	  SrvOptIA_PD.o             SrvOptIAPrefix.o          SrvOptAuthentication.o \
 	  SrvOptKeyGeneration.o     SrvOptAAAAuthentication.o SrvOptAddrParams.o \
-	  SrvOptLQ.o
+	  SrvOptLQ.o                    SrvOptRemoteID.o      SrvOptGeneric.o        \
+          SrvOptEcho.o
 objs: $(OBJECTS)
 
 libs: libSrvOptions.a

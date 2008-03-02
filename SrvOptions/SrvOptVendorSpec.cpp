@@ -6,19 +6,19 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptVendorSpec.cpp,v 1.1 2006-11-03 20:07:07 thomson Exp $
+ * $Id: SrvOptVendorSpec.cpp,v 1.2 2008-03-02 19:20:30 thomson Exp $
  */
 
 #include "SrvOptVendorSpec.h"
 
 TSrvOptVendorSpec::TSrvOptVendorSpec(char * buf,  int n, TMsg* parent)
-    :TOptVendorSpecInfo(buf,n, parent)
+    :TOptVendorSpecInfo(OPTION_VENDOR_OPTS, buf,n, parent)
 {
     
 }
 
 TSrvOptVendorSpec::TSrvOptVendorSpec(int enterprise, char * data, int dataLen, TMsg* parent)
-    :TOptVendorSpecInfo(enterprise, data, dataLen, parent)
+    :TOptVendorSpecInfo(OPTION_VENDOR_OPTS, enterprise, data, dataLen, parent)
 {
 }
 

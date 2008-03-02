@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptIA_NA.h,v 1.9 2007-05-04 17:47:25 thomson Exp $
+ * $Id: SrvOptIA_NA.h,v 1.10 2008-03-02 19:20:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2007-05-04 17:47:25  thomson
+ * *** empty log message ***
+ *
  * Revision 1.8  2006-03-05 21:32:28  thomson
  * Temp. addresses support merged into main branch.
  *
@@ -86,7 +89,7 @@ class TSrvOptIA_NA : public TOptIA_NA
     SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
 					  unsigned long valid, bool quiet);
     SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TIPv6Addr> hint);
-
+    SPtr<TIPv6Addr> getExceptionAddr();
 };
 
 #endif

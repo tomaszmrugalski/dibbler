@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.24 2007-09-06 23:10:39 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.25 2008-03-02 19:20:30 thomson Exp $
  */
 
 #ifdef WIN32
@@ -20,6 +20,8 @@
 #include "SrvOptIAAddress.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
+#include "SrvOptRemoteID.h"
+#include "SrvCfgOptions.h"
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
@@ -110,7 +112,6 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     // FIXME: SOLICIT without RAPID COMMIT should set this to true
     bool quiet = false;
 
-
     // --- check if client already has binding
     if (renew(queryOpt, false)) {
       Log(Info) << "Previous binding for client " << ClntDuid->getPlain() << ", IA(iaid=" 
@@ -123,9 +124,16 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     if (!queryOpt->countAddrs()) {
       Log(Notice) << "IA option (with IAADDR suboptions missing) received. Assigning one address."
                   << LogEnd;
-      
-      SmartPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
-      this->assignAddr(anyaddr, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
+
+
+      // is there any specific address reserved for this client? (exception mechanism)
+      SPtr<TIPv6Addr> hint = getExceptionAddr();
+      if (!hint) {
+	  hint = new TIPv6Addr();
+      } else {
+	  Log(Notice) << "Reserved address " << hint->getPlain() << " for this client found, trying to assign." << LogEnd;
+      }
+      this->assignAddr(hint, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
       
       // include status code
       SmartPtr<TSrvOptStatusCode> ptrStatus;
@@ -178,11 +186,20 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     queryOpt->firstOption();
     while ( opt = queryOpt->getOption() ) {
 	switch ( opt->getOptType() ) {
-      case OPTION_IAADDR: {
-      optAddr = (Ptr*) opt;
-      hint    = optAddr->getAddr();
-	  
-      if (willAssign) {
+	case OPTION_IAADDR: 
+	{
+	    optAddr = (Ptr*) opt;
+	    hint    = optAddr->getAddr();
+
+	    if (getExceptionAddr()) {
+		SPtr<TIPv6Addr> cliHint = hint;
+		hint = getExceptionAddr();
+		Log(Info) << "Client requested " << cliHint->getPlain();
+		Log(Cont) << ", but there is address reserved for this client: " << hint->getPlain() 
+			  << " (client's hint ignored)." << LogEnd;
+	    }
+	    
+	    if (willAssign) {
 		// we've got free addrs left, assign one of them
 		// always register this address as used by this client
 		// (if this is solicit, this addr will be released later)
@@ -191,24 +208,26 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
 		this->assignAddr(hint, pref, valid, quiet);
 		willAssign--;
 		addrsAssigned++;
-        
-      } else {
+		
+	    } else {
 		ok = false;
-      }
-      break;
-      }
-      case OPTION_STATUS_CODE: {
+	    }
+	    break;
+	}
+	case OPTION_STATUS_CODE: 
+	{
 	    SmartPtr<TOptStatusCode> ptrStatus = (Ptr*) opt;
 	    Log(Notice) << "Receviced STATUS_CODE code=" 
-                    <<  ptrStatus->getCode() << ", message=(" << ptrStatus->getText()
-                    << ")" << LogEnd;
+			<<  ptrStatus->getCode() << ", message=(" << ptrStatus->getText()
+			<< ")" << LogEnd;
 	    break;
-      }
-      default: {
+	}
+	default: 
+	{
 	    Log(Warning) << "Invalid suboption (" << opt->getOptType() 
-                     << ") in an OPTION_IA_NA option received. Option ignored." << LogEnd;
+			 << ") in an OPTION_IA_NA option received. Option ignored." << LogEnd;
 	    break;
-      }
+	}
 	}
     }
     
@@ -284,6 +303,34 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
     return optAddr;
 }
 
+/** 
+ * tries to find address reserved for this particular client
+ * 
+ * @return 
+ */
+SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
+{
+    SmartPtr<TSrvCfgIface> ptrIface=CfgMgr->getIfaceByID(Iface);
+    if (!ptrIface) {
+	return 0;
+    }
+
+    SPtr<TSrvOptRemoteID> remoteID;
+
+
+    TSrvMsg * par = dynamic_cast<TSrvMsg*>(Parent);
+    if (par) {
+	remoteID = par->getRemoteID();
+    } else {
+    }
+
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, remoteID, false/* false = verbose */);
+
+    if (ex)
+	return ex->getAddr();
+
+    return 0;
+}
 
 // constructor used only in RENEW, REBIND, DECLINE and RELEASE
 TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
