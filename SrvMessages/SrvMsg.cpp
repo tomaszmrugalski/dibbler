@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.49 2008-03-02 19:21:25 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.50 2008-03-02 22:02:16 thomson Exp $
  */
 
 #include <sstream>
@@ -456,7 +456,7 @@ void TSrvMsg::appendAuthenticationOption(SmartPtr<TDUID> duid)
 
     DigestType = SrvCfgMgr->getDigest();
     if (DigestType == DIGEST_NONE) {
-        Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
+        // Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
         return;
     }
 
@@ -928,6 +928,11 @@ SmartPtr<TSrvTransMgr> TSrvMsg::getSrvTransMgr()
 bool TSrvMsg::validateReplayDetection() {
     if (this->MsgType == SOLICIT_MSG)
         return true;
+
+    if (SrvCfgMgr->getDigest() ==  DIGEST_NONE) {
+        // Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
+        return true;
+    }
 
     SmartPtr<TAddrClient> client = SrvAddrMgr->getClient(SPI);
     if (!client) {

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.11 2006-12-28 22:53:00 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.12 2008-03-02 22:03:14 thomson Exp $
  *
  */
 
@@ -65,6 +65,14 @@ SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SmartPtr<TIPv6Addr> 
     /// FIXME: Implement finding RELAYs using link address
     Log(Error) << "Finding RELAYs using link address is not implemented yet. Using first relay:" 
 	      << this->Relays[0].iface->getFullName() << LogEnd;
+    return this->Relays[0].iface;
+}
+
+SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getAnyRelay() {
+    if (this->RelaysCnt==0) {
+	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
+	return 0;
+    }
     return this->Relays[0].iface;
 }
 

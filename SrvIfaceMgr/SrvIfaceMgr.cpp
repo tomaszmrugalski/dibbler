@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.28 2008-03-02 19:21:58 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.29 2008-03-02 22:03:14 thomson Exp $
  *
  */
 
@@ -383,15 +383,19 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 
 	Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
 
+	bool guessMode = SrvCfgMgr->guessMode();
+
 	if (ptrIfaceID) {
 	    // find relay interface based on the interface-id option
 	    Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue() << LogEnd;
 	    relayIface = ptrIface->getRelayByInterfaceID(ptrIfaceID->getValue());
 	    if (!relayIface) {
-		Log(Error) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getValue() << " defined on the " 
-			   << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
-		return 0;
-	    }
+	        if (!guessMode) {
+		    Log(Error) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getValue() << " defined on the " 
+			       << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+		    return 0;
+		} 
+	    } 
 	}
 	else {
 	    // find relay interface based on the link address
@@ -401,9 +405,21 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	    relayIface = ptrIface->getRelayByLinkAddr(linkAddr);
 	    if (!relayIface) {
 		Log(Error) << "Unable to find relay interface using link address: " << linkAddr->getPlain() << LogEnd;
-		return 0;
+		if (!guessMode) {
+		  return 0;
+		}
 	    }
 	}
+	if (!relayIface && guessMode) {
+	    relayIface = ptrIface->getAnyRelay();
+	    if (!relayIface) {
+	        Log(Error) << "Guess-mode: Unable to find any relays on " << ptrIface->getFullName() << LogEnd;
+	        return 0;
+	    }
+	    interfaceIDTbl[relays] = -1;
+	    Log(Notice) << "Guess-mode: Relayed interface guessed as " << relayIface->getFullName() << LogEnd;
+	}
+
 	// now switch to relay interface
 	ptrIface = relayIface;
 	buf = relay_buf;
