@@ -295,6 +295,8 @@ release-linux: VERSION-linux
 	strip $(CLIENTBIN)
 	@echo "[STRIP  ] $(RELAYBIN)"
 	strip $(RELAYBIN)
+	@echo "[STRIP  ] $(REQUESTORBIN)"
+	strip $(REQUESTORBIN)
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-linux.tar.gz"
 	tar czvf dibbler-$(VERSION)-linux.tar.gz                                   \
 		 $(SERVERBIN) $(CLIENTBIN) $(RELAYBIN) $(REQUESTORBIN) *.conf   \
@@ -362,10 +364,10 @@ deb:
 	echo "[RENAME ] ../dibbler-$(VERSION)" ; mv ../$(DIR) ../dibbler-$(VERSION); fi
 	dpkg-buildpackage -rfakeroot
 
-release-doc: VERSION-src doc
+release-doc: 
 	@echo "[TAR/GZ ] dibbler-$(VERSION)-doc.tar.gz"
 	tar czvf dibbler-$(VERSION)-doc.tar.gz VERSION RELNOTES LICENSE CHANGELOG \
-                 doc/*.pdf doc/html doc/rfc doc/rfc-drafts > filelist-doc
+                 doc/*.pdf doc/rfc doc/rfc-drafts > filelist-doc
 
 release-gentoo: VERSION-linux
 	@echo "[TAR/GZ ] dibbler-tmp.tar.gz"
