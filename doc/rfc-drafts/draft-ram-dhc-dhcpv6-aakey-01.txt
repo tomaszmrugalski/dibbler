@@ -1,0 +1,874 @@
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+   DHC Working group                                         Vishnu Ram 
+   Internet Draft                                         Vihang Kamble 
+   Document: draft-ram-dhc-dhcpv6-aakey-01.txt         Saumya Upadhyaya 
+                                                             Nitin Jain 
+   Expires: March 4, 2007                               August 31, 2006 
+    
+    
+        Authentication, Authorization and key management for DHCPv6 
+    
+    
+Status of this Memo 
+    
+   By submitting this Internet-Draft, each author represents that any 
+   applicable patent or other IPR claims of which he or she is aware 
+   have been or will be disclosed, and any of which he or she becomes 
+   aware will be disclosed, in accordance with Section 6 of BCP 79. 
+    
+   Internet-Drafts are working documents of the Internet Engineering 
+   Task Force (IETF), its areas, and its working groups.  Note that 
+   other groups may also distribute working documents as Internet-
+   Drafts. 
+    
+   Internet-Drafts are draft documents valid for a maximum of six months 
+   and may be updated, replaced, or obsoleted by other documents at any 
+   time.  It is inappropriate to use Internet-Drafts as reference 
+   material or to cite them other than as "work in progress." 
+    
+   The list of current Internet-Drafts can be accessed at 
+         http://www.ietf.org/ietf/1id-abstracts.txt 
+    
+   The list of Internet-Draft Shadow Directories can be accessed at 
+         http://www.ietf.org/shadow.html. 
+    
+   This Internet-Draft will expire on March 4, 2007. 
+    
+ 
+Abstract 
+
+   Dynamic Host Configuration Protocol version 6 (DHCPv6) 
+   authentication, as described in RFC3315, makes use of a model 
+   described in RFC3118. The DHCP threat model is described in RFC3118. 
+   However, RFC3118 does not discuss the distribution of keys to the 
+   server and the client. It assumes that the keys are transferred to 
+   the server and client using out of band mechanisms.  
+
+
+    
+
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 1] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+   This draft proposes to make use of the security association that the 
+   client shares with its home Authentication, Authorization and 
+   Accounting (AAA) servers. The security association between the client 
+   and server are established during DHCPv6 messaging. This document 
+   specifies options to DHCPv6 messages that can be used to create 
+   DHCPv6 Security Associations between the client and server. 
+
+    
+Table of Contents 
+    
+   1. Introduction...................................................2 
+   2. Terminology....................................................3 
+   3. Overview.......................................................4 
+   4. Security associations..........................................6 
+   5. Key Generation Nonce Creation and Key Derivation...............7 
+   6. DHCPv6 Options for security....................................8 
+      6.1. Client-server authentication option.......................8 
+      6.2. Client - AAA Authentication option........................9 
+      6.3. Key Generation option....................................10 
+   7. IANA Considerations...........................................11 
+   8. Security Considerations.......................................12 
+   9. References....................................................12 
+      9.1. Normative references.....................................12 
+      9.2. Informative references...................................12 
+   Appendix A.  AAA Infrastructure..................................13 
+   Appendix B.  Message Flow for SA establishment...................13 
+   Appendix C.  Sample configuration from AAA Infrastructure........15 
+   Authors' Addresses...............................................15 
+   10. Full Copyright Statement.....................................16 
+   11. Intellectual Property........................................16 
+    
+    
+1. Introduction 
+    
+   The Dynamic host configuration protocol (DHCP) threat model is 
+   defined in RFC3118 [2]. This calls for a need for securing DHCPv6 
+   messages between the client and server.  
+   RFC3118 as well as RFC3315 [1] discuss security of DHCPv6 messages. 
+   If the keys are configured statically, deployment becomes difficult 
+   when there are a large number of clients, especially in the roaming 
+   scenarios. In this document, we propose an in-band mechanism for 
+   establishing the DHCPv6 security association (SA) between the client 
+   and server. 
+    
+   Authentication, authorization and accounting (AAA) servers are used 
+   to provide authentication and authorization for IP hosts. AAA servers 
+   make use of AAA protocols like RADIUS or Diameter. The use of this is 
+   out of scope of this document and will be covered in [11]. The 
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 2] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+   infrastructure for establishing the DHCPv6 Security Association is 
+   covered in appendix A. 
+    
+   This draft makes use of the security association that the client 
+   shares with its home AAA servers (AAAH). The security association 
+   between the client and server is established by the AAAH and 
+   transferred to the server as defined in [11]. Also see Appendix A. 
+   The server transfers the DHCPv6 Security Association to the client 
+   using options specified in this document. The DHCPv6 Security 
+   Associations thus established will be used in calculating the Hashed 
+   message authentication code (HMAC) in the client-server 
+   authentication options of DHCPv6 messages.  
+    
+   This document does not talk about security between relay agents and 
+   servers, security for relay agents and handover scenarios. 
+    
+2. Terminology 
+    
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", 
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this 
+   document are to be interpreted as described in RFC2119 [4]. 
+    
+      AAA           Authentication, Authorization, and Accounting  
+                    (sec [8]). 
+    
+      AAA entity    A network node processing AAA messages according  
+                    to the requirements for AAA protocols (see [8]). 
+    
+      AAA Security Association 
+                    A security association between a AAA entity and  
+                    another node needing the services of that AAA  
+                    entity.  In this document all AAA Security  
+                    Associations are between a client and its  
+                    AAAH.  
+      Key           A number, kept secret.  Only nodes in possession of  
+                    the key have any hope of using the security  
+                    transform to obtain correct results. 
+    
+      Key Generation Nonce 
+                    Nonce data used for the purpose of creating a key. 
+    
+      DHCPv6 Security Association (DSA) 
+                    A DHCPv6 Security Association is a simplex  
+                    connection that applies security services to DHCPv6  
+                    messages between a client and server  
+                    using the options defined in this document.  A  
+                    DHCPv6 Security Association is uniquely identified  
+                    by the peer source and destination IP addresses and  
+                    an SPI.  Two nodes may have one or more DHCPv6  
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 3] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+                    Security Associations; however, typically there is  
+                    no reason to have more than one DHCPv6 Security  
+                    Association between two nodes, except as a transient  
+                    Condition during re-keying events. 
+    
+      Security Algorithm 
+                    A set of rules for using input data and a secret key 
+                    for producing data for use in security protocols. 
+    
+      SPI           Security Parameters Index.  The SPI is an arbitrary 
+                    32-bit value that assists in the identification of  
+                    an AAA, IP, or DHCPv6 Security Association. 
+    
+      Server        Refers to DHCPv6 server  
+    
+      Client        Refers to DHCPv6 client 
+    
+    
+3. Overview 
+    
+   The client may lack any pre-existing DSA with the server, say, when 
+   the client is roaming to foreign networks. The options defined in 
+   this document allow a server to supply key material to clients to be 
+   used for authenticating DHCPv6 messages between the client and 
+   server. The mechanism used by the server to establish this DSA is 
+   defined in [11]. 
+    
+   When no DSA exists between the client and server: 
+    
+   - The client MUST include key generation option in the option 
+     request option in a DHCPSOLICIT / DHCPINFORMREQ message. It SHOULD 
+     include its network access identifier (NAI) [3] in all its 
+     messages. The client computes the HMAC over the DHCPv6 message 
+     using the client-AAA security association and includes the HMAC in 
+     the client-AAA Authentication option. 
+    
+   - If the server supports message authentication, it uses the AAA 
+     protocol to contact the home network of the client using the NAI 
+     received in the DHCPSOLICIT / DHCPINFORMREQ message.  
+ 
+   - If the server does not support message authentication, it sends 
+     back a DHCPADVERTISE / DHCPREPLY without the Key Generation 
+     option. If the local policy of the client does not allow unsecured 
+     DHCPv6 messaging, then the client silently discards the 
+     DHCPADVERTISE and sends a DHCPDECLINE for a DHCPREPLY (if rapid 
+     commit is used). 
+ 
+   - On receiving the DSA from the home network using the AAA protocol, 
+     the server MUST send the nonce, AAA-SPI and key lifetime received 
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 4] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+     from the AAAH to the client in the Key Generation option in the 
+     DHCPADVERTISE / DHCPREPLY message. The AAA-SPI along with the 
+     nonce is used by the client to compute the keys. The server MUST 
+     also include a client-server authentication option (refer section 
+     6) in the DHCPADVERTISE / DHCPREPLY message which contains a HMAC 
+     created using the keys obtained using the AAA protocol.  
+ 
+   - For further messaging, the client and server MUST include the 
+     client-server authentication option which contains a HMAC created 
+     using the keys in the DSA that is setup. 
+   Refer Appendix B for call flows. 
+      
+   When DSA already exists between the client and server: 
+    
+   - The client MUST send the client-server authentication option in 
+     DHCPSOLICIT, if a new IP address is required, or in DHCPINFORMREQ, 
+     if only configuration options are required. 
+    
+   - The server validates the HMAC in the client-server authentication 
+     option and if authenticated, sends a DHCPADVERTISE / DHCPREPLY 
+     with client-server authentication option computed using the 
+     existing DSA along with the other options requested. 
+ 
+   - No interaction with the home domain is initiated. 
+    
+   Renewal of DSA: 
+    
+   - The client MUST include a Key Generation Option in the Option 
+     Request option of the DHCPREQUEST / DHCPINFORMREQ message, 
+     requesting for a new DSA to be established between the client and 
+     server. It MUST also include the client-server authentication 
+     option with HMAC computed using the old DSA.  
+    
+   - The server verifies the authenticity of the message by verifying 
+     the HMAC in the client-server authentication option included by 
+     the client. If not authenticated, the server SHOULD send a 
+     DHCPREPLY with status code option set to NOTAUTHENTICATED. 
+    
+   - If authenticated, the server contacts the AAAH to get the DSA. 
+    
+   - The server MUST include the DSA received from the AAAH in the key 
+     generation option in the DHCPREPLY message. It also includes the 
+     client-server authentication option which contains a HMAC created 
+     using the keys obtained using the AAA protocol. 
+    
+   AAAH initiated termination of DHCPv6 session: 
+    
+   - On receiving a termination trigger from the AAAH, the server 
+     checks if there is a valid DSA between the client and server. If 
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 5] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+     there is no valid DSA, the server SHOULD NOT initiate a 
+     DHCPRECONFIGURE. If a valid DSA exists, the server SHOULD initiate 
+     a DHCPRECONFIGURE message towards the client.  
+    
+   - The client MUST initiate a DHCPINFORMREQ towards the server. 
+    
+   - The server sends a DHCPREPLY with status code SERVERTERMINATED 
+    
+   AAAH initiated configuration update: 
+    
+   - On receiving a configuration update trigger from the AAAH, the 
+     server checks if there is a valid DSA between the client and 
+     server. If there is no valid DSA, the server SHOULD NOT initiate a 
+     DHCPRECONFIGURE. If a valid DSA exists, the server SHOULD initiate 
+     a DHCPRECONFIGURE message towards the client.  
+    
+   - The DHCPRECONFIGURE message contains the options that the server 
+     would like the client to request for in the option request option. 
+     The configuration update from the AAAH may be as described in 
+     Appendix C. 
+    
+   - The client MUST initiate a DHCPINFORMREQ towards the server. 
+    
+   - The server sends a DHCPREPLY with status code SUCCESS and the 
+     configuration options received from the AAAH. 
+    
+   Any DHCPv6 message SHOULD contain at least one of the two 
+   authentication options: client-AAA authentication option and/or 
+   client-server authentication option. 
+    
+4. Security associations 
+    
+   The DHCPv6 Security association between the client and server 
+   consists of an authentication key which is used to authenticate 
+   messages between them, the cryptographic algorithm that is used for 
+   the computation of authentication information.  
+    
+   The AAA Security association consists of a AAA key, algorithm used to 
+   compute the keys and a cryptographic algorithm used to compute the 
+   authentication information between the client and the AAAH. 
+    
+   The Security Parameters Index (SPI) is used by two peers to index 
+   into the security association established between them. The SPI maps 
+   to the same SA at both peers. 
+    
+
+
+
+
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 6] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+5. Key Generation Nonce Creation and Key Derivation 
+ 
+   The algorithm described in this section is used to generate the keys 
+   at the client using the nonce received from the AAAH. This is similar 
+   to the one described in section 5 of [7]. 
+    
+   This section contains the procedures followed in the creation of the 
+   Key Generation Nonce by AAAH, and the key derivation procedures used 
+   by clients.  Note that the AAAH will also deliver the keys to the 
+   server via the AAA protocol.  AAAH that follow these procedures will 
+   produce results that can be understood by clients.  The server will 
+   transcribe the results into the appropriate DHCPv6 options. 
+    
+   The following example uses HMAC-SHA1 [5].  All clients and servers 
+   implementing DHCPv6 [1] and implementing the options specified in 
+   this document MUST implement HMAC-SHA1 [5].  Other message 
+   authentication codes or keyed hash functions MAY also be used.  The 
+   particular algorithm used is configured as part of the AAA Security 
+   Association between the MN and the AAAH, which is in turn indexed by 
+   the AAA SPI. 
+    
+   The following steps are performed on the AAAH [11]: 
+     1. The AAAH identifies the client.  The AAAH uses the client 
+        identifier to identify the client. 
+      
+     2. The AAAH generates a random [6] value of at least 128 bits to be 
+        used as the Key Generation Nonce. 
+ 
+     3. The AAAH inserts the random value into the Key Generation Nonce 
+        Reply option in the "Key Generation Nonce" field. 
+    
+   The following steps are performed by the client (here || represents 
+   concatenation): 
+    
+     1. The client calculates 
+         key = HMAC-SHA1 (AAA-key, {Key Generation Nonce || client 
+     identifier}) 
+         Here the Key Generation Nonce is from the key generation option 
+     in the DHCPADVERTISE or DHCPREPLY, and the client identifier is 
+     the client's NAI which it sent in the DHCPv6 message towards the 
+     server. 
+      
+     2. The client creates the DHCPv6 Security Association(s), using the 
+        resulting key and the other relevant information in the Key 
+        Generation Nonce option. 
+    
+   The secret key used within the HMAC-SHA1 computation is indicated by 
+   the AAA Security Association indexed by the AAA SPI, which has been 
+
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 7] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+   previously configured as the basis for the AAA Security Association 
+   between the client and the AAAH creating the key material. 
+ 
+6. DHCPv6 Options for security 
+ 
+   This section defines the options added or modified from [1]. 
+    
+6.1. Client-server authentication option  
+   The client-server authentication option is used between the client 
+   and the server to provide for message authentication and replay 
+   detection. This option in this draft is a modified version of the 
+   authentication option in [1].  
+    
+   This client-server authentication option includes a Security 
+   Parameters Index which would be useful when more than one set of DSA 
+   are used between the client and server (typically in a scenario when 
+   there is an overlap in the lifetimes of the DSA). This SPI is an 
+   index to the keys, the algorithm and protocol. Hence the protocol, 
+   algorithm and key id need not be sent across separately in each 
+   client-server authentication option. Also, the DHCPv6 realm that is 
+   described in [1] is not included in the authentication information as 
+   the keys are established dynamically from the home domain. 
+    
+        0                   1                   2                   3 
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+       |          OPTION_AUTH          |          option-len           | 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+       |      RDM      |                                               | 
+       +-+-+-+-+-+-+-+-+                                               | 
+       |          replay detection (64 bits)                           | 
+       |               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+       |               |           client-server SPI                   | 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-| 
+       |SPI contd.     |                                               | 
+       +-+-+-+-+-+-+-+-+                                               | 
+       .                   authentication information                  . 
+       .                       (variable length)                       . 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+    
+                Fig 1: client-server authentication option 
+    
+         option-code                  OPTION_AUTH (11) 
+    
+         option-len                   13 + length of authentication 
+                                      information field 
+    
+         RDM                          The replay detection method used  
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 8] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+                                      in this client-server  
+                                      authentication option 
+    
+         Replay detection             The replay detection information  
+                                      for the RDM 
+    
+         client-server SPI            The client SPI field is used to   
+                                      identify the DSA being used to  
+                                      compute the authentication  
+                                      information 
+    
+         authentication information   The HMAC computed using the keys 
+                                      and algorithm indexed by the  
+                                      client SPI 
+    
+6.2. Client - AAA Authentication option  
+   This option is used to send the HMAC to the AAAH for the first 
+   message (say, DHCPSOLICIT) before the DSA is setup between the client 
+   and server. The AAAH authenticates the client based on the pre-
+   existing security association between the AAAH and the client. 
+    
+   The format of the client - AAA Authentication option is shown below 
+    
+          0                   1                   2                   3 
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+       |          OPTION_AAAAUTH       |          option-len           | 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+       |                             AAA SPI                           | 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-| 
+       |                                                               | 
+       |                                                                
+       .                   authentication information                  . 
+       .                       (variable length)                       . 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+                                      
+                  Fig 2: client-AAA authentication option 
+    
+         option-code                  OPTION_AAAAUTH (TBD) 
+    
+         option-len                   4 + length of authentication 
+                                      information field 
+    
+         AAA SPI                      The AAA SPI is the security  
+                                      parameters index used by the  
+                                      client to compute the 
+                                      authentication information  
+                                      included in the option 
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007                [Page 9] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+    
+         authentication information   The HMAC computed using the keys 
+                                      and algorithm indexed by the  
+                                      AAA SPI 
+    
+6.3. Key Generation option 
+    
+   When the client requests for establishment of a SA, it includes the 
+   option code of the key generation option in the option request 
+   option. In response to such a request, the server provides the DSA to 
+   the client in the option defined below 
+    
+       0                   1                   2                   3 
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+       |          OPTION_KEYGEN        |          option-len           | 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+       |                     client-server SPI                         |   
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-| 
+       |             Key Generation Data..                             | 
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+    
+                       Fig 3: key generation option 
+    
+         option-code                  OPTION_KEYGEN (TBD) 
+    
+         option-len                   4 + length of authentication 
+                                      information field 
+    
+         client-server SPI            This field is the SPI the  
+                                      server will assign to the  
+                                      DSA being set up 
+         Key Generation Data          The DHCPv6 Security association    
+                                      which consists of the nonce and  
+                                      other information required by the 
+                                      client to create the keys. 
+    
+   The key generation data consists of the lifetime of the security 
+   association being setup up, the AAA SPI which indexes into the SA 
+   between the client and AAA (to get the key and algorithm used to 
+   derive the authentication keys as discussed in section 5), the 
+   algorithm which is used to compute the authentication information 
+   used for message authentication and the nonce used to derive the 
+   keys. The format of the key generation data is shown below. 
+    
+    
+    
+    
+    
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007               [Page 10] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+    
+    
+    
+    
+    
+       0                   1                   2                   3 
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+      |                            Lifetime                           | 
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+      |                            AAA SPI                            | 
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+      | Algorithm Identifier          |      Key Generation Nonce ... 
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+    
+            Fig 4: key generation data in key generation option 
+    
+      lifetime   This field indicates the duration of time (in seconds)  
+                 for which the keying material used to create the  
+                 authentication key is valid. 
+    
+      AAA SPI    A 32-bit opaque value, indicating the SPI that the  
+                 client must use to determine the transform to  
+                 use for establishing the DHCPv6 Security Association  
+                 between the client and the server. 
+    
+      Algorithm Identifier 
+                 This field indicates the transform to be used (stored  
+                 as part of the DHCPv6 Security Association) with the  
+                 server. 
+    
+      Key Generation Nonce 
+                 A random [6] value of at least 128 bits. 
+    
+   The Key Generation Nonce is provided by the AAAH for use by the 
+   client in creating the authentication key, which is used to secure 
+   future DHCPv6 messages between the client and server. 
+    
+   Once the client creates the DHCPv6 Security Association with the 
+   server, by using the transform indexed by the AAA SPI, it stores that 
+   DHCPv6 Security Association indexed by the client-server SPI in its 
+   list of DHCPv6 Security Associations. 
+    
+   The server stores the client-server SPI to identify the DSA being 
+   used for authenticating future DHCPv6 message exchange. 
+    
+7. IANA Considerations  
+    
+
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007               [Page 11] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+   This document defines 2 new options and a new status code. The values 
+   for these options are: 
+         Name                                 Value   Section 
+         ---------------------                ------- --------- 
+   client - AAA Authentication option         TBD      6.2 
+   Key Generation option                      TBD      6.3 
+   Status code NOTAUTHENTICATED               TBD      3  
+   Status code SERVERTERMINATED               TBD      3 
+    
+8. Security Considerations 
+    
+   In this draft, we do not discuss the security between the DHCPv6 
+   Relay and server. It is assumed to be done out of band. Since there 
+   is nothing client specific at the relay agent and that the relay 
+   agent is stateless, there is no necessity to dynamically establish SA 
+   between the relay and server. 
+    
+    
+9. References 
+    
+9.1. Normative references 
+    
+      [1]  R. Droms (ed.), J. Bound, B. Volz, T. Lemon, C. Perkins,  
+              and M. Carney, "Dynamic Host Configuration Protocol for  
+              IPv6 (DHCPv6)", RFC 3315, July 2003 
+      [2]  Droms, R., Ed. and W. Arbaugh, Ed., "Authentication for  
+              DHCP Messages", RFC 3118, June 2001. 
+      [3]  Aboba, B. and M. Beadles, "The Network Access  
+              Identifier", RFC 2486, January 1999. 
+      [4]  Bradner, S., "Key words for use in RFCs to Indicate  
+              Requirement Levels", BCP 14, RFC 2119, March 1997. 
+      [5]  Krawczyk, H., Bellare, M., and R. Canetti, "HMAC: Keyed- 
+              Hashing for Message Authentication", RFC 2104, February  
+              1997. 
+      [6]  Eastlake, D., Crocker, S., and J. Schiller, "Randomness 
+           Recommendations for Security", RFC 1750, December 1994. 
+    
+9.2. Informative references 
+    
+      [7] Calhoun, P. and C. Perkins, "Authentication,  
+           Authorization, and Accounting (AAA) Registration Keys for  
+           Mobile IPv4", RFC 3957, March 2005 
+      [8] Mitton, D., St.Johns, M., Barkley, S., Nelson, D., Patil,  
+           B., Stevens, M., and B. Wolff, "Authentication,  
+           Authorization, And Accounting: Protocol Evaluation",  
+           RFC 3127, June 2001. 
+      [9] Rigney, C., Willens, S., Rubens, A., and A. Simpson,  
+           "Remote Authentication Dial In User Service (RADIUS)",  
+           RFC 2865, June 2000. 
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007               [Page 12] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+      [10] Calhoun, P., Loughney, J., Guttman, E., Zorn, G., and J.  
+            Arkko, "Diameter Base Protocol", RFC 3588, September 2003. 
+      [11] Vishnu, R., Vihang, G., Saumya, U., Nitin, J., "DHCP    
+           Diameter Application" Work in progress 
+    
+Appendix A.  AAA Infrastructure  
+    
+   A node can typically move into different administrative domains than 
+   its home domain. When in a foreign domain, the client may need to 
+   obtain a new IP address and other configuration options. The server 
+   may not have enough information to authenticate the client. Hence the 
+   server contacts its local authority (in this case the AAA server in 
+   the foreign domain (AAAF)). The AAA server in the foreign domain is 
+   used for relaying the messages only. The AAAF in-turn contacts the 
+   AAAH, using the NAI that is included by the client.  
+    
+   The AAAH authenticates the client, provides configuration parameters 
+   to the server using the Diameter [10] / RADIUS [9] protocol. The 
+   mechanism to do the same using Diameter is defined in [11]. The 
+   server transfers the security association to the client using DHCPv6 
+   messaging. A security association between the client and its AAAH is 
+   assumed to be preconfigured. 
+    
+   Security association between the server, AAAF and AAAH is assumed. 
+    
+    
+                   Foreign Domain                  Home Domain 
+                 +--------------+           +----------------------+ 
+                 |   +------+   |           |   +------+           | 
+                 |   |      |   |           |   |      |           | 
+                 |   | AAAF |   |           |   | AAAH |           | 
+                 |   |      +-------------------+      |           | 
+                 |   +---+--+   |           |   +------+           | 
+                 |       |      |           |                      | 
+                 |       |      |           +----------------------+ 
+      +------+   |   +---+--+   | 
+      |      |   |   |      |   |        
+      |  DC  |- -|- -|  DS  |   |       DC   =  client 
+      |      |   |   |      |   |       DS   =  server 
+      |      |   |   |      |   |       AAAF =  Foreign authority 
+      +------+   |   +------+   |       AAAH =  home authority 
+                 |              | 
+                 +--------------+ 
+    
+                      Fig 6: DHCP AAA Infrastructure 
+    
+Appendix B.  Message Flow for SA establishment 
+    
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007               [Page 13] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+   In this section we discuss the messaging to obtain the DHCPv6 
+   Security association dynamically from the AAA infrastructure. 
+    
+    
+    
+      Client              Server                  AAA Infrastructure 
+       |                       |                           | 
+       |                       |                           | 
+       |                       |                           | 
+       |                       |                           | 
+       |-- DHCPSOLICIT  ------>|                           | 
+       |   + Key Req +         |                           | 
+       |   client AAA auth extn|                           | 
+       |                       |--- AAA-DHCPv6-Request.--->| 
+       |                       |    + authentication + SA  | 
+       |                       |      request              | 
+       |                       |                           | 
+       |                       |<---AAA-DHCPv6-Reply   .---| 
+       |                       |   + SA + config options   | 
+       |                       |                           | 
+       |<-- DHCPADVERTISE -----|                           | 
+       | + Key Reply+auth extn |                           | 
+    
+                      Fig 7: Initial SA establishment 
+    
+      In the above diagram,  
+    
+   - The client sends a DHCPSOLICIT with a key generation option in the 
+     option request option. 
+ 
+   - The server uses the contacts its locally configured AAA 
+     Infrastructure (see appendix A), according to local policy using 
+     Diameter messaging described in [11]. 
+ 
+   - The server receives a response from the AAA Infrastructure with 
+     the authorization for the client. It also contains keying material 
+     which is used locally by the server and a nonce which the client 
+     utilizes to obtain the authentication key. 
+ 
+   - The server encapsulates the nonce, lifetime and client-AAA-SPI 
+     received in a Key Generation Data portion. The server also 
+     includes the client-server authentication option to authenticate 
+     the current message using the key information received. It 
+     includes both these options in the DHCPADVERTISE. 
+    
+
+
+
+
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007               [Page 14] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+Appendix C.  Sample configuration from AAA Infrastructure 
+ 
+   The server can either obtain the configuration options for a client 
+   from either the AAA Infrastructure or it can be statically 
+   configured. We define a format which the server can use to store   / 
+   receive these configuration options. This is informational only. 
+    
+   <?xml version="1.0" encoding="UTF-8"?> 
+   <DHCPConfigParams> 
+             <HaIpAddress> 1:2:3:4:5:6:7:8 </HaIpAddress> 
+             <HomeIpAddress>1:2:3:4:5:6:7:9</HomeIpAddress> 
+             <Mip6Nonce> mipv6nonce </Mip6Nonce> 
+             <AaaKey> 1 </AaaKey> 
+             <Mip6SaLifetime> 100 </Mip6SaLifetime> 
+   </DHCPConfigParams> 
+    
+Authors' Addresses 
+    
+   Vishnu Ram 
+   Motorola 
+   66/1, Bagmane Tech Park,  
+   C V Raman Nagar, Bangalore, 560093 
+   vishnu@motorola.com 
+    
+   Vihang Kamble 
+   Motorola 
+   66/1, Bagmane Tech Park,  
+   C V Raman Nagar, Bangalore, 560093 
+   vihang@motorola.com 
+    
+   Saumya Upadhyaya 
+   Motorola 
+   66/1, Bagmane Tech Park,  
+   C V Raman Nagar, Bangalore, 560093 
+   saumya@motorola.com 
+    
+   Nitin Jain 
+   Motorola 
+   66/1, Bagmane Tech Park,  
+   C V Raman Nagar, Bangalore, 560093 
+   nitin@motorola.com 
+    
+Contributors 
+ 
+   A significant contribution to this draft was made by Tarjani K in the 
+   DHCPv6 area. 
+    
+
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007               [Page 15] 
+ Authentication, Authorization and key management for DHCPv6 Aug 31, 06 
+ 
+ 
+10. Full Copyright Statement 
+    
+   Copyright (C) The Internet Society (2006). 
+    
+   This document is subject to the rights, licenses and restrictions 
+   contained in BCP 78, and except as set forth therein, the authors 
+   retain all their rights. 
+    
+   This document and the information contained herein are provided on an 
+   "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS 
+   OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET 
+   ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,  
+   INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE 
+   INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED 
+   WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. 
+    
+11. Intellectual Property 
+    
+   The IETF takes no position regarding the validity or scope of any 
+   Intellectual Property Rights or other rights that might be claimed to 
+   pertain to the implementation or use of the technology described in 
+   this document or the extent to which any license under such rights 
+   might or might not be available; nor does it represent that it has 
+   made any independent effort to identify any such rights.  Information 
+   on the procedures with respect to rights in RFC documents can be 
+   found in BCP 78 and BCP 79. 
+    
+   Copies of IPR disclosures made to the IETF Secretariat and any 
+   assurances of licenses to be made available, or the result of an 
+   attempt made to obtain a general license or permission for the use of 
+   such proprietary rights by implementers or users of this 
+   specification can be obtained from the IETF on-line IPR repository at 
+   http://www.ietf.org/ipr. 
+    
+   The IETF invites any interested party to bring to its attention any 
+   copyrights, patents or patent applications, or other proprietary 
+   rights that may cover technology that may be required to implement 
+   this standard.  Please address the information to the IETF at ietf-
+   ipr@ietf.org. 
+    
+   The IETF has been notified of intellectual property rights claimed in 
+   regard to some or all of the specification contained in this 
+   document.  For more information consult the online list of claimed 
+   rights. 
+    
+
+
+
+ 
+ 
+Vishnu et al.,          Expires March 4, 2007               [Page 16] 
+

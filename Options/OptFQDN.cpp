@@ -7,7 +7,7 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.4 2007-08-26 10:26:18 thomson Exp $
+* $Id: OptFQDN.cpp,v 1.5 2008-03-02 22:38:46 thomson Exp $
 *
 */
 
@@ -86,7 +86,10 @@ int TOptFQDN::getSize() {
 	//The first length and the final 0 will increased the fqdn string length by 2
 	//We also have to add 4 for the header (option type and size) and 1 for the flags.
 	// 2 + 1 + 4 = 7
-	return fqdn.length() + 7;
+        if (fqdn.length())
+	    return fqdn.length() + 7;
+	else
+	    return 6;
 }
 
 char * TOptFQDN::storeSelf(char *buffer) {
@@ -128,7 +131,7 @@ char * TOptFQDN::storeSelf(char *buffer) {
 		buffer += copy.length();
 	}
 	*buffer = 0;
-	buffer++;
+	//buffer++;
 
 	return buffer;
 }
