@@ -6,20 +6,19 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptVendorSpec.cpp,v 1.2 2006-11-03 22:23:15 thomson Exp $
+ * $Id: ClntOptVendorSpec.cpp,v 1.3 2008-03-02 19:19:10 thomson Exp $
  *
  */
 
 #include "ClntOptVendorSpec.h"
 
 TClntOptVendorSpec::TClntOptVendorSpec( char * buf,  int n, TMsg* parent)
-    :TOptVendorSpecInfo(buf,n, parent)
+    :TOptVendorSpecInfo(OPTION_VENDOR_OPTS, buf,n, parent)
 {
-
 }
 
 TClntOptVendorSpec::TClntOptVendorSpec(int enterprise, char * data, int dataLen, TMsg* parent)
-    :TOptVendorSpecInfo(enterprise, data, dataLen, parent)
+    :TOptVendorSpecInfo(OPTION_VENDOR_OPTS, enterprise, data, dataLen, parent)
 {
 }
 
