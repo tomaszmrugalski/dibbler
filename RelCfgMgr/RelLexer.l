@@ -53,6 +53,9 @@ multicast           { return RelParser::MULTICAST_; }
 interface-id        { return RelParser::IFACE_ID_; }
 interface-id-order  { return RelParser::IFACE_ID_ORDER_; }
 guess-mode          { return RelParser::GUESS_MODE_; }
+option              { return RelParser::OPTION_; }
+remote-id           { return RelParser::REMOTE_ID_; }
+echo-request        { return RelParser::ECHO_REQUEST_; }
 
 log-name            { return RelParser::LOGNAME_;}
 log-level           { return RelParser::LOGLEVEL_;}
@@ -190,6 +193,38 @@ false               { yylval.ival=0; return RelParser::INTNUMBER_;}
         YYABORT; 
     }
     return RelParser::INTNUMBER_;
+}
+
+0x{hexdigit}+ {
+    // DUID
+    int len;
+    char * ptr;
+    if (strlen(yytext)%2) {
+        yytext[1]='0'; //if odd then no-meaning zero at the beginning
+        len = strlen(yytext)-1;
+        ptr = yytext+1;
+    } else {
+        len = strlen(yytext)-2;
+        ptr = yytext+2;
+    }
+
+    //and now there is an even number of hex digits
+    yylval.duidval.length = len >> 1;
+    yylval.duidval.duid   = new char[len >> 1];
+    for (int i=0 ; i<len; i++)
+    {
+        yylval.duidval.duid[i>>1]<<=4;
+        if (!isxdigit(ptr[i])) { 
+             Log(Crit) << "DUID parsing failed (" << yytext << ")." << LogEnd;
+             YYABORT; 
+        } 
+        if (isalpha(ptr[i])) {
+            yylval.duidval.duid[i>>1]|=toupper(ptr[i])-'A'+10;
+        } else {
+            yylval.duidval.duid[i>>1]|=ptr[i]-'0';
+        }
+   }
+   return RelParser::DUID_;
 }
 
 .  { return yytext[0]; } 

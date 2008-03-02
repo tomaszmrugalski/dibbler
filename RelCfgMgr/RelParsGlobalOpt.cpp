@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelParsGlobalOpt.cpp,v 1.3 2007-05-01 12:03:13 thomson Exp $
+ * $Id: RelParsGlobalOpt.cpp,v 1.4 2008-03-02 19:35:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2007-05-01 12:03:13  thomson
+ * Support for interface-id location added.
+ *
  * Revision 1.2  2007-03-07 02:37:11  thomson
  * Experimental support for guess-mode.
  *
@@ -52,4 +55,24 @@ void TRelParsGlobalOpt::setInterfaceIDOrder(ERelIfaceIdOrder order) {
 
 ERelIfaceIdOrder TRelParsGlobalOpt::getInterfaceIDOrder() {
     return InterfaceIDOrder;
+}
+
+void TRelParsGlobalOpt::setRemoteID(SPtr<TRelOptRemoteID> remoteID)
+{
+    RemoteID = remoteID;
+}
+
+SPtr<TRelOptRemoteID> TRelParsGlobalOpt::getRemoteID()
+{
+    return RemoteID;
+}
+
+void TRelParsGlobalOpt::setEcho(SPtr<TRelOptEcho> echo)
+{
+    Echo = echo;
+}
+
+SPtr<TRelOptEcho> TRelParsGlobalOpt::getEcho()
+{
+    return Echo;
 }

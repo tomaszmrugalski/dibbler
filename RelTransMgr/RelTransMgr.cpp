@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelTransMgr.cpp,v 1.18 2007-05-01 19:29:47 thomson Exp $
+ * $Id: RelTransMgr.cpp,v 1.19 2008-03-02 19:36:27 thomson Exp $
  *
  */
 
@@ -17,6 +17,8 @@
 #include "RelCfgMgr.h"
 #include "RelIfaceMgr.h"
 #include "RelOptInterfaceID.h"
+#include "RelOptEcho.h"
+#include "RelOptGeneric.h"
 #include "Logger.h"
 
 TRelTransMgr::TRelTransMgr(TCtx * ctx, string xmlFile)
@@ -174,6 +176,36 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
 	Log(Warning) << "Interface-id option not added (interface-id-order omit used in relay.conf). "
 		     << "That is a debugging feature and violates RFC3315. Use with caution." << LogEnd;
     }
+
+    SPtr<TRelOptRemoteID> remoteID = Ctx->CfgMgr->getRemoteID();
+    if (remoteID) {
+	remoteID->storeSelf(buf+offset);
+	offset += remoteID->getSize();
+	Log(Debug) << "Appended RemoteID with " << remoteID->getVendorDataLen() << "-byte long data (option length=" 
+		   << remoteID->getSize() << ")." << LogEnd;
+    }
+
+    SPtr<TRelOptEcho> echo = Ctx->CfgMgr->getEcho();
+    if (echo) {
+	echo->storeSelf(buf+offset);
+	offset += echo->getSize();
+	Log(Debug) << "Appended EchoRequest option with ";
+
+	int i=0;
+	char tmpBuf[256];
+	for (i=0;i<255;i++)
+	    tmpBuf[i] = 255-i;
+
+	for (int i=0; i<echo->count(); i++) {
+	    int code = echo->getReqOpt(i);
+	    SPtr<TRelOptGeneric> gen = new TRelOptGeneric(code, tmpBuf, 4, 0);
+	    gen->storeSelf(buf+offset);
+	    offset += gen->getSize();
+	    Log(Cont) << code << " ";
+	}
+	Log(Cont) << " opt(s)." << LogEnd;
+    }
+
     this->Ctx->CfgMgr->firstIface();
     while (cfgIface = this->Ctx->CfgMgr->getIface()) {
 	if (cfgIface->getServerUnicast()) {

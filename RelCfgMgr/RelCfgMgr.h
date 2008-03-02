@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.h,v 1.6 2007-05-01 12:03:13 thomson Exp $
+ * $Id: RelCfgMgr.h,v 1.7 2008-03-02 19:35:26 thomson Exp $
  *
  */
 
@@ -19,6 +19,8 @@ class TRelCfgMgr;
 
 #include "CfgMgr.h"
 #include "DHCPConst.h"
+#include "RelOptRemoteID.h"
+#include "RelOptEcho.h"
 
 class TRelCfgMgr : public TCfgMgr
 {
@@ -48,6 +50,9 @@ public:
     bool guessMode();
     ERelIfaceIdOrder getInterfaceIDOrder();
 
+    SPtr<TRelOptRemoteID> getRemoteID();
+    SPtr<TRelOptEcho>     getEcho();
+
 private:    
     TCtx Ctx;
     string XmlFile;
@@ -65,6 +70,9 @@ private:
     string Workdir;
     bool GuessMode;
     ERelIfaceIdOrder InterfaceIDOrder;
+
+    SPtr<TRelOptRemoteID> RemoteID;
+    SPtr<TRelOptEcho> Echo;
 };
 
 #endif /* RELCONFMGR_H */

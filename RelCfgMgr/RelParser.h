@@ -34,6 +34,7 @@ List(TRelParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addr
 List(TRelCfgIface) RelCfgIfaceLst;         /* list of RelCfg interfaces */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
+SPtr<TRelOptEcho> EchoOpt;                 /* echo request option */                 \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
 /*method check whether interface with id=ifaceName has been already declared*/       \
@@ -46,12 +47,17 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 45 "RelParser.y"
+#line 46 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
     char *strval;
     char addrval[16];
+    struct SDuid
+    {
+        int length;
+        char* duid;
+    } duidval;
 } yy_RelParser_stype;
 #define YY_RelParser_STYPE yy_RelParser_stype
 
@@ -233,11 +239,15 @@ typedef
 #define	LOGLEVEL_	266
 #define	LOGMODE_	267
 #define	WORKDIR_	268
-#define	GUESS_MODE_	269
-#define	STRING_	270
-#define	HEXNUMBER_	271
-#define	INTNUMBER_	272
-#define	IPV6ADDR_	273
+#define	DUID_	269
+#define	OPTION_	270
+#define	REMOTE_ID_	271
+#define	ECHO_REQUEST_	272
+#define	GUESS_MODE_	273
+#define	STRING_	274
+#define	HEXNUMBER_	275
+#define	INTNUMBER_	276
+#define	IPV6ADDR_	277
 
 
 #line 169 "../bison++/bison.h"
@@ -297,6 +307,10 @@ static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
 static const int WORKDIR_;
+static const int DUID_;
+static const int OPTION_;
+static const int REMOTE_ID_;
+static const int ECHO_REQUEST_;
 static const int GUESS_MODE_;
 static const int STRING_;
 static const int HEXNUMBER_;
@@ -321,11 +335,15 @@ static const int IPV6ADDR_;
 	,LOGLEVEL_=266
 	,LOGMODE_=267
 	,WORKDIR_=268
-	,GUESS_MODE_=269
-	,STRING_=270
-	,HEXNUMBER_=271
-	,INTNUMBER_=272
-	,IPV6ADDR_=273
+	,DUID_=269
+	,OPTION_=270
+	,REMOTE_ID_=271
+	,ECHO_REQUEST_=272
+	,GUESS_MODE_=273
+	,STRING_=274
+	,HEXNUMBER_=275
+	,INTNUMBER_=276
+	,IPV6ADDR_=277
 
 
 #line 215 "../bison++/bison.h"

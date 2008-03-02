@@ -28,6 +28,7 @@ List(TRelParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addr
 List(TRelCfgIface) RelCfgIfaceLst;         /* list of RelCfg interfaces */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
+SPtr<TRelOptEcho> EchoOpt;                 /* echo request option */                 \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
 /*method check whether interface with id=ifaceName has been already declared*/       \
@@ -47,10 +48,16 @@ virtual ~RelParser();
     unsigned int ival;
     char *strval;
     char addrval[16];
+    struct SDuid
+    {
+        int length;
+        char* duid;
+    } duidval;
 }
 
 %token IFACE_, CLIENT_, SERVER_, UNICAST_, MULTICAST_, IFACE_ID_, IFACE_ID_ORDER_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
+%token DUID_, OPTION_, REMOTE_ID_, ECHO_REQUEST_
 %token GUESS_MODE_
 
 %token <strval>     STRING_
@@ -58,6 +65,7 @@ virtual ~RelParser();
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %type  <ival>       Number
+%token <duidval>    DUID_
 
 %%
 
@@ -85,6 +93,8 @@ GlobalOption
 | WorkDirOption
 | GuessMode
 | IfaceIDOrder
+| RemoteID
+| EchoRequest
 ;
 
 IfaceList
@@ -212,6 +222,36 @@ IfaceID
     ParserOptStack.getLast()->setInterfaceID($2);
 }
 ;
+
+RemoteID
+:OPTION_ REMOTE_ID_ Number '-' DUID_
+{
+    Log(Debug) << "RemoteID set: enterprise-number=" << $3 << ", remote-id length=" << $5.length << LogEnd;
+    ParserOptStack.getLast()->setRemoteID( new TRelOptRemoteID($3, $5.duid, $5.length, 0));
+};
+
+EchoRequest
+:OPTION_ ECHO_REQUEST_ 
+{
+    EchoOpt = new TRelOptEcho(0);
+    ParserOptStack.getLast()->setEcho(EchoOpt);
+    Log(Debug) << "Echo Request option will be added with opt(s): ";
+} OptionIdList
+{
+    Log(Cont) << ", " << EchoOpt->count() << " opt(s) total." << LogEnd;
+};
+
+OptionIdList
+: Number
+{
+    EchoOpt->addOption($1);
+    Log(Cont) << " " << $1;
+} 
+|OptionIdList ',' Number
+{
+    EchoOpt->addOption($3);
+    Log(Cont) << " " << $3;
+};
 
 IfaceIDOrder
 :IFACE_ID_ORDER_ STRING_

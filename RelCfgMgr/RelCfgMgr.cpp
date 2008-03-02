@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelCfgMgr.cpp,v 1.11 2007-05-01 12:03:13 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.12 2008-03-02 19:35:26 thomson Exp $
  *
  */
 
@@ -101,6 +101,9 @@ bool TRelCfgMgr::setupGlobalOpts(SmartPtr<TRelParsGlobalOpt> opt) {
     this->Workdir          = opt->getWorkDir();
     this->GuessMode        = opt->getGuessMode();
     this->InterfaceIDOrder = opt->getInterfaceIDOrder();
+
+    this->RemoteID         = opt->getRemoteID();
+    this->Echo             = opt->getEcho();
     return true;
 }
 
@@ -248,6 +251,16 @@ ERelIfaceIdOrder TRelCfgMgr::getInterfaceIDOrder()
     return InterfaceIDOrder;
 }
 
+SPtr<TRelOptRemoteID> TRelCfgMgr::getRemoteID()
+{
+    return RemoteID;
+}
+
+SPtr<TRelOptEcho> TRelCfgMgr::getEcho()
+{
+    return Echo;
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -274,6 +287,25 @@ ostream & operator<<(ostream &out, TRelCfgMgr &x) {
 	break;
     }
     out << "</InterfaceIDOrder>" << endl;
+
+    if (x.getRemoteID()) {
+	SPtr<TRelOptRemoteID> r = x.getRemoteID();
+	out << "  <RemoteID enterprise=\"" << r->getVendor() << "\" length=\"" << r->getVendorDataLen() 
+	    << "\">" << r->getVendorDataPlain() << "</RemoteID>" << endl;
+    } else {
+	out << "  <!-- <RemoteID/> -->" << endl;
+    }
+
+    if (x.getEcho()) {
+	SPtr<TRelOptEcho> e = x.getEcho();
+	out << "  <EchoRequest count=\"" << e->count() << "\">";
+	for (int i=0;i<e->count();i++) {
+	    out << e->getReqOpt(i) << " ";
+	}
+	out << "</EchoRequest>" << endl;
+    } else {
+	out << "  <!-- <EchoRequest/> -->" << endl;
+    }
     
     SmartPtr<TRelCfgIface> ptrIface;
     x.firstIface();

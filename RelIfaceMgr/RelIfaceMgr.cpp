@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.16 2007-07-05 00:17:42 thomson Exp $
+ * $Id: RelIfaceMgr.cpp,v 1.17 2008-03-02 19:35:57 thomson Exp $
  *
  */
 
@@ -197,8 +197,15 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	    bufsize -= relayLen;
 	    break;
 	default:
-	    Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Message dropped." << LogEnd;
-	    return 0;
+	    SPtr<TRelOptEcho> echo = Ctx->CfgMgr->getEcho();
+	    if (echo && echo->isOption(code)) {
+		Log(Notice) << "Received echoed back option " << code << "." << LogEnd;
+	    } else {
+		Log(Warning) << "Invalid option " << code << " in RELAY_REPL message. Option ignored." << LogEnd;
+	    }
+	    buf     += len;
+	    bufsize -= len;
+	    continue;
 	}
     }
     

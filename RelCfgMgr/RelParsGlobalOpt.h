@@ -6,13 +6,16 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelParsGlobalOpt.h,v 1.4 2007-05-01 12:03:13 thomson Exp $
+ * $Id: RelParsGlobalOpt.h,v 1.5 2008-03-02 19:35:26 thomson Exp $
  *
  */
 
 #ifndef TRELPARSGLOBALOPT_H_
 #define TRELPARSGLOBALOPT_H_
 #include "RelParsIfaceOpt.h"
+#include "RelOptRemoteID.h"
+#include "RelOptEcho.h"
+#include "SmartPtr.h"
 #include <string>
 
 typedef enum {
@@ -35,11 +38,19 @@ class TRelParsGlobalOpt : public TRelParsIfaceOpt
 
     void setInterfaceIDOrder(ERelIfaceIdOrder order);
     ERelIfaceIdOrder getInterfaceIDOrder();
+
+    void setRemoteID(SPtr<TRelOptRemoteID> remoteID);
+    SPtr<TRelOptRemoteID> getRemoteID();
+
+    void setEcho(SPtr<TRelOptEcho> echo);
+    SPtr<TRelOptEcho> getEcho();
     
 private:
     string WorkDir;
     bool GuessMode;
 
     ERelIfaceIdOrder InterfaceIDOrder;
+    SPtr<TRelOptRemoteID> RemoteID;
+    SPtr<TRelOptEcho>     Echo;
 };
 #endif
