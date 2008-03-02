@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.13 2008-02-25 17:49:06 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.14 2008-03-02 23:17:58 thomson Exp $
  *
  */
 
@@ -25,6 +25,7 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->InactiveMode   = false;
     this->InsistMode     = false;
     this->Experimental   = false;
+    this->FQDNFlagS      = false;
 
     this->AuthEnabled    = false;
     this->AuthAcceptMethods.clear();
@@ -112,6 +113,16 @@ void TClntParsGlobalOpt::setAuthAcceptMethods(List(DigestTypes) lst)
 List(DigestTypes) TClntParsGlobalOpt::getAuthAcceptMethods()
 {
     return AuthAcceptMethods;
+}
+
+void TClntParsGlobalOpt::setFQDNFlagS(bool s)
+{
+    FQDNFlagS = s;
+}
+
+bool TClntParsGlobalOpt::getFQDNFlagS()
+{
+    return FQDNFlagS;
 }
 
 void TClntParsGlobalOpt::setAuthEnabled(bool enabled)

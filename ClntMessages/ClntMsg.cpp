@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.33 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.34 2008-03-02 23:17:59 thomson Exp $
  */
 
 #ifdef WIN32
@@ -534,6 +534,7 @@ void TClntMsg::appendRequestedOptions() {
 	string fqdn = iface->getProposedFQDN();
 	{
 	    SmartPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
+	    opt->setSFlag(ClntCfgMgr->getFQDNFlagS());
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setFQDNState(STATE_INPROCESS);

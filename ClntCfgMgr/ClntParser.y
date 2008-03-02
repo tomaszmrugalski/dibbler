@@ -96,7 +96,7 @@ namespace std
 
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_, UNICAST_
 %token NTP_SERVER_, DOMAIN_, TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
-%token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_
+%token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_, FQDN_S_
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
@@ -149,6 +149,7 @@ GlobalOptionDeclaration
 | AnonInfRequest
 | InactiveMode
 | InsistMode
+| FQDNBits
 | Experimental
 ;
 
@@ -810,6 +811,18 @@ FQDNOption
     ParserOptStack.getLast()->setFQDN($3);
 }
 ;
+
+FQDNBits
+:OPTION_ FQDN_S_ Number
+{
+    if ($3!=0 && $3!=1) {
+	Log(Crit) << "Invalid FQDN S bit value: " << $3 << ", expected 0 or 1." << LogEnd;
+	YYABORT;
+    }
+
+    Log(Info) << "Setting FQDN S bit to " << $3 << LogEnd;
+    ParserOptStack.getLast()->setFQDNFlagS($3);
+};
 
 //////////////////////////////////////////////////////////////////////
 //NIS-SERVER option///////////////////////////////////////////////////

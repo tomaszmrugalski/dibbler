@@ -1,12 +1,12 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
+/*
+ * Dibbler - a portable DHCPv6
+ *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.13 2008-02-25 17:49:06 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.14 2008-03-02 23:17:58 thomson Exp $
  *
  */
 
@@ -46,6 +46,9 @@ public:
     void setExperimental();
     bool getExperimental();
 
+    void setFQDNFlagS(bool s);
+    bool getFQDNFlagS();
+
 private:
     string WorkDir;
     int PrefixLength;
@@ -56,6 +59,8 @@ private:
     bool   InsistMode;
     bool   AuthEnabled;
     List(DigestTypes) AuthAcceptMethods;
+
+    bool FQDNFlagS;
 
     bool Experimental;
 };

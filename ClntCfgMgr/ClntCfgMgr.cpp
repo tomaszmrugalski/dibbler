@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.54 2008-02-25 17:49:06 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.55 2008-03-02 23:17:58 thomson Exp $
  *
  */
 
@@ -521,6 +521,8 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     this->InsistMode     = opt->getInsistMode();   // should the client insist on receiving all options
                                                    // i.e. sending INF-REQUEST if REQUEST did not grant required opts
     this->InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
+
+    this->FQDNFlagS      = opt->getFQDNFlagS();
     
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
@@ -632,6 +634,11 @@ bool TClntCfgMgr::getAuthEnabled()
     return AuthEnabled;
 }
 
+bool TClntCfgMgr::getFQDNFlagS()
+{
+    return FQDNFlagS;
+}
+
 TClntCfgMgr::~TClntCfgMgr() {
     Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;
 }
@@ -646,6 +653,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <AnonInfRequest>" << (x.anonInfRequest()?1:0) << "</AnonInfRequest>" << endl;
     strum << "  <InsistMode>" << (x.InsistMode?1:0) << "</InsistMode>" << endl;
     strum << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</InactiveMode>" << endl;
+    strum << "  <FQDNFlagS>" << (x.FQDNFlagS?1:0) << "</FQDNFlagS>" << endl;
     strum << "  <digest>";
     switch (x.getDigest()) {
     case DIGEST_NONE:

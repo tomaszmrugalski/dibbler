@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.20 2008-02-25 17:49:06 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.21 2008-03-02 23:17:58 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -72,6 +72,8 @@ class TClntCfgMgr : public TCfgMgr
     bool getAuthEnabled();
     SmartPtr<KeyList> AuthKeys;
 
+    bool getFQDNFlagS();
+
 private:
     bool setGlobalOptions(ClntParser * parser);
     bool validateConfig();
@@ -96,6 +98,7 @@ private:
     List(DigestTypes) AuthAcceptMethods;
 
     uint32_t AAASPI;
+    bool FQDNFlagS; // S bit in the FQDN option
 };
 
 typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);
