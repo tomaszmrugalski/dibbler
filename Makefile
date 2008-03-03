@@ -122,7 +122,7 @@ $(REQUESTORBIN): includes-only commonlibs Requestor $(REQUESTORDIRS)
 	-L./Options -lOptions \
 	-L./Misc -lMisc \
 	-L./IfaceMgr -lIfaceMgr \
-	-L./Messages -lMsg \
+	-L./Messages -lMsg -lMisc \
 	-L./Port-linux -lLowLevel
 
 Requestor:
