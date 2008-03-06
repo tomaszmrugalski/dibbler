@@ -1,21 +1,26 @@
 
-$Id: TODO,v 1.50 2008-02-25 17:49:05 thomson Exp $
+$Id: TODO,v 1.51 2008-03-06 16:03:18 thomson Exp $
+
+Colors:
+
+light-green 2001:4f8:ff00:ff01::/64
+yellow      2001:4f8:ff00:ff02::/64
+blue        2001:4f8:ff00:ff03::/64 (cisco)
+green       2001:4f8:ff00:ff04::/64 (hp-ux)
+red         2001:4f8:ff00:ff05::/64
+orange      2001:4f8:ff00:ff06::/64
+green-cross
+pink        2001:4f8:ff00:ff07::/64 (dibbler)
 
 
- Leasequery HOWTO
-------------------
-
-To compile requestor, type:
-make requestor
-
-To send Lease Query request, issue following command:
-./dibbler-requestor -i eth0 -addr 00::01:02:03:04:05
-or
-./dibbler-requestor -i eth0 -duid 00:01:02:03:04:05
-
-CLIENT_ID sent by the requestor is hardcoded at this time.
-
-
+ Philly bakeoff BUGS/OBSERVATIONS
+----------------------------------
+1. There are 2 servers, one of them responds with IA/NOADDRSAVAIL, second responds fine.
+   Client sends REQUEST and gets address configured. BUG: It also sends another SOLICIT.
+2. Several RELEASEs from Richard, sending REPLYies. 
+3. HP-UX server sends address with valid-lifetime set to 0. Client adds and removes address immediately,
+   then waits 30 seconds for RENEW. Dibbler client tries to RENEW and crash.
+4. Client stateless. Insist mode implemented. [done]
 
  Vancouver bakeoff BUGS/OBSERVATIONS
 -------------------------------------
@@ -42,7 +47,7 @@ CLIENT_ID sent by the requestor is hardcoded at this time.
 12. FQDN does not start if rapid-commit is used.
 13. No log created (no directory) silently omitted.
 
-New tasks should be done to the TODO list. After task is implemented, it should be moved to the
+New tasks should be added to the TODO list. After task is implemented, it should be moved to the
 'DONE/Not Validated' list. After confirmation that it is working properly, it can be removed completely.
 
 - CLI: link-change detection: part of the log file.

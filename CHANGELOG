@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  0.7.0-CVS [not-released-yet]
+  - Cli: stateless insist-mode implemented
   - Srv: RemoteID support added
   - Rel: RemoteID support added
   - Srv: Echo Request Option support added

@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.13 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.14 2008-03-06 16:03:18 thomson Exp $
  *
  */
 
@@ -47,8 +47,11 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface->getID();
     IsDone=false;
 
-    if (!CfgMgr->anonInfRequest())
+    if (!CfgMgr->anonInfRequest()) {
 	Options.append(new TClntOptClientIdentifier(ClntCfgMgr->getDUID(),this));
+    } else {
+	Log(Info) << "Sending anonymous INF-REQUEST (ClientID not included)." << LogEnd;
+    }
 
     this->appendRequestedOptions();
 
@@ -158,11 +161,19 @@ void TClntMsgInfRequest::answer(SmartPtr<TClntMsg> msg)
     ptrORO->delOption(OPTION_INFORMATION_REFRESH_TIME);
     if (ptrORO && ptrORO->count())
     {
-	Log(Notice) << "Not all options were assigned (";
-	for (int i=0; i<ptrORO->count(); i++)
-	    Log(Cont) << ptrORO->getReqOpt(i) << " ";
-	Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
-        ClntTransMgr->sendInfRequest(Options,Iface);
+	if (ClntCfgMgr->insistMode()){ 
+	    Log(Notice) << "Insist-mode enabled. Not all options were assigned (";
+	    for (int i=0; i<ptrORO->count(); i++)
+		Log(Cont) << ptrORO->getReqOpt(i) << " ";
+	    Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
+	    ClntTransMgr->sendInfRequest(Options,Iface);
+	} else {
+	    Log(Notice) << "Insist-mode disabled. Not all options were assigned (";
+	    for (int i=0; i<ptrORO->count(); i++)
+		Log(Cont) << ptrORO->getReqOpt(i) << " ";
+	    Log(Cont) << "). They will remain unconfigured." << LogEnd;
+	    IsDone = true;
+	}
     } else {
 	Log(Debug) << "All requested options were assigned." << LogEnd;
         IsDone=true;
