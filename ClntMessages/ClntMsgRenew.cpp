@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.16 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.17 2008-03-06 21:36:57 thomson Exp $
  *
  */
 
@@ -56,6 +56,12 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     } else {
         PDLst.first();
 	ia = PDLst.get();
+    }
+
+    if (!ia) {
+	Log(Error) << "No IA to renew. Something is wrong." << LogEnd;
+	IsDone = true;
+	return;
     }
 
     MRD      = ia->getT2Timeout();  
