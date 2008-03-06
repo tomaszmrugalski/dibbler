@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.34 2008-03-02 23:17:59 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.35 2008-03-06 21:37:26 thomson Exp $
  */
 
 #ifdef WIN32
@@ -449,6 +449,11 @@ void TClntMsg::appendRequestedOptions() {
 	Log(Debug) << "#### Adding UNICAST to ORO." << LogEnd;
     }
 
+    if (ClntCfgMgr->addInfRefreshTime()) {
+	optORO->addOption(OPTION_INFORMATION_REFRESH_TIME);
+	Log(Debug) << "#### Adding INFORMATION REFRESH TIME to ORO." << LogEnd;
+    }
+
     // --- option: DNS-SERVERS ---
     if ( iface->isReqDNSServer() && (iface->getDNSServerState()==STATE_NOTCONFIGURED) ) {
 	optORO->addOption(OPTION_DNS_SERVERS);
@@ -778,6 +783,19 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 		break;
 	    }
 
+	    SmartPtr<TOpt> requestOpt;
+	    this->Options.first();
+	    while (requestOpt = this->Options.get()) {
+		if (requestOpt->getOptType() != OPTION_IA_TA)
+		    continue;
+		SPtr<TClntOptTA> reqTA = (Ptr*) requestOpt;
+		if (ta->getIAID() == reqTA->getIAID())
+		{
+		    this->Options.del();
+		    break;
+		}
+	    }
+
 	    ta->setIface(Iface);
 	    ta->doDuties();
 	    break;
@@ -855,6 +873,8 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	if (requestOpt->getOptType() == OPTION_IA_TA) taLeft = true;
 	if (requestOpt->getOptType() == OPTION_IA_PD) pdLeft = true;
     }
+
+//    taLeft = false;
 
     if (iaLeft || taLeft || pdLeft) {
         // send new Request to another server
