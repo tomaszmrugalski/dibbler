@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.25 2008-03-02 19:20:30 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.26 2008-03-23 13:14:23 thomson Exp $
  */
 
 #ifdef WIN32
@@ -138,8 +138,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
       // include status code
       SmartPtr<TSrvOptStatusCode> ptrStatus;
       ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-                                        "1 addr granted. Next time you might consider including "
-                                        "IAADDR in IA option.",this->Parent);
+                                        "1 address granted. You may include IAADDR in IA option, if you want to provide a hint.",this->Parent);
       this->SubOptions.append((Ptr*)ptrStatus);
       
       return;

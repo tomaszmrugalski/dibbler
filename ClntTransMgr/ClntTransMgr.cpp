@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.57 2008-02-25 17:49:08 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.58 2008-03-23 13:11:34 thomson Exp $
  *
  */
 
@@ -1067,15 +1067,20 @@ int TClntTransMgr::getMaxPreference()
     return max;
 }
 
-
 void TClntTransMgr::printLst(List(TMsg) lst)
 {
     SPtr<TMsg> x;
     SPtr<TClntMsgAdvertise> adv;
     lst.first();
+    bool first = true;
     while (x = lst.get()) {
 	adv = (Ptr*) x;
-	Log(Debug) << "Advertise from " << adv->getInfo() << "." << LogEnd;
+	Log(Debug) << "Advertise from " << adv->getInfo() << ".";
+	if (first) {
+	    Log(Cont) << "[using this]";
+	    first = false;
+	}
+	Log(Cont) << LogEnd;
     }
 }
 
