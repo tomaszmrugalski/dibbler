@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.51 2008-03-06 16:03:18 thomson Exp $
+$Id: TODO,v 1.52 2008-03-23 20:49:49 thomson Exp $
 
 Colors:
 
@@ -21,6 +21,15 @@ pink        2001:4f8:ff00:ff07::/64 (dibbler)
 3. HP-UX server sends address with valid-lifetime set to 0. Client adds and removes address immediately,
    then waits 30 seconds for RENEW. Dibbler client tries to RENEW and crash.
 4. Client stateless. Insist mode implemented. [done]
+5. Client gets confused when after RENEW, server sends NO-BINDING. The address eventually expires
+   and client sleeps for 0xffffffff seconds.
+6. Make (INFORMATION_REFRESH_TIME configurable).
+7. Dibbler client asks for TA, dibbler server provides it. Client accepts, adds address, but for some
+   reason it sends SOLICIT.
+8. Leasequery: (Discussion with Bernie) Asking about address from the pool, but not assigned, should
+   return empty (without LQ Client option) response. Asking about address outside of the pool should
+   report not-configured (that works ok right now).
+9. Add configuration to send InfRefreshTime in stateless-mode
 
  Vancouver bakeoff BUGS/OBSERVATIONS
 -------------------------------------

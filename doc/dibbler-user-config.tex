@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.51 2008-03-23 13:00:11 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.52 2008-03-23 20:49:49 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -289,6 +289,12 @@ sometimes allowed range.
             number from that company's pool is 67:89:ab:cd
             (hexadecimal value of arbitrary length). See section
             \ref{feature-duid-types} for details.
+\item[option fqdn-s] -- (scope: global, type: boolean, default:
+            1). The S bit is used in FQDN option. It is used to
+            negotiate, which side (server or client) wants to perform
+            DNS Update procedure. See \cite{rfc4704} for details. In
+            general, if you don't want that this option does, you
+            don't want to modify this.
  \item[rapid-commit] -- (scope: interface, type: boolean, default:
 	    0). This option allows rapid commit procedure to be
 	    performed. Note that enabling rapid commit on the client
@@ -652,6 +658,9 @@ name, without any preferrence. Here is an example how to configure
 client to perform such task:
 \begin{lstlisting}
 # client.conf
+
+# uncomment following line to force S bit to 0
+# option fqdn-s 0
 log-level 7
 iface eth0 {
 # ask for address
@@ -697,6 +706,8 @@ dns-server'' are required for ,,option fqdn'' to work properly. Also if
 DHCPv6 server provides more than one DNS server address, update will
 be attempted only forthe first address on the list.
 
+It is also possible to force S bit in the FQDN option to 0 or 1. See
+\cite{rfc4704} for details regarding its meaning.
 
 \subsubsection{Example 8: Interface indexes}
 Usually, interface names are referred to by names, e.g. eth0 or Local
