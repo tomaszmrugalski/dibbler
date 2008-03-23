@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.50 2008-02-25 17:49:13 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.51 2008-03-23 13:00:11 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -1521,7 +1521,8 @@ will receive different parameters (second.client.biz domain,
 information). Also client with DUID 0x0001000044e8ef3400085404a324
 will receives normal domain and DNS server, but different (vendor=2)
 vendor specific information. See section \ref{features-exceptions} for
-background information.
+background information. Since 0.8.0RC1, also addresses can be reserverd
+in this way.
 
 \begin{lstlisting}
 # server.conf
@@ -1535,20 +1536,32 @@ iface "eth0" {
  option dns-server 2000::1
  option domain example.com
  option vendor-spec 5678-0x0002aaaa
- 
-  client 0x000102030406 {
-# special parameters for client with DUID 00:01:02:03:04:06      
+
+  # special parameters for client with DUID 00:01:02:03:04:06      
+  client duid 0x000102030406 
+  {
+        address 2001::123
 	option domain second.client.biz
 	option dns-server 1234::5678:abcd
-	option vendor-spec 2-0x000122
+	option vendor-spec 2-0x000122, 22-0x222222
   }
 
-  client 0x0001000044e8ef3400085404a324
+  # special address reserved for client with this remote-id option
+  # (remote-id option may be added by relays)  
+  client remote-id 5-0x01020304
   {
-# this client should receive default domain and dns-server, 
-# but different vendor-specific info
-	option vendor-spec 1111-0x00029999
+	address 2000::0102:0304
+	option domain our.special.remoteid.client.org
   }
+
+  #  client link-local fe80::211:25ff:fe12:6688
+  #  (link-local reservation is not supported yet. configure clients
+  #  to use DUID-LL (link-local address based DUID) and then make
+  #  DUID based reservations)
+  #  {
+  #      option domain link.local.detected.interop.test.com
+  #  } 
+ 
 }
 \end{lstlisting}
 
