@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.55 2008-03-02 23:17:58 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.56 2008-03-23 13:11:08 thomson Exp $
  *
  */
 
@@ -572,6 +572,22 @@ bool TClntCfgMgr::anonInfRequest()
 bool TClntCfgMgr::inactiveMode()
 {
     return InactiveMode;
+}
+
+bool TClntCfgMgr::addInfRefreshTime()
+{
+    /* this can be considered a workaround, but for now ask for inf-refresh-time 
+       only when running in stateless mode */
+
+    // are there any stateful interfaces?
+    SmartPtr<TClntCfgIface> ptr;
+    firstIface();
+    while ( ptr = getIface() ) {
+        if (!ptr->stateless())
+	    return false;
+    }
+
+    return true;
 }
 
 bool TClntCfgMgr::insistMode()

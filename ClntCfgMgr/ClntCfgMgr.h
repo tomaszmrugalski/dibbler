@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.21 2008-03-02 23:17:58 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.22 2008-03-23 13:11:09 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -61,6 +61,7 @@ class TClntCfgMgr : public TCfgMgr
     bool anonInfRequest();
     bool insistMode();
     bool inactiveMode();
+    bool addInfRefreshTime();
 
     int inactiveIfacesCnt();
     SPtr<TClntCfgIface> checkInactiveIfaces();
