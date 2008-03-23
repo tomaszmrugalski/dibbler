@@ -4,9 +4,7 @@ export TOPDIR=$(CURDIR)
 
 all: server client relay
 
-includes: poslib-configure includes-only
-
-includes-only:
+includes:
 	cd $(INCDIR); $(MAKE) links
 
 bison: bison/bison++
@@ -38,7 +36,12 @@ $(MISC)/DHCPServer.o: includes
 
 $(MISC)/DHCPRelay.o: includes
 
-$(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
+ifndef MOD_CLNT_DISABLE_DNSUPDATE
+CLNTPOSLIB=-lposlib
+CLNTDEPS+=libposlib
+endif
+
+$(CLIENTBIN): $(CLNTDEPS) includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
 	-L$(MISC)         -lMisc         \
@@ -60,13 +63,14 @@ $(CLIENTBIN): libposlib includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIE
 	-L$(MISC)         -lMisc           \
 	-L$(POSLIB)       $(CLNTPOSLIB)
 
-ifndef MOD_CLNT_DISABLE_DNSUPDATE
-CLNTPOSLIB=-lposlib	
-endif
-
 server: $(SERVERBIN)
 
-$(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
+ifndef MOD_SRV_DISABLE_DNSUPDATE
+SRVPOSLIB=-lposlib	
+SRVDEPS += libposlib
+endif
+
+$(SERVERBIN): $(SRVDEPS) includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr     \
@@ -91,13 +95,10 @@ $(SERVERBIN): libposlib includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVE
 	-L$(IFACEMGR)    -lIfaceMgr        \
 	-L$(POSLIB)      $(SRVPOSLIB)
 
-ifndef MOD_SRV_DISABLE_DNSUPDATE
-SRVPOSLIB=-lposlib	
-endif
 
 relay: $(RELAYBIN)
 
-$(RELAYBIN): poslib-configure includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
+$(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
 	-L$(RELTRANSMGR) -lRelTransMgr  \
@@ -115,7 +116,7 @@ $(RELAYBIN): poslib-configure includes commonlibs relaylibs $(MISC)/DHCPRelay.o 
 	-lMisc -lIfaceMgr -lLowLevel -lRelTransMgr -lRelCfgMgr -lRelMsg -lRelOptions -lOptions
 
 requestor: $(REQUESTORBIN)
-$(REQUESTORBIN): includes-only commonlibs Requestor $(REQUESTORDIRS)
+$(REQUESTORBIN): includes commonlibs Requestor $(REQUESTORDIRS)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
 	$(CXX) $(LDFLAGS) $(OPTS) -I $(INCDIR) -o dibbler-requestor \
 	-L./Requestor -lRequestor \
@@ -144,7 +145,7 @@ objs:	includes
 
 libs:	libposlib commonlibs clntlibs srvlibs
 
-commonlibs:	includes-only
+commonlibs:	includes
 	@for dir in $(COMMONSUBDIRS); do \
 		( cd $$dir; $(MAKE) libs ) || exit 1; \
 	done
