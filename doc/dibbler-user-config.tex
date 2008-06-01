@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.52 2008-03-23 20:49:49 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.53 2008-06-01 18:43:34 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -989,6 +989,12 @@ OptionName option-value
   required interfaces to become operational. That is a useful feature,
   when using wireless interfaces, which take some time to initialize
   as associate.
+\item[guess-mode] -- (scope: global, type: present or missing,
+  default: missing). When this option is enabled, server will not pay
+  close attention to the interface-id option in relayed messages. If
+  interface-id has a value other than specified in server.conf or even
+  when there is no interface-id option at all, it will use first relay
+  defined.
  \item[preference] -- (scope: interface, type: 0-255, default:
 	    none). Eech server can be configured to a specific
 	    preference level. When client receives several
@@ -1704,6 +1710,33 @@ iface eth0
   {
     pool 2000::100-2000::10f
   } 
+}
+\end{lstlisting}
+
+\subsubsection{Example 16: Relay support with unknown interface-id}
+\label{example-server-relay3}
+To get more informations about relay configuration, see section \ref{features-relays}.
+In pervious examples (\ref{example-server-relay1},
+\ref{example-server-relay2}) it was assumed that interface-id set by
+relay is known. However, in some cases that is not true. If sysadmin
+wants to accept relayed messages from any relay, there is a feature
+called guess mode. It tries to match any relay defined in server.conf
+instead of exactly checking interface-id value.
+
+Since there is only one relay defined, it will be used, regardless of
+the interface-id value (or even lack of thereof).
+
+\begin{lstlisting}
+# server.conf
+guess-mode
+
+iface relay1 {
+  relay eth1
+  interface-id 5020
+  class {
+    pool 2000::1-2000::ff
+  }
+  option dns-server 2000::100,2000::101
 }
 \end{lstlisting}
 
