@@ -150,6 +150,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
     appendRequestedOptions(duidOpt->getDUID(), confirm->getAddr(), confirm->getIface(), reqOpts);
 
+    appendStatusCode();
+
     appendAuthenticationOption(duidOpt->getDUID());
 
     pkt = new char[this->getSize()];

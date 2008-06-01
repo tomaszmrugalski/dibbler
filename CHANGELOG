@@ -2,6 +2,8 @@
   Dibbler changelog
  ------------------- 
  0.7.0-CVS [not-released-yet]
+  - Srv: supports out of addresses scenario properly (bug #177)
+  - Cli: ADVERTISE with empty IAs are now discarded properly
   - Cli: supports TA properly
   - Cli: stateless insist-mode implemented
   - Srv/Rel: RemoteID support added
@@ -10,13 +12,16 @@
   - Srv: Guess-mode implemented (relay's interface-id don't have to be specified anymore)
   - Srv/Cli: Authentication and authorization added
   - Cli: FQDN S bit is now configurable
+  - Srv: reply for CONFIRM now contains server-id (fixed long time ago, probably
+    in 0.6.1) (bug #163)
+  - Numerous fixes after 3rd bakeoff meeting (Philadelphia)
 
  0.7.0 [2008-02-23]
   - no significant changes to 0.7.0RC1
   
  0.7.0RC1 [2007-12-31]
   - Leasequery support (new entity: requestor added)
-  - Numerous fixes after Vancover 2nd bakeoff meeting
+  - Numerous fixes after 2nd bakeoff meeting (Vancouver)
   - CLI: REQUEST is sent to multicast when unicast option is supported
     (because client does not have address with sufficient scope)
   - Fix in all string options (like domain name or nis domain)

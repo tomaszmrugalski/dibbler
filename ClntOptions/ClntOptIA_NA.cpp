@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.22 2007-12-03 16:55:15 thomson Exp $
+ * $Id: ClntOptIA_NA.cpp,v 1.23 2008-06-01 18:29:03 thomson Exp $
  *
  */
 
@@ -145,7 +145,6 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
         {                
             if(allowOptInOpt(parent->getType(),OPTION_IA_NA,code))
             {
-                SmartPtr<TOpt> opt= SmartPtr<TOpt>();
                 switch (code)
                 {
                 case OPTION_IAADDR:
@@ -161,8 +160,6 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
                         <<") in this version of server."<<LogEnd;
                     break;
                 }
-                if((opt)&&(opt->isValid()))
-                    SubOptions.append(opt);
             }
             else
 		Log(Warning) << "Illegal option received, opttype=" << code 

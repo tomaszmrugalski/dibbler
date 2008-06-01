@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.26 2008-03-23 13:14:23 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.27 2008-06-01 18:29:04 thomson Exp $
  */
 
 #ifdef WIN32
@@ -133,12 +133,18 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
       } else {
 	  Log(Notice) << "Reserved address " << hint->getPlain() << " for this client found, trying to assign." << LogEnd;
       }
-      this->assignAddr(hint, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet);
-      
-      // include status code
       SmartPtr<TSrvOptStatusCode> ptrStatus;
-      ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-                                        "1 address granted. You may include IAADDR in IA option, if you want to provide a hint.",this->Parent);
+      if (this->assignAddr(hint, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet))
+      {
+	  // include status code
+	  ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
+					    "1 address granted. You may include IAADDR in IA option, if you want to provide a hint.",
+					    this->Parent);
+      } else {
+	  ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+					    "No more addresses available. Sorry.",
+					    this->Parent);
+      }
       this->SubOptions.append((Ptr*)ptrStatus);
       
       return;
@@ -277,6 +283,10 @@ SmartPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SmartPtr<TIPv6Addr> hint, un
     
     // get address
     addr = this->getFreeAddr(hint);
+    if (!addr) {
+	Log(Warning) << "There are no more addresses available." << LogEnd;
+	return 0;
+    }
     ptrClass = this->CfgMgr->getClassByAddr(this->Iface, addr);
     pref = ptrClass->getPref(pref);
     valid= ptrClass->getValid(valid);
@@ -583,6 +593,7 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
 	    if (AddrMgr->addrIsFree(addr))
 		return addr;
 	    Log(Info) << "Unfortunately, " << addr->getPlain() << " is used." << LogEnd;
+	    AddrMgr->delCachedAddr(addr);
 	} else {
 	    Log(Warning) << "Cache: Cached address " << *addr << " found, but it is no longer valid." << LogEnd;
 	    AddrMgr->delCachedAddr(addr);
@@ -593,12 +604,24 @@ SmartPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SmartPtr<TIPv6Addr> hint) {
     // or specified hint is invalid
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     ptrClass = ptrIface->getRandomClass(this->ClntDuid, this->ClntAddr);
-    if (!ptrClass) {
+    if (!ptrClass || (ptrClass->getAssignedCount()>=ptrClass->getClassMaxLease()) ) {
+	// random class in invalid, let's try to find another one
+	
 	ptrIface->firstAddrClass();
-	ptrClass = ptrIface->getAddrClass();
+	while (ptrClass = ptrIface->getAddrClass()) {
+	    if (!ptrClass->clntSupported(ClntDuid, ClntAddr))
+		continue;
+	    if (ptrClass->getAssignedCount()>=ptrClass->getClassMaxLease())
+		continue;
+	    break;
+	}
+    }
+	
+    if (!ptrClass) {
+	Log(Warning) << "Unable to find any non-full class for this client." << LogEnd;
+	return 0;
     }
 
-    // FIXME: Check if there are any addresses available at all?
     do {
 	addr = ptrClass->getRandomAddr();
     } while (!AddrMgr->addrIsFree(hint));

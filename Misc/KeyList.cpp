@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: KeyList.cpp,v 1.1 2008-02-25 20:42:45 thomson Exp $
+ * $Id: KeyList.cpp,v 1.2 2008-06-01 18:29:03 thomson Exp $
  */
 
 #include "KeyList.h"
@@ -57,9 +57,10 @@ void KeyList::Add(uint32_t SPI, uint32_t AAASPI, char * AuthInfoKey) {
 }
 
 char * KeyList::Get(uint32_t SPI) {
-    char buf[100];
+    // char buf[100];
     //sprintf(buf, "KeyList get: 0x%8.8x", SPI);
-    Log(Debug) << buf << LogEnd;
+    //Log(Debug) << buf << LogEnd;
+
     KeyListElement * tmp = beginning;
     while (tmp) {
         if (tmp->SPI == SPI)
@@ -67,7 +68,7 @@ char * KeyList::Get(uint32_t SPI) {
         tmp = tmp->next;
     }
 
-    Log(Warning) << "Auth: Key not found." << LogEnd;
+    Log(Warning) << "Auth: Required key (SPI=" << SPI << ") not found." << LogEnd;
     return NULL;
 }
 

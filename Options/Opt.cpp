@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.8 2007-03-28 00:39:46 thomson Exp $
+ * $Id: Opt.cpp,v 1.9 2008-06-01 18:29:03 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2007-03-28 00:39:46  thomson
+ * Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
+ *
  * Revision 1.7  2006-11-17 00:37:16  thomson
  * Partial AUTH support by Sammael, fixes by thomson
  *
@@ -70,11 +73,12 @@ SmartPtr<TOpt> TOpt::getOption() {
 
 SmartPtr<TOpt> TOpt::getOption(int optType) {
     firstOption();
-    SmartPtr<TOpt> opt;
-    while(opt=getOption())
+    SmartPtr<TOpt> opt = 0;
+    while(opt=getOption()) {
 	if (opt->getOptType()==optType)
 	    return opt;
-    return SmartPtr<TOpt>();
+    }
+    return 0;
 }
 
 void TOpt::addOption(SmartPtr<TOpt> opt)

@@ -6,7 +6,7 @@
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.24 2007-01-27 17:12:24 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.25 2008-06-01 18:29:03 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -28,6 +28,7 @@
 #include "ClntOptPreference.h"
 #include "ClntOptRapidCommit.h"
 #include "ClntOptServerIdentifier.h"
+#include "ClntOptStatusCode.h"
 #include <cmath>
 #include "Logger.h"
 
@@ -177,14 +178,36 @@ bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TClntMsg> msg)
     }
 
     // have we asked for IA?
-    if ( (this->getOption(OPTION_IA_NA)) && (!msg->getOption(OPTION_IA_NA)) ) {
-	Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
-	return true;
+    if (this->getOption(OPTION_IA_NA))
+    {
+	SPtr<TClntOptIA_NA> ia = (Ptr*)msg->getOption(OPTION_IA_NA);
+	if (!ia)  {
+	    Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
+	    return true;
+	}
+	if (!ia->getOption(OPTION_IAADDR)) {
+	    Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
+	    return true;
+	}
+	SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
+	if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+	    Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode() << "(" << st->getText() << "). Ignored." << LogEnd;
+	    return true;
+	}
     }
+    
+
     
     // have we asked for TA?
     if ( (this->getOption(OPTION_IA_TA)) && (!msg->getOption(OPTION_IA_TA)) ) {
 	Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
+	return true;
+    }
+
+    // have we asked for PD?
+    if ( (this->getOption(OPTION_IA_PD)) && (!msg->getOption(OPTION_IA_PD)) ) {
+	Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
+	return true;
     }
 	 
     // everything seems ok

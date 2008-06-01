@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.29 2008-03-02 19:21:25 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.30 2008-06-01 18:29:04 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -214,6 +214,8 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     
     //if client requested parameters and policy doesn't forbid from answering
     this->appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
+
+    appendStatusCode();
 
     // include our DUID
     SmartPtr<TSrvOptServerIdentifier> ptrSrvID;

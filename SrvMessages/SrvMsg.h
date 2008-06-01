@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.17 2008-03-02 19:21:25 thomson Exp $
+ * $Id: SrvMsg.h,v 1.18 2008-06-01 18:29:04 thomson Exp $
  *
  */
 
@@ -57,6 +57,8 @@ public:
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
     string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt);
+    void appendStatusCode();
+    bool delOption(int code);
 
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
 		      SPtr<TIPv6Addr> peerAddr,

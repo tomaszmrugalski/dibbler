@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.50 2008-03-02 22:02:16 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.51 2008-06-01 18:29:04 thomson Exp $
  */
 
 #include <sstream>
@@ -960,4 +960,52 @@ void TSrvMsg::setRemoteID(SPtr<TSrvOptRemoteID> remoteID)
 SPtr<TSrvOptRemoteID> TSrvMsg::getRemoteID()
 {
     return RemoteID;
+}
+
+/** 
+ * copy status-code to top-level if something is wrong (i.e. status-code!=SUCCESS)
+ * 
+ */
+void TSrvMsg::appendStatusCode()
+{
+    SPtr<TSrvOptStatusCode> rootLevel, optLevel;
+    SPtr<TOpt> opt;
+    //rootLevel = getOption(OPTION_STATUS_CODE);
+
+    firstOption();
+    while (opt = getOption()) {
+	switch ( opt->getOptType() ) {
+	case OPTION_IA_NA:
+	{
+	    if (optLevel= (Ptr*)opt->getOption(OPTION_STATUS_CODE)) {
+		if (optLevel->getCode() != STATUSCODE_SUCCESS) {
+		    // copy status code to root-level
+		    delOption(OPTION_STATUS_CODE);
+		    rootLevel = new TSrvOptStatusCode(optLevel->getCode(), optLevel->getText(), this);
+		    Options.append( (Ptr*) rootLevel);
+		    return;
+		}
+	    }
+	}
+	default:
+	{
+
+	}
+	}
+	
+    }
+
+}
+
+bool TSrvMsg::delOption(int code)
+{
+    SPtr<TOpt> opt;
+    Options.first();
+    while (opt = Options.get()) {
+	if (opt->getOptType() == code) {
+	    Options.del();
+	    return true;
+	}
+    }
+    return false;
 }
