@@ -114,7 +114,7 @@ namespace std
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_
+%token EXPERIMENTAL_, ADDR_PARAMS_, MAPPING_PREFIX_
 %type  <ival> Number
 
 %%
@@ -151,6 +151,7 @@ GlobalOptionDeclaration
 | InsistMode
 | FQDNBits
 | Experimental
+| ExperimentalMappingPrefix
 ;
 
 InterfaceOptionDeclaration
@@ -179,7 +180,7 @@ IAOptionDeclaration
 | T2Option
 | RapidCommitOption
 | ADDRESOptionDeclaration
-| AddrParams
+| ExperimentalAddrParams
 ;
 
 InterfaceDeclaration
@@ -544,6 +545,18 @@ Experimental
     ParserOptStack.getLast()->setExperimental();
 };
 
+ExperimentalMappingPrefix
+: MAPPING_PREFIX_
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'mapping-prefix' defined, but experimental features are disabled."
+		  << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+    ParserOptStack.getLast()->setMappingPrefix(true);
+};
+
+
 RejectServersOption
 :REJECT_SERVERS_ 
 {
@@ -579,7 +592,7 @@ RapidCommitOption
 }
 ;
 
-AddrParams
+ExperimentalAddrParams
 :   ADDR_PARAMS_ 
 {
     if (!ParserOptStack.getLast()->getExperimental()) {

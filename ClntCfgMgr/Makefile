@@ -24,7 +24,7 @@ parser: ClntParser.y ClntLexer.l
 #	$(BISONPP) -l -d ClntParser.y -o ClntParser.cpp
 	echo "[FLEX   ] $(SUBDIR)/ClntLexer.l"
 	$(FLEX) -+ -i -L -oClntLexer.cpp ClntLexer.l
-	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
+#	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
 	@echo "[SED    ] $(SUBDIR)/ClntLexer.cpp"
 	cat ClntLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > ClntLexer.cpp2
 	rm -f ClntLexer.cpp

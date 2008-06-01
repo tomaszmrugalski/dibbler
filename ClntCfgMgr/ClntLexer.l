@@ -1,4 +1,3 @@
-%option noyywrap
 %option yylineno
 
 %{
@@ -91,8 +90,6 @@ vendor-spec           { return ClntParser::VENDOR_SPEC_; }
 anonymous-inf-request { return ClntParser::ANON_INF_REQUEST_; }
 insist-mode           { return ClntParser::INSIST_MODE_; }
 inactive-mode         { return ClntParser::INACTIVE_MODE_; }
-experimental          { return ClntParser::EXPERIMENTAL_; }
-addr-params           { return ClntParser::ADDR_PARAMS_; }
 auth-enabled          { return ClntParser::AUTH_ENABLED_; }
 auth-accept-methods   { return ClntParser::AUTH_ACCEPT_METHODS_; }
 digest-none           { return ClntParser::DIGEST_NONE_; }
@@ -103,6 +100,9 @@ digest-hmac-sha224    { return ClntParser::DIGEST_HMAC_SHA224_; }
 digest-hmac-sha256    { return ClntParser::DIGEST_HMAC_SHA256_; }
 digest-hmac-sha384    { return ClntParser::DIGEST_HMAC_SHA384_; }
 digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
+experimental          { return ClntParser::EXPERIMENTAL_; }
+addr-params           { return ClntParser::ADDR_PARAMS_; }
+mapping-prefix        { return ClntParser::MAPPING_PREFIX_; }
 #.* ;
 
 "//"(.*) ;

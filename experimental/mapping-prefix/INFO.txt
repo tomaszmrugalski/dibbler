@@ -1,0 +1,6 @@
+Experimental feature: Mapping prefix
+
+Instead of adding/deleting delegated prefix, client executes external commands:
+/var/lib/dibbler/mappingprefxiadd and /var/lib/dibbler/mappingprefxidel
+
+Both scripts are executed with 1 extra parameter: That is a prefix (the delegated one).

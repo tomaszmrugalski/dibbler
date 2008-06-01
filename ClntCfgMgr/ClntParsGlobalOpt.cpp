@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.14 2008-03-02 23:17:58 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.15 2008-06-01 23:15:34 thomson Exp $
  *
  */
 
@@ -24,8 +24,9 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->AnonInfRequest = false;
     this->InactiveMode   = false;
     this->InsistMode     = false;
-    this->Experimental   = false;
     this->FQDNFlagS      = false;
+    this->Experimental   = false;
+    this->ExperimentalMappingPrefix = false;
 
     this->AuthEnabled    = false;
     this->AuthAcceptMethods.clear();
@@ -134,4 +135,15 @@ void TClntParsGlobalOpt::setAuthEnabled(bool enabled)
 bool TClntParsGlobalOpt::getAuthEnabled()
 {
     return AuthEnabled;
+}
+
+void TClntParsGlobalOpt::setMappingPrefix(bool useMP)
+{
+    ExperimentalMappingPrefix = useMP;
+    Log(Notice) << "Experimental: mappix-prefix " << (useMP?"enabled":"disabled") << LogEnd;
+}
+
+bool TClntParsGlobalOpt::getMappingPrefix()
+{
+    return ExperimentalMappingPrefix;
 }

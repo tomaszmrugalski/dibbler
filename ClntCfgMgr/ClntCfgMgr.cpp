@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.56 2008-03-23 13:11:08 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.57 2008-06-01 23:15:34 thomson Exp $
  *
  */
 
@@ -523,6 +523,8 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     this->InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
 
     this->FQDNFlagS      = opt->getFQDNFlagS();
+
+    this->MappingPrefix  = opt->getMappingPrefix(); // experimental feature
     
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
@@ -654,6 +656,12 @@ bool TClntCfgMgr::getFQDNFlagS()
 {
     return FQDNFlagS;
 }
+
+bool TClntCfgMgr::getMappingPrefix()
+{
+    return MappingPrefix;
+}
+
 
 TClntCfgMgr::~TClntCfgMgr() {
     Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;

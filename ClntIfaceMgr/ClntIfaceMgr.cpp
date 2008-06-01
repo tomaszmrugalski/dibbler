@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.41 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.42 2008-06-01 23:15:35 thomson Exp $
  */
 
 #include "Portable.h"
@@ -390,6 +390,39 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         Log(Error) << "Unable to find interface with ifindex=" << iface << ", prefix add operation failed." << LogEnd;
         return false;
     }
+
+
+    if (ClntCfgMgr->getMappingPrefix()) {
+	char buf[128];
+	char cmd1[]="./mappingprefixadd";
+	char cmd2[]="./mappingprefixdel";
+	int returnCode = 0;
+	switch (mode) {
+	case PREFIX_MODIFY_ADD:
+	{
+	    sprintf(buf, "%s %s", cmd1, prefix->getPlain());
+	    Log(Notice) << "Executing external command to ADD prefix: " << buf << LogEnd;
+	    returnCode = system(buf);
+	    Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
+	    break;
+	}
+	case PREFIX_MODIFY_DEL:
+	{
+	    sprintf(buf, "%s %s", cmd2, prefix->getPlain());
+	    Log(Notice) << "Executing external command to DEL prefix: " << buf << LogEnd;
+	    returnCode = system(buf);
+	    Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
+	    break;
+	}
+	default:
+	{
+
+	}
+	}
+	
+	return true; // added successfully
+    }
+
 
     string action;
     int status;

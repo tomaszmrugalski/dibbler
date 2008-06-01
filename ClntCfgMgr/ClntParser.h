@@ -321,6 +321,7 @@ typedef
 #define	INACTIVE_MODE_	316
 #define	EXPERIMENTAL_	317
 #define	ADDR_PARAMS_	318
+#define	MAPPING_PREFIX_	319
 
 
 #line 169 "../bison++/bison.h"
@@ -430,6 +431,7 @@ static const int INSIST_MODE_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
+static const int MAPPING_PREFIX_;
 
 
 #line 212 "../bison++/bison.h"
@@ -499,6 +501,7 @@ static const int ADDR_PARAMS_;
 	,INACTIVE_MODE_=316
 	,EXPERIMENTAL_=317
 	,ADDR_PARAMS_=318
+	,MAPPING_PREFIX_=319
 
 
 #line 215 "../bison++/bison.h"

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.14 2008-03-02 23:17:58 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.15 2008-06-01 23:15:34 thomson Exp $
  *
  */
 
@@ -46,6 +46,9 @@ public:
     void setExperimental();
     bool getExperimental();
 
+    void setMappingPrefix(bool useMP);
+    bool getMappingPrefix();
+
     void setFQDNFlagS(bool s);
     bool getFQDNFlagS();
 
@@ -63,6 +66,7 @@ private:
     bool FQDNFlagS;
 
     bool Experimental;
+    bool ExperimentalMappingPrefix;
 };
 
 #endif
