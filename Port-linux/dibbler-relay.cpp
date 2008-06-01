@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-relay.cpp,v 1.10 2005-10-11 20:52:47 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.11 2008-06-01 21:45:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005-10-11 20:52:47  thomson
+ * Problem with command-line parsing fixed.
+ *
  * Revision 1.9  2005/07/31 14:39:40  thomson
  * Minor changes related to 0.4.1 release.
  *
@@ -80,15 +83,18 @@ int run() {
 	return -1;
     }
 
-    TDHCPRelay srv(RELCONF_FILE);
+    TDHCPRelay relay(RELCONF_FILE);
     
-    ptr = &srv;
+    ptr = &relay;
+    if (ptr->isDone()) {
+	return -1;
+    }
     
     // connect signals
     signal(SIGTERM, signal_handler);
     signal(SIGINT, signal_handler);
     
-    srv.run();
+    ptr->run();
     
     die(RELPID_FILE);
     return 0;

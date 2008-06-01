@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-client.cpp,v 1.19 2007-01-03 01:26:18 thomson Exp $
+ * $Id: dibbler-client.cpp,v 1.20 2008-06-01 21:45:48 thomson Exp $
  *
  */
 
@@ -61,6 +61,10 @@ int run() {
 
     TDHCPClient client(CLNTCONF_FILE);
     ptr = &client;
+
+    if (ptr->isDone()) {
+	return -1;
+    }
 
     // connect signals
     signal(SIGTERM, signal_handler);

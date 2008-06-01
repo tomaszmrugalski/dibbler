@@ -1,5 +1,5 @@
 
-$Id: TODO,v 1.53 2008-06-01 18:29:03 thomson Exp $
+$Id: TODO,v 1.54 2008-06-01 21:45:48 thomson Exp $
 
 Colors:
 
@@ -14,7 +14,6 @@ pink        2001:4f8:ff00:ff07::/64 (dibbler)
 
  TODO
 ------
-1. Document server's guess-mode (silicon valley)
 2. Server's support for M+P prefix
 3. Client's support for M+P prefix
 4. Make Auth a modular feature (i.e. that it can be disabled at

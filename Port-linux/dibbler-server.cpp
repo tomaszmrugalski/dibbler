@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-server.cpp,v 1.18 2005-10-11 20:52:47 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.19 2008-06-01 21:45:48 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005-10-11 20:52:47  thomson
+ * Problem with command-line parsing fixed.
+ *
  * Revision 1.17  2005/07/31 14:39:40  thomson
  * Minor changes related to 0.4.1 release.
  *
@@ -92,6 +95,9 @@ int run() {
     TDHCPServer srv(SRVCONF_FILE);
     
     ptr = &srv;
+    if (ptr->isDone()) {
+	return -1;
+    }
     
     // connect signals
     signal(SIGTERM, signal_handler);
