@@ -9,8 +9,11 @@ OBJECTS = ClntOptClientIdentifier.o ClntOptElapsed.o 	       ClntOptIAAddress.o 
           ClntOptSIPServer.o        ClntOptSIPDomain.o         ClntOptFQDN.o           \
           ClntOptNISServer.o        ClntOptNISDomain.o         ClntOptNISPServer.o     \
           ClntOptNISPDomain.o       ClntOptLifetime.o          ClntOptTA.o             \
-	  ClntOptIAPrefix.o         ClntOptIA_NA.o	       ClntOptAuthentication.o \
-	  ClntOptKeyGeneration.o    ClntOptAAAAuthentication.o
+	  ClntOptIAPrefix.o         ClntOptIA_NA.o	       
+
+ifndef MOD_DISABLE_AUTH
+OBJECTS += ClntOptAuthentication.o ClntOptKeyGeneration.o    ClntOptAAAAuthentication.o
+endif
 
 objs: $(OBJECTS)
 

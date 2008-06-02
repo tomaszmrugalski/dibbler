@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.21 2008-03-02 22:06:20 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.22 2008-06-02 00:15:01 thomson Exp $
  *
  */
 
@@ -82,11 +82,13 @@ public:
     int getCacheSize();
 
     //Authentication
+#ifndef MOD_DISABLE_AUTH
     SmartPtr<KeyList> AuthKeys;
     unsigned int getAuthLifetime();
     unsigned int getAuthKeyGenNonceLen();
     List(DigestTypes) getDigestLst();
     enum DigestTypes getDigest();
+#endif
 
 private:    
     static int NextRelayID;
@@ -108,9 +110,11 @@ private:
     int  CacheSize;
     ESrvIfaceIdOrder InterfaceIDOrder;
 
+#ifndef MOD_DISABLE_AUTH
     unsigned int AuthLifetime;
     unsigned int AuthKeyGenNonceLen;
     List(DigestTypes) DigestLst;
+#endif
 };
 
 #endif /* SRVCONFMGR_H */

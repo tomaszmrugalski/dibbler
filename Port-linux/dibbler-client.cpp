@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-client.cpp,v 1.20 2008-06-01 21:45:48 thomson Exp $
+ * $Id: dibbler-client.cpp,v 1.21 2008-06-02 00:15:00 thomson Exp $
  *
  */
 
@@ -15,6 +15,7 @@
 #include "Portable.h"
 #include "Logger.h"
 #include "daemon.h"
+#include "ClntCfgMgr.h"
 
 TDHCPClient * ptr;
 
@@ -24,6 +25,7 @@ void signal_handler(int n) {
 }
 
 int status() {
+
     int pid = getServerPID();
     if (pid==-1) {
 	cout << "Dibbler server: NOT RUNNING." << endl;

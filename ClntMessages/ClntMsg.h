@@ -45,7 +45,9 @@ public:
     void copyAAASPI(SmartPtr<TClntMsg> q);
     void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
 //    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
+
     void appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr);
+
     void appendRequestedOptions();
     SmartPtr<TClntTransMgr>  getClntTransMgr();
     SmartPtr<TClntAddrMgr>   getClntAddrMgr();

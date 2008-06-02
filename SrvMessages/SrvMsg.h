@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.h,v 1.18 2008-06-01 18:29:04 thomson Exp $
+ * $Id: SrvMsg.h,v 1.19 2008-06-02 00:15:01 thomson Exp $
  *
  */
 
@@ -52,7 +52,9 @@ public:
     void copyRelayInfo(SPtr<TSrvMsg> q);
     void copyAAASPI(SPtr<TSrvMsg> q);
     void copyRemoteID(SPtr<TSrvMsg> q);
+
     void appendAuthenticationOption(SmartPtr<TDUID> duid);
+
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
     string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);

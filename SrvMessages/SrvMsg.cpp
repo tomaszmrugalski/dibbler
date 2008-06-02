@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.51 2008-06-01 18:29:04 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.52 2008-06-02 00:15:01 thomson Exp $
  */
 
 #include <sstream>
@@ -49,9 +49,12 @@
 #include "SrvOptNISPDomain.h"
 #include "SrvOptLifetime.h"
 #include "DNSUpdate.h"
+
+#ifndef MOD_DISABLE_AUTH
 #include "SrvOptAAAAuthentication.h"
 #include "SrvOptKeyGeneration.h"
 #include "SrvOptAuthentication.h"
+#endif
 
 #include "Logger.h"
 #include "SrvIfaceMgr.h"
@@ -79,8 +82,12 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->Relays = 0;
+
+
+#ifndef MOD_DISABLE_AUTH
     this->DigestType = CfgMgr->getDigest();
     this->AuthKeys = CfgMgr->AuthKeys;
+#endif
 }
 
 /** 
@@ -106,8 +113,11 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->Relays = 0;
+
+#ifndef MOD_DISABLE_AUTH
     this->AuthKeys = CfgMgr->AuthKeys;
     this->DigestType = CfgMgr->getDigest();
+#endif
 	
     int pos=0;
     while (pos<bufSize)	{
@@ -215,27 +225,30 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	    ptr = new TSrvOptLQ(buf+pos, length, this);
 	    break;
 	    // remaining LQ options are not supported to be received by server
+
+#ifndef MOD_DISABLE_AUTH
 	case OPTION_AAAAUTH:
-        if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
-            this->DigestType = DIGEST_HMAC_SHA1;
-    	    ptr = new TSrvOptAAAAuthentication(buf+pos, length, this);
-        }
+	    if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
+		this->DigestType = DIGEST_HMAC_SHA1;
+		ptr = new TSrvOptAAAAuthentication(buf+pos, length, this);
+	    }
 	    break;
-    case OPTION_KEYGEN:
+	case OPTION_KEYGEN:
 	    Log(Warning) << "Option OPTION_KEYGEN received by server is invalid, ignoring." << LogEnd;
 	    break;
 	case OPTION_AUTH:
-        if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
-           this->DigestType = SrvCfgMgr->getDigest();
-
-           ptr = new TSrvOptAuthentication(buf+pos, length, this);
-           SmartPtr<TOptDUID> optDUID = (SmartPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
-           if (optDUID) {
-               SmartPtr<TAddrClient> client = SrvAddrMgr->getClient(optDUID->getDUID());
-               if (client)
-                   client->setSPI(SPI);
-           }
-        }
+	    if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
+		this->DigestType = SrvCfgMgr->getDigest();
+		
+		ptr = new TSrvOptAuthentication(buf+pos, length, this);
+		SmartPtr<TOptDUID> optDUID = (SmartPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
+		if (optDUID) {
+		    SmartPtr<TAddrClient> client = SrvAddrMgr->getClient(optDUID->getDUID());
+		    if (client)
+			client->setSPI(SPI);
+		}
+	    }
+#endif
 	    
         break;
 	case OPTION_VENDOR_OPTS:
@@ -366,12 +379,6 @@ void TSrvMsg::send()
     this->SrvIfaceMgr->send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
 }
 
-void TSrvMsg::copyAAASPI(SmartPtr<TSrvMsg> q) {
-    this->AAASPI = q->getAAASPI();
-    this->SPI = q->getSPI();
-    this->AuthInfoKey = q->getAuthInfoKey();
-}
-
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
   this->RemoteID = q->getRemoteID();
 }
@@ -443,12 +450,23 @@ int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
     return offset;
 }
 
+
+void TSrvMsg::copyAAASPI(SmartPtr<TSrvMsg> q) {
+#ifndef MOD_DISABLE_AUTH
+    this->AAASPI = q->getAAASPI();
+    this->SPI = q->getSPI();
+    this->AuthInfoKey = q->getAuthInfoKey();
+#endif
+}
+
 /** 
  * this function appends authentication option
  * 
  */
 void TSrvMsg::appendAuthenticationOption(SmartPtr<TDUID> duid)
 {
+
+#ifndef MOD_DISABLE_AUTH
     if (!duid) {
         Log(Error) << "Auth: No duid! Probably internal error. Authentication option not appended." << LogEnd;
         return;
@@ -473,6 +491,7 @@ void TSrvMsg::appendAuthenticationOption(SmartPtr<TDUID> duid)
             this->ReplayDetection = 1;
         Options.append(new TSrvOptAuthentication(this));
     }
+#endif
 }
 
 /** 
@@ -633,25 +652,13 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     }
 
     // --- option: KEYGEN ---
+#ifndef MOD_DISABLE_AUTH
     if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr->getDigest() != DIGEST_NONE ) { // && this->MsgType == ADVERTISE_MSG ) {
         	SmartPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
         	Options.append( (Ptr*)optKeyGeneration);
     }
+#endif
 
-    // --- option: AUTH ---
-
-    /*
-    if ( reqOpts->isOption(OPTION_AUTH)  && SrvCfgMgr->getDigest() != DIGEST_NONE ) {
-        this->DigestType = SrvCfgMgr->getDigest();
-        
-        if (SrvAddrMgr->getClient(duid) && SrvAddrMgr->getClient(duid)->getSPI())
-            this->setSPI(SrvAddrMgr->getClient(duid)->getSPI());
-        SmartPtr<TSrvOptAuthentication> optAuthentication = new TSrvOptAuthentication(this);
-        Options.append( (Ptr*)optAuthentication);
-        
-        SrvAddrMgr->getClient(duid)->setSPI(this->getSPI());
-    }
-    */
 
     return newOptionAssigned;
 }
@@ -926,6 +933,8 @@ SmartPtr<TSrvTransMgr> TSrvMsg::getSrvTransMgr()
 }
 
 bool TSrvMsg::validateReplayDetection() {
+
+#ifndef MOD_DISABLE_AUTH
     if (this->MsgType == SOLICIT_MSG)
         return true;
 
@@ -950,6 +959,9 @@ bool TSrvMsg::validateReplayDetection() {
         Log(Warning) << "Auth: Replayed message detected, message dropped." << LogEnd;
         return false;
     }
+#else
+    return true;
+#endif
 }
 
 void TSrvMsg::setRemoteID(SPtr<TSrvOptRemoteID> remoteID)

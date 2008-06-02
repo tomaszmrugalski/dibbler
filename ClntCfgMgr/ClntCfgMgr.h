@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.23 2008-06-01 23:15:34 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.24 2008-06-02 00:15:00 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -25,7 +25,10 @@ class ClntParser;
 #include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
 #include "CfgMgr.h"
+
+#ifndef MOD_DISABLE_AUTH
 #include "KeyList.h"
+#endif
 
 class TClntCfgMgr : public TCfgMgr
 {
@@ -67,11 +70,13 @@ class TClntCfgMgr : public TCfgMgr
     SPtr<TClntCfgIface> checkInactiveIfaces();
     bool openSocket(SPtr<TClntCfgIface> iface);
 
+#ifndef MOD_DISABLE_AUTH
     // Authorization
     uint32_t getAAASPI();
     List(DigestTypes) getAuthAcceptMethods();
     bool getAuthEnabled();
     SmartPtr<KeyList> AuthKeys;
+#endif
 
     bool getFQDNFlagS();
     bool getMappingPrefix();
@@ -96,10 +101,13 @@ private:
     bool InsistMode;
     bool InactiveMode;
 
+
+#ifndef MOD_DISABLE_AUTH
     bool AuthEnabled;
     List(DigestTypes) AuthAcceptMethods;
-
     uint32_t AAASPI;
+#endif
+
     bool FQDNFlagS; // S bit in the FQDN option
     bool MappingPrefix;
 };

@@ -5,7 +5,7 @@ FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
-COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0 $(PEDANTIC)
+COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O2 $(PEDANTIC)
 OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
 
 # === linker options ===
@@ -24,10 +24,11 @@ DEBUGINFO    = -g
 # See Developer Guide, section named "Modular features" for
 # detailed description of those parameters
 
+MOD_CLNT_BIND_REUSE        = y
 #MOD_CLNT_EMBEDDED_CFG      = y
 #MOD_CLNT_DISABLE_DNSUPDATE = y
-MOD_CLNT_BIND_REUSE        = y
 #MOD_SRV_DISABLE_DNSUPDATE  = y
+#MOD_DISABLE_AUTH      = y
 
 # === Portability section ===
 # Make sure that you have uncommented only one section
@@ -64,7 +65,7 @@ PORT_SUBDIR  = Port-linux
 #XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
 # === do not modify anything below ===
-MAKEFLAGS   += -s
+#MAKEFLAGS   += -s
 VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
 INST_MANDIR  = $(DESTDIR)'/usr/local/man'
@@ -165,4 +166,8 @@ endif
 
 ifdef MOD_SRV_DISABLE_DNSUPDATE
 COPTS += -DMOD_SRV_DISABLE_DNSUPDATE
+endif
+
+ifdef MOD_DISABLE_AUTH
+COPTS += -DMOD_DISABLE_AUTH
 endif

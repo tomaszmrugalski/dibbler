@@ -8,7 +8,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.55 2008-03-02 22:06:20 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.56 2008-06-02 00:15:01 thomson Exp $
  *
  */
 
@@ -55,7 +55,9 @@ TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string x
 
     this->dump();
 
+#ifndef MOD_DISABLE_AUTH
     AuthKeys = new KeyList();
+#endif
 
     IsDone = false;
 }
@@ -122,13 +124,15 @@ bool TSrvCfgMgr::setGlobalOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->Workdir          = opt->getWorkDir();
     this->Stateless        = opt->getStateless();
     this->CacheSize        = opt->getCacheSize();
-    this->DigestLst        = opt->getDigest();
     this->InterfaceIDOrder = opt->getInterfaceIDOrder();
     this->InactiveMode     = opt->getInactiveMode(); // should the client accept not ready interfaces?
     this->GuessMode        = opt->getGuessMode();
 
+#ifndef MOD_DISABLE_AUTH
+    this->DigestLst        = opt->getDigest();
     this->AuthKeyGenNonceLen = opt->getAuthKeyLen();
     this->AuthLifetime = opt->getAuthLifetime();
+#endif
 
     return true;
 }
@@ -751,6 +755,7 @@ bool TSrvCfgMgr::incrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
     return iface->addClntPrefix(prefix);
 }
 
+#ifndef MOD_DISABLE_AUTH
 List(DigestTypes) TSrvCfgMgr::getDigestLst() {
     return this->DigestLst;
 }
@@ -777,6 +782,7 @@ unsigned int TSrvCfgMgr::getAuthKeyGenNonceLen()
 {
     return AuthKeyGenNonceLen;
 }
+#endif
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
@@ -811,6 +817,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     }
     out << "</InterfaceIDOrder>" << endl;
 
+#ifndef MOD_DISABLE_AUTH
     out << "  <auth count=\"" << x.DigestLst.count() << "\">";
     x.DigestLst.first();
     SPtr<DigestTypes> dig;
@@ -829,6 +836,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     }
 
     out << "</auth>" << endl;
+#endif
 
     if (x.stateless())
 	out << "  <stateless/>" << std::endl;

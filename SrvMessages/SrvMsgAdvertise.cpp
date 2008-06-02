@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.30 2008-06-01 18:29:04 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.31 2008-06-02 00:15:01 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -38,7 +38,9 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	     solicit->getTransID())
 {
     this->copyRelayInfo((Ptr*)solicit);
+#ifndef MOD_DISABLE_AUTH
     this->copyAAASPI((Ptr*)solicit);
+#endif
     this->copyRemoteID((Ptr*)solicit);
     if (!this->answer(solicit)) {
 	this->IsDone = true;
@@ -60,7 +62,9 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     clntAddr = solicit->getAddr();
     clntIface =solicit->getIface();
 
+#ifndef MOD_DISABLE_AUTH
     this->copyAAASPI((Ptr*)solicit);
+#endif
     this->copyRemoteID((Ptr*)solicit);
 
     // is this client supported?

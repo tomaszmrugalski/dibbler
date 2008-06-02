@@ -7,9 +7,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgAdvertise.cpp,v 1.6 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsgAdvertise.cpp,v 1.7 2008-06-02 00:15:00 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2008-02-25 17:49:07  thomson
+ * Authentication added. Megapatch by Michal Kowalczuk.
+ * (small changes by Tomasz Mrugalski)
+ *
  * Revision 1.5  2007-03-27 23:44:56  thomson
  * Client now chooses server properly (bug #151)
  *
@@ -29,7 +33,10 @@
 #include "OptPreference.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
+
+#ifndef MOD_DISABLE_AUTH
 #include "ClntOptKeyGeneration.h"
+#endif
 #include "ClntOptPreference.h"
 
 TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
@@ -81,11 +88,9 @@ string TClntMsgAdvertise::getInfo()
     ostringstream tmp;
     SPtr<TClntOptPreference> pref;
     SPtr<TClntOptServerIdentifier> srvID;
-    SPtr<TClntOptKeyGeneration> keyGen;
 
     pref   = (Ptr*) getOption(OPTION_PREFERENCE);
     srvID  = (Ptr*) getOption(OPTION_SERVERID);
-    keyGen = (Ptr*) getOption(OPTION_KEYGEN);
 
     if (srvID) {
 	tmp << "Server ID=" << srvID->getDUID()->getPlain();
@@ -98,13 +103,17 @@ string TClntMsgAdvertise::getInfo()
     } else {
 	tmp << ", no preference option, assumed 0";
     }
-    
+
+#ifndef MOD_DISABLE_AUTH
+    SPtr<TClntOptKeyGeneration> keyGen;
+    keyGen = (Ptr*) getOption(OPTION_KEYGEN);
     if (keyGen) {
 	tmp << ", keygen (AlgorithmId=" << keyGen->getAlgorithmId() << ")";
-    DigestType = (DigestTypes)keyGen->getAlgorithmId();
+	DigestType = (DigestTypes)keyGen->getAlgorithmId();
     } else {
 	tmp << ", no auth info";
     }
+#endif
     
     return tmp.str();
 }

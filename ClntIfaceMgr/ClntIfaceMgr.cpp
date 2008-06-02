@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.42 2008-06-01 23:15:35 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.43 2008-06-02 00:15:00 thomson Exp $
  */
 
 #include "Portable.h"
@@ -100,10 +100,12 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case ADVERTISE_MSG:
             ptr = new TClntMsgAdvertise(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
                 ifaceid,peer,buf,bufsize);
+#ifndef MOD_DISABLE_AUTH
             if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr->getAuthAcceptMethods())) {
                     Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
                     return 0;
             }
+#endif
             return ptr;
         case SOLICIT_MSG:
         case REQUEST_MSG:
@@ -118,10 +120,12 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case REPLY_MSG:
             ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
                 ifaceid, peer, buf, bufsize);
+#ifndef MOD_DISABLE_AUTH
             if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr->getAuthAcceptMethods())) {
                     Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
                     return 0;
             }
+#endif
             return ptr;
 
         case RECONFIGURE_MSG:
@@ -425,7 +429,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 
 
     string action;
-    int status;
+    int status = -1;
 
     switch (mode) {
     case PREFIX_MODIFY_ADD:

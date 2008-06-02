@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.35 2008-03-06 21:37:26 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.36 2008-06-02 00:15:00 thomson Exp $
  */
 
 #ifdef WIN32
@@ -48,9 +48,13 @@
 #include "ClntOptNISPServer.h"
 #include "ClntOptNISPDomain.h"
 #include "ClntOptLifetime.h"
+
+#ifndef MOD_DISABLE_AUTH
 #include "ClntOptAAAAuthentication.h"
 #include "ClntOptKeyGeneration.h"
 #include "ClntOptAuthentication.h"
+#endif
+
 #include "Logger.h"
 
 string msgs[] = { "",
@@ -217,6 +221,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    ptr = (Ptr*) ta;
 	    break;
 	}
+#ifndef MOD_DISABLE_AUTH
 	case OPTION_AAAAUTH:
 	    Log(Warning) << "Option OPTION_AAAAUTH received by client is invalid, ignoring." << LogEnd;
 	    break;
@@ -229,6 +234,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
                 ptr = new TClntOptAuthentication(buf+pos, length, this);
 	    }
 	    break;
+#endif
 	case OPTION_VENDOR_OPTS: {
 	    SmartPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
 	    ptr = (Ptr*) vendor;
@@ -282,8 +288,10 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
                    :TMsg(iface,addr,msgType)
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
+#ifndef MOD_DISABLE_AUTH
     this->DigestType = CfgMgr->getDigest();
     this->AuthKeys = CfgMgr->AuthKeys;
+#endif
 }
 
 void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr, 
@@ -306,7 +314,9 @@ void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr,
     MRC = 0;
     MRD = 0;
 
+#ifndef MOD_DISABLE_AUTH
     this->AuthKeys = CfgMgr->AuthKeys;
+#endif
     this->KeyGenNonce = NULL;
     this->KeyGenNonceLen = 0;
 }
@@ -407,6 +417,7 @@ void TClntMsg::setIface(int iface) {
  */
 void TClntMsg::appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr)
 {
+#ifndef MOD_DISABLE_AUTH
     if (!ClntCfgMgr->getAuthEnabled() || ClntCfgMgr->getDigest() == DIGEST_NONE) {
         Log(Debug) << "Authentication is disabled, not including auth options in message." << LogEnd;
         this->DigestType = DIGEST_NONE;
@@ -428,6 +439,7 @@ void TClntMsg::appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr)
         if (client)
             client->setSPI(this->getSPI());
     }
+#endif
 }
 
 /*
@@ -446,7 +458,7 @@ void TClntMsg::appendRequestedOptions() {
 
     if (iface->getUnicast()) {
 	optORO->addOption(OPTION_UNICAST);
-	Log(Debug) << "#### Adding UNICAST to ORO." << LogEnd;
+	Log(Debug) << "Adding UNICAST to ORO." << LogEnd;
     }
 
     if (ClntCfgMgr->addInfRefreshTime()) {
@@ -627,6 +639,7 @@ void TClntMsg::appendRequestedOptions() {
     // include ELAPSED option
     Options.append(new TClntOptElapsed(this));
 
+#ifndef MOD_DISABLE_AUTH
     if (this->MsgType == SOLICIT_MSG) {
             if (ClntCfgMgr->getAuthEnabled()) {
                     // --- option: AAAAUTH ---
@@ -651,6 +664,7 @@ void TClntMsg::appendRequestedOptions() {
             }
             */
     }
+#endif
 
     // final setup: Did we add any options at all? 
     if ( optORO->count() ) 

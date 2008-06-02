@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.57 2008-06-01 23:15:34 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.58 2008-06-02 00:15:00 thomson Exp $
  *
  */
 
@@ -57,7 +57,9 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
     }
     this->dump();
 
+#ifndef MOD_DISABLE_AUTH
     AuthKeys = new KeyList();
+#endif
 
     IsDone = false;
 }
@@ -534,12 +536,14 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
       this->DUIDEnterpriseID     = parser->DUIDEnterpriseID;
     }
 
+#ifndef MOD_DISABLE_AUTH
     this->AuthEnabled = opt->getAuthEnabled();
     if (this->AuthEnabled)
         this->AuthAcceptMethods = opt->getAuthAcceptMethods();
     else
         this->AuthAcceptMethods.clear();
     this->AAASPI = getAAASPIfromFile();
+#endif
 
     return true;
 }
@@ -638,6 +642,7 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
     return 0;
 }
 
+#ifndef MOD_DISABLE_AUTH
 uint32_t TClntCfgMgr::getAAASPI() {
     return AAASPI;
 }
@@ -651,6 +656,7 @@ bool TClntCfgMgr::getAuthEnabled()
 {
     return AuthEnabled;
 }
+#endif
 
 bool TClntCfgMgr::getFQDNFlagS()
 {

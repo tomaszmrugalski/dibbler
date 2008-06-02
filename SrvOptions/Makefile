@@ -9,10 +9,14 @@ OBJECTS = SrvOptClientIdentifier.o	SrvOptElapsed.o       SrvOptIAAddress.o      
           SrvOptSIPServer.o         	SrvOptSIPDomain.o     SrvOptFQDN.o           \
           SrvOptNISServer.o         	SrvOptNISDomain.o     SrvOptNISPServer.o     \
           SrvOptNISPDomain.o        	SrvOptLifetime.o      SrvOptTA.o             \
-	  SrvOptIA_PD.o             SrvOptIAPrefix.o          SrvOptAuthentication.o \
-	  SrvOptKeyGeneration.o     SrvOptAAAAuthentication.o SrvOptAddrParams.o \
+	  SrvOptIA_PD.o             SrvOptIAPrefix.o          SrvOptAddrParams.o \
 	  SrvOptLQ.o                    SrvOptRemoteID.o      SrvOptGeneric.o        \
           SrvOptEcho.o
+
 objs: $(OBJECTS)
+
+ifndef MOD_DISABLE_AUTH
+OBJECTS += SrvOptAuthentication.o SrvOptKeyGeneration.o SrvOptAAAAuthentication.o
+endif
 
 libs: libSrvOptions.a
