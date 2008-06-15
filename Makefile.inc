@@ -16,7 +16,7 @@ REL_LDFLAGS  = $(LDFLAGS)
 
 # === debuging parameters ===
 PEDANTIC     = -pedantic
-DEBUGINFO    = -g
+#DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === modular features ===
@@ -26,9 +26,10 @@ DEBUGINFO    = -g
 
 MOD_CLNT_BIND_REUSE        = y
 #MOD_CLNT_EMBEDDED_CFG      = y
-#MOD_CLNT_DISABLE_DNSUPDATE = y
-#MOD_SRV_DISABLE_DNSUPDATE  = y
-#MOD_DISABLE_AUTH      = y
+MOD_CLNT_DISABLE_DNSUPDATE = y
+MOD_SRV_DISABLE_DNSUPDATE  = y
+MOD_DISABLE_AUTH      = y
+#MOD_DEBUG = y
 
 # === Portability section ===
 # Make sure that you have uncommented only one section
@@ -170,4 +171,8 @@ endif
 
 ifdef MOD_DISABLE_AUTH
 COPTS += -DMOD_DISABLE_AUTH
+endif
+
+ifdef MOD_DEBUG
+COPTS += -DDEBUG
 endif

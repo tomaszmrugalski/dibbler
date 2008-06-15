@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.15 2008-02-25 17:49:08 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.16 2008-06-15 17:28:12 thomson Exp $
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
@@ -165,6 +165,7 @@ void printHex(char *message, char *buffer, unsigned len) {
 }
 
 #ifndef WIN32
+#ifdef DEBUG
 #include <execinfo.h>
 
 
@@ -179,4 +180,5 @@ void print_trace(void)
   size = backtrace (array, 10);
   backtrace_symbols_fd (array, size, 1);
 }
+#endif
 #endif

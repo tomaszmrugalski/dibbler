@@ -6,7 +6,7 @@
 %%
 %% released under GNU GPL v2 or later licence
 %%
-%% $Id: dibbler-devel-compile.tex,v 1.15 2007-09-06 23:10:39 thomson Exp $
+%% $Id: dibbler-devel-compile.tex,v 1.16 2008-06-15 17:28:12 thomson Exp $
 %%
 
 \section{Compilation}
@@ -230,6 +230,10 @@ project options window}. Following flags are available:
   behalf. According to FQDN standard \cite{rfc4704}, only server is allowed
   to execute reverse resolve (PTR record) DNS updates, so in such setup
   only forward resoling (AAAA record) will be executed be the client.
+\item[MOD\_DISABLE\_AUTH] -- does not compile authentication
+  support. Makes bin files smaller.
+\item[MOD\_DEBUG] -- Enables some extra debugging features. If you are
+  not core developer, you probably won't even notice.
 \end{description}
 
 \subsection{Cross-compilation}
