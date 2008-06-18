@@ -664,7 +664,7 @@ YYLABEL(yynewstate)
       /* Extend the stack our own way.  */
       if (yystacksize >= YYMAXDEPTH)
 	{
-	  YY_@_ERROR("parser stack overflow");
+	    YY_@_ERROR(((char*)"parser stack overflow"));
 	  __ALLOCA_return(2);
 	}
       yystacksize *= 2;
@@ -936,7 +936,7 @@ YYLABEL(yyerrlab)   /* here on detecting error */
 	}
       else
 #endif /* YY_@_ERROR_VERBOSE */
-	YY_@_ERROR("parse error");
+        YY_@_ERROR((char*)"parse error");
     }
 
   YYGOTO(yyerrlab1);
