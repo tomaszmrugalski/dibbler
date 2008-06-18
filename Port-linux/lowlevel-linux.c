@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.9 2008-02-25 17:49:10 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.10 2008-06-18 21:52:25 thomson Exp $
  *
  */
 
@@ -706,3 +706,19 @@ char * _SL_;
 int dnet_pton(int af, const char *src, void *addr) { return 0; }
 const char *dnet_ntop(int af, const void *addr, char *str, size_t len){ return 0; }
 const char *ipx_ntop(int af, const void *addr, char *str, size_t len) { return 0; }
+
+#ifdef DEBUG
+#include <execinfo.h>
+
+/*
+  [Thomson: very clever function. It prints backtrace. Done by Michal Kowalczuk.]
+ */ 
+void print_trace(void)
+{
+  void *array[10];
+  size_t size;
+
+  size = backtrace (array, 10);
+  backtrace_symbols_fd (array, size, 1);
+}
+#endif
