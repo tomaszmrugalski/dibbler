@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.16 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.17 2008-06-18 20:18:41 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -28,7 +28,10 @@
 #include "AddrMgr.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
+
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
+#endif
 
 /** 
  * create RELEASE message
