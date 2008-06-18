@@ -15,7 +15,7 @@ lowlevel-linux.o: lowlevel-linux.c
 	$(CC) $(COPTS) -I. -c lowlevel-linux.c 
 
 libnetlink.o: libnetlink.c
-	@echo "[CC     ] $(SUBDIR)/$@ (warnings)"
+	@echo "[CC     ] $(SUBDIR)/$@ (warnings ignored)"
 	$(CC) $(COPTS) -c libnetlink.c 2> libnetlink.c-warnings
 
 ll_map.o: ll_map.c 
@@ -27,7 +27,7 @@ ll_types.o: ll_types.c
 	$(CC) $(COPTS) -c ll_types.c
 
 utils.o: utils.c
-	@echo "[CC     ] $(SUBDIR)/$@ (warnings)"
+	@echo "[CC     ] $(SUBDIR)/$@ (warnings ignored)"
 	$(CC) $(COPTS) -c utils.c 2> utils.c-warnings
 
 lowlevel-options-linux.o: lowlevel-options-linux.c	
@@ -35,7 +35,7 @@ lowlevel-options-linux.o: lowlevel-options-linux.c
 	$(CC) $(COPTS) -c $<
 
 iproute.o: iproute.c
-	@echo "[CC     ] $(SUBDIR)/$@ (warnings)"
+	@echo "[CC     ] $(SUBDIR)/$@ (warnings ignored)"
 	$(CC) $(COPTS) -c iproute.c 2> iproute.c-warnings
 
 # ============================================================

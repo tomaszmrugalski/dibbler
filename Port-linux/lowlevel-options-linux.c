@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-options-linux.c,v 1.13 2007-04-18 19:10:25 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.14 2008-06-18 21:13:45 thomson Exp $
  *
  */
 
@@ -120,13 +120,16 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
 
 int domain_del(const char * ifname, int ifaceid, const char *domain) {
     FILE * f, *f2;
-    char buf[512];
+    char buf[512], searchbuf[512], *ptr;
     int found=0;
-    int x;
     struct stat st;
     memset(&st,0,sizeof(st));
     stat(RESOLVCONF_FILE, &st);
 
+    if (strlen(domain) >= sizeof(searchbuf)-1 )
+	return LOWLEVEL_ERROR_UNSPEC;
+    searchbuf[0] = ' ';
+    strcpy(&(searchbuf[1]), domain);
     unlink(RESOLVCONF_FILE".old");
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
     if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
@@ -134,14 +137,11 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
     if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
 	return LOWLEVEL_ERROR_FILE;
     while (fgets(buf,511,f)) {
-	if ( (!found) && (strstr(buf, domain)) ) {
+	if ( (!found) && (ptr=strstr(buf, searchbuf)) ) {
 	    found = 1;
-	    x = strstr(buf, domain) - buf;
-	    memmove (strstr(buf, domain)-1, strstr(buf, domain)+strlen(domain), 511-x);
+	    strcpy(ptr, ptr+strlen(searchbuf));
 	    if (strlen(buf)<11) /* 11=minimum length (one letter domain in 2letter top domain, e.g. "search x.pl") */
 		continue;
-	    fprintf(f2, "%s", buf);
-	    continue;
 	}
 	fprintf(f2,"%s",buf);
     }
