@@ -666,6 +666,7 @@ and \texttt{/dev/urandom}:
 \begin{lstlisting}
 $ dd if=/dev/urandom of=AAA-key-b9a6452c bs=1 count=32
 \end{lstlisting}
+%%$
 
 \item Administrator creates file \texttt{AAA-SPI} which contains previously chosen
 \textit{AAASPI}. This file will be used by the client only.
@@ -1038,5 +1039,27 @@ iface eth0 {
    addr-params 80
    pool 2001:458:ff01:ff03::/80
  }
+}
+\end{lstlisting}
+
+\subsubsection{Mapping prefix}
+It is possible to modify client's behavior when delegated prefix is
+received. Instead of considering it as a prefix that should be
+distributed on other interfaces, it is used as a mapping
+prefix. Normal prefix processing is supressed and external script is
+executed: \verb+mappingprefixadd+ or \verb+mappingprefixdel+. That
+script must be present in the working directory (that would be
+\verb+/var/lib/dibbler+ under Linux or current directory (Windows).
+
+To enable this feature, \verb+client.conf+ similar to the following
+may be used:
+
+\begin{lstlisting}
+experimental
+mapping-prefix
+log-mode short
+
+iface eth0 {
+   pd
 }
 \end{lstlisting}
