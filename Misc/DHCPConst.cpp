@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.16 2008-06-15 17:28:12 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.17 2008-06-18 21:55:59 thomson Exp $
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
@@ -125,15 +125,15 @@ unsigned DIGESTSIZE[] = {
 };
 
 char *DIGESTNAME[] = {
-        "NONE",
-        "PLAIN",
-        "HMAC-MD5",
-        "HMAC-SHA-1",
-        "HMAC-SHA-224",
-        "HMAC-SHA-256",
-        "HMAC-SHA-384",
-        "HMAC-SHA-512",
-        ""   //_END_
+    (char *)"NONE",
+    (char *)"PLAIN",
+    (char *)"HMAC-MD5",
+    (char *)"HMAC-SHA-1",
+    (char *)"HMAC-SHA-224",
+    (char *)"HMAC-SHA-256",
+    (char *)"HMAC-SHA-384",
+    (char *)"HMAC-SHA-512",
+    (char *)""   //_END_
 };
 
 unsigned getDigestSize(enum DigestTypes type) {
@@ -148,7 +148,7 @@ char *getDigestName(enum DigestTypes type) {
     return DIGESTNAME[type];
 }
 
-void printHex(char *message, char *buffer, unsigned len) {
+void PrintHex(std::string message, char *buffer, unsigned len) {
     unsigned j;
     char *buf = new char[len*3+1];
 
@@ -164,21 +164,3 @@ void printHex(char *message, char *buffer, unsigned len) {
     delete buf;
 }
 
-#ifndef WIN32
-#ifdef DEBUG
-#include <execinfo.h>
-
-
-/*
-  [Thomson: very clever function. It prints backtrace. Done by Michal Kowalczuk.]
- */ 
-void print_trace(void)
-{
-  void *array[10];
-  size_t size;
-
-  size = backtrace (array, 10);
-  backtrace_symbols_fd (array, size, 1);
-}
-#endif
-#endif

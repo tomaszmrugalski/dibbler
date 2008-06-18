@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * $Id: Logger.h,v 1.16 2008-02-25 17:49:09 thomson Exp $
+ * $Id: Logger.h,v 1.17 2008-06-18 21:55:59 thomson Exp $
  *
  * Released under GNU GPL v2 or later licence
  *
@@ -60,5 +60,8 @@ namespace logger {
 std::string StateToString(EState state);
 std::string StatusCodeToString(int status);
 std::string MsgTypeToString(int msgType);
+
+// for debugging purposes
+void PrintHex(std::string message, char *buf, unsigned len);
 
 #endif

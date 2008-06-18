@@ -10,7 +10,6 @@
  */
 
 #include "limits.h"
-//#include "SmartPtr.h"
 
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
@@ -305,12 +304,5 @@ char *getDigestName(enum DigestTypes type);
 // key = HMAC-SHA1 (AAA-key, {Key Generation Nonce || client identifier})
 // so it's size is always size of HMAC-SHA1 result which is 160bits = 20bytes
 #define AUTHKEYLEN 20
-
-// for debugging purposes
-void printHex(char *message, char *buf, unsigned len);
-
-#ifndef WIN32
-void print_trace(void);
-#endif
 
 #endif

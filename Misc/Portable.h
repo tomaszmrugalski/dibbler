@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.93 2008-06-15 17:28:12 thomson Exp $
+ * $Id: Portable.h,v 1.94 2008-06-18 21:55:59 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -283,5 +283,12 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef LINUX
+#ifdef DEBUG
+void print_trace(void);
+#endif
+#endif
+
 
 #endif
