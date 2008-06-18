@@ -8,12 +8,10 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.29 2008-03-02 22:03:14 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.30 2008-06-18 20:37:53 thomson Exp $
  *
  */
 
-#include <malloc.h>
-#include <stdio.h>
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "SrvIfaceMgr.h"
