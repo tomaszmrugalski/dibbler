@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.52 2008-06-02 00:15:01 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.53 2008-06-18 20:38:26 thomson Exp $
  */
 
 #include <sstream>
@@ -48,7 +48,10 @@
 #include "SrvOptNISPServer.h"
 #include "SrvOptNISPDomain.h"
 #include "SrvOptLifetime.h"
+
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
+#endif
 
 #ifndef MOD_DISABLE_AUTH
 #include "SrvOptAAAAuthentication.h"
