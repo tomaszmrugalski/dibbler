@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.43 2008-06-02 00:15:00 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.44 2008-06-18 20:18:03 thomson Exp $
  */
 
 #include "Portable.h"
@@ -17,7 +17,10 @@
 #include "ClntMsgReply.h"
 #include "ClntMsgAdvertise.h"
 #include "Logger.h"
+
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
+#endif
 
 using namespace logger;
 using namespace std;

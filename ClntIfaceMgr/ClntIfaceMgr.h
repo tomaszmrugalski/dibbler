@@ -6,9 +6,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.12 2007-04-01 04:53:19 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.13 2008-06-18 20:18:03 thomson Exp $
  *
  */
+
+#include <iostream>
 
 class TClntIfaceMgr;
 class TClntMsg;
