@@ -1,7 +1,7 @@
 include ../Makefile.inc
 OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o FQDN.o 
 
-ifndef MOD_CLNT_DISABLE_AUTH
+ifndef MOD_DISABLE_AUTH
 OBJECTS += sha1.o sha256.o sha512.o md5.o hmac-sha-md5.o KeyList.o
 endif
 
@@ -30,9 +30,9 @@ sha512.o: sha512.c sha512.h
 	$(CC) $(COPTS) -std=c99 -c sha512.c 
 
 # MD5 routined
-md.o: md.c md.h
+md5.o: md5.c md5.h
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c md.c 
+	$(CC) $(COPTS) -c md5.c 
 
 # HMAC-SHA and HMAC-MD5
 hmac-sha-md5.o: hmac-sha-md5.c hmac.h
