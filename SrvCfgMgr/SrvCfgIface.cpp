@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.42 2008-03-02 19:27:21 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.43 2008-06-18 20:37:20 thomson Exp $
  */
 
 #include <cstdlib>
@@ -14,8 +14,11 @@
 #include "SrvCfgIface.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgPD.h"
-#include "DNSUpdate.h"
 #include "Logger.h"
+
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
+#include "DNSUpdate.h"
+#endif
 
 using namespace std;
 
@@ -353,6 +356,7 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->LeaseQuery    = opt->getLeaseQuerySupport();
     
     if (opt->supportFQDN()){
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
 	this->setFQDNLst(opt->getFQDNLst());
 	this->setFQDNMode(opt->getFQDNMode());
 	this->setRevDNSZoneRootLength(opt->getRevDNSZoneRootLength());
@@ -367,8 +371,10 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
 	    break;
 	case DNSUPDATE_MODE_BOTH:
 	    Log(Cont) << "server will perform both (AAAA and PTR) updates." << LogEnd;
-	    break;
 	}
+#else
+	Log(Error) << "DNSUpdate is disabled (please recompile)." << LogEnd;
+#endif
     	Log(Debug) <<"FQDN: revDNS zoneroot lenght set to " << this->getRevDNSZoneRootLength()<< "." << LogEnd;
     }
   

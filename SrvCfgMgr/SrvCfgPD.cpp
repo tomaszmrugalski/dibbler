@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 or later licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.8 2008-03-02 22:06:05 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.9 2008-06-18 20:37:20 thomson Exp $
  *
  */
 
@@ -65,7 +65,7 @@ unsigned long TSrvCfgPD::getPD_Length() {
 
 bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 {
-    int poolLength;
+    int poolLength=0;
     int cnt = 0;
     Log(Debug) << "PD: Client will receive /" << prefixLength << " prefixes (T1=" << opt->getT1Beg() 
 	       << ".." << opt->getT1End() << ", T2=" << opt->getT2Beg() << ".." << opt->getT2End()
