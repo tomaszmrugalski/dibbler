@@ -1,5 +1,6 @@
 # === used tools ===
 CXX          ?= g++
+CXXLD        ?= $(CXX)
 CC           ?= gcc
 FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
@@ -26,9 +27,9 @@ PEDANTIC     = -pedantic
 
 MOD_CLNT_BIND_REUSE        = y
 #MOD_CLNT_EMBEDDED_CFG      = y
-MOD_CLNT_DISABLE_DNSUPDATE = y
-MOD_SRV_DISABLE_DNSUPDATE  = y
-MOD_DISABLE_AUTH      = y
+#MOD_CLNT_DISABLE_DNSUPDATE = y
+#MOD_SRV_DISABLE_DNSUPDATE  = y
+#MOD_DISABLE_AUTH      = y
 #MOD_DEBUG = y
 
 # === Portability section ===
@@ -44,8 +45,8 @@ REQUESTORBIN = dibbler-requestor
 CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
 SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
 RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
-PORT_LDFLAGS =
-PORT_CFLAGS  = 
+PORT_LDFLAGS ?=
+PORT_CFLAGS  ?= 
 PORT_SUBDIR  = Port-linux
 
 # === Port: Win2k (mingw) ===

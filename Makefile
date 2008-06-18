@@ -43,7 +43,7 @@ endif
 
 $(CLIENTBIN): $(CLNTDEPS) includes commonlibs clntlibs $(MISC)/DHCPClient.o $(CLIENT)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
-	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
+	$(CXXLD) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -o $@ $(MISC)/DHCPClient.o $(CLIENT) \
 	-L$(MISC)         -lMisc         \
 	-L$(ADDRMGR)      -lAddrMgr      \
 	-L$(CLNTADDRMGR)  -lClntAddrMgr  \
@@ -72,7 +72,7 @@ endif
 
 $(SERVERBIN): $(SRVDEPS) includes commonlibs srvlibs $(MISC)/DHCPServer.o $(SERVER)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
-	$(CXX) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
+	$(CXXLD) $(SRV_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPServer.o $(SERVER)  \
 	-L$(SRVADDRMGR)   -lSrvAddrMgr     \
 	-L$(ADDRMGR)      -lAddrMgr        \
 	-L$(LOWLEVEL)                      \
@@ -100,7 +100,7 @@ relay: $(RELAYBIN)
 
 $(RELAYBIN): includes commonlibs relaylibs $(MISC)/DHCPRelay.o $(RELAY)
 	@echo "[LINK   ] $(SUBDIR)/$@ ($(LINKPRINT))"
-	$(CXX) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
+	$(CXXLD) $(REL_LDFLAGS) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ $(MISC)/DHCPRelay.o $(RELAY)  \
 	-L$(RELTRANSMGR) -lRelTransMgr  \
 	-L$(RELCFGMGR)   -lRelCfgMgr    \
 	-L$(RELIFACEMGR) -lRelIfaceMgr  \
@@ -481,4 +481,12 @@ clean-libs:
 links: includes
 clobber: clean clean-libs
 
-.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser snapshot help Requestor
+.PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser snapshot help Requestor test2
+
+
+# test section, please ingore.
+test1: test/test14.cpp
+	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) test/test1.cpp -L$(MISC) -lMisc -o test1 -nodefaultlibs -luClibc++
+
+test2: test/test2.cpp
+	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -I/home/thomson/devel/openwrt/kamikaze/build_dir/mipsel/uClibc++-0.2.2/include test/test2.cpp Misc/Logger.cpp -o test2 -nodefaultlibs -luClibc++
