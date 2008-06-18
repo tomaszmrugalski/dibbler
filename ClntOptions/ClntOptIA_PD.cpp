@@ -235,8 +235,8 @@ bool TClntOptIA_PD::updatePrefixes()
 
 bool TClntOptIA_PD::modifyPrefixes(PrefixModifyMode mode)
 {
-    bool status;
-    EState state;
+    bool status = false;
+    EState state = STATE_NOTCONFIGURED;
     SmartPtr<TClntOptIAPrefix> prefix;
     string action;
     switch(mode) {

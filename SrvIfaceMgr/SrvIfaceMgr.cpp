@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.30 2008-06-18 20:37:53 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.31 2008-06-18 23:22:15 thomson Exp $
  *
  */
 
@@ -433,7 +433,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	msg->setRemoteID(remoteID);
 	remoteID = 0;
 	remoteID = msg->getRemoteID();
-	printHex("RemoteID:", remoteID->getVendorData(), remoteID->getVendorDataLen());
+	PrintHex("RemoteID:", remoteID->getVendorData(), remoteID->getVendorDataLen());
     }
 
     return (Ptr*)msg;

@@ -1,7 +1,10 @@
 
   Dibbler changelog
  ------------------- 
- 0.7.0-CVS [not-released-yet]
+ 0.7.0 [2008-06-18]
+  - Linux: Prefixes starting with a-f are now supported properly (bug #171)
+  - /etc/resolv.conf update bug fixed (bug #161)
+  - Srv/Cli: Experimental authentication and authorization added (bugs #79, #80)
   - All: Return codes are now proper under Linux (bug #175)
   - Srv: supports out of addresses scenario properly (bug #177)
   - Cli: ADVERTISE with empty IAs are now discarded properly
@@ -11,14 +14,10 @@
   - Srv/Rel: Echo Request Option support added
   - Srv: Prefixes with lengths not divisible by 8 are now supported properly
   - Srv: Guess-mode implemented (relay's interface-id don't have to be specified anymore)
-  - Srv/Cli: Authentication and authorization added (bugs #79, #80)
   - Cli: FQDN S bit is now configurable
   - Srv: reply for CONFIRM now contains server-id (fixed long time ago, probably
     in 0.6.1) (bug #163)
   - Numerous fixes after 3rd bakeoff meeting (Philadelphia)
-
- 0.7.0 [2008-02-23]
-  - no significant changes to 0.7.0RC1
   
  0.7.0RC1 [2007-12-31]
   - Leasequery support (new entity: requestor added)

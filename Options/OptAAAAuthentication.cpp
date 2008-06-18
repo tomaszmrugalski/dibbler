@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptAAAAuthentication.cpp,v 1.1 2008-02-25 20:42:46 thomson Exp $
+ * $Id: OptAAAAuthentication.cpp,v 1.2 2008-06-18 23:22:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2008-02-25 20:42:46  thomson
+ * Missing new AUTH files added.
+ *
  *
  */
 
@@ -57,11 +60,11 @@ TOptAAAAuthentication::TOptAAAAuthentication( char * &buf,  int &n, TMsg* parent
 
     this->Parent->setAuthInfoPtr(buf);
 
-    printHex("Auth: received digest: ", buf, AAAAuthInfoLen);
+    PrintHex("Auth: received digest: ", buf, AAAAuthInfoLen);
     
     buf+=n; n = 0;
 
-    printHex("Auth:received AAA-SPI: ", (char *)&this->AAASPI, sizeof(this->AAASPI));
+    PrintHex("Auth:received AAA-SPI: ", (char *)&this->AAASPI, sizeof(this->AAASPI));
 
     this->Parent->setAuthInfoKey();
 }

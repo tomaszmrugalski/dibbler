@@ -153,7 +153,7 @@ int TMsg::storeSelf(char * buffer)
                     default:
                         break;
             }
-            printHex("Auth: Sending digest: ", AuthInfoPtr, getDigestSize(UsedDigestType));
+            PrintHex("Auth: Sending digest: ", AuthInfoPtr, getDigestSize(UsedDigestType));
     }
 
     return buffer-start;
@@ -209,7 +209,7 @@ void TMsg::setAuthInfoKey(char* ptr) {
         return;
     }
 
-    printHex("Auth: setting auth info to: ", AuthInfoKey, AUTHKEYLEN);
+    PrintHex("Auth: setting auth info to: ", AuthInfoKey, AUTHKEYLEN);
 }
 
 int TMsg::setAuthInfoKey() {
@@ -237,7 +237,7 @@ int TMsg::setAuthInfoKey() {
     }
     Log(Debug) << "Auth: AAA-key loaded from file " << fname << "." << LogEnd;
 
-    printHex("Auth: AAA-key: ", AAAkey, AAAkeyLen);
+    PrintHex("Auth: AAA-key: ", AAAkey, AAAkeyLen);
 
     memset(KeyGenNonce_ClientID, 0, KeyGenNonceLen+128);
     if (KeyGenNonce)
@@ -245,13 +245,13 @@ int TMsg::setAuthInfoKey() {
 
     // FIXME fill also with ClientID (DUID?)
 
-    printHex("Auth: Infokey: using KeyGenNonce+CliendID: ", KeyGenNonce_ClientID, KeyGenNonceLen+128);
+    PrintHex("Auth: Infokey: using KeyGenNonce+CliendID: ", KeyGenNonce_ClientID, KeyGenNonceLen+128);
 
     Log(Debug) << "Auth: AAAKeyLen: " << AAAkeyLen << ", KeyGenNonceLen: " << KeyGenNonceLen << LogEnd;
     AuthInfoKey = new char[AUTHKEYLEN];
     hmac_sha(KeyGenNonce_ClientID, KeyGenNonceLen+128, AAAkey, AAAkeyLen, (char *)AuthInfoKey, 1);
 
-    printHex("Auth: AuthInfoKey (calculated): ", AuthInfoKey, AUTHKEYLEN);
+    PrintHex("Auth: AuthInfoKey (calculated): ", AuthInfoKey, AUTHKEYLEN);
 
     delete KeyGenNonce_ClientID;
 
@@ -375,8 +375,8 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
             is_ok = true;
 
         Log(Debug) << "Auth:Checking using digest method: " << DigestType << LogEnd;
-        printHex("Auth:received digest: ", rcvdAuthInfo, AuthInfoLen);
-        printHex("Auth:  proper digest: ", goodAuthInfo, AuthInfoLen);
+        PrintHex("Auth:received digest: ", rcvdAuthInfo, AuthInfoLen);
+        PrintHex("Auth:  proper digest: ", goodAuthInfo, AuthInfoLen);
 
         delete [] rcvdAuthInfo;
         delete [] goodAuthInfo;

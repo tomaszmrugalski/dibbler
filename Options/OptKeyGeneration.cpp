@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptKeyGeneration.cpp,v 1.1 2008-02-25 20:42:46 thomson Exp $
+ * $Id: OptKeyGeneration.cpp,v 1.2 2008-06-18 23:22:14 thomson Exp $
  *
  */
 
@@ -50,7 +50,7 @@ TOptKeyGeneration::TOptKeyGeneration( char * &buf,  int &n, TMsg* parent)
 
     this->Parent->setKeyGenNonce(buf, n);
 
-    printHex("KeyGenNonce: ", buf, n);
+    PrintHex("KeyGenNonce: ", buf, n);
     
     buf+=n; n = 0;
 

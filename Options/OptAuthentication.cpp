@@ -5,9 +5,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptAuthentication.cpp,v 1.5 2008-02-25 17:49:09 thomson Exp $
+ * $Id: OptAuthentication.cpp,v 1.6 2008-06-18 23:22:14 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2008-02-25 17:49:09  thomson
+ * Authentication added. Megapatch by Michal Kowalczuk.
+ * (small changes by Tomasz Mrugalski)
+ *
  * Revision 1.4  2006-11-30 03:17:46  thomson
  * Auth related changes by Sammael.
  *
@@ -74,7 +78,7 @@ TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
     if (this->Parent->getType() != ADVERTISE_MSG)
         this->Parent->setAuthInfoKey(this->Parent->AuthKeys->Get(this->Parent->getSPI()));
 
-    printHex("Received digest: ", buf, AuthInfoLen);
+    PrintHex("Received digest: ", buf, AuthInfoLen);
     
     buf+=n; n = 0;
 }
