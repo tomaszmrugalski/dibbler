@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvOptKeyGeneration.cpp,v 1.1 2008-02-25 20:42:46 thomson Exp $
+ * $Id: SrvOptKeyGeneration.cpp,v 1.2 2008-06-18 21:56:39 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2008-02-25 20:42:46  thomson
+ * Missing new AUTH files added.
+ *
  *
  */
 
@@ -39,7 +42,7 @@ TSrvOptKeyGeneration::TSrvOptKeyGeneration(TSrvMsg* parent)
 	    
 	} while (this->Parent->AuthKeys->Get(spi));
 	
-        printHex("Auth:generated SPI: ", (char*)&spi, 4);
+        PrintHex("Auth:generated SPI: ", (char*)&spi, 4);
         this->Parent->setSPI(spi);
     }
 
