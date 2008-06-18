@@ -872,6 +872,8 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 				NEXT_ARG();
 			}
 			if ((**argv < '0' || **argv > '9') &&
+			    (**argv < 'a' || **argv > 'f') &&
+			    (**argv < 'A' || **argv > 'F') &&
 			    rtnl_rtntype_a2n(&type, *argv) == 0) {
 				NEXT_ARG();
 				req.r.rtm_type = type;
