@@ -120,6 +120,7 @@ int TMsg::storeSelf(char * buffer)
         buffer += Option->getSize();
     }
 
+#ifndef MOD_DISABLE_AUTH
     // for AAAAUTH use only HMAC-SHA1
     if (getOption(OPTION_AAAAUTH))
             UsedDigestType = DIGEST_HMAC_SHA1;
@@ -155,6 +156,7 @@ int TMsg::storeSelf(char * buffer)
             }
             PrintHex("Auth: Sending digest: ", AuthInfoPtr, getDigestSize(UsedDigestType));
     }
+#endif
 
     return buffer-start;
 }
@@ -213,6 +215,7 @@ void TMsg::setAuthInfoKey(char* ptr) {
 }
 
 int TMsg::setAuthInfoKey() {
+#ifndef MOD_DISABLE_AUTH
     //  key = HMAC-SHA1 (AAA-key, {Key Generation Nonce || client identifier})
 
     char *KeyGenNonce_ClientID;
@@ -254,6 +257,7 @@ int TMsg::setAuthInfoKey() {
     PrintHex("Auth: AuthInfoKey (calculated): ", AuthInfoKey, AUTHKEYLEN);
 
     delete KeyGenNonce_ClientID;
+#endif
 
     return 0;
 }
@@ -340,6 +344,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
     if (DigestType == DIGEST_NONE) {
             is_ok = true;
     } else if (AuthInfoPtr) {
+#ifndef MOD_DISABLE_AUTH
         unsigned AuthInfoLen = getDigestSize(DigestType);
         char *rcvdAuthInfo = new char[AuthInfoLen];
         char *goodAuthInfo = new char[AuthInfoLen];
@@ -385,7 +390,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
             Log(Info) << "Authentication Information correct." << LogEnd;
         else
             Log(Error) << "Authentication Information incorrect." << LogEnd;
-
+#endif
     } else {
       Log(Error) << "Auth: Digest mode set to " << DigestType << ", but AUTH option not set." << LogEnd;
     }

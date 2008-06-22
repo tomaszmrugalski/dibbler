@@ -1,8 +1,8 @@
 include ../Makefile.inc
-OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o FQDN.o 
+OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o FQDN.o KeyList.o
 
 ifndef MOD_DISABLE_AUTH
-OBJECTS += sha1.o sha256.o sha512.o md5.o hmac-sha-md5.o KeyList.o
+OBJECTS += sha1.o sha256.o sha512.o md5.o hmac-sha-md5.o
 endif
 
 objs: $(OBJECTS)
