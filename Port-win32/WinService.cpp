@@ -6,7 +6,7 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.17 2005-08-07 18:10:59 thomson Exp $
+ * $Id: WinService.cpp,v 1.18 2008-06-22 11:43:18 thomson Exp $
  */
 
 #include <windows.h>
@@ -482,15 +482,29 @@ bool TWinService::verifyPort() {
           << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
           ok = true;
     }
-    if (!ok)
+    if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==0)) {
+         Log(Notice) << "Windows Vista detected (majorVersion=" << verinfo.dwMajorVersion
+          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+         Log(Warning) << "Support for Vista is considered experimental." << LogEnd;
+          ok = true;
+    }
+
+    if (!ok) {
          Log(Warning) << "Unsupported operating system detected (majorVersion=" << verinfo.dwMajorVersion
           << ", minorVersion=" << verinfo.dwMinorVersion << ")." << LogEnd;
-    
+         Log(Notice) << "Supported systems:" << LogEnd;
+         Log(Notice) << "Windows XP:    major=5 minor=1" << LogEnd;
+         Log(Notice) << "Windows 2003:  major=5 minor=2" << LogEnd;
+         Log(Notice) << "Windows Vista: major=6 minor=0" << LogEnd;
+    }
     return ok;
 }
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2005-08-07 18:10:59  thomson
+ * 0.4.1 release.
+ *
  * Revision 1.16  2005/07/26 00:03:02  thomson
  * Preparation for relase 0.4.1
  *

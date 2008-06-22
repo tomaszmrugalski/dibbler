@@ -970,6 +970,9 @@
 				<File
 					RelativePath="..\poslib\poslib\vsnprintf.h">
 				</File>
+				<File
+					RelativePath="..\poslib\poslib\w32poll.cpp">
+				</File>
 			</Filter>
 		</Filter>
 		<File

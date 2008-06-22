@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.18 2008-02-25 17:49:10 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.19 2008-06-22 11:43:18 thomson Exp $
  *
  */
 
@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <io.h>
 
 #include "Portable.h"
 #include "DHCPConst.h"
@@ -84,19 +85,19 @@ uint32_t getAAASPIfromFile() {
     return ret;
 }
 
-char * getAAAKeyFilename(uint32_t *SPI)
+char * getAAAKeyFilename(uint32_t SPI)
 {
     static char filename[1024];
     if (SPI)
-        snprintf(filename, 1024, "%s%s%x", "", "AAA-key-", *SPI);
+        snprintf(filename, 1024, "%s%s%x", "", "AAA-key-", SPI);
     else
         strcpy(filename, "AAA-key");
     return filename;
 }
 
-char * getAAAKey(uint32_t *SPI, uint32_t *len) {
-    /* FIXME change buffer size */
-    char filename[1024];
+char * getAAAKey(uint32_t SPI, uint32_t *len) {
+
+    char * filename;
     struct stat st;
     char * retval;
     int offset = 0;

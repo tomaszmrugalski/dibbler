@@ -142,10 +142,19 @@
 				<File
 					RelativePath="..\Options\OptInteger.cpp">
 				</File>
+				<File
+					RelativePath="..\Options\OptOptionRequest.cpp">
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorSpecInfo.cpp">
+				</File>
 			</Filter>
 			<Filter
 				Name="RelOptions"
 				Filter="">
+				<File
+					RelativePath="..\RelOptions\RelOptEcho.cpp">
+				</File>
 				<File
 					RelativePath="..\RelOptions\RelOptGeneric.cpp">
 				</File>
@@ -154,6 +163,9 @@
 				</File>
 				<File
 					RelativePath="..\RelOptions\RelOptRelayMsg.cpp">
+				</File>
+				<File
+					RelativePath="..\RelOptions\RelOptRemoteID.cpp">
 				</File>
 			</Filter>
 			<Filter

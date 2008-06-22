@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.7.0RC1 (WinXP/2003 port)
-OutputBaseFilename=dibbler-0.7.1RC1-win32
+AppVerName=Dibbler 0.7.1 (WinXP/2003/Vista port)
+OutputBaseFilename=dibbler-0.7.1-win32
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
@@ -15,18 +15,14 @@ Compression=lzma
 SolidCompression=yes
 LicenseFile=..\license
 InfoAfterFile=..\RELNOTES
-
-[Types]
-Name: "Full";   Description: "ALL (Server, client, relay and docs)";
-Name: "Server"; Description: "Server only.";
-Name: "Client"; Description: "Client only.";
-Name: "Relay";  Description: "Relay only.";
+AlwaysShowComponentsList = yes
 
 [Components]
-Name: "Server"; Description: "DHCPv6 server"; Types: Full Server;
-Name: "Client"; Description: "DHCPv6 client"; Types: Full Client;
-Name: "Relay";  Description: "DHCPv6 relay";  Types: Full Relay;
-Name: "Documentation"; Description: "User's Guide"; Types: Full Server Client Relay;
+Name: "Server"; Description: "DHCPv6 server"; Types: Full Compact;
+Name: "Client"; Description: "DHCPv6 client"; Types: Full Compact;
+Name: "Relay";  Description: "DHCPv6 relay"; Types: Full;
+Name: "Documentation"; Description: "User's Guide"; Types: Full Compact;
+Name: "Tools";  Description: "DHCPv6 requestor and other tools"; Types: Full;
 
 [Files]
 Source: "Debug\dibbler-client.exe"; DestDir: "{app}"; Components: Client;
@@ -36,7 +32,7 @@ Source: "Debug\dibbler-relay.exe"; DestDir: "{app}"; Components: Relay;
 Source: "..\relay*.conf"; DestDir: "{app}"; Components: Relay;
 Source: "relay.log"; DestDir: "{app}"; Components: Relay;
 Source: "Debug\dibbler-server.exe"; DestDir: "{app}"; Components: Server;
-Source: "Debug\dibbler-requestor.exe"; DestDir: "{app}"; Components: Server;
+Source: "Debug\dibbler-requestor.exe"; DestDir: "{app}"; Components: Tools;
 Source: "..\server*.conf"; DestDir: "{app}"; Components: Server;
 Source: "server.log"; DestDir: "{app}"; Components: Server;
 Source: "..\doc\dibbler-user.pdf"; DestDir: "{app}"; Components: Documentation;

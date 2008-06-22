@@ -5,12 +5,11 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: RelOptEcho.cpp,v 1.1 2008-03-02 20:01:42 thomson Exp $
+ * $Id: RelOptEcho.cpp,v 1.2 2008-06-22 11:43:19 thomson Exp $
  *
  */
 
 #include "SmartPtr.h"
-#include "SrvCfgMgr.h"
 #include "RelOptEcho.h"
 
 TRelOptEcho::TRelOptEcho( char * buf,  int n, TMsg* parent)

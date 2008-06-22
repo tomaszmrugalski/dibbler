@@ -1,21 +1,23 @@
 
-  Dibbler 0.7.0 release notes [2008-02-23]
+  Dibbler 0.7.1 release notes [2008-06-18]
  ---------------------------------------------------------
 
- This is a final 0.7.0 release. 
+ This is a final 0.7.1 release. 
 
- Biggest improvement since 0.6.1 is support for lease query.
- As usual, numerous bugs were fixed and documentation has been updated
- once again.
+ Biggest improvement since 0.6.1 is support for lease query, authentication
+ and countless bug fixes. Technically speaking, lease query was available
+ in the 0.7.0, which was "quasi-released", as a source code only and 
+ unannounced. To avoid confusion, I decided to skip 0.7.0 rerelease and
+ here is the 0.7.1.
 
  Changes:
   - Leasequery support (new entity: requestor added)
-  - Numerous fixes after Vancover 2nd bakeoff meeting
-  - CLI: REQUEST is sent to multicast when unicast option is supported
-    (because client does not have address with sufficient scope)
-  - Fix in all string options (like domain name or nis domain)
-  - Fix in DNS Update (memory corruption fixed)
-  - Documentation updated.
+  - Authentication support
+  - Experimental support for Microsoft Vista
+  - Server now supports relays with unknown interface-ids better
+  - Numerous fixes after 2nd(Vancouver) and 3rd(Philadelphia) bakeoff meetings
+
+ See CHANGELOG for a complete list of changes.
 
  If you find bugs, please report it on http://klub.com.pl/bugzilla/
  or send bug report directly to the author. Appropriate links are on 

@@ -27,6 +27,7 @@
 				RuntimeLibrary="5"
 				DefaultCharIsUnsigned="TRUE"
 				TreatWChar_tAsBuiltInType="TRUE"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"/>
@@ -165,6 +166,9 @@
 					RelativePath="..\Options\Opt.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptAAAAuthentication.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptAddr.cpp">
 				</File>
 				<File
@@ -201,6 +205,9 @@
 					RelativePath="..\Options\OptInteger.cpp">
 				</File>
 				<File
+					RelativePath="..\Options\OptKeyGeneration.cpp">
+				</File>
+				<File
 					RelativePath="..\Options\OptOptionRequest.cpp">
 				</File>
 				<File
@@ -235,6 +242,9 @@
 				Name="SrvOptions"
 				Filter="">
 				<File
+					RelativePath="..\SrvOptions\SrvOptAAAAuthentication.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvOptions\SrvOptAuthentication.cpp">
 				</File>
 				<File
@@ -247,10 +257,16 @@
 					RelativePath="..\SrvOptions\SrvOptDomainName.cpp">
 				</File>
 				<File
+					RelativePath="..\SrvOptions\SrvOptEcho.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvOptions\SrvOptElapsed.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptFQDN.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptGeneric.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptIA_NA.cpp">
@@ -266,6 +282,9 @@
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptInterfaceID.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptKeyGeneration.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptLifetime.cpp">
@@ -296,6 +315,9 @@
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptRapidCommit.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptRemoteID.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptServerIdentifier.cpp">
@@ -412,6 +434,9 @@
 					RelativePath="..\misc\IPv6Addr.cpp">
 				</File>
 				<File
+					RelativePath="..\Misc\KeyList.cpp">
+				</File>
+				<File
 					RelativePath="..\misc\Logger.cpp">
 				</File>
 				<File
@@ -441,6 +466,9 @@
 				</File>
 				<File
 					RelativePath="SrvService.cpp">
+				</File>
+				<File
+					RelativePath="..\poslib\poslib\w32poll.cpp">
 				</File>
 				<File
 					RelativePath="WinService.cpp">

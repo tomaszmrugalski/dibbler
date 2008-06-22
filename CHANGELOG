@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
- 0.7.0 [2008-06-18]
+ 0.7.1 [2008-06-18]
   - Linux: Prefixes starting with a-f are now supported properly (bug #171)
   - /etc/resolv.conf update bug fixed (bug #161)
   - Srv/Cli: Experimental authentication and authorization added (bugs #79, #80)
@@ -18,7 +18,9 @@
   - Srv: reply for CONFIRM now contains server-id (fixed long time ago, probably
     in 0.6.1) (bug #163)
   - Numerous fixes after 3rd bakeoff meeting (Philadelphia)
-  
+
+ 0.7.0 [was never properly released]
+	
  0.7.0RC1 [2007-12-31]
   - Leasequery support (new entity: requestor added)
   - Numerous fixes after 2nd bakeoff meeting (Vancouver)

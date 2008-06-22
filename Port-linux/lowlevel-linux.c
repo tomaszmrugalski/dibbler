@@ -11,7 +11,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: lowlevel-linux.c,v 1.10 2008-06-18 21:52:25 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.11 2008-06-22 11:43:18 thomson Exp $
  *
  */
 
@@ -657,8 +657,10 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
 
     /* FIXME should be freed somewhere */
     retval = malloc(st.st_size);
-    if (!retval)
+    if (!retval) {
+        close(fd);
         return NULL;
+    }
 
     while (offset < st.st_size) {
         ret = read(fd, retval + offset, st.st_size - offset);
