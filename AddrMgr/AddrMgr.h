@@ -17,7 +17,7 @@ class TAddrMgr;
 #include "AddrClient.h"
 #include "AddrIA.h"
 
-#ifdef LIBXML2
+#ifdef MOD_LIBXML2
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
@@ -62,16 +62,21 @@ class TAddrMgr
     unsigned long getAddrCount(SmartPtr<TDUID> duid, int iface);
     
     // --- backup/restore ---
-    void dbLoad();
+    void dbLoad(const char * xmlFile);
     virtual void dump();
     bool isDone();
 
-#ifdef LIBXML2
+#ifdef MOD_LIBXML2
     xmlDocPtr xmlLoad(const char * filename);
     SmartPtr<TAddrAddr> parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, int depth);
     SmartPtr<TAddrIA> parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth);
     SmartPtr<TAddrClient> parseAddrClient(xmlDocPtr doc, xmlNodePtr xmlClient, int depth);
     void parseAddrMgr(xmlDocPtr doc,int depth);
+#else
+    bool xmlLoadBuiltIn(const char * xmlFile);
+    SPtr<TAddrClient> parseAddrClient(FILE *f);
+    SPtr<TAddrIA> parseAddrIA(FILE *f);
+    SPtr<TAddrAddr> parseAddrAddr(char * buf);
 #endif
 
 protected:

@@ -6,7 +6,7 @@ FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
-COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O2 $(PEDANTIC)
+COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0 $(PEDANTIC)
 OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
 
 # === linker options ===
@@ -17,7 +17,7 @@ REL_LDFLAGS  = $(LDFLAGS)
 
 # === debuging parameters ===
 PEDANTIC     = -pedantic
-#DEBUGINFO    = -g
+DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === modular features ===
@@ -30,6 +30,7 @@ MOD_CLNT_BIND_REUSE        = y
 #MOD_CLNT_DISABLE_DNSUPDATE = y
 #MOD_SRV_DISABLE_DNSUPDATE  = y
 #MOD_DISABLE_AUTH      = y
+#MOD_LIBXML2 = y
 #MOD_DEBUG = y
 
 # === Portability section ===
@@ -136,7 +137,7 @@ FINDOPTS = -path './poslib/*' -prune -o
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
-	rm -f *~ *.o *.a *.xml test? $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) $(REQUESTORBIN) TAGS
+	rm -f *~ *.o *.a test? $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) $(REQUESTORBIN) TAGS
 	find . $(FINDOPTS) -type l -exec rm {} \;
 	find . $(FINDOPTS) -name *.a -exec rm {} \;
 	find . $(FINDOPTS) -name *~ -exec rm {} \;
@@ -172,6 +173,11 @@ endif
 
 ifdef MOD_DISABLE_AUTH
 COPTS += -DMOD_DISABLE_AUTH
+endif
+
+ifdef MOD_LIBXML2
+COPTS += -DMOD_LIBXML2 -I/usr/include/libxml2
+CLNT_LDFLAGS += -lxml2
 endif
 
 ifdef MOD_DEBUG

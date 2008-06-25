@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.31 2008-02-25 17:49:06 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.32 2008-06-25 07:44:05 thomson Exp $
  *
  */
 
@@ -25,23 +25,28 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     this->IsDone = false;
     this->XmlFile = xmlFile;
     
-    if (loadfile)
-	dbLoad();
+    if (false)
+	dbLoad(CLNTADDRMGR_FILE);
 
     DeleteEmptyClient = true;
 }
 
-void TAddrMgr::dbLoad()
+void TAddrMgr::dbLoad(const char * xmlFile)
 {
 
-#ifdef LIBXML2
+#ifdef MOD_LIBXML2
+    Log(Debug) << "Loading " << xmlFile << " (using libxml2)." << LogEnd;
      xmlDocPtr root;
-     root = xmlLoad(this->dbfile.c_str());
+     root = xmlLoad(xmlFile);
      if (!root) {
  	Log(Error) << "File loading has failed." << LogEnd;
+	return;
      }
      this->parseAddrMgr(root,0);
      xmlFreeDoc(root);
+#else
+     Log(Debug) << "Loading " << xmlFile << " (using built-in routines)." << LogEnd;
+     xmlLoadBuiltIn(xmlFile);
 #endif
 }
 
@@ -457,9 +462,9 @@ bool TAddrMgr::prefixIsFree(SPtr<TIPv6Addr> x)
 /* PD-ends */
 
 // --------------------------------------------------------------------
-// --- XML-related methods --------------------------------------------
+// --- XML-related methods (libxml2) ----------------------------------
 // --------------------------------------------------------------------
-#ifdef LIBXML2
+#ifdef MOD_LIBXML2
 // loads entire file
 xmlDocPtr TAddrMgr::xmlLoad(const char * filename) {
      xmlDocPtr doc;
@@ -491,7 +496,7 @@ xmlDocPtr TAddrMgr::xmlLoad(const char * filename) {
      if (!dtd)
      {
  	Log(Error) << "DTD load failed." << LogEnd;
- 	return NULL;
+ 	//return NULL;
      }
 
      return doc;
@@ -540,8 +545,11 @@ SmartPtr<TAddrIA> TAddrMgr::parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int dep
      // unicast
      xmlChar * unicast = xmlGetProp(xmlIA,(const xmlChar*)"unicast");
      char packedUnicast[16];
-     inet_pton6((const char *)unicast,packedUnicast);
-     SmartPtr<TIPv6Addr> ptrUnicast = new TIPv6Addr(packedUnicast);
+     SmartPtr<TIPv6Addr> ptrUnicast;
+     if (unicast) {
+       inet_pton6((const char *)unicast,packedUnicast);
+       ptrUnicast = new TIPv6Addr(packedUnicast);
+     }
 
      // T1
      xmlChar * T1Str = xmlGetProp(xmlIA,(const xmlChar*)"T1");
@@ -634,6 +642,175 @@ void TAddrMgr::parseAddrMgr(xmlDocPtr doc,int depth)
  	xmlClient = xmlClient->next;
      }
 }
+#else
+// --------------------------------------------------------------------
+// --- XML-related methods (built-in) ---------------------------------
+// --------------------------------------------------------------------
+bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
+{
+    SPtr<TAddrClient> clnt;
+    bool AddrClient = false;
+
+    char buf[256];
+
+    FILE * f;
+    if (!(f = fopen(xmlFile,"r"))) {
+        Log(Warning) << "Unable to open " << xmlFile << "." << LogEnd;
+        return false;
+    }
+
+    while (!feof(f)) {
+      fgets(buf, 255, f);
+	if (strstr(buf,"<AddrMgr>")) {
+	    AddrClient = true;
+	    continue;
+	}
+	if (AddrClient && strstr(buf,"<AddrClient")) {
+	  clnt = parseAddrClient(f);
+	  continue;
+	}
+
+	if (strstr(buf,"</AddrMgr>")) {
+	    break;
+	}
+	
+	Log(Debug) << buf << LogEnd;
+
+    }
+    fclose(f);
+
+    if (clnt) {
+	Log(Notice) << "#### Client parsed successfuly." << LogEnd;
+    } 
+    
+    return false;
+}
+
+SPtr<TAddrClient> TAddrMgr::parseAddrClient(FILE *f)
+{
+    char buf[256];
+    char * x = 0;
+    SPtr<TAddrClient> clnt = 0;
+    SPtr<TDUID> duid = 0;
+    SPtr<TAddrIA> ia = 0;
+
+    while (!feof(f)) {
+	fgets(buf,255,f);
+	if (strstr(buf,"<duid")) {
+	    x = strstr(buf,">")+1;
+	    x = strstr(x,"</duid>");
+	    if (x)
+		*x = 0; // remove trailing xml tag
+	    duid = new TDUID(strstr(buf,">")+1);
+	    clnt = new TAddrClient(duid);
+	    Log(Debug) << "#### New AddrClient created: duid=" << duid->getPlain() << LogEnd;
+	    if (ia = parseAddrIA(f))
+		clnt->addIA(ia);
+	    // TODO: support for more than one IA
+
+	    // TODO: support for PD
+	    continue;
+	}
+	if (strstr(buf,"</AddrClient>"))
+	    break;
+    }
+
+    // TODO: add some extra checks here
+    return clnt;
+}
+
+SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f)
+{
+    // IA paramteres
+    char buf[256];
+    char * x = 0;
+    int t1 = 0, t2 = 0, iaid = 0, iface = 0;
+    SPtr<TAddrIA> ia;
+    SPtr<TAddrAddr> addr;
+    SPtr<TDUID> duid;
+
+    while (!feof(f)) {
+	fgets(buf,255,f);
+	if (strstr(buf,"<AddrIA")) {
+	    if ((x=strstr(buf,"T1"))) {
+		t1=atoi(x+4);
+	    }
+	    if ((x=strstr(buf,"T2"))) {
+		t2=atoi(x+4);
+	    }
+	    if ((x=strstr(buf,"IAID"))) {
+		iaid=atoi(x+6);
+	    }
+	    if ((x=strstr(buf,"iface"))) {
+		iface=atoi(x+7);
+	    }
+
+	    if (t1!=0 && t2!=0 && iaid!=0 && iface!=0) {
+		Log(Debug) << "Parsed IA: t1=" << t1 << ", t2="<< t2 << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+		duid = 0; // don't use old DUID
+	    }
+	    continue;
+	}
+	if (strstr(buf,"duid")) {
+	    char * x;
+	    x = strstr(buf,">")+1;
+	    x = strstr(x,"</duid>");
+	    if (x)
+		*x = 0; // remove trailing xml tag
+	    duid = new TDUID(strstr(buf,">")+1);
+	    Log(Debug) << "Parsed duid=" << duid->getPlain() << LogEnd;
+
+	    ia = new TAddrIA(iface, 0, duid, t1,t2, iaid);
+	    continue;
+	}
+	if (strstr(buf,"<AddrAddr")) {
+	    addr = parseAddrAddr(buf);
+	    if (ia && addr)
+		ia->addAddr(addr);
+	}
+	if (strstr(buf,"</AddrIA>"))
+	    break;
+
+    }
+    return ia;
+}
+
+SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(char * buf)
+{
+    // address parameters
+    unsigned long timestamp, pref, valid;
+    SPtr<TIPv6Addr> addr = 0;
+    SPtr<TAddrAddr> addraddr;
+    char * x;
+
+    if (strstr(buf, "<AddrAddr")) {
+	timestamp=pref=valid=0;
+	addr = 0;
+	if ((x=strstr(buf,"timestamp"))) {
+	    timestamp = atoi(x+11);
+	}
+	if ((x=strstr(buf,"pref"))) {
+	    pref = atoi(x+6);
+	}
+	if ((x=strstr(buf,"valid"))) {
+	    valid = atoi(x+7);
+	}
+	if ((x=strstr(buf,">"))) {
+	    x = strstr(x, "</AddrAddr>");
+	    if (x)
+		*x = 0;
+	    addr = new TIPv6Addr(strstr(buf,">")+1, true);
+	    Log(Debug) << "Parsed addr=" << addr->getPlain() << ", pref=" << pref << ", valid=" << valid << ",ts=" << timestamp << LogEnd;
+
+	}
+	if (addr && timestamp && pref && valid) {
+	    SmartPtr<TAddrAddr> addraddr = new TAddrAddr(addr, pref, valid);
+	    addraddr->setTimestamp(timestamp);
+	}
+    }
+    return addraddr;
+}
+
 #endif
 
 bool TAddrMgr::isDone() {
