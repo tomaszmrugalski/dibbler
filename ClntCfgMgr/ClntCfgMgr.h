@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.25 2008-06-25 23:00:11 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.26 2008-06-25 23:12:20 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -102,7 +102,7 @@ private:
     bool AnonInfRequest;
     bool InsistMode;
     bool InactiveMode;
-
+    bool UseConfirm;
 
 #ifndef MOD_DISABLE_AUTH
     bool AuthEnabled;

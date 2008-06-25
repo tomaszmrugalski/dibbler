@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.15 2008-06-01 23:15:34 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.16 2008-06-25 23:12:20 thomson Exp $
  *
  */
 
@@ -52,6 +52,9 @@ public:
     void setFQDNFlagS(bool s);
     bool getFQDNFlagS();
 
+    void setConfirm(bool conf);
+    bool getConfirm();
+
 private:
     string WorkDir;
     int PrefixLength;
@@ -62,6 +65,7 @@ private:
     bool   InsistMode;
     bool   AuthEnabled;
     List(DigestTypes) AuthAcceptMethods;
+    bool UseConfirm;
 
     bool FQDNFlagS;
 

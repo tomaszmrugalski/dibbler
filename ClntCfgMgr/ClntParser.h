@@ -78,7 +78,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;
+    DUIDEnterpriseID = 0;                                                   
 
 #line 79 "ClntParser.y"
 typedef union    
@@ -300,28 +300,29 @@ typedef
 #define	INTNUMBER_	295
 #define	DUID_	296
 #define	STRICT_RFC_NO_ROUTING_	297
-#define	PD_	298
-#define	DUID_TYPE_	299
-#define	DUID_TYPE_LLT_	300
-#define	DUID_TYPE_LL_	301
-#define	DUID_TYPE_EN_	302
-#define	AUTH_ENABLED_	303
-#define	AUTH_ACCEPT_METHODS_	304
-#define	DIGEST_NONE_	305
-#define	DIGEST_PLAIN_	306
-#define	DIGEST_HMAC_MD5_	307
-#define	DIGEST_HMAC_SHA1_	308
-#define	DIGEST_HMAC_SHA224_	309
-#define	DIGEST_HMAC_SHA256_	310
-#define	DIGEST_HMAC_SHA384_	311
-#define	DIGEST_HMAC_SHA512_	312
-#define	STATELESS_	313
-#define	ANON_INF_REQUEST_	314
-#define	INSIST_MODE_	315
-#define	INACTIVE_MODE_	316
-#define	EXPERIMENTAL_	317
-#define	ADDR_PARAMS_	318
-#define	MAPPING_PREFIX_	319
+#define	USE_CONFIRM_	298
+#define	PD_	299
+#define	DUID_TYPE_	300
+#define	DUID_TYPE_LLT_	301
+#define	DUID_TYPE_LL_	302
+#define	DUID_TYPE_EN_	303
+#define	AUTH_ENABLED_	304
+#define	AUTH_ACCEPT_METHODS_	305
+#define	DIGEST_NONE_	306
+#define	DIGEST_PLAIN_	307
+#define	DIGEST_HMAC_MD5_	308
+#define	DIGEST_HMAC_SHA1_	309
+#define	DIGEST_HMAC_SHA224_	310
+#define	DIGEST_HMAC_SHA256_	311
+#define	DIGEST_HMAC_SHA384_	312
+#define	DIGEST_HMAC_SHA512_	313
+#define	STATELESS_	314
+#define	ANON_INF_REQUEST_	315
+#define	INSIST_MODE_	316
+#define	INACTIVE_MODE_	317
+#define	EXPERIMENTAL_	318
+#define	ADDR_PARAMS_	319
+#define	MAPPING_PREFIX_	320
 
 
 #line 169 "../bison++/bison.h"
@@ -410,6 +411,7 @@ static const int HEXNUMBER_;
 static const int INTNUMBER_;
 static const int DUID_;
 static const int STRICT_RFC_NO_ROUTING_;
+static const int USE_CONFIRM_;
 static const int PD_;
 static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
@@ -480,28 +482,29 @@ static const int MAPPING_PREFIX_;
 	,INTNUMBER_=295
 	,DUID_=296
 	,STRICT_RFC_NO_ROUTING_=297
-	,PD_=298
-	,DUID_TYPE_=299
-	,DUID_TYPE_LLT_=300
-	,DUID_TYPE_LL_=301
-	,DUID_TYPE_EN_=302
-	,AUTH_ENABLED_=303
-	,AUTH_ACCEPT_METHODS_=304
-	,DIGEST_NONE_=305
-	,DIGEST_PLAIN_=306
-	,DIGEST_HMAC_MD5_=307
-	,DIGEST_HMAC_SHA1_=308
-	,DIGEST_HMAC_SHA224_=309
-	,DIGEST_HMAC_SHA256_=310
-	,DIGEST_HMAC_SHA384_=311
-	,DIGEST_HMAC_SHA512_=312
-	,STATELESS_=313
-	,ANON_INF_REQUEST_=314
-	,INSIST_MODE_=315
-	,INACTIVE_MODE_=316
-	,EXPERIMENTAL_=317
-	,ADDR_PARAMS_=318
-	,MAPPING_PREFIX_=319
+	,USE_CONFIRM_=298
+	,PD_=299
+	,DUID_TYPE_=300
+	,DUID_TYPE_LLT_=301
+	,DUID_TYPE_LL_=302
+	,DUID_TYPE_EN_=303
+	,AUTH_ENABLED_=304
+	,AUTH_ACCEPT_METHODS_=305
+	,DIGEST_NONE_=306
+	,DIGEST_PLAIN_=307
+	,DIGEST_HMAC_MD5_=308
+	,DIGEST_HMAC_SHA1_=309
+	,DIGEST_HMAC_SHA224_=310
+	,DIGEST_HMAC_SHA256_=311
+	,DIGEST_HMAC_SHA384_=312
+	,DIGEST_HMAC_SHA512_=313
+	,STATELESS_=314
+	,ANON_INF_REQUEST_=315
+	,INSIST_MODE_=316
+	,INACTIVE_MODE_=317
+	,EXPERIMENTAL_=318
+	,ADDR_PARAMS_=319
+	,MAPPING_PREFIX_=320
 
 
 #line 215 "../bison++/bison.h"

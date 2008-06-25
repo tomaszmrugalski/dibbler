@@ -74,7 +74,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;
+    DUIDEnterpriseID = 0;                                                   
 
 %union    
 {
@@ -107,7 +107,7 @@ namespace std
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
-%token STRICT_RFC_NO_ROUTING_
+%token STRICT_RFC_NO_ROUTING_, USE_CONFIRM_
 %token PD_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
@@ -152,6 +152,7 @@ GlobalOptionDeclaration
 | FQDNBits
 | Experimental
 | ExperimentalMappingPrefix
+| UseConfirm
 ;
 
 InterfaceOptionDeclaration
@@ -601,6 +602,13 @@ ExperimentalAddrParams
 	YYABORT;
     }
     ParserOptStack.getLast()->setAddrParams(true);
+};
+
+UseConfirm
+: USE_CONFIRM_
+{
+    Log(Debug) << "CONFIRM support enabled." << LogEnd;
+    ParserOptStack.getLast()->setConfirm(true);
 };
 
 ValidTimeOption

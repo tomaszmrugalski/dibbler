@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.59 2008-06-25 23:00:10 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.60 2008-06-25 23:12:20 thomson Exp $
  *
  */
 
@@ -527,6 +527,8 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     this->FQDNFlagS      = opt->getFQDNFlagS();
 
     this->MappingPrefix  = opt->getMappingPrefix(); // experimental feature
+
+    this->UseConfirm     = opt->getConfirm(); // should client try to send CONFIRM?
     
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
@@ -670,7 +672,7 @@ bool TClntCfgMgr::getMappingPrefix()
 
 bool TClntCfgMgr::useConfirm()
 {
-    return false;
+    return UseConfirm;
 }
 
 TClntCfgMgr::~TClntCfgMgr() {

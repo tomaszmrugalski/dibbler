@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.33 2008-06-25 23:00:10 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.34 2008-06-25 23:12:19 thomson Exp $
  *
  */
 
@@ -25,8 +25,11 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     this->IsDone = false;
     this->XmlFile = xmlFile;
     
-    if (loadfile)
+    if (loadfile) {
 	dbLoad(CLNTADDRMGR_FILE);
+    } else {
+	Log(Info) << "use-confirm disabled in the confguration file. Skipping old database load." << LogEnd;
+    }
 
     DeleteEmptyClient = true;
 }
