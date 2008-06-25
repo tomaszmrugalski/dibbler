@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.53 2008-06-01 18:43:34 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.54 2008-06-25 23:19:47 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -852,7 +852,7 @@ iface "eth0" {
 }
 \end{lstlisting}
 
-\subsubsection{Example 11: Authentication}
+\subsubsection{Example 14: Authentication}
 \label{example-client-auth}
 Authentication is enabled. Client will accept HMAC-SHA-512, HMAC-MD5
 and HMAC-SHA-256 as an authentication method.
@@ -869,6 +869,27 @@ auth-accept-methods digest-hmac-sha512, digest-hmac-md5, digest-hmac-sha256
 iface eth0 {
 }
 \end{lstlisting}
+
+\subsubsection{Example 15: Confirm}
+\label{example-client-confirm}
+It is possible to configure client to send \msg{CONFIRM} message, when
+there is an old lease addresses database. Please note that this
+feature have been developed very lately.
+
+Currently, client does support only IAs in the \msg{CONFIRM}.
+
+\begin{lstlisting}
+# client.conf
+
+log-mode short
+log-level 7
+use-confirm
+
+iface eth0 {
+  ia
+}
+\end{lstlisting}
+
 
 \subsection{Server configuration file}
 \label{server-conf}
@@ -1713,7 +1734,7 @@ iface eth0
 }
 \end{lstlisting}
 
-\subsubsection{Example 16: Relay support with unknown interface-id}
+\subsubsection{Example 18: Relay support with unknown interface-id}
 \label{example-server-relay3}
 To get more informations about relay configuration, see section \ref{features-relays}.
 In pervious examples (\ref{example-server-relay1},
