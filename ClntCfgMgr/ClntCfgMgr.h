@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.24 2008-06-02 00:15:00 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.25 2008-06-25 23:00:11 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -80,6 +80,8 @@ class TClntCfgMgr : public TCfgMgr
 
     bool getFQDNFlagS();
     bool getMappingPrefix();
+
+    bool useConfirm();
 
 private:
     bool setGlobalOptions(ClntParser * parser);

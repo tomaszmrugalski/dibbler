@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.21 2007-05-04 17:20:39 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.22 2008-06-25 23:00:10 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -18,15 +18,18 @@
 
 
 TClntAddrMgr::TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntCfgMgr, string xmlFile, bool loadDB)
-    :TAddrMgr(xmlFile, loadDB)
+    :TAddrMgr(xmlFile, ClntCfgMgr->useConfirm())
 {
-    
-    // add this client (with proper duid)
-    SmartPtr<TAddrClient> client = new TAddrClient(ClntCfgMgr->getDUID());
-    addClient(client);
-    DeleteEmptyClient = false; // don't delete this client, even when IAs or PD has been removed
+    // client may have been already loaded from client-AddrMgr.xml file
+    firstClient();
+    if (!getClient()) {
+	// add this client (with proper duid)
+	SmartPtr<TAddrClient> client = new TAddrClient(ClntCfgMgr->getDUID());
+	addClient(client);
+    }
 
     // set Client field
+    DeleteEmptyClient = false; // don't delete this client, even when IAs or PD has been removed
     firstClient();
     Client = getClient();
 }

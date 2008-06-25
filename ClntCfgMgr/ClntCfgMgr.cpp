@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.58 2008-06-02 00:15:00 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.59 2008-06-25 23:00:10 thomson Exp $
  *
  */
 
@@ -668,6 +668,10 @@ bool TClntCfgMgr::getMappingPrefix()
     return MappingPrefix;
 }
 
+bool TClntCfgMgr::useConfirm()
+{
+    return false;
+}
 
 TClntCfgMgr::~TClntCfgMgr() {
     Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;

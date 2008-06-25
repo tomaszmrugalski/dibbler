@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.32 2008-06-25 07:44:05 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.33 2008-06-25 23:00:10 thomson Exp $
  *
  */
 
@@ -25,7 +25,7 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     this->IsDone = false;
     this->XmlFile = xmlFile;
     
-    if (false)
+    if (loadfile)
 	dbLoad(CLNTADDRMGR_FILE);
 
     DeleteEmptyClient = true;
@@ -45,7 +45,7 @@ void TAddrMgr::dbLoad(const char * xmlFile)
      this->parseAddrMgr(root,0);
      xmlFreeDoc(root);
 #else
-     Log(Debug) << "Loading " << xmlFile << " (using built-in routines)." << LogEnd;
+     Log(Info) << "UseConfirm enabled, loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
      xmlLoadBuiltIn(xmlFile);
 #endif
 }
@@ -589,6 +589,7 @@ SmartPtr<TAddrIA> TAddrMgr::parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int dep
  	if (xmlAddr->type == XML_ELEMENT_NODE) {
  	    ptrAddr = parseAddrAddr(doc, xmlAddr, depth+2);
  	    ptrIA->addAddr(ptrAddr);
+	    ptrAddr->setTentative(TENTATIVE_NO);
  	}
  	xmlAddr = xmlAddr->next;
      }
@@ -673,14 +674,13 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
 	if (strstr(buf,"</AddrMgr>")) {
 	    break;
 	}
-	
-	Log(Debug) << buf << LogEnd;
-
     }
     fclose(f);
 
     if (clnt) {
-	Log(Notice) << "#### Client parsed successfuly." << LogEnd;
+	Log(Notice) << "Address database loaded successfuly." << LogEnd;
+	ClntsLst.append(clnt);
+	return true;
     } 
     
     return false;
@@ -703,9 +703,10 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(FILE *f)
 		*x = 0; // remove trailing xml tag
 	    duid = new TDUID(strstr(buf,">")+1);
 	    clnt = new TAddrClient(duid);
-	    Log(Debug) << "#### New AddrClient created: duid=" << duid->getPlain() << LogEnd;
-	    if (ia = parseAddrIA(f))
+	    // Log(Debug) << "New address loaded from file created: duid=" << duid->getPlain() << LogEnd;
+	    if (ia = parseAddrIA(f)) {
 		clnt->addIA(ia);
+	    }
 	    // TODO: support for more than one IA
 
 	    // TODO: support for PD
@@ -725,7 +726,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f)
     char buf[256];
     char * x = 0;
     int t1 = 0, t2 = 0, iaid = 0, iface = 0;
-    SPtr<TAddrIA> ia;
+    SPtr<TAddrIA> ia = 0;
     SPtr<TAddrAddr> addr;
     SPtr<TDUID> duid;
 
@@ -746,7 +747,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f)
 	    }
 
 	    if (t1!=0 && t2!=0 && iaid!=0 && iface!=0) {
-		Log(Debug) << "Parsed IA: t1=" << t1 << ", t2="<< t2 << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+		Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2 << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
 		duid = 0; // don't use old DUID
 	    }
 	    continue;
@@ -758,20 +759,25 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f)
 	    if (x)
 		*x = 0; // remove trailing xml tag
 	    duid = new TDUID(strstr(buf,">")+1);
-	    Log(Debug) << "Parsed duid=" << duid->getPlain() << LogEnd;
+	    // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
 
 	    ia = new TAddrIA(iface, 0, duid, t1,t2, iaid);
+	    ia->setState(STATE_CONFIRMME);
 	    continue;
 	}
 	if (strstr(buf,"<AddrAddr")) {
 	    addr = parseAddrAddr(buf);
-	    if (ia && addr)
+	    if (ia && addr) {
 		ia->addAddr(addr);
+		addr->setTentative(TENTATIVE_NO);
+	    }
 	}
 	if (strstr(buf,"</AddrIA>"))
 	    break;
 
     }
+    if (ia)
+	ia->setTentative();
     return ia;
 }
 
@@ -804,7 +810,7 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(char * buf)
 
 	}
 	if (addr && timestamp && pref && valid) {
-	    SmartPtr<TAddrAddr> addraddr = new TAddrAddr(addr, pref, valid);
+	    addraddr = new TAddrAddr(addr, pref, valid);
 	    addraddr->setTimestamp(timestamp);
 	}
     }

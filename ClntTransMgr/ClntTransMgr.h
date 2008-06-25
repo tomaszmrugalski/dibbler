@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.h,v 1.13 2007-03-28 00:15:14 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.14 2008-06-25 23:00:11 thomson Exp $
  *
  */
 class TClntTransMgr;
@@ -82,7 +82,6 @@ class TClntTransMgr
     List(TClntMsg) Transactions;
     bool IsDone;         // isDone = true - client operation is finished
     bool Shutdown;       // is shutdown in progress?
-    bool ConfirmEnabled; // should we send CONFIRM message?
 
     bool BindReuse; // Bug #56. Shall we allow running client and server on the same machine?
 

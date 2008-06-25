@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.36 2008-06-02 00:15:00 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.37 2008-06-25 23:00:11 thomson Exp $
  */
 
 #ifdef WIN32
@@ -326,6 +326,8 @@ unsigned long TClntMsg::getTimeout()
     long diff = (LastTimeStamp+RT) - now();
     return (diff<0) ? 0 : diff;
 }
+
+#define floor(x) (int)(x)
 
 void TClntMsg::send()
 {

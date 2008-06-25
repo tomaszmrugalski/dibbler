@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.58 2008-03-23 13:11:34 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.59 2008-06-25 23:00:11 thomson Exp $
  *
  */
 
@@ -50,16 +50,16 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 {
     // should we set REUSE option during binding sockets?
 #ifdef MOD_CLNT_BIND_REUSE
-    this->BindReuse = true;
+    BindReuse = true;
 #else
-    this->BindReuse = false;
+    BindReuse = false;
 #endif
 
-    this->IsDone = true;
+    IsDone = true;
 
-    this->IfaceMgr = ifaceMgr;
-    this->AddrMgr  = addrMgr;
-    this->CfgMgr   = cfgMgr;
+    IfaceMgr = ifaceMgr;
+    AddrMgr  = addrMgr;
+    CfgMgr   = cfgMgr;
 
     if (this->BindReuse)
 	Log(Debug) << "Bind reuse enabled (multiple instances allowed)." << LogEnd;
@@ -78,11 +78,7 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 	}
     }
 
-    // FIXME: CONFIRM support is not complete
-    // this->checkDB();
-    // checkConfirm();
-    this->ConfirmEnabled=true;
-
+    this->checkDB();
     this->Shutdown = false;
     this->IsDone = false;
 }
@@ -210,21 +206,29 @@ void TClntTransMgr::removeExpired() {
     }
 }
 
+/** 
+ * checks if loaded Address database is sanite (i.e. does not reffer to non-existing interface)
+ * 
+ */
 void TClntTransMgr::checkDB()
 {
+    SmartPtr<TClntCfgIface> iface;
     SmartPtr <TAddrIA> ptrIA;
-    AddrMgr->firstIA();
+    SmartPtr<TAddrAddr> ptrAddr;
+
     AddrMgr->doDuties();
+    AddrMgr->firstIA();
     while ( ptrIA = AddrMgr->getIA()) {
-        SmartPtr<TIfaceIface> ptrIface;
-        ptrIface = IfaceMgr->getIfaceByID( ptrIA->getIface() );
-        if (!ptrIface) {
+        iface = CfgMgr->getIface( ptrIA->getIface() );
+        if (!iface) {
+	    Log(Warning) << "IA (iaid=" << ptrIA->getIAID() << ") loaded from old file, but currently there is no iface with ifindex="
+			 << ptrIA->getIface();
             // IA with non-existent iface, purge iface
-            SmartPtr<TAddrAddr> ptrAddr;
             ptrIA->firstAddr();
             while (ptrAddr = ptrIA->getAddr())
                 ptrIA->delAddr( ptrAddr->get() );
             ptrIA->setState(STATE_NOTCONFIGURED);
+	    AddrMgr->delIA(ptrIA->getIAID());
         }
     }
 }
@@ -309,6 +313,11 @@ void TClntTransMgr::doDuties()
     this->CfgMgr->dump();
 
     if (!this->Shutdown && !this->IsDone) {
+
+        // did we switched links lately?
+	// are there any IAs to confirm?
+	checkConfirm();
+	
         // are there any tentative addrs?
         checkDecline();
 
@@ -321,11 +330,6 @@ void TClntTransMgr::doDuties()
 
         // are there any aging IAs or PDs?
         checkRenew();
-
-        // did we switched links lately?
-	// FIXME: for now, we cannot check link switches, so checkConfirm
-	// is run only during startup
-        //checkConfirm();        
 
         //Maybe we require only infromations concernig link
         checkInfRequest();
@@ -701,28 +705,36 @@ void TClntTransMgr::checkSolicit() {
 
 void TClntTransMgr::checkConfirm()
 {
-    //FIXME: When should we send CONFIRM? How to detect switching to new link?
-    //Is it a start of address of manager
-    if(!ConfirmEnabled)
-        return;
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TIfaceIface> ptrIface;
-    IfaceMgr->firstIface();
-    while(ptrIface=IfaceMgr->getIface())
+    SPtr<TAddrIA> ptrIA;
+    SPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIA> cfgIA;
+    List(TAddrIA) IALst;
+
+    CfgMgr->firstIface();
+    while(iface=CfgMgr->getIface())
     {
-        TContainer<SmartPtr<TAddrIA> > IALst;
-        AddrMgr->firstIA();
-        while(ptrIA=AddrMgr->getIA())
-        {
-            if(ptrIA->getIface()==ptrIface->getID())
-            {
-                IALst.append(ptrIA);
-                ptrIA->setState(STATE_INPROCESS);
-            }
-        }
-        if (IALst.count())
+	IALst.clear();
+	iface->firstIA();
+	while (cfgIA = iface->getIA()) {
+	    AddrMgr->firstIA();
+	    while(ptrIA=AddrMgr->getIA())
+	    {
+		if (ptrIA->getState()!=STATE_CONFIRMME)
+		    continue;
+		if (ptrIA->getIface()==iface->getID())
+		{
+		    IALst.append(ptrIA);
+		    ptrIA->setState(STATE_INPROCESS);
+		    cfgIA->setState(STATE_INPROCESS);
+		}
+	    }
+	}	    
+
+        if (IALst.count()) {
+	    Log(Info) << "Creating CONFIRM: " << IALst.count() << " IA(s) on " << iface->getFullName() << LogEnd;
             Transactions.append(
-            new TClntMsgConfirm(IfaceMgr,That,CfgMgr,AddrMgr,ptrIface->getID(),IALst));
+		new TClntMsgConfirm(IfaceMgr,That,CfgMgr,AddrMgr,iface->getID(),IALst));
+	}
     }
 }
 

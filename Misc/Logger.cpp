@@ -193,6 +193,8 @@ std::string StateToString(EState state) {
 	return "DISABLED";
     case STATE_TENTATIVECHECK:
 	return "TENTATIVECHECK";
+    case STATE_CONFIRMME:
+	return "CONFIRMME";
     case STATE_TENTATIVE:
 	return "TENTATIVE";
     default:
