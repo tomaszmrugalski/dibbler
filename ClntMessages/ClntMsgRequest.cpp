@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.24 2008-02-25 17:49:08 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.25 2008-06-26 21:44:17 thomson Exp $
  *
  */
 
@@ -181,8 +181,8 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    new TClntOptIA_NA(ClntCfgIA, ClntAddrIA, this);
 	Options.append((Ptr*)IA_NA);
     }
-    Options.append(new TClntOptElapsed(this));
 
+    appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];

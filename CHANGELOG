@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+ 0.7.1-CVS [...]
+  - Experimental CONFIRM support added
+  - Cli: elapsed option is now sent in all messages
+
  0.7.1 [2008-06-18]
   - Linux: Prefixes starting with a-f are now supported properly (bug #171)
   - /etc/resolv.conf update bug fixed (bug #161)

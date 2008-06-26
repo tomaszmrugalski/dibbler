@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.17 2008-03-06 21:36:57 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.18 2008-06-26 21:44:17 thomson Exp $
  *
  */
 
@@ -95,6 +95,7 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	Options.append(new TClntOptIA_PD(ia, this));
     }
 
+    appendRequestedOptions();
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];

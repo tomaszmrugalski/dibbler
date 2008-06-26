@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.9 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.10 2008-06-26 21:44:17 thomson Exp $
  *
  */
 
@@ -52,6 +52,7 @@ TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr,
     while(ia=iaLst.get())
         Options.append(new TClntOptIA_NA(ia,true,this));
 
+    appendRequestedOptions();
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];

@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.14 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.15 2008-06-26 21:44:17 thomson Exp $
  *
  */
 
@@ -75,6 +75,7 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
     }
     MRD= maxMRD;
 
+    appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];
@@ -87,7 +88,9 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
   return;
 
 #if 0
-        SmartPtr<TOpt> opt;
+  // TODO: Fix REPLY support for REBIND
+  
+SmartPtr<TOpt> opt;
     
     // get DUID
     SmartPtr<TClntOptServerIdentifier> ptrDUID;

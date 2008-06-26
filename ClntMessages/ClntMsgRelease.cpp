@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.17 2008-06-18 20:18:41 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.18 2008-06-26 21:44:17 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -129,6 +129,7 @@ TClntMsgRelease::TClntMsgRelease(
 	AddrMgr->delPD(pd->getIAID() );
     }
 
+    appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];

@@ -7,9 +7,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgDecline.cpp,v 1.4 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntMsgDecline.cpp,v 1.5 2008-06-26 21:44:17 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2008-02-25 17:49:07  thomson
+ * Authentication added. Megapatch by Michal Kowalczuk.
+ * (small changes by Tomasz Mrugalski)
+ *
  * Revision 1.3  2005-01-08 16:52:03  thomson
  * Relay support implemented.
  *
@@ -57,6 +61,7 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	Options.append( new TClntOptIA_NA(ptrIA,this));
     }
 
+    appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];

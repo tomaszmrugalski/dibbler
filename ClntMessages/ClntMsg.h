@@ -47,7 +47,7 @@ public:
 //    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
 
     void appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr);
-
+    void appendElapsedOption();
     void appendRequestedOptions();
     SmartPtr<TClntTransMgr>  getClntTransMgr();
     SmartPtr<TClntAddrMgr>   getClntAddrMgr();

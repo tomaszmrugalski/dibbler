@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.34 2008-06-25 23:12:19 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.35 2008-06-26 21:44:17 thomson Exp $
  *
  */
 
@@ -48,7 +48,7 @@ void TAddrMgr::dbLoad(const char * xmlFile)
      this->parseAddrMgr(root,0);
      xmlFreeDoc(root);
 #else
-     Log(Info) << "UseConfirm enabled, loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
+     Log(Info) << "use-confirm enabled, loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
      xmlLoadBuiltIn(xmlFile);
 #endif
 }

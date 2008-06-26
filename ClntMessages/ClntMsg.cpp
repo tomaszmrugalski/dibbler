@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.37 2008-06-25 23:00:11 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.38 2008-06-26 21:44:17 thomson Exp $
  */
 
 #ifdef WIN32
@@ -444,6 +444,13 @@ void TClntMsg::appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr)
 #endif
 }
 
+void TClntMsg::appendElapsedOption() {
+    // include ELAPSED option
+
+    if (!getOption(OPTION_ELAPSED_TIME))
+	Options.append(new TClntOptElapsed(this));
+}
+
 /*
  * this method adds requested (which have status==STATE_NOTCONFIGURED) options
  */
@@ -465,7 +472,7 @@ void TClntMsg::appendRequestedOptions() {
 
     if (ClntCfgMgr->addInfRefreshTime()) {
 	optORO->addOption(OPTION_INFORMATION_REFRESH_TIME);
-	Log(Debug) << "#### Adding INFORMATION REFRESH TIME to ORO." << LogEnd;
+	Log(Debug) << "Adding INFORMATION REFRESH TIME to ORO." << LogEnd;
     }
 
     // --- option: DNS-SERVERS ---
@@ -638,8 +645,7 @@ void TClntMsg::appendRequestedOptions() {
     if (addrParams)
 	optORO->addOption(OPTION_ADDRPARAMS);
 
-    // include ELAPSED option
-    Options.append(new TClntOptElapsed(this));
+    appendElapsedOption();
 
 #ifndef MOD_DISABLE_AUTH
     if (this->MsgType == SOLICIT_MSG) {
