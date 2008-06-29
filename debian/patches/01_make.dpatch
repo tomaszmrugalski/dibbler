@@ -37,14 +37,3 @@ exit 0
  INST_CONFDIR = $(DESTDIR)'/etc/dibbler'
  INSTALL      = 'install'
  MKDIR        = mkdir -p
---- Makefile.inc.orig	2006-02-04 12:39:07.000000000 +0100
-+++ Makefile.inc	2006-02-04 12:42:04.729644536 +0100
-@@ -13,7 +13,7 @@
- 
- # === debuging parameters ===
- PEDANTIC     = -pedantic
--DEBUGINFO    = -g
-+#DEBUGINFO    = -g
- #EFENCE       = -lefence
- 
- # === libxml2 stuff ===
