@@ -1,3 +1,12 @@
+dibbler (0.7.1-1) unstable; urgency=low
+
+  * New upstream release (0.7.0 was never fully released)
+  * Finnish translation added. (closes: #464054)
+  * Swedish translation added. (closes: #483729)
+  * My own IETF draft removed from source (closes #482049)
+
+ --  <thomson@dexter>  Sun, 29 Jun 2008 17:21:59 +0200
+
 dibbler (0.6.1-1) unstable; urgency=low
 
   * New upstream release 

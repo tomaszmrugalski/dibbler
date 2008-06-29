@@ -1,0 +1,114 @@
+# translation of dibbler_0.6.1-1_templates.po to swedish
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Martin Bagge <martin.bagge@bthstudent.se>, 2008.
+msgid ""
+msgstr ""
+"Project-Id-Version: dibbler_0.6.1-1_templates\n"
+"Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
+"POT-Creation-Date: 2007-07-11 19:57+0200\n"
+"PO-Revision-Date: 2008-06-29 17:29+0100\n"
+"Last-Translator: Tomasz Mrugalski <thomson@klub.com.pl>\n"
+"Language-Team: swedish <sv@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+
+#. Type: title
+#. Description
+#: ../dibbler-client.templates:2001
+msgid "dibbler-client: DHCPv6 client"
+msgstr "dibbler-client: DHCPv6 klient"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-client.templates:3001
+msgid "Should the Dibbler client be launched when the system starts?"
+msgstr "Ska Dibbler-klienten startas när systemet startar?"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-client.templates:3001
+msgid "The Dibbler client can be configured to be launched when the system is started. If you choose this option, this host will have a correct IPv6 setup after booting. Please ensure that a DHCPv6 server is available on the network."
+msgstr "Dibbler-klienten kan ställas in att starta när systemet startar. Om du väljer att göra så kommer det här systemet att ha en fungerande IPv6-installation efter uppstart. Kontrollera så att en DHCPv6-server finns tillgänglig i nätverket."
+
+#. Type: string
+#. Description
+#: ../dibbler-client.templates:4001
+msgid "Interfaces to be configured:"
+msgstr "Nätverkskort att konfigurera:"
+
+#. Type: string
+#. Description
+#: ../dibbler-client.templates:4001
+msgid "Dibbler can configure any or all of a computer's network interfaces."
+msgstr "Dibbler kan konfigurera enskilda eller samtliga datorns nätverkskort."
+
+#. Type: string
+#. Description
+#: ../dibbler-client.templates:4001
+msgid "More than one interface may be specified by separating the interface names with spaces."
+msgstr "Mer än ett nätverkskort kan specificeras genom att separera nätverkskortens namn med mellanslag."
+
+#. Type: multiselect
+#. Choices
+#: ../dibbler-client.templates:5001
+msgid "dns"
+msgstr "dns"
+
+#. Type: multiselect
+#. Choices
+#: ../dibbler-client.templates:5001
+msgid "domain"
+msgstr "domän"
+
+#. Type: multiselect
+#. Description
+#: ../dibbler-client.templates:5002
+msgid "Additional parameters to obtain:"
+msgstr "Ytterligare parametrar som ska hämtas:"
+
+#. Type: multiselect
+#. Description
+#: ../dibbler-client.templates:5002
+msgid "The Dibbler client can request that the DHCPv6 server supplies additional configuration parameters."
+msgstr "Dibbler-klienten kan fråga om DHCPv6-servern tillhandahåller ytterligare inställningsparametrar."
+
+#. Type: title
+#. Description
+#: ../dibbler-relay.templates:2001
+msgid "dibbler-relay: DHCPv6 relay"
+msgstr "dibbler-relay: DHCPv6-återsändningsnod"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-relay.templates:3001
+msgid "Should the Dibbler relay be launched when the system starts?"
+msgstr "Ska Dibbler-relay startas när systemet startas?"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-relay.templates:3001
+msgid "The Dibbler relay can be configured to be launched when the system is started. If you choose this option, this node will forward DHCPv6 messages between clients, servers and other relays."
+msgstr "Dibblers återsändningsnod kan ställas in att starta när systemet startas. Om du väljer att göra så här kommer den här noden att återsända DHCPv6-meddelanden mellan klienter, servrar och andra återsändningsnoder."
+
+#. Type: title
+#. Description
+#: ../dibbler-server.templates:2001
+msgid "dibbler-server: DHCPv6 server"
+msgstr "dibbler-server: DHCPv6-server"
+
+#. Type: boolean
+#. Description
+#: ../dibbler-server.templates:3001
+msgid "Should the Dibbler server be launched when the system starts?"
+msgstr "Ska Dibbler-servern startas när systemet startar? "
+
+#. Type: boolean
+#. Description
+#: ../dibbler-server.templates:3001
+msgid "The Dibbler server can be configured to be launched when the system is started. If you choose this option, this node will act as a DHCPv6 server. It will provide IPv6 addresses and additional configuration options to other nodes in the network."
+msgstr "Dibbler-servern kan ställas in att starta när systemet startar. Om du väljer att göra så här kommer den här noden att agera som en DHCPv6-server. Den kommer att förse andra noder i nätverket med IPv6-adresser och ytterligare inställningsparametrar."
+
