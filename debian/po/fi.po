@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: thomson@klub.com.pl\n"
 "POT-Creation-Date: 2007-07-11 19:57+0200\n"
 "PO-Revision-Date: 2008-02-05 00:01+0200\n"
-"Last-Translator: Esko Araj‰rvi <edu@iki.fi>\n"
+"Last-Translator: Esko Araj√§rvi <edu@iki.fi>\n"
 "Language-Team: Finnish <debian-l10n-finnish@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,31 +22,31 @@ msgstr "dibbler-client: DHCPv6-asiakas"
 #. Description
 #: ../dibbler-client.templates:3001
 msgid "Should the Dibbler client be launched when the system starts?"
-msgstr "Tulisiko Dibbler-asiakas k‰ynnist‰‰, kun j‰rjestelm‰ k‰ynnistet‰‰n?"
+msgstr "Tulisiko Dibbler-asiakas k√§ynnist√§√§, kun j√§rjestelm√§ k√§ynnistet√§√§n?"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-client.templates:3001
 msgid "The Dibbler client can be configured to be launched when the system is started. If you choose this option, this host will have a correct IPv6 setup after booting. Please ensure that a DHCPv6 server is available on the network."
-msgstr "Dibbler-asiakas voidaan asettaa k‰ynnistym‰‰n k‰ynnistett‰ess‰ j‰rjestelm‰. Jos valitset t‰m‰n vaihtoehdon, t‰ll‰ koneella on oikeat IPv6-asetukset k‰ynnistyksen j‰lkeen. Varmista, ett‰ DHCPv6-palvelin on saatavilla verkossa."
+msgstr "Dibbler-asiakas voidaan asettaa k√§ynnistym√§√§n k√§ynnistett√§ess√§ j√§rjestelm√§. Jos valitset t√§m√§n vaihtoehdon, t√§ll√§ koneella on oikeat IPv6-asetukset k√§ynnistyksen j√§lkeen. Varmista, ett√§ DHCPv6-palvelin on saatavilla verkossa."
 
 #. Type: string
 #. Description
 #: ../dibbler-client.templates:4001
 msgid "Interfaces to be configured:"
-msgstr "Asetettavat liitynn‰t:"
+msgstr "Asetettavat liitynn√§t:"
 
 #. Type: string
 #. Description
 #: ../dibbler-client.templates:4001
 msgid "Dibbler can configure any or all of a computer's network interfaces."
-msgstr "Dibbler voi tehd‰ jonkin tai kaikkien tietokoneen verkkoliityntˆjen asetukset."
+msgstr "Dibbler voi tehd√§ jonkin tai kaikkien tietokoneen verkkoliitynt√∂jen asetukset."
 
 #. Type: string
 #. Description
 #: ../dibbler-client.templates:4001
 msgid "More than one interface may be specified by separating the interface names with spaces."
-msgstr "Useampia kuin yksi liitynt‰ voidaan syˆtt‰‰ erottamalla liityntˆjen nimet v‰lilyˆnnein."
+msgstr "Useampia kuin yksi liitynt√§ voidaan sy√∂tt√§√§ erottamalla liitynt√∂jen nimet v√§lily√∂nnein."
 
 #. Type: multiselect
 #. Choices
@@ -64,31 +64,31 @@ msgstr "verkkoalue"
 #. Description
 #: ../dibbler-client.templates:5002
 msgid "Additional parameters to obtain:"
-msgstr "Haettavat lis‰parametrit:"
+msgstr "Haettavat lis√§parametrit:"
 
 #. Type: multiselect
 #. Description
 #: ../dibbler-client.templates:5002
 msgid "The Dibbler client can request that the DHCPv6 server supplies additional configuration parameters."
-msgstr "Dibbler-asiakas voi pyyt‰‰ DHCPv6-palvelimelta lis‰asetuksia."
+msgstr "Dibbler-asiakas voi pyyt√§√§ DHCPv6-palvelimelta lis√§asetuksia."
 
 #. Type: title
 #. Description
 #: ../dibbler-relay.templates:2001
 msgid "dibbler-relay: DHCPv6 relay"
-msgstr "dibbler-relay: DHCPv6-v‰litt‰j‰"
+msgstr "dibbler-relay: DHCPv6-v√§litt√§j√§"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-relay.templates:3001
 msgid "Should the Dibbler relay be launched when the system starts?"
-msgstr "Tulisiko Dibbler-v‰litt‰j‰ k‰ynnist‰‰, kun j‰rjestelm‰ k‰ynnistet‰‰n?"
+msgstr "Tulisiko Dibbler-v√§litt√§j√§ k√§ynnist√§√§, kun j√§rjestelm√§ k√§ynnistet√§√§n?"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-relay.templates:3001
 msgid "The Dibbler relay can be configured to be launched when the system is started. If you choose this option, this node will forward DHCPv6 messages between clients, servers and other relays."
-msgstr "Dibbler-v‰litt‰j‰ voidaan asettaa k‰ynnistym‰‰n k‰ynnistett‰ess‰ j‰rjestelm‰. Jos valitset t‰m‰n vaihtoehdon, t‰m‰ solmu l‰hett‰‰ edelleen DHCPv6-viestej‰ asiakkaiden, palvelimien ja muiden v‰litt‰jien v‰lill‰."
+msgstr "Dibbler-v√§litt√§j√§ voidaan asettaa k√§ynnistym√§√§n k√§ynnistett√§ess√§ j√§rjestelm√§. Jos valitset t√§m√§n vaihtoehdon, t√§m√§ solmu l√§hett√§√§ edelleen DHCPv6-viestej√§ asiakkaiden, palvelimien ja muiden v√§litt√§jien v√§lill√§."
 
 #. Type: title
 #. Description
@@ -100,11 +100,11 @@ msgstr "dibbler-server: DHCPv6-palvelin"
 #. Description
 #: ../dibbler-server.templates:3001
 msgid "Should the Dibbler server be launched when the system starts?"
-msgstr "Tulisiko Dibbler-palvelin k‰ynnist‰‰, kun j‰rjestelm‰ k‰ynnistet‰‰n?"
+msgstr "Tulisiko Dibbler-palvelin k√§ynnist√§√§, kun j√§rjestelm√§ k√§ynnistet√§√§n?"
 
 #. Type: boolean
 #. Description
 #: ../dibbler-server.templates:3001
 msgid "The Dibbler server can be configured to be launched when the system is started. If you choose this option, this node will act as a DHCPv6 server. It will provide IPv6 addresses and additional configuration options to other nodes in the network."
-msgstr "Dibbler-palvelin voidaan asettaa k‰ynnistym‰‰n k‰ynnistett‰ess‰ j‰rjestelm‰. Jos valitset t‰m‰n vaihtoehdon, t‰m‰ solmu toimii DHCPv6-palvelimena. Se antaa IPv6-osoitteita ja lis‰asetuksia verkon muille solmuille."
+msgstr "Dibbler-palvelin voidaan asettaa k√§ynnistym√§√§n k√§ynnistett√§ess√§ j√§rjestelm√§. Jos valitset t√§m√§n vaihtoehdon, t√§m√§ solmu toimii DHCPv6-palvelimena. Se antaa IPv6-osoitteita ja lis√§asetuksia verkon muille solmuille."
 
