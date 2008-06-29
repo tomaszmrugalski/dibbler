@@ -4,6 +4,7 @@ dibbler (0.7.1-1) unstable; urgency=low
   * Finnish translation added. (closes: #464054)
   * Swedish translation added. (closes: #483729)
   * My own IETF draft removed from source (closes: #482049)
+  * Numerous deb script cleanups (thanks to noshadow)
 
  --  Tomasz Mrugalski <thomson@klub.com.pl>  Sun, 29 Jun 2008 17:21:59 +0200
 

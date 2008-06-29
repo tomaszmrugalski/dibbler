@@ -16,8 +16,6 @@
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 
-
-
 CFLAGS = -Wall -g
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
@@ -26,88 +24,75 @@ else
 	CFLAGS += -O2
 endif
 
-configure: configure-stamp
-configure-stamp: patch
-	dh_testdir
-	touch configure-stamp
-
-#Patch
-patch: patch-stamp
-patch-stamp:
-	dpatch apply-all
-	touch patch-stamp
-
-unpatch:
-	dpatch deapply-all
-	rm -rf patch-stamp debian/patched
-
-#Architecture 
-build: build-arch build-indep
-
 build-arch: build-arch-stamp
-build-arch-stamp: configure-stamp 
-	$(MAKE) server client relay
+build-arch-stamp:
+	$(MAKE) SILENTMAKE="" CFLAGS="$(CFLAGS)" server client relay
 	touch build-arch-stamp
 
-build-indep: build-indep-stamp
-build-indep-stamp: configure-stamp 
-	touch build-indep-stamp
+build-indep:
+# nothing to do
 
-clean: unpatch
+clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
+	rm -f build-arch-stamp poslib.log poslib/configure-poslib.log
 	$(MAKE) clobber
-	dh_clean 
+	if [ -e poslib/Makefile ]; then $(MAKE) -C poslib distclean ; fi
+	dh_clean
 	debconf-updatepo
 
-install: install-indep install-arch
-install-indep:
+binary-indep:
 	dh_testdir
 	dh_testroot
-	dh_clean -k -i 
+	dh_clean -k -i
 	dh_installdirs -i
 	dh_install -i
+	dh_installchangelogs -i CHANGELOG
+	dh_installdocs -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_shlibdeps -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
 
-install-arch:
-	dh_testdir
-	dh_testroot
-	dh_clean -k -s 
-	dh_installdirs -s etc/dibbler var/lib/dibbler
-# Install everything to the tmp directory
-	mkdir -p $(CURDIR)/debian/tmp
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
-# This one instructs dh_install to use packagename.install from the debian/tmp directory
-	dh_install --sourcedir=debian/tmp
-
-# This one will look for debian/package.init and install it into /etc/init.d
-	dh_installinit 
-
-binary-common:
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs CHANGELOG
-	dh_installdocs
-	dh_installexamples
-	dh_installdebconf
-	dh_installman
-	dh_link
-	dh_strip
-	dh_compress 
-	dh_fixperms
-	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-# Build architecture independant packages using the common target.
-binary-indep: build-indep install-indep
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+DESTDIR=$(CURDIR)/debian/tmp
 
 # Build architecture dependant packages using the common target.
-binary-arch: build-arch install-arch
-	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
+binary-arch: build-arch
+	dh_testdir
+	dh_testroot
+	dh_clean -k -a
+	dh_installdirs -s etc/dibbler var/lib/dibbler
+	mkdir -p debian/tmp
+	$(MAKE) install \
+		SILENTMAKE="" \
+		CFLAGS="$(CFLAGS)" \
+		DESTDIR=$(DESTDIR) \
+		INST_MANDIR=$(DESTDIR)/usr/share/man \
+		INST_DOCDIR=$(DESTDIR)/usr/share/doc \
+		INST_BINDIR=$(DESTDIR)/usr/sbin
+	dh_installinit
+# This one instructs dh_install to use packagename.install from the debian/tmp directory
+	dh_install -a --sourcedir=debian/tmp
+	dh_installchangelogs -a CHANGELOG
+	dh_installdocs -a
+	dh_installexamples -a
+	dh_installdebconf -a
+	dh_installman -a
+	dh_link -a
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
 
 binary: binary-arch binary-indep
-.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure patch unpatch
+build: build-arch build-indep
+
+.PHONY: clean binary-indep binary-arch binary build-arch build-indep build

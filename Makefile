@@ -163,12 +163,11 @@ srvlibs:	includes
 libposlib: poslib-configure
 	@echo "[MAKE   ] /poslib/poslib"
 	$(MAKE) -C $(PREFIX)/poslib > poslib.log
-	rm -f $(POSLIB)/*.so*
 
 poslib-configure:
 	@echo "[CONFIG ] /poslib/"
 	cd $(PREFIX)/poslib; test -e "config.h" || \
-		./configure --host=$(CHOST) --build=$(CBUILD) >configure-poslib.log;
+		./configure --disable-shared --host=$(CHOST) --build=$(CBUILD) >configure-poslib.log;
 
 relaylibs:	includes
 	@for dir in $(RELSUBDIRS); do \
@@ -342,6 +341,8 @@ release-src: VERSION-src
 orig:
 	@echo "[RM     ] debian/"
 	rm -rf debian/
+	@echo "[RM     ] poslib/autom4te.cache"
+	rm -rf poslib/autom4te.cache
 	@echo "[RM     ] */CVS"
 	- find -type d -name CVS -exec rm -rf {} \; &>/dev/null
 	for i in doc/rfc doc/rfc-drafts Port-win32 Port-winnt2k ; do                                      \
