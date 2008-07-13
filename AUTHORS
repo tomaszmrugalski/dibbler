@@ -45,6 +45,9 @@
   - Michal Kowalczuk <michal@kowalczuk.eu>
     2007-12: Authentication and authorization
 
+  - Petr Pisar <petr.pisar(at)atlas.cz>
+    2008-07: Small xml fix
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
   
