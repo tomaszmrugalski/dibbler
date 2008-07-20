@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.96 2008-06-26 21:44:17 thomson Exp $
+ * $Id: Portable.h,v 1.97 2008-07-20 15:54:36 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -55,6 +55,10 @@
 #endif
 
 #define snprintf _snprintf
+#endif
+
+#ifdef MACOS
+#include <stdint.h>
 #endif
 
 #define DEFAULT_UMASK 027
@@ -139,6 +143,24 @@ struct iface {
 #define NULLFILE           "/dev/null"
 #endif
 
+#ifdef MACOS
+#define WORKDIR            "/var/lib/dibbler"
+#define DEFAULT_SCRIPTSDIR "/var/lib/dibbler/scripts"
+#define CLNTCONF_FILE      "/etc/dibbler/client.conf"
+#define SRVCONF_FILE       "/etc/dibbler/server.conf"
+#define RELCONF_FILE       "/etc/dibbler/relay.conf"
+#define RESOLVCONF_FILE    "/etc/resolv.conf"
+#define NTPCONF_FILE       "/etc/ntp.conf"
+#define RADVD_FILE         "/etc/dibbler/radvd.conf"
+#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
+#define SRVPID_FILE        "/var/lib/dibbler/server.pid"
+#define RELPID_FILE        "/var/lib/dibbler/relay.pid"
+#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
+#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
+#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
+#define NULLFILE           "/dev/null"
+#endif
+
 /* --- options --- */
 #define OPTION_DNS_SERVERS_FILENAME  "option-dns-servers"
 #define OPTION_DOMAINS_FILENAME      "option-domains"
@@ -154,9 +176,11 @@ struct iface {
 /* ********************************************************************** */
 /* *** interface flags ************************************************** */
 /* ********************************************************************** */
+/* those flags are used to parse flags in the structure
+   returned by if_list_get(). They are highly system specific. */
+#define LOGLEVEL          0
 
 #ifdef WIN32
-#define LOGLEVEL          0
 #define IF_RUNNING        0x1
 #define IF_UP             0x1
 #define IF_MULTICAST      0x4
@@ -164,11 +188,18 @@ struct iface {
 #endif
 
 #ifdef LINUX
-#define LOGLEVEL	      0
 #define IF_UP		      0x1
 #define IF_LOOPBACK	      0x8
 #define IF_RUNNING	      0x40
-#define IF_MULTICAST	  0x1000
+#define IF_MULTICAST	      0x1000
+#endif
+
+#ifdef MACOS
+/* dumb guesses for now. if_list_get() must be implemented for real */
+#define IF_UP        0x1
+#define IF_LOOPBACK  0x2
+#define IF_RUNNING   0x4
+#define IF_MULTICAST 0x8 
 #endif
 
 /* ********************************************************************** */
@@ -185,6 +216,7 @@ struct iface {
 #define LOWLEVEL_ERROR_REUSE_FAILED     -9
 #define LOWLEVEL_ERROR_FILE             -10
 #define LOWLEVEL_ERROR_SOCKET           -11
+#define LOWLEVEL_ERROR_NOT_IMPLEMENTED  -12
 
 #define LOWLEVEL_TENTATIVE_YES 1
 #define LOWLEVEL_TENTATIVE_NO  0

@@ -38,27 +38,18 @@ MOD_CLNT_BIND_REUSE        = y
 
 # === Port: Linux ===
 ARCH         = LINUX
-LOWLEVEL     = $(PREFIX)/$(PORTDIR)
-CLIENTBIN    = dibbler-client
-SERVERBIN    = dibbler-server
-RELAYBIN     = dibbler-relay
-REQUESTORBIN = dibbler-requestor
-CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
-SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
-RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
 PORT_LDFLAGS ?=
 PORT_CFLAGS  ?= 
 PORT_SUBDIR  = Port-linux
 
+# === Port: Mac OS ===
+#ARCH          = MACOS
+#PORT_LDFLAGS ?=
+#PORT_LDFLAGS ?=
+#PORT_SUBDIR   = Port-macos
+
 # === Port: Win2k (mingw) ===
 #ARCH         = WIN2K
-#LOWLEVEL     = $(PREFIX)/$(PORTDIR)
-#CLIENTBIN    = dibbler-client-win2k
-#SERVERBIN    = dibbler-server-win2k
-#RELAYBIN     = dibbler-relay-win2k
-#CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
-#SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
-#RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
 #PORT_LDFLAGS = -lws2_32
 #PORT_CFLAGS  = -DMINGWBUILD
 #PORT_SUBDIR  = Port-win2k
@@ -68,7 +59,8 @@ PORT_SUBDIR  = Port-linux
 #XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
 # === do not modify anything below ===
-MAKEFLAGS   += -s
+SILENTMAKE    = -s
+MAKEFLAGS   += $(SILENTMAKE)
 VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
 INST_MANDIR  = $(DESTDIR)'/usr/local/man'
@@ -120,6 +112,16 @@ RELSUBDIRS   = RelTransMgr RelMessages RelOptions  RelIfaceMgr RelCfgMgr
 REQUESTORDIRS= Requestor   Options Misc IfaceMgr Messages Port-linux
 POSLIBDIRS   = poslib	  poslib/poslib
 SUBDIRS      = $(COMMONSUBDIRS) $(CLNTSUBDIRS) $(SRVSUBDIRS) $(RELSUBDIRS) $(POSLIBDIRS)
+
+LOWLEVEL     = $(PREFIX)/$(PORTDIR)
+CLIENTBIN    = dibbler-client
+SERVERBIN    = dibbler-server
+RELAYBIN     = dibbler-relay
+REQUESTORBIN = dibbler-requestor
+CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
+SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
+RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
+
 
 # === UNIVERSAL TARGETS ===
 

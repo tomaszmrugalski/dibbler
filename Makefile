@@ -124,7 +124,7 @@ $(REQUESTORBIN): includes commonlibs Requestor $(REQUESTORDIRS)
 	-L./Misc -lMisc \
 	-L./IfaceMgr -lIfaceMgr \
 	-L./Messages -lMsg -lMisc \
-	-L./Port-linux -lLowLevel
+	-L$(LOWLEVEL) -lLowLevel
 
 Requestor:
 	cd Requestor; $(MAKE) all
