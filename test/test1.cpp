@@ -1,8 +1,27 @@
+#include "SmartPtr.h"
+#include "Logger.h"
+#include "IPv6Addr.h"
 #include <iostream>
 
 using namespace std;
 
 int main() {
+
+
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr("2000::1",true);
+    char buf[128];
+    char cmd1[]="./mappingprefixadd";
+    char cmd2[]="./mappingprefixdel";
+    int returnCode = 0;
+    sprintf(buf, "%s %s", "sh", cmd1);
+    Log(Notice) << "Executing external command: [" << buf << "]" << LogEnd;
+    returnCode = system(buf);
+    Log(Notice) << "returnCode=" << returnCode << LogEnd;
+
+    sprintf(buf, "sh /tmp/mappingprefixadd %s", prefix->getPlain());
+    Log(Notice) << "Executing external command: [" << buf << "]" << LogEnd;
+    returnCode = system(buf);
+    Log(Notice) << "returnCode=" << returnCode << LogEnd;
 
 #if 0
     ostringstream strum;

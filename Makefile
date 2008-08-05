@@ -487,7 +487,8 @@ clobber: clean clean-libs
 
 # test section, please ingore.
 test1: test/test14.cpp
-	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) test/test1.cpp -L$(MISC) -lMisc -o test1 -nodefaultlibs -luClibc++
+	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) test/test1.cpp -I$(INCDIR) -L$(MISC) -lMisc -o test1
+#	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) test/test1.cpp -L$(MISC) -lMisc -o test1 -nodefaultlibs -luClibc++
 
 test2: test/test2.cpp
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -I/home/thomson/devel/openwrt/kamikaze/build_dir/mipsel/uClibc++-0.2.2/include test/test2.cpp Misc/Logger.cpp -o test2 -nodefaultlibs -luClibc++

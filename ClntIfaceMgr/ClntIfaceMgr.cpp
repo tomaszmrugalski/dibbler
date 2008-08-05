@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.44 2008-06-18 20:18:03 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.45 2008-08-05 22:27:26 thomson Exp $
  */
 
 #include "Portable.h"
@@ -407,7 +407,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	switch (mode) {
 	case PREFIX_MODIFY_ADD:
 	{
-	    sprintf(buf, "%s %s", cmd1, prefix->getPlain());
+	    sprintf(buf, "sh %s %s", cmd1, prefix->getPlain());
 	    Log(Notice) << "Executing external command to ADD prefix: " << buf << LogEnd;
 	    returnCode = system(buf);
 	    Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
@@ -415,7 +415,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	}
 	case PREFIX_MODIFY_DEL:
 	{
-	    sprintf(buf, "%s %s", cmd2, prefix->getPlain());
+	    sprintf(buf, "sh %s %s", cmd2, prefix->getPlain());
 	    Log(Notice) << "Executing external command to DEL prefix: " << buf << LogEnd;
 	    returnCode = system(buf);
 	    Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
