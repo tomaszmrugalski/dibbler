@@ -94,10 +94,10 @@ for i in ${IFACES}; do
     echo "" >> ${CONFFILE_NEW}
 done
 
-db_stop
-
 # register this config
-test -f /usr/bin/ucf && ucf ${CONFFILE_NEW} ${CONFFILE} </dev/tty
+test -x /usr/bin/ucf && ucf ${CONFFILE_NEW} ${CONFFILE}
+
+db_stop
 
 # Start service if necessary
 if [ $START == "true" ]; then

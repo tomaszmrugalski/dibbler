@@ -1,3 +1,9 @@
+dibbler (0.7.1-2) unstable; urgency=low
+
+  * ucf is now used properly (closes: #494265)
+
+ --  Tomasz Mrugalski <thomson@klub.com.pl>  Tue, 12 Aug 2008 00:52:36 +0200
+
 dibbler (0.7.1-1) unstable; urgency=low
 
   * New upstream release (0.7.0 was never fully released)
