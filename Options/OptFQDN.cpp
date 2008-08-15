@@ -7,7 +7,7 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.5 2008-03-02 22:38:46 thomson Exp $
+* $Id: OptFQDN.cpp,v 1.6 2008-08-15 19:15:45 thomson Exp $
 *
 */
 
@@ -43,12 +43,27 @@ TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
     fqdn = "";
     if ( bufsize <= 255 ) {
 	short tmplength = *buf;
+	if (tmplength>bufsize) 
+	{
+	    Log(Warning) << "Malformed FQDN option: domain name encoding is invalid. "
+			 << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
+	    Valid = false;
+	    return;
+	}
+
 	buf++;
 	while (tmplength != 0) {
 	    fqdn.append(buf, tmplength);
 	    buf += tmplength;
 	    bufsize -= tmplength;
 	    tmplength = *buf;
+	    if (tmplength>bufsize) 
+	    {
+		Log(Warning) << "Malformed FQDN option: domain name encoding is invalid."
+			     << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
+		Valid = false;
+		return;
+	    }
 	    buf++;
 	    if ( tmplength != 0 ) {
 		fqdn.append(".");
@@ -58,7 +73,7 @@ TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
 	bufsize--;
 	Valid = true;
     }
-    //Log(Debug) << "FQDN: FQDN option received, bits N=" << this->flag_N << ", O=" << this->flag_O << ",S=" << this->flag_S << LogEnd;
+    Log(Debug) << "FQDN: FQDN option received: fqdn name=" << fqdn << LogEnd;
 }
 
 TOptFQDN::~TOptFQDN() {
