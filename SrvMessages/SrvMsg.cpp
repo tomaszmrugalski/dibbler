@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.53 2008-06-18 20:38:26 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.54 2008-08-16 00:42:39 thomson Exp $
  */
 
 #include <sstream>
@@ -134,8 +134,9 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
         unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
         pos+=2;
 	if (pos+length>bufSize) {
-	    Log(Error) << "Invalid option (type=" << code << ", len=" << length 
-		       << " received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
+	    Log(Error) << "Malformed option (type=" << code << ", len=" << length 
+		       << ", offset from beginning of DHCPv6 message=" << pos+4 /* 4=msg-type+trans-id */
+		       << ") received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
 	    IsDone = true;
 	    return;
 	}

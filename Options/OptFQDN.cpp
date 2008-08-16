@@ -7,7 +7,7 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.6 2008-08-15 19:15:45 thomson Exp $
+* $Id: OptFQDN.cpp,v 1.7 2008-08-16 00:42:39 thomson Exp $
 *
 */
 
@@ -17,22 +17,19 @@
 
 TOptFQDN::TOptFQDN(string fqdn, TMsg* parent)
 		:TOpt(OPTION_FQDN, parent) {
-	this->fqdn = fqdn;
-	flag_N = false;
-	flag_S = false;
-	// This flag is always off in client messages.
-	this->flag_O = false;
+    fqdn = fqdn;
+    flag_N = false;
+    flag_S = false;
+    flag_O = false; // This flag is always off in client messages.
 
-	this->Valid = true;
+    Valid = true;
 }
-
 
 TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
 		:TOpt(OPTION_FQDN, parent) {
     this->Valid = false;
     // Extracting flags...
-    //TODO some checks from flags.
-    char flags = *buf;
+    unsigned char flags = *buf;
     this->flag_N = flags & FQDN_N;
     this->flag_S = flags & FQDN_S;
     this->flag_O = flags & FQDN_O;
@@ -42,7 +39,7 @@ TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
     //Extracting domain name
     fqdn = "";
     if ( bufsize <= 255 ) {
-	short tmplength = *buf;
+	unsigned char tmplength = *buf;
 	if (tmplength>bufsize) 
 	{
 	    Log(Warning) << "Malformed FQDN option: domain name encoding is invalid. "
@@ -96,11 +93,19 @@ string TOptFQDN::getFQDN() {
 	return fqdn;
 }
 
+/** 
+ * @brief returns option size
+ *
+ * Each dot will be removed from the string, and replaced with a length < 63
+ * The first length and the final 0 will increased the fqdn string length by 2
+ * We also have to add 4 for the header (option type and size) and 1 for the flags.
+ * 2 + 1 + 4 = 7
+ * 
+ * 
+ * 
+ * @return size of the option (without option header)
+ */
 int TOptFQDN::getSize() {
-	//Each point will be removed from the string, and replaced with a length < 63
-	//The first length and the final 0 will increased the fqdn string length by 2
-	//We also have to add 4 for the header (option type and size) and 1 for the flags.
-	// 2 + 1 + 4 = 7
         if (fqdn.length())
 	    return fqdn.length() + 7;
 	else
