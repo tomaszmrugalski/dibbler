@@ -80,27 +80,40 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     confirm->firstOption();
     bool OnLink = true;
     int checkCnt = 0;
+    List(TSrvOptIA_NA) validIAs;
 
     while ( (ptrOpt = confirm->getOption()) && OnLink ) {
+
 	switch (ptrOpt->getOptType()) {
 	case OPTION_IA_NA: {
+
 	    SmartPtr<TSrvOptIA_NA> ia = (Ptr*) ptrOpt;
 	    SmartPtr<TOpt> subOpt;
+	    unsigned long addrCnt = 0;
 	    ia->firstOption();
 	    while ( (subOpt = ia->getOption()) && (OnLink) ) {
-		if (subOpt->getOptType() != OPTION_IAADDR)
+		if (subOpt->getOptType() != OPTION_IAADDR){
 		    continue;
+		}
+		
 		SmartPtr<TSrvOptIAAddress> optAddr = (Ptr*) subOpt;
 		Log(Debug) << "CONFIRM message: checking if " << optAddr->getAddr()->getPlain() << " is supported:";
 		if (!CfgMgr->isIAAddrSupported(this->Iface, optAddr->getAddr())) {
 		    Log(Cont) << "no." << LogEnd;
 		    OnLink = false;
 		} else {
-		    // TODO check if it is bound or not. If it is, then check if it is bound to this client
+		    // FIXME check if it is bound or not. If it is, then check if it is bound to this client
 		    Log(Cont) << "yes." << LogEnd;
+		    addrCnt++;
 		}
 		checkCnt++;
 	    }
+	    if(addrCnt){
+			SmartPtr<TSrvOptIA_NA> tempIA = new TSrvOptIA_NA(CfgMgr,AddrMgr,ia,
+                                                                confirm->getAddr(),duidOpt->getDUID(),confirm->getIface(),
+                                                                addrCnt,CONFIRM_MSG,this);
+                        validIAs.append(tempIA);
+            }
 	    break;
 	}
 	case OPTION_IA_TA: {
@@ -145,6 +158,15 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 				  "Your addresses are valid! Yahoo!",
 				  this);
 	this->Options.append( (Ptr*) ptrCode);
+
+	int iaNum=validIAs.count();
+	if(iaNum){
+	    SmartPtr<TSrvOptIA_NA> ia;
+	    validIAs.first();
+	    while(ia=validIAs.get() ){
+		this->Options.append((Ptr*)ia );
+	    }
+	}
     }
 
     // include our ServerID

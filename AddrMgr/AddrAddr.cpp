@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.12 2007-04-22 21:19:26 thomson Exp $
+ * $Id: AddrAddr.cpp,v 1.13 2008-08-17 22:41:41 thomson Exp $
  */
 
 #include <iostream>
@@ -135,6 +135,7 @@ ostream & operator<<(ostream & strum,TAddrAddr &x) {
 	  << " timestamp=\"" << x.Timestamp << "\""
 	  << " pref=\"" << x.Prefered <<"\""
 	  << " valid=\"" << x.Valid <<  "\""
+	  << " prefix=\"" << x.Prefix << "\""
 	  << ">" << x.Addr->getPlain()<< "</AddrAddr>" << std::endl;
     return strum;
 }

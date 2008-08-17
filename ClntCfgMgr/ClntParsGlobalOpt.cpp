@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.16 2008-06-25 23:12:20 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.17 2008-08-17 22:41:42 thomson Exp $
  *
  */
 
@@ -27,7 +27,7 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->FQDNFlagS      = false;
     this->Experimental   = false;
     this->ExperimentalMappingPrefix = false;
-    this->UseConfirm     = false;
+    this->UseConfirm     = true;
 
     this->AuthEnabled    = false;
     this->AuthAcceptMethods.clear();

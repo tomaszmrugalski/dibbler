@@ -6,11 +6,15 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: dibbler-client.cpp,v 1.21 2008-06-02 00:15:00 thomson Exp $
+ * $Id: dibbler-client.cpp,v 1.22 2008-08-17 22:41:43 thomson Exp $
  *
  */
 
 #include <signal.h>
+#include <sys/wait.h>  //CHANGED: the following two headers are added.
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #include "DHCPClient.h"
 #include "Portable.h"
 #include "Logger.h"
@@ -23,6 +27,12 @@ void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
 }
+
+// when network linkstate change event is detected, this handler will be called.
+void signal_handler1(int n) {
+    Log(Notice) << "Network switch off event detected. do Confirmming." << LogEnd;
+    ptr->changeLinkstate();
+}   
 
 int status() {
 
@@ -68,9 +78,12 @@ int run() {
 	return -1;
     }
 
-    // connect signals
+    // connect signals (SIGTERM, SIGINT = shutdown)
     signal(SIGTERM, signal_handler);
     signal(SIGINT, signal_handler);
+
+    // SIGUSR1 = link state-change
+    signal(SIGUSR1,signal_handler1);
 
     ptr->run();
 

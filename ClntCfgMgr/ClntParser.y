@@ -107,7 +107,7 @@ namespace std
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
-%token STRICT_RFC_NO_ROUTING_, USE_CONFIRM_
+%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
 %token PD_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
@@ -152,7 +152,7 @@ GlobalOptionDeclaration
 | FQDNBits
 | Experimental
 | ExperimentalMappingPrefix
-| UseConfirm
+| SkipConfirm
 ;
 
 InterfaceOptionDeclaration
@@ -604,11 +604,11 @@ ExperimentalAddrParams
     ParserOptStack.getLast()->setAddrParams(true);
 };
 
-UseConfirm
-: USE_CONFIRM_
+SkipConfirm
+: SKIP_CONFIRM_
 {
-    Log(Debug) << "CONFIRM support enabled." << LogEnd;
-    ParserOptStack.getLast()->setConfirm(true);
+    Log(Debug) << "CONFIRM support disabled (skip-confirm in client.conf)." << LogEnd;
+    ParserOptStack.getLast()->setConfirm(false);
 };
 
 ValidTimeOption

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.28 2007-04-01 04:53:19 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.29 2008-08-17 22:41:43 thomson Exp $
  *                                                                           
  */
 
@@ -22,10 +22,12 @@
 #include "Portable.h"
 
 volatile int serviceShutdown;
+volatile int linkstateChange;
 
 TDHCPClient::TDHCPClient(string config)
 {
     serviceShutdown = 0;
+    linkstateChange = 0;
     srand(now());
     this->IsDone = false;
 
@@ -75,6 +77,13 @@ void TDHCPClient::stop() {
 #endif
 }
 
+void TDHCPClient::changeLinkstate() {
+    linkstateChange = 1;
+}
+
+void TDHCPClient::resetLinkstate() {
+    linkstateChange = 0;
+}
 
 void TDHCPClient::run()
 {
@@ -84,6 +93,10 @@ void TDHCPClient::run()
 	if (serviceShutdown)
 	    TransMgr->shutdown();
 	
+        if (linkstateChange) {
+	    AddrMgr->setIA2Confirm();
+	    this->resetLinkstate();
+        }
 	TransMgr->doDuties();
 	
 	unsigned int timeout = TransMgr->getTimeout();
@@ -127,6 +140,10 @@ void TDHCPClient::setWorkdir(std::string workdir) {
         this->CfgMgr->setWorkdir(workdir);
         this->CfgMgr->dump();
     }
+}
+
+SmartPtr<TClntAddrMgr> TDHCPClient::getAddrMgr() {
+    return this->AddrMgr;
 }
 
 TDHCPClient::~TDHCPClient()

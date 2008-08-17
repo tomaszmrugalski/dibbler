@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.22 2008-06-25 23:00:10 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.23 2008-08-17 22:41:42 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -151,6 +151,19 @@ SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
     }
     return 0;
 }
+
+void TClntAddrMgr::setIA2Confirm()
+{
+
+    SmartPtr<TAddrIA> ptrIA;
+    this->firstIA();
+    while(ptrIA = this->getIA()){
+        if(ptrIA->getState() == STATE_CONFIGURED || ptrIA->getState() == STATE_INPROCESS)
+	    ptrIA->setState(STATE_CONFIRMME);
+    } 
+
+}
+
 
 // pd functions 
 

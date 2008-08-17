@@ -104,7 +104,7 @@ digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
 experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
 mapping-prefix        { return ClntParser::MAPPING_PREFIX_; }
-use-confirm           { return ClntParser::USE_CONFIRM_; }
+skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
 #.* ;
 
 "//"(.*) ;

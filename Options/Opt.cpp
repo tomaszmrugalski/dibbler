@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.9 2008-06-01 18:29:03 thomson Exp $
+ * $Id: Opt.cpp,v 1.10 2008-08-17 22:41:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2008-06-01 18:29:03  thomson
+ * Server now supports out of addrs scenario (bug #177)
+ *
  * Revision 1.8  2007-03-28 00:39:46  thomson
  * Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
  *
@@ -86,7 +89,7 @@ void TOpt::addOption(SmartPtr<TOpt> opt)
     SubOptions.append(opt);
 }
 
- int TOpt::countOption()
+int TOpt::countOption()
 {
     return SubOptions.count();
 }

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrIA.cpp,v 1.21 2007-12-09 04:08:35 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.22 2008-08-17 22:41:41 thomson Exp $
  *
  */
 
@@ -30,7 +30,7 @@ TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid,
     this->T2 = T2;
     this->IAID = ID;
     this->Tentative = TENTATIVE_UNKNOWN;
-    this->State     = STATE_NOTCONFIGURED;
+    this->State     = STATE_NOTCONFIGURED;//	STATE_CONFIRMME;
     this->Timestamp = now();
     this->Unicast = false;
     this->setDUID(duid);

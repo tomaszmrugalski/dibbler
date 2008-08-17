@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.16 2008-02-25 17:49:06 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.17 2008-08-17 22:41:41 thomson Exp $
  *
  */
 
@@ -50,6 +50,11 @@ void TAddrClient::firstIA() {
 }
 
 void TAddrClient::addIA(SmartPtr<TAddrIA> ia) {
+    if (getIA(ia->getIAID()))
+    {
+	Log(Debug) << "Unable to add IA (iaid=" << ia->getIAID() << "), such IA already exists." << LogEnd;
+	return;
+    }
     IAsLst.append(ia);
 }
 

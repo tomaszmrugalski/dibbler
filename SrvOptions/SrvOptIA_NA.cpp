@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvOptIA_NA.cpp,v 1.27 2008-06-01 18:29:04 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.28 2008-08-17 22:41:44 thomson Exp $
  */
 
 #ifdef WIN32
@@ -505,6 +505,46 @@ void TSrvOptIA_NA::release(SmartPtr<TSrvOptIA_NA> queryOpt,
 void TSrvOptIA_NA::confirm(SmartPtr<TSrvOptIA_NA> queryOpt,
                            unsigned long &addrCount)
 {
+    
+    SmartPtr<TSrvOptIA_NA> ia = queryOpt;
+    SmartPtr<TOpt> subOpt;
+    bool NotOnLink = false;
+    
+    ia->firstOption();
+    while ( subOpt = ia->getOption() ) {
+	if (subOpt->getOptType() != OPTION_IAADDR)
+	    continue;
+
+        SmartPtr<TSrvOptIAAddress> optAddr = (Ptr*)subOpt;
+
+	//FIXME: proper check if the addresses are valid or not should be performed
+        SmartPtr<TSrvCfgAddrClass> ptrClass;
+        ptrClass = CfgMgr->getClassByAddr(this->Iface, optAddr->getAddr());
+	if (!ptrClass)
+	{
+	    NotOnLink = true;
+	    break;
+	}
+
+	// set IA Address suboptions and IA
+        optAddr->setPref( ptrClass->getPref(DHCPV6_INFINITY) );
+        optAddr->setValid( ptrClass->getValid(DHCPV6_INFINITY) );
+
+        this->setT1( ptrClass->getT1(DHCPV6_INFINITY) );
+        this->setT2( ptrClass->getT2(DHCPV6_INFINITY) );
+                   
+        SmartPtr<TOptIAAddress> myOptAddr;
+        myOptAddr = new TSrvOptIAAddress(optAddr->getAddr(), optAddr->getPref(),
+                                       optAddr->getValid(),this->Parent);
+        SubOptions.append( (Ptr*)myOptAddr );
+    }
+
+
+    if (NotOnLink)
+        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
+						"Those addresses are not valid on this link.",this->Parent ));
+
+    
 }
 
 void TSrvOptIA_NA::decline(SmartPtr<TSrvOptIA_NA> queryOpt,

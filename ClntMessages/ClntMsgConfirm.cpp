@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.10 2008-06-26 21:44:17 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.11 2008-08-17 22:41:42 thomson Exp $
  *
  */
 
@@ -98,8 +98,9 @@ void TClntMsgConfirm::addrsAccepted() {
 	    continue;
 
 	// set them to RENEW timeout
-	unsigned long ts =now()-ptrIA->getT1();
-	ptrIA->setTimestamp(ts);
+	// Uncomment this line if you don't want RENEW to be sent after
+	// CONFIRM exchange is complete
+	// ptrIA->setTimestamp( now()-ptrIA->getT1() );
 	ptrIA->setState(STATE_CONFIGURED);
     }
     ClntAddrMgr->firstIA();

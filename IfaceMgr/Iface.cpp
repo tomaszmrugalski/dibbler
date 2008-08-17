@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Iface.cpp,v 1.27 2007-04-22 21:19:29 thomson Exp $
+ * $Id: Iface.cpp,v 1.28 2008-08-17 22:41:43 thomson Exp $
  *
  */
 
@@ -171,7 +171,15 @@ void TIfaceIface::addGlobalAddr(SmartPtr<TIPv6Addr> addr) {
 }
 
 void TIfaceIface::delGlobalAddr(SmartPtr<TIPv6Addr> addr) {
-    // FIXME: Implement this
+    SmartPtr<TIPv6Addr> tempAddr;
+    for(int i = 0; i < this->GlobalAddrLst.count(); i++)
+    {
+	tempAddr = this->GlobalAddrLst.get();
+	if(*tempAddr == *addr){
+		this->GlobalAddrLst.del();
+		break;
+	}
+    }
 }
 
 

@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntTransMgr.cpp,v 1.59 2008-06-25 23:00:11 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.60 2008-08-17 22:41:43 thomson Exp $
  *
  */
 
@@ -356,7 +356,7 @@ void TClntTransMgr::shutdown()
     this->Shutdown = true;
     Log(Notice) << "Shutting down entire client." << LogEnd;
 	
-    // delete all weird-state and address-free IAs 
+    // delete all weird-state/innormal-state and address-free IAs 
     AddrMgr->firstIA();
     while (ptrFirstIA = AddrMgr->getIA()) {
         if ( (ptrFirstIA->getState() != STATE_CONFIGURED && ptrFirstIA->getState() != STATE_INPROCESS) ||
@@ -393,10 +393,10 @@ void TClntTransMgr::shutdown()
                     }
                     ptrNextIA->firstAddr();
 
-		    // addrs are RELEASEd in ClntMsgRelease.cpp
+		    // addresses are deleted in ClntMsgRelease.cpp, DO NOT delete them here
                     // while (ptrAddr = ptrNextIA->getAddr() ) {
-                    //     ptrIface->delAddr( ptrAddr->get() );
-                    //}
+                    //    ptrIface->delAddr( ptrAddr->get(),ptrAddr->getPrefix() );
+                    // }
 
                     // delete IA from AddrMgr
                     AddrMgr->delIA( ptrNextIA->getIAID() );
@@ -461,8 +461,9 @@ void TClntTransMgr::shutdown()
     if (releasedPDs.count())
 	this->sendRelease(releasedIAs, 0, releasedPDs);
     
-    //doDuties(); // just to send RELEASE msg
-    //Transactions.clear(); // delete all transactions
+    //CHANGED:the following two lines are uncommented.
+    doDuties(); // just to send RELEASE msg
+    Transactions.clear(); // delete all transactions
 
     // clean up options
     this->IfaceMgr->removeAllOpts();
@@ -500,8 +501,14 @@ void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
     }
 
     if (!found) 
-        Log(Warning) << "Message with wrong transID (" << hex << msgAnswer->getTransID() << dec
-		     << ") received. Ignoring." << LogEnd;
+    {
+	if (!Shutdown)
+	    Log(Warning) << "Message with wrong transID (0x" << hex << msgAnswer->getTransID() << dec
+			 << ") received. Ignoring." << LogEnd;
+	else
+	    Log(Debug) << "Message with transID=0x" << hex << msgAnswer->getTransID() << dec
+		       << " received, but ignored during shutdown." << LogEnd;
+    } 
     CfgMgr->dump();
     AddrMgr->dump();
 }
@@ -719,7 +726,7 @@ void TClntTransMgr::checkConfirm()
 	    AddrMgr->firstIA();
 	    while(ptrIA=AddrMgr->getIA())
 	    {
-		if (ptrIA->getState()!=STATE_CONFIRMME)
+		if (ptrIA->getState()!=STATE_CONFIRMME)	
 		    continue;
 		if (ptrIA->getIface()==iface->getID())
 		{
@@ -813,6 +820,8 @@ void TClntTransMgr::checkRenew()
     SmartPtr<TAddrIA> ia;
     SmartPtr<TAddrIA> iaPattern;
     AddrMgr->firstIA();
+
+    // Need to be fixed:?? how to deal with mutiple network interfaces.
     while (ia = AddrMgr->getIA() ) 
     {
         if ( (ia->getT1Timeout()!=0) || 

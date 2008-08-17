@@ -42,11 +42,14 @@
   - Petr Pisar <petr.pisar(at)atlas(dot)cz>
     2007-08: Inactive mode for server
 
-  - Michal Kowalczuk <michal@kowalczuk.eu>
+  - Michal Kowalczuk <michal(at)kowalczuk.eu>
     2007-12: Authentication and authorization
 
   - Petr Pisar <petr.pisar(at)atlas.cz>
     2008-07: Small xml fix
+    
+  - Liu Ming/BII group <extrafliu(at)gmail.com>
+    2008-08: CONFIRM support fixes
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntAddrMgr.h,v 1.11 2007-02-02 00:52:03 thomson Exp $
+ * $Id: ClntAddrMgr.h,v 1.12 2008-08-17 22:41:42 thomson Exp $
  *
  */
 
@@ -18,6 +18,7 @@
 #include "AddrIA.h"
 #include "AddrMgr.h"
 #include "ClntCfgMgr.h"
+#include "Portable.h"
 
 class TClntAddrMgr : public TAddrMgr
 {
@@ -39,6 +40,8 @@ class TClntAddrMgr : public TAddrMgr
     void addIA(SmartPtr<TAddrIA> ptr);
     bool delIA(long IAID);
     int countIA();
+    // CHANGED here: when network switch off signal received, the funtion will be invoked to set valid IA to CONFIRMME state.
+    void setIA2Confirm();
 
     // --- PD --- 
     void firstPD();

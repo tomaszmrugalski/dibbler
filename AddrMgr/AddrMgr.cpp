@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: AddrMgr.cpp,v 1.35 2008-06-26 21:44:17 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.36 2008-08-17 22:41:42 thomson Exp $
  *
  */
 
@@ -18,6 +18,7 @@
 #include <limits.h>
 #include "AddrMgr.h"
 #include "AddrClient.h"
+#include "DHCPConst.h"
 #include "Logger.h"
 
 TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
@@ -28,7 +29,7 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     if (loadfile) {
 	dbLoad(CLNTADDRMGR_FILE);
     } else {
-	Log(Info) << "use-confirm disabled in the confguration file. Skipping old database load." << LogEnd;
+	Log(Debug) << "Skipping database loading." << LogEnd;
     }
 
     DeleteEmptyClient = true;
@@ -48,7 +49,7 @@ void TAddrMgr::dbLoad(const char * xmlFile)
      this->parseAddrMgr(root,0);
      xmlFreeDoc(root);
 #else
-     Log(Info) << "use-confirm enabled, loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
+     Log(Info) << "Loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
      xmlLoadBuiltIn(xmlFile);
 #endif
 }
@@ -710,16 +711,16 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(FILE *f)
 	    if (ia = parseAddrIA(f)) {
 		clnt->addIA(ia);
 	    }
-	    // TODO: support for more than one IA
+	    // FIXME: support for more than one IA
 
-	    // TODO: support for PD
+	    // FIXME: support for PD
 	    continue;
 	}
 	if (strstr(buf,"</AddrClient>"))
 	    break;
     }
 
-    // TODO: add some extra checks here
+    // FIXME: add some extra checks here
     return clnt;
 }
 
@@ -787,10 +788,12 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f)
 SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(char * buf)
 {
     // address parameters
-    unsigned long timestamp, pref, valid;
+    unsigned long timestamp, pref=DHCPV6_INFINITY, valid=DHCPV6_INFINITY, prefix = CLIENT_DEFAULT_PREFIX_LENGTH;
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrAddr> addraddr;
     char * x;
+
+    
 
     if (strstr(buf, "<AddrAddr")) {
 	timestamp=pref=valid=0;
@@ -798,11 +801,14 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(char * buf)
 	if ((x=strstr(buf,"timestamp"))) {
 	    timestamp = atoi(x+11);
 	}
-	if ((x=strstr(buf,"pref"))) {
+	if ((x=strstr(buf,"pref="))) {
 	    pref = atoi(x+6);
 	}
 	if ((x=strstr(buf,"valid"))) {
 	    valid = atoi(x+7);
+	}
+	if ((x=strstr(buf,"prefix="))) {
+	    prefix = atoi(x+8);
 	}
 	if ((x=strstr(buf,">"))) {
 	    x = strstr(x, "</AddrAddr>");
@@ -813,7 +819,7 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(char * buf)
 
 	}
 	if (addr && timestamp && pref && valid) {
-	    addraddr = new TAddrAddr(addr, pref, valid);
+	    addraddr = new TAddrAddr(addr, pref, valid, prefix);
 	    addraddr->setTimestamp(timestamp);
 	}
     }

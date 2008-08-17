@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.18 2008-06-26 21:44:17 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.19 2008-08-17 22:41:42 thomson Exp $
  *
  */
 
@@ -46,7 +46,7 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     }
 
     // retransmit until T2 has been reached or any address has expired
-    //it shhould be the same for all IAs
+    //it should be the same for all IAs
     unsigned int timeout = DHCPV6_INFINITY;
 
     SPtr<TAddrIA> ia;
@@ -167,10 +167,17 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
     IsDone = true;
 }
 
+/** 
+ * @brief changes IA state to not cofigured.
+ * 
+ * @param IAID 
+ */
 void TClntMsgRenew::releaseIA(long IAID)
 {
-    // setStatus(NOTCONFIGURED);
-    //FIXME:
+    SPtr<TAddrIA> ia = getClntAddrMgr()->getIA(IAID);
+    if(ia){
+        ia->setState(STATE_NOTCONFIGURED);
+    }  
 }
 
 void TClntMsgRenew::doDuties()

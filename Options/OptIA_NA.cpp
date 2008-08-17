@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIA_NA.cpp,v 1.7 2007-01-21 19:17:58 thomson Exp $
+ * $Id: OptIA_NA.cpp,v 1.8 2008-08-17 22:41:43 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007-01-21 19:17:58  thomson
+ * Option name constants updated (by Jyrki Soini)
+ *
  * Revision 1.6  2004-09-07 22:02:33  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *
@@ -50,8 +53,16 @@ unsigned long TOptIA_NA::getT1() {
     return T1;
 }
 
+void TOptIA_NA::setT1(unsigned long t1) {
+    this->T1 = t1;
+}
+
 unsigned long TOptIA_NA::getT2() {
     return T2;
+}
+
+void TOptIA_NA::setT2(unsigned long t2) {
+    this->T2 = t2;
 }
 
 TOptIA_NA::TOptIA_NA( char * &buf, int &bufsize, TMsg* parent)

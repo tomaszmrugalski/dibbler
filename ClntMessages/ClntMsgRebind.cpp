@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.15 2008-06-26 21:44:17 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.16 2008-08-17 22:41:42 thomson Exp $
  *
  */
 
@@ -88,7 +88,7 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
   return;
 
 #if 0
-  // TODO: Fix REPLY support for REBIND
+  // FIXME: Fix REPLY support for REBIND
   
 SmartPtr<TOpt> opt;
     

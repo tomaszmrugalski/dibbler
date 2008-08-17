@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: ClntOptFQDN.cpp,v 1.7 2006-10-06 00:42:13 thomson Exp $
+ * $Id: ClntOptFQDN.cpp,v 1.8 2008-08-17 22:41:42 thomson Exp $
  *
  */
 
@@ -36,7 +36,7 @@ TClntOptFQDN::TClntOptFQDN(char *buf, int bufsize, TMsg* parent)
 bool TClntOptFQDN::doDuties() {
     if (getSFlag()) {
 	Log(Notice) << "FQDN: DHCPv6 server made the DNS update for my name: " << getFQDN() << " ." << LogEnd;
-	//TODO Check the DNS server with the given name.
+	//FIXME: Check the DNS server with the given name.
 	return true;
     }
 	

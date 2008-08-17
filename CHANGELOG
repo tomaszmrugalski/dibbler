@@ -2,7 +2,8 @@
   Dibbler changelog
  ------------------- 
  0.7.1-CVS [...]
-  - Experimental CONFIRM support added
+  - Experimental CONFIRM support added (+extra fixes)
+  - Cli: requested options are now sent in RENEW messages
   - Cli: elapsed option is now sent in all messages
 
  0.7.1 [2008-06-18]
