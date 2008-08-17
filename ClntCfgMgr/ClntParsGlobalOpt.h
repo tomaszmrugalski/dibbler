@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.h,v 1.16 2008-06-25 23:12:20 thomson Exp $
+ * $Id: ClntParsGlobalOpt.h,v 1.17 2008-08-17 23:39:32 thomson Exp $
  *
  */
 
@@ -55,6 +55,8 @@ public:
     void setConfirm(bool conf);
     bool getConfirm();
 
+    void setTunnelMode(int vendorid);
+    int  getTunnelMode();
 private:
     string WorkDir;
     int PrefixLength;
@@ -71,6 +73,7 @@ private:
 
     bool Experimental;
     bool ExperimentalMappingPrefix;
+    int  TunnelMode;
 };
 
 #endif

@@ -45,6 +45,7 @@ TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
 TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SmartPtr<string> > PresentStringLst;                             \
 List(TClntOptVendorSpec) VendorSpec;					    \
+SPtr<TClntOptVendorSpec> TunnelMode;                                        \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -74,7 +75,8 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;                                                   
+    DUIDEnterpriseID = 0;                                                   \
+    TunnelMode = 0;
 
 %union    
 {
@@ -114,7 +116,7 @@ namespace std
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, MAPPING_PREFIX_
+%token EXPERIMENTAL_, ADDR_PARAMS_, MAPPING_PREFIX_, TUNNEL_MODE_
 %type  <ival> Number
 
 %%
@@ -152,6 +154,7 @@ GlobalOptionDeclaration
 | FQDNBits
 | Experimental
 | ExperimentalMappingPrefix
+| ExperimentalTunnelMode
 | SkipConfirm
 ;
 
@@ -557,6 +560,23 @@ ExperimentalMappingPrefix
     ParserOptStack.getLast()->setMappingPrefix(true);
 };
 
+ExperimentalTunnelMode
+: TUNNEL_MODE_ Number
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'tunnel-mode' defined, but experimental features are disabled."
+		  << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+
+    Log(Debug) << "Tunnel-mode defined (vendor-id=" << $2 << "), mapping-prefix enabled too." << LogEnd;
+    ParserOptStack.getLast()->setVendorSpec();
+    ParserOptStack.getLast()->setTunnelMode($2);
+    TunnelMode = new TClntOptVendorSpec($2, 0, 0, 0);
+    ParserOptStack.getLast()->setMappingPrefix(true);
+}
+
+
 
 RejectServersOption
 :REJECT_SERVERS_ 
@@ -925,7 +945,6 @@ VendorSpecOption
 {
     Log(Debug) << "VendorSpec defined (no details)." << LogEnd;
     ParserOptStack.getLast()->setVendorSpec();
-    this->VendorSpec.clear();
 }
 |OPTION_ VENDOR_SPEC_ Number DUID_
 {
@@ -995,6 +1014,8 @@ void ClntParser::StartIfaceDeclaration()
   ClntCfgIALst.clear();
   ClntCfgAddrLst.clear();
   this->VendorSpec.clear();
+  if (TunnelMode)
+      VendorSpec.append(TunnelMode);
 }
 
 bool ClntParser::EndIfaceDeclaration()

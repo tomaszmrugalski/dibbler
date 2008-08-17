@@ -51,6 +51,7 @@ TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
 TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SmartPtr<string> > PresentStringLst;                             \
 List(TClntOptVendorSpec) VendorSpec;					    \
+SPtr<TClntOptVendorSpec> TunnelMode;                                        \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -78,9 +79,10 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;                                                   
+    DUIDEnterpriseID = 0;                                                   \
+    TunnelMode = 0;
 
-#line 79 "ClntParser.y"
+#line 81 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -300,7 +302,7 @@ typedef
 #define	INTNUMBER_	295
 #define	DUID_	296
 #define	STRICT_RFC_NO_ROUTING_	297
-#define	USE_CONFIRM_	298
+#define	SKIP_CONFIRM_	298
 #define	PD_	299
 #define	DUID_TYPE_	300
 #define	DUID_TYPE_LLT_	301
@@ -323,6 +325,7 @@ typedef
 #define	EXPERIMENTAL_	318
 #define	ADDR_PARAMS_	319
 #define	MAPPING_PREFIX_	320
+#define	TUNNEL_MODE_	321
 
 
 #line 169 "../bison++/bison.h"
@@ -411,7 +414,7 @@ static const int HEXNUMBER_;
 static const int INTNUMBER_;
 static const int DUID_;
 static const int STRICT_RFC_NO_ROUTING_;
-static const int USE_CONFIRM_;
+static const int SKIP_CONFIRM_;
 static const int PD_;
 static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
@@ -434,6 +437,7 @@ static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int MAPPING_PREFIX_;
+static const int TUNNEL_MODE_;
 
 
 #line 212 "../bison++/bison.h"
@@ -482,7 +486,7 @@ static const int MAPPING_PREFIX_;
 	,INTNUMBER_=295
 	,DUID_=296
 	,STRICT_RFC_NO_ROUTING_=297
-	,USE_CONFIRM_=298
+	,SKIP_CONFIRM_=298
 	,PD_=299
 	,DUID_TYPE_=300
 	,DUID_TYPE_LLT_=301
@@ -505,6 +509,7 @@ static const int MAPPING_PREFIX_;
 	,EXPERIMENTAL_=318
 	,ADDR_PARAMS_=319
 	,MAPPING_PREFIX_=320
+	,TUNNEL_MODE_=321
 
 
 #line 215 "../bison++/bison.h"

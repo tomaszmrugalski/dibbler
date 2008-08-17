@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.17 2008-08-17 22:41:42 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.18 2008-08-17 23:39:32 thomson Exp $
  *
  */
 
@@ -152,6 +152,16 @@ bool TClntParsGlobalOpt::getMappingPrefix()
 void TClntParsGlobalOpt::setConfirm(bool conf)
 {
     UseConfirm = conf;
+}
+
+void TClntParsGlobalOpt::setTunnelMode(int vendorid)
+{
+    TunnelMode = vendorid;
+}
+
+int  TClntParsGlobalOpt::getTunnelMode()
+{
+    return TunnelMode;
 }
 
 bool TClntParsGlobalOpt::getConfirm()

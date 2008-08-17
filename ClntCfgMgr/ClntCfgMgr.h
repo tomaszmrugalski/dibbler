@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.26 2008-06-25 23:12:20 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.27 2008-08-17 23:39:32 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -112,6 +112,7 @@ private:
 
     bool FQDNFlagS; // S bit in the FQDN option
     bool MappingPrefix;
+    int  TunnelMode;
 };
 
 typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);

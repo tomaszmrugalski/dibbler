@@ -105,6 +105,7 @@ experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
 mapping-prefix        { return ClntParser::MAPPING_PREFIX_; }
 skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
+tunnel-mode           { return ClntParser::TUNNEL_MODE_; }
 #.* ;
 
 "//"(.*) ;

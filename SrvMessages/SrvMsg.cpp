@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.54 2008-08-16 00:42:39 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.55 2008-08-17 23:39:33 thomson Exp $
  */
 
 #include <sstream>
@@ -129,10 +129,13 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 		       << " bytes left to parse. Bytes ignored." << LogEnd;
 	    break;
 	}
-        unsigned short code   = ntohs( *((unsigned short*) (buf+pos)));
+
+
+        unsigned short code   = buf[pos]*256 + buf[pos+1];
         pos+=2;
-        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
+        unsigned short length = buf[pos]*256 + buf[pos+1];
         pos+=2;
+
 	if (pos+length>bufSize) {
 	    Log(Error) << "Malformed option (type=" << code << ", len=" << length 
 		       << ", offset from beginning of DHCPv6 message=" << pos+4 /* 4=msg-type+trans-id */
