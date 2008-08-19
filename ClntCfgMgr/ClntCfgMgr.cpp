@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.61 2008-08-17 23:39:32 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.62 2008-08-19 00:09:39 thomson Exp $
  *
  */
 
@@ -675,6 +675,11 @@ bool TClntCfgMgr::getMappingPrefix()
 bool TClntCfgMgr::useConfirm()
 {
     return UseConfirm;
+}
+
+int TClntCfgMgr::tunnelMode()
+{
+    return TunnelMode;
 }
 
 TClntCfgMgr::~TClntCfgMgr() {

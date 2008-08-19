@@ -172,6 +172,11 @@ typedef enum {
     QUERY_BY_CLIENTID = 2
 } ELeaseQueryType;
 
+
+// --- experimental: tunnel-mode ---
+#define OPTION_VENDORSPEC_TUNNEL_TYPE 1
+#define OPTION_VENDORSPEC_ENDPOINT    2
+
 // --- Option lengths --
 // (value of the len field, so actual option length is +4 bytes)
 #define OPTION_ELAPSED_TIME_LEN     2

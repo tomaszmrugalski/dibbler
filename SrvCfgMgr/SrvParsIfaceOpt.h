@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.13 2007-10-25 07:00:52 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.14 2008-08-19 00:09:40 thomson Exp $
  *
  */
 
@@ -127,6 +127,11 @@ public:
     bool supportVendorSpec();
     List(TSrvOptVendorSpec) getVendorSpec();
 
+    // experimental tunnel-mode
+    void setTunnelMode(int vendor, int mode, SPtr<TIPv6Addr> addr);
+    int getTunnelMode();
+    SPtr<TSrvOptVendorSpec> getTunnelVendorSpec();
+
 private:
     char Preference;
     bool RapidCommit;
@@ -170,6 +175,10 @@ private:
     int FQDNMode;
     int revDNSZoneRootLength;
     unsigned int Lifetime;
+
+    // tunnel-mode
+    int TunnelMode;
+    SPtr<TSrvOptVendorSpec> TunnelVendorSpec;
 
     List(TSrvOptVendorSpec) VendorSpec;
 };

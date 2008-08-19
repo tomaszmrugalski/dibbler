@@ -96,7 +96,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_
+%token EXPERIMENTAL_, ADDR_PARAMS_, TUNNEL_MODE_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -142,6 +142,7 @@ GlobalOption
 | Experimental
 | IfaceIDOrder
 | GuessMode
+| TunnelMode
 ;
 
 InterfaceOptionDeclaration
@@ -256,6 +257,7 @@ ClientOption
 | NISPDomainOption
 | LifetimeOption
 | VendorSpecOption
+| TunnelMode
 | AddressReservation
 ;
 
@@ -699,6 +701,41 @@ AddrParams
     Log(Warning) << "Experimental addr-params added (prefix=" << $2 << ", bitfield=" << bitfield << ")." << LogEnd;
     ParserOptStack.getLast()->setAddrParams($2,bitfield);
 };
+
+TunnelMode
+: TUNNEL_MODE_ Number Number IPV6ADDR_
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'tunnel-mode' defined, but experimental features are disabled. Add 'experimental' "
+		  << "in global section of server.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+
+    std::string mode;
+    switch ($3)
+    {
+    case 0:
+	mode = "none";
+	break;
+    case 1:
+	mode = "IPv4-to-IPv6 NAT";
+	break;
+    case 2:
+	mode = "IPv4-over-IPv6 tunnel";
+	break;
+    default:
+	Log(Crit) << "Invalid mode specified: " << $3 << ", allowed: 0(none), 1(IPv4-to-IPv6 NAT) and 2(IPv4-over-IPv6 tunnel)"
+		  << LogEnd;
+    };
+
+    SPtr<TIPv6Addr> addr = new TIPv6Addr($4);
+
+    Log(Notice) << "Experimental tunnel-mode configured: mode=" << $3 << "(" << mode << "), address "
+		<< addr->getPlain() << "." << LogEnd;
+    ParserOptStack.getLast()->setTunnelMode($2, $3, addr);
+};
+
+
 
 IfaceMaxLeaseOption
 : IFACE_MAX_LEASE_ Number

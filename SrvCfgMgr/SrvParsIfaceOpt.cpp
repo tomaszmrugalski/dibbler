@@ -6,7 +6,7 @@
  *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.13 2007-10-25 07:00:52 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.14 2008-08-19 00:09:40 thomson Exp $
  *
  */
 
@@ -38,6 +38,9 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     this->NISPDomainSupport = false;
     this->LifetimeSupport   = false;
     this->VendorSpecSupport = false;
+
+    this->TunnelMode = 0;
+    this->TunnelVendorSpec = 0;
 
     this->Relay = false;
     this->RelayName = "[unknown]";
@@ -389,4 +392,38 @@ unsigned int TSrvParsIfaceOpt::getLifetime() {
 
 bool TSrvParsIfaceOpt::supportLifetime() {
     return this->LifetimeSupport;
+}
+
+void TSrvParsIfaceOpt::setTunnelMode(int vendor, int mode, SPtr<TIPv6Addr> addr)
+{
+    TunnelMode = mode;
+    char tmpbuf[32];
+    int len;
+    
+    tmpbuf[0] = 0x0;
+    tmpbuf[1] = OPTION_VENDORSPEC_TUNNEL_TYPE;
+    tmpbuf[2] = 0x0;
+    tmpbuf[3] = 0x1;  // 0x0001 - option-len
+    tmpbuf[4] = mode;
+
+    tmpbuf[5] = 0x0;
+    tmpbuf[6] = OPTION_VENDORSPEC_ENDPOINT;
+    tmpbuf[7] = 0x0;
+    tmpbuf[8] = 0x10; // 0x0010 - option-code
+    memmove(tmpbuf+9,addr->getAddr(), 16);
+    len = 9+16; // actual length
+
+    SPtr<TSrvOptVendorSpec> v = new TSrvOptVendorSpec(vendor, tmpbuf, len, 0);
+
+    TunnelVendorSpec = v;
+}
+
+int TSrvParsIfaceOpt::getTunnelMode()
+{
+    return TunnelMode;
+}
+
+SPtr<TSrvOptVendorSpec> TSrvParsIfaceOpt::getTunnelVendorSpec()
+{
+    return TunnelVendorSpec;
 }

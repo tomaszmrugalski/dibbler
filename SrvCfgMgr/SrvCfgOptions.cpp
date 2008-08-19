@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.cpp,v 1.3 2008-03-02 19:27:21 thomson Exp $
+ * $Id: SrvCfgOptions.cpp,v 1.4 2008-08-19 00:09:39 thomson Exp $
  *
  */
 
@@ -244,6 +244,11 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
     if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
     if (opt->supportVendorSpec()) this->setVendorSpec(opt->getVendorSpec());
+    if (opt->getTunnelMode())     
+    {
+	VendorSpecSupport = true;
+	this->VendorSpec.append(opt->getTunnelVendorSpec());
+    }
 
     return true;
 }

@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.27 2008-08-17 23:39:32 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.28 2008-08-19 00:09:39 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -82,6 +82,8 @@ class TClntCfgMgr : public TCfgMgr
     bool getMappingPrefix();
 
     bool useConfirm();
+
+    int tunnelMode(); // returns vendor-id
 
 private:
     bool setGlobalOptions(ClntParser * parser);
