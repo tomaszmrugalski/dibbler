@@ -2227,7 +2227,7 @@ case 159:
 case 160:
 #line 707 "SrvParser.y"
 {
-    if (!ParserOptStack.getLast()->getExperimental()) {
+    if (!ParserOptStack.getFirst()->getExperimental()) {
 	Log(Crit) << "Experimental 'tunnel-mode' defined, but experimental features are disabled. Add 'experimental' "
 		  << "in global section of server.conf to enable it." << LogEnd;
 	YYABORT;

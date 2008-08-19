@@ -705,7 +705,7 @@ AddrParams
 TunnelMode
 : TUNNEL_MODE_ Number Number IPV6ADDR_
 {
-    if (!ParserOptStack.getLast()->getExperimental()) {
+    if (!ParserOptStack.getFirst()->getExperimental()) {
 	Log(Crit) << "Experimental 'tunnel-mode' defined, but experimental features are disabled. Add 'experimental' "
 		  << "in global section of server.conf to enable it." << LogEnd;
 	YYABORT;
