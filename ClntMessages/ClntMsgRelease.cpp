@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.18 2008-06-26 21:44:17 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.19 2008-08-19 23:27:33 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -84,11 +84,14 @@ TClntMsgRelease::TClntMsgRelease(
     }
     if (!x->getDUID()) {
 	Log(Error) << "Unable to send RELEASE. Unable to find DUID. " << LogEnd;
+	return;
     }
     srvDUID = x->getDUID();
 
     Options.append(new TClntOptServerIdentifier( srvDUID,this));
     Options.append(new TClntOptClientIdentifier( CfgMgr->getDUID(),this));
+
+    IfaceMgr->notifyScripts(RELEASE_MSG);
 
     // --- RELEASE IA ---
     iaLst.first();

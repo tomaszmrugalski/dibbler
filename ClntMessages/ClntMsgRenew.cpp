@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.19 2008-08-17 22:41:42 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.20 2008-08-19 23:27:33 thomson Exp $
  *
  */
 
@@ -165,6 +165,8 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
     //There is no use to send Rebind even if server realesed some addresses/IAs
     //in such a case new Solicit message should be sent
     IsDone = true;
+
+    ClntIfaceMgr->notifyScripts(RENEW_MSG);
 }
 
 /** 

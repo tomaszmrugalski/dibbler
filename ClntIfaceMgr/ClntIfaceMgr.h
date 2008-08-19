@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.h,v 1.13 2008-06-18 20:18:03 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.14 2008-08-19 23:27:33 thomson Exp $
  *
  */
 
@@ -51,6 +51,8 @@ class TClntIfaceMgr : public TIfaceMgr
 		    SmartPtr<TClntTransMgr> clntTransMgr,
 		    SmartPtr<TClntCfgMgr>   clntCfgMgr,
 		    SmartPtr<TClntAddrMgr>  clntAddrMgr);
+
+    void notifyScripts(int msgType);
 
     bool fqdnAdd(SmartPtr<TClntIfaceIface> iface, string domainname);
     bool fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> ia, string domainname);

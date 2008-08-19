@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.45 2008-08-05 22:27:26 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.46 2008-08-19 23:27:33 thomson Exp $
  */
 
 #include "Portable.h"
@@ -576,6 +576,11 @@ void TClntIfaceMgr::redetectIfaces() {
     }
 
     if_list_release(ifaceList); // allocated in pure C, and so release it there
+}
+
+void TClntIfaceMgr::notifyScripts(int msgType)
+{
+    Log(Debug) << "#### received notification" << LogEnd;
 }
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {

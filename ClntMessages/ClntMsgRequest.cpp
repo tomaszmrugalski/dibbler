@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.25 2008-06-26 21:44:17 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.26 2008-08-19 23:27:33 thomson Exp $
  *
  */
 
@@ -195,6 +195,8 @@ void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
 {
     this->copyAAASPI(msg);
     TClntMsg::answer(msg);
+
+    ClntIfaceMgr->notifyScripts(REQUEST_MSG);
 }
 
 void TClntMsgRequest::doDuties()

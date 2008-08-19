@@ -6,27 +6,9 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.h,v 1.7 2006-08-22 00:01:20 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.8 2008-08-19 23:27:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.6  2006-08-21 22:18:27  thomson
- * Changes by Krzysiek Wnuk
- *
- * Revision 1.5  2006-03-02 00:57:46  thomson
- * FQDN support initial checkin.
- *
- * Revision 1.4  2005/01/25 00:32:26  thomson
- * Global addrs support added.
- *
- * Revision 1.3  2004/11/01 23:31:24  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.2  2004/10/27 22:07:55  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.1  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *
  */
 
@@ -59,6 +41,8 @@ class TClntIfaceIface: public TIfaceIface {
     bool setNISPServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
     bool setNISPDomain(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string domain);
     bool setLifetime(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, unsigned int life);
+
+    bool setTunnelMode(int mode, SPtr<TIPv6Addr> remoteEndpoint);
     void removeAllOpts();
     unsigned int getTimeout();
 
@@ -115,6 +99,9 @@ class TClntIfaceIface: public TIfaceIface {
     string              NISPDomain;
     SmartPtr<TIPv6Addr> NISPDomainAddr;
     SmartPtr<TDUID>     NISPDomainDUID;
+
+    int TunnelMode;
+    SPtr<TIPv6Addr> TunnelEndpoint;
     
     unsigned int LifetimeTimeout;
     unsigned int LifetimeTimestamp;

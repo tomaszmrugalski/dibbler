@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.13 2008-02-25 17:49:07 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.14 2008-08-19 23:27:33 thomson Exp $
  *
  */
 
@@ -29,6 +29,9 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
     this->DomainLst.clear();
     this->NTPServerLst.clear();
     this->Timezone = "";
+
+    TunnelMode = -1;
+    TunnelEndpoint = 0;
 
     unlink(WORKDIR"/"OPTION_DNS_SERVERS_FILENAME);
     unlink(WORKDIR"/"OPTION_DOMAINS_FILENAME);
@@ -667,6 +670,16 @@ string TClntIfaceIface::getFQDN() {
 List(TIPv6Addr) TClntIfaceIface::getDNSServerLst() {
 	return DNSServerLst;
 }
+
+bool TClntIfaceIface::setTunnelMode(int mode, SPtr<TIPv6Addr> remoteEndpoint)
+{
+    Log(Debug) << "Tunnel: tunnel set to type=" << mode << ", remote end=" << remoteEndpoint->getPlain()
+	       << " on the " << getFullName() << " interface." << LogEnd;
+    TunnelMode = mode;
+    TunnelEndpoint = remoteEndpoint;
+    return true;
+}
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntOptVendorSpec.cpp,v 1.4 2008-08-19 00:09:39 thomson Exp $
+ * $Id: ClntOptVendorSpec.cpp,v 1.5 2008-08-19 23:27:33 thomson Exp $
  *
  */
 
@@ -25,8 +25,15 @@ TClntOptVendorSpec::TClntOptVendorSpec(int enterprise, char * data, int dataLen,
 
 bool TClntOptVendorSpec::doDuties() {
     TClntMsg * msg = dynamic_cast<TClntMsg*>(Parent);
-    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(msg->getIface());
 
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << msg->getIface() << LogEnd;
+	return false;
+    }
+
+    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
     if (Vendor != cfgMgr->tunnelMode())
     {
 	Log(Debug) << "Tunnel-mode: vendor expected=" << cfgMgr->tunnelMode() << ", received=" << Vendor << LogEnd;
@@ -60,13 +67,11 @@ bool TClntOptVendorSpec::doDuties() {
 	{
 	case OPTION_VENDORSPEC_TUNNEL_TYPE:
 	{
-	    Log(Debug) << "#### TunnelType found" << LogEnd;
 	    tunnelType = buf[pos];
 	    break;
 	}
 	case OPTION_VENDORSPEC_ENDPOINT:
 	{
-	    Log(Debug) << "#### TunnelEndpoint found" << LogEnd;
 	    tunnelEndpoint = new TIPv6Addr(buf+pos);
 	    break;
 	}
@@ -77,8 +82,15 @@ bool TClntOptVendorSpec::doDuties() {
 	pos += length;
     }
 
+    if (tunnelType != -1) {
+	Log(Info) << "Tunnel: Tunnel type set to " << tunnelType << LogEnd;
+    }
+    if (tunnelEndpoint) {
+	Log(Info) << "Tunnel: Tunnel endpoint is " << tunnelEndpoint->getPlain() << LogEnd;
+    }
+
     // perform tunnel-mode operations
-    Log(Debug) << "#### tunnel-mode=" << tunnelType << ", endpoint=" << tunnelEndpoint->getPlain() << LogEnd;
+    iface->setTunnelMode(tunnelType, tunnelEndpoint);
     return true;
 }
 
