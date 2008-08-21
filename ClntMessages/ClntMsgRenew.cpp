@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.20 2008-08-19 23:27:33 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.21 2008-08-21 00:25:08 thomson Exp $
  *
  */
 
@@ -166,7 +166,7 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
     //in such a case new Solicit message should be sent
     IsDone = true;
 
-    ClntIfaceMgr->notifyScripts(RENEW_MSG);
+    ClntIfaceMgr->notifyScripts(RENEW_MSG, Iface);
 }
 
 /** 

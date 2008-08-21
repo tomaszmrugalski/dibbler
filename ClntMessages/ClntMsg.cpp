@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsg.cpp,v 1.38 2008-06-26 21:44:17 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.39 2008-08-21 00:25:08 thomson Exp $
  */
 
 #ifdef WIN32
@@ -327,17 +327,15 @@ unsigned long TClntMsg::getTimeout()
     return (diff<0) ? 0 : diff;
 }
 
-#define floor(x) (int)(x)
-
 void TClntMsg::send()
 {
     if (!RC)
-        RT=(int)floor(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
+        RT=(int)(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
     else
-	RT =(int) floor(0.5+2.0*RT+RT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
+	RT =(int)(0.5+2.0*RT+RT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
 
     if (MRT != 0 && RT>MRT) 
-	RT = (int) floor(0.5+MRT + MRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
+	RT = (int)(0.5+MRT + MRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
     
     if ((MRD != 0) && (RT>MRD))
         RT = MRD;

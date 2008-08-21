@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.19 2008-08-19 23:27:33 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.20 2008-08-21 00:25:08 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -91,7 +91,7 @@ TClntMsgRelease::TClntMsgRelease(
     Options.append(new TClntOptServerIdentifier( srvDUID,this));
     Options.append(new TClntOptClientIdentifier( CfgMgr->getDUID(),this));
 
-    IfaceMgr->notifyScripts(RELEASE_MSG);
+    IfaceMgr->notifyScripts(RELEASE_MSG, Iface);
 
     // --- RELEASE IA ---
     iaLst.first();

@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.14 2008-08-19 23:27:33 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.15 2008-08-21 00:25:08 thomson Exp $
  *
  */
 
@@ -680,6 +680,15 @@ bool TClntIfaceIface::setTunnelMode(int mode, SPtr<TIPv6Addr> remoteEndpoint)
     return true;
 }
 
+int  TClntIfaceIface::getTunnelMode()
+{
+    return TunnelMode;
+}
+
+SPtr<TIPv6Addr> TClntIfaceIface::getTunnelEndpoint()
+{
+    return TunnelEndpoint;
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

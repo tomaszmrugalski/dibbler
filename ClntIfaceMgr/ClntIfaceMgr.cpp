@@ -7,12 +7,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.46 2008-08-19 23:27:33 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.47 2008-08-21 00:25:08 thomson Exp $
  */
 
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
+#include "ClntAddrMgr.h"
 #include "Msg.h"
 #include "ClntMsgReply.h"
 #include "ClntMsgAdvertise.h"
@@ -578,9 +579,84 @@ void TClntIfaceMgr::redetectIfaces() {
     if_list_release(ifaceList); // allocated in pure C, and so release it there
 }
 
-void TClntIfaceMgr::notifyScripts(int msgType)
+void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 {
-    Log(Debug) << "#### received notification" << LogEnd;
+    PrefixModifyMode mode;
+    string action;
+
+    switch (msgType)
+    {
+    case REQUEST_MSG:
+	mode = PREFIX_MODIFY_ADD;
+	action = "add";
+	break;
+    case RELEASE_MSG:
+	mode = PREFIX_MODIFY_DEL;
+	action = "delete";
+	break;
+    case RENEW_MSG:
+    default:
+	mode = PREFIX_MODIFY_UPDATE;
+	action = "update";
+    }
+
+    SPtr<TClntIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << ifindex << ". Notification NOT sent." << LogEnd;
+	return;
+    }
+
+    int tunnelMode = iface->getTunnelMode();
+    SPtr<TIPv6Addr> ip;
+    SPtr<TIPv6Addr> remoteEndpoint;
+    SPtr<TAddrPrefix> prefix;
+
+    if (tunnelMode!=0)
+    {
+	remoteEndpoint = iface->getTunnelEndpoint();
+    }
+
+    ClntAddrMgr->firstIA();
+    SPtr<TAddrIA> ia = ClntAddrMgr->getIA();
+    if (!ia)
+    {
+	Log(Error) << "Unable to find any IAs defined in the AddrMgr." << LogEnd;
+	return;
+    }
+
+    ia->firstAddr();
+    if (ia->countAddr())
+    {
+	SPtr<TAddrAddr> addr = ia->getAddr();
+	ip = addr->get();
+    }
+
+    ClntAddrMgr->firstPD();
+    ia = ClntAddrMgr->getPD();
+    if (ia)
+    {
+	ia->firstPrefix();
+	prefix = ia->getPrefix();
+    }
+
+    if (!ip)
+	ip = new TIPv6Addr("::", true);
+
+    if (!remoteEndpoint)
+	remoteEndpoint = new TIPv6Addr("::", true);
+    
+    if (!prefix) 
+	prefix = new TAddrPrefix(new TIPv6Addr("::", true), 0, 0, 0);
+
+    stringstream tmp;
+    tmp << "sh ./notify " << action << " " << ip->getPlain() << " "
+	<< remoteEndpoint->getPlain() << " " << prefix->get()->getPlain() << " " 
+	<< prefix->getLength();
+    Log(Info) << "#### About to execute command: " << tmp.str() << LogEnd;
+
+    int returnCode = system(tmp.str().c_str());
+
+    Log(Notice) << "Return code=" << returnCode << LogEnd;
 }
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {

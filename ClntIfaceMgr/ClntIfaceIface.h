@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceIface.h,v 1.8 2008-08-19 23:27:33 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.9 2008-08-21 00:25:08 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2008-08-19 23:27:33  thomson
+ * TunnelMode additional support.
+ *
  *
  */
 
@@ -43,6 +46,9 @@ class TClntIfaceIface: public TIfaceIface {
     bool setLifetime(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, unsigned int life);
 
     bool setTunnelMode(int mode, SPtr<TIPv6Addr> remoteEndpoint);
+    int  getTunnelMode();
+    SPtr<TIPv6Addr> getTunnelEndpoint();
+
     void removeAllOpts();
     unsigned int getTimeout();
 
