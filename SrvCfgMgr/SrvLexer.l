@@ -94,6 +94,7 @@ nis-domain          { return SrvParser::NIS_DOMAIN_; }
 nis\+-server        { return SrvParser::NISP_SERVER_; }
 nis\+-domain        { return SrvParser::NISP_DOMAIN_; }
 lifetime            { return SrvParser::LIFETIME_; }
+extra               { return SrvParser::EXTRA_; }
 cache-size          { return SrvParser::CACHE_SIZE_; }
 pd-class	    { return SrvParser::PDCLASS_; }
 pd-length	    { return SrvParser::PD_LENGTH_; }

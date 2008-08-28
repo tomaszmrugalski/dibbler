@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.14 2008-08-19 00:09:40 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.15 2008-08-28 07:09:02 thomson Exp $
  *
  */
 
@@ -14,6 +14,7 @@
 #define TSRCPARSIFACEOPT_H_
 
 #include "SrvOptVendorSpec.h"
+#include "SrvOptGeneric.h"
 #include "SrvParsClassOpt.h"
 #include "FQDN.h"
 
@@ -127,6 +128,10 @@ public:
     bool supportVendorSpec();
     List(TSrvOptVendorSpec) getVendorSpec();
 
+    // option: extra
+    void setExtraOptions(List(TSrvOptGeneric) extraOpts);
+    List(TSrvOptGeneric) getExtraOptions();
+
     // experimental tunnel-mode
     void setTunnelMode(int vendor, int mode, SPtr<TIPv6Addr> addr);
     int getTunnelMode();
@@ -181,6 +186,7 @@ private:
     SPtr<TSrvOptVendorSpec> TunnelVendorSpec;
 
     List(TSrvOptVendorSpec) VendorSpec;
+    List(TSrvOptGeneric) ExtraOpts;
 };
 
 #endif

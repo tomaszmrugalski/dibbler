@@ -6,7 +6,7 @@
  *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.14 2008-08-19 00:09:40 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.15 2008-08-28 07:09:02 thomson Exp $
  *
  */
 
@@ -227,6 +227,18 @@ void TSrvParsIfaceOpt::setSIPDomainLst(List(string) * domain) {
 bool TSrvParsIfaceOpt::supportSIPDomain() {
     return this->SIPDomainSupport;
 }
+
+// --- option: extra ---
+List(TSrvOptGeneric) TSrvParsIfaceOpt::getExtraOptions()
+{
+    return ExtraOpts;
+}
+
+void TSrvParsIfaceOpt::setExtraOptions(List(TSrvOptGeneric) extraOpts)
+{
+    ExtraOpts = extraOpts;
+}
+
 
 // --- option: FQDN ---
 

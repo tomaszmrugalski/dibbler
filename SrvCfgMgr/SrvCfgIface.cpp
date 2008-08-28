@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.43 2008-06-18 20:37:20 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.44 2008-08-28 07:09:01 thomson Exp $
  */
 
 #include <cstdlib>
@@ -752,6 +752,17 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 	out << "    </vendorSpecList>" << endl;
     } else {
 	out << "    <!-- <vendorSpec/> -->" << endl;
+    }
+
+    out << "    <!-- " << iface.getExtraOptions().count() << " extra option(s) -->" << endl;
+
+    List(TSrvOptGeneric) extraOpts;
+    SPtr<TSrvOptGeneric> gen;
+    extraOpts = iface.getExtraOptions();
+    extraOpts.first();
+    while (gen = extraOpts.get())
+    {
+	out << "      <extraOption length=\"" << gen->getSize()-4 << "\"/>" << endl;
     }
 
     // option: FQDN

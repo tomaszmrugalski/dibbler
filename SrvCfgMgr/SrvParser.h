@@ -50,6 +50,7 @@ SmartPtr<TIPv6Addr> addr;                                                       
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
+List(TSrvOptGeneric) ExtraOpts;                                                      \
 List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
@@ -74,7 +75,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 73 "SrvParser.y"
+#line 74 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -308,23 +309,24 @@ typedef
 #define	EXPERIMENTAL_	307
 #define	ADDR_PARAMS_	308
 #define	TUNNEL_MODE_	309
-#define	AUTH_METHOD_	310
-#define	AUTH_LIFETIME_	311
-#define	AUTH_KEY_LEN_	312
-#define	DIGEST_NONE_	313
-#define	DIGEST_PLAIN_	314
-#define	DIGEST_HMAC_MD5_	315
-#define	DIGEST_HMAC_SHA1_	316
-#define	DIGEST_HMAC_SHA224_	317
-#define	DIGEST_HMAC_SHA256_	318
-#define	DIGEST_HMAC_SHA384_	319
-#define	DIGEST_HMAC_SHA512_	320
-#define	ACCEPT_LEASEQUERY_	321
-#define	STRING_	322
-#define	HEXNUMBER_	323
-#define	INTNUMBER_	324
-#define	IPV6ADDR_	325
-#define	DUID_	326
+#define	EXTRA_	310
+#define	AUTH_METHOD_	311
+#define	AUTH_LIFETIME_	312
+#define	AUTH_KEY_LEN_	313
+#define	DIGEST_NONE_	314
+#define	DIGEST_PLAIN_	315
+#define	DIGEST_HMAC_MD5_	316
+#define	DIGEST_HMAC_SHA1_	317
+#define	DIGEST_HMAC_SHA224_	318
+#define	DIGEST_HMAC_SHA256_	319
+#define	DIGEST_HMAC_SHA384_	320
+#define	DIGEST_HMAC_SHA512_	321
+#define	ACCEPT_LEASEQUERY_	322
+#define	STRING_	323
+#define	HEXNUMBER_	324
+#define	INTNUMBER_	325
+#define	IPV6ADDR_	326
+#define	DUID_	327
 
 
 #line 169 "../bison++/bison.h"
@@ -425,6 +427,7 @@ static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int TUNNEL_MODE_;
+static const int EXTRA_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
 static const int AUTH_KEY_LEN_;
@@ -502,23 +505,24 @@ static const int DUID_;
 	,EXPERIMENTAL_=307
 	,ADDR_PARAMS_=308
 	,TUNNEL_MODE_=309
-	,AUTH_METHOD_=310
-	,AUTH_LIFETIME_=311
-	,AUTH_KEY_LEN_=312
-	,DIGEST_NONE_=313
-	,DIGEST_PLAIN_=314
-	,DIGEST_HMAC_MD5_=315
-	,DIGEST_HMAC_SHA1_=316
-	,DIGEST_HMAC_SHA224_=317
-	,DIGEST_HMAC_SHA256_=318
-	,DIGEST_HMAC_SHA384_=319
-	,DIGEST_HMAC_SHA512_=320
-	,ACCEPT_LEASEQUERY_=321
-	,STRING_=322
-	,HEXNUMBER_=323
-	,INTNUMBER_=324
-	,IPV6ADDR_=325
-	,DUID_=326
+	,EXTRA_=310
+	,AUTH_METHOD_=311
+	,AUTH_LIFETIME_=312
+	,AUTH_KEY_LEN_=313
+	,DIGEST_NONE_=314
+	,DIGEST_PLAIN_=315
+	,DIGEST_HMAC_MD5_=316
+	,DIGEST_HMAC_SHA1_=317
+	,DIGEST_HMAC_SHA224_=318
+	,DIGEST_HMAC_SHA256_=319
+	,DIGEST_HMAC_SHA384_=320
+	,DIGEST_HMAC_SHA512_=321
+	,ACCEPT_LEASEQUERY_=322
+	,STRING_=323
+	,HEXNUMBER_=324
+	,INTNUMBER_=325
+	,IPV6ADDR_=326
+	,DUID_=327
 
 
 #line 215 "../bison++/bison.h"

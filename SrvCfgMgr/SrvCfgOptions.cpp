@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.cpp,v 1.4 2008-08-19 00:09:39 thomson Exp $
+ * $Id: SrvCfgOptions.cpp,v 1.5 2008-08-28 07:09:01 thomson Exp $
  *
  */
 
@@ -230,6 +230,18 @@ void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
     this->VendorSpec = vendor;
 }
 
+void TSrvCfgOptions::setExtraOptions(List(TSrvOptGeneric) extra)
+{
+    Log(Debug) << "#### Setting " << extra.count() << " generics." << LogEnd;
+    ExtraOpts = extra;
+}
+
+List(TSrvOptGeneric) TSrvCfgOptions::getExtraOptions()
+{
+    return ExtraOpts;
+}
+
+
 bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 {
     if (opt->supportDNSServer())  this->setDNSServerLst(opt->getDNSServerLst());
@@ -249,7 +261,7 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 	VendorSpecSupport = true;
 	this->VendorSpec.append(opt->getTunnelVendorSpec());
     }
-
+    setExtraOptions(opt->getExtraOptions());
     return true;
 }
 

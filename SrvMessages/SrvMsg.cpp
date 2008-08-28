@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvMsg.cpp,v 1.55 2008-08-17 23:39:33 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.56 2008-08-28 07:09:03 thomson Exp $
  */
 
 #include <sstream>
@@ -31,6 +31,7 @@
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
+#include "SrvOptGeneric.h"
 #include "SrvOptLQ.h"
 #include "SrvOptTA.h"
 #include "SrvCfgOptions.h"
@@ -655,6 +656,18 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
 	else
 	    optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
 	Options.append( (Ptr*)optLifetime);
+	newOptionAssigned = true;
+    }
+
+    // --- option: extra options ---
+    List(TSrvOptGeneric) generics = ptrIface->getExtraOptions();
+
+    SPtr<TSrvOptGeneric> gen;
+    generics.first();
+    while (gen = generics.get())
+    {
+	Log(Debug) << "Experimental: Appending extra option " << gen->getSize() << LogEnd;
+	Options.append( (Ptr*) gen);
 	newOptionAssigned = true;
     }
 

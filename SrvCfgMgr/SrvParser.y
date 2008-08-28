@@ -44,6 +44,7 @@ SmartPtr<TIPv6Addr> addr;                                                       
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
+List(TSrvOptGeneric) ExtraOpts;                                                      \
 List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
@@ -96,7 +97,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, TUNNEL_MODE_
+%token EXPERIMENTAL_, ADDR_PARAMS_, TUNNEL_MODE_, EXTRA_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -167,6 +168,7 @@ InterfaceOptionDeclaration
 | NISPServerOption
 | NISPDomainOption
 | LifetimeOption
+| ExtraOptions
 | PDDeclaration
 | VendorSpecOption
 | Client
@@ -257,6 +259,7 @@ ClientOption
 | NISPDomainOption
 | LifetimeOption
 | VendorSpecOption
+| ExtraOptions
 | TunnelMode
 | AddressReservation
 ;
@@ -735,7 +738,32 @@ TunnelMode
     ParserOptStack.getLast()->setTunnelMode($2, $3, addr);
 };
 
+ExtraOptions
+:OPTION_ EXTRA_ {
+    if (!ParserOptStack.getFirst()->getExperimental()) {
+	Log(Crit) << "Experimental 'option extra' defined, but experimental features are disabled. Add 'experimental' "
+		  << "in global section of server.conf to enable it." << LogEnd;
+	YYABORT;
+    }
 
+    ExtraOpts.clear();
+} ExtraOptsList
+{
+    ParserOptStack.getLast()->setExtraOptions(ExtraOpts);
+};
+
+ExtraOptsList
+: Number '-' DUID_
+{
+    Log(Debug) << "Extra option defined: code=" << $1 << ", valuelen=" << $3.length << LogEnd;
+    ExtraOpts.append(new TSrvOptGeneric($1, $3.duid, $3.length, 0));
+}
+| ExtraOptsList ',' Number '-' DUID_
+{
+    Log(Debug) << "Extra option defined: code=" << $3 << ", valuelen=" << $5.length << LogEnd;
+    ExtraOpts.append(new TSrvOptGeneric($3, $5.duid, $5.length, 0));
+}
+;
 
 IfaceMaxLeaseOption
 : IFACE_MAX_LEASE_ Number
@@ -1144,6 +1172,7 @@ void SrvParser::StartIfaceDeclaration()
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
     VendorSpec.clear();
+    ExtraOpts.clear();
     ClientLst.clear();
 }
 

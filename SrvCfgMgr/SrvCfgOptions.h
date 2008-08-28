@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.h,v 1.3 2008-03-02 19:27:21 thomson Exp $
+ * $Id: SrvCfgOptions.h,v 1.4 2008-08-28 07:09:01 thomson Exp $
  *
  */
 
@@ -19,6 +19,7 @@
 
 #include "SrvOptVendorSpec.h"
 #include "SrvOptRemoteID.h"
+#include "SrvOptGeneric.h"
 
 #include "SmartPtr.h"
 #include "Container.h"
@@ -104,6 +105,9 @@ public:
     bool supportVendorSpec();
     SPtr<TSrvOptVendorSpec> getVendorSpec(int num=0);
 
+    void setExtraOptions(List(TSrvOptGeneric) extra);
+    List(TSrvOptGeneric) getExtraOptions();
+
 private:
 
     // options
@@ -135,6 +139,7 @@ private:
     string NISDomain;
     string NISPDomain;
     List(TSrvOptVendorSpec) VendorSpec;
+    List(TSrvOptGeneric) ExtraOpts;
     unsigned int Lifetime;
 
     void SetDefaults();
