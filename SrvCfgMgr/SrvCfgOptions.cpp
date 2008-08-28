@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgOptions.cpp,v 1.5 2008-08-28 07:09:01 thomson Exp $
+ * $Id: SrvCfgOptions.cpp,v 1.6 2008-08-28 22:39:10 thomson Exp $
  *
  */
 
@@ -232,7 +232,7 @@ void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
 
 void TSrvCfgOptions::setExtraOptions(List(TSrvOptGeneric) extra)
 {
-    Log(Debug) << "#### Setting " << extra.count() << " generics." << LogEnd;
+    Log(Debug) << "Setting " << extra.count() << " generic option(s)." << LogEnd;
     ExtraOpts = extra;
 }
 

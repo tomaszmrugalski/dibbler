@@ -89,6 +89,7 @@ time-zone           { return SrvParser::TIME_ZONE_;}
 sip-server          { return SrvParser::SIP_SERVER_; }
 sip-domain          { return SrvParser::SIP_DOMAIN_; }
 fqdn                { return SrvParser::FQDN_; }
+accept-unknown-fqdn { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
 nis-server          { return SrvParser::NIS_SERVER_; }
 nis-domain          { return SrvParser::NIS_DOMAIN_; }
 nis\+-server        { return SrvParser::NISP_SERVER_; }

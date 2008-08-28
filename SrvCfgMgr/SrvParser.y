@@ -86,7 +86,7 @@ virtual ~SrvParser();
 %token IFACE_, RELAY_, IFACE_ID_, IFACE_ID_ORDER_, CLASS_, TACLASS_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
-%token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, LIFETIME_
+%token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, ACCEPT_UNKNOWN_FQDN_, LIFETIME_
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_, SHARE_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
@@ -163,6 +163,7 @@ InterfaceOptionDeclaration
 | SIPServerOption
 | SIPDomainOption
 | FQDNOption
+| AcceptUnknownFQDN
 | NISServerOption
 | NISDomainOption
 | NISPServerOption
@@ -727,8 +728,9 @@ TunnelMode
 	mode = "IPv4-over-IPv6 tunnel";
 	break;
     default:
-	Log(Crit) << "Invalid mode specified: " << $3 << ", allowed: 0(none), 1(IPv4-to-IPv6 NAT) and 2(IPv4-over-IPv6 tunnel)"
-		  << LogEnd;
+	Log(Warning) << "Unknown tunnel mode specified: " << $3 << ", allowed: 0(none), 1(IPv4-to-IPv6 NAT) and 2(IPv4-over-IPv6 tunnel)"
+		     << LogEnd;
+	mode = "unknown";
     };
 
     SPtr<TIPv6Addr> addr = new TIPv6Addr($4);
@@ -1056,6 +1058,13 @@ FQDNOption
   
 }
 ;
+
+AcceptUnknownFQDN
+:ACCEPT_UNKNOWN_FQDN_
+{
+    ParserOptStack.getLast()->acceptUnknownFQDN(true);
+    Log(Debug) << "FQDN: Unknown fqdn names will be accepted by the server." << LogEnd;
+};
 
 //////////////////////////////////////////////////////////////////////
 //NIS-SERVER option///////////////////////////////////////////////////

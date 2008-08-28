@@ -430,6 +430,51 @@ example.com.            86400   IN      NS      v13.klub.com.pl.
 \end{lstlisting}
 %% >>
 
+\subsubsection{Accepting Unknown FQDNs}
+By default, server configured to support FQDN has a list of names that
+are to be provided to clients. But there are scenarios, where client
+uses it own name and sends it to the server. So it makes sense to
+sometimes allow client's own domain names. Server does not know
+anything about such names, thus its nickname ''Unknown FQDN''.
+
+To configure such support, add \verb+accept-unknonwn-fqdn+ option to
+the interface. For example:
+
+\begin{lstlisting}
+iface "eth0" {
+
+# assign addresses from this class
+ class {
+   pool 2000::/64
+ }
+
+# provide DNS server location to the clients
+# also server will use this address to perform DNS Update,
+# so it must be valid and DNS server must accept DNS Updates.
+ option dns-server 2000::1
+ 
+# provide their domain name
+ option domain example.com
+
+# provide fully qualified domain names for clients
+# note that first, second and third entry is reserved
+# for a specific address or a DUID
+
+ option fqdn 1 64
+             zebuline.example.com - 2000::1,
+	     kael.example.com - 2000::2,
+	     wash.example.com - 0x0001000043ce25b40013d4024bf5,
+	     zoe.example.com,
+	     malcolm.example.com,
+	     kaylee.example.com,
+	     jayne.example.com,
+	     inara.example.com
+
+ accept-unknown-fqdn
+	     
+}
+\end{lstlisting}
+
 \subsection{Server address caching}
 Previous Dibbler versions assigned a random address from the available
 address pool, so the same client received different address each time it

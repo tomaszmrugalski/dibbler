@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.15 2008-08-28 07:09:02 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.16 2008-08-28 22:39:11 thomson Exp $
  *
  */
 
@@ -90,6 +90,8 @@ public:
     string getFQDNName();
     int getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
+    void acceptUnknownFQDN(bool accept);
+    bool acceptUnknownFQDN();
 
     SmartPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) *fqdn);
@@ -178,6 +180,7 @@ private:
     string NISDomain;
     string NISPDomain;
     int FQDNMode;
+    bool AcceptUnknownFQDN;
     int revDNSZoneRootLength;
     unsigned int Lifetime;
 

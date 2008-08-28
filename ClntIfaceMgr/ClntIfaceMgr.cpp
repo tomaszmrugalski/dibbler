@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.47 2008-08-21 00:25:08 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.48 2008-08-28 22:39:10 thomson Exp $
  */
 
 #include "Portable.h"
@@ -649,10 +649,10 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 	prefix = new TAddrPrefix(new TIPv6Addr("::", true), 0, 0, 0);
 
     stringstream tmp;
-    tmp << "sh ./notify " << action << " " << ip->getPlain() << " "
-	<< remoteEndpoint->getPlain() << " " << prefix->get()->getPlain() << " " 
-	<< prefix->getLength();
-    Log(Info) << "#### About to execute command: " << tmp.str() << LogEnd;
+    tmp << "sh ./notify " << " " << ip->getPlain() << " "
+	<< prefix->get()->getPlain() << " " << prefix->getLength() << " "
+	<< remoteEndpoint->getPlain() << " " << action;
+    Log(Info) << "About to execute command: " << tmp.str() << LogEnd;
 
     int returnCode = system(tmp.str().c_str());
 

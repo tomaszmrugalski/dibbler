@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.44 2008-08-28 07:09:01 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.45 2008-08-28 22:39:10 thomson Exp $
  */
 
 #include <cstdlib>
@@ -356,6 +356,7 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->LeaseQuery    = opt->getLeaseQuerySupport();
     
     if (opt->supportFQDN()){
+	AcceptUnknownFQDN = opt->acceptUnknownFQDN();
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 	this->setFQDNLst(opt->getFQDNLst());
 	this->setFQDNMode(opt->getFQDNMode());
@@ -419,6 +420,7 @@ void TSrvCfgIface::setDefaults() {
     this->preference = 0;
    
     this->FQDNSupport             = false;
+    this->AcceptUnknownFQDN       = false;
     this->PrefixDelegationSupport = false;
 }
 
@@ -501,9 +503,18 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     SPtr<TFQDN> bestFound=0; // best FQDN found for that client
 
     SPtr<TFQDN> foo;
+
+    bool duplicate = false ; // whether the hint exists in the FQDN list
+
     while (foo=this->FQDNLst.get()) {
+
 	if (foo->isUsed())
-	    continue;
+	{ // client sent a hint, but it is used currently
+	    if (foo->Name == hint)	    
+	     	   duplicate = true; 
+            continue;
+	}
+
 	if (duid && (foo->Duid) && *(foo->Duid)== *duid) {
 	    Log(Debug) << "FQDN found: " << foo->Name << " using duid " << duid->getPlain() << LogEnd;
 	    return foo;
@@ -515,7 +526,8 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 	
 	if (foo->Name == hint){
 	    // client asked for this name. Let's check if client is allowed to get this name.
-	    if ( (!foo->Duid) && (!foo->Addr) ) {
+	   duplicate = true; 
+	   if ( (!foo->Duid) && (!foo->Addr) ) {
 		Log(Debug) << "Client's hint: " << hint << " found in fqdn list, setting fqdn to "<< foo->Name << LogEnd;
 		return foo;
 	    }
@@ -523,17 +535,44 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 	if (!foo->Addr && !foo->Duid) {
 	    if (!bestFound)
 		bestFound = foo;
-	    return foo;
+	 //   return foo;
 	}
     }
-    
+	
+    if (!hint.empty() &&  !duplicate )
+    {
+	if (acceptUnknownFQDN()) // should the server be accepting unknown names?
+	{
+	    Log(Debug) << "Client's hint: " << hint <<" but not found in FQDN list, creating an entry  " <<LogEnd;
+	    SPtr<TFQDN> newEntry = new TFQDN(hint,false);
+	    FQDNLst.append(newEntry);
+	    Log(Debug) << "Retured FQDN  " << newEntry->Name <<LogEnd;
+	    return newEntry;
+	} else 
+	{
+	    Log(Info) << "FQDN: Client sent valid hint that is not mentioned in server configuration."
+		      << " Currently server is configured to drop such hints. To accept them, please "
+		      << "add accept-unknown-fqdn in the server.conf." << LogEnd;
+	}
+    }
+
     if (bestFound) {
-	Log(Debug) << "Not reserved FQDN found: " << foo->Name << LogEnd;
+	Log(Debug) << "Not reserved FQDN found: " << bestFound->Name << LogEnd;
 	return bestFound;
     }
 
     // not found
     return 0;
+}
+
+/** 
+ * returns if server should accept FQDN hints that are not configured in the server.conf
+ * 
+ * 
+ * @return true, if unknown names should be accepted
+ */
+bool TSrvCfgIface::acceptUnknownFQDN() {
+    return AcceptUnknownFQDN;
 }
 
 SmartPtr<TDUID> TSrvCfgIface::getFQDNDuid(string name) {

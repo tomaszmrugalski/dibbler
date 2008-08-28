@@ -396,54 +396,55 @@ typedef
 #define	NISP_SERVER_	277
 #define	NISP_DOMAIN_	278
 #define	FQDN_	279
-#define	LIFETIME_	280
-#define	ACCEPT_ONLY_	281
-#define	REJECT_CLIENTS_	282
-#define	POOL_	283
-#define	SHARE_	284
-#define	T1_	285
-#define	T2_	286
-#define	PREF_TIME_	287
-#define	VALID_TIME_	288
-#define	UNICAST_	289
-#define	PREFERENCE_	290
-#define	RAPID_COMMIT_	291
-#define	IFACE_MAX_LEASE_	292
-#define	CLASS_MAX_LEASE_	293
-#define	CLNT_MAX_LEASE_	294
-#define	STATELESS_	295
-#define	CACHE_SIZE_	296
-#define	PDCLASS_	297
-#define	PD_LENGTH_	298
-#define	PD_POOL_	299
-#define	VENDOR_SPEC_	300
-#define	CLIENT_	301
-#define	DUID_KEYWORD_	302
-#define	REMOTE_ID_	303
-#define	ADDRESS_	304
-#define	GUESS_MODE_	305
-#define	INACTIVE_MODE_	306
-#define	EXPERIMENTAL_	307
-#define	ADDR_PARAMS_	308
-#define	TUNNEL_MODE_	309
-#define	EXTRA_	310
-#define	AUTH_METHOD_	311
-#define	AUTH_LIFETIME_	312
-#define	AUTH_KEY_LEN_	313
-#define	DIGEST_NONE_	314
-#define	DIGEST_PLAIN_	315
-#define	DIGEST_HMAC_MD5_	316
-#define	DIGEST_HMAC_SHA1_	317
-#define	DIGEST_HMAC_SHA224_	318
-#define	DIGEST_HMAC_SHA256_	319
-#define	DIGEST_HMAC_SHA384_	320
-#define	DIGEST_HMAC_SHA512_	321
-#define	ACCEPT_LEASEQUERY_	322
-#define	STRING_	323
-#define	HEXNUMBER_	324
-#define	INTNUMBER_	325
-#define	IPV6ADDR_	326
-#define	DUID_	327
+#define	ACCEPT_UNKNOWN_FQDN_	280
+#define	LIFETIME_	281
+#define	ACCEPT_ONLY_	282
+#define	REJECT_CLIENTS_	283
+#define	POOL_	284
+#define	SHARE_	285
+#define	T1_	286
+#define	T2_	287
+#define	PREF_TIME_	288
+#define	VALID_TIME_	289
+#define	UNICAST_	290
+#define	PREFERENCE_	291
+#define	RAPID_COMMIT_	292
+#define	IFACE_MAX_LEASE_	293
+#define	CLASS_MAX_LEASE_	294
+#define	CLNT_MAX_LEASE_	295
+#define	STATELESS_	296
+#define	CACHE_SIZE_	297
+#define	PDCLASS_	298
+#define	PD_LENGTH_	299
+#define	PD_POOL_	300
+#define	VENDOR_SPEC_	301
+#define	CLIENT_	302
+#define	DUID_KEYWORD_	303
+#define	REMOTE_ID_	304
+#define	ADDRESS_	305
+#define	GUESS_MODE_	306
+#define	INACTIVE_MODE_	307
+#define	EXPERIMENTAL_	308
+#define	ADDR_PARAMS_	309
+#define	TUNNEL_MODE_	310
+#define	EXTRA_	311
+#define	AUTH_METHOD_	312
+#define	AUTH_LIFETIME_	313
+#define	AUTH_KEY_LEN_	314
+#define	DIGEST_NONE_	315
+#define	DIGEST_PLAIN_	316
+#define	DIGEST_HMAC_MD5_	317
+#define	DIGEST_HMAC_SHA1_	318
+#define	DIGEST_HMAC_SHA224_	319
+#define	DIGEST_HMAC_SHA256_	320
+#define	DIGEST_HMAC_SHA384_	321
+#define	DIGEST_HMAC_SHA512_	322
+#define	ACCEPT_LEASEQUERY_	323
+#define	STRING_	324
+#define	HEXNUMBER_	325
+#define	INTNUMBER_	326
+#define	IPV6ADDR_	327
+#define	DUID_	328
 
 
 #line 263 "../bison++/bison.cc"
@@ -515,6 +516,7 @@ static const int NIS_DOMAIN_;
 static const int NISP_SERVER_;
 static const int NISP_DOMAIN_;
 static const int FQDN_;
+static const int ACCEPT_UNKNOWN_FQDN_;
 static const int LIFETIME_;
 static const int ACCEPT_ONLY_;
 static const int REJECT_CLIENTS_;
@@ -593,54 +595,55 @@ enum YY_SrvParser_ENUM_TOKEN { YY_SrvParser_NULL_TOKEN=0
 	,NISP_SERVER_=277
 	,NISP_DOMAIN_=278
 	,FQDN_=279
-	,LIFETIME_=280
-	,ACCEPT_ONLY_=281
-	,REJECT_CLIENTS_=282
-	,POOL_=283
-	,SHARE_=284
-	,T1_=285
-	,T2_=286
-	,PREF_TIME_=287
-	,VALID_TIME_=288
-	,UNICAST_=289
-	,PREFERENCE_=290
-	,RAPID_COMMIT_=291
-	,IFACE_MAX_LEASE_=292
-	,CLASS_MAX_LEASE_=293
-	,CLNT_MAX_LEASE_=294
-	,STATELESS_=295
-	,CACHE_SIZE_=296
-	,PDCLASS_=297
-	,PD_LENGTH_=298
-	,PD_POOL_=299
-	,VENDOR_SPEC_=300
-	,CLIENT_=301
-	,DUID_KEYWORD_=302
-	,REMOTE_ID_=303
-	,ADDRESS_=304
-	,GUESS_MODE_=305
-	,INACTIVE_MODE_=306
-	,EXPERIMENTAL_=307
-	,ADDR_PARAMS_=308
-	,TUNNEL_MODE_=309
-	,EXTRA_=310
-	,AUTH_METHOD_=311
-	,AUTH_LIFETIME_=312
-	,AUTH_KEY_LEN_=313
-	,DIGEST_NONE_=314
-	,DIGEST_PLAIN_=315
-	,DIGEST_HMAC_MD5_=316
-	,DIGEST_HMAC_SHA1_=317
-	,DIGEST_HMAC_SHA224_=318
-	,DIGEST_HMAC_SHA256_=319
-	,DIGEST_HMAC_SHA384_=320
-	,DIGEST_HMAC_SHA512_=321
-	,ACCEPT_LEASEQUERY_=322
-	,STRING_=323
-	,HEXNUMBER_=324
-	,INTNUMBER_=325
-	,IPV6ADDR_=326
-	,DUID_=327
+	,ACCEPT_UNKNOWN_FQDN_=280
+	,LIFETIME_=281
+	,ACCEPT_ONLY_=282
+	,REJECT_CLIENTS_=283
+	,POOL_=284
+	,SHARE_=285
+	,T1_=286
+	,T2_=287
+	,PREF_TIME_=288
+	,VALID_TIME_=289
+	,UNICAST_=290
+	,PREFERENCE_=291
+	,RAPID_COMMIT_=292
+	,IFACE_MAX_LEASE_=293
+	,CLASS_MAX_LEASE_=294
+	,CLNT_MAX_LEASE_=295
+	,STATELESS_=296
+	,CACHE_SIZE_=297
+	,PDCLASS_=298
+	,PD_LENGTH_=299
+	,PD_POOL_=300
+	,VENDOR_SPEC_=301
+	,CLIENT_=302
+	,DUID_KEYWORD_=303
+	,REMOTE_ID_=304
+	,ADDRESS_=305
+	,GUESS_MODE_=306
+	,INACTIVE_MODE_=307
+	,EXPERIMENTAL_=308
+	,ADDR_PARAMS_=309
+	,TUNNEL_MODE_=310
+	,EXTRA_=311
+	,AUTH_METHOD_=312
+	,AUTH_LIFETIME_=313
+	,AUTH_KEY_LEN_=314
+	,DIGEST_NONE_=315
+	,DIGEST_PLAIN_=316
+	,DIGEST_HMAC_MD5_=317
+	,DIGEST_HMAC_SHA1_=318
+	,DIGEST_HMAC_SHA224_=319
+	,DIGEST_HMAC_SHA256_=320
+	,DIGEST_HMAC_SHA384_=321
+	,DIGEST_HMAC_SHA512_=322
+	,ACCEPT_LEASEQUERY_=323
+	,STRING_=324
+	,HEXNUMBER_=325
+	,INTNUMBER_=326
+	,IPV6ADDR_=327
+	,DUID_=328
 
 
 #line 310 "../bison++/bison.cc"
@@ -699,54 +702,55 @@ const int YY_SrvParser_CLASS::NIS_DOMAIN_=276;
 const int YY_SrvParser_CLASS::NISP_SERVER_=277;
 const int YY_SrvParser_CLASS::NISP_DOMAIN_=278;
 const int YY_SrvParser_CLASS::FQDN_=279;
-const int YY_SrvParser_CLASS::LIFETIME_=280;
-const int YY_SrvParser_CLASS::ACCEPT_ONLY_=281;
-const int YY_SrvParser_CLASS::REJECT_CLIENTS_=282;
-const int YY_SrvParser_CLASS::POOL_=283;
-const int YY_SrvParser_CLASS::SHARE_=284;
-const int YY_SrvParser_CLASS::T1_=285;
-const int YY_SrvParser_CLASS::T2_=286;
-const int YY_SrvParser_CLASS::PREF_TIME_=287;
-const int YY_SrvParser_CLASS::VALID_TIME_=288;
-const int YY_SrvParser_CLASS::UNICAST_=289;
-const int YY_SrvParser_CLASS::PREFERENCE_=290;
-const int YY_SrvParser_CLASS::RAPID_COMMIT_=291;
-const int YY_SrvParser_CLASS::IFACE_MAX_LEASE_=292;
-const int YY_SrvParser_CLASS::CLASS_MAX_LEASE_=293;
-const int YY_SrvParser_CLASS::CLNT_MAX_LEASE_=294;
-const int YY_SrvParser_CLASS::STATELESS_=295;
-const int YY_SrvParser_CLASS::CACHE_SIZE_=296;
-const int YY_SrvParser_CLASS::PDCLASS_=297;
-const int YY_SrvParser_CLASS::PD_LENGTH_=298;
-const int YY_SrvParser_CLASS::PD_POOL_=299;
-const int YY_SrvParser_CLASS::VENDOR_SPEC_=300;
-const int YY_SrvParser_CLASS::CLIENT_=301;
-const int YY_SrvParser_CLASS::DUID_KEYWORD_=302;
-const int YY_SrvParser_CLASS::REMOTE_ID_=303;
-const int YY_SrvParser_CLASS::ADDRESS_=304;
-const int YY_SrvParser_CLASS::GUESS_MODE_=305;
-const int YY_SrvParser_CLASS::INACTIVE_MODE_=306;
-const int YY_SrvParser_CLASS::EXPERIMENTAL_=307;
-const int YY_SrvParser_CLASS::ADDR_PARAMS_=308;
-const int YY_SrvParser_CLASS::TUNNEL_MODE_=309;
-const int YY_SrvParser_CLASS::EXTRA_=310;
-const int YY_SrvParser_CLASS::AUTH_METHOD_=311;
-const int YY_SrvParser_CLASS::AUTH_LIFETIME_=312;
-const int YY_SrvParser_CLASS::AUTH_KEY_LEN_=313;
-const int YY_SrvParser_CLASS::DIGEST_NONE_=314;
-const int YY_SrvParser_CLASS::DIGEST_PLAIN_=315;
-const int YY_SrvParser_CLASS::DIGEST_HMAC_MD5_=316;
-const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA1_=317;
-const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA224_=318;
-const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA256_=319;
-const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA384_=320;
-const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA512_=321;
-const int YY_SrvParser_CLASS::ACCEPT_LEASEQUERY_=322;
-const int YY_SrvParser_CLASS::STRING_=323;
-const int YY_SrvParser_CLASS::HEXNUMBER_=324;
-const int YY_SrvParser_CLASS::INTNUMBER_=325;
-const int YY_SrvParser_CLASS::IPV6ADDR_=326;
-const int YY_SrvParser_CLASS::DUID_=327;
+const int YY_SrvParser_CLASS::ACCEPT_UNKNOWN_FQDN_=280;
+const int YY_SrvParser_CLASS::LIFETIME_=281;
+const int YY_SrvParser_CLASS::ACCEPT_ONLY_=282;
+const int YY_SrvParser_CLASS::REJECT_CLIENTS_=283;
+const int YY_SrvParser_CLASS::POOL_=284;
+const int YY_SrvParser_CLASS::SHARE_=285;
+const int YY_SrvParser_CLASS::T1_=286;
+const int YY_SrvParser_CLASS::T2_=287;
+const int YY_SrvParser_CLASS::PREF_TIME_=288;
+const int YY_SrvParser_CLASS::VALID_TIME_=289;
+const int YY_SrvParser_CLASS::UNICAST_=290;
+const int YY_SrvParser_CLASS::PREFERENCE_=291;
+const int YY_SrvParser_CLASS::RAPID_COMMIT_=292;
+const int YY_SrvParser_CLASS::IFACE_MAX_LEASE_=293;
+const int YY_SrvParser_CLASS::CLASS_MAX_LEASE_=294;
+const int YY_SrvParser_CLASS::CLNT_MAX_LEASE_=295;
+const int YY_SrvParser_CLASS::STATELESS_=296;
+const int YY_SrvParser_CLASS::CACHE_SIZE_=297;
+const int YY_SrvParser_CLASS::PDCLASS_=298;
+const int YY_SrvParser_CLASS::PD_LENGTH_=299;
+const int YY_SrvParser_CLASS::PD_POOL_=300;
+const int YY_SrvParser_CLASS::VENDOR_SPEC_=301;
+const int YY_SrvParser_CLASS::CLIENT_=302;
+const int YY_SrvParser_CLASS::DUID_KEYWORD_=303;
+const int YY_SrvParser_CLASS::REMOTE_ID_=304;
+const int YY_SrvParser_CLASS::ADDRESS_=305;
+const int YY_SrvParser_CLASS::GUESS_MODE_=306;
+const int YY_SrvParser_CLASS::INACTIVE_MODE_=307;
+const int YY_SrvParser_CLASS::EXPERIMENTAL_=308;
+const int YY_SrvParser_CLASS::ADDR_PARAMS_=309;
+const int YY_SrvParser_CLASS::TUNNEL_MODE_=310;
+const int YY_SrvParser_CLASS::EXTRA_=311;
+const int YY_SrvParser_CLASS::AUTH_METHOD_=312;
+const int YY_SrvParser_CLASS::AUTH_LIFETIME_=313;
+const int YY_SrvParser_CLASS::AUTH_KEY_LEN_=314;
+const int YY_SrvParser_CLASS::DIGEST_NONE_=315;
+const int YY_SrvParser_CLASS::DIGEST_PLAIN_=316;
+const int YY_SrvParser_CLASS::DIGEST_HMAC_MD5_=317;
+const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA1_=318;
+const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA224_=319;
+const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA256_=320;
+const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA384_=321;
+const int YY_SrvParser_CLASS::DIGEST_HMAC_SHA512_=322;
+const int YY_SrvParser_CLASS::ACCEPT_LEASEQUERY_=323;
+const int YY_SrvParser_CLASS::STRING_=324;
+const int YY_SrvParser_CLASS::HEXNUMBER_=325;
+const int YY_SrvParser_CLASS::INTNUMBER_=326;
+const int YY_SrvParser_CLASS::IPV6ADDR_=327;
+const int YY_SrvParser_CLASS::DUID_=328;
 
 
 #line 341 "../bison++/bison.cc"
@@ -765,18 +769,18 @@ YY_SrvParser_CONSTRUCTOR_CODE;
  #line 352 "../bison++/bison.cc"
 
 
-#define	YYFINAL		331
+#define	YYFINAL		332
 #define	YYFLAG		-32768
-#define	YYNTBASE	78
+#define	YYNTBASE	79
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 327 ? yytranslate[x] : 177)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 328 ? yytranslate[x] : 179)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,    76,    75,     2,    77,     2,     2,     2,
+     2,     2,     2,    77,    76,     2,    78,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -784,7 +788,7 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,    73,     2,    74,     2,     2,     2,     2,     2,
+     2,     2,    74,     2,    75,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -804,7 +808,7 @@ static const char yytranslate[] = {     0,
     36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
     46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
     56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
-    66,    67,    68,    69,    70,    71,    72
+    66,    67,    68,    69,    70,    71,    72,    73
 };
 
 #if YY_SrvParser_DEBUG != 0
@@ -813,91 +817,91 @@ static const short yyprhs[] = {     0,
     21,    23,    25,    27,    29,    31,    33,    35,    37,    39,
     41,    43,    45,    47,    49,    51,    53,    55,    57,    59,
     61,    63,    65,    67,    69,    71,    73,    75,    77,    79,
-    81,    83,    85,    87,    89,    91,    93,    94,   101,   102,
-   109,   111,   114,   116,   118,   121,   124,   125,   133,   134,
-   144,   146,   149,   151,   153,   155,   157,   159,   161,   163,
-   165,   167,   169,   171,   173,   175,   177,   179,   182,   183,
-   189,   191,   194,   195,   201,   203,   206,   208,   210,   212,
-   214,   216,   218,   219,   225,   227,   230,   232,   234,   236,
-   238,   240,   242,   245,   248,   251,   254,   257,   260,   263,
-   266,   269,   272,   274,   278,   282,   286,   292,   298,   300,
-   302,   304,   308,   312,   318,   320,   324,   326,   330,   334,
-   338,   344,   348,   350,   354,   358,   364,   366,   370,   374,
-   380,   381,   385,   386,   390,   391,   395,   396,   400,   403,
-   406,   411,   414,   419,   422,   425,   430,   433,   438,   441,
-   444,   447,   452,   453,   458,   462,   466,   472,   475,   478,
-   481,   484,   487,   490,   493,   496,   498,   500,   502,   504,
-   507,   510,   512,   515,   518,   521,   524,   526,   528,   530,
-   532,   534,   536,   538,   540,   542,   544,   545,   550,   551,
-   556,   557,   562,   566,   567,   572,   573,   578,   579,   584,
-   585,   591,   592,   599,   600,   605,   606,   611,   615,   619,
-   623,   624
+    81,    83,    85,    87,    89,    91,    93,    95,    96,   103,
+   104,   111,   113,   116,   118,   120,   123,   126,   127,   135,
+   136,   146,   148,   151,   153,   155,   157,   159,   161,   163,
+   165,   167,   169,   171,   173,   175,   177,   179,   181,   184,
+   185,   191,   193,   196,   197,   203,   205,   208,   210,   212,
+   214,   216,   218,   220,   221,   227,   229,   232,   234,   236,
+   238,   240,   242,   244,   247,   250,   253,   256,   259,   262,
+   265,   268,   271,   274,   276,   280,   284,   288,   294,   300,
+   302,   304,   306,   310,   314,   320,   322,   326,   328,   332,
+   336,   340,   346,   350,   352,   356,   360,   366,   368,   372,
+   376,   382,   383,   387,   388,   392,   393,   397,   398,   402,
+   405,   408,   413,   416,   421,   424,   427,   432,   435,   440,
+   443,   446,   449,   454,   455,   460,   464,   470,   473,   476,
+   479,   482,   485,   488,   491,   494,   496,   498,   500,   502,
+   505,   508,   510,   513,   516,   519,   522,   524,   526,   528,
+   530,   532,   534,   536,   538,   540,   542,   543,   548,   549,
+   554,   555,   560,   564,   565,   570,   571,   576,   577,   582,
+   583,   589,   590,   597,   599,   600,   605,   606,   611,   615,
+   619,   623,   624
 };
 
-static const short yyrhs[] = {    79,
-     0,     0,    80,     0,    82,     0,    79,    80,     0,    79,
-    82,     0,    81,     0,   140,     0,   139,     0,   141,     0,
-   142,     0,   143,     0,   148,     0,   103,     0,   104,     0,
-   105,     0,   146,     0,   147,     0,   144,     0,   131,     0,
-   152,     0,   150,     0,   151,     0,   149,     0,   136,     0,
-   138,     0,   137,     0,   135,     0,   128,     0,   153,     0,
-   155,     0,   157,     0,   159,     0,   160,     0,   162,     0,
-   164,     0,   168,     0,   172,     0,   170,     0,   173,     0,
-   174,     0,   132,     0,    99,     0,   175,     0,    86,     0,
-   145,     0,     0,     3,    68,    73,    83,    85,    74,     0,
-     0,     3,   107,    73,    84,    85,    74,     0,    81,     0,
-    85,    81,     0,    92,     0,    95,     0,    85,    95,     0,
-    85,    92,     0,     0,    46,    47,    72,    73,    87,    89,
-    74,     0,     0,    46,    48,   107,    75,    72,    73,    88,
-    89,    74,     0,    90,     0,    89,    90,     0,   153,     0,
-   155,     0,   157,     0,   159,     0,   160,     0,   162,     0,
-   168,     0,   172,     0,   170,     0,   173,     0,   174,     0,
-   175,     0,   132,     0,   131,     0,    91,     0,    49,    71,
-     0,     0,     7,    73,    93,    94,    74,     0,   152,     0,
-    94,   152,     0,     0,     8,    73,    96,    97,    74,     0,
-    98,     0,    97,    98,     0,   123,     0,   124,     0,   118,
-     0,   129,     0,   114,     0,   116,     0,     0,    42,    73,
-   100,   101,    74,     0,   102,     0,   102,   101,     0,   122,
-     0,   120,     0,   124,     0,   123,     0,   126,     0,   127,
-     0,    56,    59,     0,    56,    60,     0,    56,    61,     0,
-    56,    62,     0,    56,    63,     0,    56,    64,     0,    56,
-    65,     0,    56,    66,     0,    57,   107,     0,    58,   107,
-     0,    68,     0,    68,    75,    72,     0,    68,    75,    71,
-     0,   106,    76,    68,     0,   106,    76,    68,    75,    72,
-     0,   106,    76,    68,    75,    71,     0,    69,     0,    70,
-     0,    71,     0,   108,    76,    71,     0,   107,    75,    72,
-     0,   109,    76,   107,    75,    72,     0,    68,     0,   110,
-    76,    68,     0,    71,     0,    71,    75,    71,     0,    71,
-    77,    70,     0,   111,    76,    71,     0,   111,    76,    71,
-    75,    71,     0,    71,    77,    70,     0,    71,     0,    71,
-    75,    71,     0,   113,    76,    71,     0,   113,    76,    71,
-    75,    71,     0,    72,     0,    72,    75,    72,     0,   113,
-    76,    72,     0,   113,    76,    72,    75,    72,     0,     0,
-    27,   115,   113,     0,     0,    26,   117,   113,     0,     0,
-    28,   119,   111,     0,     0,    44,   121,   112,     0,    43,
-   107,     0,    32,   107,     0,    32,   107,    75,   107,     0,
-    33,   107,     0,    33,   107,    75,   107,     0,    29,   107,
-     0,    30,   107,     0,    30,   107,    75,   107,     0,    31,
-   107,     0,    31,   107,    75,   107,     0,    39,   107,     0,
-    38,   107,     0,    53,   107,     0,    54,   107,   107,    71,
-     0,     0,    13,    55,   133,   134,     0,   107,    75,    72,
-     0,   107,    75,    75,     0,   134,    76,   107,    75,    72,
-     0,    37,   107,     0,    34,    71,     0,    36,   107,     0,
-    35,   107,     0,    10,   107,     0,    11,    68,     0,     9,
-    68,     0,    12,    68,     0,    40,     0,    50,     0,    51,
-     0,    52,     0,     6,    68,     0,    41,   107,     0,    67,
-     0,    67,   107,     0,     4,    68,     0,     4,   107,     0,
-     5,   107,     0,   123,     0,   124,     0,   118,     0,   125,
-     0,   126,     0,   127,     0,   114,     0,   116,     0,   129,
-     0,   130,     0,     0,    13,    14,   154,   108,     0,     0,
-    13,    15,   156,   110,     0,     0,    13,    16,   158,   108,
-     0,    13,    17,    68,     0,     0,    13,    18,   161,   108,
-     0,     0,    13,    19,   163,   110,     0,     0,    13,    24,
-   165,   106,     0,     0,    13,    24,    70,   166,   106,     0,
-     0,    13,    24,    70,    70,   167,   106,     0,     0,    13,
-    20,   169,   108,     0,     0,    13,    22,   171,   108,     0,
-    13,    21,    68,     0,    13,    23,    68,     0,    13,    25,
-   107,     0,     0,    13,    45,   176,   109,     0
+static const short yyrhs[] = {    80,
+     0,     0,    81,     0,    83,     0,    80,    81,     0,    80,
+    83,     0,    82,     0,   141,     0,   140,     0,   142,     0,
+   143,     0,   144,     0,   149,     0,   104,     0,   105,     0,
+   106,     0,   147,     0,   148,     0,   145,     0,   132,     0,
+   153,     0,   151,     0,   152,     0,   150,     0,   137,     0,
+   139,     0,   138,     0,   136,     0,   129,     0,   154,     0,
+   156,     0,   158,     0,   160,     0,   161,     0,   163,     0,
+   165,     0,   169,     0,   170,     0,   174,     0,   172,     0,
+   175,     0,   176,     0,   133,     0,   100,     0,   177,     0,
+    87,     0,   146,     0,     0,     3,    69,    74,    84,    86,
+    75,     0,     0,     3,   108,    74,    85,    86,    75,     0,
+    82,     0,    86,    82,     0,    93,     0,    96,     0,    86,
+    96,     0,    86,    93,     0,     0,    47,    48,    73,    74,
+    88,    90,    75,     0,     0,    47,    49,   108,    76,    73,
+    74,    89,    90,    75,     0,    91,     0,    90,    91,     0,
+   154,     0,   156,     0,   158,     0,   160,     0,   161,     0,
+   163,     0,   170,     0,   174,     0,   172,     0,   175,     0,
+   176,     0,   177,     0,   133,     0,   132,     0,    92,     0,
+    50,    72,     0,     0,     7,    74,    94,    95,    75,     0,
+   153,     0,    95,   153,     0,     0,     8,    74,    97,    98,
+    75,     0,    99,     0,    98,    99,     0,   124,     0,   125,
+     0,   119,     0,   130,     0,   115,     0,   117,     0,     0,
+    43,    74,   101,   102,    75,     0,   103,     0,   103,   102,
+     0,   123,     0,   121,     0,   125,     0,   124,     0,   127,
+     0,   128,     0,    57,    60,     0,    57,    61,     0,    57,
+    62,     0,    57,    63,     0,    57,    64,     0,    57,    65,
+     0,    57,    66,     0,    57,    67,     0,    58,   108,     0,
+    59,   108,     0,    69,     0,    69,    76,    73,     0,    69,
+    76,    72,     0,   107,    77,    69,     0,   107,    77,    69,
+    76,    73,     0,   107,    77,    69,    76,    72,     0,    70,
+     0,    71,     0,    72,     0,   109,    77,    72,     0,   108,
+    76,    73,     0,   110,    77,   108,    76,    73,     0,    69,
+     0,   111,    77,    69,     0,    72,     0,    72,    76,    72,
+     0,    72,    78,    71,     0,   112,    77,    72,     0,   112,
+    77,    72,    76,    72,     0,    72,    78,    71,     0,    72,
+     0,    72,    76,    72,     0,   114,    77,    72,     0,   114,
+    77,    72,    76,    72,     0,    73,     0,    73,    76,    73,
+     0,   114,    77,    73,     0,   114,    77,    73,    76,    73,
+     0,     0,    28,   116,   114,     0,     0,    27,   118,   114,
+     0,     0,    29,   120,   112,     0,     0,    45,   122,   113,
+     0,    44,   108,     0,    33,   108,     0,    33,   108,    76,
+   108,     0,    34,   108,     0,    34,   108,    76,   108,     0,
+    30,   108,     0,    31,   108,     0,    31,   108,    76,   108,
+     0,    32,   108,     0,    32,   108,    76,   108,     0,    40,
+   108,     0,    39,   108,     0,    54,   108,     0,    55,   108,
+   108,    72,     0,     0,    13,    56,   134,   135,     0,   108,
+    76,    73,     0,   135,    77,   108,    76,    73,     0,    38,
+   108,     0,    35,    72,     0,    37,   108,     0,    36,   108,
+     0,    10,   108,     0,    11,    69,     0,     9,    69,     0,
+    12,    69,     0,    41,     0,    51,     0,    52,     0,    53,
+     0,     6,    69,     0,    42,   108,     0,    68,     0,    68,
+   108,     0,     4,    69,     0,     4,   108,     0,     5,   108,
+     0,   124,     0,   125,     0,   119,     0,   126,     0,   127,
+     0,   128,     0,   115,     0,   117,     0,   130,     0,   131,
+     0,     0,    13,    14,   155,   109,     0,     0,    13,    15,
+   157,   111,     0,     0,    13,    16,   159,   109,     0,    13,
+    17,    69,     0,     0,    13,    18,   162,   109,     0,     0,
+    13,    19,   164,   111,     0,     0,    13,    24,   166,   107,
+     0,     0,    13,    24,    71,   167,   107,     0,     0,    13,
+    24,    71,    71,   168,   107,     0,    25,     0,     0,    13,
+    20,   171,   109,     0,     0,    13,    22,   173,   109,     0,
+    13,    21,    69,     0,    13,    23,    69,     0,    13,    26,
+   108,     0,     0,    13,    46,   178,   110,     0
 };
 
 #endif
@@ -908,85 +912,85 @@ static const short yyrline[] = { 0,
    137,   138,   139,   140,   141,   142,   143,   144,   145,   146,
    150,   151,   152,   153,   154,   155,   156,   157,   158,   159,
    160,   161,   162,   163,   164,   165,   166,   167,   168,   169,
-   170,   171,   172,   173,   174,   175,   180,   185,   194,   200,
-   207,   208,   209,   210,   211,   212,   216,   222,   230,   236,
-   245,   246,   250,   251,   252,   253,   254,   255,   256,   257,
-   258,   259,   260,   261,   262,   263,   264,   267,   276,   281,
-   289,   290,   295,   298,   306,   307,   310,   311,   312,   313,
-   314,   315,   319,   322,   330,   331,   334,   335,   336,   337,
-   338,   339,   347,   348,   349,   350,   351,   352,   353,   354,
-   358,   362,   370,   375,   382,   389,   394,   401,   411,   412,
-   416,   420,   427,   432,   440,   441,   445,   449,   458,   474,
-   478,   490,   513,   517,   526,   530,   539,   544,   554,   559,
-   573,   577,   583,   587,   593,   597,   603,   606,   611,   618,
-   623,   631,   636,   644,   656,   661,   669,   674,   682,   689,
-   696,   709,   742,   751,   756,   761,   766,   774,   781,   788,
-   803,   815,   821,   826,   833,   840,   847,   854,   860,   867,
-   888,   895,   900,   920,   924,   931,   938,   939,   940,   941,
-   942,   943,   944,   945,   946,   947,   955,   959,   968,   971,
-   980,   984,   993,  1003,  1006,  1015,  1018,  1028,  1036,  1039,
-  1047,  1051,  1059,  1069,  1072,  1081,  1084,  1093,  1103,  1113,
-  1120,  1123
+   170,   171,   172,   173,   174,   175,   176,   181,   186,   195,
+   201,   208,   209,   210,   211,   212,   213,   217,   223,   231,
+   237,   246,   247,   251,   252,   253,   254,   255,   256,   257,
+   258,   259,   260,   261,   262,   263,   264,   265,   268,   277,
+   282,   290,   291,   296,   299,   307,   308,   311,   312,   313,
+   314,   315,   316,   320,   323,   331,   332,   335,   336,   337,
+   338,   339,   340,   348,   349,   350,   351,   352,   353,   354,
+   355,   359,   363,   371,   376,   383,   390,   395,   402,   412,
+   413,   417,   421,   428,   433,   441,   442,   446,   450,   459,
+   475,   479,   491,   514,   518,   527,   531,   540,   545,   555,
+   560,   574,   578,   584,   588,   594,   598,   604,   607,   612,
+   619,   624,   632,   637,   645,   657,   662,   670,   675,   683,
+   690,   697,   710,   744,   753,   758,   763,   771,   778,   785,
+   800,   812,   818,   823,   830,   837,   844,   851,   857,   864,
+   885,   892,   897,   917,   921,   928,   935,   936,   937,   938,
+   939,   940,   941,   942,   943,   944,   952,   956,   965,   968,
+   977,   981,   990,  1000,  1003,  1012,  1015,  1025,  1033,  1036,
+  1044,  1048,  1056,  1063,  1073,  1076,  1085,  1088,  1097,  1107,
+  1117,  1124,  1127
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","RELAY_",
 "IFACE_ID_","IFACE_ID_ORDER_","CLASS_","TACLASS_","LOGNAME_","LOGLEVEL_","LOGMODE_",
 "WORKDIR_","OPTION_","DNS_SERVER_","DOMAIN_","NTP_SERVER_","TIME_ZONE_","SIP_SERVER_",
 "SIP_DOMAIN_","NIS_SERVER_","NIS_DOMAIN_","NISP_SERVER_","NISP_DOMAIN_","FQDN_",
-"LIFETIME_","ACCEPT_ONLY_","REJECT_CLIENTS_","POOL_","SHARE_","T1_","T2_","PREF_TIME_",
-"VALID_TIME_","UNICAST_","PREFERENCE_","RAPID_COMMIT_","IFACE_MAX_LEASE_","CLASS_MAX_LEASE_",
-"CLNT_MAX_LEASE_","STATELESS_","CACHE_SIZE_","PDCLASS_","PD_LENGTH_","PD_POOL_",
-"VENDOR_SPEC_","CLIENT_","DUID_KEYWORD_","REMOTE_ID_","ADDRESS_","GUESS_MODE_",
-"INACTIVE_MODE_","EXPERIMENTAL_","ADDR_PARAMS_","TUNNEL_MODE_","EXTRA_","AUTH_METHOD_",
-"AUTH_LIFETIME_","AUTH_KEY_LEN_","DIGEST_NONE_","DIGEST_PLAIN_","DIGEST_HMAC_MD5_",
-"DIGEST_HMAC_SHA1_","DIGEST_HMAC_SHA224_","DIGEST_HMAC_SHA256_","DIGEST_HMAC_SHA384_",
-"DIGEST_HMAC_SHA512_","ACCEPT_LEASEQUERY_","STRING_","HEXNUMBER_","INTNUMBER_",
-"IPV6ADDR_","DUID_","'{'","'}'","'-'","','","'/'","Grammar","GlobalDeclarationList",
-"GlobalOption","InterfaceOptionDeclaration","InterfaceDeclaration","@1","@2",
-"InterfaceDeclarationsList","Client","@3","@4","ClientOptions","ClientOption",
-"AddressReservation","ClassDeclaration","@5","ClassOptionDeclarationsList","TAClassDeclaration",
-"@6","TAClassOptionsList","TAClassOption","PDDeclaration","@7","PDOptionsList",
-"PDOptions","AuthMethod","AuthLifetime","AuthKeyGenNonceLen","FQDNList","Number",
-"ADDRESSList","VendorSpecList","StringList","ADDRESSRangeList","PDRangeList",
-"ADDRESSDUIDRangeList","RejectClientsOption","@8","AcceptOnlyOption","@9","PoolOption",
-"@10","PDPoolOption","@11","PDLength","PreferredTimeOption","ValidTimeOption",
-"ShareOption","T1Option","T2Option","ClntMaxLeaseOption","ClassMaxLeaseOption",
-"AddrParams","TunnelMode","ExtraOptions","@12","ExtraOptsList","IfaceMaxLeaseOption",
-"UnicastAddressOption","RapidCommitOption","PreferenceOption","LogLevelOption",
-"LogModeOption","LogNameOption","WorkDirOption","StatelessOption","GuessMode",
-"InactiveMode","Experimental","IfaceIDOrder","CacheSizeOption","AcceptLeaseQuery",
-"RelayOption","InterfaceIDOption","ClassOptionDeclaration","DNSServerOption",
-"@13","DomainOption","@14","NTPServerOption","@15","TimeZoneOption","SIPServerOption",
-"@16","SIPDomainOption","@17","FQDNOption","@18","@19","@20","NISServerOption",
-"@21","NISPServerOption","@22","NISDomainOption","NISPDomainOption","LifetimeOption",
-"VendorSpecOption","@23",""
+"ACCEPT_UNKNOWN_FQDN_","LIFETIME_","ACCEPT_ONLY_","REJECT_CLIENTS_","POOL_",
+"SHARE_","T1_","T2_","PREF_TIME_","VALID_TIME_","UNICAST_","PREFERENCE_","RAPID_COMMIT_",
+"IFACE_MAX_LEASE_","CLASS_MAX_LEASE_","CLNT_MAX_LEASE_","STATELESS_","CACHE_SIZE_",
+"PDCLASS_","PD_LENGTH_","PD_POOL_","VENDOR_SPEC_","CLIENT_","DUID_KEYWORD_",
+"REMOTE_ID_","ADDRESS_","GUESS_MODE_","INACTIVE_MODE_","EXPERIMENTAL_","ADDR_PARAMS_",
+"TUNNEL_MODE_","EXTRA_","AUTH_METHOD_","AUTH_LIFETIME_","AUTH_KEY_LEN_","DIGEST_NONE_",
+"DIGEST_PLAIN_","DIGEST_HMAC_MD5_","DIGEST_HMAC_SHA1_","DIGEST_HMAC_SHA224_",
+"DIGEST_HMAC_SHA256_","DIGEST_HMAC_SHA384_","DIGEST_HMAC_SHA512_","ACCEPT_LEASEQUERY_",
+"STRING_","HEXNUMBER_","INTNUMBER_","IPV6ADDR_","DUID_","'{'","'}'","'-'","','",
+"'/'","Grammar","GlobalDeclarationList","GlobalOption","InterfaceOptionDeclaration",
+"InterfaceDeclaration","@1","@2","InterfaceDeclarationsList","Client","@3","@4",
+"ClientOptions","ClientOption","AddressReservation","ClassDeclaration","@5",
+"ClassOptionDeclarationsList","TAClassDeclaration","@6","TAClassOptionsList",
+"TAClassOption","PDDeclaration","@7","PDOptionsList","PDOptions","AuthMethod",
+"AuthLifetime","AuthKeyGenNonceLen","FQDNList","Number","ADDRESSList","VendorSpecList",
+"StringList","ADDRESSRangeList","PDRangeList","ADDRESSDUIDRangeList","RejectClientsOption",
+"@8","AcceptOnlyOption","@9","PoolOption","@10","PDPoolOption","@11","PDLength",
+"PreferredTimeOption","ValidTimeOption","ShareOption","T1Option","T2Option",
+"ClntMaxLeaseOption","ClassMaxLeaseOption","AddrParams","TunnelMode","ExtraOptions",
+"@12","ExtraOptsList","IfaceMaxLeaseOption","UnicastAddressOption","RapidCommitOption",
+"PreferenceOption","LogLevelOption","LogModeOption","LogNameOption","WorkDirOption",
+"StatelessOption","GuessMode","InactiveMode","Experimental","IfaceIDOrder","CacheSizeOption",
+"AcceptLeaseQuery","RelayOption","InterfaceIDOption","ClassOptionDeclaration",
+"DNSServerOption","@13","DomainOption","@14","NTPServerOption","@15","TimeZoneOption",
+"SIPServerOption","@16","SIPDomainOption","@17","FQDNOption","@18","@19","@20",
+"AcceptUnknownFQDN","NISServerOption","@21","NISPServerOption","@22","NISDomainOption",
+"NISPDomainOption","LifetimeOption","VendorSpecOption","@23",""
 };
 #endif
 
 static const short yyr1[] = {     0,
-    78,    78,    79,    79,    79,    79,    80,    80,    80,    80,
-    80,    80,    80,    80,    80,    80,    80,    80,    80,    80,
+    79,    79,    80,    80,    80,    80,    81,    81,    81,    81,
     81,    81,    81,    81,    81,    81,    81,    81,    81,    81,
-    81,    81,    81,    81,    81,    81,    81,    81,    81,    81,
-    81,    81,    81,    81,    81,    81,    83,    82,    84,    82,
-    85,    85,    85,    85,    85,    85,    87,    86,    88,    86,
-    89,    89,    90,    90,    90,    90,    90,    90,    90,    90,
-    90,    90,    90,    90,    90,    90,    90,    91,    93,    92,
-    94,    94,    96,    95,    97,    97,    98,    98,    98,    98,
-    98,    98,   100,    99,   101,   101,   102,   102,   102,   102,
-   102,   102,   103,   103,   103,   103,   103,   103,   103,   103,
-   104,   105,   106,   106,   106,   106,   106,   106,   107,   107,
-   108,   108,   109,   109,   110,   110,   111,   111,   111,   111,
-   111,   112,   113,   113,   113,   113,   113,   113,   113,   113,
-   115,   114,   117,   116,   119,   118,   121,   120,   122,   123,
-   123,   124,   124,   125,   126,   126,   127,   127,   128,   129,
-   130,   131,   133,   132,   134,   134,   134,   135,   136,   137,
-   138,   139,   140,   141,   142,   143,   144,   145,   146,   147,
-   148,   149,   149,   150,   150,   151,   152,   152,   152,   152,
-   152,   152,   152,   152,   152,   152,   154,   153,   156,   155,
-   158,   157,   159,   161,   160,   163,   162,   165,   164,   166,
-   164,   167,   164,   169,   168,   171,   170,   172,   173,   174,
-   176,   175
+    82,    82,    82,    82,    82,    82,    82,    82,    82,    82,
+    82,    82,    82,    82,    82,    82,    82,    82,    82,    82,
+    82,    82,    82,    82,    82,    82,    82,    84,    83,    85,
+    83,    86,    86,    86,    86,    86,    86,    88,    87,    89,
+    87,    90,    90,    91,    91,    91,    91,    91,    91,    91,
+    91,    91,    91,    91,    91,    91,    91,    91,    92,    94,
+    93,    95,    95,    97,    96,    98,    98,    99,    99,    99,
+    99,    99,    99,   101,   100,   102,   102,   103,   103,   103,
+   103,   103,   103,   104,   104,   104,   104,   104,   104,   104,
+   104,   105,   106,   107,   107,   107,   107,   107,   107,   108,
+   108,   109,   109,   110,   110,   111,   111,   112,   112,   112,
+   112,   112,   113,   114,   114,   114,   114,   114,   114,   114,
+   114,   116,   115,   118,   117,   120,   119,   122,   121,   123,
+   124,   124,   125,   125,   126,   127,   127,   128,   128,   129,
+   130,   131,   132,   134,   133,   135,   135,   136,   137,   138,
+   139,   140,   141,   142,   143,   144,   145,   146,   147,   148,
+   149,   150,   150,   151,   151,   152,   153,   153,   153,   153,
+   153,   153,   153,   153,   153,   153,   155,   154,   157,   156,
+   159,   158,   160,   162,   161,   164,   163,   166,   165,   167,
+   165,   168,   165,   169,   171,   170,   173,   172,   174,   175,
+   176,   178,   177
 };
 
 static const short yyr2[] = {     0,
@@ -994,233 +998,225 @@ static const short yyr2[] = {     0,
      1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
      1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
      1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-     1,     1,     1,     1,     1,     1,     0,     6,     0,     6,
-     1,     2,     1,     1,     2,     2,     0,     7,     0,     9,
-     1,     2,     1,     1,     1,     1,     1,     1,     1,     1,
-     1,     1,     1,     1,     1,     1,     1,     2,     0,     5,
-     1,     2,     0,     5,     1,     2,     1,     1,     1,     1,
-     1,     1,     0,     5,     1,     2,     1,     1,     1,     1,
-     1,     1,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     1,     3,     3,     3,     5,     5,     1,     1,
-     1,     3,     3,     5,     1,     3,     1,     3,     3,     3,
-     5,     3,     1,     3,     3,     5,     1,     3,     3,     5,
-     0,     3,     0,     3,     0,     3,     0,     3,     2,     2,
-     4,     2,     4,     2,     2,     4,     2,     4,     2,     2,
-     2,     4,     0,     4,     3,     3,     5,     2,     2,     2,
+     1,     1,     1,     1,     1,     1,     1,     0,     6,     0,
+     6,     1,     2,     1,     1,     2,     2,     0,     7,     0,
+     9,     1,     2,     1,     1,     1,     1,     1,     1,     1,
+     1,     1,     1,     1,     1,     1,     1,     1,     2,     0,
+     5,     1,     2,     0,     5,     1,     2,     1,     1,     1,
+     1,     1,     1,     0,     5,     1,     2,     1,     1,     1,
+     1,     1,     1,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     1,     3,     3,     3,     5,     5,     1,
+     1,     1,     3,     3,     5,     1,     3,     1,     3,     3,
+     3,     5,     3,     1,     3,     3,     5,     1,     3,     3,
+     5,     0,     3,     0,     3,     0,     3,     0,     3,     2,
+     2,     4,     2,     4,     2,     2,     4,     2,     4,     2,
+     2,     2,     4,     0,     4,     3,     5,     2,     2,     2,
      2,     2,     2,     2,     2,     1,     1,     1,     1,     2,
      2,     1,     2,     2,     2,     2,     1,     1,     1,     1,
      1,     1,     1,     1,     1,     1,     0,     4,     0,     4,
      0,     4,     3,     0,     4,     0,     4,     0,     4,     0,
-     5,     0,     6,     0,     4,     0,     4,     3,     3,     3,
-     0,     4
+     5,     0,     6,     1,     0,     4,     0,     4,     3,     3,
+     3,     0,     4
 };
 
 static const short yydefact[] = {     2,
-     0,     0,     0,     0,     0,     0,     0,     0,     0,   143,
-   141,   145,     0,     0,     0,     0,     0,     0,     0,     0,
-     0,     0,     0,   176,     0,     0,     0,   177,   178,   179,
-     0,     0,     0,     0,     0,   182,     1,     3,     7,     4,
-    45,    43,    14,    15,    16,   193,   194,   189,   187,   188,
-   190,   191,   192,    29,   195,   196,    20,    42,    28,    25,
-    27,    26,     9,     8,    10,    11,    12,    19,    46,    17,
-    18,    13,    24,    22,    23,    21,    30,    31,    32,    33,
-    34,    35,    36,    37,    39,    38,    40,    41,    44,     0,
-   119,   120,     0,   184,   185,   186,   180,   174,   172,   173,
-   175,   197,   199,   201,     0,   204,   206,   214,     0,   216,
-     0,   208,     0,   221,   163,     0,     0,     0,   154,   155,
-   157,   150,   152,   169,   171,   170,   168,   160,   159,   181,
-    93,     0,     0,   161,     0,   103,   104,   105,   106,   107,
-   108,   109,   110,   111,   112,   183,     5,     6,    47,    49,
-     0,     0,     0,   203,     0,     0,     0,   218,     0,   219,
-   210,     0,   220,     0,     0,   133,   137,   144,   142,   127,
-   146,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     0,   121,   198,   125,   200,   202,   205,   207,   215,   217,
-   212,     0,   113,   209,     0,   222,     0,   164,     0,     0,
-     0,     0,     0,     0,   156,   158,   151,   153,     0,   147,
-     0,    95,    98,    97,   100,    99,   101,   102,    57,     0,
-   162,     0,     0,    51,     0,    53,    54,     0,     0,     0,
-     0,   211,     0,     0,     0,     0,     0,     0,   134,   138,
-   135,   139,   128,   129,   130,   149,     0,    94,    96,     0,
-     0,    79,    83,    48,    52,    56,    55,    50,   122,   126,
-   213,   115,   114,   116,   123,     0,   165,   166,     0,     0,
-     0,     0,     0,   148,     0,     0,     0,    61,    77,    76,
-    75,    63,    64,    65,    66,    67,    68,    69,    71,    70,
-    72,    73,    74,    59,     0,     0,     0,     0,     0,   136,
-   140,   131,     0,    78,    58,    62,     0,     0,    81,     0,
-    85,    91,    92,    89,    87,    88,    90,   118,   117,   124,
-   167,   132,     0,    80,    82,    84,    86,    60,     0,     0,
-     0
+     0,     0,     0,     0,     0,     0,     0,     0,     0,   214,
+   144,   142,   146,     0,     0,     0,     0,     0,     0,     0,
+     0,     0,     0,     0,   176,     0,     0,     0,   177,   178,
+   179,     0,     0,     0,     0,     0,   182,     1,     3,     7,
+     4,    46,    44,    14,    15,    16,   193,   194,   189,   187,
+   188,   190,   191,   192,    29,   195,   196,    20,    43,    28,
+    25,    27,    26,     9,     8,    10,    11,    12,    19,    47,
+    17,    18,    13,    24,    22,    23,    21,    30,    31,    32,
+    33,    34,    35,    36,    37,    38,    40,    39,    41,    42,
+    45,     0,   120,   121,     0,   184,   185,   186,   180,   174,
+   172,   173,   175,   197,   199,   201,     0,   204,   206,   215,
+     0,   217,     0,   208,     0,   222,   164,     0,     0,     0,
+   155,   156,   158,   151,   153,   169,   171,   170,   168,   161,
+   160,   181,    94,     0,     0,   162,     0,   104,   105,   106,
+   107,   108,   109,   110,   111,   112,   113,   183,     5,     6,
+    48,    50,     0,     0,     0,   203,     0,     0,     0,   219,
+     0,   220,   210,     0,   221,     0,     0,   134,   138,   145,
+   143,   128,   147,     0,     0,     0,     0,     0,     0,     0,
+     0,     0,     0,   122,   198,   126,   200,   202,   205,   207,
+   216,   218,   212,     0,   114,   209,     0,   223,     0,   165,
+     0,     0,     0,     0,     0,     0,   157,   159,   152,   154,
+     0,   148,     0,    96,    99,    98,   101,   100,   102,   103,
+    58,     0,   163,     0,     0,    52,     0,    54,    55,     0,
+     0,     0,     0,   211,     0,     0,     0,     0,     0,     0,
+   135,   139,   136,   140,   129,   130,   131,   150,     0,    95,
+    97,     0,     0,    80,    84,    49,    53,    57,    56,    51,
+   123,   127,   213,   116,   115,   117,   124,     0,   166,     0,
+     0,     0,     0,     0,   149,     0,     0,     0,    62,    78,
+    77,    76,    64,    65,    66,    67,    68,    69,    70,    72,
+    71,    73,    74,    75,    60,     0,     0,     0,     0,     0,
+   137,   141,   132,     0,    79,    59,    63,     0,     0,    82,
+     0,    86,    92,    93,    90,    88,    89,    91,   119,   118,
+   125,   167,   133,     0,    81,    83,    85,    87,    61,     0,
+     0,     0
 };
 
-static const short yydefgoto[] = {   329,
-    37,    38,    39,    40,   180,   181,   225,    41,   250,   307,
-   277,   278,   279,   226,   295,   308,   227,   296,   310,   311,
-    42,   176,   211,   212,    43,    44,    45,   194,    93,   183,
-   196,   185,   171,   274,   168,    46,   117,    47,   116,    48,
-   118,   213,   247,   214,    49,    50,    51,    52,    53,    54,
-    55,    56,   280,    58,   165,   198,    59,    60,    61,    62,
-    63,    64,    65,    66,    67,    68,    69,    70,    71,    72,
-    73,    74,    75,    76,    77,   151,    78,   152,    79,   153,
-    80,    81,   155,    82,   156,    83,   162,   192,   231,    84,
-   157,    85,   159,    86,    87,    88,    89,   164
+static const short yydefgoto[] = {   330,
+    38,    39,    40,    41,   182,   183,   227,    42,   252,   308,
+   278,   279,   280,   228,   296,   309,   229,   297,   311,   312,
+    43,   178,   213,   214,    44,    45,    46,   196,    95,   185,
+   198,   187,   173,   275,   170,    47,   119,    48,   118,    49,
+   120,   215,   249,   216,    50,    51,    52,    53,    54,    55,
+    56,    57,   281,    59,   167,   200,    60,    61,    62,    63,
+    64,    65,    66,    67,    68,    69,    70,    71,    72,    73,
+    74,    75,    76,    77,    78,   153,    79,   154,    80,   155,
+    81,    82,   157,    83,   158,    84,   164,   194,   233,    85,
+    86,   159,    87,   161,    88,    89,    90,    91,   166
 };
 
-static const short yypact[] = {   263,
-    57,    98,    50,   -42,   -16,    50,    -4,    18,   386,-32768,
--32768,-32768,    50,    50,    50,    50,    50,    42,    50,    50,
-    50,    50,    50,-32768,    50,    55,   110,-32768,-32768,-32768,
-    50,    50,   167,    50,    50,    50,   263,-32768,-32768,-32768,
+static const short yypact[] = {   264,
+    72,    98,    92,   -62,   -43,    92,   -21,   -15,   375,-32768,
+-32768,-32768,-32768,    92,    92,    92,    92,    92,   -13,    92,
+    92,    92,    92,    92,-32768,    92,    -3,    59,-32768,-32768,
+-32768,    92,    92,   376,    92,    92,    92,   264,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    62,
--32768,-32768,    78,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,    86,-32768,-32768,-32768,    96,-32768,
-   101,    60,    50,-32768,-32768,   117,   117,   134,-32768,   138,
-   143,   146,   149,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,   140,    50,-32768,    50,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
-   152,   169,   152,-32768,   152,   169,   152,-32768,   152,-32768,
-   144,   184,-32768,    50,    50,   160,   178,   179,   179,   -18,
-   180,    50,    50,    50,    50,   116,   186,   182,   189,   318,
-   318,-32768,   185,-32768,   188,   185,   185,   188,   185,   185,
--32768,   184,   187,   194,   196,   201,   203,   204,   210,   211,
-   124,   213,   215,   216,-32768,-32768,-32768,-32768,    50,-32768,
-   208,   116,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   234,
--32768,   235,   237,-32768,   148,-32768,-32768,   212,   217,   239,
-   184,   194,   137,   243,   240,    50,    15,    50,-32768,-32768,
-   249,   252,-32768,-32768,   253,-32768,   247,-32768,-32768,    80,
-   256,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
-   194,-32768,-32768,   257,-32768,   258,-32768,-32768,   259,   264,
-   265,   267,   262,-32768,   428,   269,    43,-32768,-32768,-32768,
+-32768,     2,-32768,-32768,    30,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,    46,-32768,-32768,-32768,
+    51,-32768,    63,    81,    92,-32768,-32768,   138,   138,    62,
+-32768,    79,    94,   100,   118,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,   125,    92,-32768,    92,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,   112,   165,   139,   270,   271,-32768,
--32768,-32768,   266,-32768,-32768,-32768,    80,   346,-32768,   354,
+-32768,-32768,    99,   133,    99,-32768,    99,   133,    99,-32768,
+    99,-32768,   135,   139,-32768,    92,    92,   128,   148,   141,
+   141,   101,   149,    92,    92,    92,    92,    95,   155,   151,
+   158,   320,   320,-32768,   154,-32768,   156,   154,   154,   156,
+   154,   154,-32768,   139,   159,   157,   177,   179,   178,   180,
+   160,   185,   140,   188,   190,   191,-32768,-32768,-32768,-32768,
+    92,-32768,   187,    95,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,   192,-32768,   197,   198,-32768,   153,-32768,-32768,   212,
+   206,   210,   139,   157,   142,   213,   208,    92,   211,    92,
+-32768,-32768,   207,   209,-32768,-32768,   214,-32768,   216,-32768,
+-32768,    75,   234,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,   157,-32768,-32768,   233,-32768,   236,-32768,   237,
+   238,   241,   248,   251,-32768,   388,   254,    37,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,    58,-32768,-32768,-32768,-32768,-32768,   341,   358,
--32768
+-32768,-32768,-32768,-32768,-32768,   396,   117,   150,   257,   258,
+-32768,-32768,-32768,   215,-32768,-32768,-32768,    75,   307,-32768,
+   120,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,    56,-32768,-32768,-32768,-32768,-32768,   342,
+   343,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,   322,  -175,   324,-32768,-32768,   181,-32768,-32768,-32768,
-    56,  -253,-32768,  -134,-32768,-32768,  -119,-32768,-32768,    73,
--32768,-32768,   153,-32768,-32768,-32768,-32768,  -185,    -2,    47,
--32768,   214,-32768,-32768,   250,  -249,-32768,  -236,-32768,  -233,
--32768,-32768,-32768,-32768,  -174,  -173,-32768,  -136,  -132,-32768,
-  -200,-32768,    25,  -242,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,   306,  -174,   324,-32768,-32768,   181,-32768,-32768,-32768,
+    57,  -238,-32768,  -150,-32768,-32768,  -131,-32768,-32768,    55,
+-32768,-32768,   161,-32768,-32768,-32768,-32768,  -149,    -2,    42,
+-32768,   218,-32768,-32768,   249,  -236,-32768,  -194,-32768,  -192,
+-32768,-32768,-32768,-32768,  -175,  -173,-32768,  -151,  -121,-32768,
+  -188,-32768,    52,  -250,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,  -192,  -241,-32768,  -240,-32768,  -234,-32768,
-  -228,  -223,-32768,  -222,-32768,-32768,-32768,-32768,-32768,  -219,
--32768,  -209,-32768,  -208,  -205,  -202,  -199,-32768
+-32768,-32768,-32768,  -249,  -246,-32768,  -242,-32768,  -241,-32768,
+  -235,  -229,-32768,  -227,-32768,-32768,-32768,-32768,-32768,-32768,
+  -223,-32768,  -214,-32768,  -210,  -208,  -206,  -187,-32768
 };
 
 
-#define	YYLAST		483
+#define	YYLAST		450
 
 
-static const short yytable[] = {    95,
-    96,   215,   216,    99,   224,   224,   232,   281,   282,   283,
-   119,   120,   121,   122,   123,   284,   125,   126,   127,   128,
-   129,   285,   130,   306,    57,    97,   286,   287,   134,   135,
-   288,   144,   145,   146,   281,   282,   283,   215,   216,   217,
-   289,   290,   284,   218,   291,   261,   312,   292,   285,   255,
-   293,    98,   255,   286,   287,   275,   202,   288,   203,   313,
-   312,    57,   314,   100,   281,   282,   283,   289,   290,   306,
-   275,   291,   284,   313,   292,   217,   314,   293,   285,   218,
-   281,   282,   283,   286,   287,   101,   267,   288,   284,   268,
-   256,   276,   275,   256,   285,   317,    32,   289,   290,   286,
-   287,   291,   309,   288,   292,   257,   276,   293,   257,   317,
-   163,    32,   124,   289,   290,   325,   305,   291,    91,    92,
-   292,   315,   316,   293,    90,    91,    92,   131,   276,   161,
-   178,   328,   179,    32,   149,   315,   316,    10,    11,    12,
-    13,    14,    15,    16,    17,    14,    15,    16,    17,    22,
-   150,     2,     3,   154,   222,   223,   132,   133,   209,   210,
-     9,   195,   197,   158,    31,    94,    91,    92,   160,   205,
-   206,   207,   208,    10,    11,    12,    13,    14,    15,    16,
-    17,    18,    19,    20,    21,    22,    23,   166,   167,    26,
-    10,    11,    12,    27,   241,   242,    16,    17,    29,   186,
-    31,   187,    22,   189,   170,   190,   246,   262,   263,   318,
-   319,   177,   172,   191,    36,     2,     3,   173,   222,   223,
-   174,   254,   182,   175,     9,   136,   137,   138,   139,   140,
-   141,   142,   143,   266,   199,   269,   184,    10,    11,    12,
-    13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-    23,   193,   200,    26,   201,   204,   220,    27,   219,   221,
-   229,   233,    29,   230,    31,     1,     2,     3,     4,   234,
-   235,     5,     6,     7,     8,     9,   236,   237,    36,   238,
-   239,   248,   240,   243,   244,   258,   245,   259,    10,    11,
+static const short yytable[] = {    97,
+    98,   282,   217,   101,   218,   283,    99,   226,   226,   284,
+   285,   121,   122,   123,   124,   125,   286,   127,   128,   129,
+   130,   131,   287,   132,   288,   100,   219,   282,   289,   136,
+   137,   283,   146,   147,   148,   284,   285,   290,   217,   307,
+   218,   291,   286,   292,   234,   293,   310,   102,   287,   276,
+   288,    58,   257,   103,   289,   257,   220,   282,   126,   326,
+   313,   283,   219,   290,   294,   284,   285,   291,   276,   292,
+   133,   293,   286,   282,   313,   151,   258,   283,   287,   258,
+   288,   284,   285,   263,   289,   307,   277,   276,   286,    58,
+   294,    33,   220,   290,   287,   259,   288,   291,   259,   292,
+   289,   293,   314,   152,   315,   277,   134,   135,   318,   290,
+    33,   306,   165,   291,   156,   292,   314,   293,   315,   160,
+   294,   316,   318,   317,   277,    15,    16,    17,    18,    33,
+   329,   162,   180,   172,   181,   316,   294,   317,   211,   212,
+    92,    93,    94,    11,    12,    13,    11,    12,    13,    17,
+    18,   163,    17,    18,   174,    23,     2,     3,    23,   224,
+   225,    93,    94,   197,   199,     9,    96,    93,    94,   175,
+   184,   207,   208,   209,   210,   176,   204,    10,   205,    11,
     12,    13,    14,    15,    16,    17,    18,    19,    20,    21,
-    22,    23,    24,    25,    26,   251,   260,   252,    27,   253,
-   264,   265,    28,    29,    30,    31,    32,   273,    33,    34,
-    35,     2,     3,   270,   222,   223,   271,   272,   294,    36,
-     9,   297,   298,   299,   300,   322,   301,   302,   303,   304,
-   330,   320,   321,    10,    11,    12,    13,    14,    15,    16,
-    17,    18,    19,    20,    21,    22,    23,   331,   147,    26,
-   148,   228,   323,    27,   249,     0,   169,     0,    29,   188,
-    31,    10,    11,    12,    13,    14,    15,    16,    17,    10,
-    11,    12,   327,    22,    36,    16,    17,     0,     0,     0,
-     0,    22,     0,     0,     0,     0,     0,     0,    31,   102,
-   103,   104,   105,   106,   107,   108,   109,   110,   111,   112,
-   113,     0,     0,     0,     0,     0,     0,     0,     0,   324,
-     0,     0,     0,     0,     0,     0,     0,   326,     0,     0,
-   114,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-   115,   102,   103,   104,   105,   106,   107,   108,   109,   110,
-   111,     0,   113,     0,     0,     0,     0,     0,     0,     0,
-     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     0,     0,   114,     0,     0,     0,     0,     0,     0,     0,
-     0,     0,   115
+    22,    23,    24,   177,   327,    27,   188,   179,   189,    28,
+   191,   186,   192,   201,    30,   193,    32,   195,   248,   168,
+   169,   243,   244,   264,   265,     2,     3,   203,   224,   225,
+    37,   319,   320,   202,     9,   206,   222,   256,   221,   223,
+   231,   241,   232,   236,   235,   268,    10,   270,    11,    12,
+    13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
+    23,    24,   237,   239,    27,   238,   240,   242,    28,   245,
+   246,   250,   247,    30,   253,    32,     1,     2,     3,     4,
+   254,   255,     5,     6,     7,     8,     9,   261,   262,    37,
+   267,   266,   271,   269,   272,   323,   260,   274,    10,   273,
+    11,    12,    13,    14,    15,    16,    17,    18,    19,    20,
+    21,    22,    23,    24,    25,    26,    27,   295,   298,   301,
+    28,   299,   300,   302,    29,    30,    31,    32,    33,   303,
+    34,    35,    36,     2,     3,   305,   224,   225,   304,   321,
+   322,    37,     9,    11,    12,    13,    14,    15,    16,    17,
+    18,   331,   332,   149,    10,    23,    11,    12,    13,    14,
+    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+    32,   150,    27,   230,   324,   328,    28,   171,     0,     0,
+     0,    30,     0,    32,   251,   190,     0,     0,     0,     0,
+     0,   325,     0,     0,     0,     0,     0,    37,   104,   105,
+   106,   107,   108,   109,   110,   111,   112,   113,   114,     0,
+   115,   104,   105,   106,   107,   108,   109,   110,   111,   112,
+   113,     0,     0,   115,     0,     0,     0,     0,     0,     0,
+   116,     0,    11,    12,    13,    14,    15,    16,    17,    18,
+   117,     0,     0,   116,    23,   138,   139,   140,   141,   142,
+   143,   144,   145,   117,     0,     0,     0,     0,     0,    32
 };
 
 static const short yycheck[] = {     2,
-     3,   176,   176,     6,   180,   181,   192,   250,   250,   250,
-    13,    14,    15,    16,    17,   250,    19,    20,    21,    22,
-    23,   250,    25,   277,     0,    68,   250,   250,    31,    32,
-   250,    34,    35,    36,   277,   277,   277,   212,   212,   176,
-   250,   250,   277,   176,   250,   231,   296,   250,   277,   225,
-   250,    68,   228,   277,   277,    13,    75,   277,    77,   296,
-   310,    37,   296,    68,   307,   307,   307,   277,   277,   323,
-    13,   277,   307,   310,   277,   212,   310,   277,   307,   212,
-   323,   323,   323,   307,   307,    68,    72,   307,   323,    75,
-   225,    49,    13,   228,   323,   296,    54,   307,   307,   323,
-   323,   307,   295,   323,   307,   225,    49,   307,   228,   310,
-   113,    54,    71,   323,   323,   308,    74,   323,    69,    70,
-   323,   296,   296,   323,    68,    69,    70,    73,    49,    70,
-   133,    74,   135,    54,    73,   310,   310,    26,    27,    28,
-    29,    30,    31,    32,    33,    30,    31,    32,    33,    38,
-    73,     4,     5,    68,     7,     8,    47,    48,    43,    44,
-    13,   164,   165,    68,    53,    68,    69,    70,    68,   172,
-   173,   174,   175,    26,    27,    28,    29,    30,    31,    32,
-    33,    34,    35,    36,    37,    38,    39,    71,    72,    42,
-    26,    27,    28,    46,    71,    72,    32,    33,    51,   153,
-    53,   155,    38,   157,    71,   159,   209,    71,    72,    71,
-    72,    72,    75,    70,    67,     4,     5,    75,     7,     8,
-    75,    74,    71,    75,    13,    59,    60,    61,    62,    63,
-    64,    65,    66,   236,    75,   238,    68,    26,    27,    28,
-    29,    30,    31,    32,    33,    34,    35,    36,    37,    38,
-    39,    68,    75,    42,    76,    76,    75,    46,    73,    71,
-    76,    75,    51,    76,    53,     3,     4,     5,     6,    76,
-    75,     9,    10,    11,    12,    13,    76,    75,    67,    76,
-    71,    74,    72,    71,    70,    74,    71,    71,    26,    27,
+     3,   252,   178,     6,   178,   252,    69,   182,   183,   252,
+   252,    14,    15,    16,    17,    18,   252,    20,    21,    22,
+    23,    24,   252,    26,   252,    69,   178,   278,   252,    32,
+    33,   278,    35,    36,    37,   278,   278,   252,   214,   278,
+   214,   252,   278,   252,   194,   252,   296,    69,   278,    13,
+   278,     0,   227,    69,   278,   230,   178,   308,    72,   309,
+   297,   308,   214,   278,   252,   308,   308,   278,    13,   278,
+    74,   278,   308,   324,   311,    74,   227,   324,   308,   230,
+   308,   324,   324,   233,   308,   324,    50,    13,   324,    38,
+   278,    55,   214,   308,   324,   227,   324,   308,   230,   308,
+   324,   308,   297,    74,   297,    50,    48,    49,   297,   324,
+    55,    75,   115,   324,    69,   324,   311,   324,   311,    69,
+   308,   297,   311,   297,    50,    31,    32,    33,    34,    55,
+    75,    69,   135,    72,   137,   311,   324,   311,    44,    45,
+    69,    70,    71,    27,    28,    29,    27,    28,    29,    33,
+    34,    71,    33,    34,    76,    39,     4,     5,    39,     7,
+     8,    70,    71,   166,   167,    13,    69,    70,    71,    76,
+    72,   174,   175,   176,   177,    76,    76,    25,    78,    27,
     28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
-    38,    39,    40,    41,    42,    72,    68,    73,    46,    73,
-    68,    72,    50,    51,    52,    53,    54,    71,    56,    57,
-    58,     4,     5,    75,     7,     8,    75,    75,    73,    67,
-    13,    75,    75,    75,    71,    70,    72,    71,    77,    71,
-     0,    72,    72,    26,    27,    28,    29,    30,    31,    32,
-    33,    34,    35,    36,    37,    38,    39,     0,    37,    42,
-    37,   181,   307,    46,   212,    -1,   117,    -1,    51,   156,
-    53,    26,    27,    28,    29,    30,    31,    32,    33,    26,
-    27,    28,   310,    38,    67,    32,    33,    -1,    -1,    -1,
-    -1,    38,    -1,    -1,    -1,    -1,    -1,    -1,    53,    14,
-    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    74,
-    -1,    -1,    -1,    -1,    -1,    -1,    -1,    74,    -1,    -1,
-    45,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-    55,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-    23,    -1,    25,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    45,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    55
+    38,    39,    40,    76,    75,    43,   155,    73,   157,    47,
+   159,    69,   161,    76,    52,    71,    54,    69,   211,    72,
+    73,    72,    73,    72,    73,     4,     5,    77,     7,     8,
+    68,    72,    73,    76,    13,    77,    76,    75,    74,    72,
+    77,    72,    77,    77,    76,   238,    25,   240,    27,    28,
+    29,    30,    31,    32,    33,    34,    35,    36,    37,    38,
+    39,    40,    76,    76,    43,    77,    77,    73,    47,    72,
+    71,    75,    72,    52,    73,    54,     3,     4,     5,     6,
+    74,    74,     9,    10,    11,    12,    13,    72,    69,    68,
+    73,    69,    76,    73,    76,    71,    75,    72,    25,    76,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    74,    76,    72,
+    47,    76,    76,    73,    51,    52,    53,    54,    55,    72,
+    57,    58,    59,     4,     5,    72,     7,     8,    78,    73,
+    73,    68,    13,    27,    28,    29,    30,    31,    32,    33,
+    34,     0,     0,    38,    25,    39,    27,    28,    29,    30,
+    31,    32,    33,    34,    35,    36,    37,    38,    39,    40,
+    54,    38,    43,   183,   308,   311,    47,   119,    -1,    -1,
+    -1,    52,    -1,    54,   214,   158,    -1,    -1,    -1,    -1,
+    -1,    75,    -1,    -1,    -1,    -1,    -1,    68,    14,    15,
+    16,    17,    18,    19,    20,    21,    22,    23,    24,    -1,
+    26,    14,    15,    16,    17,    18,    19,    20,    21,    22,
+    23,    -1,    -1,    26,    -1,    -1,    -1,    -1,    -1,    -1,
+    46,    -1,    27,    28,    29,    30,    31,    32,    33,    34,
+    56,    -1,    -1,    46,    39,    60,    61,    62,    63,    64,
+    65,    66,    67,    56,    -1,    -1,    -1,    -1,    -1,    54
 };
 
 #line 352 "../bison++/bison.cc"
@@ -1716,15 +1712,15 @@ YYLABEL(yyreduce)
 
   switch (yyn) {
 
-case 47:
-#line 181 "SrvParser.y"
+case 48:
+#line 182 "SrvParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
-case 48:
-#line 186 "SrvParser.y"
+case 49:
+#line 187 "SrvParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1733,31 +1729,31 @@ case 48:
     EndIfaceDeclaration();
 ;
     break;}
-case 49:
-#line 195 "SrvParser.y"
+case 50:
+#line 196 "SrvParser.y"
 {
     if (!CheckIsIface(yyvsp[-1].ival))
 	YYABORT;
     StartIfaceDeclaration();
 ;
     break;}
-case 50:
-#line 201 "SrvParser.y"
+case 51:
+#line 202 "SrvParser.y"
 {
     SrvCfgIfaceLst.append(new TSrvCfgIface(yyvsp[-4].ival));
     EndIfaceDeclaration();
 ;
     break;}
-case 57:
-#line 217 "SrvParser.y"
+case 58:
+#line 218 "SrvParser.y"
 {
     ParserOptStack.append(new TSrvParsGlobalOpt());
     SPtr<TDUID> duid = new TDUID(yyvsp[-1].duidval.duid,yyvsp[-1].duidval.length);
     ClientLst.append(new TSrvCfgOptions(duid));
 ;
     break;}
-case 58:
-#line 223 "SrvParser.y"
+case 59:
+#line 224 "SrvParser.y"
 {
     Log(Debug) << "Exception: DUID-based exception specified." << LogEnd;
     // copy all defined options
@@ -1765,16 +1761,16 @@ case 58:
     ParserOptStack.delLast();
 ;
     break;}
-case 59:
-#line 231 "SrvParser.y"
+case 60:
+#line 232 "SrvParser.y"
 {
     ParserOptStack.append(new TSrvParsGlobalOpt());
     SPtr<TSrvOptRemoteID> remoteid = new TSrvOptRemoteID(yyvsp[-3].ival, yyvsp[-1].duidval.duid, yyvsp[-1].duidval.length, 0);
     ClientLst.append(new TSrvCfgOptions(remoteid));
 ;
     break;}
-case 60:
-#line 237 "SrvParser.y"
+case 61:
+#line 238 "SrvParser.y"
 {
     Log(Debug) << "Exception: RemoteID-based exception specified." << LogEnd;
     // copy all defined options
@@ -1782,102 +1778,102 @@ case 60:
     ParserOptStack.delLast();
 ;
     break;}
-case 78:
-#line 269 "SrvParser.y"
+case 79:
+#line 270 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Info) << "Exception: Address " << addr->getPlain() << " reserved." << LogEnd;
     ClientLst.getLast()->setAddr(addr);
 ;
     break;}
-case 79:
-#line 278 "SrvParser.y"
+case 80:
+#line 279 "SrvParser.y"
 { 
     StartClassDeclaration();
 ;
     break;}
-case 80:
-#line 282 "SrvParser.y"
+case 81:
+#line 283 "SrvParser.y"
 {
     if (!EndClassDeclaration())
 	YYABORT;
 ;
     break;}
-case 83:
-#line 296 "SrvParser.y"
+case 84:
+#line 297 "SrvParser.y"
 {
     StartTAClassDeclaration();
 ;
     break;}
-case 84:
-#line 299 "SrvParser.y"
+case 85:
+#line 300 "SrvParser.y"
 {
     if (!EndTAClassDeclaration())
 	YYABORT;
 ;
     break;}
-case 93:
-#line 320 "SrvParser.y"
+case 94:
+#line 321 "SrvParser.y"
 {
     StartPDDeclaration();
 ;
     break;}
-case 94:
-#line 323 "SrvParser.y"
+case 95:
+#line 324 "SrvParser.y"
 {
     if (!EndPDDeclaration())
 	YYABORT;
 ;
     break;}
-case 103:
-#line 347 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_NONE); ;
-    break;}
 case 104:
 #line 348 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_PLAIN); ;
+{ ParserOptStack.getLast()->addDigest(DIGEST_NONE); ;
     break;}
 case 105:
 #line 349 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_MD5); ;
+{ ParserOptStack.getLast()->addDigest(DIGEST_PLAIN); ;
     break;}
 case 106:
 #line 350 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); ;
+{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_MD5); ;
     break;}
 case 107:
 #line 351 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA224); ;
+{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); ;
     break;}
 case 108:
 #line 352 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA256); ;
+{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA224); ;
     break;}
 case 109:
 #line 353 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA384); ;
+{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA256); ;
     break;}
 case 110:
 #line 354 "SrvParser.y"
-{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA512); ;
+{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA384); ;
     break;}
 case 111:
-#line 358 "SrvParser.y"
-{ ParserOptStack.getLast()->setAuthLifetime(yyvsp[0].ival); ;
+#line 355 "SrvParser.y"
+{ ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA512); ;
     break;}
 case 112:
-#line 362 "SrvParser.y"
-{ ParserOptStack.getLast()->setAuthKeyLen(yyvsp[0].ival); ;
+#line 359 "SrvParser.y"
+{ ParserOptStack.getLast()->setAuthLifetime(yyvsp[0].ival); ;
     break;}
 case 113:
-#line 371 "SrvParser.y"
+#line 363 "SrvParser.y"
+{ ParserOptStack.getLast()->setAuthKeyLen(yyvsp[0].ival); ;
+    break;}
+case 114:
+#line 372 "SrvParser.y"
 {
     Log(Notice)<< "FQDN: The client "<<yyvsp[0].strval<<" has no address nor DUID"<<LogEnd;
     PresentFQDNLst.append(new TFQDN(yyvsp[0].strval,false));
 ;
     break;}
-case 114:
-#line 376 "SrvParser.y"
+case 115:
+#line 377 "SrvParser.y"
 {
     duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval <<" reserved for DUID "<<duidNew->getPlain()<<LogEnd;
@@ -1885,8 +1881,8 @@ case 114:
     PresentFQDNLst.append(new TFQDN(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length), yyvsp[-2].strval,false));
 ;
     break;}
-case 115:
-#line 383 "SrvParser.y"
+case 116:
+#line 384 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval <<" reserved for address "<<*addr<<LogEnd;
@@ -1894,15 +1890,15 @@ case 115:
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr(yyvsp[0].addrval), yyvsp[-2].strval,false));
 ;
     break;}
-case 116:
-#line 390 "SrvParser.y"
+case 117:
+#line 391 "SrvParser.y"
 {
 	Log(Notice)<< "FQDN:"<<yyvsp[0].strval<<" has no reservations (is available to everyone)."<<LogEnd;
     PresentFQDNLst.append(new TFQDN(yyvsp[0].strval,false));
 ;
     break;}
-case 117:
-#line 395 "SrvParser.y"
+case 118:
+#line 396 "SrvParser.y"
 {
     duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
@@ -1910,8 +1906,8 @@ case 117:
     PresentFQDNLst.append(new TFQDN(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length), yyvsp[-2].strval,false));
 ;
     break;}
-case 118:
-#line 402 "SrvParser.y"
+case 119:
+#line 403 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval<<" reserved for address "<< addr->getPlain() << LogEnd;
@@ -1919,56 +1915,56 @@ case 118:
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr(yyvsp[0].addrval), yyvsp[-2].strval,false));
 ;
     break;}
-case 119:
-#line 411 "SrvParser.y"
-{yyval.ival=yyvsp[0].ival;;
-    break;}
 case 120:
 #line 412 "SrvParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 121:
-#line 417 "SrvParser.y"
-{
-    PresentAddrLst.append(new TIPv6Addr(yyvsp[0].addrval));
-;
+#line 413 "SrvParser.y"
+{yyval.ival=yyvsp[0].ival;;
     break;}
 case 122:
-#line 421 "SrvParser.y"
+#line 418 "SrvParser.y"
 {
     PresentAddrLst.append(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 123:
-#line 428 "SrvParser.y"
+#line 422 "SrvParser.y"
+{
+    PresentAddrLst.append(new TIPv6Addr(yyvsp[0].addrval));
+;
+    break;}
+case 124:
+#line 429 "SrvParser.y"
 {
     // Log(Debug) << "Vendor-spec defined: Number: " << $1 << ", valuelen=" << $3.length << LogEnd;
     VendorSpec.append(new TSrvOptVendorSpec(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
 ;
     break;}
-case 124:
-#line 433 "SrvParser.y"
+case 125:
+#line 434 "SrvParser.y"
 {
     // Log(Debug) << "Vendor-spec defined: Number: " << $3 << ", valuelen=" << $5.length << LogEnd;
     VendorSpec.append(new TSrvOptVendorSpec(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
 ;
-    break;}
-case 125:
-#line 440 "SrvParser.y"
-{ PresentStringLst.append(SmartPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 126:
 #line 441 "SrvParser.y"
 { PresentStringLst.append(SmartPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 127:
-#line 446 "SrvParser.y"
+#line 442 "SrvParser.y"
+{ PresentStringLst.append(SmartPtr<string> (new string(yyvsp[0].strval))); ;
+    break;}
+case 128:
+#line 447 "SrvParser.y"
 {
         PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
-case 128:
-#line 450 "SrvParser.y"
+case 129:
+#line 451 "SrvParser.y"
 {
         SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
         SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -1978,8 +1974,8 @@ case 128:
             PresentRangeLst.append(new TStationRange(addr2,addr1));
     ;
     break;}
-case 129:
-#line 459 "SrvParser.y"
+case 130:
+#line 460 "SrvParser.y"
 {
 	SmartPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
 	int prefix = yyvsp[0].ival;
@@ -1996,14 +1992,14 @@ case 129:
             PresentRangeLst.append(new TStationRange(addr2,addr1));
     ;
     break;}
-case 130:
-#line 475 "SrvParser.y"
+case 131:
+#line 476 "SrvParser.y"
 {
         PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
-case 131:
-#line 479 "SrvParser.y"
+case 132:
+#line 480 "SrvParser.y"
 {
         SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
         SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -2013,8 +2009,8 @@ case 131:
             PresentRangeLst.append(new TStationRange(addr2,addr1));
     ;
     break;}
-case 132:
-#line 491 "SrvParser.y"
+case 133:
+#line 492 "SrvParser.y"
 {
 	SmartPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
 	int prefix = yyvsp[0].ival;
@@ -2035,31 +2031,14 @@ case 132:
 	PDLst.append(range);
     ;
     break;}
-case 133:
-#line 514 "SrvParser.y"
+case 134:
+#line 515 "SrvParser.y"
 {
     PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
-;
-    break;}
-case 134:
-#line 518 "SrvParser.y"
-{
-    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
-    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
-    if (*addr1<=*addr2)
-	PresentRangeLst.append(new TStationRange(addr1,addr2));
-    else
-	PresentRangeLst.append(new TStationRange(addr2,addr1));
 ;
     break;}
 case 135:
-#line 527 "SrvParser.y"
-{
-    PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
-;
-    break;}
-case 136:
-#line 531 "SrvParser.y"
+#line 519 "SrvParser.y"
 {
     SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
     SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -2069,15 +2048,32 @@ case 136:
 	PresentRangeLst.append(new TStationRange(addr2,addr1));
 ;
     break;}
+case 136:
+#line 528 "SrvParser.y"
+{
+    PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
+;
+    break;}
 case 137:
-#line 540 "SrvParser.y"
+#line 532 "SrvParser.y"
+{
+    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
+    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
+    if (*addr1<=*addr2)
+	PresentRangeLst.append(new TStationRange(addr1,addr2));
+    else
+	PresentRangeLst.append(new TStationRange(addr2,addr1));
+;
+    break;}
+case 138:
+#line 541 "SrvParser.y"
 {
     PresentRangeLst.append(new TStationRange(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length)));
     delete yyvsp[0].duidval.duid;
 ;
     break;}
-case 138:
-#line 545 "SrvParser.y"
+case 139:
+#line 546 "SrvParser.y"
 {   
     SmartPtr<TDUID> duid1(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
     SmartPtr<TDUID> duid2(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
@@ -2088,15 +2084,15 @@ case 138:
         PresentRangeLst.append(new TStationRange(duid2,duid1));
 ;
     break;}
-case 139:
-#line 555 "SrvParser.y"
+case 140:
+#line 556 "SrvParser.y"
 {
     PresentRangeLst.append(new TStationRange(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length)));
     delete yyvsp[0].duidval.duid;
 ;
     break;}
-case 140:
-#line 560 "SrvParser.y"
+case 141:
+#line 561 "SrvParser.y"
 {
     SmartPtr<TDUID> duid2(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
     SmartPtr<TDUID> duid1(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
@@ -2108,89 +2104,89 @@ case 140:
     delete yyvsp[0].duidval.duid;
 ;
     break;}
-case 141:
-#line 574 "SrvParser.y"
+case 142:
+#line 575 "SrvParser.y"
 {
     PresentRangeLst.clear();    
 ;
     break;}
-case 142:
-#line 577 "SrvParser.y"
+case 143:
+#line 578 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRejedClnt(&PresentRangeLst);
 ;
     break;}
-case 143:
-#line 584 "SrvParser.y"
+case 144:
+#line 585 "SrvParser.y"
 {
     PresentRangeLst.clear();    
 ;
     break;}
-case 144:
-#line 587 "SrvParser.y"
+case 145:
+#line 588 "SrvParser.y"
 {
     ParserOptStack.getLast()->setAcceptClnt(&PresentRangeLst);
 ;
     break;}
-case 145:
-#line 594 "SrvParser.y"
+case 146:
+#line 595 "SrvParser.y"
 {
     PresentRangeLst.clear();    
 ;
     break;}
-case 146:
-#line 597 "SrvParser.y"
+case 147:
+#line 598 "SrvParser.y"
 {
     ParserOptStack.getLast()->setPool(&PresentRangeLst);
 ;
     break;}
-case 147:
-#line 604 "SrvParser.y"
+case 148:
+#line 605 "SrvParser.y"
 {
 ;
     break;}
-case 148:
-#line 606 "SrvParser.y"
+case 149:
+#line 607 "SrvParser.y"
 {
     ParserOptStack.getLast()->setPool(&PresentRangeLst/*PDList*/);
 ;
     break;}
-case 149:
-#line 612 "SrvParser.y"
+case 150:
+#line 613 "SrvParser.y"
 {
    this->PDPrefix = yyvsp[0].ival;
 ;
     break;}
-case 150:
-#line 619 "SrvParser.y"
+case 151:
+#line 620 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setPrefBeg(yyvsp[0].ival);
     ParserOptStack.getLast()->setPrefEnd(yyvsp[0].ival);
 ;
     break;}
-case 151:
-#line 624 "SrvParser.y"
+case 152:
+#line 625 "SrvParser.y"
 {
     ParserOptStack.getLast()->setPrefBeg(yyvsp[-2].ival);
     ParserOptStack.getLast()->setPrefEnd(yyvsp[0].ival);   
 ;
     break;}
-case 152:
-#line 632 "SrvParser.y"
+case 153:
+#line 633 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setValidBeg(yyvsp[0].ival);
     ParserOptStack.getLast()->setValidEnd(yyvsp[0].ival);
 ;
     break;}
-case 153:
-#line 637 "SrvParser.y"
+case 154:
+#line 638 "SrvParser.y"
 {
     ParserOptStack.getLast()->setValidBeg(yyvsp[-2].ival);
     ParserOptStack.getLast()->setValidEnd(yyvsp[0].ival);  
 ;
     break;}
-case 154:
-#line 645 "SrvParser.y"
+case 155:
+#line 646 "SrvParser.y"
 {
     int x=yyvsp[0].ival;
     if ( (x<1) || (x>1000)) {
@@ -2201,48 +2197,48 @@ case 154:
     ParserOptStack.getLast()->setShare(x);
 ;
     break;}
-case 155:
-#line 657 "SrvParser.y"
+case 156:
+#line 658 "SrvParser.y"
 {
     ParserOptStack.getLast()->setT1Beg(yyvsp[0].ival); 
     ParserOptStack.getLast()->setT1End(yyvsp[0].ival); 
 ;
     break;}
-case 156:
-#line 662 "SrvParser.y"
+case 157:
+#line 663 "SrvParser.y"
 {
     ParserOptStack.getLast()->setT1Beg(yyvsp[-2].ival); 
     ParserOptStack.getLast()->setT1End(yyvsp[0].ival); 
 ;
     break;}
-case 157:
-#line 670 "SrvParser.y"
+case 158:
+#line 671 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setT2Beg(yyvsp[0].ival); 
     ParserOptStack.getLast()->setT2End(yyvsp[0].ival); 
 ;
     break;}
-case 158:
-#line 675 "SrvParser.y"
+case 159:
+#line 676 "SrvParser.y"
 {
     ParserOptStack.getLast()->setT2Beg(yyvsp[-2].ival); 
     ParserOptStack.getLast()->setT2End(yyvsp[0].ival); 
 ;
     break;}
-case 159:
-#line 683 "SrvParser.y"
+case 160:
+#line 684 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setClntMaxLease(yyvsp[0].ival);
 ;
     break;}
-case 160:
-#line 690 "SrvParser.y"
+case 161:
+#line 691 "SrvParser.y"
 {
     ParserOptStack.getLast()->setClassMaxLease(yyvsp[0].ival);
 ;
     break;}
-case 161:
-#line 697 "SrvParser.y"
+case 162:
+#line 698 "SrvParser.y"
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
 	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled. Add 'experimental' "
@@ -2254,8 +2250,8 @@ case 161:
     ParserOptStack.getLast()->setAddrParams(yyvsp[0].ival,bitfield);
 ;
     break;}
-case 162:
-#line 710 "SrvParser.y"
+case 163:
+#line 711 "SrvParser.y"
 {
     if (!ParserOptStack.getFirst()->getExperimental()) {
 	Log(Crit) << "Experimental 'tunnel-mode' defined, but experimental features are disabled. Add 'experimental' "
@@ -2276,8 +2272,9 @@ case 162:
 	mode = "IPv4-over-IPv6 tunnel";
 	break;
     default:
-	Log(Crit) << "Invalid mode specified: " << yyvsp[-1].ival << ", allowed: 0(none), 1(IPv4-to-IPv6 NAT) and 2(IPv4-over-IPv6 tunnel)"
-		  << LogEnd;
+	Log(Warning) << "Unknown tunnel mode specified: " << yyvsp[-1].ival << ", allowed: 0(none), 1(IPv4-to-IPv6 NAT) and 2(IPv4-over-IPv6 tunnel)"
+		     << LogEnd;
+	mode = "unknown";
     };
 
     SPtr<TIPv6Addr> addr = new TIPv6Addr(yyvsp[0].addrval);
@@ -2287,8 +2284,8 @@ case 162:
     ParserOptStack.getLast()->setTunnelMode(yyvsp[-2].ival, yyvsp[-1].ival, addr);
 ;
     break;}
-case 163:
-#line 742 "SrvParser.y"
+case 164:
+#line 744 "SrvParser.y"
 {
     if (!ParserOptStack.getFirst()->getExperimental()) {
 	Log(Crit) << "Experimental 'option extra' defined, but experimental features are disabled. Add 'experimental' "
@@ -2299,47 +2296,40 @@ case 163:
     ExtraOpts.clear();
 ;
     break;}
-case 164:
-#line 751 "SrvParser.y"
+case 165:
+#line 753 "SrvParser.y"
 {
     ParserOptStack.getLast()->setExtraOptions(ExtraOpts);
 ;
     break;}
-case 165:
-#line 757 "SrvParser.y"
+case 166:
+#line 759 "SrvParser.y"
 {
     Log(Debug) << "Extra option defined: code=" << yyvsp[-2].ival << ", valuelen=" << yyvsp[0].duidval.length << LogEnd;
     ExtraOpts.append(new TSrvOptGeneric(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
 ;
     break;}
-case 166:
-#line 762 "SrvParser.y"
-{
-    Log(Debug) << "Extra option defined: code=" << yyvsp[-2].ival << ", no length." << LogEnd;
-    ExtraOpts.append(new TSrvOptGeneric(yyvsp[-2].ival, 0,0,0));
-;
-    break;}
 case 167:
-#line 767 "SrvParser.y"
+#line 764 "SrvParser.y"
 {
     Log(Debug) << "Extra option defined: code=" << yyvsp[-2].ival << ", valuelen=" << yyvsp[0].duidval.length << LogEnd;
     ExtraOpts.append(new TSrvOptGeneric(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
 ;
     break;}
 case 168:
-#line 775 "SrvParser.y"
+#line 772 "SrvParser.y"
 {
     ParserOptStack.getLast()->setIfaceMaxLease(yyvsp[0].ival);
 ;
     break;}
 case 169:
-#line 782 "SrvParser.y"
+#line 779 "SrvParser.y"
 {
     ParserOptStack.getLast()->setUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 170:
-#line 789 "SrvParser.y"
+#line 786 "SrvParser.y"
 { 
     if ( (yyvsp[0].ival!=0) && (yyvsp[0].ival!=1)) {
 	Log(Crit) << "RAPID-COMMIT  parameter in line " << lex->lineno() << " must have 0 or 1 value." 
@@ -2353,7 +2343,7 @@ case 170:
 ;
     break;}
 case 171:
-#line 804 "SrvParser.y"
+#line 801 "SrvParser.y"
 { 
     if ((yyvsp[0].ival<0)||(yyvsp[0].ival>255)) {
 	Log(Crit) << "Preference value (" << yyvsp[0].ival << ") in line " << lex->lineno() 
@@ -2364,57 +2354,57 @@ case 171:
 ;
     break;}
 case 172:
-#line 815 "SrvParser.y"
+#line 812 "SrvParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
 case 173:
-#line 821 "SrvParser.y"
+#line 818 "SrvParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
 case 174:
-#line 827 "SrvParser.y"
+#line 824 "SrvParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
 case 175:
-#line 834 "SrvParser.y"
+#line 831 "SrvParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
 case 176:
-#line 841 "SrvParser.y"
+#line 838 "SrvParser.y"
 {
     ParserOptStack.getLast()->setStateless(true);
 ;
     break;}
 case 177:
-#line 848 "SrvParser.y"
+#line 845 "SrvParser.y"
 {
     Log(Info) << "Guess-mode enabled: relay interfaces may be loosely defined (matching interface-id is not mandatory)." << LogEnd;
     ParserOptStack.getLast()->setGuessMode(true);
 ;
     break;}
 case 178:
-#line 855 "SrvParser.y"
+#line 852 "SrvParser.y"
 {
     ParserOptStack.getLast()->setInactiveMode(true);
 ;
     break;}
 case 179:
-#line 861 "SrvParser.y"
+#line 858 "SrvParser.y"
 {
     Log(Crit) << "Experimental features are allowed." << LogEnd;
     ParserOptStack.getLast()->setExperimental(true);
 ;
     break;}
 case 180:
-#line 868 "SrvParser.y"
+#line 865 "SrvParser.y"
 {
     if (!strncasecmp(yyvsp[0].strval,"before",6)) 
     {
@@ -2435,20 +2425,20 @@ case 180:
 ;
     break;}
 case 181:
-#line 889 "SrvParser.y"
+#line 886 "SrvParser.y"
 {
     ParserOptStack.getLast()->setCacheSize(yyvsp[0].ival);
 ;
     break;}
 case 182:
-#line 896 "SrvParser.y"
+#line 893 "SrvParser.y"
 {
     ParserOptStack.getLast()->setLeaseQuerySupport(true);
 
 ;
     break;}
 case 183:
-#line 901 "SrvParser.y"
+#line 898 "SrvParser.y"
 {
     switch (yyvsp[0].ival) {
     case 0:
@@ -2465,91 +2455,91 @@ case 183:
 ;
     break;}
 case 184:
-#line 921 "SrvParser.y"
+#line 918 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayName(yyvsp[0].strval);
 ;
     break;}
 case 185:
-#line 925 "SrvParser.y"
+#line 922 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayID(yyvsp[0].ival);
 ;
     break;}
 case 186:
-#line 932 "SrvParser.y"
+#line 929 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayInterfaceID(yyvsp[0].ival);
 ;
     break;}
 case 197:
-#line 956 "SrvParser.y"
+#line 953 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 198:
-#line 959 "SrvParser.y"
+#line 956 "SrvParser.y"
 {
     ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 ;
     break;}
 case 199:
-#line 968 "SrvParser.y"
+#line 965 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 200:
-#line 971 "SrvParser.y"
+#line 968 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 ;
     break;}
 case 201:
-#line 981 "SrvParser.y"
+#line 978 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 202:
-#line 984 "SrvParser.y"
+#line 981 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
 ;
     break;}
 case 203:
-#line 994 "SrvParser.y"
+#line 991 "SrvParser.y"
 { 
     ParserOptStack.getLast()->setTimezone(yyvsp[0].strval); 
 ;
     break;}
 case 204:
-#line 1003 "SrvParser.y"
+#line 1000 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 205:
-#line 1006 "SrvParser.y"
+#line 1003 "SrvParser.y"
 {
     ParserOptStack.getLast()->setSIPServerLst(&PresentAddrLst);
 ;
     break;}
 case 206:
-#line 1015 "SrvParser.y"
+#line 1012 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 207:
-#line 1018 "SrvParser.y"
+#line 1015 "SrvParser.y"
 {
     ParserOptStack.getLast()->setSIPDomainLst(&PresentStringLst);
 ;
     break;}
 case 208:
-#line 1029 "SrvParser.y"
+#line 1026 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)   << "No FQDNMode found, setting default mode 2 (all updates executed by server)." << LogEnd;
@@ -2559,13 +2549,13 @@ case 208:
 ;
     break;}
 case 209:
-#line 1036 "SrvParser.y"
+#line 1033 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 ;
     break;}
 case 210:
-#line 1040 "SrvParser.y"
+#line 1037 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)  << "FQDNMode found, setting value"<< yyvsp[0].ival <<LogEnd;
@@ -2575,14 +2565,14 @@ case 210:
 ;
     break;}
 case 211:
-#line 1047 "SrvParser.y"
+#line 1044 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
   
 ;
     break;}
 case 212:
-#line 1052 "SrvParser.y"
+#line 1049 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug) << "FQDNMode found, setting value " << yyvsp[-1].ival <<LogEnd;
@@ -2592,62 +2582,69 @@ case 212:
 ;
     break;}
 case 213:
-#line 1059 "SrvParser.y"
+#line 1056 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
   
 ;
     break;}
 case 214:
-#line 1069 "SrvParser.y"
+#line 1064 "SrvParser.y"
+{
+    ParserOptStack.getLast()->acceptUnknownFQDN(true);
+    Log(Debug) << "FQDN: Unknown fqdn names will be accepted by the server." << LogEnd;
+;
+    break;}
+case 215:
+#line 1073 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
-case 215:
-#line 1072 "SrvParser.y"
+case 216:
+#line 1076 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 ;
     break;}
-case 216:
-#line 1081 "SrvParser.y"
+case 217:
+#line 1085 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
-case 217:
-#line 1084 "SrvParser.y"
+case 218:
+#line 1088 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 ;
     break;}
-case 218:
-#line 1094 "SrvParser.y"
+case 219:
+#line 1098 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISDomain(yyvsp[0].strval);
 ;
     break;}
-case 219:
-#line 1104 "SrvParser.y"
+case 220:
+#line 1108 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPDomain(yyvsp[0].strval);
 ;
     break;}
-case 220:
-#line 1114 "SrvParser.y"
+case 221:
+#line 1118 "SrvParser.y"
 {
     ParserOptStack.getLast()->setLifetime(yyvsp[0].ival);
 ;
     break;}
-case 221:
-#line 1120 "SrvParser.y"
+case 222:
+#line 1124 "SrvParser.y"
 {
     VendorSpec.clear();
 ;
     break;}
-case 222:
-#line 1123 "SrvParser.y"
+case 223:
+#line 1127 "SrvParser.y"
 {
     ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
@@ -2857,7 +2854,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 1128 "SrvParser.y"
+#line 1132 "SrvParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

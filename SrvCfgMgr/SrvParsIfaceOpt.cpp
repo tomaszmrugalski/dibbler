@@ -6,7 +6,7 @@
  *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 or later licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.15 2008-08-28 07:09:02 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.16 2008-08-28 22:39:11 thomson Exp $
  *
  */
 
@@ -32,6 +32,7 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     this->SIPServerSupport  = false;
     this->SIPDomainSupport  = false;
     this->FQDNSupport       = false;
+    this->AcceptUnknownFQDN = false;
     this->NISServerSupport  = false;
     this->NISDomainSupport  = false;
     this->NISPServerSupport = false;
@@ -49,6 +50,14 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
+}
+
+void TSrvParsIfaceOpt::acceptUnknownFQDN(bool accept) {
+    AcceptUnknownFQDN = accept;
+}
+
+bool TSrvParsIfaceOpt::acceptUnknownFQDN() {
+    return AcceptUnknownFQDN;
 }
 
 void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support)

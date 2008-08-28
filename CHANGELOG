@@ -2,6 +2,8 @@
   Dibbler changelog
  ------------------- 
  0.7.1-CVS [...]
+  - Srv: client's FQDN hints may now be honored
+  - Srv: support for extra options added
   - Experimental CONFIRM support added (+extra fixes)
   - Cli: requested options are now sent in RENEW messages
   - Cli: elapsed option is now sent in all messages

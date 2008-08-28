@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgIface.h,v 1.27 2008-03-02 19:27:21 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.28 2008-08-28 22:39:10 thomson Exp $
  *
  */
 
@@ -114,6 +114,7 @@ public:
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     void setFQDNMode(int FQDNMode);
     bool supportFQDN();
+    bool acceptUnknownFQDN();
     bool leaseQuerySupport();
 
 private:
@@ -147,6 +148,7 @@ private:
     int revDNSZoneRootLength;
     unsigned int PrefixLength;
     bool FQDNSupport;
+    bool AcceptUnknownFQDN;
 
     // --- per-client parameters (exceptions) ---
     List(TSrvCfgOptions) ExceptionsLst;
