@@ -1064,3 +1064,189 @@ iface eth0 {
    pd
 }
 \end{lstlisting}
+
+\subsubsection{Extra options}
+Dibbler is the DHCPv6 with support for a very large number of
+options. However, there are always some new options that are not yet
+supported. Another case is that vendors sometimes want to develop
+and validate their private options before formal standarisation
+process takes place. To cover such cases, dibbler server can be
+configured to send some extra additional options. As those options may
+carry virtually anything, they are specified as a hex string. Those
+options will be appended to all messages transmitted by the server. It
+is possible to specify more than one extra option.
+
+To send option 7777 containing 3 bytes 0x123456, following
+configuration file may be used:
+
+\begin{lstlisting}
+# client.conf
+experimental
+log-mode short
+
+iface eth0 {
+   ia
+   option extra 7777-0x123456
+}
+\end{lstlisting}
+
+Several options may also be transmitted:
+
+\begin{lstlisting}
+# client.conf
+experimental
+log-mode short
+
+iface eth0 {
+   ia
+   option extra 7777-0x123456,123-0xabcd
+}
+\end{lstlisting}
+
+A word of warning: There are no safety checks regarding option codes,
+so it is possible to transmit already defined options using this
+feature. Use with caution!
+
+\subsubsection{Tunnel mode}
+In some scenarios, dibbler may be used for router configuration. IPv6
+routers may need some extra information for tunnel creation. Dibbler
+now provides support for conveying such parameters. As routers may use
+different tunneling schemes, there is a special option that is used to
+convey the tunneling mode.
+
+Here is a server configuration file for tunnel-mode. It instructs
+server to send tunnel endpoint address as 2000::abcd. It will be
+carried in a vendor-specific option with vendor-id 17270. It will also
+send tunnel mode parameter set to 1.
+
+As of August 2008, following modes are supported:
+\begin{itemize}
+\item 0 -- don't create tunnel at all
+\item 1 -- use IPv4-to-IPv6 NAT
+\item 2 -- create IPv4-over-IPv6 tunnel
+\end{itemize}
+
+Here is an example \verb+server.conf+ file that provides such configuration:
+\begin{lstlisting}
+# server.conf : tunnel mode
+# Logging level range: 1(Emergency)-8(Debug)
+log-level 8
+
+# Don't log full date
+log-mode short
+
+# Tunnel mode is non-standard behavior, thus requires 'experimental' keyword
+experimental
+
+# 
+tunnel-mode 17270 1 2000::abcd
+
+iface "eth0" {
+
+# assign addresses from this pool
+ class {
+   pool 2000::/64
+ }
+
+#assign /96 prefixes from this pool
+ pd-class {
+     pd-pool 3000:458:ff01:ff03:abcd::/80
+     pd-length 96
+ }
+}
+\end{lstlisting}
+
+It is also possible to configure server to provide unique tunnel
+configurations for each client:
+
+\begin{lstlisting}
+# server.conf
+
+# Logging level range: 1(Emergency)-8(Debug)
+log-level 8
+
+# Don't log full date
+log-mode short
+
+experimental
+
+# clients will receive tunnel-mode = 1 and tunnel endpoint will be 2000::abcd
+tunnel-mode 17270 1 2000::abcd
+
+iface "eth0" {
+
+# assign addresses from this pool
+ class {
+   pool 2000::/64
+ }
+
+#assign /96 prefixes from this pool
+ pd-class {
+     pd-pool 3000:458:ff01:ff03:abcd::/80
+     pd-length 96
+ }
+
+# provide DNS server location to the clients
+ option dns-server 2000::ff,2000::fe
+ 
+# provide their domain name
+ option domain example.com
+
+# client with this duid will receive tunnel-mode=2 and tunnel end
+# point set to 2000::aaaa
+ client duid 0x000100010f549272000822222222
+ {
+   tunnel-mode 17270 2 2000::aaaa
+ }
+
+# another per-client configuration.
+ client duid 0x000100010f549272000822222221
+ {
+   tunnel-mode 17270 2 3000::dead
+ }
+
+}
+\end{lstlisting}
+
+Server does not send those options by default. They have to be
+requested by client. To request tunnel information, client must send
+vendor-specific information option. Client may be configured to do so
+by using tunnel-mode directive. Here is an example \verb+client.conf+
+configuration file:
+
+\begin{lstlisting}
+# client.conf
+
+# Experimental features are to be allowed
+experimental
+
+# Ask for tunnel-mode using vendor-id 17270
+tunnel-mode 17270
+
+log-level 8
+
+iface eth0 {
+   ia // ask for 1 address
+   pd // and one prefix
+   option dns-server // get DNS server 
+}
+\end{lstlisting}
+
+Note that server and client have to be configured to use the same
+vendor-id value. After client receives all configuration parameters,
+it will execute external script called \verb+notify+. That script will
+be called with some extra paramters: received IPv6 address, received
+IPv6 prefix, prefix length, tunnel endpoint and tunnel-mode. For
+example, if client receives 2000::1 adress, a 2000:abc::/64 prefix,
+tunnel endpoint 2000:4f8::1 and tunnel mode 1, execution will take
+folllowing form:
+
+\begin{lstlisting}
+./notify 2000::1 2000:abc:: 64 2000:4f8::1 1
+\end{lstlisting}
+
+That script is supposed to be stored in \verb+/var/lib/dibbler+
+(Linux) or current directory (Windows). Note that this feature is
+completely untested under Windows.
+
+
