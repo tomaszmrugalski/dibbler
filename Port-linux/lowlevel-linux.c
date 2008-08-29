@@ -9,9 +9,9 @@
  * Authors: Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  * Changes: Laszlo Valko <valko@linux.karinthy.hu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-linux.c,v 1.11 2008-06-22 11:43:18 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.12 2008-08-29 00:07:31 thomson Exp $
  *
  */
 

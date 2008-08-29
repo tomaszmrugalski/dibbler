@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.h,v 1.28 2008-08-28 22:39:10 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.29 2008-08-29 00:07:33 thomson Exp $
  *
  */
 

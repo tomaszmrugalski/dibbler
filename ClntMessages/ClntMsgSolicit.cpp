@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.25 2008-06-01 18:29:03 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.26 2008-08-29 00:07:28 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"

@@ -5,11 +5,14 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: daemon.h,v 1.1 2008-07-20 15:54:36 thomson Exp $
+ * $Id: daemon.h,v 1.2 2008-08-29 00:07:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2008-07-20 15:54:36  thomson
+ * Initial Mac OS port.
+ *
  * Revision 1.4  2008-02-25 17:49:09  thomson
  * Authentication added. Megapatch by Michal Kowalczuk.
  * (small changes by Tomasz Mrugalski)

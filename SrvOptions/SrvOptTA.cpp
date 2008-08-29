@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptTA.cpp,v 1.6 2007-09-02 22:54:12 thomson Exp $
+ * $Id: SrvOptTA.cpp,v 1.7 2008-08-29 00:07:37 thomson Exp $
  */
 
 #ifdef WIN32

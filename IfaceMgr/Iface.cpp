@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: Iface.cpp,v 1.28 2008-08-17 22:41:43 thomson Exp $
+ * $Id: Iface.cpp,v 1.29 2008-08-29 00:07:29 thomson Exp $
  *
  */
 

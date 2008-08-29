@@ -5,11 +5,14 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgDecline.cpp,v 1.5 2008-06-26 21:44:17 thomson Exp $
+ * $Id: ClntMsgDecline.cpp,v 1.6 2008-08-29 00:07:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2008-06-26 21:44:17  thomson
+ * *** empty log message ***
+ *
  * Revision 1.4  2008-02-25 17:49:07  thomson
  * Authentication added. Megapatch by Michal Kowalczuk.
  * (small changes by Tomasz Mrugalski)

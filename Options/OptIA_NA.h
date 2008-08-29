@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: OptIA_NA.h,v 1.5 2008-08-17 22:41:43 thomson Exp $
+ * $Id: OptIA_NA.h,v 1.6 2008-08-29 00:07:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2008-08-17 22:41:43  thomson
+ * CONFIRM improvements (patch sent by Liu Ming)
+ *
  * Revision 1.4  2004-09-07 22:02:33  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
  *

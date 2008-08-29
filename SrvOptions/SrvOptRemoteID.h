@@ -3,7 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
  */
 

@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQueryReply.cpp,v 1.6 2008-01-01 20:05:21 thomson Exp $
+ * $Id: SrvMsgLeaseQueryReply.cpp,v 1.7 2008-08-29 00:07:35 thomson Exp $
  */
 
 #include "SrvMsgLeaseQueryReply.h"

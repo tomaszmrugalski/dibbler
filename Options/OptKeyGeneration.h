@@ -4,9 +4,9 @@
  * author : Michal Kowalczuk <michal@kowalczuk.eu>
  * changes: Tomasz Mrugalski <thomson(at)klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: OptKeyGeneration.h,v 1.1 2008-02-25 20:42:46 thomson Exp $
+ * $Id: OptKeyGeneration.h,v 1.2 2008-08-29 00:07:30 thomson Exp $
  *
  */
 

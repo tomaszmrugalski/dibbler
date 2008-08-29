@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptIA_NA.h,v 1.10 2008-03-02 19:20:30 thomson Exp $
+ * $Id: SrvOptIA_NA.h,v 1.11 2008-08-29 00:07:36 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2008-03-02 19:20:30  thomson
+ * RemoteID, EchoRequest options implemneted.
+ *
  * Revision 1.9  2007-05-04 17:47:25  thomson
  * *** empty log message ***
  *

@@ -6,11 +6,11 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
  * some of those functions are taken form GNU libc6 library
  *
- * $Id: addrpack.c,v 1.9 2006-12-09 09:50:23 thomson Exp $
+ * $Id: addrpack.c,v 1.10 2008-08-29 00:07:30 thomson Exp $
  */
 
 

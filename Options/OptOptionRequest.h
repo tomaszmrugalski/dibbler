@@ -4,11 +4,15 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: OptOptionRequest.h,v 1.5 2007-07-05 00:17:42 thomson Exp $
+ * $Id: OptOptionRequest.h,v 1.6 2008-08-29 00:07:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2007-07-05 00:17:42  thomson
+ * Security update: don't create world writable files,
+ * handle malformed option length.
+ *
  * Revision 1.4  2006-03-05 21:37:46  thomson
  * TA support merged.
  *

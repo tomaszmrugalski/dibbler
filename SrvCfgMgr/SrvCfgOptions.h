@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgOptions.h,v 1.4 2008-08-28 07:09:01 thomson Exp $
+ * $Id: SrvCfgOptions.h,v 1.5 2008-08-29 00:07:33 thomson Exp $
  *
  */
 

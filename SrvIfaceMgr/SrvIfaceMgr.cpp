@@ -6,9 +6,9 @@
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *          Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.31 2008-06-18 23:22:15 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.32 2008-08-29 00:07:34 thomson Exp $
  *
  */
 
@@ -33,13 +33,6 @@
 #include "SrvIfaceIface.h"
 #include "SrvOptEcho.h"
 #include "SrvOptGeneric.h"
-
-/**
- * ServerInterfaceManager - sends and receives messages (server version)
- * @date 2003-10-14
- * @author Tomasz Mrugalski <admin@klub.com.pl>
- * @licence GNU GPL v2 or later
- */
 
 using namespace std;
 

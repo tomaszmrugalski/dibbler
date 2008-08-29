@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: DUID.cpp,v 1.12 2007-08-26 10:26:18 thomson Exp $
+ * $Id: DUID.cpp,v 1.13 2008-08-29 00:07:30 thomson Exp $
  */
 
 #include <iostream>

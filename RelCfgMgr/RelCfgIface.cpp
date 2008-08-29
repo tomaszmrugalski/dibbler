@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgIface.cpp,v 1.3 2007-03-07 02:37:10 thomson Exp $
+ * $Id: RelCfgIface.cpp,v 1.4 2008-08-29 00:07:31 thomson Exp $
  *
  */
 

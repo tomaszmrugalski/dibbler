@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntTransMgr.h,v 1.14 2008-06-25 23:00:11 thomson Exp $
+ * $Id: ClntTransMgr.h,v 1.15 2008-08-29 00:07:29 thomson Exp $
  *
  */
 class TClntTransMgr;

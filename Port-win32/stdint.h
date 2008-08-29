@@ -3,11 +3,11 @@
  *
  * author: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
  * dummy wrapper for WIN32 compilation
  *
- * $Id: stdint.h,v 1.2 2008-02-25 17:49:10 thomson Exp $
+ * $Id: stdint.h,v 1.3 2008-08-29 00:07:31 thomson Exp $
  */
 
 #ifdef WIN32

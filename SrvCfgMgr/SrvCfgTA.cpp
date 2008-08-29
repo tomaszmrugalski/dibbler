@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgTA.cpp,v 1.3 2006-03-21 19:12:47 thomson Exp $
+ * $Id: SrvCfgTA.cpp,v 1.4 2008-08-29 00:07:33 thomson Exp $
  */
 
 #include "SrvCfgTA.h"
@@ -199,6 +199,9 @@ ostream& operator<<(ostream& out,TSrvCfgTA& addrClass)
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006-03-21 19:12:47  thomson
+ * TA related tune ups.
+ *
  * Revision 1.2  2006/03/05 21:34:05  thomson
  * Temp. addresses support merged to the top branch.
  *

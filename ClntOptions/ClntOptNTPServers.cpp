@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptNTPServers.cpp,v 1.8 2007-01-21 19:17:57 thomson Exp $
+ * $Id: ClntOptNTPServers.cpp,v 1.9 2008-08-29 00:07:29 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2007-01-21 19:17:57  thomson
+ * Option name constants updated (by Jyrki Soini)
+ *
  * Revision 1.7  2007-01-07 20:18:46  thomson
  * State enum names changed.
  *

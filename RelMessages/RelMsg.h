@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelMsg.h,v 1.5 2005-04-28 21:20:52 thomson Exp $
+ * $Id: RelMsg.h,v 1.6 2008-08-29 00:07:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005-04-28 21:20:52  thomson
+ * Support for multiple relays added.
+ *
  * Revision 1.4  2005/04/25 00:19:20  thomson
  * Changes in progress.
  *

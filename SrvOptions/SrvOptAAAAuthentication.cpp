@@ -3,11 +3,14 @@
  *
  * author: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptAAAAuthentication.cpp,v 1.1 2008-02-25 20:42:46 thomson Exp $
+ * $Id: SrvOptAAAAuthentication.cpp,v 1.2 2008-08-29 00:07:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2008-02-25 20:42:46  thomson
+ * Missing new AUTH files added.
+ *
  *
  */
 

@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.16 2008-08-17 22:41:42 thomson Exp $
+ * $Id: ClntMsgRebind.cpp,v 1.17 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

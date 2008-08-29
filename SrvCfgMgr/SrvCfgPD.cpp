@@ -3,9 +3,9 @@
  *                                                                           
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * 
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.9 2008-06-18 20:37:20 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.10 2008-08-29 00:07:33 thomson Exp $
  *
  */
 

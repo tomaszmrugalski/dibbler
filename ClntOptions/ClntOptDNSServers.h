@@ -4,11 +4,15 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptDNSServers.h,v 1.5 2004-10-27 22:07:56 thomson Exp $
+ * $Id: ClntOptDNSServers.h,v 1.6 2008-08-29 00:07:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004-10-27 22:07:56  thomson
+ * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
+ * message is now sent properly. Valid lifetime granted by server fixed.
+ *
  * Revision 1.4  2004/10/25 20:45:53  thomson
  * Option support, parsers rewritten. ClntIfaceMgr now handles options.
  *

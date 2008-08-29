@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: IfaceMgr.cpp,v 1.27 2007-12-04 08:57:05 thomson Exp $
+ * $Id: IfaceMgr.cpp,v 1.28 2008-08-29 00:07:30 thomson Exp $
  *
  */
 
@@ -19,13 +19,6 @@
 #include "SocketIPv6.h"
 
 #include "Logger.h"
-
-/*
- * InterfaceManager - provides access to all network interfaces present in the system
- * @date 2003-10-26
- * @author Tomasz Mrugalski <admin@klub.com.pl>
- * @licence GNU GPL v2 or later
- */
 
 /*
  * creates list of interfaces

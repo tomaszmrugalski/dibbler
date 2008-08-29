@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptDomainName.cpp,v 1.10 2007-01-07 20:18:45 thomson Exp $
+ * $Id: ClntOptDomainName.cpp,v 1.11 2008-08-29 00:07:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2007-01-07 20:18:45  thomson
+ * State enum names changed.
+ *
  * Revision 1.9  2004-11-01 23:31:24  thomson
  * New options,option handling mechanism and option renewal implemented.
  *

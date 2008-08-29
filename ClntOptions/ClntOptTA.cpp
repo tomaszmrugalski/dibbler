@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptTA.cpp,v 1.6 2007-04-22 21:19:29 thomson Exp $
+ * $Id: ClntOptTA.cpp,v 1.7 2008-08-29 00:07:29 thomson Exp $
  *
  */
 

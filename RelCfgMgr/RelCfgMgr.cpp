@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgMgr.cpp,v 1.12 2008-03-02 19:35:26 thomson Exp $
+ * $Id: RelCfgMgr.cpp,v 1.13 2008-08-29 00:07:31 thomson Exp $
  *
  */
 

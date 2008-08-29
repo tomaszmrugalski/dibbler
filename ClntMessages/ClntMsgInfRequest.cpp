@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.14 2008-03-06 16:03:18 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.15 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

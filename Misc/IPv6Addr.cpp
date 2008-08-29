@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: IPv6Addr.cpp,v 1.10 2008-03-02 21:59:53 thomson Exp $
+ * $Id: IPv6Addr.cpp,v 1.11 2008-08-29 00:07:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2008-03-02 21:59:53  thomson
+ * non %8 prefix lengths fixed.
+ *
  * Revision 1.9  2007-05-03 23:16:29  thomson
  * Fix for assigning the same prefix several times.
  *

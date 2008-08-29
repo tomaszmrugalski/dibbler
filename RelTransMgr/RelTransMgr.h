@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelTransMgr.h,v 1.2 2005-01-13 22:45:55 thomson Exp $
+ * $Id: RelTransMgr.h,v 1.3 2008-08-29 00:07:33 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2005-01-13 22:45:55  thomson
+ * Relays implemented.
+ *
  * Revision 1.1  2005/01/11 22:53:36  thomson
  * Relay skeleton implemented.
  *

@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgSolicit.h,v 1.6 2007-01-27 17:12:24 thomson Exp $
+ * $Id: ClntMsgSolicit.h,v 1.7 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

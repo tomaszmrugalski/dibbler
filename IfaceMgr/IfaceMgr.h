@@ -1,8 +1,13 @@
 /*
- * InterfaceManager - provides access to all network interfaces present in the system
- * @date 2003-10-26
- * @author Tomasz Mrugalski <admin@klub.com.pl>
- * @licence GNU GPL v2 or later
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
+ * $Id: IfaceMgr.h,v 1.9 2008-08-29 00:07:30 thomson Exp $
+ *
  */
 
 class TIfaceMgr;

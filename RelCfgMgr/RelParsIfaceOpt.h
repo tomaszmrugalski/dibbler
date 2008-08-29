@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelParsIfaceOpt.h,v 1.2 2007-05-01 12:03:13 thomson Exp $
+ * $Id: RelParsIfaceOpt.h,v 1.3 2008-08-29 00:07:32 thomson Exp $
  *
  */
 

@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptNISPDomain.cpp,v 1.3 2007-01-07 20:18:46 thomson Exp $
+ * $Id: ClntOptNISPDomain.cpp,v 1.4 2008-08-29 00:07:29 thomson Exp $
  *
  */
 

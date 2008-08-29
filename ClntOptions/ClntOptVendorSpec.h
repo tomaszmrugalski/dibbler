@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptVendorSpec.h,v 1.3 2006-11-03 22:23:15 thomson Exp $
+ * $Id: ClntOptVendorSpec.h,v 1.4 2008-08-29 00:07:29 thomson Exp $
  */
 
 class TClntOptVendorSpec;

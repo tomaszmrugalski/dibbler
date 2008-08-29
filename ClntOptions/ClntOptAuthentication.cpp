@@ -3,9 +3,9 @@
  *
  * author: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptAuthentication.cpp,v 1.3 2008-02-25 17:49:08 thomson Exp $
+ * $Id: ClntOptAuthentication.cpp,v 1.4 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

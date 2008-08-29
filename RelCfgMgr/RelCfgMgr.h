@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgMgr.h,v 1.7 2008-03-02 19:35:26 thomson Exp $
+ * $Id: RelCfgMgr.h,v 1.8 2008-08-29 00:07:32 thomson Exp $
  *
  */
 

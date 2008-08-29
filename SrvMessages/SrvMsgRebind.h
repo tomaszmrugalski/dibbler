@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgRebind.h,v 1.4 2006-08-21 21:33:20 thomson Exp $
+ * $Id: SrvMsgRebind.h,v 1.5 2008-08-29 00:07:35 thomson Exp $
  *
  */
 

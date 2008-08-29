@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-server.cpp,v 1.19 2008-06-01 21:45:48 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.20 2008-08-29 00:07:31 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2008-06-01 21:45:48  thomson
+ * Return coded are now returned properly under Linux (bug #175)
+ *
  * Revision 1.18  2005-10-11 20:52:47  thomson
  * Problem with command-line parsing fixed.
  *

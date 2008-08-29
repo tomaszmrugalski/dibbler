@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptDNSServers.cpp,v 1.12 2007-01-21 19:17:57 thomson Exp $
+ * $Id: ClntOptDNSServers.cpp,v 1.13 2008-08-29 00:07:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2007-01-21 19:17:57  thomson
+ * Option name constants updated (by Jyrki Soini)
+ *
  * Revision 1.11  2007-01-07 20:18:45  thomson
  * State enum names changed.
  *

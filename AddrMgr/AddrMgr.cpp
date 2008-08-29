@@ -6,9 +6,9 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Micha³ Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: AddrMgr.cpp,v 1.36 2008-08-17 22:41:42 thomson Exp $
+ * $Id: AddrMgr.cpp,v 1.37 2008-08-29 00:07:26 thomson Exp $
  *
  */
 

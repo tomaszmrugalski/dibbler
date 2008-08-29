@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRelease.h,v 1.5 2006-10-06 00:43:28 thomson Exp $
+ * $Id: ClntMsgRelease.h,v 1.6 2008-08-29 00:07:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006-10-06 00:43:28  thomson
+ * Initial PD support.
+ *
  * Revision 1.4  2006-03-23 00:12:09  thomson
  * TA support on the client side finished.
  *

@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvTransMgr.h,v 1.10 2007-01-27 17:13:44 thomson Exp $
+ * $Id: SrvTransMgr.h,v 1.11 2008-08-29 00:07:38 thomson Exp $
  *
  */
 

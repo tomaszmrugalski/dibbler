@@ -3,9 +3,9 @@
  *                                                                           
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>                             
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: FQDN.cpp,v 1.6 2006-10-06 00:25:53 thomson Exp $
+ * $Id: FQDN.cpp,v 1.7 2008-08-29 00:07:30 thomson Exp $
  *
  */
 

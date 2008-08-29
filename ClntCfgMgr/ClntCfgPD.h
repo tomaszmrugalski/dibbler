@@ -3,9 +3,9 @@
  *
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * 
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntCfgPD.h,v 1.2 2007-01-25 23:26:41 thomson Exp $
+ * $Id: ClntCfgPD.h,v 1.3 2008-08-29 00:07:27 thomson Exp $
  */
 
 #ifndef CLNTCFGPD_H

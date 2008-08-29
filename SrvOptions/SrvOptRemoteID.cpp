@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptRemoteID.cpp,v 1.1 2008-03-02 19:20:30 thomson Exp $
+ * $Id: SrvOptRemoteID.cpp,v 1.2 2008-08-29 00:07:37 thomson Exp $
  */
 
 #include "SrvOptRemoteID.h"

@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.31 2008-06-02 00:15:01 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.32 2008-08-29 00:07:34 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"

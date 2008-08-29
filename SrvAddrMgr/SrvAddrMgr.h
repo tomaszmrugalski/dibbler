@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.10 2006-10-06 00:39:12 thomson Exp $
+ * $Id: SrvAddrMgr.h,v 1.11 2008-08-29 00:07:33 thomson Exp $
  *
  */
 

@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski  <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.cpp,v 1.22 2008-08-17 22:41:41 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.23 2008-08-29 00:07:26 thomson Exp $
  *
  */
 

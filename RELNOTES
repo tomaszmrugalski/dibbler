@@ -1,21 +1,19 @@
 
-  Dibbler 0.7.1 release notes [2008-06-18]
+  Dibbler 0.7.2 release notes [2008-08-31]
  ---------------------------------------------------------
 
- This is a final 0.7.1 release. 
+ This is a final 0.7.2 release. 
 
- Biggest improvement since 0.6.1 is support for lease query, authentication
- and countless bug fixes. Technically speaking, lease query was available
- in the 0.7.0, which was "quasi-released", as a source code only and 
- unannounced. To avoid confusion, I decided to skip 0.7.0 rerelease and
- here is the 0.7.1.
-
- Changes:
-  - Leasequery support (new entity: requestor added)
-  - Authentication support
-  - Experimental support for Microsoft Vista
-  - Server now supports relays with unknown interface-ids better
-  - Numerous fixes after 2nd(Vancouver) and 3rd(Philadelphia) bakeoff meetings
+ That is a special release. Its main difference comapared to previous
+ releases is that it contains extra features for IPv6 tunnel configuration
+ and that it is released under GNU GPL v2 only.
+ 
+ Please note that previous versions were released as "GPL v2 or later".
+ Following releases (be it 0.7.3 or 0.8.0) will again be released as 
+ "GPL v2 or later". 
+ 
+ A word of explanation: This temporary license change is useful for 
+ companies that have concerns regarding GPL v3.
 
  See CHANGELOG for a complete list of changes.
 

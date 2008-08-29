@@ -6,9 +6,9 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsg.h,v 1.19 2008-06-02 00:15:01 thomson Exp $
+ * $Id: SrvMsg.h,v 1.20 2008-08-29 00:07:34 thomson Exp $
  *
  */
 

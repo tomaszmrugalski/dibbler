@@ -4,9 +4,9 @@
  * author : Michal Kowalczuk <michal@kowalczuk.eu>
  * changes: Tomasz Mrugalski <thomson(at)klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: KeyList.cpp,v 1.2 2008-06-01 18:29:03 thomson Exp $
+ * $Id: KeyList.cpp,v 1.3 2008-08-29 00:07:30 thomson Exp $
  */
 
 #include "KeyList.h"

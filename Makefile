@@ -494,5 +494,5 @@ test2: test/test2.cpp
 	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -I/home/thomson/devel/openwrt/kamikaze/build_dir/mipsel/uClibc++-0.2.2/include test/test2.cpp Misc/Logger.cpp -o test2 -nodefaultlibs -luClibc++
 
 v2:
-	find . -path "./poslib" -prune -name *.h -or -name *.cpp \
+	find . -name *.h \
       -exec perl -pi -e 's/released under GNU GPL v2 or later licence/released under GNU GPL v2 only licence/' {} \;

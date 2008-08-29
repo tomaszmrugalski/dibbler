@@ -6,9 +6,9 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntTransMgr.cpp,v 1.60 2008-08-17 22:41:43 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.61 2008-08-29 00:07:29 thomson Exp $
  *
  */
 

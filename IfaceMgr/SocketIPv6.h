@@ -1,13 +1,20 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *          Micha³ Kowalczuk <michal@kowalczuk.eu>
+ *
+ * released under GNU GPL v2 only licence
+ *
+ * $Id: SocketIPv6.h,v 1.7 2008-08-29 00:07:30 thomson Exp $
+ *
+ */
+
 class TIfaceSocket;
 #ifndef IFACESOCKETIPV6_H
 #define IFACESOCKETIPV6_H
-
-/*
- * IfaceSocketIPv6 - represents network socket 
- * @date 2003-10-26
- * @author Tomasz Mrugalski <admin@klub.com.pl>
- * @licence GNU GPL v2 or later
- */
 
 #include <iostream>
 #include <string>

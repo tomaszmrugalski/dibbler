@@ -3,7 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  */
 
 class TSrvOptTA;
@@ -52,5 +52,5 @@ class TSrvOptTA : public TOptTA
 
 #endif
 /*
- * $Id: SrvOptTA.h,v 1.3 2006-03-21 19:11:48 thomson Exp $
+ * $Id: SrvOptTA.h,v 1.4 2008-08-29 00:07:37 thomson Exp $
  */

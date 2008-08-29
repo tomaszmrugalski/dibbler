@@ -6,9 +6,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvTransMgr.cpp,v 1.36 2008-02-25 17:49:12 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.37 2008-08-29 00:07:38 thomson Exp $
  *
  */
 

@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.16 2008-08-28 22:39:11 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.17 2008-08-29 00:07:34 thomson Exp $
  *
  */
 

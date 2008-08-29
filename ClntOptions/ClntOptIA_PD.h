@@ -4,7 +4,7 @@
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * changes: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  */
 
 #ifndef CLNTOPTIA_PD_H

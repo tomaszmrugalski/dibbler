@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptElapsed.cpp,v 1.4 2006-10-29 13:11:47 thomson Exp $
+ * $Id: SrvOptElapsed.cpp,v 1.5 2008-08-29 00:07:36 thomson Exp $
  */
 
 #include "DHCPConst.h"

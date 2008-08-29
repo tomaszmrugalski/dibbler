@@ -6,9 +6,9 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.27 2008-02-25 17:49:06 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.28 2008-08-29 00:07:27 thomson Exp $
  *
  */
 

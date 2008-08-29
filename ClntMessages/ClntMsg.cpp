@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsg.cpp,v 1.39 2008-08-21 00:25:08 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.40 2008-08-29 00:07:28 thomson Exp $
  */
 
 #ifdef WIN32

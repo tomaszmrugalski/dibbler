@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.9 2007-09-07 08:31:21 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.10 2008-08-29 00:07:34 thomson Exp $
  *
  */
 
@@ -22,13 +22,6 @@ class TSrvIfaceMgr;
 #include "SrvTransMgr.h"
 #include "SrvIfaceIface.h"
 #include "SrvMsg.h"
-
-/**
- * ServerInterfaceManager - sends and receives messages (server version)
- * @date 2003-10-14
- * @author Tomasz Mrugalski <admin@klub.com.pl>
- * @licence GNU GPL v2 or later
- */
 
 class TSrvIfaceMgr :public TIfaceMgr {
  public:

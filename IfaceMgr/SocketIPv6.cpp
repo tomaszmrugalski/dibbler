@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SocketIPv6.cpp,v 1.19 2007-01-07 20:18:46 thomson Exp $
+ * $Id: SocketIPv6.cpp,v 1.20 2008-08-29 00:07:30 thomson Exp $
  *
  */
 

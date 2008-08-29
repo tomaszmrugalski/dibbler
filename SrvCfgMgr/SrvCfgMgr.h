@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvCfgMgr.h,v 1.22 2008-06-02 00:15:01 thomson Exp $
+ * $Id: SrvCfgMgr.h,v 1.23 2008-08-29 00:07:33 thomson Exp $
  *
  */
 

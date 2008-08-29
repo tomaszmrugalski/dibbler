@@ -6,9 +6,9 @@
  * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.56 2008-06-02 00:15:01 thomson Exp $
+ * $Id: SrvCfgMgr.cpp,v 1.57 2008-08-29 00:07:33 thomson Exp $
  *
  */
 

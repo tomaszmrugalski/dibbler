@@ -4,11 +4,15 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvMsgDecline.h,v 1.4 2006-08-21 21:33:20 thomson Exp $
+ * $Id: SrvMsgDecline.h,v 1.5 2008-08-29 00:07:34 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006-08-21 21:33:20  thomson
+ * prepareFQDN() moved from SrvMgrReply to SrvMsg,
+ * unnecessary constructors removed.
+ *
  * Revision 1.3  2005-01-08 16:52:04  thomson
  * Relay support implemented.
  *

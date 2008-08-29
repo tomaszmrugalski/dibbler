@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptElapsed.cpp,v 1.7 2007-02-03 15:37:15 thomson Exp $
+ * $Id: ClntOptElapsed.cpp,v 1.8 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

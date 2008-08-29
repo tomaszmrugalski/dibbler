@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: StationRange.h,v 1.6 2006-12-04 23:30:53 thomson Exp $
+ * $Id: StationRange.h,v 1.7 2008-08-29 00:07:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006-12-04 23:30:53  thomson
+ * Prefix delegation support added.
+ *
  * Revision 1.5  2006-10-06 00:30:46  thomson
  * Initial PD support.
  *

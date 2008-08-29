@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceIface.h,v 1.9 2008-08-21 00:25:08 thomson Exp $
+ * $Id: ClntIfaceIface.h,v 1.10 2008-08-29 00:07:27 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2008-08-21 00:25:08  thomson
+ * Notify mechanism implemented.
+ *
  * Revision 1.8  2008-08-19 23:27:33  thomson
  * TunnelMode additional support.
  *

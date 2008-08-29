@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgReply.cpp,v 1.8 2007-05-04 17:22:49 thomson Exp $
+ * $Id: ClntMsgReply.cpp,v 1.9 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

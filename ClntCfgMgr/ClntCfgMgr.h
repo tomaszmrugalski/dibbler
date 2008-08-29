@@ -6,9 +6,9 @@
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.28 2008-08-19 00:09:39 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.29 2008-08-29 00:07:27 thomson Exp $
  */
 
 class TClntCfgMgr;

@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ReqOpt.cpp,v 1.2 2007-12-03 16:59:17 thomson Exp $
+ * $Id: ReqOpt.cpp,v 1.3 2008-08-29 00:07:33 thomson Exp $
  *
  */
 #include "ReqOpt.h"

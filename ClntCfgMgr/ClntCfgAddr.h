@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntCfgAddr.h,v 1.5 2007-01-21 18:06:57 thomson Exp $
+ * $Id: ClntCfgAddr.h,v 1.6 2008-08-29 00:07:27 thomson Exp $
  *
  */
 

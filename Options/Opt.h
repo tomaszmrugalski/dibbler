@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *                                                                           
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: Opt.h,v 1.10 2007-12-02 10:31:59 thomson Exp $
+ * $Id: Opt.h,v 1.11 2008-08-29 00:07:30 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2007-12-02 10:31:59  thomson
+ * Requestor implemented (RFC5007)
+ *
  * Revision 1.9  2007-03-28 00:39:46  thomson
  * Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
  *

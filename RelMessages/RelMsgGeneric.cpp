@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelMsgGeneric.cpp,v 1.4 2005-08-03 23:17:11 thomson Exp $
+ * $Id: RelMsgGeneric.cpp,v 1.5 2008-08-29 00:07:32 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005-08-03 23:17:11  thomson
+ * Minor changes fixed.
+ *
  * Revision 1.3  2005/04/28 21:20:52  thomson
  * Support for multiple relays added.
  *

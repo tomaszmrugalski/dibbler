@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.h,v 1.15 2008-08-21 00:25:08 thomson Exp $
+ * $Id: ClntIfaceMgr.h,v 1.16 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

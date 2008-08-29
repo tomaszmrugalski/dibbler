@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.17 2008-06-18 21:55:59 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.18 2008-08-29 00:07:30 thomson Exp $
  *
- * released under GNU GPL v2 or later licence                                
+ * released under GNU GPL v2 only licence                                
  *                                                                           
  */
 #include "DHCPConst.h"

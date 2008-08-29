@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptEcho.cpp,v 1.1 2008-03-02 19:54:07 thomson Exp $
+ * $Id: SrvOptEcho.cpp,v 1.2 2008-08-29 00:07:36 thomson Exp $
  *
  */
 

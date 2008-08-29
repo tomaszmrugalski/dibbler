@@ -6,9 +6,9 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsg.cpp,v 1.56 2008-08-28 07:09:03 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.57 2008-08-29 00:07:34 thomson Exp $
  */
 
 #include <sstream>

@@ -6,9 +6,9 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.21 2008-08-21 00:25:08 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.22 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

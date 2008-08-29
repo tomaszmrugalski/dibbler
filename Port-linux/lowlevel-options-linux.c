@@ -3,9 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-options-linux.c,v 1.14 2008-06-18 21:13:45 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.15 2008-08-29 00:07:31 thomson Exp $
  *
  */
 

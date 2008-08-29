@@ -5,11 +5,14 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgAdvertise.cpp,v 1.7 2008-06-02 00:15:00 thomson Exp $
+ * $Id: ClntMsgAdvertise.cpp,v 1.8 2008-08-29 00:07:28 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2008-06-02 00:15:00  thomson
+ * AUTH is now a modular feature.
+ *
  * Revision 1.6  2008-02-25 17:49:07  thomson
  * Authentication added. Megapatch by Michal Kowalczuk.
  * (small changes by Tomasz Mrugalski)

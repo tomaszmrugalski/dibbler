@@ -4,9 +4,12 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2006-11-03 20:07:07  thomson
+ * Server-side vendorSpecInfo support added.
+ *
  */
 
 #ifndef SRVOPTVENDORSPECINFO_H

@@ -5,9 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.48 2008-08-28 22:39:10 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.49 2008-08-29 00:07:28 thomson Exp $
  */
 
 #include "Portable.h"

@@ -4,11 +4,14 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgReply.h,v 1.10 2006-10-06 00:42:58 thomson Exp $
+ * $Id: SrvMsgReply.h,v 1.11 2008-08-29 00:07:35 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006-10-06 00:42:58  thomson
+ * Initial PD support.
+ *
  * Revision 1.9  2006-08-30 01:10:39  thomson
  * DNSUpdate general cleanup.
  *

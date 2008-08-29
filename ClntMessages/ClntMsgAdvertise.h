@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgAdvertise.h,v 1.5 2007-03-28 00:39:46 thomson Exp $
+ * $Id: ClntMsgAdvertise.h,v 1.6 2008-08-29 00:07:28 thomson Exp $
  *
  */
 

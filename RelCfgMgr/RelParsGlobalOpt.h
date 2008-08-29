@@ -4,9 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * released under GNU GPL v2 or later licence
+ * released under GNU GPL v2 only licence
  *
- * $Id: RelParsGlobalOpt.h,v 1.5 2008-03-02 19:35:26 thomson Exp $
+ * $Id: RelParsGlobalOpt.h,v 1.6 2008-08-29 00:07:32 thomson Exp $
  *
  */
 
