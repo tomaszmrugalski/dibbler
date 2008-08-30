@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.49 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.50 2008-08-30 21:41:12 thomson Exp $
  */
 
 #include "Portable.h"
@@ -418,6 +418,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	{
 	    sprintf(buf, "sh %s %s", cmd2, prefix->getPlain());
 	    Log(Notice) << "Executing external command to DEL prefix: " << buf << LogEnd;
+
 	    returnCode = system(buf);
 	    Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
 	    break;
@@ -581,6 +582,11 @@ void TClntIfaceMgr::redetectIfaces() {
 
 void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 {
+    if (!ClntCfgMgr->getNotifyScripts()) {
+	Log(Debug) << "Not executing external script (Notify script disabled)." << LogEnd;
+	return;
+    }
+
     PrefixModifyMode mode;
     string action;
 
@@ -651,12 +657,12 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
     stringstream tmp;
     tmp << "sh ./notify " << " " << ip->getPlain() << " "
 	<< prefix->get()->getPlain() << " " << prefix->getLength() << " "
-	<< remoteEndpoint->getPlain() << " " << action;
+	<< remoteEndpoint->getPlain() << " " << tunnelMode << " " << action;
     Log(Info) << "About to execute command: " << tmp.str() << LogEnd;
 
     int returnCode = system(tmp.str().c_str());
 
-    Log(Notice) << "Return code=" << returnCode << LogEnd;
+    Log(Info) << "Return code=" << returnCode << LogEnd;
 }
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {

@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.64 2008-08-30 20:27:35 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.65 2008-08-30 21:41:10 thomson Exp $
  *
  */
 
@@ -43,6 +43,7 @@ TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr,
 {
     this->IfaceMgr = ClntIfaceMgr;
     this->IsDone=false;
+    NotifyScripts = false;
 
     if (!parseConfigFile(cfgFile)) {
 	this->IsDone = true;
@@ -207,8 +208,6 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 
 	    }
 
-        cfgIface->DNSServerState()
-
 	    this->addIface(cfgIface);
 	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
 			 << " configuation has been loaded." << LogEnd;
@@ -218,7 +217,12 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	// we'll try to configure each interface we could find
 	Log(Warning) << "Config file does not contain any interface definitions. Trying to autodetect."
 		     << LogEnd;
+
+	List(TIPv6Addr) dnsList;
+	dnsList.clear();
+	parser->ParserOptStack.getLast()->setDNSServerLst(&dnsList);
 	
+	int cnt = 0;
 	IfaceMgr->firstIface();
 	while ( ifaceIface = IfaceMgr->getIface() ) {
 	    // for each interface present in the system...
@@ -270,6 +274,12 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 
 	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
                       << " has been added." << LogEnd;
+	    cnt ++;
+	}
+	if (!cnt) {
+	    Log(Crit) << "Unable to detect any suitable interfaces. If there are any interfaces that you"
+		      << " want to have configured, please specify them in client.conf file." << LogEnd;
+	    return false;
 	}
     }
     return true;
@@ -521,6 +531,7 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     this->LogLevel       = logger::getLogLevel();
     this->LogName        = logger::getLogName();
     this->ScriptsDir     = opt->getScriptsDir();
+    this->NotifyScripts  = opt->getNotifyScripts();
     this->AnonInfRequest = opt->getAnonInfRequest();
     this->InsistMode     = opt->getInsistMode();   // should the client insist on receiving all options
                                                    // i.e. sending INF-REQUEST if REQUEST did not grant required opts
@@ -728,6 +739,10 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     return strum;
 }
 
+bool TClntCfgMgr::getNotifyScripts()
+{
+    return NotifyScripts;
+}
 
 #ifdef MOD_CLNT_EMBEDDED_CFG
 /** 

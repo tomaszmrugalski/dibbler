@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.54 2008-06-25 23:19:47 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.55 2008-08-30 21:41:13 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -870,20 +870,24 @@ iface eth0 {
 }
 \end{lstlisting}
 
-\subsubsection{Example 15: Confirm}
+\subsubsection{Example 15: Skip Confirm}
 \label{example-client-confirm}
-It is possible to configure client to send \msg{CONFIRM} message, when
-there is an old lease addresses database. Please note that this
-feature have been developed very lately.
+Client detects if previous client instance was not shutdown properly
+(due to power outage, client crash or similar event). In such case, it
+reads existing address database and checks if assigned addresses may
+still be valid. If that is so, it tries to confirm those addresses by
+using \msg{CONFIRM} message.
 
-Currently, client does support only IAs in the \msg{CONFIRM}.
+If user don't want \msg{CONFIRM} message to be send and client should
+start ''from scratch'' every time, it is possible to disable confirm
+support. 
 
 \begin{lstlisting}
 # client.conf
 
 log-mode short
 log-level 7
-use-confirm
+skip-confirm
 
 iface eth0 {
   ia

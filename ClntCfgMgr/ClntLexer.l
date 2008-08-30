@@ -58,6 +58,7 @@ log-mode              { return ClntParser::LOGMODE_; }
 log-name              { return ClntParser::LOGNAME_; }
 work-dir              { return ClntParser::WORKDIR_;}
 scripts-dir           { return ClntParser::SCRIPTS_DIR_; }
+notify-scripts        { return ClntParser::NOTIFY_SCRIPTS_; }
 prefered-lifetime     { return ClntParser::PREF_TIME_; }
 valid-lifetime        { return ClntParser::VALID_TIME_; }
 t1                    { return ClntParser::T1_;}

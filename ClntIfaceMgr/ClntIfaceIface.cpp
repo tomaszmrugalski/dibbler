@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.17 2008-08-30 20:27:35 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.18 2008-08-30 21:41:12 thomson Exp $
  *
  */
 
@@ -46,6 +46,8 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
 
     this->LifetimeTimeout = DHCPV6_INFINITY;
     this->LifetimeTimestamp = now();
+
+    setPrefixLength(CLIENT_DEFAULT_PREFIX_LENGTH);
 }
 
 /*

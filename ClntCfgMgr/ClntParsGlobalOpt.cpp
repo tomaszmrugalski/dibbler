@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntParsGlobalOpt.cpp,v 1.19 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntParsGlobalOpt.cpp,v 1.20 2008-08-30 21:41:11 thomson Exp $
  *
  */
 
@@ -21,6 +21,7 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->PrefixLength   = CLIENT_DEFAULT_PREFIX_LENGTH;
     this->Digest         = CLIENT_DEFAULT_DIGEST;
     this->ScriptsDir     = DEFAULT_SCRIPTSDIR;
+    this->NotifyScripts  = false;
     this->AnonInfRequest = false;
     this->InactiveMode   = false;
     this->InsistMode     = false;
@@ -167,4 +168,14 @@ int  TClntParsGlobalOpt::getTunnelMode()
 bool TClntParsGlobalOpt::getConfirm()
 {
     return UseConfirm;
+}
+
+bool TClntParsGlobalOpt::getNotifyScripts()
+{
+    return NotifyScripts;
+}
+
+void TClntParsGlobalOpt::setNotifyScripts(bool useScripts)
+{
+    NotifyScripts = useScripts;
 }

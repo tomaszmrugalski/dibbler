@@ -1,12 +1,16 @@
 
   Dibbler changelog
  ------------------- 
- 0.7.1-CVS [...]
+ 0.7.2 [2008-08-31]
+  - Cli: external scripts may now be executed
+  - Cli: addresses are now added properly in autodetect-mode
+  - Cli: DNS server is now configured properly under Windows XP/Vista
   - Srv: client's FQDN hints may now be honored
   - Srv: support for extra options added
   - Experimental CONFIRM support added (+extra fixes)
   - Cli: requested options are now sent in RENEW messages
   - Cli: elapsed option is now sent in all messages
+  - Cli: client does not get confused when running in autodetect mode and there are no suitable interfaces
 
  0.7.1 [2008-06-18]
   - Linux: Prefixes starting with a-f are now supported properly (bug #171)

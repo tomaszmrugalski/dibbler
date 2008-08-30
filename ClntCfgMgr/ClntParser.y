@@ -102,7 +102,7 @@ namespace std
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
-%token OPTION_, SCRIPTS_DIR_
+%token OPTION_, SCRIPTS_DIR_, NOTIFY_SCRIPTS_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -156,6 +156,7 @@ GlobalOptionDeclaration
 | ExperimentalMappingPrefix
 | ExperimentalTunnelMode
 | SkipConfirm
+| NotifyScripts
 ;
 
 InterfaceOptionDeclaration
@@ -630,6 +631,15 @@ SkipConfirm
     Log(Debug) << "CONFIRM support disabled (skip-confirm in client.conf)." << LogEnd;
     ParserOptStack.getLast()->setConfirm(false);
 };
+
+NotifyScripts
+: NOTIFY_SCRIPTS_
+{
+    Log(Debug) << "Notify scripts enabled." << LogEnd;
+    ParserOptStack.getLast()->setNotifyScripts(true);
+};
+
+
 
 ValidTimeOption
 :VALID_TIME_ Number

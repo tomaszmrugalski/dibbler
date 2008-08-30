@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntCfgMgr.h,v 1.29 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntCfgMgr.h,v 1.30 2008-08-30 21:41:10 thomson Exp $
  */
 
 class TClntCfgMgr;
@@ -59,7 +59,9 @@ class TClntCfgMgr : public TCfgMgr
 
     DigestTypes getDigest();
     void setDigest(DigestTypes value);
+
     string getScriptsDir();
+    bool getNotifyScripts();
 
     bool anonInfRequest();
     bool insistMode();
@@ -101,6 +103,8 @@ private:
     List(TClntCfgIface) InactiveLst;
     DigestTypes Digest;
     string ScriptsDir;
+    bool NotifyScripts;
+
     bool AnonInfRequest;
     bool InsistMode;
     bool InactiveMode;
