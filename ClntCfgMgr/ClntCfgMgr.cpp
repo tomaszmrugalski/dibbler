@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.63 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.64 2008-08-30 20:27:35 thomson Exp $
  *
  */
 
@@ -206,6 +206,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 		return false;
 
 	    }
+
+        cfgIface->DNSServerState()
 
 	    this->addIface(cfgIface);
 	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 

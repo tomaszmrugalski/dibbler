@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.16 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.17 2008-08-30 20:27:35 thomson Exp $
  *
  */
 
@@ -728,6 +728,8 @@ ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
     while (sock = x.getSocket() ) {
 	strum << "    " << *sock;
     }
+    strum << "    <prefixLength>" << x.getPrefixLength() << "</prefixLength>" << endl;
+
     strum << "    <!-- options -->" << endl;
 
     // --- option: DNS-SERVERS ---

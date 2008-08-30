@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: client-win32.cpp,v 1.19 2005-07-27 21:57:43 thomson Exp $
+ * $Id: client-win32.cpp,v 1.20 2008-08-30 20:27:35 thomson Exp $
  */
 
 #include <string>
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 
     WSADATA wsaData;
 
-	cout << DIBBLER_COPYRIGHT1 << " (CLIENT, WinXP/2003 port)" << endl;
+	cout << DIBBLER_COPYRIGHT1 << " (CLIENT, WinXP/2003/Vista port)" << endl;
 	cout << DIBBLER_COPYRIGHT2 << endl;
 	cout << DIBBLER_COPYRIGHT3 << endl;
 	cout << DIBBLER_COPYRIGHT4 << endl;
@@ -137,6 +137,9 @@ int main(int argc, char* argv[])
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2005-07-27 21:57:43  thomson
+ * 0.4.1 release, windows related changes.
+ *
  * Revision 1.18  2005/07/26 00:03:03  thomson
  * Preparation for relase 0.4.1
  *
