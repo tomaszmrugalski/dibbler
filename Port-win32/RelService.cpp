@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.8 2006-05-01 14:03:28 thomson Exp $
+ * $Id: RelService.cpp,v 1.9 2008-08-30 20:41:06 thomson Exp $
  */
 
 #include <winsock2.h>
@@ -109,7 +109,7 @@ void TRelService::Run()
     logger::setLogName("Rel");
     logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003 port)" << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003/Vista port)" << LogEnd;
     
     TDHCPRelay relay(workdir+"\\"+confile);
     relPtr = &relay; // remember address

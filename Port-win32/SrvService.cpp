@@ -6,7 +6,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: SrvService.cpp,v 1.19 2006-05-01 14:03:28 thomson Exp $
+ * $Id: SrvService.cpp,v 1.20 2008-08-30 20:41:06 thomson Exp $
  */
 
 #include <winsock2.h>
@@ -110,7 +110,7 @@ void TSrvService::Run()
     logger::setLogName("Srv");
 	logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER, WinXP/2003 port)" << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER, WinXP/2003/Vista port)" << LogEnd;
     
     TDHCPServer server(workdir+"\\"+confile);
     srvPtr = &server; // remember address
@@ -126,6 +126,9 @@ void TSrvService::setState(EServiceState status) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2006-05-01 14:03:28  thomson
+ * winsock2.h include added.
+ *
  * Revision 1.18  2005/07/24 16:00:03  thomson
  * Port WinNT/2000 related changes.
  *

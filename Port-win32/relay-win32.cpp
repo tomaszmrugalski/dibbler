@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.7 2005-07-26 00:03:03 thomson Exp $
+ * $Id: relay-win32.cpp,v 1.8 2008-08-30 20:41:07 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -58,7 +58,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 
 int main(int argc, char* argv[]) {
 
-    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003 port)" << endl;
+    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003/Vista port)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
     cout << DIBBLER_COPYRIGHT3 << endl;
     cout << DIBBLER_COPYRIGHT4 << endl;
@@ -133,6 +133,9 @@ int main(int argc, char* argv[]) {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005-07-26 00:03:03  thomson
+ * Preparation for relase 0.4.1
+ *
  * Revision 1.6  2005/07/24 16:00:03  thomson
  * Port WinNT/2000 related changes.
  *

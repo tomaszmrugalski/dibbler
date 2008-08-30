@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: ClntService.cpp,v 1.23 2006-05-01 13:56:28 thomson Exp $
+ * $Id: ClntService.cpp,v 1.24 2008-08-30 20:41:06 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -111,7 +111,7 @@ void TClntService::Run() {
     logger::setLogName("Client");
 	logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT, WinXP/2003 port)" << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << "(CLIENT, WinXP/2003/Vista port)" << LogEnd;
     
     TDHCPClient client(workdir+"\\"+confile);
     clntPtr = &client; // remember address
@@ -131,6 +131,9 @@ TClntService::~TClntService(void)
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2006-05-01 13:56:28  thomson
+ * winsock2.h include added.
+ *
  * Revision 1.22  2005/08/07 18:10:59  thomson
  * 0.4.1 release.
  *

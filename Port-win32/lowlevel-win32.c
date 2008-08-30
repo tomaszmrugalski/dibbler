@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.19 2008-06-22 11:43:18 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.20 2008-08-30 20:41:07 thomson Exp $
  *
  */
 
@@ -468,7 +468,7 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
 
 extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
     
-    // netsh interface ipv6 add dns interface="eth0" address=2000::123
+    // netsh interface ipv6 add dns "eth0" address=2000::123
     char arg1[]="interface";
     char arg2[]="ipv6";
     char arg3[]="add";
@@ -477,7 +477,7 @@ extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
     char arg6[256]; // address=...
     intptr_t i;
     
-    sprintf(arg5,"interface=\"%s\"", ifname);
+    sprintf(arg5,"\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
 
@@ -492,7 +492,7 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     char arg5[256]; // interface=...
     char arg6[256]; // address=...
     intptr_t i;
-    sprintf(arg5,"interface=\"%s\"", ifname);
+    sprintf(arg5,"\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
 
