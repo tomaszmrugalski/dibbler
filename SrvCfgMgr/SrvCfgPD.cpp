@@ -5,7 +5,7 @@
  * 
  * released under GNU GPL v2 only licence
  *                                                                           
- * $Id: SrvCfgPD.cpp,v 1.10 2008-08-29 00:07:33 thomson Exp $
+ * $Id: SrvCfgPD.cpp,v 1.11 2008-09-01 00:01:46 thomson Exp $
  *
  */
 
@@ -66,7 +66,6 @@ unsigned long TSrvCfgPD::getPD_Length() {
 bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 {
     int poolLength=0;
-    int cnt = 0;
     Log(Debug) << "PD: Client will receive /" << prefixLength << " prefixes (T1=" << opt->getT1Beg() 
 	       << ".." << opt->getT1End() << ", T2=" << opt->getT2Beg() << ".." << opt->getT2End()
 	       << ")." <<LogEnd; 
@@ -103,7 +102,12 @@ bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
     this->PD_Count = prefixLength - pool->getPrefixLength();
     if (this->PD_Count > 31)
 	this->PD_Count = DHCPV6_INFINITY;
-    this->PD_Count = 2 << (this->PD_Count-1);
+    if (this->PD_Count!=0)
+    {
+	this->PD_Count = 2 << (this->PD_Count-1);
+    } else {
+	this->PD_Count = 1; // only 1 prefix available
+    }
 
     opt->firstPool();
     while ( pool = opt->getPool() ) {
@@ -112,10 +116,11 @@ bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 	Log(Debug) << "PD: Pool " << pool->getAddrL()->getPlain() << " - " 
 		   << pool->getAddrR()->getPlain() << ", pool length: " 
 		   << pool->getPrefixLength() << "." << LogEnd;
+	/* FIXME: this code is fishy. It behave erraticaly, when there is only 1 prefix to be assigned 
 	if (this->PD_Count > pool->rangeCount())
 	    this->PD_Count = pool->rangeCount();
-	cnt++;
-    }
+	    cnt++; */
+    } 
 
     // calculate common section
     PoolLst.first();
@@ -125,8 +130,6 @@ bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 	return false;
     }
 
-    //Log(Debug) << "#### pool->getAddrL() = " << pool->getAddrL()->getPlain() << LogEnd;
-    //Log(Debug) << "#### pool->getAddrR() = " << pool->getAddrR()->getPlain() << LogEnd;
     CommonPool = new TStationRange( new TIPv6Addr(*pool->getAddrL()), new TIPv6Addr(*pool->getAddrR()));
     CommonPool->truncate(pool->getPrefixLength()+1, prefixLength);
     CommonPool->setPrefixLength(poolLength);
