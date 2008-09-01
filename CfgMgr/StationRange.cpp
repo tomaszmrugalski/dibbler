@@ -131,7 +131,9 @@ unsigned long TStationRange::rangeCount()
         {
             if (addr[i]>0) return DHCPV6_INFINITY;
         }
-        unsigned long retVal=ntohl(*(long*)(addr+12))+1;
+        unsigned long retVal = addr[12]*256*256*256 + addr[13]*256*256 + addr[14]*256 + addr[15];
+	if (retVal!=DHCPV6_INFINITY)
+	    return retVal + 1;
         return retVal;
     }
     else
