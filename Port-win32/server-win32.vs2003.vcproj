@@ -37,7 +37,6 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib Iphlpapi.lib"
 				OutputFile="$(OutDir)/dibbler-server.exe"
-				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -71,18 +70,20 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib\poslib"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="0"
-				UsePrecompiledHeader="3"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/server-win2k.exe"
-				LinkIncremental="1"
+				AdditionalDependencies="ws2_32.lib Iphlpapi.lib"
+				OutputFile="$(OutDir)/dibbler-server.exe"
+				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>

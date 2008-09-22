@@ -8,7 +8,7 @@
  * 
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntCfgMgr.cpp,v 1.65 2008-08-30 21:41:10 thomson Exp $
+ * $Id: ClntCfgMgr.cpp,v 1.66 2008-09-22 17:08:52 thomson Exp $
  *
  */
 
@@ -189,7 +189,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	    // Check if the interface is during bring-up phase (i.e. DAD procedure for link-local addr is not complete yet)
 	    char tmp[64];
 	    ifaceIface->firstLLAddress();
-	    inet_ntop6(ifaceIface->getLLAddress(), tmp); 
+	    inet_ntop6(ifaceIface->getLLAddress(), tmp);
 	    if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp) == LOWLEVEL_TENTATIVE_YES) {
 		Log(Notice) << "Interface " << ifaceIface->getFullName() << " has link-local address " << tmp 
 			    << ", but it is currently tentative." << LogEnd;

@@ -6,7 +6,7 @@
  *                                                                           
  * Released under GNU GPL v2 licence
  *                                                                           
- * $Id: WinService.cpp,v 1.18 2008-06-22 11:43:18 thomson Exp $
+ * $Id: WinService.cpp,v 1.19 2008-09-22 17:08:52 thomson Exp $
  */
 
 #include <windows.h>
@@ -492,6 +492,9 @@ bool TWinService::verifyPort() {
     if (!ok) {
          Log(Warning) << "Unsupported operating system detected (majorVersion=" << verinfo.dwMajorVersion
           << ", minorVersion=" << verinfo.dwMinorVersion << ")." << LogEnd;
+         Log(Notice) << "Unsupported systems (there's specific Dibbler version for those systems:" << LogEnd;
+         Log(Notice) << "Windows NT4:   major<5 minor=0" << LogEnd;
+         Log(Notice) << "Windows 2000:  major=5 minor=0" << LogEnd;
          Log(Notice) << "Supported systems:" << LogEnd;
          Log(Notice) << "Windows XP:    major=5 minor=1" << LogEnd;
          Log(Notice) << "Windows 2003:  major=5 minor=2" << LogEnd;
@@ -502,6 +505,9 @@ bool TWinService::verifyPort() {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2008-06-22 11:43:18  thomson
+ * Win32 changes for 0.7.1. Vista is now supported. Yay!
+ *
  * Revision 1.17  2005-08-07 18:10:59  thomson
  * 0.4.1 release.
  *

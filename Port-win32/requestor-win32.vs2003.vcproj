@@ -68,6 +68,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..;.;include;..\Options;..\misc;..\Messages;..\IfaceMgr;..\Requestor"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="4"
 				UsePrecompiledHeader="0"
@@ -78,6 +79,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="ws2_32.lib Iphlpapi.lib"
 				OutputFile="$(OutDir)/dibbler-requestor.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"

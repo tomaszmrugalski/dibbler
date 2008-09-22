@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Requestor.cpp,v 1.6 2008-01-01 18:24:09 thomson Exp $
+ * $Id: Requestor.cpp,v 1.7 2008-09-22 17:08:54 thomson Exp $
  */
 
 #include "Portable.h"
@@ -79,13 +79,13 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 	    dstaddr = argv[++i];
 	    continue;
 	}
-        if (!strncmp(argv[i], "-help", 5) || !strncmp(argv[i], "/help", 5) || 
+        if (!strncmp(argv[i], "--help", 5) || !strncmp(argv[i], "-h", 5) || !strncmp(argv[i], "/help", 5) || 
 	    !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
-            printHelp();
             return false;
         }
         
         Log(Error) << "Unable to parse command-line parameter: " << argv[i] << LogEnd;
+        Log(Error) << "Please use -h for help." << LogEnd;
         return false;
     }
 
@@ -145,6 +145,7 @@ int main(int argc, char *argv[])
 
     if (!parseCmdLine(&a, argc, argv)) {
         Log(Crit) << "Aborted. Invalid command-line parameters or help called." << LogEnd;
+        printHelp();
         return -1;
     }
 

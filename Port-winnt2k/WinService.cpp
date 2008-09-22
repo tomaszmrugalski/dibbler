@@ -7,7 +7,7 @@
  *
  * based on WinService.cpp,v 1.14 2005/02/01 22:39:20 thomson Exp $
  *
- * $Id: WinService.cpp,v 1.3 2005-07-26 00:03:03 thomson Exp $
+ * $Id: WinService.cpp,v 1.4 2008-09-22 17:08:53 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *                                                                           
@@ -489,14 +489,26 @@ bool TWinService::verifyPort() {
           ok = true;
     }
     if (!ok)
+    {
          Log(Warning) << "Unsupported operating system detected (major=" << verinfo.dwMajorVersion
           << ", minor=" << verinfo.dwMinorVersion << ")." << LogEnd;
-    
+         Log(Notice) << "Supported systems:" << LogEnd;
+         Log(Notice) << "Windows NT4:   major<5 minor=0" << LogEnd;
+         Log(Notice) << "Windows 2000:  major=5 minor=0" << LogEnd;
+         Log(Notice) << "Unsupported systems (there's specific Dibbler version for recent systems):" << LogEnd;
+         Log(Notice) << "Windows XP:    major=5 minor=1" << LogEnd;
+         Log(Notice) << "Windows 2003:  major=5 minor=2" << LogEnd;
+         Log(Notice) << "Windows Vista: major=6 minor=0" << LogEnd;
+          
+    }
     return ok;
 }
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005-07-26 00:03:03  thomson
+ * Preparation for relase 0.4.1
+ *
  * Revision 1.2  2005/07/24 16:00:03  thomson
  * Port WinNT/2000 related changes.
  *

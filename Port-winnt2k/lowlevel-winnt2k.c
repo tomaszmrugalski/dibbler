@@ -2,12 +2,11 @@
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
- *          Marek Senderski <msend@o2.pl>
  *          win2k version by <sob@hisoftware.cz>
  *
  * based on code from Dibbler 0.2.0-RC2 and Dibbler 0.4.0
  *
- * $Id: lowlevel-winnt2k.c,v 1.6 2007-02-07 21:14:55 thomson Exp $
+ * $Id: lowlevel-winnt2k.c,v 1.7 2008-09-22 17:08:54 thomson Exp $
  *
  * released under GNU GPL v2 licence
  *
@@ -29,6 +28,9 @@
 #include <process.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 #include "Portable.h"
 
@@ -522,4 +524,78 @@ int prefix_forwarding_enabled()
 {
     // FIXME: Detect if IPv6 forwarding is enabled or not
     return 1;
+}
+
+/* when updating this file, remember to also update copy in Port-win32/lowlevel-win32.c */
+uint32_t getAAASPIfromFile() {
+    char filename[1024];
+    struct stat st;
+    uint32_t ret;
+    FILE *file;
+
+    strcpy(filename, "AAA-SPI");
+
+    if (stat(filename, &st))
+        return 0;
+
+    file = fopen(filename, "r");
+    if (!file)
+        return 0;
+
+    fscanf(file, "%x", &ret);
+    fclose(file);
+
+    return ret;
+}
+
+/* when updating this file, remember to also update copy in Port-win32/lowlevel-win32.c */
+char * getAAAKeyFilename(uint32_t SPI)
+{
+    static char filename[1024];
+    if (SPI)
+        snprintf(filename, 1024, "%s%s%x", "", "AAA-key-", SPI);
+    else
+        strcpy(filename, "AAA-key");
+    return filename;
+}
+
+/* when updating this file, remember to also update copy in Port-win32/lowlevel-win32.c */
+char * getAAAKey(uint32_t SPI, uint32_t *len) {
+
+    char * filename;
+    struct stat st;
+    char * retval;
+    int offset = 0;
+    int fd;
+    int ret;
+
+    filename = getAAAKeyFilename(SPI);
+
+    if (stat(filename, &st))
+        return NULL;
+
+    fd = open(filename, O_RDONLY);
+    if (0 > fd)
+        return NULL;
+
+    /* FIXME should be freed somewhere */
+    retval = malloc(st.st_size);
+    if (!retval)
+        return NULL;
+
+    while (offset < st.st_size) {
+        ret = read(fd, retval + offset, st.st_size - offset);
+        if (!ret) break;
+        if (ret < 0) {
+            return NULL;
+        }
+        offset += ret;
+    }
+    close(fd);
+
+    if (offset != st.st_size)
+        return NULL;
+
+    *len = st.st_size;
+    return retval;
 }

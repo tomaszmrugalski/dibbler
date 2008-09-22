@@ -8,10 +8,11 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.32 2008-08-29 00:07:34 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.33 2008-09-22 17:08:54 thomson Exp $
  *
  */
 
+#include <stdio.h> // required for DEV-CPP compilation
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "SrvIfaceMgr.h"

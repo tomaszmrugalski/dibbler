@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.20 2008-08-30 20:41:07 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.21 2008-09-22 17:08:53 thomson Exp $
  *
  */
 
@@ -64,6 +64,7 @@ int lowlevelInit()
     return 1;
 }
 
+/* when updating this file, remember to also update copy in Port-winnt2k/lowlevel-winnt2k.c */
 uint32_t getAAASPIfromFile() {
     char filename[1024];
     struct stat st;
@@ -85,6 +86,7 @@ uint32_t getAAASPIfromFile() {
     return ret;
 }
 
+/* when updating this file, remember to also update copy in Port-winnt2k/lowlevel-winnt2k.c */
 char * getAAAKeyFilename(uint32_t SPI)
 {
     static char filename[1024];
@@ -95,6 +97,7 @@ char * getAAAKeyFilename(uint32_t SPI)
     return filename;
 }
 
+/* when updating this file, remember to also update copy in Port-winnt2k/lowlevel-winnt2k.c */
 char * getAAAKey(uint32_t SPI, uint32_t *len) {
 
     char * filename;
