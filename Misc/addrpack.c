@@ -10,7 +10,7 @@
  *
  * some of those functions are taken form GNU libc6 library
  *
- * $Id: addrpack.c,v 1.10 2008-08-29 00:07:30 thomson Exp $
+ * $Id: addrpack.c,v 1.11 2008-10-10 20:10:34 thomson Exp $
  */
 
 
@@ -167,6 +167,7 @@ char * inet_ntop6(const unsigned char * src, char * dst)
 {
 	char tmp[sizeof "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"], *tp;
 	struct { int base, len; } best, cur;
+	best.len = cur.len = 0;
 	u_int words[NS_IN6ADDRSZ / NS_INT16SZ];
 	int i;
 
