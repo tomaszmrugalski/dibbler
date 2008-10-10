@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: daemon.cpp,v 1.12 2008-10-10 20:28:51 thomson Exp $
+ * $Id: daemon.cpp,v 1.13 2008-10-10 20:39:12 thomson Exp $
  *
  */
 
@@ -38,7 +38,7 @@ using namespace std;
  * 
  * @return pid value, -1 when file is not found and -2 when unable to read
  */
-int getPID(const char * file) {
+pid_t getPID(const char * file) {
     /* check if the file exists */
     struct stat buf;
     int i = stat(file, &buf);
@@ -48,20 +48,20 @@ int getPID(const char * file) {
     ifstream pidfile(file);
     if (!pidfile.is_open()) 
 	return -2;
-    int pid;
+    pid_t pid;
     pidfile >> pid;
     return pid;
 }
 
-int getClientPID() {
+pid_t getClientPID() {
     return getPID(CLNTPID_FILE);
 }
 
-int getServerPID() {
+pid_t getServerPID() {
     return getPID(SRVPID_FILE);
 }
 
-int getRelayPID() {
+pid_t getRelayPID() {
     return getPID(RELPID_FILE);
 }
 
@@ -72,7 +72,7 @@ void daemon_init() {
     //fclose(stdout);
     //fclose(stderr);
 
-    int childpid;
+    pid_t childpid;
     cout << "Starting daemon..." << endl;
     logger::EchoOff();
 
@@ -118,14 +118,31 @@ void daemon_die() {
 
 int init(const char * pidfile, const char * workdir) {
     string tmp;
+    /*FIXME: buf needs to fit "/proc/%d/exe", where %d is pid_t
+     * (on my system it's 20 B exactly with positive PID. However this is not
+     * portable.) */
     char buf[20];
     char cmd[256];
-    int pid = getPID(pidfile);
+    pid_t pid = getPID(pidfile);
     if (pid != -1) {
-	sprintf(buf,"/proc/%d", pid);
+	/* XXX: ISO C++ doesn't support 'j' length modifier nor 'll' nor
+	 * PRIdMAX macro. So, long int is the biggest printable type.
+	 * God bless pid_t to fit into long int. */
+	if (snprintf(buf, sizeof(buf), "/proc/%ld", (long int)pid)
+		>= (int)sizeof(buf)) {
+	    Log(Crit) << "Buffer for string `/proc/" << pid << "' too small"
+		      << LogEnd;
+	    return 0;
+	};
 	if (!access(buf, F_OK)) {
-	    sprintf(buf, "/proc/%d/exe", pid);
-	    int len=readlink(buf, cmd, sizeof(cmd));
+	    if(snprintf(buf, sizeof(buf), "/proc/%ld/exe", (long int)pid)
+		    >= (int)sizeof(buf)) {
+		Log(Crit) << "Buffer for string `/proc/" << pid << "/exe' too small"
+			  << LogEnd;
+		return 0;
+	    }
+
+	    ssize_t len=readlink(buf, cmd, sizeof(cmd));
 	    if(len!=-1) {
 	        cmd[len]=0;
 		if(strstr(cmd, "dibbler")==NULL) {
@@ -187,7 +204,7 @@ int stop(const char * pidfile) {
     int saved_errno;
     int ptrace_failed, p_status;
 
-    int pid = getPID(pidfile);
+    pid_t pid = getPID(pidfile);
     if (pid==-1) {
 	cout << "Process is not running." << endl;
 	return -1;

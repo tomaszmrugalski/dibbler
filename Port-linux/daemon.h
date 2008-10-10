@@ -7,9 +7,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: daemon.h,v 1.5 2008-08-29 00:07:31 thomson Exp $
+ * $Id: daemon.h,v 1.6 2008-10-10 20:39:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2008-08-29 00:07:31  thomson
+ * Temporary license change(GPLv2 or later -> GPLv2 only)
+ *
  * Revision 1.4  2008-02-25 17:49:09  thomson
  * Authentication added. Megapatch by Michal Kowalczuk.
  * (small changes by Tomasz Mrugalski)
@@ -40,7 +43,7 @@ int start(const char * pidfile, const char * workdir);
 int stop(const char * pidfile);
 
 int init(const char * pidfile, const char * workdir);
-int getPID(char * pidfile);
+pid_t getPID(char * pidfile);
 int getServerPID();
 int getClientPID();
 int getRelayPID();

@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-server.cpp,v 1.20 2008-08-29 00:07:31 thomson Exp $
+ * $Id: dibbler-server.cpp,v 1.21 2008-10-10 20:39:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2008-08-29 00:07:31  thomson
+ * Temporary license change(GPLv2 or later -> GPLv2 only)
+ *
  * Revision 1.19  2008-06-01 21:45:48  thomson
  * Return coded are now returned properly under Linux (bug #175)
  *
@@ -65,13 +68,13 @@ void signal_handler(int n) {
 }
 
 int status() {
-    int pid = getServerPID();
+    pid_t pid = getServerPID();
     if (pid==-1) {
 	cout << "Dibbler server: NOT RUNNING." << endl;
     } else {
 	cout << "Dibbler server: RUNNING, pid=" << pid << endl;
     }
-    int result = pid;
+    int result = (pid>0)? 0: -1;
     
     pid = getClientPID();
     if (pid==-1) {
@@ -174,5 +177,5 @@ int main(int argc, char * argv[])
 
     logEnd();
 
-    return result;
+    return result? EXIT_FAILURE: EXIT_SUCCESS;
 }

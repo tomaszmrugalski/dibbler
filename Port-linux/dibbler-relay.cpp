@@ -5,9 +5,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-relay.cpp,v 1.12 2008-08-29 00:07:31 thomson Exp $
+ * $Id: dibbler-relay.cpp,v 1.13 2008-10-10 20:39:12 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2008-08-29 00:07:31  thomson
+ * Temporary license change(GPLv2 or later -> GPLv2 only)
+ *
  * Revision 1.11  2008-06-01 21:45:48  thomson
  * Return coded are now returned properly under Linux (bug #175)
  *
@@ -57,7 +60,7 @@ void signal_handler(int n) {
 }
 
 int status() {
-    int pid = getServerPID();
+    pid_t pid = getServerPID();
     if (pid==-1) {
 	cout << "Dibbler server: NOT RUNNING." << endl;
     } else {
@@ -78,7 +81,7 @@ int status() {
 	cout << "Dibbler relay : RUNNING, pid=" << pid << endl;
     }
 
-    return pid;
+    return (pid>0)? 0: -1;
 }
 
 int run() {
@@ -164,5 +167,5 @@ int main(int argc, char * argv[])
 
     logEnd();
 
-    return result;
+    return result? EXIT_FAILURE: EXIT_SUCCESS;
 }
