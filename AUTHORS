@@ -35,6 +35,7 @@
 
   - Petr Pisar <petr.pisar(at)atlas.cz>
     2007-03: Various fixes (ntp_add, xml syntax, tun support improved)
+    2008-08: /etc/resolv.conf rewriting improved
 
   - David Minodier <david.minodier(at)orange-ftgroup.com>
     2007-04: Fixes in prefix delegation

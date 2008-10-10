@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-options-linux.c,v 1.15 2008-08-29 00:07:31 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.16 2008-10-10 20:04:25 thomson Exp $
  *
  */
 
@@ -13,16 +13,145 @@
 #include <linux/types.h>
 #include <sys/socket.h>
 #include <linux/rtnetlink.h>
+#include <ctype.h>
+#include <errno.h>
 #include "sys/stat.h"
 #include "Portable.h"
 
 #define CR 0x0a
 #define LF 0x0d
+#define MAX_LINE_LEN 511
+
 
 extern char * Message;
 
 /* in iproute.c, borrowed from iproute2 */
 extern int iproute_modify(int cmd, unsigned flags, int argc, char **argv);
+
+/** 
+/* Remove value of keyword from opened file in and the result is printed into
+ * opened file out. If removed_empty and keyword remains without argument, it
+ * will be removed too. Comments (starting with comment char) are respected.
+ * All values following keyword are removed on all lines (global remove).
+ * 
+ * @param in 
+ * @param out 
+ * @param keyword 
+ * @param value 
+ * @param comment 
+ * @param remove_empty 
+ * 
+ * @return Returns LOWLEVEL_NO_ERROR by default, LOWLEVEL_ERROR_FILE on I/O error \
+ *         (and errno is set up), LOWLEVEL_ERROR_UNSPEC if value or keyword is too long.
+ */
+int cfg_value_del(FILE *in, FILE *out, const char *keyword, const char *value,
+	const char comment, int remove_empty) {
+    char buf[MAX_LINE_LEN+1];
+
+    if (strlen(keyword) > MAX_LINE_LEN || strlen(value) > MAX_LINE_LEN)
+	return(LOWLEVEL_ERROR_UNSPEC);
+
+    errno = 0;
+    while (fgets(buf, MAX_LINE_LEN, in)) {
+
+	char *head;
+	/* Skip leading white space */
+	for (head=buf; *head!='\0' && isspace((int)(*head)); head++);
+	/* Skip comment */
+	if (*head!='\0' && *head!=comment) {
+	    /* Find keyword */
+	    if (strstr(head, keyword)==head) {
+		head += strlen(keyword);
+
+		/* Skip alone keyword */
+		if (*head!='\0' && *head!=comment && isspace((int)(*head))) {
+		    char *keyword_end=head;
+
+		    /* Locate each argument */
+		    while (*head!='\0' && *head!=comment) {
+		    char *argument_begin=head;
+		    /* Skip spaces before argument */
+		    for (; *head!='\0' && isspace((int)(*head)); head++);
+		    if (*head!='\0' && *head!=comment) {
+			/* Compare argument to value */
+			if (strstr(head, value)==head) {
+			    head += strlen(value);
+			    if (*head=='\0' || *head==comment ||
+				    isspace((int)(*head))) {
+				/* remove this argument */
+				/* sprinf() moves data and appends '\0' */
+				sprintf(argument_begin, "%s", head);
+				head=argument_begin;
+			    }
+			}
+			/* Skip rest of the argument */
+			for (; *head!='\0' && !isspace((int)(*head)); head++);
+		    }
+		}
+
+		/* Remove whole line if keyword remains without any arguments.*/
+		if (remove_empty) {
+		    for (head=keyword_end; *head!='\0' && isspace((int)(*head));
+			    head++);
+		    if (*head=='\0' || *head==comment) *buf='\0';
+		    }
+		}
+	    }
+	}
+
+	/* print output */
+	if (-1 == fprintf(out, "%s", buf)) return(LOWLEVEL_ERROR_FILE);
+    }
+
+    return((errno)?LOWLEVEL_ERROR_FILE:LOWLEVEL_NO_ERROR);
+}
+
+
+/* Removes value of keyword from file.
+ * It tries to do its best not to corrupt the file.
+ * Returns LOWLEVEL ERROR codes */
+int cfg_file_del(const char *file, const char *keyword, const char *value) {
+    FILE *fold, *ftmp;
+    int tmpfd;
+    int error=LOWLEVEL_NO_ERROR;
+    struct stat st;
+    char template[]="/etc/dibbler.XXXXXX";
+
+    /* Create temporary FILE */
+    if (-1 == (tmpfd=mkstemp(template)))
+	return(LOWLEVEL_ERROR_FILE);
+
+    if (NULL == (ftmp=fdopen(tmpfd, "w"))) {
+	unlink(template);
+	close(tmpfd);
+	return(LOWLEVEL_ERROR_FILE);
+    }
+
+    /* Open original file */
+    if (!(fold = fopen(file, "r"))) {
+	unlink(template);
+	fclose(ftmp);
+	return(LOWLEVEL_ERROR_FILE);
+    }
+
+    /* modify configuration */
+    error = cfg_value_del(fold, ftmp, keyword, value, '#', 1);
+
+    /* close the files */
+    if (EOF==fclose(fold)) error=LOWLEVEL_ERROR_FILE;
+    if (EOF==fclose(ftmp)) error=LOWLEVEL_ERROR_FILE;
+
+    /* move temp file into place of the old one */
+    if (error==LOWLEVEL_NO_ERROR) {
+	memset(&st,0,sizeof(st));
+	if (stat(file, &st) || rename(template, file) ||
+		chmod(file, st.st_mode))
+	    error=LOWLEVEL_ERROR_FILE;
+    }
+
+    return(error);
+}
+
 
 /*
  * results 0 - ok
@@ -49,29 +178,7 @@ int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
 }
 
 int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
-    FILE * f, *f2;
-    char buf[512];
-    int found=0;
-    struct stat st;
-    memset(&st,0,sizeof(st));
-    stat(RESOLVCONF_FILE, &st);
-
-    unlink(RESOLVCONF_FILE".old");
-    rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
-    f = fopen(RESOLVCONF_FILE".old","r");
-    f2 = fopen(RESOLVCONF_FILE,"w"); 
-    while (fgets(buf,511,f)) {
-	if ( (!found) && (strstr(buf, addrPlain)) ) {
-	    found = 1;
-	    continue;
-	}
-	fprintf(f2,"%s",buf);
-    }
-    fclose(f);
-    fclose(f2);
-
-    chmod(RESOLVCONF_FILE, st.st_mode);
-    return LOWLEVEL_NO_ERROR;
+    return cfg_file_del(RESOLVCONF_FILE, "nameserver", addrPlain);
 }
 
 int domain_add(const char* ifname, int ifaceid, const char* domain) {
@@ -119,37 +226,7 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
 }
 
 int domain_del(const char * ifname, int ifaceid, const char *domain) {
-    FILE * f, *f2;
-    char buf[512], searchbuf[512], *ptr;
-    int found=0;
-    struct stat st;
-    memset(&st,0,sizeof(st));
-    stat(RESOLVCONF_FILE, &st);
-
-    if (strlen(domain) >= sizeof(searchbuf)-1 )
-	return LOWLEVEL_ERROR_UNSPEC;
-    searchbuf[0] = ' ';
-    strcpy(&(searchbuf[1]), domain);
-    unlink(RESOLVCONF_FILE".old");
-    rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
-    if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
-	return LOWLEVEL_ERROR_FILE;
-    if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
-	return LOWLEVEL_ERROR_FILE;
-    while (fgets(buf,511,f)) {
-	if ( (!found) && (ptr=strstr(buf, searchbuf)) ) {
-	    found = 1;
-	    strcpy(ptr, ptr+strlen(searchbuf));
-	    if (strlen(buf)<11) /* 11=minimum length (one letter domain in 2letter top domain, e.g. "search x.pl") */
-		continue;
-	}
-	fprintf(f2,"%s",buf);
-    }
-    fclose(f);
-    fclose(f2);
-
-    chmod(RESOLVCONF_FILE,st.st_mode);
-    return LOWLEVEL_NO_ERROR;
+    return cfg_file_del(RESOLVCONF_FILE, "search", domain);
 }
 
 int ntp_add(const char* ifname, const int ifindex, const char* addrPlain){
@@ -172,29 +249,7 @@ int ntp_add(const char* ifname, const int ifindex, const char* addrPlain){
 }
 
 int ntp_del(const char* ifname, const int ifindex, const char* addrPlain){
-    FILE * f, *f2;
-    char buf[512];
-    int found=0;
-    struct stat st;
-    memset(&st,0,sizeof(st));
-    stat(NTPCONF_FILE, &st);
-
-    unlink(NTPCONF_FILE".old");
-    rename(NTPCONF_FILE, NTPCONF_FILE".old");
-    f = fopen(NTPCONF_FILE".old","r");
-    f2 = fopen(NTPCONF_FILE,"w"); 
-    while (fgets(buf,511,f)) {
-	if ( (!found) && (strstr(buf, addrPlain)) ) {
-	    found = 1;
-	    continue;
-	}
-	fprintf(f2,"%s",buf);
-    }
-    fclose(f);
-    fclose(f2);
-
-    chmod(NTPCONF_FILE, st.st_mode);
-    return LOWLEVEL_NO_ERROR;
+    return cfg_file_del(NTPCONF_FILE, "server", addrPlain);
 }
 
 int timezone_set(const char* ifname, int ifindex, const char* timezone){
