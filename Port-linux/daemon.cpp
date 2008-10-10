@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: daemon.cpp,v 1.11 2008-08-29 00:07:31 thomson Exp $
+ * $Id: daemon.cpp,v 1.12 2008-10-10 20:28:51 thomson Exp $
  *
  */
 
@@ -19,6 +19,10 @@
 #include <fcntl.h>
 #include <linux/ioctl.h>
 #include <sys/stat.h>
+#include <errno.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "Portable.h"
 #include "Logger.h"
 
@@ -27,10 +31,23 @@ extern int run();
 
 using namespace std;
 
+/** 
+ * checks if pid file exists, and returns its content (or -2 if unable to read)
+ * 
+ * @param file 
+ * 
+ * @return pid value, -1 when file is not found and -2 when unable to read
+ */
 int getPID(const char * file) {
+    /* check if the file exists */
+    struct stat buf;
+    int i = stat(file, &buf);
+    if (i!=0)
+	return -1;
+
     ifstream pidfile(file);
     if (!pidfile.is_open()) 
-	return -1;
+	return -2;
     int pid;
     pidfile >> pid;
     return pid;
@@ -167,13 +184,50 @@ int start(const char * pidfile, const char * workdir) {
 }
 
 int stop(const char * pidfile) {
+    int saved_errno;
+    int ptrace_failed, p_status;
+
     int pid = getPID(pidfile);
     if (pid==-1) {
 	cout << "Process is not running." << endl;
 	return -1;
     }
-    cout << "Sending KILL signal to process " << pid << endl;
-    kill(pid, SIGTERM);
+    if (pid==-2) {
+	cout << "Unable to read file " << pidfile << ". Are you running as root?" << endl;
+	return -1;
+    }
+
+    ptrace_failed = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
+    if (ptrace_failed) {
+	saved_errno = errno;
+	cout << "Attaching to process " << pid << " failed: "
+	     << strerror(saved_errno) << endl;
+	cout << "Warning: Can not guarantee for remote process termination" << endl;
+    }
+
+    cout << "Sending TERM signal to process " << pid << endl;
+    if (-1 == kill(pid, SIGTERM)) {
+	saved_errno = errno;
+	cout << "Signal sending failed: " << strerror(saved_errno) << endl;
+	if (!ptrace_failed) ptrace(PTRACE_DETACH, pid, NULL, NULL);
+	return -1;
+    }
+
+    if (!ptrace_failed) {
+	cout << "Waiting for signalled process termination... " << flush;
+	do {
+	    if (-1 == waitpid(pid, &p_status, 0)) {
+		saved_errno = errno;
+		cout << "Failed: " << strerror(saved_errno) << endl;
+		ptrace(PTRACE_DETACH, pid, NULL, NULL);
+		return -1;
+	    }
+	    ptrace(PTRACE_CONT, pid, NULL,
+		    WIFSTOPPED(p_status) ? WSTOPSIG(p_status) : NULL);
+	} while (! (WIFEXITED(p_status) || WIFSIGNALED(p_status)) );
+	cout << "Done." << endl;
+    }
+
     return 0;
 }
 
