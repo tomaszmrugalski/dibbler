@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-options-linux.c,v 1.16 2008-10-10 20:04:25 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.17 2008-10-12 14:01:35 thomson Exp $
  *
  */
 
@@ -28,7 +28,6 @@ extern char * Message;
 /* in iproute.c, borrowed from iproute2 */
 extern int iproute_modify(int cmd, unsigned flags, int argc, char **argv);
 
-/** 
 /* Remove value of keyword from opened file in and the result is printed into
  * opened file out. If removed_empty and keyword remains without argument, it
  * will be removed too. Comments (starting with comment char) are respected.
