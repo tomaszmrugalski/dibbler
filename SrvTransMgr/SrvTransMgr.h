@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvTransMgr.h,v 1.11 2008-08-29 00:07:38 thomson Exp $
+ * $Id: SrvTransMgr.h,v 1.12 2008-10-12 20:10:25 thomson Exp $
  *
  */
 
@@ -42,11 +42,13 @@ class TSrvTransMgr
 
     bool isDone();
     void shutdown();
-    
+
     char * getCtrlAddr();
     int    getCtrlIface();
-    
+
     void setContext(SmartPtr<TSrvTransMgr> transMgr);
+
+    SmartPtr<TSrvMsg> requestMsg;
   private:
     string XmlFile;
     List(TSrvMsg) MsgLst;

@@ -5,10 +5,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
+ *          Nguyen Vinh Nghiem
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvTransMgr.cpp,v 1.37 2008-08-29 00:07:38 thomson Exp $
+ * $Id: SrvTransMgr.cpp,v 1.38 2008-10-12 20:10:25 thomson Exp $
  *
  */
 
@@ -44,10 +45,10 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     this->AddrMgr  = addrMgr;
     this->CfgMgr   = cfgMgr;
     this->XmlFile  = xmlFile;
-    
+
     // TransMgr is certainly not done yet. We're just getting started
     IsDone = false;
-    
+
     // for each interface in CfgMgr, create socket (in IfaceMgr)
     SmartPtr<TSrvCfgIface> confIface;
     CfgMgr->firstIface();
@@ -62,10 +63,10 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 }
 
 /*
- * opens proper (multicast or unicast) socket on interface 
+ * opens proper (multicast or unicast) socket on interface
  */
 bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
-    
+
     SmartPtr<TSrvIfaceIface> iface = (Ptr*)IfaceMgr->getIfaceByID(confIface->getID());
     SmartPtr<TIPv6Addr> unicast = confIface->getUnicast();
 
@@ -77,16 +78,16 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
 	    Log(Notice) << "Relay init: Creating socket on the underlaying interface: " << iface->getName()
 			<< "/" << iface->getID() << "." << LogEnd;
     }
-    
+
     if (unicast) {
 	/* unicast */
-	Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName() 
+	Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName()
 		    << "/" << confIface->getID() << " interface." << LogEnd;
 	if (!iface->addSocket( unicast, DHCPSERVER_PORT, true, false)) {
 	    Log(Crit) << "Proper socket creation failed." << LogEnd;
 	    return false;
 	}
-    } 
+    }
 
     char srvAddr[16];
     if (!confIface->isRelay()) {
@@ -96,11 +97,11 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
     }
 
     SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
-    Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName() 
-		<< "/" << confIface->getID() << " (" << iface->getName() << "/" 
+    Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName()
+		<< "/" << confIface->getID() << " (" << iface->getName() << "/"
 		<< iface->getID() << ") interface." << LogEnd;
     if (iface->getSocketByAddr(ipAddr)) {
-	Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the " 
+	Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the "
 		    << iface->getName() << "." << LogEnd;
 	return true;
     } ;
@@ -124,9 +125,9 @@ long TSrvTransMgr::getTimeout()
     unsigned long addrTimeout = 0xffffffff;
     SmartPtr<TSrvMsg> ptrMsg;
     MsgLst.first();
-    while (ptrMsg = MsgLst.get() ) 
+    while (ptrMsg = MsgLst.get() )
     {
-        if (ptrMsg->getTimeout() < min) 
+        if (ptrMsg->getTimeout() < min)
             min = ptrMsg->getTimeout();
     }
     if (CfgMgr->inactiveIfacesCnt() && ifaceRecheckPeriod<min)
@@ -136,22 +137,29 @@ long TSrvTransMgr::getTimeout()
 }
 
 void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
-{	
-    if (!msg->check())
+{
+	requestMsg = msg;
+
+	if (!msg->check())
     {
         // proper warnings will be printed in the check() method, if necessary.
         // Log(Warning) << "Invalid message received." << LogEnd;
         return;
     }
-    // Do we have ready answer for this?
+	// Ask NodeClietSpecific to analyse the message
+	NodeClientSpecific::analyseMessage(msg);
+	//CfgMgr->InClientClass(msg);
+
+	// Do we have ready answer for this?
+
     SmartPtr<TSrvMsg> answ;
     Log(Debug) << MsgLst.count() << " answers buffered.";
 
     MsgLst.first();
-    while(answ=(Ptr*)MsgLst.get()) 
+    while(answ=(Ptr*)MsgLst.get())
     {
         if (answ->getTransID()==msg->getTransID()) {
-            Log(Cont) << " Old reply with transID=" << hex << msg->getTransID() 
+            Log(Cont) << " Old reply with transID=" << hex << msg->getTransID()
 		      << dec << " found. Sending old reply." << LogEnd;
 	    answ->send();
             return;
@@ -159,6 +167,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
     }
     Log(Cont) << " Old reply for transID=" << hex << msg->getTransID()
 	      << " not found. Generating new answer." << dec << LogEnd;
+
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
@@ -201,49 +210,49 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 	this->MsgLst.append((Ptr*)x);
 	break;
     }
-    case REQUEST_MSG: 
+    case REQUEST_MSG:
     {
 	SmartPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
 	answ=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
-    case CONFIRM_MSG: 
+    case CONFIRM_MSG:
     {
 	SmartPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply(IfaceMgr,That,CfgMgr,AddrMgr,nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
-    case RENEW_MSG: 
+    case RENEW_MSG:
     {
 	SmartPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply(IfaceMgr, That,CfgMgr,AddrMgr,nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
-    case REBIND_MSG: 
+    case REBIND_MSG:
     {
 	SmartPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
-    case DECLINE_MSG: 
+    case DECLINE_MSG:
     {
 	SmartPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
-    case RELEASE_MSG: 
+    case RELEASE_MSG:
     {
 	SmartPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
-    case INFORMATION_REQUEST_MSG : 
+    case INFORMATION_REQUEST_MSG :
     {
 	SmartPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
@@ -265,7 +274,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
     }
     case RECONFIGURE_MSG:
     case ADVERTISE_MSG:
-    case REPLY_MSG: 
+    case REPLY_MSG:
     {
 	Log(Warning) << "Invalid message type received: " << msg->getType()
 		     << LogEnd;
@@ -275,36 +284,36 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
     case RELAY_REPL_MSG:
     default:
     {
-	Log(Warning)<< "Message type " << msg->getType() 
+	Log(Warning)<< "Message type " << msg->getType()
 		    << " not supported." << LogEnd;
 	break;
     }
     }
-    
+
     // save DB state regardless of action taken
     AddrMgr->dump();
     CfgMgr->dump();
-}	
+}
 
 void TSrvTransMgr::doDuties()
 {
     int deletedCnt = 0;
-    // are there any outdated addresses? 
+    // are there any outdated addresses?
     if (!AddrMgr->getTimeout())
         AddrMgr->doDuties();
 
     // for each message on list, let it do its duties, if timeout is reached
     SmartPtr<TSrvMsg> msg;
     MsgLst.first();
-    while (msg=MsgLst.get()) 
-        if ( (!msg->getTimeout()) && (!msg->isDone()) ) 
+    while (msg=MsgLst.get())
+        if ( (!msg->getTimeout()) && (!msg->isDone()) )
             msg->doDuties();
 
     // now delete messages marked as done
     MsgLst.first();
-    while (msg = MsgLst.get() ) 
+    while (msg = MsgLst.get() )
     {
-        if (msg->isDone()) 
+        if (msg->isDone())
         {
             MsgLst.del();
 	    deletedCnt++;
