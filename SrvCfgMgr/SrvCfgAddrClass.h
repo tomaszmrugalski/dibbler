@@ -1,12 +1,13 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvCfgAddrClass.h,v 1.16 2008-08-29 00:07:33 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Nguyen Vinh Nghiem
+ *
+ * released under GNU GPL v2 or later licence
+ *
+ * $Id: SrvCfgAddrClass.h,v 1.17 2008-10-12 19:42:45 thomson Exp $
  *
  */
 
@@ -26,7 +27,7 @@ class TSrvCfgAddrClass;
 #include "DUID.h"
 #include "SmartPtr.h"
 #include "SrvOptAddrParams.h"
-
+#include "SrvCfgClientClass.h"
 using namespace std;
 
 
@@ -35,17 +36,19 @@ class TSrvCfgAddrClass
     friend ostream& operator<<(ostream& out,TSrvCfgAddrClass& iface);
  public:
     TSrvCfgAddrClass();
-    
+
     //Is client with this DUID and IP address supported?
     bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
+    bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TSrvMsg> msg);
+
     //Is client with this DUID and IP address prefered? (is in accept-only?)
     bool clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
-    
+
     //checks if the address belongs to the pool
     bool addrInPool(SmartPtr<TIPv6Addr> addr);
     unsigned long countAddrInPool();
     SmartPtr<TIPv6Addr> getRandomAddr();
-    
+
     unsigned long getT1(unsigned long clntT1);
     unsigned long getT2(unsigned long clntT2);
     unsigned long getPref(unsigned long clntPref);
@@ -62,8 +65,10 @@ class TSrvCfgAddrClass
 
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
     SPtr<TSrvOptAddrParams> getAddrParams();
-    
+
     virtual ~TSrvCfgAddrClass();
+    void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
+
  private:
     unsigned long T1Beg;
     unsigned long T2Beg;
@@ -74,20 +79,27 @@ class TSrvCfgAddrClass
     unsigned long PrefEnd;
     unsigned long ValidEnd;
     unsigned long Share;
-    
-    long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
-    
-    unsigned long ID;
-    static unsigned long staticID;
 
-    TContainer<SmartPtr<TStationRange> > RejedClnt;
-    TContainer<SmartPtr<TStationRange> > AcceptClnt;
+    long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
+
     SmartPtr<TStationRange> Pool;
     unsigned long ClassMaxLease;
     unsigned long AddrsAssigned;
     unsigned long AddrsCount;
 
     SPtr<TSrvOptAddrParams> AddrParams; // AddrParams - experimental option
+
+    // new, better white/black-list
+    unsigned long ID; // client class ID
+    static unsigned long staticID;
+    List(string) allowLst;
+    List(string) denyLst;
+    List(TSrvCfgClientClass) allowClientClassLst;
+    List(TSrvCfgClientClass) denyClientClassLst;
+
+    // old white/black-list
+    List(TStationRange) RejedClnt;
+    List(TStationRange) AcceptClnt;
 };
 
 #endif

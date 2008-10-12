@@ -1,12 +1,13 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvCfgAddrClass.cpp,v 1.24 2008-08-29 00:07:33 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Nguyen Vinh Nghiem
+ *
+ * released under GNU GPL v2 only licence
+ *
+ * $Id: SrvCfgAddrClass.cpp,v 1.25 2008-10-12 19:42:45 thomson Exp $
  *
  */
 
@@ -16,13 +17,14 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 #include "SrvOptAddrParams.h"
+#include "SrvMsg.h"
 
 /*
  * static field initialization
  */
 unsigned long TSrvCfgAddrClass::staticID=0;
 
- 
+
 TSrvCfgAddrClass::TSrvCfgAddrClass() {
     this->T1Beg    = 0;
     this->T1End    = DHCPV6_INFINITY;
@@ -32,7 +34,7 @@ TSrvCfgAddrClass::TSrvCfgAddrClass() {
     this->PrefEnd  = DHCPV6_INFINITY;
     this->ValidBeg = 0;
     this->ValidEnd = DHCPV6_INFINITY;
-    this->ID = staticID++;
+    this->ID = staticID++; // client-class ID
     this->AddrsAssigned = 0;
     this->AddrsCount = 0;
 }
@@ -51,7 +53,7 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
     while(range=RejedClnt.get())
         if (range->in(duid,clntAddr))
             return false;
-    
+
     if (AcceptClnt.count()) {
         AcceptClnt.first();
 	    // there's white list
@@ -61,11 +63,55 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
                 return true;
         }
         return false;
-    } 
-      
+    }
+
     return true;
 }
 
+bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TSrvMsg> msg)
+{
+
+    // is client on denied client class
+	SmartPtr<TSrvCfgClientClass> clntClass;
+	denyClientClassLst.first();
+	while(clntClass = denyClientClassLst.get())
+	{
+		if (clntClass->isStatisfy(msg))
+		return false;
+	}
+
+	// is client on accepted client class
+	allowClientClassLst.first();
+	while(clntClass = allowClientClassLst.get())
+	{
+		if (clntClass->isStatisfy(msg))
+			return true;
+	}
+
+    SmartPtr<TStationRange> range;
+    RejedClnt.first();
+
+    // is client on black list?
+    while(range=RejedClnt.get())
+        if (range->in(duid,clntAddr))
+            return false;
+
+    if (AcceptClnt.count()) {
+        AcceptClnt.first();
+	    // there's white list
+        while(range=AcceptClnt.get()) {
+	    // is client on this white list?
+            if (range->in(duid,clntAddr))
+                return true;
+        }
+        return false;
+    }
+
+    if (allowClientClassLst.count())
+    	return false ;
+   return true;
+
+}
 /*
  * is client prefered in this class? (= is it in whitelist?)
  */
@@ -77,7 +123,7 @@ bool TSrvCfgAddrClass::clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cln
     while(range=RejedClnt.get())
         if (range->in(duid,clntAddr))
             return false;
-            
+
     if (AcceptClnt.count()) {
         AcceptClnt.first();
         while(range=AcceptClnt.get()) {
@@ -118,27 +164,30 @@ unsigned long TSrvCfgAddrClass::getValid(unsigned long clntValid) {
 
 void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
 {
-    this->T1Beg    = opt->getT1Beg();
-    this->T2Beg    = opt->getT2Beg();
-    this->T1End    = opt->getT1End();
-    this->T2End    = opt->getT2End();
-    this->PrefBeg  = opt->getPrefBeg();
-    this->PrefEnd  = opt->getPrefEnd();
-    this->ValidBeg = opt->getValidBeg();
-    this->ValidEnd = opt->getValidEnd();
-    this->Share    = opt->getShare();
-    
+    T1Beg    = opt->getT1Beg();
+    T2Beg    = opt->getT2Beg();
+    T1End    = opt->getT1End();
+    T2End    = opt->getT2End();
+    PrefBeg  = opt->getPrefBeg();
+    PrefEnd  = opt->getPrefEnd();
+    ValidBeg = opt->getValidBeg();
+    ValidEnd = opt->getValidEnd();
+    Share    = opt->getShare();
+
+    allowLst = opt->getAllowClientClassString();
+    denyLst = opt->getDenyClientClassString();
+
     ClassMaxLease = opt->getClassMaxLease();
-    
+
     SmartPtr<TStationRange> statRange;
     opt->firstRejedClnt();
     while(statRange=opt->getRejedClnt())
         this->RejedClnt.append(statRange);
-    
+
     opt->firstAcceptClnt();
     while(statRange=opt->getAcceptClnt())
         this->AcceptClnt.append(statRange);
-	
+
     opt->firstPool();
     this->Pool = opt->getPool();
     if (opt->getPool()) {
@@ -217,7 +266,7 @@ bool TSrvCfgAddrClass::isLinkLocal() {
 	Log(Crit) << "Staring address " << addr->getPlain() << " is link-local." << LogEnd;
 	return true;
     }
-    
+
     addr = this->Pool->getAddrR();
     if (!memcmp(addr->getAddr(), linklocal,2)) {
 	Log(Crit) << "Ending address " << addr->getPlain() << " is link-local." << LogEnd;
@@ -236,31 +285,74 @@ SPtr<TSrvOptAddrParams> TSrvCfgAddrClass::getAddrParams()
 ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
 {
     out << "    <class id=\"" << addrClass.ID << "\" share=\"" << addrClass.Share << "\">" << std::endl;
-    out << "      <!-- total addrs in class: " << addrClass.AddrsCount 
+    out << "      <!-- total addrs in class: " << addrClass.AddrsCount
 	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
     out << "      <T1 min=\"" << addrClass.T1Beg << "\" max=\"" << addrClass.T1End  << "\" />" << endl;
     out << "      <T2 min=\"" << addrClass.T2Beg << "\" max=\"" << addrClass.T2End  << "\" />" << endl;
     out << "      <pref min=\"" << addrClass.PrefBeg << "\" max=\""<< addrClass.PrefEnd  << "\" />" <<endl;
     out << "      <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd << "\" />" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << endl;
-        
+
     SmartPtr<TStationRange> statRange;
     out << "      <!-- address range -->" << endl;
     out << *addrClass.Pool;
-    
+
     out << "      <!-- reject-clients ranges:" << addrClass.RejedClnt.count() << " -->" << endl;
     addrClass.RejedClnt.first();
     while(statRange=addrClass.RejedClnt.get())
-	out << *statRange;	
-	
+	out << *statRange;
+
     out << "      <!-- accept-only ranges:" << addrClass.AcceptClnt.count() << " -->" << endl;
     addrClass.AcceptClnt.first();
     while(statRange=addrClass.AcceptClnt.get())
 	out << *statRange;
 
-    if (addrClass.AddrParams) 
-	out << "      <AddrParams prefix=\"" << addrClass.AddrParams->getPrefix() << "\" bitfield=\"" 
+    if (addrClass.AddrParams)
+	out << "      <AddrParams prefix=\"" << addrClass.AddrParams->getPrefix() << "\" bitfield=\""
 	    << addrClass.AddrParams->getBitfield() << "\"/>" << endl;
     out << "    </class>" << std::endl;
     return out;
 }
+
+/** 
+ * Create the AllowClientClassLst and DenyClientClassLst
+ * 
+ * @param clientClassLst list of available client class names
+ */
+void TSrvCfgAddrClass::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst )
+{
+
+    Log(Info) << "Mapping allow, deny list to class "<< ID << ":" << clientClassLst.count() << " allow/deny entries in total." << LogEnd;
+
+    SmartPtr<string> classname;
+    SmartPtr<TSrvCfgClientClass> clntClass;
+    
+    allowLst.first();
+    while (classname = allowLst.get())
+    {
+	clientClassLst.first();
+	while( clntClass = clientClassLst.get() )
+	{
+	    if (clntClass->getClassName()== *classname)
+	    {
+		allowClientClassLst.append(clntClass);
+		Log(Debug) << "  Insert into allow list " <<clntClass->getClassName() << LogEnd;
+	    }
+	}
+    }
+    
+    denyLst.first();
+    while (classname = denyLst.get())
+    {
+	clientClassLst.first();
+	while( clntClass = clientClassLst.get() )
+	{
+	    if (clntClass->getClassName()== *classname)
+	    {
+		denyClientClassLst.append(clntClass);
+		Log(Debug) << "  Insert into deny list " <<clntClass->getClassName()<<LogEnd;
+	    }
+	}
+    }
+}
+
