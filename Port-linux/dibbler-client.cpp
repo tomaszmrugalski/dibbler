@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-client.cpp,v 1.24 2008-10-10 20:39:12 thomson Exp $
+ * $Id: dibbler-client.cpp,v 1.25 2008-10-12 14:02:40 thomson Exp $
  *
  */
 
@@ -31,7 +31,9 @@ void signal_handler(int n) {
 // when network linkstate change event is detected, this handler will be called.
 void signal_handler1(int n) {
     Log(Notice) << "Network switch off event detected. do Confirmming." << LogEnd;
-    ptr->changeLinkstate();
+
+    // get information regarding updated interfaces and call
+    // link_state_changed(int ifindex)
 }   
 
 int status() {
