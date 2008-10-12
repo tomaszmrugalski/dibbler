@@ -6,21 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: DHCPClient.h,v 1.6 2008-08-29 00:07:30 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.5  2008-08-17 22:41:43  thomson
- * CONFIRM improvements (patch sent by Liu Ming)
- *
- * Revision 1.4  2005-02-01 00:57:36  thomson
- * no message
- *
- * Revision 1.3  2004/12/07 00:45:41  thomson
- * Clnt managers creation unified and cleaned up.
- *
- * Revision 1.2  2004/06/20 19:29:23  thomson
- * New address assignment finally works.
- *
+ * $Id: DHCPClient.h,v 1.7 2008-10-12 14:07:31 thomson Exp $
  *                                                                           
  */
 
@@ -30,6 +16,8 @@
 #include <iostream>
 #include <string>
 #include "SmartPtr.h"
+#include "Portable.h"
+
 using namespace std;
 
 class TClntIfaceMgr;
@@ -43,25 +31,25 @@ class TDHCPClient
     TDHCPClient(string config);
     void run();
     void stop();
-    void changeLinkstate();
     void resetLinkstate();
     bool isDone();
     bool checkPrivileges();
     void setWorkdir(std::string workdir);
     SmartPtr<TClntAddrMgr>  getAddrMgr();
-
+    SmartPtr<TClntCfgMgr> getCfgMgr();
+    char* getCtrlIface();
     ~TDHCPClient();
 
   private:
+    void initLinkStateChange();
+
     SmartPtr<TClntIfaceMgr> IfaceMgr;
     SmartPtr<TClntAddrMgr>  AddrMgr;
     SmartPtr<TClntCfgMgr>   CfgMgr;
     SmartPtr<TClntTransMgr> TransMgr;
     bool IsDone;
-
+    volatile link_state_notify_t linkstates;
 };
-
-
 
 #endif
 

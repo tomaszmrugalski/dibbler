@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.30 2008-08-29 00:07:30 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.31 2008-10-12 14:07:31 thomson Exp $
  *                                                                           
  */
 
@@ -59,7 +59,31 @@ TDHCPClient::TDHCPClient(string config)
 	return;
     }
 
+    if (CfgMgr->useConfirm())
+	initLinkStateChange();
+
     TransMgr->setContext(TransMgr);
+}
+
+/** 
+ * initializes low-level link state change detection mechanism
+ * 
+ */
+void TDHCPClient::initLinkStateChange()
+{
+    memset((void*)&this->linkstates, 0, sizeof(linkstates));
+
+    CfgMgr->firstIface();
+    SPtr<TClntCfgIface> iface;
+    Log(Debug) << "Initialising link-state detection for interfaces: ";
+    while (iface = CfgMgr->getIface()) 
+    {
+	linkstates.ifindex[linkstates.cnt++] = iface->getID();
+	Log(Cont) << iface->getID() << " ";
+    }
+    Log(Cont) << LogEnd;
+    
+    link_state_change_init(&linkstates, &linkstateChange);
 }
 
 void TDHCPClient::stop() {
@@ -77,12 +101,20 @@ void TDHCPClient::stop() {
 #endif
 }
 
-void TDHCPClient::changeLinkstate() {
-    linkstateChange = 1;
-}
+/* Function removed. Please use link_state_changed() instead */
+/* void TDHCPClient::changeLinkstate(int iface_id) */
 
 void TDHCPClient::resetLinkstate() {
+    linkstates.cnt = 0;
+    for (int i = 0; i<MAX_LINK_STATE_CHANGES_AT_ONCE; i++)
+	linkstates.ifindex[i]=0; // ugly, but safe way of zeroing table
     linkstateChange = 0;
+}
+
+char* TDHCPClient::getCtrlIface(){
+    SmartPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
+    return iface->getName();
+;
 }
 
 void TDHCPClient::run()
@@ -94,9 +126,10 @@ void TDHCPClient::run()
 	    TransMgr->shutdown();
 	
         if (linkstateChange) {
-	    AddrMgr->setIA2Confirm();
+	    AddrMgr->setIA2Confirm(&linkstates);
 	    this->resetLinkstate();
         }
+
 	TransMgr->doDuties();
 	
 	unsigned int timeout = TransMgr->getTimeout();
@@ -144,6 +177,10 @@ void TDHCPClient::setWorkdir(std::string workdir) {
 
 SmartPtr<TClntAddrMgr> TDHCPClient::getAddrMgr() {
     return this->AddrMgr;
+}
+
+SmartPtr<TClntCfgMgr> TDHCPClient::getCfgMgr() {
+    return this->CfgMgr;
 }
 
 TDHCPClient::~TDHCPClient()
