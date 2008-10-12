@@ -2,8 +2,10 @@
   Dibbler changelog
  ------------------- 
  CVS 
+  - Linux: Pid is now stored in pid_t type (bug #180)
   - Cli: /etc/resolv.conf support improved
   - Linux: Race condition in stop/start fixed (bug #181)
+
  0.7.2 [2008-08-31]
   - Cli: external scripts may now be executed
   - Cli: addresses are now added properly in autodetect-mode

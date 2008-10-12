@@ -23,8 +23,6 @@
 
   - Krzysztof Wnuk
     2006-05: Reverse DNS Updates, lots of enhancements
-
-  - Krzysztof Wnuk
     2006-09: Initial prefix delegation support
 
   - Arne Bernin <arne(at)stollmann.de>
@@ -32,23 +30,18 @@
 
   - David Minodier  <david.minodier(at)orange-ftgroup.com>
     2007-03: Prefix during prefix delegation is now split properly
+    2007-04: Fixes in prefix delegation
 
   - Petr Pisar <petr.pisar(at)atlas.cz>
     2007-03: Various fixes (ntp_add, xml syntax, tun support improved)
+    2007-08: Inactive mode for server
+    2008-07: Small xml fix
     2008-08: /etc/resolv.conf rewriting improved
     2008-09: Race condition under linux fixed
-
-  - David Minodier <david.minodier(at)orange-ftgroup.com>
-    2007-04: Fixes in prefix delegation
-
-  - Petr Pisar <petr.pisar(at)atlas(dot)cz>
-    2007-08: Inactive mode for server
+    2008-09: PID is now stored in pid_t type, not int
 
   - Michal Kowalczuk <michal(at)kowalczuk.eu>
     2007-12: Authentication and authorization
-
-  - Petr Pisar <petr.pisar(at)atlas.cz>
-    2008-07: Small xml fix
     
   - Liu Ming/BII group <extrafliu(at)gmail.com>
     2008-08: CONFIRM support fixes
