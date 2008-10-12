@@ -475,6 +475,154 @@ iface "eth0" {
 }
 \end{lstlisting}
 
+\subsection{Introduction to client classification}
+It is possible to define more than one address class for a single
+interface. Normally, when a client asks for an address, one of the
+classes is being chosen on a random basis. If not specified otherwise,
+all classes have equal probability of being chosen. However there are
+cases where an Administrator wants to restrict access to a given pool
+or to have distinct "client classes" associated to different address
+pools. For example, Computer and IP-Telephone terminals can coexist in
+the same LAN ; but the Computer must belong to given class pool
+meanwhile the IP-Telephone must belong to another pool.
+
+In order to implement the Client Class Classification, you must first
+create the client class and then in the class declaration, indicate
+which class to be allowed or denied. This point will be discussed in
+detail in next sections.
+
+\subsubsection{Client class  declaration}
+Each client class used for class / ta / pd addressing must be defined
+in the server configuration file at global scope. A client-class
+declaration looks like this:
+
+\begin{lstlisting}
+Client-class TelephoneClass{
+        match-if ( client.vendor-spec.en == 1234567)
+}
+\end{lstlisting}
+
+Where TelephoneClass denotes the name of the client class and the
+(client.vendor-spec.en == 1234567) denotes the condition an incoming
+message shall match to belong to the Client-Class. The supported
+operator and data will be discussed in next section.
+
+
+\subsubsection{Access control}
+Access control is based on a per pool basis. In the client-class
+declaration; you can deny or allow the client class by using the
+keyword "allow" or "deny". For example, following class accepts all
+clients except those belonging to the client class "TelephoneClass":
+
+\begin{lstlisting}
+class {
+     2000::/64
+     deny TelephoneClass
+}
+\end{lstlisting}
+
+Another example. This class accepts only client belonging to the
+client class "TelephoneClass". 
+
+\begin{lstlisting}
+class {
+     2000::/64
+     allow TelephoneClass
+}
+\end{lstlisting}
+
+The rule can also be applied to TA/PD declaration. Several "allow"
+directives can be associated to a given pool.
+
+\begin{lstlisting}
+ta-class {
+     pool 2000::/64
+     deny TelephoneClass
+}
+
+pd-class {
+     pd-pool 2000::/80
+     pd-length 96
+     deny TelephoneClass
+}
+\end{lstlisting}
+
+\subsubsection{Assigning clients to defined classes}
+Classifying operators are used for assigning client to a specific class.
+Currently, Dibbler supports the following Operators for classifying clients:
+
+\begin{lstlisting}
+Equal operator
+    Syntax : ( Expr1 == Expr2 )
+    Scope : global
+    Purpose : returns "true" if Expr1 equals Expr2
+
+And Operator
+    Syntax : ( Condition1 and Condition2 )
+    Scope : global
+    Purpose : returns "true" if both Condition1 and Condition2 are "true"
+
+Or operator
+    Syntax : ( Condition1  or  Condition2 )
+    Scope : global
+    Purpose : returns "true" if either Condition1 or Condition2 is "true"
+
+Contain Operator
+    Syntax : ( String1 contain String2 )
+    Scope : global
+    Purpose :  returns "true" if String2 is a substring of String1
+
+Substring Operator
+    Syntax substring ( Expr1, index, length )
+    Scope : global
+    Purpose : returns the substring of the result of that evaluation
+    that starts index characters from the beginning, continuing for
+    length characters. 
+\end{lstlisting}
+
+Dibbler accepts different data expressions -- or variables -- which
+reflect value of options found in the packet to which the server is
+responding.
+
+\begin{description}
+\item[client.vendor-spec.en] the enterprise number value of
+  OptionVendorSpecific (OPTION\_VENDOR\_OPTS, option value equals to 17
+  as per RFC3315)
+\item[client.vendor-spec.data] the data of OptionVendorSpecific
+  (OPTION\_VENDOR\_OPTS, option value equals to 17 as per RFC3315)
+\item[client.vendor-class.en] the enterprise number value of
+  OptionVendorClass (OPTION\_VENDOR\_CLASS, option value equal to 16 as
+  per RFC3315)
+\item[client.vendor-class.data] the data of OptionVendorClass
+  (OPTION\_VENDOR\_CLASS, option value equals to 16 as per RFC3315)
+\end{description}
+
+\subsubsection{Examples of Client-Class Classifying}
+
+Example 1 :
+\begin{lstlisting}
+Client-class CPEClass {
+        match-if ( client.vendor-spec.data contain CPE )
+}
+\end{lstlisting}
+Client belongs to CPEClass if its request message contains the Vendor
+Specific option with the data field including the substring "CPE".
+
+
+Example 2 : Combination with AND operator
+\begin{lstlisting}
+Client-class TelephoneClass {
+  match-if (( client.vendor-spec.en == 1234) and ( client.vendor-spec.data contain CPE ) )
+}
+\end{lstlisting}
+
+Example 3 : Combination with OR operator
+\begin{lstlisting}
+Client-class TelephoneClass {
+  match-if (( client.vendor-spec.en == 1234) or ( client.vendor-spec.data contain CPE ) )
+}
+\end{lstlisting}
+
 \subsection{Server address caching}
 Previous Dibbler versions assigned a random address from the available
 address pool, so the same client received different address each time it
