@@ -46,6 +46,9 @@
   - Liu Ming/BII group <extrafliu(at)gmail.com>
     2008-08: CONFIRM support fixes
 
+  - Nghiem Nguyen/Orange FT group <vinhnghiem.nguyen(at)orange-ftgroup.com>
+    2008-10: Client classification
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
   
