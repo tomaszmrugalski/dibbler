@@ -1,6 +1,8 @@
 include ../Makefile.inc
 
-OBJECTS = lowlevel-linux.o libnetlink.o ll_map.o ll_types.o utils.o lowlevel-options-linux.o daemon.o iproute.o
+OBJECTS = lowlevel-linux.o lowlevel-linux-link-state.o lowlevel-options-linux.o\
+          libnetlink.o ll_map.o ll_types.o utils.o daemon.o iproute.o
+#         interface.o ifplugd.o
 
 objs: $(OBJECTS)
 
@@ -13,6 +15,10 @@ libs: objs libLowLevel.a
 lowlevel-linux.o: lowlevel-linux.c 
 	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(COPTS) -I. -c lowlevel-linux.c 
+
+lowlevel-linux-link-state.o: lowlevel-linux-link-state.c
+	@echo "[CC     ] $(SUBDIR)/$@"
+	$(CC) $(COPTS) -I. -c lowlevel-linux-link-state.c
 
 libnetlink.o: libnetlink.c
 	@echo "[CC     ] $(SUBDIR)/$@ (warnings ignored)"
