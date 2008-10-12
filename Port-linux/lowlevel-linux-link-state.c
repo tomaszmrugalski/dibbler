@@ -5,7 +5,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: lowlevel-linux-link-state.c,v 1.1 2008-10-12 14:00:56 thomson Exp $
+ * $Id: lowlevel-linux-link-state.c,v 1.2 2008-10-12 14:18:00 thomson Exp $
  */	
 
 #include "Portable.h"
@@ -22,10 +22,13 @@ void link_state_change_init(volatile struct link_state_notify_t * monitored_link
 {
     int i=0;
 
+    /* uncomment this section to get information regarding interfaces to be monitored */
+    /*
     printf("About to start monitoring %d interfaces:", monitored_links->cnt);
     for (i=0; i<monitored_links->cnt; i++)
 	printf(" %d", monitored_links->ifindex[i]);
     printf("\n");
+    */
 
     /* the same structure will be used for notifying about link-state change */
     notifier = notify;
