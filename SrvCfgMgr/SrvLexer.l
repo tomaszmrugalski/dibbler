@@ -118,6 +118,20 @@ digest-hmac-sha224  { return SrvParser::DIGEST_HMAC_SHA224_; }
 digest-hmac-sha256  { return SrvParser::DIGEST_HMAC_SHA256_; }
 digest-hmac-sha384  { return SrvParser::DIGEST_HMAC_SHA384_; }
 digest-hmac-sha512  { return SrvParser::DIGEST_HMAC_SHA512_; }
+client-class        { return SrvParser::CLIENT_CLASS_; }
+match-if            { return SrvParser::MATCH_IF_; }
+==                  { return SrvParser::EQ_; }
+and                  { return SrvParser::AND_; }
+or                  { return SrvParser::OR_; }
+client.vendor-spec.en    { return SrvParser::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_; }
+client.vendor-spec.data   { return SrvParser::CLIENT_VENDOR_SPEC_DATA_; }
+client.vendor-class.en    { return SrvParser::CLIENT_VENDOR_CLASS_EN_; }
+client.vendor-class.data   { return SrvParser::CLIENT_VENDOR_CLASS_DATA_; }
+allow		    { return SrvParser::ALLOW_; }
+deny 		    { return SrvParser::DENY_; }
+substring 	    { return SrvParser::SUBSTRING_; }
+contain 	    { return SrvParser::CONTAIN_; }
+
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}
