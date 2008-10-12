@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntAddrMgr.h,v 1.13 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntAddrMgr.h,v 1.14 2008-10-12 14:05:25 thomson Exp $
  *
  */
 
@@ -41,7 +41,7 @@ class TClntAddrMgr : public TAddrMgr
     bool delIA(long IAID);
     int countIA();
     // CHANGED here: when network switch off signal received, the funtion will be invoked to set valid IA to CONFIRMME state.
-    void setIA2Confirm();
+    void setIA2Confirm(volatile link_state_notify_t * changedLinks);
 
     // --- PD --- 
     void firstPD();

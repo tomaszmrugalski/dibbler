@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.24 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.25 2008-10-12 14:05:25 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -152,18 +152,33 @@ SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
     return 0;
 }
 
-void TClntAddrMgr::setIA2Confirm()
+/** 
+ * sets specified interface to CONFIRMME state
+ * 
+ * @param changedLinks structure containing interface indexes to be confirmed
+ */
+void TClntAddrMgr::setIA2Confirm(volatile link_state_notify_t * changedLinks)
 {
-
     SmartPtr<TAddrIA> ptrIA;
     this->firstIA();
     while(ptrIA = this->getIA()){
-        if(ptrIA->getState() == STATE_CONFIGURED || ptrIA->getState() == STATE_INPROCESS)
+
+	bool found = false;
+	int ifindex = ptrIA->getIface(); // interface index of this IA
+
+	// is this index on the list of interfaces to be confirmed?
+	for (int i=0; i < MAX_LINK_STATE_CHANGES_AT_ONCE; i++)
+	    if (changedLinks->ifindex[i]==ifindex)
+		found = true;
+
+	if (!found)
+	    continue;
+
+        if( (ptrIA->getState() == STATE_CONFIGURED || ptrIA->getState() == STATE_INPROCESS) )
 	    ptrIA->setState(STATE_CONFIRMME);
     } 
 
 }
-
 
 // pd functions 
 
