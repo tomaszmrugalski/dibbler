@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.31 2008-10-12 14:07:31 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.32 2008-10-12 14:32:12 thomson Exp $
  *                                                                           
  */
 
@@ -88,6 +88,9 @@ void TDHCPClient::initLinkStateChange()
 
 void TDHCPClient::stop() {
     serviceShutdown = 1;
+
+    if (CfgMgr->useConfirm())
+	link_state_change_cleanup();
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
