@@ -1,12 +1,13 @@
 /*
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvParsClassOpt.h,v 1.9 2008-08-29 00:07:34 thomson Exp $
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Nguyen Vinh Nghiem
+ *
+ * released under GNU GPL v2 only licence
+ *
+ * $Id: SrvParsClassOpt.h,v 1.10 2008-10-12 20:07:32 thomson Exp $
  *
  */
 
@@ -39,7 +40,7 @@ class TSrvParsClassOpt
     void setT2End(unsigned long t2);
     unsigned long getT2Beg();
     unsigned long getT2End();
-    
+
     void setPrefBeg(unsigned long pref);
     void setPrefEnd(unsigned long pref);
     unsigned long getPrefBeg();
@@ -52,19 +53,19 @@ class TSrvParsClassOpt
     void setValidBeg(unsigned long valid);
     unsigned long getValidEnd();
     unsigned long getValidBeg();
-        
+
     //Rejected clients access routines
     void addRejedClnt(SmartPtr<TStationRange> addr);
     void firstRejedClnt();
     SmartPtr<TStationRange> getRejedClnt();
     void setRejedClnt(TContainer<SmartPtr<TStationRange> > *rejedClnt);
-    
+
     //Accepted clients access routines
     void addAcceptClnt(SmartPtr<TStationRange> addr);
     void firstAcceptClnt();
     SmartPtr<TStationRange> getAcceptClnt();
     void setAcceptClnt(TContainer<SmartPtr<TStationRange> > *acceptClnt);
-    
+
     //Pool access routines
     void addPool(SmartPtr<TStationRange> addr);
     void firstPool();
@@ -79,6 +80,14 @@ class TSrvParsClassOpt
     void setAddrParams(int prefix, int bitfield);
     SPtr<TSrvOptAddrParams> getAddrParams();
 
+    // Allow and deny list
+
+    void setAllowClientClass(string s);
+    List(string) getAllowClientClassString();
+
+    void setDenyClientClass(string s);
+    List(string) getDenyClientClassString();
+
 private:
     //Ranges of T1 i T2
     unsigned long T1Beg;
@@ -90,14 +99,17 @@ private:
     unsigned long ValidBeg;
     unsigned long ValidEnd;
     unsigned long Share;
-    
+
     TContainer<SmartPtr<TStationRange> > RejedClnt;
     TContainer<SmartPtr<TStationRange> > AcceptClnt;
     TContainer<SmartPtr<TStationRange> > Pool;
-    
+
     unsigned long ClassMaxLease;
 
     // AddrParams fields
     SPtr<TSrvOptAddrParams> AddrParams;
+
+    List(string) allowLst;
+    List(string) denyLst;
 };
 #endif

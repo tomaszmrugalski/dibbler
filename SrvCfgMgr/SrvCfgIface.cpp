@@ -1,12 +1,13 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvCfgIface.cpp,v 1.46 2008-08-29 00:07:33 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Nguyen Vinh Nghiem
+ *
+ * released under GNU GPL v2 only licence
+ *
+ * $Id: SrvCfgIface.cpp,v 1.47 2008-10-12 20:07:31 thomson Exp $
  */
 
 #include <cstdlib>
@@ -68,7 +69,7 @@ bool TSrvCfgIface::getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Ad
     SmartPtr<TSrvCfgAddrClass> ptrClass;
     this->SrvCfgAddrClassLst.first();
     while(ptrClass=SrvCfgAddrClassLst.get()) {
-        if (ptrClass->clntPrefered(duid, clntAddr)) { 
+        if (ptrClass->clntPrefered(duid, clntAddr)) {
             classid=ptrClass->getID();
             return true;
         }
@@ -97,13 +98,13 @@ bool TSrvCfgIface::getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Add
         }
     }
 
-    if (!cnt) 
+    if (!cnt)
 	return false; // this client is not supported by any class
 
     rnd = rand() % sum;
 
     unsigned int j=0;
-    
+
     for (unsigned int i=0; i<100;i++) {
 	j += share[i];
 	if (j>=rnd) {
@@ -185,7 +186,7 @@ void TSrvCfgIface::addClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
 	    return;
 	}
     }
-    Log(Warning) << "Unable to increase address usage: no class found for " 
+    Log(Warning) << "Unable to increase address usage: no class found for "
 		 << *ptrAddr << LogEnd;
 }
 
@@ -200,30 +201,30 @@ void TSrvCfgIface::delClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
 	    return;
 	}
     }
-    Log(Warning) << "Unable to decrease address usage: no class found for " 
+    Log(Warning) << "Unable to decrease address usage: no class found for "
 		 << *ptrAddr << LogEnd;
 }
 
-SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid, 
+SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid,
 							SmartPtr<TIPv6Addr> clntAddr) {
 
     unsigned long classid;
 
     // step 1: Is there a class reserved for this client?
 
-    // if there is class where client is on whitelist, it should be used rather than any other class 
+    // if there is class where client is on whitelist, it should be used rather than any other class
     // that would be also suitable
     if(this->getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
       Log(Debug) << "Found prefered class for client (duid = " << *clntDuid << ", addr = "
   	        << *clntAddr << ")" << LogEnd;
       return this->getClassByID(classid);
-    } 
+    }
 
     // Get one of the normal classes
     if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
-	Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd; 
+	Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd;
 	return this->getClassByID(classid);
-    } 
+    }
 
     // This is some kind of problem...
     Log(Error) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
@@ -237,7 +238,7 @@ long TSrvCfgIface::countAddrClass() {
 
 
 
-/** Prefix delegation functions 
+/** Prefix delegation functions
 
 */
 
@@ -266,7 +267,7 @@ bool TSrvCfgIface::addClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
 	    return true;
 	}
     }
-    Log(Warning) << "Unable to increase prefix usage: no prefix found for " 
+    Log(Warning) << "Unable to increase prefix usage: no prefix found for "
 		 << *ptrAddr << LogEnd;
     return false;
 }
@@ -282,40 +283,10 @@ bool TSrvCfgIface::delClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
 	    return true;
 	}
     }
-    Log(Warning) << "Unable to decrease address usage: no class found for " 
+    Log(Warning) << "Unable to decrease address usage: no class found for "
 		 << *ptrAddr << LogEnd;
     return false;
 }
-
-#if 0
-SmartPtr<TSrvCfgPD> TSrvCfgIface::getRandomPrefix(SmartPtr<TDUID> clntDuid, 
-							SmartPtr<TIPv6Addr> clntAddr) {
-/* this method is not used currently 
-   
-      unsigned long classid;
-
-    // step 1: Is there a class reserved for this client?
-
-    // if there is class where client is on whitelist, it should be used rather than any other class 
-    // that would be also suitable
-    if(this->getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
-      Log(Debug) << "Found prefered class for client (duid = " << *clntDuid << ", addr = "
-  	        << *clntAddr << ")" << LogEnd;
-      return this->getClassByID(classid);
-    } 
-
-    // Get one of the normal classes
-    if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
-	Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd; 
-	return this->getClassByID(classid);
-    } 
-
-    // This is some kind of problem...
-    Log(Error) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
-	       << clntAddr->getPlain() << ")." << LogEnd;*/
-    return 0;
-}
-#endif
 
 long TSrvCfgIface::countPD() {
     return this->SrvCfgPDLst.count();
@@ -354,7 +325,7 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
     this->RapidCommit   = opt->getRapidCommit();
     this->Unicast       = opt->getUnicast();
     this->LeaseQuery    = opt->getLeaseQuerySupport();
-    
+
     if (opt->supportFQDN()){
 	AcceptUnknownFQDN = opt->acceptUnknownFQDN();
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
@@ -378,7 +349,7 @@ void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
 #endif
     	Log(Debug) <<"FQDN: revDNS zoneroot lenght set to " << this->getRevDNSZoneRootLength()<< "." << LogEnd;
     }
-  
+
     if (opt->isRelay()) {
 	this->Relay = true;
 	this->RelayName        = opt->getRelayName();
@@ -418,7 +389,7 @@ void TSrvCfgIface::setDefaults() {
     this->ID = -1;
     this->NoConfig = false;
     this->preference = 0;
-   
+
     this->FQDNSupport             = false;
     this->AcceptUnknownFQDN       = false;
     this->PrefixDelegationSupport = false;
@@ -487,15 +458,15 @@ void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
     this->FQDNSupport = true;
 }
 
-/** 
+/**
  * this method tries to find a name for a client. It check client's hint, and possible reservations
  * by duid or by address
- * 
- * @param duid 
- * @param addr 
- * @param hint 
- * 
- * @return 
+ *
+ * @param duid
+ * @param addr
+ * @param hint
+ *
+ * @return
  */
 SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, string hint) {
     FQDNLst.first();
@@ -510,8 +481,8 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 
 	if (foo->isUsed())
 	{ // client sent a hint, but it is used currently
-	    if (foo->Name == hint)	    
-	     	   duplicate = true; 
+	    if (foo->Name == hint)
+	     	   duplicate = true;
             continue;
 	}
 
@@ -523,10 +494,10 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 	    Log(Debug) << "FQDN found: " << foo->Name << " using address " << addr->getPlain() << LogEnd;
 	    return foo;
 	}
-	
+
 	if (foo->Name == hint){
 	    // client asked for this name. Let's check if client is allowed to get this name.
-	   duplicate = true; 
+	   duplicate = true;
 	   if ( (!foo->Duid) && (!foo->Addr) ) {
 		Log(Debug) << "Client's hint: " << hint << " found in fqdn list, setting fqdn to "<< foo->Name << LogEnd;
 		return foo;
@@ -538,7 +509,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 	 //   return foo;
 	}
     }
-	
+
     if (!hint.empty() &&  !duplicate )
     {
 	if (acceptUnknownFQDN()) // should the server be accepting unknown names?
@@ -548,7 +519,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
 	    FQDNLst.append(newEntry);
 	    Log(Debug) << "Retured FQDN  " << newEntry->Name <<LogEnd;
 	    return newEntry;
-	} else 
+	} else
 	{
 	    Log(Info) << "FQDN: Client sent valid hint that is not mentioned in server configuration."
 		      << " Currently server is configured to drop such hints. To accept them, please "
@@ -565,10 +536,10 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     return 0;
 }
 
-/** 
+/**
  * returns if server should accept FQDN hints that are not configured in the server.conf
- * 
- * 
+ *
+ *
  * @return true, if unknown names should be accepted
  */
 bool TSrvCfgIface::acceptUnknownFQDN() {
@@ -616,7 +587,7 @@ void TSrvCfgIface::addTAAddr() {
     this->firstTA();
     ta=this->getTA();
     if (!ta) {
-	Log(Error) << "Unable to increase TA usage. TA (temporary addresses) is not found on the " 
+	Log(Error) << "Unable to increase TA usage. TA (temporary addresses) is not found on the "
 		   << this->getFullName() << " interface." << LogEnd;
 	return;
     }
@@ -628,7 +599,7 @@ void TSrvCfgIface::delTAAddr() {
     this->firstTA();
     ta = this->getTA();
     if (!ta) {
-	Log(Error) << "Unable to decrease TA usage. TA (temporary addresses) is not found on the " 
+	Log(Error) << "Unable to decrease TA usage. TA (temporary addresses) is not found on the "
 		   << this->getFullName() << " interface." << LogEnd;
 	return;
     }
@@ -659,7 +630,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << std::endl;
     out << "    <clntMaxLease>" << iface.ClntMaxLease << "</clntMaxLease>" << std::endl;
     out << "    <LeaseQuery>" << (iface.LeaseQuery?"1":"0") << "</LeaseQuery>" << std::endl;
-       
+
     if (iface.Unicast) {
         out << "    <unicast>" << *(iface.Unicast) << "</unicast>" << endl;
     } else {
@@ -677,7 +648,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     SmartPtr<TSrvCfgAddrClass>	ia;
     iface.SrvCfgAddrClassLst.first();
     out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst.count() << "-->" << endl;
-    while( ia=iface.SrvCfgAddrClassLst.get() ) {	
+    while( ia=iface.SrvCfgAddrClassLst.get() ) {
 	out << *ia;
     }
 
@@ -686,7 +657,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     SmartPtr<TSrvCfgPD>	pd;
     iface.SrvCfgPDLst.first();
     out << "    <!-- PD: prefix delegation class count: " << iface.SrvCfgPDLst.count() << "-->" << endl;
-    while( pd=iface.SrvCfgPDLst.get() ) {	
+    while( pd=iface.SrvCfgPDLst.get() ) {
 	out << *pd;
     }
 
@@ -696,10 +667,10 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     iface.firstTA();
     out << "    <!-- TA: temporary IPv6 addr class count: " << iface.SrvCfgTALst.count() << "-->" << endl;
     while( ta=iface.getTA() )
-    {	
+    {
 	out << *ta;
     }
-    
+
     out << endl << "    <!-- options -->" << endl;
 
     // option: DNS-SERVERS
@@ -785,7 +756,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 	iface.VendorSpec.first();
         SPtr<TSrvOptVendorSpec> v;
 	while (v = iface.VendorSpec.get()) {
-	    out << "      <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen() 
+	    out << "      <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen()
 	    << "\">" << v->getVendorDataPlain() << "</vendorSpec>" << endl;
 	}
 	out << "    </vendorSpecList>" << endl;
@@ -814,7 +785,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 	    out << "       " << *f;
       }
       out << "    </fqdnOptions>" << endl;
-    } else { 
+    } else {
       out << "    <!-- <fqdnOptions/> -->" << endl;
     }
 
@@ -825,7 +796,32 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     while (ex = iface.ExceptionsLst.get()) {
 	out << *ex;
     }
-    
+
     out << "  </SrvCfgIface>" << endl;
     return out;
+}
+
+void TSrvCfgIface::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
+{
+
+	//  Log(Info)<<"Mapping allow, deny list inside interface "<<Name<<LogEnd;
+	  SmartPtr<TSrvCfgAddrClass> ptrClass;
+	  this->SrvCfgAddrClassLst.first();
+	  while(ptrClass=SrvCfgAddrClassLst.get()){
+		  ptrClass->mapAllowDenyList(clientClassLst);
+	  }
+
+
+   // Map the Allow and Deny list to TA c
+	  SmartPtr<TSrvCfgTA> ptrTA;
+	  this->SrvCfgTALst.first();
+	  while(ptrTA = SrvCfgTALst.get()){
+		  ptrTA->mapAllowDenyList(clientClassLst);
+	  }
+	  // Map the Allow and Deny list to prefix
+	  SmartPtr<TSrvCfgPD> ptrPD;
+	  this->SrvCfgPDLst.first();
+	  while(ptrPD = SrvCfgPDLst.get()){
+		  ptrPD->mapAllowDenyList(clientClassLst);
+	  }
 }

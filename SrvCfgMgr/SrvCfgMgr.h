@@ -1,13 +1,14 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvCfgMgr.h,v 1.23 2008-08-29 00:07:33 thomson Exp $
+ *          Nguyen Vinh Nghiem
+ *
+ * released under GNU GPL v2 only licence
+ *
+ * $Id: SrvCfgMgr.h,v 1.24 2008-10-12 20:07:31 thomson Exp $
  *
  */
 
@@ -25,10 +26,11 @@ class TSrvCfgMgr;
 
 #include "FlexLexer.h"
 #include "SrvParser.h"
+#include "SrvCfgClientClass.h"
 
 class TSrvCfgMgr : public TCfgMgr
 {
-public:  
+public:
     friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
     TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile);
 
@@ -47,13 +49,14 @@ public:
     void dump();
 
     bool setupRelay(SmartPtr<TSrvCfgIface> cfgIface);
-    
+
     //Address assignment connected methods
     long countAvailAddrs(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, int iface);
     SmartPtr<TSrvCfgAddrClass> getClassByAddr(int iface, SmartPtr<TIPv6Addr> addr);
     SmartPtr<TSrvCfgPD> getClassByPrefix(int iface, SmartPtr<TIPv6Addr> prefix);
     SmartPtr<TIPv6Addr> getRandomAddr(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
     bool isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
+    bool isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface, SmartPtr<TSrvMsg> msg);
 
     // prefix-related
     bool incrPrefixCount(int iface, SPtr<TIPv6Addr> prefix);
@@ -90,7 +93,9 @@ public:
     enum DigestTypes getDigest();
 #endif
 
-private:    
+    // Client List check
+    void InClientClass(SmartPtr<TSrvMsg> msg);
+private:
     static int NextRelayID;
     string XmlFile;
 
@@ -100,6 +105,7 @@ private:
     bool validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfgAddrClass> ptrClass);
     List(TSrvCfgIface) SrvCfgIfaceLst;
     List(TSrvCfgIface) InactiveLst;
+    List(TSrvCfgClientClass) ClientClassLst;
     SmartPtr<TSrvIfaceMgr> IfaceMgr;
     bool matchParsedSystemInterfaces(SrvParser *parser);
 

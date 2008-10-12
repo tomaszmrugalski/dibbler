@@ -3,10 +3,11 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Nguyen Vinh Nghiem
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvParsClassOpt.cpp,v 1.9 2008-08-29 00:07:34 thomson Exp $
+ * $Id: SrvParsClassOpt.cpp,v 1.10 2008-10-12 20:07:32 thomson Exp $
  *
  */
 
@@ -214,3 +215,25 @@ SPtr<TSrvOptAddrParams> TSrvParsClassOpt::getAddrParams()
 {
     return AddrParams;
 }
+
+void TSrvParsClassOpt::setAllowClientClass(string s)
+{
+	allowLst.append(SmartPtr<string> (new string(s)));
+}
+
+void TSrvParsClassOpt::setDenyClientClass(string s)
+{
+	denyLst.append(SmartPtr<string> (new string(s)));
+}
+
+List(string) TSrvParsClassOpt::getAllowClientClassString()
+{
+	return allowLst;
+}
+
+List(string) TSrvParsClassOpt::getDenyClientClassString()
+{
+	return denyLst;
+}
+
+

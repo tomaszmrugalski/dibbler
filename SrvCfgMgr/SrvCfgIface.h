@@ -4,10 +4,11 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk
+ *          Nguyen Vinh Nghiem
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.h,v 1.29 2008-08-29 00:07:33 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.30 2008-10-12 20:07:31 thomson Exp $
  *
  */
 
@@ -75,7 +76,7 @@ public:
     SmartPtr<TIPv6Addr> getUnicast();
     void setNoConfig();
     void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
-    
+
     unsigned char getPreference();
 
     bool getRapidCommit();
@@ -117,6 +118,8 @@ public:
     bool acceptUnknownFQDN();
     bool leaseQuerySupport();
 
+    void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
+
 private:
     unsigned char preference;
     int	ID;
@@ -125,7 +128,7 @@ private:
     SmartPtr<TIPv6Addr> Unicast;
     unsigned long IfaceMaxLease;
     unsigned long ClntMaxLease;
-    bool RapidCommit;	
+    bool RapidCommit;
     List(TSrvCfgAddrClass) SrvCfgAddrClassLst; // IA_NA list (normal addresses)
     bool LeaseQuery;
 

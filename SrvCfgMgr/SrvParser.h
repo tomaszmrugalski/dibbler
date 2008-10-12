@@ -35,6 +35,13 @@
 #include "SrvOptVendorSpec.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
+#include "SrvCfgClientClass.h"
+#include "Node.h"
+#include "NodeConstant.h"
+#include "NodeClientSpecific.h"
+#include "NodeOperator.h"
+#include <sstream>
+
 #define YY_USE_CLASS
 #define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                     \
 List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
@@ -42,8 +49,10 @@ List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */      
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
 List(TSrvCfgPD) SrvCfgPDLst;		   /* list of SrvCfg PD objects */           \
+List(TSrvCfgClientClass) SrvCfgClientClassLst;		   /* list of SrvCfgClientClass objects */      \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
+List(Node) NodeClientClassLst;             /* Node list */                         \
 List(TFQDN) PresentFQDNLst;                                                          \
 SmartPtr<TDUID> duidNew;                                                             \
 SmartPtr<TIPv6Addr> addr;                                                            \
@@ -75,7 +84,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 74 "SrvParser.y"
+#line 83 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -323,11 +332,24 @@ typedef
 #define	DIGEST_HMAC_SHA384_	321
 #define	DIGEST_HMAC_SHA512_	322
 #define	ACCEPT_LEASEQUERY_	323
-#define	STRING_	324
-#define	HEXNUMBER_	325
-#define	INTNUMBER_	326
-#define	IPV6ADDR_	327
-#define	DUID_	328
+#define	CLIENT_CLASS_	324
+#define	MATCH_IF_	325
+#define	EQ_	326
+#define	AND_	327
+#define	OR_	328
+#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	329
+#define	CLIENT_VENDOR_SPEC_DATA_	330
+#define	CLIENT_VENDOR_CLASS_EN_	331
+#define	CLIENT_VENDOR_CLASS_DATA_	332
+#define	ALLOW_	333
+#define	DENY_	334
+#define	SUBSTRING_	335
+#define	CONTAIN_	336
+#define	STRING_	337
+#define	HEXNUMBER_	338
+#define	INTNUMBER_	339
+#define	IPV6ADDR_	340
+#define	DUID_	341
 
 
 #line 169 "../bison++/bison.h"
@@ -442,6 +464,19 @@ static const int DIGEST_HMAC_SHA256_;
 static const int DIGEST_HMAC_SHA384_;
 static const int DIGEST_HMAC_SHA512_;
 static const int ACCEPT_LEASEQUERY_;
+static const int CLIENT_CLASS_;
+static const int MATCH_IF_;
+static const int EQ_;
+static const int AND_;
+static const int OR_;
+static const int CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_;
+static const int CLIENT_VENDOR_SPEC_DATA_;
+static const int CLIENT_VENDOR_CLASS_EN_;
+static const int CLIENT_VENDOR_CLASS_DATA_;
+static const int ALLOW_;
+static const int DENY_;
+static const int SUBSTRING_;
+static const int CONTAIN_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -521,11 +556,24 @@ static const int DUID_;
 	,DIGEST_HMAC_SHA384_=321
 	,DIGEST_HMAC_SHA512_=322
 	,ACCEPT_LEASEQUERY_=323
-	,STRING_=324
-	,HEXNUMBER_=325
-	,INTNUMBER_=326
-	,IPV6ADDR_=327
-	,DUID_=328
+	,CLIENT_CLASS_=324
+	,MATCH_IF_=325
+	,EQ_=326
+	,AND_=327
+	,OR_=328
+	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=329
+	,CLIENT_VENDOR_SPEC_DATA_=330
+	,CLIENT_VENDOR_CLASS_EN_=331
+	,CLIENT_VENDOR_CLASS_DATA_=332
+	,ALLOW_=333
+	,DENY_=334
+	,SUBSTRING_=335
+	,CONTAIN_=336
+	,STRING_=337
+	,HEXNUMBER_=338
+	,INTNUMBER_=339
+	,IPV6ADDR_=340
+	,DUID_=341
 
 
 #line 215 "../bison++/bison.h"

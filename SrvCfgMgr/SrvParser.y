@@ -22,6 +22,13 @@
 #include "SrvOptVendorSpec.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
+#include "SrvCfgClientClass.h"
+#include "Node.h"
+#include "NodeConstant.h"
+#include "NodeClientSpecific.h"
+#include "NodeOperator.h"
+#include <sstream>
+
 #define YY_USE_CLASS
 %}
 
@@ -36,8 +43,10 @@ List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */      
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
 List(TSrvCfgPD) SrvCfgPDLst;		   /* list of SrvCfg PD objects */           \
+List(TSrvCfgClientClass) SrvCfgClientClassLst;		   /* list of SrvCfgClientClass objects */      \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
+List(Node) NodeClientClassLst;             /* Node list */                         \
 List(TFQDN) PresentFQDNLst;                                                          \
 SmartPtr<TDUID> duidNew;                                                             \
 SmartPtr<TIPv6Addr> addr;                                                            \
@@ -102,6 +111,18 @@ virtual ~SrvParser();
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token ACCEPT_LEASEQUERY_
+%token CLIENT_CLASS_
+%token MATCH_IF_
+%token EQ_, AND_, OR_
+%token CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_
+%token CLIENT_VENDOR_SPEC_DATA_
+%token CLIENT_VENDOR_CLASS_EN_
+%token CLIENT_VENDOR_CLASS_DATA_
+%token ALLOW_
+%token DENY_
+%token SUBSTRING_
+%token CONTAIN_
+
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -144,7 +165,10 @@ GlobalOption
 | IfaceIDOrder
 | GuessMode
 | TunnelMode
+| ClientClass
 ;
+
+
 
 InterfaceOptionDeclaration
 : ClassOptionDeclaration
@@ -314,6 +338,8 @@ TAClassOption
 | ClassMaxLeaseOption
 | RejectClientsOption
 | AcceptOnlyOption
+| AllowClientClassDeclaration
+| DenyClientClassDeclaration
 ;
 
  PDDeclaration
@@ -338,6 +364,8 @@ PDOptions
 | PreferredTimeOption
 | T1Option
 | T2Option
+| AllowClientClassDeclaration
+| DenyClientClassDeclaration
 ;
 
 
@@ -942,7 +970,67 @@ ClassOptionDeclaration
 | AcceptOnlyOption
 | ClassMaxLeaseOption
 | AddrParams
+| AllowClientClassDeclaration
+| DenyClientClassDeclaration
 ;
+	
+AllowClientClassDeclaration
+: ALLOW_ STRING_
+{	
+    SPtr<TSrvCfgClientClass> clntClass;
+    bool found = false;
+    SrvCfgClientClassLst.first();
+    while (clntClass = SrvCfgClientClassLst.get())
+    {
+	if (clntClass->getClassName() == string($2))
+	    found = true;
+    }
+    if (!found)
+    {
+	Log(Crit) << "Line " << lex->lineno()
+		  << ": Unable to use class " << string($2) << ", no such class defined." << LogEnd;
+	YYABORT;
+    }
+    ParserOptStack.getLast()->setAllowClientClass(string($2));
+
+    int deny = ParserOptStack.getLast()->getDenyClientClassString().count();
+
+    if (deny)
+    {
+	Log(Crit) << "Line " << lex->lineno() << ": Unable to define both allow and deny lists for this client class." << LogEnd;
+	YYABORT;
+    }
+	
+}
+
+DenyClientClassDeclaration
+: DENY_ STRING_
+{	
+    SPtr<TSrvCfgClientClass> clntClass;
+    bool found = false;
+    SrvCfgClientClassLst.first();
+    while (clntClass = SrvCfgClientClassLst.get())
+    {
+	if (clntClass->getClassName() == string($2))
+	    found = true;
+    }
+    if (!found)
+    {
+	Log(Crit) << "Line " << lex->lineno()
+		  << ": Unable to use class " << string($2) << ", no such class defined." << LogEnd;
+	YYABORT;
+    }
+    ParserOptStack.getLast()->setDenyClientClass(string($2));
+
+    int allow = ParserOptStack.getLast()->getAllowClientClassString().count();
+
+    if (allow)
+    {
+	Log(Crit) << "Line " << lex->lineno() << ": Unable to define both allow and deny lists for this client class." << LogEnd;
+	YYABORT;
+    }
+
+}
 
 ////////////////////////////////////////////////////////////////////////
 /// DNS-server option //////////////////////////////////////////////////
@@ -1129,6 +1217,93 @@ VendorSpecOption
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
 };
 
+
+ClientClass
+:CLIENT_CLASS_ STRING_ '{'  
+{
+    Log(Notice) << "ClientClass found, name: " << string($2) << LogEnd;
+} ClientClassDecleration   '}'
+{
+    SmartPtr<Node> cond =  NodeClientClassLst.getLast();
+    SrvCfgClientClassLst.append( new TSrvCfgClientClass(string($2),cond));
+    NodeClientClassLst.delLast();
+}
+;
+	
+		
+ClientClassDecleration
+: MATCH_IF_ Condition
+{
+}
+;
+
+Condition
+: | '(' Expr CONTAIN_ Expr ')'
+{
+    SmartPtr<Node> r =  NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    SmartPtr<Node> l = NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_CONTAIN,l,r));
+}
+| '(' Expr EQ_ Expr ')'
+{
+    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    
+    NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_EQUAL,l,r));
+}
+| '(' Condition  AND_  Condition ')'
+{
+    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_AND,l,r));
+    
+}
+| '(' Condition  OR_  Condition ')'
+{
+    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_OR,l,r));
+}
+;
+
+Expr
+:CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_
+{
+    NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM));
+}
+|CLIENT_VENDOR_SPEC_DATA_
+{
+    NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_DATA));
+}
+| STRING_
+{
+    // Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
+    NodeClientClassLst.append(new NodeConstant(string($1)));
+}
+|Number
+{
+    //Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
+    stringstream convert;
+    string snum;
+    convert<<$1;
+    convert>>snum;
+    NodeClientClassLst.append(new NodeConstant(snum));
+}
+| SUBSTRING_ '(' Expr ',' Number ',' Number  ')'
+{
+    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    NodeClientClassLst.delLast();
+    NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_SUBSTRING,l, $5,$7));
+}
+;
 %%
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1178,7 +1353,7 @@ bool SrvParser::CheckIsIface(string ifaceName)
 void SrvParser::StartIfaceDeclaration()
 {
     // create new option (representing this interface) on the parser stack
-    ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+	ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
     VendorSpec.clear();
     ExtraOpts.clear();

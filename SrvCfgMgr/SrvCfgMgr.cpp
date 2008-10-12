@@ -1,14 +1,15 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
  * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvCfgMgr.cpp,v 1.57 2008-08-29 00:07:33 thomson Exp $
+ *          Nguyen Vinh Nghiem
+ *
+ * released under GNU GPL v2 only licence
+ *
+ * $Id: SrvCfgMgr.cpp,v 1.58 2008-10-12 20:07:31 thomson Exp $
  *
  */
 
@@ -91,19 +92,24 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
 
     // setup global options
     this->setGlobalOptions(parser.ParserOptStack.getLast());
-    
+
+    // setup ClientClass  List
+    ClientClassLst = parser.SrvCfgClientClassLst;
+
+    Log(Info) << ClientClassLst.count() << " client class(es) defined." << LogEnd;
+
     // analyse interfaces mentioned in config file
     if (!this->matchParsedSystemInterfaces(&parser)) {
 	this->IsDone = true;
 	return false;
     }
-    
+
     // check for invalid values, e.g. T1>T2
     if(!this->validateConfig()) {
 	this->IsDone = true;
         return false;
     }
-    
+
     if (this->stateless()) {
 	Log(Notice) << "Running in stateless mode." << LogEnd;
     } else {
@@ -148,11 +154,14 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 
     SmartPtr<TSrvCfgIface> cfgIface;
     SmartPtr<TIfaceIface>  ifaceIface;
-    
+
     parser->SrvCfgIfaceLst.first();
     while(cfgIface=parser->SrvCfgIfaceLst.get()) {
 	// for each interface from config file
-	
+
+	// map deny and allow list
+    	cfgIface->mapAllowDenyList(parser->SrvCfgClientClassLst);
+
 	// relay interface
 	if (cfgIface->isRelay()) {
 	    cfgIface->setID(this->NextRelayID++);
@@ -163,7 +172,7 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 
 	    continue; // skip physical interface checking part
 	}
-	
+
 	// physical interface
 	if (cfgIface->getID()==-1) {
 	    // ID==-1 means that user referenced to interface by name
@@ -172,7 +181,7 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 	    ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
 	}
 	if (!ifaceIface) {
-	    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+	    Log(Crit) << "Interface " << cfgIface->getFullName()
 		      << " is not present in the system or does not support IPv6."
 		      << LogEnd;
 	    return false;
@@ -189,7 +198,7 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 	// Check for link scope address presence
         if (!ifaceIface->countLLAddress()) {
             if (this->inactiveMode()) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName() 
+                Log(Notice) << "Interface " << ifaceIface->getFullName()
                             << " is not operational yet (does not have link scope address), skipping it for now." << LogEnd;
                 this->addIface(cfgIface);
                 this->makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
@@ -204,13 +213,13 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 	// Check if the interface is during bring-up phase (i.e. DAD procedure for link-local addr is not complete yet)
 	char tmp[64];
 	ifaceIface->firstLLAddress();
-	inet_ntop6(ifaceIface->getLLAddress(), tmp); 
+	inet_ntop6(ifaceIface->getLLAddress(), tmp);
 	if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp) == LOWLEVEL_TENTATIVE_YES) {
-	    Log(Notice) << "Interface " << ifaceIface->getFullName() << " has link-scope address " << tmp 
+	    Log(Notice) << "Interface " << ifaceIface->getFullName() << " has link-scope address " << tmp
 			<< ", but it is currently tentative." << LogEnd;
 
 	    if (this->inactiveMode()) {
-		Log(Notice) << "Interface " << ifaceIface->getFullName() 
+		Log(Notice) << "Interface " << ifaceIface->getFullName()
 			    << " is not operational yet (link-scope address is not ready), skipping it for now." << LogEnd;
 		addIface(cfgIface);
 		makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
@@ -224,7 +233,7 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 	}
 
 	this->addIface(cfgIface);
-	Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
+	Log(Info) << "Interface " << cfgIface->getFullName()
 		  << " configuration has been loaded." << LogEnd;
     }
     return true;
@@ -262,7 +271,7 @@ void TSrvCfgMgr::makeInactiveIface(int ifindex, bool inactive) {
 	// something is wrong, VERY wrong
     }
 
-    else 
+    else
     {
         InactiveLst.first();
         while (x= InactiveLst.get()) {
@@ -344,9 +353,14 @@ TSrvCfgMgr::~TSrvCfgMgr() {
     Log(Debug) << "SrvCfgMgr cleanup." << LogEnd;
 }
 
-/**
- * checks if this Addr is already configured in that TA belonging to that client 
+/** 
+ * checks if the specified address belongs to the currently supported TA pool
  * (used in CONFIRM message)
+ * 
+ * @param iface 
+ * @param addr 
+ * 
+ * @return 
  */
 bool TSrvCfgMgr::isTAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
     SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
@@ -359,9 +373,14 @@ bool TSrvCfgMgr::isTAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
     return ta->addrInPool(addr);
 }
 
-/**
- * checks if this Addr is already configured in that IA belonging to that client 
+/** 
+ * checks if this Addr is already configured in that IA belonging to that client
  * (used in CONFIRM message)
+ * 
+ * @param iface 
+ * @param addr 
+ * 
+ * @return true, if address is supported
  */
 bool TSrvCfgMgr::isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
     SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
@@ -376,17 +395,21 @@ bool TSrvCfgMgr::isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
     return false;
 }
 
-
-/*
+/** 
  * returns how many addresses can be assigned to this client?
- * factors used: 
+ * factors used:
  * - iface-max-lease
  * - clntSupported()
  * - class-max-lease in each class
  * - assignedCount in each class
- * return value <= clnt-max-lease <= iface-max-lease
+ * 
+ * @param clntDuid 
+ * @param clntAddr 
+ * @param iface 
+ * 
+ * @return return value <= clnt-max-lease <= iface-max-lease
  */
-long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid, 
+long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid,
 				 SmartPtr<TIPv6Addr> clntAddr,  int iface)
 {
     // FIXME: long long long int (128bit) could come in handy
@@ -416,15 +439,20 @@ long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid,
 	if (tmp>0)
 	    avail += tmp;
     }
-    
+
     if (avail > (ifaceMaxLease-ifaceAssigned))
 	avail = ifaceMaxLease-ifaceAssigned;
     return (long)avail;
 }
 
-/*
- * get a class, which address belongs to
- */ 
+/** 
+ * return class, which address belongs to
+ * 
+ * @param iface 
+ * @param addr 
+ * 
+ * @return pointer to the class (or 0, if no suitable class found)
+ */
 SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6Addr> addr)
 {
     this->firstIface();
@@ -446,12 +474,12 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6A
     return 0; // NULL
 }
 
-/** 
+/**
  * get a class, which prefix belongs to
- * 
- * @param iface 
- * @param addr 
- * 
+ *
+ * @param iface
+ * @param addr
+ *
  * @return class (or 0 if no class is found)
  */
 SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> addr)
@@ -477,7 +505,7 @@ SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> 
 
 
 //on basis of duid/address/iface assign addresss to client
-SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid, 
+SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid,
 					      SmartPtr<TIPv6Addr> clntAddr,
 					      int iface) {
     SmartPtr<TSrvCfgIface> ptrIface;
@@ -498,7 +526,7 @@ SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid,
 }
 
 
-/* 
+/*
  * Method checks whether client is supported and assigned addresses from any class
  */
 bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface)
@@ -523,11 +551,44 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
 	}
     }
     if (!classCnt) {
-	Log(Warning) << "There are no address class defined on the " << ptrIface->getFullName() 
+	Log(Warning) << "There are no address class defined on the " << ptrIface->getFullName()
 		     << ". Maybe you are trying to configure clients on cascade relay interface? "
 		     << "If that is so, please define separate class on this interface, too." << LogEnd;
     }
     return false;
+}
+
+
+/*
+* Method checks whether client is supported and assigned addresses from any class
+*/
+bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface, SmartPtr<TSrvMsg> msg)
+{
+   SmartPtr<TSrvCfgIface> ptrIface;
+   firstIface();
+   while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
+
+   /* FIXME: reject-client and accept-only does not work in stateless mode */
+   if (this->stateless())
+	return true;
+
+   int classCnt = 0;
+   if (ptrIface)
+   {
+       SmartPtr<TSrvCfgAddrClass> ptrClass;
+       ptrIface->firstAddrClass();
+       while(ptrClass=ptrIface->getAddrClass()) {
+           if (ptrClass->clntSupported(duid,clntAddr,msg))
+               return true;
+	    classCnt++;
+	}
+   }
+   if (!classCnt) {
+	Log(Warning) << "There are no address class defined on the " << ptrIface->getFullName()
+		     << ". Maybe you are trying to configure clients on cascade relay interface? "
+		     << "If that is so, please define separate class on this interface, too." << LogEnd;
+   }
+   return false;
 }
 
 bool TSrvCfgMgr::isDone() {
@@ -558,23 +619,23 @@ bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
 	dummyRelay = true;
 
     if (ptrIface->countAddrClass() && this->stateless()) {
-	Log(Crit) << "Config problem: Interface " << ptrIface->getFullName() 
+	Log(Crit) << "Config problem: Interface " << ptrIface->getFullName()
 		  << ": Class definitions present, but stateless mode set." << LogEnd;
 	return false;
     }
     if (!ptrIface->countAddrClass() && !this->stateless()) {
 	if (!dummyRelay) {
-	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
+	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID()
 		      << ": No class definitions present, but stateless mode not set." << LogEnd;
 	    return false;
 	} else {
-	    Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface." 
+	    Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface."
 			 << LogEnd;
 	}
     }
 
     if (ptrIface->supportFQDN() && !ptrIface->supportDNSServer()) {
-	Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined." 
+	Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
 		  << " Please disable FQDN support or add DNS servers." << LogEnd;
 	return false;
     }
@@ -583,7 +644,7 @@ bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
     ptrIface->firstAddrClass();
     while(ptrClass=ptrIface->getAddrClass()) {
 	if (!this->validateClass(ptrIface, ptrClass)) {
-	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID() 
+	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID()
 		      << ": Invalid class defined." << LogEnd;
 	    return false;
 	}
@@ -598,7 +659,7 @@ bool TSrvCfgMgr::validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfg
 		  << " overlaps with link local addresses." << LogEnd;
 	return false;
     }
-    
+
     if ( ptrClass->getPref(0) > ptrClass->getValid(0x7fffffff) )
     {
 	Log(Crit) << "Prefered time max value (" <<ptrClass->getPref(0x7fffffff)
@@ -625,7 +686,7 @@ SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
 	if ( ptrIface->getID()==iface )
 	    return ptrIface;
     }
-    Log(Error) << "Invalid interface (id=" << iface 
+    Log(Error) << "Invalid interface (id=" << iface
 	       << ") specifed, cannot get address." << LogEnd;
     return 0; // NULL
 }
@@ -635,7 +696,7 @@ void TSrvCfgMgr::delClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-	Log(Warning) << "Unable to decrease address usage: unknown interface (id=" 
+	Log(Warning) << "Unable to decrease address usage: unknown interface (id="
 		     << iface << ")" << LogEnd;
 	return;
     }
@@ -646,7 +707,7 @@ void TSrvCfgMgr::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-	Log(Warning) << "Unable to increase address usage: unknown interface (id=" 
+	Log(Warning) << "Unable to increase address usage: unknown interface (id="
 		     << iface << ")" << LogEnd;
 	return;
     }
@@ -657,7 +718,7 @@ void TSrvCfgMgr::addTAAddr(int iface) {
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-	Log(Error) << "Unable to increase address usage: interface (id=" 
+	Log(Error) << "Unable to increase address usage: interface (id="
 		   << iface << ") not found." << LogEnd;
 	return;
     }
@@ -668,7 +729,7 @@ void TSrvCfgMgr::delTAAddr(int iface) {
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-	Log(Error) << "Unable to decrease address usage: interface (id=" 
+	Log(Error) << "Unable to decrease address usage: interface (id="
 		   << iface << ") not found." << LogEnd;
 	return;
     }
@@ -709,11 +770,10 @@ bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
     return true;
 }
 
-/** 
- * returns size (in bytes of the configured cache size 
- * 
- * 
- * @return 
+/**
+ * returns size (in bytes of the configured cache size
+ *
+ * @return
  */
 int TSrvCfgMgr::getCacheSize() {
     return this->CacheSize;
@@ -724,14 +784,14 @@ ESrvIfaceIdOrder TSrvCfgMgr::getInterfaceIDOrder()
     return InterfaceIDOrder;
 }
 
-/** 
+/**
  * decreases prefix usage count (i.e. decreases prefix-pool usage by one)
  * actual prefix is deleted in AddrMgr
- * 
- * @param iface 
- * @param prefix 
- * 
- * @return 
+ *
+ * @param iface
+ * @param prefix
+ *
+ * @return
  */
 bool TSrvCfgMgr::decrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
 {
@@ -842,7 +902,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
 	out << "  <stateless/>" << std::endl;
     else
 	out << "  <!-- <stateless/> -->" << std::endl;
-    
+
     SmartPtr<TSrvCfgIface> ptrIface;
     x.firstIface();
     while (ptrIface = x.getIface()) {
@@ -851,3 +911,22 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     out << "</SrvCfgMgr>" << std::endl;
     return out;
 }
+
+
+void TSrvCfgMgr::InClientClass(SmartPtr<TSrvMsg> msg)
+{
+	// For each client class, check whether the message belong to ClientClass
+	ClientClassLst.first();
+	SmartPtr<TSrvCfgClientClass> clntClass;
+
+	while( clntClass= ClientClassLst.get() )
+	{
+	    Log(Debug) << "Checking if client belongs to " << clntClass->getClassName() << " client class";
+		if (clntClass->isStatisfy(msg))
+			Log(Cont)<<" ... yes." << LogEnd;
+		else
+			Log(Cont)<<" ... no." << LogEnd;
+	}
+}
+
+
