@@ -2,7 +2,7 @@ include ../Makefile.inc
 
 OBJECTS =  SrvParser.o SrvLexer.o SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o \
            SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o SrvCfgTA.o \
-	   SrvCfgPD.o SrvCfgOptions.o
+	   SrvCfgPD.o SrvCfgOptions.o SrvCfgClientClass.o Node.o NodeConstant.o  NodeClientSpecific.o NodeOperator.o
 
 objs: $(OBJECTS)
 
