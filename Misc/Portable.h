@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.98 2008-08-29 00:07:30 thomson Exp $
+ * $Id: Portable.h,v 1.99 2008-10-12 14:06:22 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -71,6 +71,7 @@
 #define MAX_IFNAME_LENGTH 255
 #endif
 
+/* Structure used for interface name reporting */
 struct iface {
     char name[MAX_IFNAME_LENGTH];  /* interface name */
     int  id;                       /* interface ID (often called ifindex) */
@@ -83,6 +84,14 @@ struct iface {
     int  globaladdrcount;          /* number of global IPV6 addresses */
     unsigned int flags;            /* look IF_xxx in portable.h */
     struct iface* next;            /* structure describing next iface in system */
+};
+
+#define MAX_LINK_STATE_CHANGES_AT_ONCE 16
+
+struct link_state_notify_t
+{
+    int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. Only non-zero values will be used */
+    int cnt;  /* number of iterface indexes filled */
 };
 
 /**********************************************************************/
@@ -245,10 +254,11 @@ extern "C" {
 
     int lowlevelInit();
     int lowlevelExit();
-    
+
+    /* get list of interfaces */
     extern struct iface * if_list_get();
     extern void if_list_release(struct iface * list);
-    
+
     /* add address to interface */
     extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
 			  unsigned long pref, unsigned long valid, int prefixLength);
@@ -272,7 +282,8 @@ extern "C" {
     extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
     extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
     extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
-    /* microsleep(int microsecs) */
+    extern void link_state_change_init(volatile struct link_state_notify_t * changed_links, volatile int * notify);
+    extern void link_state_change_cleanup();
     extern void microsleep(int microsecs);
     uint64_t htonll(uint64_t n);
     uint64_t ntohll(uint64_t n);
