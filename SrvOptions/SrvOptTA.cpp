@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptTA.cpp,v 1.7 2008-08-29 00:07:37 thomson Exp $
+ * $Id: SrvOptTA.cpp,v 1.8 2008-10-12 20:16:14 thomson Exp $
  */
 
 #ifdef WIN32
@@ -13,7 +13,7 @@
 #endif
 #ifdef LINUX
 #include <netinet/in.h>
-#endif 
+#endif
 
 #include "SrvOptTA.h"
 #include "SrvOptIAAddress.h"
@@ -49,7 +49,7 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
 	    break;
 	default:
 	    Log(Warning) <<"Option " << code << "not supported "
-			 <<" in message (type=" << parent->getType() 
+			 <<" in message (type=" << parent->getType()
 			 <<") in this version of server." << LogEnd;
 	    break;
 	}
@@ -59,16 +59,16 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
 
 /*
  * Constructor used in aswers to:
- * - SOLICIT 
+ * - SOLICIT
  * - SOLICIT (with RAPID_COMMIT)
  * - REQUEST
  */
 TSrvOptTA::TSrvOptTA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
 			   SmartPtr<TSrvOptTA> queryOpt,
-			   SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
+			   SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
 			   int iface, int msgType, TMsg* parent)
     :TOptTA(queryOpt->getIAID(), parent) {
-    
+
     this->AddrMgr   = addrMgr;
     this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
@@ -99,17 +99,17 @@ TSrvOptTA::TSrvOptTA(int iaid, int statusCode, string txt, TMsg* parent)
     SubOptions.append(new TSrvOptStatusCode(statusCode, txt, parent));
 }
 
-/** 
+/**
  * used in response to SOLICIT message
- * 
- * @param queryOpt 
+ *
+ * @param queryOpt
  */
 void TSrvOptTA::solicit(SmartPtr<TSrvOptTA> queryOpt) {
     this->solicitRequest(queryOpt, true);
 }
 
 void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
-	
+
     // --- check address counts, how many we've got, how many assigned etc. ---
     unsigned long addrsAssigned  = 0; // already assigned
     unsigned long addrsAvail     = 0; // how many are allowed for client?
@@ -121,31 +121,31 @@ void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
     addrsMax      = CfgMgr->getIfaceByID(this->Iface)->getClntMaxLease();
 
     if (willAssign > addrsMax - addrsAssigned) {
-	Log(Notice) << "Client got " << addrsAssigned << " and requested " 
+	Log(Notice) << "Client got " << addrsAssigned << " and requested "
 		    << willAssign << " more, but limit for a client is "
 		    << addrsMax << LogEnd;
 	willAssign = addrsMax - addrsAssigned;
     }
 
     if (willAssign > addrsAvail) {
-	Log(Notice) << willAssign << " addrs " << (solicit?"would":"will") << " be assigned, but only" 
+	Log(Notice) << willAssign << " addrs " << (solicit?"would":"will") << " be assigned, but only"
 		    << addrsAssigned << " is available." << LogEnd;
 	willAssign = addrsAvail;
     }
 
-    Log(Info) << "Client has " << addrsAssigned << " addrs, " << addrsAvail 
-	      << " is available, limit for client is " << addrsMax << ", " 
+    Log(Info) << "Client has " << addrsAssigned << " addrs, " << addrsAvail
+	      << " is available, limit for client is " << addrsMax << ", "
 	      << willAssign << " will be assigned." << LogEnd;
     if (!willAssign) {
-	SubOptions.append( (Ptr*) new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL, 
+	SubOptions.append( (Ptr*) new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
 							"Sorry, buddy. No temporary addresses for you", this->Parent) );
 	Log(Warning) << "No temporary addresses were assigned in TA (iaid="<< this->IAID << ")." << LogEnd;
 	return;
-    } 
+    }
 
     // --- ok, let's assign those damn addresses ---
     SmartPtr<TSrvOptIAAddress> optAddr;
-    
+
     optAddr = this->assignAddr();
     if (!optAddr) {
 	Log(Error) << "No temporary address found. Server is NOT configured with TA option." << LogEnd;
@@ -187,31 +187,48 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
     }
 }
 
-/** 
+/**
  * this method finds a temp. address for this client, marks it as used and then
  * creates IAAADDR option containing this option.
- * 
- * 
- * @return 
+ *
+ *
+ * @return
  */
 SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     SmartPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->CfgMgr->getIfaceByID(this->Iface);
     if (!ptrIface) {
-	Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n" 
+	Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
 		   << this->Iface << LogEnd;
 	return 0; // NULL
     }
 
     SmartPtr<TSrvCfgTA> ta;
     ptrIface->firstTA();
+
+    /*
     ta = ptrIface->getTA();
     if (!ta) {
-	Log(Warning) << "TA option (temporary addresses) is not configured on the " 
+	Log(Warning) << "TA option (temporary addresses) is not configured on the "
 		     << ptrIface->getFullName() << LogEnd;
     	return 0;
      }
+    */
+    SmartPtr<TSrvTransMgr> srvTrans =  ((TSrvMsg*)Parent)->SrvTransMgr;
+    SmartPtr<TSrvMsg> requestMsg =  (Ptr*)(srvTrans->requestMsg);
 
+    while ( ta = ptrIface->getTA())
+    {
+    	if (!ta->clntSupported(ClntDuid, ClntAddr, requestMsg ))
+    		continue;
+    	break;
+    }
+
+    if (!ta)
+    {
+    	Log(Warning) << "Unable to find any suitable (allowed,non-full) TA for this client." << LogEnd;
+    	return 0;
+    }
     SmartPtr<TIPv6Addr> addr;
     int safety=0;
 
@@ -220,7 +237,7 @@ SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
 	if (AddrMgr->taAddrIsFree(addr)) {
 	    if ((this->OrgMessage == REQUEST_MSG)) {
 		Log(Debug) << "Temporary address " << addr->getPlain() << " granted." << LogEnd;
-		AddrMgr->addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface, 
+		AddrMgr->addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface,
 				   this->IAID, addr, ta->getPref(), ta->getValid());
 		CfgMgr->addTAAddr(this->Iface);
 	    } else {
