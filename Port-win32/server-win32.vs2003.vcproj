@@ -513,7 +513,22 @@
 				Name="SrvCfgMgr"
 				Filter="">
 				<File
+					RelativePath="..\SrvCfgMgr\Node.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\NodeClientSpecific.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\NodeConstant.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\NodeOperator.cpp">
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvCfgAddrClass.cpp">
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgClientClass.cpp">
 				</File>
 				<File
 					RelativePath="..\SrvCfgMgr\SrvCfgIface.cpp">

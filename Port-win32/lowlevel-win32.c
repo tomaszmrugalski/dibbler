@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.21 2008-09-22 17:08:53 thomson Exp $
+ * $Id: lowlevel-win32.c,v 1.22 2008-10-13 22:41:18 thomson Exp $
  *
  */
 
@@ -644,4 +644,15 @@ int prefix_forwarding_enabled()
 {
     // FIXME: Detect if IPv6 forwarding is enabled or not
     return 1;
+}
+
+
+void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
+{
+    //FIXME: implement this
+}
+
+void link_state_change_cleanup()
+{
+   //FIXME: implement this
 }

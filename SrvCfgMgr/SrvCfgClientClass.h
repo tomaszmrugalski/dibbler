@@ -6,13 +6,12 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgClientClass.h,v 1.1 2008-10-12 20:54:15 thomson Exp $
+ * $Id: SrvCfgClientClass.h,v 1.2 2008-10-13 22:41:18 thomson Exp $
  *
  */
 
 #ifndef SRVCFGCLIENTCLASS_H_
 #define SRVCFGCLIENTCLASS_H_
-using namespace std;
 
 #include <string>
 #include "SmartPtr.h"
@@ -24,11 +23,11 @@ public:
     TSrvCfgClientClass(string);
     TSrvCfgClientClass(string , SmartPtr<Node>&);
     virtual ~TSrvCfgClientClass();
-    string getClassName();
+    std::string getClassName();
     SmartPtr<Node> getCondition();
     bool isStatisfy(SmartPtr<TSrvMsg> msg);
 private:
-    string classname;
+  std::string classname;
     SmartPtr<Node> condition;
 };
 

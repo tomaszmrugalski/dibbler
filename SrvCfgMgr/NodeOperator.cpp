@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeOperator.cpp,v 1.1 2008-10-12 19:36:58 thomson Exp $
+ * $Id: NodeOperator.cpp,v 1.2 2008-10-13 22:41:18 thomson Exp $
  *
  */
 
@@ -67,11 +67,11 @@ string NodeOperator::exec(SmartPtr<TSrvMsg> msg)
 		return "false";
 		break;
 	case OPERATOR_AND :
-		if (l->exec(msg) == "true" and r->exec(msg) == "true") return "true";
+		if ( (l->exec(msg) == "true") && (r->exec(msg) == "true")) return "true";
 		return "false";
 		break;
 	case OPERATOR_OR :
-		if (l->exec(msg) == "true" or r->exec(msg) == "true") return "true";
+		if ( (l->exec(msg) == "true") || (r->exec(msg) == "true") ) return "true";
 		return "false";
 		break;
 
