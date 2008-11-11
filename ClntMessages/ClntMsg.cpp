@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsg.cpp,v 1.40 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.41 2008-11-11 22:16:06 thomson Exp $
  */
 
 #ifdef WIN32
@@ -329,6 +329,7 @@ unsigned long TClntMsg::getTimeout()
 
 void TClntMsg::send()
 {
+    srand(now());
     if (!RC)
         RT=(int)(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
     else
@@ -449,6 +450,7 @@ void TClntMsg::appendElapsedOption() {
 	Options.append(new TClntOptElapsed(this));
 }
 
+/* CHANGED in this function: According to RFC3315,'status==STATE_NOTCONFIGURED' is not a must.*/
 /*
  * this method adds requested (which have status==STATE_NOTCONFIGURED) options
  */
@@ -467,14 +469,14 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_UNICAST);
 	Log(Debug) << "Adding UNICAST to ORO." << LogEnd;
     }
-
+ 
     if (ClntCfgMgr->addInfRefreshTime()) {
 	optORO->addOption(OPTION_INFORMATION_REFRESH_TIME);
 	Log(Debug) << "Adding INFORMATION REFRESH TIME to ORO." << LogEnd;
     }
 
     // --- option: DNS-SERVERS ---
-    if ( iface->isReqDNSServer() && (iface->getDNSServerState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqDNSServer() ) {
 	optORO->addOption(OPTION_DNS_SERVERS);
 	
 	List(TIPv6Addr) * dnsLst = iface->getProposedDNSServerLst();
@@ -487,7 +489,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: DOMAINS --
-    if ( iface->isReqDomain() && (iface->getDomainState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqDomain() ) {
 	optORO->addOption(OPTION_DOMAIN_LIST);
 
 	List(string) * domainsLst = iface->getProposedDomainLst();
@@ -500,7 +502,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: NTP SERVER ---
-    if ( iface->isReqNTPServer() && (iface->getNTPServerState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqNTPServer() ) {
 	optORO->addOption(OPTION_SNTP_SERVERS);
 
 	List(TIPv6Addr) * ntpLst = iface->getProposedNTPServerLst();
@@ -513,7 +515,7 @@ void TClntMsg::appendRequestedOptions() {
     }
         
     // --- option: TIMEZONE ---
-    if ( iface->isReqTimezone() && (iface->getTimezoneState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqTimezone() ) {
 	optORO->addOption(OPTION_TIME_ZONE);
 
 	string timezone = iface->getProposedTimezone();
@@ -526,7 +528,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: SIP-SERVERS ---
-    if ( iface->isReqSIPServer() && (iface->getSIPServerState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqSIPServer() ) {
 	optORO->addOption(OPTION_SIP_SERVER_A);
 	
 	List(TIPv6Addr) * lst = iface->getProposedSIPServerLst();
@@ -539,7 +541,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: SIP-DOMAINS ---
-    if ( iface->isReqSIPDomain() && (iface->getSIPDomainState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqSIPDomain() ) {
 	optORO->addOption(OPTION_SIP_SERVER_D);
 
 	List(string) * domainsLst = iface->getProposedSIPDomainLst();
@@ -552,7 +554,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: FQDN ---
-    if ( iface->isReqFQDN() && (iface->getFQDNState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqFQDN() ) {
 	optORO->addOption(OPTION_FQDN);
 
 	string fqdn = iface->getProposedFQDN();
@@ -565,7 +567,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: NIS-SERVERS ---
-    if ( iface->isReqNISServer() && (iface->getNISServerState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqNISServer() ) {
 	optORO->addOption(OPTION_NIS_SERVERS);
 	
 	List(TIPv6Addr) * lst = iface->getProposedNISServerLst();
@@ -578,7 +580,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: NIS-DOMAIN ---
-    if ( iface->isReqNISDomain() && (iface->getNISDomainState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqNISDomain() ) {
 	optORO->addOption(OPTION_NIS_DOMAIN_NAME);
 	string domain = iface->getProposedNISDomain();
 	if (domain.length()) {
@@ -589,7 +591,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: NIS+-SERVERS ---
-    if ( iface->isReqNISPServer() && (iface->getNISPServerState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqNISPServer() ) {
 	optORO->addOption(OPTION_NISP_SERVERS);
 	
 	List(TIPv6Addr) * lst = iface->getProposedNISPServerLst();
@@ -602,7 +604,7 @@ void TClntMsg::appendRequestedOptions() {
     }
 
     // --- option: NIS+-DOMAIN ---
-    if ( iface->isReqNISPDomain() && (iface->getNISPDomainState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqNISPDomain() ) {
 	optORO->addOption(OPTION_NISP_DOMAIN_NAME);
 	string domain = iface->getProposedNISPDomain();
 	if (domain.length()) {
@@ -621,7 +623,7 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_INFORMATION_REFRESH_TIME);
 
     // --- option: VENDOR-SPEC ---
-    if ( iface->isReqVendorSpec() && (iface->getVendorSpecState()==STATE_NOTCONFIGURED) ) {
+    if ( iface->isReqVendorSpec() ) {
 	optORO->addOption(OPTION_VENDOR_OPTS);
 	iface->setVendorSpecState(STATE_INPROCESS);
 
