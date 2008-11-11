@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.25 2008-10-12 14:05:25 thomson Exp $
+ * $Id: ClntAddrMgr.cpp,v 1.26 2008-11-11 22:02:43 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -175,7 +175,10 @@ void TClntAddrMgr::setIA2Confirm(volatile link_state_notify_t * changedLinks)
 	    continue;
 
         if( (ptrIA->getState() == STATE_CONFIGURED || ptrIA->getState() == STATE_INPROCESS) )
+	{
 	    ptrIA->setState(STATE_CONFIRMME);
+	    Log(Notice) << "Network switch off event detected. do Confirmming." << LogEnd;
+	}
     } 
 
 }
