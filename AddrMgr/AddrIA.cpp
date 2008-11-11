@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.cpp,v 1.23 2008-08-29 00:07:26 thomson Exp $
+ * $Id: AddrIA.cpp,v 1.24 2008-11-11 21:55:27 thomson Exp $
  *
  */
 
@@ -44,6 +44,11 @@ TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid,
 unsigned long TAddrIA::getIAID()
 {
     return this->IAID;
+}
+
+void TAddrIA::reset()
+{
+    setState(STATE_NOTCONFIGURED);
 }
 
 int TAddrIA::getIface()

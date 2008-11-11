@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.h,v 1.9 2008-08-29 00:07:26 thomson Exp $
+ * $Id: AddrIA.h,v 1.10 2008-11-11 21:55:27 thomson Exp $
  *
  */
 
@@ -38,6 +38,7 @@ class TAddrIA
     void setState(enum EState state);
     void setT1(unsigned long T1);
     void setT2(unsigned long T2);
+    void reset();
     unsigned long getT1();
     unsigned long getT2();
     unsigned long getIAID();
