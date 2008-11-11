@@ -7,7 +7,7 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.7 2008-08-16 00:42:39 thomson Exp $
+* $Id: OptFQDN.cpp,v 1.8 2008-11-11 20:55:46 thomson Exp $
 *
 */
 
@@ -15,9 +15,9 @@
 #include "OptFQDN.h"
 #include "Logger.h"
 
-TOptFQDN::TOptFQDN(string fqdn, TMsg* parent)
+TOptFQDN::TOptFQDN(string domain, TMsg* parent)
 		:TOpt(OPTION_FQDN, parent) {
-    fqdn = fqdn;
+    fqdn = domain;
     flag_N = false;
     flag_S = false;
     flag_O = false; // This flag is always off in client messages.
