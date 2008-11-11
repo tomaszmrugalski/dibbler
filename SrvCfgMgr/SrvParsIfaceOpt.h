@@ -6,7 +6,7 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.17 2008-08-29 00:07:34 thomson Exp $
+ * $Id: SrvParsIfaceOpt.h,v 1.18 2008-11-11 22:41:49 thomson Exp $
  *
  */
 
@@ -15,6 +15,7 @@
 
 #include "SrvOptVendorSpec.h"
 #include "SrvOptGeneric.h"
+#include "SrvOptInterfaceID.h"
 #include "SrvParsClassOpt.h"
 #include "FQDN.h"
 
@@ -42,10 +43,10 @@ public:
 
     void setRelayName(string name);
     void setRelayID(int ifindex);
-    void setRelayInterfaceID(int id);
+    void setRelayInterfaceID(SPtr<TSrvOptInterfaceID> id);
     string getRelayName();
     int getRelayID();
-    int getRelayInterfaceID();
+    SPtr<TSrvOptInterfaceID> getRelayInterfaceID();
     bool isRelay();
 
     // leasequery support
@@ -151,7 +152,7 @@ private:
     bool Relay;
     string RelayName;
     int RelayID;
-    int RelayInterfaceID;
+    SPtr<TSrvOptInterfaceID> RelayInterfaceID;
 
     // options
     bool DNSServerSupport;

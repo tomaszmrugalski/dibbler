@@ -6,7 +6,7 @@
  *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.17 2008-08-29 00:07:34 thomson Exp $
+ * $Id: SrvParsIfaceOpt.cpp,v 1.18 2008-11-11 22:41:49 thomson Exp $
  *
  */
 
@@ -128,7 +128,7 @@ void TSrvParsIfaceOpt::setRelayID(int id) {
     this->RelayID    = id;
 }
 
-void TSrvParsIfaceOpt::setRelayInterfaceID(int id) {
+void TSrvParsIfaceOpt::setRelayInterfaceID(SPtr<TSrvOptInterfaceID> id) {
     this->Relay = true;
     this->RelayInterfaceID= id;
 }
@@ -141,7 +141,7 @@ int TSrvParsIfaceOpt::getRelayID() {
     return this->RelayID;
 }
 
-int TSrvParsIfaceOpt::getRelayInterfaceID() {
+SPtr<TSrvOptInterfaceID> TSrvParsIfaceOpt::getRelayInterfaceID() {
     return this->RelayInterfaceID;
 }
 

@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.h,v 1.30 2008-10-12 20:07:31 thomson Exp $
+ * $Id: SrvCfgIface.h,v 1.31 2008-11-11 22:41:49 thomson Exp $
  *
  */
 
@@ -95,7 +95,7 @@ public:
     // relays
     string getRelayName();
     int getRelayID();
-    int getRelayInterfaceID();
+    SPtr<TSrvOptInterfaceID> getRelayInterfaceID();
     bool isRelay();
     void setRelayName(string name);
     void setRelayID(int id);
@@ -143,7 +143,7 @@ private:
     bool Relay;
     string RelayName;     // name of the underlaying physical interface (or other relay)
     int RelayID;          // ifindex
-    int RelayInterfaceID; // value of interface-id option (optional)
+    SPtr<TSrvOptInterfaceID> RelayInterfaceID; // value of interface-id option (optional)
 
     // --- option: FQDN ---
     List(TFQDN) FQDNLst;

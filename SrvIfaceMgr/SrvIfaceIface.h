@@ -6,26 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.7 2008-08-29 00:07:34 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2008-03-02 22:03:14  thomson
- * *** empty log message ***
- *
- * Revision 1.5  2005-05-10 00:02:39  thomson
- * getRelayByLinkAddr() implemented.
- *
- * Revision 1.4  2005/01/25 00:32:26  thomson
- * Global addrs support added.
- *
- * Revision 1.3  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2005/01/03 23:13:57  thomson
- * Partial relay implementation.
- *
- * Revision 1.1  2005/01/03 21:56:27  thomson
- * Initial version.
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.8 2008-11-11 22:41:49 thomson Exp $
  *
  */
 
@@ -35,11 +16,12 @@ class TSrvIfaceIface;
 
 #include "Iface.h"
 #include "DHCPConst.h"
+#include "SrvOptInterfaceID.h"
 
 struct Relay {
     SmartPtr<TSrvIfaceIface> iface;
     int ifindex;
-    int interfaceID;
+    SPtr<TSrvOptInterfaceID> interfaceID;
 };
 typedef struct Relay TRelay;
 
@@ -52,9 +34,9 @@ class TSrvIfaceIface: public TIfaceIface {
     friend ostream & operator <<(ostream & strum, TSrvIfaceIface &x);
 
     void setUnderlaying(SmartPtr<TSrvIfaceIface> under);
-    bool appendRelay(SmartPtr<TSrvIfaceIface> relay, int interfaceID);
+    bool appendRelay(SmartPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID);
     SmartPtr<TSrvIfaceIface> getUnderlaying();
-    SmartPtr<TSrvIfaceIface> getRelayByInterfaceID(int interfaceID);
+    SmartPtr<TSrvIfaceIface> getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
     SmartPtr<TSrvIfaceIface> getRelayByLinkAddr(SmartPtr<TIPv6Addr> addr);
     SmartPtr<TSrvIfaceIface> getAnyRelay();
     int getRelayCnt();

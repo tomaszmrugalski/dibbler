@@ -6,19 +6,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptGeneric.cpp,v 1.3 2007-08-26 10:26:19 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2005-01-24 00:42:57  thomson
- * no message
- *
- * Revision 1.1  2005/01/12 00:01:06  thomson
- * *** empty log message ***
+ * $Id: OptGeneric.cpp,v 1.4 2008-11-11 22:41:48 thomson Exp $
  *
  */
 
 #include <stdlib.h>
 #include <string.h>
+#include <sstream>
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "OptGeneric.h"
@@ -55,6 +49,27 @@ int TOptGeneric::getSize()
     buf+=2;
     memmove(buf, this->Data, this->DataLen);
     return buf+this->DataLen;
+}
+
+std::string TOptGeneric::getPlain()
+{
+    stringstream plain;
+    stringstream hex;
+    bool printable = true;
+    for (int i=0;i<DataLen; ++i)
+    {
+	if (!isalpha(Data[i]) && Data[i]!=32/* spc */) {
+	    printable = false;
+	}
+	plain << Data[i];
+	hex << std::hex << setfill('0') << setw(2) << (unsigned int) Data[i];
+	if ((i<DataLen-1))
+	    hex << ":";
+    }
+    if (printable)
+	return plain.str();
+    else
+	return hex.str();
 }
 
 bool TOptGeneric::isValid()

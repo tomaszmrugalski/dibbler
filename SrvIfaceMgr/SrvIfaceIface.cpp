@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.13 2008-08-29 00:07:34 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.14 2008-11-11 22:41:49 thomson Exp $
  *
  */
 
@@ -34,7 +34,7 @@ SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getUnderlaying() {
     return this->UnderRelay;
 }
 
-bool TSrvIfaceIface::appendRelay(SmartPtr<TSrvIfaceIface> relay, int interfaceID) {
+bool TSrvIfaceIface::appendRelay(SmartPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID) {
     if (this->RelaysCnt>=HOP_COUNT_LIMIT) 
 	return false;
     this->Relays[this->RelaysCnt].iface       = relay;
@@ -44,14 +44,14 @@ bool TSrvIfaceIface::appendRelay(SmartPtr<TSrvIfaceIface> relay, int interfaceID
     return true;
 }
 
-SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(int interfaceID) {
+SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
     int i=0;
     if (this->RelaysCnt==0) {
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
 	return 0;
     }
     for (i=0; i<this->RelaysCnt; i++) {
-	if (this->Relays[i].interfaceID == interfaceID)
+	if (*Relays[i].interfaceID == *interfaceID)
 	    return this->Relays[i].iface;
     }
     return 0;
@@ -107,7 +107,7 @@ ostream & operator <<(ostream & strum, TSrvIfaceIface &x) {
 	for (i=0; i< x.RelaysCnt; i++) {
 	    strum << "    <OverlayingRelay name=\"" << x.Relays[i].iface->getName() 
 		  << "\" ifindex=\"" << x.Relays[i].ifindex 
-		  << "\" interfaceID=\"" << x.Relays[i].interfaceID << "\" />" << endl;
+		  << "\" interfaceID=\"" << x.Relays[i].interfaceID->getPlain() << "\" />" << endl;
 	}
     }
 

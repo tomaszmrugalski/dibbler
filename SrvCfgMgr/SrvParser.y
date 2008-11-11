@@ -955,7 +955,18 @@ RelayOption
 InterfaceIDOption
 :IFACE_ID_ Number
 {
-    ParserOptStack.getLast()->setRelayInterfaceID($2);
+    SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID($2, 0);
+    ParserOptStack.getLast()->setRelayInterfaceID(id);
+}
+|IFACE_ID_ DUID_
+{
+    SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID($2.duid, $2.length, 0);
+    ParserOptStack.getLast()->setRelayInterfaceID(id);
+}
+|IFACE_ID_ STRING_
+{
+    SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID($2, strlen($2), 0);
+    ParserOptStack.getLast()->setRelayInterfaceID(id);
 }
 ;
 

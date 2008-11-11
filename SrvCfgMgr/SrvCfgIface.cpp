@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.cpp,v 1.47 2008-10-12 20:07:31 thomson Exp $
+ * $Id: SrvCfgIface.cpp,v 1.48 2008-11-11 22:41:48 thomson Exp $
  */
 
 #include <cstdlib>
@@ -436,7 +436,7 @@ int TSrvCfgIface::getRelayID() {
     return this->RelayID;
 }
 
-int TSrvCfgIface::getRelayInterfaceID() {
+SPtr<TSrvOptInterfaceID> TSrvCfgIface::getRelayInterfaceID() {
     return this->RelayInterfaceID;
 }
 
@@ -621,7 +621,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     if (iface.Relay) {
 	out << "    <relay name=\"" << iface.RelayName << "\" ifindex=\"" << iface.RelayID << "\" interfaceid=\""
-	    << iface.RelayInterfaceID << "\"/>" << std::endl;
+	    << iface.RelayInterfaceID->getPlain() << "\"/>" << std::endl;
     } else {
 	out << "    <!-- <relay/> -->" << std::endl;
     }

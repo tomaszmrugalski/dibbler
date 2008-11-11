@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.10 2008-08-29 00:07:34 thomson Exp $
+ * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.11 2008-11-11 22:41:49 thomson Exp $
  *
  */
 
@@ -37,7 +37,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
 				      SmartPtr<TIPv6Addr> peer, 
 				      char * buf, int bufsize);
     
-    bool setupRelay(string name, int ifindex, int underIfindex, int interfaceID);
+    bool setupRelay(string name, int ifindex, int underIfindex, SPtr<TSrvOptInterfaceID> interfaceID);
     void dump();
     
     // ---sends messages---

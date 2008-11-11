@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvIfaceMgr.cpp,v 1.33 2008-09-22 17:08:54 thomson Exp $
+ * $Id: SrvIfaceMgr.cpp,v 1.34 2008-11-11 22:41:49 thomson Exp $
  *
  */
 
@@ -135,8 +135,27 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
 SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     
     // static buffer speeds things up
-    static char buf[4096];
-    int bufsize=4096;
+    const int maxBufsize = 4096;
+    int bufsize=maxBufsize;
+    static char buf[maxBufsize];
+
+#if 0
+    buf[0]=buf[1]=buf[2]=buf[3]=2;
+    buf[4]=buf[5]=buf[6]=buf[7]=2;
+
+    SPtr<TSrvOptInterfaceID> opt1 = new TSrvOptInterfaceID(3, 0);
+    SPtr<TSrvOptInterfaceID> opt2 = new TSrvOptInterfaceID(5, 0);
+
+    Log(Info) << "#### opt1->" << opt1->getPlain() << LogEnd;
+    Log(Info) << "#### opt2->" << opt2->getPlain() << LogEnd;
+
+    if (*opt1 == *opt2)
+	Log(Info) << "#### equal " << LogEnd;
+    else
+	Log(Info) << "#### NOT equal" << LogEnd;
+
+    exit(-1);
+#endif
 
     SmartPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
@@ -207,7 +226,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     }
 }
 
-bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, int interfaceID) {
+bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, SPtr<TSrvOptInterfaceID> interfaceID) {
     SmartPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
     if (!under) {
 	Log(Crit) << "Unable to setup " << name << "/" << ifindex 
@@ -379,11 +398,11 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 
 	if (ptrIfaceID) {
 	    // find relay interface based on the interface-id option
-	    Log(Cont) << ", interfaceID=" << ptrIfaceID->getValue() << LogEnd;
-	    relayIface = ptrIface->getRelayByInterfaceID(ptrIfaceID->getValue());
+	    Log(Cont) << ", interfaceID len=" << ptrIfaceID->getSize() << LogEnd;
+	    relayIface = ptrIface->getRelayByInterfaceID(ptrIfaceID);
 	    if (!relayIface) {
 	        if (!guessMode) {
-		    Log(Error) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getValue() << " defined on the " 
+		    Log(Error) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getPlain() << " defined on the " 
 			       << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
 		    return 0;
 		} 

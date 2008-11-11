@@ -6,23 +6,39 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptInterfaceID.cpp,v 1.5 2008-08-29 00:07:36 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2006-10-29 13:11:47  thomson
- * Size of the Elapsed time option has been corrected,
- * OptInteger4 class migrated to OptInteger.
- *
- * Revision 1.3  2005-01-08 16:52:04  thomson
- * Relay support implemented.
+ * $Id: SrvOptInterfaceID.cpp,v 1.6 2008-11-11 22:41:50 thomson Exp $
  *
  */
 
 #include "SrvOptInterfaceID.h"
 #include "DHCPConst.h"
+#include <netinet/in.h>
+
+/** 
+ * compares two interface-ids
+ * 
+ * @param other 
+ * 
+ * @return true, if both interface-IDs are the same
+ */
+bool TSrvOptInterfaceID::operator==(const TSrvOptInterfaceID &other) const
+{
+    if (DataLen != other.DataLen)
+	return false;
+    if (!memcmp(Data, other.Data, DataLen))
+	return true;
+    return false;
+}
+
+TSrvOptInterfaceID::TSrvOptInterfaceID(int id, TMsg * parent)
+    :TOptGeneric(OPTION_INTERFACE_ID, (char*)&id, sizeof(int), parent)
+{
+    int tmp = htonl(id);
+    memmove(Data, &tmp, sizeof(int));
+}
 
 TSrvOptInterfaceID::TSrvOptInterfaceID( char * buf,  int n, TMsg* parent)
-    :TOptInteger(OPTION_INTERFACE_ID, 4 /* FIXME */, buf,n, parent) {
+    :TOptGeneric(OPTION_INTERFACE_ID, buf,n, parent) {
 }
 
 bool TSrvOptInterfaceID::doDuties() {
