@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.55 2008-08-30 21:41:13 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.56 2008-11-11 22:49:34 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -1061,7 +1061,10 @@ OptionName option-value
             defined). Used in relay definition. Each relay interface
             should have defined its unique identified. It will be sent
             in the \opt{interface-id} option. Note that this value
-            must be the same as configured in the dibbler-relay. See
+            must be the same as configured in the dibbler-relay. It
+            may be possible to specify this parameter by using a
+            number (option will be 4 bytes long), a string or a full
+            hex dump.  See
             \ref{features-relays}, \ref{example-server-relay1} and
             \ref{example-relay} for details.
  \item[vendor-spec] -- (scope: interface, type: integer-hexstring,
@@ -1417,7 +1420,10 @@ be specified before logical ones.
 # server.conf
 iface relay1 {
   relay eth1
-  interface-id 5020
+  // interface-id 5020
+  // interface-id "some interface name"
+  interface-id 0x427531264361332f3000001018680f980000
+
   class {
     pool 2000::1-2000::ff
   }
