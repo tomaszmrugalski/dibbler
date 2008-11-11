@@ -7,9 +7,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgDecline.cpp,v 1.6 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntMsgDecline.cpp,v 1.7 2008-11-11 22:20:42 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2008-08-29 00:07:28  thomson
+ * Temporary license change(GPLv2 or later -> GPLv2 only)
+ *
  * Revision 1.5  2008-06-26 21:44:17  thomson
  * *** empty log message ***
  *
@@ -68,7 +71,8 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];
-
+    this->IsDone = false;
+    // this->send();
 }
 
 TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
