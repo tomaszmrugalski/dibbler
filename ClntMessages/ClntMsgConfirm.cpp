@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.12 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.13 2008-11-11 22:19:54 thomson Exp $
  *
  */
 
@@ -54,8 +54,10 @@ TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     appendRequestedOptions();
     appendAuthenticationOption(AddrMgr);
-
+    
+    this->IsDone = false;
     pkt = new char[getSize()];
+    this->send();
 }           
 
 void TClntMsgConfirm::answer(SmartPtr<TClntMsg> reply)
@@ -97,6 +99,7 @@ void TClntMsgConfirm::addrsAccepted() {
 	if (!ptrIA)
 	    continue;
 
+	//CHANGED: ??why ts=now()-ptrIA->getT1(); So comment this line.	
 	// set them to RENEW timeout
 	// Uncomment this line if you don't want RENEW to be sent after
 	// CONFIRM exchange is complete
@@ -136,7 +139,11 @@ void TClntMsgConfirm::addrsRejected() {
 	    // ... and from DB
 	    ptrIA->delAddr( ptrAddr->get() );
 	}
+
+        //not only the address should be rejected, but also the original IA should be deleted and using a new IA to process SOLICIT
 	ptrIA->setState(STATE_NOTCONFIGURED);
+	SmartPtr<TClntCfgIA> ptrCfgIA = ClntCfgMgr->getIA(ptrOptIA->getIAID());
+	ptrCfgIA->setState(STATE_NOTCONFIGURED);
     }
     ClntAddrMgr->firstIA();
 }
