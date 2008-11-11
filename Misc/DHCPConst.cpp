@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>                                    
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *                                                                           
- * $Id: DHCPConst.cpp,v 1.18 2008-08-29 00:07:30 thomson Exp $
+ * $Id: DHCPConst.cpp,v 1.19 2008-11-11 22:37:03 thomson Exp $
  *
  * released under GNU GPL v2 only licence                                
  *                                                                           
@@ -13,7 +13,7 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 #include "SmartPtr.h"
-
+#include <cstdio>
 
 // standard options specified in RFC3315, pg. 99
 bool OptInMsg[13][20] = {
