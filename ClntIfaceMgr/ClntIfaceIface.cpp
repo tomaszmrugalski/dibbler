@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceIface.cpp,v 1.18 2008-08-30 21:41:12 thomson Exp $
+ * $Id: ClntIfaceIface.cpp,v 1.19 2008-11-13 21:05:42 thomson Exp $
  *
  */
 
@@ -610,6 +610,7 @@ void TClntIfaceIface::removeAllOpts() {
     if (this->Timezone.length()) {
 	Log(Notice) << "Timezone " << this->Timezone << " unset on the interface "
 	<< this->getName() << "/" << this->getID() <<"." << LogEnd;
+	this->Timezone = "";
 	timezone_del( this->getName(), this->getID(), this->Timezone.c_str() );
     }
 

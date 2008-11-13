@@ -5,7 +5,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-options-linux.c,v 1.17 2008-10-12 14:01:35 thomson Exp $
+ * $Id: lowlevel-options-linux.c,v 1.18 2008-11-13 21:05:42 thomson Exp $
  *
  */
 
@@ -16,6 +16,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include "sys/stat.h"
+#include "errno.h"
 #include "Portable.h"
 
 #define CR 0x0a
@@ -251,7 +252,36 @@ int ntp_del(const char* ifname, const int ifindex, const char* addrPlain){
     return cfg_file_del(NTPCONF_FILE, "server", addrPlain);
 }
 
+/* 
+ * Set new timezone by making symlink (usually from /etc/localtime to
+ * /usr/share/zoneinfo/<timezone>).
+ * Only symbolic abberviated timezone specification is assumed. POSIX
+ * timezones like 'PST8PDT,M4.1.0/02:00,M10.5.0/02:00' are not supported.
+ */
 int timezone_set(const char* ifname, int ifindex, const char* timezone){
+    /* timezone-data README states:
+     * file name component must not exceed 14 characters
+     * file name components use only ASCII letters, '.', '-' and '_'.
+     * Thus TZ_LEN >= 
+     * strlen(TIMEZONES_DIR) + '/' + file name component1 + '/' + component2 */
+#define TZ_LEN 64
+#define TIMEZONE_FILE_TMP TIMEZONE_FILE".dibbler"
+    char buf[TZ_LEN];
+    struct stat st;
+    
+    if (!timezone || strlen(timezone)==0) return LOWLEVEL_ERROR_UNSPEC;
+    /* Security check: Do not allow evil server to traverse client file system */
+    if (strstr(timezone, "..")) return LOWLEVEL_ERROR_UNSPEC;
+    if (TZ_LEN <= snprintf(buf, TZ_LEN, "%s/%s", TIMEZONES_DIR, timezone))
+	return LOWLEVEL_ERROR_UNSPEC;
+    if (stat(buf, &st) || S_ISDIR(st.st_mode)) return LOWLEVEL_ERROR_FILE;
+
+    if (unlink(TIMEZONE_FILE_TMP) && errno!=ENOENT) return LOWLEVEL_ERROR_FILE;
+    if (symlink(buf, TIMEZONE_FILE_TMP)) return LOWLEVEL_ERROR_FILE;
+    if (rename(TIMEZONE_FILE_TMP, TIMEZONE_FILE)) {
+	unlink(TIMEZONE_FILE_TMP);
+	return LOWLEVEL_ERROR_FILE;
+    }
     return LOWLEVEL_NO_ERROR;
 }
 

@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.99 2008-10-12 14:06:22 thomson Exp $
+ * $Id: Portable.h,v 1.100 2008-11-13 21:05:42 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -142,6 +142,8 @@ struct link_state_notify_t
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
+#define TIMEZONE_FILE      "/etc/localtime"
+#define TIMEZONES_DIR      "/usr/share/zoneinfo"
 #define RADVD_FILE         "/etc/dibbler/radvd.conf"
 #define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
 #define SRVPID_FILE        "/var/lib/dibbler/server.pid"
