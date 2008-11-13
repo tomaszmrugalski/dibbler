@@ -2,7 +2,8 @@
   Dibbler changelog
  ------------------- 
  CVS 
-  - Cli/Srv: Empty FQDN option problem fixed (bug #
+  - Interface-ids other than 4 bytes long are now supported (bug #179)
+  - Cli/Srv: Empty FQDN option problem fixed (bug #186 and #187)
   - Srv: Client classification implemented
   - Linux: Pid is now stored in pid_t type (bug #180)
   - Cli: /etc/resolv.conf support improved
