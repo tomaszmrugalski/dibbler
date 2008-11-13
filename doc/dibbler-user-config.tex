@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.56 2008-11-11 22:49:34 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.57 2008-11-13 22:29:55 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -207,7 +207,7 @@ sometimes allowed range.
 	    level is set, the more messages dibbler will print.
  \item[log-name] -- (scope: global, type: string, default: Client). Defines 
 	    name, which should be used during logging.
- \item[log-mode] -- (scope: global, type: short, full or precise,
+ \item[log-mode] -- (scope: global, type: short, full, precise or syslog
 	    default value: full) Defines logging mode. In the
 	    default, full mode, name, date and time in the h:m:s format
 	    will be printed. In short mode, only minutes and
@@ -215,7 +215,8 @@ sometimes allowed range.
 	    terminals with limited width). Recently added precise
 	    mode logs information with seconds and microsecond
 	    precision. It is a useful for finding bottlenecks in
-	    the DHCPv6 autoconfiguration process.
+	    the DHCPv6 autoconfiguration process. Syslog works under 
+	    Linux only and allows default POSIX logging functions.
  \item[strict-rfc-no-routing] -- (scope: global, type: none, default:
 	    not defined). During normal operation, DHCPv6 client
 	    should add IPv6 address only, without configuring

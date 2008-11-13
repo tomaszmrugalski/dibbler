@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: daemon.cpp,v 1.13 2008-10-10 20:39:12 thomson Exp $
+ * $Id: daemon.cpp,v 1.14 2008-11-13 22:29:55 thomson Exp $
  *
  */
 
@@ -172,7 +172,7 @@ int init(const char * pidfile, const char * workdir) {
     }
     pidFile << getpid();
     pidFile.close();
-    Log(Notice) << "My pid (" << getpid() << ") is stored in " << pidfile << endl;
+    Log(Notice) << "My pid (" << getpid() << ") is stored in " << pidfile << LogEnd;
 
     if (chdir(workdir)) {
 	Log(Crit) << "Unable to change directory to " << workdir << "." << LogEnd;
@@ -267,7 +267,7 @@ void logStart(const char * note, const char * logname, const char * logfile) {
     logger::Initialize(logfile);
 
     logger::EchoOff();
-    Log(Emerg) << DIBBLER_COPYRIGHT1 << " " << note << LogEnd;
+    Log(Notice) << DIBBLER_COPYRIGHT1 << " " << note << LogEnd;
     logger::EchoOn();
 }
 

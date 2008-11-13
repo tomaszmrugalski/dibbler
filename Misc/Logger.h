@@ -5,7 +5,7 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * $Id: Logger.h,v 1.18 2008-08-29 00:07:30 thomson Exp $
+ * $Id: Logger.h,v 1.19 2008-11-13 22:29:55 thomson Exp $
  *
  * Released under GNU GPL v2 only licence
  *
@@ -27,9 +27,9 @@ namespace logger {
     enum Elogmode {
 	LOGMODE_FULL,
 	LOGMODE_SHORT,
-	LOGMODE_SYSLOG,
-	LOGMODE_EVENTLOG, /* unix only */
-	LOGMODE_PRECISE   /* windows only */
+	LOGMODE_PRECISE,
+	LOGMODE_SYSLOG,  /* unix only */
+	LOGMODE_EVENTLOG /* windows only */
     };
 
     using namespace std;

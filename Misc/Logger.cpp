@@ -18,17 +18,26 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 
+#ifdef LINUX
+#include <syslog.h>
+#endif
+
 namespace logger {
 
-    string logname="Init";
-    int logLevel=8;
+    string logname="Init";  // Application ID in the log
+    int logLevel=8;  // Don't log messages with lower priority (=higher number)
     Elogmode logmode = LOGMODE_DEFAULT; /* default logmode */
     ofstream logFile;    // file where wanted msgs are stored
-    bool logFileMode = false;
-    bool echo = true;
-    int curLogEntry = 8;
+    string logFileName;
+    bool logFileMode = false;	// loging into file is active
+    bool echo = true;		// copy log on tty
+    int curLogEntry = 8;	// Log level of currently constructed message
+#ifdef LINUX
+    string syslogname="DibblerInit";	// logname for syslog
+    int curSyslogEntry = LOG_NOTICE;	// curLogEntry for syslog
+#endif
 
-    ostringstream buffer;
+    ostringstream buffer;	// buffer for currently constructed message
 
     // LogEnd;
     ostream & endl (ostream & strum) {
@@ -40,6 +49,11 @@ namespace logger {
 	    // log to the file
 	    if (logFileMode)
 		logger::logFile << buffer.str() << std::endl;
+#ifdef LINUX
+	    // POSIX syslog
+	    if (logmode == LOGMODE_SYSLOG) 
+		syslog(curSyslogEntry, "%s", buffer.str().c_str());
+#endif
 	}
 
 	buffer.str(std::string());
@@ -57,8 +71,19 @@ namespace logger {
 			       "Notice   ",
 			       "Info     ",
 			       "Debug    " };
-
 	logger::curLogEntry = x;
+
+#ifdef LINUX
+	static int syslogLevel[]= {LOG_EMERG,
+				   LOG_ALERT,
+				   LOG_CRIT,
+				   LOG_ERR,
+			           LOG_WARNING,
+				   LOG_NOTICE,
+				   LOG_INFO,
+			           LOG_DEBUG};
+	logger::curSyslogEntry = syslogLevel[logger::curLogEntry - 1];
+#endif
 
 	time_t teraz;
 	teraz = time(NULL);
@@ -95,10 +120,10 @@ namespace logger {
 	    buffer.width(6); buffer.fill('0'); buffer << usec << "us ";
 	    break;
 	case LOGMODE_SYSLOG:
-	    buffer << "SYSLOG logging mode not supported yet.";
+	    return buffer;
 	    break;
 	case LOGMODE_EVENTLOG:
-	    buffer << "SYSLOG logging mode not supported yet.";
+	    buffer << "EVENTLOG logging mode not supported yet.";
 	    break;
 	}
 	buffer << ' ' << logger::logname ;
@@ -116,14 +141,81 @@ namespace logger {
     ostream& logInfo()    { return logger::logCommon(7); }
     ostream& logDebug()   { return logger::logCommon(8); }
 
-    void Initialize(const char * file) {
-	logger::logFileMode = true;
-	logger::logFile.open(file, ofstream::out | ofstream::app);
+    /**
+     * Prepare logging backend specified in logger::logmode for logging.
+     */
+    static void openLog() {
+	switch (logger::logmode) {
+	    case LOGMODE_FULL:
+	    case LOGMODE_SHORT:
+	    case LOGMODE_PRECISE:
+		logger::logFileMode = true;
+		logger::logFile.open(logFileName.c_str(),
+			ofstream::out | ofstream::app);
+		break;
+	    case LOGMODE_SYSLOG:
+#ifdef LINUX
+		openlog(syslogname.c_str(), LOG_PID, LOG_DAEMON);
+#endif
+		break;
+	    case LOGMODE_EVENTLOG:
+#ifdef WIN32
+#endif
+		break;
+	}
     }
 
+    /**
+     * Change logging mode, possibly backend too.
+     * Some modes log into common backend, some modes have unique backends.
+     *
+     * @param newMode New logging mode
+     * */
+    static void changeLogMode(Elogmode newMode) {
+	if (newMode != logger::logmode) {
+	    if (logger::logFileMode &&
+		    ((newMode == LOGMODE_FULL) || (newMode == LOGMODE_SHORT) ||
+		     (newMode == LOGMODE_PRECISE))) 
+		logger::logmode = newMode;
+	    else {
+		Terminate();
+		logger::logmode = newMode;
+		openLog();
+	    }
+	}
+    }
+
+    /**
+     * Initialize logging.
+     * 
+     * @param file File suitable for logging into
+     */
+    void Initialize(const char * file) {
+	logger::logFileName = std::string(file);
+	openLog();
+    }
+
+    /**
+     * Close loging backend.
+     */
     void Terminate() {
-	logger::logFileMode = false;
-	logger::logFile.close();
+	switch (logger::logmode) {
+	    case LOGMODE_FULL:
+	    case LOGMODE_SHORT:
+	    case LOGMODE_PRECISE:
+		logger::logFileMode = false;
+		logger::logFile.close();
+		break;
+	    case LOGMODE_SYSLOG:
+#ifdef LINUX
+		closelog();
+#endif
+		break;
+	    case LOGMODE_EVENTLOG:
+#ifdef WIN32
+#endif
+		break;
+	}
     }
 
     void EchoOn() {
@@ -142,6 +234,9 @@ namespace logger {
 
     void setLogName(string x) {
 	logger::logname = x;
+#ifdef LINUX
+	logger::syslogname = std::string("Dibbler").append(logger::logname);
+#endif
     }
 
     string getLogName() {
@@ -154,23 +249,23 @@ namespace logger {
 
     void setLogMode(string x) {
 	if (x=="short") {
-	    logger::logmode = LOGMODE_SHORT;
+	    changeLogMode(LOGMODE_SHORT);
 	}
 	if (x=="full") {
-	    logger::logmode = LOGMODE_FULL;
+	    changeLogMode(LOGMODE_FULL);
 	}
 	if (x=="precise") {
-	    logger::logmode = LOGMODE_PRECISE;
+	    changeLogMode(LOGMODE_PRECISE);
 	}
 
 #ifdef LINUX
 	if (x=="syslog") {
-	    logger::logmode = LOGMODE_SYSLOG;
+	    changeLogMode(LOGMODE_SYSLOG);
 	}
 #endif 
 #ifdef WIN32
 	if (x=="eventlog") {
-	    logger::logmode = LOGMODE_EVENTLOG;
+	    changeLogMode(LOGMODE_EVENTLOG);
 	}
 #endif
     }

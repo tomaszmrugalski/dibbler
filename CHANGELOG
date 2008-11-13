@@ -2,6 +2,7 @@
   Dibbler changelog
  ------------------- 
  CVS 
+  - Linux: Syslog support added.
   - Double timezone removal fixed (by Petr Pisar) (bug #183)
   - Timezone support implemented in Linux systems (by Petr Pisar) (bug #182)
   - Interface-ids other than 4 bytes long are now supported (bug #179)
