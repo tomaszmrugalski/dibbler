@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.57 2008-11-13 22:29:55 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.58 2008-11-13 22:44:12 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -771,14 +771,14 @@ Client would like to obtain an address on ,,Local Area Connection''
 interface. Note quotation marks around
 interface name. They are necessary since this particular interface name
 contains spaces. Client also would like to accept Unicast
-communication if server supports it. User don't care about
-details, so keep those log very short. Take note that you won't be
+communication if server supports it. User wants all information 
+to be logged via Linux syslog daemon. Take note that you won't be
 able see to what Dibbler is doing with such low log-level. (Usually
 log-level should be set to 7, which is also a default value).
 
 \begin{lstlisting}
 # client.conf
-log-mode short
+log-mode syslog
 log-level 5
 iface "Local Area Connection" {
   unicast yes
@@ -984,7 +984,7 @@ OptionName option-value
 	    level is set, the more messages dibbler will print.
  \item[log-name] -- (scope: global, type: string, default: Server). Defines 
 	    name, which should be used during logging.
- \item[log-mode] -- (scope: global, type: short, full or precise,
+ \item[log-mode] -- (scope: global, type: short, full, precise or syslog
 	    default value: full) Defines logging mode. In the
 	    default, full mode, name, date and time in the h:m:s format
 	    will be printed. In short mode, only minutes and
@@ -992,7 +992,8 @@ OptionName option-value
 	    terminals with limited width). Recently added precise
 	    mode logs information with seconds and microsecond
 	    precision. It is a useful for finding bottlenecks in
-	    the DHCPv6 autoconfiguration process.
+	    the DHCPv6 autoconfiguration process. Syslog is a Linux
+	    mode only.
  \item[cache-size] -- (scope: global, type: integer, default:
 	    1048576). It defines a size of the memory (specified in
             bytes) which can se used to store cached entries.
