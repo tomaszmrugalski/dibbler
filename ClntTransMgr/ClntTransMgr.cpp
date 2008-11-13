@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntTransMgr.cpp,v 1.61 2008-08-29 00:07:29 thomson Exp $
+ * $Id: ClntTransMgr.cpp,v 1.62 2008-11-13 22:18:17 thomson Exp $
  *
  */
 
@@ -868,8 +868,7 @@ void TClntTransMgr::checkRenew()
     }
 
     if (iaLst.count() + pdLst.count() == 0) {
-	// FIXME: something is wrong
-	Log(Error) << "RENEW send attempted, but there are no IA(s) or PD(s) to send." << LogEnd;
+	// there are no IAs or PD to refresh. Just do nothing.
 	return;
     }
 	 

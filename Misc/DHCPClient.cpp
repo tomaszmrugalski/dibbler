@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.32 2008-10-12 14:32:12 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.33 2008-11-13 22:18:17 thomson Exp $
  *                                                                           
  */
 
@@ -71,6 +71,9 @@ TDHCPClient::TDHCPClient(string config)
  */
 void TDHCPClient::initLinkStateChange()
 {
+    Log(Debug) << "LinkState change detection not fully supported (disabled for now)." << LogEnd;
+    return; // disable this for now
+
     memset((void*)&this->linkstates, 0, sizeof(linkstates));
 
     CfgMgr->firstIface();
