@@ -142,8 +142,6 @@
 // RFC4833: Timezone options for DHCP 
 #define OPTION_NEW_POSIX_TIMEZONE 41
 #define OPTION_NEW_TZDB_TIMEZONE  42
-// old implementation define
-#define OPTION_TIME_ZONE          41
 
 // RFC-ietf-dhc-dhcpv6-ero-01.txt
 #define OPTION_ERO              43

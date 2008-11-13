@@ -7,7 +7,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.32 2008-08-29 00:07:34 thomson Exp $
+ * $Id: SrvMsgAdvertise.cpp,v 1.33 2008-11-13 22:40:26 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -161,9 +161,9 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    if (!reqOpts->isOption(OPTION_SNTP_SERVERS))
 		reqOpts->addOption(OPTION_SNTP_SERVERS);
 	    break;
-	case OPTION_TIME_ZONE:
-	    if (!reqOpts->isOption(OPTION_TIME_ZONE))
-		reqOpts->addOption(OPTION_TIME_ZONE);
+	case OPTION_NEW_TZDB_TIMEZONE:
+	    if (!reqOpts->isOption(OPTION_NEW_TZDB_TIMEZONE))
+		reqOpts->addOption(OPTION_NEW_TZDB_TIMEZONE);
 	    break;
 	    
 	case OPTION_PREFERENCE :

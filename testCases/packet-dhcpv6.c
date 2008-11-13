@@ -6,7 +6,7 @@
  * Tony Lindstrom <tony.lindstrom@ericsson.com>
  * Tomasz Mrugalski <thomson@klub.com.pl>
  *
- * $Id: packet-dhcpv6.c,v 1.1 2004-11-30 00:59:24 thomson Exp $
+ * $Id: packet-dhcpv6.c,v 1.2 2008-11-13 22:40:26 thomson Exp $
  *
  * The information used comes from:
  * RFC3315.txt (DHCPv6)
@@ -114,7 +114,7 @@ static gint ett_dhcpv6_option = -1;
  */
 #define OPTION_CLIENT_FQDN      34
 #define OPTION_SNTP_SERVERS	40
-#define OPTION_TIME_ZONE	41
+#define OPTION_NEW_TZDB_TIMEZONE	41
 #define OPTION_LIFETIME         42
 
 #define	DUID_LLT		1
@@ -171,7 +171,7 @@ static const value_string opttype_vals[] = {
 	{ OPTION_NIS_DOMAIN_NAME, "Network Information Server Domain Name" },
 	{ OPTION_NISP_DOMAIN_NAME,"Network Information Server V2 Domain Name" },
 	{ OPTION_SNTP_SERVERS,	"Simple Network Time Protocol Server" },
-	{ OPTION_TIME_ZONE,	"Time zone" },
+	{ OPTION_NEW_TZDB_TIMEZONE,	"Time zone name" },
 	{ OPTION_LIFETIME,      "Lifetime" },
 	{ OPTION_CLIENT_FQDN,   "Fully Qualified Domain Name" },
 	{ 0,	NULL }
@@ -681,11 +681,11 @@ dhcpv6_option(tvbuff_t *tvb, proto_tree *bp_tree, int off, int eoff,
 				ip6_to_str(&in6));
 		}
 		break;
-	case OPTION_TIME_ZONE:
+	case OPTION_NEW_TZDB_TIMEZONE:
 	  if (optlen > 0) {
 	    tvb_memcpy(tvb, (guint*)buf, off, optlen);
 	    buf[optlen]=0;
-	    proto_tree_add_text(subtree, tvb, off, optlen, "time-zone: %s", buf);
+	    proto_tree_add_text(subtree, tvb, off, optlen, "time-zone name: %s", buf);
 	  }
 	  break;
 	case OPTION_LIFETIME:

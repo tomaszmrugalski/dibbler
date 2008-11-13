@@ -39,7 +39,8 @@
     2008-08: /etc/resolv.conf rewriting improved
     2008-09: Race condition under linux fixed
     2008-09: PID is now stored in pid_t type, not int
-    2008-09: Timezone implementation
+    2008-09: Timezone implementation and fixes
+    2008-09: Syslog support
 
   - Michal Kowalczuk <michal(at)kowalczuk.eu>
     2007-12: Authentication and authorization

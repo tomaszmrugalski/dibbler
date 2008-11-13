@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsg.cpp,v 1.57 2008-08-29 00:07:34 thomson Exp $
+ * $Id: SrvMsg.cpp,v 1.58 2008-11-13 22:40:26 thomson Exp $
  */
 
 #include <sstream>
@@ -196,7 +196,7 @@ TSrvMsg::TSrvMsg(SmartPtr<TSrvIfaceMgr> IfaceMgr,
 	case OPTION_DOMAIN_LIST:
 	    ptr = new TSrvOptDomainName(buf+pos, length,this);
 	    break;
-	case OPTION_TIME_ZONE:
+	case OPTION_NEW_TZDB_TIMEZONE:
 	    ptr = new TSrvOptTimeZone(buf+pos, length,this);
 	    break;
 	case OPTION_SIP_SERVER_A:
@@ -562,7 +562,7 @@ bool TSrvMsg::appendRequestedOptions(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> a
     };
     
     // --- option: TIMEZONE --- 
-    if ( reqOpts->isOption(OPTION_TIME_ZONE) && ptrIface->supportTimezone() ) {
+    if ( reqOpts->isOption(OPTION_NEW_TZDB_TIMEZONE) && ptrIface->supportTimezone() ) {
 	SmartPtr<TSrvOptTimeZone> optTimezone;
 	if (ex && ex->supportTimezone())
 	    optTimezone = new TSrvOptTimeZone(ex->getTimezone(),this);

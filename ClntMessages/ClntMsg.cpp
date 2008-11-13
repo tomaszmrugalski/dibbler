@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsg.cpp,v 1.41 2008-11-11 22:16:06 thomson Exp $
+ * $Id: ClntMsg.cpp,v 1.42 2008-11-13 22:40:26 thomson Exp $
  */
 
 #ifdef WIN32
@@ -188,7 +188,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	case OPTION_DOMAIN_LIST:
 	    ptr = new TClntOptDomainName(buf+pos, length, this);
 	    break;
-	case OPTION_TIME_ZONE:
+	case OPTION_NEW_TZDB_TIMEZONE:
 	    ptr = new TClntOptTimeZone(buf+pos, length,this);
 	    break;
 	case OPTION_SIP_SERVER_A:
@@ -516,7 +516,7 @@ void TClntMsg::appendRequestedOptions() {
         
     // --- option: TIMEZONE ---
     if ( iface->isReqTimezone() ) {
-	optORO->addOption(OPTION_TIME_ZONE);
+	optORO->addOption(OPTION_NEW_TZDB_TIMEZONE);
 
 	string timezone = iface->getProposedTimezone();
 	if (timezone.length()) {

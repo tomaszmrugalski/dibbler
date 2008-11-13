@@ -6,9 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: ClntOptTimeZone.cpp,v 1.7 2007-01-07 20:18:46 thomson Exp $
+ * $Id: ClntOptTimeZone.cpp,v 1.8 2008-11-13 22:40:26 thomson Exp $
  *
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007-01-07 20:18:46  thomson
+ * State enum names changed.
+ *
  * Revision 1.6  2004-11-01 23:31:25  thomson
  * New options,option handling mechanism and option renewal implemented.
  *
@@ -30,12 +33,12 @@
 #include "Logger.h"
 
 TClntOptTimeZone::TClntOptTimeZone(string domain, TMsg* parent)
-    :TOptString(OPTION_TIME_ZONE, domain, parent) {
+    :TOptString(OPTION_NEW_TZDB_TIMEZONE, domain, parent) {
 
 }
 
 TClntOptTimeZone::TClntOptTimeZone(char *buf, int bufsize, TMsg* parent)
-    :TOptString(OPTION_TIME_ZONE, buf,bufsize, parent) {
+    :TOptString(OPTION_NEW_TZDB_TIMEZONE, buf,bufsize, parent) {
     // FIXME: do some validity check
 
 }
