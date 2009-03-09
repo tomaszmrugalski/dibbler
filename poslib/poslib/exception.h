@@ -52,6 +52,7 @@ class PException {
    * \param p The PException to copy
    */
   PException(const PException& p);
+  
   /*!
    * \brief constructor with message
    *
@@ -59,7 +60,7 @@ class PException {
    * parameter will be copied to the PException using a strdup().
    * \param _message The message for the exception
    */
-  PException(char *_message);
+  PException(const char *_message);
   /*!
    * \brief constructor with message and another exception
    *
@@ -78,7 +79,7 @@ class PException {
    * \param _message Error message
    * \param p Exception whose message is appended to the error message
    */
-  PException(char *_message, PException &p);
+  PException(const char *_message, PException &p);
   /*!
    * \brief constructor with format string
    *
@@ -94,7 +95,7 @@ class PException {
    * \param message The format string message
    * \param ... Arguments for the format string
    */
-  PException(bool formatted, char *_message, ...);
+  PException(bool formatted, const char *_message, ...);
   /*!
    * \brief destructor
    *

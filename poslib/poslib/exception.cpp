@@ -28,11 +28,11 @@ PException::PException() {
   message = strdup("");
 }
 
-PException::PException(char *_message) {
+PException::PException(const char *_message) {
   message = strdup(_message);
 }
 
-PException::PException(char *_message, PException &p) {
+PException::PException(const char *_message, PException &p) {
   message = (char *)malloc(strlen(_message) + strlen(p.message) + 1);
   strcpy(message, _message);
   strcat(message, p.message);
@@ -42,7 +42,7 @@ PException::PException(const PException& p) {
   message = strdup(p.message);
 }
 
-PException::PException(bool formatted, char *_message, ...) {
+PException::PException(bool formatted, const char *_message, ...) {
   va_list list;
   char buff[1024];
 
