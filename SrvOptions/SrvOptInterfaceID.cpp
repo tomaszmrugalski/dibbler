@@ -6,13 +6,14 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptInterfaceID.cpp,v 1.6 2008-11-11 22:41:50 thomson Exp $
+ * $Id: SrvOptInterfaceID.cpp,v 1.7 2009-03-09 22:45:58 thomson Exp $
  *
  */
 
 #include "SrvOptInterfaceID.h"
 #include "DHCPConst.h"
 #include <netinet/in.h>
+#include <string.h>
 
 /** 
  * compares two interface-ids
