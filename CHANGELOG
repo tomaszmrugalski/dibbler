@@ -1,7 +1,8 @@
 
   Dibbler changelog
  ------------------- 
- CVS 
+ 0.7.3 [2009-03-09]
+  - Linux: Fix for compilation with libc6, version 2.8
   - New timezone option support added (by Petr Pisar) (bug #185)
   - Linux: Syslog support added (by Petr Pisar) (bug #184)
   - Double timezone removal fixed (by Petr Pisar) (bug #183)

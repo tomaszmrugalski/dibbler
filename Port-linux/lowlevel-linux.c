@@ -11,9 +11,11 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-linux.c,v 1.12 2008-08-29 00:07:31 thomson Exp $
+ * $Id: lowlevel-linux.c,v 1.13 2009-03-09 22:27:23 thomson Exp $
  *
  */
+
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -165,7 +167,7 @@ struct iface * if_list_get()
 #endif
 
 	tmp = malloc(sizeof(struct iface));
-	snprintf(tmp->name,MAX_IFNAME_LENGTH,(char*)RTA_DATA(tb[IFLA_IFNAME]));
+	snprintf(tmp->name,MAX_IFNAME_LENGTH,"%s",(char*)RTA_DATA(tb[IFLA_IFNAME]));
 	tmp->id=ifi->ifi_index;
 	tmp->flags=ifi->ifi_flags;
 	tmp->hardwareType = ifi->ifi_type;
