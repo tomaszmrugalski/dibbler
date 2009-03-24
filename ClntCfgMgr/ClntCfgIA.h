@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntCfgIA.h,v 1.9 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntCfgIA.h,v 1.10 2009-03-24 23:17:17 thomson Exp $
  */
 
 class TClntCfgIA;
@@ -41,7 +41,8 @@ class TClntCfgIA
 
     TClntCfgIA();
     TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID);
-
+    
+    void reset();
     void setState(enum EState state);
     enum EState getState();
     bool getAddrParams();
@@ -53,6 +54,7 @@ class TClntCfgIA
     
     EState State;	
     List(TClntCfgAddr) ClntCfgAddrLst;
+    static long newID();
 
     bool AddrParams;
 };

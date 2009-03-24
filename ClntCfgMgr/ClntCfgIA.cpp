@@ -15,12 +15,17 @@
 using namespace std;
 
 TClntCfgIA::TClntCfgIA() {
-    static unsigned long nextIAID=1;
-    this->IAID = nextIAID++;
+
+    this->IAID = newID();
     this->T1 = CLIENT_DEFAULT_T1;
     this->T2 = CLIENT_DEFAULT_T2;
     this->State = STATE_NOTCONFIGURED;
     this->AddrParams = false;
+}
+
+long TClntCfgIA::newID(){
+    static unsigned long nextIAID=1;
+    return nextIAID++;
 }
 
 long TClntCfgIA::countAddr()
@@ -52,11 +57,8 @@ void TClntCfgIA::setIAID(long iaid) {
     IAID=iaid;
 }
 
-void TClntCfgIA::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
-    this->T1=opt->getT1();
-    this->T2=opt->getT2();
-    
-    this->AddrParams = opt->getAddrParams();
+void TClntCfgIA::reset() {
+    this->State = STATE_NOTCONFIGURED;
 }
 
 void TClntCfgIA::firstAddr()
@@ -75,6 +77,13 @@ TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)
     T1=right->getT1();
     T2=right->getT2();
     this->State = STATE_NOTCONFIGURED;
+}
+
+void TClntCfgIA::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
+    this->T1=opt->getT1();
+    this->T2=opt->getT2();
+    
+    this->AddrParams = opt->getAddrParams();
 }
 
 void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)

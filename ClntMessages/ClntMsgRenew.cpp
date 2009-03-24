@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRenew.cpp,v 1.22 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntMsgRenew.cpp,v 1.23 2009-03-24 23:17:17 thomson Exp $
  *
  */
 
@@ -103,10 +103,11 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->send();
 }
 
+
 void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
 {
     SmartPtr<TOpt> opt;
-    
+    unsigned int iaCnt = 0; 
     // get DUID
     SmartPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) this->getOption(OPTION_SERVERID);
@@ -119,13 +120,20 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
     while ( opt = Reply->getOption() ) {
         switch (opt->getOptType()) {
 	case OPTION_IA_NA: {
+	    iaCnt++;
 	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
 	    if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
-		SmartPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
-		Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code " << 
-		    StatusCodeToString(status->getCode()) << ": " 
-			     << status->getText() << LogEnd;
-		break;
+		if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
+		    ClntTransMgr->sendRequest(Options,Iface);
+		    IsDone = true;
+		    return;
+		}else{
+		    SmartPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
+  		    Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code " << 
+		        StatusCodeToString(status->getCode()) << ": " 
+			         << status->getText() << LogEnd;
+	  	    break;
+		}
 	    }
 	    ptrOptIA->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
 			         ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
@@ -134,13 +142,21 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
 	    break;
 	}
 	case OPTION_IA_PD: {
+	    iaCnt++;
 	    SPtr<TClntOptIA_PD> pd = (Ptr*) opt;
 	    if (pd->getStatusCode() != STATUSCODE_SUCCESS) {
-		SmartPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
-		Log(Warning) << "Received PD (iaid=" << pd->getIAID() << ") with status code " << 
-		    StatusCodeToString(status->getCode()) << ": " 
-			     << status->getText() << LogEnd;
-		break;
+		if(pd->getStatusCode() == STATUSCODE_NOBINDING){
+		    ClntTransMgr->sendRequest(Options,Iface);
+		    IsDone = true;
+		    return;
+		}
+		else{
+	            SmartPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
+		    Log(Warning) << "Received PD (iaid=" << pd->getIAID() << ") with status code " << 
+		        StatusCodeToString(status->getCode()) << ": " 
+			         << status->getText() << LogEnd;
+		    break;
+		}
 	    }
 	    pd->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr, ptrDUID->getDUID(), 0, (TMsg*)this);
 	    pd->doDuties();
@@ -189,7 +205,7 @@ void TClntMsgRenew::doDuties()
     // should we send RENEW once more or start sending REBIND
     if (!MRD) 
     {
-	Log(Notice) << "RENEW remains unanswered and timeout T2 reached. " << LogEnd;
+	Log(Notice) << "RENEW remains unanswered and timeout T2 reached, so REBIND will be sent." << LogEnd;
         ClntTransMgr->sendRebind(this->Options,this->getIface());
         IsDone = true;
         return;

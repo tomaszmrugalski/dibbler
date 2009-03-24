@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgInfRequest.cpp,v 1.15 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntMsgInfRequest.cpp,v 1.16 2009-03-24 23:17:17 thomson Exp $
  *
  */
 
@@ -56,8 +56,9 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->appendRequestedOptions();
 
     appendAuthenticationOption(AddrMgr);
-
+    appendElapsedOption();
     pkt = new char[getSize()];
+    this->send();
 }
 
 //opts - all options list WITHOUT serverDUID including server id
@@ -113,6 +114,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
             case OPTION_AUTH:
             case OPTION_AAAAUTH:
             case OPTION_KEYGEN:
+	    case OPTION_ELAPSED_TIME:       //delete the old elapsed option,as we will append a new one
                 Options.del();
                 break;        
         }
@@ -122,10 +124,11 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
         //RECONF_ACCEPT - maybe also SERVERID if information request
         //is answer to reconfigure message
     }
-
+    appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];
+    this->send();
 }
 
 

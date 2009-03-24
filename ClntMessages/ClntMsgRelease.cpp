@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.22 2008-09-01 00:01:01 thomson Exp $
+ * $Id: ClntMsgRelease.cpp,v 1.23 2009-03-24 23:17:17 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -156,6 +156,7 @@ TClntMsgRelease::TClntMsgRelease(
 
     pkt = new char[getSize()];
     IsDone = false;
+    this->send();
 }
 
 void TClntMsgRelease::answer(SmartPtr<TClntMsg> rep)

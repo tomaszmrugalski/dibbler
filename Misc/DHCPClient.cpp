@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: DHCPClient.cpp,v 1.33 2008-11-13 22:18:17 thomson Exp $
+ * $Id: DHCPClient.cpp,v 1.34 2009-03-24 23:17:18 thomson Exp $
  *                                                                           
  */
 
@@ -92,8 +92,10 @@ void TDHCPClient::initLinkStateChange()
 void TDHCPClient::stop() {
     serviceShutdown = 1;
 
+#ifdef MOD_CLNT_CONFIRM
     if (CfgMgr->useConfirm())
 	link_state_change_cleanup();
+#endif
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
@@ -117,6 +119,13 @@ void TDHCPClient::resetLinkstate() {
     linkstateChange = 0;
 }
 
+
+#ifdef MOD_CLNT_CONFIRM
+void TDHCPClient::requestLinkstateChange(){
+    linkstateChange = 1;
+}
+#endif
+
 char* TDHCPClient::getCtrlIface(){
     SmartPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
     return iface->getName();
@@ -130,11 +139,13 @@ void TDHCPClient::run()
     {
 	if (serviceShutdown)
 	    TransMgr->shutdown();
-	
+
+#ifdef MOD_CLNT_CONFIRM	
         if (linkstateChange) {
 	    AddrMgr->setIA2Confirm(&linkstates);
 	    this->resetLinkstate();
         }
+#endif
 
 	TransMgr->doDuties();
 	

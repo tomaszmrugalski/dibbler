@@ -7,25 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgDecline.cpp,v 1.7 2008-11-11 22:20:42 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2008-08-29 00:07:28  thomson
- * Temporary license change(GPLv2 or later -> GPLv2 only)
- *
- * Revision 1.5  2008-06-26 21:44:17  thomson
- * *** empty log message ***
- *
- * Revision 1.4  2008-02-25 17:49:07  thomson
- * Authentication added. Megapatch by Michal Kowalczuk.
- * (small changes by Tomasz Mrugalski)
- *
- * Revision 1.3  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
+ * $Id: ClntMsgDecline.cpp,v 1.8 2009-03-24 23:17:17 thomson Exp $
  *
  */
 
@@ -69,7 +51,8 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
-
+    this->IsDone = false;
+    this->send();
     pkt = new char[getSize()];
     this->IsDone = false;
     // this->send();

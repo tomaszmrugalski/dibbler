@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.50 2008-08-30 21:41:12 thomson Exp $
+ * $Id: ClntIfaceMgr.cpp,v 1.51 2009-03-24 23:17:17 thomson Exp $
  */
 
 #include "Portable.h"
@@ -593,6 +593,7 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
     switch (msgType)
     {
     case REQUEST_MSG:
+    case CONFIRM_MSG:
 	mode = PREFIX_MODIFY_ADD;
 	action = "add";
 	break;

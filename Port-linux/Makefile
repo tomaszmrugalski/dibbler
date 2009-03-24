@@ -1,8 +1,11 @@
 include ../Makefile.inc
 
-OBJECTS = lowlevel-linux.o lowlevel-linux-link-state.o lowlevel-options-linux.o\
+OBJECTS = lowlevel-linux.o lowlevel-options-linux.o \
           libnetlink.o ll_map.o ll_types.o utils.o daemon.o iproute.o
-#         interface.o ifplugd.o
+
+ifdef MOD_CLNT_CONFIRM
+OBJECTS += interface.o ifplugd.o lowlevel-linux-link-state.o
+endif 
 
 objs: $(OBJECTS)
 
@@ -15,6 +18,14 @@ libs: objs libLowLevel.a
 lowlevel-linux.o: lowlevel-linux.c 
 	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(COPTS) -I. -c lowlevel-linux.c 
+
+interface.o: interface.c
+	@echo "[CC     ] $(SUBDIR)/$@"
+	$(CC) $(COPTS) -I. -c interface.c 
+
+ifplugd.o: ifplugd.c
+	@echo "[CC     ] $(SUBDIR)/$@"
+	$(CC) $(COPTS) -I. -c ifplugd.c 
 
 lowlevel-linux-link-state.o: lowlevel-linux-link-state.c
 	@echo "[CC     ] $(SUBDIR)/$@"

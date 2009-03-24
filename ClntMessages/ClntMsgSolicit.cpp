@@ -6,7 +6,7 @@
  * chamges: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgSolicit.cpp,v 1.26 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntMsgSolicit.cpp,v 1.27 2009-03-24 23:17:17 thomson Exp $
  */
 #include "SmartPtr.h"
 #include "Msg.h"
@@ -88,6 +88,8 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->appendRequestedOptions();
     
     pkt = new char[getSize()];
+    this->IsDone = false;
+    this->send();
 }
 
 void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
@@ -104,6 +106,7 @@ void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
 	}
 	ClntTransMgr->addAdvertise((Ptr*)msg);
 	SmartPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
+
 	if (prefOpt && (prefOpt->getPreference() == 255) )
 	{
 	    Log(Info) << "ADVERTISE message with prefrence set to 255 received, so wait time for"

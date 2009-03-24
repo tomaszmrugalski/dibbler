@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.13 2008-11-11 22:19:54 thomson Exp $
+ * $Id: ClntMsgConfirm.cpp,v 1.14 2009-03-24 23:17:17 thomson Exp $
  *
  */
 
@@ -53,13 +53,14 @@ TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr,
         Options.append(new TClntOptIA_NA(ia,true,this));
 
     appendRequestedOptions();
+    appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
     
     this->IsDone = false;
     pkt = new char[getSize()];
     this->send();
 }           
-
+    
 void TClntMsgConfirm::answer(SmartPtr<TClntMsg> reply)
 {
     SmartPtr <TClntOptStatusCode> ptrOptCode;
@@ -90,6 +91,7 @@ void TClntMsgConfirm::addrsAccepted() {
     SmartPtr<TAddrIA> ptrIA;
     SmartPtr<TOpt> ptrOpt;
     this->firstOption();
+    SmartPtr<TAddrAddr> ptrAddrAddr;
     while ( ptrOpt = this->getOption() ) {
 	if (ptrOpt->getOptType()!=OPTION_IA_NA)
 	    continue;
@@ -107,6 +109,11 @@ void TClntMsgConfirm::addrsAccepted() {
 	ptrIA->setState(STATE_CONFIGURED);
     }
     ClntAddrMgr->firstIA();
+	SmartPtr<TIfaceIface> ptrIface;
+	ptrIface = ClntIfaceMgr->getIfaceByID(ptrIA->getIface());
+	ptrIA->firstAddr();
+	ptrAddrAddr = ptrIA->getAddr();
+	ptrIface->addAddr(ptrAddrAddr->get(),ptrAddrAddr->getPref(),ptrAddrAddr->getValid(),ptrIface->getPrefixLength());
 }
 
 void TClntMsgConfirm::addrsRejected() {
@@ -140,10 +147,10 @@ void TClntMsgConfirm::addrsRejected() {
 	    ptrIA->delAddr( ptrAddr->get() );
 	}
 
-        //not only the address should be rejected, but also the original IA should be deleted and using a new IA to process SOLICIT
-	ptrIA->setState(STATE_NOTCONFIGURED);
+	//not only the address should be rejected, but also the original IA should be deleted and using a new IA to process SOLICIT
 	SmartPtr<TClntCfgIA> ptrCfgIA = ClntCfgMgr->getIA(ptrOptIA->getIAID());
-	ptrCfgIA->setState(STATE_NOTCONFIGURED);
+	ptrCfgIA->reset();
+	ptrIA->reset();
     }
     ClntAddrMgr->firstIA();
 }

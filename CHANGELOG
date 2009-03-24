@@ -1,6 +1,9 @@
 
   Dibbler changelog
  ------------------- 
+ 0.7.4 [not-released-yet]
+  - Linux: CONFIRM support added
+
  0.7.3 [2009-03-09]
   - Linux: Fix for compilation with libc6, version 2.8
   - New timezone option support added (by Petr Pisar) (bug #185)

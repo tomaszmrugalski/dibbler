@@ -8,7 +8,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRequest.cpp,v 1.28 2008-08-29 00:07:28 thomson Exp $
+ * $Id: ClntMsgRequest.cpp,v 1.29 2009-03-24 23:17:17 thomson Exp $
  *
  */
 
@@ -25,6 +25,7 @@
 #include "ClntOptElapsed.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptOptionRequest.h"
+#include "ClntOptStatusCode.h"
 #include <cmath>
 #include "Logger.h"
 
@@ -77,8 +78,8 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Options.first();
     SmartPtr<TOpt> opt;
     while (opt = Options.get()) {
-        // delete OPTION_AAAAUTH (needed only in SOLICIT)
-        if (opt->getOptType() == OPTION_AAAAUTH)
+        // delete OPTION_AAAAUTH (needed only in SOLICIT) and we will append a new elapsed time option later
+        if (opt->getOptType() == OPTION_AAAAUTH || opt->getOptType() == OPTION_ELAPSED_TIME)
             Options.del();
         else
             opt->setParent(this);
@@ -135,10 +136,11 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     // ... and append server's DUID from ADVERTISE
     Options.append( srvDUID );
     
+    appendElapsedOption();
     appendAuthenticationOption(AddrMgr);
-
     pkt = new char[getSize()];
-
+    this->IsDone = false;
+    this->send();
 }
 
 TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
@@ -186,6 +188,8 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     appendAuthenticationOption(AddrMgr);
 
     pkt = new char[getSize()];
+    this->IsDone = false;
+    this->send();
 }
 
 /*
@@ -194,6 +198,33 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
 {
     this->copyAAASPI(msg);
+
+#ifdef MOD_CLNT_CONFIRM    
+    /* CHANGED here: When the client receives a NotOnLink status from the server in
+     * response to a Request, the client can either re-issue the Request
+     * without specifying any addresses or restart the DHCP server discovery
+     * process.
+     */  
+    SmartPtr<TOptStatusCode> optStateCode = (Ptr*)msg->getOption(OPTION_STATUS_CODE);
+    if( optStateCode && STATUSCODE_NOTONLINK == optStateCode->getCode()){
+	SmartPtr<TOpt> opt;
+	Options.first();
+	while(opt = Options.get()){
+	    if(opt->getOptType() != OPTION_IA_NA){
+		continue;
+	    }
+	    SmartPtr<TClntOptIA_NA> IA_NA = (Ptr*)opt;
+	    IA_NA->firstOption();
+	    SmartPtr<TOpt> subOpt;
+	    while( subOpt = IA_NA->getOption()){
+		if(subOpt->getOptType() == OPTION_IAADDR)
+		    IA_NA->delOption();
+	    }
+	} 
+	return;   
+    }
+#endif
+     
     TClntMsg::answer(msg);
 
     ClntIfaceMgr->notifyScripts(REQUEST_MSG, Iface);

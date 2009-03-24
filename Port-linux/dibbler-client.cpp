@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-client.cpp,v 1.25 2008-10-12 14:02:40 thomson Exp $
+ * $Id: dibbler-client.cpp,v 1.26 2009-03-24 23:17:18 thomson Exp $
  *
  */
 
@@ -20,21 +20,34 @@
 #include "Logger.h"
 #include "daemon.h"
 #include "ClntCfgMgr.h"
+#include "ifplugd.h"
+#include <map>
+#include <pthread.h>
+
+using std::map;
+
+#define IF_RECONNECTED_DETECTED -1
+
+extern pthread_mutex_t lock;
+
 
 TDHCPClient * ptr;
+//static const char *TOOL_NAME = "ifplugstatus";
+
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
 }
 
-// when network linkstate change event is detected, this handler will be called.
-void signal_handler1(int n) {
-    Log(Notice) << "Network switch off event detected. do Confirmming." << LogEnd;
 
-    // get information regarding updated interfaces and call
-    // link_state_changed(int ifindex)
-}   
+#ifdef MOD_CLNT_CONFIRM
+void signal_handler_of_linkstate_change(int n) {
+    Log(Notice) << "Network switch off event detected. do Confirmming." << LogEnd;
+    pthread_mutex_lock(&lock);
+    pthread_mutex_unlock(&lock);
+}
+#endif
 
 int status() {
 
@@ -63,6 +76,7 @@ int status() {
     return result;
 }
 
+
 int run() {
     if (!init(CLNTPID_FILE, WORKDIR)) {
 	return -1;
@@ -84,8 +98,15 @@ int run() {
     signal(SIGTERM, signal_handler);
     signal(SIGINT, signal_handler);
 
+#ifdef MOD_CLNT_CONFIRM
+    // CHANGED: add a signal handling function to handle SIGUSR1,
+    // which will be generated if network switch off.
     // SIGUSR1 = link state-change
-    signal(SIGUSR1,signal_handler1);
+    signal(SIGUSR1, signal_handler_of_linkstate_change);
+    Log(Notice) << "CONFIRM support enabled." << LogEnd;
+#else
+    Log(Info) << "CONFIRM support not compiled in." << LogEnd;
+#endif
 
     ptr->run();
 

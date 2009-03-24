@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: DHCPClient.h,v 1.7 2008-10-12 14:07:31 thomson Exp $
+ * $Id: DHCPClient.h,v 1.8 2009-03-24 23:17:18 thomson Exp $
  *                                                                           
  */
 
@@ -35,6 +35,9 @@ class TDHCPClient
     bool isDone();
     bool checkPrivileges();
     void setWorkdir(std::string workdir);
+#ifdef MOD_CLNT_CONFIRM
+    void requestLinkstateChange();
+#endif
     SmartPtr<TClntAddrMgr>  getAddrMgr();
     SmartPtr<TClntCfgMgr> getCfgMgr();
     char* getCtrlIface();

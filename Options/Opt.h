@@ -6,31 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: Opt.h,v 1.11 2008-08-29 00:07:30 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.10  2007-12-02 10:31:59  thomson
- * Requestor implemented (RFC5007)
- *
- * Revision 1.9  2007-03-28 00:39:46  thomson
- * Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
- *
- * Revision 1.8  2006-11-17 00:37:16  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- * Revision 1.7  2006-03-03 20:25:15  thomson
- * Comment added.
- *
- * Revision 1.6  2006/01/12 00:23:35  thomson
- * Cleanup changes. Now -pedantic option works.
- *
- * Revision 1.5  2004/10/27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
- *
- * Revision 1.4  2004/05/23 16:40:12  thomson
- * *** empty log message ***
- *
+ * $Id: Opt.h,v 1.12 2009-03-24 23:17:18 thomson Exp $
  *                                                                           
  */
 
@@ -86,6 +62,7 @@ class TOpt
     void firstOption();
     SmartPtr<TOpt> getOption();
     void addOption(SmartPtr<TOpt> opt);
+    void delOption();
     int countOption();
     void delAllOptions();
     void setParent(TMsg* Parent);
