@@ -3,12 +3,12 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.28 2008-08-29 00:07:27 thomson Exp $
+ * $Id: ClntCfgIface.cpp,v 1.29 2009-03-24 22:46:17 thomson Exp $
  *
  */
 
@@ -174,7 +174,6 @@ SPtr<TClntCfgIA> TClntCfgIface::getIA(int iaid)
     }
     return 0;
 }
-
 
  void TClntCfgIface::addIA(SmartPtr<TClntCfgIA> ptr)
 {
