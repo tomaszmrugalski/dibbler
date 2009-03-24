@@ -72,6 +72,16 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	return;
     }
 
+    // check whether the client with DUID specified exists in Server Address database or not.
+    SmartPtr <TAddrClient> ptrClient;
+    ptrClient = this->SrvAddrMgr->getClient(duidOpt->getDUID());
+    if (!ptrClient) {
+        Log(Info) << "Unable to create reply for CONFIRM message with client DUID ="
+                  << duidOpt->getDUID()->getPlain() << ": No such client." << LogEnd;
+        IsDone = true;
+        return;
+    }
+
     // copy client's ID
     SmartPtr<TOpt> ptrOpt;
     ptrOpt = confirm->getOption(OPTION_CLIENTID);
@@ -88,6 +98,17 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	case OPTION_IA_NA: {
 
 	    SmartPtr<TSrvOptIA_NA> ia = (Ptr*) ptrOpt;
+	    
+            // now we check whether this IA exists in Server Address database or not.
+    	    SmartPtr <TAddrIA> ptrIA;
+ 	    ptrIA = ptrClient->getIA(ia->getIAID());
+       	    if (!ptrIA) {
+      	        Log(Info) << "Unable to create reply for CONFIRM message. IA(iaid=" << ia->getIAID() << ", client="
+                   << duidOpt->getDUID()->getPlain() << ": No such IA_NA." << LogEnd;
+	        IsDone = true;
+     	        return;
+            }	    
+
 	    SmartPtr<TOpt> subOpt;
 	    unsigned long addrCnt = 0;
 	    ia->firstOption();
@@ -118,6 +139,16 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	}
 	case OPTION_IA_TA: {
 	    SmartPtr<TSrvOptTA> ta = (Ptr*) ptrOpt;
+	    // now we check whether this IA exists in Server Address database or not.
+            SmartPtr <TAddrIA> ptrIA;
+            ptrIA = ptrClient->getIA(ta->getIAID());
+            if (!ptrIA) {
+                Log(Info) << "Unable to create reply for CONFIRM message.TA(iaid=" << ta->getIAID() << ", client="
+                   << duidOpt->getDUID()->getPlain() << ": No such IA_TA." << LogEnd;
+                IsDone = true;
+                return;
+            }
+
 	    SmartPtr<TOpt> subOpt;
 	    ta->firstOption();
 	    while (subOpt = ta->getOption() && (OnLink)) {
@@ -180,12 +211,12 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     appendAuthenticationOption(duidOpt->getDUID());
 
     pkt = new char[this->getSize()];
-    IsDone = false;
     this->MRT = 31;
+    IsDone = false;
     this->send();
 }
 	
-/** 
+/*
  * this constructor is used to create REPLY message as a response for DECLINE message
  * 
  * @param ifaceMgr 
@@ -295,6 +326,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    SmartPtr<TSrvOptStatusCode> optStatusCode = 
 		new TSrvOptStatusCode(STATUSCODE_SUCCESS,tmp+" addrs declined.",this);
 	    replyIA_NA->addOption( (Ptr*) optStatusCode );
+	    break;
 	};
 	case OPTION_IA_TA:
 	    Log(Info) << "TA address declined. Oh well. Since it's temporary, let's ignore it entirely." << LogEnd;
