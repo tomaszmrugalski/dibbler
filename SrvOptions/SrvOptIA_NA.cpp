@@ -7,7 +7,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptIA_NA.cpp,v 1.30 2008-10-12 20:16:14 thomson Exp $
+ * $Id: SrvOptIA_NA.cpp,v 1.31 2009-03-24 01:14:55 thomson Exp $
  */
 
 #ifdef WIN32
@@ -342,7 +342,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
     return 0;
 }
 
-// constructor used only in RENEW, REBIND, DECLINE and RELEASE
+// constructor used only in RENEW, REBIND, CONFIRM,DECLINE and RELEASE
 TSrvOptIA_NA::TSrvOptIA_NA( SmartPtr<TSrvCfgMgr> cfgMgr,
 		 SmartPtr<TSrvAddrMgr> addrMgr,
 		 SmartPtr<TSrvOptIA_NA> queryOpt,
@@ -501,6 +501,8 @@ void TSrvOptIA_NA::release(SmartPtr<TSrvOptIA_NA> queryOpt,
 {
 }
 
+
+//CHANGED here: add code to support CONFRIM msgs
 void TSrvOptIA_NA::confirm(SmartPtr<TSrvOptIA_NA> queryOpt,
                            unsigned long &addrCount)
 {
