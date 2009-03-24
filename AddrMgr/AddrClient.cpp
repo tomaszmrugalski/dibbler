@@ -6,7 +6,7 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.18 2008-11-11 22:01:27 thomson Exp $
+ * $Id: AddrClient.cpp,v 1.19 2009-03-24 22:41:07 thomson Exp $
  *
  */
 
@@ -172,7 +172,7 @@ unsigned long TAddrClient::getT1Timeout() {
     while ( ptr = IAsLst.get() ) {
         if (ptr->getState()==STATE_CONFIGURED) {
 	    if (ts > ptr->getT1Timeout())
-            ts = ptr->getT1Timeout();
+		ts = ptr->getT1Timeout();
 	}else if (ptr->getState()==STATE_NOTCONFIGURED){
 	    ts = 0;
 	}
