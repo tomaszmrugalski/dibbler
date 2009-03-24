@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelMsg.cpp,v 1.6 2008-08-29 00:07:32 thomson Exp $
+ * $Id: RelMsg.cpp,v 1.7 2009-03-24 01:18:11 thomson Exp $
  *
  */
 
@@ -31,6 +31,8 @@ TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  
     // data+=4, dataLen-=4 is modified in TMsg
     if (dataLen<=0) // avoid decoding of empty messages.
 	return;
+
+    this->HopCount = 0;
     this->decodeOpts(data, dataLen);
 }
 
