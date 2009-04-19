@@ -2,12 +2,11 @@
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
- *          Marek Senderski <msend@o2.pl>
- * changes: Michal Kowalczuk <michal@kowalczuk.eu>
+ * changes: Paul Schauer <p.schauer(at)comcast(dot)net>
  *
- * released under GNU GPL v2 only licence
+ * released under GNU GPL v2 licence
  *
- * $Id: daemon.cpp,v 1.3 2008-11-13 22:29:55 thomson Exp $
+ * $Id: daemon.cpp,v 1.4 2009-04-19 21:37:44 thomson Exp $
  *
  */
 
@@ -198,7 +197,7 @@ void logStart(const char * note, const char * logname, const char * logfile) {
     logger::Initialize(logfile);
 
     logger::EchoOff();
-    Log(Notice) << DIBBLER_COPYRIGHT1 << " " << note << LogEnd;
+    Log(Emerg) << DIBBLER_COPYRIGHT1 << " " << note << LogEnd;
     logger::EchoOn();
 }
 
