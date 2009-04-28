@@ -7,7 +7,7 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.58 2008-11-13 22:44:12 thomson Exp $
+%% $Id: dibbler-user-config.tex,v 1.59 2009-04-28 22:15:30 thomson Exp $
 %%
 
 \section{Configuration files}
@@ -892,6 +892,21 @@ skip-confirm
 
 iface eth0 {
   ia
+}
+\end{lstlisting}
+
+\subsubsection{Example 15: User-defined IAID}
+\label{example-client-iaid}
+Sometimes it is useful to define specific IAID  identifiers. That is
+rather uncommon, but possible:
+
+\begin{lstlisting}
+# client.conf
+
+iface "eth0" {
+  ia 123 
+  option dns-server
+  option domain
 }
 \end{lstlisting}
 
