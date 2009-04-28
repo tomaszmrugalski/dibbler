@@ -337,6 +337,18 @@ IADeclarationList '}'
     EndIADeclaration();
 }
 
+|IA_ Number '{'
+{
+    StartIADeclaration(false);
+    this->iaid = $2;
+}
+IADeclarationList '}'
+{
+    EndIADeclaration();
+    Log(Info) << "Setting IAID to " << this->iaid << LogEnd;
+    ClntCfgIALst.getLast()->setIAID(this->iaid);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // ia { }
 /////////////////////////////////////////////////////////////////////////////
@@ -354,6 +366,15 @@ IADeclarationList '}'
     StartIADeclaration(true);
     EndIADeclaration();
 }
+
+|IA_ Number
+{
+    StartIADeclaration(true);
+    EndIADeclaration();
+    Log(Info) << "Setting IAID to " << $2 << LogEnd;
+    ClntCfgIALst.getLast()->setIAID($2);
+}
+
 ;
 
 IADeclarationList

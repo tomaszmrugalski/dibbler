@@ -51,6 +51,9 @@
 
   - Nghiem Nguyen/Orange FT group <vinhnghiem.nguyen(at)orange-ftgroup.com>
     2008-10: Client classification
+    
+  - Paul Schauer <p.schauer(at)comcast(dot)net> 
+    2009-04: MacOSX port.
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
