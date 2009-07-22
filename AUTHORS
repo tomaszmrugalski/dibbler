@@ -55,6 +55,9 @@
   - Paul Schauer <p.schauer(at)comcast(dot)net> 
     2009-04: MacOSX port.
 
+  - Christopher Small <chsmall(at)grnoc(dot)iu(dot)edu>
+    2009-05: MaxOSX fixes.
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
   

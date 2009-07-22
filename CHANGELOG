@@ -4,6 +4,7 @@
  0.7.4 [not-released-yet]
   - Linux: CONFIRM support added
   - It is now possible to configure IAID
+  - Support for Mac OS X added (experimental, of course)
 
  0.7.3 [2009-03-09]
   - Linux: Fix for compilation with libc6, version 2.8

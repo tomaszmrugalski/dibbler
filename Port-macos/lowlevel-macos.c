@@ -6,7 +6,7 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-macos.c,v 1.2 2009-04-19 21:37:44 thomson Exp $
+ * $Id: lowlevel-macos.c,v 1.3 2009-07-22 20:19:08 thomson Exp $
  *
  * Based on Port-linux/lowlevel-linux.c
  *
@@ -27,6 +27,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <ifaddrs.h>
+
+#include <net/if_dl.h>
 
 #include "Portable.h"
 
@@ -316,6 +318,8 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
     bzero(&bindme, sizeof (struct sockaddr_in6));
     bindme.sin6_family = AF_INET6;
     bindme.sin6_port = htons(port);
+    /* Bind to interface using scope_id */ 
+    bindme.sin6_scope_id = ifaceid;
     tmp = (char*) (&bindme.sin6_addr);
     inet_pton6(addr, tmp);
     if (bind(Insock, (struct sockaddr*) & bindme, sizeof (bindme)) < 0) {

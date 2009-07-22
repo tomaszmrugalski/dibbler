@@ -22,6 +22,11 @@
 #include <syslog.h>
 #endif
 
+#ifdef MACOS
+#include <syslog.h>
+#include <sys/time.h>
+#endif
+
 namespace logger {
 
     string logname="Init";  // Application ID in the log

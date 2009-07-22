@@ -8,7 +8,7 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.101 2009-03-09 22:27:23 thomson Exp $
+ * $Id: Portable.h,v 1.102 2009-07-22 20:19:08 thomson Exp $
  */	
 
 #ifndef PORTABLE_H
@@ -206,11 +206,10 @@ struct link_state_notify_t
 #endif
 
 #ifdef MACOS
-/* dumb guesses for now. if_list_get() must be implemented for real */
 #define IF_UP        0x1
-#define IF_LOOPBACK  0x2
-#define IF_RUNNING   0x4
-#define IF_MULTICAST 0x8 
+#define IF_LOOPBACK  0x8
+#define IF_RUNNING   0x40
+#define IF_MULTICAST 0x8000
 #endif
 
 /* ********************************************************************** */

@@ -6,7 +6,7 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: CfgMgr.cpp,v 1.19 2008-08-29 00:07:26 thomson Exp $
+ * $Id: CfgMgr.cpp,v 1.20 2009-07-22 20:19:08 thomson Exp $
  */
 
 #ifdef WIN32
@@ -15,6 +15,10 @@
 #ifdef LINUX
 #include <netinet/in.h>
 #endif 
+#ifdef MACOS
+#include <netinet/in.h>
+#include <sys/types.h>
+#endif
 
 #include <iostream>
 #include <fstream>
