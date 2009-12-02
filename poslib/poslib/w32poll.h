@@ -21,6 +21,7 @@
 #ifndef __POSLIB_W32POLL_H
 #define __POSLIB_W32POLL_H
 
+#ifndef WIN32
 struct pollfd {
     int fd;           /* file descriptor */
     short events;     /* requested events */
@@ -33,6 +34,7 @@ struct pollfd {
 #define POLLERR     0x0008    /* Error condition */
 #define POLLHUP     0x0010    /* Hung up */
 #define POLLNVAL    0x0020    /* Invalid request: fd not open */
+#endif
 
 int poll(struct pollfd *ufds, unsigned int nfds, int timeout);
 

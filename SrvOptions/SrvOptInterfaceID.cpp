@@ -12,8 +12,13 @@
 
 #include "SrvOptInterfaceID.h"
 #include "DHCPConst.h"
-#include <netinet/in.h>
 #include <string.h>
+
+#ifdef WIN32
+#include <WinSock2.h>
+#else
+#include <netinet/in.h>
+#endif
 
 /** 
  * compares two interface-ids

@@ -25,6 +25,7 @@
 #include "exception.h"
 #include "lexfn.h"
 #include "postime.h"
+#include <errno.h>
 
 #ifndef WIN32
 #include <pthread.h>
