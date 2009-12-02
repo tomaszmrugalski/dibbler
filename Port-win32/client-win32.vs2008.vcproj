@@ -903,13 +903,29 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
-			<File
-				RelativePath="FlexLexer.h"
-				>
-			</File>
 			<Filter
 				Name="AddrMgr"
 				>
+				<File
+					RelativePath="..\AddrMgr\AddrAddr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrClient.h"
+					>
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrIA.h"
+					>
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrMgr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\AddrMgr\AddrPrefix.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="IfaceMgr"
@@ -930,6 +946,26 @@
 			<Filter
 				Name="CfgMgr"
 				>
+				<File
+					RelativePath="..\CfgMgr\CfgMgr.h"
+					>
+				</File>
+				<File
+					RelativePath="FlexLexer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CfgMgr\StationID.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CfgMgr\StationRange.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CfgMgr\TimeZone.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Options"

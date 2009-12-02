@@ -45,7 +45,7 @@ TDHCPClient::TDHCPClient(string config)
 	return;
     }
 
-    this->AddrMgr = new TClntAddrMgr(CfgMgr, CLNTADDRMGR_FILE, false);
+    this->AddrMgr = new TClntAddrMgr(CfgMgr->getDUID(), CfgMgr->useConfirm(), CLNTADDRMGR_FILE, false);
     if ( this->AddrMgr->isDone() ) {
  	  Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
 	  this->IsDone = true;

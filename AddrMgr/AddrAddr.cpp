@@ -17,6 +17,17 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
+/**
+ * @brief AddrAddr constructor for addresses
+ *
+ * constructor used for creating an address
+ *
+ * @param addr IPv6 address
+ * @param pref prefered lifetime
+ * @param valid valid lifetime
+ *
+ * @return <description or remove if void/constructor/destructor>
+ */
 TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Prefered = pref;
     this->Valid = valid;
@@ -26,11 +37,24 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Prefix = 128;
 
     if (pref>valid) {
-	Log(Warning) << "Trying to store " << this->Addr->getPlain() << " with prefered(" << pref << ")>valid("
-		     << valid << ") lifetimes." << LogEnd;
+        Log(Warning) << "Trying to create " << this->Addr->getPlain() << " with prefered(" << pref 
+          << ") larger than valid(" << valid << ") lifetime." << LogEnd;
     }
 }
 
+
+/**
+ * @brief AddrAddr constructor for prefixes
+ *
+ * constructor used for prefix creation
+ *
+ * @param addr IPv6 address that will be used as a prefix
+ * @param pref prefered lifetime
+ * @param valid valid lifetime
+ * @param prefix length of the prefix (1..128)
+ *
+ * @return <description or remove if void/constructor/destructor>
+ */
 TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefix) {
     this->Prefered = pref;
     this->Valid = valid;
@@ -62,13 +86,20 @@ SmartPtr<TIPv6Addr> TAddrAddr::get() {
     return Addr;
 }
 
-// return Prefered time left
+/**
+ * @brief returns prefered lifetime left
+ *
+ * <full_description>
+ *
+ *
+ * @return <description or remove if void/constructor/destructor>
+ */
 unsigned long TAddrAddr::getPrefTimeout()
 {
     unsigned long ts = Timestamp + Prefered;
     unsigned long x  = now();
     if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
-	return DHCPV6_INFINITY;
+        return DHCPV6_INFINITY;
     }
     if (ts>x) 
         return ts-x;

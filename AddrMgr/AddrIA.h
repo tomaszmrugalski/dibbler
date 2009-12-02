@@ -57,8 +57,8 @@ class TAddrIA
     SmartPtr<TIPv6Addr> getSrvAddr();
 
     //--- address list related methods---
-    void addAddr(SmartPtr<TAddrAddr> x);
-    void addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid);
+    void addAddr(SPtr<TAddrAddr> x);
+    void addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid);
     void addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix);
     int getAddrCount();
 
@@ -88,7 +88,6 @@ class TAddrIA
     unsigned long getPrefTimeout();
     unsigned long getValidTimeout();
     unsigned long getMaxValidTimeout();
-    unsigned long getMaxValid();
     unsigned long getTimestamp();
     
     //---tentative---

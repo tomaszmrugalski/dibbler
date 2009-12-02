@@ -12,20 +12,31 @@
 #include "SmartPtr.h"
 #include "AddrIA.h"
 #include "ClntAddrMgr.h"
-#include "ClntCfgMgr.h"
 #include "AddrClient.h"
 #include "Logger.h"
 
 
-TClntAddrMgr::TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntCfgMgr, string xmlFile, bool loadDB)
-    :TAddrMgr(xmlFile, ClntCfgMgr->useConfirm())
+/**
+ * @brief Client address manager constructor
+ *
+ * constructor used for creation of client version of address manager
+ *
+ * @param clientDUID pointer to client DUID
+ * @param useConfirm should confirm be used or not?
+ * @param xmlFile XML filename (AddrMgr dumps will be stored there)
+ * @param loadDB should existing dump be loaded?
+ *
+ * @return <description or remove if void/constructor/destructor>
+ */
+TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFile, bool loadDB)
+    :TAddrMgr(xmlFile, useConfirm)
 {
     // client may have been already loaded from client-AddrMgr.xml file
     firstClient();
     if (!getClient()) {
-	// add this client (with proper duid)
-	SmartPtr<TAddrClient> client = new TAddrClient(ClntCfgMgr->getDUID());
-	addClient(client);
+        // add this client (with proper duid)
+        SmartPtr<TAddrClient> client = new TAddrClient(clientDUID);
+        addClient(client);
     }
 
     // set Client field
@@ -53,11 +64,11 @@ unsigned long TClntAddrMgr::getTimeout()
     unsigned long val,val2;
     val = this->getT1Timeout();
     if ( (val2 = this->getT2Timeout()) < val)
-	val = val2;
+        val = val2;
     if ( (val2 = this->getPrefTimeout()) < val)
-	val = val2;
+        val = val2;
     if ( (val2 = this->getValidTimeout()) < val)
-	val = val2;
+        val = val2;
     return val;
 }
 
@@ -70,17 +81,21 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
 
     while(ptrIA=Client->getIA())
     {
-	tmp = ptrIA->getTentativeTimeout();
-	if (min > tmp)
-	    min = tmp;
+	      tmp = ptrIA->getTentativeTimeout();
+	      if (min > tmp)
+	          min = tmp;
     }
 
     return min;
 }
 
-/* removes outdated addrs from addrDB
-   sends DECLINE for addrs which are detected as tentative
-   removes addrs from IfaceMgr 
+/**
+ * @brief Removes outdated addresses
+ *
+ * removes addresses that already expired. May also perform
+ * other duties. This method should be called periodically.
+ *
+ *
  */
 void TClntAddrMgr::doDuties()
 {
@@ -90,21 +105,20 @@ void TClntAddrMgr::doDuties()
     this->firstIA();
     while ( ptrIA = this->getIA() ) 
     {
-	ptrIA->firstAddr();
-	while( ptrAddr=ptrIA->getAddr())
-	{
-	    //Removing outdated addresses
-	    if(!ptrAddr->getValidTimeout())
-	    {
-		ptrIA->delAddr(ptrAddr->get());
-		Log(Notice) << "Address " << ptrAddr->get()->getPlain() 
-			     << " from IA " << ptrIA->getIAID() 
-			     << " has been removed from addrDB." << LogEnd;
-		ptrIA->setState(STATE_NOTCONFIGURED);
-	    }
-	}
-    }
-	    
+	      ptrIA->firstAddr();
+	      while( ptrAddr=ptrIA->getAddr())
+	      {
+	          //Removing outdated addresses
+	          if(!ptrAddr->getValidTimeout())
+	          {
+		            ptrIA->delAddr(ptrAddr->get());
+		            Log(Notice) << "Address " << ptrAddr->get()->getPlain() 
+			                 << " from IA " << ptrIA->getIAID() 
+			                 << " has been removed from addrDB." << LogEnd;
+		            ptrIA->setState(STATE_NOTCONFIGURED);
+	          }
+	      }
+    }	    
 }
 
 void TClntAddrMgr::firstIA() {
@@ -132,6 +146,7 @@ TClntAddrMgr::~TClntAddrMgr() {
     Log(Debug) << "ClntAddrMgr cleanup." << LogEnd;
 }
 
+#if 0
 bool TClntAddrMgr::isIAAssigned(unsigned long IAID)
 {
 	SmartPtr<TAddrIA> ia;
@@ -140,6 +155,7 @@ bool TClntAddrMgr::isIAAssigned(unsigned long IAID)
 		if (ia->getIAID()==IAID) return true;
 	return false;
 }	
+#endif
 
 SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
 {
@@ -205,6 +221,7 @@ int TClntAddrMgr::countPD() {
     return Client->countPD();
 }
 
+#if 0
 bool TClntAddrMgr::isPDAssigned(unsigned long IAID)
 {
 	SmartPtr<TAddrIA> pd;
@@ -213,6 +230,7 @@ bool TClntAddrMgr::isPDAssigned(unsigned long IAID)
 		if (pd->getIAID()==IAID) return true;
 	return false;
 }	
+#endif
 
 SmartPtr<TAddrIA> TClntAddrMgr::getPD(unsigned long IAID)
 {

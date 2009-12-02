@@ -23,6 +23,19 @@
 #include <windows.h>
 #endif
 
+/**
+ * @brief constructor for new IA
+ *
+ * used for creation of IA, a container for addresses
+ *
+ * @param iface interface index (ifindex)
+ * @param addr address
+ * @param duid DUID (client DUID in server's database and server DUID in client's database)
+ * @param T1 T1 timer
+ * @param T2 T2 timer
+ * @param ID IAID (if this is really IA) or PDID (if this is PD, not IA)
+ *
+ */
 TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, 
 		 unsigned long T1, unsigned long T2,unsigned long ID) 
 {
@@ -46,6 +59,10 @@ unsigned long TAddrIA::getIAID()
     return this->IAID;
 }
 
+/**
+ * resets IA to unconfigured state
+ *
+ */
 void TAddrIA::reset()
 {
     setState(STATE_NOTCONFIGURED);
@@ -343,19 +360,6 @@ unsigned long TAddrIA::getValidTimeout() {
     return ts;
 }
 
-unsigned long TAddrIA::getMaxValid() {
-    unsigned long ts = 0;
-
-    SmartPtr<TAddrAddr> ptr;
-    this->AddrLst.first();
-
-    while (ptr = this->AddrLst.get() ) {
-        if (ts < ptr->getValidTimeout()) 
-            ts = ptr->getValidTimeout();
-    }
-    return ts;
-}
-
 // set timestamp
 void TAddrIA::setTimestamp(unsigned long ts)
 {
@@ -377,6 +381,13 @@ unsigned long TAddrIA::getTimestamp()
     return Timestamp;
 }
 
+/**
+ * @brief returns time till DAD procedure finishes
+ *
+ * returns how much time left until DAD procedure is finished
+ *
+ * @return timeout in seconds
+ */
 unsigned long TAddrIA::getTentativeTimeout()
 {
     unsigned long min = DHCPV6_INFINITY;
@@ -401,13 +412,17 @@ unsigned long TAddrIA::getTentativeTimeout()
     return min;
 }
 
-// returns Tentative status (TENTATIVE_YES/TENTATIVE_NO/TENTATIVE_UNKNOWN)
+/**
+ * @brief checks and returns tentative status
+ *
+ * checks if DAD procedure is finished and returns tentative status
+ *
+ * @return Tentative status (TENTATIVE_YES/TENTATIVE_NO/TENTATIVE_UNKNOWN)
+ */
 enum ETentative TAddrIA::getTentative()
 {
     if (Tentative != TENTATIVE_UNKNOWN)
     	return Tentative;
-    //if (Timestamp+DADTIMEOUT > now() )
-	//    return TENTATIVE_UNKNOWN;
 
     SmartPtr<TAddrAddr> ptrAddr;
     AddrLst.first();
@@ -457,6 +472,13 @@ enum ETentative TAddrIA::getTentative()
     }
 }
 
+/**
+ * @brief sets tentative state, according to states of addresses
+ *
+ * sets tentative state, based on stats of addresses defined within
+ * this IA
+ *
+ */
 void TAddrIA::setTentative()
 {
     SmartPtr<TAddrAddr> ptrAddr;
@@ -482,7 +504,7 @@ void TAddrIA::setTentative()
 /** 
  * stores DNS server address, at which DNSUpdate was performed
  * 
- * @param srvAddr 
+ * @param srvAddr DNS Server address to be stored
  */
 void TAddrIA::setFQDNDnsServer(SPtr<TIPv6Addr> srvAddr)
 {
@@ -492,8 +514,7 @@ void TAddrIA::setFQDNDnsServer(SPtr<TIPv6Addr> srvAddr)
 /** 
  * return DNS server address, where the DNSUpdate was performed
  * 
- * 
- * @return 
+ * @return DNS server that DNS Update was performed at
  */
 SPtr<TIPv6Addr> TAddrIA::getFQDNDnsServer()
 {

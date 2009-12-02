@@ -16,6 +16,15 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
+/**
+ * @brief constructor for creating client
+ *
+ * constructor used for creating client container. Client
+ * contains list of IAs, TAs and PDs.
+ *
+ * @param duid Client DUID
+ *
+ */
 TAddrClient::TAddrClient(SmartPtr<TDUID> duid) {
     this->DUID=duid;
     this->SPI = 0;
@@ -29,6 +38,25 @@ SmartPtr<TDUID> TAddrClient::getDUID() {
 
 // --- IA ------------------------------------------------------------
 
+
+/**
+ * @brief rewinds IA list to the beginning
+ *
+ * rewinds IA list to the beginning
+ */
+void TAddrClient::firstIA() {
+  IAsLst.first();
+}
+
+/**
+ * @brief returns next IA
+ *
+ * returns next IA. Make sure to all firstIA() method before calling
+ * getIA() for the first time.
+ *
+ *
+ * @return next IA
+ */
 SmartPtr<TAddrIA> TAddrClient::getIA() {
     return IAsLst.get();
 }
@@ -45,19 +73,22 @@ SmartPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID) {
     return SmartPtr<TAddrIA>();
 }
 
-void TAddrClient::firstIA() {
-    IAsLst.first();
-}
-
 void TAddrClient::addIA(SmartPtr<TAddrIA> ia) {
     if (getIA(ia->getIAID()))
     {
-	Log(Debug) << "Unable to add IA (iaid=" << ia->getIAID() << "), such IA already exists." << LogEnd;
-	return;
+        Log(Debug) << "Unable to add IA (iaid=" << ia->getIAID() << "), such IA already exists." << LogEnd;
+	      return;
     }
     IAsLst.append(ia);
 }
 
+/**
+ * @brief returns number of IAs in this client
+ *
+ * returns number of IAs in this client
+ *
+ * @return number of IAs
+ */
 int TAddrClient::countIA() {
     return IAsLst.count();
 }

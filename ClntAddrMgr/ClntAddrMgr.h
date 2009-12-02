@@ -17,13 +17,12 @@
 #include "SmartPtr.h"
 #include "AddrIA.h"
 #include "AddrMgr.h"
-#include "ClntCfgMgr.h"
 #include "Portable.h"
 
 class TClntAddrMgr : public TAddrMgr
 {
   public:
-    TClntAddrMgr(SmartPtr<TClntCfgMgr> ClntCfgMgr, string xmlFile, bool loadDB);
+    TClntAddrMgr(SPtr<TDUID> clientDuid, bool useConfirm, string xmlFile, bool loadDB);
 
     unsigned long getT1Timeout();
     unsigned long getT2Timeout();
@@ -71,8 +70,8 @@ class TClntAddrMgr : public TAddrMgr
 
     void doDuties();
     
-    bool isIAAssigned(unsigned long IAID);
-    bool isPDAssigned(unsigned long IAID);
+    //bool isIAAssigned(unsigned long IAID);
+    //bool isPDAssigned(unsigned long IAID);
  protected:
     void print(ostream &x);
  private:

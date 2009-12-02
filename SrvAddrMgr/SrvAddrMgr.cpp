@@ -28,23 +28,34 @@ TSrvAddrMgr::~TSrvAddrMgr() {
     Log(Debug) << "SrvAddrMgr cleanup." << LogEnd;
 }
 
+/**
+ * @brief brief
+ *
+ * <full_description>
+ *
+ *
+ * @return <description or remove if void/constructor/destructor>
+ */
 long TSrvAddrMgr::getTimeout() {
     return this->getValidTimeout();
 }
 
 /** 
- * add address for a client. If client's IA is missing, add it, too.
+ * @brief adds an address to the client. 
+ *
+ * Adds a single address to the client. If the client is not present in
+ * address manager, adds it, too. Also, if client's IA is missing, adds it as well.
  * 
- * @param clntDuid 
- * @param clntAddr 
- * @param iface 
- * @param IAID 
- * @param T1 
- * @param T2 
- * @param addr 
- * @param pref 
- * @param valid 
- * @param quiet 
+ * @param clntDuid client DUID
+ * @param clntAddr client's address (link-local, used if unicast is to be used)
+ * @param iface interface, on which client is reachable
+ * @param IAID ID of an IA
+ * @param T1 - T1 timer
+ * @param T2 - T2 timer
+ * @param addr - address to be added
+ * @param pref prefered lifetime
+ * @param valid valid lifetime
+ * @param quiet quiet mode (e.g. used during SOLICIT handling, don't print anything about adding client/IA/address, as it will be deleted immediately anyway)
  * 
  * @return 
  */
@@ -62,10 +73,10 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
 
     // have we found this client? 
     if (!ptrClient) {
-	if (!quiet) Log(Debug) << "Adding client (DUID=" << clntDuid->getPlain()
-			       << ") to addrDB." << LogEnd;
-	ptrClient = new TAddrClient(clntDuid);
-	this->addClient(ptrClient);
+	      if (!quiet) Log(Debug) << "Adding client (DUID=" << clntDuid->getPlain()
+			             << ") to addrDB." << LogEnd;
+	      ptrClient = new TAddrClient(clntDuid);
+	      this->addClient(ptrClient);
     }
 
     // find this IA
@@ -112,8 +123,9 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
  *  Frees address (also deletes IA and/or client, if this was last address)
  */
 bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
-			      unsigned long IAID, SmartPtr<TIPv6Addr> clntAddr,
-			      bool quiet) {
+			      unsigned long IAID, SmartPtr<TIPv6Addr> clntAddr, bool quiet) 
+{
+
     // find this client
     SmartPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -121,12 +133,10 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
         if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
             break;
     }
-
-    // have we found this client? 
-    if (!ptrClient) {
+    if (!ptrClient) { // have we found this client?
         Log(Warning) << "Client (DUID=" << clntDuid->getPlain() 
 		     << ") not found in addrDB, cannot delete address and/or client." << LogEnd;
-	return false;
+	      return false;
     }
 
     // find this IA
@@ -136,50 +146,48 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
         if ( ptrIA->getIAID() == IAID)
             break;
     }
-
-    // have we found this IA?
-    if (!ptrIA) {
+    if (!ptrIA) { // have we found this IA?
         Log(Warning) << "IA (IAID=" << IAID << ") not assigned to client, cannot delete address and/or IA."
 		     << LogEnd;
         return false;
     }
 
+    // find an address
     SmartPtr <TAddrAddr> ptrAddr;
     ptrIA->firstAddr();
     while ( ptrAddr = ptrIA->getAddr() ) {
         if (*ptrAddr->get()==*clntAddr)
             break;
     }
-
-    // address already exists
     if (!ptrAddr) {
-	Log(Warning) << "Address " << *clntAddr << " not assigned, cannot delete." << LogEnd;
-	return false;
+	      Log(Warning) << "Address " << *clntAddr << " not assigned, cannot delete." << LogEnd;
+	      return false;
     }
 
     ptrIA->delAddr(clntAddr);
     this->addCachedAddr(clntDuid, clntAddr);
     if (!quiet)
-	Log(Debug) << "Deleted address " << *clntAddr << " from addrDB." << LogEnd;
+	      Log(Debug) << "Deleted address " << *clntAddr << " from addrDB." << LogEnd;
     
     if (!ptrIA->countAddr()) {
-	if (!quiet)
-	    Log(Debug) << "Deleted IA (IAID=" << IAID << ") from addrDB." << LogEnd;
-	ptrClient->delIA(IAID);
+	      if (!quiet)
+	          Log(Debug) << "Deleted IA (IAID=" << IAID << ") from addrDB." << LogEnd;
+	      ptrClient->delIA(IAID);
     }
 
     if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD()) {
-	if (!quiet)
-	    Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
-		      << ") from addrDB." << LogEnd;
-	this->delClient(clntDuid);
+	      if (!quiet)
+	          Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
+		            << ") from addrDB." << LogEnd;
+	      this->delClient(clntDuid);
     }
-
     return true;
 }
 
 /** 
- * adds TA address
+ * @brief adds TA address to AddrMgr
+ *
+ * adds temporary address. Add missing client or TA, if necessary.
  * 
  * @param clntDuid 
  * @param clntAddr 
