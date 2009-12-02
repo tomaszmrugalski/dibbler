@@ -27,11 +27,10 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     this->XmlFile = xmlFile;
     
     if (loadfile) {
-	dbLoad(CLNTADDRMGR_FILE);
+	      dbLoad(xmlFile.c_str());
     } else {
-	Log(Debug) << "Skipping database loading." << LogEnd;
+	      Log(Debug) << "Skipping database loading." << LogEnd;
     }
-
     DeleteEmptyClient = true;
 }
 
@@ -439,7 +438,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
  * 
  * @param x 
  * 
- * @return true - used, false - free
+ * @return true - free, false - used
  */
 bool TAddrMgr::prefixIsFree(SPtr<TIPv6Addr> x)
 {
