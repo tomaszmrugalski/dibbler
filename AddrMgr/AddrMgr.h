@@ -59,7 +59,7 @@ class TAddrMgr
     unsigned long getT2Timeout();
     unsigned long getPrefTimeout();
     unsigned long getValidTimeout();
-    unsigned long getAddrCount(SmartPtr<TDUID> duid, int iface);
+    //unsigned long getAddrCount(SmartPtr<TDUID> duid, int iface);
     
     // --- backup/restore ---
     void dbLoad(const char * xmlFile);
@@ -67,12 +67,14 @@ class TAddrMgr
     bool isDone();
 
 #ifdef MOD_LIBXML2
+    // database loading methods that use libxml2
     xmlDocPtr xmlLoad(const char * filename);
     SmartPtr<TAddrAddr> parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, int depth);
     SmartPtr<TAddrIA> parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth);
     SmartPtr<TAddrClient> parseAddrClient(xmlDocPtr doc, xmlNodePtr xmlClient, int depth);
     void parseAddrMgr(xmlDocPtr doc,int depth);
 #else
+    // database loading methods that use internal loading routines
     bool xmlLoadBuiltIn(const char * xmlFile);
     SPtr<TAddrClient> parseAddrClient(FILE *f);
     SPtr<TAddrIA> parseAddrIA(FILE *f);
