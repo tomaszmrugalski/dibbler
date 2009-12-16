@@ -28,8 +28,15 @@ using namespace std;
 class TAddrIA
 {
   public:
+    typedef enum
+    {
+	TYPE_IA,
+	TYPE_TA,
+	TYPE_PD
+    } TIAType;
+
     friend ostream & operator<<(ostream & strum,TAddrIA &x);
-    TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, 
+    TAddrIA(int iface, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
 	    unsigned long T1, unsigned long T2,unsigned long ID);
     ~TAddrIA();
 
@@ -125,6 +132,8 @@ private:
 
     SPtr<TIPv6Addr> fqdnDnsServer; // DNS Updates was performed to that server
     SPtr<TFQDN> fqdn;              // this FQDN object was used to perform update
+
+    TIAType Type; // type of this IA (IA, TA or PD)
 };
 
 #endif 

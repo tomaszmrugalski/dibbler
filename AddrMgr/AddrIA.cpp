@@ -36,18 +36,13 @@
  * @param ID IAID (if this is really IA) or PDID (if this is PD, not IA)
  *
  */
-TAddrIA::TAddrIA(int iface, SmartPtr<TIPv6Addr> addr, SmartPtr<TDUID> duid, 
-		 unsigned long T1, unsigned long T2,unsigned long ID) 
+TAddrIA::TAddrIA(int iface, TIAType t, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
+		 unsigned long t1, unsigned long t2,unsigned long id)
+    :IAID(id),T1(t1),T2(t2), State(STATE_NOTCONFIGURED), 
+     Tentative(TENTATIVE_UNKNOWN), Timestamp(now()), 
+     Unicast(false), Iface(iface), Type(t)
 {
-    this->T1 = T1;
-    this->T2 = T2;
-    this->IAID = ID;
-    this->Tentative = TENTATIVE_UNKNOWN;
-    this->State     = STATE_NOTCONFIGURED;//	STATE_CONFIRMME;
-    this->Timestamp = now();
-    this->Unicast = false;
     this->setDUID(duid);
-    this->Iface = iface;
     if (addr)
         this->setUnicast(addr);
     else
@@ -549,8 +544,21 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
 
     SmartPtr<TAddrAddr> ptr;
     SPtr<TAddrPrefix> prefix;
-
-	strum << "    <AddrIA unicast=\"";
+    string name;
+    
+    switch (x.Type)
+    {
+    case TAddrIA::TYPE_IA:
+	name="AddrIA";
+	break;
+    case TAddrIA::TYPE_TA:
+	name="AddrTA";
+	break;
+    case TAddrIA::TYPE_PD:
+	name="AddrPD";
+	break;
+    }
+    strum << "    <" << name << " unicast=\"";
     if (x.Unicast)
 	strum << x.SrvAddr->getPlain();
     strum << "\" T1=\"" << x.T1 << "\""
@@ -586,6 +594,6 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
 	strum << "      <!-- <fqdn>-->" << endl;
     }
 
-    strum << "    </AddrIA>" << dec << endl;
+    strum << "    </" << name << ">" << dec << endl;
     return strum;
 }
