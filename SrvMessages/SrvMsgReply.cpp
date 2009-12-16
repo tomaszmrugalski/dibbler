@@ -296,7 +296,8 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 	    SmartPtr<TAddrIA> declinedIA = declinedClient->getIA(0);
 	    if (!declinedIA)
 	    {
-		declinedIA=new TAddrIA(decline->getIface(), SmartPtr<TIPv6Addr>(new TIPv6Addr()), declinedDUID, 0, 0, 0);
+		declinedIA=new TAddrIA(decline->getIface(), TAddrIA::TYPE_IA,
+				       SmartPtr<TIPv6Addr>(new TIPv6Addr()), declinedDUID, 0, 0, 0);
 		declinedClient->addIA(declinedIA);
 	    }
 	    ptrOpt->firstOption();

@@ -47,13 +47,13 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
 }
 
 /** 
- * Used in SOLICIT constructor
+ * constructor used in building SOLICIT message
  * 
  * @param ClntCfgPD 
  * @param parent 
  */
 TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
-    :TOptIA_PD(1, ClntCfgPD->getT1(), ClntCfgPD->getT2(), parent)
+    :TOptIA_PD(ClntCfgPD->getIAID(), ClntCfgPD->getT1(), ClntCfgPD->getT2(), parent)
 {
     // FIXME: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
     clearContext();

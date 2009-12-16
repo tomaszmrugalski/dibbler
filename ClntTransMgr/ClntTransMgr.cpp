@@ -92,7 +92,9 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
     SmartPtr<TClntCfgIA> ia;
     iface->firstIA();
     while(ia=iface->getIA()) {
-	AddrMgr->addIA(new TAddrIA(iface->getID(),SmartPtr<TIPv6Addr>(), 
+	AddrMgr->addIA(new TAddrIA(iface->getID(),
+				   TAddrIA::TYPE_IA,
+				   SmartPtr<TIPv6Addr>(), 
 				   SmartPtr<TDUID>(),CLIENT_DEFAULT_T1,CLIENT_DEFAULT_T2,
 				   ia->getIAID()));
     }

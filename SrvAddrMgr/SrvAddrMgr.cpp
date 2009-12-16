@@ -1,11 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- * changes: Krzysztof WNuk <keczi@poczta.onet.pl>                                                                         
- * released under GNU GPL v2 only licence                                
- *                                                                           
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Krzysztof WNuk <keczi@poczta.onet.pl>
+ * released under GNU GPL v2 only licence
+ *
  * $Id: SrvAddrMgr.cpp,v 1.19 2008-08-29 00:07:33 thomson Exp $
  *
  */
@@ -20,8 +20,10 @@
 
 TSrvAddrMgr::TSrvAddrMgr(string xmlfile) 
     :TAddrMgr(xmlfile, false) {
+	
     this->CacheMaxSize = 999999999;
     this->cacheRead();
+	TAddrMgr::dbLoad(SRVADDRMGR_FILE);
 }
 
 TSrvAddrMgr::~TSrvAddrMgr() {
@@ -89,7 +91,7 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
 
     // have we found this IA?
     if (!ptrIA) {
-	ptrIA = new TAddrIA(iface, clntAddr, clntDuid, T1, T2, IAID);
+	ptrIA = new TAddrIA(iface, TAddrIA::TYPE_IA, clntAddr, clntDuid, T1, T2, IAID);
 	ptrClient->addIA(ptrIA);
 	if (!quiet)
 	    Log(Debug) << "Adding IA (IAID=" << IAID << ") to addrDB." << LogEnd;
@@ -227,7 +229,8 @@ bool TSrvAddrMgr::addTAAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntA
 
     // have we found this TA?
     if (!ta) {
-	ta = new TAddrIA(iface, clntAddr, clntDuid, DHCPV6_INFINITY, DHCPV6_INFINITY, iaid);
+	ta = new TAddrIA(iface, TAddrIA::TYPE_TA, clntAddr, clntDuid, 
+			 DHCPV6_INFINITY, DHCPV6_INFINITY, iaid);
 	ptrClient->addTA(ta);
 	Log(Debug) << "Adding TA (IAID=" << iaid << ") to the addrDB." << LogEnd;
     }

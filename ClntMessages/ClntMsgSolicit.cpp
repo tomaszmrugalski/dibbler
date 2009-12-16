@@ -194,7 +194,8 @@ bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TClntMsg> msg)
 	}
 	SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
 	if (st && st->getCode()!= STATUSCODE_SUCCESS) {
-	    Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode() << "(" << st->getText() << "). Ignored." << LogEnd;
+	    Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode() 
+			<< "(" << st->getText() << "). Ignored." << LogEnd;
 	    return true;
 	}
     }
