@@ -27,9 +27,9 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     this->XmlFile = xmlFile;
     
     if (loadfile) {
-	      dbLoad(xmlFile.c_str());
+	dbLoad(xmlFile.c_str());
     } else {
-	      Log(Debug) << "Skipping database loading." << LogEnd;
+	Log(Debug) << "Skipping database loading." << LogEnd;
     }
     DeleteEmptyClient = true;
 }
@@ -56,20 +56,19 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
  */
 void TAddrMgr::dbLoad(const char * xmlFile)
 {
-
 #ifdef MOD_LIBXML2
     Log(Debug) << "Loading " << xmlFile << " (using libxml2)." << LogEnd;
-     xmlDocPtr root;
-     root = xmlLoad(xmlFile);
-     if (!root) {
+    xmlDocPtr root;
+    root = xmlLoad(xmlFile);
+    if (!root) {
  	Log(Error) << "File loading has failed." << LogEnd;
 	return;
-     }
-     this->parseAddrMgr(root,0);
-     xmlFreeDoc(root);
+    }
+    this->parseAddrMgr(root,0);
+    xmlFreeDoc(root);
 #else
-     Log(Info) << "Loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
-     xmlLoadBuiltIn(xmlFile);
+    Log(Info) << "Loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
+    xmlLoadBuiltIn(xmlFile);
 #endif
 }
 
@@ -316,7 +315,7 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartP
 
     // have we found this PD?
     if (!ptrPD) {
-	ptrPD = new TAddrIA(iface, addr, duid, T1, T2, IAID);
+	ptrPD = new TAddrIA(iface, TAddrIA::TYPE_PD, addr, duid, T1, T2, IAID);
 	client->addPD(ptrPD);
 	if (!quiet)
 	    Log(Debug) << "PD: Adding PD (iaid=" << IAID << ") to addrDB." << LogEnd;
@@ -835,8 +834,9 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f)
 	          }
 
 	          if (t1!=0 && t2!=0 && iaid!=0 && iface!=0) {
-		            Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2 << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
-		            duid = 0; // don't use old DUID
+		      Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="
+				 << t2 << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+		      duid = 0; // don't use old DUID
 	          }
 	          continue;
 	      }
@@ -849,7 +849,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f)
 	          duid = new TDUID(strstr(buf,">")+1);
 	          // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
 
-	          ia = new TAddrIA(iface, 0, duid, t1,t2, iaid);
+	          ia = new TAddrIA(iface, TAddrIA::TYPE_IA, 0, duid, t1,t2, iaid);
 	          ia->setState(STATE_CONFIRMME);
 	          continue;
 	      }
