@@ -6,6 +6,7 @@
  * changes: Petr Pisar <petr.pisar(at)atlas(dot)cz>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *          Nguyen Vinh Nghiem
+ *          Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
  *
  * released under GNU GPL v2 only licence
  *
@@ -623,10 +624,11 @@ bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
 		  << ": Class definitions present, but stateless mode set." << LogEnd;
 	return false;
     }
-    if (!ptrIface->countAddrClass() && !this->stateless()) {
+    if (!ptrIface->countAddrClass() && !ptrIface->countPD() 
+	&& !ptrIface->getTA() && !this->stateless()) {
 	if (!dummyRelay) {
 	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID()
-		      << ": No class definitions present, but stateless mode not set." << LogEnd;
+		      << ": No class definitions (IA,TA or PD) present, but stateless mode not set." << LogEnd;
 	    return false;
 	} else {
 	    Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface."
