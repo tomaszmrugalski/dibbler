@@ -83,6 +83,7 @@ public:
     bool guessMode();
     ESrvIfaceIdOrder getInterfaceIDOrder();
     int getCacheSize();
+    bool reconfigureSupport();
 
     //Authentication
 #ifndef MOD_DISABLE_AUTH
@@ -98,6 +99,7 @@ public:
 private:
     static int NextRelayID;
     string XmlFile;
+    bool reconfigure;
 
     bool IsDone;
     bool validateConfig();

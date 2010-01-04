@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
  *
  * released under GNU GPL v2 only licence
  *
@@ -74,8 +75,7 @@ class TAddrIA
     SPtr<TAddrPrefix> getPrefix();
 
     void addPrefix(SPtr<TAddrPrefix> x);
-    void addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
-		   int length);
+    void addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int length);
     int getPrefixCount();
     bool delPrefix(SPtr<TAddrPrefix> x);
     bool delPrefix(SPtr<TIPv6Addr> x);

@@ -13,6 +13,8 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
+
+
 volatile int serviceShutdown;
 
 TDHCPServer::TDHCPServer(string config)
@@ -29,14 +31,6 @@ TDHCPServer::TDHCPServer(string config)
     }
     this->IfaceMgr->dump();
     
-    this->AddrMgr = new TSrvAddrMgr(SRVADDRMGR_FILE);
-    if ( this->AddrMgr->isDone() ) {
-	Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
-	this->IsDone = true;
-	return;
-    }
-    this->AddrMgr->dump();
-
     this->CfgMgr = new TSrvCfgMgr(IfaceMgr, config, SRVCFGMGR_FILE);
     if ( this->CfgMgr->isDone() ) {
 	Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
@@ -44,6 +38,14 @@ TDHCPServer::TDHCPServer(string config)
 	return;
     }
     this->CfgMgr->dump();
+
+    this->AddrMgr = new TSrvAddrMgr(SRVADDRMGR_FILE, CfgMgr->reconfigureSupport());
+    if ( this->AddrMgr->isDone() ) {
+	Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
+	this->IsDone = true;
+	return;
+    }
+    this->AddrMgr->dump();
 
     this->TransMgr = new TSrvTransMgr(IfaceMgr, AddrMgr, CfgMgr, SRVTRANSMGR_FILE);
     if ( this->TransMgr->isDone() ) {
@@ -58,7 +60,7 @@ TDHCPServer::TDHCPServer(string config)
 }
 
 void TDHCPServer::run()
-{
+{	
     bool silent = false;
     while ( (!this->isDone()) && (!TransMgr->isDone()) ) {
     	if (serviceShutdown)

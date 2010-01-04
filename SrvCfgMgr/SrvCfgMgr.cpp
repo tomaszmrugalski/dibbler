@@ -37,10 +37,9 @@ using namespace std;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile)
-    :TCfgMgr((Ptr*)ifaceMgr)
+    :TCfgMgr((Ptr*)ifaceMgr), XmlFile(xmlFile), reconfigure(true)
 {
     this->IfaceMgr = ifaceMgr;
-    this->XmlFile = xmlFile;
 
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
@@ -932,3 +931,7 @@ void TSrvCfgMgr::InClientClass(SmartPtr<TSrvMsg> msg)
 }
 
 
+bool TSrvCfgMgr::reconfigureSupport()
+{
+    return reconfigure;
+}

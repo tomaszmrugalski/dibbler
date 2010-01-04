@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski  <msend@o2.pl>
+ * changes: Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
  *
  * released under GNU GPL v2 only licence
  *
@@ -234,8 +235,7 @@ void TAddrIA::addPrefix(SPtr<TAddrPrefix> x)
     this->PrefixLst.append(x);
 }
 
-void TAddrIA::addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
-	       int length)
+void TAddrIA::addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int length)
 {
     SmartPtr<TAddrPrefix> ptr = new TAddrPrefix(addr, pref, valid, length);
     PrefixLst.append(ptr);
@@ -562,10 +562,21 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
     if (x.Unicast)
 	strum << x.SrvAddr->getPlain();
     strum << "\" T1=\"" << x.T1 << "\""
-	   << " T2=\"" << x.T2 << "\""
-	   << " IAID=\"" << x.IAID << "\""
-	   << " state=\"" << StateToString(x.State) 
-	   << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
+	  << " T2=\"" << x.T2 << "\"";
+
+    switch (x.Type)
+    {
+    case TAddrIA::TYPE_IA:
+    case TAddrIA::TYPE_TA:
+	strum << " IAID=\"";
+	break;
+    case TAddrIA::TYPE_PD:
+	strum << " PDID=\"";
+	break;
+    }
+    strum << x.IAID << "\""
+	  << " state=\"" << StateToString(x.State) 
+	  << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
         strum << "      " << *x.DUID;
 

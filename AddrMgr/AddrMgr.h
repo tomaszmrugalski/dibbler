@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski  <msend@o2.pl>
+ * changes: Grzegorz Pluto   <g.pluto(at)u-r-b-a-n(dot)pl>
  *
  * released under GNU GPL v2 licence
  */
@@ -65,20 +66,24 @@ class TAddrMgr
     void dbLoad(const char * xmlFile);
     virtual void dump();
     bool isDone();
+    bool restore;
 
 #ifdef MOD_LIBXML2
     // database loading methods that use libxml2
     xmlDocPtr xmlLoad(const char * filename);
     SmartPtr<TAddrAddr> parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, int depth);
-    SmartPtr<TAddrIA> parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth);
+    SmartPtr<TAddrIA> libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth);
     SmartPtr<TAddrClient> parseAddrClient(xmlDocPtr doc, xmlNodePtr xmlClient, int depth);
     void parseAddrMgr(xmlDocPtr doc,int depth);
 #else
     // database loading methods that use internal loading routines
     bool xmlLoadBuiltIn(const char * xmlFile);
     SPtr<TAddrClient> parseAddrClient(FILE *f);
-    SPtr<TAddrIA> parseAddrIA(FILE *f);
-    SPtr<TAddrAddr> parseAddrAddr(char * buf);
+    SPtr<TAddrIA> parseAddrIA(FILE * f, bool AddrIA,int t1,int t2,int iaid,int iface);
+    SPtr<TAddrIA> parseAddrPD(FILE * f, bool AddrPD,int t1,int t2,int iaid,int iface);
+    SPtr<TAddrAddr> parseAddrAddr(char * buf,bool pd);
+    SPtr<TAddrPrefix> parseAddrPrefix(char * buf,bool pd);
+    SPtr<TAddrIA> parseAddrTA(FILE *f);
 #endif
 
 protected:

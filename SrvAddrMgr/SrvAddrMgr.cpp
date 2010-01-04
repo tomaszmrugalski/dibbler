@@ -4,6 +4,8 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof WNuk <keczi@poczta.onet.pl>
+ *          Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
+ *
  * released under GNU GPL v2 only licence
  *
  * $Id: SrvAddrMgr.cpp,v 1.19 2008-08-29 00:07:33 thomson Exp $
@@ -18,12 +20,11 @@
 #include "SrvCfgAddrClass.h"
 #include "Portable.h"
 
-TSrvAddrMgr::TSrvAddrMgr(string xmlfile) 
-    :TAddrMgr(xmlfile, false) {
+TSrvAddrMgr::TSrvAddrMgr(string xmlfile, bool loadDB) 
+    :TAddrMgr(xmlfile, loadDB) {
 	
     this->CacheMaxSize = 999999999;
     this->cacheRead();
-	TAddrMgr::dbLoad(SRVADDRMGR_FILE);
 }
 
 TSrvAddrMgr::~TSrvAddrMgr() {
@@ -663,6 +664,7 @@ void TSrvAddrMgr::print(ostream & out) {
 }
 
 void TSrvAddrMgr::dump() {
+	
     TAddrMgr::dump(); // perform normal dump of the AddrMgr
     cacheDump();
 }

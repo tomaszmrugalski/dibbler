@@ -3,6 +3,7 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
+ * changes: Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
@@ -29,7 +30,7 @@ class TSrvCacheEntry
 class TSrvAddrMgr : public TAddrMgr
 {
   public:
-    TSrvAddrMgr(string xmlfile);
+    TSrvAddrMgr(string xmlfile, bool loadDB);
     ~TSrvAddrMgr();
 
     long getTimeout();
