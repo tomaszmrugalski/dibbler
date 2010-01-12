@@ -33,7 +33,7 @@ void TSrvMsgLeaseQuery::doDuties() {
 }
 
 bool TSrvMsgLeaseQuery::check() {
-    // TODO: validation
+    /// @todo: validation
     if (!getOption(OPTION_CLIENTID)) {
 	Log(Warning) << "LQ: Lease Query message does not contain required CLIENT-ID option." << LogEnd;
 	return false;

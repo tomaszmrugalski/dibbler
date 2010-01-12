@@ -75,7 +75,7 @@ void daemon_init() {
 	    exit(0); // parent process
 	
 #if 0
-	// TODO: daemon spawning in Mac OS is done a bit differently
+	// @todo: daemon spawning in Mac OS is done a bit differently
 	if (setpgrp(0) == -1) {
 	    Log(Crit) << "Can't change process group." << endl;
 	    return;

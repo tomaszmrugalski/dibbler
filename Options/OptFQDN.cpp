@@ -157,18 +157,18 @@ char * TOptFQDN::storeSelf(char *buffer) {
 }
 
 bool TOptFQDN::isValid() {
-	//TODO Check the validity of this option
-	return Valid;
+    /// @todo Check the validity of this option
+    return Valid;
 }
 
 bool TOptFQDN::getNFlag( ) {
-	return flag_N;
+    return flag_N;
 }
 
 bool TOptFQDN::getSFlag( ) {
-	return flag_S;
+    return flag_S;
 }
 
 bool TOptFQDN::getOFlag( ) {
-	return flag_O;
+    return flag_O;
 }

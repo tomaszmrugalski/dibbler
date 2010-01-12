@@ -13,23 +13,25 @@
 #include "SrvCfgClientClass.h"
 #include "SrvMsg.h"
 
-TSrvCfgClientClass::TSrvCfgClientClass() {
-    // TODO Auto-generated constructor stub
-    classname = "";
+TSrvCfgClientClass::TSrvCfgClientClass()
+    :classname("")
+{
 }
 
-TSrvCfgClientClass::TSrvCfgClientClass(string name) {
-    // TODO Auto-generated constructor stub
-    classname = name;
+TSrvCfgClientClass::TSrvCfgClientClass(string name)
+    :classname(name)
+{
 }
 
-TSrvCfgClientClass::TSrvCfgClientClass(string name , SmartPtr<Node>& cond){
+TSrvCfgClientClass::TSrvCfgClientClass(string name , SmartPtr<Node>& cond)
+{
     classname = name;
     condition = cond;
 }
 
-TSrvCfgClientClass::~TSrvCfgClientClass() {
-    // TODO Auto-generated destructor stub
+TSrvCfgClientClass::~TSrvCfgClientClass() 
+{
+    
 }
 
 
@@ -45,6 +47,7 @@ SmartPtr<Node> TSrvCfgClientClass::getCondition()
 
 bool TSrvCfgClientClass::isStatisfy(SmartPtr<TSrvMsg> msg)
 {
-    if (condition->exec(msg) == "true") return true ;
+    if (condition->exec(msg) == "true") 
+        return true ;
     return false;
 }

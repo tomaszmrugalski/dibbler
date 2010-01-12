@@ -361,7 +361,7 @@ message_buff DnsMessage::compile(int maxlen) {
         /* truncate it here */
         msg.resize(x);
         msg[2] |= 2;
-        msg[4] = n / 256; // TODO: is this safe if chars are unsigned?
+        msg[4] = n / 256; /// @todo: is this safe if chars are unsigned?
         msg[5] = n;
         throw PTruncatedException();
       }
