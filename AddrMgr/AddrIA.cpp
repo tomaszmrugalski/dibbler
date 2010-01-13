@@ -89,22 +89,22 @@ void TAddrIA::setT2(unsigned long T2)
     this->T2 = T2;
 }
 
-void TAddrIA::addAddr(SmartPtr<TAddrAddr> x)
+void TAddrIA::addAddr(SPtr<TAddrAddr> x)
 {
     AddrLst.append(x);
     Tentative = TENTATIVE_UNKNOWN;
 }
 
-void TAddrIA::addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid)
+void TAddrIA::addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid)
 {
-    SmartPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid);
+    SPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid);
     AddrLst.append(ptr);
     Tentative = TENTATIVE_UNKNOWN;
 }
 
-void TAddrIA::addAddr(SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix)
+void TAddrIA::addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix)
 {
-    SmartPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid, prefix);
+    SPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid, prefix);
     AddrLst.append(ptr);
     Tentative = TENTATIVE_UNKNOWN;
 }
@@ -127,7 +127,7 @@ TAddrIA::~TAddrIA()
 // --- contact with server using Unicast/Multicast --------------------
 // --------------------------------------------------------------------
 
-void TAddrIA::setUnicast(SmartPtr<TIPv6Addr> addr)
+void TAddrIA::setUnicast(SPtr<TIPv6Addr> addr)
 {
     this->Unicast = true;
     this->SrvAddr=addr;
@@ -138,7 +138,7 @@ void TAddrIA::setMulticast()
     this->Unicast = false;
 }
 
-SmartPtr<TIPv6Addr> TAddrIA::getSrvAddr()
+SPtr<TIPv6Addr> TAddrIA::getSrvAddr()
 {
     if (!this->Unicast) 
         return 0;
@@ -149,12 +149,12 @@ SmartPtr<TIPv6Addr> TAddrIA::getSrvAddr()
 // --- server's DUID --------------------------------------------------
 // --------------------------------------------------------------------
 
-void TAddrIA::setDUID(SmartPtr<TDUID> duid)
+void TAddrIA::setDUID(SPtr<TDUID> duid)
 {
     this->DUID = duid;
 }
 
-SmartPtr<TDUID> TAddrIA::getDUID()
+SPtr<TDUID> TAddrIA::getDUID()
 {
     return DUID;
 }
@@ -168,7 +168,7 @@ void TAddrIA::firstAddr()
 }
 
 // returns next address
-SmartPtr<TAddrAddr> TAddrIA::getAddr()
+SPtr<TAddrAddr> TAddrIA::getAddr()
 {
     return AddrLst.get();
 }
@@ -180,12 +180,12 @@ SmartPtr<TAddrAddr> TAddrIA::getAddr()
  * 
  * @return 
  */
-SmartPtr<TAddrAddr> TAddrIA::getAddr(SmartPtr<TIPv6Addr> addr)
+SPtr<TAddrAddr> TAddrIA::getAddr(SPtr<TIPv6Addr> addr)
 {
     if (!addr)
 	return 0;
     AddrLst.first();
-    SmartPtr <TAddrAddr> ptrAddr;
+    SPtr <TAddrAddr> ptrAddr;
     while (ptrAddr = AddrLst.get() ) {
         if ( (*addr)==(*(ptrAddr->get())) )
             return ptrAddr;
@@ -198,9 +198,9 @@ int TAddrIA::countAddr()
     return AddrLst.count();
 }
 
-int TAddrIA::delAddr(SmartPtr<TIPv6Addr> addr)
+int TAddrIA::delAddr(SPtr<TIPv6Addr> addr)
 {
-    SmartPtr< TAddrAddr> ptr;
+    SPtr< TAddrAddr> ptr;
     AddrLst.first();
 
     while (ptr = AddrLst.get())
@@ -237,7 +237,7 @@ void TAddrIA::addPrefix(SPtr<TAddrPrefix> x)
 
 void TAddrIA::addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int length)
 {
-    SmartPtr<TAddrPrefix> ptr = new TAddrPrefix(addr, pref, valid, length);
+    SPtr<TAddrPrefix> ptr = new TAddrPrefix(addr, pref, valid, length);
     PrefixLst.append(ptr);
 }
 
@@ -248,7 +248,7 @@ int TAddrIA::getPrefixCount()
 
 bool TAddrIA::delPrefix(SPtr<TAddrPrefix> x)
 {
-    SmartPtr<TAddrPrefix> ptr;
+    SPtr<TAddrPrefix> ptr;
     PrefixLst.first();
 
     while (ptr = PrefixLst.get())
@@ -264,7 +264,7 @@ bool TAddrIA::delPrefix(SPtr<TAddrPrefix> x)
 
 bool TAddrIA::delPrefix(SPtr<TIPv6Addr> x)
 {
-    SmartPtr<TAddrPrefix> ptr;
+    SPtr<TAddrPrefix> ptr;
     PrefixLst.first();
 
     while (ptr = PrefixLst.get())
@@ -312,7 +312,7 @@ unsigned long TAddrIA::getT2Timeout() {
 unsigned long TAddrIA::getPrefTimeout() {
     unsigned long ts = ULONG_MAX;
 
-    SmartPtr<TAddrAddr> ptr;
+    SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
 
     while (ptr = this->AddrLst.get() ) {
@@ -325,7 +325,7 @@ unsigned long TAddrIA::getPrefTimeout() {
 unsigned long TAddrIA::getMaxValidTimeout() {
     unsigned long ts = 0; // should be 0
 
-    SmartPtr<TAddrAddr> ptr;
+    SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
     while (ptr = this->AddrLst.get() ) {
         if (ts < ptr->getValidTimeout()) 
@@ -345,7 +345,7 @@ unsigned long TAddrIA::getMaxValidTimeout() {
 unsigned long TAddrIA::getValidTimeout() {
     unsigned long ts = ULONG_MAX;
 
-    SmartPtr<TAddrAddr> ptr;
+    SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
 
     while (ptr = this->AddrLst.get() ) {
@@ -359,7 +359,7 @@ unsigned long TAddrIA::getValidTimeout() {
 void TAddrIA::setTimestamp(unsigned long ts)
 {
     this->Timestamp = ts;
-    SmartPtr<TAddrAddr> ptr;
+    SPtr<TAddrAddr> ptr;
     AddrLst.first();
     while (ptr = AddrLst.get() )
     {
@@ -393,7 +393,7 @@ unsigned long TAddrIA::getTentativeTimeout()
     case TENTATIVE_NO:
         return DHCPV6_INFINITY;
     case TENTATIVE_UNKNOWN:
-        SmartPtr <TAddrAddr> ptrAddr;
+        SPtr <TAddrAddr> ptrAddr;
         AddrLst.first();
         while ( ptrAddr = AddrLst.get() )
         {
@@ -419,7 +419,7 @@ enum ETentative TAddrIA::getTentative()
     if (Tentative != TENTATIVE_UNKNOWN)
     	return Tentative;
 
-    SmartPtr<TAddrAddr> ptrAddr;
+    SPtr<TAddrAddr> ptrAddr;
     AddrLst.first();
 
     bool allChecked = true;
@@ -476,7 +476,7 @@ enum ETentative TAddrIA::getTentative()
  */
 void TAddrIA::setTentative()
 {
-    SmartPtr<TAddrAddr> ptrAddr;
+    SPtr<TAddrAddr> ptrAddr;
     AddrLst.first();
     Tentative = TENTATIVE_NO;
 
@@ -542,7 +542,7 @@ SPtr<TFQDN> TAddrIA::getFQDN()
 
 ostream & operator<<(ostream & strum,TAddrIA &x) {
 
-    SmartPtr<TAddrAddr> ptr;
+    SPtr<TAddrAddr> ptr;
     SPtr<TAddrPrefix> prefix;
     string name;
     

@@ -56,13 +56,13 @@ class TAddrIA
     int getIface();
 
     //---Server's DUID---
-    void setDUID(SmartPtr<TDUID> duid);
-    SmartPtr<TDUID> getDUID();
+    void setDUID(SPtr<TDUID> duid);
+    SPtr<TDUID> getDUID();
 
     //---Contact with server using Unicast/Multicast---
-    void setUnicast(SmartPtr<TIPv6Addr> addr);
+    void setUnicast(SPtr<TIPv6Addr> addr);
     void setMulticast();
-    SmartPtr<TIPv6Addr> getSrvAddr();
+    SPtr<TIPv6Addr> getSrvAddr();
 
     //--- address list related methods---
     void addAddr(SPtr<TAddrAddr> x);
@@ -82,10 +82,10 @@ class TAddrIA
 
     // --- address management ---
     void firstAddr();
-    SmartPtr<TAddrAddr> getAddr();
-    SmartPtr<TAddrAddr> getAddr(SmartPtr<TIPv6Addr> addr);
+    SPtr<TAddrAddr> getAddr();
+    SPtr<TAddrAddr> getAddr(SPtr<TIPv6Addr> addr);
     int countAddr();
-    int delAddr(SmartPtr<TIPv6Addr> addr);
+    int delAddr(SPtr<TIPv6Addr> addr);
     
     // timestamp
     void setTimestamp(unsigned long ts);
@@ -121,11 +121,11 @@ private:
 
     unsigned long Timestamp; // timestamp of last IA refresh (renew/rebind/confirm etc.)
 
-    SmartPtr<TDUID> DUID;
+    SPtr<TDUID> DUID;
 
     // Server which maintains this IA is connected by unicast or multicast
     bool Unicast;
-    SmartPtr<TIPv6Addr> SrvAddr;
+    SPtr<TIPv6Addr> SrvAddr;
 
     // Iface ID
     int Iface;

@@ -25,14 +25,14 @@
  * @param duid Client DUID
  *
  */
-TAddrClient::TAddrClient(SmartPtr<TDUID> duid) {
+TAddrClient::TAddrClient(SPtr<TDUID> duid) {
     this->DUID=duid;
     this->SPI = 0;
     this->ReplayDetectionRcvd = 0;
     this->ReplayDetectionSent = 1;
 }
 
-SmartPtr<TDUID> TAddrClient::getDUID() {
+SPtr<TDUID> TAddrClient::getDUID() {
     return this->DUID;
 }
 
@@ -57,12 +57,12 @@ void TAddrClient::firstIA() {
  *
  * @return next IA
  */
-SmartPtr<TAddrIA> TAddrClient::getIA() {
+SPtr<TAddrIA> TAddrClient::getIA() {
     return IAsLst.get();
 }
 
-SmartPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID) {
-    SmartPtr<TAddrIA> ptr;
+SPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID) {
+    SPtr<TAddrIA> ptr;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -70,10 +70,10 @@ SmartPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID) {
             return ptr;
         }
     }
-    return SmartPtr<TAddrIA>();
+    return SPtr<TAddrIA>();
 }
 
-void TAddrClient::addIA(SmartPtr<TAddrIA> ia) {
+void TAddrClient::addIA(SPtr<TAddrIA> ia) {
     if (getIA(ia->getIAID()))
     {
         Log(Debug) << "Unable to add IA (iaid=" << ia->getIAID() << "), such IA already exists." << LogEnd;
@@ -94,7 +94,7 @@ int TAddrClient::countIA() {
 }
 
 bool TAddrClient::delIA(unsigned long IAID) {
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -108,12 +108,12 @@ bool TAddrClient::delIA(unsigned long IAID) {
 
 // --- PD ------------------------------------------------------------
 
-SmartPtr<TAddrIA> TAddrClient::getPD() {
+SPtr<TAddrIA> TAddrClient::getPD() {
     return PDLst.get();
 }
 
-SmartPtr<TAddrIA> TAddrClient::getPD(unsigned long IAID) {
-    SmartPtr<TAddrIA> ptr;
+SPtr<TAddrIA> TAddrClient::getPD(unsigned long IAID) {
+    SPtr<TAddrIA> ptr;
     PDLst.first();
 
     while ( ptr = PDLst.get() ) {
@@ -128,7 +128,7 @@ void TAddrClient::firstPD() {
     PDLst.first();
 }
 
-void TAddrClient::addPD(SmartPtr<TAddrIA> pd) {
+void TAddrClient::addPD(SPtr<TAddrIA> pd) {
     PDLst.append(pd);
 }
 
@@ -137,7 +137,7 @@ int TAddrClient::countPD() {
 }
 
 bool TAddrClient::delPD(unsigned long IAID) {
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     PDLst.first();
 
     while ( ptr = PDLst.get() ) {
@@ -151,12 +151,12 @@ bool TAddrClient::delPD(unsigned long IAID) {
 
 // --- TA ------------------------------------------------------------
 
-SmartPtr<TAddrIA> TAddrClient::getTA() {
+SPtr<TAddrIA> TAddrClient::getTA() {
     return TALst.get();
 }
 
-SmartPtr<TAddrIA> TAddrClient::getTA(unsigned long IAID) {
-    SmartPtr<TAddrIA> ptr;
+SPtr<TAddrIA> TAddrClient::getTA(unsigned long IAID) {
+    SPtr<TAddrIA> ptr;
     TALst.first();
 
     while ( ptr = TALst.get() ) {
@@ -171,7 +171,7 @@ void TAddrClient::firstTA() {
     TALst.first();
 }
 
-void TAddrClient::addTA(SmartPtr<TAddrIA> ia) {
+void TAddrClient::addTA(SPtr<TAddrIA> ia) {
     TALst.append(ia);
 }
 
@@ -180,7 +180,7 @@ int TAddrClient::countTA() {
 }
 
 bool TAddrClient::delTA(unsigned long iaid) {
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     TALst.first();
     while ( ptr = TALst.get() ) {
         if (ptr->getIAID() == iaid) {
@@ -196,7 +196,7 @@ bool TAddrClient::delTA(unsigned long iaid) {
 // --------------------------------------------------------------------
 
 unsigned long TAddrClient::getT1Timeout() {
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     unsigned long ts = ULONG_MAX;
 
     IAsLst.first();
@@ -220,7 +220,7 @@ unsigned long TAddrClient::getT1Timeout() {
 }
 
 unsigned long TAddrClient::getT2Timeout() {
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     unsigned long ts = ULONG_MAX;
     IAsLst.first();
 
@@ -243,7 +243,7 @@ unsigned long TAddrClient::getT2Timeout() {
 }
 
 unsigned long TAddrClient::getPrefTimeout() {
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     unsigned long ts = ULONG_MAX;
 
     IAsLst.first();
@@ -266,7 +266,7 @@ unsigned long TAddrClient::getPrefTimeout() {
 }
 
 unsigned long TAddrClient::getValidTimeout() {
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     unsigned long ts = ULONG_MAX;
 
     IAsLst.first();
@@ -287,7 +287,7 @@ unsigned long TAddrClient::getValidTimeout() {
 unsigned long TAddrClient::getLastTimestamp() {
 
     unsigned long ts = 0;
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
 
     IAsLst.first();
     while ( ptr = IAsLst.get() ) {
@@ -348,7 +348,7 @@ ostream & operator<<(ostream & strum,TAddrClient &x)
 	strum << "    " << *x.DUID;
 
     strum << "    <!-- " << x.IAsLst.count() << " IA(s) -->" << endl;
-    SmartPtr<TAddrIA> ptr;
+    SPtr<TAddrIA> ptr;
     x.IAsLst.first();
     while (ptr = x.IAsLst.get() ) {
         strum << *ptr;

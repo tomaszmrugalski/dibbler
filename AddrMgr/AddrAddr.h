@@ -24,11 +24,11 @@ class TAddrAddr
     friend ostream & operator<<(ostream & strum,TAddrAddr &x);
   public:
 
-    TAddrAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
-    TAddrAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid, int prefix);
+    TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid);
+    TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefix);
 
     // return address in packed format (char[16])
-    SmartPtr<TIPv6Addr> get();
+    SPtr<TIPv6Addr> get();
 
     // lifetime related
     unsigned long getPref();
@@ -53,7 +53,7 @@ class TAddrAddr
 
     unsigned long Prefered;
     unsigned long Valid;
-    SmartPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Addr;
     unsigned long Timestamp;
     int Prefix;
 };

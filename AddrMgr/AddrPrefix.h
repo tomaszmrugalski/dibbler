@@ -28,7 +28,7 @@ class TAddrPrefix: public TAddrAddr
     friend ostream & operator<<(ostream & strum,TAddrPrefix &x);
   public:
 
-    TAddrPrefix(SmartPtr<TIPv6Addr> addr, long pref, long valid, int length);
+    TAddrPrefix(SPtr<TIPv6Addr> addr, long pref, long valid, int length);
 
     // return address in packed format (char[16])
     int getLength();

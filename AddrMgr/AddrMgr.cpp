@@ -28,9 +28,9 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     this->XmlFile = xmlFile;
     
     if (loadfile) {
-	dbLoad(xmlFile.c_str());
+      	dbLoad(xmlFile.c_str());
     } else {
-	Log(Debug) << "Skipping database loading." << LogEnd;
+	      Log(Debug) << "Skipping database loading." << LogEnd;
     }
     DeleteEmptyClient = true;
 }
@@ -88,7 +88,7 @@ void TAddrMgr::dump()
     xmlDump.close();
 }
 
-void TAddrMgr::addClient(SmartPtr<TAddrClient> x)
+void TAddrMgr::addClient(SPtr<TAddrClient> x)
 {
     ClntsLst.append(x);
 }
@@ -98,7 +98,7 @@ void TAddrMgr::firstClient()
     ClntsLst.first();
 }
 
-SmartPtr<TAddrClient> TAddrMgr::getClient()
+SPtr<TAddrClient> TAddrMgr::getClient()
 {
     return ClntsLst.get();
 }
@@ -112,9 +112,9 @@ SmartPtr<TAddrClient> TAddrMgr::getClient()
  *
  * @return smart pointer to the client (or 0 if client is not found)
  */
-SPtr<TAddrClient> TAddrMgr::getClient(SmartPtr<TDUID> duid)
+SPtr<TAddrClient> TAddrMgr::getClient(SPtr<TDUID> duid)
 {
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) 
     {
@@ -134,9 +134,9 @@ SPtr<TAddrClient> TAddrMgr::getClient(SmartPtr<TDUID> duid)
  *
  * @return smart pointer to the client (or 0 if client is not found)
  */
-SmartPtr<TAddrClient> TAddrMgr::getClient(uint32_t SPI)
+SPtr<TAddrClient> TAddrMgr::getClient(uint32_t SPI)
 {
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) 
     {
@@ -176,9 +176,9 @@ int TAddrMgr::countClient()
     return ClntsLst.count();
 }
 
-bool TAddrMgr::delClient(SmartPtr<TDUID> duid)
+bool TAddrMgr::delClient(SPtr<TDUID> duid)
 {
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     ClntsLst.first();
 
     while ( ptr = ClntsLst.get() ) 
@@ -199,7 +199,7 @@ bool TAddrMgr::delClient(SmartPtr<TDUID> duid)
 unsigned long TAddrMgr::getT1Timeout()
 {
     unsigned long ts = ULONG_MAX;
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
         if (ts > ptr->getT1Timeout() )
@@ -211,7 +211,7 @@ unsigned long TAddrMgr::getT1Timeout()
 unsigned long TAddrMgr::getT2Timeout()
 {
     unsigned long ts = ULONG_MAX;
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
         if (ts > ptr->getT2Timeout() )
@@ -223,7 +223,7 @@ unsigned long TAddrMgr::getT2Timeout()
 unsigned long TAddrMgr::getPrefTimeout()
 {
     unsigned long ts = ULONG_MAX;
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
         if (ts > ptr->getPrefTimeout() )
@@ -235,7 +235,7 @@ unsigned long TAddrMgr::getPrefTimeout()
 unsigned long TAddrMgr::getValidTimeout()
 {
     unsigned long ts = ULONG_MAX;
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
         if (ts > ptr->getValidTimeout() )
@@ -244,38 +244,30 @@ unsigned long TAddrMgr::getValidTimeout()
     return ts;
 }
 
-#if 0
-unsigned long TAddrMgr::getAddrCount(SmartPtr<TDUID> duid, int iface)
-{
-    // Not used on the client side, server side uses SrvAddrMgr::getAddrCount()
-    return 1;
-}
-#endif
-
 /* Prefix Delegation-related method starts here */
 
 /** 
  * addx prefix for a client. If client's IA is missing, add it, too.
  * 
- * @param clntDuid 
- * @param clntAddr 
- * @param iface 
- * @param IAID 
- * @param T1 
- * @param T2 
- * @param addr 
- * @param pref 
- * @param valid 
- * @param quiet 
+ * @param clntDuid client DUID
+ * @param clntAddr client address
+ * @param iface    interface index used for client communication
+ * @param IAID     IA identifier
+ * @param T1       T1 timer value
+ * @param T2       T2 timer value
+ * @param prefix   prefix to be added
+ * @param pref     preferred lifetime
+ * @param valid    valid lifetime
+ * @param quiet    should it be added quietly? (i.e. no messages printed)
  * 
- * @return 
+ * @return true if adding was successful
  */
 bool TAddrMgr::addPrefix(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
                          int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
                          SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
                          int length, bool quiet) {
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     while ( ptrClient = this->getClient() ) {
         if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
@@ -292,9 +284,9 @@ bool TAddrMgr::addPrefix(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
     return addPrefix(ptrClient, clntDuid, clntAddr, iface, IAID, T1, T2, prefix, pref, valid, length, quiet);
 }
 
-bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartPtr<TIPv6Addr> addr,
+bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
 			 int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-			 SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			 SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			 int length, bool quiet) {
     if (!prefix) {
 	Log(Error) << "Attempt to add null prefix failed." << LogEnd;
@@ -307,7 +299,7 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartP
     }
 
     // find this PD
-    SmartPtr <TAddrIA> ptrPD;
+    SPtr <TAddrIA> ptrPD;
     client->firstPD();
     while ( ptrPD = client->getPD() ) {
         if ( ptrPD->getIAID() == IAID)
@@ -322,7 +314,7 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartP
 	    Log(Debug) << "PD: Adding PD (iaid=" << IAID << ") to addrDB." << LogEnd;
     }
 
-    SmartPtr <TAddrPrefix> ptrPrefix;
+    SPtr <TAddrPrefix> ptrPrefix;
     ptrPD->firstPrefix();
     while ( ptrPrefix = ptrPD->getPrefix() ) {
         if (*ptrPrefix->get()==*prefix)
@@ -347,11 +339,11 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartP
 
 bool TAddrMgr::updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
 			    int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
-			    SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			    SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			    int length, bool quiet)
 {
     // find client...
-    SmartPtr <TAddrClient> client;
+    SPtr <TAddrClient> client;
     this->firstClient();
     while ( client = this->getClient() ) {
         if ( (*client->getDUID()) == (*duid) ) 
@@ -365,9 +357,9 @@ bool TAddrMgr::updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
     return updatePrefix(client, duid, addr, iface, IAID, T1, T2, prefix, pref, valid, length, quiet);
 }
 
-bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartPtr<TIPv6Addr> clntAddr,
+bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
 			    int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-			    SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			    SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			    int length, bool quiet)
 {
     if (!prefix) {
@@ -380,7 +372,7 @@ bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , Sma
     }
     
     // for that client, find IA
-    SmartPtr <TAddrIA> pd;
+    SPtr <TAddrIA> pd;
     client->firstPD();
     while ( pd = client->getPD() ) {
         if ( pd->getIAID() == IAID)
@@ -395,7 +387,7 @@ bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , Sma
     pd->setT1(T1);
     pd->setT2(T2);
 
-    SmartPtr <TAddrPrefix> ptrPrefix;
+    SPtr <TAddrPrefix> ptrPrefix;
     pd->firstPrefix();
     while ( ptrPrefix = pd->getPrefix() ) {
         if (*ptrPrefix->get()==*prefix)
@@ -418,13 +410,13 @@ bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , Sma
 /*
  *  Frees prefix (also deletes IA and/or client, if this was last address)
  */
-bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
-			    unsigned long IAID, SmartPtr<TIPv6Addr> prefix,
+bool TAddrMgr::delPrefix(SPtr<TDUID> clntDuid,
+			    unsigned long IAID, SPtr<TIPv6Addr> prefix,
 			    bool quiet) {
 
     Log(Debug) << "PD: Deleting prefix " << prefix->getPlain() << ", DUID=" << clntDuid->getPlain() << ", iaid=" << IAID << LogEnd;
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     while ( ptrClient = this->getClient() ) {
         if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
@@ -439,7 +431,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
     }
 
     // find this IA
-    SmartPtr <TAddrIA> ptrPD;
+    SPtr <TAddrIA> ptrPD;
     ptrClient->firstPD();
     while ( ptrPD = ptrClient->getPD() ) {
         if ( ptrPD->getIAID() == IAID)
@@ -453,7 +445,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
         return false;
     }
 
-    SmartPtr <TAddrPrefix> ptrPrefix;
+    SPtr <TAddrPrefix> ptrPrefix;
     ptrPD->firstPrefix();
     while ( ptrPrefix = ptrPD->getPrefix() ) {
         if (*ptrPrefix->get()==*prefix)
@@ -560,7 +552,7 @@ xmlDocPtr TAddrMgr::xmlLoad(const char * filename) {
   //  return NULL;
 }
 
-SmartPtr<TAddrAddr> TAddrMgr::parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, int depth)
+SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, int depth)
 {
      // timestamp
      xmlChar * tsStr = xmlGetProp(xmlAddr,(const xmlChar*)"timestamp");
@@ -581,7 +573,7 @@ SmartPtr<TAddrAddr> TAddrMgr::parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, i
 
      inet_pton6((const char*)addr,addrPacked);
 
-     SmartPtr<TAddrAddr> ptrAddr = new TAddrAddr(new TIPv6Addr(addrPacked),pref,valid);
+     SPtr<TAddrAddr> ptrAddr = new TAddrAddr(new TIPv6Addr(addrPacked),pref,valid);
      ptrAddr->setTimestamp(ts);
 
      xmlFree(addr);
@@ -593,16 +585,16 @@ SmartPtr<TAddrAddr> TAddrMgr::parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, i
 //   return NULL;
 }
 
-SmartPtr<TAddrIA> TAddrMgr::libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth)
+SPtr<TAddrIA> TAddrMgr::libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth)
 {
      // DUID
      xmlChar * DUIDStr = xmlGetProp(xmlIA,(const xmlChar*)"DUID");
-     SmartPtr <TDUID> ptrDUID = new TDUID((char*)DUIDStr);
+     SPtr <TDUID> ptrDUID = new TDUID((char*)DUIDStr);
 
      // unicast
      xmlChar * unicast = xmlGetProp(xmlIA,(const xmlChar*)"unicast");
      char packedUnicast[16];
-     SmartPtr<TIPv6Addr> ptrUnicast;
+     SPtr<TIPv6Addr> ptrUnicast;
      if (unicast) {
        inet_pton6((const char *)unicast,packedUnicast);
        ptrUnicast = new TIPv6Addr(packedUnicast);
@@ -629,7 +621,7 @@ SmartPtr<TAddrIA> TAddrMgr::libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, 
      unsigned long iface = atol((const char *)ifaceStr);
 
      // now we've got all data, so create AddrIA
-     SmartPtr<TAddrIA> ptrIA = new TAddrIA(iface, ptrUnicast, ptrDUID, T1, T2, IAID);
+     SPtr<TAddrIA> ptrIA = new TAddrIA(iface, ptrUnicast, ptrDUID, T1, T2, IAID);
 
      xmlFree(DUIDStr);
      xmlFree(unicast);
@@ -640,7 +632,7 @@ SmartPtr<TAddrIA> TAddrMgr::libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, 
      xmlFree(ifaceStr);
     
      // look for each address
-     SmartPtr<TAddrAddr> ptrAddr;
+     SPtr<TAddrAddr> ptrAddr;
      xmlNodePtr xmlAddr = xmlIA->xmlChildrenNode;
      while (xmlAddr) {
  	if (xmlAddr->type == XML_ELEMENT_NODE) {
@@ -655,19 +647,19 @@ SmartPtr<TAddrIA> TAddrMgr::libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, 
 //    return NULL;
 }
 
-SmartPtr<TAddrClient> TAddrMgr::parseAddrClient(xmlDocPtr doc, xmlNodePtr xmlClient, int depth)
+SPtr<TAddrClient> TAddrMgr::parseAddrClient(xmlDocPtr doc, xmlNodePtr xmlClient, int depth)
 {
      // DUID
      xmlChar *DUID;
      DUID = xmlGetProp(xmlClient,(const xmlChar*)"DUID");
-     SmartPtr<TDUID> ptrDUID = new TDUID((char*)DUID);
+     SPtr<TDUID> ptrDUID = new TDUID((char*)DUID);
 
      // create AddrClient
-     SmartPtr<TAddrClient> ptrClient = new TAddrClient(ptrDUID);
+     SPtr<TAddrClient> ptrClient = new TAddrClient(ptrDUID);
 
      xmlFree(DUID);
 
-     SmartPtr<TAddrIA> ptrIA;
+     SPtr<TAddrIA> ptrIA;
      xmlNodePtr xmlIA = xmlClient->xmlChildrenNode;
      while (xmlIA) {
  	if (xmlIA->type == XML_ELEMENT_NODE) {
@@ -688,7 +680,7 @@ void TAddrMgr::parseAddrMgr(xmlDocPtr doc,int depth)
 
      xmlClient = n->xmlChildrenNode;
 
-     SmartPtr<TAddrClient> ptrClient;
+     SPtr<TAddrClient> ptrClient;
 
      while (xmlClient) {
  	if (xmlClient->type == XML_ELEMENT_NODE) {
@@ -709,7 +701,7 @@ void TAddrMgr::parseAddrMgr(xmlDocPtr doc,int depth)
  * @brief loads AddrMgr database from a file
  *
  * loads AddrMgr database from a file. Opens specified
- * XML file and parsed outer <AddrMgr></AddrMgr> tags.
+ * XML file and parsed outer \<AddrMgr>\</AddrMgr> tags.
  *
  * @param xmlFile filename that contains database
  *
@@ -1124,7 +1116,7 @@ ostream & operator<<(ostream & strum,TAddrMgr &x) {
     strum << "  <timestamp>" << now() << "</timestamp>" << endl;
     x.print(strum);
 
-    SmartPtr<TAddrClient> ptr;
+    SPtr<TAddrClient> ptr;
     x.ClntsLst.first();
 
     while ( ptr = x.ClntsLst.get() ) {

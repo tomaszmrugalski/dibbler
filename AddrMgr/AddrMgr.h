@@ -33,26 +33,26 @@ class TAddrMgr
     virtual ~TAddrMgr();
     
     //--- Client container ---
-    void addClient(SmartPtr<TAddrClient> x);
+    void addClient(SPtr<TAddrClient> x);
     void firstClient();
-    SmartPtr<TAddrClient> getClient();
-    SmartPtr<TAddrClient> getClient(SmartPtr<TDUID> duid);
-    SmartPtr<TAddrClient> getClient(uint32_t SPI);
+    SPtr<TAddrClient> getClient();
+    SPtr<TAddrClient> getClient(SPtr<TDUID> duid);
+    SPtr<TAddrClient> getClient(uint32_t SPI);
     SPtr<TAddrClient> getClient(SPtr<TIPv6Addr> leasedAddr);
     int countClient();
-    bool delClient(SmartPtr<TDUID> duid);
+    bool delClient(SPtr<TDUID> duid);
 
     // --- prefix related ---
-    virtual bool addPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
+    virtual bool addPrefix(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
 			   int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-			   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			   SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			   int length, bool quiet);
     virtual bool updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
 			      int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
-			      SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			      SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			      int length, bool quiet);
 
-    bool delPrefix(SmartPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
+    bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
     bool prefixIsFree(SPtr<TIPv6Addr> prefix);
 
     //--- Time related methods ---
@@ -60,7 +60,6 @@ class TAddrMgr
     unsigned long getT2Timeout();
     unsigned long getPrefTimeout();
     unsigned long getValidTimeout();
-    //unsigned long getAddrCount(SmartPtr<TDUID> duid, int iface);
     
     // --- backup/restore ---
     void dbLoad(const char * xmlFile);
@@ -71,9 +70,9 @@ class TAddrMgr
 #ifdef MOD_LIBXML2
     // database loading methods that use libxml2
     xmlDocPtr xmlLoad(const char * filename);
-    SmartPtr<TAddrAddr> parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, int depth);
-    SmartPtr<TAddrIA> libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth);
-    SmartPtr<TAddrClient> parseAddrClient(xmlDocPtr doc, xmlNodePtr xmlClient, int depth);
+    SPtr<TAddrAddr> parseAddrAddr(xmlDocPtr doc, xmlNodePtr xmlAddr, int depth);
+    SPtr<TAddrIA> libxml_parseAddrIA(xmlDocPtr doc, xmlNodePtr xmlIA, int depth);
+    SPtr<TAddrClient> parseAddrClient(xmlDocPtr doc, xmlNodePtr xmlClient, int depth);
     void parseAddrMgr(xmlDocPtr doc,int depth);
 #else
     // database loading methods that use internal loading routines
@@ -88,13 +87,13 @@ class TAddrMgr
 
 protected:
     virtual void print(ostream & out) = 0;
-    bool addPrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartPtr<TIPv6Addr> clntAddr,
+    bool addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
 		   int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-		   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+		   SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		   int length, bool quiet);
-    bool updatePrefix(SPtr<TAddrClient> client, SmartPtr<TDUID> duid , SmartPtr<TIPv6Addr> clntAddr,
+    bool updatePrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
 		      int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-		      SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+		      SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		      int length, bool quiet);
 
     bool IsDone;

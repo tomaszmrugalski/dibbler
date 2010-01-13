@@ -16,7 +16,7 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TAddrPrefix::TAddrPrefix(SmartPtr<TIPv6Addr> prefix, long pref, long valid, int length)
+TAddrPrefix::TAddrPrefix(SPtr<TIPv6Addr> prefix, long pref, long valid, int length)
     :TAddrAddr(prefix, pref, valid)
 {
     this->Length = length;

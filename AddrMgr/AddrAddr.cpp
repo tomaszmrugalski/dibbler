@@ -80,7 +80,7 @@ int TAddrAddr::getPrefix()
     return Prefix;
 }
 
-SmartPtr<TIPv6Addr> TAddrAddr::get() {
+SPtr<TIPv6Addr> TAddrAddr::get() {
     return Addr;
 }
 
