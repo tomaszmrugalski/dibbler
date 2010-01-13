@@ -181,7 +181,7 @@ bool TDHCPClient::isDone() {
 }
 
 bool TDHCPClient::checkPrivileges() {
-    // FIXME: check privileges
+    /// @todo: check privileges
     return true;
 }
 

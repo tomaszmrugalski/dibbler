@@ -123,7 +123,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 		    Log(Cont) << "no." << LogEnd;
 		    OnLink = false;
 		} else {
-		    // FIXME check if it is bound or not. If it is, then check if it is bound to this client
+		    /// @todo check if it is bound or not. If it is, then check if it is bound to this client
 		    Log(Cont) << "yes." << LogEnd;
 		    addrCnt++;
 		}
@@ -239,7 +239,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
     SmartPtr<TOpt> ptrOpt;
 
-    // FIXME: Implement DECLINE support for client-id and option request as in other messages
+    /// @todo: Implement DECLINE support for client-id and option request as in other messages
     // include our DUID
     ptrOpt = decline->getOption(OPTION_SERVERID);
     Options.append(ptrOpt);
@@ -454,7 +454,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     this->copyAAASPI((Ptr*)release);
     this->copyRemoteID((Ptr*)release);
 
-     //FIXME:When the server receives a Release message via unicast from a client
+     /// @todo:When the server receives a Release message via unicast from a client
     //to which the server has not sent a unicast option, the server
     //discards the Release message and responds with a Reply message
     //containing a Status Code option with value UseMulticast, a Server
@@ -994,7 +994,7 @@ TSrvMsgReply::TSrvMsgReply(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 
         pkt = new char[this->getSize()];
         IsDone = false;
-        this->MRT = 330; // FIXME: 
+        this->MRT = 330; /// @todo: 
         this->send();
     } else {
 	Log(Warning) << "No options to answer in INF-REQUEST, so REPLY will not be send." << LogEnd;

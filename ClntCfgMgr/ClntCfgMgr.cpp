@@ -340,7 +340,7 @@ int TClntCfgMgr::countIfaces()
 
 bool TClntCfgMgr::getReconfigure()
 {
-    //FIXME: Implement this in some distant future
+    /// @todo: Implement this in some distant future
     return false;
 }
 

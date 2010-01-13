@@ -300,7 +300,7 @@ sha256_process_block (const void *buffer, size_t len, struct sha256_ctx *ctx)
       uint32_t tm;
       uint32_t t0, t1;
       int t;
-      /* FIXME: see sha1.c for a better implementation.  */
+      /** @todo: see sha1.c for a better implementation.  */
       for (t = 0; t < 16; t++)
 	{
 	  x[t] = SWAP (*words);

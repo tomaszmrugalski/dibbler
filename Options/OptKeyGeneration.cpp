@@ -112,7 +112,7 @@ TOptKeyGeneration::TOptKeyGeneration(TMsg* parent)
 
 TOptKeyGeneration::~TOptKeyGeneration()
 {
-// FIXME: do it in Msg.cpp    
+/// @todo: do it in Msg.cpp    
 //    if (KeyGenNonceLen)
 //        delete [] KeyGenNonce;
 }

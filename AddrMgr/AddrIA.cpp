@@ -253,7 +253,7 @@ bool TAddrIA::delPrefix(SPtr<TAddrPrefix> x)
 
     while (ptr = PrefixLst.get())
     {
-	// FIXME: should we compare prefix length, too?
+	/// @todo: should we compare prefix length, too?
         if (*(ptr->get())==(*x->get())) {
             PrefixLst.del();
             return true;
@@ -269,7 +269,7 @@ bool TAddrIA::delPrefix(SPtr<TIPv6Addr> x)
 
     while (ptr = PrefixLst.get())
     {
-	// FIXME: should we compare prefix length, too?
+	/// @todo: should we compare prefix length, too?
         if (*(ptr->get())==(*x)) {
             PrefixLst.del();
             return true;

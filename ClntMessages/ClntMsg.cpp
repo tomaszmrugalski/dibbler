@@ -919,7 +919,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 		ClntTransMgr->sendInfRequest(this->Options, this->Iface);
 	    } else {
 		Log(Notice) << "Insist-mode disabled, giving up (not sending INF-REQUEST)." << LogEnd;
-		// FIXME: set proper options to FAILED state
+		/// @todo: set proper options to FAILED state
 	    }
         }
     }

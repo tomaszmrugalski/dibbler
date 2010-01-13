@@ -121,7 +121,7 @@ bool TDHCPRelay::isDone() {
 }
 
 bool TDHCPRelay::checkPrivileges() {
-    // FIXME: check privileges
+    /// @todo: check privileges
     return true;
 }
 

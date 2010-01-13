@@ -28,7 +28,7 @@ TClntOptFQDN::TClntOptFQDN(string domain, TMsg* parent)
 
 TClntOptFQDN::TClntOptFQDN(char *buf, int bufsize, TMsg* parent)
     :TOptFQDN(buf, bufsize, parent) {
-    // FIXME: do some validity check
+    /// @todo: do some validity check
 
 }
 
@@ -36,7 +36,7 @@ TClntOptFQDN::TClntOptFQDN(char *buf, int bufsize, TMsg* parent)
 bool TClntOptFQDN::doDuties() {
     if (getSFlag()) {
 	Log(Notice) << "FQDN: DHCPv6 server made the DNS update for my name: " << getFQDN() << " ." << LogEnd;
-	//FIXME: Check the DNS server with the given name.
+	/// @todo: Check the DNS server with the given name.
 	return true;
     }
 	

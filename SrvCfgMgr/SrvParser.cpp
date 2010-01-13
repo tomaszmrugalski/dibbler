@@ -1986,7 +1986,7 @@ case 120:
 {
     duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval <<" reserved for DUID "<<duidNew->getPlain()<<LogEnd;
-    // FIXME: Use SmartPtr()
+    /// @todo: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length), yyvsp[-2].strval,false));
 ;
     break;}
@@ -1995,7 +1995,7 @@ case 121:
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval <<" reserved for address "<<*addr<<LogEnd;
-    // FIXME: Use SmartPtr()
+    /// @todo: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr(yyvsp[0].addrval), yyvsp[-2].strval,false));
 ;
     break;}
@@ -2011,7 +2011,7 @@ case 123:
 {
     duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
-    // FIXME: Use SmartPtr()
+    /// @todo: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length), yyvsp[-2].strval,false));
 ;
     break;}
@@ -2020,7 +2020,7 @@ case 124:
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval<<" reserved for address "<< addr->getPlain() << LogEnd;
-    // FIXME: Use SmartPtr()
+    /// @todo: Use SmartPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr(yyvsp[0].addrval), yyvsp[-2].strval,false));
 ;
     break;}

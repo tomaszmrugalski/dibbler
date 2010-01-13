@@ -468,7 +468,7 @@ bool TAddrMgr::delPrefix(SmartPtr<TDUID> clntDuid,
 
     ptrPD->delPrefix(prefix);
 
-    // FIXME: Cache for prefixes this->addCachedAddr(clntDuid, clntAddr);
+    /// @todo: Cache for prefixes this->addCachedAddr(clntDuid, clntAddr);
     if (!quiet)
       	Log(Debug) << "PD: Deleted prefix " << *prefix << " from addrDB." << LogEnd;
     
@@ -789,9 +789,9 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(FILE *f)
       	        *x = 0; // remove trailing xml tag
             duid = new TDUID(strstr(buf,">")+1);
             clnt = new TAddrClient(duid);
-            // FIXME: support for more than one IA
+            /// @todo: support for more than one IA
 
-            // FIXME: support for PD
+            /// @todo: support for PD
             continue;
         }
 	if(strstr(buf,"<AddrIA ")){
@@ -850,7 +850,7 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(FILE *f)
 	    break;
     }
 
-    // FIXME: add some extra checks here
+    /// @todo: add some extra checks here
     return clnt;
 }
 

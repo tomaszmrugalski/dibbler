@@ -55,7 +55,7 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
 TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
     :TOptIA_PD(ClntCfgPD->getIAID(), ClntCfgPD->getT1(), ClntCfgPD->getT2(), parent)
 {
-    // FIXME: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
+    /// @todo: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
     clearContext();
 }
 

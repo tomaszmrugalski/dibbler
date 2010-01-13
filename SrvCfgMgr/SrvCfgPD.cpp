@@ -108,7 +108,7 @@ bool TSrvCfgPD::setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 	Log(Debug) << "PD: Pool " << pool->getAddrL()->getPlain() << " - "
 		   << pool->getAddrR()->getPlain() << ", pool length: "
 		   << pool->getPrefixLength() << "." << LogEnd;
-	/* FIXME: this code is fishy. It behave erraticaly, when there is only 1 prefix to be assigned
+	/** @todo: this code is fishy. It behave erraticaly, when there is only 1 prefix to be assigned
 	if (this->PD_Count > pool->rangeCount())
 	    this->PD_Count = pool->rangeCount();
 	    cnt++; */
@@ -185,7 +185,7 @@ List(TIPv6Addr) TSrvCfgPD::getRandomList() {
     commonPart = this->CommonPool->getRandomPrefix();
     commonPart->truncate(0, this->getPD_Length());
 
-    // FIXME: it's just workaround. Prefix random generation should be implemented for real.
+    /// @todo: it's just workaround. Prefix random generation should be implemented for real.
     if (PD_Count == PD_Assigned+1) {
 	commonPart = new TIPv6Addr(*CommonPool->getAddrR());
     }

@@ -200,7 +200,7 @@ void TClntMsgRenew::releaseIA(long IAID)
 
 void TClntMsgRenew::doDuties()
 {
-    // FIXME: increase RT from REN_TIMEOUT to REN_MAX_RT
+    /// @todo: increase RT from REN_TIMEOUT to REN_MAX_RT
 
     // should we send RENEW once more or start sending REBIND
     if (!MRD) 

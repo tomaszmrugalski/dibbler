@@ -29,36 +29,35 @@ TSrvOptIAPrefix::TSrvOptIAPrefix( char * buf, int bufsize, TMsg* parent)
     int pos=0;
     while(pos<bufsize) 
     {
-        int code=buf[pos]*256+buf[pos+1]; // FIXME: use htons!
+        int code=buf[pos]*256+buf[pos+1]; /// @todo: use htons!
         pos+=2;
-        int length=buf[pos]*256+buf[pos+1]; // FIXME: use htons!
+        int length=buf[pos]*256+buf[pos+1]; /// @todo: use htons!
         pos+=2;
         if ((code>0)&&(code<=24))
         {                
             if(allowOptInOpt(parent->getType(),OPTION_IAPREFIX,code))
             {
                 SmartPtr<TOpt> opt;
-		opt = SmartPtr<TOpt>();
+		            opt = SmartPtr<TOpt>();
                 switch (code)
                 {
                 case OPTION_STATUS_CODE:
-                    opt =(Ptr*)SmartPtr<TSrvOptStatusCode> (
-			new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt =(Ptr*)SmartPtr<TSrvOptStatusCode> (new TSrvOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
-		    Log(Warning) << "Option " << code<< " not supported "
-                        <<" in message (type="<< parent->getType() <<")." << LogEnd;
+		                  Log(Warning) << "Option " << code<< " not supported "
+                                   << " in message (type="<< parent->getType() <<")." << LogEnd;
                     break;
                 }
                 if((opt)&&(opt->isValid()))
                     SubOptions.append(opt);
             } else {
-		Log(Warning) << "Illegal option received, opttype=" << code 
-			     << " in field options of IA_PD option" << LogEnd;
-	    }
+		            Log(Warning) << "Illegal option received, opttype=" << code 
+			                 << " in field options of IA_PD option" << LogEnd;
+      	    }
         } else {
-	    Log(Warning) <<"Unknown option in option IA_PD( optType=" 
-		 << code << "). Option ignored." << LogEnd;
+	          Log(Warning) <<"Unknown option in option IA_PD( optType=" 
+		       << code << "). Option ignored." << LogEnd;
         };
         pos+=length;
     }

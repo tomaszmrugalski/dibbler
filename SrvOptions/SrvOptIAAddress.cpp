@@ -43,9 +43,9 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
     int pos=0;
     while(pos<bufsize) 
     {
-        int code=buf[pos]*256+buf[pos+1]; // FIXME: use htons!
+        int code=buf[pos]*256+buf[pos+1]; /// @todo: use htons!
         pos+=2;
-        int length=buf[pos]*256+buf[pos+1]; // FIXME: use htons!
+        int length=buf[pos]*256+buf[pos+1]; /// @todo: use htons!
         pos+=2;
         if ((code>0)&&(code<=24))
         {                

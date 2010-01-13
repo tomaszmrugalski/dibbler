@@ -225,7 +225,7 @@ int TMsg::setAuthInfoKey() {
     if (!KeyGenNonce)
         KeyGenNonceLen = 16;
 
-    // FIXME set proper size of Client ID (DUID?) (here and in hmac_sha())
+    /// @todo set proper size of Client ID (DUID?) (here and in hmac_sha())
     KeyGenNonce_ClientID = new char[KeyGenNonceLen+128];
 
     AAAkey = getAAAKey(AAASPI, &AAAkeyLen);
@@ -246,7 +246,7 @@ int TMsg::setAuthInfoKey() {
     if (KeyGenNonce)
         memcpy(KeyGenNonce_ClientID, KeyGenNonce, KeyGenNonceLen);
 
-    // FIXME fill also with ClientID (DUID?)
+    /// @todo fill also with ClientID (DUID?)
 
     PrintHex("Auth: Infokey: using KeyGenNonce+CliendID: ", KeyGenNonce_ClientID, KeyGenNonceLen+128);
 

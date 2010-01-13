@@ -422,7 +422,7 @@ int TClntOptIA_NA::countValidAddrs(SmartPtr<TAddrIA> ptrIA)
     }
     
     //count all valid (valid>0) addresses received from server
-    //FIXME: A) check if they repeats (possible with maliciious server)
+    /// @todo: A) check if they repeats (possible with maliciious server)
     //       B) and not already assigned in addrDB (in others IAs)
     //       It's easy and worth checking
     //       A) Create list of valid addrs and add new valid addr 

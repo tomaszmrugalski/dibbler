@@ -27,14 +27,16 @@
 #include "DHCPConst.h"
 
 TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, TMsg* parent)
-    :TOptIA_PD(IAID,T1,T2, parent) {
+    :TOptIA_PD(IAID,T1,T2, parent) 
+{
     this->IAID=IAID;
     this->T1=T1;
     this->T2=T2;
 }
 
 TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, int Code, string Text, TMsg* parent)
-    :TOptIA_PD(IAID,T1,T2, parent) {
+    :TOptIA_PD(IAID,T1,T2, parent) 
+{
     SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
 }
 
@@ -42,7 +44,8 @@ TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, int Code, string Text, 
  * Create IA_PD option based on receive buffer
  */
 TSrvOptIA_PD::TSrvOptIA_PD( char * buf, int bufsize, TMsg* parent)
-    :TOptIA_PD(buf,bufsize, parent) {
+    :TOptIA_PD(buf,bufsize, parent) 
+{
     int pos=0;
 
     while(pos<bufsize)
@@ -107,13 +110,10 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
 }
 
 /**
- * gets one (or more) prefix for requested
+ * @brief gets one (or more) prefix for requested
  *
- * @param hint
- * @param length
- * @param pref
- * @param valid
- * @param fake
+ * @param hint proposed prefix
+ * @param fake should the prefix be really assigned or not (used in SOLICIT processing)
  *
  * @return status, if it was possible to assign something (STATUSCODE_SUCCESS)
  */
@@ -156,10 +156,8 @@ int TSrvOptIA_PD::assignPrefix(SmartPtr<TIPv6Addr> hint, bool fake) {
 
 // so far it is enough here
 // constructor used only in RENEW, REBIND, DECLINE and RELEASE
-TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvOptIA_PD> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TDUID> clntDuid,
+TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr, SmartPtr<TSrvAddrMgr> addrMgr,
+		 SmartPtr<TSrvOptIA_PD> queryOpt, SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TDUID> clntDuid,
 		 int iface, int msgType , TMsg* parent)
     :TOptIA_PD(queryOpt->getIAID(), 0x7fffffff, 0x7fffffff, parent)
 {
@@ -171,17 +169,17 @@ TSrvOptIA_PD::TSrvOptIA_PD( SmartPtr<TSrvCfgMgr> cfgMgr,
 
     SPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID(Iface);
     if (!ptrIface) {
-	Log(Error) << "Unable to find interface with ifindex=" << Iface << ". Something is wrong, VERY wrong." << LogEnd;
-	return;
+	      Log(Error) << "Unable to find interface with ifindex=" << Iface << ". Something is wrong, VERY wrong." << LogEnd;
+	      return;
     }
 
     // is the prefix delegation supported?
     if ( !ptrIface->supportPrefixDelegation() ) {
-	SmartPtr<TSrvOptStatusCode> ptrStatus;
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
-					  "Server support for prefix delegation is not enabled. Sorry buddy.",this->Parent);
-        this->SubOptions.append((Ptr*)ptrStatus);
-	return;
+	      SmartPtr<TSrvOptStatusCode> ptrStatus;
+	      ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+					        "Server support for prefix delegation is not enabled. Sorry buddy.",this->Parent);
+              this->SubOptions.append((Ptr*)ptrStatus);
+	      return;
     }
 
     bool fake  = false; // is this assignment for real?
@@ -311,19 +309,19 @@ void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) 
 }
 
 void TSrvOptIA_PD::rebind(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
-    // FIXME: implement PD support in REBIND message
+    /// @todo: implement PD support in REBIND message
 }
 
 void TSrvOptIA_PD::release(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
-    // FIXME: implement PD support in RELEASE message
+    /// @todo: implement PD support in RELEASE message
 }
 
 void TSrvOptIA_PD::confirm(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
-    // FIXME: implement PD support in CONFIRM message
+    /// @todo: implement PD support in CONFIRM message
 }
 
 void TSrvOptIA_PD::decline(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
-    // FIXME: implement PD support in DECLINE message
+    /// @todo: implement PD support in DECLINE message
 }
 
 bool TSrvOptIA_PD::doDuties() {

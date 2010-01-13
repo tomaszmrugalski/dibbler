@@ -114,7 +114,7 @@ bool TDHCPServer::isDone() {
 }
 
 bool TDHCPServer::checkPrivileges() {
-    // FIXME: check privileges
+    /// @todo: check privileges
     return true;
 }
 

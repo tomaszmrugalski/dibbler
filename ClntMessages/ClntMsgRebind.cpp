@@ -90,7 +90,7 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
     return;
 
 #if 0
-  // FIXME: Fix REPLY support for REBIND
+  /// @todo: Fix REPLY support for REBIND
   
 SmartPtr<TOpt> opt;
     
@@ -213,7 +213,7 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 	    ptrAddrAddr = ptrAddrIA->getAddr( ptrOptAddr->getAddr() );
 	    if (!ptrAddrAddr) {
 		// there is no such addr in db
-		// FIXME: what to do with new addrs?
+		/// @todo: what to do with new addrs?
 		// (Thomson:I think we should RELEASE all addrs, and issue new REQUEST for this IA)
 	    } else {
 		if ( (ptrOptAddr->getPref() == 0) || (ptrOptAddr->getValid() == 0) ) {
@@ -224,12 +224,12 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 		if (ptrOptAddr->getPref() != ptrAddrAddr->getPref() )
 		{
 		    // received diffrent prefered-lifetime
-		    // FIXME:
+		    /// @todo:
 		}
 		if (ptrOptAddr->getValid() != ptrAddrAddr->getValid() )
 		{
 		    // received diffrent prefered-lifetime
-		    // FIXME:
+		    /// @todo:
 		}
 		ptrAddrAddr->setTimestamp();
 	    }

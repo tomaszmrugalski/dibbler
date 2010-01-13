@@ -110,7 +110,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
 
-    // FIXME: SOLICIT without RAPID COMMIT should set this to true
+    /// @todo: SOLICIT without RAPID COMMIT should set this to true
     bool quiet = false;
 
     // --- check if client already has binding
@@ -242,7 +242,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> 
     if (ok) {
       ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
                                         "All addresses were assigned.",this->Parent);
-      // FIXME: if this is solicit, place "all addrs would be assigned."
+      /// @todo: if this is solicit, place "all addrs would be assigned."
     } else {
 	char buf[60];
 	sprintf(buf, "%lu addr(s) requested, but assigned only %lu.",addrsRequested, addrsAssigned);
@@ -472,7 +472,7 @@ void TSrvOptIA_NA::rebind(SmartPtr<TSrvOptIA_NA> queryOpt,
         return;
     }
 
-    // FIXME: 18.2.4 par. 3 (check if addrs are appropriate for this link)
+    /// @todo: 18.2.4 par. 3 (check if addrs are appropriate for this link)
 
     // everything seems ok, update data in addrdb
     ptrIA->setTimestamp();
@@ -517,7 +517,7 @@ void TSrvOptIA_NA::confirm(SmartPtr<TSrvOptIA_NA> queryOpt,
 
         SmartPtr<TSrvOptIAAddress> optAddr = (Ptr*)subOpt;
 
-	//FIXME: proper check if the addresses are valid or not should be performed
+	/// @todo: proper check if the addresses are valid or not should be performed
         SmartPtr<TSrvCfgAddrClass> ptrClass;
         ptrClass = CfgMgr->getClassByAddr(this->Iface, optAddr->getAddr());
 	if (!ptrClass)

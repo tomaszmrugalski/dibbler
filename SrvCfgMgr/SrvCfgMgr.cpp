@@ -189,7 +189,7 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 
 	// Complete name and ID (one of them usually misses depending on
 	// identifier used in config file.
-	// FIXME: Client's class uses setIface{Name,ID}(). We should unite the
+	/// @todo: Client's class uses setIface{Name,ID}(). We should unite the
 	// method names.
 	cfgIface->setName(ifaceIface->getName());
 	cfgIface->setID(ifaceIface->getID());
@@ -412,7 +412,7 @@ bool TSrvCfgMgr::isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
 long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid,
 				 SmartPtr<TIPv6Addr> clntAddr,  int iface)
 {
-    // FIXME: long long long int (128bit) could come in handy
+    /// @todo: long long long int (128bit) could come in handy
     double avail         = 0; // how many are available?
     double ifaceAssigned = 0; // how many are assigned on this iface?
     SmartPtr<TSrvCfgIface> ptrIface;
@@ -522,7 +522,7 @@ SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid,
     ptrClass = ptrIface->getAddrClass();
     return ptrClass->getRandomAddr();
 
-    //FIXME: get addrs from first address only
+    /// @todo: get addrs from first address only
 }
 
 
@@ -535,7 +535,7 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
     firstIface();
     while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
 
-    /* FIXME: reject-client and accept-only does not work in stateless mode */
+    /** @todo: reject-client and accept-only does not work in stateless mode */
     if (this->stateless())
 	return true;
 
@@ -568,7 +568,7 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
    firstIface();
    while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
 
-   /* FIXME: reject-client and accept-only does not work in stateless mode */
+   /** @todo: reject-client and accept-only does not work in stateless mode */
    if (this->stateless())
 	return true;
 

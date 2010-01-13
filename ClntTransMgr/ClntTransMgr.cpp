@@ -954,7 +954,7 @@ void TClntTransMgr::checkDecline()
 
 void TClntTransMgr::checkRequest()
 {
-    // FIXME: Reimplement check request support.
+    /// @todo: Reimplement check request support.
     return;
 
     SmartPtr<TAddrIA> ia;

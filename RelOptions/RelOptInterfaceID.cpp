@@ -14,11 +14,11 @@
 #include "DHCPConst.h"
 
 TRelOptInterfaceID::TRelOptInterfaceID(char * data, int dataLen, TMsg* parent)
-    :TOptInteger(OPTION_INTERFACE_ID, 4 /* FIXME: Support length other than 4 */, data, dataLen, parent) {
+    :TOptInteger(OPTION_INTERFACE_ID, 4 /** @todo: Support length other than 4 */, data, dataLen, parent) {
 }
 
 TRelOptInterfaceID::TRelOptInterfaceID(int interfaceID, TMsg* parent)
-    :TOptInteger(OPTION_INTERFACE_ID, 4 /* FIXME: Support length other than 4 */, interfaceID, parent) {
+    :TOptInteger(OPTION_INTERFACE_ID, 4 /** @todo: Support length other than 4 */, interfaceID, parent) {
 }
 
 bool TRelOptInterfaceID::doDuties() {

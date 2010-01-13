@@ -282,7 +282,7 @@ void doRevDnsZoneRoot( char * src,  char * dst, int length){
     dst[0]=0;
 
     i = 15 - length/8; /* skip whole bytes */
-    /* FIXME: what to do with prefixes which do not divide by 4? */
+    /** @todo: what to do with prefixes which do not divide by 4? */
     switch (length%8) {
     case 1:
 	break;

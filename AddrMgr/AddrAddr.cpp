@@ -26,7 +26,6 @@
  * @param pref prefered lifetime
  * @param valid valid lifetime
  *
- * @return <description or remove if void/constructor/destructor>
  */
 TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Prefered = pref;
@@ -53,7 +52,6 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
  * @param valid valid lifetime
  * @param prefix length of the prefix (1..128)
  *
- * @return <description or remove if void/constructor/destructor>
  */
 TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefix) {
     this->Prefered = pref;
@@ -87,12 +85,12 @@ SmartPtr<TIPv6Addr> TAddrAddr::get() {
 }
 
 /**
- * @brief returns prefered lifetime left
+ * @brief returns preferred lifetime left
  *
- * <full_description>
+ * returns preferred lifetime
  *
  *
- * @return <description or remove if void/constructor/destructor>
+ * @return preferred lifetime
  */
 unsigned long TAddrAddr::getPrefTimeout()
 {
@@ -107,7 +105,13 @@ unsigned long TAddrAddr::getPrefTimeout()
         return 0;
 }
 
-// return Valid time left
+/**
+ * @brief returns valid lifetime
+ *
+ * returns valid lifetime
+ *
+ * @return valid lifetime
+ */
 unsigned long TAddrAddr::getValidTimeout()
 {
     unsigned long ts = Timestamp + Valid;

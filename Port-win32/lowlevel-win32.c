@@ -116,7 +116,7 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
     if (0 > fd)
         return NULL;
 
-    /* FIXME should be freed somewhere */
+    /** @todo should be freed somewhere */
     retval = malloc(st.st_size);
     if (!retval)
         return NULL;
@@ -499,7 +499,7 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
 
-    // FIXME: check status
+    /// @todo: check status
     return LOWLEVEL_NO_ERROR;
 }
 
@@ -604,7 +604,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
         i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9, NULL);
 
     if (i==-1) {
-        // FIXME: some better error support
+        /// @todo: some better error support
         return -1;
     }
 
@@ -633,7 +633,7 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6, NULL);
 
     if (i==-1) {
-        // FIXME: some better error support
+        /// @todo: some better error support
         return -1;
     }
 
@@ -642,17 +642,17 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
 
 int prefix_forwarding_enabled()
 {
-    // FIXME: Detect if IPv6 forwarding is enabled or not
+    /// @todo: Detect if IPv6 forwarding is enabled or not
     return 1;
 }
 
 
 void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
 {
-    //FIXME: implement this
+    /// @todo: implement this
 }
 
 void link_state_change_cleanup()
 {
-   //FIXME: implement this
+   /// @todo: implement this
 }

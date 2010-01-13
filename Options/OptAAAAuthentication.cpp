@@ -103,7 +103,7 @@ TOptAAAAuthentication::TOptAAAAuthentication(TMsg* parent)
     this->Parent->setAuthInfoPtr(buf);
     this->Parent->setAAASPI(AAASPI);
 
-    // FIXME is this neccesary? AuthInfoKey will be different later anyway
+    /// @todo is this neccesary? AuthInfoKey will be different later anyway
     this->Parent->setAuthInfoKey();
 
     buf+=AAAAuthInfoLen;

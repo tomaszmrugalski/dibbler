@@ -39,12 +39,12 @@ TClntOptTimeZone::TClntOptTimeZone(string domain, TMsg* parent)
 
 TClntOptTimeZone::TClntOptTimeZone(char *buf, int bufsize, TMsg* parent)
     :TOptString(OPTION_NEW_TZDB_TIMEZONE, buf,bufsize, parent) {
-    // FIXME: do some validity check
+    /// @todo: do some validity check
 
 }
 
 bool TClntOptTimeZone::isValid() {
-    // FIXME: check is somehow
+    /// @todo: check is somehow
     return true;
 }
 

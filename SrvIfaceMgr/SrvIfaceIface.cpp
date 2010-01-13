@@ -62,7 +62,7 @@ SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SmartPtr<TIPv6Addr> 
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
 	return 0;
     }
-    /// FIXME: Implement finding RELAYs using link address
+    //// @todo: Implement finding RELAYs using link address
     Log(Error) << "Finding RELAYs using link address is not implemented yet. Using first relay:" 
 	      << this->Relays[0].iface->getFullName() << LogEnd;
     return this->Relays[0].iface;

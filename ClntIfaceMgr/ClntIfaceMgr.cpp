@@ -236,28 +236,27 @@ bool TClntIfaceMgr::doDuties() {
     
     this->firstIface();
     while (iface = (Ptr*)this->getIface()) {
-	cfgIface = ClntCfgMgr->getIface(iface->getID());
-	if (cfgIface) {
-	    // Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
-	    if (cfgIface->getFQDNState() == STATE_INPROCESS) {
-		// Here we check if all parameters are set, and do the DNS update if possible
-		List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
-		string fqdn = iface->getFQDN();
-		if (ClntAddrMgr->countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
+	      cfgIface = ClntCfgMgr->getIface(iface->getID());
+	      if (cfgIface) {
+            // Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
+            if (cfgIface->getFQDNState() == STATE_INPROCESS) {
+		            // Here we check if all parameters are set, and do the DNS update if possible
+		            List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
+		            string fqdn = iface->getFQDN();
+		            if (ClntAddrMgr->countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
 
-		    Log(Warning) << "FIXME: Sleeping 3 seconds before performing DNS Update." << LogEnd;
-		    /* FIXME: sleep cannot be performed here. What if client has to perform other 
-		       action during those 3 seconds? */
+		                Log(Warning) << "Sleeping 3 seconds before performing DNS Update." << LogEnd;
+		                /** @todo: sleep cannot be performed here. What if client has to perform other 
+		                   action during those 3 seconds? */
 #ifdef WIN32
-		    Sleep(3);
+            		    Sleep(3);
 #else
-		    sleep(3);
+            		    sleep(3);
 #endif
-		    this->fqdnAdd(iface, fqdn);
-
-		}
-	    }
-	}
+            		    this->fqdnAdd(iface, fqdn);
+            		}
+	          }
+	      }
     }
     ClntAddrMgr->dump();
     this->dump();
@@ -272,15 +271,15 @@ bool TClntIfaceMgr::fqdnAdd(SmartPtr<TClntIfaceIface> iface, string fqdn)
     SmartPtr<TClntCfgIface> cfgIface;
     cfgIface = ClntCfgMgr->getIface(iface->getID());
     if (!cfgIface) {
-	Log(Error) << "Unable to find interface with ifindex=" << iface->getID() << "." << LogEnd;
-	return false;
+	      Log(Error) << "Unable to find interface with ifindex=" << iface->getID() << "." << LogEnd;
+	      return false;
     }
     
     // For the moment, we just take the first DNS entry.
     List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
     if (!DNSSrvLst.count()) {
-	Log(Error) << "Unable to find DNS Server. FQDN add failed." << LogEnd;
-	return false;
+	      Log(Error) << "Unable to find DNS Server. FQDN add failed." << LogEnd;
+	      return false;
     }
     DNSSrvLst.first();
     DNSAddr = DNSSrvLst.get();
@@ -291,25 +290,24 @@ bool TClntIfaceMgr::fqdnAdd(SmartPtr<TClntIfaceIface> iface, string fqdn)
     ptrAddrIA = ClntAddrMgr->getIA();
     
     if (ptrAddrIA->countAddr() > 0) {
-	ptrAddrIA->firstAddr();
-	addr = ptrAddrIA->getAddr()->get();
+	      ptrAddrIA->firstAddr();
+	      addr = ptrAddrIA->getAddr()->get();
 	
-	Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *addr 
-		    << " and FQDN=" << fqdn << LogEnd;
+	      Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *addr 
+		          << " and FQDN=" << fqdn << LogEnd;
 	
-			// remember DNS Address (used during address release)
-	ptrAddrIA->setFQDNDnsServer(DNSAddr);
+			  // remember DNS Address (used during address release)
+    	  ptrAddrIA->setFQDNDnsServer(DNSAddr);
 	
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
-	/* add AAAA record */
-	DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(), DNSUPDATE_AAAA);
-	int result = act->run();
-	act->showResult(result);
-	delete act;
-
+      	/* add AAAA record */
+	      DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(), DNSUPDATE_AAAA);
+	      int result = act->run();
+	      act->showResult(result);
+	      delete act;
 #else
-	Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
-	return false;
+	      Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+	      return false;
 #endif
     }
     return true;
@@ -324,9 +322,9 @@ bool TClntIfaceMgr::fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> i
     ia->firstAddr();
     SPtr<TAddrAddr> tmpAddr = ia->getAddr();
     if (!tmpAddr) {
-	Log(Error) << "FQDN: Unable to delete FQDN: IA (IAID=" << ia->getIAID() << ") does not have any addresses." 
-		   << LogEnd;
-	return false;
+	      Log(Error) << "FQDN: Unable to delete FQDN: IA (IAID=" << ia->getIAID() << ") does not have any addresses." 
+		         << LogEnd;
+	      return false;
     }
     SPtr<TIPv6Addr> myAddr = tmpAddr->get();
     
@@ -356,13 +354,15 @@ void TClntIfaceMgr::dump()
 }
 
 /** 
- * configures prefix in the operating system
+ * @brief configures prefix in the operating system
+ *
+ * configures specified prefix in the operating system
  * 
- * @param iface 
- * @param prefix 
- * @param prefixLen 
- * @param pref 
- * @param valid 
+ * @param iface interface index
+ * @param prefix prefix to be configured
+ * @param prefixLen prefix length
+ * @param pref prefered lifetime
+ * @param valid valid lifetime
  * 
  * @return true if operation was successful, false otherwise
  */
@@ -400,38 +400,36 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     }
 
 
-    if (ClntCfgMgr->getMappingPrefix()) {
-	char buf[128];
-	char cmd1[]="./mappingprefixadd";
-	char cmd2[]="./mappingprefixdel";
-	int returnCode = 0;
-	switch (mode) {
-	case PREFIX_MODIFY_ADD:
-	{
-	    sprintf(buf, "sh %s %s", cmd1, prefix->getPlain());
-	    Log(Notice) << "Executing external command to ADD prefix: " << buf << LogEnd;
-	    returnCode = system(buf);
-	    Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
-	    break;
-	}
-	case PREFIX_MODIFY_DEL:
-	{
-	    sprintf(buf, "sh %s %s", cmd2, prefix->getPlain());
-	    Log(Notice) << "Executing external command to DEL prefix: " << buf << LogEnd;
+    if (ClntCfgMgr->getMappingPrefix()) 
+    {
+      char buf[128];
+      char cmd1[]="./mappingprefixadd";
+      char cmd2[]="./mappingprefixdel";
+      int returnCode = 0;
+      switch (mode) {
+          case PREFIX_MODIFY_ADD:
+          {
+              sprintf(buf, "sh %s %s", cmd1, prefix->getPlain());
+              Log(Notice) << "Executing external command to ADD prefix: " << buf << LogEnd;
+              returnCode = system(buf);
+              Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
+              break;
+          }
+          case PREFIX_MODIFY_DEL:
+          {
+              sprintf(buf, "sh %s %s", cmd2, prefix->getPlain());
+              Log(Notice) << "Executing external command to DEL prefix: " << buf << LogEnd;
 
-	    returnCode = system(buf);
-	    Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
-	    break;
-	}
-	default:
-	{
-
-	}
-	}
-	
-	return true; // added successfully
+              returnCode = system(buf);
+              Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
+              break;
+          }
+          default:
+          {
+          }
+    	}
+    	return true; // added successfully
     }
-
 
     string action;
     int status = -1;

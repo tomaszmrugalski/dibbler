@@ -86,13 +86,13 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     }
 
     // delete OPTION_KEYGEN from OPTION_ORO (needed only once)
-    // FIXME: shouldn't it be done when receiving OPTION_KEYGEN in ADVERTISE?
+    /// @todo: shouldn't it be done when receiving OPTION_KEYGEN in ADVERTISE?
     SmartPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
     if (optORO) {
         if (advertise->getOption(OPTION_KEYGEN))
             optORO->delOption(OPTION_KEYGEN);
         // delete also OPTION_AUTH from OPTION_ORO
-        // FIXME: shouldn't it be done when receiving OPTION_AUTH in ADVERTISE?
+        /// @todo: shouldn't it be done when receiving OPTION_AUTH in ADVERTISE?
         if (advertise->getOption(OPTION_AUTH))
             optORO->delOption(OPTION_AUTH);
     }

@@ -160,7 +160,7 @@ void TClntMsgConfirm::doDuties()
     
     //The first Confirm message from the client on the interface MUST be
     //delayed by a random amount of time between 0 and CNF_MAX_DELAY.    
-    // FIXME:
+    /// @todo:
         //if (RC == 0) ;
 		//microsleep(rand()%1000000);
     if (!MRD) {

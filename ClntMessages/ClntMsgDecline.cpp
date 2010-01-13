@@ -70,7 +70,7 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
 void TClntMsgDecline::answer(SmartPtr<TClntMsg> rep)
 {
-    //FIXME: Is UseMulticast option included?
+    /// @todo: Is UseMulticast option included?
 
     SmartPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
     SmartPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
