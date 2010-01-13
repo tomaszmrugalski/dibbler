@@ -28,16 +28,16 @@ class TClntCfgAddr
     friend std::ostream& operator<<(std::ostream& out,TClntCfgAddr& group);
  public:
     TClntCfgAddr();
-    TClntCfgAddr(SmartPtr<TIPv6Addr> addr);
-    TClntCfgAddr(SmartPtr<TIPv6Addr> addr,long valid,long pref);
+    TClntCfgAddr(SPtr<TIPv6Addr> addr);
+    TClntCfgAddr(SPtr<TIPv6Addr> addr,long valid,long pref);
     ~TClntCfgAddr();
 
-    SmartPtr<TIPv6Addr> get();
+    SPtr<TIPv6Addr> get();
     unsigned long getValid();
     unsigned long getPref();
-    void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
+    void setOptions(SPtr<TClntParsGlobalOpt> opt);
  private:
-    SmartPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Addr;
     unsigned long Valid;
     unsigned long Pref;
 };

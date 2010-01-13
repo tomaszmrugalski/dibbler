@@ -53,7 +53,7 @@ void TClntCfgPD::setIAID(long iaid) {
     IAID=iaid;
 }
 
-void TClntCfgPD::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
+void TClntCfgPD::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     this->T1=opt->getT1();
     this->T2=opt->getT2();
 }
@@ -63,11 +63,11 @@ void TClntCfgPD::firstPrefix()
     ClntCfgPrefixLst.first();
 }
 
-SmartPtr<TClntCfgPrefix> TClntCfgPD::getPrefix() {
+SPtr<TClntCfgPrefix> TClntCfgPD::getPrefix() {
     return ClntCfgPrefixLst.get();
 }
 
-TClntCfgPD::TClntCfgPD(SmartPtr<TClntCfgPD> right, long iAID)
+TClntCfgPD::TClntCfgPD(SPtr<TClntCfgPD> right, long iAID)
     :ClntCfgPrefixLst(right->ClntCfgPrefixLst)
 {
     IAID=iAID;
@@ -75,7 +75,7 @@ TClntCfgPD::TClntCfgPD(SmartPtr<TClntCfgPD> right, long iAID)
     T2=right->getT2();
 }
 
-void TClntCfgPD::addPrefix(SmartPtr<TClntCfgPrefix> prefix)
+void TClntCfgPD::addPrefix(SPtr<TClntCfgPrefix> prefix)
 {
     this->ClntCfgPrefixLst.append(prefix);    
 }
@@ -85,7 +85,7 @@ ostream& operator<<(ostream& out,TClntCfgPD& pd)
     out << "        <pd iaid=\"" << pd.IAID << "\" state=\"" << StateToString(pd.State) << "\" t1=\"" 
 	<< pd.T1 << "\" t2=\"" << pd.T2 << "\" prefixes=\"" << pd.ClntCfgPrefixLst.count() << "\">" << std::endl;
 
-    SmartPtr<TClntCfgPrefix> prefix;
+    SPtr<TClntCfgPrefix> prefix;
     
     pd.ClntCfgPrefixLst.first();
     while(prefix=pd.ClntCfgPrefixLst.get())

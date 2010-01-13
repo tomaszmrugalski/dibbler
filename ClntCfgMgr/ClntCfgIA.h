@@ -32,15 +32,15 @@ class TClntCfgIA
     unsigned long getT1();
     unsigned long getT2();
 
-    void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
+    void setOptions(SPtr<TClntParsGlobalOpt> opt);
 
     void firstAddr();
-    SmartPtr<TClntCfgAddr> getAddr();
+    SPtr<TClntCfgAddr> getAddr();
     long countAddr();
-    void addAddr(SmartPtr<TClntCfgAddr> addr);
+    void addAddr(SPtr<TClntCfgAddr> addr);
 
     TClntCfgIA();
-    TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID);
+    TClntCfgIA(SPtr<TClntCfgIA> right, long iAID);
     
     void reset();
     void setState(enum EState state);

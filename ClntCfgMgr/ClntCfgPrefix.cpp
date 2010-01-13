@@ -16,7 +16,7 @@
 #include "ClntCfgPrefix.h"
 #include "Logger.h"
 
-SmartPtr<TIPv6Addr> TClntCfgPrefix::get() {
+SPtr<TIPv6Addr> TClntCfgPrefix::get() {
     return Prefix;
 }
 
@@ -29,7 +29,7 @@ unsigned long TClntCfgPrefix::getPref() {
 }
 
 
-TClntCfgPrefix::TClntCfgPrefix(SmartPtr<TIPv6Addr> prefix, long valid, long pref, char prefixLength)
+TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix, long valid, long pref, char prefixLength)
 {
     Prefix=prefix;
     Valid = valid;
@@ -41,7 +41,7 @@ TClntCfgPrefix::~TClntCfgPrefix() {
 
 }
 
-void TClntCfgPrefix::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
+void TClntCfgPrefix::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     this->Valid=opt->getValid();
     this->Pref=opt->getPref();
 }
@@ -53,7 +53,7 @@ TClntCfgPrefix::TClntCfgPrefix() {
     PrefixLength = 0;
 }
 
-TClntCfgPrefix::TClntCfgPrefix(SmartPtr<TIPv6Addr> prefix, char prefixLength) {
+TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix, char prefixLength) {
     Prefix=prefix;
     Valid = ULONG_MAX;
     Pref = ULONG_MAX;

@@ -31,15 +31,15 @@ class TClntCfgPD
     unsigned long getT2();
     char getPrefixLength();
 
-    void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
+    void setOptions(SPtr<TClntParsGlobalOpt> opt);
 
     void firstPrefix();
-    SmartPtr<TClntCfgPrefix> getPrefix();
+    SPtr<TClntCfgPrefix> getPrefix();
     long countPrefixes();
-    void addPrefix(SmartPtr<TClntCfgPrefix> addr);
+    void addPrefix(SPtr<TClntCfgPrefix> addr);
 
     TClntCfgPD();
-    TClntCfgPD(SmartPtr<TClntCfgPD> right, long iAID);
+    TClntCfgPD(SPtr<TClntCfgPD> right, long iAID);
 
     void setState(enum EState state);
     enum EState getState();

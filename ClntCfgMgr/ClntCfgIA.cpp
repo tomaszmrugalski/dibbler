@@ -66,11 +66,11 @@ void TClntCfgIA::firstAddr()
     ClntCfgAddrLst.first();
 }
 
-SmartPtr<TClntCfgAddr> TClntCfgIA::getAddr() {
+SPtr<TClntCfgAddr> TClntCfgIA::getAddr() {
     return ClntCfgAddrLst.get();
 }
 
-TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)
+TClntCfgIA::TClntCfgIA(SPtr<TClntCfgIA> right, long iAID)
     :ClntCfgAddrLst(right->ClntCfgAddrLst)
 {
     IAID=iAID;
@@ -79,14 +79,14 @@ TClntCfgIA::TClntCfgIA(SmartPtr<TClntCfgIA> right, long iAID)
     this->State = STATE_NOTCONFIGURED;
 }
 
-void TClntCfgIA::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
+void TClntCfgIA::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     this->T1=opt->getT1();
     this->T2=opt->getT2();
     
     this->AddrParams = opt->getAddrParams();
 }
 
-void TClntCfgIA::addAddr(SmartPtr<TClntCfgAddr> addr)
+void TClntCfgIA::addAddr(SPtr<TClntCfgAddr> addr)
 {
     this->ClntCfgAddrLst.append(addr);    
 }
@@ -101,7 +101,7 @@ ostream& operator<<(ostream& out,TClntCfgIA& ia)
     out << "        <ia iaid=\"" << ia.IAID << "\" state=\"" << StateToString(ia.State) << "\" t1=\"" 
 	<< ia.T1 << "\" t2=\"" << ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
 
-    SmartPtr<TClntCfgAddr> addr;
+    SPtr<TClntCfgAddr> addr;
     
     ia.ClntCfgAddrLst.first();
     while(addr=ia.ClntCfgAddrLst.get())

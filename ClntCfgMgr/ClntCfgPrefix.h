@@ -27,16 +27,16 @@ class TClntCfgPrefix
     friend std::ostream& operator<<(std::ostream& out,TClntCfgPrefix& group);
  public:
     TClntCfgPrefix();
-    TClntCfgPrefix(SmartPtr<TIPv6Addr> prefix, char prefixLength);
-    TClntCfgPrefix(SmartPtr<TIPv6Addr> prefix, long valid, long pref, char prefixLength);
+    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, char prefixLength);
+    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, long valid, long pref, char prefixLength);
     ~TClntCfgPrefix();
 
-    SmartPtr<TIPv6Addr> get();
+    SPtr<TIPv6Addr> get();
     unsigned long getValid();
     unsigned long getPref();
-    void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
+    void setOptions(SPtr<TClntParsGlobalOpt> opt);
  private:
-    SmartPtr<TIPv6Addr> Prefix;
+    SPtr<TIPv6Addr> Prefix;
     unsigned long Valid;
     unsigned long Pref;
     char PrefixLength;

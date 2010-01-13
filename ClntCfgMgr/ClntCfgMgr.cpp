@@ -37,7 +37,7 @@ using namespace std;
 static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
 #endif
 
-TClntCfgMgr::TClntCfgMgr(SmartPtr<TClntIfaceMgr> ClntIfaceMgr, 
+TClntCfgMgr::TClntCfgMgr(SPtr<TClntIfaceMgr> ClntIfaceMgr, 
                          const string cfgFile)
     :TCfgMgr((Ptr*)ClntIfaceMgr)
 {
@@ -140,8 +140,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << CLNTCONF_FILE << LogEnd;
 
-    SmartPtr<TClntCfgIface> cfgIface;
-    SmartPtr<TIfaceIface> ifaceIface;
+    SPtr<TClntCfgIface> cfgIface;
+    SPtr<TIfaceIface> ifaceIface;
 
     if (cfgIfaceCnt) {
 	// user specified some interfaces in config file
@@ -254,16 +254,16 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	    }
 
 	    // One address...
-	    SmartPtr<TClntCfgAddr> addr(new TClntCfgAddr());
+	    SPtr<TClntCfgAddr> addr(new TClntCfgAddr());
 	    addr->setOptions(parser->ParserOptStack.getLast());
 
 	    // ... is stored in one IA...
-	    SmartPtr<TClntCfgIA> ia = new TClntCfgIA();
+	    SPtr<TClntCfgIA> ia = new TClntCfgIA();
 	    ia->setOptions(parser->ParserOptStack.getLast());
 	    ia->addAddr(addr);
 	    
 	    // ... on this newly created interface...
-	    cfgIface = SmartPtr<TClntCfgIface>(new TClntCfgIface(ifaceIface->getID()));
+	    cfgIface = SPtr<TClntCfgIface>(new TClntCfgIface(ifaceIface->getID()));
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
 	    cfgIface->addIA(ia);
@@ -285,19 +285,19 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     return true;
 }
 
-SmartPtr<TClntCfgIface> TClntCfgMgr::getIface()
+SPtr<TClntCfgIface> TClntCfgMgr::getIface()
 {
     return ClntCfgIfaceLst.get();
 }
 
-void TClntCfgMgr::addIface(SmartPtr<TClntCfgIface> ptr)
+void TClntCfgMgr::addIface(SPtr<TClntCfgIface> ptr)
 {
     ClntCfgIfaceLst.append(ptr);
 }
 
 void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive)
 {
-    SmartPtr<TClntCfgIface> x;
+    SPtr<TClntCfgIface> x;
 
     if (inactive)
     {
@@ -346,11 +346,11 @@ bool TClntCfgMgr::getReconfigure()
 
 int TClntCfgMgr::countAddrForIA(long IAID)
 {
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     firstIface();
     while (iface = getIface() ) 
     {
-	SmartPtr<TClntCfgIA> ia;
+	SPtr<TClntCfgIA> ia;
 	iface->firstIA();
 	while (ia = iface->getIA())
 	    if (ia->getIAID()==IAID)
@@ -359,13 +359,13 @@ int TClntCfgMgr::countAddrForIA(long IAID)
     return 0;
 }
 
-SmartPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID)
+SPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID)
 {
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     firstIface();
     while (iface = getIface() ) 
     {
-	SmartPtr<TClntCfgIA> ia;
+	SPtr<TClntCfgIA> ia;
 	iface->firstIA();
 	while (ia = iface->getIA())
 	    if (ia->getIAID()==IAID)
@@ -374,13 +374,13 @@ SmartPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID)
     return 0;
 }
 
-SmartPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID)
+SPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID)
 {
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     firstIface();
     while (iface = getIface() ) 
     {
-	SmartPtr<TClntCfgPD> pd;
+	SPtr<TClntCfgPD> pd;
 	iface->firstPD();
 	while (pd = iface->getPD())
 	    if (pd->getIAID()==IAID)
@@ -392,7 +392,7 @@ SmartPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID)
 bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
 {
     firstIface();
-    SmartPtr<TClntCfgIface> ptrIface;
+    SPtr<TClntCfgIface> ptrIface;
     while (ptrIface = getIface() ) {
         if ( ptrIface->getID() == iface ) break;
     }
@@ -402,7 +402,7 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
         return false;
     }
 
-    SmartPtr<TClntCfgIA> ia;
+    SPtr<TClntCfgIA> ia;
     ptrIface->firstIA();
 
     while (ia = ptrIface->getIA()) 
@@ -422,7 +422,7 @@ bool TClntCfgMgr::validateConfig()
 {
     //Is everything so far is ok
     if (IsDone) return false;
-    SmartPtr<TClntCfgIface> ptrIface;
+    SPtr<TClntCfgIface> ptrIface;
     this->ClntCfgIfaceLst.first();
     while(ptrIface=ClntCfgIfaceLst.get())
     {
@@ -433,7 +433,7 @@ bool TClntCfgMgr::validateConfig()
     return true;
 }
 
-bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
+bool TClntCfgMgr::validateIface(SPtr<TClntCfgIface> ptrIface) {
 
     if(ptrIface->isReqTimezone()&&(ptrIface->getProposedTimezone()!=""))
     {   
@@ -446,7 +446,7 @@ bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
 	}
     }
     
-    SmartPtr<TClntCfgIA> ptrIA;
+    SPtr<TClntCfgIA> ptrIA;
     ptrIface->firstIA();
     while(ptrIA=ptrIface->getIA())
     {
@@ -456,7 +456,7 @@ bool TClntCfgMgr::validateIface(SmartPtr<TClntCfgIface> ptrIface) {
     return true;
 }
 
-bool TClntCfgMgr::validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA) {
+bool TClntCfgMgr::validateIA(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgIA> ptrIA) {
 
     if ( ptrIA->getT2()<ptrIA->getT1() ) 
     {
@@ -464,7 +464,7 @@ bool TClntCfgMgr::validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfg
 		  << "/" << ptrIface->getID() << " interface." << LogEnd;
 	return false;
     }
-    SmartPtr<TClntCfgAddr> ptrAddr;
+    SPtr<TClntCfgAddr> ptrAddr;
     ptrIA->firstAddr();
     while(ptrAddr=ptrIA->getAddr())
     {
@@ -474,10 +474,10 @@ bool TClntCfgMgr::validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfg
     return true;
 }
 
-bool TClntCfgMgr::validateAddr(SmartPtr<TClntCfgIface> ptrIface, 
-			       SmartPtr<TClntCfgIA> ptrIA,
-			       SmartPtr<TClntCfgAddr> ptrAddr) {
-    SmartPtr<TIPv6Addr> addr = ptrAddr->get();
+bool TClntCfgMgr::validateAddr(SPtr<TClntCfgIface> ptrIface, 
+			       SPtr<TClntCfgIA> ptrIA,
+			       SPtr<TClntCfgAddr> ptrAddr) {
+    SPtr<TIPv6Addr> addr = ptrAddr->get();
     if ( addr && addr->linkLocal()) {
 	Log(Crit) << "Address " << ptrAddr->get()->getPlain() << " specified in IA "
 		  << ptrIA->getIAID() << " on the " << ptrIface->getName() << "/" << ptrIface->getID()
@@ -500,33 +500,33 @@ bool TClntCfgMgr::validateAddr(SmartPtr<TClntCfgIface> ptrIface,
     return true;
 }
 
-SmartPtr<TClntCfgIface> TClntCfgMgr::getIface(int id)
+SPtr<TClntCfgIface> TClntCfgMgr::getIface(int id)
 {
     firstIface();
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     while(iface=getIface())
         if (iface->getID()==id) return iface;
-    return SmartPtr<TClntCfgIface> ();
+    return SPtr<TClntCfgIface> ();
 }
 
-SmartPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
+SPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
 {
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     firstIface();
     while(iface=getIface())
     {
-	SmartPtr<TClntCfgIA> ia;
+	SPtr<TClntCfgIA> ia;
 	iface->firstIA();
 	while(ia=iface->getIA())
 	    if (ia->getIAID()==iaid)
 		return iface;
     }
-    return SmartPtr<TClntCfgIface>();
+    return SPtr<TClntCfgIface>();
 }
 
 bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
 {
-    SmartPtr<TClntParsGlobalOpt> opt = parser->ParserOptStack.getLast();
+    SPtr<TClntParsGlobalOpt> opt = parser->ParserOptStack.getLast();
     this->Digest         = opt->getDigest();
     this->LogLevel       = logger::getLogLevel();
     this->LogName        = logger::getLogName();
@@ -603,7 +603,7 @@ bool TClntCfgMgr::addInfRefreshTime()
        only when running in stateless mode */
 
     // are there any stateful interfaces?
-    SmartPtr<TClntCfgIface> ptr;
+    SPtr<TClntCfgIface> ptr;
     firstIface();
     while ( ptr = getIface() ) {
         if (!ptr->stateless())
@@ -728,7 +728,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     else
         strum << "  <!-- duid not set -->";
 
-    SmartPtr<TClntCfgIface> ptr;
+    SPtr<TClntCfgIface> ptr;
     x.firstIface();
 
     while ( ptr = x.getIface() ) {

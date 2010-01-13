@@ -60,7 +60,7 @@ TClntCfgIface::TClntCfgIface(int ifaceNr) {
     this->VendorSpecState = STATE_DISABLED;
 }
 
-void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
+void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     this->isIA        = opt->getIsIAs();
     this->Unicast     = opt->getUnicast();
     this->RapidCommit = opt->getRapidCommit();
@@ -109,7 +109,7 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
     if (ReqLifetime)   this->setLifetimeState(STATE_NOTCONFIGURED);
     if (ReqVendorSpec) this->setVendorSpecState(STATE_NOTCONFIGURED);
     // copy preferred-server list
-    SmartPtr<TStationID> station;
+    SPtr<TStationID> station;
     opt->firstPrefSrv();
     while (station = opt->getPrefSrv())
 	this->PrefSrvLst.append(station);
@@ -120,10 +120,10 @@ void TClntCfgIface::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
 	this->RejectedSrvLst.append(station);
 }
 
-bool TClntCfgIface::isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> duid)
+bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
 {
     this->RejectedSrvLst.first();
-    SmartPtr<TStationID> RejectedSrv;
+    SPtr<TStationID> RejectedSrv;
     while(RejectedSrv=RejectedSrvLst.get())
     {
         if (((*RejectedSrv)==addr)||((*RejectedSrv)==duid))
@@ -136,11 +136,11 @@ void TClntCfgIface::firstTA() {
     this->ClntCfgTALst.first();
 }
 
-SmartPtr<TClntCfgTA> TClntCfgIface::getTA() {
+SPtr<TClntCfgTA> TClntCfgIface::getTA() {
     return this->ClntCfgTALst.get();
 }
 
-void  TClntCfgIface::addTA(SmartPtr<TClntCfgTA> ta) {
+void  TClntCfgIface::addTA(SPtr<TClntCfgTA> ta) {
     this->ClntCfgTALst.append(ta);
 }
 
@@ -159,7 +159,7 @@ int TClntCfgIface::countIA()
     return IALst.count();
 }
 
- SmartPtr<TClntCfgIA> TClntCfgIface::getIA()
+ SPtr<TClntCfgIA> TClntCfgIface::getIA()
 {
     return IALst.get();
 }
@@ -175,7 +175,7 @@ SPtr<TClntCfgIA> TClntCfgIface::getIA(int iaid)
     return 0;
 }
 
- void TClntCfgIface::addIA(SmartPtr<TClntCfgIA> ptr)
+ void TClntCfgIface::addIA(SPtr<TClntCfgIA> ptr)
 {
     IALst.append(ptr);
 }
@@ -190,7 +190,7 @@ int TClntCfgIface::countPD()
     return PDLst.count();
 }
 
- SmartPtr<TClntCfgPD> TClntCfgIface::getPD()
+ SPtr<TClntCfgPD> TClntCfgIface::getPD()
 {
     return PDLst.get();
 }
@@ -206,18 +206,10 @@ SPtr<TClntCfgPD> TClntCfgIface::getPD(int iaid)
     return 0;
 }
 
-void TClntCfgIface::addPD(SmartPtr<TClntCfgPD> ptr)
+void TClntCfgIface::addPD(SPtr<TClntCfgPD> ptr)
 {
     PDLst.append(ptr);
 }
-
-
-#if 0
-SmartPtr<TClntCfgIA> TClntCfgIface::getLastIA()
-{
-    return IALst.getLast();
-}
-#endif
 
  string TClntCfgIface::getName(void)
 {
@@ -484,8 +476,8 @@ int  TClntCfgIface::getPrefixLength() {
 
 ostream& operator<<(ostream& out,TClntCfgIface& iface)
 {
-    SmartPtr<TIPv6Addr> addr;
-    SmartPtr<string> str;
+    SPtr<TIPv6Addr> addr;
+    SPtr<string> str;
 
     out << dec;
     out<<"  <ClntCfgIface ";
@@ -505,7 +497,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     out << "    <!-- addresses -->" << endl;
     out << "    <iaLst count=\"" << iface.IALst.count() << "\">" << endl;
-    SmartPtr<TClntCfgIA> ia;
+    SPtr<TClntCfgIA> ia;
     iface.IALst.first();
     while(ia=iface.IALst.get())
     {	
@@ -514,7 +506,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << "    </iaLst>" << endl;
 
     out << "    <!-- temporary addresses -->" << endl;
-    SmartPtr<TClntCfgTA> ta;
+    SPtr<TClntCfgTA> ta;
     iface.firstTA();
     while (ta = iface.getTA() ) {
 	out << *ta;
@@ -524,7 +516,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     out << "    <!-- prefix delegation -->" << endl;
     out << "    <pdLst count=\"" << iface.countPD() << "\">" << endl;
-    SmartPtr<TClntCfgPD> pd;
+    SPtr<TClntCfgPD> pd;
     iface.firstPD();
     while (pd = iface.getPD()) {
 	out << *pd;

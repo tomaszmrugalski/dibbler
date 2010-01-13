@@ -39,31 +39,31 @@ public:
     TClntCfgIface(string ifaceName);
     TClntCfgIface(int ifaceNr);
 
-    bool isServerRejected(SmartPtr<TIPv6Addr> addr,SmartPtr<TDUID> duid);
+    bool isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid);
 
     // IA
     void firstIA();
     int countIA();
     SPtr<TClntCfgIA> getIA();
     SPtr<TClntCfgIA> getIA(int iaid);
-    void addIA(SmartPtr<TClntCfgIA> ptr);
+    void addIA(SPtr<TClntCfgIA> ptr);
 
     // PD
     void firstPD();
     int countPD();
     SPtr<TClntCfgPD> getPD();
     SPtr<TClntCfgPD> getPD(int iaid);
-    void addPD(SmartPtr<TClntCfgPD> ptr);
+    void addPD(SPtr<TClntCfgPD> ptr);
     
     // TA
     void firstTA();
-    void addTA(SmartPtr<TClntCfgTA> ta);
-    SmartPtr<TClntCfgTA> getTA();
+    void addTA(SPtr<TClntCfgTA> ta);
+    SPtr<TClntCfgTA> getTA();
     int countTA();
 
     string getName(void);
     string getFullName(void);
-    void setOptions(SmartPtr<TClntParsGlobalOpt> opt);
+    void setOptions(SPtr<TClntParsGlobalOpt> opt);
     int	getID(void);
     void setNoConfig();
     void setIfaceID(int ifaceID);

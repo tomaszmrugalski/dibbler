@@ -137,9 +137,9 @@ List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
-TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
-TContainer<SmartPtr<string> > PresentStringLst;                             \
+TContainer<SPtr<TStationID> > PresentStationLst;                        \
+TContainer<SPtr<TIPv6Addr> > PresentAddrLst;                            \
+TContainer<SPtr<string> > PresentStringLst;                             \
 List(TClntOptVendorSpec) VendorSpec;					    \
 SPtr<TClntOptVendorSpec> TunnelMode;                                        \
 /*method check whether interface with id=ifaceNr has been */                \
@@ -1679,7 +1679,7 @@ case 56:
 #line 262 "ClntParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);
-    ClntCfgIfaceLst.append(SmartPtr<TClntCfgIface> (new TClntCfgIface(yyvsp[-1].ival)) );
+    ClntCfgIfaceLst.append(SPtr<TClntCfgIface> (new TClntCfgIface(yyvsp[-1].ival)) );
     ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
     ClntCfgIfaceLst.getLast()->setNoConfig();
 ;
@@ -1775,15 +1775,15 @@ case 79:
 case 84:
 #line 389 "ClntParser.y"
 {
-    SmartPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
-    SmartPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
+    SPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
+    SPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
     ParserOptStack.append(newOpt);
 ;
     break;}
 case 85:
 #line 395 "ClntParser.y"
 {
-    //ClntCfgAddrLst.append(SmartPtr<TClntCfgAddr> (new TClntCfgAddr()));
+    //ClntCfgAddrLst.append(SPtr<TClntCfgAddr> (new TClntCfgAddr()));
     //set proper options specific for this Address
     //ClntCfgAddrLst.getLast()->setOptions(&(*ParserOptStack.getLast()));
     if (ParserOptStack.count())
@@ -1933,27 +1933,27 @@ case 110:
     break;}
 case 113:
 #line 541 "ClntParser.y"
-{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); ;
+{ SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); ;
     break;}
 case 114:
 #line 542 "ClntParser.y"
-{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); ;
+{ SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); ;
     break;}
 case 115:
 #line 543 "ClntParser.y"
-{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); ;
+{ SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); ;
     break;}
 case 116:
 #line 544 "ClntParser.y"
-{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); ;
+{ SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); ;
     break;}
 case 117:
 #line 545 "ClntParser.y"
-{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); ;
+{ SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); ;
     break;}
 case 118:
 #line 546 "ClntParser.y"
-{ SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); ;
+{ SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); ;
     break;}
 case 119:
 #line 551 "ClntParser.y"
@@ -2135,42 +2135,42 @@ case 145:
 case 146:
 #line 739 "ClntParser.y"
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
 ;
     break;}
 case 147:
 #line 743 "ClntParser.y"
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
 ;
     break;}
 case 148:
 #line 747 "ClntParser.y"
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr(yyvsp[0].addrval))));
 ;
     break;}
 case 149:
 #line 751 "ClntParser.y"
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID( new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID( new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length))));
 ;
     break;}
 case 150:
 #line 757 "ClntParser.y"
-{PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
+{PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
     break;}
 case 151:
 #line 758 "ClntParser.y"
-{PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
+{PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr(yyvsp[0].addrval)));;
     break;}
 case 152:
 #line 762 "ClntParser.y"
-{ PresentStringLst.append(SmartPtr<string> (new string(yyvsp[0].strval))); ;
+{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 153:
 #line 763 "ClntParser.y"
-{ PresentStringLst.append(SmartPtr<string> (new string(yyvsp[0].strval))); ;
+{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 154:
 #line 766 "ClntParser.y"
@@ -2184,7 +2184,7 @@ case 156:
 #line 775 "ClntParser.y"
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 ;
     break;}
@@ -2223,7 +2223,7 @@ case 162:
 #line 811 "ClntParser.y"
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
 ;
     break;}
@@ -2255,7 +2255,7 @@ case 167:
 #line 843 "ClntParser.y"
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setSIPServerLst(&PresentAddrLst);
 ;
     break;}
@@ -2318,7 +2318,7 @@ case 176:
 #line 904 "ClntParser.y"
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 ;
     break;}
@@ -2338,7 +2338,7 @@ case 179:
 #line 922 "ClntParser.y"
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 ;
     break;}
@@ -2636,7 +2636,7 @@ YYLABEL(yyerrhandle)
  */
 bool ClntParser::CheckIsIface(int ifaceNr)
 {
-  SmartPtr<TClntCfgIface> ptr;
+  SPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) YYABORT;
@@ -2647,7 +2647,7 @@ bool ClntParser::CheckIsIface(int ifaceNr)
 //already declared 
 bool ClntParser::CheckIsIface(string ifaceName)
 {
-  SmartPtr<TClntCfgIface> ptr;
+  SPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
   {
@@ -2674,7 +2674,7 @@ void ClntParser::StartIfaceDeclaration()
 
 bool ClntParser::EndIfaceDeclaration()
 {
-    SmartPtr<TClntCfgIface> iface = ClntCfgIfaceLst.getLast();
+    SPtr<TClntCfgIface> iface = ClntCfgIfaceLst.getLast();
     if (!iface) {
 	Log(Crit) << "Internal error: Interface not found. Something is wrong. Very wrong." << LogEnd;
 	return false;
@@ -2700,14 +2700,14 @@ bool ClntParser::EndIfaceDeclaration()
     }
 
     // add all IAs to the interface
-    SmartPtr<TClntCfgIA> ia;
+    SPtr<TClntCfgIA> ia;
     ClntCfgIALst.first();
     while (ia=ClntCfgIALst.get()) {
 	ClntCfgIfaceLst.getLast()->addIA(ia);
     }
     
     //add all TAs to the interface
-    SmartPtr<TClntCfgTA> ptrTA;
+    SPtr<TClntCfgTA> ptrTA;
     ClntCfgTALst.first();
     while ( ptrTA = ClntCfgTALst.get() ) {
 	iface->addTA(ptrTA);
@@ -2758,9 +2758,9 @@ void ClntParser::EndIADeclaration()
     if(!ClntCfgAddrLst.count()) {
 	EmptyIA();
     } else {
-	SmartPtr<TClntCfgIA> ia = new TClntCfgIA();
+	SPtr<TClntCfgIA> ia = new TClntCfgIA();
 	ClntCfgIALst.append(ia);
-	SmartPtr<TClntCfgAddr> ptr;
+	SPtr<TClntCfgAddr> ptr;
 	ClntCfgAddrLst.first();
 	while(ptr=ClntCfgAddrLst.get())
 	    ia->addAddr(ptr);

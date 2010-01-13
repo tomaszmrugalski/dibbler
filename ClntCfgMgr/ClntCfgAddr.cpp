@@ -25,7 +25,7 @@
 #include "ClntCfgAddr.h"
 #include "Logger.h"
 
-SmartPtr<TIPv6Addr> TClntCfgAddr::get() {
+SPtr<TIPv6Addr> TClntCfgAddr::get() {
     return Addr;
 }
 
@@ -38,7 +38,7 @@ unsigned long TClntCfgAddr::getPref() {
 }
 
 
-TClntCfgAddr::TClntCfgAddr(SmartPtr<TIPv6Addr> addr,long valid,long pref)
+TClntCfgAddr::TClntCfgAddr(SPtr<TIPv6Addr> addr,long valid,long pref)
 {
     Addr=addr;
     Valid = valid;
@@ -49,7 +49,7 @@ TClntCfgAddr::~TClntCfgAddr() {
 
 }
 
-void TClntCfgAddr::setOptions(SmartPtr<TClntParsGlobalOpt> opt) {
+void TClntCfgAddr::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     this->Valid=opt->getValid();
     this->Pref=opt->getPref();
 }
@@ -60,7 +60,7 @@ TClntCfgAddr::TClntCfgAddr() {
     Addr= new TIPv6Addr();
 }
 
-TClntCfgAddr::TClntCfgAddr(SmartPtr<TIPv6Addr> addr) {
+TClntCfgAddr::TClntCfgAddr(SPtr<TIPv6Addr> addr) {
     Addr=addr;
     Valid = ULONG_MAX;
     Pref = ULONG_MAX;

@@ -34,16 +34,16 @@ class TClntCfgMgr : public TCfgMgr
 {
     friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
  public:
-    TClntCfgMgr(SmartPtr<TClntIfaceMgr> IfaceMgr, const string cfgFile);
+    TClntCfgMgr(SPtr<TClntIfaceMgr> IfaceMgr, const string cfgFile);
     ~TClntCfgMgr();
     
     // --- Iface related ---
-    SmartPtr<TClntCfgIA> getIA(long IAID);
-    SmartPtr<TClntCfgPD> getPD(long IAID);
-    SmartPtr<TClntCfgIface> getIface();
-    SmartPtr<TClntCfgIface> getIface(int id);
+    SPtr<TClntCfgIA> getIA(long IAID);
+    SPtr<TClntCfgPD> getPD(long IAID);
+    SPtr<TClntCfgIface> getIface();
+    SPtr<TClntCfgIface> getIface(int id);
     void firstIface();
-    void addIface(SmartPtr<TClntCfgIface> x);
+    void addIface(SPtr<TClntCfgIface> x);
     void makeInactiveIface(int ifindex, bool inactive);
     int countIfaces();
     void dump();
@@ -54,7 +54,7 @@ class TClntCfgMgr : public TCfgMgr
     bool setIAState(int iface, int iaid, enum EState state);
     int countAddrForIA(long IAID);
     
-    SmartPtr<TClntCfgIface> getIfaceByIAID(int iaid);
+    SPtr<TClntCfgIface> getIfaceByIAID(int iaid);
     bool isDone();
 
     DigestTypes getDigest();
@@ -77,7 +77,7 @@ class TClntCfgMgr : public TCfgMgr
     uint32_t getAAASPI();
     List(DigestTypes) getAuthAcceptMethods();
     bool getAuthEnabled();
-    SmartPtr<KeyList> AuthKeys;
+    SPtr<KeyList> AuthKeys;
 #endif
 
     bool getFQDNFlagS();
@@ -90,15 +90,15 @@ class TClntCfgMgr : public TCfgMgr
 private:
     bool setGlobalOptions(ClntParser * parser);
     bool validateConfig();
-    bool validateIface(SmartPtr<TClntCfgIface> iface);
-    bool validateIA(SmartPtr<TClntCfgIface> ptrIface, SmartPtr<TClntCfgIA> ptrIA);
-    bool validateAddr(SmartPtr<TClntCfgIface> ptrIface, 
-		      SmartPtr<TClntCfgIA> ptrIA,
-		      SmartPtr<TClntCfgAddr> ptrAddr);
+    bool validateIface(SPtr<TClntCfgIface> iface);
+    bool validateIA(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgIA> ptrIA);
+    bool validateAddr(SPtr<TClntCfgIface> ptrIface, 
+		      SPtr<TClntCfgIA> ptrIA,
+		      SPtr<TClntCfgAddr> ptrAddr);
     bool parseConfigFile(string cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
 
-    SmartPtr<TClntIfaceMgr> IfaceMgr;
+    SPtr<TClntIfaceMgr> IfaceMgr;
     List(TClntCfgIface) ClntCfgIfaceLst;
     List(TClntCfgIface) InactiveLst;
     DigestTypes Digest;

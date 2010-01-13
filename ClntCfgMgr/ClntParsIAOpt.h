@@ -36,17 +36,17 @@ class TClntParsIAOpt : public TClntParsAddrOpt
     bool getAddrHint();
     void setAddrHint(bool addrHint);
     
-    void addPrefSrv(SmartPtr<TStationID> prefSrv);
+    void addPrefSrv(SPtr<TStationID> prefSrv);
     void firstPrefSrv();
-    SmartPtr<TStationID> getPrefSrv();
+    SPtr<TStationID> getPrefSrv();
     void clearPrefSrv();
-    void setPrefSrvLst(TContainer<SmartPtr<TStationID> > *lst);
+    void setPrefSrvLst(TContainer<SPtr<TStationID> > *lst);
     
-    void addRejedSrv(SmartPtr<TStationID> prefSrv);
+    void addRejedSrv(SPtr<TStationID> prefSrv);
     void firstRejedSrv();
-    SmartPtr<TStationID> getRejedSrv();
+    SPtr<TStationID> getRejedSrv();
     void clearRejedSrv();
-    void setRejedSrvLst(TContainer<SmartPtr<TStationID> > *lst);
+    void setRejedSrvLst(TContainer<SPtr<TStationID> > *lst);
 
     void setAddrParams(bool useAddrParams);
     bool getAddrParams();

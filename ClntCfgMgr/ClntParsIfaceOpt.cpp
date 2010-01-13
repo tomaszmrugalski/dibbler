@@ -92,7 +92,7 @@ TClntParsIfaceOpt::~TClntParsIfaceOpt() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getDNSServerLst() { 
     return &this->DNSServerLst;
 }
-void TClntParsIfaceOpt::setDNSServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TClntParsIfaceOpt::setDNSServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->DNSServerLst = *lst;
     this->ReqDNSServer = true;
 }
@@ -116,7 +116,7 @@ bool TClntParsIfaceOpt::getReqDomain() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getNTPServerLst() {
     return &this->NTPServerLst;
 }
-void TClntParsIfaceOpt::setNTPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TClntParsIfaceOpt::setNTPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->NTPServerLst = *lst;
     this->ReqNTPServer = true;
 }
@@ -141,7 +141,7 @@ string TClntParsIfaceOpt::getTimezone() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getSIPServerLst() {
     return &this->SIPServerLst;
 }
-void TClntParsIfaceOpt::setSIPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TClntParsIfaceOpt::setSIPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->SIPServerLst = *lst;
     this->ReqSIPServer = true;
 }
@@ -186,7 +186,7 @@ bool TClntParsIfaceOpt::getReqPrefixDelegation() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getNISServerLst() {
     return &this->NISServerLst;
 }
-void TClntParsIfaceOpt::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TClntParsIfaceOpt::setNISServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->NISServerLst = *lst;
     this->ReqNISServer = true;
 }
@@ -209,7 +209,7 @@ bool TClntParsIfaceOpt::getReqNISDomain() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getNISPServerLst() {
     return &this->NISPServerLst;
 }
-void TClntParsIfaceOpt::setNISPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TClntParsIfaceOpt::setNISPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->NISPServerLst = *lst;
     this->ReqNISPServer = true;
 }

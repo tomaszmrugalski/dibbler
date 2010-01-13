@@ -47,9 +47,9 @@ List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
-TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
-TContainer<SmartPtr<string> > PresentStringLst;                             \
+TContainer<SPtr<TStationID> > PresentStationLst;                        \
+TContainer<SPtr<TIPv6Addr> > PresentAddrLst;                            \
+TContainer<SPtr<string> > PresentStringLst;                             \
 List(TClntOptVendorSpec) VendorSpec;					    \
 SPtr<TClntOptVendorSpec> TunnelMode;                                        \
 /*method check whether interface with id=ifaceNr has been */                \
