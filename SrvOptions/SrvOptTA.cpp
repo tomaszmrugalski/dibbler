@@ -37,14 +37,14 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
         int length=buf[pos]*256+buf[pos+1];
         pos+=2;
 
-	SmartPtr<TOpt> opt;
+	SPtr<TOpt> opt;
 	switch (code) {
 	case OPTION_IAADDR:
-	    opt = (Ptr*) SmartPtr<TSrvOptIAAddress>(new TSrvOptIAAddress(buf+pos,length,this->Parent));
+	    opt = (Ptr*) SPtr<TSrvOptIAAddress>(new TSrvOptIAAddress(buf+pos,length,this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	case OPTION_STATUS_CODE:
-	    opt = (Ptr*) SmartPtr<TSrvOptStatusCode>(new TSrvOptStatusCode(buf+pos,length,this->Parent));
+	    opt = (Ptr*) SPtr<TSrvOptStatusCode>(new TSrvOptStatusCode(buf+pos,length,this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	default:
@@ -63,9 +63,9 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
  * - SOLICIT (with RAPID_COMMIT)
  * - REQUEST
  */
-TSrvOptTA::TSrvOptTA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
-			   SmartPtr<TSrvOptTA> queryOpt,
-			   SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
+TSrvOptTA::TSrvOptTA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
+			   SPtr<TSrvOptTA> queryOpt,
+			   SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
 			   int iface, int msgType, TMsg* parent)
     :TOptTA(queryOpt->getIAID(), parent) {
 
@@ -104,11 +104,11 @@ TSrvOptTA::TSrvOptTA(int iaid, int statusCode, string txt, TMsg* parent)
  *
  * @param queryOpt
  */
-void TSrvOptTA::solicit(SmartPtr<TSrvOptTA> queryOpt) {
+void TSrvOptTA::solicit(SPtr<TSrvOptTA> queryOpt) {
     this->solicitRequest(queryOpt, true);
 }
 
-void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
+void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
 
     // --- check address counts, how many we've got, how many assigned etc. ---
     unsigned long addrsAssigned  = 0; // already assigned
@@ -144,12 +144,12 @@ void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
     }
 
     // --- ok, let's assign those damn addresses ---
-    SmartPtr<TSrvOptIAAddress> optAddr;
+    SPtr<TSrvOptIAAddress> optAddr;
 
     optAddr = this->assignAddr();
     if (!optAddr) {
 	Log(Error) << "No temporary address found. Server is NOT configured with TA option." << LogEnd;
-	SmartPtr<TSrvOptStatusCode> ptrStatus;
+	SPtr<TSrvOptStatusCode> ptrStatus;
 	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
 					  "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
         this->SubOptions.append((Ptr*)ptrStatus);
@@ -160,22 +160,22 @@ void TSrvOptTA::solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit) {
     // those addresses will be released in the TSrvMsgAdvertise::answer() method
 }
 
-void TSrvOptTA::request(SmartPtr<TSrvOptTA> queryOpt) {
+void TSrvOptTA::request(SPtr<TSrvOptTA> queryOpt) {
     this->solicitRequest(queryOpt, false);
 }
 
-void TSrvOptTA::release(SmartPtr<TSrvOptTA> queryOpt) {
+void TSrvOptTA::release(SPtr<TSrvOptTA> queryOpt) {
     Log(Crit) << "### Implement this: TA in RELEASE msg." << LogEnd;
 }
 
-void TSrvOptTA::confirm(SmartPtr<TSrvOptTA> queryOpt) {
+void TSrvOptTA::confirm(SPtr<TSrvOptTA> queryOpt) {
     Log(Crit) << "### Implement this: TA in CONFIRM msg." << LogEnd;
 }
 
 void TSrvOptTA::releaseAllAddrs(bool quiet) {
-    SmartPtr<TOpt> opt;
-    SmartPtr<TIPv6Addr> addr;
-    SmartPtr<TOptIAAddress> optAddr;
+    SPtr<TOpt> opt;
+    SPtr<TIPv6Addr> addr;
+    SPtr<TOptIAAddress> optAddr;
     this->firstOption();
     while ( opt = this->getOption() ) {
 	if (opt->getOptType() != OPTION_IAADDR)
@@ -194,8 +194,8 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
  *
  * @return
  */
-SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
-    SmartPtr<TSrvCfgIface> ptrIface;
+SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->CfgMgr->getIfaceByID(this->Iface);
     if (!ptrIface) {
 	Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
@@ -203,7 +203,7 @@ SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
 	return 0; // NULL
     }
 
-    SmartPtr<TSrvCfgTA> ta;
+    SPtr<TSrvCfgTA> ta;
     ptrIface->firstTA();
 
     /*
@@ -214,8 +214,8 @@ SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     	return 0;
      }
     */
-    SmartPtr<TSrvTransMgr> srvTrans =  ((TSrvMsg*)Parent)->SrvTransMgr;
-    SmartPtr<TSrvMsg> requestMsg =  (Ptr*)(srvTrans->requestMsg);
+    SPtr<TSrvTransMgr> srvTrans =  ((TSrvMsg*)Parent)->SrvTransMgr;
+    SPtr<TSrvMsg> requestMsg =  (Ptr*)(srvTrans->requestMsg);
 
     while ( ta = ptrIface->getTA())
     {
@@ -229,7 +229,7 @@ SmartPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     	Log(Warning) << "Unable to find any suitable (allowed,non-full) TA for this client." << LogEnd;
     	return 0;
     }
-    SmartPtr<TIPv6Addr> addr;
+    SPtr<TIPv6Addr> addr;
     int safety=0;
 
     while (safety<MAX_TA_RANDOM_TRIES) {

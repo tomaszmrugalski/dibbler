@@ -17,7 +17,7 @@ class TSrvOptIAPrefix : public TOptIAPrefix {
  public:
     TSrvOptIAPrefix( char * addr, int n, TMsg* parent);
     
-    TSrvOptIAPrefix(SmartPtr<TIPv6Addr> prefix,char length, unsigned long pref, 
+    TSrvOptIAPrefix(SPtr<TIPv6Addr> prefix,char length, unsigned long pref, 
 		     unsigned long valid, TMsg* parent);
 
     bool doDuties();

@@ -35,9 +35,9 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptStatusCode.h"
 
-TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
-			   SmartPtr<TSrvAddrMgr> addrMgr,
-			   SmartPtr<TSrvCfgMgr> cfgMgr,
+TSrvTransMgr::TSrvTransMgr(SPtr<TSrvIfaceMgr> ifaceMgr,
+			   SPtr<TSrvAddrMgr> addrMgr,
+			   SPtr<TSrvCfgMgr> cfgMgr,
                            string xmlFile)
 {
     // remember IfaceMgr and create remaining managers
@@ -50,7 +50,7 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
     IsDone = false;
 
     // for each interface in CfgMgr, create socket (in IfaceMgr)
-    SmartPtr<TSrvCfgIface> confIface;
+    SPtr<TSrvCfgIface> confIface;
     CfgMgr->firstIface();
     while (confIface=CfgMgr->getIface()) {
 	if (!this->openSocket(confIface)) {
@@ -65,10 +65,10 @@ TSrvTransMgr::TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
 /*
  * opens proper (multicast or unicast) socket on interface
  */
-bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
+bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
 
-    SmartPtr<TSrvIfaceIface> iface = (Ptr*)IfaceMgr->getIfaceByID(confIface->getID());
-    SmartPtr<TIPv6Addr> unicast = confIface->getUnicast();
+    SPtr<TSrvIfaceIface> iface = (Ptr*)IfaceMgr->getIfaceByID(confIface->getID());
+    SPtr<TIPv6Addr> unicast = confIface->getUnicast();
 
     if (confIface->isRelay()) {
 	while (iface->getUnderlaying()) {
@@ -96,7 +96,7 @@ bool TSrvTransMgr::openSocket(SmartPtr<TSrvCfgIface> confIface) {
 	inet_pton6(ALL_DHCP_SERVERS,srvAddr);
     }
 
-    SmartPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
+    SPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
     Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName()
 		<< "/" << confIface->getID() << " (" << iface->getName() << "/"
 		<< iface->getID() << ") interface." << LogEnd;
@@ -123,7 +123,7 @@ long TSrvTransMgr::getTimeout()
     unsigned long min = 0xffffffff;
     unsigned long ifaceRecheckPeriod = 10;
     unsigned long addrTimeout = 0xffffffff;
-    SmartPtr<TSrvMsg> ptrMsg;
+    SPtr<TSrvMsg> ptrMsg;
     MsgLst.first();
     while (ptrMsg = MsgLst.get() )
     {
@@ -132,11 +132,11 @@ long TSrvTransMgr::getTimeout()
     }
     if (CfgMgr->inactiveIfacesCnt() && ifaceRecheckPeriod<min)
 	min = ifaceRecheckPeriod;
-    addrTimeout = AddrMgr->getTimeout();
+    addrTimeout = AddrMgr->getValidTimeout();
     return min<addrTimeout?min:addrTimeout;
 }
 
-void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
+void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 {
 	requestMsg = msg;
 
@@ -152,7 +152,7 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 
 	// Do we have ready answer for this?
 
-    SmartPtr<TSrvMsg> answ;
+    SPtr<TSrvMsg> answ;
     Log(Debug) << MsgLst.count() << " answers buffered.";
 
     MsgLst.first();
@@ -171,24 +171,24 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
-	SmartPtr<TSrvCfgIface> ptrCfgIface = CfgMgr->getIfaceByID(msg->getIface());
+	SPtr<TSrvCfgIface> ptrCfgIface = CfgMgr->getIfaceByID(msg->getIface());
 	if (msg->getOption(OPTION_RAPID_COMMIT) && !ptrCfgIface->getRapidCommit()) {
 	    Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
 		      << ptrCfgIface->getName() << " interface." << LogEnd;
 	}
 	if (msg->getOption(OPTION_RAPID_COMMIT) && ptrCfgIface->getRapidCommit() )
 	{
-	    SmartPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-	    SmartPtr<TSrvMsgReply> answRep=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
+	    SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
+	    SPtr<TSrvMsgReply> answRep=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
 	    //if at least one IA has in reply message status success
 	    if (!answRep->isDone()) {
-		SmartPtr<TOpt> ptrOpt;
+		SPtr<TOpt> ptrOpt;
 		answRep->firstOption();
 		bool found=false;
 		while( (ptrOpt=answRep->getOption()) && (!found) ) {
 		    if (ptrOpt->getOptType()==OPTION_IA_NA) {
-			SmartPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
-			SmartPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
+			SPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
+			SPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
 			    ptrIA->getOption(OPTION_STATUS_CODE);
 			if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
 			    found=true;
@@ -206,55 +206,55 @@ void TSrvTransMgr::relayMsg(SmartPtr<TSrvMsg> msg)
 	//construction of reply with rapid commit wasn't successful
 	//Maybe it's possible to construct appropriate advertise message
 	//and assign some "not rapid" addresses to this client
-	SmartPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise(IfaceMgr,That,CfgMgr,AddrMgr,(Ptr*)msg);
+	SPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise(IfaceMgr,That,CfgMgr,AddrMgr,(Ptr*)msg);
 	this->MsgLst.append((Ptr*)x);
 	break;
     }
     case REQUEST_MSG:
     {
-	SmartPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
+	SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
 	answ=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
     case CONFIRM_MSG:
     {
-	SmartPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
+	SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply(IfaceMgr,That,CfgMgr,AddrMgr,nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
     case RENEW_MSG:
     {
-	SmartPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
+	SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply(IfaceMgr, That,CfgMgr,AddrMgr,nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
     case REBIND_MSG:
     {
-	SmartPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
+	SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case DECLINE_MSG:
     {
-	SmartPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
+	SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case RELEASE_MSG:
     {
-	SmartPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
+	SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case INFORMATION_REQUEST_MSG :
     {
-	SmartPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
+	SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
@@ -299,11 +299,11 @@ void TSrvTransMgr::doDuties()
 {
     int deletedCnt = 0;
     // are there any outdated addresses?
-    if (!AddrMgr->getTimeout())
+    if (!AddrMgr->getValidTimeout())
         AddrMgr->doDuties();
 
     // for each message on list, let it do its duties, if timeout is reached
-    SmartPtr<TSrvMsg> msg;
+    SPtr<TSrvMsg> msg;
     MsgLst.first();
     while (msg=MsgLst.get())
         if ( (!msg->getTimeout()) && (!msg->isDone()) )
@@ -345,7 +345,7 @@ bool TSrvTransMgr::isDone()
     return IsDone;
 }
 
-void TSrvTransMgr::setContext(SmartPtr<TSrvTransMgr> that)
+void TSrvTransMgr::setContext(SPtr<TSrvTransMgr> that)
 {
     this->That=that;
     IfaceMgr->setContext(IfaceMgr,That,CfgMgr,AddrMgr);

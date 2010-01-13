@@ -27,7 +27,7 @@
 class TSrvOptServerUnicast : public TOptAddr {
  public:
     TSrvOptServerUnicast( char * buf,  int n, TMsg* parent);
-    TSrvOptServerUnicast(SmartPtr<TIPv6Addr> addr, TMsg* parent);
+    TSrvOptServerUnicast(SPtr<TIPv6Addr> addr, TMsg* parent);
     bool doDuties();	
 };
 

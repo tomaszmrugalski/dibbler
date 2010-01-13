@@ -27,10 +27,10 @@ class TSrvOptIA_PD : public TOptIA_PD
 {
   public:
     
-    TSrvOptIA_PD(SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvOptIA_PD> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TDUID> duid,
+    TSrvOptIA_PD(SPtr<TSrvCfgMgr> cfgMgr,
+		 SPtr<TSrvAddrMgr> addrMgr,
+		 SPtr<TSrvOptIA_PD> queryOpt,
+		 SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> duid,
 		 int iface, int msgType , TMsg* parent);
 
     TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent);    
@@ -47,14 +47,14 @@ class TSrvOptIA_PD : public TOptIA_PD
     void decline       (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
     bool doDuties();
  private:
-    SmartPtr<TSrvAddrMgr> AddrMgr;
-    SmartPtr<TSrvCfgMgr>  CfgMgr;
-    SmartPtr<TIPv6Addr>   ClntAddr;
-    SmartPtr<TDUID>       ClntDuid;
+    SPtr<TSrvAddrMgr> AddrMgr;
+    SPtr<TSrvCfgMgr>  CfgMgr;
+    SPtr<TIPv6Addr>   ClntAddr;
+    SPtr<TDUID>       ClntDuid;
     int                   Iface;
     
-    int assignPrefix(SmartPtr<TIPv6Addr> hint, bool quiet);
-    List(TIPv6Addr) getFreePrefixes(SmartPtr<TIPv6Addr> hint);
+    int assignPrefix(SPtr<TIPv6Addr> hint, bool quiet);
+    List(TIPv6Addr) getFreePrefixes(SPtr<TIPv6Addr> hint);
 
     unsigned long Prefered;
     unsigned long Valid;

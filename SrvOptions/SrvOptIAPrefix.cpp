@@ -37,12 +37,12 @@ TSrvOptIAPrefix::TSrvOptIAPrefix( char * buf, int bufsize, TMsg* parent)
         {                
             if(allowOptInOpt(parent->getType(),OPTION_IAPREFIX,code))
             {
-                SmartPtr<TOpt> opt;
-		            opt = SmartPtr<TOpt>();
+                SPtr<TOpt> opt;
+		            opt = SPtr<TOpt>();
                 switch (code)
                 {
                 case OPTION_STATUS_CODE:
-                    opt =(Ptr*)SmartPtr<TSrvOptStatusCode> (new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt =(Ptr*)SPtr<TSrvOptStatusCode> (new TSrvOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
 		                  Log(Warning) << "Option " << code<< " not supported "
@@ -63,7 +63,7 @@ TSrvOptIAPrefix::TSrvOptIAPrefix( char * buf, int bufsize, TMsg* parent)
     }
 }
 
-TSrvOptIAPrefix::TSrvOptIAPrefix(SmartPtr<TIPv6Addr> prefix, char length, unsigned long pref, 
+TSrvOptIAPrefix::TSrvOptIAPrefix(SPtr<TIPv6Addr> prefix, char length, unsigned long pref, 
 				   unsigned long valid, TMsg* parent)
     :TOptIAPrefix(prefix,length,pref,valid, parent) {
 	

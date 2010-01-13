@@ -15,7 +15,7 @@
 #include "SrvOptClientIdentifier.h"
 
 TSrvOptClientIdentifier::TSrvOptClientIdentifier(
-    SmartPtr<TDUID> duid, TMsg* parent)
+    SPtr<TDUID> duid, TMsg* parent)
     :TOptDUID(OPTION_CLIENTID, duid, parent)
 {
 }

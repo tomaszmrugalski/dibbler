@@ -23,9 +23,9 @@ class TSrvOptTA : public TOptTA
 {
   public:
 /* Constructor used in answers to: SOLICIT, SOLICIT (with RAPID_COMMIT) and REQUEST */
-    TSrvOptTA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvOptTA> queryOpt,
-		 SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
+    TSrvOptTA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
+		 SPtr<TSrvOptTA> queryOpt,
+		 SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr, 
 		 int iface, int msgType, TMsg* parent);
     TSrvOptTA(char * buf, int bufsize, TMsg* parent);
     TSrvOptTA(int iaid, int statusCode, string txt, TMsg* parent);
@@ -33,19 +33,19 @@ class TSrvOptTA : public TOptTA
 
     bool doDuties();
  private:
-    SmartPtr<TSrvAddrMgr> AddrMgr;
-    SmartPtr<TSrvCfgMgr>  CfgMgr;
-    SmartPtr<TIPv6Addr>   ClntAddr;
-    SmartPtr<TDUID>       ClntDuid;
+    SPtr<TSrvAddrMgr> AddrMgr;
+    SPtr<TSrvCfgMgr>  CfgMgr;
+    SPtr<TIPv6Addr>   ClntAddr;
+    SPtr<TDUID>       ClntDuid;
     int                   Iface;
     
-    SmartPtr<TSrvOptIAAddress> assignAddr();
-    void solicit(SmartPtr<TSrvOptTA> queryOpt);
-    void request(SmartPtr<TSrvOptTA> queryOpt);
-    void release(SmartPtr<TSrvOptTA> queryOpt);
-    void confirm(SmartPtr<TSrvOptTA> queryOpt);
+    SPtr<TSrvOptIAAddress> assignAddr();
+    void solicit(SPtr<TSrvOptTA> queryOpt);
+    void request(SPtr<TSrvOptTA> queryOpt);
+    void release(SPtr<TSrvOptTA> queryOpt);
+    void confirm(SPtr<TSrvOptTA> queryOpt);
 
-    void solicitRequest(SmartPtr<TSrvOptTA> queryOpt, bool solicit);
+    void solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit);
 
     int OrgMessage; // original message, which we are responding to 
 };

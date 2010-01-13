@@ -18,7 +18,7 @@
 #include "DHCPConst.h"
 #include "SrvOptServerIdentifier.h"
 
-TSrvOptServerIdentifier::TSrvOptServerIdentifier( SmartPtr<TDUID> duid, TMsg* parent)
+TSrvOptServerIdentifier::TSrvOptServerIdentifier( SPtr<TDUID> duid, TMsg* parent)
     :TOptDUID(OPTION_SERVERID, duid, parent)
 {
 }

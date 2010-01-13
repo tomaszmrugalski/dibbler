@@ -27,16 +27,16 @@ class TSrvTransMgr
 {
     friend ostream & operator<<(ostream &strum, TSrvTransMgr &x);
   public:
-    TSrvTransMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvCfgMgr> cfgMgr,
+    TSrvTransMgr(SPtr<TSrvIfaceMgr> ifaceMgr,
+		 SPtr<TSrvAddrMgr> addrMgr,
+		 SPtr<TSrvCfgMgr> cfgMgr,
 		 string xmlFile);
     ~TSrvTransMgr();
 
-    bool openSocket(SmartPtr<TSrvCfgIface> confIface);
+    bool openSocket(SPtr<TSrvCfgIface> confIface);
 
     long getTimeout();
-    void relayMsg(SmartPtr<TSrvMsg> msg);
+    void relayMsg(SPtr<TSrvMsg> msg);
     void doDuties();
     void dump();
 
@@ -46,18 +46,18 @@ class TSrvTransMgr
     char * getCtrlAddr();
     int    getCtrlIface();
 
-    void setContext(SmartPtr<TSrvTransMgr> transMgr);
+    void setContext(SPtr<TSrvTransMgr> transMgr);
 
-    SmartPtr<TSrvMsg> requestMsg;
+    SPtr<TSrvMsg> requestMsg;
   private:
     string XmlFile;
     List(TSrvMsg) MsgLst;
     bool IsDone;
 
-    SmartPtr<TSrvIfaceMgr> IfaceMgr;
-    SmartPtr<TSrvTransMgr> That;
-    SmartPtr<TSrvCfgMgr>  CfgMgr;
-    SmartPtr<TSrvAddrMgr>  AddrMgr;
+    SPtr<TSrvIfaceMgr> IfaceMgr;
+    SPtr<TSrvTransMgr> That;
+    SPtr<TSrvCfgMgr>  CfgMgr;
+    SPtr<TSrvAddrMgr>  AddrMgr;
 
     int ctrlIface;
     char ctrlAddr[48];

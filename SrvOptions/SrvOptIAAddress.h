@@ -31,7 +31,7 @@ class TSrvOptIAAddress : public TOptIAAddress {
  public:
     TSrvOptIAAddress( char * addr, int n, TMsg* parent);
     
-    TSrvOptIAAddress(SmartPtr<TIPv6Addr> addr, unsigned long pref, 
+    TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
 		     unsigned long valid, TMsg* parent);
 
     bool doDuties();

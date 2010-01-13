@@ -17,7 +17,7 @@ class TOptDUID;
 class TSrvOptClientIdentifier : public TOptDUID
 {
  public:
-    TSrvOptClientIdentifier( SmartPtr<TDUID> duid, TMsg* parent);
+    TSrvOptClientIdentifier( SPtr<TDUID> duid, TMsg* parent);
     TSrvOptClientIdentifier(char* buf, int bufsize, TMsg* parent);
     bool doDuties();
 };

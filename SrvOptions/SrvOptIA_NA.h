@@ -53,10 +53,10 @@ class TSrvOptIA_NA : public TOptIA_NA
 {
   public:
     
-    TSrvOptIA_NA(SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvAddrMgr> addrMgr,
-		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TDUID> duid,
+    TSrvOptIA_NA(SPtr<TSrvCfgMgr> cfgMgr,
+		 SPtr<TSrvAddrMgr> addrMgr,
+		 SPtr<TSrvOptIA_NA> queryOpt,
+		 SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> duid,
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent);
 
     TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent);    
@@ -67,31 +67,31 @@ class TSrvOptIA_NA : public TOptIA_NA
  * - SOLICIT 
  * - SOLICIT (with RAPID_COMMIT)
  * - REQUEST */
-    TSrvOptIA_NA(SmartPtr<TSrvAddrMgr> addrMgr,  SmartPtr<TSrvCfgMgr> cfgMgr,
-		 SmartPtr<TSrvOptIA_NA> queryOpt,
-		 SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, 
+    TSrvOptIA_NA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
+		 SPtr<TSrvOptIA_NA> queryOpt,
+		 SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr, 
 		 int iface, int msgType, TMsg* parent);
     
     void releaseAllAddrs(bool quiet);
 
-    void solicit(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
-    void request(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
-    bool renew(SmartPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing);
-    void rebind(SmartPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
-    void release(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
-    void confirm(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
-    void decline(SmartPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void solicit(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void request(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    bool renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing);
+    void rebind(SPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
+    void release(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void confirm(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+    void decline(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     bool doDuties();
  private:
-    SmartPtr<TSrvAddrMgr> AddrMgr;
-    SmartPtr<TSrvCfgMgr>  CfgMgr;
-    SmartPtr<TIPv6Addr>   ClntAddr;
-    SmartPtr<TDUID>       ClntDuid;
+    SPtr<TSrvAddrMgr> AddrMgr;
+    SPtr<TSrvCfgMgr>  CfgMgr;
+    SPtr<TIPv6Addr>   ClntAddr;
+    SPtr<TDUID>       ClntDuid;
     int                   Iface;
     
-    SmartPtr<TSrvOptIAAddress> assignAddr(SmartPtr<TIPv6Addr> hint, unsigned long pref,
+    SPtr<TSrvOptIAAddress> assignAddr(SPtr<TIPv6Addr> hint, unsigned long pref,
 					  unsigned long valid, bool quiet);
-    SmartPtr<TIPv6Addr> getFreeAddr(SmartPtr<TIPv6Addr> hint);
+    SPtr<TIPv6Addr> getFreeAddr(SPtr<TIPv6Addr> hint);
     SPtr<TIPv6Addr> getExceptionAddr();
 };
 

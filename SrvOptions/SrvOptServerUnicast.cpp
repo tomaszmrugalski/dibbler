@@ -26,7 +26,7 @@ TSrvOptServerUnicast::TSrvOptServerUnicast( char * buf,  int n, TMsg* parent)
 
 }
 
-TSrvOptServerUnicast::TSrvOptServerUnicast(SmartPtr<TIPv6Addr> addr, TMsg* parent) 
+TSrvOptServerUnicast::TSrvOptServerUnicast(SPtr<TIPv6Addr> addr, TMsg* parent) 
     :TOptAddr(OPTION_UNICAST, addr, parent) {
 
 }

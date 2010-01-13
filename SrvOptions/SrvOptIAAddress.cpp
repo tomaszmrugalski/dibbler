@@ -51,12 +51,12 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
         {                
             if(allowOptInOpt(parent->getType(),OPTION_IAADDR,code))
             {
-                SmartPtr<TOpt> opt;
-		opt = SmartPtr<TOpt>();
+                SPtr<TOpt> opt;
+		opt = SPtr<TOpt>();
                 switch (code)
                 {
                 case OPTION_STATUS_CODE:
-                    opt =(Ptr*)SmartPtr<TSrvOptStatusCode> (
+                    opt =(Ptr*)SPtr<TSrvOptStatusCode> (
 			new TSrvOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
@@ -78,7 +78,7 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
     }
 }
 
-TSrvOptIAAddress::TSrvOptIAAddress(SmartPtr<TIPv6Addr> addr, unsigned long pref, 
+TSrvOptIAAddress::TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
 				   unsigned long valid, TMsg* parent)
     :TOptIAAddress(addr,pref,valid, parent) {
 
