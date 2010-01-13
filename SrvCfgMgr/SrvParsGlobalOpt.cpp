@@ -61,7 +61,7 @@ int  TSrvParsGlobalOpt::getCacheSize() {
 }
 
 void TSrvParsGlobalOpt::addDigest(DigestTypes x) {
-    SmartPtr<DigestTypes> dt = new DigestTypes;
+    SPtr<DigestTypes> dt = new DigestTypes;
     *dt = x;
 
     this->DigestLst.append(dt);

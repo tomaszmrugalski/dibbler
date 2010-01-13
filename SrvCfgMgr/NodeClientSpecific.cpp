@@ -16,7 +16,7 @@
 #include "SrvOptVendorClass.h"
 #include <sstream>
 
-SmartPtr<TSrvMsg> NodeClientSpecific::CurrentMsg;
+SPtr<TSrvMsg> NodeClientSpecific::CurrentMsg;
 string NodeClientSpecific::vendor_spec_num  ;
 string NodeClientSpecific::vendor_spec_data ;
 string NodeClientSpecific::vendor_class_num ;
@@ -32,7 +32,7 @@ NodeClientSpecific::NodeClientSpecific()
 NodeClientSpecific::~NodeClientSpecific() {
 }
 
-string NodeClientSpecific::exec(SmartPtr<TSrvMsg> msg)
+string NodeClientSpecific::exec(SPtr<TSrvMsg> msg)
 {
 
     // If have not analyse the Msg, then analyse it
@@ -68,14 +68,14 @@ NodeClientSpecific::NodeClientSpecific(ClientSpecificType t)
     Type = t;
 }
 
-void  NodeClientSpecific::analyseMessage(SmartPtr<TSrvMsg> msg)
+void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
 {
     if (CurrentMsg != msg)
     {
 	CurrentMsg = msg;
 	
-	SmartPtr<TOpt> ptrOpt;
-	SmartPtr<TOpt> ptrOpt2;
+	SPtr<TOpt> ptrOpt;
+	SPtr<TOpt> ptrOpt2;
 	
 	stringstream convert;
 	msg->firstOption();

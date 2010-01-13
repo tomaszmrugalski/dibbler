@@ -39,15 +39,15 @@ public:
     virtual ~NodeClientSpecific();
     NodeClientSpecific(ClientSpecificType t);
     
-    string exec(SmartPtr<TSrvMsg> msg);
-    static void  analyseMessage(SmartPtr<TSrvMsg> msg);
+    string exec(SPtr<TSrvMsg> msg);
+    static void  analyseMessage(SPtr<TSrvMsg> msg);
     
     
     static string vendor_spec_num  ;
     static string vendor_spec_data ;
     static string vendor_class_num ;
     static string vendor_class_data ;
-    static SmartPtr<TSrvMsg> CurrentMsg;
+    static SPtr<TSrvMsg> CurrentMsg;
     
 private:
     ClientSpecificType Type;

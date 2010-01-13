@@ -106,7 +106,7 @@ bool TSrvCfgOptions::supportTimezone(){
 }
 
 // --- option: SIP server ---
-void TSrvCfgOptions::setSIPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TSrvCfgOptions::setSIPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->SIPServerLst = *lst;
     this->SIPServerSupport = true;
 }
@@ -130,7 +130,7 @@ bool TSrvCfgOptions::supportSIPDomain() {
 }
 
 // --- option: NIS server ---
-void TSrvCfgOptions::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TSrvCfgOptions::setNISServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->NISServerLst     = *lst;
     this->NISServerSupport = true;
 }
@@ -154,7 +154,7 @@ bool TSrvCfgOptions::supportNISDomain() {
 }
 
 // --- option: NIS+ server ---
-void TSrvCfgOptions::setNISPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TSrvCfgOptions::setNISPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->NISPServerLst = *lst;
     this->NISPServerSupport = true;
 }
@@ -271,7 +271,7 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
 
     SPtr<TIPv6Addr> addr;
-    SmartPtr<string> str;
+    SPtr<string> str;
 
     out << "    <client>" << endl;
     if (iface.Duid)

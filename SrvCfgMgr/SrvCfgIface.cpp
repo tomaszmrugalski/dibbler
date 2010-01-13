@@ -65,8 +65,8 @@ void TSrvCfgIface::firstAddrClass() {
 /*
  * tries to find if there is a class, where client is on white-list
  */
-bool TSrvCfgIface::getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+bool TSrvCfgIface::getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+    SPtr<TSrvCfgAddrClass> ptrClass;
     this->SrvCfgAddrClassLst.first();
     while(ptrClass=SrvCfgAddrClassLst.get()) {
         if (ptrClass->clntPrefered(duid, clntAddr)) {
@@ -80,14 +80,14 @@ bool TSrvCfgIface::getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Ad
 /*
  * tries to find a class, which client is allowed to use
  */
-bool TSrvCfgIface::getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
     unsigned int clsid[100];
     unsigned int share[100];
     unsigned int cnt = 0;
     unsigned int sum = 0;
     unsigned int rnd;
 
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    SPtr<TSrvCfgAddrClass> ptrClass;
     this->SrvCfgAddrClassLst.first();
     while( (ptrClass=SrvCfgAddrClassLst.get()) && (cnt<100) ) {
         if (ptrClass->clntSupported(duid, clntAddr)) {
@@ -125,24 +125,24 @@ bool TSrvCfgIface::supportPrefixDelegation() {
     return this->PrefixDelegationSupport;
 }
 
-void TSrvCfgIface::addTA(SmartPtr<TSrvCfgTA> ta) {
+void TSrvCfgIface::addTA(SPtr<TSrvCfgTA> ta) {
     this->SrvCfgTALst.append(ta);
 }
 
 void TSrvCfgIface::firstTA() {
     this->SrvCfgTALst.first();
 }
-SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA() {
+SPtr<TSrvCfgTA> TSrvCfgIface::getTA() {
     return this->SrvCfgTALst.get();
 }
 
-void TSrvCfgIface::addPD(SmartPtr<TSrvCfgPD> pd) {
+void TSrvCfgIface::addPD(SPtr<TSrvCfgPD> pd) {
     this->PrefixDelegationSupport = true;
     this->SrvCfgPDLst.append(pd);
 }
 
-SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr) {
-    SmartPtr<TSrvCfgTA> ta;
+SPtr<TSrvCfgTA> TSrvCfgIface::getTA(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr) {
+    SPtr<TSrvCfgTA> ta;
 
     // try to find preferred TA for this client
     this->SrvCfgTALst.first();
@@ -161,13 +161,13 @@ SmartPtr<TSrvCfgTA> TSrvCfgIface::getTA(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6
     return 0;
 }
 
-SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
+SPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
     return SrvCfgAddrClassLst.get();
 }
 
-SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
+SPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
     this->firstAddrClass();
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    SPtr<TSrvCfgAddrClass> ptrClass;
     while (ptrClass = this->getAddrClass()) {
 	if (ptrClass->getID() == id)
 	    return ptrClass;
@@ -175,8 +175,8 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
     return 0;
 }
 
-void TSrvCfgIface::addClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr) {
+    SPtr<TSrvCfgAddrClass> ptrClass;
     this->firstAddrClass();
     while (ptrClass = this->getAddrClass() ) {
 	if (ptrClass->addrInPool(ptrAddr)) {
@@ -190,8 +190,8 @@ void TSrvCfgIface::addClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
 		 << *ptrAddr << LogEnd;
 }
 
-void TSrvCfgIface::delClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+void TSrvCfgIface::delClntAddr(SPtr<TIPv6Addr> ptrAddr) {
+    SPtr<TSrvCfgAddrClass> ptrClass;
     this->firstAddrClass();
     while (ptrClass = this->getAddrClass() ) {
 	if (ptrClass->addrInPool(ptrAddr)) {
@@ -205,8 +205,8 @@ void TSrvCfgIface::delClntAddr(SmartPtr<TIPv6Addr> ptrAddr) {
 		 << *ptrAddr << LogEnd;
 }
 
-SmartPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SmartPtr<TDUID> clntDuid,
-							SmartPtr<TIPv6Addr> clntAddr) {
+SPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SPtr<TDUID> clntDuid,
+							SPtr<TIPv6Addr> clntAddr) {
 
     unsigned long classid;
 
@@ -242,13 +242,13 @@ long TSrvCfgIface::countAddrClass() {
 
 */
 
-SmartPtr<TSrvCfgPD> TSrvCfgIface::getPD() {
+SPtr<TSrvCfgPD> TSrvCfgIface::getPD() {
     return SrvCfgPDLst.get();
 }
 
-SmartPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
+SPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
     this->firstPD();
-    SmartPtr<TSrvCfgPD> ptrPD;
+    SPtr<TSrvCfgPD> ptrPD;
     while (ptrPD = this->getPD()) {
 	if (ptrPD->getID() == id)
 	    return ptrPD;
@@ -256,8 +256,8 @@ SmartPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
     return 0;
 }
 
-bool TSrvCfgIface::addClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
-    SmartPtr<TSrvCfgPD> ptrPD;
+bool TSrvCfgIface::addClntPrefix(SPtr<TIPv6Addr> ptrAddr) {
+    SPtr<TSrvCfgPD> ptrPD;
     this->firstPD();
     while (ptrPD = this->getPD() ) {
 	if (ptrPD->prefixInPool(ptrAddr)) {
@@ -272,8 +272,8 @@ bool TSrvCfgIface::addClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
     return false;
 }
 
-bool TSrvCfgIface::delClntPrefix(SmartPtr<TIPv6Addr> ptrAddr) {
-    SmartPtr<TSrvCfgPD> ptrPD;
+bool TSrvCfgIface::delClntPrefix(SPtr<TIPv6Addr> ptrAddr) {
+    SPtr<TSrvCfgPD> ptrPD;
     this->firstPD();
     while (ptrPD = this->getPD() ) {
 	if (ptrPD->prefixInPool(ptrAddr)) {
@@ -309,7 +309,7 @@ string TSrvCfgIface::getFullName() {
 	+oss.str();
 }
 
-SmartPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {
+SPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {
 	return this->Unicast;
 }
 
@@ -317,7 +317,7 @@ SmartPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {
 TSrvCfgIface::~TSrvCfgIface() {
 }
 
-void TSrvCfgIface::setOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
+void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     // default options
     this->preference    = opt->getPreference();
     this->IfaceMaxLease = opt->getIfaceMaxLease();
@@ -416,7 +416,7 @@ bool TSrvCfgIface::getRapidCommit() {
 }
 
 
-void TSrvCfgIface::addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass) {
+void TSrvCfgIface::addAddrClass(SPtr<TSrvCfgAddrClass> addrClass) {
     this->SrvCfgAddrClassLst.append(addrClass);
 }
 
@@ -468,7 +468,7 @@ void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
  *
  * @return
  */
-SPtr<TFQDN> TSrvCfgIface::getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, string hint) {
+SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, string hint) {
     FQDNLst.first();
 
     SPtr<TFQDN> bestFound=0; // best FQDN found for that client
@@ -546,8 +546,8 @@ bool TSrvCfgIface::acceptUnknownFQDN() {
     return AcceptUnknownFQDN;
 }
 
-SmartPtr<TDUID> TSrvCfgIface::getFQDNDuid(string name) {
-    SmartPtr<TDUID> res = new TDUID();
+SPtr<TDUID> TSrvCfgIface::getFQDNDuid(string name) {
+    SPtr<TDUID> res = new TDUID();
     return res;
 }
 
@@ -583,7 +583,7 @@ string TSrvCfgIface::getFQDNModeString() {
 
 
 void TSrvCfgIface::addTAAddr() {
-    SmartPtr<TSrvCfgTA> ta;
+    SPtr<TSrvCfgTA> ta;
     this->firstTA();
     ta=this->getTA();
     if (!ta) {
@@ -595,7 +595,7 @@ void TSrvCfgIface::addTAAddr() {
 }
 
 void TSrvCfgIface::delTAAddr() {
-    SmartPtr<TSrvCfgTA> ta;
+    SPtr<TSrvCfgTA> ta;
     this->firstTA();
     ta = this->getTA();
     if (!ta) {
@@ -612,9 +612,9 @@ void TSrvCfgIface::delTAAddr() {
 // --------------------------------------------------------------------
 
 ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
-    SmartPtr<TStationID> Station;
-    SmartPtr<TIPv6Addr> addr;
-    SmartPtr<string> str;
+    SPtr<TStationID> Station;
+    SPtr<TIPv6Addr> addr;
+    SPtr<string> str;
 
     out << dec;
     out << "  <SrvCfgIface name=\""<<iface.Name << "\" ifindex=\""<<iface.ID << "\">" << endl;
@@ -645,7 +645,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     out << endl;
     // print IA objects
-    SmartPtr<TSrvCfgAddrClass>	ia;
+    SPtr<TSrvCfgAddrClass>	ia;
     iface.SrvCfgAddrClassLst.first();
     out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst.count() << "-->" << endl;
     while( ia=iface.SrvCfgAddrClassLst.get() ) {
@@ -654,7 +654,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     out << endl;
     // print PD objects
-    SmartPtr<TSrvCfgPD>	pd;
+    SPtr<TSrvCfgPD>	pd;
     iface.SrvCfgPDLst.first();
     out << "    <!-- PD: prefix delegation class count: " << iface.SrvCfgPDLst.count() << "-->" << endl;
     while( pd=iface.SrvCfgPDLst.get() ) {
@@ -663,7 +663,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     out << endl;
     // print TA objects
-    SmartPtr<TSrvCfgTA> ta;
+    SPtr<TSrvCfgTA> ta;
     iface.firstTA();
     out << "    <!-- TA: temporary IPv6 addr class count: " << iface.SrvCfgTALst.count() << "-->" << endl;
     while( ta=iface.getTA() )
@@ -805,7 +805,7 @@ void TSrvCfgIface::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
 {
 
 	//  Log(Info)<<"Mapping allow, deny list inside interface "<<Name<<LogEnd;
-	  SmartPtr<TSrvCfgAddrClass> ptrClass;
+	  SPtr<TSrvCfgAddrClass> ptrClass;
 	  this->SrvCfgAddrClassLst.first();
 	  while(ptrClass=SrvCfgAddrClassLst.get()){
 		  ptrClass->mapAllowDenyList(clientClassLst);
@@ -813,13 +813,13 @@ void TSrvCfgIface::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
 
 
    // Map the Allow and Deny list to TA c
-	  SmartPtr<TSrvCfgTA> ptrTA;
+	  SPtr<TSrvCfgTA> ptrTA;
 	  this->SrvCfgTALst.first();
 	  while(ptrTA = SrvCfgTALst.get()){
 		  ptrTA->mapAllowDenyList(clientClassLst);
 	  }
 	  // Map the Allow and Deny list to prefix
-	  SmartPtr<TSrvCfgPD> ptrPD;
+	  SPtr<TSrvCfgPD> ptrPD;
 	  this->SrvCfgPDLst.first();
 	  while(ptrPD = SrvCfgPDLst.get()){
 		  ptrPD->mapAllowDenyList(clientClassLst);

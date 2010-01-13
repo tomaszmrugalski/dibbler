@@ -10,7 +10,7 @@
  */
 #include "ReqOpt.h"
 
-TReqOptAddr::TReqOptAddr(int type, SmartPtr<TIPv6Addr> addr, TMsg * parent)
+TReqOptAddr::TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent)
   :TOptIAAddress(addr, 0x33333333, 0x88888888, parent)
 {
 }
@@ -20,7 +20,7 @@ bool TReqOptAddr::doDuties()
     return true;
 }
 
-TReqOptDUID::TReqOptDUID(int type, SmartPtr<TDUID> duid, TMsg* parent)
+TReqOptDUID::TReqOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
     :TOptDUID(type, duid, parent)
 {
 }

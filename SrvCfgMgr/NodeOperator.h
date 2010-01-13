@@ -28,18 +28,18 @@ public:
 	};
 
 	NodeOperator();
-	NodeOperator(OperatorType t , SmartPtr<Node>& lll, SmartPtr<Node>& rrr);
+	NodeOperator(OperatorType t , SPtr<Node>& lll, SPtr<Node>& rrr);
 	// Construction method for Substring
-	NodeOperator(OperatorType t , SmartPtr<Node>& lll,  int in,  int len);
+	NodeOperator(OperatorType t , SPtr<Node>& lll,  int in,  int len);
 	// Construction method for Contain
-	NodeOperator(OperatorType t, SmartPtr<Node>& lll,  string s );
+	NodeOperator(OperatorType t, SPtr<Node>& lll,  string s );
 	virtual ~NodeOperator();
-	virtual string exec(SmartPtr<TSrvMsg> msg);
+	virtual string exec(SPtr<TSrvMsg> msg);
 	virtual string exec();
 
 private :
-	SmartPtr<Node> l;
-	SmartPtr<Node> r;
+	SPtr<Node> l;
+	SPtr<Node> r;
 	OperatorType type;
 
 	// support substring

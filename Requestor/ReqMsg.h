@@ -19,9 +19,9 @@
 class TReqMsg: public TMsg
 {
 public:
-    TReqMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType);
+    TReqMsg(int iface, SPtr<TIPv6Addr> addr, int msgType);
     // used to create TMsg object based on received char[] data
-    TReqMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
+    TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
     void addOption(SPtr<TOpt> opt);
 
     string getName();

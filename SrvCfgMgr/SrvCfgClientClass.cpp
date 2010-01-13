@@ -23,7 +23,7 @@ TSrvCfgClientClass::TSrvCfgClientClass(string name)
 {
 }
 
-TSrvCfgClientClass::TSrvCfgClientClass(string name , SmartPtr<Node>& cond)
+TSrvCfgClientClass::TSrvCfgClientClass(string name , SPtr<Node>& cond)
 {
     classname = name;
     condition = cond;
@@ -40,12 +40,12 @@ string TSrvCfgClientClass::getClassName()
     return classname;
 }
 
-SmartPtr<Node> TSrvCfgClientClass::getCondition()
+SPtr<Node> TSrvCfgClientClass::getCondition()
 {
     return condition;
 }
 
-bool TSrvCfgClientClass::isStatisfy(SmartPtr<TSrvMsg> msg)
+bool TSrvCfgClientClass::isStatisfy(SPtr<TSrvMsg> msg)
 {
     if (condition->exec(msg) == "true") 
         return true ;

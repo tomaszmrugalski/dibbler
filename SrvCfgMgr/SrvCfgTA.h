@@ -23,7 +23,6 @@ class TSrcCfgTA;
 #include "SmartPtr.h"
 #include "IPv6Addr.h"
 #include "DUID.h"
-#include "SmartPtr.h"
 
 using namespace std;
 
@@ -35,13 +34,13 @@ class TSrvCfgTA
     TSrvCfgTA();
 
     //Is client with this DUID and IP address supported?
-    bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
+    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
     //Is client with this DUID and IP address prefered? (is in accept-only?)
-    bool clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
+    bool clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
 
     unsigned long countAddrInPool();
-    SmartPtr<TIPv6Addr> getRandomAddr();
-    bool addrInPool(SmartPtr<TIPv6Addr> addr);
+    SPtr<TIPv6Addr> getRandomAddr();
+    bool addrInPool(SPtr<TIPv6Addr> addr);
 
     unsigned long getPref();
     unsigned long getValid();
@@ -52,11 +51,11 @@ class TSrvCfgTA
     long incrAssigned(int count=1);
     long decrAssigned(int count=1);
 
-    void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
+    void setOptions(SPtr<TSrvParsGlobalOpt> opt);
     virtual ~TSrvCfgTA();
 
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
-    bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TSrvMsg> msg);
+    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
  private:
     unsigned long Pref;
     unsigned long Valid;
@@ -64,9 +63,9 @@ class TSrvCfgTA
     unsigned long ID; // this is not IAID, just internal ID counter
     static unsigned long staticID;
 
-    TContainer<SmartPtr<TStationRange> > RejedClnt;
-    TContainer<SmartPtr<TStationRange> > AcceptClnt;
-    SmartPtr<TStationRange> Pool;
+    TContainer<SPtr<TStationRange> > RejedClnt;
+    TContainer<SPtr<TStationRange> > AcceptClnt;
+    SPtr<TStationRange> Pool;
     unsigned long ClassMaxLease;
     unsigned long AddrsAssigned;
     unsigned long AddrsCount;

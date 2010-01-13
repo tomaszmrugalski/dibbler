@@ -71,11 +71,11 @@ bool TSrvParsIfaceOpt::getLeaseQuerySupport()
 }
 
 // --- unicast ---
-void TSrvParsIfaceOpt::setUnicast(SmartPtr<TIPv6Addr> addr) {
+void TSrvParsIfaceOpt::setUnicast(SPtr<TIPv6Addr> addr) {
     this->Unicast = addr;
 }
 
-SmartPtr<TIPv6Addr> TSrvParsIfaceOpt::getUnicast() {
+SPtr<TIPv6Addr> TSrvParsIfaceOpt::getUnicast() {
     return this->Unicast;
 }
 
@@ -214,7 +214,7 @@ bool TSrvParsIfaceOpt::supportTimezone(){
 }
 
 // --- option: SIP server ---
-void TSrvParsIfaceOpt::setSIPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TSrvParsIfaceOpt::setSIPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->SIPServerLst = *lst;
     this->SIPServerSupport = true;
 }
@@ -256,10 +256,10 @@ void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) *fqdn) {
     this->FQDNSupport = true;
 }
 
-string TSrvParsIfaceOpt::getFQDNName(SmartPtr<TDUID> duid) {
+string TSrvParsIfaceOpt::getFQDNName(SPtr<TDUID> duid) {
     int cpt = 1;
     string res = "";
-    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    SPtr<TFQDN> foo = FQDNLst.getFirst();
     FQDNLst.first();
     foo = FQDNLst.get();
     while(!(*(*foo).Duid == *duid) && cpt<FQDNLst.count()){
@@ -276,10 +276,10 @@ string TSrvParsIfaceOpt::getFQDNName(SmartPtr<TDUID> duid) {
     return res;
 }
 
-string TSrvParsIfaceOpt::getFQDNName(SmartPtr<TIPv6Addr> addr) {
+string TSrvParsIfaceOpt::getFQDNName(SPtr<TIPv6Addr> addr) {
     int cpt = 1;
     string res = "";
-    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    SPtr<TFQDN> foo = FQDNLst.getFirst();
     FQDNLst.first();
     foo = FQDNLst.get();
     while(!(*(*foo).Addr == *addr) && cpt<FQDNLst.count()){
@@ -299,7 +299,7 @@ string TSrvParsIfaceOpt::getFQDNName(SmartPtr<TIPv6Addr> addr) {
 string TSrvParsIfaceOpt::getFQDNName() {
     int cpt = 1;
     string res = "";
-    SmartPtr<TFQDN> foo = FQDNLst.getFirst();
+    SPtr<TFQDN> foo = FQDNLst.getFirst();
     FQDNLst.first();
     foo = FQDNLst.get();
     Log(Debug)<<"FQDN used ? : "<<(*foo).used<<LogEnd;
@@ -327,8 +327,8 @@ string TSrvParsIfaceOpt::getFQDNName() {
     return res;
 }
 
-SmartPtr<TDUID> TSrvParsIfaceOpt::getFQDNDuid(string name) {
-    SmartPtr<TDUID> res = new TDUID();
+SPtr<TDUID> TSrvParsIfaceOpt::getFQDNDuid(string name) {
+    SPtr<TDUID> res = new TDUID();
     return res;
 }
 
@@ -355,7 +355,7 @@ bool TSrvParsIfaceOpt::supportFQDN() {
 }
 
 // --- option: NIS server ---
-void TSrvParsIfaceOpt::setNISServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TSrvParsIfaceOpt::setNISServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->NISServerLst     = *lst;
     this->NISServerSupport = true;
 }
@@ -379,7 +379,7 @@ bool TSrvParsIfaceOpt::supportNISDomain() {
 }
 
 // --- option: NIS+ server ---
-void TSrvParsIfaceOpt::setNISPServerLst(TContainer<SmartPtr<TIPv6Addr> > *lst) {
+void TSrvParsIfaceOpt::setNISPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
     this->NISPServerLst = *lst;
     this->NISPServerSupport = true;
 }

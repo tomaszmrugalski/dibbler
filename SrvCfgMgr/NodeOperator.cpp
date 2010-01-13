@@ -23,7 +23,7 @@ NodeOperator::~NodeOperator()
 {
 }
 
-NodeOperator::NodeOperator(OperatorType t, SmartPtr<Node>& left, SmartPtr<Node>& right)
+NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, SPtr<Node>& right)
     :Node(NODE_OPERATOR)
 {
     if (left->Type == NODE_CONST && right->Type == NODE_CONST)
@@ -35,7 +35,7 @@ NodeOperator::NodeOperator(OperatorType t, SmartPtr<Node>& left, SmartPtr<Node>&
     r = right;
 }
 
-NodeOperator::NodeOperator(OperatorType t, SmartPtr<Node>& left,  int in,  int len)
+NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left,  int in,  int len)
     :Node(NODE_OPERATOR)
 {
     type = t;
@@ -45,7 +45,7 @@ NodeOperator::NodeOperator(OperatorType t, SmartPtr<Node>& left,  int in,  int l
 }
 
 
-NodeOperator::NodeOperator(OperatorType t, SmartPtr<Node>& left,  string s )
+NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left,  string s )
     :Node(NODE_OPERATOR)
 {
     type = t;
@@ -58,7 +58,7 @@ string NodeOperator::exec()
     return "";
 }
 
-string NodeOperator::exec(SmartPtr<TSrvMsg> msg)
+string NodeOperator::exec(SPtr<TSrvMsg> msg)
 {
 	switch (type)
 	{

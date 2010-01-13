@@ -32,49 +32,49 @@ class TSrvCfgMgr : public TCfgMgr
 {
 public:
     friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
-    TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile);
+    TSrvCfgMgr(SPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile);
 
     bool parseConfigFile(string cfgFile);
 
     //Interfaces acccess methods
     void firstIface();
-    SmartPtr<TSrvCfgIface> getIface();
-    SmartPtr<TSrvCfgIface> getIfaceByID(int iface);
+    SPtr<TSrvCfgIface> getIface();
+    SPtr<TSrvCfgIface> getIfaceByID(int iface);
     long countIface();
-    void addIface(SmartPtr<TSrvCfgIface> iface);
+    void addIface(SPtr<TSrvCfgIface> iface);
     void makeInactiveIface(int ifindex, bool inactive);
     int inactiveIfacesCnt();
     SPtr<TSrvCfgIface> checkInactiveIfaces();
 
     void dump();
 
-    bool setupRelay(SmartPtr<TSrvCfgIface> cfgIface);
+    bool setupRelay(SPtr<TSrvCfgIface> cfgIface);
 
     //Address assignment connected methods
-    long countAvailAddrs(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr, int iface);
-    SmartPtr<TSrvCfgAddrClass> getClassByAddr(int iface, SmartPtr<TIPv6Addr> addr);
-    SmartPtr<TSrvCfgPD> getClassByPrefix(int iface, SmartPtr<TIPv6Addr> prefix);
-    SmartPtr<TIPv6Addr> getRandomAddr(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
-    bool isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface);
-    bool isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface, SmartPtr<TSrvMsg> msg);
+    long countAvailAddrs(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr, int iface);
+    SPtr<TSrvCfgAddrClass> getClassByAddr(int iface, SPtr<TIPv6Addr> addr);
+    SPtr<TSrvCfgPD> getClassByPrefix(int iface, SPtr<TIPv6Addr> prefix);
+    SPtr<TIPv6Addr> getRandomAddr(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface);
+    bool isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface);
+    bool isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface, SPtr<TSrvMsg> msg);
 
     // prefix-related
     bool incrPrefixCount(int iface, SPtr<TIPv6Addr> prefix);
     bool decrPrefixCount(int iface, SPtr<TIPv6Addr> prefix);
 
     // class' usage management
-    void delClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
-    void addClntAddr(int iface, SmartPtr<TIPv6Addr> addr);
+    void delClntAddr(int iface, SPtr<TIPv6Addr> addr);
+    void addClntAddr(int iface, SPtr<TIPv6Addr> addr);
 
-    bool isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr);
-    bool isTAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr);
+    bool isIAAddrSupported(int iface, SPtr<TIPv6Addr> addr);
+    bool isTAAddrSupported(int iface, SPtr<TIPv6Addr> addr);
 
     void addTAAddr(int iface);
     void delTAAddr(int iface);
 
     bool isDone();
     virtual ~TSrvCfgMgr();
-    bool setGlobalOptions(SmartPtr<TSrvParsGlobalOpt> opt);
+    bool setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt);
 
     // configuration parameters
     string getWorkdir();
@@ -87,7 +87,7 @@ public:
 
     //Authentication
 #ifndef MOD_DISABLE_AUTH
-    SmartPtr<KeyList> AuthKeys;
+    SPtr<KeyList> AuthKeys;
     unsigned int getAuthLifetime();
     unsigned int getAuthKeyGenNonceLen();
     List(DigestTypes) getDigestLst();
@@ -95,7 +95,7 @@ public:
 #endif
 
     // Client List check
-    void InClientClass(SmartPtr<TSrvMsg> msg);
+    void InClientClass(SPtr<TSrvMsg> msg);
 private:
     static int NextRelayID;
     string XmlFile;
@@ -103,12 +103,12 @@ private:
 
     bool IsDone;
     bool validateConfig();
-    bool validateIface(SmartPtr<TSrvCfgIface> ptrIface);
-    bool validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfgAddrClass> ptrClass);
+    bool validateIface(SPtr<TSrvCfgIface> ptrIface);
+    bool validateClass(SPtr<TSrvCfgIface> ptrIface, SPtr<TSrvCfgAddrClass> ptrClass);
     List(TSrvCfgIface) SrvCfgIfaceLst;
     List(TSrvCfgIface) InactiveLst;
     List(TSrvCfgClientClass) ClientClassLst;
-    SmartPtr<TSrvIfaceMgr> IfaceMgr;
+    SPtr<TSrvIfaceMgr> IfaceMgr;
     bool matchParsedSystemInterfaces(SrvParser *parser);
 
     // global options

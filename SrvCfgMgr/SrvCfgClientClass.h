@@ -21,14 +21,14 @@ class TSrvCfgClientClass {
 public:
     TSrvCfgClientClass();
     TSrvCfgClientClass(string);
-    TSrvCfgClientClass(string , SmartPtr<Node>&);
+    TSrvCfgClientClass(string , SPtr<Node>&);
     virtual ~TSrvCfgClientClass();
     std::string getClassName();
-    SmartPtr<Node> getCondition();
-    bool isStatisfy(SmartPtr<TSrvMsg> msg);
+    SPtr<Node> getCondition();
+    bool isStatisfy(SPtr<TSrvMsg> msg);
 private:
   std::string classname;
-    SmartPtr<Node> condition;
+    SPtr<Node> condition;
 };
 
 #endif /* SRVCFGCLIENTCLASS_H_ */

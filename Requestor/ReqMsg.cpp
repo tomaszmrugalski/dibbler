@@ -14,13 +14,13 @@
 
 using namespace std;
 
-TReqMsg::TReqMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType)
+TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
     :TMsg(iface, addr, msgType)
 {
 
 }
     // used to create TMsg object based on received char[] data
-TReqMsg::TReqMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
+TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
     :TMsg(iface, addr, buf, bufSize)
 {
 

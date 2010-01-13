@@ -54,8 +54,8 @@ List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc
 List(string) PresentStringLst;             /* string list */                         \
 List(Node) NodeClientClassLst;             /* Node list */                         \
 List(TFQDN) PresentFQDNLst;                                                          \
-SmartPtr<TDUID> duidNew;                                                             \
-SmartPtr<TIPv6Addr> addr;                                                            \
+SPtr<TDUID> duidNew;                                                             \
+SPtr<TIPv6Addr> addr;                                                            \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
@@ -71,8 +71,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
-SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
+SPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
+SPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 void StartTAClassDeclaration();                                                      \
 bool EndTAClassDeclaration();                                                        \
 void StartPDDeclaration();                                                           \

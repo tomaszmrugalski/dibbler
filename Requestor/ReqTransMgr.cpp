@@ -45,8 +45,8 @@ bool ReqTransMgr::BindSockets()
 #ifndef WIN32
     Log(Info) << "Binding socket on loopback interface." << LogEnd;
 
-    SmartPtr<TIfaceIface> ptrIface;
-    SmartPtr<TIfaceIface> loopback;
+    SPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> loopback;
     IfaceMgr->firstIface();
     while (ptrIface=IfaceMgr->getIface()) {
         if (!ptrIface->flagLoopback()) {
@@ -60,7 +60,7 @@ bool ReqTransMgr::BindSockets()
 	   return false;
     }
 
-    SmartPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::", true);
+    SPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::", true);
     Log(Notice) << "Creating control (" << *loopAddr << ") socket on the " << loopback->getName() 
 		<< "/" << loopback->getID() << " interface." << LogEnd;
 
@@ -89,7 +89,7 @@ bool ReqTransMgr::BindSockets()
     	return false;
     }
 
-    SmartPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
+    SPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
 
     if (!Iface->addSocket(ll, DHCPCLIENT_PORT, true, true)) {
         Log(Crit) << "Socket creation or binding failed." << LogEnd;
@@ -222,7 +222,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
     string linePrefix = o.str();
 
     int pos = 0;
-    SmartPtr<TOpt> ptr;
+    SPtr<TOpt> ptr;
     bool print = true;
     while (pos<bufLen) {
 	if (pos+4>bufLen) {

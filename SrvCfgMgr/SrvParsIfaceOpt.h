@@ -38,8 +38,8 @@ public:
     void setRapidCommit(bool rapidComm);
     bool getRapidCommit();
 
-    void setUnicast(SmartPtr<TIPv6Addr> addr);
-    SmartPtr<TIPv6Addr> getUnicast();
+    void setUnicast(SPtr<TIPv6Addr> addr);
+    SPtr<TIPv6Addr> getUnicast();
 
     void setRelayName(string name);
     void setRelayID(int ifindex);
@@ -86,15 +86,15 @@ public:
 
     // option: FQDN
     List(TFQDN) *getFQDNLst();
-    string getFQDNName(SmartPtr<TDUID> duid);
-    string getFQDNName(SmartPtr<TIPv6Addr> addr);
+    string getFQDNName(SPtr<TDUID> duid);
+    string getFQDNName(SPtr<TIPv6Addr> addr);
     string getFQDNName();
     int getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     void acceptUnknownFQDN(bool accept);
     bool acceptUnknownFQDN();
 
-    SmartPtr<TDUID> getFQDNDuid(string name);
+    SPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) *fqdn);
     bool supportFQDN();
 
@@ -145,7 +145,7 @@ private:
     bool RapidCommit;
     long IfaceMaxLease;
     long ClntMaxLease;
-    SmartPtr<TIPv6Addr> Unicast;
+    SPtr<TIPv6Addr> Unicast;
     bool LeaseQuery; // support for leasequery
 
     // relay

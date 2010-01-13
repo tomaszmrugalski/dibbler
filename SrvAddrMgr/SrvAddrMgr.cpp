@@ -31,18 +31,6 @@ TSrvAddrMgr::~TSrvAddrMgr() {
     Log(Debug) << "SrvAddrMgr cleanup." << LogEnd;
 }
 
-/**
- * @brief brief
- *
- * <full_description>
- *
- *
- * @return <description or remove if void/constructor/destructor>
- */
-long TSrvAddrMgr::getTimeout() {
-    return this->getValidTimeout();
-}
-
 /** 
  * @brief adds an address to the client. 
  *
@@ -56,18 +44,19 @@ long TSrvAddrMgr::getTimeout() {
  * @param T1 - T1 timer
  * @param T2 - T2 timer
  * @param addr - address to be added
- * @param pref prefered lifetime
+ * @param pref preferred lifetime
  * @param valid valid lifetime
  * @param quiet quiet mode (e.g. used during SOLICIT handling, don't print anything about adding client/IA/address, as it will be deleted immediately anyway)
  * 
- * @return 
+ * @return true, if addition was successful
  */
-bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
+bool TSrvAddrMgr::addClntAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
 			      int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-			      SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
-			      bool quiet) {
+			      SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
+			      bool quiet) 
+{
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     while ( ptrClient = this->getClient() ) {
         if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
@@ -83,7 +72,7 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
     }
 
     // find this IA
-    SmartPtr <TAddrIA> ptrIA;
+    SPtr <TAddrIA> ptrIA;
     ptrClient->firstIA();
     while ( ptrIA = ptrClient->getIA() ) {
         if ( ptrIA->getIAID() == IAID)
@@ -98,7 +87,7 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
 	    Log(Debug) << "Adding IA (IAID=" << IAID << ") to addrDB." << LogEnd;
     }
 
-    SmartPtr <TAddrAddr> ptrAddr;
+    SPtr <TAddrAddr> ptrAddr;
     ptrIA->firstAddr();
     while ( ptrAddr = ptrIA->getAddr() ) {
         if (*ptrAddr->get()==*addr)
@@ -125,12 +114,12 @@ bool TSrvAddrMgr::addClntAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> cln
 /*
  *  Frees address (also deletes IA and/or client, if this was last address)
  */
-bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
-			      unsigned long IAID, SmartPtr<TIPv6Addr> clntAddr, bool quiet) 
+bool TSrvAddrMgr::delClntAddr(SPtr<TDUID> clntDuid,
+			      unsigned long IAID, SPtr<TIPv6Addr> clntAddr, bool quiet) 
 {
 
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     while ( ptrClient = this->getClient() ) {
         if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
@@ -143,7 +132,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
     }
 
     // find this IA
-    SmartPtr <TAddrIA> ptrIA;
+    SPtr <TAddrIA> ptrIA;
     ptrClient->firstIA();
     while ( ptrIA = ptrClient->getIA() ) {
         if ( ptrIA->getIAID() == IAID)
@@ -156,7 +145,7 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
     }
 
     // find an address
-    SmartPtr <TAddrAddr> ptrAddr;
+    SPtr <TAddrAddr> ptrAddr;
     ptrIA->firstAddr();
     while ( ptrAddr = ptrIA->getAddr() ) {
         if (*ptrAddr->get()==*clntAddr)
@@ -202,11 +191,11 @@ bool TSrvAddrMgr::delClntAddr(SmartPtr<TDUID> clntDuid,
  * 
  * @return 
  */
-bool TSrvAddrMgr::addTAAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntAddr,
-			    int iface, unsigned long iaid, SmartPtr<TIPv6Addr> addr, 
+bool TSrvAddrMgr::addTAAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
+			    int iface, unsigned long iaid, SPtr<TIPv6Addr> addr, 
 			    unsigned long pref, unsigned long valid) {
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     while ( ptrClient = this->getClient() ) {
         if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
@@ -221,7 +210,7 @@ bool TSrvAddrMgr::addTAAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntA
     }
 
     // find this TA
-    SmartPtr <TAddrIA> ta;
+    SPtr <TAddrIA> ta;
     ptrClient->firstTA();
     while ( ta = ptrClient->getTA() ) {
         if ( ta->getIAID() == iaid)
@@ -236,7 +225,7 @@ bool TSrvAddrMgr::addTAAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntA
 	Log(Debug) << "Adding TA (IAID=" << iaid << ") to the addrDB." << LogEnd;
     }
 
-    SmartPtr <TAddrAddr> ptrAddr;
+    SPtr <TAddrAddr> ptrAddr;
     ta->firstAddr();
     while ( ptrAddr = ta->getAddr() ) {
         if (*ptrAddr->get()==*addr)
@@ -267,10 +256,10 @@ bool TSrvAddrMgr::addTAAddr(SmartPtr<TDUID> clntDuid , SmartPtr<TIPv6Addr> clntA
  * 
  * @return 
  */
-bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid, 
-			      SmartPtr<TIPv6Addr> clntAddr) {
+bool TSrvAddrMgr::delTAAddr(SPtr<TDUID> clntDuid, unsigned long iaid, 
+			      SPtr<TIPv6Addr> clntAddr) {
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     while ( ptrClient = this->getClient() ) {
         if ( (*ptrClient->getDUID()) == (*clntDuid) ) 
@@ -285,7 +274,7 @@ bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid,
     }
 
     // find this IA
-    SmartPtr <TAddrIA> ta;
+    SPtr <TAddrIA> ta;
     ptrClient->firstTA();
     while ( ta = ptrClient->getTA() ) {
         if ( ta->getIAID() == iaid)
@@ -299,7 +288,7 @@ bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid,
         return false;
     }
 
-    SmartPtr <TAddrAddr> ptrAddr;
+    SPtr <TAddrAddr> ptrAddr;
     ta->firstAddr();
     while ( ptrAddr = ta->getAddr() ) {
         if (*ptrAddr->get()==*clntAddr)
@@ -332,9 +321,9 @@ bool TSrvAddrMgr::delTAAddr(SmartPtr<TDUID> clntDuid, unsigned long iaid,
 /*
  * how many addresses does this client have?
  */
-unsigned long TSrvAddrMgr::getAddrCount(SmartPtr<TDUID> duid)
+unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
 {
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     ClntsLst.first();
     while ( ptrClient = ClntsLst.get() ) {
         if ( (*ptrClient->getDUID()) == (*duid))
@@ -348,7 +337,7 @@ unsigned long TSrvAddrMgr::getAddrCount(SmartPtr<TDUID> duid)
     unsigned long count=0;
     
     // look at each of client's IAs
-    SmartPtr <TAddrIA> ptrIA;
+    SPtr <TAddrIA> ptrIA;
     ptrClient->firstIA();
     while ( ptrIA = ptrClient->getIA() ) {
         count += ptrIA->countAddr();
@@ -356,20 +345,20 @@ unsigned long TSrvAddrMgr::getAddrCount(SmartPtr<TDUID> duid)
     return count;
 }
 
-bool TSrvAddrMgr::addrIsFree(SmartPtr<TIPv6Addr> addr)
+bool TSrvAddrMgr::addrIsFree(SPtr<TIPv6Addr> addr)
 {
     // for each client...
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     ClntsLst.first();
     while ( ptrClient = ClntsLst.get() ) 
     {
 
         // look at each client's IAs
-        SmartPtr <TAddrIA> ptrIA;
+        SPtr <TAddrIA> ptrIA;
         ptrClient->firstIA();
         while ( ptrIA = ptrClient->getIA() ) 
         {
-            SmartPtr<TAddrAddr> ptrAddr;
+            SPtr<TAddrAddr> ptrAddr;
             if (ptrAddr = ptrIA->getAddr(addr) )
                 return false;
         }
@@ -384,14 +373,14 @@ bool TSrvAddrMgr::addrIsFree(SmartPtr<TIPv6Addr> addr)
  * 
  * @return 
  */
-bool TSrvAddrMgr::taAddrIsFree(SmartPtr<TIPv6Addr> addr)
+bool TSrvAddrMgr::taAddrIsFree(SPtr<TIPv6Addr> addr)
 {
     // for each client...
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     ClntsLst.first();
     while ( ptrClient = ClntsLst.get() ) {
         // look at each client's TAs
-        SmartPtr <TAddrIA> ta;
+        SPtr <TAddrIA> ta;
         ptrClient->firstTA();
         while ( ta = ptrClient->getTA() ) 
         {
@@ -403,32 +392,32 @@ bool TSrvAddrMgr::taAddrIsFree(SmartPtr<TIPv6Addr> addr)
 }
 
 void TSrvAddrMgr::getAddrsCount(
-     SmartPtr<TContainer<SmartPtr<TSrvCfgAddrClass> > > classes,
+     SPtr<TContainer<SPtr<TSrvCfgAddrClass> > > classes,
      long    *clntCnt,
      long    *addrCnt,
-     SmartPtr<TDUID> duid, 
+     SPtr<TDUID> duid, 
      int iface)
 {   
     memset(clntCnt,0,sizeof(long)*classes->count());
     memset(addrCnt,0,sizeof(long)*classes->count());
     int classNr=0;
 
-    SmartPtr<TAddrClient> ptrClient;
+    SPtr<TAddrClient> ptrClient;
     firstClient();
     while(ptrClient=getClient())
     {
         bool thisClient=(*(ptrClient->getDUID())==*duid);
         ptrClient->firstIA();
-        SmartPtr<TAddrIA> ptrIA;
+        SPtr<TAddrIA> ptrIA;
         while(ptrIA=ptrClient->getIA())
         {
-            SmartPtr<TAddrAddr> ptrAddr;
+            SPtr<TAddrAddr> ptrAddr;
             ptrIA->firstAddr();
             while(ptrAddr=ptrIA->getAddr())
             {
                 if(ptrIA->getIface()==iface)
                 {
-                    SmartPtr<TSrvCfgAddrClass> ptrClass;
+                    SPtr<TSrvCfgAddrClass> ptrClass;
                     classes->first();
 		    classNr=0;
                     while(ptrClass=classes->get())
@@ -449,19 +438,19 @@ void TSrvAddrMgr::getAddrsCount(
 
 SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
 {
-    SmartPtr<TAddrClient> ptrAddrClient = this->getClient(clntDuid);	
+    SPtr<TAddrClient> ptrAddrClient = this->getClient(clntDuid);	
     if (!ptrAddrClient) { 
 	Log(Warning) << "Unable to find client in the addrDB."; 
 	return 0;
     }
     ptrAddrClient->firstIA();
-    SmartPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
+    SPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
     if (!ptrAddrIA) { 
 	Log(Warning) << "Client does not have any addresses assigned." << LogEnd; 
 	return 0;
     }
     ptrAddrIA->firstAddr();
-    SmartPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
+    SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
     if (!addr) {
 	return 0;
     }
@@ -480,9 +469,9 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
  */
 void TSrvAddrMgr::doDuties()
 {
-    SmartPtr<TAddrClient> ptrClient;
-    SmartPtr<TAddrIA>     ptrIA;
-    SmartPtr<TAddrAddr>   ptrAddr;
+    SPtr<TAddrClient> ptrClient;
+    SPtr<TAddrIA>     ptrIA;
+    SPtr<TAddrAddr>   ptrAddr;
     bool anyDeleted=false;
     // for each client...
     this->firstClient();
@@ -536,7 +525,6 @@ void TSrvAddrMgr::doDuties()
  * returns address cached for this client. 
  * 
  * @param clntDuid 
- * @param clntAddr 
  * 
  * @return cached address. 0 if cached address is not found.
  */
@@ -547,13 +535,13 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getCachedAddr(SPtr<TDUID> clntDuid) {
     this->Cache.first();
 
     while (entry = this->Cache.get()) {
-	if (!entry->Duid)
-	    continue; // something is wrong. VERY wrong. But shut up and continue.
-	if (*entry->Duid == *clntDuid) {
-	    Log(Debug) << "Cache: Cached address for client (DUID=" << clntDuid->getPlain() << ") found: " 
-		       << entry->Addr->getPlain() << LogEnd;
-	    return entry->Addr;
-	}
+	    if (!entry->Duid)
+	        continue; // something is wrong. VERY wrong. But shut up and continue.
+	    if (*entry->Duid == *clntDuid) {
+	        Log(Debug) << "Cache: Cached address for client (DUID=" << clntDuid->getPlain() << ") found: " 
+                       << entry->Addr->getPlain() << LogEnd;
+ 	        return entry->Addr;
+	    }
     }
 
     Log(Debug) << "Cache: There are no cached entries for client (DUID=" << clntDuid->getPlain() << ")." << LogEnd;
@@ -569,19 +557,19 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getCachedAddr(SPtr<TDUID> clntDuid) {
  */
 bool TSrvAddrMgr::delCachedAddr(SPtr<TIPv6Addr> addr) {
     if (!this->CacheMaxSize)
-	return false;
+	    return false;
     
     this->Cache.first();
     SPtr<TSrvCacheEntry> entry;
     while (entry = this->Cache.get()) {
-	if (!entry->Addr)
-	    continue; // something is wrong. VERY wrong. But shut up and continue.
-	if ( *(entry->Addr) == *addr) {
-	    this->Cache.del();
-	    this->Cache.first();
-	    Log(Debug) << "Cache: Address " << *addr << " was deleted." << LogEnd;
-	    return true;
-	}
+	    if (!entry->Addr)
+	        continue; // something is wrong. VERY wrong. But shut up and continue.
+	    if ( *(entry->Addr) == *addr) {
+	        this->Cache.del();
+	        this->Cache.first();
+	        Log(Debug) << "Cache: Address " << *addr << " was deleted." << LogEnd;
+	        return true;
+	    }
     }
     Log(Debug) << "Cache: Attempt to delete " << *addr << " failed." << LogEnd;
     return false;
@@ -641,7 +629,7 @@ void TSrvAddrMgr::setCacheSize(int bytes) {
     int entrySize = sizeof(TSrvCacheEntry) + sizeof(TIPv6Addr) + sizeof(TDUID);
     this->CacheMaxSize = bytes/entrySize;
     Log(Debug) << "Cache: size set to " << bytes << " bytes, 1 cache entry size is " << entrySize 
-	       << " bytes, so maximum " << this->CacheMaxSize << " address-client pair(s) may be cached." << LogEnd;
+	           << " bytes, so maximum " << this->CacheMaxSize << " address-client pair(s) may be cached." << LogEnd;
     this->checkCacheSize();
 }
 

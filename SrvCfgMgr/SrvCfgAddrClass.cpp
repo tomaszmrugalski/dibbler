@@ -45,9 +45,9 @@ TSrvCfgAddrClass::~TSrvCfgAddrClass() {
 /*
  * is client allowed to use this class? (it can be rejected on DUID or address basis)
  */
-bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr)
+bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SmartPtr<TStationRange> range;
+    SPtr<TStationRange> range;
     RejedClnt.first();
     // is client on black list?
     while(range=RejedClnt.get())
@@ -68,11 +68,11 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
     return true;
 }
 
-bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TSrvMsg> msg)
+bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg)
 {
 
     // is client on denied client class
-	SmartPtr<TSrvCfgClientClass> clntClass;
+	SPtr<TSrvCfgClientClass> clntClass;
 	denyClientClassLst.first();
 	while(clntClass = denyClientClassLst.get())
 	{
@@ -88,7 +88,7 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
 			return true;
 	}
 
-    SmartPtr<TStationRange> range;
+    SPtr<TStationRange> range;
     RejedClnt.first();
 
     // is client on black list?
@@ -115,9 +115,9 @@ bool TSrvCfgAddrClass::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> cl
 /*
  * is client prefered in this class? (= is it in whitelist?)
  */
-bool TSrvCfgAddrClass::clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr)
+bool TSrvCfgAddrClass::clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SmartPtr<TStationRange> range;
+    SPtr<TStationRange> range;
     RejedClnt.first();
     // is client on black list?
     while(range=RejedClnt.get())
@@ -162,7 +162,7 @@ unsigned long TSrvCfgAddrClass::getValid(unsigned long clntValid) {
     return chooseTime(ValidBeg,ValidEnd,clntValid);
 }
 
-void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
+void TSrvCfgAddrClass::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 {
     T1Beg    = opt->getT1Beg();
     T2Beg    = opt->getT2Beg();
@@ -179,7 +179,7 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
 
     ClassMaxLease = opt->getClassMaxLease();
 
-    SmartPtr<TStationRange> statRange;
+    SPtr<TStationRange> statRange;
     opt->firstRejedClnt();
     while(statRange=opt->getRejedClnt())
         this->RejedClnt.append(statRange);
@@ -204,7 +204,7 @@ void TSrvCfgAddrClass::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
     AddrParams = opt->getAddrParams();
 }
 
-bool TSrvCfgAddrClass::addrInPool(SmartPtr<TIPv6Addr> addr)
+bool TSrvCfgAddrClass::addrInPool(SPtr<TIPv6Addr> addr)
 {
     return Pool->in(addr);
 }
@@ -214,7 +214,7 @@ unsigned long TSrvCfgAddrClass::countAddrInPool()
     return this->AddrsCount;
 }
 
-SmartPtr<TIPv6Addr> TSrvCfgAddrClass::getRandomAddr()
+SPtr<TIPv6Addr> TSrvCfgAddrClass::getRandomAddr()
 {
     return Pool->getRandomAddr();
 }
@@ -247,7 +247,7 @@ unsigned long TSrvCfgAddrClass::getAssignedCount() {
 }
 
 bool TSrvCfgAddrClass::isLinkLocal() {
-    SmartPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::",true);
+    SPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::",true);
     if (this->addrInPool(addr)) {
 	Log(Crit) << "Link local address (fe80::) belongs to the class." << LogEnd;
 	return true;
@@ -293,7 +293,7 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     out << "      <valid min=\"" << addrClass.ValidBeg << "\" max=\""<< addrClass.ValidEnd << "\" />" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << endl;
 
-    SmartPtr<TStationRange> statRange;
+    SPtr<TStationRange> statRange;
     out << "      <!-- address range -->" << endl;
     out << *addrClass.Pool;
 
@@ -324,8 +324,8 @@ void TSrvCfgAddrClass::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst
 
     Log(Info) << "Mapping allow, deny list to class "<< ID << ":" << clientClassLst.count() << " allow/deny entries in total." << LogEnd;
 
-    SmartPtr<string> classname;
-    SmartPtr<TSrvCfgClientClass> clntClass;
+    SPtr<string> classname;
+    SPtr<TSrvCfgClientClass> clntClass;
     
     allowLst.first();
     while (classname = allowLst.get())

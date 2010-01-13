@@ -29,7 +29,7 @@ public:
 
     Node(NodeType type);
     virtual ~Node();
-    virtual string exec(SmartPtr<TSrvMsg> msg) = 0;
+    virtual string exec(SPtr<TSrvMsg> msg) = 0;
 
     NodeType Type;
 };

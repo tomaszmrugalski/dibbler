@@ -144,8 +144,8 @@ List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc
 List(string) PresentStringLst;             /* string list */                         \
 List(Node) NodeClientClassLst;             /* Node list */                         \
 List(TFQDN) PresentFQDNLst;                                                          \
-SmartPtr<TDUID> duidNew;                                                             \
-SmartPtr<TIPv6Addr> addr;                                                            \
+SPtr<TDUID> duidNew;                                                             \
+SPtr<TIPv6Addr> addr;                                                            \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
@@ -161,8 +161,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
-SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
+SPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
+SPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
 void StartTAClassDeclaration();                                                      \
 bool EndTAClassDeclaration();                                                        \
 void StartPDDeclaration();                                                           \
@@ -1986,7 +1986,7 @@ case 120:
 {
     duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval <<" reserved for DUID "<<duidNew->getPlain()<<LogEnd;
-    /// @todo: Use SmartPtr()
+    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length), yyvsp[-2].strval,false));
 ;
     break;}
@@ -1995,7 +1995,7 @@ case 121:
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval <<" reserved for address "<<*addr<<LogEnd;
-    /// @todo: Use SmartPtr()
+    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr(yyvsp[0].addrval), yyvsp[-2].strval,false));
 ;
     break;}
@@ -2011,7 +2011,7 @@ case 123:
 {
     duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
-    /// @todo: Use SmartPtr()
+    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length), yyvsp[-2].strval,false));
 ;
     break;}
@@ -2020,7 +2020,7 @@ case 124:
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval<<" reserved for address "<< addr->getPlain() << LogEnd;
-    /// @todo: Use SmartPtr()
+    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr(yyvsp[0].addrval), yyvsp[-2].strval,false));
 ;
     break;}
@@ -2060,11 +2060,11 @@ case 130:
     break;}
 case 131:
 #line 469 "SrvParser.y"
-{ PresentStringLst.append(SmartPtr<string> (new string(yyvsp[0].strval))); ;
+{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 132:
 #line 470 "SrvParser.y"
-{ PresentStringLst.append(SmartPtr<string> (new string(yyvsp[0].strval))); ;
+{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 133:
 #line 475 "SrvParser.y"
@@ -2075,8 +2075,8 @@ case 133:
 case 134:
 #line 479 "SrvParser.y"
 {
-        SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
-        SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
+        SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
+        SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -2086,15 +2086,15 @@ case 134:
 case 135:
 #line 488 "SrvParser.y"
 {
-	SmartPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
+	SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
 	int prefix = yyvsp[0].ival;
 	if ( (prefix<1) || (prefix>128)) {
 	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
 		      << ". Allowed range: 1..128." << LogEnd;
 	    YYABORT;
 	}
-	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin(yyvsp[-2].addrval, prefix);
-	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax(yyvsp[-2].addrval, prefix);
+	SPtr<TIPv6Addr> addr1 = this->getRangeMin(yyvsp[-2].addrval, prefix);
+	SPtr<TIPv6Addr> addr2 = this->getRangeMax(yyvsp[-2].addrval, prefix);
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -2110,8 +2110,8 @@ case 136:
 case 137:
 #line 508 "SrvParser.y"
 {
-        SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
-        SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
+        SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
+        SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -2121,7 +2121,7 @@ case 137:
 case 138:
 #line 520 "SrvParser.y"
 {
-	SmartPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
+	SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
 	int prefix = yyvsp[0].ival;
 	if ( (prefix<1) || (prefix>128)) {
 	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
@@ -2129,8 +2129,8 @@ case 138:
 	    YYABORT;
 	}
  	
-	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin(yyvsp[-2].addrval, prefix);
-	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax(yyvsp[-2].addrval, prefix);
+	SPtr<TIPv6Addr> addr1 = this->getRangeMin(yyvsp[-2].addrval, prefix);
+	SPtr<TIPv6Addr> addr2 = this->getRangeMax(yyvsp[-2].addrval, prefix);
 	SPtr<TStationRange> range = 0;
 	if (*addr1<=*addr2)
             range = new TStationRange(addr1,addr2);
@@ -2149,8 +2149,8 @@ case 139:
 case 140:
 #line 547 "SrvParser.y"
 {
-    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
-    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
+    SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
+    SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
     if (*addr1<=*addr2)
 	PresentRangeLst.append(new TStationRange(addr1,addr2));
     else
@@ -2166,8 +2166,8 @@ case 141:
 case 142:
 #line 560 "SrvParser.y"
 {
-    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
-    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
+    SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
+    SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
     if (*addr1<=*addr2)
 	PresentRangeLst.append(new TStationRange(addr1,addr2));
     else
@@ -2184,8 +2184,8 @@ case 143:
 case 144:
 #line 574 "SrvParser.y"
 {   
-    SmartPtr<TDUID> duid1(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
-    SmartPtr<TDUID> duid2(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
+    SPtr<TDUID> duid1(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
+    SPtr<TDUID> duid2(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
     
     if (*duid1<=*duid2)
         PresentRangeLst.append(new TStationRange(duid1,duid2));
@@ -2203,8 +2203,8 @@ case 145:
 case 146:
 #line 589 "SrvParser.y"
 {
-    SmartPtr<TDUID> duid2(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
-    SmartPtr<TDUID> duid1(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
+    SPtr<TDUID> duid2(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
+    SPtr<TDUID> duid1(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
     if (*duid1<=*duid2)
         PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
@@ -2841,7 +2841,7 @@ case 235:
 case 236:
 #line 1237 "SrvParser.y"
 {
-    SmartPtr<Node> cond =  NodeClientClassLst.getLast();
+    SPtr<Node> cond =  NodeClientClassLst.getLast();
     SrvCfgClientClassLst.append( new TSrvCfgClientClass(string(yyvsp[-4].strval),cond));
     NodeClientClassLst.delLast();
 ;
@@ -2854,9 +2854,9 @@ case 237:
 case 239:
 #line 1253 "SrvParser.y"
 {
-    SmartPtr<Node> r =  NodeClientClassLst.getLast();
+    SPtr<Node> r =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> l = NodeClientClassLst.getLast();
+    SPtr<Node> l = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_CONTAIN,l,r));
 ;
@@ -2864,9 +2864,9 @@ case 239:
 case 240:
 #line 1261 "SrvParser.y"
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_EQUAL,l,r));
@@ -2875,9 +2875,9 @@ case 240:
 case 241:
 #line 1270 "SrvParser.y"
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_AND,l,r));
     
@@ -2886,9 +2886,9 @@ case 241:
 case 242:
 #line 1279 "SrvParser.y"
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_OR,l,r));
 ;
@@ -2926,7 +2926,7 @@ case 246:
 case 247:
 #line 1312 "SrvParser.y"
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_SUBSTRING,l, yyvsp[-3].ival,yyvsp[-1].ival));
 ;
@@ -3150,7 +3150,7 @@ YYLABEL(yyerrhandle)
  */
 bool SrvParser::CheckIsIface(int ifaceNr)
 {
-  SmartPtr<TSrvCfgIface> ptr;
+  SPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) {
@@ -3164,7 +3164,7 @@ bool SrvParser::CheckIsIface(int ifaceNr)
 //already declared 
 bool SrvParser::CheckIsIface(string ifaceName)
 {
-  SmartPtr<TSrvCfgIface> ptr;
+  SPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
   {
@@ -3202,26 +3202,26 @@ void SrvParser::StartIfaceDeclaration()
 bool SrvParser::EndIfaceDeclaration()
 {
     // get this interface object
-    SmartPtr<TSrvCfgIface> iface = SrvCfgIfaceLst.getLast();
+    SPtr<TSrvCfgIface> iface = SrvCfgIfaceLst.getLast();
 
     // set its options
     SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
 
     // copy all IA objects
-    SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
+    SPtr<TSrvCfgAddrClass> ptrAddrClass;
     SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
         iface->addAddrClass(ptrAddrClass);
     SrvCfgAddrClassLst.clear();
 
     // copy all TA objects
-    SmartPtr<TSrvCfgTA> ta;
+    SPtr<TSrvCfgTA> ta;
     SrvCfgTALst.first();
     while (ta=SrvCfgTALst.get())
         iface->addTA(ta);
     SrvCfgTALst.clear();
 
-    SmartPtr<TSrvCfgPD> pd;
+    SPtr<TSrvCfgPD> pd;
     SrvCfgPDLst.first();
     while (pd=SrvCfgPDLst.get())
         iface->addPD(pd);
@@ -3275,7 +3275,7 @@ bool SrvParser::EndTAClassDeclaration()
         return false;
     }
     // create new object representing just parsed TA and add it to the list
-    SmartPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
+    SPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
     ptrTA->setOptions(ParserOptStack.getLast());
     SrvCfgTALst.append(ptrTA);
 
@@ -3320,7 +3320,7 @@ bool SrvParser::EndPDDeclaration()
         Log(Warning) << "Prefix pool /" << PDPrefix << " defined and clients are supposed to get /" << len << " prefixes. Only ONE client will get prefix" << LogEnd;
     }
 
-    SmartPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
+    SPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
     ParserOptStack.getLast()->setPool(&this->PDLst);
     if (!ptrPD->setOptions(ParserOptStack.getLast(), this->PDPrefix))
 	return false;
@@ -3362,7 +3362,7 @@ SrvParser::~SrvParser() {
 
 static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 
-SmartPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
+SPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     char packed[16];
     char mask;
     memcpy(packed, addrPacked,16);
@@ -3377,7 +3377,7 @@ SmartPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     return new TIPv6Addr(packed, false);
 }
 
-SmartPtr<TIPv6Addr> SrvParser::getRangeMax(char * addrPacked, int prefix){
+SPtr<TIPv6Addr> SrvParser::getRangeMax(char * addrPacked, int prefix){
     char packed[16];
     char mask;
     memcpy(packed, addrPacked,16);

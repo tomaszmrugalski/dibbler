@@ -40,9 +40,9 @@ TSrvCfgTA::~TSrvCfgTA() {
  *
  * @return
  */
-bool TSrvCfgTA::clntSupported(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr)
+bool TSrvCfgTA::clntSupported(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr)
 {
-    SmartPtr<TStationRange> range;
+    SPtr<TStationRange> range;
     RejedClnt.first();
     // is client on black list?
     while(range=RejedClnt.get())
@@ -64,11 +64,11 @@ bool TSrvCfgTA::clntSupported(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clnt
 }
 
 
- bool TSrvCfgTA::clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TSrvMsg> msg)
+ bool TSrvCfgTA::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg)
  {
 
      // is client on denied client class
- 	SmartPtr<TSrvCfgClientClass> clntClass;
+ 	SPtr<TSrvCfgClientClass> clntClass;
  	denyClientClassLst.first();
  	while(clntClass = denyClientClassLst.get())
  	{
@@ -84,7 +84,7 @@ bool TSrvCfgTA::clntSupported(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clnt
  			return true;
  	}
 
-     SmartPtr<TStationRange> range;
+     SPtr<TStationRange> range;
      RejedClnt.first();
 
      // is client on black list?
@@ -113,9 +113,9 @@ bool TSrvCfgTA::clntSupported(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clnt
 /*
  * is client prefered in this class? (= is it in whitelist?)
  */
-bool TSrvCfgTA::clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr)
+bool TSrvCfgTA::clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SmartPtr<TStationRange> range;
+    SPtr<TStationRange> range;
     RejedClnt.first();
     // is client on black list?
     while(range=RejedClnt.get())
@@ -141,7 +141,7 @@ unsigned long TSrvCfgTA::getValid() {
     return this->Valid;
 }
 
-void TSrvCfgTA::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
+void TSrvCfgTA::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 {
     if (opt->getPrefBeg()!=opt->getPrefEnd()) {
 	Log(Warning) << "TA-class does not support preferred-lifetime ranges. Lower bound ("
@@ -158,7 +158,7 @@ void TSrvCfgTA::setOptions(SmartPtr<TSrvParsGlobalOpt> opt)
     ClassMaxLease = opt->getClassMaxLease();
 
     // copy black-list
-    SmartPtr<TStationRange> statRange;
+    SPtr<TStationRange> statRange;
     opt->firstRejedClnt();
     while(statRange=opt->getRejedClnt())
         this->RejedClnt.append(statRange);
@@ -193,7 +193,7 @@ unsigned long TSrvCfgTA::countAddrInPool()
     return this->AddrsCount;
 }
 
-SmartPtr<TIPv6Addr> TSrvCfgTA::getRandomAddr()
+SPtr<TIPv6Addr> TSrvCfgTA::getRandomAddr()
 {
     return Pool->getRandomAddr();
 }
@@ -221,7 +221,7 @@ unsigned long TSrvCfgTA::getAssignedCount() {
     return this->AddrsAssigned;
 }
 
-bool TSrvCfgTA::addrInPool(SmartPtr<TIPv6Addr> addr) 
+bool TSrvCfgTA::addrInPool(SPtr<TIPv6Addr> addr) 
 {
     return Pool->in(addr);
 }
@@ -234,7 +234,7 @@ ostream& operator<<(ostream& out,TSrvCfgTA& addrClass)
 	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << endl;
 
-    SmartPtr<TStationRange> statRange;
+    SPtr<TStationRange> statRange;
     out << "      <!-- address range -->" << endl;
     out << *addrClass.Pool;
 
@@ -257,8 +257,8 @@ void TSrvCfgTA::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
 
 	Log(Info)<<"Mapping allow, deny list to TA "<< ID <<LogEnd;
 
-	SmartPtr<string> classname;
-	SmartPtr<TSrvCfgClientClass> clntClass;
+	SPtr<string> classname;
+	SPtr<TSrvCfgClientClass> clntClass;
 
 	allowLst.first();
 	while (classname = allowLst.get())

@@ -33,31 +33,30 @@ class TSrvAddrMgr : public TAddrMgr
     TSrvAddrMgr(string xmlfile, bool loadDB);
     ~TSrvAddrMgr();
 
-    long getTimeout();
     // IA address management
-    bool addClntAddr(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
+    bool addClntAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
 		     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-		     SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
+		     SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
 		     bool quiet);
-    bool delClntAddr(SmartPtr<TDUID> duid,unsigned long IAID, SmartPtr<TIPv6Addr> addr,
+    bool delClntAddr(SPtr<TDUID> duid,unsigned long IAID, SPtr<TIPv6Addr> addr,
 		     bool quiet);
 
     // TA address management
-    bool addTAAddr(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr,
-		   int iface, unsigned long iaid, SmartPtr<TIPv6Addr> addr, 
+    bool addTAAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
+		   int iface, unsigned long iaid, SPtr<TIPv6Addr> addr, 
 		   unsigned long pref, unsigned long valid);
-    bool delTAAddr(SmartPtr<TDUID> duid,unsigned long iaid, SmartPtr<TIPv6Addr> addr);
+    bool delTAAddr(SPtr<TDUID> duid,unsigned long iaid, SPtr<TIPv6Addr> addr);
 
     // how many addresses does this client have?
-    unsigned long getAddrCount(SmartPtr<TDUID> duid);
+    unsigned long getAddrCount(SPtr<TDUID> duid);
 
     void doDuties();
     
-    void getAddrsCount(SmartPtr<List(TSrvCfgAddrClass)> classes, long *clntCnt,
-		       long *addrCnt, SmartPtr<TDUID> duid, int iface);
+    void getAddrsCount(SPtr<List(TSrvCfgAddrClass)> classes, long *clntCnt,
+		       long *addrCnt, SPtr<TDUID> duid, int iface);
 
-    bool addrIsFree(SmartPtr<TIPv6Addr> addr);
-    bool taAddrIsFree(SmartPtr<TIPv6Addr> addr);
+    bool addrIsFree(SPtr<TIPv6Addr> addr);
+    bool taAddrIsFree(SPtr<TIPv6Addr> addr);
 
     SPtr<TIPv6Addr> getFirstAddr(SPtr<TDUID> clntDuid);
 

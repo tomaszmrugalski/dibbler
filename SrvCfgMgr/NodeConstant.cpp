@@ -43,7 +43,7 @@ string NodeConstant::exec()
     return value;
 }
 
-string NodeConstant::exec(SmartPtr<TSrvMsg> msg)
+string NodeConstant::exec(SPtr<TSrvMsg> msg)
 {
     return value;
 }

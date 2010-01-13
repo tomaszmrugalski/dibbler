@@ -36,7 +36,7 @@ using namespace std;
 
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
-TSrvCfgMgr::TSrvCfgMgr(SmartPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile)
+TSrvCfgMgr::TSrvCfgMgr(SPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile)
     :TCfgMgr((Ptr*)ifaceMgr), XmlFile(xmlFile), reconfigure(true)
 {
     this->IfaceMgr = ifaceMgr;
@@ -126,7 +126,7 @@ void TSrvCfgMgr::dump() {
     xmlDump.close();
 }
 
-bool TSrvCfgMgr::setGlobalOptions(SmartPtr<TSrvParsGlobalOpt> opt) {
+bool TSrvCfgMgr::setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt) {
     this->Workdir          = opt->getWorkDir();
     this->Stateless        = opt->getStateless();
     this->CacheSize        = opt->getCacheSize();
@@ -152,8 +152,8 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
     cfgIfaceCnt = parser->SrvCfgIfaceLst.count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << LogEnd;
 
-    SmartPtr<TSrvCfgIface> cfgIface;
-    SmartPtr<TIfaceIface>  ifaceIface;
+    SPtr<TSrvCfgIface> cfgIface;
+    SPtr<TIfaceIface>  ifaceIface;
 
     parser->SrvCfgIfaceLst.first();
     while(cfgIface=parser->SrvCfgIfaceLst.get()) {
@@ -239,11 +239,11 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
     return true;
 }
 
-SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIface() {
+SPtr<TSrvCfgIface> TSrvCfgMgr::getIface() {
 	return this->SrvCfgIfaceLst.get();
 }
 
-void TSrvCfgMgr::addIface(SmartPtr<TSrvCfgIface> ptr) {
+void TSrvCfgMgr::addIface(SPtr<TSrvCfgIface> ptr) {
     SrvCfgIfaceLst.append(ptr);
 }
 
@@ -254,7 +254,7 @@ void TSrvCfgMgr::addIface(SmartPtr<TSrvCfgIface> ptr) {
  * @param inactive true for makeing inactive, false for makeing active
  */
 void TSrvCfgMgr::makeInactiveIface(int ifindex, bool inactive) {
-    SmartPtr<TSrvCfgIface> x;
+    SPtr<TSrvCfgIface> x;
 
     if (inactive)
     {
@@ -362,12 +362,12 @@ TSrvCfgMgr::~TSrvCfgMgr() {
  * 
  * @return 
  */
-bool TSrvCfgMgr::isTAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
-    SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
+bool TSrvCfgMgr::isTAAddrSupported(int iface, SPtr<TIPv6Addr> addr) {
+    SPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
     if (!ptrIface)
 	return false;
     ptrIface->firstTA();
-    SmartPtr<TSrvCfgTA> ta = ptrIface->getTA();
+    SPtr<TSrvCfgTA> ta = ptrIface->getTA();
     if (!ta)
 	return false;
     return ta->addrInPool(addr);
@@ -382,12 +382,12 @@ bool TSrvCfgMgr::isTAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
  * 
  * @return true, if address is supported
  */
-bool TSrvCfgMgr::isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
-    SmartPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
+bool TSrvCfgMgr::isIAAddrSupported(int iface, SPtr<TIPv6Addr> addr) {
+    SPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
     if (!ptrIface)
 	return false;
     ptrIface->firstAddrClass();
-    SmartPtr<TSrvCfgAddrClass> addrClass;
+    SPtr<TSrvCfgAddrClass> addrClass;
     while (addrClass = ptrIface->getAddrClass()) {
 	if (addrClass->addrInPool(addr))
 	    return true;
@@ -409,13 +409,13 @@ bool TSrvCfgMgr::isIAAddrSupported(int iface, SmartPtr<TIPv6Addr> addr) {
  * 
  * @return return value <= clnt-max-lease <= iface-max-lease
  */
-long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid,
-				 SmartPtr<TIPv6Addr> clntAddr,  int iface)
+long TSrvCfgMgr::countAvailAddrs(SPtr<TDUID> clntDuid,
+				 SPtr<TIPv6Addr> clntAddr,  int iface)
 {
     /// @todo: long long long int (128bit) could come in handy
     double avail         = 0; // how many are available?
     double ifaceAssigned = 0; // how many are assigned on this iface?
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Interface " << iface << " does not exist in SrvCfgMgr." << LogEnd;
@@ -424,7 +424,7 @@ long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid,
 
     unsigned long ifaceMaxLease = ptrIface->getIfaceMaxLease();
 
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    SPtr<TSrvCfgAddrClass> ptrClass;
     ptrIface->firstAddrClass();
     while (ptrClass = ptrIface->getAddrClass()) {
 	if (!ptrClass->clntSupported(clntDuid,clntAddr))
@@ -453,10 +453,10 @@ long TSrvCfgMgr::countAvailAddrs(SmartPtr<TDUID> clntDuid,
  * 
  * @return pointer to the class (or 0, if no suitable class found)
  */
-SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6Addr> addr)
+SPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SPtr<TIPv6Addr> addr)
 {
     this->firstIface();
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
 
     if (!ptrIface) {
@@ -464,7 +464,7 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6A
 	return 0; // NULL
     }
 
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    SPtr<TSrvCfgAddrClass> ptrClass;
     ptrIface->firstAddrClass();
     while (ptrClass = ptrIface->getAddrClass()) {
 	if (ptrClass->addrInPool(addr))
@@ -482,10 +482,10 @@ SmartPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SmartPtr<TIPv6A
  *
  * @return class (or 0 if no class is found)
  */
-SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> addr)
+SPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SPtr<TIPv6Addr> addr)
 {
     this->firstIface();
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
 
     if (!ptrIface) {
@@ -493,7 +493,7 @@ SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> 
 	return 0;
     }
 
-    SmartPtr<TSrvCfgPD> ptrClass;
+    SPtr<TSrvCfgPD> ptrClass;
     ptrIface->firstPD();
     while (ptrClass = ptrIface->getPD()) {
 	if (ptrClass->prefixInPool(addr))
@@ -505,12 +505,12 @@ SmartPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SmartPtr<TIPv6Addr> 
 
 
 //on basis of duid/address/iface assign addresss to client
-SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid,
-					      SmartPtr<TIPv6Addr> clntAddr,
+SPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SPtr<TDUID> clntDuid,
+					      SPtr<TIPv6Addr> clntAddr,
 					      int iface) {
-    SmartPtr<TSrvCfgIface> ptrIface;
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
-    SmartPtr<TIPv6Addr>    any;
+    SPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgAddrClass> ptrClass;
+    SPtr<TIPv6Addr>    any;
 
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
@@ -529,9 +529,9 @@ SmartPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SmartPtr<TDUID> clntDuid,
 /*
  * Method checks whether client is supported and assigned addresses from any class
  */
-bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface)
+bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface)
 {
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
     firstIface();
     while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
 
@@ -542,7 +542,7 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
     int classCnt = 0;
     if (ptrIface)
     {
-        SmartPtr<TSrvCfgAddrClass> ptrClass;
+        SPtr<TSrvCfgAddrClass> ptrClass;
         ptrIface->firstAddrClass();
         while(ptrClass=ptrIface->getAddrClass()) {
             if (ptrClass->clntSupported(duid,clntAddr))
@@ -562,9 +562,9 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
 /*
 * Method checks whether client is supported and assigned addresses from any class
 */
-bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, int iface, SmartPtr<TSrvMsg> msg)
+bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface, SPtr<TSrvMsg> msg)
 {
-   SmartPtr<TSrvCfgIface> ptrIface;
+   SPtr<TSrvCfgIface> ptrIface;
    firstIface();
    while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
 
@@ -575,7 +575,7 @@ bool TSrvCfgMgr::isClntSupported(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntA
    int classCnt = 0;
    if (ptrIface)
    {
-       SmartPtr<TSrvCfgAddrClass> ptrClass;
+       SPtr<TSrvCfgAddrClass> ptrClass;
        ptrIface->firstAddrClass();
        while(ptrClass=ptrIface->getAddrClass()) {
            if (ptrClass->clntSupported(duid,clntAddr,msg))
@@ -596,7 +596,7 @@ bool TSrvCfgMgr::isDone() {
 }
 
 bool TSrvCfgMgr::validateConfig() {
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
 
     if (0 == (this->countIface() + this->inactiveIfacesCnt())) {
 	Log(Crit) << "Config problem: No interface defined." << LogEnd;
@@ -611,10 +611,10 @@ bool TSrvCfgMgr::validateConfig() {
     return true;
 }
 
-bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
+bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
 {
     bool dummyRelay = false;
-    SmartPtr<TSrvIfaceIface> iface = (Ptr*)this->IfaceMgr->getIfaceByID(ptrIface->getID());
+    SPtr<TSrvIfaceIface> iface = (Ptr*)this->IfaceMgr->getIfaceByID(ptrIface->getID());
     if (iface && ptrIface->isRelay() && iface->getRelayCnt())
 	dummyRelay = true;
 
@@ -641,7 +641,7 @@ bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
 	return false;
     }
 
-    SmartPtr<TSrvCfgAddrClass> ptrClass;
+    SPtr<TSrvCfgAddrClass> ptrClass;
     ptrIface->firstAddrClass();
     while(ptrClass=ptrIface->getAddrClass()) {
 	if (!this->validateClass(ptrIface, ptrClass)) {
@@ -653,7 +653,7 @@ bool TSrvCfgMgr::validateIface(SmartPtr<TSrvCfgIface> ptrIface)
     return true;
 }
 
-bool TSrvCfgMgr::validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfgAddrClass> ptrClass)
+bool TSrvCfgMgr::validateClass(SPtr<TSrvCfgIface> ptrIface, SPtr<TSrvCfgAddrClass> ptrClass)
 {
     if (ptrClass->isLinkLocal()) {
 	Log(Crit) << "One of the classes defined on the " << ptrIface->getName() << "/" << ptrIface->getID()
@@ -680,8 +680,8 @@ bool TSrvCfgMgr::validateClass(SmartPtr<TSrvCfgIface> ptrIface, SmartPtr<TSrvCfg
     return true;
 }
 
-SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
-    SmartPtr<TSrvCfgIface> ptrIface;
+SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
+    SPtr<TSrvCfgIface> ptrIface;
     this->firstIface();
     while ( ptrIface = this->getIface() ) {
 	if ( ptrIface->getID()==iface )
@@ -693,8 +693,8 @@ SmartPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
 }
 
 
-void TSrvCfgMgr::delClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
-    SmartPtr<TSrvCfgIface> ptrIface;
+void TSrvCfgMgr::delClntAddr(int iface, SPtr<TIPv6Addr> addr) {
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Warning) << "Unable to decrease address usage: unknown interface (id="
@@ -704,8 +704,8 @@ void TSrvCfgMgr::delClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
     ptrIface->delClntAddr(addr);
 }
 
-void TSrvCfgMgr::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
-    SmartPtr<TSrvCfgIface> ptrIface;
+void TSrvCfgMgr::addClntAddr(int iface, SPtr<TIPv6Addr> addr) {
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Warning) << "Unable to increase address usage: unknown interface (id="
@@ -716,7 +716,7 @@ void TSrvCfgMgr::addClntAddr(int iface, SmartPtr<TIPv6Addr> addr) {
 }
 
 void TSrvCfgMgr::addTAAddr(int iface) {
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Unable to increase address usage: interface (id="
@@ -727,7 +727,7 @@ void TSrvCfgMgr::addTAAddr(int iface) {
 }
 
 void TSrvCfgMgr::delTAAddr(int iface) {
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Unable to decrease address usage: interface (id="
@@ -751,8 +751,8 @@ bool TSrvCfgMgr::guessMode()
     return GuessMode;
 }
 
-bool TSrvCfgMgr::setupRelay(SmartPtr<TSrvCfgIface> cfgIface) {
-    SmartPtr<TIfaceIface> iface;
+bool TSrvCfgMgr::setupRelay(SPtr<TSrvCfgIface> cfgIface) {
+    SPtr<TIfaceIface> iface;
     string name = cfgIface->getRelayName();
 
     iface = IfaceMgr->getIfaceByName(name);
@@ -787,27 +787,27 @@ ESrvIfaceIdOrder TSrvCfgMgr::getInterfaceIDOrder()
 
 /**
  * decreases prefix usage count (i.e. decreases prefix-pool usage by one)
- * actual prefix is deleted in AddrMgr
+ * Actual prefix is also deleted in AddrMgr.
  *
- * @param iface
- * @param prefix
+ * @param ifindex interface index
+ * @param prefix  prefix to be deleted
  *
- * @return
+ * @return 
  */
 bool TSrvCfgMgr::decrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
 {
-    SmartPtr<TSrvCfgIface> iface;
+    SPtr<TSrvCfgIface> iface;
     iface = getIfaceByID(ifindex);
     if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << ifindex << ", prefix deletion aborted." << LogEnd;
-	return false;
+	      Log(Error) << "Unable to find interface with ifindex=" << ifindex << ", prefix deletion aborted." << LogEnd;
+	      return false;
     }
     return iface->delClntPrefix(prefix);
 }
 
 bool TSrvCfgMgr::incrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
 {
-    SmartPtr<TSrvCfgIface> iface;
+    SPtr<TSrvCfgIface> iface;
     iface = getIfaceByID(ifindex);
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex << ", prefix increase count aborted." << LogEnd;
@@ -822,7 +822,7 @@ List(DigestTypes) TSrvCfgMgr::getDigestLst() {
 }
 
 enum DigestTypes TSrvCfgMgr::getDigest() {
-    SmartPtr<DigestTypes> dt;
+    SPtr<DigestTypes> dt;
 
     if (0 == DigestLst.count())
         return DIGEST_NONE;
@@ -904,7 +904,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     else
 	out << "  <!-- <stateless/> -->" << std::endl;
 
-    SmartPtr<TSrvCfgIface> ptrIface;
+    SPtr<TSrvCfgIface> ptrIface;
     x.firstIface();
     while (ptrIface = x.getIface()) {
 	out << *ptrIface;
@@ -914,11 +914,11 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
 }
 
 
-void TSrvCfgMgr::InClientClass(SmartPtr<TSrvMsg> msg)
+void TSrvCfgMgr::InClientClass(SPtr<TSrvMsg> msg)
 {
 	// For each client class, check whether the message belong to ClientClass
 	ClientClassLst.first();
-	SmartPtr<TSrvCfgClientClass> clntClass;
+	SPtr<TSrvCfgClientClass> clntClass;
 
 	while( clntClass= ClientClassLst.get() )
 	{

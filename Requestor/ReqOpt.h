@@ -20,7 +20,7 @@
 class TReqOptAddr : public TOptIAAddress
 {
 public:
-    TReqOptAddr(int type, SmartPtr<TIPv6Addr> addr, TMsg * parent);
+    TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent);
 protected:
     bool doDuties();
 };
@@ -28,7 +28,7 @@ protected:
 class TReqOptDUID : public TOptDUID
 {
 public:
-    TReqOptDUID(int type, SmartPtr<TDUID> duid, TMsg* parent);
+    TReqOptDUID(int type, SPtr<TDUID> duid, TMsg* parent);
 protected:
     bool doDuties();
 };

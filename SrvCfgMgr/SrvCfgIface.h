@@ -45,37 +45,37 @@ public:
     string getFullName();
 
     // permanent address management (IA_NA)
-    void addAddrClass(SmartPtr<TSrvCfgAddrClass> addrClass);
+    void addAddrClass(SPtr<TSrvCfgAddrClass> addrClass);
     void firstAddrClass();
-    bool getPreferedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
-    bool getAllowedAddrClassID(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr, unsigned long &classid);
-    SmartPtr<TSrvCfgAddrClass> getAddrClass();
-    SmartPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
-    SmartPtr<TSrvCfgAddrClass> getRandomClass(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
+    bool getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid);
+    bool getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid);
+    SPtr<TSrvCfgAddrClass> getAddrClass();
+    SPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
+    SPtr<TSrvCfgAddrClass> getRandomClass(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr);
     long countAddrClass();
 
     // temporary address management (IA_TA)
-    void addTA(SmartPtr<TSrvCfgTA> ta);
+    void addTA(SPtr<TSrvCfgTA> ta);
     void firstTA();
-    SmartPtr<TSrvCfgTA> getTA();
-    SmartPtr<TSrvCfgTA> getTA(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> clntAddr);
+    SPtr<TSrvCfgTA> getTA();
+    SPtr<TSrvCfgTA> getTA(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
 
     // prefix management (IA_PD)
-    void addPDClass(SmartPtr<TSrvCfgPD> PDClass);
-    SmartPtr<TSrvCfgPD> getPDByID(unsigned long id);
-    //SmartPtr<TSrvCfgPD> getRandomPrefix(SmartPtr<TDUID> clntDuid, SmartPtr<TIPv6Addr> clntAddr);
+    void addPDClass(SPtr<TSrvCfgPD> PDClass);
+    SPtr<TSrvCfgPD> getPDByID(unsigned long id);
+    //SPtr<TSrvCfgPD> getRandomPrefix(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr);
     long countPD();
-    void addPD(SmartPtr<TSrvCfgPD> pd);
+    void addPD(SPtr<TSrvCfgPD> pd);
     void firstPD();
-    SmartPtr<TSrvCfgPD> getPD();
-    bool addClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
-    bool delClntPrefix(SmartPtr<TIPv6Addr> ptrPD);
+    SPtr<TSrvCfgPD> getPD();
+    bool addClntPrefix(SPtr<TIPv6Addr> ptrPD);
+    bool delClntPrefix(SPtr<TIPv6Addr> ptrPD);
     bool supportPrefixDelegation();
 
     // other
-    SmartPtr<TIPv6Addr> getUnicast();
+    SPtr<TIPv6Addr> getUnicast();
     void setNoConfig();
-    void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
+    void setOptions(SPtr<TSrvParsGlobalOpt> opt);
 
     unsigned char getPreference();
 
@@ -85,8 +85,8 @@ public:
     unsigned long getClntMaxLease();
 
     // IA address functions
-    void addClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
-    void delClntAddr(SmartPtr<TIPv6Addr> ptrAddr);
+    void addClntAddr(SPtr<TIPv6Addr> ptrAddr);
+    void delClntAddr(SPtr<TIPv6Addr> ptrAddr);
 
     // TA address functions
     void addTAAddr();
@@ -106,8 +106,8 @@ public:
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
-    SPtr<TFQDN> getFQDNName(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr, string hint);
-    SmartPtr<TDUID> getFQDNDuid(string name);
+    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, string hint);
+    SPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) * fqdn);
     int getFQDNMode();
     string getFQDNModeString();
@@ -125,7 +125,7 @@ private:
     int	ID;
     string Name;
     bool NoConfig;
-    SmartPtr<TIPv6Addr> Unicast;
+    SPtr<TIPv6Addr> Unicast;
     unsigned long IfaceMaxLease;
     unsigned long ClntMaxLease;
     bool RapidCommit;

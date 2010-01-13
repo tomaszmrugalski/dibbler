@@ -56,15 +56,15 @@ class TSrvCfgPD
     TSrvCfgPD();
 
     //Is client with this DUID and IP address supported?
-    bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
-    bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TSrvMsg> msg);
+    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
+    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
     //Is client with this DUID and IP address prefered? (is in accept-only?)
-    bool clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
+    bool clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
 
     //checks if the prefix belongs to the pool
-    bool prefixInPool(SmartPtr<TIPv6Addr> prefix);
+    bool prefixInPool(SPtr<TIPv6Addr> prefix);
     unsigned long countPrefixesInPool();
-    SmartPtr<TIPv6Addr> getRandomPrefix();
+    SPtr<TIPv6Addr> getRandomPrefix();
     List(TIPv6Addr) getRandomList();
 
     unsigned long getT1(unsigned long hintT1);
@@ -83,7 +83,7 @@ class TSrvCfgPD
     long incrAssigned(int count=1);
     long decrAssigned(int count=1);
 
-    bool setOptions(SmartPtr<TSrvParsGlobalOpt> opt, int PDPrefix);
+    bool setOptions(SPtr<TSrvParsGlobalOpt> opt, int PDPrefix);
     virtual ~TSrvCfgPD();
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 

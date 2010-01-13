@@ -119,7 +119,7 @@ unsigned long TSrvParsClassOpt::getValidBeg()
 }
 
 //Rejected clients access routines
-void TSrvParsClassOpt::addRejedClnt(SmartPtr<TStationRange> addr)
+void TSrvParsClassOpt::addRejedClnt(SPtr<TStationRange> addr)
 {
     this->RejedClnt.append(addr);
 }
@@ -127,21 +127,21 @@ void TSrvParsClassOpt::firstRejedClnt()
 {
     this->RejedClnt.first();
 }
-SmartPtr<TStationRange> TSrvParsClassOpt::getRejedClnt()
+SPtr<TStationRange> TSrvParsClassOpt::getRejedClnt()
 {
     return this->RejedClnt.get();
 }
-void TSrvParsClassOpt::setRejedClnt(TContainer<SmartPtr<TStationRange> > *rejedClnt)
+void TSrvParsClassOpt::setRejedClnt(TContainer<SPtr<TStationRange> > *rejedClnt)
 {
     this->RejedClnt.clear();
     rejedClnt->first();
-    SmartPtr<TStationRange> addr;
+    SPtr<TStationRange> addr;
     while(addr=rejedClnt->get())
         this->RejedClnt.append(addr);
 }
 
 //Accepted clients access routines
-void TSrvParsClassOpt::addAcceptClnt(SmartPtr<TStationRange> addr)
+void TSrvParsClassOpt::addAcceptClnt(SPtr<TStationRange> addr)
 {
     this->AcceptClnt.append(addr);
 }
@@ -151,22 +151,22 @@ void TSrvParsClassOpt::firstAcceptClnt()
     this->AcceptClnt.first();
 }
 
-SmartPtr<TStationRange> TSrvParsClassOpt::getAcceptClnt()
+SPtr<TStationRange> TSrvParsClassOpt::getAcceptClnt()
 {
     return this->AcceptClnt.get();
 }
 
-void TSrvParsClassOpt::setAcceptClnt(TContainer<SmartPtr<TStationRange> > *acceptClnt)
+void TSrvParsClassOpt::setAcceptClnt(TContainer<SPtr<TStationRange> > *acceptClnt)
 {
     this->AcceptClnt.clear();
     acceptClnt->first();
-    SmartPtr<TStationRange> addr;
+    SPtr<TStationRange> addr;
     while(addr=acceptClnt->get())
         this->AcceptClnt.append(addr);
 }
 
 //Pool access routines
-void TSrvParsClassOpt::addPool(SmartPtr<TStationRange> addr)
+void TSrvParsClassOpt::addPool(SPtr<TStationRange> addr)
 {
     this->Pool.append(addr);
 }
@@ -174,16 +174,16 @@ void TSrvParsClassOpt::firstPool()
 {
     this->Pool.first();
 }
-SmartPtr<TStationRange> TSrvParsClassOpt::getPool()
+SPtr<TStationRange> TSrvParsClassOpt::getPool()
 {
     return this->Pool.get();
 }
 
-void TSrvParsClassOpt::setPool(TContainer<SmartPtr<TStationRange> > *pool)
+void TSrvParsClassOpt::setPool(TContainer<SPtr<TStationRange> > *pool)
 {
     this->Pool.clear();
     pool->first();
-    SmartPtr<TStationRange> addr;
+    SPtr<TStationRange> addr;
     while(addr=pool->get())
         this->Pool.append(addr);
 }
@@ -218,12 +218,12 @@ SPtr<TSrvOptAddrParams> TSrvParsClassOpt::getAddrParams()
 
 void TSrvParsClassOpt::setAllowClientClass(string s)
 {
-	allowLst.append(SmartPtr<string> (new string(s)));
+	allowLst.append(SPtr<string> (new string(s)));
 }
 
 void TSrvParsClassOpt::setDenyClientClass(string s)
 {
-	denyLst.append(SmartPtr<string> (new string(s)));
+	denyLst.append(SPtr<string> (new string(s)));
 }
 
 List(string) TSrvParsClassOpt::getAllowClientClassString()

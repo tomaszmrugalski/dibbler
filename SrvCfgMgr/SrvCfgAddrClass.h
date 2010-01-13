@@ -38,16 +38,16 @@ class TSrvCfgAddrClass
     TSrvCfgAddrClass();
 
     //Is client with this DUID and IP address supported?
-    bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
-    bool clntSupported(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr, SmartPtr<TSrvMsg> msg);
+    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
+    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
 
     //Is client with this DUID and IP address prefered? (is in accept-only?)
-    bool clntPrefered(SmartPtr<TDUID> duid,SmartPtr<TIPv6Addr> clntAddr);
+    bool clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
 
     //checks if the address belongs to the pool
-    bool addrInPool(SmartPtr<TIPv6Addr> addr);
+    bool addrInPool(SPtr<TIPv6Addr> addr);
     unsigned long countAddrInPool();
-    SmartPtr<TIPv6Addr> getRandomAddr();
+    SPtr<TIPv6Addr> getRandomAddr();
 
     unsigned long getT1(unsigned long clntT1);
     unsigned long getT2(unsigned long clntT2);
@@ -63,7 +63,7 @@ class TSrvCfgAddrClass
     long incrAssigned(int count=1);
     long decrAssigned(int count=1);
 
-    void setOptions(SmartPtr<TSrvParsGlobalOpt> opt);
+    void setOptions(SPtr<TSrvParsGlobalOpt> opt);
     SPtr<TSrvOptAddrParams> getAddrParams();
 
     virtual ~TSrvCfgAddrClass();
@@ -82,7 +82,7 @@ class TSrvCfgAddrClass
 
     long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
 
-    SmartPtr<TStationRange> Pool;
+    SPtr<TStationRange> Pool;
     unsigned long ClassMaxLease;
     unsigned long AddrsAssigned;
     unsigned long AddrsCount;

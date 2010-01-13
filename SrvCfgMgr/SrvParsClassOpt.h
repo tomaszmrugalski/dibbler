@@ -55,22 +55,22 @@ class TSrvParsClassOpt
     unsigned long getValidBeg();
 
     //Rejected clients access routines
-    void addRejedClnt(SmartPtr<TStationRange> addr);
+    void addRejedClnt(SPtr<TStationRange> addr);
     void firstRejedClnt();
-    SmartPtr<TStationRange> getRejedClnt();
-    void setRejedClnt(TContainer<SmartPtr<TStationRange> > *rejedClnt);
+    SPtr<TStationRange> getRejedClnt();
+    void setRejedClnt(TContainer<SPtr<TStationRange> > *rejedClnt);
 
     //Accepted clients access routines
-    void addAcceptClnt(SmartPtr<TStationRange> addr);
+    void addAcceptClnt(SPtr<TStationRange> addr);
     void firstAcceptClnt();
-    SmartPtr<TStationRange> getAcceptClnt();
-    void setAcceptClnt(TContainer<SmartPtr<TStationRange> > *acceptClnt);
+    SPtr<TStationRange> getAcceptClnt();
+    void setAcceptClnt(TContainer<SPtr<TStationRange> > *acceptClnt);
 
     //Pool access routines
-    void addPool(SmartPtr<TStationRange> addr);
+    void addPool(SPtr<TStationRange> addr);
     void firstPool();
-    SmartPtr<TStationRange> getPool();
-    void setPool(TContainer<SmartPtr<TStationRange> > *pool);
+    SPtr<TStationRange> getPool();
+    void setPool(TContainer<SPtr<TStationRange> > *pool);
     long countPool();
 
     // leases count
@@ -100,9 +100,9 @@ private:
     unsigned long ValidEnd;
     unsigned long Share;
 
-    TContainer<SmartPtr<TStationRange> > RejedClnt;
-    TContainer<SmartPtr<TStationRange> > AcceptClnt;
-    TContainer<SmartPtr<TStationRange> > Pool;
+    TContainer<SPtr<TStationRange> > RejedClnt;
+    TContainer<SPtr<TStationRange> > AcceptClnt;
+    TContainer<SPtr<TStationRange> > Pool;
 
     unsigned long ClassMaxLease;
 

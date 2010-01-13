@@ -25,6 +25,6 @@ public :
     string getStringValue();
     string value;
     virtual string exec();
-    virtual string exec(SmartPtr<TSrvMsg> msg);
+    virtual string exec(SPtr<TSrvMsg> msg);
 };
 #endif /* NODECONSTANT_H_ */
