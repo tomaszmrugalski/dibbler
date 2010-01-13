@@ -18,9 +18,9 @@ class TSrvMsgRenew;
 class TSrvMsgRenew : public TSrvMsg
 {
  public:
-    TSrvMsgRenew(SmartPtr<TSrvIfaceMgr> IfaceMgr,SmartPtr<TSrvTransMgr> TransMgr,
-		 SmartPtr<TSrvCfgMgr> CfgMgr,SmartPtr<TSrvAddrMgr> AddrMgr,
-		 int iface, SmartPtr<TIPv6Addr> addr,
+    TSrvMsgRenew(SPtr<TSrvIfaceMgr> IfaceMgr,SPtr<TSrvTransMgr> TransMgr,
+		 SPtr<TSrvCfgMgr> CfgMgr,SPtr<TSrvAddrMgr> AddrMgr,
+		 int iface, SPtr<TIPv6Addr> addr,
 		 char* buf, int bufSize);
     
     void doDuties();

@@ -53,7 +53,7 @@ public:
     void copyAAASPI(SPtr<TSrvMsg> q);
     void copyRemoteID(SPtr<TSrvMsg> q);
 
-    void appendAuthenticationOption(SmartPtr<TDUID> duid);
+    void appendAuthenticationOption(SPtr<TDUID> duid);
 
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
@@ -72,7 +72,7 @@ public:
 
     bool validateReplayDetection();
 
-    SmartPtr<TSrvTransMgr> getSrvTransMgr();
+    SPtr<TSrvTransMgr> getSrvTransMgr();
 
     virtual bool check() = 0;
 

@@ -25,11 +25,11 @@
 class TSrvMsgConfirm : public TSrvMsg
 {
  public:
-    TSrvMsgConfirm(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-		   SmartPtr<TSrvTransMgr> TransMgr, 
-		   SmartPtr<TSrvCfgMgr> CfgMgr, 
-		   SmartPtr<TSrvAddrMgr> AddrMgr,
-		   int iface, SmartPtr<TIPv6Addr> addr,
+    TSrvMsgConfirm(SPtr<TSrvIfaceMgr> IfaceMgr, 
+		   SPtr<TSrvTransMgr> TransMgr, 
+		   SPtr<TSrvCfgMgr> CfgMgr, 
+		   SPtr<TSrvAddrMgr> AddrMgr,
+		   int iface, SPtr<TIPv6Addr> addr,
 		   char* buf, int bufSize);
     bool check();
     void doDuties();

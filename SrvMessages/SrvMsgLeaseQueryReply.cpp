@@ -21,11 +21,11 @@
 #include "AddrClient.h"
 
 
-TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-				   SmartPtr<TSrvTransMgr> TransMgr,
-				   SmartPtr<TSrvCfgMgr> CfgMgr,
-				   SmartPtr<TSrvAddrMgr> AddrMgr,
-				   SmartPtr<TSrvMsgLeaseQuery> query)
+TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvIfaceMgr> IfaceMgr,
+				   SPtr<TSrvTransMgr> TransMgr,
+				   SPtr<TSrvCfgMgr> CfgMgr,
+				   SPtr<TSrvAddrMgr> AddrMgr,
+				   SPtr<TSrvMsgLeaseQuery> query)
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
 	     query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
 	     query->getTransID())
@@ -93,7 +93,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     }
 
     // append SERVERID
-    SmartPtr<TSrvOptServerIdentifier> ptrSrvID;
+    SPtr<TSrvOptServerIdentifier> ptrSrvID;
     ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr->getDUID(),this);
     Options.append((Ptr*)ptrSrvID);
 

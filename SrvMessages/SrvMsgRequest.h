@@ -24,11 +24,11 @@ class TSrvMsgRequest;
 class TSrvMsgRequest : public TSrvMsg
 {
   public:
-    TSrvMsgRequest(SmartPtr<TSrvIfaceMgr> IfMgr, 
-		   SmartPtr<TSrvTransMgr> TransMgr,
-		   SmartPtr<TSrvCfgMgr>   ConfMgr, 
-		   SmartPtr<TSrvAddrMgr>  AddrMgr, 
-		   int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize);
+    TSrvMsgRequest(SPtr<TSrvIfaceMgr> IfMgr, 
+		   SPtr<TSrvTransMgr> TransMgr,
+		   SPtr<TSrvCfgMgr>   ConfMgr, 
+		   SPtr<TSrvAddrMgr>  AddrMgr, 
+		   int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
 	
     void doDuties();
     bool check();
@@ -37,7 +37,7 @@ class TSrvMsgRequest : public TSrvMsg
     string getName();
 
   private:
-    SmartPtr<TSrvAddrMgr> AddrMgr;
+    SPtr<TSrvAddrMgr> AddrMgr;
 };
 
 

@@ -15,12 +15,12 @@
 #include "AddrClient.h"
 
 TSrvMsgRelease::TSrvMsgRelease(
-	SmartPtr<TSrvIfaceMgr> IfMgr, 
-	SmartPtr<TSrvTransMgr> TransMgr,
-	SmartPtr<TSrvCfgMgr>   ConfMgr, 
-	SmartPtr<TSrvAddrMgr>  AddrMgr, 
+	SPtr<TSrvIfaceMgr> IfMgr, 
+	SPtr<TSrvTransMgr> TransMgr,
+	SPtr<TSrvCfgMgr>   ConfMgr, 
+	SPtr<TSrvAddrMgr>  AddrMgr, 
 	int iface, 
-	SmartPtr<TIPv6Addr> addr,
+	SPtr<TIPv6Addr> addr,
 	char* buf,
 	int bufSize)
     :TSrvMsg(IfMgr, TransMgr, ConfMgr, AddrMgr, iface, addr,buf,bufSize)

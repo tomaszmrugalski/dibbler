@@ -23,11 +23,11 @@
 class TSrvMsgInfRequest : public TSrvMsg
 {
   public:
-    TSrvMsgInfRequest(SmartPtr<TSrvIfaceMgr> IfMgr, 
-		      SmartPtr<TSrvTransMgr> TransMgr,
-		      SmartPtr<TSrvCfgMgr>   ConfMgr, 
-		      SmartPtr<TSrvAddrMgr>  AddrMgr, 
-		      int iface, SmartPtr<TIPv6Addr> addr, 
+    TSrvMsgInfRequest(SPtr<TSrvIfaceMgr> IfMgr, 
+		      SPtr<TSrvTransMgr> TransMgr,
+		      SPtr<TSrvCfgMgr>   ConfMgr, 
+		      SPtr<TSrvAddrMgr>  AddrMgr, 
+		      int iface, SPtr<TIPv6Addr> addr, 
 		      char* buf, int bufSize);
     void doDuties();
     bool check();
@@ -35,7 +35,7 @@ class TSrvMsgInfRequest : public TSrvMsg
     string getName();
     ~TSrvMsgInfRequest();
   private:
-    SmartPtr<TSrvAddrMgr> AddrMgr;
+    SPtr<TSrvAddrMgr> AddrMgr;
     List(TMsg) BackupSrvLst;
 };
 

@@ -21,17 +21,17 @@
 class TSrvMsgLeaseQueryReply : public TSrvMsg
 {
   public:
-    TSrvMsgLeaseQueryReply(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-			   SmartPtr<TSrvTransMgr> TransMgr,
-			   SmartPtr<TSrvCfgMgr> CfgMgr,
-			   SmartPtr<TSrvAddrMgr> AddrMgr,
-			   SmartPtr<TSrvMsgLeaseQuery> query);
+    TSrvMsgLeaseQueryReply(SPtr<TSrvIfaceMgr> IfaceMgr,
+			   SPtr<TSrvTransMgr> TransMgr,
+			   SPtr<TSrvCfgMgr> CfgMgr,
+			   SPtr<TSrvAddrMgr> AddrMgr,
+			   SPtr<TSrvMsgLeaseQuery> query);
 
     bool queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
     bool queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
     void appendClientData(SPtr<TAddrClient> cli);
 
-    bool answer(SmartPtr<TSrvMsgLeaseQuery> query);
+    bool answer(SPtr<TSrvMsgLeaseQuery> query);
     bool check();
     void doDuties();
     unsigned long getTimeout();

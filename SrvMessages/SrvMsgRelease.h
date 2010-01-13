@@ -30,12 +30,12 @@ class TSrvMsgRelease;
 class TSrvMsgRelease : public TSrvMsg
 {
   public:
-    TSrvMsgRelease(SmartPtr<TSrvIfaceMgr> IfMgr, 
-		SmartPtr<TSrvTransMgr> TransMgr,
-		SmartPtr<TSrvCfgMgr>   ConfMgr, 
-		SmartPtr<TSrvAddrMgr>  AddrMgr, 
+    TSrvMsgRelease(SPtr<TSrvIfaceMgr> IfMgr, 
+		SPtr<TSrvTransMgr> TransMgr,
+		SPtr<TSrvCfgMgr>   ConfMgr, 
+		SPtr<TSrvAddrMgr>  AddrMgr, 
 		 int iface, 
-		 SmartPtr<TIPv6Addr> addr,
+		 SPtr<TIPv6Addr> addr,
 		 char* buf,
 		 int bufSize);
 	

@@ -65,7 +65,7 @@ TSrvIfaceMgr::TSrvIfaceMgr(string xmlFile)
                  // << ", flags=" << ptr->flags 
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
-        SmartPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
+        SPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,
 						       ptr->mac,
 						       ptr->maclen,
@@ -96,16 +96,17 @@ void TSrvIfaceMgr::dump()
 
 /**
  * sends data to client. Uses multicast address as source
- * @param iface - interface ID
+ * @param iface interface index
  * @param msg - buffer containing message ready to send
  * @param size - size of message
- * @param addr - destination address
- * returns true if message was send successfully
+ * @param addr  destination IPv6 address
+ * @param port  destination UDP port
+ * @return true if message was send successfully
  */
 bool TSrvIfaceMgr::send(int iface, char *msg, int size, 
-			SmartPtr<TIPv6Addr> addr, int port) {
+			SPtr<TIPv6Addr> addr, int port) {
     // find this interface
-    SmartPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> ptrIface;
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
 	    Log(Error)  << "Send failed: No such interface id=" << iface << LogEnd;
@@ -113,7 +114,7 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 
     // find this socket
-    SmartPtr<TIfaceSocket> ptrSocket;
+    SPtr<TIfaceSocket> ptrSocket;
     ptrIface->firstSocket();
     ptrSocket = ptrIface->getSocket();
     if (!ptrSocket) {
@@ -130,9 +131,9 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
  * reads messages from all interfaces
  * it's wrapper around IfaceMgr::select(...) method
  * @param timeout - how long can we wait for packets?
- * returns SmartPtr to message object
+ * returns SPtr to message object
  */
-SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
+SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     
     // static buffer speeds things up
     const int maxBufsize = 4096;
@@ -157,7 +158,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     exit(-1);
 #endif
 
-    SmartPtr<TIPv6Addr> peer (new TIPv6Addr());
+    SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
     int msgtype;
 
@@ -171,8 +172,8 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	
 	// check message type
 	msgtype = buf[0];
-	//SmartPtr<TMsg> ptr;
-	SmartPtr<TSrvIfaceIface> ptrIface;
+	//SPtr<TMsg> ptr;
+	SPtr<TSrvIfaceIface> ptrIface;
 
 	// get interface
 	ptrIface = (Ptr*)this->getIfaceBySocket(sockid);
@@ -182,7 +183,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 		   << ")." << LogEnd;
 
 	// create specific message object
-    SmartPtr<TSrvMsg> ptr;
+    SPtr<TSrvMsg> ptr;
 	switch (msgtype) {
 	case SOLICIT_MSG:
 	case REQUEST_MSG:
@@ -227,7 +228,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 }
 
 bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, SPtr<TSrvOptInterfaceID> interfaceID) {
-    SmartPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
+    SPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
     if (!under) {
 	Log(Crit) << "Unable to setup " << name << "/" << ifindex 
 		  << " relay: underlaying interface with id=" << underIfindex 
@@ -242,7 +243,7 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, SPtr<T
 	return false;
     }
 
-    SmartPtr<TSrvIfaceIface> relay = new TSrvIfaceIface((const char*)name.c_str(), ifindex, 
+    SPtr<TSrvIfaceIface> relay = new TSrvIfaceIface((const char*)name.c_str(), ifindex, 
 							IF_UP | IF_RUNNING | IF_MULTICAST,   // flags
 							0,   // MAC
 							0,   // MAC length
@@ -265,16 +266,16 @@ bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, SPtr<T
     return true;
 }
 
-SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIface, 
-						SmartPtr<TIPv6Addr> peer, 
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface, 
+						SPtr<TIPv6Addr> peer, 
 						char * buf, int bufsize) {
 
-    SmartPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
+    SPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
     List(TSrvOptGeneric) echoListTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TSrvIfaceIface> relayIface;
+    SPtr<TSrvIfaceIface> relayIface;
     int relays=0; // number of nested RELAY_FORW messages
     SPtr<TSrvOptRemoteID> remoteID = 0;
     SPtr<TSrvOptEcho> echo = 0;
@@ -293,7 +294,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	    return 0;
 	}
 
-	SmartPtr<TSrvOptInterfaceID> ptrIfaceID;
+	SPtr<TSrvOptInterfaceID> ptrIfaceID;
 	ptrIfaceID = 0;
 
 	char type = buf[0];
@@ -303,8 +304,8 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	int optRelayCnt = 0;
 	int optIfaceIDCnt = 0;
 
-	SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
-	SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
+	SPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
+	SPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
 	buf+=34;
 	bufsize-=34;
 
@@ -437,7 +438,7 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
 	bufsize = relay_bufsize;
     }
     
-    SmartPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, relay_buf, relay_bufsize);
+    SPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, relay_buf, relay_bufsize);
     for (int i=0; i<relays; i++) {
 	msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i], echoListTbl[i]);
     }
@@ -452,8 +453,8 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIfac
     return (Ptr*)msg;
  }
 
-SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SmartPtr<TSrvIfaceIface> ptrIface, 
-					     SmartPtr<TIPv6Addr> peer, 
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface, 
+					     SPtr<TIPv6Addr> peer, 
 					     char * buf, int bufsize) {
     int ifaceid = ptrIface->getID();
     if (bufsize<4) 
@@ -501,12 +502,12 @@ SmartPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SmartPtr<TSrvIfaceIface> ptrIface,
 }
 
 /*
- * remember SmartPtrs to all managers (including this one)
+ * remember SPtrs to all managers (including this one)
  */
-void TSrvIfaceMgr::setContext(SmartPtr<TSrvIfaceMgr> srvIfaceMgr,
-			      SmartPtr<TSrvTransMgr> srvTransMgr,
-			      SmartPtr<TSrvCfgMgr> srvCfgMgr,
-			      SmartPtr<TSrvAddrMgr> srvAddrMgr) {
+void TSrvIfaceMgr::setContext(SPtr<TSrvIfaceMgr> srvIfaceMgr,
+			      SPtr<TSrvTransMgr> srvTransMgr,
+			      SPtr<TSrvCfgMgr> srvCfgMgr,
+			      SPtr<TSrvAddrMgr> srvAddrMgr) {
     SrvCfgMgr=srvCfgMgr;
     SrvAddrMgr=srvAddrMgr;
     SrvTransMgr=srvTransMgr;
@@ -543,7 +544,7 @@ void TSrvIfaceMgr::redetectIfaces() {
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
     strum << "<SrvIfaceMgr>" << std::endl;
-    SmartPtr<TSrvIfaceIface> ptr;
+    SPtr<TSrvIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr= (Ptr*) x.IfaceLst.get() ) {
 	strum << *ptr;

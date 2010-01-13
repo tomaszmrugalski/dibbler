@@ -23,10 +23,10 @@ class TSrvMsgLeaseQuery;
 class TSrvMsgLeaseQuery : public TSrvMsg
 {
   public:
-    TSrvMsgLeaseQuery(SmartPtr<TSrvIfaceMgr> IfMgr, 
-		      SmartPtr<TSrvCfgMgr>   ConfMgr, 
-		      SmartPtr<TSrvAddrMgr>  AddrMgr, 
-		      int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize);
+    TSrvMsgLeaseQuery(SPtr<TSrvIfaceMgr> IfMgr, 
+		      SPtr<TSrvCfgMgr>   ConfMgr, 
+		      SPtr<TSrvAddrMgr>  AddrMgr, 
+		      int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
     void doDuties();
     bool check();

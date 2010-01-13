@@ -19,7 +19,7 @@ class TSrvIfaceIface;
 #include "SrvOptInterfaceID.h"
 
 struct Relay {
-    SmartPtr<TSrvIfaceIface> iface;
+    SPtr<TSrvIfaceIface> iface;
     int ifindex;
     SPtr<TSrvOptInterfaceID> interfaceID;
 };
@@ -33,16 +33,16 @@ class TSrvIfaceIface: public TIfaceIface {
 
     friend ostream & operator <<(ostream & strum, TSrvIfaceIface &x);
 
-    void setUnderlaying(SmartPtr<TSrvIfaceIface> under);
-    bool appendRelay(SmartPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID);
-    SmartPtr<TSrvIfaceIface> getUnderlaying();
-    SmartPtr<TSrvIfaceIface> getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
-    SmartPtr<TSrvIfaceIface> getRelayByLinkAddr(SmartPtr<TIPv6Addr> addr);
-    SmartPtr<TSrvIfaceIface> getAnyRelay();
+    void setUnderlaying(SPtr<TSrvIfaceIface> under);
+    bool appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID);
+    SPtr<TSrvIfaceIface> getUnderlaying();
+    SPtr<TSrvIfaceIface> getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
+    SPtr<TSrvIfaceIface> getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
+    SPtr<TSrvIfaceIface> getAnyRelay();
     int getRelayCnt();
 
  private:
-    SmartPtr<TSrvIfaceIface> UnderRelay;
+    SPtr<TSrvIfaceIface> UnderRelay;
     bool Relay;
 
     TRelay Relays[HOP_COUNT_LIMIT];

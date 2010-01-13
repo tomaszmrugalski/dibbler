@@ -28,11 +28,11 @@
 #include "SrvOptIA_PD.h"
 #include "Logger.h"
 
-TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-				   SmartPtr<TSrvTransMgr> TransMgr,
-				   SmartPtr<TSrvCfgMgr> CfgMgr,
-				   SmartPtr<TSrvAddrMgr> AddrMgr,
-				   SmartPtr<TSrvMsgSolicit> solicit)
+TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
+				   SPtr<TSrvTransMgr> TransMgr,
+				   SPtr<TSrvCfgMgr> CfgMgr,
+				   SPtr<TSrvAddrMgr> AddrMgr,
+				   SPtr<TSrvMsgSolicit> solicit)
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
 	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
 	     solicit->getTransID())
@@ -49,11 +49,11 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
     this->IsDone = false;
 }
 
-bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
-    SmartPtr<TOpt>       opt;
-    SmartPtr<TSrvOptClientIdentifier> optClntID;
-    SmartPtr<TDUID>      clntDuid;
-    SmartPtr<TIPv6Addr>  clntAddr;
+bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
+    SPtr<TOpt>       opt;
+    SPtr<TSrvOptClientIdentifier> optClntID;
+    SPtr<TDUID>      clntDuid;
+    SPtr<TIPv6Addr>  clntAddr;
     unsigned int         clntIface;
 
     opt = solicit->getOption(OPTION_CLIENTID);
@@ -75,7 +75,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
         return false;
     }
 
-    SmartPtr<TSrvOptOptionRequest> reqOpts;
+    SPtr<TSrvOptOptionRequest> reqOpts;
 
     //remember requested option in order to add number of "hint" options,
     //wich are included in this packet (but not in OPTION REQUEST option).
@@ -93,7 +93,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	case OPTION_IA_NA : {
-	    SmartPtr<TSrvOptIA_NA> optIA_NA;
+	    SPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA = new TSrvOptIA_NA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt,
 					clntDuid, clntAddr, 
 					clntIface, SOLICIT_MSG,this);
@@ -101,14 +101,14 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	case OPTION_IA_TA: {
-	    SmartPtr<TSrvOptTA> optTA;
+	    SPtr<TSrvOptTA> optTA;
 	    optTA = new TSrvOptTA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt, 
 				  clntDuid, clntAddr, clntIface, SOLICIT_MSG, this);
 	    this->Options.append( (Ptr*) optTA);
 	    break;
 	}
 	case OPTION_IA_PD: {
-	    SmartPtr<TSrvOptIA_PD> optPD;
+	    SPtr<TSrvOptIA_PD> optPD;
 	    optPD = new TSrvOptIA_PD(SrvCfgMgr, SrvAddrMgr, (Ptr*) opt, clntAddr, clntDuid,  
 				     clntIface, SOLICIT_MSG, this);
 	    this->Options.append( (Ptr*) optPD);
@@ -137,7 +137,7 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	case OPTION_STATUS_CODE : {
-	    SmartPtr< TOptStatusCode > ptrStatus = (Ptr*) opt;
+	    SPtr< TOptStatusCode > ptrStatus = (Ptr*) opt;
 	    Log(Error) << "Received STATUS_CODE from client:" 
 		       <<  ptrStatus->getCode() << ", (" << ptrStatus->getText()
 		       << ")" << LogEnd;
@@ -173,10 +173,10 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	case OPTION_FQDN : {
-	    SmartPtr<TSrvOptFQDN> requestFQDN = (Ptr*) opt;
-	    SmartPtr<TOptFQDN> anotherFQDN = (Ptr*) opt;
+	    SPtr<TSrvOptFQDN> requestFQDN = (Ptr*) opt;
+	    SPtr<TOptFQDN> anotherFQDN = (Ptr*) opt;
 	    string hint = anotherFQDN->getFQDN();
-	    SmartPtr<TSrvOptFQDN> optFQDN;
+	    SPtr<TSrvOptFQDN> optFQDN;
 
 	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr->getFirstAddr(clntDuid);
 	    if (clntAssignedAddr)
@@ -222,21 +222,21 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     appendStatusCode();
 
     // include our DUID
-    SmartPtr<TSrvOptServerIdentifier> ptrSrvID;
+    SPtr<TSrvOptServerIdentifier> ptrSrvID;
     ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr->getDUID(),this);
     Options.append((Ptr*)ptrSrvID);
 
     // ... and our preference
-    SmartPtr<TSrvOptPreference> ptrPreference;
+    SPtr<TSrvOptPreference> ptrPreference;
     unsigned char preference = SrvCfgMgr->getIfaceByID(solicit->getIface())->getPreference();
     Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
     ptrPreference = new TSrvOptPreference(preference,this);
     Options.append((Ptr*)ptrPreference);
 
     // does this server support unicast?
-    SmartPtr<TIPv6Addr> unicastAddr = SrvCfgMgr->getIfaceByID(solicit->getIface())->getUnicast();
+    SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr->getIfaceByID(solicit->getIface())->getUnicast();
     if (unicastAddr) {
-	SmartPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
+	SPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
 	Options.append((Ptr*)optUnicast);
     }
 
@@ -245,13 +245,13 @@ bool TSrvMsgAdvertise::answer(SmartPtr<TSrvMsgSolicit> solicit) {
     while ( opt = this->getOption()) {
 	switch (opt->getOptType()) {
 	case OPTION_IA_NA: {
-	    SmartPtr<TSrvOptIA_NA> ptrOptIA_NA;
+	    SPtr<TSrvOptIA_NA> ptrOptIA_NA;
 	    ptrOptIA_NA = (Ptr*) opt;
 	    ptrOptIA_NA->releaseAllAddrs(false);
 	    break;
 	}
 	case OPTION_IA_TA: {
-	    SmartPtr<TSrvOptTA> ta;
+	    SPtr<TSrvOptTA> ta;
 	    ta = (Ptr*) opt;
 	    ta->releaseAllAddrs(false);
 	    break;

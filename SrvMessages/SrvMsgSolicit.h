@@ -24,11 +24,11 @@ class TSrvMsgSolicit;
 class TSrvMsgSolicit : public TSrvMsg
 {
  public:
-    TSrvMsgSolicit(SmartPtr<TSrvIfaceMgr> ifaceMgr, 
-		   SmartPtr<TSrvTransMgr> transMgr,
-		   SmartPtr<TSrvCfgMgr>	  cfgMgr,
-		   SmartPtr<TSrvAddrMgr>  addrMgr,
-		   int iface, SmartPtr<TIPv6Addr> addr,
+    TSrvMsgSolicit(SPtr<TSrvIfaceMgr> ifaceMgr, 
+		   SPtr<TSrvTransMgr> transMgr,
+		   SPtr<TSrvCfgMgr>	  cfgMgr,
+		   SPtr<TSrvAddrMgr>  addrMgr,
+		   int iface, SPtr<TIPv6Addr> addr,
 		   char* buf, int bufSzie);
 
     void doDuties();
@@ -39,10 +39,10 @@ class TSrvMsgSolicit : public TSrvMsg
     ~TSrvMsgSolicit();
 
  private:
-    void setAttribs(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-		    SmartPtr<TSrvTransMgr> TransMgr, 
-		    SmartPtr<TSrvCfgMgr> CfgMgr,
-		    SmartPtr<TSrvAddrMgr> AddrMgr,
+    void setAttribs(SPtr<TSrvIfaceMgr> IfaceMgr, 
+		    SPtr<TSrvTransMgr> TransMgr, 
+		    SPtr<TSrvCfgMgr> CfgMgr,
+		    SPtr<TSrvAddrMgr> AddrMgr,
 		    int iface, char* addr, int msgType);
 };
 #endif /* SRVMSGSOLICIT_H*/

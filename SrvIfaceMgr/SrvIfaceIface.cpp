@@ -25,16 +25,16 @@ TSrvIfaceIface::TSrvIfaceIface(const char * name, int id, unsigned int flags, ch
     this->RelaysCnt = 0;
 }
 
-void TSrvIfaceIface::setUnderlaying(SmartPtr<TSrvIfaceIface> under) {
+void TSrvIfaceIface::setUnderlaying(SPtr<TSrvIfaceIface> under) {
     this->UnderRelay = under;
     this->Relay = true;
 }
 
-SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getUnderlaying() {
+SPtr<TSrvIfaceIface> TSrvIfaceIface::getUnderlaying() {
     return this->UnderRelay;
 }
 
-bool TSrvIfaceIface::appendRelay(SmartPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID) {
+bool TSrvIfaceIface::appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID) {
     if (this->RelaysCnt>=HOP_COUNT_LIMIT) 
 	return false;
     this->Relays[this->RelaysCnt].iface       = relay;
@@ -44,7 +44,7 @@ bool TSrvIfaceIface::appendRelay(SmartPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInt
     return true;
 }
 
-SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
+SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
     int i=0;
     if (this->RelaysCnt==0) {
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
@@ -57,7 +57,7 @@ SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInter
     return 0;
 }
 
-SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SmartPtr<TIPv6Addr> addr) {
+SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SPtr<TIPv6Addr> addr) {
     if (this->RelaysCnt==0) {
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
 	return 0;
@@ -68,7 +68,7 @@ SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SmartPtr<TIPv6Addr> 
     return this->Relays[0].iface;
 }
 
-SmartPtr<TSrvIfaceIface> TSrvIfaceIface::getAnyRelay() {
+SPtr<TSrvIfaceIface> TSrvIfaceIface::getAnyRelay() {
     if (this->RelaysCnt==0) {
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
 	return 0;
@@ -128,7 +128,7 @@ ostream & operator <<(ostream & strum, TSrvIfaceIface &x) {
     strum << "</Mac>" << endl;
 
     strum << "    <!-- " << x.countSocket() << " sockets -->" << endl;
-    SmartPtr<TIfaceSocket> sock;
+    SPtr<TIfaceSocket> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {
 	strum << "    " << *sock;

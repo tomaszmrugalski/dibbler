@@ -30,27 +30,27 @@ class TSrvMsgAdvertise : public TSrvMsg
 {
   public:
     // creates object based on a buffer
-    TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-		     SmartPtr<TSrvTransMgr> TransMgr,
-		     SmartPtr<TSrvCfgMgr> CfgMgr,
-		     SmartPtr<TSrvAddrMgr> AddrMgr,
-		     int iface, SmartPtr<TIPv6Addr> addr);
+    TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
+		     SPtr<TSrvTransMgr> TransMgr,
+		     SPtr<TSrvCfgMgr> CfgMgr,
+		     SPtr<TSrvAddrMgr> AddrMgr,
+		     int iface, SPtr<TIPv6Addr> addr);
     
-    TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-		     SmartPtr<TSrvTransMgr> TransMgr,
-		     SmartPtr<TSrvCfgMgr> CfgMgr,
-		     SmartPtr<TSrvAddrMgr> AddrMgr,
-		     SmartPtr<TSrvMsgSolicit> question);
+    TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
+		     SPtr<TSrvTransMgr> TransMgr,
+		     SPtr<TSrvCfgMgr> CfgMgr,
+		     SPtr<TSrvAddrMgr> AddrMgr,
+		     SPtr<TSrvMsgSolicit> question);
     
-	TSrvMsgAdvertise(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-		SmartPtr<TSrvTransMgr> TransMgr,
-		SmartPtr<TSrvCfgMgr> CfgMgr,
-		SmartPtr<TSrvAddrMgr> AddrMgr,
-		unsigned int iface, SmartPtr<TIPv6Addr> addr,
+	TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
+		SPtr<TSrvTransMgr> TransMgr,
+		SPtr<TSrvCfgMgr> CfgMgr,
+		SPtr<TSrvAddrMgr> AddrMgr,
+		unsigned int iface, SPtr<TIPv6Addr> addr,
 		unsigned char* buf, unsigned int bufSize);
 
     bool check();
-    bool answer(SmartPtr<TSrvMsgSolicit> solicit);
+    bool answer(SPtr<TSrvMsgSolicit> solicit);
     void doDuties();
     unsigned long getTimeout();
     string getName();

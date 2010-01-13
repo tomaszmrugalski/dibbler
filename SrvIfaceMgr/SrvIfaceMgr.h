@@ -29,24 +29,24 @@ class TSrvIfaceMgr :public TIfaceMgr {
     ~TSrvIfaceMgr();
     friend ostream & operator <<(ostream & strum, TSrvIfaceMgr &x);
 
-    SmartPtr<TSrvMsg> decodeMsg(SmartPtr<TSrvIfaceIface> ptrIface, 
-				SmartPtr<TIPv6Addr> peer, 
+    SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface, 
+				SPtr<TIPv6Addr> peer, 
 				char * buf, int bufsize);
     
-    SmartPtr<TSrvMsg> decodeRelayForw(SmartPtr<TSrvIfaceIface> ptrIface, 
-				      SmartPtr<TIPv6Addr> peer, 
+    SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface, 
+				      SPtr<TIPv6Addr> peer, 
 				      char * buf, int bufsize);
     
     bool setupRelay(string name, int ifindex, int underIfindex, SPtr<TSrvOptInterfaceID> interfaceID);
     void dump();
     
     // ---sends messages---
-    bool send(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr, int port);
+    bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
     
     // ---receives messages---
-    SmartPtr<TSrvMsg> select(unsigned long timeout);
+    SPtr<TSrvMsg> select(unsigned long timeout);
 
-    // ---remember SmartPtrs to all menagers---
+    // ---remember SPtrs to all menagers---
     void setContext(SPtr<TSrvIfaceMgr> srvIfaceMgr,
 		    SPtr<TSrvTransMgr> srvTransMgr,
 		    SPtr<TSrvCfgMgr> srvCfgMgr,
@@ -56,10 +56,10 @@ class TSrvIfaceMgr :public TIfaceMgr {
 
   private:
     string XmlFile;
-    SmartPtr<TSrvCfgMgr> SrvCfgMgr;
-    SmartPtr<TSrvAddrMgr> SrvAddrMgr;
-    SmartPtr<TSrvTransMgr> SrvTransMgr;
-    SmartPtr<TSrvIfaceMgr> That;
+    SPtr<TSrvCfgMgr> SrvCfgMgr;
+    SPtr<TSrvAddrMgr> SrvAddrMgr;
+    SPtr<TSrvTransMgr> SrvTransMgr;
+    SPtr<TSrvIfaceMgr> That;
 
 };
 

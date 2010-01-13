@@ -14,11 +14,11 @@
 #include "AddrClient.h"
 #include "SrvOptServerIdentifier.h"
     
-TSrvMsgDecline::TSrvMsgDecline(SmartPtr<TSrvIfaceMgr> IfaceMgr,
-			       SmartPtr<TSrvTransMgr> TransMgr,
-			       SmartPtr<TSrvCfgMgr> CfgMgr,
-			       SmartPtr<TSrvAddrMgr> AddrMgr,
-			       int iface, SmartPtr<TIPv6Addr> addr,
+TSrvMsgDecline::TSrvMsgDecline(SPtr<TSrvIfaceMgr> IfaceMgr,
+			       SPtr<TSrvTransMgr> TransMgr,
+			       SPtr<TSrvCfgMgr> CfgMgr,
+			       SPtr<TSrvAddrMgr> AddrMgr,
+			       int iface, SPtr<TIPv6Addr> addr,
 			       char* buf, int bufSize)
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,bufSize) {
 }

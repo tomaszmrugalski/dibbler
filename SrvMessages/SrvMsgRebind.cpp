@@ -14,11 +14,11 @@
 #include "SrvMsgRebind.h"
 #include "AddrClient.h"
 
-TSrvMsgRebind::TSrvMsgRebind(SmartPtr<TSrvIfaceMgr> IfaceMgr, 
-			     SmartPtr<TSrvTransMgr> TransMgr, 
-			     SmartPtr<TSrvCfgMgr> CfgMgr, 
-			     SmartPtr<TSrvAddrMgr> AddrMgr,
-			     int iface, SmartPtr<TIPv6Addr> addr,
+TSrvMsgRebind::TSrvMsgRebind(SPtr<TSrvIfaceMgr> IfaceMgr, 
+			     SPtr<TSrvTransMgr> TransMgr, 
+			     SPtr<TSrvCfgMgr> CfgMgr, 
+			     SPtr<TSrvAddrMgr> AddrMgr,
+			     int iface, SPtr<TIPv6Addr> addr,
 			     char* buf, int bufSize)
     :TSrvMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize) {
 }

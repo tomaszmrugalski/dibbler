@@ -18,11 +18,11 @@ class TSrvMsgRebind;
 class TSrvMsgRebind : public TSrvMsg
 {
   public:
-    TSrvMsgRebind(SmartPtr<TSrvIfaceMgr>, 
-		  SmartPtr<TSrvTransMgr>, 
-		  SmartPtr<TSrvCfgMgr>, 
-		  SmartPtr<TSrvAddrMgr> AddrMgr,
-		  int iface, SmartPtr<TIPv6Addr> addr,
+    TSrvMsgRebind(SPtr<TSrvIfaceMgr>, 
+		  SPtr<TSrvTransMgr>, 
+		  SPtr<TSrvCfgMgr>, 
+		  SPtr<TSrvAddrMgr> AddrMgr,
+		  int iface, SPtr<TIPv6Addr> addr,
 		  char* buf, int bufSize);
     
     void doDuties();

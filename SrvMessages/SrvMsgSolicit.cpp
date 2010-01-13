@@ -22,11 +22,11 @@
 #include "AddrClient.h"
 #include <cmath>
 
-TSrvMsgSolicit::TSrvMsgSolicit(SmartPtr<TSrvIfaceMgr>	ifaceMgr, 
-			       SmartPtr<TSrvTransMgr>	transMgr,
-			       SmartPtr<TSrvCfgMgr>	cfgMgr,
-			       SmartPtr<TSrvAddrMgr>	addrMgr,
-			       int iface, SmartPtr<TIPv6Addr> addr,
+TSrvMsgSolicit::TSrvMsgSolicit(SPtr<TSrvIfaceMgr>	ifaceMgr, 
+			       SPtr<TSrvTransMgr>	transMgr,
+			       SPtr<TSrvCfgMgr>	cfgMgr,
+			       SPtr<TSrvAddrMgr>	addrMgr,
+			       int iface, SPtr<TIPv6Addr> addr,
 			       char* buf, int bufSize)
     :TSrvMsg(ifaceMgr,transMgr,cfgMgr,addrMgr,iface,addr,buf,bufSize) {
 }

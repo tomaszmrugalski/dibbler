@@ -62,53 +62,53 @@ class TSrvMsgReply;
 class TSrvMsgReply : public TSrvMsg
 {
   public:
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgConfirm> question);
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgConfirm> question);
     
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgDecline> question);	
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgDecline> question);	
     
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgRebind> question);	
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgRebind> question);	
 
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgRelease> question);	
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgRelease> question);	
     
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgRenew> question);	
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgRenew> question);	
     
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgRequest> question);
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgRequest> question);
     
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgSolicit> question);
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgSolicit> question);
     
-    TSrvMsgReply(SmartPtr<TSrvIfaceMgr>, 
-		 SmartPtr<TSrvTransMgr>, 
-		 SmartPtr<TSrvCfgMgr>, 
-		 SmartPtr<TSrvAddrMgr> AddrMgr,
-		 SmartPtr<TSrvMsgInfRequest> question);
+    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
+		 SPtr<TSrvTransMgr>, 
+		 SPtr<TSrvCfgMgr>, 
+		 SPtr<TSrvAddrMgr> AddrMgr,
+		 SPtr<TSrvMsgInfRequest> question);
 
     void doDuties();
     unsigned long getTimeout();
@@ -118,10 +118,10 @@ class TSrvMsgReply : public TSrvMsg
     ~TSrvMsgReply();
 private:
     //bool iaExist(unsigned long iaid);
-    SmartPtr<TSrvOptOptionRequest> reqOpts;
-    SmartPtr<TSrvOptClientIdentifier> duidOpt;
-    void appendDefaultOption(SmartPtr<TOpt> ptrOpt);
-    void setOptionsReqOptClntDUID(SmartPtr<TMsg> msg);
+    SPtr<TSrvOptOptionRequest> reqOpts;
+    SPtr<TSrvOptClientIdentifier> duidOpt;
+    void appendDefaultOption(SPtr<TOpt> ptrOpt);
+    void setOptionsReqOptClntDUID(SPtr<TMsg> msg);
 };
 
 
