@@ -43,9 +43,9 @@
 
 using namespace std;
 
-TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-			     SmartPtr<TClntAddrMgr> addrMgr,
-			     SmartPtr<TClntCfgMgr> cfgMgr,
+TClntTransMgr::TClntTransMgr(SPtr<TClntIfaceMgr> ifaceMgr, 
+			     SPtr<TClntAddrMgr> addrMgr,
+			     SPtr<TClntCfgMgr> cfgMgr,
                              string config)
 {
     // should we set REUSE option during binding sockets?
@@ -70,7 +70,7 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
 	return;
     }
 
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     CfgMgr->firstIface();
     while(iface=CfgMgr->getIface()) {
 	if (!this->openSocket(iface)) {
@@ -83,24 +83,24 @@ TClntTransMgr::TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr,
     this->IsDone = false;
 }
 
-bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
+bool TClntTransMgr::openSocket(SPtr<TClntCfgIface> iface) {
 
     if (iface->noConfig())       
 	return true;
 
     // create IAs in AddrMgr corresponding to those specified in CfgMgr.
-    SmartPtr<TClntCfgIA> ia;
+    SPtr<TClntCfgIA> ia;
     iface->firstIA();
     while(ia=iface->getIA()) {
 	AddrMgr->addIA(new TAddrIA(iface->getID(),
 				   TAddrIA::TYPE_IA,
-				   SmartPtr<TIPv6Addr>(), 
-				   SmartPtr<TDUID>(),CLIENT_DEFAULT_T1,CLIENT_DEFAULT_T2,
+				   SPtr<TIPv6Addr>(), 
+				   SPtr<TDUID>(),CLIENT_DEFAULT_T1,CLIENT_DEFAULT_T2,
 				   ia->getIAID()));
     }
     
     // open socket
-    SmartPtr<TIfaceIface> realIface = IfaceMgr->getIfaceByID(iface->getID());
+    SPtr<TIfaceIface> realIface = IfaceMgr->getIfaceByID(iface->getID());
     if (!realIface) {
 	Log(Error) << "Interface " << iface->getName() << "/" << iface->getID()
 		   << " not present in system." << LogEnd;
@@ -127,12 +127,12 @@ bool TClntTransMgr::openSocket(SmartPtr<TClntCfgIface> iface) {
 	return false;
     }
 
-    SmartPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
+    SPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
 
 #if 0
 #ifndef WIN32
-    SmartPtr<TIfaceIface> loopback;
-    SmartPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> loopback;
+    SPtr<TIfaceIface> ptrIface;
     IfaceMgr->firstIface();
     while (ptrIface=IfaceMgr->getIface()) {
         if (!ptrIface->flagLoopback()) {
@@ -184,9 +184,9 @@ void TClntTransMgr::removeExpired() {
     if (AddrMgr->getValidTimeout())
         return;
 
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TAddrAddr> ptrAddr;
-    SmartPtr<TIfaceIface> ptrIface;
+    SPtr<TAddrIA> ptrIA;
+    SPtr<TAddrAddr> ptrAddr;
+    SPtr<TIfaceIface> ptrIface;
 
     this->AddrMgr->firstIA();
     while (ptrIA = this->AddrMgr->getIA()) {
@@ -214,9 +214,9 @@ void TClntTransMgr::removeExpired() {
  */
 void TClntTransMgr::checkDB()
 {
-    SmartPtr<TClntCfgIface> iface;
-    SmartPtr <TAddrIA> ptrIA;
-    SmartPtr<TAddrAddr> ptrAddr;
+    SPtr<TClntCfgIface> iface;
+    SPtr <TAddrIA> ptrIA;
+    SPtr<TAddrAddr> ptrAddr;
 
     AddrMgr->doDuties();
     AddrMgr->firstIA();
@@ -236,13 +236,13 @@ void TClntTransMgr::checkDB()
 }
 
 bool TClntTransMgr::openLoopbackSocket() {
-    SmartPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> ptrIface;
 
     if (!this->BindReuse)
 	return true;
 
 #ifndef WIN32
-    SmartPtr<TIfaceIface> loopback;
+    SPtr<TIfaceIface> loopback;
     IfaceMgr->firstIface();
     while (ptrIface=IfaceMgr->getIface()) {
         if (!ptrIface->flagLoopback()) {
@@ -256,7 +256,7 @@ bool TClntTransMgr::openLoopbackSocket() {
 	   return false;
     }
 
-    SmartPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::", true);
+    SPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::", true);
     Log(Notice) << "Creating control (" << *loopAddr << ") socket on the " << loopback->getName() 
 		<< "/" << loopback->getID() << " interface." << LogEnd;
 
@@ -275,14 +275,14 @@ bool TClntTransMgr::openLoopbackSocket() {
 void TClntTransMgr::doDuties()
 {
     // for each message on list, let it do its duties, if timeout is reached
-    SmartPtr <TClntMsg> msg;
+    SPtr <TClntMsg> msg;
     Transactions.first();
     while(msg=Transactions.get())
     {
         if ((!msg->getTimeout())&&(!msg->isDone())) {
 	    Log(Info) << "Processing msg (" << msg->getName() << ",transID=0x"
 	     << hex << msg->getTransID() << dec << ",opts:";
-	    SmartPtr<TOpt> ptrOpt;
+	    SPtr<TOpt> ptrOpt;
 	    msg->firstOption();
 	    while (ptrOpt = msg->getOption()) {
 		Log(Cont) << " " << ptrOpt->getOptType();
@@ -346,11 +346,11 @@ void TClntTransMgr::doDuties()
 
 void TClntTransMgr::shutdown()
 {
-    SmartPtr<TAddrIA> ptrFirstIA;
-    SmartPtr<TAddrIA> ptrNextIA;
-    SmartPtr<TAddrIA> ta;
+    SPtr<TAddrIA> ptrFirstIA;
+    SPtr<TAddrIA> ptrNextIA;
+    SPtr<TAddrIA> ta;
     SPtr<TAddrIA> pd;
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     List(TAddrIA) releasedIAs;
     List(TAddrIA) releasedPDs;
 
@@ -380,53 +380,54 @@ void TClntTransMgr::shutdown()
         // find similar IAs 
         while (ptrNextIA = AddrMgr->getIA()) {
             if ((*(ptrFirstIA->getDUID())==*(ptrNextIA->getDUID())) &&
-                (ptrFirstIA->getIface() == ptrNextIA->getIface() ) ) {
-                    // IA serviced via this same server, add it do the list
-                    releasedIAs.append(ptrNextIA);
+                (ptrFirstIA->getIface() == ptrNextIA->getIface() ) ) 
+            {
+                // IA serviced via this same server, add it do the list
+                releasedIAs.append(ptrNextIA);
 
-                    // delete addressess from IfaceMgr
-                    SmartPtr<TAddrAddr> ptrAddr;
-                    SmartPtr<TIfaceIface> ptrIface;
-                    ptrIface = IfaceMgr->getIfaceByID(ptrNextIA->getIface());
-                    if (!ptrIface) {
-			Log(Error) << "Unable to find " << ptrNextIA->getIface()
-                            << " interface while releasing address." << LogEnd;
-                        break;
-                    }
-                    ptrNextIA->firstAddr();
-
-		    // addresses are deleted in ClntMsgRelease.cpp, DO NOT delete them here
-                    // while (ptrAddr = ptrNextIA->getAddr() ) {
-                    //    ptrIface->delAddr( ptrAddr->get(),ptrAddr->getPrefix() );
-                    // }
-
-                    // delete IA from AddrMgr
-                    AddrMgr->delIA( ptrNextIA->getIAID() );
+                // delete addressess from IfaceMgr
+                SPtr<TAddrAddr> ptrAddr;
+                SPtr<TIfaceIface> ptrIface;
+                ptrIface = IfaceMgr->getIfaceByID(ptrNextIA->getIface());
+                if (!ptrIface) {
+		            Log(Error) << "Unable to find " << ptrNextIA->getIface()
+                               << " interface while releasing address." << LogEnd;
+                    break;
                 }
+                ptrNextIA->firstAddr();
+
+    		    // addresses are deleted in ClntMsgRelease.cpp, DO NOT delete them here
+                // while (ptrAddr = ptrNextIA->getAddr() ) {
+                //    ptrIface->delAddr( ptrAddr->get(),ptrAddr->getPrefix() );
+                // }
+
+                // delete IA from AddrMgr
+                AddrMgr->delIA( ptrNextIA->getIAID() );
+            }
         }
 
-	ta = 0;
+    	ta = 0;
         if (releasedIAs.count()) { 
-	    // check if there are TA to release
-	    releasedIAs.first();
-	    iface = CfgMgr->getIface(releasedIAs.get()->getIface());
-	    if (iface && iface->countTA()) {
-		iface->firstTA();
-		SmartPtr<TClntCfgTA> cfgTA = iface->getTA();
-		ta = AddrMgr->getTA(cfgTA->getIAID());
-		cfgTA->setState(STATE_DISABLED);
-	    }
+	        // check if there are TA to release
+	        releasedIAs.first();
+	        iface = CfgMgr->getIface(releasedIAs.get()->getIface());
+	        if (iface && iface->countTA()) {
+    		    iface->firstTA();
+	    	    SPtr<TClntCfgTA> cfgTA = iface->getTA();
+		        ta = AddrMgr->getTA(cfgTA->getIAID());
+		        cfgTA->setState(STATE_DISABLED);
+	        }
 
-	}
-	pd = 0;
-	AddrMgr->firstPD();
-	while (pd = AddrMgr->getPD()) {
-	    releasedPDs.append(pd);
-	    SPtr<TClntCfgPD> cfgPD = CfgMgr->getPD(pd->getIAID());
-	    if (cfgPD)
-		cfgPD->setState(STATE_DISABLED);
-	}
-	this->sendRelease(releasedIAs,ta, releasedPDs);
+    	}
+	    pd = 0;
+	    AddrMgr->firstPD();
+	    while (pd = AddrMgr->getPD()) {
+	        releasedPDs.append(pd);
+	        SPtr<TClntCfgPD> cfgPD = CfgMgr->getPD(pd->getIAID());
+	        if (cfgPD)
+		    cfgPD->setState(STATE_DISABLED);
+	    }
+	    this->sendRelease(releasedIAs,ta, releasedPDs);
     }
 
     // now check if there are any TA left
@@ -434,7 +435,7 @@ void TClntTransMgr::shutdown()
     while (iface = CfgMgr->getIface()) {
 	if (iface->countTA()) {
 	    iface->firstTA();
-	    SmartPtr<TClntCfgTA> cfgTA = iface->getTA();
+	    SPtr<TClntCfgTA> cfgTA = iface->getTA();
 	    ta = AddrMgr->getTA(cfgTA->getIAID());
 	    releasedIAs.clear();
 	    if (!ta) {
@@ -471,10 +472,10 @@ void TClntTransMgr::shutdown()
     this->IfaceMgr->removeAllOpts();
 }
 
-void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
+void TClntTransMgr::relayMsg(SPtr<TClntMsg>  msgAnswer)
 {
-    SmartPtr<TIfaceIface> ifaceQuestion;
-    SmartPtr<TIfaceIface> ifaceAnswer;
+    SPtr<TIfaceIface> ifaceQuestion;
+    SPtr<TIfaceIface> ifaceAnswer;
 
     // is message valid?
     if (!msgAnswer->check())
@@ -482,7 +483,7 @@ void TClntTransMgr::relayMsg(SmartPtr<TClntMsg>  msgAnswer)
     
     // find which message this is answer for
     bool found = false;
-    SmartPtr<TClntMsg> msgQuestion;
+    SPtr<TClntMsg> msgQuestion;
     Transactions.first();
     while(msgQuestion=(Ptr*)Transactions.get()) {
         if (msgQuestion->getTransID()==msgAnswer->getTransID()) {
@@ -535,7 +536,7 @@ unsigned long TClntTransMgr::getTimeout()
 	timeout = tmp;
 
     // Messages timeout
-    SmartPtr<TClntMsg> ptrMsg;
+    SPtr<TClntMsg> ptrMsg;
     Transactions.first();
     tmp = DHCPV6_INFINITY;
     while(ptrMsg=Transactions.get())
@@ -565,18 +566,18 @@ void TClntTransMgr::sendRequest(List(TOpt) requestOptions, int iface)
 {
     sortAdvertiseLst();
 
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     requestOptions.first();
     while (opt = requestOptions.get()) {
 	if (!allowOptInMsg(REQUEST_MSG, opt->getOptType()))
 	    requestOptions.del();
     }
-    SmartPtr<TClntMsg> ptr = new TClntMsgRequest(IfaceMgr,That,CfgMgr, AddrMgr, requestOptions, iface);
+    SPtr<TClntMsg> ptr = new TClntMsgRequest(IfaceMgr,That,CfgMgr, AddrMgr, requestOptions, iface);
     Transactions.append( (Ptr*)ptr );
 }
 
 // Send RELEASE message
-void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta, List(TAddrIA) pdLst)
+void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst)
 {
     if ( !IALst.count() && !ta && !pdLst.count() ) {
         Log(Error) << "Unable to send RELEASE with empty IA list, PD list and no TA." << LogEnd;
@@ -585,30 +586,30 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta, List
 
     // find interface and srv address
     int iface;
-    SmartPtr<TIPv6Addr> addr;
-    SmartPtr<TAddrIA> ptrIA;
+    SPtr<TIPv6Addr> addr;
+    SPtr<TAddrIA> ptrIA;
     if (IALst.count()) {
-	IALst.first();
-	ptrIA = IALst.get();
-	iface = ptrIA->getIface();
-	addr  = ptrIA->getSrvAddr();
+	    IALst.first();
+	    ptrIA = IALst.get();
+	    iface = ptrIA->getIface();
+	    addr  = ptrIA->getSrvAddr();
     } else if (pdLst.count()) {
-	pdLst.first();
-	ptrIA = pdLst.get();
-	iface = ptrIA->getIface();
-	addr  = ptrIA->getSrvAddr();
+	    pdLst.first();
+	    ptrIA = pdLst.get();
+	    iface = ptrIA->getIface();
+	    addr  = ptrIA->getSrvAddr();
     } else if (ta) {
-	iface = ta->getIface();
-	addr  = ta->getSrvAddr();
+	    iface = ta->getIface();
+	    addr  = ta->getSrvAddr();
     } else {
-	Log(Error) << "Unable to send RELEASE message. No IA, PD or TA defined." << LogEnd;
-	return;
+	    Log(Error) << "Unable to send RELEASE message. No IA, PD or TA defined." << LogEnd;
+	    return;
     }
 
-    SmartPtr<TClntCfgIface> ptrIface = CfgMgr->getIface(iface);
+    SPtr<TClntCfgIface> ptrIface = CfgMgr->getIface(iface);
     if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
-	return;
+	    Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
+	    return;
     }
 	
     Log(Notice) << "Creating RELEASE for " << IALst.count() << " IA(s), " 
@@ -616,34 +617,34 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SmartPtr<TAddrIA> ta, List
 		<< (ta?" and TA":" (no TA)") << " on the " << ptrIface->getFullName() 
 		<< " interface." << LogEnd;
 
-    SmartPtr<TClntMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, iface, 
+    SPtr<TClntMsg> ptr = new TClntMsgRelease(IfaceMgr,That,CfgMgr, AddrMgr, iface, 
 						 addr, IALst, ta, pdLst);
     Transactions.append( ptr );
 }
 
 // Send REBIND message
 void TClntTransMgr::sendRebind(List(TOpt) requestOptions, int iface) {
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     requestOptions.first();
     while (opt = requestOptions.get()) {
 	if (!allowOptInMsg(REBIND_MSG, opt->getOptType()))
 	    requestOptions.del();
     }
 
-    SmartPtr<TClntMsg> ptr =  new TClntMsgRebind(IfaceMgr, That, CfgMgr, AddrMgr, requestOptions, iface);
+    SPtr<TClntMsg> ptr =  new TClntMsgRebind(IfaceMgr, That, CfgMgr, AddrMgr, requestOptions, iface);
     if (!ptr->isDone())
 	Transactions.append( ptr );
 }
 
 void TClntTransMgr::sendInfRequest(List(TOpt) requestOptions, int iface) {
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     requestOptions.first();
     while (opt = requestOptions.get()) {
 	if (!allowOptInMsg(INFORMATION_REQUEST_MSG, opt->getOptType()))
 	    requestOptions.del();
     }
 
-    SmartPtr<TClntMsg> ptr = new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,requestOptions,iface);
+    SPtr<TClntMsg> ptr = new TClntMsgInfRequest(IfaceMgr,That,CfgMgr,AddrMgr,requestOptions,iface);
     if (!ptr->isDone())
 	Transactions.append( ptr );    
 }
@@ -653,7 +654,7 @@ void TClntTransMgr::checkSolicit() {
 
     //For every iface, every group in iface in ClntCfgMgr 
     //Enumerate IA's from this group
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     CfgMgr->firstIface();
     while( (iface=CfgMgr->getIface()) )
     {
@@ -662,7 +663,7 @@ void TClntTransMgr::checkSolicit() {
 
 	// step 1: check if there are any IA to be configured
 	List(TClntCfgIA) iaLst; // list of IA requiring configuration
-	SmartPtr<TClntCfgIA> cfgIA;
+	SPtr<TClntCfgIA> cfgIA;
     
 	iface->firstIA();
 	while(cfgIA=iface->getIA())
@@ -674,7 +675,7 @@ void TClntTransMgr::checkSolicit() {
 	}
 
 	// step 2: check if TA has to be configured
-	SmartPtr<TClntCfgTA> ta;
+	SPtr<TClntCfgTA> ta;
 	if (iface->countTA() ) {
 	    iface->firstTA();
 	    ta = iface->getTA();
@@ -749,13 +750,13 @@ void TClntTransMgr::checkConfirm()
 
 void TClntTransMgr::checkInfRequest()
 {
-    SmartPtr<TClntCfgIface> iface;
+    SPtr<TClntCfgIface> iface;
     CfgMgr->firstIface();
     while( (iface=CfgMgr->getIface()) )
     {
         if (iface->noConfig())
             continue;
-	SmartPtr<TClntIfaceIface> ifaceIface = (Ptr*)IfaceMgr->getIfaceByID(iface->getID());
+	SPtr<TClntIfaceIface> ifaceIface = (Ptr*)IfaceMgr->getIfaceByID(iface->getID());
 	if (!ifaceIface) {
 	    Log(Error) << "Interface with ifindex=" << iface->getID() << " not found." << LogEnd;
 	    continue;
@@ -819,8 +820,8 @@ void TClntTransMgr::checkRenew()
     
     // Find all IAs
     List(TAddrIA) iaLst;
-    SmartPtr<TAddrIA> ia;
-    SmartPtr<TAddrIA> iaPattern;
+    SPtr<TAddrIA> ia;
+    SPtr<TAddrIA> iaPattern;
     AddrMgr->firstIA();
 
     // Need to be fixed:?? how to deal with mutiple network interfaces.
@@ -875,7 +876,7 @@ void TClntTransMgr::checkRenew()
     }
 	 
     Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
-    SmartPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst, pdLst);
+    SPtr <TClntMsg> ptrRenew = new TClntMsgRenew(IfaceMgr, That, CfgMgr, AddrMgr, iaLst, pdLst);
     Transactions.append(ptrRenew);
 }
 
@@ -884,13 +885,13 @@ void TClntTransMgr::checkDecline()
     //Find any tentative address and remove them from address manager
     //Group declined addresses and IAs by server and send Decline
     //Find first IA with tentative addresses
-    SmartPtr<TAddrIA> firstIA;
-    SmartPtr<TAddrIA> ptrIA;
+    SPtr<TAddrIA> firstIA;
+    SPtr<TAddrIA> ptrIA;
     int result;
     do
     {
-        firstIA=SmartPtr<TAddrIA>(); // NULL
-        TContainer<SmartPtr<TAddrIA> > declineIALst;
+        firstIA=SPtr<TAddrIA>(); // NULL
+        TContainer<SPtr<TAddrIA> > declineIALst;
 
         AddrMgr->firstIA();
         while((ptrIA=AddrMgr->getIA())&&(!firstIA))
@@ -911,19 +912,19 @@ void TClntTransMgr::checkDecline()
 
             }
             //Here should be send decline for all tentative addresses in IAs
-            SmartPtr<TClntMsgDecline> decline = 
+            SPtr<TClntMsgDecline> decline = 
                 new TClntMsgDecline(IfaceMgr, That, CfgMgr, AddrMgr,
-                firstIA->getIface(), SmartPtr<TIPv6Addr>(),
+                firstIA->getIface(), SPtr<TIPv6Addr>(),
                 declineIALst);
             Transactions.append( (Ptr*) decline);
 
             // decline sent, now remove those addrs from IfaceMgr
-            SmartPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(firstIA->getIface());
+            SPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(firstIA->getIface());
 	    SPtr<TDUID> duid;
 
             declineIALst.first();
             while (ptrIA = declineIALst.get() ) {
-                SmartPtr<TAddrAddr> ptrAddr;
+                SPtr<TAddrAddr> ptrAddr;
                 ptrIA->firstAddr();
 		Log(Info) << "Sending DECLINE for IA(IAID=" << ptrIA->getIAID() << ")" << LogEnd;
 
@@ -943,7 +944,7 @@ void TClntTransMgr::checkDecline()
             }
 
 	    // create REQUEST message
-	    SmartPtr<TClntMsgRequest> request;
+	    SPtr<TClntMsgRequest> request;
 	    request = new TClntMsgRequest(IfaceMgr, That, CfgMgr, AddrMgr,
 					  declineIALst, duid, firstIA->getIface() );
 	    Transactions.append( (Ptr*) request);
@@ -957,9 +958,9 @@ void TClntTransMgr::checkRequest()
     /// @todo: Reimplement check request support.
     return;
 
-    SmartPtr<TAddrIA> ia;
-    SmartPtr<TClntCfgIA> cfgIA;
-    SmartPtr<TDUID> duid = 0;
+    SPtr<TAddrIA> ia;
+    SPtr<TClntCfgIA> cfgIA;
+    SPtr<TDUID> duid = 0;
     List(TAddrIA) requestIALst;
     int ifaceID = 0;
 
@@ -1005,7 +1006,7 @@ void TClntTransMgr::checkRequest()
 
     if (requestIALst.count()) {
 	// create REQUEST message
-	SmartPtr<TClntMsgRequest> request;
+	SPtr<TClntMsgRequest> request;
 	request = new TClntMsgRequest(IfaceMgr, That, CfgMgr, AddrMgr,
 				      requestIALst, duid, ifaceID );
 	Transactions.append( (Ptr*) request);
@@ -1017,7 +1018,7 @@ bool TClntTransMgr::isDone()
     return IsDone;
 }
 
-void TClntTransMgr::setContext(SmartPtr<TClntTransMgr> that)
+void TClntTransMgr::setContext(SPtr<TClntTransMgr> that)
 {
     this->That=that;
     IfaceMgr->setContext(IfaceMgr,That,CfgMgr,AddrMgr);
@@ -1080,7 +1081,7 @@ int TClntTransMgr::getMaxPreference()
 	return -1;
     int max = 0;
     
-    SmartPtr<TClntMsgAdvertise> ptr;
+    SPtr<TClntMsgAdvertise> ptr;
     AdvertiseLst.first();
     while ( ptr = (Ptr*) AdvertiseLst.get() ) {
 	if ( max < ptr->getPreference() )
@@ -1112,7 +1113,7 @@ void TClntTransMgr::sortAdvertiseLst()
     List(TMsg) sorted;
 
     // sort ADVERTISE by the PREFERENCE value
-    SmartPtr<TClntMsgAdvertise> ptr;
+    SPtr<TClntMsgAdvertise> ptr;
     while (AdvertiseLst.count()) {
 	int max = getMaxPreference();
 	AdvertiseLst.first();

@@ -6,8 +6,8 @@
  *
  *
  * @section toc Table Of Contents
- * - @subpage intro
  * - @subpage toc
+ * - @subpage intro
  * - @subpage compilation
  *   - @subpage compilationLinux
  *   - @subpage compilationWin32

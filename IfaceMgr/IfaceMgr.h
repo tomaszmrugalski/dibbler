@@ -28,14 +28,14 @@ class TIfaceMgr {
 
     // ---Iface related---
     void firstIface();
-    SmartPtr<TIfaceIface> getIface();
-    SmartPtr<TIfaceIface> getIfaceByName(string name);
-    SmartPtr<TIfaceIface> getIfaceByID(int id);
-    SmartPtr<TIfaceIface> getIfaceBySocket(int fd);
+    SPtr<TIfaceIface> getIface();
+    SPtr<TIfaceIface> getIfaceByName(string name);
+    SPtr<TIfaceIface> getIfaceByID(int id);
+    SPtr<TIfaceIface> getIfaceBySocket(int fd);
     int countIface();
 
     // ---other---
-    int select(unsigned long time, char *buf, int &bufsize, SmartPtr<TIPv6Addr> peer);
+    int select(unsigned long time, char *buf, int &bufsize, SPtr<TIPv6Addr> peer);
     string printMac(char * mac, int macLen);
     void dump();
     bool isDone();

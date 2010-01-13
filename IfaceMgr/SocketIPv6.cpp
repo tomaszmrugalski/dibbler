@@ -24,19 +24,20 @@ int TIfaceSocket::Count=0;
 
 /**
  * creates socket bound to specific address on this interface
- * @param iface - interface name
- * @param ifaceid - interface ID
- * @param port - port, to which socket will be bound
- * @param addr - address 
- * @param ifaceonly - force interface-only flag in setsockopt()
+ * @param iface   interface name
+ * @param ifindex interface index
+ * @param port    UDP port, to which socket will be bound
+ * @param addr    IPv6 address 
+ * @param ifaceonly force interface-only flag in setsockopt()?
+ * @param reuse   should socket be bound with reuse flag in setsockopt()?
  */
-TIfaceSocket::TIfaceSocket(char * iface, int ifaceid, int port,
-				   SmartPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse) { 
+TIfaceSocket::TIfaceSocket(char * iface, int ifindex, int port,
+				   SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse) { 
     if (this->Count==0) {
 	FD_ZERO(getFDS());
     }
     this->Count++;
-    this->createSocket(iface, ifaceid, addr, port, ifaceonly, reuse);
+    this->createSocket(iface, ifindex, addr, port, ifaceonly, reuse);
 }
 
 enum EState TIfaceSocket::getStatus() {
@@ -46,10 +47,11 @@ enum EState TIfaceSocket::getStatus() {
 
 /**
  * creates socket bound to this interface
- * @param iface - interface name
- * @param ifaceid - interface ID
- * @param port - port, to which socket will be bound
- * @param ifaceonly - force interface-only flag in setsockopt()
+ * @param iface      interface name
+ * @param ifaceid    interface index
+ * @param port       UDP port, to which socket will be bound
+ * @param ifaceonly  force interface-only flag in setsockopt()?
+ * @param reuse      should socket be bound with reuse flag in setsockopt()?
  */
 TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly, bool reuse) {
     if (this->Count==0) {
@@ -58,7 +60,7 @@ TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly, bo
 
     // bind it to any address (::)
     char anyaddr[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    SmartPtr<TIPv6Addr> smartAny (new TIPv6Addr(anyaddr));   
+    SPtr<TIPv6Addr> smartAny (new TIPv6Addr(anyaddr));   
     this->createSocket(iface, ifaceid, smartAny, port, ifaceonly, reuse);
     this->Count++;
 }
@@ -70,9 +72,11 @@ TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly, bo
  * @param port - port, to which socket will be bound
  * @param addr - address 
  * @param ifaceonly - force interface-only flag in setsockopt()
- * returns error code (or 0 if everything is ok)
+ * @param reuse should socket be bound with reuse flag in setsockopt()?
+ *
+ * @return negative error code (or 0 if everything is ok)
  */
-int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 
+int TIfaceSocket::createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr, 
 				   int port, bool ifaceonly, bool reuse) {
     int sock;
 
@@ -116,7 +120,7 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> ad
  * @param port - to which port
  * returns number of bytes sent or -1 if something went wrong
  */
-int TIfaceSocket::send(char * buf,int len, SmartPtr<TIPv6Addr> addr,int port) {
+int TIfaceSocket::send(char * buf,int len, SPtr<TIPv6Addr> addr,int port) {
 
     int result;
     
@@ -137,7 +141,7 @@ int TIfaceSocket::send(char * buf,int len, SmartPtr<TIPv6Addr> addr,int port) {
  * @param buf - received data are stored here
  * @param addr - will contain info about sender
  */
-int TIfaceSocket::recv(char * buf, SmartPtr<TIPv6Addr> addr) {
+int TIfaceSocket::recv(char * buf, SPtr<TIPv6Addr> addr) {
     char myPlainAddr[48];
     char peerPlainAddr[48];
 
@@ -192,7 +196,7 @@ int TIfaceSocket::getPort() {
 /**
  * returns address
  */
-SmartPtr<TIPv6Addr> TIfaceSocket::getAddr() {
+SPtr<TIPv6Addr> TIfaceSocket::getAddr() {
     return this->Addr;
 }
 

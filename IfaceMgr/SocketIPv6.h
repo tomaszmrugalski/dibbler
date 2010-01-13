@@ -32,19 +32,19 @@ class TIfaceSocket {
     friend ostream& operator<<(ostream& strum, TIfaceSocket &x);
  public:
     TIfaceSocket(char * iface,int ifaceid, int port, 
-		     SmartPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
+		     SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
     TIfaceSocket(char * iface,int ifaceid, int port,
 		     bool ifaceonly, bool reuse);
    
     // ---transmission---
-    int send(char * buf,int len, SmartPtr<TIPv6Addr> addr,int port);
-    int recv(char * buf,SmartPtr<TIPv6Addr> addr);
+    int send(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
+    int recv(char * buf,SPtr<TIPv6Addr> addr);
     
     // ---get info---
     int getFD();
     int getPort();
     int getIfaceID();
-    SmartPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr();
     enum EState getStatus();
 
     // ---select() stuff---
@@ -56,7 +56,7 @@ class TIfaceSocket {
     ~TIfaceSocket();
  private:
     // adds socket to this interface
-    int createSocket(char * iface, int ifaceid, SmartPtr<TIPv6Addr> addr, 
+    int createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr, 
 		     int port, bool ifaceonly, bool reuse);
     void printError(int error, char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port);
 
@@ -79,7 +79,7 @@ class TIfaceSocket {
     int  IfaceID;
 
     // bounded address 
-    SmartPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Addr;
 
     // true = bounded to this interface only
     bool IfaceOnly;

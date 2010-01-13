@@ -49,26 +49,26 @@ class TIfaceIface{
     int   countLLAddress();
 
     void firstGlobalAddr();
-    SmartPtr<TIPv6Addr> getGlobalAddr();
+    SPtr<TIPv6Addr> getGlobalAddr();
     unsigned int countGlobalAddr();
-    void addGlobalAddr(SmartPtr<TIPv6Addr> addr);
-    void delGlobalAddr(SmartPtr<TIPv6Addr> addr);
+    void addGlobalAddr(SPtr<TIPv6Addr> addr);
+    void delGlobalAddr(SPtr<TIPv6Addr> addr);
 
     // ---address related---
-    bool addAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid, int prefixLen);
-    bool delAddr(SmartPtr<TIPv6Addr> addr, int prefixLen);
-    bool updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid);
+    bool addAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefixLen);
+    bool delAddr(SPtr<TIPv6Addr> addr, int prefixLen);
+    bool updateAddr(SPtr<TIPv6Addr> addr, long pref, long valid);
     void setPrefixLength(int len);
     int getPrefixLength();
     
     // ---socket related---
-    bool addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);
+    bool addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);
     bool addSocket(int port, bool ifaceonly, bool reuse); 
     bool delSocket(int id);
     void firstSocket();
-    SmartPtr <TIfaceSocket> getSocketByFD(int fd);
-    SmartPtr <TIfaceSocket> getSocket();
-    SmartPtr<TIfaceSocket> getSocketByAddr(SmartPtr<TIPv6Addr> addr);
+    SPtr <TIfaceSocket> getSocketByFD(int fd);
+    SPtr <TIfaceSocket> getSocket();
+    SPtr<TIfaceSocket> getSocketByAddr(SPtr<TIPv6Addr> addr);
     int countSocket();
 
     virtual ~TIfaceIface();

@@ -46,7 +46,7 @@ TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* ma
 
     // store all global addresses
     for (int i=0; i<globalCnt; i++) {
-	SmartPtr<TIPv6Addr> addr = new TIPv6Addr(globalAddr+16*i);
+	SPtr<TIPv6Addr> addr = new TIPv6Addr(globalAddr+16*i);
 	this->GlobalAddrLst.append(addr);
     }
 
@@ -104,7 +104,7 @@ void TIfaceIface::updateState(struct iface *x)
 
     // store all global addresses
     for (int i=0; i<x->globaladdrcount; i++) {
-	SmartPtr<TIPv6Addr> addr = new TIPv6Addr(x->globaladdr+16*i);
+	SPtr<TIPv6Addr> addr = new TIPv6Addr(x->globaladdr+16*i);
 	this->GlobalAddrLst.append(addr);
     }
 
@@ -112,53 +112,60 @@ void TIfaceIface::updateState(struct iface *x)
 }
 
 
-/*
+/**
  * returns true if interface is UP
  */
-bool TIfaceIface::flagUp() {
+bool TIfaceIface::flagUp() 
+{
     return this->Flags&IF_UP;
 }
 
-/*
+/**
  * returns true if interface is RUNNING
  */
-bool TIfaceIface::flagRunning() {
+bool TIfaceIface::flagRunning() 
+{
     return (bool)(this->Flags & IF_RUNNING);
 }
 
-/*
+/**
  * returns true is interface is MULTICAST capable
  */
-bool TIfaceIface::flagMulticast() {
-    return (bool)(this->Flags&IF_MULTICAST);
+bool TIfaceIface::flagMulticast() 
+{
+    return (Flags&IF_MULTICAST)?true:false;
 }
 
-/*
+/**
  * returns true is interface is LOOPBACK
  */
-bool TIfaceIface::flagLoopback() {
-    return (bool)(this->Flags&IF_LOOPBACK);
+bool TIfaceIface::flagLoopback() 
+{
+    return (Flags&IF_LOOPBACK)?true:false;
 }
 
-/*
+/**
  * returns MAC length
  */
-int TIfaceIface::getMacLen() {
-    return this->Maclen;
+int TIfaceIface::getMacLen() 
+{
+    return Maclen;
 }
 
-/*
+/**
  * returns MAC
  */
-char* TIfaceIface::getMac() {
-    return this->Mac;
+char* TIfaceIface::getMac() 
+{
+    return Mac;
 }
 
-void TIfaceIface::firstGlobalAddr() {
-    this->GlobalAddrLst.first();
+void TIfaceIface::firstGlobalAddr() 
+{
+    GlobalAddrLst.first();
 }
 
-SmartPtr<TIPv6Addr> TIfaceIface::getGlobalAddr() {
+SPtr<TIPv6Addr> TIfaceIface::getGlobalAddr() {
     return this->GlobalAddrLst.get();
 }
 
@@ -166,24 +173,26 @@ unsigned int TIfaceIface::countGlobalAddr() {
     return this->GlobalAddrLst.count();
 }
 
-void TIfaceIface::addGlobalAddr(SmartPtr<TIPv6Addr> addr) {
+void TIfaceIface::addGlobalAddr(SPtr<TIPv6Addr> addr) 
+{
     this->GlobalAddrLst.append(addr);
 }
 
-void TIfaceIface::delGlobalAddr(SmartPtr<TIPv6Addr> addr) {
-    SmartPtr<TIPv6Addr> tempAddr;
+void TIfaceIface::delGlobalAddr(SPtr<TIPv6Addr> addr) 
+{
+    SPtr<TIPv6Addr> tempAddr;
     for(int i = 0; i < this->GlobalAddrLst.count(); i++)
     {
-	tempAddr = this->GlobalAddrLst.get();
-	if(*tempAddr == *addr){
-		this->GlobalAddrLst.del();
-		break;
-	}
+	      tempAddr = this->GlobalAddrLst.get();
+	      if(*tempAddr == *addr){
+		        this->GlobalAddrLst.del();
+		        break;
+	      }
     }
 }
 
 
-/*
+/**
  * returns HW type 
  */
 int TIfaceIface::getHardwareType() {
@@ -194,11 +203,11 @@ int TIfaceIface::getHardwareType() {
 // --- address related ------------------------------------------------
 // --------------------------------------------------------------------
 
-/*
+/**
  * adds address to this interface with prefered- and valid-lifetime
  * (wrapper around pure C function)
  */
-bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid, int prefixLen) {
+bool TIfaceIface::addAddr(SPtr<TIPv6Addr> addr,long pref, long valid, int prefixLen) {
     Log(Notice) << "Address " << addr->getPlain() << "/" << prefixLen << " added to "
 		<< getFullName() << " interface." << LogEnd;
 
@@ -206,20 +215,20 @@ bool TIfaceIface::addAddr(SmartPtr<TIPv6Addr> addr,long pref, long valid, int pr
 			    pref, valid, prefixLen);
 }
 
-/*
+/**
  * deletes address from interface
  * (wrapper around pure C function)
  */
-bool TIfaceIface::delAddr(SmartPtr<TIPv6Addr> addr, int prefixLen) {
+bool TIfaceIface::delAddr(SPtr<TIPv6Addr> addr, int prefixLen) {
     Log(Notice) << "Address " << addr->getPlain() << "/" << prefixLen << " deleted from "
 		<< getFullName() << " interface." << LogEnd;
     return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain(), prefixLen);
 }
 
-/*
+/**
  * update address prefered- and valid-lifetime
  */
-bool TIfaceIface::updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
+bool TIfaceIface::updateAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     int result;
     Log(Notice) << "Address " << addr->getPlain() << " updated on "
 		<< getFullName() << " interface." << LogEnd;
@@ -233,15 +242,15 @@ bool TIfaceIface::updateAddr(SmartPtr<TIPv6Addr> addr, long pref, long valid) {
     return true;
 }
 
-/*
- * get first LL address
+/**
+ * get first link-local address
  */
 char* TIfaceIface::firstLLAddress() {
     return PresLLAddr=LLAddr;
 }
 
-/*
- * get next LL address
+/**
+ * get next link-local address
  * (oh boy, this method stinks. Nobody uses it, anyway)
  */
 char* TIfaceIface::getLLAddress() {
@@ -266,12 +275,11 @@ int TIfaceIface::countLLAddress() {
 /*
  * binds socket to one address only
  */
-bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse) {
+bool TIfaceIface::addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse) {
     // Log(Debug) << "Creating socket on " << *addr << " address." << LogEnd;
-    SmartPtr<TIfaceSocket> ptr = 
-	new TIfaceSocket(this->Name, this->ID, port, addr, ifaceonly, reuse);
+    SPtr<TIfaceSocket> ptr = new TIfaceSocket(this->Name, this->ID, port, addr, ifaceonly, reuse);
     if (ptr->getStatus()!=STATE_CONFIGURED) {
-	return false;
+      	return false;
     }
     SocketsLst.append(ptr);
     return true;
@@ -281,10 +289,10 @@ bool TIfaceIface::addSocket(SmartPtr<TIPv6Addr> addr,int port, bool ifaceonly, b
  * binds socket on whole interface
  */
 bool TIfaceIface::addSocket(int port, bool ifaceonly, bool reuse) {
-    SmartPtr<TIfaceSocket> ptr = 
+    SPtr<TIfaceSocket> ptr = 
 	new TIfaceSocket(this->Name, this->ID, port, ifaceonly, reuse);
     if (ptr->getStatus()!=STATE_CONFIGURED) {
-	return false;
+	      return false;
     }
     SocketsLst.append(ptr);
     return true;
@@ -294,14 +302,14 @@ bool TIfaceIface::addSocket(int port, bool ifaceonly, bool reuse) {
  * closes socket
  */
 bool TIfaceIface::delSocket(int fd) {
-    SmartPtr<TIfaceSocket> sock;
+    SPtr<TIfaceSocket> sock;
     SocketsLst.first();
     
     while ( sock = SocketsLst.get() ) {
-	if (sock->getFD() == fd) {
-	    SocketsLst.del();
-	    return true;
-	}
+	      if (sock->getFD() == fd) {
+	          SocketsLst.del();
+	          return true;
+	      }
     }
     return false;
 }
@@ -316,19 +324,19 @@ void TIfaceIface::firstSocket() {
 /*
  * returns next socket from list
  */
-SmartPtr <TIfaceSocket> TIfaceIface::getSocket() {
+SPtr <TIfaceSocket> TIfaceIface::getSocket() {
     return SocketsLst.get();
 }
 
 /*
  * returns socket by FileDescriptor (or NULL, if no such socket exists)
  */
-SmartPtr <TIfaceSocket> TIfaceIface::getSocketByFD(int fd) {
-    SmartPtr<TIfaceSocket> ptr;
+SPtr <TIfaceSocket> TIfaceIface::getSocketByFD(int fd) {
+    SPtr<TIfaceSocket> ptr;
     SocketsLst.first();
     while ( ptr = SocketsLst.get() ) {
-	if ( ptr->getFD()==fd )
-	    return ptr;
+	      if ( ptr->getFD()==fd )
+	          return ptr;
     }
     return 0; // NULL
 }
@@ -345,25 +353,25 @@ int TIfaceIface::countSocket() {
  */
 TIfaceIface::~TIfaceIface() {
     if (this->LLAddrCnt>0) {
-	delete [] this->LLAddr;
+      	delete [] this->LLAddr;
     }
     delete [] Mac;
 }
 
-SmartPtr<TIfaceSocket> TIfaceIface::getSocketByAddr(SmartPtr<TIPv6Addr> addr) {
-    SmartPtr<TIfaceSocket> ptr;
+SPtr<TIfaceSocket> TIfaceIface::getSocketByAddr(SPtr<TIPv6Addr> addr) {
+    SPtr<TIfaceSocket> ptr;
     SocketsLst.first();
     while ( ptr = SocketsLst.get() ) {
-	if ( *ptr->getAddr()==*addr )
-	    return ptr;
+	      if ( *ptr->getAddr()==*addr )
+	          return ptr;
     }
     return 0; // NULL
 }
 
 void TIfaceIface::setPrefixLength(int len) {
     if (len>128 || len<0) {
-	Log(Error) << "Invalid length " << len << " set attempt was ignored on the " << this->getFullName() << " interface." << LogEnd;
-	return;
+	      Log(Error) << "Invalid length " << len << " set attempt was ignored on the " << this->getFullName() << " interface." << LogEnd;
+	      return;
     }
     this->PrefixLen = len;
 }
@@ -390,31 +398,31 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
     for (int i=0; i<x.LLAddrCnt; i++) {
-	inet_ntop6(x.LLAddr+i*16,buf);
-	strum << "    <Addr>" << buf << "</Addr>" << endl;
+	      inet_ntop6(x.LLAddr+i*16,buf);
+	      strum << "    <Addr>" << buf << "</Addr>" << endl;
     }
 
     strum << "    <!-- " << x.countGlobalAddr() << " non-local addrs -->" << endl;
 
     x.firstGlobalAddr();
-    SmartPtr<TIPv6Addr> addr;
+    SPtr<TIPv6Addr> addr;
     while (addr = x.getGlobalAddr()) {
-	strum << "    " << *addr;
+      	strum << "    " << *addr;
     }
 
     strum << "    <Mac>";
     for (int i=0; i<x.Maclen; i++) {
-	strum.fill('0');
-	strum.width(2);
-	strum << (hex) << (int) x.Mac[i];
-	if (i<x.Maclen-1) strum  << ":";
+	      strum.fill('0');
+	      strum.width(2);
+	      strum << (hex) << (int) x.Mac[i];
+	      if (i<x.Maclen-1) strum  << ":";
     }
     strum << "</Mac>" << endl;
 
-    SmartPtr<TIfaceSocket> sock;
+    SPtr<TIfaceSocket> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {
-	strum << "    " << *sock;
+      	strum << "    " << *sock;
     }
     strum << "  </IfaceIface>" << endl;
     return strum;

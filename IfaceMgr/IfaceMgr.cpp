@@ -50,7 +50,7 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
                  // << ", flags=" << ptr->flags 
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
-        SmartPtr<TIfaceIface> smartptr(new TIfaceIface(ptr->name,ptr->id,
+        SPtr<TIfaceIface> iface(new TIfaceIface(ptr->name,ptr->id,
 						       ptr->flags,
 						       ptr->mac,
 						       ptr->maclen,
@@ -59,7 +59,7 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
 						       ptr->globaladdr,
 						       ptr->globaladdrcount,
 						       ptr->hardwareType));
-        this->IfaceLst.append(smartptr);
+        this->IfaceLst.append(iface);
         ptr = ptr->next;
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
@@ -82,7 +82,7 @@ void TIfaceMgr::firstIface() {
 /*
  * gets next interface on list
  */
-SmartPtr<TIfaceIface> TIfaceMgr::getIface() {
+SPtr<TIfaceIface> TIfaceMgr::getIface() {
     return IfaceLst.get();
 }
 
@@ -91,8 +91,8 @@ SmartPtr<TIfaceIface> TIfaceMgr::getIface() {
  * gets interface by it's name (or NULL if no such inteface exists)
  * @param name - interface name
  */
-SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
-    SmartPtr<TIfaceIface> ptr;
+SPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
+    SPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {
 	if ( !strcmp(name.c_str(),ptr->getName()) )
@@ -105,8 +105,8 @@ SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
  * gets interface by it ID (or NULL if no such interface exists)
  * @param id - interface id
  */ 
-SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByID(int id) {
-    SmartPtr<TIfaceIface> ptr;
+SPtr<TIfaceIface> TIfaceMgr::getIfaceByID(int id) {
+    SPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {
 	if ( id == ptr->getID() )
@@ -118,8 +118,8 @@ SmartPtr<TIfaceIface> TIfaceMgr::getIfaceByID(int id) {
 /*
  * gets interface by socket descriptor (or NULL if no such interface exists)
  */
-SmartPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
-    SmartPtr<TIfaceIface> ptr;
+SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
+    SPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {
 	if ( ptr->getSocketByFD(fd) )
@@ -138,7 +138,7 @@ SmartPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
  * returns socketID
  */
 int TIfaceMgr::select(unsigned long time, char *buf, 
-		      int &bufsize, SmartPtr<TIPv6Addr> peer) {
+		      int &bufsize, SPtr<TIPv6Addr> peer) {
     struct timeval czas;
     int result;
     if (time > DHCPV6_INFINITY/2)
@@ -160,8 +160,8 @@ int TIfaceMgr::select(unsigned long time, char *buf,
         return 0; 
     }
 
-    SmartPtr<TIfaceIface> iface;
-    SmartPtr<TIfaceSocket> sock;
+    SPtr<TIfaceIface> iface;
+    SPtr<TIfaceSocket> sock;
     bool found = 0;
     IfaceLst.first();
     while ( (!found) && (iface = IfaceLst.get()) ) {
@@ -231,7 +231,7 @@ void TIfaceMgr::dump()
 }
 
 /*
- * destructor. Does really nothing. (SmartPtr is a sweet thing, isn't it?)
+ * destructor. Does really nothing. (SPtr is a sweet thing, isn't it?)
  */
 TIfaceMgr::~TIfaceMgr()
 {
@@ -263,7 +263,7 @@ string TIfaceMgr::printMac(char * mac, int macLen) {
 ostream & operator <<(ostream & strum, TIfaceMgr &x)
 {
     strum << "<IfaceMgr>" << endl;
-    SmartPtr<TIfaceIface> ptr;
+    SPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr=x.IfaceLst.get() ) {
         strum << *ptr;

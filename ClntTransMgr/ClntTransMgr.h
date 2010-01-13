@@ -27,22 +27,22 @@ class TClntConfMgr;
 class TClntTransMgr
 {
   public:
-    TClntTransMgr(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-		  SmartPtr<TClntAddrMgr> addrMgr,
-		  SmartPtr<TClntCfgMgr> cfgMgr,
+    TClntTransMgr(SPtr<TClntIfaceMgr> ifaceMgr, 
+		  SPtr<TClntAddrMgr> addrMgr,
+		  SPtr<TClntCfgMgr> cfgMgr,
 		  string config);
     ~TClntTransMgr();
     void doDuties();
-    void relayMsg(SmartPtr<TClntMsg> msg);
+    void relayMsg(SPtr<TClntMsg> msg);
     unsigned long getTimeout();
     void stop();
     void sendRequest(List(TOpt) requestOptions, int iface);
-    void sendInfRequest(TContainer< SmartPtr<TOpt> > requestOptions, int iface);
-    void sendRebind( TContainer<SmartPtr<TOpt> > ptrIA, int iface);
-    void sendRelease(List(TAddrIA) iaLst, SmartPtr<TAddrIA> ta, List(TAddrIA) pdLst);
+    void sendInfRequest(TContainer< SPtr<TOpt> > requestOptions, int iface);
+    void sendRebind( TContainer<SPtr<TOpt> > ptrIA, int iface);
+    void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     void shutdown();
     bool isDone();
-    void setContext(SmartPtr<TClntTransMgr> that);
+    void setContext(SPtr<TClntTransMgr> that);
 
     char * getCtrlAddr();
     int    getCtrlIface();
@@ -70,14 +70,14 @@ class TClntTransMgr
 
   private:
     bool openLoopbackSocket();
-    bool openSocket(SmartPtr<TClntCfgIface> iface);
+    bool openSocket(SPtr<TClntCfgIface> iface);
     void sortAdvertiseLst();
     void printLst(List(TMsg) lst);
     // managers
-    SmartPtr<TClntCfgMgr>   CfgMgr;
-    SmartPtr<TClntIfaceMgr> IfaceMgr;
-    SmartPtr<TClntAddrMgr>  AddrMgr;
-    SmartPtr<TClntTransMgr> That;
+    SPtr<TClntCfgMgr>   CfgMgr;
+    SPtr<TClntIfaceMgr> IfaceMgr;
+    SPtr<TClntAddrMgr>  AddrMgr;
+    SPtr<TClntTransMgr> That;
 
     List(TClntMsg) Transactions;
     bool IsDone;         // isDone = true - client operation is finished
