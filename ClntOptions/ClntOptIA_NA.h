@@ -23,9 +23,9 @@ class TOptIA_NA;
 class TClntOptIA_NA : public TOptIA_NA
 {
  public:
-    TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent);
-    TClntOptIA_NA(SmartPtr<TAddrIA> AddrIA, TMsg* parent);
-    TClntOptIA_NA(SmartPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* parent);
+    TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, TMsg* parent);
+    TClntOptIA_NA(SPtr<TAddrIA> AddrIA, TMsg* parent);
+    TClntOptIA_NA(SPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* parent);
     TClntOptIA_NA(char * buf, int bufsize, TMsg* parent);
     ~TClntOptIA_NA();    
 
@@ -35,32 +35,32 @@ class TClntOptIA_NA : public TOptIA_NA
 		    SPtr<TClntTransMgr> transMgr, 
 		    SPtr<TClntCfgMgr>   cfgMgr, 
 		    SPtr<TClntAddrMgr>  addrMgr,
-		    SPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface);
+		    SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, int iface);
     void setIface(int iface);
 
-    SmartPtr<TClntOptIAAddress> getAddr();
-    SmartPtr<TClntOptIAAddress> getAddr(SmartPtr<TIPv6Addr> addr);
+    SPtr<TClntOptIAAddress> getAddr();
+    SPtr<TClntOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
     void firstAddr();
     int countAddr();
-    TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, 
-		  SmartPtr<TAddrIA> ClntaddrIA, 
+    TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, 
+		  SPtr<TAddrIA> ClntaddrIA, 
 		  TMsg* parent);
     bool isValid();
 
  private:
-    void releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr );
-    int countValidAddrs(SmartPtr<TAddrIA> ptrAddrIA);
+    void releaseAddr(long IAID, SPtr<TIPv6Addr> addr );
+    int countValidAddrs(SPtr<TAddrIA> ptrAddrIA);
 
-    SmartPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Addr;
     bool Unicast;
-    SmartPtr<TDUID> DUID;
+    SPtr<TDUID> DUID;
     int Iface;
 
     /* Context */
-    SmartPtr<TClntIfaceMgr> IfaceMgr;
-    SmartPtr<TClntTransMgr> TransMgr;
-    SmartPtr<TClntCfgMgr>   CfgMgr;
-    SmartPtr<TClntAddrMgr>  AddrMgr;
+    SPtr<TClntIfaceMgr> IfaceMgr;
+    SPtr<TClntTransMgr> TransMgr;
+    SPtr<TClntCfgMgr>   CfgMgr;
+    SPtr<TClntAddrMgr>  AddrMgr;
 };
 
 

@@ -42,16 +42,16 @@ bool TClntOptFQDN::doDuties() {
 	
     string reason = "trying to set FQDN.";
     int ifindex = this->Parent->getIface();
-    SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
+    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
     
     if (!ifaceMgr) {
 	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
 	return false;
     }
     
-    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
     
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
@@ -67,7 +67,7 @@ bool TClntOptFQDN::doDuties() {
     return iface->setFQDN(this->DUID, addr,getFQDN()); // this runs only when client is gonna update DNS server 
 }
 
-void TClntOptFQDN::setSrvDuid(SmartPtr<TDUID> duid)
+void TClntOptFQDN::setSrvDuid(SPtr<TDUID> duid)
 
 {
     this->SrvDUID=duid;

@@ -30,7 +30,7 @@
 TClntOptIAAddress::TClntOptIAAddress( char * buf, int bufSize, TMsg* parent)
 	:TOptIAAddress(buf, bufSize, parent)
 {
-    SmartPtr<TOpt> opt = 0;
+    SPtr<TOpt> opt = 0;
     int MsgType = 0;
     if (parent)
 	parent->getType();
@@ -81,7 +81,7 @@ TClntOptIAAddress::TClntOptIAAddress( char * buf, int bufSize, TMsg* parent)
     }
 }
 
-TClntOptIAAddress::TClntOptIAAddress( SmartPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent)
+TClntOptIAAddress::TClntOptIAAddress( SPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent)
 	:TOptIAAddress(addr,pref,valid, parent)
 {
 

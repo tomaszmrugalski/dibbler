@@ -37,7 +37,7 @@ TClntOptServerIdentifier::TClntOptServerIdentifier( char * duid,  int n, TMsg* p
 
 }
 
-TClntOptServerIdentifier::TClntOptServerIdentifier(SmartPtr<TDUID> duid, TMsg* parent)
+TClntOptServerIdentifier::TClntOptServerIdentifier(SPtr<TDUID> duid, TMsg* parent)
     :TOptDUID(OPTION_SERVERID, duid, parent) {
 
 }

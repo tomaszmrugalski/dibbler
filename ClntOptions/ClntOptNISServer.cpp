@@ -26,14 +26,14 @@ TClntOptNISServers::TClntOptNISServers(char* buf, int size, TMsg* parent)
 bool TClntOptNISServers::doDuties() {
     string reason = "trying to set NIS server(s).";
     int ifindex = this->Parent->getIface();
-    SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
+    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
     if (!ifaceMgr) {
 	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
 		   << " while " << reason << LogEnd;
@@ -45,14 +45,14 @@ bool TClntOptNISServers::doDuties() {
 	return false;
     }
 
-    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
     cfgIface->setNISServerState(STATE_CONFIGURED);
 
     return iface->setNISServerLst(this->DUID, addr,this->AddrLst);
 }
 
-void TClntOptNISServers::setSrvDuid(SmartPtr<TDUID> duid)
+void TClntOptNISServers::setSrvDuid(SPtr<TDUID> duid)
 {
     this->SrvDUID=duid;
 }

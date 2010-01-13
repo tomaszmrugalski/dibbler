@@ -19,7 +19,7 @@ class TClntOptIAAddress : public TOptIAAddress
 {
  public:
     TClntOptIAAddress(char *addr,int n, TMsg* parent);
-    TClntOptIAAddress(SmartPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent);
+    TClntOptIAAddress(SPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent);
     bool doDuties();
     bool isValid();
 };

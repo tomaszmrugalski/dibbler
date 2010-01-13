@@ -20,10 +20,10 @@
 /** 
  * Used in REQUEST, RENEW, REBIND, DECLINE and RELEASE
  * 
- * @param addrIA 
+ * @param addrPD 
  * @param parent 
  */
-TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
+TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
     :TOptIA_PD(addrPD->getIAID(),addrPD->getT1(),addrPD->getT2(), parent)
 {
     
@@ -36,7 +36,7 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
 
     clearContext();
 
-    SmartPtr<TAddrPrefix> ptrPrefix;
+    SPtr<TAddrPrefix> ptrPrefix;
     addrPD->firstPrefix();
     while ( ptrPrefix = addrPD->getPrefix() )
     {
@@ -52,7 +52,7 @@ TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TAddrIA> addrPD, TMsg* parent)
  * @param ClntCfgPD 
  * @param parent 
  */
-TClntOptIA_PD::TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
+TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
     :TOptIA_PD(ClntCfgPD->getIAID(), ClntCfgPD->getT1(), ClntCfgPD->getT2(), parent)
 {
     /// @todo: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
@@ -75,39 +75,34 @@ TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
         int code=buf[pos]*256+buf[pos+1];
         pos+=2;
         int length=buf[pos]*256+buf[pos+1];
-	pos+=2;
+       	pos+=2;
         if ((code>0)&&(code<=26))
         {                
-	    
-	    if(allowOptInOpt(parent->getType(),OPTION_IA_PD,code))
+	        if(allowOptInOpt(parent->getType(),OPTION_IA_PD,code))
             {
-		SmartPtr<TOpt> opt= SmartPtr<TOpt>();
+		        SPtr<TOpt> opt= SPtr<TOpt>();
                 switch (code)
                 {
                 case OPTION_IAPREFIX:
-                    //  SmartPtr<TOptIAAddress> ptr;
-		    SubOptions.append( new TClntOptIAPrefix(buf+pos,length,this->Parent));
+        		        SubOptions.append( new TClntOptIAPrefix(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
                     SubOptions.append( new TClntOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
-		    Log(Warning) <<"Option opttype=" << code<< "not supported "
-                        <<" in field of message (type="<< parent->getType() 
-                        <<") in this version of server."<<LogEnd;
+	                Log(Warning) << "Option opttype=" << code<< "not supported "
+                                 << " in field of message (type="<< parent->getType() 
+                                 << ") in this version of server."<<LogEnd;
                     break;
                 }
                 if((opt)&&(opt->isValid()))
                     SubOptions.append(opt);
-            }
-            else
-		Log(Warning) << "Illegal option received, opttype=" << code 
-                << " in field options of IA_PD option"<<LogEnd;
-        }
-        else
-        {
-	    Log(Warning) <<"Unknown option in option IA_NA( optType=" 
-			 << code << "). Option ignored." << LogEnd;
+            } else
+		    Log(Warning) << "Illegal option received, opttype=" << code 
+                         << " in field options of IA_PD option" << LogEnd;
+        } else {
+	        Log(Warning) << "Unknown option in option IA_NA(optType=" 
+			     << code << "). Option ignored." << LogEnd;
         };
         pos+=length;
     }
@@ -120,21 +115,21 @@ void TClntOptIA_PD::firstPrefix()
     SubOptions.first();
 }
 
-SmartPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix()
+SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix()
 {
-    SmartPtr<TClntOptIAPrefix> ptr;
+    SPtr<TClntOptIAPrefix> ptr;
     do {
         ptr = (Ptr*) SubOptions.get();
         if (ptr)
             if (ptr->getOptType()==OPTION_IAPREFIX)
                 return ptr;
     } while (ptr);
-    return SmartPtr<TClntOptIAPrefix>();
+    return SPtr<TClntOptIAPrefix>();
 }
 
 int TClntOptIA_PD::countPrefix()
 {
-    SmartPtr< TOpt> ptr;
+    SPtr< TOpt> ptr;
     SubOptions.first();
     int count = 0;
     while ( ptr = SubOptions.get() ) {
@@ -146,20 +141,20 @@ int TClntOptIA_PD::countPrefix()
 
 int TClntOptIA_PD::getStatusCode()
 {
-    SmartPtr<TOpt> option;
+    SPtr<TOpt> option;
     if (option=getOption(OPTION_STATUS_CODE))
     {
-        SmartPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
+        SPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
         return statOpt->getCode();
     }
     return STATUSCODE_SUCCESS;
 }
 
-void TClntOptIA_PD::setContext(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-                               SmartPtr<TClntTransMgr> transMgr, 
-                               SmartPtr<TClntCfgMgr> cfgMgr, 
-                               SmartPtr<TClntAddrMgr> addrMgr,
-                               SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, 
+void TClntOptIA_PD::setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
+                               SPtr<TClntTransMgr> transMgr, 
+                               SPtr<TClntCfgMgr> cfgMgr, 
+                               SPtr<TClntAddrMgr> addrMgr,
+                               SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, 
                                TMsg * originalMsg)
 {
     this->AddrMgr=addrMgr;
@@ -205,9 +200,9 @@ bool TClntOptIA_PD::doDuties()
     return true;
 } 
 
-SmartPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SmartPtr<TIPv6Addr> prefix)
+SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SPtr<TIPv6Addr> prefix)
 {
-   SmartPtr<TClntOptIAPrefix> optPrefix;
+   SPtr<TClntOptIAPrefix> optPrefix;
     this->firstPrefix();
     while(optPrefix=this->getPrefix())
     {   
@@ -237,7 +232,7 @@ bool TClntOptIA_PD::modifyPrefixes(PrefixModifyMode mode)
 {
     bool status = false;
     EState state = STATE_NOTCONFIGURED;
-    SmartPtr<TClntOptIAPrefix> prefix;
+    SPtr<TClntOptIAPrefix> prefix;
     string action;
     switch(mode) {
       case PREFIX_MODIFY_ADD:
@@ -311,7 +306,7 @@ void TClntOptIA_PD::setIface(int iface) {
 
 bool TClntOptIA_PD::isValid()
 {
-    SmartPtr<TClntOptIAPrefix> prefix;
+    SPtr<TClntOptIAPrefix> prefix;
     this->firstPrefix();
     while (prefix = this->getPrefix()) {
 	if (prefix->getPrefix()->linkLocal()) {
@@ -330,7 +325,7 @@ bool TClntOptIA_PD::isValid()
 
 void TClntOptIA_PD::setState(EState state)
 {
-    SmartPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(this->Iface);
+    SPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(this->Iface);
 
     SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(getIAID());
     if (!cfgPD) {

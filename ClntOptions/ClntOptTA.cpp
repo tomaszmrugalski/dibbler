@@ -47,7 +47,7 @@ TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
         pos+=2;
         int length=buf[pos]*256+buf[pos+1];
         pos+=2;
-	SmartPtr<TOpt> opt = 0;
+	SPtr<TOpt> opt = 0;
 
 	if(!allowOptInOpt(parent->getType(),OPTION_IA_TA,code)) {
 	    Log(Warning) << "Option " << code << " is not allowed as suboption of " << OPTION_IA_TA << LogEnd;
@@ -72,12 +72,12 @@ TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
     }
 }
 
-TClntOptTA::TClntOptTA(SmartPtr<TAddrIA> ta, TMsg* parent)
+TClntOptTA::TClntOptTA(SPtr<TAddrIA> ta, TMsg* parent)
     :TOptTA(ta->getIAID(), parent) 
 
 {
     ta->firstAddr();
-    SmartPtr<TAddrAddr> addr;
+    SPtr<TAddrAddr> addr;
     while (addr=ta->getAddr()) {
 	SubOptions.append(new TClntOptIAAddress(addr->get(), 0, 0, parent));
     }
@@ -88,9 +88,9 @@ void TClntOptTA::firstAddr()
     SubOptions.first();
 }
 
-SmartPtr<TClntOptIAAddress> TClntOptTA::getAddr()
+SPtr<TClntOptIAAddress> TClntOptTA::getAddr()
 {
-    SmartPtr<TClntOptIAAddress> ptr;
+    SPtr<TClntOptIAAddress> ptr;
     do {
         ptr = (Ptr*) SubOptions.get();
         if (ptr)
@@ -102,7 +102,7 @@ SmartPtr<TClntOptIAAddress> TClntOptTA::getAddr()
 
 int TClntOptTA::countAddr()
 {
-    SmartPtr<TOpt> ptr;
+    SPtr<TOpt> ptr;
     SubOptions.first();
     int count = 0;
     while ( ptr = SubOptions.get() ) {
@@ -114,10 +114,10 @@ int TClntOptTA::countAddr()
 
 int TClntOptTA::getStatusCode()
 {
-    SmartPtr<TOpt> option;
+    SPtr<TOpt> option;
     if (option=getOption(OPTION_STATUS_CODE))
     {
-        SmartPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
+        SPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
         return statOpt->getCode();
     }
     return STATUSCODE_SUCCESS;
@@ -135,7 +135,7 @@ TClntOptTA::~TClntOptTA()
  */bool TClntOptTA::doDuties()
 {
     // find this TA in addrMgr...
-    SmartPtr<TAddrIA> ta = AddrMgr->getTA(this->getIAID());
+    SPtr<TAddrIA> ta = AddrMgr->getTA(this->getIAID());
 
     if (!ta) {
 	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB." << LogEnd;
@@ -146,10 +146,10 @@ TClntOptTA::~TClntOptTA()
     }
 
     // IAID found, set up new received options.
-    SmartPtr<TAddrAddr> addr;
-    SmartPtr<TClntOptIAAddress> optAddr;
+    SPtr<TAddrAddr> addr;
+    SPtr<TClntOptIAAddress> optAddr;
 
-    SmartPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> ptrIface;
     ptrIface = IfaceMgr->getIfaceByID(this->Iface);
     if (!ptrIface) 
     {
@@ -196,8 +196,8 @@ TClntOptTA::~TClntOptTA()
     }
 
     // mark this TA as configured
-    SmartPtr<TClntCfgTA> cfgTA;
-    SmartPtr<TClntCfgIface> cfgIface;
+    SPtr<TClntCfgTA> cfgTA;
+    SPtr<TClntCfgIface> cfgIface;
     if (! (cfgIface = CfgMgr->getIface(this->Iface)) ) {
 	Log(Error) << "Unable to find TA class in the CfgMgr, on the " << this->Iface << " interface." << LogEnd;
 	return true;
@@ -210,9 +210,9 @@ TClntOptTA::~TClntOptTA()
     return true;
 } 
 
-SmartPtr<TClntOptIAAddress> TClntOptTA::getAddr(SmartPtr<TIPv6Addr> addr)
+SPtr<TClntOptIAAddress> TClntOptTA::getAddr(SPtr<TIPv6Addr> addr)
 {
-    SmartPtr<TClntOptIAAddress> optAddr;
+    SPtr<TClntOptIAAddress> optAddr;
     this->firstAddr();
     while(optAddr=this->getAddr())
     {   
@@ -220,12 +220,12 @@ SmartPtr<TClntOptIAAddress> TClntOptTA::getAddr(SmartPtr<TIPv6Addr> addr)
         if ((*addr)==(*optAddr->getAddr()))
             return optAddr;
     };
-    return SmartPtr<TClntOptIAAddress>();
+    return SPtr<TClntOptIAAddress>();
 }
 
-void TClntOptTA::releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr )
+void TClntOptTA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )
 {
-    SmartPtr<TAddrIA> ptrIA = AddrMgr->getIA(IAID);
+    SPtr<TAddrIA> ptrIA = AddrMgr->getIA(IAID);
     if (ptrIA)
         ptrIA->delAddr(addr);
     else
@@ -235,7 +235,7 @@ void TClntOptTA::releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr )
 
 bool TClntOptTA::isValid()
 {
-    SmartPtr<TClntOptIAAddress> addr;
+    SPtr<TClntOptIAAddress> addr;
     this->firstAddr();
     while (addr = this->getAddr()) {
 	if (!addr->getAddr()->linkLocal())
@@ -249,9 +249,9 @@ bool TClntOptTA::isValid()
     return true;
 }
 
-void TClntOptTA::setContext(SmartPtr<TClntAddrMgr> addrMgr, SmartPtr<TClntIfaceMgr> ifaceMgr,
-			    SmartPtr<TClntCfgMgr> cfgMgr, int iface,
-			    SmartPtr<TIPv6Addr> clntAddr) {
+void TClntOptTA::setContext(SPtr<TClntAddrMgr> addrMgr, SPtr<TClntIfaceMgr> ifaceMgr,
+			    SPtr<TClntCfgMgr> cfgMgr, int iface,
+			    SPtr<TIPv6Addr> clntAddr) {
     this->IfaceMgr = ifaceMgr;
     this->AddrMgr  = addrMgr;
     this->CfgMgr   = cfgMgr;

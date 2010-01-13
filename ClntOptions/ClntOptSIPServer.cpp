@@ -25,14 +25,14 @@ TClntOptSIPServers::TClntOptSIPServers(char* buf, int size, TMsg* parent)
 bool TClntOptSIPServers::doDuties() {
     string reason = "trying to set SIP server(s).";
     int ifindex = this->Parent->getIface();
-    SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
+    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
     if (!ifaceMgr) {
 	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
 		   << " while " << reason << LogEnd;
@@ -44,14 +44,14 @@ bool TClntOptSIPServers::doDuties() {
 	return false;
     }
 
-    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
     cfgIface->setSIPServerState(STATE_CONFIGURED);
 
     return iface->setSIPServerLst(this->DUID, addr,this->AddrLst);
 }
 
-void TClntOptSIPServers::setSrvDuid(SmartPtr<TDUID> duid)
+void TClntOptSIPServers::setSrvDuid(SPtr<TDUID> duid)
 {
     this->SrvDUID=duid;
 }

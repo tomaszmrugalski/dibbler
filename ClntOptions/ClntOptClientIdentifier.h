@@ -16,7 +16,7 @@ class TClntOptClientIdentifier : public TOptDUID
 {
   public:
     TClntOptClientIdentifier(char * duid,int n, TMsg* parent);
-    TClntOptClientIdentifier(SmartPtr<TDUID> duid, TMsg* parent);
+    TClntOptClientIdentifier(SPtr<TDUID> duid, TMsg* parent);
     bool doDuties();
 };
 

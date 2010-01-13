@@ -26,7 +26,7 @@
 TClntOptIAPrefix::TClntOptIAPrefix( char * buf, int bufSize, TMsg* parent)
 	:TOptIAPrefix(buf, bufSize, parent)
 {
-    SmartPtr<TOpt> opt = 0;
+    SPtr<TOpt> opt = 0;
     int pos=0;
     int MsgType = 0;
     if (parent)
@@ -69,7 +69,7 @@ TClntOptIAPrefix::TClntOptIAPrefix( char * buf, int bufSize, TMsg* parent)
     }
 }
 
-TClntOptIAPrefix::TClntOptIAPrefix( SmartPtr<TIPv6Addr> addr, long pref, long valid, char prefixLength, TMsg* parent)
+TClntOptIAPrefix::TClntOptIAPrefix( SPtr<TIPv6Addr> addr, long pref, long valid, char prefixLength, TMsg* parent)
 	:TOptIAPrefix(addr,prefixLength,pref,valid, parent)
 {
 

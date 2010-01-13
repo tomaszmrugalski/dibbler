@@ -30,7 +30,7 @@
 #include "ClntOptOptionRequest.h"
 
 
-TClntOptOptionRequest::TClntOptOptionRequest(SmartPtr<TClntCfgIface> ptrIface, TMsg* parent)
+TClntOptOptionRequest::TClntOptOptionRequest(SPtr<TClntCfgIface> ptrIface, TMsg* parent)
 	:TOptOptionRequest(parent) {
     // requested options are no longer added here
     // see void TClntMsg::appendRequestedOptions() for details

@@ -25,15 +25,15 @@ TClntOptVendorSpec::TClntOptVendorSpec(int enterprise, char * data, int dataLen,
 
 bool TClntOptVendorSpec::doDuties() {
     TClntMsg * msg = dynamic_cast<TClntMsg*>(Parent);
-    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
-    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(msg->getIface());
+    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(msg->getIface());
 
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << msg->getIface() << LogEnd;
 	return false;
     }
 
-    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
     if (Vendor != cfgMgr->tunnelMode())
     {
 	Log(Debug) << "Tunnel-mode: vendor expected=" << cfgMgr->tunnelMode() << ", received=" << Vendor << LogEnd;

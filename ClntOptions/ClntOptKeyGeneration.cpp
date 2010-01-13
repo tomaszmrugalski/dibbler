@@ -27,8 +27,8 @@ bool TClntOptKeyGeneration::doDuties()
 {
     int ifindex = this->Parent->getIface();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
     cfgIface->setKeyGenerationState(STATE_CONFIGURED);
 
     return true;

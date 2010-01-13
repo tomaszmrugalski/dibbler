@@ -26,8 +26,8 @@ class TClntOptSIPServers : public TOptAddrLst
     TClntOptSIPServers(List(TIPv6Addr) * lst, TMsg* parent);
     TClntOptSIPServers(char* buf, int size, TMsg* parent);
     bool doDuties();
-    void setSrvDuid(SmartPtr<TDUID> duid);
+    void setSrvDuid(SPtr<TDUID> duid);
  private:
-    SmartPtr<TDUID> SrvDUID;
+    SPtr<TDUID> SrvDUID;
 };
 #endif

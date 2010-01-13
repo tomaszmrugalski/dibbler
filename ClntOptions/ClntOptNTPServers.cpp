@@ -46,14 +46,14 @@ TClntOptNTPServers::TClntOptNTPServers(char* buf, int size, TMsg* parent)
 bool TClntOptNTPServers::doDuties() {
     string reason = "trying to set NTP server(s).";
     int ifindex = this->Parent->getIface();
-    SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
+    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
     if (!ifaceMgr) {
 	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
 		   << " while " << reason << LogEnd;
@@ -65,14 +65,14 @@ bool TClntOptNTPServers::doDuties() {
 	return false;
     }
 
-    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
     cfgIface->setNTPServerState(STATE_CONFIGURED);
 
     return iface->setNTPServerLst(this->DUID, addr,this->AddrLst);
 }
 
-void TClntOptNTPServers::setSrvDuid(SmartPtr<TDUID> duid)
+void TClntOptNTPServers::setSrvDuid(SPtr<TDUID> duid)
 {
     this->SrvDUID=duid;
 }

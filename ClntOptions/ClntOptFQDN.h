@@ -32,9 +32,9 @@ class TClntOptFQDN : public TOptFQDN
     TClntOptFQDN(string fqdn, TMsg* parent);
     TClntOptFQDN(char *buf, int bufsize, TMsg* parent);
     bool doDuties();
-    void setSrvDuid(SmartPtr<TDUID> duid);
+    void setSrvDuid(SPtr<TDUID> duid);
 private:
-    SmartPtr<TDUID> SrvDUID;
+    SPtr<TDUID> SrvDUID;
 };
 
 

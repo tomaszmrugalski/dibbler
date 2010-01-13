@@ -25,11 +25,11 @@
  * @param zeroTimes 
  * @param parent 
  */
-TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* parent)
+TClntOptIA_NA::TClntOptIA_NA(SPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* parent)
     :TOptIA_NA(clntAddrIA->getIAID(), zeroTimes?0:clntAddrIA->getT1(),
 	       zeroTimes?0:clntAddrIA->getT2(), parent) 
 {
-    SmartPtr <TAddrAddr> addr;
+    SPtr <TAddrAddr> addr;
     clntAddrIA->firstAddr();
     while ( addr = clntAddrIA->getAddr() ) {
 	SubOptions.append( new TClntOptIAAddress(addr->get(),
@@ -46,7 +46,7 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg*
  * @param addrIA 
  * @param parent 
  */
-TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
+TClntOptIA_NA::TClntOptIA_NA(SPtr<TAddrIA> addrIA, TMsg* parent)
     :TOptIA_NA(addrIA->getIAID(),addrIA->getT1(),addrIA->getT2(), parent)
 {
     // should we include all addrs or tentative ones only?
@@ -63,7 +63,7 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
 	zeroTimes = true;
     }
 
-    SmartPtr<TAddrAddr> ptrAddr;
+    SPtr<TAddrAddr> ptrAddr;
     addrIA->firstAddr();
     while ( ptrAddr = addrIA->getAddr() )
     {
@@ -71,7 +71,7 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
 	    SubOptions.append(new TClntOptIAAddress(ptrAddr->get(), zeroTimes?0:ptrAddr->getPref(), 
 						    zeroTimes?0:ptrAddr->getValid(),this->Parent) );
     }
-    DUID = SmartPtr<TDUID>(); // NULL
+    DUID = SPtr<TDUID>(); // NULL
 }
 
 /** 
@@ -81,16 +81,16 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TAddrIA> addrIA, TMsg* parent)
  * @param ClntaddrIA 
  * @param parent 
  */
-TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, SmartPtr<TAddrIA> ClntaddrIA, TMsg* parent)
+TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, SPtr<TAddrIA> ClntaddrIA, TMsg* parent)
     :TOptIA_NA(ClntaddrIA->getIAID(),ClntaddrIA->getT1(),ClntaddrIA->getT2(), parent)
 {
     //checkRequestConstructor
     ClntCfgIA->firstAddr();
-    SmartPtr<TClntCfgAddr> ClntCfgAddr;
+    SPtr<TClntCfgAddr> ClntCfgAddr;
     while ((ClntCfgAddr = ClntCfgIA->getAddr())&&
         ((ClntCfgIA->countAddr()-ClntaddrIA->getAddrCount())>this->countAddr() ))
     {
-        SmartPtr<TAddrAddr> ptrAddr=ClntaddrIA->getAddr(ClntCfgAddr->get());
+        SPtr<TAddrAddr> ptrAddr=ClntaddrIA->getAddr(ClntCfgAddr->get());
         if(!ptrAddr)
             SubOptions.append(new TClntOptIAAddress(
             ClntCfgAddr->get(),
@@ -98,7 +98,7 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, SmartPtr<TAddrIA> C
             ClntCfgAddr->getValid(),
             this->Parent));
     }
-    DUID = SmartPtr<TDUID>(); // NULL
+    DUID = SPtr<TDUID>(); // NULL
 }
 
 /** 
@@ -107,17 +107,17 @@ TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, SmartPtr<TAddrIA> C
  * @param ClntCfgIA 
  * @param parent 
  */
-TClntOptIA_NA::TClntOptIA_NA(SmartPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
+TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
     :TOptIA_NA(ClntCfgIA->getIAID(),ClntCfgIA->getT1(),ClntCfgIA->getT2(), parent)
 {
     ClntCfgIA->firstAddr();
-    SmartPtr<TClntCfgAddr> ClntCfgAddr;
+    SPtr<TClntCfgAddr> ClntCfgAddr;
     // just copy all addresses defined in the CfgMgr
     while (ClntCfgAddr = ClntCfgIA->getAddr())
         SubOptions.append(new TClntOptIAAddress(ClntCfgAddr->get(),
         ClntCfgAddr->getPref(),
         ClntCfgAddr->getValid(),this->Parent) ); 
-    DUID = SmartPtr<TDUID>(); // NULL
+    DUID = SPtr<TDUID>(); // NULL
 }
 
 /** 
@@ -148,7 +148,6 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
                 switch (code)
                 {
                 case OPTION_IAADDR:
-                    //  SmartPtr<TOptIAAddress> ptr;
                     SubOptions.append( new TClntOptIAAddress(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
@@ -179,21 +178,21 @@ void TClntOptIA_NA::firstAddr()
     SubOptions.first();
 }
 
-SmartPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr()
+SPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr()
 {
-    SmartPtr<TClntOptIAAddress> ptr;
+    SPtr<TClntOptIAAddress> ptr;
     do {
         ptr = (Ptr*) SubOptions.get();
         if (ptr)
             if (ptr->getOptType()==OPTION_IAADDR)
                 return ptr;
     } while (ptr);
-    return SmartPtr<TClntOptIAAddress>();
+    return SPtr<TClntOptIAAddress>();
 }
 
 int TClntOptIA_NA::countAddr()
 {
-    SmartPtr< TOpt> ptr;
+    SPtr< TOpt> ptr;
     SubOptions.first();
     int count = 0;
     while ( ptr = SubOptions.get() ) {
@@ -205,20 +204,20 @@ int TClntOptIA_NA::countAddr()
 
 int TClntOptIA_NA::getStatusCode()
 {
-    SmartPtr<TOpt> option;
+    SPtr<TOpt> option;
     if (option=getOption(OPTION_STATUS_CODE))
     {
-        SmartPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
+        SPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
         return statOpt->getCode();
     }
     return STATUSCODE_SUCCESS;
 }
 
-void TClntOptIA_NA::setContext(SmartPtr<TClntIfaceMgr> ifaceMgr, 
-                               SmartPtr<TClntTransMgr> transMgr, 
-                               SmartPtr<TClntCfgMgr> cfgMgr, 
-                               SmartPtr<TClntAddrMgr> addrMgr,
-                               SmartPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, int iface)
+void TClntOptIA_NA::setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
+                               SPtr<TClntTransMgr> transMgr, 
+                               SPtr<TClntCfgMgr> cfgMgr, 
+                               SPtr<TClntAddrMgr> addrMgr,
+                               SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, int iface)
 {
     this->AddrMgr=addrMgr;
     this->IfaceMgr=ifaceMgr;
@@ -247,7 +246,7 @@ TClntOptIA_NA::~TClntOptIA_NA()
 bool TClntOptIA_NA::doDuties()
 {
     // find this IA in addrMgr...
-    SmartPtr<TAddrIA> ptrIA=AddrMgr->getIA(this->getIAID());
+    SPtr<TAddrIA> ptrIA=AddrMgr->getIA(this->getIAID());
     if (!ptrIA) {
         // unknown IAID, ignore it
 	Log(Warning) << "Received message contains unknown IA (IAID="
@@ -256,8 +255,8 @@ bool TClntOptIA_NA::doDuties()
     }
 
     // IAID found, set up new received options.
-    SmartPtr<TAddrAddr> ptrAddrAddr;
-    SmartPtr<TClntOptIAAddress> ptrOptAddr;
+    SPtr<TAddrAddr> ptrAddrAddr;
+    SPtr<TClntOptIAAddress> ptrOptAddr;
 
 #if 0
     //if not we don't like this server, cause
@@ -273,8 +272,8 @@ bool TClntOptIA_NA::doDuties()
         //or the server doesn't want to prolong lease.
 
         ptrIA->firstAddr();
-        while(SmartPtr<TAddrAddr> addrToRel=ptrIA->getAddr()) {
-	    SmartPtr<TIPv6Addr> addr2(addrToRel->get());
+        while(SPtr<TAddrAddr> addrToRel=ptrIA->getAddr()) {
+	    SPtr<TIPv6Addr> addr2(addrToRel->get());
             IfaceMgr->getIfaceByID(ptrIA->getIface())->delAddr(addr2);
 	}
 
@@ -306,7 +305,7 @@ bool TClntOptIA_NA::doDuties()
         list.append(ptrIA);
 
         AddrMgr->delIA(ptrIA->getIAID() );
-        AddrMgr->addIA(new TAddrIA(ptrIA->getIface(), SmartPtr<TIPv6Addr>(), SmartPtr<TDUID>(),
+        AddrMgr->addIA(new TAddrIA(ptrIA->getIface(), SPtr<TIPv6Addr>(), SPtr<TDUID>(),
 				   0x7fffffff,0x7fffffff,ptrIA->getIAID()));
 
 	List(TAddrIA) pdLst;
@@ -317,7 +316,7 @@ bool TClntOptIA_NA::doDuties()
     }
 #endif /* if 0 */
 
-    SmartPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> ptrIface;
     ptrIface = IfaceMgr->getIfaceByID(this->Iface);
     if (!ptrIface) 
     {
@@ -363,7 +362,7 @@ bool TClntOptIA_NA::doDuties()
             }
 
             // set up new options in IfaceMgr
-            SmartPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(this->Iface);
+            SPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(this->Iface);
             if (ptrIface)
                 ptrIface->updateAddr(ptrOptAddr->getAddr(), 
                         ptrOptAddr->getPref(), 
@@ -374,7 +373,7 @@ bool TClntOptIA_NA::doDuties()
             ptrAddrAddr->setTimestamp();
         }
     }
-    SmartPtr<TClntCfgIA> ptrCfgIA;
+    SPtr<TClntCfgIA> ptrCfgIA;
     ptrCfgIA=CfgMgr->getIA(ptrIA->getIAID());
 
     if (getT1() && getT2()) {
@@ -401,13 +400,13 @@ bool TClntOptIA_NA::doDuties()
 //Counts all valid and diffrent addresses in sum of
 //addresses received in IA from server and addresses contained
 //in its counterpart IA in address manager
-int TClntOptIA_NA::countValidAddrs(SmartPtr<TAddrIA> ptrIA)
+int TClntOptIA_NA::countValidAddrs(SPtr<TAddrIA> ptrIA)
 {
     int count=0;
 
     //Counts addresses not received in Reply message
     //but which are in addrDB, and are still valid (valid>0)
-    SmartPtr<TAddrAddr> ptrAddr;
+    SPtr<TAddrAddr> ptrAddr;
     ptrIA->firstAddr();
     //For each addr in DB for this IA
     while(ptrAddr = ptrIA->getAddr())
@@ -430,7 +429,7 @@ int TClntOptIA_NA::countValidAddrs(SmartPtr<TAddrIA> ptrIA)
     //       B) Address can be assigned only in this IA, not in other
     //          This could be ommited if VerifyIA worked prooperly
     this->firstAddr();
-    SmartPtr<TClntOptIAAddress> ptrOptIAAddr;
+    SPtr<TClntOptIAAddress> ptrOptIAAddr;
     while(ptrOptIAAddr=this->getAddr())
     {
         if (!ptrOptIAAddr->getValid())
@@ -441,9 +440,9 @@ int TClntOptIA_NA::countValidAddrs(SmartPtr<TAddrIA> ptrIA)
     return count;
 }
 
-SmartPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr(SmartPtr<TIPv6Addr> addr)
+SPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr(SPtr<TIPv6Addr> addr)
 {
-    SmartPtr<TClntOptIAAddress> optAddr;
+    SPtr<TClntOptIAAddress> optAddr;
     this->firstAddr();
     while(optAddr=this->getAddr())
     {   
@@ -451,12 +450,12 @@ SmartPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr(SmartPtr<TIPv6Addr> addr)
         if ((*addr)==(*optAddr->getAddr()))
             return optAddr;
     };
-    return SmartPtr<TClntOptIAAddress>();
+    return SPtr<TClntOptIAAddress>();
 }
 
-void TClntOptIA_NA::releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr )
+void TClntOptIA_NA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )
 {
-    SmartPtr<TAddrIA> ptrIA = AddrMgr->getIA(IAID);
+    SPtr<TAddrIA> ptrIA = AddrMgr->getIA(IAID);
     if (ptrIA)
         ptrIA->delAddr(addr);
     else
@@ -471,7 +470,7 @@ void TClntOptIA_NA::setIface(int iface) {
 
 bool TClntOptIA_NA::isValid()
 {
-    SmartPtr<TClntOptIAAddress> addr;
+    SPtr<TClntOptIAAddress> addr;
     this->firstAddr();
     while (addr = this->getAddr()) {
 	if (addr->getAddr()->linkLocal()) {

@@ -30,32 +30,32 @@ class TClntOptTA : public TOptTA
  public:
     TClntOptTA(unsigned int iaid, TMsg* parent);
     TClntOptTA(char * buf, int bufsize, TMsg* parent);
-    TClntOptTA(SmartPtr<TAddrIA> ta, TMsg* parent);
+    TClntOptTA(SPtr<TAddrIA> ta, TMsg* parent);
     ~TClntOptTA();    
 
     bool doDuties();
     int getStatusCode();
 
-    SmartPtr<TClntOptIAAddress> getAddr();
-    SmartPtr<TClntOptIAAddress> getAddr(SmartPtr<TIPv6Addr> addr);
+    SPtr<TClntOptIAAddress> getAddr();
+    SPtr<TClntOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
     void firstAddr();
     int countAddr();
     bool isValid();
     void setIface(int iface); // used to override interface (e.g. when msg is received via loopback)
 
-    void setContext(SmartPtr<TClntAddrMgr> addrMgr, SmartPtr<TClntIfaceMgr> ifaceMgr,
-		    SmartPtr<TClntCfgMgr> cfgMgr, int iface, SmartPtr<TIPv6Addr> clntAddr);
+    void setContext(SPtr<TClntAddrMgr> addrMgr, SPtr<TClntIfaceMgr> ifaceMgr,
+		    SPtr<TClntCfgMgr> cfgMgr, int iface, SPtr<TIPv6Addr> clntAddr);
 
  private:
-    void releaseAddr(long IAID, SmartPtr<TIPv6Addr> addr );
+    void releaseAddr(long IAID, SPtr<TIPv6Addr> addr );
 
-    SmartPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Addr;
     int Iface;
 
     TCtx * Ctx;
-    SmartPtr<TClntIfaceMgr> IfaceMgr;
-    SmartPtr<TClntCfgMgr>   CfgMgr;
-    SmartPtr<TClntAddrMgr>  AddrMgr;
+    SPtr<TClntIfaceMgr> IfaceMgr;
+    SPtr<TClntCfgMgr>   CfgMgr;
+    SPtr<TClntAddrMgr>  AddrMgr;
 };
 
 

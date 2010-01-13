@@ -23,8 +23,8 @@ class TOptIA_PD;
 class TClntOptIA_PD : public TOptIA_PD
 {
  public:
-    TClntOptIA_PD(SmartPtr<TClntCfgPD> ClntCfgPD, TMsg* parent);
-    TClntOptIA_PD(SmartPtr<TAddrIA> clntAddrPD, TMsg* parent);
+    TClntOptIA_PD(SPtr<TClntCfgPD> ClntCfgPD, TMsg* parent);
+    TClntOptIA_PD(SPtr<TAddrIA> clntAddrPD, TMsg* parent);
     TClntOptIA_PD(char * buf, int bufsize, TMsg* parent);
     ~TClntOptIA_PD();
 
@@ -34,11 +34,11 @@ class TClntOptIA_PD : public TOptIA_PD
 		    SPtr<TClntTransMgr> transMgr, 
 		    SPtr<TClntCfgMgr>   cfgMgr, 
 		    SPtr<TClntAddrMgr>  addrMgr,
-		    SPtr<TDUID> srvDuid, SmartPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
+		    SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
     void setIface(int iface);
 
-    SmartPtr<TClntOptIAPrefix> getPrefix();
-    SmartPtr<TClntOptIAPrefix> getPrefix(SmartPtr<TIPv6Addr> prefix);
+    SPtr<TClntOptIAPrefix> getPrefix();
+    SPtr<TClntOptIAPrefix> getPrefix(SPtr<TIPv6Addr> prefix);
     void firstPrefix();
     int countPrefix();
     bool isValid();
@@ -51,16 +51,16 @@ class TClntOptIA_PD : public TOptIA_PD
     void setState(EState state);
     void clearContext();
 
-    SmartPtr<TIPv6Addr> Prefix;
+    SPtr<TIPv6Addr> Prefix;
     bool Unicast;
-    SmartPtr<TDUID> DUID;
+    SPtr<TDUID> DUID;
     int Iface;
 
     /* Context */
-    SmartPtr<TClntIfaceMgr> IfaceMgr;
-    SmartPtr<TClntTransMgr> TransMgr;
-    SmartPtr<TClntCfgMgr>   CfgMgr;
-    SmartPtr<TClntAddrMgr>  AddrMgr;
+    SPtr<TClntIfaceMgr> IfaceMgr;
+    SPtr<TClntTransMgr> TransMgr;
+    SPtr<TClntCfgMgr>   CfgMgr;
+    SPtr<TClntAddrMgr>  AddrMgr;
     TMsg * OriginalMsg;
     /* Context */
 };

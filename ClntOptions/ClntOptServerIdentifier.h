@@ -27,7 +27,7 @@ class TClntOptServerIdentifier : public TOptDUID
 {
   public:
     TClntOptServerIdentifier( char * duid, int n, TMsg* parent);
-    TClntOptServerIdentifier(SmartPtr<TDUID> duid, TMsg* parent);
+    TClntOptServerIdentifier(SPtr<TDUID> duid, TMsg* parent);
 	bool doDuties();
 };
 #endif

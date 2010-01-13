@@ -27,9 +27,9 @@ class TClntOptTimeZone : public TOptString
     TClntOptTimeZone(string domain, TMsg* parent);
     TClntOptTimeZone(char *buf, int bufsize, TMsg* parent);
     bool doDuties();
-    void setSrvDuid(SmartPtr<TDUID> duid);
+    void setSrvDuid(SPtr<TDUID> duid);
     bool isValid();
  private:
-    SmartPtr<TDUID> SrvDUID;
+    SPtr<TDUID> SrvDUID;
 };
 #endif

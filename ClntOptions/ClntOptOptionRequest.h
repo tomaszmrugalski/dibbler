@@ -30,11 +30,11 @@ class TClntConfMgr;
 class TClntOptOptionRequest : public TOptOptionRequest 
 {
  public:
-    TClntOptOptionRequest(SmartPtr<TClntCfgIface> ptrIface, TMsg* parent);
+    TClntOptOptionRequest(SPtr<TClntCfgIface> ptrIface, TMsg* parent);
     TClntOptOptionRequest( char * buf,  int n, TMsg* parent);
     bool doDuties();
  private:
-    SmartPtr<TClntCfgMgr> CfgMgr;
+    SPtr<TClntCfgMgr> CfgMgr;
 };
 
 #endif

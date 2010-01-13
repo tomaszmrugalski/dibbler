@@ -46,14 +46,14 @@ TClntOptDomainName::TClntOptDomainName(char *buf, int bufsize, TMsg* parent)
 bool TClntOptDomainName::doDuties() {
     string reason = "trying to set domain(s).";
     int ifindex = this->Parent->getIface();
-    SmartPtr<TIPv6Addr> addr = this->Parent->getAddr();
+    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SmartPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
+    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
     if (!ifaceMgr) {
 	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
         return false;
     }
-    SmartPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
 		   << " while " << reason << LogEnd;
@@ -65,13 +65,13 @@ bool TClntOptDomainName::doDuties() {
 	return false;
     }
 
-    SmartPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SmartPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
+    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
     cfgIface->setDomainState(STATE_CONFIGURED);
 
     return iface->setDomainLst(this->DUID, addr, this->StringLst);
 }
 
-void TClntOptDomainName::setSrvDuid(SmartPtr<TDUID> duid) {
+void TClntOptDomainName::setSrvDuid(SPtr<TDUID> duid) {
     this->SrvDUID=duid;
 }
