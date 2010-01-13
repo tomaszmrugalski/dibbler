@@ -97,7 +97,7 @@ void TRelCfgMgr::dump() {
     xmlDump.close();
 }
 
-bool TRelCfgMgr::setupGlobalOpts(SmartPtr<TRelParsGlobalOpt> opt) {
+bool TRelCfgMgr::setupGlobalOpts(SPtr<TRelParsGlobalOpt> opt) {
     this->Workdir          = opt->getWorkDir();
     this->GuessMode        = opt->getGuessMode();
     this->InterfaceIDOrder = opt->getInterfaceIDOrder();
@@ -116,8 +116,8 @@ bool TRelCfgMgr::matchParsedSystemInterfaces(List(TRelCfgIface) * lst) {
     cfgIfaceCnt = lst->count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << RELCONF_FILE << LogEnd;
 
-    SmartPtr<TRelCfgIface> cfgIface;
-    SmartPtr<TIfaceIface>  ifaceIface;
+    SPtr<TRelCfgIface> cfgIface;
+    SPtr<TIfaceIface>  ifaceIface;
     
     lst->first();
     while(cfgIface=lst->get()) {
@@ -151,11 +151,11 @@ bool TRelCfgMgr::matchParsedSystemInterfaces(List(TRelCfgIface) * lst) {
     return true;
 }
 
-SmartPtr<TRelCfgIface> TRelCfgMgr::getIface() {
+SPtr<TRelCfgIface> TRelCfgMgr::getIface() {
 	return this->IfaceLst.get();
 }
 
-void TRelCfgMgr::addIface(SmartPtr<TRelCfgIface> ptr) {
+void TRelCfgMgr::addIface(SPtr<TRelCfgIface> ptr) {
     IfaceLst.append(ptr);
 }
 
@@ -180,7 +180,7 @@ bool TRelCfgMgr::guessMode() {
 }
 
 bool TRelCfgMgr::validateConfig() {
-    SmartPtr<TRelCfgIface> ptrIface;
+    SPtr<TRelCfgIface> ptrIface;
 
     if (!this->countIface()) {
 	Log(Crit) << "Config problem: No interface defined." << LogEnd;
@@ -199,7 +199,7 @@ bool TRelCfgMgr::validateConfig() {
     return true;
 }
 
-bool TRelCfgMgr::validateIface(SmartPtr<TRelCfgIface> ptrIface)
+bool TRelCfgMgr::validateIface(SPtr<TRelCfgIface> ptrIface)
 {
     if ( (ptrIface->getInterfaceID() == (signed int)DHCPV6_INFINITY) &&
 	(ptrIface->getClientUnicast() || ptrIface->getClientMulticast()) ) {
@@ -220,9 +220,9 @@ bool TRelCfgMgr::validateIface(SmartPtr<TRelCfgIface> ptrIface)
     return true;
 }
 
-SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface) 
+SPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface) 
 {
-    SmartPtr<TRelCfgIface> ptrIface;
+    SPtr<TRelCfgIface> ptrIface;
     this->firstIface();
     while ( ptrIface = this->getIface() ) {
 	if ( ptrIface->getID()==iface )
@@ -233,9 +233,9 @@ SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface)
 }
 
 
-SmartPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) 
+SPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface) 
 {
-    SmartPtr<TRelCfgIface> ptrIface;
+    SPtr<TRelCfgIface> ptrIface;
     this->firstIface();
     while ( ptrIface = this->getIface() ) {
 	if ( ptrIface->getInterfaceID()==iface )
@@ -307,7 +307,7 @@ ostream & operator<<(ostream &out, TRelCfgMgr &x) {
 	out << "  <!-- <EchoRequest/> -->" << endl;
     }
     
-    SmartPtr<TRelCfgIface> ptrIface;
+    SPtr<TRelCfgIface> ptrIface;
     x.firstIface();
     while (ptrIface = x.getIface()) {
 	out << *ptrIface;

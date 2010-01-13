@@ -102,7 +102,7 @@
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
-			ManagedExtensions="4"
+			ManagedExtensions="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -406,6 +406,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\RelIfaceMgr\RelIfaceMgr.h"
+					>
+				</File>
+				<File
 					RelativePath="..\IfaceMgr\SocketIPv6.h"
 					>
 				</File>
@@ -527,6 +531,34 @@
 				</File>
 				<File
 					RelativePath="WinService.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Messages"
+				>
+				<File
+					RelativePath="..\RelMessages\RelMsg.h"
+					>
+				</File>
+				<File
+					RelativePath="..\RelMessages\RelMsgGeneric.h"
+					>
+				</File>
+				<File
+					RelativePath="..\RelMessages\RelMsgRelayForw.h"
+					>
+				</File>
+				<File
+					RelativePath="..\RelMessages\RelMsgRelayRepl.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="RelTransMgr"
+				>
+				<File
+					RelativePath="..\RelTransMgr\RelTransMgr.h"
 					>
 				</File>
 			</Filter>

@@ -926,10 +926,22 @@
 					RelativePath="..\AddrMgr\AddrPrefix.h"
 					>
 				</File>
+				<File
+					RelativePath="..\ClntAddrMgr\ClntAddrMgr.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="IfaceMgr"
 				>
+				<File
+					RelativePath="..\ClntIfaceMgr\ClntIfaceIface.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntIfaceMgr\ClntIfaceMgr.h"
+					>
+				</File>
 				<File
 					RelativePath="..\IfaceMgr\Iface.h"
 					>
@@ -948,6 +960,54 @@
 				>
 				<File
 					RelativePath="..\CfgMgr\CfgMgr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgAddr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgIA.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgIface.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgMgr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgPD.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgPrefix.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntCfgTA.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntParsAddrOpt.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntParser.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntParsGlobalOpt.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntParsIAOpt.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntParsIfaceOpt.h"
 					>
 				</File>
 				<File
@@ -1103,7 +1163,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\ClntOptions\ClntOptIA_PD.h"
+					>
+				</File>
+				<File
 					RelativePath="..\ClntOptions\ClntOptIAAddress.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptIAPrefix.h"
 					>
 				</File>
 				<File
@@ -1164,6 +1232,10 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptStatusCode.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntOptions\ClntOptTA.h"
 					>
 				</File>
 				<File
@@ -1236,6 +1308,10 @@
 				>
 				<File
 					RelativePath="..\misc\Container.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\DHCPClient.h"
 					>
 				</File>
 				<File
@@ -1336,6 +1412,14 @@
 				</File>
 				<File
 					RelativePath="..\poslib\poslib\vsnprintf.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="ClntTransMgr"
+				>
+				<File
+					RelativePath="..\ClntTransMgr\ClntTransMgr.h"
 					>
 				</File>
 			</Filter>

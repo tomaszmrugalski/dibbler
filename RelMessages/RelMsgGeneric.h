@@ -35,7 +35,7 @@ using namespace std;
 class TRelMsgGeneric: public TRelMsg {
 
  public:
-    TRelMsgGeneric(TCtx * ctx, int iface, SmartPtr<TIPv6Addr> addr, char * data, int dataLen);
+    TRelMsgGeneric(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
     string getName();
     bool check();
     int getSize();

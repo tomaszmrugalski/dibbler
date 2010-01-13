@@ -1569,7 +1569,7 @@ YYLABEL(yyerrhandle)
 //already declared
 bool RelParser::CheckIsIface(int ifaceNr)
 {
-  SmartPtr<TRelCfgIface> ptr;
+  SPtr<TRelCfgIface> ptr;
   RelCfgIfaceLst.first();
   while (ptr=RelCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) {
@@ -1583,7 +1583,7 @@ bool RelParser::CheckIsIface(int ifaceNr)
 //already declared 
 bool RelParser::CheckIsIface(string ifaceName)
 {
-  SmartPtr<TRelCfgIface> ptr;
+  SPtr<TRelCfgIface> ptr;
   RelCfgIfaceLst.first();
   while (ptr=RelCfgIfaceLst.get())
   {

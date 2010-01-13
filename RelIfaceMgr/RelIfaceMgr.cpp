@@ -42,23 +42,24 @@ void TRelIfaceMgr::dump()
 
 /**
  * sends data to client. Uses multicast address as source
- * @param iface - interface ID
- * @param msg - buffer containing message ready to send
- * @param size - size of message
- * @param addr - destination address
+ * @param ifindex interface ID
+ * @param data    buffer containing message ready to send
+ * @param dataLen size of message
+ * @param addr    destination address
+ * @param port    UDP port to send the data to
  * returns true if message was send successfully
  */
-bool TRelIfaceMgr::send(int ifindex, char *data, int dataLen, 
-			SmartPtr<TIPv6Addr> addr, int port) {
+bool TRelIfaceMgr::send(int ifindex, char *data, int dataLen, SPtr<TIPv6Addr> addr, int port)
+{
     // find this interface
-    SmartPtr<TIfaceIface> iface = this->getIfaceByID(ifindex);
+    SPtr<TIfaceIface> iface = this->getIfaceByID(ifindex);
     if (!iface) {
 	Log(Error)  << "Send failed: No such interface id=" << ifindex << LogEnd;
 	return false;
     }
 
     // find this socket
-    SmartPtr<TIfaceSocket> ptrSocket;
+    SPtr<TIfaceSocket> ptrSocket;
     iface->firstSocket();
     ptrSocket = iface->getSocket();
     if (!ptrSocket) {
@@ -77,15 +78,15 @@ bool TRelIfaceMgr::send(int ifindex, char *data, int dataLen,
  * reads messages from all interfaces
  * it's wrapper around IfaceMgr::select(...) method
  * @param timeout - how long can we wait for packets?
- * returns SmartPtr to message object
+ * returns SPtr to message object
  */
-SmartPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
+SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
     
     // static buffer speeds things up
     static char data[2048];
     int dataLen=2048;
 
-    SmartPtr<TIPv6Addr> peer (new TIPv6Addr());
+    SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
     int msgtype;
 
@@ -99,9 +100,9 @@ SmartPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 	
 	// check message type
 	msgtype = data[0];
-	SmartPtr<TMsg> ptr;
-	SmartPtr<TIfaceIface> iface;
-	SmartPtr<TIfaceSocket> sock;
+	SPtr<TMsg> ptr;
+	SPtr<TIfaceIface> iface;
+	SPtr<TIfaceSocket> sock;
 
 	// get interface
 	iface = this->getIfaceBySocket(sockid);
@@ -122,29 +123,29 @@ SmartPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
     return 0;
 }
 
-SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SmartPtr<TIfaceIface> iface, 
-						SmartPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> iface, 
+						SPtr<TIPv6Addr> peer, 
 						char * data, int dataLen) {
     int ifindex = iface->getID();
-    SmartPtr<TRelMsg> msg = new TRelMsgRelayForw(this->Ctx, ifindex, peer, data, dataLen);
+    SPtr<TRelMsg> msg = new TRelMsgRelayForw(this->Ctx, ifindex, peer, data, dataLen);
     return msg;
 }
 
-SmartPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SmartPtr<TIfaceIface> iface, 
-					      SmartPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SPtr<TIfaceIface> iface, 
+					      SPtr<TIPv6Addr> peer, 
 					      char * buf, int bufsize) {
     int ifindex = iface->getID();
     return new TRelMsgGeneric(this->Ctx, ifindex, peer, buf, bufsize);
 }
 
-SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface, 
-						SmartPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface, 
+						SPtr<TIPv6Addr> peer, 
 						char * buf, int bufsize) {
-    SmartPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TRelOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
+    SPtr<TRelOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
-    SmartPtr<TRelOptInterfaceID> ptrIfaceID;
+    SPtr<TRelOptInterfaceID> ptrIfaceID;
     char * relayBuf=0;
     int relayLen = 0;
     int relays=0;
@@ -157,8 +158,8 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 
     // char type = buf[0]; // ignore it
     int hopCount = buf[1]; // this one is not currently needed either
-    SmartPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
-    SmartPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
+    SPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
+    SPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
     buf+=34;
     bufsize-=34;
     
@@ -222,7 +223,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
 	}
 
 	/* guess mode enabled, let's find any interface */
-	SmartPtr<TRelCfgIface> tmp;
+	SPtr<TRelCfgIface> tmp;
 	Ctx->CfgMgr->firstIface();
 	while (tmp = Ctx->CfgMgr->getIface()) {
 	    if (tmp->getID() == iface->getID()) 
@@ -243,7 +244,7 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     hopTbl[relays] = hopCount;
     relays++;
 
-    SmartPtr<TRelMsg> msg;
+    SPtr<TRelMsg> msg;
     switch (relayBuf[0]) {
     case RELAY_REPL_MSG:
 	//msg = this->decodeRelayRepl(iface, peer, buf, bufsize);
@@ -260,8 +261,8 @@ SmartPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SmartPtr<TIfaceIface> iface,
     return (Ptr*)msg;
 }
 
-SmartPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SmartPtr<TIfaceIface> iface, 
-					  SmartPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface, 
+					  SPtr<TIPv6Addr> peer, 
 					  char * data, int dataLen) {
     if (dataLen <= 0) 
 	return 0;
@@ -297,7 +298,7 @@ void TRelIfaceMgr::setContext(TCtx *ctx)
 
 ostream & operator <<(ostream & strum, TRelIfaceMgr &x) {
     strum << "<RelIfaceMgr>" << std::endl;
-    SmartPtr<TIfaceIface> ptr;
+    SPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr= (Ptr*) x.IfaceLst.get() ) {
 	strum << *ptr;

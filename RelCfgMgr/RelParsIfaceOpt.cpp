@@ -31,19 +31,19 @@ TRelParsIfaceOpt::~TRelParsIfaceOpt(void) {
 }
 
 // --- unicast ---
-void TRelParsIfaceOpt::setServerUnicast(SmartPtr<TIPv6Addr> addr) {
+void TRelParsIfaceOpt::setServerUnicast(SPtr<TIPv6Addr> addr) {
     this->ServerUnicast = addr;
 }
 
-SmartPtr<TIPv6Addr> TRelParsIfaceOpt::getServerUnicast() {
+SPtr<TIPv6Addr> TRelParsIfaceOpt::getServerUnicast() {
     return this->ServerUnicast;
 }
 
-void TRelParsIfaceOpt::setClientUnicast(SmartPtr<TIPv6Addr> addr) {
+void TRelParsIfaceOpt::setClientUnicast(SPtr<TIPv6Addr> addr) {
     this->ClientUnicast = addr;
 }
 
-SmartPtr<TIPv6Addr> TRelParsIfaceOpt::getClientUnicast() {
+SPtr<TIPv6Addr> TRelParsIfaceOpt::getClientUnicast() {
     return this->ClientUnicast;
 }
 

@@ -29,7 +29,7 @@
 class TRelMsgRelayForw: public TRelMsg {
 
  public:
-    TRelMsgRelayForw(TCtx * ctx, int iface, SmartPtr<TIPv6Addr> addr, char * data, int dataLen);
+    TRelMsgRelayForw(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
     string getName();
     bool check();
 
@@ -37,8 +37,8 @@ class TRelMsgRelayForw: public TRelMsg {
     int getSize();
 
  private:
-    SmartPtr<TIPv6Addr> PeerAddr;
-    SmartPtr<TIPv6Addr> LinkAddr;
+    SPtr<TIPv6Addr> PeerAddr;
+    SPtr<TIPv6Addr> LinkAddr;
 };
 
 #endif

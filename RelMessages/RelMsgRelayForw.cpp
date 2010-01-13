@@ -33,7 +33,7 @@
 
 // --- options ---
 
-TRelMsgRelayForw::TRelMsgRelayForw(TCtx * ctx, int iface, SmartPtr<TIPv6Addr> addr, char * data, int dataLen)
+TRelMsgRelayForw::TRelMsgRelayForw(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
     :TRelMsg(ctx, iface, addr, 0, 0) // 0,0 - avoid decoding anything
 {
     this->MsgType = RELAY_FORW_MSG;
@@ -83,7 +83,7 @@ int TRelMsgRelayForw::storeSelf(char * buffer)
     buffer += 16;
 
     Options.first();
-    SmartPtr<TOpt> Option;
+    SPtr<TOpt> Option;
     while( Option = Options.get() )
     {
         Option->storeSelf(buffer);
@@ -93,7 +93,7 @@ int TRelMsgRelayForw::storeSelf(char * buffer)
 }
 
 int TRelMsgRelayForw::getSize() {
-    SmartPtr<TOpt> Option;
+    SPtr<TOpt> Option;
     int pktsize=0;
     Options.first();
     while( Option = Options.get() )

@@ -27,7 +27,7 @@
 #include "SmartPtr.h"
 
 int TRelMsgRelayRepl::getSize() {
-    SmartPtr<TOpt> Option;
+    SPtr<TOpt> Option;
     int pktsize=0;
     Options.first();
     while( Option = Options.get() )
@@ -35,7 +35,7 @@ int TRelMsgRelayRepl::getSize() {
     return pktsize + MIN_RELAYREPL_LEN;
 }
 
-TRelMsgRelayRepl::TRelMsgRelayRepl(TCtx * ctx, int iface, SmartPtr<TIPv6Addr> addr, char * data, int dataLen)
+TRelMsgRelayRepl::TRelMsgRelayRepl(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
     :TRelMsg(ctx, iface, addr, 0, 0) // 0,0 - avoid decoding anything
 {
     this->MsgType = RELAY_REPL_MSG;
@@ -82,7 +82,7 @@ int TRelMsgRelayRepl::storeSelf(char * buffer)
     buffer += 16;
 
     Options.first();
-    SmartPtr<TOpt> Option;
+    SPtr<TOpt> Option;
     while( Option = Options.get() )
     {
         Option->storeSelf(buffer);

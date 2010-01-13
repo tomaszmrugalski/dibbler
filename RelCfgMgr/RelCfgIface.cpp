@@ -54,11 +54,11 @@ string TRelCfgIface::getFullName() {
 TRelCfgIface::~TRelCfgIface() {
 }
 
-SmartPtr<TIPv6Addr> TRelCfgIface::getServerUnicast() {
+SPtr<TIPv6Addr> TRelCfgIface::getServerUnicast() {
     return this->ServerUnicast;
 }
 
-SmartPtr<TIPv6Addr> TRelCfgIface::getClientUnicast() {
+SPtr<TIPv6Addr> TRelCfgIface::getClientUnicast() {
     return this->ClientUnicast;
 }
 
@@ -70,7 +70,7 @@ bool TRelCfgIface::getServerMulticast() {
     return this->ServerMulticast;
 }
 
-void TRelCfgIface::setOptions(SmartPtr<TRelParsGlobalOpt> opt) {
+void TRelCfgIface::setOptions(SPtr<TRelParsGlobalOpt> opt) {
     this->ClientUnicast = opt->getClientUnicast();
     this->ServerUnicast = opt->getServerUnicast();
     this->ClientMulticast = opt->getClientMulticast();
@@ -95,8 +95,8 @@ int TRelCfgIface::getInterfaceID() {
 // --------------------------------------------------------------------
 
 ostream& operator<<(ostream& out,TRelCfgIface& iface) {
-    SmartPtr<TIPv6Addr> addr;
-    SmartPtr<string> str;
+    SPtr<TIPv6Addr> addr;
+    SPtr<string> str;
 
     out << dec;
     out << "  <RelCfgIface name=\""<<iface.Name << "\" ifindex=\""<<iface.ID 

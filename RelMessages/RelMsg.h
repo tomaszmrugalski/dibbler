@@ -37,19 +37,19 @@ class TRelMsg;
 class TRelMsg : public TMsg
 {
 public:
-    TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  int dataLen);
+    TRelMsg(TCtx * ctx, int iface,  SPtr<TIPv6Addr> addr, char* data,  int dataLen);
     virtual bool check() = 0;
     virtual int getSize() = 0;
-    void setDestination(int ifindex, SmartPtr<TIPv6Addr> dest);
+    void setDestination(int ifindex, SPtr<TIPv6Addr> dest);
     int getDestIface();
-    SmartPtr<TIPv6Addr> getDestAddr();
+    SPtr<TIPv6Addr> getDestAddr();
     void decodeOpts(char * data, int dataLen);
     int getHopCount();
     
  protected:
     TCtx * Ctx;
     int DestIface;
-    SmartPtr<TIPv6Addr>   DestAddr;
+    SPtr<TIPv6Addr>   DestAddr;
 
     int HopCount; // mormal messages =0, RELAY_FORW, RELAY_REPL = (0..32)
 };

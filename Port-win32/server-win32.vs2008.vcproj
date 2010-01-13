@@ -102,7 +102,7 @@
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
-			ManagedExtensions="4"
+			ManagedExtensions="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -349,6 +349,10 @@
 				>
 				<File
 					RelativePath="..\SrvOptions\SrvOptAAAAuthentication.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvOptions\SrvOptAddrParams.cpp"
 					>
 				</File>
 				<File
@@ -913,7 +917,7 @@
 				Name="SrvOptions"
 				>
 				<File
-					RelativePath="..\SrvOptions\SrvOptAddrParams.cpp"
+					RelativePath="..\SrvOptions\SrvOptAddrParams.h"
 					>
 				</File>
 				<File
@@ -1045,7 +1049,27 @@
 					>
 				</File>
 				<File
+					RelativePath="..\SrvCfgMgr\Node.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\NodeClientSpecific.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\NodeConstant.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\NodeOperator.h"
+					>
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvCfgAddrClass.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgClientClass.h"
 					>
 				</File>
 				<File
@@ -1054,6 +1078,10 @@
 				</File>
 				<File
 					RelativePath="..\SrvCfgMgr\SrvCfgMgr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvCfgTA.h"
 					>
 				</File>
 				<File
@@ -1082,6 +1110,10 @@
 				</File>
 				<File
 					RelativePath="..\misc\DHCPConst.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\DHCPServer.h"
 					>
 				</File>
 				<File
@@ -1150,6 +1182,70 @@
 				>
 				<File
 					RelativePath="..\SrvAddrMgr\SrvAddrMgr.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="SrvMessages"
+				>
+				<File
+					RelativePath="..\SrvMessages\SrvMsg.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgAdvertise.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgConfirm.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgDecline.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgInfRequest.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgLeaseQuery.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgLeaseQueryReply.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgRebind.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgRelease.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgRenew.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgReply.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgRequest.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgSolicit.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="SrvTransMgr"
+				>
+				<File
+					RelativePath="..\SrvTransMgr\SrvTransMgr.h"
 					>
 				</File>
 			</Filter>

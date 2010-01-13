@@ -46,12 +46,12 @@ public:
     string getName();
     string getFullName();
 
-    SmartPtr<TIPv6Addr> getServerUnicast();
-    SmartPtr<TIPv6Addr> getClientUnicast();
+    SPtr<TIPv6Addr> getServerUnicast();
+    SPtr<TIPv6Addr> getClientUnicast();
     bool getServerMulticast();
     bool getClientMulticast();
 
-    void setOptions(SmartPtr<TRelParsGlobalOpt> opt);
+    void setOptions(SPtr<TRelParsGlobalOpt> opt);
     
     unsigned char getPreference();
     int getInterfaceID();
@@ -61,8 +61,8 @@ private:
     int	ID;
     int InterfaceID; // value of interface-id option (optional)
 
-    SmartPtr<TIPv6Addr> ClientUnicast;
-    SmartPtr<TIPv6Addr> ServerUnicast;
+    SPtr<TIPv6Addr> ClientUnicast;
+    SPtr<TIPv6Addr> ServerUnicast;
     bool ClientMulticast;
     bool ServerMulticast;
 };

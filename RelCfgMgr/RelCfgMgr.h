@@ -33,17 +33,17 @@ public:
 
     //Interfaces acccess methods
     void firstIface();
-    SmartPtr<TRelCfgIface> getIface();
-    SmartPtr<TRelCfgIface> getIfaceByID(int iface);
-    SmartPtr<TRelCfgIface> getIfaceByInterfaceID(int iface);
+    SPtr<TRelCfgIface> getIface();
+    SPtr<TRelCfgIface> getIfaceByID(int iface);
+    SPtr<TRelCfgIface> getIfaceByInterfaceID(int iface);
     long countIface();
-    void addIface(SmartPtr<TRelCfgIface> iface);
+    void addIface(SPtr<TRelCfgIface> iface);
 
     void dump();
 
     bool isDone();
 
-    bool setupGlobalOpts(SmartPtr<TRelParsGlobalOpt> opt);
+    bool setupGlobalOpts(SPtr<TRelParsGlobalOpt> opt);
 
     // configuration parameters
     string getWorkdir();
@@ -61,7 +61,7 @@ private:
 
     bool IsDone;
     bool validateConfig();
-    bool validateIface(SmartPtr<TRelCfgIface> ptrIface);
+    bool validateIface(SPtr<TRelCfgIface> ptrIface);
     List(TRelCfgIface) IfaceLst;
 
     bool matchParsedSystemInterfaces(List(TRelCfgIface) * lst);

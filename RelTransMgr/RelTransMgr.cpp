@@ -29,7 +29,7 @@ TRelTransMgr::TRelTransMgr(TCtx * ctx, string xmlFile)
     this->XmlFile = xmlFile;
 
     // for each interface in CfgMgr, create socket (in IfaceMgr)
-    SmartPtr<TRelCfgIface> confIface;
+    SPtr<TRelCfgIface> confIface;
     this->Ctx->CfgMgr->firstIface();
     while (confIface=this->Ctx->CfgMgr->getIface()) {
 	if (!this->openSocket(confIface)) {
@@ -42,18 +42,18 @@ TRelTransMgr::TRelTransMgr(TCtx * ctx, string xmlFile)
 /*
  * opens proper (multicast or unicast) socket on interface 
  */
-bool TRelTransMgr::openSocket(SmartPtr<TRelCfgIface> cfgIface) {
+bool TRelTransMgr::openSocket(SPtr<TRelCfgIface> cfgIface) {
 
-    SmartPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(cfgIface->getID());
+    SPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(cfgIface->getID());
     if (!iface) {
 	Log(Crit) << "Unable to find " << cfgIface->getName() << "/" << cfgIface->getID()
 		  << " interface in the IfaceMgr." << LogEnd;
 	return false;
     }
 
-    SmartPtr<TIPv6Addr> srvUnicast = cfgIface->getServerUnicast();
-    SmartPtr<TIPv6Addr> clntUnicast = cfgIface->getClientUnicast();
-    SmartPtr<TIPv6Addr> addr;
+    SPtr<TIPv6Addr> srvUnicast = cfgIface->getServerUnicast();
+    SPtr<TIPv6Addr> clntUnicast = cfgIface->getClientUnicast();
+    SPtr<TIPv6Addr> addr;
 
     if (cfgIface->getServerMulticast() || srvUnicast) {
 
@@ -100,7 +100,7 @@ bool TRelTransMgr::openSocket(SmartPtr<TRelCfgIface> cfgIface) {
 /**
  * relays normal (i.e. not server replies) messages to defined servers
  */
-void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
+void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
 {	
     static char buf[MAX_PACKET_LEN];
     int offset = 0;
@@ -121,8 +121,8 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     }
 
     // prepare message
-    SmartPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(msg->getIface());
-    SmartPtr<TIPv6Addr> addr;
+    SPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(msg->getIface());
+    SPtr<TIPv6Addr> addr;
 
     // store header
     buf[offset++] = RELAY_FORW_MSG;
@@ -143,7 +143,7 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     addr->storeSelf(buf+offset);
     offset += 16;
 
-    SmartPtr<TRelCfgIface> cfgIface;
+    SPtr<TRelCfgIface> cfgIface;
     cfgIface = this->Ctx->CfgMgr->getIfaceByID(msg->getIface());
     TRelOptInterfaceID ifaceID(cfgIface->getInterfaceID(), 0);
 
@@ -233,16 +233,16 @@ void TRelTransMgr::relayMsg(SmartPtr<TRelMsg> msg)
     this->Ctx->CfgMgr->dump();
 }	
 
-void TRelTransMgr::relayMsgRepl(SmartPtr<TRelMsg> msg) {
+void TRelTransMgr::relayMsgRepl(SPtr<TRelMsg> msg) {
     int port;
-    SmartPtr<TRelCfgIface> cfgIface = this->Ctx->CfgMgr->getIfaceByInterfaceID(msg->getDestIface());
+    SPtr<TRelCfgIface> cfgIface = this->Ctx->CfgMgr->getIfaceByInterfaceID(msg->getDestIface());
     if (!cfgIface) {
 	Log(Error) << "Unable to relay message: Invalid interfaceID value:" << msg->getDestIface() << LogEnd;
 	return;
     }
 
-    SmartPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(cfgIface->getID());
-    SmartPtr<TIPv6Addr> addr = msg->getDestAddr();
+    SPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(cfgIface->getID());
+    SPtr<TIPv6Addr> addr = msg->getDestAddr();
     static char buf[MAX_PACKET_LEN];
     int bufLen;
 

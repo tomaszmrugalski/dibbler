@@ -26,7 +26,7 @@
 #include "RelOptGeneric.h"
 
 //Constructor builds message on the basis of received message
-TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  int dataLen)
+TRelMsg::TRelMsg(TCtx * ctx, int iface,  SPtr<TIPv6Addr> addr, char* data,  int dataLen)
     :TMsg(iface, addr, data, dataLen) {
     // data+=4, dataLen-=4 is modified in TMsg
     if (dataLen<=0) // avoid decoding of empty messages.
@@ -38,7 +38,7 @@ TRelMsg::TRelMsg(TCtx * ctx, int iface,  SmartPtr<TIPv6Addr> addr, char* data,  
 
 void TRelMsg::decodeOpts(char * buf, int bufSize) {
     int pos=0;
-    SmartPtr<TOpt> ptr;
+    SPtr<TOpt> ptr;
 
     while (pos<bufSize)	{
 	if (pos+4>bufSize) {
@@ -90,7 +90,7 @@ void TRelMsg::decodeOpts(char * buf, int bufSize) {
     }
 }
 
-void TRelMsg::setDestination(int iface, SmartPtr<TIPv6Addr> dest) {
+void TRelMsg::setDestination(int iface, SPtr<TIPv6Addr> dest) {
     this->DestIface = iface;
     this->DestAddr  = dest;
 }
@@ -99,7 +99,7 @@ int TRelMsg::getDestIface() {
     return this->DestIface;
 }
 
-SmartPtr<TIPv6Addr> TRelMsg::getDestAddr() {
+SPtr<TIPv6Addr> TRelMsg::getDestAddr() {
     return this->DestAddr;
 }
 

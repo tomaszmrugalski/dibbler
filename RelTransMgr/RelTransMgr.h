@@ -37,12 +37,12 @@ class TRelTransMgr
     TRelTransMgr(TCtx * ctx, string xmlFile);
     ~TRelTransMgr();
 
-    bool openSocket(SmartPtr<TRelCfgIface> confIface);
+    bool openSocket(SPtr<TRelCfgIface> confIface);
 
     bool doDuties();
 
-    void relayMsg(SmartPtr<TRelMsg> msg);
-    void relayMsgRepl(SmartPtr<TRelMsg> msg);
+    void relayMsg(SPtr<TRelMsg> msg);
+    void relayMsgRepl(SPtr<TRelMsg> msg);
     void dump();
 
     bool isDone();

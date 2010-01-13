@@ -32,15 +32,15 @@ class TRelMsgRelayRepl;
 
 class TRelMsgRelayRepl: public TRelMsg {
  public:
-    TRelMsgRelayRepl(TCtx * ctx, int iface, SmartPtr<TIPv6Addr> addr, char * data, int dataLen);
+    TRelMsgRelayRepl(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
     int getSize();
     int storeSelf(char * buffer);
     string getName();
     bool check();
 
  private:
-    SmartPtr<TIPv6Addr> PeerAddr;
-    SmartPtr<TIPv6Addr> LinkAddr;
+    SPtr<TIPv6Addr> PeerAddr;
+    SPtr<TIPv6Addr> LinkAddr;
 };
 
 #endif

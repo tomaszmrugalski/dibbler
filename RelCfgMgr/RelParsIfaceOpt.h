@@ -22,13 +22,13 @@ public:
     TRelParsIfaceOpt(void);
     ~TRelParsIfaceOpt(void);
 
-    void setClientUnicast(SmartPtr<TIPv6Addr> addr);
-    void setServerUnicast(SmartPtr<TIPv6Addr> addr);
+    void setClientUnicast(SPtr<TIPv6Addr> addr);
+    void setServerUnicast(SPtr<TIPv6Addr> addr);
     void setClientMulticast(bool unicast);
     void setServerMulticast(bool unicast);
 
-    SmartPtr<TIPv6Addr> getServerUnicast();
-    SmartPtr<TIPv6Addr> getClientUnicast();
+    SPtr<TIPv6Addr> getServerUnicast();
+    SPtr<TIPv6Addr> getClientUnicast();
     bool getServerMulticast();
     bool getClientMulticast();
 
@@ -36,8 +36,8 @@ public:
     int getInterfaceID();
 
 private:
-    SmartPtr<TIPv6Addr> ClientUnicast;
-    SmartPtr<TIPv6Addr> ServerUnicast;
+    SPtr<TIPv6Addr> ClientUnicast;
+    SPtr<TIPv6Addr> ServerUnicast;
     bool ClientMulticast;
     bool ServerMulticast;
 
