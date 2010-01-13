@@ -18,15 +18,15 @@
 class TOptDUID : public TOpt
 {
   public:
-    TOptDUID(int type, SmartPtr<TDUID> duid, TMsg* parent);
+    TOptDUID(int type, SPtr<TDUID> duid, TMsg* parent);
     TOptDUID(int type, char* &buf, int &bufsize, TMsg* parent);
     int getSize();
 
     char * storeSelf(char* buf);
-    SmartPtr<TDUID> getDUID();
+    SPtr<TDUID> getDUID();
     bool isValid();
   protected:
-    SmartPtr<TDUID> DUID;
+    SPtr<TDUID> DUID;
 };
 
 #endif

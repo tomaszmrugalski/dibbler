@@ -43,11 +43,11 @@ TOptTA::TOptTA( char * &buf, int &bufsize, TMsg* parent)
 }
 
 int TOptTA::getStatusCode() {
-    SmartPtr<TOpt> ptrOpt;
+    SPtr<TOpt> ptrOpt;
     SubOptions.first();
     while ( ptrOpt = SubOptions.get() ) {
 	if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
-	    SmartPtr <TOptStatusCode> ptrStatus;
+	    SPtr <TOptStatusCode> ptrStatus;
 	    ptrStatus = (Ptr*) ptrOpt;
 	    return ptrStatus->getCode();
 	}
@@ -73,12 +73,12 @@ char * TOptTA::storeSelf( char* buf) {
 
 unsigned long TOptTA::getMaxValid() {
     unsigned long maxValid=0;
-    SmartPtr<TOpt> ptrOpt;
+    SPtr<TOpt> ptrOpt;
     SubOptions.first();
     while (ptrOpt=SubOptions.get())
     {
         if (ptrOpt->getOptType()==OPTION_IAADDR) {
-            SmartPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
+            SPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
             if (maxValid<ptrIAAddr->getValid())
                 maxValid=ptrIAAddr->getValid();
         }
@@ -95,7 +95,7 @@ bool TOptTA::isValid() {
  */
 int TOptTA::countAddrs() {
     int cnt = 0;
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     this->firstOption();
     while (opt = this->getOption() ) {
 	if (opt->getOptType() == OPTION_IAADDR)

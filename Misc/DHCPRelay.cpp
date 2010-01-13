@@ -91,19 +91,19 @@ void TDHCPRelay::run()
 	}
 #endif
 	
-	SmartPtr<TRelMsg> msg = this->Ctx.IfaceMgr->select(timeout);
+	SPtr<TRelMsg> msg = this->Ctx.IfaceMgr->select(timeout);
 	if (!msg) 
 	    continue;
 	silent = false;
 	int iface = msg->getIface();
-	SmartPtr<TIfaceIface> ptrIface;
+	SPtr<TIfaceIface> ptrIface;
 	ptrIface = this->Ctx.IfaceMgr->getIfaceByID(iface);
 	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		    << "/" << iface;
 	if (msg->getType()!=RELAY_FORW_MSG && msg->getType()!=RELAY_REPL_MSG)
 	    Log(Cont) << hex << ",TransID=0x" << msg->getTransID() << dec;
 	Log(Cont) << ", " << msg->countOption() << " opts:";
-	SmartPtr<TOpt> ptrOpt;
+	SPtr<TOpt> ptrOpt;
 	msg->firstOption();
 	while ( ptrOpt = msg->getOption() ) {
 	    Log(Cont) << " " << ptrOpt->getOptType(); 

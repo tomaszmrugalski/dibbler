@@ -34,7 +34,7 @@ TOptAddr::TOptAddr(int type, char * &buf,  int &n, TMsg* parent)
     n-=16;
 }
 
-TOptAddr::TOptAddr(int type, SmartPtr<TIPv6Addr> addr, TMsg* parent) 
+TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent) 
     :TOpt(type, parent) {
     this->Addr = addr;
 }
@@ -43,7 +43,7 @@ int TOptAddr::getSize() {
     return 20;
 }
 
-SmartPtr<TIPv6Addr> TOptAddr::getAddr() {
+SPtr<TIPv6Addr> TOptAddr::getAddr() {
     return Addr;
 }
 

@@ -30,11 +30,11 @@ class TOptIAAddress : public TOpt
 {
   public:
     TOptIAAddress( char * &addr, int &n, TMsg* parent);
-    TOptIAAddress( SmartPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg* parent);
+    TOptIAAddress( SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg* parent);
     int getSize();
     
     char * storeSelf( char* buf);
-    SmartPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr();
     unsigned long getPref();
     unsigned long getValid();
     void setPref(unsigned long pref);
@@ -42,7 +42,7 @@ class TOptIAAddress : public TOpt
     bool isValid();    
 
  private:
-    SmartPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Addr;
     unsigned long Valid;
     unsigned long Pref;
     bool ValidOpt;

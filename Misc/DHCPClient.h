@@ -38,18 +38,18 @@ class TDHCPClient
 #ifdef MOD_CLNT_CONFIRM
     void requestLinkstateChange();
 #endif
-    SmartPtr<TClntAddrMgr>  getAddrMgr();
-    SmartPtr<TClntCfgMgr> getCfgMgr();
+    SPtr<TClntAddrMgr>  getAddrMgr();
+    SPtr<TClntCfgMgr> getCfgMgr();
     char* getCtrlIface();
     ~TDHCPClient();
 
   private:
     void initLinkStateChange();
 
-    SmartPtr<TClntIfaceMgr> IfaceMgr;
-    SmartPtr<TClntAddrMgr>  AddrMgr;
-    SmartPtr<TClntCfgMgr>   CfgMgr;
-    SmartPtr<TClntTransMgr> TransMgr;
+    SPtr<TClntIfaceMgr> IfaceMgr;
+    SPtr<TClntAddrMgr>  AddrMgr;
+    SPtr<TClntCfgMgr>   CfgMgr;
+    SPtr<TClntTransMgr> TransMgr;
     bool IsDone;
     volatile link_state_notify_t linkstates;
 };

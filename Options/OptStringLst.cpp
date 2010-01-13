@@ -80,7 +80,7 @@ TOptStringLst::TOptStringLst(int type, char *&buf, int &bufsize, TMsg* parent)
         if (len==0) {
             // end of domain
             if (domain.length()) {
-        	    SmartPtr<string> x = new string(domain);
+        	    SPtr<string> x = new string(domain);
                 this->StringLst.append(x);
             }
             bufsize -= len+1;
@@ -103,7 +103,7 @@ TOptStringLst::TOptStringLst(int type, char *&buf, int &bufsize, TMsg* parent)
 
 char * TOptStringLst::storeSelf(char* buf)
 {
-    SmartPtr<string> x;
+    SPtr<string> x;
     *(short*)buf = htons(OptType);
     buf+=2;
     *(short*)buf = htons(getSize()-4);
@@ -143,7 +143,7 @@ char * TOptStringLst::storeSelf(char* buf)
 int TOptStringLst::getSize() {
     int len = 0;
     int tmplen = 0;
-    SmartPtr<string> x;
+    SPtr<string> x;
     StringLst.first();
     while ( x = StringLst.get() ) {
 	const char * c = x->c_str();

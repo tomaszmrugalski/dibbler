@@ -99,7 +99,7 @@ void TDHCPClient::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
-    SmartPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
+    SPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
     Log(Warning) << "Sending SHUTDOWN packet on the " << iface->getName()
         << "/" << iface->getID() << " (addr=" << TransMgr->getCtrlAddr() << ")." << LogEnd;
     int fd = sock_add("", TransMgr->getCtrlIface(),"::",0,true, false); 
@@ -127,14 +127,14 @@ void TDHCPClient::requestLinkstateChange(){
 #endif
 
 char* TDHCPClient::getCtrlIface(){
-    SmartPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
+    SPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
     return iface->getName();
 ;
 }
 
 void TDHCPClient::run()
 {
-    SmartPtr<TMsg> msg;
+    SPtr<TMsg> msg;
     while ( (!this->isDone()) && !TransMgr->isDone() )
     {
 	if (serviceShutdown)
@@ -155,16 +155,16 @@ void TDHCPClient::run()
 	    timeout = 1;
 	
         Log(Debug) << "Sleeping for " << timeout << " second(s)." << LogEnd;
-        SmartPtr<TClntMsg> msg=IfaceMgr->select(timeout);
+        SPtr<TClntMsg> msg=IfaceMgr->select(timeout);
 	
         if (msg) {
 	    int iface = msg->getIface();
-	    SmartPtr<TIfaceIface> ptrIface;
+	    SPtr<TIfaceIface> ptrIface;
 	    ptrIface = IfaceMgr->getIfaceByID(iface);
             Log(Info) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		      << "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
 		      << dec << ", " << msg->countOption() << " opts:";
-            SmartPtr<TOpt> ptrOpt;
+            SPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
                 Log(Cont) << " " << ptrOpt->getOptType(); 
@@ -192,11 +192,11 @@ void TDHCPClient::setWorkdir(std::string workdir) {
     }
 }
 
-SmartPtr<TClntAddrMgr> TDHCPClient::getAddrMgr() {
+SPtr<TClntAddrMgr> TDHCPClient::getAddrMgr() {
     return this->AddrMgr;
 }
 
-SmartPtr<TClntCfgMgr> TDHCPClient::getCfgMgr() {
+SPtr<TClntCfgMgr> TDHCPClient::getCfgMgr() {
     return this->CfgMgr;
 }
 

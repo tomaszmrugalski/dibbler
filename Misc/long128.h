@@ -21,7 +21,7 @@ class ulong128
 {
  public:
     ulong128();
-    ulong128(SmartPtr<TIPv6Addr> addr);
+    ulong128(SPtr<TIPv6Addr> addr);
     ulong128 operator+(ulong128& other);
     
  private:

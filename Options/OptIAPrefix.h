@@ -20,11 +20,11 @@ class TOptIAPrefix : public TOpt
 {
   public:
     TOptIAPrefix( char * &addr, int &n, TMsg* parent);
-    TOptIAPrefix( SmartPtr<TIPv6Addr> addr, char prefix_length,unsigned long pref, unsigned long valid, TMsg* parent);
+    TOptIAPrefix( SPtr<TIPv6Addr> addr, char prefix_length,unsigned long pref, unsigned long valid, TMsg* parent);
     int getSize();
     
     char * storeSelf( char* buf);
-    SmartPtr<TIPv6Addr> getPrefix();
+    SPtr<TIPv6Addr> getPrefix();
     char getPrefixLength();
     unsigned long getPref();
     unsigned long getValid();
@@ -34,7 +34,7 @@ class TOptIAPrefix : public TOpt
     bool isValid();    
 
  private:
-    SmartPtr<TIPv6Addr> Prefix; // 
+    SPtr<TIPv6Addr> Prefix; // 
     unsigned long Valid;
     unsigned long Pref;
     char PrefixLength; // this I am not sure (because prefix should be only 1 byte )

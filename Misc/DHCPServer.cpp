@@ -82,17 +82,17 @@ void TDHCPServer::run()
 	}
 #endif
 	
-	SmartPtr<TSrvMsg> msg=IfaceMgr->select(timeout);
+	SPtr<TSrvMsg> msg=IfaceMgr->select(timeout);
 	if (!msg) 
 	    continue;
 	silent = false;
 	int iface = msg->getIface();
-	SmartPtr<TIfaceIface> ptrIface;
+	SPtr<TIfaceIface> ptrIface;
 	ptrIface = IfaceMgr->getIfaceByID(iface);
 	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		    << "/" << iface << hex << ",TransID=0x" << msg->getTransID() 
 		    << dec << ", " << msg->countOption() << " opts:";
-	SmartPtr<TOpt> ptrOpt;
+	SPtr<TOpt> ptrOpt;
 	msg->firstOption();
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();

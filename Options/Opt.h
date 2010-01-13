@@ -56,25 +56,25 @@ class TOpt
     int getSubOptSize();
     
     char* storeSubOpt(char* buf);
-    SmartPtr<TOpt> getOption(int optType);
+    SPtr<TOpt> getOption(int optType);
 
     // suboptions management
     void firstOption();
-    SmartPtr<TOpt> getOption();
-    void addOption(SmartPtr<TOpt> opt);
+    SPtr<TOpt> getOption();
+    void addOption(SPtr<TOpt> opt);
     void delOption();
     int countOption();
     void delAllOptions();
     void setParent(TMsg* Parent);
 
-    SmartPtr<TDUID> getDUID();
-    void setDUID(SmartPtr<TDUID> duid);
+    SPtr<TDUID> getDUID();
+    void setDUID(SPtr<TDUID> duid);
 
  protected:
-    TContainer< SmartPtr<TOpt> > SubOptions;
+    TContainer< SPtr<TOpt> > SubOptions;
     int OptType;
     TMsg* Parent;
-    SmartPtr<TDUID> DUID;
+    SPtr<TDUID> DUID;
 };
 
 #endif

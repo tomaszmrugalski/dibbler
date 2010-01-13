@@ -33,7 +33,7 @@
 #include "DHCPConst.h"
 #include "OptDUID.h"
 
-TOptDUID::TOptDUID(int type, SmartPtr<TDUID> duid, TMsg* parent)
+TOptDUID::TOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
     :TOpt(type, parent)
 {
     this->DUID=duid;
@@ -63,7 +63,7 @@ TOptDUID::TOptDUID(int type, char* &buf, int &bufsize, TMsg* parent)
     bufsize-=DUID->getLen();
 }
 
-SmartPtr<TDUID> TOptDUID::getDUID()
+SPtr<TDUID> TOptDUID::getDUID()
 {
 	return DUID;
 }

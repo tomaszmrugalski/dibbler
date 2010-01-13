@@ -27,12 +27,12 @@ class TOptAddr : public TOpt
 {
  public:
     TOptAddr(int type, char * &buf,  int &n, TMsg* parent);
-    TOptAddr(int type, SmartPtr<TIPv6Addr> addr, TMsg * parent);
+    TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent);
     int getSize();
     char * storeSelf( char* buf);
-    SmartPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr();
  protected:
-    SmartPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Addr;
 };
 
 #endif

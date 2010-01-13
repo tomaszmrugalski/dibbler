@@ -23,7 +23,7 @@
 #include "Logger.h"
 #include "hmac.h"
 
-TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
+TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 {
     setAttribs(iface, addr, 0, 0);
     if (bufSize<4)
@@ -35,19 +35,19 @@ TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
     this->pkt = 0;
 }
 
-TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType)
+TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
     this->pkt = 0;
 }
 
-TMsg::TMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType,  long transID)
+TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
 {
     setAttribs(iface,addr,msgType,transID);
 }
 
-void TMsg::setAttribs(int iface, SmartPtr<TIPv6Addr> addr, int msgType, long transID)
+void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
 {
     PeerAddr=addr;
 
@@ -68,7 +68,7 @@ void TMsg::setAttribs(int iface, SmartPtr<TIPv6Addr> addr, int msgType, long tra
 
 int TMsg::getSize()
 {
-    SmartPtr<TOpt> Option;
+    SPtr<TOpt> Option;
     int pktsize=0;
     Options.first();
     while( Option = Options.get() )
@@ -91,7 +91,7 @@ long TMsg::getTransID()
     return TransID;
 }
 
-TContainer< SmartPtr<TOpt> > TMsg::getOptLst()
+TContainer< SPtr<TOpt> > TMsg::getOptLst()
 {
     return Options;
 }
@@ -113,7 +113,7 @@ int TMsg::storeSelf(char * buffer)
     buffer[0] = tmp%256;  tmp = tmp/256;
     buffer+=3;
     Options.first();
-    SmartPtr<TOpt> Option;
+    SPtr<TOpt> Option;
     while( Option = Options.get() )
     {
         Option->storeSelf(buffer);
@@ -161,15 +161,15 @@ int TMsg::storeSelf(char * buffer)
     return buffer-start;
 }
 
-SmartPtr<TOpt> TMsg::getOption(int type) {
-    SmartPtr<TOpt> Option;
+SPtr<TOpt> TMsg::getOption(int type) {
+    SPtr<TOpt> Option;
     
     Options.first();
     while ( Option = Options.get() ) {
 	if (Option->getOptType()==type) 
 	    return Option;
     }
-    return SmartPtr<TOpt>();
+    return SPtr<TOpt>();
 }
 
 void TMsg::firstOption() {
@@ -180,14 +180,14 @@ int TMsg::countOption() {
     return Options.count();
 }
 
-SmartPtr<TOpt> TMsg::getOption() {
+SPtr<TOpt> TMsg::getOption() {
     return Options.get();
 }
 
 TMsg::~TMsg() {
 }
 
-SmartPtr<TIPv6Addr> TMsg::getAddr() {
+SPtr<TIPv6Addr> TMsg::getAddr() {
     return PeerAddr;
 }
 
@@ -317,7 +317,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize) {
 
 bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
     bool is_ok = false;
-    SmartPtr<DigestTypes> dt;
+    SPtr<DigestTypes> dt;
     bool dt_in_list = false;
     
     //empty list means that any digest type is accepted
@@ -408,7 +408,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
  */
 bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
 {
-    SmartPtr<TOpt> option;
+    SPtr<TOpt> option;
     int clntCnt=0;
     int srvCnt =0;
     int authCnt = 0;

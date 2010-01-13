@@ -30,7 +30,7 @@ public:
     char * storeSelf( char* buf);
     int getSize();
     void firstAddr();
-    SmartPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr();
     int countAddr();
     bool isValid();
 protected:

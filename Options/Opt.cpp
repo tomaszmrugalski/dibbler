@@ -28,13 +28,13 @@ TOpt::TOpt( int optType, TMsg *parent){
 int TOpt::getSubOptSize() {
     int size = 0;    
     SubOptions.first();    
-    SmartPtr<TOpt> ptr;    
+    SPtr<TOpt> ptr;    
     while (ptr = SubOptions.get()) 		
 	size += ptr->getSize();    
     return size;
 }
 char* TOpt::storeSubOpt( char* buf){
-    SmartPtr<TOpt> ptr;	
+    SPtr<TOpt> ptr;	
     SubOptions.first();    
     while ( ptr = SubOptions.get() ) {
 	ptr->storeSelf(buf);
@@ -47,13 +47,13 @@ void TOpt::firstOption() {
     SubOptions.first();
 }
 
-SmartPtr<TOpt> TOpt::getOption() {
+SPtr<TOpt> TOpt::getOption() {
     return SubOptions.get();
 }
 
-SmartPtr<TOpt> TOpt::getOption(int optType) {
+SPtr<TOpt> TOpt::getOption(int optType) {
     firstOption();
-    SmartPtr<TOpt> opt = 0;
+    SPtr<TOpt> opt = 0;
     while(opt=getOption()) {
 	if (opt->getOptType()==optType)
 	    return opt;
@@ -61,7 +61,7 @@ SmartPtr<TOpt> TOpt::getOption(int optType) {
     return 0;
 }
 
-void TOpt::addOption(SmartPtr<TOpt> opt)
+void TOpt::addOption(SPtr<TOpt> opt)
 {
     SubOptions.append(opt);
 }
@@ -87,10 +87,10 @@ bool TOpt::isValid()
     return true;
 }
 
-SmartPtr<TDUID> TOpt::getDUID() {
+SPtr<TDUID> TOpt::getDUID() {
     return this->DUID;
 }
-void TOpt::setDUID(SmartPtr<TDUID> duid) {
+void TOpt::setDUID(SPtr<TDUID> duid) {
     this->DUID = duid;
 }
 

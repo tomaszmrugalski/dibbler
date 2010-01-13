@@ -26,11 +26,11 @@ class TMsg
 {
   public:
     // Used to create TMsg object (normal way)
-    TMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType);
-    TMsg(int iface, SmartPtr<TIPv6Addr> addr, int msgType, long transID);
+    TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType);
+    TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
 
     // used to create TMsg object based on received char[] data
-    TMsg(int iface, SmartPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
+    TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
     
     virtual int getSize();
     
@@ -43,16 +43,16 @@ class TMsg
     virtual string getName() = 0;
 
     // returns requested option (or NULL, there is no such option)
-    SmartPtr<TOpt> getOption(int type);
+    SPtr<TOpt> getOption(int type);
     void firstOption();
     int countOption();
 
-    virtual SmartPtr<TOpt> getOption();
+    virtual SPtr<TOpt> getOption();
     
     long getType();
     long getTransID();
-    TContainer< SmartPtr<TOpt> > getOptLst();
-    SmartPtr<TIPv6Addr> getAddr();
+    TContainer< SPtr<TOpt> > getOptLst();
+    SPtr<TIPv6Addr> getAddr();
     int getIface();
     virtual ~TMsg();
     bool isDone();
@@ -74,7 +74,7 @@ class TMsg
     char* getKeyGenNonce();
     unsigned getKeyGenNonceLen();
     enum DigestTypes DigestType;
-    SmartPtr<KeyList> AuthKeys;
+    SPtr<KeyList> AuthKeys;
 
   protected:
     int MsgType;
@@ -83,14 +83,14 @@ class TMsg
 
     List(TOpt) Options;
     
-    void setAttribs(int iface, SmartPtr<TIPv6Addr> addr, 
+    void setAttribs(int iface, SPtr<TIPv6Addr> addr, 
 		    int msgType, long transID);
     virtual bool check(bool clntIDmandatory, bool srvIDmandatory);
     
     bool IsDone; // Is this transaction done?
     char * pkt;  // buffer where this packet will be build
     int Iface;   // interface from/to which message was received/should be sent
-    SmartPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
+    SPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
 
     // auth stuff below
     char * AuthInfoPtr; // pointer to Authentication Information field of OPTION AUTH and OPTION AAAAUTH

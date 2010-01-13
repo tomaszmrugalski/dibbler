@@ -48,7 +48,7 @@ TOptAddrLst::TOptAddrLst(int type, char* &buf,int &bufSize, TMsg* parent)
 }
 
 char * TOptAddrLst::storeSelf(char* buf) {
-    SmartPtr<TIPv6Addr> addr;
+    SPtr<TIPv6Addr> addr;
 
     *(short*)buf = htons(OptType);
     buf+=2;
@@ -69,7 +69,7 @@ void TOptAddrLst::firstAddr() {
     this->AddrLst.first();
 }
 
-SmartPtr<TIPv6Addr> TOptAddrLst::getAddr()
+SPtr<TIPv6Addr> TOptAddrLst::getAddr()
 {
     return this->AddrLst.get();
 }

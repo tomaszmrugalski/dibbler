@@ -15,7 +15,7 @@
 
 using namespace std;
 
-#define List(x) TContainer< SmartPtr< x > >
+#define List(x) TContainer< SPtr< x > >
 
 template <class TYP>
 class TContainer{

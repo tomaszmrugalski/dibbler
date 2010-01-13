@@ -31,7 +31,7 @@ TOptIAPrefix::TOptIAPrefix( char * &buf, int &n, TMsg* parent)
 }
 }
 
-TOptIAPrefix::TOptIAPrefix(SmartPtr<TIPv6Addr> prefix, char prefixLength, unsigned long pref, unsigned long valid,
+TOptIAPrefix::TOptIAPrefix(SPtr<TIPv6Addr> prefix, char prefixLength, unsigned long pref, unsigned long valid,
 				 TMsg* parent)
     :TOpt(OPTION_IAPREFIX, parent) {
     /*if(prefix)
@@ -79,7 +79,7 @@ char * TOptIAPrefix::storeSelf( char* buf)
     return buf;
 }
 
- SmartPtr<TIPv6Addr> TOptIAPrefix::getPrefix()
+ SPtr<TIPv6Addr> TOptIAPrefix::getPrefix()
 {
 	return this->Prefix;
 }

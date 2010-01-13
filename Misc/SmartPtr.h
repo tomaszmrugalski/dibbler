@@ -4,69 +4,48 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: SmartPtr.h,v 1.7 2007-01-02 01:39:01 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2006-12-25 20:47:01  thomson
- * Some memory leaks fixes, valgrind info added.
- *
- * Revision 1.5  2006-07-03 18:01:51  thomson
- * SPtr define added.
- *
- * Revision 1.4  2004/06/04 19:47:06  thomson
- * Various fixes.
- *
- * Revision 1.3  2004/06/04 16:55:27  thomson
- * *** empty log message ***
- *
- * Revision 1.2  2004/03/29 22:06:49  thomson
- * 0.1.1 version
- *
- *
  * Released under GNU GPL v2 licence
  *
  */
 
-#ifndef SMARTPTR_H
-#define SMARTPTR_H
+#ifndef SPtr_H
+#define SPtr_H
 
 #include <iostream>
 
-#define SPtr SmartPtr
+//Don't use this class alone, it's used only in casting 
+//one smartpointer to another smartpointer 
+//e.g.
+//SPtr<a> a(new a()); SPtr<b> b(new(b)); a=b;
 
 class Ptr {
 public:
-    //constructor used in case of NULL SmartPtr
+    //constructor used in case of NULL SPtr
     Ptr() {
-	ptr=NULL;
-	refcount=1;
+	      ptr=NULL;
+	      refcount=1;
     }
-    //Constructor used in case of non NULL SmartPtr
-    Ptr(void* sth) {
-	ptr=sth;
-	refcount=1;
+    //Constructor used in case of non NULL SPtr
+    Ptr(void* object) {
+	      ptr=object;
+	      refcount=1;
     }
     
     ~Ptr() {
-	//if(ptr) delete ptr;
+      	//if(ptr) delete ptr;
     }
     int refcount; //refrence counter
     void * ptr;	  //pointer to the real object
 };
 
 template <class T>
-class SmartPtr
+class SPtr
 {
 
-	//Don't use this class alone, it's used only in casting 
-	//one smartpointer to another smartpointer 
-	//e.g.
-	//SmartPtr<a> a(new a()); SmartPtr<b> b(new(b)); a=b;
-
 public:
-    SmartPtr();
-    SmartPtr(T* something);
-	SmartPtr(Ptr *voidptr) { 
+    SPtr();
+    SPtr(T* something);
+	SPtr(Ptr *voidptr) { 
         if(voidptr) 
         {
             this->ptr=voidptr; 
@@ -75,9 +54,9 @@ public:
         else
             this->ptr=new Ptr();
     }
-    SmartPtr(const SmartPtr & ref);
-	SmartPtr(int onlyNull);
-	SmartPtr& operator=(const SmartPtr& old);
+    SPtr(const SPtr & ref);
+	SPtr(int onlyNull);
+	SPtr& operator=(const SPtr& old);
 
 	operator Ptr*() {
 	    if (this->ptr->ptr) 
@@ -87,7 +66,7 @@ public:
 	}
 
     int refCount();
-    ~SmartPtr();
+    ~SPtr();
     T& operator*() const;
     T* operator->() const;
 
@@ -95,30 +74,30 @@ public:
     Ptr * ptr;
 };
 
-template <class T> SmartPtr<T>::SmartPtr() {
+template <class T> SPtr<T>::SPtr() {
     ptr = new Ptr();
 }
 
-template <class T> int SmartPtr<T>::refCount() {
+template <class T> int SPtr<T>::refCount() {
     if (this->ptr)
 	return this->ptr->refcount;
     return 0;
 }
 
 template <class T>
-SmartPtr<T>::SmartPtr(T* something) {
+SPtr<T>::SPtr(T* something) {
     ptr = new Ptr(something);
 }
 
 template <class T>
-SmartPtr<T>::SmartPtr(const SmartPtr& old) {
+SPtr<T>::SPtr(const SPtr& old) {
 	old.ptr->refcount++;
 	this->ptr = old.ptr;
     this->ptr->refcount=old.ptr->refcount;
 }
 
 template <class T>
-SmartPtr<T>::~SmartPtr() {
+SPtr<T>::~SPtr() {
     if (!(--(ptr->refcount))) {
 	delete (T*)(ptr->ptr);
 	delete ptr;
@@ -126,12 +105,12 @@ SmartPtr<T>::~SmartPtr() {
 }
 
 template <class T>
-T& SmartPtr<T>::operator*() const {
+T& SPtr<T>::operator*() const {
     return *((T*)(ptr->ptr)); //it can return NULL
 }
 
 template <class T>
-T* SmartPtr<T>::operator->() const {
+T* SPtr<T>::operator->() const {
     if (!ptr) {
 	return 0;
     }
@@ -139,15 +118,15 @@ T* SmartPtr<T>::operator->() const {
 }
 
 //It's is called in eg. instrusction: return NULL;
-//and SmartPtr is returned in function
+//and SPtr is returned in function
 template <class T>
-SmartPtr<T>::SmartPtr(int )
+SPtr<T>::SPtr(int )
 {
 	ptr=new Ptr(); //this->ptr->ptr is NULL
 }
 
 template <class T>
-SmartPtr<T>& SmartPtr<T>::operator=(const SmartPtr& old) {
+SPtr<T>& SPtr<T>::operator=(const SPtr& old) {
 	if (this==&old)
 		return *this;
 	if (this->ptr) 

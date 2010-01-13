@@ -14,8 +14,8 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-/* #define DIBBLER_VERSION "0.7.3-CVS (" __DATE__ " " __TIME__ ")" */
-#define DIBBLER_VERSION "0.7.3"
+#define DIBBLER_VERSION "0.7.3-SVN (" __DATE__ " " __TIME__ ")"
+/* #define DIBBLER_VERSION "0.7.3" */
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"

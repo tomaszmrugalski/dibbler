@@ -14,7 +14,7 @@ ulong128::ulong128()
     memset(bytes,0,16);
 }
 
-ulong128::ulong128(SmartPtr<TIPv6Addr> addr)
+ulong128::ulong128(SPtr<TIPv6Addr> addr)
 {
     memcpy(this->bytes,addr->getAddr(),16);
 }

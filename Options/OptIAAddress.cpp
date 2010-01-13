@@ -32,7 +32,7 @@ TOptIAAddress::TOptIAAddress( char * &buf, int &n, TMsg* parent)
     }
 }
 
-TOptIAAddress::TOptIAAddress(SmartPtr<TIPv6Addr> addr, unsigned long pref, 
+TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
 			     unsigned long valid, TMsg* parent)
     :TOpt(OPTION_IAADDR, parent) {
     if(addr)
@@ -72,7 +72,7 @@ void TOptIAAddress::setValid(unsigned long valid) {
     return buf;
 }
 
- SmartPtr<TIPv6Addr> TOptIAAddress::getAddr()
+ SPtr<TIPv6Addr> TOptIAAddress::getAddr()
 {
 	return this->Addr;
 }

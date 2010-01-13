@@ -56,11 +56,11 @@ TOptIA_PD::TOptIA_PD( char * &buf, int &bufsize, TMsg* parent)
 
 
 int TOptIA_PD::getStatusCode() {
-    SmartPtr<TOpt> ptrOpt;
+    SPtr<TOpt> ptrOpt;
     SubOptions.first();
     while ( ptrOpt = SubOptions.get() ) {
 	if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
-	    SmartPtr <TOptStatusCode> ptrStatus;
+	    SPtr <TOptStatusCode> ptrStatus;
 	    ptrStatus = (Ptr*) ptrOpt;
 	    return ptrStatus->getCode();
 	}
@@ -90,12 +90,12 @@ char * TOptIA_PD::storeSelf( char* buf) {
 
 unsigned long TOptIA_PD::getMaxValid() {
     unsigned long maxValid=0;
-    SmartPtr<TOpt> ptrOpt;
+    SPtr<TOpt> ptrOpt;
     SubOptions.first();
     while (ptrOpt=SubOptions.get())
     {
         if (ptrOpt->getOptType()==OPTION_IAPREFIX) {
-            //SmartPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
+            //SPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
             //if (maxValid<ptrIAAddr->getValid())
             //    maxValid=ptrIAAddr->getValid();
         }
@@ -112,7 +112,7 @@ bool TOptIA_PD::isValid() {
  */
 int TOptIA_PD::countPrefixes() {
     int cnt = 0;
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     this->firstOption();
     while (opt = this->getOption() ) {
 	if (opt->getOptType() == OPTION_IAPREFIX)

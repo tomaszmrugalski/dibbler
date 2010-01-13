@@ -14,7 +14,7 @@
 #include "FQDN.h"
 #include "Portable.h"
 
-/// @todo: TFQDN should be implemented using SmartPtr()
+/// @todo: TFQDN should be implemented using SPtr()
 
 
 TFQDN::TFQDN() {
