@@ -17,12 +17,12 @@
 #include "AddrIA.h"
 #include "ClntOptIA_NA.h"
 
-TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
-				 SmartPtr<TClntTransMgr> TransMgr,
-				 SmartPtr<TClntCfgMgr> CfgMgr,
-				 SmartPtr<TClntAddrMgr> AddrMgr,
-				 int iface, SmartPtr<TIPv6Addr> addr,
-				 TContainer< SmartPtr< TAddrIA> > IALst)
+TClntMsgDecline::TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
+				 SPtr<TClntTransMgr> TransMgr,
+				 SPtr<TClntCfgMgr> CfgMgr,
+				 SPtr<TClntAddrMgr> AddrMgr,
+				 int iface, SPtr<TIPv6Addr> addr,
+				 TContainer< SPtr< TAddrIA> > IALst)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,DECLINE_MSG)
 {
     IRT=DEC_TIMEOUT;
@@ -34,7 +34,7 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
     RT=0;
 
     // include our ClientIdentifier
-    SmartPtr<TOpt> ptr;
+    SPtr<TOpt> ptr;
     ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
     Options.append( ptr );
     
@@ -43,7 +43,7 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Options.append( ptr );
     
     // create IAs
-    SmartPtr<TAddrIA> ptrIA;
+    SPtr<TAddrIA> ptrIA;
     IALst.first();
     while ( ptrIA = IALst.get() ) {
 	Options.append( new TClntOptIA_NA(ptrIA,this));
@@ -58,22 +58,22 @@ TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
     // this->send();
 }
 
-TClntMsgDecline::TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
-				 SmartPtr<TClntTransMgr> TransMgr,
-				 SmartPtr<TClntCfgMgr> CfgMgr,
-				 SmartPtr<TClntAddrMgr> AddrMgr,
-				 int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize)
+TClntMsgDecline::TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
+				 SPtr<TClntTransMgr> TransMgr,
+				 SPtr<TClntCfgMgr> CfgMgr,
+				 SPtr<TClntAddrMgr> AddrMgr,
+				 int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,bufSize)
 {
 	pkt=NULL;
 }
 
-void TClntMsgDecline::answer(SmartPtr<TClntMsg> rep)
+void TClntMsgDecline::answer(SPtr<TClntMsg> rep)
 {
     /// @todo: Is UseMulticast option included?
 
-    SmartPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
-    SmartPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
+    SPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
+    SPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
     if ((!repSrvID)||
         (!(*msgSrvID->getDUID()==*repSrvID->getDUID())))
        return;

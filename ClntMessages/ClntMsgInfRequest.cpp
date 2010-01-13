@@ -30,12 +30,12 @@
 #include "ClntOptTimeZone.h"
 #include <cmath>
 
-TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-				       SmartPtr<TClntTransMgr> TransMgr,
-				       SmartPtr<TClntCfgMgr>   CfgMgr, 
-				       SmartPtr<TClntAddrMgr>  AddrMgr, 
-				       SmartPtr<TClntCfgIface> iface)
-    :TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface->getID(), SmartPtr<TIPv6Addr>() /*NULL*/, 
+TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
+				       SPtr<TClntTransMgr> TransMgr,
+				       SPtr<TClntCfgMgr>   CfgMgr, 
+				       SPtr<TClntAddrMgr>  AddrMgr, 
+				       SPtr<TClntCfgIface> iface)
+    :TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface->getID(), SPtr<TIPv6Addr>() /*NULL*/, 
 	      INFORMATION_REQUEST_MSG) {
 
     IRT = INF_TIMEOUT;
@@ -62,13 +62,13 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 }
 
 //opts - all options list WITHOUT serverDUID including server id
-TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-				       SmartPtr<TClntTransMgr> TransMgr,
-				       SmartPtr<TClntCfgMgr>   CfgMgr, 
-				       SmartPtr<TClntAddrMgr> AddrMgr, 
-				       TContainer< SmartPtr<TOpt> > ReqOpts,
+TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
+				       SPtr<TClntTransMgr> TransMgr,
+				       SPtr<TClntCfgMgr>   CfgMgr, 
+				       SPtr<TClntAddrMgr> AddrMgr, 
+				       TContainer< SPtr<TOpt> > ReqOpts,
 				       int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,SmartPtr<TIPv6Addr>() /*NULL*/,
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,SPtr<TIPv6Addr>() /*NULL*/,
 	      INFORMATION_REQUEST_MSG) {
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
@@ -79,7 +79,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface;
     IsDone=false;
     
-    SmartPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(iface);
+    SPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Unable to find interface with ifindex=" << iface 
 		   << " while trying to generate INF-REQUEST." << LogEnd;
@@ -92,7 +92,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     // copy whole list from Verify ...
     Options = ReqOpts;
     
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     Options.first();
     while(opt=Options.get())
     {
@@ -132,16 +132,16 @@ TClntMsgInfRequest::TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 }
 
 
-void TClntMsgInfRequest::answer(SmartPtr<TClntMsg> msg)
+void TClntMsgInfRequest::answer(SPtr<TClntMsg> msg)
 {
     //server DUID from which there is answer
-    SmartPtr<TClntOptServerIdentifier> ptrDUID;
+    SPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
     //which option have we requested from server
-    SmartPtr<TClntOptOptionRequest> ptrORO;
+    SPtr<TClntOptOptionRequest> ptrORO;
     ptrORO = (Ptr*)getOption(OPTION_ORO);
     
-    SmartPtr<TOpt> option;
+    SPtr<TOpt> option;
     msg->firstOption();
     while(option = msg->getOption())
     {
@@ -152,7 +152,7 @@ void TClntMsgInfRequest::answer(SmartPtr<TClntMsg> msg)
 	}
 	if ( ptrORO && (ptrORO->isOption(option->getOptType())) )
 	    ptrORO->delOption(option->getOptType());
-	SmartPtr<TOpt> requestOpt;
+	SPtr<TOpt> requestOpt;
 	this->firstOption();
 	while ( requestOpt = this->getOption()) 
 	{

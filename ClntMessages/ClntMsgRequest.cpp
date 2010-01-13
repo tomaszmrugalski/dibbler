@@ -32,14 +32,14 @@
 /*
  * opts - options list WITHOUT serverDUID
  */
-TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-				 SmartPtr<TClntTransMgr> TransMgr,
-				 SmartPtr<TClntCfgMgr>   CfgMgr, 
-				 SmartPtr<TClntAddrMgr> AddrMgr, 
+TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
+				 SPtr<TClntTransMgr> TransMgr,
+				 SPtr<TClntCfgMgr>   CfgMgr, 
+				 SPtr<TClntAddrMgr> AddrMgr, 
 				 List(TOpt) opts, 
 				 
 				 int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, SmartPtr<TIPv6Addr>() /*NULL*/, REQUEST_MSG) {
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, SPtr<TIPv6Addr>() /*NULL*/, REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
     MRC = REQ_MAX_RC;
@@ -67,7 +67,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     TransMgr->firstAdvertise();
     SPtr<TClntMsgAdvertise> advertise = (Ptr*) TransMgr->getAdvertise();
-    this->copyAAASPI((SmartPtr<TClntMsg>)advertise);
+    this->copyAAASPI((SPtr<TClntMsg>)advertise);
 
     // remove just used server
     TransMgr->delFirstAdvertise();
@@ -76,7 +76,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     Options = opts;
     // set proper Parent in copied options
     Options.first();
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     while (opt = Options.get()) {
         // delete OPTION_AAAAUTH (needed only in SOLICIT) and we will append a new elapsed time option later
         if (opt->getOptType() == OPTION_AAAAUTH || opt->getOptType() == OPTION_ELAPSED_TIME)
@@ -87,7 +87,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     // delete OPTION_KEYGEN from OPTION_ORO (needed only once)
     /// @todo: shouldn't it be done when receiving OPTION_KEYGEN in ADVERTISE?
-    SmartPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
+    SPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
     if (optORO) {
         if (advertise->getOption(OPTION_KEYGEN))
             optORO->delOption(OPTION_KEYGEN);
@@ -101,13 +101,13 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     copyAddrsFromAdvertise((Ptr*) advertise);
 
     // does this server support unicast?
-    SmartPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(iface);
+    SPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(iface);
     if (!cfgIface) {
 	Log(Error) << "Unable to find interface with ifindex " << iface << "." << LogEnd;    
 	IsDone = true;
 	return;
     }
-    SmartPtr<TClntOptServerUnicast> unicast = (Ptr*) advertise->getOption(OPTION_UNICAST);
+    SPtr<TClntOptServerUnicast> unicast = (Ptr*) advertise->getOption(OPTION_UNICAST);
     if (unicast && !cfgIface->getUnicast()) {
 	Log(Info) << "Server offers unicast (" << *unicast->getAddr() 
 		  << ") communication, but this client is not configured to so." << LogEnd;
@@ -116,13 +116,13 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	Log(Debug) << "Server supports unicast on address " << *unicast->getAddr() << "." << LogEnd;
 	//this->PeerAddr = unicast->getAddr();
 	Options.first();
-	SmartPtr<TOpt> opt;
+	SPtr<TOpt> opt;
 	// set this unicast address in each IA in AddrMgr
 	while (opt = Options.get()) {
 	    if (opt->getOptType()!=OPTION_IA_NA)
 		continue;
-	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
-	    SmartPtr<TAddrIA> ptrAddrIA = AddrMgr->getIA(ptrOptIA->getIAID());
+	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
+	    SPtr<TAddrIA> ptrAddrIA = AddrMgr->getIA(ptrOptIA->getIAID());
 	  
 	    if (!ptrAddrIA) {
 		Log(Crit) << "IA with IAID=" << ptrOptIA->getIAID() << " not found." << LogEnd;
@@ -143,14 +143,14 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->send();
 }
 
-TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-				 SmartPtr<TClntTransMgr> TransMgr,
-				 SmartPtr<TClntCfgMgr>   CfgMgr, 
-				 SmartPtr<TClntAddrMgr> AddrMgr, 
-				 TContainer<SmartPtr<TAddrIA> > IAs,
-				 SmartPtr<TDUID> srvDUID,
+TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
+				 SPtr<TClntTransMgr> TransMgr,
+				 SPtr<TClntCfgMgr>   CfgMgr, 
+				 SPtr<TClntAddrMgr> AddrMgr, 
+				 TContainer<SPtr<TAddrIA> > IAs,
+				 SPtr<TDUID> srvDUID,
 				 int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,SmartPtr<TIPv6Addr>()/*NULL*/,REQUEST_MSG) {
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,SPtr<TIPv6Addr>()/*NULL*/,REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
     MRC = REQ_MAX_RC;
@@ -159,7 +159,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     Iface=iface;
     IsDone=false;
-    SmartPtr<TOpt> ptr;
+    SPtr<TOpt> ptr;
     ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
     Options.append( ptr );
 
@@ -169,17 +169,17 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	return;
     }
     
-    ptr = (Ptr*) SmartPtr<TClntOptServerIdentifier> (new TClntOptServerIdentifier(srvDUID,this));
+    ptr = (Ptr*) SPtr<TClntOptServerIdentifier> (new TClntOptServerIdentifier(srvDUID,this));
     // all IAs provided by checkSolicit
-    SmartPtr<TAddrIA> ClntAddrIA;
+    SPtr<TAddrIA> ClntAddrIA;
     Options.append( ptr );
 	
     IAs.first();
     while (ClntAddrIA = IAs.get()) 
     {
-        SmartPtr<TClntCfgIA> ClntCfgIA = 
+        SPtr<TClntCfgIA> ClntCfgIA = 
             ClntCfgMgr->getIA(ClntAddrIA->getIAID());
-	SmartPtr<TClntOptIA_NA> IA_NA =
+	SPtr<TClntOptIA_NA> IA_NA =
 	    new TClntOptIA_NA(ClntCfgIA, ClntAddrIA, this);
 	Options.append((Ptr*)IA_NA);
     }
@@ -195,7 +195,7 @@ TClntMsgRequest::TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr,
 /*
  * analyse REPLY received for this REQUEST
  */
-void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
+void TClntMsgRequest::answer(SPtr<TClntMsg> msg)
 {
     this->copyAAASPI(msg);
 
@@ -205,17 +205,17 @@ void TClntMsgRequest::answer(SmartPtr<TClntMsg> msg)
      * without specifying any addresses or restart the DHCP server discovery
      * process.
      */  
-    SmartPtr<TOptStatusCode> optStateCode = (Ptr*)msg->getOption(OPTION_STATUS_CODE);
+    SPtr<TOptStatusCode> optStateCode = (Ptr*)msg->getOption(OPTION_STATUS_CODE);
     if( optStateCode && STATUSCODE_NOTONLINK == optStateCode->getCode()){
-	SmartPtr<TOpt> opt;
+	SPtr<TOpt> opt;
 	Options.first();
 	while(opt = Options.get()){
 	    if(opt->getOptType() != OPTION_IA_NA){
 		continue;
 	    }
-	    SmartPtr<TClntOptIA_NA> IA_NA = (Ptr*)opt;
+	    SPtr<TClntOptIA_NA> IA_NA = (Ptr*)opt;
 	    IA_NA->firstOption();
-	    SmartPtr<TOpt> subOpt;
+	    SPtr<TOpt> subOpt;
 	    while( subOpt = IA_NA->getOption()){
 		if(subOpt->getOptType() == OPTION_IAADDR)
 		    IA_NA->delOption();
@@ -258,9 +258,10 @@ string TClntMsgRequest::getName() {
  * on the backup list. When this method is called, it is sure that some IAs, TA or PDs will
  * remain not configured (as there are no servers available, which could configure it)
  * 
- * @param List 
+ * @param options list of still unconfigured options 
+ * @param state state to be set in CfgMgr
  */
-void TClntMsgRequest::setState(List(TOpt) opts, EState state)
+void TClntMsgRequest::setState(List(TOpt) options, EState state)
 {
     SPtr<TOpt>          opt;
     SPtr<TClntOptIA_NA> ia;
@@ -273,41 +274,41 @@ void TClntMsgRequest::setState(List(TOpt) opts, EState state)
 
     SPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(Iface);
     if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << Iface << LogEnd;
-	return;
+	      Log(Error) << "Unable to find interface with ifindex=" << Iface << LogEnd;
+	      return;
     }
 
-    opts.first();
-    while ( opt = opts.get() ) {
-	switch (opt->getOptType()) {
-	case OPTION_IA_NA:
-	{
-	    ia = (Ptr*) opt;
-	    cfgIa = iface->getIA(ia->getIAID());
-	    if (cfgIa)
-		cfgIa->setState(state);
-	    break;
-	}
-	case OPTION_IA_TA:
-	{
-	    ia = (Ptr*) opt;
-	    iface->firstTA();
-	    cfgTa = iface->getTA();
-	    if (cfgTa)
-		cfgTa->setState(state);
-	    break;
-	}
-	case OPTION_IA_PD:
-	{
-	    pd = (Ptr*) opt;
-	    cfgPd = iface->getPD(pd->getIAID());
-	    if (cfgPd)
-		cfgPd->setState(state);
-	    break;
-	}
-	default:
-	    continue;
-	}
+    options.first();
+    while ( opt = options.get() ) {
+	      switch (opt->getOptType()) {
+	      case OPTION_IA_NA:
+	      {
+	          ia = (Ptr*) opt;
+	          cfgIa = iface->getIA(ia->getIAID());
+	          if (cfgIa)
+		      cfgIa->setState(state);
+	          break;
+	      }
+	      case OPTION_IA_TA:
+	      {
+	          ia = (Ptr*) opt;
+	          iface->firstTA();
+	          cfgTa = iface->getTA();
+	          if (cfgTa)
+		      cfgTa->setState(state);
+	          break;
+	      }
+	      case OPTION_IA_PD:
+	      {
+	          pd = (Ptr*) opt;
+	          cfgPd = iface->getPD(pd->getIAID());
+	          if (cfgPd)
+		      cfgPd->setState(state);
+	          break;
+	      }
+      	default:
+	        continue;
+	    }
     }
 }
 

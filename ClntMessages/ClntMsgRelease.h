@@ -32,22 +32,22 @@ class TClntMsgRelease;
 class TClntMsgRelease : public TClntMsg
 {
   public:
-    TClntMsgRelease(SmartPtr<TClntIfaceMgr> IfMgr, 
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr>   ConfMgr, 
-		    SmartPtr<TClntAddrMgr>  AddrMgr, 
-		    int iface,  SmartPtr<TIPv6Addr> addr=NULL);
+    TClntMsgRelease(SPtr<TClntIfaceMgr> IfMgr, 
+		    SPtr<TClntTransMgr> TransMgr,
+		    SPtr<TClntCfgMgr>   ConfMgr, 
+		    SPtr<TClntAddrMgr>  AddrMgr, 
+		    int iface,  SPtr<TIPv6Addr> addr=NULL);
     
-    TClntMsgRelease(SmartPtr<TClntIfaceMgr> IfMgr, 
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr>   CfgMgr, 
-		    SmartPtr<TClntAddrMgr>  AddrMgr, 
-		    int iface, SmartPtr<TIPv6Addr> addr,
+    TClntMsgRelease(SPtr<TClntIfaceMgr> IfMgr, 
+		    SPtr<TClntTransMgr> TransMgr,
+		    SPtr<TClntCfgMgr>   CfgMgr, 
+		    SPtr<TClntAddrMgr>  AddrMgr, 
+		    int iface, SPtr<TIPv6Addr> addr,
 		    List(TAddrIA) iaLst, 
-		    SmartPtr<TAddrIA> ta,
+		    SPtr<TAddrIA> ta,
 		    List(TAddrIA) pdLst);
 
-    void answer(SmartPtr<TClntMsg> Rep);
+    void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     bool check();
     string getName();

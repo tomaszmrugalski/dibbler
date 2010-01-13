@@ -29,19 +29,19 @@ class TClntMsgReply;
 class TClntMsgReply : public TClntMsg
 {
   public:
-    TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-		  SmartPtr<TClntTransMgr> TransMgr, 
-		  SmartPtr<TClntCfgMgr>   CfgMgr, 
-		  SmartPtr<TClntAddrMgr> AddrMgr,
-		  int iface, SmartPtr<TIPv6Addr> addr);
+    TClntMsgReply(SPtr<TClntIfaceMgr> IfaceMgr, 
+		  SPtr<TClntTransMgr> TransMgr, 
+		  SPtr<TClntCfgMgr>   CfgMgr, 
+		  SPtr<TClntAddrMgr> AddrMgr,
+		  int iface, SPtr<TIPv6Addr> addr);
 
-    TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-		  SmartPtr<TClntTransMgr> TransMgr, 
-		  SmartPtr<TClntCfgMgr>   CfgMgr, 
-		  SmartPtr<TClntAddrMgr> AddrMgr,
-		  int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize);
+    TClntMsgReply(SPtr<TClntIfaceMgr> IfaceMgr, 
+		  SPtr<TClntTransMgr> TransMgr, 
+		  SPtr<TClntCfgMgr>   CfgMgr, 
+		  SPtr<TClntAddrMgr> AddrMgr,
+		  int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
 	
-    void answer(SmartPtr<TClntMsg> Rep);
+    void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     bool check();
     string getName();

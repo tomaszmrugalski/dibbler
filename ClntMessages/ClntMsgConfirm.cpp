@@ -20,13 +20,13 @@
 #include "Logger.h"
 
 //  iaLst - contain all IA's to  be checked (they have to be in the same link)
-TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-				 SmartPtr<TClntTransMgr> TransMgr, 
-				 SmartPtr<TClntCfgMgr>	CfgMgr, 
-				 SmartPtr<TClntAddrMgr> AddrMgr,
+TClntMsgConfirm::TClntMsgConfirm(SPtr<TClntIfaceMgr> IfaceMgr, 
+				 SPtr<TClntTransMgr> TransMgr, 
+				 SPtr<TClntCfgMgr>	CfgMgr, 
+				 SPtr<TClntAddrMgr> AddrMgr,
 				 unsigned int iface, 
-				 TContainer<SmartPtr<TAddrIA> > iaLst)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, SmartPtr<TIPv6Addr>() /*NULL*/,CONFIRM_MSG) {   
+				 TContainer<SPtr<TAddrIA> > iaLst)
+    :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, SPtr<TIPv6Addr>() /*NULL*/,CONFIRM_MSG) {   
 
     IRT = CNF_TIMEOUT;
     MRT = CNF_MAX_RT;
@@ -47,7 +47,7 @@ TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr,
     //T1 and T2 fields in any IA_NA options, and the preferred-lifetime and
     //valid-lifetime fields in the IA Address options to 0, as the server
     //will ignore these fields. 
-    SmartPtr<TAddrIA> ia;
+    SPtr<TAddrIA> ia;
     iaLst.first();
     while(ia=iaLst.get())
         Options.append(new TClntOptIA_NA(ia,true,this));
@@ -61,9 +61,9 @@ TClntMsgConfirm::TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->send();
 }           
     
-void TClntMsgConfirm::answer(SmartPtr<TClntMsg> reply)
+void TClntMsgConfirm::answer(SPtr<TClntMsg> reply)
 {
-    SmartPtr <TClntOptStatusCode> ptrOptCode;
+    SPtr <TClntOptStatusCode> ptrOptCode;
     ptrOptCode = (Ptr*) reply->getOption(OPTION_STATUS_CODE);
     switch (ptrOptCode->getCode() ) {
     case STATUSCODE_SUCCESS:
@@ -88,15 +88,15 @@ void TClntMsgConfirm::answer(SmartPtr<TClntMsg> reply)
 }
 
 void TClntMsgConfirm::addrsAccepted() {
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TOpt> ptrOpt;
+    SPtr<TAddrIA> ptrIA;
+    SPtr<TOpt> ptrOpt;
     this->firstOption();
-    SmartPtr<TAddrAddr> ptrAddrAddr;
+    SPtr<TAddrAddr> ptrAddrAddr;
     while ( ptrOpt = this->getOption() ) {
 	if (ptrOpt->getOptType()!=OPTION_IA_NA)
 	    continue;
 
-	SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
+	SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
 	ptrIA = ClntAddrMgr->getIA( ptrOptIA->getIAID() );
 	if (!ptrIA)
 	    continue;
@@ -109,7 +109,7 @@ void TClntMsgConfirm::addrsAccepted() {
 	ptrIA->setState(STATE_CONFIGURED);
     }
     ClntAddrMgr->firstIA();
-	SmartPtr<TIfaceIface> ptrIface;
+	SPtr<TIfaceIface> ptrIface;
 	ptrIface = ClntIfaceMgr->getIfaceByID(ptrIA->getIface());
 	ptrIA->firstAddr();
 	ptrAddrAddr = ptrIA->getAddr();
@@ -117,20 +117,20 @@ void TClntMsgConfirm::addrsAccepted() {
 }
 
 void TClntMsgConfirm::addrsRejected() {
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TOpt> ptrOpt;
+    SPtr<TAddrIA> ptrIA;
+    SPtr<TOpt> ptrOpt;
     this->firstOption();
     while ( ptrOpt = this->getOption() ) {
 	if (ptrOpt->getOptType()!=OPTION_IA_NA)
 	    continue;
 
-	SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
+	SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
 	ptrIA = ClntAddrMgr->getIA(ptrOptIA->getIAID());
 	if (!ptrIA)
 	    continue;
 
 	// release all addrs
-	SmartPtr<TIfaceIface> ptrIface;
+	SPtr<TIfaceIface> ptrIface;
 	ptrIface = ClntIfaceMgr->getIfaceByID(ptrIA->getIface());
 	if (!ptrIface) {
 	    Log(Crit) << "We have addresses assigned to non-existing interface."
@@ -138,7 +138,7 @@ void TClntMsgConfirm::addrsRejected() {
 	    ptrIA->setState(STATE_NOTCONFIGURED);
 	    return;
 	}
-	SmartPtr<TAddrAddr> ptrAddr;
+	SPtr<TAddrAddr> ptrAddr;
 	ptrIA->firstAddr();
 	while (ptrAddr = ptrIA->getAddr() ) {
 	    // remove addr from ...
@@ -148,7 +148,7 @@ void TClntMsgConfirm::addrsRejected() {
 	}
 
 	//not only the address should be rejected, but also the original IA should be deleted and using a new IA to process SOLICIT
-	SmartPtr<TClntCfgIA> ptrCfgIA = ClntCfgMgr->getIA(ptrOptIA->getIAID());
+	SPtr<TClntCfgIA> ptrCfgIA = ClntCfgMgr->getIA(ptrOptIA->getIAID());
 	ptrCfgIA->reset();
 	ptrIA->reset();
     }

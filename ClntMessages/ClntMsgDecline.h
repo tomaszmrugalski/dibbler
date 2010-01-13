@@ -26,22 +26,22 @@ class TClntMsgDecline;
 class TClntMsgDecline : public TClntMsg
 {
   public:
-    TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr> CfgMgr,
-		    SmartPtr<TClntAddrMgr> AddrMgr,
-		    int iface, SmartPtr<TIPv6Addr> addr,
-		    TContainer< SmartPtr< TAddrIA> > IALst);
+    TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
+		    SPtr<TClntTransMgr> TransMgr,
+		    SPtr<TClntCfgMgr> CfgMgr,
+		    SPtr<TClntAddrMgr> AddrMgr,
+		    int iface, SPtr<TIPv6Addr> addr,
+		    TContainer< SPtr< TAddrIA> > IALst);
 
-    TClntMsgDecline(SmartPtr<TClntIfaceMgr> IfaceMgr,
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr> CfgMgr,
-		    SmartPtr<TClntAddrMgr> AddrMgr,
-		    int iface, SmartPtr<TIPv6Addr> addr, 
+    TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
+		    SPtr<TClntTransMgr> TransMgr,
+		    SPtr<TClntCfgMgr> CfgMgr,
+		    SPtr<TClntAddrMgr> AddrMgr,
+		    int iface, SPtr<TIPv6Addr> addr, 
 		    char* buf, int bufSize);
     bool  check();
     
-    void  answer(SmartPtr<TClntMsg> Rep);
+    void  answer(SPtr<TClntMsg> Rep);
     void  doDuties();
     string getName();
     ~TClntMsgDecline();

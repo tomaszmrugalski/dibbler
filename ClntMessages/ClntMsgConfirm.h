@@ -31,14 +31,14 @@ class TClntMsgConfirm : public TClntMsg
 {
 public:
 
-   TClntMsgConfirm(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-	SmartPtr<TClntTransMgr> TransMgr, 
-	SmartPtr<TClntCfgMgr>	CfgMgr, 
-	SmartPtr<TClntAddrMgr> AddrMgr,
+   TClntMsgConfirm(SPtr<TClntIfaceMgr> IfaceMgr, 
+	SPtr<TClntTransMgr> TransMgr, 
+	SPtr<TClntCfgMgr>	CfgMgr, 
+	SPtr<TClntAddrMgr> AddrMgr,
 	unsigned int iface, 
-    TContainer<SmartPtr<TAddrIA> > iaLst);
+    TContainer<SPtr<TAddrIA> > iaLst);
     bool check();
-    void answer(SmartPtr<TClntMsg> Rep);
+    void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     unsigned long getTimeout();
     string getName();

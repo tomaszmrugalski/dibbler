@@ -14,25 +14,25 @@
 #include "ClntMsgReply.h"
 #include "ClntMsg.h"
 
-TClntMsgReply::TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-			     SmartPtr<TClntTransMgr> TransMgr, 
-			     SmartPtr<TClntCfgMgr> CfgMgr, 
-			     SmartPtr<TClntAddrMgr> AddrMgr,
-			     int iface, SmartPtr<TIPv6Addr> addr)
+TClntMsgReply::TClntMsgReply(SPtr<TClntIfaceMgr> IfaceMgr, 
+			     SPtr<TClntTransMgr> TransMgr, 
+			     SPtr<TClntCfgMgr> CfgMgr, 
+			     SPtr<TClntAddrMgr> AddrMgr,
+			     int iface, SPtr<TIPv6Addr> addr)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,REPLY_MSG)
 {
 }
 
-TClntMsgReply::TClntMsgReply(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-			     SmartPtr<TClntTransMgr> TransMgr, 
-			     SmartPtr<TClntCfgMgr> CfgMgr, 
-			     SmartPtr<TClntAddrMgr> AddrMgr,
-			     int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize)
+TClntMsgReply::TClntMsgReply(SPtr<TClntIfaceMgr> IfaceMgr, 
+			     SPtr<TClntTransMgr> TransMgr, 
+			     SPtr<TClntCfgMgr> CfgMgr, 
+			     SPtr<TClntAddrMgr> AddrMgr,
+			     int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize)
 {
 }
 
-void TClntMsgReply::answer(SmartPtr<TClntMsg> Reply) {
+void TClntMsgReply::answer(SPtr<TClntMsg> Reply) {
     // this should never happen. After receiving REPLY for e.g. REQUEST,
     // request->answer(reply) is called. Client nevers sends reply msg, so
     // this method will never be called.

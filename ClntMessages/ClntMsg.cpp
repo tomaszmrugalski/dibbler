@@ -107,18 +107,18 @@ void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
  * @param buf 
  * @param bufSize 
  */
-TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-                   SmartPtr<TClntTransMgr> TransMgr, 
-                   SmartPtr<TClntCfgMgr>   CfgMgr,
-                   SmartPtr<TClntAddrMgr>  AddrMgr,
-                   int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize)
+TClntMsg::TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
+                   SPtr<TClntTransMgr> TransMgr, 
+                   SPtr<TClntCfgMgr>   CfgMgr,
+                   SPtr<TClntAddrMgr>  AddrMgr,
+                   int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
                    :TMsg(iface, addr, buf, bufSize)
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     //After reading message code and transactionID   
     //read options contained in message    
     int pos=0;
-    SmartPtr<TOpt> ptr;
+    SPtr<TOpt> ptr;
     while (pos<bufSize) {
 	if (pos+4>bufSize) {
 	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos) 
@@ -216,7 +216,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    ptr = new TClntOptLifetime(buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA: {
-	    SmartPtr<TClntOptTA> ta = new TClntOptTA(buf+pos, length, this);
+	    SPtr<TClntOptTA> ta = new TClntOptTA(buf+pos, length, this);
 	    ta->setContext(AddrMgr, IfaceMgr, CfgMgr, Iface, addr);
 	    ptr = (Ptr*) ta;
 	    break;
@@ -236,7 +236,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 	    break;
 #endif
 	case OPTION_VENDOR_OPTS: {
-	    SmartPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
+	    SPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
 	    ptr = (Ptr*) vendor;
 	    vendor->setIfaceMgr(IfaceMgr);
 	    break;
@@ -265,7 +265,7 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
         pos+=length;
     }
 
-    SmartPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)this->getOption(OPTION_SERVERID);
+    SPtr<TClntOptServerIdentifier> optSrvID = (Ptr*)this->getOption(OPTION_SERVERID);
     if (!optSrvID) {
 	Log(Warning) << "Message " << this->MsgType 
 		     << " does not contain SERVERID option. Ignoring." << LogEnd;
@@ -274,17 +274,17 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
     }
 
     this->firstOption();
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     while ( opt = getOption() )
 	opt->setDUID(optSrvID->getDUID());
 }
 
-TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-                   SmartPtr<TClntTransMgr> TransMgr, 
-                   SmartPtr<TClntCfgMgr> CfgMgr,
-                   SmartPtr<TClntAddrMgr> AddrMgr,
+TClntMsg::TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
+                   SPtr<TClntTransMgr> TransMgr, 
+                   SPtr<TClntCfgMgr> CfgMgr,
+                   SPtr<TClntAddrMgr> AddrMgr,
                    int iface, 
-                   SmartPtr<TIPv6Addr> addr, int msgType)
+                   SPtr<TIPv6Addr> addr, int msgType)
                    :TMsg(iface,addr,msgType)
 {
     setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
@@ -294,10 +294,10 @@ TClntMsg::TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr,
 #endif
 }
 
-void TClntMsg::setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-                          SmartPtr<TClntTransMgr> TransMgr, 
-                          SmartPtr<TClntCfgMgr> CfgMgr,
-                          SmartPtr<TClntAddrMgr> AddrMgr)
+void TClntMsg::setAttribs(SPtr<TClntIfaceMgr> IfaceMgr, 
+                          SPtr<TClntTransMgr> TransMgr, 
+                          SPtr<TClntCfgMgr> CfgMgr,
+                          SPtr<TClntAddrMgr> AddrMgr)
 {
     this->ClntTransMgr = TransMgr;	
     this->ClntIfaceMgr = IfaceMgr;	
@@ -346,7 +346,7 @@ void TClntMsg::send()
 
     this->storeSelf(this->pkt);
 
-    SmartPtr<TIfaceIface> ptrIface = ClntIfaceMgr->getIfaceByID(Iface);
+    SPtr<TIfaceIface> ptrIface = ClntIfaceMgr->getIfaceByID(Iface);
     if (PeerAddr) {
 	Log(Debug) << "Sending " << this->getName() << " on " << ptrIface->getName() 
 		   << "/" << Iface << " to unicast addr " << *PeerAddr << "." << LogEnd;
@@ -359,45 +359,45 @@ void TClntMsg::send()
     LastTimeStamp = now();
 }
 
-void TClntMsg::copyAAASPI(SmartPtr<TClntMsg> q) {
+void TClntMsg::copyAAASPI(SPtr<TClntMsg> q) {
     this->AAASPI = q->getAAASPI();
     this->SPI = q->getSPI();
     this->AuthInfoKey = q->getAuthInfoKey();
 }
 
-SmartPtr<TClntTransMgr> TClntMsg::getClntTransMgr()
+SPtr<TClntTransMgr> TClntMsg::getClntTransMgr()
 {
     return this->ClntTransMgr;
 }
 
-SmartPtr<TClntAddrMgr> TClntMsg::getClntAddrMgr()
+SPtr<TClntAddrMgr> TClntMsg::getClntAddrMgr()
 {
     return this->ClntAddrMgr;
 }
 
-SmartPtr<TClntCfgMgr> TClntMsg::getClntCfgMgr()
+SPtr<TClntCfgMgr> TClntMsg::getClntCfgMgr()
 {
     return this->ClntCfgMgr;
 }
 
-SmartPtr<TClntIfaceMgr> TClntMsg::getClntIfaceMgr()
+SPtr<TClntIfaceMgr> TClntMsg::getClntIfaceMgr()
 {
     return this->ClntIfaceMgr;
 }
 
 void TClntMsg::setIface(int iface) {
     this->Iface = iface;
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     this->Options.first();
     while (opt = Options.get()) {
 	switch ( opt->getOptType() ) {
 	case OPTION_IA_NA: {
-	    SmartPtr<TClntOptIA_NA> ia = (Ptr*) opt;
+	    SPtr<TClntOptIA_NA> ia = (Ptr*) opt;
 	    ia->setIface(iface);
 	    break;
 	}
 	case OPTION_IA_TA: {
-	    SmartPtr<TClntOptTA> ta = (Ptr*) opt;
+	    SPtr<TClntOptTA> ta = (Ptr*) opt;
 	    ta->setIface(iface);
 	    break;
 	}
@@ -410,13 +410,10 @@ void TClntMsg::setIface(int iface) {
 /** 
  * this function appends authentication option
  * 
- * @param duid 
- * @param addr 
- * @param iface 
- * @param reqOpts 
+ * @param AddrMgr pointer to Address Manager
  * 
  */
-void TClntMsg::appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr)
+void TClntMsg::appendAuthenticationOption(SPtr<TClntAddrMgr> AddrMgr)
 {
 #ifndef MOD_DISABLE_AUTH
     if (!ClntCfgMgr->getAuthEnabled() || ClntCfgMgr->getDigest() == DIGEST_NONE) {
@@ -429,7 +426,7 @@ void TClntMsg::appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr)
 
     if (!getOption(OPTION_AUTH)) {
         ClntAddrMgr->firstClient();
-        SmartPtr<TAddrClient> client = ClntAddrMgr->getClient();
+        SPtr<TAddrClient> client = ClntAddrMgr->getClient();
         if (client && client->getSPI())
             this->setSPI(client->getSPI());
         if (client)
@@ -457,13 +454,13 @@ void TClntMsg::appendElapsedOption() {
 void TClntMsg::appendRequestedOptions() {
 
     // find configuration specified in config file
-    SmartPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
+    SPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << this->Iface << LogEnd;
 	return;
     }
     
-    SmartPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
+    SPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
 
     if (iface->getUnicast()) {
 	optORO->addOption(OPTION_UNICAST);
@@ -482,7 +479,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * dnsLst = iface->getProposedDNSServerLst();
 	if (dnsLst->count()) {
 	    // if there are any hints specified in config file, include them
-	    SmartPtr<TClntOptDNSServers> opt = new TClntOptDNSServers(dnsLst,this);
+	    SPtr<TClntOptDNSServers> opt = new TClntOptDNSServers(dnsLst,this);
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setDNSServerState(STATE_INPROCESS);
@@ -495,7 +492,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(string) * domainsLst = iface->getProposedDomainLst();
 	if ( domainsLst->count() ) {
 	    // if there are any hints specified in config file, include them
-            SmartPtr<TClntOptDomainName> opt = new TClntOptDomainName(domainsLst,this);
+            SPtr<TClntOptDomainName> opt = new TClntOptDomainName(domainsLst,this);
             Options.append( (Ptr*)opt );
 	}
 	iface->setDomainState(STATE_INPROCESS);
@@ -508,7 +505,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * ntpLst = iface->getProposedNTPServerLst();
 	if (ntpLst->count()) {
 	    // if there are any hints specified in config file, include them
-	    SmartPtr<TClntOptNTPServers> opt = new TClntOptNTPServers(ntpLst,this);
+	    SPtr<TClntOptNTPServers> opt = new TClntOptNTPServers(ntpLst,this);
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setNTPServerState(STATE_INPROCESS);
@@ -521,7 +518,7 @@ void TClntMsg::appendRequestedOptions() {
 	string timezone = iface->getProposedTimezone();
 	if (timezone.length()) {
 	    // if there are any hints specified in config file, include them
-	    SmartPtr<TClntOptTimeZone> opt = new TClntOptTimeZone(timezone,this);
+	    SPtr<TClntOptTimeZone> opt = new TClntOptTimeZone(timezone,this);
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setTimezoneState(STATE_INPROCESS);
@@ -534,7 +531,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedSIPServerLst();
 	if ( lst->count()) {
 	    // if there are any hints specified in config file, include them
-	    SmartPtr<TClntOptSIPServers> opt = new TClntOptSIPServers( lst, this );
+	    SPtr<TClntOptSIPServers> opt = new TClntOptSIPServers( lst, this );
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setSIPServerState(STATE_INPROCESS);
@@ -547,7 +544,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(string) * domainsLst = iface->getProposedSIPDomainLst();
 	if ( domainsLst->count() ) {
 	    // if there are any hints specified in config file, include them
-            SmartPtr<TClntOptSIPDomain> opt = new TClntOptSIPDomain( domainsLst,this );
+            SPtr<TClntOptSIPDomain> opt = new TClntOptSIPDomain( domainsLst,this );
             Options.append( (Ptr*)opt );
 	}
 	iface->setSIPDomainState(STATE_INPROCESS);
@@ -559,7 +556,7 @@ void TClntMsg::appendRequestedOptions() {
 
 	string fqdn = iface->getProposedFQDN();
 	{
-	    SmartPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
+	    SPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
 	    opt->setSFlag(ClntCfgMgr->getFQDNFlagS());
 	    Options.append( (Ptr*)opt );
 	}
@@ -573,7 +570,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedNISServerLst();
 	if ( lst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    SmartPtr<TClntOptNISServers> opt = new TClntOptNISServers( lst,this );
+	    SPtr<TClntOptNISServers> opt = new TClntOptNISServers( lst,this );
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setNISServerState(STATE_INPROCESS);
@@ -584,7 +581,7 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_NIS_DOMAIN_NAME);
 	string domain = iface->getProposedNISDomain();
 	if (domain.length()) {
-	    SmartPtr<TClntOptNISDomain> opt = new TClntOptNISDomain( domain,this );
+	    SPtr<TClntOptNISDomain> opt = new TClntOptNISDomain( domain,this );
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setNISDomainState(STATE_INPROCESS);
@@ -597,7 +594,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedNISPServerLst();
 	if ( lst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    SmartPtr<TClntOptNISPServers> opt = new TClntOptNISPServers( lst,this );
+	    SPtr<TClntOptNISPServers> opt = new TClntOptNISPServers( lst,this );
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setNISPServerState(STATE_INPROCESS);
@@ -608,7 +605,7 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_NISP_DOMAIN_NAME);
 	string domain = iface->getProposedNISPDomain();
 	if (domain.length()) {
-	    SmartPtr<TClntOptNISPDomain> opt = new TClntOptNISPDomain( domain,this );
+	    SPtr<TClntOptNISPDomain> opt = new TClntOptNISPDomain( domain,this );
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setNISPDomainState(STATE_INPROCESS);
@@ -664,7 +661,7 @@ void TClntMsg::appendRequestedOptions() {
             if (ClntCfgMgr->getAuthEnabled() && ClntCfgMgr->getDigest()!=DIGEST_NONE) {
                     Log(Debug) << "Authentication enabled, adding AUTH option." << LogEnd;
                     ClntAddrMgr->firstClient();
-                    SmartPtr<TAddrClient> client = ClntAddrMgr->getClient();
+                    SPtr<TAddrClient> client = ClntAddrMgr->getClient();
                     if (client && client->getSPI())
                         this->setSPI(client->getSPI());
                     Options.append(new TClntOptAuthentication(this));
@@ -686,8 +683,8 @@ void TClntMsg::appendRequestedOptions() {
  */
 void TClntMsg::appendTAOptions(bool switchToInProcess)
 {
-    SmartPtr<TClntCfgIface> ptrIface;
-    SmartPtr<TClntCfgTA> ptrTA;
+    SPtr<TClntCfgIface> ptrIface;
+    SPtr<TClntCfgTA> ptrTA;
     ClntCfgMgr->firstIface();
     // for each interface...
     while ( ptrIface = ClntCfgMgr->getIface() ) {
@@ -697,7 +694,7 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
 	    if (ptrTA->getState()!=STATE_NOTCONFIGURED)
 		continue;
 	    // ... which are not yet configured
-	    SmartPtr<TOpt> ptrOpt = new TClntOptTA(ptrTA->getIAID(), this);
+	    SPtr<TOpt> ptrOpt = new TClntOptTA(ptrTA->getIAID(), this);
 
 	    Options.append ( (Ptr*) ptrOpt);
 	    Log(Debug) << "TA option (IAID=" << ptrTA->getIAID() << ") was added." << LogEnd;
@@ -712,7 +709,7 @@ bool TClntMsg::appendClientID()
 {
     if (!ClntCfgMgr)
 	return false;
-    SmartPtr<TOpt> ptr;
+    SPtr<TOpt> ptr;
     ptr = new TClntOptClientIdentifier( ClntCfgMgr->getDUID(), this );
     Options.append( ptr );
     return true;
@@ -721,7 +718,7 @@ bool TClntMsg::appendClientID()
 bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
 
-    SmartPtr<TClntOptClientIdentifier> clnID;
+    SPtr<TClntOptClientIdentifier> clnID;
 
     if ( (clnID=(Ptr*)this->getOption(OPTION_CLIENTID)) &&
 	 !( *(clnID->getDUID())==(*(this->ClntCfgMgr->getDUID())) ) ) {
@@ -741,7 +738,7 @@ bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 
 void TClntMsg::answer(SPtr<TClntMsg> reply)
 {
-    SmartPtr<TClntOptServerIdentifier> ptrDUID;
+    SPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) reply->getOption(OPTION_SERVERID);
     if (!ptrDUID) {
       Log(Warning) << "Received REPLY message without SERVER ID option. Message ignored." << LogEnd;
@@ -749,11 +746,11 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     }
     
     // analyse all options received
-    SmartPtr<TOpt> option;
+    SPtr<TOpt> option;
 
     // find ORO in received options
     reply->firstOption();
-    SmartPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
+    SPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
 
     reply->firstOption();
     while (option = reply->getOption() ) {
@@ -762,7 +759,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 
 	case OPTION_IA_NA:
 	{
-	    SmartPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
+	    SPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
 	    if (clntOpt->getStatusCode()!=STATUSCODE_SUCCESS) {
 		Log(Warning) << "Received IA (IAID=" << clntOpt->getIAID() << ") with non-success status:"
 			     << clntOpt->getStatusCode() << ", IA ignored." << LogEnd;
@@ -775,14 +772,14 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    clntOpt->doDuties();
 	    
 	    // delete that IA from request list
-	    SmartPtr<TOpt> requestOpt;
+	    SPtr<TOpt> requestOpt;
 	    Options.first();
 	    while (requestOpt = Options.get())
 	    {
 		if (requestOpt->getOptType()!=OPTION_IA_NA)
 		    continue;
 		
-		SmartPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
+		SPtr<TClntOptIA_NA> ptrIA = (Ptr*) requestOpt;
 		if ( ptrIA->getIAID() == clntOpt->getIAID() ) 
 		{
 		    this->Options.del();
@@ -805,7 +802,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 		break;
 	    }
 
-	    SmartPtr<TOpt> requestOpt;
+	    SPtr<TOpt> requestOpt;
 	    this->Options.first();
 	    while (requestOpt = this->Options.get()) {
 		if (requestOpt->getOptType() != OPTION_IA_TA)
@@ -839,7 +836,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    pd->doDuties();
 	    
 	    // delete that PD from request list
-	    SmartPtr<TOpt> requestOpt;
+	    SPtr<TOpt> requestOpt;
 	    this->Options.first();
 	    while (requestOpt = this->Options.get()) {
 		if (requestOpt->getOptType() != OPTION_IA_PD)
@@ -868,7 +865,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    //Log(Debug) << "Setting up option " << option->getOptType() << "." << LogEnd;
 	    if (!option->doDuties()) 
 		break;
-	    SmartPtr<TOpt> requestOpt;
+	    SPtr<TOpt> requestOpt;
 	    if ( optORO && (optORO->isOption(option->getOptType())) )
 		optORO->delOption(option->getOptType());
 	    
@@ -885,7 +882,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     }
     //Options and IAs serviced by server are removed from requestOptions list
 
-    SmartPtr<TOpt> requestOpt;
+    SPtr<TOpt> requestOpt;
     this->Options.first();
     bool iaLeft = false;
     bool taLeft = false;
@@ -932,7 +929,7 @@ bool TClntMsg::validateReplayDetection() {
         return true;
 
     ClntAddrMgr->firstClient();
-    SmartPtr<TAddrClient> client = ClntAddrMgr->getClient();
+    SPtr<TAddrClient> client = ClntAddrMgr->getClient();
 
     if (!client) {
         Log(Debug) << "Something is wrong, VERY wrong. Info about this client (myself) is not found." << LogEnd;

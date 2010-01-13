@@ -47,13 +47,13 @@
  * @param pdLst - IA_PD list to be released
  */
 TClntMsgRelease::TClntMsgRelease(
-	SmartPtr<TClntIfaceMgr> IfaceMgr, 
-	SmartPtr<TClntTransMgr> TransMgr,
-	SmartPtr<TClntCfgMgr>   CfgMgr, 
-	SmartPtr<TClntAddrMgr>  AddrMgr, 
-	int iface, SmartPtr<TIPv6Addr> addr,
+	SPtr<TClntIfaceMgr> IfaceMgr, 
+	SPtr<TClntTransMgr> TransMgr,
+	SPtr<TClntCfgMgr>   CfgMgr, 
+	SPtr<TClntAddrMgr>  AddrMgr, 
+	int iface, SPtr<TIPv6Addr> addr,
 	List(TAddrIA) iaLst,
-	SmartPtr<TAddrIA> ta,
+	SPtr<TAddrIA> ta,
 	List(TAddrIA) pdLst)
 	:TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface, addr, RELEASE_MSG)
 {
@@ -66,7 +66,7 @@ TClntMsgRelease::TClntMsgRelease(
     RT=0;
 
     // obtain IA, TA or PD, so server DUID can be obtained
-    SmartPtr<TAddrIA> x = 0;
+    SPtr<TAddrIA> x = 0;
     if (iaLst.count()) {
 	iaLst.first();
 	x=iaLst.get();
@@ -116,8 +116,8 @@ TClntMsgRelease::TClntMsgRelease(
     iaLst.first();
     while(x=iaLst.get()) {
         Options.append(new TClntOptIA_NA(x,this));
-	SmartPtr<TAddrAddr> ptrAddr;
-	SmartPtr<TClntIfaceIface> ptrIface;
+	SPtr<TAddrAddr> ptrAddr;
+	SPtr<TClntIfaceIface> ptrIface;
 	ptrIface = (Ptr*)IfaceMgr->getIfaceByID(x->getIface());
 	x->firstAddr();
 	while (ptrAddr = x->getAddr()) {
@@ -139,16 +139,16 @@ TClntMsgRelease::TClntMsgRelease(
 
     // --- RELEASE PD ---
 
-    SmartPtr<TAddrIA> pd = 0;
+    SPtr<TAddrIA> pd = 0;
     
     pdLst.first();
     while(pd=pdLst.get()) {
-	SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
-        Options.append( (Ptr*)pdOpt);
-	pdOpt->setContext(IfaceMgr, TransMgr, CfgMgr, AddrMgr, srvDUID, addr, this);
-	pdOpt->delPrefixes();
+	      SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
+        Options.append( (Ptr*)pdOpt );
+	      pdOpt->setContext(IfaceMgr, TransMgr, CfgMgr, AddrMgr, srvDUID, addr, this);
+	      pdOpt->delPrefixes();
 
-	AddrMgr->delPD(pd->getIAID() );
+	      AddrMgr->delPD(pd->getIAID() );
     }
 
     appendElapsedOption();
@@ -159,10 +159,10 @@ TClntMsgRelease::TClntMsgRelease(
     this->send();
 }
 
-void TClntMsgRelease::answer(SmartPtr<TClntMsg> rep)
+void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
 {
-    SmartPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
-    SmartPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
+    SPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
+    SPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
     if ((!repSrvID)||
         (!(*msgSrvID->getDUID()==*repSrvID->getDUID())))
        return;

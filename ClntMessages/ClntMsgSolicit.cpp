@@ -32,11 +32,11 @@
 #include <cmath>
 #include "Logger.h"
 
-TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-				 SmartPtr<TClntTransMgr> TransMgr,
-				 SmartPtr<TClntCfgMgr>   CfgMgr,
-				 SmartPtr<TClntAddrMgr>  AddrMgr,
-				 int iface, SmartPtr<TIPv6Addr> addr,
+TClntMsgSolicit::TClntMsgSolicit(SPtr<TClntIfaceMgr> IfaceMgr, 
+				 SPtr<TClntTransMgr> TransMgr,
+				 SPtr<TClntCfgMgr>   CfgMgr,
+				 SPtr<TClntAddrMgr>  AddrMgr,
+				 int iface, SPtr<TIPv6Addr> addr,
 				 List(TClntCfgIA) iaLst, 
 				 SPtr<TClntCfgTA> ta,
 				 List(TClntCfgPD) pdLst, 
@@ -53,10 +53,10 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
     appendClientID();
     
     // all IAs are provided by ClntTransMgr::checkSolicit()
-    SmartPtr<TClntCfgIA> ia;
+    SPtr<TClntCfgIA> ia;
     iaLst.first();
     while (ia = iaLst.get()) {
-	SmartPtr<TClntOptIA_NA> iaOpt;
+	SPtr<TClntOptIA_NA> iaOpt;
 	iaOpt = new TClntOptIA_NA(ia, this);
 	Options.append( (Ptr*)iaOpt );
 	ia->setState(STATE_INPROCESS);
@@ -92,7 +92,7 @@ TClntMsgSolicit::TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->send();
 }
 
-void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
+void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
 {
     if (shallRejectAnswer(msg))
 	return;
@@ -105,7 +105,7 @@ void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
 		" RAPID-COMMIT." << LogEnd;
 	}
 	ClntTransMgr->addAdvertise((Ptr*)msg);
-	SmartPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
+	SPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
 
 	if (prefOpt && (prefOpt->getPreference() == 255) )
 	{
@@ -158,18 +158,18 @@ void TClntMsgSolicit::answer(SmartPtr<TClntMsg> msg)
  * 
  * @return 
  */
-bool TClntMsgSolicit::shallRejectAnswer(SmartPtr<TClntMsg> msg)
+bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 {
     // this == solicit or request
     // msg  == reply
-    SmartPtr<TClntOptServerIdentifier> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
+    SPtr<TClntOptServerIdentifier> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
     if (!srvDUID) {
 	Log(Notice) << "No server identifier provided. Message ignored." << LogEnd;
 	return true;
     }
     
     //is this server rejected?
-    SmartPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
+    SPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
     if (!iface) {
 	Log(Error) << "Unable to find iface=" << this->Iface << "." << LogEnd;
 	return false;

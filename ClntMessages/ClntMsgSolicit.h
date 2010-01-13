@@ -21,21 +21,21 @@ class TClntIfaceMgr;
 class TClntMsgSolicit : public TClntMsg
 {
 public:
-    TClntMsgSolicit(SmartPtr<TClntIfaceMgr> IfaceMgr,
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr>   CfgMgr,
-		    SmartPtr<TClntAddrMgr>  AddrMgr,
+    TClntMsgSolicit(SPtr<TClntIfaceMgr> IfaceMgr,
+		    SPtr<TClntTransMgr> TransMgr,
+		    SPtr<TClntCfgMgr>   CfgMgr,
+		    SPtr<TClntAddrMgr>  AddrMgr,
 		    int iface,
-		    SmartPtr<TIPv6Addr> addr,
+		    SPtr<TIPv6Addr> addr,
 		    List(TClntCfgIA) iaLst, 
 		    SPtr<TClntCfgTA> ta,
 		    List(TClntCfgPD) pdLst,
 		    bool rapid=false);
 
-    void answer(SmartPtr<TClntMsg> msg);
+    void answer(SPtr<TClntMsg> msg);
 
     void doDuties();
-    bool shallRejectAnswer(SmartPtr<TClntMsg> msg);
+    bool shallRejectAnswer(SPtr<TClntMsg> msg);
     void sortAnswers();
     string getName();
     bool check();

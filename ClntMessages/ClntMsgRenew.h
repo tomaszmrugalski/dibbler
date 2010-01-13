@@ -18,18 +18,18 @@
 class TClntMsgRenew : public TClntMsg
 {
   public:
-    TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
-		  SmartPtr<TClntTransMgr> TransMgr,
-		  SmartPtr<TClntCfgMgr> CfgMgr,
-		  SmartPtr<TClntAddrMgr> AddrMgr,
+    TClntMsgRenew(SPtr<TClntIfaceMgr> IfaceMgr,
+		  SPtr<TClntTransMgr> TransMgr,
+		  SPtr<TClntCfgMgr> CfgMgr,
+		  SPtr<TClntAddrMgr> AddrMgr,
 		  List(TAddrIA) IALst, List(TAddrIA) PDLst);
 
-    void answer(SmartPtr<TClntMsg> Rep);
+    void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     bool check();
     string getName();
     ~TClntMsgRenew();
-    void updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA);
+    void updateIA(SPtr <TClntOptIA_NA> ptrOptIA);
     void releaseIA(long IAID);
 
  private:

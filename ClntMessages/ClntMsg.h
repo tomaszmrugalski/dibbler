@@ -23,17 +23,17 @@
 class TClntMsg : public TMsg
 {
 public:
-    TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-	     SmartPtr<TClntTransMgr> TransMgr, 
-	     SmartPtr<TClntCfgMgr> CfgMgr,
-	     SmartPtr<TClntAddrMgr> AddrMgr,
-	     int iface, SmartPtr<TIPv6Addr> addr, char* buf, int bufSize);
+    TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
+	     SPtr<TClntTransMgr> TransMgr, 
+	     SPtr<TClntCfgMgr> CfgMgr,
+	     SPtr<TClntAddrMgr> AddrMgr,
+	     int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
-    TClntMsg(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-	     SmartPtr<TClntTransMgr> TransMgr, 
-	     SmartPtr<TClntCfgMgr> CfgMgr,
-	     SmartPtr<TClntAddrMgr> AddrMgr,
-	     int iface, SmartPtr<TIPv6Addr> addr, int msgType);
+    TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
+	     SPtr<TClntTransMgr> TransMgr, 
+	     SPtr<TClntCfgMgr> CfgMgr,
+	     SPtr<TClntAddrMgr> AddrMgr,
+	     int iface, SPtr<TIPv6Addr> addr, int msgType);
     unsigned long getTimeout();
     void send();
 
@@ -42,17 +42,17 @@ public:
     virtual bool check() = 0;
     void setIface(int iface); // used to override when we have received msg via loopback interface.
 
-    void copyAAASPI(SmartPtr<TClntMsg> q);
+    void copyAAASPI(SPtr<TClntMsg> q);
     void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
 //    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
 
-    void appendAuthenticationOption(SmartPtr<TClntAddrMgr> AddrMgr);
+    void appendAuthenticationOption(SPtr<TClntAddrMgr> AddrMgr);
     void appendElapsedOption();
     void appendRequestedOptions();
-    SmartPtr<TClntTransMgr>  getClntTransMgr();
-    SmartPtr<TClntAddrMgr>   getClntAddrMgr();
-    SmartPtr<TClntCfgMgr>    getClntCfgMgr();
-    SmartPtr<TClntIfaceMgr>  getClntIfaceMgr();
+    SPtr<TClntTransMgr>  getClntTransMgr();
+    SPtr<TClntAddrMgr>   getClntAddrMgr();
+    SPtr<TClntCfgMgr>    getClntCfgMgr();
+    SPtr<TClntIfaceMgr>  getClntIfaceMgr();
 
     bool validateReplayDetection();
 
@@ -71,16 +71,16 @@ public:
     int RT;             // Retransmission timeout (in seconds)
     int FirstTimeStamp; // timestamp of the first transmission
     int LastTimeStamp;  // timestamp of the last transmission
-    SmartPtr<TClntTransMgr>  ClntTransMgr;
-    SmartPtr<TClntAddrMgr>   ClntAddrMgr;
-    SmartPtr<TClntCfgMgr>    ClntCfgMgr;
-    SmartPtr<TClntIfaceMgr>  ClntIfaceMgr;
+    SPtr<TClntTransMgr>  ClntTransMgr;
+    SPtr<TClntAddrMgr>   ClntAddrMgr;
+    SPtr<TClntCfgMgr>    ClntCfgMgr;
+    SPtr<TClntIfaceMgr>  ClntIfaceMgr;
 
  private:
-    void setAttribs(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-		    SmartPtr<TClntTransMgr> TransMgr, 
-		    SmartPtr<TClntCfgMgr>   CfgMgr,
-		    SmartPtr<TClntAddrMgr>  AddrMgr);
+    void setAttribs(SPtr<TClntIfaceMgr> IfaceMgr, 
+		    SPtr<TClntTransMgr> TransMgr, 
+		    SPtr<TClntCfgMgr>   CfgMgr,
+		    SPtr<TClntAddrMgr>  AddrMgr);
     void invalidAllowOptInMsg(int msg, int opt);
     void invalidAllowOptInOpt(int msg, int parentOpt, int childOpt);
 };

@@ -44,21 +44,21 @@ class TClntIfaceMgr;
 class TClntMsgRequest : public TClntMsg
 {
   public:
-    TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
-		    SmartPtr<TClntTransMgr> TransMgr,
-		    SmartPtr<TClntCfgMgr>   ConfMgr, 
-		    SmartPtr<TClntAddrMgr>  AddrMgr, 
-		    TContainer< SmartPtr<TOpt> > opts, 
+    TClntMsgRequest(SPtr<TClntIfaceMgr> IfMgr, 
+		    SPtr<TClntTransMgr> TransMgr,
+		    SPtr<TClntCfgMgr>   ConfMgr, 
+		    SPtr<TClntAddrMgr>  AddrMgr, 
+		    TContainer< SPtr<TOpt> > opts, 
 		    int iface);
-    TClntMsgRequest(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-				 SmartPtr<TClntTransMgr> TransMgr,
-				 SmartPtr<TClntCfgMgr>   CfgMgr, 
-				 SmartPtr<TClntAddrMgr> AddrMgr, 
-                 TContainer<SmartPtr<TAddrIA> > requestIALst,
-                 SmartPtr<TDUID> srvDUID,
+    TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
+				 SPtr<TClntTransMgr> TransMgr,
+				 SPtr<TClntCfgMgr>   CfgMgr, 
+				 SPtr<TClntAddrMgr> AddrMgr, 
+                 TContainer<SPtr<TAddrIA> > requestIALst,
+                 SPtr<TDUID> srvDUID,
 				 int iface);
 
-    void answer(SmartPtr<TClntMsg> msg);
+    void answer(SPtr<TClntMsg> msg);
     void doDuties();
     bool check();
     string getName();
@@ -66,7 +66,7 @@ class TClntMsgRequest : public TClntMsg
   private:
     void setState(List(TOpt) opts, EState state);
     void copyAddrsFromAdvertise(SPtr<TClntMsg> adv);
-    SmartPtr<TClntAddrMgr> AddrMgr;
+    SPtr<TClntAddrMgr> AddrMgr;
 };
 
 #endif /* CLNTMSGREQUEST_H */

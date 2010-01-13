@@ -32,27 +32,27 @@ class TClntIfaceMgr;
 class TClntMsgInfRequest : public TClntMsg
 {
   public:
-    TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
-		       SmartPtr<TClntTransMgr> TransMgr,
-		       SmartPtr<TClntCfgMgr>   ConfMgr, 
-		       SmartPtr<TClntAddrMgr>  AddrMgr, 
-		       TContainer< SmartPtr<TOpt> > ReqOpts,
+    TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfMgr, 
+		       SPtr<TClntTransMgr> TransMgr,
+		       SPtr<TClntCfgMgr>   ConfMgr, 
+		       SPtr<TClntAddrMgr>  AddrMgr, 
+		       TContainer< SPtr<TOpt> > ReqOpts,
 		       int iface);
     
-    TClntMsgInfRequest(SmartPtr<TClntIfaceMgr> IfMgr, 
-		       SmartPtr<TClntTransMgr> TransMgr,
-		       SmartPtr<TClntCfgMgr>   ConfMgr, 
-		       SmartPtr<TClntAddrMgr>  AddrMgr, 
-		       SmartPtr<TClntCfgIface> iface);
+    TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfMgr, 
+		       SPtr<TClntTransMgr> TransMgr,
+		       SPtr<TClntCfgMgr>   ConfMgr, 
+		       SPtr<TClntAddrMgr>  AddrMgr, 
+		       SPtr<TClntCfgIface> iface);
     
-    void answer(SmartPtr<TClntMsg> msg);
+    void answer(SPtr<TClntMsg> msg);
     void doDuties();    
     bool check();
     string getName();
     ~TClntMsgInfRequest();
 
   private:
-    SmartPtr<TClntAddrMgr> AddrMgr;
+    SPtr<TClntAddrMgr> AddrMgr;
 };
 
 

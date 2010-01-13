@@ -23,21 +23,21 @@ class TClntMsgRebind;
 class TClntMsgRebind : public TClntMsg
 {
   public:
-    TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-		   SmartPtr<TClntTransMgr> TransMgr, 
-		   SmartPtr<TClntCfgMgr> CfgMgr, 
-		   SmartPtr<TClntAddrMgr> AddrMgr,
-		   TContainer<SmartPtr<TOpt> > ptrOpts, int iface);
+    TClntMsgRebind(SPtr<TClntIfaceMgr> IfaceMgr, 
+		   SPtr<TClntTransMgr> TransMgr, 
+		   SPtr<TClntCfgMgr> CfgMgr, 
+		   SPtr<TClntAddrMgr> AddrMgr,
+		   TContainer<SPtr<TOpt> > ptrOpts, int iface);
     
-    void answer(SmartPtr<TClntMsg> Rep);
+    void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     bool check();
     string getName();
     ~TClntMsgRebind();
  private:
-    void updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
-		  SmartPtr<TClntOptServerIdentifier> optSrvDUID, 
-		  SmartPtr<TClntOptServerUnicast> optUnicast);
+    void updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
+		  SPtr<TClntOptServerIdentifier> optSrvDUID, 
+		  SPtr<TClntOptServerUnicast> optUnicast);
     void releaseIA(int IAID);
     void releasePD(int IAID);
 

@@ -42,22 +42,22 @@
 #endif
 #include "ClntOptPreference.h"
 
-TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
-				     SmartPtr<TClntTransMgr> TransMgr,
-				     SmartPtr<TClntCfgMgr> CfgMgr,
-				     SmartPtr<TClntAddrMgr> AddrMgr,
-				     int iface, SmartPtr<TIPv6Addr> addr)
+TClntMsgAdvertise::TClntMsgAdvertise(SPtr<TClntIfaceMgr> IfaceMgr,
+				     SPtr<TClntTransMgr> TransMgr,
+				     SPtr<TClntCfgMgr> CfgMgr,
+				     SPtr<TClntAddrMgr> AddrMgr,
+				     int iface, SPtr<TIPv6Addr> addr)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,ADVERTISE_MSG) {
 }
 
 /* 
  * creates buffer based on buffer
  */
-TClntMsgAdvertise::TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
-				     SmartPtr<TClntTransMgr> TransMgr,
-				     SmartPtr<TClntCfgMgr> CfgMgr,
-				     SmartPtr<TClntAddrMgr> AddrMgr,
-				     int iface, SmartPtr<TIPv6Addr> addr, 
+TClntMsgAdvertise::TClntMsgAdvertise(SPtr<TClntIfaceMgr> IfaceMgr,
+				     SPtr<TClntTransMgr> TransMgr,
+				     SPtr<TClntCfgMgr> CfgMgr,
+				     SPtr<TClntAddrMgr> AddrMgr,
+				     int iface, SPtr<TIPv6Addr> addr, 
 				     char* buf, int buflen)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,buflen) {
 }
@@ -67,14 +67,14 @@ bool TClntMsgAdvertise::check() {
 }
 
 int TClntMsgAdvertise::getPreference() {
-    SmartPtr<TOptPreference> ptr;
+    SPtr<TOptPreference> ptr;
     ptr = (Ptr*) this->getOption(OPTION_PREFERENCE);
     if (!ptr)
         return 0;
     return ptr->getPreference();
 }
 
-void TClntMsgAdvertise::answer(SmartPtr<TClntMsg> Rep) {
+void TClntMsgAdvertise::answer(SPtr<TClntMsg> Rep) {
     // this should never happen
 }
 

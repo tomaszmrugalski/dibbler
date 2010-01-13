@@ -26,10 +26,10 @@
 #include <cmath>
 #include <iostream>
 
-TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr, 
-                               SmartPtr<TClntTransMgr> TransMgr, 
-                               SmartPtr<TClntCfgMgr> CfgMgr, 
-                               SmartPtr<TClntAddrMgr> AddrMgr,
+TClntMsgRebind::TClntMsgRebind(SPtr<TClntIfaceMgr> IfaceMgr, 
+                               SPtr<TClntTransMgr> TransMgr, 
+                               SPtr<TClntCfgMgr> CfgMgr, 
+                               SPtr<TClntAddrMgr> AddrMgr,
                                List(TOpt) ptrOpts, int iface)
   :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, iface, 0, REBIND_MSG)
 {
@@ -40,7 +40,7 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
     RT=0;
 
     // there are options copied from RENEW. Get rid of some of them
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     firstOption();
     while(opt=getOption())
     {
@@ -58,8 +58,8 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
       switch (opt->getOptType()) {
         case OPTION_IA_NA:
           {
-            SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*) opt;
-            SmartPtr<TAddrIA> ptrAddrIA= ClntAddrMgr->getIA(ptrIA->getIAID());
+            SPtr<TClntOptIA_NA> ptrIA=(Ptr*) opt;
+            SPtr<TAddrIA> ptrAddrIA= ClntAddrMgr->getIA(ptrIA->getIAID());
             if (ptrAddrIA && maxMRD<ptrAddrIA->getMaxValidTimeout())
               maxMRD=ptrAddrIA->getMaxValidTimeout();
             break;
@@ -84,7 +84,7 @@ TClntMsgRebind::TClntMsgRebind(SmartPtr<TClntIfaceMgr> IfaceMgr,
     this->send();
 }
 
-void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
+void TClntMsgRebind::answer(SPtr<TClntMsg> Reply)
 {
     TClntMsg::answer(Reply);
     return;
@@ -92,13 +92,13 @@ void TClntMsgRebind::answer(SmartPtr<TClntMsg> Reply)
 #if 0
   /// @todo: Fix REPLY support for REBIND
   
-SmartPtr<TOpt> opt;
+SPtr<TOpt> opt;
     
     // get DUID
-    SmartPtr<TClntOptServerIdentifier> ptrDUID;
+    SPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) Reply->getOption(OPTION_SERVERID);
     
-    SmartPtr<TClntOptOptionRequest> ptrOptionReqOpt=(Ptr*)getOption(OPTION_ORO);
+    SPtr<TClntOptOptionRequest> ptrOptionReqOpt=(Ptr*)getOption(OPTION_ORO);
 
     Reply->firstOption();
     // for each option in message... (there should be only one IA option, as we send
@@ -107,14 +107,14 @@ SmartPtr<TOpt> opt;
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
             iaCnt++;
-            SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
+            SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
             if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
                 if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
                     ClntTransMgr->sendRequest(Options,Iface);
                     IsDone = true;
                     return;
                 }else{
-		    SmartPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
+		    SPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
                     Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code " <<
                         StatusCodeToString(status->getCode()) << ": "
                                  << status->getText() << LogEnd;
@@ -122,7 +122,7 @@ SmartPtr<TOpt> opt;
                 }
             }
             ptrOptIA->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-                                 ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
+                                 ptrDUID->getDUID(), SPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
 
             ptrOptIA->doDuties();
             break;
@@ -137,7 +137,7 @@ SmartPtr<TOpt> opt;
                     return;
                 }
                 else{
-                    SmartPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
+                    SPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
                     Log(Warning) << "Received PD (iaid=" << pd->getIAID() << ") with status code " <<
                         StatusCodeToString(status->getCode()) << ": "
                                  << status->getText() << LogEnd;
@@ -170,11 +170,11 @@ SmartPtr<TOpt> opt;
 #endif
 }
 
-void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
-			      SmartPtr<TClntOptServerIdentifier> optSrvDUID, 
-			      SmartPtr<TClntOptServerUnicast> optUnicast) {
+void TClntMsgRebind::updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
+			      SPtr<TClntOptServerIdentifier> optSrvDUID, 
+			      SPtr<TClntOptServerUnicast> optUnicast) {
 
-    SmartPtr< TAddrIA> ptrAddrIA;
+    SPtr< TAddrIA> ptrAddrIA;
     bool found = false;
     
     // ..find IA in addrMgr...
@@ -199,8 +199,8 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 	}
 
 	// IAID found, set up new received options.
-	SmartPtr<TAddrAddr> ptrAddrAddr;
-	SmartPtr<TClntOptIAAddress> ptrOptAddr;
+	SPtr<TAddrAddr> ptrAddrAddr;
+	SPtr<TClntOptIAAddress> ptrOptAddr;
 	
 	// are all addrs configured?
 	if (ptrOptIA->countAddr() != ptrAddrIA->countAddr() ) {
@@ -247,20 +247,20 @@ void TClntMsgRebind::updateIA(SmartPtr <TClntOptIA_NA> ptrOptIA,
 
 void TClntMsgRebind::doDuties()
 {
-    SmartPtr<TIfaceIface> iface = ClntIfaceMgr->getIfaceByID(this->Iface);
+    SPtr<TIfaceIface> iface = ClntIfaceMgr->getIfaceByID(this->Iface);
 
     if (!MRD)
     {
 	stringstream iaLst;
 	stringstream pdLst;
-        SmartPtr<TOpt> ptrOpt;
+        SPtr<TOpt> ptrOpt;
         firstOption();
         while(ptrOpt=getOption())
         {
 	    switch( ptrOpt->getOptType()) {
 	    case OPTION_IA_NA:
 	    {
-		SmartPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
+		SPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
 		iaLst << ptrIA->getIAID() << " ";
 		releaseIA(ptrIA->getIAID());
 		break;
@@ -287,14 +287,14 @@ void TClntMsgRebind::doDuties()
 
 void TClntMsgRebind::releaseIA(int IAID)
 {
-    SmartPtr<TAddrIA> ptrAddrIA=this->ClntAddrMgr->getIA(IAID);
+    SPtr<TAddrIA> ptrAddrIA=this->ClntAddrMgr->getIA(IAID);
     if (!ptrAddrIA)
     {
         Log(Error) << "IA has not been found in Address Manager."<< LogEnd;
         return;
     }
 
-    SmartPtr<TAddrAddr> ptrAddr;
+    SPtr<TAddrAddr> ptrAddr;
     ptrAddrIA->firstAddr();
     while(ptrAddr=ptrAddrIA->getAddr())
     {

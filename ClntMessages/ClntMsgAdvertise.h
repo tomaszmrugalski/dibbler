@@ -18,23 +18,23 @@
 class TClntMsgAdvertise : public TClntMsg
 {
   public:
-    TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
-		      SmartPtr<TClntTransMgr> TransMgr,
-		      SmartPtr<TClntCfgMgr>   CfgMgr,
-		      SmartPtr<TClntAddrMgr>  AddrMgr,
-		      int iface, SmartPtr<TIPv6Addr> addr);
+    TClntMsgAdvertise(SPtr<TClntIfaceMgr> IfaceMgr,
+		      SPtr<TClntTransMgr> TransMgr,
+		      SPtr<TClntCfgMgr>   CfgMgr,
+		      SPtr<TClntAddrMgr>  AddrMgr,
+		      int iface, SPtr<TIPv6Addr> addr);
     
-    TClntMsgAdvertise(SmartPtr<TClntIfaceMgr> IfaceMgr,
-		      SmartPtr<TClntTransMgr> TransMgr,
-		      SmartPtr<TClntCfgMgr> CfgMgr,
-		      SmartPtr<TClntAddrMgr> AddrMgr,
-		      int iface, SmartPtr<TIPv6Addr> addr, 
+    TClntMsgAdvertise(SPtr<TClntIfaceMgr> IfaceMgr,
+		      SPtr<TClntTransMgr> TransMgr,
+		      SPtr<TClntCfgMgr> CfgMgr,
+		      SPtr<TClntAddrMgr> AddrMgr,
+		      int iface, SPtr<TIPv6Addr> addr, 
 		      char* buf, int bufSize);
     
     // returns preference value (default value is 0)
     int getPreference();
     bool check();
-    void answer(SmartPtr<TClntMsg> Rep);
+    void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     string getName();
     string getInfo();

@@ -25,10 +25,10 @@
 
 #include <cmath>
 
-TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
-			     SmartPtr<TClntTransMgr> TransMgr,
-			     SmartPtr<TClntCfgMgr> CfgMgr,
-			     SmartPtr<TClntAddrMgr> AddrMgr,
+TClntMsgRenew::TClntMsgRenew(SPtr<TClntIfaceMgr> IfaceMgr,
+			     SPtr<TClntTransMgr> TransMgr,
+			     SPtr<TClntCfgMgr> CfgMgr,
+			     SPtr<TClntAddrMgr> AddrMgr,
 			     List(TAddrIA) IALst,
 			     List(TAddrIA) PDLst)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, 0, 0, RENEW_MSG)
@@ -76,23 +76,23 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 
     // and say who's this message is for
     if (IALst.count())
-	Options.append( new TClntOptServerIdentifier(IALst.getFirst()->getDUID(),this));
+      	Options.append( new TClntOptServerIdentifier(IALst.getFirst()->getDUID(),this));
     else
-	Options.append( new TClntOptServerIdentifier(PDLst.getFirst()->getDUID(),this));
+	      Options.append( new TClntOptServerIdentifier(PDLst.getFirst()->getDUID(),this));
     
     //Store all IAs to renew
     IALst.first();
     while(ia=IALst.get()) {
-	if (timeout > ia->getT2Timeout())
-	    timeout = ia->getT2Timeout();
-	Options.append(new TClntOptIA_NA(ia,this));
+	      if (timeout > ia->getT2Timeout())
+	          timeout = ia->getT2Timeout();
+	      Options.append(new TClntOptIA_NA(ia,this));
     }
 
     PDLst.first();
     while (ia=PDLst.get()) {
-	if (timeout > ia->getT2Timeout())
-	    timeout = ia->getT2Timeout();
-	Options.append(new TClntOptIA_PD(ia, this));
+	      if (timeout > ia->getT2Timeout())
+	          timeout = ia->getT2Timeout();
+	      Options.append(new TClntOptIA_PD(ia, this));
     }
 
     appendRequestedOptions();
@@ -104,15 +104,15 @@ TClntMsgRenew::TClntMsgRenew(SmartPtr<TClntIfaceMgr> IfaceMgr,
 }
 
 
-void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
+void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 {
-    SmartPtr<TOpt> opt;
+    SPtr<TOpt> opt;
     unsigned int iaCnt = 0; 
     // get DUID
-    SmartPtr<TClntOptServerIdentifier> ptrDUID;
+    SPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) this->getOption(OPTION_SERVERID);
     
-    SmartPtr<TClntOptOptionRequest> ptrOptionReqOpt=(Ptr*)getOption(OPTION_ORO);
+    SPtr<TClntOptOptionRequest> ptrOptionReqOpt=(Ptr*)getOption(OPTION_ORO);
 
     Reply->firstOption();
     // for each option in message... (there should be only one IA option, as we send 
@@ -121,14 +121,14 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
         switch (opt->getOptType()) {
 	case OPTION_IA_NA: {
 	    iaCnt++;
-	    SmartPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
+	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
 	    if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
 		if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
 		    ClntTransMgr->sendRequest(Options,Iface);
 		    IsDone = true;
 		    return;
 		}else{
-		    SmartPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
+		    SPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
   		    Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code " << 
 		        StatusCodeToString(status->getCode()) << ": " 
 			         << status->getText() << LogEnd;
@@ -136,7 +136,7 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
 		}
 	    }
 	    ptrOptIA->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-			         ptrDUID->getDUID(), SmartPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
+			         ptrDUID->getDUID(), SPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
 
 	    ptrOptIA->doDuties();
 	    break;
@@ -151,7 +151,7 @@ void TClntMsgRenew::answer(SmartPtr<TClntMsg> Reply)
 		    return;
 		}
 		else{
-	            SmartPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
+	            SPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
 		    Log(Warning) << "Received PD (iaid=" << pd->getIAID() << ") with status code " << 
 		        StatusCodeToString(status->getCode()) << ": " 
 			         << status->getText() << LogEnd;
