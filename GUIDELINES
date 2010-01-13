@@ -1,9 +1,9 @@
 
   GUIDELINES
  ------------
- 1. SmartPtr can be created only:
-    - from other SmartPtr  (automatic conversion)
-    - using new() memory allocator ( SmartPtr<foo> = new foo(); )
+ 1. SPtr can be created only:
+    - from other SPtr  (automatic conversion)
+    - using new() memory allocator ( SPtr<foo> = new foo(); )
  2. Don't use unsigned char *, use char * instead.
  3. Object/Function/Variables prefixes: 
     - Clnt Srv  (server/client)
@@ -13,7 +13,7 @@
     methods addAddr(), firstAddr(), getAddr() etc.
  5. Lists which will not be modified are parsed as pointers.
  5. Before running doDuties() on OptIA_NA, one should run setThats() and setSrvDUID().
- 6. (Ptr*) is used ONLY while casting one SmartPtr on another SmartPtr.
+ 6. (Ptr*) is used ONLY while casting one SPtr on another SPtr.
  7. Port-specific files MUST be places in dir named port-PORTNAME
  
 
