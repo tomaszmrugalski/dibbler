@@ -26,11 +26,11 @@
 using namespace logger;
 using namespace std;
 
-bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr)
+bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> addr)
 {
     int result;
     // get interface
-    SmartPtr<TIfaceIface> Iface;
+    SPtr<TIfaceIface> Iface;
     Iface = this->getIfaceByID(iface);
     if (!Iface) {
         Log(Error) << " No such interface (id=" << iface << "). Send failed." << LogEnd;
@@ -38,7 +38,7 @@ bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Ad
     }
 
     // are there any sockets on this interface?
-    SmartPtr<TIfaceSocket> sock; 
+    SPtr<TIfaceSocket> sock; 
     if (! Iface->countSocket() ) {
         Log(Error) << "Interface " << Iface->getName() << " has no open sockets." << LogEnd;
         return false;
@@ -64,17 +64,17 @@ bool TClntIfaceMgr::sendMulticast(int iface, char * msg, int msgsize)
     // prepare address
     char addr[16];
     inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,addr);
-    SmartPtr<TIPv6Addr> multicastAddr = new TIPv6Addr(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,true);
+    SPtr<TIPv6Addr> multicastAddr = new TIPv6Addr(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,true);
     
     return this->sendUnicast(iface, msg, msgsize, multicastAddr);
 }
 
 
-SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
+SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 {
     int bufsize=4096;
     static char buf[4096];
-    SmartPtr<TIPv6Addr> peer(new TIPv6Addr());
+    SPtr<TIPv6Addr> peer(new TIPv6Addr());
     int sockid;
     int msgtype;
     int ifaceid;
@@ -92,8 +92,8 @@ SmartPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             return 0; // NULL
         }
         msgtype = buf[0];
-        SmartPtr<TClntMsg> ptr;
-        SmartPtr<TIfaceIface> ptrIface;
+        SPtr<TClntMsg> ptr;
+        SPtr<TIfaceIface> ptrIface;
         ptrIface = this->getIfaceBySocket(sockid);
         ifaceid = ptrIface->getID();
 	Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/" 
@@ -171,7 +171,7 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
                  // << ", flags=" << ptr->flags 
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 	
-        SmartPtr<TIfaceIface> iface = new TClntIfaceIface(ptr->name,ptr->id,
+        SPtr<TIfaceIface> iface = new TClntIfaceIface(ptr->name,ptr->id,
 							  ptr->flags,
 							  ptr->mac,
 							  ptr->maclen,
@@ -188,10 +188,10 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
 
 }
 
-void TClntIfaceMgr::setContext(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
-                               SmartPtr<TClntTransMgr> clntTransMgr,
-                               SmartPtr<TClntCfgMgr> clntCfgMgr,
-                               SmartPtr<TClntAddrMgr> clntAddrMgr)
+void TClntIfaceMgr::setContext(SPtr<TClntIfaceMgr> clntIfaceMgr,
+                               SPtr<TClntTransMgr> clntTransMgr,
+                               SPtr<TClntCfgMgr> clntCfgMgr,
+                               SPtr<TClntAddrMgr> clntAddrMgr)
 {
     ClntCfgMgr=clntCfgMgr;
     ClntAddrMgr=clntAddrMgr;
@@ -205,8 +205,8 @@ TClntIfaceMgr::~TClntIfaceMgr() {
 }
 
 void TClntIfaceMgr::removeAllOpts() {
-    SmartPtr<TIfaceIface> iface;
-    SmartPtr<TClntIfaceIface> clntIface;
+    SPtr<TIfaceIface> iface;
+    SPtr<TClntIfaceIface> clntIface;
 
     this->firstIface();
     while (iface = this->getIface()) {
@@ -217,8 +217,8 @@ void TClntIfaceMgr::removeAllOpts() {
 
 unsigned int TClntIfaceMgr::getTimeout() {
     unsigned int min=DHCPV6_INFINITY, tmp;
-    SmartPtr<TIfaceIface> iface;
-    SmartPtr<TClntIfaceIface> clntIface;
+    SPtr<TIfaceIface> iface;
+    SPtr<TClntIfaceIface> clntIface;
 
     this->firstIface();
     while (iface = this->getIface()) {
@@ -231,8 +231,8 @@ unsigned int TClntIfaceMgr::getTimeout() {
 }
 
 bool TClntIfaceMgr::doDuties() {
-    SmartPtr<TClntIfaceIface> iface;
-    SmartPtr<TClntCfgIface> cfgIface;
+    SPtr<TClntIfaceIface> iface;
+    SPtr<TClntCfgIface> cfgIface;
     
     this->firstIface();
     while (iface = (Ptr*)this->getIface()) {
@@ -263,12 +263,12 @@ bool TClntIfaceMgr::doDuties() {
     return true;
 }
 
-bool TClntIfaceMgr::fqdnAdd(SmartPtr<TClntIfaceIface> iface, string fqdn)
+bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
 {
-    SmartPtr<TIPv6Addr> DNSAddr;
-    SmartPtr<TIPv6Addr> addr;
+    SPtr<TIPv6Addr> DNSAddr;
+    SPtr<TIPv6Addr> addr;
 
-    SmartPtr<TClntCfgIface> cfgIface;
+    SPtr<TClntCfgIface> cfgIface;
     cfgIface = ClntCfgMgr->getIface(iface->getID());
     if (!cfgIface) {
 	      Log(Error) << "Unable to find interface with ifindex=" << iface->getID() << "." << LogEnd;
@@ -285,7 +285,7 @@ bool TClntIfaceMgr::fqdnAdd(SmartPtr<TClntIfaceIface> iface, string fqdn)
     DNSAddr = DNSSrvLst.get();
     
     // And the first IP address
-    SmartPtr<TAddrIA> ptrAddrIA;
+    SPtr<TAddrIA> ptrAddrIA;
     ClntAddrMgr->firstIA();
     ptrAddrIA = ClntAddrMgr->getIA();
     
@@ -313,12 +313,12 @@ bool TClntIfaceMgr::fqdnAdd(SmartPtr<TClntIfaceIface> iface, string fqdn)
     return true;
 }
 
-bool TClntIfaceMgr::fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> ia, string fqdn)
+bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string fqdn)
 {
     SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
     
     // let's do deleting update
-    SmartPtr<TIPv6Addr> clntAddr;
+    SPtr<TIPv6Addr> clntAddr;
     ia->firstAddr();
     SPtr<TAddrAddr> tmpAddr = ia->getAddr();
     if (!tmpAddr) {
@@ -328,7 +328,7 @@ bool TClntIfaceMgr::fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> i
     }
     SPtr<TIPv6Addr> myAddr = tmpAddr->get();
     
-    SmartPtr<TClntCfgIface> ptrIface = ClntCfgMgr->getIface(iface->getID());
+    SPtr<TClntCfgIface> ptrIface = ClntCfgMgr->getIface(iface->getID());
     
     Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
 	       << " and FQDN=" << fqdn << LogEnd;
@@ -666,7 +666,7 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "<ClntIfaceMgr>" << std::endl;
-    SmartPtr<TClntIfaceIface> ptr;
+    SPtr<TClntIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr= (Ptr*) x.IfaceLst.get() ) {
 	strum << *ptr;

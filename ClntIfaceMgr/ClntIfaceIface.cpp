@@ -62,10 +62,10 @@ unsigned int TClntIfaceIface::getTimeout() {
     return this->LifetimeTimestamp+this->LifetimeTimeout-current;
 }
 
-bool TClntIfaceIface::setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, 
+bool TClntIfaceIface::setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, 
 				      List(TIPv6Addr) addrs) {
     // remove old addresses
-    SmartPtr<TIPv6Addr> old, addr;
+    SPtr<TIPv6Addr> old, addr;
     this->DNSServerLst.first();
     while (old = this->DNSServerLst.get()) {
 	// for each already set server...
@@ -117,9 +117,9 @@ bool TClntIfaceIface::setDNSServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     return true;
 }
 
-bool TClntIfaceIface::setDomainLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(string) domains) {
+bool TClntIfaceIface::setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(string) domains) {
     // remove old domains
-    SmartPtr<string> old, domain;
+    SPtr<string> old, domain;
     this->DomainLst.first();
     while (old = this->DomainLst.get()) {
 	// for each already domain ...
@@ -171,10 +171,10 @@ bool TClntIfaceIface::setDomainLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv
     return true;
 }
 
-bool TClntIfaceIface::setNTPServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, 
+bool TClntIfaceIface::setNTPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, 
 				      List(TIPv6Addr) addrs) {
     // remove old addresses
-    SmartPtr<TIPv6Addr> old, addr;
+    SPtr<TIPv6Addr> old, addr;
     this->NTPServerLst.first();
     while (old = this->NTPServerLst.get()) {
 	// for each already set server...
@@ -226,7 +226,7 @@ bool TClntIfaceIface::setNTPServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     return true;
 }
 
-bool TClntIfaceIface::setTimezone(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string timezone) {
+bool TClntIfaceIface::setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string timezone) {
     this->TimezoneAddr = srv;
     this->TimezoneDUID = duid;
     if (timezone==this->Timezone) {
@@ -244,10 +244,10 @@ bool TClntIfaceIface::setTimezone(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv,
     return true;
 }
 
-bool TClntIfaceIface::setSIPServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, 
+bool TClntIfaceIface::setSIPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, 
 				      List(TIPv6Addr) addrs) {
     // remove old addresses
-    SmartPtr<TIPv6Addr> old, addr;
+    SPtr<TIPv6Addr> old, addr;
     this->SIPServerLst.first();
     while (old = this->SIPServerLst.get()) {
 	// for each already set server...
@@ -298,9 +298,9 @@ bool TClntIfaceIface::setSIPServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     this->SIPServerLstDUID = duid;
     return true;
 }
-bool TClntIfaceIface::setSIPDomainLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(string) domains) {
+bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(string) domains) {
     // remove old domains
-    SmartPtr<string> old, domain;
+    SPtr<string> old, domain;
     this->SIPDomainLst.first();
     while (old = this->SIPDomainLst.get()) {
 	// for each already domain ...
@@ -352,16 +352,16 @@ bool TClntIfaceIface::setSIPDomainLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     return true;
 }
 
-bool TClntIfaceIface::setFQDN(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string fqdn) {
+bool TClntIfaceIface::setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string fqdn) {
     this->FQDN = fqdn;
     this->FQDNDUID = duid;
     this->FQDNAddr = srv;
     return true;
 }
 
-bool TClntIfaceIface::setNISServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs) {
+bool TClntIfaceIface::setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs) {
     // remove old addresses
-    SmartPtr<TIPv6Addr> old, addr;
+    SPtr<TIPv6Addr> old, addr;
     this->NISServerLst.first();
     while (old = this->NISServerLst.get()) {
         // for each already set server...
@@ -412,7 +412,7 @@ bool TClntIfaceIface::setNISServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> 
     this->NISServerLstDUID = duid;
     return true;
 }
-bool TClntIfaceIface::setNISDomain(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string domain) {
+bool TClntIfaceIface::setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string domain) {
     this->NISDomainAddr = srv;
     this->NISDomainDUID = duid;
     if (domain==this->NISDomain) {
@@ -430,9 +430,9 @@ bool TClntIfaceIface::setNISDomain(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv
     return true;
 }
 
-bool TClntIfaceIface::setNISPServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs) {
+bool TClntIfaceIface::setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs) {
     // remove old addresses
-    SmartPtr<TIPv6Addr> old, addr;
+    SPtr<TIPv6Addr> old, addr;
     this->NISPServerLst.first();
     while (old = this->NISPServerLst.get()) {
 	// for each already set server...
@@ -483,7 +483,7 @@ bool TClntIfaceIface::setNISPServerLst(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr>
     this->NISPServerLstDUID = duid;
     return true;
 }
-bool TClntIfaceIface::setNISPDomain(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, string domain) {
+bool TClntIfaceIface::setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string domain) {
     this->NISPDomainAddr = srv;
     this->NISPDomainDUID = duid;
     if (domain==this->NISPDomain) {
@@ -501,7 +501,7 @@ bool TClntIfaceIface::setNISPDomain(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> sr
     return true;
 }
 
-bool TClntIfaceIface::setLifetime(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> srv, unsigned int life) {
+bool TClntIfaceIface::setLifetime(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, unsigned int life) {
     this->LifetimeTimeout = life;
     this->LifetimeTimestamp = now();
     if (life == DHCPV6_INFINITY) {
@@ -576,8 +576,8 @@ void TClntIfaceIface::setString(const char * filename, const char * str) {
 }
 
 void TClntIfaceIface::removeAllOpts() {
-    SmartPtr<TIPv6Addr> addr;
-    SmartPtr<string> str;
+    SPtr<TIPv6Addr> addr;
+    SPtr<string> str;
 
     // --- option: DNS-SERVER ---
     this->DNSServerLst.first();
@@ -701,8 +701,8 @@ SPtr<TIPv6Addr> TClntIfaceIface::getTunnelEndpoint()
  */
 ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
     char buf[48];
-    SmartPtr<TIPv6Addr> addr;
-    SmartPtr<string> str;
+    SPtr<TIPv6Addr> addr;
+    SPtr<string> str;
 
     strum << dec;
     strum << "  <ClntIfaceIface";
@@ -726,7 +726,7 @@ ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
     }
     strum << "</Mac>" << dec << endl;
 
-    SmartPtr<TIfaceSocket> sock;
+    SPtr<TIfaceSocket> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {
 	strum << "    " << *sock;

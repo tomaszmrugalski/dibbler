@@ -41,21 +41,21 @@ class TClntIfaceMgr : public TIfaceMgr
     friend ostream & operator <<(ostream & strum, TClntIfaceMgr &x);
     void dump();
     
-    bool sendUnicast(int iface, char *msg, int size, SmartPtr<TIPv6Addr> addr);
+    bool sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> addr);
     
     bool sendMulticast(int iface, char *msg, int msgsize);
     
-    SmartPtr<TClntMsg> select(unsigned int timeout);
+    SPtr<TClntMsg> select(unsigned int timeout);
 
-    void setContext(SmartPtr<TClntIfaceMgr> clntIfaceMgr,
-		    SmartPtr<TClntTransMgr> clntTransMgr,
-		    SmartPtr<TClntCfgMgr>   clntCfgMgr,
-		    SmartPtr<TClntAddrMgr>  clntAddrMgr);
+    void setContext(SPtr<TClntIfaceMgr> clntIfaceMgr,
+		    SPtr<TClntTransMgr> clntTransMgr,
+		    SPtr<TClntCfgMgr>   clntCfgMgr,
+		    SPtr<TClntAddrMgr>  clntAddrMgr);
 
     void notifyScripts(int msgType, int ifindex);
 
-    bool fqdnAdd(SmartPtr<TClntIfaceIface> iface, string domainname);
-    bool fqdnDel(SmartPtr<TClntIfaceIface> iface, SmartPtr<TAddrIA> ia, string domainname);
+    bool fqdnAdd(SPtr<TClntIfaceIface> iface, string domainname);
+    bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string domainname);
 
     bool addPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
     bool updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
@@ -74,10 +74,10 @@ class TClntIfaceMgr : public TIfaceMgr
     bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid, PrefixModifyMode mode);
 
     string XmlFile;
-    SmartPtr<TClntCfgMgr> ClntCfgMgr;
-    SmartPtr<TClntAddrMgr> ClntAddrMgr;
-    SmartPtr<TClntTransMgr> ClntTransMgr;
-    SmartPtr<TClntIfaceMgr> That;
+    SPtr<TClntCfgMgr> ClntCfgMgr;
+    SPtr<TClntAddrMgr> ClntAddrMgr;
+    SPtr<TClntTransMgr> ClntTransMgr;
+    SPtr<TClntIfaceMgr> That;
 };
 
 #endif 
