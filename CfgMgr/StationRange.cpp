@@ -21,33 +21,33 @@ TStationRange::TStationRange(void)
 {
     
 }
-TStationRange::TStationRange( SmartPtr<TDUID> duidl, SmartPtr<TDUID> duidr)
+TStationRange::TStationRange( SPtr<TDUID> duidl, SPtr<TDUID> duidr)
 {
     this->DUIDL=duidl;
     this->DUIDR=duidr;
     this->isAddrRange=false;
 }
 
-TStationRange::TStationRange( SmartPtr<TIPv6Addr> addrl, SmartPtr<TIPv6Addr> addrr)
+TStationRange::TStationRange( SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrr)
 {
     this->AddrL=addrl;
     this->AddrR=addrr;
     this->isAddrRange=true;
 }
 
-TStationRange::TStationRange( SmartPtr<TDUID> duid)
+TStationRange::TStationRange( SPtr<TDUID> duid)
 {
     this->DUIDL=this->DUIDR=duid;
     this->isAddrRange=false;
 }
 
-TStationRange::TStationRange( SmartPtr<TIPv6Addr> addr)
+TStationRange::TStationRange( SPtr<TIPv6Addr> addr)
 {
     this->AddrL=this->AddrR=addr;
     this->isAddrRange=true;
 }
 
-bool TStationRange::in(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr)
+bool TStationRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr)
 {
     if (isAddrRange)
     {
@@ -64,7 +64,7 @@ bool TStationRange::in(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr)
     return true;
 }
 
-bool TStationRange::in(SmartPtr<TIPv6Addr> addr)
+bool TStationRange::in(SPtr<TIPv6Addr> addr)
 {
     if (isAddrRange)
     {
@@ -77,7 +77,7 @@ bool TStationRange::in(SmartPtr<TIPv6Addr> addr)
         return false;
 }
 
-bool TStationRange::in(SmartPtr<TDUID> duid)
+bool TStationRange::in(SPtr<TDUID> duid)
 {
     if (isAddrRange)
         return false;
@@ -89,11 +89,11 @@ bool TStationRange::in(SmartPtr<TDUID> duid)
     return true;
 }
 
-SmartPtr<TIPv6Addr> TStationRange::getRandomAddr()
+SPtr<TIPv6Addr> TStationRange::getRandomAddr()
 {
     if(isAddrRange)
     {
-        SmartPtr<TIPv6Addr> diff = new TIPv6Addr();
+        SPtr<TIPv6Addr> diff = new TIPv6Addr();
         *diff=(*AddrR)-(*AddrL);
         --(*diff);
         *diff=*diff+*AddrL;
@@ -103,11 +103,11 @@ SmartPtr<TIPv6Addr> TStationRange::getRandomAddr()
         return 0;
 }
 
-SmartPtr<TIPv6Addr> TStationRange::getRandomPrefix()
+SPtr<TIPv6Addr> TStationRange::getRandomPrefix()
 {
     if(isAddrRange)
     {
-        SmartPtr<TIPv6Addr> diff = new TIPv6Addr();
+        SPtr<TIPv6Addr> diff = new TIPv6Addr();
         *diff=(*AddrR)-(*AddrL);
         --(*diff);
         *diff=*diff+*AddrL;
@@ -124,7 +124,7 @@ unsigned long TStationRange::rangeCount()
     if(isAddrRange)
     {
 
-        SmartPtr<TIPv6Addr> diff(new TIPv6Addr());
+        SPtr<TIPv6Addr> diff(new TIPv6Addr());
         *diff=(*AddrR)-(*AddrL);
         char *addr=diff->getAddr();
         for(int i=0;i<12;i++)
@@ -154,11 +154,11 @@ void TStationRange::setPrefixLength(int len)
 TStationRange::~TStationRange(void) {
 }
 
-SmartPtr<TIPv6Addr> TStationRange::getAddrL() {
+SPtr<TIPv6Addr> TStationRange::getAddrL() {
     return this->AddrL;
 }
 
-SmartPtr<TIPv6Addr> TStationRange::getAddrR() {
+SPtr<TIPv6Addr> TStationRange::getAddrR() {
     return this->AddrR;
 }
 

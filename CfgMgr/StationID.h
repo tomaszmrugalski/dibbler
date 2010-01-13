@@ -24,17 +24,17 @@ class TStationID
 	friend std::ostream& operator<<(std::ostream& out,TStationID&  station);
 public:
 
-	TStationID(SmartPtr<TIPv6Addr> addr);
-    TStationID(SmartPtr<TDUID> duid);
-    bool operator==(SmartPtr<TIPv6Addr> addr);
-    bool operator==(SmartPtr<TDUID> duid);
+	TStationID(SPtr<TIPv6Addr> addr);
+    TStationID(SPtr<TDUID> duid);
+    bool operator==(SPtr<TIPv6Addr> addr);
+    bool operator==(SPtr<TDUID> duid);
 
 	//TStationID(const TStationID& info);
 	//~TStationID();
 private:
     bool isIDAddress;
-    SmartPtr<TIPv6Addr> Addr;
-    SmartPtr<TDUID> DUID;
+    SPtr<TIPv6Addr> Addr;
+    SPtr<TDUID> DUID;
 };
 
 #endif 

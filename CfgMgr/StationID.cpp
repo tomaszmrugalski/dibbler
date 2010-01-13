@@ -14,26 +14,26 @@
 
 using namespace std;
 
-TStationID::TStationID(SmartPtr<TIPv6Addr> addr)
+TStationID::TStationID(SPtr<TIPv6Addr> addr)
 {
     this->Addr=addr;
     isIDAddress=true;
 }
 
-TStationID::TStationID(SmartPtr<TDUID> duid)
+TStationID::TStationID(SPtr<TDUID> duid)
 {
     this->DUID=duid;
     isIDAddress=false;
 }
 
-bool TStationID::operator==(SmartPtr<TIPv6Addr> addr)
+bool TStationID::operator==(SPtr<TIPv6Addr> addr)
 {   
     if (!isIDAddress)
         return false;
     return *addr==*Addr;
 }
 
-bool TStationID::operator==(SmartPtr<TDUID> duid)
+bool TStationID::operator==(SPtr<TDUID> duid)
 {
     if (isIDAddress)
         return false;

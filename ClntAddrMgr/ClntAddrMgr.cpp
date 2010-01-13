@@ -35,7 +35,7 @@ TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFi
     firstClient();
     if (!getClient()) {
         // add this client (with proper duid)
-        SmartPtr<TAddrClient> client = new TAddrClient(clientDUID);
+        SPtr<TAddrClient> client = new TAddrClient(clientDUID);
         addClient(client);
     }
 
@@ -74,7 +74,7 @@ unsigned long TClntAddrMgr::getTimeout()
 
 unsigned long TClntAddrMgr::getTentativeTimeout()
 {
-    SmartPtr<TAddrIA> ptrIA;
+    SPtr<TAddrIA> ptrIA;
     Client->firstIA();
     unsigned long min = DHCPV6_INFINITY;
     unsigned long tmp;
@@ -99,8 +99,8 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
  */
 void TClntAddrMgr::doDuties()
 {
-    SmartPtr<TAddrIA> ptrIA;
-    SmartPtr<TAddrAddr> ptrAddr;
+    SPtr<TAddrIA> ptrIA;
+    SPtr<TAddrAddr> ptrAddr;
 
     this->firstIA();
     while ( ptrIA = this->getIA() ) 
@@ -125,7 +125,7 @@ void TClntAddrMgr::firstIA() {
     Client->firstIA();
 }
 
-SmartPtr<TAddrIA> TClntAddrMgr::getIA() {
+SPtr<TAddrIA> TClntAddrMgr::getIA() {
     return Client->getIA();
 }
 
@@ -133,7 +133,7 @@ bool TClntAddrMgr::delIA(long IAID) {
     return Client->delIA(IAID);
 }
 
-void TClntAddrMgr::addIA(SmartPtr<TAddrIA> ptr) {
+void TClntAddrMgr::addIA(SPtr<TAddrIA> ptr) {
     Client->addIA(ptr);
 }
 
@@ -146,20 +146,9 @@ TClntAddrMgr::~TClntAddrMgr() {
     Log(Debug) << "ClntAddrMgr cleanup." << LogEnd;
 }
 
-#if 0
-bool TClntAddrMgr::isIAAssigned(unsigned long IAID)
+SPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
 {
-	SmartPtr<TAddrIA> ia;
-	firstIA();
-	while (ia=getIA())
-		if (ia->getIAID()==IAID) return true;
-	return false;
-}	
-#endif
-
-SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
-{
-    SmartPtr<TAddrIA> ptrIA;
+    SPtr<TAddrIA> ptrIA;
     this->Client->firstIA();
     while (ptrIA = this->Client->getIA() ) {
 	if (ptrIA->getIAID() == IAID)
@@ -175,7 +164,7 @@ SmartPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
  */
 void TClntAddrMgr::setIA2Confirm(volatile link_state_notify_t * changedLinks)
 {
-    SmartPtr<TAddrIA> ptrIA;
+    SPtr<TAddrIA> ptrIA;
     this->firstIA();
     while(ptrIA = this->getIA()){
 
@@ -205,7 +194,7 @@ void TClntAddrMgr::firstPD() {
     Client->firstPD();
 }
 
-SmartPtr<TAddrIA> TClntAddrMgr::getPD() {
+SPtr<TAddrIA> TClntAddrMgr::getPD() {
     return Client->getPD();
 }
 
@@ -213,7 +202,7 @@ bool TClntAddrMgr::delPD(long IAID) {
     return Client->delPD(IAID);
 }
 
-void TClntAddrMgr::addPD(SmartPtr<TAddrIA> ptr) {
+void TClntAddrMgr::addPD(SPtr<TAddrIA> ptr) {
     Client->addPD(ptr);
 }
 
@@ -221,20 +210,9 @@ int TClntAddrMgr::countPD() {
     return Client->countPD();
 }
 
-#if 0
-bool TClntAddrMgr::isPDAssigned(unsigned long IAID)
+SPtr<TAddrIA> TClntAddrMgr::getPD(unsigned long IAID)
 {
-	SmartPtr<TAddrIA> pd;
-	Client->firstPD();
-	while (pd=Client->getPD())
-		if (pd->getIAID()==IAID) return true;
-	return false;
-}	
-#endif
-
-SmartPtr<TAddrIA> TClntAddrMgr::getPD(unsigned long IAID)
-{
-    SmartPtr<TAddrIA> ptrPD;
+    SPtr<TAddrIA> ptrPD;
     this->Client->firstPD();
     while (ptrPD = this->Client->getPD() ) {
 	if (ptrPD->getIAID() == IAID)
@@ -251,14 +229,14 @@ void TClntAddrMgr::firstTA()
     Client->firstTA();
 }
 
-SmartPtr<TAddrIA> TClntAddrMgr::getTA()
+SPtr<TAddrIA> TClntAddrMgr::getTA()
 {
     return Client->getTA();
 }
 
-SmartPtr<TAddrIA> TClntAddrMgr::getTA(unsigned long iaid)
+SPtr<TAddrIA> TClntAddrMgr::getTA(unsigned long iaid)
 {
-    SmartPtr<TAddrIA> ta;
+    SPtr<TAddrIA> ta;
     this->Client->firstTA();
     while (ta = this->Client->getTA() ) {
 	if (ta->getIAID() == iaid)
@@ -267,7 +245,7 @@ SmartPtr<TAddrIA> TClntAddrMgr::getTA(unsigned long iaid)
     return 0;
 }
 
-void TClntAddrMgr::addTA(SmartPtr<TAddrIA> ptr)
+void TClntAddrMgr::addTA(SPtr<TAddrIA> ptr)
 {
     Client->addTA(ptr);
 }
@@ -286,9 +264,9 @@ void TClntAddrMgr::print(ostream &x) {
     
 }
 
-bool TClntAddrMgr::addPrefix(SmartPtr<TDUID> srvDuid , SmartPtr<TIPv6Addr> srvAddr,
+bool TClntAddrMgr::addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
 			     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
-			     SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+			     SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			     int length, bool quiet) 
 {
     if (!prefix) {
@@ -297,7 +275,7 @@ bool TClntAddrMgr::addPrefix(SmartPtr<TDUID> srvDuid , SmartPtr<TIPv6Addr> srvAd
     }
 
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     ptrClient = getClient();
 
@@ -307,7 +285,7 @@ bool TClntAddrMgr::addPrefix(SmartPtr<TDUID> srvDuid , SmartPtr<TIPv6Addr> srvAd
 
 bool TClntAddrMgr::updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
 				int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
-				SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+				SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 				int length, bool quiet)
 {
     if (!prefix) {
@@ -316,7 +294,7 @@ bool TClntAddrMgr::updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
     }
 
     // find this client
-    SmartPtr <TAddrClient> ptrClient;
+    SPtr <TAddrClient> ptrClient;
     this->firstClient();
     ptrClient = getClient();
 

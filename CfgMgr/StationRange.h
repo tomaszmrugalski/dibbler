@@ -43,27 +43,27 @@ class TStationRange
  public:
     TStationRange(void);
     ~TStationRange(void);
-    TStationRange( SmartPtr<TDUID> duidl, SmartPtr<TDUID> duidr);
-    TStationRange( SmartPtr<TDUID> duid);
-    TStationRange( SmartPtr<TIPv6Addr> addrl, SmartPtr<TIPv6Addr> addrR);
-    TStationRange( SmartPtr<TIPv6Addr> addr);
-    bool in(SmartPtr<TDUID> duid, SmartPtr<TIPv6Addr> addr);
-    bool in(SmartPtr<TIPv6Addr> addr);
-    bool in(SmartPtr<TDUID> duid);
-    SmartPtr<TIPv6Addr> getRandomAddr();
-    SmartPtr<TIPv6Addr> getRandomPrefix();
+    TStationRange( SPtr<TDUID> duidl, SPtr<TDUID> duidr);
+    TStationRange( SPtr<TDUID> duid);
+    TStationRange( SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
+    TStationRange( SPtr<TIPv6Addr> addr);
+    bool in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr);
+    bool in(SPtr<TIPv6Addr> addr);
+    bool in(SPtr<TDUID> duid);
+    SPtr<TIPv6Addr> getRandomAddr();
+    SPtr<TIPv6Addr> getRandomPrefix();
     unsigned long rangeCount();
-    SmartPtr<TIPv6Addr> getAddrL();
-    SmartPtr<TIPv6Addr> getAddrR();
+    SPtr<TIPv6Addr> getAddrL();
+    SPtr<TIPv6Addr> getAddrR();
     int getPrefixLength();
     void setPrefixLength(int len);
     void truncate(int minPrefix, int maxPrefix);
  private:
     bool isAddrRange;
-    SmartPtr<TDUID> DUIDL;
-    SmartPtr<TDUID> DUIDR;
-    SmartPtr<TIPv6Addr> AddrL;
-    SmartPtr<TIPv6Addr> AddrR;
+    SPtr<TDUID> DUIDL;
+    SPtr<TDUID> DUIDR;
+    SPtr<TIPv6Addr> AddrL;
+    SPtr<TIPv6Addr> AddrR;
 
     int PrefixLength;
 };

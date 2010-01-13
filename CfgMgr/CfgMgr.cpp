@@ -30,7 +30,7 @@
 #include "Logger.h"
 #include "Iface.h"
 
-TCfgMgr::TCfgMgr(SmartPtr<TIfaceMgr> IfaceMgr) {
+TCfgMgr::TCfgMgr(SPtr<TIfaceMgr> IfaceMgr) {
     this->IfaceMgr = IfaceMgr;
     this->DUIDType = DUID_TYPE_LLT; /* default DUID type: LLT */
 }
@@ -150,7 +150,7 @@ bool TCfgMgr::setDUID(const string filename) {
 	return true;
     }
 
-    SmartPtr<TIfaceIface> realIface;
+    SPtr<TIfaceIface> realIface;
 
     bool found=false;
     
@@ -301,7 +301,7 @@ int TCfgMgr::getLogLevel()
     return LogLevel;
 }
 
-SmartPtr<TDUID> TCfgMgr::getDUID()
+SPtr<TDUID> TCfgMgr::getDUID()
 {
     return DUID;
 }

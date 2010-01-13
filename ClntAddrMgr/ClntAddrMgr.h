@@ -34,9 +34,9 @@ class TClntAddrMgr : public TAddrMgr
 
     // --- IA ---
     void firstIA();
-    SmartPtr<TAddrIA> getIA();
-    SmartPtr<TAddrIA> getIA(unsigned long IAID);
-    void addIA(SmartPtr<TAddrIA> ptr);
+    SPtr<TAddrIA> getIA();
+    SPtr<TAddrIA> getIA(unsigned long IAID);
+    void addIA(SPtr<TAddrIA> ptr);
     bool delIA(long IAID);
     int countIA();
     // CHANGED here: when network switch off signal received, the funtion will be invoked to set valid IA to CONFIRMME state.
@@ -44,25 +44,25 @@ class TClntAddrMgr : public TAddrMgr
 
     // --- PD --- 
     void firstPD();
-    SmartPtr<TAddrIA> getPD();
-    SmartPtr<TAddrIA> getPD(unsigned long IAID);
-    void addPD(SmartPtr<TAddrIA> ptr);
+    SPtr<TAddrIA> getPD();
+    SPtr<TAddrIA> getPD(unsigned long IAID);
+    void addPD(SPtr<TAddrIA> ptr);
     bool delPD(long IAID);
     int countPD();
     bool addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
 		   int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
-		   SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+		   SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		   int length, bool quiet);
     bool updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
 		      int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
-		      SmartPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+		      SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		      int length, bool quiet);
 
     // --- TA ---
     void firstTA();
-    SmartPtr<TAddrIA> getTA();
-    SmartPtr<TAddrIA> getTA(unsigned long iaid);
-    void addTA(SmartPtr<TAddrIA> ptr);
+    SPtr<TAddrIA> getTA();
+    SPtr<TAddrIA> getTA(unsigned long iaid);
+    void addTA(SPtr<TAddrIA> ptr);
     bool delTA(unsigned long iaid);
     int countTA();
 
@@ -75,7 +75,7 @@ class TClntAddrMgr : public TAddrMgr
  protected:
     void print(ostream &x);
  private:
-    SmartPtr<TAddrClient> Client;
+    SPtr<TAddrClient> Client;
 };
 
 #endif
