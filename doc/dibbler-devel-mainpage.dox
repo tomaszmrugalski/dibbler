@@ -14,6 +14,7 @@
  *   - @subpage compilationWinNT
  *   - @subpage compilationFlexBison
  *   - @subpage compilationDebRpm
+ *   - @subpage compilationOpenWrt
  *   - @subpage compilationGentoo
  *   - @subpage compilationDistros
  *   - @subpage compilationEnvironment
@@ -22,12 +23,12 @@
  *   - @subpage compilationCross
  * - @subpage portability
  *   - @subpage portabilityLowLevel
- * - @subpage generalInfo
+ * - @subpage generalInfo "4. General information"
  *   - @subpage generalReleases
  *   - @subpage generalSVN
  *   - @subpage generalDocs
  *   - @subpage generalMemoryCpu
- * - @subpage srcOverview
+ * - @subpage srcOverview "5. Source code information"
  *   - @subpage srcOptionValues
  *   - @subpage srcMemoryManagement
  *   - @subpage srcLogger
@@ -40,8 +41,8 @@
  *   - @subpage archClient
  *   - @subpage archServer
  *   - @subpage archRelay
-     - @subpage archRequestor
- *  - @subpage debug
+ *   - @subpage archRequestor
+ * - @subpage debug
  *   - @subpage debugMemoryLeaks
  * - @subpage faq
  * - @subpage tips

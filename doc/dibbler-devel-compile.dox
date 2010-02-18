@@ -54,25 +54,27 @@ make parser
  * doing so, there is an flex and bison binary included in port-win32. Take note that
  * several modifications are required:
  * 
- * To generate \verb+ClntParser.cpp+ and \verb+ClntLexer.cpp+ files, you can use
- * \verb+parser.bat+. After generation, in file \verb+ClntLexer.cpp+ replace: 
- * \verb+class istream;+ with: \verb+#include <iostream>+ and 
- * \verb+using namespace std;+ lines. flex binary included is slightly modified. 
+ * To generate @c ClntParser.cpp and @c ClntLexer.cpp files, you can use
+ * @c parser.bat. After generation, in file @c ClntLexer.cpp replace: 
+ * @c class istream; with: @c #include <iostream> and 
+ * @c using namespace std; lines. flex binary included is slightly modified. 
  * It generates
  * 
  * @verbatim
- * #include "FlexLexer.h"
- * @endverbatim 
+ #include "FlexLexer.h"
+ @endverbatim 
  * instead of 
  * @verbatim
- * #include <FlexLexer.h>
- * @endverbatim 
+ #include <FlexLexer.h>
+ @endverbatim 
  * 
- * You should add .\ to include path if you have problem with missing \verb+FlexLexer.h+.
- * Also note that \verb+FlexLexer.h+ is modified (std:: added in several places,
- * \verb+<fstream.h>+ is replaced with \verb+<fstream>+ etc.)
- * %%\item In file ClntParser.cpp, substitute line (around 1860): ,,	*++yyvsp = yylval;''
- * %%with: ,,*++yyvsp = ::yylval;''. This trick is supposed to fix numerous
+ * You should add .\\ to include path if you have problem with missing @c FlexLexer.h.
+ * Also note that FlexLexer.h is modified (std:: added in several places,
+ * @c <fstream.h> is replaced with @c <fstream> etc.)
+ * %%\item In file ClntParser.cpp, substitute line (around 1860): 
+@berbatim*++yyvsp = yylval;@endverbatim
+ * %%with: 
+,,*++yyvsp = ::yylval;''. This trick is supposed to fix numerous
  * %%parser problems.
  * \end{itemize}
  * 
@@ -93,12 +95,12 @@ make parser
  * make release-rpm
  * @endverbatim
  * 
- * @section compilationOpenWrt Cross-compilation for OpenWRT
+ * @section compilationOpenWrt 2.6 Cross-compilation for OpenWRT
  * Dibbler is also part of the OpenWRT Linux distribution intended to
  * address broad range of embedded devices, like LinkSys routers and 
  * access points.
  *
- * @section compilationGentoo 2.6 Ebuild script for Gentoo Linux
+ * @section compilationGentoo 2.7 Ebuild script for Gentoo Linux
  * There is also ebuild script prepared for Gentoo users. It is located
  * in the Port-linux/gentoo directory. Dibbler is also part of the
  * Gentoo Linux distribution so make sure that you verify which version
@@ -108,58 +110,57 @@ make parser
  * to Gentoo community. Author no longer maintains it, but occasionally
  * retrieves latest version from Gentoo repositories.
  * 
- * @section compilationDistros Dibbler in Linux distributions
+ * @section compilationDistros 2.8 Dibbler in Linux distributions
  * Dibbler is available in several distributions:
  * 
- *  - @href{http://debian.org}{Debian GNU/Linux} -- use standard tools
+ *  - <a href="http://debian.org">Debian GNU/Linux</a> -- use standard tools
  *    (apt-get, aptitude) to install dibbler-client, dibbler-server,
- *    dibbler-relay or dibbler-doc packages (e.g. apt-get install dibbler-client)
- *  - @href{http://www.gentoo.org}{Gentoo Linux} -- use emerge to
+ *    dibbler-relay or dibbler-doc packages (e.g. @c apt-get @c install @c dibbler-client)
+ *  - <a href="http://www.gentoo.org">Gentoo Linux</a> -- use emerge to
  *     install dibbler (e.g. emerge dibbler).
- *  - @href{http://openwrt.org}{OpenWRT}
- *  - @href{http://ubuntu.com}{Ubuntu Linux}
- *  - @href{http://www.pld-linux.org}{PLD GNU/Linux} -- use standard
+ *  - <a href="http://openwrt.org">OpenWRT</a>
+ *  - <a href="http://ubuntu.com">Ubuntu Linux</a>
+ *  - <a href="http://www.pld-linux.org">PLD GNU/Linux</a> -- use standard
  *     PLD's poldek tool to install dibbler package.
  * 
- * @section compilationEnvironment Compilation environment
+ * @section compilationEnvironment 2.9 Compilation environment
  * When compilation is being performed in non-standard envrionment, it is a
- * good idea to examine and modify \verb+Makefile.inc+ file. Compiler name,
+ * good idea to examine and modify @c Makefile.inc file. Compiler name,
  * compilation and link options, used libraries and debugging options can
  * be modified there.
  * 
- * \subsection{Changing default values}
+ * @section compilationDefaultValues 2.10 Changing default values
  * Custom builds might be prepared with different than default
  * compilation options. Here is a list of features, which can be
  * customised:
  * \begin{itemize}
  * \item Default log level -- please modify LOGMODE\_DEFAULT define in
- *   \verb+Mish/Logger.h+.
+ *   @c Mish/Logger.h+.
  * \item FIXME - describe remaining parameters
  * \end{itemize}
  * 
- * \subsection{Modular features}
+ * @section compilationModularFeatures 2.11 Modular features
  * \label{modular-features}
  * In the 0.5.0 release, so called \emph{modular features} were
  * introduced. It is now possible to enable or disable of the Dibbler
  * features. To set, which optional features should be compiled, modify
- * \verb+Makefile.inc+ file before starting compilation\footnote{In Windows
+ * @c Makefile.inc file before starting compilation\footnote{In Windows
  * builds, which use MS Visual Studio, those flags must be defined in the
  * project options window}. Following flags are available:
  * 
- * \begin{description}
- *  \item[MOD\_CLNT\_EMBEDDED\_CFG] -- If this flag is set, client will use
+ * - @c MOD_CLNT_EMBEDDED_CFG -- If this flag is set, client will use
  *   hardcoded configuration, instead of reading configuration file. To
  *   reasonably use this feature, hardcoded configuration should be
- *   modified to match specific needs. See \verb+ClntCfgMgr/ClntCfgMgr.cpp+
+ *   modified to match specific needs. See @c ClntCfgMgr/ClntCfgMgr.cpp+
  *   file for details.
- *  \item[MOD\_CLNT\_DISABLE\_DNSUPDATE] -- If this flag is set, client will
+ * - @c MOD_CLNT_DISABLE_DNSUPDATE -- If this flag is set, client will
  *   be compiled without DNS Update support, used in FQDN feature. This
  *   will make client binary file smaller and will skip the whole poslib
  *   library, but client will not be able to perform DNS Updates on its own
  *   and will ask server to perform such updates. When DNS Updates are
  *   disabled, extra care should be used during server configuration, so
  *   all updates will performed on the server side.
- *  \item[MOD\_CLNT\_BIND\_REUSE] -- Normally it does not make sense to
+ * - @c MOD_CLNT_BIND_REUSE -- Normally it does not make sense to
  *   execute server and client on the same machine. It is also not
  *   reasonable to execute several client instances on the same host. To
  *   prevent such situations, client open normal sockets (without reuse
@@ -170,20 +171,19 @@ make parser
  *   clients in parallel should be allowed. To allow this, enable flag
  *   MOD\_CLNT\_BIND\_REUSE. Note that feature will also make possible to
  *   execute server and client on the same node.
- *  \item[MOD\_SRV\_DISABLE\_DNSUPDATE] -- If this flag is set, server will
+ * - @c MOD_SRV_DISABLE_DNSUPDATE -- If this flag is set, server will
  *   be compiled without DNS Update support, used in FQDN feature. This
  *   will make server binary file smaller and will skip the whole poslib
  *   library, but server will not be able to perform DNS Updates on client
  *   behalf. According to FQDN standard \cite{rfc4704}, only server is allowed
  *   to execute reverse resolve (PTR record) DNS updates, so in such setup
  *   only forward resoling (AAAA record) will be executed be the client.
- * \item[MOD\_DISABLE\_AUTH] -- does not compile authentication
+ * - @c MOD_DISABLE_AUTH -- does not compile authentication
  *   support. Makes bin files smaller.
- * \item[MOD\_DEBUG] -- Enables some extra debugging features. If you are
+ * - @c MOD_DEBUG -- Enables some extra debugging features. If you are
  *   not core developer, you probably won't even notice.
- * \end{description}
  * 
- * \subsection{Cross-compilation}
+ * @subsection compilationCross 2.12 Cross-compilation
  * Since 0.6.1 version, dibbler supports cross-compilation. It was
  * possible in previous versions, but with considerable amount of work.
  * 
@@ -193,7 +193,7 @@ make parser
  * In general, a toolchain has to be specified.
  * 
  * For autotools compilation driven (e.g. poslib), you need to call the
- * configure script with --chost and --cbuild parameters describing
+ * configure script with @c --chost and @c --cbuild parameters describing
  * toolchains used for compilation of binaries for platform where dibbler
  * is supposted to run and for platform where compilation will be
  * proceeded. configure should derive names of compiler for C (CC), C++
@@ -201,15 +201,15 @@ make parser
  * 
  * If you don't use autotools (like dibbler partially) or you want your own
  * compilers, you need to export this variables manually (CC, CXX). If you
- * want specify compiler for producing local binaries, use CC\_FOR\_BUILD and
- * CXX\_FOR\_BUILD.
+ * want specify compiler for producing local binaries, use @c CC_FOR_BUILD and
+ * @c CXX_FOR_BUILD.
  * 
  * Next, if you want to optimize the binaries or to use some non-standard
  * paths to header files or libraries, you need to export variables CFLAGS
  * and LDFLAGS for C language and CXXFLAGS and LDFLAGS for C++. These
  * variables apply for compilation for target platform. If you want tweak
  * compilation of binaries for local building machine, use
- * CFLAGS\_FOR\_BUILD, LDFLAGS\_FOR\_BUILD and CXXFLAGS\_FOR\_BUILD.
+ * @c CFLAGS_FOR_BUILD, @c LDFLAGS_FOR_BUILD and @c CXXFLAGS_FOR_BUILD.
  * 
  * If you have all cross-compiled libraries under one directory (lets say
  * image of root file system), you can use gcc argument --sysroot which
@@ -223,22 +223,22 @@ make parser
  * mipsel-softfloat-linux-gnu on i586-pc-linux-gnu having MIPS system
  * installed under /var/tftp/mips32el-linux-gnu and all tool-chain utilities in PATH:
  * 
- * \begin{lstlisting}
- * CBUILD=i586-pc-linux-gnu \
- * CC=mipsel-softfloat-linux-gnu-gcc \
- * CXX=mipsel-softfloat-linux-gnu-g++ \
- * CFLAGS='-march=4kc -msoft-float -Os -pipe -fomit-frame-pointer
- * --sysroot=/var/tftp/mips32el-linux-gnu' \
- * CXXFLAGS='-march=4kc -msoft-float -Os -pipe -fomit-frame-pointer
- * --sysroot=/var/tftp/mips32el-linux-gnu' \
- * LDFLAGS=--sysroot=/var/tftp/mips32el-linux-gnu \
- * CHOST=mipsel-softfloat-linux-gnu \
- * CC_FOR_BUILD=i586-pc-linux-gnu-gcc \
- * CFLAGS_FOR_BUILD='-march=k6-2 -O2 -pipe -fomit-frame-pointer' \
- * CXXFLAGS_FOR_BUILD='-march=k6-2 -O2 -pipe -fomit-frame-pointer' \
- * CXX_FOR_BUILD=i586-pc-linux-gnu-g++ \
- * LDFLAGS_FOR_BUILD= \
- * make -j1
- * \end{lstlisting}
+ * @verbatim
+CBUILD=i586-pc-linux-gnu \
+CC=mipsel-softfloat-linux-gnu-gcc \
+CXX=mipsel-softfloat-linux-gnu-g++ \
+CFLAGS='-march=4kc -msoft-float -Os -pipe -fomit-frame-pointer
+--sysroot=/var/tftp/mips32el-linux-gnu' \
+CXXFLAGS='-march=4kc -msoft-float -Os -pipe -fomit-frame-pointer
+--sysroot=/var/tftp/mips32el-linux-gnu' \
+LDFLAGS=--sysroot=/var/tftp/mips32el-linux-gnu \
+CHOST=mipsel-softfloat-linux-gnu \
+CC_FOR_BUILD=i586-pc-linux-gnu-gcc \
+CFLAGS_FOR_BUILD='-march=k6-2 -O2 -pipe -fomit-frame-pointer' \
+CXXFLAGS_FOR_BUILD='-march=k6-2 -O2 -pipe -fomit-frame-pointer' \
+CXX_FOR_BUILD=i586-pc-linux-gnu-g++ \
+LDFLAGS_FOR_BUILD= \
+make -j1
+@endverbatim
  *
  */

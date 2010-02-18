@@ -1,0 +1,15 @@
+/**
+
+@page debug 7. Dibbler debugging
+
+This section specifies, which tools can be used to debug Dibbler and
+generally aid in the software process development.
+
+@section debugMemoryLeaks 7.1 Detecting Memory Leaks using Valgrind
+
+Execute dibbler with the following command:
+@verbatim
+valgrind --tool=memcheck --show-reachable=yes --leak-check=full ./dibbler-client run
+@endverbatim
+
+*/
