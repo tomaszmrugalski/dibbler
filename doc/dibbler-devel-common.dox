@@ -11,8 +11,8 @@ significant functionality is added, the middle number is being
 increased. When new release contains only fixes and small
 improvements, only the minor number is changed. Leftmost number is
 currently set to 0 as not all features mentioned in base DHCPv6
-document (RFC3315, \cite{rfc3315}) are implemented. When this
-implementation will be complete, release number will reach
+document (<a href="http://www.ietf.org/rfc/rfc3315.txt>RFC3315</a>) are implemented. 
+When Dibbler implementation will be complete, release number will reach
 1.0.0. Since DHCPv6 specification is extensive, don't expect this to
 happen anytime soon.
 
@@ -22,12 +22,12 @@ happen anytime soon.
 
 @section generalDocs 4.3 Documentation
 There are three parts of the documentation: User's Guide, Developer's
-Guide and a Code documentation. Both guides are written in \LaTeX
-(*.tex files). To generate PDF files, you need to have \LaTeX
+Guide and a Code documentation. Both guides are written in LaTeX
+(*.tex files). To generate PDF files, you need to have LaTeX
 installed. To generate Code documentation, 
-a tool called \href{http://www.doxygen.org}{Doxygen} is required. All
+a tool called <a href"http://www.doxygen.org">Doxygen</a> is required. All
 documentation is of course available at
-\href{http://klub.com.pl/dhcpv6}{Dibbler's homepage}.
+<a href="http://klub.com.pl/dhcpv6">Dibbler's homepage</a>.
 
 To generate all documentation, type (in Dibbler source directory):
 @verbatim
@@ -46,7 +46,7 @@ were taken on a AMD Athlon 2800+ (actual clock speed: 2083MHz),
 running under Linux 2.6.17.3. Dibbler was compiled by gcc 4.1.2
 (exact version number printed by @c gcc @c --version command:
 @verbatim
-\verb+gcc (GCC) 4.1.2 20060715 (prerelease) (Debian 4.1.1-9)
+gcc (GCC) 4.1.2 20060715 (prerelease) (Debian 4.1.1-9)
 @endverbatim
 
 Every Dibbler component (client, server or relay) is event driven. It
@@ -57,7 +57,7 @@ is being received) actual CPU usage is 0. During tests, author was
 unable to observe any CPU consumption above 0,0\%. 
 
 In the 0.5.0 release, a compilation options called Modular features
-was added (see section @ref compilationModularFeatures). One of the possible
+was added (see Section @ref compilationModularFeatures). One of the possible
 way of compiling Dibbler is to disable poslib - a library used to
 perform DNS Updates. Dibbler binaries compiled without poslib are
 designated as -wo-poslib. It is possible to compile Dibbler with
@@ -67,30 +67,25 @@ various compilation options. In particular (enabled by default)
 usage), @b -O0 (disably any kind of optimisation) or -Os (produce
 smallest possible code). Debugging informations can be removed using
 @b strip command (designated below as -stripped). Linux command
-line tool called \verb+top+ was used to measure memory usage. VIRT is
+line tool called \b top was used to measure memory usage. VIRT is
 a virtual memory size, RES denotes size of actual physical memory used
 and SHR is a size of a shared memory. See top manual page for details.
 
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|c|l|l|}
-\hline
-VIRT & RES& SHR & \%CPU &\%MEM&Optim.&filesize&COMMAND \\
-\hline
-3416&1564&1416 &  0.0 & 0.2 & -O0 & 7123510 & dibbler-server\\
-3416&1560&1416 &  0.0 & 0.2 & -O0 & 751948  & dibbler-server-stripped\\
-3328&1544&1400 &  0.0 & 0.2 & -O0 & 6533375 & dibbler-server-wo-poslib\\
-3328&1548&1400 &  0.0 & 0.2 & -O0 & 663592  & dibbler-server-wo-poslib-stripped\\
-3220&1436&1292 &  0.0 & 0.2 & -Os & 4596760 & dibbler-server run\\
-3140&1424&1276 &  0.0 & 0.2 & -Os & 468776  & dibbler-server-wo-poslib\\
-3388&1636&1496 &  0.0 & 0.2 & -O0 & 9771605 & dibbler-client\\
-3392&1644&1496 &  0.0 & 0.2 & -O0 & 725352  & dibbler-client-stripped\\
-3296&1608&1472 &  0.0 & 0.2 & -O0 & 9183726 & dibbler-client-wo-poslib\\
-3300&1612&1472 &  0.0 & 0.2 & -O0 & 639240  & dibbler-client-wo-poslib-stripped\\
-3212&1472&1336 &  0.0 & 0.2 & -Os & 5901734 & dibbler-client-wo-poslib\\
-3120&1456&1320 &  0.0 & 0.2 & -Os & 458984  & dibbler-client-wo-poslib\\
-\hline
-\end{tabular}
-\end{center}
+<table border="1">
+  <tr><td>VIRT</td><td>RES </td><td> SHR </td><td> %CPU </td><td>%MEM</td><td>Optim.</td><td>filesize</td><td>COMMAND</td></tr>
+  <tr><td>3416</td><td>1564</td><td>1416 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 7123510 </td><td> dibbler-server</td></tr>
+  <tr><td>3416</td><td>1560</td><td>1416 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 751948  </td><td> dibbler-server-stripped</td></tr>
+  <tr><td>3328</td><td>1544</td><td>1400 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 6533375 </td><td> dibbler-server-wo-poslib</td></tr>
+  <tr><td>3328</td><td>1548</td><td>1400 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 663592  </td><td> dibbler-server-wo-poslib-stripped</td></tr>
+  <tr><td>3220</td><td>1436</td><td>1292 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 4596760 </td><td> dibbler-server run</td></tr>
+  <tr><td>3140</td><td>1424</td><td>1276 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 468776  </td><td> dibbler-server-wo-poslib</td></tr>
+  <tr><td>3388</td><td>1636</td><td>1496 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 9771605 </td><td> dibbler-client</td></tr>
+  <tr><td>3392</td><td>1644</td><td>1496 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 725352  </td><td> dibbler-client-stripped</td></tr>
+  <tr><td>3296</td><td>1608</td><td>1472 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 9183726 </td><td> dibbler-client-wo-poslib</td></tr>
+  <tr><td>3300</td><td>1612</td><td>1472 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 639240  </td><td> dibbler-client-wo-poslib-stripped</td></tr>
+  <tr><td>3212</td><td>1472</td><td>1336 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 5901734 </td><td> dibbler-client-wo-poslib</td></tr>
+  <tr><td>3120</td><td>1456</td><td>1320 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 458984  </td><td> dibbler-client-wo-poslib</td></tr>
+</table>
 
 Dibbler stores data internally in lists. This means that server's
 memory and CPU usage is a linearly proportional to a number of clients
@@ -137,7 +132,8 @@ pointing at the object. There is a tradeoff: normal pointers (*)
 should not be mixed with smart pointers. 
 
 Smart pointers are implemented as C++ class templates. Template is
-called @c SmartPtr<TYPE>.
+called @c SPtr<TYPE>. @b Note: It has been renamed. Previous, obsolete
+name is SmartPtr<TYPE>. Please, do not use it anymore.
 
 To quickly explain smart pointers usage, here's short code example:
 @verbatim
@@ -150,25 +146,22 @@ To quickly explain smart pointers usage, here's short code example:
  7 }
 @endverbatim
 What's happened in those lines?
-\begin{description}
-\item[1] -- Function starts.
-\item[2] -- New TIPv6Addr object is created. Smart Pointer
+ - [1] -- Function starts.
+ - [2] -- New TIPv6Addr object is created. Smart Pointer
   (SmartPtr$<$TIPv6Addr$>$) is also created to point at this object. Using
   normal pointer to achive the same goal would look like this: \\
-  \verb+TIPv6Addr * addr = new TIPv6Addr("ff02::1:2");+
-\item[3] -- Another pointer is created. It is equivalent of the
+  TIPv6Addr * addr = new TIPv6Addr("ff02::1:2");
+ - [3] -- Another pointer is created. It is equivalent of the
   classical pointer (TIPv6Addr * tmp).
-\item[4] -- Simple check if pointer does not point to anything.
-\item[5] -- Smart pointers can be coppied in a easy way.
-\item[6] -- Using object pointed by smart pointer is simple
-\item[7] -- Here magic begins. addr and tmp are local variables, so
+ - [4] -- Simple check if pointer does not point to anything.
+ - [5] -- Smart pointers can be coppied in a easy way.
+ - [6] -- Using object pointed by smart pointer is simple
+ - [7] -- Here magic begins. addr and tmp are local variables, so
   they are destroyed here. But they are the only smart pointers which
   access TIPv6Addr object. So they are destroy that object. 
-\end{description}
 
-In conclusion, object remain in memory as long as there is at least
-one smart pointer which points to this object. SmartPointers can be
-easily derefernced. Just add * before them:
+Object remain in memory as long as there is at least one smart pointer which points to this object. 
+Smart pointers can be easily derefernced. Just add * before them:
 @verbatim
 cout << *addr << endl;
 @endverbatim
@@ -202,97 +195,94 @@ How to use this list? Oh well, another example:
 
 And here is description what that code does:
 
-\begin{description}
-\item[1] -- Address list declaration.
-\item[2,3] -- SmartPtrs declarations. Just to show variable types.
-\item[4] -- List can be cleared. All pointers will be destroyed. If
+ - [1] -- Address list declaration.
+ - [2,3] -- SmartPtrs declarations. Just to show variable types.
+ - [4] -- List can be cleared. All pointers will be destroyed. If
   they were only pointers to point to some objects, those objects will
   be destroyed, too.
-\item[5] -- Append object pointed by ptr to the list.
-\item[6] -- Rewind list to the beginning.
-\item[7] -- Get next object from the list. If list is empty or last
+ - [5] -- Append object pointed by ptr to the list.
+ - [6] -- Rewind list to the beginning.
+ - [7] -- Get next object from the list. If list is empty or last
   element was already got, NULL is returned.
-\item[8] -- An easy way to count elements on the list.
-\item[9] -- Rewind list to the beginning.
-\item[10,11] -- A cute example how to print all addresses on the list.
+ - [8] -- An easy way to count elements on the list.
+ - [9] -- Rewind list to the beginning.
+ - [10,11] -- A cute example how to print all addresses on the list.
 \end{description}
 
 @section srcLogger 5.3 Logging
 To log various informations, Log(LOGLEVEL) macros are defined. There
 are eight levels of logging:
-\begin{description}
-\item[Emergency] -- Used to report system wide emergency. Such
+
+ - \b Emergency -- Used to report system wide emergency. Such
   conditions could not occur in the DHCPv6 client o server, so this
   logging level should not be used. Called with
   \verb+Log(Emerg) << "..." << LogEnd+.
 
-\item[Alert] -- Used to alert an administrator about system wide
+ - \b Alert -- Used to alert an administrator about system wide
   alerts. This logging level should not be used in DHCPv6. 
   Called with \verb+Log(Alert) << "..." << LogEnd+.
 
-\item[Critical] -- Used in situations critical to the application,
+ - \b Critical -- Used in situations critical to the application,
   e.g. application shutdown. Fatal errors should be logged on this
   level. Called with \verb+Log(Crit) << "..." << LogEnd+.
 
-\item[Error] -- Used to report error situations. For example, problems
+ - \b Error -- Used to report error situations. For example, problems
   with binding sockets. Called with \verb+Log(Error) << "..." << LogEnd+.
 
-\item[Warning] -- Used to report RFC violations, e.g. missing required
+ - \b Warning -- Used to report RFC violations, e.g. missing required
   options, invalid parameters and so on. Called with \verb+Log(Warning) << "..." << LogEnd+.
 
-\item[Notice] -- Used to report normal operations, e.g. address
+ - \b Notice -- Used to report normal operations, e.g. address
  assignement or informations about received options. Called with
- \verb+Log(Notice) << "..." << LogEnd+.
+ @code Log(Notice) << "..." << LogEnd @endcode
 
-\item[Info] -- Used to report detailed information. DHCPv6 protocol
+ - \b Info -- Used to report detailed information. DHCPv6 protocol
   knowledge might be needed to understand those messages.
   Called with \verb+Log(Info) << "..." << LogEnd+.
 
-\item[Debug] -- Used to report internal informations. Knowledge about
+ - \b Debug -- Used to report internal informations. Knowledge about
   Dibbler source code might be needed to understand those messages.
   Called with \verb+Log(Debug) << "..." << LogEnd+.
-\end{description}
 
 @section srcNames 5.4 Names and prefixes
 To avoid confussion, various prefixes are used in class and variable
 names. Class types begin with T (e.g. address class would be named
 TAddr), enumeration types begin with E (e.g. state enumaterion would
 be names EState). Dibbler is divided into 4 large functional blocks
-called managers\footnote{They are described in the following sections
-  of this document}: address maganger, interface manager, Configuration
+called managers (They are described in the following sections
+  of this document): address maganger, interface manager, Configuration
 manager, and transmsission manager. Each of them uses different
 prefix: Addr, Iface, Cfg or Trans. There are also objects shared among
 them: messages (Msg prefix) and options (Opt prefix). Often there are
 two derived versions: related to client (Clnt prefix) or related to
 server (Clnt). Rel prefix is used to denote Relay related classes. 
 Here are examples of some class names:
-\begin{description}
-\item[TAddrMgr] -- Address manager, common version.
-\item[TClntAddrMgr] -- Address manager, client version.
-\item[TAddrIface] -- Interface representation, used in address manager.
-\item[TAddrAddr] -- Address representation used in address manager.
-\item[TSrvIfaceMgr] -- Interface manager, server version.
-\item[TClntIfaceIface] -- Interface representation used in client
+
+ - \b TAddrMgr -- Address manager, common version.
+ - \b TClntAddrMgr -- Address manager, client version.
+ - \b TAddrIface -- Interface representation, used in address manager.
+ - \b TAddrAddr -- Address representation used in address manager.
+ - \b TSrvIfaceMgr -- Interface manager, server version.
+ - \b TClntIfaceIface -- Interface representation used in client
   interface manager.
-\item[TClntMsg] -- Message represented on the client side.
-\item[TClntOptPreference] -- Prefernce option used on the client side.
-\item[TIfaceSocket] -- Socket used in the interface manager.
-\item[TClntCfgAddr] -- Address used in the client config manager.
-\end{description}
+ - \b TClntMsg -- Message represented on the client side.
+ - \b TClntOptPreference -- Prefernce option used on the client side.
+ - \b TIfaceSocket -- Socket used in the interface manager.
+ - \b TClntCfgAddr -- Address used in the client config manager.
 
 Also note that class function names start with small letters
-(e.g. \verb+bool TOpt::isValid();+) and class variables start with capital
-letters (e.g. \verb+bool TOpt::IsValid;+).
+(e.g. bool TOpt::isValid();) and class variables start with capital
+letters (e.g. bool TOpt::IsValid;).
 
 @section srcParsers 5.5 Configuration file parsers
 @b Note: Similar approach is used in server, client and
 relay. In following section when reference to a specific file is needed,
 client files are used. To find corresponding files related to server and
-relay, substitute \verb+Clnt+ with \verb+Srv+ or \verb+Rel+.
+relay, substitute \b Clnt with \b Srv or \b Rel.
 
 Dibbler uses standard lexer/parser. Lexer is generated using flex. Parser is
 generated with bison++ (full source code for bison++ is provided with
-Dibbler sources). See \verb+ClntCfgMgr/ClntParser.y+ and
+Dibbler sources). See ClntCfgMgr/ClntParser.y and
 ClntCfgMgr/ClntLexer.l for details. Make sure that you have flex installed
 (bison++ is provided with the dibbler source code). To generate parser
 and lexer code, type:
@@ -356,14 +346,14 @@ bool SrvParser::EndIfaceDeclaration()
 
 Lexer and parser are created in the Client Configuration Manager. See
 ClntCfgMgr/ClntCfgMgr.cpp. Following code is executed in the ClntCfgMgr
-constructor\footnote{Actual code is much more complicated, but
-unnecessary lines were removed for a clarification reasons.}
+constructor. Actual code is much more complicated, but
+unnecessary lines were removed for a clarification reasons.
 
 @verbatim
-yyFlexLexer lexer(\&f,\&clog);
-ClntParser parser(\&lexer);
+yyFlexLexer lexer(&f,&clog);
+ClntParser parser(&lexer);
 result = parser.yyparse();
-matchParsedSystemInterfaces(\&parser);
+matchParsedSystemInterfaces(&parser);
 validateConfig();
 @endverbatim
 
@@ -390,7 +380,7 @@ Example mentioned above works as follows:
 
 Another way of defining client configuration was introduced in the 0.5.0
 release. Instead of reading configuration file, configuration can be
-hardcoded in the binary file itself. See MOD\_CLNT\_EMBEDDED\_CFG flag
-description in section \ref{modular-features}.
+hardcoded in the binary file itself. See \b MOD_CLNT_EMBEDDED_CFG flag
+description in Section @ref compilationModularFeatures.
 
 */

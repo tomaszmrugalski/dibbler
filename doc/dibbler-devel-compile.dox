@@ -133,20 +133,17 @@ make parser
  * Custom builds might be prepared with different than default
  * compilation options. Here is a list of features, which can be
  * customised:
- * \begin{itemize}
- * \item Default log level -- please modify LOGMODE\_DEFAULT define in
+ * - Default log level -- please modify LOGMODE\_DEFAULT define in
  *   @c Mish/Logger.h+.
- * \item FIXME - describe remaining parameters
- * \end{itemize}
+ * - @todo - describe remaining parameters
  * 
  * @section compilationModularFeatures 2.11 Modular features
- * \label{modular-features}
  * In the 0.5.0 release, so called \emph{modular features} were
  * introduced. It is now possible to enable or disable of the Dibbler
  * features. To set, which optional features should be compiled, modify
- * @c Makefile.inc file before starting compilation\footnote{In Windows
+ * @c Makefile.inc file before starting compilation (In Windows
  * builds, which use MS Visual Studio, those flags must be defined in the
- * project options window}. Following flags are available:
+ * project options). Following flags are available:
  * 
  * - @c MOD_CLNT_EMBEDDED_CFG -- If this flag is set, client will use
  *   hardcoded configuration, instead of reading configuration file. To

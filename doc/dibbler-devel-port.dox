@@ -29,19 +29,17 @@
  * - @code void if_list_release(struct iface * list) @endcode Releases list previously
  * allocated in the if_list_get() function.
  * 
- * - @code int ipaddr_add(const char* ifacename, int ifindex, const char*
- * 	   addr, uint pref, uint valid) @endcode
+ * - @code int ipaddr_add(const char* ifacename, int ifindex, const char* addr, uint pref, uint valid) @endcode
  * This function adds address specified (in plain text) in addr parameter to
  * the interface named ifacename with interface index ifindex with preferred
  * and valid lifetimes set to pref and valid. Note that some systems might
  * ignore interface name and use ifindex only, or vice versa.
  * 
- * - @code int ipaddr_del(const char* ifacename, int ifindex, const char*
- * 	   addr)@endcode Removes address addr (specified in plain text) from the interface
- * ifacename.
+ * - @code int ipaddr_del(const char* ifacename, int ifindex, const char* addr)@endcode 
+ *  Removes address addr (specified in plain text) from the interface ifacename.
  * 
- * - @code int sock_add(char* ifacename,int ifaceid, char* addr, int port, int
- * thisifaceonly, int reuse)] @endcode Creates socket used to read and write data to
+ * - @code int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse)] @endcode 
+ * Creates socket used to read and write data to
  * the ifacename/ifaceid interface, bound to address addr (specified in plain
  * text) and to the port. thisifaceonly parameter specifies if the socket
  * should be bound to the specific interface (1) or not (0). Some systems (e.g.
@@ -54,12 +52,12 @@
  * - @code int sock_del(int fd) @endcode -- delete previously created socket. fd is a
  * file descriptor returned by the sock_add() function.
  * 
- * - @code int sock_send(int fd, char* addr, char* buf, int buflen, int port,
- * int iface) @endcode Sends data to addr (defined in packed name)/port, using socket
+ * - @code int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface) @endcode 
+ * Sends data to addr (defined in packed name)/port, using socket
  * fs. Send buflen byte starting at buf. Send the data using interface iface.
  * 
- * - @code int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char*
- * buf, int buflen) @endcode Receive data from the fd socket. Store destination (my)
+ * - @code int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen) @endcode 
+ * Receive data from the fd socket. Store destination (my)
  * address in a memory located at myPlainAddr, store sender's address in a
  * memory located at peerPlainAddr. The data itself should be stored in a
  * memory located at buf. buflen is a size of a buffer (to avoid buffer
@@ -108,7 +106,7 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char*domain);
  * microseconds.
  * 
  * An example implementation of those functions, can be found in
- * Port-linux/layer3.c and Port-linux/lowlevel-options-linux.c file. Those
+ * Port-linux/lowlevel-linux.c and Port-linux/lowlevel-options-linux.c file. Those
  * files are specific for a Linux system.
  * 
  * To fully port Dibbler, also a main() function must be implemented. It should
@@ -130,6 +128,6 @@ srv.run();
 @endverbatim
  * 
  * See Port-linux/dibbler-client.cpp and Port-linux/dibbler-server.cpp for
- * example implementation, specific to a Linux systems. Implementations for
- * Windows XP are available in the Port-win32 directory.
+ * example implementation, specific to a Linux systems. Other implementations 
+ * (ports to different systems) are available in their Port-* directories.
  */

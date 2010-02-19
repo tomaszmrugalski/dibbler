@@ -17,7 +17,7 @@
 
 
 /**
- * @brief Client address manager constructor
+ * @brief Client Address Manager constructor
  *
  * constructor used for creation of client version of address manager
  *
@@ -26,7 +26,6 @@
  * @param xmlFile XML filename (AddrMgr dumps will be stored there)
  * @param loadDB should existing dump be loaded?
  *
- * @return <description or remove if void/constructor/destructor>
  */
 TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFile, bool loadDB)
     :TAddrMgr(xmlFile, useConfirm)
@@ -94,7 +93,6 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
  *
  * removes addresses that already expired. May also perform
  * other duties. This method should be called periodically.
- *
  *
  */
 void TClntAddrMgr::doDuties()
@@ -264,6 +262,23 @@ void TClntAddrMgr::print(ostream &x) {
     
 }
 
+/**
+ * @brief Adds a prefix. 
+ *
+ * @param srvDuid Server DUID 
+ * @param srvAddr Server address. 
+ * @param iface   interface index
+ * @param IAID    IAID
+ * @param T1      T1 timer
+ * @param T2      T2 timer
+ * @param prefix  prefix
+ * @param pref    prefered lifetime
+ * @param valid   valid lifetime
+ * @param length  prefix length
+ * @param quiet   quiet mode (true=be quiet)
+ *
+ * @return true if successful, false otherwise
+ */
 bool TClntAddrMgr::addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
 			     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
 			     SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,

@@ -3,8 +3,7 @@
 @page faq 8. Frequently Asked Questions
 This section describes various Dibbler aspects.
 
-\begin{description}
-\item[XML files] -- After performing any action, server, client and
+- <b>XML files</b> -- After performing any action, server, client and
 relay store their internal information into XML files. As for 0.4.1
 version, those files are never read, just written. This feature can be
 used as a debugging tool. However, it's main purpose is the ability to
@@ -12,7 +11,7 @@ process and present internal state in some external form. For example
 using with css styles or after processing via XSLT parsers, server
 statistics can be presented as a web page.
 
-\item[Message building] -- Each TMsg object (see Messages/Msg.h) has
+- <b>Message building </b> -- Each TMsg object (see Messages/Msg.h) has
 Options list. Options (TOpt derived objects) are created (usually in
 the constructor). They're stored as objects. For good example, see
 appendRequestedOptions() method in the client messages
@@ -20,19 +19,18 @@ appendRequestedOptions() method in the client messages
 storeSelf(), which is called just before message is being sent.
 
 You might ask: what about retransmissions? Message is built each time
-it is being resent. That might seem inefficient, but there is one
+it is being resent. That might seem inefficient, but there is an
 option called Estimated. It specifies how long does this particular
 transaction is being processed. So each time retrasmission is in fact
 a slightly different message. It differs in that option, so
 UDP checksum is different, so it has to be rebuilt.
-\end{description}
 
 @page tips 9. Tips and tricks
 
  - Linux: Running client and server on the same host requires
   client recompilation with specific option enabled. Please edit
-  \verb+misc/Portable.h+ and set \verb+CLIENT_BIND_REUSE+ to
-  \verb+true+. This will allow to receive data from local server, but
+  \c misc/Portable.h and set \b CLIENT_BIND_REUSE to
+  true. This will allow to receive data from local server, but
   will also disable checking if there is another client running. So
   you can run multiple clients, which is a straight road to
   trouble. You were warned.
@@ -43,12 +41,12 @@ UDP checksum is different, so it has to be rebuilt.
   packet-dhcpv6.c from Dibbler homepage and recompile
   Ethereal. Dibbler's author sent patches to the Ethereal team. Those
   changes should be included in the next Ethereal
-  release. \textbf{NOTE:} This is no longer true. Patch was accepted
+  release. \b NOTE: This is no longer true. Patch was accepted
   and now Ethereal prints informations properly.
  - If you are reading this Developer's Guide, then Hey! You're
   probably a developer! If you found any bugs (or think you found
   one), go to the
-  \href{http://klub.com.pl/bugzilla}{http://klub.com.pl/bugzilla}
+  <a href="http://klub.com.pl/bugzilla">http://klub.com.pl/bugzilla</a>
    and report it. If your report was a mistake -- oh well, you just
   lost 5 minutes. But if it was really a bug, you have just helped improve
   next Dibbler version.

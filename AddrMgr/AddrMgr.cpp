@@ -247,7 +247,7 @@ unsigned long TAddrMgr::getValidTimeout()
 /* Prefix Delegation-related method starts here */
 
 /** 
- * addx prefix for a client. If client's IA is missing, add it, too.
+ * adds prefix for a client. If client's IA is missing, add it, too.
  * 
  * @param clntDuid client DUID
  * @param clntAddr client address
@@ -258,6 +258,7 @@ unsigned long TAddrMgr::getValidTimeout()
  * @param prefix   prefix to be added
  * @param pref     preferred lifetime
  * @param valid    valid lifetime
+ * @param length   prefix length
  * @param quiet    should it be added quietly? (i.e. no messages printed)
  * 
  * @return true if adding was successful
@@ -872,7 +873,12 @@ SPtr<TAddrIA> TAddrMgr::parseAddrTA(FILE *f) {
  * parses part XML section that represents single PD
  * (section between <AddrPD>...</AddrPD>
  *
- * @param f file handle , bool AddrPD,int t1,int t2,int iaid,int iface
+ * @param f file handle
+ * @prams AddrPD is this AddrPD token
+ * @param t1 T1 value
+ * @param t2 T2 value
+ * @param iaid IAID
+ * @param iface interface index
  *
  * @return pointer to newly created TAddrIA object
  */
