@@ -4,7 +4,7 @@
  * This section contains guidelines and tips for people intending to port
  * Dibbler to a new achitecture or system. Before attempting to do so,
  * please contact Dibbler author
- * (\href{mailto:thomson(at)klub.com.pl}{thomson(at)klub.com.pl})
+ * (a href="mailto:thomson(at)klub.com.pl">thomson(at)klub.com.pl</a>)
  * for help. Substantial support will be provided.
  * 
  * @section portabilityLowLevel 3.1 Low-level System API

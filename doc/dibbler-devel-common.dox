@@ -11,7 +11,7 @@ significant functionality is added, the middle number is being
 increased. When new release contains only fixes and small
 improvements, only the minor number is changed. Leftmost number is
 currently set to 0 as not all features mentioned in base DHCPv6
-document (<a href="http://www.ietf.org/rfc/rfc3315.txt>RFC3315</a>) are implemented. 
+document (<a href="http://www.ietf.org/rfc/rfc3315.txt">RFC3315</a>) are implemented. 
 When Dibbler implementation will be complete, release number will reach
 1.0.0. Since DHCPv6 specification is extensive, don't expect this to
 happen anytime soon.
@@ -111,8 +111,8 @@ There's pretty good chance that different implementors may choose
 diffrent values for those not-yet officialy accepted options. To
 change those values in Dibbler, you have to modify file
 misc/DHCPConst.h and recompile server or client. Make sure that you
-build everything for scratch. Use \verb+make clean+ in Linux and
-\verb+Clean up solution+ in Windows before you start building a new
+build everything for scratch. Use \b make \b clean in Linux and
+\b Clean \b up \b solution in Windows before you start building a new
 version.
 
 In default build, Dibbler stores all information in the
@@ -179,7 +179,7 @@ List(TIPv6Addr) addrLst;
 @endverbatim
 
 How to use this list? Oh well, another example:
-\begin{verbatim}
+@verbatim
 1  List(TIPv6Addr) addrLst;
 2  SmartPtr<TIPv6Addr> ptr = ...;
 3  SmartPtr<TIPv6Addr> tmp;
@@ -191,7 +191,7 @@ How to use this list? Oh well, another example:
 9  addrLst.first();
 10 while (tmp = addrLst.get()) 
 11   cout << *tmp << endl;
-\end{verbatim}
+@endverbatim
 
 And here is description what that code does:
 
@@ -207,7 +207,6 @@ And here is description what that code does:
  - [8] -- An easy way to count elements on the list.
  - [9] -- Rewind list to the beginning.
  - [10,11] -- A cute example how to print all addresses on the list.
-\end{description}
 
 @section srcLogger 5.3 Logging
 To log various informations, Log(LOGLEVEL) macros are defined. There
@@ -215,22 +214,23 @@ are eight levels of logging:
 
  - \b Emergency -- Used to report system wide emergency. Such
   conditions could not occur in the DHCPv6 client o server, so this
-  logging level should not be used. Called with
-  \verb+Log(Emerg) << "..." << LogEnd+.
+  logging level should not be used. Called with:
+  @code Log(Emerg) << "..." << LogEnd @endcode
 
  - \b Alert -- Used to alert an administrator about system wide
   alerts. This logging level should not be used in DHCPv6. 
-  Called with \verb+Log(Alert) << "..." << LogEnd+.
+  Called with @code Log(Alert) << "..." << LogEnd @endcode
 
  - \b Critical -- Used in situations critical to the application,
   e.g. application shutdown. Fatal errors should be logged on this
-  level. Called with \verb+Log(Crit) << "..." << LogEnd+.
+  level. Called with @code Log(Crit) << "..." << LogEnd @endcode.
 
  - \b Error -- Used to report error situations. For example, problems
-  with binding sockets. Called with \verb+Log(Error) << "..." << LogEnd+.
+  with binding sockets. Called with @code Log(Error) << "..." << LogEnd @endcode.
 
  - \b Warning -- Used to report RFC violations, e.g. missing required
-  options, invalid parameters and so on. Called with \verb+Log(Warning) << "..." << LogEnd+.
+  options, invalid parameters and so on. Called with @code Log(Warning) 
+  << "..." << LogEnd @endcode
 
  - \b Notice -- Used to report normal operations, e.g. address
  assignement or informations about received options. Called with
@@ -238,11 +238,11 @@ are eight levels of logging:
 
  - \b Info -- Used to report detailed information. DHCPv6 protocol
   knowledge might be needed to understand those messages.
-  Called with \verb+Log(Info) << "..." << LogEnd+.
+  Called with @code Log(Info) << "..." << LogEnd @endcode
 
  - \b Debug -- Used to report internal informations. Knowledge about
   Dibbler source code might be needed to understand those messages.
-  Called with \verb+Log(Debug) << "..." << LogEnd+.
+  Called with @code Log(Debug) << "..." << LogEnd @endcode.
 
 @section srcNames 5.4 Names and prefixes
 To avoid confussion, various prefixes are used in class and variable
@@ -295,8 +295,8 @@ make parser (each time you modify *.l or *.y files)
 @section srcParsersParsing 5.5.1 Parsing
 Configuration file reading is done using Flex and bison++ tools. Flex
 is so called lexer. Its responsibility is to read config file and
-translate it into stream of tokens. \footnote{To be precise, Flex
-  generates lexers, so it should be called lexer generator.} For
+translate it into stream of tokens. (To be precise, Flex
+  generates lexers, so it should be called lexer generator.) For
 example, this config file:
 @verbatim
 iface eth0 {
