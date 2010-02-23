@@ -488,17 +488,24 @@ bool TWinService::verifyPort() {
          Log(Warning) << "Support for Vista is considered experimental." << LogEnd;
           ok = true;
     }
+    if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==1)) {
+         Log(Notice) << "Windows7 detected (majorVersion=" << verinfo.dwMajorVersion
+          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+         Log(Warning) << "Support for Win7 is considered experimental." << LogEnd;
+          ok = true;
+    }
 
     if (!ok) {
          Log(Warning) << "Unsupported operating system detected (majorVersion=" << verinfo.dwMajorVersion
           << ", minorVersion=" << verinfo.dwMinorVersion << ")." << LogEnd;
-         Log(Notice) << "Unsupported systems (there's specific Dibbler version for those systems:" << LogEnd;
+         Log(Notice) << "Unsupported systems (there's separate Dibbler version for those systems):" << LogEnd;
          Log(Notice) << "Windows NT4:   major<5 minor=0" << LogEnd;
          Log(Notice) << "Windows 2000:  major=5 minor=0" << LogEnd;
          Log(Notice) << "Supported systems:" << LogEnd;
          Log(Notice) << "Windows XP:    major=5 minor=1" << LogEnd;
          Log(Notice) << "Windows 2003:  major=5 minor=2" << LogEnd;
          Log(Notice) << "Windows Vista: major=6 minor=0" << LogEnd;
+		 Log(Notice) << "Windows 7:     major=6 minor=1" << LogEnd;
     }
     return ok;
 }

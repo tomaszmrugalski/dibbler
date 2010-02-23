@@ -35,30 +35,30 @@ EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
     int n=1;
     while (n<argc)
     {
-	if (!strncmp(argv[n], "status",6))    {	return STATUS;}
-	if (!strncmp(argv[n], "start",5))     {	return START;	}
-	if (!strncmp(argv[n], "stop",4))      {	return STOP;	}
-	if (!strncmp(argv[n], "help",4))      { return HELP; }
-	if (!strncmp(argv[n], "uninstall",9)) {	return UNINSTALL; }
-	if (!strncmp(argv[n], "install",7))   {	status = INSTALL; }
-	if (!strncmp(argv[n], "run",3))       { status = RUN; }
-    if (!strncmp(argv[n], "service", 7))  { status = SERVICE; }
-	
-	if (strncmp(argv[n], "-d",2)==0) {
-	    if (n+1==argc) {
-		cout << "-d is a last parameter (additional filepath required)" << endl;
-		return INVALID; // this is last parameter
-	    }
+	    if (!strncmp(argv[n], "status",6))    {	return STATUS;}
+	    if (!strncmp(argv[n], "start",5))     {	return START;	}
+	    if (!strncmp(argv[n], "stop",4))      {	return STOP;	}
+	    if (!strncmp(argv[n], "help",4))      { return HELP; }
+	    if (!strncmp(argv[n], "uninstall",9)) {	return UNINSTALL; }
+	    if (!strncmp(argv[n], "install",7))   {	status = INSTALL; }
+	    if (!strncmp(argv[n], "run",3))       { status = RUN; }
+        if (!strncmp(argv[n], "service", 7))  { status = SERVICE; }
+    	
+	    if (strncmp(argv[n], "-d",2)==0) {
+	        if (n+1==argc) {
+		        cout << "-d is a last parameter (additional filepath required)" << endl;
+		        return INVALID; // this is last parameter
+	        }
+	        n++;
+	        char temp[255];
+	        strncpy(temp,argv[n],254);
+		    int endpos = strlen(temp);
+		    if (temp[endpos-1]=='\\')
+			    temp[endpos-1]=0;
+            ServiceDir = temp;
+            dirFound=true;
+        }
 	    n++;
-	    char temp[255];
-	    strncpy(temp,argv[n],254);
-		int endpos = strlen(temp);
-		if (temp[endpos-1]=='\\')
-			temp[endpos-1]=0;
-        ServiceDir = temp;
-        dirFound=true;
-    }
-	n++;
     }
     if (!dirFound) {
      // Log(Notice) << "-d parameter missing. Trying to load server.conf from current directory." << LogEnd;
@@ -72,15 +72,21 @@ EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
 	    return INVALID;
 	}
 	const char * tmp = ServiceDir.c_str();
-	if ( *(tmp+1)!=':') {
-	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: second character is not a ':'. "
+    if ( tmp[0]=='.' && tmp[1]=='.')
+        return status; // relative directory
+    if ( tmp[0]==tmp[1]=='\\')
+    {
+        Log(Warning) << "Network directory specified as config file location." << LogEnd;
+        return status;
+    }
+    
+    if ( *(tmp+1)!=':') {
+	    Log(Notice) << "Invalid or not absolute directory [" << ServiceDir << "]: second character is not a ':'. "
 		      << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << LogEnd;
-	    return INVALID;
 	}
 	if ( *(tmp+2)!='\\' && *(tmp+2)!='/' ) {
-	    Log(Crit) << "Invalid directory [" << ServiceDir << "]: third character is not a '/' nor '\\'. "
+	    Log(Notice) << "Invalid or absolute directory [" << ServiceDir << "]: third character is not a '/' nor '\\'. "
 		      << "Please use full absolute" << " pathname, e.g. C:\\dibbler" << LogEnd;
-	    return INVALID;
 	}
 	return status;
 }
@@ -110,9 +116,9 @@ void TSrvService::Run()
     logger::setLogName("Srv");
 	logger::Initialize((char*)logFile.c_str());
     
-    Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER, WinXP/2003/Vista port)" << LogEnd;
+    Log(Crit) << DIBBLER_COPYRIGHT1 << " (SERVER, WinXP/2003/Vista/Win7 port)" << LogEnd;
     
-    TDHCPServer server(workdir+"\\"+confile);
+    TDHCPServer server(confile);
     srvPtr = &server; // remember address
     server.setWorkdir(this->ServiceDir);
     
