@@ -104,7 +104,8 @@ void checkLinkState(){
 /** 
  * begin monitoring of those interfaces
  * 
- * @param changed_links 
+ * @param monitored_links head of the monitored links list
+ * @param notify pointer to variable that is going to be modifed if change is detected
  */
 void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
 {
@@ -123,7 +124,7 @@ void link_state_change_init(volatile struct link_state_notify_t * monitored_link
     changed_links = monitored_links; 
 
     parent_id = pthread_self();
-    /* FIXME: Add actual monitoring here (spawn extra thread or install some handlers, etc.)  */
+    /** @todo Add actual monitoring here (spawn extra thread or install some handlers, etc.)  */
     err = pthread_create(&ntid,NULL,checkLinkState,NULL);
 
     if (err !=0 ){

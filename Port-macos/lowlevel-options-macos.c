@@ -258,7 +258,7 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
  */
 int prefix_forwarding_enabled()
 {
-    /* TODO: implement this */
+    /** @todo: implement this */
   return 0;
 }
 
@@ -268,29 +268,31 @@ int prefix_forwarding_enabled()
  * to all other up, running and multicast capable interfaces.
  * In both cases, radvd.conf file will be created.
  * 
- * @param ifname 
- * @param ifindex 
- * @param prefixPlain 
- * @param prefixLength 
+ * @param ifname interface name
+ * @param ifindex interface index
+ * @param prefixPlain prefix (specified in human readable format)
+ * @param prefixLength prefix length
+ * @param prefered preferred lifetime
+ * @param valid valid lifetime
  * 
- * @return 
+ * @return negative error code or 0 if successful
  */
 int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
 	       unsigned long prefered, unsigned long valid)
 {
-    /* TODO: implement this */
+    /** @todo: implement this */
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 
 int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
 		  unsigned long prefered, unsigned long valid)
 {
-    /* TODO: implement this */
+    /** @todo: implement this */
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 
 
 int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength) {
-    /* TODO: implement this */
+    /** @todo: implement this */
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }

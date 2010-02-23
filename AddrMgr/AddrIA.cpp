@@ -30,18 +30,19 @@
  * used for creation of IA, a container for addresses
  *
  * @param iface interface index (ifindex)
+ * @param type specifies container type (IA, PD or TA)
  * @param addr address
  * @param duid DUID (client DUID in server's database and server DUID in client's database)
- * @param T1 T1 timer
- * @param T2 T2 timer
- * @param ID IAID (if this is really IA) or PDID (if this is PD, not IA)
+ * @param t1 T1 timer
+ * @param t2 T2 timer
+ * @param id IAID (if this is really IA) or PDID (if this is PD, not IA)
  *
  */
-TAddrIA::TAddrIA(int iface, TIAType t, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
+TAddrIA::TAddrIA(int iface, TIAType type, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
 		 unsigned long t1, unsigned long t2,unsigned long id)
     :IAID(id),T1(t1),T2(t2), State(STATE_NOTCONFIGURED), 
      Tentative(TENTATIVE_UNKNOWN), Timestamp(now()), 
-     Unicast(false), Iface(iface), Type(t)
+     Unicast(false), Iface(iface), Type(type)
 {
     this->setDUID(duid);
     if (addr)

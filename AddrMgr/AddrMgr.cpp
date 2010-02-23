@@ -870,11 +870,10 @@ SPtr<TAddrIA> TAddrMgr::parseAddrTA(FILE *f) {
 /**
  * @brief parses part XML section that represents single PD
  *
- * parses part XML section that represents single PD
- * (section between <AddrPD>...</AddrPD>
+ * (section between <AddrPD>...</AddrPD>)
  *
  * @param f file handle
- * @prams AddrPD is this AddrPD token
+ * @param AddrPD is this AddrPD token
  * @param t1 T1 value
  * @param t2 T2 value
  * @param iaid IAID
@@ -929,10 +928,14 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(FILE * f, bool AddrPD,int t1,int t2,int iaid
 /**
  * @brief parses part XML section that represents single IA
  *
- * parses part XML section that represents single IA
- * (section between <AddrIA>...</AddrIA>
+ * (section between <AddrIA>...</AddrIA>)
  *
- * @param f file handle , bool AddrIA,int t1,int t2,int iaid,int iface
+ * @param f file handle
+ * @param AddrIA
+ * @param t1 parsed T1 timer value
+ * @param t2 parsed T2 timer value
+ * @param iaid parsed IAID 
+ * @param iface parsed interface index (ifindex)
  *
  * @return pointer to newly created TAddrIA object
  */
@@ -948,7 +951,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(FILE * f, bool AddrIA,int t1,int t2,int iaid
     SPtr<TDUID> duid;
     while (!feof(f)) {
 	fgets(buf,255,f);
-	if (t1!=0 && t2!=0 && iaid!=0 && iface!=0 && AddrIA==true && AddrIA==true) {
+	if (t1!=0 && t2!=0 && iaid!=0 && iface!=0 && AddrIA==true) {
 		  AddrIA=false;
 		  Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2 << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
 		  duid = 0; // don't use old DUID
