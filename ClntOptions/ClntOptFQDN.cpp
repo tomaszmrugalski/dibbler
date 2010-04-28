@@ -35,23 +35,17 @@ TClntOptFQDN::TClntOptFQDN(char *buf, int bufsize, TMsg* parent)
 
 bool TClntOptFQDN::doDuties() {
     if (getSFlag()) {
-	Log(Notice) << "FQDN: DHCPv6 server made the DNS update for my name: " << getFQDN() << " ." << LogEnd;
-	/// @todo: Check the DNS server with the given name.
-	return true;
+	    Log(Notice) << "FQDN: DHCPv6 server made the DNS update for my name: " << getFQDN() << " ." << LogEnd;
+	    /// @todo: Check the DNS server with the given name.
+	    return true;
     }
 	
     string reason = "trying to set FQDN.";
     int ifindex = this->Parent->getIface();
     SPtr<TIPv6Addr> addr = this->Parent->getAddr();
     TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
     
-    if (!ifaceMgr) {
-	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
-	return false;
-    }
-    
-    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
     
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex 

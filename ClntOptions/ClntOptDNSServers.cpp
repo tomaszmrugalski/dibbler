@@ -58,30 +58,23 @@ TClntOptDNSServers::TClntOptDNSServers(char* buf, int size, TMsg* parent)
 bool TClntOptDNSServers::doDuties()
 {
     string reason = "trying to set DNS server(s).";
-    int ifindex = this->Parent->getIface();
-    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
-    TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
-    if (!ifaceMgr) {
-	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
+    int ifindex = Parent->getIface();
+
+    if (!DUID) {
+        Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
         return false;
     }
-    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+
+    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
     if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
-		   << " while " << reason << LogEnd;
+        Log(Error) << "Unable to find interface ifindex=" << ifindex
+            << reason << LogEnd;
         return false;
     }
 
-    if (!this->DUID) {
-	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
-	return false;
-    }
-
-    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
     cfgIface->setDNSServerState(STATE_CONFIGURED);
 
-    return iface->setDNSServerLst(this->DUID, addr, this->AddrLst);
+    return iface->setDNSServerLst(DUID, Parent->getAddr(), AddrLst);
 }
 

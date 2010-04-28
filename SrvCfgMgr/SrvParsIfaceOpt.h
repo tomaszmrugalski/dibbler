@@ -135,10 +135,11 @@ public:
     void setExtraOptions(List(TSrvOptGeneric) extraOpts);
     List(TSrvOptGeneric) getExtraOptions();
 
-    // experimental tunnel-mode
-    void setTunnelMode(int vendor, int mode, SPtr<TIPv6Addr> addr);
-    int getTunnelMode();
-    SPtr<TSrvOptVendorSpec> getTunnelVendorSpec();
+    // DS-Lite tunnel
+    void setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr);
+    void setDsLiteTunnelName(const std::string name);
+    SPtr<TOpt> getDsLiteTunnelAddr();
+    SPtr<TOpt> getDsLiteTunnelName();
 
 private:
     char Preference;
@@ -186,8 +187,8 @@ private:
     unsigned int Lifetime;
 
     // tunnel-mode
-    int TunnelMode;
-    SPtr<TSrvOptVendorSpec> TunnelVendorSpec;
+    SPtr<TOpt> DsLiteTunnelAddr;
+    SPtr<TOpt> DsLiteTunnelName;
 
     List(TSrvOptVendorSpec) VendorSpec;
     List(TSrvOptGeneric) ExtraOpts;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="server-win32"
 	ProjectGUID="{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
 	Keyword="ManagedCProj"
@@ -268,10 +268,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptElapsed.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Options\OptFQDN.cpp"
 					>
 				</File>
@@ -305,10 +301,6 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Options\OptPreference.cpp"
 					>
 				</File>
 				<File
@@ -841,10 +833,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptElapsed.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Options\OptFQDN.h"
 					>
 				</File>
@@ -874,10 +862,6 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Options\OptPreference.h"
 					>
 				</File>
 				<File

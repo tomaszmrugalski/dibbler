@@ -36,26 +36,17 @@
 /** 
  * create RELEASE message
  * 
- * @param IfaceMgr 
- * @param TransMgr 
- * @param CfgMgr 
- * @param AddrMgr 
  * @param iface 
  * @param addr 
  * @param iaLst - IA_NA list, which are served by on server on one link
  * @param ta    - IA_TA to be released
  * @param pdLst - IA_PD list to be released
  */
-TClntMsgRelease::TClntMsgRelease(
-	SPtr<TClntIfaceMgr> IfaceMgr, 
-	SPtr<TClntTransMgr> TransMgr,
-	SPtr<TClntCfgMgr>   CfgMgr, 
-	SPtr<TClntAddrMgr>  AddrMgr, 
-	int iface, SPtr<TIPv6Addr> addr,
-	List(TAddrIA) iaLst,
-	SPtr<TAddrIA> ta,
-	List(TAddrIA) pdLst)
-	:TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface, addr, RELEASE_MSG)
+TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
+                                 List(TAddrIA) iaLst,
+                                 SPtr<TAddrIA> ta,
+                                 List(TAddrIA) pdLst)
+  :TClntMsg(iface, addr, RELEASE_MSG)
 {
     SPtr<TDUID> srvDUID;
     
@@ -68,67 +59,65 @@ TClntMsgRelease::TClntMsgRelease(
     // obtain IA, TA or PD, so server DUID can be obtained
     SPtr<TAddrIA> x = 0;
     if (iaLst.count()) {
-	iaLst.first();
-	x=iaLst.get();
+        iaLst.first();
+        x=iaLst.get();
     }
     if (!x)
-	x = ta;
+        x = ta;
     if (!x) {
-	pdLst.first();
-	x = pdLst.get();
+        pdLst.first();
+        x = pdLst.get();
     }
     if (!x) {
-	Log(Error) << "Unable to send RELEASE. No IA and no TA provided." << LogEnd;
-	this->IsDone = true;
-	return;
+        Log(Error) << "Unable to send RELEASE. No IA, TA or PD provided." << LogEnd;
+        this->IsDone = true;
+        return;
     }
     if (!x->getDUID()) {
-	Log(Error) << "Unable to send RELEASE. Unable to find DUID. " << LogEnd;
-	return;
+        Log(Error) << "Unable to send RELEASE. Unable to find DUID. " << LogEnd;
+        return;
     }
     srvDUID = x->getDUID();
 
     Options.append(new TClntOptServerIdentifier( srvDUID,this));
-    Options.append(new TClntOptClientIdentifier( CfgMgr->getDUID(),this));
+    Options.append(new TClntOptClientIdentifier( ClntCfgMgr().getDUID(),this));
 
-
-    if (ClntCfgMgr->getNotifyScripts()) {
-
-	// release workaround (add removed 
-	iaLst.first();
-	SPtr<TAddrIA> ia;
-	while (ia = iaLst.get()) 
-	{
-	    ClntAddrMgr->addIA(ia);
-	}
+    if (ClntCfgMgr().getNotifyScripts()) {
+	    // release workaround (add removed IAs)
+        /// @todo: WTF? Why are those IAs removed?
+        iaLst.first();
+        SPtr<TAddrIA> ia;
+	    while (ia = iaLst.get()) 
+	    {
+	        ClntAddrMgr().addIA(ia);
+	    }
 	
-	IfaceMgr->notifyScripts(RELEASE_MSG, Iface);
+    	ClntIfaceMgr().notifyScripts(RELEASE_MSG, Iface);
 
-	iaLst.first();
-	while (ia = iaLst.get())
-	{
-	    ClntAddrMgr->delIA(ia->getIAID());
-	}
+	    iaLst.first();
+	    while (ia = iaLst.get())
+	    {
+	        ClntAddrMgr().delIA(ia->getIAID());
+	    }
     }
-
 
     // --- RELEASE IA ---
     iaLst.first();
     while(x=iaLst.get()) {
         Options.append(new TClntOptIA_NA(x,this));
-	SPtr<TAddrAddr> ptrAddr;
-	SPtr<TClntIfaceIface> ptrIface;
-	ptrIface = (Ptr*)IfaceMgr->getIfaceByID(x->getIface());
-	x->firstAddr();
-	while (ptrAddr = x->getAddr()) {
-	    ptrIface->delAddr(ptrAddr->get(), ptrAddr->getPrefix());
-	}
+        SPtr<TAddrAddr> ptrAddr;
+        SPtr<TClntIfaceIface> ptrIface;
+        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIface());
+        x->firstAddr();
+        while (ptrAddr = x->getAddr()) {
+            ptrIface->delAddr(ptrAddr->get(), ptrAddr->getPrefix());
+        }
 
 	// --- DNS Update ---
 	SPtr<TIPv6Addr> dns = x->getFQDNDnsServer();
 	if (dns) {
 	    string fqdn = ptrIface->getFQDN();
-	    IfaceMgr->fqdnDel(ptrIface, x, fqdn);
+	    ClntIfaceMgr().fqdnDel(ptrIface, x, fqdn);
 	}
 	// --- DNS Update ---
     }
@@ -143,16 +132,16 @@ TClntMsgRelease::TClntMsgRelease(
     
     pdLst.first();
     while(pd=pdLst.get()) {
-	      SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
+        SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
         Options.append( (Ptr*)pdOpt );
-	      pdOpt->setContext(IfaceMgr, TransMgr, CfgMgr, AddrMgr, srvDUID, addr, this);
-	      pdOpt->delPrefixes();
+        pdOpt->setContext(srvDUID, addr, this);
+        pdOpt->delPrefixes();
 
-	      AddrMgr->delPD(pd->getIAID() );
+        ClntAddrMgr().delPD(pd->getIAID() );
     }
 
     appendElapsedOption();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
 
     pkt = new char[getSize()];
     IsDone = false;

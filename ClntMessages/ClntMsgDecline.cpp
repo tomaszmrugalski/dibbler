@@ -17,13 +17,9 @@
 #include "AddrIA.h"
 #include "ClntOptIA_NA.h"
 
-TClntMsgDecline::TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
-				 SPtr<TClntTransMgr> TransMgr,
-				 SPtr<TClntCfgMgr> CfgMgr,
-				 SPtr<TClntAddrMgr> AddrMgr,
-				 int iface, SPtr<TIPv6Addr> addr,
-				 TContainer< SPtr< TAddrIA> > IALst)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,DECLINE_MSG)
+TClntMsgDecline::TClntMsgDecline(int iface, SPtr<TIPv6Addr> addr,
+                                 List(TAddrIA) IALst)
+    :TClntMsg(iface, addr, DECLINE_MSG)
 {
     IRT=DEC_TIMEOUT;
     MRT=0;
@@ -35,7 +31,7 @@ TClntMsgDecline::TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
 
     // include our ClientIdentifier
     SPtr<TOpt> ptr;
-    ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
+    ptr = new TClntOptClientIdentifier( ClntCfgMgr().getDUID(), this );
     Options.append( ptr );
     
     // include server's DUID
@@ -50,22 +46,12 @@ TClntMsgDecline::TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
     }
 
     appendElapsedOption();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
     this->IsDone = false;
     this->send();
     pkt = new char[getSize()];
     this->IsDone = false;
     // this->send();
-}
-
-TClntMsgDecline::TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
-				 SPtr<TClntTransMgr> TransMgr,
-				 SPtr<TClntCfgMgr> CfgMgr,
-				 SPtr<TClntAddrMgr> AddrMgr,
-				 int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,bufSize)
-{
-	pkt=NULL;
 }
 
 void TClntMsgDecline::answer(SPtr<TClntMsg> rep)

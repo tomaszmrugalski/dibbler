@@ -18,18 +18,10 @@
 class TClntMsgAdvertise : public TClntMsg
 {
   public:
-    TClntMsgAdvertise(SPtr<TClntIfaceMgr> IfaceMgr,
-		      SPtr<TClntTransMgr> TransMgr,
-		      SPtr<TClntCfgMgr>   CfgMgr,
-		      SPtr<TClntAddrMgr>  AddrMgr,
-		      int iface, SPtr<TIPv6Addr> addr);
+    /* TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr); */
     
-    TClntMsgAdvertise(SPtr<TClntIfaceMgr> IfaceMgr,
-		      SPtr<TClntTransMgr> TransMgr,
-		      SPtr<TClntCfgMgr> CfgMgr,
-		      SPtr<TClntAddrMgr> AddrMgr,
-		      int iface, SPtr<TIPv6Addr> addr, 
-		      char* buf, int bufSize);
+    TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr, 
+                      char* buf, int bufSize);
     
     // returns preference value (default value is 0)
     int getPreference();

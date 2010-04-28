@@ -6,16 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgDecline.h,v 1.4 2008-08-29 00:07:28 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
- *
  */
 
 class TClntMsgDecline;
@@ -26,19 +16,8 @@ class TClntMsgDecline;
 class TClntMsgDecline : public TClntMsg
 {
   public:
-    TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
-		    SPtr<TClntTransMgr> TransMgr,
-		    SPtr<TClntCfgMgr> CfgMgr,
-		    SPtr<TClntAddrMgr> AddrMgr,
-		    int iface, SPtr<TIPv6Addr> addr,
-		    TContainer< SPtr< TAddrIA> > IALst);
-
-    TClntMsgDecline(SPtr<TClntIfaceMgr> IfaceMgr,
-		    SPtr<TClntTransMgr> TransMgr,
-		    SPtr<TClntCfgMgr> CfgMgr,
-		    SPtr<TClntAddrMgr> AddrMgr,
-		    int iface, SPtr<TIPv6Addr> addr, 
-		    char* buf, int bufSize);
+  TClntMsgDecline(int iface, SPtr<TIPv6Addr> addr, List(TAddrIA) IALst);
+  
     bool  check();
     
     void  answer(SPtr<TClntMsg> Rep);

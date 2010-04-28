@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptIA_NA.cpp,v 1.24 2008-08-29 00:07:29 thomson Exp $
- *
  */
 
 #include "AddrIA.h"
@@ -17,6 +15,9 @@
 #include "ClntOptStatusCode.h"
 #include "ClntOptAddrParams.h"
 #include "Logger.h"
+#include "Msg.h"
+#include "ClntAddrMgr.h"
+#include "ClntIfaceMgr.h"
 
 /** 
  * Used in CONFIRM constructor
@@ -213,44 +214,34 @@ int TClntOptIA_NA::getStatusCode()
     return STATUSCODE_SUCCESS;
 }
 
-void TClntOptIA_NA::setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
-                               SPtr<TClntTransMgr> transMgr, 
-                               SPtr<TClntCfgMgr> cfgMgr, 
-                               SPtr<TClntAddrMgr> addrMgr,
-                               SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, int iface)
+void TClntOptIA_NA::setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, int iface)
 {
-    this->AddrMgr=addrMgr;
-    this->IfaceMgr=ifaceMgr;
-    this->TransMgr=transMgr;
-    this->CfgMgr=cfgMgr;
-    this->DUID=srvDuid;
+    DUID=srvDuid;
     if (srvAddr) {
-        this->Unicast = true;
+        Unicast = true;
     } else {
-        this->Unicast = false;
+        Unicast = false;
     }
-    this->Addr=srvAddr;
-    this->Iface = iface;
+    Addr = srvAddr;
+    Iface = iface;
 }
 
-TClntOptIA_NA::~TClntOptIA_NA()
-{
+TClntOptIA_NA::~TClntOptIA_NA() {
 
 }
 
 //I don't know whether this method should be invoked everywhere
-//i.e. from Verify\Renew\Rebind
+//i.e. from Verify/Renew/Rebind
 //it's worth to check whether futher reactions in every message will 
 //be the same e.g. detection of duplicate address, lack of enough
 //addresses
-bool TClntOptIA_NA::doDuties()
-{
+bool TClntOptIA_NA::doDuties() {
     // find this IA in addrMgr...
-    SPtr<TAddrIA> ptrIA=AddrMgr->getIA(this->getIAID());
+    SPtr<TAddrIA> ptrIA=ClntAddrMgr().getIA(this->getIAID());
     if (!ptrIA) {
         // unknown IAID, ignore it
-	Log(Warning) << "Received message contains unknown IA (IAID="
-            << this->getIAID() << "). We didn't order it. Weird... ignoring it." << LogEnd;
+        Log(Warning) << "Received message contains unknown IA (IAID="
+                     << this->getIAID() << "). We didn't order it. Weird... ignoring it." << LogEnd;
         return true;
     }
 
@@ -274,7 +265,7 @@ bool TClntOptIA_NA::doDuties()
         ptrIA->firstAddr();
         while(SPtr<TAddrAddr> addrToRel=ptrIA->getAddr()) {
 	    SPtr<TIPv6Addr> addr2(addrToRel->get());
-            IfaceMgr->getIfaceByID(ptrIA->getIface())->delAddr(addr2);
+            ClntIfaceMgr().getIfaceByID(ptrIA->getIface())->delAddr(addr2);
 	}
 
         this->firstAddr();
@@ -304,8 +295,8 @@ bool TClntOptIA_NA::doDuties()
         List(TAddrIA) list;
         list.append(ptrIA);
 
-        AddrMgr->delIA(ptrIA->getIAID() );
-        AddrMgr->addIA(new TAddrIA(ptrIA->getIface(), SPtr<TIPv6Addr>(), SPtr<TDUID>(),
+        ClntAddrMgr().delIA(ptrIA->getIAID() );
+        ClntAddrMgr().addIA(new TAddrIA(ptrIA->getIface(), SPtr<TIPv6Addr>(), SPtr<TDUID>(),
 				   0x7fffffff,0x7fffffff,ptrIA->getIAID()));
 
 	List(TAddrIA) pdLst;
@@ -317,7 +308,7 @@ bool TClntOptIA_NA::doDuties()
 #endif /* if 0 */
 
     SPtr<TIfaceIface> ptrIface;
-    ptrIface = IfaceMgr->getIfaceByID(this->Iface);
+    ptrIface = ClntIfaceMgr().getIfaceByID(this->Iface);
     if (!ptrIface) 
     {
 	Log(Error) << "Interface with ifindex=" << this->Iface << " not found." << LogEnd;
@@ -362,7 +353,7 @@ bool TClntOptIA_NA::doDuties()
             }
 
             // set up new options in IfaceMgr
-            SPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(this->Iface);
+            SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(this->Iface);
             if (ptrIface)
                 ptrIface->updateAddr(ptrOptAddr->getAddr(), 
                         ptrOptAddr->getPref(), 
@@ -374,7 +365,7 @@ bool TClntOptIA_NA::doDuties()
         }
     }
     SPtr<TClntCfgIA> ptrCfgIA;
-    ptrCfgIA=CfgMgr->getIA(ptrIA->getIAID());
+    ptrCfgIA=ClntCfgMgr().getIA(ptrIA->getIAID());
 
     if (getT1() && getT2()) {
       ptrIA->setT1( this->getT1() );
@@ -455,7 +446,7 @@ SPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr(SPtr<TIPv6Addr> addr)
 
 void TClntOptIA_NA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )
 {
-    SPtr<TAddrIA> ptrIA = AddrMgr->getIA(IAID);
+    SPtr<TAddrIA> ptrIA = ClntAddrMgr().getIA(IAID);
     if (ptrIA)
         ptrIA->delAddr(addr);
     else

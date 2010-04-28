@@ -30,11 +30,11 @@ using namespace std;
 
 %define MEMBERS yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-List(TClntParsGlobalOpt) ParserOptStack;			            \
+List(TClntParsGlobalOpt) ParserOptStack;			                        \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
 List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
-List(TClntCfgIA)    ClntCfgIALst;		                            \
+List(TClntCfgIA)    ClntCfgIALst;		                                    \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
@@ -44,8 +44,7 @@ List(DigestTypes)   DigestLst;                                              \
 TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
 TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SmartPtr<string> > PresentStringLst;                             \
-List(TClntOptVendorSpec) VendorSpec;					    \
-SPtr<TClntOptVendorSpec> TunnelMode;                                        \
+List(TClntOptVendorSpec) VendorSpec;					                    \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -75,8 +74,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;                                                   \
-    TunnelMode = 0;
+    DUIDEnterpriseID = 0;
 
 %union    
 {
@@ -101,7 +99,7 @@ namespace std
 %token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_, FQDN_S_
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
-%token IA_,TA_,IAID_,ADDRES_,IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
+%token IA_,TA_,IAID_,ADDRES_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
 %token OPTION_, SCRIPTS_DIR_, NOTIFY_SCRIPTS_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_
 %token <strval>     STRING_
@@ -116,7 +114,7 @@ namespace std
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, MAPPING_PREFIX_, TUNNEL_MODE_
+%token EXPERIMENTAL_, ADDR_PARAMS_, MAPPING_PREFIX__, DS_LITE_TUNNEL_
 %type  <ival> Number
 
 %%
@@ -154,7 +152,6 @@ GlobalOptionDeclaration
 | FQDNBits
 | Experimental
 | ExperimentalMappingPrefix
-| ExperimentalTunnelMode
 | SkipConfirm
 | NotifyScripts
 ;
@@ -176,6 +173,7 @@ InterfaceOptionDeclaration
 | NISPDomainOption
 | LifetimeOption
 | VendorSpecOption
+| DsLiteTunnelOption
 | RejectServersOption
 | PreferServersOption
 ;
@@ -582,24 +580,6 @@ ExperimentalMappingPrefix
     ParserOptStack.getLast()->setMappingPrefix(true);
 };
 
-ExperimentalTunnelMode
-: TUNNEL_MODE_ Number
-{
-    if (!ParserOptStack.getLast()->getExperimental()) {
-	Log(Crit) << "Experimental 'tunnel-mode' defined, but experimental features are disabled."
-		  << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
-	YYABORT;
-    }
-
-    Log(Debug) << "Tunnel-mode defined (vendor-id=" << $2 << "), mapping-prefix enabled too." << LogEnd;
-    ParserOptStack.getLast()->setVendorSpec();
-    ParserOptStack.getLast()->setTunnelMode($2);
-    TunnelMode = new TClntOptVendorSpec($2, 0, 0, 0);
-    ParserOptStack.getLast()->setMappingPrefix(true);
-}
-
-
-
 RejectServersOption
 :REJECT_SERVERS_ 
 {
@@ -995,7 +975,11 @@ VendorSpecList
 | VendorSpecList ',' Number  { VendorSpec.append( new TClntOptVendorSpec($3,0,0,0) ); }
 ;
 
-
+DsLiteTunnelOption
+: OPTION_ DS_LITE_TUNNEL_         { ParserOptStack.getLast()->setDsLiteTunnel(TUNNEL_BOTH); }
+| OPTION_ DS_LITE_TUNNEL_ ADDRES_ { ParserOptStack.getLast()->setDsLiteTunnel(TUNNEL_ADDR); }
+| OPTION_ DS_LITE_TUNNEL_ NAME_   { ParserOptStack.getLast()->setDsLiteTunnel(TUNNEL_NAME); }
+;
 %%
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1045,8 +1029,6 @@ void ClntParser::StartIfaceDeclaration()
   ClntCfgIALst.clear();
   ClntCfgAddrLst.clear();
   this->VendorSpec.clear();
-  if (TunnelMode)
-      VendorSpec.append(TunnelMode);
 }
 
 bool ClntParser::EndIfaceDeclaration()

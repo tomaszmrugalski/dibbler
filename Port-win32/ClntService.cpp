@@ -21,6 +21,8 @@
 TDHCPClient * clntPtr;
 TClntService StaticService;
 
+using namespace std;
+
 TClntService::TClntService() 
     :TWinService("DHCPv6Client","Dibbler - a DHCPv6 client",SERVICE_AUTO_START,
 		 "tcpip6\0winmgmt\0",
@@ -47,7 +49,7 @@ EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])
 	
 		if (strncmp(argv[n], "-d",2)==0) {
 			if (n+1==argc) {
-				cout << "-d is a last parameter (additional filepath required)" << endl;
+				std::cout << "-d is a last parameter (additional filepath required)" << std::endl;
 				return INVALID; // this is last parameter
 			}
 			n++;

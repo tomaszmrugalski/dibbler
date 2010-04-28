@@ -57,7 +57,7 @@
 
 #include "Logger.h"
 
-string msgs[] = { "",
+static string msgs[] = { "",
 		  "SOLICIT",
 		  "ADVERTISE",
 		  "REQUEST",
@@ -107,14 +107,11 @@ void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
  * @param buf 
  * @param bufSize 
  */
-TClntMsg::TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
-                   SPtr<TClntTransMgr> TransMgr, 
-                   SPtr<TClntCfgMgr>   CfgMgr,
-                   SPtr<TClntAddrMgr>  AddrMgr,
-                   int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
                    :TMsg(iface, addr, buf, bufSize)
 {
-    setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
+    setDefaults();
+
     //After reading message code and transactionID   
     //read options contained in message    
     int pos=0;
@@ -216,29 +213,25 @@ TClntMsg::TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr,
 	    ptr = new TClntOptLifetime(buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA: {
-	    SPtr<TClntOptTA> ta = new TClntOptTA(buf+pos, length, this);
-	    ta->setContext(AddrMgr, IfaceMgr, CfgMgr, Iface, addr);
-	    ptr = (Ptr*) ta;
+            ptr = new TClntOptTA(buf+pos, length, this);
 	    break;
 	}
 #ifndef MOD_DISABLE_AUTH
 	case OPTION_AAAAUTH:
-	    Log(Warning) << "Option OPTION_AAAAUTH received by client is invalid, ignoring." << LogEnd;
+	    Log(Warning) << "Client is not supposed to receive OPTION_AAAAUTH, ignoring." << LogEnd;
 	    break;
 	case OPTION_KEYGEN:
 	    ptr = new TClntOptKeyGeneration(buf+pos, length, this);
 	    break;
 	case OPTION_AUTH:
-	    if (ClntCfgMgr->getAuthEnabled()) {
-                this->DigestType = ClntCfgMgr->getDigest();
+	    if (ClntCfgMgr().getAuthEnabled()) {
+                this->DigestType = ClntCfgMgr().getDigest();
                 ptr = new TClntOptAuthentication(buf+pos, length, this);
 	    }
 	    break;
 #endif
 	case OPTION_VENDOR_OPTS: {
 	    SPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
-	    ptr = (Ptr*) vendor;
-	    vendor->setIfaceMgr(IfaceMgr);
 	    break;
 	}
 	case OPTION_RECONF_ACCEPT:
@@ -279,31 +272,15 @@ TClntMsg::TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr,
 	opt->setDUID(optSrvID->getDUID());
 }
 
-TClntMsg::TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
-                   SPtr<TClntTransMgr> TransMgr, 
-                   SPtr<TClntCfgMgr> CfgMgr,
-                   SPtr<TClntAddrMgr> AddrMgr,
-                   int iface, 
+TClntMsg::TClntMsg(int iface, 
                    SPtr<TIPv6Addr> addr, int msgType)
                    :TMsg(iface,addr,msgType)
 {
-    setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
-#ifndef MOD_DISABLE_AUTH
-    this->DigestType = CfgMgr->getDigest();
-    this->AuthKeys = CfgMgr->AuthKeys;
-#endif
+    setDefaults();
 }
 
-void TClntMsg::setAttribs(SPtr<TClntIfaceMgr> IfaceMgr, 
-                          SPtr<TClntTransMgr> TransMgr, 
-                          SPtr<TClntCfgMgr> CfgMgr,
-                          SPtr<TClntAddrMgr> AddrMgr)
+void TClntMsg::setDefaults()
 {
-    this->ClntTransMgr = TransMgr;	
-    this->ClntIfaceMgr = IfaceMgr;	
-    this->ClntCfgMgr   = CfgMgr;
-    this->ClntAddrMgr  = AddrMgr;
-
     FirstTimeStamp = now();			
     LastTimeStamp  = now();			
 
@@ -315,10 +292,11 @@ void TClntMsg::setAttribs(SPtr<TClntIfaceMgr> IfaceMgr,
     MRD = 0;
 
 #ifndef MOD_DISABLE_AUTH
-    this->AuthKeys = CfgMgr->AuthKeys;
+    DigestType = ClntCfgMgr().getDigest();
+    AuthKeys = ClntCfgMgr().AuthKeys;
 #endif
-    this->KeyGenNonce = NULL;
-    this->KeyGenNonceLen = 0;
+    KeyGenNonce = NULL;
+    KeyGenNonceLen = 0;
 }
 
 unsigned long TClntMsg::getTimeout()
@@ -346,43 +324,23 @@ void TClntMsg::send()
 
     this->storeSelf(this->pkt);
 
-    SPtr<TIfaceIface> ptrIface = ClntIfaceMgr->getIfaceByID(Iface);
+    SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(Iface);
     if (PeerAddr) {
-	Log(Debug) << "Sending " << this->getName() << " on " << ptrIface->getName() 
-		   << "/" << Iface << " to unicast addr " << *PeerAddr << "." << LogEnd;
-	ClntIfaceMgr->sendUnicast(Iface,pkt,getSize(),PeerAddr);
+        Log(Debug) << "Sending " << this->getName() << " on " << ptrIface->getName() 
+                   << "/" << Iface << " to unicast addr " << *PeerAddr << "." << LogEnd;
+        ClntIfaceMgr().sendUnicast(Iface,pkt,getSize(),PeerAddr);
     } else {
-	Log(Debug) << "Sending " << this->getName() << " on " << ptrIface->getName() 
-		   << "/" << Iface << " to multicast." << LogEnd;
-	ClntIfaceMgr->sendMulticast(Iface, pkt, getSize());
+        Log(Debug) << "Sending " << this->getName() << " on " << ptrIface->getName() 
+                   << "/" << Iface << " to multicast." << LogEnd;
+        ClntIfaceMgr().sendMulticast(Iface, pkt, getSize());
     }
     LastTimeStamp = now();
 }
 
 void TClntMsg::copyAAASPI(SPtr<TClntMsg> q) {
-    this->AAASPI = q->getAAASPI();
-    this->SPI = q->getSPI();
-    this->AuthInfoKey = q->getAuthInfoKey();
-}
-
-SPtr<TClntTransMgr> TClntMsg::getClntTransMgr()
-{
-    return this->ClntTransMgr;
-}
-
-SPtr<TClntAddrMgr> TClntMsg::getClntAddrMgr()
-{
-    return this->ClntAddrMgr;
-}
-
-SPtr<TClntCfgMgr> TClntMsg::getClntCfgMgr()
-{
-    return this->ClntCfgMgr;
-}
-
-SPtr<TClntIfaceMgr> TClntMsg::getClntIfaceMgr()
-{
-    return this->ClntIfaceMgr;
+    AAASPI = q->getAAASPI();
+    SPI = q->getSPI();
+    AuthInfoKey = q->getAuthInfoKey();
 }
 
 void TClntMsg::setIface(int iface) {
@@ -390,20 +348,20 @@ void TClntMsg::setIface(int iface) {
     SPtr<TOpt> opt;
     this->Options.first();
     while (opt = Options.get()) {
-	switch ( opt->getOptType() ) {
-	case OPTION_IA_NA: {
-	    SPtr<TClntOptIA_NA> ia = (Ptr*) opt;
-	    ia->setIface(iface);
-	    break;
-	}
-	case OPTION_IA_TA: {
-	    SPtr<TClntOptTA> ta = (Ptr*) opt;
-	    ta->setIface(iface);
-	    break;
-	}
-	default:
-	    continue;
-	}
+	    switch ( opt->getOptType() ) {
+	    case OPTION_IA_NA: {
+	        SPtr<TClntOptIA_NA> ia = (Ptr*) opt;
+	        ia->setIface(iface);
+	        break;
+	    }
+	    case OPTION_IA_TA: {
+	        SPtr<TClntOptTA> ta = (Ptr*) opt;
+	        ta->setIface(iface);
+	        break;
+	    }
+	    default:
+	        continue;
+	    }
     }
 }
 
@@ -413,20 +371,20 @@ void TClntMsg::setIface(int iface) {
  * @param AddrMgr pointer to Address Manager
  * 
  */
-void TClntMsg::appendAuthenticationOption(SPtr<TClntAddrMgr> AddrMgr)
+void TClntMsg::appendAuthenticationOption()
 {
 #ifndef MOD_DISABLE_AUTH
-    if (!ClntCfgMgr->getAuthEnabled() || ClntCfgMgr->getDigest() == DIGEST_NONE) {
+    if (!ClntCfgMgr().getAuthEnabled() || ClntCfgMgr().getDigest() == DIGEST_NONE) {
         Log(Debug) << "Authentication is disabled, not including auth options in message." << LogEnd;
-        this->DigestType = DIGEST_NONE;
+        DigestType = DIGEST_NONE;
         return;
     }
 
-    this->DigestType = ClntCfgMgr->getDigest();
+    this->DigestType = ClntCfgMgr().getDigest();
 
     if (!getOption(OPTION_AUTH)) {
-        ClntAddrMgr->firstClient();
-        SPtr<TAddrClient> client = ClntAddrMgr->getClient();
+        ClntAddrMgr().firstClient();
+        SPtr<TAddrClient> client = ClntAddrMgr().getClient();
         if (client && client->getSPI())
             this->setSPI(client->getSPI());
         if (client)
@@ -444,20 +402,19 @@ void TClntMsg::appendElapsedOption() {
     // include ELAPSED option
 
     if (!getOption(OPTION_ELAPSED_TIME))
-	Options.append(new TClntOptElapsed(this));
+        Options.append(new TClntOptElapsed(this));
 }
 
-/* CHANGED in this function: According to RFC3315,'status==STATE_NOTCONFIGURED' is not a must.*/
-/*
+/* CHANGED in this function: According to RFC3315,'status==STATE_NOTCONFIGURED' is not a must.
  * this method adds requested (which have status==STATE_NOTCONFIGURED) options
  */
 void TClntMsg::appendRequestedOptions() {
 
     // find configuration specified in config file
-    SPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
+    SPtr<TClntCfgIface> iface = ClntCfgMgr().getIface(this->Iface);
     if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << this->Iface << LogEnd;
-	return;
+        Log(Error) << "Unable to find interface with ifindex=" << this->Iface << LogEnd;
+        return;
     }
     
     SPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
@@ -467,7 +424,7 @@ void TClntMsg::appendRequestedOptions() {
 	Log(Debug) << "Adding UNICAST to ORO." << LogEnd;
     }
  
-    if (ClntCfgMgr->addInfRefreshTime()) {
+    if (ClntCfgMgr().addInfRefreshTime()) {
 	optORO->addOption(OPTION_INFORMATION_REFRESH_TIME);
 	Log(Debug) << "Adding INFORMATION REFRESH TIME to ORO." << LogEnd;
     }
@@ -557,7 +514,7 @@ void TClntMsg::appendRequestedOptions() {
 	string fqdn = iface->getProposedFQDN();
 	{
 	    SPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
-	    opt->setSFlag(ClntCfgMgr->getFQDNFlagS());
+	    opt->setSFlag(ClntCfgMgr().getFQDNFlagS());
 	    Options.append( (Ptr*)opt );
 	}
 	iface->setFQDNState(STATE_INPROCESS);
@@ -646,7 +603,7 @@ void TClntMsg::appendRequestedOptions() {
 
 #ifndef MOD_DISABLE_AUTH
     if (this->MsgType == SOLICIT_MSG) {
-            if (ClntCfgMgr->getAuthEnabled()) {
+            if (ClntCfgMgr().getAuthEnabled()) {
                     // --- option: AAAAUTH ---
                     Options.append(new TClntOptAAAAuthentication(this));
 
@@ -658,7 +615,7 @@ void TClntMsg::appendRequestedOptions() {
     } else {
         /*
             // --- option: AUTH ---
-            if (ClntCfgMgr->getAuthEnabled() && ClntCfgMgr->getDigest()!=DIGEST_NONE) {
+            if (ClntCfgMgr().getAuthEnabled() && ClntCfgMgr().getDigest()!=DIGEST_NONE) {
                     Log(Debug) << "Authentication enabled, adding AUTH option." << LogEnd;
                     ClntAddrMgr->firstClient();
                     SPtr<TAddrClient> client = ClntAddrMgr->getClient();
@@ -685,9 +642,9 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
 {
     SPtr<TClntCfgIface> ptrIface;
     SPtr<TClntCfgTA> ptrTA;
-    ClntCfgMgr->firstIface();
+    ClntCfgMgr().firstIface();
     // for each interface...
-    while ( ptrIface = ClntCfgMgr->getIface() ) {
+    while ( ptrIface = ClntCfgMgr().getIface() ) {
 	ptrIface->firstTA();
 	// ... find TA...
 	while ( ptrTA = ptrIface->getTA() ) {
@@ -707,10 +664,8 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
 
 bool TClntMsg::appendClientID()
 {
-    if (!ClntCfgMgr)
-	return false;
     SPtr<TOpt> ptr;
-    ptr = new TClntOptClientIdentifier( ClntCfgMgr->getDUID(), this );
+    ptr = new TClntOptClientIdentifier( ClntCfgMgr().getDUID(), this );
     Options.append( ptr );
     return true;
 }
@@ -720,10 +675,11 @@ bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 
     SPtr<TClntOptClientIdentifier> clnID;
 
-    if ( (clnID=(Ptr*)this->getOption(OPTION_CLIENTID)) &&
-	 !( *(clnID->getDUID())==(*(this->ClntCfgMgr->getDUID())) ) ) {
-	Log(Warning) << "Message " << this->getName() << " received with mismatched ClientID option. Message dropped." << LogEnd;
-	return false;
+    if ( (clnID=(Ptr*)getOption(OPTION_CLIENTID)) &&
+	 !( *(clnID->getDUID())==(*(ClntCfgMgr().getDUID())) ) ) {
+        Log(Warning) << "Message " << this->getName() 
+            << " received with mismatched ClientID option. Message dropped." << LogEnd;
+        return false;
     }
 
     return status;
@@ -767,8 +723,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    }
 	    
 	    // configure received IA
-	    clntOpt->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-			        ptrDUID->getDUID(), 0/* srvAddr used is unicast */, this->Iface);
+	    clntOpt->setContext(ptrDUID->getDUID(), 0/* srvAddr used is unicast */, this->Iface);
 	    clntOpt->doDuties();
 	    
 	    // delete that IA from request list
@@ -831,8 +786,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    }
 
 	    // configure received PD
-	    pd->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-			   ptrDUID->getDUID(), 0/* srvAddr used in unicast */, this);
+	    pd->setContext(ptrDUID->getDUID(), 0/* srvAddr used in unicast */, this);
 	    pd->doDuties();
 	    
 	    // delete that PD from request list
@@ -899,26 +853,26 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
         // send new Request to another server
         Log(Notice) << "There are still " << (iaLeft?"some IA(s)":"") 
 		    << (taLeft?"TA":"") << (pdLeft?"some PD(s)":"") << " to configure." << LogEnd;
-	ClntTransMgr->sendRequest(this->Options, this->Iface);
+	ClntTransMgr().sendRequest(this->Options, this->Iface);
     } else {
 	if (optORO)
 	    optORO->delOption(OPTION_ADDRPARAMS); // don't insist on getting ADDR-PARAMS
 
         if ( optORO && (optORO->count()) )
         {
-	    Log(Warning) << "All IA(s), TA and PD(s) has been configured, but some options (";
-	    for (int i=0; i< optORO->count(); i++)
-		Log(Cont) << optORO->getReqOpt(i) << " ";
-	    Log(Cont) << ") were not assigned." << LogEnd;
-	    
-	    if (ClntCfgMgr->insistMode()) {
-		Log(Notice) << "Insist-mode enabled, sending INF-REQUEST." << LogEnd;
-		ClntTransMgr->sendInfRequest(this->Options, this->Iface);
-	    } else {
-		Log(Notice) << "Insist-mode disabled, giving up (not sending INF-REQUEST)." << LogEnd;
-		/// @todo: set proper options to FAILED state
-	    }
-        }
+    	    Log(Warning) << "All IA(s), TA and PD(s) has been configured, but some options (";
+    	    for (int i=0; i< optORO->count(); i++)
+    		Log(Cont) << optORO->getReqOpt(i) << " ";
+    	    Log(Cont) << ") were not assigned." << LogEnd;
+    	    
+    	    if (ClntCfgMgr().insistMode()) {
+                Log(Notice) << "Insist-mode enabled, sending INF-REQUEST." << LogEnd;
+                ClntTransMgr().sendInfRequest(this->Options, this->Iface);
+    	    } else {
+                Log(Notice) << "Insist-mode disabled, giving up (not sending INF-REQUEST)." << LogEnd;
+                /// @todo: set proper options to FAILED state
+    	    }
+            }
     }
     IsDone = true;
     return;
@@ -928,12 +882,12 @@ bool TClntMsg::validateReplayDetection() {
     if (this->MsgType == SOLICIT_MSG)
         return true;
 
-    ClntAddrMgr->firstClient();
-    SPtr<TAddrClient> client = ClntAddrMgr->getClient();
+    ClntAddrMgr().firstClient();
+    SPtr<TAddrClient> client = ClntAddrMgr().getClient();
 
     if (!client) {
-        Log(Debug) << "Something is wrong, VERY wrong. Info about this client (myself) is not found." << LogEnd;
-        return true;
+        Log(Crit) << "Something is wrong, VERY wrong. Info about this client (myself) is not found." << LogEnd;
+        return false;
     }
 
     if (!client->getReplayDetectionRcvd() && !this->ReplayDetection)

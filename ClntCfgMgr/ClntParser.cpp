@@ -2002,7 +2002,6 @@ case 124:
 
     Log(Debug) << "Tunnel-mode defined (vendor-id=" << yyvsp[0].ival << "), mapping-prefix enabled too." << LogEnd;
     ParserOptStack.getLast()->setVendorSpec();
-    ParserOptStack.getLast()->setTunnelMode(yyvsp[0].ival);
     TunnelMode = new TClntOptVendorSpec(yyvsp[0].ival, 0, 0, 0);
     ParserOptStack.getLast()->setMappingPrefix(true);
 ;

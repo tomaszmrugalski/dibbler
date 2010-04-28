@@ -12,10 +12,13 @@
 
 #include <climits>
 #include "SrvParsIfaceOpt.h"
+#include "OptAddr.h"
+#include "OptString.h"
 #include "DHCPConst.h"
 #include "Logger.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
+:DsLiteTunnelName(0), DsLiteTunnelAddr(0)
 {
     this->Unicast       = 0;
     this->Preference    = SERVER_DEFAULT_PREFERENCE;
@@ -40,9 +43,6 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     this->LifetimeSupport   = false;
     this->VendorSpecSupport = false;
 
-    this->TunnelMode = 0;
-    this->TunnelVendorSpec = 0;
-
     this->Relay = false;
     this->RelayName = "[unknown]";
     this->RelayID = -1;
@@ -60,13 +60,11 @@ bool TSrvParsIfaceOpt::acceptUnknownFQDN() {
     return AcceptUnknownFQDN;
 }
 
-void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support)
-{
+void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support) {
     this->LeaseQuery = support;
 }
 
-bool TSrvParsIfaceOpt::getLeaseQuerySupport()
-{
+bool TSrvParsIfaceOpt::getLeaseQuerySupport() {
     return LeaseQuery;
 }
 
@@ -93,8 +91,7 @@ void TSrvParsIfaceOpt::setClntMaxLease(long clntMaxLease) {
     this->ClntMaxLease = clntMaxLease;
 }
 
-long TSrvParsIfaceOpt::getClntMaxLease()
-{
+long TSrvParsIfaceOpt::getClntMaxLease() {
     return this->ClntMaxLease;
 }
 
@@ -154,6 +151,7 @@ void TSrvParsIfaceOpt::setDNSServerLst(List(TIPv6Addr) *lst) {
     this->DNSServerLst = *lst;
     this->DNSServerSupport = true;
 }
+
 List(TIPv6Addr) * TSrvParsIfaceOpt::getDNSServerLst() {
     return &this->DNSServerLst;
 }
@@ -166,6 +164,7 @@ void TSrvParsIfaceOpt::setDomainLst(List(string) * lst) {
     this->DomainLst = *lst;
     this->DomainSupport = true;
 }
+
 List(string) * TSrvParsIfaceOpt::getDomainLst() {
     return &this->DomainLst;
 }
@@ -415,36 +414,12 @@ bool TSrvParsIfaceOpt::supportLifetime() {
     return this->LifetimeSupport;
 }
 
-void TSrvParsIfaceOpt::setTunnelMode(int vendor, int mode, SPtr<TIPv6Addr> addr)
+void TSrvParsIfaceOpt::setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr)
 {
-    TunnelMode = mode;
-    char tmpbuf[32];
-    int len;
-    
-    tmpbuf[0] = 0x0;
-    tmpbuf[1] = OPTION_VENDORSPEC_TUNNEL_TYPE;
-    tmpbuf[2] = 0x0;
-    tmpbuf[3] = 0x1;  // 0x0001 - option-len
-    tmpbuf[4] = mode;
-
-    tmpbuf[5] = 0x0;
-    tmpbuf[6] = OPTION_VENDORSPEC_ENDPOINT;
-    tmpbuf[7] = 0x0;
-    tmpbuf[8] = 0x10; // 0x0010 - option-code
-    memmove(tmpbuf+9,addr->getAddr(), 16);
-    len = 9+16; // actual length
-
-    SPtr<TSrvOptVendorSpec> v = new TSrvOptVendorSpec(vendor, tmpbuf, len, 0);
-
-    TunnelVendorSpec = v;
+    DsLiteTunnelAddr = new TOptAddr(OPTION_DS_LITE_ADDR, addr, 0);
 }
 
-int TSrvParsIfaceOpt::getTunnelMode()
+void TSrvParsIfaceOpt::setDsLiteTunnelName(const std::string name)
 {
-    return TunnelMode;
-}
-
-SPtr<TSrvOptVendorSpec> TSrvParsIfaceOpt::getTunnelVendorSpec()
-{
-    return TunnelVendorSpec;
+    DsLiteTunnelName = new TOptString(OPTION_DS_LITE_NAME, name, 0);
 }

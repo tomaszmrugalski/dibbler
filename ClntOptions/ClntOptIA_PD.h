@@ -13,9 +13,6 @@
 #include "OptIA_PD.h"
 #include "ClntOptIAPrefix.h"
 #include "ClntIfaceMgr.h"
-#include "ClntTransMgr.h"
-#include "ClntCfgMgr.h"
-#include "ClntAddrMgr.h"
 #include "IPv6Addr.h"
 
 class TOptIA_PD;
@@ -30,11 +27,7 @@ class TClntOptIA_PD : public TOptIA_PD
 
     bool doDuties();
     int getStatusCode();
-    void setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
-		    SPtr<TClntTransMgr> transMgr, 
-		    SPtr<TClntCfgMgr>   cfgMgr, 
-		    SPtr<TClntAddrMgr>  addrMgr,
-		    SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
+    void setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
     void setIface(int iface);
 
     SPtr<TClntOptIAPrefix> getPrefix();
@@ -47,7 +40,7 @@ class TClntOptIA_PD : public TOptIA_PD
     bool updatePrefixes();
     bool delPrefixes();
  private:
-    bool modifyPrefixes(PrefixModifyMode mode);
+     bool modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode);
     void setState(EState state);
     void clearContext();
 

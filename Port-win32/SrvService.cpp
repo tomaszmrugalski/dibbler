@@ -74,7 +74,7 @@ EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
 	const char * tmp = ServiceDir.c_str();
     if ( tmp[0]=='.' && tmp[1]=='.')
         return status; // relative directory
-    if ( tmp[0]==tmp[1]=='\\')
+    if ( tmp[0]=='\\' && tmp[1]=='\\')
     {
         Log(Warning) << "Network directory specified as config file location." << LogEnd;
         return status;

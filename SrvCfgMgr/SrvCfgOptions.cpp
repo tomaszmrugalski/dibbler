@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgOptions.cpp,v 1.7 2008-08-29 00:07:33 thomson Exp $
- *
  */
 
 #include "Logger.h"
@@ -52,6 +50,9 @@ void TSrvCfgOptions::SetDefaults() {
 
     Duid = 0;
     RemoteID = 0;
+
+    DsLiteTunnelAddr = 0;
+    DsLiteTunnelName = 0;
 }
 
 // --------------------------------------------------------------------
@@ -256,11 +257,9 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
     if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
     if (opt->supportVendorSpec()) this->setVendorSpec(opt->getVendorSpec());
-    if (opt->getTunnelMode())     
-    {
-	VendorSpecSupport = true;
-	this->VendorSpec.append(opt->getTunnelVendorSpec());
-    }
+
+    DsLiteTunnelAddr = opt->getDsLiteTunnelAddr(); // null = not supported
+    DsLiteTunnelName = opt->getDsLiteTunnelName(); // null = not supported
     setExtraOptions(opt->getExtraOptions());
     return true;
 }

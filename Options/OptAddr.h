@@ -31,6 +31,7 @@ class TOptAddr : public TOpt
     int getSize();
     char * storeSelf( char* buf);
     SPtr<TIPv6Addr> getAddr();
+    virtual bool doDuties() { return true; } // does nothing on its own
  protected:
     SPtr<TIPv6Addr> Addr;
 };

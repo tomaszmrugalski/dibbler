@@ -27,30 +27,23 @@ TClntOptNISPDomain::TClntOptNISPDomain(char *buf, int bufsize, TMsg* parent)
 bool TClntOptNISPDomain::doDuties() {
     string reason = "trying to set NIS+ domain.";
     int ifindex = this->Parent->getIface();
-    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
-    TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
-    if (!ifaceMgr) {
-	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
+    
+    if (!DUID) {
+        Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
         return false;
     }
-    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+
+    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
     if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
-		   << " while " << reason << LogEnd;
+        Log(Error) << "Unable to find interface ifindex=" << ifindex
+            << reason << LogEnd;
         return false;
     }
 
-    if (!this->DUID) {
-	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
-	return false;
-    }
-
-    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
     cfgIface->setNISPDomainState(STATE_CONFIGURED);
 
-    return iface->setNISPDomain(this->DUID, addr,this->Str);
+    return iface->setNISPDomain(DUID, Parent->getAddr(), Str);
 }
 
 void TClntOptNISPDomain::setSrvDuid(SPtr<TDUID> duid) {

@@ -27,7 +27,7 @@ using namespace std;
 int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TRelCfgMgr::TRelCfgMgr(TCtx ctx, string cfgFile, string xmlFile)
-    :TCfgMgr(ctx.IfaceMgr)
+    :TCfgMgr()
 {
     this->Ctx = ctx;
     this->XmlFile = xmlFile;
@@ -125,9 +125,9 @@ bool TRelCfgMgr::matchParsedSystemInterfaces(List(TRelCfgIface) * lst) {
 	// physical interface
 	if (cfgIface->getID()==-1) {
 	    // ID==-1 means that user referenced to interface by name
-	    ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
+	    ifaceIface = RelIfaceMgr().getIfaceByName(cfgIface->getName());
 	} else {
-	    ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
+	    ifaceIface = RelIfaceMgr().getIfaceByID(cfgIface->getID());
 	}
 	if (!ifaceIface) {
 	    Log(Crit) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 

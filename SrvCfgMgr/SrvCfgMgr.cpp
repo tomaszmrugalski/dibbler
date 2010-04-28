@@ -37,7 +37,7 @@ using namespace std;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TSrvCfgMgr::TSrvCfgMgr(SPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile)
-    :TCfgMgr((Ptr*)ifaceMgr), XmlFile(xmlFile), reconfigure(true)
+    :TCfgMgr(), XmlFile(xmlFile), reconfigure(true)
 {
     this->IfaceMgr = ifaceMgr;
 
@@ -49,7 +49,7 @@ TSrvCfgMgr::TSrvCfgMgr(SPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFi
 
     // load or create DUID
     string duidFile = (string)SRVDUID_FILE;
-    if (!this->setDUID(duidFile)) {
+    if (!this->setDUID(duidFile, *ifaceMgr)) {
 		this->IsDone=true;
 		return;
     }

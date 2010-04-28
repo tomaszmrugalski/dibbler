@@ -181,6 +181,7 @@ public:
     void setAuthenticationState(EState state);
 
 private:
+    void setDefaults();
     string IfaceName;
     int ID;
     bool NoConfig;
@@ -240,6 +241,9 @@ private:
     bool ReqLifetime;
     bool ReqPrefixDelegation;
     bool ReqVendorSpec;
+
+	SPtr<TIPv6Addr> DsLiteTunnelAddr;
+	SPtr<TOpt> DsLiteTunnelName;
 };
 
 #endif 

@@ -3,29 +3,23 @@
  *                                                                           
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
- *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                      
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                      
+ *
  * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: ClntParsIfaceOpt.h,v 1.10 2008-08-29 00:07:27 thomson Exp $
  *
  */
 
-class TClntParsIfaceOpt;
 #ifndef CLNTPARSEIFACEOPT_H
 #define CLNTPARSEIFACEOPT_H
 
+#include <iostream>
+#include <string>
 #include "DHCPConst.h"
 #include "Container.h"
-
 #include "ClntParsIAOpt.h"
 #include "StationID.h"
 #include "IPv6Addr.h"
-class TClntOptVendorSpec;
-
-#include <iostream>
-#include <string>
-using namespace std;
-
+#include "ClntOptVendorSpec.h"
 
 class TClntParsIfaceOpt : public TClntParsIAOpt
 {
@@ -36,8 +30,6 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getUnicast();
     bool getRapidCommit();
     void setRapidCommit(bool rapid);
-/*     bool isNewGroup(); */
-/*     void setNewGroup(bool newGr); */
     bool getIsIAs();
     void setIsIAs(bool state);
     
@@ -48,8 +40,8 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqDNSServer();
 
     // option: Domain
-    List(string) * getDomainLst();
-    void setDomainLst(List(string) * domains);
+    List(std::string) * getDomainLst();
+    void setDomainLst(List(std::string) * domains);
     bool getReqDomain();
 
     // option: NTP servers
@@ -58,8 +50,8 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqNTPServer();
 
     // option: Timezone
-    string getTimezone();
-    void setTimezone(string timeZone);
+    std::string getTimezone();
+    void setTimezone(std::string timeZone);
     bool getReqTimezone();
 
     // option: SIP servers
@@ -68,13 +60,13 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqSIPServer();
 
     // option: SIP domains
-    List(string) * getSIPDomainLst();
-    void setSIPDomainLst(List(string) *domainlist);
+    List(std::string) * getSIPDomainLst();
+    void setSIPDomainLst(List(std::string) *domainlist);
     bool getReqSIPDomain();
 
     // option: FQDN
-    string getFQDN();
-    void setFQDN(string fqdn);
+    std::string getFQDN();
+    void setFQDN(std::string fqdn);
     bool getReqFQDN();
 
     // option: NIS servers
@@ -88,13 +80,13 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqNISPServer();
 
     // option: NIS domain
-    string getNISDomain();
-    void setNISDomain(string domain);
+    std::string getNISDomain();
+    void setNISDomain(std::string domain);
     bool getReqNISDomain();
 
     // option: NISP domain
-    string getNISPDomain();
-    void setNISPDomain(string domain);
+    std::string getNISPDomain();
+    void setNISPDomain(std::string domain);
     bool getReqNISPDomain();
 
     // option: Lifetime
@@ -112,24 +104,36 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqVendorSpec();
     List(TClntOptVendorSpec) getVendorSpec();
 
+    void setDsLiteTunnelMode(EDsLiteTunnelMode mode);
+    EDsLiteTunnelMode getDsLiteTunnelMode();
+
+	void setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr);
+	SPtr<TIPv6Addr> getDsLiteTunnelAddr();
+	void setDsLiteTunnelName(SPtr<TOpt> name);
+	SPtr<TOpt> getDsLiteTunnelName();
+
 private:
     bool NoIAs;
     bool Unicast; // do we accept unicast?
     bool RapidCommit;
+    EDsLiteTunnelMode DsLiteTunnelMode;
 
     List(TIPv6Addr) DNSServerLst;
-    List(string) DomainLst;
+    List(std::string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
-    string Timezone;
+    std::string Timezone;
     List(TIPv6Addr) SIPServerLst;
-    List(string) SIPDomainLst;
-    string FQDN;
+    List(std::string) SIPDomainLst;
+    std::string FQDN;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
-    string NISDomain;
-    string NISPDomain;
+    std::string NISDomain;
+    std::string NISPDomain;
     bool Lifetime;
     List(TClntOptVendorSpec) VendorSpec;
+
+	SPtr<TIPv6Addr> DsLiteTunnelAddr;
+	SPtr<TOpt> DsLiteTunnelName;
 
     bool ReqDNSServer;
     bool ReqDomain;

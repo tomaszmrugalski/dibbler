@@ -30,11 +30,17 @@ class ClntParser;
 #include "KeyList.h"
 #endif
 
+#define ClntCfgMgr() (TClntCfgMgr::instance())
+
 class TClntCfgMgr : public TCfgMgr
 {
     friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
+ private:
+    TClntCfgMgr(const std::string cfgFile);
+
  public:
-    TClntCfgMgr(SPtr<TClntIfaceMgr> IfaceMgr, const string cfgFile);
+    static TClntCfgMgr & instance();
+    static void instanceCreate(const std::string cfgFile);
     ~TClntCfgMgr();
     
     // --- Iface related ---
@@ -84,9 +90,6 @@ class TClntCfgMgr : public TCfgMgr
     bool getMappingPrefix();
 
     bool useConfirm();
-
-    int tunnelMode(); // returns vendor-id
-
 private:
     bool setGlobalOptions(ClntParser * parser);
     bool validateConfig();
@@ -98,10 +101,8 @@ private:
     bool parseConfigFile(string cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
 
-    SPtr<TClntIfaceMgr> IfaceMgr;
     List(TClntCfgIface) ClntCfgIfaceLst;
     List(TClntCfgIface) InactiveLst;
-    DigestTypes Digest;
     string ScriptsDir;
     bool NotifyScripts;
 
@@ -110,6 +111,7 @@ private:
     bool InactiveMode;
     bool UseConfirm;
 
+    DigestTypes Digest;
 #ifndef MOD_DISABLE_AUTH
     bool AuthEnabled;
     List(DigestTypes) AuthAcceptMethods;
@@ -118,7 +120,8 @@ private:
 
     bool FQDNFlagS; // S bit in the FQDN option
     bool MappingPrefix;
-    int  TunnelMode;
+
+    static TClntCfgMgr * Instance;
 };
 
 typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);

@@ -18,38 +18,24 @@
 #include "SmartPtr.h"
 #include "Portable.h"
 
-using namespace std;
-
-class TClntIfaceMgr;
-class TClntAddrMgr;
-class TClntCfgMgr;
-class TClntTransMgr;
-
 class TDHCPClient
 {
   public:
-    TDHCPClient(string config);
+    TDHCPClient(const std::string config);
     void run();
     void stop();
     void resetLinkstate();
     bool isDone();
     bool checkPrivileges();
-    void setWorkdir(std::string workdir);
+    void setWorkdir(const std::string workdir);
 #ifdef MOD_CLNT_CONFIRM
     void requestLinkstateChange();
 #endif
-    SPtr<TClntAddrMgr>  getAddrMgr();
-    SPtr<TClntCfgMgr> getCfgMgr();
     char* getCtrlIface();
     ~TDHCPClient();
 
   private:
     void initLinkStateChange();
-
-    SPtr<TClntIfaceMgr> IfaceMgr;
-    SPtr<TClntAddrMgr>  AddrMgr;
-    SPtr<TClntCfgMgr>   CfgMgr;
-    SPtr<TClntTransMgr> TransMgr;
     bool IsDone;
     volatile link_state_notify_t linkstates;
 };

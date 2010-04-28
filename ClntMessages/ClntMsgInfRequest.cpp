@@ -30,13 +30,8 @@
 #include "ClntOptTimeZone.h"
 #include <cmath>
 
-TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
-				       SPtr<TClntTransMgr> TransMgr,
-				       SPtr<TClntCfgMgr>   CfgMgr, 
-				       SPtr<TClntAddrMgr>  AddrMgr, 
-				       SPtr<TClntCfgIface> iface)
-    :TClntMsg(IfaceMgr, TransMgr, CfgMgr, AddrMgr, iface->getID(), SPtr<TIPv6Addr>() /*NULL*/, 
-	      INFORMATION_REQUEST_MSG) {
+TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
+    :TClntMsg(iface->getID(), 0, INFORMATION_REQUEST_MSG) {
 
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
@@ -47,29 +42,24 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface->getID();
     IsDone=false;
 
-    if (!CfgMgr->anonInfRequest()) {
-	Options.append(new TClntOptClientIdentifier(ClntCfgMgr->getDUID(),this));
+    if (!ClntCfgMgr().anonInfRequest()) {
+        Options.append(new TClntOptClientIdentifier(ClntCfgMgr().getDUID(),this));
     } else {
-	Log(Info) << "Sending anonymous INF-REQUEST (ClientID not included)." << LogEnd;
+        Log(Info) << "Sending anonymous INF-REQUEST (ClientID not included)." << LogEnd;
     }
 
     this->appendRequestedOptions();
 
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
     appendElapsedOption();
     pkt = new char[getSize()];
     this->send();
 }
 
 //opts - all options list WITHOUT serverDUID including server id
-TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
-				       SPtr<TClntTransMgr> TransMgr,
-				       SPtr<TClntCfgMgr>   CfgMgr, 
-				       SPtr<TClntAddrMgr> AddrMgr, 
-				       TContainer< SPtr<TOpt> > ReqOpts,
+TClntMsgInfRequest::TClntMsgInfRequest(List(TOpt) ReqOpts,
 				       int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,SPtr<TIPv6Addr>() /*NULL*/,
-	      INFORMATION_REQUEST_MSG) {
+    :TClntMsg(iface, 0, INFORMATION_REQUEST_MSG) {
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
     MRC = 0;
@@ -79,15 +69,15 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface;
     IsDone=false;
     
-    SPtr<TIfaceIface> ptrIface = IfaceMgr->getIfaceByID(iface);
+    SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(iface);
     if (!ptrIface) {
-	Log(Error) << "Unable to find interface with ifindex=" << iface 
-		   << " while trying to generate INF-REQUEST." << LogEnd;
-	this->IsDone = true;
-	return;
+        Log(Error) << "Unable to find interface with ifindex=" << iface 
+                   << " while trying to generate INF-REQUEST." << LogEnd;
+        IsDone = true;
+        return;
     }
-    Log(Debug) << "Creating INF-REQUEST on the " << ptrIface->getName()
-	       << "/" << iface << "." << LogEnd;
+    Log(Debug) << "Creating INF-REQUEST on the " << ptrIface->getFullName()
+	           << "." << LogEnd;
     
     // copy whole list from Verify ...
     Options = ReqOpts;
@@ -125,7 +115,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntIfaceMgr> IfaceMgr,
         //is answer to reconfigure message
     }
     appendElapsedOption();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
 
     pkt = new char[getSize()];
     this->send();
@@ -164,21 +154,21 @@ void TClntMsgInfRequest::answer(SPtr<TClntMsg> msg)
     ptrORO->delOption(OPTION_INFORMATION_REFRESH_TIME);
     if (ptrORO && ptrORO->count())
     {
-	if (ClntCfgMgr->insistMode()){ 
-	    Log(Notice) << "Insist-mode enabled. Not all options were assigned (";
-	    for (int i=0; i<ptrORO->count(); i++)
-		Log(Cont) << ptrORO->getReqOpt(i) << " ";
-	    Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
-	    ClntTransMgr->sendInfRequest(Options,Iface);
-	} else {
-	    Log(Notice) << "Insist-mode disabled. Not all options were assigned (";
-	    for (int i=0; i<ptrORO->count(); i++)
-		Log(Cont) << ptrORO->getReqOpt(i) << " ";
-	    Log(Cont) << "). They will remain unconfigured." << LogEnd;
-	    IsDone = true;
-	}
+	    if (ClntCfgMgr().insistMode()){ 
+	        Log(Notice) << "Insist-mode enabled. Not all options were assigned (";
+	        for (int i=0; i<ptrORO->count(); i++)
+                Log(Cont) << ptrORO->getReqOpt(i) << " ";
+	        Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
+	        ClntTransMgr().sendInfRequest(Options,Iface);
+	    } else {
+	        Log(Notice) << "Insist-mode disabled. Not all options were assigned (";
+	        for (int i=0; i<ptrORO->count(); i++)
+                Log(Cont) << ptrORO->getReqOpt(i) << " ";
+	        Log(Cont) << "). They will remain unconfigured." << LogEnd;
+	        IsDone = true;
+	    }
     } else {
-	Log(Debug) << "All requested options were assigned." << LogEnd;
+        Log(Debug) << "All requested options were assigned." << LogEnd;
         IsDone=true;
     }
     return;

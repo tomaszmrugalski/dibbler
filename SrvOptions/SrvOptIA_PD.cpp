@@ -131,7 +131,7 @@ int TSrvOptIA_PD::assignPrefix(SPtr<TIPv6Addr> hint, bool fake) {
     prefixLst.first();
     while (prefix = prefixLst.get()) {
       buf << prefix->getPlain() << "/" << this->PDLength << " ";
-      optPrefix = new TSrvOptIAPrefix(prefix, this->PDLength, this->Prefered, this->Valid, this->Parent);
+      optPrefix = new TSrvOptIAPrefix(prefix, (char)this->PDLength, this->Prefered, this->Valid, this->Parent);
       SubOptions.append((Ptr*)optPrefix);
 
       if (!fake) {

@@ -155,16 +155,6 @@ void TClntParsGlobalOpt::setConfirm(bool conf)
     UseConfirm = conf;
 }
 
-void TClntParsGlobalOpt::setTunnelMode(int vendorid)
-{
-    TunnelMode = vendorid;
-}
-
-int  TClntParsGlobalOpt::getTunnelMode()
-{
-    return TunnelMode;
-}
-
 bool TClntParsGlobalOpt::getConfirm()
 {
     return UseConfirm;

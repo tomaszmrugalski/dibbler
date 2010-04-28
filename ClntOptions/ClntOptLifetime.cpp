@@ -28,24 +28,19 @@ bool TClntOptLifetime::doDuties()
 {
     string reason = "trying to set Lifetime timer.";
     int ifindex = this->Parent->getIface();
-    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
-    TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
-    if (!ifaceMgr) {
-	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
+
+    if (!DUID) {
+        Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
         return false;
     }
-    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
+
+    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
     if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
-		   << " while " << reason << LogEnd;
+        Log(Error) << "Unable to find interface ifindex=" << ifindex
+            << reason << LogEnd;
         return false;
     }
 
-    if (!this->DUID) {
-	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
-	return false;
-    }
-
-    return iface->setLifetime(this->DUID, addr, this->Value);
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
+    return iface->setLifetime(DUID, Parent->getAddr(), Value);
 }

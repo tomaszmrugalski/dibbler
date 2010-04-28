@@ -24,45 +24,43 @@
 volatile int serviceShutdown;
 volatile int linkstateChange;
 
-TDHCPClient::TDHCPClient(string config)
+TDHCPClient::TDHCPClient(const std::string config)
+  :IsDone(false)
 {
     serviceShutdown = 0;
     linkstateChange = 0;
     srand(now());
-    this->IsDone = false;
 
-    IfaceMgr = new TClntIfaceMgr(CLNTIFACEMGR_FILE);
-    if ( this->IfaceMgr->isDone() ) {
- 	  Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
-	  this->IsDone = true;
-	  return;
+    TClntIfaceMgr::instanceCreate(CLNTIFACEMGR_FILE);
+    if ( ClntIfaceMgr().isDone() ) {
+        Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
+        IsDone = true;
+        return;
     }
 
-    this->CfgMgr = new TClntCfgMgr(IfaceMgr, config);
-    if ( this->CfgMgr->isDone() ) {
-	Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
-	this->IsDone = true;
-	return;
+    TClntCfgMgr::instanceCreate(config);
+    if ( ClntCfgMgr().isDone() ) {
+        Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
+        this->IsDone = true;
+        return;
     }
 
-    this->AddrMgr = new TClntAddrMgr(CfgMgr->getDUID(), CfgMgr->useConfirm(), CLNTADDRMGR_FILE, false);
-    if ( this->AddrMgr->isDone() ) {
- 	  Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
-	  this->IsDone = true;
-	  return;
+	TClntAddrMgr::instanceCreate(ClntCfgMgr().getDUID(), ClntCfgMgr().useConfirm(), CLNTADDRMGR_FILE, false);
+    if ( ClntAddrMgr().isDone() ) {
+     	Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
+  	    IsDone = true;
+  	    return;
     }
 
-    this->TransMgr = new TClntTransMgr(IfaceMgr, AddrMgr, CfgMgr, CLNTTRANSMGR_FILE);
-    if ( this->TransMgr->isDone() ) {
-	Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
-	this->IsDone = true;
-	return;
+    TClntTransMgr::instanceCreate(CLNTTRANSMGR_FILE);
+    if ( TClntTransMgr::instance().isDone() ) {
+        Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
+        this->IsDone = true;
+        return;
     }
 
-    if (CfgMgr->useConfirm())
-	initLinkStateChange();
-
-    TransMgr->setContext(TransMgr);
+    if (ClntCfgMgr().useConfirm())
+        initLinkStateChange();
 }
 
 /** 
@@ -76,10 +74,10 @@ void TDHCPClient::initLinkStateChange()
 
     memset((void*)&this->linkstates, 0, sizeof(linkstates));
 
-    CfgMgr->firstIface();
+    ClntCfgMgr().firstIface();
     SPtr<TClntCfgIface> iface;
     Log(Debug) << "Initialising link-state detection for interfaces: ";
-    while (iface = CfgMgr->getIface()) 
+    while (iface = ClntCfgMgr().getIface()) 
     {
 	linkstates.ifindex[linkstates.cnt++] = iface->getID();
 	Log(Cont) << iface->getID() << " ";
@@ -93,18 +91,18 @@ void TDHCPClient::stop() {
     serviceShutdown = 1;
 
 #ifdef MOD_CLNT_CONFIRM
-    if (CfgMgr->useConfirm())
+    if (ClntCfgMgr().useConfirm())
 	link_state_change_cleanup();
 #endif
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
-    SPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
+    SPtr<TIfaceIface> iface = ClntIfaceMgr().getIfaceByID(ClntTransMgr().getCtrlIface());
     Log(Warning) << "Sending SHUTDOWN packet on the " << iface->getName()
-        << "/" << iface->getID() << " (addr=" << TransMgr->getCtrlAddr() << ")." << LogEnd;
-    int fd = sock_add("", TransMgr->getCtrlIface(),"::",0,true, false); 
+        << "/" << iface->getID() << " (addr=" << ClntTransMgr().getCtrlAddr() << ")." << LogEnd;
+    int fd = sock_add("", ClntTransMgr().getCtrlIface(),"::",0,true, false); 
     char buf = CONTROL_MSG;
-    int cnt=sock_send(fd,TransMgr->getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,TransMgr->getCtrlIface());
+    int cnt = sock_send(fd,ClntTransMgr().getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,ClntTransMgr().getCtrlIface());
     sock_del(fd);
 #endif
 }
@@ -115,7 +113,7 @@ void TDHCPClient::stop() {
 void TDHCPClient::resetLinkstate() {
     linkstates.cnt = 0;
     for (int i = 0; i<MAX_LINK_STATE_CHANGES_AT_ONCE; i++)
-	linkstates.ifindex[i]=0; // ugly, but safe way of zeroing table
+        linkstates.ifindex[i]=0; // ugly, but safe way of zeroing table
     linkstateChange = 0;
 }
 
@@ -127,7 +125,7 @@ void TDHCPClient::requestLinkstateChange(){
 #endif
 
 char* TDHCPClient::getCtrlIface(){
-    SPtr<TIfaceIface> iface = IfaceMgr->getIfaceByID(TransMgr->getCtrlIface());
+    SPtr<TIfaceIface> iface = ClntIfaceMgr().getIfaceByID(ClntTransMgr().getCtrlIface());
     return iface->getName();
 ;
 }
@@ -135,32 +133,32 @@ char* TDHCPClient::getCtrlIface(){
 void TDHCPClient::run()
 {
     SPtr<TMsg> msg;
-    while ( (!this->isDone()) && !TransMgr->isDone() )
+    while ( (!this->isDone()) && !ClntTransMgr().isDone() )
     {
 	if (serviceShutdown)
-	    TransMgr->shutdown();
+	    ClntTransMgr().shutdown();
 
 #ifdef MOD_CLNT_CONFIRM	
         if (linkstateChange) {
-	    AddrMgr->setIA2Confirm(&linkstates);
-	    this->resetLinkstate();
+          ClntAddrMgr().setIA2Confirm(&linkstates);
+          this->resetLinkstate();
         }
 #endif
 
-	TransMgr->doDuties();
+	ClntTransMgr().doDuties();
 	
-	unsigned int timeout = TransMgr->getTimeout();
+	unsigned int timeout = ClntTransMgr().getTimeout();
 
 	if (timeout == 0)
 	    timeout = 1;
 	
         Log(Debug) << "Sleeping for " << timeout << " second(s)." << LogEnd;
-        SPtr<TClntMsg> msg=IfaceMgr->select(timeout);
+        SPtr<TClntMsg> msg=ClntIfaceMgr().select(timeout);
 	
         if (msg) {
 	    int iface = msg->getIface();
 	    SPtr<TIfaceIface> ptrIface;
-	    ptrIface = IfaceMgr->getIfaceByID(iface);
+	    ptrIface = ClntIfaceMgr().getIfaceByID(iface);
             Log(Info) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		      << "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
 		      << dec << ", " << msg->countOption() << " opts:";
@@ -170,7 +168,7 @@ void TDHCPClient::run()
                 Log(Cont) << " " << ptrOpt->getOptType(); 
             Log(Cont) << LogEnd;
 	    
-            TransMgr->relayMsg(msg);
+            ClntTransMgr().relayMsg(msg);
         }
     }
     Log(Notice) << "Bye bye." << LogEnd;
@@ -186,26 +184,10 @@ bool TDHCPClient::checkPrivileges() {
 }
 
 void TDHCPClient::setWorkdir(std::string workdir) {
-    if (this->CfgMgr) {
-        this->CfgMgr->setWorkdir(workdir);
-        this->CfgMgr->dump();
-    }
-}
-
-SPtr<TClntAddrMgr> TDHCPClient::getAddrMgr() {
-    return this->AddrMgr;
-}
-
-SPtr<TClntCfgMgr> TDHCPClient::getCfgMgr() {
-    return this->CfgMgr;
+    ClntCfgMgr().setWorkdir(workdir);
+    ClntCfgMgr().dump();
 }
 
 TDHCPClient::~TDHCPClient()
 {
-    if (TransMgr)
-	TransMgr->setContext(0);
-    this->TransMgr = 0;
-    this->AddrMgr  = 0;
-    this->CfgMgr   = 0;
-    this->IfaceMgr = 0;
 }

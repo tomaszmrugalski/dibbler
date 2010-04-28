@@ -21,16 +21,9 @@ class TClntIfaceMgr;
 class TClntMsgSolicit : public TClntMsg
 {
 public:
-    TClntMsgSolicit(SPtr<TClntIfaceMgr> IfaceMgr,
-		    SPtr<TClntTransMgr> TransMgr,
-		    SPtr<TClntCfgMgr>   CfgMgr,
-		    SPtr<TClntAddrMgr>  AddrMgr,
-		    int iface,
-		    SPtr<TIPv6Addr> addr,
-		    List(TClntCfgIA) iaLst, 
-		    SPtr<TClntCfgTA> ta,
-		    List(TClntCfgPD) pdLst,
-		    bool rapid=false);
+  TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
+                  List(TClntCfgIA) iaLst, SPtr<TClntCfgTA> ta,
+                  List(TClntCfgPD) pdLst, bool rapid=false);
 
     void answer(SPtr<TClntMsg> msg);
 

@@ -146,6 +146,9 @@ private:
 
     SPtr<TSrvOptRemoteID> RemoteID;
     SPtr<TDUID> Duid;
+
+    SPtr<TOpt> DsLiteTunnelAddr;
+    SPtr<TOpt> DsLiteTunnelName;
 };
 
 #endif

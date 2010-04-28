@@ -23,17 +23,9 @@
 class TClntMsg : public TMsg
 {
 public:
-    TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
-	     SPtr<TClntTransMgr> TransMgr, 
-	     SPtr<TClntCfgMgr> CfgMgr,
-	     SPtr<TClntAddrMgr> AddrMgr,
-	     int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
+    TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
-    TClntMsg(SPtr<TClntIfaceMgr> IfaceMgr, 
-	     SPtr<TClntTransMgr> TransMgr, 
-	     SPtr<TClntCfgMgr> CfgMgr,
-	     SPtr<TClntAddrMgr> AddrMgr,
-	     int iface, SPtr<TIPv6Addr> addr, int msgType);
+    TClntMsg(int iface, SPtr<TIPv6Addr> addr, int msgType);
     unsigned long getTimeout();
     void send();
 
@@ -46,13 +38,9 @@ public:
     void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
 //    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
 
-    void appendAuthenticationOption(SPtr<TClntAddrMgr> AddrMgr);
+    void appendAuthenticationOption();
     void appendElapsedOption();
     void appendRequestedOptions();
-    SPtr<TClntTransMgr>  getClntTransMgr();
-    SPtr<TClntAddrMgr>   getClntAddrMgr();
-    SPtr<TClntCfgMgr>    getClntCfgMgr();
-    SPtr<TClntIfaceMgr>  getClntIfaceMgr();
 
     bool validateReplayDetection();
 
@@ -71,16 +59,9 @@ public:
     int RT;             // Retransmission timeout (in seconds)
     int FirstTimeStamp; // timestamp of the first transmission
     int LastTimeStamp;  // timestamp of the last transmission
-    SPtr<TClntTransMgr>  ClntTransMgr;
-    SPtr<TClntAddrMgr>   ClntAddrMgr;
-    SPtr<TClntCfgMgr>    ClntCfgMgr;
-    SPtr<TClntIfaceMgr>  ClntIfaceMgr;
 
  private:
-    void setAttribs(SPtr<TClntIfaceMgr> IfaceMgr, 
-		    SPtr<TClntTransMgr> TransMgr, 
-		    SPtr<TClntCfgMgr>   CfgMgr,
-		    SPtr<TClntAddrMgr>  AddrMgr);
+    void setDefaults();
     void invalidAllowOptInMsg(int msg, int opt);
     void invalidAllowOptInOpt(int msg, int parentOpt, int childOpt);
 };

@@ -150,26 +150,18 @@ int TClntOptIA_PD::getStatusCode()
     return STATUSCODE_SUCCESS;
 }
 
-void TClntOptIA_PD::setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
-                               SPtr<TClntTransMgr> transMgr, 
-                               SPtr<TClntCfgMgr> cfgMgr, 
-                               SPtr<TClntAddrMgr> addrMgr,
-                               SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, 
+void TClntOptIA_PD::setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, 
                                TMsg * originalMsg)
 {
-    this->AddrMgr=addrMgr;
-    this->IfaceMgr=ifaceMgr;
-    this->TransMgr=transMgr;
-    this->CfgMgr=cfgMgr;
-    this->DUID=srvDuid;
+    DUID=srvDuid;
     if (srvAddr) {
-        this->Unicast = true;
+        Unicast = true;
     } else {
-        this->Unicast = false;
+        Unicast = false;
     }
-    this->Prefix=srvAddr;
-    this->OriginalMsg = originalMsg;
-    this->Iface = originalMsg->getIface();
+    Prefix = srvAddr;
+    OriginalMsg = originalMsg;
+    Iface = originalMsg->getIface();
 }
 
 TClntOptIA_PD::~TClntOptIA_PD()
@@ -215,41 +207,41 @@ SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SPtr<TIPv6Addr> prefix)
 
 bool TClntOptIA_PD::addPrefixes()
 {
-    return modifyPrefixes(PREFIX_MODIFY_ADD);
+    return modifyPrefixes(TClntIfaceMgr::PREFIX_MODIFY_ADD);
 }
 
 bool TClntOptIA_PD::delPrefixes()
 {
-    return modifyPrefixes(PREFIX_MODIFY_DEL);
+    return modifyPrefixes(TClntIfaceMgr::PREFIX_MODIFY_DEL);
 }
 
 bool TClntOptIA_PD::updatePrefixes()
 {
-    return modifyPrefixes(PREFIX_MODIFY_UPDATE);
+    return modifyPrefixes(TClntIfaceMgr::PREFIX_MODIFY_UPDATE);
 }
 
-bool TClntOptIA_PD::modifyPrefixes(PrefixModifyMode mode)
+bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
 {
     bool status = false;
     EState state = STATE_NOTCONFIGURED;
     SPtr<TClntOptIAPrefix> prefix;
     string action;
     switch(mode) {
-      case PREFIX_MODIFY_ADD:
+      case TClntIfaceMgr::PREFIX_MODIFY_ADD:
         action = "addition";
         state = STATE_CONFIGURED;
         break;
-      case PREFIX_MODIFY_UPDATE:
+      case TClntIfaceMgr::PREFIX_MODIFY_UPDATE:
         action = "update";
         state = STATE_CONFIGURED;
         break;
-      case PREFIX_MODIFY_DEL:
+      case TClntIfaceMgr::PREFIX_MODIFY_DEL:
         action = "delete";
         state = STATE_NOTCONFIGURED;
         break;
     }
     
-    if ( (mode==PREFIX_MODIFY_ADD) || (mode==PREFIX_MODIFY_UPDATE) ) {
+    if ( (mode==TClntIfaceMgr::PREFIX_MODIFY_ADD) || (mode==TClntIfaceMgr::PREFIX_MODIFY_UPDATE) ) {
       if ( (T1==0) && (T2==0) ) {
         firstPrefix();
         if (prefix = getPrefix()) {
@@ -264,25 +256,25 @@ bool TClntOptIA_PD::modifyPrefixes(PrefixModifyMode mode)
     this->firstPrefix();
     while (prefix = this->getPrefix() ) {
 	switch (mode) {
-	case PREFIX_MODIFY_ADD:
-	    AddrMgr->addPrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
+    case TClntIfaceMgr::PREFIX_MODIFY_ADD:
+	    ClntAddrMgr().addPrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
                            prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
-	    status = IfaceMgr->addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
+	    status = ClntIfaceMgr().addPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
                                      prefix->getPref(), prefix->getValid());
         Log(Debug) << "RENEW will be sent (T1) after " << T1 << ", REBIND (T2) after " << T2 << " seconds." << LogEnd;
 	    action = "addition";
 	    break;
-	case PREFIX_MODIFY_UPDATE:
-	    AddrMgr->updatePrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
+	case TClntIfaceMgr::PREFIX_MODIFY_UPDATE:
+	    ClntAddrMgr().updatePrefix(this->DUID, this->Prefix, this->Iface, this->IAID, this->T1, this->T2,
 				  prefix->getPrefix(), prefix->getPref(), prefix->getValid(), prefix->getPrefixLength(), false);
-	    status = IfaceMgr->updatePrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
+	    status = ClntIfaceMgr().updatePrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
 					    prefix->getPref(), prefix->getValid());
         Log(Debug) << "RENEW will be sent (T1) after " << T1 << ", REBIND (T2) after " << T2 << " seconds." << LogEnd;
 	    action = "update";
 	    break;
-	case PREFIX_MODIFY_DEL:
-	    AddrMgr->delPrefix(CfgMgr->getDUID(), this->IAID, prefix->getPrefix(), false);
-	    status = IfaceMgr->delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() );
+	case TClntIfaceMgr::PREFIX_MODIFY_DEL:
+	    ClntAddrMgr().delPrefix(CfgMgr->getDUID(), this->IAID, prefix->getPrefix(), false);
+	    status = ClntIfaceMgr().delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() );
 	    action = "delete";
 	    break;
 	}
@@ -335,7 +327,7 @@ void TClntOptIA_PD::setState(EState state)
     }
     cfgPD->setState(state);
 
-    SPtr<TAddrIA> addrPD = AddrMgr->getPD(getIAID());
+    SPtr<TAddrIA> addrPD = ClntAddrMgr().getPD(getIAID());
     if (!addrPD) {
 	/* Log(Error) << "Unable to find PD with iaid=" << getIAID() << " on the "
 	   << cfgIface->getFullName() << " interface (AddrMgr)." << LogEnd; */

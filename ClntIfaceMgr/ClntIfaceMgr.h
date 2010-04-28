@@ -27,16 +27,24 @@ class TClntIfaceIface;
 #include "IPv6Addr.h"
 #include "ClntMsg.h"
 
-typedef enum {
-    PREFIX_MODIFY_ADD,
-    PREFIX_MODIFY_UPDATE,
-    PREFIX_MODIFY_DEL
-} PrefixModifyMode;
+#define ClntIfaceMgr() (TClntIfaceMgr::instance())
 
 class TClntIfaceMgr : public TIfaceMgr
 {
+public:
+	typedef enum {
+		PREFIX_MODIFY_ADD,
+		PREFIX_MODIFY_UPDATE,
+		PREFIX_MODIFY_DEL
+	} PrefixModifyMode;
+
+ private:
+    TClntIfaceMgr(string xmlFile); // this is singleton
+    
  public:
-    TClntIfaceMgr(string xmlFile);
+    static void instanceCreate(const std::string xmlFile);
+    static TClntIfaceMgr& instance();
+
     ~TClntIfaceMgr();
     friend ostream & operator <<(ostream & strum, TClntIfaceMgr &x);
     void dump();
@@ -46,11 +54,6 @@ class TClntIfaceMgr : public TIfaceMgr
     bool sendMulticast(int iface, char *msg, int msgsize);
     
     SPtr<TClntMsg> select(unsigned int timeout);
-
-    void setContext(SPtr<TClntIfaceMgr> clntIfaceMgr,
-		    SPtr<TClntTransMgr> clntTransMgr,
-		    SPtr<TClntCfgMgr>   clntCfgMgr,
-		    SPtr<TClntAddrMgr>  clntAddrMgr);
 
     void notifyScripts(int msgType, int ifindex);
 
@@ -71,13 +74,12 @@ class TClntIfaceMgr : public TIfaceMgr
     void redetectIfaces();
 
   private:
-    bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid, PrefixModifyMode mode);
+    bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, 
+		      unsigned int valid, PrefixModifyMode mode);
 
     string XmlFile;
-    SPtr<TClntCfgMgr> ClntCfgMgr;
-    SPtr<TClntAddrMgr> ClntAddrMgr;
-    SPtr<TClntTransMgr> ClntTransMgr;
-    SPtr<TClntIfaceMgr> That;
+
+    static TClntIfaceMgr * Instance;
 };
 
 #endif 

@@ -23,11 +23,7 @@ class TClntMsgRebind;
 class TClntMsgRebind : public TClntMsg
 {
   public:
-    TClntMsgRebind(SPtr<TClntIfaceMgr> IfaceMgr, 
-		   SPtr<TClntTransMgr> TransMgr, 
-		   SPtr<TClntCfgMgr> CfgMgr, 
-		   SPtr<TClntAddrMgr> AddrMgr,
-		   TContainer<SPtr<TOpt> > ptrOpts, int iface);
+    TClntMsgRebind(List(TOpt) ptrOpts, int iface);
     
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();

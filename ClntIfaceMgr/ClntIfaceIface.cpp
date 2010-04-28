@@ -24,14 +24,12 @@
 TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* mac, 
 				 int maclen, char* llAddr, int llAddrCnt, char * globalAddr,
 				 int globalAddrCnt, int hwType)
-    :TIfaceIface(name, id, flags, mac, maclen, llAddr, llAddrCnt, globalAddr, globalAddrCnt, hwType) {
+  :TIfaceIface(name, id, flags, mac, maclen, llAddr, llAddrCnt, globalAddr, globalAddrCnt, hwType),
+   TunnelEndpoint(0), LifetimeTimeout(DHCPV6_INFINITY), LifetimeTimestamp(now()) {
     this->DNSServerLst.clear();
     this->DomainLst.clear();
     this->NTPServerLst.clear();
     this->Timezone = "";
-
-    TunnelMode = -1;
-    TunnelEndpoint = 0;
 
     unlink(WORKDIR"/"OPTION_DNS_SERVERS_FILENAME);
     unlink(WORKDIR"/"OPTION_DOMAINS_FILENAME);
@@ -43,9 +41,6 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
     unlink(WORKDIR"/"OPTION_NIS_DOMAIN_FILENAME);
     unlink(WORKDIR"/"OPTION_NISP_SERVERS_FILENAME);
     unlink(WORKDIR"/"OPTION_NISP_DOMAIN_FILENAME);
-
-    this->LifetimeTimeout = DHCPV6_INFINITY;
-    this->LifetimeTimestamp = now();
 
     setPrefixLength(CLIENT_DEFAULT_PREFIX_LENGTH);
 }
@@ -674,22 +669,7 @@ List(TIPv6Addr) TClntIfaceIface::getDNSServerLst() {
 	return DNSServerLst;
 }
 
-bool TClntIfaceIface::setTunnelMode(int mode, SPtr<TIPv6Addr> remoteEndpoint)
-{
-    Log(Debug) << "Tunnel: tunnel set to type=" << mode << ", remote end=" << remoteEndpoint->getPlain()
-	       << " on the " << getFullName() << " interface." << LogEnd;
-    TunnelMode = mode;
-    TunnelEndpoint = remoteEndpoint;
-    return true;
-}
-
-int  TClntIfaceIface::getTunnelMode()
-{
-    return TunnelMode;
-}
-
-SPtr<TIPv6Addr> TClntIfaceIface::getTunnelEndpoint()
-{
+SPtr<TIPv6Addr> TClntIfaceIface::getDsLiteTunnel() {
     return TunnelEndpoint;
 }
 

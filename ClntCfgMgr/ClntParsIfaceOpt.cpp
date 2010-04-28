@@ -1,12 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *   changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: ClntParsIfaceOpt.cpp,v 1.11 2008-08-29 00:07:27 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *
+ * released under GNU GPL v2 only licence
  *
  */
 
@@ -18,7 +17,8 @@
 
 using namespace std;
 
-TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
+TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt(),
+DsLiteTunnelMode(TUNNEL_NONE)
 {
     DNSServerLst.clear();
     DomainLst.clear();
@@ -166,9 +166,11 @@ void TClntParsIfaceOpt::setFQDN(string fqdn) {
     this->FQDN=fqdn;
     this->ReqFQDN=true;
 }
+
 bool TClntParsIfaceOpt::getReqFQDN() {
     return this->ReqFQDN;
 }
+
 string TClntParsIfaceOpt::getFQDN() { 
     return this->FQDN;
 }
@@ -177,6 +179,7 @@ string TClntParsIfaceOpt::getFQDN() {
 void TClntParsIfaceOpt::setPrefixDelegation() { 
     this->ReqPrefixDelegation=true;
 }
+
 bool TClntParsIfaceOpt::getReqPrefixDelegation() {
     return this->ReqPrefixDelegation;
 }
@@ -186,21 +189,26 @@ bool TClntParsIfaceOpt::getReqPrefixDelegation() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getNISServerLst() {
     return &this->NISServerLst;
 }
+
 void TClntParsIfaceOpt::setNISServerLst(List(TIPv6Addr) *lst) {
     this->NISServerLst = *lst;
     this->ReqNISServer = true;
 }
+
 bool TClntParsIfaceOpt::getReqNISServer(){
     return this->ReqNISServer;
 }
+
 // --- option: NIS domain ---
 string TClntParsIfaceOpt::getNISDomain() { 
     return this->NISDomain;
 }
+
 void TClntParsIfaceOpt::setNISDomain(string domain) { 
     this->NISDomain=domain;
     this->ReqNISDomain=true;
 }
+
 bool TClntParsIfaceOpt::getReqNISDomain() {
     return this->ReqNISDomain;
 }
@@ -209,13 +217,16 @@ bool TClntParsIfaceOpt::getReqNISDomain() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getNISPServerLst() {
     return &this->NISPServerLst;
 }
+
 void TClntParsIfaceOpt::setNISPServerLst(List(TIPv6Addr) *lst) {
     this->NISPServerLst = *lst;
     this->ReqNISPServer = true;
 }
+
 bool TClntParsIfaceOpt::getReqNISPServer(){
     return this->ReqNISPServer;
 }
+
 // --- option: NIS+ domain ---
 string TClntParsIfaceOpt::getNISPDomain() { 
     return this->NISPDomain;
@@ -242,23 +253,43 @@ bool TClntParsIfaceOpt::getReqLifetime() {
 }
 
 // --- option: vendor-spec ---
-void TClntParsIfaceOpt::setVendorSpec(List(TClntOptVendorSpec) vendorSpec)
-{
+void TClntParsIfaceOpt::setVendorSpec(List(TClntOptVendorSpec) vendorSpec) {
     VendorSpec = vendorSpec;
     ReqVendorSpec = true;
 }
 
-void TClntParsIfaceOpt::setVendorSpec()
-{
+void TClntParsIfaceOpt::setVendorSpec() {
     ReqVendorSpec = true;
 }
 
-bool TClntParsIfaceOpt::getReqVendorSpec()
-{
+bool TClntParsIfaceOpt::getReqVendorSpec() {
     return ReqVendorSpec;
 }
 
-List(TClntOptVendorSpec) TClntParsIfaceOpt::getVendorSpec()
-{
+List(TClntOptVendorSpec) TClntParsIfaceOpt::getVendorSpec() {
     return VendorSpec;
+}
+
+void TClntParsIfaceOpt::setDsLiteTunnelMode(EDsLiteTunnelMode mode) {
+    DsLiteTunnelMode = mode;
+}
+ 
+EDsLiteTunnelMode TClntParsIfaceOpt::getDsLiteTunnelMode() {
+    return DsLiteTunnelMode;
+}
+
+void TClntParsIfaceOpt::setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr) {
+	DsLiteTunnelAddr = addr;
+}
+
+SPtr<TIPv6Addr> TClntParsIfaceOpt::getDsLiteTunnelAddr() {
+	return DsLiteTunnelAddr;
+}
+
+void TClntParsIfaceOpt::setDsLiteTunnelName(SPtr<TOpt> name) {
+	DsLiteTunnelName = name;
+}
+
+SPtr<TOpt> TClntParsIfaceOpt::getDsLiteTunnelName() {
+	return DsLiteTunnelName;
 }

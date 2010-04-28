@@ -10,7 +10,6 @@
  *
  */
 
-class TCfgMgr;
 #ifndef CFGMGR_H
 #define CFGMGR_H
 #include <string>
@@ -22,7 +21,6 @@ class TCfgMgr;
 #define RELAY_MIN_IFINDEX 1024
 
 /* Defined DUID types */
-using namespace std;
 
 enum EDUIDType{
     DUID_TYPE_NOT_DEFINED = 0,
@@ -34,7 +32,7 @@ enum EDUIDType{
 class TCfgMgr
 {
  public:
-    TCfgMgr(SPtr<TIfaceMgr> IfaceMgr);
+    TCfgMgr();
     virtual ~TCfgMgr();
 
     bool compareConfigs(const string cfgFile, const string oldCfgFile);
@@ -47,14 +45,13 @@ class TCfgMgr
     
  protected:
     SPtr<TDUID> DUID;
-    bool setDUID(const string duidFile);
-    bool loadDUID(const string filename);
-    bool generateDUID(const string duidFile,char * mac,int macLen, int macType);
+    bool setDUID(const std::string duidFile, TIfaceMgr &ifaceMgr);
+    bool loadDUID(const std::string filename);
+    bool generateDUID(const std::string duidFile,char * mac,int macLen, int macType);
     string Workdir;
     string LogName;
     int LogLevel;
     bool IsDone;
-    SPtr<TIfaceMgr> IfaceMgr;
     EDUIDType DUIDType;
     int DUIDEnterpriseNumber;
     SPtr<TDUID> DUIDEnterpriseID;

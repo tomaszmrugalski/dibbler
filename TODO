@@ -142,3 +142,27 @@ New tasks should be added to the TODO list. After task is implemented, it should
  ------
 - Linux kernel does not support finite lifetimes: kernel sources:
    addrconf.c:  inet6_rtm_newaddr() :1579, functions ipv6_add_addr and in ndisc.c:ndisc_router_discovery
+
+
+
+ REDESIGN IDEAS
+----------------
+Current hierarchy:
+class TClntParsGlobalOpt : public TClntParsIfaceOpt
+class TClntParsIfaceOpt : public TClntParsIAOpt
+class TClntParsIAOpt : public TClntParsAddrOpt
+class TClntParsAddrOpt
+
+ClntCfgMgr 
+ClntCfgIface
+ClntCfgIA
+ClntCfgTA
+ClntCfgPD
+ClntCfgAddr
+ClntCfgPrefix
+
+ CODE CLEANUP
+--------------
+- remove void TClntMsg::invalidAllowOptInMsg(int msg, int opt) {
+- remove void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
+- rename TClntTransMgr::addAdvertise to addReceivedAdvertise

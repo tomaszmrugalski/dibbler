@@ -244,7 +244,7 @@ are eight levels of logging:
   Dibbler source code might be needed to understand those messages.
   Called with @code Log(Debug) << "..." << LogEnd @endcode.
 
-@section srcNames 5.4 Names and prefixes
+@section srcNames 5.4 Naming convention
 To avoid confussion, various prefixes are used in class and variable
 names. Class types begin with T (e.g. address class would be named
 TAddr), enumeration types begin with E (e.g. state enumaterion would
@@ -271,8 +271,10 @@ Here are examples of some class names:
  - \b TClntCfgAddr -- Address used in the client config manager.
 
 Also note that class function names start with small letters
-(e.g. bool TOpt::isValid();) and class variables start with capital
+(e.g. bool TOpt::isValid();) and class members start with capital
 letters (e.g. bool TOpt::IsValid;).
+
+
 
 @section srcParsers 5.5 Configuration file parsers
 @b Note: Similar approach is used in server, client and

@@ -6,9 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptString.h,v 1.1 2004-11-02 01:23:13 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
  */
 
 #ifndef OPTSTRING_H
@@ -28,6 +25,7 @@ class TOptString : public TOpt
     char * storeSelf( char* buf);
     int getSize();
     string getString();
+    virtual bool doDuties() { return true; } // do nothing, actual code in ClntOpt* classes
  protected:
     string Str;
 };

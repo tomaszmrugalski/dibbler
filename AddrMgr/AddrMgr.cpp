@@ -31,7 +31,7 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
     if (loadfile) {
       	dbLoad(xmlFile.c_str());
     } else {
-	      Log(Debug) << "Skipping database loading." << LogEnd;
+        Log(Debug) << "Skipping database loading." << LogEnd;
     }
     DeleteEmptyClient = true;
 }
@@ -63,8 +63,8 @@ void TAddrMgr::dbLoad(const char * xmlFile)
     xmlDocPtr root;
     root = xmlLoad(xmlFile);
     if (!root) {
- 	Log(Error) << "File loading has failed." << LogEnd;
-	return;
+        Log(Error) << "File loading has failed." << LogEnd;
+        return;
     }
     this->parseAddrMgr(root,0);
     xmlFreeDoc(root);
@@ -162,12 +162,12 @@ SPtr<TAddrClient> TAddrMgr::getClient(SPtr<TIPv6Addr> leasedAddr)
     ClntsLst.first();
     while (cli = ClntsLst.get() ) 
     {
-	      SPtr<TAddrIA> ia;
-	      cli->firstIA();
-	      while (ia = cli->getIA()) {
-	          if ( ia->getAddr(leasedAddr) )
-		            return cli;
-	      }
+        SPtr<TAddrIA> ia;
+        cli->firstIA();
+        while (ia = cli->getIA()) {
+            if ( ia->getAddr(leasedAddr) )
+                return cli;
+        }
     }
     return 0;
 }

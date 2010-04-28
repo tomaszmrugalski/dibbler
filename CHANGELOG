@@ -6,6 +6,10 @@
   - It is now possible to configure IAID
   - Support for Mac OS X added (experimental, of course)
 
+ ----
+  - OptPreference class removed
+  - tunnel endpoint removed
+
  0.7.3 [2009-03-09]
   - Linux: Fix for compilation with libc6, version 2.8
   - New timezone option support added (by Petr Pisar) (bug #185)

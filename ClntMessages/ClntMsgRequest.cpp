@@ -26,20 +26,15 @@
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptStatusCode.h"
+#include "ClntTransMgr.h"
 #include <cmath>
 #include "Logger.h"
 
 /*
  * opts - options list WITHOUT serverDUID
  */
-TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
-				 SPtr<TClntTransMgr> TransMgr,
-				 SPtr<TClntCfgMgr>   CfgMgr, 
-				 SPtr<TClntAddrMgr> AddrMgr, 
-				 List(TOpt) opts, 
-				 
-				 int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface, SPtr<TIPv6Addr>() /*NULL*/, REQUEST_MSG) {
+TClntMsgRequest::TClntMsgRequest(List(TOpt) opts, int iface)
+    :TClntMsg(iface, 0, REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
     MRC = REQ_MAX_RC;
@@ -49,7 +44,7 @@ TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface;
     IsDone=false;
 
-    int backupCount = TransMgr->getAdvertiseLstCount();
+    int backupCount = ClntTransMgr().getAdvertiseLstCount();
     if (!backupCount) 
     {
 	Log(Error) << "Unable to send REQUEST. There are no backup servers left." << LogEnd;
@@ -60,17 +55,17 @@ TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     }
     Log(Info) << "Creating REQUEST. Backup server list contains " 
 	      << backupCount << " server(s)." << LogEnd;
-    TransMgr->printAdvertiseLst();
+    ClntTransMgr().printAdvertiseLst();
 
     // get server DUID from the first advertise
-    SPtr<TOpt> srvDUID = TransMgr->getAdvertiseDUID();
+    SPtr<TOpt> srvDUID = ClntTransMgr().getAdvertiseDUID();
 
-    TransMgr->firstAdvertise();
-    SPtr<TClntMsgAdvertise> advertise = (Ptr*) TransMgr->getAdvertise();
+    ClntTransMgr().firstAdvertise();
+    SPtr<TClntMsgAdvertise> advertise = (Ptr*) ClntTransMgr().getAdvertise();
     this->copyAAASPI((SPtr<TClntMsg>)advertise);
 
     // remove just used server
-    TransMgr->delFirstAdvertise();
+    ClntTransMgr().delFirstAdvertise();
 
     // copy whole list from SOLICIT ...
     Options = opts;
@@ -101,7 +96,7 @@ TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     copyAddrsFromAdvertise((Ptr*) advertise);
 
     // does this server support unicast?
-    SPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(iface);
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(iface);
     if (!cfgIface) {
 	Log(Error) << "Unable to find interface with ifindex " << iface << "." << LogEnd;    
 	IsDone = true;
@@ -122,7 +117,7 @@ TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr,
 	    if (opt->getOptType()!=OPTION_IA_NA)
 		continue;
 	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
-	    SPtr<TAddrIA> ptrAddrIA = AddrMgr->getIA(ptrOptIA->getIAID());
+	    SPtr<TAddrIA> ptrAddrIA = ClntAddrMgr().getIA(ptrOptIA->getIAID());
 	  
 	    if (!ptrAddrIA) {
 		Log(Crit) << "IA with IAID=" << ptrOptIA->getIAID() << " not found." << LogEnd;
@@ -137,20 +132,15 @@ TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     Options.append( srvDUID );
     
     appendElapsedOption();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
     pkt = new char[getSize()];
     this->IsDone = false;
     this->send();
 }
 
-TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr, 
-				 SPtr<TClntTransMgr> TransMgr,
-				 SPtr<TClntCfgMgr>   CfgMgr, 
-				 SPtr<TClntAddrMgr> AddrMgr, 
-				 TContainer<SPtr<TAddrIA> > IAs,
-				 SPtr<TDUID> srvDUID,
-				 int iface)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,SPtr<TIPv6Addr>()/*NULL*/,REQUEST_MSG) {
+TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
+				 SPtr<TDUID> srvDUID, int iface)
+    :TClntMsg(iface, 0, REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
     MRC = REQ_MAX_RC;
@@ -160,7 +150,7 @@ TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     Iface=iface;
     IsDone=false;
     SPtr<TOpt> ptr;
-    ptr = new TClntOptClientIdentifier( CfgMgr->getDUID(), this );
+    ptr = new TClntOptClientIdentifier( ClntCfgMgr().getDUID(), this );
     Options.append( ptr );
 
     if (!srvDUID) {
@@ -177,15 +167,13 @@ TClntMsgRequest::TClntMsgRequest(SPtr<TClntIfaceMgr> IfaceMgr,
     IAs.first();
     while (ClntAddrIA = IAs.get()) 
     {
-        SPtr<TClntCfgIA> ClntCfgIA = 
-            ClntCfgMgr->getIA(ClntAddrIA->getIAID());
-	SPtr<TClntOptIA_NA> IA_NA =
-	    new TClntOptIA_NA(ClntCfgIA, ClntAddrIA, this);
-	Options.append((Ptr*)IA_NA);
+        SPtr<TClntCfgIA> ClntCfgIA = ClntCfgMgr().getIA(ClntAddrIA->getIAID());
+        SPtr<TClntOptIA_NA> IA_NA = new TClntOptIA_NA(ClntCfgIA, ClntAddrIA, this);
+        Options.append((Ptr*)IA_NA);
     }
 
     appendElapsedOption();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
 
     pkt = new char[getSize()];
     this->IsDone = false;
@@ -227,7 +215,7 @@ void TClntMsgRequest::answer(SPtr<TClntMsg> msg)
      
     TClntMsg::answer(msg);
 
-    ClntIfaceMgr->notifyScripts(REQUEST_MSG, Iface);
+    ClntIfaceMgr().notifyScripts(REQUEST_MSG, Iface);
 }
 
 void TClntMsgRequest::doDuties()
@@ -235,10 +223,10 @@ void TClntMsgRequest::doDuties()
     // timeout is reached and we still don't have answer, retransmit
     if (RC>MRC) 
     {
-	ClntTransMgr->sendRequest(Options, Iface);
+        ClntTransMgr().sendRequest(Options, Iface);
 
-	IsDone = true;
-	return;
+        IsDone = true;
+        return;
     }
     send();
     return;
@@ -272,7 +260,7 @@ void TClntMsgRequest::setState(List(TOpt) options, EState state)
     SPtr<TClntCfgTA> cfgTa;
     SPtr<TClntCfgPD> cfgPd;
 
-    SPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(Iface);
+    SPtr<TClntCfgIface> iface = ClntCfgMgr().getIface(Iface);
     if (!iface) {
 	      Log(Error) << "Unable to find interface with ifindex=" << Iface << LogEnd;
 	      return;

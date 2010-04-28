@@ -26,8 +26,8 @@ using namespace std;
 class TOptInteger : public TOpt
 {
 public:
-    TOptInteger(int type, unsigned int len/*0-4*/, unsigned int value, TMsg* parent);
-    TOptInteger(int type, unsigned int len/*0-4*/, char *&buf, int &bufsize, TMsg* parent);
+    TOptInteger(int type, unsigned int len/* 1,2, or 4*/, unsigned int value, TMsg* parent);
+    TOptInteger(int type, unsigned int len/* 1,2, or 4*/, char *&buf, int &bufsize, TMsg* parent);
     char * storeSelf( char* buf);
     int getSize();
     unsigned int getValue();

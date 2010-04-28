@@ -32,16 +32,12 @@
 #include <cmath>
 #include "Logger.h"
 
-TClntMsgSolicit::TClntMsgSolicit(SPtr<TClntIfaceMgr> IfaceMgr, 
-				 SPtr<TClntTransMgr> TransMgr,
-				 SPtr<TClntCfgMgr>   CfgMgr,
-				 SPtr<TClntAddrMgr>  AddrMgr,
-				 int iface, SPtr<TIPv6Addr> addr,
+TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 				 List(TClntCfgIA) iaLst, 
 				 SPtr<TClntCfgTA> ta,
 				 List(TClntCfgPD) pdLst, 
 				 bool rapid)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,SOLICIT_MSG)
+    :TClntMsg(iface,addr,SOLICIT_MSG)
 {
     IRT=SOL_TIMEOUT;
     MRT=SOL_MAX_RT;
@@ -52,7 +48,7 @@ TClntMsgSolicit::TClntMsgSolicit(SPtr<TClntIfaceMgr> IfaceMgr,
     // ClientIdentifier option
     appendClientID();
     
-    // all IAs are provided by ClntTransMgr::checkSolicit()
+    // all IAs are provided by ::checkSolicit()
     SPtr<TClntCfgIA> ia;
     iaLst.first();
     while (ia = iaLst.get()) {
@@ -62,14 +58,14 @@ TClntMsgSolicit::TClntMsgSolicit(SPtr<TClntIfaceMgr> IfaceMgr,
 	ia->setState(STATE_INPROCESS);
     }
 
-    // TA is provided by ClntTransMgr::checkSolicit()
+    // TA is provided by ::checkSolicit()
     if (ta) {
 	SPtr<TClntOptTA> taOpt = new TClntOptTA(ta->getIAID(), this);
 	Options.append( (Ptr*) taOpt);
 	ta->setState(STATE_INPROCESS);
     }
 
-    // all PDs are provided by ClntTransMgr::checkSolicit()
+    // all PDs are provided by ::checkSolicit()
     SPtr<TClntCfgPD> pd;
     pdLst.first();
     while ( pd = pdLst.get() ) {
@@ -104,20 +100,20 @@ void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
 	    Log(Info) << "Server responded with ADVERTISE instead of REPLY, probably does not support"
 		" RAPID-COMMIT." << LogEnd;
 	}
-	ClntTransMgr->addAdvertise((Ptr*)msg);
-	SPtr<TOptPreference> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
+	ClntTransMgr().addAdvertise((Ptr*)msg);
+	SPtr<TOptInteger> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
 
-	if (prefOpt && (prefOpt->getPreference() == 255) )
+	if (prefOpt && (prefOpt->getValue() == 255) )
 	{
 	    Log(Info) << "ADVERTISE message with prefrence set to 255 received, so wait time for"
 		" other possible ADVERTISE messages is skipped." << LogEnd;
-	    ClntTransMgr->sendRequest(Options,Iface);
+	    ClntTransMgr().sendRequest(Options,Iface);
 	    IsDone = true;
 	    return;
 	}
 	if (this->RC > 1)
 	{
-	    ClntTransMgr->sendRequest(Options,Iface);
+	    ClntTransMgr().sendRequest(Options,Iface);
 	    IsDone = true;
 	    return;
 	}
@@ -169,7 +165,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
     }
     
     //is this server rejected?
-    SPtr<TClntCfgIface> iface = ClntCfgMgr->getIface(this->Iface);
+    SPtr<TClntCfgIface> iface = ClntCfgMgr().getIface(this->Iface);
     if (!iface) {
 	Log(Error) << "Unable to find iface=" << this->Iface << "." << LogEnd;
 	return false;
@@ -220,19 +216,12 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 
 void TClntMsgSolicit::doDuties()
 {
-    if ( ClntTransMgr->getAdvertiseLstCount() ) 
-    { // there is a timeout, but we have already answers and all is ok
-	ClntTransMgr->sendRequest(Options, Iface);
-	IsDone = true;
-	return;
+    if ( ClntTransMgr().getAdvertiseLstCount() ) { 
+        // there is a timeout, but we have already answers and all is ok
+        ClntTransMgr().sendRequest(Options, Iface);
+        IsDone = true;
+        return;
     }
-
-    // there is a timeout and there is no still answer
-    //is it a final timeout for this message
-    
-    // first transmission
-    //if (RC == 0) ;
-    //microsleep(rand()%1000000);
     send();
 }
 

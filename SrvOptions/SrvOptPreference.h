@@ -7,13 +7,13 @@
  * released under GNU GPL v2 only licence
  */
 
-#ifndef SRVPREFERENCE_H_HEADER_INCLUDED_C1126A41
-#define SRVPREFERENCE_H_HEADER_INCLUDED_C1126A41
+#ifndef SRVPREFERENCE_H_HEADER
+#define SRVPREFERENCE_H_HEADER
 
 #include "DHCPConst.h"
-#include "OptPreference.h"
+#include "OptInteger.h"
 
-class TSrvOptPreference : public TOptPreference 
+class TSrvOptPreference : public TOptInteger 
 {
   public:
     TSrvOptPreference( char * buf,  int n, TMsg* parent);

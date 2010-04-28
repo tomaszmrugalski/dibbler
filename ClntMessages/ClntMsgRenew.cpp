@@ -21,17 +21,13 @@
 #include "ClntOptOptionRequest.h"
 #include "ClntOptStatusCode.h"
 #include "Logger.h"
-#include "SmartPtr.h"
-
+#include "ClntTransMgr.h"
+#include "ClntIfaceMgr.h"
 #include <cmath>
 
-TClntMsgRenew::TClntMsgRenew(SPtr<TClntIfaceMgr> IfaceMgr,
-			     SPtr<TClntTransMgr> TransMgr,
-			     SPtr<TClntCfgMgr> CfgMgr,
-			     SPtr<TClntAddrMgr> AddrMgr,
-			     List(TAddrIA) IALst,
-			     List(TAddrIA) PDLst)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, 0, 0, RENEW_MSG)
+TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
+                             List(TAddrIA) PDLst)
+    :TClntMsg(0, 0, RENEW_MSG)
 {
    // set transmission parameters
     IRT=REN_TIMEOUT;
@@ -72,7 +68,7 @@ TClntMsgRenew::TClntMsgRenew(SPtr<TClntIfaceMgr> IfaceMgr,
         RT=MRD;
 
     // store our DUID
-    Options.append(new TClntOptClientIdentifier(CfgMgr->getDUID(),this));
+    Options.append(new TClntOptClientIdentifier(ClntCfgMgr().getDUID(),this));
 
     // and say who's this message is for
     if (IALst.count())
@@ -96,7 +92,7 @@ TClntMsgRenew::TClntMsgRenew(SPtr<TClntIfaceMgr> IfaceMgr,
     }
 
     appendRequestedOptions();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
 
     pkt = new char[getSize()];
     this->IsDone = false;
@@ -124,7 +120,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
 	    if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
 		if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
-		    ClntTransMgr->sendRequest(Options,Iface);
+		    ClntTransMgr().sendRequest(Options,Iface);
 		    IsDone = true;
 		    return;
 		}else{
@@ -135,8 +131,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 	  	    break;
 		}
 	    }
-	    ptrOptIA->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-			         ptrDUID->getDUID(), SPtr<TIPv6Addr>() /*NULL*/, Reply->getIface());
+	    ptrOptIA->setContext(ptrDUID->getDUID(), 0, Reply->getIface());
 
 	    ptrOptIA->doDuties();
 	    break;
@@ -146,7 +141,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 	    SPtr<TClntOptIA_PD> pd = (Ptr*) opt;
 	    if (pd->getStatusCode() != STATUSCODE_SUCCESS) {
 		if(pd->getStatusCode() == STATUSCODE_NOBINDING){
-		    ClntTransMgr->sendRequest(Options,Iface);
+		    ClntTransMgr().sendRequest(Options,Iface);
 		    IsDone = true;
 		    return;
 		}
@@ -158,7 +153,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 		    break;
 		}
 	    }
-	    pd->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr, ptrDUID->getDUID(), 0, (TMsg*)this);
+	    pd->setContext(ptrDUID->getDUID(), 0, (TMsg*)this);
 	    pd->doDuties();
 	    break;
 	}
@@ -182,17 +177,17 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
     //in such a case new Solicit message should be sent
     IsDone = true;
 
-    ClntIfaceMgr->notifyScripts(RENEW_MSG, Iface);
+    ClntIfaceMgr().notifyScripts(RENEW_MSG, Iface);
 }
 
 /** 
  * @brief changes IA state to not cofigured.
  * 
- * @param IAID 
+ * @param iaid
  */
-void TClntMsgRenew::releaseIA(long IAID)
+void TClntMsgRenew::releaseIA(long iaid)
 {
-    SPtr<TAddrIA> ia = getClntAddrMgr()->getIA(IAID);
+    SPtr<TAddrIA> ia = ClntAddrMgr().getIA(iaid);
     if(ia){
         ia->setState(STATE_NOTCONFIGURED);
     }  
@@ -206,7 +201,7 @@ void TClntMsgRenew::doDuties()
     if (!MRD) 
     {
 	Log(Notice) << "RENEW remains unanswered and timeout T2 reached, so REBIND will be sent." << LogEnd;
-        ClntTransMgr->sendRebind(this->Options,this->getIface());
+        ClntTransMgr().sendRebind(Options,getIface());
         IsDone = true;
         return;
     }

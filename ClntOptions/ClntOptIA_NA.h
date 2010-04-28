@@ -12,10 +12,6 @@
 #include "ClntCfgIA.h"
 #include "OptIA_NA.h"
 #include "ClntOptIAAddress.h"
-#include "ClntIfaceMgr.h"
-#include "ClntTransMgr.h"
-#include "ClntCfgMgr.h"
-#include "ClntAddrMgr.h"
 #include "IPv6Addr.h"
 
 class TOptIA_NA;
@@ -23,28 +19,23 @@ class TOptIA_NA;
 class TClntOptIA_NA : public TOptIA_NA
 {
  public:
+     /// @todo: WTF? Why there are 5 different constructors??? There should be 2 or 3.
     TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, TMsg* parent);
     TClntOptIA_NA(SPtr<TAddrIA> AddrIA, TMsg* parent);
     TClntOptIA_NA(SPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* parent);
+    TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, SPtr<TAddrIA> ClntaddrIA, TMsg* parent);
     TClntOptIA_NA(char * buf, int bufsize, TMsg* parent);
     ~TClntOptIA_NA();    
 
     bool doDuties();
     int getStatusCode();
-    void setContext(SPtr<TClntIfaceMgr> ifaceMgr, 
-		    SPtr<TClntTransMgr> transMgr, 
-		    SPtr<TClntCfgMgr>   cfgMgr, 
-		    SPtr<TClntAddrMgr>  addrMgr,
-		    SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, int iface);
+    void setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, int iface);
     void setIface(int iface);
 
     SPtr<TClntOptIAAddress> getAddr();
     SPtr<TClntOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
     void firstAddr();
     int countAddr();
-    TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, 
-		  SPtr<TAddrIA> ClntaddrIA, 
-		  TMsg* parent);
     bool isValid();
 
  private:
@@ -55,12 +46,6 @@ class TClntOptIA_NA : public TOptIA_NA
     bool Unicast;
     SPtr<TDUID> DUID;
     int Iface;
-
-    /* Context */
-    SPtr<TClntIfaceMgr> IfaceMgr;
-    SPtr<TClntTransMgr> TransMgr;
-    SPtr<TClntCfgMgr>   CfgMgr;
-    SPtr<TClntAddrMgr>  AddrMgr;
 };
 
 

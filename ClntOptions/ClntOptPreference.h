@@ -19,9 +19,9 @@
 #define CLNTPREFERENCE_H
 
 #include "DHCPConst.h"
-#include "OptPreference.h"
+#include "OptInteger.h"
 
-class TClntOptPreference : public TOptPreference 
+class TClntOptPreference : public TOptInteger
 {
   public:
     TClntOptPreference( char * buf,  int n, TMsg* parent);

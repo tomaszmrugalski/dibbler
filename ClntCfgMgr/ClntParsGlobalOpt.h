@@ -57,8 +57,7 @@ public:
     void setConfirm(bool conf);
     bool getConfirm();
 
-    void setTunnelMode(int vendorid);
-    int  getTunnelMode();
+
 private:
     string WorkDir;
     int PrefixLength;
@@ -76,7 +75,6 @@ private:
 
     bool Experimental;
     bool ExperimentalMappingPrefix;
-    int  TunnelMode;
 };
 
 #endif

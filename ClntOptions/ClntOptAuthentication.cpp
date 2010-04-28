@@ -26,10 +26,8 @@ TClntOptAuthentication::TClntOptAuthentication(TMsg* parent)
 bool TClntOptAuthentication::doDuties()
 {
     int ifindex = this->Parent->getIface();
-    TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
     cfgIface->setAuthenticationState(STATE_CONFIGURED);
 
-    return false;
+    return false; /// @todo: why return false here?
 }

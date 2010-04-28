@@ -28,15 +28,15 @@
 #include "Logger.h"
 #include "Portable.h"
 #include "Logger.h"
-#include "Iface.h"
 
-TCfgMgr::TCfgMgr(SPtr<TIfaceMgr> IfaceMgr) {
-    this->IfaceMgr = IfaceMgr;
-    this->DUIDType = DUID_TYPE_LLT; /* default DUID type: LLT */
+TCfgMgr::TCfgMgr()
+:IsDone(false), 
+DUIDType(DUID_TYPE_LLT) /* default DUID type: LLT */ 
+{
+	
 }
 
 TCfgMgr::~TCfgMgr() {
-    this->IfaceMgr = 0;
 }
 
 // method compares both files and if differs
@@ -142,49 +142,49 @@ bool TCfgMgr::loadDUID(const string duidFile)
     return true;
 }
 
-bool TCfgMgr::setDUID(const string filename) {
+bool TCfgMgr::setDUID(const string filename, TIfaceMgr & ifaceMgr) {
     
     // --- load DUID ---
     if (this->loadDUID(filename)) {
-	Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
-	return true;
+        Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
+        return true;
     }
 
     SPtr<TIfaceIface> realIface;
 
     bool found=false;
     
-
-    IfaceMgr->firstIface();
+	ifaceMgr.firstIface();
     if (this->DUIDType == DUID_TYPE_EN) {
-      realIface = IfaceMgr->getIface(); // use the first interface. It will be ignored anyway
-      found = true; 
+        realIface = ifaceMgr.getIface(); // use the first interface. It will be ignored anyway
+        found = true; 
 
-      if (!realIface) {
-        Log(Error) << "Unable to find any interfaces. Can't generate DUID" << LogEnd;
-        return false;
-      }
+        if (!realIface) {
+            Log(Error) << "Unable to find any interfaces. Can't generate DUID" << LogEnd;
+            return false;
+        }
     }
-    while( (!found) && (realIface=IfaceMgr->getIface()) )
+    while( (!found) && (realIface=ifaceMgr.getIface()) )
     {
         realIface->firstLLAddress();
         char buf[64];
         memset(buf,0,64);
 
         if (!realIface->getMac()) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName() 
                      << " skipped: no link addresses." << LogEnd;
           continue;
         }
         if ( realIface->getMacLen()<6 ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
-                     << " skipped: MAC length is " << realIface->getMacLen() << ", but at least 6 is required." << LogEnd;
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName() 
+                     << " skipped: MAC length is " << realIface->getMacLen() 
+                     << ", but at least 6 is required." << LogEnd;
           continue;
         }
         if ( realIface->flagLoopback() ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+            Log(Debug) << "DUID creation: Interface " << realIface->getFullName() 
                      << " skipped: Interface is loopback." << LogEnd;
-          continue;
+            continue;
         }
         if ( !memcmp(realIface->getMac(),buf,realIface->getMacLen()) ) {
           Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 

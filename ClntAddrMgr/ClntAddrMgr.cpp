@@ -15,6 +15,21 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
+TClntAddrMgr * TClntAddrMgr::Instance = 0;
+
+void TClntAddrMgr::instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFile, bool loadDB)
+{
+  if (Instance) {
+      Log(Crit) << "Attempt to create another instance of TClntAddrMgr!" << LogEnd;
+      return;
+  }
+  Instance = new TClntAddrMgr(clientDUID, useConfirm, xmlFile, loadDB);
+}
+
+TClntAddrMgr& TClntAddrMgr::instance()
+{
+  return *Instance;
+}
 
 /**
  * @brief Client Address Manager constructor
@@ -157,6 +172,8 @@ SPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
 
 /** 
  * sets specified interface to CONFIRMME state
+ * when network switch off signal received, the funtion will be invoked to 
+ * set valid IA to CONFIRMME state.
  * 
  * @param changedLinks structure containing interface indexes to be confirmed
  */
@@ -174,8 +191,8 @@ void TClntAddrMgr::setIA2Confirm(volatile link_state_notify_t * changedLinks)
 	    if (changedLinks->ifindex[i]==ifindex)
 		found = true;
 
-	if (!found)
-	    continue;
+        if (!found)
+            continue;
 
         if( (ptrIA->getState() == STATE_CONFIGURED || ptrIA->getState() == STATE_INPROCESS) )
 	{

@@ -1,4 +1,4 @@
-	/*
+/*
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
@@ -14,6 +14,7 @@
 #include "ClntMsgReply.h"
 #include "ClntMsg.h"
 
+/*
 TClntMsgReply::TClntMsgReply(SPtr<TClntIfaceMgr> IfaceMgr, 
 			     SPtr<TClntTransMgr> TransMgr, 
 			     SPtr<TClntCfgMgr> CfgMgr, 
@@ -21,14 +22,10 @@ TClntMsgReply::TClntMsgReply(SPtr<TClntIfaceMgr> IfaceMgr,
 			     int iface, SPtr<TIPv6Addr> addr)
     :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,REPLY_MSG)
 {
-}
+} */
 
-TClntMsgReply::TClntMsgReply(SPtr<TClntIfaceMgr> IfaceMgr, 
-			     SPtr<TClntTransMgr> TransMgr, 
-			     SPtr<TClntCfgMgr> CfgMgr, 
-			     SPtr<TClntAddrMgr> AddrMgr,
-			     int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize)
+TClntMsgReply::TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TClntMsg(iface, addr,buf,bufSize)
 {
 }
 
@@ -43,7 +40,7 @@ void TClntMsgReply::doDuties() {
 
 
 bool TClntMsgReply::check() {
-    bool anonInfReq = ClntCfgMgr->anonInfRequest();
+    bool anonInfReq = ClntCfgMgr().anonInfRequest();
     return TClntMsg::check(!anonInfReq /* clientID mandatory */, true /* serverID mandatory */ );
 }
 

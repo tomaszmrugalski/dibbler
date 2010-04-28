@@ -7,8 +7,6 @@
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: ClntCfgIface.cpp,v 1.29 2009-03-24 22:46:17 thomson Exp $
  *
  */
 
@@ -21,29 +19,21 @@
 using namespace std;
 
 TClntCfgIface::TClntCfgIface(string ifaceName) {
+    setDefaults();
+    
     NoConfig=false;
     IfaceName=ifaceName;
     ID=-1;
-    this->DNSServerState  = STATE_DISABLED;
-    this->DomainState     = STATE_DISABLED;
-    this->NTPServerState  = STATE_DISABLED;
-    this->TimezoneState   = STATE_DISABLED;
-    this->SIPServerState  = STATE_DISABLED;
-    this->SIPDomainState  = STATE_DISABLED;
-    this->FQDNState       = STATE_DISABLED;
-    this->NISServerState  = STATE_DISABLED;
-    this->NISPServerState = STATE_DISABLED;
-    this->NISDomainState  = STATE_DISABLED;
-    this->NISPDomainState = STATE_DISABLED;
-    this->LifetimeState   = STATE_DISABLED;
-    this->PrefixDelegationState = STATE_DISABLED;
-    this->VendorSpecState = STATE_DISABLED;
 }
 
 TClntCfgIface::TClntCfgIface(int ifaceNr) {
+    setDefaults();
     NoConfig=false;
     ID=ifaceNr;
     IfaceName="[unknown]";
+}
+
+void TClntCfgIface::setDefaults() {
     this->DNSServerState  = STATE_DISABLED;
     this->DomainState     = STATE_DISABLED;
     this->NTPServerState  = STATE_DISABLED;
@@ -58,6 +48,8 @@ TClntCfgIface::TClntCfgIface(int ifaceNr) {
     this->LifetimeState   = STATE_DISABLED;
     this->PrefixDelegationState = STATE_DISABLED;
     this->VendorSpecState = STATE_DISABLED;
+//  this->DsLiteTunnelName = STATE_DISABLED;
+//  this->DsLiteTunnelAddr = STATE_DISABLED;
 }
 
 void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
@@ -108,6 +100,23 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     if (ReqNISPDomain) this->setNISPDomainState(STATE_NOTCONFIGURED);
     if (ReqLifetime)   this->setLifetimeState(STATE_NOTCONFIGURED);
     if (ReqVendorSpec) this->setVendorSpecState(STATE_NOTCONFIGURED);
+
+    switch (opt->getDsLiteTunnelMode())
+    {
+	case TUNNEL_ADDR:
+		DsLiteTunnelAddr = opt->getDsLiteTunnelAddr();
+		break;
+	case TUNNEL_NAME:
+		DsLiteTunnelName = opt->getDsLiteTunnelName();
+		break;
+	case TUNNEL_BOTH:
+		DsLiteTunnelAddr = opt->getDsLiteTunnelAddr();
+		DsLiteTunnelName = opt->getDsLiteTunnelName();
+		break;
+	case TUNNEL_NONE:
+		break;
+    }
+
     // copy preferred-server list
     SPtr<TStationID> station;
     opt->firstPrefSrv();

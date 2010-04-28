@@ -48,14 +48,12 @@ class TClntIfaceIface: public TIfaceIface {
     bool setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string domain);
     bool setLifetime(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, unsigned int life);
 
-    bool setTunnelMode(int mode, SPtr<TIPv6Addr> remoteEndpoint);
-    int  getTunnelMode();
-    SPtr<TIPv6Addr> getTunnelEndpoint();
+    bool setDsLiteTunnel(SPtr<TIPv6Addr> remoteEndpoint);
+    SPtr<TIPv6Addr> getDsLiteTunnel();
 
     void removeAllOpts();
     unsigned int getTimeout();
 
-    //Getters for FQDN
     string getFQDN();
     List(TIPv6Addr) getDNSServerLst();
 
@@ -65,15 +63,15 @@ class TClntIfaceIface: public TIfaceIface {
     void delString(const char * filename, const char * str);
     void setString(const char * filename, const char * str);
 
-    List(TIPv6Addr)     DNSServerLst;
+    List(TIPv6Addr) DNSServerLst;
     SPtr<TIPv6Addr> DNSServerLstAddr;
     SPtr<TDUID>     DNSServerLstDUID;
 
-    List(string)        DomainLst;
+    List(string)    DomainLst;
     SPtr<TIPv6Addr> DomainLstAddr;
     SPtr<TDUID>     DomainLstDUID;
 
-    List(TIPv6Addr)     NTPServerLst;
+    List(TIPv6Addr) NTPServerLst;
     SPtr<TIPv6Addr> NTPServerLstAddr;
     SPtr<TDUID>     NTPServerLstDUID;
 
@@ -85,31 +83,30 @@ class TClntIfaceIface: public TIfaceIface {
     SPtr<TIPv6Addr> FQDNAddr;
     SPtr<TDUID>     FQDNDUID;
 
-    List(TIPv6Addr)     SIPServerLst;
+    List(TIPv6Addr) SIPServerLst;
     SPtr<TIPv6Addr> SIPServerLstAddr;
     SPtr<TDUID>     SIPServerLstDUID;
 
-    List(string)        SIPDomainLst;
+    List(string)    SIPDomainLst;
     SPtr<TIPv6Addr> SIPDomainLstAddr;
     SPtr<TDUID>     SIPDomainLstDUID;
 
-    List(TIPv6Addr)     NISServerLst;
+    List(TIPv6Addr) NISServerLst;
     SPtr<TIPv6Addr> NISServerLstAddr;
     SPtr<TDUID>     NISServerLstDUID;
 
-    string              NISDomain;
+    string          NISDomain;
     SPtr<TIPv6Addr> NISDomainAddr;
     SPtr<TDUID>     NISDomainDUID;
 
-    List(TIPv6Addr)     NISPServerLst;
+    List(TIPv6Addr) NISPServerLst;
     SPtr<TIPv6Addr> NISPServerLstAddr;
     SPtr<TDUID>     NISPServerLstDUID;
 
-    string              NISPDomain;
+    string          NISPDomain;
     SPtr<TIPv6Addr> NISPDomainAddr;
     SPtr<TDUID>     NISPDomainDUID;
 
-    int TunnelMode;
     SPtr<TIPv6Addr> TunnelEndpoint;
     
     unsigned int LifetimeTimeout;

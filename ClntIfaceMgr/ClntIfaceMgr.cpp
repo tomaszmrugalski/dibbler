@@ -13,8 +13,8 @@
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
-#include "ClntAddrMgr.h"
-#include "Msg.h"
+// #include "ClntAddrMgr.h"
+// #include "Msg.h"
 #include "ClntMsgReply.h"
 #include "ClntMsgAdvertise.h"
 #include "Logger.h"
@@ -23,8 +23,23 @@
 #include "DNSUpdate.h"
 #endif
 
-using namespace logger;
-using namespace std;
+TClntIfaceMgr * TClntIfaceMgr::Instance = 0;
+
+void TClntIfaceMgr::instanceCreate(const std::string xmlFile)
+{
+    if (Instance) {
+        Log(Crit) << "Application error: Attempt to create another ClntIfaceMgr instance!" << LogEnd;
+        return;
+    }
+    Instance = new TClntIfaceMgr(xmlFile);
+}
+
+TClntIfaceMgr& TClntIfaceMgr::instance()
+{
+    if (!Instance)
+		Log(Crit) << "Requested IfaceMgr, but it is not created yet." << LogEnd;
+    return *Instance;
+}
 
 bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> addr)
 {
@@ -102,10 +117,9 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 	
         switch (msgtype) {
         case ADVERTISE_MSG:
-            ptr = new TClntMsgAdvertise(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-                ifaceid,peer,buf,bufsize);
+            ptr = new TClntMsgAdvertise(ifaceid,peer,buf,bufsize);
 #ifndef MOD_DISABLE_AUTH
-            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr->getAuthAcceptMethods())) {
+            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
                     Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
                     return 0;
             }
@@ -122,10 +136,9 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 	    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
             return 0; // NULL
         case REPLY_MSG:
-            ptr = new TClntMsgReply(That, ClntTransMgr, ClntCfgMgr, ClntAddrMgr,
-                ifaceid, peer, buf, bufsize);
+            ptr = new TClntMsgReply(ifaceid, peer, buf, bufsize);
 #ifndef MOD_DISABLE_AUTH
-            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr->getAuthAcceptMethods())) {
+            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
                     Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
                     return 0;
             }
@@ -188,17 +201,6 @@ TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
 
 }
 
-void TClntIfaceMgr::setContext(SPtr<TClntIfaceMgr> clntIfaceMgr,
-                               SPtr<TClntTransMgr> clntTransMgr,
-                               SPtr<TClntCfgMgr> clntCfgMgr,
-                               SPtr<TClntAddrMgr> clntAddrMgr)
-{
-    ClntCfgMgr=clntCfgMgr;
-    ClntAddrMgr=clntAddrMgr;
-    ClntTransMgr=clntTransMgr;
-    That=clntIfaceMgr;
-}
-
 TClntIfaceMgr::~TClntIfaceMgr() {
     IfaceLst.clear();
     Log(Debug) << "ClntIfaceMgr cleanup." << LogEnd;
@@ -236,14 +238,14 @@ bool TClntIfaceMgr::doDuties() {
     
     this->firstIface();
     while (iface = (Ptr*)this->getIface()) {
-	      cfgIface = ClntCfgMgr->getIface(iface->getID());
+	      cfgIface = ClntCfgMgr().getIface(iface->getID());
 	      if (cfgIface) {
             // Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
             if (cfgIface->getFQDNState() == STATE_INPROCESS) {
 		            // Here we check if all parameters are set, and do the DNS update if possible
 		            List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
 		            string fqdn = iface->getFQDN();
-		            if (ClntAddrMgr->countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
+		            if (ClntAddrMgr().countIA() > 0 && DNSSrvLst.count() > 0 && fqdn.size() > 0) {
 
 		                Log(Warning) << "Sleeping 3 seconds before performing DNS Update." << LogEnd;
 		                /** @todo: sleep cannot be performed here. What if client has to perform other 
@@ -258,7 +260,7 @@ bool TClntIfaceMgr::doDuties() {
 	          }
 	      }
     }
-    ClntAddrMgr->dump();
+    ClntAddrMgr().dump();
     this->dump();
     return true;
 }
@@ -269,7 +271,7 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
     SPtr<TIPv6Addr> addr;
 
     SPtr<TClntCfgIface> cfgIface;
-    cfgIface = ClntCfgMgr->getIface(iface->getID());
+    cfgIface = ClntCfgMgr().getIface(iface->getID());
     if (!cfgIface) {
 	      Log(Error) << "Unable to find interface with ifindex=" << iface->getID() << "." << LogEnd;
 	      return false;
@@ -286,8 +288,8 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
     
     // And the first IP address
     SPtr<TAddrIA> ptrAddrIA;
-    ClntAddrMgr->firstIA();
-    ptrAddrIA = ClntAddrMgr->getIA();
+    ClntAddrMgr().firstIA();
+    ptrAddrIA = ClntAddrMgr().getIA();
     
     if (ptrAddrIA->countAddr() > 0) {
 	      ptrAddrIA->firstAddr();
@@ -328,7 +330,7 @@ bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, strin
     }
     SPtr<TIPv6Addr> myAddr = tmpAddr->get();
     
-    SPtr<TClntCfgIface> ptrIface = ClntCfgMgr->getIface(iface->getID());
+    SPtr<TClntCfgIface> ptrIface = ClntCfgMgr().getIface(iface->getID());
     
     Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
 	       << " and FQDN=" << fqdn << LogEnd;
@@ -400,7 +402,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     }
 
 
-    if (ClntCfgMgr->getMappingPrefix()) 
+    if (ClntCfgMgr().getMappingPrefix()) 
     {
       char buf[128];
       char cmd1[]="./mappingprefixadd";
@@ -580,7 +582,7 @@ void TClntIfaceMgr::redetectIfaces() {
 
 void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 {
-    if (!ClntCfgMgr->getNotifyScripts()) {
+    if (!ClntCfgMgr().getNotifyScripts()) {
 	Log(Debug) << "Not executing external script (Notify script disabled)." << LogEnd;
 	return;
     }
@@ -611,18 +613,12 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 	return;
     }
 
-    int tunnelMode = iface->getTunnelMode();
     SPtr<TIPv6Addr> ip;
-    SPtr<TIPv6Addr> remoteEndpoint;
+    SPtr<TIPv6Addr> remoteEndpoint = iface->getDsLiteTunnel();
     SPtr<TAddrPrefix> prefix;
 
-    if (tunnelMode!=0)
-    {
-	remoteEndpoint = iface->getTunnelEndpoint();
-    }
-
-    ClntAddrMgr->firstIA();
-    SPtr<TAddrIA> ia = ClntAddrMgr->getIA();
+    ClntAddrMgr().firstIA();
+    SPtr<TAddrIA> ia = ClntAddrMgr().getIA();
     if (!ia)
     {
 	Log(Error) << "Unable to find any IAs defined in the AddrMgr." << LogEnd;
@@ -636,8 +632,8 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 	ip = addr->get();
     }
 
-    ClntAddrMgr->firstPD();
-    ia = ClntAddrMgr->getPD();
+    ClntAddrMgr().firstPD();
+    ia = ClntAddrMgr().getPD();
     if (ia)
     {
 	ia->firstPrefix();
@@ -656,7 +652,7 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
     stringstream tmp;
     tmp << "sh ./notify " << " " << ip->getPlain() << " "
 	<< prefix->get()->getPlain() << " " << prefix->getLength() << " "
-	<< remoteEndpoint->getPlain() << " " << tunnelMode << " " << action;
+	<< remoteEndpoint->getPlain() << " " << action;
     Log(Info) << "About to execute command: " << tmp.str() << LogEnd;
 
     int returnCode = system(tmp.str().c_str());

@@ -18,11 +18,7 @@
 class TClntMsgRenew : public TClntMsg
 {
   public:
-    TClntMsgRenew(SPtr<TClntIfaceMgr> IfaceMgr,
-		  SPtr<TClntTransMgr> TransMgr,
-		  SPtr<TClntCfgMgr> CfgMgr,
-		  SPtr<TClntAddrMgr> AddrMgr,
-		  List(TAddrIA) IALst, List(TAddrIA) PDLst);
+    TClntMsgRenew(List(TAddrIA) IALst, List(TAddrIA) PDLst);
 
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();

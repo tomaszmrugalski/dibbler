@@ -27,30 +27,23 @@ TClntOptSIPDomain::TClntOptSIPDomain(char *buf, int bufsize, TMsg* parent)
 bool TClntOptSIPDomain::doDuties() {
     string reason = "trying to set SIP domain(s).";
     int ifindex = this->Parent->getIface();
-    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
-    TClntMsg * msg = (TClntMsg*)(this->Parent);
-    SPtr<TClntIfaceMgr> ifaceMgr = msg->getClntIfaceMgr();
-    if (!ifaceMgr) {
-	Log(Error) << "Unable to access IfaceMgr while " << reason << LogEnd;
-        return false;
-    }
-    SPtr<TClntIfaceIface> iface = (Ptr*)ifaceMgr->getIfaceByID(ifindex);
-    if (!iface) {
-	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
-		   << " while " << reason << LogEnd;
-        return false;
-    }
 
     if (!this->DUID) {
-	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
-	return false;
+        Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
+        return false;
     }
 
-    SPtr<TClntCfgMgr> cfgMgr = msg->getClntCfgMgr();
-    SPtr<TClntCfgIface> cfgIface = cfgMgr->getIface(ifindex);
+    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
+    if (!iface) {
+        Log(Error) << "Unable to find interface ifindex=" << ifindex
+            << reason << LogEnd;
+        return false;
+    }
+
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
     cfgIface->setSIPDomainState(STATE_CONFIGURED);
 
-    return iface->setSIPDomainLst(this->DUID, addr,this->StringLst);
+    return iface->setSIPDomainLst(DUID, Parent->getAddr(), StringLst);
 }
 
 void TClntOptSIPDomain::setSrvDuid(SPtr<TDUID> duid) {

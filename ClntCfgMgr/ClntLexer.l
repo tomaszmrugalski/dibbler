@@ -48,6 +48,7 @@ namespace std {
 iface                 { return ClntParser::IFACE_;}
 no-config             { return ClntParser::NO_CONFIG_;}
 address               { return ClntParser::ADDRES_;}
+name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
 ta                    { return ClntParser::TA_; }
 iaid                  { return ClntParser::IAID_; }
@@ -106,7 +107,7 @@ experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
 mapping-prefix        { return ClntParser::MAPPING_PREFIX_; }
 skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
-tunnel-mode           { return ClntParser::TUNNEL_MODE_; }
+ds-lite-tunnel        { return ClntParser::DS_LITE_TUNNEL_; }
 #.* ;
 
 "//"(.*) ;

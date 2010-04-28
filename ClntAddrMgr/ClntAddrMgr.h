@@ -19,10 +19,16 @@
 #include "AddrMgr.h"
 #include "Portable.h"
 
+#define ClntAddrMgr() (TClntAddrMgr::instance())
+
 class TClntAddrMgr : public TAddrMgr
 {
-  public:
+ private:
     TClntAddrMgr(SPtr<TDUID> clientDuid, bool useConfirm, string xmlFile, bool loadDB);
+
+  public:
+    static TClntAddrMgr& instance();
+    static void instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFile, bool loadDB);
 
     unsigned long getT1Timeout();
     unsigned long getT2Timeout();
@@ -39,7 +45,6 @@ class TClntAddrMgr : public TAddrMgr
     void addIA(SPtr<TAddrIA> ptr);
     bool delIA(long IAID);
     int countIA();
-    // CHANGED here: when network switch off signal received, the funtion will be invoked to set valid IA to CONFIRMME state.
     void setIA2Confirm(volatile link_state_notify_t * changedLinks);
 
     // --- PD --- 
@@ -76,6 +81,7 @@ class TClntAddrMgr : public TAddrMgr
     void print(ostream &x);
  private:
     SPtr<TAddrClient> Client;
+    static TClntAddrMgr * Instance;
 };
 
 #endif

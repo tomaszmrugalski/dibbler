@@ -23,7 +23,7 @@ TClntOptAAAAuthentication::TClntOptAAAAuthentication( char * buf,  int n, TMsg* 
 TClntOptAAAAuthentication::TClntOptAAAAuthentication(TClntMsg* parent)
     :TOptAAAAuthentication(parent)
 {
-    this->setAAASPI(parent->getClntCfgMgr()->getAAASPI());
+    this->setAAASPI(ClntCfgMgr().getAAASPI());
 }
 
 bool TClntOptAAAAuthentication::doDuties()

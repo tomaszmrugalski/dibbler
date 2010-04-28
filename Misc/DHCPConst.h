@@ -164,16 +164,15 @@
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251
 
+// draft-ietf-softwire-ds-lite-tunnel-option-01.txt
+#define OPTION_DS_LITE_ADDR 252
+#define OPTION_DS_LITE_NAME 253
+
 // -- Query types (RFC5007) --
 typedef enum {
     QUERY_BY_ADDRESS = 1,
     QUERY_BY_CLIENTID = 2
 } ELeaseQueryType;
-
-
-// --- experimental: tunnel-mode ---
-#define OPTION_VENDORSPEC_TUNNEL_TYPE 1
-#define OPTION_VENDORSPEC_ENDPOINT    2
 
 // --- Option lengths --
 // (value of the len field, so actual option length is +4 bytes)
@@ -248,6 +247,13 @@ enum EState {
     STATE_CONFIRMME,
     STATE_TENTATIVECHECK, 
     STATE_TENTATIVE};
+
+enum EDsLiteTunnelMode {
+    TUNNEL_NONE,
+    TUNNEL_ADDR, // use DS_LITE_TUNNEL_ADDR option
+    TUNNEL_NAME, // use DS_LITE_TUNNEL_NAME option
+    TUNNEL_BOTH  // use both
+};
 
 // FQDN option flags
 #define FQDN_N 0x4

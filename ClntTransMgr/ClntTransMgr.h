@@ -24,13 +24,16 @@ class TClntConfMgr;
 #include "Opt.h"
 #include "IPv6Addr.h"
 
+#define ClntTransMgr() (TClntTransMgr::instance())
+
 class TClntTransMgr
 {
+ private:
+  TClntTransMgr(const std::string config);
+
   public:
-    TClntTransMgr(SPtr<TClntIfaceMgr> ifaceMgr, 
-		  SPtr<TClntAddrMgr> addrMgr,
-		  SPtr<TClntCfgMgr> cfgMgr,
-		  string config);
+    static void instanceCreate(const std::string config);
+    static TClntTransMgr &instance();
     ~TClntTransMgr();
     void doDuties();
     void relayMsg(SPtr<TClntMsg> msg);
@@ -42,7 +45,6 @@ class TClntTransMgr
     void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     void shutdown();
     bool isDone();
-    void setContext(SPtr<TClntTransMgr> that);
 
     char * getCtrlAddr();
     int    getCtrlIface();
@@ -73,11 +75,6 @@ class TClntTransMgr
     bool openSocket(SPtr<TClntCfgIface> iface);
     void sortAdvertiseLst();
     void printLst(List(TMsg) lst);
-    // managers
-    SPtr<TClntCfgMgr>   CfgMgr;
-    SPtr<TClntIfaceMgr> IfaceMgr;
-    SPtr<TClntAddrMgr>  AddrMgr;
-    SPtr<TClntTransMgr> That;
 
     List(TClntMsg) Transactions;
     bool IsDone;         // isDone = true - client operation is finished
@@ -89,6 +86,8 @@ class TClntTransMgr
     char ctrlAddr[48];
 
     List(TMsg) AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
+
+    static TClntTransMgr * Instance;
 };
 
 #endif

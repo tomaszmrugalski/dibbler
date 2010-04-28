@@ -21,13 +21,13 @@
 #include "ClntOptPreference.h"
 
 TClntOptPreference::TClntOptPreference( char * buf,  int n, TMsg* parent)
-	:TOptPreference(buf,n, parent)
+  :TOptInteger(OPTION_PREFERENCE, 1, buf,n, parent)
 {
 
 }
 
 TClntOptPreference::TClntOptPreference( char pref, TMsg* parent)
-	:TOptPreference(pref, parent)
+  :TOptInteger(OPTION_PREFERENCE, 1, pref, parent)
 {
 }
 

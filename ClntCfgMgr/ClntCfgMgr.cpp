@@ -22,9 +22,7 @@
 #include "Logger.h"
 #include "FlexLexer.h"
 
-using namespace std;
 
-#include "IfaceMgr.h"
 #include "ClntIfaceMgr.h"
 
 #include "ClntParsGlobalOpt.h"
@@ -33,36 +31,49 @@ using namespace std;
 #include "FlexLexer.h"
 #include "ClntParser.h"
 
+using namespace std;
+
+TClntCfgMgr * TClntCfgMgr::Instance = 0;
+
 #ifdef MOD_CLNT_EMBEDDED_CFG
 static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
 #endif
 
-TClntCfgMgr::TClntCfgMgr(SPtr<TClntIfaceMgr> ClntIfaceMgr, 
-                         const string cfgFile)
-    :TCfgMgr((Ptr*)ClntIfaceMgr)
+TClntCfgMgr & TClntCfgMgr::instance()
 {
-    this->IfaceMgr = ClntIfaceMgr;
-    this->IsDone=false;
+  if (!Instance)
+    Log(Crit) << "Application error. Tried to access CfgMgr without instanceCreate!" << LogEnd;
+  // throw an exception here or something
+  return *Instance;
+}
+
+void TClntCfgMgr::instanceCreate(const std::string cfgFile) {
+    Instance = new TClntCfgMgr(cfgFile);
+}
+
+
+TClntCfgMgr::TClntCfgMgr(const string cfgFile)
+  :TCfgMgr()
+{
     NotifyScripts = false;
 
+	// parse configuration file
     if (!parseConfigFile(cfgFile)) {
-	this->IsDone = true;
-	return;
+        IsDone = true;
+	    return;
     }
  
     // load or create DUID
     string duidFile = (string)CLNTDUID_FILE;
-    if (!setDUID(duidFile)) {
-	this->IsDone=true;
-	return;
+    if (!setDUID(duidFile, ClntIfaceMgr())) {
+        IsDone = true;
+ 	    return;
     }
     this->dump();
 
 #ifndef MOD_DISABLE_AUTH
-    AuthKeys = new KeyList();
+    AuthKeys = new KeyList(); // create dummy empty keylist
 #endif
-
-    IsDone = false;
 }
 
 void TClntCfgMgr::dump() {
@@ -82,10 +93,10 @@ bool TClntCfgMgr::parseConfigFile(string cfgFile)
     ifstream f;
     f.open(cfgFile.c_str());
     if ( ! f.is_open()  ) {
-	Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
-	return false;
+        Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd; 
+	    return false;
     } else {
-	Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
+        Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     }
     yyFlexLexer lexer(&f,&clog);
     ClntParser parser(&lexer);
@@ -101,12 +112,12 @@ bool TClntCfgMgr::parseConfigFile(string cfgFile)
     }
 
     if (!setGlobalOptions(&parser)) {
-	return false;
+        return false;
     }
 
     // match parsed interfaces with interfaces detected in system
     if (!matchParsedSystemInterfaces(&parser)) {
-	return false;
+        return false;
     }
 #else
     // --- use hardcoded config ---
@@ -149,9 +160,9 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	while(cfgIface = parser->ClntCfgIfaceLst.get()) {
 	    // for each interface (from config file)
 	    if (cfgIface->getID()==-1) {
-		ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
+		    ifaceIface = ClntIfaceMgr().getIfaceByName(cfgIface->getName());
 	    } else {
-		ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
+		    ifaceIface = ClntIfaceMgr().getIfaceByID(cfgIface->getID());
 	    }
 
 	    if (!ifaceIface) {
@@ -210,7 +221,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 
 	    this->addIface(cfgIface);
 	    Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID() 
-			 << " configuation has been loaded." << LogEnd;
+				  << " configuation has been loaded." << LogEnd;
 	}
     } else {
 	// user didn't specified any interfaces in config file, so
@@ -223,8 +234,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	parser->ParserOptStack.getLast()->setDNSServerLst(&dnsList);
 	
 	int cnt = 0;
-	IfaceMgr->firstIface();
-	while ( ifaceIface = IfaceMgr->getIface() ) {
+	ClntIfaceMgr().firstIface();
+	while ( ifaceIface = ClntIfaceMgr().getIface() ) {
 	    // for each interface present in the system...
 	    if (!ifaceIface->flagUp()) {
 		Log(Notice) << "Interface " << ifaceIface->getFullName() << " is down, ignoring." << LogEnd;
@@ -420,8 +431,8 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
 //check whether T1<T2 and Pref<Valid and at least T1<=Valid
 bool TClntCfgMgr::validateConfig()
 {
-    //Is everything so far is ok
-    if (IsDone) return false;
+    if (IsDone) 
+		return false; //Is everything so far ok?
     SPtr<TClntCfgIface> ptrIface;
     this->ClntCfgIfaceLst.first();
     while(ptrIface=ClntCfgIfaceLst.get())
@@ -536,14 +547,9 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     this->InsistMode     = opt->getInsistMode();   // should the client insist on receiving all options
                                                    // i.e. sending INF-REQUEST if REQUEST did not grant required opts
     this->InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
-
     this->FQDNFlagS      = opt->getFQDNFlagS();
-
     this->MappingPrefix  = opt->getMappingPrefix(); // experimental feature
-
     this->UseConfirm     = opt->getConfirm(); // should client try to send CONFIRM?
-
-    this->TunnelMode     = opt->getTunnelMode();
     
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
@@ -626,34 +632,33 @@ int TClntCfgMgr::inactiveIfacesCnt()
 SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
 {
     if (!InactiveLst.count())
-	return 0;
+	    return 0;
 
-    IfaceMgr->redetectIfaces();
+    ClntIfaceMgr().redetectIfaces();
     SPtr<TClntCfgIface> x;
     SPtr<TIfaceIface> iface;
     InactiveLst.first();
     while (x = InactiveLst.get()) {
-	iface = IfaceMgr->getIfaceByID(x->getID());
-	if (!iface) {
-	    Log(Error) << "Unable to find interface with ifindex=" << x->getID() << LogEnd;
-	    continue;
-	}
-	iface->firstLLAddress();
-	if (iface->flagUp() && iface->flagRunning() && iface->getLLAddress()) {
-	    // check if its link-local address is not tentative
-	    char tmp[64];
-	    iface->firstLLAddress();
-	    inet_ntop6(iface->getLLAddress(), tmp);
-	    if (is_addr_tentative(iface->getName(), iface->getID(), tmp)==LOWLEVEL_TENTATIVE_YES) {
-		Log(Debug) << "Interface " << iface->getFullName() << " is up and running, but link-local address " << tmp
-			   << " is currently tentative." << LogEnd;
-		continue;
+	    iface = ClntIfaceMgr().getIfaceByID(x->getID());
+        if (!iface) {
+	        Log(Error) << "Unable to find interface with ifindex=" << x->getID() << LogEnd;
+	        continue;
 	    }
-
-
-	    makeInactiveIface(x->getID(), false); // move it to InactiveLst
-	    return x;
-	}
+	    iface->firstLLAddress();
+    	if (iface->flagUp() && iface->flagRunning() && iface->getLLAddress()) {
+    	    // check if its link-local address is not tentative
+    	    char tmp[64];
+    	    iface->firstLLAddress();
+    	    inet_ntop6(iface->getLLAddress(), tmp);
+    	    if (is_addr_tentative(iface->getName(), iface->getID(), tmp)==LOWLEVEL_TENTATIVE_YES) {
+    		Log(Debug) << "Interface " << iface->getFullName() << " is up and running, but link-local address " << tmp
+    			   << " is currently tentative." << LogEnd;
+    		continue;
+    	    }
+    
+    	    makeInactiveIface(x->getID(), false); // move it to InactiveLst
+    	    return x;
+    	}
     }
 
     return 0;
@@ -688,11 +693,6 @@ bool TClntCfgMgr::getMappingPrefix()
 bool TClntCfgMgr::useConfirm()
 {
     return UseConfirm;
-}
-
-int TClntCfgMgr::tunnelMode()
-{
-    return TunnelMode;
 }
 
 TClntCfgMgr::~TClntCfgMgr() {

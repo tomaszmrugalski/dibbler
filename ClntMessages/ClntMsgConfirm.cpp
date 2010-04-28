@@ -20,14 +20,10 @@
 #include "Logger.h"
 
 //  iaLst - contain all IA's to  be checked (they have to be in the same link)
-TClntMsgConfirm::TClntMsgConfirm(SPtr<TClntIfaceMgr> IfaceMgr, 
-				 SPtr<TClntTransMgr> TransMgr, 
-				 SPtr<TClntCfgMgr>	CfgMgr, 
-				 SPtr<TClntAddrMgr> AddrMgr,
-				 unsigned int iface, 
-				 TContainer<SPtr<TAddrIA> > iaLst)
-    :TClntMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, SPtr<TIPv6Addr>() /*NULL*/,CONFIRM_MSG) {   
-
+TClntMsgConfirm::TClntMsgConfirm(unsigned int iface, 
+                                 List(TAddrIA) iaLst)
+  :TClntMsg(iface, 0, CONFIRM_MSG) {   
+  
     IRT = CNF_TIMEOUT;
     MRT = CNF_MAX_RT;
     MRC = 0;
@@ -39,7 +35,7 @@ TClntMsgConfirm::TClntMsgConfirm(SPtr<TClntIfaceMgr> IfaceMgr,
 
     //The client MUST include a Client Identifier option to identify itself
     //to the server.  
-    Options.append(new TClntOptClientIdentifier( CfgMgr->getDUID(), this ) );
+    Options.append(new TClntOptClientIdentifier( ClntCfgMgr().getDUID(), this ) );
     //The client includes IA options for all of the IAs
     //assigned to the interface for which the Confirm message is being
     //sent.  The IA options include all of the addresses the client
@@ -54,7 +50,7 @@ TClntMsgConfirm::TClntMsgConfirm(SPtr<TClntIfaceMgr> IfaceMgr,
 
     appendRequestedOptions();
     appendElapsedOption();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
     
     this->IsDone = false;
     pkt = new char[getSize()];
@@ -97,7 +93,7 @@ void TClntMsgConfirm::addrsAccepted() {
 	    continue;
 
 	SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
-	ptrIA = ClntAddrMgr->getIA( ptrOptIA->getIAID() );
+	ptrIA = ClntAddrMgr().getIA( ptrOptIA->getIAID() );
 	if (!ptrIA)
 	    continue;
 
@@ -108,9 +104,9 @@ void TClntMsgConfirm::addrsAccepted() {
 	// ptrIA->setTimestamp( now()-ptrIA->getT1() );
 	ptrIA->setState(STATE_CONFIGURED);
     }
-    ClntAddrMgr->firstIA();
+    ClntAddrMgr().firstIA();
 	SPtr<TIfaceIface> ptrIface;
-	ptrIface = ClntIfaceMgr->getIfaceByID(ptrIA->getIface());
+	ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIface());
 	ptrIA->firstAddr();
 	ptrAddrAddr = ptrIA->getAddr();
 	ptrIface->addAddr(ptrAddrAddr->get(),ptrAddrAddr->getPref(),ptrAddrAddr->getValid(),ptrIface->getPrefixLength());
@@ -125,13 +121,13 @@ void TClntMsgConfirm::addrsRejected() {
 	    continue;
 
 	SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
-	ptrIA = ClntAddrMgr->getIA(ptrOptIA->getIAID());
+	ptrIA = ClntAddrMgr().getIA(ptrOptIA->getIAID());
 	if (!ptrIA)
 	    continue;
 
 	// release all addrs
 	SPtr<TIfaceIface> ptrIface;
-	ptrIface = ClntIfaceMgr->getIfaceByID(ptrIA->getIface());
+	ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIface());
 	if (!ptrIface) {
 	    Log(Crit) << "We have addresses assigned to non-existing interface."
 		"Help! Somebody stole an interface!" << LogEnd;
@@ -148,11 +144,11 @@ void TClntMsgConfirm::addrsRejected() {
 	}
 
 	//not only the address should be rejected, but also the original IA should be deleted and using a new IA to process SOLICIT
-	SPtr<TClntCfgIA> ptrCfgIA = ClntCfgMgr->getIA(ptrOptIA->getIAID());
+	SPtr<TClntCfgIA> ptrCfgIA = ClntCfgMgr().getIA(ptrOptIA->getIAID());
 	ptrCfgIA->reset();
 	ptrIA->reset();
     }
-    ClntAddrMgr->firstIA();
+    ClntAddrMgr().firstIA();
 }
 
 void TClntMsgConfirm::doDuties()

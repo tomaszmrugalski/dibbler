@@ -26,12 +26,8 @@
 #include <cmath>
 #include <iostream>
 
-TClntMsgRebind::TClntMsgRebind(SPtr<TClntIfaceMgr> IfaceMgr, 
-                               SPtr<TClntTransMgr> TransMgr, 
-                               SPtr<TClntCfgMgr> CfgMgr, 
-                               SPtr<TClntAddrMgr> AddrMgr,
-                               List(TOpt) ptrOpts, int iface)
-  :TClntMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr, iface, 0, REBIND_MSG)
+TClntMsgRebind::TClntMsgRebind(List(TOpt) ptrOpts, int iface)
+  :TClntMsg(iface, 0, REBIND_MSG)
 {
     Options=ptrOpts;
     IRT=REB_TIMEOUT;
@@ -59,7 +55,7 @@ TClntMsgRebind::TClntMsgRebind(SPtr<TClntIfaceMgr> IfaceMgr,
         case OPTION_IA_NA:
           {
             SPtr<TClntOptIA_NA> ptrIA=(Ptr*) opt;
-            SPtr<TAddrIA> ptrAddrIA= ClntAddrMgr->getIA(ptrIA->getIAID());
+            SPtr<TAddrIA> ptrAddrIA= ClntAddrMgr().getIA(ptrIA->getIAID());
             if (ptrAddrIA && maxMRD<ptrAddrIA->getMaxValidTimeout())
               maxMRD=ptrAddrIA->getMaxValidTimeout();
             break;
@@ -67,7 +63,7 @@ TClntMsgRebind::TClntMsgRebind(SPtr<TClntIfaceMgr> IfaceMgr,
         case OPTION_IA_PD:
           {
             SPtr<TClntOptIA_PD> pd = (Ptr*) opt;
-            SPtr<TAddrIA> addrPd = ClntAddrMgr->getPD(pd->getIAID());
+            SPtr<TAddrIA> addrPd = ClntAddrMgr().getPD(pd->getIAID());
             if (addrPd && maxMRD<addrPd->getMaxValidTimeout())
               maxMRD=addrPd->getMaxValidTimeout();
             break;
@@ -77,7 +73,7 @@ TClntMsgRebind::TClntMsgRebind(SPtr<TClntIfaceMgr> IfaceMgr,
     MRD= maxMRD;
 
     appendElapsedOption();
-    appendAuthenticationOption(AddrMgr);
+    appendAuthenticationOption();
 
     pkt = new char[getSize()];
     this->IsDone = false;    
@@ -110,7 +106,7 @@ SPtr<TOpt> opt;
             SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
             if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
                 if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
-                    ClntTransMgr->sendRequest(Options,Iface);
+                    ClntTransMgr().sendRequest(Options,Iface);
                     IsDone = true;
                     return;
                 }else{
@@ -178,8 +174,8 @@ void TClntMsgRebind::updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
     bool found = false;
     
     // ..find IA in addrMgr...
-    ClntAddrMgr->firstIA();
-    while  (ptrAddrIA = ClntAddrMgr->getIA() ) {
+    ClntAddrMgr().firstIA();
+    while  (ptrAddrIA = ClntAddrMgr().getIA() ) {
 	if (ptrOptIA->getIAID() == ptrAddrIA->getIAID()) {
 	    found = true;
 	    break;
@@ -247,32 +243,32 @@ void TClntMsgRebind::updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
 
 void TClntMsgRebind::doDuties()
 {
-    SPtr<TIfaceIface> iface = ClntIfaceMgr->getIfaceByID(this->Iface);
+    SPtr<TIfaceIface> iface = ClntIfaceMgr().getIfaceByID(this->Iface);
 
     if (!MRD)
     {
-	stringstream iaLst;
-	stringstream pdLst;
+        stringstream iaLst;
+        stringstream pdLst;
         SPtr<TOpt> ptrOpt;
         firstOption();
         while(ptrOpt=getOption())
         {
-	    switch( ptrOpt->getOptType()) {
-	    case OPTION_IA_NA:
-	    {
-		SPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
-		iaLst << ptrIA->getIAID() << " ";
-		releaseIA(ptrIA->getIAID());
-		break;
-	    }
-	    case OPTION_IA_PD:
-	    {
-		SPtr<TClntOptIA_PD> ptrPD = (Ptr*)ptrOpt;
-		ptrPD->setContext(ClntIfaceMgr, ClntTransMgr, ClntCfgMgr, ClntAddrMgr, 0, 0, this);
-		ptrPD->delPrefixes();
-		break;
-	    }
-	    };
+	        switch( ptrOpt->getOptType()) {
+            case OPTION_IA_NA:
+              {
+                SPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
+                iaLst << ptrIA->getIAID() << " ";
+                releaseIA(ptrIA->getIAID());
+                break;
+              }
+            case OPTION_IA_PD:
+              {
+                SPtr<TClntOptIA_PD> ptrPD = (Ptr*)ptrOpt;
+                ptrPD->setContext(0, 0, this);
+                ptrPD->delPrefixes();
+                break;
+              }
+            };
         }
 	Log(Warning) << "REBIND for the IA(s):" << iaLst.str()
 		     << ", PD(s):" << pdLst.str()
@@ -287,7 +283,7 @@ void TClntMsgRebind::doDuties()
 
 void TClntMsgRebind::releaseIA(int IAID)
 {
-    SPtr<TAddrIA> ptrAddrIA=this->ClntAddrMgr->getIA(IAID);
+    SPtr<TAddrIA> ptrAddrIA=ClntAddrMgr().getIA(IAID);
     if (!ptrAddrIA)
     {
         Log(Error) << "IA has not been found in Address Manager."<< LogEnd;
@@ -299,7 +295,7 @@ void TClntMsgRebind::releaseIA(int IAID)
     while(ptrAddr=ptrAddrIA->getAddr())
     {
         //remove outdated address from interface
-	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr->getIfaceByID(ptrAddrIA->getIface());
+	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrAddrIA->getIface());
 	if (!ptrIface) {
 	    Log(Error) << "Unable to find interface with ifindex " << ptrAddrIA->getIface() << LogEnd;
 	    continue;
@@ -310,7 +306,7 @@ void TClntMsgRebind::releaseIA(int IAID)
     }
     ptrAddrIA->setState(STATE_NOTCONFIGURED);
 
-    SPtr<TClntCfgIA> cfgIA = ClntCfgMgr->getIA(IAID);
+    SPtr<TClntCfgIA> cfgIA = ClntCfgMgr().getIA(IAID);
     if (!cfgIA)
 	return;
     cfgIA->setState(STATE_NOTCONFIGURED);

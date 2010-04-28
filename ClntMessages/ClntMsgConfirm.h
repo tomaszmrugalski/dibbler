@@ -6,16 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgConfirm.h,v 1.4 2008-08-29 00:07:28 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2005-01-08 16:52:03  thomson
- * Relay support implemented.
- *
- * Revision 1.2  2004/06/20 17:51:48  thomson
- * getName() method implemented, comment cleanup
- *
- *
  */
 
 class TClntMsgConfirm;    
@@ -30,13 +20,7 @@ class TClntMsgConfirm;
 class TClntMsgConfirm : public TClntMsg
 {
 public:
-
-   TClntMsgConfirm(SPtr<TClntIfaceMgr> IfaceMgr, 
-	SPtr<TClntTransMgr> TransMgr, 
-	SPtr<TClntCfgMgr>	CfgMgr, 
-	SPtr<TClntAddrMgr> AddrMgr,
-	unsigned int iface, 
-    TContainer<SPtr<TAddrIA> > iaLst);
+    TClntMsgConfirm(unsigned int iface, List(TAddrIA) iaLst);
     bool check();
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();
