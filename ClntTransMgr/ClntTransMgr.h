@@ -19,7 +19,6 @@ class TClntConfMgr;
 #ifndef CLNTTRANSMGR_H
 #define CLNTTRANSMGR_H
 #include <string>
-#include "ClntIfaceMgr.h"
 #include "ClntCfgIface.h"
 #include "Opt.h"
 #include "IPv6Addr.h"

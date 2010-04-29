@@ -22,6 +22,7 @@
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
+#include "SrvTransMgr.h"
 
 #define MAX_TA_RANDOM_TRIES 100
 
@@ -63,14 +64,10 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
  * - SOLICIT (with RAPID_COMMIT)
  * - REQUEST
  */
-TSrvOptTA::TSrvOptTA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
-			   SPtr<TSrvOptTA> queryOpt,
+TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt,
 			   SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
 			   int iface, int msgType, TMsg* parent)
     :TOptTA(queryOpt->getIAID(), parent) {
-
-    this->AddrMgr   = addrMgr;
-    this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
@@ -116,9 +113,9 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
     unsigned long addrsMax       = 0; // clnt-max-lease
     unsigned long willAssign     = 1; // how many will be assigned? Just 1.
 
-    addrsAssigned = AddrMgr->getAddrCount(this->ClntDuid);
-    addrsAvail    = CfgMgr->countAvailAddrs(this->ClntDuid, this->ClntAddr, this->Iface);
-    addrsMax      = CfgMgr->getIfaceByID(this->Iface)->getClntMaxLease();
+    addrsAssigned = SrvAddrMgr().getAddrCount(this->ClntDuid);
+    addrsAvail    = SrvCfgMgr().countAvailAddrs(this->ClntDuid, this->ClntAddr, this->Iface);
+    addrsMax      = SrvCfgMgr().getIfaceByID(this->Iface)->getClntMaxLease();
 
     if (willAssign > addrsMax - addrsAssigned) {
 	Log(Notice) << "Client got " << addrsAssigned << " and requested "
@@ -182,8 +179,8 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
 	    continue;
 	optAddr = (Ptr*) opt;
 	addr = optAddr->getAddr();
-	this->AddrMgr->delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
-	this->CfgMgr->delClntAddr(this->Iface, addr);
+	SrvAddrMgr().delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
+	SrvCfgMgr().delClntAddr(this->Iface, addr);
     }
 }
 
@@ -196,7 +193,7 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
  */
 SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     SPtr<TSrvCfgIface> ptrIface;
-    ptrIface = this->CfgMgr->getIfaceByID(this->Iface);
+    ptrIface = SrvCfgMgr().getIfaceByID(this->Iface);
     if (!ptrIface) {
 	Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
 		   << this->Iface << LogEnd;
@@ -206,16 +203,7 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     SPtr<TSrvCfgTA> ta;
     ptrIface->firstTA();
 
-    /*
-    ta = ptrIface->getTA();
-    if (!ta) {
-	Log(Warning) << "TA option (temporary addresses) is not configured on the "
-		     << ptrIface->getFullName() << LogEnd;
-    	return 0;
-     }
-    */
-    SPtr<TSrvTransMgr> srvTrans =  ((TSrvMsg*)Parent)->SrvTransMgr;
-    SPtr<TSrvMsg> requestMsg =  (Ptr*)(srvTrans->requestMsg);
+    SPtr<TSrvMsg> requestMsg =  (Ptr*)SrvTransMgr().getCurrentRequest();
 
     while ( ta = ptrIface->getTA())
     {
@@ -234,12 +222,12 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
 
     while (safety<MAX_TA_RANDOM_TRIES) {
 	addr = ta->getRandomAddr();
-	if (AddrMgr->taAddrIsFree(addr)) {
+	if (SrvAddrMgr().taAddrIsFree(addr)) {
 	    if ((this->OrgMessage == REQUEST_MSG)) {
 		Log(Debug) << "Temporary address " << addr->getPlain() << " granted." << LogEnd;
-		AddrMgr->addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface,
+		SrvAddrMgr().addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface,
 				   this->IAID, addr, ta->getPref(), ta->getValid());
-		CfgMgr->addTAAddr(this->Iface);
+		SrvCfgMgr().addTAAddr(this->Iface);
 	    } else {
 		Log(Debug) << "Temporary address " << addr->getPlain() << " generated (not granted)." << LogEnd;
 	    }

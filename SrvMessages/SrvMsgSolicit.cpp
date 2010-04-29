@@ -13,22 +13,13 @@
 #include "SrvMsgSolicit.h"
 #include "Msg.h"
 #include "SmartPtr.h"
-
-#include "SrvCfgMgr.h"
-#include "SrvIfaceMgr.h"
-#include "SrvTransMgr.h"
-#include "SrvAddrMgr.h"
 #include "SrvMsg.h"
 #include "AddrClient.h"
 #include <cmath>
 
-TSrvMsgSolicit::TSrvMsgSolicit(SPtr<TSrvIfaceMgr>	ifaceMgr, 
-			       SPtr<TSrvTransMgr>	transMgr,
-			       SPtr<TSrvCfgMgr>	cfgMgr,
-			       SPtr<TSrvAddrMgr>	addrMgr,
-			       int iface, SPtr<TIPv6Addr> addr,
+TSrvMsgSolicit::TSrvMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 			       char* buf, int bufSize)
-    :TSrvMsg(ifaceMgr,transMgr,cfgMgr,addrMgr,iface,addr,buf,bufSize) {
+    :TSrvMsg(iface,addr,buf,bufSize) {
 }
 
 void TSrvMsgSolicit::doDuties() {

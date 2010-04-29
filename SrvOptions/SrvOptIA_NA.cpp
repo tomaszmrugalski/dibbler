@@ -26,6 +26,10 @@
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
+#include "Msg.h"
+#include "SrvAddrMgr.h"
+#include "SrvCfgMgr.h"
+#include "SrvTransMgr.h"
 
 TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
     :TOptIA_NA(IAID,T1,T2, parent) {
@@ -98,14 +102,11 @@ TSrvOptIA_NA::TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent)
  * @param msgType
  * @param parent
  */
-TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
-			   SPtr<TSrvOptIA_NA> queryOpt,
+TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
 			   SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
 			   int iface, int msgType, TMsg* parent)
     :TOptIA_NA(queryOpt->getIAID(), DHCPV6_INFINITY, DHCPV6_INFINITY, parent) {
 
-    this->AddrMgr   = addrMgr;
-    this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
@@ -158,10 +159,10 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
     unsigned long addrsMax       = 0; // clnt-max-lease
     unsigned long willAssign     = 0; // how many will be assigned?
 
-    addrsAssigned = addrMgr->getAddrCount(clntDuid);
+    addrsAssigned = SrvAddrMgr().getAddrCount(clntDuid);
     addrsRequested= queryOpt->countAddrs();
-    addrsAvail    = cfgMgr->countAvailAddrs(clntDuid, clntAddr, iface);
-    addrsMax      = cfgMgr->getIfaceByID(iface)->getClntMaxLease();
+    addrsAvail    = SrvCfgMgr().countAvailAddrs(clntDuid, clntAddr, iface);
+    addrsMax      = SrvCfgMgr().getIfaceByID(iface)->getClntMaxLease();
 
     willAssign = addrsRequested;
 
@@ -245,7 +246,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
       /// @todo: if this is solicit, place "all addrs would be assigned."
     } else {
 	char buf[60];
-	sprintf(buf, "%lu addr(s) requested, but assigned only %lu.",addrsRequested, addrsAssigned);
+	snprintf(buf, 60, "%lu addr(s) requested, but assigned only %lu.",addrsRequested, addrsAssigned);
 	if (addrsAssigned) {
 	    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,buf, this->Parent);
 	} else {
@@ -268,8 +269,8 @@ void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
 	    continue;
 	optAddr = (Ptr*) opt;
 	addr = optAddr->getAddr();
-	this->AddrMgr->delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
-	this->CfgMgr->delClntAddr(this->Iface, addr);
+	SrvAddrMgr().delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
+	SrvCfgMgr().delClntAddr(this->Iface, addr);
     }
 }
 
@@ -288,7 +289,7 @@ SPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> hint, unsigned l
 	Log(Warning) << "There are no more addresses available." << LogEnd;
 	return 0;
     }
-    ptrClass = this->CfgMgr->getClassByAddr(this->Iface, addr);
+    ptrClass = SrvCfgMgr().getClassByAddr(this->Iface, addr);
     pref = ptrClass->getPref(pref);
     valid= ptrClass->getValid(valid);
     optAddr = new TSrvOptIAAddress(addr, pref, valid, this->Parent);
@@ -306,9 +307,9 @@ SPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> hint, unsigned l
     this->T2= ptrClass->getT2(this->T2);
 
     // register this address as used by this client
-    this->AddrMgr->addClntAddr(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID,
+    SrvAddrMgr().addClntAddr(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID,
 			       this->T1, this->T2, addr, pref, valid, quiet);
-    this->CfgMgr->addClntAddr(this->Iface, addr);
+    SrvCfgMgr().addClntAddr(this->Iface, addr);
 
     return optAddr;
 }
@@ -320,7 +321,7 @@ SPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> hint, unsigned l
  */
 SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
 {
-    SPtr<TSrvCfgIface> ptrIface=CfgMgr->getIfaceByID(Iface);
+    SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(Iface);
     if (!ptrIface) {
 	return 0;
     }
@@ -343,15 +344,11 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
 }
 
 // constructor used only in RENEW, REBIND, CONFIRM,DECLINE and RELEASE
-TSrvOptIA_NA::TSrvOptIA_NA( SPtr<TSrvCfgMgr> cfgMgr,
-		 SPtr<TSrvAddrMgr> addrMgr,
-		 SPtr<TSrvOptIA_NA> queryOpt,
+TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
 		 SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent)
     :TOptIA_NA(queryOpt->getIAID(),0x7fffffff,0x7fffffff, parent)
 {
-    this->AddrMgr   = addrMgr;
-    this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
@@ -402,7 +399,7 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
 {
     // find that client in addrdb
     SPtr <TAddrClient> ptrClient;
-    ptrClient = this->AddrMgr->getClient(this->ClntDuid);
+    ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
       if (complainIfMissing) {
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
@@ -454,8 +451,7 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
                           unsigned long &addrCount)
 {
     // find that client in addrdb
-    SPtr <TAddrClient> ptrClient;
-    ptrClient = this->AddrMgr->getClient(this->ClntDuid);
+    SPtr <TAddrClient> ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
         // hmmm, that's not our client
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
@@ -519,7 +515,7 @@ void TSrvOptIA_NA::confirm(SPtr<TSrvOptIA_NA> queryOpt,
 
 	/// @todo: proper check if the addresses are valid or not should be performed
         SPtr<TSrvCfgAddrClass> ptrClass;
-        ptrClass = CfgMgr->getClassByAddr(this->Iface, optAddr->getAddr());
+        ptrClass = SrvCfgMgr().getClassByAddr(this->Iface, optAddr->getAddr());
 	if (!ptrClass)
 	{
 	    NotOnLink = true;
@@ -561,29 +557,26 @@ bool TSrvOptIA_NA::doDuties()
  */
 SPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SPtr<TIPv6Addr> hint) {
 
-    // Getting out the request Message
-    
-    SPtr<TSrvTransMgr> srvTrans =  ((TSrvMsg*)Parent)->SrvTransMgr;
-    SPtr<TSrvMsg> requestMsg =  (Ptr*)(srvTrans->requestMsg);
-
     bool invalidAddr = false;
     SPtr<TSrvCfgIface> ptrIface;
     SPtr<TIPv6Addr>    addr;
-    ptrIface = this->CfgMgr->getIfaceByID(this->Iface);
+    ptrIface = SrvCfgMgr().getIfaceByID(this->Iface);
     if (!ptrIface) {
-	Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
-		   << this->Iface << LogEnd;
-	return 0; // NULL
+        Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
+	           << this->Iface << LogEnd;
+        return 0; // NULL
     }
+
+    SPtr<TSrvMsg> requestMsg = SrvTransMgr().getCurrentRequest();
 
     // check if this address is ok
 
     // is it anyaddress (::)?
     SPtr<TIPv6Addr> anyaddr = new TIPv6Addr();
     if (*anyaddr==*hint) {
-	Log(Debug) << "Client requested unspecified (" << *hint
-		   << ") address. Hint ignored." << LogEnd;
-	invalidAddr = true;
+        Log(Debug) << "Client requested unspecified (" << *hint
+           << ") address. Hint ignored." << LogEnd;
+        invalidAddr = true;
     }
 
     // is it multicast address (ff...)?
@@ -604,7 +597,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SPtr<TIPv6Addr> hint) {
 	// hint is valid, try to use it
 
 	SPtr<TSrvCfgAddrClass> ptrClass;
-	ptrClass = this->CfgMgr->getClassByAddr(this->Iface, hint);
+	ptrClass = SrvCfgMgr().getClassByAddr(this->Iface, hint);
 
 	// For Supportting Client Classify
 	// Should get clientMessage, instead of Parent message
@@ -613,7 +606,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SPtr<TIPv6Addr> hint) {
 	if ( ptrClass && ptrClass->clntSupported(ClntDuid, ClntAddr, requestMsg ))
 	{
 		// best case: address belongs to supported class, and is free
-		if ( AddrMgr->addrIsFree(hint) ) {
+		if ( SrvAddrMgr().addrIsFree(hint) ) {
 		    Log(Debug) << "Requested address (" << *hint << ") is free, great!" << LogEnd;
 		    return hint;
 		}
@@ -631,23 +624,23 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SPtr<TIPv6Addr> hint) {
 			       << ") belongs to supported class, but is used." << LogEnd;
 		    do {
 			addr = ptrClass->getRandomAddr();
-		    } while (!AddrMgr->addrIsFree(addr));
+		    } while (!SrvAddrMgr().addrIsFree(addr));
 		    return addr;
 		}
 	}// If the Class are valid and support the Client (based on duid, addr, clientclass)
     } //  if ( !invalidAddr )
 
     // do we have a cached address for that client?
-    if (addr = AddrMgr->getCachedAddr(this->ClntDuid)) {
-	if (this->CfgMgr->getClassByAddr(this->Iface, addr)) {
+    if (addr = SrvAddrMgr().getCachedAddr(this->ClntDuid)) {
+	if (SrvCfgMgr().getClassByAddr(this->Iface, addr)) {
 	    Log(Info) << "Cache: Cached address " << *addr << " found. Welcome back." << LogEnd;
-	    if (AddrMgr->addrIsFree(addr))
+	    if (SrvAddrMgr().addrIsFree(addr))
 		return addr;
 	    Log(Info) << "Unfortunately, " << addr->getPlain() << " is used." << LogEnd;
-	    AddrMgr->delCachedAddr(addr);
+	    SrvAddrMgr().delCachedAddr(addr);
 	} else {
 	    Log(Warning) << "Cache: Cached address " << *addr << " found, but it is no longer valid." << LogEnd;
-	    AddrMgr->delCachedAddr(addr);
+	    SrvAddrMgr().delCachedAddr(addr);
 	}// else
     }// if have cached address for that client
 
@@ -680,6 +673,6 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SPtr<TIPv6Addr> hint) {
 
     do {
 	addr = ptrClass->getRandomAddr();
-    } while (!AddrMgr->addrIsFree(hint));
+    } while (!SrvAddrMgr().addrIsFree(hint));
     return addr;
 }

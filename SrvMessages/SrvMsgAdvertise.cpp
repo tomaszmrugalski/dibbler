@@ -28,13 +28,8 @@
 #include "SrvOptIA_PD.h"
 #include "Logger.h"
 
-TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
-				   SPtr<TSrvTransMgr> TransMgr,
-				   SPtr<TSrvCfgMgr> CfgMgr,
-				   SPtr<TSrvAddrMgr> AddrMgr,
-				   SPtr<TSrvMsgSolicit> solicit)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
-	     solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
+TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> solicit)
+    :TSrvMsg(solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
 	     solicit->getTransID())
 {
     this->copyRelayInfo((Ptr*)solicit);
@@ -68,7 +63,7 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
     this->copyRemoteID((Ptr*)solicit);
 
     // is this client supported?
-    if (!SrvCfgMgr->isClntSupported(clntDuid, clntAddr, clntIface)) {
+    if (!SrvCfgMgr().isClntSupported(clntDuid, clntAddr, clntIface)) {
         //No reply for this client 
 	Log(Notice) << "Client (DUID=" << clntDuid->getPlain() << ",addr=" << *clntAddr 
 		    << ") was rejected due to accept-only or reject-client." << LogEnd;
@@ -94,24 +89,22 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
 	}
 	case OPTION_IA_NA : {
 	    SPtr<TSrvOptIA_NA> optIA_NA;
-	    optIA_NA = new TSrvOptIA_NA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt,
-					clntDuid, clntAddr, 
-					clntIface, SOLICIT_MSG,this);
-	    this->Options.append((Ptr*)optIA_NA);
+	    optIA_NA = new TSrvOptIA_NA((Ptr*) opt,	clntDuid, clntAddr, clntIface, SOLICIT_MSG,this);
+	    Options.append((Ptr*)optIA_NA);
 	    break;
 	}
 	case OPTION_IA_TA: {
 	    SPtr<TSrvOptTA> optTA;
-	    optTA = new TSrvOptTA(SrvAddrMgr, SrvCfgMgr, (Ptr*) opt, 
+	    optTA = new TSrvOptTA((Ptr*) opt, 
 				  clntDuid, clntAddr, clntIface, SOLICIT_MSG, this);
-	    this->Options.append( (Ptr*) optTA);
+	    Options.append( (Ptr*) optTA);
 	    break;
 	}
 	case OPTION_IA_PD: {
 	    SPtr<TSrvOptIA_PD> optPD;
-	    optPD = new TSrvOptIA_PD(SrvCfgMgr, SrvAddrMgr, (Ptr*) opt, clntAddr, clntDuid,  
+	    optPD = new TSrvOptIA_PD((Ptr*) opt, clntAddr, clntDuid,  
 				     clntIface, SOLICIT_MSG, this);
-	    this->Options.append( (Ptr*) optPD);
+	    Options.append( (Ptr*) optPD);
 	    break;
 	}
 	case OPTION_RAPID_COMMIT: {
@@ -178,7 +171,7 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
 	    string hint = anotherFQDN->getFQDN();
 	    SPtr<TSrvOptFQDN> optFQDN;
 
-	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr->getFirstAddr(clntDuid);
+	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(clntDuid);
 	    if (clntAssignedAddr)
 		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAssignedAddr, hint, false);
 	    else
@@ -223,18 +216,18 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
 
     // include our DUID
     SPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr->getDUID(),this);
+    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
     Options.append((Ptr*)ptrSrvID);
 
     // ... and our preference
     SPtr<TSrvOptPreference> ptrPreference;
-    unsigned char preference = SrvCfgMgr->getIfaceByID(solicit->getIface())->getPreference();
+    unsigned char preference = SrvCfgMgr().getIfaceByID(solicit->getIface())->getPreference();
     Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
     ptrPreference = new TSrvOptPreference(preference,this);
     Options.append((Ptr*)ptrPreference);
 
     // does this server support unicast?
-    SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr->getIfaceByID(solicit->getIface())->getUnicast();
+    SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr().getIfaceByID(solicit->getIface())->getUnicast();
     if (unicastAddr) {
 	SPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
 	Options.append((Ptr*)optUnicast);

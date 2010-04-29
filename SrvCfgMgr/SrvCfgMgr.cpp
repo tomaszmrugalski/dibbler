@@ -10,8 +10,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgMgr.cpp,v 1.58 2008-10-12 20:07:31 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -22,34 +20,29 @@
 #include "SrvCfgMgr.h"
 #include "SrvCfgIface.h"
 #include "Logger.h"
-
-using namespace std;
-
 #include "IfaceMgr.h"
 #include "SrvIfaceMgr.h"
-
 #include "AddrClient.h"
 #include "TimeZone.h"
-
 #include "FlexLexer.h"
 #include "SrvParser.h"
 
+TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
-TSrvCfgMgr::TSrvCfgMgr(SPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile)
+TSrvCfgMgr::TSrvCfgMgr(const std::string cfgFile, const std::string xmlFile)
     :TCfgMgr(), XmlFile(xmlFile), reconfigure(true)
 {
-    this->IfaceMgr = ifaceMgr;
-
+ 
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
-	this->IsDone = true;
-	return;
+  	    IsDone = true;
+	      return;
     }
 
     // load or create DUID
     string duidFile = (string)SRVDUID_FILE;
-    if (!this->setDUID(duidFile, *ifaceMgr)) {
+    if (!setDUID(duidFile, SrvIfaceMgr())) {
 		this->IsDone=true;
 		return;
     }
@@ -934,4 +927,12 @@ void TSrvCfgMgr::InClientClass(SPtr<TSrvMsg> msg)
 bool TSrvCfgMgr::reconfigureSupport()
 {
     return reconfigure;
+}
+
+void TSrvCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlDumpFile )
+{
+    if (Instance)
+      Log(Crit) << "SrvCfgMgr already created. Application error!" << LogEnd;
+    Instance = new TSrvCfgMgr(cfgFile, xmlDumpFile);
+
 }

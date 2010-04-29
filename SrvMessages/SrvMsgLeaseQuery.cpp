@@ -17,16 +17,12 @@
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptIA_NA.h"
 #include "AddrClient.h"
+#include "Logger.h"
 
-TSrvMsgLeaseQuery::TSrvMsgLeaseQuery(SPtr<TSrvIfaceMgr> IfaceMgr, 
-                               //SPtr<TSrvTransMgr> TransMgr,
-                               SPtr<TSrvCfgMgr>   ConfMgr, 
-                               SPtr<TSrvAddrMgr>  AddrMgr, 
-                               int iface,  SPtr<TIPv6Addr> addr,
-                               char* buf,
-                               int bufSize)
-    :TSrvMsg(IfaceMgr,0,ConfMgr,AddrMgr,iface,addr,buf,bufSize) {
+TSrvMsgLeaseQuery::TSrvMsgLeaseQuery(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TSrvMsg(iface,addr,buf,bufSize) {
 }
+
 
 void TSrvMsgLeaseQuery::doDuties() {
     return;

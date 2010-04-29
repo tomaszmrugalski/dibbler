@@ -8,7 +8,6 @@
  *                                                                           
  */
 
-class TSrvMsgDecline;
 #ifndef SRVMSGDECLINE_H
 #define SRVMSGDECLINE_H
 #include "SrvMsg.h"
@@ -16,12 +15,7 @@ class TSrvMsgDecline;
 class TSrvMsgDecline : public TSrvMsg
 {
   public:
-    TSrvMsgDecline(SPtr<TSrvIfaceMgr> IfaceMgr,
-		   SPtr<TSrvTransMgr> TransMgr,
-		   SPtr<TSrvCfgMgr> CfgMgr,
-		   SPtr<TSrvAddrMgr> AddrMgr,
-		   int iface, SPtr<TIPv6Addr> addr,
-		   char* buf, int bufSize);
+    TSrvMsgDecline(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
     bool  check();
     string getName();

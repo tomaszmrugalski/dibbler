@@ -14,22 +14,12 @@ class TSrvMsgSolicit;
 #ifndef SRVMSGSOLICIT_H
 #define SRVMSGSOLICIT_H
 #include "SrvMsg.h"
-#include "SrvCfgMgr.h"
-#include "SrvIfaceMgr.h"
-#include "SrvTransMgr.h"
-#include "SrvAddrMgr.h"
-
 #include "SmartPtr.h"
 
 class TSrvMsgSolicit : public TSrvMsg
 {
  public:
-    TSrvMsgSolicit(SPtr<TSrvIfaceMgr> ifaceMgr, 
-		   SPtr<TSrvTransMgr> transMgr,
-		   SPtr<TSrvCfgMgr>	  cfgMgr,
-		   SPtr<TSrvAddrMgr>  addrMgr,
-		   int iface, SPtr<TIPv6Addr> addr,
-		   char* buf, int bufSzie);
+    TSrvMsgSolicit(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSzie);
 
     void doDuties();
     void sortAnswers();
@@ -39,10 +29,6 @@ class TSrvMsgSolicit : public TSrvMsg
     ~TSrvMsgSolicit();
 
  private:
-    void setAttribs(SPtr<TSrvIfaceMgr> IfaceMgr, 
-		    SPtr<TSrvTransMgr> TransMgr, 
-		    SPtr<TSrvCfgMgr> CfgMgr,
-		    SPtr<TSrvAddrMgr> AddrMgr,
-		    int iface, char* addr, int msgType);
+    void setAttribs(int iface, char* addr, int msgType);
 };
 #endif /* SRVMSGSOLICIT_H*/

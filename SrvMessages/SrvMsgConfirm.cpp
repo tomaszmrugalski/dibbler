@@ -14,13 +14,8 @@
 #include "AddrClient.h"
 #include "SrvMsgConfirm.h"
 
-TSrvMsgConfirm::TSrvMsgConfirm(SPtr<TSrvIfaceMgr> IfaceMgr, 
-			       SPtr<TSrvTransMgr> TransMgr, 
-			       SPtr<TSrvCfgMgr> CfgMgr, 
-			       SPtr<TSrvAddrMgr> AddrMgr,
-			       int iface, SPtr<TIPv6Addr> addr,
-			       char* buf, int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize) {
+TSrvMsgConfirm::TSrvMsgConfirm(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TSrvMsg(iface, addr,buf,bufSize) {
 }
 
 void TSrvMsgConfirm::doDuties() {

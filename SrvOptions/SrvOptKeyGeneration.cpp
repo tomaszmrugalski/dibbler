@@ -22,6 +22,7 @@
 #include "OptAAAAuthentication.h"
 #include "Msg.h"
 #include "Logger.h"
+#include "SrvCfgMgr.h"
 
 TSrvOptKeyGeneration::TSrvOptKeyGeneration(char * buf,  int n, TMsg* parent)
 	:TOptKeyGeneration(buf, n, parent) {
@@ -43,18 +44,18 @@ TSrvOptKeyGeneration::TSrvOptKeyGeneration(TSrvMsg* parent)
 	    return;
 	    }
 	    
-	} while (this->Parent->AuthKeys->Get(spi));
+	} while (Parent->AuthKeys->Get(spi));
 	
         PrintHex("Auth:generated SPI: ", (char*)&spi, 4);
-        this->Parent->setSPI(spi);
+        Parent->setSPI(spi);
     }
 
-    setLifetime(parent->SrvCfgMgr->getAuthLifetime());
+    setLifetime(SrvCfgMgr().getAuthLifetime());
     
     setAlgorithmId(parent->DigestType);
 
 
-    unsigned kgnlen = parent->SrvCfgMgr->getAuthKeyGenNonceLen();
+    unsigned kgnlen = SrvCfgMgr().getAuthKeyGenNonceLen();
     char *kgn = new char[kgnlen];
     for (unsigned i = 0; i < kgnlen; i++)
         kgn[i] = (char)(rand() % 256);

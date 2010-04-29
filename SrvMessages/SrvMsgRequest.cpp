@@ -19,14 +19,8 @@
 #include "SrvOptIA_NA.h"
 #include "AddrClient.h"
 
-TSrvMsgRequest::TSrvMsgRequest(SPtr<TSrvIfaceMgr> IfaceMgr, 
-                               SPtr<TSrvTransMgr> TransMgr,
-                               SPtr<TSrvCfgMgr>   ConfMgr, 
-                               SPtr<TSrvAddrMgr>  AddrMgr, 
-                               int iface,  SPtr<TIPv6Addr> addr,
-                               char* buf,
-                               int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize) {
+TSrvMsgRequest::TSrvMsgRequest(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TSrvMsg(iface,addr,buf,bufSize) {
 }
 
 void TSrvMsgRequest::doDuties() {

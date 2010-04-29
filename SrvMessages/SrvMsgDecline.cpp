@@ -14,13 +14,9 @@
 #include "AddrClient.h"
 #include "SrvOptServerIdentifier.h"
     
-TSrvMsgDecline::TSrvMsgDecline(SPtr<TSrvIfaceMgr> IfaceMgr,
-			       SPtr<TSrvTransMgr> TransMgr,
-			       SPtr<TSrvCfgMgr> CfgMgr,
-			       SPtr<TSrvAddrMgr> AddrMgr,
-			       int iface, SPtr<TIPv6Addr> addr,
+TSrvMsgDecline::TSrvMsgDecline(int iface, SPtr<TIPv6Addr> addr,
 			       char* buf, int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,bufSize) {
+    :TSrvMsg(iface,addr,buf,bufSize) {
 }
 
 void TSrvMsgDecline::doDuties() {

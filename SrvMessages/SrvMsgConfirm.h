@@ -25,12 +25,7 @@
 class TSrvMsgConfirm : public TSrvMsg
 {
  public:
-    TSrvMsgConfirm(SPtr<TSrvIfaceMgr> IfaceMgr, 
-		   SPtr<TSrvTransMgr> TransMgr, 
-		   SPtr<TSrvCfgMgr> CfgMgr, 
-		   SPtr<TSrvAddrMgr> AddrMgr,
-		   int iface, SPtr<TIPv6Addr> addr,
-		   char* buf, int bufSize);
+    TSrvMsgConfirm(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     bool check();
     void doDuties();
     unsigned long getTimeout();

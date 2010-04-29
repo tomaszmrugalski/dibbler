@@ -6,11 +6,8 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgRebind.h,v 1.5 2008-08-29 00:07:35 thomson Exp $
- *
  */
 
-class TSrvMsgRebind;
 #ifndef SRVMSGREBIND_H
 #define SRVMSGREBIND_H
 #include "SrvMsg.h"
@@ -18,12 +15,7 @@ class TSrvMsgRebind;
 class TSrvMsgRebind : public TSrvMsg
 {
   public:
-    TSrvMsgRebind(SPtr<TSrvIfaceMgr>, 
-		  SPtr<TSrvTransMgr>, 
-		  SPtr<TSrvCfgMgr>, 
-		  SPtr<TSrvAddrMgr> AddrMgr,
-		  int iface, SPtr<TIPv6Addr> addr,
-		  char* buf, int bufSize);
+    TSrvMsgRebind(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
     void doDuties();
     string getName();

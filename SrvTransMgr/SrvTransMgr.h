@@ -10,7 +10,6 @@
  *
  */
 
-class TSrvTransMgr;
 #ifndef SRVTRANSMGR_H
 #define SRVTRANSMGR_H
 
@@ -23,17 +22,17 @@ class TSrvTransMgr;
 #include "SrvCfgMgr.h"
 #include "SrvAddrMgr.h"
 
+#define SrvTransMgr() (TSrvTransMgr::instance())
+
 class TSrvTransMgr
 {
     friend ostream & operator<<(ostream &strum, TSrvTransMgr &x);
   public:
-    TSrvTransMgr(SPtr<TSrvIfaceMgr> ifaceMgr,
-		 SPtr<TSrvAddrMgr> addrMgr,
-		 SPtr<TSrvCfgMgr> cfgMgr,
-		 string xmlFile);
-    ~TSrvTransMgr();
+    static void instanceCreate(const std::string config);
+    static TSrvTransMgr &instance();
 
     bool openSocket(SPtr<TSrvCfgIface> confIface);
+    SPtr<TMsg> getCurrentRequest();
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
@@ -46,21 +45,19 @@ class TSrvTransMgr
     char * getCtrlAddr();
     int    getCtrlIface();
 
-    void setContext(SPtr<TSrvTransMgr> transMgr);
-
     SPtr<TSrvMsg> requestMsg;
   private:
+    TSrvTransMgr(string xmlFile);
+    ~TSrvTransMgr();
+
     string XmlFile;
     List(TSrvMsg) MsgLst;
     bool IsDone;
 
-    SPtr<TSrvIfaceMgr> IfaceMgr;
-    SPtr<TSrvTransMgr> That;
-    SPtr<TSrvCfgMgr>  CfgMgr;
-    SPtr<TSrvAddrMgr>  AddrMgr;
-
     int ctrlIface;
     char ctrlAddr[48];
+
+    static TSrvTransMgr * Instance;
 };
 
 

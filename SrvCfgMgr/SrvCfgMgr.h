@@ -8,11 +8,8 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgMgr.h,v 1.24 2008-10-12 20:07:31 thomson Exp $
- *
  */
 
-class TSrvCfgMgr;
 #ifndef SRVCONFMGR_H
 #define SRVCONFMGR_H
 #include "SmartPtr.h"
@@ -28,11 +25,16 @@ class TSrvCfgMgr;
 #include "SrvParser.h"
 #include "SrvCfgClientClass.h"
 
+
+#define SrvCfgMgr() (TSrvCfgMgr::instance())
+
 class TSrvCfgMgr : public TCfgMgr
 {
 public:
     friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
-    TSrvCfgMgr(SPtr<TSrvIfaceMgr> ifaceMgr, string cfgFile, string xmlFile);
+
+    static void instanceCreate(const std::string cfgFile, const std::string xmlDumpFile);
+    static TSrvCfgMgr &instance();
 
     bool parseConfigFile(string cfgFile);
 
@@ -97,6 +99,8 @@ public:
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
 private:
+    TSrvCfgMgr(string cfgFile, string xmlFile);
+    static TSrvCfgMgr * Instance;
     static int NextRelayID;
     string XmlFile;
     bool reconfigure;

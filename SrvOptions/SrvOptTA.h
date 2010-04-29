@@ -23,18 +23,14 @@ class TSrvOptTA : public TOptTA
 {
   public:
 /* Constructor used in answers to: SOLICIT, SOLICIT (with RAPID_COMMIT) and REQUEST */
-    TSrvOptTA(SPtr<TSrvAddrMgr> addrMgr,  SPtr<TSrvCfgMgr> cfgMgr,
-		 SPtr<TSrvOptTA> queryOpt,
-		 SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr, 
-		 int iface, int msgType, TMsg* parent);
+    TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,  int iface, int msgType, TMsg* parent);
     TSrvOptTA(char * buf, int bufsize, TMsg* parent);
     TSrvOptTA(int iaid, int statusCode, string txt, TMsg* parent);
+    /// @todo: Why 3 construstors?
     void releaseAllAddrs(bool quiet);
 
     bool doDuties();
  private:
-    SPtr<TSrvAddrMgr> AddrMgr;
-    SPtr<TSrvCfgMgr>  CfgMgr;
     SPtr<TIPv6Addr>   ClntAddr;
     SPtr<TDUID>       ClntDuid;
     int                   Iface;
@@ -51,6 +47,3 @@ class TSrvOptTA : public TOptTA
 };
 
 #endif
-/*
- * $Id: SrvOptTA.h,v 1.4 2008-08-29 00:07:37 thomson Exp $
- */

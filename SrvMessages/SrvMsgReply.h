@@ -8,39 +8,6 @@
  *
  * $Id: SrvMsgReply.h,v 1.12 2009-03-24 01:16:53 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.11  2008-08-29 00:07:35  thomson
- * Temporary license change(GPLv2 or later -> GPLv2 only)
- *
- * Revision 1.10  2006-10-06 00:42:58  thomson
- * Initial PD support.
- *
- * Revision 1.9  2006-08-30 01:10:39  thomson
- * DNSUpdate general cleanup.
- *
- * Revision 1.8  2006-08-21 22:22:52  thomson
- * Changes by Krzysiek Wnuk, several fixes by thomson.
- *
- * Revision 1.7  2006-08-21 21:33:21  thomson
- * prepareFQDN() moved from SrvMgrReply to SrvMsg,
- * unnecessary constructors removed.
- *
- * Revision 1.6  2006-07-03 20:15:57  thomson
- * FQDN support partially supported (still does not work properly).
- *
- * Revision 1.5  2006/02/02 23:18:30  thomson
- * 0.4.2 release.
- *
- * Revision 1.4  2005/01/08 16:52:04  thomson
- * Relay support implemented.
- *
- * Revision 1.3  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.2  2004/06/20 17:25:07  thomson
- * getName() method implemented, clean up
- *
- *
  */
 
 class TSrvMsgReply;
@@ -62,53 +29,21 @@ class TSrvMsgReply;
 class TSrvMsgReply : public TSrvMsg
 {
   public:
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgConfirm> question);
+    TSrvMsgReply(SPtr<TSrvMsgConfirm> question);
     
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgDecline> question);	
+    TSrvMsgReply(SPtr<TSrvMsgDecline> question);	
     
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgRebind> question);	
+    TSrvMsgReply(SPtr<TSrvMsgRebind> question);	
 
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgRelease> question);	
+    TSrvMsgReply(SPtr<TSrvMsgRelease> question);	
     
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgRenew> question);	
+    TSrvMsgReply(SPtr<TSrvMsgRenew> question);	
     
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgRequest> question);
+    TSrvMsgReply(SPtr<TSrvMsgRequest> question);
     
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgSolicit> question);
+    TSrvMsgReply(SPtr<TSrvMsgSolicit> question);
     
-    TSrvMsgReply(SPtr<TSrvIfaceMgr>, 
-		 SPtr<TSrvTransMgr>, 
-		 SPtr<TSrvCfgMgr>, 
-		 SPtr<TSrvAddrMgr> AddrMgr,
-		 SPtr<TSrvMsgInfRequest> question);
+    TSrvMsgReply(SPtr<TSrvMsgInfRequest> question);
 
     void doDuties();
     unsigned long getTimeout();

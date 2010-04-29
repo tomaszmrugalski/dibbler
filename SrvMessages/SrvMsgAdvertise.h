@@ -30,24 +30,10 @@ class TSrvMsgAdvertise : public TSrvMsg
 {
   public:
     // creates object based on a buffer
-    TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
-		     SPtr<TSrvTransMgr> TransMgr,
-		     SPtr<TSrvCfgMgr> CfgMgr,
-		     SPtr<TSrvAddrMgr> AddrMgr,
-		     int iface, SPtr<TIPv6Addr> addr);
-    
-    TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
-		     SPtr<TSrvTransMgr> TransMgr,
-		     SPtr<TSrvCfgMgr> CfgMgr,
-		     SPtr<TSrvAddrMgr> AddrMgr,
-		     SPtr<TSrvMsgSolicit> question);
-    
-	TSrvMsgAdvertise(SPtr<TSrvIfaceMgr> IfaceMgr,
-		SPtr<TSrvTransMgr> TransMgr,
-		SPtr<TSrvCfgMgr> CfgMgr,
-		SPtr<TSrvAddrMgr> AddrMgr,
-		unsigned int iface, SPtr<TIPv6Addr> addr,
-		unsigned char* buf, unsigned int bufSize);
+    TSrvMsgAdvertise(int iface, SPtr<TIPv6Addr> addr);
+    TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> question);
+    TSrvMsgAdvertise(unsigned int iface, SPtr<TIPv6Addr> addr,unsigned char* buf, unsigned int bufSize);
+    /// @todo: get rid of 2 of those constructors
 
     bool check();
     bool answer(SPtr<TSrvMsgSolicit> solicit);

@@ -395,7 +395,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 
 	Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
 
-	bool guessMode = SrvCfgMgr->guessMode();
+	bool guessMode = SrvCfgMgr().guessMode();
 
 	if (ptrIfaceID) {
 	    // find relay interface based on the interface-id option
@@ -461,57 +461,27 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
 	return 0;
     switch (buf[0]) {
     case SOLICIT_MSG:
-	return new TSrvMsgSolicit(That, this->SrvTransMgr, 
-				  this->SrvCfgMgr, this->SrvAddrMgr,
-				  ifaceid, peer, buf, bufsize);
+	      return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
     case REQUEST_MSG:
-	return new TSrvMsgRequest(That, this->SrvTransMgr, 
-				  this->SrvCfgMgr, this->SrvAddrMgr,
-				      ifaceid, peer, buf, bufsize);
+	      return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
     case CONFIRM_MSG:
-	return new TSrvMsgConfirm(That, this->SrvTransMgr, 
-				  this->SrvCfgMgr, this->SrvAddrMgr,
-				  ifaceid,  peer, buf, bufsize);
+	      return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
     case RENEW_MSG:
-	return new TSrvMsgRenew  (That, this->SrvTransMgr, 
-				  this->SrvCfgMgr, this->SrvAddrMgr,
-				  ifaceid,  peer, buf, bufsize);
+	      return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
     case REBIND_MSG:
-	return new TSrvMsgRebind (That, this->SrvTransMgr, 
-				  this->SrvCfgMgr, this->SrvAddrMgr,
-				  ifaceid, peer, buf, bufsize);
+	      return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
     case RELEASE_MSG:
-	return new TSrvMsgRelease(That, this->SrvTransMgr, 
-				  this->SrvCfgMgr, this->SrvAddrMgr,
-				  ifaceid, peer, buf, bufsize);
+	      return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
     case DECLINE_MSG:
-	return new TSrvMsgDecline(That, this->SrvTransMgr, 
-				  this->SrvCfgMgr, this->SrvAddrMgr,
-				  ifaceid, peer, buf, bufsize);
+	      return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
     case INFORMATION_REQUEST_MSG:
-	return new TSrvMsgInfRequest(That, this->SrvTransMgr, 
-				     this->SrvCfgMgr, this->SrvAddrMgr,
-				     ifaceid, peer, buf, bufsize);
+	      return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
     case LEASEQUERY_MSG:
-	return new TSrvMsgLeaseQuery(That, SrvCfgMgr, SrvAddrMgr, ifaceid, 
-				     peer, buf, bufsize);
+	      return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
     default:
-	Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
-	return 0; //NULL;;
+        Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
+        return 0; //NULL;;
     }
-}
-
-/*
- * remember SPtrs to all managers (including this one)
- */
-void TSrvIfaceMgr::setContext(SPtr<TSrvIfaceMgr> srvIfaceMgr,
-			      SPtr<TSrvTransMgr> srvTransMgr,
-			      SPtr<TSrvCfgMgr> srvCfgMgr,
-			      SPtr<TSrvAddrMgr> srvAddrMgr) {
-    SrvCfgMgr=srvCfgMgr;
-    SrvAddrMgr=srvAddrMgr;
-    SrvTransMgr=srvTransMgr;
-    That=srvIfaceMgr;
 }
 
 /**
@@ -540,6 +510,20 @@ void TSrvIfaceMgr::redetectIfaces() {
     }
 
     if_list_release(ifaceList); // allocated in pure C, and so release it there
+}
+
+void TSrvIfaceMgr::instanceCreate( const std::string xmlDumpFile )
+{
+    if (Instance)
+      Log(Crit) << "SrvIfaceMgr instance already created! Application error." << LogEnd;
+    Instance = new TSrvIfaceMgr(xmlDumpFile);
+}
+
+TSrvIfaceMgr & TSrvIfaceMgr::instance()
+{
+  if (!Instance)
+      Log(Crit) << "SrvIfaceMgr not create yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+  return *Instance;
 }
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {

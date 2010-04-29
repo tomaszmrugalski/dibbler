@@ -14,13 +14,8 @@
 #include "SrvMsgRebind.h"
 #include "AddrClient.h"
 
-TSrvMsgRebind::TSrvMsgRebind(SPtr<TSrvIfaceMgr> IfaceMgr, 
-			     SPtr<TSrvTransMgr> TransMgr, 
-			     SPtr<TSrvCfgMgr> CfgMgr, 
-			     SPtr<TSrvAddrMgr> AddrMgr,
-			     int iface, SPtr<TIPv6Addr> addr,
-			     char* buf, int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr, AddrMgr, iface, addr,buf,bufSize) {
+TSrvMsgRebind::TSrvMsgRebind(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TSrvMsg(iface, addr,buf,bufSize) {
 }
 
 void TSrvMsgRebind::doDuties() {

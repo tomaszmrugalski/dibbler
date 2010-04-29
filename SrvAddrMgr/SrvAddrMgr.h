@@ -7,12 +7,8 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvAddrMgr.h,v 1.11 2008-08-29 00:07:33 thomson Exp $
- *
  */
 
-class TSrvAddrMgr;
-class TSrvCacheEntry;
 #ifndef SRVADDRMGR_H
 #define SRVADDRMGR_H
 
@@ -20,17 +16,21 @@ class TSrvCacheEntry;
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgPD.h"
 
-class TSrvCacheEntry
-{
- public:
-    SPtr<TIPv6Addr> Addr;       // cached address, previously assigned to a client
-    SPtr<TDUID>     Duid;       // client's duid    
-};
+#define SrvAddrMgr() (TSrvAddrMgr::instance())
 
 class TSrvAddrMgr : public TAddrMgr
 {
   public:
-    TSrvAddrMgr(string xmlfile, bool loadDB);
+    static void instanceCreate(const std::string xmlFile, bool loadDB);
+    static TSrvAddrMgr & instance();
+
+    class TSrvCacheEntry
+    {
+    public:
+      SPtr<TIPv6Addr> Addr;       // cached address, previously assigned to a client
+      SPtr<TDUID>     Duid;       // client's duid    
+    };
+
     ~TSrvAddrMgr();
 
     // IA address management
@@ -72,6 +72,9 @@ class TSrvAddrMgr : public TAddrMgr
     void print(ostream & out);
 
  private:
+    TSrvAddrMgr(string xmlfile, bool loadDB);
+    static TSrvAddrMgr * Instance;
+
     void cacheRead();
     void cacheDump();
     void checkCacheSize();

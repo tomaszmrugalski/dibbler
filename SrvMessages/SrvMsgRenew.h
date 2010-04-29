@@ -6,11 +6,8 @@
  * chamges Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgRenew.h,v 1.6 2008-08-29 00:07:35 thomson Exp $
- *
  */
 
-class TSrvMsgRenew;
 #ifndef SRVMSGRENEW_H
 #define SRVMSGRENEW_H
 #include "SrvMsg.h"
@@ -18,10 +15,7 @@ class TSrvMsgRenew;
 class TSrvMsgRenew : public TSrvMsg
 {
  public:
-    TSrvMsgRenew(SPtr<TSrvIfaceMgr> IfaceMgr,SPtr<TSrvTransMgr> TransMgr,
-		 SPtr<TSrvCfgMgr> CfgMgr,SPtr<TSrvAddrMgr> AddrMgr,
-		 int iface, SPtr<TIPv6Addr> addr,
-		 char* buf, int bufSize);
+    TSrvMsgRenew(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
     void doDuties();
     unsigned long getTimeout();

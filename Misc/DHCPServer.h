@@ -30,10 +30,6 @@ class TDHCPServer
 
   private:
     bool IsDone;
-    SPtr<TSrvIfaceMgr> IfaceMgr;
-    SPtr<TSrvAddrMgr> AddrMgr;
-    SPtr<TSrvCfgMgr> CfgMgr;
-    SPtr<TSrvTransMgr> TransMgr;
 };
 
 #endif

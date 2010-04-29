@@ -21,11 +21,7 @@
 class TSrvMsgLeaseQueryReply : public TSrvMsg
 {
   public:
-    TSrvMsgLeaseQueryReply(SPtr<TSrvIfaceMgr> IfaceMgr,
-			   SPtr<TSrvTransMgr> TransMgr,
-			   SPtr<TSrvCfgMgr> CfgMgr,
-			   SPtr<TSrvAddrMgr> AddrMgr,
-			   SPtr<TSrvMsgLeaseQuery> query);
+    TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query);
 
     bool queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
     bool queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);

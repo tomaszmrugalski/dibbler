@@ -18,18 +18,15 @@ class TSrvOptIA_PD;
 #include "SrvOptIAPrefix.h" 
 #include "SmartPtr.h"
 #include "DUID.h"
-#include "SrvCfgMgr.h"
-#include "SrvAddrMgr.h" 
 #include "Container.h"
 #include "IPv6Addr.h"
+#include "SrvCfgIface.h"
 
 class TSrvOptIA_PD : public TOptIA_PD
 {
   public:
     
-    TSrvOptIA_PD(SPtr<TSrvCfgMgr> cfgMgr,
-		 SPtr<TSrvAddrMgr> addrMgr,
-		 SPtr<TSrvOptIA_PD> queryOpt,
+    TSrvOptIA_PD(SPtr<TSrvOptIA_PD> queryOpt,
 		 SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> duid,
 		 int iface, int msgType , TMsg* parent);
 
@@ -47,8 +44,6 @@ class TSrvOptIA_PD : public TOptIA_PD
     void decline       (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
     bool doDuties();
  private:
-    SPtr<TSrvAddrMgr> AddrMgr;
-    SPtr<TSrvCfgMgr>  CfgMgr;
     SPtr<TIPv6Addr>   ClntAddr;
     SPtr<TDUID>       ClntDuid;
     int                   Iface;

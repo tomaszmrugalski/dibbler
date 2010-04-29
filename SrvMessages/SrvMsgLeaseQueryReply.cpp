@@ -19,15 +19,11 @@
 #include "SrvOptIAPrefix.h"
 #include "SrvOptClientIdentifier.h"
 #include "AddrClient.h"
+#include "SrvCfgMgr.h"
 
 
-TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvIfaceMgr> IfaceMgr,
-				   SPtr<TSrvTransMgr> TransMgr,
-				   SPtr<TSrvCfgMgr> CfgMgr,
-				   SPtr<TSrvAddrMgr> AddrMgr,
-				   SPtr<TSrvMsgLeaseQuery> query)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,
-	     query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
+TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
+    :TSrvMsg(query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
 	     query->getTransID())
 {
   if (!answer(query)) {
@@ -94,7 +90,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 
     // append SERVERID
     SPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr->getDUID(),this);
+    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(), this);
     Options.append((Ptr*)ptrSrvID);
 
     // allocate buffer
@@ -120,7 +116,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     }
 
     // search for client
-    SPtr<TAddrClient> cli = SrvAddrMgr->getClient( addr->getAddr() );
+    SPtr<TAddrClient> cli = SrvAddrMgr().getClient( addr->getAddr() );
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
@@ -151,7 +147,7 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     }
 
     // search for client
-    SPtr<TAddrClient> cli = SrvAddrMgr->getClient( duid );
+    SPtr<TAddrClient> cli = SrvAddrMgr().getClient( duid );
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain() << " not found." << LogEnd;

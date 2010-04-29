@@ -13,19 +13,11 @@
 #include "SrvMsgInfRequest.h"
 #include "SmartPtr.h"
 #include "DHCPConst.h"
-#include "SrvIfaceMgr.h"
 #include "SrvMsgAdvertise.h"
 #include "SrvOptServerIdentifier.h"
 
-TSrvMsgInfRequest::TSrvMsgInfRequest(SPtr<TSrvIfaceMgr> IfaceMgr, 
-				     SPtr<TSrvTransMgr> TransMgr,
-				     SPtr<TSrvCfgMgr>   ConfMgr, 
-				     SPtr<TSrvAddrMgr>  AddrMgr, 
-				     int iface,  
-				     SPtr<TIPv6Addr> addr,
-				     char* buf,
-				     int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,ConfMgr,AddrMgr,iface,addr,buf,bufSize) {
+TSrvMsgInfRequest::TSrvMsgInfRequest(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TSrvMsg(iface, addr, buf, bufSize) {
 }
 
 void TSrvMsgInfRequest::doDuties() {

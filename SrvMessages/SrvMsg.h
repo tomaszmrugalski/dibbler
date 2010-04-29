@@ -19,9 +19,6 @@ class TSrvMsg;
 #include "Msg.h"
 #include "SmartPtr.h"
 #include "Opt.h"
-#include "SrvIfaceMgr.h"
-#include "SrvTransMgr.h"
-#include "SrvCfgMgr.h"
 #include "SrvAddrMgr.h"
 #include "IPv6Addr.h"
 #include "SrvOptOptionRequest.h"
@@ -29,26 +26,15 @@ class TSrvMsg;
 #include "SrvOptFQDN.h"
 #include "SrvOptRemoteID.h"
 #include "SrvOptGeneric.h"
+#include "SrvCfgIface.h"
 
 class TSrvMsg : public TMsg
 {
 public:
-    TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, SPtr<TSrvTransMgr> TransMgr, 
-	    SPtr<TSrvCfgMgr> CfgMgr,     SPtr<TSrvAddrMgr> AddrMgr,
-	    int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
-    
-    TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, SPtr<TSrvTransMgr> TransMgr, 
-	    SPtr<TSrvCfgMgr> CfgMgr,     SPtr<TSrvAddrMgr> AddrMgr,
-	    int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
-    
-    TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, SPtr<TSrvTransMgr> TransMgr, 
-	    SPtr<TSrvCfgMgr> CfgMgr,     SPtr<TSrvAddrMgr> AddrMgr);
-    
-    SPtr<TSrvTransMgr>  SrvTransMgr;
-    SPtr<TSrvAddrMgr>   SrvAddrMgr;
-    SPtr<TSrvCfgMgr>    SrvCfgMgr;
-    SPtr<TSrvIfaceMgr>  SrvIfaceMgr;
-    
+    TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
+    TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
+    // TSrvMsg();
+        
     void copyRelayInfo(SPtr<TSrvMsg> q);
     void copyAAASPI(SPtr<TSrvMsg> q);
     void copyRemoteID(SPtr<TSrvMsg> q);
@@ -72,8 +58,6 @@ public:
 
     bool validateReplayDetection();
 
-    SPtr<TSrvTransMgr> getSrvTransMgr();
-
     virtual bool check() = 0;
 
     void setRemoteID(SPtr<TSrvOptRemoteID> remoteID);
@@ -83,10 +67,6 @@ public:
     void doDuties();
     void send();
 protected:
-    void setAttribs(SPtr<TSrvIfaceMgr> IfaceMgr, 
-		    SPtr<TSrvTransMgr> TransMgr, 
-		    SPtr<TSrvCfgMgr> CfgMgr,
-		    SPtr<TSrvAddrMgr> AddrMgr);
     bool check(bool clntIDmandatory, bool srvIDmandatory);
     SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
 				  SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate);

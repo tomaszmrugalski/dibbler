@@ -25,6 +25,9 @@
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
+#include "Msg.h"
+#include "SrvCfgMgr.h"
+#include "SrvTransMgr.h"
 
 TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, TMsg* parent)
     :TOptIA_PD(IAID,T1,T2, parent) 
@@ -104,8 +107,8 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
 	    continue;
 	optPrefix = (Ptr*) opt;
 	prefix = optPrefix->getPrefix();
-	//AddrMgr->delClntAddr(this->ClntDuid, this->IAID, prefix, quiet); // not sure about that
-	CfgMgr->decrPrefixCount(this->Iface, prefix);
+	//SrvAddrMgr().delClntAddr(this->ClntDuid, this->IAID, prefix, quiet); // not sure about that
+	SrvCfgMgr().decrPrefixCount(this->Iface, prefix);
     }
 }
 
@@ -137,11 +140,11 @@ int TSrvOptIA_PD::assignPrefix(SPtr<TIPv6Addr> hint, bool fake) {
       if (!fake) {
 	    // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
 	    // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
-	    AddrMgr->addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
+	    SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
                            prefix, this->Prefered, this->Valid, this->PDLength, false);
 	    if (!alreadyIncreased) {
           // but CfgMgr has to increase usage only once. Don't ask my why :)
-          CfgMgr->incrPrefixCount(Iface, prefix);
+          SrvCfgMgr().incrPrefixCount(Iface, prefix);
           alreadyIncreased = true;
 	    }
       }
@@ -156,18 +159,15 @@ int TSrvOptIA_PD::assignPrefix(SPtr<TIPv6Addr> hint, bool fake) {
 
 // so far it is enough here
 // constructor used only in RENEW, REBIND, DECLINE and RELEASE
-TSrvOptIA_PD::TSrvOptIA_PD( SPtr<TSrvCfgMgr> cfgMgr, SPtr<TSrvAddrMgr> addrMgr,
-		 SPtr<TSrvOptIA_PD> queryOpt, SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
+TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
 		 int iface, int msgType , TMsg* parent)
     :TOptIA_PD(queryOpt->getIAID(), 0x7fffffff, 0x7fffffff, parent)
 {
-    this->AddrMgr   = addrMgr;
-    this->CfgMgr    = cfgMgr;
     this->ClntDuid  = clntDuid;
     this->ClntAddr  = clntAddr;
     this->Iface     = iface;
 
-    SPtr<TSrvCfgIface> ptrIface = CfgMgr->getIfaceByID(Iface);
+    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(Iface);
     if (!ptrIface) {
 	      Log(Error) << "Unable to find interface with ifindex=" << Iface << ". Something is wrong, VERY wrong." << LogEnd;
 	      return;
@@ -270,7 +270,7 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface
  */
 void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
     SPtr <TAddrClient> ptrClient;
-    ptrClient = this->AddrMgr->getClient(this->ClntDuid);
+    ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
 						this->Parent));
@@ -353,7 +353,7 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TIPv6Addr> hint) {
     List(TIPv6Addr) lst;
 
     lst.clear();
-    ptrIface = this->CfgMgr->getIfaceByID(this->Iface);
+    ptrIface = SrvCfgMgr().getIfaceByID(this->Iface);
     if (!ptrIface) {
       Log(Error) << "PD: Trying to find free prefix on non-existent interface (ifindex=" << this->Iface << ")." << LogEnd;
       return lst; // empty list
@@ -399,18 +399,17 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TIPv6Addr> hint) {
     }
 
     // Get the request message from client
-    SPtr<TSrvTransMgr> srvTrans =  ((TSrvMsg*)Parent)->SrvTransMgr;
-    SPtr<TSrvMsg> requestMsg =  (Ptr*)(srvTrans->requestMsg);
+    SPtr<TSrvMsg> requestMsg = SrvTransMgr().getCurrentRequest();
 
     if ( validHint ) {
       // hint is valid, try to use it
-      ptrPD = this->CfgMgr->getClassByPrefix(this->Iface, hint);
+      ptrPD = SrvCfgMgr().getClassByPrefix(this->Iface, hint);
 
       // if the PD allow the hint, based on DUID, Addr, and Msg from client
      if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, requestMsg ))
 	 {
 		  // case 2: address belongs to supported class, and is free
-		  if ( ptrPD && AddrMgr->prefixIsFree(hint) ) {
+		  if ( ptrPD && SrvAddrMgr().prefixIsFree(hint) ) {
 			Log(Debug) << "PD: Requested prefix (" << *hint << ") is free, great!" << LogEnd;
 			this->PDLength = ptrPD->getPD_Length();
 			this->Prefered = ptrPD->getPrefered(this->Prefered);
@@ -425,7 +424,7 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TIPv6Addr> hint) {
 		  if (ptrPD) {
 			do {
 			  prefix=ptrPD->getRandomPrefix();
-			} while (!this->AddrMgr->prefixIsFree(prefix));
+			} while (!SrvAddrMgr().prefixIsFree(prefix));
 			lst.append(prefix);
 
 			this->PDLength = ptrPD->getPD_Length();
@@ -462,7 +461,7 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TIPv6Addr> hint) {
 	lst.first();
 	bool allFree = true;
 	while (prefix = lst.get()) {
-	    if (!AddrMgr->prefixIsFree(prefix)) {
+	    if (!SrvAddrMgr().prefixIsFree(prefix)) {
 		allFree = false;
 	    }
 	}

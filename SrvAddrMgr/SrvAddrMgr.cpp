@@ -20,6 +20,8 @@
 #include "SrvCfgAddrClass.h"
 #include "Portable.h"
 
+TSrvAddrMgr * TSrvAddrMgr::Instance = 0;
+
 TSrvAddrMgr::TSrvAddrMgr(string xmlfile, bool loadDB) 
     :TAddrMgr(xmlfile, loadDB) {
 	
@@ -763,4 +765,18 @@ void TSrvAddrMgr::cacheRead() {
 	Log(Debug) << "Cache: " << SRVCACHE_FILE << " file: " << entries << " entries expected, but " 
 		   << this->Cache.count() << " found." << LogEnd;
     }
+}
+
+void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )
+{
+    if (Instance)
+        Log(Crit) << "SrvAddrMgr already exists! Application error" << LogEnd;
+    Instance = new TSrvAddrMgr(xmlFile, loadDB);
+}
+
+TSrvAddrMgr & TSrvAddrMgr::instance()
+{
+    if (!Instance)
+        Log(Crit) << "SrvAddrMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    return *Instance;
 }

@@ -11,22 +11,22 @@
  *
  */
 
-class TSrvIfaceMgr;
 #ifndef SRVIFACEMGR_H
 #define SRVIFACEMGR_H
 
 #include "SmartPtr.h"
 #include "IfaceMgr.h"
-#include "SrvCfgMgr.h"
-#include "SrvAddrMgr.h"
-#include "SrvTransMgr.h"
 #include "SrvIfaceIface.h"
 #include "SrvMsg.h"
 
+#define SrvIfaceMgr() (TSrvIfaceMgr::instance())
+
 class TSrvIfaceMgr :public TIfaceMgr {
  public:
-    TSrvIfaceMgr(string xmlFile);
-    ~TSrvIfaceMgr();
+   static void instanceCreate(const std::string xmlDumpFile);
+   static TSrvIfaceMgr &instance();
+
+   ~TSrvIfaceMgr();
     friend ostream & operator <<(ostream & strum, TSrvIfaceMgr &x);
 
     SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface, 
@@ -46,21 +46,13 @@ class TSrvIfaceMgr :public TIfaceMgr {
     // ---receives messages---
     SPtr<TSrvMsg> select(unsigned long timeout);
 
-    // ---remember SPtrs to all menagers---
-    void setContext(SPtr<TSrvIfaceMgr> srvIfaceMgr,
-		    SPtr<TSrvTransMgr> srvTransMgr,
-		    SPtr<TSrvCfgMgr> srvCfgMgr,
-		    SPtr<TSrvAddrMgr> srvAddrMgr);
-
     void redetectIfaces();
 
   private:
-    string XmlFile;
-    SPtr<TSrvCfgMgr> SrvCfgMgr;
-    SPtr<TSrvAddrMgr> SrvAddrMgr;
-    SPtr<TSrvTransMgr> SrvTransMgr;
-    SPtr<TSrvIfaceMgr> That;
+    TSrvIfaceMgr(string xmlFile);
+    static TSrvIfaceMgr * Instance;
 
+    string XmlFile;
 };
 
 #endif 

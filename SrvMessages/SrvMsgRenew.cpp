@@ -16,13 +16,8 @@
 #include "SrvCfgMgr.h"
 #include "DHCPConst.h"
 
-TSrvMsgRenew::TSrvMsgRenew(SPtr<TSrvIfaceMgr> IfaceMgr,
-			   SPtr<TSrvTransMgr> TransMgr,
-			   SPtr<TSrvCfgMgr> CfgMgr,
-			   SPtr<TSrvAddrMgr> AddrMgr,
-			   int iface,  SPtr<TIPv6Addr> addr,
-			   char* buf, int bufSize)
-    :TSrvMsg(IfaceMgr,TransMgr,CfgMgr,AddrMgr,iface,addr,buf,bufSize) {
+TSrvMsgRenew::TSrvMsgRenew(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TSrvMsg(iface,addr,buf,bufSize) {
 
 }
 

@@ -35,31 +35,22 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptStatusCode.h"
 
-TSrvTransMgr::TSrvTransMgr(SPtr<TSrvIfaceMgr> ifaceMgr,
-			   SPtr<TSrvAddrMgr> addrMgr,
-			   SPtr<TSrvCfgMgr> cfgMgr,
-                           string xmlFile)
+TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
+: XmlFile(xmlFile), IsDone(false)
 {
-    // remember IfaceMgr and create remaining managers
-    this->IfaceMgr = ifaceMgr;
-    this->AddrMgr  = addrMgr;
-    this->CfgMgr   = cfgMgr;
-    this->XmlFile  = xmlFile;
-
     // TransMgr is certainly not done yet. We're just getting started
-    IsDone = false;
 
     // for each interface in CfgMgr, create socket (in IfaceMgr)
     SPtr<TSrvCfgIface> confIface;
-    CfgMgr->firstIface();
-    while (confIface=CfgMgr->getIface()) {
-	if (!this->openSocket(confIface)) {
-	    this->IsDone = true;
-	    break;
-	}
+    SrvCfgMgr().firstIface();
+    while (confIface = SrvCfgMgr().getIface()) {
+  	    if (!this->openSocket(confIface)) {
+	          this->IsDone = true;
+	          break;
+	      }
     }
 
-    this->AddrMgr->setCacheSize(this->CfgMgr->getCacheSize());
+    SrvAddrMgr().setCacheSize(SrvCfgMgr().getCacheSize());
 }
 
 /*
@@ -67,7 +58,7 @@ TSrvTransMgr::TSrvTransMgr(SPtr<TSrvIfaceMgr> ifaceMgr,
  */
 bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
 
-    SPtr<TSrvIfaceIface> iface = (Ptr*)IfaceMgr->getIfaceByID(confIface->getID());
+    SPtr<TSrvIfaceIface> iface = SrvIfaceMgr().getIfaceByID(confIface->getID());
     SPtr<TIPv6Addr> unicast = confIface->getUnicast();
 
     if (confIface->isRelay()) {
@@ -130,9 +121,9 @@ long TSrvTransMgr::getTimeout()
         if (ptrMsg->getTimeout() < min)
             min = ptrMsg->getTimeout();
     }
-    if (CfgMgr->inactiveIfacesCnt() && ifaceRecheckPeriod<min)
+    if (SrvCfgMgr().inactiveIfacesCnt() && ifaceRecheckPeriod<min)
 	min = ifaceRecheckPeriod;
-    addrTimeout = AddrMgr->getValidTimeout();
+    addrTimeout = SrvAddrMgr().getValidTimeout();
     return min<addrTimeout?min:addrTimeout;
 }
 
@@ -148,7 +139,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
 	// Ask NodeClietSpecific to analyse the message
 	NodeClientSpecific::analyseMessage(msg);
-	//CfgMgr->InClientClass(msg);
+	//SrvCfgMgr().InClientClass(msg);
 
 	// Do we have ready answer for this?
 
@@ -171,7 +162,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
-	SPtr<TSrvCfgIface> ptrCfgIface = CfgMgr->getIfaceByID(msg->getIface());
+	SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
 	if (msg->getOption(OPTION_RAPID_COMMIT) && !ptrCfgIface->getRapidCommit()) {
 	    Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
 		      << ptrCfgIface->getName() << " interface." << LogEnd;
@@ -179,7 +170,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	if (msg->getOption(OPTION_RAPID_COMMIT) && ptrCfgIface->getRapidCommit() )
 	{
 	    SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-	    SPtr<TSrvMsgReply> answRep=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
+	    SPtr<TSrvMsgReply> answRep = new TSrvMsgReply(nmsg);
 	    //if at least one IA has in reply message status success
 	    if (!answRep->isDone()) {
 		SPtr<TOpt> ptrOpt;
@@ -206,69 +197,69 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	//construction of reply with rapid commit wasn't successful
 	//Maybe it's possible to construct appropriate advertise message
 	//and assign some "not rapid" addresses to this client
-	SPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise(IfaceMgr,That,CfgMgr,AddrMgr,(Ptr*)msg);
+	SPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise((Ptr*)msg);
 	this->MsgLst.append((Ptr*)x);
 	break;
     }
     case REQUEST_MSG:
     {
-	SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
-	answ=new TSrvMsgReply(IfaceMgr, That, CfgMgr, AddrMgr, nmsg);
-	this->MsgLst.append((Ptr*)answ);
-	break;
+        SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
+        answ=new TSrvMsgReply(nmsg);
+        this->MsgLst.append((Ptr*)answ);
+        break;
     }
     case CONFIRM_MSG:
     {
 	SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply(IfaceMgr,That,CfgMgr,AddrMgr,nmsg);
+	answ=new TSrvMsgReply(nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
     case RENEW_MSG:
     {
 	SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply(IfaceMgr, That,CfgMgr,AddrMgr,nmsg);
+	answ=new TSrvMsgReply(nmsg);
 	this->MsgLst.append((Ptr*)answ);
 	break;
     }
     case REBIND_MSG:
     {
 	SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	answ=new TSrvMsgReply(nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case DECLINE_MSG:
     {
 	SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	answ=new TSrvMsgReply( nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case RELEASE_MSG:
     {
 	SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	answ=new TSrvMsgReply( nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case INFORMATION_REQUEST_MSG :
     {
 	SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply( IfaceMgr,  That, CfgMgr, AddrMgr,nmsg);
+	answ=new TSrvMsgReply( nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case LEASEQUERY_MSG:
     {
 	int iface = msg->getIface();
-	if (!CfgMgr->getIfaceByID(iface) || !CfgMgr->getIfaceByID(iface)->leaseQuerySupport()) {
+	if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
 	    Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
 	    return;
 	}
 	Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
 	SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-	answ = new TSrvMsgLeaseQueryReply(IfaceMgr, That, CfgMgr, AddrMgr, lq);
+	answ = new TSrvMsgLeaseQueryReply(lq);
 	MsgLst.append( (Ptr*) answ);
 	break;
     }
@@ -291,16 +282,16 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
 
     // save DB state regardless of action taken
-    AddrMgr->dump();
-    CfgMgr->dump();
+    SrvAddrMgr().dump();
+    SrvCfgMgr().dump();
 }
 
 void TSrvTransMgr::doDuties()
 {
     int deletedCnt = 0;
     // are there any outdated addresses?
-    if (!AddrMgr->getValidTimeout())
-        AddrMgr->doDuties();
+    if (!SrvAddrMgr().getValidTimeout())
+        SrvAddrMgr().doDuties();
 
     // for each message on list, let it do its duties, if timeout is reached
     SPtr<TSrvMsg> msg;
@@ -324,10 +315,10 @@ void TSrvTransMgr::doDuties()
     }
 
     // Open socket on interface which becames ready during server run
-    if (CfgMgr->inactiveMode())
+    if (SrvCfgMgr().inactiveMode())
     {
 	SPtr<TSrvCfgIface> x;
-	x = CfgMgr->checkInactiveIfaces();
+	x = SrvCfgMgr().checkInactiveIfaces();
 	if (x)
 	    openSocket(x);
     }
@@ -336,19 +327,13 @@ void TSrvTransMgr::doDuties()
 
 void TSrvTransMgr::shutdown()
 {
-    AddrMgr->dump();
+    SrvAddrMgr().dump();
     IsDone = true;
 }
 
 bool TSrvTransMgr::isDone()
 {
     return IsDone;
-}
-
-void TSrvTransMgr::setContext(SPtr<TSrvTransMgr> that)
-{
-    this->That=that;
-    IfaceMgr->setContext(IfaceMgr,That,CfgMgr,AddrMgr);
 }
 
 char* TSrvTransMgr::getCtrlAddr() {
@@ -367,9 +352,22 @@ void TSrvTransMgr::dump() {
 }
 
 TSrvTransMgr::~TSrvTransMgr() {
-    this->That = 0;
-    IfaceMgr->setContext(0,0,0,0);
     Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
+}
+
+void TSrvTransMgr::instanceCreate( const std::string config )
+{
+  if (!Instance)
+    Instance = new TSrvTransMgr(config);
+  else
+    Log(Crit) << "Attempt to create another Transmission Manager. One instance already present!" << LogEnd;
+}
+
+TSrvTransMgr & TSrvTransMgr::instance()
+{
+  if (!Instance)
+    Log(Crit) << "TransMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+  return *Instance;
 }
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)

@@ -14,16 +14,8 @@
 #include "SrvOptServerIdentifier.h"
 #include "AddrClient.h"
 
-TSrvMsgRelease::TSrvMsgRelease(
-	SPtr<TSrvIfaceMgr> IfMgr, 
-	SPtr<TSrvTransMgr> TransMgr,
-	SPtr<TSrvCfgMgr>   ConfMgr, 
-	SPtr<TSrvAddrMgr>  AddrMgr, 
-	int iface, 
-	SPtr<TIPv6Addr> addr,
-	char* buf,
-	int bufSize)
-    :TSrvMsg(IfMgr, TransMgr, ConfMgr, AddrMgr, iface, addr,buf,bufSize)
+TSrvMsgRelease::TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+    :TSrvMsg(iface, addr, buf, bufSize)
 {
 }
 

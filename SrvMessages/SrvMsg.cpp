@@ -77,21 +77,20 @@
  * @param msgType 
  * @param transID 
  */
-TSrvMsg::TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, 
-                 SPtr<TSrvTransMgr> TransMgr, 
-                 SPtr<TSrvCfgMgr> CfgMgr,
-                 SPtr<TSrvAddrMgr> AddrMgr,
-                 int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
+TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
                  :TMsg(iface, addr, msgType, transID)
 {
-    setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->Relays = 0;
 
-
 #ifndef MOD_DISABLE_AUTH
-    this->DigestType = CfgMgr->getDigest();
-    this->AuthKeys = CfgMgr->AuthKeys;
+    this->DigestType = SrvCfgMgr().getDigest();
+    this->AuthKeys = SrvCfgMgr().AuthKeys;
 #endif
+
+    FirstTimeStamp = now();
+    this->MRT=0;
+    KeyGenNonce = NULL;
+    KeyGenNonceLen = 0;
 }
 
 /** 
@@ -107,21 +106,21 @@ TSrvMsg::TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr,
  * @param buf 
  * @param bufSize 
  */
-TSrvMsg::TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr, 
-                 SPtr<TSrvTransMgr> TransMgr, 
-                 SPtr<TSrvCfgMgr> CfgMgr,
-                 SPtr<TSrvAddrMgr> AddrMgr,
-                 int iface,  SPtr<TIPv6Addr> addr,
+TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
                  char* buf,  int bufSize)
                  :TMsg(iface, addr, buf, bufSize)
 {
-    setAttribs(IfaceMgr,TransMgr,CfgMgr,AddrMgr);
     this->Relays = 0;
 
 #ifndef MOD_DISABLE_AUTH
-    this->AuthKeys = CfgMgr->AuthKeys;
-    this->DigestType = CfgMgr->getDigest();
+    this->AuthKeys = SrvCfgMgr().AuthKeys;
+    this->DigestType = SrvCfgMgr().getDigest();
 #endif
+
+    FirstTimeStamp = now();
+    this->MRT=0;
+    KeyGenNonce = NULL;
+    KeyGenNonceLen = 0;
 	
     int pos=0;
     while (pos<bufSize)	{
@@ -236,7 +235,7 @@ TSrvMsg::TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr,
 
 #ifndef MOD_DISABLE_AUTH
 	case OPTION_AAAAUTH:
-	    if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
+	    if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
 		this->DigestType = DIGEST_HMAC_SHA1;
 		ptr = new TSrvOptAAAAuthentication(buf+pos, length, this);
 	    }
@@ -245,13 +244,13 @@ TSrvMsg::TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr,
 	    Log(Warning) << "Option OPTION_KEYGEN received by server is invalid, ignoring." << LogEnd;
 	    break;
 	case OPTION_AUTH:
-	    if (SrvCfgMgr->getDigest() != DIGEST_NONE) {
-		this->DigestType = SrvCfgMgr->getDigest();
+	    if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
+		this->DigestType = SrvCfgMgr().getDigest();
 		
 		ptr = new TSrvOptAuthentication(buf+pos, length, this);
 		SPtr<TOptDUID> optDUID = (SPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
 		if (optDUID) {
-		    SPtr<TAddrClient> client = SrvAddrMgr->getClient(optDUID->getDUID());
+		    SPtr<TAddrClient> client = SrvAddrMgr().getClient(optDUID->getDUID());
 		    if (client)
 			client->setSPI(SPI);
 		}
@@ -278,21 +277,6 @@ TSrvMsg::TSrvMsg(SPtr<TSrvIfaceMgr> IfaceMgr,
         pos+=length;
     }
 
-}
-
-void TSrvMsg::setAttribs(SPtr<TSrvIfaceMgr> IfaceMgr, 
-                         SPtr<TSrvTransMgr> TransMgr, 
-                         SPtr<TSrvCfgMgr> CfgMgr,
-                         SPtr<TSrvAddrMgr> AddrMgr)
-{
-    SrvTransMgr=TransMgr;	
-    SrvIfaceMgr=IfaceMgr;	
-    SrvCfgMgr=CfgMgr;
-    SrvAddrMgr=AddrMgr;
-    FirstTimeStamp = now();
-    this->MRT=0;
-    KeyGenNonce = NULL;
-    KeyGenNonceLen = 0;
 }
 
 void TSrvMsg::doDuties() {
@@ -333,7 +317,7 @@ void TSrvMsg::send()
     SPtr<TSrvOptGeneric> gen;
     SPtr<TSrvIfaceIface> ptrIface;
     SPtr<TSrvIfaceIface> under;
-    ptrIface = (Ptr*) SrvIfaceMgr->getIfaceByID(this->Iface);
+    ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(this->Iface);
     Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getName() << "/" << this->Iface
 		<< hex << ",transID=0x" << this->getTransID() << dec << ", opts:";
     SPtr<TOpt> ptrOpt;
@@ -355,7 +339,7 @@ void TSrvMsg::send()
 	len[Relays-1]=this->getSize();
 	for (int i=this->Relays-1; i>0; i--) {
 	    len[i-1]= len[i] + 38; // 34 bytes (relay header) + 4 bytes (relay-msg option header)
-	    if (this->InterfaceIDTbl[i] && (SrvCfgMgr->getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
+	    if (this->InterfaceIDTbl[i] && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
 		len[i-1]+=this->InterfaceIDTbl[i]->getSize();
 
 		EchoListTbl[i].first();
@@ -367,7 +351,7 @@ void TSrvMsg::send()
 	}
 
 	// recursive storeSelf
-	offset += storeSelfRelay(buf, 0, SrvCfgMgr->getInterfaceIDOrder() );
+	offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder() );
 
 	// check if there are underlaying interfaces
 	for (int i=0; i < this->Relays; i++) {
@@ -384,7 +368,7 @@ void TSrvMsg::send()
     } else {
 	offset += this->storeSelf(buf+offset);
     }
-    this->SrvIfaceMgr->send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+    SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
 }
 
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
@@ -480,7 +464,7 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
         return;
     }
 
-    DigestType = SrvCfgMgr->getDigest();
+    DigestType = SrvCfgMgr().getDigest();
     if (DigestType == DIGEST_NONE) {
         // Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
         return;
@@ -489,7 +473,7 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
     Log(Debug) << "Auth: Setting DigestType to: " << this->DigestType << LogEnd;
 
     if (!getOption(OPTION_AUTH)) {
-        SPtr<TAddrClient> client = SrvAddrMgr->getClient(duid);
+        SPtr<TAddrClient> client = SrvAddrMgr().getClient(duid);
         if (client && !client->getSPI() && this->getSPI())
             client->setSPI(this->getSPI());
 
@@ -517,10 +501,10 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 {
     bool newOptionAssigned = false;
     // client didn't want any option? Or maybe we're not supporting this client?
-    if (!reqOpts->count() || !SrvCfgMgr->isClntSupported(duid,addr,iface))
+    if (!reqOpts->count() || !SrvCfgMgr().isClntSupported(duid,addr,iface))
 	return false;
 
-    SPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr->getIfaceByID(iface);
+    SPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr().getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Unable to find interface (ifindex=" << iface << "). Something is wrong." << LogEnd;
 	return false;
@@ -673,7 +657,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     // --- option: KEYGEN ---
 #ifndef MOD_DISABLE_AUTH
-    if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr->getDigest() != DIGEST_NONE ) { // && this->MsgType == ADVERTISE_MSG ) {
+    if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE ) { // && this->MsgType == ADVERTISE_MSG ) {
         	SPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
         	Options.append( (Ptr*)optKeyGeneration);
     }
@@ -714,7 +698,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 				       SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate) {
 
     SPtr<TSrvOptFQDN> optFQDN;
-    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr->getIfaceByID( this->Iface );
+    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID( this->Iface );
     if (!ptrIface) {
 	      Log(Crit) << "Msg received through not configured interface. "
 	          "Somebody call an exorcist!" << LogEnd;
@@ -779,7 +763,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	      DNSSrvLst.first();
 	      DNSAddr = DNSSrvLst.get();
       	
-	      SPtr<TAddrClient> ptrAddrClient = SrvAddrMgr->getClient(clntDuid);	
+	      SPtr<TAddrClient> ptrAddrClient = SrvAddrMgr().getClient(clntDuid);	
 	      if (!ptrAddrClient) { 
 	          Log(Warning) << "Unable to find client."; 
 	          return 0;
@@ -904,7 +888,7 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 
     SPtr<TSrvOptServerIdentifier> optSrvID = (Ptr*) this->getOption(OPTION_SERVERID);
     if (optSrvID) {
-	if ( !( *(SrvCfgMgr->getDUID()) == *(optSrvID->getDUID()) ) ) {
+	if ( !( *(SrvCfgMgr().getDUID()) == *(optSrvID->getDUID()) ) ) {
 	    Log(Debug) << "Wrong ServerID value detected. This message is not for me. Message ignored." << LogEnd;
 	    return false;
 	}
@@ -915,7 +899,7 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 
 bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt)
 {
-    SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr->getIfaceByID(iface);
+    SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
 	return false;
@@ -950,23 +934,18 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSr
     return false;
 }
 
-SPtr<TSrvTransMgr> TSrvMsg::getSrvTransMgr()
-{
-    return this->SrvTransMgr;
-}
-
 bool TSrvMsg::validateReplayDetection() {
 
 #ifndef MOD_DISABLE_AUTH
     if (this->MsgType == SOLICIT_MSG)
         return true;
 
-    if (SrvCfgMgr->getDigest() ==  DIGEST_NONE) {
+    if (SrvCfgMgr().getDigest() ==  DIGEST_NONE) {
         // Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
         return true;
     }
 
-    SPtr<TAddrClient> client = SrvAddrMgr->getClient(SPI);
+    SPtr<TAddrClient> client = SrvAddrMgr().getClient(SPI);
     if (!client) {
         Log(Debug) << "Auth: Unable to find client with SPI=" << SPI << "." << LogEnd;
         return true;
