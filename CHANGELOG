@@ -5,10 +5,10 @@
   - Linux: CONFIRM support added
   - It is now possible to configure IAID
   - Support for Mac OS X added (experimental, of course)
-
- ----
-  - OptPreference class removed
-  - tunnel endpoint removed
+  - Fixed problem with not populating AddrMgr correctly
+  - Code cleanup: Obsolete OptPreference class removed
+  - Code cleanup: Singleton managers implemented
+  - Code cleanup: Osbolete tunnel endpoint removed
 
  0.7.3 [2009-03-09]
   - Linux: Fix for compilation with libc6, version 2.8

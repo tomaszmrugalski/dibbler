@@ -70,6 +70,9 @@ TClntTransMgr::TClntTransMgr(const std::string config)
     SPtr<TClntCfgIface> iface;
     ClntCfgMgr().firstIface();
     while(iface=ClntCfgMgr().getIface()) {
+	if (!populateAddrMgr(iface))
+	    return;
+
         if (!this->openSocket(iface)) {
             return;
         }
@@ -80,20 +83,44 @@ TClntTransMgr::TClntTransMgr(const std::string config)
     IsDone = false;
 }
 
-bool TClntTransMgr::openSocket(SPtr<TClntCfgIface> iface) {
 
-    if (iface->noConfig())       
-        return true;
-
+bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
+{
     // create IAs in AddrMgr corresponding to those specified in CfgMgr.
     SPtr<TClntCfgIA> ia;
     iface->firstIA();
     while(ia=iface->getIA()) {
         SPtr<TAddrIA> addrIA = new TAddrIA(iface->getID(), TAddrIA::TYPE_IA,
-                                           0, 0, CLIENT_DEFAULT_T1, CLIENT_DEFAULT_T2,
+                                           0, 0, ia->getT1(), ia->getT2(),
                                            ia->getIAID());
         ClntAddrMgr().addIA(addrIA);
     }
+
+    SPtr<TClntCfgTA> ta;
+    iface->firstTA();
+    if (ta = iface->getTA())
+    {
+	SPtr<TAddrIA> addrTA = new TAddrIA(iface->getID(), TAddrIA::TYPE_TA,
+					   0, 0, DHCPV6_INFINITY, DHCPV6_INFINITY,
+					   ta->getIAID());
+	ClntAddrMgr().addTA(addrTA);
+    }
+    SPtr<TClntCfgPD> pd;
+    iface->firstPD();
+    while (pd = iface->getPD()) {
+	SPtr<TAddrIA> addrPD = new TAddrIA(iface->getID(), TAddrIA::TYPE_PD,
+					   0, 0, pd->getT1(), pd->getT2(),
+					   pd->getIAID());
+	ClntAddrMgr().addPD(addrPD);
+    }
+
+    return true;
+}
+
+bool TClntTransMgr::openSocket(SPtr<TClntCfgIface> iface) {
+
+    if (iface->noConfig())       
+        return true;
     
     // open socket
     SPtr<TIfaceIface> realIface = ClntIfaceMgr().getIfaceByID(iface->getID());
@@ -604,7 +631,7 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SPtr<TAddrIA> ta, List(TAd
     }
 
     SPtr<TClntCfgIface> ptrIface = ClntCfgMgr().getIface(iface);
-    if (!iface) {
+    if (!ptrIface) {
 	    Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
 	    return;
     }

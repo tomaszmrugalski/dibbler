@@ -66,6 +66,8 @@ class TClntTransMgr
   private:
     bool openLoopbackSocket();
     bool openSocket(SPtr<TClntCfgIface> iface);
+    bool populateAddrMgr(SPtr<TClntCfgIface> iface);
+
     void sortAdvertiseLst();
     void printLst(List(TMsg) lst);
 

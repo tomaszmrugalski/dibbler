@@ -180,6 +180,8 @@ public:
     EState getAuthenticationState();
     void setAuthenticationState(EState state);
 
+    EDsLiteTunnelMode getDsLiteTunnelMode();
+
 private:
     void setDefaults();
     string IfaceName;

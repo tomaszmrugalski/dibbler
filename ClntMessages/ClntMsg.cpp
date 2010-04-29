@@ -588,6 +588,18 @@ void TClntMsg::appendRequestedOptions() {
 	}
     }
 
+    // --- option: DS-LITE ---
+    if (iface->getDsLiteTunnelMode()==TUNNEL_ADDR ||
+	iface->getDsLiteTunnelMode()==TUNNEL_BOTH)
+    {
+	optORO->addOption(OPTION_DS_LITE_ADDR);
+    }
+    if (iface->getDsLiteTunnelMode()==TUNNEL_NAME || 
+	iface->getDsLiteTunnelMode()==TUNNEL_BOTH)
+    {
+	optORO->addOption(OPTION_DS_LITE_NAME);
+    }
+
     // --- option: ADDRPARAMS ---
     SPtr<TClntCfgIA> ia;
     iface->firstIA();

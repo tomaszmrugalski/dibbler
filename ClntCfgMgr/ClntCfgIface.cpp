@@ -115,6 +115,10 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
 	this->RejectedSrvLst.append(station);
 }
 
+EDsLiteTunnelMode TClntCfgIface::getDsLiteTunnelMode() {
+    return DsLiteTunnelMode;
+}
+
 bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
 {
     this->RejectedSrvLst.first();
@@ -170,7 +174,7 @@ SPtr<TClntCfgIA> TClntCfgIface::getIA(int iaid)
     return 0;
 }
 
- void TClntCfgIface::addIA(SPtr<TClntCfgIA> ptr)
+void TClntCfgIface::addIA(SPtr<TClntCfgIA> ptr)
 {
     IALst.append(ptr);
 }
