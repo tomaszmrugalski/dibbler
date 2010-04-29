@@ -33,8 +33,8 @@
 
 // --- options ---
 
-TRelMsgRelayForw::TRelMsgRelayForw(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
-    :TRelMsg(ctx, iface, addr, 0, 0) // 0,0 - avoid decoding anything
+TRelMsgRelayForw::TRelMsgRelayForw(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
+    :TRelMsg(iface, addr, 0, 0) // 0,0 - avoid decoding anything
 {
     this->MsgType = RELAY_FORW_MSG;
     if (dataLen < MIN_RELAYFORW_LEN) {

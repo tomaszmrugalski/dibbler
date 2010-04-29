@@ -5,11 +5,8 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelIfaceMgr.cpp,v 1.18 2008-08-29 00:07:32 thomson Exp $
- *
  */
 
-#include "RelCommon.h"
 #include "Logger.h"
 #include "IPv6Addr.h"
 #include "Iface.h"
@@ -20,6 +17,8 @@
 #include "RelMsgRelayForw.h"
 #include "RelMsgRelayRepl.h"
 #include "RelOptInterfaceID.h"
+
+TRelIfaceMgr * TRelIfaceMgr::Instance = 0;
 
 /*
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
@@ -127,7 +126,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> iface,
 						SPtr<TIPv6Addr> peer, 
 						char * data, int dataLen) {
     int ifindex = iface->getID();
-    SPtr<TRelMsg> msg = new TRelMsgRelayForw(this->Ctx, ifindex, peer, data, dataLen);
+    SPtr<TRelMsg> msg = new TRelMsgRelayForw(ifindex, peer, data, dataLen);
     return msg;
 }
 
@@ -135,7 +134,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SPtr<TIfaceIface> iface,
 					      SPtr<TIPv6Addr> peer, 
 					      char * buf, int bufsize) {
     int ifindex = iface->getID();
-    return new TRelMsgGeneric(this->Ctx, ifindex, peer, buf, bufsize);
+    return new TRelMsgGeneric(ifindex, peer, buf, bufsize);
 }
 
 SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface, 
@@ -198,7 +197,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 	    bufsize -= relayLen;
 	    break;
 	default:
-	    SPtr<TRelOptEcho> echo = Ctx->CfgMgr->getEcho();
+	    SPtr<TRelOptEcho> echo = RelCfgMgr().getEcho();
 	    if (echo && echo->isOption(code)) {
 		Log(Notice) << "Received echoed back option " << code << "." << LogEnd;
 	    } else {
@@ -216,7 +215,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
     Log(Cont) << LogEnd;
 
     if (!ptrIfaceID) {
-	if (!Ctx->CfgMgr->guessMode()) {
+	if (!RelCfgMgr().guessMode()) {
 	    /* guessMode disabled */
 	    Log(Warning) << "InterfaceID option is missing, guessMode disabled, unable to forward. Packet dropped." << LogEnd;
 	    return 0;
@@ -224,8 +223,8 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 
 	/* guess mode enabled, let's find any interface */
 	SPtr<TRelCfgIface> tmp;
-	Ctx->CfgMgr->firstIface();
-	while (tmp = Ctx->CfgMgr->getIface()) {
+	RelCfgMgr().firstIface();
+	while (tmp = RelCfgMgr().getIface()) {
 	    if (tmp->getID() == iface->getID()) 
 		continue; // skip the interface we've received the data on
 	    break;
@@ -248,7 +247,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
     switch (relayBuf[0]) {
     case RELAY_REPL_MSG:
 	//msg = this->decodeRelayRepl(iface, peer, buf, bufsize);
-	msg = new TRelMsgRelayRepl(this->Ctx, iface->getID(), peer, relayBuf, relayLen);
+	msg = new TRelMsgRelayRepl(iface->getID(), peer, relayBuf, relayLen);
 	break;
     case RELAY_FORW_MSG:
 	Log(Error) << "RELAY_REPL contains RELAY_FORW message." << LogEnd;
@@ -291,9 +290,18 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
     }
 }
 
-void TRelIfaceMgr::setContext(TCtx *ctx)
+void TRelIfaceMgr::instanceCreate( const std::string xmlFile )
 {
-    this->Ctx = ctx;
+    if (Instance)
+      Log(Crit) << "RelIfaceMgr instance already created. Application error!" << LogEnd;
+    Instance = new TRelIfaceMgr(xmlFile);
+}
+
+TRelIfaceMgr& TRelIfaceMgr::instance()
+{
+    if (!Instance)
+      Log(Crit) << "RelIfaceMgr istance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    return *Instance;
 }
 
 ostream & operator <<(ostream & strum, TRelIfaceMgr &x) {

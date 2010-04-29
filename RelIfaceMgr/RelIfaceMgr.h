@@ -6,21 +6,21 @@
  *
  * released under GNU GPL v2 only licence
  *
- *
  */
 
-class TSrvIfaceMgr;
 #ifndef RELIFACEMGR_H
 #define RELIFACEMGR_H
 
-#include "RelCommon.h"
 #include "RelMsg.h"
 #include "IfaceMgr.h"
 #include "Iface.h"
 
+#define RelIfaceMgr() (TRelIfaceMgr::instance())
+
 class TRelIfaceMgr: public TIfaceMgr {
  public:
-    TRelIfaceMgr(string xmlFile);
+   static void instanceCreate(const std::string xmlFile);
+   static TRelIfaceMgr& instance();
     ~TRelIfaceMgr();
     friend ostream & operator <<(ostream & strum, TRelIfaceMgr &x);
 
@@ -44,10 +44,10 @@ class TRelIfaceMgr: public TIfaceMgr {
     
     // ---receives messages---
     SPtr<TRelMsg> select(unsigned long timeout);
-    void setContext(TCtx *ctx);
 
   private:
-    TCtx * Ctx;
+    TRelIfaceMgr(string xmlFile);
+    static TRelIfaceMgr * Instance;
 };
 
 #endif 

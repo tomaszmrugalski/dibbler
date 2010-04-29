@@ -26,11 +26,11 @@
 #include "RelOptGeneric.h"
 
 //Constructor builds message on the basis of received message
-TRelMsg::TRelMsg(TCtx * ctx, int iface,  SPtr<TIPv6Addr> addr, char* data,  int dataLen)
+TRelMsg::TRelMsg(int iface,  SPtr<TIPv6Addr> addr, char* data,  int dataLen)
     :TMsg(iface, addr, data, dataLen) {
     // data+=4, dataLen-=4 is modified in TMsg
     if (dataLen<=0) // avoid decoding of empty messages.
-	return;
+        return;
 
     this->HopCount = 0;
     this->decodeOpts(data, dataLen);

@@ -23,18 +23,19 @@ class TRelTransMgr;
 #define RELTRANSMGR_H
 
 #include <iostream>
-#include "RelCommon.h"
 #include "SmartPtr.h"
 #include "RelCfgIface.h"
 #include "RelMsg.h"
 
-using namespace std;
+#define RelTransMgr() (TRelTransMgr::instance())
 
 class TRelTransMgr
 {
     friend ostream & operator<<(ostream &strum, TRelTransMgr &x);
   public:
-    TRelTransMgr(TCtx * ctx, string xmlFile);
+    static void instanceCreate(const std::string xmlFile);
+    static TRelTransMgr& instance();
+
     ~TRelTransMgr();
 
     bool openSocket(SPtr<TRelCfgIface> confIface);
@@ -52,7 +53,8 @@ class TRelTransMgr
     int    getCtrlIface();
     
   private:
-    TCtx * Ctx;
+    TRelTransMgr(const std::string xmlFile);
+    static TRelTransMgr * Instance;
     string XmlFile;
     bool IsDone;
 

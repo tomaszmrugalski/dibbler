@@ -35,8 +35,8 @@ int TRelMsgRelayRepl::getSize() {
     return pktsize + MIN_RELAYREPL_LEN;
 }
 
-TRelMsgRelayRepl::TRelMsgRelayRepl(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
-    :TRelMsg(ctx, iface, addr, 0, 0) // 0,0 - avoid decoding anything
+TRelMsgRelayRepl::TRelMsgRelayRepl(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
+    :TRelMsg(iface, addr, 0, 0) // 0,0 - avoid decoding anything
 {
     this->MsgType = RELAY_REPL_MSG;
     if (dataLen < MIN_RELAYREPL_LEN) {

@@ -32,8 +32,8 @@
 
 using namespace std;
 
-TRelMsgGeneric::TRelMsgGeneric(TCtx * ctx, int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
-    :TRelMsg(ctx, iface, addr, data, dataLen) {
+TRelMsgGeneric::TRelMsgGeneric(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen)
+    :TRelMsg(iface, addr, data, dataLen) {
 
 }
 

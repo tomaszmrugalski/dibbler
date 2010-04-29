@@ -12,30 +12,26 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "RelCommon.h"
-
-using namespace std;
-
 #include "IfaceMgr.h"
 #include "RelIfaceMgr.h"
 #include "RelCfgIface.h"
-
 #include "FlexLexer.h"
 #include "RelParser.h"
 #include "RelCfgMgr.h"
 
+using namespace std;
+
 int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
-TRelCfgMgr::TRelCfgMgr(TCtx ctx, string cfgFile, string xmlFile)
-    :TCfgMgr()
-{
-    this->Ctx = ctx;
-    this->XmlFile = xmlFile;
+TRelCfgMgr * TRelCfgMgr::Instance = 0;
 
+TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
+    :TCfgMgr(), XmlFile(xmlFile)
+{
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
-	this->IsDone = true;
-	return;
+        this->IsDone = true;
+        return;
     }
 
     this->dump();
@@ -259,6 +255,20 @@ SPtr<TRelOptRemoteID> TRelCfgMgr::getRemoteID()
 SPtr<TRelOptEcho> TRelCfgMgr::getEcho()
 {
     return Echo;
+}
+
+void TRelCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlFile )
+{
+    if (Instance)
+        Log(Crit) << "RelCfgMgr instance already created. Application error!" << LogEnd;
+    Instance = new TRelCfgMgr(cfgFile, xmlFile);
+}
+
+TRelCfgMgr& TRelCfgMgr::instance()
+{
+    if (!Instance)
+        Log(Crit) << "RelCfgMgr instance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    return *Instance;
 }
 
 // --------------------------------------------------------------------

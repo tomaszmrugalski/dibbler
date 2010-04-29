@@ -19,7 +19,6 @@
 
 #include <iostream>
 #include <string>
-#include "RelCommon.h"
 
 using namespace std;
 
@@ -36,7 +35,6 @@ class TDHCPRelay
 
   private:
     bool IsDone;
-    TCtx Ctx;
 };
 
 #endif

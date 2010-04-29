@@ -6,15 +6,11 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgMgr.h,v 1.8 2008-08-29 00:07:32 thomson Exp $
- *
  */
 
-class TRelCfgMgr;
 #ifndef RELCFGMGR_H
 #define RELCFGMGR_H
 
-#include "RelCommon.h"
 #include "RelCfgIface.h"
 
 #include "CfgMgr.h"
@@ -22,16 +18,20 @@ class TRelCfgMgr;
 #include "RelOptRemoteID.h"
 #include "RelOptEcho.h"
 
+#define RelCfgMgr() (TRelCfgMgr::instance())
+
 class TRelCfgMgr : public TCfgMgr
 {
 public:  
-    friend ostream & operator<<(ostream &strum, TRelCfgMgr &x);
-    TRelCfgMgr(TCtx ctx, string cfgFile, string xmlFile);
+    friend ostream & operator<<(std::ostream &strum, TRelCfgMgr &x);
     virtual ~TRelCfgMgr();
 
-    bool parseConfigFile(string cfgFile);
+    static void instanceCreate(const std::string cfgFile, const std::string xmlFile);
+    static TRelCfgMgr& instance();
 
-    //Interfaces acccess methods
+    bool parseConfigFile(const std::string cfgFile);
+
+    //Interfaces access methods
     void firstIface();
     SPtr<TRelCfgIface> getIface();
     SPtr<TRelCfgIface> getIfaceByID(int iface);
@@ -54,8 +54,10 @@ public:
     SPtr<TRelOptEcho>     getEcho();
 
 private:    
-    TCtx Ctx;
-    string XmlFile;
+    static TRelCfgMgr * Instance;
+    TRelCfgMgr(const std::string cfgFile, const std::string xmlFile);
+
+    std::string XmlFile;
 
     static int NextRelayID;
 
@@ -67,7 +69,7 @@ private:
     bool matchParsedSystemInterfaces(List(TRelCfgIface) * lst);
 
     // global options
-    string Workdir;
+    std::string Workdir;
     bool GuessMode;
     ERelIfaceIdOrder InterfaceIDOrder;
 

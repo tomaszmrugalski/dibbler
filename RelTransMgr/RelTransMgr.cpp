@@ -21,21 +21,19 @@
 #include "RelOptGeneric.h"
 #include "Logger.h"
 
-TRelTransMgr::TRelTransMgr(TCtx * ctx, string xmlFile)
-{
-    // remember context
-    this->Ctx = ctx;
-    this->IsDone = false; // TransMgr is certainly not done yet. We're just getting started
-    this->XmlFile = xmlFile;
+TRelTransMgr * TRelTransMgr::Instance = 0; // singleton implementation
 
+TRelTransMgr::TRelTransMgr(const std::string xmlFile)
+:IsDone(false), XmlFile(xmlFile)
+{
     // for each interface in CfgMgr, create socket (in IfaceMgr)
     SPtr<TRelCfgIface> confIface;
-    this->Ctx->CfgMgr->firstIface();
-    while (confIface=this->Ctx->CfgMgr->getIface()) {
-	if (!this->openSocket(confIface)) {
-	    this->IsDone = true;
-	    break;
-	}
+    RelCfgMgr().firstIface();
+    while (confIface=RelCfgMgr().getIface()) {
+        if (!this->openSocket(confIface)) {
+            this->IsDone = true;
+            break;
+        }
     }
 }
 
@@ -44,7 +42,7 @@ TRelTransMgr::TRelTransMgr(TCtx * ctx, string xmlFile)
  */
 bool TRelTransMgr::openSocket(SPtr<TRelCfgIface> cfgIface) {
 
-    SPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(cfgIface->getID());
+    SPtr<TIfaceIface> iface = RelIfaceMgr().getIfaceByID(cfgIface->getID());
     if (!iface) {
 	Log(Crit) << "Unable to find " << cfgIface->getName() << "/" << cfgIface->getID()
 		  << " interface in the IfaceMgr." << LogEnd;
@@ -121,7 +119,7 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     }
 
     // prepare message
-    SPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(msg->getIface());
+    SPtr<TIfaceIface> iface = RelIfaceMgr().getIfaceByID(msg->getIface());
     SPtr<TIPv6Addr> addr;
 
     // store header
@@ -144,10 +142,10 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     offset += 16;
 
     SPtr<TRelCfgIface> cfgIface;
-    cfgIface = this->Ctx->CfgMgr->getIfaceByID(msg->getIface());
+    cfgIface = RelCfgMgr().getIfaceByID(msg->getIface());
     TRelOptInterfaceID ifaceID(cfgIface->getInterfaceID(), 0);
 
-    if (Ctx->CfgMgr->getInterfaceIDOrder()==REL_IFACE_ID_ORDER_BEFORE)
+    if (RelCfgMgr().getInterfaceIDOrder()==REL_IFACE_ID_ORDER_BEFORE)
     {
 	// store InterfaceID option
 	ifaceID.storeSelf(buf + offset);
@@ -163,7 +161,7 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     bufLen = msg->storeSelf(buf+offset);
     offset += bufLen;
 
-    if (Ctx->CfgMgr->getInterfaceIDOrder()==REL_IFACE_ID_ORDER_AFTER)
+    if (RelCfgMgr().getInterfaceIDOrder()==REL_IFACE_ID_ORDER_AFTER)
     {
 	// store InterfaceID option
 	ifaceID.storeSelf(buf + offset);
@@ -171,13 +169,13 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
 	Log(Debug) << "Interface-id option added after relayed message." << LogEnd;
     }
 
-    if (Ctx->CfgMgr->getInterfaceIDOrder()==REL_IFACE_ID_ORDER_NONE)
+    if (RelCfgMgr().getInterfaceIDOrder()==REL_IFACE_ID_ORDER_NONE)
     {
 	Log(Warning) << "Interface-id option not added (interface-id-order omit used in relay.conf). "
 		     << "That is a debugging feature and violates RFC3315. Use with caution." << LogEnd;
     }
 
-    SPtr<TRelOptRemoteID> remoteID = Ctx->CfgMgr->getRemoteID();
+    SPtr<TRelOptRemoteID> remoteID = RelCfgMgr().getRemoteID();
     if (remoteID) {
 	remoteID->storeSelf(buf+offset);
 	offset += remoteID->getSize();
@@ -185,7 +183,7 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
 		   << remoteID->getSize() << ")." << LogEnd;
     }
 
-    SPtr<TRelOptEcho> echo = Ctx->CfgMgr->getEcho();
+    SPtr<TRelOptEcho> echo = RelCfgMgr().getEcho();
     if (echo) {
 	echo->storeSelf(buf+offset);
 	offset += echo->getSize();
@@ -206,14 +204,14 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
 	Log(Cont) << " opt(s)." << LogEnd;
     }
 
-    this->Ctx->CfgMgr->firstIface();
-    while (cfgIface = this->Ctx->CfgMgr->getIface()) {
+    RelCfgMgr().firstIface();
+    while (cfgIface = RelCfgMgr().getIface()) {
 	if (cfgIface->getServerUnicast()) {
 	    Log(Notice) << "Relaying encapsulated " << msg->getName() << " message on the " << cfgIface->getFullName()
 			<< " interface to unicast (" << cfgIface->getServerUnicast()->getPlain() << ") address, port " 
 			<< DHCPSERVER_PORT << "." << LogEnd;
 
-	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
+	    if (!RelIfaceMgr().send(cfgIface->getID(), buf, offset, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data to server unicast address." << LogEnd;
 	    }
 					   
@@ -223,25 +221,25 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
 	    Log(Notice) << "Relaying encapsulated " << msg->getName() << " message on the " << cfgIface->getFullName()
 			<< " interface to multicast (" << addr->getPlain() << ") address, port " 
 			<< DHCPSERVER_PORT << "." << LogEnd;
-	    if (!this->Ctx->IfaceMgr->send(cfgIface->getID(), buf, offset, addr, DHCPSERVER_PORT)) {
+	    if (!RelIfaceMgr().send(cfgIface->getID(), buf, offset, addr, DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data to server multicast address." << LogEnd;
 	    }
 	}
     }
 
     // save DB state regardless of action taken
-    this->Ctx->CfgMgr->dump();
+    RelCfgMgr().dump();
 }	
 
 void TRelTransMgr::relayMsgRepl(SPtr<TRelMsg> msg) {
     int port;
-    SPtr<TRelCfgIface> cfgIface = this->Ctx->CfgMgr->getIfaceByInterfaceID(msg->getDestIface());
+    SPtr<TRelCfgIface> cfgIface = RelCfgMgr().getIfaceByInterfaceID(msg->getDestIface());
     if (!cfgIface) {
 	Log(Error) << "Unable to relay message: Invalid interfaceID value:" << msg->getDestIface() << LogEnd;
 	return;
     }
 
-    SPtr<TIfaceIface> iface = this->Ctx->IfaceMgr->getIfaceByID(cfgIface->getID());
+    SPtr<TIfaceIface> iface = RelIfaceMgr().getIfaceByID(cfgIface->getID());
     SPtr<TIPv6Addr> addr = msg->getDestAddr();
     static char buf[MAX_PACKET_LEN];
     int bufLen;
@@ -260,7 +258,7 @@ void TRelTransMgr::relayMsgRepl(SPtr<TRelMsg> msg) {
     Log(Notice) << "Relaying decapsulated " << msg->getName() << " message on the " << iface->getFullName()
 		<< " interface to the " << addr->getPlain() << ", port " << port << "." << LogEnd;
 
-    if (!this->Ctx->IfaceMgr->send(iface->getID(), buf, bufLen, addr, port)) {
+    if (!RelIfaceMgr().send(iface->getID(), buf, bufLen, addr, port)) {
 	Log(Error) << "Failed to decapsulated data." << LogEnd;
     }
     
@@ -295,6 +293,21 @@ void TRelTransMgr::dump() {
 
 TRelTransMgr::~TRelTransMgr() {
     Log(Debug) << "RelTransMgr cleanup." << LogEnd;
+}
+
+void TRelTransMgr::instanceCreate( const std::string xmlFile )
+{
+  if (Instance)
+      Log(Crit) << "RelTransMgr instance already created. Application error!" << LogEnd;
+  Instance = new TRelTransMgr(xmlFile);
+
+}
+
+TRelTransMgr& TRelTransMgr::instance()
+{
+    if (!Instance)
+        Log(Crit) << "RelTransMgr istance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    return *Instance;
 }
 
 
