@@ -107,10 +107,10 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     void setDsLiteTunnelMode(EDsLiteTunnelMode mode);
     EDsLiteTunnelMode getDsLiteTunnelMode();
 
-	void setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr);
-	SPtr<TIPv6Addr> getDsLiteTunnelAddr();
-	void setDsLiteTunnelName(SPtr<TOpt> name);
-	SPtr<TOpt> getDsLiteTunnelName();
+/*     void setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr); */
+/*     SPtr<TIPv6Addr> getDsLiteTunnelAddr(); */
+/*     void setDsLiteTunnelName(SPtr<TOpt> name); */
+/*     SPtr<TOpt> getDsLiteTunnelName(); */
 
 private:
     bool NoIAs;

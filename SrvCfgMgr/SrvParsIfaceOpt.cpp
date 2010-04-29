@@ -18,7 +18,7 @@
 #include "Logger.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
-:DsLiteTunnelName(0), DsLiteTunnelAddr(0)
+ :DsLiteTunnelAddr(0), DsLiteTunnelName(0)
 {
     this->Unicast       = 0;
     this->Preference    = SERVER_DEFAULT_PREFERENCE;

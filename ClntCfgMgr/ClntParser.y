@@ -41,9 +41,9 @@ List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-TContainer<SmartPtr<TStationID> > PresentStationLst;                        \
-TContainer<SmartPtr<TIPv6Addr> > PresentAddrLst;                            \
-TContainer<SmartPtr<string> > PresentStringLst;                             \
+TContainer<SPtr<TStationID> > PresentStationLst;                        \
+TContainer<SPtr<TIPv6Addr> > PresentAddrLst;                            \
+TContainer<SPtr<string> > PresentStringLst;                             \
 List(TClntOptVendorSpec) VendorSpec;					                    \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
@@ -114,7 +114,7 @@ namespace std
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, MAPPING_PREFIX__, DS_LITE_TUNNEL_
+%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_
 %type  <ival> Number
 
 %%
@@ -151,7 +151,6 @@ GlobalOptionDeclaration
 | InsistMode
 | FQDNBits
 | Experimental
-| ExperimentalMappingPrefix
 | SkipConfirm
 | NotifyScripts
 ;
@@ -259,7 +258,7 @@ InterfaceDeclarationsList '}'
 |IFACE_ Number NO_CONFIG_
 {
     CheckIsIface($2);
-    ClntCfgIfaceLst.append(SmartPtr<TClntCfgIface> (new TClntCfgIface($2)) );
+    ClntCfgIfaceLst.append(SPtr<TClntCfgIface> (new TClntCfgIface($2)) );
     ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
     ClntCfgIfaceLst.getLast()->setNoConfig();
 }
@@ -385,13 +384,13 @@ IADeclarationList
 ADDRESDeclaration
 : ADDRES_ '{' 
 {
-    SmartPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
-    SmartPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
+    SPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
+    SPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
     ParserOptStack.append(newOpt);
 }
 ADDRESDeclarationList '}'
 {
-    //ClntCfgAddrLst.append(SmartPtr<TClntCfgAddr> (new TClntCfgAddr()));
+    //ClntCfgAddrLst.append(SPtr<TClntCfgAddr> (new TClntCfgAddr()));
     //set proper options specific for this Address
     //ClntCfgAddrLst.getLast()->setOptions(&(*ParserOptStack.getLast()));
     if (ParserOptStack.count())
@@ -536,12 +535,12 @@ DigestList
 ;
 
 Digest
-: DIGEST_HMAC_MD5_    { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA1_   { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA224_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA256_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA384_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA512_ { SmartPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); }
+: DIGEST_HMAC_MD5_    { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA1_   { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA224_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA256_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA384_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); }
+| DIGEST_HMAC_SHA512_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); }
 ; 
 
 AnonInfRequest
@@ -567,17 +566,6 @@ Experimental
 {
     Log(Crit) << "Experimental features are allowed." << LogEnd;
     ParserOptStack.getLast()->setExperimental();
-};
-
-ExperimentalMappingPrefix
-: MAPPING_PREFIX_
-{
-    if (!ParserOptStack.getLast()->getExperimental()) {
-	Log(Crit) << "Experimental 'mapping-prefix' defined, but experimental features are disabled."
-		  << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
-	YYABORT;
-    }
-    ParserOptStack.getLast()->setMappingPrefix(true);
 };
 
 RejectServersOption
@@ -717,30 +705,30 @@ UnicastOption
 ADDRESDUIDList
 : IPV6ADDR_   
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr($1))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr($1))));
 }
 | DUID_
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TDUID($1.duid,$1.length))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TDUID($1.duid,$1.length))));
 }
 | ADDRESDUIDList ',' IPV6ADDR_
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID(new TIPv6Addr($3))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr($3))));
 }
 | ADDRESDUIDList ',' DUID_
 {
-    PresentStationLst.append(SmartPtr<TStationID> (new TStationID( new TDUID($3.duid,$3.length))));
+    PresentStationLst.append(SPtr<TStationID> (new TStationID( new TDUID($3.duid,$3.length))));
 }
 ;
 
 ADDRESSList
-: IPV6ADDR_   {PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr($1)));}
-| ADDRESSList ',' IPV6ADDR_   {PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr($3)));}
+: IPV6ADDR_   {PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr($1)));}
+| ADDRESSList ',' IPV6ADDR_   {PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr($3)));}
 ;
 
 StringList
-: STRING_ { PresentStringLst.append(SmartPtr<string> (new string($1))); }
-| StringList ',' STRING_ { PresentStringLst.append(SmartPtr<string> (new string($3))); }
+: STRING_ { PresentStringLst.append(SPtr<string> (new string($1))); }
+| StringList ',' STRING_ { PresentStringLst.append(SPtr<string> (new string($3))); }
 
 Number
 :  HEXNUMBER_ {$$=$1;}
@@ -754,7 +742,7 @@ DNSServerOption
 :OPTION_ DNS_SERVER_ 
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 }
 |OPTION_ DNS_SERVER_ 
@@ -790,7 +778,7 @@ NTPServerOption
 :OPTION_ NTP_SERVER_ 
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
 }
 |OPTION_ NTP_SERVER_ {
@@ -822,7 +810,7 @@ SIPServerOption
 :OPTION_ SIP_SERVER_ 
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setSIPServerLst(&PresentAddrLst);
 }
 |OPTION_ SIP_SERVER_ {
@@ -883,7 +871,7 @@ NISServerOption
 :OPTION_ NIS_SERVER_ 
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 }
 |OPTION_ NIS_SERVER_ {
@@ -901,7 +889,7 @@ NISPServerOption
 : OPTION_ NISP_SERVER_
 {
     PresentAddrLst.clear();
-//    PresentAddrLst.append(SmartPtr<TIPv6Addr> (new TIPv6Addr()));
+//    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 }
 | OPTION_ NISP_SERVER_ {
@@ -976,9 +964,9 @@ VendorSpecList
 ;
 
 DsLiteTunnelOption
-: OPTION_ DS_LITE_TUNNEL_         { ParserOptStack.getLast()->setDsLiteTunnel(TUNNEL_BOTH); }
-| OPTION_ DS_LITE_TUNNEL_ ADDRES_ { ParserOptStack.getLast()->setDsLiteTunnel(TUNNEL_ADDR); }
-| OPTION_ DS_LITE_TUNNEL_ NAME_   { ParserOptStack.getLast()->setDsLiteTunnel(TUNNEL_NAME); }
+: OPTION_ DS_LITE_TUNNEL_         { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_BOTH); }
+| OPTION_ DS_LITE_TUNNEL_ ADDRES_ { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_ADDR); }
+| OPTION_ DS_LITE_TUNNEL_ NAME_   { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_NAME); }
 ;
 %%
 
@@ -997,7 +985,7 @@ DsLiteTunnelOption
  */
 bool ClntParser::CheckIsIface(int ifaceNr)
 {
-  SmartPtr<TClntCfgIface> ptr;
+  SPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) YYABORT;
@@ -1008,7 +996,7 @@ bool ClntParser::CheckIsIface(int ifaceNr)
 //already declared 
 bool ClntParser::CheckIsIface(string ifaceName)
 {
-  SmartPtr<TClntCfgIface> ptr;
+  SPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
   {
@@ -1033,7 +1021,7 @@ void ClntParser::StartIfaceDeclaration()
 
 bool ClntParser::EndIfaceDeclaration()
 {
-    SmartPtr<TClntCfgIface> iface = ClntCfgIfaceLst.getLast();
+    SPtr<TClntCfgIface> iface = ClntCfgIfaceLst.getLast();
     if (!iface) {
 	Log(Crit) << "Internal error: Interface not found. Something is wrong. Very wrong." << LogEnd;
 	return false;
@@ -1059,14 +1047,14 @@ bool ClntParser::EndIfaceDeclaration()
     }
 
     // add all IAs to the interface
-    SmartPtr<TClntCfgIA> ia;
+    SPtr<TClntCfgIA> ia;
     ClntCfgIALst.first();
     while (ia=ClntCfgIALst.get()) {
 	ClntCfgIfaceLst.getLast()->addIA(ia);
     }
     
     //add all TAs to the interface
-    SmartPtr<TClntCfgTA> ptrTA;
+    SPtr<TClntCfgTA> ptrTA;
     ClntCfgTALst.first();
     while ( ptrTA = ClntCfgTALst.get() ) {
 	iface->addTA(ptrTA);
@@ -1117,9 +1105,9 @@ void ClntParser::EndIADeclaration()
     if(!ClntCfgAddrLst.count()) {
 	EmptyIA();
     } else {
-	SmartPtr<TClntCfgIA> ia = new TClntCfgIA();
+	SPtr<TClntCfgIA> ia = new TClntCfgIA();
 	ClntCfgIALst.append(ia);
-	SmartPtr<TClntCfgAddr> ptr;
+	SPtr<TClntCfgAddr> ptr;
 	ClntCfgAddrLst.first();
 	while(ptr=ClntCfgAddrLst.get())
 	    ia->addAddr(ptr);

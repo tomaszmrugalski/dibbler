@@ -242,8 +242,7 @@ private:
     bool ReqPrefixDelegation;
     bool ReqVendorSpec;
 
-	SPtr<TIPv6Addr> DsLiteTunnelAddr;
-	SPtr<TOpt> DsLiteTunnelName;
+    EDsLiteTunnelMode DsLiteTunnelMode;
 };
 
 #endif 

@@ -24,7 +24,7 @@
 TRelTransMgr * TRelTransMgr::Instance = 0; // singleton implementation
 
 TRelTransMgr::TRelTransMgr(const std::string xmlFile)
-:IsDone(false), XmlFile(xmlFile)
+    :XmlFile(xmlFile), IsDone(false)
 {
     // for each interface in CfgMgr, create socket (in IfaceMgr)
     SPtr<TRelCfgIface> confIface;

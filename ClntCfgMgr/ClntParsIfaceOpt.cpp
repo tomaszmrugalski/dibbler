@@ -278,18 +278,18 @@ EDsLiteTunnelMode TClntParsIfaceOpt::getDsLiteTunnelMode() {
     return DsLiteTunnelMode;
 }
 
-void TClntParsIfaceOpt::setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr) {
-	DsLiteTunnelAddr = addr;
-}
+// void TClntParsIfaceOpt::setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr) {
+// 	DsLiteTunnelAddr = addr;
+// }
 
-SPtr<TIPv6Addr> TClntParsIfaceOpt::getDsLiteTunnelAddr() {
-	return DsLiteTunnelAddr;
-}
+// SPtr<TIPv6Addr> TClntParsIfaceOpt::getDsLiteTunnelAddr() {
+// 	return DsLiteTunnelAddr;
+// }
 
-void TClntParsIfaceOpt::setDsLiteTunnelName(SPtr<TOpt> name) {
-	DsLiteTunnelName = name;
-}
+// void TClntParsIfaceOpt::setDsLiteTunnelName(SPtr<TOpt> name) {
+// 	DsLiteTunnelName = name;
+// }
 
-SPtr<TOpt> TClntParsIfaceOpt::getDsLiteTunnelName() {
-	return DsLiteTunnelName;
-}
+// SPtr<TOpt> TClntParsIfaceOpt::getDsLiteTunnelName() {
+// 	return DsLiteTunnelName;
+// }

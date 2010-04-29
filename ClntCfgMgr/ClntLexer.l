@@ -105,7 +105,6 @@ digest-hmac-sha384    { return ClntParser::DIGEST_HMAC_SHA384_; }
 digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
 experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
-mapping-prefix        { return ClntParser::MAPPING_PREFIX_; }
 skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
 ds-lite-tunnel        { return ClntParser::DS_LITE_TUNNEL_; }
 #.* ;

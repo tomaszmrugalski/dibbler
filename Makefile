@@ -177,9 +177,9 @@ relaylibs:	includes
 doc: 
 	cd doc; $(MAKE)
 
-oxygen:
+doxygen:
 	@echo "[DOXYGEN]"
-	doxygen oxygen.cfg >oxygen.log 2>oxygen.err
+	doxygen doxygen.cfg >oxygen.log 2>oxygen.err
 
 VERSION-linux:
 	echo " Operating system " >  VERSION
@@ -452,7 +452,7 @@ help:
 	@echo "bison          - builds bison++ (required if you want to generate parsers by yourself)"
 	@echo "parser         - generate parser files"
 	@echo "doc            - generate User's Guide and Developer's Guide PDF files (LaTeX system is required)"
-	@echo "oxygen         - generate Source Documentation (Doxygen is required)"
+	@echo "doxygen        - generate Source Documentation (Doxygen is required)"
 	@echo "snapshot       - generate CVS snapshot"
 	@echo "clean          - cleans source tree"
 	@echo

@@ -49,13 +49,13 @@ List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */      
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
 List(TSrvCfgPD) SrvCfgPDLst;		   /* list of SrvCfg PD objects */           \
-List(TSrvCfgClientClass) SrvCfgClientClassLst;		   /* list of SrvCfgClientClass objects */      \
+List(TSrvCfgClientClass) SrvCfgClientClassLst; /* list of SrvCfgClientClass objs */  \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
-List(Node) NodeClientClassLst;             /* Node list */                         \
+List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
-SPtr<TDUID> duidNew;                                                             \
-SPtr<TIPv6Addr> addr;                                                            \
+SPtr<TDUID> duidNew;                                                                 \
+SPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
@@ -71,8 +71,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
-SPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
+SPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                          \
+SPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                          \
 void StartTAClassDeclaration();                                                      \
 bool EndTAClassDeclaration();                                                        \
 void StartPDDeclaration();                                                           \
@@ -318,7 +318,7 @@ typedef
 #define	INACTIVE_MODE_	307
 #define	EXPERIMENTAL_	308
 #define	ADDR_PARAMS_	309
-#define	TUNNEL_MODE_	310
+#define	DS_LITE_TUNNEL_	310
 #define	EXTRA_	311
 #define	AUTH_METHOD_	312
 #define	AUTH_LIFETIME_	313
@@ -450,7 +450,7 @@ static const int GUESS_MODE_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
-static const int TUNNEL_MODE_;
+static const int DS_LITE_TUNNEL_;
 static const int EXTRA_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
@@ -542,7 +542,7 @@ static const int DUID_;
 	,INACTIVE_MODE_=307
 	,EXPERIMENTAL_=308
 	,ADDR_PARAMS_=309
-	,TUNNEL_MODE_=310
+	,DS_LITE_TUNNEL_=310
 	,EXTRA_=311
 	,AUTH_METHOD_=312
 	,AUTH_LIFETIME_=313

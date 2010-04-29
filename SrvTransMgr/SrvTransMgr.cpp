@@ -60,7 +60,7 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
  */
 bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
 
-    SPtr<TSrvIfaceIface> iface = SrvIfaceMgr().getIfaceByID(confIface->getID());
+    SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(confIface->getID());
     SPtr<TIPv6Addr> unicast = confIface->getUnicast();
 
     if (confIface->isRelay()) {

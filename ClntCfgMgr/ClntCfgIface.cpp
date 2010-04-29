@@ -101,21 +101,7 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     if (ReqLifetime)   this->setLifetimeState(STATE_NOTCONFIGURED);
     if (ReqVendorSpec) this->setVendorSpecState(STATE_NOTCONFIGURED);
 
-    switch (opt->getDsLiteTunnelMode())
-    {
-	case TUNNEL_ADDR:
-		DsLiteTunnelAddr = opt->getDsLiteTunnelAddr();
-		break;
-	case TUNNEL_NAME:
-		DsLiteTunnelName = opt->getDsLiteTunnelName();
-		break;
-	case TUNNEL_BOTH:
-		DsLiteTunnelAddr = opt->getDsLiteTunnelAddr();
-		DsLiteTunnelName = opt->getDsLiteTunnelName();
-		break;
-	case TUNNEL_NONE:
-		break;
-    }
+    DsLiteTunnelMode = opt->getDsLiteTunnelMode();
 
     // copy preferred-server list
     SPtr<TStationID> station;

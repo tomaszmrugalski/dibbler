@@ -284,31 +284,32 @@ IfaceIDOrder
 //already declared
 bool RelParser::CheckIsIface(int ifaceNr)
 {
-  SmartPtr<TRelCfgIface> ptr;
-  RelCfgIfaceLst.first();
-  while (ptr=RelCfgIfaceLst.get())
-    if ((ptr->getID())==ifaceNr) {
-	Log(Crit) << "Interface with ID=" << ifaceNr << " is already defined." << LogEnd;
-	YYABORT;
+    SPtr<TRelCfgIface> ptr;
+    RelCfgIfaceLst.first();
+    while (ptr=RelCfgIfaceLst.get()) {
+	if ((ptr->getID())==ifaceNr) {
+	    Log(Crit) << "Interface with ID=" << ifaceNr << " is already defined." << LogEnd;
+	    YYABORT;
+	}
     }
-  return true;
+    return true;
 }
     
 //method check whether interface with id=ifaceName has been
 //already declared 
 bool RelParser::CheckIsIface(string ifaceName)
 {
-  SmartPtr<TRelCfgIface> ptr;
-  RelCfgIfaceLst.first();
-  while (ptr=RelCfgIfaceLst.get())
-  {
-    string presName=ptr->getName();
-    if (presName==ifaceName) {
-	Log(Crit) << "Interface " << ifaceName << " is already defined." << LogEnd;
-	YYABORT;
+    SPtr<TRelCfgIface> ptr;
+    RelCfgIfaceLst.first();
+    while (ptr=RelCfgIfaceLst.get())
+    {
+	string presName=ptr->getName();
+	if (presName==ifaceName) {
+	    Log(Crit) << "Interface " << ifaceName << " is already defined." << LogEnd;
+	    YYABORT;
+	}
     }
-  }
-  return true;
+    return true;
 }
 
 //method creates new scope appropriately for interface options and declarations

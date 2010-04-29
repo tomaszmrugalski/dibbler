@@ -103,7 +103,7 @@ pd-pool             { return SrvParser::PD_POOL_;}
 vendor-spec         { return SrvParser::VENDOR_SPEC_; }
 addr-params         { return SrvParser::ADDR_PARAMS_; }
 experimental        { return SrvParser::EXPERIMENTAL_; }
-tunnel-mode         { return SrvParser::TUNNEL_MODE_; }
+ds-lite-tunnel      { return SrvParser::DS_LITE_TUNNEL_; }
 inactive-mode       { return SrvParser::INACTIVE_MODE_; }
 accept-leasequery   { return SrvParser::ACCEPT_LEASEQUERY_; }
 

@@ -10,7 +10,7 @@
  */
 
 #include "ClntMsgAdvertise.h"
-#include "OptPreference.h"
+#include "OptInteger.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 
@@ -32,11 +32,11 @@ bool TClntMsgAdvertise::check() {
 }
 
 int TClntMsgAdvertise::getPreference() {
-    SPtr<TOptPreference> ptr;
+    SPtr<TOptInteger> ptr;
     ptr = (Ptr*) this->getOption(OPTION_PREFERENCE);
     if (!ptr)
         return 0;
-    return ptr->getPreference();
+    return ptr->getValue();
 }
 
 void TClntMsgAdvertise::answer(SPtr<TClntMsg> Rep) {

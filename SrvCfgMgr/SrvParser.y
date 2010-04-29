@@ -43,13 +43,13 @@ List(TSrvCfgIface) SrvCfgIfaceLst;         /* list of SrvCfg interfaces */      
 List(TSrvCfgAddrClass) SrvCfgAddrClassLst; /* list of SrvCfg address classes */      \
 List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */           \
 List(TSrvCfgPD) SrvCfgPDLst;		   /* list of SrvCfg PD objects */           \
-List(TSrvCfgClientClass) SrvCfgClientClassLst;		   /* list of SrvCfgClientClass objects */      \
+List(TSrvCfgClientClass) SrvCfgClientClassLst; /* list of SrvCfgClientClass objs */  \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
 List(string) PresentStringLst;             /* string list */                         \
-List(Node) NodeClientClassLst;             /* Node list */                         \
+List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
-SmartPtr<TDUID> duidNew;                                                             \
-SmartPtr<TIPv6Addr> addr;                                                            \
+SPtr<TDUID> duidNew;                                                                 \
+SPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
@@ -65,8 +65,8 @@ void StartIfaceDeclaration();                                                   
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
-SmartPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                      \
-SmartPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                      \
+SPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);                          \
+SPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);                          \
 void StartTAClassDeclaration();                                                      \
 bool EndTAClassDeclaration();                                                        \
 void StartPDDeclaration();                                                           \
@@ -106,7 +106,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, TUNNEL_MODE_, EXTRA_
+%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, EXTRA_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -164,7 +164,6 @@ GlobalOption
 | Experimental
 | IfaceIDOrder
 | GuessMode
-| TunnelMode
 | ClientClass
 ;
 
@@ -285,7 +284,8 @@ ClientOption
 | LifetimeOption
 | VendorSpecOption
 | ExtraOptions
-| TunnelMode
+| DsLiteTunnelAddr
+| DsLiteTunnelName
 | AddressReservation
 ;
 
@@ -405,14 +405,14 @@ FQDNList
 {
     duidNew = new TDUID($3.duid,$3.length);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID "<<duidNew->getPlain()<<LogEnd;
-    // FIXME: Use SmartPtr()
+    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID($3.duid,$3.length), $1,false));
 } 
 | STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($3);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for address "<<*addr<<LogEnd;
-    // FIXME: Use SmartPtr()
+    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($3), $1,false));
 }
 | FQDNList ',' STRING_
@@ -424,14 +424,14 @@ FQDNList
 {
     duidNew = new TDUID($5.duid,$5.length);
     Log(Debug)<< "FQDN:" << $3 << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
-    // FIXME: Use SmartPtr()
+    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TDUID($5.duid,$5.length), $3,false));
 }
 | FQDNList ',' STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($5);
     Log(Debug)<< "FQDN:" << $3<<" reserved for address "<< addr->getPlain() << LogEnd;
-    // FIXME: Use SmartPtr()
+    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($5), $3,false));
 }
 ;
@@ -466,8 +466,8 @@ VendorSpecList
 ;
 
 StringList
-: STRING_ { PresentStringLst.append(SmartPtr<string> (new string($1))); }
-| StringList ',' STRING_ { PresentStringLst.append(SmartPtr<string> (new string($3))); }
+: STRING_ { PresentStringLst.append(SPtr<string> (new string($1))); }
+| StringList ',' STRING_ { PresentStringLst.append(SPtr<string> (new string($3))); }
 ;
 
 ADDRESSRangeList
@@ -477,8 +477,8 @@ ADDRESSRangeList
     }
     |   IPV6ADDR_ '-' IPV6ADDR_ 
     {
-        SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
-        SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
+        SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
+        SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -486,15 +486,15 @@ ADDRESSRangeList
     }
     |  IPV6ADDR_ '/' INTNUMBER_
     {
-	SmartPtr<TIPv6Addr> addr(new TIPv6Addr($1));
+	SPtr<TIPv6Addr> addr(new TIPv6Addr($1));
 	int prefix = $3;
 	if ( (prefix<1) || (prefix>128)) {
 	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
 		      << ". Allowed range: 1..128." << LogEnd;
 	    YYABORT;
 	}
-	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
-	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
+	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
+	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -506,8 +506,8 @@ ADDRESSRangeList
     }
     |   ADDRESSRangeList ',' IPV6ADDR_ '-' IPV6ADDR_ 
     {
-        SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
-        SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
+        SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
+        SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
         if (*addr1<=*addr2)
             PresentRangeLst.append(new TStationRange(addr1,addr2));
         else
@@ -518,7 +518,7 @@ ADDRESSRangeList
 PDRangeList
 :   IPV6ADDR_ '/' INTNUMBER_
     {
-	SmartPtr<TIPv6Addr> addr(new TIPv6Addr($1));
+	SPtr<TIPv6Addr> addr(new TIPv6Addr($1));
 	int prefix = $3;
 	if ( (prefix<1) || (prefix>128)) {
 	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
@@ -526,8 +526,8 @@ PDRangeList
 	    YYABORT;
 	}
  	
-	SmartPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
-	SmartPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
+	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
+	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
 	SPtr<TStationRange> range = 0;
 	if (*addr1<=*addr2)
             range = new TStationRange(addr1,addr2);
@@ -545,8 +545,8 @@ ADDRESSDUIDRangeList
 }
 |   IPV6ADDR_ '-' IPV6ADDR_ 
 {
-    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
-    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
+    SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
+    SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
     if (*addr1<=*addr2)
 	PresentRangeLst.append(new TStationRange(addr1,addr2));
     else
@@ -558,8 +558,8 @@ ADDRESSDUIDRangeList
 }
 |   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_ 
 {
-    SmartPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
-    SmartPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
+    SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
+    SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
     if (*addr1<=*addr2)
 	PresentRangeLst.append(new TStationRange(addr1,addr2));
     else
@@ -572,8 +572,8 @@ ADDRESSDUIDRangeList
 }
 | DUID_ '-' DUID_ 
 {   
-    SmartPtr<TDUID> duid1(new TDUID($1.duid,$1.length));
-    SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
+    SPtr<TDUID> duid1(new TDUID($1.duid,$1.length));
+    SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
     
     if (*duid1<=*duid2)
         PresentRangeLst.append(new TStationRange(duid1,duid2));
@@ -587,8 +587,8 @@ ADDRESSDUIDRangeList
 }
 | ADDRESSDUIDRangeList ',' DUID_ '-' DUID_ 
 {
-    SmartPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
-    SmartPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
+    SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
+    SPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
     if (*duid1<=*duid2)
         PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
@@ -734,38 +734,20 @@ AddrParams
     ParserOptStack.getLast()->setAddrParams($2,bitfield);
 };
 
-TunnelMode
-: TUNNEL_MODE_ Number Number IPV6ADDR_
+DsLiteTunnelAddr
+: DS_LITE_TUNNEL_ IPV6ADDR_
 {
-    if (!ParserOptStack.getFirst()->getExperimental()) {
-	Log(Crit) << "Experimental 'tunnel-mode' defined, but experimental features are disabled. Add 'experimental' "
-		  << "in global section of server.conf to enable it." << LogEnd;
-	YYABORT;
-    }
+    SPtr<TIPv6Addr> addr = new TIPv6Addr($2);
+    Log(Info) << "Enabling DS-Lite tunnel option, address=" << addr->getPlain() << LogEnd;
+    ParserOptStack.getLast()->setDsLiteTunnelAddr(addr);
+};
 
-    std::string mode;
-    switch ($3)
-    {
-    case 0:
-	mode = "none";
-	break;
-    case 1:
-	mode = "IPv4-to-IPv6 NAT";
-	break;
-    case 2:
-	mode = "IPv4-over-IPv6 tunnel";
-	break;
-    default:
-	Log(Warning) << "Unknown tunnel mode specified: " << $3 << ", allowed: 0(none), 1(IPv4-to-IPv6 NAT) and 2(IPv4-over-IPv6 tunnel)"
-		     << LogEnd;
-	mode = "unknown";
-    };
-
-    SPtr<TIPv6Addr> addr = new TIPv6Addr($4);
-
-    Log(Notice) << "Experimental tunnel-mode configured: mode=" << $3 << "(" << mode << "), address "
-		<< addr->getPlain() << "." << LogEnd;
-    ParserOptStack.getLast()->setTunnelMode($2, $3, addr);
+DsLiteTunnelName
+: DS_LITE_TUNNEL_ STRING_
+{
+    std::string name = std::string($2);
+    Log(Info) << "Enabling DS-Lite tunnel option, name=" << name << LogEnd;
+    ParserOptStack.getLast()->setDsLiteTunnelName(name);
 };
 
 ExtraOptions
@@ -1235,7 +1217,7 @@ ClientClass
     Log(Notice) << "ClientClass found, name: " << string($2) << LogEnd;
 } ClientClassDecleration   '}'
 {
-    SmartPtr<Node> cond =  NodeClientClassLst.getLast();
+    SPtr<Node> cond =  NodeClientClassLst.getLast();
     SrvCfgClientClassLst.append( new TSrvCfgClientClass(string($2),cond));
     NodeClientClassLst.delLast();
 }
@@ -1251,35 +1233,35 @@ ClientClassDecleration
 Condition
 : | '(' Expr CONTAIN_ Expr ')'
 {
-    SmartPtr<Node> r =  NodeClientClassLst.getLast();
+    SPtr<Node> r =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> l = NodeClientClassLst.getLast();
+    SPtr<Node> l = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_CONTAIN,l,r));
 }
 | '(' Expr EQ_ Expr ')'
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_EQUAL,l,r));
 }
 | '(' Condition  AND_  Condition ')'
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_AND,l,r));
     
 }
 | '(' Condition  OR_  Condition ')'
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    SmartPtr<Node> r = NodeClientClassLst.getLast();
+    SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_OR,l,r));
 }
@@ -1310,7 +1292,7 @@ Expr
 }
 | SUBSTRING_ '(' Expr ',' Number ',' Number  ')'
 {
-    SmartPtr<Node> l =  NodeClientClassLst.getLast();
+    SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_SUBSTRING,l, $5,$7));
 }
@@ -1329,7 +1311,7 @@ Expr
  */
 bool SrvParser::CheckIsIface(int ifaceNr)
 {
-  SmartPtr<TSrvCfgIface> ptr;
+  SPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
     if ((ptr->getID())==ifaceNr) {
@@ -1343,7 +1325,7 @@ bool SrvParser::CheckIsIface(int ifaceNr)
 //already declared 
 bool SrvParser::CheckIsIface(string ifaceName)
 {
-  SmartPtr<TSrvCfgIface> ptr;
+  SPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
   while (ptr=SrvCfgIfaceLst.get())
   {
@@ -1381,26 +1363,26 @@ void SrvParser::StartIfaceDeclaration()
 bool SrvParser::EndIfaceDeclaration()
 {
     // get this interface object
-    SmartPtr<TSrvCfgIface> iface = SrvCfgIfaceLst.getLast();
+    SPtr<TSrvCfgIface> iface = SrvCfgIfaceLst.getLast();
 
     // set its options
     SrvCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
 
     // copy all IA objects
-    SmartPtr<TSrvCfgAddrClass> ptrAddrClass;
+    SPtr<TSrvCfgAddrClass> ptrAddrClass;
     SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
         iface->addAddrClass(ptrAddrClass);
     SrvCfgAddrClassLst.clear();
 
     // copy all TA objects
-    SmartPtr<TSrvCfgTA> ta;
+    SPtr<TSrvCfgTA> ta;
     SrvCfgTALst.first();
     while (ta=SrvCfgTALst.get())
         iface->addTA(ta);
     SrvCfgTALst.clear();
 
-    SmartPtr<TSrvCfgPD> pd;
+    SPtr<TSrvCfgPD> pd;
     SrvCfgPDLst.first();
     while (pd=SrvCfgPDLst.get())
         iface->addPD(pd);
@@ -1454,7 +1436,7 @@ bool SrvParser::EndTAClassDeclaration()
         return false;
     }
     // create new object representing just parsed TA and add it to the list
-    SmartPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
+    SPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
     ptrTA->setOptions(ParserOptStack.getLast());
     SrvCfgTALst.append(ptrTA);
 
@@ -1499,7 +1481,7 @@ bool SrvParser::EndPDDeclaration()
         Log(Warning) << "Prefix pool /" << PDPrefix << " defined and clients are supposed to get /" << len << " prefixes. Only ONE client will get prefix" << LogEnd;
     }
 
-    SmartPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
+    SPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
     ParserOptStack.getLast()->setPool(&this->PDLst);
     if (!ptrPD->setOptions(ParserOptStack.getLast(), this->PDPrefix))
 	return false;
@@ -1541,7 +1523,7 @@ SrvParser::~SrvParser() {
 
 static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 
-SmartPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
+SPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     char packed[16];
     char mask;
     memcpy(packed, addrPacked,16);
@@ -1556,7 +1538,7 @@ SmartPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     return new TIPv6Addr(packed, false);
 }
 
-SmartPtr<TIPv6Addr> SrvParser::getRangeMax(char * addrPacked, int prefix){
+SPtr<TIPv6Addr> SrvParser::getRangeMax(char * addrPacked, int prefix){
     char packed[16];
     char mask;
     memcpy(packed, addrPacked,16);

@@ -36,11 +36,11 @@ using namespace std;
 #define YY_USE_CLASS
 #define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-List(TClntParsGlobalOpt) ParserOptStack;			            \
+List(TClntParsGlobalOpt) ParserOptStack;			                        \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
 List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
-List(TClntCfgIA)    ClntCfgIALst;		                            \
+List(TClntCfgIA)    ClntCfgIALst;		                                    \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
@@ -50,8 +50,7 @@ List(DigestTypes)   DigestLst;                                              \
 TContainer<SPtr<TStationID> > PresentStationLst;                        \
 TContainer<SPtr<TIPv6Addr> > PresentAddrLst;                            \
 TContainer<SPtr<string> > PresentStringLst;                             \
-List(TClntOptVendorSpec) VendorSpec;					    \
-SPtr<TClntOptVendorSpec> TunnelMode;                                        \
+List(TClntOptVendorSpec) VendorSpec;					                    \
 /*method check whether interface with id=ifaceNr has been */                \
 /*already declared */                                                       \
 bool CheckIsIface(int ifaceNr);                                             \
@@ -79,10 +78,9 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;                                                   \
-    TunnelMode = 0;
+    DUIDEnterpriseID = 0;
 
-#line 81 "ClntParser.y"
+#line 79 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -289,44 +287,44 @@ typedef
 #define	TA_	282
 #define	IAID_	283
 #define	ADDRES_	284
-#define	IPV6ADDR_	285
-#define	WORKDIR_	286
-#define	RAPID_COMMIT_	287
-#define	OPTION_	288
-#define	SCRIPTS_DIR_	289
-#define	NOTIFY_SCRIPTS_	290
-#define	LOGNAME_	291
-#define	LOGLEVEL_	292
-#define	LOGMODE_	293
-#define	STRING_	294
-#define	HEXNUMBER_	295
-#define	INTNUMBER_	296
-#define	DUID_	297
-#define	STRICT_RFC_NO_ROUTING_	298
-#define	SKIP_CONFIRM_	299
-#define	PD_	300
-#define	DUID_TYPE_	301
-#define	DUID_TYPE_LLT_	302
-#define	DUID_TYPE_LL_	303
-#define	DUID_TYPE_EN_	304
-#define	AUTH_ENABLED_	305
-#define	AUTH_ACCEPT_METHODS_	306
-#define	DIGEST_NONE_	307
-#define	DIGEST_PLAIN_	308
-#define	DIGEST_HMAC_MD5_	309
-#define	DIGEST_HMAC_SHA1_	310
-#define	DIGEST_HMAC_SHA224_	311
-#define	DIGEST_HMAC_SHA256_	312
-#define	DIGEST_HMAC_SHA384_	313
-#define	DIGEST_HMAC_SHA512_	314
-#define	STATELESS_	315
-#define	ANON_INF_REQUEST_	316
-#define	INSIST_MODE_	317
-#define	INACTIVE_MODE_	318
-#define	EXPERIMENTAL_	319
-#define	ADDR_PARAMS_	320
-#define	MAPPING_PREFIX_	321
-#define	TUNNEL_MODE_	322
+#define	NAME_	285
+#define	IPV6ADDR_	286
+#define	WORKDIR_	287
+#define	RAPID_COMMIT_	288
+#define	OPTION_	289
+#define	SCRIPTS_DIR_	290
+#define	NOTIFY_SCRIPTS_	291
+#define	LOGNAME_	292
+#define	LOGLEVEL_	293
+#define	LOGMODE_	294
+#define	STRING_	295
+#define	HEXNUMBER_	296
+#define	INTNUMBER_	297
+#define	DUID_	298
+#define	STRICT_RFC_NO_ROUTING_	299
+#define	SKIP_CONFIRM_	300
+#define	PD_	301
+#define	DUID_TYPE_	302
+#define	DUID_TYPE_LLT_	303
+#define	DUID_TYPE_LL_	304
+#define	DUID_TYPE_EN_	305
+#define	AUTH_ENABLED_	306
+#define	AUTH_ACCEPT_METHODS_	307
+#define	DIGEST_NONE_	308
+#define	DIGEST_PLAIN_	309
+#define	DIGEST_HMAC_MD5_	310
+#define	DIGEST_HMAC_SHA1_	311
+#define	DIGEST_HMAC_SHA224_	312
+#define	DIGEST_HMAC_SHA256_	313
+#define	DIGEST_HMAC_SHA384_	314
+#define	DIGEST_HMAC_SHA512_	315
+#define	STATELESS_	316
+#define	ANON_INF_REQUEST_	317
+#define	INSIST_MODE_	318
+#define	INACTIVE_MODE_	319
+#define	EXPERIMENTAL_	320
+#define	ADDR_PARAMS_	321
+#define	DS_LITE_TUNNEL_	322
 
 
 #line 169 "../bison++/bison.h"
@@ -402,6 +400,7 @@ static const int IA_;
 static const int TA_;
 static const int IAID_;
 static const int ADDRES_;
+static const int NAME_;
 static const int IPV6ADDR_;
 static const int WORKDIR_;
 static const int RAPID_COMMIT_;
@@ -438,8 +437,7 @@ static const int INSIST_MODE_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
-static const int MAPPING_PREFIX_;
-static const int TUNNEL_MODE_;
+static const int DS_LITE_TUNNEL_;
 
 
 #line 212 "../bison++/bison.h"
@@ -475,44 +473,44 @@ static const int TUNNEL_MODE_;
 	,TA_=282
 	,IAID_=283
 	,ADDRES_=284
-	,IPV6ADDR_=285
-	,WORKDIR_=286
-	,RAPID_COMMIT_=287
-	,OPTION_=288
-	,SCRIPTS_DIR_=289
-	,NOTIFY_SCRIPTS_=290
-	,LOGNAME_=291
-	,LOGLEVEL_=292
-	,LOGMODE_=293
-	,STRING_=294
-	,HEXNUMBER_=295
-	,INTNUMBER_=296
-	,DUID_=297
-	,STRICT_RFC_NO_ROUTING_=298
-	,SKIP_CONFIRM_=299
-	,PD_=300
-	,DUID_TYPE_=301
-	,DUID_TYPE_LLT_=302
-	,DUID_TYPE_LL_=303
-	,DUID_TYPE_EN_=304
-	,AUTH_ENABLED_=305
-	,AUTH_ACCEPT_METHODS_=306
-	,DIGEST_NONE_=307
-	,DIGEST_PLAIN_=308
-	,DIGEST_HMAC_MD5_=309
-	,DIGEST_HMAC_SHA1_=310
-	,DIGEST_HMAC_SHA224_=311
-	,DIGEST_HMAC_SHA256_=312
-	,DIGEST_HMAC_SHA384_=313
-	,DIGEST_HMAC_SHA512_=314
-	,STATELESS_=315
-	,ANON_INF_REQUEST_=316
-	,INSIST_MODE_=317
-	,INACTIVE_MODE_=318
-	,EXPERIMENTAL_=319
-	,ADDR_PARAMS_=320
-	,MAPPING_PREFIX_=321
-	,TUNNEL_MODE_=322
+	,NAME_=285
+	,IPV6ADDR_=286
+	,WORKDIR_=287
+	,RAPID_COMMIT_=288
+	,OPTION_=289
+	,SCRIPTS_DIR_=290
+	,NOTIFY_SCRIPTS_=291
+	,LOGNAME_=292
+	,LOGLEVEL_=293
+	,LOGMODE_=294
+	,STRING_=295
+	,HEXNUMBER_=296
+	,INTNUMBER_=297
+	,DUID_=298
+	,STRICT_RFC_NO_ROUTING_=299
+	,SKIP_CONFIRM_=300
+	,PD_=301
+	,DUID_TYPE_=302
+	,DUID_TYPE_LLT_=303
+	,DUID_TYPE_LL_=304
+	,DUID_TYPE_EN_=305
+	,AUTH_ENABLED_=306
+	,AUTH_ACCEPT_METHODS_=307
+	,DIGEST_NONE_=308
+	,DIGEST_PLAIN_=309
+	,DIGEST_HMAC_MD5_=310
+	,DIGEST_HMAC_SHA1_=311
+	,DIGEST_HMAC_SHA224_=312
+	,DIGEST_HMAC_SHA256_=313
+	,DIGEST_HMAC_SHA384_=314
+	,DIGEST_HMAC_SHA512_=315
+	,STATELESS_=316
+	,ANON_INF_REQUEST_=317
+	,INSIST_MODE_=318
+	,INACTIVE_MODE_=319
+	,EXPERIMENTAL_=320
+	,ADDR_PARAMS_=321
+	,DS_LITE_TUNNEL_=322
 
 
 #line 215 "../bison++/bison.h"
