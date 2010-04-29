@@ -2368,29 +2368,11 @@ case 168:
 	YYABORT;
     }
 
-    std::string mode;
-    switch (yyvsp[-1].ival)
-    {
-    case 0:
-	mode = "none";
-	break;
-    case 1:
-	mode = "IPv4-to-IPv6 NAT";
-	break;
-    case 2:
-	mode = "IPv4-over-IPv6 tunnel";
-	break;
-    default:
-	Log(Warning) << "Unknown tunnel mode specified: " << yyvsp[-1].ival << ", allowed: 0(none), 1(IPv4-to-IPv6 NAT) and 2(IPv4-over-IPv6 tunnel)"
-		     << LogEnd;
-	mode = "unknown";
-    };
-
     SPtr<TIPv6Addr> addr = new TIPv6Addr(yyvsp[0].addrval);
 
-    Log(Notice) << "Experimental tunnel-mode configured: mode=" << yyvsp[-1].ival << "(" << mode << "), address "
+    Log(Notice) << "Experimental tunnel-mode configured: address="
 		<< addr->getPlain() << "." << LogEnd;
-    ParserOptStack.getLast()->setTunnelMode(yyvsp[-2].ival, yyvsp[-1].ival, addr);
+    ParserOptStack.getLast()->setDsLiteTunnelAddr(addr);
 ;
     break;}
 case 169:

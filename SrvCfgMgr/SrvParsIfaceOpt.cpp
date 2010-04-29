@@ -423,3 +423,14 @@ void TSrvParsIfaceOpt::setDsLiteTunnelName(const std::string name)
 {
     DsLiteTunnelName = new TOptString(OPTION_DS_LITE_NAME, name, 0);
 }
+
+SPtr<TOpt> TSrvParsIfaceOpt::getDsLiteTunnelAddr()
+{
+    return DsLiteTunnelAddr;
+}
+
+SPtr<TOpt> TSrvParsIfaceOpt::getDsLiteTunnelName()
+{
+    return DsLiteTunnelName;
+}
+

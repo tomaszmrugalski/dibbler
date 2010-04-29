@@ -936,3 +936,10 @@ void TSrvCfgMgr::instanceCreate( const std::string cfgFile, const std::string xm
     Instance = new TSrvCfgMgr(cfgFile, xmlDumpFile);
 
 }
+
+TSrvCfgMgr & TSrvCfgMgr::instance()
+{
+    if (!Instance)
+        Log(Crit) << "SrvCfgMgr not initalized yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    return *Instance;
+}

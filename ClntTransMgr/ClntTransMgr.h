@@ -6,15 +6,7 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntTransMgr.h,v 1.15 2008-08-29 00:07:29 thomson Exp $
- *
  */
-class TClntTransMgr;
-class TDHCPMsg;
-class TClntAddrMgr;
-class TMsg;
-class TClntMsg;
-class TClntConfMgr;
 
 #ifndef CLNTTRANSMGR_H
 #define CLNTTRANSMGR_H
@@ -22,6 +14,8 @@ class TClntConfMgr;
 #include "ClntCfgIface.h"
 #include "Opt.h"
 #include "IPv6Addr.h"
+#include "AddrIA.h"
+#include "ClntMsg.h"
 
 #define ClntTransMgr() (TClntTransMgr::instance())
 

@@ -37,6 +37,9 @@
 
 using namespace std;
 
+TSrvIfaceMgr * TSrvIfaceMgr::Instance = 0;
+
+
 /*
  * constructor. 
  */

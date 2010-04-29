@@ -32,7 +32,7 @@ class TSrvTransMgr
     static TSrvTransMgr &instance();
 
     bool openSocket(SPtr<TSrvCfgIface> confIface);
-    SPtr<TMsg> getCurrentRequest();
+    SPtr<TSrvMsg> getCurrentRequest();
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
@@ -44,8 +44,6 @@ class TSrvTransMgr
 
     char * getCtrlAddr();
     int    getCtrlIface();
-
-    SPtr<TSrvMsg> requestMsg;
   private:
     TSrvTransMgr(string xmlFile);
     ~TSrvTransMgr();
@@ -56,6 +54,8 @@ class TSrvTransMgr
 
     int ctrlIface;
     char ctrlAddr[48];
+
+    SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
 
     static TSrvTransMgr * Instance;
 };

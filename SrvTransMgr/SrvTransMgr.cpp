@@ -35,6 +35,8 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptStatusCode.h"
 
+TSrvTransMgr * TSrvTransMgr::Instance = 0;
+
 TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
 : XmlFile(xmlFile), IsDone(false)
 {
@@ -368,6 +370,11 @@ TSrvTransMgr & TSrvTransMgr::instance()
   if (!Instance)
     Log(Crit) << "TransMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
   return *Instance;
+}
+
+SPtr<TSrvMsg> TSrvTransMgr::getCurrentRequest()
+{
+    return requestMsg;
 }
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)
