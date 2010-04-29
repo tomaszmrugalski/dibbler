@@ -169,9 +169,9 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 	// physical interface
 	if (cfgIface->getID()==-1) {
 	    // ID==-1 means that user referenced to interface by name
-	    ifaceIface = IfaceMgr->getIfaceByName(cfgIface->getName());
+	    ifaceIface = SrvIfaceMgr().getIfaceByName(cfgIface->getName());
 	} else {
-	    ifaceIface = IfaceMgr->getIfaceByID(cfgIface->getID());
+	    ifaceIface = SrvIfaceMgr().getIfaceByID(cfgIface->getID());
 	}
 	if (!ifaceIface) {
 	    Log(Crit) << "Interface " << cfgIface->getFullName()
@@ -309,12 +309,12 @@ SPtr<TSrvCfgIface> TSrvCfgMgr::checkInactiveIfaces() {
     if (!InactiveLst.count())
 	return 0;
 
-    IfaceMgr->redetectIfaces();
+    SrvIfaceMgr().redetectIfaces();
     SPtr<TSrvCfgIface> x;
     SPtr<TIfaceIface> iface;
     InactiveLst.first();
     while (x = InactiveLst.get()) {
-	iface = IfaceMgr->getIfaceByID(x->getID());
+	iface = SrvIfaceMgr().getIfaceByID(x->getID());
 	if (!iface) {
 	    Log(Error) << "TSrvCfgMgr::checkInactiveIfaces(): " <<
 		"Unable to find interface with ifindex=" << x->getID() << LogEnd;
@@ -607,17 +607,17 @@ bool TSrvCfgMgr::validateConfig() {
 bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
 {
     bool dummyRelay = false;
-    SPtr<TSrvIfaceIface> iface = (Ptr*)this->IfaceMgr->getIfaceByID(ptrIface->getID());
+    SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(ptrIface->getID());
     if (iface && ptrIface->isRelay() && iface->getRelayCnt())
 	dummyRelay = true;
 
-    if (ptrIface->countAddrClass() && this->stateless()) {
+    if (ptrIface->countAddrClass() && stateless()) {
 	Log(Crit) << "Config problem: Interface " << ptrIface->getFullName()
 		  << ": Class definitions present, but stateless mode set." << LogEnd;
 	return false;
     }
     if (!ptrIface->countAddrClass() && !ptrIface->countPD() 
-	&& !ptrIface->getTA() && !this->stateless()) {
+	&& !ptrIface->getTA() && !stateless()) {
 	if (!dummyRelay) {
 	    Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID()
 		      << ": No class definitions (IA,TA or PD) present, but stateless mode not set." << LogEnd;
@@ -748,7 +748,7 @@ bool TSrvCfgMgr::setupRelay(SPtr<TSrvCfgIface> cfgIface) {
     SPtr<TIfaceIface> iface;
     string name = cfgIface->getRelayName();
 
-    iface = IfaceMgr->getIfaceByName(name);
+    iface = SrvIfaceMgr().getIfaceByName(name);
     if (!iface) {
 	Log(Crit) << "Underlaying interface for " << cfgIface->getName() << "/" << cfgIface->getID()
 		  << " with name " << name << " is missing." << LogEnd;
@@ -756,7 +756,7 @@ bool TSrvCfgMgr::setupRelay(SPtr<TSrvCfgIface> cfgIface) {
     }
     cfgIface->setRelayID(iface->getID());
 
-    if (!IfaceMgr->setupRelay(cfgIface->getName(), cfgIface->getID(), iface->getID(), cfgIface->getRelayInterfaceID())) {
+    if (!SrvIfaceMgr().setupRelay(cfgIface->getName(), cfgIface->getID(), iface->getID(), cfgIface->getRelayInterfaceID())) {
 	Log(Crit) << "Relay setup for " << cfgIface->getName() << "/" << cfgIface->getID() << " interface failed." << LogEnd;
 	return false;
     }

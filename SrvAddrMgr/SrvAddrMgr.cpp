@@ -498,7 +498,7 @@ void TSrvAddrMgr::doDuties()
 					<< ptrIA->getIAID() << ") in client (DUID=\"";
                             if (ptrClient->getDUID()) 
                             {
-                                Log(Cont) << *ptrClient->getDUID();
+                                Log(Cont) << ptrClient->getDUID()->getPlain();
                             }
                             Log(Cont) << "\") has expired." << dec << LogEnd;
                             ptrIA->delAddr(ptrAddr->get());

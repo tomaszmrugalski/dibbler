@@ -112,7 +112,6 @@ private:
     List(TSrvCfgIface) SrvCfgIfaceLst;
     List(TSrvCfgIface) InactiveLst;
     List(TSrvCfgClientClass) ClientClassLst;
-    SPtr<TSrvIfaceMgr> IfaceMgr;
     bool matchParsedSystemInterfaces(SrvParser *parser);
 
     // global options
