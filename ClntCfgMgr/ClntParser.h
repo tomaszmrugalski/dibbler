@@ -324,7 +324,8 @@ typedef
 #define	INACTIVE_MODE_	319
 #define	EXPERIMENTAL_	320
 #define	ADDR_PARAMS_	321
-#define	DS_LITE_TUNNEL_	322
+#define	REMOTE_AUTOCONF_	322
+#define	DS_LITE_TUNNEL_	323
 
 
 #line 169 "../bison++/bison.h"
@@ -437,6 +438,7 @@ static const int INSIST_MODE_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
+static const int REMOTE_AUTOCONF_;
 static const int DS_LITE_TUNNEL_;
 
 
@@ -510,7 +512,8 @@ static const int DS_LITE_TUNNEL_;
 	,INACTIVE_MODE_=319
 	,EXPERIMENTAL_=320
 	,ADDR_PARAMS_=321
-	,DS_LITE_TUNNEL_=322
+	,REMOTE_AUTOCONF_=322
+	,DS_LITE_TUNNEL_=323
 
 
 #line 215 "../bison++/bison.h"

@@ -65,9 +65,9 @@ SPtr<TClntCfgAddr> TClntCfgIA::getAddr() {
 }
 
 TClntCfgIA::TClntCfgIA(SPtr<TClntCfgIA> right, long iaid)
-    :ClntCfgAddrLst(right->ClntCfgAddrLst),
-    IAID(iaid), T1(right->getT1()), T2(right->getT2()),
-    State(STATE_NOTCONFIGURED) {
+    :IAID(iaid), T1(right->getT1()), T2(right->getT2()),
+     State(STATE_NOTCONFIGURED),
+     ClntCfgAddrLst(right->ClntCfgAddrLst) {
 }
 
 void TClntCfgIA::setOptions(SPtr<TClntParsGlobalOpt> opt) {
