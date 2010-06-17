@@ -46,6 +46,9 @@ class TClntCfgIA
     void setState(enum EState state);
     enum EState getState();
     bool getAddrParams();
+
+    void setRemoteAutoconf();
+    bool getRemoteAutoconf();
     
   private:
     unsigned long IAID;
@@ -56,7 +59,8 @@ class TClntCfgIA
     List(TClntCfgAddr) ClntCfgAddrLst;
     static long newID();
 
-    bool AddrParams;
+    bool AddrParams;     /// experimental address parameters feature
+    bool RemoteAutoconf; /// experimental remote autoconf feature
 };
 
 #endif 

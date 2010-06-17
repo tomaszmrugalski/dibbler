@@ -122,3 +122,12 @@ bool TClntParsIAOpt::getAddrParams()
 {
     return AddrParams;
 }
+
+void TClntParsIAOpt::setRemoteAutoconf(bool enable) {
+    RemoteAutoconf = enable;
+}
+
+bool TClntParsIAOpt::getRemoteAutoconf() {
+    return RemoteAutoconf;
+}
+

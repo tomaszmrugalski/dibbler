@@ -166,3 +166,25 @@ ClntCfgPrefix
 - remove void TClntMsg::invalidAllowOptInMsg(int msg, int opt) {
 - remove void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
 - rename TClntTransMgr::addAdvertise to addReceivedAdvertise
+
+ REMOTE-AUTOCONF
+-----------------
+- target server uses unicasts
+- previous server announces option_REMOTE_AUTOCONF_NEIGHNORS option:
+  - List of addresses (list of neighboring DHCPv6 servers)
+- Client receives list of neighbors
+- Client obtains configuration locally
+- Client Sends unicast solicit to all dst servers with OPTION_REMOTE_AUTOCONF
+- Server responds with ADVERTISE (including OPTION_REMOTE_AUTOCONF)
+- Client sends unicast request to dst server wthi OPTION_REMOTE_AUTOCONF
+- Server responds with REPLY (including OPTION_REMOTE_AUTOCONF)
+   - external entities (mip daemon?) are notified
+- Client maintains extra information till handover
+- After handover, client uses a priori knowledge to configure parameters
+  instanteously (copy alternative configuration to main configuration)
+
+Client operation:
+- Store additional configuration in AddrMgr->Client->IA->alternativeConf
+- Add CheckRemoteAutoConf to ClntTransMgr
+- Add UseAlternativeIA(copies from alternative IA to "main" IA after HO)
+- Modify Reply (if handled IA is remote, then don't call IfaceMgr->addAddr() )

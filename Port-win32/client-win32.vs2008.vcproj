@@ -315,26 +315,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptPreference.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\Options\OptRapidCommit.cpp"
 					>
 				</File>
@@ -1077,10 +1057,6 @@
 				</File>
 				<File
 					RelativePath="..\sources\Options\OptOptionRequest.h"
-					>
-				</File>
-				<File
-					RelativePath="..\sources\Options\OptPreference.h"
 					>
 				</File>
 				<File

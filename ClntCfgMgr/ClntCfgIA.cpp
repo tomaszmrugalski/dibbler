@@ -8,19 +8,15 @@
  */
 
 #include "ClntCfgIA.h"
-#include <climits>
+//#include <climits>
 #include <iostream>
 #include <iomanip>
 #include "Logger.h"
 using namespace std;
 
-TClntCfgIA::TClntCfgIA() {
-
-    this->IAID = newID();
-    this->T1 = CLIENT_DEFAULT_T1;
-    this->T2 = CLIENT_DEFAULT_T2;
-    this->State = STATE_NOTCONFIGURED;
-    this->AddrParams = false;
+TClntCfgIA::TClntCfgIA() 
+:IAID(newID()), T1(CLIENT_DEFAULT_T1), T2(CLIENT_DEFAULT_T2), 
+      State(STATE_NOTCONFIGURED), AddrParams(false), RemoteAutoconf(true) {
 }
 
 long TClntCfgIA::newID(){
@@ -28,8 +24,7 @@ long TClntCfgIA::newID(){
     return nextIAID++;
 }
 
-long TClntCfgIA::countAddr()
-{
+long TClntCfgIA::countAddr() {
     return ClntCfgAddrLst.count();
 }
 
@@ -61,8 +56,7 @@ void TClntCfgIA::reset() {
     this->State = STATE_NOTCONFIGURED;
 }
 
-void TClntCfgIA::firstAddr()
-{
+void TClntCfgIA::firstAddr() {
     ClntCfgAddrLst.first();
 }
 
@@ -70,34 +64,37 @@ SPtr<TClntCfgAddr> TClntCfgIA::getAddr() {
     return ClntCfgAddrLst.get();
 }
 
-TClntCfgIA::TClntCfgIA(SPtr<TClntCfgIA> right, long iAID)
-    :ClntCfgAddrLst(right->ClntCfgAddrLst)
-{
-    IAID=iAID;
-    T1=right->getT1();
-    T2=right->getT2();
-    this->State = STATE_NOTCONFIGURED;
+TClntCfgIA::TClntCfgIA(SPtr<TClntCfgIA> right, long iaid)
+    :ClntCfgAddrLst(right->ClntCfgAddrLst),
+    IAID(iaid), T1(right->getT1()), T2(right->getT2()),
+    State(STATE_NOTCONFIGURED) {
 }
 
 void TClntCfgIA::setOptions(SPtr<TClntParsGlobalOpt> opt) {
-    this->T1=opt->getT1();
-    this->T2=opt->getT2();
+    T1=opt->getT1();
+    T2=opt->getT2();
     
-    this->AddrParams = opt->getAddrParams();
+    AddrParams = opt->getAddrParams();
+    RemoteAutoconf = opt->getRemoteAutoconf();
 }
 
-void TClntCfgIA::addAddr(SPtr<TClntCfgAddr> addr)
-{
+void TClntCfgIA::addAddr(SPtr<TClntCfgAddr> addr) {
     this->ClntCfgAddrLst.append(addr);    
 }
 
-bool TClntCfgIA::getAddrParams()
-{
+bool TClntCfgIA::getAddrParams() {
     return AddrParams;
 }
 
-ostream& operator<<(ostream& out,TClntCfgIA& ia)
-{
+void TClntCfgIA::setRemoteAutoconf() {
+    RemoteAutoconf = true;
+}
+
+bool TClntCfgIA::getRemoteAutoconf() {
+    return RemoteAutoconf;
+}
+
+ostream& operator<<(ostream& out,TClntCfgIA& ia) {
     out << "        <ia iaid=\"" << ia.IAID << "\" state=\"" << StateToString(ia.State) << "\" t1=\"" 
 	<< ia.T1 << "\" t2=\"" << ia.T2 << "\" addrs=\"" << ia.ClntCfgAddrLst.count() << "\">" << std::endl;
 
@@ -109,7 +106,9 @@ ostream& operator<<(ostream& out,TClntCfgIA& ia)
         out << "          " << *addr;
     }
     if (ia.AddrParams)
-	out << "          <addrParams/>" << endl;
+        out << "          <addrParams/>" << endl;
+    if (ia.RemoteAutoconf)
+        out << "          <remoteAutoconf/>" << endl;
     out << "        </ia>" << std::endl;
     return out;
 }

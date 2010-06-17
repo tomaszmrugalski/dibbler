@@ -448,6 +448,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	    break;
     }
 
+#if 0
     if (!prefix_forwarding_enabled()) {
         // option 1: add/update/delete this prefix to this interface only
         Log(Debug) << "PD: IPv6 forwarding disabled, so prefix operation will apply to this (" << ptrIface->getFullName() 
@@ -474,9 +475,9 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         }
         return true;
     }
+#endif
 
     // option 2: split this prefix and add it to all interfaces
-    Log(Notice) << "PD: IPv6 forwarding enabled, so prefix operation will apply to all interfaces." << LogEnd;
     Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << (int)prefixLen 
 		<< " to all interfaces (prefix will be split to /" << int(prefixLen+8) << " prefixes)." << LogEnd;
 

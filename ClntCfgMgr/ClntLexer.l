@@ -62,6 +62,7 @@ scripts-dir           { return ClntParser::SCRIPTS_DIR_; }
 notify-scripts        { return ClntParser::NOTIFY_SCRIPTS_; }
 prefered-lifetime     { return ClntParser::PREF_TIME_; }
 valid-lifetime        { return ClntParser::VALID_TIME_; }
+remote-autoconf       { return ClnyParser::REMOTE_AUTOCONF_; }
 t1                    { return ClntParser::T1_;}
 t2                    { return ClntParser::T2_;}
 option                { return ClntParser::OPTION_; }

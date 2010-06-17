@@ -313,7 +313,6 @@ extern "C" {
     extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
     extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
 
-    extern int prefix_forwarding_enabled();
     extern int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
 			  unsigned long prefered, unsigned long valid);
     extern int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,

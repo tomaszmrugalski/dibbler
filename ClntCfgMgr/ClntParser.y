@@ -114,7 +114,7 @@ namespace std
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_
+%token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_, DS_LITE_TUNNEL_
 %type  <ival> Number
 
 %%
@@ -183,6 +183,7 @@ IAOptionDeclaration
 | RapidCommitOption
 | ADDRESOptionDeclaration
 | ExperimentalAddrParams
+| ExperimentalRemoteAutoconf
 ;
 
 InterfaceDeclaration
@@ -606,13 +607,26 @@ RapidCommitOption
 ExperimentalAddrParams
 :   ADDR_PARAMS_ 
 {
-    if (!ParserOptStack.getLast()->getExperimental()) {
-	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled."
-		  << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
-	YYABORT;
+        if (!ParserOptStack.getLast()->getExperimental()) {
+        Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled."
+	          << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
+        YYABORT;
     }
     ParserOptStack.getLast()->setAddrParams(true);
 };
+
+ExperimentalRemoteAutoconf
+:   REMOTE_AUTOCONF_
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+        Log(Crit) << "Experimental remote autoconfiguration feature defined, but experimental"
+        " features are disabled. Add 'experimental' in global section of client.conf "
+        "to enable it." << LogEnd;
+        YYABORT;
+    }
+    ParserOptStack.getLast()->setRemoteAutoconf(true);
+};
+
 
 SkipConfirm
 : SKIP_CONFIRM_

@@ -640,13 +640,6 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     return LOWLEVEL_NO_ERROR;
 }
 
-int prefix_forwarding_enabled()
-{
-    /// @todo: Detect if IPv6 forwarding is enabled or not
-    return 1;
-}
-
-
 void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
 {
     /// @todo: implement this
