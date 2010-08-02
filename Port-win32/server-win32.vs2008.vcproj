@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="server-win32"
 	ProjectGUID="{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
 	Keyword="ManagedCProj"
@@ -744,11 +744,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\SrvCfgMgr\SrvLexer.l"
+					>
+				</File>
+				<File
 					RelativePath="..\SrvCfgMgr\SrvParsClassOpt.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\SrvCfgMgr\SrvParser.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvCfgMgr\SrvParser.y"
 					>
 				</File>
 				<File
