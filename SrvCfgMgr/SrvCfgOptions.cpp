@@ -53,6 +53,9 @@ void TSrvCfgOptions::SetDefaults() {
 
     DsLiteTunnelAddr = 0;
     DsLiteTunnelName = 0;
+
+	CustomOpts.clear();
+	ExtraOpts.clear();
 }
 
 // --------------------------------------------------------------------
@@ -231,20 +234,24 @@ void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
     this->VendorSpec = vendor;
 }
 
-void TSrvCfgOptions::setExtraOptions(List(TSrvOptGeneric) extra)
-{
-    Log(Debug) << "Setting " << extra.count() << " generic option(s)." << LogEnd;
-    ExtraOpts = extra;
+void TSrvCfgOptions::setExtraOption(SPtr<TSrvOptGeneric> custom, bool always) {
+	Log(Debug) << "Setting " << (always?"mandatory":"request-only")
+		       << custom->getOptType() << " generic option." << LogEnd;
+	if (always)
+		ExtraOpts.push_back(custom);
+	else
+		CustomOpts.push_back(custom);
 }
 
-List(TSrvOptGeneric) TSrvCfgOptions::getExtraOptions()
-{
+TSrvOptGenericList& TSrvCfgOptions::getExtraOptions() {
     return ExtraOpts;
 }
 
+TSrvOptGenericList& TSrvCfgOptions::getCustomOptions() {
+    return CustomOpts;
+}
 
-bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
-{
+bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportDNSServer())  this->setDNSServerLst(opt->getDNSServerLst());
     if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
     if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
@@ -260,7 +267,7 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 
     DsLiteTunnelAddr = opt->getDsLiteTunnelAddr(); // null = not supported
     DsLiteTunnelName = opt->getDsLiteTunnelName(); // null = not supported
-    setExtraOptions(opt->getExtraOptions());
+
     return true;
 }
 

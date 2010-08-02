@@ -140,6 +140,13 @@ New tasks should be added to the TODO list. After task is implemented, it should
  ------
  See http://klub.com.pl/bugzilla/
 
+  DRAFTS & RFCs 
+ ---------------
+Netboot: https://datatracker.ietf.org/doc/draft-ietf-dhc-dhcpv6-opt-netboot/
+DS-Lite tunnel: https://datatracker.ietf.org/doc/draft-ietf-softwire-ds-lite-tunnel-option/
+
+
+
   INFO
  ------
 - Linux kernel does not support finite lifetimes: kernel sources:

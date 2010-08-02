@@ -764,15 +764,12 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 	out << "    <!-- <vendorSpec/> -->" << endl;
     }
 
-    out << "    <!-- " << iface.getExtraOptions().count() << " extra option(s) -->" << endl;
+    out << "    <!-- " << iface.getExtraOptions().size() << " extra option(s) -->" << endl;
 
-    List(TSrvOptGeneric) extraOpts;
-    SPtr<TSrvOptGeneric> gen;
-    extraOpts = iface.getExtraOptions();
-    extraOpts.first();
-    while (gen = extraOpts.get())
+	for (TSrvOptGenericList::const_iterator gen=iface.getExtraOptions().begin();
+		 gen != iface.getExtraOptions().end(); ++gen)
     {
-	out << "      <extraOption length=\"" << gen->getSize()-4 << "\"/>" << endl;
+		out << "      <extraOption length=\"" << (*gen)->getSize()-4 << "\"/>" << endl;
     }
 
     // option: FQDN

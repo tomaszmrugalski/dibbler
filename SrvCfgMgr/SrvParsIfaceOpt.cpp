@@ -236,17 +236,6 @@ bool TSrvParsIfaceOpt::supportSIPDomain() {
     return this->SIPDomainSupport;
 }
 
-// --- option: extra ---
-List(TSrvOptGeneric) TSrvParsIfaceOpt::getExtraOptions()
-{
-    return ExtraOpts;
-}
-
-void TSrvParsIfaceOpt::setExtraOptions(List(TSrvOptGeneric) extraOpts)
-{
-    ExtraOpts = extraOpts;
-}
-
 
 // --- option: FQDN ---
 

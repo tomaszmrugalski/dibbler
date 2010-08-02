@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <string>
+#include <list>
 
 #include "SrvOptVendorSpec.h"
 #include "SrvOptRemoteID.h"
@@ -105,8 +106,9 @@ public:
     bool supportVendorSpec();
     SPtr<TSrvOptVendorSpec> getVendorSpec(int num=0);
 
-    void setExtraOptions(List(TSrvOptGeneric) extra);
-    List(TSrvOptGeneric) getExtraOptions();
+    void setExtraOption(SPtr<TSrvOptGeneric> extra, bool always);
+    TSrvOptGenericList& getExtraOptions();
+    TSrvOptGenericList& getCustomOptions();
 
 private:
 
@@ -139,7 +141,8 @@ private:
     string NISDomain;
     string NISPDomain;
     List(TSrvOptVendorSpec) VendorSpec;
-    List(TSrvOptGeneric) ExtraOpts;
+	TSrvOptGenericList ExtraOpts; // extra options ALWAYS sent to client
+	TSrvOptGenericList CustomOpts; // extra options sent to client only if requested
     unsigned int Lifetime;
 
     void SetDefaults();

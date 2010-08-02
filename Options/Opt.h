@@ -77,4 +77,6 @@ class TOpt
     SPtr<TDUID> DUID;
 };
 
+typedef std::list< SPtr<TOpt> > TOptList;
+
 #endif

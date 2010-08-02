@@ -53,8 +53,9 @@ SPtr<TIPv6Addr> addr;                                                           
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
-List(TSrvOptGeneric) ExtraOpts;                                                      \
-List(TSrvOptVendorSpec) VendorSpec;			                             \
+List(TSrvOptGeneric) ExtraOpts;  /* custom options that will ALWAYS be added */      \
+List(TSrvOptGeneric) CustomOpts; /* custom options that will be added if requested*/ \
+List(TSrvOptVendorSpec) VendorSpec;			                                         \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
@@ -106,7 +107,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, EXTRA_
+%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, EXTRA_, STRING_KEYWORD_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -751,29 +752,22 @@ DsLiteTunnelName
 };
 
 ExtraOptions
-:OPTION_ EXTRA_ {
-    if (!ParserOptStack.getFirst()->getExperimental()) {
-	Log(Crit) << "Experimental 'option extra' defined, but experimental features are disabled. Add 'experimental' "
-		  << "in global section of server.conf to enable it." << LogEnd;
-	YYABORT;
-    }
+: ExtraOption
+| ExtraOptions ExtraOption
 
-    ExtraOpts.clear();
-} ExtraOptsList
-{
-    ParserOptStack.getLast()->setExtraOptions(ExtraOpts);
-};
-
-ExtraOptsList
-: Number '-' DUID_
-{
-    Log(Debug) << "Extra option defined: code=" << $1 << ", valuelen=" << $3.length << LogEnd;
-    ExtraOpts.append(new TSrvOptGeneric($1, $3.duid, $3.length, 0));
-}
-| ExtraOptsList ',' Number '-' DUID_
+ExtraOption
+:OPTION_ EXTRA_ Number_ '-' DUID_
 {
     Log(Debug) << "Extra option defined: code=" << $3 << ", valuelen=" << $5.length << LogEnd;
-    ExtraOpts.append(new TSrvOptGeneric($3, $5.duid, $5.length, 0));
+	SrvCfgIfaceLst.getLast().addExtraOption(new TSrvOptGeneric($3, $5.duid, $5.length, 0), true);
+}
+|OPTION_ EXTRA_ Number ADDRESS_ IPV6ADDR_
+{
+	SrvCfgIfaceLst.getLast().addExtraOption(new TOptAddr($3, new TIPv6Addr($5), 0), true);
+}
+|OPTION_ EXTRA_ Number STRING_KEYWORD_ STRING_
+{
+	SrvCfgIfaceLst.getLast().addExtraOption(new TOptString($3, string($5), 0), true);
 }
 ;
 
@@ -875,19 +869,19 @@ IfaceIDOrder
 {
     if (!strncasecmp($2,"before",6)) 
     {
-	ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_BEFORE);
+		ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_BEFORE);
     } else 
     if (!strncasecmp($2,"after",5)) 
     {
-	ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_AFTER);
+		ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_AFTER);
     } else
     if (!strncasecmp($2,"omit",4)) 
     {
-	ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_NONE);
+		ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_NONE);
     } else 
     {
-	Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, omit" << LogEnd;
-	YYABORT;
+		Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, omit" << LogEnd;
+		YYABORT;
     }
 };
 
@@ -908,16 +902,15 @@ AcceptLeaseQuery
 {
     switch ($2) {
     case 0:
-	ParserOptStack.getLast()->setLeaseQuerySupport(false);
-	break;
+		ParserOptStack.getLast()->setLeaseQuerySupport(false);
+		break;
     case 1:
-	ParserOptStack.getLast()->setLeaseQuerySupport(true);
-	break;
+		ParserOptStack.getLast()->setLeaseQuerySupport(true);
+		break;
     default:
-	Log(Crit) << "Invalid value of accept-leasequery specifed. Allowed values: 0, 1, yes, no, true, false" << LogEnd;
-	YYABORT;
+		Log(Crit) << "Invalid value of accept-leasequery specifed. Allowed values: 0, 1, yes, no, true, false" << LogEnd;
+		YYABORT;
     }
-
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -1350,6 +1343,7 @@ void SrvParser::StartIfaceDeclaration()
     SrvCfgAddrClassLst.clear();
     VendorSpec.clear();
     ExtraOpts.clear();
+    CustomOpts.clear();
     ClientLst.clear();
 }
 
@@ -1421,7 +1415,7 @@ void SrvParser::StartClassDeclaration()
 
 
 /** 
- * Just add 
+ * Just add global options
  * 
  */
 void SrvParser::StartTAClassDeclaration()

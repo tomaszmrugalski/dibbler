@@ -131,10 +131,6 @@ public:
     bool supportVendorSpec();
     List(TSrvOptVendorSpec) getVendorSpec();
 
-    // option: extra
-    void setExtraOptions(List(TSrvOptGeneric) extraOpts);
-    List(TSrvOptGeneric) getExtraOptions();
-
     // DS-Lite tunnel
     void setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr);
     void setDsLiteTunnelName(const std::string name);
@@ -191,7 +187,6 @@ private:
     SPtr<TOpt> DsLiteTunnelName;
 
     List(TSrvOptVendorSpec) VendorSpec;
-    List(TSrvOptGeneric) ExtraOpts;
 };
 
 #endif

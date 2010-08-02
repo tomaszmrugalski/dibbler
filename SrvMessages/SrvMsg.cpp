@@ -644,16 +644,27 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     }
 
     // --- option: extra options ---
-    List(TSrvOptGeneric) generics = ptrIface->getExtraOptions();
+    TSrvOptGenericList generics = ptrIface->getExtraOptions();
 
-    SPtr<TSrvOptGeneric> gen;
-    generics.first();
-    while (gen = generics.get())
-    {
-	Log(Debug) << "Experimental: Appending extra option " << gen->getSize() << LogEnd;
-	Options.append( (Ptr*) gen);
-	newOptionAssigned = true;
-    }
+	for (TSrvOptGenericList::iterator gen = generics.begin(); gen!=generics.end(); ++gen)
+	{
+		Log(Debug) << "Appending extra option " << (*gen)->getOptType() 
+			<< " (" << (*gen)->getSize() << ")" << LogEnd;
+		Options.append( (Ptr*) *gen);
+		newOptionAssigned = true;
+	}
+
+	TSrvOptGenericList customOpts = ptrIface->getCustomOptions();
+	for (TSrvOptGenericList::iterator gen = generics.begin(); gen!=generics.end(); ++gen)
+	{
+		if (reqOpts->isOption( (*gen)->getOptType()))
+		{
+			Log(Debug) << "Appending extra option " << (*gen)->getOptType() 
+				       << " (" << (*gen)->getSize() << ")" << LogEnd;
+     		Options.append( (Ptr*) *gen);
+		    newOptionAssigned = true;
+		}
+	}
 
     // --- option: KEYGEN ---
 #ifndef MOD_DISABLE_AUTH

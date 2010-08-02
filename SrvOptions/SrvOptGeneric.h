@@ -12,6 +12,7 @@
 #ifndef SRVOPTGENERIC_H
 #define SRVOPTGENERIC_H
 
+#include <list>
 #include "DHCPConst.h"
 #include "OptGeneric.h"
 
@@ -22,5 +23,7 @@ class TSrvOptGeneric : public TOptGeneric
     bool doDuties();
 
 };
+
+typedef std::list< SPtr<TSrvOptGeneric> > TSrvOptGenericList;
 
 #endif /* SRVOPTGENERIC_H */

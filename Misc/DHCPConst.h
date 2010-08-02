@@ -164,7 +164,7 @@
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251
 
-// draft-ietf-softwire-ds-lite-tunnel-option-01.txt
+// draft-ietf-softwire-ds-lite-tunnel-option
 #define OPTION_DS_LITE_ADDR 252
 #define OPTION_DS_LITE_NAME 253
 
@@ -180,20 +180,20 @@ typedef enum {
 #define OPTION_INFORMATION_REFRESH_TIME_LEN         4
 
 // --- Status Codes --- 
-#define STATUSCODE_SUCCESS       0
-#define STATUSCODE_UNSPECFAIL    1
-#define STATUSCODE_NOADDRSAVAIL  2
-#define STATUSCODE_NOBINDING     3
-#define STATUSCODE_NOTONLINK     4
-#define STATUSCODE_USEMULTICAST  5
-#define STATUSCODE_NOPREFIXAVAIL 6 
+#define STATUSCODE_SUCCESS          0
+#define STATUSCODE_UNSPECFAIL       1
+#define STATUSCODE_NOADDRSAVAIL     2
+#define STATUSCODE_NOBINDING        3
+#define STATUSCODE_NOTONLINK        4
+#define STATUSCODE_USEMULTICAST     5
+#define STATUSCODE_NOPREFIXAVAIL    6 
 // Leasequery status codes
 #define STATUSCODE_UNKNOWNQUERYTYPE 7
-#define STATUSCODE_MALFORMEDQUERY 8
-#define STATUSCODE_NOTCONFIGURED 9
-#define STATUSCODE_NOTALLOWED    10
+#define STATUSCODE_MALFORMEDQUERY   8
+#define STATUSCODE_NOTCONFIGURED    9
+#define STATUSCODE_NOTALLOWED       10
 
-// INFINITY + 1 is 0. Hihi, cool
+// INFINITY + 1 is 0. That's cool!
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
 
 // How long should we wait before we assume that OS detected duplicated addresses (in secs)
