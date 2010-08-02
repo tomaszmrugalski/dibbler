@@ -766,10 +766,10 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
     out << "    <!-- " << iface.getExtraOptions().size() << " extra option(s) -->" << endl;
 
-	for (TSrvOptGenericList::const_iterator gen=iface.getExtraOptions().begin();
-		 gen != iface.getExtraOptions().end(); ++gen)
+    for (TOptList::const_iterator gen=iface.getExtraOptions().begin();
+	 gen != iface.getExtraOptions().end(); ++gen)
     {
-		out << "      <extraOption length=\"" << (*gen)->getSize()-4 << "\"/>" << endl;
+	out << "      <extraOption length=\"" << (*gen)->getSize()-4 << "\"/>" << endl;
     }
 
     // option: FQDN

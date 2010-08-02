@@ -24,6 +24,8 @@
 #include "SrvParsGlobalOpt.h"
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
+#include "OptAddr.h"
+#include "OptString.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
 #include "SrvCfgAddrClass.h"
@@ -59,8 +61,9 @@ SPtr<TIPv6Addr> addr;                                                           
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
-List(TSrvOptGeneric) ExtraOpts;                                                      \
-List(TSrvOptVendorSpec) VendorSpec;			                             \
+List(TSrvOptGeneric) ExtraOpts;  /* custom options that will ALWAYS be added */      \
+List(TSrvOptGeneric) CustomOpts; /* custom options that will be added if requested*/ \
+List(TSrvOptVendorSpec) VendorSpec;			                                         \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
@@ -84,7 +87,7 @@ virtual ~SrvParser();
     ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 83 "SrvParser.y"
+#line 86 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -319,7 +322,7 @@ typedef
 #define	EXPERIMENTAL_	308
 #define	ADDR_PARAMS_	309
 #define	DS_LITE_TUNNEL_	310
-#define	EXTRA_	311
+#define	STRING_KEYWORD_	311
 #define	AUTH_METHOD_	312
 #define	AUTH_LIFETIME_	313
 #define	AUTH_KEY_LEN_	314
@@ -344,12 +347,13 @@ typedef
 #define	ALLOW_	333
 #define	DENY_	334
 #define	SUBSTRING_	335
-#define	CONTAIN_	336
-#define	STRING_	337
-#define	HEXNUMBER_	338
-#define	INTNUMBER_	339
-#define	IPV6ADDR_	340
-#define	DUID_	341
+#define	CUSTOM_OPTION_	336
+#define	CONTAIN_	337
+#define	STRING_	338
+#define	HEXNUMBER_	339
+#define	INTNUMBER_	340
+#define	IPV6ADDR_	341
+#define	DUID_	342
 
 
 #line 169 "../bison++/bison.h"
@@ -451,7 +455,7 @@ static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int DS_LITE_TUNNEL_;
-static const int EXTRA_;
+static const int STRING_KEYWORD_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
 static const int AUTH_KEY_LEN_;
@@ -476,6 +480,7 @@ static const int CLIENT_VENDOR_CLASS_DATA_;
 static const int ALLOW_;
 static const int DENY_;
 static const int SUBSTRING_;
+static const int CUSTOM_OPTION_;
 static const int CONTAIN_;
 static const int STRING_;
 static const int HEXNUMBER_;
@@ -543,7 +548,7 @@ static const int DUID_;
 	,EXPERIMENTAL_=308
 	,ADDR_PARAMS_=309
 	,DS_LITE_TUNNEL_=310
-	,EXTRA_=311
+	,STRING_KEYWORD_=311
 	,AUTH_METHOD_=312
 	,AUTH_LIFETIME_=313
 	,AUTH_KEY_LEN_=314
@@ -568,12 +573,13 @@ static const int DUID_;
 	,ALLOW_=333
 	,DENY_=334
 	,SUBSTRING_=335
-	,CONTAIN_=336
-	,STRING_=337
-	,HEXNUMBER_=338
-	,INTNUMBER_=339
-	,IPV6ADDR_=340
-	,DUID_=341
+	,CUSTOM_OPTION_=336
+	,CONTAIN_=337
+	,STRING_=338
+	,HEXNUMBER_=339
+	,INTNUMBER_=340
+	,IPV6ADDR_=341
+	,DUID_=342
 
 
 #line 215 "../bison++/bison.h"

@@ -234,20 +234,24 @@ void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
     this->VendorSpec = vendor;
 }
 
-void TSrvCfgOptions::setExtraOption(SPtr<TSrvOptGeneric> custom, bool always) {
-	Log(Debug) << "Setting " << (always?"mandatory":"request-only")
-		       << custom->getOptType() << " generic option." << LogEnd;
+void TSrvCfgOptions::setExtraOption(SPtr<TOpt> custom, bool always) {
+	Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
+		   << custom->getOptType() << " generic option (length=" 
+		   << custom->getSize() << "." << LogEnd;
+
+	ExtraOpts.push_back(custom);
+/*
 	if (always)
 		ExtraOpts.push_back(custom);
 	else
-		CustomOpts.push_back(custom);
+	CustomOpts.push_back(custom);*/
 }
 
-TSrvOptGenericList& TSrvCfgOptions::getExtraOptions() {
+TOptList& TSrvCfgOptions::getExtraOptions() {
     return ExtraOpts;
 }
 
-TSrvOptGenericList& TSrvCfgOptions::getCustomOptions() {
+TOptList& TSrvCfgOptions::getCustomOptions() {
     return CustomOpts;
 }
 

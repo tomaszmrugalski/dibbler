@@ -106,9 +106,9 @@ public:
     bool supportVendorSpec();
     SPtr<TSrvOptVendorSpec> getVendorSpec(int num=0);
 
-    void setExtraOption(SPtr<TSrvOptGeneric> extra, bool always);
-    TSrvOptGenericList& getExtraOptions();
-    TSrvOptGenericList& getCustomOptions();
+    void setExtraOption(SPtr<TOpt> extra, bool always);
+    TOptList& getExtraOptions();
+    TOptList& getCustomOptions();
 
 private:
 
@@ -141,8 +141,8 @@ private:
     string NISDomain;
     string NISPDomain;
     List(TSrvOptVendorSpec) VendorSpec;
-	TSrvOptGenericList ExtraOpts; // extra options ALWAYS sent to client
-	TSrvOptGenericList CustomOpts; // extra options sent to client only if requested
+    TOptList ExtraOpts; // extra options ALWAYS sent to client
+    TOptList CustomOpts; // extra options sent to client only if requested
     unsigned int Lifetime;
 
     void SetDefaults();

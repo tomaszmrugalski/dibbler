@@ -11,6 +11,8 @@
 #include "SrvParsGlobalOpt.h"
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
+#include "OptAddr.h"
+#include "OptString.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
 #include "SrvCfgAddrClass.h"
@@ -107,7 +109,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, EXTRA_, STRING_KEYWORD_
+%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, STRING_KEYWORD_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -121,7 +123,7 @@ virtual ~SrvParser();
 %token CLIENT_VENDOR_CLASS_DATA_
 %token ALLOW_
 %token DENY_
-%token SUBSTRING_
+%token SUBSTRING_, CUSTOM_OPTION_
 %token CONTAIN_
 
 
@@ -193,7 +195,7 @@ InterfaceOptionDeclaration
 | NISPServerOption
 | NISPDomainOption
 | LifetimeOption
-| ExtraOptions
+| ExtraOption
 | PDDeclaration
 | VendorSpecOption
 | Client
@@ -284,7 +286,7 @@ ClientOption
 | NISPDomainOption
 | LifetimeOption
 | VendorSpecOption
-| ExtraOptions
+| ExtraOption
 | DsLiteTunnelAddr
 | DsLiteTunnelName
 | AddressReservation
@@ -751,25 +753,20 @@ DsLiteTunnelName
     ParserOptStack.getLast()->setDsLiteTunnelName(name);
 };
 
-ExtraOptions
-: ExtraOption
-| ExtraOptions ExtraOption
-
 ExtraOption
-:OPTION_ EXTRA_ Number_ '-' DUID_
+:OPTION_ Number '-' DUID_
 {
-    Log(Debug) << "Extra option defined: code=" << $3 << ", valuelen=" << $5.length << LogEnd;
-	SrvCfgIfaceLst.getLast().addExtraOption(new TSrvOptGeneric($3, $5.duid, $5.length, 0), true);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
+	SrvCfgIfaceLst.getLast()->setExtraOption(new TSrvOptGeneric($2, $4.duid, $4.length, 0), true);
 }
-|OPTION_ EXTRA_ Number ADDRESS_ IPV6ADDR_
+|OPTION_ Number ADDRESS_ IPV6ADDR_
 {
-	SrvCfgIfaceLst.getLast().addExtraOption(new TOptAddr($3, new TIPv6Addr($5), 0), true);
+    SrvCfgIfaceLst.getLast()->setExtraOption(new TOptAddr($2, new TIPv6Addr($4), 0), true);
 }
-|OPTION_ EXTRA_ Number STRING_KEYWORD_ STRING_
+|OPTION_ Number STRING_KEYWORD_ STRING_
 {
-	SrvCfgIfaceLst.getLast().addExtraOption(new TOptString($3, string($5), 0), true);
-}
-;
+    SrvCfgIfaceLst.getLast()->setExtraOption(new TOptString($2, string($4), 0), true);
+};
 
 IfaceMaxLeaseOption
 : IFACE_MAX_LEASE_ Number

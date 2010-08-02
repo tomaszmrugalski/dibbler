@@ -95,7 +95,6 @@ nis-domain          { return SrvParser::NIS_DOMAIN_; }
 nis\+-server        { return SrvParser::NISP_SERVER_; }
 nis\+-domain        { return SrvParser::NISP_DOMAIN_; }
 lifetime            { return SrvParser::LIFETIME_; }
-extra               { return SrvParser::EXTRA_; }
 cache-size          { return SrvParser::CACHE_SIZE_; }
 pd-class	    { return SrvParser::PDCLASS_; }
 pd-length	    { return SrvParser::PD_LENGTH_; }
@@ -131,6 +130,7 @@ allow		    { return SrvParser::ALLOW_; }
 deny 		    { return SrvParser::DENY_; }
 substring 	    { return SrvParser::SUBSTRING_; }
 contain 	    { return SrvParser::CONTAIN_; }
+string              { return SrvParser::STRING_KEYWORD_; }
 
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
