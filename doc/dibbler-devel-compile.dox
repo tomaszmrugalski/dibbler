@@ -44,7 +44,13 @@ make parser
  * Those 2 old Windows operating systems are only partially supported. Note that
  * even Microsoft does not support IPv6 on those systems. 
  *
- * @section compilationFlexBison 2.4 Flex and bison++ under Windows
+ * @section compilationMac 2.4 Compilation for Mac OS
+ * // @todo: describe Mac compilation
+ *
+ *
+ * @section compilationBSD 2.5 Compilation for FreeBSD
+
+ * @section compilationFlexBison 2.6 Flex and bison++ under Windows
  * Flex and bison++ tools are not required to successfully build Dibbler. They are 
  * only required, if changes are made to the parsers. Lexer and Parser files
  * (ClntCfgMgr/ClntLexer.*, ClntCfgMgr/ClntParser.*, SrvCfgMgr/SrvLexer.*, 
@@ -69,7 +75,7 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  #include <FlexLexer.h>
  @endverbatim 
  * 
- * You should add .\\ to include path if you have problem with missing @c FlexLexer.h.
+ * You should add .\\ to include path if you have problem with missing FlexLexer.h.
  * Also note that FlexLexer.h is modified (std:: added in several places,
  * @code <fstream.h> @endcode is replaced with @code <fstream> @endcode etc.)
  *
@@ -81,7 +87,7 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  * in a painful trial-and-error way. Also, it is strongly recommended to get
  * latest version of Flex/bison++ for Windows.
  * 
- * @section compilationDebRpm 2.5 DEB and RPM Packages
+ * @section compilationDebRpm 2.7 DEB and RPM Packages
  * There is a possibility to generate RPM (RadHat, Fedora Core, Mandrake,
  * PLD and lots of other distributions) and DEB (Debian, Knoppix and
  * other) packages. Before trying this trick, make sure that you have
@@ -94,12 +100,12 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  * make release-rpm
  * @endverbatim
  * 
- * @section compilationOpenWrt 2.6 Cross-compilation for OpenWRT
+ * @section compilationOpenWrt 2.8 Cross-compilation for OpenWRT
  * Dibbler is also part of the OpenWRT Linux distribution intended to
  * address broad range of embedded devices, like LinkSys routers and 
  * access points.
  *
- * @section compilationGentoo 2.7 Ebuild script for Gentoo Linux
+ * @section compilationGentoo 2.9 Ebuild script for Gentoo Linux
  * There is also ebuild script prepared for Gentoo users. It is located
  * in the Port-linux/gentoo directory. Dibbler is also part of the
  * Gentoo Linux distribution so make sure that you verify which version
@@ -109,7 +115,7 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  * to Gentoo community. Author no longer maintains it, but occasionally
  * retrieves latest version from Gentoo repositories.
  * 
- * @section compilationDistros 2.8 Dibbler in Linux distributions
+ * @section compilationDistros 2.10 Dibbler in Linux distributions
  * Dibbler is available in several distributions:
  * 
  *  - <a href="http://debian.org">Debian GNU/Linux</a> -- use standard tools
@@ -122,13 +128,13 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  *  - <a href="http://www.pld-linux.org">PLD GNU/Linux</a> -- use standard
  *     PLD's poldek tool to install dibbler package.
  * 
- * @section compilationEnvironment 2.9 Compilation environment
+ * @section compilationEnvironment 2.11 Compilation environment
  * When compilation is being performed in non-standard envrionment, it is a
  * good idea to examine and modify @c Makefile.inc file. Compiler name,
  * compilation and link options, used libraries and debugging options can
  * be modified there.
  * 
- * @section compilationDefaultValues 2.10 Changing default values
+ * @section compilationDefaultValues 2.12 Changing default values
  * Custom builds might be prepared with different than default
  * compilation options. Here is a list of features, which can be
  * customised:
@@ -136,7 +142,7 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  *   @c Mish/Logger.h+.
  * - @todo - describe remaining parameters
  * 
- * @section compilationModularFeatures 2.11 Modular features
+ * @section compilationModularFeatures 2.13 Modular features
  * In the 0.5.0 release, so called \e modular features were
  * introduced. It is now possible to enable or disable of the Dibbler
  * features. To set, which optional features should be compiled, modify
@@ -180,12 +186,12 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  * - @c MOD_DEBUG -- Enables some extra debugging features. If you are
  *   not core developer, you probably won't even notice.
  * 
- * @subsection compilationCross 2.12 Cross-compilation
+ * @subsection compilationCross 2.14 Cross-compilation
  * Since 0.6.1 version, dibbler supports cross-compilation. It was
  * possible in previous versions, but with considerable amount of work.
  * 
  * Following description has been provided by 
- * <a href="petr.pisar(at)atlas(dot)cz">Petr Pisar</a>. Thanks!
+ * <a href="mailto:petr.pisar(at)atlas(dot)cz">Petr Pisar</a>. Thanks!
  * 
  * In general, a toolchain has to be specified.
  * 

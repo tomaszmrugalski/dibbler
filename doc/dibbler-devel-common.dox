@@ -18,13 +18,13 @@ happen anytime soon.
 
 @section generalSVN 4.2 SVN repository
 
-@todo: Comment this
+@todo Comment this
 
 @section generalDocs 4.3 Documentation
-There are three parts of the documentation: User's Guide, Developer's
-Guide and a Code documentation. Both guides are written in LaTeX
-(*.tex files). To generate PDF files, you need to have LaTeX
-installed. To generate Code documentation, 
+There are two parts of the documentation: User's Guide and Developer's
+Guide. User's Guide is written in LaTeX (*.tex files). 
+To generate PDF files, you need to have LaTeX
+installed. To generate Developer's Guide documentation, 
 a tool called <a href"http://www.doxygen.org">Doxygen</a> is required. All
 documentation is of course available at
 <a href="http://klub.com.pl/dhcpv6">Dibbler's homepage</a>.
@@ -34,16 +34,16 @@ To generate all documentation, type (in Dibbler source directory):
 make doc oxygen
 @endverbatim
 
-In this section various common aspects of the Dibbler internal
-workings are decribed.
+Note that versions 0.7.3 and earlier had Developer's Guide and Code 
+documentation separated. Those two documents are merged and are Doxygen
+based.
 
 @section generalMemoryCpu 4.4 Memory/CPU usage
 This section provides basic insight about memory and CPU requirements
-for the dibbler components. 
-
-Folowing paragraphs describe memory and CPU usage measurements. They
+for the dibbler components. Folowing paragraphs describe memory and 
+CPU usage measurements. They
 were taken on a AMD Athlon 2800+ (actual clock speed: 2083MHz),
-running under Linux 2.6.17.3. Dibbler was compiled by gcc 4.1.2
+running under Linux 2.6.17.3. Dibbler was compiled with gcc 4.1.2
 (exact version number printed by @c gcc @c --version command:
 @verbatim
 gcc (GCC) 4.1.2 20060715 (prerelease) (Debian 4.1.1-9)
@@ -223,10 +223,10 @@ are eight levels of logging:
 
  - \b Critical -- Used in situations critical to the application,
   e.g. application shutdown. Fatal errors should be logged on this
-  level. Called with @code Log(Crit) << "..." << LogEnd @endcode.
+  level. Called with @code Log(Crit) << "..." << LogEnd @endcode
 
  - \b Error -- Used to report error situations. For example, problems
-  with binding sockets. Called with @code Log(Error) << "..." << LogEnd @endcode.
+  with binding sockets. Called with @code Log(Error) << "..." << LogEnd @endcode
 
  - \b Warning -- Used to report RFC violations, e.g. missing required
   options, invalid parameters and so on. Called with @code Log(Warning) 
@@ -242,7 +242,7 @@ are eight levels of logging:
 
  - \b Debug -- Used to report internal informations. Knowledge about
   Dibbler source code might be needed to understand those messages.
-  Called with @code Log(Debug) << "..." << LogEnd @endcode.
+  Called with @code Log(Debug) << "..." << LogEnd @endcode
 
 @section srcNames 5.4 Naming convention
 To avoid confussion, various prefixes are used in class and variable
@@ -260,7 +260,6 @@ Here are examples of some class names:
 
  - \b TAddrMgr -- Address manager, common version.
  - \b TClntAddrMgr -- Address manager, client version.
- - \b TAddrIface -- Interface representation, used in address manager.
  - \b TAddrAddr -- Address representation used in address manager.
  - \b TSrvIfaceMgr -- Interface manager, server version.
  - \b TClntIfaceIface -- Interface representation used in client
@@ -270,9 +269,9 @@ Here are examples of some class names:
  - \b TIfaceSocket -- Socket used in the interface manager.
  - \b TClntCfgAddr -- Address used in the client config manager.
 
-Also note that class function names start with small letters
-(e.g. bool TOpt::isValid();) and class members start with capital
-letters (e.g. bool TOpt::IsValid;).
+Also note that class members start with small letters
+(e.g. bool TOpt::isValid() ) and class members start with capital
+letters (e.g. bool TOpt::IsValid ).
 
 
 

@@ -38,7 +38,7 @@
  * - @code int ipaddr_del(const char* ifacename, int ifindex, const char* addr)@endcode 
  *  Removes address addr (specified in plain text) from the interface ifacename.
  * 
- * - @code int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse)] @endcode 
+ * - @code int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse) @endcode 
  * Creates socket used to read and write data to
  * the ifacename/ifaceid interface, bound to address addr (specified in plain
  * text) and to the port. thisifaceonly parameter specifies if the socket
@@ -100,7 +100,7 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char*domain);
  * (IPv6 address Plain-To-Network), inet_ntop4 (IPv4 address Network-To-Plain)
  * and inet_ntop6 (IPv6 address Network-To-Plain) functions, which should be
  * present in the system. If they are not, port-specific part of the dibbler
- * should provide them.
+ * should provide them. See misc/addrpack.c for implementation used in Windows.
  * 
  * Also function microsleep(int x) should make current process dormant for x
  * microseconds.

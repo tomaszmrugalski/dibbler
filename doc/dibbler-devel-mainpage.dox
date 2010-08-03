@@ -12,6 +12,8 @@
  *   - @subpage compilationLinux
  *   - @subpage compilationWin32
  *   - @subpage compilationWinNT
+ *   - @subpage compilationMac
+ *   - @subpage compilationBSD
  *   - @subpage compilationFlexBison
  *   - @subpage compilationDebRpm
  *   - @subpage compilationOpenWrt
@@ -50,14 +52,14 @@
  *
  * @section intro 1. Introduction
  * Welcome to the Dibbler developer's guide. This document describes
- * various aspects of the compilation and installation of Dibbler software.
- * and client. Detailed description of the internal architecture is also
- * provided. People with programming background can find useful
+ * various aspects of the compilation and installation of Dibbler software,
+ * detailed description of the internal architecture, common coding practice
+ * and many more. People with programming background can find useful
  * informations here. Main purpose of this document is to help
  * contributors to quickly know Dibbler from the inside.
  * 
- * This document is intenteded just as its title states -- a guide. It is
- * not a thorough code description. Dibbler code was developed since 2003,
- * but unfortunately providing clear documentation was never priority.
+ * This document is intended just as its title states -- a guide. It is
+ * not a thorough code description. Dibbler code is under development since 
+  * 2003, but unfortunately providing clear documentation was never priority.
  *
  */
