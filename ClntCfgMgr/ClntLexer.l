@@ -47,7 +47,9 @@ namespace std {
 [ \t]    ; // ignore TABs and spaces
 iface                 { return ClntParser::IFACE_;}
 no-config             { return ClntParser::NO_CONFIG_;}
-address               { return ClntParser::ADDRES_;}
+address               { return ClntParser::ADDRESS_;}
+string                { return ClntParser::STRING_KEYWORD_; }
+address-list          { return ClntParser::ADDRESS_LIST_; }
 name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
 ta                    { return ClntParser::TA_; }

@@ -21,6 +21,7 @@
 #include "SmartPtr.h"
 #include "Container.h"
 #include "ClntParser.h"
+#include "ClntOptGeneric.h"
 #include "ClntParsGlobalOpt.h"
 #include "ClntCfgIface.h"
 #include "ClntCfgAddr.h"
@@ -30,33 +31,35 @@
 #include "ClntOptVendorSpec.h"
 #include "CfgMgr.h"
 #include "Logger.h"
+#include "OptAddr.h"
+#include "OptAddrLst.h"
+#include "Opt.h"
+#include "OptString.h"
 
 using namespace std;
     
 #define YY_USE_CLASS
 #define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-List(TClntParsGlobalOpt) ParserOptStack;			                        \
+List(TClntParsGlobalOpt) ParserOptStack;			            \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
 List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
-List(TClntCfgIA)    ClntCfgIALst;		                                    \
+List(TClntCfgIA)    ClntCfgIALst;		                            \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-TContainer<SPtr<TStationID> > PresentStationLst;                        \
-TContainer<SPtr<TIPv6Addr> > PresentAddrLst;                            \
-TContainer<SPtr<string> > PresentStringLst;                             \
-List(TClntOptVendorSpec) VendorSpec;					                    \
-/*method check whether interface with id=ifaceNr has been */                \
-/*already declared */                                                       \
-bool CheckIsIface(int ifaceNr);                                             \
-/* method check if interface with id=ifaceName has been already declared */ \
-bool CheckIsIface(string ifaceName);                                        \
-void StartIfaceDeclaration();                                               \
+List(TStationID) PresentStationLst;		                            \
+List(TIPv6Addr) PresentAddrLst;			                            \
+List(string) PresentStringLst;	                                            \
+List(TClntOptVendorSpec) VendorSpec;					    \
+bool IfaceDefined(int ifaceNr);                                             \
+bool IfaceDefined(string ifaceName);                                        \
+bool StartIfaceDeclaration(string ifaceName);                               \
+bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
 void StartIADeclaration(bool aggregation);                                  \
@@ -80,7 +83,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;
 
-#line 79 "ClntParser.y"
+#line 82 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -286,7 +289,7 @@ typedef
 #define	IA_	281
 #define	TA_	282
 #define	IAID_	283
-#define	ADDRES_	284
+#define	ADDRESS_	284
 #define	NAME_	285
 #define	IPV6ADDR_	286
 #define	WORKDIR_	287
@@ -326,6 +329,8 @@ typedef
 #define	ADDR_PARAMS_	321
 #define	REMOTE_AUTOCONF_	322
 #define	DS_LITE_TUNNEL_	323
+#define	ADDRESS_LIST_	324
+#define	STRING_KEYWORD_	325
 
 
 #line 169 "../bison++/bison.h"
@@ -400,7 +405,7 @@ static const int PREFERRED_SERVERS_;
 static const int IA_;
 static const int TA_;
 static const int IAID_;
-static const int ADDRES_;
+static const int ADDRESS_;
 static const int NAME_;
 static const int IPV6ADDR_;
 static const int WORKDIR_;
@@ -440,6 +445,8 @@ static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
 static const int DS_LITE_TUNNEL_;
+static const int ADDRESS_LIST_;
+static const int STRING_KEYWORD_;
 
 
 #line 212 "../bison++/bison.h"
@@ -474,7 +481,7 @@ static const int DS_LITE_TUNNEL_;
 	,IA_=281
 	,TA_=282
 	,IAID_=283
-	,ADDRES_=284
+	,ADDRESS_=284
 	,NAME_=285
 	,IPV6ADDR_=286
 	,WORKDIR_=287
@@ -514,6 +521,8 @@ static const int DS_LITE_TUNNEL_;
 	,ADDR_PARAMS_=321
 	,REMOTE_AUTOCONF_=322
 	,DS_LITE_TUNNEL_=323
+	,ADDRESS_LIST_=324
+	,STRING_KEYWORD_=325
 
 
 #line 215 "../bison++/bison.h"

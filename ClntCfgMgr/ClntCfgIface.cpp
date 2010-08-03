@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 #include "ClntCfgIface.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -48,8 +49,8 @@ void TClntCfgIface::setDefaults() {
     this->LifetimeState   = STATE_DISABLED;
     this->PrefixDelegationState = STATE_DISABLED;
     this->VendorSpecState = STATE_DISABLED;
-//  this->DsLiteTunnelName = STATE_DISABLED;
-//  this->DsLiteTunnelAddr = STATE_DISABLED;
+
+    ExtraOpts.clear();
 }
 
 void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
@@ -467,6 +468,26 @@ int  TClntCfgIface::getPrefixLength() {
     return this->PrefixLength;
 }
 
+
+void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, bool always) {
+    SPtr<TOptionStatus> optStatus = new TOptionStatus();
+    optStatus->OptionType = extra->getOptType();
+    optStatus->Option = extra;
+    optStatus->Always = true;
+    ExtraOpts.push_back(optStatus);
+}
+
+void TClntCfgIface::addExtraOption(int opttype, bool always) {
+
+}
+
+TClntCfgIface::TOptionStatusLst& TClntCfgIface::getExtraOptions() {
+
+}
+
+SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
+
+}
 
 
 // --------------------------------------------------------------------

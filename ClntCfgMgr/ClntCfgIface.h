@@ -11,13 +11,9 @@
  * $Id: ClntCfgIface.h,v 1.20 2008-08-29 00:07:27 thomson Exp $
  */
 
-class TClntCfgIface;
 #ifndef CLNTCFGIFACE_H
 #define CLNTCFGIFACE_H
-
-#include <iostream>
-#include <iomanip>
-#include <sstream>
+#include <list>
 
 #include "Container.h"
 #include "StationID.h"
@@ -34,8 +30,19 @@ class TClntCfgIface;
 
 class TClntCfgIface
 {
-	friend std::ostream& operator<<(std::ostream&,TClntCfgIface&);
+    friend std::ostream& operator<<(std::ostream&,TClntCfgIface&);
 public:
+    class TOptionStatus
+    {
+    public:
+        TOptionStatus(): OptionType(0), State(STATE_NOTCONFIGURED), Option(0), Always(true) {};
+	int OptionType;
+	EState State;
+	SPtr<TOpt> Option;
+	bool Always; // show this option be sent always? (even when already configured?)
+    };
+    typedef std::list< SPtr<TOptionStatus> > TOptionStatusLst;
+    
     TClntCfgIface(string ifaceName);
     TClntCfgIface(int ifaceNr);
 
@@ -172,6 +179,12 @@ public:
     SPtr<TClntOptVendorSpec> getVendorSpec();
     int getVendorSpecCount();
 
+    // --- custom/extra options ---
+    void addExtraOption(SPtr<TOpt> extra, bool always);
+    void addExtraOption(int opttype, bool always);
+    TOptionStatusLst& getExtraOptions();
+    SPtr<TOptionStatus> getExtaOptionState(int type);
+
     // --- option: KeyGeneration ---
     EState getKeyGenerationState();
     void setKeyGenerationState(EState state);
@@ -245,6 +258,8 @@ private:
     bool ReqVendorSpec;
 
     EDsLiteTunnelMode DsLiteTunnelMode;
+
+    TOptionStatusLst ExtraOpts; // extra options to be sent to server
 };
 
 #endif 

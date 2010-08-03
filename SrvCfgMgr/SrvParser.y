@@ -751,14 +751,17 @@ DsLiteTunnelName
 ExtraOption
 :OPTION_ Number '-' DUID_
 {
-    Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
     SPtr<TOpt> opt = new TSrvOptGeneric($2, $4.duid, $4.length, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", length=" << $4.length << LogEnd;
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
 {
-    SPtr<TOpt> opt = new TOptAddr($2, new TIPv6Addr($4), 0);
+    SPtr<TIPv6Addr> addr(new TIPv6Addr($4));
+
+    SPtr<TOpt> opt = new TOptAddr($2, addr, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << addr->getPlain() << LogEnd;
 }
 |OPTION_ Number ADDRESS_LIST_  
 {
@@ -767,11 +770,13 @@ ExtraOption
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.size() << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
     SPtr<TOpt> opt = new TOptString($2, string($4), 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
 };
 
 IfaceMaxLeaseOption

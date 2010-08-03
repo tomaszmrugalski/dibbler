@@ -8,6 +8,7 @@
 #include "SmartPtr.h"
 #include "Container.h"
 #include "ClntParser.h"
+#include "ClntOptGeneric.h"
 #include "ClntParsGlobalOpt.h"
 #include "ClntCfgIface.h"
 #include "ClntCfgAddr.h"
@@ -17,6 +18,10 @@
 #include "ClntOptVendorSpec.h"
 #include "CfgMgr.h"
 #include "Logger.h"
+#include "OptAddr.h"
+#include "OptAddrLst.h"
+#include "Opt.h"
+#include "OptString.h"
 
 using namespace std;
     
@@ -30,27 +35,25 @@ using namespace std;
 
 %define MEMBERS yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-List(TClntParsGlobalOpt) ParserOptStack;			                        \
+List(TClntParsGlobalOpt) ParserOptStack;			            \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
 List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
-List(TClntCfgIA)    ClntCfgIALst;		                                    \
+List(TClntCfgIA)    ClntCfgIALst;		                            \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-TContainer<SPtr<TStationID> > PresentStationLst;                        \
-TContainer<SPtr<TIPv6Addr> > PresentAddrLst;                            \
-TContainer<SPtr<string> > PresentStringLst;                             \
-List(TClntOptVendorSpec) VendorSpec;					                    \
-/*method check whether interface with id=ifaceNr has been */                \
-/*already declared */                                                       \
-bool CheckIsIface(int ifaceNr);                                             \
-/* method check if interface with id=ifaceName has been already declared */ \
-bool CheckIsIface(string ifaceName);                                        \
-void StartIfaceDeclaration();                                               \
+List(TStationID) PresentStationLst;		                            \
+List(TIPv6Addr) PresentAddrLst;			                            \
+List(string) PresentStringLst;	                                            \
+List(TClntOptVendorSpec) VendorSpec;					    \
+bool IfaceDefined(int ifaceNr);                                             \
+bool IfaceDefined(string ifaceName);                                        \
+bool StartIfaceDeclaration(string ifaceName);                               \
+bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
 void StartIADeclaration(bool aggregation);                                  \
@@ -99,7 +102,7 @@ namespace std
 %token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_, FQDN_S_
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
-%token IA_,TA_,IAID_,ADDRES_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
+%token IA_,TA_,IAID_,ADDRESS_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
 %token OPTION_, SCRIPTS_DIR_, NOTIFY_SCRIPTS_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_
 %token <strval>     STRING_
@@ -115,6 +118,7 @@ namespace std
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_, DS_LITE_TUNNEL_
+%token ADDRESS_LIST_, STRING_KEYWORD_
 %type  <ival> Number
 
 %%
@@ -175,6 +179,7 @@ InterfaceOptionDeclaration
 | DsLiteTunnelOption
 | RejectServersOption
 | PreferServersOption
+| ExtraOption
 ;
 
 IAOptionDeclaration
@@ -192,14 +197,11 @@ InterfaceDeclaration
 /////////////////////////////////////////////////////////////////////////////
 :IFACE_ STRING_ '{' 
 {
-    CheckIsIface(string($2)); //If no - everything is ok
-    StartIfaceDeclaration();
+    if (!StartIfaceDeclaration($2))
+	YYABORT;
 }
 InterfaceDeclarationsList '}'
 {
-    //Information about new interface has been read
-    //Add it to list of read interfaces
-    ClntCfgIfaceLst.append(new TClntCfgIface($2));
     delete [] $2;
     if (!EndIfaceDeclaration())
 	YYABORT;
@@ -210,12 +212,13 @@ InterfaceDeclarationsList '}'
 /////////////////////////////////////////////////////////////////////////////
 |IFACE_ Number '{' 
 {
-    CheckIsIface($2);   //If no - everything is ok
-    StartIfaceDeclaration();
+    if (!IfaceDefined($2))
+	YYABORT;
+    if (!StartIfaceDeclaration($2))
+	YYABORT;
 }
 InterfaceDeclarationsList '}'
 {
-    ClntCfgIfaceLst.append(new TClntCfgIface($2) );
     if (!EndIfaceDeclaration())
 	YYABORT;
 }
@@ -225,7 +228,8 @@ InterfaceDeclarationsList '}'
 /////////////////////////////////////////////////////////////////////////////
 |IFACE_ STRING_ '{' '}' 
 {
-    CheckIsIface(string($2));
+    if (!IfaceDefined(string($2)))
+	YYABORT;
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
     delete [] $2;
     EmptyIface();
@@ -236,7 +240,8 @@ InterfaceDeclarationsList '}'
 /////////////////////////////////////////////////////////////////////////////
 |IFACE_ Number '{' '}'
 {
-    CheckIsIface($2);
+    if (!IfaceDefined($2))
+	YYABORT;
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
     EmptyIface();
 }
@@ -246,7 +251,8 @@ InterfaceDeclarationsList '}'
 /////////////////////////////////////////////////////////////////////////////
 |IFACE_ STRING_ NO_CONFIG_
 {
-    CheckIsIface(string($2));
+    if (!IfaceDefined(string($2)))
+	YYABORT;
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
     ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
     ClntCfgIfaceLst.getLast()->setNoConfig();
@@ -258,7 +264,8 @@ InterfaceDeclarationsList '}'
 /////////////////////////////////////////////////////////////////////////////
 |IFACE_ Number NO_CONFIG_
 {
-    CheckIsIface($2);
+    if (!IfaceDefined($2))
+	YYABORT;
     ClntCfgIfaceLst.append(SPtr<TClntCfgIface> (new TClntCfgIface($2)) );
     ClntCfgIfaceLst.getLast()->setOptions(ParserOptStack.getLast());
     ClntCfgIfaceLst.getLast()->setNoConfig();
@@ -383,7 +390,7 @@ IADeclarationList
 ;
 
 ADDRESDeclaration
-: ADDRES_ '{' 
+: ADDRESS_ '{' 
 {
     SPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
     SPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
@@ -398,7 +405,7 @@ ADDRESDeclarationList '}'
 	ParserOptStack.delLast();
 }
 //In this agregated declaration no address hints are allowed
-|ADDRES_ Number '{' 
+|ADDRESS_ Number '{' 
 {
     ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
     ParserOptStack.getLast()->setAddrHint(false);
@@ -409,22 +416,22 @@ ADDRESDeclarationList '}'
     ParserOptStack.delLast();
 }
 
-|ADDRES_ Number '{' '}'
+|ADDRESS_ Number '{' '}'
 {
     for (int i=0;i<$2; i++) EmptyAddr();
 }
 
-|ADDRES_ '{' '}'
+|ADDRESS_ '{' '}'
 {
     EmptyAddr();
 }
 
-|ADDRES_ Number
+|ADDRESS_ Number
 {
     for (int i=0;i<$2; i++) EmptyAddr();
 }
 
-|ADDRES_ 
+|ADDRESS_ 
 {
     EmptyAddr();
 }
@@ -978,44 +985,91 @@ VendorSpecList
 ;
 
 DsLiteTunnelOption
-: OPTION_ DS_LITE_TUNNEL_         { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_BOTH); }
-| OPTION_ DS_LITE_TUNNEL_ ADDRES_ { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_ADDR); }
-| OPTION_ DS_LITE_TUNNEL_ NAME_   { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_NAME); }
+: OPTION_ DS_LITE_TUNNEL_          { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_BOTH); }
+| OPTION_ DS_LITE_TUNNEL_ ADDRESS_ { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_ADDR); }
+| OPTION_ DS_LITE_TUNNEL_ NAME_    { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_NAME); }
 ;
+
+ExtraOption
+:OPTION_ Number '-' DUID_
+{
+    Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
+    SPtr<TOpt> opt = new TClntOptGeneric($2, $4.duid, $4.length, 0);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
+}
+|OPTION_ Number ADDRESS_ IPV6ADDR_
+{
+    SPtr<TIPv6Addr> addr(new TIPv6Addr($4, true));
+
+    SPtr<TOpt> opt = new TOptAddr($2, addr, 0);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << $4 << LogEnd;
+}
+|OPTION_ Number ADDRESS_LIST_  
+{
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.count() << LogEnd;
+}
+|OPTION_ Number STRING_KEYWORD_ STRING_
+{
+    SPtr<TOpt> opt = new TOptString($2, string($4), 0);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
+};
+
 %%
 
 /////////////////////////////////////////////////////////////////////////////
 // programs section
 /////////////////////////////////////////////////////////////////////////////
 
-//
+
 /** 
  * method check whether interface with id=ifaceNr has been 
- * already declared. YYABORT macro is called to abort parsing.
+ * already declared. 
  * 
- * @param ifaceNr 
+ * @param ifindex interface index of the checked interface
  * 
  * @return true if not declared.
  */
-bool ClntParser::CheckIsIface(int ifaceNr)
-{
-  SPtr<TClntCfgIface> ptr;
-  ClntCfgIfaceLst.first();
-  while (ptr=ClntCfgIfaceLst.get())
-    if ((ptr->getID())==ifaceNr) YYABORT;
-  return true;
-}
-    
-//method check whether interface with id=ifaceName has been
-//already declared 
-bool ClntParser::CheckIsIface(string ifaceName)
+bool ClntParser::IfaceDefined(int ifindex)
 {
   SPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
   while (ptr=ClntCfgIfaceLst.get())
   {
-    string presName=ptr->getName();
-    if (presName==ifaceName) YYABORT;
+      if ((ptr->getID())==ifindex) {
+	  Log(Crit) << "Interface with ifindex=" << ifindex << " is already defined." << LogEnd;
+	  return false;
+      }
+  }
+  return true;
+}
+    
+//method check whether interface with id=ifaceName has been
+//already declared 
+/** 
+ * method check whether interface with specified name has been 
+ * already declared. 
+ * 
+ * @param ifaceName name of the checked interface
+ * 
+ * @return true if not declared.
+ */
+bool ClntParser::IfaceDefined(string ifaceName)
+{
+  SPtr<TClntCfgIface> ptr;
+  ClntCfgIfaceLst.first();
+  while (ptr=ClntCfgIfaceLst.get())
+  {
+      if (ptr->getName()==ifaceName) {
+	  Log(Crit) << "Interface " << ifaceName << " is already defined." << LogEnd;
+	  return false;
+      }
   };
   return true;
 }
@@ -1024,13 +1078,38 @@ bool ClntParser::CheckIsIface(string ifaceName)
  * creates new scope appropriately for interface options and declarations
  * clears all lists except the list of interfaces and adds new group
  */
-void ClntParser::StartIfaceDeclaration()
+bool ClntParser::StartIfaceDeclaration(string ifaceName)
 {
-  //Interface scope, so parameters associated with global scope are pushed on stack
-  ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
-  ClntCfgIALst.clear();
-  ClntCfgAddrLst.clear();
-  this->VendorSpec.clear();
+    if (!IfaceDefined(ifaceName)) 
+	return false;
+
+    ClntCfgIfaceLst.append(new TClntCfgIface(ifaceName));
+
+    //Interface scope, so parameters associated with global scope are pushed on stack
+    ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
+    ClntCfgIALst.clear();
+    ClntCfgAddrLst.clear();
+    this->VendorSpec.clear();
+    return true;
+}
+
+/** 
+ * creates new scope appropriately for interface options and declarations
+ * clears all lists except the list of interfaces and adds new group
+ */
+bool ClntParser::StartIfaceDeclaration(int ifindex)
+{
+    if (!IfaceDefined(ifindex)) 
+	return false;
+
+    ClntCfgIfaceLst.append(new TClntCfgIface(ifindex));
+    
+    //Interface scope, so parameters associated with global scope are pushed on stack
+    ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
+    ClntCfgIALst.clear();
+    ClntCfgAddrLst.clear();
+    this->VendorSpec.clear();
+    return true;
 }
 
 bool ClntParser::EndIfaceDeclaration()
