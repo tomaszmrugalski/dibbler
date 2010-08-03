@@ -18,14 +18,13 @@
 #include "Logger.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
- :DsLiteTunnelAddr(0), DsLiteTunnelName(0)
 {
-    this->Unicast       = 0;
-    this->Preference    = SERVER_DEFAULT_PREFERENCE;
-    this->RapidCommit   = SERVER_DEFAULT_RAPIDCOMMIT;
-    this->ClntMaxLease  = SERVER_DEFAULT_CLNTMAXLEASE;
-    this->IfaceMaxLease = SERVER_DEFAULT_IFACEMAXLEASE;
-    this->LeaseQuery    = false; // don't support leasequery unless explicitly configured to do so
+    Unicast       = 0;
+    Preference    = SERVER_DEFAULT_PREFERENCE;
+    RapidCommit   = SERVER_DEFAULT_RAPIDCOMMIT;
+    ClntMaxLease  = SERVER_DEFAULT_CLNTMAXLEASE;
+    IfaceMaxLease = SERVER_DEFAULT_IFACEMAXLEASE;
+    LeaseQuery    = false; // don't support leasequery unless explicitly configured to do so
 
     // options
     this->DNSServerSupport  = false;

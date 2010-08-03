@@ -33,6 +33,7 @@ public:
     SPtr<TIPv6Addr> getAddr();
     int countAddr();
     bool isValid();
+    virtual bool doDuties() { return true; } // does nothing on its own
 protected:
     List(TIPv6Addr) AddrLst;
     bool Valid;

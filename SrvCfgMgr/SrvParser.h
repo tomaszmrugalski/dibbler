@@ -25,6 +25,7 @@
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
 #include "OptAddr.h"
+#include "OptAddrLst.h"
 #include "OptString.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
@@ -56,19 +57,16 @@ List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc
 List(string) PresentStringLst;             /* string list */                         \
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
-SPtr<TDUID> duidNew;                                                                 \
 SPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
-int VendorEnterpriseNumber;                                                          \
 List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
-/*method check whether interface with id=ifaceNr has been already declared */        \
 bool IfaceDefined(int ifaceNr);                                                      \
-/*method check whether interface with id=ifaceName has been already declared*/       \
 bool IfaceDefined(string ifaceName);                                                 \
-void StartIfaceDeclaration();                                                        \
+bool StartIfaceDeclaration(string iface);                                            \
+bool StartIfaceDeclaration(int ifindex);                                             \
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
@@ -84,7 +82,7 @@ virtual ~SrvParser();
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 83 "SrvParser.y"
+#line 81 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -319,32 +317,32 @@ typedef
 #define	EXPERIMENTAL_	308
 #define	ADDR_PARAMS_	309
 #define	DS_LITE_TUNNEL_	310
-#define	STRING_KEYWORD_	311
-#define	AUTH_METHOD_	312
-#define	AUTH_LIFETIME_	313
-#define	AUTH_KEY_LEN_	314
-#define	DIGEST_NONE_	315
-#define	DIGEST_PLAIN_	316
-#define	DIGEST_HMAC_MD5_	317
-#define	DIGEST_HMAC_SHA1_	318
-#define	DIGEST_HMAC_SHA224_	319
-#define	DIGEST_HMAC_SHA256_	320
-#define	DIGEST_HMAC_SHA384_	321
-#define	DIGEST_HMAC_SHA512_	322
-#define	ACCEPT_LEASEQUERY_	323
-#define	CLIENT_CLASS_	324
-#define	MATCH_IF_	325
-#define	EQ_	326
-#define	AND_	327
-#define	OR_	328
-#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	329
-#define	CLIENT_VENDOR_SPEC_DATA_	330
-#define	CLIENT_VENDOR_CLASS_EN_	331
-#define	CLIENT_VENDOR_CLASS_DATA_	332
-#define	ALLOW_	333
-#define	DENY_	334
-#define	SUBSTRING_	335
-#define	CUSTOM_OPTION_	336
+#define	AUTH_METHOD_	311
+#define	AUTH_LIFETIME_	312
+#define	AUTH_KEY_LEN_	313
+#define	DIGEST_NONE_	314
+#define	DIGEST_PLAIN_	315
+#define	DIGEST_HMAC_MD5_	316
+#define	DIGEST_HMAC_SHA1_	317
+#define	DIGEST_HMAC_SHA224_	318
+#define	DIGEST_HMAC_SHA256_	319
+#define	DIGEST_HMAC_SHA384_	320
+#define	DIGEST_HMAC_SHA512_	321
+#define	ACCEPT_LEASEQUERY_	322
+#define	CLIENT_CLASS_	323
+#define	MATCH_IF_	324
+#define	EQ_	325
+#define	AND_	326
+#define	OR_	327
+#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	328
+#define	CLIENT_VENDOR_SPEC_DATA_	329
+#define	CLIENT_VENDOR_CLASS_EN_	330
+#define	CLIENT_VENDOR_CLASS_DATA_	331
+#define	ALLOW_	332
+#define	DENY_	333
+#define	SUBSTRING_	334
+#define	STRING_KEYWORD_	335
+#define	ADDRESS_LIST_	336
 #define	CONTAIN_	337
 #define	STRING_	338
 #define	HEXNUMBER_	339
@@ -452,7 +450,6 @@ static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int DS_LITE_TUNNEL_;
-static const int STRING_KEYWORD_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
 static const int AUTH_KEY_LEN_;
@@ -477,7 +474,8 @@ static const int CLIENT_VENDOR_CLASS_DATA_;
 static const int ALLOW_;
 static const int DENY_;
 static const int SUBSTRING_;
-static const int CUSTOM_OPTION_;
+static const int STRING_KEYWORD_;
+static const int ADDRESS_LIST_;
 static const int CONTAIN_;
 static const int STRING_;
 static const int HEXNUMBER_;
@@ -545,32 +543,32 @@ static const int DUID_;
 	,EXPERIMENTAL_=308
 	,ADDR_PARAMS_=309
 	,DS_LITE_TUNNEL_=310
-	,STRING_KEYWORD_=311
-	,AUTH_METHOD_=312
-	,AUTH_LIFETIME_=313
-	,AUTH_KEY_LEN_=314
-	,DIGEST_NONE_=315
-	,DIGEST_PLAIN_=316
-	,DIGEST_HMAC_MD5_=317
-	,DIGEST_HMAC_SHA1_=318
-	,DIGEST_HMAC_SHA224_=319
-	,DIGEST_HMAC_SHA256_=320
-	,DIGEST_HMAC_SHA384_=321
-	,DIGEST_HMAC_SHA512_=322
-	,ACCEPT_LEASEQUERY_=323
-	,CLIENT_CLASS_=324
-	,MATCH_IF_=325
-	,EQ_=326
-	,AND_=327
-	,OR_=328
-	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=329
-	,CLIENT_VENDOR_SPEC_DATA_=330
-	,CLIENT_VENDOR_CLASS_EN_=331
-	,CLIENT_VENDOR_CLASS_DATA_=332
-	,ALLOW_=333
-	,DENY_=334
-	,SUBSTRING_=335
-	,CUSTOM_OPTION_=336
+	,AUTH_METHOD_=311
+	,AUTH_LIFETIME_=312
+	,AUTH_KEY_LEN_=313
+	,DIGEST_NONE_=314
+	,DIGEST_PLAIN_=315
+	,DIGEST_HMAC_MD5_=316
+	,DIGEST_HMAC_SHA1_=317
+	,DIGEST_HMAC_SHA224_=318
+	,DIGEST_HMAC_SHA256_=319
+	,DIGEST_HMAC_SHA384_=320
+	,DIGEST_HMAC_SHA512_=321
+	,ACCEPT_LEASEQUERY_=322
+	,CLIENT_CLASS_=323
+	,MATCH_IF_=324
+	,EQ_=325
+	,AND_=326
+	,OR_=327
+	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=328
+	,CLIENT_VENDOR_SPEC_DATA_=329
+	,CLIENT_VENDOR_CLASS_EN_=330
+	,CLIENT_VENDOR_CLASS_DATA_=331
+	,ALLOW_=332
+	,DENY_=333
+	,SUBSTRING_=334
+	,STRING_KEYWORD_=335
+	,ADDRESS_LIST_=336
 	,CONTAIN_=337
 	,STRING_=338
 	,HEXNUMBER_=339

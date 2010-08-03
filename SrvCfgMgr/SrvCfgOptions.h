@@ -106,8 +106,9 @@ public:
     bool supportVendorSpec();
     SPtr<TSrvOptVendorSpec> getVendorSpec(int num=0);
 
-    void setExtraOption(SPtr<TOpt> extra, bool always);
+    void addExtraOption(SPtr<TOpt> extra, bool always);
     TOptList& getExtraOptions();
+    SPtr<TOpt> getCustomOption(int type);
     TOptList& getCustomOptions();
 
 private:

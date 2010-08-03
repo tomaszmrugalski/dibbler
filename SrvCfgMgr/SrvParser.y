@@ -12,6 +12,7 @@
 #include "SrvParsClassOpt.h"
 #include "SrvParsIfaceOpt.h"
 #include "OptAddr.h"
+#include "OptAddrLst.h"
 #include "OptString.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
@@ -188,6 +189,8 @@ InterfaceOptionDeclaration
 | NISDomainOption
 | NISPServerOption
 | NISPDomainOption
+| DsLiteTunnelAddr
+| DsLiteTunnelName
 | LifetimeOption
 | ExtraOption
 | PDDeclaration
@@ -729,19 +732,19 @@ AddrParams
 };
 
 DsLiteTunnelAddr
-: DS_LITE_TUNNEL_ IPV6ADDR_
+: OPTION_ DS_LITE_TUNNEL_ IPV6ADDR_
 {
-    SPtr<TIPv6Addr> addr = new TIPv6Addr($2);
+    SPtr<TIPv6Addr> addr = new TIPv6Addr($3);
     Log(Info) << "Enabling DS-Lite tunnel option, address=" << addr->getPlain() << LogEnd;
-    SPtr<TOpt> tunnelAddr = new TOptAddr(OPTION_DS_LITE_ADDR, add, 0);
+    SPtr<TOpt> tunnelAddr = new TOptAddr(OPTION_DS_LITE_ADDR, addr, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(tunnelAddr, false);
 };
 
 DsLiteTunnelName
-: DS_LITE_TUNNEL_ STRING_
+: OPTION_ DS_LITE_TUNNEL_ STRING_
 {
-    SPtr<TOpt> tunnelName = new TOptString(OPTION_DS_LITE_NAME, name, 0);
-    Log(Info) << "Enabling DS-Lite tunnel option, name=" << $2 << LogEnd;
+    SPtr<TOpt> tunnelName = new TOptString(OPTION_DS_LITE_NAME, $3, 0);
+    Log(Info) << "Enabling DS-Lite tunnel option, name=" << $3 << LogEnd;
     SrvCfgIfaceLst.getLast()->addExtraOption(tunnelName, false);
 };
 
