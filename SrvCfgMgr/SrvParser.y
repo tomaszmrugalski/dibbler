@@ -50,19 +50,16 @@ List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc
 List(string) PresentStringLst;             /* string list */                         \
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
-SPtr<TDUID> duidNew;                                                                 \
 SPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
-int VendorEnterpriseNumber;                                                          \
 List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
-/*method check whether interface with id=ifaceNr has been already declared */        \
 bool IfaceDefined(int ifaceNr);                                                      \
-/*method check whether interface with id=ifaceName has been already declared*/       \
 bool IfaceDefined(string ifaceName);                                                 \
-void StartIfaceDeclaration();                                                        \
+bool StartIfaceDeclaration(string iface);                                            \
+bool StartIfaceDeclaration(int ifindex);                                             \
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
 bool EndClassDeclaration();                                                          \
@@ -203,10 +200,8 @@ InterfaceDeclaration
 /* iface eth0 { ... } */
 :IFACE_ STRING_ '{' 
 {
-    if (!IfaceDefined(string($2))) 
+    if (!StartIfaceDeclaration($2))
 	YYABORT;
-    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-    StartIfaceDeclaration();
 }
 InterfaceDeclarationsList '}'
 {
@@ -218,10 +213,8 @@ InterfaceDeclarationsList '}'
 /* iface 5 { ... } */
 |IFACE_ Number '{' 
 {
-    if (!IfaceDefined($2))
+    if (!StartIfaceDeclaration($2))
 	YYABORT;
-    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
-    StartIfaceDeclaration();
 }
 InterfaceDeclarationsList '}'
 {
@@ -404,10 +397,10 @@ FQDNList
 }
 | STRING_ '-' DUID_
 {
-    duidNew = new TDUID($3.duid,$3.length);
-    Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID "<<duidNew->getPlain()<<LogEnd;
+    TDUID* duidNew = new TDUID($3.duid,$3.length);
+    Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID " << duidNew->getPlain()<<LogEnd;
     // FIXME: Use SPtr()
-    PresentFQDNLst.append(new TFQDN(new TDUID($3.duid,$3.length), $1,false));
+    PresentFQDNLst.append(new TFQDN(duidNew, $1,false));
 } 
 | STRING_ '-' IPV6ADDR_
 {
@@ -423,10 +416,10 @@ FQDNList
 }
 | FQDNList ',' STRING_ '-' DUID_
 {
-    duidNew = new TDUID($5.duid,$5.length);
+    TDUID* duidNew = new TDUID($5.duid,$5.length);
     Log(Debug)<< "FQDN:" << $3 << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
     // FIXME: Use SPtr()
-    PresentFQDNLst.append(new TFQDN(new TDUID($5.duid,$5.length), $3,false));
+    PresentFQDNLst.append(new TFQDN( duidNew, $3,false));
 }
 | FQDNList ',' STRING_ '-' IPV6ADDR_
 {
@@ -1339,14 +1332,43 @@ bool SrvParser::IfaceDefined(string ifaceName)
  * clears all lists except the list of interfaces and adds new group
  * 
  */
-void SrvParser::StartIfaceDeclaration()
+bool SrvParser::StartIfaceDeclaration(string ifaceName)
 {
+    if (!IfaceDefined(ifaceName)) 
+	return false;
+
+    SrvCfgIfaceLst.append(new TSrvCfgIface(ifaceName));
+
     // create new option (representing this interface) on the parser stack
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
     VendorSpec.clear();
     ClientLst.clear();
+
+    return true;
 }
+
+/** 
+ * method creates new option for just started interface scope
+ * clears all lists except the list of interfaces and adds new group
+ * 
+ */
+bool SrvParser::StartIfaceDeclaration(int ifindex)
+{
+    if (!IfaceDefined(ifindex)) 
+	return false;
+
+    SrvCfgIfaceLst.append(new TSrvCfgIface(ifindex));
+
+    // create new option (representing this interface) on the parser stack
+    ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+    SrvCfgAddrClassLst.clear();
+    VendorSpec.clear();
+    ClientLst.clear();
+
+    return true;
+}
+
 
 /** 
  * this method is called after inteface declaration has ended. It creates
