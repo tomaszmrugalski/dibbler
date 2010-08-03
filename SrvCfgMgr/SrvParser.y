@@ -103,7 +103,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, STRING_KEYWORD_
+%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -117,7 +117,7 @@ virtual ~SrvParser();
 %token CLIENT_VENDOR_CLASS_DATA_
 %token ALLOW_
 %token DENY_
-%token SUBSTRING_, CUSTOM_OPTION_
+%token SUBSTRING_, STRING_KEYWORD_, ADDRESS_LIST_
 %token CONTAIN_
 
 
@@ -733,15 +733,16 @@ DsLiteTunnelAddr
 {
     SPtr<TIPv6Addr> addr = new TIPv6Addr($2);
     Log(Info) << "Enabling DS-Lite tunnel option, address=" << addr->getPlain() << LogEnd;
-    ParserOptStack.getLast()->setDsLiteTunnelAddr(addr);
+    SPtr<TOpt> tunnelAddr = new TOptAddr(OPTION_DS_LITE_ADDR, add, 0);
+    SrvCfgIfaceLst.getLast()->addExtraOption(tunnelAddr, false);
 };
 
 DsLiteTunnelName
 : DS_LITE_TUNNEL_ STRING_
 {
-    std::string name = std::string($2);
-    Log(Info) << "Enabling DS-Lite tunnel option, name=" << name << LogEnd;
-    ParserOptStack.getLast()->setDsLiteTunnelName(name);
+    SPtr<TOpt> tunnelName = new TOptString(OPTION_DS_LITE_NAME, name, 0);
+    Log(Info) << "Enabling DS-Lite tunnel option, name=" << $2 << LogEnd;
+    SrvCfgIfaceLst.getLast()->addExtraOption(tunnelName, false);
 };
 
 ExtraOption
@@ -749,17 +750,25 @@ ExtraOption
 {
     Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
     SPtr<TOpt> opt = new TSrvOptGeneric($2, $4.duid, $4.length, 0);
-    SrvCfgIfaceLst.getLast()->setExtraOption(opt, true);
+    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
 {
     SPtr<TOpt> opt = new TOptAddr($2, new TIPv6Addr($4), 0);
-    SrvCfgIfaceLst.getLast()->setExtraOption(opt, true);
+    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+}
+|OPTION_ Number ADDRESS_LIST_  
+{
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
+    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
     SPtr<TOpt> opt = new TOptString($2, string($4), 0);
-    SrvCfgIfaceLst.getLast()->setExtraOption(opt, true);
+    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
 };
 
 IfaceMaxLeaseOption

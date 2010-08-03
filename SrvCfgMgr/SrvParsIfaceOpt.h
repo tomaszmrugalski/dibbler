@@ -131,12 +131,6 @@ public:
     bool supportVendorSpec();
     List(TSrvOptVendorSpec) getVendorSpec();
 
-    // DS-Lite tunnel
-    void setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr);
-    void setDsLiteTunnelName(const std::string name);
-    SPtr<TOpt> getDsLiteTunnelAddr();
-    SPtr<TOpt> getDsLiteTunnelName();
-
 private:
     char Preference;
     bool RapidCommit;
@@ -181,10 +175,6 @@ private:
     bool AcceptUnknownFQDN;
     int revDNSZoneRootLength;
     unsigned int Lifetime;
-
-    // tunnel-mode
-    SPtr<TOpt> DsLiteTunnelAddr;
-    SPtr<TOpt> DsLiteTunnelName;
 
     List(TSrvOptVendorSpec) VendorSpec;
 };
