@@ -55,15 +55,13 @@ SPtr<TIPv6Addr> addr;                                                           
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
-List(TSrvOptGeneric) ExtraOpts;  /* custom options that will ALWAYS be added */      \
-List(TSrvOptGeneric) CustomOpts; /* custom options that will be added if requested*/ \
-List(TSrvOptVendorSpec) VendorSpec;			                                         \
+List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
-bool CheckIsIface(int ifaceNr);                                                      \
+bool IfaceDefined(int ifaceNr);                                                      \
 /*method check whether interface with id=ifaceName has been already declared*/       \
-bool CheckIsIface(string ifaceName);                                                 \
+bool IfaceDefined(string ifaceName);                                                 \
 void StartIfaceDeclaration();                                                        \
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
@@ -80,7 +78,6 @@ virtual ~SrvParser();
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
 %define CONSTRUCTOR_CODE                                                          \
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
 %union    
@@ -206,27 +203,28 @@ InterfaceDeclaration
 /* iface eth0 { ... } */
 :IFACE_ STRING_ '{' 
 {
-    CheckIsIface(string($2)); //If no - everything is ok
+    if (!IfaceDefined(string($2))) 
+	YYABORT;
+    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
     StartIfaceDeclaration();
 }
 InterfaceDeclarationsList '}'
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
-    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
     delete [] $2;
     EndIfaceDeclaration();
 }
 /* iface 5 { ... } */
 |IFACE_ Number '{' 
 {
-    if (!CheckIsIface($2))
+    if (!IfaceDefined($2))
 	YYABORT;
+    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
     StartIfaceDeclaration();
 }
 InterfaceDeclarationsList '}'
 {
-    SrvCfgIfaceLst.append(new TSrvCfgIface($2));
     EndIfaceDeclaration();
 }
 
@@ -757,15 +755,18 @@ ExtraOption
 :OPTION_ Number '-' DUID_
 {
     Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
-	SrvCfgIfaceLst.getLast()->setExtraOption(new TSrvOptGeneric($2, $4.duid, $4.length, 0), true);
+    SPtr<TOpt> opt = new TSrvOptGeneric($2, $4.duid, $4.length, 0);
+    SrvCfgIfaceLst.getLast()->setExtraOption(opt, true);
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
 {
-    SrvCfgIfaceLst.getLast()->setExtraOption(new TOptAddr($2, new TIPv6Addr($4), 0), true);
+    SPtr<TOpt> opt = new TOptAddr($2, new TIPv6Addr($4), 0);
+    SrvCfgIfaceLst.getLast()->setExtraOption(opt, true);
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
-    SrvCfgIfaceLst.getLast()->setExtraOption(new TOptString($2, string($4), 0), true);
+    SPtr<TOpt> opt = new TOptString($2, string($4), 0);
+    SrvCfgIfaceLst.getLast()->setExtraOption(opt, true);
 };
 
 IfaceMaxLeaseOption
@@ -1299,7 +1300,7 @@ Expr
  * 
  * @return true if interface was not declared
  */
-bool SrvParser::CheckIsIface(int ifaceNr)
+bool SrvParser::IfaceDefined(int ifaceNr)
 {
   SPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
@@ -1311,9 +1312,14 @@ bool SrvParser::CheckIsIface(int ifaceNr)
   return true;
 }
     
-//method check whether interface with id=ifaceName has been
-//already declared 
-bool SrvParser::CheckIsIface(string ifaceName)
+/** 
+ * check whether interface with id=ifaceName has been already declared
+ * 
+ * @param ifaceName 
+ * 
+ * @return true, if defined, false otherwise
+ */
+bool SrvParser::IfaceDefined(string ifaceName)
 {
   SPtr<TSrvCfgIface> ptr;
   SrvCfgIfaceLst.first();
@@ -1336,11 +1342,9 @@ bool SrvParser::CheckIsIface(string ifaceName)
 void SrvParser::StartIfaceDeclaration()
 {
     // create new option (representing this interface) on the parser stack
-	ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+    ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
     VendorSpec.clear();
-    ExtraOpts.clear();
-    CustomOpts.clear();
     ClientLst.clear();
 }
 
@@ -1389,20 +1393,21 @@ bool SrvParser::EndIfaceDeclaration()
 
 void SrvParser::StartClassDeclaration()
 {
-  ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+    ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+    SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
 }
 
 /** 
  * this method is adds new object representig just parsed IA class.
  * 
  * @return true if everything works ok.
- */bool SrvParser::EndClassDeclaration()
+ */
+bool SrvParser::EndClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool()) {
         Log(Crit) << "No pools defined for this class." << LogEnd;
         return false;
     }
-    SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
     //setting interface options on the basis of just read information
     SrvCfgAddrClassLst.getLast()->setOptions(ParserOptStack.getLast());
     ParserOptStack.delLast();

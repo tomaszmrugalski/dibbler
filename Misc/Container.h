@@ -111,10 +111,11 @@ template <class TYP>TYP TContainer<TYP>::getLast() {
 }
 
 template <class TYP>void TContainer<TYP>::delLast() {    
-    lista.pop_back();    first();
+    lista.pop_back();    
+    first();
 }
 
 template <class TYP>TYP TContainer<TYP>::getFirst() {	
-	return lista.front();
+    return lista.front();
 }
 #endif

@@ -61,15 +61,13 @@ SPtr<TIPv6Addr> addr;                                                           
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 int VendorEnterpriseNumber;                                                          \
-List(TSrvOptGeneric) ExtraOpts;  /* custom options that will ALWAYS be added */      \
-List(TSrvOptGeneric) CustomOpts; /* custom options that will be added if requested*/ \
-List(TSrvOptVendorSpec) VendorSpec;			                                         \
+List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 /*method check whether interface with id=ifaceNr has been already declared */        \
-bool CheckIsIface(int ifaceNr);                                                      \
+bool IfaceDefined(int ifaceNr);                                                      \
 /*method check whether interface with id=ifaceName has been already declared*/       \
-bool CheckIsIface(string ifaceName);                                                 \
+bool IfaceDefined(string ifaceName);                                                 \
 void StartIfaceDeclaration();                                                        \
 bool EndIfaceDeclaration();                                                          \
 void StartClassDeclaration();                                                        \
@@ -84,10 +82,9 @@ virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    ParserOptStack.getLast()->setUnicast(false);                                  \
     this->lex = lex;
 
-#line 86 "SrvParser.y"
+#line 83 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;

@@ -648,7 +648,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     for (TOptList::iterator gen = generics.begin(); gen!=generics.end(); ++gen)
     {
-	Log(Debug) << "Appending extra option " << (*gen)->getOptType() 
+	Log(Debug) << "Appending mandatory extra option " << (*gen)->getOptType() 
 		   << " (" << (*gen)->getSize() << ")" << LogEnd;
 	Options.append( (Ptr*) *gen);
 	newOptionAssigned = true;
@@ -658,7 +658,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     {
 	if (reqOpts->isOption( (*gen)->getOptType()))
 	{
-	    Log(Debug) << "Appending extra option " << (*gen)->getOptType() 
+	    Log(Debug) << "Appending requested extra option " << (*gen)->getOptType() 
 		       << " (" << (*gen)->getSize() << ")" << LogEnd;
 	    Options.append( (Ptr*) *gen);
 	    newOptionAssigned = true;

@@ -203,7 +203,6 @@ int TAddrIA::delAddr(SPtr<TIPv6Addr> addr)
 {
     SPtr< TAddrAddr> ptr;
     AddrLst.first();
-
     while (ptr = AddrLst.get())
     {
         if (*(ptr->get())==(*addr)) {

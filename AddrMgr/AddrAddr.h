@@ -12,6 +12,7 @@
 #ifndef ADDRADDR_H
 #define ADDRADDR_H
 
+#include <list>
 #include <iostream>
 #include "IPv6Addr.h"
 #include "SmartPtr.h"
@@ -57,4 +58,7 @@ class TAddrAddr
     unsigned long Timestamp;
     int Prefix;
 };
+
+typedef std::list< SPtr<TIPv6Addr> > TAddrList;
+
 #endif

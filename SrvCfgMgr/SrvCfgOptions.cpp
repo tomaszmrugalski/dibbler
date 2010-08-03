@@ -54,8 +54,8 @@ void TSrvCfgOptions::SetDefaults() {
     DsLiteTunnelAddr = 0;
     DsLiteTunnelName = 0;
 
-	CustomOpts.clear();
-	ExtraOpts.clear();
+    CustomOpts.clear();
+    ExtraOpts.clear();
 }
 
 // --------------------------------------------------------------------
@@ -237,7 +237,7 @@ void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
 void TSrvCfgOptions::setExtraOption(SPtr<TOpt> custom, bool always) {
 	Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
 		   << custom->getOptType() << " generic option (length=" 
-		   << custom->getSize() << "." << LogEnd;
+		   << custom->getSize() << ")." << LogEnd;
 
 	ExtraOpts.push_back(custom);
 /*
