@@ -8,7 +8,6 @@
 #include "SmartPtr.h"
 #include "Container.h"
 #include "ClntParser.h"
-#include "ClntOptGeneric.h"
 #include "ClntParsGlobalOpt.h"
 #include "ClntCfgIface.h"
 #include "ClntCfgAddr.h"
@@ -18,9 +17,9 @@
 #include "ClntOptVendorSpec.h"
 #include "CfgMgr.h"
 #include "Logger.h"
+#include "OptGeneric.h"
 #include "OptAddr.h"
 #include "OptAddrLst.h"
-#include "Opt.h"
 #include "OptString.h"
 
 using namespace std;
@@ -994,7 +993,7 @@ ExtraOption
 :OPTION_ Number '-' DUID_
 {
     Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
-    SPtr<TOpt> opt = new TClntOptGeneric($2, $4.duid, $4.length, 0);
+    SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_

@@ -11,6 +11,9 @@
  *
  */
 
+#include <cmath>
+#include <iostream>
+#include <sstream>
 #include "SmartPtr.h"
 #include "ClntMsg.h"
 #include "ClntMsgRebind.h"
@@ -23,8 +26,6 @@
 #include "Logger.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptStatusCode.h"
-#include <cmath>
-#include <iostream>
 
 TClntMsgRebind::TClntMsgRebind(List(TOpt) ptrOpts, int iface)
   :TClntMsg(iface, 0, REBIND_MSG)
@@ -247,8 +248,8 @@ void TClntMsgRebind::doDuties()
 
     if (!MRD)
     {
-        stringstream iaLst;
-        stringstream pdLst;
+        ostringstream iaLst;
+        ostringstream pdLst;
         SPtr<TOpt> ptrOpt;
         firstOption();
         while(ptrOpt=getOption())

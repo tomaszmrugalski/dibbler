@@ -10,8 +10,7 @@ OBJECTS = SrvOptClientIdentifier.o	SrvOptElapsed.o       SrvOptIAAddress.o      
           SrvOptNISServer.o         	SrvOptNISDomain.o     SrvOptNISPServer.o     \
           SrvOptNISPDomain.o        	SrvOptLifetime.o      SrvOptTA.o             \
 	  SrvOptIA_PD.o                 SrvOptIAPrefix.o      SrvOptAddrParams.o     \
-	  SrvOptLQ.o                    SrvOptRemoteID.o      SrvOptGeneric.o        \
-          SrvOptEcho.o
+	  SrvOptLQ.o                    SrvOptRemoteID.o      SrvOptEcho.o
 
 ifndef MOD_DISABLE_AUTH
 OBJECTS += SrvOptAuthentication.o SrvOptKeyGeneration.o SrvOptAAAAuthentication.o

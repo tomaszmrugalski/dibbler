@@ -21,7 +21,6 @@
 #include "SmartPtr.h"
 #include "Container.h"
 #include "ClntParser.h"
-#include "ClntOptGeneric.h"
 #include "ClntParsGlobalOpt.h"
 #include "ClntCfgIface.h"
 #include "ClntCfgAddr.h"
@@ -31,9 +30,9 @@
 #include "ClntOptVendorSpec.h"
 #include "CfgMgr.h"
 #include "Logger.h"
+#include "OptGeneric.h"
 #include "OptAddr.h"
 #include "OptAddrLst.h"
-#include "Opt.h"
 #include "OptString.h"
 
 using namespace std;
@@ -83,7 +82,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;
 
-#line 82 "ClntParser.y"
+#line 81 "ClntParser.y"
 typedef union    
 {
     int ival;    

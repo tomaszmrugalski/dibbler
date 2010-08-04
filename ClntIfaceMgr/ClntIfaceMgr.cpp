@@ -10,6 +10,7 @@
  * $Id: ClntIfaceMgr.cpp,v 1.51 2009-03-24 23:17:17 thomson Exp $
  */
 
+#include <sstream>
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"

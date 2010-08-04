@@ -12,28 +12,25 @@
  *
  */
 
-class TSrvMsg;
 #ifndef SRVMSG_H
 #define SRVMSG_H
 
 #include "Msg.h"
 #include "SmartPtr.h"
-#include "Opt.h"
 #include "SrvAddrMgr.h"
 #include "IPv6Addr.h"
+#include "SrvCfgIface.h"
 #include "SrvOptOptionRequest.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvOptFQDN.h"
 #include "SrvOptRemoteID.h"
-#include "SrvOptGeneric.h"
-#include "SrvCfgIface.h"
+#include "OptGeneric.h"
 
 class TSrvMsg : public TMsg
 {
 public:
     TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
     TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
-    // TSrvMsg();
         
     void copyRelayInfo(SPtr<TSrvMsg> q);
     void copyAAASPI(SPtr<TSrvMsg> q);
@@ -52,7 +49,7 @@ public:
 		      SPtr<TIPv6Addr> peerAddr,
 		      int hop,
 		      SPtr<TSrvOptInterfaceID> interfaceID,
-		      List(TSrvOptGeneric) echoList);
+		      List(TOptGeneric) echoList);
 
     int getRelayCount();
 
@@ -77,7 +74,7 @@ protected:
     SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
-    List(TSrvOptGeneric) EchoListTbl[HOP_COUNT_LIMIT];  // list of options to be
+    List(TOptGeneric) EchoListTbl[HOP_COUNT_LIMIT];  // list of options to be echoed back
     int len[HOP_COUNT_LIMIT];
     int HopTbl[HOP_COUNT_LIMIT];
 

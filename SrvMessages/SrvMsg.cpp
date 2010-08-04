@@ -31,7 +31,7 @@
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
 #include "SrvOptRapidCommit.h"
-#include "SrvOptGeneric.h"
+#include "OptGeneric.h"
 #include "SrvOptLQ.h"
 #include "SrvOptTA.h"
 #include "SrvCfgOptions.h"
@@ -295,7 +295,7 @@ void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
 			   SPtr<TIPv6Addr> peerAddr,
 			   int hop,
 			   SPtr<TSrvOptInterfaceID> interfaceID,
-                           List(TSrvOptGeneric) echolist) {
+                           List(TOptGeneric) echolist) {
     this->LinkAddrTbl[this->Relays] = linkAddr;
     this->PeerAddrTbl[this->Relays] = peerAddr;
     this->HopTbl[this->Relays]      = hop;
@@ -314,7 +314,7 @@ void TSrvMsg::send()
     int offset = 0;
     int port;
 
-    SPtr<TSrvOptGeneric> gen;
+    SPtr<TOptGeneric> gen;
     SPtr<TSrvIfaceIface> ptrIface;
     SPtr<TSrvIfaceIface> under;
     ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(this->Iface);
@@ -431,7 +431,7 @@ int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
 	}
     }
 
-    SPtr<TSrvOptGeneric> gen;
+    SPtr<TOptGeneric> gen;
     EchoListTbl[relayDepth].first();
     while (gen = EchoListTbl[relayDepth].get()) {
 	Log(Debug) << "Echoing back option " << gen->getOptType() << ", length " << gen->getSize() << LogEnd;

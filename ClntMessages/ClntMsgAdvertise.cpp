@@ -9,6 +9,7 @@
  *
  */
 
+#include <sstream>
 #include "ClntMsgAdvertise.h"
 #include "OptInteger.h"
 #include "ClntOptClientIdentifier.h"

@@ -18,14 +18,14 @@
 #include <string>
 #include <list>
 
-#include "SrvOptVendorSpec.h"
-#include "SrvOptRemoteID.h"
-#include "SrvOptGeneric.h"
-
 #include "SmartPtr.h"
 #include "Container.h"
 #include "IPv6Addr.h"
 #include "SrvParsGlobalOpt.h"
+
+#include "SrvOptVendorSpec.h"
+#include "SrvOptRemoteID.h"
+#include "OptGeneric.h"
 
 class TSrvCfgIface;
 

@@ -33,7 +33,7 @@
 #include "AddrClient.h"
 #include "SrvIfaceIface.h"
 #include "SrvOptEcho.h"
-#include "SrvOptGeneric.h"
+#include "OptGeneric.h"
 
 using namespace std;
 
@@ -277,12 +277,12 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
     SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
-    List(TSrvOptGeneric) echoListTbl[HOP_COUNT_LIMIT];
+    List(TOptGeneric) echoListTbl[HOP_COUNT_LIMIT];
     SPtr<TSrvIfaceIface> relayIface;
     int relays=0; // number of nested RELAY_FORW messages
     SPtr<TSrvOptRemoteID> remoteID = 0;
     SPtr<TSrvOptEcho> echo = 0;
-    SPtr<TSrvOptGeneric> gen = 0;
+    SPtr<TOptGeneric> gen = 0;
 
     char * relay_buf = buf;
     int relay_bufsize = bufsize;
@@ -348,7 +348,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 		echo = new TSrvOptEcho(buf, len, 0);
 		break;
 	    default:
-		gen = new TSrvOptGeneric(code, buf, len, 0);
+		gen = new TOptGeneric(code, buf, len, 0);
 		echoListTbl[relays].append(gen);
 
 	    }

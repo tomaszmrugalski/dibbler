@@ -751,7 +751,7 @@ DsLiteTunnelName
 ExtraOption
 :OPTION_ Number '-' DUID_
 {
-    SPtr<TOpt> opt = new TSrvOptGeneric($2, $4.duid, $4.length, 0);
+    SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", length=" << $4.length << LogEnd;
 }
@@ -770,7 +770,7 @@ ExtraOption
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.size() << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.count() << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {

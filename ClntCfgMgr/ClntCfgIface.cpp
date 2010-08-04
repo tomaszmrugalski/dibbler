@@ -478,15 +478,22 @@ void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, bool always) {
 }
 
 void TClntCfgIface::addExtraOption(int opttype, bool always) {
-
+    SPtr<TOptionStatus> optStatus = new TOptionStatus();
+    optStatus->OptionType = opttype;
+    optStatus->Always = always;
+    ExtraOpts.push_back(optStatus);
 }
 
 TClntCfgIface::TOptionStatusLst& TClntCfgIface::getExtraOptions() {
-
+    return ExtraOpts;
 }
 
 SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
-
+    for (TOptionStatusLst::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+	if ((*opt)->OptionType == type)
+	    return (*opt); // these are the droids you are looking for
+    
+    return 0; // not found
 }
 
 

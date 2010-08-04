@@ -14,7 +14,6 @@
 #define TSRCPARSIFACEOPT_H_
 
 #include "SrvOptVendorSpec.h"
-#include "SrvOptGeneric.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvParsClassOpt.h"
 #include "FQDN.h"
