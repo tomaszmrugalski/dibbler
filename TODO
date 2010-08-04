@@ -1,6 +1,8 @@
 
  Dibbler code TODO
 -------------------
+- Add sanity length checks in Options constructors
+- Remove setDUID() method from TOpt()
 - Implement support for Client vendor class options
 - Fix: Elapsed time should be specified with 10ms granulation.
 - Feature: Add support for admin configured options both on server and client as well.
