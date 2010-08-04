@@ -12,8 +12,7 @@
 
 #include "Opt.h"
 
-int TOpt::getOptType()
-{
+int TOpt::getOptType() {
     return OptType;
 }
 
@@ -21,10 +20,12 @@ TOpt::~TOpt() {
 
 }
 
-TOpt::TOpt( int optType, TMsg *parent){	
+TOpt::TOpt( int optType, TMsg *parent)
+    :Layout(Layout_OptGeneric), Valid(true) {
     OptType=optType;    
     Parent=parent;
 }
+
 int TOpt::getSubOptSize() {
     int size = 0;    
     SubOptions.first();    
@@ -33,6 +34,7 @@ int TOpt::getSubOptSize() {
 	size += ptr->getSize();    
     return size;
 }
+
 char* TOpt::storeSubOpt( char* buf){
     SPtr<TOpt> ptr;	
     SubOptions.first();    
@@ -61,30 +63,24 @@ SPtr<TOpt> TOpt::getOption(int optType) {
     return 0;
 }
 
-void TOpt::addOption(SPtr<TOpt> opt)
-{
+void TOpt::addOption(SPtr<TOpt> opt) {
     SubOptions.append(opt);
 }
 
-int TOpt::countOption()
-{
+int TOpt::countOption() {
     return SubOptions.count();
 }
 
-void TOpt::setParent(TMsg* Parent)
-{
+void TOpt::setParent(TMsg* Parent) {
     this->Parent=Parent;
 }
 
-void TOpt::delAllOptions()
-{
+void TOpt::delAllOptions() {
     SubOptions.clear();
 }
 
-bool TOpt::isValid()
-{   
-    //for most of options it's enough
-    return true;
+bool TOpt::isValid() {   
+    return Valid;
 }
 
 SPtr<TDUID> TOpt::getDUID() {
@@ -94,9 +90,10 @@ void TOpt::setDUID(SPtr<TDUID> duid) {
     this->DUID = duid;
 }
 
-//CHANGED here: this member function is added.
-void TOpt::delOption()
-{
+void TOpt::delOption() {
   SubOptions.del();
 }
-     
+
+std::string TOpt::getPlain() {
+    return "[generic]";
+}

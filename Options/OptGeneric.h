@@ -24,7 +24,7 @@ class TOptGeneric : public TOpt
 	return false;
     }
 
-    TOptGeneric(int optType, char * data, int dataLen, TMsg* parent);
+    TOptGeneric(int optType, const char * data, unsigned short dataLen, TMsg* parent);
     TOptGeneric(int optType, TMsg* parent);
     ~TOptGeneric();
     int getSize();

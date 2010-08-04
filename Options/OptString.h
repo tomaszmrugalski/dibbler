@@ -15,13 +15,11 @@
 
 #include "Opt.h"
 
-using namespace std;
-
 class TOptString : public TOpt
 {
  public:
-    TOptString(int type, string str, TMsg* parent);
-    TOptString(int type, char *&buf, int &bufsize, TMsg* parent);
+    TOptString(int type, std::string str, TMsg* parent);
+    TOptString(int type, const char *buf, unsigned short len, TMsg* parent);
     char * storeSelf( char* buf);
     int getSize();
     string getString();

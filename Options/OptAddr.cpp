@@ -8,17 +8,8 @@
  *
  * $Id: OptAddr.cpp,v 1.1 2004-10-26 22:36:57 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2004/09/07 17:42:31  thomson
- * Server Unicast implemented.
- *
- * Revision 1.3  2004/09/05 15:27:49  thomson
- * Data receive switched from recvfrom to recvmsg, unicast partially supported.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
  */
+
 #ifdef WIN32
 #include <winsock2.h>
 #endif
@@ -26,16 +17,23 @@
 #include <netinet/in.h>
 #endif 
 #include "OptAddr.h"
+#include "Logger.h"
 
-TOptAddr::TOptAddr(int type, char * &buf,  int &n, TMsg* parent)
+TOptAddr::TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent)
     :TOpt(type, parent) {
-    this->Addr = new TIPv6Addr(buf, false); // plain = false
-    buf-=16; 
-    n-=16;
+    Layout = Layout_OptAddr;
+    if (len!=16) {
+	Valid = false;
+	Log(Warning) << "Malformed option (code=" << type << ", length=" << len
+		     << "), expected length is 16." << LogEnd;
+	return;
+    }
+    Addr = new TIPv6Addr(buf, false); // plain = false
 }
 
 TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent) 
     :TOpt(type, parent) {
+    Layout = Layout_OptAddr;
     this->Addr = addr;
 }
 

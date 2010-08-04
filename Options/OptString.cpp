@@ -7,19 +7,6 @@
  * released under GNU GPL v2 licence
  *
  * $Id: OptString.cpp,v 1.3 2007-08-26 10:26:19 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2005-07-17 21:09:52  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.1  2004/11/02 01:23:13  thomson
- * Initial revision
- *
- * Revision 1.3  2004/04/11 18:10:56  thomson
- * CRLF fixed.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
  */
 
 #include <stdlib.h>
@@ -30,21 +17,21 @@
 
 using namespace std;
 
-TOptString::TOptString(int type, string str, TMsg* parent)
-    :TOpt(type, parent) {
-    Str = str;
+TOptString::TOptString(int type, std::string str, TMsg* parent)
+    :TOpt(type, parent), Str(str) {
+    Layout = Layout_OptString;
 }
 
-TOptString::TOptString(int type, char *&buf, int &bufsize, TMsg* parent)
+TOptString::TOptString(int type, const char *buf, unsigned short bufsize, TMsg* parent)
     :TOpt(type, parent)
 {
+    Layout = Layout_OptString;
+
     char* str=new char[bufsize+1];
     memcpy(str,buf,bufsize);
     str[bufsize]=0;
     Str = string(str);
     delete [] str;
-    bufsize -= this->Str.length()+1;
-    buf += this->Str.length()+1;
 }
 
 char * TOptString::storeSelf(char* buf)

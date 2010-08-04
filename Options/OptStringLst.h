@@ -22,12 +22,13 @@ class TOptStringLst : public TOpt
 {
 public:
     TOptStringLst(int type, List(string) strLst, TMsg* parent);
-    TOptStringLst(int type, char *&buf, int &bufsize, TMsg* parent);
+    TOptStringLst(int type, const char *buf, unsigned short bufsize, TMsg* parent);
     char * storeSelf( char* buf);
     int getSize();
     void firstString();
     string getString();
     int countString();
+    bool doDuties() { return true; }
 
 protected:
     List(string) StringLst;

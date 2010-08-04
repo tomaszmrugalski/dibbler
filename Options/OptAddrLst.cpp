@@ -27,12 +27,13 @@
 
 TOptAddrLst::TOptAddrLst(int type, List(TIPv6Addr) lst, TMsg* parent)
     :TOpt(type, parent), AddrLst(lst) {
-    
+    Layout = Layout_OptAddrLst;
 }
 
-TOptAddrLst::TOptAddrLst(int type, char* &buf,int &bufSize, TMsg* parent)
+TOptAddrLst::TOptAddrLst(int type, const char* buf, unsigned short bufSize, TMsg* parent)
     :TOpt(type, parent)
 {
+    Layout = Layout_OptAddrLst;
     while(bufSize>0)
     {
 	if (bufSize<16) {
@@ -40,8 +41,8 @@ TOptAddrLst::TOptAddrLst(int type, char* &buf,int &bufSize, TMsg* parent)
 	    return;
 	}
         this->AddrLst.append(new TIPv6Addr(buf));
-        bufSize-=16;
-        buf+=16;
+	buf +=16;
+	bufSize -= 16;
     }
     Valid = true;
     return;

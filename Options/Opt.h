@@ -23,17 +23,27 @@ class TMsg;
 class TOpt
 {
   public:
+
+    typedef enum {
+	Layout_OptAddr,
+	Layout_OptAddrLst,
+	Layout_OptString,
+	Layout_OptStringLst,
+	Layout_OptDuid,
+	Layout_OptGeneric
+    } EOptionLayout;
+
     TOpt(int optType, TMsg* parent);
     virtual ~TOpt();
 
-	/**
-	 * Return the size of the option, including :
-	 *  - Option number,
-	 *  - Option size
-	 *  - data
-	 * 
-	 * @return the size, I've already said that !
-	 */
+    /**
+     * Return the size of the option, including :
+     *  - Option number,
+     *  - Option size
+     *  - data
+     * 
+     * @return the size, I've already said that !
+     */
     virtual int getSize() = 0;
     
     /**
@@ -52,6 +62,8 @@ class TOpt
      * @return true if the option is valid.
      */
     virtual bool isValid();
+
+    virtual std::string getPlain();
     
     int getOptType();
     int getSubOptSize();
@@ -70,12 +82,15 @@ class TOpt
 
     SPtr<TDUID> getDUID();
     void setDUID(SPtr<TDUID> duid);
+    EOptionLayout getLayout() { return Layout; }
 
  protected:
     TContainer< SPtr<TOpt> > SubOptions;
+    EOptionLayout Layout;
     int OptType;
     TMsg* Parent;
     SPtr<TDUID> DUID;
+    bool Valid;
 };
 
 typedef std::list< SPtr<TOpt> > TOptList;

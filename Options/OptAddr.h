@@ -26,7 +26,7 @@
 class TOptAddr : public TOpt
 {
  public:
-    TOptAddr(int type, char * &buf,  int &n, TMsg* parent);
+    TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent);
     TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent);
     int getSize();
     char * storeSelf( char* buf);

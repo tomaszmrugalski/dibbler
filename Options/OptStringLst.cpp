@@ -8,45 +8,6 @@
  *
  * $Id: OptStringLst.cpp,v 1.11 2007-12-25 08:11:57 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.10  2007-08-26 10:26:19  thomson
- * Possible segfault in REBIND processing,
- * gcc 4.3.0 conformance
- *
- * Revision 1.9  2007-05-01 12:06:50  thomson
- * Fix for possible misalignment in strings.
- *
- * Revision 1.8  2007-01-21 21:29:45  thomson
- * Portability fixes (MIPSEL and 64bits)
- *
- * Revision 1.7  2005-07-17 21:09:52  thomson
- * Minor improvements for 0.4.1 release.
- *
- * Revision 1.6  2005/05/10 00:01:46  thomson
- * Minor compilation bug fixed.
- *
- * Revision 1.5  2005/03/15 23:02:31  thomson
- * 0.4.0 release.
- *
- * Revision 1.4  2005/03/07 23:48:16  thomson
- * Typo fix.
- *
- * Revision 1.3  2005/03/07 23:36:14  thomson
- * Minor changes.
- *
- * Revision 1.2  2005/03/07 22:44:22  thomson
- * DomainList is now stored and parsed approprietly (bug #104)
- *
- * Revision 1.1  2004/11/02 01:23:13  thomson
- * Initial revision
- *
- * Revision 1.3  2004/04/11 18:10:56  thomson
- * CRLF fixed.
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- *
  */
 
 #include <stdlib.h>
@@ -63,7 +24,7 @@ TOptStringLst::TOptStringLst(int type, List(string) strLst, TMsg* parent)
     this->StringLst = strLst;
 }
 
-TOptStringLst::TOptStringLst(int type, char *&buf, int &bufsize, TMsg* parent)
+TOptStringLst::TOptStringLst(int type, const char *buf, unsigned short bufsize, TMsg* parent)
     :TOpt(type, parent) {
     int len;
     string domain = "";

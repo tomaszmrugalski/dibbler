@@ -17,7 +17,7 @@
 #include "DHCPConst.h"
 #include "OptGeneric.h"
 
-TOptGeneric::TOptGeneric(int optType, char* data, int dataLen, TMsg* parent)
+TOptGeneric::TOptGeneric(int optType, const char* data, unsigned short dataLen, TMsg* parent)
     :TOpt(optType, parent) {
     this->Data = new char[dataLen];
     memcpy(this->Data, data, dataLen);

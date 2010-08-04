@@ -26,7 +26,7 @@ class TOptAddrLst : public TOpt
 {
 public:
     TOptAddrLst(int type, List(TIPv6Addr) lst, TMsg* parent);
-    TOptAddrLst(int type, char *&buf, int &bufsize, TMsg* parent);
+    TOptAddrLst(int type, const char *buf, unsigned short len, TMsg* parent);
     char * storeSelf( char* buf);
     int getSize();
     void firstAddr();
@@ -36,7 +36,5 @@ public:
     virtual bool doDuties() { return true; } // does nothing on its own
 protected:
     List(TIPv6Addr) AddrLst;
-    bool Valid;
-
 };
 #endif
