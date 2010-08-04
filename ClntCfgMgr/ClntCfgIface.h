@@ -27,19 +27,22 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
 #include "ClntOptVendorSpec.h"
+#include "Opt.h"
 
 class TClntCfgIface
 {
     friend std::ostream& operator<<(std::ostream&,TClntCfgIface&);
 public:
+
     class TOptionStatus
     {
     public:
         TOptionStatus(): OptionType(0), State(STATE_NOTCONFIGURED), Option(0), Always(true) {};
-	int OptionType;
+	unsigned short OptionType;
 	EState State;
 	SPtr<TOpt> Option;
-	bool Always; // show this option be sent always? (even when already configured?)
+	TOpt::EOptionLayout Layout;
+	bool Always; // should this option be sent always? (even when already configured?)
     };
     typedef std::list< SPtr<TOptionStatus> > TOptionStatusLst;
     
@@ -180,8 +183,8 @@ public:
     int getVendorSpecCount();
 
     // --- custom/extra options ---
-    void addExtraOption(SPtr<TOpt> extra, bool always);
-    void addExtraOption(int opttype, bool always);
+    void addExtraOption(SPtr<TOpt> extra, bool sendAlways);
+    void addExtraOption(int optType, TOpt::EOptionLayout layout, bool sendAlways);
     TOptionStatusLst& getExtraOptions();
     SPtr<TOptionStatus> getExtaOptionState(int type);
 

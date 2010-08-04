@@ -106,10 +106,13 @@ digest-hmac-sha224    { return ClntParser::DIGEST_HMAC_SHA224_; }
 digest-hmac-sha256    { return ClntParser::DIGEST_HMAC_SHA256_; }
 digest-hmac-sha384    { return ClntParser::DIGEST_HMAC_SHA384_; }
 digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
-experimental          { return ClntParser::EXPERIMENTAL_; }
-addr-params           { return ClntParser::ADDR_PARAMS_; }
 skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
 ds-lite-tunnel        { return ClntParser::DS_LITE_TUNNEL_; }
+
+experimental          { return ClntParser::EXPERIMENTAL_; }
+addr-params           { return ClntParser::ADDR_PARAMS_; }
+request               { return ClntParser::REQUEST_; }
+
 #.* ;
 
 "//"(.*) ;

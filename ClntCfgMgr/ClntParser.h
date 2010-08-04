@@ -330,6 +330,7 @@ typedef
 #define	DS_LITE_TUNNEL_	323
 #define	ADDRESS_LIST_	324
 #define	STRING_KEYWORD_	325
+#define	REQUEST_	326
 
 
 #line 169 "../bison++/bison.h"
@@ -446,6 +447,7 @@ static const int REMOTE_AUTOCONF_;
 static const int DS_LITE_TUNNEL_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
+static const int REQUEST_;
 
 
 #line 212 "../bison++/bison.h"
@@ -522,6 +524,7 @@ static const int STRING_KEYWORD_;
 	,DS_LITE_TUNNEL_=323
 	,ADDRESS_LIST_=324
 	,STRING_KEYWORD_=325
+	,REQUEST_=326
 
 
 #line 215 "../bison++/bison.h"

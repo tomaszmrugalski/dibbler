@@ -469,18 +469,33 @@ int  TClntCfgIface::getPrefixLength() {
 }
 
 
-void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, bool always) {
+/** 
+ * add extra option to the list of supported extra options
+ * 
+ * @param extra smart pointer to the supported option (to be sent)
+ * @param sendAlways should this option be always sent? Even when already configured?
+ */
+void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, bool sendAlways) {
     SPtr<TOptionStatus> optStatus = new TOptionStatus();
     optStatus->OptionType = extra->getOptType();
     optStatus->Option = extra;
-    optStatus->Always = true;
+    optStatus->Always = sendAlways;
+    optStatus->Layout = extra->getLayout();
     ExtraOpts.push_back(optStatus);
 }
 
-void TClntCfgIface::addExtraOption(int opttype, bool always) {
+/** 
+ * add extra option to the list of supported extra options
+ * 
+ * @param opttype code of the supported option
+ * @param layout defines layout (see TOpt::EOptionLayout)
+ * @param sendAlways should this option be always sent? Even when already configured?
+ */
+void TClntCfgIface::addExtraOption(int opttype, TOpt::EOptionLayout layout, bool sendAlways) {
     SPtr<TOptionStatus> optStatus = new TOptionStatus();
     optStatus->OptionType = opttype;
-    optStatus->Always = always;
+    optStatus->Always = sendAlways;
+    optStatus->Layout = layout;
     ExtraOpts.push_back(optStatus);
 }
 

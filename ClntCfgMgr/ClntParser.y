@@ -117,7 +117,7 @@ namespace std
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_, DS_LITE_TUNNEL_
-%token ADDRESS_LIST_, STRING_KEYWORD_
+%token ADDRESS_LIST_, STRING_KEYWORD_, REQUEST_
 %type  <ival> Number
 
 %%
@@ -1019,6 +1019,24 @@ ExtraOption
     SPtr<TOpt> opt = new TOptString($2, string($4), 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
+}
+|OPTION_ Number ADDRESS_ REQUEST_
+{
+    // just request this option and expect OptAddr layout
+    Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
+    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_OptAddr, false);
+}
+|OPTION_ Number STRING_ REQUEST_
+{
+    // just request this option and expect OptString layout
+    Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
+    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_OptString, false);
+}
+|OPTION_ Number ADDRESS_LIST_  
+{
+    // just request this option and expect OptAddrLst layout
+    Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
+    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_OptAddrLst, false);
 };
 
 %%
