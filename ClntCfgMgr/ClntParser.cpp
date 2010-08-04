@@ -916,7 +916,7 @@ static const short yyrline[] = { 0,
    789,   798,   804,   807,   816,   820,   830,   836,   839,   848,
    853,   856,   865,   869,   876,   891,   897,   900,   909,   915,
    918,   927,   931,   942,   946,   956,   963,   968,   974,   982,
-   983,   987,   988,   989,   993,   999,  1007,  1011,  1016
+   983,   987,   988,   989,   993,   999,  1007,  1011,  1017
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","T1_","T2_",
@@ -2466,11 +2466,11 @@ case 195:
 case 196:
 #line 1000 "ClntParser.y"
 {
-    SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[0].addrval, true));
+    SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[0].addrval));
 
     SPtr<TOpt> opt = new TOptAddr(yyvsp[-2].ival, addr, 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << yyvsp[-2].ival << ", address=" << yyvsp[0].addrval << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << yyvsp[-2].ival << ", address=" << addr->getPlain() << LogEnd;
 ;
     break;}
 case 197:
@@ -2484,11 +2484,12 @@ case 198:
 {
     SPtr<TOpt> opt = new TOptAddrLst(yyvsp[-3].ival, PresentAddrLst, 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << yyvsp[-3].ival << ", address count=" << PresentAddrLst.count() << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << yyvsp[-3].ival << ", containing " 
+	       << PresentAddrLst.count() << " addresses." << LogEnd;
 ;
     break;}
 case 199:
-#line 1017 "ClntParser.y"
+#line 1018 "ClntParser.y"
 {
     SPtr<TOpt> opt = new TOptString(yyvsp[-2].ival, string(yyvsp[0].strval), 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
@@ -2699,7 +2700,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 1023 "ClntParser.y"
+#line 1024 "ClntParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

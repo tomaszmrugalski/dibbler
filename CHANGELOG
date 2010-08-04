@@ -1,13 +1,14 @@
 
   Dibbler changelog
  ------------------- 
- 0.7.4 [not-released-yet]
+ 0.8.0 [not-released-yet]
   - Linux: CONFIRM support added
   - Support for Windows 7 added
   - It is now possible to configure IAID
   - Server reloads its database after shutdown/start sequence
   - Support for Mac OS X added (experimental, of course)
   - Fixed problem with not populating AddrMgr correctly
+  - Srv/Cli: DUID in format 00:01:02:03 is now supported in config files (0x010203 format is still supported)
   - Code cleanup: Obsolete OptPreference class removed
   - Code cleanup: Singleton managers implemented
   - Code cleanup: Obsolete tunnel endpoint removed

@@ -613,6 +613,20 @@ void TClntMsg::appendRequestedOptions() {
 
     appendElapsedOption();
 
+    // --- generic options ---
+    TClntCfgIface::TOptionStatusLst& genericOpts = iface->getExtraOptions();
+    for (TClntCfgIface::TOptionStatusLst::iterator gen = genericOpts.begin(); 
+	 gen!=genericOpts.end(); 
+	 ++gen) {
+	if ( (*gen)->State == STATE_NOTCONFIGURED ||
+	     (*gen)->State == STATE_INPROCESS ||
+	     (*gen)->State == STATE_CONFIRMME) {
+	    optORO->addOption( (*gen)->OptionType);
+	    if ( (*gen)->Option)
+		Options.append( (*gen)->Option );
+	}
+    }
+
 #ifndef MOD_DISABLE_AUTH
     if (this->MsgType == SOLICIT_MSG) {
             if (ClntCfgMgr().getAuthEnabled()) {

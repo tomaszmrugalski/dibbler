@@ -283,6 +283,34 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
    return SrvParser::DUID_;
 }
 
+{hexdigit}{2}(:{hexdigit}{2})+ {
+   int len = (strlen(yytext)+1)/3;
+   char * pos = 0;
+   // Log(Crit) << "#### Detected [" << yytext << "] as DUID [len=" << len << "]" << LogEnd;
+   yylval.duidval.length = len;
+   yylval.duidval.duid   = new char[len];
+
+   int i=0;
+   for (pos = yytext; pos<=yytext+strlen(yytext)-2; pos+=3)
+   {
+      char x;
+      if (isalpha(*pos))
+        x = (toupper(*pos)-'A' + 10);
+      else
+        x = *pos-'0';
+      x *= 16;
+
+      if (isalpha(*(pos+1)))	
+        x += (toupper(*(pos+1))-'A' + 10);
+      else
+        x += *(pos+1) - '0';
+      yylval.duidval.duid[i] = x;
+      i++;
+   }
+   
+   return SrvParser::DUID_;
+}
+
 {hexnumber} {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';

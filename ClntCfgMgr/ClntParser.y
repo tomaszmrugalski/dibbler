@@ -998,11 +998,11 @@ ExtraOption
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
 {
-    SPtr<TIPv6Addr> addr(new TIPv6Addr($4, true));
+    SPtr<TIPv6Addr> addr(new TIPv6Addr($4));
 
     SPtr<TOpt> opt = new TOptAddr($2, addr, 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << $4 << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << addr->getPlain() << LogEnd;
 }
 |OPTION_ Number ADDRESS_LIST_  
 {
@@ -1011,7 +1011,8 @@ ExtraOption
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.count() << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << $2 << ", containing " 
+	       << PresentAddrLst.count() << " addresses." << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
