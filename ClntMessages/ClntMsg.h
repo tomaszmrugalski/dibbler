@@ -28,6 +28,7 @@ public:
     TClntMsg(int iface, SPtr<TIPv6Addr> addr, int msgType);
     unsigned long getTimeout();
     void send();
+    SPtr<TOpt> parseExtraOption(const char *buf, unsigned int code, unsigned int length);
 
     //answer for a specific message
     virtual void doDuties() = 0;

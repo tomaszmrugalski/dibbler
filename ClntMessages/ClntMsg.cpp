@@ -19,10 +19,14 @@
 #endif
 
 #include <cmath>
+#include <sstream>
 
+#include "ClntCfgMgr.h"
 
 #include "ClntMsg.h"
 #include "ClntTransMgr.h"
+
+#include "OptGeneric.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptIA_NA.h"
@@ -34,8 +38,6 @@
 #include "ClntOptServerUnicast.h"
 #include "ClntOptStatusCode.h"
 #include "ClntOptRapidCommit.h"
-
-
 #include "ClntOptDNSServers.h"
 #include "ClntOptDomainName.h"
 #include "ClntOptNTPServers.h"
@@ -212,6 +214,12 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	case OPTION_INFORMATION_REFRESH_TIME:
 	    ptr = new TClntOptLifetime(buf+pos, length, this);
 	    break;
+	case OPTION_DS_LITE_ADDR: 
+	    ptr = new TOptAddr(code, buf+pos, length, this);
+	    break;
+	case OPTION_DS_LITE_NAME:
+	    ptr = new TOptString(code, buf+pos, length, this);
+	    break;
 	case OPTION_IA_TA: {
             ptr = new TClntOptTA(buf+pos, length, this);
 	    break;
@@ -243,11 +251,17 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    Log(Warning) << "Option " << code<< " in message " 
 			 << MsgType << " is not supported." << LogEnd;
 	    break;
-	default: 
-	    Log(Warning) << "Unknown option: " << code << ", length=" << length 
-			 << ". Ignored." << LogEnd;
-	    pos+=length;
-	    continue;
+	default:
+
+	    ptr = parseExtraOption(buf+pos, code, length);
+	    if (!ptr)
+	    {
+		Log(Warning) << "Unknown option: " << code << ", length=" << length 
+			     << ". Ignored." << LogEnd;
+		pos+=length;
+		continue;
+	    }
+
 	}
 	
 	if ( (ptr) && (ptr->isValid()) ) {
@@ -271,6 +285,60 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     while ( opt = getOption() )
 	opt->setDUID(optSrvID->getDUID());
 }
+
+SPtr<TOpt> TClntMsg::parseExtraOption(const char *buf, unsigned int code, unsigned int length)
+{
+    SPtr<TOpt> ptr;
+    SPtr<TClntCfgIface> cfgIface = TClntCfgMgr::instance().getIface(Iface);
+    TClntCfgIface::TOptionStatusLst ExtraOpts = cfgIface->getExtraOptions();
+    for (TClntCfgIface::TOptionStatusLst::iterator exp = ExtraOpts.begin();
+	 exp != ExtraOpts.end();
+	 ++exp) {
+	if (code != (*exp)->OptionType)
+	    continue;
+	stringstream tmp;
+	tmp << "Received expected extra option: type=" << code
+	    << ", size=" << length << ", layout=";
+	
+	switch ( (*exp)->Layout)
+	{
+	case TOpt::Layout_OptAddr:
+	{
+	    ptr = new TOptAddr(code, buf, length, this);
+	    Log(Info) << tmp.str() << "single-address" << LogEnd;
+	    break;
+	}
+	case TOpt::Layout_OptAddrLst:
+	{
+	    ptr = new TOptAddrLst(code, buf, length, this);
+	    Log(Info) << tmp.str() << "list-of-addesses" << LogEnd;
+	    break;
+	}
+	case TOpt::Layout_OptString:
+	{
+	    ptr = new TOptString(code, buf, length, this);
+	    Log(Info) << tmp.str() << "single string" << LogEnd;
+	    break;
+	}
+	case TOpt::Layout_OptStringLst:
+	{
+	    ptr = new TOptStringLst(code, buf, length, this);
+	    Log(Info) << tmp.str() << "list-of-strings" << LogEnd;
+	    break;
+	}
+	case TOpt::Layout_OptGeneric:
+	default:
+	{
+	    ptr = new TOptGeneric(code, buf, length, this);
+	    Log(Info) << tmp.str() << "generic" << LogEnd;
+	    break;
+	}
+	}
+    }
+
+    return ptr;
+}
+
 
 TClntMsg::TClntMsg(int iface, 
                    SPtr<TIPv6Addr> addr, int msgType)
