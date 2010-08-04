@@ -653,7 +653,8 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	Options.append( (Ptr*) *gen);
 	newOptionAssigned = true;
     }
-    
+
+    generics = ptrIface->getCustomOptions();
     for (TOptList::iterator gen = generics.begin(); gen!=generics.end(); ++gen)
     {
 	if (reqOpts->isOption( (*gen)->getOptType()))
