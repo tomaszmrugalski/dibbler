@@ -143,9 +143,8 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     appendElapsedOption();
     appendAuthenticationOption();
 
-    pkt = new char[getSize()];
     IsDone = false;
-    this->send();
+    send();
 }
 
 void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
@@ -176,7 +175,5 @@ string TClntMsgRelease::getName() {
     return "RELEASE";
 }
 
-TClntMsgRelease::~TClntMsgRelease()
-{
-    delete [] pkt;
+TClntMsgRelease::~TClntMsgRelease() {
 }

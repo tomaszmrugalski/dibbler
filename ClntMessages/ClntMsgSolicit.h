@@ -23,7 +23,8 @@ class TClntMsgSolicit : public TClntMsg
 public:
   TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
                   List(TClntCfgIA) iaLst, SPtr<TClntCfgTA> ta,
-                  List(TClntCfgPD) pdLst, bool rapid=false);
+                  List(TClntCfgPD) pdLst, bool rapid=false,
+		  bool remoteAutoconf = false);
 
     void answer(SPtr<TClntMsg> msg);
 

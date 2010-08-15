@@ -13,13 +13,14 @@
 #include "DHCPConst.h"
 #include "Opt.h"
 
-class TOptRapidCommit : public TOpt
+class TOptEmpty : public TOpt
 {
 public:
-    TOptRapidCommit(TMsg* parent);
-    TOptRapidCommit(char * &buf,  int &n,TMsg* parent);
+    TOptEmpty(int code, TMsg* parent);
+    TOptEmpty(int code, const char * buf,  int n, TMsg* parent);
     int getSize();
     char * storeSelf(char* buf);
+    bool doDuties() { return false; }
 };
 
 #endif 

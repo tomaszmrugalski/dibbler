@@ -13,6 +13,7 @@
 #include <string>
 #include "ClntCfgIface.h"
 #include "Opt.h"
+#include "OptAddrLst.h"
 #include "IPv6Addr.h"
 #include "AddrIA.h"
 #include "ClntMsg.h"
@@ -52,6 +53,29 @@ class TClntTransMgr
     int getMaxPreference();
     int getAdvertiseLstCount();
     void printAdvertiseLst();
+
+#ifdef MOD_REMOTE_AUTOCONF
+    class TNeighborInfo {
+    public:
+      SPtr<TIPv6Addr> srvAddr;
+      int ifindex;
+      int transid;
+      SPtr<TDUID> srvDuid;
+      SPtr<TClntMsg> reply;
+    TNeighborInfo(SPtr<TIPv6Addr> addr): srvAddr(addr), ifindex(0), transid(0), srvDuid(0), reply(0) { }
+    };
+    typedef std::list< SPtr<TNeighborInfo> > TNeighborInfoLst;
+    TNeighborInfoLst Neighbors;
+
+    SPtr<TNeighborInfo> neighborInfoGet(SPtr<TIPv6Addr> addr);
+    SPtr<TNeighborInfo> neighborInfoGet(int transid);
+
+    SPtr<TNeighborInfo> neighborAdd(int ifindex, SPtr<TIPv6Addr> addr);
+
+    bool updateNeighbors(int ifindex, SPtr<TOptAddrLst> neighbors);
+    bool sendRemoteSolicit(SPtr<TNeighborInfo> neighbor);
+    bool processRemoteReply(SPtr<TClntMsg> reply);
+#endif
     
  protected:
     void removeExpired();

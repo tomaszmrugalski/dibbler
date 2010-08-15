@@ -52,9 +52,8 @@ TClntMsgConfirm::TClntMsgConfirm(unsigned int iface,
     appendElapsedOption();
     appendAuthenticationOption();
     
-    this->IsDone = false;
-    pkt = new char[getSize()];
-    this->send();
+    IsDone = false;
+    send();
 }           
     
 void TClntMsgConfirm::answer(SPtr<TClntMsg> reply)
@@ -184,7 +183,5 @@ string TClntMsgConfirm::getName() {
     return "CONFIRM";
 }
 
-TClntMsgConfirm::~TClntMsgConfirm()
-{
-    delete [] pkt;
+TClntMsgConfirm::~TClntMsgConfirm() {
 }

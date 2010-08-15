@@ -20,7 +20,6 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptIAAddress.h"
 #include "SrvOptStatusCode.h"
-#include "SrvOptRapidCommit.h"
 #include "SrvOptRemoteID.h"
 #include "SrvCfgOptions.h"
 #include "Logger.h"

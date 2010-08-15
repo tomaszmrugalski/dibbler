@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgDecline.cpp,v 1.8 2009-03-24 23:17:17 thomson Exp $
- *
  */
 
 #include "ClntMsgDecline.h"
@@ -47,11 +45,8 @@ TClntMsgDecline::TClntMsgDecline(int iface, SPtr<TIPv6Addr> addr,
 
     appendElapsedOption();
     appendAuthenticationOption();
-    this->IsDone = false;
-    this->send();
-    pkt = new char[getSize()];
-    this->IsDone = false;
-    // this->send();
+    IsDone = false;
+    send();
 }
 
 void TClntMsgDecline::answer(SPtr<TClntMsg> rep)

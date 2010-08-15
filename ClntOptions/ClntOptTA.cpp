@@ -14,7 +14,6 @@
 #include "ClntOptTA.h"
 #include "ClntOptIAAddress.h"
 #include "ClntOptStatusCode.h"
-#include "ClntOptRapidCommit.h"
 #include "Logger.h"
 #include "ClntOptIAAddress.h"
 

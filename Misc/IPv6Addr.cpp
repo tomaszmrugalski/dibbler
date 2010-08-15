@@ -8,32 +8,11 @@
  *
  * $Id: IPv6Addr.cpp,v 1.11 2008-08-29 00:07:30 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.10  2008-03-02 21:59:53  thomson
- * non %8 prefix lengths fixed.
- *
- * Revision 1.9  2007-05-03 23:16:29  thomson
- * Fix for assigning the same prefix several times.
- *
- * Revision 1.8  2006-12-04 23:33:11  thomson
- * Prefix delegation related fixes
- *
- * Revision 1.7  2006-12-02 14:54:45  thomson
- * IPv6Addr::truncate implemented, inet_pton6 does not use IPv4-eccapsulated form
- *
- * Revision 1.6  2006-10-06 00:25:53  thomson
- * Initial PD support.
- *
- * Revision 1.5  2006-08-21 22:52:40  thomson
- * Various fixes.
- *
- * Revision 1.4  2004/12/07 20:53:14  thomson
- * Link local safety checks added (bug #39)
- *
  */
 
 #include <stdlib.h>
-#include <string.h>
+#include <string>
+#include <iostream>
 #include "IPv6Addr.h"
 #include "Portable.h"
 #include "Logger.h"
@@ -140,7 +119,7 @@ void TIPv6Addr::shiftR(int bits)
 
 }
 
-ostream& operator<<(ostream& out,TIPv6Addr& addr)
+std::ostream& operator<<(std::ostream& out,TIPv6Addr& addr)
 {
 	char buf[48];
 	if (addr.Addr) {
@@ -154,15 +133,13 @@ ostream& operator<<(ostream& out,TIPv6Addr& addr)
 
 bool TIPv6Addr::operator<=(const TIPv6Addr &other)
 {
-    
-	for (int i=0;i<16;i++)
-    {
+    for (int i=0;i<16;i++) {
         if (Addr[i]<other.Addr[i])
             return true;
         if(Addr[i]>other.Addr[i])
-			return false;
+	    return false;
     }
-	return true; //hmm: are they equal
+    return true; //hmm: are they equal
 }
 
 TIPv6Addr TIPv6Addr::operator-(const TIPv6Addr &other)

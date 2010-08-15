@@ -14,7 +14,7 @@
  *
  *
  */
-#include <stdlib.h>
+#include <stdlib.h>
 #ifdef LINUX
 #include <netinet/in.h>
 #endif
@@ -22,29 +22,21 @@
 #include <winsock2.h>
 #endif
 
-#include "OptRapidCommit.h"
+#include "OptEmpty.h"
 
-TOptRapidCommit::TOptRapidCommit( char * &buf,  int &n, TMsg* parent)
-	:TOpt(OPTION_RAPID_COMMIT, parent)
-{
-	//Here are read common things for server and client
+TOptEmpty::TOptEmpty(int code, const char * buf,  int n, TMsg* parent)
+    :TOpt(code, parent) {
 }
 
-TOptRapidCommit::TOptRapidCommit(TMsg* parent)
-	:TOpt(OPTION_RAPID_COMMIT, parent)
-{
-
+TOptEmpty::TOptEmpty(int code, TMsg* parent)
+    :TOpt(code, parent) {
 }
 
-//##ModelId=3ECE0A2C03D3
- int TOptRapidCommit::getSize()
-{
-	return 4;
+ int TOptEmpty::getSize() {
+     return 4;
 }
 
-//##ModelId=3ECE0A2D0028
- char * TOptRapidCommit::storeSelf( char* buf)
-{
+ char * TOptEmpty::storeSelf( char* buf) {
     *(short*)buf = htons(OptType);
     buf+=2;
     *(short*)buf = htons(getSize()-4);

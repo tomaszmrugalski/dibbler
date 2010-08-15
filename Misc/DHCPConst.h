@@ -168,6 +168,9 @@
 #define OPTION_DS_LITE_ADDR 252
 #define OPTION_DS_LITE_NAME 253
 
+// draft-mrugalski-remote-dhcpv6-00
+#define OPTION_NEIGHBORS 254
+
 // -- Query types (RFC5007) --
 typedef enum {
     QUERY_BY_ADDRESS = 1,

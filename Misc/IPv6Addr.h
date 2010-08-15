@@ -6,23 +6,6 @@
  *
  * $Id: IPv6Addr.h,v 1.8 2007-05-03 23:16:29 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2006-12-04 23:33:11  thomson
- * Prefix delegation related fixes
- *
- * Revision 1.6  2006-12-02 14:54:45  thomson
- * IPv6Addr::truncate implemented, inet_pton6 does not use IPv4-eccapsulated form
- *
- * Revision 1.5  2006-08-21 22:52:40  thomson
- * Various fixes.
- *
- * Revision 1.4  2004/12/07 20:53:14  thomson
- * Link local safety checks added (bug #39)
- *
- * Revision 1.3  2004/03/29 22:06:49  thomson
- * 0.1.1 version
- *
- *
  * Released under GNU GPL v2 licence
  *
  */
@@ -31,9 +14,9 @@
 #define IPV6ADDR_H
 
 #include <iostream>
-#include <fstream>
-#include <iomanip>
-using namespace std;
+#include <list>
+#include <SmartPtr.h>
+
 class TIPv6Addr
 {
 	friend std::ostream& operator<<(std::ostream& out,TIPv6Addr& group);
@@ -58,4 +41,6 @@ private:
     char Addr[16];
     char Plain[sizeof("0000:0000:0000:0000:0000:0000:0000.000.000.000.000")];
 };
+
+typedef std::list< SPtr<TIPv6Addr> > TAddrLst;
 #endif

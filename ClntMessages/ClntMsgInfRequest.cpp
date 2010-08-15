@@ -52,8 +52,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
 
     appendAuthenticationOption();
     appendElapsedOption();
-    pkt = new char[getSize()];
-    this->send();
+    send();
 }
 
 //opts - all options list WITHOUT serverDUID including server id
@@ -117,7 +116,6 @@ TClntMsgInfRequest::TClntMsgInfRequest(List(TOpt) ReqOpts,
     appendElapsedOption();
     appendAuthenticationOption();
 
-    pkt = new char[getSize()];
     this->send();
 }
 
@@ -190,8 +188,5 @@ string TClntMsgInfRequest::getName() {
     return "INF-REQUEST";
 }
 
-TClntMsgInfRequest::~TClntMsgInfRequest()
-{
-    delete [] pkt;
-    pkt=NULL;
+TClntMsgInfRequest::~TClntMsgInfRequest() {
 }

@@ -76,9 +76,8 @@ TClntMsgRebind::TClntMsgRebind(List(TOpt) ptrOpts, int iface)
     appendElapsedOption();
     appendAuthenticationOption();
 
-    pkt = new char[getSize()];
-    this->IsDone = false;    
-    this->send();
+    IsDone = false;    
+    send();
 }
 
 void TClntMsgRebind::answer(SPtr<TClntMsg> Reply)

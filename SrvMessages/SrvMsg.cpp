@@ -21,6 +21,7 @@
 
 #include "SrvMsg.h"
 #include "SrvTransMgr.h"
+#include "OptEmpty.h"
 #include "SrvOptClientIdentifier.h"
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptIA_NA.h"
@@ -30,7 +31,6 @@
 #include "SrvOptElapsed.h"
 #include "SrvOptServerUnicast.h"
 #include "SrvOptStatusCode.h"
-#include "SrvOptRapidCommit.h"
 #include "OptGeneric.h"
 #include "SrvOptLQ.h"
 #include "SrvOptTA.h"
@@ -184,7 +184,7 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 	    ptr = new TSrvOptStatusCode(buf+pos,length,this);
 	    break;
 	case OPTION_RAPID_COMMIT:
-	    ptr = new TSrvOptRapidCommit(buf+pos,length,this);
+	    ptr = new TOptEmpty(code, buf+pos,length,this);
 	    break;
 	case OPTION_DNS_SERVERS:
 	    ptr = new TSrvOptDNSServers(buf+pos,length,this);

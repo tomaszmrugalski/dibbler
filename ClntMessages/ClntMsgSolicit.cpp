@@ -26,7 +26,7 @@
 #include "ClntOptOptionRequest.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptPreference.h"
-#include "ClntOptRapidCommit.h"
+#include "OptEmpty.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptStatusCode.h"
 #include <cmath>
@@ -36,7 +36,7 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 				 List(TClntCfgIA) iaLst, 
 				 SPtr<TClntCfgTA> ta,
 				 List(TClntCfgPD) pdLst, 
-				 bool rapid)
+				 bool rapid, bool remoteAutoconf)
     :TClntMsg(iface,addr,SOLICIT_MSG)
 {
     IRT=SOL_TIMEOUT;
@@ -55,14 +55,16 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 	SPtr<TClntOptIA_NA> iaOpt;
 	iaOpt = new TClntOptIA_NA(ia, this);
 	Options.append( (Ptr*)iaOpt );
-	ia->setState(STATE_INPROCESS);
+	if (!remoteAutoconf)
+	    ia->setState(STATE_INPROCESS);
     }
 
     // TA is provided by ::checkSolicit()
     if (ta) {
 	SPtr<TClntOptTA> taOpt = new TClntOptTA(ta->getIAID(), this);
 	Options.append( (Ptr*) taOpt);
-	ta->setState(STATE_INPROCESS);
+	if (!remoteAutoconf)
+	    ta->setState(STATE_INPROCESS);
     }
 
     // all PDs are provided by ::checkSolicit()
@@ -71,21 +73,23 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     while ( pd = pdLst.get() ) {
 	SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd, this);
 	Options.append( (Ptr*)pdOpt );
-	pd->setState(STATE_INPROCESS);
+	if (remoteAutoconf)
+	    pd->setState(STATE_INPROCESS);
     }
     
     if(rapid)
-        Options.append(new TClntOptRapidCommit(this));
+        Options.append(new TOptEmpty(OPTION_RAPID_COMMIT, this));
 
     // append and switch to INPROCESS state
-    this->appendTAOptions(true); 
+    if (!remoteAutoconf)
+	appendTAOptions(true); 
 
     // append options specified in the config file
-    this->appendRequestedOptions();
+    if (!remoteAutoconf)
+	appendRequestedOptions();
     
-    pkt = new char[getSize()];
-    this->IsDone = false;
-    this->send();
+    IsDone = false;
+    send();
 }
 
 void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
@@ -235,7 +239,5 @@ string TClntMsgSolicit::getName() {
     return "SOLICIT";
 }
 
-TClntMsgSolicit::~TClntMsgSolicit()
-{
-    delete [] pkt;
+TClntMsgSolicit::~TClntMsgSolicit() {
 }

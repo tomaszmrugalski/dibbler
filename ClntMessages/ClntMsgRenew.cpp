@@ -94,9 +94,8 @@ TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
     appendRequestedOptions();
     appendAuthenticationOption();
 
-    pkt = new char[getSize()];
-    this->IsDone = false;
-    this->send();
+    IsDone = false;
+    send();
 }
 
 
@@ -219,8 +218,5 @@ string TClntMsgRenew::getName() {
     return "RENEW";
 }
 
-TClntMsgRenew::~TClntMsgRenew()
-{
-    delete [] pkt;
-    pkt = NULL;
+TClntMsgRenew::~TClntMsgRenew() {
 }

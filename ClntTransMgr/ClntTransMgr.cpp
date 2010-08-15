@@ -328,7 +328,7 @@ void TClntTransMgr::doDuties()
         SPtr<TClntCfgIface> x;
         x = ClntCfgMgr().checkInactiveIfaces();
         if (x)
-	        openSocket(x);
+	    openSocket(x);
     }
 
     removeExpired();
@@ -504,6 +504,13 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
     // is message valid?
     if (!msgAnswer->check())
         return ;
+
+#ifdef MOD_REMOTE_AUTOCONF
+    if (neighborInfoGet(msgAnswer->getTransID())) {
+	processRemoteReply(msgAnswer);
+	return;
+    }
+#endif 
     
     // find which message this is answer for
     bool found = false;
@@ -1146,3 +1153,105 @@ void TClntTransMgr::sortAdvertiseLst()
 void TClntTransMgr::printAdvertiseLst() {
     printLst(AdvertiseLst);
 }
+
+#ifdef MOD_REMOTE_AUTOCONF
+SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborInfoGet(SPtr<TIPv6Addr> addr) {
+    for (TNeighborInfoLst::iterator it=Neighbors.begin(); it!=Neighbors.end(); ++it) {
+	if ( (*(*it)->srvAddr) == *addr)
+	    return *it;
+    }
+    return 0;
+}
+
+SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborInfoGet(int transid) {
+  for (TNeighborInfoLst::iterator it=Neighbors.begin(); it!=Neighbors.end(); ++it) {
+      if ( (*it)->transid == transid)
+	  return *it;
+  }
+
+  return 0;
+}
+
+bool TClntTransMgr::updateNeighbors(int ifindex, SPtr<TOptAddrLst> neighbors) {
+  neighbors->firstAddr();
+
+  SPtr<TIPv6Addr> addr;
+  while (addr=neighbors->getAddr()) {
+      SPtr<TNeighborInfo> info;
+      info = neighborInfoGet(addr);
+      if (info)
+	  continue; // this neighbor is already known
+      neighborAdd(ifindex, addr);
+  }
+
+  return true;
+}
+
+SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborAdd(int ifindex, SPtr<TIPv6Addr> addr) {
+    SPtr<TNeighborInfo> info = new TNeighborInfo(addr);
+    info->srvAddr = addr;
+    info->ifindex = ifindex;
+
+    Log(Debug) << "New information about neighbor " << addr->getPlain() << " added." << LogEnd;
+    Neighbors.push_back(info);
+    sendRemoteSolicit(info);
+
+    return info;
+}
+
+bool TClntTransMgr::sendRemoteSolicit(SPtr<TNeighborInfo> neighbor) {
+    Log(Debug) << "Sending remote Solicit to " << neighbor->srvAddr->getPlain() << LogEnd;
+
+    SPtr<TClntCfgIface> iface;
+    ClntCfgMgr().firstIface();
+    while( (iface=ClntCfgMgr().getIface()) )
+    {
+	if (iface->getID() == neighbor->ifindex)
+	    break;
+    }
+    if (!iface) {
+	Log(Error) << "Unable to find interface with ifindex=" << neighbor->ifindex 
+		   << ". Remote solicit failed." << LogEnd;
+	return false;
+    }
+
+    List(TClntCfgIA) iaLst; // list of IA requiring configuration
+    SPtr<TClntCfgIA> cfgIA;
+    iface->firstIA();
+    while (cfgIA=iface->getIA()) {
+	iaLst.append(cfgIA);
+    }
+
+    // ignore TA & PD
+    Log(Info) << "Creating remote SOLICIT to be transmitted to " << neighbor->srvAddr->getPlain() << LogEnd;
+    SPtr<TClntCfgTA> ta; // use empty pointer
+    List(TClntCfgPD) pdLst; // use empty list
+
+    SPtr<TClntMsg> solicit = new TClntMsgSolicit(neighbor->ifindex, neighbor->srvAddr,
+						 iaLst, ta, pdLst,
+						 true /*rapid-commit */, 
+						 true /* remote autoconf*/);
+    neighbor->transid = solicit->getTransID();
+    Transactions.append(solicit);
+
+    return true;
+}
+
+bool TClntTransMgr::processRemoteReply(SPtr<TClntMsg> reply) {
+
+    Log(Debug) << "Processing REPLY to remote SOLICIT" << LogEnd;
+    int xid = reply->getTransID();
+    SPtr<TNeighborInfo> neigh = neighborInfoGet(xid);
+    if (!neigh) {
+	Log(Error) << "Failed to match transmitted SOLICIT. Seems like bogus remote REPLY." << LogEnd;
+	return false;
+    }
+
+    neigh->reply = reply;
+
+    /// @todo Implement actual usage of the received parameters
+
+    return true;
+}
+
+#endif

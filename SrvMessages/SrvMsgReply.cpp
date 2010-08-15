@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include "SmartPtr.h"
+#include "OptEmpty.h" // rapid-commit option
 #include "SrvMsgReply.h"
 #include "SrvMsg.h"
 #include "SrvOptOptionRequest.h"
@@ -19,7 +20,6 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
 #include "SrvOptTA.h"
-#include "SrvOptRapidCommit.h"
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptTimeZone.h"
 #include "SrvOptDomainName.h"
@@ -832,7 +832,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     this->Options.append((Ptr*)srvDUID);
 
     // include rapid commit
-    SPtr<TSrvOptRapidCommit> optRapidCommit = new TSrvOptRapidCommit(this);
+    SPtr<TOptEmpty> optRapidCommit = new TOptEmpty(OPTION_RAPID_COMMIT, this);
     this->Options.append((Ptr*)optRapidCommit);
 
     // is this client supported?

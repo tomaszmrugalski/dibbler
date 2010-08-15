@@ -14,6 +14,7 @@ class TMsg;
 
 #include <iostream>
 #include <string>
+#include <list>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "DHCPConst.h"
@@ -101,5 +102,7 @@ class TMsg
     char *KeyGenNonce;
     unsigned KeyGenNonceLen;
 };
+
+typedef std::list< SPtr<TMsg> > TMsgLst;
 
 #endif

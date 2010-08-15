@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
 OBJECTS = SrvOptClientIdentifier.o	SrvOptElapsed.o       SrvOptIAAddress.o      \
-          SrvOptInterfaceID.o 		SrvOptPreference.o    SrvOptRapidCommit.o    \
+          SrvOptInterfaceID.o 		SrvOptPreference.o                           \
           SrvOptServerIdentifier.o 	SrvOptServerUnicast.o SrvOptStatusCode.o     \
 	  SrvOptUserClass.o 		SrvOptVendorClass.o   SrvOptVendorSpec.o     \
 	  SrvOptIA_NA.o 		SrvOptOptionRequest.o SrvOptDNSServers.o     \

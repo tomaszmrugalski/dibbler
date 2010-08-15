@@ -133,9 +133,8 @@ TClntMsgRequest::TClntMsgRequest(List(TOpt) opts, int iface)
     
     appendElapsedOption();
     appendAuthenticationOption();
-    pkt = new char[getSize()];
-    this->IsDone = false;
-    this->send();
+    IsDone = false;
+    send();
 }
 
 TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
@@ -335,8 +334,5 @@ void TClntMsgRequest::copyAddrsFromAdvertise(SPtr<TClntMsg> adv)
 
 }
 
-TClntMsgRequest::~TClntMsgRequest()
-{
-    delete [] pkt;
-    pkt=NULL;
+TClntMsgRequest::~TClntMsgRequest() {
 }

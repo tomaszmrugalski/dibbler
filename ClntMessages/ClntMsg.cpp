@@ -27,6 +27,8 @@
 #include "ClntTransMgr.h"
 
 #include "OptGeneric.h"
+#include "OptEmpty.h"
+#include "OptAddrLst.h"
 #include "ClntOptClientIdentifier.h"
 #include "ClntOptServerIdentifier.h"
 #include "ClntOptIA_NA.h"
@@ -37,7 +39,6 @@
 #include "ClntOptElapsed.h"
 #include "ClntOptServerUnicast.h"
 #include "ClntOptStatusCode.h"
-#include "ClntOptRapidCommit.h"
 #include "ClntOptDNSServers.h"
 #include "ClntOptDomainName.h"
 #include "ClntOptNTPServers.h"
@@ -176,7 +177,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TClntOptStatusCode(buf+pos,length,this);
 	    break;
 	case OPTION_RAPID_COMMIT:
-	    ptr = new TClntOptRapidCommit(buf+pos,length,this);
+	    ptr = new TOptEmpty(code, buf+pos,length,this);
 	    break;
 	case OPTION_DNS_SERVERS:
 	    ptr = new TClntOptDNSServers(buf+pos,length,this);
@@ -347,6 +348,12 @@ TClntMsg::TClntMsg(int iface,
     setDefaults();
 }
 
+TClntMsg::~TClntMsg() {
+    if (pkt)
+	delete [] pkt;
+    pkt = 0;
+}
+
 void TClntMsg::setDefaults()
 {
     FirstTimeStamp = now();			
@@ -375,6 +382,9 @@ unsigned long TClntMsg::getTimeout()
 
 void TClntMsg::send()
 {
+    if (!pkt)
+	pkt = new char[getSize()];
+
     srand(now());
     if (!RC)
         RT=(int)(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
@@ -903,6 +913,14 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    
 	    break;
 	    }
+#ifdef MOD_REMOTE_AUTOCONF
+	case OPTION_NEIGHBORS:
+	  {
+	    SPtr<TOptAddrLst> neighbors = (Ptr*) option;
+	    ClntTransMgr().updateNeighbors(reply->getIface(), neighbors);
+	    break;
+	  }
+#endif
 
 	case OPTION_IAADDR:
 	    Log(Warning) << "Option OPTION_IAADDR misplaced." << LogEnd;

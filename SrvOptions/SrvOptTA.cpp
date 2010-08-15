@@ -18,7 +18,6 @@
 #include "SrvOptTA.h"
 #include "SrvOptIAAddress.h"
 #include "SrvOptStatusCode.h"
-#include "SrvOptRapidCommit.h"
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"

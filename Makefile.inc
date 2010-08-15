@@ -31,8 +31,10 @@ MOD_CLNT_BIND_REUSE        = y
 #MOD_SRV_DISABLE_DNSUPDATE  = y
 #MOD_DISABLE_AUTH      = y
 #MOD_CLNT_CONFIRM = y
+MOD_REMOTE_AUTOCONF = y
 #MOD_LIBXML2 = y
 #MOD_DEBUG = y
+
 
 # === Portability section ===
 # Make sure that you have uncommented only one section
@@ -180,6 +182,10 @@ endif
 
 ifdef MOD_DISABLE_AUTH
 COPTS += -DMOD_DISABLE_AUTH
+endif
+
+ifdef MOD_REMOTE_AUTOCONF
+COPTS += -DMOD_REMOTE_AUTOCONF
 endif
 
 ifdef MOD_LIBXML2

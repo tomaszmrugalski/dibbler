@@ -24,6 +24,7 @@
 #include "hmac.h"
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
+    :pkt(0)
 {
     setAttribs(iface, addr, 0, 0);
     if (bufSize<4)
@@ -32,14 +33,13 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
     unsigned char * buf2 = (unsigned char *)(buf+1);
     this->TransID= ((long)buf2[0])<<16 | ((long)buf2[1])<<8 | (long)buf2[2];
     buf+=4; bufSize-=4;
-    this->pkt = 0;
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
+    :pkt(0)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
-    this->pkt = 0;
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)

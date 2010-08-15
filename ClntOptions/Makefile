@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
 OBJECTS = ClntOptClientIdentifier.o ClntOptElapsed.o 	       ClntOptIAAddress.o      \
-	  ClntOptPreference.o       ClntOptRapidCommit.o       ClntOptAddrParams.o     \
+	  ClntOptPreference.o                                  ClntOptAddrParams.o     \
 	  ClntOptServerIdentifier.o ClntOptServerUnicast.o     ClntOptStatusCode.o     \
 	  ClntOptUserClass.o 	    ClntOptVendorClass.o       ClntOptVendorSpec.o     \
 	  ClntOptIA_PD.o	    ClntOptOptionRequest.o     ClntOptDNSServers.o     \
