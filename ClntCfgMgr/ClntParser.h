@@ -28,7 +28,7 @@
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
 #include "ClntOptVendorSpec.h"
-#include "CfgMgr.h"
+#include "ClntCfgMgr.h"
 #include "Logger.h"
 #include "OptGeneric.h"
 #include "OptAddr.h"
@@ -67,6 +67,7 @@ void StartPDDeclaration();                                                  \
 bool EndPDDeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
+			 TClntCfgMgr * CfgMgr;\
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
 virtual ~ClntParser();                                                      \
@@ -82,7 +83,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;
 
-#line 81 "ClntParser.y"
+#line 82 "ClntParser.y"
 typedef union    
 {
     int ival;    

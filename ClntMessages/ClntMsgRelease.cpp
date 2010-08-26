@@ -92,7 +92,6 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
 	        ClntAddrMgr().addIA(ia);
 	    }
 	
-    	ClntIfaceMgr().notifyScripts(RELEASE_MSG, Iface);
 
 	    iaLst.first();
 	    while (ia = iaLst.get())

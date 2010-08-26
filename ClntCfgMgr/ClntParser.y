@@ -15,7 +15,7 @@
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
 #include "ClntOptVendorSpec.h"
-#include "CfgMgr.h"
+#include "ClntCfgMgr.h"
 #include "Logger.h"
 #include "OptGeneric.h"
 #include "OptAddr.h"
@@ -61,6 +61,7 @@ void StartPDDeclaration();                                                  \
 bool EndPDDeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
+			 TClntCfgMgr * CfgMgr;\
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
 virtual ~ClntParser();                                                      \
@@ -179,6 +180,7 @@ InterfaceOptionDeclaration
 | RejectServersOption
 | PreferServersOption
 | ExtraOption
+| ExperimentalRemoteAutoconf
 ;
 
 IAOptionDeclaration
@@ -187,7 +189,6 @@ IAOptionDeclaration
 | RapidCommitOption
 | ADDRESOptionDeclaration
 | ExperimentalAddrParams
-| ExperimentalRemoteAutoconf
 ;
 
 InterfaceDeclaration
@@ -630,7 +631,7 @@ ExperimentalRemoteAutoconf
         "to enable it." << LogEnd;
         YYABORT;
     }
-    ParserOptStack.getLast()->setRemoteAutoconf(true);
+    CfgMgr->setRemoteAutoconf(true);
 };
 
 

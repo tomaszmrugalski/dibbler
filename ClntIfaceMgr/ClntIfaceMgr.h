@@ -55,7 +55,7 @@ public:
     
     SPtr<TClntMsg> select(unsigned int timeout);
 
-    void notifyScripts(int msgType, int ifindex);
+    void notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
 
     bool fqdnAdd(SPtr<TClntIfaceIface> iface, string domainname);
     bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string domainname);

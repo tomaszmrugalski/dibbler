@@ -37,6 +37,8 @@ class TClntTransMgr
     void sendInfRequest(TContainer< SPtr<TOpt> > requestOptions, int iface);
     void sendRebind( TContainer<SPtr<TOpt> > ptrIA, int iface);
     void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
+    bool handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
+
     void shutdown();
     bool isDone();
 
@@ -71,6 +73,8 @@ class TClntTransMgr
     SPtr<TNeighborInfo> neighborInfoGet(int transid);
 
     SPtr<TNeighborInfo> neighborAdd(int ifindex, SPtr<TIPv6Addr> addr);
+
+    bool sendRemoteSolicits();
 
     bool updateNeighbors(int ifindex, SPtr<TOptAddrLst> neighbors);
     bool sendRemoteSolicit(SPtr<TNeighborInfo> neighbor);

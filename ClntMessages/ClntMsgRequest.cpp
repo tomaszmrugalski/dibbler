@@ -213,8 +213,6 @@ void TClntMsgRequest::answer(SPtr<TClntMsg> msg)
 #endif
      
     TClntMsg::answer(msg);
-
-    ClntIfaceMgr().notifyScripts(REQUEST_MSG, Iface);
 }
 
 void TClntMsgRequest::doDuties()

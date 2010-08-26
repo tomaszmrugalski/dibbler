@@ -16,7 +16,7 @@ using namespace std;
 
 TClntCfgIA::TClntCfgIA() 
 :IAID(newID()), T1(CLIENT_DEFAULT_T1), T2(CLIENT_DEFAULT_T2), 
-      State(STATE_NOTCONFIGURED), AddrParams(false), RemoteAutoconf(true) {
+      State(STATE_NOTCONFIGURED), AddrParams(false) {
 }
 
 long TClntCfgIA::newID(){
@@ -75,7 +75,6 @@ void TClntCfgIA::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     T2=opt->getT2();
     
     AddrParams = opt->getAddrParams();
-    RemoteAutoconf = opt->getRemoteAutoconf();
 }
 
 void TClntCfgIA::addAddr(SPtr<TClntCfgAddr> addr) {
@@ -84,14 +83,6 @@ void TClntCfgIA::addAddr(SPtr<TClntCfgAddr> addr) {
 
 bool TClntCfgIA::getAddrParams() {
     return AddrParams;
-}
-
-void TClntCfgIA::setRemoteAutoconf() {
-    RemoteAutoconf = true;
-}
-
-bool TClntCfgIA::getRemoteAutoconf() {
-    return RemoteAutoconf;
 }
 
 ostream& operator<<(ostream& out,TClntCfgIA& ia) {
@@ -107,8 +98,6 @@ ostream& operator<<(ostream& out,TClntCfgIA& ia) {
     }
     if (ia.AddrParams)
         out << "          <addrParams/>" << endl;
-    if (ia.RemoteAutoconf)
-        out << "          <remoteAutoconf/>" << endl;
     out << "        </ia>" << std::endl;
     return out;
 }

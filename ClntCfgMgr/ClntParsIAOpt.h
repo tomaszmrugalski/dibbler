@@ -51,8 +51,6 @@ class TClntParsIAOpt : public TClntParsAddrOpt
     void setAddrParams(bool useAddrParams);
     bool getAddrParams();
 
-    void setRemoteAutoconf(bool enable);
-    bool getRemoteAutoconf();
 private:
     long T1;
     long T2;
@@ -63,7 +61,6 @@ private:
     List(TStationID) RejedSrv;
 
     bool AddrParams;
-    bool RemoteAutoconf;
 };
 
 #endif

@@ -529,8 +529,8 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
 		msgAnswer->setIface(msgQuestion->getIface());
 	    }
 
-            msgQuestion->answer(msgAnswer);
-            break;
+	    handleResponse(msgQuestion, msgAnswer);
+	    break;
         }
     }
 
@@ -545,6 +545,39 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
     } 
     ClntCfgMgr().dump();
     ClntAddrMgr().dump();
+}
+
+/** 
+ * handle response
+ * 
+ * @param question 
+ * @param answer 
+ * 
+ * @return 
+ */
+bool TClntTransMgr::handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer)
+{
+    // pre-handling hooks can be added here
+
+    // handle actual response
+    question->answer(answer);
+
+    // post-handling hooks can be added here
+    ClntIfaceMgr().notifyScripts(question, answer);
+
+    if ( (question->getType()==REQUEST_MSG || question->getType()==SOLICIT_MSG) &&
+	 (answer->getType()==REPLY_MSG) ) {
+	// we got actual configuration complete here
+
+#ifdef MOD_REMOTE_AUTOCONF
+	Log(Warning) << "Transmitting Remote-autoconf now (should be after DAD is complete)." << LogEnd;
+	if (ClntCfgMgr().getRemoteAutoconf())
+	    sendRemoteSolicits();
+#endif 
+	
+    }
+
+    return true;
 }
 
 unsigned long TClntTransMgr::getTimeout()
@@ -1194,9 +1227,21 @@ SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborAdd(int ifindex, SPtr<
 
     Log(Debug) << "New information about neighbor " << addr->getPlain() << " added." << LogEnd;
     Neighbors.push_back(info);
-    sendRemoteSolicit(info);
+
+    // it's too early to send remote solicit.
+    // we will send it once global address is received
+    // sendRemoteSolicit(info); 
 
     return info;
+}
+
+bool TClntTransMgr::sendRemoteSolicits() {
+    bool status = true;
+    for (TNeighborInfoLst::iterator it=Neighbors.begin(); it!=Neighbors.end(); ++it) {
+	status = sendRemoteSolicit(*it) && status;
+    }
+
+    return status;
 }
 
 bool TClntTransMgr::sendRemoteSolicit(SPtr<TNeighborInfo> neighbor) {
@@ -1239,7 +1284,7 @@ bool TClntTransMgr::sendRemoteSolicit(SPtr<TNeighborInfo> neighbor) {
 
 bool TClntTransMgr::processRemoteReply(SPtr<TClntMsg> reply) {
 
-    Log(Debug) << "Processing REPLY to remote SOLICIT" << LogEnd;
+    Log(Debug) << "Processing REPLY to remote SOLICIT." << LogEnd;
     int xid = reply->getTransID();
     SPtr<TNeighborInfo> neigh = neighborInfoGet(xid);
     if (!neigh) {

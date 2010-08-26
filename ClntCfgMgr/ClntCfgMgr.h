@@ -86,6 +86,11 @@ class TClntCfgMgr : public TCfgMgr
     SPtr<KeyList> AuthKeys;
 #endif
 
+#ifdef MOD_REMOTE_AUTOCONF
+    void setRemoteAutoconf(bool enable);
+    bool getRemoteAutoconf();
+#endif
+
     bool getFQDNFlagS();
     bool getMappingPrefix();
 
@@ -117,6 +122,8 @@ private:
     List(DigestTypes) AuthAcceptMethods;
     uint32_t AAASPI;
 #endif
+
+    bool RemoteAutoconf;
 
     bool FQDNFlagS; // S bit in the FQDN option
     bool MappingPrefix;

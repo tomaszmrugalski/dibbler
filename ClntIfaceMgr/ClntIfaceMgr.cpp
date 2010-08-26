@@ -582,7 +582,7 @@ void TClntIfaceMgr::redetectIfaces() {
     if_list_release(ifaceList); // allocated in pure C, and so release it there
 }
 
-void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
+void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
 {
     if (!ClntCfgMgr().getNotifyScripts()) {
 	Log(Debug) << "Not executing external script (Notify script disabled)." << LogEnd;
@@ -592,7 +592,7 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
     PrefixModifyMode mode;
     string action;
 
-    switch (msgType)
+    switch (question->getType())
     {
     case REQUEST_MSG:
     case CONFIRM_MSG:
@@ -609,6 +609,7 @@ void TClntIfaceMgr::notifyScripts(int msgType, int ifindex)
 	action = "update";
     }
 
+    int ifindex = reply->getIface();
     SPtr<TClntIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex << ". Notification NOT sent." << LogEnd;

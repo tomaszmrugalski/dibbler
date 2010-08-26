@@ -56,8 +56,9 @@ TClntCfgMgr::TClntCfgMgr(const string cfgFile)
   :TCfgMgr()
 {
     NotifyScripts = false;
+    RemoteAutoconf = false;
 
-	// parse configuration file
+    // parse configuration file
     if (!parseConfigFile(cfgFile)) {
         IsDone = true;
 	    return;
@@ -100,6 +101,7 @@ bool TClntCfgMgr::parseConfigFile(string cfgFile)
     }
     yyFlexLexer lexer(&f,&clog);
     ClntParser parser(&lexer);
+    parser.CfgMgr = this; // just a workaround to access CfgMgr while still being in constructor
     int result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << LogEnd;
     f.close();
@@ -160,9 +162,9 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	while(cfgIface = parser->ClntCfgIfaceLst.get()) {
 	    // for each interface (from config file)
 	    if (cfgIface->getID()==-1) {
-		    ifaceIface = ClntIfaceMgr().getIfaceByName(cfgIface->getName());
+		ifaceIface = ClntIfaceMgr().getIfaceByName(cfgIface->getName());
 	    } else {
-		    ifaceIface = ClntIfaceMgr().getIfaceByID(cfgIface->getID());
+		ifaceIface = ClntIfaceMgr().getIfaceByID(cfgIface->getID());
 	    }
 
 	    if (!ifaceIface) {
@@ -176,6 +178,15 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 			       << " has flag no-config set, so it is ignored." << LogEnd;
 		continue;
 	    }
+
+#ifdef MOD_REMOTE_AUTOCONF
+	    if (RemoteAutoconf) {
+		List(TIPv6Addr) emptyLst;
+		SPtr<TOpt> optNeighbors = new TOptAddrLst(OPTION_NEIGHBORS, emptyLst, 0);
+		Log(Debug) << "Enabled Neighbors option on " << cfgIface->getFullName() << LogEnd;
+		cfgIface->addExtraOption(optNeighbors, false);
+	    }
+#endif
 
 	    cfgIface->setIfaceName(ifaceIface->getName());
 	    cfgIface->setIfaceID(ifaceIface->getID());
@@ -570,6 +581,17 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
 
     return true;
 }
+
+#ifdef MOD_REMOTE_AUTOCONF
+void TClntCfgMgr::setRemoteAutoconf(bool enable) {
+    Log(Info) << "Remote autoconf " << (enable?"enabled":"disabled") << LogEnd;
+    RemoteAutoconf = enable;
+}
+
+bool TClntCfgMgr::getRemoteAutoconf() {
+    return RemoteAutoconf;
+}
+#endif
 
 void TClntCfgMgr::setDigest(DigestTypes type)
 {

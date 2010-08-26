@@ -35,28 +35,28 @@ TClntCfgIface::TClntCfgIface(int ifaceNr) {
 }
 
 void TClntCfgIface::setDefaults() {
-    this->DNSServerState  = STATE_DISABLED;
-    this->DomainState     = STATE_DISABLED;
-    this->NTPServerState  = STATE_DISABLED;
-    this->TimezoneState   = STATE_DISABLED;
-    this->SIPServerState  = STATE_DISABLED;
-    this->SIPDomainState  = STATE_DISABLED;
-    this->FQDNState       = STATE_DISABLED;
-    this->NISServerState  = STATE_DISABLED;
-    this->NISPServerState = STATE_DISABLED;
-    this->NISDomainState  = STATE_DISABLED;
-    this->NISPDomainState = STATE_DISABLED;
-    this->LifetimeState   = STATE_DISABLED;
-    this->PrefixDelegationState = STATE_DISABLED;
-    this->VendorSpecState = STATE_DISABLED;
+    DNSServerState  = STATE_DISABLED;
+    DomainState     = STATE_DISABLED;
+    NTPServerState  = STATE_DISABLED;
+    TimezoneState   = STATE_DISABLED;
+    SIPServerState  = STATE_DISABLED;
+    SIPDomainState  = STATE_DISABLED;
+    FQDNState       = STATE_DISABLED;
+    NISServerState  = STATE_DISABLED;
+    NISPServerState = STATE_DISABLED;
+    NISDomainState  = STATE_DISABLED;
+    NISPDomainState = STATE_DISABLED;
+    LifetimeState   = STATE_DISABLED;
+    PrefixDelegationState = STATE_DISABLED;
+    VendorSpecState = STATE_DISABLED;
 
     ExtraOpts.clear();
 }
 
 void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
-    this->isIA        = opt->getIsIAs();
-    this->Unicast     = opt->getUnicast();
-    this->RapidCommit = opt->getRapidCommit();
+    isIA        = opt->getIsIAs();
+    Unicast     = opt->getUnicast();
+    RapidCommit = opt->getRapidCommit();
 
     // copy YES/NO information
     ReqDNSServer = opt->getReqDNSServer();
@@ -75,32 +75,32 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     ReqVendorSpec= opt->getReqVendorSpec();
 
     // copy parameters
-    this->DNSServerLst = *opt->getDNSServerLst();
-    this->DomainLst    = *opt->getDomainLst();
-    this->Timezone     = opt->getTimezone();
-    this->NTPServerLst = *opt->getNTPServerLst();
-    this->SIPServerLst = *opt->getSIPServerLst();
-    this->SIPDomainLst = *opt->getSIPDomainLst();
-    this->FQDN         = opt->getFQDN();
-    this->NISServerLst = *opt->getNISServerLst();
-    this->NISDomain    = opt->getNISDomain();
-    this->NISPServerLst= *opt->getNISPServerLst();
-    this->NISPDomain   = opt->getNISPDomain();
-    this->VendorSpec   = opt->getVendorSpec();
+    DNSServerLst = *opt->getDNSServerLst();
+    DomainLst    = *opt->getDomainLst();
+    Timezone     = opt->getTimezone();
+    NTPServerLst = *opt->getNTPServerLst();
+    SIPServerLst = *opt->getSIPServerLst();
+    SIPDomainLst = *opt->getSIPDomainLst();
+    FQDN         = opt->getFQDN();
+    NISServerLst = *opt->getNISServerLst();
+    NISDomain    = opt->getNISDomain();
+    NISPServerLst= *opt->getNISPServerLst();
+    NISPDomain   = opt->getNISPDomain();
+    VendorSpec   = opt->getVendorSpec();
 
-    if (ReqDNSServer)  this->setDNSServerState(STATE_NOTCONFIGURED);
-    if (ReqDomain)     this->setDomainState(STATE_NOTCONFIGURED);
-    if (ReqNTPServer)  this->setNTPServerState(STATE_NOTCONFIGURED);
-    if (ReqTimezone)   this->setTimezoneState(STATE_NOTCONFIGURED);
-    if (ReqSIPServer)  this->setSIPServerState(STATE_NOTCONFIGURED);
-    if (ReqSIPDomain)  this->setSIPDomainState(STATE_NOTCONFIGURED);
-    if (ReqFQDN)       this->setFQDNState(STATE_NOTCONFIGURED);
-    if (ReqNISServer)  this->setNISServerState(STATE_NOTCONFIGURED);
-    if (ReqNISDomain)  this->setNISDomainState(STATE_NOTCONFIGURED);
-    if (ReqNISPServer) this->setNISPServerState(STATE_NOTCONFIGURED);
-    if (ReqNISPDomain) this->setNISPDomainState(STATE_NOTCONFIGURED);
-    if (ReqLifetime)   this->setLifetimeState(STATE_NOTCONFIGURED);
-    if (ReqVendorSpec) this->setVendorSpecState(STATE_NOTCONFIGURED);
+    if (ReqDNSServer)  setDNSServerState(STATE_NOTCONFIGURED);
+    if (ReqDomain)     setDomainState(STATE_NOTCONFIGURED);
+    if (ReqNTPServer)  setNTPServerState(STATE_NOTCONFIGURED);
+    if (ReqTimezone)   setTimezoneState(STATE_NOTCONFIGURED);
+    if (ReqSIPServer)  setSIPServerState(STATE_NOTCONFIGURED);
+    if (ReqSIPDomain)  setSIPDomainState(STATE_NOTCONFIGURED);
+    if (ReqFQDN)       setFQDNState(STATE_NOTCONFIGURED);
+    if (ReqNISServer)  setNISServerState(STATE_NOTCONFIGURED);
+    if (ReqNISDomain)  setNISDomainState(STATE_NOTCONFIGURED);
+    if (ReqNISPServer) setNISPServerState(STATE_NOTCONFIGURED);
+    if (ReqNISPDomain) setNISPDomainState(STATE_NOTCONFIGURED);
+    if (ReqLifetime)   setLifetimeState(STATE_NOTCONFIGURED);
+    if (ReqVendorSpec) setVendorSpecState(STATE_NOTCONFIGURED);
 
     DsLiteTunnelMode = opt->getDsLiteTunnelMode();
 
@@ -108,12 +108,12 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     SPtr<TStationID> station;
     opt->firstPrefSrv();
     while (station = opt->getPrefSrv())
-	this->PrefSrvLst.append(station);
+	PrefSrvLst.append(station);
 
     // copy rejected-server list
     opt->firstRejedSrv();
     while (station = opt->getRejedSrv())
-	this->RejectedSrvLst.append(station);
+	RejectedSrvLst.append(station);
 }
 
 EDsLiteTunnelMode TClntCfgIface::getDsLiteTunnelMode() {
@@ -122,7 +122,7 @@ EDsLiteTunnelMode TClntCfgIface::getDsLiteTunnelMode() {
 
 bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
 {
-    this->RejectedSrvLst.first();
+    RejectedSrvLst.first();
     SPtr<TStationID> RejectedSrv;
     while(RejectedSrv=RejectedSrvLst.get())
     {
@@ -133,15 +133,15 @@ bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
 }
 
 void TClntCfgIface::firstTA() {
-    this->ClntCfgTALst.first();
+    ClntCfgTALst.first();
 }
 
 SPtr<TClntCfgTA> TClntCfgIface::getTA() {
-    return this->ClntCfgTALst.get();
+    return ClntCfgTALst.get();
 }
 
 void  TClntCfgIface::addTA(SPtr<TClntCfgTA> ta) {
-    this->ClntCfgTALst.append(ta);
+    ClntCfgTALst.append(ta);
 }
 
 int TClntCfgIface::countTA()
@@ -218,8 +218,8 @@ void TClntCfgIface::addPD(SPtr<TClntCfgPD> ptr)
 
 string TClntCfgIface::getFullName() {
     ostringstream oss;
-    oss << this->ID;
-    return string(this->IfaceName)
+    oss << ID;
+    return string(IfaceName)
 	+"/"
 	+oss.str();
 }

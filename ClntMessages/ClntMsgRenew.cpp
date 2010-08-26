@@ -175,8 +175,6 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
     //There is no use to send Rebind even if server realesed some addresses/IAs
     //in such a case new Solicit message should be sent
     IsDone = true;
-
-    ClntIfaceMgr().notifyScripts(RENEW_MSG, Iface);
 }
 
 /** 

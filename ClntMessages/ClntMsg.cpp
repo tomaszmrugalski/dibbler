@@ -253,7 +253,6 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 			 << MsgType << " is not supported." << LogEnd;
 	    break;
 	default:
-
 	    ptr = parseExtraOption(buf+pos, code, length);
 	    if (!ptr)
 	    {
@@ -730,6 +729,11 @@ void TClntMsg::appendRequestedOptions() {
             }
             */
     }
+#endif
+
+#ifdef MOD_REMOTE_AUTOCONF
+    if (ClntCfgMgr().getRemoteAutoconf())
+	optORO->addOption(OPTION_NEIGHBORS);
 #endif
 
     // final setup: Did we add any options at all? 
