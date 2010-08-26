@@ -664,9 +664,14 @@ void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
 }
 
 bool TClntIfaceMgr::notifyRemoteScripts(SPtr<TIPv6Addr> rcvdAddr, SPtr<TIPv6Addr> srvAddr) {
-    Log(Info) << "#### Remote Notify Scripts not implemented yet." << LogEnd;
     Log(Info) << "Received address " << rcvdAddr->getPlain() 
 	      << " from remote server located at " << srvAddr->getPlain() << LogEnd;
+
+    stringstream tmp;
+    tmp << "./remote-autoconf " << rcvdAddr->getPlain() << " " << srvAddr->getPlain();
+    
+    int returnCode = system(tmp.str().c_str());
+    Log(Info) << "Executed command: " << tmp.str() << ", return code=" << returnCode << LogEnd;
 
     return true;
 }
