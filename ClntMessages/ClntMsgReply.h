@@ -17,10 +17,9 @@ class TClntMsgReply;
 class TClntMsgReply : public TClntMsg
 {
   public:
-  /* TClntMsgReply(int iface, SPtr<TIPv6Addr> addr); */
-
     TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-	
+
+    SPtr<TIPv6Addr> getFirstAddr();
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     bool check();

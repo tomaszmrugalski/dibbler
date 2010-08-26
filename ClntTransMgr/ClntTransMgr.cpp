@@ -21,6 +21,7 @@
 #include "ClntMsgRequest.h"
 #include "ClntMsgRenew.h"
 #include "ClntMsgRebind.h"
+#include "ClntMsgReply.h"
 #include "ClntMsgRelease.h"
 #include "ClntMsgSolicit.h"
 #include "ClntMsgInfRequest.h"
@@ -420,11 +421,6 @@ void TClntTransMgr::shutdown()
                 }
                 ptrNextIA->firstAddr();
 
-    		    // addresses are deleted in ClntMsgRelease.cpp, DO NOT delete them here
-                // while (ptrAddr = ptrNextIA->getAddr() ) {
-                //    ptrIface->delAddr( ptrAddr->get(),ptrAddr->getPrefix() );
-                // }
-
                 // delete IA from AddrMgr
                 ClntAddrMgr().delIA( ptrNextIA->getIAID() );
             }
@@ -526,6 +522,7 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
 			     << " sent on " << ifaceQuestion->getFullName() << " was received on interface " 
 			     << ifaceAnswer->getFullName() << "." << LogEnd;
 		// return; // don't return, just fix interface ID
+		// useful, when sending thru eth0, but receiving via loopback
 		msgAnswer->setIface(msgQuestion->getIface());
 	    }
 
@@ -1288,15 +1285,15 @@ bool TClntTransMgr::processRemoteReply(SPtr<TClntMsg> reply) {
     int xid = reply->getTransID();
     SPtr<TNeighborInfo> neigh = neighborInfoGet(xid);
     if (!neigh) {
-	Log(Error) << "Failed to match transmitted SOLICIT. Seems like bogus remote REPLY." << LogEnd;
+	Log(Error) << "Failed to match transmitted remote SOLICIT. Seems like bogus remote REPLY." << LogEnd;
 	return false;
     }
 
+    SPtr<TClntMsgReply> rpl = (Ptr*) reply;
     neigh->reply = reply;
+    neigh->rcvdAddr = rpl->getFirstAddr();
 
-    /// @todo Implement actual usage of the received parameters
-
-    return true;
+    return ClntIfaceMgr().notifyRemoteScripts(neigh->rcvdAddr, neigh->srvAddr);
 }
 
 #endif

@@ -12,7 +12,7 @@
 
 #include "SmartPtr.h"
 #include "ClntMsgReply.h"
-#include "ClntMsg.h"
+#include "ClntOptIAAddress.h"
 
 TClntMsgReply::TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     :TClntMsg(iface, addr,buf,bufSize)
@@ -28,15 +28,31 @@ void TClntMsgReply::answer(SPtr<TClntMsg> Reply) {
 void TClntMsgReply::doDuties() {
 }
 
-
 bool TClntMsgReply::check() {
     bool anonInfReq = ClntCfgMgr().anonInfRequest();
     return TClntMsg::check(!anonInfReq /* clientID mandatory */, true /* serverID mandatory */ );
 }
 
-
 string TClntMsgReply::getName() {
     return "REPLY";
+}
+
+SPtr<TIPv6Addr> TClntMsgReply::getFirstAddr() {
+    firstOption();
+    SPtr<TOpt> opt, subopt;
+    while (opt=getOption()) {
+	if (opt->getOptType() != OPTION_IA_NA)
+	    continue;
+	opt->firstOption();
+	while (subopt=opt->getOption()) {
+	    if (subopt->getOptType() != OPTION_IAADDR)
+		continue;
+	    SPtr<TOptIAAddress> optAddr = (Ptr*) subopt;
+	    return optAddr->getAddr();
+	}
+    }
+
+    return 0;
 }
 
 TClntMsgReply::~TClntMsgReply() {

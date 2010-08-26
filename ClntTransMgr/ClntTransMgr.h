@@ -64,6 +64,7 @@ class TClntTransMgr
       int transid;
       SPtr<TDUID> srvDuid;
       SPtr<TClntMsg> reply;
+      SPtr<TIPv6Addr> rcvdAddr;
     TNeighborInfo(SPtr<TIPv6Addr> addr): srvAddr(addr), ifindex(0), transid(0), srvDuid(0), reply(0) { }
     };
     typedef std::list< SPtr<TNeighborInfo> > TNeighborInfoLst;

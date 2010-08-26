@@ -56,6 +56,9 @@ public:
     SPtr<TClntMsg> select(unsigned int timeout);
 
     void notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
+#ifdef MOD_REMOTE_AUTOCONF
+    bool notifyRemoteScripts(SPtr<TIPv6Addr> receivedAddr, SPtr<TIPv6Addr> serverAddr);
+#endif    
 
     bool fqdnAdd(SPtr<TClntIfaceIface> iface, string domainname);
     bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string domainname);

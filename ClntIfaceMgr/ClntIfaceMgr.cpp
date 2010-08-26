@@ -663,6 +663,14 @@ void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
     Log(Info) << "Return code=" << returnCode << LogEnd;
 }
 
+bool TClntIfaceMgr::notifyRemoteScripts(SPtr<TIPv6Addr> rcvdAddr, SPtr<TIPv6Addr> srvAddr) {
+    Log(Info) << "#### Remote Notify Scripts not implemented yet." << LogEnd;
+    Log(Info) << "Received address " << rcvdAddr->getPlain() 
+	      << " from remote server located at " << srvAddr->getPlain() << LogEnd;
+
+    return true;
+}
+
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "<ClntIfaceMgr>" << std::endl;
     SPtr<TClntIfaceIface> ptr;
