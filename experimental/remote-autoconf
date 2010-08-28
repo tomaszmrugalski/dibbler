@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "\033[32mRemote Autoconf script."
+echo "Received remote address $1 from srv $2 on $3/$4"
+echo "Remote autoconf script complete.\033[0m"
