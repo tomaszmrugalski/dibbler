@@ -360,6 +360,11 @@ void TClntTransMgr::doDuties()
 
         //Maybe we require only infromations concernig link
         checkInfRequest();
+
+#ifdef MOD_REMOTE_AUTOCONF
+	checkRemoteSolicits();
+#endif
+
     } 
     
     // This method launch the DNS update, so the checkDecline has to be done before to ensure the ip address is valid
@@ -564,14 +569,7 @@ bool TClntTransMgr::handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answe
 
     if ( (question->getType()==REQUEST_MSG || question->getType()==SOLICIT_MSG) &&
 	 (answer->getType()==REPLY_MSG) ) {
-	// we got actual configuration complete here
-
-#ifdef MOD_REMOTE_AUTOCONF
-	Log(Warning) << "Transmitting Remote-autoconf now (should be after DAD is complete)." << LogEnd;
-	if (ClntCfgMgr().getRemoteAutoconf())
-	    sendRemoteSolicits();
-#endif 
-	
+	// we got actual configuration complete here	
     }
 
     return true;
@@ -1232,10 +1230,22 @@ SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborAdd(int ifindex, SPtr<
     return info;
 }
 
-bool TClntTransMgr::sendRemoteSolicits() {
+bool TClntTransMgr::checkRemoteSolicits() {
     bool status = true;
+
+    if (!ClntAddrMgr().getPreferredAddr()) {
+	// There are no preferred (non-tentative) addresses. Skipping remote solicit.
+	return false;
+    }
+
+    // There is preferred address: " << ClntAddrMgr().getPreferredAddr()->getPlain()
+    
     for (TNeighborInfoLst::iterator it=Neighbors.begin(); it!=Neighbors.end(); ++it) {
+	if ( (*it)->state != TNeighborInfo::NeighborInfoState_Added)
+	    continue; 
+	
 	status = sendRemoteSolicit(*it) && status;
+	(*it)->state = TNeighborInfo::NeighborInfoState_Sent;
     }
 
     return status;
@@ -1281,7 +1291,7 @@ bool TClntTransMgr::sendRemoteSolicit(SPtr<TNeighborInfo> neighbor) {
 
 bool TClntTransMgr::processRemoteReply(SPtr<TClntMsg> reply) {
 
-    Log(Debug) << "Processing REPLY to remote SOLICIT." << LogEnd;
+    Log(Debug) << "Processing remote REPLY to remote SOLICIT." << LogEnd;
     int xid = reply->getTransID();
     SPtr<TNeighborInfo> neigh = neighborInfoGet(xid);
     if (!neigh) {
@@ -1292,8 +1302,16 @@ bool TClntTransMgr::processRemoteReply(SPtr<TClntMsg> reply) {
     SPtr<TClntMsgReply> rpl = (Ptr*) reply;
     neigh->reply = reply;
     neigh->rcvdAddr = rpl->getFirstAddr();
+    neigh->state = TNeighborInfo::NeighborInfoState_Received;
 
-    return ClntIfaceMgr().notifyRemoteScripts(neigh->rcvdAddr, neigh->srvAddr);
+    Transactions.first();
+    SPtr<TClntMsg> sol;
+    while (sol = Transactions.get() ) {
+	if (sol->getTransID() == neigh->transid)
+	    sol->isDone(true);
+    }
+
+    return ClntIfaceMgr().notifyRemoteScripts(neigh->rcvdAddr, neigh->srvAddr, reply->getIface() );
 }
 
 #endif

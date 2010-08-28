@@ -57,15 +57,22 @@ class TClntTransMgr
     void printAdvertiseLst();
 
 #ifdef MOD_REMOTE_AUTOCONF
-    class TNeighborInfo {
-    public:
+    struct TNeighborInfo {
+	typedef enum {
+	    NeighborInfoState_Added,   // just added (waiting to be sent)
+	    NeighborInfoState_Sent,    // sent, awaiting remote reply
+	    NeighborInfoState_Received // remote reply received
+	} NeighborInfoState;
       SPtr<TIPv6Addr> srvAddr;
       int ifindex;
       int transid;
       SPtr<TDUID> srvDuid;
       SPtr<TClntMsg> reply;
       SPtr<TIPv6Addr> rcvdAddr;
-    TNeighborInfo(SPtr<TIPv6Addr> addr): srvAddr(addr), ifindex(0), transid(0), srvDuid(0), reply(0) { }
+      NeighborInfoState state;
+    TNeighborInfo(SPtr<TIPv6Addr> addr)
+	: srvAddr(addr), ifindex(0), transid(0), 
+	  srvDuid(0), reply(0), rcvdAddr(0), state(NeighborInfoState_Added) { }
     };
     typedef std::list< SPtr<TNeighborInfo> > TNeighborInfoLst;
     TNeighborInfoLst Neighbors;
@@ -75,8 +82,7 @@ class TClntTransMgr
 
     SPtr<TNeighborInfo> neighborAdd(int ifindex, SPtr<TIPv6Addr> addr);
 
-    bool sendRemoteSolicits();
-
+    bool checkRemoteSolicits();
     bool updateNeighbors(int ifindex, SPtr<TOptAddrLst> neighbors);
     bool sendRemoteSolicit(SPtr<TNeighborInfo> neighbor);
     bool processRemoteReply(SPtr<TClntMsg> reply);

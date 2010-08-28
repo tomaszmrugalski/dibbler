@@ -199,6 +199,11 @@ bool TMsg::isDone() {
     return IsDone;
 }
 
+bool TMsg::isDone(bool done) {
+    IsDone = done;
+    return IsDone;
+}
+
 void TMsg::setAuthInfoPtr(char* ptr) {
     AuthInfoPtr = ptr;
 }

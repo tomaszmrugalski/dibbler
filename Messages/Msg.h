@@ -57,6 +57,7 @@ class TMsg
     int getIface();
     virtual ~TMsg();
     bool isDone();
+    bool isDone(bool done);
 
     // auth stuff below
     void setAuthInfoPtr(char* ptr);
