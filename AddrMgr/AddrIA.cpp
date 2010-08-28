@@ -436,23 +436,23 @@ enum ETentative TAddrIA::getTentative()
 	case TENTATIVE_UNKNOWN:
         if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
         {
-
+	    
             switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
             {
-                case    LOWLEVEL_TENTATIVE_YES:  
-                    ptrAddr->setTentative(TENTATIVE_YES);
-                    this->Tentative=TENTATIVE_YES;
-                    return TENTATIVE_YES;
-                case    LOWLEVEL_TENTATIVE_NO:
-                    ptrAddr->setTentative(TENTATIVE_NO);
-                    Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
-			       << " is not tentative." << LogEnd;
-                    break;
-                default:
-                    Log(Error) << "DAD inconclusive. Unable to dermine " << ptrAddr->get()->getPlain() 
-                               << " address state. Assuming NOT TENTATIVE." << LogEnd;
-                    ptrAddr->setTentative(TENTATIVE_NO);
-                    break;
+	    case LOWLEVEL_TENTATIVE_YES:  
+		ptrAddr->setTentative(TENTATIVE_YES);
+		this->Tentative=TENTATIVE_YES;
+		return TENTATIVE_YES;
+	    case LOWLEVEL_TENTATIVE_NO:
+		ptrAddr->setTentative(TENTATIVE_NO);
+		Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
+			   << " is not tentative." << LogEnd;
+		break;
+	    default:
+		Log(Error) << "DAD inconclusive. Unable to dermine " << ptrAddr->get()->getPlain() 
+			   << " address state. Assuming NOT TENTATIVE." << LogEnd;
+		ptrAddr->setTentative(TENTATIVE_NO);
+		break;
             }
         } 
         else 
