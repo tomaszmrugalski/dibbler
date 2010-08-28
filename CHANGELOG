@@ -4,15 +4,18 @@
  0.8.0 [not-released-yet]
   - Linux: CONFIRM support added
   - Support for Windows 7 added
-  - It is now possible to configure IAID
   - Server reloads its database after shutdown/start sequence
-  - Support for Mac OS X added (experimental, of course)
-  - Fixed problem with not populating AddrMgr correctly
+  - Linux: console logging now has color support
   - Srv/Cli: DUID in format 00:01:02:03 is now supported in config files (0x010203 format is still supported)
-  - Code cleanup: Obsolete OptPreference class removed
+  - It is now possible to configure IAID
+  - Support for Mac OS X added (experimental, of course)
+  - Experimental support dor DS-Lite tunnels added
+  - Experimental support for Remote Autoconf added
+  - Fixed problem with not populating AddrMgr correctly
   - Code cleanup: Singleton managers implemented
+  - Code cleanup: Obsolete OptPreference class removed
   - Code cleanup: Obsolete tunnel endpoint removed
-  - Code cleanup: Obsolete VS2003 and VS2008 files removed
+  - Code cleanup: Obsolete VS2003 and VS2005 files removed
 
  0.7.3 [2009-03-09]
   - Linux: Fix for compilation with libc6, version 2.8
