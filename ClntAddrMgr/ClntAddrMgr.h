@@ -18,6 +18,7 @@
 #include "AddrIA.h"
 #include "AddrMgr.h"
 #include "Portable.h"
+#include "IPv6Addr.h"
 
 #define ClntAddrMgr() (TClntAddrMgr::instance())
 
@@ -46,6 +47,7 @@ class TClntAddrMgr : public TAddrMgr
     bool delIA(long IAID);
     int countIA();
     void setIA2Confirm(volatile link_state_notify_t * changedLinks);
+    SPtr<TIPv6Addr> getPreferredAddr();
 
     // --- PD --- 
     void firstPD();
@@ -75,8 +77,6 @@ class TClntAddrMgr : public TAddrMgr
 
     void doDuties();
     
-    //bool isIAAssigned(unsigned long IAID);
-    //bool isPDAssigned(unsigned long IAID);
  protected:
     void print(ostream &x);
  private:

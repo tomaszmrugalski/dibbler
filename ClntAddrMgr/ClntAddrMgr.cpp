@@ -333,3 +333,23 @@ bool TClntAddrMgr::updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
     return TAddrMgr::updatePrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix, 
 				  pref, valid, length, quiet);
 }
+
+SPtr<TIPv6Addr> TClntAddrMgr::getPreferredAddr() {
+    SPtr<TAddrIA> ia;
+    SPtr<TAddrAddr> addr;
+    
+    firstIA();
+    while ( ia = getIA() ) {
+	if (ia->getTentative() != TENTATIVE_NO)
+	    continue;
+
+	ia->firstAddr();
+	while (addr = ia->getAddr()) {
+	    if (addr->getTentative() == TENTATIVE_NO)
+		return addr->get(); // return the first address from first non-tentative
+	    //if (is_addr_tentative(NULL, ia->getIface(), addr->get()->getPlain()) == LOWLEVEL_TENTATIVE_NO)
+	}
+    }
+
+    return 0;
+}
