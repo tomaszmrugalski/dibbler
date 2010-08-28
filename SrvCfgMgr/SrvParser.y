@@ -104,7 +104,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_
+%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -193,6 +193,7 @@ InterfaceOptionDeclaration
 | DsLiteTunnelName
 | LifetimeOption
 | ExtraOption
+| RemoteAutoconfNeighborsOption
 | PDDeclaration
 | VendorSpecOption
 | Client
@@ -778,6 +779,26 @@ ExtraOption
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
 };
+
+RemoteAutoconfNeighborsOption
+:OPTION_ REMOTE_AUTOCONF_NEIGHBORS_ 
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'remote autoconf neighbors' defined, but "
+		  << "experimental features are disabled. Add 'experimental' "
+		  << "in global section of server.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+
+    PresentAddrLst.clear();
+} ADDRESSList
+{
+    SPtr<TOpt> opt = new TOptAddrLst(OPTION_NEIGHBORS, PresentAddrLst, 0);
+    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    Log(Debug) << "Remote autoconf neighbors enabled (" << PresentAddrLst.count() 
+	       << " neighbors defined.)" << LogEnd;
+}
+
 
 IfaceMaxLeaseOption
 : IFACE_MAX_LEASE_ Number

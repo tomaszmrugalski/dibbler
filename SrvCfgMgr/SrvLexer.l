@@ -100,12 +100,14 @@ pd-class	    { return SrvParser::PDCLASS_; }
 pd-length	    { return SrvParser::PD_LENGTH_; }
 pd-pool             { return SrvParser::PD_POOL_;}
 vendor-spec         { return SrvParser::VENDOR_SPEC_; }
-addr-params         { return SrvParser::ADDR_PARAMS_; }
+
 experimental        { return SrvParser::EXPERIMENTAL_; }
+addr-params         { return SrvParser::ADDR_PARAMS_; }
+neighbors           { return SrvParser::REMOTE_AUTOCONF_NEIGHBORS_; }
+
 ds-lite-tunnel      { return SrvParser::DS_LITE_TUNNEL_; }
 inactive-mode       { return SrvParser::INACTIVE_MODE_; }
 accept-leasequery   { return SrvParser::ACCEPT_LEASEQUERY_; }
-
 auth-method         { return SrvParser::AUTH_METHOD_; }
 auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
 auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
