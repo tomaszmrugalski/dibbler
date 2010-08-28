@@ -57,7 +57,7 @@ public:
 
     void notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
 #ifdef MOD_REMOTE_AUTOCONF
-    bool notifyRemoteScripts(SPtr<TIPv6Addr> receivedAddr, SPtr<TIPv6Addr> serverAddr);
+    bool notifyRemoteScripts(SPtr<TIPv6Addr> receivedAddr, SPtr<TIPv6Addr> serverAddr, int ifindex);
 #endif    
 
     bool fqdnAdd(SPtr<TClntIfaceIface> iface, string domainname);

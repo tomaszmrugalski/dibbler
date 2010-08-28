@@ -14,8 +14,6 @@
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
-// #include "ClntAddrMgr.h"
-// #include "Msg.h"
 #include "ClntMsgReply.h"
 #include "ClntMsgAdvertise.h"
 #include "Logger.h"
@@ -663,12 +661,16 @@ void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
     Log(Info) << "Return code=" << returnCode << LogEnd;
 }
 
-bool TClntIfaceMgr::notifyRemoteScripts(SPtr<TIPv6Addr> rcvdAddr, SPtr<TIPv6Addr> srvAddr) {
+bool TClntIfaceMgr::notifyRemoteScripts(SPtr<TIPv6Addr> rcvdAddr, SPtr<TIPv6Addr> srvAddr, int ifindex) {
+
     Log(Info) << "Received address " << rcvdAddr->getPlain() 
 	      << " from remote server located at " << srvAddr->getPlain() << LogEnd;
 
+    SPtr<TIfaceIface> iface = getIfaceByID(ifindex);
+
     stringstream tmp;
-    tmp << "./remote-autoconf " << rcvdAddr->getPlain() << " " << srvAddr->getPlain();
+    tmp << "./remote-autoconf " << rcvdAddr->getPlain() << " " << srvAddr->getPlain()
+	<< " " << iface->getName() << " " << iface->getID();
     
     int returnCode = system(tmp.str().c_str());
     Log(Info) << "Executed command: " << tmp.str() << ", return code=" << returnCode << LogEnd;
