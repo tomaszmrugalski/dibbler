@@ -37,6 +37,7 @@ namespace logger {
     bool logFileMode = false;	// loging into file is active
     bool echo = true;		// copy log on tty
     int curLogEntry = 8;	// Log level of currently constructed message
+    bool color = false;
 #ifdef LINUX
     string syslogname="DibblerInit";	// logname for syslog
     int curSyslogEntry = LOG_NOTICE;	// curLogEntry for syslog
@@ -47,6 +48,9 @@ namespace logger {
     // LogEnd;
     ostream & endl (ostream & strum) {
 	if (curLogEntry <= logLevel) {
+
+	    if (color)
+		buffer << "\033[0m";
 	    // log on the console
 	    if (echo)
 		std::cout << buffer.str() << std::endl;
@@ -66,6 +70,11 @@ namespace logger {
 
 	return strum;
     }
+
+    void setColors(bool colorLogs) {
+	Log(Debug) << "Color logs " << (colorLogs?"enabled.":"disabled.") << LogEnd;
+	color = colorLogs;
+    }
     
     ostream & logCommon(int x) {
 	static char lv[][10]= {"Emergency",
@@ -76,6 +85,16 @@ namespace logger {
 			       "Notice   ",
 			       "Info     ",
 			       "Debug    " };
+
+	static char colors[][10] = { "\033[31m",
+				     "\033[31m",
+				     "\033[31m",
+				     "\033[31m",
+				     "\033[33m",
+				     "\033[30m",
+				     "\033[30m",
+				     "\033[37m" };
+
 	logger::curLogEntry = x;
 
 #ifdef LINUX
@@ -93,6 +112,11 @@ namespace logger {
 	time_t teraz;
 	teraz = time(NULL);
 	struct tm * now = localtime( &teraz );
+	if (color && (logmode==LOGMODE_FULL || logmode==LOGMODE_SHORT) )
+	{
+	    buffer << colors[x-1];
+	}
+
 	switch(logmode) {
 	case LOGMODE_FULL:
 	    buffer << (1900+now->tm_year) << ".";

@@ -91,7 +91,7 @@ virtual ~SrvParser();
 }
 
 %token IFACE_, RELAY_, IFACE_ID_, IFACE_ID_ORDER_, CLASS_, TACLASS_
-%token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
+%token LOGNAME_, LOGLEVEL_, LOGMODE_, LOGCOLORS_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, ACCEPT_UNKNOWN_FQDN_, LIFETIME_
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_, SHARE_
@@ -153,6 +153,7 @@ GlobalOption
 | LogModeOption
 | LogLevelOption
 | LogNameOption
+| LogColors
 | WorkDirOption
 | StatelessOption
 | CacheSizeOption
@@ -858,6 +859,12 @@ LogNameOption
     logger::setLogName($2);
 }
 ;
+
+LogColors
+: LOGCOLORS_ Number 
+{
+    logger::setColors($2==1);
+}
 
 WorkDirOption
 :   WORKDIR_ STRING_

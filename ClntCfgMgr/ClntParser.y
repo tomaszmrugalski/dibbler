@@ -104,7 +104,7 @@ namespace std
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,TA_,IAID_,ADDRESS_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
 %token OPTION_, SCRIPTS_DIR_, NOTIFY_SCRIPTS_
-%token LOGNAME_, LOGLEVEL_, LOGMODE_
+%token LOGNAME_, LOGLEVEL_, LOGMODE_, LOGCOLORS_
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
 %token <ival>       INTNUMBER_
@@ -144,6 +144,7 @@ GlobalOptionDeclaration
 | LogModeOption
 | LogNameOption
 | LogLevelOption
+| LogColors
 | WorkDirOption
 | DuidTypeOption
 | StrictRfcNoRoutingOption
@@ -485,6 +486,12 @@ LogModeOption
 LogNameOption
 : LOGNAME_ STRING_ {
     logger::setLogName($2);
+}
+
+LogColors
+: LOGCOLORS_ Number 
+{
+    logger::setColors($2==1);
 }
 
 DuidTypeOption

@@ -50,6 +50,7 @@ namespace logger {
     void setLogMode(string x);
     void EchoOff();
     void EchoOn();
+    void setColors(bool colors);
     string getLogName();
     int getLogLevel();
     

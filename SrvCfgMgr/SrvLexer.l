@@ -56,6 +56,7 @@ interface-id-order  { return SrvParser::IFACE_ID_ORDER_; }
 log-name            { return SrvParser::LOGNAME_;}
 log-level           { return SrvParser::LOGLEVEL_;}
 log-mode            { return SrvParser::LOGMODE_; }
+log-colors          { return SrvParser::LOGCOLORS_; }
 
 work-dir            { return SrvParser::WORKDIR_;}
 

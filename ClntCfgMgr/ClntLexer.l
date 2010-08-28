@@ -59,6 +59,8 @@ stateless             { return ClntParser::STATELESS_;}
 log-level             { return ClntParser::LOGLEVEL_; }
 log-mode              { return ClntParser::LOGMODE_; }
 log-name              { return ClntParser::LOGNAME_; }
+log-colors            { return ClntParser::LOGCOLORS_; }
+
 work-dir              { return ClntParser::WORKDIR_;}
 scripts-dir           { return ClntParser::SCRIPTS_DIR_; }
 notify-scripts        { return ClntParser::NOTIFY_SCRIPTS_; }
