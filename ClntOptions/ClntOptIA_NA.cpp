@@ -230,12 +230,9 @@ TClntOptIA_NA::~TClntOptIA_NA() {
 
 }
 
-//I don't know whether this method should be invoked everywhere
-//i.e. from Verify/Renew/Rebind
-//it's worth to check whether futher reactions in every message will 
-//be the same e.g. detection of duplicate address, lack of enough
-//addresses
+
 bool TClntOptIA_NA::doDuties() {
+
     // find this IA in addrMgr...
     SPtr<TAddrIA> ptrIA=ClntAddrMgr().getIA(this->getIAID());
     if (!ptrIA) {

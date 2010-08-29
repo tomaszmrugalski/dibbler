@@ -82,21 +82,21 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(),this));
 
     if (ClntCfgMgr().getNotifyScripts()) {
-	    // release workaround (add removed IAs)
+	// release workaround (add removed IAs)
         /// @todo: WTF? Why are those IAs removed?
         iaLst.first();
         SPtr<TAddrIA> ia;
-	    while (ia = iaLst.get()) 
-	    {
-	        ClntAddrMgr().addIA(ia);
-	    }
+	while (ia = iaLst.get()) 
+	{
+	    ClntAddrMgr().addIA(ia);
+	}
 	
-
-	    iaLst.first();
-	    while (ia = iaLst.get())
-	    {
-	        ClntAddrMgr().delIA(ia->getIAID());
-	    }
+	
+	iaLst.first();
+	while (ia = iaLst.get())
+	{
+	    ClntAddrMgr().delIA(ia->getIAID());
+	}
     }
 
     // --- RELEASE IA ---

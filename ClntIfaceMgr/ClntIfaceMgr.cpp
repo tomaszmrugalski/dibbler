@@ -58,17 +58,10 @@ bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> 
         return false;
     }
 
-    // yes, there are. Get first of them.
+    // yes, there are. Get first of them (there's usually only one anyway.
+    // Additional socket is created for unicast communication
     Iface->firstSocket();
-    while (sock = Iface->getSocket()) {
-	if (!sock->multicast())
-	    break;
-    }
-    if (!sock) {
-	Log(Notice) << "Failed to find unicast socket, trying to send via multicast-bound socket." << LogEnd;
-	Iface->firstSocket();
-	sock = Iface->getSocket();
-    }
+    sock = Iface->getSocket();
 
     result = sock->send( (char*)msg, size, addr, DHCPSERVER_PORT);
     if (result == -1) {

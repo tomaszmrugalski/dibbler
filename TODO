@@ -1,6 +1,7 @@
 
  Dibbler code TODO
 -------------------
+- Fix (easy): run unicast server, run client, cli gets single addr, restart server, restart client, srv will send NoAddrsAvail.
 - Add sanity length checks in Options constructors
 - Remove setDUID() method from TOpt()
 - Implement support for Client vendor class options

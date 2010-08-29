@@ -80,6 +80,8 @@ TClntTransMgr::TClntTransMgr(const std::string config)
     }
 
     checkDB();
+    ClntIfaceMgr().dump();
+
     Shutdown = false;
     IsDone = false;
 }
@@ -153,34 +155,19 @@ bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
 
     SPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
 
-#if 0
-#ifndef WIN32
-    SPtr<TIfaceIface> loopback;
-    SPtr<TIfaceIface> ptrIface;
-    ClntIfaceMgr().firstIface();
-    while (ptrIface=ClntIfaceMgr().getIface()) {
-        if (!ptrIface->flagLoopback()) {
-            continue;
+    // it's very important to open unicast socket first as it will be used for
+    // unicast communication
+    if (iface->getUnicast()) {
+	Log(Notice) << "Creating socket for unicast communication on " << iface->getFullName()
+		    << LogEnd;
+	SPtr<TIPv6Addr> anyaddr = new TIPv6Addr("::", true); // don't bind to a specific address
+	if (!realIface->addSocket(anyaddr, DHCPCLIENT_PORT, false, this->BindReuse)) {
+	    Log(Crit) << "Unicast socket creation (addr=" << anyaddr->getPlain() << ") on " 
+		      << iface->getFullName() << " interface failed." << LogEnd;
+	    return false;
 	}
-	loopback = ptrIface;
-	break;
-    }
-    if (!loopback) {
-	Log(Error) << "Loopback interface not found!" << LogEnd;
-	return false;
-    }
 
-    // required to be able to receive data from server on the same machine
-    // (data is sent via the lo interface)
-    Log(Notice) << "Creating socket (addr=" << *addr << ") on " 
-		<< loopback->getFullName() << " interface." << LogEnd;
-    if (!loopback->addSocket(addr,DHCPCLIENT_PORT,false, true)) {
-	Log(Crit) << "Socket creation (addr=" << *addr << ") on " 
-		  << loopback->getFullName() << " interface failed." << LogEnd;
-	return false;
     }
-#endif
-#endif
 
     Log(Notice) << "Creating socket (addr=" << *addr << ") on " 
 		<< iface->getFullName() << " interface." << LogEnd;
@@ -197,18 +184,6 @@ bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
 	    this->ctrlIface = realIface->getID();
 	    strncpy(this->ctrlAddr,buf,48);
     } 
-
-    if (iface->getUnicast()) {
-	Log(Notice) << "Creating socket for unicast communication on " << iface->getFullName()
-		    << LogEnd;
-	SPtr<TIPv6Addr> anyaddr = new TIPv6Addr("::", true); // don't bind to a specific address
-	if (!realIface->addSocket(anyaddr, DHCPCLIENT_PORT, true, this->BindReuse)) {
-	    Log(Crit) << "Unicast socket creation (addr=" << *addr << ") on " 
-		      << iface->getFullName() << " interface failed." << LogEnd;
-	    return false;
-	}
-
-    }
 
     return true;
 }
@@ -469,7 +444,7 @@ void TClntTransMgr::shutdown()
 	        if (cfgPD)
 		    cfgPD->setState(STATE_DISABLED);
 	    }
-	    this->sendRelease(releasedIAs,ta, releasedPDs);
+	    sendRelease(releasedIAs,ta, releasedPDs);
     }
 
     // now check if there are any TA left
