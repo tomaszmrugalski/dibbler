@@ -5,6 +5,7 @@
   - Linux: CONFIRM support added
   - Support for Windows 7 added
   - Server reloads its database after shutdown/start sequence
+  - Client with enabled unicast now uses global source addresses
   - Linux: console logging now has color support
   - Srv/Cli: DUID in format 00:01:02:03 is now supported in config files (0x010203 format is still supported)
   - It is now possible to configure IAID
@@ -13,7 +14,8 @@
   - Experimental support for Remote Autoconf added
   - Fixed problem with not populating AddrMgr correctly
   - Code cleanup: Singleton managers implemented
-  - Code cleanup: Obsolete OptPreference class removed
+  - Code cleanup: Server REPLY generation refactored
+  - Code cleanup: Obsolete classes removed
   - Code cleanup: Obsolete tunnel endpoint removed
   - Code cleanup: Obsolete VS2003 and VS2005 files removed
 
