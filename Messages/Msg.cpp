@@ -68,12 +68,13 @@ void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID
 
 int TMsg::getSize()
 {
-    SPtr<TOpt> Option;
     int pktsize=0;
-    Options.first();
-    while( Option = Options.get() )
-	pktsize+=Option->getSize();
-    return pktsize+4;
+    TOptList::iterator opt;
+    for (opt = Options.begin(); opt!=Options.end(); ++opt)
+    {
+	pktsize += (*opt)->getSize();
+    }
+    return pktsize + 4;
 }
 
 unsigned long TMsg::getTimeout()
@@ -91,7 +92,7 @@ long TMsg::getTransID()
     return TransID;
 }
 
-TContainer< SPtr<TOpt> > TMsg::getOptLst()
+TOptList & TMsg::getOptLst()
 {
     return Options;
 }
@@ -112,12 +113,11 @@ int TMsg::storeSelf(char * buffer)
     buffer[1] = tmp%256;  tmp = tmp/256;
     buffer[0] = tmp%256;  tmp = tmp/256;
     buffer+=3;
-    Options.first();
-    SPtr<TOpt> Option;
-    while( Option = Options.get() )
-    {
-        Option->storeSelf(buffer);
-        buffer += Option->getSize();
+
+    TOptList::iterator option;
+    for (option=Options.begin(); option!=Options.end(); ++option) {
+        (*option)->storeSelf(buffer);
+	buffer += (*option)->getSize();
     }
 
 #ifndef MOD_DISABLE_AUTH
@@ -162,26 +162,26 @@ int TMsg::storeSelf(char * buffer)
 }
 
 SPtr<TOpt> TMsg::getOption(int type) {
-    SPtr<TOpt> Option;
-    
-    Options.first();
-    while ( Option = Options.get() ) {
-	if (Option->getOptType()==type) 
-	    return Option;
-    }
-    return SPtr<TOpt>();
+    TOptList::iterator opt;
+    for (opt = Options.begin(); opt!=Options.end(); ++opt)
+        if ( (*opt)->getOptType()==type) 
+	    return *opt;
+    return 0;
 }
 
 void TMsg::firstOption() {
-    Options.first();
+    NextOpt = Options.begin();
 }
 
 int TMsg::countOption() {
-    return Options.count();
+    return Options.size();
 }
 
 SPtr<TOpt> TMsg::getOption() {
-    return Options.get();
+    ++NextOpt;
+    if (NextOpt != Options.end())
+	return (*NextOpt);
+    return 0;
 }
 
 TMsg::~TMsg() {
@@ -419,10 +419,9 @@ bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
     int authCnt = 0;
     bool status = true;
 
-    Options.first();
-    while (option = Options.get() ) 
+    for (TOptList::iterator opt=Options.begin(); opt!=Options.end(); ++opt)
     {
-	switch (option->getOptType()) {
+	switch ( (*opt)->getOptType() ) {
 	case OPTION_CLIENTID:
 	    clntCnt++;
 	    break;
@@ -460,8 +459,22 @@ bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
 		     << " message, but " << srvCnt << " received.";
     }
 
-    if (!status)
+    if (!status) {
 	Log(Cont) << "Message dropped." << LogEnd;
+	IsDone = true;
+    }
 
     return status;
+}
+
+bool TMsg::delOption(int code)
+{
+    for (TOptList::iterator opt = Options.begin(); opt!=Options.end(); ++opt)
+    {
+	if ( (*opt)->getOptType() == code) {
+	    Options.erase(opt);
+	    return true;
+	}
+    }
+    return false;
 }

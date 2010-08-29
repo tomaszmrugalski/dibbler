@@ -131,20 +131,19 @@ long TSrvTransMgr::getTimeout()
 
 void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 {
-	requestMsg = msg;
-
-	if (!msg->check())
-    {
+    requestMsg = msg;
+    
+    if (!msg->check()) {
         // proper warnings will be printed in the check() method, if necessary.
         // Log(Warning) << "Invalid message received." << LogEnd;
         return;
     }
-	// Ask NodeClietSpecific to analyse the message
-	NodeClientSpecific::analyseMessage(msg);
-	//SrvCfgMgr().InClientClass(msg);
 
-	// Do we have ready answer for this?
+    // Ask NodeClietSpecific to analyse the message
+    NodeClientSpecific::analyseMessage(msg);
+    //SrvCfgMgr().InClientClass(msg);
 
+    /// @todo (or at least disable by default) answer buffering mechanism
     SPtr<TSrvMsg> answ;
     Log(Debug) << MsgLst.count() << " answers buffered.";
 
@@ -206,7 +205,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     case REQUEST_MSG:
     {
         SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
-        answ=new TSrvMsgReply(nmsg);
+        answ = new TSrvMsgReply(nmsg);
         this->MsgLst.append((Ptr*)answ);
         break;
     }

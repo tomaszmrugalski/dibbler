@@ -26,9 +26,9 @@ class TSrvMsgConfirm : public TSrvMsg
 {
  public:
     TSrvMsgConfirm(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-    bool check();
     void doDuties();
-    unsigned long getTimeout();
+    bool check();
+    unsigned long getTimeout(); /// @todo this is obsolete
     ~TSrvMsgConfirm();
     string getName();
 

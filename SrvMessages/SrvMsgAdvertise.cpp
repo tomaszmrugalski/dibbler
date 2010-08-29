@@ -32,79 +32,54 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> solicit)
     :TSrvMsg(solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
 	     solicit->getTransID())
 {
-    this->copyRelayInfo((Ptr*)solicit);
-#ifndef MOD_DISABLE_AUTH
-    this->copyAAASPI((Ptr*)solicit);
-#endif
-    this->copyRemoteID((Ptr*)solicit);
-    if (!this->answer(solicit)) {
+    getORO( (Ptr*)solicit );
+    copyClientID( (Ptr*)solicit );
+    copyRelayInfo( (Ptr*)solicit );
+    copyAAASPI( (Ptr*)solicit );
+    copyRemoteID( (Ptr*)solicit );
+
+    if (!this->handleSolicitOptions(solicit)) {
 	this->IsDone = true;
 	return;
     }
     this->IsDone = false;
 }
 
-bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
+bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
+
     SPtr<TOpt>       opt;
-    SPtr<TSrvOptClientIdentifier> optClntID;
-    SPtr<TDUID>      clntDuid;
-    SPtr<TIPv6Addr>  clntAddr;
-    unsigned int         clntIface;
-
-    opt = solicit->getOption(OPTION_CLIENTID);
-    optClntID = (Ptr*) opt;
-    clntDuid = optClntID->getDUID();
-    clntAddr = solicit->getAddr();
-    clntIface =solicit->getIface();
-
-#ifndef MOD_DISABLE_AUTH
-    this->copyAAASPI((Ptr*)solicit);
-#endif
-    this->copyRemoteID((Ptr*)solicit);
+    SPtr<TIPv6Addr> clntAddr = PeerAddr;
 
     // is this client supported?
-    if (!SrvCfgMgr().isClntSupported(clntDuid, clntAddr, clntIface)) {
+    // @todo move this to a common place (for every message)
+    if (!SrvCfgMgr().isClntSupported(ClientDUID, clntAddr, Iface)) {
         //No reply for this client 
-	Log(Notice) << "Client (DUID=" << clntDuid->getPlain() << ",addr=" << *clntAddr 
+	Log(Notice) << "Client (DUID=" << ClientDUID->getPlain() << ",addr=" << *clntAddr 
 		    << ") was rejected due to accept-only or reject-client." << LogEnd;
         return false;
     }
 
-    SPtr<TSrvOptOptionRequest> reqOpts;
-
-    //remember requested option in order to add number of "hint" options,
-    //wich are included in this packet (but not in OPTION REQUEST option).
-    //if OPTION REQUEST option wasn't included by client - create new one
-    reqOpts= (Ptr*) solicit->getOption(OPTION_ORO);
-    if (!reqOpts)
-        reqOpts=new TSrvOptOptionRequest(this);
-    
     // --- process this message ---
     solicit->firstOption();
     while ( opt = solicit->getOption()) {
 	switch (opt->getOptType()) {
-	case OPTION_CLIENTID : {
-	    this->Options.append(opt);
-	    break;
-	}
 	case OPTION_IA_NA : {
 	    SPtr<TSrvOptIA_NA> optIA_NA;
-	    optIA_NA = new TSrvOptIA_NA((Ptr*) opt,	clntDuid, clntAddr, clntIface, SOLICIT_MSG,this);
-	    Options.append((Ptr*)optIA_NA);
+	    optIA_NA = new TSrvOptIA_NA( (Ptr*)opt, ClientDUID, clntAddr, Iface, SOLICIT_MSG, this);
+	    Options.push_back((Ptr*)optIA_NA);
 	    break;
 	}
 	case OPTION_IA_TA: {
 	    SPtr<TSrvOptTA> optTA;
 	    optTA = new TSrvOptTA((Ptr*) opt, 
-				  clntDuid, clntAddr, clntIface, SOLICIT_MSG, this);
-	    Options.append( (Ptr*) optTA);
+				  ClientDUID, clntAddr, Iface, SOLICIT_MSG, this);
+	    Options.push_back( (Ptr*) optTA);
 	    break;
 	}
 	case OPTION_IA_PD: {
 	    SPtr<TSrvOptIA_PD> optPD;
-	    optPD = new TSrvOptIA_PD((Ptr*) opt, clntAddr, clntDuid,  
-				     clntIface, SOLICIT_MSG, this);
-	    Options.append( (Ptr*) optPD);
+	    optPD = new TSrvOptIA_PD((Ptr*) opt, clntAddr, ClientDUID,  Iface, SOLICIT_MSG, this);
+	    Options.push_back( (Ptr*) optPD);
 	    break;
 	}
 	case OPTION_RAPID_COMMIT: {
@@ -122,9 +97,9 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
 	    break;
 	}
 	case OPTION_AUTH : {
-		reqOpts->addOption(OPTION_AUTH);
-    	break;
-    }                 
+	    ORO->addOption(OPTION_AUTH);
+	    break;
+	}                 
 	case OPTION_ORO: 
 	case OPTION_ELAPSED_TIME : {
 	    break;
@@ -139,67 +114,56 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
 	    
 	//add options requested by client to option Request Option if
 	//client didn't included them
-	    
-	case OPTION_DNS_SERVERS: {
-	    if (!reqOpts->isOption(OPTION_DNS_SERVERS))
-		reqOpts->addOption(OPTION_DNS_SERVERS);
-	    break;
-	}
-	case OPTION_DOMAIN_LIST: {
-	    if (!reqOpts->isOption(OPTION_DOMAIN_LIST))
-		reqOpts->addOption(OPTION_DOMAIN_LIST);
-	    break;
-	}
-	case OPTION_SNTP_SERVERS:
-	    if (!reqOpts->isOption(OPTION_SNTP_SERVERS))
-		reqOpts->addOption(OPTION_SNTP_SERVERS);
-	    break;
-	case OPTION_NEW_TZDB_TIMEZONE:
-	    if (!reqOpts->isOption(OPTION_NEW_TZDB_TIMEZONE))
-		reqOpts->addOption(OPTION_NEW_TZDB_TIMEZONE);
-	    break;
-	    
-	case OPTION_PREFERENCE :
-	case OPTION_UNICAST :
-	case OPTION_SERVERID : {
-	    Log(Warning) << "Invalid option (OPTION_UNICAST) received." << LogEnd;
-	    break;
-	}
-	case OPTION_FQDN : {
+	    	case OPTION_FQDN : {
 	    SPtr<TSrvOptFQDN> requestFQDN = (Ptr*) opt;
 	    SPtr<TOptFQDN> anotherFQDN = (Ptr*) opt;
 	    string hint = anotherFQDN->getFQDN();
 	    SPtr<TSrvOptFQDN> optFQDN;
 
-	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(clntDuid);
+	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
 	    if (clntAssignedAddr)
-		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAssignedAddr, hint, false);
+		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
 	    else
-		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, hint, false);
+		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAddr, hint, false);
 
 	    if (optFQDN) {
-		this->Options.append((Ptr*) optFQDN);
+		this->Options.push_back((Ptr*) optFQDN);
 	    }
 	    break;
 	}
 	case OPTION_VENDOR_OPTS:
 	{
 	    SPtr<TSrvOptVendorSpec> v = (Ptr*) opt;
-	    appendVendorSpec(clntDuid, clntIface, v->getVendor(), reqOpts);
+	    appendVendorSpec(ClientDUID, Iface, v->getVendor(), ORO);
 	    break;
 	}
 	
-    case OPTION_AAAAUTH:
+	case OPTION_AAAAUTH:
 	{
 	    Log(Debug) << "Auth: Option AAAAuthentication received." << LogEnd;
 	    break;
 	}
-	
+	case OPTION_PREFERENCE:
+	case OPTION_UNICAST:
+	case OPTION_SERVERID: 
+	case OPTION_RELAY_MSG:
+	case OPTION_INTERFACE_ID:
+	{
+	    Log(Warning) << "Invalid option (" << opt->getOptType() << ") received." << LogEnd;
+	    break;
+	}
+
+	case OPTION_DNS_SERVERS: 
+	case OPTION_DOMAIN_LIST: 
+	case OPTION_SNTP_SERVERS:
+	case OPTION_NEW_TZDB_TIMEZONE: 
+	{
+	    handleDefaultOption(opt);
+	    break;
+	}
 	// options not yet supported 
-	case OPTION_RELAY_MSG :
 	case OPTION_USER_CLASS :
 	case OPTION_VENDOR_CLASS:
-	case OPTION_INTERFACE_ID :
 	case OPTION_RECONF_MSG :
 	case OPTION_RECONF_ACCEPT:
 	default: {
@@ -208,30 +172,15 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
 	}
 	} // end of switch
     } // end of while
+
+    // append serverID, preference and possibly unicast
+    appendMandatoryOptions(ORO);
     
     //if client requested parameters and policy doesn't forbid from answering
-    this->appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
+    appendRequestedOptions(ClientDUID, clntAddr, Iface, ORO);
+
 
     appendStatusCode();
-
-    // include our DUID
-    SPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
-    Options.append((Ptr*)ptrSrvID);
-
-    // ... and our preference
-    SPtr<TSrvOptPreference> ptrPreference;
-    unsigned char preference = SrvCfgMgr().getIfaceByID(solicit->getIface())->getPreference();
-    Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
-    ptrPreference = new TSrvOptPreference(preference,this);
-    Options.append((Ptr*)ptrPreference);
-
-    // does this server support unicast?
-    SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr().getIfaceByID(solicit->getIface())->getUnicast();
-    if (unicastAddr) {
-	SPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
-	Options.append((Ptr*)optUnicast);
-    }
 
     // this is ADVERTISE only, so we need to release assigned addresses
     this->firstOption();
@@ -254,11 +203,11 @@ bool TSrvMsgAdvertise::answer(SPtr<TSrvMsgSolicit> solicit) {
 	}
     }
 
-    appendAuthenticationOption(clntDuid);
+    appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
-    this->MRT = 0;
-    this->send();
+    MRT = 0;
+    send();
     return true;
 }
 

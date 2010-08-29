@@ -271,7 +271,7 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 	    break;
 	}
 	if ( (ptr) && (ptr->isValid()) )
-	    Options.append( ptr );
+	    Options.push_back( ptr );
 	else
 	    Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
         pos+=length;
@@ -373,6 +373,16 @@ void TSrvMsg::send()
 
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
   this->RemoteID = q->getRemoteID();
+}
+
+bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
+    SPtr<TOpt> x = donor->getOption(OPTION_CLIENTID);
+    if (x) {
+	SPtr<TOptDUID> optDuid = (Ptr*) x;
+	ClientDUID = optDuid->getDUID();
+	return true;
+    }
+    return false;
 }
 
 void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
@@ -481,9 +491,42 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
             this->ReplayDetection = client->getNextReplayDetectionSent();
         else
             this->ReplayDetection = 1;
-        Options.append(new TSrvOptAuthentication(this));
+        Options.push_back(new TSrvOptAuthentication(this));
     }
 #endif
+}
+
+bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool clientID /* =true */)
+{
+    // include our DUID (Server ID)
+    SPtr<TSrvOptServerIdentifier> ptrSrvID;
+    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
+    Options.push_back((Ptr*)ptrSrvID);
+    oro->delOption(OPTION_SERVERID);
+
+    // include his DUID (Client ID)
+    if (clientID) {
+	SPtr<TOptDUID> clientDuid = new TOptDUID(OPTION_CLIENTID, ClientDUID, this);
+	Options.push_back( (Ptr*)clientDuid);
+    }
+
+    // ... and our preference
+    SPtr<TSrvOptPreference> ptrPreference;
+    unsigned char preference = SrvCfgMgr().getIfaceByID(Iface)->getPreference();
+    Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
+    ptrPreference = new TSrvOptPreference(preference,this);
+    Options.push_back((Ptr*)ptrPreference);
+    oro->delOption(OPTION_PREFERENCE);
+
+    // does this server support unicast?
+    SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr().getIfaceByID(Iface)->getUnicast();
+    if (unicastAddr) {
+	SPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
+	Options.push_back((Ptr*)optUnicast);
+	oro->delOption(OPTION_UNICAST);
+    }
+    
+    return true;
 }
 
 /** 
@@ -519,7 +562,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    optDNS = new TSrvOptDNSServers(*ex->getDNSServerLst(), this);
 	else
 	    optDNS = new TSrvOptDNSServers(*ptrIface->getDNSServerLst(),this);
-	Options.append((Ptr*)optDNS);
+	Options.push_back((Ptr*)optDNS);
 	newOptionAssigned = true;
     };
 
@@ -530,7 +573,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    optDomain = new TSrvOptDomainName(*ex->getDomainLst(),this);
 	else
 	    optDomain = new TSrvOptDomainName(*ptrIface->getDomainLst(),this);
-	Options.append((Ptr*)optDomain);
+	Options.push_back((Ptr*)optDomain);
 	newOptionAssigned = true;
     };
     
@@ -541,7 +584,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    optNTP = new TSrvOptNTPServers(*ex->getNTPServerLst(),this);
 	else
 	    optNTP = new TSrvOptNTPServers(*ptrIface->getNTPServerLst(),this);
-	Options.append((Ptr*)optNTP);
+	Options.push_back((Ptr*)optNTP);
 	newOptionAssigned = true;
     };
     
@@ -552,7 +595,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    optTimezone = new TSrvOptTimeZone(ex->getTimezone(),this);
 	else
 	    optTimezone = new TSrvOptTimeZone(ptrIface->getTimezone(),this);
-	Options.append((Ptr*)optTimezone);
+	Options.push_back((Ptr*)optTimezone);
 	newOptionAssigned = true;
     };
 
@@ -563,7 +606,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    optSIPServer = new TSrvOptSIPServers(*ex->getSIPServerLst(),this);
 	else
 	    optSIPServer = new TSrvOptSIPServers(*ptrIface->getSIPServerLst(),this);
-	Options.append((Ptr*)optSIPServer);
+	Options.push_back((Ptr*)optSIPServer);
 	newOptionAssigned = true;
     };
 
@@ -574,7 +617,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    optSIPDomain= new TSrvOptSIPDomain(*ex->getSIPDomainLst(),this);
 	else
 	    optSIPDomain= new TSrvOptSIPDomain(*ptrIface->getSIPDomainLst(),this);
-	Options.append((Ptr*)optSIPDomain);
+	Options.push_back((Ptr*)optSIPDomain);
 	newOptionAssigned = true;
     };
 
@@ -588,7 +631,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    opt = new TSrvOptNISServers(*ex->getNISServerLst(),this);
 	else
 	    opt = new TSrvOptNISServers(*ptrIface->getNISServerLst(),this);
-	Options.append((Ptr*)opt);
+	Options.push_back((Ptr*)opt);
 	newOptionAssigned = true;
     };
 
@@ -599,7 +642,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    opt = new TSrvOptNISDomain(ex->getNISDomain(),this);
 	else
 	    opt = new TSrvOptNISDomain(ptrIface->getNISDomain(),this);
-	Options.append((Ptr*)opt);
+	Options.push_back((Ptr*)opt);
 	newOptionAssigned = true;
     };
 
@@ -610,7 +653,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    opt = new TSrvOptNISPServers(*ex->getNISPServerLst(),this);
 	else
 	    opt = new TSrvOptNISPServers(*ptrIface->getNISPServerLst(),this);
-	Options.append((Ptr*) opt);
+	Options.push_back((Ptr*) opt);
 	newOptionAssigned = true;
     };
 
@@ -621,7 +664,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    opt = new TSrvOptNISPDomain(ex->getNISPDomain(), this);
 	else
 	    opt = new TSrvOptNISPDomain(ptrIface->getNISPDomain(), this);
-	Options.append((Ptr*)opt);
+	Options.push_back((Ptr*)opt);
 	newOptionAssigned = true;
     };
 
@@ -639,7 +682,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	    optLifetime = new TSrvOptLifetime(ex->getLifetime(), this);
 	else
 	    optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
-	Options.append( (Ptr*)optLifetime);
+	Options.push_back( (Ptr*)optLifetime);
 	newOptionAssigned = true;
     }
 
@@ -650,7 +693,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     {
 	Log(Debug) << "Appending mandatory extra option " << (*gen)->getOptType() 
 		   << " (" << (*gen)->getSize() << ")" << LogEnd;
-	Options.append( (Ptr*) *gen);
+	Options.push_back( (Ptr*) *gen);
 	newOptionAssigned = true;
     }
 
@@ -661,7 +704,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	{
 	    Log(Debug) << "Appending requested extra option " << (*gen)->getOptType() 
 		       << " (" << (*gen)->getSize() << ")" << LogEnd;
-	    Options.append( (Ptr*) *gen);
+	    Options.push_back( (Ptr*) *gen);
 	    newOptionAssigned = true;
 	}
     }
@@ -670,7 +713,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 #ifndef MOD_DISABLE_AUTH
     if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE ) { // && this->MsgType == ADVERTISE_MSG ) {
         	SPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
-        	Options.append( (Ptr*)optKeyGeneration);
+        	Options.push_back( (Ptr*)optKeyGeneration);
     }
 #endif
 
@@ -904,7 +947,6 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 	    return false;
 	}
     }
-
     return status;
 }
 
@@ -927,7 +969,7 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSr
 	v = ex->getVendorSpec(vendor);
 	if (v) {
 	    Log(Debug) << "Found (client specific) vendor-spec. info (vendor=" << v->getVendor() << ")." << LogEnd;
-	    Options.append( (Ptr*)v);
+	    Options.push_back( (Ptr*)v);
 	    reqOpt->delOption(OPTION_VENDOR_OPTS);
 	    return true;
 	}
@@ -936,7 +978,7 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSr
     v= ptrIface->getVendorSpec(vendor);
     if (v) {
 	Log(Debug) << "Found vendor-spec. info (vendor=" << v->getVendor() << ")." << LogEnd;
-	Options.append( (Ptr*)v);
+	Options.push_back( (Ptr*)v);
 	reqOpt->delOption(OPTION_VENDOR_OPTS);
 	return true;
     }
@@ -1007,7 +1049,7 @@ void TSrvMsg::appendStatusCode()
 		    // copy status code to root-level
 		    delOption(OPTION_STATUS_CODE);
 		    rootLevel = new TSrvOptStatusCode(optLevel->getCode(), optLevel->getText(), this);
-		    Options.append( (Ptr*) rootLevel);
+		    Options.push_back( (Ptr*) rootLevel);
 		    return;
 		}
 	    }
@@ -1022,15 +1064,27 @@ void TSrvMsg::appendStatusCode()
 
 }
 
-bool TSrvMsg::delOption(int code)
-{
-    SPtr<TOpt> opt;
-    Options.first();
-    while (opt = Options.get()) {
-	if (opt->getOptType() == code) {
-	    Options.del();
-	    return true;
-	}
+void TSrvMsg::handleDefaultOption(SPtr<TOpt> ptrOpt) {
+    int opt = ptrOpt->getOptType();
+    switch(opt)
+    {
+    case OPTION_ELAPSED_TIME :
+        break;
+    default:
+	if (!ORO->isOption(opt))
+	    ORO->addOption(opt);
+	break;
     }
-    return false;
+}
+
+/** 
+ * finds OPTION_REQUEST OPTION in options
+ * 
+ * @param msg - parent message
+ */
+void TSrvMsg::getORO(SPtr<TMsg> msg)
+{
+    ORO = (Ptr*)msg->getOption(OPTION_ORO);
+    if (!ORO)
+        ORO = new TSrvOptOptionRequest(this);
 }

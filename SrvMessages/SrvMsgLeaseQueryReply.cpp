@@ -66,7 +66,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 		ok = queryByClientID(q, queryMsg);
 		break;
 	    default:
-		Options.append( new TSrvOptStatusCode(STATUSCODE_UNKNOWNQUERYTYPE, "Invalid Query type.", this) );
+		Options.push_back( new TSrvOptStatusCode(STATUSCODE_UNKNOWNQUERYTYPE, "Invalid Query type.", this) );
 		Log(Warning) << "LQ: Invalid query type (" << q->getQueryType() << " received." << LogEnd;
 		return true;
 	    }
@@ -78,20 +78,20 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 	}
 	case OPTION_CLIENTID:
 	    // copy the client-id option
-	    Options.append(opt);
+	    Options.push_back(opt);
 	    break;
 	}
 
     }
     if (!count) {
-	Options.append(new TSrvOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
+	Options.push_back(new TSrvOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
 	return true;
     }
 
     // append SERVERID
     SPtr<TSrvOptServerIdentifier> ptrSrvID;
     ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(), this);
-    Options.append((Ptr*)ptrSrvID);
+    Options.push_back((Ptr*)ptrSrvID);
 
     // allocate buffer
     pkt = new char[getSize()];
@@ -111,7 +111,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
 	    addr = (Ptr*) opt;
     }
     if (!addr) {
-	Options.append(new TSrvOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required IAADDR suboption missing.", this));
+	Options.push_back(new TSrvOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required IAADDR suboption missing.", this));
 	return true;
     }
 
@@ -120,7 +120,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
-	Options.append( new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
+	Options.push_back( new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
 	return true;
     }
     
@@ -142,7 +142,7 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
 	}
     }
     if (!duid) {
-	Options.append( new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your ClientID.", this) );
+	Options.push_back( new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your ClientID.", this) );
 	return true;
     }
 
@@ -151,7 +151,7 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain() << " not found." << LogEnd;
-	Options.append( new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this DUID found.", this) );
+	Options.push_back( new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this DUID found.", this) );
 	return true;
     }
     
@@ -205,7 +205,7 @@ void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {
 
     cliData->addOption( new TSrvOptLQClientTime(diff, this));
 
-    Options.append((Ptr*)cliData);
+    Options.push_back((Ptr*)cliData);
 }
 
 bool TSrvMsgLeaseQueryReply::check() {

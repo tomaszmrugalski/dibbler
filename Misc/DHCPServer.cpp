@@ -96,7 +96,7 @@ void TDHCPServer::run()
 	    Log(Cont) << " " << ptrOpt->getOptType();
 	Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;
 	if (SrvCfgMgr().stateless() && ( (msg->getType()!=INFORMATION_REQUEST_MSG) &&
-				     (msg->getType()!=RELAY_FORW_MSG))) {
+					 (msg->getType()!=RELAY_FORW_MSG))) {
 	    Log(Warning) 
 		<< "Stateful configuration related message received while running in the stateless mode. Message ignored." 
 		<< LogEnd;

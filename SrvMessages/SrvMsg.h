@@ -35,15 +35,16 @@ public:
     void copyRelayInfo(SPtr<TSrvMsg> q);
     void copyAAASPI(SPtr<TSrvMsg> q);
     void copyRemoteID(SPtr<TSrvMsg> q);
+    bool copyClientID(SPtr<TMsg> donor);
 
     void appendAuthenticationOption(SPtr<TDUID> duid);
-
+    bool appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool includeClientID = true);
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
     string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt);
     void appendStatusCode();
-    bool delOption(int code);
+    // bool delOption(int code);
 
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
 		      SPtr<TIPv6Addr> peerAddr,
@@ -64,11 +65,18 @@ public:
     void doDuties();
     void send();
 protected:
+    SPtr<TSrvOptOptionRequest> ORO;
+    void handleDefaultOption(SPtr<TOpt> ptrOpt);
+    void getORO(SPtr<TMsg> clientMessage);
+    SPtr<TDUID> ClientDUID;
+
     bool check(bool clntIDmandatory, bool srvIDmandatory);
+
     SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
 				  SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate);
     void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
     int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
+
 
     // relay
     SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];

@@ -48,60 +48,64 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     :TSrvMsg(confirm->getIface(),confirm->getAddr(), REPLY_MSG, 
 	     confirm->getTransID())
 {
-    this->copyRelayInfo((Ptr*)confirm);
-    this->copyAAASPI((Ptr*)confirm);
-    this->copyRemoteID((Ptr*)confirm);
+    getORO( (Ptr*)confirm );
+    copyClientID((Ptr*)confirm );
+    copyRelayInfo((Ptr*)confirm);
+    copyAAASPI((Ptr*)confirm);
+    copyRemoteID((Ptr*)confirm);
 
-    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID( confirm->getIface() );
+    handleConfirmOptions( confirm->getOptLst() );
+
+    appendMandatoryOptions(ORO);
+    appendRequestedOptions(ClientDUID, confirm->getAddr(), confirm->getIface(), ORO);
+    appendStatusCode();
+    appendAuthenticationOption(ClientDUID);
+
+    pkt = new char[this->getSize()];
+    this->MRT = 31;
+    IsDone = false;
+    this->send();
+}
+
+bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
+    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID( Iface );
     if (!ptrIface) {
 	Log(Crit) << "Msg received through not configured interface. "
 	    "Somebody call an exorcist!" << LogEnd;
 	this->IsDone = true;
-	return;
-    }
-
-    setOptionsReqOptClntDUID((Ptr*)confirm);
-    if (!duidOpt) {
-	Log(Warning) << "CONFIRM message without client-id option received, message dropped." << LogEnd;
-	IsDone = true;
-	return;
+	return false;
     }
 
     // check whether the client with DUID specified exists in Server Address database or not.
     SPtr <TAddrClient> ptrClient;
-    ptrClient = SrvAddrMgr().getClient(duidOpt->getDUID());
+    ptrClient = SrvAddrMgr().getClient(ClientDUID);
     if (!ptrClient) {
         Log(Info) << "Unable to create reply for CONFIRM message with client DUID ="
-                  << duidOpt->getDUID()->getPlain() << ": No such client." << LogEnd;
+                  << ClientDUID->getPlain() << ": No such client." << LogEnd;
         IsDone = true;
-        return;
+        return false;
     }
 
-    // copy client's ID
-    SPtr<TOpt> ptrOpt;
-    ptrOpt = confirm->getOption(OPTION_CLIENTID);
-    Options.append(ptrOpt);
-
-    confirm->firstOption();
     bool OnLink = true;
     int checkCnt = 0;
     List(TSrvOptIA_NA) validIAs;
 
-    while ( (ptrOpt = confirm->getOption()) && OnLink ) {
+    TOptList::iterator opt = Options.begin();
+    while ( (opt!=Options.end()) && OnLink ) {
 
-	switch (ptrOpt->getOptType()) {
+	switch ( (*opt)->getOptType()) {
 	case OPTION_IA_NA: {
 
-	    SPtr<TSrvOptIA_NA> ia = (Ptr*) ptrOpt;
+	    SPtr<TSrvOptIA_NA> ia = (Ptr*) (*opt);
 	    
             // now we check whether this IA exists in Server Address database or not.
     	    SPtr <TAddrIA> ptrIA;
  	    ptrIA = ptrClient->getIA(ia->getIAID());
        	    if (!ptrIA) {
       	        Log(Info) << "Unable to create reply for CONFIRM message. IA(iaid=" << ia->getIAID() << ", client="
-                   << duidOpt->getDUID()->getPlain() << ": No such IA_NA." << LogEnd;
+                   << ClientDUID->getPlain() << ": No such IA_NA." << LogEnd;
 	        IsDone = true;
-     	        return;
+     	        return false;
             }	    
 
 	    SPtr<TOpt> subOpt;
@@ -125,22 +129,22 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 		checkCnt++;
 	    }
 	    if(addrCnt){
-			SPtr<TSrvOptIA_NA> tempIA = new TSrvOptIA_NA(ia,confirm->getAddr(),
-                          duidOpt->getDUID(),confirm->getIface(), addrCnt,CONFIRM_MSG,this);
-                        validIAs.append(tempIA);
+		SPtr<TSrvOptIA_NA> tempIA = new TSrvOptIA_NA(ia, PeerAddr,
+							     ClientDUID, Iface, addrCnt,CONFIRM_MSG, this);
+		validIAs.append(tempIA);
             }
 	    break;
 	}
 	case OPTION_IA_TA: {
-	    SPtr<TSrvOptTA> ta = (Ptr*) ptrOpt;
+	    SPtr<TSrvOptTA> ta = (Ptr*) (*opt);
 	    // now we check whether this IA exists in Server Address database or not.
             SPtr <TAddrIA> ptrIA;
             ptrIA = ptrClient->getIA(ta->getIAID());
             if (!ptrIA) {
                 Log(Info) << "Unable to create reply for CONFIRM message.TA(iaid=" << ta->getIAID() << ", client="
-                   << duidOpt->getDUID()->getPlain() << ": No such IA_TA." << LogEnd;
+                   << ClientDUID->getPlain() << ": No such IA_TA." << LogEnd;
                 IsDone = true;
-                return;
+                return false;
             }
 
 	    SPtr<TOpt> subOpt;
@@ -157,9 +161,10 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    break;
 	}
 	default:
-	    // other options - ignore them
+	    handleDefaultOption( *opt);
 	    continue;
 	}
+	++opt;
     }
     if (!checkCnt) {
 	// no check
@@ -167,7 +172,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
 				  "No addresses checked. Did you send any?",
 				  this);
-	this->Options.append( (Ptr*) ptrCode );
+	Options.push_back( (Ptr*) ptrCode );
     } else
     if (!OnLink) {
 	// not-on-link
@@ -175,40 +180,27 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
 				  "Sorry, those addresses are not valid for this link.",
 				  this);
-	this->Options.append( (Ptr*) ptrCode );
+	Options.push_back( (Ptr*) ptrCode );
     } else {
 	// success
 	SPtr <TSrvOptStatusCode> ptrCode = 
 	    new TSrvOptStatusCode(STATUSCODE_SUCCESS,
 				  "Your addresses are valid! Yahoo!",
 				  this);
-	this->Options.append( (Ptr*) ptrCode);
-
-	int iaNum=validIAs.count();
-	if(iaNum){
+	Options.push_back( (Ptr*) ptrCode);
+	
+	if(validIAs.count()){
 	    SPtr<TSrvOptIA_NA> ia;
 	    validIAs.first();
 	    while(ia=validIAs.get() ){
-		this->Options.append((Ptr*)ia );
+		Options.push_back((Ptr*)ia );
 	    }
 	}
     }
-
-    // include our ServerID
-    SPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
-    this->Options.append((Ptr*)srvDUID);
-
-    appendRequestedOptions(duidOpt->getDUID(), confirm->getAddr(), confirm->getIface(), reqOpts);
-
-    appendStatusCode();
-
-    appendAuthenticationOption(duidOpt->getDUID());
-
-    pkt = new char[this->getSize()];
-    this->MRT = 31;
-    IsDone = false;
-    this->send();
+    
+    return true;
 }
+
 	
 /*
  * this constructor is used to create REPLY message as a response for DECLINE message
@@ -218,35 +210,22 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
  * @param CfgMgr 
  * @param AddrMgr 
  * @param decline 
- */TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
+ */
+TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
     :TSrvMsg(decline->getIface(),decline->getAddr(), REPLY_MSG, decline->getTransID())
 {
-    this->copyRelayInfo((Ptr*)decline);
-    this->copyAAASPI((Ptr*)decline);
-    this->copyRemoteID((Ptr*)decline);
+    getORO( (Ptr*)decline );
+    copyClientID( (Ptr*)decline );
+    copyRelayInfo( (Ptr*)decline );
+    copyAAASPI( (Ptr*)decline );
+    copyRemoteID( (Ptr*)decline );
 
 
     SPtr<TOpt> ptrOpt;
 
-    /// @todo: Implement DECLINE support for client-id and option request as in other messages
-    // include our DUID
-    ptrOpt = decline->getOption(OPTION_SERVERID);
-    Options.append(ptrOpt);
-
-    // copy client's DUID
-    SPtr<TSrvOptClientIdentifier> ptrClntDUID;
-    ptrOpt = decline->getOption(OPTION_CLIENTID);
-    if (!ptrOpt) {
-	Log(Warning) << "Received DECLINE message without client-id option. Message ignored." << LogEnd;
-	IsDone = true;
-	return;
-    }
-    ptrClntDUID = (Ptr*) ptrOpt;
-    Options.append(ptrOpt);
-    duidOpt=(Ptr*)ptrOpt;
-    SPtr<TAddrClient> ptrClient = SrvAddrMgr().getClient(duidOpt->getDUID());
+    SPtr<TAddrClient> ptrClient = SrvAddrMgr().getClient(ClientDUID);
     if (!ptrClient) {
-	Log(Warning) << "Received DECLINE from unknown client, DUID=" << *duidOpt->getDUID() << ". Ignored." << LogEnd;
+	Log(Warning) << "Received DECLINE from unknown client, DUID=" << *ClientDUID << ". Ignored." << LogEnd;
 	IsDone = true;
 	return;
     }
@@ -269,7 +248,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    SPtr<TAddrIA> ptrIA = ptrClient->getIA(ptrIA_NA->getIAID());
 	    if (!ptrIA) 
 	    {
-		Options.append( new TSrvOptIA_NA(ptrIA_NA->getIAID(), 0, 0, STATUSCODE_NOBINDING,
+		Options.push_back( new TSrvOptIA_NA(ptrIA_NA->getIAID(), 0, 0, STATUSCODE_NOBINDING,
 					     "No such IA is bound.",this) );
 		continue;
 	    }
@@ -309,7 +288,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 		    AddrsDeclinedCnt++;
 		};
 	    }
-	    Options.append((Ptr*)replyIA_NA);
+	    Options.push_back((Ptr*)replyIA_NA);
 	    char buf[10];
 	    sprintf(buf,"%d",AddrsDeclinedCnt);
 	    string tmp = buf;
@@ -322,11 +301,14 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    Log(Info) << "TA address declined. Oh well. Since it's temporary, let's ignore it entirely." << LogEnd;
 	    break;
 	default:
+	    handleDefaultOption(ptrOpt);
 	    break;
 	}
     }
 
-    appendAuthenticationOption(duidOpt->getDUID());
+    appendMandatoryOptions(ORO);
+
+    appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
     IsDone = false;
@@ -342,23 +324,19 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
  * @param CfgMgr 
  * @param AddrMgr 
  * @param rebind 
- */TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
+ */
+TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
     :TSrvMsg(rebind->getIface(),rebind->getAddr(), REPLY_MSG, rebind->getTransID())
 {
-    this->copyRelayInfo((Ptr*)rebind);
-    this->copyAAASPI((Ptr*)rebind);
-    this->copyRemoteID((Ptr*)rebind);
+    getORO( (Ptr*)rebind );
+    copyClientID( (Ptr*)rebind );
+    copyRelayInfo( (Ptr*)rebind );
+    copyAAASPI( (Ptr*)rebind );
+    copyRemoteID( (Ptr*)rebind );
 
     unsigned long addrCount=0;
     SPtr<TOpt> ptrOpt;
 
-    setOptionsReqOptClntDUID((Ptr*)rebind);
-    if (!duidOpt) {
-      Log(Warning) << "REBIND message without client-id option received, message dropped." << LogEnd;
-      IsDone = true;
-      return;
-    }
-    
     rebind->firstOption();
     while (ptrOpt = rebind->getOption() ) 
     {
@@ -368,25 +346,25 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
           {
             SPtr<TSrvOptIA_NA> optIA_NA;
             optIA_NA = new TSrvOptIA_NA((Ptr*)ptrOpt, 
-                                        rebind->getAddr(), duidOpt->getDUID(),
+                                        rebind->getAddr(), ClientDUID,
                                         rebind->getIface(), addrCount, REBIND_MSG,
                                         this);
             if (optIA_NA->getStatusCode() != STATUSCODE_NOBINDING )
-              this->Options.append((Ptr*)optIA_NA);
+              Options.push_back((Ptr*)optIA_NA);
             else {
-              this->IsDone = true;
-              Log(Notice) << "REBIND received with unknown addresses and " 
-                          << "was silently discarded." << LogEnd;
+		this->IsDone = true;
+		Log(Notice) << "REBIND received with unknown addresses and " 
+			    << "was silently discarded." << LogEnd;
               return;
             }
             break;
           }
         case OPTION_IA_PD: {
-          SPtr<TSrvOptIA_PD> pd;
-          pd = new TSrvOptIA_PD( (Ptr*) ptrOpt, rebind->getAddr(), 
-                                duidOpt->getDUID(), rebind->getIface(), REQUEST_MSG, this);
-          this->Options.append((Ptr*)pd);
-          break;
+	    SPtr<TSrvOptIA_PD> pd;
+	    pd = new TSrvOptIA_PD( (Ptr*) ptrOpt, rebind->getAddr(), 
+				   ClientDUID, rebind->getIface(), REQUEST_MSG, this);
+	    Options.push_back((Ptr*)pd);
+	    break;
         }
 
         case OPTION_IAADDR:
@@ -397,22 +375,18 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
             Log(Warning) << "Invalid option (" <<ptrOpt->getOptType() << ") received." << LogEnd;
             break;
         default:
-            appendDefaultOption(ptrOpt);
+	    handleDefaultOption(ptrOpt);
             break;
         }
     }
-    appendRequestedOptions(duidOpt->getDUID(),rebind->getAddr(),rebind->getIface(),reqOpts);
 
-    // append our DUID
-    SPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
-    this->Options.append((Ptr*)srvDUID);
-    
-    appendAuthenticationOption(duidOpt->getDUID());
+    appendMandatoryOptions(ORO);
+    appendRequestedOptions(ClientDUID, rebind->getAddr(),rebind->getIface(), ORO);
+    appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
     IsDone = false;
     this->MRT = 0;
-
     this->send();
 
 }
@@ -429,9 +403,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     :TSrvMsg(release->getIface(),release->getAddr(), REPLY_MSG, 
 	     release->getTransID())
 {
-    this->copyRelayInfo((Ptr*)release);
-    this->copyAAASPI((Ptr*)release);
-    this->copyRemoteID((Ptr*)release);
+    getORO( (Ptr*) release );
+    copyClientID( (Ptr*) release );
+    copyRelayInfo((Ptr*)release);
+    copyAAASPI((Ptr*)release);
+    copyRemoteID((Ptr*)release);
 
      /// @todo:When the server receives a Release message via unicast from a client
     //to which the server has not sent a unicast option, the server
@@ -440,19 +416,9 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     //Identifier option containing the server's DUID, the Client Identifier
     //option from the client message, and no other options.
 
-    SPtr<TSrvOptClientIdentifier> clntID;
     SPtr<TOpt> opt, subOpt;
 
-    release->firstOption();
-    opt = release->getOption(OPTION_SERVERID);
-    Options.append(opt);
-
-    release->firstOption();
-    opt = release->getOption(OPTION_CLIENTID);
-    Options.append(opt);
-    clntID=(Ptr*) opt;
-
-    SPtr<TAddrClient> client = SrvAddrMgr().getClient(clntID->getDUID());
+    SPtr<TAddrClient> client = SrvAddrMgr().getClient(ClientDUID);
     if (!client) {
 	Log(Warning) << "Received RELEASE from unknown client." << LogEnd;
 	IsDone = true;
@@ -467,7 +433,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	return;
     }
 
-    appendAuthenticationOption(clntID->getDUID());
+    appendMandatoryOptions(ORO);
+    appendAuthenticationOption(ClientDUID);
 
     release->firstOption();
     while(opt=release->getOption()) {
@@ -480,8 +447,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    // does this client has IA? (iaid check)
 	    SPtr<TAddrIA> ptrIA = client->getIA(clntIA->getIAID() );
 	    if (!ptrIA) {
-		Log(Warning) << "No such IA (iaid=" << clntIA->getIAID() << ") found for client:" << *clntID->getDUID() << LogEnd;
-		Options.append( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such IA is bound.",this) );
+		Log(Warning) << "No such IA (iaid=" << clntIA->getIAID() << ") found for client:" << ClientDUID->getPlain() << LogEnd;
+		Options.push_back( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such IA is bound.",this) );
 		continue;
 	    }
 
@@ -497,11 +464,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 		if (subOpt->getOptType()!=OPTION_IAADDR)
 		    continue;
 		addr = (Ptr*) subOpt;
-		if (SrvAddrMgr().delClntAddr(clntID->getDUID(), clntIA->getIAID(), addr->getAddr(), false) ) {
+		if (SrvAddrMgr().delClntAddr(ClientDUID, clntIA->getIAID(), addr->getAddr(), false) ) {
 		    SrvCfgMgr().delClntAddr(this->Iface,addr->getAddr());
 		    anyDeleted=true;                    
 		} else {
-		    Log(Warning) << "No such binding found: client=" << clntID->getDUID()->getPlain() << ", IA (iaid=" 
+		    Log(Warning) << "No such binding found: client=" << ClientDUID->getPlain() << ", IA (iaid=" 
 				 << clntIA->getIAID() << "), addr="<< addr->getAddr()->getPlain() << LogEnd;
 		};
 	    };
@@ -510,7 +477,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    if (!anyDeleted)
 	    {
 		SPtr<TSrvOptIA_NA> ansIA(new TSrvOptIA_NA(clntIA->getIAID(), clntIA->getT1(),clntIA->getT2(),this));
-		Options.append((Ptr*)ansIA);
+		Options.push_back((Ptr*)ansIA);
 		ansIA->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
 	    };
 	    break;
@@ -520,8 +487,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    bool anyDeleted = false;
 	    SPtr<TAddrIA> ptrIA = client->getTA(ta->getIAID() );
 	    if (!ptrIA) {
-		Log(Warning) << "No such TA (iaid=" << ta->getIAID() << ") found for client:" << *clntID->getDUID() << LogEnd;
-		Options.append( new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING, "No such IA is bound.", this) );
+		Log(Warning) << "No such TA (iaid=" << ta->getIAID() << ") found for client:" << ClientDUID->getPlain() << LogEnd;
+		Options.push_back( new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING, "No such IA is bound.", this) );
 		continue;
 	    }
 	    
@@ -531,11 +498,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 		if (subOpt->getOptType()!=OPTION_IAADDR)
 		    continue;
 		SPtr<TSrvOptIAAddress> addr = (Ptr*) subOpt;
-		if (SrvAddrMgr().delTAAddr(clntID->getDUID(), ta->getIAID(), addr->getAddr()) ) {
+		if (SrvAddrMgr().delTAAddr(ClientDUID, ta->getIAID(), addr->getAddr()) ) {
 		    SrvCfgMgr().delTAAddr(this->Iface);
 		    anyDeleted=true;                    
 		} else {
-		    Log(Warning) << "No such binding found: client=" << clntID->getDUID()->getPlain() << ", TA (iaid=" 
+		    Log(Warning) << "No such binding found: client=" << ClientDUID->getPlain() << ", TA (iaid=" 
 			     << ta->getIAID() << "), addr="<< addr->getAddr()->getPlain() << LogEnd;
 		};
 	    }
@@ -544,7 +511,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    if (!anyDeleted)
 	    {
 		SPtr<TSrvOptTA> answerTA = new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING, "Not every address had binding.", this);
-		Options.append((Ptr*)answerTA);
+		Options.push_back((Ptr*)answerTA);
 	    };
 	    break;
 	}
@@ -557,8 +524,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    // does this client has PD? (iaid check)
 	    SPtr<TAddrIA> ptrPD = client->getPD( pd->getIAID() );
 	    if (!ptrPD) {
-		Log(Warning) << "No such PD (iaid=" << pd->getIAID() << ") found for client:" << *clntID->getDUID() << LogEnd;
-		Options.append( new TSrvOptIA_PD(pd->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such PD is bound.",this) );
+		Log(Warning) << "No such PD (iaid=" << pd->getIAID() << ") found for client:" << ClientDUID->getPlain() << LogEnd;
+		Options.push_back( new TSrvOptIA_PD(pd->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such PD is bound.",this) );
 		continue;
 	    }
 
@@ -568,11 +535,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 		if (subOpt->getOptType()!=OPTION_IAPREFIX)
 		    continue;
 		prefix = (Ptr*) subOpt;
-		if (SrvAddrMgr().delPrefix(clntID->getDUID(), pd->getIAID(), prefix->getPrefix(), false) ) {
+		if (SrvAddrMgr().delPrefix(ClientDUID, pd->getIAID(), prefix->getPrefix(), false) ) {
 		    SrvCfgMgr().decrPrefixCount(Iface, prefix->getPrefix());
 		    anyDeleted=true;                    
 		} else {
-		    Log(Warning) << "PD: No such binding found: client=" << clntID->getDUID()->getPlain() << ", PD (iaid=" 
+		    Log(Warning) << "PD: No such binding found: client=" << ClientDUID->getPlain() << ", PD (iaid=" 
 				 << pd->getIAID() << "), addr="<< prefix->getPrefix()->getPlain() << LogEnd;
 		};
 	    };
@@ -581,22 +548,22 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 	    if (!anyDeleted)
 	    {
 		SPtr<TSrvOptIA_PD> ansPD(new TSrvOptIA_PD(pd->getIAID(), 0, 0, this));
-		Options.append((Ptr*)ansPD);
+		Options.push_back((Ptr*)ansPD);
 		ansPD->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
 	    };
 	    break;
 	}
 	default:
+	    handleDefaultOption(opt);
 	    break;
 	}; // switch(...)
     } // while 
     
-    Options.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,
+    Options.push_back(new TSrvOptStatusCode(STATUSCODE_SUCCESS,
 					 "All IAs in RELEASE message were processed.",this));
     
     pkt = new char[this->getSize()];
     IsDone = false;
-
     this->MRT=46;
     this->send();
 }
@@ -605,9 +572,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
     :TSrvMsg(renew->getIface(),renew->getAddr(), REPLY_MSG, renew->getTransID())
 {
-    this->copyRelayInfo((Ptr*)renew);
-    this->copyAAASPI((Ptr*)renew);
-    this->copyRemoteID((Ptr*)renew);
+    getORO( (Ptr*)renew );
+    copyClientID( (Ptr*)renew );
+    copyRelayInfo((Ptr*)renew);
+    copyAAASPI((Ptr*)renew);
+    copyRemoteID((Ptr*)renew);
 
     // uncomment this to test REBIND
     //IsDone = true;
@@ -616,12 +585,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
 
     unsigned long addrCount=0;
     SPtr<TOpt> ptrOpt;
-    setOptionsReqOptClntDUID((Ptr*)renew);
-    if (!duidOpt) {
-	Log(Warning) << "RENEW message without client-id option received, message dropped." << LogEnd;
-	IsDone = true;
-	return;
-    }
     
     renew->firstOption();
     while (ptrOpt = renew->getOption() ) 
@@ -629,22 +592,22 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
         switch (ptrOpt->getOptType()) 
         {
         case OPTION_SERVERID:
-            this->Options.append(ptrOpt);
+            Options.push_back(ptrOpt);
             break;
         case OPTION_IA_NA: {
 	    SPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA = new TSrvOptIA_NA((Ptr*)ptrOpt, 
-					renew->getAddr(), duidOpt->getDUID(),
+					renew->getAddr(), ClientDUID,
 					renew->getIface(), addrCount, RENEW_MSG, this);
-	    this->Options.append((Ptr*)optIA_NA);
+	    Options.push_back((Ptr*)optIA_NA);
             break;
 	}
 	case OPTION_IA_PD: {
 	    SPtr<TSrvOptIA_PD> optPD;
 	    optPD = new TSrvOptIA_PD( (Ptr*)ptrOpt,
-				     renew->getAddr(), duidOpt->getDUID(),
+				     renew->getAddr(), ClientDUID,
 				     renew->getIface(), RENEW_MSG, this);
-	    Options.append( (Ptr*) optPD);
+	    Options.push_back( (Ptr*) optPD);
 	    break;
 	}
 	case OPTION_IA_TA:
@@ -662,13 +625,15 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
             Log(Warning) << "Invalid option "<<ptrOpt->getOptType()<<" received." << LogEnd;
             break;
         default:
-            appendDefaultOption(ptrOpt);
+	    handleDefaultOption(ptrOpt);
+            // do nothing with remaining options
             break;
         }
     }
-    appendRequestedOptions(duidOpt->getDUID(),renew->getAddr(),renew->getIface(),reqOpts);
 
-    appendAuthenticationOption(duidOpt->getDUID());
+    appendMandatoryOptions(ORO);
+    appendRequestedOptions(ClientDUID,renew->getAddr(),renew->getIface(), ORO);
+    appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
     IsDone = false;
@@ -686,66 +651,50 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
  * @param request 
  */
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
-    :TSrvMsg(request->getIface(),request->getAddr(), REPLY_MSG, request->getTransID())
+    :TSrvMsg(request->getIface(), request->getAddr(), REPLY_MSG, request->getTransID())
 {
-    this->copyRelayInfo((Ptr*)request);
-    this->copyAAASPI((Ptr*)request);
-    this->copyRemoteID((Ptr*)request);
+    getORO( (Ptr*)request );
+    copyClientID( (Ptr*)request );
+    copyRelayInfo( (Ptr*)request );
+    copyAAASPI( (Ptr*)request );
+    copyRemoteID( (Ptr*)request );
 
-    SPtr<TOpt>       opt;
-    SPtr<TSrvOptClientIdentifier> optClntID;
-    SPtr<TDUID>      clntDuid;
-    SPtr<TIPv6Addr>  clntAddr;
-    unsigned int         clntIface;
-
-    opt = request->getOption(OPTION_CLIENTID);
-    optClntID = (Ptr*) opt;
-    clntDuid  = optClntID->getDUID();
-    clntAddr  = request->getAddr();
-    clntIface = request->getIface();
-
-    setOptionsReqOptClntDUID((Ptr*)request);
-    if (!duidOpt) {
-	Log(Warning) << "REQUEST message without client-id option received, message dropped." << LogEnd;
-	IsDone = true;
-	return;
-    }
-
-
+    /// @todo move this to a common message handling place
     // is this client supported?
-    if (!SrvCfgMgr().isClntSupported(clntDuid, clntAddr, clntIface)) {
+    if (!SrvCfgMgr().isClntSupported(ClientDUID, request->getAddr(), Iface)) {
         //No reply for this client 
-	Log(Notice) << "Client (DUID=" << clntDuid->getPlain() << ",addr=" << *clntAddr 
+	Log(Notice) << "Message from client (DUID=" << ClientDUID->getPlain() << ",addr=" 
+		    << request->getAddr()->getPlain()
 		    << ") was rejected due to accept-only or reject-client." << LogEnd;
         IsDone=true;
         return;
     }
 
+    SPtr<TIPv6Addr> clntAddr = request->getAddr();
+    unsigned int clntIface = request->getIface();
+
     // try to provide answer for all options
+    SPtr<TOpt> opt;
     request->firstOption();
     while ( opt = request->getOption() ) {
 	switch (opt->getOptType()) {
-	case OPTION_SERVERID    : {
-	    this->Options.append(opt);
-	    break;
-	}
 	case OPTION_IA_NA: {
 	    SPtr<TSrvOptIA_NA> optIA;
-	    optIA = new TSrvOptIA_NA( (Ptr*) opt, clntDuid, clntAddr, clntIface, REQUEST_MSG, this);
-	    this->Options.append((Ptr*)optIA);
+	    optIA = new TSrvOptIA_NA( (Ptr*) opt, ClientDUID, clntAddr, clntIface, REQUEST_MSG, this);
+	    Options.push_back((Ptr*)optIA);
 	    break;
 	}
 	case OPTION_IA_TA: {
 	    SPtr<TSrvOptTA> ta;
-	    ta = new TSrvOptTA( (Ptr*) opt, clntDuid, clntAddr, clntIface, REQUEST_MSG, this);
-	    this->Options.append((Ptr*)ta);
+	    ta = new TSrvOptTA( (Ptr*) opt, ClientDUID, clntAddr, clntIface, REQUEST_MSG, this);
+	    Options.push_back((Ptr*)ta);
 	    break;
 	}
 
 	case OPTION_IA_PD: {
 	    SPtr<TSrvOptIA_PD> pd;
-	    pd = new TSrvOptIA_PD( (Ptr*) opt, clntAddr, clntDuid, clntIface, REQUEST_MSG, this);
-	    this->Options.append((Ptr*)pd);
+	    pd = new TSrvOptIA_PD( (Ptr*) opt, clntAddr, ClientDUID, clntIface, REQUEST_MSG, this);
+	    Options.push_back((Ptr*)pd);
 	    break;
 	}
 	case OPTION_STATUS_CODE :
@@ -765,80 +714,57 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
 
 	    string hint = anotherFQDN->getFQDN();
 		
-	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(clntDuid);
+	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
 	    if (clntAssignedAddr)
-		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAssignedAddr, hint, true);
+		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAssignedAddr, hint, true);
 	    else
-		optFQDN = this->prepareFQDN(requestFQDN, clntDuid, clntAddr, hint, true);
+		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAddr, hint, true);
 	    if (optFQDN) {
-		this->Options.append((Ptr*) optFQDN);
+		Options.push_back((Ptr*) optFQDN);
 	    }
 	    break;
 	}
 	case OPTION_VENDOR_OPTS:
 	{
 	    SPtr<TSrvOptVendorSpec> v = (Ptr*) opt;
-	    appendVendorSpec(clntDuid, clntIface, v->getVendor(), reqOpts);
+	    appendVendorSpec(ClientDUID, clntIface, v->getVendor(), ORO);
 	    break;
 	}
-
 	default:
-	    appendDefaultOption(opt);
+	    handleDefaultOption(opt);
 	    break;
 	}
     }
 
-    appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
-
-    appendAuthenticationOption(clntDuid);
+    appendMandatoryOptions(ORO);
+    appendRequestedOptions(ClientDUID, clntAddr, clntIface, ORO);
+    appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
     IsDone = false;
-    SPtr<TIPv6Addr> ptrAddr;
     this->MRT = 330; 
     this->send();
 }
 
 //SOLICIT
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
-    :TSrvMsg(solicit->getIface(),
-	     solicit->getAddr(),REPLY_MSG,solicit->getTransID())
+    :TSrvMsg(solicit->getIface(), solicit->getAddr(), REPLY_MSG, solicit->getTransID())
 {
-    this->copyRelayInfo((Ptr*)solicit);
-    this->copyAAASPI((Ptr*)solicit);
-    this->copyRemoteID((Ptr*)solicit);
+    getORO( (Ptr*)solicit );
+    copyClientID( (Ptr*)solicit );
+    copyRelayInfo( (Ptr*)solicit );
+    copyAAASPI( (Ptr*)solicit );
+    copyRemoteID( (Ptr*)solicit );
 
-    SPtr<TOpt>       opt;
-    SPtr<TSrvOptClientIdentifier> optClntID;
-    SPtr<TDUID>      clntDuid;
-    SPtr<TIPv6Addr>  clntAddr;
-    unsigned int         clntIface;
+    /// @todo remove this and use Iface and PeerAddr
+    SPtr<TIPv6Addr> clntAddr = solicit->getAddr();
+    unsigned int clntIface = solicit->getIface();
 
-    opt = solicit->getOption(OPTION_CLIENTID);
-    optClntID = (Ptr*) opt;
-    clntDuid  = optClntID->getDUID();
-    clntAddr  = solicit->getAddr();
-    clntIface = solicit->getIface();
-
-    setOptionsReqOptClntDUID((Ptr*)solicit);
-    if (!duidOpt) {
-	Log(Warning) << "SOLICIT message without client-id option received, message dropped." << LogEnd;
-	IsDone = true;
-	return;
-    }
-
-    // include our DUID 
-    SPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
-    this->Options.append((Ptr*)srvDUID);
-
-    // include rapid commit
-    SPtr<TOptEmpty> optRapidCommit = new TOptEmpty(OPTION_RAPID_COMMIT, this);
-    this->Options.append((Ptr*)optRapidCommit);
-
+    /// @todo move this to a common message handling place
     // is this client supported?
-    if (!SrvCfgMgr().isClntSupported(clntDuid, clntAddr, clntIface)) {
+    if (!SrvCfgMgr().isClntSupported(ClientDUID, clntAddr, clntIface)) {
         //No reply for this client 
-	Log(Notice) << "Client (DUID=" << clntDuid->getPlain() << ",addr=" << *clntAddr 
+	Log(Notice) << "Client (DUID=" << ClientDUID->getPlain() << ",addr=" << *clntAddr 
 		    << ") was rejected due to accept-only or reject-client." << LogEnd;
         IsDone=true;
         return;
@@ -846,6 +772,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
 
     //So if we can do something for this client at least set configuration
     //parameters - let's do  option by option - try to answer to it
+    SPtr<TOpt> opt;
     solicit->firstOption();
     while ( opt = solicit->getOption() ) 
     {
@@ -857,15 +784,15 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
 	    return;
 	case OPTION_IA_NA       : {
 	    SPtr<TSrvOptIA_NA> optIA_NA;
-	    optIA_NA = new TSrvOptIA_NA((Ptr*) opt, clntDuid, clntAddr, clntIface, REQUEST_MSG,this);
-	    this->Options.append((Ptr*)optIA_NA);
+	    optIA_NA = new TSrvOptIA_NA((Ptr*) opt, ClientDUID, clntAddr, clntIface, REQUEST_MSG,this);
+	    Options.push_back((Ptr*)optIA_NA);
 	    break;
 	}
 	case OPTION_IA_TA: {
 	    SPtr<TSrvOptTA> ta;
-	    ta = new TSrvOptTA( (Ptr*) opt, clntDuid, clntAddr,
+	    ta = new TSrvOptTA( (Ptr*) opt, ClientDUID, clntAddr,
 			       clntIface, REQUEST_MSG, this);
-	    this->Options.append((Ptr*)ta);
+	    Options.push_back((Ptr*)ta);
 	    break;
 	}
 	case OPTION_STATUS_CODE : 
@@ -882,13 +809,13 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
 	    Log(Info) << "SOLICIT with RAPID-COMMIT received." << LogEnd;
 	    break;
 	default:
-	    appendDefaultOption(opt);
+	    handleDefaultOption(opt);
 	    break;
         }
     }
-    appendRequestedOptions(clntDuid, clntAddr, clntIface, reqOpts);
-
-    appendAuthenticationOption(clntDuid);
+    appendMandatoryOptions(ORO);
+    appendRequestedOptions(ClientDUID, clntAddr, clntIface, ORO);
+    appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
     IsDone = false;
@@ -898,21 +825,21 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
 }
 
 // INFORMATION-REQUEST answer
-TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> question)
-    :TSrvMsg(question->getIface(),
-	     question->getAddr(),REPLY_MSG,question->getTransID())
+TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
+    :TSrvMsg(infRequest->getIface(),
+	     infRequest->getAddr(),REPLY_MSG,infRequest->getTransID())
 {
-    this->copyRelayInfo((Ptr*)question);
-    this->copyAAASPI((Ptr*)question);
-    this->copyRemoteID((Ptr*)question);
+    getORO( (Ptr*)infRequest );
+    copyClientID( (Ptr*)infRequest );
+    copyRelayInfo((Ptr*)infRequest);
+    copyAAASPI((Ptr*)infRequest);
+    copyRemoteID((Ptr*)infRequest);
 
+    Log(Debug) << "Received INF-REQUEST requesting " << showRequestedOptions(ORO) << "." << LogEnd;
+
+    infRequest->firstOption();
     SPtr<TOpt> ptrOpt;
-    setOptionsReqOptClntDUID((Ptr*)question);
-    
-    Log(Debug) << "Received INF-REQUEST requesting " << this->showRequestedOptions(this->reqOpts) << "." << LogEnd;
-
-    question->firstOption();
-    while (ptrOpt = question->getOption() ) 
+    while (ptrOpt = infRequest->getOption() ) 
     {
         switch (ptrOpt->getOptType()) 
         {
@@ -932,31 +859,24 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> question)
                 Log(Warning) << "Invalid option " << ptrOpt->getOptType() <<" received." << LogEnd;
                 break;
             default:
-                this->appendDefaultOption(ptrOpt);
+		handleDefaultOption(ptrOpt);
             break;
         }
     }
-    SPtr<TDUID> duid;
-    if (duidOpt)
-	duid = duidOpt->getDUID();
-    else
-	duid = new TDUID();
-    
-    if (appendRequestedOptions(duid, question->getAddr(),question->getIface(),reqOpts)) {
-        // include our DUID
-        SPtr<TSrvOptServerIdentifier> srvDUID=new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
-        this->Options.append((Ptr*)srvDUID);
 
-        appendAuthenticationOption(duid);
-
-        pkt = new char[this->getSize()];
-        IsDone = false;
-        this->MRT = 330; /// @todo: 
-        this->send();
-    } else {
+    appendMandatoryOptions(ORO);
+    if ( !appendRequestedOptions(ClientDUID, infRequest->getAddr(),infRequest->getIface(), ORO) ) {
 	Log(Warning) << "No options to answer in INF-REQUEST, so REPLY will not be send." << LogEnd;
         IsDone=true;
+	return;
     }
+
+    appendAuthenticationOption(ClientDUID);
+	
+    pkt = new char[this->getSize()];
+    IsDone = false;
+    MRT = 330; /// @todo: 
+    send();
 }
 
 void TSrvMsgReply::doDuties() {
@@ -972,48 +892,8 @@ unsigned long TSrvMsgReply::getTimeout() {
 
 bool TSrvMsgReply::check() {
     /* not used on the server side */
+    /* we generate REPLY messages, so they are *GOOD*. */
     return false;
-}
-
-void TSrvMsgReply::appendDefaultOption(SPtr<TOpt> ptrOpt) {
-    int opt = ptrOpt->getOptType();
-    switch(opt)
-    {
-    case OPTION_CLIENTID :
-        this->Options.append(ptrOpt);
-        break;
-    case OPTION_ORO:
-        //we found it at the beginning of function
-        break;
-    case OPTION_ELAPSED_TIME :
-        //Ignore - BE PATIENT MY CLIENT!!!
-        break;
-    default:
-	// all other options set in OPTION REQUEST
-	if (!reqOpts->isOption(opt))
-	    reqOpts->addOption(opt);
-	break;
-    }
-}
-
-/** 
- * finds CLIENT_DUID and OPTIONREQUEST in options
- * 
- * @param msg - parent message
- */
-void TSrvMsgReply::setOptionsReqOptClntDUID(SPtr<TMsg> msg)
-{
-    reqOpts= SPtr<TSrvOptOptionRequest>();
-   // remember client's DUID
-    duidOpt = (Ptr*) msg->getOption(OPTION_CLIENTID);
-    //remember requested option in order to add number of "hint" options
-    //wich are included in packet but not in Request Option
-    //if Request option wasn't included by client - create new one
-    //in which number of "hint" options could be stored
-    this->reqOpts=(Ptr*)msg->getOption(OPTION_ORO);
-    //If there is no option Request it will ba added
-    if (!reqOpts)
-        this->reqOpts=new TSrvOptOptionRequest(this);
 }
 
 TSrvMsgReply::~TSrvMsgReply()

@@ -36,7 +36,7 @@ class TSrvMsgAdvertise : public TSrvMsg
     /// @todo: get rid of 2 of those constructors
 
     bool check();
-    bool answer(SPtr<TSrvMsgSolicit> solicit);
+    bool handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit);
     void doDuties();
     unsigned long getTimeout();
     string getName();

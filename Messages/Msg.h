@@ -52,7 +52,7 @@ class TMsg
     
     long getType();
     long getTransID();
-    TContainer< SPtr<TOpt> > getOptLst();
+    TOptList & getOptLst();
     SPtr<TIPv6Addr> getAddr();
     int getIface();
     virtual ~TMsg();
@@ -80,11 +80,12 @@ class TMsg
 
   protected:
     int MsgType;
-
     long TransID;
 
-    List(TOpt) Options;
-    
+    bool delOption(int code);
+
+    TOptList Options;
+    TOptList::iterator NextOpt; // to be removed together with firstOption() and getOption();
     void setAttribs(int iface, SPtr<TIPv6Addr> addr, 
 		    int msgType, long transID);
     virtual bool check(bool clntIDmandatory, bool srvIDmandatory);

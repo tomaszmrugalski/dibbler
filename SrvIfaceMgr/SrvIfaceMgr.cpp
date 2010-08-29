@@ -186,7 +186,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 		   << ")." << LogEnd;
 
 	// create specific message object
-    SPtr<TSrvMsg> ptr;
+	SPtr<TSrvMsg> ptr;
 	switch (msgtype) {
 	case SOLICIT_MSG:
 	case REQUEST_MSG:
@@ -197,22 +197,26 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	case DECLINE_MSG:
 	case INFORMATION_REQUEST_MSG:
 	case LEASEQUERY_MSG:
+	{
 	    ptr = this->decodeMsg(ptrIface, peer, buf, bufsize);
-        if (!ptr->validateReplayDetection() ||
-            !ptr->validateAuthInfo(buf, bufsize)) {
-            Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-            return 0;
-        }
-        return ptr;
+	    if (!ptr->validateReplayDetection() ||
+		!ptr->validateAuthInfo(buf, bufsize)) {
+		Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+		return 0;
+	    }
+	    return ptr;
+	}
 	case RELAY_FORW_MSG:
+	{
 	    ptr = this->decodeRelayForw(ptrIface, peer, buf, bufsize);
-        if (!ptr)
-            return 0;
-        if (!ptr->validateReplayDetection() ||
-            !ptr->validateAuthInfo(buf, bufsize)) {
-            Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
-            return 0;
-        }
+	    if (!ptr)
+		return 0;
+	    if (!ptr->validateReplayDetection() ||
+		!ptr->validateAuthInfo(buf, bufsize)) {
+		Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
+		return 0;
+	    }
+	}
         return ptr;
 	case ADVERTISE_MSG:
 	case REPLY_MSG:

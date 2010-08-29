@@ -30,19 +30,12 @@ class TSrvMsgReply : public TSrvMsg
 {
   public:
     TSrvMsgReply(SPtr<TSrvMsgConfirm> question);
-    
     TSrvMsgReply(SPtr<TSrvMsgDecline> question);	
-    
     TSrvMsgReply(SPtr<TSrvMsgRebind> question);	
-
     TSrvMsgReply(SPtr<TSrvMsgRelease> question);	
-    
     TSrvMsgReply(SPtr<TSrvMsgRenew> question);	
-    
     TSrvMsgReply(SPtr<TSrvMsgRequest> question);
-    
     TSrvMsgReply(SPtr<TSrvMsgSolicit> question);
-    
     TSrvMsgReply(SPtr<TSrvMsgInfRequest> question);
 
     void doDuties();
@@ -52,11 +45,15 @@ class TSrvMsgReply : public TSrvMsg
     
     ~TSrvMsgReply();
 private:
-    //bool iaExist(unsigned long iaid);
-    SPtr<TSrvOptOptionRequest> reqOpts;
-    SPtr<TSrvOptClientIdentifier> duidOpt;
-    void appendDefaultOption(SPtr<TOpt> ptrOpt);
-    void setOptionsReqOptClntDUID(SPtr<TMsg> msg);
+
+    bool handleSolicitOptions(TOptList& options);
+    bool handleRequestOptions(TOptList& options);
+    bool handleRenewOptions(TOptList& options);
+    bool handleRebindOptions(TOptList& options);
+    bool handleReleaseOptions(TOptList& options);
+    bool handleDeclineOptions(TOptList& options);
+    bool handleConfirmOptions(TOptList& options);
+    bool handleInfRequestOptions(TOptList& options);
 };
 
 

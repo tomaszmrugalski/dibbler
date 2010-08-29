@@ -23,6 +23,7 @@ class TOptDUID : public TOpt
     int getSize();
 
     char * storeSelf(char* buf);
+    bool doDuties() { return true; }
     SPtr<TDUID> getDUID();
     bool isValid();
   protected:
