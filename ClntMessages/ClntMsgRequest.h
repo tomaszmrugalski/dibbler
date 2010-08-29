@@ -18,7 +18,7 @@ class TClntIfaceMgr;
 class TClntMsgRequest : public TClntMsg
 {
   public:
-  TClntMsgRequest(List(TOpt) opts, int iface);
+  TClntMsgRequest(TOptList opts, int iface);
   TClntMsgRequest(List(TAddrIA) requestIALst,
                   SPtr<TDUID> srvDUID,
                   int iface);
@@ -29,7 +29,7 @@ class TClntMsgRequest : public TClntMsg
     string getName();
     ~TClntMsgRequest();
   private:
-    void setState(List(TOpt) opts, EState state);
+    void setState(TOptList opts, EState state);
     void copyAddrsFromAdvertise(SPtr<TClntMsg> adv);
 };
 

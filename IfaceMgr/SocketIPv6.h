@@ -53,6 +53,8 @@ class TIfaceSocket {
     //  with POSIX select() function. )
     static fd_set * getFDS();
 
+    inline bool multicast() { return Multicast; }
+
     ~TIfaceSocket();
  private:
     // adds socket to this interface

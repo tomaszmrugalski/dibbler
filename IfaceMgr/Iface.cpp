@@ -285,6 +285,7 @@ bool TIfaceIface::addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool 
     return true;
 }
 
+#if 0
 /*
  * binds socket on whole interface
  */
@@ -297,6 +298,7 @@ bool TIfaceIface::addSocket(int port, bool ifaceonly, bool reuse) {
     SocketsLst.append(ptr);
     return true;
 }
+#endif
 
 /*
  * closes socket

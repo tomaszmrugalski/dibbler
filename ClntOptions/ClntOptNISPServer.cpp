@@ -11,7 +11,6 @@
  */
 
 #include "ClntOptNISPServer.h"
-#include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
@@ -45,6 +44,7 @@ bool TClntOptNISPServers::doDuties() {
     return iface->setNISPServerLst(DUID, Parent->getAddr(), AddrLst);
 }
 
+/// @todo remove
 void TClntOptNISPServers::setSrvDuid(SPtr<TDUID> duid)
 {
     this->SrvDUID=duid;

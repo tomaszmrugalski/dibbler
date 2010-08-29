@@ -11,7 +11,6 @@
  */
 
 #include "ClntOptNISServer.h"
-#include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
@@ -45,6 +44,7 @@ bool TClntOptNISServers::doDuties() {
     return iface->setNISServerLst(DUID, Parent->getAddr(), AddrLst);
 }
 
+/// @todo remove
 void TClntOptNISServers::setSrvDuid(SPtr<TDUID> duid)
 {
     this->SrvDUID=duid;

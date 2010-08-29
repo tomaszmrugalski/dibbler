@@ -178,9 +178,11 @@ int TMsg::countOption() {
 }
 
 SPtr<TOpt> TMsg::getOption() {
-    ++NextOpt;
-    if (NextOpt != Options.end())
-	return (*NextOpt);
+    if (NextOpt != Options.end()) {
+	TOptList::iterator it = NextOpt;
+	++NextOpt;
+	return (*it);
+    }
     return 0;
 }
 
@@ -439,24 +441,26 @@ bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
 
     if (clntIDmandatory && (clntCnt!=1) ) {
 	Log(Warning) << "Exactly 1 ClientID option required in the " << this->getName() 
-		     << " message, but " << clntCnt << " received.";
+		     << " message, but " << clntCnt << " received." << LogEnd;
 	status = false;
     }
 
     if (srvIDmandatory && (srvCnt!=1) ) {
 	Log(Warning) << "Exactly 1 ServerID option required in the " << this->getName() 
-		     << " message, but " << srvCnt << " received.";
+		     << " message, but " << srvCnt << " received." << LogEnd;
 	status = false;
     }
     
     if (!srvIDmandatory && (srvCnt)) {
 	Log(Warning) << "No ServerID option is allowed in the " << this->getName()
-		     << " message, but " << srvCnt << " received.";
+		     << " message, but " << srvCnt << " received." << LogEnd;
+	status = false;
     }
 
     if (authCnt > 1) {
 	Log(Warning) << "No more that one authentication option is allowed in the " << this->getName()
-		     << " message, but " << srvCnt << " received.";
+		     << " message, but " << srvCnt << " received." << LogEnd;
+	status = false;
     }
 
     if (!status) {
@@ -473,6 +477,7 @@ bool TMsg::delOption(int code)
     {
 	if ( (*opt)->getOptType() == code) {
 	    Options.erase(opt);
+	    firstOption();
 	    return true;
 	}
     }

@@ -74,7 +74,7 @@ TClntTransMgr::TClntTransMgr(const std::string config)
 	if (!populateAddrMgr(iface))
 	    return;
 
-        if (!this->openSocket(iface)) {
+        if (!this->openSockets(iface)) {
             return;
         }
     }
@@ -118,7 +118,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     return true;
 }
 
-bool TClntTransMgr::openSocket(SPtr<TClntCfgIface> iface) {
+bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
 
     if (iface->noConfig())       
         return true;
@@ -172,31 +172,44 @@ bool TClntTransMgr::openSocket(SPtr<TClntCfgIface> iface) {
 
     // required to be able to receive data from server on the same machine
     // (data is sent via the lo interface)
-    Log(Notice) << "Creating socket (addr=" << *addr << ") on the " << loopback->getName() 
-		<< "/" << loopback->getID() << " interface." << LogEnd;
+    Log(Notice) << "Creating socket (addr=" << *addr << ") on " 
+		<< loopback->getFullName() << " interface." << LogEnd;
     if (!loopback->addSocket(addr,DHCPCLIENT_PORT,false, true)) {
-	Log(Crit) << "Socket creation (addr=" << *addr << ") on the " << loopback->getName() 
-		  << "/" << loopback->getID() << " interface failed." << LogEnd;
+	Log(Crit) << "Socket creation (addr=" << *addr << ") on " 
+		  << loopback->getFullName() << " interface failed." << LogEnd;
 	return false;
     }
 #endif
 #endif
 
-    Log(Notice) << "Creating socket (addr=" << *addr << ") on the " << iface->getName() 
-                << "/" << iface->getID() << " interface." << LogEnd;
+    Log(Notice) << "Creating socket (addr=" << *addr << ") on " 
+		<< iface->getFullName() << " interface." << LogEnd;
     if (!realIface->addSocket(addr,DHCPCLIENT_PORT,true, this->BindReuse)) {
-        Log(Crit) << "Socket creation (addr=" << *addr << ") on the " << iface->getName() 
-                  << "/" << iface->getID() << " interface failed." << LogEnd;
+        Log(Crit) << "Socket creation (addr=" << *addr << ") on " 
+		  << iface->getFullName() << " interface failed." << LogEnd;
         return false;
     }
 
     if (llAddr) {
 	    char buf[48];
 	    inet_ntop6(llAddr,buf);
-	    Log(Info) << "Socket bound to " << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
+	    // Log(Info) << "Socket bound to " << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
 	    this->ctrlIface = realIface->getID();
-	    memcpy(this->ctrlAddr,buf,48);
+	    strncpy(this->ctrlAddr,buf,48);
     } 
+
+    if (iface->getUnicast()) {
+	Log(Notice) << "Creating socket for unicast communication on " << iface->getFullName()
+		    << LogEnd;
+	SPtr<TIPv6Addr> anyaddr = new TIPv6Addr("::", true); // don't bind to a specific address
+	if (!realIface->addSocket(anyaddr, DHCPCLIENT_PORT, true, this->BindReuse)) {
+	    Log(Crit) << "Unicast socket creation (addr=" << *addr << ") on " 
+		      << iface->getFullName() << " interface failed." << LogEnd;
+	    return false;
+	}
+
+    }
+
     return true;
 }
 
@@ -328,8 +341,12 @@ void TClntTransMgr::doDuties()
     {
         SPtr<TClntCfgIface> x;
         x = ClntCfgMgr().checkInactiveIfaces();
-        if (x)
-	    openSocket(x);
+        if (x) {
+	    if (!openSockets(x)) {
+		Log(Crit) << "Attempt to bind activates interfaces failed."
+			  << " Following operation may be unstable!" << LogEnd;
+	    }
+	}
     }
 
     removeExpired();
@@ -621,15 +638,15 @@ void TClntTransMgr::stop()
 /**
  * Note: requestOptions list MUST NOT contain server DUID.
  */
-void TClntTransMgr::sendRequest(List(TOpt) requestOptions, int iface)
+void TClntTransMgr::sendRequest(TOptList requestOptions, int iface)
 {
     sortAdvertiseLst();
 
-    SPtr<TOpt> opt;
-    requestOptions.first();
-    while (opt = requestOptions.get()) {
-	if (!allowOptInMsg(REQUEST_MSG, opt->getOptType()))
-	    requestOptions.del();
+    for (TOptList::iterator opt= requestOptions.begin();
+	 opt!=requestOptions.end(); ++opt)
+    {
+	if (!allowOptInMsg(REQUEST_MSG, (*opt)->getOptType()))
+	    opt = requestOptions.erase(opt);
     }
     SPtr<TClntMsg> ptr = new TClntMsgRequest(requestOptions, iface);
     Transactions.append( (Ptr*)ptr );
@@ -681,12 +698,13 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SPtr<TAddrIA> ta, List(TAd
 }
 
 // Send REBIND message
-void TClntTransMgr::sendRebind(List(TOpt) requestOptions, int iface) {
-    SPtr<TOpt> opt;
-    requestOptions.first();
-    while (opt = requestOptions.get()) {
-	if (!allowOptInMsg(REBIND_MSG, opt->getOptType()))
-	    requestOptions.del();
+void TClntTransMgr::sendRebind(TOptList requestOptions, int iface) {
+
+    for (TOptList::iterator opt= requestOptions.begin();
+	 opt!=requestOptions.end(); ++opt)
+    {
+	if (!allowOptInMsg(REBIND_MSG, (*opt)->getOptType()))
+	    opt = requestOptions.erase(opt);
     }
 
     SPtr<TClntMsg> ptr =  new TClntMsgRebind(requestOptions, iface);
@@ -694,12 +712,13 @@ void TClntTransMgr::sendRebind(List(TOpt) requestOptions, int iface) {
 	Transactions.append( ptr );
 }
 
-void TClntTransMgr::sendInfRequest(List(TOpt) requestOptions, int iface) {
-    SPtr<TOpt> opt;
-    requestOptions.first();
-    while (opt = requestOptions.get()) {
-	if (!allowOptInMsg(INFORMATION_REQUEST_MSG, opt->getOptType()))
-	    requestOptions.del();
+void TClntTransMgr::sendInfRequest(TOptList requestOptions, int iface) {
+
+    for (TOptList::iterator opt= requestOptions.begin();
+	 opt!=requestOptions.end(); ++opt)
+    {
+	if (!allowOptInMsg(INFORMATION_REQUEST_MSG, (*opt)->getOptType()))
+	    opt = requestOptions.erase(opt);
     }
 
     SPtr<TClntMsg> ptr = new TClntMsgInfRequest(requestOptions,iface);

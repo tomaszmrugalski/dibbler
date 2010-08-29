@@ -12,8 +12,7 @@
 #include <sstream>
 #include "ClntMsgAdvertise.h"
 #include "OptInteger.h"
-#include "ClntOptClientIdentifier.h"
-#include "ClntOptServerIdentifier.h"
+#include "OptDUID.h"
 
 #ifndef MOD_DISABLE_AUTH
 #include "ClntOptKeyGeneration.h"
@@ -56,7 +55,7 @@ string TClntMsgAdvertise::getInfo()
 {
     ostringstream tmp;
     SPtr<TClntOptPreference> pref;
-    SPtr<TClntOptServerIdentifier> srvID;
+    SPtr<TOptDUID> srvID;
 
     pref   = (Ptr*) getOption(OPTION_PREFERENCE);
     srvID  = (Ptr*) getOption(OPTION_SERVERID);

@@ -22,12 +22,11 @@
 #include "ClntOptIA_NA.h"
 #include "ClntOptTA.h"
 #include "ClntOptIA_PD.h"
-#include "ClntOptClientIdentifier.h"
+#include "OptDUID.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptPreference.h"
 #include "OptEmpty.h"
-#include "ClntOptServerIdentifier.h"
 #include "ClntOptStatusCode.h"
 #include <cmath>
 #include "Logger.h"
@@ -54,7 +53,7 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     while (ia = iaLst.get()) {
 	SPtr<TClntOptIA_NA> iaOpt;
 	iaOpt = new TClntOptIA_NA(ia, this);
-	Options.append( (Ptr*)iaOpt );
+	Options.push_back( (Ptr*)iaOpt );
 	if (!remoteAutoconf)
 	    ia->setState(STATE_INPROCESS);
     }
@@ -62,7 +61,7 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     // TA is provided by ::checkSolicit()
     if (ta) {
 	SPtr<TClntOptTA> taOpt = new TClntOptTA(ta->getIAID(), this);
-	Options.append( (Ptr*) taOpt);
+	Options.push_back( (Ptr*) taOpt);
 	if (!remoteAutoconf)
 	    ta->setState(STATE_INPROCESS);
     }
@@ -72,13 +71,13 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     pdLst.first();
     while ( pd = pdLst.get() ) {
 	SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd, this);
-	Options.append( (Ptr*)pdOpt );
+	Options.push_back( (Ptr*)pdOpt );
 	if (remoteAutoconf)
 	    pd->setState(STATE_INPROCESS);
     }
     
     if(rapid)
-        Options.append(new TOptEmpty(OPTION_RAPID_COMMIT, this));
+        Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
 
     // append and switch to INPROCESS state
     if (!remoteAutoconf)
@@ -162,7 +161,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 {
     // this == solicit or request
     // msg  == reply
-    SPtr<TClntOptServerIdentifier> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
     if (!srvDUID) {
 	Log(Notice) << "No server identifier provided. Message ignored." << LogEnd;
 	return true;

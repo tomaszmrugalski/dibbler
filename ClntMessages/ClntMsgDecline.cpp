@@ -10,8 +10,7 @@
  */
 
 #include "ClntMsgDecline.h"
-#include "ClntOptClientIdentifier.h"
-#include "ClntOptServerIdentifier.h"
+#include "OptDUID.h"
 #include "AddrIA.h"
 #include "ClntOptIA_NA.h"
 
@@ -29,18 +28,18 @@ TClntMsgDecline::TClntMsgDecline(int iface, SPtr<TIPv6Addr> addr,
 
     // include our ClientIdentifier
     SPtr<TOpt> ptr;
-    ptr = new TClntOptClientIdentifier( ClntCfgMgr().getDUID(), this );
-    Options.append( ptr );
+    ptr = new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(), this );
+    Options.push_back( ptr );
     
     // include server's DUID
-    ptr = new TClntOptServerIdentifier(IALst.getFirst()->getDUID(),this);
-    Options.append( ptr );
+    ptr = new TOptDUID(OPTION_SERVERID, IALst.getFirst()->getDUID(),this);
+    Options.push_back( ptr );
     
     // create IAs
     SPtr<TAddrIA> ptrIA;
     IALst.first();
     while ( ptrIA = IALst.get() ) {
-	Options.append( new TClntOptIA_NA(ptrIA,this));
+	Options.push_back( new TClntOptIA_NA(ptrIA,this));
     }
 
     appendElapsedOption();
@@ -53,8 +52,8 @@ void TClntMsgDecline::answer(SPtr<TClntMsg> rep)
 {
     /// @todo: Is UseMulticast option included?
 
-    SPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
-    SPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
     if ((!repSrvID)||
         (!(*msgSrvID->getDUID()==*repSrvID->getDUID())))
        return;

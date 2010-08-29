@@ -16,8 +16,7 @@
 #include "SmartPtr.h"
 #include "Container.h"
 #include "AddrIA.h"
-#include "ClntOptServerIdentifier.h"
-#include "ClntOptClientIdentifier.h"
+#include "OptDUID.h"
 #include "ClntCfgMgr.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptTA.h"
@@ -79,8 +78,8 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     }
     srvDUID = x->getDUID();
 
-    Options.append(new TClntOptServerIdentifier( srvDUID,this));
-    Options.append(new TClntOptClientIdentifier( ClntCfgMgr().getDUID(),this));
+    Options.push_back(new TOptDUID(OPTION_SERVERID, srvDUID,this));
+    Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(),this));
 
     if (ClntCfgMgr().getNotifyScripts()) {
 	    // release workaround (add removed IAs)
@@ -103,7 +102,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     // --- RELEASE IA ---
     iaLst.first();
     while(x=iaLst.get()) {
-        Options.append(new TClntOptIA_NA(x,this));
+        Options.push_back(new TClntOptIA_NA(x,this));
         SPtr<TAddrAddr> ptrAddr;
         SPtr<TClntIfaceIface> ptrIface;
         ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIface());
@@ -123,7 +122,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     
     // --- RELEASE TA ---
     if (ta)
-	Options.append(new TClntOptTA(ta, this));
+	Options.push_back(new TClntOptTA(ta, this));
 
     // --- RELEASE PD ---
 
@@ -132,7 +131,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     pdLst.first();
     while(pd=pdLst.get()) {
         SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
-        Options.append( (Ptr*)pdOpt );
+        Options.push_back( (Ptr*)pdOpt );
         pdOpt->setContext(srvDUID, addr, this);
         pdOpt->delPrefixes();
 
@@ -148,11 +147,14 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
 
 void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
 {
-    SPtr<TClntOptServerIdentifier> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
-    SPtr<TClntOptServerIdentifier> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
     if ((!repSrvID)||
-        (!(*msgSrvID->getDUID()==*repSrvID->getDUID())))
+        (!(*msgSrvID->getDUID()==*repSrvID->getDUID()))) {
+	Log(Error) << "Internal error. RELEASE sent to server with DUID=" << msgSrvID->getPlain()
+		   << ", but response returned with " << repSrvID->getPlain() << LogEnd;
        return;
+    }
     IsDone=true;   
 }
 

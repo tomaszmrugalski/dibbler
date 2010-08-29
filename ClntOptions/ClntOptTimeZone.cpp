@@ -5,30 +5,9 @@
  *          Marek Senderski <msend@o2.pl>
  *
  * released under GNU GPL v2 licence
- *
- * $Id: ClntOptTimeZone.cpp,v 1.8 2008-11-13 22:40:26 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2007-01-07 20:18:46  thomson
- * State enum names changed.
- *
- * Revision 1.6  2004-11-01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.5  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.4  2004/03/29 19:10:06  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- *
  */
 
 #include "ClntOptTimeZone.h"
-#include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
@@ -70,6 +49,7 @@ bool TClntOptTimeZone::doDuties() {
     return iface->setTimezone(DUID, Parent->getAddr(), Str);
 }
 
+/// @todo remove this
 void TClntOptTimeZone::setSrvDuid(SPtr<TDUID> duid) {
     SrvDUID=duid;
 }

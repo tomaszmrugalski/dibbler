@@ -13,7 +13,7 @@
 
 #include "SmartPtr.h"
 #include "ClntMsgConfirm.h"
-#include "ClntOptClientIdentifier.h"
+#include "OptDUID.h"
 #include "ClntOptStatusCode.h"
 #include "ClntOptIA_NA.h"
 #include "DHCPConst.h"
@@ -35,7 +35,7 @@ TClntMsgConfirm::TClntMsgConfirm(unsigned int iface,
 
     //The client MUST include a Client Identifier option to identify itself
     //to the server.  
-    Options.append(new TClntOptClientIdentifier( ClntCfgMgr().getDUID(), this ) );
+    Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(), this ) );
     //The client includes IA options for all of the IAs
     //assigned to the interface for which the Confirm message is being
     //sent.  The IA options include all of the addresses the client
@@ -46,7 +46,7 @@ TClntMsgConfirm::TClntMsgConfirm(unsigned int iface,
     SPtr<TAddrIA> ia;
     iaLst.first();
     while(ia=iaLst.get())
-        Options.append(new TClntOptIA_NA(ia,true,this));
+        Options.push_back(new TClntOptIA_NA(ia,true,this));
 
     appendRequestedOptions();
     appendElapsedOption();

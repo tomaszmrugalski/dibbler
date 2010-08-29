@@ -11,7 +11,6 @@
  */
 #include "DHCPConst.h"
 #include "ClntOptLifetime.h"
-#include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 

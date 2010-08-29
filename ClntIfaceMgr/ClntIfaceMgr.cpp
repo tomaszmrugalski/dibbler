@@ -60,12 +60,20 @@ bool TClntIfaceMgr::sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> 
 
     // yes, there are. Get first of them.
     Iface->firstSocket();
-    sock = Iface->getSocket();
+    while (sock = Iface->getSocket()) {
+	if (!sock->multicast())
+	    break;
+    }
+    if (!sock) {
+	Log(Notice) << "Failed to find unicast socket, trying to send via multicast-bound socket." << LogEnd;
+	Iface->firstSocket();
+	sock = Iface->getSocket();
+    }
 
     result = sock->send( (char*)msg, size, addr, DHCPSERVER_PORT);
     if (result == -1) {
 	Log(Error) << "Send failed: " << size << " bytes to " << *addr 
-		   << " on " << Iface->getName() << "/" << Iface->getID() 
+		   << " on " << Iface->getFullName()
 		   << "(socket " << sock->getFD() << ")." << LogEnd;
 	return false;
     }
@@ -150,7 +158,8 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case RELAY_FORW_MSG: // those two msgs should not be visible for client
         case RELAY_REPL_MSG:
         default:
-            Log(Warning) << "Message type " << msgtype << " is not supposed to be received by client. Check your relay/server configuration." << LogEnd;
+            Log(Warning) << "Message type " << msgtype << " is not supposed to "
+			 << "be received by client. Check your relay/server configuration." << LogEnd;
             return 0;
         }
     } else {

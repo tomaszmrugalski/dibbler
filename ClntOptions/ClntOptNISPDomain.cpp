@@ -11,7 +11,6 @@
  */
 
 #include "ClntOptNISPDomain.h"
-#include "ClntOptServerIdentifier.h"
 #include "Portable.h"
 #include "ClntMsg.h"
 #include "Logger.h"
@@ -46,6 +45,7 @@ bool TClntOptNISPDomain::doDuties() {
     return iface->setNISPDomain(DUID, Parent->getAddr(), Str);
 }
 
+/// @todo remove
 void TClntOptNISPDomain::setSrvDuid(SPtr<TDUID> duid) {
     this->SrvDUID=duid;
 }

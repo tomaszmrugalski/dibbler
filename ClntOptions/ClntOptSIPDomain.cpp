@@ -11,7 +11,6 @@
  */
 
 #include "ClntOptSIPDomain.h"
-#include "ClntOptServerIdentifier.h"
 #include "Portable.h"
 #include "ClntMsg.h"
 #include "Logger.h"
@@ -46,6 +45,7 @@ bool TClntOptSIPDomain::doDuties() {
     return iface->setSIPDomainLst(DUID, Parent->getAddr(), StringLst);
 }
 
+/// @todo remove
 void TClntOptSIPDomain::setSrvDuid(SPtr<TDUID> duid) {
     this->SrvDUID=duid;
 }

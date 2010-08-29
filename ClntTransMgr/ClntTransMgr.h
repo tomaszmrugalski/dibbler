@@ -33,9 +33,9 @@ class TClntTransMgr
     void relayMsg(SPtr<TClntMsg> msg);
     unsigned long getTimeout();
     void stop();
-    void sendRequest(List(TOpt) requestOptions, int iface);
-    void sendInfRequest(TContainer< SPtr<TOpt> > requestOptions, int iface);
-    void sendRebind( TContainer<SPtr<TOpt> > ptrIA, int iface);
+    void sendRequest(TOptList requestOptions, int iface);
+    void sendInfRequest(TOptList requestOptions, int iface);
+    void sendRebind(TOptList ptrIA, int iface);
     void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     bool handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
 
@@ -100,7 +100,7 @@ class TClntTransMgr
 
   private:
     bool openLoopbackSocket();
-    bool openSocket(SPtr<TClntCfgIface> iface);
+    bool openSockets(SPtr<TClntCfgIface> iface);
     bool populateAddrMgr(SPtr<TClntCfgIface> iface);
 
     void sortAdvertiseLst();

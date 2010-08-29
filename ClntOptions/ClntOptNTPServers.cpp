@@ -6,32 +6,9 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptNTPServers.cpp,v 1.9 2008-08-29 00:07:29 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.8  2007-01-21 19:17:57  thomson
- * Option name constants updated (by Jyrki Soini)
- *
- * Revision 1.7  2007-01-07 20:18:46  thomson
- * State enum names changed.
- *
- * Revision 1.6  2004-11-01 23:31:25  thomson
- * New options,option handling mechanism and option renewal implemented.
- *
- * Revision 1.5  2004/10/25 20:45:53  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
- *
- * Revision 1.4  2004/03/29 19:10:06  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
- *
  */
 
 #include "ClntOptNTPServers.h"
-#include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
@@ -65,7 +42,10 @@ bool TClntOptNTPServers::doDuties() {
     return iface->setNTPServerLst(DUID, Parent->getAddr(), AddrLst);
 }
 
+#if 0
+/// @todo Remove this if nobody uses it
 void TClntOptNTPServers::setSrvDuid(SPtr<TDUID> duid)
 {
-    this->SrvDUID=duid;
+    SrvDUID=duid;
 }
+#endif

@@ -16,8 +16,7 @@
 #include "DHCPConst.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIA_PD.h"
-#include "ClntOptClientIdentifier.h"
-#include "ClntOptServerIdentifier.h"
+#include "OptDUID.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptStatusCode.h"
 #include "Logger.h"
@@ -68,27 +67,27 @@ TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
         RT=MRD;
 
     // store our DUID
-    Options.append(new TClntOptClientIdentifier(ClntCfgMgr().getDUID(),this));
+    Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(), this));
 
     // and say who's this message is for
     if (IALst.count())
-      	Options.append( new TClntOptServerIdentifier(IALst.getFirst()->getDUID(),this));
+      	Options.push_back( new TOptDUID(OPTION_SERVERID,IALst.getFirst()->getDUID(),this));
     else
-	      Options.append( new TClntOptServerIdentifier(PDLst.getFirst()->getDUID(),this));
+	Options.push_back( new TOptDUID(OPTION_SERVERID,PDLst.getFirst()->getDUID(),this));
     
     //Store all IAs to renew
     IALst.first();
     while(ia=IALst.get()) {
 	      if (timeout > ia->getT2Timeout())
 	          timeout = ia->getT2Timeout();
-	      Options.append(new TClntOptIA_NA(ia,this));
+	      Options.push_back(new TClntOptIA_NA(ia,this));
     }
 
     PDLst.first();
     while (ia=PDLst.get()) {
 	      if (timeout > ia->getT2Timeout())
 	          timeout = ia->getT2Timeout();
-	      Options.append(new TClntOptIA_PD(ia, this));
+	      Options.push_back(new TClntOptIA_PD(ia, this));
     }
 
     appendRequestedOptions();
@@ -104,8 +103,8 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
     SPtr<TOpt> opt;
     unsigned int iaCnt = 0; 
     // get DUID
-    SPtr<TClntOptServerIdentifier> ptrDUID;
-    ptrDUID = (Ptr*) this->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> srvDUID;
+    srvDUID = (Ptr*) this->getOption(OPTION_SERVERID);
     
     SPtr<TClntOptOptionRequest> ptrOptionReqOpt=(Ptr*)getOption(OPTION_ORO);
 
@@ -119,7 +118,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
 	    if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
 		if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
-		    ClntTransMgr().sendRequest(Options,Iface);
+		    ClntTransMgr().sendRequest(Options, Iface);
 		    IsDone = true;
 		    return;
 		}else{
@@ -130,7 +129,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 	  	    break;
 		}
 	    }
-	    ptrOptIA->setContext(ptrDUID->getDUID(), 0, Reply->getIface());
+	    ptrOptIA->setContext(srvDUID->getDUID(), 0, Reply->getIface());
 
 	    ptrOptIA->doDuties();
 	    break;
@@ -152,7 +151,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 		    break;
 		}
 	    }
-	    pd->setContext(ptrDUID->getDUID(), 0, (TMsg*)this);
+	    pd->setContext(srvDUID->getDUID(), 0, (TMsg*)this);
 	    pd->doDuties();
 	    break;
 	}

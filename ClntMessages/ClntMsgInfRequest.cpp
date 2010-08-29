@@ -17,8 +17,7 @@
 #include "Container.h"
 #include "ClntIfaceMgr.h"
 #include "ClntMsgAdvertise.h"
-#include "ClntOptServerIdentifier.h"
-#include "ClntOptClientIdentifier.h"
+#include "OptDUID.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptElapsed.h"
 #include "Logger.h"
@@ -43,7 +42,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
     IsDone=false;
 
     if (!ClntCfgMgr().anonInfRequest()) {
-        Options.append(new TClntOptClientIdentifier(ClntCfgMgr().getDUID(),this));
+        Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(), this));
     } else {
         Log(Info) << "Sending anonymous INF-REQUEST (ClientID not included)." << LogEnd;
     }
@@ -56,7 +55,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
 }
 
 //opts - all options list WITHOUT serverDUID including server id
-TClntMsgInfRequest::TClntMsgInfRequest(List(TOpt) ReqOpts,
+TClntMsgInfRequest::TClntMsgInfRequest(TOptList ReqOpts,
 				       int iface)
     :TClntMsg(iface, 0, INFORMATION_REQUEST_MSG) {
     IRT = INF_TIMEOUT;
@@ -82,8 +81,8 @@ TClntMsgInfRequest::TClntMsgInfRequest(List(TOpt) ReqOpts,
     Options = ReqOpts;
     
     SPtr<TOpt> opt;
-    Options.first();
-    while(opt=Options.get())
+    firstOption();
+    while(opt=getOption())
     {
         switch (opt->getOptType())
         {       
@@ -104,7 +103,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(List(TOpt) ReqOpts,
             case OPTION_AAAAUTH:
             case OPTION_KEYGEN:
 	    case OPTION_ELAPSED_TIME:       //delete the old elapsed option,as we will append a new one
-                Options.del();
+                delOption(opt->getOptType());
                 break;        
         }
         //The other options can be included in Information request option
@@ -122,9 +121,6 @@ TClntMsgInfRequest::TClntMsgInfRequest(List(TOpt) ReqOpts,
 
 void TClntMsgInfRequest::answer(SPtr<TClntMsg> msg)
 {
-    //server DUID from which there is answer
-    SPtr<TClntOptServerIdentifier> ptrDUID;
-    ptrDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
     //which option have we requested from server
     SPtr<TClntOptOptionRequest> ptrORO;
     ptrORO = (Ptr*)getOption(OPTION_ORO);
@@ -144,34 +140,36 @@ void TClntMsgInfRequest::answer(SPtr<TClntMsg> msg)
 	this->firstOption();
 	while ( requestOpt = this->getOption()) 
 	{
-	    if (requestOpt->getOptType()==option->getOptType())
-		this->Options.del();
+	    if (requestOpt->getOptType()==option->getOptType()) {
+		delOption(requestOpt->getOptType());
+		break;
+	    }
 	}//while
     }
-
+    
     ptrORO->delOption(OPTION_INFORMATION_REFRESH_TIME);
     if (ptrORO && ptrORO->count())
     {
-	    if (ClntCfgMgr().insistMode()){ 
-	        Log(Notice) << "Insist-mode enabled. Not all options were assigned (";
-	        for (int i=0; i<ptrORO->count(); i++)
+	if (ClntCfgMgr().insistMode()){ 
+	    Log(Notice) << "Insist-mode enabled. Not all options were assigned (";
+	    for (int i=0; i<ptrORO->count(); i++)
                 Log(Cont) << ptrORO->getReqOpt(i) << " ";
-	        Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
-	        ClntTransMgr().sendInfRequest(Options,Iface);
-	    } else {
-	        Log(Notice) << "Insist-mode disabled. Not all options were assigned (";
-	        for (int i=0; i<ptrORO->count(); i++)
+	    Log(Cont) << "). Sending new INFORMATION-REQUEST." << LogEnd;
+	    ClntTransMgr().sendInfRequest(Options,Iface);
+	} else {
+	    Log(Notice) << "Insist-mode disabled. Not all options were assigned (";
+	    for (int i=0; i<ptrORO->count(); i++)
                 Log(Cont) << ptrORO->getReqOpt(i) << " ";
-	        Log(Cont) << "). They will remain unconfigured." << LogEnd;
-	        IsDone = true;
-	    }
+	    Log(Cont) << "). They will remain unconfigured." << LogEnd;
+	    IsDone = true;
+	}
     } else {
         Log(Debug) << "All requested options were assigned." << LogEnd;
         IsDone=true;
     }
     return;
 }
-
+    
 void TClntMsgInfRequest::doDuties()
 {
     //timeout is reached, so let's retrasmit this message

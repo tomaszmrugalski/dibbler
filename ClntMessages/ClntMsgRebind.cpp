@@ -19,15 +19,14 @@
 #include "ClntMsgRebind.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIA_PD.h"
-#include "ClntOptClientIdentifier.h"
-#include "ClntOptServerIdentifier.h"
-#include "ClntOptServerUnicast.h"
+#include "OptDUID.h"
+#include "OptAddr.h"
 #include "AddrIA.h"
 #include "Logger.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptStatusCode.h"
 
-TClntMsgRebind::TClntMsgRebind(List(TOpt) ptrOpts, int iface)
+TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface)
   :TClntMsg(iface, 0, REBIND_MSG)
 {
     Options=ptrOpts;
@@ -37,16 +36,10 @@ TClntMsgRebind::TClntMsgRebind(List(TOpt) ptrOpts, int iface)
     RT=0;
 
     // there are options copied from RENEW. Get rid of some of them
+    delOption(OPTION_ELAPSED_TIME);
+    delOption(OPTION_SERVERID);
     SPtr<TOpt> opt;
-    firstOption();
-    while(opt=getOption())
-    {
-	if (opt->getOptType()==OPTION_ELAPSED_TIME)
-            Options.del();
-        if (opt->getOptType()==OPTION_SERVERID)
-            Options.del();
-    };
-
+    
     // calculate timeout (how long should be the REBIND message transmitted)
     unsigned long maxMRD=0;    
     firstOption();
@@ -167,8 +160,8 @@ SPtr<TOpt> opt;
 }
 
 void TClntMsgRebind::updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
-			      SPtr<TClntOptServerIdentifier> optSrvDUID, 
-			      SPtr<TClntOptServerUnicast> optUnicast) {
+			      SPtr<TOptDUID> optSrvDUID, 
+			      SPtr<TOptAddr> optUnicast) {
 
     SPtr< TAddrIA> ptrAddrIA;
     bool found = false;

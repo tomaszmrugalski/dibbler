@@ -197,7 +197,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	    if (!ifaceIface->countLLAddress()) {
 		if (this->inactiveMode()) {
 		    Log(Notice) << "Interface " << ifaceIface->getFullName() 
-				<< " is not operational yet (does not have link-local address), skipping it for now." << LogEnd;
+				<< " is not operational yet (does not have "
+				<< "link-local address), skipping it for now." << LogEnd;
 		    addIface(cfgIface);
 		    makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
 		    return true;
@@ -208,17 +209,21 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 		return false;
 	    }
 
-	    // Check if the interface is during bring-up phase (i.e. DAD procedure for link-local addr is not complete yet)
+	    // Check if the interface is during bring-up phase 
+	    // (i.e. DAD procedure for link-local addr is not complete yet)
 	    char tmp[64];
 	    ifaceIface->firstLLAddress();
 	    inet_ntop6(ifaceIface->getLLAddress(), tmp);
-	    if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp) == LOWLEVEL_TENTATIVE_YES) {
-		Log(Notice) << "Interface " << ifaceIface->getFullName() << " has link-local address " << tmp 
+	    if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp) 
+		== LOWLEVEL_TENTATIVE_YES) {
+		Log(Notice) << "Interface " << ifaceIface->getFullName() 
+			    << " has link-local address " << tmp 
 			    << ", but it is currently tentative." << LogEnd;
 
 		if (this->inactiveMode()) {
 		    Log(Notice) << "Interface " << ifaceIface->getFullName() 
-				<< " is not operational yet (link-local address is not ready), skipping it for now." << LogEnd;
+				<< " is not operational yet (link-local address "
+				<< "is not ready), skipping it for now." << LogEnd;
 		    addIface(cfgIface);
 		    makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
 		    return true;
@@ -271,7 +276,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 	    ifaceIface->firstLLAddress();
 	    if (!ifaceIface->getLLAddress()) {
 		Log(Notice) << "Interface " << ifaceIface->getFullName()
-			    << " has no link-local address, ignoring. (Disconnected? Not associated? No-link?)" << LogEnd;
+			    << " has no link-local address, ignoring. "
+			    << "(Disconnected? Not associated? No-link?)" << LogEnd;
 		continue;
 	    }
 
@@ -332,7 +338,8 @@ void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive)
 		return;
 	    }
 	}
-	Log(Error) << "Unable to switch interface ifindex=" << ifindex << " to inactive-mode: interface not found." << LogEnd;
+	Log(Error) << "Unable to switch interface ifindex=" << ifindex 
+		   << " to inactive-mode: interface not found." << LogEnd;
 	return;
     }
 
@@ -347,7 +354,8 @@ void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive)
 	}
     }
 
-    Log(Error) << "Unable to switch interface ifindex=" << ifindex << " from inactive-mode to normal operation: interface not found." << LogEnd;
+    Log(Error) << "Unable to switch interface ifindex=" << ifindex 
+	       << " from inactive-mode to normal operation: interface not found." << LogEnd;
 }
 
 void TClntCfgMgr::firstIface()
@@ -549,34 +557,34 @@ SPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
 bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
 {
     SPtr<TClntParsGlobalOpt> opt = parser->ParserOptStack.getLast();
-    this->Digest         = opt->getDigest();
-    this->LogLevel       = logger::getLogLevel();
-    this->LogName        = logger::getLogName();
-    this->ScriptsDir     = opt->getScriptsDir();
-    this->NotifyScripts  = opt->getNotifyScripts();
-    this->AnonInfRequest = opt->getAnonInfRequest();
-    this->InsistMode     = opt->getInsistMode();   // should the client insist on receiving all options
+    Digest         = opt->getDigest();
+    LogLevel       = logger::getLogLevel();
+    LogName        = logger::getLogName();
+    ScriptsDir     = opt->getScriptsDir();
+    NotifyScripts  = opt->getNotifyScripts();
+    AnonInfRequest = opt->getAnonInfRequest();
+    InsistMode     = opt->getInsistMode();   // should the client insist on receiving all options
                                                    // i.e. sending INF-REQUEST if REQUEST did not grant required opts
-    this->InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
-    this->FQDNFlagS      = opt->getFQDNFlagS();
-    this->MappingPrefix  = opt->getMappingPrefix(); // experimental feature
-    this->UseConfirm     = opt->getConfirm(); // should client try to send CONFIRM?
+    InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
+    FQDNFlagS      = opt->getFQDNFlagS();
+    MappingPrefix  = opt->getMappingPrefix(); // experimental feature
+    UseConfirm     = opt->getConfirm(); // should client try to send CONFIRM?
     
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
-      this->DUIDType = parser->DUIDType;
+      DUIDType = parser->DUIDType;
       //Log(Debug) << "DUID type set to " << parser->DUIDType << "." << LogEnd;
-      this->DUIDEnterpriseNumber = parser->DUIDEnterpriseNumber;
-      this->DUIDEnterpriseID     = parser->DUIDEnterpriseID;
+      DUIDEnterpriseNumber = parser->DUIDEnterpriseNumber;
+      DUIDEnterpriseID     = parser->DUIDEnterpriseID;
     }
 
 #ifndef MOD_DISABLE_AUTH
-    this->AuthEnabled = opt->getAuthEnabled();
-    if (this->AuthEnabled)
-        this->AuthAcceptMethods = opt->getAuthAcceptMethods();
+    AuthEnabled = opt->getAuthEnabled();
+    if (AuthEnabled)
+        AuthAcceptMethods = opt->getAuthAcceptMethods();
     else
-        this->AuthAcceptMethods.clear();
-    this->AAASPI = getAAASPIfromFile();
+        AuthAcceptMethods.clear();
+    AAASPI = getAAASPIfromFile();
 #endif
 
     return true;
@@ -596,18 +604,18 @@ bool TClntCfgMgr::getRemoteAutoconf() {
 void TClntCfgMgr::setDigest(DigestTypes type)
 {
     if (type >= DIGEST_INVALID)
-        this->Digest = DIGEST_NONE;
+        Digest = DIGEST_NONE;
     else
-        this->Digest = type;
+        Digest = type;
 }
 
 DigestTypes TClntCfgMgr::getDigest()
 {
-    return this->Digest;
+    return Digest;
 }
 
 bool TClntCfgMgr::isDone() {
-    return this->IsDone;
+    return IsDone;
 }
 
 string TClntCfgMgr::getScriptsDir()
@@ -673,7 +681,8 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
     	    iface->firstLLAddress();
     	    inet_ntop6(iface->getLLAddress(), tmp);
     	    if (is_addr_tentative(iface->getName(), iface->getID(), tmp)==LOWLEVEL_TENTATIVE_YES) {
-    		Log(Debug) << "Interface " << iface->getFullName() << " is up and running, but link-local address " << tmp
+    		Log(Debug) << "Interface " << iface->getFullName() 
+			   << " is up and running, but link-local address " << tmp
     			   << " is currently tentative." << LogEnd;
     		continue;
     	    }

@@ -19,7 +19,7 @@ class TOptDUID : public TOpt
 {
   public:
     TOptDUID(int type, SPtr<TDUID> duid, TMsg* parent);
-    TOptDUID(int type, char* &buf, int &bufsize, TMsg* parent);
+    TOptDUID(int type, const char* buf, int len, TMsg* parent);
     int getSize();
 
     char * storeSelf(char* buf);

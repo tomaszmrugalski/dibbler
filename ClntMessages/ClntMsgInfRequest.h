@@ -19,7 +19,7 @@ class TClntIfaceMgr;
 class TClntMsgInfRequest : public TClntMsg
 {
   public:
-    TClntMsgInfRequest(List(TOpt) ReqOpts, int iface);
+    TClntMsgInfRequest(TOptList ReqOpts, int iface);
     TClntMsgInfRequest(SPtr<TClntCfgIface> iface);
     
     void answer(SPtr<TClntMsg> msg);

@@ -10,7 +10,6 @@
  */
 
 #include "ClntOptSIPServer.h"
-#include "ClntOptServerIdentifier.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
@@ -44,6 +43,7 @@ bool TClntOptSIPServers::doDuties() {
     return iface->setSIPServerLst(DUID, Parent->getAddr(), AddrLst);
 }
 
+/// @todo remove
 void TClntOptSIPServers::setSrvDuid(SPtr<TDUID> duid)
 {
     this->SrvDUID=duid;

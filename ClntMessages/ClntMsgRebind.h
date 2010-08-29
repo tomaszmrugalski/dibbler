@@ -16,14 +16,13 @@ class TClntMsgRebind;
 
 #include "ClntMsg.h"
 #include "ClntOptIA_NA.h"
-#include "ClntOptServerIdentifier.h"
-#include "ClntOptClientIdentifier.h"
-#include "ClntOptServerUnicast.h"
+#include "OptDUID.h"
+#include "OptAddr.h"
 
 class TClntMsgRebind : public TClntMsg
 {
   public:
-    TClntMsgRebind(List(TOpt) ptrOpts, int iface);
+    TClntMsgRebind(TOptList ptrOpts, int iface);
     
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();
@@ -31,9 +30,9 @@ class TClntMsgRebind : public TClntMsg
     string getName();
     ~TClntMsgRebind();
  private:
-    void updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
-		  SPtr<TClntOptServerIdentifier> optSrvDUID, 
-		  SPtr<TClntOptServerUnicast> optUnicast);
+    void updateIA(SPtr<TClntOptIA_NA> ptrOptIA,
+		  SPtr<TOptDUID> optSrvDUID, 
+		  SPtr<TOptAddr> optUnicast);
     void releaseIA(int IAID);
     void releasePD(int IAID);
 

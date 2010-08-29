@@ -15,15 +15,14 @@
 #include "ClntMsgRequest.h"
 #include "SmartPtr.h"
 #include "DHCPConst.h"
+#include "OptDUID.h"
+#include "OptAddr.h"
 #include "ClntIfaceMgr.h"
 #include "ClntMsgAdvertise.h"
-#include "ClntOptServerIdentifier.h"
-#include "ClntOptServerUnicast.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptTA.h"
 #include "ClntOptIA_PD.h"
 #include "ClntOptElapsed.h"
-#include "ClntOptClientIdentifier.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptStatusCode.h"
 #include "ClntTransMgr.h"
@@ -33,7 +32,7 @@
 /*
  * opts - options list WITHOUT serverDUID
  */
-TClntMsgRequest::TClntMsgRequest(List(TOpt) opts, int iface)
+TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
     :TClntMsg(iface, 0, REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
@@ -69,15 +68,15 @@ TClntMsgRequest::TClntMsgRequest(List(TOpt) opts, int iface)
 
     // copy whole list from SOLICIT ...
     Options = opts;
+
     // set proper Parent in copied options
-    Options.first();
-    SPtr<TOpt> opt;
-    while (opt = Options.get()) {
-        // delete OPTION_AAAAUTH (needed only in SOLICIT) and we will append a new elapsed time option later
-        if (opt->getOptType() == OPTION_AAAAUTH || opt->getOptType() == OPTION_ELAPSED_TIME)
-            Options.del();
-        else
-            opt->setParent(this);
+    for (TOptList::iterator opt=Options.begin(); opt!=Options.end(); ++opt)
+    {
+        if ( (*opt)->getOptType() == OPTION_AAAAUTH || (*opt)->getOptType() == OPTION_ELAPSED_TIME)
+	    opt = Options.erase(opt);
+	else
+	    (*opt)->setParent(this);
+
     }
 
     // delete OPTION_KEYGEN from OPTION_ORO (needed only once)
@@ -102,18 +101,19 @@ TClntMsgRequest::TClntMsgRequest(List(TOpt) opts, int iface)
 	IsDone = true;
 	return;
     }
-    SPtr<TClntOptServerUnicast> unicast = (Ptr*) advertise->getOption(OPTION_UNICAST);
+    SPtr<TOptAddr> unicast = (Ptr*) advertise->getOption(OPTION_UNICAST);
     if (unicast && !cfgIface->getUnicast()) {
 	Log(Info) << "Server offers unicast (" << *unicast->getAddr() 
 		  << ") communication, but this client is not configured to so." << LogEnd;
     }
     if (unicast && cfgIface->getUnicast()) {
 	Log(Debug) << "Server supports unicast on address " << *unicast->getAddr() << "." << LogEnd;
+
 	//this->PeerAddr = unicast->getAddr();
-	Options.first();
+	firstOption();
 	SPtr<TOpt> opt;
 	// set this unicast address in each IA in AddrMgr
-	while (opt = Options.get()) {
+	while ( opt = getOption() ) {
 	    if (opt->getOptType()!=OPTION_IA_NA)
 		continue;
 	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
@@ -129,7 +129,7 @@ TClntMsgRequest::TClntMsgRequest(List(TOpt) opts, int iface)
     }
     
     // ... and append server's DUID from ADVERTISE
-    Options.append( srvDUID );
+    Options.push_back( srvDUID );
     
     appendElapsedOption();
     appendAuthenticationOption();
@@ -149,8 +149,8 @@ TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
     Iface=iface;
     IsDone=false;
     SPtr<TOpt> ptr;
-    ptr = new TClntOptClientIdentifier( ClntCfgMgr().getDUID(), this );
-    Options.append( ptr );
+    ptr = new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(), this );
+    Options.push_back( ptr );
 
     if (!srvDUID) {
 	Log(Error) << "Unable to send REQUEST: ServerId not specified.\n" << LogEnd;
@@ -158,17 +158,17 @@ TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
 	return;
     }
     
-    ptr = (Ptr*) SPtr<TClntOptServerIdentifier> (new TClntOptServerIdentifier(srvDUID,this));
+    ptr = (Ptr*) new TOptDUID(OPTION_SERVERID, srvDUID,this);
     // all IAs provided by checkSolicit
     SPtr<TAddrIA> ClntAddrIA;
-    Options.append( ptr );
+    Options.push_back( ptr );
 	
     IAs.first();
     while (ClntAddrIA = IAs.get()) 
     {
         SPtr<TClntCfgIA> ClntCfgIA = ClntCfgMgr().getIA(ClntAddrIA->getIAID());
         SPtr<TClntOptIA_NA> IA_NA = new TClntOptIA_NA(ClntCfgIA, ClntAddrIA, this);
-        Options.append((Ptr*)IA_NA);
+        Options.push_back((Ptr*)IA_NA);
     }
 
     appendElapsedOption();
@@ -246,7 +246,7 @@ string TClntMsgRequest::getName() {
  * @param options list of still unconfigured options 
  * @param state state to be set in CfgMgr
  */
-void TClntMsgRequest::setState(List(TOpt) options, EState state)
+void TClntMsgRequest::setState(TOptList options, EState state)
 {
     SPtr<TOpt>          opt;
     SPtr<TClntOptIA_NA> ia;
@@ -263,37 +263,37 @@ void TClntMsgRequest::setState(List(TOpt) options, EState state)
 	      return;
     }
 
-    options.first();
-    while ( opt = options.get() ) {
-	      switch (opt->getOptType()) {
-	      case OPTION_IA_NA:
-	      {
-	          ia = (Ptr*) opt;
-	          cfgIa = iface->getIA(ia->getIAID());
-	          if (cfgIa)
-		      cfgIa->setState(state);
-	          break;
-	      }
-	      case OPTION_IA_TA:
-	      {
-	          ia = (Ptr*) opt;
-	          iface->firstTA();
-	          cfgTa = iface->getTA();
-	          if (cfgTa)
-		      cfgTa->setState(state);
-	          break;
-	      }
-	      case OPTION_IA_PD:
-	      {
-	          pd = (Ptr*) opt;
-	          cfgPd = iface->getPD(pd->getIAID());
-	          if (cfgPd)
-		      cfgPd->setState(state);
-	          break;
-	      }
+    for (TOptList::iterator opt = options.begin(); opt!=options.end(); ++opt)
+    {
+	switch ( (*opt)->getOptType()) {
+	case OPTION_IA_NA:
+	{
+	    ia = (Ptr*) (*opt);
+	    cfgIa = iface->getIA(ia->getIAID());
+	    if (cfgIa)
+		cfgIa->setState(state);
+	    break;
+	}
+	case OPTION_IA_TA:
+	{
+	    ia = (Ptr*) (*opt);
+	    iface->firstTA();
+	    cfgTa = iface->getTA();
+	    if (cfgTa)
+		cfgTa->setState(state);
+	    break;
+	}
+	case OPTION_IA_PD:
+	{
+	    pd = (Ptr*) (*opt);
+	    cfgPd = iface->getPD(pd->getIAID());
+	    if (cfgPd)
+		cfgPd->setState(state);
+	    break;
+	}
       	default:
-	        continue;
-	    }
+	    continue;
+	}
     }
 }
 
@@ -304,8 +304,8 @@ void TClntMsgRequest::copyAddrsFromAdvertise(SPtr<TClntMsg> adv)
 
     this->copyAAASPI(adv);
 
-    Options.first();
-    while (opt1 = Options.get()) {
+    firstOption();
+    while (opt1 = getOption()) {
 	if (opt1->getOptType()!=OPTION_IA_NA)
 	    continue; // ignore all options except IA_NA
 	adv->firstOption();
