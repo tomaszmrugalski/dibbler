@@ -175,14 +175,16 @@ SPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
     return 0;
 }
 
-void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr) {
+void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) {
     SPtr<TSrvCfgAddrClass> ptrClass;
     this->firstAddrClass();
     while (ptrClass = this->getAddrClass() ) {
 	if (ptrClass->addrInPool(ptrAddr)) {
+	    ptrClass->incrAssigned();
+	    if (quiet)
+		return;
 	    Log(Debug) << "Address usage for class " << ptrClass->getID()
 		       << " increased by 1." << LogEnd;
-	    ptrClass->incrAssigned();
 	    return;
 	}
     }
@@ -190,12 +192,14 @@ void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr) {
 		 << *ptrAddr << LogEnd;
 }
 
-void TSrvCfgIface::delClntAddr(SPtr<TIPv6Addr> ptrAddr) {
+void TSrvCfgIface::delClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) {
     SPtr<TSrvCfgAddrClass> ptrClass;
     this->firstAddrClass();
     while (ptrClass = this->getAddrClass() ) {
 	if (ptrClass->addrInPool(ptrAddr)) {
 	    ptrClass->decrAssigned();
+	    if (quiet)
+		return;
 	    Log(Debug) << "Address usage for class " << ptrClass->getID()
 		       << " decreased by 1." << LogEnd;
 	    return;

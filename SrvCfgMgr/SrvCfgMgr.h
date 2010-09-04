@@ -53,6 +53,7 @@ public:
     bool setupRelay(SPtr<TSrvCfgIface> cfgIface);
 
     //Address assignment connected methods
+    void setCounters();
     long countAvailAddrs(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr, int iface);
     SPtr<TSrvCfgAddrClass> getClassByAddr(int iface, SPtr<TIPv6Addr> addr);
     SPtr<TSrvCfgPD> getClassByPrefix(int iface, SPtr<TIPv6Addr> prefix);

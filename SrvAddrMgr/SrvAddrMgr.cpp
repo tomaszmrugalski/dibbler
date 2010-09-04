@@ -48,7 +48,8 @@ TSrvAddrMgr::~TSrvAddrMgr() {
  * @param addr - address to be added
  * @param pref preferred lifetime
  * @param valid valid lifetime
- * @param quiet quiet mode (e.g. used during SOLICIT handling, don't print anything about adding client/IA/address, as it will be deleted immediately anyway)
+ * @param quiet quiet mode (e.g. used during SOLICIT handling, don't print anything about 
+ *              adding client/IA/address, as it will be deleted immediately anyway)
  * 
  * @return true, if addition was successful
  */

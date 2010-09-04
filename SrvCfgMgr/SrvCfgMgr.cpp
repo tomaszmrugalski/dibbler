@@ -22,7 +22,7 @@
 #include "Logger.h"
 #include "IfaceMgr.h"
 #include "SrvIfaceMgr.h"
-#include "AddrClient.h"
+#include "AddrMgr.h"
 #include "TimeZone.h"
 #include "FlexLexer.h"
 #include "SrvParser.h"
@@ -928,6 +928,36 @@ bool TSrvCfgMgr::reconfigureSupport()
 {
     return reconfigure;
 }
+
+
+/** 
+ * sets pool usage counters (used during bringup, after AddrDB is loaded from file)
+ * 
+ */
+void TSrvCfgMgr::setCounters()
+{
+    int cnt = 0;
+    SrvAddrMgr().firstClient();
+    SPtr<TAddrClient> client;
+    SPtr<TSrvCfgIface> iface;
+    while (client = SrvAddrMgr().getClient()) {
+	
+	SPtr<TAddrIA> ia;
+	client->firstIA();
+	while ( ia=client->getIA() ) {
+	    iface = getIfaceByID(ia->getIface());
+	    
+	    SPtr<TAddrAddr> addr;
+	    ia->firstAddr();
+	    while ( addr=ia->getAddr() ) {
+		iface->addClntAddr(addr->get(), true/*quiet*/);
+		cnt++;
+	    }
+	}
+    }
+    Log(Debug) << "Increased pools usage: currently " << cnt << " address(es) are leased." << LogEnd;
+}
+
 
 void TSrvCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlDumpFile )
 {

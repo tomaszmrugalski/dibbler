@@ -44,6 +44,7 @@ class TSrvTransMgr
 
     char * getCtrlAddr();
     int    getCtrlIface();
+
   private:
     TSrvTransMgr(string xmlFile);
     ~TSrvTransMgr();

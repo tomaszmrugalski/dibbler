@@ -39,9 +39,9 @@ TDHCPServer::TDHCPServer(string config)
     }
     SrvCfgMgr().dump();
 
-    TSrvAddrMgr::instanceCreate(SRVADDRMGR_FILE, SrvCfgMgr().reconfigureSupport());
+    TSrvAddrMgr::instanceCreate(SRVADDRMGR_FILE, true /*always load DB*/ );
     if ( SrvAddrMgr().isDone() ) {
-        Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
+        Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
         this->IsDone = true;
         return;
     }
@@ -53,8 +53,11 @@ TDHCPServer::TDHCPServer(string config)
         this->IsDone = true;
         return;
     }
+
+    SrvCfgMgr().setCounters();
+    SrvCfgMgr().dump();
     SrvIfaceMgr().dump(); // dump it once more (important, if relay interfaces were added)
-    SrvTransMgr().dump(); 
+    SrvTransMgr().dump();
 }
 
 void TDHCPServer::run()
@@ -73,7 +76,7 @@ void TDHCPServer::run()
 	    Log(Notice) << "Accepting connections. Next event in " << timeout 
 			<< " second(s)." << LogEnd;
 #ifdef WIN32
-	// There's no easy way to break select, so just don't sleep for too long.
+	// There's no easy way to break select under Windows, so just don't sleep for too long.
 	if (timeout>5) {
 	    silent = true;
 	    timeout = 5;

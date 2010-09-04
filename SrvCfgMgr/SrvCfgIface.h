@@ -85,8 +85,8 @@ public:
     unsigned long getClntMaxLease();
 
     // IA address functions
-    void addClntAddr(SPtr<TIPv6Addr> ptrAddr);
-    void delClntAddr(SPtr<TIPv6Addr> ptrAddr);
+    void addClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet = false);
+    void delClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet = false);
 
     // TA address functions
     void addTAAddr();
