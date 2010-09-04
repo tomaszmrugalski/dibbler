@@ -90,8 +90,8 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
     int checkCnt = 0;
     List(TSrvOptIA_NA) validIAs;
 
-    TOptList::iterator opt = Options.begin();
-    while ( (opt!=Options.end()) && OnLink ) {
+    TOptList::iterator opt = options.begin();
+    while ( (opt!=options.end()) && OnLink ) {
 
 	switch ( (*opt)->getOptType()) {
 	case OPTION_IA_NA: {
@@ -162,7 +162,7 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
 	}
 	default:
 	    handleDefaultOption( *opt);
-	    continue;
+	    break;
 	}
 	++opt;
     }
