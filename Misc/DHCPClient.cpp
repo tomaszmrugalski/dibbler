@@ -61,6 +61,8 @@ TDHCPClient::TDHCPClient(const std::string config)
 
     if (ClntCfgMgr().useConfirm())
         initLinkStateChange();
+    else
+	Log(Debug) << "Confirm disabled, skipping link change detection." << LogEnd;
 }
 
 /** 
@@ -69,8 +71,8 @@ TDHCPClient::TDHCPClient(const std::string config)
  */
 void TDHCPClient::initLinkStateChange()
 {
-    Log(Debug) << "LinkState change detection not fully supported (disabled for now)." << LogEnd;
-    return; // disable this for now
+    // Log(Debug) << "LinkState change detection not fully supported (disabled for now)." << LogEnd;
+    // return; // disable this for now
 
     memset((void*)&this->linkstates, 0, sizeof(linkstates));
 
@@ -80,7 +82,7 @@ void TDHCPClient::initLinkStateChange()
     while (iface = ClntCfgMgr().getIface()) 
     {
 	linkstates.ifindex[linkstates.cnt++] = iface->getID();
-	Log(Cont) << iface->getID() << " ";
+	Log(Cont) << iface->getFullName() << " ";
     }
     Log(Cont) << LogEnd;
     

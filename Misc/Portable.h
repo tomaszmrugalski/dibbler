@@ -82,6 +82,7 @@ struct iface {
     int  linkaddrcount;            /* number of assigned IPv6 link local addresses */
     char *globaladdr;              /* global IPv6 addresses */
     int  globaladdrcount;          /* number of global IPV6 addresses */
+    int  link_state;               /* used in link change detection routines */
     unsigned int flags;            /* look IF_xxx in portable.h */
     struct iface* next;            /* structure describing next iface in system */
 };
@@ -90,7 +91,9 @@ struct iface {
 
 struct link_state_notify_t
 {
-    int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. Only non-zero values will be used */
+    int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. 
+						    Only non-zero values will be used */
+    int stat[MAX_LINK_STATE_CHANGES_AT_ONCE];
     int cnt;  /* number of iterface indexes filled */
 };
 
