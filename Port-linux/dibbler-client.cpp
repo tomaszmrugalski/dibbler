@@ -20,7 +20,6 @@
 #include "Logger.h"
 #include "daemon.h"
 #include "ClntCfgMgr.h"
-#include "ifplugd.h"
 #include <map>
 #include <pthread.h>
 
