@@ -7,6 +7,7 @@
  *
  */
 
+#include <fstream>
 #include "Logger.h"
 #include "IPv6Addr.h"
 #include "Iface.h"

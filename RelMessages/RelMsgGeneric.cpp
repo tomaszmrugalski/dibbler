@@ -6,25 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelMsgGeneric.cpp,v 1.5 2008-08-29 00:07:32 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2005-08-03 23:17:11  thomson
- * Minor changes fixed.
- *
- * Revision 1.3  2005/04/28 21:20:52  thomson
- * Support for multiple relays added.
- *
- * Revision 1.2  2005/01/13 22:45:55  thomson
- * Relays implemented.
- *
- * Revision 1.1  2005/01/12 00:00:38  thomson
- * *** empty log message ***
- *
- * Revision 1.1  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
- *
  */
 
 #include <iostream>
@@ -59,13 +40,4 @@ string TRelMsgGeneric::getName() {
     default:
 	return "UNKNOWN/GENERIC";
     }
-}
-
-int TRelMsgGeneric::getSize() {
-    SPtr<TOpt> Option;
-    int pktsize=0;
-    Options.first();
-    while( Option = Options.get() )
-	pktsize+=Option->getSize();
-    return pktsize + 4;
 }

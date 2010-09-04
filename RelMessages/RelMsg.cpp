@@ -83,7 +83,7 @@ void TRelMsg::decodeOpts(char * buf, int bufSize) {
 	}
 
 	if ( (ptr) && (ptr->isValid()) )
-	    Options.append( ptr );
+	    Options.push_back( ptr );
 	else
 	    Log(Warning) << "Option " << code << " is invalid. Option ignored." << LogEnd;
         pos+=length;

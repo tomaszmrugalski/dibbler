@@ -13,6 +13,7 @@
 #define MAX_PACKET_LEN 1452
 #define RELAY_FORW_MSG_LEN 36
 
+#include <fstream>
 #include "RelTransMgr.h"
 #include "RelCfgMgr.h"
 #include "RelIfaceMgr.h"

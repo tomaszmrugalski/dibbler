@@ -19,7 +19,6 @@ class TRelMsgGeneric: public TRelMsg {
     TRelMsgGeneric(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
     string getName();
     bool check();
-    int getSize();
 };
 
 #endif

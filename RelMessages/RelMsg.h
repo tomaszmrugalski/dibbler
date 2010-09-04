@@ -19,7 +19,6 @@ class TRelMsg : public TMsg
 public:
     TRelMsg(int iface,  SPtr<TIPv6Addr> addr, char* data,  int dataLen);
     virtual bool check() = 0;
-    virtual int getSize() = 0;
     void setDestination(int ifindex, SPtr<TIPv6Addr> dest);
     int getDestIface();
     SPtr<TIPv6Addr> getDestAddr();

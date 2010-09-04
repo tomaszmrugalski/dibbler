@@ -41,6 +41,6 @@ string TReqMsg::getName()
 
 void TReqMsg::addOption(SPtr<TOpt> opt)
 {
-    Options.append(opt);
+    Options.push_back(opt);
 }
 
