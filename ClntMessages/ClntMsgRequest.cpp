@@ -195,8 +195,8 @@ void TClntMsgRequest::answer(SPtr<TClntMsg> msg)
     SPtr<TOptStatusCode> optStateCode = (Ptr*)msg->getOption(OPTION_STATUS_CODE);
     if( optStateCode && STATUSCODE_NOTONLINK == optStateCode->getCode()){
 	SPtr<TOpt> opt;
-	Options.first();
-	while(opt = Options.get()){
+	firstOption();
+	while(opt = getOption()){
 	    if(opt->getOptType() != OPTION_IA_NA){
 		continue;
 	    }
