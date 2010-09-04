@@ -741,6 +741,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     strum << "  <InsistMode>" << (x.InsistMode?1:0) << "</InsistMode>" << endl;
     strum << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</InactiveMode>" << endl;
     strum << "  <FQDNFlagS>" << (x.FQDNFlagS?1:0) << "</FQDNFlagS>" << endl;
+    strum << "  <useConfirm>" << (x.UseConfirm?1:0) << "</useConfirm>" << endl;
     strum << "  <digest>";
     switch (x.getDigest()) {
     case DIGEST_NONE:
