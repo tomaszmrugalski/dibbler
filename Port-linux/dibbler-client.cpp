@@ -30,7 +30,6 @@ using std::map;
 
 extern pthread_mutex_t lock;
 
-
 TDHCPClient * ptr;
 //static const char *TOOL_NAME = "ifplugstatus";
 
@@ -43,7 +42,7 @@ void signal_handler(int n) {
 
 #ifdef MOD_CLNT_CONFIRM
 void signal_handler_of_linkstate_change(int n) {
-    Log(Notice) << "Network switch off event detected. do Confirmming." << LogEnd;
+    Log(Notice) << "Network switch off event detected. initiating CONFIRM." << LogEnd;
     pthread_mutex_lock(&lock);
     pthread_mutex_unlock(&lock);
 }
@@ -87,6 +86,11 @@ int run() {
 	return -1;
     }
 
+    if_list_get();
+    if_list_get();
+    if_list_get();
+    if_list_get();
+
     TDHCPClient client(CLNTCONF_FILE);
     ptr = &client;
 
@@ -103,7 +107,7 @@ int run() {
     // which will be generated if network switch off.
     // SIGUSR1 = link state-change
     signal(SIGUSR1, signal_handler_of_linkstate_change);
-    Log(Notice) << "CONFIRM support enabled." << LogEnd;
+    Log(Notice) << "CONFIRM support compiled in." << LogEnd;
 #else
     Log(Info) << "CONFIRM support not compiled in." << LogEnd;
 #endif

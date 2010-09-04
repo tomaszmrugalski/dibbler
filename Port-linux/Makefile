@@ -4,7 +4,7 @@ OBJECTS = lowlevel-linux.o lowlevel-options-linux.o \
           libnetlink.o ll_map.o ll_types.o utils.o daemon.o iproute.o
 
 ifdef MOD_CLNT_CONFIRM
-OBJECTS += interface.o ifplugd.o lowlevel-linux-link-state.o
+OBJECTS += interface.o lowlevel-linux-link-state.o
 endif 
 
 objs: $(OBJECTS)
@@ -21,7 +21,7 @@ lowlevel-linux.o: lowlevel-linux.c
 
 interface.o: interface.c
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -I. -c interface.c 
+	$(CC) -std=c99 $(COPTS) -I. -c interface.c 
 
 ifplugd.o: ifplugd.c
 	@echo "[CC     ] $(SUBDIR)/$@"

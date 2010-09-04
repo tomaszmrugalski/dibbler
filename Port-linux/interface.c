@@ -37,10 +37,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <net/if.h>
+
 #include "ethtool-local.h"
 #include "interface.h"
-//#include <libdaemon/dlog.h>
 #include <stdarg.h>
+
+#include <types.h>
 
 void daemon_log(int loglevel, const char *fmt,...)
 {
@@ -53,7 +56,7 @@ void daemon_log(int loglevel, const char *fmt,...)
     printf("%s\n", buf);
 }
 
-void interface_up(int fd, char *iface) {
+void interface_up(int fd, const char *iface) {
     struct ifreq ifr;
 
     memset(&ifr, 0, sizeof(ifr));
@@ -98,7 +101,7 @@ void interface_up(int fd, char *iface) {
 }
 
 
-interface_status_t interface_detect_beat_ethtool(int fd, char *iface) {
+interface_status_t interface_detect_beat_ethtool(int fd, const char *iface) {
 
     struct ifreq ifr;
     struct ethtool_value edata;
@@ -110,7 +113,7 @@ interface_status_t interface_detect_beat_ethtool(int fd, char *iface) {
     strncpy(ifr.ifr_name, iface, sizeof(ifr.ifr_name)-1);
 
     edata.cmd = ETHTOOL_GLINK;
-    ifr.ifr_data = (caddr_t) &edata;
+    ifr.ifr_data = /*(caddr_t)*/ &edata;
 
     if (ioctl(fd, SIOCETHTOOL, &ifr) == -1) {
         if (interface_do_message)
@@ -122,7 +125,7 @@ interface_status_t interface_detect_beat_ethtool(int fd, char *iface) {
     return edata.data ? IFSTATUS_UP : IFSTATUS_DOWN;
 }
 
-interface_status_t interface_detect_beat_iff(int fd, char *iface) {
+interface_status_t interface_detect_beat_iff(int fd, const char *iface) {
 
     struct ifreq ifr;
 
@@ -141,5 +144,3 @@ interface_status_t interface_detect_beat_iff(int fd, char *iface) {
 
     return ifr.ifr_flags & IFF_RUNNING ? IFSTATUS_UP : IFSTATUS_DOWN;
 }
-
-

@@ -1,7 +1,5 @@
-#ifndef foointerfacehfoo
-#define foointerfacehfoo
-
-/* $Id: interface.h,v 1.1 2009-03-24 23:18:15 thomson Exp $ */
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
 /*
  * This file is part of ifplugd.
@@ -30,13 +28,13 @@ int interface_do_message;
 
 typedef enum { IFSTATUS_UP, IFSTATUS_DOWN, IFSTATUS_ERR } interface_status_t;
 
-void interface_up(int fd, char *iface);
+void interface_up(int fd, const char *iface);
 
-//interface_status_t interface_detect_beat_mii(int fd, char *iface);
-//interface_status_t interface_detect_beat_priv(int fd, char *iface);
-interface_status_t interface_detect_beat_ethtool(int fd, char *iface);
-//interface_status_t interface_detect_beat_wlan(int fd, char *iface);
-interface_status_t interface_detect_beat_iff(int fd, char *iface);
+/* interface_status_t interface_detect_beat_mii(int fd, char *iface); */
+/* interface_status_t interface_detect_beat_priv(int fd, char *iface); */
+interface_status_t interface_detect_beat_ethtool(int fd, const char *iface);
+/* interface_status_t interface_detect_beat_wlan(int fd, char *iface); */
+interface_status_t interface_detect_beat_iff(int fd, const char *iface);
 #ifdef __cplusplus 
 }
 #endif
