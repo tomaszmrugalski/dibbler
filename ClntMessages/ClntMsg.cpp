@@ -708,7 +708,7 @@ void TClntMsg::appendRequestedOptions() {
 	     (*gen)->State == STATE_INPROCESS ||
 	     (*gen)->State == STATE_CONFIRMME) {
 	    optORO->addOption( (*gen)->OptionType);
-	    if ( (*gen)->Option)
+	    if ( (*gen)->Option && (*gen)->Always)
 		Options.push_back( (*gen)->Option );
 	}
     }
