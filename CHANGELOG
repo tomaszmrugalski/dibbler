@@ -14,6 +14,7 @@
   - Experimental support for Remote Autoconf added
   - Fixed problem with not populating AddrMgr correctly
   - Fix: after restart, server no longer refuses to handle adresses after first RELEASE.
+  - Fix: Notify scripts are now executed, even when no IA received (bug #193)
   - Code cleanup: Singleton managers implemented
   - Code cleanup: Server REPLY generation refactored
   - Code cleanup: Obsolete classes removed

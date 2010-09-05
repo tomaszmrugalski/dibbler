@@ -622,19 +622,16 @@ void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
 
     ClntAddrMgr().firstIA();
     SPtr<TAddrIA> ia = ClntAddrMgr().getIA();
-    if (!ia)
+    if (ia)
     {
-	Log(Error) << "Unable to find any IAs defined in the AddrMgr." << LogEnd;
-	return;
+	ia->firstAddr();
+	if (ia->countAddr())
+	{
+	    SPtr<TAddrAddr> addr = ia->getAddr();
+	    ip = addr->get();
+	}
     }
-
-    ia->firstAddr();
-    if (ia->countAddr())
-    {
-	SPtr<TAddrAddr> addr = ia->getAddr();
-	ip = addr->get();
-    }
-
+    
     ClntAddrMgr().firstPD();
     ia = ClntAddrMgr().getPD();
     if (ia)
