@@ -317,7 +317,7 @@ typedef
 #define	INACTIVE_MODE_	308
 #define	EXPERIMENTAL_	309
 #define	ADDR_PARAMS_	310
-#define	DS_LITE_TUNNEL_	311
+#define	DS_LITE_	311
 #define	REMOTE_AUTOCONF_NEIGHBORS_	312
 #define	AUTH_METHOD_	313
 #define	AUTH_LIFETIME_	314
@@ -452,7 +452,7 @@ static const int GUESS_MODE_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
-static const int DS_LITE_TUNNEL_;
+static const int DS_LITE_;
 static const int REMOTE_AUTOCONF_NEIGHBORS_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
@@ -547,7 +547,7 @@ static const int DUID_;
 	,INACTIVE_MODE_=308
 	,EXPERIMENTAL_=309
 	,ADDR_PARAMS_=310
-	,DS_LITE_TUNNEL_=311
+	,DS_LITE_=311
 	,REMOTE_AUTOCONF_NEIGHBORS_=312
 	,AUTH_METHOD_=313
 	,AUTH_LIFETIME_=314

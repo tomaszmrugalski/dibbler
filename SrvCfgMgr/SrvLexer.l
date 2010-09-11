@@ -106,7 +106,7 @@ experimental        { return SrvParser::EXPERIMENTAL_; }
 addr-params         { return SrvParser::ADDR_PARAMS_; }
 neighbors           { return SrvParser::REMOTE_AUTOCONF_NEIGHBORS_; }
 
-ds-lite-tunnel      { return SrvParser::DS_LITE_TUNNEL_; }
+ds-lite             { return SrvParser::DS_LITE_; }
 inactive-mode       { return SrvParser::INACTIVE_MODE_; }
 accept-leasequery   { return SrvParser::ACCEPT_LEASEQUERY_; }
 auth-method         { return SrvParser::AUTH_METHOD_; }

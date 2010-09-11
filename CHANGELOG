@@ -10,7 +10,8 @@
   - Srv/Cli: DUID in format 00:01:02:03 is now supported in config files (0x010203 format is still supported)
   - It is now possible to configure IAID
   - Support for Mac OS X added (experimental, of course)
-  - Experimental support dor DS-Lite tunnels added
+  - Server: DS-Lite tunnel options added
+  - Client: Partial support for DS-Lite tunnel option added
   - Experimental support for Remote Autoconf added
   - Fixed problem with not populating AddrMgr correctly
   - Fix: after restart, server no longer refuses to handle adresses after first RELEASE.

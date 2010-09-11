@@ -1,12 +1,16 @@
 
  Dibbler code TODO
 -------------------
-- Fix (easy): run unicast server, run client, cli gets single addr, restart server, restart client, srv will send NoAddrsAvail.
+Before 0.8.0 release:
+- Fix references in User's guide
+- Describe MOD_REMOTE_AUTOCONF Remote autoconf extension in Developer's Guide
+- Describe MOD_CLNT_CONFIRM in Developer's Guide
+- Add examples for ds-lite, custom options and remote-autoconf
+
 - Add sanity length checks in Options constructors
 - Remove setDUID() method from TOpt()
 - Implement support for Client vendor class options
 - Fix: Elapsed time should be specified with 10ms granulation.
-- Feature: Add support for admin configured options both on server and client as well.
 - Cleanup: Migrated to STL. Remove Container.h and replace it with <list>
 - CLI: AUTH: set ClntCfgIface->getKeyGenerationState() somewhere
 - CLI: PD: this should be possible "iface eth0 { pd { prefix 2000::/64 } }"
@@ -20,7 +24,6 @@
 - CLI: When server is not configured to support PD and client requests PD, server sends PD with status code
   set to NOADDRSAVAIL (that is ok). However, client should complain about it (and maybe try to do something with it). 
   Right now it prints information that "PD set successfully."
-- SRV/REL: Support InterfaceID option with length other than 4
 - ALL: Migrate SPtr -> SPtr, TIPv6Addr -> TAddr
 - ALL: Make TAddrAddr a derived class from TAddr
 - CLI: Remember last assigned address.
@@ -128,6 +131,10 @@ New tasks should be added to the TODO list. After task is implemented, it should
 
   DONE
  ------
+- SRV/REL: Support InterfaceID option with length other than 4
+- Feature: Add support for admin configured options both on server and client as well.
+- Fix (easy): run unicast server, run client, cli gets single addr, restart server, restart client, 
+  srv will send NoAddrsAvail.
 - CLI: Linux: prefixes should be moved to Port-linux.
 - DOC: Describe dumping XML files, option files
 - SRV: Crashes when not configured to support prefix-delegation, but client sends pd option.

@@ -329,7 +329,7 @@ typedef
 #define	EXPERIMENTAL_	321
 #define	ADDR_PARAMS_	322
 #define	REMOTE_AUTOCONF_	323
-#define	DS_LITE_TUNNEL_	324
+#define	DS_LITE_	324
 #define	ADDRESS_LIST_	325
 #define	STRING_KEYWORD_	326
 #define	REQUEST_	327
@@ -447,7 +447,7 @@ static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
-static const int DS_LITE_TUNNEL_;
+static const int DS_LITE_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
 static const int REQUEST_;
@@ -525,7 +525,7 @@ static const int REQUEST_;
 	,EXPERIMENTAL_=321
 	,ADDR_PARAMS_=322
 	,REMOTE_AUTOCONF_=323
-	,DS_LITE_TUNNEL_=324
+	,DS_LITE_=324
 	,ADDRESS_LIST_=325
 	,STRING_KEYWORD_=326
 	,REQUEST_=327

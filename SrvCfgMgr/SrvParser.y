@@ -104,7 +104,7 @@ virtual ~SrvParser();
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_TUNNEL_, REMOTE_AUTOCONF_NEIGHBORS_
+%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -734,7 +734,7 @@ AddrParams
 };
 
 DsLiteTunnelAddr
-: OPTION_ DS_LITE_TUNNEL_ IPV6ADDR_
+: OPTION_ DS_LITE_ IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr = new TIPv6Addr($3);
     Log(Info) << "Enabling DS-Lite tunnel option, address=" << addr->getPlain() << LogEnd;
@@ -743,7 +743,7 @@ DsLiteTunnelAddr
 };
 
 DsLiteTunnelName
-: OPTION_ DS_LITE_TUNNEL_ STRING_
+: OPTION_ DS_LITE_ STRING_
 {
     SPtr<TOpt> tunnelName = new TOptString(OPTION_DS_LITE_NAME, $3, 0);
     Log(Info) << "Enabling DS-Lite tunnel option, name=" << $3 << LogEnd;

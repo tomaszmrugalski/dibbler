@@ -117,7 +117,7 @@ namespace std
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_, DS_LITE_TUNNEL_
+%token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_, DS_LITE_
 %token ADDRESS_LIST_, STRING_KEYWORD_, REQUEST_
 %type  <ival> Number
 
@@ -996,9 +996,9 @@ VendorSpecList
 ;
 
 DsLiteTunnelOption
-: OPTION_ DS_LITE_TUNNEL_          { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_BOTH); }
-| OPTION_ DS_LITE_TUNNEL_ ADDRESS_ { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_ADDR); }
-| OPTION_ DS_LITE_TUNNEL_ NAME_    { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_NAME); }
+: OPTION_ DS_LITE_          { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_BOTH); }
+| OPTION_ DS_LITE_ ADDRESS_ { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_ADDR); }
+| OPTION_ DS_LITE_ NAME_    { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_NAME); }
 ;
 
 ExtraOption
