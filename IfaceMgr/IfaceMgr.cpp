@@ -201,7 +201,10 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     // check if we've received data addressed to us. There's problem with sockets binding. 
     // If there are 2 open sockets (one bound to multicast and one to global address),
     // each packet sent on multicast address is also received on unicast socket.
-    if (!iface->flagLoopback() && memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)) {
+    char anycast[16] = {0};
+    if (!iface->flagLoopback() 
+	&& memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)
+	&& memcmp(sock->getAddr()->getAddr(), anycast, 16) ) {
 	    Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
                    << *sock->getAddr() << ", message ignored." << LogEnd;
 	    bufsize = 0;
