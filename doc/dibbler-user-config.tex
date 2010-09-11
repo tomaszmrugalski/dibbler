@@ -23,12 +23,16 @@ ETH0 are dwo diffrent interfaces.
 Config file parsing is token-based. Token can be considered a keyword
 or a specific phrase. Here's list of tokens used:
 \begin{description}
-\item[IPv6 address] -- IPv6 address, e.g. 2000:dead:beef::789
-\item[32-bit decimal integer] -- string containing only numbers, e.g. 123456
+\item[IPv6 address] -- IPv6 address, e.g. 2000:db81::dead:beef
+\item[32-bit decimal integer] -- string containing only numbers, e.g. 12345
 \item[string] -- string of arbitrary characters enclosed in single or double
   quotes, e.g. 'this is a string'. If string contains only a-z, A-Z and
   0-9 characters, quotes can be omited, e.g. beeblebrox
-\item[DUID identifier] -- hex number starting with 0x, e.g. 0x12abcd.
+\item[DUID identifier] -- hex number starting with 0x,
+  e.g. 0x12abcd. In Dibbler version 0.8.0RC1, another format was
+  introduced: 2 hex digits separated by comma, e.g. 12:aa:bb:cc:d5. As
+  this format may in some cases be confused with IPv6 address, the old
+  format (starting with 0x) remains to be supported.
 \item[IPv6 address list] -- IPv6 addresses separated with commas,
 	   e.g. 2000::123, 2000::456
 \item[DUID list] -- DUIDs separated with commas, e.g. 0x0123456,0x0789abcd
@@ -41,9 +45,7 @@ or a specific phrase. Here's list of tokens used:
 There are four scopes, in which options can be specified: global,
 inteface, IA and address. Every option is specific for one scope.
 Each option is only applied to a scope and all subscopes in which it is
-defined.
-
-For example, T1 is defined for
+defined. For example, T1 is defined for
 IA scope. However, it can be also used in more common scopes. In this
 case -- in interface or global. Defining T1 in interface scope means:
 ,,for this interface the default T1 value is ...''. The same applies
@@ -60,7 +62,7 @@ contains. Least significant scope is address.
 
 \subsection{Comments}
 
-Comments are also allowed. All common comment styles are supported:
+Comments are allowed in configuration files. All common comment styles are supported:
 \begin{itemize}
 \item C++ style one-line comments: // this is comment
 \item C style multi-line comments: /* this is multiline comment */
@@ -82,21 +84,6 @@ running interface \footnote{Exactly: Client tries to configure each
   usually have IPv4 address (4bytes long) as their link address. It
   should configure all Ethernet and 802.11 interfaces. The latter was
   not tested by author due to lack of access to 802.11 equipment.}.
-
-\subsubsection{Global parameters}
-
-There are several global options. Those options can be used in the
-global scope. However, inteface, IA and address scoped options can be
-used in the global scope, too. 
-Client configuration file has following syntax:
-
-\begin{verbatim}
-global-options
-interface-options
-IA-options
-address-options
-interface-declaration
-\end{verbatim}
 
 \subsubsection{Interface declaration}
 
@@ -217,6 +204,11 @@ sometimes allowed range.
 	    precision. It is a useful for finding bottlenecks in
 	    the DHCPv6 autoconfiguration process. Syslog works under 
 	    Linux only and allows default POSIX logging functions.
+\item[log-colors] -- (scope: global, type: boolean, default:
+            off). Defines if logs printed to console should use
+            colors. That feature is used to enhance logs readability.
+            As it makes the log files messy on systems that do not
+            support colors, it is disabled by default.
  \item[strict-rfc-no-routing] -- (scope: global, type: none, default:
 	    not defined). During normal operation, DHCPv6 client
 	    should add IPv6 address only, without configuring
@@ -376,7 +368,7 @@ interface scope, i.e. it is defined once per interface. As for the
 	    capability is greatly reduced, as user can't use domain
 	    names (e.g. http://wp.pl/), but must use IP addresses
 	    directly (e.g. http://212.77.100.101/ or
-	    http://3ffe:1234::456/). Defined in \cite{rfc3596}.
+	    http://2001:db8:1:1234::456/). Defined in \cite{rfc3596}.
  \item[domain] -- (scope: interface, type: domain list, default:
 	    none). This option is used for retriving domain or domains
 	    names, which the client is connected in. For example, if
@@ -439,6 +431,13 @@ interface scope, i.e. it is defined once per interface. As for the
 	    client will not send such option, but it will accept it and
 	    act accordingly if the server sends it on its own. Format of
 	    this option is defined in \cite{draft-lifetime}.
+ \item[ds-lite] -- (scope: interface, type: address or FQDN). In
+            Dual-Stack Lite networks, client may want to configure
+            DS-Lite tunnel. Client may want to obtain information
+            about remote tunnel endpoint. There are 2 options that
+            allow configuration of that option. One is IPv6 address
+            based and the second one uses FQDN. Both options are
+            defined in \cite{draft-ds-lite}.
  \item[auth-enabled] -- (scope: global, type: boolean, default: no). This
             option enables authentication and authorization. When set
             to true, server support must also be enabled, otherwise
@@ -910,6 +909,67 @@ iface "eth0" {
 }
 \end{lstlisting}
 
+\subsubsection{Example 16: Dual-Stack Lite information}
+\label{example-server-ds-lite}
+Server may provide information about DS-Lite tunnel endpoints to the
+clients. 
+
+\begin{lstlisting}
+iface "eth0" {
+  ia
+
+  option ds-lite address   # request for address only
+#  option ds-lite name     # request for FQDN only
+#  option ds-lite          # request for both
+}
+
+\end{lstlisting}
+
+\subsubsection{Example 17: Custom options}
+Client is able to ask for custom options, that are not supported by
+default. Following config file allows client to ask for many
+options. Also, see Section \ref{features-custom-options} for
+extended explanation.
+
+\begin{lstlisting}
+#client.conf
+iface "eth0" {
+  unicast 1
+  ia
+
+  option 145 - 01:02:a3:b4:c5:dd:ea
+  option 146 address 2001:db8:1::dead:beef
+  option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
+  option 148 string "secretlair.example.org"
+
+  option 149 string request
+  option 150 address request
+  option 151 address-list request
+\end{lstlisting}
+
+\subsubsection{Example 18: Remote Autoconfiguration}
+Client is able to use experimental extension to ask for configuration
+remotely. See Section \ref{features-remote-autoconf} for details.
+
+\begin{lstlisting}
+log-mode short
+log-level 8
+experimental
+remote-autoconf
+
+iface "eth0" {
+  ia
+  unicast 1
+  option dns-server
+  option domain
+  option nis-server
+  option nis-domain
+  option nis+-server
+  option nis+-domain
+  option time-zone
+  option lifetime
+}
+\end{lstlisting}
 
 \subsection{Server configuration file}
 \label{server-conf}
@@ -1205,6 +1265,13 @@ All supported options are specified below:
             server sends to a client. If client does not support it,
             it should ignore this option. Format of
 	    this option is defined in \cite{draft-lifetime}.
+ \item[ds-lite] -- (scope: interface, type: address or FQDN). In
+            Dual-Stack Lite networks, client may want to configure
+            DS-Lite tunnel. Client may want to obtain information
+            about remote tunnel endpoint. There are 2 options that
+            allow configuration of that option. One is IPv6 address
+            based and the second one uses FQDN. Both options are
+            defined in \cite{draft-ds-lite}.
  \item[auth-method] -- (scope: global, type: string, default: empty). Set
             it to one of the following values to enable authentication
             on ther server side, using selected method of generating
@@ -1788,6 +1855,44 @@ iface relay1 {
 }
 \end{lstlisting}
 
+
+\subsubsection{Example 19: DS-Lite tunnel}
+Server is able to provide Dual-Stack lite configuration for clients.
+Both address and name based configurations are supported:
+
+\begin{lstlisting}
+iface "eth0" {
+ class {
+   pool 2001:db8::/64
+ }
+
+ option ds-lite 2001:db8:1::ffff
+ option ds-lite sc.example.org
+}
+\end{lstlisting}
+
+\subsubsection{Example 20: Custom options}
+Server may be configured to also provide custom options to the
+clients. See Section \ref{features-custom-options} for details.
+
+\begin{lstlisting}
+iface "eth0" {
+ class {
+   pool 2001:db8::/64
+ }
+ option 145 - 01:02:a3:b4:c5:dd:ea
+ option 146 address 2001:db8:1::dead:beef
+ option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
+ option 148 string "secretlair.example.org"
+}
+\end{lstlisting}
+
+
+\subsubsection{Example 21: Remote Autoconfiguration}
+Server does support experimental extension called remote
+autoconfiguration, as defined in \cite{draft-remote-autoconf}. See
+Section \ref{features-remote-autoconf} for details and configuration
+examples.
 
 \subsection{Relay configuration file}
 \label{relay-conf}

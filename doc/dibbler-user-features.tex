@@ -3,6 +3,216 @@ This section contains information about setting up various Dibbler
 features. Since this section was added recently, it is not yet
 comprehensive. That is expected to change.
 
+\subsection{Prefix delegation}
+\label{features-prefix}
+As specified in \cite{rfc3633}: \begin{emph}
+   The prefix delegation mechanism is
+   intended for simple delegation of prefixes from a delegating router
+   to requesting routers.  It is appropriate for situations in which the
+   delegating router does not have knowledge about the topology of the
+   networks to which the requesting router is attached, and the
+   delegating router does not require other information aside from the
+   identity of the requesting router to choose a prefix for delegation.
+   For example, these options would be used by a service provider to
+   assign a prefix to a Customer Premise Equipment (CPE) device acting
+   as a router between the subscriber's internal network and the service
+   provider's core network. \end{emph}
+
+To configure server to provide prefixes, a pool must be defined and
+also client prefixes' length. For example section below assigns
+2000:1234::/32 pool to be managed by this server. From this pool,
+server will assign /48 prefixes to the clients. For example, client
+can receive prefix 2000:1234:7c34::/48. 
+
+\begin{lstlisting}
+pd-class {
+    pd-pool 2000:1234::/32
+    pd-length 48
+}
+\end{lstlisting}
+
+As a general rule, server will provide random prefix to a client,
+unless client provided a hint. The full prefix assignment algorithm is
+as follows:
+
+\begin{enumerate}
+\item client didn't provide any hints: one prefix from each pool will
+  be granted
+\item client has provided hint and that is valid (supported and
+  unused): requested prefix will be granted
+\item client has provided hint, which belongs to supported pool, but this prefix is used:
+  other prefix from that pool will be asigned
+\item client has provided hint, but it is invalid (not beloninging to
+  a supported pool, multicast or link-local): see point 1
+\end{enumerate}
+
+Dibbler implementation supports prefix delegation, as specified in
+\cite{rfc3633}. Up to and including 0.7.3 version, client was also
+capable to do non-standard tricks with delegated prefix if it was a
+host, rather than router. This mode of operation was removed in
+0.8.0RC1. Now client behaves the same way, regardless if it is a 
+host or a router. When
+client receives prefix on one interface (e.g. prefix
+2000:1234:7c34::/48 received on eth0) it will generate subprefixes for
+all other interfaces, which are up, running, non-loopback and
+multicast capable. In the example depicted on
+Fig. \ref{fig-prefixes-router}, received prefix was split into 3
+prefixes: 2000:1234:7c34:1000::/56 for eth1, 2000:1234:7c34:2000::/56 for eth2
+and 2000:1234:7c34:3000::/56 for eth3.
+
+\begin{figure}[ht]
+\begin{center}
+\label{fig-prefixes-router}
+\includegraphics[width=0.65\textwidth]{dibbler-prefixes-router}
+\caption{\emph{Prefix delegation (router behaviour)}}
+\end{center}
+\end{figure}
+
+It is also possible to define multiple prefix pools. See section
+\ref{example-server-prefix} for simple prefix delegation configuration
+for server or section \ref{example-server-prefixes} for multiple
+prefixes configuration. Also section \ref{example-client-prefix}
+provides information related to client configuration.
+
+\subsection{Relays}
+\label{features-relays}
+In small networks, all nodes (server, hosts and routers) are connected
+to the same network segment -- usually Ethernet segment or a single
+access point or hotspot. This is very convenient as all clients can
+reach server directly. However, larger networks usually are connected
+via routers, so direct communication is not always possible. On the
+other hand it is useful to have one server, which supports multiple
+links -- some connected directly and some remotely.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.65\textwidth]{dibbler-relay}
+\caption{\emph{Relay deployment}}
+\end{center}
+\end{figure}
+
+Very nice feature of the relays is that they appear as actual servers
+from the client's point of view. Therefore no special arrangement or
+configuration on the client side is required. On the other hand, from
+the administrator point of view, it is much easier to manage one DHCPv6
+server and deploy several relays than manage several servers on remote
+links. 
+
+It is important to understand that relays not simply forward DHCPv6
+messages. Each message forwarded from client to the server is
+encapsulated. Also each message forwarded from server to a client is
+decapsulated. Therefore additional server configuration is required to
+deal with encapsulated (i.e. relayed) traffic.
+
+To avoid confusion during reference to a specific link (i.e. eth0 on
+the relay may be different link than eth0 on the server), each link
+must be referred to using its unique interface-id. For simplicity
+reasons, Dibbler uses 4 bytes long identifiers, which are specified as
+numbers. It is essential to use the same indentifier in the relay
+configuration as well as in the server, so both will refer to the same
+link using the same number. See section \ref{example-server-relay1} for
+example how to configure server and section \ref{example-relay-1} for 
+corresponding relay configuration.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.4\textwidth]{dibbler-cascade-relays}
+\caption{\emph{Cascade relays}}
+\label{fig-cascade-relays}
+\end{center}
+\end{figure}
+
+In larger networks it is sometimes useful to connect multiple
+relays. Assuming there are 2 relays connecting server and client. Such
+scenario is depicted on figure \ref{fig-cascade-relays}. Requests from
+client are received by relay2, which encapsulates and sends them to
+relay1. Relay1 further encapsulates those messages and sends them to
+the server. Since server receives double encapsulated messages, it
+must be properly configured to support such traffic. See section
+\ref{example-server-relay2} for details about server configuration and 
+section \ref{example-relay-cascade} for example relays configuration.
+
+\subsection{Custom options}
+\label{features-custom-options}
+Dibbler is the DHCPv6 with support for a very large number of
+options. However, there are always some new options that are not yet
+supported. Another case is that vendors sometimes want to develop
+and validate their private options before formal standarisation
+process takes place. Starting with 0.8.0RC1, both client and server 
+are able to handle custom options. Even though author tries to
+implement support for as many options as possible, there are always
+cases, when that is not 
+enough. Some users may also test out new ideas, before thet get
+standardized. Currently only several option layouts are supported, but
+that list is going to be expanded soon. Server is able to support
+following extra formats: generic (defined by hex string), IPv6
+address, IPv6 address list and string (domain). To define those
+options, use the following format:
+
+\begin{lstlisting}
+#server.conf
+iface "eth0" {
+
+ class {
+   pool 2001:db8:1::/64
+ }
+
+ option 145 - 01:02:a3:b4:c5:dd:ea
+ option 146 address 2001:db8:1::dead:beef
+ option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
+ option 148 string "secretlair.example.org"
+}
+\end{lstlisting}
+
+Similar list can be configured for client. However, client can ask
+for such custom options for testing purposes only, as mechanism for
+handling those options once received is not yet implemented, as of
+0.8.0RC1. Consider it experimental for the time being. Client can 
+request for an option using \opt{ORO} option or even send the option
+in its messages.
+
+\begin{lstlisting}
+#client.conf
+iface "eth0" {
+  unicast 1
+  ia
+
+  option 145 - 01:02:a3:b4:c5:dd:ea
+  option 146 address 2001:db8:1::dead:beef
+  option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
+  option 148 string "secretlair.example.org"
+
+  option 149 string request
+  option 150 address request
+  option 151 address-list request
+\end{lstlisting}
+
+A word of warning: There are no safety checks regarding option codes,
+so it is possible to transmit already defined options using this
+feature. Use with caution!
+
+\subsection{Confirm}
+\label{example-client-confirm}
+Client detects if previous client instance was not shutdown properly
+(due to power outage, client crash, forceful shutdown or similar
+event). In such case, it reads existing address database and checks if 
+assigned addresses may still be valid. If that is so, it tries to 
+confirm those addresses by using \msg{CONFIRM} message.
+
+If you want to provoke this kind of scenario on purpose, you can run
+dibbler-client normally, then forcefully kill the procss (by sending
+kill -9 signal, or pressing ctrl-\\ under Linux). Make sure that you
+rerun client before address valid lifetime expires.
+
+Currently, client does support only IAs in the \msg{CONFIRM}.
+
+\subsection{Mobility}
+Client can also be compiled with support for link change detection.
+The intended use for this feature is mobility. Client is able to
+detect when it moves to new link and react accordingly. Client sends
+\msg{CONFIRM} message to verify that its currently held address is
+still usable on this new link.
+
 \subsection{Leasequery}
 \label{features-leasequery}
 Servers provide addresses, prefixes and other configuration options to
@@ -648,63 +858,6 @@ Below is the algorithm used by the server to assign an address to the client.
 \end{itemize}
 %% see SrvOptions/SrvOptIA_NA.cpp, TSrvOptIA_NA::getFreeAddr() method
 
-\subsection{Relays}
-\label{features-relays}
-In small networks, all nodes (server, hosts and routers) are connected
-to the same network segment -- usually Ethernet segment or a single
-access point or hotspot. This is very convenient as all clients can
-reach server directly. However, larger networks usually are connected
-via routers, so direct communication is not always possible. On the
-other hand it is useful to have one server, which supports multiple
-links -- some connected directly and some remotely.
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=0.65\textwidth]{dibbler-relay}
-\caption{\emph{Relay deployment}}
-\end{center}
-\end{figure}
-
-Very nice feature of the relays is that they appear as actual servers
-from the client's point of view. Therefore no special arrangement or
-configuration on the client side is required. On the other hand, from
-the administrator point of view, it is much easier to manage one DHCPv6
-server and deploy several relays than manage several servers on remote
-links. 
-
-It is important to understand that relays not simply forward DHCPv6
-messages. Each message forwarded from client to the server is
-encapsulated. Also each message forwarded from server to a client is
-decapsulated. Therefore additional server configuration is required to
-deal with encapsulated (i.e. relayed) traffic.
-
-To avoid confusion during reference to a specific link (i.e. eth0 on
-the relay may be different link than eth0 on the server), each link
-must be referred to using its unique interface-id. For simplicity
-reasons, Dibbler uses 4 bytes long identifiers, which are specified as
-numbers. It is essential to use the same indentifier in the relay
-configuration as well as in the server, so both will refer to the same
-link using the same number. See section \ref{example-server-relay1} for
-example how to configure server and section \ref{example-relay-1} for 
-corresponding relay configuration.
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=0.4\textwidth]{dibbler-cascade-relays}
-\caption{\emph{Cascade relays}}
-\label{fig-cascade-relays}
-\end{center}
-\end{figure}
-
-In larger networks it is sometimes useful to connect multiple
-relays. Assuming there are 2 relays connecting server and client. Such
-scenario is depicted on figure \ref{fig-cascade-relays}. Requests from
-client are received by relay2, which encapsulates and sends them to
-relay1. Relay1 further encapsulates those messages and sends them to
-the server. Since server receives double encapsulated messages, it
-must be properly configured to support such traffic. See section
-\ref{example-server-relay2} for details about server configuration and 
-section \ref{example-relay-cascade} for example relays configuration.
 
 \subsection{XML files}
 \label{features-xml}
@@ -729,94 +882,6 @@ description for server only:
       information about previously assigned addresses. 
 \end{itemize}
 
-\subsection{Prefix delegation}
-\label{features-prefix}
-According to \cite{rfc3633}: 
-
-\begin{quote}
-   The prefix delegation mechanism is
-   intended for simple delegation of prefixes from a delegating router
-   to requesting routers.  It is appropriate for situations in which the
-   delegating router does not have knowledge about the topology of the
-   networks to which the requesting router is attached, and the
-   delegating router does not require other information aside from the
-   identity of the requesting router to choose a prefix for delegation.
-   For example, these options would be used by a service provider to
-   assign a prefix to a Customer Premise Equipment (CPE) device acting
-   as a router between the subscriber's internal network and the service
-   provider's core network.
-\end{quote}
-
-\begin{figure}[ht]
-\begin{center}
-\label{fig-prefixes-host}
-\includegraphics[width=0.65\textwidth]{dibbler-prefixes-host}
-\caption{\emph{Prefix delegation (host behaviour)}}
-\end{center}
-\end{figure}
-
-To configure server to provide prefixes, a pool must be defined and
-also client prefixes' length. For example section below assigns
-2000:1234::/32 pool to be managed by this server. From this pool,
-server will assign /48 prefixes to the clients. For example, client
-can receive prefix 2000:1234:7c34::/48. 
-
-\begin{lstlisting}
-pd-class {
-    pd-pool 2000:1234::/32
-    pd-length 48
-}
-\end{lstlisting}
-
-As a general rule, server will provide random prefix to a client,
-unless client provided a hint. The full prefix assignment algorithm is
-as follows:
-
-\begin{enumerate}
-\item client didn't provide any hints: one prefix from each pool will
-  be granted
-\item client has provided hint and that is valid (supported and
-  unused): requested prefix will be granted
-\item client has provided hint, which belongs to supported pool, but this prefix is used:
-  other prefix from that pool will be asigned
-\item client has provided hint, but it is invalid (not beloninging to
-  a supported pool, multicast or link-local): see point 1
-\end{enumerate}
-
-Dibbler implementation supports prefix delegation, but it also
-extends it. From the server point of view, everything works according
-to specs \cite{rfc3633}. However, client is able to meaningfully use
-received prefix, even when packet forwarding is not enabled
-(i.e. client is a host, not a router). In fact, this is simpler
-scenario, therefore it will be explained first. This scenario is
-depicted on Fig. \ref{fig-prefixes-host}. When dibbler client receives
-prefix and detects that packet forwarding in not enabled, it will
-configure received prefix on the interface, which data has been
-received on.
-
-Client's behavior is radically different if packet forwarding is
-enabled (i.e. client is a router, not a host). In such scenario, when
-client receives prefix on one interface (e.g. prefix
-2000:1234:7c34::/48 received on eth0) it will generate subprefixes for
-all other interfaces, which are up, running, non-loopback and
-multicast capable. In the example depicted on
-Fig. \ref{fig-prefixes-router}, received prefix was split into 3
-prefixes: 2000:1234:7c34:1000::/56 for eth1, 2000:1234:7c34:2000::/56 for eth2
-and 2000:1234:7c34:3000::/56 for eth3.
-
-\begin{figure}[ht]
-\begin{center}
-\label{fig-prefixes-router}
-\includegraphics[width=0.65\textwidth]{dibbler-prefixes-router}
-\caption{\emph{Prefix delegation (router behaviour)}}
-\end{center}
-\end{figure}
-
-It is also possible to define multiple prefix pools. See section
-\ref{example-server-prefix} for simple prefix delegation configuration
-for server or section \ref{example-server-prefixes} for multiple
-prefixes configuration. Also section \ref{example-client-prefix}
-provides information related to client configuration.
 
 \subsection{Authentication and Authorization}
 \label{features-auth}
@@ -1235,230 +1300,6 @@ iface eth0 {
 }
 \end{lstlisting}
 
-\subsubsection{Mapping prefix}
-It is possible to modify client's behavior when delegated prefix is
-received. Instead of considering it as a prefix that should be
-distributed on other interfaces, it is used as a mapping
-prefix. Normal prefix processing is supressed and external script is
-executed: \verb+mappingprefixadd+ or \verb+mappingprefixdel+. That
-script must be present in the working directory (that would be
-\verb+/var/lib/dibbler+ under Linux or current directory (Windows).
-
-To enable this feature, \verb+client.conf+ similar to the following
-may be used:
-
-\begin{lstlisting}
-# client.conf
-experimental
-mapping-prefix
-log-mode short
-
-iface eth0 {
-   pd
-}
-\end{lstlisting}
-
-\subsubsection{Extra options}
-Dibbler is the DHCPv6 with support for a very large number of
-options. However, there are always some new options that are not yet
-supported. Another case is that vendors sometimes want to develop
-and validate their private options before formal standarisation
-process takes place. To cover such cases, dibbler server can be
-configured to send some extra additional options. As those options may
-carry virtually anything, they are specified as a hex string. Those
-options will be appended to all messages transmitted by the server. It
-is possible to specify more than one extra option.
-
-To send option 7777 containing 3 bytes 0x123456, following
-configuration file may be used:
-
-\begin{lstlisting}
-# client.conf
-experimental
-log-mode short
-
-iface eth0 {
-   ia
-   option extra 7777-0x123456
-}
-\end{lstlisting}
-
-Several options may also be transmitted:
-
-\begin{lstlisting}
-# client.conf
-experimental
-log-mode short
-
-iface eth0 {
-   ia
-   option extra 7777-0x123456,123-0xabcd
-}
-\end{lstlisting}
-
-A word of warning: There are no safety checks regarding option codes,
-so it is possible to transmit already defined options using this
-feature. Use with caution!
-
-\subsubsection{Tunnel mode}
-In some scenarios, dibbler may be used for router configuration. IPv6
-routers may need some extra information for tunnel creation. Dibbler
-now provides support for conveying such parameters. As routers may use
-different tunneling schemes, there is a special option that is used to
-convey the tunneling mode.
-
-Here is a server configuration file for tunnel-mode. It instructs
-server to send tunnel endpoint address as 2000::abcd. It will be
-carried in a vendor-specific option with vendor-id 1727. It will also
-send tunnel mode parameter set to 1.
-
-As of August 2008, following modes are supported:
-\begin{itemize}
-\item 0 -- don't create tunnel at all
-\item 1 -- use IPv4-to-IPv6 NAT
-\item 2 -- create IPv4-over-IPv6 tunnel
-\end{itemize}
-
-Here is an example \verb+server.conf+ file that provides such configuration:
-
-\begin{lstlisting}
-# server.conf : tunnel mode
-# Logging level range: 1(Emergency)-8(Debug)
-log-level 8
-
-# Don't log full date
-log-mode short
-
-# Tunnel mode is non-standard behavior, thus requires 'experimental' keyword
-experimental
-
-# 
-tunnel-mode 1727 1 2000::abcd
-
-iface "eth0" {
-
-# assign addresses from this pool
- class {
-   pool 2000::/64
- }
-
-#assign /96 prefixes from this pool
- pd-class {
-     pd-pool 3000:458:ff01:ff03:abcd::/80
-     pd-length 96
- }
-}
-\end{lstlisting}
-
-It is also possible to configure server to provide unique tunnel
-configurations for each client:
-
-\begin{lstlisting}
-# server.conf
-
-# Logging level range: 1(Emergency)-8(Debug)
-log-level 8
-
-# Don't log full date
-log-mode short
-
-experimental
-
-# clients will receive tunnel-mode = 1 and tunnel endpoint will be 2000::abcd
-tunnel-mode 1727 1 2000::abcd
-
-iface "eth0" {
-
-# assign addresses from this pool
- class {
-   pool 2000::/64
- }
-
-#assign /96 prefixes from this pool
- pd-class {
-     pd-pool 3000:458:ff01:ff03:abcd::/80
-     pd-length 96
- }
-
-# provide DNS server location to the clients
- option dns-server 2000::ff,2000::fe
- 
-# provide their domain name
- option domain example.com
-
-# client with this duid will receive tunnel-mode=2 and tunnel end
-# point set to 2000::aaaa
- client duid 0x000100010f549272000822222222
- {
-   tunnel-mode 1727 2 2000::aaaa
- }
-
-# another per-client configuration.
- client duid 0x000100010f549272000822222221
- {
-   tunnel-mode 1727 2 3000::dead
- }
-
-}
-\end{lstlisting}
-
-Server does not send those options by default. They have to be
-requested by client. To request tunnel information, client must send
-vendor-specific information option. Client may be configured to do so
-by using tunnel-mode directive. Here is an example \verb+client.conf+
-configuration file:
-
-\begin{lstlisting}
-# client.conf
-
-# Experimental features are to be allowed
-experimental
-
-# Ask for tunnel-mode using vendor-id 1727
-tunnel-mode 1727
-
-log-level 8
-
-iface eth0 {
-   ia // ask for 1 address
-   pd // and one prefix
-   option dns-server // get DNS server 
-}
-\end{lstlisting}
-
-Note that server and client have to be configured to use the same
-vendor-id value. After client receives all configuration parameters,
-it will execute external script called \verb+notify+. That script will
-be called with some extra paramters: received IPv6 address, received
-IPv6 prefix, prefix length, tunnel endpoint and tunnel-mode. For
-example, if client receives 2000::1 adress, a 2000:abc::/64 prefix,
-tunnel endpoint 2000:4f8::1 and tunnel mode 1, execution will take
-folllowing form:
-
-\begin{lstlisting}
-./notify 2000::1 2000:abc:: 64 2000:4f8::1 1
-\end{lstlisting}
-
-That script is supposed to be stored in \verb+/var/lib/dibbler+
-(Linux) or current directory (Windows). Note that this feature is
-completely untested under Windows.
-
-
-\subsubsection{Confirm}
-\label{example-client-confirm}
-Client detects if previous client instance was not shutdown properly
-(due to power outage, client crash or similar event). In such case, it
-reads existing address database and checks if assigned addresses may
-still be valid. If that is so, it tries to confirm those addresses by
-using \msg{CONFIRM} message.
-
-If you want to provoke this kind of scenario on purpose, you can run
-dibbler-client normally, then forcefully kill the procss (by sending
-kill -9 signal, or pressing ctrl-\\ under Linux). Make sure that you
-rerun client before address valid lifetime expires.
-
-Currently, client does support only IAs in the \msg{CONFIRM}.
-
 \subsubsection{External scripts}
 Dibbler-client is able to receive addresses, prefixes and numerous
 additional options. It will do its best to set up those parameters in
@@ -1498,3 +1339,155 @@ Note that only first address and first prefix will be passed. If
 specific parameter is not configured, :: or 0 will be used instead. If
 you want to be notified about more than one address, you must parse
 client-AddrMgr.xml and client-IfacMgr.xml files.
+
+\subsubsection{Remote Autoconfiguration}
+Every time a node attaches to a new link, it must renew or
+obtain new address and parameters, using DHCPv6 protocol (namely 
+\msg{CONFIRM} or \msg{SOLICIT} messages.  In case of mobile nodes, 
+it is beneficial to obtain address and other  configuration parameters 
+remotely, before actually attaching to destination link.  This
+extension provides experimental support for such operation.
+Details of this mechanism are thoroughly discussed in \cite{phd,
+  draft-remote-autocnf, networks2010, atnac2010}.
+
+The idea is that once client attaches to its current location, normal
+configuration procedure is initiated (\msg{SOLICIT}, \msg{ADVERTISE},
+\msg{REQUEST} and \msg{REPLY}). However, besides requesting the usual
+options, client also asks for \opt{NEIGHBORS} option. Server provides
+that option that contains list of available DHCPv6 servers at
+neighboring networks. 
+
+Once client gains that information, it then initiates remote
+autoconfiguration process, i.e. it sends \msg{SOLICIT} message to each
+of the newly discovered neighbors, requesting single IPv6
+address. Servers respond remotely, using \msg{REPLY} message. Once
+this exchange is completed, client knows its new IPv6 address for each
+of the potential handover targets. What is especially important is
+that client obtains that knowledge, while still being connected to old
+location. It may leverage that knowledge, e.g. to update his
+correspondent nodes in advance.
+
+As Dibbler client is not a mobility software itself, it has to
+communicate with Mobile IPv6 stack somehow. Therefore it triggers
+./remote-autoconf script every time remote autoconfiguration is
+concluded. 
+
+Note that to support this scenario, both client and all participating
+servers must have unicast and rapid-commit support enabled.
+
+Following series of server.conf files demonstrate, how 3 servers can 
+be configured to incorm client about their 2 neighbors.
+
+\begin{lstlisting}
+#server.conf for server1.
+log-level 8
+log-mode short
+preference 2
+
+experimental
+
+iface "eth0" {
+
+ t1 1800
+ class {
+   pool 2001:db8:1111::/64
+ }
+
+ rapid-commit 1
+ unicast 2001:db8:1111::f
+
+ option neighbors 2001:db8:2222::f,2001:db8:3333::f
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+#server.conf for server2
+log-level 8
+log-mode short
+preference 1
+
+experimental
+
+iface "eth1" {
+ unicast 2001:db8:2222::f
+ rapid-commit 1
+
+ class {
+   pool 2001:db8:2222::/64
+ }
+
+
+ option neighbors 2001:db8:1111::f,2001:db8:3333::f
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+log-level 8
+preference 0
+experimental
+
+iface "eth1" {
+
+ unicast 2001:db8:3333::f
+ rapid-commit 1
+ class {
+   pool 2001:db8:3333::/64
+ }
+ 
+ option dns-server 2001:db8:3333::f
+ option neighbors 2001:db8:1111::f,2001:db8:2222::f
+}
+\end{lstlisting}
+
+Client also needs to have enabled number of features. Following config
+file may serve as an example:
+
+\begin{lstlisting}
+log-mode short
+log-level 8
+
+experimental
+remote-autoconf
+
+iface "eth0" {
+  ia
+  unicast 1
+}
+\end{lstlisting}
+
+\subsection{Obsoleted experimental features}
+This subsection describes experimental features that are not supported
+anymore. This list is provided for historical reasons. It may be
+useful for someone to ease tracking of features removal, e.g. to 
+get the latest version that still has support for something.
+
+\subsubsection{Mapping prefix}
+Mapping prefix was an extension that altered client's behavior when 
+delegated prefix is received. Instead of considering it as a prefix 
+that should be distributed on other interfaces, it is used as a mapping
+prefix. Normal prefix processing is supressed and external script is
+executed: \verb+mappingprefixadd+ or \verb+mappingprefixdel+. That
+script must be present in the working directory (that would be
+\verb+/var/lib/dibbler+ under Linux or current directory (Windows).
+This feature was removed in 0.8.0RC1.
+
+\subsubsection{Tunnel mode}
+As support for DS-Lite \cite{ds-lite-draft} support was added in
+0.8.0RC1, the old support for configuring tunnels was retired. That
+old, removed configuration worked as follows:
+
+In some scenarios, dibbler may be used for router configuration. IPv6
+routers may need some extra information for tunnel creation. Dibbler
+provided support for conveying such parameters. As routers may use
+different tunneling schemes, there was also a special option that is 
+used to convey the tunneling mode. It was possible to instruct server
+server to send tunnel endpoint address, using vendor-specific option 
+with customisable vendor-id field. Following tunnel modes were 
+supported:
+
+\begin{itemize}
+\item 0 -- don't create tunnel at all
+\item 1 -- use IPv4-to-IPv6 NAT
+\item 2 -- create IPv4-over-IPv6 tunnel
+\end{itemize}
+

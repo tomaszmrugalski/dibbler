@@ -21,28 +21,23 @@ to check out Dibbler website: \url{http://klub.com.pl/dhcpv6/}.
 
 \subsection{Overview}
 
-\emph{Dynamic Host Configuration Protocol for IPv6}, often called
-DHCPv6 is a protocol, which is used to automatically configure IPv6
+\emph{Dynamic Host Configuration Protocol for IPv6}, often abbreviated
+as DHCPv6, is a protocol, which is used to automatically configure IPv6
 capable computers and other equipment located in a local network. This
-protocol defines \emph{clients} (i.e. nodes, which should be configured),
+protocol defines \emph{clients} (i.e. nodes, which want to be configured),
 \emph{servers} (i.e. nodes, which provide configuration to clients) and
 \emph{relays} (i.e. nodes, which are connected to more than one network and
-are able to forward traffic between local clients and remote servers).
-
-
-\emph{Requestor} support has been added in version 0.7.0RC1. Requestor
-is a separate entity, which sends queries to the server regarding
-leases to a specific clients. It is possible to ask a server, who has
-specific address or what addresses are assigned to a specific client. 
-This feature is part of the lease query mechanism defined in
-\cite{rfc5007} and is considered advanced topic. If you don't know
-what lease query is, you definetely don't need it.
+are able to forward traffic between local clients and remote
+servers). Also, special type of DHCPv6 entity called \emph{requestor}
+has been defined. It is used by network administrator to query servers
+about their status and assigned parameters.
 
 Dibbler is a portable DHCPv6 solution, which features server, client and
-relay. Currently there are ports available for Windows XP and 2003 (support for
-NT4 and 2000 is considered experimental) and Linux 2.4/2.6 systems. 
-It supports both stateful (i.e. IPv6 address granting) and stateless
-(i.e. options granting) autoconfiguration. Besides basic
+relay. Currently there are ports available for many Windows platforms
+ranging from NT4 to Windows 7, Linux 2.4/2.6 systems and Mac OS
+(experimental). See Section \ref{requirements} for details. It supports both stateful 
+(i.e. IPv6 address granting) and stateless (i.e. options granting) 
+autoconfiguration. Besides basic
 functionality (specified in basic DHCPv6 spec, RFC3315 \cite{rfc3315}),
 it also offers serveral enhancements, e.g. DNS servers and domain names
 configuration.
@@ -53,6 +48,14 @@ that it is freely available, free of charge and can be used by anyone
 (including commercial users). Source code is also provided, so anyone
 skilled enough can fix bugs, add new features and distribute his/her
 own version.
+
+\emph{Requestor} support has been added in version 0.7.0RC1. Requestor
+is a separate entity, which sends queries to the server regarding
+leases to specific clients. It is possible to ask a server, who has
+specific address or what addresses are assigned to a specific client. 
+This feature is part of the lease query mechanism defined in
+\cite{rfc5007} and is considered advanced topic. If you don't know
+what lease query is, you definetely don't need it.
 
 \begin{figure}[ht]
 \begin{center}
@@ -125,9 +128,9 @@ As for now, Dibbler supports following features:
 \item Power failure/crash support -- After client recovers from a crash or
       a power failure, it still can have valid addresses assigned. In such
       circumstances, client uses \msg{CONFIRM} message, to config if
-      those addresses are still valid. \footnote{As for \version
-      version, this functionality works on the server side only,
-      client side support will be available in future releases.}.
+      those addresses are still valid.
+\item Link change detection -- Client can be instructed to monitor its
+      link state. Once it detects 
 \item Normal and temporary addresses -- Depending on its purpose,
       client can be configured to ask for normal (\opt{IA\_NA} option)
       or temporary (\opt{IA\_TA} option). Although use of temporary
@@ -219,21 +222,24 @@ features:
  \item DNSSec (DNS Security Extensions) \cite{rfc4033} in DNS Updates \cite{rfc4704}
 \end{itemize}
 
-\subsection{Requirements}
+\subsection{Operating System Requirements}
+\label{requirements}
 Dibbler can be run on Linux systems with kernels from 2.4 and 2.6
 series. IPv6 (compiled into kernel or as module) support is necessary
 to run dibbler. DHCPv6 uses UDP ports below 1024, so root privileges
 are required. They're also required to add, modify and delete various
 system parameters, e.g. IPv6 addresses.
 
-Dibbler also runs on Windows XP and 2003. In XP systems, at least
-Service Pack 1 is required. To install various Dibbler parts (server,
+Dibbler also runs on any Windows systems from Windows XP (Service Pack
+1 or later) to Windows 7. To install various Dibbler parts (server,
 client or relay) as services, administrator privileges might be
-required. 
-
-Support for Windows NT4 and 2000 is limited and considered
+required. Support for Windows NT4 and 2000 is limited and considered
 experimental. Due to lack of support and any kind of informations from
 Microsoft, this is not expected to change.
+
+There is also experimental port for Mac OS systems, but due to
+author's lack of access to Mac hardware, Dibbler is not released for
+those platforms.
 
 See RELEASE-NOTES for details about version-specific upgrades, fixes
 and features.
