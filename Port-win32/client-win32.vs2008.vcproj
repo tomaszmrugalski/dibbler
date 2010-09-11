@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="client-win32"
 	ProjectGUID="{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
 	Keyword="Win32Proj"
@@ -283,6 +283,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptEmpty.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptFQDN.cpp"
 					>
 				</File>
@@ -312,10 +316,6 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Options\OptRapidCommit.cpp"
 					>
 				</File>
 				<File
@@ -360,10 +360,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptAuthentication.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptClientIdentifier.cpp"
 					>
 				</File>
 				<File
@@ -432,18 +428,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptPreference.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptRapidCommit.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptServerIdentifier.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptServerUnicast.cpp"
 					>
 				</File>
 				<File
@@ -592,6 +576,10 @@
 				</File>
 				<File
 					RelativePath="..\ClntCfgMgr\ClntParser.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntCfgMgr\ClntParser.y"
 					>
 				</File>
 				<File

@@ -598,10 +598,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     sprintf(arg8,"validlifetime=%d", valid);
 
     sprintf(buf, "%s %s %s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-    if (prefix_forwarding_enabled())
-        i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
-    else
-        i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9, NULL);
+    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
 
     if (i==-1) {
         /// @todo: some better error support

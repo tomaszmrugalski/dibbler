@@ -638,7 +638,11 @@ ExperimentalRemoteAutoconf
         "to enable it." << LogEnd;
         YYABORT;
     }
+#ifdef MOD_REMOTE_AUTOCONF
     CfgMgr->setRemoteAutoconf(true);
+#else
+	Log(Error) << "Remote autoconf support not compiled in." << LogEnd;
+#endif
 };
 
 

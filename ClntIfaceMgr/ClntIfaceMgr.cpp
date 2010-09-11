@@ -660,6 +660,7 @@ void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
     Log(Info) << "Return code=" << returnCode << LogEnd;
 }
 
+#ifdef MOD_REMOTE_AUTOCONF
 bool TClntIfaceMgr::notifyRemoteScripts(SPtr<TIPv6Addr> rcvdAddr, SPtr<TIPv6Addr> srvAddr, int ifindex) {
 
     Log(Info) << "Received address " << rcvdAddr->getPlain() 
@@ -676,6 +677,7 @@ bool TClntIfaceMgr::notifyRemoteScripts(SPtr<TIPv6Addr> rcvdAddr, SPtr<TIPv6Addr
 
     return true;
 }
+#endif
 
 ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "<ClntIfaceMgr>" << std::endl;
