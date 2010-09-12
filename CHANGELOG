@@ -18,7 +18,7 @@
   - Fix: Notify scripts are now executed, even when no IA received (bug #193)
   - Code cleanup: Singleton managers implemented
   - Code cleanup: Server REPLY generation refactored
-  - Code cleanup: Obsolete classes removed
+  - Code cleanup: Many obsolete classes removed
   - Code cleanup: Obsolete tunnel endpoint removed
   - Code cleanup: Obsolete VS2003 and VS2005 files removed
 
