@@ -192,7 +192,7 @@ so it is possible to transmit already defined options using this
 feature. Use with caution!
 
 \subsection{Confirm}
-\label{example-client-confirm}
+\label{features-confirm}
 Client detects if previous client instance was not shutdown properly
 (due to power outage, client crash, forceful shutdown or similar
 event). In such case, it reads existing address database and checks if 
@@ -1341,6 +1341,7 @@ you want to be notified about more than one address, you must parse
 client-AddrMgr.xml and client-IfacMgr.xml files.
 
 \subsubsection{Remote Autoconfiguration}
+\label{features-remote-autoconf}
 Every time a node attaches to a new link, it must renew or
 obtain new address and parameters, using DHCPv6 protocol (namely 
 \msg{CONFIRM} or \msg{SOLICIT} messages.  In case of mobile nodes, 
@@ -1348,7 +1349,7 @@ it is beneficial to obtain address and other  configuration parameters
 remotely, before actually attaching to destination link.  This
 extension provides experimental support for such operation.
 Details of this mechanism are thoroughly discussed in \cite{phd,
-  draft-remote-autocnf, networks2010, atnac2010}.
+  draft-remote-autoconf, networks2010, atnac2010}.
 
 The idea is that once client attaches to its current location, normal
 configuration procedure is initiated (\msg{SOLICIT}, \msg{ADVERTISE},
@@ -1472,7 +1473,7 @@ script must be present in the working directory (that would be
 This feature was removed in 0.8.0RC1.
 
 \subsubsection{Tunnel mode}
-As support for DS-Lite \cite{ds-lite-draft} support was added in
+As support for DS-Lite \cite{draft-ds-lite} support was added in
 0.8.0RC1, the old support for configuring tunnels was retired. That
 old, removed configuration worked as follows:
 

@@ -1,19 +1,27 @@
 
-  Dibbler 0.7.2 release notes [2008-08-31]
+  Dibbler 0.8.0RC1 release notes [2010-09-17]
  ---------------------------------------------------------
 
- This is a final 0.7.2 release. 
+ This is first release candidate (RC1) for 0.8.0 Dibbler release.
 
- That is a special release. Its main difference comapared to previous
- releases is that it contains extra features for IPv6 tunnel configuration
- and that it is released under GNU GPL v2 only.
+ Dibbler (and myself) is now recovering after long maintenance mode.
+ There are couple of new features added. Client loads its database
+ and if there are still valid leases, it sends CONFIRM instead of
+ SOLICIT. In Linux systems, client can also detect link switches, 
+ so once your Linux client moves to a different link, it will send
+ CONFIRM, too. Server reloads its database after restart, so you can
+ finally restaring server, without worrying about lost leases. DUID
+ can now be specified using 00:12:45:ab format (similar to MAC addresses).
+ Support for Windows 7 and Mac OS is now added (both considered experimental).
+ Both server and client support custom options, so if dibbler does
+ not support your favourite option, here's your chance. 
+
+ Bunch of experimental features are also added: DS-Lite tunnel
+ configuration and remote autoconfiguration.
  
- Please note that previous versions were released as "GPL v2 or later".
- Following releases (be it 0.7.3 or 0.8.0) will again be released as 
- "GPL v2 or later". 
- 
- A word of explanation: This temporary license change is useful for 
- companies that have concerns regarding GPL v3.
+ There's also number of under the hood changes that hopefully
+ will be invisible to end users. If something that worked previously
+ now crashes miserably, let me know.
 
  See CHANGELOG for a complete list of changes.
 
