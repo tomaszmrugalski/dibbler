@@ -7,6 +7,7 @@ Before 0.8.0 release:
 - Describe MOD_CLNT_CONFIRM in Developer's Guide
 - Add examples for ds-lite, custom options and remote-autoconf
 
+- RFC3315, 9.1 duid length is no longer than 128 octets
 - Add sanity length checks in Options constructors
 - Remove setDUID() method from TOpt()
 - Implement support for Client vendor class options
