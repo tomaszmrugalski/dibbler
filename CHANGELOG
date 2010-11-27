@@ -1,7 +1,10 @@
 
   Dibbler changelog
  ------------------- 
- 0.8.0 [2010-09-17]
+0.8.0RC-2 [not-released-yet]
+  - Fixed compilation problems
+
+0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added
   - Support for Windows 7 added
   - Server reloads its database after shutdown/start sequence
