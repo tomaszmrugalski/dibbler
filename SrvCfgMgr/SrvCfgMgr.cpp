@@ -17,6 +17,8 @@
 #include <string>
 #include "SmartPtr.h"
 #include "Portable.h"
+#include "FlexLexer.h"
+#include "SrvParser.h"
 #include "SrvCfgMgr.h"
 #include "SrvCfgIface.h"
 #include "Logger.h"
@@ -24,7 +26,6 @@
 #include "SrvIfaceMgr.h"
 #include "AddrMgr.h"
 #include "TimeZone.h"
-#include "FlexLexer.h"
 #include "SrvParser.h"
 
 TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
@@ -33,6 +34,7 @@ int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 TSrvCfgMgr::TSrvCfgMgr(const std::string cfgFile, const std::string xmlFile)
     :TCfgMgr(), XmlFile(xmlFile), reconfigure(true)
 {
+    setDefaults();
  
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
@@ -56,6 +58,14 @@ TSrvCfgMgr::TSrvCfgMgr(const std::string cfgFile, const std::string xmlFile)
     IsDone = false;
 }
 
+void TSrvCfgMgr::setDefaults()
+{
+    BulkLQAccept = BULKLQ_ACCEPT;
+    BulkLQTcpPort = BULKLQ_TCP_PORT;
+    BulkLQMaxConns = BULKLQ_MAX_CONNS;
+    BulkLQTimeout = BULKLQ_TIMEOUT;
+}
+
 bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     int result;
     ifstream f;
@@ -70,6 +80,7 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
+    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still in constructor, so instance() singleton method can't be called
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
@@ -108,6 +119,12 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     } else {
 	Log(Notice) << "Running in stateful mode." << LogEnd;
     }
+
+    // @todo: remove this info later
+    Log(Debug) << "Bulk-leasequery: enabled=" << (BulkLQAccept?"yes":"no")
+	       << ", TCP port=" << BulkLQTcpPort
+	       << ", max conns=" << BulkLQMaxConns
+	       << ", timeout=" << BulkLQTimeout << LogEnd;
 
     return true;
 }
@@ -973,3 +990,25 @@ TSrvCfgMgr & TSrvCfgMgr::instance()
         Log(Crit) << "SrvCfgMgr not initalized yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
     return *Instance;
 }
+
+    // Bulk-LeaseQuery
+void TSrvCfgMgr::bulkLQAccept(bool enabled)
+{
+    BulkLQAccept = enabled;
+}
+
+void TSrvCfgMgr::bulkLQTcpPort(unsigned short portNumber)
+{
+    BulkLQTcpPort = portNumber;
+}
+
+void TSrvCfgMgr::bulkLQMaxConns(unsigned int maxConnections)
+{
+    BulkLQMaxConns = maxConnections;
+}
+
+void TSrvCfgMgr::bulkLQTimeout(unsigned int timeout)
+{
+    BulkLQTimeout = timeout;
+}
+

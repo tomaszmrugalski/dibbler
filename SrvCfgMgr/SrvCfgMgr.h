@@ -10,6 +10,8 @@
  *
  */
 
+class TSrvCfgMgr;
+
 #ifndef SRVCONFMGR_H
 #define SRVCONFMGR_H
 #include "SmartPtr.h"
@@ -20,13 +22,12 @@
 #include "Container.h"
 #include "DUID.h"
 #include "KeyList.h"
-
-#include "FlexLexer.h"
-#include "SrvParser.h"
 #include "SrvCfgClientClass.h"
 
 
 #define SrvCfgMgr() (TSrvCfgMgr::instance())
+
+class SrvParser;
 
 class TSrvCfgMgr : public TCfgMgr
 {
@@ -88,6 +89,12 @@ public:
     int getCacheSize();
     bool reconfigureSupport();
 
+    // Bulk-LeaseQuery
+    void bulkLQAccept(bool enabled);
+    void bulkLQTcpPort(unsigned short portNumber);
+    void bulkLQMaxConns(unsigned int maxConnections);
+    void bulkLQTimeout(unsigned int timeout);
+
     //Authentication
 #ifndef MOD_DISABLE_AUTH
     SPtr<KeyList> AuthKeys;
@@ -96,6 +103,8 @@ public:
     List(DigestTypes) getDigestLst();
     enum DigestTypes getDigest();
 #endif
+
+    void setDefaults();
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
@@ -127,6 +136,12 @@ private:
     unsigned int AuthKeyGenNonceLen;
     List(DigestTypes) DigestLst;
 #endif
+
+    // lease-query parameters
+    bool BulkLQAccept;
+    unsigned short BulkLQTcpPort;
+    unsigned int BulkLQMaxConns;
+    unsigned int BulkLQTimeout;
 };
 
 #endif /* SRVCONFMGR_H */

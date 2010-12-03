@@ -187,6 +187,12 @@ struct link_state_notify_t
 #define OPTION_NISP_SERVERS_FILENAME "option-nisplus-servers"
 #define OPTION_NISP_DOMAIN_FILENAME  "option-nisplus-domain"
 
+/* --- bulk leasequery --- */
+#define BULKLQ_ACCEPT false
+#define BULKLQ_TCP_PORT 547
+#define BULKLQ_MAX_CONNS 10
+#define BULKLQ_TIMEOUT 300
+
 /* ********************************************************************** */
 /* *** interface flags ************************************************** */
 /* ********************************************************************** */

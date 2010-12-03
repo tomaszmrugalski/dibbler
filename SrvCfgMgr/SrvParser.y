@@ -14,6 +14,7 @@
 #include "OptAddr.h"
 #include "OptAddrLst.h"
 #include "OptString.h"
+#include "SrvCfgMgr.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
 #include "SrvCfgAddrClass.h"
@@ -70,6 +71,7 @@ void StartTAClassDeclaration();                                                 
 bool EndTAClassDeclaration();                                                        \
 void StartPDDeclaration();                                                           \
 bool EndPDDeclaration();                                                             \
+TSrvCfgMgr * CfgMgr;                                                                 \
 virtual ~SrvParser();
 
 // constructor
@@ -109,6 +111,7 @@ virtual ~SrvParser();
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token ACCEPT_LEASEQUERY_
+%token BULKLQ_ACCEPT_, BULKLQ_TCPPORT_, BULKLQ_MAX_CONNS_, BULKLQ_TIMEOUT_
 %token CLIENT_CLASS_
 %token MATCH_IF_
 %token EQ_, AND_, OR_
@@ -173,6 +176,10 @@ InterfaceOptionDeclaration
 | RelayOption
 | InterfaceIDOption
 | AcceptLeaseQuery
+| BulkLeaseQueryAccept
+| BulkLeaseQueryTcpPort
+| BulkLeaseQueryMaxConns
+| BulkLeaseQueryTimeout
 | UnicastAddressOption
 | PreferenceOption
 | RapidCommitOption
@@ -928,6 +935,10 @@ CacheSizeOption
 }
 ;
 
+////////////////////////////////////////////////////////////////////////
+/// LEASE-QUERY (regular and bulk) /////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
 AcceptLeaseQuery
 : ACCEPT_LEASEQUERY_
 {
@@ -947,6 +958,35 @@ AcceptLeaseQuery
 		Log(Crit) << "Invalid value of accept-leasequery specifed. Allowed values: 0, 1, yes, no, true, false" << LogEnd;
 		YYABORT;
     }
+};
+
+BulkLeaseQueryAccept
+: BULKLQ_ACCEPT_ Number
+{
+    if ($2!=0 && $2!=1) {
+	Log(Error) << "Invalid bulk-leasequery-accept value: " << ($2)
+		   << ", 0 or 1 expected." << LogEnd;
+	YYABORT;
+    }
+    CfgMgr->bulkLQAccept( (bool) $2);
+};
+
+BulkLeaseQueryTcpPort
+: BULKLQ_TCPPORT_ Number
+{
+    CfgMgr->bulkLQTcpPort( $2 );
+}
+
+BulkLeaseQueryMaxConns
+: BULKLQ_MAX_CONNS_ Number
+{
+    CfgMgr->bulkLQMaxConns( $2 );
+};
+
+BulkLeaseQueryTimeout
+: BULKLQ_TIMEOUT_ Number
+{
+    CfgMgr->bulkLQTimeout( $2 );
 };
 
 ////////////////////////////////////////////////////////////////////////

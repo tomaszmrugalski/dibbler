@@ -34,6 +34,7 @@
 #include "SrvMsgLeaseQueryReply.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptStatusCode.h"
+#include "NodeClientSpecific.h"
 
 TSrvTransMgr * TSrvTransMgr::Instance = 0;
 
