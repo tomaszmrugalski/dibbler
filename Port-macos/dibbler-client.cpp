@@ -52,11 +52,13 @@ int status() {
 
 int run() {
     if (!init(CLNTPID_FILE, WORKDIR)) {
+	die(CLNTPID_FILE);
 	return -1;
     }
 
     if (lowlevelInit()<0) {
 	cout << "Lowlevel init failed:" << error_message() << endl;
+	die(CLNTPID_FILE);
 	return -1;
     }
 
@@ -64,6 +66,7 @@ int run() {
     ptr = &client;
 
     if (ptr->isDone()) {
+	die(CLNTPID_FILE);
 	return -1;
     }
 

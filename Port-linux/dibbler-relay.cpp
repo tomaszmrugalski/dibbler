@@ -7,43 +7,6 @@
  *
  * $Id: dibbler-relay.cpp,v 1.13 2008-10-10 20:39:12 thomson Exp $
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.12  2008-08-29 00:07:31  thomson
- * Temporary license change(GPLv2 or later -> GPLv2 only)
- *
- * Revision 1.11  2008-06-01 21:45:48  thomson
- * Return coded are now returned properly under Linux (bug #175)
- *
- * Revision 1.10  2005-10-11 20:52:47  thomson
- * Problem with command-line parsing fixed.
- *
- * Revision 1.9  2005/07/31 14:39:40  thomson
- * Minor changes related to 0.4.1 release.
- *
- * Revision 1.8  2005/07/21 21:40:19  thomson
- * PID checking process is improved.
- *
- * Revision 1.7  2005/04/28 21:20:52  thomson
- * Support for multiple relays added.
- *
- * Revision 1.6  2005/02/03 22:42:25  thomson
- * *** empty log message ***
- *
- * Revision 1.5  2005/02/03 22:06:40  thomson
- * Linux startup/pid checking changed.
- *
- * Revision 1.4  2005/02/03 20:09:11  thomson
- * *** empty log message ***
- *
- * Revision 1.3  2005/01/30 23:12:28  thomson
- * *** empty log message ***
- *
- * Revision 1.2  2005/01/30 22:53:28  thomson
- * *** empty log message ***
- *
- * Revision 1.1  2005/01/11 22:53:35  thomson
- * Relay skeleton implemented.
- *
  */
 
 #include <signal.h>
@@ -86,6 +49,7 @@ int status() {
 
 int run() {
     if (!init(RELPID_FILE, WORKDIR)) {
+	die(RELPID_FILE);
 	return -1;
     }
 
@@ -93,6 +57,7 @@ int run() {
     
     ptr = &relay;
     if (ptr->isDone()) {
+	die(RELPID_FILE);
 	return -1;
     }
     

@@ -51,6 +51,7 @@ int status() {
 
 int run() {
     if (!init(SRVPID_FILE, WORKDIR)) {
+	die(SRVPID_FILE);
 	return -1;
     }
 
@@ -58,6 +59,7 @@ int run() {
     
     ptr = &srv;
     if (ptr->isDone()) {
+	die(SRVPID_FILE);
 	return -1;
     }
     

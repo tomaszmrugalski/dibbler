@@ -94,6 +94,7 @@ int run() {
     ptr = &client;
 
     if (ptr->isDone()) {
+	die(CLNTPID_FILE);
 	return -1;
     }
 

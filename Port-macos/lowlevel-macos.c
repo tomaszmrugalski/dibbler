@@ -96,6 +96,7 @@ struct iface * if_list_get() {
         if (strncmp(ifRtnList->name, ifTemp->ifa_name, strlen(ifTemp->ifa_name))
                 != 0) {
             ifRtnTemp = malloc(sizeof (struct iface));
+	    memset(ifRtnTemp, 0, sizeof (struct iface));
             strlcpy(ifRtnTemp->name, ifTemp->ifa_name, strlen(ifTemp->ifa_name)
                     + 1);
             ifRtnTemp->flags = ifTemp->ifa_flags;
