@@ -66,6 +66,7 @@ struct iface * if_list_get() {
      * Translating between Mac OS X internal representation of link and IP address
      * and Dibbler internal format.
      */
+    unsigned int ifindex_zero_cnt = 0;
 
     struct ifaddrs *ifList, *ifTemp;
     struct iface *ifRtnList = NULL;
@@ -82,6 +83,8 @@ struct iface * if_list_get() {
 
     ifTemp = malloc(sizeof (struct ifaddrs));
     ifRtnList = malloc(sizeof (struct iface));
+    memset( ifTemp, 0, sizeof (struct ifaddrs) );
+    memset( ifRtnList, 0, sizeof(struct iface) );
 
     /* If there is at least one interface, populate first element before loop */
 
@@ -99,6 +102,14 @@ struct iface * if_list_get() {
 	    memset(ifRtnTemp, 0, sizeof (struct iface));
             strlcpy(ifRtnTemp->name, ifTemp->ifa_name, strlen(ifTemp->ifa_name)
                     + 1);
+	    ifRtnTemp->id = if_nametoindex(ifRtnTemp->name);
+
+#ifdef LOWLEVEL_DEBUG
+	    printf("Detected ifindex=%d for interface %d\n", ifRtnTemp->id, ifRtnTemp->name);
+	    if (++ifindex_zero_cnt>1) 
+		printf("WARNING: More than one interface with ifindex=0 detected!\n");
+#endif
+
             ifRtnTemp->flags = ifTemp->ifa_flags;
             ifRtnTemp->next = ifRtnList;
             ifRtnList = ifRtnTemp;
@@ -154,7 +165,9 @@ struct iface * if_list_get() {
 
                 } else if (ifList->ifa_addr->sa_family == AF_LINK) {
                     linkInfo = (struct sockaddr_dl *) ifTemp->ifa_addr;
-                    ifRtnTemp->id = linkInfo->sdl_index;
+
+                    //ifRtnTemp->id = linkInfo->sdl_index; // don't do it here, use if_nametoindex instead
+
                     /*
                      * NOTE!
                      * sdl_type is unsigned character; hardwareType is
