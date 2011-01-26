@@ -328,7 +328,7 @@ release-src: VERSION-src
 		mv ../$(DIR) ../dibbler-$(VERSION); \
 	fi
 	@echo "[TAR/GZ ] ../dibbler-$(VERSION).tar.gz"
-	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
+	cd ..; tar czvf dibbler-tmp.tar.gz --exclude .svn --exclude '*.exe' --exclude '*.o' \
         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' --exclude 'debian' --exclude 'doc/rfc' \
 	--exclude 'doc/rfc-drafts' --exclude 'doc/iana' --exclude 'Port-winnt2k/tpipv6.h' \
 	--exclude 'Port-winnt2k/wspiapi.h' dibbler-`cat dibbler-version`
@@ -473,7 +473,7 @@ fixme:
 tags:
 	@echo "[TAGS   ]"
 	rm -f TAGS
-	find . -name '*.cpp' -or -name '*.h' | xargs etags
+	find . -name '*.cpp' -or -name '*.h' -or -name '*.c' | xargs etags
 
 clean-libs:
 	find . -name *.a -exec rm {} \;

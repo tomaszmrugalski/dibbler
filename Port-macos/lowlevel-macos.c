@@ -526,3 +526,24 @@ char * error_message() {
     return Message;
 }
 
+
+/** 
+ * begin link monitoring
+ * 
+ * @param monitored_links head of the monitored links list
+ * @param notify pointer to variable that is going to be modifed if change is detected
+ */
+void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
+{
+    printf("Link change monitoring is not supported yet on Macs. Sorry.\n");
+    return;
+}
+
+/** 
+ * cleanup code for link state monitoring
+ * 
+ */
+void link_state_change_cleanup()
+{
+    return;
+}
