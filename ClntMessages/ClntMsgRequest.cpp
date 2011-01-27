@@ -70,13 +70,15 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
     Options = opts;
 
     // set proper Parent in copied options
-    for (TOptList::iterator opt=Options.begin(); opt!=Options.end(); ++opt)
+    TOptList::iterator opt=Options.begin();
+    while (opt!=Options.end())
     {
         if ( (*opt)->getOptType() == OPTION_AAAAUTH || (*opt)->getOptType() == OPTION_ELAPSED_TIME)
-	    opt = Options.erase(opt);
-	else
-	    (*opt)->setParent(this);
-
+	          opt = Options.erase(opt);
+        else {
+	          (*opt)->setParent(this);
+            ++opt;
+        }
     }
 
     // delete OPTION_KEYGEN from OPTION_ORO (needed only once)
