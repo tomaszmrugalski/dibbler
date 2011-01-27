@@ -731,10 +731,8 @@ void TClntTransMgr::checkSolicit() {
 	if (iface->countTA() ) {
 	    iface->firstTA();
 	    ta = iface->getTA();
-	    if (ta->getState()==STATE_NOTCONFIGURED)
-		ta->setState(STATE_INPROCESS);
-	    else
-		ta = 0;
+	    if (ta->getState()!=STATE_NOTCONFIGURED)
+            ta = 0;
 	}
 
 	// step 3: check if there are any PD to be configured

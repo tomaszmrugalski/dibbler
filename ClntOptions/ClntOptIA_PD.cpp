@@ -8,7 +8,7 @@
  */
 
 #include "AddrIA.h"
-#include "ClntCfgPD.h"
+#include "ClntCfgMgr.h"
 #include "ClntOptIA_PD.h"
 #include "ClntOptIAPrefix.h"
 #include "ClntOptStatusCode.h"
@@ -273,7 +273,7 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
 	    action = "update";
 	    break;
 	case TClntIfaceMgr::PREFIX_MODIFY_DEL:
-	    ClntAddrMgr().delPrefix(CfgMgr->getDUID(), this->IAID, prefix->getPrefix(), false);
+	    ClntAddrMgr().delPrefix(ClntCfgMgr().getDUID(), this->IAID, prefix->getPrefix(), false);
 	    status = ClntIfaceMgr().delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() );
 	    action = "delete";
 	    break;
@@ -317,7 +317,7 @@ bool TClntOptIA_PD::isValid()
 
 void TClntOptIA_PD::setState(EState state)
 {
-    SPtr<TClntCfgIface> cfgIface = CfgMgr->getIface(this->Iface);
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(this->Iface);
 
     SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(getIAID());
     if (!cfgPD) {
@@ -341,9 +341,5 @@ void TClntOptIA_PD::setState(EState state)
 void TClntOptIA_PD::clearContext()
 {
     DUID = 0;
-    AddrMgr = 0;
-    IfaceMgr = 0;
-    TransMgr = 0;
-    CfgMgr = 0;
     OriginalMsg = 0;
 }

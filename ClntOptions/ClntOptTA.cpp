@@ -16,6 +16,8 @@
 #include "ClntOptStatusCode.h"
 #include "Logger.h"
 #include "ClntOptIAAddress.h"
+#include "ClntAddrMgr.h"
+#include "ClntIfaceMgr.h"
 
 /** 
  * Constructor used during 
@@ -134,14 +136,14 @@ TClntOptTA::~TClntOptTA()
  */bool TClntOptTA::doDuties()
 {
     // find this TA in addrMgr...
-    SPtr<TAddrIA> ta = AddrMgr->getTA(this->getIAID());
+    SPtr<TAddrIA> ta = ClntAddrMgr().getTA(this->getIAID());
 
     if (!ta) {
 	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB." << LogEnd;
-	ta = new TAddrIA(this->Iface, TAddrIA::TYPE_TA, 0 /*if unicast, then this->Addr*/, 
-			 this->DUID, DHCPV6_INFINITY, 
-			 DHCPV6_INFINITY, this->getIAID());
-	AddrMgr->addTA(ta);
+        ta = new TAddrIA(this->Iface, TAddrIA::TYPE_TA, 0 /*if unicast, then this->Addr*/, 
+		         this->DUID, DHCPV6_INFINITY, 
+		         DHCPV6_INFINITY, this->getIAID());
+        ClntAddrMgr().addTA(ta);
     }
 
     // IAID found, set up new received options.
@@ -149,7 +151,7 @@ TClntOptTA::~TClntOptTA()
     SPtr<TClntOptIAAddress> optAddr;
 
     SPtr<TIfaceIface> ptrIface;
-    ptrIface = IfaceMgr->getIfaceByID(this->Iface);
+    ptrIface = ClntIfaceMgr().getIfaceByID(this->Iface);
     if (!ptrIface) 
     {
 	Log(Error) << "Interface " << this->Iface << " not found." << LogEnd;
@@ -197,9 +199,9 @@ TClntOptTA::~TClntOptTA()
     // mark this TA as configured
     SPtr<TClntCfgTA> cfgTA;
     SPtr<TClntCfgIface> cfgIface;
-    if (! (cfgIface = CfgMgr->getIface(this->Iface)) ) {
-	Log(Error) << "Unable to find TA class in the CfgMgr, on the " << this->Iface << " interface." << LogEnd;
-	return true;
+    if (! (cfgIface = ClntCfgMgr().getIface(this->Iface)) ) {
+        Log(Error) << "Unable to find TA class in the CfgMgr, on the " << this->Iface << " interface." << LogEnd;
+        return true;
     }
     cfgIface->firstTA();
     cfgTA = cfgIface->getTA();
@@ -224,7 +226,7 @@ SPtr<TClntOptIAAddress> TClntOptTA::getAddr(SPtr<TIPv6Addr> addr)
 
 void TClntOptTA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )
 {
-    SPtr<TAddrIA> ptrIA = AddrMgr->getIA(IAID);
+    SPtr<TAddrIA> ptrIA = ClntAddrMgr().getIA(IAID);
     if (ptrIA)
         ptrIA->delAddr(addr);
     else
@@ -248,12 +250,7 @@ bool TClntOptTA::isValid()
     return true;
 }
 
-void TClntOptTA::setContext(SPtr<TClntAddrMgr> addrMgr, SPtr<TClntIfaceMgr> ifaceMgr,
-			    SPtr<TClntCfgMgr> cfgMgr, int iface,
-			    SPtr<TIPv6Addr> clntAddr) {
-    this->IfaceMgr = ifaceMgr;
-    this->AddrMgr  = addrMgr;
-    this->CfgMgr   = cfgMgr;
+void TClntOptTA::setContext(int iface, SPtr<TIPv6Addr> clntAddr) {
     this->Iface    = iface;
     this->Addr     = clntAddr;
 }

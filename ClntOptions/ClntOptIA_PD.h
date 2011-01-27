@@ -49,13 +49,7 @@ class TClntOptIA_PD : public TOptIA_PD
     SPtr<TDUID> DUID;
     int Iface;
 
-    /* Context */
-    SPtr<TClntIfaceMgr> IfaceMgr;
-    SPtr<TClntTransMgr> TransMgr;
-    SPtr<TClntCfgMgr>   CfgMgr;
-    SPtr<TClntAddrMgr>  AddrMgr;
     TMsg * OriginalMsg;
-    /* Context */
 };
 
 #endif /* CLNTOPTIA_PD_H */

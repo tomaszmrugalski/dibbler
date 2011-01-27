@@ -51,11 +51,11 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     SPtr<TClntCfgIA> ia;
     iaLst.first();
     while (ia = iaLst.get()) {
-	SPtr<TClntOptIA_NA> iaOpt;
-	iaOpt = new TClntOptIA_NA(ia, this);
-	Options.push_back( (Ptr*)iaOpt );
-	if (!remoteAutoconf)
-	    ia->setState(STATE_INPROCESS);
+        SPtr<TClntOptIA_NA> iaOpt;
+        iaOpt = new TClntOptIA_NA(ia, this);
+        Options.push_back( (Ptr*)iaOpt );
+        if (!remoteAutoconf)
+            ia->setState(STATE_INPROCESS);
     }
 
     // TA is provided by ::checkSolicit()
@@ -70,10 +70,10 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     SPtr<TClntCfgPD> pd;
     pdLst.first();
     while ( pd = pdLst.get() ) {
-	SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd, this);
-	Options.push_back( (Ptr*)pdOpt );
-	if (remoteAutoconf)
-	    pd->setState(STATE_INPROCESS);
+        SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd, this);
+        Options.push_back( (Ptr*)pdOpt );
+        if (!remoteAutoconf)
+            pd->setState(STATE_INPROCESS);
     }
     
     if(rapid)
@@ -163,15 +163,15 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
     // msg  == reply
     SPtr<TOptDUID> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
     if (!srvDUID) {
-	Log(Notice) << "No server identifier provided. Message ignored." << LogEnd;
-	return true;
+        Log(Notice) << "No server identifier provided. Message ignored." << LogEnd;
+        return true;
     }
     
     //is this server rejected?
     SPtr<TClntCfgIface> iface = ClntCfgMgr().getIface(this->Iface);
     if (!iface) {
-	Log(Error) << "Unable to find iface=" << this->Iface << "." << LogEnd;
-	return false;
+        Log(Error) << "Unable to find iface=" << this->Iface << "." << LogEnd;
+        return true;
     }
 
     if (iface->isServerRejected(msg->getAddr(), srvDUID->getDUID())) {
@@ -182,35 +182,35 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
     // have we asked for IA?
     if (this->getOption(OPTION_IA_NA))
     {
-	SPtr<TClntOptIA_NA> ia = (Ptr*)msg->getOption(OPTION_IA_NA);
-	if (!ia)  {
-	    Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
-	    return true;
-	}
-	if (!ia->getOption(OPTION_IAADDR)) {
-	    Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
-	    return true;
-	}
-	SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
-	if (st && st->getCode()!= STATUSCODE_SUCCESS) {
-	    Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode() 
-			<< "(" << st->getText() << "). Ignored." << LogEnd;
-	    return true;
-	}
+        ///@todo Check if proper IAIDs are returned, also if all IA were answered (if requested several IAs were requested)
+        SPtr<TClntOptIA_NA> ia = (Ptr*)msg->getOption(OPTION_IA_NA);
+        if (!ia)  {
+            Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
+            return true;
+        }
+        if (!ia->getOption(OPTION_IAADDR)) {
+            Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
+            return true;
+        }
+        SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
+        if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+            Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode() 
+	            << "(" << st->getText() << "). Ignored." << LogEnd;
+            return true;
+        }
     }
-    
-
-    
+        
     // have we asked for TA?
     if ( (this->getOption(OPTION_IA_TA)) && (!msg->getOption(OPTION_IA_TA)) ) {
-	Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
-	return true;
+        Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
+        return true;
     }
 
     // have we asked for PD?
     if ( (this->getOption(OPTION_IA_PD)) && (!msg->getOption(OPTION_IA_PD)) ) {
-	Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
-	return true;
+        // @todo check if PDID is ok (and if all requested PDs are returned)
+        Log(Notice) << "PD option requested, but not present in this message. Ignored." << LogEnd;
+        return true;
     }
 	 
     // everything seems ok

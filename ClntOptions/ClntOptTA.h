@@ -18,12 +18,8 @@ class TMsg;
 
 #include "OptTA.h"
 #include "ClntOptIAAddress.h"
-#include "ClntIfaceMgr.h"
-#include "ClntTransMgr.h"
-#include "ClntCfgMgr.h"
-#include "ClntAddrMgr.h"
 #include "IPv6Addr.h"
-#include "ClntCommon.h"
+#include "Msg.h"
 
 class TClntOptTA : public TOptTA
 {
@@ -43,19 +39,13 @@ class TClntOptTA : public TOptTA
     bool isValid();
     void setIface(int iface); // used to override interface (e.g. when msg is received via loopback)
 
-    void setContext(SPtr<TClntAddrMgr> addrMgr, SPtr<TClntIfaceMgr> ifaceMgr,
-		    SPtr<TClntCfgMgr> cfgMgr, int iface, SPtr<TIPv6Addr> clntAddr);
+    void setContext(int iface, SPtr<TIPv6Addr> clntAddr);
 
  private:
     void releaseAddr(long IAID, SPtr<TIPv6Addr> addr );
 
     SPtr<TIPv6Addr> Addr;
     int Iface;
-
-    TCtx * Ctx;
-    SPtr<TClntIfaceMgr> IfaceMgr;
-    SPtr<TClntCfgMgr>   CfgMgr;
-    SPtr<TClntAddrMgr>  AddrMgr;
 };
 
 
