@@ -54,7 +54,7 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
     // @todo move this to a common place (for every message)
     if (!SrvCfgMgr().isClntSupported(ClientDUID, clntAddr, Iface)) {
         //No reply for this client 
-	Log(Notice) << "Client (DUID=" << ClientDUID->getPlain() << ",addr=" << *clntAddr 
+        Log(Notice) << "Client (DUID=" << ClientDUID->getPlain() << ",addr=" << *clntAddr 
 		    << ") was rejected due to accept-only or reject-client." << LogEnd;
         return false;
     }
@@ -100,7 +100,8 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
 	    ORO->addOption(OPTION_AUTH);
 	    break;
 	}                 
-	case OPTION_ORO: 
+	case OPTION_ORO:
+    case OPTION_CLIENTID:
 	case OPTION_ELAPSED_TIME : {
 	    break;
 	}
