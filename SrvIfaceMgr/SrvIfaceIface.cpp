@@ -115,7 +115,15 @@ ostream & operator <<(ostream & strum, TSrvIfaceIface &x) {
 
     for (int i=0; i<x.LLAddrCnt; i++) {
 	inet_ntop6(x.LLAddr+i*16,buf);
-	strum << "    <Addr>" << buf << "</Addr>" << endl;
+	strum << "    <Addr scope=\"local\">" << buf << "</Addr>" << endl;
+    }
+
+    strum << "    <!-- " << x.countGlobalAddr() << " non-local (global) addrs -->" << endl;
+
+    x.firstGlobalAddr();
+    SPtr<TIPv6Addr> addr;
+    while (addr = x.getGlobalAddr()) {
+      	strum << "    <Addr scope=\"global\">" << *addr << "</Addr>" << endl;
     }
 
     strum << "    <Mac length=\"" << x.Maclen << "\">";
