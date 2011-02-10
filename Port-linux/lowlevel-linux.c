@@ -167,6 +167,7 @@ struct iface * if_list_get()
 #endif
 
 	tmp = malloc(sizeof(struct iface));
+	memset(tmp, 0, sizeof(struct iface));
 	snprintf(tmp->name,MAX_IFNAME_LENGTH,"%s",(char*)RTA_DATA(tb[IFLA_IFNAME]));
 	tmp->id=ifi->ifi_index;
 	tmp->flags=ifi->ifi_flags;
