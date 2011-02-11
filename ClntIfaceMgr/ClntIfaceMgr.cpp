@@ -274,15 +274,15 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
     SPtr<TClntCfgIface> cfgIface;
     cfgIface = ClntCfgMgr().getIface(iface->getID());
     if (!cfgIface) {
-	      Log(Error) << "Unable to find interface with ifindex=" << iface->getID() << "." << LogEnd;
-	      return false;
+        Log(Error) << "Unable to find interface with ifindex=" << iface->getID() << "." << LogEnd;
+        return false;
     }
     
     // For the moment, we just take the first DNS entry.
     List(TIPv6Addr) DNSSrvLst = iface->getDNSServerLst();
     if (!DNSSrvLst.count()) {
-	      Log(Error) << "Unable to find DNS Server. FQDN add failed." << LogEnd;
-	      return false;
+        Log(Error) << "Unable to find DNS Server. FQDN add failed." << LogEnd;
+        return false;
     }
     DNSSrvLst.first();
     DNSAddr = DNSSrvLst.get();
@@ -293,24 +293,24 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
     ptrAddrIA = ClntAddrMgr().getIA();
     
     if (ptrAddrIA->countAddr() > 0) {
-	      ptrAddrIA->firstAddr();
-	      addr = ptrAddrIA->getAddr()->get();
+        ptrAddrIA->firstAddr();
+        addr = ptrAddrIA->getAddr()->get();
 	
-	      Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *addr 
-		          << " and FQDN=" << fqdn << LogEnd;
+        Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr 
+		    << ", IP=" << *addr << " and FQDN=" << fqdn << LogEnd;
 	
-			  // remember DNS Address (used during address release)
-    	  ptrAddrIA->setFQDNDnsServer(DNSAddr);
+	// remember DNS Address (used during address release)
+        ptrAddrIA->setFQDNDnsServer(DNSAddr);
 	
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
       	/* add AAAA record */
-	      DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(), DNSUPDATE_AAAA);
-	      int result = act->run();
-	      act->showResult(result);
-	      delete act;
+        DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(), DNSUPDATE_AAAA);
+        int result = act->run();
+        act->showResult(result);
+        delete act;
 #else
-	      Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
-	      return false;
+        Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+        return false;
 #endif
     }
     return true;
@@ -325,9 +325,9 @@ bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, strin
     ia->firstAddr();
     SPtr<TAddrAddr> tmpAddr = ia->getAddr();
     if (!tmpAddr) {
-	      Log(Error) << "FQDN: Unable to delete FQDN: IA (IAID=" << ia->getIAID() << ") does not have any addresses." 
-		         << LogEnd;
-	      return false;
+	Log(Error) << "FQDN: Unable to delete FQDN: IA (IAID=" << ia->getIAID() 
+		   << ") does not have any addresses." << LogEnd;
+	return false;
     }
     SPtr<TIPv6Addr> myAddr = tmpAddr->get();
     

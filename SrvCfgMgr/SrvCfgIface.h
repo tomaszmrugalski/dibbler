@@ -113,9 +113,7 @@ public:
     string getFQDNModeString();
     int  getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
-    void setFQDNMode(int FQDNMode);
     bool supportFQDN();
-    bool acceptUnknownFQDN();
     bool leaseQuerySupport();
 
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
@@ -150,8 +148,8 @@ private:
     int FQDNMode;
     int revDNSZoneRootLength;
     unsigned int PrefixLength;
-    bool FQDNSupport;
-    bool AcceptUnknownFQDN;
+    EUnknownFQDNMode UnknownFQDN;
+    std::string FQDNDomain;
 
     // --- per-client parameters (exceptions) ---
     List(TSrvCfgOptions) ExceptionsLst;

@@ -9,7 +9,7 @@
  *
  */
 
-#include "limits.h"
+#include "DHCPDefaults.h"
 
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
@@ -199,42 +199,6 @@ typedef enum {
 // INFINITY + 1 is 0. That's cool!
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
 
-// How long should we wait before we assume that OS detected duplicated addresses (in secs)
-#define DADTIMEOUT (unsigned) 3
-
-// addresses reported as DECLINED are not used for 2 hours
-#define DECLINED_TIMEOUT (unsigned) 7200
-
-// DHCPv6 server default values
-#define SERVER_DEFAULT_DOMAIN ""
-#define SERVER_DEFAULT_TIMEZONE ""
-#define SERVER_DEFAULT_CLNTMAXLEASE ULONG_MAX
-#define SERVER_DEFAULT_IFACEMAXLEASE ULONG_MAX
-#define SERVER_DEFAULT_PREFERENCE 0
-#define SERVER_DEFAULT_RAPIDCOMMIT false
-
-#define SERVER_DEFAULT_MIN_T1    5
-#define SERVER_DEFAULT_MAX_T1    3600      /* 1 hour */
-#define SERVER_DEFAULT_MIN_T2    10
-#define SERVER_DEFAULT_MAX_T2    5400      /* 1,5 hour */
-#define SERVER_DEFAULT_MIN_PREF  7200      /* 2 hours */
-#define SERVER_DEFAULT_MAX_PREF  86400     /* 1 day */
-#define SERVER_DEFAULT_MIN_VALID 10800     /* 3 hours */
-#define SERVER_DEFAULT_MAX_VALID 172800    /* 2 days */
-#define SERVER_DEFAULT_CLASS_SHARE 100
-#define SERVER_DEFAULT_CLASS_MAX_LEASE ULONG_MAX
-#define SERVER_DEFAULT_TA_PREF_LIFETIME 3600
-#define SERVER_DEFAULT_TA_VALID_LIFETIME 7200
-#define SERVER_DEFAULT_CACHE_SIZE 1048576   /* cache size, specified in bytes */
-#define CLIENT_DEFAULT_T1 ULONG_MAX
-#define CLIENT_DEFAULT_T2 ULONG_MAX
-
-#define CLIENT_DEFAULT_UNICAST false
-#define CLIENT_DEFAULT_RAPID_COMMIT false
-
-#define CLIENT_DEFAULT_PREFIX_LENGTH 64
-#define CLIENT_DEFAULT_DIGEST DIGEST_NONE
-
 enum ETentative {
     TENTATIVE_UNKNOWN = -1,
     TENTATIVE_NO      = 0,
@@ -256,6 +220,15 @@ enum EDsLiteTunnelMode {
     TUNNEL_ADDR, // use DS_LITE_TUNNEL_ADDR option
     TUNNEL_NAME, // use DS_LITE_TUNNEL_NAME option
     TUNNEL_BOTH  // use both
+};
+
+// specifies server behavior, when receiving unknown FQDN
+enum EUnknownFQDNMode {
+    UNKNOWN_FQDN_REJECT = 0,      // reject unknown FQDNs (do not assign a name from pool)
+    UNKKOWN_FQDN_ACCEPT_POOL = 1, // assign other name available in pool
+    UNKNOWN_FQDN_ACCEPT = 2,      // accept unknown FQDNs
+    UKNNOWN_FQDN_APPEND = 3,      // accept, but append defined domain suffix
+    UKNNOWN_FQDN_PROCEDURAL = 4   // generate name procedurally, append defined domain suffix
 };
 
 // FQDN option flags

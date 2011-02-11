@@ -31,10 +31,6 @@
 #include "AddrAddr.h"
 #include "Logger.h"
 
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
-#include "DNSUpdate.h"
-#endif
-
 /** 
  * this constructor is used to create REPLY message as a response for CONFIRM message
  * 

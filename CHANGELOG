@@ -7,6 +7,8 @@
   - Fix: error in detecting MAC addresses on Mac
   - Fix: several crashes introduced in 0.8.0RC1 fixed
   - Fix: client no longer gets confused when requesting IA,TA and PD
+  - Srv: It is now possible to specify how server should handle unknown FQDNs from clients
+  - Srv: Is is now possible to specify DDNS server address, used during DNS Updates
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added

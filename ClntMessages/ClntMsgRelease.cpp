@@ -28,10 +28,6 @@
 #include "AddrIA.h"
 #include "AddrAddr.h"
 
-#ifndef MOD_CLNT_DISABLE_DNSUPDATE
-#include "DNSUpdate.h"
-#endif
-
 /** 
  * create RELEASE message
  * 

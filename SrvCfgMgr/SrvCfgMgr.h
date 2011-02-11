@@ -89,6 +89,9 @@ public:
     int getCacheSize();
     bool reconfigureSupport();
 
+    void fqdnDdnsAddress(SPtr<TIPv6Addr> ddnsAddress);
+    SPtr<TIPv6Addr> fqdnDdnsAddress();
+
     // Bulk-LeaseQuery
     void bulkLQAccept(bool enabled);
     void bulkLQTcpPort(unsigned short portNumber);
@@ -136,6 +139,9 @@ private:
     unsigned int AuthKeyGenNonceLen;
     List(DigestTypes) DigestLst;
 #endif
+
+    // DDNS address
+    SPtr<TIPv6Addr> FqdnDdnsAddress;
 
     // lease-query parameters
     bool BulkLQAccept;

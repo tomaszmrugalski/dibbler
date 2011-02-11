@@ -1012,3 +1012,13 @@ void TSrvCfgMgr::bulkLQTimeout(unsigned int timeout)
     BulkLQTimeout = timeout;
 }
 
+
+void TSrvCfgMgr::fqdnDdnsAddress(SPtr<TIPv6Addr> ddnsAddress)
+{
+    FqdnDdnsAddress = ddnsAddress;
+}
+
+SPtr<TIPv6Addr> TSrvCfgMgr::fqdnDdnsAddress()
+{
+    return FqdnDdnsAddress;
+}

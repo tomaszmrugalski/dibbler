@@ -14,7 +14,7 @@
 #include "SrvParsIfaceOpt.h"
 #include "OptAddr.h"
 #include "OptString.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
@@ -27,36 +27,49 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     LeaseQuery    = false; // don't support leasequery unless explicitly configured to do so
 
     // options
-    this->DNSServerSupport  = false;
-    this->DomainSupport     = false;
-    this->NTPServerSupport  = false;
-    this->TimezoneSupport   = false;
-    this->SIPServerSupport  = false;
-    this->SIPDomainSupport  = false;
-    this->FQDNSupport       = false;
-    this->AcceptUnknownFQDN = false;
-    this->NISServerSupport  = false;
-    this->NISDomainSupport  = false;
-    this->NISPServerSupport = false;
-    this->NISPDomainSupport = false;
-    this->LifetimeSupport   = false;
-    this->VendorSpecSupport = false;
+    DNSServerSupport  = false;
+    DomainSupport     = false;
+    NTPServerSupport  = false;
+    TimezoneSupport   = false;
+    SIPServerSupport  = false;
+    SIPDomainSupport  = false;
+    FQDNSupport       = false;
+    NISServerSupport  = false;
+    NISDomainSupport  = false;
+    NISPServerSupport = false;
+    NISPDomainSupport = false;
+    LifetimeSupport   = false;
+    VendorSpecSupport = false;
 
-    this->Relay = false;
-    this->RelayName = "[unknown]";
-    this->RelayID = -1;
-    this->RelayInterfaceID = -1;
+    UnknownFQDN = SERVER_DEFAULT_UNKNOWN_FQDN;
+    FQDNDomain = "";
+
+    Relay = false;
+    RelayName = "[unknown]";
+    RelayID = -1;
+    RelayInterfaceID = -1;
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
 }
 
-void TSrvParsIfaceOpt::acceptUnknownFQDN(bool accept) {
-    AcceptUnknownFQDN = accept;
+void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain) {
+    UnknownFQDN = mode;
+    FQDNDomain = domain;
 }
 
-bool TSrvParsIfaceOpt::acceptUnknownFQDN() {
-    return AcceptUnknownFQDN;
+/** 
+ * returns enum that specifies, how to handle unknown FQDNs
+ * 
+ * 
+ * @return 
+ */
+EUnknownFQDNMode TSrvParsIfaceOpt::getUnknownFQDN() {
+    return UnknownFQDN;
+}
+
+std::string TSrvParsIfaceOpt::getFQDNDomain() {
+    return FQDNDomain;
 }
 
 void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support) {

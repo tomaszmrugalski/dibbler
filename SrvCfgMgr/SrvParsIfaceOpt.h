@@ -90,8 +90,9 @@ public:
     string getFQDNName();
     int getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
-    void acceptUnknownFQDN(bool accept);
-    bool acceptUnknownFQDN();
+    void setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain);
+    EUnknownFQDNMode getUnknownFQDN();
+    std::string getFQDNDomain();
 
     SPtr<TDUID> getFQDNDuid(string name);
     void setFQDNLst(List(TFQDN) *fqdn);
@@ -170,12 +171,15 @@ private:
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
     string NISPDomain;
-    int FQDNMode;
-    bool AcceptUnknownFQDN;
-    int revDNSZoneRootLength;
     unsigned int Lifetime;
 
     List(TSrvOptVendorSpec) VendorSpec;
+
+    // FQDN
+    int FQDNMode;
+    EUnknownFQDNMode UnknownFQDN; // accept, reject, append domain, generate procedurally
+    std::string FQDNDomain;
+    int revDNSZoneRootLength;
 };
 
 #endif

@@ -331,10 +331,13 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     this->LeaseQuery    = opt->getLeaseQuerySupport();
 
     if (opt->supportFQDN()){
-	AcceptUnknownFQDN = opt->acceptUnknownFQDN();
+	UnknownFQDN = opt->getUnknownFQDN();
+	FQDNDomain  = opt->getFQDNDomain();
+
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 	this->setFQDNLst(opt->getFQDNLst());
-	this->setFQDNMode(opt->getFQDNMode());
+	FQDNMode = opt->getFQDNMode();
+	
 	this->setRevDNSZoneRootLength(opt->getRevDNSZoneRootLength());
 	Log(Debug) <<"FQDN: Support is enabled on the " << this->getName()  << " interface." << LogEnd;
 	Log(Debug) <<"FQDN: Mode set to " << this->getFQDNMode() << ": ";
@@ -394,8 +397,7 @@ void TSrvCfgIface::setDefaults() {
     this->NoConfig = false;
     this->preference = 0;
 
-    this->FQDNSupport             = false;
-    this->AcceptUnknownFQDN       = false;
+    this->UnknownFQDN = SERVER_DEFAULT_UNKNOWN_FQDN;
     this->PrefixDelegationSupport = false;
 }
 
@@ -459,7 +461,6 @@ void TSrvCfgIface::setRelayID(int id) {
 // --- option: FQDN ---
 void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
     this->FQDNLst = *fqdn;
-    this->FQDNSupport = true;
 }
 
 /**
@@ -473,20 +474,20 @@ void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
  * @return
  */
 SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, string hint) {
-    FQDNLst.first();
 
-    SPtr<TFQDN> bestFound=0; // best FQDN found for that client
-
+    SPtr<TFQDN> alternative = 0; // best FQDN found for that client
     SPtr<TFQDN> foo;
 
-    bool duplicate = false ; // whether the hint exists in the FQDN list
+    bool knownName = false ; // whether the hint exists in the FQDN list
 
+    FQDNLst.first();
     while (foo=this->FQDNLst.get()) {
 
 	if (foo->isUsed())
 	{ // client sent a hint, but it is used currently
+	    Log(Debug) << "FQDN: Client requested " << hint << ", but it is currently used." << LogEnd;
 	    if (foo->Name == hint)
-	     	   duplicate = true;
+	     	   knownName = true;
             continue;
 	}
 
@@ -501,53 +502,75 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
 
 	if (foo->Name == hint){
 	    // client asked for this name. Let's check if client is allowed to get this name.
-	   duplicate = true;
+	   knownName = true;
 	   if ( (!foo->Duid) && (!foo->Addr) ) {
 		Log(Debug) << "Client's hint: " << hint << " found in fqdn list, setting fqdn to "<< foo->Name << LogEnd;
 		return foo;
 	    }
 	}
 	if (!foo->Addr && !foo->Duid) {
-	    if (!bestFound)
-		bestFound = foo;
-	 //   return foo;
+	    if (!alternative)
+		alternative = foo;
 	}
     }
 
-    if (!hint.empty() &&  !duplicate )
+    switch (UnknownFQDN)
     {
-	if (acceptUnknownFQDN()) // should the server be accepting unknown names?
-	{
-	    Log(Debug) << "Client's hint: " << hint <<" but not found in FQDN list, creating an entry  " <<LogEnd;
-	    SPtr<TFQDN> newEntry = new TFQDN(hint,false);
-	    FQDNLst.append(newEntry);
-	    Log(Debug) << "Retured FQDN  " << newEntry->Name <<LogEnd;
-	    return newEntry;
-	} else
-	{
-	    Log(Info) << "FQDN: Client sent valid hint that is not mentioned in server configuration."
-		      << " Currently server is configured to drop such hints. To accept them, please "
-		      << "add accept-unknown-fqdn in the server.conf." << LogEnd;
-	}
+    default:
+    {
+	Log(Error) << "FQDN: Invalid unknown-fqdn mode specified (" << UnknownFQDN << ")." << LogEnd;
+	return 0;
+    }
+    case UNKNOWN_FQDN_REJECT:
+    {
+	Log(Info) << "FQDN: Client sent valid hint (" << hint << ") that is not "
+		  << "mentioned in server configuration. Server is configured to "
+		  << "drop such hints. To accept them, please "
+		  << "'add accept-unknown-fqdn X' in the server.conf (with X>0)." << LogEnd;
+	return 0;
+    }
+    case UNKKOWN_FQDN_ACCEPT_POOL:
+    {
+	if (alternative)
+	    Log(Info) << "FQDN: Client requested " << hint << ", but assigning other name (" 
+		      << alternative->Name << ") from available pool instead." << LogEnd;
+	return alternative;
+    }
+    case UNKNOWN_FQDN_ACCEPT:
+    {
+	Log(Info) << "FQDN: Accepting unknown (" << hint <<") FQDN requested by client." <<LogEnd;
+	SPtr<TFQDN> newEntry = new TFQDN(hint,false);
+	FQDNLst.append(newEntry);
+	Log(Debug) << "Retured FQDN  " << newEntry->Name <<LogEnd;
+	return newEntry;
+    }
+    case UKNNOWN_FQDN_APPEND:
+    {
+	string assignedDomain = hint + "." + FQDNDomain;
+	SPtr<TFQDN> newEntry = new TFQDN(assignedDomain, false);
+	FQDNLst.append(newEntry);
+	Log(Info) << "FQDN: Client requested (" << hint <<"), assiging (" << assignedDomain << ")." <<LogEnd;
+	return newEntry;
+    }
+    case UKNNOWN_FQDN_PROCEDURAL:
+    {
+	string tmp = addr->getPlain();
+	std::string::size_type j = 0;
+	while ( (j=tmp.find("::"))!=std::string::npos)
+	    tmp.replace(j,2,"-");
+	while ( (j=tmp.find(':'))!=std::string::npos)
+	    tmp.replace(j,2,"-");
+	tmp = tmp + "." + FQDNDomain;
+	SPtr<TFQDN> newEntry = new TFQDN(tmp, false);
+	FQDNLst.append(newEntry);
+	Log(Info) << "FQDN: Client requested (" << hint <<"), assiging (" << tmp << ")." <<LogEnd;
+	return newEntry;
     }
 
-    if (bestFound) {
-	Log(Debug) << "Not reserved FQDN found: " << bestFound->Name << LogEnd;
-	return bestFound;
     }
 
     // not found
     return 0;
-}
-
-/**
- * returns if server should accept FQDN hints that are not configured in the server.conf
- *
- *
- * @return true, if unknown names should be accepted
- */
-bool TSrvCfgIface::acceptUnknownFQDN() {
-    return AcceptUnknownFQDN;
 }
 
 SPtr<TDUID> TSrvCfgIface::getFQDNDuid(string name) {
@@ -560,20 +583,19 @@ List(TFQDN) *TSrvCfgIface::getFQDNLst() {
 }
 
 bool TSrvCfgIface::supportFQDN() {
-    return this->FQDNSupport;
+    return FQDNLst.count() || UnknownFQDN>=UNKNOWN_FQDN_ACCEPT;
 }
 
-void TSrvCfgIface::setFQDNMode(int FQDNMode) {
-    this->FQDNMode = FQDNMode;
-}
 int TSrvCfgIface::getFQDNMode(){
-    return this->FQDNMode;
+    return FQDNMode;
 }
+
 int TSrvCfgIface::getRevDNSZoneRootLength(){
-	return this->revDNSZoneRootLength;
+    return this->revDNSZoneRootLength;
 }
+
 void TSrvCfgIface::setRevDNSZoneRootLength(int revDNSZoneRootLength){
-	this->revDNSZoneRootLength=revDNSZoneRootLength;
+    this->revDNSZoneRootLength=revDNSZoneRootLength;
 }
 
 string TSrvCfgIface::getFQDNModeString() {
@@ -787,7 +809,11 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     if (iface.supportFQDN()) {
       SPtr<TFQDN> f;
       List(TFQDN) * lst = iface.getFQDNLst();
-      out << "    <fqdnOptions count=\"" << lst->count() << "\" prefix=\"" << iface.getRevDNSZoneRootLength() << "\">" << endl;
+      out << "    <fqdnOptions count=\"" << lst->count() << "\" prefix=\"" 
+	  << iface.getRevDNSZoneRootLength() << "\""
+	  << " domain=\"" << iface.FQDNDomain << "\""
+	  << " unknownFqdnMode=\"" << iface.UnknownFQDN << "\""
+	  << ">" << endl;
       lst->first();
       while (f=lst->get()) {
 	    out << "       " << *f;
@@ -811,25 +837,23 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
 void TSrvCfgIface::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
 {
+    //  Log(Info)<<"Mapping allow, deny list inside interface "<<Name<<LogEnd;
+    SPtr<TSrvCfgAddrClass> ptrClass;
+    this->SrvCfgAddrClassLst.first();
+    while(ptrClass=SrvCfgAddrClassLst.get()){
+	ptrClass->mapAllowDenyList(clientClassLst);
+    }
 
-	//  Log(Info)<<"Mapping allow, deny list inside interface "<<Name<<LogEnd;
-	  SPtr<TSrvCfgAddrClass> ptrClass;
-	  this->SrvCfgAddrClassLst.first();
-	  while(ptrClass=SrvCfgAddrClassLst.get()){
-		  ptrClass->mapAllowDenyList(clientClassLst);
-	  }
-
-
-   // Map the Allow and Deny list to TA c
-	  SPtr<TSrvCfgTA> ptrTA;
-	  this->SrvCfgTALst.first();
-	  while(ptrTA = SrvCfgTALst.get()){
-		  ptrTA->mapAllowDenyList(clientClassLst);
-	  }
-	  // Map the Allow and Deny list to prefix
-	  SPtr<TSrvCfgPD> ptrPD;
-	  this->SrvCfgPDLst.first();
-	  while(ptrPD = SrvCfgPDLst.get()){
-		  ptrPD->mapAllowDenyList(clientClassLst);
-	  }
+    // Map the Allow and Deny list to TA c
+    SPtr<TSrvCfgTA> ptrTA;
+    this->SrvCfgTALst.first();
+    while(ptrTA = SrvCfgTALst.get()){
+	ptrTA->mapAllowDenyList(clientClassLst);
+    }
+    // Map the Allow and Deny list to prefix
+    SPtr<TSrvCfgPD> ptrPD;
+    this->SrvCfgPDLst.first();
+    while(ptrPD = SrvCfgPDLst.get()){
+	ptrPD->mapAllowDenyList(clientClassLst);
+    }
 }

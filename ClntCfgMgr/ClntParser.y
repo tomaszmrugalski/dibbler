@@ -61,7 +61,7 @@ void StartPDDeclaration();                                                  \
 bool EndPDDeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
-			 TClntCfgMgr * CfgMgr;\
+TClntCfgMgr * CfgMgr;                                                       \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
 virtual ~ClntParser();                                                      \

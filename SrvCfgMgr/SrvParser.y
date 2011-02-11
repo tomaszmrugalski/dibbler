@@ -95,7 +95,8 @@ virtual ~SrvParser();
 %token IFACE_, RELAY_, IFACE_ID_, IFACE_ID_ORDER_, CLASS_, TACLASS_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, LOGCOLORS_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
-%token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, FQDN_, ACCEPT_UNKNOWN_FQDN_, LIFETIME_
+%token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, LIFETIME_
+%token FQDN_, ACCEPT_UNKNOWN_FQDN_, FQDN_DDNS_ADDRESS_
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_, SHARE_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
@@ -165,6 +166,7 @@ GlobalOption
 | AuthKeyGenNonceLen
 | Experimental
 | IfaceIDOrder
+| FqdnDdnsAddress
 | GuessMode
 | ClientClass
 ;
@@ -423,7 +425,7 @@ FQDNList
 }
 | FQDNList ',' STRING_
 {
-	Log(Notice)<< "FQDN:"<<$3<<" has no reservations (is available to everyone)."<<LogEnd;
+	Log(Debug) << "FQDN:"<<$3<<" has no reservations (is available to everyone)."<<LogEnd;
     PresentFQDNLst.append(new TFQDN($3,false));
 }
 | FQDNList ',' STRING_ '-' DUID_
@@ -1210,11 +1212,25 @@ FQDNOption
 ;
 
 AcceptUnknownFQDN
-:ACCEPT_UNKNOWN_FQDN_
+:ACCEPT_UNKNOWN_FQDN_ Number STRING_
 {
-    ParserOptStack.getLast()->acceptUnknownFQDN(true);
-    Log(Debug) << "FQDN: Unknown fqdn names will be accepted by the server." << LogEnd;
-};
+    ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode($2), string($3) );
+    Log(Debug) << "FQDN: Unknown fqdn names processing set to " << $2 << ", domain=" << $3 << "." << LogEnd;
+}
+|ACCEPT_UNKNOWN_FQDN_ Number
+{
+    ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode($2), string("") );
+    Log(Debug) << "FQDN: Unknown fqdn names processing set to " << $2 << ", no domain." << LogEnd;
+}
+;
+
+FqdnDdnsAddress
+:FQDN_DDNS_ADDRESS_ IPV6ADDR_
+{
+    addr = new TIPv6Addr($2);
+    CfgMgr->fqdnDdnsAddress( addr );
+    Log(Info) << "FQDN: DDNS updates will be performed to " << addr->getPlain() << "." << LogEnd;
+}
 
 //////////////////////////////////////////////////////////////////////
 //NIS-SERVER option///////////////////////////////////////////////////
