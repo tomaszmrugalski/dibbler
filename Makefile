@@ -433,11 +433,11 @@ install:
 DIR=`basename $(PWD)`
 
 snapshot: clean
-	cvs update -d
-	rm -f dibbler-`date +%Y%m%d`-CVS.tar.gz
-	cd ..; tar czf dibbler-CVS.tar.gz $(DIR)
-	mv ../dibbler-CVS.tar.gz dibbler-`date +%Y%m%d`-CVS.tar.gz
-	echo "Snapshot has been stored in the dibbler-`date +%Y%m%d`-CVS.tar.gz file."
+	svn update
+	rm -f dibbler-`date +%Y%m%d`-SVN.tar.gz
+	cd ..; tar czf dibbler-SVN.tar.gz $(DIR) --exclude .svn --exclude '*.exe' --exclude '*.o' --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz'
+	mv ../dibbler-SVN.tar.gz dibbler-`date +%Y%m%d`-SVN.tar.gz
+	echo "Snapshot has been stored in the dibbler-`date +%Y%m%d`-SVN.tar.gz file."
 
 help:
 	@echo "Welcome to Dibbler building help system"
