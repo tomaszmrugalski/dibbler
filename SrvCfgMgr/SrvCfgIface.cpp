@@ -485,9 +485,17 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
 
 	if (foo->isUsed())
 	{ // client sent a hint, but it is used currently
-	    Log(Debug) << "FQDN: Client requested " << hint << ", but it is currently used." << LogEnd;
-	    if (foo->Name == hint)
+            if ( foo->getDuid() == *duid && foo->getAddr() == *addr) {
+                Log(Debug) << "FQDN: This client (DUID=" << duid->getPlain() 
+                           << ") has already assigned name " << foo->Name
+                           <<" to its address " << foo->getAddr().getPlain() << "." << LogEnd;
+                return foo;
+            }
+
+	    if (foo->Name == hint) {
+                Log(Debug) << "FQDN: Client requested " << hint << ", but it is currently used." << LogEnd;
 	     	   knownName = true;
+            }
             continue;
 	}
 
@@ -546,10 +554,22 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
     }
     case UKNNOWN_FQDN_APPEND:
     {
-	string assignedDomain = hint + "." + FQDNDomain;
+	string assignedDomain = hint;
+        std::string::size_type j = assignedDomain.find(".");
+        assignedDomain = assignedDomain.substr(0, j); // chop off anything after first dot
+
+        // sanity check
+        for (int k=assignedDomain.length(); k>=0; k--){
+            char x = assignedDomain[k];
+            if (!isalpha(x) && !isdigit(x) && (x!='_') && (x!='-') ) {
+                assignedDomain.replace(k,1,""); // remove all inappropriate chars
+            }
+        }
+
+        assignedDomain += "." + FQDNDomain;
 	SPtr<TFQDN> newEntry = new TFQDN(assignedDomain, false);
 	FQDNLst.append(newEntry);
-	Log(Info) << "FQDN: Client requested (" << hint <<"), assiging (" << assignedDomain << ")." <<LogEnd;
+	Log(Info) << "FQDN: Client requested (" << hint <<"), assigning (" << assignedDomain << ")." <<LogEnd;
 	return newEntry;
     }
     case UKNNOWN_FQDN_PROCEDURAL:
@@ -557,9 +577,9 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
 	string tmp = addr->getPlain();
 	std::string::size_type j = 0;
 	while ( (j=tmp.find("::"))!=std::string::npos)
-	    tmp.replace(j,2,"-");
+	    tmp.replace(j,1,"-");
 	while ( (j=tmp.find(':'))!=std::string::npos)
-	    tmp.replace(j,2,"-");
+	    tmp.replace(j,1,"-");
 	tmp = tmp + "." + FQDNDomain;
 	SPtr<TFQDN> newEntry = new TFQDN(tmp, false);
 	FQDNLst.append(newEntry);
