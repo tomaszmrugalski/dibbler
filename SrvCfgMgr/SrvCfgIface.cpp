@@ -561,7 +561,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
         // sanity check
         for (int k=assignedDomain.length(); k>=0; k--){
             char x = assignedDomain[k];
-            if (!isalpha(x) && !isdigit(x) && (x!='_') && (x!='-') ) {
+            if (!isalpha(x) && !isdigit(x) && (x!='-') ) {
                 assignedDomain.replace(k,1,""); // remove all inappropriate chars
             }
         }
