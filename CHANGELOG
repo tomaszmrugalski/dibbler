@@ -10,6 +10,7 @@
   - Srv: It is now possible to specify how server should handle unknown FQDNs from clients
   - Srv: Is is now possible to specify DDNS server address, used during DNS Updates
   - Doc: Fixed bug in example in server man page
+  - Srv: answers to RENEW are now constructed properly (single SERVERID is enough)
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added

@@ -441,25 +441,25 @@ bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
 
     if (clntIDmandatory && (clntCnt!=1) ) {
 	Log(Warning) << "Exactly 1 ClientID option required in the " << this->getName() 
-		     << " message, but " << clntCnt << " received." << LogEnd;
+		     << " message, but " << clntCnt << " received.";
 	status = false;
     }
 
     if (srvIDmandatory && (srvCnt!=1) ) {
 	Log(Warning) << "Exactly 1 ServerID option required in the " << this->getName() 
-		     << " message, but " << srvCnt << " received." << LogEnd;
+		     << " message, but " << srvCnt << " received.";
 	status = false;
     }
     
     if (!srvIDmandatory && (srvCnt)) {
 	Log(Warning) << "No ServerID option is allowed in the " << this->getName()
-		     << " message, but " << srvCnt << " received." << LogEnd;
+		     << " message, but " << srvCnt << " received.";
 	status = false;
     }
 
     if (authCnt > 1) {
 	Log(Warning) << "No more that one authentication option is allowed in the " << this->getName()
-		     << " message, but " << srvCnt << " received." << LogEnd;
+		     << " message, but " << srvCnt << " received.";
 	status = false;
     }
 

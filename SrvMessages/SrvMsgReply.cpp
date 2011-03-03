@@ -587,9 +587,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
     {
         switch (ptrOpt->getOptType()) 
         {
-        case OPTION_SERVERID:
-            Options.push_back(ptrOpt);
-            break;
         case OPTION_IA_NA: {
 	    SPtr<TSrvOptIA_NA> optIA_NA;
 	    optIA_NA = new TSrvOptIA_NA((Ptr*)ptrOpt, 
