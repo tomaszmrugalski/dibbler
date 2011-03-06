@@ -753,6 +753,9 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     SPtr<TIPv6Addr> clntAddr = solicit->getAddr();
     unsigned int clntIface = solicit->getIface();
 
+    // append RAPID-COMMIT option
+    Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
+
     /// @todo move this to a common message handling place
     // is this client supported?
     if (!SrvCfgMgr().isClntSupported(ClientDUID, clntAddr, clntIface)) {

@@ -7,6 +7,7 @@
   - Fix: error in detecting MAC addresses on Mac
   - Fix: several crashes introduced in 0.8.0RC1 fixed
   - Fix: client no longer gets confused when requesting IA,TA and PD
+  - Fix: Server now sends back rapid-commit option
   - Srv: It is now possible to specify how server should handle unknown FQDNs from clients
   - Srv: Is is now possible to specify DDNS server address, used during DNS Updates
   - Doc: Fixed bug in example in server man page
