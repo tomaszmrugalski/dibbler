@@ -923,7 +923,7 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     return out;
 }
 
-
+/// @todo: Fix this! We check if message is from accepted client, but don't do anything with that info
 void TSrvCfgMgr::InClientClass(SPtr<TSrvMsg> msg)
 {
 	// For each client class, check whether the message belong to ClientClass
