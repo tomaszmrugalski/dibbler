@@ -12,6 +12,7 @@
   - Srv: Is is now possible to specify DDNS server address, used during DNS Updates
   - Doc: Fixed bug in example in server man page
   - Srv: answers to RENEW are now constructed properly (single SERVERID is enough)
+  - All: Inteface link address is now detected properly on Mac OS X
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added

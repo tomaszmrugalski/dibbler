@@ -150,17 +150,10 @@ struct iface * if_list_get() {
             printf("Detected interface %s, ifindex=%d, flags=%d\n", 
                    iface_ptr->name, iface_ptr->id, iface_ptr->flags);
             
-            // add this new structure to the head of the interfaces list
-            {
-                // add to the end - simple, fast and easy, but reverts interface order
-                // iface_ptr->next = iface_lst;
-                // iface_lst = iface_ptr;
-
-                // add interface to the end (proper, but more complicated)
-                iface_lst = if_list_add(iface_lst, iface_ptr);
-            }
+            // add this new structure to the end of the interfaces list
+            iface_lst = if_list_add(iface_lst, iface_ptr);
         }
-        
+
         addr_ptr = addr_ptr->ifa_next;
     }
 
@@ -211,7 +204,7 @@ struct iface * if_list_get() {
 
                     }
 
-                } else if (addrs_lst->ifa_addr->sa_family == AF_LINK) {
+                } else if (addr_ptr->ifa_addr->sa_family == AF_LINK) {
                     linkInfo = (struct sockaddr_dl *) addr_ptr->ifa_addr;
 
                     //iface_ptr->id = linkInfo->sdl_index; // don't do it here, use if_nametoindex instead
@@ -231,12 +224,13 @@ struct iface * if_list_get() {
             }
         }
     }
+
     /* Print out iface_lst data if debug mode */
-#ifdef LOWLEVEL_DEBUG {
-    for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr
-            = iface_ptr->next) {
+#ifdef LOWLEVEL_DEBUG
+    iface_ptr = iface_lst;
+    while (iface_ptr) {
         if_print(iface_ptr);
-        fflush(stdout);
+        iface_ptr = iface_ptr->next;
     }
 #endif
 
