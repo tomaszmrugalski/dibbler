@@ -121,9 +121,6 @@ struct iface * if_list_get() {
     struct ifaddrs *addr_ptr = NULL; // single address
     struct iface *iface_lst = NULL;  // interface list
     struct iface *iface_ptr = NULL;  // pointer to single interface
-    struct sockaddr_dl *linkInfo;
-    char *myV6array;
-    int addrPos = 0;
 
     if (getifaddrs(&addrs_lst) != 0) {
         perror("Error in getifaddrs: ");
@@ -162,66 +159,52 @@ struct iface * if_list_get() {
      * by name
      */
 
-    myV6array = malloc(16);
+    // for each address...
     for (addr_ptr = addrs_lst; addr_ptr != NULL; addr_ptr = addr_ptr->ifa_next) {
-        for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr
-                = iface_ptr->next) {
-            if (strncmp(iface_ptr->name, addr_ptr->ifa_name, strlen(
-                    addr_ptr->ifa_name)) == 0) {
-                if (addr_ptr->ifa_addr->sa_family == AF_INET6) {
+        for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr = iface_ptr->next) { 
+            // ... find its corresponding interface
+            if (strncmp(iface_ptr->name, addr_ptr->ifa_name, strlen(addr_ptr->ifa_name)))
+                continue;
 
-                    memcpy(
-                            myV6array,
-                            &((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr,
-                            16);
-
-                    if (myV6array[0] == 0xfe && myV6array[1] == 0x80) {
-                        /*
-                         * IPv6 address is link local
-                         */
-                        if (!iface_ptr->linkaddr) {
-                            iface_ptr->linkaddrcount = 0;
-                            iface_ptr->linkaddr = malloc(16);
+            switch (addr_ptr->ifa_addr->sa_family)
+                {
+                case AF_INET6:
+                    {
+                        char * ptr = (char*)(&((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr);
+                        if (ptr[0] == 0xfe && ptr[1] == 0x80) { // link-local IPv6 address 
+                            char * addrs = malloc( (iface_ptr->linkaddrcount+1)*16);
+                            memcpy(addrs, iface_ptr->linkaddr, 16*iface_ptr->linkaddrcount);
+                            memcpy(addrs + 16*iface_ptr->linkaddrcount, ptr, 16);
+                            free(iface_ptr->linkaddr);
+                            iface_ptr->linkaddr = addrs;
+                            iface_ptr->linkaddrcount++;
+                        } else { // this is global address
+                            char * addrs = malloc( (iface_ptr->globaladdrcount+1)*16);
+                            memcpy(addrs, iface_ptr->globaladdr, 16*iface_ptr->globaladdrcount);
+                            memcpy(addrs + 16*iface_ptr->globaladdrcount, ptr, 16);
+                            free(iface_ptr->globaladdr);
+                            iface_ptr->globaladdr = addrs;
+                            iface_ptr->globaladdrcount++;
                         }
-
-                        addrPos = iface_ptr->linkaddrcount * 16;
-                        memcpy(iface_ptr->linkaddr + addrPos, myV6array, 16);
-
-                        iface_ptr->linkaddrcount++;
-
-                    } else {
-                        /*
-                         *  IPv6 address is global
-                         */
-
-                        if (!iface_ptr->globaladdr) {
-                            iface_ptr->globaladdrcount = 0;
-                            iface_ptr->globaladdr = malloc(16);
+                        break;
+                    } // end of AF_INET6 handling
+                case AF_LINK:
+                    {
+                        struct sockaddr_dl *linkInfo;
+                        linkInfo = (struct sockaddr_dl *) addr_ptr->ifa_addr;
+                        
+                        // Note: sdl_type is unsigned character; hardwareType is integer
+                        iface_ptr->hardwareType = linkInfo->sdl_type;
+                        if (linkInfo->sdl_alen > 1) {
+                            memcpy(iface_ptr->mac, LLADDR(linkInfo),
+                                   linkInfo->sdl_alen);
+                            iface_ptr->maclen = linkInfo->sdl_alen;
                         }
-                        addrPos = iface_ptr->globaladdrcount * 16;
-                        memcpy(iface_ptr->globaladdr + addrPos, myV6array, 16);
-                        iface_ptr->globaladdrcount++;
-
+                        break;
                     }
-
-                } else if (addr_ptr->ifa_addr->sa_family == AF_LINK) {
-                    linkInfo = (struct sockaddr_dl *) addr_ptr->ifa_addr;
-
-                    //iface_ptr->id = linkInfo->sdl_index; // don't do it here, use if_nametoindex instead
-
-                    /*
-                     * NOTE!
-                     * sdl_type is unsigned character; hardwareType is
-                     * integer
-                     */
-                    iface_ptr->hardwareType = linkInfo->sdl_type;
-                    if (linkInfo->sdl_alen > 1) {
-                        memcpy(iface_ptr->mac, LLADDR(linkInfo),
-                                linkInfo->sdl_alen);
-                        iface_ptr->maclen = linkInfo->sdl_alen;
-                    }
+                default:
+                    break; // ignore other address families
                 }
-            }
         }
     }
 
@@ -239,12 +222,13 @@ struct iface * if_list_get() {
 
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
         unsigned long pref, unsigned long valid, int prefixLength) {
-    /* TODO: implement this */
-#ifdef LOWLEVEL_DEBUG
-    printf("### In ipaddr_add\n###");
-    fflush(stdout);
-#endif
-    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+    char buf[512];
+    int status;
+    sprintf(buf, "ifconfig %s inet6 %s prefixlen %d add", ifacename, addr, prefixLength);
+    status = system(buf);
+    if (!status)
+        return LOWLEVEL_NO_ERROR;
+    return LOWLEVEL_ERROR_UNSPEC;
 }
 
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
@@ -255,8 +239,13 @@ int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 
 int ipaddr_del(const char * ifacename, int ifaceid, const char * addr,
         int prefixLength) {
-    /* TODO: implement this */
-    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+    char buf[512];
+    int status;
+    sprintf(buf, "ifconfig %s inet6 %s prefixlen %d delete", ifacename, addr, prefixLength);
+    status = system(buf);
+    if (!status)
+        return LOWLEVEL_NO_ERROR;
+    return LOWLEVEL_ERROR_UNSPEC;
 }
 
 int sock_add(char * ifacename, int ifaceid, char * addr, int port,
@@ -280,7 +269,7 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
 
 #ifdef LOWLEVEL_DEBUG
     printf(
-            "### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d reuse=%d###\n",
+            "LOWLEVEL_DEBUG iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d reuse=%d###\n",
             ifacename, ifaceid, addr, port, thisifaceonly, reuse);
     fflush(stdout);
 #endif
