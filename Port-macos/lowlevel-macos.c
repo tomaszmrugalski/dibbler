@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-macos.c,v 1.3 2009-07-22 20:19:08 thomson Exp $
- *
  * Based on Port-linux/lowlevel-linux.c
  *
  */
@@ -29,7 +27,7 @@
 #include <ifaddrs.h>
 
 #include <net/if_dl.h>
-
+#include <net/if.h>
 #include "Portable.h"
 
 #define LOWLEVEL_DEBUG 1
@@ -66,174 +64,166 @@ struct iface * if_list_get() {
      * Translating between Mac OS X internal representation of link and IP address
      * and Dibbler internal format.
      */
-    unsigned int ifindex_zero_cnt = 0;
-
-    struct ifaddrs *ifList, *ifTemp;
-    struct iface *ifRtnList = NULL;
-    struct iface *ifRtnTemp = NULL;
+    struct ifaddrs *addrs_lst = NULL; // list returned by system
+    struct ifaddrs *addr_ptr = NULL; // single address
+    struct iface *iface_lst = NULL;  // interface list
+    struct iface *iface_ptr = NULL;  // pointer to single interface
     struct sockaddr_dl *linkInfo;
     char *myV6array;
     int addrPos = 0;
     int tmpInt = 0, tmpInt1 = 0;
 
-    if (getifaddrs(&ifList) != 0) {
+    if (getifaddrs(&addrs_lst) != 0) {
         perror("Error in getifaddrs: ");
-        return ifRtnList;
+        return iface_lst;
     }
 
-    ifTemp = malloc(sizeof (struct ifaddrs));
-    ifRtnList = malloc(sizeof (struct iface));
-    memset( ifTemp, 0, sizeof (struct ifaddrs) );
-    memset( ifRtnList, 0, sizeof(struct iface) );
-
-    /* If there is at least one interface, populate first element before loop */
-
-    if (ifList != NULL) {
-        strlcpy(ifRtnList->name, ifList->ifa_name, strlen(ifList->ifa_name) + 1);
-        ifRtnList->flags = ifList->ifa_flags;
-    }
-    ifRtnList->next = NULL;
-
-    /* First pass through entire ifList: collect unique interface names and flags */
-    for (ifTemp = ifList; ifTemp != NULL; ifTemp = ifTemp->ifa_next) {
-        if (strncmp(ifRtnList->name, ifTemp->ifa_name, strlen(ifTemp->ifa_name))
-                != 0) {
-            ifRtnTemp = malloc(sizeof (struct iface));
-	    memset(ifRtnTemp, 0, sizeof (struct iface));
-            strlcpy(ifRtnTemp->name, ifTemp->ifa_name, strlen(ifTemp->ifa_name)
-                    + 1);
-	    ifRtnTemp->id = if_nametoindex(ifRtnTemp->name);
-
-#ifdef LOWLEVEL_DEBUG
-	    printf("Detected ifindex=%d for interface %d\n", ifRtnTemp->id, ifRtnTemp->name);
-	    if (++ifindex_zero_cnt>1) 
-		printf("WARNING: More than one interface with ifindex=0 detected!\n");
-#endif
-
-            ifRtnTemp->flags = ifTemp->ifa_flags;
-            ifRtnTemp->next = ifRtnList;
-            ifRtnList = ifRtnTemp;
+    /* First pass through entire addrs_lst: collect unique interface names and flags */
+    addr_ptr = addrs_lst;
+    while (addr_ptr != NULL) {
+        // check if this interface name is already on target list
+        iface_ptr = iface_lst;
+        while (iface_ptr!=NULL) {
+            if (!strcmp(addr_ptr->ifa_name, iface_ptr->name))
+                break;
+            iface_ptr = iface_ptr->next;
         }
+        if (!iface_ptr) { // interface with that name not found, let's add one!
+            iface_ptr = malloc(sizeof(struct iface));
+            memset(iface_ptr, 0, sizeof(struct iface));
+            
+            strlcpy(iface_ptr->name, addr_ptr->ifa_name, MAX_IFNAME_LENGTH);
+            iface_ptr->id = if_nametoindex(iface_ptr->name);
+            iface_ptr->flags = addr_ptr->ifa_flags;
+            printf("Detected interface %s, ifindex=%d, flags=%d\n", 
+                   iface_ptr->name, iface_ptr->id, iface_ptr->flags);
+            
+            // add this new structure to the head of the interfaces list
+            iface_ptr->next = iface_lst;
+            iface_lst = iface_ptr;
+        }
+        
+        addr_ptr = addr_ptr->ifa_next;
     }
 
     /*
-     * Second pass through ifList: collect link and IP layer info for each interface
+     * Second pass through addrs_lst: collect link and IP layer info for each interface
      * by name
      */
 
     myV6array = malloc(16);
-    for (ifTemp = ifList; ifTemp != NULL; ifTemp = ifTemp->ifa_next) {
-        for (ifRtnTemp = ifRtnList; ifRtnTemp != NULL; ifRtnTemp
-                = ifRtnTemp->next) {
-            if (strncmp(ifRtnTemp->name, ifTemp->ifa_name, strlen(
-                    ifTemp->ifa_name)) == 0) {
-                if (ifTemp->ifa_addr->sa_family == AF_INET6) {
+    for (addr_ptr = addrs_lst; addr_ptr != NULL; addr_ptr = addr_ptr->ifa_next) {
+        for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr
+                = iface_ptr->next) {
+            if (strncmp(iface_ptr->name, addr_ptr->ifa_name, strlen(
+                    addr_ptr->ifa_name)) == 0) {
+                if (addr_ptr->ifa_addr->sa_family == AF_INET6) {
 
                     memcpy(
                             myV6array,
-                            &((struct sockaddr_in6 *) ifTemp->ifa_addr)->sin6_addr,
+                            &((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr,
                             16);
 
                     if (myV6array[0] == 0xfe && myV6array[1] == 0x80) {
                         /*
                          * IPv6 address is link local
                          */
-                        if (!ifRtnTemp->linkaddr) {
-                            ifRtnTemp->linkaddrcount = 0;
-                            ifRtnTemp->linkaddr = malloc(16);
+                        if (!iface_ptr->linkaddr) {
+                            iface_ptr->linkaddrcount = 0;
+                            iface_ptr->linkaddr = malloc(16);
                         }
 
-                        addrPos = ifRtnTemp->linkaddrcount * 16;
-                        memcpy(ifRtnTemp->linkaddr + addrPos, myV6array, 16);
+                        addrPos = iface_ptr->linkaddrcount * 16;
+                        memcpy(iface_ptr->linkaddr + addrPos, myV6array, 16);
 
-                        ifRtnTemp->linkaddrcount++;
+                        iface_ptr->linkaddrcount++;
 
                     } else {
                         /*
                          *  IPv6 address is global
                          */
 
-                        if (!ifRtnTemp->globaladdr) {
-                            ifRtnTemp->globaladdrcount = 0;
-                            ifRtnTemp->globaladdr = malloc(16);
+                        if (!iface_ptr->globaladdr) {
+                            iface_ptr->globaladdrcount = 0;
+                            iface_ptr->globaladdr = malloc(16);
                         }
-                        addrPos = ifRtnTemp->globaladdrcount * 16;
-                        memcpy(ifRtnTemp->globaladdr + addrPos, myV6array, 16);
-                        ifRtnTemp->globaladdrcount++;
+                        addrPos = iface_ptr->globaladdrcount * 16;
+                        memcpy(iface_ptr->globaladdr + addrPos, myV6array, 16);
+                        iface_ptr->globaladdrcount++;
 
                     }
 
-                } else if (ifList->ifa_addr->sa_family == AF_LINK) {
-                    linkInfo = (struct sockaddr_dl *) ifTemp->ifa_addr;
+                } else if (addrs_lst->ifa_addr->sa_family == AF_LINK) {
+                    linkInfo = (struct sockaddr_dl *) addr_ptr->ifa_addr;
 
-                    //ifRtnTemp->id = linkInfo->sdl_index; // don't do it here, use if_nametoindex instead
+                    //iface_ptr->id = linkInfo->sdl_index; // don't do it here, use if_nametoindex instead
 
                     /*
                      * NOTE!
                      * sdl_type is unsigned character; hardwareType is
                      * integer
                      */
-                    ifRtnTemp->hardwareType = linkInfo->sdl_type;
+                    iface_ptr->hardwareType = linkInfo->sdl_type;
                     if (linkInfo->sdl_alen > 1) {
-                        memcpy(ifRtnTemp->mac, LLADDR(linkInfo),
+                        memcpy(iface_ptr->mac, LLADDR(linkInfo),
                                 linkInfo->sdl_alen);
-                        ifRtnTemp->maclen = linkInfo->sdl_alen;
+                        iface_ptr->maclen = linkInfo->sdl_alen;
                     }
                 }
             }
         }
     }
-    /* Print out ifRtnList data if debug mode */
+    /* Print out iface_lst data if debug mode */
 #ifdef LOWLEVEL_DEBUG {
-    for (ifRtnTemp = ifRtnList; ifRtnTemp != NULL; ifRtnTemp
-            = ifRtnTemp->next) {
-        printf("Interface name: %s\n", ifRtnTemp->name);
-        printf("\tInterface index: %i\n", ifRtnTemp->id);
-        printf("\tInterface type: %x\n", ifRtnTemp->hardwareType);
-        printf("\tLink layer Length: %x\n", ifRtnTemp->maclen);
+    for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr
+            = iface_ptr->next) {
+        printf("Interface name: %s\n", iface_ptr->name);
+        printf("\tInterface index: %i\n", iface_ptr->id);
+        printf("\tInterface type: %x\n", iface_ptr->hardwareType);
+        printf("\tLink layer Length: %x\n", iface_ptr->maclen);
         printf("\tLink layer Addr: ");
-        for (tmpInt1 = 0; tmpInt1 < ifRtnTemp->maclen - 1; tmpInt1++) {
-            printf("%02x:", (unsigned char) ifRtnTemp->mac[tmpInt1]);
+        for (tmpInt1 = 0; tmpInt1 < iface_ptr->maclen - 1; tmpInt1++) {
+            printf("%02x:", (unsigned char) iface_ptr->mac[tmpInt1]);
         }
-        printf("%02x", (unsigned char) ifRtnTemp->mac[tmpInt1++]);
+        printf("%02x", (unsigned char) iface_ptr->mac[tmpInt1++]);
         printf("\n");
-        printf("\t%s Local IPv6 address count: %i\n", ifRtnTemp->name,
-                ifRtnTemp->linkaddrcount);
+        printf("\t%s Local IPv6 address count: %i\n", iface_ptr->name,
+                iface_ptr->linkaddrcount);
         printf("\tLocal IPv6 address(es):\n");
         tmpInt = 0;
-        for (tmpInt1 = 0; tmpInt1 < ifRtnTemp->linkaddrcount; tmpInt1++) {
+        for (tmpInt1 = 0; tmpInt1 < iface_ptr->linkaddrcount; tmpInt1++) {
             printf("\t%i=", tmpInt1);
             for (tmpInt = 0; tmpInt < 14; tmpInt += 2) {
-                printf("%02x%02x:", (unsigned char) ifRtnTemp->linkaddr[tmpInt + tmpInt1 * 16], (unsigned char) ifRtnTemp->linkaddr[tmpInt + 1
+                printf("%02x%02x:", (unsigned char) iface_ptr->linkaddr[tmpInt + tmpInt1 * 16], (unsigned char) iface_ptr->linkaddr[tmpInt + 1
                         + tmpInt1 * 16]);
             }
-            printf("%02x%02x", (unsigned char) ifRtnTemp->linkaddr[tmpInt
-                    + tmpInt1 * 16], (unsigned char) ifRtnTemp->linkaddr[tmpInt + 1
+            printf("%02x%02x", (unsigned char) iface_ptr->linkaddr[tmpInt
+                    + tmpInt1 * 16], (unsigned char) iface_ptr->linkaddr[tmpInt + 1
                     + tmpInt1 * 16]);
             printf("\n");
         }
-        printf("\t%s Global IPv6 address count: %i\n", ifRtnTemp->name,
-                ifRtnTemp->globaladdrcount);
+        printf("\t%s Global IPv6 address count: %i\n", iface_ptr->name,
+                iface_ptr->globaladdrcount);
         printf("\tGlobal IPv6 address(es):\n");
         tmpInt = 0;
-        for (tmpInt1 = 0; tmpInt1 < ifRtnTemp->globaladdrcount; tmpInt1++) {
+        for (tmpInt1 = 0; tmpInt1 < iface_ptr->globaladdrcount; tmpInt1++) {
             printf("\t%i=", tmpInt1);
             for (tmpInt = 0; tmpInt < 14; tmpInt += 2) {
-                printf("%02x%02x:", (unsigned char) ifRtnTemp->globaladdr[tmpInt
-                        + tmpInt1 * 16], (unsigned char) ifRtnTemp->globaladdr[tmpInt + 1
+                printf("%02x%02x:", (unsigned char) iface_ptr->globaladdr[tmpInt
+                        + tmpInt1 * 16], (unsigned char) iface_ptr->globaladdr[tmpInt + 1
                         + tmpInt1 * 16]);
             }
-            printf("%02x%02x", (unsigned char) ifRtnTemp->globaladdr[tmpInt
-                    + tmpInt1 * 16], (unsigned char) ifRtnTemp->globaladdr[tmpInt + 1
+            printf("%02x%02x", (unsigned char) iface_ptr->globaladdr[tmpInt
+                    + tmpInt1 * 16], (unsigned char) iface_ptr->globaladdr[tmpInt + 1
                     + tmpInt1 * 16]);
             printf("\n");
         }
-        printf("\tInterface flags: %x\n", ifRtnTemp->flags);
+        printf("\tInterface flags: %x\n", iface_ptr->flags);
     }
     fflush(stdout);
 #endif
 
-    return ifRtnList;
+    return iface_lst;
 } /* end of if_list_get */
 
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
