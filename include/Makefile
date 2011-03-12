@@ -10,8 +10,7 @@ links: poslib-links
 	for dir in $(SUBDIRS); do \
 	  if [ "$$dir" != "include" ]; then \
 	  ln -f -s $(PREFIX)/$$dir/*.h . 2>/dev/null;  \
-	  fi; \
-          echo -n ""; \
+	  fi;\
 	done
 	ln -f -s $(SRVCFGMGR)/SrvParser.h SrvParser.h
 	ln -f -s $(CLNTCFGMGR)/ClntParser.h ClntParser.h

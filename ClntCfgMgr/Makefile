@@ -5,9 +5,10 @@ OBJECTS = ClntParser.o        ClntLexer.o     ClntCfgIA.o        ClntCfgMgr.o   
           ClntParsGlobalOpt.o ClntParsIAOpt.o ClntParsIfaceOpt.o ClntCfgTA.o       \
 	  ClntCfgPD.o        ClntCfgPrefix.o
 
-ClntLexer.o: ClntLexer.cpp
-	@echo "[CXX    ] $(SUBDIR)/$@"
-	$(CXX) $(OPTS) -c -ftemplate-depth-30 ClntLexer.cpp
+#Dedicated rule no longer needed. Default rule handles it well
+#ClntLexer.o: ClntLexer.cpp
+#	@echo "[CXX    ] $(SUBDIR)/$@"
+#	$(CXX) $(CPPFLAGS) -c -ftemplate-depth-30 ClntLexer.cpp
 
 objs: $(OBJECTS)
 

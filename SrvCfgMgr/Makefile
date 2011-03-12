@@ -8,9 +8,10 @@ objs: $(OBJECTS)
 
 libs: libSrvCfgMgr.a
 
-SrvLexer.o: SrvLexer.cpp
-	@echo "[CXX    ] $(SUBDIR)/$@"
-	$(CXX) -c $(OPTS) -ftemplate-depth-30 SrvLexer.cpp 
+# No longer needed default rule handles it well
+#SrvLexer.o: SrvLexer.cpp
+#	@echo "[CXX    ] $(SUBDIR)/$@"
+#	$(CXX) -c $(CPPFLAGS) -ftemplate-depth-30 SrvLexer.cpp 
 
 # APPROACH 1: ignore .y .l dependency
 # After modifying .y and .l files, you have to manually rebuild .cpp files by issuing: make parser

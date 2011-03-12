@@ -6,8 +6,12 @@ FLEX         = flex
 BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
 
 # === compiler options ===
-COPTS        = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0 $(PEDANTIC)
-OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
+# C only flags
+CFLAGS      += -std=c99 $(CPPFLAGS)
+# common flags
+CPPFLAGS     = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0 $(PEDANTIC)
+# C++ specific flags
+CXXFLAGS     = -ftemplate-depth-40 $(COPTS) $(CPPFLAGS)
 
 # === linker options ===
 LDFLAGS      += $(XMLLIBS) $(EFENCE) $(PORT_LDFLAGS)
@@ -17,7 +21,7 @@ REL_LDFLAGS  = $(LDFLAGS)
 
 # === debuging parameters ===
 PEDANTIC     = -pedantic
-#DEBUGINFO    = -g
+DEBUGINFO    = -g
 #EFENCE       = -lefence
 
 # === modular features ===
@@ -31,7 +35,7 @@ MOD_CLNT_BIND_REUSE        = y
 #MOD_SRV_DISABLE_DNSUPDATE  = y
 #MOD_DISABLE_AUTH      = y
 MOD_CLNT_CONFIRM = y
-MOD_REMOTE_AUTOCONF = y
+#MOD_REMOTE_AUTOCONF = y
 #MOD_LIBXML2 = y
 #MOD_DEBUG = y
 
@@ -62,7 +66,7 @@ PORT_SUBDIR  = Port-linux
 #XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
 # === do not modify anything below ===
-SILENTMAKE    = -s
+#SILENTMAKE    = -s
 MAKEFLAGS   += $(SILENTMAKE)
 VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
@@ -130,7 +134,7 @@ RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
 
 %.o: %.cpp %.h
 	@echo "[CXX    ] $(SUBDIR)/$@"
-	$(CXX) $(OPTS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 %.a: objs
 	@echo "[LIB    ] $(SUBDIR)/$@"	
