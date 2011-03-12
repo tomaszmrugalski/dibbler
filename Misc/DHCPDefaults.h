@@ -14,10 +14,10 @@
 #define DHCPDEFAULTS_H
 
 // How long should we wait before we assume that OS detected duplicated addresses (in secs)
-#define DADTIMEOUT (unsigned) 3
+#define DADTIMEOUT ((unsigned long) 3)
 
 // addresses reported as DECLINED are not used for 2 hours
-#define DECLINED_TIMEOUT (unsigned) 7200
+#define DECLINED_TIMEOUT ((unsigned long) 7200)
 
 // DHCPv6 server default values
 #define SERVER_DEFAULT_DOMAIN ""
