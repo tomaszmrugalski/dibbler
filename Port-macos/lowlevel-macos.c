@@ -55,6 +55,59 @@ void if_list_release(struct iface * list) {
     }
 }
 
+void if_print(struct iface * iface_ptr) {
+    int tmp, tmpInt = 0;
+
+    printf("Interface %s, index=%i type=%x flags=%x\n", iface_ptr->name, iface_ptr->id, 
+           iface_ptr->hardwareType, iface_ptr->flags);
+    printf("\tLink layer Length: %x Addr:", iface_ptr->maclen);
+    for (tmp = 0; tmp < iface_ptr->maclen; tmp++) {
+        printf("%02x:", (unsigned char) iface_ptr->mac[tmp]);
+    }
+    printf("\n");
+    printf("\tLocal IPv6 address count: %i, address ", iface_ptr->linkaddrcount);
+    for (tmp = 0; tmp < iface_ptr->linkaddrcount; tmp++) {
+        printf("\t%i=", tmp);
+        for (tmpInt = 0; tmpInt < 16; tmpInt += 2) {
+            printf("%02x%02x:", 
+                   (unsigned char) iface_ptr->linkaddr[tmpInt + tmp * 16], 
+                   (unsigned char) iface_ptr->linkaddr[tmpInt + 1 + tmp * 16]);
+        }
+        printf("\n");
+    }
+    if (iface_ptr->linkaddrcount==0)
+        printf("\n");
+
+    printf("\t%s Global IPv6 address count: %i, address ", iface_ptr->name,
+           iface_ptr->globaladdrcount);
+    tmpInt = 0;
+    for (tmp = 0; tmp < iface_ptr->globaladdrcount; tmp++) {
+        printf("\t%i=", tmp);
+        for (tmpInt = 0; tmpInt < 16; tmpInt += 2) {
+            printf("%02x%02x:", 
+                   (unsigned char) iface_ptr->globaladdr[tmpInt+ tmp * 16], 
+                   (unsigned char) iface_ptr->globaladdr[tmpInt + 1 + tmp * 16]);
+        }
+        printf("\n");
+    }
+   if (iface_ptr->globaladdrcount==0)
+        printf("\n");
+}
+
+struct iface * if_list_add(struct iface * head, struct iface * element) {
+    struct iface *tmp;
+    element->next = NULL;
+    if (!head)
+        return element;
+    tmp = head;
+    while (tmp->next != NULL) {
+        tmp = tmp->next;
+    }
+
+    tmp->next = element;
+    return head;
+}
+
 /*
  * returns interface list with detailed informations
  */
@@ -71,7 +124,6 @@ struct iface * if_list_get() {
     struct sockaddr_dl *linkInfo;
     char *myV6array;
     int addrPos = 0;
-    int tmpInt = 0, tmpInt1 = 0;
 
     if (getifaddrs(&addrs_lst) != 0) {
         perror("Error in getifaddrs: ");
@@ -99,8 +151,14 @@ struct iface * if_list_get() {
                    iface_ptr->name, iface_ptr->id, iface_ptr->flags);
             
             // add this new structure to the head of the interfaces list
-            iface_ptr->next = iface_lst;
-            iface_lst = iface_ptr;
+            {
+                // add to the end - simple, fast and easy, but reverts interface order
+                // iface_ptr->next = iface_lst;
+                // iface_lst = iface_ptr;
+
+                // add interface to the end (proper, but more complicated)
+                iface_lst = if_list_add(iface_lst, iface_ptr);
+            }
         }
         
         addr_ptr = addr_ptr->ifa_next;
@@ -177,50 +235,9 @@ struct iface * if_list_get() {
 #ifdef LOWLEVEL_DEBUG {
     for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr
             = iface_ptr->next) {
-        printf("Interface name: %s\n", iface_ptr->name);
-        printf("\tInterface index: %i\n", iface_ptr->id);
-        printf("\tInterface type: %x\n", iface_ptr->hardwareType);
-        printf("\tLink layer Length: %x\n", iface_ptr->maclen);
-        printf("\tLink layer Addr: ");
-        for (tmpInt1 = 0; tmpInt1 < iface_ptr->maclen - 1; tmpInt1++) {
-            printf("%02x:", (unsigned char) iface_ptr->mac[tmpInt1]);
-        }
-        printf("%02x", (unsigned char) iface_ptr->mac[tmpInt1++]);
-        printf("\n");
-        printf("\t%s Local IPv6 address count: %i\n", iface_ptr->name,
-                iface_ptr->linkaddrcount);
-        printf("\tLocal IPv6 address(es):\n");
-        tmpInt = 0;
-        for (tmpInt1 = 0; tmpInt1 < iface_ptr->linkaddrcount; tmpInt1++) {
-            printf("\t%i=", tmpInt1);
-            for (tmpInt = 0; tmpInt < 14; tmpInt += 2) {
-                printf("%02x%02x:", (unsigned char) iface_ptr->linkaddr[tmpInt + tmpInt1 * 16], (unsigned char) iface_ptr->linkaddr[tmpInt + 1
-                        + tmpInt1 * 16]);
-            }
-            printf("%02x%02x", (unsigned char) iface_ptr->linkaddr[tmpInt
-                    + tmpInt1 * 16], (unsigned char) iface_ptr->linkaddr[tmpInt + 1
-                    + tmpInt1 * 16]);
-            printf("\n");
-        }
-        printf("\t%s Global IPv6 address count: %i\n", iface_ptr->name,
-                iface_ptr->globaladdrcount);
-        printf("\tGlobal IPv6 address(es):\n");
-        tmpInt = 0;
-        for (tmpInt1 = 0; tmpInt1 < iface_ptr->globaladdrcount; tmpInt1++) {
-            printf("\t%i=", tmpInt1);
-            for (tmpInt = 0; tmpInt < 14; tmpInt += 2) {
-                printf("%02x%02x:", (unsigned char) iface_ptr->globaladdr[tmpInt
-                        + tmpInt1 * 16], (unsigned char) iface_ptr->globaladdr[tmpInt + 1
-                        + tmpInt1 * 16]);
-            }
-            printf("%02x%02x", (unsigned char) iface_ptr->globaladdr[tmpInt
-                    + tmpInt1 * 16], (unsigned char) iface_ptr->globaladdr[tmpInt + 1
-                    + tmpInt1 * 16]);
-            printf("\n");
-        }
-        printf("\tInterface flags: %x\n", iface_ptr->flags);
+        if_print(iface_ptr);
+        fflush(stdout);
     }
-    fflush(stdout);
 #endif
 
     return iface_lst;
