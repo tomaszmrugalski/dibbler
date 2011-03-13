@@ -24,17 +24,16 @@
 
 #ifdef LINUX
 #include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <resolv.h>
-#include <sys/socket.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <arpa/inet.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <string.h>
+/*#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
+//#include <sys/socket.h>
+//#include <sys/select.h>
+//#include <sys/time.h>
+//#include <arpa/inet.h>
+//#include <ctype.h>
+//#include <stdarg.h>
+//#include <string.h>*/
 #endif 
 
 #ifdef WIN32

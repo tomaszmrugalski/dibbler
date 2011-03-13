@@ -11,6 +11,7 @@
  */
 
 
+#include <string.h>
 #include <string>
 #include "SocketIPv6.h"
 #include "Portable.h"

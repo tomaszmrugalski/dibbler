@@ -9,7 +9,8 @@
  * $Id: OptStatusCode.cpp,v 1.7 2007-08-26 10:26:19 thomson Exp $
  *
  */
-#include <stdlib.h>
+
+#include <string.h>
 #include <string>
 #include "Portable.h"
 #include "OptStatusCode.h"

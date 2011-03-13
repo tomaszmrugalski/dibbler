@@ -2,10 +2,13 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ * changes: Tomasz Mrugalski <thomson(at)klub.com.pl>
  * 
  * released under GNU GPL v2 only licence
  *
  */
+
+#include <string.h>
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "OptIAPrefix.h"

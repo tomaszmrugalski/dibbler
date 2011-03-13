@@ -8,6 +8,7 @@
  * $Id: ReqTransMgr.cpp,v 1.10 2008-01-01 20:21:14 thomson Exp $
  */
 
+#include <stdio.h>
 #include <sstream>
 #include "SocketIPv6.h"
 #include "ReqTransMgr.h"

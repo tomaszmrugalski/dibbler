@@ -9,6 +9,7 @@
  * $Id: CfgMgr.cpp,v 1.20 2009-07-22 20:19:08 thomson Exp $
  */
 
+/*
 #ifdef WIN32
 #include <winsock2.h>
 #endif
@@ -19,11 +20,12 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #endif
+*/
 
+#include <string.h>
 #include <iostream>
 #include <fstream>
 #include <string>
-//#include <iomanip>
 #include "CfgMgr.h"
 #include "Logger.h"
 #include "Portable.h"

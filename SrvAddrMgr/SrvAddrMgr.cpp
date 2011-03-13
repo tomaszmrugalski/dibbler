@@ -12,6 +12,7 @@
  *
  */
 
+#include <stdlib.h>
 #include "SrvAddrMgr.h"
 #include "AddrClient.h"
 #include "AddrIA.h"

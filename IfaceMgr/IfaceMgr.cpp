@@ -10,18 +10,17 @@
  *
  */
 
+#include <string.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <errno.h>
 #include "Portable.h"
 #include "IfaceMgr.h"
 #include "Iface.h"
 #include "SocketIPv6.h"
-
 #include "Logger.h"
-
-extern int errno;
 
 /*
  * creates list of interfaces

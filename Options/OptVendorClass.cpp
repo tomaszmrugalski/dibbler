@@ -9,7 +9,9 @@
  * $Id: OptVendorClass.cpp,v 1.4 2008-10-12 16:05:06 thomson Exp $
  *
  */
-#include "OptVendorClass.h"
+
+#include <string.h>
+#include "OptVendorClass.h"
 #include <iostream>
 #include <sstream>
 #include "Portable.h"

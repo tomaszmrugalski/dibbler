@@ -19,12 +19,13 @@
 #include "DHCPConst.h"
 
 #ifdef LINUX
+#include <sys/time.h>
 #include <syslog.h>
 #endif
 
 #ifdef MACOS
-#include <syslog.h>
 #include <sys/time.h>
+#include <syslog.h>
 #endif
 
 namespace logger {

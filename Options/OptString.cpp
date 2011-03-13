@@ -9,7 +9,7 @@
  * $Id: OptString.cpp,v 1.3 2007-08-26 10:26:19 thomson Exp $
  */
 
-#include <stdlib.h>
+#include <string.h>
 #include <iostream>
 #include "Portable.h"
 #include "OptString.h"

@@ -11,6 +11,7 @@
 *
 */
 
+#include <string.h>
 #include "Portable.h"
 #include "OptFQDN.h"
 #include "Logger.h"

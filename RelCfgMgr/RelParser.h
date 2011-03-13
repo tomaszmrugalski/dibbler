@@ -14,6 +14,8 @@
  #line 8 "../bison++/bison.h"
 #line 3 "RelParser.y"
 
+#include <string.h>
+#include <strings.h>
 #include <iostream>
 #include <string>
 #include <malloc.h>
@@ -47,7 +49,7 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 46 "RelParser.y"
+#line 48 "RelParser.y"
 typedef union    
 {
     unsigned int ival;

@@ -9,7 +9,9 @@
  *
  */
 
+#include <string.h>
 #include <signal.h>
+#include <stdlib.h>
 #include "DHCPRelay.h"
 #include "Portable.h"
 #include "Logger.h"

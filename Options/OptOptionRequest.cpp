@@ -9,7 +9,8 @@
  * $Id: OptOptionRequest.cpp,v 1.8 2007-08-26 10:26:19 thomson Exp $
  *
  */
-#include <stdlib.h>
+
+#include <string.h>
 #include "Portable.h"
 #include "OptOptionRequest.h"
 #include "DHCPConst.h"

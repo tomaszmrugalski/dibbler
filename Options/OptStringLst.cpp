@@ -10,7 +10,7 @@
  *
  */
 
-#include <stdlib.h>
+#include <string.h>
 #include "Portable.h"
 #include "OptStringLst.h"
 #include "DHCPConst.h"

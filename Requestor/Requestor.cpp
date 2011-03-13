@@ -8,6 +8,8 @@
  * $Id: Requestor.cpp,v 1.7 2008-09-22 17:08:54 thomson Exp $
  */
 
+#include <string.h>
+#include <stdlib.h>
 #include "Portable.h"
 #include "ReqCfgMgr.h"
 #include "Portable.h"
