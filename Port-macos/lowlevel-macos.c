@@ -339,7 +339,6 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
         inet_pton6(addr, tmp);
 
         /* Add to the all agent multicast address */
-        /* there seem to be on IPV6_ADD_MEMBERSHIP, only IP_ADD_MEMBERSHIP. Will it work? */
         if (setsockopt(Insock, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6, sizeof (mreq6))) {
             sprintf(Message, "error joining ipv6 group");
             return LOWLEVEL_ERROR_MCAST_MEMBERSHIP;
@@ -353,22 +352,18 @@ int sock_del(int fd) {
     return close(fd);
 }
 
-int sock_send(int sock, char *addr, char *buf, int message_len, int port,
-        int iface) {
-    struct addrinfo hints, *res;
+int sock_send(int sock, char *addr, char *buf, int message_len, int port, int iface) {
     int result;
-    char cport[10];
-    sprintf(cport, "%d", port);
+    struct sockaddr_in6 dst;
 
-    memset(&hints, 0, sizeof (hints));
-    hints.ai_family = PF_INET6;
-    hints.ai_socktype = SOCK_DGRAM;
-    if (getaddrinfo(addr, cport, &hints, &res) < 0) {
-        return -1; /* Error in transmitting */
-    }
+    memset(&dst, 0, sizeof (struct sockaddr_in6));
+    dst.sin6_len = sizeof(struct sockaddr_in6);
+    dst.sin6_family = PF_INET6;
+    dst.sin6_port = htons(port); // htons?
+    inet_pton6(addr,(char*)&dst.sin6_addr);
+    dst.sin6_scope_id = iface;
 
-    result = sendto(sock, buf, message_len, 0, res->ai_addr, res->ai_addrlen);
-    freeaddrinfo(res);
+    result = sendto(sock, buf, message_len, 0, (struct sockaddr*)&dst, sizeof(struct sockaddr_in6));
 
     if (result < 0) {
         sprintf(Message, "Unable to send data (dst addr: %s)", addr);
