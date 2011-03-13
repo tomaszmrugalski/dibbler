@@ -66,7 +66,7 @@ PORT_SUBDIR  = Port-linux
 #XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
 # === do not modify anything below ===
-#SILENTMAKE    = -s
+SILENTMAKE    = -s
 MAKEFLAGS   += $(SILENTMAKE)
 VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
