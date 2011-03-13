@@ -253,8 +253,7 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
     int error;
     int on = 1;
     struct addrinfo hints;
-    struct addrinfo *res, *res2;
-    struct ipv6_mreq mreq6;
+    struct addrinfo *res;
     int Insock;
     int multicast;
     char port_char[6];
@@ -291,14 +290,12 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
         return LOWLEVEL_ERROR_UNSPEC;
     }
 
-#if 0
     /* this part looks like Linux only code */
     /* Set the options  to receive ipv6 traffic */
-    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof (on)) < 0) {
+    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof (on)) < 0) {
         sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
         return LOWLEVEL_ERROR_SOCK_OPTS;
     }
-#endif
 
     if (thisifaceonly) {
 #if 0
@@ -335,26 +332,18 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
 
     /* multicast server stuff */
     if (multicast) {
-        hints.ai_flags = 0;
-        if ((error = getaddrinfo(addr, port_char, &hints, &res2))) {
-            sprintf(Message, "Failed to obtain getaddrinfo");
-            return LOWLEVEL_ERROR_GETADDRINFO;
-        }
+        struct ipv6_mreq mreq6;
         memset(&mreq6, 0, sizeof (mreq6));
         mreq6.ipv6mr_interface = ifaceid;
-        memcpy(&mreq6.ipv6mr_multiaddr,
-                &((struct sockaddr_in6 *) res2->ai_addr)->sin6_addr,
-                sizeof (mreq6.ipv6mr_multiaddr));
+        tmp = (char*) (&mreq6.ipv6mr_multiaddr);
+        inet_pton6(addr, tmp);
 
         /* Add to the all agent multicast address */
-#if 0
         /* there seem to be on IPV6_ADD_MEMBERSHIP, only IP_ADD_MEMBERSHIP. Will it work? */
-        if (setsockopt(Insock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &mreq6, sizeof (mreq6))) {
+        if (setsockopt(Insock, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6, sizeof (mreq6))) {
             sprintf(Message, "error joining ipv6 group");
             return LOWLEVEL_ERROR_MCAST_MEMBERSHIP;
         }
-#endif
-        freeaddrinfo(res2);
     }
 
     return Insock;
