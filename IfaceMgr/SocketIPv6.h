@@ -52,7 +52,7 @@ class TIfaceSocket {
     // (it's really messed up. fd_set is some really weird macro used
     //  with POSIX select() function. )
     static fd_set * getFDS();
-
+    inline static int getMaxFD() { return MaxFD; }
     inline bool multicast() { return Multicast; }
 
     ~TIfaceSocket();
@@ -90,8 +90,9 @@ class TIfaceSocket {
     bool Multicast;
 
     // Static element. Class needs to know, when first object is
-    // created. It call some weird macro to zero fd_set 
+    // created. It call FD_SET to zero fd_set 
     static int Count;
+    static int MaxFD; // needed instead of FD_MAXSIZE on Macs
 };
 
 

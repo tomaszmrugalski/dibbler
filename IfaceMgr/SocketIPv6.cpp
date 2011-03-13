@@ -21,6 +21,7 @@
  * static elements of TIfaceSocket class
  */ 
 int TIfaceSocket::Count=0;
+int TIfaceSocket::MaxFD=0;
 
 /**
  * creates socket bound to specific address on this interface
@@ -109,6 +110,9 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr,
 
     // add FileDescriptior fd_set using FD_SET macro
     FD_SET(this->FD,this->getFDS());
+    if (FD>MaxFD)
+        MaxFD = FD;
+
     return 0;
 }
 

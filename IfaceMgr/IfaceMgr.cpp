@@ -21,6 +21,8 @@
 
 #include "Logger.h"
 
+extern int errno;
+
 /*
  * creates list of interfaces
  */
@@ -144,6 +146,12 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     int result;
     if (time > DHCPV6_INFINITY/2)
 	time /=2;
+
+#ifdef MACOS
+    // For some reason, Darwin kernel doesn't like too large timeout values
+    if (time > DHCPV6_INFINITY/4)
+        time = 3600*24*7; // a week is enough
+#endif
     
     czas.tv_sec=time;
     czas.tv_usec=0;
@@ -152,13 +160,23 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     fd_set fds;
     fds = *TIfaceSocket::getFDS();
 
-    result = ::select(FD_SETSIZE,&fds,NULL, NULL, &czas);
+    int maxFD;
+    //maxFD = FD_SETSIZE;
+    maxFD = TIfaceSocket::getMaxFD() + 1;
+
+    result = ::select(maxFD,&fds,NULL, NULL, &czas);
 
     // something received
 
-    if (result<=0) { // timeout, nothing received
+    if (result==0) { // timeout, nothing received
         bufsize = 0;
         return 0; 
+    }
+    if (result<0) {
+        char buf[512];
+        strncpy(buf, strerror(errno),512);
+        Log(Error) << "Failed to read sockets (select() returned " << result << "), error=" << buf << LogEnd;
+        return 0;
     }
 
     SPtr<TIfaceIface> iface;
