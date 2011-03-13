@@ -10,13 +10,16 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include <linux/types.h>
 #include <sys/socket.h>
 #include <linux/rtnetlink.h>
-#include <ctype.h>
-#include <errno.h>
 #include "sys/stat.h"
-#include "errno.h"
+#include <errno.h>
 #include "Portable.h"
 
 #define CR 0x0a
