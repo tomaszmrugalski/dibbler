@@ -8,9 +8,13 @@
  * $Id: lowlevel-linux-link-state.c,v 1.4 2009-03-24 23:17:18 thomson Exp $
  */	
 
+#include <stdio.h>
 #include <pthread.h>
 #include <signal.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "Portable.h"
 #include "interface.h"
 
