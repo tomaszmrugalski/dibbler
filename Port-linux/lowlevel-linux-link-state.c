@@ -8,9 +8,11 @@
  * $Id: lowlevel-linux-link-state.c,v 1.4 2009-03-24 23:17:18 thomson Exp $
  */	
 
+#define __USE_UNIX98
+
 #include <stdio.h>
-#include <pthread.h>
 #include <signal.h>
+#include <pthread.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>

@@ -65,7 +65,7 @@ struct ethtool_regs {
 	u32	cmd;
 	u32	version; /* driver-specific, indicates different chips/revs */
 	u32	len; /* bytes */
-	u8	data[0];
+        u8	data[]; /* thomson: was data[0] */
 };
 
 /* for passing EEPROM chunks */
@@ -74,7 +74,7 @@ struct ethtool_eeprom {
 	u32	magic;
 	u32	offset; /* in bytes */
 	u32	len; /* in bytes */
-	u8	data[0];
+        u8	data[]; /* thomson: was data[0] */
 };
 
 /* for configuring coalescing parameters of chip */
@@ -225,7 +225,7 @@ struct ethtool_gstrings {
 	u32	cmd;		/* ETHTOOL_GSTRINGS */
 	u32	string_set;	/* string set id e.c. ETH_SS_TEST, etc*/
 	u32	len;		/* number of strings in the string set */
-	u8	data[0];
+        u8	data[]; /* thomson: was data[0] */
 };
 
 enum ethtool_test_flags {
@@ -239,7 +239,7 @@ struct ethtool_test {
 	u32	flags;		/* ETH_TEST_FL_xxx */
 	u32	reserved;
 	u32	len;		/* result length, in number of u64 elements */
-	u64	data[0];
+        u64	data[]; /* thomson: was data[0] */
 };
 
 /* CMDs currently supported */

@@ -14,6 +14,9 @@
  * Rani Assaf <rani@magic.metawire.com> 980929:	resolve addresses
  */
 
+#define _GNU_SOURCE
+#define _XOPEN_SOURCE 700
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,13 +27,11 @@
 #include <string.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include <resolv.h>
+#include <limits.h>
 #include <asm/types.h>
 #include <linux/pkt_sched.h>
 #include <time.h>
 #include <sys/time.h>
-
-
 #include "utils.h"
 
 int get_integer(int *val, const char *arg, int base)
@@ -59,20 +60,6 @@ int get_unsigned(unsigned *val, const char *arg, int base)
 		return -1;
 	*val = res;
 	return 0;
-}
-
-int get_u64(__u64 *val, const char *arg, int base)
-{
-	unsigned long long res;
-	char *ptr;
-
-	if (!arg || !*arg)
-		return -1;
-	res = strtoull(arg, &ptr, base);
-	if (!ptr || ptr == arg || *ptr || res == 0xFFFFFFFFULL)
- 		return -1;
- 	*val = res;
- 	return 0;
 }
 
 int get_u32(__u32 *val, const char *arg, int base)
@@ -330,8 +317,8 @@ int matches(const char *cmd, const char *pattern)
 
 int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits)
 {
-	__u32 *a1 = a->data;
-	__u32 *a2 = b->data;
+        __u32 *a1 = (__u32*)a->data;
+	__u32 *a2 = (__u32*)b->data;
 	int words = bits >> 0x05;
 
 	bits &= 0x1f;
@@ -358,42 +345,7 @@ int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits)
 
 int __iproute2_hz_internal;
 
-int __get_hz(void)
-{
-	char name[1024];
-	int hz = 0;
-	FILE *fp;
-
-	if (getenv("HZ"))
-		return atoi(getenv("HZ")) ? : HZ;
-
-	if (getenv("PROC_NET_PSCHED")) {
-		snprintf(name, sizeof(name)-1, "%s", getenv("PROC_NET_PSCHED"));
-	} else if (getenv("PROC_ROOT")) {
-		snprintf(name, sizeof(name)-1, "%s/net/psched", getenv("PROC_ROOT"));
-	} else {
-		strcpy(name, "/proc/net/psched");
-	}
-	fp = fopen(name, "r");
-
-	if (fp) {
-		unsigned nom, denom;
-		if (fscanf(fp, "%*08x%*08x%08x%08x", &nom, &denom) == 2)
-			if (nom == 1000000)
-				hz = denom;
-		fclose(fp);
-	}
-	if (hz)
-		return hz;
-	return HZ;
-}
-
 int __iproute2_user_hz_internal;
-
-int __get_user_hz(void)
-{
-	return sysconf(_SC_CLK_TCK);
-}
 
 const char *rt_addr_n2a(int af, int len, const void *addr, char *buf, int buflen)
 {

@@ -9,6 +9,9 @@
  *
  */
 
+#define _BSD_SOURCE
+#define _POSIX_SOURCE
+
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -18,8 +21,7 @@
 #include <linux/types.h>
 #include <sys/socket.h>
 #include <linux/rtnetlink.h>
-#include "sys/stat.h"
-#include <errno.h>
+#include <sys/stat.h>
 #include "Portable.h"
 
 #define CR 0x0a

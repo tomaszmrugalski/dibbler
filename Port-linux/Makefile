@@ -17,43 +17,43 @@ libs: objs libLowLevel.a
 # ============================================================
 lowlevel-linux.o: lowlevel-linux.c 
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -I. -c lowlevel-linux.c 
+	$(CC) $(CFLAGS) -I. -c lowlevel-linux.c 
 
 interface.o: interface.c
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) -std=c99 $(COPTS) -I. -c interface.c 
+	$(CC) -std=c99 $(CFLAGS) -I. -c interface.c 
 
 ifplugd.o: ifplugd.c
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -I. -c ifplugd.c 
+	$(CC) $(CFLAGS) -I. -c ifplugd.c 
 
 lowlevel-linux-link-state.o: lowlevel-linux-link-state.c
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -I. -c lowlevel-linux-link-state.c
+	$(CC) $(CFLAGS) -I. -c lowlevel-linux-link-state.c
 
 libnetlink.o: libnetlink.c
-	@echo "[CC     ] $(SUBDIR)/$@ (warnings ignored)"
-	$(CC) $(COPTS) -c libnetlink.c 2> libnetlink.c-warnings
+	@echo "[CC     ] $(SUBDIR)/$@"
+	$(CC) -std=c99 $(CFLAGS) -c libnetlink.c
 
 ll_map.o: ll_map.c 
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c ll_map.c
+	$(CC) $(CFLAGS) -c ll_map.c
 
 ll_types.o: ll_types.c
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c ll_types.c
+	$(CC) $(CFLAGS) -c ll_types.c
 
 utils.o: utils.c
-	@echo "[CC     ] $(SUBDIR)/$@ (warnings ignored)"
-	$(CC) $(COPTS) -c utils.c 2> utils.c-warnings
+	@echo "[CC     ] $(SUBDIR)/$@"
+	$(CC) $(CFLAGS) -c utils.c
 
 lowlevel-options-linux.o: lowlevel-options-linux.c	
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c $<
+	$(CC) $(CFLAGS) -c $<
 
 iproute.o: iproute.c
-	@echo "[CC     ] $(SUBDIR)/$@ (warnings ignored)"
-	$(CC) $(COPTS) -c iproute.c 2> iproute.c-warnings
+	@echo "[CC     ] $(SUBDIR)/$@"
+	$(CC) $(CFLAGS) -c iproute.c
 
 # ============================================================
 # === tests ==================================================

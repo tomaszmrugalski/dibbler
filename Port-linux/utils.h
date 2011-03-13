@@ -2,7 +2,7 @@
 #define __UTILS_H__ 1
 
 #include <asm/types.h>
-#include <resolv.h>
+//#include <resolv.h>
 #include <linux/types.h>
 
 #include "libnetlink.h"
@@ -80,7 +80,6 @@ extern int get_unsigned(unsigned *val, const char *arg, int base);
 #define get_byte get_u8
 #define get_ushort get_u16
 #define get_short get_s16
-extern int get_u64(__u64 *val, const char *arg, int base);
 extern int get_u32(__u32 *val, const char *arg, int base);
 extern int get_u16(__u16 *val, const char *arg, int base);
 extern int get_s16(__s16 *val, const char *arg, int base);
@@ -109,13 +108,10 @@ const char *ipx_ntop(int af, const void *addr, char *str, size_t len);
 int ipx_pton(int af, const char *src, void *addr);
 
 extern int __iproute2_hz_internal;
-extern int __get_hz(void);
 
 static __inline__ int get_hz(void)
 {
-	if (__iproute2_hz_internal == 0)
-		__iproute2_hz_internal = __get_hz();
-	return __iproute2_hz_internal;
+    return 1000;
 }
 
 extern int __iproute2_user_hz_internal;
@@ -123,9 +119,7 @@ extern int __get_user_hz(void);
 
 static __inline__ int get_user_hz(void)
 {
-	if (__iproute2_user_hz_internal == 0)
-		__iproute2_user_hz_internal = __get_user_hz();
-	return __iproute2_user_hz_internal;
+    return 1000;
 }
 
 int print_timestamp(FILE *fp);
