@@ -284,11 +284,19 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
     *bufPtr = buf;
 }
 
-/*
- * adds or deletes addresses to interface
- */
-
-int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, int add)
+/** 
+ * adds, updates or deletes addresses to interface
+ * 
+ * @param addr 
+ * @param ifacename 
+ * @param prefixLen 
+ * @param preferred 
+ * @param valid 
+ * @param mode - 0-delete, 1-add, 2-update
+ * 
+ * @return 
+ */int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, 
+                      unsigned long preferred, unsigned long valid, int mode)
 {
     struct rtnl_handle rth;
     struct {
@@ -301,6 +309,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, i
     int local_len = 0;
     int peer_len = 0;
     int scoped = 0;
+    struct ifa_cacheinfo ci;
 
 #ifdef LOWLEVEL_DEBUG
     printf("### iface=%s, addr=%s, add=%d ###\n", ifacename, addr, add);
@@ -309,8 +318,18 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, i
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
     req.n.nlmsg_flags = NLM_F_REQUEST;
-    if (add==1) req.n.nlmsg_type = RTM_NEWADDR; /* add address */
-    else req.n.nlmsg_type = RTM_DELADDR;        /* del address */
+    switch (mode) {
+    case 0:
+        req.n.nlmsg_type = RTM_DELADDR;        /* del address */
+        break;
+    case 1:
+        req.n.nlmsg_type = RTM_NEWADDR; /* add address */
+        break;
+    case 2:
+        /* @FIXME: There's no extra flag for update */
+        req.n.nlmsg_type = RTM_NEWADDR; /* update address */
+        break;
+    }
     req.ifa.ifa_family = AF_INET6;
     req.ifa.ifa_flags = 0;
     req.ifa.ifa_prefixlen = prefixLen;
@@ -319,6 +338,11 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, i
     
     addattr_l(&req.n, sizeof(req), IFA_LOCAL, &lcl.data, lcl.bytelen);
     local_len = lcl.bytelen;
+
+    memset(&ci, 0, sizeof(ci));
+    ci.ifa_valid = valid;
+    ci.ifa_prefered = preferred;
+    addattr_l(&req.n, sizeof(req), IFA_CACHEINFO, &ci, sizeof(ci));
     
     if (peer_len == 0 && local_len) {
 	peer = lcl;
@@ -346,7 +370,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, i
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
 	       unsigned long valid, int prefixLength)
 {
-    return ipaddr_add_or_del(addr,ifacename, prefixLength, 1);
+    return ipaddr_add_or_del(addr,ifacename, prefixLength, pref, valid, 1);
 }
 
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
@@ -359,7 +383,7 @@ int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 
 int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefixLength)
 {
-    return ipaddr_add_or_del(addr,ifacename, prefixLength, 0);
+    return ipaddr_add_or_del(addr,ifacename, prefixLength, 0/*pref*/, 0/*valid*/, 0);
 }
 
 int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly, int reuse)

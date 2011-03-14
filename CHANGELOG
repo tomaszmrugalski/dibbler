@@ -14,6 +14,7 @@
   - Srv: answers to RENEW are now constructed properly (single SERVERID is enough)
   - All: Inteface link address is now detected properly on Mac OS X
   - All: Many Mac OS port fixes. It should be operational now. 
+  - Cli: client now adds addresses with proper preferred/valid lifetimes on Linux
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added
