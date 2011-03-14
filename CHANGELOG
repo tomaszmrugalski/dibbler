@@ -9,12 +9,13 @@
   - Fix: client no longer gets confused when requesting IA,TA and PD
   - Fix: Server now sends back rapid-commit option
   - Srv: It is now possible to specify how server should handle unknown FQDNs from clients
-  - Srv: Is is now possible to specify DDNS server address, used during DNS Updates
+  - Srv: It is now possible to specify DDNS server address, used during DNS Updates
   - Doc: Fixed bug in example in server man page
   - Srv: answers to RENEW are now constructed properly (single SERVERID is enough)
   - All: Inteface link address is now detected properly on Mac OS X
   - All: Many Mac OS port fixes. It should be operational now. 
-  - Cli: client now adds addresses with proper preferred/valid lifetimes on Linux
+  - Linux: client now adds addresses with proper preferred/valid lifetimes
+  - Linux: client now properly updates addresses during renew/rebind
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added

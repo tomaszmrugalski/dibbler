@@ -52,6 +52,10 @@
 #define IPV6_RECVPKTINFO IPV6_PKTINFO
 #endif
 
+#define ADDROPER_DEL 0
+#define ADDROPER_ADD 1
+#define ADDROPER_UPDATE 2
+
 struct rtnl_handle rth;
 char Message[1024] = {0};
 
@@ -295,7 +299,8 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
  * @param mode - 0-delete, 1-add, 2-update
  * 
  * @return 
- */int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, 
+ */
+int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, 
                       unsigned long preferred, unsigned long valid, int mode)
 {
     struct rtnl_handle rth;
@@ -317,17 +322,18 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
     
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
-    req.n.nlmsg_flags = NLM_F_REQUEST;
     switch (mode) {
-    case 0:
-        req.n.nlmsg_type = RTM_DELADDR;        /* del address */
+    case ADDROPER_DEL:
+        req.n.nlmsg_type = RTM_DELADDR; /* del address */
+        req.n.nlmsg_flags = NLM_F_REQUEST;
         break;
-    case 1:
+    case ADDROPER_ADD:
         req.n.nlmsg_type = RTM_NEWADDR; /* add address */
+        req.n.nlmsg_flags = NLM_F_REQUEST |NLM_F_CREATE|NLM_F_EXCL;
         break;
-    case 2:
-        /* @FIXME: There's no extra flag for update */
+    case ADDROPER_UPDATE:
         req.n.nlmsg_type = RTM_NEWADDR; /* update address */
+        req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_REPLACE;
         break;
     }
     req.ifa.ifa_family = AF_INET6;
@@ -370,20 +376,23 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
 	       unsigned long valid, int prefixLength)
 {
-    return ipaddr_add_or_del(addr,ifacename, prefixLength, pref, valid, 1);
+    return ipaddr_add_or_del(addr,ifacename, prefixLength, pref, valid, ADDROPER_ADD);
 }
 
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 		  unsigned long pref, unsigned long valid, int prefixLength)
 {
     /* FIXME: Linux kernel currently does not provide API for dynamic adresses */
+
+    return ipaddr_add_or_del(addr, ifacename, prefixLength, pref, valid, ADDROPER_UPDATE);
+
     return LOWLEVEL_NO_ERROR;
 }
 
 
 int ipaddr_del(const char * ifacename, int ifaceid, const char * addr, int prefixLength)
 {
-    return ipaddr_add_or_del(addr,ifacename, prefixLength, 0/*pref*/, 0/*valid*/, 0);
+    return ipaddr_add_or_del(addr,ifacename, prefixLength, 0/*pref*/, 0/*valid*/, ADDROPER_DEL);
 }
 
 int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly, int reuse)
