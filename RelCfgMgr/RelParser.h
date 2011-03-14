@@ -15,7 +15,6 @@
 #line 3 "RelParser.y"
 
 #include <string.h>
-#include <strings.h>
 #include <iostream>
 #include <string>
 #include <malloc.h>

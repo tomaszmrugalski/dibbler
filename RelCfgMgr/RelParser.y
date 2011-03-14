@@ -2,7 +2,6 @@
 
 %header{
 #include <string.h>
-#include <strings.h>
 #include <iostream>
 #include <string>
 #include <malloc.h>
