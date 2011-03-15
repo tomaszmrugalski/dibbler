@@ -366,7 +366,7 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
     result = sendto(sock, buf, message_len, 0, (struct sockaddr*)&dst, sizeof(struct sockaddr_in6));
 
     if (result < 0) {
-        sprintf(Message, "Unable to send data (dst addr: %s)", addr);
+        sprintf(Message, "Unable to send data (dst addr: %s), error=%d", addr, result);
         return LOWLEVEL_ERROR_SOCKET;
     }
     return LOWLEVEL_NO_ERROR;
