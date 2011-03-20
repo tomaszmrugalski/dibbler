@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="client-win32"
 	ProjectGUID="{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
 	Keyword="Win32Proj"
@@ -16,9 +16,9 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			Name="Debug32|Win32"
+			OutputDirectory="Debug32"
+			IntermediateDirectory="Debug32"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -102,9 +102,9 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			Name="Release32|Win32"
+			OutputDirectory="Release32"
+			IntermediateDirectory="Release32"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -141,6 +141,7 @@
 				WarningLevel="1"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -566,7 +567,7 @@
 					RelativePath="..\ClntCfgMgr\ClntParsAddrOpt.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -574,7 +575,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -594,7 +595,7 @@
 					RelativePath="..\ClntCfgMgr\ClntParsGlobalOpt.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -602,7 +603,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -614,7 +615,7 @@
 					RelativePath="..\ClntCfgMgr\ClntParsIAOpt.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -622,7 +623,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -634,7 +635,7 @@
 					RelativePath="..\ClntCfgMgr\ClntParsIfaceOpt.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -642,7 +643,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -654,7 +655,7 @@
 					RelativePath="..\CfgMgr\StationID.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -662,7 +663,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -678,7 +679,7 @@
 					RelativePath="..\CfgMgr\TimeZone.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -686,7 +687,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -726,7 +727,7 @@
 					RelativePath="..\misc\IPv6Addr.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -734,7 +735,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -750,7 +751,7 @@
 					RelativePath="..\misc\Logger.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -758,7 +759,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -770,7 +771,7 @@
 					RelativePath="..\misc\long128.cpp"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Debug32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -778,7 +779,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Release32|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1398,15 +1399,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\client-win32.vs2003.rc"
+			>
+		</File>
+		<File
 			RelativePath="..\GUIDELINES"
 			>
 		</File>
 		<File
 			RelativePath="..\Relnotes"
-			>
-		</File>
-		<File
-			RelativePath=".\client-win32.vs2003.rc"
 			>
 		</File>
 		<File
