@@ -1,6 +1,7 @@
 
   Dibbler changelog
  ------------------- 
+
 0.8.0RC-2 [not-released-yet]
   - Fixed compilation problems
   - Fix: client, server and relay no longer leave PID file after failed start
