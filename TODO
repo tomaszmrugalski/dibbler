@@ -6,16 +6,14 @@ Before 0.8.0 release:
 - Describe MOD_REMOTE_AUTOCONF Remote autoconf extension in Developer's Guide
 - Describe MOD_CLNT_CONFIRM in Developer's Guide
 - Add examples for ds-lite, custom options and remote-autoconf
-
 - RFC3315, 9.1 duid length is no longer than 128 octets
+- Srv: Implement access control for PD
 - Add sanity length checks in Options constructors
 - Remove setDUID() method from TOpt()
 - Implement support for Client vendor class options
 - Fix: Elapsed time should be specified with 10ms granulation.
 - Cleanup: Migrated to STL. Remove Container.h and replace it with <list>
 - CLI: AUTH: set ClntCfgIface->getKeyGenerationState() somewhere
-- CLI: PD: this should be possible "iface eth0 { pd { prefix 2000::/64 } }"
-- CLI: PD: this should be possible "iface eth0 { pd { prefix prefix } }"
 - SRV: PD: prefixes are not removed from db if valid goes to 0.
 - CLI: PD: radvd.conf is invalid if there were more than one prefix added to the same interface
 - CLI: Implement client side prefix delegation hints. It must be possible to define, what prefix(es) client
@@ -117,14 +115,14 @@ New tasks should be added to the TODO list. After task is implemented, it should
 
   DONE/Not validated
  --------------------
-- CLI: Elapsed time is not recalculated when SOLICIT is resent
+- CLI: PD: this should be possible "iface eth0 { pd { prefix 2000::/64 } }"
+- CLI: PD: this should be possible "iface eth0 { pd { prefix prefix } }"
 - CLI: Win32: prefix delegation low-level support is not implemented.
 - CLI: PD: prefixes are not removed if valid goes to 0.
 - CLI: PD: Rebind attempt segfaults
 - CLI: PD: this cfg: "iface eth0 { pd }" does not work
 - CLI: PD: this should be possible "iface eth0 { pd pd }"
 - CLI: PD: RENEW does not work
-- ALL: Fix linux low-level interface (don't use PKTINFO anymore).
 - SRV: Prefix hint analysis. (client support for hints is required)
 - SRV: Perform DNS Update delete, when RELEASE is sent (SrvMsgReply.cpp:387)
 - CLI: Perform DNS Update delete, when RELEASE is sent (ClntMsgRelease.cpp:102)
@@ -132,6 +130,8 @@ New tasks should be added to the TODO list. After task is implemented, it should
 
   DONE
  ------
+- ALL: Fix linux low-level interface (don't use PKTINFO anymore).
+- CLI: Elapsed time is not recalculated when SOLICIT is resent
 - SRV/REL: Support InterfaceID option with length other than 4
 - Feature: Add support for admin configured options both on server and client as well.
 - Fix (easy): run unicast server, run client, cli gets single addr, restart server, restart client, 

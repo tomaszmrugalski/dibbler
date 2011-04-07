@@ -17,6 +17,10 @@
   - All: Many Mac OS port fixes. It should be operational now. 
   - Linux: client now adds addresses with proper preferred/valid lifetimes
   - Linux: client now properly updates addresses during renew/rebind
+  - Cli: Client now properly copies prefixes from ADVERTISE to REQUEST (bug #197)
+  - Cli: RELEASE is now sent properly if there are only prefixes, and no addresses (bug #196)
+  - Cli: It is now possible to define serveral prefixes in one pd
+  - Cli: It is now possible to define specific prefix in pd as a hint
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added

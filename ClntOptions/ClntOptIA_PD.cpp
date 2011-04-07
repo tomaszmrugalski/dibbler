@@ -52,10 +52,17 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
  * @param ClntCfgPD 
  * @param parent 
  */
-TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> ClntCfgPD, TMsg* parent)
-    :TOptIA_PD(ClntCfgPD->getIAID(), ClntCfgPD->getT1(), ClntCfgPD->getT2(), parent)
+TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> cfgPD, TMsg* parent)
+    :TOptIA_PD(cfgPD->getIAID(), cfgPD->getT1(), cfgPD->getT2(), parent)
 {
-    /// @todo: Copy all prefixes defined in CfgMgr (i.e. implement client hints)
+    cfgPD->firstPrefix();
+    SPtr<TClntCfgPrefix> cfgPrefix;
+    while (cfgPrefix = cfgPD->getPrefix() ) {
+        SubOptions.append(new TClntOptIAPrefix(cfgPrefix->get(),
+                                               cfgPrefix->getPref(),
+                                               cfgPrefix->getValid(),
+                                               cfgPrefix->getLength(), 0));
+    }
     clearContext();
 }
 

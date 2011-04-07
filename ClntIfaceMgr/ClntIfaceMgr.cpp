@@ -655,7 +655,7 @@ void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
 	<< remoteEndpoint->getPlain() << " " << action;
     Log(Info) << "About to execute command: " << tmp.str() << LogEnd;
 
-    int returnCode = system(tmp.str().c_str());
+    short int returnCode = system(tmp.str().c_str());
 
     Log(Info) << "Return code=" << returnCode << LogEnd;
 }

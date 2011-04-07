@@ -346,8 +346,8 @@ int yyFlexLexer::yywrap() { return 1; }
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 89
-#define YY_END_OF_BUFFER 90
+#define YY_NUM_RULES 90
+#define YY_END_OF_BUFFER 91
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -357,90 +357,90 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[771] =
     {   0,
-        1,    1,    0,    0,    0,    0,   90,   88,    2,    1,
-        1,   88,   70,   88,   88,   87,   87,   88,   88,   88,
-       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
-       88,   88,   88,   88,   88,   74,   74,   89,    1,    1,
-        1,    0,   82,   70,    0,   82,   72,   71,   87,    0,
-        0,   86,    0,   79,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,    9,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   46,   83,   83,
-       83,   83,   83,   83,   83,   24,   25,   10,   83,   83,
-       83,   83,   83,   73,   71,   87,    0,    0,    0,   78,
+        1,    1,    0,    0,    0,    0,   91,   89,    2,    1,
+        1,   89,   71,   89,   89,   88,   88,   89,   89,   89,
+       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
+       89,   89,   89,   89,   89,   75,   75,   90,    1,    1,
+        1,    0,   83,   71,    0,   83,   73,   72,   88,    0,
+        0,   87,    0,   80,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,    9,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   46,   84,   84,
+       84,   84,   84,   84,   84,   24,   25,   10,   84,   84,
+       84,   84,   84,   74,   72,   88,    0,    0,    0,   79,
 
-       84,   77,   77,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   87,    0,    0,    0,    0,   76,   76,    0,   77,
-        0,   77,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   33,   11,   83,   83,   83,   83,   83,    8,
-        0,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   87,    0,   85,    0,    0,    0,   76,    0,
+       85,   78,   78,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   88,    0,    0,    0,    0,   77,   77,    0,   78,
+        0,   78,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   33,   11,   84,   84,   84,   84,   84,    8,
+        0,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   88,    0,   86,    0,    0,    0,   77,    0,
 
-       76,    0,   77,   77,   77,   77,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,    3,   83,
-       83,   83,   83,   83,   83,   83,    0,   83,   83,   83,
-       12,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,    0,    0,    0,    0,    0,   76,   76,   76,
-       76,    0,   77,   77,   77,    0,   77,   83,   83,   83,
-       83,   83,   83,   83,   28,   83,   83,   83,   83,   83,
-       34,   83,   83,   83,   83,   83,   83,   83,    0,    0,
-       83,   83,   83,   83,   83,   26,   83,   83,   83,   83,
+       77,    0,   78,   78,   78,   78,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,    3,   84,
+       84,   84,   84,   84,   84,   84,    0,   84,   84,   84,
+       12,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,    0,    0,    0,    0,    0,   77,   77,   77,
+       77,    0,   78,   78,   78,    0,   78,   84,   84,   84,
+       84,   84,   84,   84,   28,   84,   84,   84,   84,   84,
+       34,   84,   84,   84,   84,   84,   84,   84,    0,    0,
+       84,   84,   84,   84,   84,   26,   84,   47,   84,   84,
 
-       83,   83,   83,   83,   83,   83,   83,   83,    6,   83,
-       83,   83,   83,   83,    0,    0,    0,    0,   76,   76,
-       76,    0,   76,    0,    0,   77,   77,   77,   77,   83,
-        5,   83,   83,   83,   83,   83,   66,   50,   48,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,    0,    0,
-       83,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       69,   83,   83,   83,   83,   83,   83,   83,   43,   83,
-       83,   83,   85,    0,    0,    0,    0,    0,   76,   76,
-       76,   76,    0,   77,   77,   77,    0,   77,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   49,   83,   83,
+       84,   84,   84,   84,   84,   84,   84,   84,    6,   84,
+       84,   84,   84,   84,    0,    0,    0,    0,   77,   77,
+       77,    0,   77,    0,    0,   78,   78,   78,   78,   84,
+        5,   84,   84,   84,   84,   84,   67,   51,   49,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,    0,    0,
+       84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       70,   84,   84,   84,   84,   84,   84,   84,   43,   84,
+       84,   84,   86,    0,    0,    0,    0,    0,   77,   77,
+       77,   77,    0,   78,   78,   78,    0,   78,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   50,   84,   84,
 
-       83,   83,   39,   83,   83,   15,   16,    0,    0,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   83,   83,   83,   83,   18,    0,
-        0,    0,    0,   76,   76,   76,    0,   76,   81,   77,
-       77,   77,   77,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   47,   83,   83,   83,   83,   14,    0,    0,
-       83,   83,    4,   83,   83,   83,   83,   83,   83,   83,
-       83,   83,   83,   83,   13,   83,   30,   83,   83,    0,
-        0,    0,    0,   80,   76,   76,   76,   76,   77,   77,
-       77,    0,   77,   83,   83,   83,   83,   83,   83,   83,
+       84,   84,   39,   84,   84,   15,   16,    0,    0,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   84,   84,   84,   84,   18,    0,
+        0,    0,    0,   77,   77,   77,    0,   77,   82,   78,
+       78,   78,   78,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   48,   84,   84,   84,   84,   14,    0,    0,
+       84,   84,    4,   84,   84,   84,   84,   84,   84,   84,
+       84,   84,   84,   84,   13,   84,   30,   84,   84,    0,
+        0,    0,    0,   81,   77,   77,   77,   77,   78,   78,
+       78,    0,   78,   84,   84,   84,   84,   84,   84,   84,
 
-       83,   27,   83,   83,   83,   17,    0,    0,   36,   35,
-       83,   29,   83,   83,   83,   83,   83,   83,   83,   32,
-       31,   83,   83,   83,   83,   85,    0,    0,   76,   76,
-       76,    0,   76,   77,   77,   77,   77,   68,   83,   83,
-       83,   83,   83,   57,   83,   83,   83,   53,   38,   37,
-       83,   83,   83,   83,   83,   83,   83,   19,   83,   83,
-       83,   51,    0,    0,    0,    0,   76,   76,   76,   76,
-       77,   77,   77,    0,   77,    7,   83,   83,   55,   83,
-       58,   67,   83,   83,   83,   83,   83,   42,   83,   83,
-       65,   83,   83,    0,    0,    0,   76,   76,   76,    0,
+       84,   27,   84,   84,   84,   17,    0,    0,   36,   35,
+       84,   29,   84,   84,   84,   84,   84,   84,   84,   32,
+       31,   84,   84,   84,   84,   86,    0,    0,   77,   77,
+       77,    0,   77,   78,   78,   78,   78,   69,   84,   84,
+       84,   84,   84,   58,   84,   84,   84,   54,   38,   37,
+       84,   84,   84,   84,   84,   84,   84,   19,   84,   84,
+       84,   52,    0,    0,    0,    0,   77,   77,   77,   77,
+       78,   78,   78,    0,   78,    7,   84,   84,   56,   84,
+       59,   68,   84,   84,   84,   84,   84,   42,   84,   84,
+       66,   84,   84,    0,    0,    0,   77,   77,   77,    0,
 
-       76,   77,   77,   77,   77,   83,   83,   83,   83,   54,
-       83,   83,   83,   83,   40,   83,   83,   83,   85,    0,
-        0,    0,   76,   76,   76,   76,   77,   77,   77,    0,
-       77,   83,   83,   83,   83,   20,   83,   83,   83,   83,
-       83,   22,    0,    0,   75,   78,   76,   76,   76,    0,
-       76,   77,   77,   77,   77,   83,   83,   59,   83,   83,
-       41,   83,   23,   83,    0,    0,   75,    0,   76,   76,
-       76,   76,   76,   77,   77,   77,    0,   77,   83,   83,
-       60,   83,   83,   83,   83,   83,   83,   85,   75,   78,
-       76,    0,   76,   76,   76,   76,   77,   77,   77,   83,
+       77,   78,   78,   78,   78,   84,   84,   84,   84,   55,
+       84,   84,   84,   84,   40,   84,   84,   84,   86,    0,
+        0,    0,   77,   77,   77,   77,   78,   78,   78,    0,
+       78,   84,   84,   84,   84,   20,   84,   84,   84,   84,
+       84,   22,    0,    0,   76,   79,   77,   77,   77,    0,
+       77,   78,   78,   78,   78,   84,   84,   60,   84,   84,
+       41,   84,   23,   84,    0,    0,   76,    0,   77,   77,
+       77,   77,   77,   78,   78,   78,    0,   78,   84,   84,
+       61,   84,   84,   84,   84,   84,   84,   86,   76,   79,
+       77,    0,   77,   77,   77,   77,   78,   78,   78,   84,
 
-       83,   83,   83,   83,   83,   21,   45,   83,    0,   75,
-       76,   76,   76,   76,   77,   77,   77,   83,   83,   61,
-       62,   63,   64,   83,    0,   76,   76,    0,   76,   76,
-       77,   83,   56,   83,   85,   76,   76,   77,   83,   83,
-        0,   76,   76,    0,   52,   44,   75,   76,   76,   75,
-       76,   76,    0,    0,   76,   76,    0,   76,   76,    0,
-       85,   76,   76,    0,   76,   76,    0,   76,   76,    0
+       84,   84,   84,   84,   84,   21,   45,   84,    0,   76,
+       77,   77,   77,   77,   78,   78,   78,   84,   84,   62,
+       63,   64,   65,   84,    0,   77,   77,    0,   77,   77,
+       78,   84,   57,   84,   86,   77,   77,   78,   84,   84,
+        0,   77,   77,    0,   53,   44,   76,   77,   77,   76,
+       77,   77,    0,    0,   77,   77,    0,   77,   77,    0,
+       86,   77,   77,    0,   77,   77,    0,   77,   77,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -1558,13 +1558,13 @@ static yyconst flex_int16_t yy_chk[3935] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[90] =
+static yyconst flex_int32_t yy_rule_can_match_eol[91] =
     {   0,
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 
-    0, 0, 1, 0, 0, 0, 0, 0, 0, 0,     };
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 
+    0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,     };
 
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
@@ -1976,99 +1976,99 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_; }
+{ return ClntParser::PREFIX_; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_LL_; }
+{ return ClntParser::DUID_TYPE_; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_LLT_; }
+{ return ClntParser::DUID_TYPE_LL_; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_EN_; }
+{ return ClntParser::DUID_TYPE_LLT_; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-{ return ClntParser::VENDOR_SPEC_; }
+{ return ClntParser::DUID_TYPE_EN_; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-{ return ClntParser::ANON_INF_REQUEST_; }
+{ return ClntParser::VENDOR_SPEC_; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-{ return ClntParser::INSIST_MODE_; }
+{ return ClntParser::ANON_INF_REQUEST_; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-{ return ClntParser::INACTIVE_MODE_; }
+{ return ClntParser::INSIST_MODE_; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-{ return ClntParser::AUTH_ENABLED_; }
+{ return ClntParser::INACTIVE_MODE_; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-{ return ClntParser::AUTH_ACCEPT_METHODS_; }
+{ return ClntParser::AUTH_ENABLED_; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_NONE_; }
+{ return ClntParser::AUTH_ACCEPT_METHODS_; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_PLAIN_; }
+{ return ClntParser::DIGEST_NONE_; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_MD5_; }
+{ return ClntParser::DIGEST_PLAIN_; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA1_; }
+{ return ClntParser::DIGEST_HMAC_MD5_; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA224_; }
+{ return ClntParser::DIGEST_HMAC_SHA1_; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA256_; }
+{ return ClntParser::DIGEST_HMAC_SHA224_; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA384_; }
+{ return ClntParser::DIGEST_HMAC_SHA256_; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA512_; }
+{ return ClntParser::DIGEST_HMAC_SHA384_; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-{ return ClntParser::SKIP_CONFIRM_; }
+{ return ClntParser::DIGEST_HMAC_SHA512_; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-{ return ClntParser::DS_LITE_; }
+{ return ClntParser::SKIP_CONFIRM_; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-{ return ClntParser::EXPERIMENTAL_; }
+{ return ClntParser::DS_LITE_; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-{ return ClntParser::ADDR_PARAMS_; }
+{ return ClntParser::EXPERIMENTAL_; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-{ return ClntParser::REQUEST_; }
+{ return ClntParser::ADDR_PARAMS_; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-;
+{ return ClntParser::REQUEST_; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
@@ -2076,17 +2076,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
+;
+	YY_BREAK
+case 73:
+YY_RULE_SETUP
 {
   BEGIN(COMMENT);
   ComBeg=yylineno;
 }
 	YY_BREAK
-case 73:
+case 74:
 YY_RULE_SETUP
 BEGIN(INITIAL);
 	YY_BREAK
-case 74:
-/* rule 74 can match eol */
+case 75:
+/* rule 75 can match eol */
 YY_RULE_SETUP
 ;
 	YY_BREAK
@@ -2098,17 +2102,6 @@ case YY_STATE_EOF(COMMENT):
 	YY_BREAK
     //IPv6 address - various forms
 
-case 75:
-YY_RULE_SETUP
-{
-    if(!inet_pton6(yytext,yylval.addrval)) { 
-        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
-        { YYABORT; }
-    } else {
-        return ClntParser::IPV6ADDR_;
-    }
-}
-	YY_BREAK
 case 76:
 YY_RULE_SETUP
 {
@@ -2122,23 +2115,23 @@ YY_RULE_SETUP
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-{ 
+{
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-{
+{ 
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         return ClntParser::IPV6ADDR_;
     }
 }
@@ -2177,7 +2170,18 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case 82:
-/* rule 82 can match eol */
+YY_RULE_SETUP
+{
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
+    } else {
+        return ClntParser::IPV6ADDR_;
+    }
+}
+	YY_BREAK
+case 83:
+/* rule 83 can match eol */
 YY_RULE_SETUP
 {
     yylval.strval=new char[strlen(yytext)-1];
@@ -2186,7 +2190,7 @@ YY_RULE_SETUP
     return ClntParser::STRING_;
 }
 	YY_BREAK
-case 83:
+case 84:
 YY_RULE_SETUP
 {
     int len = strlen(yytext);
@@ -2209,7 +2213,7 @@ YY_RULE_SETUP
     return ClntParser::STRING_;
 }
 	YY_BREAK
-case 84:
+case 85:
 YY_RULE_SETUP
 {
     // DUID in 0x00010203 format
@@ -2243,7 +2247,7 @@ YY_RULE_SETUP
    return ClntParser::DUID_;
 }
 	YY_BREAK
-case 85:
+case 86:
 YY_RULE_SETUP
 {
    // DUID in 00:01:02:03 format
@@ -2273,7 +2277,7 @@ YY_RULE_SETUP
    return ClntParser::DUID_;
 }
 	YY_BREAK
-case 86:
+case 87:
 YY_RULE_SETUP
 { 
     yytext[strlen(yytext)-1]='\n';
@@ -2284,7 +2288,7 @@ YY_RULE_SETUP
     return ClntParser::HEXNUMBER_;
 }
 	YY_BREAK
-case 87:
+case 88:
 YY_RULE_SETUP
 { 
     if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
@@ -2294,11 +2298,11 @@ YY_RULE_SETUP
     return ClntParser::INTNUMBER_;
 }
 	YY_BREAK
-case 88:
+case 89:
 YY_RULE_SETUP
 {return yytext[0];} 
 	YY_BREAK
-case 89:
+case 90:
 YY_RULE_SETUP
 ECHO;
 	YY_BREAK

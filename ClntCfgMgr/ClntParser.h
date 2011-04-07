@@ -53,6 +53,7 @@ List(DigestTypes)   DigestLst;                                              \
 /*preffered servers*/                                                       \
 List(TStationID) PresentStationLst;		                            \
 List(TIPv6Addr) PresentAddrLst;			                            \
+List(TClntCfgPrefix) PrefixLst;                                             \
 List(string) PresentStringLst;	                                            \
 List(TClntOptVendorSpec) VendorSpec;					    \
 bool IfaceDefined(int ifaceNr);                                             \
@@ -83,7 +84,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;
 
-#line 82 "ClntParser.y"
+#line 83 "ClntParser.y"
 typedef union    
 {
     int ival;    
@@ -308,31 +309,32 @@ typedef
 #define	STRICT_RFC_NO_ROUTING_	300
 #define	SKIP_CONFIRM_	301
 #define	PD_	302
-#define	DUID_TYPE_	303
-#define	DUID_TYPE_LLT_	304
-#define	DUID_TYPE_LL_	305
-#define	DUID_TYPE_EN_	306
-#define	AUTH_ENABLED_	307
-#define	AUTH_ACCEPT_METHODS_	308
-#define	DIGEST_NONE_	309
-#define	DIGEST_PLAIN_	310
-#define	DIGEST_HMAC_MD5_	311
-#define	DIGEST_HMAC_SHA1_	312
-#define	DIGEST_HMAC_SHA224_	313
-#define	DIGEST_HMAC_SHA256_	314
-#define	DIGEST_HMAC_SHA384_	315
-#define	DIGEST_HMAC_SHA512_	316
-#define	STATELESS_	317
-#define	ANON_INF_REQUEST_	318
-#define	INSIST_MODE_	319
-#define	INACTIVE_MODE_	320
-#define	EXPERIMENTAL_	321
-#define	ADDR_PARAMS_	322
-#define	REMOTE_AUTOCONF_	323
-#define	DS_LITE_	324
-#define	ADDRESS_LIST_	325
-#define	STRING_KEYWORD_	326
-#define	REQUEST_	327
+#define	PREFIX_	303
+#define	DUID_TYPE_	304
+#define	DUID_TYPE_LLT_	305
+#define	DUID_TYPE_LL_	306
+#define	DUID_TYPE_EN_	307
+#define	AUTH_ENABLED_	308
+#define	AUTH_ACCEPT_METHODS_	309
+#define	DIGEST_NONE_	310
+#define	DIGEST_PLAIN_	311
+#define	DIGEST_HMAC_MD5_	312
+#define	DIGEST_HMAC_SHA1_	313
+#define	DIGEST_HMAC_SHA224_	314
+#define	DIGEST_HMAC_SHA256_	315
+#define	DIGEST_HMAC_SHA384_	316
+#define	DIGEST_HMAC_SHA512_	317
+#define	STATELESS_	318
+#define	ANON_INF_REQUEST_	319
+#define	INSIST_MODE_	320
+#define	INACTIVE_MODE_	321
+#define	EXPERIMENTAL_	322
+#define	ADDR_PARAMS_	323
+#define	REMOTE_AUTOCONF_	324
+#define	DS_LITE_	325
+#define	ADDRESS_LIST_	326
+#define	STRING_KEYWORD_	327
+#define	REQUEST_	328
 
 
 #line 169 "../bison++/bison.h"
@@ -426,6 +428,7 @@ static const int DUID_;
 static const int STRICT_RFC_NO_ROUTING_;
 static const int SKIP_CONFIRM_;
 static const int PD_;
+static const int PREFIX_;
 static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
 static const int DUID_TYPE_LL_;
@@ -504,31 +507,32 @@ static const int REQUEST_;
 	,STRICT_RFC_NO_ROUTING_=300
 	,SKIP_CONFIRM_=301
 	,PD_=302
-	,DUID_TYPE_=303
-	,DUID_TYPE_LLT_=304
-	,DUID_TYPE_LL_=305
-	,DUID_TYPE_EN_=306
-	,AUTH_ENABLED_=307
-	,AUTH_ACCEPT_METHODS_=308
-	,DIGEST_NONE_=309
-	,DIGEST_PLAIN_=310
-	,DIGEST_HMAC_MD5_=311
-	,DIGEST_HMAC_SHA1_=312
-	,DIGEST_HMAC_SHA224_=313
-	,DIGEST_HMAC_SHA256_=314
-	,DIGEST_HMAC_SHA384_=315
-	,DIGEST_HMAC_SHA512_=316
-	,STATELESS_=317
-	,ANON_INF_REQUEST_=318
-	,INSIST_MODE_=319
-	,INACTIVE_MODE_=320
-	,EXPERIMENTAL_=321
-	,ADDR_PARAMS_=322
-	,REMOTE_AUTOCONF_=323
-	,DS_LITE_=324
-	,ADDRESS_LIST_=325
-	,STRING_KEYWORD_=326
-	,REQUEST_=327
+	,PREFIX_=303
+	,DUID_TYPE_=304
+	,DUID_TYPE_LLT_=305
+	,DUID_TYPE_LL_=306
+	,DUID_TYPE_EN_=307
+	,AUTH_ENABLED_=308
+	,AUTH_ACCEPT_METHODS_=309
+	,DIGEST_NONE_=310
+	,DIGEST_PLAIN_=311
+	,DIGEST_HMAC_MD5_=312
+	,DIGEST_HMAC_SHA1_=313
+	,DIGEST_HMAC_SHA224_=314
+	,DIGEST_HMAC_SHA256_=315
+	,DIGEST_HMAC_SHA384_=316
+	,DIGEST_HMAC_SHA512_=317
+	,STATELESS_=318
+	,ANON_INF_REQUEST_=319
+	,INSIST_MODE_=320
+	,INACTIVE_MODE_=321
+	,EXPERIMENTAL_=322
+	,ADDR_PARAMS_=323
+	,REMOTE_AUTOCONF_=324
+	,DS_LITE_=325
+	,ADDRESS_LIST_=326
+	,STRING_KEYWORD_=327
+	,REQUEST_=328
 
 
 #line 215 "../bison++/bison.h"

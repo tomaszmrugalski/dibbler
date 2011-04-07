@@ -29,40 +29,40 @@ unsigned long TClntCfgPrefix::getPref() {
 }
 
 
-TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix, long valid, long pref, char prefixLength)
+TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix, 
+                               unsigned long valid, 
+                               unsigned long pref, 
+                               unsigned char len)
+    :Prefix(prefix), Valid(valid), Pref(pref), PrefixLength(len)
 {
-    Prefix=prefix;
-    Valid = valid;
-    Pref = pref;
-    PrefixLength = prefixLength;
 }
 
 TClntCfgPrefix::~TClntCfgPrefix() {
 
 }
 
-void TClntCfgPrefix::setOptions(SPtr<TClntParsGlobalOpt> opt) {
+void TClntCfgPrefix::setOptions(SPtr<TClntParsGlobalOpt> opt) 
+{
     this->Valid=opt->getValid();
     this->Pref=opt->getPref();
 }
 
-TClntCfgPrefix::TClntCfgPrefix() {
+TClntCfgPrefix::TClntCfgPrefix() 
+{
     this->Valid=ULONG_MAX;
     this->Pref=ULONG_MAX;
     Prefix = new TIPv6Addr();
     PrefixLength = 0;
 }
 
-TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix, char prefixLength) {
-    Prefix=prefix;
-    Valid = ULONG_MAX;
-    Pref = ULONG_MAX;
-    PrefixLength = prefixLength;
-    
+TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix, 
+                               unsigned char len)
+    :Prefix(prefix), Valid(ULONG_MAX), Pref(ULONG_MAX), PrefixLength(len)
+{
 }
 
 ostream& operator<<(ostream& out,TClntCfgPrefix& pref) {
-    out << "<prefix preferred=\"" << pref.Pref 
+    out << "<prefix length=\"" << (unsigned int)pref.PrefixLength << "\" preferred=\"" << pref.Pref 
 	<< "\" valid=\"" << pref.Valid << "\">";
     out << *pref.Prefix << "</prefix>" << std::endl;	
     return out;

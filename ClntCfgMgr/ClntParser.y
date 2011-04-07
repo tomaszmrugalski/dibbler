@@ -47,6 +47,7 @@ List(DigestTypes)   DigestLst;                                              \
 /*preffered servers*/                                                       \
 List(TStationID) PresentStationLst;		                            \
 List(TIPv6Addr) PresentAddrLst;			                            \
+List(TClntCfgPrefix) PrefixLst;                                             \
 List(string) PresentStringLst;	                                            \
 List(TClntOptVendorSpec) VendorSpec;					    \
 bool IfaceDefined(int ifaceNr);                                             \
@@ -111,7 +112,7 @@ namespace std
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
 %token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
-%token PD_
+%token PD_, PREFIX_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
@@ -712,9 +713,26 @@ PDOptionsList
 ;
 
 PDOption
-:T1Option
-|T2Option
+: Prefix
+| T1Option
+| T2Option
 ;
+
+Prefix
+: PREFIX_ IPV6ADDR_ '/' Number
+{
+    SPtr<TIPv6Addr> addr = new TIPv6Addr($2);
+    SPtr<TClntCfgPrefix> prefix = new TClntCfgPrefix(addr, ($4));
+    PrefixLst.append(prefix);
+    Log(Debug) << "PD: Adding single prefix " << addr->getPlain() << "/" << ($4) << "." << LogEnd;
+}
+| PREFIX_
+{
+    Log(Debug) << "PD: Adding single prefix." << LogEnd;
+    SPtr<TClntCfgPrefix> prefix = new TClntCfgPrefix(new TIPv6Addr("::",true), 0);
+    PrefixLst.append(prefix);
+};
+
 
 UnicastOption
 :UNICAST_ Number
@@ -1250,12 +1268,23 @@ void ClntParser::StartPDDeclaration()
 {
   ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
   ClntCfgAddrLst.clear();
+  PrefixLst.clear();
 }
 
 bool ClntParser::EndPDDeclaration()
 {
     SPtr<TClntCfgPD> pd = new TClntCfgPD();
     pd->setOptions(ParserOptStack.getLast());
+
+    // copy all defined prefixes
+    PrefixLst.first();
+    SPtr<TClntCfgPrefix> prefix;
+    while (prefix = PrefixLst.get()) {
+        pd->addPrefix(prefix);
+    }
+
+    PrefixLst.clear();
+
     ClntCfgPDLst.append(pd);
     ParserOptStack.delLast();
     return true;
@@ -1265,7 +1294,8 @@ bool ClntParser::EndPDDeclaration()
  * method adds 1 IA object (containing 1 address) to the ClntCfgIA list.
  * Both objects' properties are set to last parsed values
  * 
- */void ClntParser::EmptyIA()
+ */
+void ClntParser::EmptyIA()
 {
     EmptyAddr();
     ClntCfgIALst.append(new TClntCfgIA());

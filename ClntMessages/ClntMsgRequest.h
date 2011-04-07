@@ -18,11 +18,11 @@ class TClntIfaceMgr;
 class TClntMsgRequest : public TClntMsg
 {
   public:
-  TClntMsgRequest(TOptList opts, int iface);
-  TClntMsgRequest(List(TAddrIA) requestIALst,
-                  SPtr<TDUID> srvDUID,
-                  int iface);
-
+    TClntMsgRequest(TOptList opts, int iface);
+    TClntMsgRequest(List(TAddrIA) requestIALst,
+                    SPtr<TDUID> srvDUID,
+                    int iface);
+    
     void answer(SPtr<TClntMsg> msg);
     void doDuties();
     bool check();
@@ -31,6 +31,7 @@ class TClntMsgRequest : public TClntMsg
   private:
     void setState(TOptList opts, EState state);
     void copyAddrsFromAdvertise(SPtr<TClntMsg> adv);
+    void copyPrefixesFromAdvertise(SPtr<TClntMsg> adv);
 };
 
 #endif /* CLNTMSGREQUEST_H */

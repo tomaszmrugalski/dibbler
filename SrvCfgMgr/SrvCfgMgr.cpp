@@ -559,6 +559,14 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int
                 return true;
 	    classCnt++;
 	}
+
+        SPtr<TSrvCfgPD> pd;
+        ptrIface->firstPD();
+        while ( pd=ptrIface->getPD() ) {
+            if (pd->clntSupported(duid, clntAddr))
+                return true;
+            classCnt++;
+        }
     }
     if (!classCnt) {
 	Log(Warning) << "There are no address class defined on the " << ptrIface->getFullName()

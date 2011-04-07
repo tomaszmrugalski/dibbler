@@ -300,49 +300,34 @@ void TSrvCfgPD::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
 }
 
 
+bool TSrvCfgPD::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
+{
+    ///@todo implement access control for PD for real
+    return true;
+}
+
 bool TSrvCfgPD::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg)
 {
+    ///@todo implement access control for PD for real
 
     // is client on denied client class
-	SPtr<TSrvCfgClientClass> clntClass;
-	denyClientClassLst.first();
-	while(clntClass = denyClientClassLst.get())
-	{
-		if (clntClass->isStatisfy(msg))
-		return false;
-	}
-
-	// is client on accepted client class
-	allowClientClassLst.first();
-	while(clntClass = allowClientClassLst.get())
-	{
-		if (clntClass->isStatisfy(msg))
-			return true;
-	}
-
-	/*
-    SPtr<TStationRange> range;
-    RejedClnt.first();
-
-    // is client on black list?
-    while(range=RejedClnt.get())
-        if (range->in(duid,clntAddr))
+    SPtr<TSrvCfgClientClass> clntClass;
+    denyClientClassLst.first();
+    while(clntClass = denyClientClassLst.get())
+    {
+        if (clntClass->isStatisfy(msg))
             return false;
-
-    if (AcceptClnt.count()) {
-        AcceptClnt.first();
-	    // there's white list
-        while(range=AcceptClnt.get()) {
-	    // is client on this white list?
-            if (range->in(duid,clntAddr))
-                return true;
-        }
-        return false;
     }
-*/
+    
+    // is client on accepted client class
+    allowClientClassLst.first();
+    while(clntClass = allowClientClassLst.get())
+    {
+        if (clntClass->isStatisfy(msg))
+            return true;
+    }
     if (allowClientClassLst.count())
     	return false ;
-   return true;
 
-
+    return true;
 }

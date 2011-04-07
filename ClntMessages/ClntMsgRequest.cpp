@@ -96,6 +96,8 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
     // copy addresses offered in ADVERTISE
     copyAddrsFromAdvertise((Ptr*) advertise);
 
+    copyPrefixesFromAdvertise((Ptr*) advertise);
+
     // does this server support unicast?
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(iface);
     if (!cfgIface) {
@@ -301,6 +303,9 @@ void TClntMsgRequest::setState(TOptList options, EState state)
 
 void TClntMsgRequest::copyAddrsFromAdvertise(SPtr<TClntMsg> adv)
 {
+    if (ClntCfgMgr().insistMode())
+        return; // insist-mode on, so ask for the address user specified again
+
     SPtr<TOpt> opt1, opt2, opt3;
     SPtr<TClntOptIA_NA> ia1, ia2;
 
@@ -325,6 +330,40 @@ void TClntMsgRequest::copyAddrsFromAdvertise(SPtr<TClntMsg> adv)
 	    ia2->firstOption();
 	    while (opt3 = ia2->getOption()) {
 		if (opt3->getOptType() == OPTION_IAADDR)
+		    ia1->addOption(opt3);
+	    }
+	}
+    }
+}
+
+void TClntMsgRequest::copyPrefixesFromAdvertise(SPtr<TClntMsg> adv)
+{
+    if (ClntCfgMgr().insistMode())
+        return; // insist-mode on, so ask for the address user specified again
+
+    SPtr<TOpt> opt1, opt2, opt3;
+    SPtr<TClntOptIA_PD> ia1, ia2;
+
+    this->copyAAASPI(adv);
+
+    firstOption();
+    while (opt1 = getOption()) {
+	if (opt1->getOptType()!=OPTION_IA_PD)
+	    continue; // ignore all options except IA_NA
+	adv->firstOption();
+	while (opt2 = adv->getOption()) {
+	    if (opt2->getOptType() != OPTION_IA_PD)
+		continue;
+	    ia1 = (Ptr*) opt1;
+	    ia2 = (Ptr*) opt2;
+	    if (ia1->getIAID() != ia2->getIAID())
+		continue;
+
+	    // found IA_PD in ADVERTISE, now copy all addrs
+	    ia1->delAllOptions();
+	    ia2->firstOption();
+	    while (opt3 = ia2->getOption()) {
+		if (opt3->getOptType() == OPTION_IAPREFIX)
 		    ia1->addOption(opt3);
 	    }
 

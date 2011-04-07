@@ -337,6 +337,7 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6
 	Log(Debug) << "PD: Adding " << prefix->getPlain() 
 		   << " prefix to PD (iaid=" << IAID 
 		   << ") to addrDB." << LogEnd;
+    ptrPD->setDUID(duid);
     return true;
 }
 

@@ -48,7 +48,7 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 48 "RelParser.y"
+#line 47 "RelParser.y"
 typedef union    
 {
     unsigned int ival;

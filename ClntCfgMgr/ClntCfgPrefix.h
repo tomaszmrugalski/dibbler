@@ -27,19 +27,21 @@ class TClntCfgPrefix
     friend std::ostream& operator<<(std::ostream& out,TClntCfgPrefix& group);
  public:
     TClntCfgPrefix();
-    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, char prefixLength);
-    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, long valid, long pref, char prefixLength);
+    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, unsigned char prefixLength);
+    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, unsigned long valid, 
+                   unsigned long pref, unsigned char prefixLength);
     ~TClntCfgPrefix();
 
     SPtr<TIPv6Addr> get();
     unsigned long getValid();
     unsigned long getPref();
+    inline unsigned char getLength() { return PrefixLength; }
     void setOptions(SPtr<TClntParsGlobalOpt> opt);
  private:
     SPtr<TIPv6Addr> Prefix;
     unsigned long Valid;
     unsigned long Pref;
-    char PrefixLength;
+    unsigned char PrefixLength;
 };
 
 #endif
