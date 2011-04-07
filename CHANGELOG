@@ -21,6 +21,9 @@
   - Cli: RELEASE is now sent properly if there are only prefixes, and no addresses (bug #196)
   - Cli: It is now possible to define serveral prefixes in one pd
   - Cli: It is now possible to define specific prefix in pd as a hint
+  - Cli: T1,T2 are now properly set for PD
+  - Cli: Duplicate IA,TA and PD are no longer created in database, when 
+    restarting client with existing leases.
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added
