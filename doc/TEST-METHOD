@@ -1,0 +1,30 @@
+Test 1.1 client.conf/server.conf
+Copy client.conf to /etc/dibbler
+Copy server.conf to /etc/dibbler
+run server
+run client
+Check that client does not report any errors.
+Check that server does not report any errors.
+
+
+Test 1.2
+Copy client-autodetect.conf to /etc/dibbler
+
+Test 1.3 Temporary addresses
+Copy client-ta.conf to /etc/dibbler
+
+
+Test 1.4 PD
+copy client-prefix-delegation.conf to /etc/dibbler
+
+Use wireshark. Make sure that prefixes are assigned properly.
+
+
+Test 1.5 PDx2
+Uncomment second pd-pool i /etc/dibbler/server.conf
+
+
+Test 1.6 stateless
+
+Test 1.7 anynymous stateless
+
