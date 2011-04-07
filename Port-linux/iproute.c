@@ -945,10 +945,7 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 	if (req.r.rtm_family == AF_UNSPEC)
 		req.r.rtm_family = AF_INET;
 
-	if (rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL) < 0)
-		exit(2);
-
-	return 0;
+	return rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL);
 }
 
 static int rtnl_rtcache_request(struct rtnl_handle *rth, int family)
