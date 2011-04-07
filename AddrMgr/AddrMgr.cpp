@@ -317,6 +317,9 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6
 	    Log(Debug) << "PD: Adding PD (iaid=" << IAID << ") to addrDB." << LogEnd;
     }
 
+    ptrPD->setT1(T1);
+    ptrPD->setT2(T2);
+
     SPtr <TAddrPrefix> ptrPrefix;
     ptrPD->firstPrefix();
     while ( ptrPrefix = ptrPD->getPrefix() ) {
@@ -326,7 +329,7 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6
 
     // address already exists
     if (ptrPrefix) {
-        Log(Warning) << "PD: Prefix " << *ptrPrefix
+        Log(Warning) << "PD: Prefix " << ptrPrefix->get()->getPlain() << "/" << ptrPrefix->getLength()
 		     << " is already assigned to this PD." << LogEnd;
         return false;
     }
