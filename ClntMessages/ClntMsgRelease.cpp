@@ -70,6 +70,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     }
     if (!x->getDUID()) {
         Log(Error) << "Unable to send RELEASE. Unable to find DUID. " << LogEnd;
+        this->IsDone = true;
         return;
     }
     srvDUID = x->getDUID();
