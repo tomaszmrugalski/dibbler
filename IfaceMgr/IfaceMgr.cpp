@@ -174,7 +174,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     if (result<0) {
         char buf[512];
         strncpy(buf, strerror(errno),512);
-        Log(Error) << "Failed to read sockets (select() returned " << result << "), error=" << buf << LogEnd;
+        Log(Debug) << "Failed to read sockets (select() returned " << result << "), error=" << buf << LogEnd;
         return 0;
     }
 

@@ -86,6 +86,7 @@ lifetime              { return ClntParser::LIFETIME_; }
 reject-server         { return ClntParser::REJECT_SERVERS_;}
 prefered-server       { return ClntParser::PREFERRED_SERVERS_;}
 rapid-commit          { return ClntParser::RAPID_COMMIT_;}
+reconfigure-accept    { return ClntParser::RECONFIGURE_; }
 unicast               { return ClntParser::UNICAST_; }
 strict-rfc-no-routing { return ClntParser::STRICT_RFC_NO_ROUTING_; }
 prefix-delegation     { return ClntParser::PD_; }

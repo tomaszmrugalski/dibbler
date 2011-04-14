@@ -54,6 +54,7 @@ class TClntCfgMgr : public TCfgMgr
     int countIfaces();
     void dump();
     
+    void setReconfigure(bool enable);
     bool getReconfigure();
     
     //IA related
@@ -115,6 +116,7 @@ private:
     bool InsistMode;
     bool InactiveMode;
     bool UseConfirm;
+    bool Reconfigure;
 
     DigestTypes Digest;
 #ifndef MOD_DISABLE_AUTH

@@ -120,6 +120,7 @@ namespace std
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_, DS_LITE_
 %token ADDRESS_LIST_, STRING_KEYWORD_, REQUEST_
+%token RECONFIGURE_
 %type  <ival> Number
 
 %%
@@ -159,6 +160,7 @@ GlobalOptionDeclaration
 | Experimental
 | SkipConfirm
 | NotifyScripts
+| ReconfigureAccept
 ;
 
 InterfaceOptionDeclaration
@@ -661,6 +663,12 @@ NotifyScripts
     ParserOptStack.getLast()->setNotifyScripts(true);
 };
 
+ReconfigureAccept
+: RECONFIGURE_ Number
+{
+    Log(Debug) << "Reconfigure accept " << (($2>0)?"enabled":"disabled") << "." << LogEnd;
+    CfgMgr->setReconfigure($2);
+};
 
 
 ValidTimeOption

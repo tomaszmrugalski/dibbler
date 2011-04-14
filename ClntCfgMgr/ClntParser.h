@@ -335,6 +335,7 @@ typedef
 #define	ADDRESS_LIST_	326
 #define	STRING_KEYWORD_	327
 #define	REQUEST_	328
+#define	RECONFIGURE_	329
 
 
 #line 169 "../bison++/bison.h"
@@ -454,6 +455,7 @@ static const int DS_LITE_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
 static const int REQUEST_;
+static const int RECONFIGURE_;
 
 
 #line 212 "../bison++/bison.h"
@@ -533,6 +535,7 @@ static const int REQUEST_;
 	,ADDRESS_LIST_=326
 	,STRING_KEYWORD_=327
 	,REQUEST_=328
+	,RECONFIGURE_=329
 
 
 #line 215 "../bison++/bison.h"

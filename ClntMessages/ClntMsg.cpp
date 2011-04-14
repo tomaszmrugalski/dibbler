@@ -502,6 +502,14 @@ void TClntMsg::appendRequestedOptions() {
         Log(Error) << "Unable to find interface with ifindex=" << this->Iface << LogEnd;
         return;
     }
+
+
+    if ( (MsgType==SOLICIT_MSG || MsgType==REQUEST_MSG) &&
+         ClntCfgMgr().getReconfigure())
+    {
+        SPtr<TOptEmpty> optReconfigure = new TOptEmpty(OPTION_RECONF_ACCEPT, this);
+        Options.push_back( (Ptr*) optReconfigure);
+    }
     
     SPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
 

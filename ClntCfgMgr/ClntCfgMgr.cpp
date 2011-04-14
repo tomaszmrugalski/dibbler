@@ -57,6 +57,7 @@ TClntCfgMgr::TClntCfgMgr(const string cfgFile)
 {
     NotifyScripts = false;
     RemoteAutoconf = false;
+    Reconfigure = false;
 
     // parse configuration file
     if (!parseConfigFile(cfgFile)) {
@@ -370,9 +371,14 @@ int TClntCfgMgr::countIfaces()
 
 bool TClntCfgMgr::getReconfigure()
 {
-    /// @todo: Implement this in some distant future
-    return false;
+    return Reconfigure;
 }
+
+void TClntCfgMgr::setReconfigure(bool enable)
+{
+    Reconfigure = enable;
+}
+
 
 int TClntCfgMgr::countAddrForIA(long IAID)
 {
