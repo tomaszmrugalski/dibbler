@@ -108,7 +108,7 @@ void * checkLinkState(void * ptr){
 	    item->link_state = new_r;
 	}
 	/* printf("."); */
-	sleep(0.5);
+	sleep(1);
     }
     /* if_list_release(head); */
     /* printf("Finishing link-state change\n"); */
