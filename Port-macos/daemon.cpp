@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: daemon.cpp,v 1.4 2009-04-19 21:37:44 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -25,35 +23,50 @@ extern int run();
 
 using namespace std;
 
-int getPID(const char * file) {
+/** 
+ * checks if pid file exists, and returns its content (or -2 if unable to read)
+ * 
+ * @param file 
+ * 
+ * @return pid value, or negative if error was detected
+ */
+pid_t getPID(const char * file) {
+    /* check if the file exists */
+    struct stat buf;
+    int i = stat(file, &buf);
+    if (i!=0)
+	return LOWLEVEL_ERROR_UNSPEC;
+
     ifstream pidfile(file);
     if (!pidfile.is_open()) 
-	return -1;
-    int pid;
+	return LOWLEVEL_ERROR_FILE;
+    pid_t pid;
     pidfile >> pid;
     return pid;
 }
 
-int getClientPID() {
+pid_t getClientPID() {
     return getPID(CLNTPID_FILE);
 }
 
-int getServerPID() {
+pid_t getServerPID() {
     return getPID(SRVPID_FILE);
 }
 
-int getRelayPID() {
+pid_t getRelayPID() {
     return getPID(RELPID_FILE);
 }
 
 void daemon_init() {
 
-    //FIXME: daemon should close all open files
-    //fclose(stdin);
-    //fclose(stdout);
-    //fclose(stderr);
+    std::cout << "Starting daemon..." << std::endl;
 
-    int childpid;
+    // daemon should close all open files
+    fclose(stdin);
+    fclose(stdout);
+    fclose(stderr);
+
+    pid_t childpid;
     cout << "Starting daemon..." << endl;
     logger::EchoOff();
 
@@ -105,7 +118,7 @@ int init(const char * pidfile, const char * workdir) {
     char buf[20];
     char cmd[256];
     int pid = getPID(pidfile);
-    if (pid != -1) {
+    if (pid > 0) {
 	sprintf(buf,"/proc/%d", pid);
 	if (!access(buf, F_OK)) {
 	    sprintf(buf, "/proc/%d/exe", pid);

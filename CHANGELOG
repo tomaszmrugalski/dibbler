@@ -25,6 +25,7 @@
   - Cli: Duplicate IA,TA and PD are no longer created in database, when 
     restarting client with existing leases.
   - Cli: Client no longer silently quits, if adding/updating prefix failed.
+  - Linux/Mac OS: daemonizing should close stdin/stdout/stderr (bug #188)
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added

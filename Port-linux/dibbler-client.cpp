@@ -2,11 +2,8 @@
  * Dibbler - a portable DHCPv6
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
- *          Marek Senderski <msend@o2.pl>
  *
  * released under GNU GPL v2 only licence
- *
- * $Id: dibbler-client.cpp,v 1.26 2009-03-24 23:17:18 thomson Exp $
  *
  */
 
@@ -74,21 +71,17 @@ int status() {
     return result;
 }
 
-
 int run() {
     if (!init(CLNTPID_FILE, WORKDIR)) {
+	die(CLNTPID_FILE);
 	return -1;
     }
 
     if (lowlevelInit()<0) {
 	cout << "Lowlevel init failed:" << error_message() << endl;
+	die(CLNTPID_FILE);
 	return -1;
     }
-
-    if_list_get();
-    if_list_get();
-    if_list_get();
-    if_list_get();
 
     TDHCPClient client(CLNTCONF_FILE);
     ptr = &client;

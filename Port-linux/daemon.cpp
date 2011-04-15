@@ -5,9 +5,7 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 only licence
- *
- * $Id: daemon.cpp,v 1.14 2008-11-13 22:29:55 thomson Exp $
+ * released under GNU GPL v2 licence
  *
  */
 
@@ -38,18 +36,18 @@ using namespace std;
  * 
  * @param file 
  * 
- * @return pid value, -1 when file is not found and -2 when unable to read
+ * @return pid value, or negative if error was detected
  */
 pid_t getPID(const char * file) {
     /* check if the file exists */
     struct stat buf;
     int i = stat(file, &buf);
     if (i!=0)
-	return -1;
+	return LOWLEVEL_ERROR_UNSPEC;
 
     ifstream pidfile(file);
     if (!pidfile.is_open()) 
-	return -2;
+	return LOWLEVEL_ERROR_FILE;
     pid_t pid;
     pidfile >> pid;
     return pid;
@@ -68,11 +66,12 @@ pid_t getRelayPID() {
 }
 
 void daemon_init() {
+    std::cout << "Starting daemon..." << std::endl;
 
-    //FIXME: daemon should close all open files
-    //fclose(stdin);
-    //fclose(stdout);
-    //fclose(stderr);
+    // daemon should close all open files
+    fclose(stdin);
+    fclose(stdout);
+    fclose(stderr);
 
     pid_t childpid;
     cout << "Starting daemon..." << endl;
@@ -126,7 +125,7 @@ int init(const char * pidfile, const char * workdir) {
     char buf[20];
     char cmd[256];
     pid_t pid = getPID(pidfile);
-    if (pid != -1) {
+    if (pid > 0) {
 	/* XXX: ISO C++ doesn't support 'j' length modifier nor 'll' nor
 	 * PRIdMAX macro. So, long int is the biggest printable type.
 	 * God bless pid_t to fit into long int. */

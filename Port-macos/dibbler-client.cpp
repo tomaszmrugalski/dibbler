@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-client.cpp,v 1.2 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
 #include <signal.h>
@@ -25,7 +23,7 @@ void signal_handler(int n) {
 
 int status() {
 
-    int pid = getServerPID();
+    pid_t pid = getServerPID();
     if (pid==-1) {
 	cout << "Dibbler server: NOT RUNNING." << endl;
     } else {
@@ -38,7 +36,7 @@ int status() {
     } else {
 	cout << "Dibbler client: RUNNING, pid=" << pid << endl;
     }
-    int result = pid;
+    int result = (pid > 0)? 0: -1;
 
     pid = getRelayPID();
     if (pid==-1) {
@@ -70,7 +68,7 @@ int run() {
 	return -1;
     }
 
-    // connect signals
+    // connect signals (SIGTERM, SIGINT = shutdown)
     signal(SIGTERM, signal_handler);
     signal(SIGINT, signal_handler);
 
@@ -144,6 +142,6 @@ int main(int argc, char * argv[])
 
     logEnd();
 
-    return result;
+    return result? EXIT_FAILURE: EXIT_SUCCESS;
 }
 
