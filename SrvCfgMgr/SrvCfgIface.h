@@ -22,8 +22,7 @@ class TSrvCfgIface;
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
-#include "SrvOptVendorSpec.h"
-#include "SrvOptRemoteID.h"
+#include "OptVendorSpecInfo.h"
 #include "SrvCfgOptions.h"
 
 using namespace std;
@@ -102,7 +101,7 @@ public:
 
     // per-client parameters (exceptions)
     void addClientExceptionsLst(List(TSrvCfgOptions) exLst);
-    SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, SPtr<TSrvOptRemoteID> remoteID, bool quiet=true);
+    SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID, bool quiet=true);
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();

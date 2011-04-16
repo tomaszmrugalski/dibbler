@@ -99,18 +99,13 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqPrefixDelegation();
 
     // option: vendor-spec
-    void setVendorSpec(List(TClntOptVendorSpec) vendorSpec);
+    void setVendorSpec(List(TOptVendorSpecInfo) vendorSpec);
     void setVendorSpec();
     bool getReqVendorSpec();
-    List(TClntOptVendorSpec) getVendorSpec();
+    List(TOptVendorSpecInfo) getVendorSpec();
 
     void setDsLiteTunnelMode(EDsLiteTunnelMode mode);
     EDsLiteTunnelMode getDsLiteTunnelMode();
-
-/*     void setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr); */
-/*     SPtr<TIPv6Addr> getDsLiteTunnelAddr(); */
-/*     void setDsLiteTunnelName(SPtr<TOpt> name); */
-/*     SPtr<TOpt> getDsLiteTunnelName(); */
 
 private:
     bool NoIAs;
@@ -130,10 +125,10 @@ private:
     std::string NISDomain;
     std::string NISPDomain;
     bool Lifetime;
-    List(TClntOptVendorSpec) VendorSpec;
+    List(TOptVendorSpecInfo) VendorSpec;
 
-	SPtr<TIPv6Addr> DsLiteTunnelAddr;
-	SPtr<TOpt> DsLiteTunnelName;
+    SPtr<TIPv6Addr> DsLiteTunnelAddr;
+    SPtr<TOpt> DsLiteTunnelName;
 
     bool ReqDNSServer;
     bool ReqDomain;

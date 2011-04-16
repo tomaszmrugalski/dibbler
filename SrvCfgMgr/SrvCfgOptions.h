@@ -23,8 +23,8 @@
 #include "IPv6Addr.h"
 #include "SrvParsGlobalOpt.h"
 
-#include "SrvOptVendorSpec.h"
-#include "SrvOptRemoteID.h"
+#include "OptVendorSpecInfo.h"
+#include "OptVendorData.h"
 #include "OptGeneric.h"
 
 class TSrvCfgIface;
@@ -37,10 +37,10 @@ class TSrvCfgOptions
 public:
     TSrvCfgOptions();
     TSrvCfgOptions(SPtr<TDUID> duid);
-    TSrvCfgOptions(SPtr<TSrvOptRemoteID> remoteid);
+    TSrvCfgOptions(SPtr<TOptVendorData> remoteid);
     bool setOptions(SPtr<TSrvParsGlobalOpt> opt);
     SPtr<TDUID> getDuid();
-    SPtr<TSrvOptRemoteID> getRemoteID();
+    SPtr<TOptVendorData> getRemoteID();
 
     // address reservation
     void setAddr(SPtr<TIPv6Addr> addr);
@@ -102,14 +102,12 @@ public:
     bool supportLifetime();
 
     // option: VENDOR-SPEC
-    void setVendorSpec(List(TSrvOptVendorSpec) vendor);
-    bool supportVendorSpec();
-    SPtr<TSrvOptVendorSpec> getVendorSpec(int num=0);
+    List(TOptVendorSpecInfo) getVendorSpecLst(unsigned int vendor=0);
 
     void addExtraOption(SPtr<TOpt> extra, bool always);
-    TOptList& getExtraOptions();
-    SPtr<TOpt> getCustomOption(int type);
-    TOptList& getCustomOptions();
+    const TOptList& getExtraOptions();
+    SPtr<TOpt> getExtraOption(int type);
+    const TOptList& getForcedOptions();
 
 private:
 
@@ -141,14 +139,13 @@ private:
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
     string NISPDomain;
-    List(TSrvOptVendorSpec) VendorSpec;
-    TOptList ExtraOpts; // extra options ALWAYS sent to client
-    TOptList CustomOpts; // extra options sent to client only if requested
+    TOptList ExtraOpts;  // extra options ALWAYS sent to client (may also include ForcedOpts)
+    TOptList ForcedOpts; // list of options that are forced to client
     unsigned int Lifetime;
 
     void SetDefaults();
 
-    SPtr<TSrvOptRemoteID> RemoteID;
+    SPtr<TOptVendorData> RemoteID;
     SPtr<TDUID> Duid;
 };
 

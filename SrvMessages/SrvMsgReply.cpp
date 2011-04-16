@@ -670,6 +670,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     SPtr<TOpt> opt;
     request->firstOption();
     while ( opt = request->getOption() ) {
+        
 	switch (opt->getOptType()) {
 	case OPTION_IA_NA: {
 	    SPtr<TSrvOptIA_NA> optIA;
@@ -719,8 +720,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
 	}
 	case OPTION_VENDOR_OPTS:
 	{
-	    SPtr<TSrvOptVendorSpec> v = (Ptr*) opt;
-	    appendVendorSpec(ClientDUID, clntIface, v->getVendor(), ORO);
+	    SPtr<TOptVendorSpecInfo> v = (Ptr*) opt;
+	    appendVendorSpec(ClientDUID, Iface, v->getVendor(), ORO);
 	    break;
 	}
 	default:

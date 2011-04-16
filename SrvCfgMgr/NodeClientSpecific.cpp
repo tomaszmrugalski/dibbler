@@ -13,7 +13,7 @@
 #include "NodeClientSpecific.h"
 #include "SrvMsg.h"
 #include "DHCPConst.h"
-#include "SrvOptVendorClass.h"
+#include "OptVendorData.h"
 #include <sstream>
 
 SPtr<TSrvMsg> NodeClientSpecific::CurrentMsg;
@@ -80,19 +80,27 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
 	stringstream convert;
 	msg->firstOption();
 	
-	SPtr<TSrvOptVendorSpec> vendorspec;
-	SPtr<TSrvOptVendorSpec> vendorclass;
+	SPtr<TOptVendorSpecInfo> vendorspec;
+	SPtr<TOptVendorData> vendorclass;
 	//SPtr<TSrvOptVendorSpec> vendorclass;
 	
 	while (ptrOpt = msg->getOption())	{
 	    switch (ptrOpt->getOptType()) {
 	    case OPTION_VENDOR_OPTS:
+            {
 		vendorspec = (Ptr*) ptrOpt;
 		convert<< vendorspec->getVendor();
 		convert>>vendor_spec_num;
-		vendor_spec_data = vendorspec->getVendorData();
-		
+                int len = vendorspec->getSize();
+                char * buf = new char[len+1];
+                buf[len]=0;
+                vendorspec->storeSelf(buf);
+		vendor_spec_data = string(buf);
+                // @FIXME: This may not work... it is probably better 
+                // to convert buf to hex
+                delete [] buf;
 		break;
+            }
 		
 	    case OPTION_VENDOR_CLASS:
 		vendorclass =  (Ptr*) ptrOpt2;

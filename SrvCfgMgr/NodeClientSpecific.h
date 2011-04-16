@@ -42,11 +42,10 @@ public:
     string exec(SPtr<TSrvMsg> msg);
     static void  analyseMessage(SPtr<TSrvMsg> msg);
     
-    
-    static string vendor_spec_num  ;
-    static string vendor_spec_data ;
-    static string vendor_class_num ;
-    static string vendor_class_data ;
+    static string vendor_spec_num;
+    static string vendor_spec_data;
+    static string vendor_class_num;
+    static string vendor_class_data;
     static SPtr<TSrvMsg> CurrentMsg;
     
 private:

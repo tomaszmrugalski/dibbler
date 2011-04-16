@@ -16,7 +16,7 @@
 #include "ClntCfgIface.h"
 #include "Logger.h"
 #include "Portable.h"
-#include "ClntOptVendorSpec.h"
+#include "OptVendorSpecInfo.h"
 using namespace std;
 
 TClntCfgIface::TClntCfgIface(string ifaceName) {
@@ -86,7 +86,7 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     NISDomain    = opt->getNISDomain();
     NISPServerLst= *opt->getNISPServerLst();
     NISPDomain   = opt->getNISPDomain();
-    VendorSpec   = opt->getVendorSpec();
+    VendorSpecLst= opt->getVendorSpec();
 
     if (ReqDNSServer)  setDNSServerState(STATE_NOTCONFIGURED);
     if (ReqDomain)     setDomainState(STATE_NOTCONFIGURED);
@@ -401,11 +401,11 @@ string TClntCfgIface::getProposedNISPDomain() {
 }
 
 void TClntCfgIface::firstVendorSpec() {
-    VendorSpec.first();
+    VendorSpecLst.first();
 }
 
-SPtr<TClntOptVendorSpec> TClntCfgIface::getVendorSpec() {
-    return this->VendorSpec.get();
+SPtr<TOptVendorSpecInfo> TClntCfgIface::getVendorSpec() {
+    return this->VendorSpecLst.get();
 }
 
 // --------------------------------------------------------------------
@@ -450,6 +450,11 @@ void TClntCfgIface::setLifetimeState(EState state) {
 
 void TClntCfgIface::setVendorSpecState(EState state) {
     this->VendorSpecState = state;
+}
+
+void TClntCfgIface::setVendorSpec(List(TOptVendorSpecInfo) vendorSpecList)
+{
+    VendorSpecLst = vendorSpecList;
 }
 
 void TClntCfgIface::setKeyGenerationState(EState state) {
@@ -685,12 +690,12 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: Vendor-spec ---
     if (iface.isReqVendorSpec()) {
-	SPtr<TClntOptVendorSpec> opt;
-	out << "    <vendorSpecLst count=\"" << iface.VendorSpec.count() << "\">" << endl;
-	iface.VendorSpec.first();
-	while (opt = iface.VendorSpec.get()) {
-	    out << "      <vendor enterprise=\"" << opt->getVendor() << "\" length=\"" << opt->getVendorDataLen() << "\">"
-		<< opt->getVendorDataPlain() << "</vendor>" << endl;
+	SPtr<TOptVendorSpecInfo> opt;
+	out << "    <vendorSpecLst count=\"" << iface.VendorSpecLst.count() << "\">" << endl;
+	iface.VendorSpecLst.first();
+	while (opt = iface.VendorSpecLst.get()) {
+	    out << "      <vendorSpec vendor=\"" << opt->getVendor() << "\">"
+                << opt->getPlain() << "</vendorSpec>" << endl;
 	}
 	out << "    <vendorSpecLst/>" << endl;
     } else {

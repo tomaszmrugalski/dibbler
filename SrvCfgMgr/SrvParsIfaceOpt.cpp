@@ -184,8 +184,9 @@ bool TSrvParsIfaceOpt::supportDomain(){
     return this->DomainSupport;
 }
 
+#if 0
 // --- option: VENDOR-SPEC INFO ---
-void TSrvParsIfaceOpt::setVendorSpec(List(TSrvOptVendorSpec) vendor)
+void TSrvParsIfaceOpt::setVendorSpec(List(TOptVendorSpecInfo) vendor)
 {
     VendorSpec = vendor;
     VendorSpecSupport = true;
@@ -195,10 +196,11 @@ bool TSrvParsIfaceOpt::supportVendorSpec()
     return VendorSpecSupport;
 }
 
-List(TSrvOptVendorSpec) TSrvParsIfaceOpt::getVendorSpec()
+List(TOptVendorSpecInfo) TSrvParsIfaceOpt::getVendorSpec()
 {
     return VendorSpec;
 }
+#endif
 
 // --- option: NTP-SERVERS ---
 void TSrvParsIfaceOpt::setNTPServerLst(List(TIPv6Addr) * lst) {

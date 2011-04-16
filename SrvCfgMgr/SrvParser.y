@@ -23,7 +23,7 @@
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
-#include "SrvOptVendorSpec.h"
+#include "OptVendorSpecInfo.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
 #include "SrvCfgClientClass.h"
@@ -55,7 +55,6 @@ List(TFQDN) PresentFQDNLst;                                                     
 SPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
-List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -262,7 +261,7 @@ Client
 | CLIENT_ REMOTE_ID_ Number '-' DUID_ '{'
 {
     ParserOptStack.append(new TSrvParsGlobalOpt());
-    SPtr<TSrvOptRemoteID> remoteid = new TSrvOptRemoteID($3, $5.duid, $5.length, 0);
+    SPtr<TOptVendorData> remoteid = new TOptVendorData($3, $5.duid, $5.length, 0);
     ClientLst.append(new TSrvCfgOptions(remoteid));
 } ClientOptions
 '}'
@@ -461,15 +460,18 @@ ADDRESSList
 ;
 
 VendorSpecList
-: Number '-' DUID_
+: Number '-' Number '-' DUID_
 {
-    // Log(Debug) << "Vendor-spec defined: Number: " << $1 << ", valuelen=" << $3.length << LogEnd;
-    VendorSpec.append(new TSrvOptVendorSpec($1, $3.duid, $3.length, 0));
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: " 
+               << $3 << ", valuelen=" << $5.length << LogEnd;
+
+    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($1, $3, $5.duid, $5.length, 0), false);
 }
-| VendorSpecList ',' Number '-' DUID_
+| VendorSpecList ',' Number '-' Number '-' DUID_
 {
-    // Log(Debug) << "Vendor-spec defined: Number: " << $3 << ", valuelen=" << $5.length << LogEnd;
-    VendorSpec.append(new TSrvOptVendorSpec($3, $5.duid, $5.length, 0));
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: " 
+               << $5 << ", valuelen=" << $7.length << LogEnd;
+    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($3, $5, $7.duid, $7.length, 0), false);
 }
 ;
 
@@ -1288,10 +1290,9 @@ LifetimeOption
 
 VendorSpecOption
 :OPTION_ VENDOR_SPEC_ {
-    VendorSpec.clear();
 } VendorSpecList
 {
-    ParserOptStack.getLast()->setVendorSpec(VendorSpec);
+    // ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
 };
 
@@ -1443,7 +1444,6 @@ bool SrvParser::StartIfaceDeclaration(string ifaceName)
     // create new option (representing this interface) on the parser stack
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
-    VendorSpec.clear();
     ClientLst.clear();
 
     return true;
@@ -1464,7 +1464,6 @@ bool SrvParser::StartIfaceDeclaration(int ifindex)
     // create new option (representing this interface) on the parser stack
     ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
     SrvCfgAddrClassLst.clear();
-    VendorSpec.clear();
     ClientLst.clear();
 
     return true;

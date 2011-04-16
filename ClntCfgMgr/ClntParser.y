@@ -49,7 +49,7 @@ List(TStationID) PresentStationLst;		                            \
 List(TIPv6Addr) PresentAddrLst;			                            \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(string) PresentStringLst;	                                            \
-List(TClntOptVendorSpec) VendorSpec;					    \
+List(TOptVendorSpecInfo) VendorSpec;					    \
 bool IfaceDefined(int ifaceNr);                                             \
 bool IfaceDefined(string ifaceName);                                        \
 bool StartIfaceDeclaration(string ifaceName);                               \
@@ -1003,12 +1003,6 @@ VendorSpecOption
     Log(Debug) << "VendorSpec defined (no details)." << LogEnd;
     ParserOptStack.getLast()->setVendorSpec();
 }
-|OPTION_ VENDOR_SPEC_ Number DUID_
-{
-    Log(Debug) << "VendorSpec defined (enterprise=" << $3 << ", hint data length=" << $4.length << ")." << LogEnd;
-    ParserOptStack.getLast()->setVendorSpec();
-    this->VendorSpec.append(new TClntOptVendorSpec($3, $4.duid, $4.length, 0));
-}
 |OPTION_ VENDOR_SPEC_ VendorSpecList
 {
     ParserOptStack.getLast()->setVendorSpec();
@@ -1017,8 +1011,10 @@ VendorSpecOption
 ;
 
 VendorSpecList
-: Number                     { VendorSpec.append( new TClntOptVendorSpec($1,0,0,0) ); }
-| VendorSpecList ',' Number  { VendorSpec.append( new TClntOptVendorSpec($3,0,0,0) ); }
+: Number                     { VendorSpec.append( new TOptVendorSpecInfo($1,0,0,0,0) ); }
+| Number '-' Number          { VendorSpec.append( new TOptVendorSpecInfo($1,$3,0,0,0) ); }
+| VendorSpecList ',' Number  { VendorSpec.append( new TOptVendorSpecInfo($3,0,0,0,0) ); }
+| VendorSpecList ',' Number '-' Number { VendorSpec.append( new TOptVendorSpecInfo($3,$5,0,0,0) ); }
 ;
 
 DsLiteTunnelOption

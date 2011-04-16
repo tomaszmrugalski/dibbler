@@ -34,6 +34,7 @@
 #include "SrvIfaceIface.h"
 #include "SrvOptEcho.h"
 #include "OptGeneric.h"
+#include "OptVendorData.h"
 
 using namespace std;
 
@@ -284,7 +285,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
     List(TOptGeneric) echoListTbl[HOP_COUNT_LIMIT];
     SPtr<TSrvIfaceIface> relayIface;
     int relays=0; // number of nested RELAY_FORW messages
-    SPtr<TSrvOptRemoteID> remoteID = 0;
+    SPtr<TOptVendorData> remoteID = 0;
     SPtr<TSrvOptEcho> echo = 0;
     SPtr<TOptGeneric> gen = 0;
 
@@ -345,7 +346,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 		optRelayCnt++;
 		break;
 	    case OPTION_REMOTE_ID:
-		remoteID = new TSrvOptRemoteID(buf, len, 0);
+		remoteID = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
 		break;
 	    case OPTION_ERO:
 		Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
@@ -450,7 +451,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 	msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i], echoListTbl[i]);
     }
     if (remoteID) {
-	Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor() << ", length=" << remoteID->getVendorDataLen() << "." << LogEnd;
+	Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor() 
+                   << ", length=" << remoteID->getVendorDataLen() << "." << LogEnd;
 	msg->setRemoteID(remoteID);
 	remoteID = 0;
 	remoteID = msg->getRemoteID();

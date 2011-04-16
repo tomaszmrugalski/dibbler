@@ -13,7 +13,7 @@
 #ifndef TSRCPARSIFACEOPT_H_
 #define TSRCPARSIFACEOPT_H_
 
-#include "SrvOptVendorSpec.h"
+#include "OptVendorSpecInfo.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvParsClassOpt.h"
 #include "FQDN.h"
@@ -126,10 +126,13 @@ public:
     unsigned int getLifetime();
     bool supportLifetime();
 
+
+#if 0
     // option: VENDOR-SPEC INFO
-    void setVendorSpec(List(TSrvOptVendorSpec) vendor);
+    void setVendorSpec(List(TOptVendorSpecInfo) vendor);
     bool supportVendorSpec();
-    List(TSrvOptVendorSpec) getVendorSpec();
+    List(TOptVendorSpecInfo) getVendorSpec();
+#endif
 
 private:
     char Preference;
@@ -173,7 +176,7 @@ private:
     string NISPDomain;
     unsigned int Lifetime;
 
-    List(TSrvOptVendorSpec) VendorSpec;
+    List(TOptVendorSpecInfo) VendorSpec;
 
     // FQDN
     int FQDNMode;

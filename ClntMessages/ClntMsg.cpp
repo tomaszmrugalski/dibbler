@@ -118,6 +118,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     //read options contained in message    
     int pos=0;
     SPtr<TOpt> ptr;
+    
     while (pos<bufSize) {
 	if (pos+4>bufSize) {
 	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos) 
@@ -237,7 +238,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    break;
 #endif
 	case OPTION_VENDOR_OPTS: {
-	    SPtr<TClntOptVendorSpec> vendor = new TClntOptVendorSpec(buf+pos, length, this);
+	    ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
 	    break;
 	}
 	case OPTION_RECONF_ACCEPT:
@@ -262,7 +263,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	}
 	
 	if ( (ptr) && (ptr->isValid()) ) {
-                    Options.push_back( ptr );
+            Options.push_back( ptr );
 	} else {
 	    Log(Warning) << "Option " << code << " is invalid. Ignoring." << LogEnd;
 	}
@@ -281,6 +282,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     SPtr<TOpt> opt;
     while ( opt = getOption() )
 	opt->setDUID(optSrvID->getDUID());
+    
 }
 
 SPtr<TOpt> TClntMsg::parseExtraOption(const char *buf, unsigned int code, unsigned int length)
@@ -675,8 +677,9 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_VENDOR_OPTS);
 	iface->setVendorSpecState(STATE_INPROCESS);
 
-	SPtr<TClntOptVendorSpec> optVendor;
+	SPtr<TOptVendorSpecInfo> optVendor;
 	iface->firstVendorSpec();
+
 	while (optVendor = iface->getVendorSpec()) {
 	    Options.push_back( (Ptr*) optVendor);
 	}

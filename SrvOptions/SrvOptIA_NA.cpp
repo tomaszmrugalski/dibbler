@@ -20,7 +20,7 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptIAAddress.h"
 #include "SrvOptStatusCode.h"
-#include "SrvOptRemoteID.h"
+#include "OptVendorData.h"
 #include "SrvCfgOptions.h"
 #include "Logger.h"
 #include "AddrClient.h"
@@ -325,13 +325,11 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
 	return 0;
     }
 
-    SPtr<TSrvOptRemoteID> remoteID;
-
+    SPtr<TOptVendorData> remoteID;
 
     TSrvMsg * par = dynamic_cast<TSrvMsg*>(Parent);
     if (par) {
 	remoteID = par->getRemoteID();
-    } else {
     }
 
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, remoteID, false/* false = verbose */);

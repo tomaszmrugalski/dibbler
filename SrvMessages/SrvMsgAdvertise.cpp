@@ -134,7 +134,7 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
 	}
 	case OPTION_VENDOR_OPTS:
 	{
-	    SPtr<TSrvOptVendorSpec> v = (Ptr*) opt;
+	    SPtr<TOptVendorData> v = (Ptr*) opt;
 	    appendVendorSpec(ClientDUID, Iface, v->getVendor(), ORO);
 	    break;
 	}

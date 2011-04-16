@@ -7,18 +7,18 @@
  * released under GNU GPL v2 only licence
  */
 
-#ifndef CLNTVENDORCLASS_H_HEADER_INCLUDED_C1125E8B
-#define CLNTVENDORCLASS_H_HEADER_INCLUDED_C1125E8B
+#ifndef CLNTVENDORCLASS_H
+#define CLNTVENDORCLASS_H
 
-#include "OptVendorClass.h"
+#include "OptVendorData.h"
 #include "DHCPConst.h"
 
-//##ModelId=3EC75CE30346
-class TClntOptVendorClass : public TOptVendorClass 
+class TClntOptVendorClass : public TOptVendorData
 {
   public:
     TClntOptVendorClass( char * buf,  int n, TMsg* parent);
 	bool doDuties();
 };
 
-#endif /* VENDORCLASS_H_HEADER_INCLUDED_C1125E8B */
+#endif
+

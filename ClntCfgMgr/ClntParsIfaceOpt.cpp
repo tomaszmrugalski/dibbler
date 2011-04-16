@@ -253,7 +253,7 @@ bool TClntParsIfaceOpt::getReqLifetime() {
 }
 
 // --- option: vendor-spec ---
-void TClntParsIfaceOpt::setVendorSpec(List(TClntOptVendorSpec) vendorSpec) {
+void TClntParsIfaceOpt::setVendorSpec(List(TOptVendorSpecInfo) vendorSpec) {
     VendorSpec = vendorSpec;
     ReqVendorSpec = true;
 }
@@ -266,7 +266,7 @@ bool TClntParsIfaceOpt::getReqVendorSpec() {
     return ReqVendorSpec;
 }
 
-List(TClntOptVendorSpec) TClntParsIfaceOpt::getVendorSpec() {
+List(TOptVendorSpecInfo) TClntParsIfaceOpt::getVendorSpec() {
     return VendorSpec;
 }
 

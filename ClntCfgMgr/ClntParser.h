@@ -55,7 +55,7 @@ List(TStationID) PresentStationLst;		                            \
 List(TIPv6Addr) PresentAddrLst;			                            \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(string) PresentStringLst;	                                            \
-List(TClntOptVendorSpec) VendorSpec;					    \
+List(TOptVendorSpecInfo) VendorSpec;					    \
 bool IfaceDefined(int ifaceNr);                                             \
 bool IfaceDefined(string ifaceName);                                        \
 bool StartIfaceDeclaration(string ifaceName);                               \

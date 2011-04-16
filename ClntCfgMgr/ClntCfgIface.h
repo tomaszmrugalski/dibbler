@@ -26,7 +26,7 @@
 #include "DUID.h"
 #include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
-#include "ClntOptVendorSpec.h"
+#include "OptVendorSpecInfo.h"
 #include "Opt.h"
 
 class TClntCfgIface
@@ -179,8 +179,9 @@ public:
     EState getVendorSpecState();
     void setVendorSpecState(EState state);
     void firstVendorSpec();
-    SPtr<TClntOptVendorSpec> getVendorSpec();
+    SPtr<TOptVendorSpecInfo> getVendorSpec();
     int getVendorSpecCount();
+    void setVendorSpec(List(TOptVendorSpecInfo) vendorSpecList);
 
     // --- custom/extra options ---
     void addExtraOption(SPtr<TOpt> extra, bool sendAlways);
@@ -226,7 +227,7 @@ private:
     List(TIPv6Addr) NISPServerLst;
     string NISDomain;
     string NISPDomain;
-    List(TClntOptVendorSpec) VendorSpec;
+    List(TOptVendorSpecInfo) VendorSpecLst;
     
     EState DNSServerState;
     EState DomainState;

@@ -259,7 +259,7 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 	    
         break;
 	case OPTION_VENDOR_OPTS:
-	    ptr = new TSrvOptVendorSpec(buf+pos, length, this);
+	    ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
 	    break;
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
@@ -505,7 +505,7 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool client
     oro->delOption(OPTION_SERVERID);
 
     // include his DUID (Client ID)
-    if (clientID) {
+    if (clientID && ClientDUID) {
 	SPtr<TOptDUID> clientDuid = new TOptDUID(OPTION_CLIENTID, ClientDUID, this);
 	Options.push_back( (Ptr*)clientDuid);
     }
@@ -669,7 +669,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     };
 
     // --- option: VENDOR SPEC ---
-    if ( reqOpts->isOption(OPTION_VENDOR_OPTS) && ptrIface->supportVendorSpec()) {
+    if ( reqOpts->isOption(OPTION_VENDOR_OPTS)) {
 	if (appendVendorSpec(duid, iface, 0, reqOpts))
 	    newOptionAssigned = true;
     }
@@ -686,19 +686,31 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	newOptionAssigned = true;
     }
 
-    // --- option: extra options ---
-    TOptList generics = ptrIface->getExtraOptions();
+    // --- option: forced options first ---
+    TOptList extraOpts; // possible additional options
+    TOptList forcedOpts; // forced (asked for or not, will send them anyway)
+    
+    if (ex) {
+        extraOpts = ex->getExtraOptions();
+        forcedOpts = ex->getForcedOptions();
+    } 
 
-    for (TOptList::iterator gen = generics.begin(); gen!=generics.end(); ++gen)
+    if (!ex || !extraOpts.size())
+        extraOpts = ptrIface->getExtraOptions();
+    
+    if (!ex || !forcedOpts.size())
+        forcedOpts = ptrIface->getForcedOptions();
+
+    for (TOptList::iterator gen = forcedOpts.begin(); gen!=forcedOpts.end(); ++gen)
     {
 	Log(Debug) << "Appending mandatory extra option " << (*gen)->getOptType() 
 		   << " (" << (*gen)->getSize() << ")" << LogEnd;
 	Options.push_back( (Ptr*) *gen);
+        reqOpts->delOption( (*gen)->getOptType() );
 	newOptionAssigned = true;
     }
 
-    generics = ptrIface->getCustomOptions();
-    for (TOptList::iterator gen = generics.begin(); gen!=generics.end(); ++gen)
+    for (TOptList::iterator gen = extraOpts.begin(); gen!=extraOpts.end(); ++gen)
     {
 	if (reqOpts->isOption( (*gen)->getOptType()))
 	{
@@ -711,12 +723,12 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     // --- option: KEYGEN ---
 #ifndef MOD_DISABLE_AUTH
-    if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE ) { // && this->MsgType == ADVERTISE_MSG ) {
-        	SPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
-        	Options.push_back( (Ptr*)optKeyGeneration);
+    if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE ) 
+    { // && this->MsgType == ADVERTISE_MSG ) {
+        SPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
+        Options.push_back( (Ptr*)optKeyGeneration);
     }
 #endif
-
 
     return newOptionAssigned;
 }
@@ -962,38 +974,41 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 
 bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt)
 {
+    reqOpt->delOption(OPTION_VENDOR_OPTS);
+
     SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(iface);
     if (!ptrIface) {
 	Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
 	return false;
     }
-    if (!ptrIface->supportVendorSpec()) {
-	Log(Debug) << "Client requeste VendorSpec info, but is not configured on the " << ptrIface->getFullName() << " interface." << LogEnd;
-	return false;
-    }
+
+    Log(Debug) << "Client requested vendor-spec. info (vendor=" << vendor 
+               << ")." << LogEnd;
 
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, true);
-    SPtr<TSrvOptVendorSpec> v;
-    Log(Debug) << "Client requested vendor-spec. info (vendor=" << vendor << ")." << LogEnd;
-    if (ex && ex->supportVendorSpec()) {
-	v = ex->getVendorSpec(vendor);
-	if (v) {
-	    Log(Debug) << "Found (client specific) vendor-spec. info (vendor=" << v->getVendor() << ")." << LogEnd;
-	    Options.push_back( (Ptr*)v);
-	    reqOpt->delOption(OPTION_VENDOR_OPTS);
-	    return true;
-	}
+    SPtr<TOptVendorSpecInfo> vs;
+    List(TOptVendorSpecInfo) vsLst;
+
+    if (ex) {
+        vsLst = ex->getVendorSpecLst(vendor);
+    } else {
+        vsLst = ptrIface->getVendorSpecLst(vendor);
     }
 
-    v= ptrIface->getVendorSpec(vendor);
-    if (v) {
-	Log(Debug) << "Found vendor-spec. info (vendor=" << v->getVendor() << ")." << LogEnd;
-	Options.push_back( (Ptr*)v);
-	reqOpt->delOption(OPTION_VENDOR_OPTS);
-	return true;
+
+    if (!vsLst.count())
+        vsLst = ptrIface->getVendorSpecLst(vendor);
+        
+    if (vsLst.count()) {
+        vsLst.first();
+        while (vs=vsLst.get())
+        {
+            Options.push_back( (Ptr*)vs);
+        }
+        return true;
     }
 
-    Log(Debug) << "Unable to find any vendor-specific option." << LogEnd;
+    Log(Debug) << "Unable to find suitable vendor-specific info option." << LogEnd;
     return false;
 }
 
@@ -1029,12 +1044,12 @@ bool TSrvMsg::validateReplayDetection() {
 #endif
 }
 
-void TSrvMsg::setRemoteID(SPtr<TSrvOptRemoteID> remoteID)
+void TSrvMsg::setRemoteID(SPtr<TOptVendorData> remoteID)
 {
     RemoteID = remoteID;
 }
 
-SPtr<TSrvOptRemoteID> TSrvMsg::getRemoteID()
+SPtr<TOptVendorData> TSrvMsg::getRemoteID()
 {
     return RemoteID;
 }
@@ -1081,7 +1096,7 @@ void TSrvMsg::handleDefaultOption(SPtr<TOpt> ptrOpt) {
     case OPTION_ELAPSED_TIME :
         break;
     default:
-	if (!ORO->isOption(opt))
+	if (!ORO->isOption(opt) && !getOption(opt))
 	    ORO->addOption(opt);
 	break;
     }

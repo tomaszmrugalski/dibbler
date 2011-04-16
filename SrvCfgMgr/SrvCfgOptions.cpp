@@ -21,7 +21,7 @@ TSrvCfgOptions::TSrvCfgOptions(SPtr<TDUID> duid) {
     Duid = duid;
 }
 
-TSrvCfgOptions::TSrvCfgOptions(SPtr<TSrvOptRemoteID> remoteID) {
+TSrvCfgOptions::TSrvCfgOptions(SPtr<TOptVendorData> remoteID) {
     SetDefaults();
     RemoteID = remoteID;
 }
@@ -30,7 +30,7 @@ SPtr<TDUID> TSrvCfgOptions::getDuid() {
     return Duid;
 }
 
-SPtr<TSrvOptRemoteID> TSrvCfgOptions::getRemoteID() {
+SPtr<TOptVendorData> TSrvCfgOptions::getRemoteID() {
     return RemoteID;
 }
 
@@ -51,8 +51,8 @@ void TSrvCfgOptions::SetDefaults() {
     Duid = 0;
     RemoteID = 0;
 
-    CustomOpts.clear();
     ExtraOpts.clear();
+    ForcedOpts.clear();
 }
 
 // --------------------------------------------------------------------
@@ -192,31 +192,35 @@ bool TSrvCfgOptions::supportLifetime() {
 }
 
 // --- option: VENDOR-SPEC INFO ---
+#if 0
 bool TSrvCfgOptions::supportVendorSpec() {
-    if (this->VendorSpec.count())
+    if (VendorSpec.count())
 	return true;
     return false;
 }
+#endif
 
-SPtr<TSrvOptVendorSpec> TSrvCfgOptions::getVendorSpec(int vendor) {
-    SPtr<TSrvOptVendorSpec> x = 0;
-    if (!VendorSpec.count())
-	return 0;
-    
-    // enterprise number not specified => return first one
-    VendorSpec.first();
-    if (vendor==0)
-	return VendorSpec.get();
+List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
 
-    // search for requested enterprise number
-    while (x=VendorSpec.get()) {
-	if (x->getVendor()==vendor)
-	    return x;
+    SPtr<TOpt> opt;
+    SPtr<TOptVendorSpecInfo> x = 0;
+    List(TOptVendorSpecInfo) returnList;
+    returnList.clear();
+
+    for (TOptList::iterator opt = ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+    {
+        if ( (*opt)->getOptType()!=OPTION_VENDOR_OPTS)
+            continue;
+        x = (Ptr*) *opt;
+        if(!vendor || x->getVendor() == vendor)
+        {
+            // enterprise number not specified => return all
+            returnList.append(x);
+        }
+
     }
-
-    // enterprise number not found, return first one
-    VendorSpec.first();
-    return VendorSpec.get();
+    
+    return returnList;
 }
 
 void TSrvCfgOptions::setAddr(SPtr<TIPv6Addr> addr) {
@@ -227,38 +231,33 @@ SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() {
     return Addr;
 }
 
-void TSrvCfgOptions::setVendorSpec(List(TSrvOptVendorSpec) vendor) {
-    this->VendorSpec = vendor;
-}
-
 void TSrvCfgOptions::addExtraOption(SPtr<TOpt> custom, bool always) {
-	Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
-		   << custom->getOptType() << " generic option (length=" 
-		   << custom->getSize() << ")." << LogEnd;
-
-	ExtraOpts.push_back(custom);
-/*
-	if (always)
-		ExtraOpts.push_back(custom);
-	else
-	CustomOpts.push_back(custom);*/
+    Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
+               << custom->getOptType() << " generic option (length=" 
+               << custom->getSize() << ")." << LogEnd;
+    
+    ExtraOpts.push_back(custom); // allways add to extra options
+    
+    if (always)
+        ForcedOpts.push_back(custom); // also add to forced, if requested so
 }
 
-TOptList& TSrvCfgOptions::getExtraOptions() {
+const TOptList& TSrvCfgOptions::getExtraOptions() {
     return ExtraOpts;
 }
 
-TOptList& TSrvCfgOptions::getCustomOptions() {
-    return CustomOpts;
-}
-
-SPtr<TOpt> TSrvCfgOptions::getCustomOption(int type) {
-    for (TOptList::iterator opt=CustomOpts.begin(); opt!=CustomOpts.end(); ++opt)
+SPtr<TOpt> TSrvCfgOptions::getExtraOption(int type) {
+    for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
     {
 	if ((*opt)->getOptType() == type)
 	    return *opt;
     }
     return 0;
+}
+
+const TOptList& TSrvCfgOptions::getForcedOptions() {
+    
+    return ForcedOpts;
 }
 
 bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
@@ -273,7 +272,6 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
     if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
-    if (opt->supportVendorSpec()) this->setVendorSpec(opt->getVendorSpec());
 
     return true;
 }
@@ -383,19 +381,20 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     }
 
 
+#if 0
     // option: VENDOR-SPEC
-    if (iface.supportVendorSpec()) {
+    if (iface.VendorSpec.count()) {
 	out << "      <vendorSpecList count=\"" << iface.VendorSpec.count() << "\">" << endl;
 	iface.VendorSpec.first();
         SPtr<TSrvOptVendorSpec> v;
 	while (v = iface.VendorSpec.get()) {
-	    out << "        <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen() 
-	    << "\">" << v->getVendorDataPlain() << "</vendorSpec>" << endl;
+	    out << v << endl;
 	}
 	out << "      </vendorSpecList>" << endl;
     } else {
 	out << "      <!-- <vendorSpec/> -->" << endl;
     }
+#endif
 
     out << "    </client>" << endl;
 

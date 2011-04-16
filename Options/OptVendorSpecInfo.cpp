@@ -15,72 +15,101 @@
 #include <sstream>
 #include "Portable.h"
 #include "OptVendorSpecInfo.h"
+#include "OptGeneric.h"
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TOptVendorSpecInfo::TOptVendorSpecInfo(int type, char * &buf,  int &n, TMsg* parent)
+TOptVendorSpecInfo::TOptVendorSpecInfo(int type, char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {
+    int optionCode, optionLen;
     if (n<4) {
-	Log(Error) << "Unable to parse vendor-spec info option." << LogEnd;
+	Log(Error) << "Unable to parse truncated vendor-spec info option." << LogEnd;
 	this->Vendor = 0;
-	this->VendorData = 0;
-	this->VendorDataLen = 0;
+        Valid = false;
 	return;
     }
 
     this->Vendor = ntohl(*(int*)buf); // enterprise number
+
     buf += 4;
     n   -= 4;
 
-    if (!n) {
-	this->VendorData = 0;
-	this->VendorDataLen = 0;
-	return;
-    }
+    while (n>=4) {
+        optionCode = ntohs(*(int*)buf);
+        optionLen  =  ntohs(*(int*)(buf+2));
+        buf += 4;
+        n   -= 4;
+        if (optionLen>n) {
+            Log(Warning) << "Malformed vendor-spec info option. Suboption " << optionCode
+                         << " truncated." << LogEnd;
+            Valid = false;
+            return;
+        }
 
+        SPtr<TOpt> opt = new TOptGeneric(optionCode, buf, optionLen, parent);
+        addOption(opt);
+        buf += optionLen;
+        n   -= optionLen;
+    }
     if (n) {
-	this->VendorData = new char[n];
-	memmove(this->VendorData, buf, n);
-    } else {
-	this->VendorData = 0;
+        Log(Warning) << "Extra " << n << " bytes, after parsing suboption " << optionCode
+                     << " in vendor-spec info option." << LogEnd;
+        Valid = false;
+        return;
     }
-    this->VendorDataLen = n;
-
-    buf += n;
-    n    = 0;
+    Valid = true;
 }
 
-TOptVendorSpecInfo::TOptVendorSpecInfo(int type, int enterprise, char *data, int dataLen, TMsg* parent)
-    :TOpt(type, parent)
+TOptVendorSpecInfo::TOptVendorSpecInfo(int enterprise, int optionCode, 
+                                       char *data, int dataLen, TMsg* parent)
+    :TOpt(OPTION_VENDOR_OPTS, parent)
 {
     this->Vendor = enterprise;
-    this->VendorData = new char[dataLen];
-    memmove(this->VendorData, data, dataLen);
-    this->VendorDataLen = dataLen;
+    if (optionCode) 
+    {
+        SPtr<TOptGeneric> opt = new TOptGeneric(optionCode, data, dataLen, parent);
+        addOption( (Ptr*) opt);
+    }
 }
 
 TOptVendorSpecInfo::~TOptVendorSpecInfo() 
 {
-    if (this->VendorDataLen)
-	delete [] VendorData;
 }
 
 int TOptVendorSpecInfo::getSize()
 {
-    return 8+this->VendorDataLen; /* normal header(4) + enterprise(4) */
+    SPtr<TOpt> opt;
+    unsigned int len = 8; // normal header(4) + enterprise(4)
+    firstOption();
+    while (opt=getOption()) {
+        len += opt->getSize();
+    }
+    return len;
 }
 
 char * TOptVendorSpecInfo::storeSelf( char* buf)
 {
+	// option-code OPTION_VENDOR_OPTS (2 bytes long)
     *(uint16_t*)buf = htons(OptType);
     buf+=2;
+    
+    // option-len size of total option-data
     *(uint16_t*)buf = htons( getSize()-4 );
     buf+=2;
+    
+    // enterprise-number (4 bytes long)
     *(uint32_t*)buf = htonl(this->Vendor);
     buf+=4;
-    memmove(buf, this->VendorData, this->VendorDataLen);
-    buf+=this->VendorDataLen;
+
+    SPtr<TOpt> opt;
+    firstOption();
+
+    while (opt = getOption())
+    {
+        buf = opt->storeSelf(buf);
+    }
+    
     return buf;
 }
 
@@ -89,28 +118,7 @@ bool TOptVendorSpecInfo::isValid()
     return true;
 }
 
-int TOptVendorSpecInfo::getVendor()
+unsigned int TOptVendorSpecInfo::getVendor()
 {
-    return this->Vendor;
+    return Vendor;
 }
-
-char * TOptVendorSpecInfo::getVendorData()
-{
-    return this->VendorData;
-}
-
-string TOptVendorSpecInfo::getVendorDataPlain()
-{
-    ostringstream tmp;
-    tmp << "0x";
-    for (int i=0; i<this->VendorDataLen; i++) {
-	tmp << setfill('0') << setw(2) << hex << (unsigned int) this->VendorData[i];
-    }
-    return tmp.str();
-}
-
-int TOptVendorSpecInfo::getVendorDataLen()
-{
-    return this->VendorDataLen;
-}
-    

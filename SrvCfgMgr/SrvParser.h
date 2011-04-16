@@ -36,7 +36,7 @@
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
-#include "SrvOptVendorSpec.h"
+#include "OptVendorSpecInfo.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
 #include "SrvCfgClientClass.h"
@@ -61,7 +61,6 @@ List(TFQDN) PresentFQDNLst;                                                     
 SPtr<TIPv6Addr> addr;                                                                \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
-List(TSrvOptVendorSpec) VendorSpec;			                             \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -84,7 +83,7 @@ virtual ~SrvParser();
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 83 "SrvParser.y"
+#line 82 "SrvParser.y"
 typedef union    
 {
     unsigned int ival;

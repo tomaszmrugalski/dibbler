@@ -23,7 +23,7 @@
 #include "SrvOptOptionRequest.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvOptFQDN.h"
-#include "SrvOptRemoteID.h"
+#include "OptVendorData.h"
 #include "OptGeneric.h"
 
 class TSrvMsg : public TMsg
@@ -58,8 +58,8 @@ public:
 
     virtual bool check() = 0;
 
-    void setRemoteID(SPtr<TSrvOptRemoteID> remoteID);
-    SPtr<TSrvOptRemoteID> getRemoteID();
+    void setRemoteID(SPtr<TOptVendorData> remoteID);
+    SPtr<TOptVendorData> getRemoteID();
 
     unsigned long getTimeout();
     void doDuties();
@@ -90,7 +90,7 @@ protected:
     unsigned long MRT;            // maximum retransmission timeout
     int Relays;
 
-    SPtr<TSrvOptRemoteID> RemoteID; // this MAY be set, if message was recevied via relay AND relay appended this RemoteID
+    SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay AND relay appended this RemoteID
     int Parent; // type of the parent message (used in ADVERTISE and REPLY)
 };
 

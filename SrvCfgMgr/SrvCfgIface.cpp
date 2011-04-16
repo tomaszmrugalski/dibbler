@@ -16,6 +16,7 @@
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgPD.h"
 #include "Logger.h"
+#include "Opt.h"
 
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
@@ -35,23 +36,26 @@ bool TSrvCfgIface::leaseQuerySupport()
 }
 
 
-SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TSrvOptRemoteID> remoteID, bool quiet)
+SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID, bool quiet)
 {
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst.first();
     while (x=ExceptionsLst.get()) {
 	if ( duid && x->getDuid() && (*(x->getDuid()) == *duid) ) {
 	    if (!quiet)
-		Log(Debug) << "Found per-client configuration (exception) for client with DUID=" << x->getDuid()->getPlain() << LogEnd;
+		Log(Debug) << "Found per-client configuration (exception) for client with DUID=" 
+                           << x->getDuid()->getPlain() << LogEnd;
 	    return x;
 	}
-	SPtr<TSrvOptRemoteID> id;
-	id = x->getRemoteID();
+	SPtr<TOptVendorData> remoteid;
+	remoteid = x->getRemoteID();
 
-	if ( remoteID && id && (remoteID->getVendor() == id->getVendor()) && (id->getVendorDataLen() == remoteID->getVendorDataLen())
-	     && !memcmp(id->getVendorData(), remoteID->getVendorData(), id->getVendorDataLen()) ) {
-		Log(Debug) << "Found per-client configuration (exception) for client with RemoteID: vendor=" << id->getVendor()
-			   << ", data=" << id->getVendorDataPlain() << "." << LogEnd;
+	if ( remoteID && remoteid && (remoteID->getVendor() == remoteid->getVendor()) 
+             && (remoteid->getVendorDataLen() == remoteID->getVendorDataLen())
+	     && !memcmp(remoteid->getVendorData(), remoteID->getVendorData(), remoteid->getVendorDataLen()) ) {
+		Log(Debug) << "Found per-client configuration (exception) for client with RemoteID: vendor=" 
+                           << remoteid->getVendor() << ", data=" 
+                           << remoteid->getVendorDataPlain() << "." << LogEnd;
 	    return x;
 	}
     }
@@ -797,33 +801,34 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     }
 
     // option: VENDOR-SPEC
-    if (iface.supportVendorSpec()) {
+/*    if (iface.supportVendorSpec()) {
 	out << "    <vendorSpecList count=\"" << iface.VendorSpec.count() << "\">" << endl;
 	iface.VendorSpec.first();
         SPtr<TSrvOptVendorSpec> v;
 	while (v = iface.VendorSpec.get()) {
-	    out << "      <vendorSpec vendor=\"" << v->getVendor() << "\" length=\"" << v->getVendorDataLen()
-	    << "\">" << v->getVendorDataPlain() << "</vendorSpec>" << endl;
+	    out << "      <vendorSpec vendor=\"" << v->getVendor() << "\">" << endl;
+            SPtr<TOpt> sub;
+            v->firstOption();
+            while (sub = v->getOption()) {
+                out << "        <option code=\"" << sub->getOptType() 
+                    << "\" length=\"" << sub->getSize() << "\">"
+                    << sub->getPlain() << "</option>" << endl;
+            }
+	    out << "      </vendorSpec>" << endl;
 	}
 	out << "    </vendorSpecList>" << endl;
     } else {
 	out << "    <!-- <vendorSpec/> -->" << endl;
-    }
+        }*/
 
     out << "    <!-- " << iface.getExtraOptions().size() << " extra option(s) -->" << endl;
 
-    /*
-    iface.getExtraOptions().first();
-    while (SPtr<TOpt> gen = iface.getExtraOptions().get())
+    TOptList extraLst =  iface.getExtraOptions();
+    for (TOptList::iterator extra = extraLst.begin(); extra!=extraLst.end(); ++extra)
     {
-	out << "      <extraOption length=\"" << gen->getSize()-4 << "\"/>" << endl;
-	} */
-
-    for (TOptList::iterator gen = iface.getExtraOptions().begin(); gen!=iface.getExtraOptions().end(); ++gen)
-    {
-	out << "      <extraOption type=\"" << (*gen)->getOptType() << "\" length=\"" 
-	    << (*gen)->getSize()-4 << "\"/>" << endl;
-    }
+	out << "      <extraOption type=\"" << (*extra)->getOptType() 
+            << "\" length=\"" << (*extra)->getSize() << "\"/>" << endl;
+    } 
 
     // option: FQDN
     if (iface.supportFQDN()) {
