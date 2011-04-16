@@ -46,6 +46,8 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 	
     // ClientIdentifier option
     appendClientID();
+
+    SPtr<TAddrIA> addrIA;
     
     // all IAs are provided by ::checkSolicit()
     SPtr<TClntCfgIA> ia;
@@ -56,6 +58,11 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
         Options.push_back( (Ptr*)iaOpt );
         if (!remoteAutoconf)
             ia->setState(STATE_INPROCESS);
+        addrIA = ClntAddrMgr().getIA(ia->getIAID());
+        if (addrIA)
+            addrIA->setState(STATE_INPROCESS);
+        else
+            Log(Error) << "AddrMgr does not have IA with IAID=" << ia->getIAID() << LogEnd;
     }
 
     // TA is provided by ::checkSolicit()
@@ -64,6 +71,11 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 	Options.push_back( (Ptr*) taOpt);
 	if (!remoteAutoconf)
 	    ta->setState(STATE_INPROCESS);
+        addrIA = ClntAddrMgr().getTA(ta->getIAID());
+        if (addrIA)
+            addrIA->setState(STATE_INPROCESS);
+        else
+            Log(Error) << "AddrMgr does not have TA with IAID=" << ia->getIAID() << LogEnd;
     }
 
     // all PDs are provided by ::checkSolicit()
@@ -74,6 +86,11 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
         Options.push_back( (Ptr*)pdOpt );
         if (!remoteAutoconf)
             pd->setState(STATE_INPROCESS);
+        addrIA = ClntAddrMgr().getPD(ta->getIAID());
+        if (addrIA)
+            addrIA->setState(STATE_INPROCESS);
+        else
+            Log(Error) << "AddrMgr does not have PD with IAID=" << pd->getIAID() << LogEnd;
     }
     
     if(rapid)

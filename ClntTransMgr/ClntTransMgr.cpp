@@ -760,8 +760,7 @@ void TClntTransMgr::checkSolicit() {
 		Log(Cont) << " (with rapid-commit)";
 	    } 
 	    Log(Cont) << " on " << iface->getFullName() <<" interface." << LogEnd;
-	    Transactions.append(new TClntMsgSolicit(
-						    iface->getID(), 0, iaLst, ta, pdLst, 
+	    Transactions.append(new TClntMsgSolicit(iface->getID(), 0, iaLst, ta, pdLst, 
 						    iface->getRapidCommit()));
         }
 
