@@ -24,8 +24,7 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TAddrMgr::TAddrMgr(string xmlFile, bool loadfile)
-{
+TAddrMgr::TAddrMgr(string xmlFile, bool loadfile) {
     this->IsDone = false;
     this->XmlFile = xmlFile;
     
@@ -64,7 +63,7 @@ void TAddrMgr::dbLoad(const char * xmlFile)
     xmlDocPtr root;
     root = xmlLoad(xmlFile);
     if (!root) {
-        Log(Error) << "File loading has failed." << LogEnd;
+        Log(Error) << "Failed to load " << xmlFile << " file." << LogEnd;
         return;
     }
     this->parseAddrMgr(root,0);
