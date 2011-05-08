@@ -98,11 +98,28 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
 	Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the "
 		    << iface->getName() << "." << LogEnd;
 	return true;
-    } ;
+    }
+
     if (!iface->addSocket(ipAddr, DHCPSERVER_PORT, true, false)) {
 	Log(Crit) << "Proper socket creation failed." << LogEnd;
 	return false;
     }
+
+#if 1
+    if (!iface->countLLAddress()) {
+        Log(Crit) << "There is no link-local address on " << iface->getFullName() << " defined." << LogEnd;
+        return false;
+    }
+    memcpy(srvAddr, iface->firstLLAddress(), 16);
+    SPtr<TIPv6Addr> llAddr = new TIPv6Addr(iface->firstLLAddress());
+    Log(Notice) << "Creating link-local (" << llAddr->getPlain() << ") socket on " << iface->getFullName()
+                << " interface." << LogEnd;
+    if (!iface->addSocket(llAddr, DHCPSERVER_PORT, true, false)) {
+        Log(Crit) << "Failed to create link-local socket on " << iface->getFullName() << " interface." << LogEnd;
+        return false;
+    }
+#endif
+
     return true;
 }
 

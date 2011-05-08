@@ -118,17 +118,21 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 
     // find this socket
-    SPtr<TIfaceSocket> ptrSocket;
+    SPtr<TIfaceSocket> sock;
     ptrIface->firstSocket();
-    ptrSocket = ptrIface->getSocket();
-    if (!ptrSocket) {
-	     Log(Error) << "Send failed: interface " << ptrIface->getName() 
-		 << "/" << iface << " has no open sockets." << LogEnd;
-         return false;
+    while (sock = ptrIface->getSocket()) {
+        if (sock->multicast())
+            continue; // don't send anything via multicast sockets
+        break;
+    }
+    if (!sock) {
+        Log(Error) << "Send failed: interface " << ptrIface->getName() 
+                   << "/" << iface << " has no open sockets." << LogEnd;
+        return false;
     }
 
     // send it!
-    return (bool)(ptrSocket->send(msg,size,addr,port));
+    return (bool)(sock->send(msg,size,addr,port));
 }
 
 /**
@@ -143,24 +147,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     const int maxBufsize = 4096;
     int bufsize=maxBufsize;
     static char buf[maxBufsize];
-
-#if 0
-    buf[0]=buf[1]=buf[2]=buf[3]=2;
-    buf[4]=buf[5]=buf[6]=buf[7]=2;
-
-    SPtr<TSrvOptInterfaceID> opt1 = new TSrvOptInterfaceID(3, 0);
-    SPtr<TSrvOptInterfaceID> opt2 = new TSrvOptInterfaceID(5, 0);
-
-    Log(Info) << "#### opt1->" << opt1->getPlain() << LogEnd;
-    Log(Info) << "#### opt2->" << opt2->getPlain() << LogEnd;
-
-    if (*opt1 == *opt2)
-	Log(Info) << "#### equal " << LogEnd;
-    else
-	Log(Info) << "#### NOT equal" << LogEnd;
-
-    exit(-1);
-#endif
 
     SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
