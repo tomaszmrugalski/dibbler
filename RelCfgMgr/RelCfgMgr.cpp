@@ -247,7 +247,7 @@ ERelIfaceIdOrder TRelCfgMgr::getInterfaceIDOrder()
     return InterfaceIDOrder;
 }
 
-SPtr<TRelOptRemoteID> TRelCfgMgr::getRemoteID()
+SPtr<TOptVendorData> TRelCfgMgr::getRemoteID()
 {
     return RemoteID;
 }
@@ -298,8 +298,7 @@ ostream & operator<<(ostream &out, TRelCfgMgr &x) {
     }
     out << "</InterfaceIDOrder>" << endl;
 
-    if (x.getRemoteID()) {
-	SPtr<TRelOptRemoteID> r = x.getRemoteID();
+    if (SPtr<TOptVendorData> r = x.getRemoteID()) {
 	out << "  <RemoteID enterprise=\"" << r->getVendor() << "\" length=\"" << r->getVendorDataLen() 
 	    << "\">" << r->getVendorDataPlain() << "</RemoteID>" << endl;
     } else {

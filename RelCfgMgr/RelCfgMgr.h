@@ -15,7 +15,7 @@
 
 #include "CfgMgr.h"
 #include "DHCPConst.h"
-#include "RelOptRemoteID.h"
+#include "OptVendorData.h"
 #include "RelOptEcho.h"
 
 #define RelCfgMgr() (TRelCfgMgr::instance())
@@ -50,10 +50,10 @@ public:
     bool guessMode();
     ERelIfaceIdOrder getInterfaceIDOrder();
 
-    SPtr<TRelOptRemoteID> getRemoteID();
+    SPtr<TOptVendorData> getRemoteID();
     SPtr<TRelOptEcho>     getEcho();
 
-private:    
+private:
     static TRelCfgMgr * Instance;
     TRelCfgMgr(const std::string cfgFile, const std::string xmlFile);
 
@@ -73,7 +73,7 @@ private:
     bool GuessMode;
     ERelIfaceIdOrder InterfaceIDOrder;
 
-    SPtr<TRelOptRemoteID> RemoteID;
+    SPtr<TOptVendorData> RemoteID;
     SPtr<TRelOptEcho> Echo;
 };
 

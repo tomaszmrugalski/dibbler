@@ -31,15 +31,15 @@ TRelTransMgr::TRelTransMgr(const std::string xmlFile)
     SPtr<TRelCfgIface> confIface;
     RelCfgMgr().firstIface();
     while (confIface=RelCfgMgr().getIface()) {
-        if (!this->openSocket(confIface)) {
-            this->IsDone = true;
-            break;
-        }
+	if (!this->openSocket(confIface)) {
+	    this->IsDone = true;
+	    break;
+	}
     }
 }
 
 /*
- * opens proper (multicast or unicast) socket on interface 
+ * opens proper (multicast or unicast) socket on interface
  */
 bool TRelTransMgr::openSocket(SPtr<TRelCfgIface> cfgIface) {
 
@@ -100,16 +100,16 @@ bool TRelTransMgr::openSocket(SPtr<TRelCfgIface> cfgIface) {
  * relays normal (i.e. not server replies) messages to defined servers
  */
 void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
-{	
+{
     static char buf[MAX_PACKET_LEN];
     int offset = 0;
     int bufLen;
     int hopCount = 0;
     if (!msg->check()) {
 	Log(Warning) << "Invalid message received." << LogEnd;
-        return;
+	return;
     }
-    
+
     if (msg->getDestAddr()) {
 	this->relayMsgRepl(msg);
 	return;
@@ -127,7 +127,7 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     buf[offset++] = RELAY_FORW_MSG;
     buf[offset++] = hopCount;
 
-    // store link-addr 
+    // store link-addr
     iface->firstGlobalAddr();
     addr = iface->getGlobalAddr();
     if (!addr) {
@@ -176,11 +176,12 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
 		     << "That is a debugging feature and violates RFC3315. Use with caution." << LogEnd;
     }
 
-    SPtr<TRelOptRemoteID> remoteID = RelCfgMgr().getRemoteID();
+    SPtr<TOptVendorData> remoteID = RelCfgMgr().getRemoteID();
     if (remoteID) {
 	remoteID->storeSelf(buf+offset);
 	offset += remoteID->getSize();
-	Log(Debug) << "Appended RemoteID with " << remoteID->getVendorDataLen() << "-byte long data (option length=" 
+	Log(Debug) << "Appended RemoteID with " << remoteID->getVendorDataLen() 
+		   << "-byte long data (option length="
 		   << remoteID->getSize() << ")." << LogEnd;
     }
 
@@ -209,18 +210,18 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     while (cfgIface = RelCfgMgr().getIface()) {
 	if (cfgIface->getServerUnicast()) {
 	    Log(Notice) << "Relaying encapsulated " << msg->getName() << " message on the " << cfgIface->getFullName()
-			<< " interface to unicast (" << cfgIface->getServerUnicast()->getPlain() << ") address, port " 
+			<< " interface to unicast (" << cfgIface->getServerUnicast()->getPlain() << ") address, port "
 			<< DHCPSERVER_PORT << "." << LogEnd;
 
 	    if (!RelIfaceMgr().send(cfgIface->getID(), buf, offset, cfgIface->getServerUnicast(), DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data to server unicast address." << LogEnd;
 	    }
-					   
+
 	}
 	if (cfgIface->getServerMulticast()) {
 	    addr = new TIPv6Addr(ALL_DHCP_SERVERS, true);
 	    Log(Notice) << "Relaying encapsulated " << msg->getName() << " message on the " << cfgIface->getFullName()
-			<< " interface to multicast (" << addr->getPlain() << ") address, port " 
+			<< " interface to multicast (" << addr->getPlain() << ") address, port "
 			<< DHCPSERVER_PORT << "." << LogEnd;
 	    if (!RelIfaceMgr().send(cfgIface->getID(), buf, offset, addr, DHCPSERVER_PORT)) {
 		Log(Error) << "Failed to send data to server multicast address." << LogEnd;
@@ -230,7 +231,7 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
 
     // save DB state regardless of action taken
     RelCfgMgr().dump();
-}	
+}
 
 void TRelTransMgr::relayMsgRepl(SPtr<TRelMsg> msg) {
     int port;
@@ -245,7 +246,7 @@ void TRelTransMgr::relayMsgRepl(SPtr<TRelMsg> msg) {
     static char buf[MAX_PACKET_LEN];
     int bufLen;
 
-    if (!iface) { 
+    if (!iface) {
 	Log(Warning) << "Unable to find interface with interfaceID=" << msg->getDestIface()
 		     << LogEnd;
 	return;
@@ -262,7 +263,7 @@ void TRelTransMgr::relayMsgRepl(SPtr<TRelMsg> msg) {
     if (!RelIfaceMgr().send(iface->getID(), buf, bufLen, addr, port)) {
 	Log(Error) << "Failed to decapsulated data." << LogEnd;
     }
-    
+
 }
 
 void TRelTransMgr::shutdown() {
@@ -307,7 +308,7 @@ void TRelTransMgr::instanceCreate( const std::string xmlFile )
 TRelTransMgr& TRelTransMgr::instance()
 {
     if (!Instance)
-        Log(Crit) << "RelTransMgr istance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+	Log(Crit) << "RelTransMgr istance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
     return *Instance;
 }
 

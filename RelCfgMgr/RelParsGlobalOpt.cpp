@@ -6,30 +6,15 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelParsGlobalOpt.cpp,v 1.5 2008-08-29 00:07:32 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2008-03-02 19:35:26  thomson
- * RemoteID, EchoRequest options implemented.
- *
- * Revision 1.3  2007-05-01 12:03:13  thomson
- * Support for interface-id location added.
- *
- * Revision 1.2  2007-03-07 02:37:11  thomson
- * Experimental support for guess-mode.
- *
- * Revision 1.1  2005-01-11 22:53:35  thomson
- * Relay skeleton implemented.
- *
  */
 
 #include "RelParsGlobalOpt.h"
 #include "Portable.h"
 
 TRelParsGlobalOpt::TRelParsGlobalOpt(void) {
-    this->WorkDir   = WORKDIR;
-    this->GuessMode = false;
-    this->InterfaceIDOrder = REL_IFACE_ID_ORDER_BEFORE;
+    WorkDir   = WORKDIR;
+    GuessMode = false;
+    InterfaceIDOrder = REL_IFACE_ID_ORDER_BEFORE;
 }
 
 TRelParsGlobalOpt::~TRelParsGlobalOpt(void) {
@@ -60,12 +45,12 @@ ERelIfaceIdOrder TRelParsGlobalOpt::getInterfaceIDOrder() {
     return InterfaceIDOrder;
 }
 
-void TRelParsGlobalOpt::setRemoteID(SPtr<TRelOptRemoteID> remoteID)
+void TRelParsGlobalOpt::setRemoteID(SPtr<TOptVendorData> remoteID)
 {
     RemoteID = remoteID;
 }
 
-SPtr<TRelOptRemoteID> TRelParsGlobalOpt::getRemoteID()
+SPtr<TOptVendorData> TRelParsGlobalOpt::getRemoteID()
 {
     return RemoteID;
 }

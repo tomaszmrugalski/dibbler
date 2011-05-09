@@ -25,6 +25,7 @@
 #include "RelParsGlobalOpt.h"
 #include "RelParsIfaceOpt.h"
 #include "RelCfgIface.h"
+#include "OptVendorData.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -48,7 +49,7 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 47 "RelParser.y"
+#line 48 "RelParser.y"
 typedef union    
 {
     unsigned int ival;

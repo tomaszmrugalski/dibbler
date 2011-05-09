@@ -12,6 +12,7 @@
 #include "RelParsGlobalOpt.h"
 #include "RelParsIfaceOpt.h"
 #include "RelCfgIface.h"
+#include "OptVendorData.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -228,7 +229,7 @@ RemoteID
 :OPTION_ REMOTE_ID_ Number '-' DUID_
 {
     Log(Debug) << "RemoteID set: enterprise-number=" << $3 << ", remote-id length=" << $5.length << LogEnd;
-    ParserOptStack.getLast()->setRemoteID( new TRelOptRemoteID($3, $5.duid, $5.length, 0));
+    ParserOptStack.getLast()->setRemoteID( new TOptVendorData($3, $5.duid, $5.length, 0));
 };
 
 EchoRequest

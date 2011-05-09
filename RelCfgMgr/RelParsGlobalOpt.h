@@ -13,7 +13,7 @@
 #ifndef TRELPARSGLOBALOPT_H_
 #define TRELPARSGLOBALOPT_H_
 #include "RelParsIfaceOpt.h"
-#include "RelOptRemoteID.h"
+#include "OptVendorData.h"
 #include "RelOptEcho.h"
 #include "SmartPtr.h"
 #include <string>
@@ -39,18 +39,18 @@ class TRelParsGlobalOpt : public TRelParsIfaceOpt
     void setInterfaceIDOrder(ERelIfaceIdOrder order);
     ERelIfaceIdOrder getInterfaceIDOrder();
 
-    void setRemoteID(SPtr<TRelOptRemoteID> remoteID);
-    SPtr<TRelOptRemoteID> getRemoteID();
+    void setRemoteID(SPtr<TOptVendorData> remoteID);
+    SPtr<TOptVendorData> getRemoteID();
 
     void setEcho(SPtr<TRelOptEcho> echo);
     SPtr<TRelOptEcho> getEcho();
-    
+
 private:
     string WorkDir;
     bool GuessMode;
 
     ERelIfaceIdOrder InterfaceIDOrder;
-    SPtr<TRelOptRemoteID> RemoteID;
+    SPtr<TOptVendorData> RemoteID;
     SPtr<TRelOptEcho>     Echo;
 };
 #endif
