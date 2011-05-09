@@ -30,6 +30,7 @@
   - All: Vendor spec support improved (new definition format is simpler) (bug #173)
   - Cli: client not waits for longer periods, rather than 1 s
   - Srv: Server now creates separate socket for transmission and not use multicast socket (bug #200)
+  - Rel: TRelOptRemoteID compilation fix
 
 0.8.0RC-1 [2010-09-17]
   - Linux: CONFIRM support added
