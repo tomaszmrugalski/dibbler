@@ -6,9 +6,8 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-usage.tex,v 1.18 2006-10-04 22:03:35 thomson Exp $
-%%
 
+\newpage
 \section{Installation and usage}
 Client, server and relay are installed in the same way. Installation
 method is different in Windows and Linux systems, so each system
@@ -37,12 +36,12 @@ If you are using other Linux distribution, obtain (e.g. download from
 needs. Currently there are available RPM packages
 (which can be used in RedHat, Fedora Core, Mandrake or PLD
 distribution), DEB packages (suitable for Debian, Ubuntu or Knoppix) and
-ebuild (for Gentoo users). To install rpm package, execute 
+ebuild (for Gentoo users). To install rpm package, execute
 \verb+rpm -i archive.rpm+ command. For example, to install dibbler 0.4.1,
 issue following command:
 
 \begin{verbatim}
-rpm -i dibbler-0.4.1-1.i386.rpm 
+rpm -i dibbler-0.4.1-1.i386.rpm
 \end{verbatim}
 
 To install Dibbler on Debian or other system with dpkg management
@@ -61,12 +60,12 @@ emerge dibbler
 
 If you would like to install Dibbler from sources, please download tar.gz
 source archive, extract it, type make followed by target (e.g. server,
-client or relay\footnote{To get full target list, type: make help.}). 
+client or relay\footnote{To get full target list, type: make help.}).
 After successful compilation type make install. For example, to build
 server and relay, type:
 
 \begin{verbatim}
-tar zxvf dibbler-0.4.0-src.tar.gz
+tar zxvf dibbler-0.8.0-src.tar.gz
 make server relay
 make install
 mkdir -p /var/lib/dibbler
@@ -75,7 +74,7 @@ mkdir -p /var/lib/dibbler
 Depending what functionality do you want to use (server,client or relay),
 you should edit configuration file (\verb+client.conf+ for client, \verb+server.conf+
 for server and \verb+relay.conf+ for relay). All configuration files should
-be placed in the \verb+/etc/dibbler+ directory. Also make sure that 
+be placed in the \verb+/etc/dibbler+ directory. Also make sure that
 \verb+/var/lib/dibbler+ directory is present and is writeable. After
 editing configuration files, issue one of the following commands:
 
@@ -107,21 +106,27 @@ dibbler-client status
 dibbler-relay status
 \end{verbatim}
 
-To see full list of available commands, type \verb+dibbler-server+, 
+To see full list of available commands, type \verb+dibbler-server+,
 \verb+dibbler-client+ or \verb+dibbler-relay+ without any parameters.
 
 \subsection{Windows installation}
-Since the 0.2.1-RC1 release, Dibbler supports Windows XP and 2003. 
+Dibbler supports Windows XP and 2003 since the 0.2.1-RC1 release.
 Support for Vista was added somewhere around 0.7.x. Support for
-Windows 7 was added in 0.8.0RC1. In version 0.4.1 exprimental support for Windows NT4 and 2000 was added. The easiest
-way of Windows installation is to download clickable Windows installer. It can be downloaded from
-\url{http://klub.com.pl/dhcpv6/}. After downloading, click on it and
-follow on screen instructions. Dibbler will be installed and all
-required links will be placed in the Start menu. Note that there are
-two Windows versions (ports): one for modern systems (XP/2003/Vista
-and Win7) and one for archaic ones (NT4/2000). Make sure
-to use proper port. If you haven't set up IPv6 support, see following
-sections for details.
+Windows 7 was added in 0.8.0RC1. In version 0.4.1 exprimental support
+for Windows NT4 and 2000 was added. The easiest way of Windows
+installation is to download clickable Windows installer. It can be
+downloaded from \url{http://klub.com.pl/dhcpv6/}. After downloading,
+click on it and follow on screen instructions. Dibbler will be
+installed and all required links will be placed in the Start
+menu. Note that there are two Windows versions (ports): one for modern
+systems (XP/2003/Vista and Win7) and one for archaic ones
+(NT4/2000). Make sure to use proper port. If you haven't set up IPv6
+support, see following sections for details.
+
+\subsection{Mac OS X installation}
+As of 0.8.0 release, ready to use dmg packages are not provided,
+therefore dibbler has to be compiled. Please follow section
+\ref{compile-macos} for details on Dibbler compilation on Mac OS X.
 
 \subsection{IPv6 support}
 Some systems does not have IPv6 enabled by default. In that is the case,
@@ -134,7 +139,7 @@ following command: \verb+ping6 ::1+ (Linux) or \verb+ping ::1+
 IPv6 can be enabled in Linux systems in two ways: compiled directly
 into kernel or as a module. If you don't have IPv6 enabled, try to load IPv6 module:
 \verb+modprobe ipv6+ (command executed as root) and try ping6 once more. If that
-fails, you have to recompile kernel to support IPv6. There are 
+fails, you have to recompile kernel to support IPv6. There are
 numerous descriptions how to recompile kernel available on the web, just
 type "kernel compilation howto" in \href{http://www.google.com}{Google}.
 
@@ -150,7 +155,7 @@ your network interface, right click it and select \verb+Properties+. Then
 click \verb+Install...+, choose protocol and then IPv6 (its naming is
 somewhat diffrent depending on what Service Pack you have installed).
 In XP, there's much quicker way to install IPv6. Simply run command
-\verb+ipv6 install+ (i.e. hit Start..., choose run... and then type 
+\verb+ipv6 install+ (i.e. hit Start..., choose run... and then type
 \verb+ipv6 install+). Also make sure that you have built-in firewall
 disabled. See \emph{Frequently Asked Question} section for details.
 
@@ -164,46 +169,54 @@ description assumes that ServicePack 4 is already installed.
   \item Download the file tpipv6-001205.exe from:
     \url{http://msdn.microsoft.com/downloads/sdks/platform/tpipv6.asp}
     and save it to a local folder (for example, \verb+C:\IPv6TP+).
-  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Tpipv6-001205.exe+ and extract the
-    files to the same location.
-  \item From the local folder (\verb+C:\IPv6TP+), run \verb+Setup.exe -x+ and extract the files to
-    a subfolder of the current folder (for example, \verb+C:\IPv6TP\files+).
-  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), open the
-    file \verb+Hotfix.inf+ in a text editor.
-  \item In the [Version] section of the Hotfix.inf file, change the line
-    NTServicePackVersion=256 to NTServicePackVersion=1024, and then
-    save changes. \footnote{This defines Service Pack requirement.
-      NTServicePackVersion is a ServicePack version multiplied by 256. If there
-    would be SP5 available, this value should have been changed to the 1280.}
-  \item From the folder containing the extracted files (\verb+C:\IPv6TP\files+), run
-    \verb+Hotfix.exe+.
+  \item From the local folder (\verb+C:\IPv6TP+), run
+    \verb+Tpipv6-001205.exe+ and extract the files to the same
+    location.
+  \item From the local folder (\verb+C:\IPv6TP+), run
+    \verb+Setup.exe -x+ and extract the files to a subfolder of the
+    current folder (for example, \verb+C:\IPv6TP\files+).
+  \item From the folder containing the extracted files
+    (\verb+C:\IPv6TP\files+), open the file \verb+Hotfix.inf+ in a
+    text editor.
+  \item In the [Version] section of the Hotfix.inf file, change the
+    line NTServicePackVersion=256 to NTServicePackVersion=1024, and
+    then save changes. \footnote{This defines Service Pack
+      requirement.  NTServicePackVersion is a ServicePack version
+      multiplied by 256. If there would be SP5 available, this value
+      should have been changed to the 1280.}
+  \item From the folder containing the extracted files
+    (\verb+C:\IPv6TP\files+), run \verb+Hotfix.exe+.
   \item Restart the computer when prompted.
-  \item After the computer is restarted, from the Windows 2000 desktop, click Start,
-    point to Settings, and then click Network and Dial-up Connections. As an
-    alternative, you can right-click My Network Places, and then click Properties.
-  \item Right-click the Ethernet-based network interface to which you want to add the IPv6
-    protocol, and then click Properties. Typically, this network interface is named
-    Local Area Connection.
+  \item After the computer is restarted, from the Windows 2000
+    desktop, click Start, point to Settings, and then click Network
+    and Dial-up Connections. As an alternative, you can right-click My
+    Network Places, and then click Properties.
+  \item Right-click the Ethernet-based network interface to which you
+    want to add the IPv6 protocol, and then click
+    Properties. Typically, this network interface is named Local Area
+    Connection.
   \item Click Install.
-  \item In the Select Network Component Type dialog box, click Protocol, and then
-    click Add.
-  \item In the Select Network Protocol dialog box, click Microsoft IPv6 Protocol and
-    then click OK.
+  \item In the Select Network Component Type dialog box, click
+    Protocol, and then click Add.
+  \item In the Select Network Protocol dialog box, click Microsoft
+    IPv6 Protocol and then click OK.
   \item Click Close to close the Local Area Connection Properties
     dialog box.
 \end{enumerate}
 
 \subsubsection{Setting up IPv6 in Windows NT4}
-If you have already working IPv6 support, you can safely skip this section.
-The following description was provided by The following description was provided by Sob
+If you have already working IPv6 support, you can safely skip this
+section.  The following description was provided by The following
+description was provided by Sob
 (\href{mailto:sob(at)hisoftware.cz}{sob(at)hisoftware.cz}). Thanks.
 
 \begin{enumerate}
   \item Download the file msripv6-bin-1-4.exe from:
     \url{http://research.microsoft.com/msripv6/msripv6.htm}{Microsoft}
     and save it to a local folder (for example, \verb+C:\IPv6Kit+).
-  \item From the local folder (\verb+C:\IPv6Kit+), run \verb+msripv6-bin-1-4.exe+ and extract the
-    files to the same location.
+  \item From the local folder (\verb+C:\IPv6Kit+), run
+    \verb+msripv6-bin-1-4.exe+ and extract the files to the same
+    location.
   \item Start the Control Panel's "Network" applet (an alternative way to do this is
     to right-click on "Network Neighborhood" and select "Properties") and select
     the "Protocols" tab.
@@ -229,7 +242,7 @@ Dibbler Developer's Guide} for information about various compilation parameters.
 Compilation in most cases is not necessary and should be performed
 only by experienced users. To compile dibbler, issue following commands:
 \begin{verbatim}
-tar zxvf dibbler-0.4.0-src.tar.gz
+tar zxvf dibbler-\version-src.tar.gz
 cd dibbler
 make server client relay doc
 \end{verbatim}
@@ -246,21 +259,25 @@ versions. Note that 2.95 is now considered obsolete and was not tested
 for some time. Lexer files were generated using flex 2.5.33. Parser file
 were created using bison++ 1.21.9\footnote{flex and bison++ tools are
   not required to compile Dibbler. Generated files are placed in CVS
-  and in tar.gz archives}. 
+  and in tar.gz archives}.
 
 If there are problems with \verb+SrvLexer.cpp+ and
 \verb+ClntLexer.cpp+ files, please use FlexLexer.h in Port-linux/
 directory. Most simple way to do this is to copy this file to
-\verb+/usr/include+ directory. 
+\verb+/usr/include+ directory.
 
-\subsubsection{Modern Windows (XP...Vista) compilation}
-Download dibbler-\version-src.tar.gz and extract it. In \verb+Port-win32+ there
-are several project files (for server, client and relay) for MS
-Visual Studio 2003. Previous dibbler releases were compiled using MS
-Visual Studio .NET (sometimes called 2002). It might work with newest
-dibber version, but there are no guarantee. Open one of the project
-files and click Build command. That should start compilation. After a
-while, binary exe files will be stored in the \verb+Debug/+ directory.
+\subsubsection{Modern Windows (XP...Win7) compilation}
+Download dibbler-\version-src.tar.gz and extract it. In
+\verb+Port-win32+ there are several project files (for server, client
+and relay) for MS Visual Studio 2008. According to authors knowledge,
+it is possible to compile dibbler using free MS Visutal C++ Express
+2008 edition. Previous dibbler releases were compiled using MS Visual
+Studio .NET (sometimes called 2002) and 2003. Those versions are not
+supported anymore. It might work with newest dibber version, but there
+are no guarantee. Open \verb+dibbler-win32.vs2008.sln+ solution file
+click Build command. That should start compilation. After a while,
+binary exe files will be stored in the \verb+Debug/+ or
+\verb+Release/+ directories.
 
 \subsubsection{Legacy Windows (NT/2000) compilation}
 Windows NT4/2000 port is considered experimental, but there are reports
@@ -271,3 +288,28 @@ click ,,open project...'', and open one of the \verb+*.dev+ files located
 in the Port-winnt2k directory, then click compile. You also should
 take a look at \verb+Port-winnt2k/INFO+ file for details.
 
+\subsubsection{Mac OS X compilation}
+\label{compile-macos}
+Mac OS X is supported since 0.8.0 version. Currently support for this
+platform is usable, but there are still several limitations:
+\begin{itemize}
+\item there are no ready to use binary (dmg) packages
+\item client is not able to configure DNS servers or domain name
+  informations
+\item compilation requires simple makefile modification
+\end{itemize}
+
+To compile Dibbler on Mac OS X, please download and extract the latest
+sources:
+\begin{verbatim}
+tar zxvf dibbler-0.8.0-src.tar.gz
+\end{verbatim}
+After extraction is complete, edit Makefile.inc file, comment out
+Linux section (marked as \verb+=== Port: Linux ===+)
+and uncomment Mac OS X section (marked as
+\verb+=== Port: Mac OS ===+). After that is complete, following
+command should build required components:
+
+\begin{verbatim}
+make server client relay
+\end{verbatim}

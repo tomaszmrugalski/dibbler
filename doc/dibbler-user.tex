@@ -20,18 +20,18 @@
 \usepackage{longtable}
 \usepackage{url}
 \usepackage[usenames]{color}
-\usepackage[colorlinks=true,linkcolor=myLinkColor,urlcolor=myUrlColor]{hyperref}
+\usepackage[colorlinks=true,citecolor=darkblue,linkcolor=darkblue,urlcolor=darkred]{hyperref}
 
 %\setlength{\topmargin}{-1.0cm}
 \usepackage[twoside=true,
-            left={2cm},
-            right={2cm},
-            top={2cm},
-            bottom={2cm},
-            footskip={1cm},
-            headheight={1cm},
+	    left={2cm},
+	    right={2cm},
+	    top={2cm},
+	    bottom={2cm},
+	    footskip={1cm},
+	    headheight={1cm},
 %%            twosideshift={0.5cm},
-            headsep={0.5cm}]{geometry}
+	    headsep={0.5cm}]{geometry}
 
 %%%%%% \dzis macro by Lupan %%%%%%
 \newcommand{\dzis}{
@@ -47,8 +47,8 @@
 \title{Dibbler -- a portable DHCPv6\\User's guide}
 
 \definecolor{myBgColor}{rgb}{1.0,1.0,1.0}
-\definecolor{myLinkColor}{rgb}{0.0,0.4,0.0}
-\definecolor{myUrlColor}{rgb}{0.7,0.2, 0.4}
+\definecolor{darkred}{rgb}{0.7,0.2, 0.4} %% URL (external links)
+\definecolor{darkblue}{rgb}{0.0,0.0,0.7} %% internal links, toc
 \definecolor{myBgTableColor}{rgb}{0.9, 0.9, 0.9}
 \pagecolor{myBgColor}
 
@@ -70,8 +70,8 @@
 
 \makeindex
 
-\newcommand{\Q}{ \textbf{Q:} }
-\newcommand{\A}{ \textbf{A:} }
+\newcommand{\Q}{ \vspace{0.5cm} \textbf{Q:} }
+\newcommand{\A}{ \vspace{0.25cm} \textbf{A:} }
 \newcommand{\Note}{ \textbf{Note:} }
 
 \newcommand{\msg}[1]{\emph{#1}}
@@ -91,7 +91,7 @@
 
 %%\renewcommand{\FancyVerbFormatLine}[1]{\colorbox{red}{#1}}
 \usepackage{listings}
-\lstset{basicstyle=\ttfamily, columns=flexible, backgroundcolor=\color{myBgTableColor},frame=lines} 
+\lstset{basicstyle=\ttfamily, columns=flexible, backgroundcolor=\color{myBgTableColor},frame=lines}
 %or columns=fullflexible
 
 %% include auto-generated version number

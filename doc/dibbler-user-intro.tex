@@ -35,15 +35,15 @@ about their status and assigned parameters.
 Dibbler is a portable DHCPv6 solution, which features server, client and
 relay. Currently there are ports available for many Windows platforms
 ranging from NT4 to Windows 7, Linux 2.4/2.6 systems and Mac OS
-(experimental). See Section \ref{requirements} for details. It supports both stateful 
-(i.e. IPv6 address granting) and stateless (i.e. options granting) 
+(experimental). See Section \ref{requirements} for details. It supports both stateful
+(i.e. IPv6 address granting) and stateless (i.e. options granting)
 autoconfiguration. Besides basic
 functionality (specified in basic DHCPv6 spec, RFC3315 \cite{rfc3315}),
 it also offers serveral enhancements, e.g. DNS servers and domain names
 configuration.
 
 Dibbler is an open source software, distributed under
-\href{http://www.gnu.org/copyleft/gpl.html}{GNU GPL} v2 licence. It means 
+\href{http://www.gnu.org/copyleft/gpl.html}{GNU GPL} v2 licence. It means
 that it is freely available, free of charge and can be used by anyone
 (including commercial users). Source code is also provided, so anyone
 skilled enough can fix bugs, add new features and distribute his/her
@@ -52,7 +52,7 @@ own version.
 \emph{Requestor} support has been added in version 0.7.0RC1. Requestor
 is a separate entity, which sends queries to the server regarding
 leases to specific clients. It is possible to ask a server, who has
-specific address or what addresses are assigned to a specific client. 
+specific address or what addresses are assigned to a specific client.
 This feature is part of the lease query mechanism defined in
 \cite{rfc5007} and is considered advanced topic. If you don't know
 what lease query is, you definetely don't need it.
@@ -130,7 +130,7 @@ As for now, Dibbler supports following features:
       circumstances, client uses \msg{CONFIRM} message, to config if
       those addresses are still valid.
 \item Link change detection -- Client can be instructed to monitor its
-      link state. Once it detects 
+      link state. Once it detects
 \item Normal and temporary addresses -- Depending on its purpose,
       client can be configured to ask for normal (\opt{IA\_NA} option)
       or temporary (\opt{IA\_TA} option). Although use of temporary
@@ -219,7 +219,8 @@ features:
 \begin{itemize}
  \item Authorization \cite{rfc3315}
  \item Reconfigure mechanism \cite{rfc3315}
- \item DNSSec (DNS Security Extensions) \cite{rfc4033} in DNS Updates \cite{rfc4704}
+ \item Any kind of security in DNS Updates \cite{rfc4704}
+ \item DNS Updates are done over TCP over IPv6 only
 \end{itemize}
 
 \subsection{Operating System Requirements}
@@ -253,7 +254,7 @@ distribution specficic packages from \url{http://www.pld-linux.org/},
 \url{http://www.gentoo.org} or \url{http://www.debian.org}. Keep in mind
 that author has not tested those ports, so there might be some
 unknown issues present. If this is the case, be sure to notify package
-maintainers and possibly the author. 
+maintainers and possibly the author.
 
 If your system is not on the list, don't despair. Dibbler is fully
 portable. Core logic is system independent and coded in C++

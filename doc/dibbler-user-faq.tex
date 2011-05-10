@@ -1,35 +1,6 @@
 %%
 %% $Id: dibbler-user-faq.tex,v 1.11 2007-09-06 23:10:40 thomson Exp $
 %%
-%% $Log: not supported by cvs2svn $
-%% Revision 1.10  2006-10-04 22:03:35  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.9  2005-08-07 17:54:52  thomson
-%% Minor changes related to 0.4.1 release.
-%%
-%% Revision 1.8  2005/03/15 23:02:31  thomson
-%% 0.4.0 release.
-%%
-%% Revision 1.7  2005/02/01 00:57:36  thomson
-%% no message
-%%
-%% Revision 1.6  2004/12/04 23:47:57  thomson
-%% Work around for bug #56 described.
-%%
-%% Revision 1.5  2004/12/01 21:58:43  thomson
-%% *** empty log message ***
-%%
-%% Revision 1.4  2004/11/28 11:14:07  thomson
-%% RFCs and drafts added, clarification about option values
-%%
-%% Revision 1.3  2004/10/25 20:45:54  thomson
-%% Option support, parsers rewritten. ClntIfaceMgr now handles options.
-%%
-%% Revision 1.2  2004/06/19 10:24:59  thomson
-%% Hyperlinks in PDF, building process modified
-%%
-
 
 \section{Frequently Asked Questions}
 
@@ -43,29 +14,41 @@ common enough to get into this section.
 \Q Why client does not configure routing after assigning addresses, so
 I cannot e.g. ping other hosts?
 
-\A It's rather difficult problem. DHCP's job is to obtain address and
-it exactly does that. To ping any other host, routing should be 
-configured. And this should be done using Router Advertisements. It's
-kinda odd, but that's the way it was meant to work. If there will be
-requests from users, I'll think about some enchancements.
+\A It's a common misunderstanding. DHCPv4 provides many configuration
+parameters to host, with default router address being one of
+them. Things are done differently in IPv6. Routing configuration is
+supposed to be conveyed using Router Advertisements (RA) messages,
+announced periodically by routers. Hosts are supposed to listen to
+those messages and configure their routing appropriately. Note that
+this mechanism is completely separate from DHCPv6. It may sound a bit
+strange, but that's the way it was meant to work. 
 
-Important note: This behaviour has changed in the 0.5.0 release. See
-\emph{strict-rfc-no-routing} directive in the \ref{client-cfg-file}
-section. 
+Properly implemented clients are supposed to configure leased address
+with /128 prefix and learn the actual prefix from RA. As this is
+incovenient, many clients (with dibbler included) bend the rules and
+configure received addresses with /64 prefix. Please note that this
+value is arbitrary chosen and may be improper in many scenarios. 
 
+\Note This behaviour has changed in the 0.5.0 release. Previous
+releases configured received address with /128 prefix. To restore old,
+more RFC conformant behavior, see \emph{strict-rfc-no-routing}
+directive in the \ref{client-cfg-file} section.
+
+\vspace{0.5cm}
 %% Q2
 \Q Dibbler server receives SOLICIT message, prints information about
 ADVERTISE/REPLY transmission, but nothing is actually transmitted. Is
 this a bug?
 
-\A Are you sure that your client is behaving properly? Before any IPv6
-packet (that includes DHCPv6 message) is transmitted, recipient
-reachabity is checked (using Neighbor Discovery protocol 
-\cite{rfc2461}). Server sends Neighbor Solicititation message and
-waits for client's Neighbor Advertisement. If that is not transmitted,
-even after 3 retries, server gives up and doesn't transmit IPv6 packet
-(DHCPv6 reply, that is) at all. Being not able to respond to the
-Neighbor Discovery packets may indicate invalid client behavior. 
+\A Are you sure that your client is behaving properly and responds to
+Neighbor Discovery (ND) requests? Before any IPv6 packet (that
+includes DHCPv6 message) is transmitted, recipient reachabity is
+checked (using Neighbor Discovery protocol \cite{rfc2461}). Server
+sends Neighbor Solicititation message and waits for client's Neighbor
+Advertisement. If that is not transmitted, even after 3 retries,
+server gives up and doesn't transmit IPv6 packet (DHCPv6 reply, that
+is) at all. Being not able to respond to the Neighbor Discovery
+packets may indicate invalid client behavior.
 
 %% Q3
 \Q Dibbler sends some options which have values not recognized by the
@@ -82,30 +65,6 @@ diffrent values for those not-yet officialy accepted options. To
 change those values in Dibbler, you have to modify file
 misc/DHCPConst.h and recompile server or client. See Developer's
 Guide, section \emph{Option Values} for details.
-
-Currently options with assigned values are: 
-\begin{itemize}
-\item RFC3315: \opt{CLIENT\_ID},
-\opt{SERVER\_ID}, \opt{IA\_NA}, \opt{IAADDR}, \opt{OPTION\_REQUEST},
-\opt{PREFERENCE}, \opt{ELAPSED}, \opt{STATUS\_CODE},
-\opt{RAPID-COMMIT}, \opt{IA\_TA}, \opt{RELAY\_MSG}, \opt{AUTH\_MSG},
-\opt{USER\_CLASS}, \opt{VENDOR\_CLASS}, \opt{VENDOR\_OPTS},
-\opt{INTERFACE\_ID}, \opt{RECONF\_MSG}, \opt{RECONF\_ACCEPT};
-\item RFC3319:
-\opt{SIP\_SERVERS}, \opt{SIP\_DOMAINS};
-\item RFC3646: \opt{DNS\_RESOLVERS},
-\opt{DOMAIN\_LIST};
-\item RFC3633: \opt{IA\_PD}, \opt{IA\_PREFIX};
-\item RFC3898:
-\opt{NIS\_SERVERS}, \opt{NIS+\_SERVERS}, \opt{NIS\_DOMAIN},
-\opt{NIS+\_DOMAIN}. 
-
-\end{itemize}
-Take note that Dibbler does not support all of
-them. There are several options which currently does not have values
-assigned (in parenthesis are numbers used in Dibbler):
-\opt{NTP\_SERVERS} (40), \opt{TIME\_ZONE} (41), \opt{LIFETIME} (42),
-\opt{FQDN} (43).
 
 %% Q4
 \Q I can't get (insert your trouble causing feature here) to
@@ -145,7 +104,7 @@ works or not.
 %% Q1
 \Q After installing \emph{Advanced Networking Pack} or \emph{Windows XP
   ServicePack2} my DHCPv6 (or other IPv6 application) stopped
-   working. Is Dibbler compatible with Windows XP SP2?
+working. Is Dibbler compatible with Windows XP SP2?
 
 \A Both products (Advanced Networking Pack as well as Service Pack 2
 for Windows XP) provide IPv6 firewall. It is configured by default to
@@ -153,9 +112,9 @@ reject all incoming IPv6 traffic. You have to disable this
 firewall. To disable firewall on the ,,Local Area Connection''
 interface, issue following command in a console:
 
-\begin{verbatim}
+\begin{lstlisting}
 netsh firewall set adapter "Local Area Connection" filter=disable
-\end{verbatim}
+\end{lstlisting}
 
 %% Q2
 \Q Server or client refuses to create DUID. What's wrong?
@@ -167,10 +126,6 @@ matches those requirements. Note that network cable must be plugged
 interface is marked as down.
 
 %% Q3
-\Q Is Microsoft Vista supported?
+\Q Is Microsoft Windows 8 supported?
 
-\A Unfortunately, Vista is not supported yet. There is a DHCPv6 client
-already available in the Microsoft Vista. If time permits, next (0.6.2
-probably) version will have support for Vista.
-
-
+\A Unfortunately, Windows 8 is not supported yet.

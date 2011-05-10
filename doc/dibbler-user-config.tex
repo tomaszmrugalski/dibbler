@@ -4,12 +4,10 @@
 %% authors: Tomasz Mrugalski <thomson@klub.com.pl>
 %%          Michal Kowalczuk <michal@kowalczuk.eu>
 %%
-%%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-config.tex,v 1.59 2009-04-28 22:15:30 thomson Exp $
-%%
 
+\newpage
 \section{Configuration files}
 
 This section describes Dibbler server, relay  and client
@@ -58,7 +56,7 @@ options override it. Next comes inteface scope. Options defined there
 are inteface-specific and apply to this interface, all IAs in this
 interface and addresses in those IAs. Next is IA scope. Options
 defined there are IA-specific and apply to this IA and to addresses it
-contains. Least significant scope is address. 
+contains. Least significant scope is address.
 
 \subsection{Comments}
 
@@ -76,7 +74,7 @@ placed in the \verb+/etc/dibbler/+ directory (Linux system) or in the
 current directory (Windows systems). After successful startup, old
 version of this file is stored as \verb+client.conf-old+. One of
 design requirements for client was ,,out of the box'' usage. To
-achieve this, simply use empty 
+achieve this, simply use empty
 \verb+client.conf+ file. Client will try to get one address for each up and
 running interface \footnote{Exactly: Client tries to configure each
   up, multicast-capable and running interface, which has link address
@@ -94,18 +92,18 @@ iface interface-name
 {
   interface-options
   IA-options
-  address-options        
+  address-options
 }
 \end{verbatim}
 
-or 
+or
 
 \begin{verbatim}
-iface interface-number 
+iface interface-number
 {
   interface-options
   IA-options
-  address-options        
+  address-options
 }
 \end{verbatim}
 
@@ -129,7 +127,7 @@ interface. IA is declared using following syntax:
 
 \begin{verbatim}
 ia
-{ 
+{
   IA-options
   address-options
   address-declaration
@@ -141,7 +139,7 @@ syntax might be used:
 
 \begin{verbatim}
 ia number
-{ 
+{
   IA-options
   address-options
 }
@@ -154,7 +152,7 @@ the same parameters. If IA contains no addresses, client assumes that
 one address should be configured. IA scoped as well as address options
 can be defined here. IA scoped options will be applied directly, while
 address scoped options will be used as default values for all addresses
-that will be defined in this IA. 
+that will be defined in this IA.
 
 \subsubsection{Address declaration}
 When IA is defined, it is sometimes useful to define its address. Its
@@ -163,7 +161,7 @@ following way:
 
 \begin{verbatim}
 address number
-{ 
+{
   address-options
   IPv6-address
 }
@@ -183,154 +181,140 @@ OptionName option-value
 \end{verbatim}
 
 Every option has a scope it can be used in, default value and
-sometimes allowed range. 
+sometimes allowed range.
 
 \begin{description}
- \item[work-dir] -- (scope: global, type: string, default: .) Defines working
-	    directory.
- \item[log-level] -- (scope: global, type: integer, default: 7) Defines
-	    verbose level of the log messages. The valid range if
-	    from 1 (Emergency) to 8 (Debug). The higher the logging
-	    level is set, the more messages dibbler will print.
- \item[log-name] -- (scope: global, type: string, default: Client). Defines 
-	    name, which should be used during logging.
- \item[log-mode] -- (scope: global, type: short, full, precise or syslog
-	    default value: full) Defines logging mode. In the
-	    default, full mode, name, date and time in the h:m:s format
-	    will be printed. In short mode, only minutes and
-	    seconds will be printed (this mode is useful on
-	    terminals with limited width). Recently added precise
-	    mode logs information with seconds and microsecond
-	    precision. It is a useful for finding bottlenecks in
-	    the DHCPv6 autoconfiguration process. Syslog works under 
-	    Linux only and allows default POSIX logging functions.
+ \item[work-dir] -- (scope: global, type: string, default: .) Defines
+   working directory.
+ \item[log-level] -- (scope: global, type: integer, default: 7)
+   Defines verbose level of the log messages. The valid range if from
+   1 (Emergency) to 8 (Debug). The higher the logging level is set,
+   the more messages dibbler will print.
+ \item[log-name] -- (scope: global, type: string, default:
+   Client). Defines name, which should be used during logging.
+ \item[log-mode] -- (scope: global, type: short, full, precise or
+   syslog default value: full) Defines logging mode. In the default,
+   full mode, name, date and time in the h:m:s format will be
+   printed. In short mode, only minutes and seconds will be printed
+   (this mode is useful on terminals with limited width). Recently
+   added precise mode logs information with seconds and microsecond
+   precision. It is a useful for finding bottlenecks in the DHCPv6
+   autoconfiguration process. Syslog works under Linux only and allows
+   default POSIX logging functions.
 \item[log-colors] -- (scope: global, type: boolean, default:
-            off). Defines if logs printed to console should use
-            colors. That feature is used to enhance logs readability.
-            As it makes the log files messy on systems that do not
-            support colors, it is disabled by default.
+  off). Defines if logs printed to console should use colors. That
+  feature is used to enhance logs readability.  As it makes the log
+  files messy on systems that do not support colors, it is disabled by
+  default.
  \item[strict-rfc-no-routing] -- (scope: global, type: none, default:
-	    not defined). During normal operation, DHCPv6 client
-	    should add IPv6 address only, without configuring
-	    routing, because this should be done with other means,
-	    i.e. router advertisements \cite{rfc2461}. However,
-	    this behavior is confusing and lots of users complained
-	    about it, so since the 0.5.0-RC1 release, this has been changed
-	    in dibbler. Right now when dibbler client configures
-	    address, it also configures routing, so every host is
-	    able to communicate with other hosts, which have
-	    obtained address from the same server. If you don't
-	    like this behavior, you might want to use this option.
+   not defined). During normal operation, DHCPv6 client should add
+   IPv6 address only, without configuring routing, because this should
+   be done with other means, i.e. router advertisements
+   \cite{rfc2461}. However, this behavior is confusing and lots of
+   users complained about it, so since the 0.5.0-RC1 release, this has
+   been changed in dibbler. Right now when dibbler client configures
+   address, it also configures routing, so every host is able to
+   communicate with other hosts, which have obtained address from the
+   same server. If you don't like this behavior, you might want to use
+   this option.
 \item[scripts-dir] -- (scope: global, type: string, default: system
-            dependent ). When
-            dibbler client receives some options it normally sets them
-            up in the system. However, instead of setting up all
-            parameters directly, dibbler client can execute external
-            scripts. Those scripts will be executed when particular
-            option is received. By default, those scripts can be
-            stored in scripts/ for Windows, or /var/lib/dibbler/scripts
-            for Linux. Using scripts-dir directive it is possible to
-            define other location of the scripts. Take note that
-            directory should be defined in single or double quotes.
-            (" sign).
-\item[anonymous-inf-request] -- (scope: global, type: present or absent,
-            default: absent). When running in a stateless mode, client
-            does not ask for addresses or prefixes, but rather
-            requests some general options. By default, it sends its
-            client identifier (DUID) to the server. However, it is
-            possible to omit this identifier, so the \msg{INF-REQUEST}
-            messages will be anonymous. This global option causes
-            client to act in such anonymous way.
+  dependent ). When dibbler client receives some options it normally
+  sets them up in the system. However, instead of setting up all
+  parameters directly, dibbler client can execute external
+  scripts. Those scripts will be executed when particular option is
+  received. By default, those scripts can be stored in scripts/ for
+  Windows, or /var/lib/dibbler/scripts for Linux. Using scripts-dir
+  directive it is possible to define other location of the
+  scripts. Take note that directory should be defined in single or
+  double quotes.  (" sign).
+\item[anonymous-inf-request] -- (scope: global, type: present or
+  absent, default: absent). When running in a stateless mode, client
+  does not ask for addresses or prefixes, but rather requests some
+  general options. By default, it sends its client identifier (DUID)
+  to the server. However, it is possible to omit this identifier, so
+  the \msg{INF-REQUEST} messages will be anonymous. This global option
+  causes client to act in such anonymous way.
  \item[inactive-mode] -- (scope: global, type: present or absent,
-            default: absent). Normally (with inactive-mode disable)
-            client tries to bind all interfaces defined in
-            configuration file. If such attempt fails, client reports
-            an error and gives up. In some cases it is possible that
-            interface is not ready yet, e.g. WLAN interface did not
-            complete association. It is possible to modify client
-            behavior, so it will accept downed and not running
-            interfaces. To do so, inactive-mode must be enabled. In
-            this mode, client will accept inactive interfaces, will
-            add them to inactive list and will periodically monitor
-            its state. When the interface finally goes on-line, client
-            will try to configure it. See section
-            \ref{feature-inactive-mode} for details.
+   default: absent). Normally (with inactive-mode disable) client
+   tries to bind all interfaces defined in configuration file. If such
+   attempt fails, client reports an error and gives up. In some cases
+   it is possible that interface is not ready yet, e.g. WLAN interface
+   did not complete association. It is possible to modify client
+   behavior, so it will accept downed and not running interfaces. To
+   do so, inactive-mode must be enabled. In this mode, client will
+   accept inactive interfaces, will add them to inactive list and will
+   periodically monitor its state. When the interface finally goes
+   on-line, client will try to configure it. See section
+   \ref{feature-inactive-mode} for details.
  \item[insist-mode] -- (scope: global, type: present or absent,
-            default: absent). Client can be instructed to obtain
-            several configuration options, like DNS server
-            configuration or domain name. It is possible that server
-            will not provide all requested options. Older versions of
-            the dibbler client had been very aggressive in such
-            case. It tried very hard to obtain such options. To do so,
-            it did send \msg{INF-REQUEST} to obtain such option. This
-            behavior has changed. Right now when client does not
-            receive all requested options, it will complain, but will
-            take no action. To enable old behavior, so called
-            insist-mode has been added. See section
-            \ref{feature-insist-mode} for details.
- \item[duid-type] -- (scope: global, type: DUID-LLT, DUID-LL or DUID-EN,
-	    default: DUID-LLT). This parameter defines, what type of
-	    DUID should be generated if there is no DUID already
-	    present. If there is a file containing DUID, this directive
-	    has no effect. DUID-LLT means that DUID will be based on
-	    link layer address as well as time. DUID-LL means that only
-	    link layer address will be used. The last value -- DUID-EN
-	    -- Enterprise Number-based generation has a slightly
-            different syntax: duid-type duid-en enterprise-number
-            enterprise-id. For example: duid-type duid-en 1234 0x6789abcd
-            means that enterprise number is set to 1234 and unique
-            number from that company's pool is 67:89:ab:cd
-            (hexadecimal value of arbitrary length). See section
-            \ref{feature-duid-types} for details.
+   default: absent). Client can be instructed to obtain several
+   configuration options, like DNS server configuration or domain
+   name. It is possible that server will not provide all requested
+   options. Older versions of the dibbler client had been very
+   aggressive in such case. It tried very hard to obtain such
+   options. To do so, it did send \msg{INF-REQUEST} to obtain such
+   option. This behavior has changed. Right now when client does not
+   receive all requested options, it will complain, but will take no
+   action. To enable old behavior, so called insist-mode has been
+   added. See section \ref{feature-insist-mode} for details.
+ \item[duid-type] -- (scope: global, type: DUID-LLT, DUID-LL or
+   DUID-EN, default: DUID-LLT). This parameter defines, what type of
+   DUID should be generated if there is no DUID already present. If
+   there is a file containing DUID, this directive has no
+   effect. DUID-LLT means that DUID will be based on link layer
+   address as well as time. DUID-LL means that only link layer address
+   will be used. The last value -- DUID-EN -- Enterprise Number-based
+   generation has a slightly different syntax: duid-type duid-en
+   enterprise-number enterprise-id. For example: duid-type duid-en
+   1234 0x6789abcd means that enterprise number is set to 1234 and
+   unique number from that company's pool is 67:89:ab:cd (hexadecimal
+   value of arbitrary length). See section \ref{feature-duid-types}
+   for details.
 \item[option fqdn-s] -- (scope: global, type: boolean, default:
-            1). The S bit is used in FQDN option. It is used to
-            negotiate, which side (server or client) wants to perform
-            DNS Update procedure. See \cite{rfc4704} for details. In
-            general, if you don't want that this option does, you
-            don't want to modify this.
+  1). The S bit is used in FQDN option. It is used to negotiate, which
+  side (server or client) wants to perform DNS Update procedure. See
+  \cite{rfc4704} for details. In general, if you don't want that this
+  option does, you don't want to modify this.
  \item[rapid-commit] -- (scope: interface, type: boolean, default:
-	    0). This option allows rapid commit procedure to be
-	    performed. Note that enabling rapid commit on the client
-	    side is not enough. server must be configured to allow
-	    rapid commit, too.
+   0). This option allows rapid commit procedure to be performed. Note
+   that enabling rapid commit on the client side is not enough. server
+   must be configured to allow rapid commit, too.
  \item[unicast] -- (scope: interface, type: boolean, default: 0). This
-	    option specifies if client should request unicast
-	    communication from the server. If server is configured to
-	    allow it, it will add unicast option to its replies. It will
-	    allow client to communicate with server via unicast
-	    addresses instead of usual multicast.
- \item[prefered-servers] -- (scope: interface, type: address or duid list, default:
-	    empty). This list defines, which servers are prefered. When
-	    client sends \msg{SOLICIT} message, all servers available in
-	    the local network will respond. When client receives
-	    multiple \msg{ADVERTISE} messages, it will choose those sent
-	    by servers mentioned on the perfered-server list.
- \item[reject-servers] -- (scope: interface, type: address or duid list, default:
-	    empty) This list defines which server must be ignored. It
-	    has negative meaning to the prefered-servers list.
+   option specifies if client should request unicast communication
+   from the server. If server is configured to allow it, it will add
+   unicast option to its replies. It will allow client to communicate
+   with server via unicast addresses instead of usual multicast.
+ \item[prefered-servers] -- (scope: interface, type: address or duid
+   list, default: empty). This list defines, which servers are
+   prefered. When client sends \msg{SOLICIT} message, all servers
+   available in the local network will respond. When client receives
+   multiple \msg{ADVERTISE} messages, it will choose those sent by
+   servers mentioned on the perfered-server list.
+ \item[reject-servers] -- (scope: interface, type: address or duid
+   list, default: empty) This list defines which server must be
+   ignored. It has negative meaning to the prefered-servers list.
  \item[vendor-spec] -- (scope: interface, type: integer-hexstring,
-	    default: empty). This option allow requesting for a vendor
-	    specific configuration option. It does not any good in
-	    itself as there are no dibbler-specific options to
-	    configure. It can be, however, used to test some other
-	    DHCPv6 server implementations. In short words: if you don't
-	    know what that is, you don't need it.
- \item[T1] -- (scope: IA, type: integer: default: $2^{32}-1$). This value
-	    defines after what time client should start renew
-	    process. This is only a hint for the server. Actual value
-	    will be provided by the server.
- \item[T2] -- (scope: IA, type: integer, default:$2^{32}-1$). This value
-	    defines after what time client will start emergency rebind
-	    procedure if renew process fails. This is only a hint for
-	    the server. Actual value will be provided by the server.
+   default: empty). This option allow requesting for a vendor specific
+   configuration option. It does not any good in itself as there are
+   no dibbler-specific options to configure. It can be, however, used
+   to test some other DHCPv6 server implementations. In short words:
+   if you don't know what that is, you don't need it.
+ \item[T1] -- (scope: IA, type: integer: default: $2^{32}-1$). This
+   value defines after what time client should start renew
+   process. This is only a hint for the server. Actual value will be
+   provided by the server.
+ \item[T2] -- (scope: IA, type: integer, default:$2^{32}-1$). This
+   value defines after what time client will start emergency rebind
+   procedure if renew process fails. This is only a hint for the
+   server. Actual value will be provided by the server.
  \item[valid-lifetime] -- (scope:address, type: integer,
-	    default:$2^{32}-1$) This parameter defines valid lifetime of
-	    an address. It will be used as a hint for a server, when the
-	    client will send requests.
+   default:$2^{32}-1$) This parameter defines valid lifetime of an
+   address. It will be used as a hint for a server, when the client
+   will send requests.
  \item[prefered-lifetime] -- (scope:address, type: integer,
-	    default:$2^{32}-1$) This parameter defines prefered lifetime
-	    of an address. It will be used as a hint for a server, when
-	    there client will send requests.
+   default:$2^{32}-1$) This parameter defines prefered lifetime of an
+   address. It will be used as a hint for a server, when there client
+   will send requests.
 \end{description}
 
 \subsubsection{Extension options}
@@ -339,7 +323,8 @@ Extension options are the options specified in external drafts and RFC
 documents, but not in the base spec \cite{rfc3315}. To easily
 distinguish if an option is part of the base standard or one of the
 multiple extensions, \verb+option+ keyword was added in the extension
-options declaration. Therfore extension options are declared as follows:
+options declaration. Therfore extension options are declared as
+follows:
 
 \begin{verbatim}
 option option-name
@@ -361,101 +346,95 @@ interface scope, i.e. it is defined once per interface. As for the
 
 \begin{description}
  \item[dns-server] -- (scope: interface, type: address list, default:
-	    none). This option conveys information about DNS servers
-	    available. After retriving this information, client will be
-	    able to resolve domain names into IP (both IPv4 and IPv6)
-	    addresses. Without setting up DNS servers, host's network
-	    capability is greatly reduced, as user can't use domain
-	    names (e.g. http://wp.pl/), but must use IP addresses
-	    directly (e.g. http://212.77.100.101/ or
-	    http://2001:db8:1:1234::456/). Defined in \cite{rfc3596}.
+   none). This option conveys information about DNS servers
+   available. After retriving this information, client will be able to
+   resolve domain names into IP (both IPv4 and IPv6)
+   addresses. Without setting up DNS servers, host's network
+   capability is greatly reduced, as user can't use domain names
+   (e.g. http://wp.pl/), but must use IP addresses directly
+   (e.g. http://212.77.100.101/ or
+   http://2001:db8:1:1234::456/). Defined in \cite{rfc3596}.
  \item[domain] -- (scope: interface, type: domain list, default:
-	    none). This option is used for retriving domain or domains
-	    names, which the client is connected in. For example, if
-	    client's hostname is \verb+alice.mylab.example.com+ and it wants to
-	    contact \verb+bob.mylab.example.com+ it can simply refer to it as
-	    \verb+bob+. Without domain name configured, it would have to
-	    use full domain name. After successful configuration, this
-	    useful shortcut is being used by all services available: web
-	    browsing, mail sending, news reading etc. Defined in
-	    \cite{rfc3596}.
+   none). This option is used for retriving domain or domains names,
+   which the client is connected in. For example, if client's hostname
+   is \verb+alice.mylab.example.com+ and it wants to contact
+   \verb+bob.mylab.example.com+ it can simply refer to it as
+   \verb+bob+. Without domain name configured, it would have to use
+   full domain name. After successful configuration, this useful
+   shortcut is being used by all services available: web browsing,
+   mail sending, news reading etc. Defined in \cite{rfc3596}.
  \item[ntp-server] -- (scope: interface, type: address list, default:
-	    none). This option defines information about available NTP
-	    servers. Network Time Protocol \cite{rfc2030} is a protocol used
-	    for time synchronisation, so all hosts in the network has
-	    the same proper time set. Defined in \cite{rfc4075}.
+   none). This option defines information about available NTP
+   servers. Network Time Protocol \cite{rfc2030} is a protocol used
+   for time synchronisation, so all hosts in the network has the same
+   proper time set. Defined in \cite{rfc4075}.
  \item[time-zone] -- (scope: interface, type: timezone, default:
-	    none). It is possible to retrieve timezone from the
-	    server. If client is interested in this information, it
-	    should ask for this option. Note that this option is
-	    considered obsolete as it is mentioned in draft version only
-	    \cite{draft-timezone}. Work on this draft seems to be
-	    abandoned as similar functionality is provided in now
-	    standard \cite{rfc4075}.
+   none). It is possible to retrieve timezone from the server. If
+   client is interested in this information, it should ask for this
+   option. Note that this option is considered obsolete as it is
+   mentioned in draft version only \cite{draft-timezone}. Work on this
+   draft seems to be abandoned as similar functionality is provided in
+   now standard \cite{rfc4075}.
  \item[sip-server] -- (scope: interface, type: address list, default:
-	    none). Session Initiation Protocol \cite{rfc3263} is an
-	    control protocol for creating, modifying, and terminating
-	    sessions with one or more participants. These sessions
-	    include Internet telephone calls, multimedia distribution,
-	    and multimedia conferences. Its most common usage is
-	    VoIP. Format of this option is defined in \cite{rfc3319}.
+   none). Session Initiation Protocol \cite{rfc3263} is an control
+   protocol for creating, modifying, and terminating sessions with one
+   or more participants. These sessions include Internet telephone
+   calls, multimedia distribution, and multimedia conferences. Its
+   most common usage is VoIP. Format of this option is defined in
+   \cite{rfc3319}.
  \item[sip-domain] -- (scope: interface, type: domain list, default:
-	    none). It is possible to define domain names for Session
-	    Initiation Protocol \cite{rfc3263}. Configuration of this
-	    parameter will ease usage of domain names in the SIP
-	    protocol. Format of this option is defined in
-	    \cite{rfc3319}.
+   none). It is possible to define domain names for Session Initiation
+   Protocol \cite{rfc3263}. Configuration of this parameter will ease
+   usage of domain names in the SIP protocol. Format of this option is
+   defined in \cite{rfc3319}.
  \item[nis-server] -- (scope: interface, type: address list, default:
-	    none). Network Information Service (NIS) is a Unix-based
-	    system designed to use common login and user information on
-	    multiple systems, e.g. universities, where students can log
-	    on to ther accounts from any host. To use this
-	    functionality, a host needs information about NIS server's
-	    address. This can be retrieved with this option. Its format
-	    is defined in \cite{rfc3898}.
+   none). Network Information Service (NIS) is a Unix-based system
+   designed to use common login and user information on multiple
+   systems, e.g. universities, where students can log on to ther
+   accounts from any host. To use this functionality, a host needs
+   information about NIS server's address. This can be retrieved with
+   this option. Its format is defined in \cite{rfc3898}.
  \item[nis-domain] -- (scope: interface, type: domain list, default:
-	    none). Network Information Service (NIS) can albo specify
-	    domain names. It can be configured with this option. It is
-	    defined in \cite{rfc3898}.
+   none). Network Information Service (NIS) can albo specify domain
+   names. It can be configured with this option. It is defined in
+   \cite{rfc3898}.
  \item[nis+-server] -- (scope: interface, type: address list, default:
-	    none). Network Information Service Plus (NIS+) is an
-	    improved version of the NIS protocol. This option is defined
-	    in \cite{rfc3898}.
+   none). Network Information Service Plus (NIS+) is an improved
+   version of the NIS protocol. This option is defined in
+   \cite{rfc3898}.
  \item[nis+-domain] -- (scope: interface, type: domain list, default:
-	    none). Similar to nis-domain, it defines domains for
-	    NIS+. This option is defined in \cite{rfc3898}.
- \item[lifetime] -- (scope: interface, type: boolean, default: no). Base
-	    spec of the DHCPv6 protocol does offers way of refreshing
-	    addresses only, but not the options. Lifetime defines, how
-	    often client would like to renew all its options. By default
-	    client will not send such option, but it will accept it and
-	    act accordingly if the server sends it on its own. Format of
-	    this option is defined in \cite{draft-lifetime}.
- \item[ds-lite] -- (scope: interface, type: address or FQDN). In
-            Dual-Stack Lite networks, client may want to configure
-            DS-Lite tunnel. Client may want to obtain information
-            about remote tunnel endpoint. There are 2 options that
-            allow configuration of that option. One is IPv6 address
-            based and the second one uses FQDN. Both options are
-            defined in \cite{draft-ds-lite}.
- \item[auth-enabled] -- (scope: global, type: boolean, default: no). This
-            option enables authentication and authorization. When set
-            to true, server support must also be enabled, otherwise
-            all messages will be dropped.
- \item[auth-accept-methods] -- (scope: global, type: string, default: empty).
-            Comma separated list of authentication methods that client will
-            accept from server. If this list is empty, any method will be
-            accepted. Possible values are:
-            \begin{itemize}
-             \item \texttt{none}
-             \item \texttt{digest\_plain}
-             \item \texttt{digest\_hmac\_md5}
-             \item \texttt{digest\_hmac\_sha1}
-             \item \texttt{digest\_hmac\_sha224}
-             \item \texttt{digest\_hmac\_sha256}
-             \item \texttt{digest\_hmac\_sha384}
-             \item \texttt{digest\_hmac\_sha512}
-            \end{itemize}
+   none). Similar to nis-domain, it defines domains for NIS+. This
+   option is defined in \cite{rfc3898}.
+ \item[lifetime] -- (scope: interface, type: boolean, default:
+   no). Base spec of the DHCPv6 protocol does offers way of refreshing
+   addresses only, but not the options. Lifetime defines, how often
+   client would like to renew all its options. By default client will
+   not send such option, but it will accept it and act accordingly if
+   the server sends it on its own. Format of this option is defined in
+   \cite{draft-lifetime}.
+ \item[aftr] -- (scope: interface, type: FQDN). In Dual-Stack Lite
+   networks, client may want to configure DS-Lite tunnel. Client may
+   want to obtain information about AFTR (a remote tunnel
+   endpoint). This option conveys fully qualified domain name. It is
+   defined in defined in \cite{draft-ds-lite}.
+ \item[auth-enabled] -- (scope: global, type: boolean, default:
+   no). This option enables authentication and authorization. When set
+   to true, server support must also be enabled, otherwise all
+   messages will be dropped.
+ \item[auth-accept-methods] -- (scope: global, type: string, default:
+   empty).  Comma separated list of authentication methods that client
+   will accept from server. If this list is empty, any method will be
+   accepted. Possible values are:
+   \begin{itemize}
+   \item \texttt{none}
+   \item \texttt{digest\_plain}
+   \item \texttt{digest\_hmac\_md5}
+   \item \texttt{digest\_hmac\_sha1}
+   \item \texttt{digest\_hmac\_sha224}
+   \item \texttt{digest\_hmac\_sha256}
+   \item \texttt{digest\_hmac\_sha384}
+   \item \texttt{digest\_hmac\_sha512}
+   \end{itemize}
 \end{description}
 
 Note that timezone format is described in file \verb+draft-ietf-dhc-dhcpv6-opt-tz-00.txt+
@@ -500,7 +479,7 @@ such circumstances, only specified options will be requested.
 \subsubsection{Relay support}
 Usage of the relays is not visible from the client's point of view:
 Client can't detect if it communicates via relay(s) or directly
-with the server. Therefore no special directives on the client side 
+with the server. Therefore no special directives on the client side
 are required to use relays. See section \ref{features-relays} for
 details related to relay deployment.
 
@@ -552,7 +531,7 @@ completely. Following example shows how to ask for a specific address
 and provide hints for a server. Client would like to get 2000::1:2:3
 address, it would like to renew addresses once in 30 minutes (T1 timer
 is set to 1800 seconds). Client also would like to have address, which
-is prefered for an hour and is valid for 2 hours. 
+is prefered for an hour and is valid for 2 hours.
 
 \begin{lstlisting}
 # client.conf
@@ -564,7 +543,7 @@ iface eth0 {
   prefered-lifetime 3600
   valid-lifetime 7200
   ia {
-    address { 
+    address {
       2000::1:2:3
     }
   }
@@ -579,7 +558,7 @@ contains spaces. It is possible to do this in two ways. First is to
 sent 2 Identity Associations (IA for short). Identity Association is a
 nice name for a addresses container. This appears to be a most common
 way of telling server that this client is interested in more than one
-address. 
+address.
 
 \begin{lstlisting}
 # client.conf
@@ -611,13 +590,13 @@ iface wifi0 {
 Rapid-commit is a shortened exchange with server. It consists of only
 two messages, instead of the usual four. It is worth to know that both sides (client
 and server) must also support rapid-commit to use this fast
-configuration. 
+configuration.
 
 \begin{lstlisting}
 # client.conf
 iface eth1 {
   rapid-commit yes
-  ia 
+  ia
   option dns-server
 }
 \end{lstlisting}
@@ -732,10 +711,10 @@ It is possible to configure dibbler-client to ask for a vendor specific
 options. Although there are no dibbler-specific features to configure,
 it is possible to use this option to test other server
 implementations. This option will rather be used by network engineers
-and power network admins, rather than normal end users. 
+and power network admins, rather than normal end users.
 
 There are 3 ways to define, how dibbler-client can request
-vendor-specific options. First choice: It can just ask for this option (only 
+vendor-specific options. First choice: It can just ask for this option (only
 \opt{option request option} will be sent). Second choice: it can ask for
 vendor-spec option by adding such option with enterprise number set, but
 no actual data. Third choice: send this option and include both
@@ -770,7 +749,7 @@ Client would like to obtain an address on ,,Local Area Connection''
 interface. Note quotation marks around
 interface name. They are necessary since this particular interface name
 contains spaces. Client also would like to accept Unicast
-communication if server supports it. User wants all information 
+communication if server supports it. User wants all information
 to be logged via Linux syslog daemon. Take note that you won't be
 able see to what Dibbler is doing with such low log-level. (Usually
 log-level should be set to 7, which is also a default value).
@@ -793,7 +772,7 @@ required to specify that this client is interested in prefix
 delegation. See section \ref{features-prefix} for background
 information related to prefix delegation and sections
 \ref{example-server-prefix} and \ref{example-server-prefixes} for
-details about server configuration. To ask for prefix delegation, 
+details about server configuration. To ask for prefix delegation,
 emph{prefix-delegation} (or \emph{pd}) should be used.
 
 \begin{lstlisting}
@@ -880,7 +859,7 @@ using \msg{CONFIRM} message.
 
 If user don't want \msg{CONFIRM} message to be send and client should
 start ''from scratch'' every time, it is possible to disable confirm
-support. 
+support.
 
 \begin{lstlisting}
 # client.conf
@@ -897,32 +876,29 @@ iface eth0 {
 \subsubsection{Example 15: User-defined IAID}
 \label{example-client-iaid}
 Sometimes it is useful to define specific IAID  identifiers. That is
-rather uncommon, but possible:
+rather uncommon, but possible. This technique can be used for both
+addresses (IA\_NA options) and prefixes (IA\_PD options).
 
 \begin{lstlisting}
 # client.conf
 
 iface "eth0" {
-  ia 123 
+  ia 123
   option dns-server
   option domain
 }
 \end{lstlisting}
 
-\subsubsection{Example 16: Dual-Stack Lite information}
+\subsubsection{Example 16: DS-Lite tunnel (AFTR)}
 \label{example-server-ds-lite}
-Server may provide information about DS-Lite tunnel endpoints to the
-clients. 
+Server may provide information about AFTR (a Dual Stack Lite tunnel
+endpoint) to the clients, as specified in \cite{draft-ds-lite}.
 
 \begin{lstlisting}
 iface "eth0" {
   ia
-
-  option ds-lite address   # request for address only
-#  option ds-lite name     # request for FQDN only
-#  option ds-lite          # request for both
+  option aftr # request name of the remote DS-Lite tunnel endpoint
 }
-
 \end{lstlisting}
 
 \subsubsection{Example 17: Custom options}
@@ -975,7 +951,7 @@ iface "eth0" {
 \label{server-conf}
 Server configuration is stored in \verb+server.conf+ file in the
 \verb+/etc/dibbler+ (Linux systems) or in current (Windows systems)
-directory. 
+directory.
 
 \subsubsection{Global scope}
 
@@ -986,7 +962,7 @@ they will be used as a default values. Configuration file has following syntax:
 \begin{verbatim}
  global-options
  interface-options
- class-options          
+ class-options
  interface-declaration
 \end{verbatim}
 
@@ -997,17 +973,17 @@ mentioned in the configuration file. Network interface is defined like this:
 iface interface-name
 {
   interface-options
-  class-options        
+  class-options
 }
 \end{verbatim}
 
-or 
+or
 
 \begin{verbatim}
-iface number 
+iface number
 {
   interface-options
-  class-options        
+  class-options
 }
 \end{verbatim}
 
@@ -1024,9 +1000,9 @@ clients. Only class scoped parameters can be defined here. Address class
 is declared as follows:
 \begin{verbatim}
 class
-{  
+{
   class-options
-  address-pool    
+  address-pool
 }
 \end{verbatim}
 
@@ -1042,7 +1018,7 @@ pool address/prefix
 So called standard options are defined by the base DHCPv6 specification,
 a so called RFC 3315 document \cite{rfc3315}. Those options are
 called standard, because all DHCPv6 implementations, should properly
-handle them. Each option has a specific scope it belongs to. 
+handle them. Each option has a specific scope it belongs to.
 
 Standard options are declared in the following way:
 
@@ -1057,7 +1033,7 @@ OptionName option-value
 	    verbose level of the log messages. The valid range if
 	    from 1 (Emergency) to 8 (Debug). The higher the logging
 	    level is set, the more messages dibbler will print.
- \item[log-name] -- (scope: global, type: string, default: Server). Defines 
+ \item[log-name] -- (scope: global, type: string, default: Server). Defines
 	    name, which should be used during logging.
  \item[log-mode] -- (scope: global, type: short, full, precise or syslog
 	    default value: full) Defines logging mode. In the
@@ -1071,18 +1047,18 @@ OptionName option-value
 	    mode only.
  \item[cache-size] -- (scope: global, type: integer, default:
 	    1048576). It defines a size of the memory (specified in
-            bytes) which can se used to store cached entries.
-\item[interface-id-order] -- (scope: global, type: before, after or omit, 
-        default: before) This parameter defines placement of the
-        interface-id option. During message relaying options can be placed in the \msg{RELAY-REPL}
-        message is arbitrary order. This option has been specified to control
-        that order. \opt{interface-id} option can be placed before or after
-        \opt{relay-message} option. There is also possibility to instruct
-        server to omit the \opt{interface-id} option altogether, but since 
-        this violates \cite{rfc3315}, it should not be used. In general, this
-        configuration parameter is only useful when dealing with buggy relays,
-        which can't handle all option orders properly. Consider this parameter
-        a debugging feature. Note: similar parameter is available in the dibbler-relay.
+	    bytes) which can se used to store cached entries.
+\item[interface-id-order] -- (scope: global, type: before, after or omit,
+	default: before) This parameter defines placement of the
+	interface-id option. During message relaying options can be placed in the \msg{RELAY-REPL}
+	message is arbitrary order. This option has been specified to control
+	that order. \opt{interface-id} option can be placed before or after
+	\opt{relay-message} option. There is also possibility to instruct
+	server to omit the \opt{interface-id} option altogether, but since
+	this violates \cite{rfc3315}, it should not be used. In general, this
+	configuration parameter is only useful when dealing with buggy relays,
+	which can't handle all option orders properly. Consider this parameter
+	a debugging feature. Note: similar parameter is available in the dibbler-relay.
 \item[inactive-mode] -- (scope: global, type: present or missing,
   default: missing). This enables so called inactive mode. When server
   begins operation and it detects that required interfaces are not
@@ -1114,36 +1090,36 @@ OptionName option-value
 	    unicast address, so clients, which accept it, will switch to
 	    a unicast communication.
  \item[rapid-commit] -- (scope: interface, type: boolean, default:
-            0). This option allows rapid commit procedure to be
-            performed. Note that enabling rapid commit on the server
-            side is not enough. Client must be configured to allow
+	    0). This option allows rapid commit procedure to be
+	    performed. Note that enabling rapid commit on the server
+	    side is not enough. Client must be configured to allow
 	    rapid commit, too.
 \item[iface-max-lease] -- (scope: interface, type: integer, default:
-            $2^{32}-1$). This parameter defines, how many normal
-            addresses can be granted on this interface.
+	    $2^{32}-1$). This parameter defines, how many normal
+	    addresses can be granted on this interface.
 \item[client-max-lease] -- (scope: interface, type: interger,
-            default:$2^{32}-1$). This parameter defines, how many
-            addresses one client can get. Main purpose of this
-            parameter is to limit number of used addresses by
-            misbehaving (malicious or restarting) clients.
+	    default:$2^{32}-1$). This parameter defines, how many
+	    addresses one client can get. Main purpose of this
+	    parameter is to limit number of used addresses by
+	    misbehaving (malicious or restarting) clients.
 \item[relay] -- (scope: interface, type: string, default: not
-            defined). Used in relay definition.
-            It specifies name of the physical (or name of
-            another relay, if cascade relaying is used) interface,
-            which is used to receive and transmit relayed data. See
-            \ref{features-relays} for details of relay deployment and
-            sections \ref{example-server-relay1} and
-            \ref{example-server-relay2} for configuration examples. 
+	    defined). Used in relay definition.
+	    It specifies name of the physical (or name of
+	    another relay, if cascade relaying is used) interface,
+	    which is used to receive and transmit relayed data. See
+	    \ref{features-relays} for details of relay deployment and
+	    sections \ref{example-server-relay1} and
+	    \ref{example-server-relay2} for configuration examples.
 \item[interface-id] -- (scope: interface, type: integer, default: not
-            defined). Used in relay definition. Each relay interface
-            should have defined its unique identified. It will be sent
-            in the \opt{interface-id} option. Note that this value
-            must be the same as configured in the dibbler-relay. It
-            may be possible to specify this parameter by using a
-            number (option will be 4 bytes long), a string or a full
-            hex dump.  See
-            \ref{features-relays}, \ref{example-server-relay1} and
-            \ref{example-relay} for details.
+	    defined). Used in relay definition. Each relay interface
+	    should have defined its unique identified. It will be sent
+	    in the \opt{interface-id} option. Note that this value
+	    must be the same as configured in the dibbler-relay. It
+	    may be possible to specify this parameter by using a
+	    number (option will be 4 bytes long), a string or a full
+	    hex dump.  See
+	    \ref{features-relays}, \ref{example-server-relay1} and
+	    \ref{example-relay} for details.
  \item[vendor-spec] -- (scope: interface, type: integer-hexstring,
 	    default: not defined). This parameter can be used to
 	    configure some vendor-specific information option. Since
@@ -1151,45 +1127,45 @@ OptionName option-value
 	    is flexible. User can specify in the configuration file,
 	    how should this option look like. See
 	    \ref{example-server-vendor-spec} section for details. It
-            is uncommon, but possible to define several vendor
-            specific options for different vendors. In such case,
-            administrator must specify coma separated list. Each list
-            entry is a vendor (enterprise number), ,,--'' sign and a
-            hex dump (similar to DUID).
+	    is uncommon, but possible to define several vendor
+	    specific options for different vendors. In such case,
+	    administrator must specify coma separated list. Each list
+	    entry is a vendor (enterprise number), ,,--'' sign and a
+	    hex dump (similar to DUID).
  \item[T1] -- (scope: class, type: integer or integer range: default:
-            $2^{32}-1$). This value
+	    $2^{32}-1$). This value
 	    defines after what time client should start renew
 	    process. Exact value or accepted range can be
-            specified. When exact value is defined, client's hints are
-            ignored completely. 
+	    specified. When exact value is defined, client's hints are
+	    ignored completely.
  \item[T2] -- (scope: class, type: integer or integer range, default:$2^{32}-1$). This value
 	    defines after what time client will start emergency rebind
 	    procedure if renew process fails. Exact value or accepted range can be
-            specified. When exact value is defined, client's hints are
-            ignored completely.
+	    specified. When exact value is defined, client's hints are
+	    ignored completely.
 \item[valid-lifetime] (scope: class, type: integer or integer range,
 	    default:$2^{32}-1$). This parameter defines valid lifetime of
 	    the granted addresses. If range is specified, client's
-            hints from that range are accepted.
+	    hints from that range are accepted.
 \item[prefered-lifetime] (scope: class, type: integer or integer range,
 	    default:$2^{32}-1$). This parameter defines prefered
-            lifetime of the granted addresses. If range is specified,
-            client's hits from that range will be accepted.
+	    lifetime of the granted addresses. If range is specified,
+	    client's hits from that range will be accepted.
 \item[class-max-lease]  -- (scope: interface, type: interger,
-            default:$2^{32}-1$). This parameter defines, how many
-            addresses can be assigned from that class.
+	    default:$2^{32}-1$). This parameter defines, how many
+	    addresses can be assigned from that class.
 \item[reject-clients] -- (scope: class, type: address or DUID list,
-            default: none). This parameter is sometimes called
-            black-list. It is a list of a clients, which should not be
-            supported. Clients can be identified by theirs link-local
-            addresses or DUIDs.
+	    default: none). This parameter is sometimes called
+	    black-list. It is a list of a clients, which should not be
+	    supported. Clients can be identified by theirs link-local
+	    addresses or DUIDs.
 \item[accept-only] -- (scope: class, type: address or DUID list,
-            default: none). This parameter is sometimes called
-            white-list. It is a list of supported clients. When this
-            list is not defined, by default all clients (except
-            mentioned in reject-clients) are supported. When
-            accept-only list is defined, only client from that list
-            will be supported.
+	    default: none). This parameter is sometimes called
+	    white-list. It is a list of supported clients. When this
+	    list is not defined, by default all clients (except
+	    mentioned in reject-clients) are supported. When
+	    accept-only list is defined, only client from that list
+	    will be supported.
 \end{description}
 
 \subsubsection{Additional options}
@@ -1204,127 +1180,122 @@ All supported options are specified below:
 
 \begin{description}
  \item[dns-server] -- (scope: interface, type: address list, default:
-	    none). This option conveys information about DNS servers
-	    available. After retriving this information, clients will be
-	    able to resolve domain names into IP (both IPv4 and IPv6)
-	    addresses. Defined in \cite{rfc3596}.
+   none). This option conveys information about DNS servers
+   available. After retriving this information, clients will be able
+   to resolve domain names into IP (both IPv4 and IPv6)
+   addresses. Defined in \cite{rfc3596}.
  \item[domain] -- (scope: interface, type: domain list, default:
-	    none). This option is used for configuring one or more domain 
-	    names, which clients are connected in. For example, if
-	    client's hostname is \verb+alice.mylab.example.com+ and it wants to
-	    contact \verb+bob.mylab.example.com+, it can simply refer to it as
-	    \verb+bob+. Without domain name configured, it would have to
-	    use full domain name. Defined in \cite{rfc3596}.
+   none). This option is used for configuring one or more domain
+   names, which clients are connected in. For example, if client's
+   hostname is \verb+alice.mylab.example.com+ and it wants to contact
+   \verb+bob.mylab.example.com+, it can simply refer to it as
+   \verb+bob+. Without domain name configured, it would have to use
+   full domain name. Defined in \cite{rfc3596}.
  \item[ntp-server] -- (scope: interface, type: address list, default:
-	    none). This option defines information about available NTP
-	    servers. Network Time Protocol \cite{rfc2030} is a protocol used
-	    for time synchronisation, so all hosts in the network has
-	    the same proper time set. Defined in \cite{rfc4075}.
+   none). This option defines information about available NTP
+   servers. Network Time Protocol \cite{rfc2030} is a protocol used
+   for time synchronisation, so all hosts in the network has the same
+   proper time set. Defined in \cite{rfc4075}.
  \item[time-zone] -- (scope: interface, type: timezone, default:
-	    none). It is possible to configure timezone, which is
-            provided by the server. Note that this option is
-	    considered obsolete as it is mentioned in draft version only
-	    \cite{draft-timezone}. Work on this draft seems to be
-	    abandoned as similar functionality is provided by now
-	    standard \cite{rfc4075}.
+   none). It is possible to configure timezone, which is provided by
+   the server. Note that this option is considered obsolete as it is
+   mentioned in draft version only \cite{draft-timezone}. Work on this
+   draft seems to be abandoned as similar functionality is provided by
+   now standard \cite{rfc4075}.
  \item[sip-server] -- (scope: interface, type: address list, default:
-	    none). Session Initiation Protocol \cite{rfc3263} is an
-	    control protocol for creating, modifying, and terminating
-	    sessions with one or more participants. These sessions
-	    include Internet telephone calls, multimedia distribution,
-	    and multimedia conferences. Its most common usage is
-	    VoIP. Format of this option is defined in \cite{rfc3319}.
+   none). Session Initiation Protocol \cite{rfc3263} is an control
+   protocol for creating, modifying, and terminating sessions with one
+   or more participants. These sessions include Internet telephone
+   calls, multimedia distribution, and multimedia conferences. Its
+   most common usage is VoIP. Format of this option is defined in
+   \cite{rfc3319}.
  \item[sip-domain] -- (scope: interface, type: domain list, default:
-	    none). It is possible to define domain names for Session
-	    Initiation Protocol \cite{rfc3263}. Configuration of this
-	    parameter will ease usage of domain names in the SIP
-	    protocol. Format of this option is defined in
-	    \cite{rfc3319}.
+   none). It is possible to define domain names for Session Initiation
+   Protocol \cite{rfc3263}. Configuration of this parameter will ease
+   usage of domain names in the SIP protocol. Format of this option is
+   defined in \cite{rfc3319}.
  \item[nis-server] -- (scope: interface, type: address list, default:
-	    none). Network Information Service (NIS) is a Unix-based
-	    system designed to use common login and user information on
-	    multiple systems, e.g. universities, where students can log
-	    on to ther accounts from any host. Its format is defined
-            in \cite{rfc3898}.
+   none). Network Information Service (NIS) is a Unix-based system
+   designed to use common login and user information on multiple
+   systems, e.g. universities, where students can log on to ther
+   accounts from any host. Its format is defined in \cite{rfc3898}.
  \item[nis-domain] -- (scope: interface, type: domain list, default:
-	    none). Network Information Service (NIS) can albo specify
-	    domain names. It can be configured with this option. It is
-	    defined in \cite{rfc3898}.
+   none). Network Information Service (NIS) can albo specify domain
+   names. It can be configured with this option. It is defined in
+   \cite{rfc3898}.
  \item[nis+-server] -- (scope: interface, type: address list, default:
-	    none). Network Information Service Plus (NIS+) is an
-	    improved version of the NIS protocol. This option is defined
-	    in \cite{rfc3898}.
+   none). Network Information Service Plus (NIS+) is an improved
+   version of the NIS protocol. This option is defined in
+   \cite{rfc3898}.
  \item[nis+-domain] -- (scope: interface, type: domain list, default:
-	    none). Similar to nis-domain, it defines domains for
-	    NIS+. This option is defined in \cite{rfc3898}.
- \item[lifetime] -- (scope: interface, type: boolean, default: no). Base
-	    spec of the DHCPv6 protocol does offers way of refreshing
-	    addresses only, but not the options. Lifetime defines, how
-	    often client should renew all its options. When defined,
-            lifetime option will be appended to all replies, which
-            server sends to a client. If client does not support it,
-            it should ignore this option. Format of
-	    this option is defined in \cite{draft-lifetime}.
- \item[ds-lite] -- (scope: interface, type: address or FQDN). In
-            Dual-Stack Lite networks, client may want to configure
-            DS-Lite tunnel. Client may want to obtain information
-            about remote tunnel endpoint. There are 2 options that
-            allow configuration of that option. One is IPv6 address
-            based and the second one uses FQDN. Both options are
-            defined in \cite{draft-ds-lite}.
- \item[auth-method] -- (scope: global, type: string, default: empty). Set
-            it to one of the following values to enable authentication
-            on ther server side, using selected method of generating
-            authentication information:
-            \begin{itemize}
-             \item \texttt{none}
-             \item \texttt{digest\_plain}
-             \item \texttt{digest\_hmac\_md5}
-             \item \texttt{digest\_hmac\_sha1}
-             \item \texttt{digest\_hmac\_sha224}
-             \item \texttt{digest\_hmac\_sha256}
-             \item \texttt{digest\_hmac\_sha384}
-             \item \texttt{digest\_hmac\_sha512}
-            \end{itemize}
- \item[auth-lifetime] -- (scope: global, type: integer, default: 0). Authentication
-            lifetime. Currently not supported.
- \item[auth-key-len] -- (scope: global, type: integes, default: 32). Key generation nonce
-            length (see \cite{draft-aaa} for details).
-
+   none). Similar to nis-domain, it defines domains for NIS+. This
+   option is defined in \cite{rfc3898}.
+ \item[lifetime] -- (scope: interface, type: boolean, default:
+   no). Base spec of the DHCPv6 protocol does offers way of refreshing
+   addresses only, but not the options. Lifetime defines, how often
+   client should renew all its options. When defined, lifetime option
+   will be appended to all replies, which server sends to a client. If
+   client does not support it, it should ignore this option. Format of
+   this option is defined in \cite{draft-lifetime}.
+ \item[aftr] -- (scope: interface, type: FQDN). In Dual-Stack Lite
+   networks, client may want to configure DS-Lite tunnel. Client may
+   want to obtain information about AFTR (a remote tunnel
+   endpoint). This option conveys a fully qualified domain name of the
+   remote tunnel. This option is defined in \cite{draft-ds-lite}.
+ \item[auth-method] -- (scope: global, type: string, default:
+   empty). Set it to one of the following values to enable
+   authentication on ther server side, using selected method of
+   generating authentication information:
+   \begin{itemize}
+   \item \texttt{none}
+   \item \texttt{digest\_plain}
+   \item \texttt{digest\_hmac\_md5}
+   \item \texttt{digest\_hmac\_sha1}
+   \item \texttt{digest\_hmac\_sha224}
+   \item \texttt{digest\_hmac\_sha256}
+   \item \texttt{digest\_hmac\_sha384}
+   \item \texttt{digest\_hmac\_sha512}
+   \end{itemize}
+ \item[auth-lifetime] -- (scope: global, type: integer, default:
+   0). Authentication lifetime. Currently not supported.
+ \item[auth-key-len] -- (scope: global, type: integes, default:
+   32). Key generation nonce length (see \cite{draft-aaa} for
+   details).
 \end{description}
 
 Lifetime is a special case. It is not set up by client in a system
 configuration. It is, however, used by the client to know how long
-obtained values are correct.
+obtained values are correct and initiate \msg{RENEW} or
+\msg{INF-REQUEST} message exchange to refresh received options.
 
 \subsection{Server configuration examples}
 
 This subsection contains various examples of the server
-configuration. If you are interested in additional examples, download source version
-and look at \verb+*.conf+ files.
+configuration. If you are interested in additional examples, download
+source version and look at \verb+*.conf+ files.
 
 \subsubsection{Example 1: Simple}
 
 In opposite to client, server uses only interfaces described in config
-file. Let's examine this common situation: server has interface
-named \emph{eth0} (which is fourth interface in the system) and is
-supposed to assign addresses from 2000::100/124 class. Simplest config
-file looks like that:
+file. Let's examine this common situation: server has interface named
+\emph{eth0} (which is fourth interface in the system) and is supposed
+to assign addresses from 2000::100/124 class. Simplest config file
+looks like that:
 
 \begin{lstlisting}
 # server.conf
 iface eth0
-{ 
+{
   class
   {
     pool 2000::100-2000::10f
-  } 
+  }
 }
 \end{lstlisting}
 
 \subsubsection{Example 2: Timeouts}
 Server should be configured to deliver specific timer values to the
-clients. This example shows how to instruct client to renew (T1 timer) 
+clients. This example shows how to instruct client to renew (T1 timer)
 addresses one in 10 minutes. In case of problems, ask other servers in
 15 minutes (T2 timer), that allowe prefered lifetime range is from 30
 minutes to 2 hours, and valid lifetime is from 1 hour to 1 day. DNS
@@ -1333,7 +1304,7 @@ clients renew all non-address related options renew once in 2 hours.
 
 \begin{lstlisting}
 # server.conf
-iface eth0 
+iface eth0
 {
   T1 600
   T2 900
@@ -1342,7 +1313,7 @@ iface eth0
   class
   {
     pool 2000::100/80
-  } 
+  }
 
   option dns-server 2000::1234
   option lifetime 7200
@@ -1355,7 +1326,7 @@ interface. It should not allow any client to obtain more than 5
 addresses and should not grant more then 50 addresses in total. From
 this specific class only 20 addresses can be assigned. Server
 preference should be set to 7. This means that this server is more
-important than all server with preference set to 6 or less. 
+important than all server with preference set to 6 or less.
 Config file is presented below:
 
 \begin{lstlisting}
@@ -1370,7 +1341,7 @@ iface eth0
     class-max-lease 20
     pool 2000::1-2000::100
   }
-}  
+}
 \end{lstlisting}
 
 \subsubsection{Example 4: Unicast communication}
@@ -1379,7 +1350,7 @@ iface eth0
 Here's modified previous example. Instead of specified limits, unicast
 communication should be supported and server should listen on
 2000::1234 address. Note that default multicast address is still
-supported. You must have this unicast address already configured on 
+supported. You must have this unicast address already configured on
 server's interface.
 
 \begin{lstlisting}
@@ -1392,7 +1363,7 @@ iface eth0
   {
     pool 2000::1-2000::100
   }
-}  
+}
 \end{lstlisting}
 
 \subsubsection{Example 5: Rapid-commit}
@@ -1414,7 +1385,7 @@ iface eth0
   {
     pool 2000::1/112
   }
-}  
+}
 \end{lstlisting}
 
 \subsubsection{Example 6: Access control}
@@ -1433,7 +1404,7 @@ iface eth0
     # duid of the rejected client
     reject-clients ``00001231200adeaaa''
     2000::2f-2000::20  // it's in reverse order, but it works.
-                       // just a trick. 
+		       // just a trick.
   }
 }
 iface eth1
@@ -1453,7 +1424,7 @@ is being choosen on a random basis. If not specified otherwise, all classes have
 However, this behavior can be modified using \verb+share+ parameter. In the following example, server supports
 3 classes with different preference level: class 1 has 100, class 2 has 200 and class 3 has 300. This means that class 1
 gets $\frac{100}{100+200+300} \approx 16\% $ of all requests, class 2
-gets $\frac{200}{100+200+300} \approx 33\% $ and class 3 gets the rest 
+gets $\frac{200}{100+200+300} \approx 33\% $ and class 3 gets the rest
 ($\frac{300}{100+200+300}=50\% $).
 
 \begin{lstlisting}
@@ -1489,7 +1460,7 @@ relays. There is some remote relay with will send encapsulated data over
 eth1 interface. It is configured to append interface-id option set to
 5020 value. Let's allow all clients using this relay some addresses
 and information about DNS servers. Also see section
-\ref{example-relay-1} for corresponding relay configuration. 
+\ref{example-relay-1} for corresponding relay configuration.
 
 Note that although eth1 interface is mentioned in the configuration file,
 direct traffic from clients located on the eth1 interface will not be
@@ -1532,7 +1503,7 @@ iface relay1
 {
   relay eth0
   interface-id 6011
-} 
+}
 
 iface relay2
 {
@@ -1556,7 +1527,7 @@ specified, it will available to everyone, i.e. the first client asks
 for FQDN will get this name. In following example, name 'zebuline.example.com' is
 reserved for address 2000::1, kael.example.com is reserved for 2000::2 and
 test.example.com is reserved for client using DUID
-00:01:00:00:43:ce:25:b4:00:13:d4:02:4b:f5. 
+00:01:00:00:43:ce:25:b4:00:13:d4:02:4b:f5.
 
 Also note that is required to define, which side can perform updates.
 This is done using single number after ,,option fqdn'' phrase. Server
@@ -1588,7 +1559,7 @@ iface "eth1" {
  option dns-server 2000::100,2000::101
  option domain example.com, test1.example.com
  option fqdn 2 64
-        zebuline.example.com - 2000::1,
+	zebuline.example.com - 2000::1,
 	kael.example.com - 2000::2,
 	test.example.com - 0x0001000043ce25b40013d4024bf5,
 	zoe.example.com,
@@ -1603,7 +1574,7 @@ iface "eth1" {
 It is possible to configure dibbler-server to provide vendor-specific
 information options. Since there are no dibbler-specific parameters,
 this implementation is quite flexible. Enterprise number as well as
-content of the option itself can be configured. 
+content of the option itself can be configured.
 
 \begin{lstlisting}
 # server.conf
@@ -1669,17 +1640,17 @@ iface "eth0" {
  option domain example.com
  option vendor-spec 5678-0x0002aaaa
 
-  # special parameters for client with DUID 00:01:02:03:04:06      
-  client duid 0x000102030406 
+  # special parameters for client with DUID 00:01:02:03:04:06
+  client duid 0x000102030406
   {
-        address 2001::123
+	address 2001::123
 	option domain second.client.biz
 	option dns-server 1234::5678:abcd
 	option vendor-spec 2-0x000122, 22-0x222222
   }
 
   # special address reserved for client with this remote-id option
-  # (remote-id option may be added by relays)  
+  # (remote-id option may be added by relays)
   client remote-id 5-0x01020304
   {
 	address 2000::0102:0304
@@ -1692,8 +1663,8 @@ iface "eth0" {
   #  DUID based reservations)
   #  {
   #      option domain link.local.detected.interop.test.com
-  #  } 
- 
+  #  }
+
 }
 \end{lstlisting}
 
@@ -1703,7 +1674,7 @@ iface "eth0" {
 Prefix delegation works quite similar to normal address granting.
 Administrator defines pool and server provides prefixes from that
 pool. Before using prefix delegation, please read section
-\ref{features-prefix}. Client configuration example is described in section 
+\ref{features-prefix}. Client configuration example is described in section
 \ref{example-client-prefix}.
 
 \begin{lstlisting}
@@ -1711,17 +1682,17 @@ pool. Before using prefix delegation, please read section
 log-mode precise
 
 iface "eth0" {
- 
+
  # the following lines instruct server to grant each client
  # prefix for this pool. For example, client might get
  # 2222:2222:2222:2222:2222:993f::/96
  pd-class {
-        pd-pool 2222:2222:2222:2222:2222::/80
-        pd-length 96
-        T1 11111
-        T2 22222
+	pd-pool 2222:2222:2222:2222:2222::/80
+	pd-length 96
+	T1 11111
+	T2 22222
     }
- 
+
 }
 \end{lstlisting}
 
@@ -1731,7 +1702,7 @@ It is possible to define more than one pool, so each client will
 receive several prefixes. It is necessary to define each pool with the
 same length, i.e. it is not possible to mix different pool lengths.
 See section \ref{features-prefix} for prefix delegation background
-information. Client configuration example is described in section 
+information. Client configuration example is described in section
 \ref{example-client-prefix}.
 
 \begin{lstlisting}
@@ -1745,31 +1716,31 @@ iface "eth0" {
  prefered-lifetime 3600
  valid-lifetime 7200
 
- # provide addresses from this pool 
+ # provide addresses from this pool
  class {
    pool 5000::/48
  }
 
  # the following lines instruct server to grant each client
  # 2 prefixes. For example, client might get
- # 2222:2222:2222:2222:2222:993f:6485::/96 and 
+ # 2222:2222:2222:2222:2222:993f:6485::/96 and
  # 1111:1111:1111:1111:1111:993f:6485::/96
  pd-class {
-        pd-pool 2222:2222:2222:2222:2222::/80
-        pd-pool 1111:1111:1111:1111:1111::/80
-        pd-length 96
-        T1 11111
-        T2 22222
+	pd-pool 2222:2222:2222:2222:2222::/80
+	pd-pool 1111:1111:1111:1111:1111::/80
+	pd-length 96
+	T1 11111
+	T2 22222
     }
- 
+
 }
 \end{lstlisting}
 
 \subsubsection{Example 15: Inactive mode}
 \label{example-server-inactivemode}
-See sections \ref{example-client-inactivemode} and 
+See sections \ref{example-client-inactivemode} and
 \ref{feature-inactive-mode} for inactive mode explanation.
-The same behavior has been added for server. 
+The same behavior has been added for server.
 
 \begin{lstlisting}
 #server.conf
@@ -1789,7 +1760,7 @@ iface "eth0" {
 \subsubsection{Example 16: Leasequery}
 A separate entity
 called requestor can send queries regarding assigned addresses and
-prefixes. Server can be configured to support such lease queries. 
+prefixes. Server can be configured to support such lease queries.
 See section \ref{features-leasequery} for detailed explanation.
 
 \begin{lstlisting}
@@ -1820,11 +1791,11 @@ auth-method digest-hmac-sha512
 auth-key-len 64
 
 iface eth0
-{ 
+{
   class
   {
     pool 2000::100-2000::10f
-  } 
+  }
 }
 \end{lstlisting}
 
@@ -1856,7 +1827,7 @@ iface relay1 {
 \end{lstlisting}
 
 
-\subsubsection{Example 19: DS-Lite tunnel}
+\subsubsection{Example 19: DS-Lite tunnel (AFTR)}
 Server is able to provide Dual-Stack lite configuration for clients.
 Both address and name based configurations are supported:
 
@@ -1917,10 +1888,10 @@ iface name_of_the_interface
 }
 \end{verbatim}
 
-or 
+or
 
 \begin{verbatim}
-iface number 
+iface number
 {
   interface options
 }
@@ -1941,7 +1912,7 @@ sometimes allowed range.
 	    verbose level of the log messages. The valid range if
 	    from 1 (Emergency) to 8 (Debug). The higher the logging
 	    level is set, the more messages dibbler will print.
- \item[log-name] -- (scope: global, type: string, default: Client). Defines 
+ \item[log-name] -- (scope: global, type: string, default: Client). Defines
 	    name, which should be used during logging.
  \item[log-mode] -- (scope: global, type: short, full or precise,
 	    default value: full) Defines logging mode. In the
@@ -1952,55 +1923,55 @@ sometimes allowed range.
 	    mode logs information with seconds and microsecond
 	    precision. It is a useful for finding bottlenecks in
 	    the DHCPv6 autoconfiguration process.
-\item[interface-id-order] -- (scope: global, type: before, after or omit, 
-        default: before) Defines placement of the
-        interface-id option. Options can be placed in the \msg{RELAY-FORW}
-        message is arbitrary order. This option has been specified to control
-        that order. \opt{interface-id} option can be placed before or after
-        \opt{relay-message} option. There is also possibility to instruct
-        server to omit the \opt{interface-id} option altogether, but since 
-        this violates \cite{rfc3315}, it should not be used. In general, this
-        configuration parameter is only useful when dealing with buggy relays,
-        which can't handle all option orders properly. Consider this parameter
-        a debugging feature. Note: similar parameter is available in the dibbler-server. 
+\item[interface-id-order] -- (scope: global, type: before, after or omit,
+	default: before) Defines placement of the
+	interface-id option. Options can be placed in the \msg{RELAY-FORW}
+	message is arbitrary order. This option has been specified to control
+	that order. \opt{interface-id} option can be placed before or after
+	\opt{relay-message} option. There is also possibility to instruct
+	server to omit the \opt{interface-id} option altogether, but since
+	this violates \cite{rfc3315}, it should not be used. In general, this
+	configuration parameter is only useful when dealing with buggy relays,
+	which can't handle all option orders properly. Consider this parameter
+	a debugging feature. Note: similar parameter is available in the dibbler-server.
 
-\item[client multicast] -- (scope: interface, type: boolean, default: false) 
-        This command instructs dibbler-relay to listen on this particular interface
-        for client messages sent to multicast (ff02::1:2) address.
+\item[client multicast] -- (scope: interface, type: boolean, default: false)
+	This command instructs dibbler-relay to listen on this particular interface
+	for client messages sent to multicast (ff02::1:2) address.
 \item[client unicast] -- (scope: interface, type: address, default: not defined)
-        This command instructs dibbler-relay to listen to messages sent to a specific
-        unicast address. This feature is usually used to connect multiple relays
-        together. 
+	This command instructs dibbler-relay to listen to messages sent to a specific
+	unicast address. This feature is usually used to connect multiple relays
+	together.
 \item[server multicast] -- (scope: interface, type: boolean, default: false)
-        This command instructs dibbler-relay to send messages (received on any interface)
-        to the server multicast (ff05::1:3) address. Note that this is not the same
-        multicast address as the server usually listens to (ff02::1:2). Server must be 
-        specifically configured to be able to receive relayed messages.
+	This command instructs dibbler-relay to send messages (received on any interface)
+	to the server multicast (ff05::1:3) address. Note that this is not the same
+	multicast address as the server usually listens to (ff02::1:2). Server must be
+	specifically configured to be able to receive relayed messages.
 \item[server unicast] -- (scope: interface, type: address, default: none)
-        This command instructs dibbler-relay to send message (received on any interface)
-        to speficied unicast address. Server must be properly configured to to be able to 
-        receive unicast traffic. See \emph{unicast} command in the \ref{example-server-unicast} 
-        section.
+	This command instructs dibbler-relay to send message (received on any interface)
+	to speficied unicast address. Server must be properly configured to to be able to
+	receive unicast traffic. See \emph{unicast} command in the \ref{example-server-unicast}
+	section.
 \item[interface-id] -- (scope: interface, type: integer, default: none)
-        This specifies identifier of a particular interface. It is used to generate 
-        \opt{interface-id} option, when relaying message to the server. This option
-        is then used by the server to detect, which interface the message originates from.
-        It is essential to have consistent interface-id defined on the relay side and
-        server side. It is worth mentioning that interface-id should be specified on the
-        interface, which is used to receive messages from the clients, not the 
-        one used to forward packets to server.
+	This specifies identifier of a particular interface. It is used to generate
+	\opt{interface-id} option, when relaying message to the server. This option
+	is then used by the server to detect, which interface the message originates from.
+	It is essential to have consistent interface-id defined on the relay side and
+	server side. It is worth mentioning that interface-id should be specified on the
+	interface, which is used to receive messages from the clients, not the
+	one used to forward packets to server.
 \item[guess-mode] -- (scope: global, type: boolean, default: no)
-        Switches relay into so called guess-mode. Under normal operation, client sends
-        messages, which are encapsulated and sent to the server. During this encapsulation
-        relay appends \opt{interface-id} option and expects that server will use the same
-        \opt{interface-id} option in its replies. Relay then uses those \opt{interface-id}
-        values to detect, which the original request came from and sends reply to the same
-        interface. Unfortunately, some servers does not sent \opt{interface-id} option.
-        Normally in such case, dibbler-relay drops such server messages as there is no
-        easy way to determine where such messages should be relayed to. However, when 
-        guess-mode is enabled, dibbler-relay tries to guess the destination interface.
-        Luckily, it is often trivial to guess as there are usually 2 interfaces: one
-        connected to server and second connected to the clients.
+	Switches relay into so called guess-mode. Under normal operation, client sends
+	messages, which are encapsulated and sent to the server. During this encapsulation
+	relay appends \opt{interface-id} option and expects that server will use the same
+	\opt{interface-id} option in its replies. Relay then uses those \opt{interface-id}
+	values to detect, which the original request came from and sends reply to the same
+	interface. Unfortunately, some servers does not sent \opt{interface-id} option.
+	Normally in such case, dibbler-relay drops such server messages as there is no
+	easy way to determine where such messages should be relayed to. However, when
+	guess-mode is enabled, dibbler-relay tries to guess the destination interface.
+	Luckily, it is often trivial to guess as there are usually 2 interfaces: one
+	connected to server and second connected to the clients.
 \end{description}
 
 \subsection{Relay configuration examples}
@@ -2010,7 +1981,7 @@ Relay configuration file is fairly simple. Relay forwards DHCPv6
 messages between interfaces. Messages from client are encapsulated and
 forwarded as RELAY\_FORW messages. Replies from server are received as
 RELAY\_REPL message. After decapsulation, they are being sent back to
-clients. 
+clients.
 
 It is vital to inform server, where this relayed message was
 received. DHCPv6 does this using interface-id option. This identifier
@@ -2052,7 +2023,7 @@ multicast addresses. Following example allows message reception from
 clients on the 2000::123 address. It is also possible to instruct
 relay to send encapulated messages to the server using unicast
 addresess. This feature is configured in the next section
-(\ref{example-relay-multiple}). 
+(\ref{example-relay-multiple}).
 
 \begin{lstlisting}
 # relay.conf
@@ -2084,11 +2055,11 @@ iface eth2 {
   server unicast 2000::456
 }
 iface eth1 {
-  client multicast yes                    
+  client multicast yes
   interface-id 1000
 }
 iface eth3 {
-  client multicast yes                    
+  client multicast yes
   interface-id 1001
 }
 \end{lstlisting}
@@ -2124,7 +2095,7 @@ iface eth0 {
   server unicast 6011::1  // relay messages on this interface to this global address
 }
 
-# client can send messages to multicast 
+# client can send messages to multicast
 # (or specific link-local addr) on this link
 iface eth1 {
   client multicast yes    // bind ff02::1:2
@@ -2142,7 +2113,7 @@ such request, should include the same interface-id option in the
 reply. However, in some poor implementations, server fails to do
 that. When relay receives such poorly formed response from the server,
 it can't decide which interface should be used to relay this
-message. 
+message.
 
 Normally such packets are dropped. However, it is possible to switch
 relay into a guess-mode. It tries to find any suitable interface,
@@ -2165,19 +2136,19 @@ iface eth1 {
 \end{lstlisting}
 
 \subsubsection{Example 6: Relaying to multicast}
-During normal operation, relay sends forwarded messages to a 
+During normal operation, relay sends forwarded messages to a
 \emph{All\_DHCP\_Servers} (FF05::1:3) multicast address.
 
-Although author does not consider this an elegant solution, it is also 
+Although author does not consider this an elegant solution, it is also
 possible to instruct relay to forward message to a \emph{All\_DHCP\_Relay\_Agents\_and\_Servers}
-(ff02::1:2) multicast address. That is quite convenient when there are several 
+(ff02::1:2) multicast address. That is quite convenient when there are several
 relays connected in a cascade way (server -- relay1 -- relay2 -- clients).
 
 For details regarding DHCPv6-related multicast addresses and relay operation, see \cite{rfc3315}.
 
 To achieve this behavior, \emph{server unicast} can be used. Note that
 name of such parameter is a bit misleading (``server unicast'' used to specify
-multicast address). That parameter should be rather called ``destination address'', 
+multicast address). That parameter should be rather called ``destination address'',
 but to maintain backward compatibility, it has its current name.
 
 \begin{lstlisting}
