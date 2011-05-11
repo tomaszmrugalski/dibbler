@@ -136,18 +136,21 @@ following command: \verb+ping6 ::1+ (Linux) or \verb+ping ::1+
 (Windows). If you get replies, you have IPv6 already installed.
 
 \subsubsection{Setting up IPv6 in Linux}
-IPv6 can be enabled in Linux systems in two ways: compiled directly
-into kernel or as a module. If you don't have IPv6 enabled, try to load IPv6 module:
-\verb+modprobe ipv6+ (command executed as root) and try ping6 once more. If that
-fails, you have to recompile kernel to support IPv6. There are
-numerous descriptions how to recompile kernel available on the web, just
-type "kernel compilation howto" in \href{http://www.google.com}{Google}.
+Most modern Linux distributions have IPv6 enabled by default, so there
+is very good chance that nothing has to be done. However, if that is
+not the case, IPv6 can be enabled in Linux systems in two ways:
+compiled directly into kernel or as a module. If you don't have IPv6
+enabled, try to load IPv6 module: \verb+modprobe ipv6+ (command
+executed as root) and try ping6 once more. If that fails, you have to
+recompile kernel to support IPv6. There are numerous descriptions how
+to recompile kernel available on the web, just type "kernel
+compilation howto" in \href{http://www.google.com}{Google}.
 
 \subsubsection{Setting up IPv6 in Windows Vista and Win7}
 Both systems have IPv6 enabled by default. Also note that Win7 also
 has DHCPv6 client built-in, so you may use it as well.
 
-\subsubsection{Setting up IPv6 in WindowsXP and 2003}
+\subsubsection{Setting up IPv6 in Windows XP and 2003}
 If you have already working IPv6 support, you can safely skip this section.
 The easiest way to enable IPv6 support is to right click on the
 \verb+My network place+ on the desktop, select \verb+Properties+, then locate
@@ -241,16 +244,17 @@ Dibbler Developer's Guide} for information about various compilation parameters.
 
 Compilation in most cases is not necessary and should be performed
 only by experienced users. To compile dibbler, issue following commands:
-\begin{verbatim}
-tar zxvf dibbler-\version-src.tar.gz
+\begin{lstlisting}
+tar zxvf dibbler-0.8.0-src.tar.gz
 cd dibbler
 make server client relay doc
-\end{verbatim}
+\end{lstlisting}
+
 That's it. You can also install it in the system by issuing command:
 
-\begin{verbatim}
+\begin{lstlisting}
 make install
-\end{verbatim}
+\end{lstlisting}
 
 If there are problems with missing/different compiler
 version, take a look at the beginning of the Makefile.inc
