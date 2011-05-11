@@ -2,7 +2,7 @@
   Dibbler changelog
  ------------------- 
 
-0.8.0 [not-released-yet]
+0.8.0 [2011-05-11]
   - Fixed compilation problems
   - Fix: client, server and relay no longer leave PID file after failed start
   - Fix: error in detecting MAC addresses on Mac
