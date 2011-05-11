@@ -1,23 +1,29 @@
 
-  Dibbler 0.8.0RC1 release notes [2010-09-17]
+  Dibbler 0.8.0 release notes [2012-12-21]
  ---------------------------------------------------------
 
- This is first release candidate (RC1) for 0.8.0 Dibbler release.
+ This is the stable 0.8.0 release of the Dibbler software.
 
- Dibbler (and myself) is now recovering after long maintenance mode.
- There are couple of new features added. Client loads its database
- and if there are still valid leases, it sends CONFIRM instead of
- SOLICIT. In Linux systems, client can also detect link switches, 
- so once your Linux client moves to a different link, it will send
- CONFIRM, too. Server reloads its database after restart, so you can
- finally restaring server, without worrying about lost leases. DUID
- can now be specified using 00:12:45:ab format (similar to MAC addresses).
- Support for Windows 7 and Mac OS is now added (both considered experimental).
- Both server and client support custom options, so if dibbler does
- not support your favourite option, here's your chance. 
+ Dibbler project now officially is resumed, after my Ph. D. and related
+ almost complete lack of time. Since last 0.8.0RC1 release, significant
+ number of features were added, so the numbering may be misleading.
+ However, I didn't want to skip 0.8.0. Notable features added in this
+ version are:
 
- Bunch of experimental features are also added: DS-Lite tunnel
- configuration and remote autoconfiguration.
+ - Mac OS X support, thanks to Paul Schauer, who did the initial port 
+   and then tested and debugged countless versions.
+ - Several new DNS Update modes implemented: server may discard unknown
+   names sent by client, sanitize them, assign other available name from
+   configured pool, append configure domain or even generate name, based
+   on assigned address.
+ - Linux client now configures and updates addresses with proper prefered 
+   and valid lifetimes.
+ - Vendor specific options format improved, it is now easier to define
+   sub-options there.
+ - DS-Lite draft implementation updated to latest, approved version (-10)
+ - Client may now send defined prefix hints in PD
+
+ Many (around 20) bug fixes are fixed as well.
  
  There's also number of under the hood changes that hopefully
  will be invisible to end users. If something that worked previously
@@ -25,11 +31,11 @@
 
  See CHANGELOG for a complete list of changes.
 
- If you find bugs, please report it on http://klub.com.pl/bugzilla/
- or send bug report directly to the author. Appropriate links are on 
- project website: http://klub.com.pl/dhcpv6/. If you need help or want
- to share your thoughts, take a look at one of the Dibbler-related
- mailing lists: dibbler or dibbler-devel.
+ If you find bugs, please report it on http://klub.com.pl/bugzilla/ or
+ send bug report to the directly to the author. Appropriate links are
+ on project website: http://klub.com.pl/dhcpv6/. If you need help or
+ want to share your thoughts, take a look at one of the
+ Dibbler-related mailing lists: dibbler or dibbler-devel.
 
                                Tomasz Mrugalski,
                                author

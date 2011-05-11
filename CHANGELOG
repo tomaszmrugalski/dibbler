@@ -2,12 +2,12 @@
   Dibbler changelog
  ------------------- 
 
-0.8.0RC-2 [not-released-yet]
+0.8.0 [not-released-yet]
   - Fixed compilation problems
   - Fix: client, server and relay no longer leave PID file after failed start
   - Fix: error in detecting MAC addresses on Mac
   - Fix: several crashes introduced in 0.8.0RC1 fixed
-  - Fix: client no longer gets confused when requesting IA,TA and PD
+  - Fix: client no longer gets confused when requesting IA, TA and PD
   - Fix: Server now sends back rapid-commit option
   - Srv: It is now possible to specify how server should handle unknown FQDNs from clients
   - Srv: It is now possible to specify DDNS server address, used during DNS Updates
@@ -28,11 +28,12 @@
   - Linux/Mac OS: daemonizing should close stdin/stdout/stderr (bug #188)
   - Linux: detecting link state change no longer takes 100% CPU
   - All: Vendor spec support improved (new definition format is simpler) (bug #173)
-  - Cli: client not waits for longer periods, rather than 1 s
+  - Cli: client now waits for longer periods, rather than 1 s
   - Srv: Server now creates separate socket for transmission and not use multicast socket (bug #200)
   - Rel: TRelOptRemoteID compilation fix
+  - Srv/Cli: DS-List draft updated to latest, approved version (ds-lite-tunnel-10) (bugs #203, #204)
 
-0.8.0RC-1 [2010-09-17]
+0.8.0RC1 [2010-09-17]
   - Linux: CONFIRM support added
   - Support for Windows 7 added
   - Server reloads its database after shutdown/start sequence

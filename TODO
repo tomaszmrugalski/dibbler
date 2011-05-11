@@ -6,6 +6,9 @@ Before 0.8.0 release:
 - Describe MOD_REMOTE_AUTOCONF Remote autoconf extension in Developer's Guide
 - Describe MOD_CLNT_CONFIRM in Developer's Guide
 - Add examples for ds-lite, custom options and remote-autoconf
+- Mac OS: configure DNS and domain properly (used mDNSresponder or Bonjour APIs)
+- Mac OS: create dmg package for easier installation
+- accept "option domain-name" besides "option domain"
 - RFC3315, 9.1 duid length is no longer than 128 octets
 - Srv: Implement access control for PD
 - Add sanity length checks in Options constructors
