@@ -9,7 +9,7 @@ BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREF
 # C only flags
 CFLAGS      += -std=c99 $(CPPFLAGS)
 # common flags
-CPPFLAGS     = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O0 $(PEDANTIC)
+CPPFLAGS     = -D$(ARCH) $(PORT_CFLAGS) $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall -funsigned-char -O2 $(PEDANTIC)
 # C++ specific flags
 CXXFLAGS     = -ftemplate-depth-40 $(COPTS) $(CPPFLAGS)
 
