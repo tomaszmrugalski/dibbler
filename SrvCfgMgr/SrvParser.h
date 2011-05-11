@@ -84,14 +84,14 @@ virtual ~SrvParser();
     this->lex = lex;
 
 #line 82 "SrvParser.y"
-typedef union    
+typedef union
 {
     unsigned int ival;
     char *strval;
     struct SDuid
     {
-        int length;
-        char* duid;
+	int length;
+	char* duid;
     } duidval;
     char addrval[16];
 } yy_SrvParser_stype;
@@ -319,8 +319,8 @@ typedef
 #define	INACTIVE_MODE_	309
 #define	EXPERIMENTAL_	310
 #define	ADDR_PARAMS_	311
-#define	DS_LITE_	312
-#define	REMOTE_AUTOCONF_NEIGHBORS_	313
+#define	REMOTE_AUTOCONF_NEIGHBORS_	312
+#define	AFTR_	313
 #define	AUTH_METHOD_	314
 #define	AUTH_LIFETIME_	315
 #define	AUTH_KEY_LEN_	316
@@ -459,8 +459,8 @@ static const int GUESS_MODE_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
-static const int DS_LITE_;
 static const int REMOTE_AUTOCONF_NEIGHBORS_;
+static const int AFTR_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
 static const int AUTH_KEY_LEN_;
@@ -559,8 +559,8 @@ static const int DUID_;
 	,INACTIVE_MODE_=309
 	,EXPERIMENTAL_=310
 	,ADDR_PARAMS_=311
-	,DS_LITE_=312
-	,REMOTE_AUTOCONF_NEIGHBORS_=313
+	,REMOTE_AUTOCONF_NEIGHBORS_=312
+	,AFTR_=313
 	,AUTH_METHOD_=314
 	,AUTH_LIFETIME_=315
 	,AUTH_KEY_LEN_=316

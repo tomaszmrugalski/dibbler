@@ -36,7 +36,7 @@
 #include "OptString.h"
 
 using namespace std;
-    
+
 #define YY_USE_CLASS
 #define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
@@ -85,15 +85,15 @@ SPtr<TDUID> DUIDEnterpriseID;
     DUIDEnterpriseID = 0;
 
 #line 83 "ClntParser.y"
-typedef union    
+typedef union
 {
-    int ival;    
-    char *strval;  
-    struct SDuid  {      
-        int length;    
-        char* duid;  
-    } duidval;  
-    char addrval[16];  
+    int ival;
+    char *strval;
+    struct SDuid  {
+	int length;
+	char* duid;
+    } duidval;
+    char addrval[16];
 } yy_ClntParser_stype;
 #define YY_ClntParser_STYPE yy_ClntParser_stype
 
@@ -331,7 +331,7 @@ typedef
 #define	EXPERIMENTAL_	322
 #define	ADDR_PARAMS_	323
 #define	REMOTE_AUTOCONF_	324
-#define	DS_LITE_	325
+#define	AFTR_	325
 #define	ADDRESS_LIST_	326
 #define	STRING_KEYWORD_	327
 #define	REQUEST_	328
@@ -451,7 +451,7 @@ static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
-static const int DS_LITE_;
+static const int AFTR_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
 static const int REQUEST_;
@@ -531,7 +531,7 @@ static const int RECONFIGURE_;
 	,EXPERIMENTAL_=322
 	,ADDR_PARAMS_=323
 	,REMOTE_AUTOCONF_=324
-	,DS_LITE_=325
+	,AFTR_=325
 	,ADDRESS_LIST_=326
 	,STRING_KEYWORD_=327
 	,REQUEST_=328

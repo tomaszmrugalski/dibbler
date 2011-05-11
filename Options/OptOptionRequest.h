@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: OptOptionRequest.h,v 1.6 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
 #ifndef OPTOPTIONREQUEST_H
@@ -23,7 +21,7 @@ class TOptOptionRequest : public TOpt
   public:
     TOptOptionRequest(TMsg* parent);
     TOptOptionRequest(char * &buf,  int &bufSize, TMsg* parent);
-    
+
     void addOption(unsigned short optNr);
     void delOption(unsigned short optNr);
     bool isOption(unsigned short optNr);
@@ -34,7 +32,7 @@ class TOptOptionRequest : public TOpt
      char * storeSelf( char* buf);
      int  getReqOpt(int optNr);
      bool isValid();
-     ~TOptOptionRequest();	
+     ~TOptOptionRequest();
   protected:
     bool Valid;
     unsigned short *Options; // you're kidding me, right? Rewrite this ASAP

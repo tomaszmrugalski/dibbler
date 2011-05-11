@@ -1,11 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                      
+/*
+ * Dibbler - a portable DHCPv6
  *
- * released under GNU GPL v2 only licence                                
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *
+ * released under GNU GPL v2 only licence
  *
  */
 
@@ -32,7 +32,7 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     void setRapidCommit(bool rapid);
     bool getIsIAs();
     void setIsIAs(bool state);
-    
+
     //-- options related methods --
     // option: DNS Servers
     List(TIPv6Addr) * getDNSServerLst();
@@ -104,14 +104,11 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqVendorSpec();
     List(TOptVendorSpecInfo) getVendorSpec();
 
-    void setDsLiteTunnelMode(EDsLiteTunnelMode mode);
-    EDsLiteTunnelMode getDsLiteTunnelMode();
 
 private:
     bool NoIAs;
     bool Unicast; // do we accept unicast?
     bool RapidCommit;
-    EDsLiteTunnelMode DsLiteTunnelMode;
 
     List(TIPv6Addr) DNSServerLst;
     List(std::string) DomainLst;
@@ -126,9 +123,6 @@ private:
     std::string NISPDomain;
     bool Lifetime;
     List(TOptVendorSpecInfo) VendorSpec;
-
-    SPtr<TIPv6Addr> DsLiteTunnelAddr;
-    SPtr<TOpt> DsLiteTunnelName;
 
     bool ReqDNSServer;
     bool ReqDomain;

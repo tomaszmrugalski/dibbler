@@ -15,13 +15,12 @@
 #endif
 #ifdef LINUX
 #include <netinet/in.h>
-#endif 
+#endif
 #include "OptAddr.h"
 #include "Logger.h"
 
 TOptAddr::TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent)
     :TOpt(type, parent) {
-    Layout = Layout_OptAddr;
     if (len!=16) {
 	Valid = false;
 	Log(Warning) << "Malformed option (code=" << type << ", length=" << len
@@ -31,9 +30,8 @@ TOptAddr::TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent)
     Addr = new TIPv6Addr(buf, false); // plain = false
 }
 
-TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent) 
+TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent)
     :TOpt(type, parent) {
-    Layout = Layout_OptAddr;
     this->Addr = addr;
 }
 

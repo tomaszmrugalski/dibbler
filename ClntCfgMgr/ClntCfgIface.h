@@ -1,13 +1,13 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
- * 
- * released under GNU GPL v2 only licence                                
- *                                                                           
+ *
+ * released under GNU GPL v2 only licence
+ *
  * $Id: ClntCfgIface.h,v 1.20 2008-08-29 00:07:27 thomson Exp $
  */
 
@@ -37,7 +37,7 @@ public:
     class TOptionStatus
     {
     public:
-        TOptionStatus(): OptionType(0), State(STATE_NOTCONFIGURED), Option(0), Always(true) {};
+	TOptionStatus(): OptionType(0), State(STATE_NOTCONFIGURED), Option(0), Always(true) {};
 	unsigned short OptionType;
 	EState State;
 	SPtr<TOpt> Option;
@@ -45,7 +45,7 @@ public:
 	bool Always; // should this option be sent always? (even when already configured?)
     };
     typedef std::list< SPtr<TOptionStatus> > TOptionStatusLst;
-    
+
     TClntCfgIface(string ifaceName);
     TClntCfgIface(int ifaceNr);
 
@@ -64,7 +64,7 @@ public:
     SPtr<TClntCfgPD> getPD();
     SPtr<TClntCfgPD> getPD(int iaid);
     void addPD(SPtr<TClntCfgPD> ptr);
-    
+
     // TA
     void firstTA();
     void addTA(SPtr<TClntCfgTA> ta);
@@ -184,7 +184,7 @@ public:
     void setVendorSpec(List(TOptVendorSpecInfo) vendorSpecList);
 
     // --- custom/extra options ---
-    void addExtraOption(SPtr<TOpt> extra, bool sendAlways);
+    void addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout, bool sendAlways);
     void addExtraOption(int optType, TOpt::EOptionLayout layout, bool sendAlways);
     TOptionStatusLst& getExtraOptions();
     SPtr<TOptionStatus> getExtaOptionState(int type);
@@ -196,8 +196,6 @@ public:
     // --- option: Authentication ---
     EState getAuthenticationState();
     void setAuthenticationState(EState state);
-
-    EDsLiteTunnelMode getDsLiteTunnelMode();
 
 private:
     void setDefaults();
@@ -215,7 +213,7 @@ private:
     List(TStationID) RejectedSrvLst;
 
     List(TClntCfgTA) ClntCfgTALst;
-    
+
     List(TIPv6Addr) DNSServerLst;
     List(string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
@@ -228,7 +226,7 @@ private:
     string NISDomain;
     string NISPDomain;
     List(TOptVendorSpecInfo) VendorSpecLst;
-    
+
     EState DNSServerState;
     EState DomainState;
     EState NTPServerState;
@@ -261,9 +259,7 @@ private:
     bool ReqPrefixDelegation;
     bool ReqVendorSpec;
 
-    EDsLiteTunnelMode DsLiteTunnelMode;
-
     TOptionStatusLst ExtraOpts; // extra options to be sent to server
 };
 
-#endif 
+#endif

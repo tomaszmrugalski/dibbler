@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: Opt.cpp,v 1.11 2009-03-24 23:17:18 thomson Exp $
- *
  */
 
 #include "Opt.h"
@@ -21,27 +19,27 @@ TOpt::~TOpt() {
 }
 
 TOpt::TOpt( int optType, TMsg *parent)
-    :Layout(Layout_OptGeneric), Valid(true) {
-    OptType=optType;    
+    :Valid(true) {
+    OptType=optType;
     Parent=parent;
 }
 
 int TOpt::getSubOptSize() {
-    int size = 0;    
-    SubOptions.first();    
-    SPtr<TOpt> ptr;    
-    while (ptr = SubOptions.get()) 		
-	size += ptr->getSize();    
+    int size = 0;
+    SubOptions.first();
+    SPtr<TOpt> ptr;
+    while (ptr = SubOptions.get())
+	size += ptr->getSize();
     return size;
 }
 
 char* TOpt::storeSubOpt( char* buf){
-    SPtr<TOpt> ptr;	
-    SubOptions.first();    
+    SPtr<TOpt> ptr;
+    SubOptions.first();
     while ( ptr = SubOptions.get() ) {
 	ptr->storeSelf(buf);
-	buf += ptr->getSize();    
-    }	
+	buf += ptr->getSize();
+    }
     return buf;
 }
 
@@ -79,7 +77,7 @@ void TOpt::delAllOptions() {
     SubOptions.clear();
 }
 
-bool TOpt::isValid() {   
+bool TOpt::isValid() {
     return Valid;
 }
 

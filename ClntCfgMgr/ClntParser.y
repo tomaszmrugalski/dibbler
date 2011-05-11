@@ -23,7 +23,7 @@
 #include "OptString.h"
 
 using namespace std;
-    
+
 #define YY_USE_CLASS
 %}
 
@@ -80,15 +80,15 @@ SPtr<TDUID> DUIDEnterpriseID;
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;
 
-%union    
+%union
 {
-    int ival;    
-    char *strval;  
-    struct SDuid  {      
-        int length;    
-        char* duid;  
-    } duidval;  
-    char addrval[16];  
+    int ival;
+    char *strval;
+    struct SDuid  {
+	int length;
+	char* duid;
+    } duidval;
+    char addrval[16];
 }
 
 %{
@@ -118,7 +118,8 @@ namespace std
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_, DS_LITE_
+%token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_
+%token AFTR_
 %token ADDRESS_LIST_, STRING_KEYWORD_, REQUEST_
 %token RECONFIGURE_
 %type  <ival> Number
@@ -164,7 +165,7 @@ GlobalOptionDeclaration
 ;
 
 InterfaceOptionDeclaration
-: IAOptionDeclaration 
+: IAOptionDeclaration
 | NoIAsOptions
 | UnicastOption
 | DNSServerOption
@@ -199,7 +200,7 @@ InterfaceDeclaration
 /////////////////////////////////////////////////////////////////////////////
 //Declaration: iface 'eth0' { T1 10 T2 20 ... }
 /////////////////////////////////////////////////////////////////////////////
-:IFACE_ STRING_ '{' 
+:IFACE_ STRING_ '{'
 {
     if (!StartIfaceDeclaration($2))
 	YYABORT;
@@ -214,7 +215,7 @@ InterfaceDeclarationsList '}'
 /////////////////////////////////////////////////////////////////////////////
 //Declaration: iface 5 { T1 10 T2 20 ... }
 /////////////////////////////////////////////////////////////////////////////
-|IFACE_ Number '{' 
+|IFACE_ Number '{'
 {
     if (!IfaceDefined($2))
 	YYABORT;
@@ -230,7 +231,7 @@ InterfaceDeclarationsList '}'
 /////////////////////////////////////////////////////////////////////////////
 //Declaration: iface 'eth0' { }
 /////////////////////////////////////////////////////////////////////////////
-|IFACE_ STRING_ '{' '}' 
+|IFACE_ STRING_ '{' '}'
 {
     if (!IfaceDefined(string($2)))
 	YYABORT;
@@ -249,7 +250,7 @@ InterfaceDeclarationsList '}'
     ClntCfgIfaceLst.append(new TClntCfgIface($2));
     EmptyIface();
 }
-    
+
 /////////////////////////////////////////////////////////////////////////////
 //Declaration: iface 'eth0' no-config
 /////////////////////////////////////////////////////////////////////////////
@@ -283,7 +284,7 @@ InterfaceDeclarationsList
 : InterfaceOptionDeclaration
 | InterfaceDeclarationsList InterfaceOptionDeclaration
 | IADeclaration
-| InterfaceDeclarationsList IADeclaration 
+| InterfaceDeclarationsList IADeclaration
 | TADeclaration
 | InterfaceDeclarationsList TADeclaration
 | PDDeclaration
@@ -295,11 +296,11 @@ TADeclaration
 // TA options
 /////////////////////////////////////////////////////////////////////////////
 :TA_
-{ 
+{
     //Log(Crit) << "TA without params." << LogEnd;
     this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
 }
-|TA_ '{' 
+|TA_ '{'
 {
     //Log(Crit) << "TA with params started." << LogEnd;
     this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
@@ -337,8 +338,8 @@ IADeclaration
 /////////////////////////////////////////////////////////////////////////////
 // ia { options-inside }
 /////////////////////////////////////////////////////////////////////////////
-:IA_ '{'   
-{ 
+:IA_ '{'
+{
     StartIADeclaration(false);
 }
 IADeclarationList '}'
@@ -389,12 +390,12 @@ IADeclarationList '}'
 IADeclarationList
 :IAOptionDeclaration
 |IADeclarationList IAOptionDeclaration
-|ADDRESDeclaration 
+|ADDRESDeclaration
 |IADeclarationList ADDRESDeclaration
 ;
 
 ADDRESDeclaration
-: ADDRESS_ '{' 
+: ADDRESS_ '{'
 {
     SPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
     SPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
@@ -409,7 +410,7 @@ ADDRESDeclarationList '}'
 	ParserOptStack.delLast();
 }
 //In this agregated declaration no address hints are allowed
-|ADDRESS_ Number '{' 
+|ADDRESS_ Number '{'
 {
     ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
     ParserOptStack.getLast()->setAddrHint(false);
@@ -435,21 +436,21 @@ ADDRESDeclarationList '}'
     for (int i=0;i<$2; i++) EmptyAddr();
 }
 
-|ADDRESS_ 
+|ADDRESS_
 {
     EmptyAddr();
 }
 ;
 
 ADDRESDeclarationList
-:  ADDRESOptionDeclaration 
+:  ADDRESOptionDeclaration
 |  ADDRESDeclarationList ADDRESOptionDeclaration
-|  IPV6ADDR_  
+|  IPV6ADDR_
 {
     if (ParserOptStack.getLast()->getAddrHint())
     {
-        ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr($1)));
-        ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
+	ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr($1)));
+	ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
     }
     else
 	YYABORT;  //this is aggregated version of IA
@@ -472,7 +473,7 @@ ADDRESOptionDeclaration
 ;
 
 LogLevelOption
-: LOGLEVEL_ Number 
+: LOGLEVEL_ Number
 {
     if ( ($2<1) || ($2>8) ) {
 	Log(Crit) << "Invalid loglevel specified: " << $2 << ". Allowed range: 1-8." << LogEnd;
@@ -492,7 +493,7 @@ LogNameOption
 }
 
 LogColors
-: LOGCOLORS_ Number 
+: LOGCOLORS_ Number
 {
     logger::setColors($2==1);
 }
@@ -500,10 +501,10 @@ LogColors
 DuidTypeOption
 : DUID_TYPE_ DUID_TYPE_LLT_  { this->DUIDType  = DUID_TYPE_LLT;}
 | DUID_TYPE_ DUID_TYPE_LL_   { this->DUIDType  = DUID_TYPE_LL; }
-| DUID_TYPE_ DUID_TYPE_EN_ Number DUID_ { 
-  this->DUIDType       = DUID_TYPE_EN; 
+| DUID_TYPE_ DUID_TYPE_EN_ Number DUID_ {
+  this->DUIDType       = DUID_TYPE_EN;
   this->DUIDEnterpriseNumber = $3;
-  this->DUIDEnterpriseID     = new TDUID($4.duid, $4.length); 
+  this->DUIDEnterpriseID     = new TDUID($4.duid, $4.length);
 }
 ;
 
@@ -511,7 +512,7 @@ NoIAsOptions
 :   STATELESS_
 {
     ParserOptStack.getLast()->setIsIAs(false);
-}   
+}
 ;
 
 WorkDirOption
@@ -543,8 +544,8 @@ AuthAcceptOption
 : AUTH_ACCEPT_METHODS_
 {
     DigestLst.clear();
-} DigestList { 
-    ParserOptStack.getLast()->setAuthAcceptMethods(DigestLst); 
+} DigestList {
+    ParserOptStack.getLast()->setAuthAcceptMethods(DigestLst);
 }
 
 DigestList
@@ -559,7 +560,7 @@ Digest
 | DIGEST_HMAC_SHA256_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); }
 | DIGEST_HMAC_SHA384_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); }
 | DIGEST_HMAC_SHA512_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); }
-; 
+;
 
 AnonInfRequest
 : ANON_INF_REQUEST_
@@ -587,7 +588,7 @@ Experimental
 };
 
 RejectServersOption
-:REJECT_SERVERS_ 
+:REJECT_SERVERS_
 {
     //ParserOptStack.getLast()->clearRejedSrv();
     PresentStationLst.clear();
@@ -595,10 +596,10 @@ RejectServersOption
 {
     ParserOptStack.getLast()->setRejedSrvLst(&PresentStationLst);
 }
-;  
+;
 
 PreferServersOption
-:PREFERRED_SERVERS_ 
+:PREFERRED_SERVERS_
 {
     PresentStationLst.clear();
 } ADDRESDUIDList{
@@ -608,26 +609,26 @@ PreferServersOption
 
 
 PreferredTimeOption
-:PREF_TIME_ Number 
+:PREF_TIME_ Number
 {
     ParserOptStack.getLast()->setPref($2);
 }
 ;
 
 RapidCommitOption
-:   RAPID_COMMIT_ Number 
-{ 
+:   RAPID_COMMIT_ Number
+{
     ParserOptStack.getLast()->setRapidCommit($2);
 }
 ;
 
 ExperimentalAddrParams
-:   ADDR_PARAMS_ 
+:   ADDR_PARAMS_
 {
-        if (!ParserOptStack.getLast()->getExperimental()) {
-        Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled."
-	          << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
-        YYABORT;
+	if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled."
+		  << "Add 'experimental' in global section of client.conf to enable it." << LogEnd;
+	YYABORT;
     }
     ParserOptStack.getLast()->setAddrParams(true);
 };
@@ -636,10 +637,10 @@ ExperimentalRemoteAutoconf
 :   REMOTE_AUTOCONF_
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
-        Log(Crit) << "Experimental remote autoconfiguration feature defined, but experimental"
-        " features are disabled. Add 'experimental' in global section of client.conf "
-        "to enable it." << LogEnd;
-        YYABORT;
+	Log(Crit) << "Experimental remote autoconfiguration feature defined, but experimental"
+	" features are disabled. Add 'experimental' in global section of client.conf "
+	"to enable it." << LogEnd;
+	YYABORT;
     }
 #ifdef MOD_REMOTE_AUTOCONF
     CfgMgr->setRemoteAutoconf(true);
@@ -753,7 +754,7 @@ UnicastOption
 	ParserOptStack.getLast()->setUnicast(true);
 	break;
     default:
-	Log(Error) << "Invalid parameter (" << $2 << ") passed to unicast in line " 
+	Log(Error) << "Invalid parameter (" << $2 << ") passed to unicast in line "
 		   << lex->YYText() << "." << LogEnd;
 	return 1;
     }
@@ -761,7 +762,7 @@ UnicastOption
 ;
 
 ADDRESDUIDList
-: IPV6ADDR_   
+: IPV6ADDR_
 {
     PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr($1))));
 }
@@ -797,13 +798,13 @@ Number
 //DNS-SERVER option///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 DNSServerOption
-:OPTION_ DNS_SERVER_ 
+:OPTION_ DNS_SERVER_
 {
     PresentAddrLst.clear();
 //    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
     ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 }
-|OPTION_ DNS_SERVER_ 
+|OPTION_ DNS_SERVER_
 {
     PresentAddrLst.clear();
 } ADDRESSList
@@ -821,7 +822,7 @@ DomainOption
     PresentStringLst.clear();
     ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 }
-|OPTION_ DOMAIN_ { 
+|OPTION_ DOMAIN_ {
     PresentStringLst.clear();
 } StringList
 {
@@ -833,7 +834,7 @@ DomainOption
 //NTP-SERVER option///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 NTPServerOption
-:OPTION_ NTP_SERVER_ 
+:OPTION_ NTP_SERVER_
 {
     PresentAddrLst.clear();
 //    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
@@ -851,7 +852,7 @@ NTPServerOption
 //TIMEZONE option/////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 TimeZoneOption
-: OPTION_ TIME_ZONE_ 
+: OPTION_ TIME_ZONE_
 {
     ParserOptStack.getLast()->setTimezone(string(""));
   }
@@ -865,7 +866,7 @@ TimeZoneOption
 //SIP-SERVER option///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 SIPServerOption
-:OPTION_ SIP_SERVER_ 
+:OPTION_ SIP_SERVER_
 {
     PresentAddrLst.clear();
 //    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
@@ -926,7 +927,7 @@ FQDNBits
 //NIS-SERVER option///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 NISServerOption
-:OPTION_ NIS_SERVER_ 
+:OPTION_ NIS_SERVER_
 {
     PresentAddrLst.clear();
 //    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
@@ -981,7 +982,7 @@ NISPDomainOption
 {
     ParserOptStack.getLast()->setNISPDomain("");
 }
-|OPTION_ NISP_DOMAIN_ STRING_ 
+|OPTION_ NISP_DOMAIN_ STRING_
 {
     ParserOptStack.getLast()->setNISPDomain($3);
 }
@@ -1007,7 +1008,7 @@ VendorSpecOption
 {
     ParserOptStack.getLast()->setVendorSpec();
     Log(Debug) << "VendorSpec defined (multiple times)." << LogEnd;
-} 
+}
 ;
 
 VendorSpecList
@@ -1018,9 +1019,10 @@ VendorSpecList
 ;
 
 DsLiteTunnelOption
-: OPTION_ DS_LITE_          { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_BOTH); }
-| OPTION_ DS_LITE_ ADDRESS_ { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_ADDR); }
-| OPTION_ DS_LITE_ NAME_    { ParserOptStack.getLast()->setDsLiteTunnelMode(TUNNEL_NAME); }
+: OPTION_ AFTR_
+{
+    ClntCfgIfaceLst.getLast()->addExtraOption(OPTION_AFTR_NAME, TOpt::Layout_String, false);
+}
 ;
 
 ExtraOption
@@ -1028,49 +1030,49 @@ ExtraOption
 {
     Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_Duid, false);
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr(new TIPv6Addr($4));
 
     SPtr<TOpt> opt = new TOptAddr($2, addr, 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_Addr, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << addr->getPlain() << LogEnd;
 }
-|OPTION_ Number ADDRESS_LIST_  
+|OPTION_ Number ADDRESS_LIST_
 {
     PresentAddrLst.clear();
 } ADDRESSList
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", containing " 
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_AddrLst, false);
+    Log(Debug) << "Extra option defined: code=" << $2 << ", containing "
 	       << PresentAddrLst.count() << " addresses." << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
     SPtr<TOpt> opt = new TOptString($2, string($4), 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_String, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
 }
 |OPTION_ Number ADDRESS_ REQUEST_
 {
     // just request this option and expect OptAddr layout
     Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
-    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_OptAddr, false);
+    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_Addr, false);
 }
 |OPTION_ Number STRING_ REQUEST_
 {
     // just request this option and expect OptString layout
     Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
-    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_OptString, false);
+    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_String, false);
 }
-|OPTION_ Number ADDRESS_LIST_  
+|OPTION_ Number ADDRESS_LIST_
 {
     // just request this option and expect OptAddrLst layout
     Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
-    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_OptAddrLst, false);
+    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_AddrLst, false);
 };
 
 %%
@@ -1080,12 +1082,12 @@ ExtraOption
 /////////////////////////////////////////////////////////////////////////////
 
 
-/** 
- * method check whether interface with id=ifaceNr has been 
- * already declared. 
- * 
+/**
+ * method check whether interface with id=ifaceNr has been
+ * already declared.
+ *
  * @param ifindex interface index of the checked interface
- * 
+ *
  * @return true if not declared.
  */
 bool ClntParser::IfaceDefined(int ifindex)
@@ -1101,15 +1103,15 @@ bool ClntParser::IfaceDefined(int ifindex)
   }
   return true;
 }
-    
+
 //method check whether interface with id=ifaceName has been
-//already declared 
-/** 
- * method check whether interface with specified name has been 
- * already declared. 
- * 
+//already declared
+/**
+ * method check whether interface with specified name has been
+ * already declared.
+ *
  * @param ifaceName name of the checked interface
- * 
+ *
  * @return true if not declared.
  */
 bool ClntParser::IfaceDefined(string ifaceName)
@@ -1126,13 +1128,13 @@ bool ClntParser::IfaceDefined(string ifaceName)
   return true;
 }
 
-/** 
+/**
  * creates new scope appropriately for interface options and declarations
  * clears all lists except the list of interfaces and adds new group
  */
 bool ClntParser::StartIfaceDeclaration(string ifaceName)
 {
-    if (!IfaceDefined(ifaceName)) 
+    if (!IfaceDefined(ifaceName))
 	return false;
 
     ClntCfgIfaceLst.append(new TClntCfgIface(ifaceName));
@@ -1145,17 +1147,17 @@ bool ClntParser::StartIfaceDeclaration(string ifaceName)
     return true;
 }
 
-/** 
+/**
  * creates new scope appropriately for interface options and declarations
  * clears all lists except the list of interfaces and adds new group
  */
 bool ClntParser::StartIfaceDeclaration(int ifindex)
 {
-    if (!IfaceDefined(ifindex)) 
+    if (!IfaceDefined(ifindex))
 	return false;
 
     ClntCfgIfaceLst.append(new TClntCfgIface(ifindex));
-    
+
     //Interface scope, so parameters associated with global scope are pushed on stack
     ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
     ClntCfgIALst.clear();
@@ -1197,7 +1199,7 @@ bool ClntParser::EndIfaceDeclaration()
     while (ia=ClntCfgIALst.get()) {
 	ClntCfgIfaceLst.getLast()->addIA(ia);
     }
-    
+
     //add all TAs to the interface
     SPtr<TClntCfgTA> ptrTA;
     ClntCfgTALst.first();
@@ -1216,7 +1218,7 @@ bool ClntParser::EndIfaceDeclaration()
     ParserOptStack.delLast();
     ClntCfgIALst.clear();
     return true;
-}   
+}
 
 void ClntParser::EmptyIface()
 {
@@ -1228,10 +1230,10 @@ void ClntParser::EmptyIface()
     ClntCfgIfaceLst.getLast()->addIA(ClntCfgIALst.getLast());
 }
 
-/** 
+/**
  * method creates new scope appropriately for interface options and declarations
  * clears list of addresses
- * 
+ *
  * @param aggregation - does this IA contains suboptions ( ia { ... } )
  */
 void ClntParser::StartIADeclaration(bool aggregation)
@@ -1241,9 +1243,9 @@ void ClntParser::StartIADeclaration(bool aggregation)
   ClntCfgAddrLst.clear();
 }
 
-/** 
+/**
  * Inbelivable piece of crap code. If you read this, rewrite this code immediately.
- * 
+ *
  */
 void ClntParser::EndIADeclaration()
 {
@@ -1284,7 +1286,7 @@ bool ClntParser::EndPDDeclaration()
     PrefixLst.first();
     SPtr<TClntCfgPrefix> prefix;
     while (prefix = PrefixLst.get()) {
-        pd->addPrefix(prefix);
+	pd->addPrefix(prefix);
     }
 
     PrefixLst.clear();
@@ -1294,10 +1296,10 @@ bool ClntParser::EndPDDeclaration()
     return true;
 }
 
-/** 
+/**
  * method adds 1 IA object (containing 1 address) to the ClntCfgIA list.
  * Both objects' properties are set to last parsed values
- * 
+ *
  */
 void ClntParser::EmptyIA()
 {
@@ -1305,18 +1307,18 @@ void ClntParser::EmptyIA()
     ClntCfgIALst.append(new TClntCfgIA());
     ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
     //ClntCfgIALst.getLast()->addAddr(ClntCfgAddrLst.getLast());
-}   
+}
 
-/** 
+/**
  * method adds empty address to the ClntCfgAddrList list and sets
  * its properties to last parsed values
- * 
+ *
  */
 void ClntParser::EmptyAddr()
 {
     ClntCfgAddrLst.append(new TClntCfgAddr());
     ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
-}   
+}
 
 
 int ClntParser::yylex()
@@ -1328,20 +1330,20 @@ int ClntParser::yylex()
     return x;
 }
 
-/** 
+/**
  * This method is called when parsing error is detected.
- * 
+ *
  * @param m - first invalid character
  */
 void ClntParser::yyerror(char *m)
 {
-    Log(Crit) << "Config parse error: line " << lex->lineno() 
+    Log(Crit) << "Config parse error: line " << lex->lineno()
 	      << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
 }
 
-/** 
+/**
  * Desctructor. Just cleans things up
- * 
+ *
  */
 
 ClntParser::~ClntParser() {

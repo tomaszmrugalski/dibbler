@@ -19,14 +19,11 @@ using namespace std;
 
 TOptString::TOptString(int type, std::string str, TMsg* parent)
     :TOpt(type, parent), Str(str) {
-    Layout = Layout_OptString;
 }
 
 TOptString::TOptString(int type, const char *buf, unsigned short bufsize, TMsg* parent)
     :TOpt(type, parent)
 {
-    Layout = Layout_OptString;
-
     char* str=new char[bufsize+1];
     memcpy(str,buf,bufsize);
     str[bufsize]=0;
@@ -39,7 +36,7 @@ char * TOptString::storeSelf(char* buf)
     *(short*)buf = htons(OptType);
     buf+=2;
     *(short*)buf = htons(getSize()-4);
-    buf+=2;    
+    buf+=2;
     memcpy(buf,Str.c_str(),Str.length());
     buf[Str.length()]=0;  // null-terminated
     return buf+this->Str.length()+1;

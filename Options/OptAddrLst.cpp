@@ -27,13 +27,11 @@
 
 TOptAddrLst::TOptAddrLst(int type, List(TIPv6Addr) lst, TMsg* parent)
     :TOpt(type, parent), AddrLst(lst) {
-    Layout = Layout_OptAddrLst;
 }
 
 TOptAddrLst::TOptAddrLst(int type, const char* buf, unsigned short bufSize, TMsg* parent)
     :TOpt(type, parent)
 {
-    Layout = Layout_OptAddrLst;
     while(bufSize>0)
     {
 	if (bufSize<16) {

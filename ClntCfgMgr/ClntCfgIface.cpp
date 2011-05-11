@@ -1,12 +1,12 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * released under GNU GPL v2 only licence                                
+ * released under GNU GPL v2 only licence
  *
  */
 
@@ -21,7 +21,7 @@ using namespace std;
 
 TClntCfgIface::TClntCfgIface(string ifaceName) {
     setDefaults();
-    
+
     NoConfig=false;
     IfaceName=ifaceName;
     ID=-1;
@@ -102,8 +102,6 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     if (ReqLifetime)   setLifetimeState(STATE_NOTCONFIGURED);
     if (ReqVendorSpec) setVendorSpecState(STATE_NOTCONFIGURED);
 
-    DsLiteTunnelMode = opt->getDsLiteTunnelMode();
-
     // copy preferred-server list
     SPtr<TStationID> station;
     opt->firstPrefSrv();
@@ -116,18 +114,14 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
 	RejectedSrvLst.append(station);
 }
 
-EDsLiteTunnelMode TClntCfgIface::getDsLiteTunnelMode() {
-    return DsLiteTunnelMode;
-}
-
 bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
 {
     RejectedSrvLst.first();
     SPtr<TStationID> RejectedSrv;
     while(RejectedSrv=RejectedSrvLst.get())
     {
-        if (((*RejectedSrv)==addr)||((*RejectedSrv)==duid))
-            return true;
+	if (((*RejectedSrv)==addr)||((*RejectedSrv)==duid))
+	    return true;
     }
     return false;
 }
@@ -213,7 +207,7 @@ void TClntCfgIface::addPD(SPtr<TClntCfgPD> ptr)
 
  string TClntCfgIface::getName(void)
 {
-    return IfaceName;    
+    return IfaceName;
 }
 
 string TClntCfgIface::getFullName() {
@@ -474,24 +468,24 @@ int  TClntCfgIface::getPrefixLength() {
 }
 
 
-/** 
+/**
  * add extra option to the list of supported extra options
- * 
+ *
  * @param extra smart pointer to the supported option (to be sent)
  * @param sendAlways should this option be always sent? Even when already configured?
  */
-void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, bool sendAlways) {
+void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout, bool sendAlways) {
     SPtr<TOptionStatus> optStatus = new TOptionStatus();
     optStatus->OptionType = extra->getOptType();
     optStatus->Option = extra;
     optStatus->Always = sendAlways;
-    optStatus->Layout = extra->getLayout();
+    optStatus->Layout = layout;
     ExtraOpts.push_back(optStatus);
 }
 
-/** 
+/**
  * add extra option to the list of supported extra options
- * 
+ *
  * @param opttype code of the supported option
  * @param layout defines layout (see TOpt::EOptionLayout)
  * @param sendAlways should this option be always sent? Even when already configured?
@@ -512,7 +506,7 @@ SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
     for (TOptionStatusLst::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
 	if ((*opt)->OptionType == type)
 	    return (*opt); // these are the droids you are looking for
-    
+
     return 0; // not found
 }
 
@@ -529,13 +523,13 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << dec;
     out<<"  <ClntCfgIface ";
     if (iface.NoConfig) {
-        out << "no-config=\"true\" />" << endl;
-        return out;
+	out << "no-config=\"true\" />" << endl;
+	return out;
     }
 
     out << "name=\"" << iface.IfaceName << "\""
-        << " ifindex=\"" << iface.ID << "\">" << endl;
-    
+	<< " ifindex=\"" << iface.ID << "\">" << endl;
+
     if (iface.RapidCommit) {
 	out << "    <RapidCommit/>" << endl;
     } else {
@@ -547,8 +541,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     SPtr<TClntCfgIA> ia;
     iface.IALst.first();
     while(ia=iface.IALst.get())
-    {	
-        out << *ia;
+    {
+	out << *ia;
     }
     out << "    </iaLst>" << endl;
 
@@ -577,14 +571,14 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
 	iface.DNSServerLst.first();
 	while(addr=iface.DNSServerLst.get())
-	    out << "      <dns-server>" << *addr << "</dns-server>" << endl;  
+	    out << "      <dns-server>" << *addr << "</dns-server>" << endl;
     } else {
 	out << "    <!-- <dns-servers/> -->" << endl;
     }
 
     // --- option: DOMAIN ---
     if (iface.isReqDomain()) {
-	out << "    <domains state=\"" << StateToString(iface.getDomainState()) 
+	out << "    <domains state=\"" << StateToString(iface.getDomainState())
 	    << "\" hints=\"" << iface.DomainLst.count() << "\" />" << endl;
 
 	iface.DomainLst.first();
@@ -593,18 +587,18 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     } else {
 	out << "    <!-- <domains/> -->" << endl;
     }
-	
+
     // --- option: NTP servers ---
     if (iface.isReqNTPServer()) {
-	out << "    <ntp-servers state=\"" << StateToString(iface.getNTPServerState()) 
+	out << "    <ntp-servers state=\"" << StateToString(iface.getNTPServerState())
 	    << "\" hints=\"" << iface.NTPServerLst.count() << "\" />" << endl;
 	iface.NTPServerLst.first();
 	while(addr=iface.NTPServerLst.get())
-	    out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;  
+	    out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;
     } else {
 	out << "    <!-- <ntp-servers/> -->" << endl;
     }
-    
+
     // --- option: Timezone ---
     if (iface.isReqTimezone()) {
 	out << "    <timezone state=\"" << StateToString(iface.getTimezoneState())
@@ -619,7 +613,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	    << "\" hints=\"" << iface.NTPServerLst.count() << "\"/>" << endl;
 	iface.NTPServerLst.first();
 	while(addr=iface.NTPServerLst.get())
-	    out << "      <sip-server>" << *addr << "</sip-server>" << endl;  
+	    out << "      <sip-server>" << *addr << "</sip-server>" << endl;
     } else {
 	out << "    <!-- <sip-servers/> -->" << endl;
     }
@@ -637,7 +631,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: FQDN ---
     if (iface.isReqFQDN()) {
-	out << "    <fqdn state=\"" << StateToString(iface.getFQDNState()) 
+	out << "    <fqdn state=\"" << StateToString(iface.getFQDNState())
 	    << "\">" << iface.FQDN << "</fqdn>" << endl;
     } else {
 	out << "    <!-- <fqdn/> -->" << endl;
@@ -649,7 +643,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	    << "\" hints=\"" << iface.NISServerLst.count() << "\"/>" << endl;
 	iface.NISServerLst.first();
 	while(addr=iface.NISServerLst.get())
-	    out << "      <nis-server>" << *addr << "</nis-server>" << endl;  
+	    out << "      <nis-server>" << *addr << "</nis-server>" << endl;
     } else {
 	out << "    <!-- <nis-servers/> -->" << endl;
     }
@@ -668,7 +662,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	    << "\" hints=\"" << iface.NISPServerLst.count() << "\"/>" << endl;
 	iface.NISPServerLst.first();
 	while(addr=iface.NISPServerLst.get())
-	    out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;  
+	    out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;
     } else {
 	out << "    <!-- <nisplus-servers/> -->" << endl;
     }
@@ -695,7 +689,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 	iface.VendorSpecLst.first();
 	while (opt = iface.VendorSpecLst.get()) {
 	    out << "      <vendorSpec vendor=\"" << opt->getVendor() << "\">"
-                << opt->getPlain() << "</vendorSpec>" << endl;
+		<< opt->getPlain() << "</vendorSpec>" << endl;
 	}
 	out << "    <vendorSpecLst/>" << endl;
     } else {

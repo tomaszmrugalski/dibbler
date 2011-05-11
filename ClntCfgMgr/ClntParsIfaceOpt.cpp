@@ -17,8 +17,7 @@
 
 using namespace std;
 
-TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt(),
-DsLiteTunnelMode(TUNNEL_NONE)
+TClntParsIfaceOpt::TClntParsIfaceOpt() : TClntParsIAOpt()
 {
     DNSServerLst.clear();
     DomainLst.clear();
@@ -33,12 +32,12 @@ DsLiteTunnelMode(TUNNEL_NONE)
     NISPDomain = "";
     Lifetime = false;
     VendorSpec.clear();
-    
+
     NoIAs   = false;
 
     this->Unicast     = CLIENT_DEFAULT_UNICAST;
     this->RapidCommit = CLIENT_DEFAULT_RAPID_COMMIT;
-    
+
     ReqDNSServer  = false;
     ReqDomain     = false;
     ReqNTPServer  = false;
@@ -57,17 +56,17 @@ DsLiteTunnelMode(TUNNEL_NONE)
 
 bool TClntParsIfaceOpt::getIsIAs()
 {
-    return !this->NoIAs;
+    return !NoIAs;
 }
 
 void TClntParsIfaceOpt::setIsIAs(bool state)
 {
-    this->NoIAs=!state;
+    NoIAs=!state;
 }
 
 void TClntParsIfaceOpt::setUnicast(bool unicast)
 {
-    this->Unicast = unicast;
+    Unicast = unicast;
 }
 
 bool TClntParsIfaceOpt::getUnicast()
@@ -89,7 +88,7 @@ TClntParsIfaceOpt::~TClntParsIfaceOpt() {
 
 // --- option: DNS server ---
 
-List(TIPv6Addr) * TClntParsIfaceOpt::getDNSServerLst() { 
+List(TIPv6Addr) * TClntParsIfaceOpt::getDNSServerLst() {
     return &this->DNSServerLst;
 }
 void TClntParsIfaceOpt::setDNSServerLst(List(TIPv6Addr) *lst) {
@@ -101,10 +100,10 @@ bool TClntParsIfaceOpt::getReqDNSServer() {
 }
 
 // --- option: domain ---
-List(string) * TClntParsIfaceOpt::getDomainLst() { 
+List(string) * TClntParsIfaceOpt::getDomainLst() {
     return &this->DomainLst;
 }
-void TClntParsIfaceOpt::setDomainLst(List(string) * domain) { 
+void TClntParsIfaceOpt::setDomainLst(List(string) * domain) {
     this->DomainLst=*domain;
     this->ReqDomain=true;
 }
@@ -125,14 +124,14 @@ bool TClntParsIfaceOpt::getReqNTPServer(){
 }
 
 // --- option: Timezone ---
-void TClntParsIfaceOpt::setTimezone(string Timezone) { 
+void TClntParsIfaceOpt::setTimezone(string Timezone) {
     this->Timezone=Timezone;
     this->ReqTimezone=true;
 }
 bool TClntParsIfaceOpt::getReqTimezone() {
     return this->ReqTimezone;
 }
-string TClntParsIfaceOpt::getTimezone() { 
+string TClntParsIfaceOpt::getTimezone() {
     return this->Timezone;
 }
 
@@ -150,10 +149,10 @@ bool TClntParsIfaceOpt::getReqSIPServer(){
 }
 
 // --- option: SIP domain ---
-List(string) * TClntParsIfaceOpt::getSIPDomainLst() { 
+List(string) * TClntParsIfaceOpt::getSIPDomainLst() {
     return &this->SIPDomainLst;
 }
-void TClntParsIfaceOpt::setSIPDomainLst(List(string) * domain) { 
+void TClntParsIfaceOpt::setSIPDomainLst(List(string) * domain) {
     this->SIPDomainLst=*domain;
     this->ReqSIPDomain=true;
 }
@@ -162,7 +161,7 @@ bool TClntParsIfaceOpt::getReqSIPDomain() {
 }
 
 // --- option: FQDN ---
-void TClntParsIfaceOpt::setFQDN(string fqdn) { 
+void TClntParsIfaceOpt::setFQDN(string fqdn) {
     this->FQDN=fqdn;
     this->ReqFQDN=true;
 }
@@ -171,12 +170,12 @@ bool TClntParsIfaceOpt::getReqFQDN() {
     return this->ReqFQDN;
 }
 
-string TClntParsIfaceOpt::getFQDN() { 
+string TClntParsIfaceOpt::getFQDN() {
     return this->FQDN;
 }
 
 // --- option: Prefix Delegation ---
-void TClntParsIfaceOpt::setPrefixDelegation() { 
+void TClntParsIfaceOpt::setPrefixDelegation() {
     this->ReqPrefixDelegation=true;
 }
 
@@ -200,11 +199,11 @@ bool TClntParsIfaceOpt::getReqNISServer(){
 }
 
 // --- option: NIS domain ---
-string TClntParsIfaceOpt::getNISDomain() { 
+string TClntParsIfaceOpt::getNISDomain() {
     return this->NISDomain;
 }
 
-void TClntParsIfaceOpt::setNISDomain(string domain) { 
+void TClntParsIfaceOpt::setNISDomain(string domain) {
     this->NISDomain=domain;
     this->ReqNISDomain=true;
 }
@@ -228,10 +227,10 @@ bool TClntParsIfaceOpt::getReqNISPServer(){
 }
 
 // --- option: NIS+ domain ---
-string TClntParsIfaceOpt::getNISPDomain() { 
+string TClntParsIfaceOpt::getNISPDomain() {
     return this->NISPDomain;
 }
-void TClntParsIfaceOpt::setNISPDomain(string domain) { 
+void TClntParsIfaceOpt::setNISPDomain(string domain) {
     this->NISPDomain=domain;
     this->ReqNISPDomain=true;
 }
@@ -241,10 +240,10 @@ bool TClntParsIfaceOpt::getReqNISPDomain() {
 
 // --- option: Lifetime ---
 
-bool TClntParsIfaceOpt::getLifetime() { 
+bool TClntParsIfaceOpt::getLifetime() {
     return this->Lifetime;
 }
-void TClntParsIfaceOpt::setLifetime() { 
+void TClntParsIfaceOpt::setLifetime() {
     this->Lifetime = true;
     this->ReqLifetime = true;
 }
@@ -269,27 +268,3 @@ bool TClntParsIfaceOpt::getReqVendorSpec() {
 List(TOptVendorSpecInfo) TClntParsIfaceOpt::getVendorSpec() {
     return VendorSpec;
 }
-
-void TClntParsIfaceOpt::setDsLiteTunnelMode(EDsLiteTunnelMode mode) {
-    DsLiteTunnelMode = mode;
-}
- 
-EDsLiteTunnelMode TClntParsIfaceOpt::getDsLiteTunnelMode() {
-    return DsLiteTunnelMode;
-}
-
-// void TClntParsIfaceOpt::setDsLiteTunnelAddr(SPtr<TIPv6Addr> addr) {
-// 	DsLiteTunnelAddr = addr;
-// }
-
-// SPtr<TIPv6Addr> TClntParsIfaceOpt::getDsLiteTunnelAddr() {
-// 	return DsLiteTunnelAddr;
-// }
-
-// void TClntParsIfaceOpt::setDsLiteTunnelName(SPtr<TOpt> name) {
-// 	DsLiteTunnelName = name;
-// }
-
-// SPtr<TOpt> TClntParsIfaceOpt::getDsLiteTunnelName() {
-// 	return DsLiteTunnelName;
-// }

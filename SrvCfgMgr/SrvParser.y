@@ -79,14 +79,14 @@ virtual ~SrvParser();
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
     this->lex = lex;
 
-%union    
+%union
 {
     unsigned int ival;
     char *strval;
     struct SDuid
     {
-        int length;
-        char* duid;
+	int length;
+	char* duid;
     } duidval;
     char addrval[16];
 }
@@ -102,11 +102,12 @@ virtual ~SrvParser();
 %token IFACE_MAX_LEASE_, CLASS_MAX_LEASE_, CLNT_MAX_LEASE_
 %token STATELESS_
 %token CACHE_SIZE_
-%token PDCLASS_, PD_LENGTH_, PD_POOL_ 
+%token PDCLASS_, PD_LENGTH_, PD_POOL_
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
-%token EXPERIMENTAL_, ADDR_PARAMS_, DS_LITE_, REMOTE_AUTOCONF_NEIGHBORS_
+%token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
+%token AFTR_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -130,7 +131,7 @@ virtual ~SrvParser();
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
-    
+
 %type  <ival>       Number
 
 %%
@@ -198,8 +199,7 @@ InterfaceOptionDeclaration
 | NISDomainOption
 | NISPServerOption
 | NISPDomainOption
-| DsLiteTunnelAddr
-| DsLiteTunnelName
+| DsLiteAftrName
 | LifetimeOption
 | ExtraOption
 | RemoteAutoconfNeighborsOption
@@ -211,7 +211,7 @@ InterfaceOptionDeclaration
 
 InterfaceDeclaration
 /* iface eth0 { ... } */
-:IFACE_ STRING_ '{' 
+:IFACE_ STRING_ '{'
 {
     if (!StartIfaceDeclaration($2))
 	YYABORT;
@@ -224,7 +224,7 @@ InterfaceDeclarationsList '}'
     EndIfaceDeclaration();
 }
 /* iface 5 { ... } */
-|IFACE_ Number '{' 
+|IFACE_ Number '{'
 {
     if (!StartIfaceDeclaration($2))
 	YYABORT;
@@ -291,8 +291,7 @@ ClientOption
 | LifetimeOption
 | VendorSpecOption
 | ExtraOption
-| DsLiteTunnelAddr
-| DsLiteTunnelName
+| DsLiteAftrName
 | AddressReservation
 ;
 
@@ -307,7 +306,7 @@ ADDRESS_ IPV6ADDR_
 /* class { ... } */
 ClassDeclaration:
 CLASS_ '{'
-{ 
+{
     StartClassDeclaration();
 }
 ClassOptionDeclarationsList '}'
@@ -414,7 +413,7 @@ FQDNList
     Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID " << duidNew->getPlain()<<LogEnd;
     // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(duidNew, $1,false));
-} 
+}
 | STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($3);
@@ -449,11 +448,11 @@ Number
 ;
 
 ADDRESSList
-: IPV6ADDR_   
+: IPV6ADDR_
 {
     PresentAddrLst.append(new TIPv6Addr($1));
 }
-| ADDRESSList ',' IPV6ADDR_   
+| ADDRESSList ',' IPV6ADDR_
 {
     PresentAddrLst.append(new TIPv6Addr($3));
 }
@@ -462,15 +461,15 @@ ADDRESSList
 VendorSpecList
 : Number '-' Number '-' DUID_
 {
-    Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: " 
-               << $3 << ", valuelen=" << $5.length << LogEnd;
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
+	       << $3 << ", valuelen=" << $5.length << LogEnd;
 
     SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($1, $3, $5.duid, $5.length, 0), false);
 }
 | VendorSpecList ',' Number '-' Number '-' DUID_
 {
-    Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: " 
-               << $5 << ", valuelen=" << $7.length << LogEnd;
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
+	       << $5 << ", valuelen=" << $7.length << LogEnd;
     SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($3, $5, $7.duid, $7.length, 0), false);
 }
 ;
@@ -481,47 +480,47 @@ StringList
 ;
 
 ADDRESSRangeList
-    : IPV6ADDR_     
+    : IPV6ADDR_
     {
-        PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
+	PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
     }
-    |   IPV6ADDR_ '-' IPV6ADDR_ 
+    |   IPV6ADDR_ '-' IPV6ADDR_
     {
-        SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
-        SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
-        if (*addr1<=*addr2)
-            PresentRangeLst.append(new TStationRange(addr1,addr2));
-        else
-            PresentRangeLst.append(new TStationRange(addr2,addr1));
+	SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
+	SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
+	if (*addr1<=*addr2)
+	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	else
+	    PresentRangeLst.append(new TStationRange(addr2,addr1));
     }
     |  IPV6ADDR_ '/' INTNUMBER_
     {
 	SPtr<TIPv6Addr> addr(new TIPv6Addr($1));
 	int prefix = $3;
 	if ( (prefix<1) || (prefix>128)) {
-	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
+	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno()
 		      << ". Allowed range: 1..128." << LogEnd;
 	    YYABORT;
 	}
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
-        if (*addr1<=*addr2)
-            PresentRangeLst.append(new TStationRange(addr1,addr2));
-        else
-            PresentRangeLst.append(new TStationRange(addr2,addr1));
+	if (*addr1<=*addr2)
+	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	else
+	    PresentRangeLst.append(new TStationRange(addr2,addr1));
     }
-    | ADDRESSRangeList ',' IPV6ADDR_ 
+    | ADDRESSRangeList ',' IPV6ADDR_
     {
-        PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
+	PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
     }
-    |   ADDRESSRangeList ',' IPV6ADDR_ '-' IPV6ADDR_ 
+    |   ADDRESSRangeList ',' IPV6ADDR_ '-' IPV6ADDR_
     {
-        SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
-        SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
-        if (*addr1<=*addr2)
-            PresentRangeLst.append(new TStationRange(addr1,addr2));
-        else
-            PresentRangeLst.append(new TStationRange(addr2,addr1));
+	SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
+	SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
+	if (*addr1<=*addr2)
+	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	else
+	    PresentRangeLst.append(new TStationRange(addr2,addr1));
     }
 ;
 
@@ -531,29 +530,29 @@ PDRangeList
 	SPtr<TIPv6Addr> addr(new TIPv6Addr($1));
 	int prefix = $3;
 	if ( (prefix<1) || (prefix>128)) {
-	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno() 
+	    Log(Crit) << "Invalid prefix defined: " << prefix << " in line " << lex->lineno()
 		      << ". Allowed range: 1..128." << LogEnd;
 	    YYABORT;
 	}
- 	
+
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
 	SPtr<TStationRange> range = 0;
 	if (*addr1<=*addr2)
-            range = new TStationRange(addr1,addr2);
-        else
-            range = new TStationRange(addr2,addr1);
+	    range = new TStationRange(addr1,addr2);
+	else
+	    range = new TStationRange(addr2,addr1);
 	range->setPrefixLength(prefix);
 	PDLst.append(range);
     }
 ;
 
 ADDRESSDUIDRangeList
-: IPV6ADDR_     
+: IPV6ADDR_
 {
     PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
 }
-|   IPV6ADDR_ '-' IPV6ADDR_ 
+|   IPV6ADDR_ '-' IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
@@ -562,11 +561,11 @@ ADDRESSDUIDRangeList
     else
 	PresentRangeLst.append(new TStationRange(addr2,addr1));
 }
-| ADDRESSDUIDRangeList ',' IPV6ADDR_ 
+| ADDRESSDUIDRangeList ',' IPV6ADDR_
 {
     PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
 }
-|   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_ 
+|   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
@@ -575,53 +574,53 @@ ADDRESSDUIDRangeList
     else
 	PresentRangeLst.append(new TStationRange(addr2,addr1));
 }
-| DUID_ 
+| DUID_
 {
     PresentRangeLst.append(new TStationRange(new TDUID($1.duid,$1.length)));
     delete $1.duid;
 }
-| DUID_ '-' DUID_ 
-{   
+| DUID_ '-' DUID_
+{
     SPtr<TDUID> duid1(new TDUID($1.duid,$1.length));
     SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
-    
+
     if (*duid1<=*duid2)
-        PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
-        PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new TStationRange(duid2,duid1));
 }
-| ADDRESSDUIDRangeList ',' DUID_ 
+| ADDRESSDUIDRangeList ',' DUID_
 {
     PresentRangeLst.append(new TStationRange(new TDUID($3.duid,$3.length)));
     delete $3.duid;
 }
-| ADDRESSDUIDRangeList ',' DUID_ '-' DUID_ 
+| ADDRESSDUIDRangeList ',' DUID_ '-' DUID_
 {
     SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
     SPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
     if (*duid1<=*duid2)
-        PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
-        PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new TStationRange(duid2,duid1));
     delete $3.duid;
     delete $5.duid;
 }
 ;
 
 RejectClientsOption
-: REJECT_CLIENTS_ 
+: REJECT_CLIENTS_
 {
-    PresentRangeLst.clear();    
+    PresentRangeLst.clear();
 } ADDRESSDUIDRangeList
 {
     ParserOptStack.getLast()->setRejedClnt(&PresentRangeLst);
 }
-;  
+;
 
 AcceptOnlyOption
 : ACCEPT_ONLY_
 {
-    PresentRangeLst.clear();    
+    PresentRangeLst.clear();
 } ADDRESSDUIDRangeList
 {
     ParserOptStack.getLast()->setAcceptClnt(&PresentRangeLst);
@@ -631,7 +630,7 @@ AcceptOnlyOption
 PoolOption
 : POOL_
 {
-    PresentRangeLst.clear();    
+    PresentRangeLst.clear();
 } ADDRESSRangeList
 {
     ParserOptStack.getLast()->setPool(&PresentRangeLst);
@@ -639,7 +638,7 @@ PoolOption
 ;
 
 PDPoolOption
-: PD_POOL_ 
+: PD_POOL_
 {
 } PDRangeList
 {
@@ -652,30 +651,30 @@ PDLength
    this->PDPrefix = $2;
 }
 ;
-    
+
 PreferredTimeOption
-: PREF_TIME_ Number 
-{ 
+: PREF_TIME_ Number
+{
     ParserOptStack.getLast()->setPrefBeg($2);
     ParserOptStack.getLast()->setPrefEnd($2);
 }
 | PREF_TIME_ Number '-' Number
 {
     ParserOptStack.getLast()->setPrefBeg($2);
-    ParserOptStack.getLast()->setPrefEnd($4);   
+    ParserOptStack.getLast()->setPrefEnd($4);
 }
 ;
 
 ValidTimeOption
-: VALID_TIME_ Number 
-{ 
+: VALID_TIME_ Number
+{
     ParserOptStack.getLast()->setValidBeg($2);
     ParserOptStack.getLast()->setValidEnd($2);
 }
 | VALID_TIME_ Number '-' Number
 {
     ParserOptStack.getLast()->setValidBeg($2);
-    ParserOptStack.getLast()->setValidEnd($4);  
+    ParserOptStack.getLast()->setValidEnd($4);
 }
 ;
 
@@ -684,7 +683,7 @@ ShareOption
 {
     int x=$2;
     if ( (x<1) || (x>1000)) {
-	Log(Crit) << "Invalid share value: " << x << " in line " << lex->lineno() 
+	Log(Crit) << "Invalid share value: " << x << " in line " << lex->lineno()
 		  << ". Allowed range: 1..1000." << LogEnd;
 	YYABORT;
     }
@@ -692,40 +691,40 @@ ShareOption
 }
 
 T1Option
-: T1_ Number 
+: T1_ Number
 {
-    ParserOptStack.getLast()->setT1Beg($2); 
-    ParserOptStack.getLast()->setT1End($2); 
+    ParserOptStack.getLast()->setT1Beg($2);
+    ParserOptStack.getLast()->setT1End($2);
 }
 | T1_ Number '-' Number
 {
-    ParserOptStack.getLast()->setT1Beg($2); 
-    ParserOptStack.getLast()->setT1End($4); 
+    ParserOptStack.getLast()->setT1Beg($2);
+    ParserOptStack.getLast()->setT1End($4);
 }
 ;
 
 T2Option
-: T2_ Number 
-{ 
-    ParserOptStack.getLast()->setT2Beg($2); 
-    ParserOptStack.getLast()->setT2End($2); 
+: T2_ Number
+{
+    ParserOptStack.getLast()->setT2Beg($2);
+    ParserOptStack.getLast()->setT2End($2);
 }
 | T2_ Number '-' Number
 {
-    ParserOptStack.getLast()->setT2Beg($2); 
-    ParserOptStack.getLast()->setT2End($4); 
+    ParserOptStack.getLast()->setT2Beg($2);
+    ParserOptStack.getLast()->setT2End($4);
 }
 ;
 
 ClntMaxLeaseOption
-: CLNT_MAX_LEASE_ Number 
-{ 
+: CLNT_MAX_LEASE_ Number
+{
     ParserOptStack.getLast()->setClntMaxLease($2);
 }
 ;
 
 ClassMaxLeaseOption
-: CLASS_MAX_LEASE_ Number 
+: CLASS_MAX_LEASE_ Number
 {
     ParserOptStack.getLast()->setClassMaxLease($2);
 }
@@ -744,20 +743,11 @@ AddrParams
     ParserOptStack.getLast()->setAddrParams($2,bitfield);
 };
 
-DsLiteTunnelAddr
-: OPTION_ DS_LITE_ IPV6ADDR_
+DsLiteAftrName
+: OPTION_ AFTR_ STRING_
 {
-    SPtr<TIPv6Addr> addr = new TIPv6Addr($3);
-    Log(Info) << "Enabling DS-Lite tunnel option, address=" << addr->getPlain() << LogEnd;
-    SPtr<TOpt> tunnelAddr = new TOptAddr(OPTION_DS_LITE_ADDR, addr, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(tunnelAddr, false);
-};
-
-DsLiteTunnelName
-: OPTION_ DS_LITE_ STRING_
-{
-    SPtr<TOpt> tunnelName = new TOptString(OPTION_DS_LITE_NAME, $3, 0);
-    Log(Info) << "Enabling DS-Lite tunnel option, name=" << $3 << LogEnd;
+    SPtr<TOpt> tunnelName = new TOptString(OPTION_AFTR_NAME, $3, 0);
+    Log(Debug) << "Enabling DS-Lite tunnel option, AFTR name=" << $3 << LogEnd;
     SrvCfgIfaceLst.getLast()->addExtraOption(tunnelName, false);
 };
 
@@ -776,7 +766,7 @@ ExtraOption
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << addr->getPlain() << LogEnd;
 }
-|OPTION_ Number ADDRESS_LIST_  
+|OPTION_ Number ADDRESS_LIST_
 {
     PresentAddrLst.clear();
 } ADDRESSList
@@ -793,7 +783,7 @@ ExtraOption
 };
 
 RemoteAutoconfNeighborsOption
-:OPTION_ REMOTE_AUTOCONF_NEIGHBORS_ 
+:OPTION_ REMOTE_AUTOCONF_NEIGHBORS_
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
 	Log(Crit) << "Experimental 'remote autoconf neighbors' defined, but "
@@ -807,7 +797,7 @@ RemoteAutoconfNeighborsOption
 {
     SPtr<TOpt> opt = new TOptAddrLst(OPTION_NEIGHBORS, PresentAddrLst, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Remote autoconf neighbors enabled (" << PresentAddrLst.count() 
+    Log(Debug) << "Remote autoconf neighbors enabled (" << PresentAddrLst.count()
 	       << " neighbors defined.)" << LogEnd;
 }
 
@@ -827,29 +817,29 @@ UnicastAddressOption
 ;
 
 RapidCommitOption
-:   RAPID_COMMIT_ Number 
-{ 
+:   RAPID_COMMIT_ Number
+{
     if ( ($2!=0) && ($2!=1)) {
-	Log(Crit) << "RAPID-COMMIT  parameter in line " << lex->lineno() << " must have 0 or 1 value." 
-               << LogEnd;
+	Log(Crit) << "RAPID-COMMIT  parameter in line " << lex->lineno() << " must have 0 or 1 value."
+	       << LogEnd;
 	YYABORT;
     }
     if (yyvsp[0].ival==1)
-	ParserOptStack.getLast()->setRapidCommit(true); 
+	ParserOptStack.getLast()->setRapidCommit(true);
     else
-	ParserOptStack.getLast()->setRapidCommit(false); 
+	ParserOptStack.getLast()->setRapidCommit(false);
 }
 ;
-    
+
 PreferenceOption
-: PREFERENCE_ Number 
-{ 
+: PREFERENCE_ Number
+{
     if (($2<0)||($2>255)) {
-	Log(Crit) << "Preference value (" << $2 << ") in line " << lex->lineno() 
+	Log(Crit) << "Preference value (" << $2 << ") in line " << lex->lineno()
 		   << " is out of range [0..255]." << LogEnd;
 	YYABORT;
     }
-    ParserOptStack.getLast()->setPreference($2);    
+    ParserOptStack.getLast()->setPreference($2);
 }
 ;
 
@@ -872,7 +862,7 @@ LogNameOption
 ;
 
 LogColors
-: LOGCOLORS_ Number 
+: LOGCOLORS_ Number
 {
     logger::setColors($2==1);
 }
@@ -914,18 +904,18 @@ Experimental
 IfaceIDOrder
 :IFACE_ID_ORDER_ STRING_
 {
-    if (!strncasecmp($2,"before",6)) 
+    if (!strncasecmp($2,"before",6))
     {
 		ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_BEFORE);
-    } else 
-    if (!strncasecmp($2,"after",5)) 
+    } else
+    if (!strncasecmp($2,"after",5))
     {
 		ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_AFTER);
     } else
-    if (!strncasecmp($2,"omit",4)) 
+    if (!strncasecmp($2,"omit",4))
     {
 		ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_NONE);
-    } else 
+    } else
     {
 		Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, omit" << LogEnd;
 		YYABORT;
@@ -1039,10 +1029,10 @@ ClassOptionDeclaration
 | AllowClientClassDeclaration
 | DenyClientClassDeclaration
 ;
-	
+
 AllowClientClassDeclaration
 : ALLOW_ STRING_
-{	
+{
     SPtr<TSrvCfgClientClass> clntClass;
     bool found = false;
     SrvCfgClientClassLst.first();
@@ -1066,12 +1056,12 @@ AllowClientClassDeclaration
 	Log(Crit) << "Line " << lex->lineno() << ": Unable to define both allow and deny lists for this client class." << LogEnd;
 	YYABORT;
     }
-	
+
 }
 
 DenyClientClassDeclaration
 : DENY_ STRING_
-{	
+{
     SPtr<TSrvCfgClientClass> clntClass;
     bool found = false;
     SrvCfgClientClassLst.first();
@@ -1103,7 +1093,7 @@ DenyClientClassDeclaration
 ////////////////////////////////////////////////////////////////////////
 
 DNSServerOption
-:OPTION_ DNS_SERVER_ 
+:OPTION_ DNS_SERVER_
 {
     PresentAddrLst.clear();
 } ADDRESSList
@@ -1119,7 +1109,7 @@ DomainOption
 : OPTION_ DOMAIN_ {
     PresentStringLst.clear();
 } StringList
-{ 
+{
     ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 }
 ;
@@ -1128,7 +1118,7 @@ DomainOption
 /// NTP-SERVER option //////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 NTPServerOption
-:OPTION_ NTP_SERVER_ 
+:OPTION_ NTP_SERVER_
 {
     PresentAddrLst.clear();
 } ADDRESSList
@@ -1141,9 +1131,9 @@ NTPServerOption
 /// TIME-ZONE option ///////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 TimeZoneOption
-: OPTION_ TIME_ZONE_ STRING_ 
-{ 
-    ParserOptStack.getLast()->setTimezone($3); 
+: OPTION_ TIME_ZONE_ STRING_
+{
+    ParserOptStack.getLast()->setTimezone($3);
 }
 ;
 
@@ -1197,9 +1187,9 @@ FQDNOption
 } FQDNList
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
-  
+
 }
-|OPTION_ FQDN_ INTNUMBER_ INTNUMBER_ 
+|OPTION_ FQDN_ INTNUMBER_ INTNUMBER_
 {
     PresentFQDNLst.clear();
     Log(Debug) << "FQDNMode found, setting value " << $3 <<LogEnd;
@@ -1209,7 +1199,7 @@ FQDNOption
 } FQDNList
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
-  
+
 }
 ;
 
@@ -1272,7 +1262,7 @@ NISDomainOption
 //NISP-DOMAIN option//////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 NISPDomainOption
-:OPTION_ NISP_DOMAIN_ STRING_ 
+:OPTION_ NISP_DOMAIN_ STRING_
 {
     ParserOptStack.getLast()->setNISPDomain($3);
 }
@@ -1298,7 +1288,7 @@ VendorSpecOption
 
 
 ClientClass
-:CLIENT_CLASS_ STRING_ '{'  
+:CLIENT_CLASS_ STRING_ '{'
 {
     Log(Notice) << "ClientClass found, name: " << string($2) << LogEnd;
 } ClientClassDecleration   '}'
@@ -1308,8 +1298,8 @@ ClientClass
     NodeClientClassLst.delLast();
 }
 ;
-	
-		
+
+
 ClientClassDecleration
 : MATCH_IF_ Condition
 {
@@ -1331,7 +1321,7 @@ Condition
     NodeClientClassLst.delLast();
     SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
-    
+
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_EQUAL,l,r));
 }
 | '(' Condition  AND_  Condition ')'
@@ -1341,7 +1331,7 @@ Condition
     SPtr<Node> r = NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
     NodeClientClassLst.append(new NodeOperator(NodeOperator::OPERATOR_AND,l,r));
-    
+
 }
 | '(' Condition  OR_  Condition ')'
 {
@@ -1388,11 +1378,11 @@ Expr
 /////////////////////////////////////////////////////////////////////////////
 // programs section
 
-/** 
+/**
  * method check whether interface with id=ifaceNr has been already declared
- * 
- * @param ifaceNr 
- * 
+ *
+ * @param ifaceNr
+ *
  * @return true if interface was not declared
  */
 bool SrvParser::IfaceDefined(int ifaceNr)
@@ -1406,12 +1396,12 @@ bool SrvParser::IfaceDefined(int ifaceNr)
     }
   return true;
 }
-    
-/** 
+
+/**
  * check whether interface with id=ifaceName has been already declared
- * 
- * @param ifaceName 
- * 
+ *
+ * @param ifaceName
+ *
  * @return true, if defined, false otherwise
  */
 bool SrvParser::IfaceDefined(string ifaceName)
@@ -1429,14 +1419,14 @@ bool SrvParser::IfaceDefined(string ifaceName)
   return true;
 }
 
-/** 
+/**
  * method creates new option for just started interface scope
  * clears all lists except the list of interfaces and adds new group
- * 
+ *
  */
 bool SrvParser::StartIfaceDeclaration(string ifaceName)
 {
-    if (!IfaceDefined(ifaceName)) 
+    if (!IfaceDefined(ifaceName))
 	return false;
 
     SrvCfgIfaceLst.append(new TSrvCfgIface(ifaceName));
@@ -1449,14 +1439,14 @@ bool SrvParser::StartIfaceDeclaration(string ifaceName)
     return true;
 }
 
-/** 
+/**
  * method creates new option for just started interface scope
  * clears all lists except the list of interfaces and adds new group
- * 
+ *
  */
 bool SrvParser::StartIfaceDeclaration(int ifindex)
 {
-    if (!IfaceDefined(ifindex)) 
+    if (!IfaceDefined(ifindex))
 	return false;
 
     SrvCfgIfaceLst.append(new TSrvCfgIface(ifindex));
@@ -1470,11 +1460,11 @@ bool SrvParser::StartIfaceDeclaration(int ifindex)
 }
 
 
-/** 
+/**
  * this method is called after inteface declaration has ended. It creates
  * new interface representation used in SrvCfgMgr. Also removes corresponding
  * element from the parser stack
- * 
+ *
  * @return true if everything is ok
  */
 bool SrvParser::EndIfaceDeclaration()
@@ -1489,20 +1479,20 @@ bool SrvParser::EndIfaceDeclaration()
     SPtr<TSrvCfgAddrClass> ptrAddrClass;
     SrvCfgAddrClassLst.first();
     while (ptrAddrClass=SrvCfgAddrClassLst.get())
-        iface->addAddrClass(ptrAddrClass);
+	iface->addAddrClass(ptrAddrClass);
     SrvCfgAddrClassLst.clear();
 
     // copy all TA objects
     SPtr<TSrvCfgTA> ta;
     SrvCfgTALst.first();
     while (ta=SrvCfgTALst.get())
-        iface->addTA(ta);
+	iface->addTA(ta);
     SrvCfgTALst.clear();
 
     SPtr<TSrvCfgPD> pd;
     SrvCfgPDLst.first();
     while (pd=SrvCfgPDLst.get())
-        iface->addPD(pd);
+	iface->addPD(pd);
     SrvCfgPDLst.clear();
 
     iface->addClientExceptionsLst(ClientLst);
@@ -1511,7 +1501,7 @@ bool SrvParser::EndIfaceDeclaration()
     ParserOptStack.delLast();
 
     return true;
-}   
+}
 
 void SrvParser::StartClassDeclaration()
 {
@@ -1519,16 +1509,16 @@ void SrvParser::StartClassDeclaration()
     SrvCfgAddrClassLst.append(new TSrvCfgAddrClass());
 }
 
-/** 
+/**
  * this method is adds new object representig just parsed IA class.
- * 
+ *
  * @return true if everything works ok.
  */
 bool SrvParser::EndClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool()) {
-        Log(Crit) << "No pools defined for this class." << LogEnd;
-        return false;
+	Log(Crit) << "No pools defined for this class." << LogEnd;
+	return false;
     }
     //setting interface options on the basis of just read information
     SrvCfgAddrClassLst.getLast()->setOptions(ParserOptStack.getLast());
@@ -1538,9 +1528,9 @@ bool SrvParser::EndClassDeclaration()
 }
 
 
-/** 
+/**
  * Just add global options
- * 
+ *
  */
 void SrvParser::StartTAClassDeclaration()
 {
@@ -1550,8 +1540,8 @@ void SrvParser::StartTAClassDeclaration()
 bool SrvParser::EndTAClassDeclaration()
 {
     if (!ParserOptStack.getLast()->countPool()) {
-        Log(Crit) << "No pools defined for this ta-class." << LogEnd;
-        return false;
+	Log(Crit) << "No pools defined for this ta-class." << LogEnd;
+	return false;
     }
     // create new object representing just parsed TA and add it to the list
     SPtr<TSrvCfgTA> ptrTA = new TSrvCfgTA();
@@ -1573,14 +1563,14 @@ void SrvParser::StartPDDeclaration()
 bool SrvParser::EndPDDeclaration()
 {
     if (!this->PDLst.count()) {
-        Log(Crit) << "No PD pools defined ." << LogEnd;
-        return false;
+	Log(Crit) << "No PD pools defined ." << LogEnd;
+	return false;
     }
     if (!this->PDPrefix) {
 	Log(Crit) << "PD prefix length not defined or set to 0." << LogEnd;
 	return false;
     }
-	
+
     int len = 0;
     this->PDLst.first();
     while ( SPtr<TStationRange> pool = PDLst.get() ) {
@@ -1596,7 +1586,7 @@ bool SrvParser::EndPDDeclaration()
 	return false;
     }
     if (len==PDPrefix) {
-        Log(Warning) << "Prefix pool /" << PDPrefix << " defined and clients are supposed to get /" << len << " prefixes. Only ONE client will get prefix" << LogEnd;
+	Log(Warning) << "Prefix pool /" << PDPrefix << " defined and clients are supposed to get /" << len << " prefixes. Only ONE client will get prefix" << LogEnd;
     }
 
     SPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
@@ -1625,8 +1615,8 @@ int SrvParser::yylex()
 
 void SrvParser::yyerror(char *m)
 {
-    Log(Crit) << "Config parse error: line " << lex->lineno() 
-              << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
+    Log(Crit) << "Config parse error: line " << lex->lineno()
+	      << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
 }
 
 SrvParser::~SrvParser() {

@@ -139,7 +139,7 @@
 // RFC-ietf-dhc-paa-option-05.txt
 #define OPTION_PANA_AGENT       40
 
-// RFC4833: Timezone options for DHCP 
+// RFC4833: Timezone options for DHCP
 #define OPTION_NEW_POSIX_TIMEZONE 41
 #define OPTION_NEW_TZDB_TIMEZONE  42
 
@@ -153,6 +153,9 @@
 #define OPTION_LQ_RELAY_DATA    47
 #define OPTION_LQ_CLIENT_LINK   48
 
+// draft-ietf-softwire-ds-lite-tunnel-option-10, approved by IESG
+#define OPTION_AFTR_NAME        64
+
 // The following option numbers are not yet standardized and
 // won't interoperate with other implementations
 // option formats taken from:
@@ -163,10 +166,6 @@
 // Experimental implementation for address prefix length information
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251
-
-// draft-ietf-softwire-ds-lite-tunnel-option
-#define OPTION_DS_LITE_ADDR 252
-#define OPTION_DS_LITE_NAME 253
 
 // draft-mrugalski-remote-dhcpv6-00
 #define OPTION_NEIGHBORS 254
@@ -182,14 +181,14 @@ typedef enum {
 #define OPTION_ELAPSED_TIME_LEN     2
 #define OPTION_INFORMATION_REFRESH_TIME_LEN         4
 
-// --- Status Codes --- 
+// --- Status Codes ---
 #define STATUSCODE_SUCCESS          0
 #define STATUSCODE_UNSPECFAIL       1
 #define STATUSCODE_NOADDRSAVAIL     2
 #define STATUSCODE_NOBINDING        3
 #define STATUSCODE_NOTONLINK        4
 #define STATUSCODE_USEMULTICAST     5
-#define STATUSCODE_NOPREFIXAVAIL    6 
+#define STATUSCODE_NOPREFIXAVAIL    6
 // Leasequery status codes
 #define STATUSCODE_UNKNOWNQUERYTYPE 7
 #define STATUSCODE_MALFORMEDQUERY   8
@@ -206,21 +205,14 @@ enum ETentative {
 };
 
 enum EState {
-    STATE_NOTCONFIGURED, 
+    STATE_NOTCONFIGURED,
     STATE_INPROCESS,
-    STATE_CONFIGURED, 
+    STATE_CONFIGURED,
     STATE_FAILED,
     STATE_DISABLED,
     STATE_CONFIRMME,
     STATE_TENTATIVECHECK,
     STATE_TENTATIVE};
-
-enum EDsLiteTunnelMode {
-    TUNNEL_NONE,
-    TUNNEL_ADDR, // use DS_LITE_TUNNEL_ADDR option
-    TUNNEL_NAME, // use DS_LITE_TUNNEL_NAME option
-    TUNNEL_BOTH  // use both
-};
 
 // specifies server behavior, when receiving unknown FQDN
 enum EUnknownFQDNMode {
@@ -241,7 +233,7 @@ enum EUnknownFQDNMode {
 #define ADDRPARAMS_MASK_ANYCAST   0x02
 #define ADDRPARAMS_MASK_MULTICAST 0x04
 
-    
+
 int allowOptInOpt(int msgType, int optOut, int optIn);
 int allowOptInMsg(int msgType, int optType);
 
@@ -271,21 +263,21 @@ int allowOptInMsg(int msgType, int optType);
 #endif
 
 enum DigestTypes {
-        DIGEST_NONE = 0,
-        DIGEST_PLAIN = 1,
-        DIGEST_HMAC_MD5 = 2,
-        DIGEST_HMAC_SHA1 = 3,
-        DIGEST_HMAC_SHA224 = 4,
-        DIGEST_HMAC_SHA256 = 5,
-        DIGEST_HMAC_SHA384 = 6,
-        DIGEST_HMAC_SHA512 = 7,
-        //this must be last, increase it if necessary
-        DIGEST_INVALID = 8
+	DIGEST_NONE = 0,
+	DIGEST_PLAIN = 1,
+	DIGEST_HMAC_MD5 = 2,
+	DIGEST_HMAC_SHA1 = 3,
+	DIGEST_HMAC_SHA224 = 4,
+	DIGEST_HMAC_SHA256 = 5,
+	DIGEST_HMAC_SHA384 = 6,
+	DIGEST_HMAC_SHA512 = 7,
+	//this must be last, increase it if necessary
+	DIGEST_INVALID = 8
 };
 
 unsigned getDigestSize(enum DigestTypes type);
 char *getDigestName(enum DigestTypes type);
-        
+
 // key is generated this way:
 // key = HMAC-SHA1 (AAA-key, {Key Generation Nonce || client identifier})
 // so it's size is always size of HMAC-SHA1 result which is 160bits = 20bytes
