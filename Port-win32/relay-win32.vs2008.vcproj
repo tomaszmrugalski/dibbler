@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="relay-win32"
 	ProjectGUID="{F3D13220-6D1A-43A5-B753-AA107DAC773D}"
 	Keyword="ManagedCProj"
@@ -387,6 +387,10 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorData.cpp"
 					>
 				</File>
 				<File
