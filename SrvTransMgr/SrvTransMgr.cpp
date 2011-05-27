@@ -112,11 +112,17 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     }
     memcpy(srvAddr, iface->firstLLAddress(), 16);
     SPtr<TIPv6Addr> llAddr = new TIPv6Addr(iface->firstLLAddress());
-    Log(Notice) << "Creating link-local (" << llAddr->getPlain() << ") socket on " << iface->getFullName()
-                << " interface." << LogEnd;
-    if (!iface->addSocket(llAddr, DHCPSERVER_PORT, true, false)) {
-        Log(Crit) << "Failed to create link-local socket on " << iface->getFullName() << " interface." << LogEnd;
-        return false;
+    if (iface->getSocketByAddr(llAddr)) {
+	Log(Notice) << "Address " << llAddr->getPlain() << " is already bound on the "
+	    << iface->getName() << "." << LogEnd;
+	return true;
+    } else {
+        Log(Notice) << "Creating link-local (" << llAddr->getPlain() << ") socket on " << iface->getFullName()
+	            << " interface." << LogEnd;
+	if (!iface->addSocket(llAddr, DHCPSERVER_PORT, true, false)) {
+    	    Log(Crit) << "Failed to create link-local socket on " << iface->getFullName() << " interface." << LogEnd;
+    	    return false;
+    	}
     }
 #endif
 

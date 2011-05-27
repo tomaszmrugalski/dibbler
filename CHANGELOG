@@ -2,6 +2,9 @@
   Dibbler changelog
  ------------------- 
 
+0.8.1 [not-released-yet]
+  - Fixed socket binding problem on server that may affect relay scenarios
+
 0.8.0 [2011-05-11]
   - Fixed compilation problems
   - Fix: client, server and relay no longer leave PID file after failed start
