@@ -670,8 +670,13 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "  <SrvCfgIface name=\""<<iface.Name << "\" ifindex=\""<<iface.ID << "\">" << endl;
 
     if (iface.Relay) {
-	out << "    <relay name=\"" << iface.RelayName << "\" ifindex=\"" << iface.RelayID << "\" interfaceid=\""
-	    << iface.RelayInterfaceID->getPlain() << "\"/>" << std::endl;
+        out << "    <relay name=\"" << iface.RelayName << "\" ifindex=\"" << iface.RelayID;
+	if (iface.RelayInterfaceID) {
+	  out << "\" interfaceid=\"" << iface.RelayInterfaceID->getPlain() << "\"";
+	} else {
+	  out << "\" interfaceid=null";
+	}
+	out << "/>" << std::endl;
     } else {
 	out << "    <!-- <relay/> -->" << std::endl;
     }

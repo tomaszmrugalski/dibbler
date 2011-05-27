@@ -106,8 +106,12 @@ ostream & operator <<(ostream & strum, TSrvIfaceIface &x) {
     if (x.RelaysCnt) {
 	for (i=0; i< x.RelaysCnt; i++) {
 	    strum << "    <OverlayingRelay name=\"" << x.Relays[i].iface->getName() 
-		  << "\" ifindex=\"" << x.Relays[i].ifindex 
-		  << "\" interfaceID=\"" << x.Relays[i].interfaceID->getPlain() << "\" />" << endl;
+		  << "\" ifindex=\"" << x.Relays[i].ifindex;
+	    if (x.Relays[i].interfaceID)
+	      strum << "\" interfaceID=\"" << x.Relays[i].interfaceID->getPlain();
+	    else
+	      strum << "\" interfaceID=null\"";
+	    strum << "\" />" << endl;
 	}
     }
 

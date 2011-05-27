@@ -22,7 +22,7 @@
 TOptVendorSpecInfo::TOptVendorSpecInfo(int type, char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {
-    int optionCode, optionLen;
+    int optionCode = 0, optionLen = 0;
     if (n<4) {
 	Log(Error) << "Unable to parse truncated vendor-spec info option." << LogEnd;
 	this->Vendor = 0;
