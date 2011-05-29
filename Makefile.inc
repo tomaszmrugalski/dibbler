@@ -78,7 +78,8 @@ INSTALL      = 'install'
 MKDIR        = mkdir -p
 CP           = cp
 
-PREFIX       = ..
+
+PREFIX       = $(TOPDIR)
 PORTDIR      = $(PREFIX)/$(PORT_SUBDIR)
 INCDIR       = $(PREFIX)/include
 ADDRMGR      = $(PREFIX)/AddrMgr
@@ -142,11 +143,14 @@ RELAY        = $(PORTDIR)/$(RELAYBIN).cpp
 
 all: libs
 
+objs: $(OBJECTS)
+
 FINDOPTS = -path './poslib/*' -prune -o
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
-	rm -f *~ *.o *.a test? $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) $(REQUESTORBIN) TAGS
+	rm -f *~ *.o *.a $(CLIENTBIN) $(SERVERBIN) $(RELAYBIN) $(REQUESTORBIN) TAGS
+	rm -f $(TESTS) $(OBJECTS)
 	find . $(FINDOPTS) -type l -exec rm {} \;
 	find . $(FINDOPTS) -name *.a -exec rm {} \;
 	find . $(FINDOPTS) -name *~ -exec rm {} \;
