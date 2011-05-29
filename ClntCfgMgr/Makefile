@@ -1,14 +1,11 @@
-include ../Makefile.inc
+TOPDIR = ..
+
+include $(TOPDIR)/Makefile.inc
 
 OBJECTS = ClntParser.o        ClntLexer.o     ClntCfgIA.o        ClntCfgMgr.o      \
 	  ClntCfgIface.o      		      ClntCfgAddr.o      ClntParsAddrOpt.o \
           ClntParsGlobalOpt.o ClntParsIAOpt.o ClntParsIfaceOpt.o ClntCfgTA.o       \
 	  ClntCfgPD.o        ClntCfgPrefix.o
-
-#Dedicated rule no longer needed. Default rule handles it well
-#ClntLexer.o: ClntLexer.cpp
-#	@echo "[CXX    ] $(SUBDIR)/$@"
-#	$(CXX) $(CPPFLAGS) -c -ftemplate-depth-30 ClntLexer.cpp
 
 objs: $(OBJECTS)
 

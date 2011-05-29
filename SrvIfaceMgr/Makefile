@@ -1,4 +1,4 @@
-include ../Makefile.inc
+TOPDIR = ..
 
 OBJECTS = SrvIfaceIface.o SrvIfaceMgr.o
 
@@ -6,6 +6,6 @@ ifndef MOD_SRV_DISABLE_DNSUPDATE
 OBJECTS += $(IFACEMGR)/DNSUpdate.o
 endif
 
-objs: $(OBJECTS)
+include $(TOPDIR)/Makefile.inc
 
 libs: libSrvIfaceMgr.a

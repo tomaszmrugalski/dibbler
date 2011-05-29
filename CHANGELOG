@@ -5,6 +5,7 @@
 0.8.1 [not-released-yet]
   - Fixed socket binding problem on server that may affect relay scenarios
   - Fixed segmentation fault when interface-id was not defined on relay interface.
+  - Makefiles reworked.
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

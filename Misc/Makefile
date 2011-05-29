@@ -1,4 +1,5 @@
-include ../Makefile.inc
+TOPDIR = ..
+
 OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o FQDN.o KeyList.o
 
 ifndef MOD_DISABLE_AUTH
@@ -8,6 +9,8 @@ endif
 objs: $(OBJECTS)
 
 libs:	libMisc.a
+
+include $(TOPDIR)/Makefile.inc
 
 # addr conversion (packed[[16] <-> plaintext[48])
 addrpack.o: addrpack.c 

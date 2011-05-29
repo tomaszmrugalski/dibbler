@@ -1,12 +1,14 @@
-include ../Makefile.inc
+TOPDIR = ..
 
-OBJECTS =  SrvParser.o SrvLexer.o SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o \
-           SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o SrvCfgTA.o \
-	   SrvCfgPD.o SrvCfgOptions.o SrvCfgClientClass.o Node.o NodeConstant.o  NodeClientSpecific.o NodeOperator.o
 
-objs: $(OBJECTS)
+OBJECTS =  SrvParser.o SrvLexer.o SrvCfgAddrClass.o SrvCfgIface.o SrvCfgMgr.o    \
+           SrvParsClassOpt.o SrvParsGlobalOpt.o SrvParsIfaceOpt.o SrvCfgTA.o     \
+	   SrvCfgPD.o SrvCfgOptions.o SrvCfgClientClass.o Node.o NodeConstant.o  \
+	   NodeClientSpecific.o NodeOperator.o
 
 libs: libSrvCfgMgr.a
+
+include ../Makefile.inc
 
 # No longer needed default rule handles it well
 #SrvLexer.o: SrvLexer.cpp

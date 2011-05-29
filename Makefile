@@ -1,6 +1,8 @@
-include Makefile.inc
-PREFIX = .
 export TOPDIR=$(CURDIR)
+include Makefile.inc
+
+PREFIX = .
+
 
 all: server client relay
 
@@ -225,12 +227,12 @@ VERSION-win:
 
 	echo " C++ compiler used " >> VERSION
 	echo "-------------------" >> VERSION
-	echo "MS Visual C++ 2003 edition" >> VERSION
+	echo "MS Visual C++ 2008 edition" >> VERSION
 	echo >> VERSION
 
 	echo " C compiler used " >> VERSION
 	echo "-----------------" >> VERSION
-	echo "MS Visual C++ 2003 edition" >> VERSION
+	echo "MS Visual C++ 2008 edition" >> VERSION
 	echo >> VERSION
 
 	echo " Date " >> VERSION
@@ -484,15 +486,6 @@ links: includes
 clobber: clean clean-libs
 
 .PHONY: release-winxp release-src release-linux release-deb relase-rpm release-all VERSION VERSION-win doc parser snapshot help Requestor test2 v2 v2orlater
-
-
-# test section, please ingore.
-test1: test/test14.cpp
-	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) test/test1.cpp -I$(INCDIR) -L$(MISC) -lMisc -o test1
-#	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) test/test1.cpp -L$(MISC) -lMisc -o test1 -nodefaultlibs -luClibc++
-
-test2: test/test2.cpp
-	$(CXX) $(CLNT_LDFLAGS) $(OPTS) $(CLNTLINKOPTS) -I/home/thomson/devel/openwrt/kamikaze/build_dir/mipsel/uClibc++-0.2.2/include test/test2.cpp Misc/Logger.cpp -o test2 -nodefaultlibs -luClibc++
 
 v2:
 	find . -name *.h \

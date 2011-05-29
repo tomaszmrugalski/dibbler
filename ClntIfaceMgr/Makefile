@@ -1,4 +1,6 @@
-include ../Makefile.inc
+TOPDIR = ..
+
+include $(TOPDIR)/Makefile.inc
 
 OBJECTS = ClntIfaceMgr.o ClntIfaceIface.o
 
