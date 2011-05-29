@@ -43,16 +43,24 @@ enum DnsUpdateMode {
 };
 
 class DNSUpdate {
-    
+
+ public:
+    enum DnsUpdateProtocol {
+	DNSUPDATE_TCP,
+	DNSUPDATE_UDP,
+	DNSUPDATE_ANY
+    };
+
 private:
     DnsMessage *message;
     _addr server;
-    char* hostname;
+    char* _hostname;
     char* hostip;
     domainname* zoneroot;
     char* ttl;
     DnsUpdateMode updateMode;
-    
+    DnsUpdateProtocol _proto;
+   
     void splitHostDomain(string fqdnName);
 
     void createSOAMsg();
@@ -63,13 +71,15 @@ private:
     void deletePTRRecordFromRRSet();
     bool DnsRR_avail(DnsMessage *msg, DnsRR& RemoteDnsRR);
     DnsRR* get_oldDnsRR();
-    void sendMsg();
-  
-    
+    void sendMsg(unsigned int timeout);
+    void sendMsgTCP(unsigned int timeout);
+    void sendMsgUDP(unsigned int timeout);
+     
  public:
-    DNSUpdate(string dns_address, string zonename, string hostname, string hostip,
-	      DnsUpdateMode updateMode);
+    DNSUpdate(string dns_address, string zonename, string hostname, 
+	      string hostip, DnsUpdateMode updateMode, 
+	      DnsUpdateProtocol proto = DNSUPDATE_TCP);
     ~DNSUpdate();
-    DnsUpdateResult run();
+    DnsUpdateResult run(int timeout);
     void showResult(int result);
 };

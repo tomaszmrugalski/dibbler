@@ -824,7 +824,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	
 	SPtr<TIPv6Addr> DNSAddr = SrvCfgMgr().fqdnDdnsAddress();
 	if (!DNSAddr) {
-	    Log(Debug) << "FQDN: DDNS address not specified, using first address used in DNS nameserver option" << LogEnd;
+	    Log(Debug) << "DDNS: DDNS address not specified, using first address used in DNS nameserver option" << LogEnd;
 
 	    // Here we check if all parameters are set, and do the DNS update if possible
 	    List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
@@ -835,7 +835,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 		DNSAddr = DNSSrvLst.get();
 	}
 	if (!DNSAddr) {
-	    Log(Error) << "FQDN: DNS Update aborted. DNS server address is unknown." << LogEnd;
+	    Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
 	    return 0;
 	}
       	
@@ -854,31 +854,46 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
 	SPtr<TIPv6Addr> IPv6Addr = addr->get();
 	
-	Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" << *IPv6Addr << " and FQDN=" 
-		    << fqdnName << LogEnd;
+	Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" 
+		    << *IPv6Addr << " and FQDN=" << fqdnName << LogEnd;
       	
 	//Test for DNS update
 	char zoneroot[128];
 	doRevDnsZoneRoot(IPv6Addr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
+	TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+	DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+
+	// that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
+	// and that would include both poslib and Dibbler headers in one place. Universe would implode then.
+	if (proto == TCfgMgr::DNSUPDATE_UDP)
+	    proto2 = DNSUpdate::DNSUPDATE_UDP;
+	if (proto == TCfgMgr::DNSUPDATE_ANY)
+	    proto2 = DNSUpdate::DNSUPDATE_ANY;
+
+	unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+	
 	if (FQDNMode==1){
 	    /* add PTR only */
 	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), DNSUPDATE_PTR);
-	    result = act->run();
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
+					   DNSUPDATE_PTR, proto2);
+	    result = act->run(timeout);
 	    act->showResult(result);
 	    delete act;
 	} // fqdnMode == 1
 	else if (FQDNMode==2){
 	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), DNSUPDATE_PTR);
-	    result = act->run();
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
+					   DNSUPDATE_PTR, proto2);
+	    result = act->run(timeout);
 	    act->showResult(result);
 	    delete act;
       	    
 	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
-	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), "", fqdnName, IPv6Addr->getPlain(), DNSUPDATE_AAAA);
-	    result2 = act2->run();
+	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), "", fqdnName, IPv6Addr->getPlain(), 
+					    DNSUPDATE_AAAA, proto2);
+	    result2 = act2->run(timeout);
 	    act2->showResult(result);
 	    delete act2;
 	} // fqdnMode == 2
@@ -928,12 +943,14 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
     char zoneroot[128];
     doRevDnsZoneRoot(clntAddr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
 
+    unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+
     if (FQDNMode == DNSUPDATE_MODE_PTR){
 	/* PTR cleanup */
 	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
 		    << " and FQDN=" << fqdn->getName() << LogEnd;
 	DNSUpdate *act = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), DNSUPDATE_PTR_CLEANUP);
-	result = act->run();
+	result = act->run(timeout);
 	act->showResult(result);
 	delete act;
 	
@@ -944,7 +961,7 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
 		    << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
 	
 	DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdnName, clntAddr->getPlain(), DNSUPDATE_AAAA_CLEANUP);
-	result = act->run();
+	result = act->run(timeout);
 	act->showResult(result);
 	delete act;
 	
@@ -952,7 +969,7 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
 	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
 		    << " and FQDN=" << fqdn->getName() << LogEnd;
 	DNSUpdate *act2 = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), DNSUPDATE_PTR_CLEANUP);
-	result = act2->run();
+	result = act2->run(timeout);
 	act2->showResult(result);
 	delete act2;
     } // fqdn mode 2 (AAAA and PTR)

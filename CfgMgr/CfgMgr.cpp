@@ -9,23 +9,7 @@
  * $Id: CfgMgr.cpp,v 1.20 2009-07-22 20:19:08 thomson Exp $
  */
 
-/*
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
-#ifdef MACOS
-#include <netinet/in.h>
 #include <sys/types.h>
-#endif
-*/
-
-#include <sys/types.h>
-//#include <stdint.h>
-
-
 #include <string.h>
 #include <iostream>
 #include <fstream>
@@ -36,13 +20,19 @@
 #include "Logger.h"
 
 TCfgMgr::TCfgMgr()
-:IsDone(false), 
-DUIDType(DUID_TYPE_LLT) /* default DUID type: LLT */ 
+ :IsDone(false), 
+  DUIDType(DUID_TYPE_LLT), /* default DUID type: LLT */ 
+  DdnsProto(DNSUPDATE_TCP),
+  _DDNSTimeout(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
 {
 	
 }
 
 TCfgMgr::~TCfgMgr() {
+}
+
+void TCfgMgr::setDDNSProtocol(DNSUpdateProtocol proto) {
+    DdnsProto = proto;
 }
 
 // method compares both files and if differs

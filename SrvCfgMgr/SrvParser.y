@@ -31,6 +31,7 @@
 #include "NodeConstant.h"
 #include "NodeClientSpecific.h"
 #include "NodeOperator.h"
+#include "CfgMgr.h"
 #include <sstream>
 
 #define YY_USE_CLASS
@@ -95,7 +96,7 @@ virtual ~SrvParser();
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, LOGCOLORS_, WORKDIR_
 %token OPTION_, DNS_SERVER_,DOMAIN_, NTP_SERVER_,TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
 %token NIS_SERVER_, NIS_DOMAIN_, NISP_SERVER_, NISP_DOMAIN_, LIFETIME_
-%token FQDN_, ACCEPT_UNKNOWN_FQDN_, FQDN_DDNS_ADDRESS_
+%token FQDN_, ACCEPT_UNKNOWN_FQDN_, FQDN_DDNS_ADDRESS_, DDNS_PROTOCOL_, DDNS_TIMEOUT_
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_, SHARE_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
 %token UNICAST_,PREFERENCE_,RAPID_COMMIT_
@@ -167,6 +168,7 @@ GlobalOption
 | Experimental
 | IfaceIDOrder
 | FqdnDdnsAddress
+| DdnsProtocol
 | GuessMode
 | ClientClass
 ;
@@ -1222,6 +1224,24 @@ FqdnDdnsAddress
     addr = new TIPv6Addr($2);
     CfgMgr->fqdnDdnsAddress( addr );
     Log(Info) << "FQDN: DDNS updates will be performed to " << addr->getPlain() << "." << LogEnd;
+};
+
+DdnsProtocol
+:DDNS_PROTOCOL_ STRING_
+{
+    if (!strcasecmp($2,"tcp"))
+	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_TCP);
+    else if (!strcasecmp($2,"udp"))
+	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_UDP);
+    else if (!strcasecmp($2,"any"))
+	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_ANY);
+};
+
+DdnsTimeout
+:DDNS_TIMEOUT_ Number
+{
+    Log(Debug) << "DDNS: Setting timeout to " << $2 << "ms." << LogEnd;
+    CfgMgr->setDDNSTimeout($2);
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -92,6 +92,8 @@ sip-domain          { return SrvParser::SIP_DOMAIN_; }
 fqdn                { return SrvParser::FQDN_; }
 accept-unknown-fqdn { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
 fqdn-ddns-address   { return SrvParser::FQDN_DDNS_ADDRESS_; }
+ddns-protocol       { return SrvParser::DDNS_PROTOCOL_; }
+ddns-timeout        { return SrvParser::DDNS_TIMEOUT_; }
 nis-server          { return SrvParser::NIS_SERVER_; }
 nis-domain          { return SrvParser::NIS_DOMAIN_; }
 nis\+-server        { return SrvParser::NISP_SERVER_; }

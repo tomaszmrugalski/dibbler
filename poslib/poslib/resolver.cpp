@@ -40,12 +40,12 @@ WaitAnswerData::WaitAnswerData(u_int16 _r_id, _addr &_from) {
 
 pos_resolver::pos_resolver() {
   /* default values */
-  n_udp_tries = 3;
+  n_udp_tries = 1;
   udp_tries = (int *)malloc(3 * sizeof(int));
   udp_tries[0] = 1000;
-  udp_tries[1] = 3000;
-  udp_tries[2] = 6000;
-  tcp_timeout = 5000;
+  udp_tries[1] = 3000; // ignored for now
+  udp_tries[2] = 6000; // ignored for now
+  tcp_timeout = 1000;
 }
 
 pos_resolver::~pos_resolver() {
@@ -131,7 +131,10 @@ void pos_cliresolver::stop() {
   quit_flag = true;
   if (sockid > 0) {
 #ifdef _WIN32
-    if (is_tcp) tcpclose(sockid); else udpclose(sockid);
+    if (is_tcp) 
+	tcpclose(sockid); 
+    else 
+	udpclose(sockid);
     sockid = -1;
 #else
     write(clipipes[1], "x", 1);

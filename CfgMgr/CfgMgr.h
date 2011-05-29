@@ -32,6 +32,12 @@ enum EDUIDType{
 class TCfgMgr
 {
  public:
+    enum DNSUpdateProtocol {
+	DNSUPDATE_TCP, /* TCP only */
+	DNSUPDATE_UDP, /* UDP only */
+	DNSUPDATE_ANY  /* try UDP first, if response truncated, switch to TCP */
+    };
+
     TCfgMgr();
     virtual ~TCfgMgr();
 
@@ -42,7 +48,11 @@ class TCfgMgr
     int getLogLevel();
     string getWorkDir();
     string getLogName();
-    
+    void setDDNSProtocol(DNSUpdateProtocol proto);
+    DNSUpdateProtocol getDDNSProtocol() { return DdnsProto; }
+    void setDDNSTimeout(unsigned int timeout) { _DDNSTimeout = timeout; }
+    unsigned int getDDNSTimeout() { return _DDNSTimeout; }
+
  protected:
     SPtr<TDUID> DUID;
     bool setDUID(const std::string duidFile, TIfaceMgr &ifaceMgr);
@@ -55,6 +65,8 @@ class TCfgMgr
     EDUIDType DUIDType;
     int DUIDEnterpriseNumber;
     SPtr<TDUID> DUIDEnterpriseID;
+    DNSUpdateProtocol DdnsProto;
+    unsigned int _DDNSTimeout;
  private:
     
 };

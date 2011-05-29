@@ -5,7 +5,9 @@
 0.8.1 [not-released-yet]
   - Fixed socket binding problem on server that may affect relay scenarios
   - Fixed segmentation fault when interface-id was not defined on relay interface.
-  - Makefiles reworked.
+  - Makefiles reworked
+  - Srv: Implemented support for DNS Update over UDP (ddns-protocol directive)
+  - Srv: Implemented support for DNS Update timeout (ddns-timeout directive)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

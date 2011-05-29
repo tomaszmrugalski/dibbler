@@ -302,10 +302,12 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
 	// remember DNS Address (used during address release)
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 	
+	unsigned int timeout = ClntCfgMgr().getDDNSTimeout();
+
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
       	/* add AAAA record */
         DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(), DNSUPDATE_AAAA);
-        int result = act->run();
+        int result = act->run(timeout);
         act->showResult(result);
         delete act;
 #else
@@ -333,11 +335,13 @@ bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, strin
     
     SPtr<TClntCfgIface> ptrIface = ClntCfgMgr().getIface(iface->getID());
     
+    unsigned int timeout = ClntCfgMgr().getDDNSTimeout();
+
     Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
 	       << " and FQDN=" << fqdn << LogEnd;
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
     DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdn, myAddr->getPlain(), DNSUPDATE_AAAA_CLEANUP);
-    int result = act->run();
+    int result = act->run(timeout);
     act->showResult(result);
     delete act;
     

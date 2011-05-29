@@ -34,17 +34,21 @@
 bool posclient_quitflag = false;
 
 int struct_pf(_addr *addr) {
-    if (addr->s_family == AF_INET) return PF_INET;
+    if (addr->s_family == AF_INET) 
+	return PF_INET;
 #ifdef HAVE_IPV6
-    else  if (addr->s_family == AF_INET6) return PF_INET6;
+    else  if (addr->s_family == AF_INET6) 
+	return PF_INET6;
 #endif
     return -1;
 }
 
 int struct_len(_addr *addr) {
-    if (addr->s_family == AF_INET) return sizeof(sockaddr_in);
+    if (addr->s_family == AF_INET) 
+	return sizeof(sockaddr_in);
 #ifdef HAVE_IPV6
-    else if (addr->s_family == AF_INET6) return sizeof(sockaddr_in6);
+    else if (addr->s_family == AF_INET6) 
+	return sizeof(sockaddr_in6);
 #endif
     return -1;
 }
@@ -74,72 +78,100 @@ class __init_socklib {
 
 void setnonblock(int sockid) {
 #ifdef _WIN32
-  long int val = 1;
-  u_long req = FIONBIO;
-  ioctlsocket(sockid, val, &req);
+    long int val = 1;
+    u_long req = FIONBIO;
+    ioctlsocket(sockid, val, &req);
 #else
-  if (fcntl(sockid, F_SETFL, O_NONBLOCK) < 0) { closesocket(sockid); throw PException("Could not set socket to non-blocking"); }
+    if (fcntl(sockid, F_SETFL, O_NONBLOCK) < 0) { 
+	closesocket(sockid); 
+	throw PException("Could not set socket to non-blocking"); 
+    }
 #endif
 }
 
 int udpcreateserver(_addr* socketaddr) {
-  int sockid;
-  int one = 1;
-
-  if ((sockid = socket(struct_pf(socketaddr), SOCK_DGRAM, IPPROTO_UDP)) < 0) throw PException("Could not create UDP socket!");
-  if (bind(sockid, (sockaddr *)(socketaddr), struct_len(socketaddr)) < 0) { closesocket(sockid); throw PException("Could not bind to socket!"); }
-  setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
-  setnonblock(sockid);
-  
-  return sockid;
+    int sockid;
+    int one = 1;
+    
+    if ((sockid = socket(struct_pf(socketaddr), SOCK_DGRAM, IPPROTO_UDP)) < 0) 
+	throw PException("Could not create UDP socket!");
+    if (bind(sockid, (sockaddr *)(socketaddr), struct_len(socketaddr)) < 0) { 
+	closesocket(sockid); 
+	throw PException("Could not bind to socket!"); 
+    }
+    
+    setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
+    setnonblock(sockid);
+    
+    return sockid;
 }
 
 void udpclose(int sockid) {
-  closesocket(sockid);
+    closesocket(sockid);
 }
 
 int udpread(int sockid, const char *buff, int len, _addr *addr) {
-  socklen_t addr_size = sizeof(_addr);
-  int ret = recvfrom(sockid, (char*)buff, len, 0, (sockaddr *) addr, &addr_size);
-  if (ret <= 0) throw PException("Could not receive data from UDP socket");
-  return ret;
+    socklen_t addr_size = sizeof(_addr);
+    int ret = recvfrom(sockid, (char*)buff, len, 0, (sockaddr *) addr, &addr_size);
+    if (ret <= 0) 
+	throw PException("Could not receive data from UDP socket");
+    return ret;
 }
 
 void udpsend(int sockid, const char *buff, int len, _addr *addr) {
-  if (sendto(sockid, (char*)buff, len, 0, (sockaddr *)addr, struct_len(addr)) < 0)
-    throw PException(true, "Could not send UDP packet: sock %d, err %d", sockid, errno);
+    if (sendto(sockid, (char*)buff, len, 0, (sockaddr *)addr, struct_len(addr)) < 0)
+	throw PException(true, "Could not send UDP packet: sock %d, err %d", sockid, errno);
 }
 
 int tcpcreateserver(_addr *socketaddr) {
-  int sockid;
-  int one = 1;
+    int sockid;
+    int one = 1;
+    
+    if ((sockid = socket(struct_pf(socketaddr), SOCK_STREAM, IPPROTO_TCP)) < 0) 
+	throw PException("Could not create TCP socket");
+    if (bind(sockid, (sockaddr *)socketaddr, struct_len(socketaddr)) < 0) { 
+	closesocket(sockid); 
+	throw PException("Could not bind TCP socket"); 
+    }
+    setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
+    setnonblock(sockid);
+    if (listen(sockid, 5) < 0) { 
+	closesocket(sockid); 
+	throw PException("Could not listen to TCP socket"); 
+    }
 
-  if ((sockid = socket(struct_pf(socketaddr), SOCK_STREAM, IPPROTO_TCP)) < 0) throw PException("Could not create TCP socket");
-  if (bind(sockid, (sockaddr *)socketaddr, struct_len(socketaddr)) < 0) { closesocket(sockid); throw PException("Could not bind TCP socket"); }
-  setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
-  setnonblock(sockid);
-  if (listen(sockid, 5) < 0) { closesocket(sockid); throw PException("Could not listen to TCP socket"); }
-
-  return sockid;
+    return sockid;
 }
 
 int tcpopen(_addr *addr) {
-  int sockid;
-  if ((sockid = socket(struct_pf(addr), SOCK_STREAM, IPPROTO_TCP)) < 0) throw PException("Could not create TCP socket");
-  if (connect(sockid, (sockaddr *)addr, struct_len(addr)) < 0) { closesocket(sockid); throw PException("Could not connect TCP socket"); }
-  return sockid;
+    int sockid;
+    if ((sockid = socket(struct_pf(addr), SOCK_STREAM, IPPROTO_TCP)) < 0)
+	throw PException("Could not create TCP socket");
+    if (connect(sockid, (sockaddr *)addr, struct_len(addr)) < 0) { 
+	closesocket(sockid);
+	string txt = addr_to_string(addr, false);
+	throw PException(true, "Could not connect TCP socket to dst addr=%s", txt.c_str());
+    }
+    return sockid;
 }
 
 int tcpopen_from(_addr *to, _addr *source) {
-  int sockid;
-  if ((sockid = socket(struct_pf(to), SOCK_STREAM, IPPROTO_TCP)) < 0) throw PException("Could not create TCP socket");
-  if (bind(sockid, (sockaddr *)source, struct_len(source)) < 0) { closesocket(sockid); throw PException("Could not bind TCP socket"); }
-  if (connect(sockid, (sockaddr *)to, struct_len(to)) < 0) { closesocket(sockid); throw PException("Could not connect TCP socket"); }
-  return sockid;
+    int sockid;
+    if ((sockid = socket(struct_pf(to), SOCK_STREAM, IPPROTO_TCP)) < 0) 
+	throw PException("Could not create TCP socket");
+    if (bind(sockid, (sockaddr *)source, struct_len(source)) < 0) { 
+	closesocket(sockid); 
+	throw PException("Could not bind TCP socket"); 
+    }
+    if (connect(sockid, (sockaddr *)to, struct_len(to)) < 0) { 
+	closesocket(sockid); 
+	throw PException("Could not connect TCP socket"); 
+    }
+    return sockid;
 }
 
 void tcpclose(int socket) {
-  closesocket(socket);
+    closesocket(socket);
 }
 
 int tcpaccept(int socket, _addr *askaddr) {

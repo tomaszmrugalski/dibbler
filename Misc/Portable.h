@@ -24,16 +24,6 @@
 
 #ifdef LINUX
 #include <netinet/in.h>
-/*#include <stdio.h>
-//#include <stdlib.h>
-//#include <unistd.h>
-//#include <sys/socket.h>
-//#include <sys/select.h>
-//#include <sys/time.h>
-//#include <arpa/inet.h>
-//#include <ctype.h>
-//#include <stdarg.h>
-//#include <string.h>*/
 #endif 
 
 #ifdef WIN32
@@ -120,6 +110,7 @@ struct link_state_notify_t
 #define REQIFACEMGR_FILE  "requestor-IfaceMgr.xml"
 
 #define DNSUPDATE_DEFAULT_TTL "2h"
+#define DNSUPDATE_DEFAULT_TIMEOUT 1000 /* in ms */
 #define INACTIVE_MODE_INTERVAL 3 /* 3 seconds */
 
 #define REQLOG_FILE        "dibbler-requestor.log"
