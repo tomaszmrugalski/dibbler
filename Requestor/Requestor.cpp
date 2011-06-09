@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 {
     // int status = 0;
     ReqCfgMgr a;
-    memset(&a, sizeof(a), 0);
+    //memset(&a, 0 sizeof(a));
 
     initWin();
 

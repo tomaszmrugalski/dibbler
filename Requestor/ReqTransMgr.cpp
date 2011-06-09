@@ -117,7 +117,8 @@ bool ReqTransMgr::SendMsg()
     else
 	dstAddr = new TIPv6Addr(CfgMgr->dstaddr, true);
     
-    Log(Debug) << "Transmitting data on the " << Iface->getFullName() << " interface to " << dstAddr->getPlain() << " address." << LogEnd;
+    Log(Debug) << "Transmitting data on the " << Iface->getFullName() << " interface to " 
+	       << dstAddr->getPlain() << " address." << LogEnd;
     TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, LEASEQUERY_MSG);
 
     char buf[1024];
@@ -129,7 +130,7 @@ bool ReqTransMgr::SendMsg()
         // Address based query
         buf[0] = QUERY_BY_ADDRESS;
         // buf[1..16] - link address, leave as ::
-        memset(buf+1, 16, 0);
+        memset(buf+1, 0, 16);
         bufLen = 17;
 
         // add new IAADDR option
@@ -144,7 +145,7 @@ bool ReqTransMgr::SendMsg()
         // DUID based query
         buf[0] = QUERY_BY_CLIENTID;
         // buf[1..16] - link address, leave as ::
-        memset(buf+1, 16, 0);
+        memset(buf+1, 0, 16);
         bufLen = 17;
 
         SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
@@ -164,7 +165,7 @@ bool ReqTransMgr::SendMsg()
     
     char msgbuf[1024];
     int  msgbufLen;
-    memset(msgbuf, 1024, 0xff);
+    memset(msgbuf, 0xff, 1024);
 
     msgbufLen = msg->storeSelf(msgbuf);
 
@@ -182,7 +183,7 @@ bool ReqTransMgr::WaitForRsp()
 {
     char buf[1024];
     int bufLen = 1024;
-    memset(buf, bufLen, 0);
+    memset(buf, 0, bufLen);
     SPtr<TIPv6Addr> sender = new TIPv6Addr();
 
     int sockFD;
