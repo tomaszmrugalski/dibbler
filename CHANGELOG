@@ -9,6 +9,7 @@
   - Srv: Implemented support for DNS Update over UDP (ddns-protocol directive)
   - Srv: Implemented support for DNS Update timeout (ddns-timeout directive)
   - Fixed problem with possible PD crash
+  - Linux: radvd.conf generation improved in PD
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

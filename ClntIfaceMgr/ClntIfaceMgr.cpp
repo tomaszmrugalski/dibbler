@@ -453,38 +453,10 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	    break;
     }
 
-#if 0
-    if (!prefix_forwarding_enabled()) {
-        // option 1: add/update/delete this prefix to this interface only
-        Log(Debug) << "PD: IPv6 forwarding disabled, so prefix operation will apply to this (" << ptrIface->getFullName() 
-                   << ") interface only." << LogEnd;
 
-	    Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << (int)prefixLen << " on the "
-		            << ptrIface->getFullName() << " interface." << LogEnd;
-	    switch (mode) {
-	    case PREFIX_MODIFY_ADD:
-	        status = prefix_add(ptrIface->getName(), iface, prefix->getPlain(), prefixLen, pref, valid);
-	        break;
-	    case PREFIX_MODIFY_UPDATE:
-	        status = prefix_update(ptrIface->getName(), iface, prefix->getPlain(), prefixLen, pref, valid);
-	        break;
-	    case PREFIX_MODIFY_DEL:
-    	    status = prefix_del(ptrIface->getName(), iface, prefix->getPlain(), prefixLen);
-	        break;
-        }
-
-        if (status!=LOWLEVEL_NO_ERROR) {
-            string tmp = error_message();
-            Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
-            return false;
-        }
-        return true;
-    }
-#endif
-
-    // option 2: split this prefix and add it to all interfaces
+    // option: split this prefix and add it to all interfaces
     Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << (int)prefixLen 
-		<< " to all interfaces (prefix will be split to /" << int(prefixLen+8) << " prefixes)." << LogEnd;
+		<< " to all interfaces (prefix will be split to /" << int(prefixLen+8) << " prefixes if necessary)." << LogEnd;
 
     if (prefixLen>120) {
         Log(Error) << "PD: Unable to perform prefix operation: prefix /" << prefixLen 
@@ -492,18 +464,14 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         return false;
     }
 
-    char buf[16];
-    memmove(buf, prefix->getAddr(), 16);
-    int offset = prefixLen/8;
-    if (prefixLen%8)
-	offset++;
-
-    SPtr<TClntIfaceIface> x;
+    // get a list of interfaces that we will assign prefixes to
+    TIfaceIfaceLst ifaceLst;
+    SPtr<TIfaceIface> x;
     firstIface();
     while ( x = (Ptr*)getIface() ) {
 	if (x->getID() == ptrIface->getID()) {
-	    Log(Debug) << "PD: Interface " << x->getFullName() << " is the interface, where prefix has been obtained, skipping." 
-		       << LogEnd;
+	    Log(Debug) << "PD: Interface " << x->getFullName() 
+		       << " is the interface, where prefix has been obtained, skipping." << LogEnd;
 	    continue;
 	}
 	
@@ -535,22 +503,56 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	    continue;
 	}
 
+	ifaceLst.push_back(x);
+    }
 
-	buf[offset] = x->getID();
+    Log(Info) << "Found " << ifaceLst.size() << " suitable interface(s):";
+    TIfaceIfaceLst::const_iterator i;
+    for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
+        Log(Cont) << (*i)->getName() << " ";
+    }
+    Log(Cont) << LogEnd;
+
+    if (ifaceLst.size() == 0) {
+	Log(Info) << "Suitable interfaces not found. Delegated prefix not split." << LogEnd;
+	return false;
+    }
+
+    for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
+
+	char buf[16];
+	int subprefixLen;
+	memmove(buf, prefix->getAddr(), 16);
+
+	if (ifaceLst.size() == 1) {
+	    // just one interface - use delegated prefix as is
+	    subprefixLen = prefixLen;
+	} else if (ifaceLst.size()<256) {
+	    subprefixLen = prefixLen + 8; // int( (ceil( log(ifaceList.size()))) );
+	    int offset = prefixLen/8;
+	    if (prefixLen%8)
+		offset++;
+	    buf[offset] = x->getID();
+	} else {
+	    // users with too much time that play with virtual interfaces are out of luck
+	    Log(Error) << "Something is wrong. Detected more than 256 interface." << LogEnd;
+	    return false;
+	}
+	
 	SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);
-
-	Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << int(prefixLen) << " on the "
-		    << x->getFullName() << " interface." << LogEnd;
+	
+	Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << subprefixLen 
+		    << " on the " << x->getFullName() << " interface." << LogEnd;
 	    
 	switch (mode) {
 	case PREFIX_MODIFY_ADD:
-	    status = prefix_add(x->getName(), x->getID(), prefix->getPlain(), prefixLen, pref, valid);
-		break;
+	    status = prefix_add(x->getName(), x->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
+	    break;
 	case PREFIX_MODIFY_UPDATE:
-	    status = prefix_update(x->getName(), x->getID(), prefix->getPlain(), prefixLen, pref, valid);
+	    status = prefix_update(x->getName(), x->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
 	    break;
 	case PREFIX_MODIFY_DEL:
-	    status = prefix_del(x->getName(), x->getID(), prefix->getPlain(), prefixLen);
+	    status = prefix_del(x->getName(), x->getID(), tmpAddr->getPlain(), subprefixLen);
 	    break;
 	}
 	if (status!=LOWLEVEL_NO_ERROR) {
@@ -558,7 +560,9 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	    Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
 	    return false;
 	}
+
     }
+
     return true;
 }
 
