@@ -409,7 +409,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     fprintf(f, "     prefix %s/%d", prefixPlain, prefixLength);
     fprintf(f, "     { \n");
     fprintf(f, "         AdvOnLink on;\n");
-    fprintf(f, "         AdvAutonomous false;\n");
+    fprintf(f, "         AdvAutonomous on;\n");
     fprintf(f, "     };\n");
     fprintf(f, "};\n");
     fprintf(f, "### %s end ###\n", ifname);
