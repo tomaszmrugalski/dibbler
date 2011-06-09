@@ -542,17 +542,17 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 	SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);
 	
 	Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << subprefixLen 
-		    << " on the " << x->getFullName() << " interface." << LogEnd;
+		    << " on the " << (*i)->getFullName() << " interface." << LogEnd;
 	    
 	switch (mode) {
 	case PREFIX_MODIFY_ADD:
-	    status = prefix_add(x->getName(), x->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
+	    status = prefix_add( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
 	    break;
 	case PREFIX_MODIFY_UPDATE:
-	    status = prefix_update(x->getName(), x->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
+	    status = prefix_update( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
 	    break;
 	case PREFIX_MODIFY_DEL:
-	    status = prefix_del(x->getName(), x->getID(), tmpAddr->getPlain(), subprefixLen);
+	  status = prefix_del( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen);
 	    break;
 	}
 	if (status!=LOWLEVEL_NO_ERROR) {
