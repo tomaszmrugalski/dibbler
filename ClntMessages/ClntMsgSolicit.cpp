@@ -86,7 +86,7 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
         Options.push_back( (Ptr*)pdOpt );
         if (!remoteAutoconf)
             pd->setState(STATE_INPROCESS);
-        addrIA = ClntAddrMgr().getPD(ta->getIAID());
+        addrIA = ClntAddrMgr().getPD(pd->getIAID());
         if (addrIA)
             addrIA->setState(STATE_INPROCESS);
         else
