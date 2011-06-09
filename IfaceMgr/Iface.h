@@ -13,6 +13,7 @@
 #ifndef IFACEIFACE_H
 #define IFACEIFACE_H
 
+#include <list>
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -96,5 +97,7 @@ class TIfaceIface{
 
     int PrefixLen; // used during address adding
 };
+
+typedef std::list < SPtr<TIfaceIface> > TIfaceIfaceLst;
 
 #endif
