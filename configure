@@ -1,0 +1,17 @@
+#!/bin/sh
+os=`uname -s`
+
+sed -e 's/^.*PORT_LINUX = y.*$/# PORT_LINUX = y/' -i .configure-old Makefile.inc
+sed -e 's/^.*PORT_MACOS = y.*$/PORT_MACOS = y/' -i .configure-old Makefile.inc
+sed -e 's/^.*PORT_BSD   = y.*$/PORT_BSD = y/' -i .configure-old Makefile.inc
+
+case $os in
+  Linux)
+     echo "Detected system: Linux"
+     sed -e 's/^.*PORT_LINUX = y.*$/PORT_LINUX = y/' -i .configure-old Makefile.inc
+  ;;
+  Darwin)
+     echo "Detected system: Mac OS"
+     sed -e 's/^.*PORT_MACOS = y.*$/PORT_MACOS = y/' -i .configure-old Makefile.inc
+  ;;
+esac

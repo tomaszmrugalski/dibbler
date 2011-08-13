@@ -10,6 +10,7 @@
   - Srv: Implemented support for DNS Update timeout (ddns-timeout directive)
   - Fixed problem with possible PD crash
   - Linux: radvd.conf generation improved in PD
+  - A simple ./configure script added
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems
