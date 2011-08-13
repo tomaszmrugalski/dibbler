@@ -2,9 +2,13 @@
  Dibbler code TODO
 -------------------
 tentative plans for 0.9.0:
-- DNS Updates over UDP
+- DNS Updates: UDP support
+- DNS Updates: DHC ID record (RFC4701)
+- DNS Updates: conflict resolution (RFC4703)
+- DNS Updates: security (TSIG)
+- Support for subscriber-id (bug 209)
+- Support for storing remote-id, subscriber-id in server-cache.xml
 - Reconfigure
-- DNS Updates security (TSIG)
 - BSD support
 - Routing configuration
 - Universal system for handling new (custom) options
