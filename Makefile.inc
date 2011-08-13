@@ -1,3 +1,13 @@
+# === Portability section ===
+# Make sure that you have uncommented only one section
+# ./configure script will do this for you
+# 
+PORT_LINUX = y
+# PORT_MACOS = y
+#
+# WINDOWS does not use Makefiles, see Visual Studio projects
+#
+
 # === used tools ===
 CXX          ?= g++
 CXXLD        ?= $(CXX)
@@ -39,21 +49,21 @@ MOD_CLNT_CONFIRM = y
 #MOD_LIBXML2 = y
 #MOD_DEBUG = y
 
-
-# === Portability section ===
-# Make sure that you have uncommented only one section
-
 # === Port: Linux ===
+ifdef PORT_LINUX
 ARCH         = LINUX
 PORT_LDFLAGS ?= -lpthread
 PORT_CFLAGS  ?= 
 PORT_SUBDIR  = Port-linux
+endif
 
 # === Port: Mac OS ===
-#ARCH          = MACOS
-#PORT_LDFLAGS ?=
-#PORT_LDFLAGS ?=
-#PORT_SUBDIR   = Port-macos
+ifdef PORT_MACOS
+ARCH          = MACOS
+PORT_LDFLAGS ?=
+PORT_LDFLAGS ?=
+PORT_SUBDIR   = Port-macos
+endif
 
 # === Port: Win2k (mingw) ===
 #ARCH         = WIN2K
