@@ -25,6 +25,9 @@ class TSrvMsgLeaseQueryReply : public TSrvMsg
 
     bool queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
     bool queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
+    bool queryByLinkAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
+    bool queryByRemoteID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
+    bool queryByRelayID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
     void appendClientData(SPtr<TAddrClient> cli);
 
     bool answer(SPtr<TSrvMsgLeaseQuery> query);

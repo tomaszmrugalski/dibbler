@@ -15,9 +15,9 @@
 
 #include <string>
 #include "SmartPtr.h"
-#include "Container.h"
 #include "Opt.h"
 #include "SrvMsg.h"
+#include "SrvMsgLeaseQuery.h"
 #include "SrvIfaceMgr.h"
 #include "SrvCfgMgr.h"
 #include "SrvAddrMgr.h"
@@ -36,6 +36,7 @@ class TSrvTransMgr
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
+    void processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq);
     void doDuties();
     void dump();
 

@@ -34,8 +34,10 @@
 #define INFORMATION_REQUEST_MSG 11
 #define RELAY_FORW_MSG 12
 #define RELAY_REPL_MSG 13
-#define LEASEQUERY_MSG       14
+#define LEASEQUERY_MSG 14
 #define LEASEQUERY_REPLY_MSG 15
+#define LEASEQUERY_DONE_MSG 16
+#define LEASEQUERY_DATA_MSG 17
 
 // implementation specific
 #define CONTROL_MSG    255
@@ -156,6 +158,9 @@
 // draft-ietf-softwire-ds-lite-tunnel-option-10, approved by IESG
 #define OPTION_AFTR_NAME        64
 
+// RFC5460: Bulk Leasequer
+#define OPTION_RELAY_ID		53
+
 // The following option numbers are not yet standardized and
 // won't interoperate with other implementations
 // option formats taken from:
@@ -173,7 +178,10 @@
 // -- Query types (RFC5007) --
 typedef enum {
     QUERY_BY_ADDRESS = 1,
-    QUERY_BY_CLIENTID = 2
+    QUERY_BY_CLIENT_ID = 2,
+    QUERY_BY_RELAY_ID = 3,
+    QUERY_BY_LINK_ADDRESS = 4,
+    QUERY_BY_REMOTE_ID = 5
 } ELeaseQueryType;
 
 // --- Option lengths --
@@ -194,6 +202,8 @@ typedef enum {
 #define STATUSCODE_MALFORMEDQUERY   8
 #define STATUSCODE_NOTCONFIGURED    9
 #define STATUSCODE_NOTALLOWED       10
+// Bulk Leasequery status codes
+#define STATUSCODE_QUERYTERMINATED 11
 
 // INFINITY + 1 is 0. That's cool!
 #define DHCPV6_INFINITY (unsigned) 0xffffffff

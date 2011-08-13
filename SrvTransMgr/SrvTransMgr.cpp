@@ -32,6 +32,8 @@
 #include "SrvMsgRelease.h"
 #include "SrvMsgLeaseQuery.h"
 #include "SrvMsgLeaseQueryReply.h"
+#include "SrvMsgLeaseQueryData.h"
+#include "SrvMsgLeaseQueryDone.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptStatusCode.h"
 #include "NodeClientSpecific.h"
@@ -271,21 +273,14 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     case INFORMATION_REQUEST_MSG :
     {
 	SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply( nmsg);
+	answ = new TSrvMsgReply( nmsg);
 	MsgLst.append((Ptr*)answ);
 	break;
     }
     case LEASEQUERY_MSG:
     {
-	int iface = msg->getIface();
-	if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
-	    Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
-	    return;
-	}
-	Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-	SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-	answ = new TSrvMsgLeaseQueryReply(lq);
-	MsgLst.append( (Ptr*) answ);
+        SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
+        processLeaseQuery(lq);
 	break;
     }
     case RECONFIGURE_MSG:
@@ -400,6 +395,33 @@ SPtr<TSrvMsg> TSrvTransMgr::getCurrentRequest()
     return requestMsg;
 }
 
+
+void TSrvTransMgr::processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq) {
+    SPtr<TSrvMsg> asnw;
+    int iface = lq->getIface();
+    if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
+        Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
+        return;
+    }
+
+    if (lq->isTCP()) {
+        Log(Debug) << "BLQ: LeaseQuery received over TCP, preparing answer." << LogEnd;
+    } else {
+        Log(Debug) << "LQ: LeaseQuery received over UDP, preparing answer." << LogEnd;
+    }
+    
+    SPtr<TSrvOptLQ> query;
+    query = (Ptr*) lq->getOption(OPTION_LQ_QUERY);
+    if (!query) {
+        Log(Warning) << "LQ: Unable to find LQ_QUERY option in LQ message. Not sending reply." << LogEnd;
+        return;
+    }
+
+    SPtr<TSrvMsg> answ = new TSrvMsgLeaseQueryReply(lq);
+    // don't add to MsgLst (no need to store cached reply)
+    // LQ-REPLY was sent from TSrvMsgLeaseQueryReply constructor
+}
+
 ostream & operator<<(ostream &s, TSrvTransMgr &x)
 {
     s << "<TSrvTransMgr>" << endl;
@@ -407,5 +429,3 @@ ostream & operator<<(ostream &s, TSrvTransMgr &x)
     s << "</TSrvTransMgr>" << endl;
     return s;
 }
-
-// vim:ts=8 noexpandtab

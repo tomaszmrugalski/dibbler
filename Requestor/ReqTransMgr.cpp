@@ -140,7 +140,7 @@ bool ReqTransMgr::SendMsg()
         bufLen += optAddr->getSize();
         free(optAddr);
         
-    } else {
+    } else if (CfgMgr->duid) {
         Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
         // DUID based query
         buf[0] = QUERY_BY_CLIENTID;
@@ -152,8 +152,22 @@ bool ReqTransMgr::SendMsg()
         TReqOptDUID * optDuid = new TReqOptDUID(OPTION_CLIENTID, duid, msg);
         optDuid->storeSelf(buf+bufLen);
         bufLen += optDuid->getSize();
-
         free(optDuid);
+    
+    } else {
+        Log(Debug) << "Creating LINK-ADDRESS-based query. Asking for " << CfgMgr->bulk << " address." << LogEnd;
+        // Link-address based query
+        buf[0] = QUERY_BY_LINKADDRESS;
+        // buf[1..16] - link address, leave as ::
+        memset(buf+1, 16, 0);
+        bufLen = 17;
+
+        // add new IAADDR option
+        SPtr<TIPv6Addr> a = new TIPv6Addr(CfgMgr->bulk, true);
+        TReqOptAddr * optAddr = new TReqOptAddr(OPTION_IAADDR, a, msg);
+        optAddr->storeSelf(buf+bufLen);
+        bufLen += optAddr->getSize();
+        free(optAddr);
     }
 
     SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");

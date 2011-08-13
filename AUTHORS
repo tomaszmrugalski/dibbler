@@ -65,5 +65,8 @@
   - Aniela Mrugalska <ania.mrugalska(at)gmail(dot)com>
     2011-05: Relay compilation fix on Windows.
 
+  - Karol Podolski <podol(at)ds(dot)pg(dot)gda(dot)pl>
+    2011-08: Initial, partial implementation of bulk leasequery.
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
