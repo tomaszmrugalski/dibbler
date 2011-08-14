@@ -83,6 +83,13 @@ extern void *sha224_finish_ctx (struct sha256_ctx *ctx, void *resbuf);
 extern void *sha256_read_ctx (const struct sha256_ctx *ctx, void *resbuf);
 extern void *sha224_read_ctx (const struct sha256_ctx *ctx, void *resbuf);
 
+
+/* Compute SHA256 (SHA224) message digest for LEN bytes beginning at BUFFER.  The
+   result is always in little endian byte order, so that a byte-wise
+   output yields to the wanted ASCII representation of the message
+   digest.  */
+extern void *sha256_buffer (const char *buffer, size_t len, void *resblock);
+
 #ifdef __cplusplus
 }
 #endif
