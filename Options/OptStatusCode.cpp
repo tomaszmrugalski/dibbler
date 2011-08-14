@@ -16,7 +16,7 @@
 #include "OptStatusCode.h"
 #include "Logger.h"
 
-#if defined(LINUX) || defined(MACOS)
+#if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
 #endif
 

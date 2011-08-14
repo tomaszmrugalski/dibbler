@@ -13,7 +13,7 @@
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#if defined(LINUX) || defined(MACOS)
+#if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
 #endif 
 

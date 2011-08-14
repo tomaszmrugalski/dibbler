@@ -89,7 +89,7 @@ int main(int argc, char * argv[])
     int result=-1;
     int len;
 
-    logStart("(RELAY, Mac OS port)", "Relay", RELLOG_FILE);
+    logStart("(RELAY, BSD port)", "Relay", RELLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {

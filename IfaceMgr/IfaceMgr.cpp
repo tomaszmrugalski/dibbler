@@ -146,7 +146,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     if (time > DHCPV6_INFINITY/2)
 	time /=2;
 
-#ifdef MACOS
+#ifdef BSD
     // For some reason, Darwin kernel doesn't like too large timeout values
     if (time > DHCPV6_INFINITY/4)
         time = 3600*24*7; // a week is enough

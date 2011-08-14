@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 #include <iostream>
-#if defined(LINUX) || defined(MACOS)
+#if defined(LINUX) || defined(BSD)
 #include <netinet/in.h>
 #endif
 #ifdef WIN32

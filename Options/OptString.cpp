@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptString.cpp,v 1.3 2007-08-26 10:26:19 thomson Exp $
  */
 
 #include <string.h>
@@ -17,7 +16,7 @@
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#if defined(LINUX) || defined(MACOS)
+#if defined(LINUX) || defined(BSD)
 #include <netinet/in.h>
 #endif 
 

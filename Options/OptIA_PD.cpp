@@ -2,6 +2,7 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ * changes: Tomasz Mrugalski <thomson@klub.com.pl>
  * 
  * released under GNU GPL v2 only licence
  *
@@ -11,7 +12,7 @@
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#if defined(LINUX) || defined(MACOS)
+#if defined(LINUX) || defined(BSD)
 #include <netinet/in.h>
 #endif
 

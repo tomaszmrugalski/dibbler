@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
     int result=-1;
     int len;
 
-    logStart("(SERVER, Mac OS port)", "Server", SRVLOG_FILE);
+    logStart("(SERVER, BSD port)", "Server", SRVLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {

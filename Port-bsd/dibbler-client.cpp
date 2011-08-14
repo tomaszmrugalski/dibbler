@@ -101,7 +101,7 @@ int main(int argc, char * argv[])
     int result=-1;
     int len;
 
-    logStart("(CLIENT, Mac OS port)", "Client", CLNTLOG_FILE);
+    logStart("(CLIENT, BSD port)", "Client", CLNTLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {

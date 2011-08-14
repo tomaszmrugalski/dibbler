@@ -23,7 +23,7 @@
 #include <syslog.h>
 #endif
 
-#ifdef MACOS
+#ifdef BSD
 #include <sys/time.h>
 #include <syslog.h>
 #endif
