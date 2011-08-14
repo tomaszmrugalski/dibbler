@@ -24,14 +24,6 @@ parser:
 
 client: $(CLIENTBIN)
 
-ifdef EFENCE
-LINKPRINT += efence
-endif
-
-ifdef DEBUGINFO
-LINKPRINT += debug
-endif
-
 $(MISC)/DHCPClient.o: includes
 
 $(MISC)/DHCPServer.o: includes

@@ -24,6 +24,7 @@ LDFLAGS      += $(XMLLIBS) $(EFENCE) $(PORT_LDFLAGS)
 CLNT_LDFLAGS = $(LDFLAGS)
 SRV_LDFLAGS  = $(LDFLAGS)
 REL_LDFLAGS  = $(LDFLAGS)
+LINKPRINT   += @LINKPRINT@
 
 # === debuging parameters ===
 # DEBUGINFO is no longer used. Please call ./configure --enable-debug

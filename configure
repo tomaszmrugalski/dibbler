@@ -612,6 +612,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+LINKPRINT
 PORT_CFLAGS
 PORT_LDFLAGS
 PORT_SUBDIR
@@ -1387,8 +1388,8 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-debug          Turn on debugging default: no
-  --enable-efence         Enables linking with electric-fence default: no
+  --enable-debug          Turn on debugging (default: no)
+  --enable-efence         Enables linking with electric-fence (default: no)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -15568,8 +15569,8 @@ $as_echo_n "checking which port is appropriate for this system... " >&6; }
       as_fn_error $? "\"Unsupported OS: uname returned $system\"" "$LINENO" 5
       ;;
   esac
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $system" >&5
-$as_echo "$system" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PORT_SUBDIR" >&5
+$as_echo "$PORT_SUBDIR" >&6; }
 
 
   # Check whether --enable-debug was given.
@@ -15592,6 +15593,7 @@ fi
 
   if test x$debug == xyes; then
      CPPFLAGS="$CPPFLAGS -O0 -g"
+     LINKPRINT+=debug
   else
      CPPFLAGS="$CPPFLAGS -O2"
   fi
@@ -15616,8 +15618,10 @@ fi
 
 
    if test x$efence == xyes; then
-      LDFLAGS += -lefence
+      LDFLAGS+=-lefence
+      LINKPRINT+=efence
    fi
+
 
 
 
@@ -18279,6 +18283,7 @@ fi
 
 
 echo
+echo "Selected port  : $PORT_SUBDIR"
 echo "Debug          : $debug"
 echo "Electric fence : $efence"
 echo
