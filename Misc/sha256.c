@@ -33,21 +33,13 @@
 #include <stddef.h>
 #include <string.h>
 
-#ifdef WORDS_BIGENDIAN
-#warning "BigEndian"
-#else
-#warning "LittleEndian"
-#endif
-
 #ifdef WIN32
 # define SWAP(n) \
     (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
 #else
 #if defined( WORDS_BIGENDIAN)
-#warning "BIG ENDIAN"
 # define SWAP(n) (n)
 #else
-#warning "LIL' ENDIAN"
 # define SWAP(n) \
     (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
 #endif
