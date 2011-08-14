@@ -13,8 +13,8 @@
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#ifdef LINUX
-#include <netinet/in.h>
+#if defined(LINUX) || defined(MACOS)
+#include <arpa/inet.h>
 #endif 
 
 #include "DHCPConst.h"

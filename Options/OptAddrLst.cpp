@@ -16,11 +16,11 @@
 
 
 #include <stdlib.h>
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
 #ifdef WIN32
 #include <winsock2.h>
+#endif
+#if defined(LINUX) || defined(MACOS)
+#include <netinet/in.h>
 #endif
 #include "OptAddrLst.h"
 #include "DHCPConst.h"

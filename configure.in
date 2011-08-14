@@ -94,6 +94,7 @@ dnl ---------------------------------------------
       PORT_LDFLAGS="-lpthread"
       ;;
     Darwin)
+    FreeBSD)
       ARCH="MACOS"
       PORT_SUBDIR="Port-macos"
       PORT_CFLAGS=

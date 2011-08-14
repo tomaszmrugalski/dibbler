@@ -4,36 +4,14 @@
  * author: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 licence
- *
- * $Id: OptAuthentication.cpp,v 1.6 2008-06-18 23:22:14 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.5  2008-02-25 17:49:09  thomson
- * Authentication added. Megapatch by Michal Kowalczuk.
- * (small changes by Tomasz Mrugalski)
- *
- * Revision 1.4  2006-11-30 03:17:46  thomson
- * Auth related changes by Sammael.
- *
- * Revision 1.3  2006-11-24 01:33:43  thomson
- * *** empty log message ***
- *
- * Revision 1.2  2006-11-17 01:28:38  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- * Revision 1.1  2006-11-17 00:37:16  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- *
- *
  */
 
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#ifdef LINUX
+#if defined(LINUX) || defined(MACOS)
 #include <netinet/in.h>
-#endif 
+#endif
 #include <stdlib.h>
 #include "OptAuthentication.h"
 #include "DHCPConst.h"

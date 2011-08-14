@@ -15,6 +15,10 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
+#if defined(LINUX) || defined(MACOS)
+#include <arpa/inet.h>
+#endif
+
 TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {

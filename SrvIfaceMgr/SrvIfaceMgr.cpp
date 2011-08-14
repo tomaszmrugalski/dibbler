@@ -35,6 +35,12 @@
 #include "SrvOptEcho.h"
 #include "OptGeneric.h"
 #include "OptVendorData.h"
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+#if defined(LINUX) || defined(MACOS)
+#include <netinet/in.h>
+#endif
 
 using namespace std;
 

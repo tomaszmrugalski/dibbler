@@ -14,6 +14,12 @@
 #include "SrvOptIAAddress.h"
 #include "SrvOptClientIdentifier.h"
 #include "Portable.h"
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+#if defined(LINUX) || defined(MACOS)
+#include <netinet/in.h>
+#endif
 
 // --- TSrvOptLQ ---
 TSrvOptLQ::TSrvOptLQ(char * buf, int bufsize, TMsg* parent)

@@ -11,6 +11,7 @@
  */
 
 #include <string.h>
+#include <arpa/inet.h>
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "Opt.h"

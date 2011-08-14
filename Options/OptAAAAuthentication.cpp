@@ -6,19 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptAAAAuthentication.cpp,v 1.2 2008-06-18 23:22:14 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2008-02-25 20:42:46  thomson
- * Missing new AUTH files added.
- *
- *
  */
 
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#ifdef LINUX
+#if defined(LINUX) || defined(MACOS)
 #include <netinet/in.h>
 #endif 
 #include <stdlib.h>

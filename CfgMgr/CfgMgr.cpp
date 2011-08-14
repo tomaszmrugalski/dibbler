@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <arpa/inet.h>
 #include "CfgMgr.h"
 #include "Logger.h"
 #include "Portable.h"

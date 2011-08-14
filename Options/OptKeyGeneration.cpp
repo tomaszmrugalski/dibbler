@@ -6,16 +6,14 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptKeyGeneration.cpp,v 1.2 2008-06-18 23:22:14 thomson Exp $
- *
  */
 
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#ifdef LINUX
+#if defined(LINUX) || defined(MACOS)
 #include <netinet/in.h>
-#endif 
+#endif
 #include <stdlib.h>
 #include "OptKeyGeneration.h"
 #include "DHCPConst.h"

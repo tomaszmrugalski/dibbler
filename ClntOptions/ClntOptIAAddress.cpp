@@ -13,9 +13,9 @@
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#ifdef LINUX
+#if defined(LINUX) || defined(MACOS)
 #include <netinet/in.h>
-#endif 
+#endif
 
 #include "DHCPConst.h"
 #include "Opt.h"

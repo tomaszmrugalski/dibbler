@@ -16,6 +16,10 @@
 #include "OptStatusCode.h"
 #include "Logger.h"
 
+#if defined(LINUX) || defined(MACOS)
+#include <arpa/inet.h>
+#endif
+
 TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
 	:TOpt(OPTION_STATUS_CODE, parent)
 {

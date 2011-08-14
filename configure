@@ -15554,6 +15554,7 @@ $as_echo_n "checking which port is appropriate for this system... " >&6; }
       PORT_LDFLAGS="-lpthread"
       ;;
     Darwin)
+    FreeBSD)
       ARCH="MACOS"
       PORT_SUBDIR="Port-macos"
       PORT_CFLAGS=
