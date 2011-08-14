@@ -13,31 +13,31 @@ libs:	libMisc.a
 include $(TOPDIR)/Makefile.inc
 
 # addr conversion (packed[[16] <-> plaintext[48])
-addrpack.o: addrpack.c 
+addrpack.o: addrpack.c
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c addrpack.c 
+	$(CC) $(CFLAGS) -c addrpack.c
 
 # SHA-1 routines
 sha1.o: sha1.c sha1.h
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c sha1.c 
+	$(CC) $(CFLAGS) -c sha1.c
 
 # SHA-224 and SHA-256 routines
 sha256.o: sha256.c sha256.h
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c sha256.c 
+	$(CC) $(CFLAGS) -c sha256.c
 
 # SHA-384 and SHA-512 routines
 sha512.o: sha512.c sha512.h
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -std=c99 -c sha512.c 
+	$(CC) $(CFLAGS) -std=c99 -c sha512.c
 
 # MD5 routined
 md5.o: md5.c md5.h
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c md5.c 
+	$(CC) $(CFLAGS) -c md5.c
 
 # HMAC-SHA and HMAC-MD5
 hmac-sha-md5.o: hmac-sha-md5.c hmac.h
 	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c hmac-sha-md5.c 
+	$(CC) $(CFLAGS) -c hmac-sha-md5.c
