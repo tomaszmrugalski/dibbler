@@ -46,7 +46,7 @@
 #define snprintf _snprintf
 #endif
 
-#ifdef MACOS
+#ifdef BSD
 #include <stdint.h>
 #endif
 
@@ -147,7 +147,7 @@ struct link_state_notify_t
 #define NULLFILE           "/dev/null"
 #endif
 
-#ifdef MACOS
+#ifdef BSD
 #define WORKDIR            "/var/lib/dibbler"
 #define DEFAULT_SCRIPTSDIR "/var/lib/dibbler/scripts"
 #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
@@ -204,7 +204,7 @@ struct link_state_notify_t
 #define IF_MULTICAST	      0x1000
 #endif
 
-#ifdef MACOS
+#ifdef BSD
 #define IF_UP        0x1
 #define IF_LOOPBACK  0x8
 #define IF_RUNNING   0x40
