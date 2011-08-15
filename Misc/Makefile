@@ -1,6 +1,6 @@
 TOPDIR = ..
 
-OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o FQDN.o KeyList.o
+OBJECTS = Logger.o DHCPConst.o DUID.o IPv6Addr.o addrpack.o FQDN.o KeyList.o base64.o
 
 ifndef MOD_DISABLE_AUTH
 OBJECTS += sha1.o sha256.o sha512.o md5.o hmac-sha-md5.o
@@ -41,3 +41,7 @@ md5.o: md5.c md5.h
 hmac-sha-md5.o: hmac-sha-md5.c hmac.h
 	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(CFLAGS) -c hmac-sha-md5.c
+
+base64.o: base64.c base64.h
+	@echo "[CC     ] $(SUBDIR)/$@"
+	$(CC) $(CFLAGS) -c base64.c
