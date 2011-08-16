@@ -19,6 +19,13 @@
 #include "Logger.h"
 #include "ReqOpt.h"
 
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+#if defined(LINUX) || defined(BSD)
+#include <netinet/in.h>
+#endif 
+
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
 {
     this->IfaceMgr = ifaceMgr;

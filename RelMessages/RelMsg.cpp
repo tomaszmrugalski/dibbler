@@ -13,7 +13,7 @@
 #ifdef WIN32
 #include <winsock2.h>
 #endif
-#ifdef LINUX
+#if defined (LINUX) || defined(BSD)
 #include <netinet/in.h>
 #endif 
 
