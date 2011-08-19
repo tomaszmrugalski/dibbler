@@ -125,7 +125,16 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
 }
 
 
-
+/**
+ * @brief loads DUID from a file.
+ *
+ * This function also checks if DUID value exist and checks the correctness of this file.
+ *
+ * @param duidFile string representation of the DUID file.
+ *
+ * @return true if DUID value exists and is correct, false if doesn't. 
+ *
+ */
 bool TCfgMgr::loadDUID(const string duidFile)
 {
     ifstream f;
@@ -133,16 +142,25 @@ bool TCfgMgr::loadDUID(const string duidFile)
     if ( !(f.is_open())  ) {
         // unable to open DUID file
         Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID." << LogEnd;
-	return false;
+		return false;
     }
 
     string s;
     getline(f,s);
     f.close();
 
-    this->DUID = new TDUID(s.c_str());
+	this->DUID = new TDUID(s.c_str());
+	
+	Log(Debug) << "DUID's value = " << DUID->getPlain() << " was loaded from " << duidFile << " file." << LogEnd;
+   
+	int duidLen = s.length();
+    int duidLen2 = DUID->getLen();
+    if (duidLen <= 0 || duidLen2 == 0) {
+        Log(Error) << "DUID's value is 0. Please check that " << duidFile << " is not empty and contains actual DUID. You can also delete it." << LogEnd;
+        return false;
+	}
 
-    return true;
+	return true;
 }
 
 bool TCfgMgr::setDUID(const string filename, TIfaceMgr & ifaceMgr) {
@@ -152,6 +170,7 @@ bool TCfgMgr::setDUID(const string filename, TIfaceMgr & ifaceMgr) {
         Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
         return true;
     }
+	// Failed to load DUID. We need to generate it.
 
     SPtr<TIfaceIface> realIface;
 

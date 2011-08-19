@@ -11,6 +11,7 @@
   - Fixed problem with possible PD crash
   - Linux: radvd.conf generation improved in PD
   - A simple ./configure script added
+  - Fix: server/client will no longer load DUID empty file (bug #209)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems
