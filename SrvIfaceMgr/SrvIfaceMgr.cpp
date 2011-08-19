@@ -138,7 +138,7 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 
     // send it!
-    return (bool)(sock->send(msg,size,addr,port));
+    return (sock->send(msg,size,addr,port));
 }
 
 /**

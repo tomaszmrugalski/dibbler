@@ -21,8 +21,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug32|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			OutputDirectory="Debug32"
+			IntermediateDirectory="Debug32"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
