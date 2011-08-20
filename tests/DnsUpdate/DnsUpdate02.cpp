@@ -4,7 +4,7 @@
 
 using namespace std;
 
-bool DnsUpdate_test(DnsUpdateProtocol proto, bool dhcid, bool tsig) {
+bool DnsUpdate_test(DNSUpdate::DnsUpdateProtocol proto, bool dhcid, bool tsig) {
 
     string dnsAddr   = "2000::1";
     string zonename  = "example.org.";
@@ -12,7 +12,7 @@ bool DnsUpdate_test(DnsUpdateProtocol proto, bool dhcid, bool tsig) {
     string hostip    = "2000::dead:beef";
 
     char duid[]="this is my duid";
-    int duidLen = strlen(dudi);
+    int duidLen = strlen(duid);
 
     DNSUpdate *act = new DNSUpdate(dnsAddr, zonename, hostname, hostip, 
 				   DNSUPDATE_AAAA, proto);

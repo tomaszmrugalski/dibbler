@@ -17,6 +17,7 @@
 #include "Portable.h"
 #include "Logger.h"
 #include <stdio.h>
+#include "sha256.h"
 
 DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
 		     string hostip, DnsUpdateMode updateMode,
@@ -156,6 +157,37 @@ void DNSUpdate::addinMsg_newAAAA(){
     
     message->authority.push_back(rr);
     Log(Debug) << "DDNS: AAAA record created:" << rr.NAME.tostring() << " -> " << hostip << LogEnd;
+}
+
+void DNSUpdate::addDHCID(const char* duid, int duidlen) {
+    DnsRR rr;
+    rr.NAME = domainname(_hostname, *zoneroot);
+    rr.TYPE = qtype_getcode("DHCID", false);
+    rr.TTL = txt_to_int(ttl);
+    
+
+    char input_buf[512];
+    char output_buf[35]; // identifier-type code (2) + digest type code (1) + digest (SHA-256 = 32 bytes)
+
+    memcpy(input_buf, duid, duidlen); // 
+    memcpy(input_buf+duidlen, rr.NAME.c_str(), strlen((const char*)rr.NAME.c_str()) );
+
+    sha256_buffer(input_buf, duidlen + strlen((const char*)rr.NAME.c_str() ),
+                  output_buf+3);
+   
+    output_buf[0] = 0;
+    output_buf[1] = 2; // identifier-type code: 0x0002 - DUID used as client identifier
+    output_buf[2] = 1; // digest type = 1 (SHA-256)
+
+    message->authority.push_back(rr);
+
+}
+
+void DNSUpdate::addTSIG(const char* key, int keylen) {
+    DnsRR rr;
+    // TODO
+
+    // message->additional.push_back(rr);
 }
 
 /** 
