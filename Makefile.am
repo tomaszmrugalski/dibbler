@@ -4,7 +4,7 @@ SUBDIRS  = AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
 SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages Misc Options
 SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
 SUBDIRS += Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr SrvMessages
-SUBDIRS += SrvOptions SrvTransMgr TransMgr
+SUBDIRS += SrvOptions SrvTransMgr
 SUBDIRS += poslib @PORT_SUBDIR@
 
 sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay
