@@ -12,6 +12,13 @@ sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay
 dibbler_client_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp 
 dibbler_client_SOURCES += $(top_srcdir)/Misc/DHCPClient.cpp $(top_srcdir)/Misc/DHCPClient.h
 
+dibbler_client_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/ClntTransMgr
+dibbler_client_CPPFLAGS += -I$(top_srcdir)/ClntCfgMgr -I$(top_srcdir)/CfgMgr
+dibbler_client_CPPFLAGS += -I$(top_srcdir)/Options -I$(top_srcdir)/ClntOptions
+dibbler_client_CPPFLAGS += -I$(top_srcdir)/ClntIfaceMgr -I$(top_srcdir)/IfaceMgr
+dibbler_client_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/ClntAddrMgr
+dibbler_client_CPPFLAGS += -I$(top_srcdir)/ClntMessages -I$(top_srcdir)/Messages
+
 dibbler_client_LDADD = -L$(top_builddir)/ClntTransMgr -lClntTransMgr
 dibbler_client_LDADD += -L$(top_builddir)/ClntMessages -lClntMessages
 dibbler_client_LDADD +=                                -lClntTransMgr

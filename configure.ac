@@ -54,7 +54,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname gettimeofday inet_ntoa memchr memmove memset select socket strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
 CFLAGS+=" -std=c99"
-CPPFLAGS+="-DLINUX"
+CPPFLAGS+=" -DLINUX"
 PORT_SUBDIR="Port-linux"
 
 AC_SUBST(LDFLAGS)
@@ -65,13 +65,13 @@ AC_SUBST(PORT_LDFLAGS)
 AC_SUBST(PORT_CFLAGS)
 AC_SUBST(LINKPRINT)
 
-echo "#### $PORT_SUBDIR"
+#AC_CONFIG_SUBDIRS([bison++
+#                   poslib])
+AC_CONFIG_SUBDIRS([poslib])
+
 AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile $PORT_SUBDIR/Makefile)
 
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
-dnl AC_OUTPUT(Port-linux/Makefile Port-bsd/Makefile)
+AC_OUTPUT(Port-linux/Makefile Port-bsd/Makefile)
 
-#AC_CONFIG_SUBDIRS([bison++
-#                   poslib])
-#AC_CONFIG_SUBDIRS(poslib)

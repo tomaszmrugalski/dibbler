@@ -19,7 +19,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include <dibbler-config.h>
 #endif
 
 #include <linux/sockios.h>
@@ -43,7 +43,7 @@
 #include "interface.h"
 #include <stdarg.h>
 
-#include <types.h>
+//#include <types.h>
 
 void daemon_log(int loglevel, const char *fmt,...)
 {
