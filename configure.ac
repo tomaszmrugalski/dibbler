@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([dibbler], [0.8.0-git], [bugs@klub.com.pl])
+AC_INIT([dibbler], [0.8.0-git], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(dibbler, 0.8.0-git)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
