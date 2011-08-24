@@ -53,9 +53,39 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname gettimeofday inet_ntoa memchr memmove memset select socket strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
-CFLAGS+=" -std=c99"
-CPPFLAGS+=" -DLINUX"
-PORT_SUBDIR="Port-linux"
+dnl ---------------------------------------------
+dnl Detect OS (will be used to select proper port
+dnl ---------------------------------------------
+  AC_MSG_CHECKING(which port is appropriate for this system)
+  system=`uname -s`
+  case $system in
+    Linux)
+      ARCH="LINUX"
+      PORT_SUBDIR="Port-linux"
+      PORT_CFLAGS=
+      PORT_LDFLAGS="-lpthread"
+      ;;
+    Darwin | FreeBSD)
+      ARCH="BSD"
+      PORT_SUBDIR="Port-bsd"
+      PORT_CFLAGS=
+      PORT_LDFLAGS=
+      ;;
+    MINGW32*)
+      ARCH="WIN2K"
+      PORT_LDFLAGS = "-lws2_32"
+      PORT_CFLAGS  = "-DMINGWBUILD"
+      PORT_SUBDIR  = "Port-win2k"
+      ;;
+    *)
+      AC_MSG_ERROR("Unsupported OS: uname returned $system")
+      ;;
+  esac
+  AC_MSG_RESULT($PORT_SUBDIR)
+
+CFLAGS+=" -std=c99 ${PORT_CFLAGS}"
+LDFLAGS+=" ${PORT_LDFLAGS}"
+CPPFLAGS+=" -D${ARCH}"
 
 AC_SUBST(LDFLAGS)
 AC_SUBST(CPPFLAGS)
