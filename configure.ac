@@ -11,6 +11,10 @@ dnl change this to [no] to have verbose build system
 dnl make V=0 and make V=1 will do the trick
 AM_SILENT_RULES([no])
 
+CFLAGS_SAVED="$CFLAGS"
+CPPFLAGS_SAVED="$CPPFLAGS"
+CXXFLAGS_SAVED="$CXXFLAGS"
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -53,6 +57,10 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname gettimeofday inet_ntoa memchr memmove memset select socket strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
+CFLAGS="$CFLAGS_SAVED"
+CPPFLAGS="$CPPFLAGS_SAVED"
+CXXFLAGS="$CXXFLAGS_SAVED"
+
 dnl ---------------------------------------------
 dnl Detect OS (will be used to select proper port
 dnl ---------------------------------------------
@@ -87,8 +95,59 @@ CFLAGS+=" -std=c99 ${PORT_CFLAGS}"
 LDFLAGS+=" ${PORT_LDFLAGS}"
 CPPFLAGS+=" -D${ARCH}"
 
+dnl ------------------------------------------------------------
+dnl ./configure parameters
+dnl ------------------------------------------------------------
+
+  AC_ARG_ENABLE(debug,
+     [  --enable-debug          Turn on debugging (default: no)],
+     [  case "${enableval}" in
+          yes)
+	    debug=yes
+	    ;;
+          no)
+	    debug=no
+	    ;;
+          *)
+            AC_MSG_ERROR(bad value ${enableval} for --enable-debug)
+	    ;;
+	esac],
+     [ debug=no ]
+  )
+
+  if test x$debug == xyes; then
+     CPPFLAGS+=" -O0 -g"
+     LINKPRINT+=debug
+  else
+     CPPFLAGS+=" -O2"
+  fi
+
+  AC_ARG_ENABLE(efence,
+     [  --enable-efence         Enables linking with electric-fence (default: no)],
+     [  case "${enableval}" in
+          yes)
+            efence=yes
+            ;;
+          no)
+            efence=no
+            ;;
+          *)
+            AC_MSG_ERROR(bad value ${enableval} for --enable-efence)
+            ;;
+        esac],
+     [ efence=no]
+   )
+
+   if test x$efence == xyes; then
+      LDFLAGS+=-lefence
+      LINKPRINT+=efence
+   fi
+
+
+
 AC_SUBST(LDFLAGS)
 AC_SUBST(CPPFLAGS)
+AC_SUBST(CXXFLAGS)
 AC_SUBST(ARCH)
 AC_SUBST(PORT_SUBDIR)
 AC_SUBST(PORT_LDFLAGS)
@@ -105,3 +164,18 @@ dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
 AC_OUTPUT(Port-linux/Makefile Port-bsd/Makefile)
 
+dnl ----------------------------------------
+dnl Print out configured parameters
+dnl ----------------------------------------
+echo
+echo "Selected port  : $PORT_SUBDIR"
+echo "Debug          : $debug"
+echo "Electric fence : $efence"
+echo 
+echo "CFLAGS         : $CFLAGS"
+echo "CPPFLAGS       : $CPPFLAGS"
+echo "CXXFLAGS       : $CXXFLAGS"
+echo "LDFLAGS        : $LDFLAGS"
+echo
+echo Type make to compile dibbler.
+echo
