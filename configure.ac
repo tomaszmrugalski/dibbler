@@ -6,6 +6,7 @@ AC_INIT([dibbler], [0.8.0-git], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(dibbler, 0.8.0-git)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl change this to [no] to have verbose build system
 dnl make V=0 and make V=1 will do the trick
@@ -18,7 +19,7 @@ CXXFLAGS_SAVED="$CXXFLAGS"
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_RANLIB
+LT_INIT([disable-shared])
 #AM_PROG_LEX
 #AC_PROG_YACC
 
@@ -154,8 +155,7 @@ AC_SUBST(PORT_LDFLAGS)
 AC_SUBST(PORT_CFLAGS)
 AC_SUBST(LINKPRINT)
 
-#AC_CONFIG_SUBDIRS([bison++
-#                   poslib])
+#AC_CONFIG_SUBDIRS([bison++])
 AC_CONFIG_SUBDIRS([poslib])
 
 AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile $PORT_SUBDIR/Makefile)

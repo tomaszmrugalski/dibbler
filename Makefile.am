@@ -37,7 +37,7 @@ dibbler_client_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_client_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_client_LDADD +=                  -lOptions -lMessages
 dibbler_client_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
-dibbler_client_LDADD += -L$(top_builddir)/Misc -lMisc
+dibbler_client_LDADD += -L$(top_builddir)/Misc -lMisc -lClntOptions -lOptions
 
 server: dibbler-server
 
@@ -66,7 +66,7 @@ dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_server_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_server_LDADD += -L$(top_builddir)/Misc -lMisc
-dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr
+dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions -lIfaceMgr
 
 relay: dibbler-relay
 

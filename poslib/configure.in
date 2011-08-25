@@ -29,8 +29,8 @@ dnl Checks for programs
 dnl -------------------
 
   AC_PROG_CXX
-  AC_PROG_RANLIB
   AM_PROG_LIBTOOL
+  LT_INIT([disable-shared])
   AC_DISABLE_SHARED
   AC_CHECK_TOOL([STRIP],[strip])
   AC_HEADER_STDC
