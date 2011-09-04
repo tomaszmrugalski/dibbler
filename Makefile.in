@@ -286,13 +286,15 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
+
+# Uncomment this if you don't want makefiles to rebuild themselves
+# Makefile:
 SUBDIRS = AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr \
 	ClntMessages ClntOptions ClntTransMgr IfaceMgr Messages Misc \
 	Options RelCfgMgr RelIfaceMgr RelMessages RelOptions \
@@ -317,10 +319,9 @@ dibbler_client_LDADD = -L$(top_builddir)/ClntTransMgr -lClntTransMgr \
 	-lClntCfgMgr -L$(top_builddir)/CfgMgr -lCfgMgr \
 	-L$(top_builddir)/ClntAddrMgr -lClntAddrMgr \
 	-L$(top_builddir)/IfaceMgr -lIfaceMgr \
-	-L$(top_builddir)/AddrMgr -lAddrMgr \
-	-L$(top_builddir)/poslib/poslib/.libs -lposlib \
-	-L$(top_builddir)/Options -lOptions -L$(top_builddir)/Messages \
-	-lMessages -lOptions -lMessages \
+	-L$(top_builddir)/AddrMgr -lAddrMgr -L$(top_builddir)/poslib \
+	-lposlib -L$(top_builddir)/Options -lOptions \
+	-L$(top_builddir)/Messages -lMessages -lOptions -lMessages \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc -lClntOptions -lOptions
 dibbler_server_SOURCES =  \
@@ -342,13 +343,12 @@ dibbler_server_LDADD = -L$(top_builddir)/SrvOptions -lSrvOptions \
 	-L$(top_builddir)/SrvTransMgr -lSrvTransMgr \
 	-L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr \
 	-L$(top_builddir)/IfaceMgr -lIfaceMgr \
-	-L$(top_builddir)/AddrMgr -lAddrMgr \
-	-L$(top_builddir)/poslib/poslib/.libs -lposlib \
-	-L$(top_builddir)/Options -lOptions -L$(top_builddir)/Messages \
-	-lMessages -L$(top_builddir)/CfgMgr -lCfgMgr \
-	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
+	-L$(top_builddir)/AddrMgr -lAddrMgr -L$(top_builddir)/poslib \
+	-lposlib -L$(top_builddir)/Options -lOptions \
+	-L$(top_builddir)/Messages -lMessages -L$(top_builddir)/CfgMgr \
+	-lCfgMgr -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc -lSrvCfgMgr -lSrvMessages \
-	-lCfgMgr -lSrvOptions -lOptions -lIfaceMgr
+	-lCfgMgr -lSrvOptions -lOptions -lIfaceMgr -lposlib
 dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp \
 	$(top_srcdir)/Misc/DHCPRelay.cpp \
 	$(top_srcdir)/Misc/DHCPRelay.h
@@ -365,9 +365,9 @@ dibbler_relay_LDADD = -L$(top_builddir)/RelTransMgr -lRelTransMgr \
 	-L$(top_builddir)/RelMessages -lRelMessages -lRelCfgMgr \
 	-L$(top_builddir)/CfgMgr -lCfgMgr -L$(top_builddir)/RelOptions \
 	-lRelOptions -L$(top_builddir)/IfaceMgr -lIfaceMgr \
-	-L$(top_builddir)/poslib/poslib/.libs -lposlib \
-	-L$(top_builddir)/Options -lOptions -L$(top_builddir)/Messages \
-	-lMessages -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
+	-L$(top_builddir)/poslib -lposlib -L$(top_builddir)/Options \
+	-lOptions -L$(top_builddir)/Messages -lMessages \
+	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc
 dibbler_requestor_SOURCES = $(top_srcdir)/Requestor/Requestor.cpp $(top_srcdir)/Requestor/Requestor.h
 dibbler_requestor_CPPFLAGS = -I$(top_srcdir)/Misc \
@@ -398,6 +398,15 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	$(am__cd) $(top_srcdir) && \
 	  $(AUTOMAKE) --foreign Makefile
 .PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    echo ' $(SHELL) ./config.status'; \
+	    $(SHELL) ./config.status;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
+	esac;
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
@@ -1077,9 +1086,6 @@ uninstall-am: uninstall-sbinPROGRAMS
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-sbinPROGRAMS
 
-
-# Uncomment this if you don't want makefiles to rebuild themselves
-Makefile:
 
 client: dibbler-client
 

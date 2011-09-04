@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 # Uncomment this if you don't want makefiles to rebuild themselves
-Makefile:
+# Makefile:
 
 SUBDIRS  = AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
 SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages Misc Options
@@ -35,7 +35,7 @@ dibbler_client_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_client_LDADD += -L$(top_builddir)/ClntAddrMgr -lClntAddrMgr
 dibbler_client_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_client_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
-dibbler_client_LDADD += -L$(top_builddir)/poslib/poslib/.libs -lposlib
+dibbler_client_LDADD += -L$(top_builddir)/poslib -lposlib
 dibbler_client_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_client_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_client_LDADD +=                  -lOptions -lMessages
@@ -63,13 +63,13 @@ dibbler_server_LDADD += -L$(top_builddir)/SrvTransMgr -lSrvTransMgr
 dibbler_server_LDADD += -L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr
 dibbler_server_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_server_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
-dibbler_server_LDADD += -L$(top_builddir)/poslib/poslib/.libs -lposlib
+dibbler_server_LDADD += -L$(top_builddir)/poslib -lposlib
 dibbler_server_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_server_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_server_LDADD += -L$(top_builddir)/Misc -lMisc
-dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions -lIfaceMgr
+dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions -lIfaceMgr -lposlib
 
 relay: dibbler-relay
 
@@ -92,7 +92,7 @@ dibbler_relay_LDADD += -lRelCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/RelOptions -lRelOptions
 dibbler_relay_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
-dibbler_relay_LDADD += -L$(top_builddir)/poslib/poslib/.libs -lposlib
+dibbler_relay_LDADD += -L$(top_builddir)/poslib -lposlib
 dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_relay_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_relay_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel

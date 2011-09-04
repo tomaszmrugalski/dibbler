@@ -21,7 +21,7 @@
 #ifndef __POSLIB_SYSSTL_H
 #define __POSLIB_SYSSTL_H
 
-#include "config.h"
+#include "dibbler-config.h"
 
 #include "sysstring.h"
 

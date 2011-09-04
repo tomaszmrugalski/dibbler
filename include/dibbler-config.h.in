@@ -24,6 +24,9 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* Define to 1 if you have the <ext/slist> header file. */
+#undef HAVE_EXT_SLIST
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
@@ -36,14 +39,23 @@
 /* Define to 1 if you have the `gethostbyname' function. */
 #undef HAVE_GETHOSTBYNAME
 
+/* Define to 1 if you have the `gethostname' function. */
+#undef HAVE_GETHOSTNAME
+
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the `inet_aton' function. */
+#undef HAVE_INET_ATON
 
 /* Define to 1 if you have the `inet_ntoa' function. */
 #undef HAVE_INET_NTOA
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Defines whether IPv6 support is available */
+#undef HAVE_IPV6
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
@@ -86,8 +98,23 @@
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 
+/* Defines whether the sin6_len field should be used */
+#undef HAVE_SIN6_LEN
+
+/* Defines whether the sin_len field is available */
+#undef HAVE_SIN_LEN
+
+/* Define to 1 if you have the <slist> header file. */
+#undef HAVE_SLIST
+
+/* Defines whether sockaddr_storage should be used */
+#undef HAVE_SOCKADDR_STORAGE
+
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
+
+/* Defines whether we have the socklen_t field */
+#undef HAVE_SOCKLEN_T
 
 /* Define to 1 if stdbool.h conforms to C99. */
 #undef HAVE_STDBOOL_H
@@ -140,6 +167,9 @@
 /* Define to 1 if you have the <sys/poll.h> header file. */
 #undef HAVE_SYS_POLL_H
 
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
 /* Define to 1 if you have the <sys/socket.h> header file. */
 #undef HAVE_SYS_SOCKET_H
 
@@ -161,8 +191,14 @@
 /* Define to 1 if you have the <vfork.h> header file. */
 #undef HAVE_VFORK_H
 
+/* Defines whether the vsnprintf() function is available */
+#undef HAVE_VSNPRINTF
+
 /* Define to 1 if you have the <wchar.h> header file. */
 #undef HAVE_WCHAR_H
+
+/* Define to 1 if you have the <winsock2.h> header file. */
+#undef HAVE_WINSOCK2_H
 
 /* Define to 1 if `fork' works. */
 #undef HAVE_WORKING_FORK
@@ -172,6 +208,9 @@
 
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
+
+/* Defines wiether the __ss_family field should be used */
+#undef HAVE___SS_FAMILY
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */

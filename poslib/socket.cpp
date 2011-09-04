@@ -31,6 +31,8 @@
 #include <pthread.h>
 #endif
 
+#define HAVE_IPV6
+
 bool posclient_quitflag = false;
 
 int struct_pf(_addr *addr) {

@@ -21,7 +21,7 @@
 #ifndef __POSLIB_SYSSOCKET_H
 #define __POSLIB_SYSSOCKET_H
 
-#include "config.h"
+#include "dibbler-config.h"
 
 #ifdef _WIN32
 #  include <winsock2.h>

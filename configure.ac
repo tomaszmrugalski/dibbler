@@ -8,6 +8,9 @@ AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
+# Poslib stuff
+AC_LANG_CPLUSPLUS
+
 dnl change this to [no] to have verbose build system
 dnl make V=0 and make V=1 will do the trick
 AM_SILENT_RULES([no])
@@ -23,14 +26,17 @@ LT_INIT([disable-shared])
 #AM_PROG_LEX
 #AC_PROG_YACC
 
-# Checks for libraries.
+# poslib
+AC_CHECK_TOOL([STRIP],[strip])
+AC_HEADER_STDC
 
 dnl -----------------------
 dnl Checks for header files
 dnl -----------------------
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h malloc.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/socket.h sys/time.h syslog.h unistd.h wchar.h])
-AC_CHECK_HEADERS(poll.h sys/poll.h)
+AC_CHECK_HEADERS(poll.h sys/poll.h winsock2.h sys/select.h)
+AC_CHECK_HEADERS(slist ext/slist)
 
   if test x$ac_cv_header_poll_h = xyes || test x$ac_cv_header_sys_poll_h = xyes; then
       AC_DEFINE(HAVE_POLL, 1, [Defines whether the poll function is available])
@@ -56,11 +62,126 @@ AC_TYPE_UINT8_T
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname gettimeofday inet_ntoa memchr memmove memset select socket strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
+AC_CHECK_FUNCS([bzero gethostbyaddr gethostname gethostbyname gettimeofday inet_ntoa inet_aton memchr memmove memset select socket strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
 CFLAGS="$CFLAGS_SAVED"
 CPPFLAGS="$CPPFLAGS_SAVED"
 CXXFLAGS="$CXXFLAGS_SAVED"
+
+
+dnl ------------------------------------------------------------
+dnl --- poslib stuff -------------------------------------------
+dnl ------------------------------------------------------------
+
+  if test $ac_cv_func_socket = no; then
+    # socket is not in the default libraries.
+    AC_CHECK_LIB(socket, socket,
+      [ LIB_LIBS="$LIB_LIBS -lsocket" ])
+  fi
+
+  AC_MSG_CHECKING(for vsnprintf)
+  AC_TRY_COMPILE([#include <stdio.h>
+    #include <stdarg.h>
+    ],[char buff[1]; va_list valist; vsnprintf(buff, 1, "", valist);],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_VSNPRINTF, 1, [Defines whether the vsnprintf() function is available])
+    ],[AC_MSG_RESULT(no)])
+
+  if test $ac_cv_func_inet_aton = no; then
+    # inet_aton is not in the default libraries.
+    AC_CHECK_LIB(resolv, inet_aton, LIB_LIBS="$LIB_LIBS -lresolv")
+  fi
+
+  if test $ac_cv_func_gethostname = no; then
+    AC_CHECK_LIB(nsl, gethostname, LIB_LIBS="$LIB_LIBS -lnsl")
+  fi
+
+  dnl May end up with duplicate -lnsl -- oh well
+  if test $ac_cv_func_gethostbyname = no; then
+    AC_CHECK_LIB(nsl, gethostbyname, LIB_LIBS="$LIB_LIBS -lnsl")
+    OLD_LIBS=$LIBS
+    LIBS="$LIB_LIBS $LIBS -lws2_32"
+    AC_TRY_LINK([#include <winsock2.h>], [gethostbyname("test");], LIB_LIBS="$LIB_LIBS -lws2_32")
+    LIBS=$OLD_LIBS
+  fi
+
+    AC_MSG_CHECKING(for struct sockaddr_in6)
+    AC_TRY_COMPILE([#include <sys/types.h>
+    #include <netinet/in.h>
+    #include <sys/socket.h>
+    ],[static struct sockaddr_in6 ac_i;],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_IPV6, 1, [Defines whether IPv6 support is available])
+
+     dnl ------------------
+     dnl Check for sin6_len
+     dnl ------------------
+
+     AC_MSG_CHECKING(whether struct sockaddr_in6 has a sin6_len field)
+     AC_TRY_COMPILE([#include <sys/types.h>
+     #include <netinet/in.h>
+     #include <sys/socket.h>
+     ],[static struct sockaddr_in6 ac_i;int ac_j = sizeof(ac_i.sin6_len);],
+     [AC_MSG_RESULT(yes)
+      AC_DEFINE(HAVE_SIN6_LEN, 1, [Defines whether the sin6_len field should be used])],
+      AC_MSG_RESULT(no))
+
+     dnl ---------------------
+     dnl Check for __ss_family
+     dnl ---------------------
+
+     AC_MSG_CHECKING(whether struct sockaddr_storage has a __ss_family field)
+     AC_TRY_COMPILE([#include <sys/types.h>
+     #include <netinet/in.h>
+     #include <sys/socket.h>
+     ],[static struct sockaddr_storage ac_i;int ac_j = sizeof(ac_i.__ss_family);],
+     [AC_MSG_RESULT(yes)
+      AC_DEFINE(HAVE___SS_FAMILY, 1, [Defines wiether the __ss_family field should be used])],
+      AC_MSG_RESULT(no))     
+    ],
+     AC_MSG_RESULT(no))
+
+    AC_MSG_CHECKING(for struct sockaddr_storage)
+    AC_TRY_COMPILE([
+      #ifdef HAVE_WINSOCK2_H
+      #include <winsock2.h>
+      #else
+      #include <sys/types.h>
+      #include <netinet/in.h>
+      #include <sys/socket.h>
+      #endif
+    ],[static struct sockaddr_storage ac_i;],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_SOCKADDR_STORAGE, 1, [Defines whether sockaddr_storage should be used])],
+     AC_MSG_ERROR(For IPv6 you will need a struct sockaddr_storage!)
+    )
+
+  dnl --------------------------------
+  dnl Check for sin_len in sockaddr_in
+  dnl --------------------------------
+
+  AC_MSG_CHECKING(whether struct sockaddr_in has a sin_len field)
+  AC_TRY_COMPILE([#include <sys/types.h>
+  #include <netinet/in.h>
+  ],[static struct sockaddr_in ac_i;int ac_j = sizeof(ac_i.sin_len);],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_SIN_LEN, 1, [Defines whether the sin_len field is available])],
+   AC_MSG_RESULT(no))
+
+  dnl -------------------
+  dnl Check for socklen_t
+  dnl -------------------
+
+  AC_MSG_CHECKING(for socklen_t)
+    AC_EGREP_HEADER(socklen_t, sys/socket.h,
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_SOCKLEN_T, 1, [Defines whether we have the socklen_t field]),
+    AC_MSG_RESULT(no))
+
+dnl ------------------------------------------------------------
+dnl --- poslib stuff -------------------------------------------
+dnl ------------------------------------------------------------
+
 
 dnl ---------------------------------------------
 dnl Detect OS (will be used to select proper port

@@ -21,7 +21,7 @@
 #ifndef __POSLIB_VSNPRINTF_H
 #define __POSLIB_VSNPRINTF_H
 
-#include "config.h"
+#include "dibbler-config.h"
 
 #ifndef HAVE_VSNPRINTF
 #include <stdarg.h>

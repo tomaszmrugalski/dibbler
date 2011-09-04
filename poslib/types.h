@@ -21,7 +21,7 @@
 #ifndef __POSLIB_TYPES_H
 #define __POSLIB_TYPES_H
 
-#include "config.h"
+#include "dibbler-config.h"
 
 #if defined(__BORLANDC__) && defined(HAVE_INTTYPES_H) && defined(__WCHAR_TYPE__)
 /* the following is a fix for a bug in the GNU C header inttypes.h, raised by borland c */
