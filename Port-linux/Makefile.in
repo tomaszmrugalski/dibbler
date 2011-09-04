@@ -251,9 +251,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Port-linux/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Port-linux/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu Port-linux/Makefile
+	  $(AUTOMAKE) --foreign Port-linux/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

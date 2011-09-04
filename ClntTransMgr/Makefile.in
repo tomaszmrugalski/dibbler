@@ -248,9 +248,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu ClntTransMgr/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign ClntTransMgr/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu ClntTransMgr/Makefile
+	  $(AUTOMAKE) --foreign ClntTransMgr/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

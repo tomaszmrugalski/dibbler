@@ -261,9 +261,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu SrvMessages/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign SrvMessages/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu SrvMessages/Makefile
+	  $(AUTOMAKE) --foreign SrvMessages/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
