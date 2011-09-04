@@ -106,6 +106,9 @@
    */
 #undef LT_OBJDIR
 
+/* Name of package */
+#undef PACKAGE
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -126,6 +129,9 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Version number of package */
+#undef VERSION
 
 /* Defines whether leak checking is enabled */
 #undef _LEAKCHECK_

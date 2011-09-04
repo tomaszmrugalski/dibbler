@@ -11,9 +11,8 @@ dnl --------------------
 dnl AC/AM Initialization
 dnl --------------------
 
-  AC_INIT()
-  DATE=`date +%y%m%d`
-  AM_INIT_AUTOMAKE(poslib, 1.1.0pre-$DATE, no-define)
+  AC_INIT(poslib, 1.1.0pre-dibbler)
+  AM_INIT_AUTOMAKE(poslib, 1.1.0pre-dibbler)
 #  AM_INIT_AUTOMAKE(poslib, $DATE, no-define)
   GENVERSION=1.1
   AC_SUBST(GENVERSION)

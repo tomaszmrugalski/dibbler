@@ -277,15 +277,6 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	$(am__cd) $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu Makefile
 .PRECIOUS: Makefile
-Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
-	@case '$?' in \
-	  *config.status*) \
-	    echo ' $(SHELL) ./config.status'; \
-	    $(SHELL) ./config.status;; \
-	  *) \
-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
-	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
-	esac;
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
@@ -799,6 +790,9 @@ uninstall-am: uninstall-libposlib_configDATA uninstall-pkgconfigDATA
 	ps ps-am tags tags-recursive uninstall uninstall-am \
 	uninstall-libposlib_configDATA uninstall-pkgconfigDATA
 
+
+# Uncomment this if you don't want makefiles to rebuild themselves
+Makefile:
 
 poslib-@GENVERSION@.pc: poslib.pc
 	cp $< $@
