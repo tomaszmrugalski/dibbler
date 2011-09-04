@@ -92,9 +92,9 @@ dnl ---------------------------------------------
   esac
   AC_MSG_RESULT($PORT_SUBDIR)
 
-CFLAGS+=" -std=c99 ${PORT_CFLAGS}"
-LDFLAGS+=" ${PORT_LDFLAGS}"
-CPPFLAGS+=" -D${ARCH}"
+CFLAGS="${CFLAGS} -std=c99 ${PORT_CFLAGS}"
+LDFLAGS="${LDFLAGS} ${PORT_LDFLAGS}"
+CPPFLAGS="${CPPFLAGS} -D${ARCH}"
 
 dnl ------------------------------------------------------------
 dnl ./configure parameters
@@ -120,11 +120,11 @@ dnl ------------------------------------------------------------
      [ debug=no ]
   )
 
-  if test x$debug == xyes; then
-     CPPFLAGS+=" -O0 -g"
-     LINKPRINT+=debug
+  if test x$debug = xyes; then
+     CPPFLAGS="${CPPFLAGS} -O0 -g"
+     LINKPRINT="${LINKPRINT} debug"
   else
-     CPPFLAGS+=" -O2"
+     CPPFLAGS="${CPPFLAGS} -O2"
   fi
 
 ### electric-fence ####################
@@ -144,9 +144,9 @@ dnl ------------------------------------------------------------
      [ efence=no]
    )
 
-   if test x$efence == xyes; then
-      LDFLAGS+=" -lefence"
-      LINKPRINT+=efence
+   if test x$efence = xyes; then
+      LDFLAGS="${LDFLAGS} -lefence"
+      LINKPRINT="${LINKPRINT} efence"
    fi
 
 ### reusing socket binding (bind SO_REUSEADDR) ####################
@@ -166,8 +166,8 @@ dnl ------------------------------------------------------------
         [MOD_CLNT_BIND_REUSE=yes]
    )
 
-   if test x$MOD_CLNT_BIND_REUSE == xyes; then
-      CPPFLAGS+=" -DMOD_CLNT_BIND_REUSE"
+   if test x$MOD_CLNT_BIND_REUSE = xyes; then
+      CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
 ### DNS Update ####################################
@@ -191,10 +191,10 @@ dnl ------------------------------------------------------------
    )
 
    if test x$MOD_CLNT_DISABLE_DNSUPDATE == xyes; then
-      CPPFLAGS+=" -DMOD_CLNT_DISABLE_DNSUPDATE"
+      CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_DISABLE_DNSUPDATE"
    fi
    if test x$MOD_SRV_DISABLE_DNSUPDATE == xyes; then
-      CPPFLAGS+=" -DMOD_SRV_DISABLE_DNSUPDATE"
+      CPPFLAGS="${CPPFLAGS} -DMOD_SRV_DISABLE_DNSUPDATE"
    fi
 
 ### Authentication ###############################
@@ -213,8 +213,8 @@ dnl ------------------------------------------------------------
            esac],
         [MOD_DISABLE_AUTH=no]
    )
-   if test x$MOD_DISABLE_AUTH == xyes; then
-      CPPFLAGS+=" -DMOD_DISABLE_AUTH"
+   if test x$MOD_DISABLE_AUTH = xyes; then
+      CPPFLAGS="${CPPFLAGS} -DMOD_DISABLE_AUTH"
    fi
 
 ### Link-state change detections ##########################
@@ -235,7 +235,7 @@ dnl ------------------------------------------------------------
    )
 
    if test x$MOD_CLNT_CONFIRM == xyes; then
-      CPPFLAGS+=" -DMOD_CLNT_CONFIRM"
+      CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_CONFIRM"
    fi
 
 ### Remote autoconf ######################################
@@ -255,8 +255,8 @@ dnl ------------------------------------------------------------
         [MOD_REMOTE_AUTOCONF=no]
    )
 
-   if test x$MOD_REMOTE_AUTOCONF == xyes; then
-      CPPFLAGS+=" -DMOD_REMOTE_AUTOCONF"
+   if test x$MOD_REMOTE_AUTOCONF = xyes; then
+      CPPFLAGS="${CPPFLAGS} -DMOD_REMOTE_AUTOCONF"
    fi
 
 AC_SUBST(LDFLAGS)
