@@ -9,7 +9,6 @@ dibbler-server
 dibbler-relay
 dibbler-requestor
 AddrMgr/Makefile
-AddrMgr/Makefile.in
 SrvAddrMgr/Makefile
 SrvCfgMgr/Makefile
 SrvIfaceMgr/Makefile
