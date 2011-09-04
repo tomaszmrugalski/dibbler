@@ -1,5 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
 
+# Uncomment this if you don't want makefiles to rebuild themselves
+Makefile:
+
 SUBDIRS  = AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
 SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages Misc Options
 SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
