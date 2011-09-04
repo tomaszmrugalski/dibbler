@@ -190,10 +190,10 @@ dnl ------------------------------------------------------------
         [MOD_CLNT_DISABLE_DNSUPDATE=no; MOD_SRV_DISABLE_DNSUPDATE=no]
    )
 
-   if test x$MOD_CLNT_DISABLE_DNSUPDATE == xyes; then
+   if test x$MOD_CLNT_DISABLE_DNSUPDATE = xyes; then
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_DISABLE_DNSUPDATE"
    fi
-   if test x$MOD_SRV_DISABLE_DNSUPDATE == xyes; then
+   if test x$MOD_SRV_DISABLE_DNSUPDATE = xyes; then
       CPPFLAGS="${CPPFLAGS} -DMOD_SRV_DISABLE_DNSUPDATE"
    fi
 
@@ -234,7 +234,7 @@ dnl ------------------------------------------------------------
         [MOD_CLNT_CONFIRM=yes]
    )
 
-   if test x$MOD_CLNT_CONFIRM == xyes; then
+   if test x$MOD_CLNT_CONFIRM = xyes; then
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_CONFIRM"
    fi
 
