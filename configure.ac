@@ -100,6 +100,10 @@ dnl ------------------------------------------------------------
 dnl ./configure parameters
 dnl ------------------------------------------------------------
 
+  AC_ARG_ENABLE(, )
+  AC_ARG_ENABLE(, Dibbler modular features:)
+
+### debugging ##################
   AC_ARG_ENABLE(debug,
      [  --enable-debug          Turn on debugging (default: no)],
      [  case "${enableval}" in
@@ -123,6 +127,7 @@ dnl ------------------------------------------------------------
      CPPFLAGS+=" -O2"
   fi
 
+### electric-fence ####################
   AC_ARG_ENABLE(efence,
      [  --enable-efence         Enables linking with electric-fence (default: no)],
      [  case "${enableval}" in
@@ -140,11 +145,119 @@ dnl ------------------------------------------------------------
    )
 
    if test x$efence == xyes; then
-      LDFLAGS+=-lefence
+      LDFLAGS+=" -lefence"
       LINKPRINT+=efence
    fi
 
+### reusing socket binding (bind SO_REUSEADDR) ####################
+   AC_ARG_ENABLE(bind-reuse,
+        [  --enable-bind-reuse     Enables reusing the same port/address: SO_REUSEADDR (default: yes)],
+        [ case "${enableval}" in
+              yes)
+              MOD_CLNT_BIND_REUSE=yes
+              ;;
+              no)
+              MOD_CLNT_BIND_REUSE=no
+              ;;
+              *)
+              AC_MSG_ERROR(bad value ${enableval} for --enable-bind-reuse)
+              ;;
+           esac],
+        [MOD_CLNT_BIND_REUSE=yes]
+   )
 
+   if test x$MOD_CLNT_BIND_REUSE == xyes; then
+      CPPFLAGS+=" -DMOD_CLNT_BIND_REUSE"
+   fi
+
+### DNS Update ####################################
+### We may add separate parameter for client and server eventually ##########
+   AC_ARG_ENABLE(dns-update,
+        [  --enable-dns-update     Enables DNS Update mechanism (default: yes)],
+        [ case "${enableval}" in
+              yes)
+              MOD_CLNT_DISABLE_DNSUPDATE=no
+              MOD_SRV_DISABLE_DNSUPDATE=no
+              ;;
+              no)
+              MOD_CLNT_DISABLE_DNSUPDATE=yes
+              MOD_SRV_DISABLE_DNSUPDATE=yes
+              ;;
+              *)
+              AC_MSG_ERROR(bad value ${enableval} for --enable-dns-update)
+              ;;
+           esac],
+        [MOD_CLNT_DISABLE_DNSUPDATE=no; MOD_SRV_DISABLE_DNSUPDATE=no]
+   )
+
+   if test x$MOD_CLNT_DISABLE_DNSUPDATE == xyes; then
+      CPPFLAGS+=" -DMOD_CLNT_DISABLE_DNSUPDATE"
+   fi
+   if test x$MOD_SRV_DISABLE_DNSUPDATE == xyes; then
+      CPPFLAGS+=" -DMOD_SRV_DISABLE_DNSUPDATE"
+   fi
+
+### Authentication ###############################
+   AC_ARG_ENABLE(auth,
+        [  --enable-auth           Enables authentication (default: yes)],
+        [ case "${enableval}" in
+              yes)
+              MOD_DISABLE_AUTH=no
+              ;;
+              no)
+              MOD_DISABLE_AUTH=yes
+              ;;
+              *)
+              AC_MSG_ERROR(bad value ${enableval} for --enable-auth)
+              ;;
+           esac],
+        [MOD_DISABLE_AUTH=no]
+   )
+   if test x$MOD_DISABLE_AUTH == xyes; then
+      CPPFLAGS+=" -DMOD_DISABLE_AUTH"
+   fi
+
+### Link-state change detections ##########################
+   AC_ARG_ENABLE(link-state,
+        [  --enable-link-state     Enables link-state change detections (default: yes)],
+        [ case "${enableval}" in
+              yes)
+              MOD_CLNT_CONFIRM=yes
+              ;;
+              no)
+              MOD_CLNT_CONFIRM=no
+              ;;
+              *)
+              AC_MSG_ERROR(bad value ${enableval} for --enable-link-state)
+              ;;
+           esac],
+        [MOD_CLNT_CONFIRM=yes]
+   )
+
+   if test x$MOD_CLNT_CONFIRM == xyes; then
+      CPPFLAGS+=" -DMOD_CLNT_CONFIRM"
+   fi
+
+### Remote autoconf ######################################
+   AC_ARG_ENABLE(remote-autoconf,
+        [ --enable-remote-autoconf Enables *experimental* remote autoconfiguration (default: no)],
+        [ case "${enableval}" in
+              yes)
+              MOD_REMOTE_AUTOCONF=yes
+              ;;
+              no)
+              MOD_REMOTE_AUTOCONF=no
+              ;;
+              *)
+              AC_MSG_ERROR(bad value ${enableval} for --enable-remote-autoconf)
+              ;;
+           esac],
+        [MOD_REMOTE_AUTOCONF=no]
+   )
+
+   if test x$MOD_REMOTE_AUTOCONF == xyes; then
+      CPPFLAGS+=" -DMOD_REMOTE_AUTOCONF"
+   fi
 
 AC_SUBST(LDFLAGS)
 AC_SUBST(CPPFLAGS)
@@ -168,9 +281,17 @@ dnl ----------------------------------------
 dnl Print out configured parameters
 dnl ----------------------------------------
 echo
-echo "Selected port  : $PORT_SUBDIR"
-echo "Debug          : $debug"
-echo "Electric fence : $efence"
+echo "Selected OS port              : $PORT_SUBDIR"
+echo "Debug                         : $debug"
+echo "Electric fence                : $efence"
+echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
+echo "DNS Update (clnt/srv) disabled: $MOD_CLNT_DISABLE_DNSUPDATE/$MOD_SRV_DISABLE_DNSUPDATE"
+echo "Authentication disabled       : $MOD_DISABLE_AUTH"
+echo "Link-state change detection   : $MOD_CLNT_CONFIRM"
+
+echo
+echo "Experimental features:"
+echo "Remote autoconfigution        : $MOD_REMOTE_AUTOCONF"
 echo 
 echo "CFLAGS         : $CFLAGS"
 echo "CPPFLAGS       : $CPPFLAGS"

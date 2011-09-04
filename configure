@@ -880,8 +880,14 @@ with_pic
 enable_fast_install
 with_gnu_ld
 enable_libtool_lock
+enable_
 enable_debug
 enable_efence
+enable_bind_reuse
+enable_dns_update
+enable_auth
+enable_link_state
+enable_remote_autoconf
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1525,8 +1531,15 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
+
+Dibbler modular features:
   --enable-debug          Turn on debugging (default: no)
   --enable-efence         Enables linking with electric-fence (default: no)
+  --enable-bind-reuse     Enables reusing the same port/address: SO_REUSEADDR (default: yes)
+  --enable-dns-update     Enables DNS Update mechanism (default: yes)
+  --enable-auth           Enables authentication (default: yes)
+  --enable-link-state     Enables link-state change detections (default: yes)
+ --enable-remote-autoconf Enables *experimental* remote autoconfiguration (default: no)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -5206,13 +5219,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:5209: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:5222: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5212: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:5225: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5215: output\"" >&5)
+  (eval echo "\"\$as_me:5228: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -6418,7 +6431,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6421 "configure"' > conftest.$ac_ext
+  echo '#line 6434 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8469,11 +8482,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8472: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8485: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8476: \$? = $ac_status" >&5
+   echo "$as_me:8489: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8808,11 +8821,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8811: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8824: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8815: \$? = $ac_status" >&5
+   echo "$as_me:8828: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8913,11 +8926,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8916: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8929: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8920: \$? = $ac_status" >&5
+   echo "$as_me:8933: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8968,11 +8981,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8971: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8984: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8975: \$? = $ac_status" >&5
+   echo "$as_me:8988: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11352,7 +11365,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11355 "configure"
+#line 11368 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11448,7 +11461,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11451 "configure"
+#line 11464 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13404,11 +13417,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13407: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13420: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13411: \$? = $ac_status" >&5
+   echo "$as_me:13424: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13503,11 +13516,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13506: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13519: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13510: \$? = $ac_status" >&5
+   echo "$as_me:13523: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -13555,11 +13568,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13558: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13571: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13562: \$? = $ac_status" >&5
+   echo "$as_me:13575: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15469,6 +15482,18 @@ LDFLAGS+=" ${PORT_LDFLAGS}"
 CPPFLAGS+=" -D${ARCH}"
 
 
+  # Check whether --enable- was given.
+if test "${enable_+set}" = set; then :
+  enableval=$enable_;
+fi
+
+  # Check whether --enable- was given.
+if test "${enable_+set}" = set; then :
+  enableval=$enable_;
+fi
+
+
+### debugging ##################
   # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug;   case "${enableval}" in
@@ -15495,6 +15520,7 @@ fi
      CPPFLAGS+=" -O2"
   fi
 
+### electric-fence ####################
   # Check whether --enable-efence was given.
 if test "${enable_efence+set}" = set; then :
   enableval=$enable_efence;   case "${enableval}" in
@@ -15515,11 +15541,134 @@ fi
 
 
    if test x$efence == xyes; then
-      LDFLAGS+=-lefence
+      LDFLAGS+=" -lefence"
       LINKPRINT+=efence
    fi
 
+### reusing socket binding (bind SO_REUSEADDR) ####################
+   # Check whether --enable-bind-reuse was given.
+if test "${enable_bind_reuse+set}" = set; then :
+  enableval=$enable_bind_reuse;  case "${enableval}" in
+              yes)
+              MOD_CLNT_BIND_REUSE=yes
+              ;;
+              no)
+              MOD_CLNT_BIND_REUSE=no
+              ;;
+              *)
+              as_fn_error $? "bad value ${enableval} for --enable-bind-reuse" "$LINENO" 5
+              ;;
+           esac
+else
+  MOD_CLNT_BIND_REUSE=yes
 
+fi
+
+
+   if test x$MOD_CLNT_BIND_REUSE == xyes; then
+      CPPFLAGS+=" -DMOD_CLNT_BIND_REUSE"
+   fi
+
+### DNS Update ####################################
+### We may add separate parameter for client and server eventually ##########
+   # Check whether --enable-dns-update was given.
+if test "${enable_dns_update+set}" = set; then :
+  enableval=$enable_dns_update;  case "${enableval}" in
+              yes)
+              MOD_CLNT_DISABLE_DNSUPDATE=no
+              MOD_SRV_DISABLE_DNSUPDATE=no
+              ;;
+              no)
+              MOD_CLNT_DISABLE_DNSUPDATE=yes
+              MOD_SRV_DISABLE_DNSUPDATE=yes
+              ;;
+              *)
+              as_fn_error $? "bad value ${enableval} for --enable-dns-update" "$LINENO" 5
+              ;;
+           esac
+else
+  MOD_CLNT_DISABLE_DNSUPDATE=no; MOD_SRV_DISABLE_DNSUPDATE=no
+
+fi
+
+
+   if test x$MOD_CLNT_DISABLE_DNSUPDATE == xyes; then
+      CPPFLAGS+=" -DMOD_CLNT_DISABLE_DNSUPDATE"
+   fi
+   if test x$MOD_SRV_DISABLE_DNSUPDATE == xyes; then
+      CPPFLAGS+=" -DMOD_SRV_DISABLE_DNSUPDATE"
+   fi
+
+### Authentication ###############################
+   # Check whether --enable-auth was given.
+if test "${enable_auth+set}" = set; then :
+  enableval=$enable_auth;  case "${enableval}" in
+              yes)
+              MOD_DISABLE_AUTH=no
+              ;;
+              no)
+              MOD_DISABLE_AUTH=yes
+              ;;
+              *)
+              as_fn_error $? "bad value ${enableval} for --enable-auth" "$LINENO" 5
+              ;;
+           esac
+else
+  MOD_DISABLE_AUTH=no
+
+fi
+
+   if test x$MOD_DISABLE_AUTH == xyes; then
+      CPPFLAGS+=" -DMOD_DISABLE_AUTH"
+   fi
+
+### Link-state change detections ##########################
+   # Check whether --enable-link-state was given.
+if test "${enable_link_state+set}" = set; then :
+  enableval=$enable_link_state;  case "${enableval}" in
+              yes)
+              MOD_CLNT_CONFIRM=yes
+              ;;
+              no)
+              MOD_CLNT_CONFIRM=no
+              ;;
+              *)
+              as_fn_error $? "bad value ${enableval} for --enable-link-state" "$LINENO" 5
+              ;;
+           esac
+else
+  MOD_CLNT_CONFIRM=yes
+
+fi
+
+
+   if test x$MOD_CLNT_CONFIRM == xyes; then
+      CPPFLAGS+=" -DMOD_CLNT_CONFIRM"
+   fi
+
+### Remote autoconf ######################################
+   # Check whether --enable-remote-autoconf was given.
+if test "${enable_remote_autoconf+set}" = set; then :
+  enableval=$enable_remote_autoconf;  case "${enableval}" in
+              yes)
+              MOD_REMOTE_AUTOCONF=yes
+              ;;
+              no)
+              MOD_REMOTE_AUTOCONF=no
+              ;;
+              *)
+              as_fn_error $? "bad value ${enableval} for --enable-remote-autoconf" "$LINENO" 5
+              ;;
+           esac
+else
+  MOD_REMOTE_AUTOCONF=no
+
+fi
+
+
+   if test x$MOD_REMOTE_AUTOCONF == xyes; then
+      CPPFLAGS+=" -DMOD_REMOTE_AUTOCONF"
+   fi
 
 
 
@@ -21104,9 +21253,17 @@ fi
 
 
 echo
-echo "Selected port  : $PORT_SUBDIR"
-echo "Debug          : $debug"
-echo "Electric fence : $efence"
+echo "Selected OS port              : $PORT_SUBDIR"
+echo "Debug                         : $debug"
+echo "Electric fence                : $efence"
+echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
+echo "DNS Update (clnt/srv) disabled: $MOD_CLNT_DISABLE_DNSUPDATE/$MOD_SRV_DISABLE_DNSUPDATE"
+echo "Authentication disabled       : $MOD_DISABLE_AUTH"
+echo "Link-state change detection   : $MOD_CLNT_CONFIRM"
+
+echo
+echo "Experimental features:"
+echo "Remote autoconfigution        : $MOD_REMOTE_AUTOCONF"
 echo
 echo "CFLAGS         : $CFLAGS"
 echo "CPPFLAGS       : $CPPFLAGS"
