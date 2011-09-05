@@ -16,7 +16,7 @@ LATEXOPTS=-file-line-error -halt-on-error
 
 user: dibbler-user.pdf
 
-devel: dibbler-devel.pdf
+devel: 
 
 dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue.tex \
 	  dibbler-user-intro.tex dibbler-user-usage.tex version.tex
@@ -33,26 +33,19 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue
 #	@echo "[PS2PDF ] $(SUBDIR)/$@"
 #	$(PS2PDF) dibbler-user.ps &>dibbler-user-ps2pdf.log
 
-dibbler-devel.pdf: dibbler-devel.tex        dibbler-devel-compile.tex \
+dibbler-devel.pdf: dibbler-devel-arch.dox dibbler-devel-bibl.dox dibbler-devel-common.dox \
+	dibbler-devel-compile.dox dibbler-devel-debug.dox dibbler-devel-intro.dox \
+        dibbler-devel-mainpage.dox dibbler-devel-misc.dox dibbler-devel-port.dox
+
+dibbler-devel.tex  doxygen.cfg dibbler-devel-compile.tex \
                    dibbler-devel-common.tex dibbler-devel-compile.tex \
 		   dibbler-devel-arch.tex   dibbler-devel-intro.tex \
                    dibbler-devel-misc.tex   version.tex
-	@echo "[LATEX  ] $(SUBDIR)/$@"
-	$(LATEX) $(LATEXOPTS) dibbler-devel.tex > dibbler-devel-1st_pass.log
-	if [ $(PASS3)=="YES" ]; then                                          \
-	  echo "[LATEX  ] $(SUBDIR)/$@";                                        \
-	  $(LATEX) $(LATEXOPTS) dibbler-devel.tex > dibbler-devel-2nd_pass.log; \
-	  echo "[LATEX  ] $(SUBDIR)/$@";                                        \
-	  $(LATEX) $(LATEXOPTS) dibbler-devel.tex > dibbler-devel-3rd_pass.log; \
-	fi
-#	@echo "[DVIPS  ] $(SUBDIR)/$@"
-#	$(DVIPS) -z dibbler-devel.dvi -o &>dibbler-devel-dvips.log
-#	@echo "[PS2PDF ] $(SUBDIR)/$@"
-#	$(PS2PDF) dibbler-devel.ps
+	doxygen doxygen.cfg
 
 version.tex:
 	@echo "[GREP   ] $(SUBDIR)/$@"
-	@../test/xtract_version > $@
+	@../scripts/xtract_version > $@
 	@echo "[PERL   ] $(SUBDIR)/$@"
 	perl -i -pe 's/_/\\_/g' version.tex
 	perl -i -pe 's/^/\\newcommand{\\version}{/' version.tex
