@@ -34,3 +34,5 @@ Port-bsd/Makefile
 RelCfgMgr/Makefile
 RelIfaceMgr/Makefile
 Port-linux/Makefile
+Makefile
+doc/html
