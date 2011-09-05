@@ -800,6 +800,16 @@ uninstall-am:
 	pdf pdf-am ps ps-am tags uninstall uninstall-am
 
 
+parser: SrvParser.y SrvLexer.l
+	@echo "[BISON++] $(SUBDIR)/SrvParser.y"
+	$(top_builddir)/bison++/bison++ --skeleton=$(top_builddir)/bison++/bison.cc --headerskeleton=$(top_builddir)/bison++/bison.h -v --debug --defines -d SrvParser.y -o SrvParser.cpp
+	@echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
+	flex -+ -i -oSrvLexer.cpp SrvLexer.l
+	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"
+	cat SrvLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > SrvLexer.cpp2
+	rm -f SrvLexer.cpp
+	mv SrvLexer.cpp2 SrvLexer.cpp
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

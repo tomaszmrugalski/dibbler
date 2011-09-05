@@ -744,6 +744,16 @@ uninstall-am:
 	pdf pdf-am ps ps-am tags uninstall uninstall-am
 
 
+parser: ClntParser.y ClntLexer.l
+	@echo "[BISON++] $(SUBDIR)/ClntParser.y"
+	$(top_builddir)/bison++/bison++ --skeleton=$(top_builddir)/bison++/bison.cc --headerskeleton=$(top_builddir)/bison++/bison.h -v --debug --defines -d ClntParser.y -o ClntParser.cpp
+	@echo "[FLEX   ] $(SUBDIR)/ClntLexer.l"
+	flex -+ -i -L -oClntLexer.cpp ClntLexer.l
+	@echo "[SED    ] $(SUBDIR)/ClntLexer.cpp"
+	cat ClntLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > ClntLexer.cpp2
+	rm -f ClntLexer.cpp
+	mv ClntLexer.cpp2 ClntLexer.cpp
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
