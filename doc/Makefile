@@ -16,8 +16,6 @@ LATEXOPTS=-file-line-error -halt-on-error
 
 user: dibbler-user.pdf
 
-devel: 
-
 dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue.tex \
 	  dibbler-user-intro.tex dibbler-user-usage.tex version.tex
 	@echo "[LATEX  ] $(SUBDIR)/$@"
@@ -33,14 +31,9 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config.tex dibbler-user-epilogue
 #	@echo "[PS2PDF ] $(SUBDIR)/$@"
 #	$(PS2PDF) dibbler-user.ps &>dibbler-user-ps2pdf.log
 
-dibbler-devel.pdf: dibbler-devel-arch.dox dibbler-devel-bibl.dox dibbler-devel-common.dox \
+devel: dibbler-devel-arch.dox dibbler-devel-bibl.dox dibbler-devel-common.dox \
 	dibbler-devel-compile.dox dibbler-devel-debug.dox dibbler-devel-intro.dox \
         dibbler-devel-mainpage.dox dibbler-devel-misc.dox dibbler-devel-port.dox
-
-dibbler-devel.tex  doxygen.cfg dibbler-devel-compile.tex \
-                   dibbler-devel-common.tex dibbler-devel-compile.tex \
-		   dibbler-devel-arch.tex   dibbler-devel-intro.tex \
-                   dibbler-devel-misc.tex   version.tex
 	doxygen doxygen.cfg
 
 version.tex:
@@ -58,4 +51,4 @@ clean:
 clobber: clean
 	@rm -f *.pdf
 
-.PHONY: version.tex
+.PHONY: version.tex devel
