@@ -23,11 +23,8 @@
 #include "postime.h"
 
 #include <sys/types.h>
-#if defined(__BORLANDC__) && defined(_WIN32) || defined(WIN32)
-struct timeval {
-  int tv_sec;
-  int tv_usec;
-};
+#if defined(WIN32)
+#include <winsock2.h>
 #else
 #include <sys/time.h>
 #endif

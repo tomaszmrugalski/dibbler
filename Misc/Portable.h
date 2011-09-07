@@ -27,6 +27,8 @@
 #endif 
 
 #ifdef WIN32
+#define strcasecmp strcmpi
+
 #ifndef uint8_t
 #define uint8_t  unsigned char
 #endif

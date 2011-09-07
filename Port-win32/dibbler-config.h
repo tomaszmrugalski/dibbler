@@ -20,7 +20,7 @@
 #define HAVE_INET_ATON 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
+// #define HAVE_INTTYPES_H 1 // not available in WIN32
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1

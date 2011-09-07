@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..;.;include;..\poslib\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
+				AdditionalIncludeDirectories="..;.;include;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;YYDEBUG; _WIN32"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
@@ -1149,47 +1149,43 @@
 				Name="poslib"
 				>
 				<File
-					RelativePath="..\poslib\poslib\dnsmessage.cpp"
+					RelativePath="..\poslib\dnsmessage.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\domainfn.cpp"
+					RelativePath="..\poslib\domainfn.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\exception.cpp"
+					RelativePath="..\poslib\exception.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\lexfn.cpp"
+					RelativePath="..\poslib\lexfn.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\masterfile.cpp"
+					RelativePath="..\poslib\postime.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\postime.cpp"
+					RelativePath="..\poslib\random.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\random.cpp"
+					RelativePath="..\poslib\resolver.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\resolver.cpp"
+					RelativePath="..\poslib\rr.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\rr.cpp"
+					RelativePath="..\poslib\socket.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\poslib\poslib\socket.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\poslib\poslib\w32poll.cpp"
+					RelativePath="..\poslib\w32poll.cpp"
 					>
 				</File>
 			</Filter>

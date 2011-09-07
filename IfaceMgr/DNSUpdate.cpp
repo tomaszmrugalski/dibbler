@@ -25,7 +25,14 @@ DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
     :_hostname(NULL) { 
     message= NULL;
     memset(&server, 0, sizeof(server));
-    server.ss_family = AF_INET6;
+
+#ifndef WIN32	
+	// LINUX, BSD
+	server.ss_family = AF_INET6;
+#else
+	// WINDOWS
+	server.sa_family = AF_INET6;
+#endif
     
     if (updateMode==DNSUPDATE_AAAA || updateMode==DNSUPDATE_AAAA_CLEANUP) {
 	splitHostDomain(hostname);
