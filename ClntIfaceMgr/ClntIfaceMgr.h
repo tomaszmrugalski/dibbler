@@ -40,6 +40,7 @@ public:
 
  private:
     TClntIfaceMgr(string xmlFile); // this is singleton
+List(TClntMsg) Transactions;
     
  public:
     static void instanceCreate(const std::string xmlFile);
@@ -52,6 +53,7 @@ public:
     bool sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> addr);
     
     bool sendMulticast(int iface, char *msg, int msgsize);
+void sendrenew();
     
     SPtr<TClntMsg> select(unsigned int timeout);
 

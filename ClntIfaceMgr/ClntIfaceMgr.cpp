@@ -14,9 +14,14 @@
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
+#include "ClntTransMgr.h"
 #include "ClntMsgReply.h"
+#include "ClntMsgRenew.h"
 #include "ClntMsgAdvertise.h"
 #include "Logger.h"
+
+
+
 
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
@@ -146,7 +151,11 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             return ptr;
 
         case RECONFIGURE_MSG:
-            Log(Warning) << "Reconfigure Message is currently not supported." << LogEnd;
+	Log(Notice) << "Received RECONFIGURE" << LogEnd;
+	ClntTransMgr().sendRenew();
+
+
+            
             return 0; // NULL
         case RELAY_FORW_MSG: // those two msgs should not be visible for client
         case RELAY_REPL_MSG:
@@ -697,3 +706,5 @@ ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "</ClntIfaceMgr>" << std::endl;
     return strum;
 }
+
+

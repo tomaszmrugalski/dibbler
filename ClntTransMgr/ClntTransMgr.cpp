@@ -513,6 +513,7 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
     // find which message this is answer for
     bool found = false;
     SPtr<TClntMsg> msgQuestion;
+Log(Info)<<"!!!!!!!!!!!!!!!!!!!!!!!WWW " << Transactions.count() << LogEnd;
     Transactions.first();
     while(msgQuestion=(Ptr*)Transactions.get()) {
         if (msgQuestion->getTransID()==msgAnswer->getTransID()) {
@@ -631,6 +632,50 @@ void TClntTransMgr::sendRequest(TOptList requestOptions, int iface)
     SPtr<TClntMsg> ptr = new TClntMsgRequest(requestOptions, iface);
     Transactions.append( (Ptr*)ptr );
 }
+
+void TClntTransMgr::sendRenew()
+{
+
+    
+    // Find all IAs
+    List(TAddrIA) iaLst;
+    SPtr<TAddrIA> ia;
+    SPtr<TAddrIA> iaPattern;
+    ClntAddrMgr().firstIA();
+ Log(Info) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!! " << LogEnd;
+
+    // Need to be fixed:?? how to deal with mutiple network interfaces.
+    while (ia = ClntAddrMgr().getIA() ) 
+    {
+
+
+
+		iaLst.append(ia);
+		ia->setState(STATE_INPROCESS);
+    }
+
+    // Find all PDs
+    List(TAddrIA) pdLst;
+    ClntAddrMgr().firstPD();
+    while (ia = ClntAddrMgr().getPD()) 
+    {
+		pdLst.append(ia);
+		ia->setState(STATE_INPROCESS);
+    }
+
+    if (iaLst.count() + pdLst.count() == 0) {
+	// there are no IAs or PD to refresh. Just do nothing.
+	return;
+    }
+	 
+    Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
+    SPtr <TClntMsg> ptrRenew = new TClntMsgRenew(iaLst, pdLst);
+Log(Info)<<"!!!!!!!!!!!!!!!!!!!!!!!Przed " << Transactions.count() << LogEnd;
+    Transactions.append(ptrRenew);
+Log(Info)<<"++++++++++++++++++++PO " << Transactions.count() << LogEnd;
+//ptrRenew->send();
+}
+
 
 // Send RELEASE message
 void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst)
