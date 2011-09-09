@@ -1,12 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- * changes: Michal Kowalczuk <michal@kowalczuk.eu>
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * author:  Grzgorz Pluto
+ * changes: Tomasz Mrugalski
+ *
+ * released under GNU GPL v2 only licence
+ *
  * $Id: SrvMsgAdvertise.cpp,v 1.33 2008-11-13 22:40:26 thomson Exp $
  */
 
@@ -40,7 +39,7 @@ ClientDUID=ptrDUID;
 
     // append serverID, preference and possibly unicast
     //appendMandatoryOptions(ORO);
-    
+
     //if client requested parameters and policy doesn't forbid from answering
     //appendRequestedOptions(ClientDUID, clientAddr, Iface, ORO);
 
@@ -53,21 +52,21 @@ ClientDUID=ptrDUID;
     if(msgType==1) {
 Log(Crit) << " wwwwwwwwwww " << PeerAddr->getPlain() << LogEnd;
 
-	    //ptrOptIA_NA->releaseAllAddrs(true);
+            //ptrOptIA_NA->releaseAllAddrs(true);
 //Options.push_back(new TOptInteger(OPTION_ADDRPARAMS, 2, 0, this));
 Log(Crit) << " jestem_na_warunku_msgType=1 " << LogEnd;
-	    //break;
-	}
+            //break;
+        }
 
-	else {
-	    SPtr<TSrvOptTA> ta;
-	    //ta = (Ptr*) opt;
-	    //ta->releaseAllAddrs(false);
-	    //break;
-	}
-	//default:
-	//    break;
-	
+        else {
+            SPtr<TSrvOptTA> ta;
+            //ta = (Ptr*) opt;
+            //ta->releaseAllAddrs(false);
+            //break;
+        }
+        //default:
+        //    break;
+
 
     appendAuthenticationOption(ClientDUID);
 
