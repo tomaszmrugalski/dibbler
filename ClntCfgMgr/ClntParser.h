@@ -158,6 +158,7 @@ typedef union
 #ifndef YY_ClntParser_DEBUG
 
  #line 71 "../bison++/bison.h"
+#define YY_ClntParser_DEBUG 1
 
 #line 71 "../bison++/bison.h"
 /* YY_ClntParser_DEBUG */
@@ -332,10 +333,11 @@ typedef
 #define	ADDR_PARAMS_	323
 #define	REMOTE_AUTOCONF_	324
 #define	AFTR_	325
-#define	ADDRESS_LIST_	326
-#define	STRING_KEYWORD_	327
-#define	REQUEST_	328
-#define	RECONFIGURE_	329
+#define	ROUTING_	326
+#define	ADDRESS_LIST_	327
+#define	STRING_KEYWORD_	328
+#define	REQUEST_	329
+#define	RECONFIGURE_	330
 
 
 #line 169 "../bison++/bison.h"
@@ -452,6 +454,7 @@ static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
 static const int AFTR_;
+static const int ROUTING_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
 static const int REQUEST_;
@@ -532,10 +535,11 @@ static const int RECONFIGURE_;
 	,ADDR_PARAMS_=323
 	,REMOTE_AUTOCONF_=324
 	,AFTR_=325
-	,ADDRESS_LIST_=326
-	,STRING_KEYWORD_=327
-	,REQUEST_=328
-	,RECONFIGURE_=329
+	,ROUTING_=326
+	,ADDRESS_LIST_=327
+	,STRING_KEYWORD_=328
+	,REQUEST_=329
+	,RECONFIGURE_=330
 
 
 #line 215 "../bison++/bison.h"
