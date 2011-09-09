@@ -502,6 +502,10 @@ TClntCfgIface::TOptionStatusLst& TClntCfgIface::getExtraOptions() {
     return ExtraOpts;
 }
 
+void TClntCfgIface::setRouting(bool enabled) {
+    /// @todo: implement this
+}
+
 SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
     for (TOptionStatusLst::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
 	if ((*opt)->OptionType == type)

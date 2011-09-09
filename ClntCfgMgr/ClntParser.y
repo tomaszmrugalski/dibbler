@@ -120,6 +120,7 @@ namespace std
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_
 %token AFTR_
+%token ROUTING_
 %token ADDRESS_LIST_, STRING_KEYWORD_, REQUEST_
 %token RECONFIGURE_
 %type  <ival> Number
@@ -166,6 +167,7 @@ GlobalOptionDeclaration
 InterfaceOptionDeclaration
 : IAOptionDeclaration
 | NoIAsOptions
+| Routing
 | UnicastOption
 | DNSServerOption
 | DomainOption
@@ -734,7 +736,6 @@ Prefix
     PrefixLst.append(prefix);
 };
 
-
 UnicastOption
 :UNICAST_ Number
 {
@@ -752,6 +753,23 @@ UnicastOption
     }
 }
 ;
+
+Routing
+:ROUTING_ Number
+{
+    switch($2) {
+    case 0:
+        ClntCfgIfaceLst.getLast()->setRouting(false);
+        break;
+    case 1:
+        ClntCfgIfaceLst.getLast()->setRouting(true);
+        break;
+    default:
+        Log(Error) << "Invalid parameter (" << $2 << ") passed to routing in line "
+                   << lex->YYText() << "." << LogEnd;
+        return 1;
+    }
+}
 
 ADDRESDUIDList
 : IPV6ADDR_

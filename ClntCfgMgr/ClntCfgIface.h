@@ -49,6 +49,8 @@ public:
     TClntCfgIface(string ifaceName);
     TClntCfgIface(int ifaceNr);
 
+    void setRouting(bool enabled);
+
     bool isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid);
 
     // IA

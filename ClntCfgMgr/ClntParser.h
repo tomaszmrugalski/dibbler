@@ -332,10 +332,11 @@ typedef
 #define	ADDR_PARAMS_	322
 #define	REMOTE_AUTOCONF_	323
 #define	AFTR_	324
-#define	ADDRESS_LIST_	325
-#define	STRING_KEYWORD_	326
-#define	REQUEST_	327
-#define	RECONFIGURE_	328
+#define	ROUTING_	325
+#define	ADDRESS_LIST_	326
+#define	STRING_KEYWORD_	327
+#define	REQUEST_	328
+#define	RECONFIGURE_	329
 
 
 #line 169 "../bison++/bison.h"
@@ -451,6 +452,7 @@ static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
 static const int AFTR_;
+static const int ROUTING_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
 static const int REQUEST_;
@@ -530,10 +532,11 @@ static const int RECONFIGURE_;
 	,ADDR_PARAMS_=322
 	,REMOTE_AUTOCONF_=323
 	,AFTR_=324
-	,ADDRESS_LIST_=325
-	,STRING_KEYWORD_=326
-	,REQUEST_=327
-	,RECONFIGURE_=328
+	,ROUTING_=325
+	,ADDRESS_LIST_=326
+	,STRING_KEYWORD_=327
+	,REQUEST_=328
+	,RECONFIGURE_=329
 
 
 #line 215 "../bison++/bison.h"

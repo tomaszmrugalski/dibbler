@@ -82,6 +82,7 @@ nis-domain            { return ClntParser::NIS_DOMAIN_; }
 nis\+-server          { return ClntParser::NISP_SERVER_; }
 nis\+-domain          { return ClntParser::NISP_DOMAIN_; }
 lifetime              { return ClntParser::LIFETIME_; }
+routing               { return ClntParser::ROUTING_; }
 reject-server         { return ClntParser::REJECT_SERVERS_;}
 prefered-server       { return ClntParser::PREFERRED_SERVERS_;}
 rapid-commit          { return ClntParser::RAPID_COMMIT_;}
