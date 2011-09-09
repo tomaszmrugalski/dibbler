@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Grzegorz Pluto
  *
  * released under GNU GPL v2 only licence
  *
@@ -45,6 +46,12 @@ class TSrvTransMgr
     char * getCtrlAddr();
     int    getCtrlIface();
 
+    bool sendReconfigure(SPtr<TIPv6Addr> addr, SPtr<TIPv6Addr> ia, int iface,
+                         int msgType, SPtr<TDUID> ptrDUID);
+
+
+bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
+
   private:
     TSrvTransMgr(string xmlFile);
     ~TSrvTransMgr();
@@ -56,7 +63,8 @@ class TSrvTransMgr
     int ctrlIface;
     char ctrlAddr[48];
 
-    SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
+    SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do
+                              /// the REQUEST handling properly
 
     static TSrvTransMgr * Instance;
 };
@@ -64,5 +72,3 @@ class TSrvTransMgr
 
 
 #endif
-
-

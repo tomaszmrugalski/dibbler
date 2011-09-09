@@ -243,7 +243,8 @@ libClntMessages_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/ClntOptions -I$(top_srcdir)/ClntIfaceMgr \
 	-I$(top_srcdir)/IfaceMgr -I$(top_srcdir)/ClntCfgMgr \
 	-I$(top_srcdir)/CfgMgr -I$(top_srcdir)/AddrMgr \
-	-I$(top_srcdir)/ClntAddrMgr -I$(top_srcdir)/ClntTransMgr
+	-I$(top_srcdir)/ClntAddrMgr -I$(top_srcdir)/ClntTransMgr \
+	-I$(top_srcdir)/poslib
 libClntMessages_a_SOURCES = ClntMsgAdvertise.cpp ClntMsgAdvertise.h ClntMsgConfirm.cpp ClntMsgConfirm.h ClntMsg.cpp ClntMsgDecline.cpp ClntMsgDecline.h ClntMsg.h ClntMsgInfRequest.cpp ClntMsgInfRequest.h ClntMsgRebind.cpp ClntMsgRebind.h ClntMsgRelease.cpp ClntMsgRelease.h ClntMsgRenew.cpp ClntMsgRenew.h ClntMsgReply.cpp ClntMsgReply.h ClntMsgRequest.cpp ClntMsgRequest.h ClntMsgSolicit.cpp ClntMsgSolicit.h
 all: all-am
 

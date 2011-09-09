@@ -17,6 +17,7 @@
 #include "SrvTransMgr.h"
 #include "SmartPtr.h"
 #include "SrvCfgIface.h"
+#include "IfaceMgr.h"
 #include "Iface.h"
 #include "DHCPConst.h"
 #include "Logger.h"
@@ -30,6 +31,8 @@
 #include "SrvMsgRebind.h"
 #include "SrvMsgRenew.h"
 #include "SrvMsgRelease.h"
+#include "SrvMsgReconfigure.h"
+#include "SrvMsg.h"
 #include "SrvMsgLeaseQuery.h"
 #include "SrvMsgLeaseQueryReply.h"
 #include "SrvOptIA_NA.h"
@@ -47,13 +50,118 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
     SPtr<TSrvCfgIface> confIface;
     SrvCfgMgr().firstIface();
     while (confIface = SrvCfgMgr().getIface()) {
-  	    if (!this->openSocket(confIface)) {
-	          this->IsDone = true;
-	          break;
-	      }
+        if (!this->openSocket(confIface)) {
+            this->IsDone = true;
+            break;
+        }
     }
+    
+    int clients = sendReconfigures();
+    Log(Info) << "Sent Reconfigure to " << clients << " client(s)." << LogEnd;
 
     SrvAddrMgr().setCacheSize(SrvCfgMgr().getCacheSize());
+}
+
+/// @brief Checks loaded database and sends RECONFIGURE to some clients.
+///
+/// Checks loaded database against current configuration and finds addresses
+/// that are outdated (do not match current configuration). RECONFIGURE message
+/// is sent to clients that currently hold those addresses.
+///
+/// @return number of clients that were reconfigured
+///
+int
+TSrvTransMgr::sendReconfigures() {
+
+    int clients = 0; // how many client did we reconfigure?
+    int iface;
+    bool PD;
+    bool check;
+    SPtr<TAddrClient> cli;
+    SPtr<TDUID> ptrDUID;
+    SrvAddrMgr().firstClient();
+    unsigned long IAID;
+
+    Log(Info) << "Checking if clients need RECONFIGURE." << LogEnd;
+    
+    while (cli = SrvAddrMgr().getClient() ) 
+    {
+        check=true;
+        ptrDUID=cli->getDUID();
+        SPtr<TAddrIA> ia;
+        cli->firstIA();
+        while ( (ia = cli->getIA()) && check) 
+        {
+            IAID=ia->getIAID();	
+            iface=ia->getIface();
+            //?????????
+            //SPtr<TIfaceIface>  ptrIface = SrvIfaceMgr().getIfaceByID(2);
+            SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
+            SPtr<TIPv6Addr> unicast=ia->getSrvAddr();
+            SPtr<TAddrAddr> adr;
+            SPtr<TIPv6Addr> addra;
+            ia->firstAddr();
+            while( (adr=ia->getAddr()) && check ) 
+            {
+                PD=false;
+                if(ClientInPool1(adr->get(),iface,PD)) 
+                {
+                    Log(Debug) << "Client " << cli->getDUID()->getPlain()
+                               << "doesn't need to reconfigure IA (iaid=" << ia->getIAID() << LogEnd;
+                }
+                else 
+                {
+                    Log(Info) << "Client " << cli->getDUID()->getPlain()
+                              << "uses outdated info. Sending RECONFIGURE." << LogEnd;
+                    sendReconfigure(unicast, adr->get(), iface, 1, ptrDUID);
+                    clients++;
+                    if (SrvAddrMgr().delClntAddr(cli->getDUID(), ia->getIAID(), adr->get(),false)) {
+                        Log(Debug) << "Outdated " << *adr->get() << " address deleted." << LogEnd;
+                    }
+                    check = false;
+                    break; // break inner while loop
+                }
+            }
+        } 
+        SPtr<TAddrIA> pd;
+        cli->firstPD();
+        while ( (pd = cli->getPD()) && check ) 
+        {
+            IAID=pd->getIAID();
+            //Log(Crit) << "pd........." << *pd << LogEnd;
+            iface=pd->getIface();
+            //Log(Crit) << "iface........." << iface << LogEnd;
+            SPtr<TAddrPrefix> prefix;
+            SPtr<TIPv6Addr> addra;
+            SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
+            SPtr<TIPv6Addr> unicast=pd->getSrvAddr();
+            pd->firstPrefix();
+            while(prefix=pd->getPrefix() ) 
+            {
+                PD=true;
+                if(ClientInPool1(prefix->get(),iface,PD))
+                {
+                    Log(Debug) << "Client " << cli->getDUID()->getPlain()
+                               << "doesn't need to reconfigure IA (iaid=" << ia->getIAID() << LogEnd;
+                }
+                else
+                {
+                    Log(Info) << "Client " << cli->getDUID()->getPlain()
+                              << "uses outdated info. Sending RECONFIGURE." << LogEnd;
+                    Log(Crit) << "wrong_PD" << LogEnd;
+                    /// @todo: RECONFIGURE for PD must be implemented
+                    check=false;
+                    if(SrvAddrMgr().delPrefix(ptrDUID, IAID, prefix->get(),true)) {
+                        Log(Debug) << "Outdated " << *adr->get() << " prefix for client "
+                                   << cli->getDUID()->getPlain() << " deleted." << LogEnd;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    return clients;
 }
 
 /*
@@ -406,6 +514,58 @@ ostream & operator<<(ostream &s, TSrvTransMgr &x)
     s << "<!-- SrvTransMgr dumps are not implemented yet -->" << endl;
     s << "</TSrvTransMgr>" << endl;
     return s;
+}
+
+
+
+/// @brief Checks if client's address or prefix is in current pool
+///
+/// This method is used after configuration and old database is loaded.
+/// We need to check if client's leases are still within current configuration.
+///
+/// @param addr address
+/// @param iface interface 
+/// @param PD is this PD?
+///
+/// @return 
+///
+bool TSrvTransMgr::ClientInPool1(SPtr<TIPv6Addr> addr, int iface, bool PD) {
+
+    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(iface);
+    if (!ptrIface)
+	return false;
+    
+    if(PD) {
+        // checking prefix delegation
+        ptrIface->firstPD();
+        SPtr<TSrvCfgPD> PDClass;
+        while (PDClass = ptrIface->getPD()) {
+            if (PDClass->prefixInPool(addr)){
+                return true;
+            }
+        }
+        return false;
+    }
+    else {
+        // checking addresses
+    	ptrIface->firstAddrClass();
+    	SPtr<TSrvCfgAddrClass> addrClass;
+    	while (addrClass = ptrIface->getAddrClass()) {
+            if (addrClass->addrInPool(addr)){
+                return true;
+            }
+    	}
+    	return false;
+   }
+}
+
+bool TSrvTransMgr::sendReconfigure(SPtr<TIPv6Addr> addr, SPtr<TIPv6Addr> ia,
+                                   int iface, int msgType, SPtr<TDUID> ptrDUID)
+{
+    SPtr<TSrvMsg> reconfigure;
+    reconfigure = new TSrvMsgReconfigure(iface, addr, ia, msgType, ptrDUID);
+    reconfigure->send();
+    return true;
 }
 
 // vim:ts=8 noexpandtab
