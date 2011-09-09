@@ -46,11 +46,12 @@ class TSrvTransMgr
     char * getCtrlAddr();
     int    getCtrlIface();
 
+    int checkReconfigures();
+
     bool sendReconfigure(SPtr<TIPv6Addr> addr, SPtr<TIPv6Addr> ia, int iface,
                          int msgType, SPtr<TDUID> ptrDUID);
 
-
-bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
+    bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
 
   private:
     TSrvTransMgr(string xmlFile);

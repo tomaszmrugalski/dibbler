@@ -56,7 +56,7 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
         }
     }
     
-    int clients = sendReconfigures();
+    int clients = checkReconfigures();
     Log(Info) << "Sent Reconfigure to " << clients << " client(s)." << LogEnd;
 
     SrvAddrMgr().setCacheSize(SrvCfgMgr().getCacheSize());
@@ -71,7 +71,7 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
 /// @return number of clients that were reconfigured
 ///
 int
-TSrvTransMgr::sendReconfigures() {
+TSrvTransMgr::checkReconfigures() {
 
     int clients = 0; // how many client did we reconfigure?
     int iface;
@@ -152,7 +152,7 @@ TSrvTransMgr::sendReconfigures() {
                     /// @todo: RECONFIGURE for PD must be implemented
                     check=false;
                     if(SrvAddrMgr().delPrefix(ptrDUID, IAID, prefix->get(),true)) {
-                        Log(Debug) << "Outdated " << *adr->get() << " prefix for client "
+                        Log(Debug) << "Outdated " << *prefix->get() << " prefix for client "
                                    << cli->getDUID()->getPlain() << " deleted." << LogEnd;
                     }
                     break;
