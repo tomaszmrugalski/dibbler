@@ -23,6 +23,7 @@
   - Changed default number of addresses allowed per client from millions to 10
   - Srv: number of currently allocated prefixes is set correctly after restart and database reload
 
+
 0.8.0 [2011-05-11]
   - Fixed compilation problems
   - Fix: client, server and relay no longer leave PID file after failed start
