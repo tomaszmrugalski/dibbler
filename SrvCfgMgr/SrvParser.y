@@ -126,7 +126,7 @@ virtual ~SrvParser();
 %token DENY_
 %token SUBSTRING_, STRING_KEYWORD_, ADDRESS_LIST_
 %token CONTAIN_
-
+%token NEXT_HOP_, ROUTE_, INFINITE_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -244,8 +244,12 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList InterfaceOptionDeclaration
 | ClassDeclaration
 | TAClassDeclaration
+| NextHopDeclaration
+| Route
 | InterfaceDeclarationsList TAClassDeclaration
 | InterfaceDeclarationsList ClassDeclaration
+| InterfaceDeclarationsList NextHopDeclaration
+| InterfaceDeclarationsList Route
 ;
 
 Client
@@ -379,6 +383,63 @@ PDOptions
 | DenyClientClassDeclaration
 ;
 
+////////////////////////////////////////////////////////////
+/// Route Option ///////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+NextHopDeclaration:
+NEXT_HOP_ IPV6ADDR_ '{'
+{
+    /// @todo: start next_hop definition
+    // Here we start definition of next-hop.
+    // Create NEXT_HOP option here.
+    // In RouteList probaby RT_PREFIX option
+    // will be added to that option.
+}
+RouteList '}'
+{
+    /// @todo: end next_hop definition
+    // next hop definition is finished. Store this option
+    // see DsliteAftrName for example how methods of 
+    // SrvCfgIface can be accessed.
+    // Do not use addExtraOption, however. addExtraOption
+    // is only useful for options that can be present only
+    // once. both RT_PREFIX and NEXT_HOP may be present
+    // couple of times.
+    /// if there is something wrong, call YYABORT;
+}
+| NEXT_HOP_ IPV6ADDR_
+{
+    /// @todo: default router (no routes defined)
+}
+| NEXT_HOP_
+{
+    /// @todo: remove this entry - it is just for parser debugging
+}
+;
+
+RouteList
+: Route
+| RouteList Route
+;
+
+Route:
+ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_ 
+{
+    /// @todo: add route to NEXT_HOP
+}
+| ROUTE_ IPV6ADDR_ '/' INTNUMBER_
+{
+    /// @todo: add route with infinite length
+}
+| ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INFINITE_
+{
+    /// @todo: add route with infinite length
+}
+| ROUTE_
+{
+
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
