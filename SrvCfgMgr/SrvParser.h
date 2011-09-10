@@ -355,11 +355,14 @@ typedef
 #define	STRING_KEYWORD_	344
 #define	ADDRESS_LIST_	345
 #define	CONTAIN_	346
-#define	STRING_	347
-#define	HEXNUMBER_	348
-#define	INTNUMBER_	349
-#define	IPV6ADDR_	350
-#define	DUID_	351
+#define	NEXT_HOP_	347
+#define	ROUTE_	348
+#define	INFINITE_	349
+#define	STRING_	350
+#define	HEXNUMBER_	351
+#define	INTNUMBER_	352
+#define	IPV6ADDR_	353
+#define	DUID_	354
 
 
 #line 169 "../bison++/bison.h"
@@ -497,6 +500,9 @@ static const int SUBSTRING_;
 static const int STRING_KEYWORD_;
 static const int ADDRESS_LIST_;
 static const int CONTAIN_;
+static const int NEXT_HOP_;
+static const int ROUTE_;
+static const int INFINITE_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -599,11 +605,14 @@ static const int DUID_;
 	,STRING_KEYWORD_=344
 	,ADDRESS_LIST_=345
 	,CONTAIN_=346
-	,STRING_=347
-	,HEXNUMBER_=348
-	,INTNUMBER_=349
-	,IPV6ADDR_=350
-	,DUID_=351
+	,NEXT_HOP_=347
+	,ROUTE_=348
+	,INFINITE_=349
+	,STRING_=350
+	,HEXNUMBER_=351
+	,INTNUMBER_=352
+	,IPV6ADDR_=353
+	,DUID_=354
 
 
 #line 215 "../bison++/bison.h"
