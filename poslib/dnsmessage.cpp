@@ -273,7 +273,7 @@ void DnsMessage::read_from_data(unsigned char *data, int len) {
   read_section(answers, adc, buff, pos);
   read_section(authority, nsc, buff, pos);
   read_section(additional, arc, buff, pos);
-};
+}
 
 class PTruncatedException {
  public:
