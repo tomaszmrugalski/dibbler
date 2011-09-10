@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.67])
 AC_INIT([dibbler], [0.8.0-git], [dibbler@klub.com.pl])
-AM_INIT_AUTOMAKE(dibbler, 0.8.0-git)
+AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -216,6 +216,8 @@ dnl ---------------------------------------------
 CFLAGS="${CFLAGS} -std=c99 ${PORT_CFLAGS}"
 LDFLAGS="${LDFLAGS} ${PORT_LDFLAGS}"
 CPPFLAGS="${CPPFLAGS} -D${ARCH}"
+
+CPPFLAGS="${CPPFLAGS} -Wall -pedantic -funsigned-char"
 
 dnl ------------------------------------------------------------
 dnl ./configure parameters
