@@ -36,3 +36,7 @@ RelIfaceMgr/Makefile
 Port-linux/Makefile
 Makefile
 doc/html
+Port-win32/Debug*
+Port-win32/*.user
+Port-win32/dibbler-win32.vs2008.ncb
+Port-win32/dibbler-win32.vs2008.suo
