@@ -23,6 +23,7 @@
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
+#include "Key.h"
 #include "OptVendorSpecInfo.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
@@ -54,6 +55,7 @@ List(string) PresentStringLst;             /* string list */                    
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
+SPtr<TKey> key;                                                                      \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 List(TSrvCfgOptions) ClientLst;                                                      \
@@ -110,6 +112,7 @@ virtual ~SrvParser();
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
+%token KEY_, SECRET_, ALGORITHM_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token ACCEPT_LEASEQUERY_
@@ -169,11 +172,11 @@ GlobalOption
 | IfaceIDOrder
 | FqdnDdnsAddress
 | DdnsProtocol
+| DdnsTimeout
 | GuessMode
 | ClientClass
+| Key
 ;
-
-
 
 InterfaceOptionDeclaration
 : ClassOptionDeclaration
@@ -244,6 +247,51 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList TAClassDeclaration
 | InterfaceDeclarationsList ClassDeclaration
 ;
+
+Key
+: KEY_ STRING_ '{'
+{
+    /// this is key object initialization part
+    /// @todo: define TKey structure and then uncomment
+    key = new TKey(string($2));
+} KeyOptions
+'}'
+{
+    /// todo: after key definition
+    /// check that both secret and algorithm keywords were defined.
+    /// implement a method addKey() in SrvCfgMgr and then call
+    /// CfgMgr->addKey( currentKey );
+    Log(Debug) << "Added key '" << key->name << "', datalen=" << key->len << LogEnd;
+} ';'
+;
+
+KeyOptions
+:KeyOption
+|KeyOptions KeyOption
+;
+
+KeyOption
+:KeyAlgorithm
+|KeySecret
+;
+
+KeySecret
+: SECRET_ STRING_ ';'
+{
+    /// @todo: remove this. It is for debugging only. Leaving our secret in logs is dumb.
+    Log(Debug) << "Setting secret to " << ($2) << LogEnd;
+
+    /// @todo: call base64_decode($2) and store it in key->data
+    /// key
+    // key->data = new unsigned char[17]; // check actual length of key
+    // key->len = 17;
+};
+
+KeyAlgorithm
+: ALGORITHM_ DIGEST_HMAC_SHA256_ ';' { Log(Debug) << "Setting key type to HMAC-SHA256" << LogEnd; key->digest = DIGEST_HMAC_SHA256; }
+| ALGORITHM_ DIGEST_HMAC_MD5_    ';' { key->digest = DIGEST_HMAC_MD5;  }
+;
+/// add other key types here
 
 Client
 : CLIENT_ DUID_KEYWORD_ DUID_ '{'
@@ -338,6 +386,7 @@ TAClassDeclaration
 TAClassOptionsList
 : TAClassOption
 | TAClassOptionsList TAClassOption
+;
 
 TAClassOption
 : PreferredTimeOption

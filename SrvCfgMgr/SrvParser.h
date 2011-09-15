@@ -36,6 +36,7 @@
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
+#include "Key.h"
 #include "OptVendorSpecInfo.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
@@ -60,6 +61,7 @@ List(string) PresentStringLst;             /* string list */                    
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
+SPtr<TKey> key;                                                                      \
 List(TStationRange) PresentRangeLst;                                                 \
 List(TStationRange) PDLst;                                                           \
 List(TSrvCfgOptions) ClientLst;                                                      \
@@ -84,7 +86,7 @@ virtual ~SrvParser();
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 83 "SrvParser.y"
+#line 85 "SrvParser.y"
 typedef union
 {
     unsigned int ival;
@@ -327,39 +329,42 @@ typedef
 #define	AUTH_METHOD_	316
 #define	AUTH_LIFETIME_	317
 #define	AUTH_KEY_LEN_	318
-#define	DIGEST_NONE_	319
-#define	DIGEST_PLAIN_	320
-#define	DIGEST_HMAC_MD5_	321
-#define	DIGEST_HMAC_SHA1_	322
-#define	DIGEST_HMAC_SHA224_	323
-#define	DIGEST_HMAC_SHA256_	324
-#define	DIGEST_HMAC_SHA384_	325
-#define	DIGEST_HMAC_SHA512_	326
-#define	ACCEPT_LEASEQUERY_	327
-#define	BULKLQ_ACCEPT_	328
-#define	BULKLQ_TCPPORT_	329
-#define	BULKLQ_MAX_CONNS_	330
-#define	BULKLQ_TIMEOUT_	331
-#define	CLIENT_CLASS_	332
-#define	MATCH_IF_	333
-#define	EQ_	334
-#define	AND_	335
-#define	OR_	336
-#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	337
-#define	CLIENT_VENDOR_SPEC_DATA_	338
-#define	CLIENT_VENDOR_CLASS_EN_	339
-#define	CLIENT_VENDOR_CLASS_DATA_	340
-#define	ALLOW_	341
-#define	DENY_	342
-#define	SUBSTRING_	343
-#define	STRING_KEYWORD_	344
-#define	ADDRESS_LIST_	345
-#define	CONTAIN_	346
-#define	STRING_	347
-#define	HEXNUMBER_	348
-#define	INTNUMBER_	349
-#define	IPV6ADDR_	350
-#define	DUID_	351
+#define	KEY_	319
+#define	SECRET_	320
+#define	ALGORITHM_	321
+#define	DIGEST_NONE_	322
+#define	DIGEST_PLAIN_	323
+#define	DIGEST_HMAC_MD5_	324
+#define	DIGEST_HMAC_SHA1_	325
+#define	DIGEST_HMAC_SHA224_	326
+#define	DIGEST_HMAC_SHA256_	327
+#define	DIGEST_HMAC_SHA384_	328
+#define	DIGEST_HMAC_SHA512_	329
+#define	ACCEPT_LEASEQUERY_	330
+#define	BULKLQ_ACCEPT_	331
+#define	BULKLQ_TCPPORT_	332
+#define	BULKLQ_MAX_CONNS_	333
+#define	BULKLQ_TIMEOUT_	334
+#define	CLIENT_CLASS_	335
+#define	MATCH_IF_	336
+#define	EQ_	337
+#define	AND_	338
+#define	OR_	339
+#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	340
+#define	CLIENT_VENDOR_SPEC_DATA_	341
+#define	CLIENT_VENDOR_CLASS_EN_	342
+#define	CLIENT_VENDOR_CLASS_DATA_	343
+#define	ALLOW_	344
+#define	DENY_	345
+#define	SUBSTRING_	346
+#define	STRING_KEYWORD_	347
+#define	ADDRESS_LIST_	348
+#define	CONTAIN_	349
+#define	STRING_	350
+#define	HEXNUMBER_	351
+#define	INTNUMBER_	352
+#define	IPV6ADDR_	353
+#define	DUID_	354
 
 
 #line 169 "../bison++/bison.h"
@@ -469,6 +474,9 @@ static const int AFTR_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
 static const int AUTH_KEY_LEN_;
+static const int KEY_;
+static const int SECRET_;
+static const int ALGORITHM_;
 static const int DIGEST_NONE_;
 static const int DIGEST_PLAIN_;
 static const int DIGEST_HMAC_MD5_;
@@ -571,39 +579,42 @@ static const int DUID_;
 	,AUTH_METHOD_=316
 	,AUTH_LIFETIME_=317
 	,AUTH_KEY_LEN_=318
-	,DIGEST_NONE_=319
-	,DIGEST_PLAIN_=320
-	,DIGEST_HMAC_MD5_=321
-	,DIGEST_HMAC_SHA1_=322
-	,DIGEST_HMAC_SHA224_=323
-	,DIGEST_HMAC_SHA256_=324
-	,DIGEST_HMAC_SHA384_=325
-	,DIGEST_HMAC_SHA512_=326
-	,ACCEPT_LEASEQUERY_=327
-	,BULKLQ_ACCEPT_=328
-	,BULKLQ_TCPPORT_=329
-	,BULKLQ_MAX_CONNS_=330
-	,BULKLQ_TIMEOUT_=331
-	,CLIENT_CLASS_=332
-	,MATCH_IF_=333
-	,EQ_=334
-	,AND_=335
-	,OR_=336
-	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=337
-	,CLIENT_VENDOR_SPEC_DATA_=338
-	,CLIENT_VENDOR_CLASS_EN_=339
-	,CLIENT_VENDOR_CLASS_DATA_=340
-	,ALLOW_=341
-	,DENY_=342
-	,SUBSTRING_=343
-	,STRING_KEYWORD_=344
-	,ADDRESS_LIST_=345
-	,CONTAIN_=346
-	,STRING_=347
-	,HEXNUMBER_=348
-	,INTNUMBER_=349
-	,IPV6ADDR_=350
-	,DUID_=351
+	,KEY_=319
+	,SECRET_=320
+	,ALGORITHM_=321
+	,DIGEST_NONE_=322
+	,DIGEST_PLAIN_=323
+	,DIGEST_HMAC_MD5_=324
+	,DIGEST_HMAC_SHA1_=325
+	,DIGEST_HMAC_SHA224_=326
+	,DIGEST_HMAC_SHA256_=327
+	,DIGEST_HMAC_SHA384_=328
+	,DIGEST_HMAC_SHA512_=329
+	,ACCEPT_LEASEQUERY_=330
+	,BULKLQ_ACCEPT_=331
+	,BULKLQ_TCPPORT_=332
+	,BULKLQ_MAX_CONNS_=333
+	,BULKLQ_TIMEOUT_=334
+	,CLIENT_CLASS_=335
+	,MATCH_IF_=336
+	,EQ_=337
+	,AND_=338
+	,OR_=339
+	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=340
+	,CLIENT_VENDOR_SPEC_DATA_=341
+	,CLIENT_VENDOR_CLASS_EN_=342
+	,CLIENT_VENDOR_CLASS_DATA_=343
+	,ALLOW_=344
+	,DENY_=345
+	,SUBSTRING_=346
+	,STRING_KEYWORD_=347
+	,ADDRESS_LIST_=348
+	,CONTAIN_=349
+	,STRING_=350
+	,HEXNUMBER_=351
+	,INTNUMBER_=352
+	,IPV6ADDR_=353
+	,DUID_=354
 
 
 #line 215 "../bison++/bison.h"
