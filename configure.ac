@@ -346,6 +346,26 @@ dnl ------------------------------------------------------------
       CPPFLAGS="${CPPFLAGS} -DMOD_DISABLE_AUTH"
    fi
 
+### gtests #################################################
+AC_ARG_WITH(gtest,
+[  --with-gtest=PATH    specify a path to gtest header files and library],
+   gtest_path="$withval", 
+   gtest_path="no")
+
+#echo "After gtest"
+
+if test "$gtest_path" != "no"
+then
+	GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+	GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+	GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+	GTEST_LDADD=`${GTEST_CONFIG} --libs`
+fi
+
+AC_SUBST(GTEST_INCLUDES)
+AC_SUBST(GTEST_LDFLAGS)
+AC_SUBST(GTEST_LDADD)
+
 ### Link-state change detections ##########################
    AC_ARG_ENABLE(link-state,
         [  --enable-link-state     Enables link-state change detections (default: yes)],
@@ -402,6 +422,16 @@ AC_SUBST(LINKPRINT)
 
 AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile)
 
+if test "$gtest_path" != "no"; then
+  echo "GTEST enabled, generating Makefiles"
+  AC_DEFINE(HAVE_GTEST, 1, [Defines if google test is available and should be used])
+fi
+
+
+AC_OUTPUT(AddrMgr/tests/Makefile)
+
+AM_CONDITIONAL(HAVE_GTEST, test $gtest_path != "no")
+
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
 AC_OUTPUT(Port-linux/Makefile Port-bsd/Makefile)
@@ -427,5 +457,13 @@ echo "CPPFLAGS       : $CPPFLAGS"
 echo "CXXFLAGS       : $CXXFLAGS"
 echo "LDFLAGS        : $LDFLAGS"
 echo
+echo "Google test    : $gtest_path"
+if test "$gtest_path" != "no"
+then
+echo "GTEST_INCLUDES : $GTEST_INCLUDES"
+echo "GTEST_LDFLAGS  : $GTEST_LDFLAGS"
+echo "GTEST_LDADD    : $GTEST_LDADD"
+echo
+fi
 echo Type make to compile dibbler.
 echo
