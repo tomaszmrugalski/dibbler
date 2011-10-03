@@ -52,7 +52,7 @@ class TAddrMgr
 			      SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			      int length, bool quiet);
 
-    bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
+    virtual bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
     bool prefixIsFree(SPtr<TIPv6Addr> prefix);
 
     //--- Time related methods ---

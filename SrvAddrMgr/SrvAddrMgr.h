@@ -48,6 +48,9 @@ class TSrvAddrMgr : public TAddrMgr
                    unsigned long pref, unsigned long valid);
     bool delTAAddr(SPtr<TDUID> duid,unsigned long iaid, SPtr<TIPv6Addr> addr);
 
+    // prefix management
+    virtual bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
+
     // how many addresses does this client have?
     unsigned long getAddrCount(SPtr<TDUID> duid);
 

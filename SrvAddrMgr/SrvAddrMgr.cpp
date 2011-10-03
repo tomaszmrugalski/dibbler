@@ -322,6 +322,14 @@ bool TSrvAddrMgr::delTAAddr(SPtr<TDUID> clntDuid, unsigned long iaid,
     return true;
 }
 
+bool TSrvAddrMgr::delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet)
+{
+    bool result = TAddrMgr::delPrefix(clntDuid, IAID, prefix, quiet);
+    if (result)
+        addCachedEntry(clntDuid, prefix, TAddrIA::TYPE_PD);
+    return result;
+}
+
 /*
  * how many addresses does this client have?
  */
