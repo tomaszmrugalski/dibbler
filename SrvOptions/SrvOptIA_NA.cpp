@@ -628,16 +628,16 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getFreeAddr(SPtr<TIPv6Addr> hint) {
     } //  if ( !invalidAddr )
 
     // do we have a cached address for that client?
-    if (addr = SrvAddrMgr().getCachedAddr(this->ClntDuid)) {
+    if (addr = SrvAddrMgr().getCachedEntry(this->ClntDuid, TAddrIA::TYPE_IA)) {
 	if (SrvCfgMgr().getClassByAddr(this->Iface, addr)) {
 	    Log(Info) << "Cache: Cached address " << *addr << " found. Welcome back." << LogEnd;
 	    if (SrvAddrMgr().addrIsFree(addr))
 		return addr;
 	    Log(Info) << "Unfortunately, " << addr->getPlain() << " is used." << LogEnd;
-	    SrvAddrMgr().delCachedAddr(addr);
+	    SrvAddrMgr().delCachedEntry(addr, TAddrIA::TYPE_IA);
 	} else {
 	    Log(Warning) << "Cache: Cached address " << *addr << " found, but it is no longer valid." << LogEnd;
-	    SrvAddrMgr().delCachedAddr(addr);
+	    SrvAddrMgr().delCachedEntry(addr, TAddrIA::TYPE_IA);
 	}// else
     }// if have cached address for that client
 

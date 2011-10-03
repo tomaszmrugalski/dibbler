@@ -161,7 +161,7 @@ bool TSrvAddrMgr::delClntAddr(SPtr<TDUID> clntDuid,
     }
 
     ptrIA->delAddr(clntAddr);
-    this->addCachedAddr(clntDuid, clntAddr);
+    this->addCachedEntry(clntDuid, clntAddr, TAddrIA::TYPE_IA);
     if (!quiet)
 	      Log(Debug) << "Deleted address " << *clntAddr << " from addrDB." << LogEnd;
     
@@ -521,18 +521,19 @@ void TSrvAddrMgr::doDuties()
             anyDeleted=true;
         };
     }
-    if (anyDeleted) 
+    if (anyDeleted)
         this->dump();
 }
 
-/** 
- * returns address cached for this client. 
- * 
- * @param clntDuid 
- * 
- * @return cached address. 0 if cached address is not found.
+/**
+ * returns address or prefix cached for this client.
+ *
+ * @param clntDuid
+ * @param type type of entry looked for (TYPE_IA for address or TYPE_PD for prefix)
+ *
+ * @return cached address or prefix. 0 if cached address is not found.
  */
-SPtr<TIPv6Addr> TSrvAddrMgr::getCachedAddr(SPtr<TDUID> clntDuid) {
+SPtr<TIPv6Addr> TSrvAddrMgr::getCachedEntry(SPtr<TDUID> clntDuid, TAddrIA::TIAType type) {
     if (!this->CacheMaxSize)
 	return 0;
     SPtr<TSrvCacheEntry> entry;
@@ -541,25 +542,28 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getCachedAddr(SPtr<TDUID> clntDuid) {
     while (entry = this->Cache.get()) {
 	    if (!entry->Duid)
 	        continue; // something is wrong. VERY wrong. But shut up and continue.
-	    if (*entry->Duid == *clntDuid) {
-	        Log(Debug) << "Cache: Cached address for client (DUID=" << clntDuid->getPlain() << ") found: " 
-                       << entry->Addr->getPlain() << LogEnd;
+	    if ((entry->type==type) && (*entry->Duid == *clntDuid) ) {
+	        Log(Debug) << "Cache: Cached " << (type==TAddrIA::TYPE_IA?"address":"prefix")
+                           << " for client (DUID=" << clntDuid->getPlain() << ") found: " 
+                           << entry->Addr->getPlain() << LogEnd;
  	        return entry->Addr;
 	    }
     }
 
-    Log(Debug) << "Cache: There are no cached entries for client (DUID=" << clntDuid->getPlain() << ")." << LogEnd;
+    Log(Debug) << "Cache: There are no cached " << (type==TAddrIA::TYPE_IA?"address":"prefix")
+               << " address entries for client (DUID=" << clntDuid->getPlain() << ")." << LogEnd;
     return 0;
 }
 
 /** 
- * this function deletes cache entry
+ * this function deletes cached address or prefix entry
  * 
  * @param addr 
+ * @param type type of entry looked for (TYPE_IA for address or TYPE_PD for prefix)
  * 
  * @return 
  */
-bool TSrvAddrMgr::delCachedAddr(SPtr<TIPv6Addr> addr) {
+bool TSrvAddrMgr::delCachedEntry(SPtr<TIPv6Addr> addr, TAddrIA::TIAType type) {
     if (!this->CacheMaxSize)
 	    return false;
     
@@ -568,10 +572,11 @@ bool TSrvAddrMgr::delCachedAddr(SPtr<TIPv6Addr> addr) {
     while (entry = this->Cache.get()) {
 	    if (!entry->Addr)
 	        continue; // something is wrong. VERY wrong. But shut up and continue.
-	    if ( *(entry->Addr) == *addr) {
+	    if ( (entry->type==type) && (*(entry->Addr) == *addr) ) {
 	        this->Cache.del();
 	        this->Cache.first();
-	        Log(Debug) << "Cache: Address " << *addr << " was deleted." << LogEnd;
+	        Log(Debug) << "Cache: " << (type==TAddrIA::TYPE_IA?"Address ":"Prefix ") 
+                           << *addr << " was deleted." << LogEnd;
 	        return true;
 	    }
     }
@@ -579,14 +584,15 @@ bool TSrvAddrMgr::delCachedAddr(SPtr<TIPv6Addr> addr) {
     return false;
 }
 
-/** 
+ /** 
  * this function deletes cache entry
  * 
  * @param clntDuid 
+ * @param type type of entry looked for (TYPE_IA for address or TYPE_PD for prefix)
  * 
  * @return 
  */
-bool TSrvAddrMgr::delCachedAddr(SPtr<TDUID> clntDuid) {
+bool TSrvAddrMgr::delCachedEntry(SPtr<TDUID> clntDuid, TAddrIA::TIAType type) {
     if (!this->CacheMaxSize)
 	return false;
     
@@ -595,7 +601,7 @@ bool TSrvAddrMgr::delCachedAddr(SPtr<TDUID> clntDuid) {
     while (entry = this->Cache.get()) {
 	if (!entry->Duid)
 	    continue; // something is wrong. VERY wrong. But shut up and continue.
-	if ( *(entry->Duid) == *clntDuid) {
+	if ( (entry->type==type) && (*(entry->Duid) == *clntDuid) ) {
 	    this->Cache.del();
 	    this->Cache.first();
 	    Log(Debug) << "Cache: Entry for client (DUID=" << clntDuid->getPlain() << ") was deleted." << LogEnd;
@@ -608,23 +614,26 @@ bool TSrvAddrMgr::delCachedAddr(SPtr<TDUID> clntDuid) {
 }
 
 /** 
- * this function adds an address to a cache. If there is entry for this client, updates it
+ * this function adds an address or prefix to a cache. If there is entry for this client, updates it
  * 
  * @param clntDuid 
  * @param cachedAddr 
+ * @param type type of entry looked for (TYPE_IA for address or TYPE_PD for prefix)
  */
-void TSrvAddrMgr::addCachedAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> cachedAddr) {
+void TSrvAddrMgr::addCachedEntry(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> cachedAddr, TAddrIA::TIAType type) {
     if (!this->CacheMaxSize)
 	return;
     SPtr<TSrvCacheEntry> entry;
 
     // is there an entry for this client, delete it. New entry will be added at the end
-    this->delCachedAddr(clntDuid);
+    this->delCachedEntry(clntDuid, type);
     
     entry = new TSrvCacheEntry();
-    entry->Duid      = clntDuid;
-    entry->Addr      = cachedAddr;
-    Log(Debug) << "Cache: Address " << cachedAddr->getPlain() << " added for client (DUID=" << clntDuid->getPlain() << "). " << LogEnd; 
+    entry->type = type;
+    entry->Duid = clntDuid;
+    entry->Addr = cachedAddr;
+    Log(Debug) << "Cache: " << (type==TAddrIA::TYPE_IA?"Address ":"Prefix ") << cachedAddr->getPlain() 
+               << " added for client (DUID=" << clntDuid->getPlain() << "). " << LogEnd; 
     this->Cache.append(entry);
     this->checkCacheSize();
 }
@@ -676,8 +685,20 @@ void TSrvAddrMgr::cacheDump() {
     SPtr<TSrvCacheEntry> x;
     this->Cache.first();
     while (x=this->Cache.get()) {
-	
-	f << "  <entry duid=\"";
+	f << "  <entry type=\"";
+        switch (x->type) {
+        case TAddrIA::TYPE_IA:
+            f << "addr";
+            break;
+        case TAddrIA::TYPE_PD:
+            f << "prefix";
+            break;
+        default:
+            Log(Error) << "Invalid cache type entry. Skipping." << LogEnd;
+            continue;
+        }
+
+        f << "\" duid=\"";
 	if (x->Duid)
 	    f << x->Duid->getPlain();
 	f << "\">";
@@ -703,6 +724,7 @@ void TSrvAddrMgr::cacheRead() {
     int entries = 0;
     std::ifstream f;
     string s;
+    TAddrIA::TIAType type;
     f.open(SRVCACHE_FILE);
     if (!f.is_open()) {
 	Log(Warning) << "Cache: Unable to open cache file " << SRVCACHE_FILE << "." << LogEnd;
@@ -733,6 +755,22 @@ void TSrvAddrMgr::cacheRead() {
 		Log(Error) << "Cache:" << SRVCACHE_FILE << " file: opening tag <cache> missing." << LogEnd;
 		return;
 	    }
+
+            type = TAddrIA::TYPE_IA; // assume that entry is for address (to maintain backward compatibility)
+
+            if ( (pos=s.find("type=\""))!=string::npos) {
+                s = s.substr(pos+6);
+                string typeStr = s.substr(0, s.find("\""));
+                if (typeStr =="addr")
+                    type = TAddrIA::TYPE_IA;
+                else if (typeStr =="prefix")
+                    type = TAddrIA::TYPE_PD;
+                else {
+                    Log(Error) << "Invalid entry type in line " << lineno << " in " << SRVCACHE_FILE << LogEnd;
+                    continue;
+                }
+            }
+
 	    if ( (pos=s.find("duid=\""))!=string::npos) {
 		s = s.substr(pos+6);
 		string duid = s.substr(0, s.find("\""));
@@ -741,8 +779,7 @@ void TSrvAddrMgr::cacheRead() {
 
 		SPtr<TIPv6Addr> tmp2 = new TIPv6Addr(addr.c_str(), true);
 		SPtr<TDUID>     tmp1 = new TDUID(duid.c_str());
-		this->addCachedAddr(tmp1, tmp2);
-
+                addCachedEntry(tmp1, tmp2, type);
 	    } else {
 		Log(Error) << "Cache: " << SRVCACHE_FILE << " file: missing duid=\"...\" in line " << lineno
 			   << "." << LogEnd;
