@@ -637,10 +637,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
 /** 
  * this constructor is used to construct REPLY for REQUEST message
  * 
- * @param ifaceMgr 
- * @param transMgr 
- * @param CfgMgr 
- * @param AddrMgr 
  * @param request 
  */
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)

@@ -28,12 +28,12 @@
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 
-TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, TMsg* parent)
+TSrvOptIA_PD::TSrvOptIA_PD( long iaid, long t1, long t2, TMsg* parent)
     :TOptIA_PD(IAID,T1,T2, parent)
 {
-    this->IAID=IAID;
-    this->T1=T1;
-    this->T2=T2;
+    IAID=iaid;
+    T1=t1;
+    T2=t2;
 }
 
 TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, int Code, string Text, TMsg* parent)
@@ -235,7 +235,9 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface
     SPtr<TIPv6Addr> hint = 0;
     if (!queryOpt->countPrefixes()) {
         Log(Notice) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
-        hint  = new TIPv6Addr(); /* :: - any address */
+        hint = SrvAddrMgr().getCachedEntry(ClntDuid, TAddrIA::TYPE_PD);
+        if (!hint)
+            hint = new TIPv6Addr(); /* :: - any address */
         this->Prefered = DHCPV6_INFINITY;
         this->Valid    = DHCPV6_INFINITY;
     } else {
@@ -247,7 +249,7 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface
     }
 
     // assign prefixes
-    int status = this->assignPrefix(hint, fake);
+    int status = assignPrefix(hint, fake);
 
     // include status code
     SPtr<TSrvOptStatusCode> ptrStatus;
