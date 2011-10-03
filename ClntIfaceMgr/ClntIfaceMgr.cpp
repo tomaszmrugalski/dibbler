@@ -514,8 +514,8 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     Log(Cont) << LogEnd;
 
     if (ifaceLst.size() == 0) {
-	Log(Info) << "Suitable interfaces not found. Delegated prefix not split." << LogEnd;
-	return false;
+        Log(Warning) << "Suitable interfaces not found. Delegated prefix not split." << LogEnd;
+        return true;
     }
 
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
