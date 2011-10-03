@@ -594,15 +594,18 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
     }
 
     // FQDN
-    if (x.fqdnDnsServer) {
-	strum << "      <fqdnDnsServer>" << x.fqdnDnsServer->getPlain() << "</fqdnDnsServer>" << endl;
-    } else {
-	strum << "      <!--<fqdnDnsServer>-->" << endl;
-    }
-    if (x.fqdn) {
-	strum << "      " << *x.fqdn << endl;
-    } else {
-	strum << "      <!-- <fqdn>-->" << endl;
+    if (x.Type!=TAddrIA::TYPE_PD) {
+        // it does not make sense to mention FQDN in PD
+        if (x.fqdnDnsServer) {
+            strum << "      <fqdnDnsServer>" << x.fqdnDnsServer->getPlain() << "</fqdnDnsServer>" << endl;
+        } else {
+            strum << "      <!--<fqdnDnsServer>-->" << endl;
+        }
+        if (x.fqdn) {
+            strum << "      " << *x.fqdn << endl;
+        } else {
+            strum << "      <!-- <fqdn>-->" << endl;
+        }
     }
 
     strum << "    </" << name << ">" << dec << endl;
