@@ -124,6 +124,13 @@ int TSrvOptIA_PD::assignPrefix(SPtr<TIPv6Addr> hint, bool fake) {
     SPtr<TSrvOptIAPrefix> optPrefix;
     SPtr<TSrvCfgPD> ptrPD;
     List(TIPv6Addr) prefixLst;
+    SPtr<TIPv6Addr> cached;
+
+    if (hint->getPlain()==string("::") ) {
+        cached = SrvAddrMgr().getCachedEntry(ClntDuid, TAddrIA::TYPE_PD);
+        if (cached)
+            hint = cached;
+    }
 
     // get address
     prefixLst.clear();
@@ -235,9 +242,7 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface
     SPtr<TIPv6Addr> hint = 0;
     if (!queryOpt->countPrefixes()) {
         Log(Notice) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
-        hint = SrvAddrMgr().getCachedEntry(ClntDuid, TAddrIA::TYPE_PD);
-        if (!hint)
-            hint = new TIPv6Addr(); /* :: - any address */
+        hint = new TIPv6Addr(); /* :: - any address */
         this->Prefered = DHCPV6_INFINITY;
         this->Valid    = DHCPV6_INFINITY;
     } else {
