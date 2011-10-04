@@ -1375,7 +1375,10 @@ parameter, denoting current operation. Its value will be one of
 "add'', "update'', or "delete''. Actual values of received parameters
 are passed as environment variables. In particular, IFNAME and IFINDEX
 variables denote interface name and interface index that was used to
-communicate with server, respectively.
+communicate with server, respectively. Another essential variable set
+is REMOTE_ADDR. It defines address from which packet originated. That
+is client's address (when run on server) and server's address (when
+run on client).
 
 Addresses are passed in variables ADDR1, ADDR2 and following. Note
 that each ADDR variable does contain triples of

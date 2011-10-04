@@ -349,7 +349,7 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
         return;
     }
 
-
+    // parameters: [0] - script name, [1] - action (add, modify, delete)
     paramCnt = addParam(params, paramCnt, scriptName.c_str());
     paramCnt = addParam(params, paramCnt, action.c_str());
 
@@ -365,6 +365,10 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
 
     tmp.str("");
     tmp << "IFINDEX=" << dec << (int)iface->getID();
+    envCnt = addParam(env, envCnt, tmp.str().c_str());
+
+    tmp.str("");
+    tmp << "REMOTE_ADDR=" << reply->getAddr()->getPlain();
     envCnt = addParam(env, envCnt, tmp.str().c_str());
 
     int ipCnt=1;
