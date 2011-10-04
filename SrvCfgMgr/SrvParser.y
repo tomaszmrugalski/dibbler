@@ -104,6 +104,7 @@ virtual ~SrvParser();
 %token STATELESS_
 %token CACHE_SIZE_
 %token PDCLASS_, PD_LENGTH_, PD_POOL_
+%token SCRIPT_
 %token VENDOR_SPEC_
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
 %token INACTIVE_MODE_
@@ -172,6 +173,7 @@ GlobalOption
 | DdnsTimeout
 | GuessMode
 | ClientClass
+| ScriptName
 ;
 
 
@@ -890,6 +892,13 @@ GuessMode
     Log(Info) << "Guess-mode enabled: relay interfaces may be loosely defined (matching interface-id is not mandatory)." << LogEnd;
     ParserOptStack.getLast()->setGuessMode(true);
 };
+
+ScriptName
+: SCRIPT_ STRING_
+{
+    CfgMgr->setScriptName($2);
+};
+
 
 InactiveMode
 : INACTIVE_MODE_

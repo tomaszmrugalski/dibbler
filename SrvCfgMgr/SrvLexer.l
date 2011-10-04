@@ -104,6 +104,7 @@ pd-class	    { return SrvParser::PDCLASS_; }
 pd-length	    { return SrvParser::PD_LENGTH_; }
 pd-pool             { return SrvParser::PD_POOL_;}
 vendor-spec         { return SrvParser::VENDOR_SPEC_; }
+script              { return SrvParser::SCRIPT_; }
 
 experimental        { return SrvParser::EXPERIMENTAL_; }
 addr-params         { return SrvParser::ADDR_PARAMS_; }

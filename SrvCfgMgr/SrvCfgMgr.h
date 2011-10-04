@@ -108,6 +108,8 @@ public:
 #endif
 
     void setDefaults();
+    std::string getScriptName() { return ScriptName; }
+    void setScriptName(std::string scriptFile) { ScriptName = scriptFile; }
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
@@ -133,6 +135,7 @@ private:
     bool GuessMode;
     int  CacheSize;
     ESrvIfaceIdOrder InterfaceIDOrder;
+    std::string ScriptName;
 
 #ifndef MOD_DISABLE_AUTH
     unsigned int AuthLifetime;

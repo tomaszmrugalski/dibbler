@@ -184,6 +184,9 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     Log(Cont) << " Old reply for transID=" << hex << msg->getTransID()
 	      << " not found. Generating new answer." << dec << LogEnd;
 
+    SPtr<TMsg> q, a; // question and answer
+
+    q = (Ptr*) msg;
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
@@ -212,6 +215,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 		}
 		if(found) {
 		    this->MsgLst.append((Ptr*)answRep);
+                    a = (Ptr*)answRep;
 		    break;
 		}
 		// else we didn't assign any address - this message sucks
@@ -224,6 +228,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	//and assign some "not rapid" addresses to this client
 	SPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise((Ptr*)msg);
 	this->MsgLst.append((Ptr*)x);
+        a = (Ptr*)x;
 	break;
     }
     case REQUEST_MSG:
@@ -231,6 +236,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
         answ = new TSrvMsgReply(nmsg);
         this->MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
         break;
     }
     case CONFIRM_MSG:
@@ -238,6 +244,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply(nmsg);
 	this->MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
 	break;
     }
     case RENEW_MSG:
@@ -245,6 +252,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply(nmsg);
 	this->MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
 	break;
     }
     case REBIND_MSG:
@@ -252,6 +260,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply(nmsg);
 	MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
 	break;
     }
     case DECLINE_MSG:
@@ -259,6 +268,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( nmsg);
 	MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
 	break;
     }
     case RELEASE_MSG:
@@ -266,6 +276,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( nmsg);
 	MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
 	break;
     }
     case INFORMATION_REQUEST_MSG :
@@ -273,6 +284,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 	SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
 	answ=new TSrvMsgReply( nmsg);
 	MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
 	break;
     }
     case LEASEQUERY_MSG:
@@ -304,6 +316,10 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 		    << " not supported." << LogEnd;
 	break;
     }
+    }
+
+    if (a) {
+        SrvIfaceMgr().notifyScripts(SrvCfgMgr().getScriptName(), q, a);
     }
 
     // save DB state regardless of action taken
