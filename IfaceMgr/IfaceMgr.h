@@ -19,6 +19,7 @@ class TIfaceMgr;
 
 #include "Iface.h"
 
+class TMsg;
 
 class TIfaceMgr {
   public:
@@ -40,9 +41,14 @@ class TIfaceMgr {
     void dump();
     bool isDone();
 
+    void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer);
+
     ~TIfaceMgr();
 
  protected:
+    static int addParam(char ** param, int offset, const char * value);
+    static void freeParams(char ** param);
+
     string XmlFile;
 
     List(TIfaceIface) IfaceLst; //Interface list

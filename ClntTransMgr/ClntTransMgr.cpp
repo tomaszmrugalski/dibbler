@@ -562,7 +562,9 @@ bool TClntTransMgr::handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answe
     question->answer(answer);
 
     // post-handling hooks can be added here
-    ClntIfaceMgr().notifyScripts(question, answer);
+    SPtr<TMsg> q = (Ptr*) question;
+    SPtr<TMsg> a = (Ptr*) answer;
+    ClntIfaceMgr().notifyScripts(ClntCfgMgr().getScript(), q, a);
 
     if ( (question->getType()==REQUEST_MSG || question->getType()==SOLICIT_MSG) &&
 	 (answer->getType()==REPLY_MSG) ) {

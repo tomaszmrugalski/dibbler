@@ -21,6 +21,9 @@
 #include "Iface.h"
 #include "SocketIPv6.h"
 #include "Logger.h"
+#include "Msg.h"
+#include "OptIAAddress.h"
+#include "OptIAPrefix.h"
 
 /*
  * creates list of interfaces
@@ -273,6 +276,148 @@ string TIfaceMgr::printMac(char * mac, int macLen) {
 	tmp << (unsigned int)x;
     }
     return tmp.str();
+}
+
+/// adds parameter to parameters list
+///
+/// @param param pointer to table
+/// @param offset offset in table
+/// @param value value to be copied
+///
+/// @return next unused offset
+///
+int TIfaceMgr::addParam(char ** param, int offset, const char * value)
+{
+    param[offset] = new char[strlen(value)+1];
+    strncpy(param[offset], value, strlen(value)+1);
+    return ++offset;
+}
+
+void TIfaceMgr::freeParams(char ** param)
+{
+    int offset = 0;
+    while (param[offset] != NULL) {
+        delete [] param[offset];
+        param[offset] = 0;
+        offset++;
+    }
+}
+
+void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply)
+{
+    if (!scriptName.length()) {
+        Log(Debug) << "Not executing external script (Notify script disabled)." << LogEnd;
+        return;
+    }
+
+    string action;
+
+    char * params[512];
+    char * env[512];
+    int paramCnt = 0;
+    int envCnt = 0;
+
+    stringstream tmp;
+
+    for (int i=0; i<512; i++) {
+        params[i]=0;
+        env[i]=0;
+    }
+
+    // get PATH
+    char * path = getenv("PATH");
+    if (path) {
+        tmp << "PATH=" << path;
+        envCnt = addParam(env, envCnt, tmp.str().c_str());
+        tmp.str("");
+    }
+
+    switch (question->getType())
+    {
+    case REQUEST_MSG:
+    case CONFIRM_MSG:
+        action = "add";
+        break;
+    case RELEASE_MSG:
+        action = "delete";
+        break;
+    case RENEW_MSG:
+
+        break;
+    default:
+        Log(Debug) << "Script execution skipped for " << reply->getName() << " response to " << question->getName() << LogEnd;
+        return;
+    }
+
+
+    paramCnt = addParam(params, paramCnt, scriptName.c_str());
+    paramCnt = addParam(params, paramCnt, action.c_str());
+
+    int ifindex = reply->getIface();
+    SPtr<TIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
+    if (!iface) {
+        Log(Error) << "Unable to find interface with ifindex=" << ifindex << ". Script NOT called." << LogEnd;
+        return;
+    }
+
+    tmp << "IFACE=" << iface->getName();
+    envCnt = addParam(env, envCnt, tmp.str().c_str());
+
+    tmp.str("");
+    tmp << "IFINDEX=" << dec << (int)iface->getID();
+    envCnt = addParam(env, envCnt, tmp.str().c_str());
+
+    int ipCnt=1;
+    int pdCnt=1;
+    SPtr<TIPv6Addr> ip;
+
+    reply->firstOption();
+    while ( SPtr<TOpt> opt = reply->getOption() ) {
+        switch (opt->getOptType()) {
+        case OPTION_IA_NA:
+        case OPTION_IA_TA:
+            {
+                opt->firstOption();
+                while (SPtr<TOpt> subopt = opt->getOption()) {
+                    if (subopt->getOptType() == OPTION_IAADDR) {
+                        SPtr<TOptIAAddress> addr = (Ptr*) subopt;
+                        tmp.str("");
+                        tmp << "ADDR" << ipCnt++ << "=" << addr->getAddr()->getPlain() << " " << addr->getPref() << " " << addr->getValid();
+                        envCnt = addParam(env, envCnt, tmp.str().c_str());
+                    }
+                }
+                break;
+            }
+        case OPTION_IA_PD:
+            {
+                opt->firstOption();
+                while (SPtr<TOpt> subopt = opt->getOption()) {
+                    if (subopt->getOptType() == OPTION_IAPREFIX) {
+                        SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
+                        tmp.str("");
+                        tmp << "PREFIX" << pdCnt++ << "=" << prefix->getPrefix()->getPlain() << " "
+                            << int(prefix->getPrefixLength()) << " "
+                            << prefix->getPref() << " " << prefix->getValid();
+                        envCnt = addParam(env, envCnt, tmp.str().c_str());
+                    }
+                }
+                break;
+            }
+        default:
+            {
+                tmp.str("");
+                tmp << "OPTION" << opt->getOptType() << "=\"" << opt->getPlain() << "\"";
+                envCnt = addParam(env, envCnt, tmp.str().c_str());
+            }
+        }
+    }
+
+    Log(Debug) << "About to execute " << scriptName << " script, " << paramCnt << " parameters, " << envCnt << " variables." << LogEnd;
+    int returnCode = execute(scriptName.c_str(), params, env);
+    freeParams(params);
+    freeParams(env);
+
+    Log(Info) << "Script execution complete, return code=" << returnCode << LogEnd;
 }
 
 // --------------------------------------------------------------------
