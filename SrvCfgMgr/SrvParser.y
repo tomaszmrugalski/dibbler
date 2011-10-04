@@ -169,6 +169,7 @@ GlobalOption
 | IfaceIDOrder
 | FqdnDdnsAddress
 | DdnsProtocol
+| DdnsTimeout
 | GuessMode
 | ClientClass
 ;

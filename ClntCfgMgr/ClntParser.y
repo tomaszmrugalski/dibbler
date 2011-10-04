@@ -104,7 +104,7 @@ namespace std
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,TA_,IAID_,ADDRESS_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
-%token OPTION_, SCRIPTS_DIR_, NOTIFY_SCRIPTS_
+%token OPTION_, SCRIPT_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, LOGCOLORS_
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -151,7 +151,7 @@ GlobalOptionDeclaration
 | WorkDirOption
 | DuidTypeOption
 | StrictRfcNoRoutingOption
-| ScriptsDir
+| ScriptName
 | AuthEnabledOption
 | AuthAcceptOption
 | AnonInfRequest
@@ -160,7 +160,6 @@ GlobalOptionDeclaration
 | FQDNBits
 | Experimental
 | SkipConfirm
-| NotifyScripts
 | ReconfigureAccept
 ;
 
@@ -531,10 +530,10 @@ StrictRfcNoRoutingOption
 }
 ;
 
-ScriptsDir
-: SCRIPTS_DIR_ STRING_
+ScriptName
+: SCRIPT_ STRING_
 {
-    ParserOptStack.getLast()->setScriptsDir($2);
+    CfgMgr->setScript($2);
 }
 
 AuthEnabledOption
@@ -655,13 +654,6 @@ SkipConfirm
 {
     Log(Debug) << "CONFIRM support disabled (skip-confirm in client.conf)." << LogEnd;
     ParserOptStack.getLast()->setConfirm(false);
-};
-
-NotifyScripts
-: NOTIFY_SCRIPTS_
-{
-    Log(Debug) << "Notify scripts enabled." << LogEnd;
-    ParserOptStack.getLast()->setNotifyScripts(true);
 };
 
 ReconfigureAccept

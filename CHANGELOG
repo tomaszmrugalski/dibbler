@@ -14,6 +14,7 @@
   - Fix: server/client will no longer load DUID empty file (bug #209)
   - Cli: no longer confused when receiving delegated prefix, but there are no suitable interfaces
   - Srv: server now caches assinged prefixes (bug #217)
+  - Cli: support for script execution reimplemented (bugs #207, #216)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

@@ -1357,8 +1357,8 @@ iface eth0 {
 \end{lstlisting}
 
 \subsubsection{External scripts}
-\Note Support for external scripts is going to be significantly
-improved ater 0.8.0 release.
+\Note Support for external scripts was rewritten in 0.8.1
+release. Note that mapping prefix and notify scripts were removed.
 
 Dibbler-client is able to receive addresses, prefixes and numerous
 additional options. It will do its best to set up those parameters in
@@ -1369,35 +1369,36 @@ external script every time REPLY is received for REQUEST (new
 parameters added), RENEW (parameters were updated) or RELEASE
 (parameters were deleted).
 
-Script called ./notify will be executed from working directory (this
-is \verb+/var/lib/dibbler+ in Posix-like system and
-installation directory under Windows). Script will be called with
-following parameters: address, prefix, prefixLength, remoteEndpoint
-(if you don't know what that is, you can safely ignore this parameter)
-and action (''add'', ''update'' or ''delete''). For example, if client
-leased 2000::1 address, 3000::/64 prefix, 4000::1 tunnel endpoint
-and tunnel mode 2, script execution will look like this:
+Name of this script is specified using \verb+script+ keyword followed
+by absolute path to script. Script will be called with a single
+parameter, denoting current operation. Its value will be one of
+"add'', "update'', or "delete''. Actual values of received parameters
+are passed as environment variables. In particular, IFNAME and IFINDEX
+variables denote interface name and interface index that was used to
+communicate with server, respectively.
 
-\begin{lstlisting}
-./notify 2000::1 3000:: 64 4000::1 2 add
-\end{lstlisting}
+Addresses are passed in variables ADDR1, ADDR2 and following. Note
+that each ADDR variable does contain triples of
+(address,preferred-lifetime,valid-lifetime) separated by spaces.
 
-To enable script execution, \verb+notify-scripts+ global option must
+Prefixes are passed in variables PREFIX1, PREFIX2 and following. Note
+that each PREFIX variable does contain quadriplet of (prefix,
+prefix-length, preferred-lifetime, valid-lifetime) separated by spaces.
+
+Support for additional options is in progress. Options will be passed
+as additional environment variables. 
+
+To enable script execution, \verb+script+ global option must
 be added to \verb+client.conf+ file. For example:
 
 \begin{lstlisting}
 # client.conf
-notify-scripts
+script /var/lib/dibbler/script.sh
 
 iface eth0 {
    ia
 }
 \end{lstlisting}
-
-Note that only first address and first prefix will be passed. If
-specific parameter is not configured, :: or 0 will be used instead. If
-you want to be notified about more than one address, you must parse
-client-AddrMgr.xml and client-IfacMgr.xml files.
 
 \subsubsection{Remote Autoconfiguration}
 \label{features-remote-autoconf}

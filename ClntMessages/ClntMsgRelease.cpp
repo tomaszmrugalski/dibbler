@@ -78,6 +78,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     Options.push_back(new TOptDUID(OPTION_SERVERID, srvDUID,this));
     Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(),this));
 
+#if 0
     if (ClntCfgMgr().getNotifyScripts()) {
 	// release workaround (add removed IAs)
         /// @todo: WTF? Why are those IAs removed?
@@ -95,6 +96,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
 	    ClntAddrMgr().delIA(ia->getIAID());
 	}
     }
+#endif
 
     // --- RELEASE IA ---
     iaLst.first();

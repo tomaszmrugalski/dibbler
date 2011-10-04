@@ -1,11 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
  * $Id: ClntParsGlobalOpt.cpp,v 1.20 2008-08-30 21:41:11 thomson Exp $
  *
  */
@@ -15,19 +15,16 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TClntParsGlobalOpt::TClntParsGlobalOpt() 
+TClntParsGlobalOpt::TClntParsGlobalOpt()
     :TClntParsIfaceOpt() {
     this->WorkDir        = WORKDIR;
     this->PrefixLength   = CLIENT_DEFAULT_PREFIX_LENGTH;
     this->Digest         = CLIENT_DEFAULT_DIGEST;
-    this->ScriptsDir     = DEFAULT_SCRIPTSDIR;
-    this->NotifyScripts  = false;
     this->AnonInfRequest = false;
     this->InactiveMode   = false;
     this->InsistMode     = false;
     this->FQDNFlagS      = false;
     this->Experimental   = false;
-    this->ExperimentalMappingPrefix = false;
     this->UseConfirm     = true;
 
     this->AuthEnabled    = false;
@@ -59,14 +56,6 @@ void TClntParsGlobalOpt::setDigest(DigestTypes digest) {
 
 DigestTypes TClntParsGlobalOpt::getDigest() {
     return this->Digest;
-}
-
-void TClntParsGlobalOpt::setScriptsDir(string dir) {
-    this->ScriptsDir=dir;
-}
-
-string TClntParsGlobalOpt::getScriptsDir() {
-    return this->ScriptsDir;
 }
 
 void TClntParsGlobalOpt::setAnonInfRequest(bool anonymous) {
@@ -131,23 +120,13 @@ bool TClntParsGlobalOpt::getFQDNFlagS()
 void TClntParsGlobalOpt::setAuthEnabled(bool enabled)
 {
     AuthEnabled = enabled;
-    Log(Debug) << "AUTH: Authentication " << (enabled?"enabled":"disabled") << "." << LogEnd;
+    Log(Debug) << "AUTH: Authentication " << (enabled?"enabled":"disabled")
+               << "." << LogEnd;
 }
 
 bool TClntParsGlobalOpt::getAuthEnabled()
 {
     return AuthEnabled;
-}
-
-void TClntParsGlobalOpt::setMappingPrefix(bool useMP)
-{
-    ExperimentalMappingPrefix = useMP;
-    Log(Notice) << "Experimental: mappix-prefix " << (useMP?"enabled":"disabled") << LogEnd;
-}
-
-bool TClntParsGlobalOpt::getMappingPrefix()
-{
-    return ExperimentalMappingPrefix;
 }
 
 void TClntParsGlobalOpt::setConfirm(bool conf)
@@ -158,14 +137,4 @@ void TClntParsGlobalOpt::setConfirm(bool conf)
 bool TClntParsGlobalOpt::getConfirm()
 {
     return UseConfirm;
-}
-
-bool TClntParsGlobalOpt::getNotifyScripts()
-{
-    return NotifyScripts;
-}
-
-void TClntParsGlobalOpt::setNotifyScripts(bool useScripts)
-{
-    NotifyScripts = useScripts;
 }

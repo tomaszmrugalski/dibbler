@@ -119,7 +119,7 @@ struct link_state_notify_t
 
 #ifdef WIN32
 #define WORKDIR            ".\\"
-#define DEFAULT_SCRIPTSDIR ".\\scritps"
+#define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE 	   "client.conf"
 #define SRVCONF_FILE       "server.conf"
 #define RELCONF_FILE       "relay.conf"
@@ -131,7 +131,7 @@ struct link_state_notify_t
 
 #ifdef LINUX
 #define WORKDIR            "/var/lib/dibbler"
-#define DEFAULT_SCRIPTSDIR "/var/lib/dibbler/scripts"
+#define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
@@ -151,7 +151,7 @@ struct link_state_notify_t
 
 #ifdef BSD
 #define WORKDIR            "/var/lib/dibbler"
-#define DEFAULT_SCRIPTSDIR "/var/lib/dibbler/scripts"
+#define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
@@ -323,6 +323,8 @@ extern "C" {
     char * getAAAKey(uint32_t SPI, uint32_t *len); /* reads AAA key from a file */
     char * getAAAKeyFilename(uint32_t SPI); /* which file? use this function to find out */
     uint32_t getAAASPIfromFile();
+
+    int execute(const char *filename, char * argv[], char *env[]);
     
 #ifdef __cplusplus
 }

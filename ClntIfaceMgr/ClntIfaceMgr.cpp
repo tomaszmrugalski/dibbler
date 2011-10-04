@@ -11,11 +11,14 @@
  */
 
 #include <sstream>
+#include <stdlib.h>
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
 #include "ClntMsgReply.h"
 #include "ClntMsgAdvertise.h"
+#include "OptIAAddress.h"
+#include "OptIAPrefix.h"
 #include "Logger.h"
 
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
@@ -397,8 +400,9 @@ bool TClntIfaceMgr::delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen)
     return modifyPrefix(iface, prefix, prefixLen, 0, 0, PREFIX_MODIFY_DEL);
 }
 
-bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid,
-    PrefixModifyMode mode)
+bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                                 unsigned int pref, unsigned int valid,
+                                 PrefixModifyMode mode)
 {
     SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
     if (!ptrIface) {
@@ -406,7 +410,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         return false;
     }
 
-
+#if 0
     if (ClntCfgMgr().getMappingPrefix())
     {
       char buf[128];
@@ -437,6 +441,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         }
         return true; // added successfully
     }
+#endif
 
     string action;
     int status = -1;
@@ -590,15 +595,60 @@ void TClntIfaceMgr::redetectIfaces() {
     if_list_release(ifaceList); // allocated in pure C, and so release it there
 }
 
+/// adds parameter to parameters list
+///
+/// @param param pointer to table
+/// @param offset offset in table
+/// @param value value to be copied
+///
+/// @return next unused offset
+///
+int TClntIfaceMgr::addParam(char ** param, int offset, const char * value)
+{
+    param[offset] = new char[strlen(value)+1];
+    strncpy(param[offset], value, strlen(value)+1);
+    return ++offset;
+}
+
+void TClntIfaceMgr::freeParams(char ** param)
+{
+    int offset = 0;
+    while (param[offset] != NULL) {
+        delete [] param[offset];
+        param[offset] = 0;
+        offset++;
+    }
+}
+
 void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
 {
-    if (!ClntCfgMgr().getNotifyScripts()) {
+    if (!ClntCfgMgr().getScript().length()) {
         Log(Debug) << "Not executing external script (Notify script disabled)." << LogEnd;
         return;
     }
 
     PrefixModifyMode mode;
     string action;
+
+    char * params[512];
+    char * env[512];
+    int paramCnt = 0;
+    int envCnt = 0;
+
+    stringstream tmp;
+
+    for (int i=0; i<512; i++) {
+        params[i]=0;
+        env[i]=0;
+    }
+
+    // get PATH
+    char * path = getenv("PATH");
+    if (path) {
+        tmp << "PATH=" << path;
+        envCnt = addParam(env, envCnt, tmp.str().c_str());
+        tmp.str("");
+    }
 
     switch (question->getType())
     {
@@ -612,60 +662,84 @@ void TClntIfaceMgr::notifyScripts(SPtr<TClntMsg> question, SPtr<TClntMsg> reply)
         action = "delete";
         break;
     case RENEW_MSG:
-    default:
         mode = PREFIX_MODIFY_UPDATE;
         action = "update";
+        break;
+    default:
+        Log(Debug) << "Script execution skipped for " << reply->getName() << " response to " << question->getName() << LogEnd;
+        return;
     }
+
+
+    paramCnt = addParam(params, paramCnt, ClntCfgMgr().getScript().c_str());
+    paramCnt = addParam(params, paramCnt, action.c_str());
 
     int ifindex = reply->getIface();
     SPtr<TClntIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
     if (!iface) {
-        Log(Error) << "Unable to find interface with ifindex=" << ifindex << ". Notification NOT sent." << LogEnd;
+        Log(Error) << "Unable to find interface with ifindex=" << ifindex << ". Script NOT called." << LogEnd;
         return;
     }
 
+    tmp << "IFACE=" << iface->getName();
+    envCnt = addParam(env, envCnt, tmp.str().c_str());
+
+    tmp.str("");
+    tmp << "IFINDEX=" << dec << (int)iface->getID();
+    envCnt = addParam(env, envCnt, tmp.str().c_str());
+
+    int ipCnt=1;
+    int pdCnt=1;
     SPtr<TIPv6Addr> ip;
-    SPtr<TIPv6Addr> remoteEndpoint = iface->getDsLiteTunnel();
     SPtr<TAddrPrefix> prefix;
 
-    ClntAddrMgr().firstIA();
-    SPtr<TAddrIA> ia = ClntAddrMgr().getIA();
-    if (ia)
-    {
-        ia->firstAddr();
-        if (ia->countAddr())
-        {
-            SPtr<TAddrAddr> addr = ia->getAddr();
-            ip = addr->get();
+    reply->firstOption();
+    while ( SPtr<TOpt> opt = reply->getOption() ) {
+        switch (opt->getOptType()) {
+        case OPTION_IA_NA:
+        case OPTION_IA_TA:
+            {
+                opt->firstOption();
+                while (SPtr<TOpt> subopt = opt->getOption()) {
+                    if (subopt->getOptType() == OPTION_IAADDR) {
+                        SPtr<TOptIAAddress> addr = (Ptr*) subopt;
+                        tmp.str("");
+                        tmp << "ADDR" << ipCnt++ << "=" << addr->getAddr()->getPlain() << " " << addr->getPref() << " " << addr->getValid();
+                        envCnt = addParam(env, envCnt, tmp.str().c_str());
+                    }
+                }
+                break;
+            }
+        case OPTION_IA_PD:
+            {
+                opt->firstOption();
+                while (SPtr<TOpt> subopt = opt->getOption()) {
+                    if (subopt->getOptType() == OPTION_IAPREFIX) {
+                        SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
+                        tmp.str("");
+                        tmp << "PREFIX" << pdCnt++ << "=" << prefix->getPrefix()->getPlain() << " "
+                            << int(prefix->getPrefixLength()) << " "
+                            << prefix->getPref() << " " << prefix->getValid();
+                        envCnt = addParam(env, envCnt, tmp.str().c_str());
+                    }
+                }
+                break;
+            }
+        default:
+            {
+                tmp.str("");
+                tmp << "OPTION" << opt->getOptType() << "=\"" << opt->getPlain() << "\"";
+                envCnt = addParam(env, envCnt, tmp.str().c_str());
+            }
         }
     }
 
-    ClntAddrMgr().firstPD();
-    ia = ClntAddrMgr().getPD();
-    if (ia)
-    {
-        ia->firstPrefix();
-        prefix = ia->getPrefix();
-    }
+    Log(Debug) << "About to execute " << ClntCfgMgr().getScript() << " script, " << paramCnt << " parameters, " << envCnt << " variables." << LogEnd;
+    int returnCode = execute(ClntCfgMgr().getScript().c_str(), params, env);
+    freeParams(params);
+    freeParams(env);
 
-    if (!ip)
-        ip = new TIPv6Addr("::", true);
-
-    if (!remoteEndpoint)
-        remoteEndpoint = new TIPv6Addr("::", true);
-
-    if (!prefix)
-        prefix = new TAddrPrefix(new TIPv6Addr("::", true), 0, 0, 0);
-
-    stringstream tmp;
-    tmp << "sh ./notify " << " " << ip->getPlain() << " "
-        << prefix->get()->getPlain() << " " << prefix->getLength() << " "
-        << remoteEndpoint->getPlain() << " " << action;
-    Log(Info) << "About to execute command: " << tmp.str() << LogEnd;
-
-    short int returnCode = system(tmp.str().c_str());
-
-    Log(Info) << "Return code=" << returnCode << LogEnd;
+    Log(Info) << "Script execution complete, return code=" << returnCode << LogEnd;
 }
 
 #ifdef MOD_REMOTE_AUTOCONF
