@@ -58,7 +58,8 @@ am_libMisc_a_OBJECTS = addrpack.$(OBJEXT) base64.$(OBJEXT) \
 	DHCPConst.$(OBJEXT) DUID.$(OBJEXT) FQDN.$(OBJEXT) \
 	hmac-sha-md5.$(OBJEXT) IPv6Addr.$(OBJEXT) KeyList.$(OBJEXT) \
 	Logger.$(OBJEXT) long128.$(OBJEXT) md5.$(OBJEXT) \
-	sha1.$(OBJEXT) sha256.$(OBJEXT) sha512.$(OBJEXT)
+	sha1.$(OBJEXT) sha256.$(OBJEXT) sha512.$(OBJEXT) \
+	lowlevel-posix.$(OBJEXT)
 libMisc_a_OBJECTS = $(am_libMisc_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -233,7 +234,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libMisc.a
-libMisc_a_SOURCES = addrpack.c base64.c base64.h Container.h DHCPConst.cpp DHCPConst.h DHCPDefaults.h dibbler-config.h DUID.cpp DUID.h FQDN.cpp FQDN.h hmac.h hmac-sha-md5.c IPv6Addr.cpp IPv6Addr.h KeyList.cpp KeyList.h Logger.cpp Logger.h long128.cpp long128.h md5.c md5.h Portable.h sha1.c sha1.h sha256.c sha256.h sha512.c sha512.h SmartPtr.h SrvCommon.h
+libMisc_a_SOURCES = addrpack.c base64.c base64.h Container.h DHCPConst.cpp DHCPConst.h DHCPDefaults.h dibbler-config.h DUID.cpp DUID.h FQDN.cpp FQDN.h hmac.h hmac-sha-md5.c IPv6Addr.cpp IPv6Addr.h KeyList.cpp KeyList.h Logger.cpp Logger.h long128.cpp long128.h md5.c md5.h Portable.h sha1.c sha1.h sha256.c sha256.h sha512.c sha512.h SmartPtr.h SrvCommon.h lowlevel-posix.c
 all: all-am
 
 .SUFFIXES:
@@ -292,6 +293,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/base64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hmac-sha-md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/long128.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lowlevel-posix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha256.Po@am__quote@

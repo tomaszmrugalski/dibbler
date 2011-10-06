@@ -56,8 +56,7 @@ libLowLevel_a_AR = $(AR) $(ARFLAGS)
 libLowLevel_a_LIBADD =
 am_libLowLevel_a_OBJECTS = libLowLevel_a-daemon.$(OBJEXT) \
 	libLowLevel_a-lowlevel-macos.$(OBJEXT) \
-	libLowLevel_a-lowlevel-options-macos.$(OBJEXT) \
-	libLowLevel_a-lowlevel-posix.$(OBJEXT)
+	libLowLevel_a-lowlevel-options-macos.$(OBJEXT)
 libLowLevel_a_OBJECTS = $(am_libLowLevel_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -233,7 +232,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libLowLevel.a
 libLowLevel_a_CPPFLAGS = -I$(top_srcdir)/Misc
-libLowLevel_a_SOURCES = daemon.cpp daemon.h lowlevel-macos.c lowlevel-options-macos.c malloc.h ../Port-linux/lowlevel-posix.c
+libLowLevel_a_SOURCES = daemon.cpp daemon.h lowlevel-macos.c lowlevel-options-macos.c malloc.h
 all: all-am
 
 .SUFFIXES:
@@ -285,7 +284,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-daemon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-macos.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-options-macos.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-posix.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -342,22 +340,6 @@ libLowLevel_a-lowlevel-options-macos.obj: lowlevel-options-macos.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-options-macos.c' object='libLowLevel_a-lowlevel-options-macos.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-macos.obj `if test -f 'lowlevel-options-macos.c'; then $(CYGPATH_W) 'lowlevel-options-macos.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-macos.c'; fi`
-
-libLowLevel_a-lowlevel-posix.o: ../Port-linux/lowlevel-posix.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-posix.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-posix.Tpo -c -o libLowLevel_a-lowlevel-posix.o `test -f '../Port-linux/lowlevel-posix.c' || echo '$(srcdir)/'`../Port-linux/lowlevel-posix.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-posix.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-posix.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../Port-linux/lowlevel-posix.c' object='libLowLevel_a-lowlevel-posix.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-posix.o `test -f '../Port-linux/lowlevel-posix.c' || echo '$(srcdir)/'`../Port-linux/lowlevel-posix.c
-
-libLowLevel_a-lowlevel-posix.obj: ../Port-linux/lowlevel-posix.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-posix.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-posix.Tpo -c -o libLowLevel_a-lowlevel-posix.obj `if test -f '../Port-linux/lowlevel-posix.c'; then $(CYGPATH_W) '../Port-linux/lowlevel-posix.c'; else $(CYGPATH_W) '$(srcdir)/../Port-linux/lowlevel-posix.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-posix.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-posix.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../Port-linux/lowlevel-posix.c' object='libLowLevel_a-lowlevel-posix.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-posix.obj `if test -f '../Port-linux/lowlevel-posix.c'; then $(CYGPATH_W) '../Port-linux/lowlevel-posix.c'; else $(CYGPATH_W) '$(srcdir)/../Port-linux/lowlevel-posix.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
