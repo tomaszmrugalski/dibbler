@@ -48,6 +48,9 @@ class TSrvIfaceMgr :public TIfaceMgr {
 
     void redetectIfaces();
 
+protected:
+	virtual int optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt);
+
   private:
     TSrvIfaceMgr(string xmlFile);
     static TSrvIfaceMgr * Instance;

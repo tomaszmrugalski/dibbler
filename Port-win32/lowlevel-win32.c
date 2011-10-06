@@ -646,3 +646,9 @@ void link_state_change_cleanup()
 {
    /// @todo: implement this
 }
+
+int execute(const char *filename, char * argv[], char *env[])
+{
+	/// @todo: implement this
+	return -1;
+}

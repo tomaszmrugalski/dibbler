@@ -303,6 +303,15 @@ void TIfaceMgr::freeParams(char ** param)
     }
 }
 
+int TIfaceMgr::optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt)
+{
+	stringstream tmp;
+	tmp.str("");
+    tmp << "OPTION" << opt->getOptType() << "=\"" << opt->getPlain() << "\"";
+    envCnt = addParam(env, envCnt, tmp.str().c_str());
+	return envCnt;
+}
+
 void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply)
 {
     if (!scriptName.length()) {
@@ -377,43 +386,7 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
 
     reply->firstOption();
     while ( SPtr<TOpt> opt = reply->getOption() ) {
-        switch (opt->getOptType()) {
-        case OPTION_IA_NA:
-        case OPTION_IA_TA:
-            {
-                opt->firstOption();
-                while (SPtr<TOpt> subopt = opt->getOption()) {
-                    if (subopt->getOptType() == OPTION_IAADDR) {
-                        SPtr<TOptIAAddress> addr = (Ptr*) subopt;
-                        tmp.str("");
-                        tmp << "ADDR" << ipCnt++ << "=" << addr->getAddr()->getPlain() << " " << addr->getPref() << " " << addr->getValid();
-                        envCnt = addParam(env, envCnt, tmp.str().c_str());
-                    }
-                }
-                break;
-            }
-        case OPTION_IA_PD:
-            {
-                opt->firstOption();
-                while (SPtr<TOpt> subopt = opt->getOption()) {
-                    if (subopt->getOptType() == OPTION_IAPREFIX) {
-                        SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
-                        tmp.str("");
-                        tmp << "PREFIX" << pdCnt++ << "=" << prefix->getPrefix()->getPlain() << " "
-                            << int(prefix->getPrefixLength()) << " "
-                            << prefix->getPref() << " " << prefix->getValid();
-                        envCnt = addParam(env, envCnt, tmp.str().c_str());
-                    }
-                }
-                break;
-            }
-        default:
-            {
-                tmp.str("");
-                tmp << "OPTION" << opt->getOptType() << "=\"" << opt->getPlain() << "\"";
-                envCnt = addParam(env, envCnt, tmp.str().c_str());
-            }
-        }
+		envCnt = optionToEnv(env, envCnt, ipCnt, pdCnt, opt);
     }
 
     Log(Debug) << "About to execute " << scriptName << " script, " << paramCnt << " parameters, " << envCnt << " variables." << LogEnd;

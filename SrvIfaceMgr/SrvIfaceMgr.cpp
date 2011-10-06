@@ -12,6 +12,7 @@
  *
  */
 
+#include <sstream>
 #include <stdio.h> // required for DEV-CPP compilation
 #include "Portable.h"
 #include "SmartPtr.h"
@@ -35,6 +36,9 @@
 #include "SrvOptEcho.h"
 #include "OptGeneric.h"
 #include "OptVendorData.h"
+#include "OptIAAddress.h"
+#include "OptIAPrefix.h"
+
 #ifdef WIN32
 #include <winsock2.h>
 #endif
@@ -526,6 +530,47 @@ TSrvIfaceMgr & TSrvIfaceMgr::instance()
       Log(Crit) << "SrvIfaceMgr not create yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
   return *Instance;
 }
+
+int TSrvIfaceMgr::optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt) {
+	stringstream tmp;
+	switch (opt->getOptType()) {
+    case OPTION_IA_NA:
+    case OPTION_IA_TA:
+        {
+            opt->firstOption();
+            while (SPtr<TOpt> subopt = opt->getOption()) {
+                if (subopt->getOptType() == OPTION_IAADDR) {
+                    SPtr<TOptIAAddress> addr = (Ptr*) subopt;
+                    tmp.str("");
+                    tmp << "ADDR" << ipCnt++ << "=" << addr->getAddr()->getPlain() << " " << addr->getPref() << " " << addr->getValid();
+                    envCnt = addParam(env, envCnt, tmp.str().c_str());
+                }
+            }
+            break;
+        }
+    case OPTION_IA_PD:
+        {
+            opt->firstOption();
+            while (SPtr<TOpt> subopt = opt->getOption()) {
+                if (subopt->getOptType() == OPTION_IAPREFIX) {
+                    SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
+                    tmp.str("");
+                    tmp << "PREFIX" << pdCnt++ << "=" << prefix->getPrefix()->getPlain() << " "
+                        << int(prefix->getPrefixLength()) << " "
+                        << prefix->getPref() << " " << prefix->getValid();
+                    envCnt = addParam(env, envCnt, tmp.str().c_str());
+                }
+            }
+            break;
+        }
+    default:
+        {
+        }
+    }
+
+	return envCnt;
+}
+
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
     strum << "<SrvIfaceMgr>" << std::endl;

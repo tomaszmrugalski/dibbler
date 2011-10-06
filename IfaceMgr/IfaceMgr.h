@@ -20,6 +20,7 @@ class TIfaceMgr;
 #include "Iface.h"
 
 class TMsg;
+class TOpt;
 
 class TIfaceMgr {
   public:
@@ -48,11 +49,10 @@ class TIfaceMgr {
  protected:
     static int addParam(char ** param, int offset, const char * value);
     static void freeParams(char ** param);
+	virtual int optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt);
 
     string XmlFile;
-
     List(TIfaceIface) IfaceLst; //Interface list
-
     bool IsDone; 
 };
 
