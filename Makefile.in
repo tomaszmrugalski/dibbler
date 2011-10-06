@@ -350,7 +350,7 @@ dibbler_server_LDADD = -L$(top_builddir)/SrvOptions -lSrvOptions \
 	-L$(top_builddir)/Messages -lMessages -L$(top_builddir)/CfgMgr \
 	-lCfgMgr -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc -lSrvCfgMgr -lSrvMessages \
-	-lCfgMgr -lSrvOptions -lOptions -lIfaceMgr -lposlib
+	-lCfgMgr -lSrvOptions -lOptions -lIfaceMgr -lposlib -lMisc
 dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp \
 	$(top_srcdir)/Misc/DHCPRelay.cpp \
 	$(top_srcdir)/Misc/DHCPRelay.h
