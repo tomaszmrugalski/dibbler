@@ -24,17 +24,20 @@
 #include "SrvOptDomainName.h"
 #include "SrvOptFQDN.h"
 #include "SrvOptIA_PD.h"
+#include "OptReconfigureMsg.h"
 #include "Logger.h"
 
 TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
                                        SPtr<TIPv6Addr> ia ,int msgType,
                                        SPtr<TDUID> ptrDUID)
-    :TSrvMsg(iface, clientAddr, RECONFIGURE_MSG, rand()%(2^24) )
+    :TSrvMsg(iface, clientAddr, RECONFIGURE_MSG, 0 )
 {
     ClientDUID=ptrDUID;
 
     // status code is not necessary in Reconfigure
     //appendStatusCode();
+
+    Options.push_back(new TOptReconfigureMsg(OPTION_RECONF_MSG, RENEW_MSG, this) );
 
     /// @todo Add necessary options here
     /// see RFC3315, section 15.11

@@ -14,6 +14,7 @@
   - Fix: server/client will no longer load DUID empty file (bug #209)
   - FreeBSD support added (not tested yet, consider it experimental)
   - Makefile system rewritten (using autotools now for better portability)
+  - Many changes related to Reconfigure support (in progress)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

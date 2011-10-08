@@ -38,7 +38,8 @@ class TClntTransMgr
     void sendRebind(TOptList ptrIA, int iface);
     void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     bool handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
-void sendRenew();
+    void handleReconfigure(SPtr<TClntMsg> reconfMsg);
+    void sendRenew();
 
     void shutdown();
     bool isDone();

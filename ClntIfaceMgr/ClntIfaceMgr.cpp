@@ -18,6 +18,7 @@
 #include "ClntMsgReply.h"
 #include "ClntMsgRenew.h"
 #include "ClntMsgAdvertise.h"
+#include "ClntMsgReconfigure.h"
 #include "Logger.h"
 
 
@@ -151,12 +152,8 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             return ptr;
 
         case RECONFIGURE_MSG:
-	Log(Notice) << "Received RECONFIGURE" << LogEnd;
-	ClntTransMgr().sendRenew();
-
-
-            
-            return 0; // NULL
+            ptr = new TClntMsgReconfigure(ifaceid, peer, buf, bufsize);
+            return ptr;
         case RELAY_FORW_MSG: // those two msgs should not be visible for client
         case RELAY_REPL_MSG:
         default:
