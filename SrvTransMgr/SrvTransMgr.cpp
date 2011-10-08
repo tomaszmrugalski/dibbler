@@ -70,8 +70,7 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
 ///
 /// @return number of clients that were reconfigured
 ///
-int
-TSrvTransMgr::checkReconfigures() {
+int TSrvTransMgr::checkReconfigures() {
 
     int clients = 0; // how many client did we reconfigure?
     int iface;
@@ -106,8 +105,7 @@ TSrvTransMgr::checkReconfigures() {
                 PD=false;
                 if(ClientInPool1(adr->get(),iface,PD)) 
                 {
-                    Log(Debug) << "Client " << cli->getDUID()->getPlain()
-                               << "doesn't need to reconfigure IA (iaid=" << ia->getIAID() << LogEnd;
+                    Log(Debug) << "Client " << cli->getDUID()->getPlain() << "doesn't need to reconfigure IA (iaid=" << ia->getIAID() << ")." << LogEnd;
                 }
                 else 
                 {
@@ -117,7 +115,7 @@ TSrvTransMgr::checkReconfigures() {
                     clients++;
                     if (SrvAddrMgr().delClntAddr(cli->getDUID(), ia->getIAID(), adr->get(),false)) {
                         Log(Debug) << "Outdated " << *adr->get() << " address deleted." << LogEnd;
-                    }
+                   }
                     check = false;
                     break; // break inner while loop
                 }
@@ -141,15 +139,17 @@ TSrvTransMgr::checkReconfigures() {
                 PD=true;
                 if(ClientInPool1(prefix->get(),iface,PD))
                 {
-                    Log(Debug) << "Client " << cli->getDUID()->getPlain()
-                               << "doesn't need to reconfigure IA (iaid=" << ia->getIAID() << LogEnd;
+                    //Log(Debug) << "Client " << cli->getDUID()->getPlain() << "doesn't need to reconfigure PD (iaid=" << ia->getIAID() << LogEnd;
+                    Log(Debug) << "Client " << cli->getDUID()->getPlain() << "doesn't need to reconfigure PD (iaid=" << pd->getIAID() << ")." << LogEnd;
                 }
                 else
                 {
                     Log(Info) << "Client " << cli->getDUID()->getPlain()
                               << "uses outdated info. Sending RECONFIGURE." << LogEnd;
-                    Log(Crit) << "wrong_PD" << LogEnd;
+                    //Log(Crit) << "wrong_PD" << LogEnd;
                     /// @todo: RECONFIGURE for PD must be implemented
+                    sendReconfigure(unicast, prefix->get(), iface, 1, ptrDUID);
+                    clients++;
                     check=false;
                     if(SrvAddrMgr().delPrefix(ptrDUID, IAID, prefix->get(),true)) {
                         Log(Debug) << "Outdated " << *prefix->get() << " prefix for client "
@@ -564,7 +564,7 @@ bool TSrvTransMgr::sendReconfigure(SPtr<TIPv6Addr> addr, SPtr<TIPv6Addr> ia,
 {
     SPtr<TSrvMsg> reconfigure;
     reconfigure = new TSrvMsgReconfigure(iface, addr, ia, msgType, ptrDUID);
-    reconfigure->send();
+    //reconfigure->send(); // not needed (message will send itself in constructor)
     return true;
 }
 

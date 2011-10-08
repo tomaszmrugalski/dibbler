@@ -23,14 +23,14 @@
 #include "DHCPConst.h"
 #include "OptReconfigureMsg.h"
 
-TOptReconfigureMsg::TOptReconfigureMsg(int type, int msgType, TMsg* parent)
-    :TOpt(type, parent)
+TOptReconfigureMsg::TOptReconfigureMsg(int msgType, TMsg* parent)
+    :TOpt(OPTION_RECONF_MSG, parent)
 {
     this->MSG_Type=msgType;
 }
 
-TOptReconfigureMsg::TOptReconfigureMsg(int type, char *&buf, int &bufsize, TMsg* parent)
-    :TOpt(type, parent)
+TOptReconfigureMsg::TOptReconfigureMsg(char *buf, int bufsize, TMsg* parent)
+    :TOpt(OPTION_RECONF_MSG, parent)
 {
     if ((unsigned int)bufsize<1) {
         Valid = false;
@@ -45,9 +45,6 @@ TOptReconfigureMsg::TOptReconfigureMsg(int type, char *&buf, int &bufsize, TMsg*
         Valid = false;
         return;
     }
-
-    buf += 1;
-    bufsize -= 1;
 }
 
 int TOptReconfigureMsg::getSize()

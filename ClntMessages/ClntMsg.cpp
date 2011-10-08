@@ -35,6 +35,7 @@
 #include "ClntOptTA.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptPreference.h"
+#include "OptReconfigureMsg.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptStatusCode.h"
 #include "ClntOptDNSServers.h"
@@ -237,10 +238,16 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
 	    break;
 	}
-	case OPTION_RECONF_ACCEPT:
+	case OPTION_RECONF_MSG: {
+	    ptr = new TOptReconfigureMsg(buf+pos, length, this);
+	    break;
+	}
+	case OPTION_RECONF_ACCEPT: {
+            ptr = new TOptEmpty(OPTION_RECONF_ACCEPT, buf+pos, length, this);
+            break;
+        }
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
-	case OPTION_RECONF_MSG:
 	case OPTION_RELAY_MSG:
 	case OPTION_INTERFACE_ID:
 	    Log(Warning) << "Option " << code<< " in message "

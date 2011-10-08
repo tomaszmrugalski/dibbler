@@ -560,12 +560,19 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
 /// @param reconfMsg pointer to received reconfigure message
 ///
 void TClntTransMgr::handleReconfigure(SPtr<TClntMsg> reconfMsg) {
-    /// @todo: received reconfigure. Now what?
-
     // see if there is reconfigure-msg option. If not, drop message.
     // if yes, send specific message, e.g. call sendRenew(), sendRebind() or sendInfRequest()
 
+    if(!ClntCfgMgr().getReconfigure()) {
+        Log(Notice) << "Client does not support reconfigure message." << LogEnd;
+        return;
+    }
+
     Log(Notice) << "Received RECONFIGURE" << LogEnd;
+    // if(ptr->check()) // this was checked already before handleReconfigure was called
+
+    /// @todo: server may tell client to send, RENEW, REBIND or INF-REQUEST
+    Log(Notice) << "Received RECONFIGURE, sending RENEW." << LogEnd;
     sendRenew();
 }
 
