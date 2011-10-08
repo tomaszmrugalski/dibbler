@@ -96,6 +96,10 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     if(rapid)
         Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
 
+    if (ClntCfgMgr().getReconfigure()) {
+        Options.push_back(new TOptEmpty(OPTION_RECONF_ACCEPT, this));
+    }
+
     // append and switch to INPROCESS state
     if (!remoteAutoconf)
 	appendTAOptions(true); 
