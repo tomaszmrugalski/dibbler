@@ -35,6 +35,7 @@ devel: dibbler-devel-arch.dox dibbler-devel-bibl.dox dibbler-devel-common.dox \
 	dibbler-devel-compile.dox dibbler-devel-debug.dox dibbler-devel-intro.dox \
         dibbler-devel-mainpage.dox dibbler-devel-misc.dox dibbler-devel-port.dox
 	doxygen doxygen.cfg
+	cp logo* html/
 
 version.tex:
 	@echo "[GREP   ] $(SUBDIR)/$@"
