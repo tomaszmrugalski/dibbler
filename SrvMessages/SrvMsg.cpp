@@ -78,7 +78,7 @@
  * @param transID 
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
-                 :TMsg(iface, addr, msgType, transID)
+    :TMsg(iface, addr, msgType, transID)
 {
     this->Relays = 0;
 
@@ -108,7 +108,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
  */
 TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
                  char* buf,  int bufSize)
-                 :TMsg(iface, addr, buf, bufSize)
+    :TMsg(iface, addr, buf, bufSize)
 {
     this->Relays = 0;
 

@@ -797,8 +797,8 @@ void TSrvAddrMgr::cacheRead() {
 	
 	if (s.find("</cache>")!=string::npos) {
 	    if (!started) {
-		Log(Error) << "Cache: Reading file " << SRVCACHE_FILE << " failed: closing tag </cache> found at line " << lineno
-			   << ", but opening tag is missing." << LogEnd;
+		Log(Error) << "Cache: Reading file " << SRVCACHE_FILE << " failed: closing tag </cache> found at line " 
+                           << lineno << ", but opening tag is missing." << LogEnd;
 		f.close();
 		return;
 	    }
@@ -816,8 +816,10 @@ void TSrvAddrMgr::cacheRead() {
 
 void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )
 {
-    if (Instance)
+    if (Instance) {
         Log(Crit) << "SrvAddrMgr already exists! Application error" << LogEnd;
+        return;
+    }
     Instance = new TSrvAddrMgr(xmlFile, loadDB);
 }
 

@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceMgr.h,v 1.11 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 #ifndef SRVIFACEMGR_H
@@ -49,7 +47,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
     void redetectIfaces();
 
 protected:
-	virtual int optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt);
+    virtual void optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix = std::string(""));
 
   private:
     TSrvIfaceMgr(string xmlFile);

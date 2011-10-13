@@ -291,7 +291,8 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     {
 	int iface = msg->getIface();
 	if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
-	    Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
+	    Log(Error) << "LQ: LeaseQuery message received on " << iface 
+                       << " interface, but it is not supported there." << LogEnd;
 	    return;
 	}
 	Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;

@@ -276,7 +276,6 @@ void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
 SPtr<TSrvOptIAAddress> TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> hint, unsigned long pref,
 						    unsigned long valid,
 						    bool quiet) {
-
     // Assign one address
     SPtr<TIPv6Addr> addr;
     SPtr<TSrvOptIAAddress> optAddr;

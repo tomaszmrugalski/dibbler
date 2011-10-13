@@ -531,44 +531,39 @@ TSrvIfaceMgr & TSrvIfaceMgr::instance()
   return *Instance;
 }
 
-int TSrvIfaceMgr::optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt) {
-	stringstream tmp;
-	switch (opt->getOptType()) {
+void TSrvIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix) {
+
+    switch (opt->getOptType()) {
     case OPTION_IA_NA:
     case OPTION_IA_TA:
-        {
-            opt->firstOption();
-            while (SPtr<TOpt> subopt = opt->getOption()) {
-                if (subopt->getOptType() == OPTION_IAADDR) {
-                    SPtr<TOptIAAddress> addr = (Ptr*) subopt;
-                    tmp.str("");
-                    tmp << "ADDR" << ipCnt++ << "=" << addr->getAddr()->getPlain() << " " << addr->getPref() << " " << addr->getValid();
-                    envCnt = addParam(env, envCnt, tmp.str().c_str());
-                }
+    {
+        opt->firstOption();
+        while (SPtr<TOpt> subopt = opt->getOption()) {
+            if (subopt->getOptType() == OPTION_IAADDR) {
+                SPtr<TOptIAAddress> addr = (Ptr*) subopt;
+                params.addAddr(addr->getAddr(), addr->getPref(), addr->getValid(), txtPrefix);
             }
-            break;
         }
-    case OPTION_IA_PD:
-        {
-            opt->firstOption();
-            while (SPtr<TOpt> subopt = opt->getOption()) {
-                if (subopt->getOptType() == OPTION_IAPREFIX) {
-                    SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
-                    tmp.str("");
-                    tmp << "PREFIX" << pdCnt++ << "=" << prefix->getPrefix()->getPlain() << " "
-                        << int(prefix->getPrefixLength()) << " "
-                        << prefix->getPref() << " " << prefix->getValid();
-                    envCnt = addParam(env, envCnt, tmp.str().c_str());
-                }
-            }
-            break;
-        }
-    default:
-        {
-        }
+        break;
     }
-
-	return envCnt;
+    case OPTION_IA_PD:
+    {
+        opt->firstOption();
+        while (SPtr<TOpt> subopt = opt->getOption()) {
+            if (subopt->getOptType() == OPTION_IAPREFIX) {
+                SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
+                params.addPrefix(prefix->getPrefix(),
+                                 prefix->getPrefixLength(),
+                                 prefix->getPref(),
+                                 prefix->getValid());
+            }
+        }
+        break;
+    }
+    default:
+        return TIfaceMgr::optionToEnv(params, opt, txtPrefix);
+        break;
+    }
 }
 
 

@@ -23,8 +23,10 @@
 #include "Logger.h"
 #include "hmac.h"
 
+class TNotifyScriptParams;
+
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
-    :pkt(0)
+    :pkt(0), NotifyScripts(NULL)
 {
     setAttribs(iface, addr, 0, 0);
     if (bufSize<4)
@@ -36,13 +38,14 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
-    :pkt(0)
+    :pkt(0), NotifyScripts(NULL)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
+    :NotifyScripts(NULL)
 {
     setAttribs(iface,addr,msgType,transID);
 }
@@ -187,6 +190,9 @@ SPtr<TOpt> TMsg::getOption() {
 }
 
 TMsg::~TMsg() {
+    if (NotifyScripts) {
+        delete NotifyScripts;
+    }
 }
 
 SPtr<TIPv6Addr> TMsg::getAddr() {

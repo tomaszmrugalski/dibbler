@@ -324,7 +324,7 @@ extern "C" {
     char * getAAAKeyFilename(uint32_t SPI); /* which file? use this function to find out */
     uint32_t getAAASPIfromFile();
 
-    int execute(const char *filename, char * argv[], char *env[]);
+    int execute(const char *filename, const char * argv[], const char *env[]);
     
 #ifdef __cplusplus
 }

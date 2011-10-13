@@ -8,10 +8,13 @@
  */
 
 #include "Portable.h"
+#include <stdio.h>
+#include <errno.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 
-int execute(const char *filename, char * argv[], char *env[])
+int execute(const char *filename, const char * argv[], const char *env[])
 {
 
 #ifdef LOWLEVEL_DEBUG
@@ -34,14 +37,21 @@ int execute(const char *filename, char * argv[], char *env[])
 
     pid = fork();
     if (!pid) {
-        execve(filename, argv, env);
+        int result = execve(filename, (char * const *)argv, (char * const *)env);
+        result = errno;
+        /* printf("#### Error during attempt to execute %s script: %s\n", filename, strerror(result)); */
+        /* errors only. if execution succeeds, this process is replaced by instance of filename */
+        if (result>0) {
+            result = -result;
+        }
+        exit(-1);
     } else {
+        /* printf("#### before waitpid() pid=%d status=%d\n", pid, status); */
         waitpid(pid, &status, 0);
+        /* printf("#### after waitpid() pid=%d status=%d\n", pid, status); */
         if (WIFEXITED(status))
             return WEXITSTATUS(status);
         else
             return LOWLEVEL_ERROR_UNSPEC;
     }
-
-    return LOWLEVEL_NO_ERROR;
 }

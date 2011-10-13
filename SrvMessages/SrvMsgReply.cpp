@@ -29,6 +29,7 @@
 #include "AddrClient.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
+#include "IfaceMgr.h"
 #include "Logger.h"
 
 /** 
@@ -395,7 +396,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
  * @param CfgMgr 
  * @param AddrMgr 
  * @param release 
- */TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
+ */
+TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
     :TSrvMsg(release->getIface(),release->getAddr(), REPLY_MSG, 
 	     release->getTransID())
 {
@@ -405,12 +407,15 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
     copyAAASPI((Ptr*)release);
     copyRemoteID((Ptr*)release);
 
-     /// @todo:When the server receives a Release message via unicast from a client
-    //to which the server has not sent a unicast option, the server
-    //discards the Release message and responds with a Reply message
-    //containing a Status Code option with value UseMulticast, a Server
-    //Identifier option containing the server's DUID, the Client Identifier
-    //option from the client message, and no other options.
+    /// @todo When the server receives a Release message via unicast from a client
+    /// to which the server has not sent a unicast option, the server
+    /// discards the Release message and responds with a Reply message
+    /// containing a Status Code option with value UseMulticast, a Server
+    /// Identifier option containing the server's DUID, the Client Identifier
+    /// option from the client message, and no other options.
+
+    // for notify script
+    TNotifyScriptParams* notifyParams = new TNotifyScriptParams();
 
     SPtr<TOpt> opt, subOpt;
 
@@ -461,6 +466,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
 		    continue;
 		addr = (Ptr*) subOpt;
 		if (SrvAddrMgr().delClntAddr(ClientDUID, clntIA->getIAID(), addr->getAddr(), false) ) {
+                    notifyParams->addAddr(addr->getAddr(), 0, 0, "SRV");
+
 		    SrvCfgMgr().delClntAddr(this->Iface,addr->getAddr());
 		    anyDeleted=true;                    
 		} else {
@@ -495,6 +502,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
 		    continue;
 		SPtr<TSrvOptIAAddress> addr = (Ptr*) subOpt;
 		if (SrvAddrMgr().delTAAddr(ClientDUID, ta->getIAID(), addr->getAddr()) ) {
+                    notifyParams->addAddr(addr->getAddr(), 0, 0 , "");
+
 		    SrvCfgMgr().delTAAddr(this->Iface);
 		    anyDeleted=true;                    
 		} else {
@@ -532,6 +541,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
 		    continue;
 		prefix = (Ptr*) subOpt;
 		if (SrvAddrMgr().delPrefix(ClientDUID, pd->getIAID(), prefix->getPrefix(), false) ) {
+                    notifyParams->addPrefix(prefix->getPrefix(), prefix->getPrefixLength(), 0, 0);
 		    SrvCfgMgr().decrPrefixCount(Iface, prefix->getPrefix());
 		    anyDeleted=true;                    
 		} else {
@@ -557,6 +567,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
     
     Options.push_back(new TSrvOptStatusCode(STATUSCODE_SUCCESS,
 					 "All IAs in RELEASE message were processed.",this));
+
+    NotifyScripts = notifyParams;
     
     pkt = new char[this->getSize()];
     IsDone = false;

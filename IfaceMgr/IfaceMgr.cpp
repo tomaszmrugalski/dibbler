@@ -24,10 +24,12 @@
 #include "Msg.h"
 #include "OptIAAddress.h"
 #include "OptIAPrefix.h"
+#include "ScriptParams.h"
 
-/*
- * creates list of interfaces
- */
+/// constructor
+///
+/// @param xmlFile xml file, where interface info will be stored
+/// @param getIfaces  specifies if interfaces should be detected
 TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
 {
     this->XmlFile = xmlFile;
@@ -36,34 +38,34 @@ TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
     struct iface  * ifaceList;
 
     if (!getIfaces)
-	return;
+        return;
 
     // get interface list
     ifaceList = if_list_get(); // external (C coded) function
     ptr = ifaceList;
-    
+
     if  (!ifaceList) {
-	IsDone = true;
-	Log(Crit) << "Unable to read info interfaces. Make sure "
-		  << "you are using proper port (i.e. win32 on WindowsXP or 2003)"
-		  << " and you have IPv6 support enabled." << LogEnd;
-	return;
+        IsDone = true;
+        Log(Crit) << "Unable to read info interfaces. Make sure "
+                  << "you are using proper port (i.e. win32 on WindowsXP or 2003)"
+                  << " and you have IPv6 support enabled." << LogEnd;
+        return;
     }
-    
+
     while (ptr!=NULL) {
-        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id 
-                 // << ", flags=" << ptr->flags 
+        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
+                 // << ", flags=" << ptr->flags
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
-	
+
         SPtr<TIfaceIface> iface(new TIfaceIface(ptr->name,ptr->id,
-						       ptr->flags,
-						       ptr->mac,
-						       ptr->maclen,
-						       ptr->linkaddr,
-						       ptr->linkaddrcount,
-						       ptr->globaladdr,
-						       ptr->globaladdrcount,
-						       ptr->hardwareType));
+                                                       ptr->flags,
+                                                       ptr->mac,
+                                                       ptr->maclen,
+                                                       ptr->linkaddr,
+                                                       ptr->linkaddrcount,
+                                                       ptr->globaladdr,
+                                                       ptr->globaladdrcount,
+                                                       ptr->hardwareType));
         this->IfaceLst.append(iface);
         ptr = ptr->next;
     }
@@ -100,8 +102,8 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
     SPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {
-	if ( !strcmp(name.c_str(),ptr->getName()) )
-	    return ptr;
+        if ( !strcmp(name.c_str(),ptr->getName()) )
+            return ptr;
     }
     return 0; // NULL
 }
@@ -109,13 +111,13 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
 /*
  * gets interface by it ID (or NULL if no such interface exists)
  * @param id - interface id
- */ 
+ */
 SPtr<TIfaceIface> TIfaceMgr::getIfaceByID(int id) {
     SPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {
-	if ( id == ptr->getID() )
-	    return ptr;
+        if ( id == ptr->getID() )
+            return ptr;
     }
     return 0; //NULL
 }
@@ -127,34 +129,35 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
     SPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {
-	if ( ptr->getSocketByFD(fd) )
-	    return ptr;
+        if ( ptr->getSocketByFD(fd) )
+            return ptr;
     }
     return 0;
 }
 
 /*
- * tries to read data from any socket on all interfaces 
+ * tries to read data from any socket on all interfaces
  * returns after time seconds.
- * @param time - listens for time seconds
- * @param buf - buffer
- * @param bufsize - buffer size
- * @param peer - informations about sender
- * returns socketID
+ * @param time listens for time seconds
+ * @param buf buffer
+ * @param bufsize buffer size
+ * @param peer informations about sender
+ *
+ * @return socket descriptor (or 0)
  */
-int TIfaceMgr::select(unsigned long time, char *buf, 
-		      int &bufsize, SPtr<TIPv6Addr> peer) {
+int TIfaceMgr::select(unsigned long time, char *buf,
+                      int &bufsize, SPtr<TIPv6Addr> peer) {
     struct timeval czas;
     int result;
     if (time > DHCPV6_INFINITY/2)
-	time /=2;
+        time /=2;
 
 #ifdef BSD
     // For some reason, Darwin kernel doesn't like too large timeout values
     if (time > DHCPV6_INFINITY/4)
         time = 3600*24*7; // a week is enough
 #endif
-    
+
     czas.tv_sec=time;
     czas.tv_usec=0;
 
@@ -172,7 +175,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 
     if (result==0) { // timeout, nothing received
         bufsize = 0;
-        return 0; 
+        return 0;
     }
     if (result<0) {
         char buf[512];
@@ -186,20 +189,20 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     bool found = 0;
     IfaceLst.first();
     while ( (!found) && (iface = IfaceLst.get()) ) {
-	iface->firstSocket();
-	while ( sock = iface->getSocket() ) {
-	    if (FD_ISSET(sock->getFD(),&fds)) {
-		found = true;
-		break;
-	    }	
-	}
+        iface->firstSocket();
+        while ( sock = iface->getSocket() ) {
+            if (FD_ISSET(sock->getFD(),&fds)) {
+                found = true;
+                break;
+            }
+        }
     }
 
     if (!found) {
         Log(Error) << "Seems like internal error. Unable to find any socket with incoming data." << LogEnd;
         return 0;
     }
-    
+
     char myPlainAddr[48];   // my plain address
     char peerPlainAddr[48]; // peer plain address
 
@@ -214,22 +217,22 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     if (result==-1) {
         Log(Error) << "Socket recv() failure detected." << LogEnd;
         bufsize = 0;
-	return -1;
+        return -1;
     }
 
 #ifndef WIN32
-    // check if we've received data addressed to us. There's problem with sockets binding. 
+    // check if we've received data addressed to us. There's problem with sockets binding.
     // If there are 2 open sockets (one bound to multicast and one to global address),
     // each packet sent on multicast address is also received on unicast socket.
     char anycast[16] = {0};
-    if (!iface->flagLoopback() 
-	&& memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)
-	&& memcmp(sock->getAddr()->getAddr(), anycast, 16) ) {
-	    Log(Debug) << "Received data on address " << myPlainAddr << ", expected " 
+    if (!iface->flagLoopback()
+        && memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)
+        && memcmp(sock->getAddr()->getAddr(), anycast, 16) ) {
+            Log(Debug) << "Received data on address " << myPlainAddr << ", expected "
                    << *sock->getAddr() << ", message ignored." << LogEnd;
-	    bufsize = 0;
-	    return 0;
-    }  
+            bufsize = 0;
+            return 0;
+    }
 #endif
 
     bufsize = result;
@@ -240,7 +243,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
  * returns interface count
  */
 int TIfaceMgr::countIface() {
-	return IfaceLst.count();
+        return IfaceLst.count();
 }
 
 /*
@@ -267,77 +270,58 @@ string TIfaceMgr::printMac(char * mac, int macLen) {
     unsigned char x;
 
     for (i=0; i<macLen; i++) {
-	if (i)
-	    tmp << ":";
-	tmp << hex;
-	tmp.fill('0');
-	tmp.width(2);
-	x = (unsigned char) mac[i];
-	tmp << (unsigned int)x;
+        if (i)
+            tmp << ":";
+        tmp << hex;
+        tmp.fill('0');
+        tmp.width(2);
+        x = (unsigned char) mac[i];
+        tmp << (unsigned int)x;
     }
     return tmp.str();
 }
 
-/// adds parameter to parameters list
-///
-/// @param param pointer to table
-/// @param offset offset in table
-/// @param value value to be copied
-///
-/// @return next unused offset
-///
-int TIfaceMgr::addParam(char ** param, int offset, const char * value)
+void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix )
 {
-    param[offset] = new char[strlen(value)+1];
-    strncpy(param[offset], value, strlen(value)+1);
-    return ++offset;
+    stringstream tmp;
+    if (txtPrefix.length()) {
+        tmp << txtPrefix << "_";
+    }
+    tmp << "OPTION" << opt->getOptType() << "=\"" << opt->getPlain() << "\"";
+    params.addParam(tmp.str().c_str());
 }
 
-void TIfaceMgr::freeParams(char ** param)
+
+
+void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply)
 {
-    int offset = 0;
-    while (param[offset] != NULL) {
-        delete [] param[offset];
-        param[offset] = 0;
-        offset++;
+    TNotifyScriptParams* params = (TNotifyScriptParams*)reply->getNotifyScriptParams();
+    if (params) {
+        notifyScripts(scriptName, question, reply, *params);
+    } else {
+        TNotifyScriptParams par;
+        notifyScripts(scriptName, question, reply, par);
     }
 }
 
-int TIfaceMgr::optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt)
-{
-	stringstream tmp;
-	tmp.str("");
-    tmp << "OPTION" << opt->getOptType() << "=\"" << opt->getPlain() << "\"";
-    envCnt = addParam(env, envCnt, tmp.str().c_str());
-	return envCnt;
-}
-
-void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply)
+void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply,
+                              TNotifyScriptParams& params)
 {
     if (!scriptName.length()) {
         Log(Debug) << "Not executing external script (Notify script disabled)." << LogEnd;
         return;
     }
-
-    string action;
-
-    char * params[512];
-    char * env[512];
-    int paramCnt = 0;
-    int envCnt = 0;
-
+    
+    const char * argv[3];
+ 
     stringstream tmp;
-
-    for (int i=0; i<512; i++) {
-        params[i]=0;
-        env[i]=0;
-    }
+    string action;
 
     // get PATH
     char * path = getenv("PATH");
     if (path) {
         tmp << "PATH=" << path;
-        envCnt = addParam(env, envCnt, tmp.str().c_str());
+        params.addParam(tmp.str().c_str());
         tmp.str("");
     }
 
@@ -351,16 +335,19 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
         action = "delete";
         break;
     case RENEW_MSG:
-
+    case REBIND_MSG:
+        action = "update";
         break;
     default:
-        Log(Debug) << "Script execution skipped for " << reply->getName() << " response to " << question->getName() << LogEnd;
+        Log(Debug) << "Script execution skipped for " << reply->getName() << " response to " << question->getName() 
+                   << ". No action needed for this type of message." << LogEnd;
         return;
     }
 
     // parameters: [0] - script name, [1] - action (add, modify, delete)
-    paramCnt = addParam(params, paramCnt, scriptName.c_str());
-    paramCnt = addParam(params, paramCnt, action.c_str());
+    argv[0] = scriptName.c_str();
+    argv[1] = action.c_str();
+    argv[2] = NULL;
 
     int ifindex = reply->getIface();
     SPtr<TIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
@@ -370,32 +357,45 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
     }
 
     tmp << "IFACE=" << iface->getName();
-    envCnt = addParam(env, envCnt, tmp.str().c_str());
+    params.addParam(tmp.str().c_str());
 
     tmp.str("");
     tmp << "IFINDEX=" << dec << (int)iface->getID();
-    envCnt = addParam(env, envCnt, tmp.str().c_str());
+    params.addParam(tmp.str().c_str());
 
     tmp.str("");
     tmp << "REMOTE_ADDR=" << reply->getAddr()->getPlain();
-    envCnt = addParam(env, envCnt, tmp.str().c_str());
+    params.addParam(tmp.str().c_str());
 
-    int ipCnt=1;
-    int pdCnt=1;
     SPtr<TIPv6Addr> ip;
 
+    // add options from server REPLY
     reply->firstOption();
     while ( SPtr<TOpt> opt = reply->getOption() ) {
-		envCnt = optionToEnv(env, envCnt, ipCnt, pdCnt, opt);
+        optionToEnv(params, opt, "SRV");
     }
 
-    Log(Debug) << "About to execute " << scriptName << " script, " << paramCnt << " parameters, " << envCnt << " variables." << LogEnd;
-    int returnCode = execute(scriptName.c_str(), params, env);
-    freeParams(params);
-    freeParams(env);
+#if 0
+    // add options from client message
+    question->firstOption();
+    while( SPtr<TOpt> opt = question->getOption() ) {
+        optionToEnv(params, opt, "CLNT");
+    }
+#endif
 
-    Log(Info) << "Script execution complete, return code=" << returnCode << LogEnd;
+    Log(Debug) << "About to execute " << scriptName << " script, "
+               << params.envCnt << " variables." << LogEnd;
+    int returnCode = execute(scriptName.c_str(), argv, params.env);
+
+    if (returnCode>=0) {
+        Log(Debug) << "Script execution complete, return code=" << returnCode << LogEnd;
+    } else {
+        // negative return code, something went wrong
+        Log(Warning) << "Script execution failed, return code=" << returnCode << LogEnd;
+    }
 }
+
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
@@ -411,7 +411,7 @@ ostream & operator <<(ostream & strum, TIfaceMgr &x)
     while ( ptr=x.IfaceLst.get() ) {
         strum << *ptr;
     }
-    
+
     strum << "</IfaceMgr>" << endl;
     return strum;
 }

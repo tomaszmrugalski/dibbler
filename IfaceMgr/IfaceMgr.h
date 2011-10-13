@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: IfaceMgr.h,v 1.9 2008-08-29 00:07:30 thomson Exp $
- *
  */
 
 class TIfaceMgr;
@@ -16,6 +14,7 @@ class TIfaceMgr;
 
 #include "SmartPtr.h"
 #include "Container.h"
+#include "ScriptParams.h"
 
 #include "Iface.h"
 
@@ -43,13 +42,13 @@ class TIfaceMgr {
     bool isDone();
 
     void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer);
+    void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer,
+                       TNotifyScriptParams& params);
 
     ~TIfaceMgr();
 
  protected:
-    static int addParam(char ** param, int offset, const char * value);
-    static void freeParams(char ** param);
-	virtual int optionToEnv(char **env, int envCnt, int& ipCnt, int& pdCnt, SPtr<TOpt> opt);
+    virtual void optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix );
 
     string XmlFile;
     List(TIfaceIface) IfaceLst; //Interface list
