@@ -195,7 +195,7 @@ dnl ---------------------------------------------
       PORT_CFLAGS=
       PORT_LDFLAGS="-lpthread"
       ;;
-    Darwin | FreeBSD)
+    Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=

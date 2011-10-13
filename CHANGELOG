@@ -17,6 +17,7 @@
   - FreeBSD support added (not tested yet, consider it experimental)
   - Makefile system rewritten (using autotools now for better portability)
   - Srv: server now calls external script when assigning or releasing delegated prefix (bug #205)
+  - NetBSD support added (not tested yet, consider it experimental)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems
