@@ -16,7 +16,6 @@ tentative plans for 0.9.0:
 1.0.0
 - remaining RFC3315 features (M,O bits)
 - Bulk Leasequery
-
 - Fix references in User's guide
 - Describe MOD_REMOTE_AUTOCONF Remote autoconf extension in Developer's Guide
 - Describe MOD_CLNT_CONFIRM in Developer's Guide
