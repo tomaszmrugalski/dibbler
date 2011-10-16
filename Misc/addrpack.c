@@ -347,7 +347,7 @@ uint64_t ntohll(uint64_t n) {
 /// @param buf pointer to first byte of buffer
 ///
 /// @return read 16-bits value
-inline uint16_t readUint16(BUFFER_TYPE * buf) {
+inline uint16_t readUint16(const BUFFER_TYPE * buf) {
     uint16_t value = ( ((uint16_t)buf[0]) << 8) + buf[1];
     return value;
 }
@@ -373,7 +373,7 @@ inline BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word) {
 /// @param buf pointer to first address of buffer
 ///
 /// @return read value
-inline uint32_t readUint32(BUFFER_TYPE * buf) {
+inline uint32_t readUint32(const BUFFER_TYPE * buf) {
     uint16_t value = ( ( (uint32_t)(buf[0]) ) << 24)
         + ( ( (uint32_t)(buf[1])) << 16)
         + ( ( (uint32_t)(buf[2])) << 8) + buf[3];

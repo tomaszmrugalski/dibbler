@@ -68,9 +68,9 @@ uint8_t* writeUint32(uint8_t* buf, uint32_t dword); */
 #ifdef __cplusplus 
 extern "C" {
 #endif
-    uint16_t readUint16(BUFFER_TYPE * buf);
+    uint16_t readUint16(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
-    uint32_t readUint32(BUFFER_TYPE * buf);
+    uint32_t readUint32(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
 #ifdef __cplusplus 
 }
