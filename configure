@@ -19724,8 +19724,7 @@ $as_echo "#define HAVE_GTEST 1" >>confdefs.h
 
 fi
 
-
-ac_config_files="$ac_config_files AddrMgr/tests/Makefile"
+ac_config_files="$ac_config_files AddrMgr/tests/Makefile Options/tests/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -20873,6 +20872,7 @@ do
     "poslib/Makefile") CONFIG_FILES="$CONFIG_FILES poslib/Makefile" ;;
     "$PORT_SUBDIR/Makefile") CONFIG_FILES="$CONFIG_FILES $PORT_SUBDIR/Makefile" ;;
     "AddrMgr/tests/Makefile") CONFIG_FILES="$CONFIG_FILES AddrMgr/tests/Makefile" ;;
+    "Options/tests/Makefile") CONFIG_FILES="$CONFIG_FILES Options/tests/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -23570,6 +23570,7 @@ do
     "poslib/Makefile") CONFIG_FILES="$CONFIG_FILES poslib/Makefile" ;;
     "$PORT_SUBDIR/Makefile") CONFIG_FILES="$CONFIG_FILES $PORT_SUBDIR/Makefile" ;;
     "AddrMgr/tests/Makefile") CONFIG_FILES="$CONFIG_FILES AddrMgr/tests/Makefile" ;;
+    "Options/tests/Makefile") CONFIG_FILES="$CONFIG_FILES Options/tests/Makefile" ;;
     "Port-linux/Makefile") CONFIG_FILES="$CONFIG_FILES Port-linux/Makefile" ;;
     "Port-bsd/Makefile") CONFIG_FILES="$CONFIG_FILES Port-bsd/Makefile" ;;
 
