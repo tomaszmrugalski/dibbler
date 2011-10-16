@@ -41,6 +41,5 @@ char * TOptAddr::storeSelf(char* buf) {
     buf+=2;
     *(uint16_t*)buf = htons( getSize()-4 );
     buf+=2;
-    this->Addr->storeSelf(buf);
-    return buf;
+    return Addr->storeSelf(buf);
 }

@@ -1,3 +1,5 @@
+SUBDIRS = . tests
+
 noinst_LIBRARIES = libOptions.a
 
 libOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Messages

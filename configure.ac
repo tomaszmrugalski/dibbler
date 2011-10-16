@@ -427,8 +427,7 @@ if test "$gtest_path" != "no"; then
   AC_DEFINE(HAVE_GTEST, 1, [Defines if google test is available and should be used])
 fi
 
-
-AC_OUTPUT(AddrMgr/tests/Makefile)
+AC_OUTPUT(AddrMgr/tests/Makefile Options/tests/Makefile)
 
 AM_CONDITIONAL(HAVE_GTEST, test $gtest_path != "no")
 
