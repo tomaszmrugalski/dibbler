@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "Portable.h"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -163,8 +164,10 @@ char * inet_ntop4(const char * src, char * dst)
 }
 
 
-char * inet_ntop6(const unsigned char * src, char * dst)
+char * inet_ntop6(const char * src2, char * dst)
 {
+    const unsigned char* src = (unsigned char*)src2;
+
 	char tmp[sizeof "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"], *tp;
 	struct { int base, len; } best, cur;
 	u_int words[NS_IN6ADDRSZ / NS_INT16SZ];
@@ -344,7 +347,7 @@ uint64_t ntohll(uint64_t n) {
 /// @param buf pointer to first byte of buffer
 ///
 /// @return read 16-bits value
-inline uint16_t readUint16(uint8_t* buf) {
+inline uint16_t readUint16(BUFFER_TYPE * buf) {
     uint16_t value = ( ((uint16_t)buf[0]) << 8) + buf[1];
     return value;
 }
@@ -357,7 +360,7 @@ inline uint16_t readUint16(uint8_t* buf) {
 /// @param word 16-bits value to be stored
 ///
 /// @return pointer to the next byte after stored value
-inline uint8_t* writeUint16(uint8_t* buf, uint16_t word) {
+inline BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word) {
     buf[0] = (uint8_t)( (word >> 8) & 0xff );
     buf[1] = (uint8_t)( (word) & 0xff );
     return buf + sizeof(uint16_t);
@@ -370,7 +373,7 @@ inline uint8_t* writeUint16(uint8_t* buf, uint16_t word) {
 /// @param buf pointer to first address of buffer
 ///
 /// @return read value
-inline uint32_t readUint32(uint8_t* buf) {
+inline uint32_t readUint32(BUFFER_TYPE * buf) {
     uint16_t value = ( ( (uint32_t)(buf[0]) ) << 24)
         + ( ( (uint32_t)(buf[1])) << 16)
         + ( ( (uint32_t)(buf[2])) << 8) + buf[3];
@@ -385,7 +388,7 @@ inline uint32_t readUint32(uint8_t* buf) {
 /// @param word 32-bits value to be stored
 ///
 /// @return pointer to the next byte after stored value
-inline uint8_t* writeUint32(uint8_t* buf, uint32_t dword) {
+inline BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword) {
     buf[0] = (uint8_t)( (dword >> 24) & 0xff );
     buf[1] = (uint8_t)( (dword >> 16) & 0xff );
     buf[2] = (uint8_t)( (dword >> 8) & 0xff );

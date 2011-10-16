@@ -55,10 +55,26 @@
 #include <stdint.h>
 #endif
 
+/* this should look like this: 
 uint16_t readUint16(uint8_t* buf);
 uint8_t * writeUint16(uint8_t* buf, uint16_t word);
 uint32_t readUint32(uint8_t* buf);
-uint8_t* writeUint32(uint8_t* buf, uint32_t dword);
+uint8_t* writeUint32(uint8_t* buf, uint32_t dword); */
+
+/* due to poor type usage (char* instead of uint8_t*), we need to stick with
+   char* for now. Changing to uint8_t would require rewriting large parts of the code */
+#define BUFFER_TYPE char
+
+#ifdef __cplusplus 
+extern "C" {
+#endif
+    uint16_t readUint16(BUFFER_TYPE * buf);
+    BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
+    uint32_t readUint32(BUFFER_TYPE * buf);
+    BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
+#ifdef __cplusplus 
+}
+#endif
 
 #define DEFAULT_UMASK 027
 
@@ -91,7 +107,7 @@ struct iface {
 struct link_state_notify_t
 {
     int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. 
-						    Only non-zero values will be used */
+                                                    Only non-zero values will be used */
     int stat[MAX_LINK_STATE_CHANGES_AT_ONCE];
     int cnt;  /* number of iterface indexes filled */
 };
@@ -271,7 +287,7 @@ extern "C" {
 
     /* add address to interface */
     extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
-			  unsigned long pref, unsigned long valid, int prefixLength);
+unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 			     unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);

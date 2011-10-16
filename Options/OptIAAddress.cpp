@@ -17,7 +17,7 @@
 #include "Opt.h"
 #include "OptIAAddress.h"
 
-TOptIAAddress::TOptIAAddress( char * &buf, int &n, TMsg* parent)
+TOptIAAddress::TOptIAAddress(const char * buf, int n, TMsg* parent)
 	:TOpt(OPTION_IAADDR, parent)
 {
     this->ValidOpt=false;

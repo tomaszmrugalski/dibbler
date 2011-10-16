@@ -19,7 +19,6 @@
 #define OPTSERVERUNICAST_H
 
 #include "Opt.h"
-#include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "IPv6Addr.h"
 

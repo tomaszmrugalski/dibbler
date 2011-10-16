@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "OptAddr.h"
 
@@ -10,7 +11,7 @@ const char expected[] = { 0, 12, // OPTION_UNICAST
                           0x20, 0x1, 0x0d, 0xb8, 0, 1, 0, 0,
                           0, 0, 0, 0, 0xde, 0xad, 0xbe, 0xef };
 
-TEST(OptAddrTest, simple) {
+TEST(OptAddrTest, storeSelf) {
     char buf[128];
 
     SPtr<TIPv6Addr> addr = new TIPv6Addr("2001:db8:1::dead:beef", true);
