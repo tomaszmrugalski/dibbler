@@ -37,16 +37,20 @@ DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
     if (updateMode==DNSUPDATE_AAAA || updateMode==DNSUPDATE_AAAA_CLEANUP) {
 	splitHostDomain(hostname);
     } else {
-	_hostname=new char[hostname.length()+1];
-	strcpy(_hostname,hostname.c_str());
+        int len = hostname.length()+1;
+        _hostname=new char[len];
+        strlcpy(_hostname,hostname.c_str(), len);
 	zoneroot = new domainname(zonename.c_str());
     }
     
     txt_to_addr(&server,dns_address.c_str());
-    this->hostip = new char[hostip.length()+1];
-    strcpy(this->hostip,hostip.c_str());
-    this->ttl=new char[strlen(DNSUPDATE_DEFAULT_TTL)+1];
-    strcpy(this->ttl,DNSUPDATE_DEFAULT_TTL);
+    int len = hostip.length()+1;
+    this->hostip = new char[len];
+    strlcpy(this->hostip,hostip.c_str(), len);
+    
+    len = strlen(DNSUPDATE_DEFAULT_TTL)+1;
+    this->ttl=new char[len];
+    strlcpy(this->ttl,DNSUPDATE_DEFAULT_TTL, len);
     this->updateMode = updateMode;
     _proto = proto;
 }
@@ -77,8 +81,9 @@ void DNSUpdate::splitHostDomain(string fqdnName) {
     if (dotpos == string::npos) {
 	Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
 		     << "]." << LogEnd;
-	_hostname = new char[fqdnName.length()+1];
-	strcpy(_hostname, fqdnName.c_str());
+	int len = fqdnName.length()+1;
+	_hostname = new char[len];
+	strlcpy(_hostname, fqdnName.c_str(), len);
     }
     else {
 	string hostname = fqdnName.substr(0, dotpos);
