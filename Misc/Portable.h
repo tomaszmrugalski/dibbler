@@ -55,6 +55,11 @@
 #include <stdint.h>
 #endif
 
+uint16_t readUint16(uint8_t* buf);
+uint8_t * writeUint16(uint8_t* buf, uint16_t word);
+uint32_t readUint32(uint8_t* buf);
+uint8_t* writeUint32(uint8_t* buf, uint32_t dword);
+
 #define DEFAULT_UMASK 027
 
 /**********************************************************************/
