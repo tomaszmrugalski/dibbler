@@ -529,7 +529,7 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
     unsigned int len = (unsigned int)strlen(str);
     bool found = false;
 
-    strlcpy(fileout,filename,512);
+    strncpy(fileout,filename,511);
 
     if ( !(f=fopen(filename,"r"))) {
 	Log(Debug) << "Unable to open file " << filename <<" while trying to delete " << str 

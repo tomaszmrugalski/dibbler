@@ -39,18 +39,18 @@ DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
     } else {
         int len = hostname.length()+1;
         _hostname=new char[len];
-        strlcpy(_hostname,hostname.c_str(), len);
+        strncpy(_hostname,hostname.c_str(), len-1);
 	zoneroot = new domainname(zonename.c_str());
     }
     
     txt_to_addr(&server,dns_address.c_str());
     int len = hostip.length()+1;
     this->hostip = new char[len];
-    strlcpy(this->hostip,hostip.c_str(), len);
+    strncpy(this->hostip,hostip.c_str(), len-1);
     
     len = strlen(DNSUPDATE_DEFAULT_TTL)+1;
     this->ttl=new char[len];
-    strlcpy(this->ttl,DNSUPDATE_DEFAULT_TTL, len);
+    strncpy(this->ttl,DNSUPDATE_DEFAULT_TTL, len-1);
     this->updateMode = updateMode;
     _proto = proto;
 }
@@ -83,7 +83,7 @@ void DNSUpdate::splitHostDomain(string fqdnName) {
 		     << "]." << LogEnd;
 	int len = fqdnName.length()+1;
 	_hostname = new char[len];
-	strlcpy(_hostname, fqdnName.c_str(), len);
+	strncpy(_hostname, fqdnName.c_str(), len -1);
     }
     else {
 	string hostname = fqdnName.substr(0, dotpos);
