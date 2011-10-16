@@ -336,3 +336,59 @@ uint64_t ntohll(uint64_t n) {
     return (((uint64_t)ntohl(n)) << 32) + ntohl(n >> 32);
 #endif
 }
+
+/// @brief reads uint16_t from buffer in a portable way
+///
+/// Buffer must be at least 2 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+///
+/// @return read 16-bits value
+inline uint16_t readUint16(uint8_t* buf) {
+    uint16_t value = ( ((uint16_t)buf[0]) << 8) + buf[1];
+    return value;
+}
+
+/// @brief stores uint16_t to a buffer in a portable way
+///
+/// Buffer must be at least 2 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+/// @param word 16-bits value to be stored
+///
+/// @return pointer to the next byte after stored value
+inline uint8_t* writeUint16(uint8_t* buf, uint16_t word) {
+    buf[0] = (uint8_t)( (word >> 8) & 0xff );
+    buf[1] = (uint8_t)( (word) & 0xff );
+    return buf + sizeof(uint16_t);
+}
+
+/// @brief reads uint16_t from buffer in a portable way
+///
+/// Buffer must be at least 2 bytes long.
+///
+/// @param buf pointer to first address of buffer
+///
+/// @return read value
+inline uint32_t readUint32(uint8_t* buf) {
+    uint16_t value = ( ( (uint32_t)(buf[0]) ) << 24)
+        + ( ( (uint32_t)(buf[1])) << 16)
+        + ( ( (uint32_t)(buf[2])) << 8) + buf[3];
+    return value;
+}
+
+/// @brief stores uint32_t to a buffer in a portable way
+///
+/// Buffer must be at least 4 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+/// @param word 32-bits value to be stored
+///
+/// @return pointer to the next byte after stored value
+inline uint8_t* writeUint32(uint8_t* buf, uint32_t dword) {
+    buf[0] = (uint8_t)( (dword >> 24) & 0xff );
+    buf[1] = (uint8_t)( (dword >> 16) & 0xff );
+    buf[2] = (uint8_t)( (dword >> 8) & 0xff );
+    buf[3] = (uint8_t)( (dword) & 0xff );
+    return buf + sizeof(uint32_t);
+}
