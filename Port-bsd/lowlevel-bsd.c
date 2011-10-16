@@ -30,6 +30,8 @@
 #include <net/if.h>
 #include "Portable.h"
 
+#include "dibbler-config.h"
+
 #ifdef OPENBSD
 #include "sys/uio.h"
 #endif
@@ -62,7 +64,7 @@ void if_list_release(struct iface * list) {
 void if_print(struct iface * iface_ptr) {
     int tmp, tmpInt = 0;
 
-    printf("Interface %s, index=%i type=%x flags=%x\n", iface_ptr->name, iface_ptr->id, 
+    printf("Interface %s, index=%i type=%x flags=%x\n", iface_ptr->name, iface_ptr->id,
            iface_ptr->hardwareType, iface_ptr->flags);
     printf("\tLink layer Length: %x Addr:", iface_ptr->maclen);
     for (tmp = 0; tmp < iface_ptr->maclen; tmp++) {
@@ -73,8 +75,8 @@ void if_print(struct iface * iface_ptr) {
     for (tmp = 0; tmp < iface_ptr->linkaddrcount; tmp++) {
         printf("\t%i=", tmp);
         for (tmpInt = 0; tmpInt < 16; tmpInt += 2) {
-            printf("%02x%02x:", 
-                   (unsigned char) iface_ptr->linkaddr[tmpInt + tmp * 16], 
+            printf("%02x%02x:",
+                   (unsigned char) iface_ptr->linkaddr[tmpInt + tmp * 16],
                    (unsigned char) iface_ptr->linkaddr[tmpInt + 1 + tmp * 16]);
         }
         printf("\n");
@@ -88,8 +90,8 @@ void if_print(struct iface * iface_ptr) {
     for (tmp = 0; tmp < iface_ptr->globaladdrcount; tmp++) {
         printf("\t%i=", tmp);
         for (tmpInt = 0; tmpInt < 16; tmpInt += 2) {
-            printf("%02x%02x:", 
-                   (unsigned char) iface_ptr->globaladdr[tmpInt+ tmp * 16], 
+            printf("%02x%02x:",
+                   (unsigned char) iface_ptr->globaladdr[tmpInt+ tmp * 16],
                    (unsigned char) iface_ptr->globaladdr[tmpInt + 1 + tmp * 16]);
         }
         printf("\n");
@@ -144,13 +146,13 @@ struct iface * if_list_get() {
         if (!iface_ptr) { // interface with that name not found, let's add one!
             iface_ptr = malloc(sizeof(struct iface));
             memset(iface_ptr, 0, sizeof(struct iface));
-            
+
             strlcpy(iface_ptr->name, addr_ptr->ifa_name, MAX_IFNAME_LENGTH);
             iface_ptr->id = if_nametoindex(iface_ptr->name);
             iface_ptr->flags = addr_ptr->ifa_flags;
-            printf("Detected interface %s, ifindex=%d, flags=%d\n", 
+            printf("Detected interface %s, ifindex=%d, flags=%d\n",
                    iface_ptr->name, iface_ptr->id, iface_ptr->flags);
-            
+
             // add this new structure to the end of the interfaces list
             iface_lst = if_list_add(iface_lst, iface_ptr);
         }
@@ -165,7 +167,7 @@ struct iface * if_list_get() {
 
     // for each address...
     for (addr_ptr = addrs_lst; addr_ptr != NULL; addr_ptr = addr_ptr->ifa_next) {
-        for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr = iface_ptr->next) { 
+        for (iface_ptr = iface_lst; iface_ptr != NULL; iface_ptr = iface_ptr->next) {
             // ... find its corresponding interface
             if (strncmp(iface_ptr->name, addr_ptr->ifa_name, strlen(addr_ptr->ifa_name)))
                 continue;
@@ -175,7 +177,7 @@ struct iface * if_list_get() {
                 case AF_INET6:
                     {
                         char * ptr = (char*)(&((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr);
-                        if (ptr[0] == 0xfe && ptr[1] == 0x80) { // link-local IPv6 address 
+                        if (ptr[0] == 0xfe && ptr[1] == 0x80) { // link-local IPv6 address
                             char * addrs = malloc( (iface_ptr->linkaddrcount+1)*16);
                             memcpy(addrs, iface_ptr->linkaddr, 16*iface_ptr->linkaddrcount);
                             memcpy(addrs + 16*iface_ptr->linkaddrcount, ptr, 16);
@@ -196,7 +198,7 @@ struct iface * if_list_get() {
                     {
                         struct sockaddr_dl *linkInfo;
                         linkInfo = (struct sockaddr_dl *) addr_ptr->ifa_addr;
-                        
+
                         // Note: sdl_type is unsigned character; hardwareType is integer
                         iface_ptr->hardwareType = linkInfo->sdl_type;
                         if (linkInfo->sdl_alen > 1) {
@@ -294,12 +296,20 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
         return LOWLEVEL_ERROR_UNSPEC;
     }
 
-    /* FreeBSD, Mac OS X: require? */
+    /* Mac OS X have IPV6_PKTINFO only */
     /* OpenBSD, NetBSD require IPV6_RECVPKTINFO */
+#if (HAVE_DECL_IPV6_RECVPKTINFO == 0) && (HAVE_DECL_IPV6_PKTINFO == 0)
+#error "Both IPV6_RECVPKTINFO and IPV6_PKTINFO not defined. Need at least one of them"
+#endif
 
     /* Set the options to receive info about ipv6 traffic */
+#if HAVE_DECL_IPV6_RECVPKTINFO == 1
     if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof (on)) < 0)
-    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof(on)) < 0) {
+#endif
+#if HAVE_DECL_IPV6_PKTINFO == 1
+    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof(on)) < 0)
+#endif
+    {
         sprintf(Message, "Failed to set up socket option (tried both IPV6_RECVPKTINFO and IPV6_PKTINFO).");
         return LOWLEVEL_ERROR_SOCK_OPTS;
     }
@@ -326,7 +336,7 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
     bzero(&bindme, sizeof (struct sockaddr_in6));
     bindme.sin6_family = AF_INET6;
     bindme.sin6_port = htons(port);
-    /* Bind to interface using scope_id */ 
+    /* Bind to interface using scope_id */
     bindme.sin6_scope_id = ifaceid;
     tmp = (char*) (&bindme.sin6_addr);
     inet_pton6(addr, tmp);
@@ -522,9 +532,9 @@ char * error_message() {
 }
 
 
-/** 
+/**
  * begin link monitoring
- * 
+ *
  * @param monitored_links head of the monitored links list
  * @param notify pointer to variable that is going to be modifed if change is detected
  */
@@ -534,9 +544,9 @@ void link_state_change_init(volatile struct link_state_notify_t * monitored_link
     return;
 }
 
-/** 
+/**
  * cleanup code for link state monitoring
- * 
+ *
  */
 void link_state_change_cleanup()
 {

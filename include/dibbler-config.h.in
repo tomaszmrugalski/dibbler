@@ -21,6 +21,14 @@
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
 
+/* Define to 1 if you have the declaration of `IPV6_PKTINFO', and to 0 if you
+   don't. */
+#undef HAVE_DECL_IPV6_PKTINFO
+
+/* Define to 1 if you have the declaration of `IPV6_RECVPKTINFO', and to 0 if
+   you don't. */
+#undef HAVE_DECL_IPV6_RECVPKTINFO
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

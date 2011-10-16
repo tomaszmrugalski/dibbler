@@ -43,6 +43,19 @@ AC_CHECK_HEADERS(slist ext/slist)
   fi
 
 
+AC_CHECK_DECLS([IPV6_PKTINFO],,,[
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <netinet/ip.h>
+])
+AC_CHECK_DECLS([IPV6_RECVPKTINFO],,,[
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_INLINE
