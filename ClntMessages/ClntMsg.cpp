@@ -10,16 +10,9 @@
  * $Id: ClntMsg.cpp,v 1.42 2008-11-13 22:40:26 thomson Exp $
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
-
 #include <cmath>
 #include <sstream>
-
+#include "Portable.h"
 #include "ClntCfgMgr.h"
 
 #include "ClntMsg.h"

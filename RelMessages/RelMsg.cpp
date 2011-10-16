@@ -6,21 +6,11 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelMsg.cpp,v 1.7 2009-03-24 01:18:11 thomson Exp $
- *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined (LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 #include "Logger.h"
 #include "RelMsg.h"
-
-// --- options ---
 #include "RelOptInterfaceID.h"
 #include "RelOptRelayMsg.h"
 #include "RelOptGeneric.h"

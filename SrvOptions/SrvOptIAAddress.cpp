@@ -1,34 +1,14 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvOptIAAddress.cpp,v 1.5 2008-08-29 00:07:36 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
  *
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2004-10-27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
  *
- * Revision 1.3  2004/10/25 20:45:54  thomson
- * Option support, parsers rewritten. ClntIfaceMgr now handles options.
+ * released under GNU GPL v2 only licence
  *
- * Revision 1.2  2004/06/17 23:53:55  thomson
- * Server Address Assignment rewritten.
- *
- *                                                                           
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "Opt.h"
 #include "OptIAAddress.h"

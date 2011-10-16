@@ -7,10 +7,9 @@
  * released under GNU GPL v2 only licence
  */
 
+
 #include <stdlib.h>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "SrvOptClientIdentifier.h"
 

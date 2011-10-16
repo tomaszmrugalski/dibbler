@@ -9,13 +9,7 @@
  * $Id: OptTA.cpp,v 1.2 2006-03-05 21:37:46 thomson Exp $
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 #include "OptTA.h"
 #include "OptIAAddress.h"
 #include "OptStatusCode.h"

@@ -18,14 +18,7 @@
 #include "RelMsgRelayForw.h"
 #include "RelMsgRelayRepl.h"
 #include "RelOptInterfaceID.h"
-
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 
 TRelIfaceMgr * TRelIfaceMgr::Instance = 0;
 

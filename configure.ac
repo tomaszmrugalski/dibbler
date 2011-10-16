@@ -201,6 +201,12 @@ dnl ---------------------------------------------
       PORT_CFLAGS=
       PORT_LDFLAGS=
       ;;
+    OpenBSD)
+      ARCH="BSD"
+      PORT_SUBDIR="Port-bsd"
+      PORT_CFLAGS=-DOPENBSD
+      PORT_LDFLAGS=
+      ;;
     MINGW32*)
       ARCH="WIN2K"
       PORT_LDFLAGS = "-lws2_32"

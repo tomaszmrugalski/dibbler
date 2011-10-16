@@ -11,13 +11,13 @@
  */
 
 #include <stdio.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <string.h>
 #include <time.h>
 #include <errno.h>
@@ -29,6 +29,10 @@
 #include <net/if_dl.h>
 #include <net/if.h>
 #include "Portable.h"
+
+#ifdef OPENBSD
+#include "sys/uio.h"
+#endif
 
 #define LOWLEVEL_DEBUG 1
 

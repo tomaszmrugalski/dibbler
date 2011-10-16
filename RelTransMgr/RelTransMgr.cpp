@@ -21,14 +21,7 @@
 #include "RelOptEcho.h"
 #include "RelOptGeneric.h"
 #include "Logger.h"
-
-#if defined(WIN32)
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 
 TRelTransMgr * TRelTransMgr::Instance = 0; // singleton implementation
 

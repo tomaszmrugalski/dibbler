@@ -12,16 +12,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-// #include <arpa/inet.h>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
-#include <sstream>
 #include "Portable.h"
+#include <sstream>
 #include "DHCPConst.h"
 #include "OptGeneric.h"
 

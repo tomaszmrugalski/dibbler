@@ -8,13 +8,8 @@
  *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
 #include <stdlib.h>
+#include "Portable.h"
 #include "OptAAAAuthentication.h"
 #include "DHCPConst.h"
 #include "Portable.h"
