@@ -6,17 +6,9 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptIAAddress.cpp,v 1.8 2008-08-29 00:07:29 thomson Exp $
- *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
-
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "Opt.h"
 #include "OptIAAddress.h"

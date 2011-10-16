@@ -16,13 +16,6 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
 TOptOptionRequest::TOptOptionRequest(TMsg* parent)
 	:TOpt(OPTION_ORO, parent)
 {

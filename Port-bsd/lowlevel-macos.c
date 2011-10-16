@@ -11,13 +11,13 @@
  */
 
 #include <stdio.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <string.h>
 #include <time.h>
 #include <errno.h>
@@ -29,6 +29,10 @@
 #include <net/if_dl.h>
 #include <net/if.h>
 #include "Portable.h"
+
+#ifdef OPENBSD
+#include "sys/uio.h"
+#endif
 
 #define LOWLEVEL_DEBUG 1
 
@@ -290,10 +294,13 @@ int sock_add(char * ifacename, int ifaceid, char * addr, int port,
         return LOWLEVEL_ERROR_UNSPEC;
     }
 
-    /* this part looks like Linux only code */
-    /* Set the options  to receive ipv6 traffic */
-    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof (on)) < 0) {
-        sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
+    /* FreeBSD, Mac OS X: require? */
+    /* OpenBSD, NetBSD require IPV6_RECVPKTINFO */
+
+    /* Set the options to receive info about ipv6 traffic */
+    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof (on)) < 0)
+    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_PKTINFO, &on, sizeof(on)) < 0) {
+        sprintf(Message, "Failed to set up socket option (tried both IPV6_RECVPKTINFO and IPV6_PKTINFO).");
         return LOWLEVEL_ERROR_SOCK_OPTS;
     }
 

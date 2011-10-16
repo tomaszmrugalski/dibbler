@@ -10,14 +10,10 @@
 
 #include <stdlib.h>
 #include <cmath>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
-
 #include "Msg.h"
 #include "Opt.h"
 #include "Logger.h"

@@ -12,12 +12,6 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "OptIAPrefix.h"
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
 
 TOptIAPrefix::TOptIAPrefix( char * &buf, int &n, TMsg* parent)
 	:TOpt(OPTION_IAPREFIX, parent)

@@ -6,12 +6,7 @@
  * released under GNU GPL v2 licence
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
+#include "Portable.h"
 #include <stdlib.h>
 #include "OptAuthentication.h"
 #include "DHCPConst.h"

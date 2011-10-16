@@ -6,16 +6,9 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptAddr.cpp,v 1.1 2004-10-26 22:36:57 thomson Exp $
- *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
+#include "Portable.h"
 #include "OptAddr.h"
 #include "Logger.h"
 

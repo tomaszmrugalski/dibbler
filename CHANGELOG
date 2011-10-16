@@ -14,9 +14,9 @@
   - Cli: no longer confused when receiving delegated prefix, but there are no suitable interfaces
   - Srv: server now caches assinged prefixes (bug #217)
   - Cli: support for script execution reimplemented (bugs #207, #216)
-  - FreeBSD support added (not tested yet, consider it experimental)
   - Makefile system rewritten (using autotools now for better portability)
   - Srv: server now calls external script when assigning or releasing delegated prefix (bug #205)
+  - FreeBSD,NetBSD,OpenBSD compilation successful (not tested yet, consider it experimental)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

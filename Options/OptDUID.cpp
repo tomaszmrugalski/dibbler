@@ -9,14 +9,7 @@
  */
 
 #include <stdlib.h>
-
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <arpa/inet.h>
-#endif 
-
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "OptDUID.h"
 

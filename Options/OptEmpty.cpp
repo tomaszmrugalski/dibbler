@@ -8,13 +8,7 @@
  *
  */
 #include <stdlib.h>
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-
+#include "Portable.h"
 #include "OptEmpty.h"
 
 TOptEmpty::TOptEmpty(int code, const char * buf,  int n, TMsg* parent)

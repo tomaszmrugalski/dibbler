@@ -18,13 +18,7 @@
 #include "OptGeneric.h"
 #include "Logger.h"
 #include "ReqOpt.h"
-
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
+#include "Portable.h"
 
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
 {

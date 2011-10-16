@@ -15,12 +15,7 @@
 #include "Portable.h"
 #include "OptFQDN.h"
 #include "Logger.h"
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
+#include "Portable.h"
 
 TOptFQDN::TOptFQDN(string domain, TMsg* parent)
 		:TOpt(OPTION_FQDN, parent) {

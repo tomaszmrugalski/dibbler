@@ -12,13 +12,7 @@
  */
 
 #include <sstream>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-
+#include "Portable.h"
 #include "SrvMsg.h"
 #include "SrvTransMgr.h"
 #include "OptEmpty.h"
@@ -35,8 +29,6 @@
 #include "SrvOptLQ.h"
 #include "SrvOptTA.h"
 #include "SrvCfgOptions.h"
-
-// --- options ---
 #include "SrvOptDNSServers.h"
 #include "SrvOptDomainName.h"
 #include "SrvOptNTPServers.h"

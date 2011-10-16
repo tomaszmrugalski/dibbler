@@ -12,12 +12,7 @@
 
 #include <stdlib.h>
 #include <iostream>
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
-#ifdef WIN32
-#include <winsock2.h>
-#endif
+#include "Portable.h"
 #include "OptInteger.h"
 #include "DHCPConst.h"
 

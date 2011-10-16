@@ -45,7 +45,7 @@ class TIfaceMgr {
     void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer,
                        TNotifyScriptParams& params);
 
-    ~TIfaceMgr();
+    virtual ~TIfaceMgr();
 
  protected:
     virtual void optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix );

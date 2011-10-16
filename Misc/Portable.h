@@ -22,9 +22,12 @@
 #define DIBBLER_COPYRIGHT3 "| Licence : GNU GPL v2 only. Developed at Gdansk University of Technology."
 #define DIBBLER_COPYRIGHT4 "| Homepage: http://klub.com.pl/dhcpv6/"
 
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+#if defined(LINUX) || defined(BSD)
+#include <arpa/inet.h>
+#endif
 
 #ifdef WIN32
 #define strcasecmp strcmpi

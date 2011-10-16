@@ -16781,10 +16781,16 @@ $as_echo_n "checking which port is appropriate for this system... " >&6; }
       PORT_CFLAGS=
       PORT_LDFLAGS="-lpthread"
       ;;
-    Darwin | FreeBSD)
+    Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=
+      PORT_LDFLAGS=
+      ;;
+    OpenBSD)
+      ARCH="BSD"
+      PORT_SUBDIR="Port-bsd"
+      PORT_CFLAGS=-DOPENBSD
       PORT_LDFLAGS=
       ;;
     MINGW32*)
