@@ -32,10 +32,8 @@ TOptString::TOptString(int type, const char *buf, unsigned short bufsize, TMsg* 
 
 char * TOptString::storeSelf(char* buf)
 {
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
     memcpy(buf,Str.c_str(),Str.length());
     buf[Str.length()]=0;  // null-terminated
     return buf+this->Str.length()+1;

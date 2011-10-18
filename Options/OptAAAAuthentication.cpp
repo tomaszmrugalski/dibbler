@@ -32,10 +32,9 @@ TOptAAAAuthentication::TOptAAAAuthentication( char * &buf,  int &n, TMsg* parent
         n=0;
         return;
     }
-    this->setAAASPI(ntohl(*(uint32_t*)buf));
-    this->Parent->setAAASPI(ntohl(*(uint32_t*)buf));
-
-    buf +=4; n -=4;
+    this->setAAASPI(readUint32(buf));
+    this->Parent->setAAASPI(readUint32(buf));
+    buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
     if (n != AAAAuthInfoLen)
     {
@@ -79,12 +78,9 @@ TOptAAAAuthentication::TOptAAAAuthentication(TMsg* parent)
 
  char * TOptAAAAuthentication::storeSelf( char* buf)
 {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons(getSize() - 4);
-    buf+=2;
-    *(uint32_t*)buf = htonl(AAASPI);
-    buf+=4;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4);
+    buf = writeUint32(buf, AAASPI);
 
     memset(buf, 0, AAAAuthInfoLen);
 

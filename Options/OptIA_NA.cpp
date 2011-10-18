@@ -48,10 +48,12 @@ TOptIA_NA::TOptIA_NA( char * &buf, int &bufsize, TMsg* parent)
         bufsize=0;
     } else {
         Valid=true;
-        IAID = ntohl(*( long*)buf);
-        T1 = ntohl(*( long*)(buf+4));
-        T2 = ntohl(*( long*)(buf+8));
-        buf+=12; bufsize-=12;
+        IAID = readUint32(buf);
+        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
+        T1 = readUint32(buf);
+        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
+        T2 = readUint32(buf);
+        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
     }
 }
 
@@ -75,18 +77,14 @@ int TOptIA_NA::getSize() {
 }
 
 char * TOptIA_NA::storeSelf( char* buf) {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-    
-    *(uint32_t*)buf = htonl(IAID);
-    buf+=4;
-    *(uint32_t*)buf = htonl(T1);
-    buf+=4;
-    *(uint32_t*)buf = htonl(T2);
-    buf+=4;
-    buf=this->storeSubOpt(buf);
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4 );
+
+    buf = writeUint32(buf, IAID);
+    buf = writeUint32(buf, T1);
+    buf = writeUint32(buf, T2);
+
+    buf = storeSubOpt(buf);
     return buf;
 }
 

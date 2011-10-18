@@ -19,6 +19,7 @@
   - FreeBSD,NetBSD,OpenBSD compilation successful (not tested yet, consider it experimental)
   - Google test framework added for unittests. There are only handful tests implemented now,
     but the number is expected to grow
+  - Fix: alignment memory reads, tested on ARMv5 (bug #221)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

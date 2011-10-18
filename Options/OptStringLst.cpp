@@ -65,10 +65,8 @@ TOptStringLst::TOptStringLst(int type, const char *buf, unsigned short bufsize, 
 char * TOptStringLst::storeSelf(char* buf)
 {
     SPtr<string> x;
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
     int len = 0;
     std::string::size_type dotpos;
    

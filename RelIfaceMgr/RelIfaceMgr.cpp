@@ -167,8 +167,8 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
     // options: only INTERFACEID and RELAY_MSG are allowed
     while (bufsize>=4) {
 
-	unsigned short code = ntohs( *((unsigned short*) (buf)));
-	unsigned short len  = ntohs( *((unsigned short*) (buf+2)));
+	unsigned short code = readUint16(buf);
+	unsigned short len  = readUint16(buf + sizeof(uint16_t));
 	if (len>bufsize) {
 	    Log(Error) << "Message RELAY-REPL truncated. There are " << (bufsize-len) 
 		       << " bytes left to parse. Message dropped." << LogEnd;

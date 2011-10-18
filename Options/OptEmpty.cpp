@@ -24,8 +24,7 @@ TOptEmpty::TOptEmpty(int code, TMsg* parent)
 }
 
  char * TOptEmpty::storeSelf( char* buf) {
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    return buf+2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
+    return buf;
 }

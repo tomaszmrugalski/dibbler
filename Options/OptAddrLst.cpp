@@ -44,10 +44,8 @@ TOptAddrLst::TOptAddrLst(int type, const char* buf, unsigned short bufSize, TMsg
 char * TOptAddrLst::storeSelf(char* buf) {
     SPtr<TIPv6Addr> addr;
 
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
     AddrLst.first();
     while(addr=AddrLst.get())
 	buf=addr->storeSelf(buf);

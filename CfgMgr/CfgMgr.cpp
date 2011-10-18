@@ -252,11 +252,11 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
         duidType = "link-local+time (duid-llt)";
         DUIDlen=macLen+8;
         DUID = new char[DUIDlen];
-        *((u_short*)DUID)=htons(this->DUIDType);
-        *((u_short*)(DUID+2))=htons((short)macType);
+        writeUint16(DUID, this->DUIDType);
+        writeUint16(DUID+2, macType);
         cur_time=now();
-        
-        *(((u_long*)(DUID+4)))=htonl((cur_time-946684800) & 0xFFFFFFFF);
+
+        writeUint32(DUID+4, (cur_time-946684800) & 0xFFFFFFFF);
         /* 946684800=Number of seconds between midnight (UTC), January
            2000 and midnight (UTC), January 1970. It is 30 years.
            7 leap years of 366 days. 23 years of 365 days.
@@ -270,8 +270,8 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
         duidType= "link-local (duid-ll)";
         DUIDlen = macLen+4;
         DUID = new char[DUIDlen];
-        *((u_short*)DUID)=htons(this->DUIDType);
-        *((u_short*)(DUID+2))=htons((short)macType);
+        writeUint16(DUID, this->DUIDType);
+        writeUint16(DUID+2, macType);
         for (int i=0;i<macLen; i++)
           DUID[i+4]=mac[i];
         break;
@@ -281,8 +281,8 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
         duidType="Enterprise Number (duid-en)";
         DUIDlen = 6 + DUIDEnterpriseID->getLen();
         DUID = new char[DUIDlen];
-        *((u_short*)DUID)=htons(this->DUIDType);
-        *(((u_long*)(DUID+2)))=htonl(this->DUIDEnterpriseNumber);
+        writeUint16(DUID, this->DUIDType);
+        writeUint32(DUID+2, this->DUIDEnterpriseNumber);
         this->DUIDEnterpriseID->storeSelf(DUID+6);
         break;
       default:

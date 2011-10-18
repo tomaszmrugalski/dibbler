@@ -118,11 +118,8 @@ int TSrvOptLQClientData::getSize()
 
 char* TSrvOptLQClientData::storeSelf(char* buf)
 {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
     buf = storeSubOpt(buf);
     return buf;
 }

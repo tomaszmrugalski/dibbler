@@ -34,16 +34,15 @@ TOptVendorSpecInfo::TOptVendorSpecInfo(int type, char * buf,  int n, TMsg* paren
 	return;
     }
 
-    this->Vendor = ntohl(*(int*)buf); // enterprise number
-
-    buf += 4;
-    n   -= 4;
+    this->Vendor = readUint32(buf); // enterprise number
+    buf += sizeof(uint32_t);
+    n   -= sizeof(uint32_t);
 
     while (n>=4) {
-        optionCode = ntohs(*(int*)buf);
-        optionLen  =  ntohs(*(int*)(buf+2));
-        buf += 4;
-        n   -= 4;
+        optionCode = readUint16(buf);
+        buf += sizeof(uint16_t); n -= sizeof(uint16_t);
+        optionLen  =  readUint16(buf);
+        buf += sizeof(uint16_t); n -= sizeof(uint16_t);
         if (optionLen>n) {
             Log(Warning) << "Malformed vendor-spec info option. Suboption " << optionCode
                          << " truncated." << LogEnd;
@@ -94,17 +93,14 @@ int TOptVendorSpecInfo::getSize()
 
 char * TOptVendorSpecInfo::storeSelf( char* buf)
 {
-	// option-code OPTION_VENDOR_OPTS (2 bytes long)
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    
+    // option-code OPTION_VENDOR_OPTS (2 bytes long)
+    buf = writeUint16(buf, OptType);
+
     // option-len size of total option-data
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-    
+    buf = writeUint16(buf, getSize()-4);
+
     // enterprise-number (4 bytes long)
-    *(uint32_t*)buf = htonl(this->Vendor);
-    buf+=4;
+    buf = writeUint32(buf, this->Vendor);
 
     SPtr<TOpt> opt;
     firstOption();

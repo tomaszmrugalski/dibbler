@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIAAddress.cpp,v 1.7 2007-08-26 10:26:19 thomson Exp $
- *
  */
 
 //#include <netinet/in.h>
@@ -17,18 +15,18 @@
 #include "Opt.h"
 #include "OptIAAddress.h"
 
-TOptIAAddress::TOptIAAddress(const char * buf, int n, TMsg* parent)
+TOptIAAddress::TOptIAAddress(char * &buf, int& n, TMsg* parent)
 	:TOpt(OPTION_IAADDR, parent)
 {
     ValidOpt=false;
     if (n>=24)
     {
         Addr = new TIPv6Addr(buf);
-        buf += 16;
+        buf += 16; n -= 16;
         Pref = readUint32(buf);
-        buf += sizeof(uint32_t);
+        buf += sizeof(uint32_t); n -= sizeof(uint32_t);
         Valid = readUint32(buf);
-        buf += sizeof(uint32_t);
+        buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
         ValidOpt=true;
     }

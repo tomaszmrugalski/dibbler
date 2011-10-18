@@ -59,7 +59,9 @@
 uint16_t readUint16(uint8_t* buf);
 uint8_t * writeUint16(uint8_t* buf, uint16_t word);
 uint32_t readUint32(uint8_t* buf);
-uint8_t* writeUint32(uint8_t* buf, uint32_t dword); */
+uint8_t* writeUint32(uint8_t* buf, uint32_t dword);
+uint64_t readUint64(uint8_t* buf);
+uint8_t* writeUint64(uint8_t* buf, uint64_t qword); */
 
 /* due to poor type usage (char* instead of uint8_t*), we need to stick with
    char* for now. Changing to uint8_t would require rewriting large parts of the code */
@@ -72,6 +74,8 @@ extern "C" {
     BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
     uint32_t readUint32(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
+    uint64_t readUint64(const BUFFER_TYPE * buf);
+    BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword);
 #ifdef __cplusplus 
 }
 #endif

@@ -68,5 +68,8 @@
   - Tomasz Gierszewski <tomag(at)eti(dot)pg(dot)gda(dot)pl>
     2011-07: NetBSD compilation fix.
 
+  - Harro Haan <hrhaan(at)gmail(dot)com>
+    2011-10: fix alignment errors (ARMv5)
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

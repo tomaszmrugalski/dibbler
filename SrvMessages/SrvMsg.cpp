@@ -418,11 +418,11 @@ int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
 	}
     }
 
-    *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
-    offset+=2;
-    *(short*)(buf+offset) = htons(len[relayDepth]);
-    offset+=2;
-    
+    writeUint16((buf+offset), OPTION_RELAY_MSG);
+    offset += sizeof(uint16_t);
+    writeUint16((buf+offset), len[relayDepth]);
+    offset += sizeof(uint16_t);
+
     offset += storeSelfRelay(buf+offset, relayDepth+1, order);
 
     if (order == SRV_IFACE_ID_ORDER_AFTER)

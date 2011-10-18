@@ -31,8 +31,8 @@ TOptTA::TOptTA( char * &buf, int &bufsize, TMsg* parent)
         bufsize=0;
     } else {
         Valid=true;
-        this->IAID = ntohl(*( long*)buf);
-        buf+=4; bufsize-=4;
+        this->IAID = readUint32(buf);
+        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
     }
 }
 
@@ -54,13 +54,9 @@ int TOptTA::getSize() {
 }
 
 char * TOptTA::storeSelf( char* buf) {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-    
-    *(uint32_t*)buf = htonl(IAID);
-    buf+=4;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
+    buf = writeUint32(buf, IAID);
     buf=this->storeSubOpt(buf);
     return buf;
 }

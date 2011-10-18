@@ -308,11 +308,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 
 	// options: only INTERFACE-ID and RELAY_MSG are allowed
 	while (bufsize>=4) {
-	    unsigned short code = ntohs( *((unsigned short*)(buf)));
-	    unsigned short len  = ntohs( *((unsigned short*)(buf+2)));
-	    buf     += 4;
-	    bufsize -= 4;
-	    
+	    unsigned short code = readUint16(buf);
+	    buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
+	    unsigned short len  = readUint16(buf);
+	    buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
+
 	    if (len > bufsize) {
 		Log(Warning) << "Truncated option " << code << ": " << bufsize << " bytes remaining, but length is " << len 
 			     << "." << LogEnd;

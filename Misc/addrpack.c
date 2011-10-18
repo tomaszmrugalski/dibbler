@@ -366,15 +366,15 @@ inline BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word) {
     return buf + sizeof(uint16_t);
 }
 
-/// @brief reads uint16_t from buffer in a portable way
+/// @brief reads uint32_t from buffer in a portable way
 ///
-/// Buffer must be at least 2 bytes long.
+/// Buffer must be at least 4 bytes long.
 ///
 /// @param buf pointer to first address of buffer
 ///
 /// @return read value
 inline uint32_t readUint32(const BUFFER_TYPE * buf) {
-    uint16_t value = ( ( (uint32_t)(buf[0]) ) << 24)
+    uint32_t value = ( ( (uint32_t)(buf[0]) ) << 24)
         + ( ( (uint32_t)(buf[1])) << 16)
         + ( ( (uint32_t)(buf[2])) << 8) + buf[3];
     return value;
@@ -394,4 +394,42 @@ inline BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword) {
     buf[2] = (uint8_t)( (dword >> 8) & 0xff );
     buf[3] = (uint8_t)( (dword) & 0xff );
     return buf + sizeof(uint32_t);
+}
+
+/// @brief reads uint64_t from buffer in a portable way
+///
+/// Buffer must be at least 8 bytes long.
+///
+/// @param buf pointer to first address of buffer
+///
+/// @return read value
+inline uint64_t readUint64(const BUFFER_TYPE * buf) {
+    uint64_t value = ( ( (uint64_t)(buf[0]) ) << 56)
+        + ( ( (uint64_t)(buf[1])) << 48)
+	+ ( ( (uint64_t)(buf[2])) << 40)
+	+ ( ( (uint64_t)(buf[3])) << 32)
+	+ ( ( (uint64_t)(buf[4])) << 24)
+	+ ( ( (uint64_t)(buf[5])) << 16)
+        + ( ( (uint64_t)(buf[6])) << 8) + buf[7];
+    return value;
+}
+
+/// @brief stores uint64_t to a buffer in a portable way
+///
+/// Buffer must be at least 8 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+/// @param word 64-bits value to be stored
+///
+/// @return pointer to the next byte after stored value
+inline BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword) {
+    buf[0] = (uint8_t)( (qword >> 56) & 0xff );
+    buf[1] = (uint8_t)( (qword >> 48) & 0xff );
+    buf[2] = (uint8_t)( (qword >> 40) & 0xff );
+    buf[3] = (uint8_t)( (qword >> 32) & 0xff );
+    buf[4] = (uint8_t)( (qword >> 24) & 0xff );
+    buf[5] = (uint8_t)( (qword >> 16) & 0xff );
+    buf[6] = (uint8_t)( (qword >> 8) & 0xff );
+    buf[7] = (uint8_t)( (qword) & 0xff );
+    return buf + sizeof(uint64_t);
 }

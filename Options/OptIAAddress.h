@@ -19,7 +19,7 @@
 class TOptIAAddress : public TOpt
 {
   public:
-    TOptIAAddress(const char* addr, int n, TMsg* parent);
+    TOptIAAddress(char* &addr, int& n, TMsg* parent);
     TOptIAAddress( SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg* parent);
     int getSize();
     

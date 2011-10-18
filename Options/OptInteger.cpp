@@ -42,13 +42,13 @@ TOptInteger::TOptInteger(int type, unsigned int len, char *&buf, int &bufsize, T
 	this->Value = (unsigned char)(*buf);
 	break;
     case 2:
-	this->Value = ntohs(*(short int*)buf);
+	this->Value = readUint16(buf);
 	break;
     case 3:
 	this->Value = ((long)buf[0])<<16 | ((long)buf[1])<<8 | (long)buf[2]; /* no ntoh3, eh? */
 	break;
     case 4:
-	this->Value = ntohl(*(int*)buf);
+	this->Value = readUint32(buf);
 	break;
     default:
 	this->Valid = false;
@@ -60,10 +60,8 @@ TOptInteger::TOptInteger(int type, unsigned int len, char *&buf, int &bufsize, T
 
 char * TOptInteger::storeSelf(char* buf)
 {
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(this->Len);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, this->Len);
     switch (this->Len) {
     case 0:
 	break;
@@ -71,7 +69,7 @@ char * TOptInteger::storeSelf(char* buf)
 	*buf = (char)this->Value;
 	break;
     case 2:
-	*(short int*)buf = htons(this->Value);
+	buf = writeUint16(buf, this->Value);
 	break;
     case 3:
     {
@@ -82,7 +80,7 @@ char * TOptInteger::storeSelf(char* buf)
 	break;
     }
     case 4:
-	*(int*)buf = htonl(this->Value);
+        buf = writeUint32(buf, this->Value);
 	break;
     default:
 	/* this should never happen */
