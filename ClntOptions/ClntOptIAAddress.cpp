@@ -19,7 +19,7 @@
 #include "IPv6Addr.h"
 #include "Msg.h"
 
-TClntOptIAAddress::TClntOptIAAddress( char * buf, int bufSize, TMsg* parent)
+TClntOptIAAddress::TClntOptIAAddress(char * buf, int bufSize, TMsg* parent)
 	:TOptIAAddress(buf, bufSize, parent)
 {
     SPtr<TOpt> opt = 0;

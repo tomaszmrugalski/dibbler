@@ -20,6 +20,8 @@
   - Google test framework added for unittests. There are only handful tests implemented now,
     but the number is expected to grow
   - Fix: alignment memory reads, tested on ARMv5 (bug #221)
+  - Changed default number of addresses allowed per client from millions to 10
+  - Srv: number of currently allocated prefixes is set correctly after restart and database reload
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

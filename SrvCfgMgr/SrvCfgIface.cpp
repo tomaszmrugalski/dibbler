@@ -184,11 +184,11 @@ void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) 
     this->firstAddrClass();
     while (ptrClass = this->getAddrClass() ) {
 	if (ptrClass->addrInPool(ptrAddr)) {
-	    ptrClass->incrAssigned();
+	    unsigned int count = ptrClass->incrAssigned();
 	    if (quiet)
 		return;
 	    Log(Debug) << "Address usage for class " << ptrClass->getID()
-		       << " increased by 1." << LogEnd;
+		       << " increased to " << count << "." << LogEnd;
 	    return;
 	}
     }
@@ -201,11 +201,11 @@ void TSrvCfgIface::delClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) 
     this->firstAddrClass();
     while (ptrClass = this->getAddrClass() ) {
 	if (ptrClass->addrInPool(ptrAddr)) {
-	    ptrClass->decrAssigned();
+	    unsigned long count = ptrClass->decrAssigned();
 	    if (quiet)
 		return;
 	    Log(Debug) << "Address usage for class " << ptrClass->getID()
-		       << " decreased by 1." << LogEnd;
+		       << " decreased to " << count << "." << LogEnd;
 	    return;
 	}
     }
@@ -264,14 +264,16 @@ SPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
     return 0;
 }
 
-bool TSrvCfgIface::addClntPrefix(SPtr<TIPv6Addr> ptrAddr) {
+bool TSrvCfgIface::addClntPrefix(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false */) {
     SPtr<TSrvCfgPD> ptrPD;
     this->firstPD();
     while (ptrPD = this->getPD() ) {
 	if (ptrPD->prefixInPool(ptrAddr)) {
+	    unsigned long count = ptrPD->incrAssigned();
+            if (quiet)
+                return true;
 	    Log(Debug) << "PD: Prefix usage for class " << ptrPD->getID()
-		       << " increased by 1." << LogEnd;
-	    ptrPD->incrAssigned();
+		       << " increased to " << count << "." << LogEnd;
 	    return true;
 	}
     }
@@ -280,14 +282,16 @@ bool TSrvCfgIface::addClntPrefix(SPtr<TIPv6Addr> ptrAddr) {
     return false;
 }
 
-bool TSrvCfgIface::delClntPrefix(SPtr<TIPv6Addr> ptrAddr) {
+bool TSrvCfgIface::delClntPrefix(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false */) {
     SPtr<TSrvCfgPD> ptrPD;
     this->firstPD();
     while (ptrPD = this->getPD() ) {
 	if (ptrPD->prefixInPool(ptrAddr)) {
-	    ptrPD->decrAssigned();
+	    unsigned long count = ptrPD->decrAssigned();
+            if (quiet)
+                return true;
 	    Log(Debug) << "PD: Prefix usage for class " << ptrPD->getID()
-		       << " decreased by 1." << LogEnd;
+		       << " decreased to " << count << "." << LogEnd;
 	    return true;
 	}
     }

@@ -21,45 +21,45 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
     :TOptIAAddress(buf,bufsize, parent)
 {
     int pos=0;
-    while(pos<bufsize) 
+    while(pos<bufsize)
     {
-        int code=buf[pos]*256+buf[pos+1]; /// @todo: use htons!
-        pos+=2;
-        int length=buf[pos]*256+buf[pos+1]; /// @todo: use htons!
-        pos+=2;
+        uint16_t code = readUint16(buf+pos);
+        pos += sizeof(uint16_t);
+        uint16_t length = readUint16(buf+pos);
+        pos += sizeof(uint16_t);
         if ((code>0)&&(code<=24))
-        {                
+        {
             if(allowOptInOpt(parent->getType(),OPTION_IAADDR,code))
             {
                 SPtr<TOpt> opt;
-		opt = SPtr<TOpt>();
+                opt = SPtr<TOpt>();
                 switch (code)
                 {
                 case OPTION_STATUS_CODE:
                     opt =(Ptr*)SPtr<TSrvOptStatusCode> (
-			new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                        new TSrvOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
-		    Log(Warning) << "Option " << code<< " not supported "
+                    Log(Warning) << "Option " << code<< " not supported "
                         <<" in message (type="<< parent->getType() <<")." << LogEnd;
                     break;
                 }
                 if((opt)&&(opt->isValid()))
                     SubOptions.append(opt);
             } else {
-		Log(Warning) << "Illegal option received, opttype=" << code 
-			     << " in field options of IA_NA option" << LogEnd;
-	    }
+                Log(Warning) << "Illegal option received, opttype=" << code
+                             << " in field options of IA_NA option" << LogEnd;
+            }
         } else {
-	    Log(Warning) <<"Unknown option in option IA_NA( optType=" 
-		 << code << "). Option ignored." << LogEnd;
+            Log(Warning) <<"Unknown option in option IAADDR( optType="
+                 << code << "). Option ignored." << LogEnd;
         };
-        pos+=length;
+        pos += length;
     }
 }
 
-TSrvOptIAAddress::TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
-				   unsigned long valid, TMsg* parent)
+TSrvOptIAAddress::TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref,
+                                   unsigned long valid, TMsg* parent)
     :TOptIAAddress(addr,pref,valid, parent) {
 
 }
