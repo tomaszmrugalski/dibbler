@@ -46,7 +46,7 @@ class TOpt
      *  - Option size
      *  - data
      *
-     * @return the size, I've already said that !
+     * @return the size
      */
     virtual int getSize() = 0;
 
@@ -70,9 +70,7 @@ class TOpt
     virtual std::string getPlain();
 
     int getOptType();
-    int getSubOptSize();
 
-    char* storeSubOpt(char* buf);
     SPtr<TOpt> getOption(int optType);
 
     // suboptions management
@@ -87,7 +85,19 @@ class TOpt
     SPtr<TDUID> getDUID();
     void setDUID(SPtr<TDUID> duid);
 
+    static bool parseOptions(TContainer< SPtr<TOpt> >& options,
+                             const char* buf,
+                             size_t len,
+                             TMsg* parent,
+                             uint8_t placeId = 0, // 5 (option 5) or (message 5)
+                             std::string place = "option" // "option" or "message"
+                             );
+
  protected:
+    char* storeHeader(char* buf);
+    char* storeSubOpt(char* buf);
+    int getSubOptSize();
+
     TContainer< SPtr<TOpt> > SubOptions;
     int OptType;
     TMsg* Parent;
