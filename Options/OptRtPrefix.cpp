@@ -27,6 +27,8 @@ TOptRtPrefix::TOptRtPrefix(const char * buf, int bufsize, TMsg* parent)
     }
     Lifetime = readUint32(buf);
     buf += sizeof(uint32_t);
+    bufsize -= sizeof(uint32_t);
+
     PrefixLen = buf[0];
     buf += 1;
     bufsize -= 1;

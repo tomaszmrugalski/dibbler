@@ -38,6 +38,9 @@ TEST(OptAddrTest, rtPrefixStoreSelf) {
     // next-hop option
     TOptAddr* nextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
 
+    EXPECT_TRUE(rtPrefix->isValid());
+    EXPECT_TRUE(nextHop->isValid());
+
     EXPECT_EQ(1000, rtPrefix->getLifetime());
     EXPECT_EQ(64, rtPrefix->getPrefixLen());
     EXPECT_EQ(42, rtPrefix->getMetric());
@@ -70,10 +73,12 @@ TEST(OptAddrTest, rtPrefixParse) {
 
     EXPECT_EQ(46, nextHop->getSize());
     EXPECT_EQ(OPTION_NEXT_HOP, nextHop->getOptType());
+    EXPECT_TRUE(nextHop->isValid());
     SPtr<TOptRtPrefix> rtPrefix = (Ptr*)nextHop->getOption(OPTION_RTPREFIX);
 
     // there should be option OPTION_RTPREFIX
     ASSERT_TRUE(rtPrefix);
+    EXPECT_TRUE(nextHop->isValid());
 
     EXPECT_EQ(1000, rtPrefix->getLifetime());
     EXPECT_EQ(64, rtPrefix->getPrefixLen());
