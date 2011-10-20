@@ -13,6 +13,7 @@
 #ifndef OPT_H
 #define OPT_H
 
+#include <stdint.h>
 #include <list>
 #include "SmartPtr.h"
 #include "Container.h"
@@ -89,7 +90,7 @@ class TOpt
                              const char* buf,
                              size_t len,
                              TMsg* parent,
-                             uint8_t placeId = 0, // 5 (option 5) or (message 5)
+                             uint16_t placeId = 0, // 5 (option 5) or (message 5)
                              std::string place = "option" // "option" or "message"
                              );
 
