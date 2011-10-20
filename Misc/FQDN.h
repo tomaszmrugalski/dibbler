@@ -27,8 +27,8 @@ public:
     TFQDN(TDUID *duid_, string name_,bool used);
     TFQDN(TIPv6Addr *addr_, string name_,bool used);
     TFQDN(string name_,bool used);
-    TDUID getDuid();
-    TIPv6Addr getAddr();
+    TDUID* getDuid();
+    TIPv6Addr* getAddr();
     string getName();
     bool isUsed();
     void setUsed(bool used);

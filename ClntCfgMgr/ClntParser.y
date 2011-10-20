@@ -100,7 +100,8 @@ namespace std
 
 %token T1_,T2_,PREF_TIME_,DNS_SERVER_,VALID_TIME_, UNICAST_
 %token NTP_SERVER_, DOMAIN_, TIME_ZONE_, SIP_SERVER_, SIP_DOMAIN_
-%token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_, FQDN_, FQDN_S_
+%token NIS_SERVER_, NISP_SERVER_, NIS_DOMAIN_, NISP_DOMAIN_
+%token FQDN_, FQDN_S_, DDNS_PROTOCOL_, DDNS_TIMEOUT_
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
 %token IA_,TA_,IAID_,ADDRESS_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
@@ -152,6 +153,8 @@ GlobalOptionDeclaration
 | DuidTypeOption
 | StrictRfcNoRoutingOption
 | ScriptName
+| DdnsProtocol
+| DdnsTimeout
 | AuthEnabledOption
 | AuthAcceptOption
 | AnonInfRequest
@@ -662,6 +665,30 @@ ReconfigureAccept
     Log(Debug) << "Reconfigure accept " << (($2>0)?"enabled":"disabled") << "." << LogEnd;
     CfgMgr->setReconfigure($2);
 };
+
+DdnsProtocol
+:DDNS_PROTOCOL_ STRING_
+{
+    if (!strcasecmp($2,"tcp"))
+	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_TCP);
+    else if (!strcasecmp($2,"udp"))
+	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_UDP);
+    else if (!strcasecmp($2,"any"))
+	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_ANY);
+    else {
+        Log(Crit) << "Invalid ddns-protocol specifed:" << ($2) 
+                  << ", supported values are tcp, udp, any." << LogEnd;
+        YYABORT;
+    }
+    Log(Debug) << "DDNS: Setting protocol to " << ($2) << LogEnd;
+};
+
+DdnsTimeout
+:DDNS_TIMEOUT_ Number
+{
+    Log(Debug) << "DDNS: Setting timeout to " << $2 << "ms." << LogEnd;
+    CfgMgr->setDDNSTimeout($2);
+}
 
 
 ValidTimeOption

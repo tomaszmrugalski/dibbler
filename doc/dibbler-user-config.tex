@@ -638,17 +638,30 @@ client to perform such task:
 \begin{lstlisting}
 # client.conf
 
+# Set protocol to one of the following values: udp, tcp, any
+ddns-protocol udp
+
+# Sets DDNS Update timeout (in ms)
+ddns-timeout 800
+
 # uncomment following line to force S bit to 0
 # option fqdn-s 0
 log-level 7
+
 iface eth0 {
-# ask for address
+# ask for one address
     ia
 
 # ask for options
    option dns-server
    option domain
    option fqdn
+
+# ask for fully qualified domain name (any name will do)
+  option fqdn
+# you can also provide hint for the server regarding preferred name
+#  option fqdn dexter.example.org
+
 }
 \end{lstlisting}
 
@@ -662,28 +675,23 @@ by the server, or only forward will be done by a client.
 
 It is also possible for client to provide its name as a hint for
 server. Server might take it into consideration when it will choose a
-name for this client. Example of a configuration file for such
-configuration is provided below:
+name for this client. To send specific hostname, additional parameter
+(a string with a fully qualified domain name) should be specified.
 
-\begin{lstlisting}
-# client.conf
-log-level 7
-iface eth0 {
-    # ask for address
-    ia
-
-    # ask for options
-    option dns-server
-    option domain
-    option fqdn zoe.example.com
-}
-\end{lstlisting}
+Two additional parameters were introduced in Dibbler
+0.8.1. \verb+ddns-protocol+ specifies protocol that should be used for
+communication with DNS server.  Allowed values
+are \verb+udp+, \verb+tcp+ or \verb+any+. ``Any'' will try to use UDP
+and if that fails, it will revert to TCP. Second parameter
+is \verb+ddns-timeout+ that specifies maximum time allowed for DNS
+server to respond before assuming communication failure. It is
+specified in milliseconds.
 
 Note that to successfully perform DNS Update, address must be assigned
-and dns server address must be known. So ,,ia'' and ,,option
-dns-server'' are required for ,,option fqdn'' to work properly. Also if
+and dns server address must be known. Therefoe  ``ia'' and ``option
+dns-server'' are required for ``option fqdn'' to work properly. Also if
 DHCPv6 server provides more than one DNS server address, update will
-be attempted only forthe first address on the list.
+be attempted only for the first address on the list.
 
 It is also possible to force S bit in the FQDN option to 0 or 1. See
 \cite{rfc4704} for details regarding its meaning.
@@ -1520,13 +1528,14 @@ iface relay2
 \subsubsection{Example 10: Dynamic DNS (FQDN)}
 \label{example-server-fqdn}
 
-Support for Dynamid DNS Updates was added recently. To configure it
-on the server side, list of available names must be defined. Each name
-can be reserved for a certain address or DUID. When no reservation is
-specified, it will available to everyone, i.e. the first client asks
-for FQDN will get this name. In following example, name 'zebuline.example.com' is
-reserved for address 2000::1, kael.example.com is reserved for 2000::2 and
-test.example.com is reserved for client using DUID
+Support for Dynamic DNS Updates was added in version 0.5.0RC1. To
+configure it on the server side, list of available names usually
+should be defined. Each name can be reserved for a certain address or
+DUID. When no reservation is specified, it will available to everyone,
+i.e. the first client asks for FQDN will get this name. In following
+example, name 'zebuline.example.com' is reserved for address 2001::db8:1::1,
+kael.example.com is reserved for 2001:db8:1::2 and test.example.com is
+reserved for client using DUID
 00:01:00:00:43:ce:25:b4:00:13:d4:02:4b:f5.
 
 Also note that is required to define, which side can perform updates.
@@ -1545,27 +1554,114 @@ the reverse domain supported by the DNS server, i.e. if this is set to
 64, and 2000::/64 addresses are used, DNS server must support
 0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa. zone.
 
+There are several additional parameters that affect DNS Update
+mechanism. \verb+ddns-protocol+ specifies protocol that should be used
+for communication with DNS server.  Allowed values
+are \verb+udp+, \verb+tcp+ or \verb+any+. ``Any'' will try to use UDP
+and if that fails, it will revert to TCP. Second parameter
+is \verb+ddns-timeout+ that specifies maximum time allowed for DNS
+server to respond before assuming communication failure. It is
+specified in milliseconds.
+
+The next useful parameter is \verb+fqdn-ddns-address+ that specifies
+address of DNS server that updates should be performed to. If it is
+not specified, first DNS address from \verb+option dns-server+ will be
+used.
+
+The last important parameter is +\verb+accept-unknown-fqdn+. In a
+simplest scenario, server is configured with a list of allowed
+names. Connecting clients may get only those names. That is convenient
+case, but it is often not feasible to deploy it in a real network.  In
+real networks, clients usually send out their own names, rather than
+wait for server to assign them one. In such cases, it is somewhat
+expected that server will not have complete list of all possible names
+that clients may send. Thus sooner or later server will likely receive
+a fqdn name that is unknown to him. This parameter specifies server
+behavior in such case.
+
+There are 5 possible policied currently supported. Each one is
+identified with an integer between 0 and 4. 0 means that uknown names
+should be rejected. That policy is useful for strictly controlled
+networks. 1 means that other available name from list of possible
+names should be sent instead. This is a compromise between strict
+control over names and liberal acceptance of clients' names. Policy 2
+accept any name that client will send. Names will be sanity
+checked. Note that mobile and nomadic clients may send names from
+their home networks. That may be a problem if server attempts to
+update AAAA records as its DNS server will probably only accept AAAA
+updates for locally administered domains. As a solution to this
+problem, policy 3 was implemented. It takes client's hostname (without
+its domain name), appends local domain name and uses such constructed
+fully qualified domain name. For example, if client
+sends \verb+nomad.faraway.org+ while visiting \verb+example.org+, with
+this policy in place, \verb+nomad.example.org+ will be assigned.
+
+The last policy is useful for larger networks. Instead of accepting
+clients' ideas about their hostnames, dedicated name is generated
+based on assigned address. For example, client that received
+\verb+2001:db8:1:0:c7a8:e81:c500:46ce+ address in domain 
+\verb+example.org+ will be assigned 
+a \verb+2001-db8-1-0-c7a8-e81-c500-46ce.example.org+ name.
+
+Following config file is a good starting point for tweaking DNS
+Update enabled server configuration.
+
 \begin{lstlisting}
 # server.conf
+
+# Logging level range: 1(Emergency)-8(Debug)
+# 
 log-level 8
-log-mode precise
-iface "eth1" {
- prefered-lifetime 3600
- valid-lifetime 7200
+
+# Don't log full date
+log-mode short
+
+# Set protocol to one of the following values: udp, tcp, any
+ddns-protocol udp
+
+# Sets DDNS Update timeout (in ms)
+ddns-timeout 1000
+
+# specify address of DNS server to be used for DDNS
+fqdn-ddns-address 2001::1
+
+iface "eth0" {
+
+# assign addresses from this class
  class {
-   pool 2000::1-2000::ff
+   pool 2001:db8:1::/64
  }
 
- option dns-server 2000::100,2000::101
- option domain example.com, test1.example.com
- option fqdn 2 64
-	zebuline.example.com - 2000::1,
-	kael.example.com - 2000::2,
-	test.example.com - 0x0001000043ce25b40013d4024bf5,
-	zoe.example.com,
-	malcolm.example.com,
-	kaylee.example.com,
-	jayne.example.com
+# provide DNS server location to the clients
+# also server will use this address to perform DNS Update,
+# so it must be valid and DNS server must accept DNS Updates.
+ option dns-server 2000::1
+
+# provide their domain name
+ option domain example.com
+
+# provide fully qualified domain names for clients
+# note that first, second and third entry is reserved
+# for a specific address or a DUID
+ option fqdn 1 64
+             zebuline.example.com - 2000::1,
+	     kael.example.com - 2000::2,
+	     wash.example.com - 0x0001000043ce25b40013d4024bf5,
+	     zoe.example.com,
+	     malcolm.example.com,
+	     kaylee.example.com,
+	     jayne.example.com,
+	     inara.example.com
+
+# specify what to do with client's names that are not on the list
+# 0 - reject
+# 1 - send other name from allowed list
+# 2 - accept any name client sends
+# 3 - accept any name client sends, but append specified domain suffix
+# 4 - ignore client's hint, generate name based on his address, append domain name
+
+ accept-unknown-fqdn 4 example.org
+
 }
 \end{lstlisting}
 

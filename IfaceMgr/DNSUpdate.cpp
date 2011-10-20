@@ -47,10 +47,12 @@ DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
     int len = hostip.length()+1;
     this->hostip = new char[len];
     strncpy(this->hostip,hostip.c_str(), len-1);
+    hostip[len-1] = 0;
     
     len = strlen(DNSUPDATE_DEFAULT_TTL)+1;
     this->ttl=new char[len];
     strncpy(this->ttl,DNSUPDATE_DEFAULT_TTL, len-1);
+    ttl[len-1]=0;
     this->updateMode = updateMode;
     _proto = proto;
 }
@@ -240,7 +242,7 @@ void DNSUpdate::deletePTRRecordFromRRSet(){
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
   message->authority.push_back(rr);
 
-  Log(Debug) << "DDNR: PTR record created: " << result << " -> " << tmp << LogEnd;
+  Log(Debug) << "DDNS: PTR record created: " << result << " -> " << tmp << LogEnd;
 }
 		
 /** 
@@ -478,7 +480,7 @@ void DNSUpdate::showResult(int result)
 	Log(Warning) << "DDNS: Unable to establish connection to the DNS server." << LogEnd;
 	break;
     case DNSUPDATE_SRVNOTAUTH:
-	Log(Warning) << "DDNS: DNS Update failed: server is not not authoritative." << LogEnd;
+	Log(Warning) << "DDNS: DNS Update failed: server returned NOTAUTH." << LogEnd;
 	break;
     case DNSUPDATE_SKIP:
 	Log(Notice) << "DDNS: DNS Update was skipped." << LogEnd;

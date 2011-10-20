@@ -493,10 +493,10 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
 
 	if (foo->isUsed())
 	{ // client sent a hint, but it is used currently
-            if ( foo->getDuid() == *duid && foo->getAddr() == *addr) {
+	  if ( (foo->getDuid()) && (*foo->getDuid() == *duid) && (*foo->getAddr() == *addr)) {
                 Log(Debug) << "FQDN: This client (DUID=" << duid->getPlain() 
                            << ") has already assigned name " << foo->Name
-                           <<" to its address " << foo->getAddr().getPlain() << "." << LogEnd;
+                           <<" to its address " << foo->getAddr()->getPlain() << "." << LogEnd;
                 return foo;
             }
 

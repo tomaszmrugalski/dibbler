@@ -77,6 +77,8 @@ sip-server            { return ClntParser::SIP_SERVER_; }
 sip-domain            { return ClntParser::SIP_DOMAIN_; }
 fqdn                  { return ClntParser::FQDN_; }
 fqdn-s                { return ClntParser::FQDN_S_; }
+ddns-protocol         { return ClntParser::DDNS_PROTOCOL_; }
+ddns-timeout          { return ClntParser::DDNS_TIMEOUT_; }
 nis-server            { return ClntParser::NIS_SERVER_; }
 nis-domain            { return ClntParser::NIS_DOMAIN_; }
 nis\+-server          { return ClntParser::NISP_SERVER_; }
