@@ -3,6 +3,7 @@
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "OptAddr.h"
+#include "OptGeneric.h"
 
 namespace {
 
@@ -45,5 +46,36 @@ TEST(OptAddrTest, parse) {
     delete opt;
 }
 
+TEST(OptAddrTest, subopts) {
+    char buf[128];
+
+    char genericPayload[4] = {51, 52, 53, 54};
+
+    SPtr<TOpt> generic = new TOptGeneric(0xface, genericPayload, 4, NULL);
+    SPtr<TIPv6Addr> addr = new TIPv6Addr("2001:db8:1::1", true);
+
+    // generic takes 8 bytes
+
+    // next hop takes 20 bytes
+    TOptAddr* nextHop = new TOptAddr(OPTION_NEXT_HOP, addr, NULL);
+
+    EXPECT_EQ(20, nextHop->getSize() );
+    nextHop->addOption(generic);
+
+    EXPECT_EQ(28, nextHop->getSize() );
+
+    char* ptr = nextHop->storeSelf(buf);
+    ASSERT_EQ(buf+28, ptr);
+
+    char expected[] = {
+        OPTION_NEXT_HOP/256, OPTION_NEXT_HOP%256, 0, 24,
+        0x20, 0x01, 0x0d, 0xb8, 0, 1, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, // 2001:db8:1::1
+        0xfa, 0xce, 0, 4,
+        51, 52, 53, 54};
+    EXPECT_EQ(0, memcmp(buf, expected, 28) );
+
+    delete nextHop;
+}
 
 }
