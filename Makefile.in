@@ -300,9 +300,9 @@ AUTOMAKE_OPTIONS = foreign
 
 # Uncomment this if you don't want makefiles to rebuild themselves
 # Makefile:
-SUBDIRS = AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr \
-	ClntMessages ClntOptions ClntTransMgr IfaceMgr Messages Misc \
-	Options RelCfgMgr RelIfaceMgr RelMessages RelOptions \
+SUBDIRS = Misc Options AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr \
+	ClntIfaceMgr ClntMessages ClntOptions ClntTransMgr IfaceMgr \
+	Messages RelCfgMgr RelIfaceMgr RelMessages RelOptions \
 	RelTransMgr Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr \
 	SrvMessages SrvOptions SrvTransMgr poslib @PORT_SUBDIR@
 dibbler_client_SOURCES =  \
