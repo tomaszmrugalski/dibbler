@@ -1232,7 +1232,7 @@ FqdnDdnsAddress
 :FQDN_DDNS_ADDRESS_ IPV6ADDR_
 {
     addr = new TIPv6Addr($2);
-    CfgMgr->fqdnDdnsAddress( addr );
+    CfgMgr->setDDNSAddress(addr);
     Log(Info) << "FQDN: DDNS updates will be performed to " << addr->getPlain() << "." << LogEnd;
 };
 

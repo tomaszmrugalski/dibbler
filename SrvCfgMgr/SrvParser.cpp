@@ -2909,7 +2909,7 @@ case 246:
 #line 1233 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
-    CfgMgr->fqdnDdnsAddress( addr );
+    CfgMgr->setDDNSAddress(addr);
     Log(Info) << "FQDN: DDNS updates will be performed to " << addr->getPlain() << "." << LogEnd;
 ;
     break;}

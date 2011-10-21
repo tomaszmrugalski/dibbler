@@ -814,18 +814,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	// Setting the O Flag correctly according to the difference between O flags
 	optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
 	
-	SPtr<TIPv6Addr> DNSAddr = SrvCfgMgr().fqdnDdnsAddress();
-	if (!DNSAddr) {
-	    Log(Debug) << "DDNS: DDNS address not specified, using first address used in DNS nameserver option" << LogEnd;
-
-	    // Here we check if all parameters are set, and do the DNS update if possible
-	    List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
-	    
-	    // For the moment, we just take the first DNS entry.
-	    DNSSrvLst.first();
-	    if (DNSSrvLst.count())
-		DNSAddr = DNSSrvLst.get();
-	}
+	SPtr<TIPv6Addr> DNSAddr = SrvCfgMgr().getDDNSAddress(Iface);
 	if (!DNSAddr) {
 	    Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
 	    return 0;
