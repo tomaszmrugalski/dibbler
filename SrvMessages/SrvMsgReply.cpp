@@ -258,31 +258,33 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
 	    // ignore those, which are not present id DB
 	    SPtr<TOpt> subOpt;
 	    SPtr<TSrvOptIAAddress> addr;
-	    SPtr<TAddrIA> declinedIA = declinedClient->getIA(0);
-	    if (!declinedIA)
-	    {
-		declinedIA=new TAddrIA(decline->getIface(), TAddrIA::TYPE_IA,
-				       SPtr<TIPv6Addr>(new TIPv6Addr()), declinedDUID, 0, 0, 0);
-		declinedClient->addIA(declinedIA);
-	    }
 	    ptrOpt->firstOption();
 	    while( subOpt = ptrOpt->getOption() ) {
 		if (subOpt->getOptType()==OPTION_IAADDR)
 		{
 		    addr = (Ptr*) subOpt;
-		    addr->setValid(0);
-		    addr->setPref(0);
-		    
-		    // if there's no such address in out DB
-		    if (!ptrIA->getAddr( addr->getAddr() ) )
-			continue;
-		    // add this addr to declined addrs...
-		    declinedIA->addAddr( new TAddrAddr( addr->getAddr(),DECLINED_TIMEOUT,DECLINED_TIMEOUT) );
-		    // ... and remove it from client's IA...
-		    ptrIA->delAddr( addr->getAddr() );
-		    // ... and finally append it in reply
-		    replyIA_NA->addOption( subOpt );
-		    AddrsDeclinedCnt++;
+
+                    // remove declined address from client
+                    if (SrvAddrMgr().delClntAddr(ptrClient->getDUID(), ptrIA_NA->getIAID(),
+                                                 addr->getAddr(), false)) {
+
+                        // add this address to DECLINED dummy client
+                        SrvAddrMgr().addClntAddr(declinedDUID,
+                                                 new TIPv6Addr("::", true), // client-address
+                                                 decline->getIface(),
+                                                 0, 0, 0, // IAID
+                                                 addr->getAddr(), // declined address
+                                                 DECLINED_TIMEOUT, DECLINED_TIMEOUT,
+                                                 false);
+
+                        // set pref/valid lifetimes to 0
+                        addr->setValid(0);
+                        addr->setPref(0);
+                        // ... and finally append it in reply
+                        replyIA_NA->addOption( subOpt );
+
+                        AddrsDeclinedCnt++;
+                    }
 		};
 	    }
 	    Options.push_back((Ptr*)replyIA_NA);

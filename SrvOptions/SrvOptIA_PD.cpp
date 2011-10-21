@@ -106,7 +106,6 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
             continue;
         optPrefix = (Ptr*) opt;
         prefix = optPrefix->getPrefix();
-        //SrvAddrMgr().delClntAddr(this->ClntDuid, this->IAID, prefix, quiet); // not sure about that
         SrvCfgMgr().decrPrefixCount(this->Iface, prefix);
     }
 }
