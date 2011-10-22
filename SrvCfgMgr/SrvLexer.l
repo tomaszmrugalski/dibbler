@@ -65,6 +65,7 @@ reject-clients      { return SrvParser::REJECT_CLIENTS_;}
 
 T1                  { return SrvParser::T1_;}
 T2                  { return SrvParser::T2_;}
+preferred-lifetime  { return SrvParser::PREF_TIME_;}
 prefered-lifetime   { return SrvParser::PREF_TIME_;}
 valid-lifetime      { return SrvParser::VALID_TIME_;}
 

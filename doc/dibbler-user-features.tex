@@ -710,6 +710,7 @@ iface "eth0" {
 \end{lstlisting}
 
 \subsection{Introduction to client classification}
+\label{feature-client-class}
 It is possible to define more than one address class for a single
 interface. Normally, when a client asks for an address, one of the
 classes is being chosen on a random basis. If not specified otherwise,
@@ -1364,11 +1365,13 @@ iface eth0 {
 }
 \end{lstlisting}
 
-\subsubsection{External scripts}
-\label{feature-client-script}
+\subsubsection{External script}
+\label{feature-script}
 
-\Note Support for external scripts was rewritten in 0.8.1
+\Note Support for external scripts was rewritten in 0.8.1RC1
 release. Note that mapping prefix and notify scripts were removed.
+
+Support for server-side script was introduced in 0.8.1RC1.
 
 Dibbler-client is able to receive addresses, prefixes and numerous
 additional options. It will do its best to set up those parameters in
