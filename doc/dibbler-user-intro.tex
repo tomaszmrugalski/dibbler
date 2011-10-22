@@ -92,43 +92,44 @@ As for now, Dibbler supports following features:
 \end{figure}
 
 \item Multiple servers support -- Client is capable of discovering and
-      maintaning communication with several servers. For example, client
-      would like to have 5 addresses configured. Prefered server can
-      only grant 3, so client send request for remaining 2 addresses to
-      one of the remaining servers.
+  maintaning communication with several servers. For example, client
+  would like to have 5 addresses configured. Prefered server can only
+  lease 3, so client send request for remaining 2 addresses to one of
+  the remaining servers.
 \item Relay support -- In a larger network, which contains several
-      Ethernet segments and/or wireless areas, sometimes centrally
-      located DHCPv6 server might not be directly reachable. In such
-      cace, additional proxies, so called relays, might be deployed to
-      relay communication between clients and a remote server. Dibbler
-      server supports indirect communication with clients via
-      relays. Stand-alone, lightweight relay implementation is also
-      available. Clients are capable of talking to the server directly
-      or via relays.
+  Ethernet segments and/or wireless areas, sometimes centrally located
+  DHCPv6 server might not be directly reachable. In such cace,
+  additional proxies, so called relays, might be deployed to relay
+  communication between clients and a remote server. Dibbler server
+  supports indirect communication with clients via
+  relays. Stand-alone, lightweight relay implementation is also
+  available. Clients are capable of talking to the server directly or
+  via relays.
 \item Address renewal -- After receiving address from a server, client
-      might be instructed to renew its address at regular
-      intervals. Client periodically sends \msg{RENEW} messege to a
-      server, which granted its address. In case of communication
-      failure, client is also able to attempt emergency address renewal
-      (i.e. it sends \msg{REBIND} message to any server).
+  might be instructed to renew its address at regular
+  intervals. Client periodically sends \msg{RENEW} messege to a
+  server, which granted its address. In case of communication failure,
+  client is also able to attempt emergency address renewal (i.e. it
+  sends \msg{REBIND} message to any server).
 \item Unicast communication -- if specific conditions are met, client
-      could send messages directly to a server's unicast address, so
-      additional servers does not need to process those messages. It also
-      improves effciency, as all nodes present in LAN segment receive
-      multicast packets.\footnote{Nodes, which do not belong to specific
-      multicast group, drop those packets silently. However, determining
-      if host belongs or not to a group must be performed on each
-      node. Also using multicast communication increases the network load.}
+  could send messages directly to a server's unicast address, so
+  additional servers does not need to process those messages. It also
+  improves effciency, as all nodes present in LAN segment receive
+  multicast packets.\footnote{Nodes, which do not belong to specific
+    multicast group, drop those packets silently. However, determining
+    if host belongs or not to a group must be performed on each
+    node. Also using multicast communication increases the network
+    load.}
 \item Duplicate address detection -- Client is able to detect and
-      properly handle faulty situation, when server grants an address
-      which is illegaly used by some other host. It will inform
-      server of such circumstances (using \msg{DECLINE} message), and
-      request another address. Server will mark this address as used by
-      unknown host, and will assign another address to a client.
-\item Power failure/crash support -- After client recovers from a crash or
-      a power failure, it still can have valid addresses assigned. In such
-      circumstances, client uses \msg{CONFIRM} message, to config if
-      those addresses are still valid.
+  properly handle faulty situation, when server grants an address
+  which is illegaly used by some other host. It will inform server of
+  such circumstances (using \msg{DECLINE} message), and request
+  another address. Server will mark this address as used by unknown
+  host, and will assign another address to a client.
+\item Power failure/crash support -- After client recovers from a
+  crash or a power failure, it still can have valid addresses
+  assigned. In such circumstances, client uses \msg{CONFIRM} message,
+  to config if those addresses are still valid.
 \item Link change detection -- Client can be instructed to monitor its
       link state. Once it detects
 \item Normal and temporary addresses -- Depending on its purpose,
@@ -202,7 +203,7 @@ several enhancements:
       of the DNS Updates: forward and reverse. First is used to
       translate domain name to an address. The second one is used to
       obtain full domain name of a known address. See section
-      \ref{features-fqdn} for details. \cite{rfc4704}
+      \ref{feature-dns-update} for details. \cite{rfc4704}
 \item Prefix Delegation -- Server can be configured to manage a prefix
       pool, i.e. clients will be assigned whole pools instead on
       single addresses. This is very useful, when clients are not
@@ -222,7 +223,7 @@ features:
  \item Any kind of security in DNS Updates\cite{rfc4704}
  \item DNS Updates are done over IPv6 only. IPv4 support is not
    planned.
- \item Client ignores M and O bits in Router Advertisements and 
+ \item Client ignores M and O bits in Router Advertisements and
    initiates operation as specfied in its config file.
 \end{itemize}
 
@@ -239,23 +240,28 @@ Dibbler also runs on any Windows systems from Windows XP (Service Pack
 client or relay) as services, administrator privileges might be
 required. Support for Windows NT4 and 2000 is limited and considered
 experimental. Due to lack of support and any kind of informations from
-Microsoft, this is not expected to change.
+Microsoft, this will not change. In fact, support for NT4 and 2000 is
+expected to be dropped soon.
 
-There is also experimental port for Mac OS systems, but due to
-author's lack of access to Mac hardware, Dibbler is not released for
-those platforms.
+There is working Mac OS X port available.
+
+Support for FreeBSD, NetBSD and OpenBSD was added in 0.8.1RC1, but
+those versions are not very well tested. They are confirmed to compile
+and be able to start operation. Author was not able to test them
+thoroughly, so reports regarding confirming their stability or
+detected issues are welcome. Please report them on the mailing
+list. See section \ref{mailing-list}.
 
 See RELEASE-NOTES for details about version-specific upgrades, fixes
 and features.
 
 \subsection{Supported platforms}
-Although Dibbler was developed on the i386 architecture, there
-are ports available for other architectures: IA64, AMD64, PowerPC,
-HPPA, Sparc, MIPS, S/390 and Alpha. They are available in the PLD,
-Gentoo and Debian Linux distributions. You can download system and
-distribution specficic packages from \url{http://www.pld-linux.org/},
-\url{http://www.gentoo.org} or \url{http://www.debian.org}. Keep in mind
-that author has not tested those ports, so there might be some
+Although Dibbler was developed on the i386 architecture, there are
+ports available for other architectures: IA64, AMD64, PowerPC, HPPA,
+Sparc, MIPS, S/390, Alpha and ARMv5. They are available in the PLD,
+Gentoo and Debian Linux distributions. Other platforms are likely to
+be supported. Keep in mind that author has not tested those ports
+himself and need to rely on users' reports, so there might be some
 unknown issues present. If this is the case, be sure to notify package
 maintainers and possibly the author.
 
