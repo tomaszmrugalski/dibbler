@@ -389,8 +389,10 @@ To configure this feature, following steps must be performed:
 
 \begin{enumerate}
 \item Configure DNS server. DNS server supporting IPv6 and dynamic
-  updates must be configured. One example of such server is a BIND
-  9.3. It is necessary to allow listening on the IPv6 sockets and
+  updates must be configured. One example of such server is an
+  excellent \href{http://www.isc.org/software/bind}{ISC BIND}
+  software. Version used during writing of this documentation was BIND
+  9.7.2. It is necessary to allow listening on the IPv6 sockets and
   define that specific domain can be updated. See example below.
 \item Configure Dibbler server to provide DNS server informations for
   clients. DNS Updates will be sent to the first DNS server on the
@@ -439,7 +441,10 @@ fqdn-ddns-address 2001:db8:1::1
 \end{figure}
 
 \subsubsection{Example BIND configuration}
-Below are example configuration files for the BIND 9.3. First is a
+Below are example configuration files for
+the \href{http://www.isc.org/software/bind}{ISC BIND 9.7.2}, developed
+by \href{http://www.isc.org}{Internet Systems Consortium, Inc.}.
+First is a
 relevant part of the /etc/bind/named.conf configuration file. Generally,
 support for IPv6 in BIND is enabled (listen-on-v6) and there are two
 zones added: example.com (normal domain) and
