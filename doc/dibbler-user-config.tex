@@ -19,9 +19,9 @@ ETH0 are dwo diffrent interfaces.
 
 \subsection{Data types}
 Config file parsing is token-based. Token can be considered a keyword
-or a specific phrase. Here's list of tokens used:
+or a specific phrase. Here are more commonly used types:
 \begin{description}
-\item[IPv6 address] -- IPv6 address, e.g. 2000:db81::dead:beef
+\item[IPv6 address] -- IPv6 address, e.g. 2000:db8:1::dead:beef
 \item[32-bit decimal integer] -- string containing only numbers, e.g. 12345
 \item[string] -- string of arbitrary characters enclosed in single or double
   quotes, e.g. 'this is a string'. If string contains only a-z, A-Z and
@@ -32,11 +32,11 @@ or a specific phrase. Here's list of tokens used:
   this format may in some cases be confused with IPv6 address, the old
   format (starting with 0x) remains to be supported.
 \item[IPv6 address list] -- IPv6 addresses separated with commas,
-	   e.g. 2000::123, 2000::456
+	   e.g. 2001:db8:1::face:b00c, fe80::abcd:1234,::1
 \item[DUID list] -- DUIDs separated with commas, e.g. 0x0123456,0x0789abcd
 \item[string list] -- strings separated with comas, e.g. tealc,jackson,carter,oneill
 \item[boolean] -- YES, NO, TRUE, FALSE, 0 or 1. Each of them can be
-  used, when user must enable or disable specific option.
+  used, when user is expected to enable or disable specific option.
 \end{description}
 
 \subsection{Scopes}
@@ -44,7 +44,9 @@ There are four scopes, in which options can be specified: global,
 inteface, IA and address. Every option is specific for one scope.
 Each option is only applied to a scope and all subscopes in which it is
 defined. For example, T1 is defined for
-IA scope. However, it can be also used in more common scopes. In this
+IA scope. If there are several interfaces and each has several address
+classes, repeating the same T1 value many time may be a bit awkward.
+Therefore parameters can be also used in more common scopes. In this
 case -- in interface or global. Defining T1 in interface scope means:
 ,,for this interface the default T1 value is ...''. The same applies
 to global scope. Options can be used multiple times. In that case
@@ -52,11 +54,11 @@ value defined later is used.
 
 Global scope is the largest. It covers the whole config file and
 applies to all intefaces, IAs, and addresses, unless some lower scope
-options override it. Next comes inteface scope. Options defined there
-are inteface-specific and apply to this interface, all IAs in this
+options override it. Next scope is inteface. Options defined there
+are inteface-specific and apply to a given interface, all IAs in this
 interface and addresses in those IAs. Next is IA scope. Options
 defined there are IA-specific and apply to this IA and to addresses it
-contains. Least significant scope is address.
+contains. The narrowest scope is address or prefix.
 
 \subsection{Comments}
 
@@ -80,8 +82,7 @@ running interface \footnote{Exactly: Client tries to configure each
   up, multicast-capable and running interface, which has link address
   at least 6 bytes long. So it will not configure tunnels (which
   usually have IPv4 address (4bytes long) as their link address. It
-  should configure all Ethernet and 802.11 interfaces. The latter was
-  not tested by author due to lack of access to 802.11 equipment.}.
+  should configure all Ethernet and 802.11 interfaces.}.
 
 \subsubsection{Interface declaration}
 
@@ -107,9 +108,9 @@ iface interface-number
 }
 \end{verbatim}
 
-In the latter case, interface-number denotes interface number. It can be extracted
-from ,,ip~l'' (Linux) or
-,,ipv6~if'' (Windows). \verb+interface-name+ is an interface
+In the latter case, interface-number denotes interface index (or ifindex). It can be obtained
+from \verb+ip~l+ (Linux), \verb+ipv6~if+ (Windows) or sometime
+\verb+ifconfig+ on other systems. \verb+interface-name+ is an interface
 name.  Name of the interface does not have to be enclosed in single or
 double quotes. It is necessary only in Windows systems, where interface
 names sometimes contain spaces, e.g. ''local network connection''.
@@ -118,15 +119,17 @@ scoped options can also be used. They will be treated as a default
 values for future definitions of the IA and address instantations.
 
 \subsubsection{IA declaration}
+\label{ia-declaration}
 IA is an acronym for Identity Association. It is a logical entity
 representing address or addresses used to perform some
-functions. IA-options can be defined, e.g. T1. IPv6 addresses can be
+functions. It is not suitable for prefixes (see Section \ref{pd-declaration}).
+IA-options can be defined, e.g. T1. IPv6 addresses can be
 defined here. All those values will be used as hints for a server.
 Almost always, each DHCPv6 client will have exactly one IA on each
 interface. IA is declared using following syntax:
 
 \begin{verbatim}
-ia
+ia [iaid]
 {
   IA-options
   address-options
@@ -134,25 +137,30 @@ ia
 }
 \end{verbatim}
 
-It is also possible to define multiple IA at once. To do so, following
-syntax might be used:
+IAID is an optional number, which describes identifier of given IA. If
+not specified, it will be automatically assigned integer numbers
+starting with 1. There may be more than one IA defined on an
+interface. IA and PD (see Section \ref{pd-declaration}) may be used
+together.
+
+\subsubsection{PD declaration}
+\label{pd-declaration}
+PD (Prefix Delegation) is a mechanism that allows leasing prefixes in
+similar way as addresses. For details, see \ref{rfc3633}. PD in
+client config file causes client to send IA\_PD option. This option
+informs server that client is requesting prefix delegation.
 
 \begin{verbatim}
-ia number
+pd [iaid]
 {
-  IA-options
-  address-options
+  pd-options
+  prefix-options
 }
 \end{verbatim}
-Number is an optional number, which describes how many such IAs
-should be requested. Number is optional. If it is not specified, 1 is
-used. If this number is not equal 1, then address options are not
-allowed. That could come in handy when someone need serveral IAs with
-the same parameters. If IA contains no addresses, client assumes that
-one address should be configured. IA scoped as well as address options
-can be defined here. IA scoped options will be applied directly, while
-address scoped options will be used as default values for all addresses
-that will be defined in this IA.
+IAID is an optional number, which identifies this particular PD. If
+not specified, it will be automatically assigned integer numbers
+starting with 1. There may be more than one PD defined on an
+interface. IA (see Section \ref{ia-declaration}) may be used together.
 
 \subsubsection{Address declaration}
 When IA is defined, it is sometimes useful to define its address. Its
@@ -160,15 +168,29 @@ value will be used as a hint for the server. Address is declared in the
 following way:
 
 \begin{verbatim}
-address number
+address [number]
 {
   address-options
   IPv6-address
 }
 \end{verbatim}
-where number denotes how many addresses with those values should be
+where number is optional and denotes how many addresses with those values should be
 requested. If it is diffrent than 1, then IPv6 address options are not
-allowed. Only address scoped options can be used here.
+allowed. Only address scoped options can be used here. Address can be
+defined only within IA scope.
+
+\subsubsection{Prefix declaration}
+When PD is defined, it is sometimes useful to define its prefix. Its
+value will be used as a hint for the server. Prefix is declared in the
+following way:
+
+\begin{verbatim}
+prefix [number]
+{
+  prefix-options
+  prefix
+}
+\end{verbatim}
 
 \subsubsection{Standard options}
 So called standard options are defined by the base DHCPv6
@@ -411,12 +433,12 @@ interface scope, i.e. it is defined once per interface. As for the
    client would like to renew all its options. By default client will
    not send such option, but it will accept it and act accordingly if
    the server sends it on its own. Format of this option is defined in
-   \cite{draft-lifetime}.
+   \cite{rfc4242}.
  \item[aftr] -- (scope: interface, type: FQDN). In Dual-Stack Lite
    networks, client may want to configure DS-Lite tunnel. Client may
    want to obtain information about AFTR (a remote tunnel
    endpoint). This option conveys fully qualified domain name. It is
-   defined in defined in \cite{draft-ds-lite}.
+   defined in defined in \cite{rfc6334}.
  \item[auth-enabled] -- (scope: global, type: boolean, default:
    no). This option enables authentication and authorization. When set
    to true, server support must also be enabled, otherwise all
@@ -900,7 +922,7 @@ iface "eth0" {
 \subsubsection{Example 16: DS-Lite tunnel (AFTR)}
 \label{example-server-ds-lite}
 Server may provide information about AFTR (a Dual Stack Lite tunnel
-endpoint) to the clients, as specified in \cite{draft-ds-lite}.
+endpoint) to the clients, as specified in \cite{rfc6334}.
 
 \begin{lstlisting}
 iface "eth0" {
@@ -1244,12 +1266,12 @@ All supported options are specified below:
    client should renew all its options. When defined, lifetime option
    will be appended to all replies, which server sends to a client. If
    client does not support it, it should ignore this option. Format of
-   this option is defined in \cite{draft-lifetime}.
+   this option is defined in \cite{rfc4242}.
  \item[aftr] -- (scope: interface, type: FQDN). In Dual-Stack Lite
    networks, client may want to configure DS-Lite tunnel. Client may
    want to obtain information about AFTR (a remote tunnel
    endpoint). This option conveys a fully qualified domain name of the
-   remote tunnel. This option is defined in \cite{draft-ds-lite}.
+   remote tunnel. This option is defined in \cite{rfc6334}.
  \item[auth-method] -- (scope: global, type: string, default:
    empty). Set it to one of the following values to enable
    authentication on ther server side, using selected method of

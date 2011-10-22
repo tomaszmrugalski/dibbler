@@ -1536,21 +1536,5 @@ script must be present in the working directory (that would be
 This feature was removed in 0.8.0RC1.
 
 \subsubsection{Tunnel mode}
-As support for DS-Lite \cite{draft-ds-lite} support was added in
-0.8.0RC1, the old support for configuring tunnels was retired. That
-old, removed configuration worked as follows:
-
-In some scenarios, dibbler may be used for router configuration. IPv6
-routers may need some extra information for tunnel creation. Dibbler
-provided support for conveying such parameters. As routers may use
-different tunneling schemes, there was also a special option that is
-used to convey the tunneling mode. It was possible to instruct server
-server to send tunnel endpoint address, using vendor-specific option
-with customisable vendor-id field. Following tunnel modes were
-supported:
-
-\begin{itemize}
-\item 0 -- don't create tunnel at all
-\item 1 -- use IPv4-to-IPv6 NAT
-\item 2 -- create IPv4-over-IPv6 tunnel
-\end{itemize}
+As support for DS-Lite \cite{rfc6334} support was added in
+0.8.0RC1, the old support for configuring tunnels was removed.
