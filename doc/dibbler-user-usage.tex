@@ -9,6 +9,7 @@
 
 \newpage
 \section{Installation and usage}
+\label{install}
 Client, server and relay are installed in the same way. Installation
 method is different in Windows and Linux systems, so each system
 installation is described separately. To simplify installation, it
@@ -44,33 +45,51 @@ issue following command:
 rpm -i dibbler-0.4.1-1.i386.rpm
 \end{verbatim}
 
-To install Dibbler on Debian or other system with dpkg management
-system, run $dpkg -i archive.deb$ command. For example, to install
-server, issue following command:
+To install Dibbler on Debian or other system with apt-get management
+system, run $apt-get install package$ command. For example, to install
+server and client, issue the following command:
 
 \begin{verbatim}
-dpkg -i dibbler-server_0.4.1-1_i386.deb
+apt-get install dibbler-server dibbler-client
 \end{verbatim}
 
 To install Dibbler in Gentoo systems, just type:
-
 \begin{verbatim}
 emerge dibbler
 \end{verbatim}
 
-If you would like to install Dibbler from sources, please download tar.gz
-source archive, extract it, type make followed by target (e.g. server,
-client or relay\footnote{To get full target list, type: make help.}).
-After successful compilation type make install. For example, to build
-server and relay, type:
+\subsection{Windows installation}
+Dibbler supports Windows XP and 2003 since the 0.2.1-RC1 release.
+Support for Vista was added somewhere around 0.7.x. Support for
+Windows 7 was added in 0.8.0RC1. In version 0.4.1 exprimental support
+for Windows NT4 and 2000 was added. The easiest way of Windows
+installation is to download clickable Windows installer. It can be
+downloaded from \url{http://klub.com.pl/dhcpv6/}. After downloading,
+click on it and follow on screen instructions. Dibbler will be
+installed and all required links will be placed in the Start
+menu. Note that there are two Windows versions (ports): one for modern
+systems (XP/2003/Vista and Win7) and one for archaic ones
+(NT4/2000). Make sure to use proper port. If you haven't set up IPv6
+support, see following sections for details.
 
-\begin{verbatim}
-tar zxvf dibbler-0.8.0-src.tar.gz
-make server relay
-make install
-mkdir -p /var/lib/dibbler
-\end{verbatim}
+\subsection{Mac OS X installation}
+As of 0.8.0 release, ready to use dmg packages are not provided,
+therefore dibbler has to be compiled. Please follow section
+\ref{compile} for generic Dibbler compilation that applies to Mac OS
+X.
 
+Currently support for Mac OS X is usable, but there is still one
+notable limitation. Client is not able to configure DNS servers or
+domain name informations.
+
+\subsection{FreeBSD, NetBSD, OpenBSD}
+As of 0.8.1RC1 release, support for FreeBSD, NetBSD and OpenBSD has
+been added. There are no prebuilt binary packages available. Please
+follow Section \ref{compile} for generic Dibbler compilation that applies to
+all 3 mentioned OSes.
+
+
+\subsection{Basic usage}
 Depending what functionality do you want to use (server,client or relay),
 you should edit configuration file (\verb+client.conf+ for client, \verb+server.conf+
 for server and \verb+relay.conf+ for relay). All configuration files should
@@ -109,24 +128,101 @@ dibbler-relay status
 To see full list of available commands, type \verb+dibbler-server+,
 \verb+dibbler-client+ or \verb+dibbler-relay+ without any parameters.
 
-\subsection{Windows installation}
-Dibbler supports Windows XP and 2003 since the 0.2.1-RC1 release.
-Support for Vista was added somewhere around 0.7.x. Support for
-Windows 7 was added in 0.8.0RC1. In version 0.4.1 exprimental support
-for Windows NT4 and 2000 was added. The easiest way of Windows
-installation is to download clickable Windows installer. It can be
-downloaded from \url{http://klub.com.pl/dhcpv6/}. After downloading,
-click on it and follow on screen instructions. Dibbler will be
-installed and all required links will be placed in the Start
-menu. Note that there are two Windows versions (ports): one for modern
-systems (XP/2003/Vista and Win7) and one for archaic ones
-(NT4/2000). Make sure to use proper port. If you haven't set up IPv6
-support, see following sections for details.
+If your OS uses different layout of directories, you may want to
+modify Misc/Portable.h before starting compilation process.
 
-\subsection{Mac OS X installation}
-As of 0.8.0 release, ready to use dmg packages are not provided,
-therefore dibbler has to be compiled. Please follow section
-\ref{compile-macos} for details on Dibbler compilation on Mac OS X.
+\subsection{Compilation}
+\label{compile}
+Dibbler is distributed in 2 versions: binary and source code. If there
+is binary version provided for your system,  it is usually better
+choice.  Compilation usually is performed by more experienced users.
+In average case it does not offer significant advantages over binary version.
+You probably want to just install and use Dibbler. If that is your case, read section
+named \ref{install}. However, if you are skilled enough, you might
+want to tune several Dibbler aspects during compilation. See \emph{
+Dibbler Developer's Guide} for information about various compilation parameters.
+
+The following descriptions applies to Linux, Mac OS X, FreeBSD, NetBSD
+and OpenBSD. Other POSIX systems may work, but were never tested by
+author. If you would like to install Dibbler from sources, you will need all
+required dependencies. In particular, you need a typical C++
+environment: a C and C++ compilers (most probably gcc and g++), make,
+and several other smaller tools.
+
+To install Dibbler package from sources, go to project homepage and
+download latest tar.gz source archive. Extract it using available tool
+for that purpose (in most cases that would be tool called tar and
+gzip).
+
+After sources are extracted, they must be configured to match specific
+operating system. To complete this step, a configure script must be
+called:
+\begin{lstlisting}
+./configure
+\end{lstlisting}
+
+Configure script accepts many parameters, so if like to tweak
+something, here is your chance. You may run \verb+./configure --help+
+to see list of available parameters. For example, to set up sources to
+compile in debug mode (useful if you want to debug them or provide
+better bugreport), you can do this:
+
+\begin{lstlisting}
+./configure --enable-debug
+\end{lstlisting}
+
+Once configure completes its operation, it prints out details of its
+configuration and source are ready for compilation. To build all
+components, just type make. If you want to make specific component
+only, you may use it as parameter to make, e.g. 
+\verb+make server+. After successful compilation type \verb+make install+ to
+install compiled code in your system.
+
+For example, to build server and relay, type:
+
+\begin{verbatim}
+tar zxvf dibbler-0.8.1RC1-src.tar.gz
+./configure
+make server relay
+make install
+mkdir -p /var/lib/dibbler
+\end{verbatim}
+
+Note that configure script was added in 0.8.1RC1. Earlier sources do
+not need that step.
+
+Dibbler was compiled using gcc 2.95, 3.0, 3.2, 3.3, 3.4, 4.0, 4.1,
+4.2, 4.3, 4.4 and 4.5 versions. Note that many older compilers are is
+now considered obsolete and ware not tested for some time. Lexer files
+(grammar defined config file) were generated using flex 2.5.33. Parser
+file were created using bison++ 1.21.9. Flex and bison++ tools are not
+required to compile Dibbler. Generated files are placed in GIT and in
+tar.gz archives. Dibbler requires also make. Autoconf and automake
+tools (autotools) were used for regeneration of the Makefiles and
+configure script.
+ 
+\subsubsection{Modern Windows (XP...Win7) compilation}
+Download dibbler-\version-src.tar.gz and extract it. In
+\verb+Port-win32+ there are several project files (for server, client
+and relay) for MS Visual Studio 2008. According to authors knowledge,
+it is possible to compile dibbler using free MS Visutal C++ Express
+2008 edition. Previous dibbler releases were compiled using MS Visual
+Studio .NET (sometimes called 2002) and 2003. Those versions are not
+supported anymore. It might work with newest dibber version, but there
+are no guarantee. Open \verb+dibbler-win32.vs2008.sln+ solution file
+click Build command. That should start compilation. After a while,
+binary exe files will be stored in the \verb+Debug/+ or
+\verb+Release/+ directories.
+
+\subsubsection{Legacy Windows (NT/2000) compilation}
+Windows NT4/2000 port is considered experimental, but there are reports
+that it works just fine. To compile it, you should download dev-cpp
+(\url{http://www.bloodshed.net/dev/devcpp.html}), a free IDE for
+Windows utilising minGW port of the gcc for Windows. Run dev-cpp,
+click ,,open project...'', and open one of the \verb+*.dev+ files located
+in the Port-winnt2k directory, then click compile. You also should
+take a look at \verb+Port-winnt2k/INFO+ file for details.
+
 
 \subsection{IPv6 support}
 Some systems does not have IPv6 enabled by default. In that is the case,
@@ -136,12 +232,12 @@ following command: \verb+ping6 ::1+ (Linux) or \verb+ping ::1+
 (Windows). If you get replies, you have IPv6 already installed.
 
 \subsubsection{Setting up IPv6 in Linux}
-Most modern Linux distributions have IPv6 enabled by default, so there
+Almost all modern Linux distributions have IPv6 enabled by default, so there
 is very good chance that nothing has to be done. However, if that is
 not the case, IPv6 can be enabled in Linux systems in two ways:
 compiled directly into kernel or as a module. If you don't have IPv6
 enabled, try to load IPv6 module: \verb+modprobe ipv6+ (command
-executed as root) and try ping6 once more. If that fails, you have to
+executed as root) and try \verb+ping6 ::1+. If that fails, you have to
 recompile kernel to support IPv6. There are numerous descriptions how
 to recompile kernel available on the web, just type "kernel
 compilation howto" in \href{http://www.google.com}{Google}.
@@ -228,92 +324,3 @@ description was provided by Sob
     distribution kit (\verb+C:\IPv6Kit+).
   \item IPv6 is now installed.
 \end{enumerate}
-
-\subsection{Compilation}
-Dibbler is distributed in 2 versions: binary and source code. For
-most users, binary version is better choice.  Compilation is
-performed by more experienced users, preferably with programming
-knowledge. It does not offer significant advantages over binary version,
-only allows to understand internal Dibbler workings. You probably want
-just install and use Dibbler. If that is your case, read section
-named \emph{Installation}. However, if you are skilled enough, you might
-want to tune several Dibbler aspects during compilation. See \emph{
-Dibbler Developer's Guide} for information about various compilation parameters.
-
-\subsubsection{Linux compilation}
-
-Compilation in most cases is not necessary and should be performed
-only by experienced users. To compile dibbler, issue following commands:
-\begin{lstlisting}
-tar zxvf dibbler-0.8.0-src.tar.gz
-cd dibbler
-make server client relay doc
-\end{lstlisting}
-
-That's it. You can also install it in the system by issuing command:
-
-\begin{lstlisting}
-make install
-\end{lstlisting}
-
-If there are problems with missing/different compiler
-version, take a look at the beginning of the Makefile.inc
-file. Dibbler was compiled using gcc 2.95, 3.0, 3.2, 3.3, 3.4, 4.0 and 4.1
-versions. Note that 2.95 is now considered obsolete and was not tested
-for some time. Lexer files were generated using flex 2.5.33. Parser file
-were created using bison++ 1.21.9\footnote{flex and bison++ tools are
-  not required to compile Dibbler. Generated files are placed in CVS
-  and in tar.gz archives}.
-
-If there are problems with \verb+SrvLexer.cpp+ and
-\verb+ClntLexer.cpp+ files, please use FlexLexer.h in Port-linux/
-directory. Most simple way to do this is to copy this file to
-\verb+/usr/include+ directory.
-
-\subsubsection{Modern Windows (XP...Win7) compilation}
-Download dibbler-\version-src.tar.gz and extract it. In
-\verb+Port-win32+ there are several project files (for server, client
-and relay) for MS Visual Studio 2008. According to authors knowledge,
-it is possible to compile dibbler using free MS Visutal C++ Express
-2008 edition. Previous dibbler releases were compiled using MS Visual
-Studio .NET (sometimes called 2002) and 2003. Those versions are not
-supported anymore. It might work with newest dibber version, but there
-are no guarantee. Open \verb+dibbler-win32.vs2008.sln+ solution file
-click Build command. That should start compilation. After a while,
-binary exe files will be stored in the \verb+Debug/+ or
-\verb+Release/+ directories.
-
-\subsubsection{Legacy Windows (NT/2000) compilation}
-Windows NT4/2000 port is considered experimental, but there are reports
-that it works just fine. To compile it, you should download dev-cpp
-(\url{http://www.bloodshed.net/dev/devcpp.html}), a free IDE for
-Windows utilising minGW port of the gcc for Windows. Run dev-cpp,
-click ,,open project...'', and open one of the \verb+*.dev+ files located
-in the Port-winnt2k directory, then click compile. You also should
-take a look at \verb+Port-winnt2k/INFO+ file for details.
-
-\subsubsection{Mac OS X compilation}
-\label{compile-macos}
-Mac OS X is supported since 0.8.0 version. Currently support for this
-platform is usable, but there are still several limitations:
-\begin{itemize}
-\item there are no ready to use binary (dmg) packages
-\item client is not able to configure DNS servers or domain name
-  informations
-\item compilation requires simple makefile modification
-\end{itemize}
-
-To compile Dibbler on Mac OS X, please download and extract the latest
-sources:
-\begin{verbatim}
-tar zxvf dibbler-0.8.0-src.tar.gz
-\end{verbatim}
-After extraction is complete, edit Makefile.inc file, comment out
-Linux section (marked as \verb+=== Port: Linux ===+)
-and uncomment Mac OS X section (marked as
-\verb+=== Port: Mac OS ===+). After that is complete, following
-command should build required components:
-
-\begin{verbatim}
-make server client relay
-\end{verbatim}
