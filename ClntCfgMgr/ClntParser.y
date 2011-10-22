@@ -168,7 +168,7 @@ GlobalOptionDeclaration
 
 InterfaceOptionDeclaration
 : IAOptionDeclaration
-| NoIAsOptions
+| StatelessMode
 | UnicastOption
 | DNSServerOption
 | DomainOption
@@ -510,7 +510,7 @@ DuidTypeOption
 }
 ;
 
-NoIAsOptions
+StatelessMode
 :   STATELESS_
 {
     ParserOptStack.getLast()->setIsIAs(false);
