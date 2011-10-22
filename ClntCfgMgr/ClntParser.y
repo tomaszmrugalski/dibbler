@@ -733,6 +733,23 @@ PDOptionsList '}'
 {
     EndPDDeclaration();
 }
+|PD_ Number 
+{
+    Log(Debug) << "Prefix delegation option found, setting IAID to" << $2 << LogEnd;
+    StartPDDeclaration();
+    EndPDDeclaration();
+    ClntCfgPDLst.getLast()->setIAID($2);
+}
+|PD_ Number '{'
+{
+    StartPDDeclaration();
+    this->iaid = $2;
+}
+PDOptionsList '}'
+{
+    EndPDDeclaration();
+    ClntCfgPDLst.getLast()->setIAID($2);
+}
 ;
 
 PDOptionsList
