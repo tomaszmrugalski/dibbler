@@ -5,6 +5,7 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *          Mateusz Ozga <matozga@gmail.com>
  *
  * released under GNU GPL v2 only licence
  *
@@ -50,6 +51,9 @@ public:
     TClntCfgIface(int ifaceNr);
 
     void setRouting(bool enabled);
+    bool isRoutingEnabled();
+    EState getRoutingEnabledState();
+    void setRoutingEnabledState(EState state);
 
     bool isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid);
 
@@ -245,6 +249,7 @@ private:
     EState VendorSpecState;
     EState KeyGenerationState;
     EState AuthenticationState;
+    EState RoutingEnabledState;
 
     bool ReqDNSServer;
     bool ReqDomain;
@@ -260,6 +265,7 @@ private:
     bool ReqLifetime;
     bool ReqPrefixDelegation;
     bool ReqVendorSpec;
+    bool RoutingEnabled;
 
     TOptionStatusLst ExtraOpts; // extra options to be sent to server
 };

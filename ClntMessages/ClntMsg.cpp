@@ -4,7 +4,8 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
- *
+ *          Mateusz Ozga <matozga@gmail.com>
+ * 
  * released under GNU GPL v2 only licence
  *
  * $Id: ClntMsg.cpp,v 1.42 2008-11-13 22:40:26 thomson Exp $
@@ -672,6 +673,19 @@ void TClntMsg::appendRequestedOptions() {
 	while (optVendor = iface->getVendorSpec()) {
 	    Options.push_back( (Ptr*) optVendor);
 	}
+    }
+
+    // --- option: Routing ---
+    if ( (this->MsgType == SOLICIT_MSG || this->MsgType == REQUEST_MSG ||     
+         this->MsgType == RENEW_MSG || this->MsgType ==  REBIND_MSG ||
+         this->MsgType == INFORMATION_REQUEST_MSG) &&
+         iface->isRoutingEnabled() ) {
+
+        optORO->addOption(OPTION_NEXT_HOP);
+        optORO->addOption(OPTION_RTPREFIX);
+        
+        // only for debugging
+        Log(Debug) << "Adding NEXT_HOP and RTPREFIX to ORO." << LogEnd;
     }
 
     // --- option: ADDRPARAMS ---
