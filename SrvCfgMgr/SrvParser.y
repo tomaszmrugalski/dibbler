@@ -24,6 +24,7 @@
 #include "Logger.h"
 #include "FQDN.h"
 #include "OptVendorSpecInfo.h"
+#include "OptRtPrefix.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
 #include "SrvCfgClientClass.h"
@@ -72,13 +73,16 @@ bool EndTAClassDeclaration();                                                   
 void StartPDDeclaration();                                                           \
 bool EndPDDeclaration();                                                             \
 TSrvCfgMgr * CfgMgr;                                                                 \
+SPtr<TOpt> nextHop;                                                                  \
 virtual ~SrvParser();
 
 // constructor
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
 %define CONSTRUCTOR_CODE                                                          \
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    this->lex = lex;
+    this->lex = lex;                                                              \
+    CfgMgr = 0;                                                                   \
+    nextHop = 0;
 
 %union
 {
@@ -390,31 +394,21 @@ PDOptions
 NextHopDeclaration:
 NEXT_HOP_ IPV6ADDR_ '{'
 {
-    /// @todo: start next_hop definition
-    // Here we start definition of next-hop.
-    // Create NEXT_HOP option here.
-    // In RouteList probaby RT_PREFIX option
-    // will be added to that option.
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2, true);
+    SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
+    nextHop = myNextHop; 
 }
 RouteList '}'
 {
-    /// @todo: end next_hop definition
-    // next hop definition is finished. Store this option
-    // see DsliteAftrName for example how methods of 
-    // SrvCfgIface can be accessed.
-    // Do not use addExtraOption, however. addExtraOption
-    // is only useful for options that can be present only
-    // once. both RT_PREFIX and NEXT_HOP may be present
-    // couple of times.
-    /// if there is something wrong, call YYABORT;
+    SrvCfgIfaceLst.getLast()->addExtraOption(nextHop, false);
+    nextHop = 0;
+    //should we call YYABORT;?
 }
 | NEXT_HOP_ IPV6ADDR_
 {
-    /// @todo: default router (no routes defined)
-}
-| NEXT_HOP_
-{
-    /// @todo: remove this entry - it is just for parser debugging
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2, true);
+    SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
+    SrvCfgIfaceLst.getLast()->addExtraOption(myNextHop, false);
 }
 ;
 
@@ -426,19 +420,30 @@ RouteList
 Route:
 ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_ 
 {
-    /// @todo: add route to NEXT_HOP
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2, true);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix($6, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_
 {
-    /// @todo: add route with infinite length
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2, true);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INFINITE_
 {
-    /// @todo: add route with infinite length
-}
-| ROUTE_
-{
-
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2, true);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
 };
 
 /////////////////////////////////////////////////////////////////////////////
