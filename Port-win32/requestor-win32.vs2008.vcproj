@@ -406,6 +406,10 @@
 					RelativePath="..\Misc\Logger.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Messages"
@@ -514,6 +518,10 @@
 				</File>
 				<File
 					RelativePath="..\Misc\Portable.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.h"
 					>
 				</File>
 			</Filter>

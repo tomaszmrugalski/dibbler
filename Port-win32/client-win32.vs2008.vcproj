@@ -1113,6 +1113,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Misc\ScriptParams.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Misc\sha1.c"
 					>
 				</File>
@@ -1631,6 +1635,10 @@
 				</File>
 				<File
 					RelativePath="..\misc\Portable.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.h"
 					>
 				</File>
 				<File
