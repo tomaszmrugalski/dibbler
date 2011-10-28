@@ -36,6 +36,10 @@ SPtr<TIPv6Addr> TOptAddr::getAddr() {
     return Addr;
 }
 
+std::string TOptAddr::getPlain() {
+    return Addr->getPlain();
+}
+
 char * TOptAddr::storeSelf(char* buf) {
 
     buf = writeUint16( buf, OptType );

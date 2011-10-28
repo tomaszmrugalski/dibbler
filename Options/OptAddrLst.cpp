@@ -6,16 +6,11 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptAddrLst.cpp,v 1.1 2004-11-02 01:23:13 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
  */
 
 
 #include <stdlib.h>
+#include <sstream>
 #include "Portable.h"
 #include "OptAddrLst.h"
 #include "DHCPConst.h"
@@ -71,3 +66,12 @@ bool TOptAddrLst::isValid()
     return this->Valid;
 }
 
+std::string TOptAddrLst::getPlain() {
+    stringstream tmp;
+    AddrLst.first();
+    SPtr<TIPv6Addr> addr;
+    while (addr = AddrLst.get()) {
+        tmp << addr->getPlain() << " ";
+    }
+    return tmp.str();
+}
