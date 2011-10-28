@@ -89,8 +89,8 @@ public:
     int getCacheSize();
     bool reconfigureSupport();
 
-    void fqdnDdnsAddress(SPtr<TIPv6Addr> ddnsAddress);
-    SPtr<TIPv6Addr> fqdnDdnsAddress();
+    void setDDNSAddress(SPtr<TIPv6Addr> ddnsAddress);
+    SPtr<TIPv6Addr> getDDNSAddress(int iface);
 
     // Bulk-LeaseQuery
     void bulkLQAccept(bool enabled);

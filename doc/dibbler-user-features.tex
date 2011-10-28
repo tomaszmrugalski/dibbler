@@ -5,7 +5,7 @@ features. Since this section was added recently, it is not yet
 comprehensive. That is expected to change.
 
 \subsection{Prefix delegation}
-\label{features-prefix}
+\label{feature-prefix}
 Prefix delegation is a mechanism that allows two routers to delegate
 (``assign'') prefixes in similar way as server can delegate
 (``lease'') addresses to hosts. As specified in \cite{rfc3633}: \emph{
@@ -77,7 +77,7 @@ prefixes configuration. Also section \ref{example-client-prefix}
 provides information related to client configuration.
 
 \subsection{Relays}
-\label{features-relays}
+\label{feature-relays}
 In small networks, all nodes (server, hosts and routers) are connected
 to the same network segment -- usually Ethernet segment or a single
 access point or hotspot. This is very convenient as all clients can
@@ -135,7 +135,7 @@ must be properly configured to support such traffic. See section
 section \ref{example-relay-cascade} for example relays configuration.
 
 \subsection{Custom options}
-\label{features-custom-options}
+\label{feature-custom-options}
 Dibbler is the DHCPv6 with support for a very large number of
 options. However, there are always some new options that are not yet
 supported. Another case is that vendors sometimes want to develop
@@ -194,7 +194,7 @@ so it is possible to transmit already defined options using this
 feature. Use with caution!
 
 \subsection{Confirm}
-\label{features-confirm}
+\label{feature-confirm}
 Client detects if previous client instance was not shutdown properly
 (due to power outage, client crash, forceful shutdown or similar
 event). In such case, it reads existing address database and checks if
@@ -216,7 +216,7 @@ detect when it moves to new link and react accordingly. Client sends
 still usable on this new link.
 
 \subsection{Leasequery}
-\label{features-leasequery}
+\label{feature-leasequery}
 Servers provide addresses, prefixes and other configuration options to
 the clients. Sometime administrators may want to obtain information
 regarding certain leases, e.g. who has been given a specific address
@@ -261,13 +261,16 @@ dibbler-requestor -i eth0 -duid 00:01:00:01:0e:8d:a2:d7:00:08:54:04:a3:24
 \end{lstlisting}
 
 \subsection{Stateless vs stateful and IA, TA options}
-\label{features-stateless-stateful}
+\label{feature-stateless-stateful}
 This section explains the difference between stateless and stateful
 configurations. IA and TA options usage is also described.
 
 Usually, normal stateful configuration based on non-temporary
 addresses should be used. If you don't know, what temporary addresses
 are, you don't need them.
+
+Note that DHCPv6 stateless autoconfiguration is part of stateless autoconfiguration
+defined in \cite{rfc4862}.
 
 There are two kinds of configurations in DHCPv6 (\cite{rfc3315},
 \cite{rfc3736}):
@@ -354,7 +357,7 @@ several combinations are illegal. Here is a complete list:
 \end{description}
 
 \subsection{DNS Update}
-\label{features-fqdn}
+\label{feature-dns-update}
 During normal operation, DHCPv6 client receives one or more IPv6
 address(es) from DHCPv6 server. If configured to do so, it can also
 receive information about DNS server addresses. As an additional
@@ -386,8 +389,10 @@ To configure this feature, following steps must be performed:
 
 \begin{enumerate}
 \item Configure DNS server. DNS server supporting IPv6 and dynamic
-  updates must be configured. One example of such server is a BIND
-  9.3. It is necessary to allow listening on the IPv6 sockets and
+  updates must be configured. One example of such server is an
+  excellent \href{http://www.isc.org/software/bind}{ISC BIND}
+  software. Version used during writing of this documentation was BIND
+  9.7.2. It is necessary to allow listening on the IPv6 sockets and
   define that specific domain can be updated. See example below.
 \item Configure Dibbler server to provide DNS server informations for
   clients. DNS Updates will be sent to the first DNS server on the
@@ -406,9 +411,9 @@ To configure this feature, following steps must be performed:
       \begin{itemize}
        \item both (AAAA and PTR) updates by itself
        \item execute PTR only by itself and let client execute AAAA
-	     update
+             update
        \item don't perform any updates and let client perform AAAA
-	     update.
+             update.
       \end{itemize}
 \end{enumerate}
 
@@ -436,7 +441,10 @@ fqdn-ddns-address 2001:db8:1::1
 \end{figure}
 
 \subsubsection{Example BIND configuration}
-Below are example configuration files for the BIND 9.3. First is a
+Below are example configuration files for
+the \href{http://www.isc.org/software/bind}{ISC BIND 9.7.2}, developed
+by \href{http://www.isc.org}{Internet Systems Consortium, Inc.}.
+First is a
 relevant part of the /etc/bind/named.conf configuration file. Generally,
 support for IPv6 in BIND is enabled (listen-on-v6) and there are two
 zones added: example.com (normal domain) and
@@ -500,15 +508,15 @@ of mapping will be done in this zone.
 $ORIGIN .
 $TTL 86400      ; 1 day
 example.com             IN SOA  v13.klub.com.pl. root.v13.klub.com.pl. (
-				129        ; serial
-				7200       ; refresh (2 hours)
-				3600       ; retry (1 hour)
-				604800     ; expire (1 week)
-				86400      ; minimum (1 day)
-				)
-			NS      v13.klub.com.pl.
-			A       1.2.3.4
-			TXT     "Fake domain used for Dibbler tests."
+                                129        ; serial
+                                7200       ; refresh (2 hours)
+                                3600       ; retry (1 hour)
+                                604800     ; expire (1 week)
+                                86400      ; minimum (1 day)
+                                )
+                        NS      v13.klub.com.pl.
+                        A       1.2.3.4
+                        TXT     "Fake domain used for Dibbler tests."
 $ORIGIN example.com.
 $TTL 7200       ; 2 hours
 zoe                     AAAA    2000::123
@@ -532,13 +540,13 @@ $TTL 259200     ; 3 days
 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa IN
       SOA 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa. hostmaster.ep.net. (
 ; this line above is split in two due to page with limitation
-				200608268  ; serial
-				86400      ; refresh (1 day)
-				1800       ; retry (30 minutes)
-				172800     ; expire (2 days)
-				259200     ; minimum (3 days)
-				)
-			NS      klub.com.pl.
+                                200608268  ; serial
+                                86400      ; refresh (1 day)
+                                1800       ; retry (30 minutes)
+                                172800     ; expire (2 days)
+                                259200     ; minimum (3 days)
+                                )
+                        NS      klub.com.pl.
 $ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
 $TTL 86200      ; 23 hours 56 minutes 40 seconds
 3.2.1                   PTR     picard.example.com.
@@ -685,14 +693,14 @@ iface "eth0" {
 # for a specific address or a DUID
 
  option fqdn 1 64
-	     zebuline.example.com - 2000::1,
-	     kael.example.com - 2000::2,
-	     wash.example.com - 0x0001000043ce25b40013d4024bf5,
-	     zoe.example.com,
-	     malcolm.example.com,
-	     kaylee.example.com,
-	     jayne.example.com,
-	     inara.example.com
+             zebuline.example.com - 2000::1,
+             kael.example.com - 2000::2,
+             wash.example.com - 0x0001000043ce25b40013d4024bf5,
+             zoe.example.com,
+             malcolm.example.com,
+             kaylee.example.com,
+             jayne.example.com,
+             inara.example.com
 
 # specify what to do with client's names that are not on the list
 # 0 - reject
@@ -707,6 +715,7 @@ iface "eth0" {
 \end{lstlisting}
 
 \subsection{Introduction to client classification}
+\label{feature-client-class}
 It is possible to define more than one address class for a single
 interface. Normally, when a client asks for an address, one of the
 classes is being chosen on a random basis. If not specified otherwise,
@@ -729,7 +738,7 @@ declaration looks like this:
 
 \begin{lstlisting}
 Client-class TelephoneClass{
-	match-if ( client.vendor-spec.en == 1234567)
+        match-if ( client.vendor-spec.en == 1234567)
 }
 \end{lstlisting}
 
@@ -833,7 +842,7 @@ responding.
 Example 1 :
 \begin{lstlisting}
 Client-class CPEClass {
-	match-if ( client.vendor-spec.data contain CPE )
+        match-if ( client.vendor-spec.data contain CPE )
 }
 \end{lstlisting}
 Client belongs to CPEClass if its request message contains the Vendor
@@ -881,7 +890,7 @@ Below is the algorithm used by the server to assign an address to the client.
 
 
 \subsection{XML files}
-\label{features-xml}
+\label{feature-xml}
 During its execution, all dibbler components (client, server and
 relay) store its internal information in the XML files. In Linux
 systems, they are stored in the \verb+/var/lib/dibbler+ directory. In
@@ -905,14 +914,18 @@ description for server only:
 
 
 \subsection{Authentication and Authorization}
-\label{features-auth}
+\label{feature-auth}
 
 Implementation of authentication and authorization in Dibbler is
 loosely based on \cite{draft-aaa}. Mainly option formats have been
-used, for interoperability purposes. Draft does not specify how to
-communicate with home and foreign AAA servers (AAAH and AAAF) using
-Diameter or Radius protocol, so Dibbler uses a different, simpler
-approach. Keys are stored locally in files. (see Fig. \ref{fig-aaa}).
+used, for interoperability purposes. This means that there should be
+no reasonable expectation of interoperability with other
+implementations.
+
+Draft does not specify how to communicate with home and foreign AAA
+servers (AAAH and AAAF) using Diameter or Radius protocol, so Dibbler
+uses a different, simpler approach. Keys are stored locally in
+files. (see Fig. \ref{fig-aaa}).
 
 \begin{figure}[ht]
 \begin{center}
@@ -985,7 +998,7 @@ b9a6452c
 When configuration files are prepared and stored in client's and
 server's \textit{AAA directory} you are ready to use
 authentication. For detailed description of possible options see
-\ref{client-conf-extension}. For quick start:
+\ref{client-conf-reference}. For quick start:
 \begin{itemize}
  \item set ``\texttt{auth-enabled true}'' in \texttt{client.conf}
 
@@ -998,7 +1011,7 @@ See section \ref{example-client-auth} for example client configuration
 and \ref{example-server-auth} for server configuration.
 
 \subsection{Exceptions: per client configuration}
-\label{features-exceptions}
+\label{feature-exceptions}
 All configuration parameters (except FQDN) are the same for all
 clients, e.g. all clients will receive the same domain name and the
 same DNS servers information.
@@ -1019,6 +1032,7 @@ See section \ref{example-server-exceptions} for server configuration
 examples.
 
 \subsection{Vendor specific information}
+\label{feature-vendor-spec}
 Dibbler supports vendor specific information options. As the name
 suggests, that option is specific to a particular vendor. To be able
 to support any vendor in a flexible manner, values are specified in a
@@ -1260,7 +1274,7 @@ following syntax:
 # client.conf - request specific address/prefix
 iface eth0 {
     ia {
-	address { 2001:db8:dead:beef:: }
+        address { 2001:db8:dead:beef:: }
     }
     pd {
        prefix 2001:db8:aaaa::/64
@@ -1289,7 +1303,7 @@ default. To enable them, ,,experimental'' keyword must be placed in
 the \verb+client.conf+ or \verb+server.conf+ files.
 
 \subsubsection{Address Parameters}
-
+\label{feature-addr-params}
 \textbf{Note: This feature is experimental, i.e. it is not described
 by any RFC or even internet draft. Don't use it, unless you exactly
 know what you are doing.}
@@ -1356,9 +1370,13 @@ iface eth0 {
 }
 \end{lstlisting}
 
-\subsubsection{External scripts}
-\Note Support for external scripts was rewritten in 0.8.1
+\subsubsection{External script}
+\label{feature-script}
+
+\Note Support for external scripts was rewritten in 0.8.1RC1
 release. Note that mapping prefix and notify scripts were removed.
+
+Support for server-side script was introduced in 0.8.1RC1.
 
 Dibbler-client is able to receive addresses, prefixes and numerous
 additional options. It will do its best to set up those parameters in
@@ -1389,7 +1407,7 @@ that each PREFIX variable does contain quadriplet of (prefix,
 prefix-length, preferred-lifetime, valid-lifetime) separated by spaces.
 
 Support for additional options is in progress. Options will be passed
-as additional environment variables. 
+as additional environment variables.
 
 To enable script execution, \verb+script+ global option must
 be added to \verb+client.conf+ file. For example:
@@ -1404,7 +1422,7 @@ iface eth0 {
 \end{lstlisting}
 
 \subsubsection{Remote Autoconfiguration}
-\label{features-remote-autoconf}
+\label{feature-remote-autoconf}
 Every time a node attaches to a new link, it must renew or
 obtain new address and parameters, using DHCPv6 protocol (namely
 \msg{CONFIRM} or \msg{SOLICIT} messages.  In case of mobile nodes,
@@ -1536,21 +1554,5 @@ script must be present in the working directory (that would be
 This feature was removed in 0.8.0RC1.
 
 \subsubsection{Tunnel mode}
-As support for DS-Lite \cite{draft-ds-lite} support was added in
-0.8.0RC1, the old support for configuring tunnels was retired. That
-old, removed configuration worked as follows:
-
-In some scenarios, dibbler may be used for router configuration. IPv6
-routers may need some extra information for tunnel creation. Dibbler
-provided support for conveying such parameters. As routers may use
-different tunneling schemes, there was also a special option that is
-used to convey the tunneling mode. It was possible to instruct server
-server to send tunnel endpoint address, using vendor-specific option
-with customisable vendor-id field. Following tunnel modes were
-supported:
-
-\begin{itemize}
-\item 0 -- don't create tunnel at all
-\item 1 -- use IPv4-to-IPv6 NAT
-\item 2 -- create IPv4-over-IPv6 tunnel
-\end{itemize}
+As support for DS-Lite \cite{rfc6334} support was added in
+0.8.0RC1, the old support for configuring tunnels was removed.

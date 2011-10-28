@@ -412,6 +412,7 @@ TSrvTransMgr & TSrvTransMgr::instance()
   return *Instance;
 }
 
+/// TODO Remove this horrible workaround!
 SPtr<TSrvMsg> TSrvTransMgr::getCurrentRequest()
 {
     return requestMsg;
@@ -425,4 +426,3 @@ ostream & operator<<(ostream &s, TSrvTransMgr &x)
     return s;
 }
 
-// vim:ts=8 noexpandtab

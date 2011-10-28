@@ -54,7 +54,6 @@ name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
 ta                    { return ClntParser::TA_; }
 iaid                  { return ClntParser::IAID_; }
-no-ia                 { return ClntParser::STATELESS_;}
 stateless             { return ClntParser::STATELESS_;}
 log-level             { return ClntParser::LOGLEVEL_; }
 log-mode              { return ClntParser::LOGMODE_; }
@@ -64,6 +63,7 @@ log-colors            { return ClntParser::LOGCOLORS_; }
 work-dir              { return ClntParser::WORKDIR_;}
 script                { return ClntParser::SCRIPT_; }
 prefered-lifetime     { return ClntParser::PREF_TIME_; }
+preferred-lifetime    { return ClntParser::PREF_TIME_; }
 valid-lifetime        { return ClntParser::VALID_TIME_; }
 remote-autoconf       { return ClntParser::REMOTE_AUTOCONF_; }
 t1                    { return ClntParser::T1_;}
@@ -77,14 +77,17 @@ sip-server            { return ClntParser::SIP_SERVER_; }
 sip-domain            { return ClntParser::SIP_DOMAIN_; }
 fqdn                  { return ClntParser::FQDN_; }
 fqdn-s                { return ClntParser::FQDN_S_; }
+ddns-protocol         { return ClntParser::DDNS_PROTOCOL_; }
+ddns-timeout          { return ClntParser::DDNS_TIMEOUT_; }
 nis-server            { return ClntParser::NIS_SERVER_; }
 nis-domain            { return ClntParser::NIS_DOMAIN_; }
 nis\+-server          { return ClntParser::NISP_SERVER_; }
 nis\+-domain          { return ClntParser::NISP_DOMAIN_; }
 lifetime              { return ClntParser::LIFETIME_; }
 routing               { return ClntParser::ROUTING_; }
-reject-server         { return ClntParser::REJECT_SERVERS_;}
-prefered-server       { return ClntParser::PREFERRED_SERVERS_;}
+reject-servers        { return ClntParser::REJECT_SERVERS_;}
+preferred-servers     { return ClntParser::PREFERRED_SERVERS_;}
+prefered-servers      { return ClntParser::PREFERRED_SERVERS_;}
 rapid-commit          { return ClntParser::RAPID_COMMIT_;}
 reconfigure-accept    { return ClntParser::RECONFIGURE_; }
 unicast               { return ClntParser::UNICAST_; }

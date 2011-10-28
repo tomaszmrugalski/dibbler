@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <ctype.h>
 #include "Portable.h"
 
@@ -347,7 +348,7 @@ uint64_t ntohll(uint64_t n) {
 /// @param buf pointer to first byte of buffer
 ///
 /// @return read 16-bits value
-inline uint16_t readUint16(const BUFFER_TYPE * buf) {
+uint16_t readUint16(const BUFFER_TYPE * buf) {
     uint16_t value = ( ((uint16_t)buf[0]) << 8) + buf[1];
     return value;
 }
@@ -360,7 +361,7 @@ inline uint16_t readUint16(const BUFFER_TYPE * buf) {
 /// @param word 16-bits value to be stored
 ///
 /// @return pointer to the next byte after stored value
-inline BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word) {
+BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word) {
     buf[0] = (uint8_t)( (word >> 8) & 0xff );
     buf[1] = (uint8_t)( (word) & 0xff );
     return buf + sizeof(uint16_t);
@@ -373,7 +374,7 @@ inline BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word) {
 /// @param buf pointer to first address of buffer
 ///
 /// @return read value
-inline uint32_t readUint32(const BUFFER_TYPE * buf) {
+uint32_t readUint32(const BUFFER_TYPE * buf) {
     uint32_t value = ( ( (uint32_t)(buf[0]) ) << 24)
         + ( ( (uint32_t)(buf[1])) << 16)
         + ( ( (uint32_t)(buf[2])) << 8) + buf[3];
@@ -388,7 +389,7 @@ inline uint32_t readUint32(const BUFFER_TYPE * buf) {
 /// @param word 32-bits value to be stored
 ///
 /// @return pointer to the next byte after stored value
-inline BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword) {
+BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword) {
     buf[0] = (uint8_t)( (dword >> 24) & 0xff );
     buf[1] = (uint8_t)( (dword >> 16) & 0xff );
     buf[2] = (uint8_t)( (dword >> 8) & 0xff );
@@ -403,7 +404,7 @@ inline BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword) {
 /// @param buf pointer to first address of buffer
 ///
 /// @return read value
-inline uint64_t readUint64(const BUFFER_TYPE * buf) {
+uint64_t readUint64(const BUFFER_TYPE * buf) {
     uint64_t value = ( ( (uint64_t)(buf[0]) ) << 56)
         + ( ( (uint64_t)(buf[1])) << 48)
 	+ ( ( (uint64_t)(buf[2])) << 40)
@@ -422,7 +423,7 @@ inline uint64_t readUint64(const BUFFER_TYPE * buf) {
 /// @param word 64-bits value to be stored
 ///
 /// @return pointer to the next byte after stored value
-inline BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword) {
+BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword) {
     buf[0] = (uint8_t)( (qword >> 56) & 0xff );
     buf[1] = (uint8_t)( (qword >> 48) & 0xff );
     buf[2] = (uint8_t)( (qword >> 40) & 0xff );

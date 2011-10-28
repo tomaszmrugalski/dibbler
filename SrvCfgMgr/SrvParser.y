@@ -1298,7 +1298,7 @@ FqdnDdnsAddress
 :FQDN_DDNS_ADDRESS_ IPV6ADDR_
 {
     addr = new TIPv6Addr($2);
-    CfgMgr->fqdnDdnsAddress( addr );
+    CfgMgr->setDDNSAddress(addr);
     Log(Info) << "FQDN: DDNS updates will be performed to " << addr->getPlain() << "." << LogEnd;
 };
 
@@ -1311,6 +1311,12 @@ DdnsProtocol
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_UDP);
     else if (!strcasecmp($2,"any"))
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_ANY);
+    else {
+        Log(Crit) << "Invalid ddns-protocol specifed:" << ($2) 
+                  << ", supported values are tcp, udp, any." << LogEnd;
+        YYABORT;
+    }
+    Log(Debug) << "DDNS: Setting protocol to " << ($2) << LogEnd;
 };
 
 DdnsTimeout

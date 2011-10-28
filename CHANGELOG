@@ -22,6 +22,9 @@
   - Fix: alignment memory reads, tested on ARMv5 (bug #221)
   - Changed default number of addresses allowed per client from millions to 10
   - Srv: number of currently allocated prefixes is set correctly after restart and database reload
+  - Several server and client fixes for DNS Update
+  - Cli: Obsolete "no-ia" statement removed. Corrected spelling of "preferred" in config parser.
+  - It is now possible to specify IAID for PD
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

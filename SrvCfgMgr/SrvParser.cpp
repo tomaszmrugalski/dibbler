@@ -1082,10 +1082,10 @@ static const short yyrline[] = { 0,
   1072,  1079,  1084,  1089,  1097,  1098,  1099,  1100,  1101,  1102,
   1103,  1104,  1105,  1106,  1107,  1108,  1112,  1141,  1174,  1178,
   1187,  1190,  1199,  1203,  1212,  1222,  1225,  1234,  1237,  1247,
-  1255,  1258,  1266,  1270,  1278,  1285,  1290,  1298,  1306,  1317,
-  1327,  1330,  1339,  1342,  1351,  1361,  1371,  1378,  1380,  1387,
-  1390,  1400,  1406,  1406,  1414,  1423,  1432,  1443,  1447,  1451,
-  1456,  1465
+  1255,  1258,  1266,  1270,  1278,  1285,  1290,  1298,  1306,  1323,
+  1333,  1336,  1345,  1348,  1357,  1367,  1377,  1384,  1386,  1393,
+  1396,  1406,  1412,  1412,  1420,  1429,  1438,  1449,  1453,  1457,
+  1462,  1471
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","RELAY_",
@@ -3009,7 +3009,7 @@ case 258:
 #line 1299 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
-    CfgMgr->fqdnDdnsAddress( addr );
+    CfgMgr->setDDNSAddress(addr);
     Log(Info) << "FQDN: DDNS updates will be performed to " << addr->getPlain() << "." << LogEnd;
 ;
     break;}
@@ -3022,77 +3022,83 @@ case 259:
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_UDP);
     else if (!strcasecmp(yyvsp[0].strval,"any"))
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_ANY);
+    else {
+        Log(Crit) << "Invalid ddns-protocol specifed:" << (yyvsp[0].strval) 
+                  << ", supported values are tcp, udp, any." << LogEnd;
+        YYABORT;
+    }
+    Log(Debug) << "DDNS: Setting protocol to " << (yyvsp[0].strval) << LogEnd;
 ;
     break;}
 case 260:
-#line 1318 "SrvParser.y"
+#line 1324 "SrvParser.y"
 {
     Log(Debug) << "DDNS: Setting timeout to " << yyvsp[0].ival << "ms." << LogEnd;
     CfgMgr->setDDNSTimeout(yyvsp[0].ival);
 ;
     break;}
 case 261:
-#line 1327 "SrvParser.y"
+#line 1333 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 262:
-#line 1330 "SrvParser.y"
+#line 1336 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 ;
     break;}
 case 263:
-#line 1339 "SrvParser.y"
+#line 1345 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 264:
-#line 1342 "SrvParser.y"
+#line 1348 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 ;
     break;}
 case 265:
-#line 1352 "SrvParser.y"
+#line 1358 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISDomain(yyvsp[0].strval);
 ;
     break;}
 case 266:
-#line 1362 "SrvParser.y"
+#line 1368 "SrvParser.y"
 {
     ParserOptStack.getLast()->setNISPDomain(yyvsp[0].strval);
 ;
     break;}
 case 267:
-#line 1372 "SrvParser.y"
+#line 1378 "SrvParser.y"
 {
     ParserOptStack.getLast()->setLifetime(yyvsp[0].ival);
 ;
     break;}
 case 268:
-#line 1378 "SrvParser.y"
+#line 1384 "SrvParser.y"
 {
 ;
     break;}
 case 269:
-#line 1380 "SrvParser.y"
+#line 1386 "SrvParser.y"
 {
     // ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
 ;
     break;}
 case 270:
-#line 1388 "SrvParser.y"
+#line 1394 "SrvParser.y"
 {
     Log(Notice) << "ClientClass found, name: " << string(yyvsp[-1].strval) << LogEnd;
 ;
     break;}
 case 271:
-#line 1391 "SrvParser.y"
+#line 1397 "SrvParser.y"
 {
     SPtr<Node> cond =  NodeClientClassLst.getLast();
     SrvCfgClientClassLst.append( new TSrvCfgClientClass(string(yyvsp[-4].strval),cond));
@@ -3100,12 +3106,12 @@ case 271:
 ;
     break;}
 case 272:
-#line 1401 "SrvParser.y"
+#line 1407 "SrvParser.y"
 {
 ;
     break;}
 case 274:
-#line 1407 "SrvParser.y"
+#line 1413 "SrvParser.y"
 {
     SPtr<Node> r =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3115,7 +3121,7 @@ case 274:
 ;
     break;}
 case 275:
-#line 1415 "SrvParser.y"
+#line 1421 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3126,7 +3132,7 @@ case 275:
 ;
     break;}
 case 276:
-#line 1424 "SrvParser.y"
+#line 1430 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3137,7 +3143,7 @@ case 276:
 ;
     break;}
 case 277:
-#line 1433 "SrvParser.y"
+#line 1439 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3147,26 +3153,26 @@ case 277:
 ;
     break;}
 case 278:
-#line 1444 "SrvParser.y"
+#line 1450 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM));
 ;
     break;}
 case 279:
-#line 1448 "SrvParser.y"
+#line 1454 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_DATA));
 ;
     break;}
 case 280:
-#line 1452 "SrvParser.y"
+#line 1458 "SrvParser.y"
 {
     // Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
     NodeClientClassLst.append(new NodeConstant(string(yyvsp[0].strval)));
 ;
     break;}
 case 281:
-#line 1457 "SrvParser.y"
+#line 1463 "SrvParser.y"
 {
     //Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
     stringstream convert;
@@ -3177,7 +3183,7 @@ case 281:
 ;
     break;}
 case 282:
-#line 1466 "SrvParser.y"
+#line 1472 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3388,7 +3394,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 1472 "SrvParser.y"
+#line 1478 "SrvParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////
