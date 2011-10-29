@@ -1,6 +1,6 @@
 /**
  *
- * @page generalInfo 4.0 General information
+ * @page generalInfo 4 General information
 This section covers several loosely related topics.
 
 @section generalReleases 4.1 Release cycle
@@ -37,7 +37,7 @@ documentation is of course available at
 
 To generate all documentation, type (in Dibbler source directory):
 @verbatim
-make doc oxygen
+make user devel
 @endverbatim
 
 Note that versions 0.7.3 and earlier had Developer's Guide and Code 
