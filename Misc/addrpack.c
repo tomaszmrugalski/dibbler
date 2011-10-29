@@ -386,7 +386,7 @@ uint32_t readUint32(const BUFFER_TYPE * buf) {
 /// Buffer must be at least 4 bytes long.
 ///
 /// @param buf pointer to first byte of buffer
-/// @param word 32-bits value to be stored
+/// @param dword 32-bits value to be stored
 ///
 /// @return pointer to the next byte after stored value
 BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword) {
@@ -420,7 +420,7 @@ uint64_t readUint64(const BUFFER_TYPE * buf) {
 /// Buffer must be at least 8 bytes long.
 ///
 /// @param buf pointer to first byte of buffer
-/// @param word 64-bits value to be stored
+/// @param qword 64-bits value to be stored
 ///
 /// @return pointer to the next byte after stored value
 BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword) {

@@ -16,9 +16,15 @@ When Dibbler implementation will be complete, release number will reach
 1.0.0. Since DHCPv6 specification is extensive, don't expect this to
 happen anytime soon.
 
-@section generalSVN 4.2 SVN repository
+@section generalGIT 4.2 GIT repository
 
-@todo Comment this
+Dibbler currently uses GIT repository available at github.com 
+<a href="https://github.com/tomaszmrugalski/dibbler">https://github.com/tomaszmrugalski/dibbler</a>.
+Please download latest sources from there. Dibbler previously used SVN
+repository. Please DO NOT use it. It is kept around only for students,
+who started their theses using SVN, so they can generate diffs easier.
+Sources in SVN are old, obsolete, buggy and will eat your hard drive if
+if you try to use it.
 
 @section generalDocs 4.3 Documentation
 There are two parts of the documentation: User's Guide and Developer's

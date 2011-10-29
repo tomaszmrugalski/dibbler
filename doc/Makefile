@@ -16,6 +16,17 @@ LATEXOPTS=-file-line-error -halt-on-error
 
 user: dibbler-user.pdf
 
+DOXYGEN  = dibbler-devel-00-mainpage.dox 
+DOXYGEN += dibbler-devel-01-intro.dox
+DOXYGEN += dibbler-devel-02-compile.dox
+DOXYGEN += dibbler-devel-03-port.dox
+DOXYGEN += dibbler-devel-04-common.dox
+DOXYGEN += dibbler-devel-06-arch.dox
+DOXYGEN += dibbler-devel-07-debug.dox
+DOXYGEN += dibbler-devel-08-contrib.dox
+DOXYGEN += dibbler-devel-09-misc.dox
+DOXYGEN += dibbler-devel-bibl.dox
+
 dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	  dibbler-user-config-server.tex dibbler-user-epilogue.tex \
 	  dibbler-user-intro.tex dibbler-user-usage.tex \
@@ -32,10 +43,8 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	-grep "undefined" dibbler-user-3rd_pass.log;
 	-grep "undefined" dibbler-user-1st_pass.log;
 
-devel: dibbler-devel-arch.dox dibbler-devel-bibl.dox dibbler-devel-common.dox \
-	dibbler-devel-compile.dox dibbler-devel-debug.dox dibbler-devel-intro.dox \
-        dibbler-devel-mainpage.dox dibbler-devel-misc.dox dibbler-devel-port.dox
-	doxygen doxygen.cfg
+devel: $(DOXYGEN)
+	doxygen doxygen.cfg > doxygen.log 2>doxygen-error.log
 	cp logo* html/
 
 version.tex:

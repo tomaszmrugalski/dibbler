@@ -1,6 +1,6 @@
 /**
 
-@page faq 8. Frequently Asked Questions
+@page faq 9. Frequently Asked Questions
 This section describes various Dibbler aspects.
 
 - <b>XML files</b> -- After performing any action, server, client and
@@ -25,7 +25,7 @@ transaction is being processed. So each time retrasmission is in fact
 a slightly different message. It differs in that option, so
 UDP checksum is different, so it has to be rebuilt.
 
-@page tips 9. Tips and tricks
+@page tips 10. Tips and tricks
 
  - Linux: Running client and server on the same host requires
   client recompilation with specific option enabled. Please edit
