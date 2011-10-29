@@ -379,10 +379,10 @@ dibbler_requestor_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/Options -I$(top_srcdir)/Messages \
 	-I$(top_srcdir)/Requestor -I$(top_srcdir)/IfaceMgr
 dibbler_requestor_LDADD = -L$(top_builddir)/Requestor -lRequestor \
-	-L$(top_builddir)/Options -lOptions -L$(top_builddir)/Messages \
-	-lMessages -L$(top_builddir)/IfaceMgr -lIfaceMgr \
-	-L$(top_builddir)/Misc -lMisc -L$(top_builddir)/@PORT_SUBDIR@ \
-	-lLowLevel
+	-L$(top_builddir)/Messages -lMessages \
+	-L$(top_builddir)/IfaceMgr -lIfaceMgr -L$(top_builddir)/Misc \
+	-lMisc -L$(top_builddir)/Options -lOptions \
+	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 all: all-recursive
 
 .SUFFIXES:

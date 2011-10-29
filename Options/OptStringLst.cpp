@@ -113,6 +113,21 @@ int TOptStringLst::getSize() {
     }
     return len+4; // 5=4(std.option header) + 1 (final 0)
 }
+
+#if 0
 string TOptStringLst::getString() {
     return *(this->StringLst.get());
+}
+#endif
+
+std::string TOptStringLst::getPlain() {
+    string concat;
+
+    StringLst.first();
+    SPtr<string> s;
+    while (s=StringLst.get()) {
+        concat.append(*s);
+        concat.append(" ");
+    }
+    return concat;
 }

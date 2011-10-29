@@ -108,10 +108,10 @@ dibbler_requestor_CPPFLAGS += -I$(top_srcdir)/Messages -I$(top_srcdir)/Requestor
 dibbler_requestor_CPPFLAGS += -I$(top_srcdir)/IfaceMgr
 
 dibbler_requestor_LDADD = -L$(top_builddir)/Requestor -lRequestor
-dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_requestor_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_requestor_LDADD += -L$(top_builddir)/Misc -lMisc
+dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
 bison: bison/bison++
