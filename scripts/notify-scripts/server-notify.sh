@@ -8,14 +8,14 @@
 
 LOGFILE=/var/lib/dibbler/server-notify.log
 
-echo "-----------" >> $LOGFILE
+echo "---$1--------" >> $LOGFILE
 date >> $LOGFILE
 
 # uncomment this to get full list of available variables
 #set >> $LOGFILE
 
 if [ "$ADDR1" != "" ]; then
-    echo "Address ${ADDR1} (operation $1) to client $REMOTE_ADDR on inteface $IFACE/$IFINDEX" >> $LOGNAME
+    echo "Address ${ADDR1} (operation $1) to client $REMOTE_ADDR on inteface $IFACE/$IFINDEX" >> $LOGFILE
 fi
 
 if [ "$PREFIX1" != "" ]; then
