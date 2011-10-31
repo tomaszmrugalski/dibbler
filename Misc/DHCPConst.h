@@ -36,8 +36,9 @@
 #define RELAY_REPL_MSG 13
 #define LEASEQUERY_MSG       14
 #define LEASEQUERY_REPLY_MSG 15
+// 16 and 17 message types are defined in RFC5460
 // new geolocation message (TODO: which draft?)
-#define GEOLOC_MSG 16
+#define GEOLOC_MSG 18
 
 // implementation specific
 #define CONTROL_MSG    255
