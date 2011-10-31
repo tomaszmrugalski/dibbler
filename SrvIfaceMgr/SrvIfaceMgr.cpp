@@ -29,6 +29,7 @@
 #include "SrvMsgDecline.h"
 #include "SrvMsgInfRequest.h"
 #include "SrvMsgLeaseQuery.h"
+#include "SrvMsgGeoloc.h"
 #include "SrvOptInterfaceID.h"
 #include "IPv6Addr.h"
 #include "AddrClient.h"
@@ -180,6 +181,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	switch (msgtype) {
 	case SOLICIT_MSG:
 	case REQUEST_MSG:
+    case GEOLOC_MSG:
 	case CONFIRM_MSG:
 	case RENEW_MSG:
 	case REBIND_MSG:
@@ -476,6 +478,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
 	      return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
     case LEASEQUERY_MSG:
 	      return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
+    case GEOLOC_MSG:
+              return new TSrvMsgGeoloc(ifaceid, peer, buf, bufsize);
     default:
         Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
         return 0; //NULL;;

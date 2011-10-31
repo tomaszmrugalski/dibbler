@@ -36,6 +36,8 @@
 #define RELAY_REPL_MSG 13
 #define LEASEQUERY_MSG       14
 #define LEASEQUERY_REPLY_MSG 15
+// new geolocation message
+#define GEOLOC_MSG 16
 
 // implementation specific
 #define CONTROL_MSG    255
@@ -71,6 +73,11 @@
 // how long does server caches its replies?
 #define SERVER_REPLY_CACHE_TIMEOUT 60
 
+// client saving geolocation modes
+#define MODE_REMEMBER 1
+#define MODE_ASK 2
+#define MODE_NEVER 3
+
 // RFC3315: supported options
 #define OPTION_CLIENTID         1
 #define OPTION_SERVERID         2
@@ -95,6 +102,8 @@
 #define OPTION_RECONF_ACCEPT    20
 
 // additional options
+// new geolocation option
+#define OPTION_GEOLOC           99
 
 // RFC3319: SIP servers and domains
 #define OPTION_SIP_SERVER_D      21
@@ -173,7 +182,10 @@
 // -- Query types (RFC5007) --
 typedef enum {
     QUERY_BY_ADDRESS = 1,
-    QUERY_BY_CLIENTID = 2
+    QUERY_BY_CLIENTID = 2,
+    //queries with geolocation information
+    QUERY_BY_ADDRESS_WITH_GEOLOC = 3,
+    QUERY_BY_CLIENTID_WITH_GEOLOC = 4
 } ELeaseQueryType;
 
 // --- Option lengths --
@@ -197,6 +209,9 @@ typedef enum {
 
 // INFINITY + 1 is 0. That's cool!
 #define DHCPV6_INFINITY (unsigned) 0xffffffff
+
+//maximum size of cache for geolocation information
+#define MAX_CACHE_SIZE 1024*1024
 
 enum ETentative {
     TENTATIVE_UNKNOWN = -1,

@@ -18,6 +18,7 @@
 #include "OptGeneric.h"
 #include "Logger.h"
 #include "ReqOpt.h"
+#include "OptStringLst.h"
 #include "Portable.h"
 
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
@@ -129,7 +130,12 @@ bool ReqTransMgr::SendMsg()
     if (CfgMgr->addr) {
         Log(Debug) << "Creating ADDRESS-based query. Asking for " << CfgMgr->addr << " address." << LogEnd;
         // Address based query
-        buf[0] = QUERY_BY_ADDRESS;
+        if(CfgMgr->geoloc) {
+            Log(Debug) << "With geolocation information." << LogEnd;
+            buf[0] = QUERY_BY_ADDRESS_WITH_GEOLOC;
+        } else {
+            buf[0] = QUERY_BY_ADDRESS; 
+        }
         // buf[1..16] - link address, leave as ::
         memset(buf+1, 0, 16);
         bufLen = 17;
@@ -144,7 +150,13 @@ bool ReqTransMgr::SendMsg()
     } else {
         Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
         // DUID based query
-        buf[0] = QUERY_BY_CLIENTID;
+        if(CfgMgr->geoloc) {
+            Log(Debug) << "With geolocation information." << LogEnd;
+            buf[0] = QUERY_BY_CLIENTID_WITH_GEOLOC;
+        } else {
+            buf[0] = QUERY_BY_CLIENTID; 
+        }
+        
         // buf[1..16] - link address, leave as ::
         memset(buf+1, 0, 16);
         bufLen = 17;
@@ -223,7 +235,8 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
     for (int i=0; i<recurseLevel; i++)
 	o << "  ";
     string linePrefix = o.str();
-
+    string parameters;
+    this->IsGeoloc = false;
     int pos = 0;
     SPtr<TOpt> ptr;
     bool print = true;
@@ -256,7 +269,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	        pos+=length;
 	        continue;
 	}
-	
+
         string name, o;
         o = "";
         name = "";
@@ -266,7 +279,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	{
 	    name ="Status Code";
 	    unsigned int st = buf[pos]*256 + buf[pos+1];
-	    
+
 	    char *Message = new char[length+10];
 	    memcpy(Message,buf+pos+2,length-2);
 	    sprintf(Message+length-2, "(%d)", st);
@@ -317,7 +330,37 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	    o = out.str();
 	    break;
 	}
-
+        case OPTION_GEOLOC:
+        {
+            name = "LQ Geolocation Information";
+            Log(Info) << "Option " << name << "(code=" << code << "), len=" << length << LogEnd;
+            
+            // get coordinates from message
+	    List(string) coordinates = getCoordinates(buf+pos, length);
+            SPtr<string> c;
+            int i = 0;
+            const char * lat = "";
+            const char * lng = "";
+            
+            // create parameters string which will be passed to graphic interface app
+            coordinates.first();
+            while(c = coordinates.get()) {
+                i++;
+                if(i%2 == 1) {
+                  lat = c->c_str();
+                } else {
+                  lng = c->c_str();
+                  Log(Info) << "  " << lat << " " << lng << LogEnd;
+                  string latitude = lat;
+                  string longitude = lng;
+                  parameters += latitude + " " + longitude + " ";
+                }
+            }
+            
+            print = false;
+            this->IsGeoloc = true;
+            break;
+        }
 	default:
 	    break;
 	}
@@ -325,6 +368,18 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	    Log(Info) << linePrefix << "Option " << name << "(code=" << code << "), len=" << length << ": " << o << LogEnd;
 	print = true;
         pos+=length;
+    }
+    
+    // if there was geoloc request, execute app and show map
+    if(this->IsGeoloc) {
+        string path = REQGEOLOCINFO_PROG;
+        path = path + ' ' + parameters;
+        int execution = system(path.c_str());
+        if(execution != 0) {
+            Log(Info) << "There has been an error during execution of graphic interface of requestor!" << LogEnd;
+        } else {
+            Log(Info) << "Execution successful!" << LogEnd;
+        }
     }
     
     return true;
@@ -342,5 +397,37 @@ string ReqTransMgr::BinToString(char * buf, int bufLen)
     }
 
     return o.str();
+}
+
+/*
+ * Get coordinates from message.
+ * 
+ * We need to change commas to dots (for Google).
+ */
+List(string) ReqTransMgr::getCoordinates(char * buf, int bufLen) {
+    
+    List(string) coordinates;
+    ostringstream o;
+    
+    o << setfill('0');
+    
+    for (int i=1; i<bufLen; i++) {
+        if(buf[i] == ',') {
+            buf[i] = '.';
+            }
+        o << buf[i];
+
+        if(buf[i] == '\0') {
+            SPtr<string> c;
+            string coor = o.str();
+            c = new string(o.str());
+            coordinates.append(c);
+            o.clear();
+            o.str("");
+            i=i+1;
+        }
+    }
+    
+    return coordinates;
 }
 

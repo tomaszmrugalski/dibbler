@@ -21,6 +21,7 @@ typedef struct {
     // message specific parameters
     char * addr;
     char * duid;
+    bool geoloc;
 } ReqCfgMgr;
 
 #endif

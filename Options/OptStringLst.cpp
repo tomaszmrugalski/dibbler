@@ -131,3 +131,7 @@ std::string TOptStringLst::getPlain() {
     }
     return concat;
 }
+
+List(string) TOptStringLst::getList() {
+    return this->StringLst;
+}

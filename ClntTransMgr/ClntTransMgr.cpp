@@ -27,6 +27,8 @@
 #include "ClntMsgInfRequest.h"
 #include "ClntMsgDecline.h"
 #include "ClntMsgConfirm.h"
+#include "ClntMsgGeoloc.h"
+#include "ClntGeolocMgr.h"
 #include "Container.h"
 #include "DHCPConst.h"
 #include "Logger.h"
@@ -569,6 +571,8 @@ bool TClntTransMgr::handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answe
     if ( (question->getType()==REQUEST_MSG || question->getType()==SOLICIT_MSG) &&
 	 (answer->getType()==REPLY_MSG) ) {
 	// we got actual configuration complete here	
+        // we can ask client for geolocation information!
+        sendGeoloc(question, answer);
     }
 
     return true;
@@ -708,6 +712,83 @@ void TClntTransMgr::sendInfRequest(TOptList requestOptions, int iface) {
 	Transactions.append( ptr );    
 }
 
+/*
+ * Check if we should ask client for geolocation information.
+ * If yes, get geoloc info and send message.
+ * If no, do nothing.
+ * 
+ * ClntGeoloMgr has two static functions. There is no need to create an instance
+ * for this manager.
+ * 
+ */
+void TClntTransMgr::sendGeoloc(SPtr<TClntMsg> question, SPtr<TClntMsg> answer) {   
+    
+    int execution;
+    int mode;
+    List(string) coordinates;  
+
+    // check mode
+    mode = TClntGeolocMgr::checkClntConf(CLNTGEOLOCINFOCFG_FILE);
+
+    if(mode == MODE_REMEMBER) {
+        // get coordinates
+        coordinates = TClntGeolocMgr::getCoordinates(CLNTGEOLOCINFOCFG_FILE);
+        
+        if(coordinates.count()) {
+            Log(Info) << "Creating GEOLOC message on ";
+            Log(Cont) << ClntIfaceMgr().getIfaceByID(question->getIface())->getFullName();
+            Log(Cont) << " interface." << LogEnd;
+            SPtr<TClntMsg> ptr = new TClntMsgGeoloc(question->getIface(), answer->getAddr(), coordinates);
+            Transactions.append( (Ptr*)ptr );
+            coordinates.first();
+            SPtr<string> z;
+            while (z = coordinates.get()) {
+                const char * c = z->c_str();
+                Log(Notice) << c << LogEnd;
+            }
+        }
+    } else if(mode == MODE_ASK || mode == 0) {
+        // execute graphic and check mode then
+        // if remember -> get coordinates
+        // if ask again -> get coordinates
+        // if never -> log: do not ask again
+        // if no file -> log: no file!
+        Log(Info) << "Execution of Geolocation!" << LogEnd;
+        execution = system("dibbler-geolocation");
+        if(execution != 0) {
+            Log(Info) << "There has been an error during execution of Geolocation!" << LogEnd;
+        } else {
+            Log(Info) << "Geolocation execution successful!" << LogEnd;
+        }
+        
+        mode = TClntGeolocMgr::checkClntConf(CLNTGEOLOCINFOCFG_FILE);
+
+        if(mode == MODE_REMEMBER || mode == MODE_ASK) {
+            coordinates = TClntGeolocMgr::getCoordinates(CLNTGEOLOCINFOCFG_FILE);
+            if(coordinates.count()) {
+                Log(Info) << "Creating GEOLOC message on ";
+                Log(Cont) << ClntIfaceMgr().getIfaceByID(question->getIface())->getFullName();
+                Log(Cont) << " interface." << LogEnd;
+                
+                SPtr<TClntMsg> ptr = new TClntMsgGeoloc(question->getIface(), answer->getAddr(), coordinates);
+                Transactions.append( (Ptr*)ptr );
+                
+                coordinates.first();
+                SPtr<string> z;
+                while (z = coordinates.get()) {
+                    const char * c = z->c_str();
+                    Log(Notice) << c << LogEnd;
+                }
+            }
+        } else if(mode == MODE_NEVER) {
+            Log(Notice) << "DO NOT ASK MODE: no geolocation information!" << LogEnd;
+        } else if(mode == 0) {
+            Log(Notice) << "FILE NOT EXISTS: there is no file with geolocation information!" << LogEnd;
+        }
+    } else if(mode == MODE_NEVER) {
+        Log(Notice) << "DO NOT ASK MODE: no geolocation information!" << LogEnd;
+    }    
+}
 // should we send SOLICIT ?
 void TClntTransMgr::checkSolicit() {
 

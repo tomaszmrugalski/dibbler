@@ -133,6 +133,8 @@ struct link_state_notify_t
 #define SRVTRANSMGR_FILE  "server-TransMgr.xml"
 #define SRVCACHE_FILE     "server-cache.xml"
 
+#define SRVGEOLOC_FILE    "server-GeolocInfo.xml"
+
 #define RELCFGMGR_FILE    "relay-CfgMgr.xml"
 #define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
 #define RELTRANSMGR_FILE  "relay-TransMgr.xml"
@@ -175,6 +177,12 @@ struct link_state_notify_t
 #define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
 #define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
 #define NULLFILE           "/dev/null"
+#define SRVGEOLOCINFOCFG_FILE	"/etc/dibbler/server-geoloc.conf"
+#define CLNTGEOLOCINFOCFG_FILE 	"/etc/dibbler/client-geoloc.conf"
+#define JSONRESPONSE_FILE  		"/var/lib/dibbler/geoloc.json"
+#define REQGEOLOCINFO_PROG 		"/var/lib/dibbler/requestor-graphic"
+#define REQGEOLOCINFOMAP_FILE 	"/var/lib/dibbler/map.png"
+#define GEOLOCINFOLOG_FILE 		"/var/lib/dibbler/curl-json.log"
 #endif
 
 #ifdef BSD

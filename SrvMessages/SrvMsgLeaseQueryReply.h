@@ -23,9 +23,10 @@ class TSrvMsgLeaseQueryReply : public TSrvMsg
   public:
     TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query);
 
-    bool queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
-    bool queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg);
+    bool queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg, bool withGeoloc);
+    bool queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg, bool withGeoloc);
     void appendClientData(SPtr<TAddrClient> cli);
+    void appendGeolocInfo(SPtr<TAddrClient> cli);
 
     bool answer(SPtr<TSrvMsgLeaseQuery> query);
     bool check();

@@ -25,6 +25,7 @@
 #include "SrvMsgReply.h"
 #include "SrvMsgConfirm.h"
 #include "SrvMsgDecline.h"
+#include "SrvMsgGeoloc.h"
 #include "SrvMsgRequest.h"
 #include "SrvMsgReply.h"
 #include "SrvMsgRebind.h"
@@ -35,6 +36,9 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptStatusCode.h"
 #include "NodeClientSpecific.h"
+#include <stdlib.h>
+#include <string.h>
+#include <sstream>
 
 TSrvTransMgr * TSrvTransMgr::Instance = 0;
 
@@ -311,6 +315,12 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
     case RELAY_FORW_MSG: // They should be decapsulated earlier
     case RELAY_REPL_MSG:
+    case GEOLOC_MSG:
+    {       
+        SrvGeolocMgr().process(msg);
+        SrvGeolocMgr().dump();
+    }
+    break;
     default:
     {
 	Log(Warning)<< "Message type " << msg->getType()
@@ -332,8 +342,11 @@ void TSrvTransMgr::doDuties()
 {
     int deletedCnt = 0;
     // are there any outdated addresses?
-    if (!SrvAddrMgr().getValidTimeout())
+    if (!SrvAddrMgr().getValidTimeout()) {
         SrvAddrMgr().doDuties();
+        // maybe some geolocation entries are outdated?
+        SrvGeolocMgr().doDuties();
+    }
 
     // for each message on list, let it do its duties, if timeout is reached
     SPtr<TSrvMsg> msg;

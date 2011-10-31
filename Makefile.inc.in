@@ -51,7 +51,7 @@ MOD_CLNT_CONFIRM = y
 #XMLLIBS      = `pkg-config libxml-2.0 --libs`
 
 # === do not modify anything below ===
-SILENTMAKE    = -s
+#SILENTMAKE    = -s
 MAKEFLAGS   += $(SILENTMAKE)
 VERSION      = `$(TOPDIR)/test/xtract_version`
 INST_WORKDIR = $(DESTDIR)'/var/lib/dibbler'
@@ -81,6 +81,8 @@ CLNTCFGMGR  = $(PREFIX)/ClntCfgMgr
 CLNTPARSER  = $(PREFIX)/ClntParser
 CLNTMESSAGES= $(PREFIX)/ClntMessages
 CLNTOPTIONS = $(PREFIX)/ClntOptions
+#Geoloc info
+CLNTGEOLOCINFO  = $(PREFIX)/ClntGeolocInfo
 
 SRVIFACEMGR = $(PREFIX)/SrvIfaceMgr
 SRVTRANSMGR = $(PREFIX)/SrvTransMgr
@@ -97,6 +99,8 @@ RELMESSAGES = $(PREFIX)/RelMessages
 RELOPTIONS  = $(PREFIX)/RelOptions
 
 POSLIB	  = $(PREFIX)/poslib/poslib/.libs
+#requestor graphic
+REQGEOLOCINFO = $(PREFIX)/ReqGeolocInfo
 
 COMMONSUBDIRS= IfaceMgr    AddrMgr      CfgMgr      Messages   Options      include Misc $(PORT_SUBDIR)
 CLNTSUBDIRS  = ClntOptions ClntIfaceMgr ClntAddrMgr ClntCfgMgr ClntTransMgr ClntMessages 
@@ -111,6 +115,9 @@ CLIENTBIN    = dibbler-client
 SERVERBIN    = dibbler-server
 RELAYBIN     = dibbler-relay
 REQUESTORBIN = dibbler-requestor
+#client geolocation and requestor
+CLNTGEOLOCBIN = dibbler-geolocation
+REQGEOLOCBIN = requestor-graphic
 CLIENT       = $(PORTDIR)/$(CLIENTBIN).cpp
 SERVER       = $(PORTDIR)/$(SERVERBIN).cpp
 RELAY        = $(PORTDIR)/$(RELAYBIN).cpp

@@ -258,6 +258,9 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 	case OPTION_VENDOR_CLASS:
 	case OPTION_RECONF_MSG:
 	case OPTION_RELAY_MSG:
+    case OPTION_GEOLOC:
+    	ptr = new TOptStringLst(OPTION_GEOLOC,buf+pos,length,this);
+    	break;
 	default:
 	    Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
 	    break;

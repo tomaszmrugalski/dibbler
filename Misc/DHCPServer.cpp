@@ -53,6 +53,15 @@ TDHCPServer::TDHCPServer(string config)
         this->IsDone = true;
         return;
     }
+    
+    TSrvGeolocMgr::instanceCreate(SRVGEOLOC_FILE, SRVGEOLOCINFOCFG_FILE);
+    if ( SrvGeolocMgr().isDone() ) {
+        Log(Crit) << "Fatal error during GeolocMgr initialization." << LogEnd;
+        this->IsDone = true;
+        return;
+    }
+    SrvGeolocMgr().setCacheSize();
+    SrvGeolocMgr().dump();
 
     SrvCfgMgr().setCounters();
     SrvCfgMgr().dump();
@@ -61,7 +70,7 @@ TDHCPServer::TDHCPServer(string config)
 }
 
 void TDHCPServer::run()
-{	
+{
     bool silent = false;
     while ( (!isDone()) && (!SrvTransMgr().isDone()) ) {
     	if (serviceShutdown)

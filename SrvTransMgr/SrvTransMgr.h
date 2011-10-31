@@ -21,6 +21,7 @@
 #include "SrvIfaceMgr.h"
 #include "SrvCfgMgr.h"
 #include "SrvAddrMgr.h"
+#include "SrvGeolocMgr.h"
 
 #define SrvTransMgr() (TSrvTransMgr::instance())
 

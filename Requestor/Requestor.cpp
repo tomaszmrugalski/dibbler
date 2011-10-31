@@ -40,6 +40,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     char * duid    = 0;
     char * iface   = 0;
     char * dstaddr = 0;
+    bool geoloc = false;
     int timeout  = 60; // default timeout value
     for (int i=1; i<argc; i++) {
         if (!strncmp(argv[i],"-addr", 5)) {
@@ -81,6 +82,10 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 	    dstaddr = argv[++i];
 	    continue;
 	}
+        if (!strncmp(argv[i],"-geoloc", 7)) {
+	    geoloc = true;
+	    continue;
+	}
         if (!strncmp(argv[i], "--help", 5) || !strncmp(argv[i], "-h", 5) || !strncmp(argv[i], "/help", 5) || 
 	    !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
             return false;
@@ -110,6 +115,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     a->iface = iface;
     a->timeout= timeout;
     a->dstaddr = dstaddr;
+    a->geoloc = geoloc;
     return true;
 }
 

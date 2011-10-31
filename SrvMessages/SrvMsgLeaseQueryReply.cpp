@@ -20,19 +20,21 @@
 #include "SrvOptClientIdentifier.h"
 #include "AddrClient.h"
 #include "SrvCfgMgr.h"
+#include "OptStringLst.h"
+#include "SrvGeolocMgr.h"
 
 
 TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
     :TSrvMsg(query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
 	     query->getTransID())
 {
-  if (!answer(query)) {
-    Log(Error) << "LQ: LQ-QUERY response generation failed." << LogEnd;
-	IsDone = true;
-  } else {
-    Log(Debug) << "LQ: LQ-QUERY response generation successful." << LogEnd;
-    IsDone = false;
-  }
+    if (!answer(query)) {
+        Log(Error) << "LQ: LQ-QUERY response generation failed." << LogEnd;
+        IsDone = true;
+    } else {
+        Log(Debug) << "LQ: LQ-QUERY response generation successful." << LogEnd;
+        IsDone = false;
+    }
 }
 
 
@@ -48,6 +50,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     int count = 0;
     SPtr<TOpt> opt;
     bool ok = true;
+    bool withGeoloc = false;
 
     Log(Info) << "LQ: Generating new LEASEQUERY_RESP message." << LogEnd;
     
@@ -60,11 +63,19 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 	    SPtr<TSrvOptLQ> q = (Ptr*) opt;
 	    switch (q->getQueryType()) {
 	    case QUERY_BY_ADDRESS:
-		ok = queryByAddress(q, queryMsg);
+		ok = queryByAddress(q, queryMsg, withGeoloc);
+		break;
+            case QUERY_BY_ADDRESS_WITH_GEOLOC:
+                withGeoloc = true;
+		ok = queryByAddress(q, queryMsg, withGeoloc);
 		break;
 	    case QUERY_BY_CLIENTID:
-		ok = queryByClientID(q, queryMsg);
+		ok = queryByClientID(q, queryMsg, withGeoloc);
 		break;
+            case QUERY_BY_CLIENTID_WITH_GEOLOC:
+                withGeoloc = true;
+                ok = queryByClientID(q, queryMsg, withGeoloc);
+                break;
 	    default:
 		Options.push_back( new TSrvOptStatusCode(STATUSCODE_UNKNOWNQUERYTYPE, "Invalid Query type.", this) );
 		Log(Warning) << "LQ: Invalid query type (" << q->getQueryType() << " received." << LogEnd;
@@ -92,7 +103,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     SPtr<TSrvOptServerIdentifier> ptrSrvID;
     ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(), this);
     Options.push_back((Ptr*)ptrSrvID);
-
+   
     // allocate buffer
     pkt = new char[getSize()];
     this->send();
@@ -100,7 +111,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     return true;
 }
 
-bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg) {
+bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg, bool withGeoloc) {
     SPtr<TOpt> opt;
     q->firstOption();
     SPtr<TSrvOptIAAddress> addr = 0;
@@ -125,10 +136,14 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     }
     
     appendClientData(cli);
+    // if geolocation information needed, append it to message
+    if(withGeoloc) {
+        appendGeolocInfo(cli);
+    }
     return true;
 }
 
-bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg) {
+bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg, bool withGeoloc) {
     SPtr<TOpt> opt;
     SPtr<TSrvOptClientIdentifier> duidOpt = 0;
     SPtr<TDUID> duid = 0;
@@ -156,7 +171,46 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     }
     
     appendClientData(cli);
+    // if geolocation information needed, append it to message
+    if(withGeoloc) {
+        appendGeolocInfo(cli);
+    }
     return true;
+}
+
+/*
+ * Appending geolocation information to LeaseQuery Reply message.
+ * Appending is based on client's DUID (no matter if LeaseQuery request was by
+ * address or by DUID).
+ * 
+ * Since there was a problem with reading coordinates (on requestor side) with dots,
+ * dots are replaced by commas.
+ */
+void TSrvMsgLeaseQueryReply::appendGeolocInfo(SPtr<TAddrClient> cli) {
+    
+    List(string) coordinates = SrvGeolocMgr().getGeolocInfo(cli->getDUID());
+    
+    if(coordinates.count()) {
+        Log(Debug) << "LQ: Adding geolocation information." << LogEnd;
+        
+        SPtr<string> s;
+        List(string) coordinatesEnhanced;
+        
+        coordinates.first();
+        while (s = coordinates.get()) {
+                const char * c = s->c_str();
+                string newCoordinate = c;
+                newCoordinate.replace(newCoordinate.find("."), 1, ",");
+                s = new string(newCoordinate);
+                coordinatesEnhanced.append(s);
+        }
+        SPtr<TOpt> ptr = new TOptStringLst(OPTION_GEOLOC, coordinatesEnhanced, this);
+        Options.push_back(ptr);
+    } else {
+        Log(Warning) << "LQ: Geolocation information for duid=";
+        Log(Cont) << cli->getDUID()->getPlain() << " not found." << LogEnd;
+	Options.push_back(new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No geolcation information for this DUID found.", this));
+    }
 }
 
 void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {

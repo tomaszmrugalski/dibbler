@@ -30,6 +30,8 @@ public:
     int countString();
     bool doDuties() { return true; }
     virtual std::string getPlain();
+    List(string) getList();
+
 protected:
     List(string) StringLst;
 };

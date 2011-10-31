@@ -39,6 +39,7 @@ class TClntTransMgr
     void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     bool handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
 
+    void sendGeoloc(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
     void shutdown();
     bool isDone();
 

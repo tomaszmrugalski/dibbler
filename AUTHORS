@@ -61,6 +61,9 @@
 
   - Wojciech Guminski <wojciech.guminski(at)eti(dot)pg(dot)gda(dot)pl>
     2010-11: Windows/Linux compilation fixes
+    
+  - Aniela Mrugalska <ania.mrugalska(at)gmail(dot)com>
+    2011-05: Relay compilation fix on Windows.
 
   - Aniela Mrugalska <ania.mrugalska(at)gmail(dot)com>
     2011-05: Relay compilation fix on Windows.
