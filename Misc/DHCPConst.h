@@ -36,7 +36,7 @@
 #define RELAY_REPL_MSG 13
 #define LEASEQUERY_MSG       14
 #define LEASEQUERY_REPLY_MSG 15
-// new geolocation message
+// new geolocation message (TODO: which draft?)
 #define GEOLOC_MSG 16
 
 // implementation specific
@@ -101,10 +101,6 @@
 #define OPTION_RECONF_MSG       19
 #define OPTION_RECONF_ACCEPT    20
 
-// additional options
-// new geolocation option
-#define OPTION_GEOLOC           99
-
 // RFC3319: SIP servers and domains
 #define OPTION_SIP_SERVER_D      21
 #define OPTION_SIP_SERVER_A      22
@@ -165,12 +161,17 @@
 // draft-ietf-softwire-ds-lite-tunnel-option-10, approved by IESG
 #define OPTION_AFTR_NAME        64
 
+
 // The following option numbers are not yet standardized and
 // won't interoperate with other implementations
 // option formats taken from:
 // draft-ram-dhc-dhcpv6-aakey-01.txt
 #define OPTION_AAAAUTH              240
 #define OPTION_KEYGEN               241
+
+// additional options
+// new geolocation option (TODO: which draft?)
+#define OPTION_GEOLOC           242
 
 // Experimental implementation for address prefix length information
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
@@ -183,9 +184,10 @@
 typedef enum {
     QUERY_BY_ADDRESS = 1,
     QUERY_BY_CLIENTID = 2,
-    //queries with geolocation information
-    QUERY_BY_ADDRESS_WITH_GEOLOC = 3,
-    QUERY_BY_CLIENTID_WITH_GEOLOC = 4
+    //queries with geolocation information (3,4,5 types defined in RFC5460)
+    // see code on bulk-leasequery branch
+    QUERY_BY_ADDRESS_WITH_GEOLOC = 6,
+    QUERY_BY_CLIENTID_WITH_GEOLOC = 7
 } ELeaseQueryType;
 
 // --- Option lengths --
