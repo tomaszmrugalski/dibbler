@@ -114,16 +114,6 @@ dibbler_requestor_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
-
-dist_doc_DATA = doc/*.pdf
-dist_doc_DATA += doc/RELEASE-METHOD doc/TEST-METHOD
-dist_doc_DATA += doc/*.dox doc/doxygen.cfg
-dist_doc_DATA += doc/dibbler-user.pdf doc/dibbler-user*.tex
-dist_doc_DATA += doc/examples
-dist_doc_DATA += doc/*.png
-
-man8_MANS = doc/man/dibbler-server.8 doc/man/dibbler-client.8 doc/man/dibbler-relay.8
-
 bison: bison/bison++
 
 bison/bison++:
@@ -136,4 +126,3 @@ parser:
 		$(MAKE) -C SrvCfgMgr parser
 		$(MAKE) -C ClntCfgMgr parser
 		$(MAKE) -C RelCfgMgr parser
-
