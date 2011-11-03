@@ -120,7 +120,7 @@ dist_doc_DATA += doc/RELEASE-METHOD doc/TEST-METHOD
 dist_doc_DATA += doc/*.dox doc/doxygen.cfg
 dist_doc_DATA += doc/dibbler-user.pdf doc/dibbler-user*.tex
 dist_doc_DATA += doc/examples
-dist_doc_DATA += doc/*.png
+dist_doc_DATA += doc/*.png doc/*.jpg
 
 man8_MANS = doc/man/dibbler-server.8 doc/man/dibbler-client.8 doc/man/dibbler-relay.8
 

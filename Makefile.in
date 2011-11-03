@@ -413,7 +413,7 @@ dibbler_requestor_LDADD = -L$(top_builddir)/Requestor -lRequestor \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dist_doc_DATA = doc/*.pdf doc/RELEASE-METHOD doc/TEST-METHOD doc/*.dox \
 	doc/doxygen.cfg doc/dibbler-user.pdf doc/dibbler-user*.tex \
-	doc/examples doc/*.png
+	doc/examples doc/*.png doc/*.jpg
 man8_MANS = doc/man/dibbler-server.8 doc/man/dibbler-client.8 doc/man/dibbler-relay.8
 all: all-recursive
 
