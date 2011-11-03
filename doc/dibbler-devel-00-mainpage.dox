@@ -40,6 +40,7 @@
  *     - @subpage srcParsersParsing
  *     - @subpage srcParsersUsingValues
  *     - @subpage srcParsersEmbeddedConfiguration
+ *   - @subpage srcCodingGuidelines
  * - @subpage arch
  *   - @subpage archClient
  *   - @subpage archServer

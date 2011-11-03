@@ -21,6 +21,7 @@ DOXYGEN += dibbler-devel-01-intro.dox
 DOXYGEN += dibbler-devel-02-compile.dox
 DOXYGEN += dibbler-devel-03-port.dox
 DOXYGEN += dibbler-devel-04-common.dox
+DOXYGEN += dibbler-devel-05-sources.dox
 DOXYGEN += dibbler-devel-06-arch.dox
 DOXYGEN += dibbler-devel-07-debug.dox
 DOXYGEN += dibbler-devel-08-contrib.dox
@@ -44,7 +45,8 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	-grep "undefined" dibbler-user-1st_pass.log;
 
 devel: $(DOXYGEN)
-	doxygen doxygen.cfg > doxygen.log 2>doxygen-error.log
+	doxygen doxygen.cfg
+# > doxygen.log 2>doxygen-error.log
 	cp logo* html/
 
 version.tex:
