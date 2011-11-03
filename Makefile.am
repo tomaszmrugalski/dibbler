@@ -115,29 +115,36 @@ dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
 
-dist_doc_DATA = doc/*.pdf
+dist_doc_DATA = CHANGELOG LICENSE doc/*.pdf
 dist_doc_DATA += doc/RELEASE-METHOD doc/TEST-METHOD
 dist_doc_DATA += doc/*.dox doc/doxygen.cfg
 dist_doc_DATA += doc/dibbler-user.pdf doc/dibbler-user*.tex
 dist_doc_DATA += doc/examples
+dist_doc_DATA += doc/man/dibbler-*.8
 dist_doc_DATA += doc/*.png doc/*.jpg
+
+dist_noinst_BISON = bison++/*
+
+dist_data_DATA = m4/*
+dist_data_DATA += scripts/*
+dist_data_DATA += tests/*
 
 # these are conditional directories. Therefore they are not added to
 # dist directory.
 
-DIST_SUBDIRS = Port-bsd Port-linux Port-win32 Port-winnt2k bison++ m4 scripts tests
+DIST_SUBDIRS = $(SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
 
 man8_MANS = doc/man/dibbler-server.8 doc/man/dibbler-client.8 doc/man/dibbler-relay.8
 
 bison: bison/bison++
 
 bison/bison++:
-                @echo "[CONFIG ] /bison++/"
-                cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
-                @echo "[MAKE   ] /bison++/bison++"
-                $(MAKE) -C $(top_srcdir)/bison++
+		@echo "[CONFIG ] /bison++/"
+		cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
+		@echo "[MAKE   ] /bison++/bison++"
+		$(MAKE) -C $(top_srcdir)/bison++
 
 parser:
-                $(MAKE) -C SrvCfgMgr parser
-                $(MAKE) -C ClntCfgMgr parser
-                $(MAKE) -C RelCfgMgr parser
+		$(MAKE) -C SrvCfgMgr parser
+		$(MAKE) -C ClntCfgMgr parser
+		$(MAKE) -C RelCfgMgr parser

@@ -1,19 +1,11 @@
-include ../Makefile.inc
+SUBDIRS = .
 
-OBJECTS =  WinService.o ClntService.o SrvService.o RelService.o addrpack.o lowlevel-winnt2k.o
-
-objs: $(OBJECTS)
-
-libs: objs libLowLevel.a 
+dist_noinst_DATA = *.cpp *.h *.log *.dev *.ico *.layout *.c
 
 # ============================================================
 # === C low level stuff ======================================
 # ============================================================
 lowlevel-winnt2k.o: lowlevel-winnt2k.c
-	@echo "[CC     ] $(SUBDIR)/$@"
-	$(CC) $(COPTS) -c $<
-
-addrpack.o: addrpack.c
 	@echo "[CC     ] $(SUBDIR)/$@"
 	$(CC) $(COPTS) -c $<
 
