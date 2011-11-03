@@ -45,8 +45,7 @@ dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	-grep "undefined" dibbler-user-1st_pass.log;
 
 devel: $(DOXYGEN)
-	doxygen doxygen.cfg
-# > doxygen.log 2>doxygen-error.log
+	doxygen doxygen.cfg > doxygen.log 2>doxygen-error.log
 	cp logo* html/
 
 version.tex:

@@ -14,7 +14,7 @@ sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay dibbler-requestor
 
 client: dibbler-client
 
-dibbler_client_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp 
+dibbler_client_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
 dibbler_client_SOURCES += $(top_srcdir)/Misc/DHCPClient.cpp $(top_srcdir)/Misc/DHCPClient.h
 
 dibbler_client_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/ClntTransMgr
@@ -69,12 +69,12 @@ dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_server_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_server_LDADD += -L$(top_builddir)/Misc -lMisc
-dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions 
+dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions
 dibbler_server_LDADD += -lIfaceMgr -lposlib -lMisc
 
 relay: dibbler-relay
 
-dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp 
+dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp
 dibbler_relay_SOURCES += $(top_srcdir)/Misc/DHCPRelay.cpp $(top_srcdir)/Misc/DHCPRelay.h
 
 dibbler_relay_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/RelTransMgr
@@ -103,7 +103,7 @@ requestor: dibbler-requestor
 
 dibbler_requestor_SOURCES = $(top_srcdir)/Requestor/Requestor.cpp $(top_srcdir)/Requestor/Requestor.h
 
-dibbler_requestor_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options 
+dibbler_requestor_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options
 dibbler_requestor_CPPFLAGS += -I$(top_srcdir)/Messages -I$(top_srcdir)/Requestor
 dibbler_requestor_CPPFLAGS += -I$(top_srcdir)/IfaceMgr
 
@@ -122,18 +122,22 @@ dist_doc_DATA += doc/dibbler-user.pdf doc/dibbler-user*.tex
 dist_doc_DATA += doc/examples
 dist_doc_DATA += doc/*.png doc/*.jpg
 
+# these are conditional directories. Therefore they are not added to
+# dist directory.
+
+DIST_SUBDIRS = Port-bsd Port-linux Port-win32 Port-winnt2k bison++ m4 scripts tests
+
 man8_MANS = doc/man/dibbler-server.8 doc/man/dibbler-client.8 doc/man/dibbler-relay.8
 
 bison: bison/bison++
 
 bison/bison++:
-		@echo "[CONFIG ] /bison++/"
-		cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
-		@echo "[MAKE   ] /bison++/bison++"
-		$(MAKE) -C $(top_srcdir)/bison++
+                @echo "[CONFIG ] /bison++/"
+                cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
+                @echo "[MAKE   ] /bison++/bison++"
+                $(MAKE) -C $(top_srcdir)/bison++
 
 parser:
-		$(MAKE) -C SrvCfgMgr parser
-		$(MAKE) -C ClntCfgMgr parser
-		$(MAKE) -C RelCfgMgr parser
-
+                $(MAKE) -C SrvCfgMgr parser
+                $(MAKE) -C ClntCfgMgr parser
+                $(MAKE) -C RelCfgMgr parser
