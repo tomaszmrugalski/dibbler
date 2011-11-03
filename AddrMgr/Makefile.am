@@ -1,4 +1,8 @@
-SUBDIRS=. tests
+SUBDIRS= .
+
+if HAVE_GTEST
+  SUBDIRS += tests
+endif
 
 noinst_LIBRARIES = libAddrMgr.a
 

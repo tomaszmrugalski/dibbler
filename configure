@@ -612,11 +612,11 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='HAVE_GTEST_FALSE
-HAVE_GTEST_TRUE
-am__EXEEXT_FALSE
+ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+HAVE_GTEST_FALSE
+HAVE_GTEST_TRUE
 LINKPRINT
 PORT_CFLAGS
 PORT_LDFLAGS
@@ -17125,6 +17125,24 @@ fi
 #AC_CONFIG_SUBDIRS([bison++])
 #AC_CONFIG_SUBDIRS([poslib])
 
+
+if test "$gtest_path" != "no"; then
+  echo "GTEST enabled, generating Makefiles"
+
+$as_echo "#define HAVE_GTEST 1" >>confdefs.h
+
+fi
+
+ if test "$gtest_path" != "no"; then
+  HAVE_GTEST_TRUE=
+  HAVE_GTEST_FALSE='#'
+else
+  HAVE_GTEST_TRUE='#'
+  HAVE_GTEST_FALSE=
+fi
+
+
+
 ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile"
 
 cat >confcache <<\_ACEOF
@@ -17254,6 +17272,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_GTEST_TRUE}" && test -z "${HAVE_GTEST_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_GTEST\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -19802,23 +19824,6 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
-
-
-if test "$gtest_path" != "no"; then
-  echo "GTEST enabled, generating Makefiles"
-
-$as_echo "#define HAVE_GTEST 1" >>confdefs.h
-
-fi
-
- if test $gtest_path != "no"; then
-  HAVE_GTEST_TRUE=
-  HAVE_GTEST_FALSE='#'
-else
-  HAVE_GTEST_TRUE='#'
-  HAVE_GTEST_FALSE=
-fi
-
 
 
 echo

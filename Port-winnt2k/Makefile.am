@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-dist_noinst_DATA = *.cpp *.h *.log *.dev *.ico *.layout *.c
+dist_noinst_DATA = *.cpp *.h *.log *.dev *.ico *.layout *.c Makefile INFO Makefile.win dibbler.iss
 
 # ============================================================
 # === C low level stuff ======================================

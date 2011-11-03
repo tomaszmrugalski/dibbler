@@ -224,7 +224,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = .
-dist_noinst_DATA = *.cpp *.h *.log *.dev *.ico *.layout *.c
+dist_noinst_DATA = *.cpp *.h *.log *.dev *.ico *.layout *.c Makefile INFO Makefile.win dibbler.iss
 all: all-recursive
 
 .SUFFIXES:
