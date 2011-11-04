@@ -8,6 +8,9 @@ AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
+# DO NOT trigger rebuild rules, unless I tell you so.
+AM_MAINTAINER_MODE([disable])
+
 # Poslib stuff
 AC_LANG_CPLUSPLUS
 
