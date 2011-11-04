@@ -125,9 +125,9 @@ dist_doc_DATA += doc/*.png doc/*.jpg
 
 dist_noinst_BISON = bison++/*
 
-dist_data_DATA = m4/*
-dist_data_DATA += scripts/*
-dist_data_DATA += tests/*
+dist_noinst_data_DATA = m4/libtool.m4 m4/lt~obsolete.m4 m4/ltoptions.m4 m4/ltsugar.m4 m4/ltversion.m4
+dist_noinst_data_DATA += scripts/*
+dist_noinst_data_DATA += tests/*
 
 # these are conditional directories. Therefore they are not added to
 # dist directory.
