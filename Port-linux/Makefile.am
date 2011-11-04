@@ -6,4 +6,4 @@ libLowLevel_a_SOURCES = daemon.cpp daemon.h ethtool-kernel.h ethtool-local.h int
 
 # that's ugly hack. Those files should not be built here. They are compiled during link of respective daemons.
 # As far as this makefile is concerned, they should be treated as data, so they are included in make dist
-dist_data_DATA = dibbler-client.cpp dibbler-relay.cpp dibbler-server.cpp
+dist_noinst_DATA = dibbler-client.cpp dibbler-relay.cpp dibbler-server.cpp

@@ -7,7 +7,7 @@ SUBDIRS  = Misc Options AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntM
 SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages
 SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
 SUBDIRS += Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr SrvMessages
-SUBDIRS += SrvOptions SrvTransMgr
+SUBDIRS += SrvOptions SrvTransMgr doc
 SUBDIRS += poslib @PORT_SUBDIR@
 
 sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay dibbler-requestor
@@ -115,26 +115,20 @@ dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
 
-dist_doc_DATA = CHANGELOG LICENSE doc/*.pdf
-dist_doc_DATA += doc/RELEASE-METHOD doc/TEST-METHOD
-dist_doc_DATA += doc/*.dox doc/doxygen.cfg
-dist_doc_DATA += doc/dibbler-user.pdf doc/dibbler-user*.tex
-dist_doc_DATA += doc/examples
-dist_doc_DATA += doc/man/dibbler-*.8
-dist_doc_DATA += doc/*.png doc/*.jpg
+dist_noinst_BISON = bison++
 
-dist_noinst_BISON = bison++/*
+nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES
+nobase_dist_doc_DATA += scripts/notify-scripts/client-notify.sh scripts/notify-scripts/server-notify.sh
+nobase_dist_doc_DATA += scripts/INFO scripts/remote-autoconf scripts/xtract_version
 
-dist_noinst_data_DATA = m4/libtool.m4 m4/lt~obsolete.m4 m4/ltoptions.m4 m4/ltsugar.m4 m4/ltversion.m4
-dist_noinst_data_DATA += scripts/*
-dist_noinst_data_DATA += tests/*
+dist_noinst_DATA = m4/libtool.m4 m4/lt~obsolete.m4 m4/ltoptions.m4 m4/ltsugar.m4 m4/ltversion.m4
+dist_noinst_DATA += scripts
+dist_noinst_DATA += tests
 
 # these are conditional directories. Therefore they are not added to
 # dist directory.
 
 DIST_SUBDIRS = $(SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
-
-man8_MANS = doc/man/dibbler-server.8 doc/man/dibbler-client.8 doc/man/dibbler-relay.8
 
 bison: bison/bison++
 
