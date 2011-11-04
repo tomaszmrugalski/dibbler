@@ -15,6 +15,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -35,7 +36,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = Port-linux
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(dist_data_DATA) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -63,10 +65,7 @@ am_libLowLevel_a_OBJECTS = libLowLevel_a-daemon.$(OBJEXT) \
 	libLowLevel_a-lowlevel-linux.$(OBJEXT) \
 	libLowLevel_a-lowlevel-linux-link-state.$(OBJEXT) \
 	libLowLevel_a-lowlevel-options-linux.$(OBJEXT) \
-	libLowLevel_a-utils.$(OBJEXT) \
-	libLowLevel_a-dibbler-client.$(OBJEXT) \
-	libLowLevel_a-dibbler-relay.$(OBJEXT) \
-	libLowLevel_a-dibbler-server.$(OBJEXT)
+	libLowLevel_a-utils.$(OBJEXT)
 libLowLevel_a_OBJECTS = $(am_libLowLevel_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -112,6 +111,29 @@ am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(libLowLevel_a_SOURCES)
 DIST_SOURCES = $(libLowLevel_a_SOURCES)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__installdirs = "$(DESTDIR)$(datadir)"
+DATA = $(dist_data_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -164,6 +186,7 @@ LINKPRINT = @LINKPRINT@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -245,17 +268,16 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libLowLevel.a
 libLowLevel_a_CPPFLAGS = -I$(top_srcdir)/Misc
-libLowLevel_a_SOURCES = daemon.cpp daemon.h ethtool-kernel.h \
-	ethtool-local.h interface.c interface.h ip_common.h iproute.c \
-	libnetlink.c libnetlink.h ll_map.c ll_map.h ll_types.c \
-	lowlevel-linux.c lowlevel-linux-link-state.c \
-	lowlevel-options-linux.c rtm_map.h rt_names.h utils.c utils.h \
-	dibbler-client.cpp dibbler-relay.cpp dibbler-server.cpp
+libLowLevel_a_SOURCES = daemon.cpp daemon.h ethtool-kernel.h ethtool-local.h interface.c interface.h ip_common.h iproute.c libnetlink.c libnetlink.h ll_map.c ll_map.h ll_types.c lowlevel-linux.c lowlevel-linux-link-state.c lowlevel-options-linux.c rtm_map.h rt_names.h utils.c utils.h
+
+# that's ugly hack. Those files should not be built here. They are compiled during link of respective daemons.
+# As far as this makefile is concerned, they should be treated as data, so they are included in make dist
+dist_data_DATA = dibbler-client.cpp dibbler-relay.cpp dibbler-server.cpp
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -280,9 +302,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
@@ -300,9 +322,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-daemon.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-dibbler-client.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-dibbler-relay.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-dibbler-server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-interface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-iproute.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-libnetlink.Po@am__quote@
@@ -521,59 +540,31 @@ libLowLevel_a-daemon.obj: daemon.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-daemon.obj `if test -f 'daemon.cpp'; then $(CYGPATH_W) 'daemon.cpp'; else $(CYGPATH_W) '$(srcdir)/daemon.cpp'; fi`
 
-libLowLevel_a-dibbler-client.o: dibbler-client.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-client.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo -c -o libLowLevel_a-dibbler-client.o `test -f 'dibbler-client.cpp' || echo '$(srcdir)/'`dibbler-client.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo $(DEPDIR)/libLowLevel_a-dibbler-client.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-client.cpp' object='libLowLevel_a-dibbler-client.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-client.o `test -f 'dibbler-client.cpp' || echo '$(srcdir)/'`dibbler-client.cpp
-
-libLowLevel_a-dibbler-client.obj: dibbler-client.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-client.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo -c -o libLowLevel_a-dibbler-client.obj `if test -f 'dibbler-client.cpp'; then $(CYGPATH_W) 'dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-client.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo $(DEPDIR)/libLowLevel_a-dibbler-client.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-client.cpp' object='libLowLevel_a-dibbler-client.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-client.obj `if test -f 'dibbler-client.cpp'; then $(CYGPATH_W) 'dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-client.cpp'; fi`
-
-libLowLevel_a-dibbler-relay.o: dibbler-relay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-relay.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo -c -o libLowLevel_a-dibbler-relay.o `test -f 'dibbler-relay.cpp' || echo '$(srcdir)/'`dibbler-relay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo $(DEPDIR)/libLowLevel_a-dibbler-relay.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-relay.cpp' object='libLowLevel_a-dibbler-relay.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-relay.o `test -f 'dibbler-relay.cpp' || echo '$(srcdir)/'`dibbler-relay.cpp
-
-libLowLevel_a-dibbler-relay.obj: dibbler-relay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-relay.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo -c -o libLowLevel_a-dibbler-relay.obj `if test -f 'dibbler-relay.cpp'; then $(CYGPATH_W) 'dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-relay.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo $(DEPDIR)/libLowLevel_a-dibbler-relay.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-relay.cpp' object='libLowLevel_a-dibbler-relay.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-relay.obj `if test -f 'dibbler-relay.cpp'; then $(CYGPATH_W) 'dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-relay.cpp'; fi`
-
-libLowLevel_a-dibbler-server.o: dibbler-server.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-server.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo -c -o libLowLevel_a-dibbler-server.o `test -f 'dibbler-server.cpp' || echo '$(srcdir)/'`dibbler-server.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo $(DEPDIR)/libLowLevel_a-dibbler-server.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-server.cpp' object='libLowLevel_a-dibbler-server.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-server.o `test -f 'dibbler-server.cpp' || echo '$(srcdir)/'`dibbler-server.cpp
-
-libLowLevel_a-dibbler-server.obj: dibbler-server.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-server.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo -c -o libLowLevel_a-dibbler-server.obj `if test -f 'dibbler-server.cpp'; then $(CYGPATH_W) 'dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-server.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo $(DEPDIR)/libLowLevel_a-dibbler-server.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-server.cpp' object='libLowLevel_a-dibbler-server.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-server.obj `if test -f 'dibbler-server.cpp'; then $(CYGPATH_W) 'dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-server.cpp'; fi`
-
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-dist_dataDATA: $(dist_data_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(datadir)" || $(MKDIR_P) "$(DESTDIR)$(datadir)"
+	@list='$(dist_data_DATA)'; test -n "$(datadir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(datadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(datadir)" || exit $$?; \
+	done
+
+uninstall-dist_dataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_data_DATA)'; test -n "$(datadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(datadir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(datadir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -659,8 +650,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(LIBRARIES) $(DATA)
 installdirs:
+	for dir in "$(DESTDIR)$(datadir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -709,7 +703,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-dist_dataDATA
 
 install-dvi: install-dvi-am
 
@@ -755,7 +749,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-dist_dataDATA
 
 .MAKE: install-am install-strip
 
@@ -763,14 +757,15 @@ uninstall-am:
 	clean-libtool clean-noinstLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am
+	install install-am install-data install-data-am \
+	install-dist_dataDATA install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-dist_dataDATA
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
