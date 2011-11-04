@@ -9,22 +9,22 @@ DHCPv6 is a relatively new protocol and additional options are in a
 specification phase. It means that until standarisation process is
 over, they do not have any officially assigned numbers. Once
 standarization process is over (and RFC document is released), this
-option gets an official number. 
+option gets an official number.
 
 There's pretty good chance that different implementors may choose
 diffrent values for those not-yet officialy accepted options. To
 change those values in Dibbler, you have to modify file
-misc/DHCPConst.h and recompile server or client. Make sure that you
-build everything for scratch. Use \b make \b clean in Linux and
-\b Clean \b up \b solution in Windows before you start building a new
-version.
+\c Misc/DHCPConst.h and recompile server or client. Make sure that you
+build everything for scratch. Use \c make \c clean in Linux, Mac OS X
+and BSD and \c Clean \c up \c solution in Windows before you start
+building a new version.
 
 In default build, Dibbler stores all information in the
 @c /var/lib/dibbler directory (Linux) or in the working directory
 (Windows). There are multiple files stored in those
 directories. However, sometimes there is a need to build Dibbler which uses
 different directory or filename. To do so, simply edit
-@c misc/Portable.h file and rebuild everything.
+@c Misc/Portable.h file and rebuild everything.
 
 @section srcMemoryManagement 5.2 Memory Management using SmartPtr
 To effectively fight memory leaks, clever mechanism was
@@ -33,17 +33,23 @@ structures, e.g. messages, options or client informations in server
 database. Smart pointer will free object by itself, when object is no
 longer needed. When this is happening? When last smart pointer stops
 pointing at the object. There is a tradeoff: normal pointers (*)
-should not be mixed with smart pointers. 
+should not be mixed with smart pointers.
+
+Smart pointer implementation in Dibbler works similar as boost::shared_ptr,
+but it allows downcasting from derived to base type, using (Ptr*) operator.
 
 Smart pointers are implemented as C++ class templates. Template is
-called @c SPtr<TYPE>. @b Note: It has been renamed. Previous, obsolete
-name is SmartPtr<TYPE>. Please, do not use it anymore.
+called @c SPtr<TYPE>.
+
+@b Note: It has been renamed. Previous, obsolete name is
+SmartPtr<TYPE>. Please, do not use it anymore as its definitions was
+removed.
 
 To quickly explain smart pointers usage, here's short code example:
 @verbatim
  1 void foo()  {
- 2   SmartPtr<TIPv6Addr> addr = new TIPv6Addr("ff02::1:2");
- 3   SmartPtr<TIPv6Addr> tmp;
+ 2   SPtr<TIPv6Addr> addr = new TIPv6Addr("ff02::1:2");
+ 3   SPtr<TIPv6Addr> tmp;
  4   if (!tmp) cout << "Null pointer" << endl;
  5   tmp = addr;
  6   std::cout << addr->getPlain();
@@ -52,19 +58,20 @@ To quickly explain smart pointers usage, here's short code example:
 What's happened in those lines?
  - [1] -- Function starts.
  - [2] -- New TIPv6Addr object is created. Smart Pointer
-  (SmartPtr$<$TIPv6Addr$>$) is also created to point at this object. Using
+  (\c SPtr<TIPv6Addr>) is also created to point at this object. Using
   normal pointer to achive the same goal would look like this: \\
   TIPv6Addr * addr = new TIPv6Addr("ff02::1:2");
  - [3] -- Another pointer is created. It is equivalent of the
-  classical pointer (TIPv6Addr * tmp).
+  classical pointer (TIPv6Addr * tmp), except the benefit of having it assigned
+  the default value of NULL.
  - [4] -- Simple check if pointer does not point to anything.
  - [5] -- Smart pointers can be coppied in a easy way.
  - [6] -- Using object pointed by smart pointer is simple
  - [7] -- Here magic begins. addr and tmp are local variables, so
   they are destroyed here. But they are the only smart pointers which
-  access TIPv6Addr object. So they are destroy that object. 
+  access TIPv6Addr object. So they are destroy that object.
 
-Object remain in memory as long as there is at least one smart pointer which points to this object. 
+Object remain in memory as long as there is at least one smart pointer which points to this object.
 Smart pointers can be easily derefernced. Just add * before them:
 @verbatim
 cout << *addr << endl;
@@ -93,7 +100,7 @@ How to use this list? Oh well, another example:
 7  tmp = addrLst.get();
 8  cout << "List contains " << addrLst.count() << " elements" << endl;
 9  addrLst.first();
-10 while (tmp = addrLst.get()) 
+10 while (tmp = addrLst.get())
 11   cout << *tmp << endl;
 @endverbatim
 
@@ -122,7 +129,7 @@ are eight levels of logging:
   @code Log(Emerg) << "..." << LogEnd @endcode
 
  - \b Alert -- Used to alert an administrator about system wide
-  alerts. This logging level should not be used in DHCPv6. 
+  alerts. This logging level should not be used in DHCPv6.
   Called with @code Log(Alert) << "..." << LogEnd @endcode
 
  - \b Critical -- Used in situations critical to the application,
@@ -133,7 +140,7 @@ are eight levels of logging:
   with binding sockets. Called with @code Log(Error) << "..." << LogEnd @endcode
 
  - \b Warning -- Used to report RFC violations, e.g. missing required
-  options, invalid parameters and so on. Called with @code Log(Warning) 
+  options, invalid parameters and so on. Called with @code Log(Warning)
   << "..." << LogEnd @endcode
 
  - \b Notice -- Used to report normal operations, e.g. address
@@ -159,7 +166,7 @@ manager, and transmsission manager. Each of them uses different
 prefix: Addr, Iface, Cfg or Trans. There are also objects shared among
 them: messages (Msg prefix) and options (Opt prefix). Often there are
 two derived versions: related to client (Clnt prefix) or related to
-server (Clnt). Rel prefix is used to denote Relay related classes. 
+server (Clnt). Rel prefix is used to denote Relay related classes.
 Here are examples of some class names:
 
  - \b TAddrMgr -- Address manager, common version.
@@ -244,7 +251,7 @@ bool SrvParser::EndIfaceDeclaration()
     // remove last option (representing this interface) from the parser stack
     ParserOptStack.delLast();
     return true;
-}   
+}
 @endverbatim
 
 @section srcParsersUsingValues 5.5.2 Using parsed values
@@ -297,13 +304,13 @@ Dibbler started a long time ago, so parts of those guidelines may seem a bit ant
 There are many areas of the existing code that do not follow this rules. There may be many
 reasons for that. I used to accept patches that fail to follow those guidelines. That will not
 happen anymore. Unless you are providing some extra cool feature, expect your patch to be rejected
-if you don't follow this rules. Dibbler have some large chunks of code merges. For example, the 
+if you don't follow this rules. Dibbler have some large chunks of code merges. For example, the
 whole poslib library used to be a separare library.
 
-Camel notation is a naming conventions when words are concatenated with first letter of each 
+Camel notation is a naming conventions when words are concatenated with first letter of each
 word (usually except the first one) is capitalized.
 
- -# Class names start with T, e.g. TOpt, TMsg. (Yes, yes, I know. Pascal sucks. I was young and dumb, 
+ -# Class names start with T, e.g. TOpt, TMsg. (Yes, yes, I know. Pascal sucks. I was young and dumb,
     when I started writing Dibbler :)
  -# Object, function and variables should use prefixes when appropriate. Following are used:
     - <tt>Clnt Srv Rel Req</tt> (server, client, relay, requestor)
@@ -313,13 +320,13 @@ word (usually except the first one) is capitalized.
     in method names and variables. It is capitalized in class names and class variables.
     e.g. <tt>setAddr()</tt>
  -# Class method starts with lower case and follow camel notation, e.g. <tt>getAddr();</tt>
- -# Class variables start with upper case and follow camel notation, e.g. int IfaceIndex; . Note: 
+ -# Class variables start with upper case and follow camel notation, e.g. int IfaceIndex; . Note:
    I'm seriously considering switching to a different notation - lower-case with underscore
    at the end, e.g. <tt>int iface_;</tt>, so you may contact me if you have strong suggestion one
    way or the other.
  -# Each new method must be accompanied with doxygen comments. Doxygen comments for method should be placed
     in cpp files.
- -# Try to use descriptive, but short names. Verb should be mentioned first (<tt>getAddr()</tt>), 
+ -# Try to use descriptive, but short names. Verb should be mentioned first (<tt>getAddr()</tt>),
     not last (do not use <tt>addrGet()</tt>)
  -# Please use types defined in stdint.h, e.g. uint8_t, int16_t, uint32_t etc. Current code
     does not follow this guideline, but it will be refactored eventually.
@@ -329,9 +336,9 @@ word (usually except the first one) is capitalized.
     latest libboost-dev took on my Debian) is often useful.
  -# Shared pointers (SPtr<Type>) can only be created: from other \c SPtr (automatic conversion) or using new() memory
      allocator,  <tt>SPtr<foo> = new foo();</tt>.
- -# Lists are operated by methods: i.e. for Addr list, there should be methods \c addAddr(), 
+ -# Lists are operated by methods: i.e. for Addr list, there should be methods \c addAddr(),
      \c firstAddr(),\c getAddr() etc.
- -# You can cast between different types of smart pointers, e.g. from SPtr<TOpt> to SPtr<TOptAddr>. Use 
+ -# You can cast between different types of smart pointers, e.g. from SPtr<TOpt> to SPtr<TOptAddr>. Use
     conversion to (Ptr*). This is the only case when Ptr* may be used.
  -# Port-specific files MUST be places in dir named port-PORTNAME. Remember that Dibbler runs on many platforms,
    so think twice before you use anything OS-specific. Also, if you code something that works on one system only,
