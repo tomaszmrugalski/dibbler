@@ -1,14 +1,15 @@
 AUTOMAKE_OPTIONS = foreign
 
-# Uncomment this if you don't want makefiles to rebuild themselves
-# Makefile:
+CODE_SUBDIRS = Misc Options AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
+CODE_SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages
+CODE_SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
+CODE_SUBDIRS += Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr SrvMessages
+CODE_SUBDIRS += SrvOptions SrvTransMgr doc
+CODE_SUBDIRS += poslib
 
-SUBDIRS  = Misc Options AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
-SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages
-SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
-SUBDIRS += Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr SrvMessages
-SUBDIRS += SrvOptions SrvTransMgr doc
-SUBDIRS += poslib @PORT_SUBDIR@
+SUBDIRS = $(CODE_SUBDIRS) @PORT_SUBDIR@
+
+DIST_SUBDIRS = $(CODE_SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
 
 sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay dibbler-requestor
 
@@ -114,9 +115,6 @@ dibbler_requestor_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
-
-dist_noinst_BISON = bison++
-
 nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify.sh scripts/notify-scripts/server-notify.sh
 nobase_dist_doc_DATA += scripts/INFO scripts/remote-autoconf scripts/xtract_version
@@ -128,7 +126,6 @@ dist_noinst_DATA += tests
 # these are conditional directories. Therefore they are not added to
 # dist directory.
 
-DIST_SUBDIRS = $(SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
 
 bison: bison/bison++
 
