@@ -439,6 +439,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptIAPrefix.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptInteger.cpp"
 					>
 				</File>
