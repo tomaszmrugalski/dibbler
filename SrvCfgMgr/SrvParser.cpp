@@ -2054,7 +2054,7 @@ case 112:
 case 123:
 #line 396 "SrvParser.y"
 {
-    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr(yyvsp[-1].addrval, true);
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr(yyvsp[-1].addrval);
     SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
     nextHop = myNextHop; 
 ;
@@ -2070,7 +2070,7 @@ case 124:
 case 125:
 #line 408 "SrvParser.y"
 {
-    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr(yyvsp[0].addrval, true);
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr(yyvsp[0].addrval);
     SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
     SrvCfgIfaceLst.getLast()->addExtraOption(myNextHop, false);
 ;
@@ -2078,7 +2078,7 @@ case 125:
 case 128:
 #line 422 "SrvParser.y"
 {
-    SPtr<TIPv6Addr> prefix = new TIPv6Addr(yyvsp[-4].addrval, true);
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr(yyvsp[-4].addrval);
     SPtr<TOpt> rtPrefix = new TOptRtPrefix(yyvsp[0].ival, yyvsp[-2].ival, 42, prefix, NULL);
     if (nextHop)
         nextHop->addOption(rtPrefix);
@@ -2089,7 +2089,7 @@ case 128:
 case 129:
 #line 431 "SrvParser.y"
 {
-    SPtr<TIPv6Addr> prefix = new TIPv6Addr(yyvsp[-2].addrval, true);
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr(yyvsp[-2].addrval);
     SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, yyvsp[0].ival, 42, prefix, NULL);
     if (nextHop)
         nextHop->addOption(rtPrefix);
@@ -2100,7 +2100,7 @@ case 129:
 case 130:
 #line 440 "SrvParser.y"
 {
-    SPtr<TIPv6Addr> prefix = new TIPv6Addr(yyvsp[-4].addrval, true);
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr(yyvsp[-4].addrval);
     SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, yyvsp[-2].ival, 42, prefix, NULL);
     if (nextHop)
         nextHop->addOption(rtPrefix);

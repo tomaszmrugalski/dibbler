@@ -1,5 +1,27 @@
 #!/bin/bash
 
+LOGFILE=/var/lib/dibbler/client.sh-log
+
+# uncomment this to get full list of available variables
+#set >> $LOGFILE
+
+echo "-----------" >> $LOGFILE
+
+if [ "$OPTION_NEXT_HOP" != "" ]; then
+    OPTION_NEXT_HOP=${OPTION_NEXT_HOP//\"/}
+
+    #if [ "$SRV_OPTION243" == "" ] || [ $SRV_OPTION243 == "::/0"]; then
+	ip -6 route del default
+	ip -6 route add default via ${OPTION_NEXT_HOP} dev $IFACE
+	echo "Added default route via ${OPTION_NEXT_HOP} on interface $IFACE/$IFINDEX" >> $LOGFILE
+
+    #fi
+
+fi
+
+exit 3
+#!/bin/bash
+
 # this is example notify script that can be invoked on a client side
 # This script will be called by client-server with a single parameter
 # describing operation (add, update, delete, expire)

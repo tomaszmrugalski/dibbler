@@ -394,7 +394,7 @@ PDOptions
 NextHopDeclaration:
 NEXT_HOP_ IPV6ADDR_ '{'
 {
-    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2, true);
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
     SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
     nextHop = myNextHop; 
 }
@@ -406,7 +406,7 @@ RouteList '}'
 }
 | NEXT_HOP_ IPV6ADDR_
 {
-    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2, true);
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
     SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
     SrvCfgIfaceLst.getLast()->addExtraOption(myNextHop, false);
 }
@@ -420,7 +420,7 @@ RouteList
 Route:
 ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_ 
 {
-    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2, true);
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
     SPtr<TOpt> rtPrefix = new TOptRtPrefix($6, $4, 42, prefix, NULL);
     if (nextHop)
         nextHop->addOption(rtPrefix);
@@ -429,7 +429,7 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_
 {
-    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2, true);
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
     SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
     if (nextHop)
         nextHop->addOption(rtPrefix);
@@ -438,7 +438,7 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INFINITE_
 {
-    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2, true);
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
     SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
     if (nextHop)
         nextHop->addOption(rtPrefix);

@@ -514,7 +514,7 @@ TClntCfgIface::TOptionStatusLst& TClntCfgIface::getExtraOptions() {
 }
 
 void TClntCfgIface::setRouting(bool enabled) {
-    /// @todo: implement this
+    RoutingEnabled = enabled;
 }
 
 SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {

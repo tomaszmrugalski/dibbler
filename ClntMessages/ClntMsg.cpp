@@ -24,6 +24,7 @@
 #include "OptAddrLst.h"
 #include "OptAddr.h"
 #include "OptDUID.h"
+#include "OptRtPrefix.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIA_PD.h"
 #include "ClntOptTA.h"
@@ -231,6 +232,14 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
 	    break;
 	}
+        case OPTION_NEXT_HOP: {
+            ptr = new TOptAddr(code, buf+pos, length, this);
+            break;
+        }
+        case OPTION_RTPREFIX: {
+            ptr = new TOptRtPrefix(buf+pos, length, this);
+            break;
+        }
 	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:

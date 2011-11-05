@@ -8,6 +8,7 @@
  *
  */
 
+#include <sstream>
 #include "DHCPConst.h"
 #include "OptRtPrefix.h"
 #include "Logger.h"
@@ -76,7 +77,14 @@ SPtr<TIPv6Addr> TOptRtPrefix::getPrefix()
     return Prefix;
 }
 
-int TOptRtPrefix::getSize() 
+int TOptRtPrefix::getSize()
 {
     return 4+22+getSubOptSize();
+}
+
+std::string TOptRtPrefix::getPlain() {
+    stringstream tmp;
+    tmp << Prefix->getPlain() << "/" << (unsigned int)PrefixLen << " " << Lifetime
+        << " " << (unsigned int)Metric;
+    return tmp.str();
 }

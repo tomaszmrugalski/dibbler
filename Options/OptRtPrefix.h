@@ -25,6 +25,7 @@ public:
     uint8_t getPrefixLen();
     uint8_t getMetric();
     SPtr<TIPv6Addr> getPrefix();
+    std::string getPlain();
 protected:
     uint32_t Lifetime;
     uint8_t PrefixLen;
