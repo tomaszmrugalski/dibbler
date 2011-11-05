@@ -46,9 +46,6 @@ class TSrvIfaceMgr :public TIfaceMgr {
 
     void redetectIfaces();
 
-protected:
-    virtual void optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix = std::string(""));
-
   private:
     TSrvIfaceMgr(string xmlFile);
     static TSrvIfaceMgr * Instance;

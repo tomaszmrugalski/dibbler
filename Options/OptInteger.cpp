@@ -11,6 +11,7 @@
  */
 
 #include <stdlib.h>
+#include <sstream>
 #include <iostream>
 #include "Portable.h"
 #include "OptInteger.h"
@@ -94,6 +95,12 @@ int TOptInteger::getSize() {
 
 unsigned int TOptInteger::getValue() {
     return this->Value;
+}
+
+std::string TOptInteger::getPlain() {
+    stringstream tmp;
+    tmp << Value;
+    return tmp.str();
 }
 
 bool TOptInteger::isValid() {

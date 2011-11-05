@@ -512,8 +512,10 @@ void TSrvIfaceMgr::redetectIfaces() {
 
 void TSrvIfaceMgr::instanceCreate( const std::string xmlDumpFile )
 {
-    if (Instance)
+    if (Instance) {
       Log(Crit) << "SrvIfaceMgr instance already created! Application error." << LogEnd;
+      return; // don't create second instance
+    }
     Instance = new TSrvIfaceMgr(xmlDumpFile);
 }
 
@@ -523,42 +525,6 @@ TSrvIfaceMgr & TSrvIfaceMgr::instance()
       Log(Crit) << "SrvIfaceMgr not create yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
   return *Instance;
 }
-
-void TSrvIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix) {
-
-    switch (opt->getOptType()) {
-    case OPTION_IA_NA:
-    case OPTION_IA_TA:
-    {
-        opt->firstOption();
-        while (SPtr<TOpt> subopt = opt->getOption()) {
-            if (subopt->getOptType() == OPTION_IAADDR) {
-                SPtr<TOptIAAddress> addr = (Ptr*) subopt;
-                params.addAddr(addr->getAddr(), addr->getPref(), addr->getValid(), txtPrefix);
-            }
-        }
-        break;
-    }
-    case OPTION_IA_PD:
-    {
-        opt->firstOption();
-        while (SPtr<TOpt> subopt = opt->getOption()) {
-            if (subopt->getOptType() == OPTION_IAPREFIX) {
-                SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
-                params.addPrefix(prefix->getPrefix(),
-                                 prefix->getPrefixLength(),
-                                 prefix->getPref(),
-                                 prefix->getValid());
-            }
-        }
-        break;
-    }
-    default:
-        return TIfaceMgr::optionToEnv(params, opt, txtPrefix);
-        break;
-    }
-}
-
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
     strum << "<SrvIfaceMgr>" << std::endl;

@@ -33,5 +33,5 @@ libposlib_a_SOURCES = \
   types.h \
   vsnprintf.h
 
-# w32poll.cpp \
-#  w32poll.h
+
+dist_noinst_DATA = w32poll.cpp w32poll.h ChangeLog-poslib

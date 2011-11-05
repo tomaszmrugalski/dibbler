@@ -283,12 +283,43 @@ string TIfaceMgr::printMac(char * mac, int macLen) {
 
 void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix )
 {
-    stringstream tmp;
-    if (txtPrefix.length()) {
-        tmp << txtPrefix << "_";
+    switch (opt->getOptType()) {
+    case OPTION_IA_NA:
+    case OPTION_IA_TA:
+    {
+        opt->firstOption();
+        while (SPtr<TOpt> subopt = opt->getOption()) {
+            if (subopt->getOptType() == OPTION_IAADDR) {
+                SPtr<TOptIAAddress> addr = (Ptr*) subopt;
+                params.addAddr(addr->getAddr(), addr->getPref(), addr->getValid(), txtPrefix);
+            }
+        }
+        break;
     }
-    tmp << "OPTION" << opt->getOptType() << "=\"" << opt->getPlain() << "\"";
-    params.addParam(tmp.str().c_str());
+    case OPTION_IA_PD:
+    {
+        opt->firstOption();
+        while (SPtr<TOpt> subopt = opt->getOption()) {
+            if (subopt->getOptType() == OPTION_IAPREFIX) {
+                SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
+                params.addPrefix(prefix->getPrefix(),
+                                 prefix->getPrefixLength(),
+                                 prefix->getPref(),
+                                 prefix->getValid());
+            }
+        }
+        break;
+    }
+    default: {
+      stringstream tmp;
+      if (txtPrefix.length()) {
+        tmp << txtPrefix << "_";
+      }
+      tmp << "OPTION" << opt->getOptType() << "=" << opt->getPlain() << "";
+      params.addParam(tmp.str().c_str());
+      break;
+    }
+    }
 }
 
 
@@ -365,6 +396,14 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
 
     tmp.str("");
     tmp << "REMOTE_ADDR=" << reply->getAddr()->getPlain();
+    params.addParam(tmp.str().c_str());
+
+    tmp.str("");
+    tmp << "CLNT_MESSAGE=" << question->getName();
+    params.addParam(tmp.str().c_str());
+
+    tmp.str("");
+    tmp << "SRV_MESSAGE=" << reply->getName();
     params.addParam(tmp.str().c_str());
 
     SPtr<TIPv6Addr> ip;

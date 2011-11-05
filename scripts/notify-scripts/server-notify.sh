@@ -6,20 +6,21 @@
 #
 # Many parameters will be passed as environment variables
 
-LOGFILE=/var/lib/dibbler/server.sh-log
+LOGFILE=/var/lib/dibbler/server-notify.log
+
+echo "---$1--------" >> $LOGFILE
+date >> $LOGFILE
 
 # uncomment this to get full list of available variables
-set >> $LOGFILE
-
-echo "-----------" >> $LOGFILE
-#set >> server.sh-log
+#set >> $LOGFILE
 
 if [ "$ADDR1" != "" ]; then
-    echo "Address ${ADDR1} (operation $1) to client $REMOTE_ADDR on inteface $IFACE/$IFINDEX" >> $LOGNAME
+    echo "Address ${ADDR1} (operation $1) to client $REMOTE_ADDR on inteface $IFACE/$IFINDEX" >> $LOGFILE
 fi
 
 if [ "$PREFIX1" != "" ]; then
     echo "Prefix ${PREFIX1} (operation $1) to client $REMOTE_ADDR on inteface $IFACE/$IFINDEX" >> $LOGFILE
 fi
 
+# sample return code. Dibbler will just print it out.
 exit 3
