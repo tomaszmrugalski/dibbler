@@ -326,6 +326,10 @@ void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::st
         }
 	break;
     }
+    case OPTION_RTPREFIX: {
+        params.addParam("OPTION_RTPREFIX", opt->getPlain());
+        break;
+    }
     default: {
       stringstream tmp;
       if (txtPrefix.length()) {
