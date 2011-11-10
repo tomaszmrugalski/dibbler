@@ -134,6 +134,123 @@ must be properly configured to support such traffic. See section
 \ref{example-server-relay2} for details about server configuration and
 section \ref{example-relay-cascade} for example relays configuration.
 
+\subsection{Routing configuration}
+\label{feature-routing}
+Until recently, DHCPv6 protocol did not define a way to provision
+routing configuration information to clients and relay or Router
+Advertisment mechanism of Neighbor Discovery
+protocol \cite{rfc4862}. While that approach works, it brings a number
+of drawbacks. In particular:
+\begin{enumerate}
+\item RA sent by router affects all hosts in a network. There is no
+way to differentiate this information on a per host basis. There is no
+way to define additional routing information for specified class of
+hosts (e.g. one department in a corporate network).
+\item RA and DHCPv6 configuration has to be consistent. That is very
+doable, but somewhat problematic, because network configuration has to
+be specified in several places. Moreover, it does not scale too
+well. There are routers located in every segment of a network, while
+there may be just a single DHCPv6 server deployed that serves many links.
+\item Administrators experienced with IPv4 that are migrating their
+networks to IPv6 ask this question very frequently: ``How do I
+configure routing?''. Until recently the proper answer to that
+question was ``you don't''.
+\item In mobile environment, mobile nodes had to wait for RA and then
+start DHCPv6 exchange. Although hosts can request RA by sending Router
+Solicitation (RS), that may sometimes not work, as routers have upper
+limits of how many RA they are allowed to sent.
+\end{enumerate}
+
+To solve aforementioned problems, a DHCPv6-based solution was
+proposed \cite{draft-route-option}. It allows provisioning of IPv6
+routing information. In particular, it allows configuration of a
+default route, any reasonable number of specific routes and routes
+available on link. This feature was introduced in Dibbler
+0.8.1RC1. Both server and client support it. Dibbler sources come with
+examples config files. See \verb+doc/example/server-route.conf+
+and \verb+doc/example/client-route.conf+ for details. 
+
+\Note This specification is not approved yet. It will change in the
+future. In particular, IANA have not assigned specific option values
+yet. Dibbler currently uses 242 for NEXT\_HOP and 243 for RTPREFIX
+options. Those values will change.
+
+\Note Current implementation is a prototype. It does support only one
+route per router, only one router and only a single route
+on-link. Although server is able to parse config that defines more
+than one, it will provision only the first route or router information
+to a client. That is implementation limitation that will be removed in
+future releases. That is not a spec limitation.
+
+To configure routing on a server side, following config may be used
+\begin{lstlisting}
+# Example server configuration file: server-route.conf
+
+iface "eth0" {
+# assign addresses from this pool
+ class {
+   pool 2000::/64
+ }
+
+
+# router with a single route with infinite lifetime
+ next-hop 2001:db8:1::face:b00c {
+     # replace this with ::/0 to configure default route
+     route 2001:db8:1::/64
+ }
+
+# a single next-hop without any routes defined (i.e. default router)
+# This simplified mode is recommended only in bandwidth restricted
+# networks. Please use full mode instead
+# next-hop 2001:db8:1::cafe
+
+# router with 3 routes defined in different ways
+ next-hop 2001:db8:1::dead:beef {
+     # route may have defined a lifetime
+     route 2001:db8:2::/64 lifetime 7200
+     # lifetime may be infinite
+     # route 2001:db8:3::/64 lifetime infinite
+ }
+
+# prefixes available on link directly, not via router
+ route 2001:db8:5::/64 lifetime 3600
+}
+\end{lstlisting}
+
+Support on client's side is enabled in a very simple way:
+\begin{lstlisting}
+# Example client configuration file: client-route.conf
+
+# Uncomment following line to skip confirm sending (after crash or power outage)
+skip-confirm
+
+# 7 = omit debug messages
+log-level 8
+
+# Uncomment this line to run script every time response is received
+script "/var/lib/dibbler/client-notify.sh"
+
+iface "eth0" {
+  ia
+
+  option dns-server
+  option domain
+  routing 1
+}
+\end{lstlisting}
+
+Two features should be enabled to reasonably use this
+feature. \verb+routing 1+ instructs client that is should request routing
+information (NEXT\_HOP and RTPREFIX options). Once such information is
+sent by the server, client will execute a notify script. Client will
+run defined script and pass necessary information to it. In
+particular, it will set OPTION\_NEXT\_HOP, OPTION\_NEXT\_HOP\_RTPREFIX
+and OPTION\_RTPREFIX variables with contents of received
+option. Please see scripts/notify-scripts/client-notify.sh for example
+on how to use that information to configure routing. User is also
+recommended to read Section \ref{feature-script} about details of
+running a script and passed variables.
+
 \subsection{Custom options}
 \label{feature-custom-options}
 Dibbler is the DHCPv6 with support for a very large number of
@@ -192,169 +309,6 @@ iface "eth0" {
 A word of warning: There are no safety checks regarding option codes,
 so it is possible to transmit already defined options using this
 feature. Use with caution!
-
-\subsection{Confirm}
-\label{feature-confirm}
-Client detects if previous client instance was not shutdown properly
-(due to power outage, client crash, forceful shutdown or similar
-event). In such case, it reads existing address database and checks if
-assigned addresses may still be valid. If that is so, it tries to
-confirm those addresses by using \msg{CONFIRM} message.
-
-If you want to provoke this kind of scenario on purpose, you can run
-dibbler-client normally, then forcefully kill the procss (by sending
-kill -9 signal, or pressing ctrl-\\ under Linux). Make sure that you
-rerun client before address valid lifetime expires.
-
-Currently, client does support only IAs in the \msg{CONFIRM}.
-
-\subsection{Mobility}
-Client can also be compiled with support for link change detection.
-The intended use for this feature is mobility. Client is able to
-detect when it moves to new link and react accordingly. Client sends
-\msg{CONFIRM} message to verify that its currently held address is
-still usable on this new link.
-
-\subsection{Leasequery}
-\label{feature-leasequery}
-Servers provide addresses, prefixes and other configuration options to
-the clients. Sometime administrators may want to obtain information
-regarding certain leases, e.g. who has been given a specific address
-or what addresses have been assigned to a specific client. This
-mechanism is called Leasequery \cite{rfc5007}. New DHCPv6 participant
-called requestor has been defined. Its sole purpose is to send queries
-and receive responses. Dibbler provides example implementation. To
-define a query, command line parameters are used.
-
-There are two types of queries: by address ("who leases this address?")
-and by client identifier ("what addresses has this client?"). To specify
-one of such types, \verb+-addr+ or \verb+duid+ command-line switches
-can be used. It is also mandatory to specify (using \verb+-i IFACE+),
-which interface should be used to transmit the query.
-
-Here is a complete list of all command-line switches:
-
-\begin{description}
-\item[-i IFACE] -- defines thru which interface should the query be sent
-\item[-addr ADDR] -- sets query type to query by address. Also defines
-  address, which the query will be about.
-\item[-duid DUID] -- sets query type to query by client
-  indentifier. Also defines client intentifier.
-\item[-timeout SECS] -- specifies time, which requestor should wait
-  for response.
-\item[-dstaddr ADDR] -- destination address of the lease query
-  message. By default messages are sent to the multicast address
-  (ff02::1:2). To transmit query to an unicast addres, use this option.
-\end{description}
-
-Example query 1: Who has 2000::1 address?
-
-\begin{lstlisting}
-dibbler-requestor -i eth0 -addr 2000::1
-\end{lstlisting}
-
-Example query 2: Which addresses are assigned to client with specific
-client identifier?
-
-\begin{lstlisting}
-dibbler-requestor -i eth0 -duid 00:01:00:01:0e:8d:a2:d7:00:08:54:04:a3:24
-\end{lstlisting}
-
-\subsection{Stateless vs stateful and IA, TA options}
-\label{feature-stateless-stateful}
-This section explains the difference between stateless and stateful
-configurations. IA and TA options usage is also described.
-
-Usually, normal stateful configuration based on non-temporary
-addresses should be used. If you don't know, what temporary addresses
-are, you don't need them.
-
-Note that DHCPv6 stateless autoconfiguration is part of stateless autoconfiguration
-defined in \cite{rfc4862}.
-
-There are two kinds of configurations in DHCPv6 (\cite{rfc3315},
-\cite{rfc3736}):
-\begin{description}
-  \item[stateful] -- it assumes that addresses (and possibly other
-    parameters) are assigned to a client. To perform this kind of
-    configuration, four messages are exchanged: \msg{SOLICIT},
-    \msg{ADVERTISE}, \msg{REQUEST} and \msg{REPLY}.
-  \item[stateless] -- when only parameters are configured (without
-    assigning addresses to a client). During execution of this type of
-    configuration, only two messages are exchanged: \msg{INF-REQUEST}
-    and \msg{REPLY}.
-\end{description}
-
-During normal operation, client works in a stateful mode. If not
-instructed otherwise, it will request one or more normal
-(i.e. non-temporary) address. It will use \opt{IA} option (Identity
-Association for Non-temporary Addresses, see \cite{rfc3315} for
-details) to request and retrieve addresses. Since this is a default
-behavior, it does not have to be mentioned in the client configuration
-file. Nevertheless, it can be provided:
-
-\begin{lstlisting}
-# client.conf
-iface eth0 {
-  ia
-  option dns-server
-}
-\end{lstlisting}
-
-In a specific circustances, client might be interested in obtaining
-only temporary addresses. Although this is still a stateful mode, its
-configuration is sligtly different. There is a special option called
-\opt{TA} (Identity Association for Temporary Addresses, see
-\cite{rfc3315} for details). This option will be used to request and
-receive temporary addresses from the client. To force client to
-request temporary addresses instead of permanent ones, \verb+ta+
-keyword must be used in client.conf file. If this option is defined,
-only temporary address will be requested. Keep in mind that temporary
-addresses are not renewed.
-
-\begin{lstlisting}
-# client.conf
-iface eth0 {
-  ta
-  option dns-server
-}
-\end{lstlisting}
-
-It is also possible to instruct client to work in a stateless mode. It
-will not ask for any type of addresses, but will ask for specific
-non-adress related configuration parameters, e.g. DNS Servers
-information. This can be achieved by using \verb+stateless+
-keyword. Since this is a global parameter, it is not defined on any
-interface, but as a global option.
-
-\begin{lstlisting}
-# client.conf
-stateless
-iface eth0
-{
-  option dns-server
-}
-\end{lstlisting}
-
-Some of the cases mentioned above can be used together. However,
-several combinations are illegal. Here is a complete list:
-
-\begin{description}
-\item[none] -- When no option is specified, client will assume one IA
-  with one address should be requested. Client will send \verb+ia+
-  option (stateful autoconfiguration).
-\item[ia] -- Client will send \verb+ia+ option (stateful
-  autoconfiguration).
-\item[ia,ta] -- When both options are specified, client will request
-  for both - Non-temporary as well as Temporary addresses (stateful
-  autoconfiguration).
-\item[stateless] -- Client will request additional configration
-  parameters only and will not ask for addresses (stateless
-  autoconfiguration).
-\item[stateless,ia] -- This combination is not allowed.
-\item[stateless,ta] -- This combination is not allowed.
-\item[stateless,ia,ta] -- This combination is not allowed.
-\end{description}
 
 \subsection{DNS Update}
 \label{feature-dns-update}
@@ -863,6 +817,220 @@ Client-class TelephoneClass {
 }
 \end{lstlisting}
 
+\subsection{External script}
+\label{feature-script}
+
+\Note Support for external scripts was rewritten in 0.8.1RC1
+release. Note that mapping prefix and notify scripts were removed.
+
+Support for server-side script was introduced in 0.8.1RC1.
+
+Dibbler-client is able to receive addresses, prefixes and numerous
+additional options. It will do its best to set up those parameters in
+the system. However, the need for some extra processing may arise. The
+most elegant solution is to call external script every time the
+configuration changes. Dibbler client may be configured to call
+external script every time REPLY is received for REQUEST (new
+parameters added), RENEW (parameters were updated) or RELEASE
+(parameters were deleted).
+
+Name of this script is specified using \verb+script+ keyword followed
+by absolute path to script. Script will be called with a single
+parameter, denoting current operation. Its value will be one of
+"add'', "update'', or "delete''. Actual values of received parameters
+are passed as environment variables. In particular, IFNAME and IFINDEX
+variables denote interface name and interface index that was used to
+communicate with server, respectively. Another essential variable set
+is REMOTE\_ADDR. It defines address from which packet originated. That
+is client's address (when run on server) and server's address (when
+run on client).
+
+Addresses are passed in variables ADDR1, ADDR2 and following. Note
+that each ADDR variable does contain triples of
+(address,preferred-lifetime,valid-lifetime) separated by spaces.
+
+Prefixes are passed in variables PREFIX1, PREFIX2 and following. Note
+that each PREFIX variable does contain quadriplet of (prefix,
+prefix-length, preferred-lifetime, valid-lifetime) separated by spaces.
+
+Support for additional options is in progress. Options will be passed
+as additional environment variables.
+
+To enable script execution, \verb+script+ global option must
+be added to \verb+client.conf+ file. For example:
+
+\begin{lstlisting}
+# client.conf
+script /var/lib/dibbler/script.sh
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+\subsection{Confirm}
+\label{feature-confirm}
+Client detects if previous client instance was not shutdown properly
+(due to power outage, client crash, forceful shutdown or similar
+event). In such case, it reads existing address database and checks if
+assigned addresses may still be valid. If that is so, it tries to
+confirm those addresses by using \msg{CONFIRM} message.
+
+If you want to provoke this kind of scenario on purpose, you can run
+dibbler-client normally, then forcefully kill the procss (by sending
+kill -9 signal, or pressing ctrl-\\ under Linux). Make sure that you
+rerun client before address valid lifetime expires.
+
+Currently, client does support only IAs in the \msg{CONFIRM}.
+
+\subsection{Mobility}
+Client can also be compiled with support for link change detection.
+The intended use for this feature is mobility. Client is able to
+detect when it moves to new link and react accordingly. Client sends
+\msg{CONFIRM} message to verify that its currently held address is
+still usable on this new link.
+
+\subsection{Leasequery}
+\label{feature-leasequery}
+Servers provide addresses, prefixes and other configuration options to
+the clients. Sometime administrators may want to obtain information
+regarding certain leases, e.g. who has been given a specific address
+or what addresses have been assigned to a specific client. This
+mechanism is called Leasequery \cite{rfc5007}. New DHCPv6 participant
+called requestor has been defined. Its sole purpose is to send queries
+and receive responses. Dibbler provides example implementation. To
+define a query, command line parameters are used.
+
+There are two types of queries: by address ("who leases this address?")
+and by client identifier ("what addresses has this client?"). To specify
+one of such types, \verb+-addr+ or \verb+duid+ command-line switches
+can be used. It is also mandatory to specify (using \verb+-i IFACE+),
+which interface should be used to transmit the query.
+
+Here is a complete list of all command-line switches:
+
+\begin{description}
+\item[-i IFACE] -- defines thru which interface should the query be sent
+\item[-addr ADDR] -- sets query type to query by address. Also defines
+  address, which the query will be about.
+\item[-duid DUID] -- sets query type to query by client
+  indentifier. Also defines client intentifier.
+\item[-timeout SECS] -- specifies time, which requestor should wait
+  for response.
+\item[-dstaddr ADDR] -- destination address of the lease query
+  message. By default messages are sent to the multicast address
+  (ff02::1:2). To transmit query to an unicast addres, use this option.
+\end{description}
+
+Example query 1: Who has 2000::1 address?
+
+\begin{lstlisting}
+dibbler-requestor -i eth0 -addr 2000::1
+\end{lstlisting}
+
+Example query 2: Which addresses are assigned to client with specific
+client identifier?
+
+\begin{lstlisting}
+dibbler-requestor -i eth0 -duid 00:01:00:01:0e:8d:a2:d7:00:08:54:04:a3:24
+\end{lstlisting}
+
+\subsection{Stateless vs stateful and IA, TA options}
+\label{feature-stateless-stateful}
+This section explains the difference between stateless and stateful
+configurations. IA and TA options usage is also described.
+
+Usually, normal stateful configuration based on non-temporary
+addresses should be used. If you don't know, what temporary addresses
+are, you don't need them.
+
+Note that DHCPv6 stateless autoconfiguration is part of stateless autoconfiguration
+defined in \cite{rfc4862}.
+
+There are two kinds of configurations in DHCPv6 (\cite{rfc3315},
+\cite{rfc3736}):
+\begin{description}
+  \item[stateful] -- it assumes that addresses (and possibly other
+    parameters) are assigned to a client. To perform this kind of
+    configuration, four messages are exchanged: \msg{SOLICIT},
+    \msg{ADVERTISE}, \msg{REQUEST} and \msg{REPLY}.
+  \item[stateless] -- when only parameters are configured (without
+    assigning addresses to a client). During execution of this type of
+    configuration, only two messages are exchanged: \msg{INF-REQUEST}
+    and \msg{REPLY}.
+\end{description}
+
+During normal operation, client works in a stateful mode. If not
+instructed otherwise, it will request one or more normal
+(i.e. non-temporary) address. It will use \opt{IA} option (Identity
+Association for Non-temporary Addresses, see \cite{rfc3315} for
+details) to request and retrieve addresses. Since this is a default
+behavior, it does not have to be mentioned in the client configuration
+file. Nevertheless, it can be provided:
+
+\begin{lstlisting}
+# client.conf
+iface eth0 {
+  ia
+  option dns-server
+}
+\end{lstlisting}
+
+In a specific circustances, client might be interested in obtaining
+only temporary addresses. Although this is still a stateful mode, its
+configuration is sligtly different. There is a special option called
+\opt{TA} (Identity Association for Temporary Addresses, see
+\cite{rfc3315} for details). This option will be used to request and
+receive temporary addresses from the client. To force client to
+request temporary addresses instead of permanent ones, \verb+ta+
+keyword must be used in client.conf file. If this option is defined,
+only temporary address will be requested. Keep in mind that temporary
+addresses are not renewed.
+
+\begin{lstlisting}
+# client.conf
+iface eth0 {
+  ta
+  option dns-server
+}
+\end{lstlisting}
+
+It is also possible to instruct client to work in a stateless mode. It
+will not ask for any type of addresses, but will ask for specific
+non-adress related configuration parameters, e.g. DNS Servers
+information. This can be achieved by using \verb+stateless+
+keyword. Since this is a global parameter, it is not defined on any
+interface, but as a global option.
+
+\begin{lstlisting}
+# client.conf
+stateless
+iface eth0
+{
+  option dns-server
+}
+\end{lstlisting}
+
+Some of the cases mentioned above can be used together. However,
+several combinations are illegal. Here is a complete list:
+
+\begin{description}
+\item[none] -- When no option is specified, client will assume one IA
+  with one address should be requested. Client will send \verb+ia+
+  option (stateful autoconfiguration).
+\item[ia] -- Client will send \verb+ia+ option (stateful
+  autoconfiguration).
+\item[ia,ta] -- When both options are specified, client will request
+  for both - Non-temporary as well as Temporary addresses (stateful
+  autoconfiguration).
+\item[stateless] -- Client will request additional configration
+  parameters only and will not ask for addresses (stateless
+  autoconfiguration).
+\item[stateless,ia] -- This combination is not allowed.
+\item[stateless,ta] -- This combination is not allowed.
+\item[stateless,ia,ta] -- This combination is not allowed.
+\end{description}
+
 \subsection{Server address caching}
 Previous Dibbler versions assigned a random address from the available
 address pool, so the same client received different address each time it
@@ -1367,57 +1535,6 @@ iface eth0 {
    addr-params 80
    pool 2001:458:ff01:ff03::/80
  }
-}
-\end{lstlisting}
-
-\subsubsection{External script}
-\label{feature-script}
-
-\Note Support for external scripts was rewritten in 0.8.1RC1
-release. Note that mapping prefix and notify scripts were removed.
-
-Support for server-side script was introduced in 0.8.1RC1.
-
-Dibbler-client is able to receive addresses, prefixes and numerous
-additional options. It will do its best to set up those parameters in
-the system. However, the need for some extra processing may arise. The
-most elegant solution is to call external script every time the
-configuration changes. Dibbler client may be configured to call
-external script every time REPLY is received for REQUEST (new
-parameters added), RENEW (parameters were updated) or RELEASE
-(parameters were deleted).
-
-Name of this script is specified using \verb+script+ keyword followed
-by absolute path to script. Script will be called with a single
-parameter, denoting current operation. Its value will be one of
-"add'', "update'', or "delete''. Actual values of received parameters
-are passed as environment variables. In particular, IFNAME and IFINDEX
-variables denote interface name and interface index that was used to
-communicate with server, respectively. Another essential variable set
-is REMOTE\_ADDR. It defines address from which packet originated. That
-is client's address (when run on server) and server's address (when
-run on client).
-
-Addresses are passed in variables ADDR1, ADDR2 and following. Note
-that each ADDR variable does contain triples of
-(address,preferred-lifetime,valid-lifetime) separated by spaces.
-
-Prefixes are passed in variables PREFIX1, PREFIX2 and following. Note
-that each PREFIX variable does contain quadriplet of (prefix,
-prefix-length, preferred-lifetime, valid-lifetime) separated by spaces.
-
-Support for additional options is in progress. Options will be passed
-as additional environment variables.
-
-To enable script execution, \verb+script+ global option must
-be added to \verb+client.conf+ file. For example:
-
-\begin{lstlisting}
-# client.conf
-script /var/lib/dibbler/script.sh
-
-iface eth0 {
-   ia
 }
 \end{lstlisting}
 

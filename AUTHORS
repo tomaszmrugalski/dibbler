@@ -71,5 +71,8 @@
   - Harro Haan <hrhaan(at)gmail(dot)com>
     2011-10: fix alignment errors (ARMv5)
 
+  - Mateusz Ozga <matozga(at)gmail(dot)com>
+    2011-11: Routing configuration
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

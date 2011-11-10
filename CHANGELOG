@@ -2,7 +2,7 @@
   Dibbler changelog
  ------------------- 
 
-0.8.1 [not-released-yet]
+0.8.1RC1 [2011-11-11]
   - Fixed socket binding problem on server that may affect relay scenarios
   - Fixed segmentation fault when interface-id was not defined on relay interface.
   - Makefiles reworked
@@ -27,6 +27,7 @@
   - It is now possible to specify IAID for PD
   - Doc: Rather large User's Guide update
   - Support for RFC6334 (DS-Lite tunnels) added
+  - Support for routing configuration added (draft-ietf-mif-dhcpv6-route-option-03)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

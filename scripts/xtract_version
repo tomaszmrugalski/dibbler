@@ -1,13 +1,2 @@
 #!/bin/bash
-if [ -e Misc/Portable.h ]; then
-  VER1=`grep "^\#define DIBBLER_VERSION" Misc/Portable.h | awk '{ print $3}'`
-else
-  if [ -e ../Misc/Portable.h ]; then
-  VER1=`grep "^\#define DIBBLER_VERSION" ../Misc/Portable.h | awk '{ print $3}'`
-  fi
-fi
-  
-VER2=${VER1##\"}
-VERSION=${VER2%%\"}
-echo $VERSION
-
+grep PACKAGE_VERSION ../include/dibbler-config.h | awk '{ gsub("\"","",$3); print "\\newcommand{\\version}{" $3 "}"; };'

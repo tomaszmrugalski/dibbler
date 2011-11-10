@@ -48,21 +48,18 @@ user: dibbler-user.tex dibbler-user-config-client.tex \
 	  $(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-2nd_pass.log;   \
 	  echo "[LATEX  ] $(SUBDIR)/$@";                                       \
 	  $(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-3rd_pass.log;   \
+	  -grep "undefined" dibbler-user-3rd_pass.log;\
 	fi
-	-grep "undefined" dibbler-user-3rd_pass.log;
-	-grep "undefined" dibbler-user-1st_pass.log;
+	if grep "undefined" dibbler-user-1st_pass.log; then \
+		echo "There are undefined references";\
+	fi
 
 devel: $(DOXYGEN)
 	doxygen doxygen.cfg > doxygen.log 2>doxygen-error.log
 	cp logo* html/
 
 version.tex:
-	@echo "[GREP   ] $(SUBDIR)/$@"
-	@../scripts/xtract_version > $@
-	@echo "[PERL   ] $(SUBDIR)/$@"
-	perl -i -pe 's/_/\\_/g' version.tex
-	perl -i -pe 's/^/\\newcommand{\\version}{/' version.tex
-	perl -i -pe 's/$$/ }/' version.tex
+	../scripts/xtract_version > version.tex
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"

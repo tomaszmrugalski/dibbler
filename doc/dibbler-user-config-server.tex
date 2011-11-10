@@ -76,6 +76,49 @@ pool minaddress-maxaddress
 pool address/prefix
 \end{lstlisting}
 
+\subsubsection{Prefix class scope}
+\label{server-pd-class-scope}
+That is an equivalent of address class for a prefix delegation. It
+contains definition of prefixes that are going to be delegation to
+clients. Only pd-class scoped parameters can be defined here. Prefix
+class is declared as follows:
+\begin{lstlisting}
+pd-class
+{
+    pd-pool prefix/length
+    pd-length prefix-length
+}
+\end{lstlisting}
+
+\subsubsection{Temporary address class scope}
+\label{server-ta-class-scope}
+That is an equivalent of address class for temporary addresses. It
+contains definition of temporary addresses that are going to be
+assigned to clients that request temporary addresses. Only ta-class
+scoped parameters can be defined here. Prefix class is declared as
+follows: 
+\begin{lstlisting}
+ta-class {
+    pool 2001:db8:1::1-2001:db81:1::ffff
+}
+\end{lstlisting}
+
+\subsubsection{Routing scope}
+\label{server-route-scope}
+Support for routing configuration was added in 0.8.0RC1. It is
+possible to define routing scope. Each scope represents a single
+router available on-link. In this scope, routes available via
+specified link my be defined.
+
+\begin{lstlisting}
+next-hop address-of-a-router
+{
+  route1-parameters
+  route2-parameters
+  ...
+}
+\end{lstlisting}
+
 \subsubsection{Server options}
 
 So called standard options are defined by the base DHCPv6 specification,
@@ -203,6 +246,25 @@ retried over TCP. See Section \ref{feature-dns-update}.
 that specifies timeout in milliseconds. Defines how long client should
 wait for DNS server response during DNS Update before declaring
 update a failure. See Section \ref{feature-dns-update}.
+
+\item[class] -- (scope: interface). This definition must be followed by
+curly braces and creates a new address class scope. See
+Section \ref{server-class-scope}.
+
+\item[pd-class] -- (scope: interface). This definition must be
+followed by curly braces and creates a new prefix-delegation class
+scope. See Section \ref{server-pd-class-scope}.
+
+\item[ta-class] -- (scope: interface). This definition must be
+followed by curly braces and creates a new temporary address class
+scope. See Section \ref{server-ta-class-scope}.
+
+\item[next-hop] -- (scope: interface). This definition takes one
+parameter that defines IPv6 address of a router. Without any further
+parameters, it conveys an information about default route for
+bandwidth limited networks. That mode is discouraged, unless there are
+significant bandwith limitations. It is usually followed by curly
+braces that create a new route scope. See Section \ref{server-route-scope}.
 
  \item[preference] -- (scope: interface, type: 0-255, default:
             none). Eech server can be configured to a specific

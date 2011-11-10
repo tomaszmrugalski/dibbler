@@ -321,7 +321,7 @@ parameter. Defines than name, which will be used during logging.
   client configures address, it also configures routing, so every host
   is able to communicate with other hosts, which have obtained address
   from the same server. If you don't like this behavior, you might
-  want to use this option. Note that draft \cite{draft-route} was
+  want to use this option. Note that draft \cite{draft-route-option} was
   introduced to solve this DHCPv6 protocol limitation. It is expected
   to be supported in the next Dibbler release.
 
@@ -645,6 +645,10 @@ request-keyword is a word ``request''. See Section \ref{feature-custom-options}.
    \texttt{digest\_hmac\_sha1}, \texttt{digest\_hmac\_sha224},
    \texttt{digest\_hmac\_sha256}, \texttt{digest\_hmac\_sha384},
    and \texttt{digest\_hmac\_sha512}.
+
+ \item[route] -- (scope: interface). Takes one boolean parameter that
+ defines if routing information should requested or not. The default
+ value is false. See Section \ref{feature-routing}.
 
 \end{description}
 
