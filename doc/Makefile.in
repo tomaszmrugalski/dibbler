@@ -230,7 +230,8 @@ nobase_dist_doc_DATA = dibbler-user.pdf \
 	examples/server-relay.conf \
 	examples/server-relay-interface-id.conf \
 	examples/server-script.conf examples/server-stateless.conf \
-	examples/server-ta.conf examples/server-win32.conf
+	examples/server-ta.conf examples/server-win32.conf \
+	examples/server-route.conf
 dist_noinst_DATA = RELEASE-METHOD TEST-METHOD doxygen.cfg $(DOXYGEN) $(TEX_SOURCES) $(man8_MANS)
 LATEX = pdflatex
 DVIPS = dvips
