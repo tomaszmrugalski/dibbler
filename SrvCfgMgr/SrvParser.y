@@ -24,6 +24,7 @@
 #include "Logger.h"
 #include "FQDN.h"
 #include "OptVendorSpecInfo.h"
+#include "OptRtPrefix.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
 #include "SrvCfgClientClass.h"
@@ -72,13 +73,16 @@ bool EndTAClassDeclaration();                                                   
 void StartPDDeclaration();                                                           \
 bool EndPDDeclaration();                                                             \
 TSrvCfgMgr * CfgMgr;                                                                 \
+SPtr<TOpt> nextHop;                                                                  \
 virtual ~SrvParser();
 
 // constructor
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
 %define CONSTRUCTOR_CODE                                                          \
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    this->lex = lex;
+    this->lex = lex;                                                              \
+    CfgMgr = 0;                                                                   \
+    nextHop = 0;
 
 %union
 {
@@ -126,7 +130,7 @@ virtual ~SrvParser();
 %token DENY_
 %token SUBSTRING_, STRING_KEYWORD_, ADDRESS_LIST_
 %token CONTAIN_
-
+%token NEXT_HOP_, ROUTE_, INFINITE_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -244,8 +248,12 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList InterfaceOptionDeclaration
 | ClassDeclaration
 | TAClassDeclaration
+| NextHopDeclaration
+| Route
 | InterfaceDeclarationsList TAClassDeclaration
 | InterfaceDeclarationsList ClassDeclaration
+| InterfaceDeclarationsList NextHopDeclaration
+| InterfaceDeclarationsList Route
 ;
 
 Client
@@ -379,6 +387,64 @@ PDOptions
 | DenyClientClassDeclaration
 ;
 
+////////////////////////////////////////////////////////////
+/// Route Option ///////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+NextHopDeclaration:
+NEXT_HOP_ IPV6ADDR_ '{'
+{
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
+    SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
+    nextHop = myNextHop; 
+}
+RouteList '}'
+{
+    SrvCfgIfaceLst.getLast()->addExtraOption(nextHop, false);
+    nextHop = 0;
+    //should we call YYABORT;?
+}
+| NEXT_HOP_ IPV6ADDR_
+{
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
+    SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
+    SrvCfgIfaceLst.getLast()->addExtraOption(myNextHop, false);
+}
+;
+
+RouteList
+: Route
+| RouteList Route
+;
+
+Route:
+ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_ 
+{
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix($6, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+}
+| ROUTE_ IPV6ADDR_ '/' INTNUMBER_
+{
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+}
+| ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INFINITE_
+{
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters

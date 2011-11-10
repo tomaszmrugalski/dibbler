@@ -5,6 +5,7 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  *          Michal Kowalczuk <michal@kowalczuk.eu>
+ *          Mateusz Ozga <matozga@gmail.com>
  *
  * released under GNU GPL v2 only licence
  *
@@ -49,6 +50,7 @@ void TClntCfgIface::setDefaults() {
     LifetimeState   = STATE_DISABLED;
     PrefixDelegationState = STATE_DISABLED;
     VendorSpecState = STATE_DISABLED;
+    RoutingEnabledState = STATE_DISABLED;
 
     ExtraOpts.clear();
 }
@@ -307,6 +309,9 @@ bool TClntCfgIface::isReqLifetime() {
 bool TClntCfgIface::isReqVendorSpec() {
     return this->ReqVendorSpec;
 }
+bool TClntCfgIface::isRoutingEnabled() {
+    return this->RoutingEnabled;
+}
 
 // --------------------------------------------------------------------------------
 // --- options: state -------------------------------------------------------------
@@ -356,6 +361,9 @@ EState TClntCfgIface::getKeyGenerationState() {
 }
 EState TClntCfgIface::getAuthenticationState() {
     return AuthenticationState;
+}
+EState TClntCfgIface::getRoutingEnabledState() {
+    return RoutingEnabledState;
 }
 // --------------------------------------------------------------------
 // --- options: get option --------------------------------------------
@@ -467,6 +475,9 @@ int  TClntCfgIface::getPrefixLength() {
     return this->PrefixLength;
 }
 
+void TClntCfgIface::setRoutingEnabledState(EState state) {
+    this->RoutingEnabledState = state;
+}
 
 /**
  * add extra option to the list of supported extra options
@@ -500,6 +511,10 @@ void TClntCfgIface::addExtraOption(int opttype, TOpt::EOptionLayout layout, bool
 
 TClntCfgIface::TOptionStatusLst& TClntCfgIface::getExtraOptions() {
     return ExtraOpts;
+}
+
+void TClntCfgIface::setRouting(bool enabled) {
+    RoutingEnabled = enabled;
 }
 
 SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {

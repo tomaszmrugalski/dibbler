@@ -17,6 +17,7 @@ TESTS += Opt_tests
 Opt_tests_SOURCES = run_tests.cpp
 Opt_tests_SOURCES += OptAddr_unittest.cc
 Opt_tests_SOURCES += OptIAAddress_unittest.cc
+Opt_tests_SOURCES += OptRtPrefix_unittest.cc
 
 Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 

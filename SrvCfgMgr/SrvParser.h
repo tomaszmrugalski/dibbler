@@ -37,6 +37,7 @@
 #include "Logger.h"
 #include "FQDN.h"
 #include "OptVendorSpecInfo.h"
+#include "OptRtPrefix.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
 #include "SrvCfgClientClass.h"
@@ -78,13 +79,16 @@ bool EndTAClassDeclaration();                                                   
 void StartPDDeclaration();                                                           \
 bool EndPDDeclaration();                                                             \
 TSrvCfgMgr * CfgMgr;                                                                 \
+SPtr<TOpt> nextHop;                                                                  \
 virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
     ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    this->lex = lex;
+    this->lex = lex;                                                              \
+    CfgMgr = 0;                                                                   \
+    nextHop = 0;
 
-#line 83 "SrvParser.y"
+#line 87 "SrvParser.y"
 typedef union
 {
     unsigned int ival;
@@ -356,11 +360,14 @@ typedef
 #define	STRING_KEYWORD_	345
 #define	ADDRESS_LIST_	346
 #define	CONTAIN_	347
-#define	STRING_	348
-#define	HEXNUMBER_	349
-#define	INTNUMBER_	350
-#define	IPV6ADDR_	351
-#define	DUID_	352
+#define	NEXT_HOP_	348
+#define	ROUTE_	349
+#define	INFINITE_	350
+#define	STRING_	351
+#define	HEXNUMBER_	352
+#define	INTNUMBER_	353
+#define	IPV6ADDR_	354
+#define	DUID_	355
 
 
 #line 169 "../bison++/bison.h"
@@ -499,6 +506,9 @@ static const int SUBSTRING_;
 static const int STRING_KEYWORD_;
 static const int ADDRESS_LIST_;
 static const int CONTAIN_;
+static const int NEXT_HOP_;
+static const int ROUTE_;
+static const int INFINITE_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -602,11 +612,14 @@ static const int DUID_;
 	,STRING_KEYWORD_=345
 	,ADDRESS_LIST_=346
 	,CONTAIN_=347
-	,STRING_=348
-	,HEXNUMBER_=349
-	,INTNUMBER_=350
-	,IPV6ADDR_=351
-	,DUID_=352
+	,NEXT_HOP_=348
+	,ROUTE_=349
+	,INFINITE_=350
+	,STRING_=351
+	,HEXNUMBER_=352
+	,INTNUMBER_=353
+	,IPV6ADDR_=354
+	,DUID_=355
 
 
 #line 215 "../bison++/bison.h"

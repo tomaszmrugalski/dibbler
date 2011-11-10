@@ -6,7 +6,7 @@ man8_MANS = man/dibbler-server.8 man/dibbler-client.8 man/dibbler-relay.8
 nobase_dist_doc_DATA = dibbler-user.pdf
 nobase_dist_doc_DATA += examples/client-addrparams.conf examples/client-auth.conf examples/client-autodetect.conf examples/client.conf examples/client-fqdn.conf examples/client-prefix-delegation.conf examples/client-stateless.conf examples/client-ta.conf examples/client-win32.conf 
 nobase_dist_doc_DATA += examples/relay-1interface.conf examples/relay.conf examples/relay-echo-remoteid.conf 
-nobase_dist_doc_DATA += examples/server-3classes.conf examples/server-addrparams.conf examples/server-auth.conf examples/server-bulk-lq.conf examples/server.conf examples/server-extraopts.conf examples/server-fqdn.conf examples/server-guess-mode.conf examples/server-leasequery.conf examples/server-per-client.conf examples/server-prefix-delegation.conf examples/server-relay.conf examples/server-relay-interface-id.conf examples/server-script.conf examples/server-stateless.conf examples/server-ta.conf examples/server-win32.conf
+nobase_dist_doc_DATA += examples/server-3classes.conf examples/server-addrparams.conf examples/server-auth.conf examples/server-bulk-lq.conf examples/server.conf examples/server-extraopts.conf examples/server-fqdn.conf examples/server-guess-mode.conf examples/server-leasequery.conf examples/server-per-client.conf examples/server-prefix-delegation.conf examples/server-relay.conf examples/server-relay-interface-id.conf examples/server-script.conf examples/server-stateless.conf examples/server-ta.conf examples/server-win32.conf examples/server-route.conf
 
 dist_noinst_DATA = RELEASE-METHOD TEST-METHOD doxygen.cfg $(DOXYGEN) $(TEX_SOURCES) $(man8_MANS)
 

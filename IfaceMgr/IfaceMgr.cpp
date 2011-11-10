@@ -310,13 +310,33 @@ void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::st
         }
         break;
     }
+    case OPTION_NEXT_HOP: {
+        if (opt->countOption()) {
+            // suboptions defined
+            opt->firstOption();
+            while (SPtr<TOpt> subopt = opt->getOption()) {
+                if (subopt->getOptType() != OPTION_RTPREFIX)
+                    continue; // ignore other options
+                params.addParam("OPTION_NEXT_HOP_RTPREFIX", opt->getPlain() + " " + subopt->getPlain());
+            }
+        } else {
+            // no suboptions, just NEXT_HOP (default router, without ::/0 route specified)
+            // Will define something like this: OPTION_NEXT_HOP=2001:db8:1::1
+            params.addParam("OPTION_NEXT_HOP", opt->getPlain());
+        }
+	break;
+    }
+    case OPTION_RTPREFIX: {
+        params.addParam("OPTION_RTPREFIX", opt->getPlain());
+        break;
+    }
     default: {
       stringstream tmp;
       if (txtPrefix.length()) {
         tmp << txtPrefix << "_";
       }
-      tmp << "OPTION" << opt->getOptType() << "=" << opt->getPlain() << "";
-      params.addParam(tmp.str().c_str());
+      tmp << "OPTION" << opt->getOptType();
+      params.addParam(tmp.str().c_str(), opt->getPlain());
       break;
     }
     }
@@ -351,9 +371,7 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
     // get PATH
     char * path = getenv("PATH");
     if (path) {
-        tmp << "PATH=" << path;
-        params.addParam(tmp.str().c_str());
-        tmp.str("");
+        params.addParam("PATH", string(path));
     }
 
     switch (question->getType())
@@ -387,24 +405,17 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
         return;
     }
 
-    tmp << "IFACE=" << iface->getName();
-    params.addParam(tmp.str().c_str());
+    params.addParam("IFACE", iface->getName());
 
-    tmp.str("");
     tmp << "IFINDEX=" << dec << (int)iface->getID();
-    params.addParam(tmp.str().c_str());
-
+    params.addParam("IFINDEX", tmp.str().c_str());
     tmp.str("");
-    tmp << "REMOTE_ADDR=" << reply->getAddr()->getPlain();
-    params.addParam(tmp.str().c_str());
 
-    tmp.str("");
-    tmp << "CLNT_MESSAGE=" << question->getName();
-    params.addParam(tmp.str().c_str());
+    params.addParam("REMOTE_ADDR", reply->getAddr()->getPlain());
 
-    tmp.str("");
-    tmp << "SRV_MESSAGE=" << reply->getName();
-    params.addParam(tmp.str().c_str());
+    params.addParam("CLNT_MESSAGE", question->getName());
+
+    params.addParam("SRV_MESSAGE", reply->getName());
 
     SPtr<TIPv6Addr> ip;
 

@@ -51,10 +51,11 @@ CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
 am__Opt_tests_SOURCES_DIST = run_tests.cpp OptAddr_unittest.cc \
-	OptIAAddress_unittest.cc
+	OptIAAddress_unittest.cc OptRtPrefix_unittest.cc
 @HAVE_GTEST_TRUE@am_Opt_tests_OBJECTS = run_tests.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptAddr_unittest.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	OptIAAddress_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	OptIAAddress_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	OptRtPrefix_unittest.$(OBJEXT)
 Opt_tests_OBJECTS = $(am_Opt_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@Opt_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -234,7 +235,8 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/Options -I$(top_srcdir)/Misc \
 	$(GTEST_INCLUDES) -Wno-long-long
 @HAVE_GTEST_TRUE@Opt_tests_SOURCES = run_tests.cpp OptAddr_unittest.cc \
-@HAVE_GTEST_TRUE@	OptIAAddress_unittest.cc
+@HAVE_GTEST_TRUE@	OptIAAddress_unittest.cc \
+@HAVE_GTEST_TRUE@	OptRtPrefix_unittest.cc
 @HAVE_GTEST_TRUE@Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@Opt_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
@@ -294,6 +296,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptAddr_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptIAAddress_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptRtPrefix_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:

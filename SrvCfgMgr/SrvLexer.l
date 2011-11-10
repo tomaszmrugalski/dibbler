@@ -90,7 +90,10 @@ ntp-server          { return SrvParser::NTP_SERVER_;}
 time-zone           { return SrvParser::TIME_ZONE_;}
 sip-server          { return SrvParser::SIP_SERVER_; }
 sip-domain          { return SrvParser::SIP_DOMAIN_; }
+next-hop            { return SrvParser::NEXT_HOP_; }
+route               { return SrvParser::ROUTE_; }
 fqdn                { return SrvParser::FQDN_; }
+infinite            { return SrvParser::INFINITE_; }
 accept-unknown-fqdn { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
 fqdn-ddns-address   { return SrvParser::FQDN_DDNS_ADDRESS_; }
 ddns-protocol       { return SrvParser::DDNS_PROTOCOL_; }
