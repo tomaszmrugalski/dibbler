@@ -12,6 +12,7 @@
 #include "ScriptParams.h"
 #include "Logger.h"
 #include <string.h>
+#include "Portable.h"
 
 using namespace std;
 

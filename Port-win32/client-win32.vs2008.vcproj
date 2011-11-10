@@ -505,6 +505,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptRtPrefix.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptStatusCode.cpp"
 					>
 				</File>
