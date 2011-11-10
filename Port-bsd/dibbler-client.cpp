@@ -12,7 +12,9 @@
 #include "Portable.h"
 #include "Logger.h"
 #include "daemon.h"
-#include "ClntCfgMgr.h"
+//#include "ClntCfgMgr.h"
+
+using namespace std;
 
 TDHCPClient * ptr;
 
