@@ -446,6 +446,10 @@
 					RelativePath="..\Options\OptInteger.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\Options\OptRtPrefix.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="IfaceMgr"

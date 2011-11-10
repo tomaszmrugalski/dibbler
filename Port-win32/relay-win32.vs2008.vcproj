@@ -398,6 +398,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptRtPrefix.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptVendorData.cpp"
 					>
 				</File>
