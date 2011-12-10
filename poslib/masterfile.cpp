@@ -133,7 +133,7 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
       if (comm_cb) {
         c = fgetc(f);
         if (c == ';') {
-	    char * foo=fgets(buff, 1024, f);
+            fgets(buff, 1024, f);
 	    ptr = buff + strlen(buff) - 1;
 	    while (ptr >= buff && (*ptr == '\n' || *ptr == '\r')) *ptr = '\0';
 	    comm_cb(userdat, buff);

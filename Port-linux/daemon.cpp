@@ -241,7 +241,7 @@ int stop(const char * pidfile) {
 		return -1;
 	    }
 	    ptrace(PTRACE_CONT, pid, NULL,
-		    WIFSTOPPED(p_status) ? WSTOPSIG(p_status) : NULL);
+		    WIFSTOPPED(p_status) ? WSTOPSIG(p_status) : 0);
 	} while (! (WIFEXITED(p_status) || WIFSIGNALED(p_status)) );
 	cout << "Done." << endl;
     }
