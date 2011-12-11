@@ -256,14 +256,15 @@ bool TSrvAddrMgr::addTAAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
 /**
  * Frees address (also deletes IA and/or client, if this was last address)
  *
- * @param clntDuid
- * @param iaid
- * @param clntAddr
+ * @param clntDuid DUID of the client
+ * @param iaid IAID of IA that contains address to be deleted
+ * @param clntAddr address to be deleted
+ * @param quiet should method log deleted address?
  *
- * @return
+ * @return true if removal was successful
  */
 bool TSrvAddrMgr::delTAAddr(SPtr<TDUID> clntDuid, unsigned long iaid,
-                              SPtr<TIPv6Addr> clntAddr) {
+                            SPtr<TIPv6Addr> clntAddr, bool quiet) {
     // find this client
     SPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -308,16 +309,19 @@ bool TSrvAddrMgr::delTAAddr(SPtr<TDUID> clntDuid, unsigned long iaid,
     }
 
     ta->delAddr(clntAddr);
-    Log(Debug) << "Deleted temp. address " << *clntAddr << " from addrDB." << LogEnd;
+    if (!quiet)
+        Log(Debug) << "Deleted temp. address " << *clntAddr << " from addrDB." << LogEnd;
 
     if (!ta->countAddr()) {
-        Log(Debug) << "Deleted TA (IAID=" << iaid << ") from addrDB." << LogEnd;
+        if (!quiet)
+            Log(Debug) << "Deleted TA (IAID=" << iaid << ") from addrDB." << LogEnd;
         ptrClient->delTA(iaid);
     }
 
     if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD()) {
-        Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
-                   << ") from addrDB." << LogEnd;
+        if (!quiet)
+            Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
+                       << ") from addrDB." << LogEnd;
         this->delClient(clntDuid);
     }
 
@@ -477,16 +481,20 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
 /* *** ADDRESS CACHE ************************************************************** */
 /* ******************************************************************************** */
 
-/**
- * remove outdated addresses
- *
- */
-void TSrvAddrMgr::doDuties()
+/// @brief  remove outdated addresses
+///
+/// @param addrLst
+/// @param tempAddrLst
+/// @param prefixLst
+///
+void TSrvAddrMgr::doDuties(std::vector<TExpiredInfo>& addrLst,
+                           std::vector<TExpiredInfo>& tempAddrLst,
+                           std::vector<TExpiredInfo>& prefixLst)
 {
     SPtr<TAddrClient> ptrClient;
     SPtr<TAddrIA>     ptrIA;
     SPtr<TAddrAddr>   ptrAddr;
-    bool anyDeleted=false;
+
     // for each client...
     this->firstClient();
     while (ptrClient = this->getClient() )
@@ -509,23 +517,18 @@ void TSrvAddrMgr::doDuties()
                 if (ptrAddr->getValidTimeout())
                     continue;
 
-                // delete this address
-                Log(Notice) << "Address " << *(ptrAddr->get()) << " in IA (IAID="
-                            << ptrIA->getIAID() << ") in client (DUID=\"";
-                if (ptrClient->getDUID())
-                {
-                    Log(Cont) << ptrClient->getDUID()->getPlain();
-                }
-                Log(Cont) << "\") has expired." << LogEnd;
-                delClntAddr(ptrClient->getDUID(), ptrIA->getIAID(),
-                            ptrAddr->get(), false);
-                anyDeleted=true;
+                TExpiredInfo expire;
+                expire.client = ptrClient;
+                expire.ia = ptrIA;
+                expire.addr = ptrAddr->get();
+                addrLst.push_back(expire);
+                // delClntAddr(ptrClient->getDUID(), ptrIA->getIAID(),  ptrAddr->get(), false);
             }
         }
 
         ptrClient->firstTA();
         while (ptrIA = ptrClient->getTA()) {
-            if (ptrIA->getValidTimeout()) 
+            if (ptrIA->getValidTimeout())
                 continue;
             ptrIA->firstAddr();
             while ( ptrAddr = ptrIA->getAddr() )
@@ -533,17 +536,12 @@ void TSrvAddrMgr::doDuties()
                 if (ptrAddr->getValidTimeout())
                     continue;
 
-                // delete this address
-                Log(Notice) << "Temp. address " << *(ptrAddr->get()) << " in IA (IAID="
-                            << ptrIA->getIAID() << ") in client (DUID=\"";
-                if (ptrClient->getDUID())
-                {
-                    Log(Cont) << ptrClient->getDUID()->getPlain();
-                }
-                Log(Cont) << "\") has expired." << LogEnd;
-                delTAAddr(ptrClient->getDUID(), ptrIA->getIAID(),
-                          ptrAddr->get());
-                anyDeleted=true;
+                TExpiredInfo expire;
+                expire.client = ptrClient;
+                expire.ia = ptrIA;
+                expire.addr = ptrAddr->get();
+                tempAddrLst.push_back(expire);
+                // delTAAddr(ptrClient->getDUID(), ptrIA->getIAID(), ptrAddr->get());
             }
         }
 
@@ -554,27 +552,20 @@ void TSrvAddrMgr::doDuties()
             if (pd->getValidTimeout())
                 continue;
 
-            pd->firstPrefix(); 
+            pd->firstPrefix();
             while (prefix = pd->getPrefix()) {
                 if (prefix->getValidTimeout())
                     continue;
 
-                // delete this prefix
-                Log(Notice) << "Prefix " << prefix->get()->getPlain() << " in IAID="
-                            << pd->getIAID() << " for client (DUID=";
-                if (ptrClient->getDUID())
-                {
-                    Log(Cont) << ptrClient->getDUID()->getPlain();
-                }
-                Log(Cont) << ") has expired." << LogEnd;
-                delPrefix(ptrClient->getDUID(), pd->getIAID(),
-                          prefix->get(), false);
-            }
-
-        }
-    }
-    if (anyDeleted)
-        this->dump();
+                TExpiredInfo expire;
+                expire.client = ptrClient;
+                expire.ia = pd;
+                expire.addr = prefix->get();
+                prefixLst.push_back(expire);
+                // delPrefix(ptrClient->getDUID(), pd->getIAID(), prefix->get(), false);
+            } // while (prefix)
+        } // while (pd)
+    } // while (client)
 }
 
 /**

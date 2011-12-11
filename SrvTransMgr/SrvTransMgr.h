@@ -14,12 +14,13 @@
 #define SRVTRANSMGR_H
 
 #include <string>
+#include <vector>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "Opt.h"
 #include "SrvMsg.h"
 #include "SrvIfaceMgr.h"
-#include "SrvCfgMgr.h"
+#include "SrvCfgIface.h"
 #include "SrvAddrMgr.h"
 
 #define SrvTransMgr() (TSrvTransMgr::instance())
@@ -41,6 +42,10 @@ class TSrvTransMgr
 
     bool isDone();
     void shutdown();
+
+    void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
+                       std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
+                       std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);
 
     char * getCtrlAddr();
     int    getCtrlIface();

@@ -12,6 +12,7 @@
 #ifndef SRVADDRMGR_H
 #define SRVADDRMGR_H
 
+#include <vector>
 #include "AddrMgr.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgPD.h"
@@ -32,6 +33,13 @@ class TSrvAddrMgr : public TAddrMgr
         SPtr<TDUID>     Duid;  // client's duid
     };
 
+    struct TExpiredInfo
+    {
+        SPtr<TAddrClient> client;
+        SPtr<TAddrIA> ia;
+        SPtr<TIPv6Addr> addr;
+    };
+
     ~TSrvAddrMgr();
 
     // IA address management
@@ -46,7 +54,7 @@ class TSrvAddrMgr : public TAddrMgr
     bool addTAAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
                    int iface, unsigned long iaid, SPtr<TIPv6Addr> addr,
                    unsigned long pref, unsigned long valid);
-    bool delTAAddr(SPtr<TDUID> duid,unsigned long iaid, SPtr<TIPv6Addr> addr);
+    bool delTAAddr(SPtr<TDUID> duid,unsigned long iaid, SPtr<TIPv6Addr> addr, bool quiet);
 
     // prefix management
     virtual bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
@@ -54,7 +62,9 @@ class TSrvAddrMgr : public TAddrMgr
     // how many addresses does this client have?
     unsigned long getAddrCount(SPtr<TDUID> duid);
 
-    void doDuties();
+    void doDuties(std::vector<TExpiredInfo>& addrLst,
+                  std::vector<TExpiredInfo>& tempAddrLst,
+                  std::vector<TExpiredInfo>& prefixLst);
 
     void getAddrsCount(SPtr<List(TSrvCfgAddrClass)> classes, long *clntCnt,
                        long *addrCnt, SPtr<TDUID> duid, int iface);
