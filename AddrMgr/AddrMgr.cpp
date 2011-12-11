@@ -784,6 +784,7 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(FILE *f)
     SPtr<TAddrIA> ia = 0;
     SPtr<TAddrIA> ptrpd=0;
     SPtr<TAddrIA> ta = 0;
+    SPtr<TIPv6Addr> unicast;
 
     while (!feof(f)) {
     	fgets(buf,255,f);
@@ -816,9 +817,20 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(FILE *f)
 		iface=atoi(x+7);
 		// Log(Debug) << "Parsed AddrIA::iface=" << iface << LogEnd;
 	    }
+            if ((x=strstr(buf,"unicast"))) {
+	        char *end = strstr(x+9, "\"");
+		string uni(x+9, end);
+                unicast = new TIPv6Addr(uni.c_str(), true);
+            }
 	    if (ia = parseAddrIA(f, t1, t2, iaid, iface)) {
 			clnt->addIA(ia);
-			Log(Debug) << "Parsed IA, iaid=" << iaid << LogEnd;
+                        Log(Debug) << "Parsed IA, iaid=" << iaid;
+                        if (unicast) {
+                            ia->setUnicast(unicast);
+                            Log(Cont) << ", unicast=" << unicast->getPlain();
+			    unicast = 0;
+			}
+			Log(Cont) << LogEnd;
 			continue;
         }
 	}
