@@ -1,6 +1,8 @@
 
   Dibbler changelog
  ------------------- 
+0.8.1 [not-released-yet]
+  - Srv: Prefixes are now expired properly.
 
 0.8.1RC1 [2011-11-11]
   - Fixed socket binding problem on server that may affect relay scenarios

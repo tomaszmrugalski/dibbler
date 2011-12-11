@@ -495,6 +495,7 @@ void TSrvAddrMgr::doDuties()
         if (ptrClient->getValidTimeout())
             continue;
 
+        // check for expired addresses
         ptrClient->firstIA();
         while ( ptrIA = ptrClient->getIA() )
         {
@@ -509,17 +510,67 @@ void TSrvAddrMgr::doDuties()
                     continue;
 
                 // delete this address
-                Log(Notice) << "Addr " << *(ptrAddr->get()) << " in IA (IAID="
+                Log(Notice) << "Address " << *(ptrAddr->get()) << " in IA (IAID="
                             << ptrIA->getIAID() << ") in client (DUID=\"";
                 if (ptrClient->getDUID())
                 {
                     Log(Cont) << ptrClient->getDUID()->getPlain();
                 }
-                Log(Cont) << "\") has expired." << dec << LogEnd;
+                Log(Cont) << "\") has expired." << LogEnd;
                 delClntAddr(ptrClient->getDUID(), ptrIA->getIAID(),
                             ptrAddr->get(), false);
                 anyDeleted=true;
             }
+        }
+
+        ptrClient->firstTA();
+        while (ptrIA = ptrClient->getTA()) {
+            if (ptrIA->getValidTimeout()) 
+                continue;
+            ptrIA->firstAddr();
+            while ( ptrAddr = ptrIA->getAddr() )
+            {
+                if (ptrAddr->getValidTimeout())
+                    continue;
+
+                // delete this address
+                Log(Notice) << "Temp. address " << *(ptrAddr->get()) << " in IA (IAID="
+                            << ptrIA->getIAID() << ") in client (DUID=\"";
+                if (ptrClient->getDUID())
+                {
+                    Log(Cont) << ptrClient->getDUID()->getPlain();
+                }
+                Log(Cont) << "\") has expired." << LogEnd;
+                delTAAddr(ptrClient->getDUID(), ptrIA->getIAID(),
+                          ptrAddr->get());
+                anyDeleted=true;
+            }
+        }
+
+        SPtr<TAddrIA> pd;
+        SPtr<TAddrPrefix> prefix;
+        ptrClient->firstPD();
+        while (pd = ptrClient->getPD()) {
+            if (pd->getValidTimeout())
+                continue;
+
+            pd->firstPrefix(); 
+            while (prefix = pd->getPrefix()) {
+                if (prefix->getValidTimeout())
+                    continue;
+
+                // delete this prefix
+                Log(Notice) << "Prefix " << prefix->get()->getPlain() << " in IAID="
+                            << pd->getIAID() << " for client (DUID=";
+                if (ptrClient->getDUID())
+                {
+                    Log(Cont) << ptrClient->getDUID()->getPlain();
+                }
+                Log(Cont) << ") has expired." << LogEnd;
+                delPrefix(ptrClient->getDUID(), pd->getIAID(),
+                          prefix->get(), false);
+            }
+
         }
     }
     if (anyDeleted)

@@ -352,6 +352,14 @@ unsigned long TAddrIA::getValidTimeout() {
         if (ts > ptr->getValidTimeout()) 
             ts = ptr->getValidTimeout();
     }
+
+    SPtr<TAddrPrefix> prefix;
+    firstPrefix();
+    while (prefix = getPrefix()) {
+      if (ts > prefix->getValidTimeout())
+          ts = prefix->getValidTimeout();
+    }
+
     return ts;
 }
 
