@@ -110,6 +110,36 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
     }
 }
 
+/// @brief checks if there are existing leases (and assigns them)
+///
+///
+/// @return true, if existing lease(s) are found
+bool TSrvOptIA_PD::existingLease() {
+    SPtr<TAddrClient> client = SrvAddrMgr().getClient(ClntDuid);
+    if (!client)
+        return false;
+    SPtr<TAddrIA> pd = client->getPD(IAID);
+    if (!pd)
+        return false;
+    if (!pd->getPrefixCount())
+        return false;
+
+    SPtr<TAddrPrefix> prefix;
+    pd->firstPrefix();
+    while (prefix = pd->getPrefix()) {
+        Log(Debug) << "Assinging existing lease: prefix=" << prefix->get()->getPlain() << "/" << prefix->getLength()
+                   << ", pref=" << prefix->getPref() << ", valid=" << prefix->getValid() << LogEnd;
+        SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(prefix->get(), prefix->getLength(), 
+                                                   prefix->getPref(), prefix->getValid(), this->Parent);
+        SubOptions.append((Ptr*)optPrefix);
+    }
+
+    T1 = pd->getT1();
+    T2 = pd->getT2();
+
+    return true;
+}
+
 /**
  * @brief gets one (or more) prefix for requested
  *
@@ -252,8 +282,14 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface
         this->Valid     = hintPrefix->getValid();
     }
 
-    // assign prefixes
-    int status = assignPrefix(hint, fake);
+    int status;
+    if (existingLease()) {
+        // re-issue existing leases
+        status = STATUSCODE_SUCCESS;
+    } else {
+        // assign new prefixes
+        status = assignPrefix(hint, fake);
+    }
 
     // include status code
     SPtr<TSrvOptStatusCode> ptrStatus;
