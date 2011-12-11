@@ -355,6 +355,32 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
     }
 }
 
+void TIfaceMgr::notifyScript(std::string scriptName, std::string action, TNotifyScriptParams& params) {
+    const char * argv[3];
+
+    // get PATH
+    char * path = getenv("PATH");
+    if (path) {
+        params.addParam("PATH", string(path));
+    }
+
+    // parameters: [0] - script name, [1] - action (add, modify, delete)
+    argv[0] = scriptName.c_str();
+    argv[1] = action.c_str();
+    argv[2] = NULL;
+    
+    Log(Debug) << "About to execute " << scriptName << " script, "
+               << params.envCnt << " variables." << LogEnd;
+    int returnCode = execute(scriptName.c_str(), argv, params.env);
+
+    if (returnCode>=0) {
+        Log(Debug) << "Script execution complete, return code=" << returnCode << LogEnd;
+    } else {
+        // negative return code, something went wrong
+        Log(Warning) << "Script execution failed, return code=" << returnCode << LogEnd;
+    }
+}
+
 void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply,
                               TNotifyScriptParams& params)
 {
@@ -363,16 +389,8 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
         return;
     }
     
-    const char * argv[3];
- 
     stringstream tmp;
     string action;
-
-    // get PATH
-    char * path = getenv("PATH");
-    if (path) {
-        params.addParam("PATH", string(path));
-    }
 
     switch (question->getType())
     {
@@ -393,11 +411,6 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
         return;
     }
 
-    // parameters: [0] - script name, [1] - action (add, modify, delete)
-    argv[0] = scriptName.c_str();
-    argv[1] = action.c_str();
-    argv[2] = NULL;
-
     int ifindex = reply->getIface();
     SPtr<TIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
     if (!iface) {
@@ -407,7 +420,7 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
 
     params.addParam("IFACE", iface->getName());
 
-    tmp << "IFINDEX=" << dec << (int)iface->getID();
+    tmp << dec << (int)iface->getID();
     params.addParam("IFINDEX", tmp.str().c_str());
     tmp.str("");
 
@@ -433,16 +446,7 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
     }
 #endif
 
-    Log(Debug) << "About to execute " << scriptName << " script, "
-               << params.envCnt << " variables." << LogEnd;
-    int returnCode = execute(scriptName.c_str(), argv, params.env);
-
-    if (returnCode>=0) {
-        Log(Debug) << "Script execution complete, return code=" << returnCode << LogEnd;
-    } else {
-        // negative return code, something went wrong
-        Log(Warning) << "Script execution failed, return code=" << returnCode << LogEnd;
-    }
+    notifyScript(scriptName, action, params);
 }
 
 

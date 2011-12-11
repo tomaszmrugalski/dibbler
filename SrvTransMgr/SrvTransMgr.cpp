@@ -8,10 +8,9 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvTransMgr.cpp,v 1.38 2008-10-12 20:10:25 thomson Exp $
- *
  */
 
+#include <sstream>
 #include <limits.h>
 #include "SrvTransMgr.h"
 #include "SmartPtr.h"
@@ -20,6 +19,7 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 #include "AddrClient.h"
+#include "AddrIA.h"
 #include "SrvMsgAdvertise.h"
 #include "SrvMsgReply.h"
 #include "SrvMsgConfirm.h"
@@ -372,6 +372,44 @@ void TSrvTransMgr::doDuties()
 
 }
 
+
+/// @brief Generates parameters for notify script based on expired lease information
+///
+/// @param params Notify parameters (all available info will be set here)
+/// @param exp expired lease details
+/// @param type type of lease (IA, TA or PD)
+void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
+                                    TAddrIA::TIAType type) {
+    stringstream tmp;
+    tmp << exp.ia->getIface();
+    params.addParam("IFINDEX", tmp.str());
+
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(exp.ia->getIface());
+    if (iface)
+        params.addParam("IFACE", iface->getName());
+
+    if (exp.ia->getSrvAddr())
+        params.addParam("REMOTE_ADDR", exp.ia->getSrvAddr()->getPlain());
+    switch (type) {
+    case TAddrIA::TYPE_IA:
+    case TAddrIA::TYPE_TA:
+    {
+        params.addAddr(exp.addr, 0, 0, "");
+        break;
+    }
+    case TAddrIA::TYPE_PD:
+    {
+        params.addPrefix(exp.addr, exp.prefixLen, 0, 0);
+    }
+    break;
+    }
+
+    tmp.str("");
+    tmp << exp.ia->getIAID();
+    params.addParam("IAID", tmp.str());
+    params.addParam("SRV_OPTION1", exp.client->getDUID()->getPlain()); // set client-id
+}
+
 /// @brief Removes expired leases and calls notify script
 ///
 /// @param addrLst
@@ -391,6 +429,10 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
         SrvAddrMgr().delClntAddr(addr->client->getDUID(),
                                  addr->ia->getIAID(),
                                  addr->addr, false);
+
+        TNotifyScriptParams params;
+        notifyExpireInfo(params, *addr, TAddrIA::TYPE_IA);
+        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 
     for (vector<TSrvAddrMgr::TExpiredInfo>::iterator addr = tempAddrLst.begin();
@@ -405,6 +447,9 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
                                addr->ia->getIAID(),
                                addr->addr, false);
 
+        TNotifyScriptParams params;
+        notifyExpireInfo(params, *addr, TAddrIA::TYPE_TA);
+        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 
     for (vector<TSrvAddrMgr::TExpiredInfo>::iterator prefix = prefixLst.begin();
@@ -418,8 +463,13 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
         SrvAddrMgr().delPrefix(prefix->client->getDUID(),
                                prefix->ia->getIAID(),
                                prefix->addr, false);
+
+        TNotifyScriptParams params;
+        notifyExpireInfo(params, *prefix, TAddrIA::TYPE_PD);
+        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 
+    SrvAddrMgr().dump();
 }
 
 

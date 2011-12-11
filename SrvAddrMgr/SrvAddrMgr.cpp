@@ -561,6 +561,7 @@ void TSrvAddrMgr::doDuties(std::vector<TExpiredInfo>& addrLst,
                 expire.client = ptrClient;
                 expire.ia = pd;
                 expire.addr = prefix->get();
+		expire.prefixLen = prefix->getLength();
                 prefixLst.push_back(expire);
                 // delPrefix(ptrClient->getDUID(), pd->getIAID(), prefix->get(), false);
             } // while (prefix)

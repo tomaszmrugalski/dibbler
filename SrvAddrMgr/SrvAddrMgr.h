@@ -37,7 +37,8 @@ class TSrvAddrMgr : public TAddrMgr
     {
         SPtr<TAddrClient> client;
         SPtr<TAddrIA> ia;
-        SPtr<TIPv6Addr> addr;
+        SPtr<TIPv6Addr> addr; // address or prefix
+	int prefixLen; // just for prefixes
     };
 
     ~TSrvAddrMgr();

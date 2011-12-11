@@ -44,6 +44,7 @@ class TIfaceMgr {
     void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer);
     void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer,
                        TNotifyScriptParams& params);
+    void notifyScript(std::string scriptName, std::string action, TNotifyScriptParams& params);
 
     virtual ~TIfaceMgr();
 
