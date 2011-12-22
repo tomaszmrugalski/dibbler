@@ -820,10 +820,10 @@ Client-class TelephoneClass {
 \subsection{External script}
 \label{feature-script}
 
-\Note Support for external scripts was rewritten in 0.8.1RC1
-release. Note that mapping prefix and notify scripts were removed.
-
-Support for server-side script was introduced in 0.8.1RC1.
+\Note Support for external scripts (often called \emph{notify script}
+  was rewritten in 0.8.1RC1 release. Note that mapping prefix and
+notify scripts were removed. Support for server-side script was
+introduced in 0.8.1RC1.
 
 Dibbler-client is able to receive addresses, prefixes and numerous
 additional options. It will do its best to set up those parameters in
@@ -837,24 +837,30 @@ parameters added), RENEW (parameters were updated) or RELEASE
 Name of this script is specified using \verb+script+ keyword followed
 by absolute path to script. Script will be called with a single
 parameter, denoting current operation. Its value will be one of
-"add'', "update'', or "delete''. Actual values of received parameters
-are passed as environment variables. In particular, IFNAME and IFINDEX
-variables denote interface name and interface index that was used to
-communicate with server, respectively. Another essential variable set
-is REMOTE\_ADDR. It defines address from which packet originated. That
-is client's address (when run on server) and server's address (when
-run on client).
+``add'', ``update'', ``delete'' or ``expire''. Currently ``expire''
+event is triggered on server-side only. \footnote{Please send your
+feedback to mailing list if you need it also on client-side.} Actual
+values of received parameters are passed as environment variables. In
+particular, IFNAME and IFINDEX variables denote interface name and
+interface index that was used to communicate with server,
+respectively. Another essential variable set is REMOTE\_ADDR. It
+defines address from which packet originated. That is client's address
+(when run on server) and server's address (when run on
+client). Client's message type is passed in CLNT\_MESSAGE
+variable. Server's response is passed in SRV\_MESSAGE. Note that
+server's reply is most often REPLY as script execution is skipped after
+sending ADVERTISE.
 
 Addresses are passed in variables ADDR1, ADDR2 and following. Note
-that each ADDR variable does contain triples of
-(address,preferred-lifetime,valid-lifetime) separated by spaces.
-
-Prefixes are passed in variables PREFIX1, PREFIX2 and following. Note
-that each PREFIX variable does contain quadriplet of (prefix,
-prefix-length, preferred-lifetime, valid-lifetime) separated by spaces.
-
-Support for additional options is in progress. Options will be passed
-as additional environment variables.
+that each ADDR variable is accompanied with two additional variables:
+ADDR1PREF (address preferred lifetime) and ADDR1VALID (address valid
+lifetime). Prefixes are passed in variables PREFIX1, PREFIX2 and
+following. Note that each PREFIX variable is accompanied with three
+additional variales: PREFIX1LEN (prefix length), PREFIX1PREF (prefix
+preferred lifetime), and PREFIX1VALID (prefix valid lifetime). Support
+for additional options is in progress. Options are passed as
+environment variables. For example client DUID (conveyed in option
+code 1), will be passed as OPTION1.
 
 To enable script execution, \verb+script+ global option must
 be added to \verb+client.conf+ file. For example:
