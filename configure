@@ -15799,7 +15799,6 @@ ac_fn_cxx_check_decl "$LINENO" "IPV6_PKTINFO" "ac_cv_have_decl_IPV6_PKTINFO" "
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
-    #include <netinet/ip.h>
 
 "
 if test "x$ac_cv_have_decl_IPV6_PKTINFO" = xyes; then :
@@ -15816,7 +15815,6 @@ ac_fn_cxx_check_decl "$LINENO" "IPV6_RECVPKTINFO" "ac_cv_have_decl_IPV6_RECVPKTI
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <netinet/ip.h>
 
 "
 if test "x$ac_cv_have_decl_IPV6_RECVPKTINFO" = xyes; then :
