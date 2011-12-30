@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
-0.8.1 [not-released-yet]
+0.8.1 [2011-12-31]
   - Srv: Prefixes are now expired properly.
   - Cli/Srv: IFINDEX variable is now set properly in notify scripts.
   - Srv: Notify script is now called when lease is expired. (bug #216)

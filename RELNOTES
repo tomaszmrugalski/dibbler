@@ -1,12 +1,12 @@
 
-  Dibbler 0.8.1RC1 release notes [2011-11-11]
+  Dibbler 0.8.1 release notes [2011-12-31]
  ---------------------------------------------------------
 
- This is the first release candidate for 0.8.1 release of the Dibbler software.
+ This is the 0.8.1 release of the Dibbler software.
 
- This candidate release introduces number of useful additions, new features
- and the usual bug fixes. In particular, the highlights of this release
- are:
+ This release includes number of useful additions, new features and the usual
+ bug fixes introduced in 0.8.1RC1 and adds couple extra features. In
+ particular, the highlights of this release are:
 
  - Support for routing configuration was added. Yes, you read that correctly.
    Recent draft draft-ietf-mif-dhcpv6-route-option defines provisioning mechanism
@@ -20,6 +20,9 @@
  - Server is now able to run scripts, too. That is convenient if you need your 
    server to execute custom actions. One notable example is a routing reconfiguration
    after prefix was delegated to a client.
+ - Server support for prefix expiration is fixed. Prefixes are expired properly,
+   and notify script is called.
+ - Server will now try to assign the same prefix for returning clients.
  - Added support for FreeBSD, NetBSD and OpenBSD. Mac OS X support is now also
    significantly improved. To achieve this level of portability, build system
    was completely rewritten and is now using automake and autoconf tools.
@@ -48,6 +51,8 @@
  on project website: http://klub.com.pl/dhcpv6/. If you need help or
  want to share your thoughts, take a look at one of the
  Dibbler-related mailing lists: dibbler or dibbler-devel.
+
+ Happy New Year, everyone!
 
                                Tomasz Mrugalski,
                                author
