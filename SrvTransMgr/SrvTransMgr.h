@@ -33,7 +33,6 @@ class TSrvTransMgr
     static TSrvTransMgr &instance();
 
     bool openSocket(SPtr<TSrvCfgIface> confIface);
-    SPtr<TSrvMsg> getCurrentRequest();
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
@@ -62,9 +61,9 @@ class TSrvTransMgr
     bool IsDone;
 
     int ctrlIface;
-    char ctrlAddr[48];
+    char ctrlAddr[48]; // @todo: WTF is that? It should be TIPv6Addr
 
-    SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
+    //SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
 
     static TSrvTransMgr * Instance;
 };

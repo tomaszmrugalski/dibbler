@@ -54,7 +54,7 @@ class TMsg
     long getType();
     long getTransID();
     TOptList & getOptLst();
-    SPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr(); /// @todo: rename to getPeerAddr()
     int getIface();
     virtual ~TMsg();
     bool isDone();

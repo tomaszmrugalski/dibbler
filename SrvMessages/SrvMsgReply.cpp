@@ -662,16 +662,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     copyAAASPI( (Ptr*)request );
     copyRemoteID( (Ptr*)request );
 
-    /// @todo move this to a common message handling place
-    // is this client supported?
-    if (!SrvCfgMgr().isClntSupported(ClientDUID, request->getAddr(), Iface)) {
-        //No reply for this client
-        Log(Notice) << "Message from client (DUID=" << ClientDUID->getPlain() << ",addr="
-                    << request->getAddr()->getPlain()
-                    << ") was rejected due to accept-only or reject-client." << LogEnd;
-        IsDone=true;
-        return;
-    }
+    /// @todo: make this common with SrvMsgAdvertise
 
     SPtr<TIPv6Addr> clntAddr = request->getAddr();
     unsigned int clntIface = request->getIface();
@@ -766,16 +757,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
 
     // append RAPID-COMMIT option
     Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
-
-    /// @todo move this to a common message handling place
-    // is this client supported?
-    if (!SrvCfgMgr().isClntSupported(ClientDUID, clntAddr, clntIface)) {
-        //No reply for this client
-        Log(Notice) << "Client (DUID=" << ClientDUID->getPlain() << ",addr=" << *clntAddr
-                    << ") was rejected due to accept-only or reject-client." << LogEnd;
-        IsDone=true;
-        return;
-    }
 
     //So if we can do something for this client at least set configuration
     //parameters - let's do  option by option - try to answer to it

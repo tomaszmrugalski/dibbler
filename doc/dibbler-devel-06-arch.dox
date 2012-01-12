@@ -134,4 +134,28 @@ consists of serveral simple blocks:
 
 @todo
 
+@section archAlgo 6.6 Algorithms
+
+@section archAlgoLeaseAssignment 6.6.1 Lease assignment policy
+
+0. Client classification is performed (a class is assigned to a client) 
+  (see NodeClientSpecific::analyseMessage(msg) in void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg))
+
+1. black-list, white-list
+2. max-client-leases
+3. existing lease for this client/ia
+4. fixed-lease (exception)
+6. cache
+7. client's hint
+8. new lease
+
+@section archAlgoFixedLease 6.6.2 Fixed lease management
+
+1. Old database is read when server starts.
+2. Existing leases are confirmed against current configuration. Invalid 
+   leases are removed.
+3. List of fixed leases is created, based on configuration.
+4. An attempt to add each fixed lease to DB is tried. If lease
+   is already in DB, addition is skipped. Leases are marked as fixed.
+
 */

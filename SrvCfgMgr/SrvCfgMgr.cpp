@@ -27,6 +27,7 @@
 #include "AddrMgr.h"
 #include "TimeZone.h"
 #include "SrvParser.h"
+#include "SrvOptClientIdentifier.h"
 
 TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
@@ -535,12 +536,25 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SPtr<TDUID> clntDuid,
     /// @todo: get addrs from first address only
 }
 
+/// Checks if a given client is supported
+///
+/// @param msg message sent by client
+///
+/// @return true if supported, false otherwise
+bool TSrvCfgMgr::isClntSupported(SPtr<TSrvMsg> msg) {
+    int iface=msg->getIface();
+    SPtr<TIPv6Addr> clntAddr = msg->getAddr();
+    
+    SPtr<TOpt> opt = msg->getOption(OPTION_CLIENTID);
+    SPtr<TDUID> duid;
+    if (!opt) {
+        // malformed message or anonymous inf-request
+        duid = new TDUID("", 0); // zero-length DUID
+    } else {
+        SPtr<TSrvOptClientIdentifier> clientId = (Ptr*) opt;
+        duid = clientId->getDUID();
+    }
 
-/*
- * Method checks whether client is supported and assigned addresses from any class
- */
-bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface)
-{
     SPtr<TSrvCfgIface> ptrIface;
     firstIface();
     while((ptrIface=getIface())&&(ptrIface->getID()!=iface)) ;
@@ -563,7 +577,7 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int
         SPtr<TSrvCfgPD> pd;
         ptrIface->firstPD();
         while ( pd=ptrIface->getPD() ) {
-            if (pd->clntSupported(duid, clntAddr))
+            if (pd->clntSupported(duid, clntAddr, msg))
                 return true;
             classCnt++;
         }
@@ -576,7 +590,7 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int
     return false;
 }
 
-
+#if 0
 /*
 * Method checks whether client is supported and assigned addresses from any class
 */
@@ -608,6 +622,7 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int
    }
    return false;
 }
+#endif
 
 bool TSrvCfgMgr::isDone() {
     return IsDone;

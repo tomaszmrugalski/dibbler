@@ -23,6 +23,9 @@
 #include "SrvOptOptionRequest.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvOptFQDN.h"
+#include "SrvOptIA_NA.h"
+#include "SrvOptTA.h"
+#include "SrvOptIA_PD.h"
 #include "OptVendorData.h"
 #include "OptGeneric.h"
 
@@ -72,6 +75,11 @@ protected:
     SPtr<TDUID> ClientDUID;
 
     bool check(bool clntIDmandatory, bool srvIDmandatory);
+
+    void processIA_NA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_NA> q);
+    void processIA_TA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> q);
+    void processIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> q);
+    void processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> q);
 
     SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
 				  SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate);

@@ -489,12 +489,9 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
 }
 
 void TSrvOptIA_NA::release(SPtr<TSrvOptIA_NA> queryOpt,
-                           unsigned long &addrCount)
-{
+                           unsigned long &addrCount) {
 }
 
-
-//CHANGED here: add code to support CONFRIM msgs
 void TSrvOptIA_NA::confirm(SPtr<TSrvOptIA_NA> queryOpt,
                            unsigned long &addrCount)
 {

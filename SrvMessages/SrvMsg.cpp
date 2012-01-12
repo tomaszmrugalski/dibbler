@@ -363,6 +363,37 @@ void TSrvMsg::send()
     SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
 }
 
+void TSrvMsg::processIA_NA(SPtr<TSrvMsg> clintMsg, SPtr<TSrvOptIA_NA> queryOpt) {
+    SPtr<TOpt> optIA_NA;
+    optIA_NA = new TSrvOptIA_NA( queryOpt, ClientDUID, PeerAddr, Iface, SOLICIT_MSG, this);
+    Options.push_back(optIA_NA);
+}
+
+void TSrvMsg::processIA_TA(SPtr<TSrvMsg> clintMsg, SPtr<TSrvOptTA> queryOpt) {
+    SPtr<TOpt> optTA;
+    optTA = new TSrvOptTA(queryOpt, ClientDUID, PeerAddr, Iface, SOLICIT_MSG, this);
+    Options.push_back(optTA);
+}
+
+void TSrvMsg::processIA_PD(SPtr<TSrvMsg> clintMsg, SPtr<TSrvOptIA_PD> queryOpt) {
+    SPtr<TOpt> optPD;
+    optPD = new TSrvOptIA_PD(queryOpt, PeerAddr, ClientDUID,  Iface, SOLICIT_MSG, this);
+    Options.push_back(optPD);
+}
+
+void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN) {
+    string hint = requestFQDN->getFQDN();
+    SPtr<TSrvOptFQDN> optFQDN;
+
+    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
+    if (clntAssignedAddr)
+        optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
+    else
+        optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, PeerAddr, hint, false);
+    
+    Options.push_back((Ptr*) optFQDN);
+}
+
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
   this->RemoteID = q->getRemoteID();
 }
@@ -536,7 +567,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 {
     bool newOptionAssigned = false;
     // client didn't want any option? Or maybe we're not supporting this client?
-    if (!reqOpts->count() || !SrvCfgMgr().isClntSupported(duid,addr,iface))
+    if (!reqOpts->count())
 	return false;
 
     SPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr().getIfaceByID(iface);
@@ -546,6 +577,8 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     }
 
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, getRemoteID(), false/* false = verbose */);
+
+    /// @todo: Make this an array of options and handle them in an uniform manner
 
     // --- option: DNS resolvers ---
     if ( reqOpts->isOption(OPTION_DNS_SERVERS) && ptrIface->supportDNSServer() ) {

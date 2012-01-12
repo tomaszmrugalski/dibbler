@@ -154,8 +154,6 @@ long TSrvTransMgr::getTimeout()
 
 void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 {
-    requestMsg = msg;
-
     if (!msg->check()) {
         // proper warnings will be printed in the check() method, if necessary.
         // Log(Warning) << "Invalid message received." << LogEnd;
@@ -164,7 +162,12 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 
     // Ask NodeClietSpecific to analyse the message
     NodeClientSpecific::analyseMessage(msg);
-    //SrvCfgMgr().InClientClass(msg);
+
+    // is this client supported? (white-list, black-list)
+    if (!SrvCfgMgr().isClntSupported(msg)) {
+        return;
+    }
+
 
     /// @todo (or at least disable by default) answer buffering mechanism
     SPtr<TSrvMsg> answ;
@@ -190,104 +193,53 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     switch(msg->getType()) {
     case SOLICIT_MSG: {
         SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
-        if (msg->getOption(OPTION_RAPID_COMMIT) && !ptrCfgIface->getRapidCommit()) {
-            Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
-                      << ptrCfgIface->getName() << " interface." << LogEnd;
-        }
-        if (msg->getOption(OPTION_RAPID_COMMIT) && ptrCfgIface->getRapidCommit() )
-        {
-            SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-            SPtr<TSrvMsgReply> answRep = new TSrvMsgReply(nmsg);
-            //if at least one IA has in reply message status success
-            if (!answRep->isDone()) {
-                SPtr<TOpt> ptrOpt;
-                answRep->firstOption();
-                bool found=false;
-                while( (ptrOpt=answRep->getOption()) && (!found) ) {
-                    if (ptrOpt->getOptType()==OPTION_IA_NA) {
-                        SPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
-                        SPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
-                            ptrIA->getOption(OPTION_STATUS_CODE);
-                        if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
-                            found=true;
-                    }
-                }
-                if(found) {
-                    this->MsgLst.append((Ptr*)answRep);
-                    a = (Ptr*)answRep;
-                    break;
-                }
-                // else we didn't assign any address - this message sucks
-                // it's better if advertise will be sent - maybe with better options
+        if (msg->getOption(OPTION_RAPID_COMMIT)) {
+            if (!ptrCfgIface->getRapidCommit()) {
+                Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
+                          << ptrCfgIface->getName() << " interface." << LogEnd;
+                a = new TSrvMsgAdvertise((Ptr*)msg);
+            } else {
+                SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
+                a = new TSrvMsgReply(nmsg);
             }
         }
-        //if there was no Rapid Commit option in solicit message or
-        //construction of reply with rapid commit wasn't successful
-        //Maybe it's possible to construct appropriate advertise message
-        //and assign some "not rapid" addresses to this client
-        SPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise((Ptr*)msg);
-        this->MsgLst.append((Ptr*)x);
-        a = (Ptr*)x;
         break;
     }
-    case REQUEST_MSG:
-    {
+    case REQUEST_MSG: {
         SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
-        answ = new TSrvMsgReply(nmsg);
-        this->MsgLst.append((Ptr*)answ);
-        a = (Ptr*)answ;
-        break;
+        a = new TSrvMsgReply(nmsg);
     }
-    case CONFIRM_MSG:
-    {
+    case CONFIRM_MSG: {
         SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
-        answ=new TSrvMsgReply(nmsg);
-        this->MsgLst.append((Ptr*)answ);
-        a = (Ptr*)answ;
+        a = new TSrvMsgReply(nmsg);
         break;
     }
-    case RENEW_MSG:
-    {
+    case RENEW_MSG: {
         SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
-        answ=new TSrvMsgReply(nmsg);
-        this->MsgLst.append((Ptr*)answ);
-        a = (Ptr*)answ;
+        a = new TSrvMsgReply(nmsg);
         break;
     }
-    case REBIND_MSG:
-    {
+    case REBIND_MSG: {
         SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
-        answ=new TSrvMsgReply(nmsg);
-        MsgLst.append((Ptr*)answ);
-        a = (Ptr*)answ;
+        a = new TSrvMsgReply(nmsg);
         break;
     }
-    case DECLINE_MSG:
-    {
+    case DECLINE_MSG: {
         SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
-        answ=new TSrvMsgReply( nmsg);
-        MsgLst.append((Ptr*)answ);
-        a = (Ptr*)answ;
+        a = new TSrvMsgReply(nmsg);
         break;
     }
-    case RELEASE_MSG:
-    {
+    case RELEASE_MSG: {
         SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
-        answ=new TSrvMsgReply( nmsg);
-        MsgLst.append((Ptr*)answ);
-        a = (Ptr*)answ;
+        a = new TSrvMsgReply(nmsg);
         break;
     }
-    case INFORMATION_REQUEST_MSG :
-    {
+    case INFORMATION_REQUEST_MSG : {
         SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-        answ=new TSrvMsgReply( nmsg);
-        MsgLst.append((Ptr*)answ);
-        a = (Ptr*)answ;
+        a = new TSrvMsgReply(nmsg);
         break;
     }
-    case LEASEQUERY_MSG:
-    {
+    case LEASEQUERY_MSG: {
         int iface = msg->getIface();
         if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
             Log(Error) << "LQ: LeaseQuery message received on " << iface
@@ -296,8 +248,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         }
         Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
         SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-        answ = new TSrvMsgLeaseQueryReply(lq);
-        MsgLst.append( (Ptr*) answ);
+        a = new TSrvMsgLeaseQueryReply(lq);
         break;
     }
     case RECONFIGURE_MSG:
@@ -319,6 +270,8 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
 
     if (a) {
+        /// @todo: messages should not call send() in their cstors, send should be done here
+        MsgLst.append((Ptr*)a);
         SrvIfaceMgr().notifyScripts(SrvCfgMgr().getScriptName(), q, a);
     }
 
@@ -516,12 +469,6 @@ TSrvTransMgr & TSrvTransMgr::instance()
   if (!Instance)
     Log(Crit) << "TransMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
   return *Instance;
-}
-
-/// TODO Remove this horrible workaround!
-SPtr<TSrvMsg> TSrvTransMgr::getCurrentRequest()
-{
-    return requestMsg;
 }
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)
