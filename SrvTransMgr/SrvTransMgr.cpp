@@ -160,16 +160,17 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         return;
     }
 
+    // LEASE ASSIGN STEP 1: Evaluate defined expressions (client classification)
     // Ask NodeClietSpecific to analyse the message
     NodeClientSpecific::analyseMessage(msg);
 
+    // LEASE ASSIGN STEP 2: Is this client supported?
     // is this client supported? (white-list, black-list)
     if (!SrvCfgMgr().isClntSupported(msg)) {
         return;
     }
 
-
-    /// @todo (or at least disable by default) answer buffering mechanism
+    /// @todo remove (or at least disable by default) answer buffering mechanism
     SPtr<TSrvMsg> answ;
     Log(Debug) << MsgLst.count() << " answers buffered.";
 

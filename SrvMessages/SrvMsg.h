@@ -57,6 +57,8 @@ public:
 
     int getRelayCount();
 
+    bool releaseAll(bool quiet);
+
     bool validateReplayDetection();
 
     virtual bool check() = 0;
@@ -67,6 +69,9 @@ public:
     unsigned long getTimeout();
     void doDuties();
     void send();
+
+    void processOptions(SPtr<TSrvMsg> clientMsg, bool quiet);
+    SPtr<TDUID> getClientDUID() { return ClientDUID; }
 
 protected:
     SPtr<TSrvOptOptionRequest> ORO;

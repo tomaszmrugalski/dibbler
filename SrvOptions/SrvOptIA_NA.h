@@ -14,7 +14,7 @@ class TSrvOptIA_NA;
 
 #include "OptIA_NA.h"
 #include "SrvOptIAAddress.h"
-#include "SmartPtr.h"
+#include "SmartPtr.h"x§
 #include "DUID.h"
 #include "Container.h"
 #include "IPv6Addr.h"
@@ -29,12 +29,9 @@ class TSrvOptIA_NA : public TOptIA_NA
     TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent);    
     TSrvOptIA_NA(long IAID, long T1, long T2, TMsg* parent);    
     TSrvOptIA_NA(long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);
-    /* Constructor used in answers to:
-    * - SOLICIT 
-    * - SOLICIT (with RAPID_COMMIT)
-    * - REQUEST */
-    TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,  int iface, int msgType, TMsg* parent);
-    /// @todo: Why 5 constructors? 2 should be enough
+    TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, TMsg* parent);
+
+    // TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,  int iface, int msgType, TMsg* parent);
 
     void releaseAllAddrs(bool quiet);
 
@@ -47,12 +44,18 @@ class TSrvOptIA_NA : public TOptIA_NA
     void decline(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     bool doDuties();
  private:
+    bool assignCachedAddr(bool quiet);
+    bool assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA> queryOpt, bool quiet);
+    bool assignSequentialAddr(SPtr<TSrvMsg> clientMsg, bool quiet);
+    bool assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet);
+    SPtr<TIPv6Addr> getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6Addr> hint);
+    bool assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t valid, bool quiet);
+    bool assignFixedLease(SPtr<TSrvOptIA_NA> req);
+
     SPtr<TIPv6Addr>   ClntAddr;
     SPtr<TDUID>       ClntDuid;
     int                   Iface;
     
-    SPtr<TSrvOptIAAddress> assignAddr(SPtr<TIPv6Addr> hint, unsigned long pref,
-					  unsigned long valid, bool quiet);
     SPtr<TIPv6Addr> getFreeAddr(SPtr<TIPv6Addr> hint);
     SPtr<TIPv6Addr> getExceptionAddr();
 };

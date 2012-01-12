@@ -69,22 +69,27 @@ void TSrvCfgIface::firstAddrClass() {
 /*
  * tries to find if there is a class, where client is on white-list
  */
-bool TSrvCfgIface::getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+/// @brief Returns ID of the preferred pool for specified client
+///
+/// @param duid client's DUID
+/// @param clntAddr client's address
+///
+/// @return ID of prefered pool (or -1 if there is none)
+int TSrvCfgIface::getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr) {
     SPtr<TSrvCfgAddrClass> ptrClass;
     this->SrvCfgAddrClassLst.first();
     while(ptrClass=SrvCfgAddrClassLst.get()) {
         if (ptrClass->clntPrefered(duid, clntAddr)) {
-            classid=ptrClass->getID();
-            return true;
+            return ptrClass->getID();
         }
     }
-    return false;
+    return -1;
 }
 
 /*
  * tries to find a class, which client is allowed to use
  */
-bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+int TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr) {
     unsigned int clsid[100];
     unsigned int share[100];
     unsigned int cnt = 0;
@@ -92,9 +97,10 @@ bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntA
     unsigned int rnd;
 
     SPtr<TSrvCfgAddrClass> ptrClass;
-    this->SrvCfgAddrClassLst.first();
+    SrvCfgAddrClassLst.first();
     while( (ptrClass=SrvCfgAddrClassLst.get()) && (cnt<100) ) {
-        if (ptrClass->clntSupported(duid, clntAddr)) {
+        if (ptrClass->clntSupported(duid, clntAddr) &&
+            ptrClass->getClassMaxLease() < ptrClass->getAssignedCount()) {
             clsid[cnt]   = ptrClass->getID();
 	    share[cnt]   = ptrClass->getShare();
 	    sum         += ptrClass->getShare();
@@ -103,21 +109,20 @@ bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntA
     }
 
     if (!cnt)
-	return false; // this client is not supported by any class
+	return -1; // this client is not supported by any class
 
     rnd = rand() % sum;
 
     unsigned int j=0;
 
-    for (unsigned int i=0; i<100;i++) {
+    for (unsigned int i=0; i<cnt; i++) {
 	j += share[i];
 	if (j>=rnd) {
-	    classid = clsid[i];
-	    break;
+	    return clsid[i];
 	}
     }
 
-    return true;
+    return clsid[cnt-1];
 }
 
 
@@ -214,29 +219,32 @@ void TSrvCfgIface::delClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) 
 }
 
 SPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SPtr<TDUID> clntDuid,
-							SPtr<TIPv6Addr> clntAddr) {
+                                                    SPtr<TIPv6Addr> clntAddr) {
 
-    unsigned long classid;
+    long classid;
 
     // step 1: Is there a class reserved for this client?
 
     // if there is class where client is on whitelist, it should be used rather than any other class
     // that would be also suitable
-    if(this->getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
-      Log(Debug) << "Found prefered class for client (duid = " << *clntDuid << ", addr = "
-  	        << *clntAddr << ")" << LogEnd;
-      return this->getClassByID(classid);
+    classid = getPreferedAddrClassID(clntDuid, clntAddr);
+    if(classid > -1) {
+        Log(Debug) << "Found prefered class " << classid << " for client (duid = " << *clntDuid << ", addr = "
+                   << *clntAddr << ")" << LogEnd;
+        return getClassByID(classid);
     }
 
     // Get one of the normal classes
-    if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
+    classid = getAllowedAddrClassID(clntDuid, clntAddr);
+    if(classid > -1) {
 	Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd;
 	return this->getClassByID(classid);
     }
 
     // This is some kind of problem...
-    Log(Error) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
-	       << clntAddr->getPlain() << ")." << LogEnd;
+    // we are out of addresses, or we really don't like this client
+    Log(Warning) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
+                 << clntAddr->getPlain() << ")." << LogEnd;
     return 0;
 }
 

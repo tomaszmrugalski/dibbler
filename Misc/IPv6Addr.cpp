@@ -214,3 +214,18 @@ TIPv6Addr& TIPv6Addr::operator--()
     }
     return *this;
 }
+
+/// @brief increases address by one
+///
+TIPv6Addr& TIPv6Addr::operator++()
+{
+    int carry = 1;
+    for (int i=15; i>=0; i--) {
+        carry = (Addr[i] == 255);
+        Addr[i]++;
+        if (!carry)
+            return *this;
+    }
+
+    return *this;
+}

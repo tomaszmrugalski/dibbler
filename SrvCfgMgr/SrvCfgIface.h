@@ -46,8 +46,9 @@ public:
     // permanent address management (IA_NA)
     void addAddrClass(SPtr<TSrvCfgAddrClass> addrClass);
     void firstAddrClass();
-    bool getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid);
-    bool getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid);
+    int getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
+    int getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
+
     SPtr<TSrvCfgAddrClass> getAddrClass();
     SPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
     SPtr<TSrvCfgAddrClass> getRandomClass(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr);

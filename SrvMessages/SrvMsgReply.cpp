@@ -217,7 +217,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
     copyAAASPI( (Ptr*)decline );
     copyRemoteID( (Ptr*)decline );
 
-
     SPtr<TOpt> ptrOpt;
 
     SPtr<TAddrClient> ptrClient = SrvAddrMgr().getClient(ClientDUID);
@@ -360,8 +359,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
           }
         case OPTION_IA_PD: {
             SPtr<TSrvOptIA_PD> pd;
-            pd = new TSrvOptIA_PD( (Ptr*) ptrOpt, rebind->getAddr(),
-                                   ClientDUID, rebind->getIface(), REQUEST_MSG, this);
+            pd = new TSrvOptIA_PD( (Ptr*)rebind, (Ptr*) ptrOpt, REBIND_MSG, this);
             Options.push_back((Ptr*)pd);
             break;
         }
@@ -555,7 +553,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
             // send result to the client
             if (!anyDeleted)
             {
-                SPtr<TSrvOptIA_PD> ansPD(new TSrvOptIA_PD(pd->getIAID(), 0, 0, this));
+                SPtr<TSrvOptIA_PD> ansPD(new TSrvOptIA_PD(pd->getIAID(), 0u, 0u, this));
                 Options.push_back((Ptr*)ansPD);
                 ansPD->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
             };
@@ -611,9 +609,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
         }
         case OPTION_IA_PD: {
             SPtr<TSrvOptIA_PD> optPD;
-            optPD = new TSrvOptIA_PD( (Ptr*)ptrOpt,
-                                     renew->getAddr(), ClientDUID,
-                                     renew->getIface(), RENEW_MSG, this);
+            optPD = new TSrvOptIA_PD((Ptr*) renew, (Ptr*)ptrOpt,
+                                     RENEW_MSG, this);
             Options.push_back( (Ptr*) optPD);
             break;
         }
@@ -662,77 +659,10 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     copyAAASPI( (Ptr*)request );
     copyRemoteID( (Ptr*)request );
 
-    /// @todo: make this common with SrvMsgAdvertise
-
-    SPtr<TIPv6Addr> clntAddr = request->getAddr();
-    unsigned int clntIface = request->getIface();
-
-    // try to provide answer for all options
-    SPtr<TOpt> opt;
-    request->firstOption();
-    while ( opt = request->getOption() ) {
-
-        switch (opt->getOptType()) {
-        case OPTION_IA_NA: {
-            SPtr<TSrvOptIA_NA> optIA;
-            optIA = new TSrvOptIA_NA( (Ptr*) opt, ClientDUID, clntAddr, clntIface, REQUEST_MSG, this);
-            Options.push_back((Ptr*)optIA);
-            break;
-        }
-        case OPTION_IA_TA: {
-            SPtr<TSrvOptTA> ta;
-            ta = new TSrvOptTA( (Ptr*) opt, ClientDUID, clntAddr, clntIface, REQUEST_MSG, this);
-            Options.push_back((Ptr*)ta);
-            break;
-        }
-
-        case OPTION_IA_PD: {
-            SPtr<TSrvOptIA_PD> pd;
-            pd = new TSrvOptIA_PD( (Ptr*) opt, clntAddr, ClientDUID, clntIface, REQUEST_MSG, this);
-            Options.push_back((Ptr*)pd);
-            break;
-        }
-        case OPTION_STATUS_CODE :
-        case OPTION_RELAY_MSG   :
-        case OPTION_PREFERENCE  :
-        case OPTION_RECONF_MSG  :
-        case OPTION_INTERFACE_ID:
-        case OPTION_IAADDR      :
-        case OPTION_UNICAST     :
-        case OPTION_RAPID_COMMIT:
-            Log(Warning) << "Invalid option " << opt->getOptType()<<" received." << LogEnd;
-            break;
-        case OPTION_FQDN : {
-            SPtr<TSrvOptFQDN> requestFQDN = (Ptr*) opt;
-            SPtr<TOptFQDN> anotherFQDN = (Ptr*) opt;
-            SPtr<TSrvOptFQDN> optFQDN;
-
-            string hint = anotherFQDN->getFQDN();
-
-            SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
-            if (clntAssignedAddr)
-                optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAssignedAddr, hint, true);
-            else
-                optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAddr, hint, true);
-            if (optFQDN) {
-                Options.push_back((Ptr*) optFQDN);
-            }
-            break;
-        }
-        case OPTION_VENDOR_OPTS:
-        {
-            SPtr<TOptVendorSpecInfo> v = (Ptr*) opt;
-            appendVendorSpec(ClientDUID, Iface, v->getVendor(), ORO);
-            break;
-        }
-        default:
-            handleDefaultOption(opt);
-            break;
-        }
-    }
+    processOptions((Ptr*)request, false); // be verbose
 
     appendMandatoryOptions(ORO);
-    appendRequestedOptions(ClientDUID, clntAddr, clntIface, ORO);
+    appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
@@ -742,6 +672,10 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
 }
 
 //SOLICIT
+
+/// @brief ctor used for generating REPLY message as SOLICIT response (in rapid-commit mode)
+///
+/// @param solicit client's message
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     :TSrvMsg(solicit->getIface(), solicit->getAddr(), REPLY_MSG, solicit->getTransID())
 {
@@ -751,58 +685,13 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     copyAAASPI( (Ptr*)solicit );
     copyRemoteID( (Ptr*)solicit );
 
-    /// @todo remove this and use Iface and PeerAddr
-    SPtr<TIPv6Addr> clntAddr = solicit->getAddr();
-    unsigned int clntIface = solicit->getIface();
+    processOptions((Ptr*) solicit, false);
 
     // append RAPID-COMMIT option
     Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
 
-    //So if we can do something for this client at least set configuration
-    //parameters - let's do  option by option - try to answer to it
-    SPtr<TOpt> opt;
-    solicit->firstOption();
-    while ( opt = solicit->getOption() )
-    {
-        switch (opt->getOptType())
-        {
-        case OPTION_SERVERID    :
-            Log(Warning) << "Solicit message contains ServerID option. Rejecting message. " << LogEnd;
-            IsDone = true;
-            return;
-        case OPTION_IA_NA       : {
-            SPtr<TSrvOptIA_NA> optIA_NA;
-            optIA_NA = new TSrvOptIA_NA((Ptr*) opt, ClientDUID, clntAddr, clntIface, REQUEST_MSG,this);
-            Options.push_back((Ptr*)optIA_NA);
-            break;
-        }
-        case OPTION_IA_TA: {
-            SPtr<TSrvOptTA> ta;
-            ta = new TSrvOptTA( (Ptr*) opt, ClientDUID, clntAddr,
-                               clntIface, REQUEST_MSG, this);
-            Options.push_back((Ptr*)ta);
-            break;
-        }
-        case OPTION_STATUS_CODE :
-        case OPTION_RELAY_MSG   :
-        case OPTION_PREFERENCE  :
-        case OPTION_RECONF_MSG  :
-        case OPTION_INTERFACE_ID:
-        case OPTION_IAADDR      :
-        case OPTION_UNICAST     :
-            Log(Warning) << "Invalid option type("
-                         <<opt->getOptType()<<") received." << LogEnd;
-            break;
-        case OPTION_RAPID_COMMIT:
-            Log(Info) << "SOLICIT with RAPID-COMMIT received." << LogEnd;
-            break;
-        default:
-            handleDefaultOption(opt);
-            break;
-        }
-    }
     appendMandatoryOptions(ORO);
-    appendRequestedOptions(ClientDUID, clntAddr, clntIface, ORO);
+    appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];

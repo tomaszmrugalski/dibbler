@@ -19,6 +19,7 @@ class TSrvCfgAddrClass;
 #include <iostream>
 #include <iomanip>
 
+#include "DHCPDefaults.h"
 #include "SrvAddrMgr.h"
 #include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
@@ -48,11 +49,13 @@ class TSrvCfgAddrClass
     bool addrInPool(SPtr<TIPv6Addr> addr);
     unsigned long countAddrInPool();
     SPtr<TIPv6Addr> getRandomAddr();
+    SPtr<TIPv6Addr> getFirstAddr();
+    SPtr<TIPv6Addr> getLastAddr();
 
-    unsigned long getT1(unsigned long clntT1);
-    unsigned long getT2(unsigned long clntT2);
-    unsigned long getPref(unsigned long clntPref);
-    unsigned long getValid(unsigned long clntValid);
+    unsigned long getT1(unsigned long clntT1 = SERVER_DEFAULT_MAX_T1);
+    unsigned long getT2(unsigned long clntT2 = SERVER_DEFAULT_MAX_T2);
+    unsigned long getPref(unsigned long clntPref = SERVER_DEFAULT_MAX_PREF);
+    unsigned long getValid(unsigned long clntValid = SERVER_DEFAULT_MAX_VALID);
     unsigned long getClassMaxLease();
     unsigned long getID();
     unsigned long getShare();

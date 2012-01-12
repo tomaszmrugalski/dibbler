@@ -138,16 +138,16 @@ consists of serveral simple blocks:
 
 @section archAlgoLeaseAssignment 6.6.1 Lease assignment policy
 
-0. Client classification is performed (a class is assigned to a client) 
+1. Client classification is performed (a class is assigned to a client) 
   (see NodeClientSpecific::analyseMessage(msg) in void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg))
 
-1. black-list, white-list
-2. max-client-leases
-3. existing lease for this client/ia
-4. fixed-lease (exception)
-6. cache
-7. client's hint
-8. new lease
+2. black-list, white-list (TSrvCfgMgr::isClntSupported() called from TSrvTransMgr::relayMsg() )
+3. existing lease for this client/ia (TSrvOptIA_NA::renew() called from TSrvOptIA_NA::TSrvOptIA_NA() )
+4. fixed-lease (exception) (TSrvOptIA_NA::assignFixedLease() called from TSrvOptIA_NA::TSrvOptIA_NA() )
+5. max-client-leases (see code in TSrvOptIA_NA::TSrvOptIA_NA())
+6. cache (TSrvOptIA_NA::assignCachedAddr() called from  TSrvOptIA_NA::TSrvOptIA_NA())
+7. client's hint (TSrvOptIA_NA::assignRequestedAddr() called from TSrvOptIA_NA::TSrvOptIA_NA())
+8. new lease (TSrvOptIA_NA::assignRandomAddr() called from TSrvOptIA_NA::TSrvOptIA_NA())
 
 @section archAlgoFixedLease 6.6.2 Fixed lease management
 

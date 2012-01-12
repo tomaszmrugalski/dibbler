@@ -28,16 +28,13 @@
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 
-TSrvOptIA_PD::TSrvOptIA_PD( long iaid, long t1, long t2, TMsg* parent)
-    :TOptIA_PD(IAID,T1,T2, parent)
+TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
+    :TOptIA_PD(iaid,t1,t2, parent)
 {
-    IAID=iaid;
-    T1=t1;
-    T2=t2;
 }
 
-TSrvOptIA_PD::TSrvOptIA_PD( long IAID, long T1, long T2, int Code, string Text, TMsg* parent)
-    :TOptIA_PD(IAID,T1,T2, parent)
+TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, int Code, string Text, TMsg* parent)
+    :TOptIA_PD(iaid, t1, t2, parent)
 {
     SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
 }
@@ -148,7 +145,7 @@ bool TSrvOptIA_PD::existingLease() {
  *
  * @return status, if it was possible to assign something (STATUSCODE_SUCCESS)
  */
-int TSrvOptIA_PD::assignPrefix(SPtr<TIPv6Addr> hint, bool fake) {
+int TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, bool fake) {
     SPtr<TIPv6Addr> prefix;
     SPtr<TSrvOptIAPrefix> optPrefix;
     SPtr<TSrvCfgPD> ptrPD;
@@ -163,7 +160,7 @@ int TSrvOptIA_PD::assignPrefix(SPtr<TIPv6Addr> hint, bool fake) {
 
     // get address
     prefixLst.clear();
-    prefixLst = this->getFreePrefixes(hint);
+    prefixLst = getFreePrefixes(clientMsg, hint);
     ostringstream buf;
     bool alreadyIncreased = false;
     prefixLst.first();
@@ -194,13 +191,12 @@ int TSrvOptIA_PD::assignPrefix(SPtr<TIPv6Addr> hint, bool fake) {
 
 // so far it is enough here
 // constructor used only in RENEW, REBIND, DECLINE and RELEASE
-TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
-                           int iface, int msgType , TMsg* parent)
+TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, int msgType , TMsg* parent)
     :TOptIA_PD(queryOpt->getIAID(), 0x7fffffff, 0x7fffffff, parent)
 {
-    this->ClntDuid  = clntDuid;
-    this->ClntAddr  = clntAddr;
-    this->Iface     = iface;
+    ClntDuid  = clientMsg->getClientDUID();
+    ClntAddr  = clientMsg->getAddr();
+    Iface     = clientMsg->getIface();
 
     SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(Iface);
     if (!ptrIface) {
@@ -227,10 +223,10 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TIPv6Addr> clntAddr
 
     switch (msgType) {
     case SOLICIT_MSG:
-        this->solicitRequest(queryOpt, ptrIface, fake);
+        this->solicitRequest(clientMsg, queryOpt, ptrIface, fake);
         break;
     case REQUEST_MSG:
-        this->solicitRequest(queryOpt, ptrIface, fake);
+        this->solicitRequest(clientMsg, queryOpt, ptrIface, fake);
         break;
     case RENEW_MSG:
         this->renew(queryOpt, ptrIface);
@@ -265,7 +261,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TIPv6Addr> clntAddr
  * @param ptrIface
  * @param fake
  */
-void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> ptrIface, bool fake) {
+void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> ptrIface, bool fake) {
 
     // --- Is this PD without IAPREFIX options? ---
     SPtr<TIPv6Addr> hint = 0;
@@ -288,7 +284,7 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface
         status = STATUSCODE_SUCCESS;
     } else {
         // assign new prefixes
-        status = assignPrefix(hint, fake);
+        status = assignPrefix(clientMsg, hint, fake);
     }
 
     // include status code
@@ -387,7 +383,7 @@ bool TSrvOptIA_PD::doDuties() {
  *
  * @return - list of prefixes
  */
-List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TIPv6Addr> hint) {
+List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint) {
 
     SPtr<TSrvCfgIface> ptrIface;
     SPtr<TIPv6Addr>    prefix;
@@ -441,15 +437,12 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TIPv6Addr> hint) {
         validHint = false;
     }
 
-    // Get the request message from client
-    SPtr<TSrvMsg> requestMsg = SrvTransMgr().getCurrentRequest();
-
     if ( validHint ) {
       // hint is valid, try to use it
       ptrPD = SrvCfgMgr().getClassByPrefix(this->Iface, hint);
 
       // if the PD allow the hint, based on DUID, Addr, and Msg from client
-     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, requestMsg ))
+     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ))
          {
                   // case 2: address belongs to supported class, and is free
                   if ( ptrPD && SrvAddrMgr().prefixIsFree(hint) ) {
@@ -486,7 +479,7 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TIPv6Addr> hint) {
 
     while ( ptrPD = ptrIface->getPD())
     {
-        if (!ptrPD->clntSupported(ClntDuid, ClntAddr, requestMsg ))
+        if (!ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ))
                 continue;
         break;
     }
