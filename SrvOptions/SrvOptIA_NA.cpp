@@ -195,11 +195,11 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
     return false;
 }
 
-
 /// @brief Tries to get cached address for this client.
 ///
 /// This method may delete entry from cache if it finds out that entry is used by someone else
-/// or is no longer valid (i.e. updated config has different pool definitions)
+/// or is no longer valid (i.e. updated config has different pool definitions).
+/// That is step 6 of lease assignment policy.
 ///
 /// @return true, if address was assigned
 bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
@@ -238,7 +238,7 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
       // is there any specific address reserved for this client? (exception mechanism)
       SPtr<TIPv6Addr> reservedAddr = getExceptionAddr();
       if (!reservedAddr) {
-          // there's no
+          // there's no reserved address for this pal
           return false;
       } 
 

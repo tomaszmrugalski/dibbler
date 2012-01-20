@@ -5,8 +5,11 @@
 Note: This is a scratchpad. It just happens to be available with the rest of the code.
 
 Important:
-- problem: how to manage fixed leases?
+- Implement 8 step lease assignment algorithm (done for IA_NA, todo for IA_PD)
+- Implement support for fixed leases: (see dibbler-devel-06-arch 6.6.2)  
+
 - Srv: Implement access control for PD
+
 - Expressions (options, client-id, ...)
 - DNS Update(delete) after expiration
 

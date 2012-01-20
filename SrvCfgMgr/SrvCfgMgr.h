@@ -76,6 +76,8 @@ public:
     void addTAAddr(int iface);
     void delTAAddr(int iface);
 
+    bool addrReserved(SPtr<TIPv6Addr> addr);
+
     bool isDone();
     virtual ~TSrvCfgMgr();
     bool setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt);
