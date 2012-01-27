@@ -2,11 +2,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([dibbler], [0.8.0-git], [dibbler@klub.com.pl])
+AC_INIT([dibbler], [0.8.1], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
 AC_CONFIG_MACRO_DIR([m4])
+
+# DO NOT trigger rebuild rules, unless I tell you so.
+AM_MAINTAINER_MODE([disable])
 
 # Poslib stuff
 AC_LANG_CPLUSPLUS
@@ -42,6 +45,17 @@ AC_CHECK_HEADERS(slist ext/slist)
       AC_DEFINE(HAVE_POLL, 1, [Defines whether the poll function is available])
   fi
 
+
+AC_CHECK_DECLS([IPV6_PKTINFO],,,[
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+])
+AC_CHECK_DECLS([IPV6_RECVPKTINFO],,,[
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -195,10 +209,16 @@ dnl ---------------------------------------------
       PORT_CFLAGS=
       PORT_LDFLAGS="-lpthread"
       ;;
-    Darwin | FreeBSD)
+    Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=
+      PORT_LDFLAGS=
+      ;;
+    OpenBSD)
+      ARCH="BSD"
+      PORT_SUBDIR="Port-bsd"
+      PORT_CFLAGS=-DOPENBSD
       PORT_LDFLAGS=
       ;;
     MINGW32*)
@@ -340,6 +360,26 @@ dnl ------------------------------------------------------------
       CPPFLAGS="${CPPFLAGS} -DMOD_DISABLE_AUTH"
    fi
 
+### gtests #################################################
+AC_ARG_WITH(gtest,
+[  --with-gtest=PATH    specify a path to gtest header files and library],
+   gtest_path="$withval", 
+   gtest_path="no")
+
+#echo "After gtest"
+
+if test "$gtest_path" != "no"
+then
+	GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+	GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+	GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+	GTEST_LDADD=`${GTEST_CONFIG} --libs`
+fi
+
+AC_SUBST(GTEST_INCLUDES)
+AC_SUBST(GTEST_LDFLAGS)
+AC_SUBST(GTEST_LDADD)
+
 ### Link-state change detections ##########################
    AC_ARG_ENABLE(link-state,
         [  --enable-link-state     Enables link-state change detections (default: yes)],
@@ -391,14 +431,21 @@ AC_SUBST(PORT_LDFLAGS)
 AC_SUBST(PORT_CFLAGS)
 AC_SUBST(LINKPRINT)
 
-#AC_CONFIG_SUBDIRS([bison++])
+AC_CONFIG_SUBDIRS([bison++])
 #AC_CONFIG_SUBDIRS([poslib])
 
-AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile)
+
+if test "$gtest_path" != "no"; then
+  echo "GTEST enabled, generating Makefiles"
+  AC_DEFINE(HAVE_GTEST, 1, [Defines if google test is available and should be used])
+fi
+
+AM_CONDITIONAL(HAVE_GTEST, [test "$gtest_path" != "no"])
 
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
-AC_OUTPUT(Port-linux/Makefile Port-bsd/Makefile)
+
+AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile)
 
 dnl ----------------------------------------
 dnl Print out configured parameters
@@ -421,5 +468,13 @@ echo "CPPFLAGS       : $CPPFLAGS"
 echo "CXXFLAGS       : $CXXFLAGS"
 echo "LDFLAGS        : $LDFLAGS"
 echo
+echo "Google test    : $gtest_path"
+if test "$gtest_path" != "no"
+then
+echo "GTEST_INCLUDES : $GTEST_INCLUDES"
+echo "GTEST_LDFLAGS  : $GTEST_LDFLAGS"
+echo "GTEST_LDADD    : $GTEST_LDADD"
+echo
+fi
 echo Type make to compile dibbler.
 echo

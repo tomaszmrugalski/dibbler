@@ -67,8 +67,8 @@ public:
     void addPD(SPtr<TSrvCfgPD> pd);
     void firstPD();
     SPtr<TSrvCfgPD> getPD();
-    bool addClntPrefix(SPtr<TIPv6Addr> ptrPD);
-    bool delClntPrefix(SPtr<TIPv6Addr> ptrPD);
+    bool addClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
+    bool delClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool supportPrefixDelegation();
 
     // other

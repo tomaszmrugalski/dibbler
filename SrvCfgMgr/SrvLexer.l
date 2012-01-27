@@ -65,6 +65,7 @@ reject-clients      { return SrvParser::REJECT_CLIENTS_;}
 
 T1                  { return SrvParser::T1_;}
 T2                  { return SrvParser::T2_;}
+preferred-lifetime  { return SrvParser::PREF_TIME_;}
 prefered-lifetime   { return SrvParser::PREF_TIME_;}
 valid-lifetime      { return SrvParser::VALID_TIME_;}
 
@@ -89,7 +90,10 @@ ntp-server          { return SrvParser::NTP_SERVER_;}
 time-zone           { return SrvParser::TIME_ZONE_;}
 sip-server          { return SrvParser::SIP_SERVER_; }
 sip-domain          { return SrvParser::SIP_DOMAIN_; }
+next-hop            { return SrvParser::NEXT_HOP_; }
+route               { return SrvParser::ROUTE_; }
 fqdn                { return SrvParser::FQDN_; }
+infinite            { return SrvParser::INFINITE_; }
 accept-unknown-fqdn { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
 fqdn-ddns-address   { return SrvParser::FQDN_DDNS_ADDRESS_; }
 ddns-protocol       { return SrvParser::DDNS_PROTOCOL_; }
@@ -104,6 +108,7 @@ pd-class	    { return SrvParser::PDCLASS_; }
 pd-length	    { return SrvParser::PD_LENGTH_; }
 pd-pool             { return SrvParser::PD_POOL_;}
 vendor-spec         { return SrvParser::VENDOR_SPEC_; }
+script              { return SrvParser::SCRIPT_; }
 
 experimental        { return SrvParser::EXPERIMENTAL_; }
 addr-params         { return SrvParser::ADDR_PARAMS_; }

@@ -1,0 +1,104 @@
+/**
+ *
+ * @page generalInfo 4 General information
+This section covers several loosely related topics.
+
+@section generalReleases 4.1 Release cycle
+Dibbler is being released as a one product, i.e. client, server and
+relay are always released together. Each version is being designated
+with three numbers, separated by periods, e.g. 0.4.2. Every time a new
+significant functionality is added, the middle number is being
+increased. When new release contains only fixes and small
+improvements, only the minor number is changed. Leftmost number is
+currently set to 0 as not all features mentioned in base DHCPv6
+document (<a href="http://www.ietf.org/rfc/rfc3315.txt">RFC3315</a>) are implemented. 
+When Dibbler implementation will be complete, release number will reach
+1.0.0. Since DHCPv6 specification is extensive, don't expect this to
+happen anytime soon.
+
+Stable releases are often preceded by Release Candidate versions. For example
+0.8.1RC1 is a Release Candidate 1 for 0.8.1 release.
+
+@section generalGIT 4.2 GIT repository
+
+Dibbler currently uses GIT repository available at github.com 
+<a href="https://github.com/tomaszmrugalski/dibbler">https://github.com/tomaszmrugalski/dibbler</a>.
+Please download latest sources from there. Dibbler previously used SVN
+repository. Please DO NOT use it. It is kept around only for students,
+who started their theses using SVN, so they can generate diffs easier.
+Sources in SVN are old, obsolete, buggy and will eat your hard drive if
+if you try to use it.
+
+@section generalDocs 4.3 Documentation
+There are two parts of the documentation: User's Guide and Developer's
+Guide. User's Guide is written in LaTeX (*.tex files). 
+To generate PDF files, you need to have LaTeX
+installed. To generate Developer's Guide documentation, 
+a tool called <a href="http://www.doxygen.org">Doxygen</a> is required. All
+documentation is of course available at
+<a href="http://klub.com.pl/dhcpv6">Dibbler's homepage</a>.
+
+To generate all documentation, type (in Dibbler source directory):
+@verbatim
+make user devel
+@endverbatim
+
+Note that versions 0.7.3 and earlier had Developer's Guide and Code 
+documentation separated. Those two documents are merged and are Doxygen
+based.
+
+@section generalMemoryCpu 4.4 Memory/CPU usage
+This section provides basic insight about memory and CPU requirements
+for the dibbler components. Folowing paragraphs describe memory and 
+CPU usage measurements. They
+were taken on a AMD Athlon 2800+ (actual clock speed: 2083MHz),
+running under Linux 2.6.17.3. Dibbler was compiled with gcc 4.1.2
+(exact version number printed by @c gcc @c --version command:
+@verbatim
+gcc (GCC) 4.1.2 20060715 (prerelease) (Debian 4.1.1-9)
+@endverbatim
+
+Every Dibbler component (client, server or relay) is event driven. It
+means that it does nothing unless some data was received or a specific
+timeout has been reached. Each component most of the time spends in a
+select() system call. This means that (unless lots of traffic
+is being received) actual CPU usage is 0. During tests, author was
+unable to observe any CPU consumption above 0,0\%. 
+
+In the 0.5.0 release, a compilation options called Modular features
+was added (see Section @ref compilationModularFeatures). One of the possible
+way of compiling Dibbler is to disable poslib - a library used to
+perform DNS Updates. Dibbler binaries compiled without poslib are
+designated as -wo-poslib. It is possible to compile Dibbler with
+various compilation options. In particular (enabled by default)
+@b -g option includes debugging information in the binary file
+(this greatly affects binary file size, but does not affect memory
+usage), @b -O0 (disably any kind of optimisation) or -Os (produce
+smallest possible code). Debugging informations can be removed using
+@b strip command (designated below as -stripped). Linux command
+line tool called \b top was used to measure memory usage. VIRT is
+a virtual memory size, RES denotes size of actual physical memory used
+and SHR is a size of a shared memory. See top manual page for details.
+
+<table border="1">
+  <tr><td>VIRT</td><td>RES </td><td> SHR </td><td> %CPU </td><td>%MEM</td><td>Optim.</td><td>filesize</td><td>COMMAND</td></tr>
+  <tr><td>3416</td><td>1564</td><td>1416 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 7123510 </td><td> dibbler-server</td></tr>
+  <tr><td>3416</td><td>1560</td><td>1416 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 751948  </td><td> dibbler-server-stripped</td></tr>
+  <tr><td>3328</td><td>1544</td><td>1400 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 6533375 </td><td> dibbler-server-wo-poslib</td></tr>
+  <tr><td>3328</td><td>1548</td><td>1400 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 663592  </td><td> dibbler-server-wo-poslib-stripped</td></tr>
+  <tr><td>3220</td><td>1436</td><td>1292 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 4596760 </td><td> dibbler-server run</td></tr>
+  <tr><td>3140</td><td>1424</td><td>1276 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 468776  </td><td> dibbler-server-wo-poslib</td></tr>
+  <tr><td>3388</td><td>1636</td><td>1496 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 9771605 </td><td> dibbler-client</td></tr>
+  <tr><td>3392</td><td>1644</td><td>1496 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 725352  </td><td> dibbler-client-stripped</td></tr>
+  <tr><td>3296</td><td>1608</td><td>1472 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 9183726 </td><td> dibbler-client-wo-poslib</td></tr>
+  <tr><td>3300</td><td>1612</td><td>1472 </td><td>  0.0 </td><td> 0.2 </td><td> -O0 </td><td> 639240  </td><td> dibbler-client-wo-poslib-stripped</td></tr>
+  <tr><td>3212</td><td>1472</td><td>1336 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 5901734 </td><td> dibbler-client-wo-poslib</td></tr>
+  <tr><td>3120</td><td>1456</td><td>1320 </td><td>  0.0 </td><td> 0.2 </td><td> -Os </td><td> 458984  </td><td> dibbler-client-wo-poslib</td></tr>
+</table>
+
+Dibbler stores data internally in lists. This means that server's
+memory and CPU usage is a linearly proportional to a number of clients
+it currently supports.
+
+@todo: Long/performance tests are required.
+*/

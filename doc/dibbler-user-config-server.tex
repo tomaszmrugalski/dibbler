@@ -1,0 +1,1262 @@
+%%
+%% Dibbler - a portable DHCPv6
+%%
+%% authors: Tomasz Mrugalski <thomson@klub.com.pl>
+%%          Michal Kowalczuk <michal@kowalczuk.eu>
+%%
+%% released under GNU GPL v2 licence
+%%
+
+\newpage
+\section{Server configuration}
+\label{server-conf}
+Server configuration is stored in \verb+server.conf+ file in the
+\verb+/etc/dibbler+ (Linux systems) or in current (Windows systems)
+directory.
+
+\subsubsection{Global scope}
+\label{server-global-scope}
+Every option can be declared in a global scope. Global options can be
+defined here. Also options of a smaller scopes can be defined here --
+they will be used as a default values. Configuration file has following syntax:
+
+\begin{lstlisting}
+ global-options
+ interface-options
+ class-options
+ interface-declaration
+\end{lstlisting}
+
+\subsubsection{Interface declaration}
+\label{server-iface-scope}
+Each network interface, which should be serviced by the server, must be
+mentioned in the configuration file. Network interface is defined like this:
+\begin{lstlisting}
+iface interface-name
+{
+  interface-options
+  class-options
+}
+\end{lstlisting}
+
+or
+
+\begin{lstlisting}
+iface number
+{
+  interface-options
+  class-options
+}
+\end{lstlisting}
+
+where \verb+interface-name+ denotes name of the interface and
+\verb+interface-number+ denotes its number. Name no longer needs to be
+enclosed in single or double quotes (except Windows systems, when
+interface name contains spaces). Note that virtual interfaces, used
+to setup relay support are also declared in this way.
+
+\subsubsection{Address class scope}
+\label{server-class-scope}
+Class is a smallest scope used in the server configuration file. It
+contains definition of the addresses, which will be provided to
+clients. Only class scoped parameters can be defined here. Address class
+is declared as follows:
+\begin{lstlisting}
+class
+{
+  class-options
+  address-pool
+}
+\end{lstlisting}
+
+Address pool defines range of the addresses, which can be assigned to the
+clients. It can be defined in one of the following formats:
+\begin{lstlisting}
+pool minaddress-maxaddress
+pool address/prefix
+\end{lstlisting}
+
+\subsubsection{Prefix class scope}
+\label{server-pd-class-scope}
+That is an equivalent of address class for a prefix delegation. It
+contains definition of prefixes that are going to be delegation to
+clients. Only pd-class scoped parameters can be defined here. Prefix
+class is declared as follows:
+\begin{lstlisting}
+pd-class
+{
+    pd-pool prefix/length
+    pd-length prefix-length
+}
+\end{lstlisting}
+
+\subsubsection{Temporary address class scope}
+\label{server-ta-class-scope}
+That is an equivalent of address class for temporary addresses. It
+contains definition of temporary addresses that are going to be
+assigned to clients that request temporary addresses. Only ta-class
+scoped parameters can be defined here. Prefix class is declared as
+follows: 
+\begin{lstlisting}
+ta-class {
+    pool 2001:db8:1::1-2001:db81:1::ffff
+}
+\end{lstlisting}
+
+\subsubsection{Routing scope}
+\label{server-route-scope}
+Support for routing configuration was added in 0.8.0RC1. It is
+possible to define routing scope. Each scope represents a single
+router available on-link. In this scope, routes available via
+specified link my be defined.
+
+\begin{lstlisting}
+next-hop address-of-a-router
+{
+  route1-parameters
+  route2-parameters
+  ...
+}
+\end{lstlisting}
+
+\subsubsection{Server options}
+
+So called standard options are defined by the base DHCPv6 specification,
+a so called RFC 3315 document \cite{rfc3315}. Those options are
+called standard, because all DHCPv6 implementations, should properly
+handle them. Each option has a specific scope it belongs to.
+
+Standard options are declared in the following way:
+
+\begin{lstlisting}
+OptionName option-value
+\end{lstlisting}
+
+\begin{description}
+\item[work-dir] -- (scope: global). Takes one parameter of string
+  type. Defines working directory.
+
+\item[log-level] -- (scope: global). Takes one integer
+  parameter. Defines verbose level of the log messages. The valid range
+  is from 1 (very quiet) to 8 (very verbose). Those values are modelled
+  after levels used in syslog. These are: 1(Emergency), 2(Alert),
+  3(Critical), 4(Error), 5 (Warning), 6(Notice), 7(Info) and
+  8(Debug). Currently Dibbler is using levels 3 to 8, as 1 and 2 are
+  reserved for system wide emergency events.
+
+\item[log-name] -- (scope: global). Takes one string
+  parameter. Defines than name, which will be used during logging.
+
+\item[log-mode] -- (scope: global). Takes one parameter that can be
+  short, full, precise or syslog. Defines logging mode. In the
+  default, full mode, name, date and time in the h:m:s format will be
+  printed. In short mode, only minutes and seconds will be printed
+  (this mode is useful on terminals with limited width). Precise mode
+  logs information with seconds and microsecond precision. It is a
+  useful as a performance diagnostic tool for finding bottlenecks in
+  the DHCPv6 autoconfiguration process. Syslog works under POSIX
+  systems (Linux, Mac OS X, BSD family) and allows default POSIX
+  logging functions.
+  
+\item[log-colors] -- (scope: global). Takes one boolean parameter.
+  Defines if logs printed to console should use colors. That feature
+  is used to enhance logs readability.  As it makes the log files
+  messy on systems that do not support colors, it is disabled by
+  default. The default is off.
+
+ \item[cache-size] -- (scope: global). Takes one parameter that
+  specifies cache size in bytes. The default value is 1048576
+  (1MB). It defines a size of the memory (specified in bytes) which
+  can se used to store cached entries.
+
+\item[stateless] -- (scope: global). It may be present or missing. The
+  default is missing. Defines that server should run in stateless
+  mode. In this mode only configuration parameters are defined, not
+  addresses or prefixes. It is mutually exclusive
+  with \emph{class}, \emph{ta-class} and \emph{pd-class}. See
+  Section \ref{feature-stateless-stateful}.
+
+
+\item[interface-id-order] -- (scope: global). Take one parameter that
+  can be one of \verb+before+, \verb+after+ or \verb+omit+. The
+        default is \verb+before+. This parameter defines placement of
+        the interface-id option. During message relaying options can
+        be placed in the \msg{RELAY-REPL} message is arbitrary
+        order. This option has been specified to control that
+        order. \opt{interface-id} option can be placed before or
+        after \opt{relay-message} option. There is also possibility to
+        instruct server to omit the \opt{interface-id} option
+        altogether, but since this violates \cite{rfc3315}, it should
+        not be used. In general, this configuration parameter is only
+        useful when dealing with buggy relays, which can't handle all
+        option orders properly. Consider this parameter a debugging
+        feature. Note: similar parameter is available in the
+        dibbler-relay.
+
+\item[experimental] -- (scope: global). Allows enabling experimental
+features. There are some highly-experimental features present in
+Dibbler. To make a clear statement about their experimental nature,
+user is required to acknowledge that fact by putting this statement in
+its config file. This statement may be present or absent. The default
+is absent.
+
+\item[inactive-mode] -- (scope: global, type: present or missing,
+  default: missing). This enables so called inactive mode. When server
+  begins operation and it detects that required interfaces are not
+  ready, error message is printed and server exits. However, if
+  inactive mode is enabled, server sleeps instead and wait for
+  required interfaces to become operational. That is a useful feature,
+  when using wireless interfaces, which take some time to initialize
+  as associate.
+
+\item[accept-leasequery] -- (scope: interface). Takes one boolean
+  parameter that specifies if server should support leasequery
+  \cite{rfc5007} protocol on a given interface. The default value is
+  0 (leasequery is not supported by default). See Section
+  \ref{feature-leasequery}.
+
+%%% TODO bulk-leasequery-accept
+%%% TODO bulk-leasequery-tcp-port
+%%% TODO bulk-leasequery-max-conns
+%%% TODO bulk-leasequery-timeout
+
+\item[guess-mode] -- (scope: global, type: present or missing,
+  default: missing). When this option is enabled, server will not pay
+  close attention to the interface-id option in relayed messages. If
+  interface-id has a value other than specified in server.conf or even
+  when there is no interface-id option at all, it will use first relay
+  defined.
+
+\item[script] -- (scope: global). Takes one string parameter that
+  specifies name of a script that will be called every time something
+  important happens in a system, e.g. when address or prefix is
+  assigned, updated or released. See Section \ref{feature-script}.
+
+\item[fqdn-ddns-address] -- (scope: global). Takes one parameter that
+  specifies address of DNS server that will be used for DNS
+  Updates. See Section \ref{feature-dns-update}.
+
+\item[ddns-protocol] -- (scope: global). Takes one string
+parameter. Defines protocol that should be used during DNS Update
+mechanism. Allowed values are \verb+tcp+, \verb+udp+ and \verb+any+.
+Any means that UDP will be tried first and if it fails, update will be
+retried over TCP. See Section \ref{feature-dns-update}.
+
+\item[ddns-timeout] -- (scope: global). Takes one integer parameter
+that specifies timeout in milliseconds. Defines how long client should
+wait for DNS server response during DNS Update before declaring
+update a failure. See Section \ref{feature-dns-update}.
+
+\item[class] -- (scope: interface). This definition must be followed by
+curly braces and creates a new address class scope. See
+Section \ref{server-class-scope}.
+
+\item[pd-class] -- (scope: interface). This definition must be
+followed by curly braces and creates a new prefix-delegation class
+scope. See Section \ref{server-pd-class-scope}.
+
+\item[ta-class] -- (scope: interface). This definition must be
+followed by curly braces and creates a new temporary address class
+scope. See Section \ref{server-ta-class-scope}.
+
+\item[next-hop] -- (scope: interface). This definition takes one
+parameter that defines IPv6 address of a router. Without any further
+parameters, it conveys an information about default route for
+bandwidth limited networks. That mode is discouraged, unless there are
+significant bandwith limitations. It is usually followed by curly
+braces that create a new route scope. See Section \ref{server-route-scope}.
+
+ \item[preference] -- (scope: interface, type: 0-255, default:
+            none). Eech server can be configured to a specific
+            preference level. When client receives several
+            \msg{ADVERTISE} messages, it should choose that server,
+            which has the highest preference level. It is also worth
+            noting that client, upon reception of the \msg{ADVERTISE}
+            message with preference set to 255 should skip wait phase
+            for possible other \msg{ADVERTISE} messages.
+
+
+ \item[unicast] -- (scope: interface, type: address,
+            default:none). Normally clients sends data to a well known
+            multicast address. This is easy to achieve, but it wastes
+            network resources as all nodes in the network must process
+            such messages and also network load is increased. To prevent
+            this, server might be configured to inform clients about its
+            unicast address, so clients, which accept it, will switch to
+            a unicast communication.
+
+ \item[rapid-commit] -- (scope: interface, type: boolean, default:
+            0). This option allows rapid commit procedure to be
+            performed. Note that enabling rapid commit on the server
+            side is not enough. Client must be configured to allow
+            rapid commit, too.
+
+\item[iface-max-lease] -- (scope: interface, type: integer, default:
+            $2^{32}-1$). This parameter defines, how many normal
+            addresses can be granted on this interface.
+
+\item[client-max-lease] -- (scope: interface, type: interger,
+            default:$2^{32}-1$). This parameter defines, how many
+            addresses one client can get. Main purpose of this
+            parameter is to limit number of used addresses by
+            misbehaving (malicious or restarting) clients.
+
+\item[relay] -- (scope: interface). Takes one string or integer
+  parameter that designated interface name or interface index. It is
+  used in relay definition.  It specifies name of the physical (or
+  name of another relay, if cascade relaying is used) interface, which
+  is used to receive and transmit relayed data. See
+  \ref{feature-relays} for details of relay deployment and sections
+  \ref{example-server-relay1} and \ref{example-server-relay2} for
+  configuration examples.
+
+\item[interface-id] -- (scope: interface, type: integer, default: not
+  defined). Used in relay definition. Each relay interface should have
+  defined its unique identified. It will be sent in the
+  \opt{interface-id} option. Note that this value must be the same as
+  configured in the dibbler-relay. It may be possible to specify this
+  parameter by using a number (option will be 4 bytes long), a string
+  or a hex of arbitrary length (please use the same format as for
+  DUID). See \ref{feature-relays}, \ref{example-server-relay1} and
+  \ref{example-relay} for details.
+
+ \item[vendor-spec] -- (scope: interface, type: integer-hexstring,
+   default: not defined). This parameter can be used to configure some
+   vendor-specific information option. Since there are no
+   dibbler-specific options, this implementation is flexible. User can
+   specify in the configuration file, how should this option look
+   like. See \ref{example-server-vendor-spec} section for details. It
+   is uncommon, but possible to define several vendor specific options
+   for different vendors. In such case, administrator must specify
+   coma separated list. Each list entry is a vendor (enterprise
+   number), ,,--'' sign and a hex dump (similar to DUID).
+
+ \item[pool] -- (scope: class). Takes coma separated IPv6 address
+   ranges. Each range is defined as first-address, a dash and a second
+   address. Defines a range of available addresses that will be
+   assigned in specific class. An example pool definition looks like
+   this:
+   \begin{lstlisting}
+     pool 2001:db8:abcd:: - 2001:db8:abcd::ffff
+   \end{lstlisting}
+
+ \item[pd-pool] -- (scope: pd-class). Takes coma separated IPv6
+   address ranges. Each range is defined as fist-address, a dash and a
+   second address. Defines a range of available prefixes (only
+   prefixes themselves, not their lengths) that will be assigned in
+   specific class. An example pd-pool definition looks like this:
+   \begin{lstlisting}
+     pd-pool 2001:db8:abcd:: - 2001:db8:abcd::ffff
+   \end{lstlisting}
+
+\item[share] -- (scope: class). Defines percentage of clients that a
+  class should handle. This parameter is only useful if there are more
+  then one class defined. See Section
+  \ref{example-server-multiple-classes}.
+
+ \item[T1] -- (scope: class, type: integer or integer range: default:
+   $2^{32}-1$). This value defines after what time client should start
+   renew process. Exact value or accepted range can be specified. When
+   exact value is defined, client's hints are ignored completely.
+
+ \item[T2] -- (scope: class, type: integer or integer range,
+   default:$2^{32}-1$). This value defines after what time client will
+   start emergency rebind procedure if renew process fails. Exact
+   value or accepted range can be specified. When exact value is
+   defined, client's hints are ignored completely.
+
+\item[valid-lifetime] (scope: class, type: integer or integer range,
+            default:$2^{32}-1$). This parameter defines valid lifetime of
+            the granted addresses. If range is specified, client's
+            hints from that range are accepted.
+
+\item[preferred-lifetime] (scope: class, type: integer or integer range,
+            default:$2^{32}-1$). This parameter defines prefered
+            lifetime of the granted addresses. If range is specified,
+            client's hits from that range will be accepted.
+
+\item[class-max-lease]  -- (scope: interface, type: interger,
+            default:$2^{32}-1$). This parameter defines, how many
+            addresses can be assigned from that class.
+
+\item[reject-clients] -- (scope: class, type: address or DUID list,
+            default: none). This parameter is sometimes called
+            black-list. It is a list of a clients, which should not be
+            supported. Clients can be identified by theirs link-local
+            addresses or DUIDs.
+
+\item[accept-only] -- (scope: class, type: address or DUID list,
+            default: none). This parameter is sometimes called
+            white-list. It is a list of supported clients. When this
+            list is not defined, by default all clients (except
+            mentioned in reject-clients) are supported. When
+            accept-only list is defined, only client from that list
+            will be supported.
+
+\item[addr-params] -- (scope: class). Experimental feature that takes 
+  one boolean parameter. It defines prefix length that is configured
+  in addr-params option. See Section \ref{feature-addr-params}.
+
+\item[allow] -- (scope: class). Specifies that clients that belong to
+  a specific client class are allowed to use that address class. Takes
+  one string parameter that defines client class name. See Section
+  \ref{feature-client-class}.
+
+\item[deny] -- (scope: class). Specifies that clients that belong to
+  a specific client class are denied use of that address class. Takes
+  one string parameter that defines client class name. See Section
+  \ref{feature-client-class}.
+
+ \item[option dns-server] -- (scope: interface, type: address list, default:
+   none). This option conveys information about DNS servers
+   available. After retriving this information, clients will be able
+   to resolve domain names into IP (both IPv4 and IPv6)
+   addresses. Defined in \cite{rfc3596}.
+
+ \item[option domain] -- (scope: interface, type: domain list, default:
+   none). This option is used for configuring one or more domain
+   names, which clients are connected in. For example, if client's
+   hostname is \verb+alice.mylab.example.com+ and it wants to contact
+   \verb+bob.mylab.example.com+, it can simply refer to it as
+   \verb+bob+. Without domain name configured, it would have to use
+   full domain name. Defined in \cite{rfc3596}.
+
+ \item[option ntp-server] -- (scope: interface, type: address list, default:
+   none). This option defines information about available NTP
+   servers. Network Time Protocol \cite{rfc2030} is a protocol used
+   for time synchronisation, so all hosts in the network has the same
+   proper time set. Defined in \cite{rfc4075}.
+
+ \item[option time-zone] -- (scope: interface, type: timezone, default:
+   none). It is possible to configure timezone, which is provided by
+   the server. Note that this option is considered obsolete as it is
+   mentioned in draft version only \cite{draft-timezone}. Work on this
+   draft seems to be abandoned as similar functionality is provided by
+   now standard \cite{rfc4075}.
+
+ \item[option sip-server] -- (scope: interface, type: address list, default:
+   none). Session Initiation Protocol \cite{rfc3263} is an control
+   protocol for creating, modifying, and terminating sessions with one
+   or more participants. These sessions include Internet telephone
+   calls, multimedia distribution, and multimedia conferences. Its
+   most common usage is VoIP. Format of this option is defined in
+   \cite{rfc3319}.
+
+ \item[option sip-domain] -- (scope: interface, type: domain list, default:
+   none). It is possible to define domain names for Session Initiation
+   Protocol \cite{rfc3263}. Configuration of this parameter will ease
+   usage of domain names in the SIP protocol. Format of this option is
+   defined in \cite{rfc3319}.
+
+ \item[option nis-server] -- (scope: interface, type: address list, default:
+   none). Network Information Service (NIS) is a Unix-based system
+   designed to use common login and user information on multiple
+   systems, e.g. universities, where students can log on to ther
+   accounts from any host. Its format is defined in \cite{rfc3898}.
+
+ \item[option nis-domain] -- (scope: interface, type: domain list, default:
+   none). Network Information Service (NIS) can albo specify domain
+   names. It can be configured with this option. It is defined in
+   \cite{rfc3898}.
+
+ \item[option nis+-server] -- (scope: interface, type: address list, default:
+   none). Network Information Service Plus (NIS+) is an improved
+   version of the NIS protocol. This option is defined in
+   \cite{rfc3898}.
+
+ \item[option nis+-domain] -- (scope: interface, type: domain list, default:
+   none). Similar to nis-domain, it defines domains for NIS+. This
+   option is defined in \cite{rfc3898}.
+
+ \item[option lifetime] -- (scope: interface, type: boolean, default:
+   no). Base spec of the DHCPv6 protocol does offers way of refreshing
+   addresses only, but not the options. Lifetime defines, how often
+   client should renew all its options. When defined, lifetime option
+   will be appended to all replies, which server sends to a client. If
+   client does not support it, it should ignore this option. Format of
+   this option is defined in \cite{rfc4242}.
+
+ \item[option fqdn] -- (scope: interface). Takes 0, 1 or 2 integer
+   parameters that are followed by FQDN list. Additional integer
+   parameters designate fqdn-mode and reverse zone length in DNS
+   Update. FQDN-mode can have 3 values: 2 (both AAAA and PTR record
+   will be updated by server), 1 (server will update PTR only) or 
+   0 (server will not update anything). Reverse zone length is an
+   integer between 0 and 128 and designates reverse zone length. FQDN
+   list is a coma separated list of fully qualified domain names, with
+   possible reservations for DUIDs or addresses. FQDN mechanism is
+   defined in \cite{rfc4704}. See Section \ref{feature-dns-update}.
+   
+\item[accept-unknown-fqdn] -- (scope: Interface). Takes one integer
+  parameter, possibly followed by second string parameter that
+  designated domain name. It specifies how server should react to
+  incoming FQDN options that contain names that are unknown to the
+  server. Allowed values are 0 (reject), 1 (send other name from
+  allowed list), 2 (accept any name client sends), 3(accept any name
+  client sends, but append specified domain suffix) and 4 (ignore
+  client's hint, generate name based on his address, append domain
+  name). Choices 3 and 4 require additional string parameter that
+  defines domain suffix. See Sections \ref{feature-dns-update}
+  and \label{example-server-fqdn}.
+ 
+\item[option] -- (scope: interface). Takes one integer number followed
+  by several possible parameter combinations. It defines custom
+  option that server may send out to clients. Supported formats are:
+  \begin{lstlisting}
+    option number - DUID
+    option number address-keyword address
+    option number address-list
+    option number string-keyword string
+  \end{lstlisting}
+Where number is an integer that defined option type, DUID is a
+hex-formatted string that defines option content, address-keyword is a
+word ``address'', address is an IPv6 address, address-list is coma
+separated list of addresses, string-keyword is a word ``string'' and
+string is any string enclosed in single or double quotes. See Section
+\ref{feature-custom-options} and \ref{example-server-custom}.
+
+ \item[option aftr] -- (scope: interface, type: FQDN). In Dual-Stack Lite
+   networks, client may want to configure DS-Lite tunnel. Client may
+   want to obtain information about AFTR (a remote tunnel
+   endpoint). This option conveys a fully qualified domain name of the
+   remote tunnel. This option is defined in \cite{rfc6334}.
+
+ \item[option neighbors] -- (scope: interface). Experimental feature
+   for Remote Autoconfiguration. Do not use it unless you know exactly
+   what you are doing. Takes coma separated list of addresses. This
+   option requires \emph{experimental} mode to be enabled. See Section
+   \ref{feature-remote-autoconf}.
+
+ \item[auth-method] -- (scope: global, type: string, default:
+   empty). Set it to one of the following values to enable
+   authentication on ther server side, using selected method of
+   generating authentication information:
+   \texttt{none}, \texttt{digest\_plain}, \texttt{digest\_hmac\_md5},
+   \texttt{digest\_hmac\_sha1}, \texttt{digest\_hmac\_sha224},
+   \texttt{digest\_hmac\_sha256}, \texttt{digest\_hmac\_sha384},
+   and \texttt{digest\_hmac\_sha512}.
+
+ \item[auth-lifetime] -- (scope: global, type: integer, default:
+   0). Authentication lifetime. Currently not supported.
+
+ \item[auth-key-len] -- (scope: global, type: integes, default:
+   32). Key generation nonce length (see \cite{draft-aaa} for
+   details).
+
+\item[client-class] -- (scope: global). Takes one string parameter
+  that defines name of a client class. Client class name is followed
+  by curly brackets that create client-class scope. Clients can be
+  grouped into classes depending on rules defined in
+  client-class. This can be used together with \verb+allow+ and
+  \verb+deny+ to assign segregate clients into different groups. See
+  Section \ref{feature-client-class} for overview and Section
+  \ref{class-expressions} for list of supported expressions.
+
+\end{description}
+
+\subsubsection{Client class quantifiers}
+\label{class-expressions}
+Additional parameters are used during client class definition. See
+Section \ref{feature-client-class} for details and examples.
+
+\begin{description}
+\item[match-if] -- (scope: client-class). 
+\item[contain] -- (scope: client-class).
+\item[substring] -- (scope: client-class).
+\item[==] -- (scope: client-class).
+\item[and] -- (scope: client-class).
+\item[or] -- (scope: client-class).
+\item[client.vendor-spec.en] -- (scope: client-class).
+\item[client.vendor-spec.data] -- (scope: client-class).
+\item[client.vendor-class.en] -- (scope: client-class).
+\item[client.vendor-class.data] -- (scope: client-class).
+\end{description}
+
+
+\subsection{Server configuration examples}
+
+This subsection contains various examples of the server
+configuration. If you are interested in additional examples, download
+source version and look at \verb+*.conf+ files.
+
+\subsubsection{Example 1: Simple}
+
+In opposite to client, server uses only interfaces described in config
+file. Let's examine this common situation: server has interface named
+\emph{eth0} (which is fourth interface in the system) and is supposed
+to assign addresses from 2000::100/124 class. Simplest config file
+looks like that:
+
+\begin{lstlisting}
+# server.conf
+iface eth0
+{
+  class
+  {
+    pool 2000::100-2000::10f
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 2: Timeouts}
+Server should be configured to deliver specific timer values to the
+clients. This example shows how to instruct client to renew (T1 timer)
+addresses one in 10 minutes. In case of problems, ask other servers in
+15 minutes (T2 timer), that allowe prefered lifetime range is from 30
+minutes to 2 hours, and valid lifetime is from 1 hour to 1 day. DNS
+server parameter is also provided. Lifetime option is used to make
+clients renew all non-address related options renew once in 2 hours.
+
+\begin{lstlisting}
+# server.conf
+iface eth0
+{
+  T1 600
+  T2 900
+  prefered-lifetime 1800-3600
+  valid-lifetime 3600-86400
+  class
+  {
+    pool 2000::100/80
+  }
+
+  option dns-server 2000::1234
+  option lifetime 7200
+}
+\end{lstlisting}
+
+\subsubsection{Example 3: Limiting amount of addresses}
+Another example: Server should support 2000::0/120 class on eth0
+interface. It should not allow any client to obtain more than 5
+addresses and should not grant more then 50 addresses in total. From
+this specific class only 20 addresses can be assigned. Server
+preference should be set to 7. This means that this server is more
+important than all server with preference set to 6 or less.
+Config file is presented below:
+
+\begin{lstlisting}
+# server.conf
+iface eth0
+{
+  iface-max-lease 50
+  client-max-lease 5
+  preference 7
+  class
+  {
+    class-max-lease 20
+    pool 2000::1-2000::100
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 4: Unicast communication}
+\label{example-server-unicast}
+
+Here's modified previous example. Instead of specified limits, unicast
+communication should be supported and server should listen on
+2000::1234 address. Note that default multicast address is still
+supported. You must have this unicast address already configured on
+server's interface.
+
+\begin{lstlisting}
+# server.conf
+log-level 7
+iface eth0
+{
+  unicast 2000::1234
+  class
+  {
+    pool 2000::1-2000::100
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 5: Rapid-commit}
+This configuration can be called quick. Rapid-commit is a way to shorten exchange to only two messages. It is
+quite useful in networks with heavy load. In case if client does not
+support rapid-commit, another trick is used. Preference is set to
+maximum possible value. 255 has a special meaning: it makes client to
+skip wait phase for possible advertise messages from other servers and
+quickly request addresses.
+
+\begin{lstlisting}
+# server.conf
+log-level 7
+iface eth0
+{
+  rapid-commit yes
+  preference 255
+  class
+  {
+    pool 2000::1/112
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 6: Access control}
+Administrators can selectively allow certain client to use this
+server (white-list). On the other hand, some clients could be
+explicitly forbidden to use this server (black-list). Specific DUIDs,
+DUID ranges, link-local addresses or the whole address ranges are
+supported. Here is config file:
+
+\begin{lstlisting}
+# server.conf
+iface eth0
+{
+  class
+  {
+    # duid of the rejected client
+    reject-clients ``00001231200adeaaa''
+    2000::2f-2000::20  // it's in reverse order, but it works.
+                       // just a trick.
+  }
+}
+iface eth1
+{
+  class
+  {
+    accept-only fe80::200:39ff:fe4b:1abc
+    pool 2000::fe00-2000::feff
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 7: Multiple classes}
+\label{example-server-multiple-classes}
+Although this is not common, a few users have requested support for multiple classes on one interface.
+Dibbler server can be configured to use several classes. When client asks for an address, one of the classes
+is being choosen on a random basis. If not specified otherwise, all classes have equal probability of being chosen.
+However, this behavior can be modified using \verb+share+ parameter. In the following example, server supports
+3 classes with different preference level: class 1 has 100, class 2 has 200 and class 3 has 300. This means that class 1
+gets $\frac{100}{100+200+300} \approx 16\% $ of all requests, class 2
+gets $\frac{200}{100+200+300} \approx 33\% $ and class 3 gets the rest
+($\frac{300}{100+200+300}=50\% $).
+
+\begin{lstlisting}
+# server.conf
+log-level 7
+log-mode short
+
+iface eth0 {
+ T1 1000
+ T2 2000
+
+ class {
+   share 100
+   pool 4000::1/80
+ }
+ class {
+   share 200
+   pool 2000::1-2000::ff
+ }
+
+ class {
+   share 300
+   pool 3000::1234:5678/112
+ }
+}
+\end{lstlisting}
+
+\subsubsection{Example 8: Relay support}
+\label{example-server-relay1}
+To get more informations about relay configuration, see section \ref{feature-relays}.
+Following server configuration example explains how to use
+relays. There is some remote relay with will send encapsulated data over
+eth1 interface. It is configured to append interface-id option set to
+5020 value. Let's allow all clients using this relay some addresses
+and information about DNS servers. Also see section
+\ref{example-relay-1} for corresponding relay configuration.
+
+Note that although eth1 interface is mentioned in the configuration file,
+direct traffic from clients located on the eth1 interface will not be
+supported. In this example, eth1 is used only to support requests
+relayed from remote link identified with interface-id value 5020.
+Of course it is possible to support both local and remote traffic. In
+such case, normal eth1 definition should be present in the server
+configuration file. Also note that real (physical) interfaces should
+be specified before logical ones.
+
+\begin{lstlisting}
+# server.conf
+iface relay1 {
+  relay eth1
+  // interface-id 5020
+  // interface-id "some interface name"
+  interface-id 0x427531264361332f3000001018680f980000
+
+  class {
+    pool 2000::1-2000::ff
+  }
+  option dns-server 2000::100,2000::101
+}
+\end{lstlisting}
+
+\subsubsection{Example 9: Cascade 2 relays}
+\label{example-server-relay2}
+This is an advanced configuration. It assumes that client sends data to
+relay1, which encapsulates it and forwards it to relay2, which
+eventually sends it to the server (after additional encapsulation). It
+assumes that first relay adds interface-id option set to 6011 and
+second one adds similar option set to 6021. For details about relays
+in general and cascade setup in particular, see section
+\ref{feature-relays}. Also see section \ref{example-relay-cascade}
+for corresponding relays configuration.
+
+\begin{lstlisting}
+# server.conf
+iface relay1
+{
+  relay eth0
+  interface-id 6011
+}
+
+iface relay2
+{
+  relay relay1
+  interface-id 6021
+  T1 1000
+  T2 2000
+  class {
+    pool 6020::20-6020::ff
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 10: Dynamic DNS (FQDN)}
+\label{example-server-fqdn}
+
+Support for Dynamic DNS Updates was added in version 0.5.0RC1. To
+configure it on the server side, list of available names usually
+should be defined. Each name can be reserved for a certain address or
+DUID. When no reservation is specified, it will available to everyone,
+i.e. the first client asks for FQDN will get this name. In following
+example, name 'zebuline.example.com' is reserved for address 2001::db8:1::1,
+kael.example.com is reserved for 2001:db8:1::2 and test.example.com is
+reserved for client using DUID
+00:01:00:00:43:ce:25:b4:00:13:d4:02:4b:f5.
+
+Also note that is required to define, which side can perform updates.
+This is done using single number after ,,option fqdn'' phrase. Server
+can perform two kinds of DNS Updates: AAAA (forward resolving,
+i.e. name to address) and PTR (reverse resolving, i.e. address to
+name). To configure server to execute both updates, specify 2. This is
+a default behavior. If this value will be skipped, server will attempt
+to perform both updates. When 1 will be specified, server will update
+PTR record only and will leave updating AAAA record to the
+client. When this value is set to 0, server will not perform any
+updates.
+
+The last parameter (64 in the following example) is a prefix length of
+the reverse domain supported by the DNS server, i.e. if this is set to
+64, and 2000::/64 addresses are used, DNS server must support
+0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa. zone.
+
+There are several additional parameters that affect DNS Update
+mechanism. \verb+ddns-protocol+ specifies protocol that should be used
+for communication with DNS server.  Allowed values
+are \verb+udp+, \verb+tcp+ or \verb+any+. ``Any'' will try to use UDP
+and if that fails, it will revert to TCP. Second parameter
+is \verb+ddns-timeout+ that specifies maximum time allowed for DNS
+server to respond before assuming communication failure. It is
+specified in milliseconds.
+
+The next useful parameter is \verb+fqdn-ddns-address+ that specifies
+address of DNS server that updates should be performed to. If it is
+not specified, first DNS address from \verb+option dns-server+ will be
+used.
+
+The last important parameter is +\verb+accept-unknown-fqdn+. In a
+simplest scenario, server is configured with a list of allowed
+names. Connecting clients may get only those names. That is convenient
+case, but it is often not feasible to deploy it in a real network.  In
+real networks, clients usually send out their own names, rather than
+wait for server to assign them one. In such cases, it is somewhat
+expected that server will not have complete list of all possible names
+that clients may send. Thus sooner or later server will likely receive
+a fqdn name that is unknown to him. This parameter specifies server
+behavior in such case.
+
+There are 5 possible policied currently supported. Each one is
+identified with an integer between 0 and 4. 0 means that uknown names
+should be rejected. That policy is useful for strictly controlled
+networks. 1 means that other available name from list of possible
+names should be sent instead. This is a compromise between strict
+control over names and liberal acceptance of clients' names. Policy 2
+accept any name that client will send. Names will be sanity
+checked. Note that mobile and nomadic clients may send names from
+their home networks. That may be a problem if server attempts to
+update AAAA records as its DNS server will probably only accept AAAA
+updates for locally administered domains. As a solution to this
+problem, policy 3 was implemented. It takes client's hostname (without
+its domain name), appends local domain name and uses such constructed
+fully qualified domain name. For example, if client
+sends \verb+nomad.faraway.org+ while visiting \verb+example.org+, with
+this policy in place, \verb+nomad.example.org+ will be assigned.
+
+The last policy is useful for larger networks. Instead of accepting
+clients' ideas about their hostnames, dedicated name is generated
+based on assigned address. For example, client that received
+\verb+2001:db8:1:0:c7a8:e81:c500:46ce+ address in domain
+\verb+example.org+ will be assigned
+a \verb+2001-db8-1-0-c7a8-e81-c500-46ce.example.org+ name.
+
+Following config file is a good starting point for tweaking DNS
+Update enabled server configuration.
+
+\begin{lstlisting}
+# server.conf
+
+# Logging level range: 1(Emergency)-8(Debug)
+#
+log-level 8
+
+# Don't log full date
+log-mode short
+
+# Set protocol to one of the following values: udp, tcp, any
+ddns-protocol udp
+
+# Sets DDNS Update timeout (in ms)
+ddns-timeout 1000
+
+# specify address of DNS server to be used for DDNS
+fqdn-ddns-address 2001::1
+
+iface "eth0" {
+
+# assign addresses from this class
+ class {
+   pool 2001:db8:1::/64
+ }
+
+# provide DNS server location to the clients
+# also server will use this address to perform DNS Update,
+# so it must be valid and DNS server must accept DNS Updates.
+ option dns-server 2000::1
+
+# provide their domain name
+ option domain example.com
+
+# provide fully qualified domain names for clients
+# note that first, second and third entry is reserved
+# for a specific address or a DUID
+ option fqdn 1 64
+             zebuline.example.com - 2000::1,
+             kael.example.com - 2000::2,
+             wash.example.com - 0x0001000043ce25b40013d4024bf5,
+             zoe.example.com,
+             malcolm.example.com,
+             kaylee.example.com,
+             jayne.example.com,
+             inara.example.com
+
+# specify what to do with client's names that are not on the list
+# 0 - reject
+# 1 - send other name from allowed list
+# 2 - accept any name client sends
+# 3 - accept any name client sends, but append specified domain suffix
+# 4 - ignore client's hint, generate name based on his address, append domain name
+
+ accept-unknown-fqdn 4 example.org
+
+}
+\end{lstlisting}
+
+\subsubsection{Example 11: Vendor-specific Information option}
+\label{example-server-vendor-spec}
+It is possible to configure dibbler-server to provide vendor-specific
+information options. Since there are no dibbler-specific parameters,
+this implementation is quite flexible. Enterprise number as well as
+content of the option itself can be configured.
+
+\begin{lstlisting}
+# server.conf
+log-level 8
+log-mode precise
+iface "eth1" {
+ class {
+   pool 2000::1-2000::ff
+ }
+
+ option vendor-spec 1234-0x00002fedc
+}
+\end{lstlisting}
+
+In some rare cases, several different options for different vendors
+may be specifed. In the folloging example 2 different values are
+defined, depending on which vendor client will specify in \msg{SOLICIT} or
+\msg{REQUEST} message. If client will only mention that it is interested in
+any vendor specific into (i.e. did not sent \opt{vendor-spec info} option, but
+only mentioned in in \opt{option request} option, it will receive
+first vendor option defined (in the following example, that would be a
+1234 and 0002fedc).
+
+\begin{lstlisting}
+# server.conf
+log-level 8
+log-mode precise
+iface "eth1" {
+ class {
+   pool 2000::1-2000::ff
+ }
+
+ option vendor-spec 1234-0x00002fedc,5678-0x0002aaaa
+}
+\end{lstlisting}
+
+\subsubsection{Example 12: Per client configuration}
+\label{example-server-exceptions}
+Usually all clients receive the same configuration options, e.g. all
+clients will use the same DNS server. However, it is possible to
+specify that particular clients should receive different options than
+others. Following example set DNS server to 2000::1, domain
+to example.com and vendor specific information for vendor 5678.
+However, if requesting client has DUID 00:01:02:03:04:05:06:07:08, it
+will receive different parameters (second.client.biz domain,
+1234::5678:abcd as a DNS server and finally different vendor-specific
+information). Also client with DUID 0x0001000044e8ef3400085404a324
+will receives normal domain and DNS server, but different (vendor=2)
+vendor specific information. See section \ref{feature-exceptions} for
+background information. Since 0.8.0RC1, also addresses can be reserverd
+in this way.
+
+\begin{lstlisting}
+# server.conf
+iface "eth0" {
+
+ class {
+   pool 2000::1/64
+ }
+
+# common configuration options, provided for all clients
+ option dns-server 2000::1
+ option domain example.com
+ option vendor-spec 5678-0x0002aaaa
+
+  # special parameters for client with DUID 00:01:02:03:04:06
+  client duid 0x000102030406
+  {
+        address 2001::123
+        option domain second.client.biz
+        option dns-server 1234::5678:abcd
+        option vendor-spec 2-0x000122, 22-0x222222
+  }
+
+  # special address reserved for client with this remote-id option
+  # (remote-id option may be added by relays)
+  client remote-id 5-0x01020304
+  {
+        address 2000::0102:0304
+        option domain our.special.remoteid.client.org
+  }
+
+  #  client link-local fe80::211:25ff:fe12:6688
+  #  (link-local reservation is not supported yet. configure clients
+  #  to use DUID-LL (link-local address based DUID) and then make
+  #  DUID based reservations)
+  #  {
+  #      option domain link.local.detected.interop.test.com
+  #  }
+
+}
+\end{lstlisting}
+
+\subsubsection{Example 13: Prefix delegation}
+\label{example-server-prefix}
+
+Prefix delegation works quite similar to normal address granting.
+Administrator defines pool and server provides prefixes from that
+pool. Before using prefix delegation, please read section
+\ref{feature-prefix}. Client configuration example is described in section
+\ref{example-client-prefix}.
+
+\begin{lstlisting}
+# server.conf
+log-mode precise
+
+iface "eth0" {
+
+ # the following lines instruct server to grant each client
+ # prefix for this pool. For example, client might get
+ # 2222:2222:2222:2222:2222:993f::/96
+ pd-class {
+        pd-pool 2222:2222:2222:2222:2222::/80
+        pd-length 96
+        T1 11111
+        T2 22222
+    }
+
+}
+\end{lstlisting}
+
+\subsubsection{Example 14: Multiple prefixes}
+\label{example-server-prefixes}
+It is possible to define more than one pool, so each client will
+receive several prefixes. It is necessary to define each pool with the
+same length, i.e. it is not possible to mix different pool lengths.
+See section \ref{feature-prefix} for prefix delegation background
+information. Client configuration example is described in section
+\ref{example-client-prefix}.
+
+\begin{lstlisting}
+# server.conf
+log-mode precise
+
+iface "eth0" {
+
+ T1 1800
+ T2 2700
+ prefered-lifetime 3600
+ valid-lifetime 7200
+
+ # provide addresses from this pool
+ class {
+   pool 5000::/48
+ }
+
+ # the following lines instruct server to grant each client
+ # 2 prefixes. For example, client might get
+ # 2222:2222:2222:2222:2222:993f:6485::/96 and
+ # 1111:1111:1111:1111:1111:993f:6485::/96
+ pd-class {
+        pd-pool 2222:2222:2222:2222:2222::/80
+        pd-pool 1111:1111:1111:1111:1111::/80
+        pd-length 96
+        T1 11111
+        T2 22222
+    }
+
+}
+\end{lstlisting}
+
+\subsubsection{Example 15: Inactive mode}
+\label{example-server-inactivemode}
+See sections \ref{example-client-inactivemode} and
+\ref{feature-inactive-mode} for inactive mode explanation.
+The same behavior has been added for server.
+
+\begin{lstlisting}
+#server.conf
+
+log-level 8
+
+inactive-mode
+
+iface "eth0" {
+
+ class {
+   pool 2000::/64
+ }
+}
+\end{lstlisting}
+
+\subsubsection{Example 16: Leasequery}
+A separate entity
+called requestor can send queries regarding assigned addresses and
+prefixes. Server can be configured to support such lease queries.
+See section \ref{feature-leasequery} for detailed explanation.
+
+\begin{lstlisting}
+#server.conf
+
+log-level 8
+
+iface "eth0" {
+ accept-leasequery
+
+ class {
+   pool 2000::/64
+ }
+}
+\end{lstlisting}
+
+
+\subsubsection{Example 17: Authentication}
+\label{example-server-auth}
+It is possible to configure server to require authentication. In this
+example, HMAC-SHA-512 will be used as an authentication method.
+Key Generation Nonce will have 64 bytes.
+
+\begin{lstlisting}
+# server.conf
+
+auth-method digest-hmac-sha512
+auth-key-len 64
+
+iface eth0
+{
+  class
+  {
+    pool 2000::100-2000::10f
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 18: Relay support with unknown interface-id}
+\label{example-server-relay3}
+To get more informations about relay configuration, see section \ref{feature-relays}.
+In pervious examples (\ref{example-server-relay1},
+\ref{example-server-relay2}) it was assumed that interface-id set by
+relay is known. However, in some cases that is not true. If sysadmin
+wants to accept relayed messages from any relay, there is a feature
+called guess mode. It tries to match any relay defined in server.conf
+instead of exactly checking interface-id value.
+
+Since there is only one relay defined, it will be used, regardless of
+the interface-id value (or even lack of thereof).
+
+\begin{lstlisting}
+# server.conf
+guess-mode
+
+iface relay1 {
+  relay eth1
+  interface-id 5020
+  class {
+    pool 2000::1-2000::ff
+  }
+  option dns-server 2000::100,2000::101
+}
+\end{lstlisting}
+
+
+\subsubsection{Example 19: DS-Lite tunnel (AFTR)}
+Server is able to provide Dual-Stack lite configuration for clients.
+Both address and name based configurations are supported:
+
+\begin{lstlisting}
+iface "eth0" {
+ class {
+   pool 2001:db8::/64
+ }
+
+ option ds-lite 2001:db8:1::ffff
+ option ds-lite sc.example.org
+}
+\end{lstlisting}
+
+\subsubsection{Example 20: Custom options}
+\label{example-server-custom}
+Server may be configured to also provide custom options to the
+clients. See Section \ref{feature-custom-options} for details.
+
+\begin{lstlisting}
+iface "eth0" {
+ class {
+   pool 2001:db8::/64
+ }
+ option 145 - 01:02:a3:b4:c5:dd:ea
+ option 146 address 2001:db8:1::dead:beef
+ option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
+ option 148 string "secretlair.example.org"
+}
+\end{lstlisting}
+
+
+\subsubsection{Example 21: Remote Autoconfiguration}
+Server does support experimental extension called remote
+autoconfiguration, as defined in \cite{draft-remote-autoconf}. See
+Section \ref{feature-remote-autoconf} for details and configuration
+examples.
+

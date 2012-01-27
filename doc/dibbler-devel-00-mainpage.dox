@@ -1,0 +1,59 @@
+/**
+ * @mainpage Dibbler Developer's Guide
+ *
+ * @section homepage Dibbler Homepage
+ * http://klub.com.pl/dhcpv6/
+ *
+ *
+ * @section toc Table Of Contents
+ * - @subpage intro
+ * - @subpage compilation
+ *   - @subpage compilationPosix
+ *   - @subpage compilationLinux
+ *   - @subpage compilationMac
+ *   - @subpage compilationBSD
+ *   - @subpage autotools
+ *   - @subpage compilationWin32
+ *   - @subpage compilationWinNT
+ *   - @subpage compilationFlexBison
+ *   - @subpage compilationDebRpm
+ *   - @subpage compilationOpenWrt
+ *   - @subpage compilationGentoo
+ *   - @subpage compilationDistros
+ *   - @subpage compilationEnvironment
+ *   - @subpage compilationDefaultValues
+ *   - @subpage compilationModularFeatures
+ *   - @subpage compilationCross
+ * - @subpage portability
+ *   - @subpage portabilityLowLevel
+ * - @subpage generalInfo "4. General information"
+ *   - @subpage generalReleases
+ *   - @subpage generalGIT
+ *   - @subpage generalDocs
+ *   - @subpage generalMemoryCpu
+ * - @subpage srcOverview "5. Source code information"
+ *   - @subpage srcOptionValues
+ *   - @subpage srcMemoryManagement
+ *   - @subpage srcLogger
+ *   - @subpage srcNames
+ *   - @subpage srcParsers
+ *     - @subpage srcParsersParsing
+ *     - @subpage srcParsersUsingValues
+ *     - @subpage srcParsersEmbeddedConfiguration
+ *   - @subpage srcCodingGuidelines
+ * - @subpage arch
+ *   - @subpage archClient
+ *   - @subpage archServer
+ *   - @subpage archRelay
+ *   - @subpage archRequestor
+ * - @subpage debug
+ *   - @subpage debugMemoryLeaks
+ * - @subpage contrib
+ *   - @subpage tests
+ * - @subpage faq
+ * - @subpage tips
+ * - @subpage acknowledgements
+ * - @subpage bibliography
+ *
+ * Doxygen: <a href="doxygen.log">[generation log]</a> <a href="doxygen-error.log">[errors and warnings]</a>
+ */

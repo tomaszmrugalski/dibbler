@@ -64,6 +64,7 @@ public:
     unsigned long getTimeout();
     void doDuties();
     void send();
+
 protected:
     SPtr<TSrvOptOptionRequest> ORO;
     void handleDefaultOption(SPtr<TOpt> ptrOpt);
@@ -92,6 +93,7 @@ protected:
 
     SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay AND relay appended this RemoteID
     int Parent; // type of the parent message (used in ADVERTISE and REPLY)
+
 };
 
 #endif

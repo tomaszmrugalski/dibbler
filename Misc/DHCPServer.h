@@ -13,8 +13,6 @@
 #include <iostream>
 #include <string>
 #include "SmartPtr.h"
-#include "SrvIfaceMgr.h"
-#include "SrvTransMgr.h"
 
 using namespace std;
 class TDHCPServer

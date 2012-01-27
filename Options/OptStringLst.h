@@ -25,11 +25,11 @@ public:
     TOptStringLst(int type, const char *buf, unsigned short bufsize, TMsg* parent);
     char * storeSelf( char* buf);
     int getSize();
-    void firstString();
-    string getString();
+    //void firstString();
+    //string getString();
     int countString();
     bool doDuties() { return true; }
-
+    virtual std::string getPlain();
 protected:
     List(string) StringLst;
 };

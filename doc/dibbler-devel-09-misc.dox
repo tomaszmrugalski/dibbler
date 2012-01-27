@@ -1,0 +1,80 @@
+/**
+
+@page faq 9. Frequently Asked Questions
+This section describes various Dibbler aspects.
+
+- <b>XML files</b> -- After performing any action, server, client and
+relay store their internal information into XML files. As for 0.4.1
+version, those files are never read, just written. This feature can be
+used as a debugging tool. However, it's main purpose is the ability to
+process and present internal state in some external form. For example
+using with css styles or after processing via XSLT parsers, server
+statistics can be presented as a web page.
+
+- <b>Message building </b> -- Each TMsg object (see Messages/Msg.h) has
+Options list. Options (TOpt derived objects) are created (usually in
+the constructor). They're stored as objects. For good example, see
+appendRequestedOptions() method in the client messages
+(ClntMessages/ClntMsg.cpp). Each option and message has method
+storeSelf(), which is called just before message is being sent.
+
+You might ask: what about retransmissions? Message is built each time
+it is being resent. That might seem inefficient, but there is an
+option called Estimated. It specifies how long does this particular
+transaction is being processed. So each time retrasmission is in fact
+a slightly different message. It differs in that option, so
+UDP checksum is different, so it has to be rebuilt.
+
+@page tips 10. Tips and tricks
+
+ - Linux: Running client and server on the same host requires
+  client recompilation with specific option enabled. Please edit
+  \c misc/Portable.h and set \b CLIENT_BIND_REUSE to
+  true. This will allow to receive data from local server, but
+  will also disable checking if there is another client running. So
+  you can run multiple clients, which is a straight road to
+  trouble. You were warned.
+ - Ethereal, a widely used network sniffer/analyzer has a bug with
+  parsing DHCPv6 message: SIP options are always reported as
+  malformed. Also NIS/NIS+ options have improper values (not
+  comformant to RFC3898). To work around that problem, download
+  packet-dhcpv6.c from Dibbler homepage and recompile
+  Ethereal. Dibbler's author sent patches to the Ethereal team. Those
+  changes should be included in the next Ethereal
+  release. \b NOTE: This is no longer true. Patch was accepted
+  and now Ethereal prints informations properly.
+ - If you are reading this Developer's Guide, then Hey! You're
+  probably a developer! If you found any bugs (or think you found
+  one), go to the
+  <a href="http://klub.com.pl/bugzilla">http://klub.com.pl/bugzilla</a>
+   and report it. If your report was a mistake -- oh well, you just
+  lost 5 minutes. But if it was really a bug, you have just helped improve
+  next Dibbler version.
+ - If you have any questions about Dibbler or DHCPv6, feel free to
+  mail me, preferably via Dibbler mailing list. All links are provided
+  on the project website.
+
+@page acknowledgements Acknowledgements
+
+Author would like to acknowledge following projects and programmes
+that supported or continue to support research and development of
+the Dibbler software and related activities.
+
+<b> This work has been partially supported by the Polish Ministry of
+Science and Higher Education under the European Regional Development
+Fund, Grant No. POIG.01.01.02-00-045/09-00 Future Internet Engineering.
+</b>
+
+\htmlonly
+<div align="center">
+<table style="border: 0px">
+  <tr>
+    <td><img src="../../logo-nss.png" width="300px"/></td>
+    <td><img src="../../logo-pg.png" /></td>
+    <td><img src="../../logo-eu.jpg" width="300px" /></td>
+  </tr>
+</table>
+</div>
+\endhtmlonly
+
+*/

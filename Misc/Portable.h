@@ -14,17 +14,20 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.8.0-git (" __DATE__ " " __TIME__ ")"
-/* #define DIBBLER_VERSION "0.8.0" */
+/* #define DIBBLER_VERSION "0.8.0-git (" __DATE__ " " __TIME__ ")" */
+#define DIBBLER_VERSION "0.8.1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
 #define DIBBLER_COPYRIGHT3 "| Licence : GNU GPL v2 only. Developed at Gdansk University of Technology."
 #define DIBBLER_COPYRIGHT4 "| Homepage: http://klub.com.pl/dhcpv6/"
 
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+#if defined(LINUX) || defined(BSD)
+#include <arpa/inet.h>
+#endif
 
 #ifdef WIN32
 #define strcasecmp strcmpi
@@ -50,6 +53,31 @@
 
 #ifdef BSD
 #include <stdint.h>
+#endif
+
+/* this should look like this: 
+uint16_t readUint16(uint8_t* buf);
+uint8_t * writeUint16(uint8_t* buf, uint16_t word);
+uint32_t readUint32(uint8_t* buf);
+uint8_t* writeUint32(uint8_t* buf, uint32_t dword);
+uint64_t readUint64(uint8_t* buf);
+uint8_t* writeUint64(uint8_t* buf, uint64_t qword); */
+
+/* due to poor type usage (char* instead of uint8_t*), we need to stick with
+   char* for now. Changing to uint8_t would require rewriting large parts of the code */
+#define BUFFER_TYPE char
+
+#ifdef __cplusplus 
+extern "C" {
+#endif
+    uint16_t readUint16(const BUFFER_TYPE * buf);
+    BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
+    uint32_t readUint32(const BUFFER_TYPE * buf);
+    BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
+    uint64_t readUint64(const BUFFER_TYPE * buf);
+    BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword);
+#ifdef __cplusplus 
+}
 #endif
 
 #define DEFAULT_UMASK 027
@@ -83,7 +111,7 @@ struct iface {
 struct link_state_notify_t
 {
     int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. 
-						    Only non-zero values will be used */
+                                                    Only non-zero values will be used */
     int stat[MAX_LINK_STATE_CHANGES_AT_ONCE];
     int cnt;  /* number of iterface indexes filled */
 };
@@ -119,7 +147,7 @@ struct link_state_notify_t
 
 #ifdef WIN32
 #define WORKDIR            ".\\"
-#define DEFAULT_SCRIPTSDIR ".\\scritps"
+#define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE 	   "client.conf"
 #define SRVCONF_FILE       "server.conf"
 #define RELCONF_FILE       "relay.conf"
@@ -131,7 +159,7 @@ struct link_state_notify_t
 
 #ifdef LINUX
 #define WORKDIR            "/var/lib/dibbler"
-#define DEFAULT_SCRIPTSDIR "/var/lib/dibbler/scripts"
+#define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
@@ -151,7 +179,7 @@ struct link_state_notify_t
 
 #ifdef BSD
 #define WORKDIR            "/var/lib/dibbler"
-#define DEFAULT_SCRIPTSDIR "/var/lib/dibbler/scripts"
+#define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
@@ -263,7 +291,7 @@ extern "C" {
 
     /* add address to interface */
     extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
-			  unsigned long pref, unsigned long valid, int prefixLength);
+unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 			     unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
@@ -323,6 +351,8 @@ extern "C" {
     char * getAAAKey(uint32_t SPI, uint32_t *len); /* reads AAA key from a file */
     char * getAAAKeyFilename(uint32_t SPI); /* which file? use this function to find out */
     uint32_t getAAASPIfromFile();
+
+    int execute(const char *filename, const char * argv[], const char *env[]);
     
 #ifdef __cplusplus
 }

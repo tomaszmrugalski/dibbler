@@ -8,12 +8,6 @@
  *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
 #include <stdlib.h>
 #include "OptKeyGeneration.h"
 #include "DHCPConst.h"
@@ -34,17 +28,17 @@ TOptKeyGeneration::TOptKeyGeneration( char * &buf,  int &n, TMsg* parent)
         n=0;
         return;
     }
-    this->Parent->setSPI(ntohl(*(uint32_t*)buf));
-    buf +=4; n -=4;
+    this->Parent->setSPI(readUint32(buf));
+    buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
-    this->setLifetime(ntohl(*(uint32_t*)buf));
-    buf +=4; n -=4;
+    this->setLifetime(readUint32(buf));
+    buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
-    this->Parent->setAAASPI(ntohl(*(uint32_t*)buf));
-    buf +=4; n -=4;
+    this->Parent->setAAASPI(readUint32(buf));
+    buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
-    this->setAlgorithmId(ntohs(*(uint16_t*)buf));
-    buf +=2; n -=2;
+    this->setAlgorithmId(readUint16(buf));
+    buf += sizeof(uint16_t); n -= sizeof(uint16_t);
 
     this->Parent->setKeyGenNonce(buf, n);
 
@@ -83,18 +77,12 @@ TOptKeyGeneration::TOptKeyGeneration(TMsg* parent)
 
  char * TOptKeyGeneration::storeSelf( char* buf)
 {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons(getSize() - 4);
-    buf+=2;
-    *(uint32_t*)buf = htonl(this->Parent->getSPI());
-    buf+=4;
-    *(uint32_t*)buf = htonl(Lifetime);
-    buf+=4;
-    *(uint32_t*)buf = htonl(this->Parent->getAAASPI());
-    buf+=4;
-    *(uint16_t*)buf = htons(AlgorithmId);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4);
+    buf = writeUint32(buf, this->Parent->getSPI());
+    buf = writeUint32(buf, Lifetime);
+    buf = writeUint32(buf, this->Parent->getAAASPI());
+    buf = writeUint16(buf, AlgorithmId);
 
     Log(Debug) << "Auth:Key Generation Nonce length: " << this->Parent->getKeyGenNonceLen() << LogEnd;
     if (this->Parent->getKeyGenNonceLen()) {

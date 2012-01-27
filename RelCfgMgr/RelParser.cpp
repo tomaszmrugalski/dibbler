@@ -212,6 +212,7 @@ typedef union
 #ifndef YY_RelParser_DEBUG
 
  #line 136 "../bison++/bison.cc"
+#define YY_RelParser_DEBUG 1
 
 #line 136 "../bison++/bison.cc"
 /* YY_RelParser_DEBUG */

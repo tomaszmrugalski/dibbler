@@ -1,17 +1,38 @@
 
   Dibbler changelog
  ------------------- 
+0.8.1 [2011-12-31]
+  - Srv: Prefixes are now expired properly.
+  - Cli/Srv: IFINDEX variable is now set properly in notify scripts.
+  - Srv: Notify script is now called when lease is expired. (bug #216)
+  - Srv: Existing prefix lease is now assigned to returning clients if exists (bug #224)
 
-0.8.1 [not-released-yet]
+0.8.1RC1 [2011-11-11]
   - Fixed socket binding problem on server that may affect relay scenarios
   - Fixed segmentation fault when interface-id was not defined on relay interface.
   - Makefiles reworked
-  - Srv: Implemented support for DNS Update over UDP (ddns-protocol directive)
-  - Srv: Implemented support for DNS Update timeout (ddns-timeout directive)
+  - Srv/Cli: Implemented support for DNS Update over UDP (ddns-protocol directive)
+  - Srv/Cli: Implemented support for DNS Update timeout (ddns-timeout directive)
   - Fixed problem with possible PD crash
   - Linux: radvd.conf generation improved in PD
-  - A simple ./configure script added
   - Fix: server/client will no longer load DUID empty file (bug #209)
+  - Cli: no longer confused when receiving delegated prefix, but there are no suitable interfaces
+  - Srv: server now caches assinged prefixes (bug #217)
+  - Cli: support for notify script execution reimplemented (bugs #207, #216)
+  - Makefile system rewritten (using autotools now for better portability)
+  - Srv: server now calls external script when assigning or releasing delegated prefix (bug #205)
+  - FreeBSD,NetBSD,OpenBSD compilation successful (not tested yet, consider it experimental)
+  - Google test framework added for unittests. There are only handful tests implemented now,
+    but the number is expected to grow
+  - Fix: alignment memory reads, tested on ARMv5 (bug #221)
+  - Changed default number of addresses allowed per client from millions to 10
+  - Srv: number of currently allocated prefixes is set correctly after restart and database reload
+  - Several server and client fixes for DNS Update
+  - Cli: Obsolete "no-ia" statement removed. Corrected spelling of "preferred" in config parser.
+  - It is now possible to specify IAID for PD
+  - Doc: Rather large User's Guide update
+  - Support for RFC6334 (DS-Lite tunnels) added
+  - Support for routing configuration added (draft-ietf-mif-dhcpv6-route-option-03)
 
 0.8.0 [2011-05-11]
   - Fixed compilation problems

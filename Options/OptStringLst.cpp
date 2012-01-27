@@ -15,12 +15,6 @@
 #include "OptStringLst.h"
 #include "DHCPConst.h"
 #include "Logger.h"
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
 
 using namespace std;
 
@@ -71,10 +65,8 @@ TOptStringLst::TOptStringLst(int type, const char *buf, unsigned short bufsize, 
 char * TOptStringLst::storeSelf(char* buf)
 {
     SPtr<string> x;
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
     int len = 0;
     std::string::size_type dotpos;
    
@@ -121,6 +113,21 @@ int TOptStringLst::getSize() {
     }
     return len+4; // 5=4(std.option header) + 1 (final 0)
 }
+
+#if 0
 string TOptStringLst::getString() {
     return *(this->StringLst.get());
+}
+#endif
+
+std::string TOptStringLst::getPlain() {
+    string concat;
+
+    StringLst.first();
+    SPtr<string> s;
+    while (s=StringLst.get()) {
+        concat.append(*s);
+        concat.append(" ");
+    }
+    return concat;
 }

@@ -6,12 +6,7 @@
  * released under GNU GPL v2 licence
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
+#include "Portable.h"
 #include <stdlib.h>
 #include "OptAuthentication.h"
 #include "DHCPConst.h"
@@ -37,11 +32,11 @@ TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
     this->setRDM(*buf);
     buf +=1; n -=1;
 
-    this->Parent->setReplayDetection(ntohll(*(uint64_t*)buf));
-    buf +=8; n -=8;
+    this->Parent->setReplayDetection(readUint64(buf));
+    buf += sizeof(uint64_t); n -= sizeof(uint64_t);
 
-    this->Parent->setSPI(ntohl(*(uint32_t*)buf));
-    buf +=4; n -=4;
+    this->Parent->setSPI(readUint32(buf));
+    buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
     if (n != AuthInfoLen)
     {
@@ -83,16 +78,12 @@ TOptAuthentication::TOptAuthentication(TMsg* parent)
     uint32_t spi = this->Parent->getSPI();
     uint32_t aaaspi = this->Parent->getAAASPI();
 
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons(getSize() - 4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4);
     *buf = RDM;
     buf+=1;
-    *(uint64_t*)buf = htonll(this->Parent->getReplayDetection());
-    buf+=8;
-    *(uint32_t*)buf = htonl(spi);
-    buf+=4;
+    buf = writeUint64(buf, this->Parent->getReplayDetection());
+    buf = writeUint32(buf, spi);
 
     memset(buf, 0, AuthInfoLen);
 

@@ -1,0 +1,17 @@
+/**
+ *
+@page intro 1. Introduction
+Welcome to the Dibbler developer's guide. This document describes
+various aspects of the compilation and installation of Dibbler server
+and client. Detailed description of the internal architecture is also
+provided. People with programming background can find useful
+informations here. Main purpose of this document is to help
+contributors to quickly know Dibbler from the inside.
+
+This document is intenteded just as its title states -- a guide. It is
+not a thorough code description. To quickly wander around classes and
+methods used, see documentation generated with the Doxygen tool (open
+file @verb doc/html/index.html ). bMore informations about
+documentation is provided in section @ref generalDocs.
+
+ */

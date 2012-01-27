@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="relay-win32"
 	ProjectGUID="{F3D13220-6D1A-43A5-B753-AA107DAC773D}"
 	Keyword="ManagedCProj"
@@ -382,11 +382,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptIAAddress.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptIAPrefix.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptInteger.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Options\OptOptionRequest.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptRtPrefix.cpp"
 					>
 				</File>
 				<File
@@ -519,6 +531,10 @@
 				</File>
 				<File
 					RelativePath="..\Misc\md5.c"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.cpp"
 					>
 				</File>
 				<File
@@ -684,6 +700,10 @@
 				</File>
 				<File
 					RelativePath="..\misc\Portable.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.h"
 					>
 				</File>
 				<File

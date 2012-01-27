@@ -9,14 +9,7 @@
  */
 
 #include <stdlib.h>
-
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <arpa/inet.h>
-#endif 
-
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "OptDUID.h"
 
@@ -35,10 +28,8 @@ TOptDUID::TOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
 
  char * TOptDUID::storeSelf( char* buf)
 {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons(DUID->getLen());
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, DUID->getLen());
     return this->DUID->storeSelf(buf);
 }
 

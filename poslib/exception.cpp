@@ -33,9 +33,10 @@ PException::PException(const char *_message) {
 }
 
 PException::PException(const char *_message, PException &p) {
-  message = (char *)malloc(strlen(_message) + strlen(p.message) + 1);
-  strcpy(message, _message);
-  strcat(message, p.message);
+  int len = strlen(_message) + strlen(p.message) + 1;
+  message = (char *)malloc(len);
+  strncpy(message, _message, len-1);
+  strncat(message, p.message, len-1);
 }
 
 PException::PException(const PException& p) {

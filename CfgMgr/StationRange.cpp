@@ -7,12 +7,6 @@
  * released under GNU GPL v2 only licence
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
 #include "StationRange.h"
 #include "DHCPConst.h"
 #include "Logger.h"

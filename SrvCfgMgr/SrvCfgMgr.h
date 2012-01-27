@@ -89,8 +89,8 @@ public:
     int getCacheSize();
     bool reconfigureSupport();
 
-    void fqdnDdnsAddress(SPtr<TIPv6Addr> ddnsAddress);
-    SPtr<TIPv6Addr> fqdnDdnsAddress();
+    void setDDNSAddress(SPtr<TIPv6Addr> ddnsAddress);
+    SPtr<TIPv6Addr> getDDNSAddress(int iface);
 
     // Bulk-LeaseQuery
     void bulkLQAccept(bool enabled);
@@ -108,6 +108,8 @@ public:
 #endif
 
     void setDefaults();
+    std::string getScriptName() { return ScriptName; }
+    void setScriptName(std::string scriptFile) { ScriptName = scriptFile; }
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
@@ -133,6 +135,7 @@ private:
     bool GuessMode;
     int  CacheSize;
     ESrvIfaceIdOrder InterfaceIDOrder;
+    std::string ScriptName;
 
 #ifndef MOD_DISABLE_AUTH
     unsigned int AuthLifetime;

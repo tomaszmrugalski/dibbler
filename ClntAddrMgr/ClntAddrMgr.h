@@ -76,6 +76,7 @@ class TClntAddrMgr : public TAddrMgr
     ~TClntAddrMgr();
 
     void doDuties();
+    void processLoadedDB();
     
  protected:
     void print(ostream &x);

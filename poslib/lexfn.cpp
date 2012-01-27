@@ -624,7 +624,7 @@ uint16_t txt_to_qclass(const char *str, bool allow_q) {
 
 stl_string intstring(u_int16 x) {
   char tmp[16];
-  sprintf(tmp, "%d", x);
+  snprintf(tmp, 15, "%d", x);
   return stl_string(tmp);
 }
 
