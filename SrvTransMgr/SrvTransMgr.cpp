@@ -1,4 +1,3 @@
-
 /*
  * Dibbler - a portable DHCPv6
  *
@@ -9,10 +8,9 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvTransMgr.cpp,v 1.38 2008-10-12 20:10:25 thomson Exp $
- *
  */
 
+#include <sstream>
 #include <limits.h>
 #include "SrvTransMgr.h"
 #include "SmartPtr.h"
@@ -21,6 +19,7 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 #include "AddrClient.h"
+#include "AddrIA.h"
 #include "SrvMsgAdvertise.h"
 #include "SrvMsgReply.h"
 #include "SrvMsgConfirm.h"
@@ -49,10 +48,10 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
     SPtr<TSrvCfgIface> confIface;
     SrvCfgMgr().firstIface();
     while (confIface = SrvCfgMgr().getIface()) {
-  	    if (!this->openSocket(confIface)) {
-	          this->IsDone = true;
-	          break;
-	      }
+            if (!this->openSocket(confIface)) {
+                  this->IsDone = true;
+                  break;
+              }
     }
 
     SrvAddrMgr().setCacheSize(SrvCfgMgr().getCacheSize());
@@ -67,44 +66,44 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     SPtr<TIPv6Addr> unicast = confIface->getUnicast();
 
     if (confIface->isRelay()) {
-	while (iface->getUnderlaying()) {
-	    iface = iface->getUnderlaying();
-	}
-	if (!iface->countSocket())
-	    Log(Notice) << "Relay init: Creating socket on the underlaying interface: " << iface->getName()
-			<< "/" << iface->getID() << "." << LogEnd;
+        while (iface->getUnderlaying()) {
+            iface = iface->getUnderlaying();
+        }
+        if (!iface->countSocket())
+            Log(Notice) << "Relay init: Creating socket on the underlaying interface: " << iface->getName()
+                        << "/" << iface->getID() << "." << LogEnd;
     }
 
     if (unicast) {
-	/* unicast */
-	Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName()
-		    << "/" << confIface->getID() << " interface." << LogEnd;
-	if (!iface->addSocket( unicast, DHCPSERVER_PORT, true, false)) {
-	    Log(Crit) << "Proper socket creation failed." << LogEnd;
-	    return false;
-	}
+        /* unicast */
+        Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName()
+                    << "/" << confIface->getID() << " interface." << LogEnd;
+        if (!iface->addSocket( unicast, DHCPSERVER_PORT, true, false)) {
+            Log(Crit) << "Proper socket creation failed." << LogEnd;
+            return false;
+        }
     }
 
     char srvAddr[16];
     if (!confIface->isRelay()) {
-	inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
+        inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
     } else {
-	inet_pton6(ALL_DHCP_SERVERS,srvAddr);
+        inet_pton6(ALL_DHCP_SERVERS,srvAddr);
     }
 
     SPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
     Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName()
-		<< "/" << confIface->getID() << " (" << iface->getName() << "/"
-		<< iface->getID() << ") interface." << LogEnd;
+                << "/" << confIface->getID() << " (" << iface->getName() << "/"
+                << iface->getID() << ") interface." << LogEnd;
     if (iface->getSocketByAddr(ipAddr)) {
-	Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the "
-		    << iface->getName() << "." << LogEnd;
-	return true;
+        Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the "
+                    << iface->getName() << "." << LogEnd;
+        return true;
     }
 
     if (!iface->addSocket(ipAddr, DHCPSERVER_PORT, true, false)) {
-	Log(Crit) << "Proper socket creation failed." << LogEnd;
-	return false;
+        Log(Crit) << "Proper socket creation failed." << LogEnd;
+        return false;
     }
 
 #if 1
@@ -115,16 +114,16 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     memcpy(srvAddr, iface->firstLLAddress(), 16);
     SPtr<TIPv6Addr> llAddr = new TIPv6Addr(iface->firstLLAddress());
     if (iface->getSocketByAddr(llAddr)) {
-	Log(Notice) << "Address " << llAddr->getPlain() << " is already bound on the "
-	    << iface->getName() << "." << LogEnd;
-	return true;
+        Log(Notice) << "Address " << llAddr->getPlain() << " is already bound on the "
+            << iface->getName() << "." << LogEnd;
+        return true;
     } else {
         Log(Notice) << "Creating link-local (" << llAddr->getPlain() << ") socket on " << iface->getFullName()
-	            << " interface." << LogEnd;
-	if (!iface->addSocket(llAddr, DHCPSERVER_PORT, true, false)) {
-    	    Log(Crit) << "Failed to create link-local socket on " << iface->getFullName() << " interface." << LogEnd;
-    	    return false;
-    	}
+                    << " interface." << LogEnd;
+        if (!iface->addSocket(llAddr, DHCPSERVER_PORT, true, false)) {
+            Log(Crit) << "Failed to create link-local socket on " << iface->getFullName() << " interface." << LogEnd;
+            return false;
+        }
     }
 #endif
 
@@ -150,7 +149,7 @@ long TSrvTransMgr::getTimeout()
             min = ptrMsg->getTimeout();
     }
     if (SrvCfgMgr().inactiveIfacesCnt() && ifaceRecheckPeriod<min)
-	min = ifaceRecheckPeriod;
+        min = ifaceRecheckPeriod;
     addrTimeout = SrvAddrMgr().getValidTimeout();
     return min<addrTimeout?min:addrTimeout;
 }
@@ -158,7 +157,7 @@ long TSrvTransMgr::getTimeout()
 void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 {
     requestMsg = msg;
-    
+
     if (!msg->check()) {
         // proper warnings will be printed in the check() method, if necessary.
         // Log(Warning) << "Invalid message received." << LogEnd;
@@ -178,104 +177,116 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     {
         if (answ->getTransID()==msg->getTransID()) {
             Log(Cont) << " Old reply with transID=" << hex << msg->getTransID()
-		      << dec << " found. Sending old reply." << LogEnd;
-	    answ->send();
+                      << dec << " found. Sending old reply." << LogEnd;
+            answ->send();
             return;
         }
     }
     Log(Cont) << " Old reply for transID=" << hex << msg->getTransID()
-	      << " not found. Generating new answer." << dec << LogEnd;
+              << " not found. Generating new answer." << dec << LogEnd;
 
+    SPtr<TMsg> q, a; // question and answer
+
+    q = (Ptr*) msg;
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
-	SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
-	if (msg->getOption(OPTION_RAPID_COMMIT) && !ptrCfgIface->getRapidCommit()) {
-	    Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
-		      << ptrCfgIface->getName() << " interface." << LogEnd;
-	}
-	if (msg->getOption(OPTION_RAPID_COMMIT) && ptrCfgIface->getRapidCommit() )
-	{
-	    SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-	    SPtr<TSrvMsgReply> answRep = new TSrvMsgReply(nmsg);
-	    //if at least one IA has in reply message status success
-	    if (!answRep->isDone()) {
-		SPtr<TOpt> ptrOpt;
-		answRep->firstOption();
-		bool found=false;
-		while( (ptrOpt=answRep->getOption()) && (!found) ) {
-		    if (ptrOpt->getOptType()==OPTION_IA_NA) {
-			SPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
-			SPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
-			    ptrIA->getOption(OPTION_STATUS_CODE);
-			if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
-			    found=true;
-		    }
-		}
-		if(found) {
-		    this->MsgLst.append((Ptr*)answRep);
-		    break;
-		}
-		// else we didn't assign any address - this message sucks
-		// it's better if advertise will be sent - maybe with better options
-	    }
-	}
-	//if there was no Rapid Commit option in solicit message or
-	//construction of reply with rapid commit wasn't successful
-	//Maybe it's possible to construct appropriate advertise message
-	//and assign some "not rapid" addresses to this client
-	SPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise((Ptr*)msg);
-	this->MsgLst.append((Ptr*)x);
-	break;
+        SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
+        if (msg->getOption(OPTION_RAPID_COMMIT) && !ptrCfgIface->getRapidCommit()) {
+            Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
+                      << ptrCfgIface->getName() << " interface." << LogEnd;
+        }
+        if (msg->getOption(OPTION_RAPID_COMMIT) && ptrCfgIface->getRapidCommit() )
+        {
+            SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
+            SPtr<TSrvMsgReply> answRep = new TSrvMsgReply(nmsg);
+            //if at least one IA has in reply message status success
+            if (!answRep->isDone()) {
+                SPtr<TOpt> ptrOpt;
+                answRep->firstOption();
+                bool found=false;
+                while( (ptrOpt=answRep->getOption()) && (!found) ) {
+                    if (ptrOpt->getOptType()==OPTION_IA_NA) {
+                        SPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
+                        SPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
+                            ptrIA->getOption(OPTION_STATUS_CODE);
+                        if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
+                            found=true;
+                    }
+                }
+                if(found) {
+                    this->MsgLst.append((Ptr*)answRep);
+                    a = (Ptr*)answRep;
+                    break;
+                }
+                // else we didn't assign any address - this message sucks
+                // it's better if advertise will be sent - maybe with better options
+            }
+        }
+        //if there was no Rapid Commit option in solicit message or
+        //construction of reply with rapid commit wasn't successful
+        //Maybe it's possible to construct appropriate advertise message
+        //and assign some "not rapid" addresses to this client
+        SPtr<TSrvMsgAdvertise> x = new TSrvMsgAdvertise((Ptr*)msg);
+        this->MsgLst.append((Ptr*)x);
+        a = (Ptr*)x;
+        break;
     }
     case REQUEST_MSG:
     {
         SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
         answ = new TSrvMsgReply(nmsg);
         this->MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
         break;
     }
     case CONFIRM_MSG:
     {
-	SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply(nmsg);
-	this->MsgLst.append((Ptr*)answ);
-	break;
+        SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
+        answ=new TSrvMsgReply(nmsg);
+        this->MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
+        break;
     }
     case RENEW_MSG:
     {
-	SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply(nmsg);
-	this->MsgLst.append((Ptr*)answ);
-	break;
+        SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
+        answ=new TSrvMsgReply(nmsg);
+        this->MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
+        break;
     }
     case REBIND_MSG:
     {
-	SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply(nmsg);
-	MsgLst.append((Ptr*)answ);
-	break;
+        SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
+        answ=new TSrvMsgReply(nmsg);
+        MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
+        break;
     }
     case DECLINE_MSG:
     {
-	SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply( nmsg);
-	MsgLst.append((Ptr*)answ);
-	break;
+        SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
+        answ=new TSrvMsgReply( nmsg);
+        MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
+        break;
     }
     case RELEASE_MSG:
     {
-	SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
-	answ=new TSrvMsgReply( nmsg);
-	MsgLst.append((Ptr*)answ);
-	break;
+        SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
+        answ=new TSrvMsgReply( nmsg);
+        MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
+        break;
     }
     case INFORMATION_REQUEST_MSG :
     {
-	SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-	answ = new TSrvMsgReply( nmsg);
-	MsgLst.append((Ptr*)answ);
-	break;
+        SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
+        answ=new TSrvMsgReply( nmsg);
+        MsgLst.append((Ptr*)answ);
+        a = (Ptr*)answ;
+        break;
     }
     case LEASEQUERY_MSG:
     {
@@ -287,18 +298,22 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     case ADVERTISE_MSG:
     case REPLY_MSG:
     {
-	Log(Warning) << "Invalid message type received: " << msg->getType()
-		     << LogEnd;
-	break;
+        Log(Warning) << "Invalid message type received: " << msg->getType()
+                     << LogEnd;
+        break;
     }
     case RELAY_FORW_MSG: // They should be decapsulated earlier
     case RELAY_REPL_MSG:
     default:
     {
-	Log(Warning)<< "Message type " << msg->getType()
-		    << " not supported." << LogEnd;
-	break;
+        Log(Warning)<< "Message type " << msg->getType()
+                    << " not supported." << LogEnd;
+        break;
     }
+    }
+
+    if (a) {
+        SrvIfaceMgr().notifyScripts(SrvCfgMgr().getScriptName(), q, a);
     }
 
     // save DB state regardless of action taken
@@ -310,8 +325,14 @@ void TSrvTransMgr::doDuties()
 {
     int deletedCnt = 0;
     // are there any outdated addresses?
-    if (!SrvAddrMgr().getValidTimeout())
-        SrvAddrMgr().doDuties();
+    std::vector<TSrvAddrMgr::TExpiredInfo> addrLst;
+    std::vector<TSrvAddrMgr::TExpiredInfo> tempAddrLst;
+    std::vector<TSrvAddrMgr::TExpiredInfo> prefixLst;
+
+    if (!SrvAddrMgr().getValidTimeout()) {
+        SrvAddrMgr().doDuties(addrLst, tempAddrLst, prefixLst);
+        removeExpired(addrLst, tempAddrLst, prefixLst);
+    }
 
     // for each message on list, let it do its duties, if timeout is reached
     SPtr<TSrvMsg> msg;
@@ -327,23 +348,124 @@ void TSrvTransMgr::doDuties()
         if (msg->isDone())
         {
             MsgLst.del();
-	    deletedCnt++;
+            deletedCnt++;
         }
     }
     if (deletedCnt) {
-	Log(Debug) << deletedCnt << " message(s) were removed from cache." << LogEnd;
+        Log(Debug) << deletedCnt << " message(s) were removed from cache." << LogEnd;
     }
 
     // Open socket on interface which becames ready during server run
     if (SrvCfgMgr().inactiveMode())
     {
-	SPtr<TSrvCfgIface> x;
-	x = SrvCfgMgr().checkInactiveIfaces();
-	if (x)
-	    openSocket(x);
+        SPtr<TSrvCfgIface> x;
+        x = SrvCfgMgr().checkInactiveIfaces();
+        if (x)
+            openSocket(x);
     }
 
 }
+
+
+/// @brief Generates parameters for notify script based on expired lease information
+///
+/// @param params Notify parameters (all available info will be set here)
+/// @param exp expired lease details
+/// @param type type of lease (IA, TA or PD)
+void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
+                                    TAddrIA::TIAType type) {
+    stringstream tmp;
+    tmp << exp.ia->getIface();
+    params.addParam("IFINDEX", tmp.str());
+
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(exp.ia->getIface());
+    if (iface)
+        params.addParam("IFACE", iface->getName());
+
+    if (exp.ia->getSrvAddr())
+        params.addParam("REMOTE_ADDR", exp.ia->getSrvAddr()->getPlain());
+    switch (type) {
+    case TAddrIA::TYPE_IA:
+    case TAddrIA::TYPE_TA:
+    {
+        params.addAddr(exp.addr, 0, 0, "");
+        break;
+    }
+    case TAddrIA::TYPE_PD:
+    {
+        params.addPrefix(exp.addr, exp.prefixLen, 0, 0);
+    }
+    break;
+    }
+
+    tmp.str("");
+    tmp << exp.ia->getIAID();
+    params.addParam("IAID", tmp.str());
+    params.addParam("SRV_OPTION1", exp.client->getDUID()->getPlain()); // set client-id
+}
+
+/// @brief Removes expired leases and calls notify script
+///
+/// @param addrLst
+/// @param tempAddrLst
+/// @param prefixLst
+void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
+                                 std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
+                                 std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst) {
+    for (vector<TSrvAddrMgr::TExpiredInfo>::iterator addr = addrLst.begin();
+         addr != addrLst.end(); ++addr) {
+        // delete this address
+        Log(Notice) << "Address " << *(addr->addr) << " in IA (IAID="
+                    << addr->ia->getIAID() << ") in client (DUID=\""
+                    << addr->client->getDUID()->getPlain()
+                    << "\") has expired." << LogEnd;
+
+        SrvAddrMgr().delClntAddr(addr->client->getDUID(),
+                                 addr->ia->getIAID(),
+                                 addr->addr, false);
+
+        TNotifyScriptParams params;
+        notifyExpireInfo(params, *addr, TAddrIA::TYPE_IA);
+        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
+    }
+
+    for (vector<TSrvAddrMgr::TExpiredInfo>::iterator addr = tempAddrLst.begin();
+         addr != tempAddrLst.end(); ++addr) {
+        // delete this address
+        Log(Notice) << "Temp. address " << *(addr->addr) << " in IA (IAID="
+                    << addr->ia->getIAID() << ") in client (DUID=\""
+                    << addr->client->getDUID()->getPlain()
+                    << "\") has expired." << LogEnd;
+
+        SrvAddrMgr().delTAAddr(addr->client->getDUID(),
+                               addr->ia->getIAID(),
+                               addr->addr, false);
+
+        TNotifyScriptParams params;
+        notifyExpireInfo(params, *addr, TAddrIA::TYPE_TA);
+        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
+    }
+
+    for (vector<TSrvAddrMgr::TExpiredInfo>::iterator prefix = prefixLst.begin();
+         prefix != prefixLst.end(); ++prefix) {
+                // delete this prefix
+        Log(Notice) << "Prefix " << prefix->addr->getPlain() << " in IAID="
+                    << prefix->ia->getIAID() << " for client (DUID="
+                    << prefix->client->getDUID()->getPlain()
+                    << ") has expired." << LogEnd;
+
+        SrvAddrMgr().delPrefix(prefix->client->getDUID(),
+                               prefix->ia->getIAID(),
+                               prefix->addr, false);
+
+        TNotifyScriptParams params;
+        notifyExpireInfo(params, *prefix, TAddrIA::TYPE_PD);
+        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
+    }
+
+    SrvAddrMgr().dump();
+}
+
 
 void TSrvTransMgr::shutdown()
 {
@@ -357,11 +479,11 @@ bool TSrvTransMgr::isDone()
 }
 
 char* TSrvTransMgr::getCtrlAddr() {
-	return this->ctrlAddr;
+        return this->ctrlAddr;
 }
 
 int  TSrvTransMgr::getCtrlIface() {
-	return this->ctrlIface;
+        return this->ctrlIface;
 }
 
 void TSrvTransMgr::dump() {
@@ -390,6 +512,7 @@ TSrvTransMgr & TSrvTransMgr::instance()
   return *Instance;
 }
 
+/// TODO Remove this horrible workaround!
 SPtr<TSrvMsg> TSrvTransMgr::getCurrentRequest()
 {
     return requestMsg;

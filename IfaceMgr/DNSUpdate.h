@@ -78,7 +78,9 @@ private:
  public:
     DNSUpdate(string dns_address, string zonename, string hostname, 
 	      string hostip, DnsUpdateMode updateMode, 
-	      DnsUpdateProtocol proto = DNSUPDATE_TCP);
+	      DnsUpdateProtocol proto /*= DNSUPDATE_TCP*/ );
+    void addDHCID(const char* duid, int duidlen);
+    void addTSIG(const char* key, int keylen);
     ~DNSUpdate();
     DnsUpdateResult run(int timeout);
     void showResult(int result);

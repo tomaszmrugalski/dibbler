@@ -168,6 +168,9 @@
 #define OPTION_AAAAUTH              240
 #define OPTION_KEYGEN               241
 
+#define OPTION_NEXT_HOP         242
+#define OPTION_RTPREFIX         243
+
 // Experimental implementation for address prefix length information
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
 #define OPTION_ADDRPARAMS           251

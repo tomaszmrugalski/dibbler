@@ -4,36 +4,9 @@
  * author: Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 licence
- *
- * $Id: OptAuthentication.cpp,v 1.6 2008-06-18 23:22:14 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.5  2008-02-25 17:49:09  thomson
- * Authentication added. Megapatch by Michal Kowalczuk.
- * (small changes by Tomasz Mrugalski)
- *
- * Revision 1.4  2006-11-30 03:17:46  thomson
- * Auth related changes by Sammael.
- *
- * Revision 1.3  2006-11-24 01:33:43  thomson
- * *** empty log message ***
- *
- * Revision 1.2  2006-11-17 01:28:38  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- * Revision 1.1  2006-11-17 00:37:16  thomson
- * Partial AUTH support by Sammael, fixes by thomson
- *
- *
- *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
+#include "Portable.h"
 #include <stdlib.h>
 #include "OptAuthentication.h"
 #include "DHCPConst.h"
@@ -59,11 +32,11 @@ TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
     this->setRDM(*buf);
     buf +=1; n -=1;
 
-    this->Parent->setReplayDetection(ntohll(*(uint64_t*)buf));
-    buf +=8; n -=8;
+    this->Parent->setReplayDetection(readUint64(buf));
+    buf += sizeof(uint64_t); n -= sizeof(uint64_t);
 
-    this->Parent->setSPI(ntohl(*(uint32_t*)buf));
-    buf +=4; n -=4;
+    this->Parent->setSPI(readUint32(buf));
+    buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
     if (n != AuthInfoLen)
     {
@@ -105,16 +78,12 @@ TOptAuthentication::TOptAuthentication(TMsg* parent)
     uint32_t spi = this->Parent->getSPI();
     uint32_t aaaspi = this->Parent->getAAASPI();
 
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons(getSize() - 4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4);
     *buf = RDM;
     buf+=1;
-    *(uint64_t*)buf = htonll(this->Parent->getReplayDetection());
-    buf+=8;
-    *(uint32_t*)buf = htonl(spi);
-    buf+=4;
+    buf = writeUint64(buf, this->Parent->getReplayDetection());
+    buf = writeUint32(buf, spi);
 
     memset(buf, 0, AuthInfoLen);
 

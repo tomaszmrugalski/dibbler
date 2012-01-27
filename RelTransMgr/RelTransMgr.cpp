@@ -21,6 +21,7 @@
 #include "RelOptEcho.h"
 #include "RelOptGeneric.h"
 #include "Logger.h"
+#include "Portable.h"
 
 TRelTransMgr * TRelTransMgr::Instance = 0; // singleton implementation
 
@@ -155,10 +156,10 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     }
 
     // store relay msg option
-    *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
-    offset+=2;
-    *(short*)(buf+offset) = htons(msg->getSize());
-    offset+=2;
+    writeUint16((buf+offset), OPTION_RELAY_MSG);
+    offset += sizeof(uint16_t);
+    writeUint16((buf+offset), msg->getSize());
+    offset += sizeof(uint16_t);
     bufLen = msg->storeSelf(buf+offset);
     offset += bufLen;
 

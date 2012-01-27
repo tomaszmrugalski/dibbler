@@ -26,6 +26,7 @@ class TOptDUID : public TOpt
     bool doDuties() { return true; }
     SPtr<TDUID> getDUID();
     bool isValid();
+    std::string getPlain() { if (DUID) return DUID->getPlain(); else return std::string(""); }
   protected:
     SPtr<TDUID> DUID;
 };

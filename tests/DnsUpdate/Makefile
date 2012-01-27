@@ -13,8 +13,8 @@ libs: testDnsUpdate.a
 include $(TOPDIR)/Makefile.inc
 
 DnsUpdate01: DnsUpdate01.cpp
-	$(CXX) $(CXXFLAGS) -o DnsUpdate01 $< -L$(TOPDIR)/Misc -lMisc \
-		              -L$(TOPDIR)/LowLevel \
+	$(CXX) $(CPPFLAGS) -o DnsUpdate01 $< 
+	$(LD) $< -L$(TOPDIR)/Misc -lMisc \
 			      -L$(TOPDIR)/IfaceMgr -lIfaceMgr
 
 DnsUpdate02: DnsUpdate02.cpp
@@ -22,7 +22,6 @@ DnsUpdate02: DnsUpdate02.cpp
 	cd $(MISC); make libs
 	cd $(SRVIFACEMGR); make libs
 	$(CXX) $(CXXFLAGS) -o DnsUpdate02 $< -L$(TOPDIR)/Misc -lMisc \
-		              -L$(TOPDIR)/LowLevel \
 			      -L$(TOPDIR)/IfaceMgr -lIfaceMgr \
 			      -L$(TOPDIR)/SrvIfaceMgr -lSrvIfaceMgr \
 			      -L$(POSLIB) -lposlib \

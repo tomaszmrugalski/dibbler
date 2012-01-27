@@ -2,6 +2,7 @@
 %% $Id: dibbler-user-faq.tex,v 1.11 2007-09-06 23:10:40 thomson Exp $
 %%
 
+\newpage
 \section{Frequently Asked Questions}
 
 Soon after initial Dibbler version was released, feedback from user
@@ -43,7 +44,7 @@ this a bug?
 \A Are you sure that your client is behaving properly and responds to
 Neighbor Discovery (ND) requests? Before any IPv6 packet (that
 includes DHCPv6 message) is transmitted, recipient reachabity is
-checked (using Neighbor Discovery protocol \cite{rfc2461}). Server
+checked (using Neighbor Discovery protocol \cite{rfc4861}). Server
 sends Neighbor Solicititation message and waits for client's Neighbor
 Advertisement. If that is not transmitted, even after 3 retries,
 server gives up and doesn't transmit IPv6 packet (DHCPv6 reply, that

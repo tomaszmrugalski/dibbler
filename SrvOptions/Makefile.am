@@ -1,0 +1,8 @@
+noinst_LIBRARIES = libSrvOptions.a
+
+libSrvOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options -I$(top_srcdir)/SrvMessages
+libSrvOptions_a_CPPFLAGS += -I$(top_srcdir)/Messages -I$(top_srcdir)/SrvIfaceMgr -I$(top_srcdir)/IfaceMgr
+libSrvOptions_a_CPPFLAGS += -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr -I$(top_srcdir)/SrvAddrMgr
+libSrvOptions_a_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvTransMgr
+
+libSrvOptions_a_SOURCES = SrvOptAAAAuthentication.cpp SrvOptAAAAuthentication.h SrvOptAddrParams.cpp SrvOptAddrParams.h SrvOptAuthentication.cpp SrvOptAuthentication.h SrvOptClientIdentifier.cpp SrvOptClientIdentifier.h SrvOptDNSServers.cpp SrvOptDNSServers.h SrvOptDomainName.cpp SrvOptDomainName.h SrvOptEcho.cpp SrvOptEcho.h SrvOptElapsed.cpp SrvOptElapsed.h SrvOptFQDN.cpp SrvOptFQDN.h SrvOptIAAddress.cpp SrvOptIAAddress.h SrvOptIA_NA.cpp SrvOptIA_NA.h SrvOptIA_PD.cpp SrvOptIA_PD.h SrvOptIAPrefix.cpp SrvOptIAPrefix.h SrvOptInterfaceID.cpp SrvOptInterfaceID.h SrvOptKeyGeneration.cpp SrvOptKeyGeneration.h SrvOptLifetime.cpp SrvOptLifetime.h SrvOptLQ.cpp SrvOptLQ.h SrvOptNISDomain.cpp SrvOptNISDomain.h SrvOptNISPDomain.cpp SrvOptNISPDomain.h SrvOptNISPServer.cpp SrvOptNISPServer.h SrvOptNISServer.cpp SrvOptNISServer.h SrvOptNTPServers.cpp SrvOptNTPServers.h SrvOptOptionRequest.cpp SrvOptOptionRequest.h SrvOptPreference.cpp SrvOptPreference.h SrvOptServerIdentifier.cpp SrvOptServerIdentifier.h SrvOptServerUnicast.cpp SrvOptServerUnicast.h SrvOptSIPDomain.cpp SrvOptSIPDomain.h SrvOptSIPServer.cpp SrvOptSIPServer.h SrvOptStatusCode.cpp SrvOptStatusCode.h SrvOptTA.cpp SrvOptTA.h SrvOptTimeZone.cpp SrvOptTimeZone.h SrvOptUserClass.cpp SrvOptUserClass.h

@@ -6,33 +6,9 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIA_NA.cpp,v 1.8 2008-08-17 22:41:43 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2007-01-21 19:17:58  thomson
- * Option name constants updated (by Jyrki Soini)
- *
- * Revision 1.6  2004-09-07 22:02:33  thomson
- * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
- *
- * Revision 1.5  2004/06/17 23:53:54  thomson
- * Server Address Assignment rewritten.
- *
- * Revision 1.4  2004/06/04 19:03:46  thomson
- * Resolved warnings with signed/unisigned
- *
- * Revision 1.2  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 #include "OptIA_NA.h"
 #include "OptIAAddress.h"
 #include "OptStatusCode.h"
@@ -72,10 +48,12 @@ TOptIA_NA::TOptIA_NA( char * &buf, int &bufsize, TMsg* parent)
         bufsize=0;
     } else {
         Valid=true;
-        IAID = ntohl(*( long*)buf);
-        T1 = ntohl(*( long*)(buf+4));
-        T2 = ntohl(*( long*)(buf+8));
-        buf+=12; bufsize-=12;
+        IAID = readUint32(buf);
+        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
+        T1 = readUint32(buf);
+        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
+        T2 = readUint32(buf);
+        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
     }
 }
 
@@ -99,18 +77,14 @@ int TOptIA_NA::getSize() {
 }
 
 char * TOptIA_NA::storeSelf( char* buf) {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-    
-    *(uint32_t*)buf = htonl(IAID);
-    buf+=4;
-    *(uint32_t*)buf = htonl(T1);
-    buf+=4;
-    *(uint32_t*)buf = htonl(T2);
-    buf+=4;
-    buf=this->storeSubOpt(buf);
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4 );
+
+    buf = writeUint32(buf, IAID);
+    buf = writeUint32(buf, T1);
+    buf = writeUint32(buf, T2);
+
+    buf = storeSubOpt(buf);
     return buf;
 }
 

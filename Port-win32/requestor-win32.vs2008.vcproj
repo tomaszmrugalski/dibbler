@@ -406,6 +406,10 @@
 					RelativePath="..\Misc\Logger.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Messages"
@@ -435,7 +439,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptIAPrefix.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptInteger.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptRtPrefix.cpp"
 					>
 				</File>
 			</Filter>
@@ -514,6 +526,10 @@
 				</File>
 				<File
 					RelativePath="..\Misc\Portable.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.h"
 					>
 				</File>
 			</Filter>

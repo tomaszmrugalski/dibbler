@@ -18,6 +18,7 @@
 #include "OptGeneric.h"
 #include "Logger.h"
 #include "ReqOpt.h"
+#include "Portable.h"
 
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
 {
@@ -143,7 +144,7 @@ bool ReqTransMgr::SendMsg()
     } else if (CfgMgr->duid) {
         Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
         // DUID based query
-        buf[0] = QUERY_BY_CLIENTID;
+        buf[0] = QUERY_BY_CLIENT_ID;
         // buf[1..16] - link address, leave as ::
         memset(buf+1, 0, 16);
         bufLen = 17;
@@ -157,7 +158,7 @@ bool ReqTransMgr::SendMsg()
     } else {
         Log(Debug) << "Creating LINK-ADDRESS-based query. Asking for " << CfgMgr->bulk << " address." << LogEnd;
         // Link-address based query
-        buf[0] = QUERY_BY_LINKADDRESS;
+        buf[0] = QUERY_BY_LINK_ADDRESS;
         // buf[1..16] - link address, leave as ::
         memset(buf+1, 16, 0);
         bufLen = 17;
@@ -246,10 +247,10 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 		       << " bytes left to parse. Bytes ignored." << LogEnd;
 	    return false;
 	}
-	unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
-	pos+=2;
-	unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
-	pos+=2;
+	unsigned short code = readUint16(buf+pos);
+	pos += sizeof(uint16_t);
+	unsigned short length = readUint16(buf+pos);
+	pos += sizeof(uint16_t);
 	if (pos+length>bufLen) {
 	    Log(Error) << linePrefix << "Truncated option (type=" << code << ", len=" << length 
 		       << " received in message << " << msgType << ". Option ignored." << LogEnd;
@@ -307,7 +308,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	case OPTION_CLT_TIME:
 	{
             name = "LQ Client Last Transmission Time";
-	    unsigned int t = ntohl( *((unsigned int*)(buf+pos)));
+	    unsigned int t = readUint32(buf+pos);
 	    ostringstream out;
 	    out << t << " second(s)";
 	    o = out.str();
@@ -322,8 +323,8 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	case OPTION_IAADDR:
 	{
 	    TIPv6Addr * addr = new TIPv6Addr(buf+pos, false);
-	    unsigned int pref  = ntohl(*((long*)(buf+pos+16)));
-	    unsigned int valid = ntohl(*((long*)(buf+pos+20)));
+	    unsigned int pref  = readUint32(buf+pos+16);
+	    unsigned int valid = readUint32(buf+pos+20);
 	    name = "IAADDR";
 	    ostringstream out;
 	    out << "addr=" << addr->getPlain() << ", pref=" << pref << ", valid=" << valid;

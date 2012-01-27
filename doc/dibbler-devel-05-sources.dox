@@ -1,0 +1,355 @@
+/**
+ * @page srcOverview 5. Source code information
+This section describes various aspects of Dibbler compilation, usage
+and internal design.
+
+@section srcOptionValues 5.1 Option values and filenames
+
+DHCPv6 is a relatively new protocol and additional options are in a
+specification phase. It means that until standarisation process is
+over, they do not have any officially assigned numbers. Once
+standarization process is over (and RFC document is released), this
+option gets an official number.
+
+There's pretty good chance that different implementors may choose
+diffrent values for those not-yet officialy accepted options. To
+change those values in Dibbler, you have to modify file
+\c Misc/DHCPConst.h and recompile server or client. Make sure that you
+build everything for scratch. Use \c make \c clean in Linux, Mac OS X
+and BSD and \c Clean \c up \c solution in Windows before you start
+building a new version.
+
+In default build, Dibbler stores all information in the
+@c /var/lib/dibbler directory (Linux) or in the working directory
+(Windows). There are multiple files stored in those
+directories. However, sometimes there is a need to build Dibbler which uses
+different directory or filename. To do so, simply edit
+@c Misc/Portable.h file and rebuild everything.
+
+@section srcMemoryManagement 5.2 Memory Management using SmartPtr
+To effectively fight memory leaks, clever mechanism was
+introduced. Smart pointers are used to point to all dynamic
+structures, e.g. messages, options or client informations in server
+database. Smart pointer will free object by itself, when object is no
+longer needed. When this is happening? When last smart pointer stops
+pointing at the object. There is a tradeoff: normal pointers (*)
+should not be mixed with smart pointers.
+
+Smart pointer implementation in Dibbler works similar as boost::shared_ptr,
+but it allows downcasting from derived to base type, using (Ptr*) operator.
+
+Smart pointers are implemented as C++ class templates. Template is
+called @c SPtr<TYPE>.
+
+@b Note: It has been renamed. Previous, obsolete name is
+SmartPtr<TYPE>. Please, do not use it anymore as its definitions was
+removed.
+
+To quickly explain smart pointers usage, here's short code example:
+@verbatim
+ 1 void foo()  {
+ 2   SPtr<TIPv6Addr> addr = new TIPv6Addr("ff02::1:2");
+ 3   SPtr<TIPv6Addr> tmp;
+ 4   if (!tmp) cout << "Null pointer" << endl;
+ 5   tmp = addr;
+ 6   std::cout << addr->getPlain();
+ 7 }
+@endverbatim
+What's happened in those lines?
+ - [1] -- Function starts.
+ - [2] -- New TIPv6Addr object is created. Smart Pointer
+  (\c SPtr<TIPv6Addr>) is also created to point at this object. Using
+  normal pointer to achive the same goal would look like this: \\
+  TIPv6Addr * addr = new TIPv6Addr("ff02::1:2");
+ - [3] -- Another pointer is created. It is equivalent of the
+  classical pointer (TIPv6Addr * tmp), except the benefit of having it assigned
+  the default value of NULL.
+ - [4] -- Simple check if pointer does not point to anything.
+ - [5] -- Smart pointers can be coppied in a easy way.
+ - [6] -- Using object pointed by smart pointer is simple
+ - [7] -- Here magic begins. addr and tmp are local variables, so
+  they are destroyed here. But they are the only smart pointers which
+  access TIPv6Addr object. So they are destroy that object.
+
+Object remain in memory as long as there is at least one smart pointer which points to this object.
+Smart pointers can be easily derefernced. Just add * before them:
+@verbatim
+cout << *addr << endl;
+@endverbatim
+
+SmartPtrs are often used to store various objects in a list. Cool part
+of this solution is that you can hold objects of various derived
+classes on one list in a very comfortable manner. There is an
+additional template defined to create and manipulate such lists. It is
+called TContainer. There's also useful macro defined to use this
+without typing too much. Here are two examples how to define list of
+addresses (both mean exactly the same):
+@verbatim
+TContainer< SPtr<TIPvAddr> > addrLst;
+List(TIPv6Addr) addrLst;
+@endverbatim
+
+How to use this list? Oh well, another example:
+@verbatim
+1  List(TIPv6Addr) addrLst;
+2  SmartPtr<TIPv6Addr> ptr = ...;
+3  SmartPtr<TIPv6Addr> tmp;
+4  addrLst.clear();
+5  addrLst.append(ptr);
+6  addrLst.first();
+7  tmp = addrLst.get();
+8  cout << "List contains " << addrLst.count() << " elements" << endl;
+9  addrLst.first();
+10 while (tmp = addrLst.get())
+11   cout << *tmp << endl;
+@endverbatim
+
+And here is description what that code does:
+
+ - [1] -- Address list declaration.
+ - [2,3] -- SmartPtrs declarations. Just to show variable types.
+ - [4] -- List can be cleared. All pointers will be destroyed. If
+  they were only pointers to point to some objects, those objects will
+  be destroyed, too.
+ - [5] -- Append object pointed by ptr to the list.
+ - [6] -- Rewind list to the beginning.
+ - [7] -- Get next object from the list. If list is empty or last
+  element was already got, NULL is returned.
+ - [8] -- An easy way to count elements on the list.
+ - [9] -- Rewind list to the beginning.
+ - [10,11] -- A cute example how to print all addresses on the list.
+
+@section srcLogger 5.3 Logging
+To log various informations, Log(LOGLEVEL) macros are defined. There
+are eight levels of logging:
+
+ - \b Emergency -- Used to report system wide emergency. Such
+  conditions could not occur in the DHCPv6 client o server, so this
+  logging level should not be used. Called with:
+  @code Log(Emerg) << "..." << LogEnd @endcode
+
+ - \b Alert -- Used to alert an administrator about system wide
+  alerts. This logging level should not be used in DHCPv6.
+  Called with @code Log(Alert) << "..." << LogEnd @endcode
+
+ - \b Critical -- Used in situations critical to the application,
+  e.g. application shutdown. Fatal errors should be logged on this
+  level. Called with @code Log(Crit) << "..." << LogEnd @endcode
+
+ - \b Error -- Used to report error situations. For example, problems
+  with binding sockets. Called with @code Log(Error) << "..." << LogEnd @endcode
+
+ - \b Warning -- Used to report RFC violations, e.g. missing required
+  options, invalid parameters and so on. Called with @code Log(Warning)
+  << "..." << LogEnd @endcode
+
+ - \b Notice -- Used to report normal operations, e.g. address
+ assignement or informations about received options. Called with
+ @code Log(Notice) << "..." << LogEnd @endcode
+
+ - \b Info -- Used to report detailed information. DHCPv6 protocol
+  knowledge might be needed to understand those messages.
+  Called with @code Log(Info) << "..." << LogEnd @endcode
+
+ - \b Debug -- Used to report internal informations. Knowledge about
+  Dibbler source code might be needed to understand those messages.
+  Called with @code Log(Debug) << "..." << LogEnd @endcode
+
+@section srcNames 5.4 Naming convention
+To avoid confussion, various prefixes are used in class and variable
+names. Class types begin with T (e.g. address class would be named
+TAddr), enumeration types begin with E (e.g. state enumaterion would
+be names EState). Dibbler is divided into 4 large functional blocks
+called managers (They are described in the following sections
+  of this document): address maganger, interface manager, Configuration
+manager, and transmsission manager. Each of them uses different
+prefix: Addr, Iface, Cfg or Trans. There are also objects shared among
+them: messages (Msg prefix) and options (Opt prefix). Often there are
+two derived versions: related to client (Clnt prefix) or related to
+server (Clnt). Rel prefix is used to denote Relay related classes.
+Here are examples of some class names:
+
+ - \b TAddrMgr -- Address manager, common version.
+ - \b TClntAddrMgr -- Address manager, client version.
+ - \b TAddrAddr -- Address representation used in address manager.
+ - \b TSrvIfaceMgr -- Interface manager, server version.
+ - \b TClntIfaceIface -- Interface representation used in client
+  interface manager.
+ - \b TClntMsg -- Message represented on the client side.
+ - \b TClntOptPreference -- Prefernce option used on the client side.
+ - \b TIfaceSocket -- Socket used in the interface manager.
+ - \b TClntCfgAddr -- Address used in the client config manager.
+
+Also note that class members start with small letters
+(e.g. bool TOpt::isValid() ) and class members start with capital
+letters (e.g. bool TOpt::IsValid ).
+
+
+
+@section srcParsers 5.5 Configuration file parsers
+@b Note: Similar approach is used in server, client and
+relay. In following section when reference to a specific file is needed,
+client files are used. To find corresponding files related to server and
+relay, substitute \b Clnt with \b Srv or \b Rel.
+
+Dibbler uses standard lexer/parser. Lexer is generated using flex. Parser is
+generated with bison++ (full source code for bison++ is provided with
+Dibbler sources). See ClntCfgMgr/ClntParser.y and
+ClntCfgMgr/ClntLexer.l for details. Make sure that you have flex installed
+(bison++ is provided with the dibbler source code). To generate parser
+and lexer code, type:
+
+@verbatim
+make bison (just once, to compile bison++)
+make parser (each time you modify *.l or *.y files)
+@endverbatim
+
+@section srcParsersParsing 5.5.1 Parsing
+Configuration file reading is done using Flex and bison++ tools. Flex
+is so called lexer. Its responsibility is to read config file and
+translate it into stream of tokens. (To be precise, Flex
+  generates lexers, so it should be called lexer generator.) For
+example, this config file:
+@verbatim
+iface eth0 {
+  class { pool 2000::1-2000::9 }
+}
+@endverbatim
+
+would be translated to following stream of tokens: [IFACE]
+[STRING:eth0] [{] [CLASS] [{] [POOL] [ADDR:2000::1] [-] [ADDR:2000::9]
+[}] [}]. This stream of token is then passed to parser. This parser is
+generated by bison++. Parser checks if that particular sequence of
+tokens makes sense. In this example, interface object will be created,
+which contains one class object, which contains one pool.
+
+Is is sometimes very useful to define some parameter, usually
+associated with some level, on higher scope level. For example, if
+there are 3 classes, instead of defining the same valid-lifetime value
+on each of them, that parameter may be defined on the interface
+level or even at the top level. This is important to remember during
+parsing. Each subsequent element must inherit its parent properties
+(class object must inherit parameter values defined on the interface
+level).
+
+To accomplish this feat, simple stack was implemented. For example, in
+server parser, following methods are called before and after interface
+definitions.
+
+@verbatim
+void SrvParser::StartIfaceDeclaration()
+{
+    // create new option (representing this interface) on the parser stack
+    ParserOptStack.append(new TSrvParsGlobalOpt(*ParserOptStack.getLast()));
+    SrvCfgAddrClassLst.clear();
+}
+
+bool SrvParser::EndIfaceDeclaration()
+{
+    // create and add new interface to SrvCfgMgr
+    ...
+    // remove last option (representing this interface) from the parser stack
+    ParserOptStack.delLast();
+    return true;
+}
+@endverbatim
+
+@section srcParsersUsingValues 5.5.2 Using parsed values
+
+Lexer and parser are created in the Client Configuration Manager. See
+ClntCfgMgr/ClntCfgMgr.cpp. Following code is executed in the ClntCfgMgr
+constructor. Actual code is much more complicated, but
+unnecessary lines were removed for a clarification reasons.
+
+@verbatim
+yyFlexLexer lexer(&f,&clog);
+ClntParser parser(&lexer);
+result = parser.yyparse();
+matchParsedSystemInterfaces(&parser);
+validateConfig();
+@endverbatim
+
+f and clog are normal C++ ifstream and ofstrem objects, associated with
+configuration file or a standard output. Configuration file is passed to
+the constructor of the entire TDHCPClient object, which is usually
+located in the main() function.
+
+Example mentioned above works as follows:
+
+ - Read all interfaces from the system (using System API). This is done in
+       Interface Manager and is not important right now.
+ - Create lexer object (it will read configuration file and convert it into stream
+       of tokens)
+ - create parser, which will interpret stream of tokens.
+ - Match interfaces present in system with those specified in the configuration
+       file.
+ - Validate configuration file to check if there are no logical errors, like T1>T2,
+       specified both stateless and request for ia, etc.
+
+@section srcParsersEmbeddedConfiguration 5.5.3 Embedded configuration
+
+@b Note: This feature applies to the client only.
+
+Another way of defining client configuration was introduced in the 0.5.0
+release. Instead of reading configuration file, configuration can be
+hardcoded in the binary file itself. See \b MOD_CLNT_EMBEDDED_CFG flag
+description in Section @ref compilationModularFeatures.
+
+@section srcCodingGuidelines 5.6 Coding guidelines
+
+This section describes coding guidelines. They are useful if you happen to develop an
+extension, rewriting something or messing with Dibbler code in some other way. Note that
+Dibbler started a long time ago, so parts of those guidelines may seem a bit antiquated.
+
+There are many areas of the existing code that do not follow this rules. There may be many
+reasons for that. I used to accept patches that fail to follow those guidelines. That will not
+happen anymore. Unless you are providing some extra cool feature, expect your patch to be rejected
+if you don't follow this rules. Dibbler have some large chunks of code merges. For example, the
+whole poslib library used to be a separare library.
+
+Camel notation is a naming conventions when words are concatenated with first letter of each
+word (usually except the first one) is capitalized.
+
+ -# Class names start with T, e.g. TOpt, TMsg. (Yes, yes, I know. Pascal sucks. I was young and dumb,
+    when I started writing Dibbler :)
+ -# Object, function and variables should use prefixes when appropriate. Following are used:
+    - <tt>Clnt Srv Rel Req</tt> (server, client, relay, requestor)
+    - <tt>Cfg Iface Addr Trans</tt> (specific managers within the code)
+    - <tt>Lst</tt> (list)
+ -# Variables and method names follow camel notation. First word is not capitalized
+    in method names and variables. It is capitalized in class names and class variables.
+    e.g. <tt>setAddr()</tt>
+ -# Class method starts with lower case and follow camel notation, e.g. <tt>getAddr();</tt>
+ -# Class variables start with upper case and follow camel notation, e.g. int IfaceIndex; . Note:
+   I'm seriously considering switching to a different notation - lower-case with underscore
+   at the end, e.g. <tt>int iface_;</tt>, so you may contact me if you have strong suggestion one
+   way or the other.
+ -# Each new method must be accompanied with doxygen comments. Doxygen comments for method should be placed
+    in cpp files.
+ -# Try to use descriptive, but short names. Verb should be mentioned first (<tt>getAddr()</tt>),
+    not last (do not use <tt>addrGet()</tt>)
+ -# Please use types defined in stdint.h, e.g. uint8_t, int16_t, uint32_t etc. Current code
+    does not follow this guideline, but it will be refactored eventually.
+ -# Please use uint8_t for any operations involving on-wire format.
+ -# Please use smart pointers (<tt>SPtr<Type></tt>) when possible. They work the same as <tt>boost::shared_ptr<Type></tt>,
+    but are better. They have better conversion operators. Also, not requiring 200MB of headers (that's how much
+    latest libboost-dev took on my Debian) is often useful.
+ -# Shared pointers (SPtr<Type>) can only be created: from other \c SPtr (automatic conversion) or using new() memory
+     allocator,  <tt>SPtr<foo> = new foo();</tt>.
+ -# Lists are operated by methods: i.e. for Addr list, there should be methods \c addAddr(),
+     \c firstAddr(),\c getAddr() etc.
+ -# You can cast between different types of smart pointers, e.g. from SPtr<TOpt> to SPtr<TOptAddr>. Use
+    conversion to (Ptr*). This is the only case when Ptr* may be used.
+ -# Port-specific files MUST be places in dir named port-PORTNAME. Remember that Dibbler runs on many platforms,
+   so think twice before you use anything OS-specific. Also, if you code something that works on one system only,
+   please provide stub implementations for other OSes.
+ -# Please do not add \c SrvOpt, ClntOpt or RelOpt classes. Options should be common for all components and very simple.
+   Please do not put anything in \c doDuties(). This approach is deprecated and existing code will be cleaned up. Please
+   put all the logic in appropriate managers (CfgMgr, IfaceMgr, TransMgr, etc.)
+ -# Currently Options have Parent parameter that contains pointer to parent message. This will be removed soon.
+ -# There are 4 main managers: \c AddrMgr, \c CfgMgr, \c IfaceMgr and \c TransMgr. You can access each of them at any time
+   using defined macros, e.g. \c ClntCfgMgr(), \c SrvIfaceMgr() and similar.
+ -# Support for googletest was added recently. While not strictly required, googletest-based unit tests for
+   new code is greatly appreciated.
+
+*/

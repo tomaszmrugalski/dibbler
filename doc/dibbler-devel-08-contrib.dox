@@ -1,0 +1,62 @@
+/**
+ * 
+ * @page contrib 8. Contributing code
+ *
+ * Dibbler has many shortcomings. There are many known reported bugs. New IETF drafts and
+ * RFCs are published frequently and Dibbler does not support many of them. If you know
+ * C++ or are skilled documentation writer, package maintainer, can improve build system
+ * or are able to contribute in any other way - great! This section is written especially
+ * for you.
+ *
+ * Preferred way of contributing code is providing patches. To ease merging process, they
+ * should be done against the latest available code in GIT. In most cases your patch
+ * will be generated against master, but there are cases when you may contribute code to
+ * other long-lived branches. Please see GIT repository for available branches. If your
+ * patch is generated against specific branch, rather than master, please clearly state 
+ * that. It will greatly increase that likelihood of acceptance.
+ *
+ * If there is no other choice, you may also provide patches against stable versions. As
+ * they are rather infrequent and code changes significantly between releases, it will be
+ * more difficult for me to review and merge the code.
+ *
+ * The least preferred way of contributting code is to send whole sources, packed as tar.gz
+ * or zip. If you absolutely have to do that, please clearly state, which version code
+ * was used as a base. Note that this greatly complicates review and merging process. There
+ * is also non-zero chance that it will introduce regressions, so please avoid this if 
+ * possible.
+ *
+ * If you start working on a feature, you may want to subscribe to dibbler-devel mailing list
+ * and announce your intentions. Also, that is the recommended way of asking questions.
+ * While there's pretty good change that I (Tomek Mrugalski) will be answering those questions,
+ * I'm very busy person and travel frequently. Therefore I may not be able to respond to any
+ * questions for prolonged periods. If you send them directly to me, your chances for getting
+ * a response are 0%. During writing of this documentation, there is over 30 people subscribed
+ * to dibbler-devel list. Oh, and this is very low-volume list. It is hard to estimate exact
+ * traffic, because there was no single post since 2008 (this section is written in October 2011).
+ *
+ * Depending on the quality, completeness and usefulness of contributted code, your code may
+ * be rejected, but such cases are relatively rare. I may ask you to fix certain aspects (that is 
+ * much more common). If the code change is relatively small and safe, it will probably end up
+ * on master. However, if it is large, highly experimental, touches essential parts of the code,
+ * or we are in code stabilization phase before a release, your code may end up on a dedicated
+ * branch. In case of merging to master or creating a branch, I will ask you to confirm that
+ * merged code works as advertised, so be prepared to download latest code from GIT and rerun your
+ * tests.
+ *
+ * @section tests 8.1 Testing
+ *
+ * In version 0.8.1RC1, support for unittests was added. Dibbler uses 
+ *  <a href="http://code.google.com/p/googletest/">googletest</a> (often abbreviated as gtest)
+ * for unittests. To run unittests, please use following commands:
+ * @verbatim
+./configure --with-gtest=/path/to/your/compliled/gtest/sources
+make
+make check
+@endverbatim
+ * 
+ * It would be great if contributted code included unittests. That is not necessary, however.
+ * During writing this section (Oct. 2011) googletest support was very fresh, so number of
+ * available tests was very limited. For example of a unittest, see tests for TOptAddr class
+ * in Options/tests/OptAddr_unittest.cc.
+ *
+ */

@@ -21,6 +21,7 @@ class TMsg;
 #include "IPv6Addr.h"
 #include "Opt.h"
 #include "KeyList.h"
+#include "ScriptParams.h"
 
 // Hey! It's grampa of all messages
 class TMsg
@@ -78,6 +79,9 @@ class TMsg
     enum DigestTypes DigestType;
     SPtr<KeyList> AuthKeys;
 
+    // notify scripts stuff
+    void* getNotifyScriptParams() { return NotifyScripts; }
+
   protected:
     int MsgType;
     long TransID;
@@ -103,6 +107,9 @@ class TMsg
     uint32_t AAASPI; // AAA-SPI sent by client in OPTION_AAAAUTH
     char *KeyGenNonce;
     unsigned KeyGenNonceLen;
+
+    // a pointer to NotifyScriptParams structure (if defined)
+    TNotifyScriptParams * NotifyScripts;
 };
 
 typedef std::list< SPtr<TMsg> > TMsgLst;

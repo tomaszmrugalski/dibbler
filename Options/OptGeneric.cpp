@@ -12,8 +12,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <sstream>
 #include "Portable.h"
+#include <sstream>
 #include "DHCPConst.h"
 #include "OptGeneric.h"
 
@@ -43,10 +43,8 @@ int TOptGeneric::getSize()
 
  char * TOptGeneric::storeSelf( char* buf)
 {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons(this->DataLen);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, this->DataLen);
     memmove(buf, this->Data, this->DataLen);
     return buf+this->DataLen;
 }

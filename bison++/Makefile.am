@@ -24,8 +24,10 @@ bison___SOURCES = closure.cc \
 			symtab.cc\
 			old.c 
 
-info_TEXINFOS = bison.texinfo
-man_MANS = bison++.1 bison.1 bison++.yacc.1
+dist_noinst_DATA = bison.cc bison.hairy bison.h
+
+#info_TEXINFOS = bison.texinfo
+#man_MANS = bison++.1 bison.1 bison++.yacc.1
 pkgdata_DATA = bison.cc bison.hairy bison.h Example
 CXX=g++
 PFILE = bison.cc

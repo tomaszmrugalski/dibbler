@@ -28,7 +28,7 @@ TIPv6Addr::TIPv6Addr() {
 
 TIPv6Addr::TIPv6Addr(const char* addr, bool plain) {
     if (plain) {
-        strcpy(Plain,addr);
+        strncpy(Plain,addr, sizeof(Plain));
         inet_pton6(Plain,Addr);
     } else {
         memcpy(Addr,addr,16);

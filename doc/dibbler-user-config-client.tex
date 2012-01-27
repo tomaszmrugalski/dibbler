@@ -1,0 +1,1134 @@
+\newpage
+\section{Client configuration}
+
+This section describes Dibbler server, relay  and client
+configuration. Square brackets denotes optional values: mandatory
+[optional]. Alternative is marked as $\mid$. A $\mid$ B means A or
+B. Parsers are case-insensitive, so Iface, IfAcE, iface and IFACE mean
+the same. This does not apply to interface names. eth0 and
+ETH0 are dwo diffrent interfaces.
+
+\subsection{Data types}
+Config file parsing is token-based. Token can be considered a keyword
+or a specific phrase. Here are more commonly used types:
+\begin{description}
+\item[IPv6 address] -- IPv6 address, e.g. 2000:db8:1::dead:beef
+\item[32-bit decimal integer] -- string containing only numbers, e.g. 12345
+\item[string] -- string of arbitrary characters enclosed in single or double
+  quotes, e.g. 'this is a string'. If string contains only a-z, A-Z and
+  0-9 characters, quotes can be omited, e.g. beeblebrox
+\item[DUID identifier] -- hex number starting with 0x,
+  e.g. 0x12abcd. In Dibbler version 0.8.0RC1, another format was
+  introduced: 2 hex digits separated by comma, e.g. 12:aa:bb:cc:d5. As
+  this format may in some cases be confused with IPv6 address, the old
+  format (starting with 0x) remains to be supported.
+\item[IPv6 address list] -- IPv6 addresses separated with commas,
+           e.g. 2001:db8:1::face:b00c, fe80::abcd:1234,::1
+\item[DUID list] -- DUIDs separated with commas, e.g. 0x0123456,0x0789abcd
+\item[string list] -- strings separated with comas, e.g. tealc,jackson,carter,oneill
+\item[boolean] -- YES, NO, TRUE, FALSE, 0 or 1. Each of them can be
+  used, when user is expected to enable or disable specific option.
+\end{description}
+
+\subsection{Scopes}
+\label{scope}
+There are four scopes, in which options can be specified: global,
+inteface, IA and address. Every option is specific for one scope.
+Each option is only applied to a scope and all subscopes in which it is
+defined. For example, T1 is defined for
+IA scope. If there are several interfaces and each has several address
+classes, repeating the same T1 value many time may be a bit awkward.
+Therefore parameters can be also used in more common scopes. In this
+case -- in interface or global. Defining T1 in interface scope means:
+,,for this interface the default T1 value is ...''. The same applies
+to global scope. Options can be used multiple times. In that case
+value defined later is used.
+
+Global scope is the largest. It covers the whole config file and
+applies to all intefaces, IAs, and addresses, unless some lower scope
+options override it. Next scope is inteface. Options defined there
+are inteface-specific and apply to a given interface, all IAs in this
+interface and addresses in those IAs. Next is IA scope. Options
+defined there are IA-specific and apply to this IA and to addresses it
+contains. The narrowest scope is address or prefix.
+
+\subsubsection{Interface declaration}
+\label{client-scope-iface}
+Each system interface, which should be configured, must be mentioned in
+the configureation file. Interfaces can be declared with this syntax:
+\begin{lstlisting}
+iface interface-name
+{
+  interface-options
+  IA-options
+  address-options
+}
+\end{lstlisting}
+
+or
+
+\begin{lstlisting}
+iface interface-number
+{
+  interface-options
+  IA-options
+  address-options
+}
+\end{lstlisting}
+
+In the latter case, interface-number denotes interface index (or
+ifindex). It can be obtained from \verb+ip~l+ (Linux), \verb+ipv6~if+
+(Windows) or sometime \verb+ifconfig+ on other systems.
+\verb+interface-name+ is an interface name.  Name of the
+interface does not have to be enclosed in single or double quotes. It
+is necessary only in Windows systems, where interface names sometimes
+contain spaces, e.g. ''local network connection''.  Interface scoped
+options can be used here. IA-scoped as well as address scoped options
+can also be used. They will be treated as a default values for future
+definitions of the IA and address instantations.
+
+\subsubsection{IA declaration}
+\label{client-scope-ia}
+IA is an acronym for Identity Association. It is a logical entity
+representing address or addresses used to perform some functions. It
+is not suitable for prefixes (see Section \ref{pd-declaration}).
+IA-options can be defined, e.g. T1. IPv6 addresses can be defined
+here. All those values will be used as hints for a server.  Almost
+always, each DHCPv6 client will have exactly one IA on each
+interface. IA is declared using following syntax:
+
+\begin{lstlisting}
+ia [iaid]
+{
+  IA-options
+  address-options
+  address-declaration
+}
+\end{lstlisting}
+
+IAID is an optional number, which describes identifier of given IA. If
+not specified, it will be automatically assigned integer numbers
+starting with 1. There may be more than one IA defined on an
+interface. IA and PD (see Section \ref{pd-declaration}) may be used
+together.
+
+\subsubsection{TA declaration}
+\label{client-scope-ta}
+TA (Temporary Address) is a mechanism very similar to IA that allows
+configuration of temporary addresses. See Section \ref{client-scope-ia}.
+
+\subsubsection{PD declaration}
+\label{pd-declaration}
+\label{client-scope-pd}
+PD (Prefix Delegation) is a mechanism that allows leasing prefixes in
+similar way as addresses. For details, see \cite{rfc3633}. PD in
+client config file causes client to send IA\_PD option. This option
+informs server that client is requesting prefix delegation.
+
+\begin{lstlisting}
+pd [iaid]
+{
+  pd-options
+  prefix-declaration
+}
+\end{lstlisting}
+IAID is an optional number, which identifies this particular PD. If
+not specified, it will be automatically assigned integer numbers
+starting with 1. There may be more than one PD defined on an
+interface. IA (see Section \ref{client-scope-ia}) may be used together.
+
+\subsubsection{Address declaration}
+\label{client-scope-addr}
+When IA is defined, it is sometimes useful to define its address. Its
+value will be used as a hint for the server. Address is declared in the
+following way:
+
+\begin{lstlisting}
+address [number]
+{
+  address-options
+  address-declaration
+}
+\end{lstlisting}
+where number is optional and denotes how many addresses with those values should be
+requested. If it is diffrent than 1, then IPv6 address options are not
+allowed. Only address scoped options can be used here. Address can be
+defined only within IA scope.
+
+\subsubsection{Prefix declaration}
+\label{client-scope-prefix}
+When PD is defined, it is sometimes useful to define its prefix. Its
+value will be used as a hint for the server. Prefix is declared in the
+following way:
+
+\begin{lstlisting}
+prefix [number]
+{
+  prefix-options
+  prefix
+}
+\end{lstlisting}
+
+\subsection{Stateless configuration}
+
+If interface does not contain \verb+IA+ or \verb+TA+ keywords, client
+will ask for one address (one IA with one address request will be sent).
+If client should not request any addresses on this interface,
+\opt{stateless}\footnote{In the version 0.2.1-RC1 and earlier, this
+  directive was called no-ia. This depreciated name is valid for now,
+  but might be removed in future releases.} keyword must be used. In
+such circumstances, only specified options will be requested.
+
+\subsection{Relay support}
+Usage of the relays is not visible from the client's point of view:
+Client can't detect if it communicates via relay(s) or directly
+with the server. Therefore no special directives on the client side
+are required to use relays. See section \ref{feature-relays} for
+details related to relay deployment.
+
+\subsection{Comments}
+
+Comments are allowed in configuration files. All common comment styles are supported:
+\begin{itemize}
+\item C++ style one-line comments: \verb+// this is comment+
+\item C style multi-line comments: \verb+ /* this is multi-line comment */+
+\item script style one-line comments: \verb+# this is one-line comment+
+\end{itemize}
+
+\subsection{File location}
+\label{client-cfg-file}
+Client configuration file should be named \verb+client.conf+. It
+should be placed in the \verb+/etc/dibbler/+ directory (Linux system)
+or in the current directory (Windows systems). One of design
+requirements for client was ,,out of the box'' usage. To achieve this,
+simply use empty \verb+client.conf+ file. Client will try to get one
+address for each up and running interface. More preciselt client tries
+to configure each up, multicast-capable and running interface, which
+has link address at least 6 bytes long. This usually means that client
+running in auto-detection mode will not configure tunnels, which
+usually have IPv4 address (4 bytes long) as their link address. It
+should configure all wired (Ethernet) and wireless (802.11)
+interfaces, though.
+
+\subsection{Client Reference}
+\label{client-conf-reference}
+This section contains complete list of parameters that are allowed in
+client configuration file.
+
+Dibbler client supports multiple parameters. Some ore defined by the
+base DHCPv6 specification (a RFC 3315 document \cite{rfc3315}),
+e.g. IA address option. Other parameters are for definition of one of
+multitude of extensions that were defined for DHCPv6 protocol
+(e.g. prefix delegation option). Finally, there are many configuration
+parameters that are not options in DHCPv6 sense, but rather affect the
+way the software operates (e.g. log level). All those parameters may
+be defined in client config file. Every statement has defined
+scope. See Section~\ref{scope} for details. In many cases, parameters
+may also be defined in scopes larger than its default scope. For
+example, instead of configuring DNS server option on 3 interfaces, it
+can be defined once in global scope.
+
+\begin{description}
+\item[iface] -- (scope: global). Takes one parameter that can be
+either string (interface name) or integer (interface index). Defines
+that client should perform some actions on specified interface. Exact
+operations are defined within interface scope. Can optionally take
+second string parameter with the only allowed value of
+``no-config''. If it is present, it instructs client to not perform
+any operation on said interface. See Section \ref{client-scope-iface}.
+
+\item[ia] -- (scope: interface). Defines IA\_NA (Identity Association for
+Non-temporary Addresses), often abbreviated as IA. That is a
+container for ``regular'' (non-temporary in DHCPv6 nomenclature)
+addresses. Simply saying, this is a client's request for a single normal
+address. There may be more than one ia defined on one interface. In
+such case, client will request several addresses. It may have one
+optional integer parameter that defines unique indentifier (IAID). If
+followed by curly brackets, it will create new IA scope. See
+Section \ref{client-scope-ia}.
+
+\item[ta] -- (scope: interface). Defines IA\_TA (Indentity Association
+for Temporary Addresses), often abbreviated as TA. This is a
+container for temporary addresses. Simply saying, this is a client's
+request for a temporary address. If followed by curly brackets, it
+will create new IA scope, similar to IA. See
+Section \ref{client-scope-ia}. Note that TA scope accepts only limited set of
+parameters (e.g. iaid).
+
+\item[pd] -- (scope: interface). Defines IA\_PD (Identity Association
+for Prefix Delegation), often abbreviated as PD. This is a container
+for prefixes. Simply saying, this is client's request for prefix
+delegation. It may have one optional integer parameter that defines
+unique indentifier (IAID). If followed by curly brackets, it will
+create new PD scope. See Sections \ref{client-scope-pd}
+and \ref{feature-prefix}.
+
+\item[address] -- (scope: ia or ta). Defines an IPv6 address. It is
+usually defined in IA or TA to specify that an address should be sent. It
+takes one optional parameter that defines multiplier. For example, to
+define 3 addresses, following syntax may be used:
+\begin{lstlisting}
+address 3 { }
+\end{lstlisting}
+If followed by curly brackets, creates new address scope. See
+Section \ref{client-scope-addr}.
+
+\item[prefix] -- (scope: pd). Defined an IPv6 prefix. It is defined in
+PD to specify that a prefix should be sent. May be empty
+(\verb+prefix+) or accompanied with prefix definition that consists of
+IPv6 address followed by slash and prefix length (e.g.
+\verb+prefix 2001:db8:1::/56+. If followed by curly brackets, creates
+new prefix scope. See Section \ref{client-scope-prefix}.
+
+\item[work-dir] -- (scope: global). Takes one string
+ parameter. Defines working directory.
+
+\item[log-level] -- (scope: global). Takes one integer
+parameter. Defines verbose level of the log messages. The valid range
+is from 1 (very quiet) to 8 (very verbose). Those values are modelled
+after levels used in syslog. These are: 1(Emergency), 2(Alert),
+3(Critical), 4(Error), 5 (Warning), 6(Notice), 7(Info) and
+8(Debug). Currently Dibbler is using levels 3 to 8, as 1 and 2 are
+reserved for system wide emergency events.
+
+\item[log-name] -- (scope: global). Takes one string
+parameter. Defines than name, which will be used during logging.
+
+\item[log-mode] -- (scope: global). Takes one parameter that can be
+   short, full, precise or syslog. Defines logging mode. In the
+   default, full mode, name, date and time in the h:m:s format will be
+   printed. In short mode, only minutes and seconds will be printed
+   (this mode is useful on terminals with limited width). Precise mode
+   logs information with seconds and microsecond precision. It is a
+   useful as a performance diagnostic tool for finding bottlenecks in
+   the DHCPv6 autoconfiguration process. Syslog works under POSIX
+   systems (Linux, Mac OS X, BSD family) and allows default POSIX
+   logging functions.
+
+\item[log-colors] -- (scope: global). Takes one boolean parameter.
+  Defines if logs printed to console should use colors. That feature
+  is used to enhance logs readability.  As it makes the log files
+  messy on systems that do not support colors, it is disabled by
+  default. The default is off.
+
+ \item[strict-rfc-no-routing] -- (scope: global) During normal
+  operation, DHCPv6 client should add IPv6 address only
+  (i.e. configure it with /128 prefix), without configuring routing.
+  Routing is expected to be configured with i.e. router
+  advertisements \cite{rfc4861}. However, this behavior is confusing
+  and lots of users complained about it. Therefore since the 0.5.0RC1
+  release, this has been changed in Dibbler. Right now when Dibbler
+  client configures address, it also configures routing, so every host
+  is able to communicate with other hosts, which have obtained address
+  from the same server. If you don't like this behavior, you might
+  want to use this option. Note that draft \cite{draft-route-option} was
+  introduced to solve this DHCPv6 protocol limitation. It is expected
+  to be supported in the next Dibbler release.
+
+\item[experimental] -- (scope: global). Allows enabling experimental
+features. There are some highly-experimental features present in
+Dibbler. To make a clear statement about their experimental nature,
+user is required to acknowledge that fact by putting this statement in
+its config file. This statement may be present or absent. The default
+is absent.
+
+\item[addr-params] -- (scope: IA). Allows configuration of additional
+sub-option conveyed in IAADDR. It supplements the usual information
+about an address received from a server with prefix length. For
+example, if client received address 2001:db8:1::abcd and addr-params
+option contains 64, Dibbler client will configure prefix
+2001:db8:1::/64 on the interface that was used to communicate with
+server. This is experimental feature, not defined in any standard or
+draft. Requires \emph{experimental} statement. See
+Section \ref{feature-addr-params}.
+
+\item[remote-autoconf] -- (scope: interface). Defines that remote
+autoconfiguration should be performed on a given interface. This is
+experimental feature, so it requires \emph{experimental}
+statement. See Section \ref{feature-remote-autoconf}.
+
+\item[ddns-protocol] -- (scope: global). Takes one string
+parameter. Defines protocol that should be used during DNS Update
+mechanism. Allowed values are \verb+tcp+, \verb+udp+ and \verb+any+.
+Any means that UDP will be tried first and if it fails, update will be
+retried over TCP. See Section \ref{feature-dns-update}.
+
+\item[ddns-timeout] -- (scope: global). Takes one integer parameter
+that specifies timeout in milliseconds. Defines how long client should
+wait for DNS server response during DNS Update before declaring
+update a failure. See Section \ref{feature-dns-update}.
+
+\item[script] -- (scope: global). Takes one string parameter that
+  specifies script name. When dibbler client receives some options it normally
+  sets them up in the system on its own. However, besides of setting up all
+  parameters directly, dibbler client can execute external
+  script. See Section \ref{feature-script} for details.
+
+\item[stateless] -- (scope: global). It may be present or missing. The
+  default is missing. Defines that client should run in stateless
+  mode. In this mode only configuration parameters are defined, not
+  addresses or prefixes. It is mutually exclusive
+  with \emph{ia}, \emph{ta} and \emph{pd}. See
+  Section \ref{feature-stateless-stateful}. \emph{No-ia}, an alias to that
+  command used to be supported, but due to misleading name its support
+  was dropped in 0.8.1RC1.
+
+
+\item[anonymous-inf-request] -- (scope: global). When running in a
+  stateless mode, client does not ask for addresses or prefixes, but
+  rather requests some general options. By default, it sends its
+  client identifier (DUID) to the server. However, it is possible to
+  omit this identifier, so the \msg{INF-REQUEST} messages will be
+  anonymous. This global option causes client to act in such anonymous
+  way.
+
+ \item[inactive-mode] -- (scope: global). This parameter may be
+   present or absent. The default is absent. Normally (with
+   inactive-mode disabled) client tries to bind all interfaces defined
+   in configuration file. If such attempt fails, client reports an
+   error and gives up. In some cases it is possible that interface is
+   not ready yet, e.g. WLAN interface did not complete association. It
+   is possible to modify client behavior, so it will accept downed and
+   not running interfaces. To do so, inactive-mode must be enabled. In
+   this mode, client will accept inactive interfaces, will add them to
+   inactive list and will periodically monitor its state. When the
+   interface finally becomes available, client will try to configure
+   it. See section \ref{feature-inactive-mode} for details.
+
+ \item[insist-mode] -- (scope: global). Client can be instructed to
+   obtain several configuration options, like DNS server configuration
+   or domain name. It is possible that server will not provide all
+   requested options. Older versions of the dibbler client had been
+   very aggressive in such case. It tried very hard to obtain options
+   that user specified in config file. To do so, it did
+   send \msg{INF-REQUEST} to obtain such option. This behavior has
+   changed. Right now when client does not receive all requested
+   options, it will complain, but will take no action. To enable old
+   behavior, so called insist-mode has been added. Insist-mode will
+   also affect the way addresses are requested. If address was
+   specified in config file, client will request it in \msg{REQUEST}
+   message, rather than sending address offered by server
+   in \msg{ADVERTISE} as it is typically done. See
+   Section \ref{feature-insist-mode} for details.
+
+ \item[skip-confirm] -- (scope: global). Support for \msg{CONFIRM} messages
+   was added in 0.8.0RC1. With it, client may send \msg{CONFIRM} when link
+   state change is detected (e.g. switching to possibly new WiFi
+   access-point or replugging Ethernet cable). Client also sends
+   \msg{CONFIRM} after restart if there are still valid leases found
+   in locally stored databased. \emph{skip-confirm} will disable any
+   actions that would result in \msg{CONFIRM} transmissions. In
+   particular, link state will not be detected and client will ignore
+   its previous address during startup.
+
+%%% TODO: Add reconfigure accept here
+
+
+
+ \item[duid-type] -- (scope: global). Takes one parameter. Allowed
+   values are DUID-LLT, DUID-LL or DUID-EN. The default is DUID-LLT.
+   This parameter defines, what type of DUID should be generated if
+   there is no DUID already present. If there is a file containing
+   DUID, this directive has no effect. DUID-LLT means that DUID will
+   be based on link layer address as well as time. DUID-LL means that
+   only link layer address will be used. The last value -- DUID-EN --
+   Enterprise Number-based generation has a slightly different syntax:
+ \begin{lstlisting}
+   duid-type duid-en enterprise-number enterprise-id.
+\end{lstlisting}
+   For example: \verb+duid-type duid-en 1234 0x6789abcd+ means that
+   enterprise number is set to 1234 and unique number from that
+   company's pool is 67:89:ab:cd (hexadecimal value of arbitrary
+   length). See section \ref{feature-duid-types} for details.
+
+\item[option fqdn-s] -- (scope: global). Takes one boolean parameter
+  and has the default value of 1. The S bit is used in FQDN option. It
+  is used to negotiate, which side (server or client) wants to perform
+  DNS Update procedure. See \cite{rfc4704} for details. In general, if
+  you don't know that this option does, you don't want to modify this.
+
+\item[option fqdn] -- (scope: interface). Takes optional domain
+   name as parameter. This option instructs client to send FQDN
+   option. This option has 2 purposes. The first one is to negotiated
+   or request Fully Qualified Domain Name for this client. The second
+   one is to negotiate, who (client or server) should perform DNS
+   Update. If optional parameter is specified, it will be sent in the
+   FQDN option. Otherwise FQDN will be sent with empty name. This
+   option is defined in \cite{rfc4704}. See
+   Section \ref{feature-dns-update} for details.
+
+ \item[rapid-commit] -- (scope: interface). Takes one boolean
+   parameter. The default is 0. This option allows rapid commit
+   procedure to be performed. Note that enabling rapid-commit on the
+   client side is not enough. server must be configured to allow rapid
+   commit, too.
+
+ \item[unicast] -- (scope: interface). Takes one boolean
+  parameter. The default value is 0. This option specifies if client
+  should request unicast communication from the server. If server is
+  configured to allow it, it will add unicast option to its
+  replies. It will allow client to communicate with server via unicast
+  addresses instead of usual multicast.
+
+ \item[preferred-servers] -- (scope: interface). Takes list of
+  addresses or list of DUIDs. The default value is empty.  This list
+  defines, which servers are preferred. When client sends \msg{SOLICIT}
+  message, all servers available in the local network will
+  respond. When client receives multiple \msg{ADVERTISE} messages, it
+  will choose those sent by servers mentioned on the preferred-server
+  list. Otherwise the best server will be chosen. Note that this
+  parameter used to be spelled differently (single R). Old spelling
+  is still supported, but is deprecated and will be removed soon.
+
+ \item[reject-servers] -- (scope: interface). Takes list of addresses
+  or list of DUIDs. The default value is empty. This list defines
+  which server must be ignored. It has opposite meaning to the
+  prefered-servers list. Servers mentioned here will never be chosen.
+
+ \item[vendor-spec] -- (scope: interface). This option allow
+   requesting for a vendor specific configuration option or
+   options. Although there are no vendor-specific (i.e. specific for
+   Dibbler) parameters, it can be used to test some other DHCPv6
+   server implementations. It takes coma separated list following
+   tokens: type (integer), type(integer) -- enterprise(number). It
+   allows definition of just vendor-specific option and/or
+   vendor-specific option with specific enterprise. See feature
+   description in Section \ref{feature-vendor-spec}.
+
+ \item[T1] -- (scope: IA or PD) Takes one parameter that specifies T1
+   hint sent to a server. The default value is $2^{32}-1$ and is
+   expressed in seconds. T1 value assigned by server defines after
+   what time client should start renew process. This is only a hint
+   for the server. Actual value will be provided by the server.
+
+\item[T2] -- (scope: IA or PD). Takes one parameter that specifies T2 hint
+   sent to a server. The default value is default:$2^{32}-1$ and is
+   expressed in seconds. This value defines hint for T2. T2 assigned
+   by server defined after what time client will start emergency
+   rebind procedure if renew process fails. This is only a hint for
+   the server. Actual value will be provided by the server.
+
+\item[valid-lifetime] -- (scope:address or prefix). Takes one integer
+   parameter that defined requested valid lifetime for address or
+   prefix. The default value is $2^{32}-1$. This parameter is
+   expressed in seconds. This parameter defines valid lifetime of an
+   address. It will be used as a hint for a server, when the client
+   sends \msg{REQUEST} messages.
+
+\item[preferred-lifetime] -- (scope:address or prefix).
+   type: integer, default:$2^{32}-1$) This parameter defines prefered
+   lifetime of an address. It will be used as a hint for a server,
+   when there client sends \msg{REQUEST} messages. Note that this
+  parameter used to be spelled differently (single R). Old spelling
+  is still supported, but is deprecated and will be removed soon.
+
+ \item[option dns-server] -- (scope: interface). Takes optional
+   address list as parameter. This option conveys information about
+   DNS servers available. After retriving this information, client
+   will be able to resolve domain names into IP (both IPv4 and IPv6)
+   addresses. If address list is not specified, client will just
+   request dns-server option from a server. If it is specified, listed
+   addresses will be sent to server as hints. Defined in \cite{rfc3596}.
+
+ \item[option domain] -- (scope: interface). Takes optional domain
+   list as parameter. This option is used for retriving domain or
+   domains names, which the client is connected in. For example, if
+   client's hostname is \verb+alice.mylab.example.com+ and it wants to
+   contact \verb+bob.mylab.example.com+ it can simply refer to it
+   as \verb+bob+. Without domain name configured, it would have to use
+   full domain name. If optional domain list if defined, it will be
+   sent to server as a hint. Defined in \cite{rfc3596}.
+
+ \item[option ntp-server] -- (scope: interface). Takes optional address
+   list as parameter. This option defines information about available NTP
+   servers. Network Time Protocol \cite{rfc2030} is a protocol used
+   for time synchronisation, so all hosts in the network has the same
+   proper time set. If address list is specified, it will be sent to
+   server as a hint. Defined in \cite{rfc4075}.
+
+ \item[option time-zone] -- (scope: interface). Optionally takes one
+   string parameter that specifies requested timezone. It is possible
+   to retrieve timezone from the server. If client is interested in
+   this information, it should ask for this option. Note that this
+   option is considered obsolete as it is mentioned in draft version
+   only \cite{draft-timezone}. Work on this draft seems to be
+   abandoned as similar functionality is provided in now
+   standard \cite{rfc4075}. Unfortunately, it is not supported in
+   Dibbler yet.
+
+ \item[option sip-server] -- (scope: interface). Takes optional
+   address list as parameter. Session Initiation Protocol
+   (SIP) \cite{rfc3263} is a control protocol for creating, modifying,
+   and terminating sessions with one or more participants. These
+   sessions include Internet telephone calls, multimedia distribution,
+   and multimedia conferences, including VoIP phones. If address list
+   is specified, it will be sent as a hint for a server. Format of
+   this option is defined in \cite{rfc3319}.
+
+ \item[option sip-domain] -- (scope: interface). Takes optional list
+   of domains. It is possible to define domain names for Session
+   Initiation Protocol \cite{rfc3263}. Configuration of this parameter
+   will ease usage of domain names in the SIP protocol. If domain list
+   is specified, it will be sent as a hint for a server. Format of
+   this option is defined in \cite{rfc3319}.
+
+ \item[option nis-server] -- (scope: interface). Takes optional
+   address list as parameter. Network Information Service (NIS) is a
+   Unix-based system designed to use common login and user information
+   on multiple systems, e.g. universities, where students can log on
+   to ther accounts from any host. To use this functionality, a host
+   needs information about NIS server's address. This can be retrieved
+   with this option. If address list is specified, it will be sent as
+   a hint for a server. Its format is defined in \cite{rfc3898}.
+
+ \item[option nis-domain] -- (scope: interface). Takes optional list
+   of domains. Network Information Service (NIS) can albo specify
+   domain names. It can be configured with this option. If domain list
+   is specified, it will be sent as a hint for a server. It is defined
+   in \cite{rfc3898}.
+
+ \item[option nis+-server] -- (scope: interface). Takes optional
+   address list as parameter. Network Information Service Plus (NIS+)
+   is an improved version of the NIS protocol. If address list is
+   specified, it will be sent as a hint for a server. This option is
+   defined in \cite{rfc3898}.
+
+ \item[option nis+-domain] -- (scope: interface). Takes optional list
+   of domains. Similar to nis-domain, it defines domains for NIS+. If
+   domain list is specified, it will be sent as a hint for a
+   server. This option is defined in \cite{rfc3898}.
+
+ \item[option lifetime] -- (scope: interface). This statement can be
+   present or missing. The default is missing.
+   Base spec of the DHCPv6 protocol does offers way of refreshing
+   addresses only, but not the options. Lifetime defines, how often
+   client would like to renew all its options. By default client will
+   not send such option, but it will accept it and act accordingly if
+   the server sends it on its own. Format of this option is defined
+   in \cite{rfc4242}.
+
+ \item[option aftr] -- (scope: interface). In networks that deploy
+   Dual-Stack Lite architecture \cite{rfc6333}, client (B4) needs to
+   configure DS-Lite tunnel. Client may obtain information about AFTR
+   (a remote tunnel endpoint). This option conveys fully qualified
+   domain name. This statement instructs client to request such
+   option. It is defined in defined in \cite{rfc6334}.
+
+\item[option] -- (scope: interface). There are number of options
+   supported by Dibbler. There may be cases, however, when user wants
+   to specify its own options. Several syntaxes are supported:
+\begin{lstlisting}
+option number - hexstring
+option number address-keyword address
+option number address-list
+option number string-keyword string
+option number address-keyword request-keyword
+option number string request-keyword
+option number address-list request-keyword
+\end{lstlisting}
+where number designates option number, address-keyword is word ``address'',
+address is an IPv6 address, address-list is coma separated list of
+IPv6 addresses, string-keyword is a word ``string'' and
+request-keyword is a word ``request''. See Section \ref{feature-custom-options}.
+
+ \item[auth-enabled] -- (scope: global). Takes one boolean
+   parameter. The default is 0. This option enables authentication and
+   authorization. When set to true, server support must also be
+   enabled, otherwise all messages will be dropped. See
+   Section \ref{feature-auth} for details.
+
+ \item[auth-accept-methods] -- (scope: global). Takes coma separated
+   list of accepted authentication methods methods that client will
+   accept from server. If this list is empty, any method will be
+   accepted. Possible values
+   are: \texttt{none}, \texttt{digest\_plain}, \texttt{digest\_hmac\_md5},
+   \texttt{digest\_hmac\_sha1}, \texttt{digest\_hmac\_sha224},
+   \texttt{digest\_hmac\_sha256}, \texttt{digest\_hmac\_sha384},
+   and \texttt{digest\_hmac\_sha512}.
+
+ \item[route] -- (scope: interface). Takes one boolean parameter that
+ defines if routing information should requested or not. The default
+ value is false. See Section \ref{feature-routing}.
+
+\end{description}
+
+After receiving options values from a server, client stores values of
+those options in separate files in the working directory
+(\verb+/var/lib/dibbler+ in POSIX systems (Linux, Mac OS X and BSD)
+and current directory in Windows). File names start with the option
+word, e.g. \verb+option-dns-server+. Dibbler client can also call user
+defined script after parameters are assigned or removed. Dibbler
+client also sets DNS servers and domain names on its own on most
+systems.
+
+\subsection{Client Configuration Examples}
+This subsection contains various examples of the most popular
+configurations. Several additional examples are provided with the source
+code. Please download it and look at \verb+*.conf+ files.
+
+\subsubsection{Example 1: Default}
+In the most simple case, client configuration file can be empty. Client will try to
+assign one address for every interface present in the system, except
+interfaces, which are:
+\begin{itemize}
+\item down (flag UP not set)
+\item loopback (flag LOOPBACK set)
+\item not running (flag RUNNING not set)
+\item not multicast capable (flag MULTICAST not set)
+\item have link-layer address less than 6 bytes long (this requirement
+      should skip all tunnels and virtual interfaces)
+\end{itemize}
+
+If you must use DHCPv6 on one of such interfaces (which is not
+recommended and such attempt probably will fail), you must explicitly
+specify this interface in the configuration file.
+
+\subsubsection{Example 2: DNS}
+Configuration mentioned in previous subsection is a minimal one and in a
+real life will be used rarely. The most common usage of the DHCPv6
+protocol is to request for an address and DNS configuration. Client
+configuration file achieving those goals is presented below:
+\begin{lstlisting}
+# client.conf
+log-mode short
+log-level 7
+iface eth0 {
+  ia
+  option dns-server
+}
+\end{lstlisting}
+
+\subsubsection{Example 3: Timeouts and specific address}
+
+Automatic configuration is being driven by several timers, which define,
+what action should be performed at various intervals. Since all
+values are provided by the server, client can only define values, which
+will be sent to a server as hints. Server might take them into
+consideration, but might also ignore them
+completely. Following example shows how to ask for a specific address
+and provide hints for a server. Client would like to get 2000::1:2:3
+address, it would like to renew addresses once in 30 minutes (T1 timer
+is set to 1800 seconds). Client also would like to have address, which
+is prefered for an hour and is valid for 2 hours.
+
+\begin{lstlisting}
+# client.conf
+log-mode short
+log-level 7
+iface eth0 {
+  T1 1800
+  T2 2000
+  prefered-lifetime 3600
+  valid-lifetime 7200
+  ia {
+    address {
+      2000::1:2:3
+    }
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 4: More than one address}
+
+Another example: client would like to obtain 2 addresses on
+wifi0 interface. They are necessary since this particular interface name
+contains spaces. It is possible to do this in two ways. First is to
+sent 2 Identity Associations (IA for short). Identity Association is a
+nice name for a addresses container. This appears to be a most common
+way of telling server that this client is interested in more than one
+address.
+
+\begin{lstlisting}
+# client.conf
+log-mode short
+log-level 5
+iface wifi0 {
+  ia
+  ia
+}
+\end{lstlisting}
+
+Another way it to send one IA, but include two address hints in
+it. Server may take them into consideration (dibbler server does), but
+some other DHCPv6 implementations may ignore those hints.
+
+\begin{lstlisting}
+# client.conf
+log-mode short
+log-level 5
+iface wifi0 {
+  ia {
+     address
+     address
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 5: Quick configuration using Rapid-commit}
+Rapid-commit is a shortened exchange with server. It consists of only
+two messages, instead of the usual four. It is worth to know that both sides (client
+and server) must also support rapid-commit to use this fast
+configuration.
+
+\begin{lstlisting}
+# client.conf
+iface eth1 {
+  rapid-commit yes
+  ia
+  option dns-server
+}
+\end{lstlisting}
+
+\subsubsection{Example 6: Stateless mode}
+Client can be configured to work in a stateless mode. It means that it
+will obtain only some configuration parameters, but no
+addresses. Let's assume we want all the details stored in a log file and
+we want to obtain all possible configuration parameters. Here is a
+configuration file:
+
+\begin{lstlisting}
+# client.conf
+log-level 8
+log-mode full
+stateless
+iface eth0
+{
+  option dns-server
+  option domain
+  option ntp-server
+  option time-zone
+  option sip-server
+  option sip-domain
+  option nis-server
+  option nis-domain
+  option nis+-server
+  option nis+-domain
+}
+\end{lstlisting}
+
+\subsubsection{Example 7: Dynamic DNS (FQDN)}
+\label{example-client-fqdn}
+Dibbler client is able to request fully qualified domain name,
+i.e. name, which is fully resolvable using DNS. After receiving such
+name, it can perform DNS Update procedure. Client can ask for any
+name, without any preferrence. Here is an example how to configure
+client to perform such task:
+\begin{lstlisting}
+# client.conf
+
+# Set protocol to one of the following values: udp, tcp, any
+ddns-protocol udp
+
+# Sets DDNS Update timeout (in ms)
+ddns-timeout 800
+
+# uncomment following line to force S bit to 0
+# option fqdn-s 0
+log-level 7
+
+iface eth0 {
+# ask for one address
+    ia
+
+# ask for options
+   option dns-server
+   option domain
+   option fqdn
+
+# ask for fully qualified domain name (any name will do)
+  option fqdn
+# you can also provide hint for the server regarding preferred name
+#  option fqdn dexter.example.org
+
+}
+\end{lstlisting}
+
+In this case, client will mention that it is interested in FQDN by
+using Option Request and empty FQDN option, as specified in
+\cite{rfc4704}. Server upon receiving such request (if it is
+configured to support it), will provide FQDN option containing domain
+name. Depending on the server's configuration, all DNS Updates will be
+performed by the server, forward will be performed by client and reverse
+by the server, or only forward will be done by a client.
+
+It is also possible for client to provide its name as a hint for
+server. Server might take it into consideration when it will choose a
+name for this client. To send specific hostname, additional parameter
+(a string with a fully qualified domain name) should be specified.
+
+Two additional parameters were introduced in Dibbler
+0.8.1. \verb+ddns-protocol+ specifies protocol that should be used for
+communication with DNS server.  Allowed values
+are \verb+udp+, \verb+tcp+ or \verb+any+. ``Any'' will try to use UDP
+and if that fails, it will revert to TCP. Second parameter
+is \verb+ddns-timeout+ that specifies maximum time allowed for DNS
+server to respond before assuming communication failure. It is
+specified in milliseconds.
+
+Note that to successfully perform DNS Update, address must be assigned
+and dns server address must be known. Therefoe  ``ia'' and ``option
+dns-server'' are required for ``option fqdn'' to work properly. Also if
+DHCPv6 server provides more than one DNS server address, update will
+be attempted only for the first address on the list.
+
+It is also possible to force S bit in the FQDN option to 0 or 1. See
+\cite{rfc4704} for details regarding its meaning.
+
+\subsubsection{Example 8: Interface indexes}
+Usually, interface names are referred to by names, e.g. eth0 or Local
+Area Connection. Every system also provides unique number associated
+with each infterface, usually called ifindex or interface index. It is
+possible to read the number using \verb+ip l+ command (Linux) or
+\verb+ipv6 ifx+. Below is an example, which demonstrate how to use
+interface indexes:
+
+\begin{lstlisting}
+# client.conf
+log-mode short
+log-level 5
+iface 5 {
+  ia
+}
+\end{lstlisting}
+
+\subsubsection{Example 9: Vendor-specific options}
+\label{example-client-vendor-spec}
+It is possible to configure dibbler-client to ask for a vendor specific
+options. Although there are no dibbler-specific features to configure,
+it is possible to use this option to test other server
+implementations. This option will rather be used by network engineers
+and power network admins, rather than normal end users.
+
+There are 3 ways to define, how dibbler-client can request
+vendor-specific options. First choice: It can just ask for this option (only
+\opt{option request option} will be sent). Second choice: it can ask for
+vendor-spec option by adding such option with enterprise number set, but
+no actual data. Third choice: send this option and include both
+enterprise number and actual data. In the following configuration file
+example, uncomment appropriate line to obtain desired bahavior:
+
+\begin{lstlisting}
+# client.conf
+log-level 8
+iface eth0 {
+# ask for address
+    ia
+
+# uncomment only one of the following lines:
+   option vendor-spec
+#   option vendor-spec 1234
+#   option vendor-spec 1234 0x0002abcd
+
+# To ask for multiple vendor-spec options, uncomment:
+#   option vendor-spec 123,456
+}
+\end{lstlisting}
+
+Although that is almost never needed, it is possible to configure
+client to request multiple vendor-specific options at the same
+time. That feature is mainly used as a test tool for the server. To
+use it, uncomment last line in the example above.
+
+\subsubsection{Example 10: Unicast communication}
+
+Client would like to obtain an address on ,,Local Area Connection''
+interface. Note quotation marks around
+interface name. They are necessary since this particular interface name
+contains spaces. Client also would like to accept Unicast
+communication if server supports it. User wants all information
+to be logged via Linux syslog daemon. Take note that you won't be
+able see to what Dibbler is doing with such low log-level. (Usually
+log-level should be set to 7, which is also a default value).
+
+\begin{lstlisting}
+# client.conf
+log-mode syslog
+log-level 5
+iface "Local Area Connection" {
+  unicast yes
+  ia
+  ia
+}
+\end{lstlisting}
+
+\subsubsection{Example 11: Prefix delegation}
+\label{example-client-prefix}
+From the client's point of view, configuration is quite simple. It is
+required to specify that this client is interested in prefix
+delegation. See section \ref{feature-prefix} for background
+information related to prefix delegation and sections
+\ref{example-server-prefix} and \ref{example-server-prefixes} for
+details about server configuration. To ask for prefix delegation,
+emph{prefix-delegation} (or \emph{pd}) should be used.
+
+\begin{lstlisting}
+# client.conf
+iface "eth0" {
+  ia  // ask for address
+  pd  // ask for prefix
+}
+\end{lstlisting}
+
+It is possible to define additional parameters for a prefix:
+
+\begin{lstlisting}
+# client.conf
+iface eth0 {
+  pd {
+    t1 1000
+    t2 2000
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Example 12: Insist mode}
+\label{example-client-insistmode}
+During normal operation, when client asks for an option, but does not
+receive it from the server, it complain, but takes no action. To force
+client to insist (i.e. ask over and over again), so called insist mode
+has been introduced. See section \ref{feature-insist-mode} for
+extended explanation.
+
+\begin{lstlisting}
+insist-mode
+iface "eth0" {
+   ia
+   option dns-server
+   option domain
+   option ntp-server
+}
+\end{lstlisting}
+
+\subsubsection{Example 13: Inactive mode}
+\label{example-client-inactivemode}
+Usually client starts when network interfaces are
+operational. Normally downed or nonexisting interfaces mentioned in
+the configuration file are considered misconfiguration and client
+refuses to start. However, sometimes that is not the case, e.g. still
+waiting to be associated wireless interfaces. To allow operation in
+such circumstances, inactive mode has been added. See
+\ref{feature-inactive-mode} for detailed explanation.
+interfaces are spec
+
+\begin{lstlisting}
+inactive-mode
+iface "eth0" {
+  ia
+}
+\end{lstlisting}
+
+\subsubsection{Example 14: Authentication}
+\label{example-client-auth}
+Authentication is enabled. Client will accept HMAC-SHA-512, HMAC-MD5
+and HMAC-SHA-256 as an authentication method.
+
+\begin{lstlisting}
+# client.conf
+
+log-mode short
+log-level 7
+
+auth-enabled true
+auth-accept-methods digest-hmac-sha512, digest-hmac-md5, digest-hmac-sha256
+
+iface eth0 {
+}
+\end{lstlisting}
+
+\subsubsection{Example 15: Skip Confirm}
+\label{example-client-confirm}
+Client detects if previous client instance was not shutdown properly
+(due to power outage, client crash or similar event). In such case, it
+reads existing address database and checks if assigned addresses may
+still be valid. If that is so, it tries to confirm those addresses by
+using \msg{CONFIRM} message.
+
+If user don't want \msg{CONFIRM} message to be send and client should
+start ''from scratch'' every time, it is possible to disable confirm
+support.
+
+\begin{lstlisting}
+# client.conf
+
+log-mode short
+log-level 7
+skip-confirm
+
+iface eth0 {
+  ia
+}
+\end{lstlisting}
+
+\subsubsection{Example 15: User-defined IAID}
+\label{example-client-iaid}
+Sometimes it is useful to define specific IAID  identifiers. That is
+rather uncommon, but possible. This technique can be used for both
+addresses (IA\_NA options) and prefixes (IA\_PD options).
+
+\begin{lstlisting}
+# client.conf
+
+iface "eth0" {
+  ia 123
+  option dns-server
+  option domain
+}
+\end{lstlisting}
+
+\subsubsection{Example 16: DS-Lite tunnel (AFTR)}
+\label{example-server-ds-lite}
+Server may provide information about AFTR (a Dual Stack Lite tunnel
+endpoint) to the clients, as specified in \cite{rfc6334}.
+
+\begin{lstlisting}
+iface "eth0" {
+  ia
+  option aftr # request name of the remote DS-Lite tunnel endpoint
+}
+\end{lstlisting}
+
+\subsubsection{Example 17: Custom options}
+Client is able to ask for custom options, that are not supported by
+default. Following config file allows client to ask for many
+options. Also, see Section \ref{feature-custom-options} for
+extended explanation.
+
+\begin{lstlisting}
+#client.conf
+iface "eth0" {
+  unicast 1
+  ia
+
+  option 145 - 01:02:a3:b4:c5:dd:ea
+  option 146 address 2001:db8:1::dead:beef
+  option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
+  option 148 string "secretlair.example.org"
+
+  option 149 string request
+  option 150 address request
+  option 151 address-list request
+\end{lstlisting}
+
+\subsubsection{Example 18: Remote Autoconfiguration}
+Client is able to use experimental extension to ask for configuration
+remotely. See Section \ref{feature-remote-autoconf} for details.
+
+\begin{lstlisting}
+log-mode short
+log-level 8
+experimental
+remote-autoconf
+
+iface "eth0" {
+  ia
+  unicast 1
+  option dns-server
+  option domain
+  option nis-server
+  option nis-domain
+  option nis+-server
+  option nis+-domain
+  option time-zone
+  option lifetime
+}
+\end{lstlisting}

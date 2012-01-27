@@ -1,41 +1,58 @@
 
-  Dibbler 0.8.0 release notes [2011-05-11]
+  Dibbler 0.8.1 release notes [2011-12-31]
  ---------------------------------------------------------
 
- This is the stable 0.8.0 release of the Dibbler software.
+ This is the 0.8.1 release of the Dibbler software.
 
- Dibbler project now officially is resumed, after my Ph. D. and related
- almost complete lack of time. Since last 0.8.0RC1 release, significant
- number of features were added, so the numbering may be misleading.
- However, I didn't want to skip 0.8.0. Notable features added in this
- version are:
+ This release includes number of useful additions, new features and the usual
+ bug fixes introduced in 0.8.1RC1 and adds couple extra features. In
+ particular, the highlights of this release are:
 
- - Mac OS X support, thanks to Paul Schauer, who did the initial port 
-   and then tested and debugged countless versions.
- - Several new DNS Update modes implemented: server may discard unknown
-   names sent by client, sanitize them, assign other available name from
-   configured pool, append configure domain or even generate name, based
-   on assigned address.
- - Linux client now configures and updates addresses with proper prefered 
-   and valid lifetimes.
- - Vendor specific options format improved, it is now easier to define
-   sub-options there.
- - DS-Lite draft implementation updated to latest, approved version (-10)
- - Client may now send defined prefix hints in PD
+ - Support for routing configuration was added. Yes, you read that correctly.
+   Recent draft draft-ietf-mif-dhcpv6-route-option defines provisioning mechanism
+   that delivers routing information over DHCPv6. Although this implementation is 
+   not entirely complete (there are certain limitations, see User's Guide), it is
+   very usable.
+ - Script support is rewritten. Client can call a script every time it receives a 
+   message and pass all received options as environment variables. That is very
+   convenient way to extend client with custom actions. This feature is going to
+   be further expanded in upcoming releases.
+ - Server is now able to run scripts, too. That is convenient if you need your 
+   server to execute custom actions. One notable example is a routing reconfiguration
+   after prefix was delegated to a client.
+ - Server support for prefix expiration is fixed. Prefixes are expired properly,
+   and notify script is called.
+ - Server will now try to assign the same prefix for returning clients.
+ - Added support for FreeBSD, NetBSD and OpenBSD. Mac OS X support is now also
+   significantly improved. To achieve this level of portability, build system
+   was completely rewritten and is now using automake and autoconf tools.
+   You can now use ./configure script to enable or disable various parameters.
+   Makefile modification is no longer necessary.
+ - DNS Update can now be performed over UDP, TCP or both (try over UDP and if it fails,
+   try TCP). Configurable timeout for DNS Updates added.
+ - Significant update in prefix delegation support. Server will now remember previously
+   assigned prefixes and will try to assign the same prefix to returning client.
+ - Support for DS-Lite tunnels configuration added (RFC6334)
+ - Rather large User's Guide documentation update
+ - Fixed mis-aligned memory reads on ARMv5 architecture
+ - Added support for unittests using googletests. Number of tests is small now, 
+   but is expected to grow.
+ - source code migrated to git.
 
- Many (around 20) bug fixes are fixed as well.
- 
- There's also number of under the hood changes that hopefully
- will be invisible to end users. If something that worked previously
- now crashes miserably, let me know.
+ Many bug fixes are fixed as well.
 
  See CHANGELOG for a complete list of changes.
 
- If you find bugs, please report it on http://klub.com.pl/bugzilla/ or
+ I would like to thank Mateusz Ozga for his routing implementation and Harro Han
+ for his ARMv5 patches.
+
+ If you find bugs, please report them on http://klub.com.pl/bugzilla/ or
  send bug report to the directly to the author. Appropriate links are
  on project website: http://klub.com.pl/dhcpv6/. If you need help or
  want to share your thoughts, take a look at one of the
  Dibbler-related mailing lists: dibbler or dibbler-devel.
+
+ Happy New Year, everyone!
 
                                Tomasz Mrugalski,
                                author

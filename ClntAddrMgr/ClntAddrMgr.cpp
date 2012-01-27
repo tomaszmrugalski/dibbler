@@ -57,6 +57,22 @@ TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFi
     DeleteEmptyClient = false; // don't delete this client, even when IAs or PD has been removed
     firstClient();
     Client = getClient();
+
+    if (useConfirm)
+        processLoadedDB();
+}
+
+void TClntAddrMgr::processLoadedDB() {
+    SPtr<TAddrIA> ia;
+    Client->firstIA();
+    while (ia=Client->getIA()) {
+        ia->setState(STATE_CONFIRMME);
+    }
+
+    Client->firstPD();
+    while (ia=Client->getPD()) {
+        ia->setState(STATE_CONFIRMME);
+    }
 }
 
 

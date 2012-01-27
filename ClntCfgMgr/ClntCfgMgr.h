@@ -67,8 +67,8 @@ class TClntCfgMgr : public TCfgMgr
     DigestTypes getDigest();
     void setDigest(DigestTypes value);
 
-    string getScriptsDir();
-    bool getNotifyScripts();
+    void setScript(std::string script) { ScriptName = script; }
+    string getScript() { return ScriptName; }
 
     bool anonInfRequest();
     bool insistMode();
@@ -93,7 +93,6 @@ class TClntCfgMgr : public TCfgMgr
 #endif
 
     bool getFQDNFlagS();
-    bool getMappingPrefix();
 
     bool useConfirm();
 private:
@@ -109,8 +108,7 @@ private:
 
     List(TClntCfgIface) ClntCfgIfaceLst;
     List(TClntCfgIface) InactiveLst;
-    string ScriptsDir;
-    bool NotifyScripts;
+    string ScriptName;
 
     bool AnonInfRequest;
     bool InsistMode;
@@ -125,10 +123,11 @@ private:
     uint32_t AAASPI;
 #endif
 
+#ifdef MOD_REMOTE_AUTOCONF
     bool RemoteAutoconf;
+#endif
 
     bool FQDNFlagS; // S bit in the FQDN option
-    bool MappingPrefix;
 
     static TClntCfgMgr * Instance;
 };

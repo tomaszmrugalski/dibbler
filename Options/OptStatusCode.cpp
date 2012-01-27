@@ -16,6 +16,10 @@
 #include "OptStatusCode.h"
 #include "Logger.h"
 
+#if defined(LINUX) || defined(BSD)
+#include <arpa/inet.h>
+#endif
+
 TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
 	:TOpt(OPTION_STATUS_CODE, parent)
 {
@@ -27,8 +31,8 @@ TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
         len=0;
         return;
     }
-    this->StatusCode = ntohs(*(short*)buf);
-    buf +=2; len -=2;
+    this->StatusCode = readUint16(buf);
+    buf += sizeof(uint16_t); len -= sizeof(uint16_t);
     char *Message = new char[len+1];
     memcpy(Message,buf,len);
     Message[len]=0;
@@ -55,12 +59,9 @@ string TOptStatusCode::getText()
 
 char * TOptStatusCode::storeSelf( char* buf)
 {
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    buf+=2;
-    *(short*)buf = htons(this->StatusCode);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
+    buf = writeUint16(buf, this->StatusCode);
     strncpy((char *)buf,Message.c_str(),Message.length());
     buf+=Message.length();
     return buf;

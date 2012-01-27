@@ -12,6 +12,7 @@
  *
  */
 
+#include <sstream>
 #include <stdio.h> // required for DEV-CPP compilation
 #include "Portable.h"
 #include "SmartPtr.h"
@@ -35,6 +36,8 @@
 #include "SrvOptEcho.h"
 #include "OptGeneric.h"
 #include "OptVendorData.h"
+#include "OptIAAddress.h"
+#include "OptIAPrefix.h"
 
 using namespace std;
 
@@ -132,7 +135,7 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 
     // send it!
-    return (bool)(sock->send(msg,size,addr,port));
+    return (sock->send(msg,size,addr,port));
 }
 
 /**
@@ -305,11 +308,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 
 	// options: only INTERFACE-ID and RELAY_MSG are allowed
 	while (bufsize>=4) {
-	    unsigned short code = ntohs( *((unsigned short*)(buf)));
-	    unsigned short len  = ntohs( *((unsigned short*)(buf+2)));
-	    buf     += 4;
-	    bufsize -= 4;
-	    
+	    unsigned short code = readUint16(buf);
+	    buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
+	    unsigned short len  = readUint16(buf);
+	    buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
+
 	    if (len > bufsize) {
 		Log(Warning) << "Truncated option " << code << ": " << bufsize << " bytes remaining, but length is " << len 
 			     << "." << LogEnd;
@@ -509,8 +512,10 @@ void TSrvIfaceMgr::redetectIfaces() {
 
 void TSrvIfaceMgr::instanceCreate( const std::string xmlDumpFile )
 {
-    if (Instance)
+    if (Instance) {
       Log(Crit) << "SrvIfaceMgr instance already created! Application error." << LogEnd;
+      return; // don't create second instance
+    }
     Instance = new TSrvIfaceMgr(xmlDumpFile);
 }
 
