@@ -1,0 +1,15 @@
+
+ Scripts for TAHI tests
+------------------------
+
+Scripts in this directory can be used to run TAHI tests on Dibbler.
+They are in a very early stage of development, so they are not very
+usable yet.
+
+TODO:
+- remove server-AddrMgr.xml after test (otherwise following tests 
+  get NoAddrAvail)
+- check that server indeed started after start attempt
+- check that server indeed stopped after stop attempt
+- get additional files (dibbler-server.log, server-cache.xml, etc.)
+
