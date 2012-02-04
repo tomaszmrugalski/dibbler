@@ -542,7 +542,7 @@ char * error_message() {
  */
 void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
 {
-    printf("Link change monitoring is not supported yet on Macs. Sorry.\n");
+    printf("Link change monitoring is not supported yet on MacOS or BSD. Sorry.\n");
     return;
 }
 
