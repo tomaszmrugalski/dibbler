@@ -18,6 +18,7 @@
 #include "Logger.h"
 #include "SrvCfgAddrClass.h"
 #include "Portable.h"
+#include "SrvCfgMgr.h"
 
 TSrvAddrMgr * TSrvAddrMgr::Instance = 0;
 
@@ -567,6 +568,44 @@ void TSrvAddrMgr::doDuties(std::vector<TExpiredInfo>& addrLst,
             } // while (prefix)
         } // while (pd)
     } // while (client)
+}
+
+/// @brief Checks if address is still supported in current configuration (used in loadDB)
+///
+/// @param addr checked address
+///
+/// @return true, if supported
+bool TSrvAddrMgr::verifyAddr(SPtr<TIPv6Addr> addr) {
+    if (SrvCfgMgr().addrReserved(addr)) {
+        return true;
+    }
+
+    SrvCfgMgr().firstIface();
+    while (SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIface()) {
+        if (SrvCfgMgr().getClassByAddr(iface->getID(), addr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// @brief Checks if prefix is still supported in current configuration (used in loadDB)
+///
+/// @param prefix checked prefix
+///
+/// @return true, if prefix is supported
+bool TSrvAddrMgr::verifyPrefix(SPtr<TIPv6Addr> prefix) {
+    if (SrvCfgMgr().prefixReserved(prefix)) {
+        return true;
+    }
+
+    SrvCfgMgr().firstIface();
+    while (SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIface()) {
+        if (SrvCfgMgr().getClassByPrefix(iface->getID(), prefix)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**

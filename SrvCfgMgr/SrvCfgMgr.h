@@ -77,6 +77,7 @@ public:
     void delTAAddr(int iface);
 
     bool addrReserved(SPtr<TIPv6Addr> addr);
+    bool prefixReserved(SPtr<TIPv6Addr> prefix);
 
     bool isDone();
     virtual ~TSrvCfgMgr();

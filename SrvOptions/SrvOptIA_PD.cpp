@@ -118,7 +118,7 @@ bool TSrvOptIA_PD::existingLease() {
     SPtr<TAddrIA> pd = client->getPD(IAID);
     if (!pd)
         return false;
-    if (!pd->getPrefixCount())
+    if (!pd->countPrefix())
         return false;
 
     SPtr<TAddrPrefix> prefix;

@@ -74,7 +74,25 @@ bool TSrvCfgIface::addrReserved(SPtr<TIPv6Addr> addr)
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst.first();
     while (x=ExceptionsLst.get()) {
-        if (x->getAddr())
+        if (x->getAddr() == addr)
+            return true;
+    }
+    return false;
+}
+
+/// @brief Checks if prefix is reserved.
+///
+/// Iterates over exceptions list and checks if specified prefix is reserved.
+///
+/// @param prefix prefix in question.
+///
+/// @return True if reserved (false otherwise).
+bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
+{
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst.first();
+    while (x=ExceptionsLst.get()) {
+        if (x->getAddr() == prefix)
             return true;
     }
     return false;

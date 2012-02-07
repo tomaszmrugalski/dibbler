@@ -154,8 +154,12 @@ consists of serveral simple blocks:
 1. Old database is read when server starts.
 2. Existing leases are confirmed against current configuration. Invalid 
    leases are removed.
-3. List of fixed leases is created, based on configuration.
-4. An attempt to add each fixed lease to DB is tried. If lease
-   is already in DB, addition is skipped. Leases are marked as fixed.
+
+The following steps are somewhat not feasible as there may be reservations for remote-id 
+or subscriber-id (or mac address) 
+
+// 3. List of fixed leases is created, based on configuration.
+// 4. An attempt to add each fixed lease to DB is tried. If lease
+//   is already in DB, addition is skipped. Leases are marked as fixed.
 
 */

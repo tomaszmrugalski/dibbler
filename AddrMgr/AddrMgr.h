@@ -58,6 +58,10 @@ class TAddrMgr
     int countClient();
     bool delClient(SPtr<TDUID> duid);
 
+    // checks if address is conformant to current configuration (used in loadDB())
+    virtual bool verifyAddr(SPtr<TIPv6Addr> addr) { return true; }
+    virtual bool verifyPrefix(SPtr<TIPv6Addr> addr) { return true; }
+
     // --- prefix related ---
     virtual bool addPrefix(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
                            int iface, unsigned long IAID, unsigned long T1, unsigned long T2,

@@ -624,7 +624,7 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int
 }
 #endif
 
-/// checks if address is reserved (chks all interfaces)
+/// checks if an address is reserved (checks all interfaces)
 ///
 /// @param addr
 ///
@@ -632,8 +632,23 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int
 bool TSrvCfgMgr::addrReserved(SPtr<TIPv6Addr> addr) {
     SPtr<TSrvCfgIface> iface;
     SrvCfgIfaceLst.first();
-    while (iface= SrvCfgIfaceLst.get()) {
+    while (iface = SrvCfgIfaceLst.get()) {
         if (addrReserved(addr))
+            return true;
+    }
+    return false;
+}
+
+/// checks if a prefix is reserved (checks all interfaces)
+///
+/// @param addr
+///
+/// @return true if reserved, false otherwise
+bool TSrvCfgMgr::prefixReserved(SPtr<TIPv6Addr> prefix) {
+    SPtr<TSrvCfgIface> iface;
+    SrvCfgIfaceLst.first();
+    while (iface = SrvCfgIfaceLst.get()) {
+        if (prefixReserved(prefix))
             return true;
     }
     return false;

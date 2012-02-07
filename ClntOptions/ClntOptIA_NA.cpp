@@ -88,8 +88,10 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, SPtr<TAddrIA> ClntaddrI
     //checkRequestConstructor
     ClntCfgIA->firstAddr();
     SPtr<TClntCfgAddr> ClntCfgAddr;
+
+    /// @todo: keep allocated address in TAddrClient
     while ((ClntCfgAddr = ClntCfgIA->getAddr())&&
-        ((ClntCfgIA->countAddr()-ClntaddrIA->getAddrCount())>this->countAddr() ))
+        ((ClntCfgIA->countAddr()-ClntaddrIA->countAddr())>this->countAddr() ))
     {
         SPtr<TAddrAddr> ptrAddr=ClntaddrIA->getAddr(ClntCfgAddr->get());
         if(!ptrAddr)
