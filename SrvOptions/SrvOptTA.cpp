@@ -111,7 +111,7 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt
     unsigned long addrsMax       = 0; // clnt-max-lease
     unsigned long willAssign     = 1; // how many will be assigned? Just 1.
 
-    addrsAssigned = SrvAddrMgr().getAddrCount(this->ClntDuid);
+    addrsAssigned = SrvAddrMgr().getLeaseCount(this->ClntDuid);
     addrsAvail    = SrvCfgMgr().countAvailAddrs(this->ClntDuid, this->ClntAddr, this->Iface);
     addrsMax      = SrvCfgMgr().getIfaceByID(this->Iface)->getClntMaxLease();
 

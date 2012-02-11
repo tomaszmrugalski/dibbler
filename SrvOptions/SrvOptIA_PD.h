@@ -45,7 +45,8 @@ class TSrvOptIA_PD : public TOptIA_PD
     int                   Iface;
 
     bool existingLease();
-    int assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, bool fake);
+    bool assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, bool fake);
+    bool assignFixedLease(SPtr<TSrvOptIA_PD> request);
 
     List(TIPv6Addr) getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint);
 

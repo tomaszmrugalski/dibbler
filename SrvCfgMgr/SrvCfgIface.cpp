@@ -17,6 +17,7 @@
 #include "SrvCfgPD.h"
 #include "Logger.h"
 #include "Opt.h"
+#include "SrvMsg.h"
 
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
@@ -36,8 +37,15 @@ bool TSrvCfgIface::leaseQuerySupport()
 }
 
 
-SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID, bool quiet)
+SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, TMsg* parent, bool quiet)
 {
+
+    SPtr<TOptVendorData> remoteID;
+    TSrvMsg* par = dynamic_cast<TSrvMsg*>(parent);
+    if (par) {
+	remoteID = par->getRemoteID();
+    }
+
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst.first();
     while (x=ExceptionsLst.get()) {

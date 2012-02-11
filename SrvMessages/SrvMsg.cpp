@@ -699,7 +699,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
         return false;
     }
 
-    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, getRemoteID(), false/* false = verbose */);
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, this, false/* false = verbose */);
 
     /// @todo: Make this an array of options and handle them in an uniform manner
 
@@ -1150,7 +1150,7 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSr
     Log(Debug) << "Client requested vendor-spec. info (vendor=" << vendor
                << ")." << LogEnd;
 
-    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, true);
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, this, true);
     SPtr<TOptVendorSpecInfo> vs;
     List(TOptVendorSpecInfo) vsLst;
 

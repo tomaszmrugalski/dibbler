@@ -109,7 +109,6 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
 
 /// @brief checks if there are existing leases (and assigns them)
 ///
-///
 /// @return true, if existing lease(s) are found
 bool TSrvOptIA_PD::existingLease() {
     SPtr<TAddrClient> client = SrvAddrMgr().getClient(ClntDuid);
@@ -134,18 +133,20 @@ bool TSrvOptIA_PD::existingLease() {
     T1 = pd->getT1();
     T2 = pd->getT2();
 
+    stringstream status;
+    status << "Here's your existing lease: " << countPrefixes() << " prefix(es).";
+    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS, status.str(),  this->Parent) );
     return true;
 }
 
-/**
- * @brief gets one (or more) prefix for requested
- *
- * @param hint proposed prefix
- * @param fake should the prefix be really assigned or not (used in SOLICIT processing)
- *
- * @return status, if it was possible to assign something (STATUSCODE_SUCCESS)
- */
-int TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, bool fake) {
+// @brief gets one (or more) prefix for requested
+//
+// @param clientMsg client message
+// @param hint proposed prefix
+// @param fake should the prefix be really assigned or not (used in SOLICIT processing)
+//
+// @return true, if something was assigned
+bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, bool fake) {
     SPtr<TIPv6Addr> prefix;
     SPtr<TSrvOptIAPrefix> optPrefix;
     SPtr<TSrvCfgPD> ptrPD;
@@ -175,18 +176,24 @@ int TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, bo
             SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
                            prefix, this->Prefered, this->Valid, this->PDLength, false);
             if (!alreadyIncreased) {
-          // but CfgMgr has to increase usage only once. Don't ask my why :)
-          SrvCfgMgr().incrPrefixCount(Iface, prefix);
-          alreadyIncreased = true;
+                // but CfgMgr has to increase usage only once. Don't ask my why :)
+                SrvCfgMgr().incrPrefixCount(Iface, prefix);
+                alreadyIncreased = true;
             }
       }
     }
     Log(Info) << "PD:" << (fake?"(would be)":"") << " assigned prefix(es):" << buf.str() << LogEnd;
 
     if (prefixLst.count()) {
-      return STATUSCODE_SUCCESS;
-    } else
-      return STATUSCODE_NOPREFIXAVAIL;
+        stringstream tmp; 
+        tmp << "Assigned " << prefixLst.count() << " prefix(es).";
+        SubOptions.append( new TSrvOptStatusCode(STATUSCODE_SUCCESS, tmp.str(), Parent) );
+        return true;
+    } 
+
+    SubOptions.append( new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+                                             "Unable to provide any prefixes. Sorry.", this->Parent) );
+    return false;
 }
 
 // so far it is enough here
@@ -266,7 +273,7 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> qu
     // --- Is this PD without IAPREFIX options? ---
     SPtr<TIPv6Addr> hint = 0;
     if (!queryOpt->countPrefixes()) {
-        Log(Notice) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
+        Log(Info) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
         hint = new TIPv6Addr(); /* :: - any address */
         this->Prefered = DHCPV6_INFINITY;
         this->Valid    = DHCPV6_INFINITY;
@@ -278,27 +285,33 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> qu
         this->Valid     = hintPrefix->getValid();
     }
 
-    int status;
+    // --- LEASE ASSIGN STEP 3: check if client already has binding
     if (existingLease()) {
-        // re-issue existing leases
-        status = STATUSCODE_SUCCESS;
-    } else {
-        // assign new prefixes
-        status = assignPrefix(clientMsg, hint, fake);
+        return;
     }
 
-    // include status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
-    if (status==STATUSCODE_SUCCESS) {
-        ostringstream tmp;
-        tmp << countPrefixes() << " prefix(es) granted.";
-        ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS, tmp.str(),  this->Parent);
-    } else {
-        ptrStatus = new TSrvOptStatusCode(status,
-                                          "Unable to provide any prefixes. Sorry.", this->Parent);
+    // --- LEASE ASSIGN STEP 4: Try to find fixed lease
+    if (assignFixedLease(queryOpt)) {
+        return;
     }
-    this->SubOptions.append((Ptr*)ptrStatus);
-    return;
+
+    // --- LEASE ASSIGN STEP 5: Count available addresses ---
+    unsigned long leaseAssigned  = SrvAddrMgr().getLeaseCount(ClntDuid); // already assigned
+    unsigned long leaseMax       = SrvCfgMgr().getIfaceByID(Iface)->getClntMaxLease(); // clnt-max-lease
+
+    if (leaseAssigned >= leaseMax) {
+        Log(Notice) << "Client got " << leaseAssigned << " lease(s) and requested 1 more, but limit for a client is "
+                  << leaseMax << LogEnd;
+        stringstream tmp;
+        tmp << "Sorry. You already have " << leaseAssigned << " lease(es) and you can't have more.";
+        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,tmp.str(), Parent));
+        return;
+    }
+
+    // --- LEASE ASSIGN STEP 6: Cached address? ---
+    // --- LEASE ASSIGN STEP 7: client's hint ---
+    // --- LEASE ASSIGN STEP 8: get new random address --
+    assignPrefix(clientMsg, hint, fake);
 }
 
 /**
@@ -364,6 +377,81 @@ void TSrvOptIA_PD::decline(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface
 }
 
 bool TSrvOptIA_PD::doDuties() {
+    return true;
+}
+
+/// @brief tries to find a fixed lease for a client
+///
+/// @param req IA_PD sent by client
+///
+/// @return true, if fixed lease is assigned
+bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
+    
+    // is there any specific address reserved for this client? (exception mechanism)
+    SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(Iface);
+    if (!ptrIface) {
+	return 0;
+    }
+
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, Parent, false/* false = verbose */);
+    if (!ex)
+        return false;
+
+    SPtr<TIPv6Addr> reservedPrefix = ex->getPrefix();
+    if (!reservedPrefix) {
+        // there's no reserved prefix for this lad
+        return false;
+    } 
+    
+    // we've got fixed prefix, yay! Let's try to calculate its preferred and valid lifetimes
+    SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
+    if (!iface) {
+        // this should never happen
+        Log(Error) << "Unable to find interface with ifindex=" << Iface << " in SrvCfgMgr." << LogEnd;
+        return false;
+    }
+    
+    // if the lease is not within normal range, treat it as fixed, infinite one
+    uint32_t pref = DHCPV6_INFINITY;
+    uint32_t valid = DHCPV6_INFINITY;
+    
+    SPtr<TSrvCfgPD> pool;
+    iface->firstPD();
+    while (pool = iface->getPD()) {
+        // This is not the pool you are looking for.
+        if (!pool->prefixInPool(reservedPrefix))
+            continue;
+
+        // we found matching pool! Yay!
+        T1 = pool->getT1(req->getT1());
+        T2 = pool->getT2(req->getT2());
+
+        SPtr<TSrvOptIAPrefix> hint = (Ptr*) req->getOption(OPTION_IAPREFIX);
+        if (hint) {
+            pref = hint->getPref();
+            valid = hint->getValid();
+        }
+        
+        pref = pool->getPrefered(pref);
+        valid = pool->getValid(valid);
+        
+        Log(Info) << "Reserved in-pool prefix " << reservedPrefix->getPlain() << "/" << ex->getPrefixLen() << " for this client found, assigning." << LogEnd;
+        SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(reservedPrefix, ex->getPrefixLen(), pref, valid, Parent);
+        SubOptions.append(optPrefix);
+
+        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed in-pool prefix.", Parent));
+        
+        return true;
+    }
+    
+    // This address does not belong to any pool. Assign it anyway
+    Log(Info) << "Reserved out-of-pool address " << reservedPrefix->getPlain()
+              << ex->getPrefixLen() << " for this client found, assigning." << LogEnd;
+    SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(reservedPrefix, ex->getPrefixLen(), pref, valid, Parent);
+    SubOptions.append(optPrefix);
+    
+    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed out-of-pool address.", Parent));
+    
     return true;
 }
 

@@ -136,14 +136,14 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     }
 
     // --- LEASE ASSIGN STEP 5: Count available addresses ---
-    unsigned long addrsAssigned  = SrvAddrMgr().getAddrCount(ClntDuid); // already assigned
-    unsigned long addrsMax       = SrvCfgMgr().getIfaceByID(Iface)->getClntMaxLease(); // clnt-max-lease
+    unsigned long leaseAssigned  = SrvAddrMgr().getLeaseCount(ClntDuid); // already assigned
+    unsigned long leaseMax       = SrvCfgMgr().getIfaceByID(Iface)->getClntMaxLease(); // clnt-max-lease
 
-    if (addrsAssigned >= addrsMax) {
-        Log(Notice) << "Client got " << addrsAssigned << " and requested 1 more, but limit for a client is "
-                  << addrsMax << LogEnd;
+    if (leaseAssigned >= leaseMax) {
+        Log(Notice) << "Client got " << leaseAssigned << " lease(s) and requested 1 more, but limit for a client is "
+                  << leaseMax << LogEnd;
         stringstream tmp;
-        tmp << "Sorry. You already have " << addrsAssigned << " address(es) and you can't have more.";
+        tmp << "Sorry. You already have " << leaseAssigned << " lease(es) and you can't have more.";
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,tmp.str(), parent));
         return;
     }
@@ -235,60 +235,60 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
 ///
 /// @return true, if assignment was successful, false if there are no fixed-leases reserved
 bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
-      // is there any specific address reserved for this client? (exception mechanism)
-      SPtr<TIPv6Addr> reservedAddr = getExceptionAddr();
-      if (!reservedAddr) {
-          // there's no reserved address for this pal
-          return false;
-      } 
-
-      // we've got fixed address, yay! Let's try to calculate its preferred and valid lifetimes
-      SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
-      if (!iface) {
-          // this should never happen
+    // is there any specific address reserved for this client? (exception mechanism)
+    SPtr<TIPv6Addr> reservedAddr = getExceptionAddr();
+    if (!reservedAddr) {
+        // there's no reserved address for this pal
+        return false;
+    } 
+    
+    // we've got fixed address, yay! Let's try to calculate its preferred and valid lifetimes
+    SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
+    if (!iface) {
+        // this should never happen
           Log(Error) << "Unable to find interface with ifindex=" << Iface << " in SrvCfgMgr." << LogEnd;
           return false;
-      }
-
-      // if the lease is not within normal range, treat it as fixed, infinite one
-      uint32_t pref = DHCPV6_INFINITY;
-      uint32_t valid = DHCPV6_INFINITY;
-
-      SPtr<TSrvCfgAddrClass> pool;
-      iface->firstAddrClass();
-      while (pool = iface->getAddrClass()) {
-          // This is not the pool you are looking for.
-          if (!pool->addrInPool(reservedAddr))
-              continue;
-          T1 = pool->getT1(req->getT1());
-          T2 = pool->getT2(req->getT2());
-
-          SPtr<TSrvOptIAAddress> hint = (Ptr*) req->getOption(OPTION_IAADDR);
-          if (hint) {
-              pref = hint->getPref();
-              valid = hint->getValid();
-          }
-
-          pref = pool->getPref(pref);
-          valid = pool->getValid(valid);
-
-          Log(Info) << "Reserved in-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
-          SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
-          SubOptions.append(optAddr);
-
-          SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
-
-          return true;
-      }
-
-      // This address does not belong to any pool. Assign it anyway
-      Log(Info) << "Reserved out-of-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
-      SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
-      SubOptions.append(optAddr);
-
-      SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
-
-      return true;
+    }
+    
+    // if the lease is not within normal range, treat it as fixed, infinite one
+    uint32_t pref = DHCPV6_INFINITY;
+    uint32_t valid = DHCPV6_INFINITY;
+    
+    SPtr<TSrvCfgAddrClass> pool;
+    iface->firstAddrClass();
+    while (pool = iface->getAddrClass()) {
+        // This is not the pool you are looking for.
+        if (!pool->addrInPool(reservedAddr))
+            continue;
+        T1 = pool->getT1(req->getT1());
+        T2 = pool->getT2(req->getT2());
+        
+        SPtr<TSrvOptIAAddress> hint = (Ptr*) req->getOption(OPTION_IAADDR);
+        if (hint) {
+            pref = hint->getPref();
+            valid = hint->getValid();
+        }
+        
+        pref = pool->getPref(pref);
+        valid = pool->getValid(valid);
+        
+        Log(Info) << "Reserved in-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
+        SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
+        SubOptions.append(optAddr);
+        
+        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
+        
+        return true;
+    }
+    
+    // This address does not belong to any pool. Assign it anyway
+    Log(Info) << "Reserved out-of-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
+    SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
+    SubOptions.append(optAddr);
+    
+    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
+    
+    return true;
 }
 
 void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
@@ -344,11 +344,9 @@ bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t vali
     return true;
 }
 
-/**
- * tries to find address reserved for this particular client
- *
- * @return
- */
+/// @brief tries to find address reserved for this particular client 
+///
+/// @return fixed address (if found)
 SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
 {
     SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(Iface);
@@ -356,14 +354,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
 	return 0;
     }
 
-    SPtr<TOptVendorData> remoteID;
-
-    TSrvMsg* par = dynamic_cast<TSrvMsg*>(Parent);
-    if (par) {
-	remoteID = par->getRemoteID();
-    }
-
-    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, remoteID, false/* false = verbose */);
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, Parent, false/* false = verbose */);
 
     if (ex)
 	return ex->getAddr();

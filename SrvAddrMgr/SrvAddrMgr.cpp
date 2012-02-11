@@ -337,10 +337,12 @@ bool TSrvAddrMgr::delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6
     return result;
 }
 
-/*
- * how many addresses does this client have?
- */
-unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
+/// @brief returns how many lease does this client have?
+///
+/// @param duid client DUID
+///
+/// @return number of leases
+unsigned long TSrvAddrMgr::getLeaseCount(SPtr<TDUID> duid)
 {
     SPtr <TAddrClient> ptrClient;
     ClntsLst.first();
@@ -353,14 +355,27 @@ unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
         return 0;
     }
 
-    unsigned long count=0;
+    unsigned long count = 0;
 
-    // look at each of client's IAs
+    // count each of client's IAs
     SPtr <TAddrIA> ptrIA;
     ptrClient->firstIA();
     while ( ptrIA = ptrClient->getIA() ) {
         count += ptrIA->countAddr();
     }
+
+    // count each of client's TA
+    ptrClient->firstTA();
+    while (ptrIA = ptrClient->getTA() ) {
+        count += ptrIA->countAddr();
+    }
+
+    // count each of client's PD
+    ptrClient->firstPD();
+    while (ptrIA = ptrClient->getPD() ) {
+        count += ptrIA->countPrefix();
+    }
+
     return count;
 }
 

@@ -63,7 +63,7 @@ class TSrvAddrMgr : public TAddrMgr
     virtual bool verifyPrefix(SPtr<TIPv6Addr> addr);
 
     // how many addresses does this client have?
-    unsigned long getAddrCount(SPtr<TDUID> duid);
+    unsigned long getLeaseCount(SPtr<TDUID> duid);
 
     void doDuties(std::vector<TExpiredInfo>& addrLst,
                   std::vector<TExpiredInfo>& tempAddrLst,
