@@ -369,7 +369,7 @@ bool TClntOptIA_NA::doDuties() {
     if (getT1() && getT2()) {
       ptrIA->setT1( this->getT1() );
       ptrIA->setT2( this->getT2() );
-      Log(Debug) << "RENEW will be sent (T1) after " << ptrIA->getT1() << ", REBIND (T2) after " << ptrIA->getT2() << " seconds." << LogEnd;
+      Log(Debug) << "RENEW(IA_NA) will be sent (T1) after " << ptrIA->getT1() << ", REBIND (T2) after " << ptrIA->getT2() << " seconds." << LogEnd;
     } else {
       this->firstAddr();
       ptrOptAddr = this->getAddr();

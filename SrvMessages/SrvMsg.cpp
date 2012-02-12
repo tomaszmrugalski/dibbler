@@ -509,7 +509,7 @@ void TSrvMsg::processIA_TA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt) {
 
 void TSrvMsg::processIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt) {
     SPtr<TOpt> optPD;
-    optPD = new TSrvOptIA_PD(clientMsg, queryOpt, SOLICIT_MSG, this);
+    optPD = new TSrvOptIA_PD(clientMsg, queryOpt, this);
     Options.push_back(optPD);
 }
 

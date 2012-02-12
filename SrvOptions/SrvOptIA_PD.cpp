@@ -28,11 +28,6 @@
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 
-TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
-    :TOptIA_PD(iaid,t1,t2, parent)
-{
-}
-
 TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, int Code, string Text, TMsg* parent)
     :TOptIA_PD(iaid, t1, t2, parent)
 {
@@ -43,7 +38,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, int Code, st
  * Create IA_PD option based on receive buffer
  */
 TSrvOptIA_PD::TSrvOptIA_PD( char * buf, int bufsize, TMsg* parent)
-    :TOptIA_PD(buf,bufsize, parent)
+    :TOptIA_PD(buf, bufsize, parent)
 {
     int pos=0;
 
@@ -192,11 +187,16 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
     return false;
 }
 
-// so far it is enough here
-// constructor used only in RENEW, REBIND, DECLINE and RELEASE
-TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, int msgType , TMsg* parent)
-    :TOptIA_PD(queryOpt->getIAID(), 0x7fffffff, 0x7fffffff, parent)
+/// @brief constructor used in replies to SOLICIT, REQUEST, RENEW, REBIND, DECLINE and RELEASE 
+///
+/// @param clientMsg client message that server responds to
+/// @param queryOpt IA_PD option from client message
+/// @param msgType message type of client request
+/// @param parent 
+TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, TMsg* parent)
+    :TOptIA_PD(queryOpt->getIAID(), DHCPV6_INFINITY, DHCPV6_INFINITY, parent)
 {
+    int msgType = clientMsg->getType();
     ClntDuid  = clientMsg->getClientDUID();
     ClntAddr  = clientMsg->getAddr();
     Iface     = clientMsg->getIface();
@@ -226,25 +226,25 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
 
     switch (msgType) {
     case SOLICIT_MSG:
-        this->solicitRequest(clientMsg, queryOpt, ptrIface, fake);
+        solicitRequest(clientMsg, queryOpt, ptrIface, fake);
         break;
     case REQUEST_MSG:
-        this->solicitRequest(clientMsg, queryOpt, ptrIface, fake);
+        solicitRequest(clientMsg, queryOpt, ptrIface, fake);
         break;
     case RENEW_MSG:
-        this->renew(queryOpt, ptrIface);
+        renew(queryOpt, ptrIface);
         break;
     case REBIND_MSG:
-        this->rebind(queryOpt, ptrIface);
+        rebind(queryOpt, ptrIface);
         break;
     case RELEASE_MSG:
-        this->release(queryOpt, ptrIface);
+        release(queryOpt, ptrIface);
         break;
     case CONFIRM_MSG:
-        this->confirm(queryOpt, ptrIface);
+        confirm(queryOpt, ptrIface);
         break;
     case DECLINE_MSG:
-        this->decline(queryOpt, ptrIface);
+        decline(queryOpt, ptrIface);
         break;
     default: {
         Log(Warning) << "Unknown message type (" << msgType
@@ -431,7 +431,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         pref = pool->getPrefered(pref);
         valid = pool->getValid(valid);
         
-        Log(Info) << "Reserved in-pool prefix " << reservedPrefix->getPlain() << "/" << ex->getPrefixLen() << " for this client found, assigning." << LogEnd;
+        Log(Info) << "Reserved in-pool prefix " << reservedPrefix->getPlain() << "/" 
+                  << static_cast<unsigned int>(ex->getPrefixLen()) << " for this client found, assigning." << LogEnd;
         SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(reservedPrefix, ex->getPrefixLen(), pref, valid, Parent);
         SubOptions.append(optPrefix);
 
@@ -442,7 +443,7 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     
     // This address does not belong to any pool. Assign it anyway
     Log(Info) << "Reserved out-of-pool address " << reservedPrefix->getPlain()
-              << ex->getPrefixLen() << " for this client found, assigning." << LogEnd;
+              << static_cast<unsigned int>(ex->getPrefixLen()) << " for this client found, assigning." << LogEnd;
     SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(reservedPrefix, ex->getPrefixLen(), pref, valid, Parent);
     SubOptions.append(optPrefix);
     

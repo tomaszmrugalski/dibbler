@@ -359,7 +359,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
           }
         case OPTION_IA_PD: {
             SPtr<TSrvOptIA_PD> pd;
-            pd = new TSrvOptIA_PD( (Ptr*)rebind, (Ptr*) ptrOpt, REBIND_MSG, this);
+            pd = new TSrvOptIA_PD( (Ptr*)rebind, (Ptr*) ptrOpt, this);
             Options.push_back((Ptr*)pd);
             break;
         }
@@ -553,9 +553,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
             // send result to the client
             if (!anyDeleted)
             {
-                SPtr<TSrvOptIA_PD> ansPD(new TSrvOptIA_PD(pd->getIAID(), 0u, 0u, this));
-                Options.push_back((Ptr*)ansPD);
-                ansPD->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
+                Options.push_back(new TSrvOptIA_PD(pd->getIAID(), 0u, 0u, 
+                                                   STATUSCODE_NOBINDING, "Not every address had binding.", this));
             };
             break;
         }
@@ -609,8 +608,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
         }
         case OPTION_IA_PD: {
             SPtr<TSrvOptIA_PD> optPD;
-            optPD = new TSrvOptIA_PD((Ptr*) renew, (Ptr*)ptrOpt,
-                                     RENEW_MSG, this);
+            optPD = new TSrvOptIA_PD((Ptr*) renew, (Ptr*)ptrOpt, this);
             Options.push_back( (Ptr*) optPD);
             break;
         }
