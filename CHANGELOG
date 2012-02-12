@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+0.8.2 [not-released-yet]
+  - Srv: address and prefix assignment rewritten
+  - Srv: implemented per-client prefix configuration
+
 0.8.1 [2011-12-31]
   - Srv: Prefixes are now expired properly.
   - Cli/Srv: IFINDEX variable is now set properly in notify scripts.
