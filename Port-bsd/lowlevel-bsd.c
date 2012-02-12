@@ -65,7 +65,7 @@ void if_print(struct iface * iface_ptr) {
     int tmp, tmpInt = 0;
 
     printf("Interface %s, index=%i type=%x flags=%x\n", iface_ptr->name, iface_ptr->id,
-           iface_ptr->hardwareType, iface_ptr->flags);
+            iface_ptr->hardwareType, iface_ptr->flags);
     printf("\tLink layer Length: %x Addr:", iface_ptr->maclen);
     for (tmp = 0; tmp < iface_ptr->maclen; tmp++) {
         printf("%02x:", (unsigned char) iface_ptr->mac[tmp]);
@@ -150,8 +150,10 @@ struct iface * if_list_get() {
             strlcpy(iface_ptr->name, addr_ptr->ifa_name, MAX_IFNAME_LENGTH);
             iface_ptr->id = if_nametoindex(iface_ptr->name);
             iface_ptr->flags = addr_ptr->ifa_flags;
+#ifdef LOWLEVEL_DEBUG
             printf("Detected interface %s, ifindex=%d, flags=%d\n",
                    iface_ptr->name, iface_ptr->id, iface_ptr->flags);
+#endif
 
             // add this new structure to the end of the interfaces list
             iface_lst = if_list_add(iface_lst, iface_ptr);
@@ -540,7 +542,7 @@ char * error_message() {
  */
 void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
 {
-    printf("Link change monitoring is not supported yet on Macs. Sorry.\n");
+    printf("Link change monitoring is not supported yet on MacOS or BSD. Sorry.\n");
     return;
 }
 
