@@ -168,10 +168,10 @@ prefixes. It is not supported for temporary addresses.
 \subsection{Routing configuration}
 \label{feature-routing}
 Until recently, DHCPv6 protocol did not define a way to provision
-routing configuration information to clients and relay or Router
-Advertisment mechanism of Neighbor Discovery
-protocol \cite{rfc4862}. While that approach works, it brings a number
-of drawbacks. In particular:
+routing configuration information to clients. The only way to deliver
+this information to hosts was to use Router Advertisment mechanism in
+Neighbor Discovery protocol \cite{rfc4862}. While that approach works,
+it brings a number of drawbacks. In particular:
 \begin{enumerate}
 \item RA sent by router affects all hosts in a network. There is no
 way to differentiate this information on a per host basis. There is no
