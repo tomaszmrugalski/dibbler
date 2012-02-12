@@ -138,12 +138,11 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     return (sock->send(msg,size,addr,port));
 }
 
-/**
- * reads messages from all interfaces
- * it's wrapper around IfaceMgr::select(...) method
- * @param timeout - how long can we wait for packets?
- * returns SPtr to message object
- */
+// @brief reads messages from all interfaces
+// it's wrapper around IfaceMgr::select(...) method
+//
+// @param timeout how long can we wait for packets (in seconds)
+// @return message object (or NULL)
 SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     
     // static buffer speeds things up
@@ -188,7 +187,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 	case INFORMATION_REQUEST_MSG:
 	case LEASEQUERY_MSG:
 	{
-	    ptr = this->decodeMsg(ptrIface, peer, buf, bufsize);
+	    ptr = decodeMsg(ptrIface, peer, buf, bufsize);
 	    if (!ptr->validateReplayDetection() ||
 		!ptr->validateAuthInfo(buf, bufsize)) {
 		Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;

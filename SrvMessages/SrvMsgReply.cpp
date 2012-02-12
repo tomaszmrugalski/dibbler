@@ -671,8 +671,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     this->send();
 }
 
-//SOLICIT
-
 /// @brief ctor used for generating REPLY message as SOLICIT response (in rapid-commit mode)
 ///
 /// @param solicit client's message

@@ -103,6 +103,7 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
             continue;
         optPrefix = (Ptr*) opt;
         prefix = optPrefix->getPrefix();
+        SrvAddrMgr().delPrefix(ClntDuid, IAID, prefix, quiet);
         SrvCfgMgr().decrPrefixCount(this->Iface, prefix);
     }
 }
@@ -163,24 +164,19 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
     prefixLst.clear();
     prefixLst = getFreePrefixes(clientMsg, hint);
     ostringstream buf;
-    bool alreadyIncreased = false;
     prefixLst.first();
     while (prefix = prefixLst.get()) {
-      buf << prefix->getPlain() << "/" << this->PDLength << " ";
-      optPrefix = new TSrvOptIAPrefix(prefix, (char)this->PDLength, this->Prefered, this->Valid, this->Parent);
-      SubOptions.append((Ptr*)optPrefix);
-
-      if (!fake) {
-            // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
-            // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
-            SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
-                           prefix, this->Prefered, this->Valid, this->PDLength, false);
-            if (!alreadyIncreased) {
-                // but CfgMgr has to increase usage only once. Don't ask my why :)
-                SrvCfgMgr().incrPrefixCount(Iface, prefix);
-                alreadyIncreased = true;
-            }
-      }
+        buf << prefix->getPlain() << "/" << this->PDLength << " ";
+        optPrefix = new TSrvOptIAPrefix(prefix, (char)this->PDLength, this->Prefered, this->Valid, this->Parent);
+        SubOptions.append((Ptr*)optPrefix);
+        
+        // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
+        // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
+        SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
+                               prefix, this->Prefered, this->Valid, this->PDLength, false);
+        
+        // but CfgMgr has to increase usage only once. Don't ask my why :)
+        SrvCfgMgr().incrPrefixCount(Iface, prefix);
     }
     Log(Info) << "PD:" << (fake?"(would be)":"") << " assigned prefix(es):" << buf.str() << LogEnd;
 
@@ -373,7 +369,7 @@ void TSrvOptIA_PD::confirm(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface
 }
 
 void TSrvOptIA_PD::decline(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
-    /// @todo: implement PD support in DECLINE message
+    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL, "You tried to decline a prefix. Are you crazy?", Parent));
 }
 
 bool TSrvOptIA_PD::doDuties() {

@@ -203,12 +203,15 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
                 SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
                 a = new TSrvMsgReply(nmsg);
             }
+        } else {
+            a = new TSrvMsgAdvertise( (Ptr*) msg);
         }
         break;
     }
     case REQUEST_MSG: {
         SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
         a = new TSrvMsgReply(nmsg);
+        break;
     }
     case CONFIRM_MSG: {
         SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;

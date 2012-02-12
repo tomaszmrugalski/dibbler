@@ -848,15 +848,13 @@ ESrvIfaceIdOrder TSrvCfgMgr::getInterfaceIDOrder()
     return InterfaceIDOrder;
 }
 
-/**
- * decreases prefix usage count (i.e. decreases prefix-pool usage by one)
- * Actual prefix is also deleted in AddrMgr.
- *
- * @param ifindex interface index
- * @param prefix  prefix to be deleted
- *
- * @return
- */
+/// @ decreases prefix usage count (i.e. decreases prefix-pool usage by one)
+/// Actual prefix is also deleted in AddrMgr.
+///
+/// @param ifindex interface index
+/// @param prefix  prefix to be deleted
+///
+/// @return true is deletion was successful
 bool TSrvCfgMgr::decrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
 {
     SPtr<TSrvCfgIface> iface;

@@ -320,7 +320,6 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         }
         case OPTION_PREFERENCE:
         case OPTION_UNICAST:
-        case OPTION_SERVERID:
         case OPTION_RELAY_MSG:
         case OPTION_INTERFACE_ID:
         case OPTION_STATUS_CODE : {
@@ -484,6 +483,16 @@ void TSrvMsg::send()
         offset += this->storeSelf(buf+offset);
     }
     SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+}
+
+SPtr<TDUID> TSrvMsg::getClientDUID() {
+    SPtr<TOpt> opt;
+    opt = getOption(OPTION_CLIENTID);
+    if (!opt)
+        return 0;
+
+    SPtr<TSrvOptClientIdentifier> clientid = (Ptr*) opt;
+    return clientid->getDUID();
 }
 
 void TSrvMsg::processIA_NA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_NA> queryOpt) {

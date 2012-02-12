@@ -19,7 +19,7 @@
 
 TSrvMsgSolicit::TSrvMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 			       char* buf, int bufSize)
-    :TSrvMsg(iface,addr,buf,bufSize) {
+    :TSrvMsg(iface, addr, buf, bufSize) {
 }
 
 void TSrvMsgSolicit::doDuties() {

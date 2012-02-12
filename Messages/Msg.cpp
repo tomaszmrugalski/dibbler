@@ -48,13 +48,13 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
 
 void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
 {
-    PeerAddr=addr;
+    PeerAddr = addr;
 
-    this->Iface=iface;
-    TransID=transID;
-    IsDone=false;
-    MsgType=msgType;
-    this->pkt=NULL;
+    Iface = iface;
+    TransID = transID;
+    IsDone = false;
+    MsgType = msgType;
+    pkt = NULL;
     DigestType = DIGEST_NONE; /* by default digest is none */
     AuthInfoPtr = NULL;
     AuthInfoKey = NULL;

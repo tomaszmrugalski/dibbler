@@ -71,7 +71,7 @@ public:
     void send();
 
     void processOptions(SPtr<TSrvMsg> clientMsg, bool quiet);
-    SPtr<TDUID> getClientDUID() { return ClientDUID; }
+    SPtr<TDUID> getClientDUID();
 
 protected:
     SPtr<TSrvOptOptionRequest> ORO;

@@ -148,7 +148,7 @@ int TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAd
     SrvCfgAddrClassLst.first();
     while( (ptrClass=SrvCfgAddrClassLst.get()) && (cnt<100) ) {
         if (ptrClass->clntSupported(duid, clntAddr) &&
-            ptrClass->getClassMaxLease() < ptrClass->getAssignedCount()) {
+            ptrClass->getClassMaxLease() > ptrClass->getAssignedCount()) {
             clsid[cnt]   = ptrClass->getID();
             share[cnt]   = ptrClass->getShare();
             sum         += ptrClass->getShare();

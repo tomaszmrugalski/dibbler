@@ -368,9 +368,9 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent)
     :TOptIA_NA(queryOpt->getIAID(),0x7fffffff,0x7fffffff, parent)
 {
-    this->ClntDuid  = clntDuid;
-    this->ClntAddr  = clntAddr;
-    this->Iface     = iface;
+    ClntDuid  = clntDuid;
+    ClntAddr  = clntAddr;
+    Iface     = iface;
 
     this->IAID = queryOpt->getIAID();
 
@@ -656,7 +656,12 @@ bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     // worst case: address does not belong to supported class
     // or specified hint is invalid
     SPtr<TIPv6Addr> candidate;
-    SPtr<TSrvCfgAddrClass> pool = SrvCfgMgr().getIfaceByID(Iface)->getRandomClass(this->ClntDuid, this->ClntAddr);
+    SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
+    if (!iface) {
+        Log(Error) << "Failed to find interface with ifindex=" << Iface << LogEnd;
+        return false;
+    }
+    SPtr<TSrvCfgAddrClass> pool = iface->getRandomClass(ClntDuid, ClntAddr);
 
     if (!pool) {
 	Log(Warning) << "Unable to find any suitable (allowed, non-full) class for this client." << LogEnd;

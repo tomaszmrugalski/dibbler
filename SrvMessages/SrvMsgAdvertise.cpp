@@ -37,11 +37,11 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> solicit)
     copyAAASPI( (Ptr*)solicit );
     copyRemoteID( (Ptr*)solicit );
 
-    if (!this->handleSolicitOptions(solicit)) {
-	this->IsDone = true;
+    if (!handleSolicitOptions(solicit)) {
+	IsDone = true;
 	return;
     }
-    this->IsDone = false;
+    IsDone = false;
 }
 
 bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
