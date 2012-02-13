@@ -469,8 +469,16 @@ bool TClntOptIA_NA::isValid()
 	}
     }
 
-    if (Valid)
-        return this->T1<=this->T2;
-    else
-        return false;
+    // RFC3315, section 22.4:
+    // If a client receives an IA_NA with T1 greater than T2, and both T1
+    // and T2 are greater than 0, the client discards the IA_NA option and
+    // processes the remainder of the message as though the server had not
+    // included the invalid IA_NA option.
+    if (T1 > T2) {
+	Log(Warning) << "Received malformed IA_NA: T1(" << T1 << ") is greater than T2("
+		     << T2 << "). Ignoring IA_NA." << LogEnd;
+	return false;
+    }
+
+    return Valid;
 }

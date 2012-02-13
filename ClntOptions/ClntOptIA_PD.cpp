@@ -317,10 +317,18 @@ bool TClntOptIA_PD::isValid()
 	}
     }
 
-    if (Valid)
-        return this->T1<=this->T2;
-    else
-        return false;
+    // Last paragraph in section 9 of RFC3633
+    // If a requesting router receives an IA_PD with T1 greater than T2, and
+    // both T1 and T2 are greater than 0, the client discards the IA_PD
+    // option and processes the remainder of the message as though the
+    // delegating router had not included the IA_PD option.
+    if (T1 > T2) {
+	Log(Warning) << "Received malformed IA_PD: T1(" << T1 << ") is greater than T2("
+		     << T2 << "). Ignoring IA_PD." << LogEnd;
+	return false;
+    }
+
+    return Valid;
 }
 
 void TClntOptIA_PD::setState(EState state)

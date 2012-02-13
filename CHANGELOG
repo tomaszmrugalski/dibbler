@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+0.8.3 [not-released-yet]
+  - Cli: Reasons for rejecting IA_NA/IA_PD are now logged (i.e. T1>T2)
+  - Cli: client no longer crashes when server's reply does not included expected IA_PD
+
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,
     ClntOpt*Domain. Client binary is now smaller by 36kb (exact size is architecture dependent)
