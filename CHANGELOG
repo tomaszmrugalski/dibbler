@@ -6,6 +6,7 @@
   - Cli/Srv: IFINDEX variable is now set properly in notify scripts.
   - Srv: Notify script is now called when lease is expired. (bug #216)
   - Srv: Existing prefix lease is now assigned to returning clients if exists (bug #224)
+  - Clnt: code refactoring. Code is now a bit smaller. Removed class: ClntOptNISServers
 
 0.8.1RC1 [2011-11-11]
   - Fixed socket binding problem on server that may affect relay scenarios

@@ -31,6 +31,7 @@ public:
     int getSize();
     void firstAddr();
     SPtr<TIPv6Addr> getAddr();
+    const List(TIPv6Addr)& getAddrLst() { return AddrLst; }
     int countAddr();
     bool isValid();
     virtual bool doDuties() { return true; } // does nothing on its own

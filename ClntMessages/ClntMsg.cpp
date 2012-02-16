@@ -39,7 +39,7 @@
 #include "ClntOptSIPServer.h"
 #include "ClntOptSIPDomain.h"
 #include "ClntOptFQDN.h"
-#include "ClntOptNISServer.h"
+#include "OptAddrLst.h"
 #include "ClntOptNISDomain.h"
 #include "ClntOptNISPServer.h"
 #include "ClntOptNISPDomain.h"
@@ -190,7 +190,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TClntOptSIPDomain(buf+pos, length, this);
 	    break;
 	case OPTION_NIS_SERVERS:
-	    ptr = new TClntOptNISServers(buf+pos, length, this);
+	    ptr = new TOptAddrLst(OPTION_NIS_SERVERS, buf+pos, length, this);
 	    break;
 	case OPTION_NIS_DOMAIN_NAME:
 	    ptr = new TClntOptNISDomain(buf+pos, length, this);
@@ -622,7 +622,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedNISServerLst();
 	if ( lst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptNISServers> opt = new TClntOptNISServers( lst,this );
+	    SPtr<TOpt> opt = new TOptAddrLst(OPTION_NIS_SERVERS, *lst, this );
 	    Options.push_back( (Ptr*)opt );
 	}
 	iface->setNISServerState(STATE_INPROCESS);
@@ -828,6 +828,18 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
       Log(Warning) << "Received REPLY message without SERVER ID option. Message ignored." << LogEnd;
       return;
     }
+    SPtr<TDUID> duid = ptrDUID->getDUID();
+
+    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(getIface());
+    if (!iface) {
+        Log(Error) << "Unable to find physical interface with ifindex=" << getIface() << LogEnd;
+        return;
+    }
+
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface( getIface() );
+    if (!cfgIface) {
+        Log(Error) << "Unable to find configuration interface with ifindex=" << getIface() << LogEnd;
+    }
 
     // analyse all options received
     SPtr<TOpt> option;
@@ -851,7 +863,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    }
 
 	    // configure received IA
-	    clntOpt->setContext(ptrDUID->getDUID(), 0/* srvAddr used is unicast */, this->Iface);
+	    clntOpt->setContext(duid, 0/* srvAddr used is unicast */, this->Iface);
 	    clntOpt->doDuties();
 
 	    // delete that IA from request list
@@ -913,7 +925,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    }
 
 	    // configure received PD
-	    pd->setContext(ptrDUID->getDUID(), 0/* srvAddr used in unicast */, this);
+	    pd->setContext(duid, 0/* srvAddr used in unicast */, this);
 	    pd->doDuties();
 
 	    // delete that PD from request list
@@ -935,6 +947,14 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 
 	    break;
 	    }
+        case OPTION_NIS_SERVERS:
+            {
+                SPtr<TOptAddrLst> nisservers = (Ptr*) option;
+                cfgIface->setNISServerState(STATE_CONFIGURED);
+                iface->setNISServerLst(duid, reply->getAddr(), nisservers->getAddrLst());
+                break;
+            }
+
 #ifdef MOD_REMOTE_AUTOCONF
 	case OPTION_NEIGHBORS:
 	  {
