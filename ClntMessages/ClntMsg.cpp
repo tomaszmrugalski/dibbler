@@ -41,7 +41,6 @@
 #include "ClntOptFQDN.h"
 #include "OptAddrLst.h"
 #include "ClntOptNISDomain.h"
-#include "ClntOptNISPServer.h"
 #include "ClntOptNISPDomain.h"
 #include "ClntOptLifetime.h"
 
@@ -196,7 +195,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TClntOptNISDomain(buf+pos, length, this);
 	    break;
 	case OPTION_NISP_SERVERS:
-	    ptr = new TClntOptNISPServers(buf+pos, length, this);
+	    ptr = new TOptAddrLst(OPTION_NISP_SERVERS, buf+pos, length, this);
 	    break;
 	case OPTION_NISP_DOMAIN_NAME:
 	    ptr = new TClntOptNISPDomain(buf+pos, length, this);
@@ -320,7 +319,7 @@ SPtr<TOpt> TClntMsg::parseExtraOption(const char *buf, unsigned int code, unsign
 	}
 	case TOpt::Layout_StringLst:
 	{
-	    ptr = new TOptStringLst(code, buf, length, this);
+	    ptr = new TOptDomainLst(code, buf, length, this);
 	    Log(Info) << tmp.str() << "list-of-strings" << LogEnd;
 	    break;
 	}
@@ -622,8 +621,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedNISServerLst();
 	if ( lst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TOpt> opt = new TOptAddrLst(OPTION_NIS_SERVERS, *lst, this );
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptAddrLst(OPTION_NIS_SERVERS, *lst, this ));
 	}
 	iface->setNISServerState(STATE_INPROCESS);
     }
@@ -646,8 +644,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedNISPServerLst();
 	if ( lst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptNISPServers> opt = new TClntOptNISPServers( lst,this );
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptAddrLst(OPTION_NISP_SERVERS, *lst, this) );
 	}
 	iface->setNISPServerState(STATE_INPROCESS);
     }
@@ -847,7 +844,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     // find ORO in received options
     reply->firstOption();
     SPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
-
+    
     reply->firstOption();
     while (option = reply->getOption() ) {
 	switch (option->getOptType())
@@ -952,6 +949,13 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
                 SPtr<TOptAddrLst> nisservers = (Ptr*) option;
                 cfgIface->setNISServerState(STATE_CONFIGURED);
                 iface->setNISServerLst(duid, reply->getAddr(), nisservers->getAddrLst());
+                break;
+            }
+        case OPTION_NISP_SERVERS:
+            {
+                SPtr<TOptAddrLst> nispservers = (Ptr*) option;
+                cfgIface->setNISPServerState(STATE_CONFIGURED);
+                iface->setNISPServerLst(duid, reply->getAddr(), nispservers->getAddrLst());
                 break;
             }
 

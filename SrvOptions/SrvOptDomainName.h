@@ -17,9 +17,9 @@
 #ifndef SRVOPTDOMAINNAME_H
 #define SRVOPTDOMAINNAME_H
 
-#include "OptStringLst.h"
+#include "OptDomainLst.h"
 
-class TSrvOptDomainName : public TOptStringLst
+class TSrvOptDomainName : public TOptDomainLst
 {
 public:
     TSrvOptDomainName(List(string) domains, TMsg* parent);

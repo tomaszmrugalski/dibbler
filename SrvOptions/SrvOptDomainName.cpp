@@ -18,12 +18,12 @@
 #include "DHCPConst.h"
 
 TSrvOptDomainName::TSrvOptDomainName(List(string) domains, TMsg* parent)
-    :TOptStringLst(OPTION_DOMAIN_LIST, domains, parent)
+    :TOptDomainLst(OPTION_DOMAIN_LIST, domains, parent)
 {
 }
 
 TSrvOptDomainName::TSrvOptDomainName(char *buf, int bufsize, TMsg* parent)
-    :TOptStringLst(OPTION_DOMAIN_LIST, buf, bufsize, parent)
+    :TOptDomainLst(OPTION_DOMAIN_LIST, buf, bufsize, parent)
 {
 
 }

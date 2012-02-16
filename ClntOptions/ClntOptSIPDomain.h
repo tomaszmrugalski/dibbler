@@ -19,11 +19,11 @@
 #define CLNTOPTSIPDOMAIN_H
 
 #include <iostream>
-#include "OptStringLst.h"
+#include "OptDomainLst.h"
 #include "DUID.h"
 #include "SmartPtr.h"
 
-class TClntOptSIPDomain : public TOptStringLst
+class TClntOptSIPDomain : public TOptDomainLst
 {
  public:
     TClntOptSIPDomain(List(string) * domains, TMsg* parent);

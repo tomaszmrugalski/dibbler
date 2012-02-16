@@ -19,11 +19,11 @@
 #define SRVOPTSIPDOMAIN_H
 
 #include <iostream>
-#include "OptStringLst.h"
+#include "OptDomainLst.h"
 #include "DUID.h"
 #include "SmartPtr.h"
 
-class TSrvOptSIPDomain : public TOptStringLst
+class TSrvOptSIPDomain : public TOptDomainLst
 {
  public:
     TSrvOptSIPDomain(List(string) domains, TMsg* parent);

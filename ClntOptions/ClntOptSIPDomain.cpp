@@ -16,11 +16,11 @@
 #include "Logger.h"
 
 TClntOptSIPDomain::TClntOptSIPDomain(List(string) *domains, TMsg* parent)    
-    :TOptStringLst(OPTION_SIP_SERVER_D, *domains, parent) {
+    :TOptDomainLst(OPTION_SIP_SERVER_D, *domains, parent) {
 }
 
 TClntOptSIPDomain::TClntOptSIPDomain(char *buf, int bufsize, TMsg* parent)
-    :TOptStringLst(OPTION_SIP_SERVER_D, buf,bufsize, parent) {
+    :TOptDomainLst(OPTION_SIP_SERVER_D, buf,bufsize, parent) {
 }
 
 bool TClntOptSIPDomain::doDuties() {
