@@ -7,8 +7,6 @@
  *          Mateusz Ozga <matozga@gmail.com>
  * 
  * released under GNU GPL v2 only licence
- *
- * $Id: ClntMsg.cpp,v 1.42 2008-11-13 22:40:26 thomson Exp $
  */
 
 #include <cmath>
@@ -24,6 +22,7 @@
 #include "OptAddrLst.h"
 #include "OptAddr.h"
 #include "OptDUID.h"
+#include "OptDomainLst.h"
 #include "OptRtPrefix.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIA_PD.h"
@@ -32,16 +31,9 @@
 #include "ClntOptPreference.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptStatusCode.h"
-#include "ClntOptDNSServers.h"
-#include "ClntOptDomainName.h"
-#include "ClntOptNTPServers.h"
 #include "ClntOptTimeZone.h"
-#include "ClntOptSIPServer.h"
-#include "ClntOptSIPDomain.h"
 #include "ClntOptFQDN.h"
 #include "OptAddrLst.h"
-#include "ClntOptNISDomain.h"
-#include "ClntOptNISPDomain.h"
 #include "ClntOptLifetime.h"
 
 #ifndef MOD_DISABLE_AUTH
@@ -170,35 +162,22 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	case OPTION_RAPID_COMMIT:
 	    ptr = new TOptEmpty(code, buf+pos,length,this);
 	    break;
+	case OPTION_NIS_SERVERS:
+	case OPTION_NISP_SERVERS:
 	case OPTION_DNS_SERVERS:
-	    ptr = new TClntOptDNSServers(buf+pos,length,this);
-	    break;
 	case OPTION_SNTP_SERVERS:
-	    ptr = new TClntOptNTPServers(buf+pos,length,this);
+	case OPTION_SIP_SERVER_A:
+	    ptr = new TOptAddrLst(code, buf+pos, length, this);
 	    break;
 	case OPTION_DOMAIN_LIST:
-	    ptr = new TClntOptDomainName(buf+pos, length, this);
+	case OPTION_SIP_SERVER_D:
+	case OPTION_NIS_DOMAIN_NAME:
+	case OPTION_NISP_DOMAIN_NAME:
+	    ptr = new TOptDomainLst(code, buf+pos, length, this);
 	    break;
 	case OPTION_NEW_TZDB_TIMEZONE:
 	    ptr = new TClntOptTimeZone(buf+pos, length,this);
 	    break;
-	case OPTION_SIP_SERVER_A:
-	    ptr = new TClntOptSIPServers(buf+pos, length, this);
-	    break;
-	case OPTION_SIP_SERVER_D:
-	    ptr = new TClntOptSIPDomain(buf+pos, length, this);
-	    break;
-	case OPTION_NIS_SERVERS:
-	    ptr = new TOptAddrLst(OPTION_NIS_SERVERS, buf+pos, length, this);
-	    break;
-	case OPTION_NIS_DOMAIN_NAME:
-	    ptr = new TClntOptNISDomain(buf+pos, length, this);
-	    break;
-	case OPTION_NISP_SERVERS:
-	    ptr = new TOptAddrLst(OPTION_NISP_SERVERS, buf+pos, length, this);
-	    break;
-	case OPTION_NISP_DOMAIN_NAME:
-	    ptr = new TClntOptNISPDomain(buf+pos, length, this);
 	    break;
 	case OPTION_FQDN:
 	    ptr = new TClntOptFQDN(buf+pos, length, this);
@@ -530,8 +509,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * dnsLst = iface->getProposedDNSServerLst();
 	if (dnsLst->count()) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptDNSServers> opt = new TClntOptDNSServers(dnsLst,this);
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptAddrLst(OPTION_DNS_SERVERS, *dnsLst, this) );
 	}
 	iface->setDNSServerState(STATE_INPROCESS);
     }
@@ -543,8 +521,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(string) * domainsLst = iface->getProposedDomainLst();
 	if ( domainsLst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptDomainName> opt = new TClntOptDomainName(domainsLst,this);
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptDomainLst(OPTION_DOMAIN_LIST, *domainsLst, this));
 	}
 	iface->setDomainState(STATE_INPROCESS);
     }
@@ -556,8 +533,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * ntpLst = iface->getProposedNTPServerLst();
 	if (ntpLst->count()) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptNTPServers> opt = new TClntOptNTPServers(ntpLst,this);
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptAddrLst(OPTION_SNTP_SERVERS, *ntpLst, this) );
 	}
 	iface->setNTPServerState(STATE_INPROCESS);
     }
@@ -582,8 +558,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedSIPServerLst();
 	if ( lst->count()) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptSIPServers> opt = new TClntOptSIPServers( lst, this );
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptAddrLst(OPTION_SIP_SERVER_A, *lst, this ) );
 	}
 	iface->setSIPServerState(STATE_INPROCESS);
     }
@@ -595,8 +570,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(string) * domainsLst = iface->getProposedSIPDomainLst();
 	if ( domainsLst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptSIPDomain> opt = new TClntOptSIPDomain( domainsLst,this );
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptDomainLst(OPTION_SIP_SERVER_D, *domainsLst, this ));
 	}
 	iface->setSIPDomainState(STATE_INPROCESS);
     }
@@ -631,8 +605,7 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_NIS_DOMAIN_NAME);
 	string domain = iface->getProposedNISDomain();
 	if (domain.length()) {
-	    SPtr<TClntOptNISDomain> opt = new TClntOptNISDomain( domain,this );
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, domain, this) );
 	}
 	iface->setNISDomainState(STATE_INPROCESS);
     }
@@ -654,8 +627,7 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_NISP_DOMAIN_NAME);
 	string domain = iface->getProposedNISPDomain();
 	if (domain.length()) {
-	    SPtr<TClntOptNISPDomain> opt = new TClntOptNISPDomain( domain,this );
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back( new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, domain, this) );
 	}
 	iface->setNISPDomainState(STATE_INPROCESS);
     }
@@ -944,6 +916,13 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 
 	    break;
 	    }
+        case OPTION_DNS_SERVERS:
+            {
+                SPtr<TOptAddrLst> dnsservers = (Ptr*) option;
+                cfgIface->setDNSServerState(STATE_CONFIGURED);
+                iface->setDNSServerLst(duid, reply->getAddr(), dnsservers->getAddrLst());
+                break;
+            }
         case OPTION_NIS_SERVERS:
             {
                 SPtr<TOptAddrLst> nisservers = (Ptr*) option;
@@ -957,6 +936,62 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
                 cfgIface->setNISPServerState(STATE_CONFIGURED);
                 iface->setNISPServerLst(duid, reply->getAddr(), nispservers->getAddrLst());
                 break;
+            }
+        case OPTION_SNTP_SERVERS:
+            {
+                SPtr<TOptAddrLst> ntpservers = (Ptr*) option;
+                cfgIface->setNTPServerState(STATE_CONFIGURED);
+                iface->setNTPServerLst(duid, reply->getAddr(), ntpservers->getAddrLst());
+                break;
+            }
+        case OPTION_SIP_SERVER_A:
+            {
+                SPtr<TOptAddrLst> sipservers = (Ptr*) option;
+                cfgIface->setSIPServerState(STATE_CONFIGURED);
+                iface->setSIPServerLst(duid, reply->getAddr(), sipservers->getAddrLst());
+                break;
+            }
+        case OPTION_DOMAIN_LIST:
+            {
+                SPtr<TOptDomainLst> domains = (Ptr*) option;
+                cfgIface->setDomainState(STATE_CONFIGURED);
+                iface->setDomainLst(duid, reply->getAddr(), domains->getDomainLst() );
+                break;
+            }
+        case OPTION_SIP_SERVER_D:
+            {
+                SPtr<TOptDomainLst> sipdomains = (Ptr*) option;
+                cfgIface->setSIPDomainState(STATE_CONFIGURED);
+                iface->setSIPDomainLst(duid, reply->getAddr(), sipdomains->getDomainLst() );
+                break;
+            }
+        case OPTION_NIS_DOMAIN_NAME:
+            {
+                SPtr<TOptDomainLst> nisdomain = (Ptr*) option;
+                List(string) domains = nisdomain->getDomainLst();
+                if (domains.count() == 1) {
+                    cfgIface->setNISDomainState(STATE_CONFIGURED);
+                    iface->setNISDomain(duid, reply->getAddr(), nisdomain->getDomain());
+                } else {
+                    Log(Warning) << "Malformed NIS Domain option received. " << domains.count()
+                                 << " domain(s) received, expected exactly 1." << LogEnd;
+                    cfgIface->setNISDomainState(STATE_FAILED);
+                }
+                break;
+            }
+        case OPTION_NISP_DOMAIN_NAME:
+            {
+                SPtr<TOptDomainLst> nispdomain = (Ptr*) option;
+                List(string) domains = nispdomain->getDomainLst();
+                if (domains.count() == 1) {
+                    cfgIface->setNISPDomainState(STATE_CONFIGURED);
+                    iface->setNISPDomain(duid, reply->getAddr(), nispdomain->getDomain());
+                } else {
+                    Log(Warning) << "Malformed NIS+ Domain option received. " << domains.count()
+                                 << " domain(s) received, expected exactly 1." << LogEnd;
+                    cfgIface->setNISDomainState(STATE_FAILED);
+                }
+
             }
 
 #ifdef MOD_REMOTE_AUTOCONF

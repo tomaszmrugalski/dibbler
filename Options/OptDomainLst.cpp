@@ -17,10 +17,20 @@
 using namespace std;
 
 TOptDomainLst::TOptDomainLst(int type, List(string) strLst, TMsg* parent)
-    :TOpt(type, parent)
-{
-    this->StringLst = strLst;
+    :TOpt(type, parent) {
+    StringLst = strLst;
 }
+
+TOptDomainLst::TOptDomainLst(int type, const std::string& domain, TMsg* parent)
+    :TOpt(type, parent) {
+    StringLst.append(new string(domain) );
+}
+
+const std::string& TOptDomainLst::getDomain() {
+    StringLst.first();
+    return *StringLst.get();
+}
+
 
 TOptDomainLst::TOptDomainLst(int type, const char *buf, unsigned short bufsize, TMsg* parent)
     :TOpt(type, parent) {

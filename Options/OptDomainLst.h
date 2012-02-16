@@ -18,7 +18,10 @@ class TOptDomainLst : public TOpt
 {
 public:
     TOptDomainLst(int type, List(string) strLst, TMsg* parent);
+    TOptDomainLst(int type, const std::string& domain, TMsg* parent);
     TOptDomainLst(int type, const char *buf, unsigned short bufsize, TMsg* parent);
+    const List(string)& getDomainLst() { return StringLst; }
+    const std::string& getDomain();
     char * storeSelf( char* buf);
     int getSize();
     int countString();
