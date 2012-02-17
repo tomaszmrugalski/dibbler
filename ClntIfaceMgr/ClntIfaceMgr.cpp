@@ -549,7 +549,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             int offset = prefixLen/8;
             if (prefixLen%8)
                 offset++;
-            buf[offset] = x->getID();
+            buf[offset] = (*i)->getID();
         } else {
             // users with too much time that play with virtual interfaces are out of luck
             Log(Error) << "Something is wrong. Detected more than 256 interface." << LogEnd;
