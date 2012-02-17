@@ -5,6 +5,7 @@
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers ClntOpt*Domain
     client image is now smaller by 36kb (exact size is architecture dependent)
   - Cli: NIS, NIS+ domains are now encoded properly by client
+  - Example configs are now using 2001:db8:1:: prefix dedicated to testing and example purposes
 
 0.8.1 [2011-12-31]
   - Srv: Prefixes are now expired properly.
