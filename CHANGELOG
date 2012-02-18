@@ -11,6 +11,7 @@
   - Cli: Prefix split is now done properly, even for prefix lengths not divisible by 8
   - Cli: It is now possible to specify downlink interfaces for prefix delegation (downlink-prefix-ifaces)
   - Cli: prefixes are now refreshed properly, even when system prefix configuration failed (bug #238)
+  - Cli: client no longer segfaults when temporary addresses are requested (bug #241, debian 659476)
 
 0.8.1 [2011-12-31]
   - Srv: Prefixes are now expired properly.

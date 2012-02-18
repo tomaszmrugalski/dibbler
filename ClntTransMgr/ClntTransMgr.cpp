@@ -86,13 +86,12 @@ TClntTransMgr::TClntTransMgr(const std::string config)
     IsDone = false;
 }
 
-
 bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
 {
     // create IAs in AddrMgr corresponding to those specified in CfgMgr.
     SPtr<TClntCfgIA> ia;
     iface->firstIA();
-    while(ia=iface->getIA()) {
+    while(ia = iface->getIA()) {
 	if (ClntAddrMgr().getIA(ia->getIAID()))
 	    continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
 	SPtr<TAddrIA> addrIA = new TAddrIA(iface->getID(), TAddrIA::TYPE_IA,
@@ -103,7 +102,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
 
     SPtr<TClntCfgTA> ta;
     iface->firstTA();
-    if (ta = iface->getTA() &&  (!ClntAddrMgr().getTA(ta->getIAID())))
+    if ( (ta = iface->getTA()) &&  (!ClntAddrMgr().getTA(ta->getIAID())))
     {
 	// if there is such TA already, then skip adding it
 	SPtr<TAddrIA> addrTA = new TAddrIA(iface->getID(), TAddrIA::TYPE_TA,
@@ -111,6 +110,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
 					   ta->getIAID());
 	ClntAddrMgr().addTA(addrTA);
     }
+
     SPtr<TClntCfgPD> pd;
     iface->firstPD();
     while (pd = iface->getPD()) {
