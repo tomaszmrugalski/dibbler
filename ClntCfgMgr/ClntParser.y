@@ -122,7 +122,7 @@ namespace std
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_
 %token AFTR_
 %token ROUTING_
-%token ADDRESS_LIST_, STRING_KEYWORD_, REQUEST_
+%token ADDRESS_LIST_, STRING_KEYWORD_, DUID_KEYWORD, REQUEST_
 %token RECONFIGURE_
 %type  <ival> Number
 
@@ -1088,7 +1088,7 @@ DsLiteTunnelOption
 ;
 
 ExtraOption
-:OPTION_ Number '-' DUID_
+:OPTION_ Number DUID_KEYWORD_ DUID_
 {
     Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);

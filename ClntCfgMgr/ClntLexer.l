@@ -49,6 +49,7 @@ iface                 { return ClntParser::IFACE_;}
 no-config             { return ClntParser::NO_CONFIG_;}
 address               { return ClntParser::ADDRESS_;}
 string                { return ClntParser::STRING_KEYWORD_; }
+duid                  { return ClntParser::DUID_KEYWORD_; }
 address-list          { return ClntParser::ADDRESS_LIST_; }
 name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
