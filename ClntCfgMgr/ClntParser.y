@@ -113,7 +113,7 @@ namespace std
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
 %token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
-%token PD_, PREFIX_
+%token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
@@ -165,6 +165,7 @@ GlobalOptionDeclaration
 | Experimental
 | SkipConfirm
 | ReconfigureAccept
+| DownlinkPrefixInterfaces
 ;
 
 InterfaceOptionDeclaration
@@ -199,6 +200,13 @@ IAOptionDeclaration
 | ADDRESOptionDeclaration
 | ExperimentalAddrParams
 ;
+
+DownlinkPrefixInterfaces
+: DOWNLINK_PREFIX_IFACES_ {
+    PresentStringLst.clear();
+} StringList {
+    CfgMgr->setDownlinkPrefixIfaces(PresentStringLst);
+}
 
 InterfaceDeclaration
 /////////////////////////////////////////////////////////////////////////////

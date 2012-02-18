@@ -241,7 +241,9 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
 
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
         unsigned long pref, unsigned long valid, int prefixLength) {
-    /* TODO: implement this */
+
+    /** @TODO: implement this */
+    sprintf(Message, "Address update on BSD systems not implemented yet.");
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 

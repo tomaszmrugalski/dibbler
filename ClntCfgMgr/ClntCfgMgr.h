@@ -18,6 +18,7 @@ class ClntParser;
 #define CLNTCFGMGR_H
 
 #include <string>
+#include <vector>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "ClntCfgIface.h"
@@ -53,6 +54,9 @@ class TClntCfgMgr : public TCfgMgr
     void makeInactiveIface(int ifindex, bool inactive);
     int countIfaces();
     void dump();
+
+    void setDownlinkPrefixIfaces(List(string)& ifaces);
+    const std::vector<std::string>& getDownlinkPrefixIfaces() { return DownlinkPrefixIfaces_; }
     
     void setReconfigure(bool enable);
     bool getReconfigure();
@@ -128,6 +132,8 @@ private:
 #endif
 
     bool FQDNFlagS; // S bit in the FQDN option
+
+    std::vector<std::string> DownlinkPrefixIfaces_;
 
     static TClntCfgMgr * Instance;
 };

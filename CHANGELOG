@@ -7,6 +7,9 @@
   - Cli: NIS, NIS+ domains are now encoded properly by client
   - Example configs are now using 2001:db8:1:: prefix dedicated to testing and example purposes
   - Cli: Fix for prefix delegation segfault (bug #236)
+  - Srv: CONFIRM messages are now supported properly.
+  - Cli: Prefix split is now done properly, even for prefix lengths not divisible by 8
+  - Cli: It is now possible to specify downlink interfaces for prefix delegation (downlink-prefix-ifaces)
 
 0.8.1 [2011-12-31]
   - Srv: Prefixes are now expired properly.
