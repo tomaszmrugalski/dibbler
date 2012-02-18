@@ -283,6 +283,15 @@ new prefix scope. See Section \ref{client-scope-prefix}.
 \item[work-dir] -- (scope: global). Takes one string
  parameter. Defines working directory.
 
+\item[downlink-prefix-ifaces] -- (scope: global). Takes coma separated
+list of network interfaces. When client receives prefix from upstream
+router, it attempts to split it into remaining interfaces. It works in
+most cases, but if there are strange interfaces or specific
+requirements, this auto-selection mechanism can be disabled and list
+of downlink interfaces can be explicitly specified. This command is
+used for that purpose. See \ref{feature-prefix} and
+\ref{example-client-prefix}.
+
 \item[log-level] -- (scope: global). Takes one integer
 parameter. Defines verbose level of the log messages. The valid range
 is from 1 (very quiet) to 8 (very verbose). Those values are modelled
@@ -980,6 +989,28 @@ iface eth0 {
   }
 }
 \end{lstlisting}
+
+Client (requesting router in PD nomenclature) receives prefix from
+upstream router and tries to auto-select downstream interfaces. It
+tries to use interfaces that are up, running, multicast-capable, with
+MAC address at least 6 bytes long and were not used to obtain
+prefix. If this algorithm does not work in your case (e.g. because you
+want to use prefixes on other interfaces or you want some interfaces
+to be skipped), it is possible to explicitly enumerate downstream
+interfaces using \emph{downlink-prefix-ifaces}:
+
+\begin{lstlisting}
+# client.conf
+
+# received prefix will be split among following interfaces
+downlink-prefix-ifaces eth1, eth5
+
+# Ask for prefix over eth0
+iface eth0 {
+    pd 
+}
+\end{lstlisting}
+
 
 \subsubsection{Example 12: Insist mode}
 \label{example-client-insistmode}
