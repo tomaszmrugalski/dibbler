@@ -210,16 +210,17 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
         if (!ia)  {
             Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
             iaOk = false;
-        }
-        else if (!ia->getOption(OPTION_IAADDR)) {
-            Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
-            iaOk = false;
-        }
-        SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
-        if (st && st->getCode()!= STATUSCODE_SUCCESS) {
-            Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
-	            << "(" << st->getText() << "). Ignored." << LogEnd;
-            iaOk = false;
+        } else {
+            if (!ia->getOption(OPTION_IAADDR)) {
+                Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
+                iaOk = false;
+            }
+            SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
+            if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+                Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
+                            << "(" << st->getText() << "). Ignored." << LogEnd;
+                iaOk = false;
+            }
         }
         if (iaOk)
             somethingAssigned = true;
