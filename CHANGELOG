@@ -6,7 +6,7 @@
     ClntOpt*Domain. Client binary is now smaller by 36kb (exact size is architecture dependent)
   - Srv: core refactoring, similar to client. Code is now a bit smaller. Removed classes:
     SrvOpt*Server, SrvOpt*Domain.
-  - Cli: NIS, NIS+ domains are now encoded properly by client and server (bug #227)
+  - Cli/Srv: NIS, NIS+ domains are now encoded properly by client and server (bug #223, #227)
   - Example configs are now using 2001:db8:1:: prefix dedicated to testing and example purposes
   - Cli: Fix for prefix delegation segfault (bug #236)
   - Srv: CONFIRM messages are now supported properly.
