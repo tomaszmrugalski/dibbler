@@ -59,8 +59,6 @@ am_libSrvOptions_a_OBJECTS =  \
 	libSrvOptions_a-SrvOptAddrParams.$(OBJEXT) \
 	libSrvOptions_a-SrvOptAuthentication.$(OBJEXT) \
 	libSrvOptions_a-SrvOptClientIdentifier.$(OBJEXT) \
-	libSrvOptions_a-SrvOptDNSServers.$(OBJEXT) \
-	libSrvOptions_a-SrvOptDomainName.$(OBJEXT) \
 	libSrvOptions_a-SrvOptEcho.$(OBJEXT) \
 	libSrvOptions_a-SrvOptElapsed.$(OBJEXT) \
 	libSrvOptions_a-SrvOptFQDN.$(OBJEXT) \
@@ -72,17 +70,10 @@ am_libSrvOptions_a_OBJECTS =  \
 	libSrvOptions_a-SrvOptKeyGeneration.$(OBJEXT) \
 	libSrvOptions_a-SrvOptLifetime.$(OBJEXT) \
 	libSrvOptions_a-SrvOptLQ.$(OBJEXT) \
-	libSrvOptions_a-SrvOptNISDomain.$(OBJEXT) \
-	libSrvOptions_a-SrvOptNISPDomain.$(OBJEXT) \
-	libSrvOptions_a-SrvOptNISPServer.$(OBJEXT) \
-	libSrvOptions_a-SrvOptNISServer.$(OBJEXT) \
-	libSrvOptions_a-SrvOptNTPServers.$(OBJEXT) \
 	libSrvOptions_a-SrvOptOptionRequest.$(OBJEXT) \
 	libSrvOptions_a-SrvOptPreference.$(OBJEXT) \
 	libSrvOptions_a-SrvOptServerIdentifier.$(OBJEXT) \
 	libSrvOptions_a-SrvOptServerUnicast.$(OBJEXT) \
-	libSrvOptions_a-SrvOptSIPDomain.$(OBJEXT) \
-	libSrvOptions_a-SrvOptSIPServer.$(OBJEXT) \
 	libSrvOptions_a-SrvOptStatusCode.$(OBJEXT) \
 	libSrvOptions_a-SrvOptTA.$(OBJEXT) \
 	libSrvOptions_a-SrvOptTimeZone.$(OBJEXT) \
@@ -272,29 +263,32 @@ libSrvOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/IfaceMgr -I$(top_srcdir)/SrvCfgMgr \
 	-I$(top_srcdir)/CfgMgr -I$(top_srcdir)/SrvAddrMgr \
 	-I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvTransMgr
+#libSrvOptions_a_SOURCES += SrvOptDNSServers.cpp SrvOptDNSServers.h
+#libSrvOptions_a_SOURCES += SrvOptDomainName.cpp SrvOptDomainName.h
+#libSrvOptions_a_SOURCES += SrvOptNISDomain.cpp SrvOptNISDomain.h
+#libSrvOptions_a_SOURCES += SrvOptNISPDomain.cpp SrvOptNISPDomain.h
+#libSrvOptions_a_SOURCES += SrvOptNISPServer.cpp SrvOptNISPServer.h
+#libSrvOptions_a_SOURCES += SrvOptNISServer.cpp SrvOptNISServer.h
+#libSrvOptions_a_SOURCES += SrvOptNTPServers.cpp SrvOptNTPServers.h
+#libSrvOptions_a_SOURCES += SrvOptSIPDomain.cpp SrvOptSIPDomain.h
+#libSrvOptions_a_SOURCES += SrvOptSIPServer.cpp SrvOptSIPServer.h
 libSrvOptions_a_SOURCES = SrvOptAAAAuthentication.cpp \
 	SrvOptAAAAuthentication.h SrvOptAddrParams.cpp \
 	SrvOptAddrParams.h SrvOptAuthentication.cpp \
 	SrvOptAuthentication.h SrvOptClientIdentifier.cpp \
-	SrvOptClientIdentifier.h SrvOptDNSServers.cpp \
-	SrvOptDNSServers.h SrvOptDomainName.cpp SrvOptDomainName.h \
-	SrvOptEcho.cpp SrvOptEcho.h SrvOptElapsed.cpp SrvOptElapsed.h \
-	SrvOptFQDN.cpp SrvOptFQDN.h SrvOptIAAddress.cpp \
-	SrvOptIAAddress.h SrvOptIA_NA.cpp SrvOptIA_NA.h \
-	SrvOptIA_PD.cpp SrvOptIA_PD.h SrvOptIAPrefix.cpp \
+	SrvOptClientIdentifier.h SrvOptEcho.cpp SrvOptEcho.h \
+	SrvOptElapsed.cpp SrvOptElapsed.h SrvOptFQDN.cpp SrvOptFQDN.h \
+	SrvOptIAAddress.cpp SrvOptIAAddress.h SrvOptIA_NA.cpp \
+	SrvOptIA_NA.h SrvOptIA_PD.cpp SrvOptIA_PD.h SrvOptIAPrefix.cpp \
 	SrvOptIAPrefix.h SrvOptInterfaceID.cpp SrvOptInterfaceID.h \
 	SrvOptKeyGeneration.cpp SrvOptKeyGeneration.h \
 	SrvOptLifetime.cpp SrvOptLifetime.h SrvOptLQ.cpp SrvOptLQ.h \
-	SrvOptNISDomain.cpp SrvOptNISDomain.h SrvOptNISPDomain.cpp \
-	SrvOptNISPDomain.h SrvOptNISPServer.cpp SrvOptNISPServer.h \
-	SrvOptNISServer.cpp SrvOptNISServer.h SrvOptNTPServers.cpp \
-	SrvOptNTPServers.h SrvOptOptionRequest.cpp \
-	SrvOptOptionRequest.h SrvOptPreference.cpp SrvOptPreference.h \
+	SrvOptOptionRequest.cpp SrvOptOptionRequest.h \
+	SrvOptPreference.cpp SrvOptPreference.h \
 	SrvOptServerIdentifier.cpp SrvOptServerIdentifier.h \
 	SrvOptServerUnicast.cpp SrvOptServerUnicast.h \
-	SrvOptSIPDomain.cpp SrvOptSIPDomain.h SrvOptSIPServer.cpp \
-	SrvOptSIPServer.h SrvOptStatusCode.cpp SrvOptStatusCode.h \
-	SrvOptTA.cpp SrvOptTA.h SrvOptTimeZone.cpp SrvOptTimeZone.h \
+	SrvOptStatusCode.cpp SrvOptStatusCode.h SrvOptTA.cpp \
+	SrvOptTA.h SrvOptTimeZone.cpp SrvOptTimeZone.h \
 	SrvOptUserClass.cpp SrvOptUserClass.h
 all: all-am
 
@@ -348,8 +342,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptAddrParams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptClientIdentifier.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptDNSServers.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptDomainName.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptEcho.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptElapsed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptFQDN.Po@am__quote@
@@ -361,15 +353,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptLQ.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptLifetime.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptNISDomain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptNISPDomain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptNISPServer.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptNISServer.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptNTPServers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptOptionRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptPreference.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptSIPDomain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptSIPServer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptServerIdentifier.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptServerUnicast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptStatusCode.Po@am__quote@
@@ -464,38 +449,6 @@ libSrvOptions_a-SrvOptClientIdentifier.obj: SrvOptClientIdentifier.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptClientIdentifier.cpp' object='libSrvOptions_a-SrvOptClientIdentifier.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptClientIdentifier.obj `if test -f 'SrvOptClientIdentifier.cpp'; then $(CYGPATH_W) 'SrvOptClientIdentifier.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptClientIdentifier.cpp'; fi`
-
-libSrvOptions_a-SrvOptDNSServers.o: SrvOptDNSServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptDNSServers.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptDNSServers.Tpo -c -o libSrvOptions_a-SrvOptDNSServers.o `test -f 'SrvOptDNSServers.cpp' || echo '$(srcdir)/'`SrvOptDNSServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptDNSServers.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptDNSServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptDNSServers.cpp' object='libSrvOptions_a-SrvOptDNSServers.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptDNSServers.o `test -f 'SrvOptDNSServers.cpp' || echo '$(srcdir)/'`SrvOptDNSServers.cpp
-
-libSrvOptions_a-SrvOptDNSServers.obj: SrvOptDNSServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptDNSServers.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptDNSServers.Tpo -c -o libSrvOptions_a-SrvOptDNSServers.obj `if test -f 'SrvOptDNSServers.cpp'; then $(CYGPATH_W) 'SrvOptDNSServers.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptDNSServers.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptDNSServers.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptDNSServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptDNSServers.cpp' object='libSrvOptions_a-SrvOptDNSServers.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptDNSServers.obj `if test -f 'SrvOptDNSServers.cpp'; then $(CYGPATH_W) 'SrvOptDNSServers.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptDNSServers.cpp'; fi`
-
-libSrvOptions_a-SrvOptDomainName.o: SrvOptDomainName.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptDomainName.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptDomainName.Tpo -c -o libSrvOptions_a-SrvOptDomainName.o `test -f 'SrvOptDomainName.cpp' || echo '$(srcdir)/'`SrvOptDomainName.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptDomainName.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptDomainName.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptDomainName.cpp' object='libSrvOptions_a-SrvOptDomainName.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptDomainName.o `test -f 'SrvOptDomainName.cpp' || echo '$(srcdir)/'`SrvOptDomainName.cpp
-
-libSrvOptions_a-SrvOptDomainName.obj: SrvOptDomainName.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptDomainName.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptDomainName.Tpo -c -o libSrvOptions_a-SrvOptDomainName.obj `if test -f 'SrvOptDomainName.cpp'; then $(CYGPATH_W) 'SrvOptDomainName.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptDomainName.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptDomainName.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptDomainName.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptDomainName.cpp' object='libSrvOptions_a-SrvOptDomainName.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptDomainName.obj `if test -f 'SrvOptDomainName.cpp'; then $(CYGPATH_W) 'SrvOptDomainName.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptDomainName.cpp'; fi`
 
 libSrvOptions_a-SrvOptEcho.o: SrvOptEcho.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptEcho.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptEcho.Tpo -c -o libSrvOptions_a-SrvOptEcho.o `test -f 'SrvOptEcho.cpp' || echo '$(srcdir)/'`SrvOptEcho.cpp
@@ -673,86 +626,6 @@ libSrvOptions_a-SrvOptLQ.obj: SrvOptLQ.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptLQ.obj `if test -f 'SrvOptLQ.cpp'; then $(CYGPATH_W) 'SrvOptLQ.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptLQ.cpp'; fi`
 
-libSrvOptions_a-SrvOptNISDomain.o: SrvOptNISDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISDomain.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISDomain.Tpo -c -o libSrvOptions_a-SrvOptNISDomain.o `test -f 'SrvOptNISDomain.cpp' || echo '$(srcdir)/'`SrvOptNISDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISDomain.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISDomain.cpp' object='libSrvOptions_a-SrvOptNISDomain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISDomain.o `test -f 'SrvOptNISDomain.cpp' || echo '$(srcdir)/'`SrvOptNISDomain.cpp
-
-libSrvOptions_a-SrvOptNISDomain.obj: SrvOptNISDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISDomain.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISDomain.Tpo -c -o libSrvOptions_a-SrvOptNISDomain.obj `if test -f 'SrvOptNISDomain.cpp'; then $(CYGPATH_W) 'SrvOptNISDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISDomain.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISDomain.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISDomain.cpp' object='libSrvOptions_a-SrvOptNISDomain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISDomain.obj `if test -f 'SrvOptNISDomain.cpp'; then $(CYGPATH_W) 'SrvOptNISDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISDomain.cpp'; fi`
-
-libSrvOptions_a-SrvOptNISPDomain.o: SrvOptNISPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISPDomain.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISPDomain.Tpo -c -o libSrvOptions_a-SrvOptNISPDomain.o `test -f 'SrvOptNISPDomain.cpp' || echo '$(srcdir)/'`SrvOptNISPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISPDomain.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISPDomain.cpp' object='libSrvOptions_a-SrvOptNISPDomain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISPDomain.o `test -f 'SrvOptNISPDomain.cpp' || echo '$(srcdir)/'`SrvOptNISPDomain.cpp
-
-libSrvOptions_a-SrvOptNISPDomain.obj: SrvOptNISPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISPDomain.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISPDomain.Tpo -c -o libSrvOptions_a-SrvOptNISPDomain.obj `if test -f 'SrvOptNISPDomain.cpp'; then $(CYGPATH_W) 'SrvOptNISPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISPDomain.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISPDomain.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISPDomain.cpp' object='libSrvOptions_a-SrvOptNISPDomain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISPDomain.obj `if test -f 'SrvOptNISPDomain.cpp'; then $(CYGPATH_W) 'SrvOptNISPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISPDomain.cpp'; fi`
-
-libSrvOptions_a-SrvOptNISPServer.o: SrvOptNISPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISPServer.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISPServer.Tpo -c -o libSrvOptions_a-SrvOptNISPServer.o `test -f 'SrvOptNISPServer.cpp' || echo '$(srcdir)/'`SrvOptNISPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISPServer.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISPServer.cpp' object='libSrvOptions_a-SrvOptNISPServer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISPServer.o `test -f 'SrvOptNISPServer.cpp' || echo '$(srcdir)/'`SrvOptNISPServer.cpp
-
-libSrvOptions_a-SrvOptNISPServer.obj: SrvOptNISPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISPServer.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISPServer.Tpo -c -o libSrvOptions_a-SrvOptNISPServer.obj `if test -f 'SrvOptNISPServer.cpp'; then $(CYGPATH_W) 'SrvOptNISPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISPServer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISPServer.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISPServer.cpp' object='libSrvOptions_a-SrvOptNISPServer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISPServer.obj `if test -f 'SrvOptNISPServer.cpp'; then $(CYGPATH_W) 'SrvOptNISPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISPServer.cpp'; fi`
-
-libSrvOptions_a-SrvOptNISServer.o: SrvOptNISServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISServer.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISServer.Tpo -c -o libSrvOptions_a-SrvOptNISServer.o `test -f 'SrvOptNISServer.cpp' || echo '$(srcdir)/'`SrvOptNISServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISServer.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISServer.cpp' object='libSrvOptions_a-SrvOptNISServer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISServer.o `test -f 'SrvOptNISServer.cpp' || echo '$(srcdir)/'`SrvOptNISServer.cpp
-
-libSrvOptions_a-SrvOptNISServer.obj: SrvOptNISServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNISServer.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNISServer.Tpo -c -o libSrvOptions_a-SrvOptNISServer.obj `if test -f 'SrvOptNISServer.cpp'; then $(CYGPATH_W) 'SrvOptNISServer.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISServer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNISServer.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNISServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNISServer.cpp' object='libSrvOptions_a-SrvOptNISServer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNISServer.obj `if test -f 'SrvOptNISServer.cpp'; then $(CYGPATH_W) 'SrvOptNISServer.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNISServer.cpp'; fi`
-
-libSrvOptions_a-SrvOptNTPServers.o: SrvOptNTPServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNTPServers.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNTPServers.Tpo -c -o libSrvOptions_a-SrvOptNTPServers.o `test -f 'SrvOptNTPServers.cpp' || echo '$(srcdir)/'`SrvOptNTPServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNTPServers.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNTPServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNTPServers.cpp' object='libSrvOptions_a-SrvOptNTPServers.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNTPServers.o `test -f 'SrvOptNTPServers.cpp' || echo '$(srcdir)/'`SrvOptNTPServers.cpp
-
-libSrvOptions_a-SrvOptNTPServers.obj: SrvOptNTPServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptNTPServers.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptNTPServers.Tpo -c -o libSrvOptions_a-SrvOptNTPServers.obj `if test -f 'SrvOptNTPServers.cpp'; then $(CYGPATH_W) 'SrvOptNTPServers.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNTPServers.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptNTPServers.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptNTPServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptNTPServers.cpp' object='libSrvOptions_a-SrvOptNTPServers.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptNTPServers.obj `if test -f 'SrvOptNTPServers.cpp'; then $(CYGPATH_W) 'SrvOptNTPServers.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptNTPServers.cpp'; fi`
-
 libSrvOptions_a-SrvOptOptionRequest.o: SrvOptOptionRequest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptOptionRequest.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptOptionRequest.Tpo -c -o libSrvOptions_a-SrvOptOptionRequest.o `test -f 'SrvOptOptionRequest.cpp' || echo '$(srcdir)/'`SrvOptOptionRequest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptOptionRequest.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptOptionRequest.Po
@@ -816,38 +689,6 @@ libSrvOptions_a-SrvOptServerUnicast.obj: SrvOptServerUnicast.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptServerUnicast.cpp' object='libSrvOptions_a-SrvOptServerUnicast.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptServerUnicast.obj `if test -f 'SrvOptServerUnicast.cpp'; then $(CYGPATH_W) 'SrvOptServerUnicast.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptServerUnicast.cpp'; fi`
-
-libSrvOptions_a-SrvOptSIPDomain.o: SrvOptSIPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptSIPDomain.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptSIPDomain.Tpo -c -o libSrvOptions_a-SrvOptSIPDomain.o `test -f 'SrvOptSIPDomain.cpp' || echo '$(srcdir)/'`SrvOptSIPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptSIPDomain.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptSIPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptSIPDomain.cpp' object='libSrvOptions_a-SrvOptSIPDomain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptSIPDomain.o `test -f 'SrvOptSIPDomain.cpp' || echo '$(srcdir)/'`SrvOptSIPDomain.cpp
-
-libSrvOptions_a-SrvOptSIPDomain.obj: SrvOptSIPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptSIPDomain.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptSIPDomain.Tpo -c -o libSrvOptions_a-SrvOptSIPDomain.obj `if test -f 'SrvOptSIPDomain.cpp'; then $(CYGPATH_W) 'SrvOptSIPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptSIPDomain.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptSIPDomain.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptSIPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptSIPDomain.cpp' object='libSrvOptions_a-SrvOptSIPDomain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptSIPDomain.obj `if test -f 'SrvOptSIPDomain.cpp'; then $(CYGPATH_W) 'SrvOptSIPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptSIPDomain.cpp'; fi`
-
-libSrvOptions_a-SrvOptSIPServer.o: SrvOptSIPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptSIPServer.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptSIPServer.Tpo -c -o libSrvOptions_a-SrvOptSIPServer.o `test -f 'SrvOptSIPServer.cpp' || echo '$(srcdir)/'`SrvOptSIPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptSIPServer.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptSIPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptSIPServer.cpp' object='libSrvOptions_a-SrvOptSIPServer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptSIPServer.o `test -f 'SrvOptSIPServer.cpp' || echo '$(srcdir)/'`SrvOptSIPServer.cpp
-
-libSrvOptions_a-SrvOptSIPServer.obj: SrvOptSIPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptSIPServer.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptSIPServer.Tpo -c -o libSrvOptions_a-SrvOptSIPServer.obj `if test -f 'SrvOptSIPServer.cpp'; then $(CYGPATH_W) 'SrvOptSIPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptSIPServer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptSIPServer.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptSIPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvOptSIPServer.cpp' object='libSrvOptions_a-SrvOptSIPServer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptSIPServer.obj `if test -f 'SrvOptSIPServer.cpp'; then $(CYGPATH_W) 'SrvOptSIPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptSIPServer.cpp'; fi`
 
 libSrvOptions_a-SrvOptStatusCode.o: SrvOptStatusCode.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptStatusCode.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptStatusCode.Tpo -c -o libSrvOptions_a-SrvOptStatusCode.o `test -f 'SrvOptStatusCode.cpp' || echo '$(srcdir)/'`SrvOptStatusCode.cpp
