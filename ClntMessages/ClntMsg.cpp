@@ -819,6 +819,10 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     
     reply->firstOption();
     while (option = reply->getOption() ) {
+
+	if (optORO)
+	  optORO->delOption(option->getOptType()); // delete received option from ORO
+
 	switch (option->getOptType())
 	{
 
@@ -991,7 +995,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
                                  << " domain(s) received, expected exactly 1." << LogEnd;
                     cfgIface->setNISDomainState(STATE_FAILED);
                 }
-
+		break;
             }
 
 #ifdef MOD_REMOTE_AUTOCONF
