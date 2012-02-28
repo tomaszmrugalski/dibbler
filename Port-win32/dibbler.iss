@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.8.1 (WinXP/2003/Vista/Win7 port)
-OutputBaseFilename=dibbler-0.8.1-win32
+AppVerName=Dibbler 0.8.2 (WinXP/2003/Vista/Win7 port)
+OutputBaseFilename=dibbler-0.8.2-win32
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
@@ -65,5 +65,3 @@ Name: "{group}\Relay View log file"; Filename: "notepad.exe"; Parameters: "{app}
 Name: "{group}\Relay Edit config file"; Filename: "notepad.exe"; Parameters: "{app}\relay.conf"
 
 Name: "{group}\Remove Dibbler"; Filename: {app}\unins000.exe
-
-
