@@ -55,6 +55,7 @@ user: dibbler-user.tex dibbler-user-config-client.tex \
 	fi
 
 devel: $(DOXYGEN)
+	mkdir -p html/
 	doxygen doxygen.cfg > html/doxygen.log 2>html/doxygen-error.log
 	cp logo* html/
 	echo "Encountered `wc -l html/doxygen-error.log` errors and warnings."
