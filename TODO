@@ -2,6 +2,7 @@
  Dibbler code TODO
 -------------------
 tentative plans for 0.9.0:
+- add cppcheck to make devel
 - DNS Updates: UDP support
 - DNS Updates: DHC ID record (RFC4701)
 - DNS Updates: conflict resolution (RFC4703)

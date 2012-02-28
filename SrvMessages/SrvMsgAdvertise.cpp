@@ -7,7 +7,6 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvMsgAdvertise.cpp,v 1.33 2008-11-13 22:40:26 thomson Exp $
  */
 
 #include "SrvMsgAdvertise.h"
@@ -20,10 +19,7 @@
 #include "SrvOptStatusCode.h"
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptPreference.h"
-#include "SrvOptDNSServers.h"
-#include "SrvOptNTPServers.h"
 #include "SrvOptTimeZone.h"
-#include "SrvOptDomainName.h"
 #include "SrvOptFQDN.h"
 #include "SrvOptIA_PD.h"
 #include "Logger.h"
