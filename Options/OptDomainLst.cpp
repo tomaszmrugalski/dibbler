@@ -75,13 +75,11 @@ char * TOptDomainLst::storeSelf(char* buf)
     SPtr<string> x;
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize()-4);
-    int len = 0;
     std::string::size_type dotpos;
    
     StringLst.first();
     while (x = StringLst.get() ) {
         string cp(*x);
-        len = (int)(x->length());
 
         dotpos = string::npos;
         while (cp.find(".")!=string::npos) {
