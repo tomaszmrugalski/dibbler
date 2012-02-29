@@ -129,10 +129,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..;.;include;..\poslib\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
+				AdditionalIncludeDirectories="..;.;include;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -457,15 +458,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptDomainLst.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptDUID.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Options\OptEmpty.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Options\OptEmpty.h"
 					>
 				</File>
 				<File
@@ -517,10 +518,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptStringLst.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Options\OptTA.cpp"
 					>
 				</File>
@@ -550,14 +547,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptAuthentication.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptDNSServers.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptDomainName.cpp"
 					>
 				</File>
 				<File
@@ -593,39 +582,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\ClntOptions\ClntOptNISDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNISPDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNISPServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNISServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNTPServers.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\ClntOptions\ClntOptOptionRequest.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptPreference.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptSIPDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptSIPServer.cpp"
 					>
 				</File>
 				<File
