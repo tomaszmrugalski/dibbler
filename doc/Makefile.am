@@ -60,6 +60,30 @@ devel: $(DOXYGEN)
 	cp logo* html/
 	echo "Encountered `wc -l html/doxygen-error.log` errors and warnings."
 
+cppcheck:
+	mkdir -p html
+	cppcheck --enable=all -f -v -j 8 .. 1> html/cppcheck.log 2> html/cppcheck-error.log
+
+compile.log:
+	mkdir -p html
+	cd .. && ./configure &> doc/html/configure.log
+	cd .. && $(MAKE) clean
+	cd .. && $(MAKE) > doc/html/compile.log 2> doc/html/compile-warnings.log
+
+check.log:
+	mkdir -p html
+	cd .. && ./configure --with-gtest=/home/thomson/devel/gtest-1.6.0 &> doc/html/configure-gtest.log
+	cd .. && $(MAKE) check &> doc/html/make-check.log
+
+distcheck.log:
+	mkdir -p html
+	cd .. && ./configure --with-gtest=/home/thomson/devel/gtest-1.6.0 &> doc/html/configure-gtest.log
+	cd .. && $(MAKE) distcheck &> doc/html/make-distcheck.log
+
+summary.log:
+	mkdir -p html/
+	wc -l html/compile-warnings.log html/cppcheck-error.log html/doxygen-error.log > html/summary.txt
+
 version.tex:
 	../scripts/xtract_version > version.tex
 
@@ -70,4 +94,4 @@ clean:
 clobber: clean
 	@rm -f *.pdf
 
-.PHONY: version.tex devel
+.PHONY: version.tex devel cppcheck compile.log check.log distcheck.log
