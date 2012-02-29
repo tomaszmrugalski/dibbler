@@ -101,6 +101,11 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 	
 	// check message type
 	msgtype = data[0];
+
+        if (msgtype > LEASEQUERY_REPLY_MSG) {
+            Log(Warning) << "Invalid message type " << msgtype << " received." << LogEnd;
+            return 0;
+        }
 	SPtr<TMsg> ptr;
 	SPtr<TIfaceIface> iface;
 	SPtr<TIfaceSocket> sock;
@@ -142,10 +147,10 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SPtr<TIfaceIface> iface,
 SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface, 
 						SPtr<TIPv6Addr> peer, 
 						char * buf, int bufsize) {
-    SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TRelOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
-    int hopTbl[HOP_COUNT_LIMIT];
+    // SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
+    // SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
+    //SPtr<TRelOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
+    //int hopTbl[HOP_COUNT_LIMIT];
     SPtr<TRelOptInterfaceID> ptrIfaceID;
     char * relayBuf=0;
     int relayLen = 0;
@@ -158,7 +163,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
     }
 
     // char type = buf[0]; // ignore it
-    int hopCount = buf[1]; // this one is not currently needed either
+    // int hopCount = buf[1]; // this one is not currently needed either
     SPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
     SPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
     buf+=34;
@@ -239,10 +244,10 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 	ptrIfaceID = new TRelOptInterfaceID(tmp->getInterfaceID(), 0);
     }
 
-    linkAddrTbl[relays] = linkAddr;
-    peerAddrTbl[relays] = peerAddr;
-    interfaceIDTbl[relays] = ptrIfaceID;
-    hopTbl[relays] = hopCount;
+    //linkAddrTbl[relays] = linkAddr;
+    //peerAddrTbl[relays] = peerAddr;
+    //interfaceIDTbl[relays] = ptrIfaceID;
+    //hopTbl[relays] = hopCount;
     relays++;
 
     SPtr<TRelMsg> msg;

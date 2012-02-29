@@ -848,6 +848,12 @@ void TSrvAddrMgr::cacheRead() {
         Log(Debug) << "Cache: " << SRVCACHE_FILE << " file: " << entries << " entries expected, but "
                    << this->Cache.count() << " found." << LogEnd;
     }
+    if (!parsed) {
+        Log(Info) << "Did not find any useful information in " << SRVCACHE_FILE << LogEnd;
+    }
+    if (!ended) {
+        Log(Warning) << SRVCACHE_FILE << " seems truncated." << LogEnd;
+    }
 }
 
 void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )

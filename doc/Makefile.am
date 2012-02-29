@@ -62,7 +62,7 @@ devel: $(DOXYGEN)
 
 cppcheck:
 	mkdir -p html
-	cppcheck --enable=all -f -v -j 8 .. 1> html/cppcheck.log 2> html/cppcheck-error.log
+	cppcheck --enable=all -f -v -j 2 .. 1> html/cppcheck.log 2> html/cppcheck-error.log
 
 compile.log:
 	mkdir -p html
@@ -73,12 +73,12 @@ compile.log:
 check.log:
 	mkdir -p html
 	cd .. && ./configure --with-gtest=/home/thomson/devel/gtest-1.6.0 &> doc/html/configure-gtest.log
-	cd .. && $(MAKE) check &> doc/html/make-check.log
+	cd .. && $(MAKE) -j2 check &> doc/html/make-check.log
 
 distcheck.log:
 	mkdir -p html
 	cd .. && ./configure --with-gtest=/home/thomson/devel/gtest-1.6.0 &> doc/html/configure-gtest.log
-	cd .. && $(MAKE) distcheck &> doc/html/make-distcheck.log
+	cd .. && $(MAKE) -j2 distcheck &> doc/html/make-distcheck.log
 
 summary.log:
 	mkdir -p html/

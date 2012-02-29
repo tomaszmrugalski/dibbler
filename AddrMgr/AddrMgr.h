@@ -93,12 +93,12 @@ class TAddrMgr
 #else
     // database loading methods that use internal loading routines
     bool xmlLoadBuiltIn(const char * xmlFile);
-    SPtr<TAddrClient> parseAddrClient(FILE *f);
-    SPtr<TAddrIA> parseAddrIA(FILE * f, int t1,int t2,int iaid,int iface);
-    SPtr<TAddrIA> parseAddrPD(FILE * f, int t1,int t2,int iaid,int iface);
-    SPtr<TAddrAddr> parseAddrAddr(char * buf,bool pd);
-    SPtr<TAddrPrefix> parseAddrPrefix(char * buf,bool pd);
-    SPtr<TAddrIA> parseAddrTA(FILE *f);
+    SPtr<TAddrClient> parseAddrClient(const char * xmlFile, FILE *f);
+    SPtr<TAddrIA> parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,int iaid,int iface);
+    SPtr<TAddrIA> parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,int iaid,int iface);
+    SPtr<TAddrAddr> parseAddrAddr(const char * xmlFile, char * buf,bool pd);
+    SPtr<TAddrPrefix> parseAddrPrefix(const char * xmlFile, char * buf,bool pd);
+    SPtr<TAddrIA> parseAddrTA(const char * xmlFile, FILE *f);
 #endif
 
 protected:
