@@ -23,9 +23,6 @@
 #include "Logger.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntCfgIface.h"
-#include "ClntOptDNSServers.h"
-#include "ClntOptNTPServers.h"
-#include "ClntOptDomainName.h"
 #include "ClntOptTimeZone.h"
 #include <cmath>
 

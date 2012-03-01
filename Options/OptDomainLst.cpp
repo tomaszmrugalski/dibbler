@@ -6,25 +6,33 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStringLst.cpp,v 1.11 2007-12-25 08:11:57 thomson Exp $
- *
  */
 
 #include <string.h>
 #include "Portable.h"
-#include "OptStringLst.h"
+#include "OptDomainLst.h"
 #include "DHCPConst.h"
 #include "Logger.h"
 
 using namespace std;
 
-TOptStringLst::TOptStringLst(int type, List(string) strLst, TMsg* parent)
-    :TOpt(type, parent)
-{
-    this->StringLst = strLst;
+TOptDomainLst::TOptDomainLst(int type, List(string) strLst, TMsg* parent)
+    :TOpt(type, parent) {
+    StringLst = strLst;
 }
 
-TOptStringLst::TOptStringLst(int type, const char *buf, unsigned short bufsize, TMsg* parent)
+TOptDomainLst::TOptDomainLst(int type, const std::string& domain, TMsg* parent)
+    :TOpt(type, parent) {
+    StringLst.append(new string(domain) );
+}
+
+const std::string& TOptDomainLst::getDomain() {
+    StringLst.first();
+    return *StringLst.get();
+}
+
+
+TOptDomainLst::TOptDomainLst(int type, const char *buf, unsigned short bufsize, TMsg* parent)
     :TOpt(type, parent) {
     int len;
     string domain = "";
@@ -62,18 +70,16 @@ TOptStringLst::TOptStringLst(int type, const char *buf, unsigned short bufsize, 
     delete [] str;
 }
 
-char * TOptStringLst::storeSelf(char* buf)
+char * TOptDomainLst::storeSelf(char* buf)
 {
     SPtr<string> x;
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize()-4);
-    int len = 0;
     std::string::size_type dotpos;
    
     StringLst.first();
     while (x = StringLst.get() ) {
         string cp(*x);
-        len = (int)(x->length());
 
         dotpos = string::npos;
         while (cp.find(".")!=string::npos) {
@@ -99,7 +105,7 @@ char * TOptStringLst::storeSelf(char* buf)
     return buf;
 }
 
-int TOptStringLst::getSize() {
+int TOptDomainLst::getSize() {
     int len = 0;
     int tmplen = 0;
     SPtr<string> x;
@@ -115,12 +121,12 @@ int TOptStringLst::getSize() {
 }
 
 #if 0
-string TOptStringLst::getString() {
+string TOptDomainLst::getString() {
     return *(this->StringLst.get());
 }
 #endif
 
-std::string TOptStringLst::getPlain() {
+std::string TOptDomainLst::getPlain() {
     string concat;
 
     StringLst.first();

@@ -49,6 +49,7 @@ iface                 { return ClntParser::IFACE_;}
 no-config             { return ClntParser::NO_CONFIG_;}
 address               { return ClntParser::ADDRESS_;}
 string                { return ClntParser::STRING_KEYWORD_; }
+duid                  { return ClntParser::DUID_KEYWORD_; }
 address-list          { return ClntParser::ADDRESS_LIST_; }
 name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
@@ -115,6 +116,7 @@ digest-hmac-sha384    { return ClntParser::DIGEST_HMAC_SHA384_; }
 digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
 skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
 aftr                  { return ClntParser::AFTR_; }
+downlink-prefix-ifaces { return ClntParser::DOWNLINK_PREFIX_IFACES_; }
 
 experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }

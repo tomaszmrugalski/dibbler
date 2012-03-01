@@ -110,8 +110,10 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 
 void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
 {
-    if (shallRejectAnswer(msg))
+    if (shallRejectAnswer(msg)) {
+        Log(Info) << "Server message was rejected." << LogEnd;
 	return;
+    }
 
     switch (msg->getType()) {
     case ADVERTISE_MSG:
@@ -131,6 +133,7 @@ void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
 	    IsDone = true;
 	    return;
 	}
+
 	if (this->RC > 1)
 	{
 	    ClntTransMgr().sendRequest(Options,Iface);
@@ -163,19 +166,21 @@ void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
  }
 
 
-/** 
- * check if received message should be accepted. Following conditions are checked:
- * - is server on the black-list?
- * - are all requested options present?
- * - is there requested IA option?
- * - is there requested TA option?
- * 
- * @param msg 
- * 
- * @return 
- */
+/// @brief check if received message should be accepted.
+///
+/// The following conditions are checked:
+/// - is server on the black-list?
+/// - are all requested options present?
+/// - is there requested IA option?
+/// - is there requested TA option?
+///
+/// @param msg server's REPLY
+///
+/// @return true if REPLY is rejected
 bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 {
+    bool somethingAssigned = false;
+
     // this == solicit or request
     // msg  == reply
     SPtr<TOptDUID> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
@@ -190,48 +195,96 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
         Log(Error) << "Unable to find iface=" << this->Iface << "." << LogEnd;
         return true;
     }
-
     if (iface->isServerRejected(msg->getAddr(), srvDUID->getDUID())) {
 	Log(Notice) << "Server was rejected (duid=" << srvDUID->getDUID() << ")." << LogEnd;
         return true;
     }
 
     // have we asked for IA?
+    bool iaOk = true;
     if (this->getOption(OPTION_IA_NA))
     {
         ///@todo Check if proper IAIDs are returned, also if all IA were answered (if requested several IAs were requested)
+        ///@todo Check all IA_NAs, not just first one
         SPtr<TClntOptIA_NA> ia = (Ptr*)msg->getOption(OPTION_IA_NA);
         if (!ia)  {
             Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
-            return true;
+            iaOk = false;
+        } else {
+            if (!ia->getOption(OPTION_IAADDR)) {
+                Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
+                iaOk = false;
+            }
+            SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
+            if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+                Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
+                            << "(" << st->getText() << "). Ignored." << LogEnd;
+                iaOk = false;
+            }
         }
-        if (!ia->getOption(OPTION_IAADDR)) {
-            Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
-            return true;
-        }
-        SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
-        if (st && st->getCode()!= STATUSCODE_SUCCESS) {
-            Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode() 
-	            << "(" << st->getText() << "). Ignored." << LogEnd;
-            return true;
-        }
+        if (iaOk)
+            somethingAssigned = true;
     }
-        
+
     // have we asked for TA?
-    if ( (this->getOption(OPTION_IA_TA)) && (!msg->getOption(OPTION_IA_TA)) ) {
-        Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
-        return true;
+    bool taOk = true;
+    if (this->getOption(OPTION_IA_TA)) {
+        SPtr<TClntOptTA> ta = (Ptr*)msg->getOption(OPTION_IA_TA);
+        if (!ta) {
+            Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
+            taOk = false;
+        } else {
+            if (!ta->getOption(OPTION_IAADDR)) {
+                Log(Notice) << "TA option received, but without IAADDR" << LogEnd;
+                taOk = false;
+            }
+
+            SPtr<TClntOptStatusCode> st = (Ptr*)ta->getOption(OPTION_STATUS_CODE);
+            if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+                Log(Notice) << "IA_TA has status code!=SUCCESS: " << st->getCode()
+                            << "(" << st->getText() << "). Ignored." << LogEnd;
+                taOk = false;
+            }
+        }
+        if (taOk)
+            somethingAssigned = true;
     }
 
     // have we asked for PD?
-    if ( (this->getOption(OPTION_IA_PD)) && (!msg->getOption(OPTION_IA_PD)) ) {
-        // @todo check if PDID is ok (and if all requested PDs are returned)
-        Log(Notice) << "PD option requested, but not present in this message. Ignored." << LogEnd;
-        return true;
+    bool pdOk = true;
+    if (getOption(OPTION_IA_PD)) {
+        SPtr<TClntOptIA_PD> pd = (Ptr*) msg->getOption(OPTION_IA_PD);
+        if (!pd) {
+            Log(Notice) << "PD option requested, but not returned in this message. Ignored." << LogEnd;
+            pdOk = false;
+        }
+
+        if (!pd->getOption(OPTION_IAPREFIX)) {
+            Log(Notice) << "Received PD without any prefixes." << LogEnd;
+            pdOk = false;
+        }
+
+        SPtr<TClntOptStatusCode> st = (Ptr*)pd->getOption(OPTION_STATUS_CODE);
+        if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+            Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
+	            << "(" << st->getText() << "). Ignored." << LogEnd;
+            pdOk = false;
+        }
+        if (pdOk)
+            somethingAssigned = true;
     }
-	 
-    // everything seems ok
-    return false;
+
+    if (!somethingAssigned)
+        return true; // this advertise does not offers us anything
+
+    if (!ClntCfgMgr().insistMode())
+        return false; // accept this advertise
+
+    // insist-mode enabled. We MUST get everything we wanted or we reject this answer
+    if (iaOk && taOk && pdOk)
+        return false;
+    else
+        return true;
 }
 
 void TClntMsgSolicit::doDuties()

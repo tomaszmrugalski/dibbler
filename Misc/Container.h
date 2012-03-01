@@ -25,7 +25,7 @@ public:
 
 	bool	append(const TYP &foo);
 	bool	prepend(const TYP& foo);    
-	int	count();
+	const int count();
 	void	first();
 	void	delFirst();
 	void    del();
@@ -56,7 +56,7 @@ void TContainer<TYP>::clear() {
 }
 
 template <class TYP>
-int TContainer<TYP>::count() {
+const int TContainer<TYP>::count() {
 	return (int)lista.size();
 }
 

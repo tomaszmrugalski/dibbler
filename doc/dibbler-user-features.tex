@@ -60,7 +60,16 @@ all other interfaces, which are up, running, non-loopback and
 multicast capable. In the example depicted on
 Fig. \ref{fig-prefixes-router}, received prefix was split into 3
 prefixes: 2000:1234:7c34:1000::/56 for eth1, 2000:1234:7c34:2000::/56
-for eth2 and 2000:1234:7c34:3000::/56 for eth3.
+for eth2 and 2000:1234:7c34:3000::/56 for eth3. Client support for
+prefix delectation was improved in 0.8.2. Client is now able to handle
+prefixes of arbitrary lengths (do not have to be divisible by 8
+anymore). The only restriction is that prefix must be shorter or equal
+120 bits.
+
+It is also possible to explicitly specify which interfaces are
+downlink (i.e. sub-prefixes should be assigned
+to). \emph{downlink-prefix-ifaces} command may be used to disable
+interface autoselection and just list downlink interfaces.
 
 \begin{figure}[ht]
 \begin{center}
@@ -108,9 +117,8 @@ deal with encapsulated (i.e. relayed) traffic.
 
 To avoid confusion during reference to a specific link (i.e. eth0 on
 the relay may be different link than eth0 on the server), each link
-must be referred to using its unique interface-id. For simplicity
-reasons, Dibbler uses 4 bytes long identifiers, which are specified as
-numbers. It is essential to use the same indentifier in the relay
+must be referred to using its unique interface-id. It is essential to 
+use the same indentifier in the relay
 configuration as well as in the server, so both will refer to the same
 link using the same number. See section \ref{example-server-relay1} for
 example how to configure server and section \ref{example-relay-1} for
@@ -276,7 +284,7 @@ iface "eth0" {
    pool 2001:db8:1::/64
  }
 
- option 145 - 01:02:a3:b4:c5:dd:ea
+ option 145 duid 01:02:a3:b4:c5:dd:ea
  option 146 address 2001:db8:1::dead:beef
  option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
  option 148 string "secretlair.example.org"
@@ -290,13 +298,16 @@ handling those options once received is not yet implemented, as of
 request for an option using \opt{ORO} option or even send the option
 in its messages.
 
+Note that in 0.8.2 formatting of DUID-style options has
+changed. ``DUID'' keyword is now required.
+
 \begin{lstlisting}
 #client.conf
 iface "eth0" {
   unicast 1
   ia
 
-  option 145 - 01:02:a3:b4:c5:dd:ea
+  option 145 duid 01:02:a3:b4:c5:dd:ea
   option 146 address 2001:db8:1::dead:beef
   option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
   option 148 string "secretlair.example.org"

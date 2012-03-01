@@ -241,7 +241,9 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
 
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
         unsigned long pref, unsigned long valid, int prefixLength) {
-    /* TODO: implement this */
+
+    /** @TODO: implement this */
+    sprintf(Message, "Address update on BSD systems not implemented yet.");
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -542,7 +544,7 @@ char * error_message() {
  */
 void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
 {
-    printf("Link change monitoring is not supported yet on Macs. Sorry.\n");
+    printf("Link change monitoring is not supported yet on MacOS or BSD. Sorry.\n");
     return;
 }
 
