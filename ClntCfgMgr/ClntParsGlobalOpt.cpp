@@ -23,7 +23,7 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     this->AnonInfRequest = false;
     this->InactiveMode   = false;
     this->InsistMode     = false;
-    this->FQDNFlagS      = false;
+    this->FQDNFlagS      = CLIENT_DEFAULT_FQDN_FLAG_S;
     this->Experimental   = false;
     this->UseConfirm     = true;
 

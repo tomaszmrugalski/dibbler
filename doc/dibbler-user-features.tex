@@ -60,7 +60,16 @@ all other interfaces, which are up, running, non-loopback and
 multicast capable. In the example depicted on
 Fig. \ref{fig-prefixes-router}, received prefix was split into 3
 prefixes: 2000:1234:7c34:1000::/56 for eth1, 2000:1234:7c34:2000::/56
-for eth2 and 2000:1234:7c34:3000::/56 for eth3.
+for eth2 and 2000:1234:7c34:3000::/56 for eth3. Client support for
+prefix delectation was improved in 0.8.2. Client is now able to handle
+prefixes of arbitrary lengths (do not have to be divisible by 8
+anymore). The only restriction is that prefix must be shorter or equal
+120 bits.
+
+It is also possible to explicitly specify which interfaces are
+downlink (i.e. sub-prefixes should be assigned
+to). \emph{downlink-prefix-ifaces} command may be used to disable
+interface autoselection and just list downlink interfaces.
 
 \begin{figure}[ht]
 \begin{center}
@@ -306,7 +315,7 @@ iface "eth0" {
    pool 2001:db8:1::/64
  }
 
- option 145 - 01:02:a3:b4:c5:dd:ea
+ option 145 duid 01:02:a3:b4:c5:dd:ea
  option 146 address 2001:db8:1::dead:beef
  option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
  option 148 string "secretlair.example.org"
@@ -320,13 +329,16 @@ handling those options once received is not yet implemented, as of
 request for an option using \opt{ORO} option or even send the option
 in its messages.
 
+Note that in 0.8.2 formatting of DUID-style options has
+changed. ``DUID'' keyword is now required.
+
 \begin{lstlisting}
 #client.conf
 iface "eth0" {
   unicast 1
   ia
 
-  option 145 - 01:02:a3:b4:c5:dd:ea
+  option 145 duid 01:02:a3:b4:c5:dd:ea
   option 146 address 2001:db8:1::dead:beef
   option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
   option 148 string "secretlair.example.org"

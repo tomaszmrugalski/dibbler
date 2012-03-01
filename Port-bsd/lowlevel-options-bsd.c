@@ -5,15 +5,13 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-options-macos.c,v 1.1 2008-07-20 15:54:37 thomson Exp $
- *
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
-#include "sys/stat.h"
+#include <sys/stat.h>
 #include "Portable.h"
 
 #define CR 0x0a
@@ -281,6 +279,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
 	       unsigned long prefered, unsigned long valid)
 {
     /** @todo: implement this */
+    sprintf(error_message(), "Prefix configuration on BSD systems not implemented yet.");
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -288,11 +287,13 @@ int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int 
 		  unsigned long prefered, unsigned long valid)
 {
     /** @todo: implement this */
+    sprintf(error_message(), "Prefix configuration on BSD systems not implemented yet.");
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 
 
 int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength) {
     /** @todo: implement this */
+    sprintf(error_message(), "Prefix configuration on BSD systems not implemented yet.");
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }

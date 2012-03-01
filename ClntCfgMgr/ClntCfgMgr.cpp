@@ -768,6 +768,17 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     return strum;
 }
 
+void TClntCfgMgr::setDownlinkPrefixIfaces(List(string)& ifaces) {
+    ifaces.first();
+    SPtr<string> iface;
+    Log(Debug) << "PD: Following interfaces marked as downlink:";
+    while (iface = ifaces.get()) {
+        Log(Cont) << " " << *iface;
+        DownlinkPrefixIfaces_.push_back(*iface);
+    }
+    Log(Cont) << LogEnd;
+}
+
 #ifdef MOD_CLNT_EMBEDDED_CFG
 /**
  * this is example hardcoded configuration file

@@ -832,7 +832,7 @@ DsLiteAftrName
 };
 
 ExtraOption
-:OPTION_ Number '-' DUID_
+:OPTION_ Number DUID_KEYWORD_ DUID_
 {
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);

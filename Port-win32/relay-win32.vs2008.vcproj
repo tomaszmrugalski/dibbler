@@ -20,8 +20,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug32|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			OutputDirectory="Debug32"
+			IntermediateDirectory="Debug32"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -44,10 +44,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr"
 				PreprocessorDefinitions="WIN32;_DEBUG"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DefaultCharIsUnsigned="true"
@@ -100,8 +101,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release32|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			OutputDirectory="Release32"
+			IntermediateDirectory="Release32"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -124,6 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr"

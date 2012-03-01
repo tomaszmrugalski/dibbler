@@ -5,10 +5,6 @@
  *          Marek Senderski <msend@o2.pl>
  *
  * released under GNU GPL v2 licence
- *
- * $Id: OptStringLst.h,v 1.1 2004-11-02 01:23:13 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
  */
 
 #ifndef OPTSTRINGLST_H
@@ -18,15 +14,16 @@
 #include <string>
 using namespace std;
 
-class TOptStringLst : public TOpt
+class TOptDomainLst : public TOpt
 {
 public:
-    TOptStringLst(int type, List(string) strLst, TMsg* parent);
-    TOptStringLst(int type, const char *buf, unsigned short bufsize, TMsg* parent);
+    TOptDomainLst(int type, List(string) strLst, TMsg* parent);
+    TOptDomainLst(int type, const std::string& domain, TMsg* parent);
+    TOptDomainLst(int type, const char *buf, unsigned short bufsize, TMsg* parent);
+    const List(string)& getDomainLst() { return StringLst; }
+    const std::string& getDomain();
     char * storeSelf( char* buf);
     int getSize();
-    //void firstString();
-    //string getString();
     int countString();
     bool doDuties() { return true; }
     virtual std::string getPlain();

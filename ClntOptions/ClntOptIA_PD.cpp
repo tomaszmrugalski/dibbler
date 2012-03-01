@@ -289,8 +289,9 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
 	if (!status) {
 	    string tmp = error_message();
 	    Log(Error) << "Prefix error encountered during prefix " << action << " operation: " << tmp << LogEnd;
-	    setState(STATE_FAILED);
-	    return true;
+            // Let's pretend it was configured and renew it
+	    // setState(STATE_FAILED);
+	    //return true;
 	}
     }
 

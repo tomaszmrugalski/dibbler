@@ -23,6 +23,7 @@ Refactor:
 
 tentative plans for 0.9.0:
 - DNS Updates: UDP support [DONE]
+- add cppcheck to make devel
 - DNS Updates: DHC ID record (RFC4701)
 - DNS Updates: conflict resolution (RFC4703)
 - DNS Updates: security (TSIG)

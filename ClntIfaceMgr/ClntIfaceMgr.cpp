@@ -303,17 +303,17 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
         // remember DNS Address (used during address release)
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
-	TCfgMgr::DNSUpdateProtocol proto = ClntCfgMgr().getDDNSProtocol();
-	DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
-	if (proto == TCfgMgr::DNSUPDATE_UDP)
-	    proto2 = DNSUpdate::DNSUPDATE_UDP;
-	if (proto == TCfgMgr::DNSUPDATE_ANY)
-	    proto2 = DNSUpdate::DNSUPDATE_ANY;
+        TCfgMgr::DNSUpdateProtocol proto = ClntCfgMgr().getDDNSProtocol();
+        DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+        if (proto == TCfgMgr::DNSUPDATE_UDP)
+            proto2 = DNSUpdate::DNSUPDATE_UDP;
+        if (proto == TCfgMgr::DNSUPDATE_ANY)
+            proto2 = DNSUpdate::DNSUPDATE_ANY;
         unsigned int timeout = ClntCfgMgr().getDDNSTimeout();
 
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
         /* add AAAA record */
-        DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(), 
+        DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(),
                                        DNSUPDATE_AAAA, proto2);
         int result = act->run(timeout);
         act->showResult(result);
@@ -354,7 +354,7 @@ bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, strin
     Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
                << " and FQDN=" << fqdn << LogEnd;
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
-    DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdn, myAddr->getPlain(), 
+    DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdn, myAddr->getPlain(),
                                    DNSUPDATE_AAAA_CLEANUP, proto2);
     int result = act->run(timeout);
     act->showResult(result);
@@ -418,44 +418,13 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 {
     SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
     if (!ptrIface) {
-        Log(Error) << "Unable to find interface with ifindex=" << iface << ", prefix add operation failed." << LogEnd;
+        Log(Error) << "Unable to find interface with ifindex=" << iface
+                   << ", prefix add/modify operation failed." << LogEnd;
         return false;
     }
 
-#if 0
-    if (ClntCfgMgr().getMappingPrefix())
-    {
-      char buf[128];
-      char cmd1[]="./mappingprefixadd";
-      char cmd2[]="./mappingprefixdel";
-      int returnCode = 0;
-      switch (mode) {
-          case PREFIX_MODIFY_ADD:
-          {
-              sprintf(buf, "sh %s %s", cmd1, prefix->getPlain());
-              Log(Notice) << "Executing external command to ADD prefix: " << buf << LogEnd;
-              returnCode = system(buf);
-              Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
-              break;
-          }
-          case PREFIX_MODIFY_DEL:
-          {
-              sprintf(buf, "sh %s %s", cmd2, prefix->getPlain());
-              Log(Notice) << "Executing external command to DEL prefix: " << buf << LogEnd;
-
-              returnCode = system(buf);
-              Log(Notice) << "ReturnCode = " << returnCode << LogEnd;
-              break;
-          }
-          default:
-          {
-          }
-        }
-        return true; // added successfully
-    }
-#endif
-
     string action;
+    int conf = 0; // number of successfully configured prefixes
     int status = -1;
 
     switch (mode) {
@@ -470,10 +439,10 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             break;
     }
 
-
     // option: split this prefix and add it to all interfaces
     Log(Notice) << "PD: " << action << " prefix " << prefix->getPlain() << "/" << (int)prefixLen
-                << " to all interfaces (prefix will be split to /" << int(prefixLen+8) << " prefixes if necessary)." << LogEnd;
+                << " to all interfaces (prefix will be split to /"
+                << int(prefixLen+8) << " prefixes if necessary)." << LogEnd;
 
     if (prefixLen>120) {
         Log(Error) << "PD: Unable to perform prefix operation: prefix /" << prefixLen
@@ -483,47 +452,58 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 
     // get a list of interfaces that we will assign prefixes to
     TIfaceIfaceLst ifaceLst;
-    SPtr<TIfaceIface> x;
-    firstIface();
-    while ( x = (Ptr*)getIface() ) {
-        if (x->getID() == ptrIface->getID()) {
-            Log(Debug) << "PD: Interface " << x->getFullName()
-                       << " is the interface, where prefix has been obtained, skipping." << LogEnd;
-            continue;
-        }
-
-        // for each interface present in the system...
-        if (!x->flagUp()) {
-            Log(Debug) << "PD: Interface " << x->getFullName() << " is down, ignoring." << LogEnd;
-            continue;
-        }
-        if (!x->flagRunning()) {
-            Log(Debug) << "PD: Interface " << x->getFullName()
-                       << " has flag RUNNING not set, ignoring." << LogEnd;
-            continue;
-        }
-        if (!x->flagMulticast()) {
-            Log(Debug) << "PD: Interface " << x->getFullName()
-                       << " is not multicast capable, ignoring." << LogEnd;
-            continue;
-        }
-        if ( !(x->getMacLen() > 5) ) {
-            Log(Debug) << "PD: Interface " << x->getFullName()
-                       << " has MAC address length " << x->getMacLen()
-                       << " (6 or more required), ignoring." << LogEnd;
-                continue;
-        }
-        x->firstLLAddress();
-        if (!x->getLLAddress()) {
-            Log(Debug) << "PD: Interface " << x->getFullName()
-                       << " has no link-local address, ignoring. (Disconnected? Not associated? No-link?)" << LogEnd;
-            continue;
-        }
-
-        ifaceLst.push_back(x);
+    vector<string> ifaceNames = ClntCfgMgr().getDownlinkPrefixIfaces();
+    for (vector<string>::const_iterator name = ifaceNames.begin(); name != ifaceNames.end(); ++name) {
+        SPtr<TIfaceIface> x = getIfaceByName(*name);
+        if (x)
+            ifaceLst.push_back(x);
+        else
+            Log(Warning) << "Interface " << *name << " specified in downlink-prefix-ifaces is missing." << LogEnd;
     }
 
-    Log(Info) << "Found " << ifaceLst.size() << " suitable interface(s):";
+    if (ifaceLst.size() == 0) {
+        SPtr<TIfaceIface> x;
+        firstIface();
+        while ( x = (Ptr*)getIface() ) {
+            if (x->getID() == ptrIface->getID()) {
+                Log(Debug) << "PD: Interface " << x->getFullName()
+                           << " is the interface, where prefix has been obtained, skipping." << LogEnd;
+                continue;
+            }
+
+            // for each interface present in the system...
+            if (!x->flagUp()) {
+                Log(Debug) << "PD: Interface " << x->getFullName() << " is down, ignoring." << LogEnd;
+            continue;
+            }
+            if (!x->flagRunning()) {
+                Log(Debug) << "PD: Interface " << x->getFullName()
+                           << " has flag RUNNING not set, ignoring." << LogEnd;
+                continue;
+            }
+            if (!x->flagMulticast()) {
+                Log(Debug) << "PD: Interface " << x->getFullName()
+                           << " is not multicast capable, ignoring." << LogEnd;
+                continue;
+            }
+            if ( !(x->getMacLen() > 5) ) {
+                Log(Debug) << "PD: Interface " << x->getFullName()
+                           << " has MAC address length " << x->getMacLen()
+                           << " (6 or more required), ignoring." << LogEnd;
+                continue;
+            }
+            x->firstLLAddress();
+            if (!x->getLLAddress()) {
+                Log(Debug) << "PD: Interface " << x->getFullName()
+                           << " has no link-local address, ignoring. (Disconnected? Not associated? No-link?)" << LogEnd;
+                continue;
+            }
+
+            ifaceLst.push_back(x);
+        }
+    }
+
+    Log(Info) << "PD: Using " << ifaceLst.size() << " suitable interface(s):";
     TIfaceIfaceLst::const_iterator i;
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
         Log(Cont) << (*i)->getName() << " ";
@@ -545,11 +525,26 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             // just one interface - use delegated prefix as is
             subprefixLen = prefixLen;
         } else if (ifaceLst.size()<256) {
-            subprefixLen = prefixLen + 8; // int( (ceil( log(ifaceList.size()))) );
+            subprefixLen = prefixLen + 8;
             int offset = prefixLen/8;
-            if (prefixLen%8)
-                offset++;
-            buf[offset] = x->getID();
+            if (prefixLen%8 == 0) {
+                // that's easy, just put ID in the next octet
+                buf[offset] = (*i)->getID();
+            } else {
+                // here's fun
+                uint16_t existing = readUint16(buf+offset);
+                uint16_t bitmask = 0xff00;
+                uint16_t infixmask = ((uint8_t)(*i)->getID()) << 8;
+                bitmask = bitmask >> (prefixLen%8);
+                infixmask = infixmask >> (prefixLen%8);
+
+                // clear out if there is anything there, i.e. server assigned prefix
+                // with garbage in host section
+                existing = existing & (~bitmask);
+                existing = existing | (bitmask & infixmask);
+                writeUint16(buf+offset, existing);
+            }
+
         } else {
             // users with too much time that play with virtual interfaces are out of luck
             Log(Error) << "Something is wrong. Detected more than 256 interface." << LogEnd;
@@ -572,15 +567,19 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
           status = prefix_del( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen);
             break;
         }
-        if (status!=LOWLEVEL_NO_ERROR) {
+        if (status==LOWLEVEL_NO_ERROR) {
+            conf++;
+        } else {
             string tmp = error_message();
             Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
-            return false;
         }
 
     }
 
-    return true;
+    if (conf) // at least one prefix configured successfully
+        return true;
+    else
+        return false;
 }
 
 void TClntIfaceMgr::redetectIfaces() {

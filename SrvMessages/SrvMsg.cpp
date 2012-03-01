@@ -7,8 +7,6 @@
  *          Michal Kowalczuk <michal@kowalczuk.eu>
  *
  * released under GNU GPL v2 only licence
- *
- * $Id: SrvMsg.cpp,v 1.58 2008-11-13 22:40:26 thomson Exp $
  */
 
 #include <sstream>
@@ -29,18 +27,11 @@
 #include "SrvOptLQ.h"
 #include "SrvOptTA.h"
 #include "SrvCfgOptions.h"
-#include "SrvOptDNSServers.h"
-#include "SrvOptDomainName.h"
-#include "SrvOptNTPServers.h"
 #include "SrvOptTimeZone.h"
-#include "SrvOptSIPServer.h"
-#include "SrvOptSIPDomain.h"
 #include "SrvOptFQDN.h"
-#include "SrvOptNISServer.h"
-#include "SrvOptNISDomain.h"
-#include "SrvOptNISPServer.h"
-#include "SrvOptNISPDomain.h"
 #include "SrvOptLifetime.h"
+#include "OptAddrLst.h"
+#include "OptDomainLst.h"
 
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
@@ -138,92 +129,78 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 
         SPtr<TOpt> ptr;
 
-        if (!allowOptInMsg(MsgType,code)) {
-            Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Option ignored." << LogEnd;
-            pos+=length;
-            continue;
-        }
-        if (!allowOptInOpt(MsgType,0,code)) {
-            Log(Warning) <<"Option " << code << " can't be present in message (type="
-                         << MsgType <<") directly. Option ignored." << LogEnd;
-            pos+=length;
-            continue;
-        }
-        ptr= 0;
-        switch (code) {
-        case OPTION_CLIENTID:
-            ptr = new TSrvOptClientIdentifier(buf+pos,length,this);
-            break;
-        case OPTION_SERVERID:
-            ptr =new TSrvOptServerIdentifier(buf+pos,length,this);
-            break;
-        case OPTION_IA_NA:
-            ptr = new TSrvOptIA_NA(buf+pos,length,this);
-            break;
-        case OPTION_ORO:
-            ptr = new TSrvOptOptionRequest(buf+pos,length,this);
-            break;
-        case OPTION_PREFERENCE:
-            ptr = new TSrvOptPreference(buf+pos,length,this);
-            break;
-        case OPTION_ELAPSED_TIME:
-            ptr = new TSrvOptElapsed(buf+pos,length,this);
-            break;
-        case OPTION_UNICAST:
-            ptr = new TSrvOptServerUnicast(buf+pos,length,this);
-            break;
-        case OPTION_STATUS_CODE:
-            ptr = new TSrvOptStatusCode(buf+pos,length,this);
-            break;
-        case OPTION_RAPID_COMMIT:
-            ptr = new TOptEmpty(code, buf+pos,length,this);
-            break;
-        case OPTION_DNS_SERVERS:
-            ptr = new TSrvOptDNSServers(buf+pos,length,this);
-            break;
-        case OPTION_SNTP_SERVERS:
-            ptr = new TSrvOptNTPServers(buf+pos,length,this);
-            break;
-        case OPTION_DOMAIN_LIST:
-            ptr = new TSrvOptDomainName(buf+pos, length,this);
-            break;
-        case OPTION_NEW_TZDB_TIMEZONE:
-            ptr = new TSrvOptTimeZone(buf+pos, length,this);
-            break;
-        case OPTION_SIP_SERVER_A:
-            ptr = new TSrvOptSIPServers(buf+pos, length, this);
-            break;
-        case OPTION_SIP_SERVER_D:
-            ptr = new TSrvOptSIPDomain(buf+pos, length, this);
-            break;
-        case OPTION_NIS_SERVERS:
-            ptr = new TSrvOptNISServers(buf+pos, length, this);
-            break;
-        case OPTION_NIS_DOMAIN_NAME:
-            ptr = new TSrvOptNISDomain(buf+pos, length, this);
-            break;
-        case OPTION_NISP_SERVERS:
-            ptr = new TSrvOptNISPServers(buf+pos, length, this);
-            break;
-        case OPTION_NISP_DOMAIN_NAME:
-            ptr = new TSrvOptNISPDomain(buf+pos, length, this);
-            break;
-        case OPTION_FQDN:
-            ptr = new TSrvOptFQDN(buf+pos, length, this);
-            break;
-        case OPTION_INFORMATION_REFRESH_TIME:
-            ptr = new TSrvOptLifetime(buf+pos, length, this);
-            break;
-        case OPTION_IA_TA:
-            ptr = new TSrvOptTA(buf+pos, length, this);
-            break;
-        case OPTION_IA_PD:
-            ptr = new TSrvOptIA_PD(buf+pos, length, this);
-            break;
-        case OPTION_LQ_QUERY:
-            ptr = new TSrvOptLQ(buf+pos, length, this);
-            break;
-            // remaining LQ options are not supported to be received by server
+	if (!allowOptInMsg(MsgType,code)) {
+	    Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Option ignored." << LogEnd;
+	    pos+=length;
+	    continue;
+	}
+	if (!allowOptInOpt(MsgType,0,code)) {
+	    Log(Warning) <<"Option " << code << " can't be present in message (type="
+			 << MsgType <<") directly. Option ignored." << LogEnd;
+	    pos+=length;
+	    continue;
+	}
+	ptr= 0;
+	switch (code) {
+	case OPTION_CLIENTID:
+	    ptr = new TSrvOptClientIdentifier(buf+pos,length,this);
+	    break;
+	case OPTION_SERVERID:
+	    ptr =new TSrvOptServerIdentifier(buf+pos,length,this);
+	    break;
+	case OPTION_IA_NA:
+	    ptr = new TSrvOptIA_NA(buf+pos,length,this);
+	    break;
+	case OPTION_ORO:
+	    ptr = new TSrvOptOptionRequest(buf+pos,length,this);
+	    break;
+	case OPTION_PREFERENCE:
+	    ptr = new TSrvOptPreference(buf+pos,length,this);
+	    break;
+	case OPTION_ELAPSED_TIME:
+	    ptr = new TSrvOptElapsed(buf+pos,length,this);
+	    break;
+	case OPTION_UNICAST:
+	    ptr = new TSrvOptServerUnicast(buf+pos,length,this);
+	    break;
+	case OPTION_STATUS_CODE:
+	    ptr = new TSrvOptStatusCode(buf+pos,length,this);
+	    break;
+	case OPTION_RAPID_COMMIT:
+	    ptr = new TOptEmpty(code, buf+pos, length, this);
+	    break;
+	case OPTION_DNS_SERVERS:
+	case OPTION_SNTP_SERVERS:
+	case OPTION_SIP_SERVER_A:
+	case OPTION_NIS_SERVERS:
+	case OPTION_NISP_SERVERS:
+	    ptr = new TOptAddrLst(code, buf+pos, length, this);
+	    break;
+	case OPTION_DOMAIN_LIST:
+	case OPTION_SIP_SERVER_D:
+	case OPTION_NIS_DOMAIN_NAME:
+	case OPTION_NISP_DOMAIN_NAME:
+	    ptr = new TOptDomainLst(code, buf+pos, length, this);
+	    break;
+	case OPTION_NEW_TZDB_TIMEZONE:
+	    ptr = new TSrvOptTimeZone(buf+pos, length,this);
+	    break;
+	case OPTION_FQDN:
+	    ptr = new TSrvOptFQDN(buf+pos, length, this);
+	    break;
+	case OPTION_INFORMATION_REFRESH_TIME:
+	    ptr = new TSrvOptLifetime(buf+pos, length, this);
+	    break;
+	case OPTION_IA_TA:
+	    ptr = new TSrvOptTA(buf+pos, length, this);
+	    break;
+	case OPTION_IA_PD:
+	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
+	    break;
+	case OPTION_LQ_QUERY:
+	    ptr = new TSrvOptLQ(buf+pos, length, this);
+	    break;
+	    // remaining LQ options are not supported to be received by server
 
 #ifndef MOD_DISABLE_AUTH
         case OPTION_AAAAUTH:
@@ -714,35 +691,35 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     // --- option: DNS resolvers ---
     if ( reqOpts->isOption(OPTION_DNS_SERVERS) && ptrIface->supportDNSServer() ) {
-        SPtr<TSrvOptDNSServers> optDNS;
-        if (ex && ex->supportDNSServer())
-            optDNS = new TSrvOptDNSServers(*ex->getDNSServerLst(), this);
-        else
-            optDNS = new TSrvOptDNSServers(*ptrIface->getDNSServerLst(),this);
-        Options.push_back((Ptr*)optDNS);
-        newOptionAssigned = true;
+	SPtr<TOpt> optDNS;
+	if (ex && ex->supportDNSServer())
+	    optDNS = new TOptAddrLst(OPTION_DNS_SERVERS, *ex->getDNSServerLst(), this);
+	else
+	    optDNS = new TOptAddrLst(OPTION_DNS_SERVERS, *ptrIface->getDNSServerLst(), this);
+	Options.push_back(optDNS);
+	newOptionAssigned = true;
     };
 
     // --- option: DOMAIN LIST ---
     if ( reqOpts->isOption(OPTION_DOMAIN_LIST) && ptrIface->supportDomain() ) {
-        SPtr<TSrvOptDomainName> optDomain;
-        if (ex && ex->supportDomain())
-            optDomain = new TSrvOptDomainName(*ex->getDomainLst(),this);
-        else
-            optDomain = new TSrvOptDomainName(*ptrIface->getDomainLst(),this);
-        Options.push_back((Ptr*)optDomain);
-        newOptionAssigned = true;
+	SPtr<TOpt> optDomain;
+	if (ex && ex->supportDomain())
+	    optDomain = new TOptDomainLst(OPTION_DOMAIN_LIST, *ex->getDomainLst(),this);
+	else
+	    optDomain = new TOptDomainLst(OPTION_DOMAIN_LIST, *ptrIface->getDomainLst(),this);
+	Options.push_back((Ptr*)optDomain);
+	newOptionAssigned = true;
     };
 
     // --- option: NTP servers ---
     if ( reqOpts->isOption(OPTION_SNTP_SERVERS) && ptrIface->supportNTPServer() ) {
-        SPtr<TSrvOptNTPServers> optNTP;
-        if (ex && ex->supportNTPServer())
-            optNTP = new TSrvOptNTPServers(*ex->getNTPServerLst(),this);
-        else
-            optNTP = new TSrvOptNTPServers(*ptrIface->getNTPServerLst(),this);
-        Options.push_back((Ptr*)optNTP);
-        newOptionAssigned = true;
+	SPtr<TOpt> optNTP;
+	if (ex && ex->supportNTPServer())
+	    optNTP = new TOptAddrLst(OPTION_SNTP_SERVERS, *ex->getNTPServerLst(),this);
+	else
+	    optNTP = new TOptAddrLst(OPTION_SNTP_SERVERS, *ptrIface->getNTPServerLst(),this);
+	Options.push_back((Ptr*)optNTP);
+	newOptionAssigned = true;
     };
 
     // --- option: TIMEZONE ---
@@ -758,24 +735,24 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     // --- option: SIP SERVERS ---
     if ( reqOpts->isOption(OPTION_SIP_SERVER_A) && ptrIface->supportSIPServer() ) {
-        SPtr<TSrvOptSIPServers> optSIPServer;
-        if (ex && ex->supportSIPServer())
-            optSIPServer = new TSrvOptSIPServers(*ex->getSIPServerLst(),this);
-        else
-            optSIPServer = new TSrvOptSIPServers(*ptrIface->getSIPServerLst(),this);
-        Options.push_back((Ptr*)optSIPServer);
-        newOptionAssigned = true;
+	SPtr<TOpt> optSIPServer;
+	if (ex && ex->supportSIPServer())
+	    optSIPServer = new TOptAddrLst(OPTION_SIP_SERVER_A, *ex->getSIPServerLst(),this);
+	else
+	    optSIPServer = new TOptAddrLst(OPTION_SIP_SERVER_A, *ptrIface->getSIPServerLst(),this);
+	Options.push_back(optSIPServer);
+	newOptionAssigned = true;
     };
 
     // --- option: SIP DOMAINS ---
     if ( reqOpts->isOption(OPTION_SIP_SERVER_D) && ptrIface->supportSIPDomain() ) {
-        SPtr<TSrvOptSIPDomain> optSIPDomain;
-        if (ex && ex->supportSIPDomain())
-            optSIPDomain= new TSrvOptSIPDomain(*ex->getSIPDomainLst(),this);
-        else
-            optSIPDomain= new TSrvOptSIPDomain(*ptrIface->getSIPDomainLst(),this);
-        Options.push_back((Ptr*)optSIPDomain);
-        newOptionAssigned = true;
+	SPtr<TOpt> optSIPDomain;
+	if (ex && ex->supportSIPDomain())
+	    optSIPDomain= new TOptDomainLst(OPTION_SIP_SERVER_D, *ex->getSIPDomainLst(),this);
+	else
+	    optSIPDomain= new TOptDomainLst(OPTION_SIP_SERVER_D, *ptrIface->getSIPDomainLst(),this);
+	Options.push_back(optSIPDomain);
+	newOptionAssigned = true;
     };
 
     // --- option: FQDN ---
@@ -783,46 +760,46 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     // --- option: NIS SERVERS ---
     if ( reqOpts->isOption(OPTION_NIS_SERVERS) && ptrIface->supportNISServer() ) {
-        SPtr<TSrvOptNISServers> opt;
-        if (ex && ex->supportNISServer())
-            opt = new TSrvOptNISServers(*ex->getNISServerLst(),this);
-        else
-            opt = new TSrvOptNISServers(*ptrIface->getNISServerLst(),this);
-        Options.push_back((Ptr*)opt);
-        newOptionAssigned = true;
+	SPtr<TOpt> opt;
+	if (ex && ex->supportNISServer())
+	    opt = new TOptAddrLst(OPTION_NIS_SERVERS, *ex->getNISServerLst(),this);
+	else
+	    opt = new TOptAddrLst(OPTION_NIS_SERVERS, *ptrIface->getNISServerLst(),this);
+	Options.push_back(opt);
+	newOptionAssigned = true;
     };
 
     // --- option: NIS DOMAIN ---
     if ( reqOpts->isOption(OPTION_NIS_DOMAIN_NAME) && ptrIface->supportNISDomain() ) {
-        SPtr<TSrvOptNISDomain> opt;
-        if (ex && ex->supportNISDomain())
-            opt = new TSrvOptNISDomain(ex->getNISDomain(),this);
-        else
-            opt = new TSrvOptNISDomain(ptrIface->getNISDomain(),this);
-        Options.push_back((Ptr*)opt);
-        newOptionAssigned = true;
+	SPtr<TOpt> opt;
+	if (ex && ex->supportNISDomain())
+	    opt = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, ex->getNISDomain(),this);
+	else
+	    opt = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, ptrIface->getNISDomain(),this);
+	Options.push_back(opt);
+	newOptionAssigned = true;
     };
 
     // --- option: NISP SERVERS ---
     if ( reqOpts->isOption(OPTION_NISP_SERVERS) && ptrIface->supportNISPServer() ) {
-        SPtr<TSrvOptNISPServers> opt;
-        if (ex && ex->supportNISPServer())
-            opt = new TSrvOptNISPServers(*ex->getNISPServerLst(),this);
-        else
-            opt = new TSrvOptNISPServers(*ptrIface->getNISPServerLst(),this);
-        Options.push_back((Ptr*) opt);
-        newOptionAssigned = true;
+	SPtr<TOpt> opt;
+	if (ex && ex->supportNISPServer())
+	    opt = new TOptAddrLst(OPTION_NISP_SERVERS, *ex->getNISPServerLst(), this);
+	else
+	    opt = new TOptAddrLst(OPTION_NISP_SERVERS, *ptrIface->getNISPServerLst(), this);
+	Options.push_back((Ptr*) opt);
+	newOptionAssigned = true;
     };
 
     // --- option: NISP DOMAIN ---
     if ( reqOpts->isOption(OPTION_NISP_DOMAIN_NAME) && ptrIface->supportNISPDomain() ) {
-        SPtr<TSrvOptNISPDomain> opt;
-        if (ex && ex->supportNISPDomain())
-            opt = new TSrvOptNISPDomain(ex->getNISPDomain(), this);
-        else
-            opt = new TSrvOptNISPDomain(ptrIface->getNISPDomain(), this);
-        Options.push_back((Ptr*)opt);
-        newOptionAssigned = true;
+	SPtr<TOpt> opt;
+	if (ex && ex->supportNISPDomain())
+	    opt = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, ex->getNISPDomain(), this);
+	else
+	    opt = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, ptrIface->getNISPDomain(), this);
+	Options.push_back((Ptr*)opt);
+	newOptionAssigned = true;
     };
 
     // --- option: VENDOR SPEC ---
@@ -1008,6 +985,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
         doRevDnsZoneRoot(IPv6Addr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 
+#if 0
         // that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
         // and that would include both poslib and Dibbler headers in one place. Universe would implode then.
         TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
@@ -1047,6 +1025,46 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
         ptrAddrIA->setFQDN(fqdn);
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
+#endif
+	// that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
+	// and that would include both poslib and Dibbler headers in one place. Universe would implode then.
+	TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+	DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+	if (proto == TCfgMgr::DNSUPDATE_UDP)
+	    proto2 = DNSUpdate::DNSUPDATE_UDP;
+	if (proto == TCfgMgr::DNSUPDATE_ANY)
+	    proto2 = DNSUpdate::DNSUPDATE_ANY;
+	unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+	
+	if (FQDNMode==1){
+	    /* add PTR only */
+	    DnsUpdateResult result = DNSUPDATE_SKIP;
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
+					   DNSUPDATE_PTR, proto2);
+	    result = act->run(timeout);
+	    act->showResult(result);
+	    delete act;
+	} // fqdnMode == 1
+	else if (FQDNMode==2){
+	    DnsUpdateResult result = DNSUPDATE_SKIP;
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
+					   DNSUPDATE_PTR, proto2);
+	    result = act->run(timeout);
+	    act->showResult(result);
+	    delete act;
+      	    
+	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
+	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), "", fqdnName, 
+                                            IPv6Addr->getPlain(),
+					    DNSUPDATE_AAAA, proto2);
+	    result2 = act2->run(timeout);
+	    act2->showResult(result);
+	    delete act2;
+	} // fqdnMode == 2
+	
+	// regardless of the result, store the info
+	ptrAddrIA->setFQDN(fqdn);
+	ptrAddrIA->setFQDNDnsServer(DNSAddr);
 #else
         Log(Error) << "This server is compiled without DNS Update support." << LogEnd;
 #endif

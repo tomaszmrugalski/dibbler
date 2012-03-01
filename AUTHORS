@@ -74,5 +74,8 @@
   - Mateusz Ozga <matozga(at)gmail(dot)com>
     2011-11: Routing configuration
 
+  - Christof Schulz (develop(at)kristov(dot)de>
+    2012-02: Fix for prefix delegation segfault
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

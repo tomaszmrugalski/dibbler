@@ -22,9 +22,6 @@
 #include "SrvOptTA.h"
 #include "SrvOptServerIdentifier.h"
 #include "SrvOptTimeZone.h"
-#include "SrvOptDomainName.h"
-#include "SrvOptDNSServers.h"
-#include "SrvOptNTPServers.h"
 #include "SrvOptFQDN.h"
 #include "AddrClient.h"
 #include "AddrIA.h"
@@ -54,8 +51,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     handleConfirmOptions( confirm->getOptLst() );
 
     appendMandatoryOptions(ORO);
-    appendRequestedOptions(ClientDUID, confirm->getAddr(), confirm->getIface(), ORO);
-    appendStatusCode();
+    // appendRequestedOptions(ClientDUID, confirm->getAddr(), confirm->getIface(), ORO);
+    // appendStatusCode();
     appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
@@ -73,16 +70,6 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         return false;
     }
 
-    // check whether the client with DUID specified exists in Server Address database or not.
-    SPtr <TAddrClient> ptrClient;
-    ptrClient = SrvAddrMgr().getClient(ClientDUID);
-    if (!ptrClient) {
-        Log(Info) << "Unable to create reply for CONFIRM message with client DUID ="
-                  << ClientDUID->getPlain() << ": No such client." << LogEnd;
-        IsDone = true;
-        return false;
-    }
-
     bool OnLink = true;
     int checkCnt = 0;
     List(TSrvOptIA_NA) validIAs;
@@ -96,14 +83,6 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
             SPtr<TSrvOptIA_NA> ia = (Ptr*) (*opt);
 
             // now we check whether this IA exists in Server Address database or not.
-            SPtr <TAddrIA> ptrIA;
-            ptrIA = ptrClient->getIA(ia->getIAID());
-            if (!ptrIA) {
-                Log(Info) << "Unable to create reply for CONFIRM message. IA(iaid=" << ia->getIAID() << ", client="
-                   << ClientDUID->getPlain() << ": No such IA_NA." << LogEnd;
-                IsDone = true;
-                return false;
-            }
 
             SPtr<TOpt> subOpt;
             unsigned long addrCnt = 0;
@@ -119,13 +98,12 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
                     Log(Cont) << "no." << LogEnd;
                     OnLink = false;
                 } else {
-                    /// @todo check if it is bound or not. If it is, then check if it is bound to this client
                     Log(Cont) << "yes." << LogEnd;
                     addrCnt++;
                 }
                 checkCnt++;
             }
-            if(addrCnt){
+            if (addrCnt) {
                 SPtr<TSrvOptIA_NA> tempIA = new TSrvOptIA_NA(ia, PeerAddr,
                                                              ClientDUID, Iface, addrCnt,CONFIRM_MSG, this);
                 validIAs.append(tempIA);
@@ -135,14 +113,6 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         case OPTION_IA_TA: {
             SPtr<TSrvOptTA> ta = (Ptr*) (*opt);
             // now we check whether this IA exists in Server Address database or not.
-            SPtr <TAddrIA> ptrIA;
-            ptrIA = ptrClient->getIA(ta->getIAID());
-            if (!ptrIA) {
-                Log(Info) << "Unable to create reply for CONFIRM message.TA(iaid=" << ta->getIAID() << ", client="
-                   << ClientDUID->getPlain() << ": No such IA_TA." << LogEnd;
-                IsDone = true;
-                return false;
-            }
 
             SPtr<TOpt> subOpt;
             ta->firstOption();
@@ -182,7 +152,7 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         // success
         SPtr <TSrvOptStatusCode> ptrCode =
             new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-                                  "Your addresses are valid! Yahoo!",
+                                  "Your addresses are correct for this link! Yay!",
                                   this);
         Options.push_back( (Ptr*) ptrCode);
 
