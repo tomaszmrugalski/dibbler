@@ -14,7 +14,7 @@ class TSrvOptIA_NA;
 
 #include "OptIA_NA.h"
 #include "SrvOptIAAddress.h"
-#include "SmartPtr.h"x§
+#include "SmartPtr.h"
 #include "DUID.h"
 #include "Container.h"
 #include "IPv6Addr.h"

@@ -338,8 +338,9 @@ typedef
 #define	ROUTING_	328
 #define	ADDRESS_LIST_	329
 #define	STRING_KEYWORD_	330
-#define	REQUEST_	331
-#define	RECONFIGURE_	332
+#define	DUID_KEYWORD_	331
+#define	REQUEST_	332
+#define	RECONFIGURE_	333
 
 
 #line 169 "../bison++/bison.h"
@@ -461,6 +462,7 @@ static const int AFTR_;
 static const int ROUTING_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
+static const int DUID_KEYWORD_;
 static const int REQUEST_;
 static const int RECONFIGURE_;
 
@@ -544,8 +546,9 @@ static const int RECONFIGURE_;
 	,ROUTING_=328
 	,ADDRESS_LIST_=329
 	,STRING_KEYWORD_=330
-	,REQUEST_=331
-	,RECONFIGURE_=332
+	,DUID_KEYWORD_=331
+	,REQUEST_=332
+	,RECONFIGURE_=333
 
 
 #line 215 "../bison++/bison.h"
