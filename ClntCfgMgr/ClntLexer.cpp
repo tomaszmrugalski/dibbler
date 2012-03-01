@@ -57,7 +57,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -88,12 +87,15 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#endif /* ! C99 */
+
 #endif /* ! FLEXINT_H */
 
 /* begin standard C++ headers. */
 #include <iostream> 
 #include <errno.h>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 /* end standard C++ headers. */
 
@@ -151,7 +153,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -336,8 +346,8 @@ int yyFlexLexer::yywrap() { return 1; }
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 95
-#define YY_END_OF_BUFFER 96
+#define YY_NUM_RULES 96
+#define YY_END_OF_BUFFER 97
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -347,97 +357,97 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[831] =
     {   0,
-        1,    1,    0,    0,    0,    0,   96,   94,    2,    1,
-        1,   94,   76,   94,   94,   93,   93,   94,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   80,   80,   95,    1,    1,
-        1,    0,   88,   76,    0,   88,   78,   77,   93,    0,
-        0,   92,    0,   85,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,    9,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   50,   89,
-       89,   89,   89,   89,   89,   89,   89,   23,   24,   10,
-       89,   89,   89,   89,   89,   79,   77,   93,    0,    0,
+        1,    1,    0,    0,    0,    0,   97,   95,    2,    1,
+        1,   95,   77,   95,   95,   94,   94,   95,   95,   95,
+       95,   95,   95,   95,   95,   95,   95,   95,   95,   95,
+       95,   95,   95,   95,   95,   81,   81,   96,    1,    1,
+        1,    0,   89,   77,    0,   89,   79,   78,   94,    0,
+        0,   93,    0,   86,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   10,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   51,   90,
+       90,   90,   90,   90,   90,   90,   90,   24,   25,   11,
+       90,   90,   90,   90,   90,   80,   78,   94,    0,    0,
 
-        0,   84,   90,   83,   83,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   93,    0,    0,    0,
-        0,   82,   82,    0,   83,    0,   83,   89,   89,   71,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   32,
-       11,   89,   89,   89,   89,   89,    8,    0,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   93,
+        0,   85,   91,   84,   84,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   94,    0,    0,    0,
+        0,   83,   83,    0,   84,    0,   84,   90,   90,   72,
+       90,   90,   90,   90,   90,   90,   90,    7,   90,   33,
+       12,   90,   90,   90,   90,   90,    9,    0,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   94,
 
-        0,   91,    0,    0,    0,   82,    0,   82,    0,   83,
-       83,   83,   83,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,    3,   89,   89,   89,
-       89,   89,   89,   89,    0,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-        0,    0,    0,    0,    0,   82,   82,   82,   82,    0,
-       83,   83,   83,    0,   83,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   27,   89,   89,   89,   89,   89,
-       33,   89,   89,   89,   89,   89,   89,   89,    0,    0,
+        0,   92,    0,    0,    0,   83,    0,   83,    0,   84,
+       84,   84,   84,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,    3,   90,   90,   90,
+       90,   90,   90,   90,    0,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+        0,    0,    0,    0,    0,   83,   83,   83,   83,    0,
+       84,   84,   84,    0,   84,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   28,   90,   90,   90,   90,   90,
+       34,   90,   90,   90,   90,   90,   90,   90,    0,    0,
 
-       89,   89,   89,   89,   25,   89,   51,   89,   89,   89,
-       89,   89,   89,   18,   89,   89,   89,   89,   89,    6,
-       89,   89,   89,   89,   89,    0,    0,    0,    0,   82,
-       82,   82,    0,   82,    0,    0,   83,   83,   83,   83,
-       89,    5,   89,   89,   89,   89,   89,   89,   89,   89,
-       55,   53,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,    0,    0,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   75,   41,   89,   89,   89,   89,
-       89,   89,   47,   89,   89,   89,   91,    0,    0,    0,
-        0,    0,   82,   82,   82,   82,    0,   83,   83,   83,
+       90,   90,   90,   90,   26,   90,   52,   90,   90,   90,
+       90,   90,   90,   19,   90,   90,   90,   90,   90,    6,
+       90,   90,   90,   90,   90,    0,    0,    0,    0,   83,
+       83,   83,    0,   83,    0,    0,   84,   84,   84,   84,
+       90,    5,   90,   90,   90,   90,   90,   90,   90,   90,
+       56,   54,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,    0,    0,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   76,   42,   90,   90,   90,   90,
+       90,   90,   48,   90,   90,   90,   92,    0,    0,    0,
+        0,    0,   83,   83,   83,   83,    0,   84,   84,   84,
 
-        0,   83,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   54,   89,   89,   89,   89,   40,
-       89,   89,   14,   15,    0,    0,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   17,    0,    0,    0,    0,
-       82,   82,   82,    0,   82,   87,   83,   83,   83,   83,
-       89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   52,   89,   89,   89,   89,   13,    0,    0,
-       89,   89,    4,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   12,   89,   29,   89,   89,    0,
+        0,   84,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   55,   90,   90,   90,   90,   41,
+       90,   90,   15,   16,    0,    0,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   18,    0,    0,    0,    0,
+       83,   83,   83,    0,   83,   88,   84,   84,   84,   84,
+       90,   90,   90,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   53,   90,   90,   90,   90,   14,    0,    0,
+       90,   90,    4,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   13,   90,   30,   90,   90,    0,
 
-        0,    0,    0,   86,   82,   82,   82,   82,   83,   83,
-       83,    0,   83,   89,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   26,   89,   89,   89,   89,   16,    0,
-        0,   37,   36,   28,   89,   89,   89,   89,   89,   89,
-       89,   89,   31,   30,   89,   89,   89,   89,   91,    0,
-        0,   82,   82,   82,    0,   82,   83,   83,   83,   83,
-       74,   89,   89,   89,   89,   89,   89,   89,   62,   89,
-       89,   89,   89,   58,   39,   38,   89,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   56,    0,
-        0,    0,    0,   82,   82,   82,   82,   83,   83,   83,
+        0,    0,    0,   87,   83,   83,   83,   83,   84,   84,
+       84,    0,   84,   90,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   27,   90,   90,   90,   90,   17,    0,
+        0,   38,   37,   29,   90,   90,   90,   90,   90,   90,
+       90,   90,   32,   31,   90,   90,   90,   90,   92,    0,
+        0,   83,   83,   83,    0,   83,   84,   84,   84,   84,
+       75,   90,   90,   90,   90,   90,   90,   90,   63,   90,
+       90,   90,   90,   59,   40,   39,   90,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   57,    0,
+        0,    0,    0,   83,   83,   83,   83,   84,   84,   84,
 
-        0,   83,    7,   89,   89,   60,   89,   35,   89,   63,
-       89,   73,   89,   89,   89,   89,   89,   89,   45,   89,
-       89,   89,   70,   89,   89,    0,    0,    0,   82,   82,
-       82,    0,   82,   83,   83,   83,   83,   89,   89,   34,
-       89,   89,   89,   59,   89,   89,   89,   89,   89,   89,
-       89,   89,   89,   89,   91,    0,    0,    0,   82,   82,
-       82,   82,   83,   83,   83,    0,   83,   89,   89,   89,
-       89,   89,   89,   89,   89,   89,   89,   89,   42,   89,
-       89,   21,    0,    0,   81,   84,   82,   82,   82,    0,
-       82,   83,   83,   83,   83,   89,   89,   64,   89,   89,
+        0,   84,    8,   90,   90,   61,   90,   36,   90,   64,
+       90,   74,   90,   90,   90,   90,   90,   90,   46,   90,
+       90,   90,   71,   90,   90,    0,    0,    0,   83,   83,
+       83,    0,   83,   84,   84,   84,   84,   90,   90,   35,
+       90,   90,   90,   60,   90,   90,   90,   90,   90,   90,
+       90,   90,   90,   90,   92,    0,    0,    0,   83,   83,
+       83,   83,   84,   84,   84,    0,   84,   90,   90,   90,
+       90,   90,   90,   90,   90,   90,   90,   90,   43,   90,
+       90,   22,    0,    0,   82,   85,   83,   83,   83,    0,
+       83,   84,   84,   84,   84,   90,   90,   65,   90,   90,
 
-       89,   89,   89,   89,   89,   89,   22,   89,    0,    0,
-       81,    0,   82,   82,   82,   82,   82,   83,   83,   83,
-        0,   83,   89,   89,   65,   89,   89,   89,   89,   89,
-       44,   89,   89,   89,   89,   89,   91,   81,   84,   82,
-        0,   82,   82,   82,   82,   83,   83,   83,   89,   89,
-       89,   89,   89,   89,   89,   19,   89,   43,   49,   89,
-       89,    0,   81,   82,   82,   82,   82,   83,   83,   83,
-       89,   89,   66,   67,   68,   69,   89,   20,   46,   89,
-        0,   82,   82,    0,   82,   82,   83,   89,   61,   89,
-       89,   91,   82,   82,   83,   89,   89,   89,    0,   82,
+       90,   90,   90,   90,   90,   90,   23,   90,    0,    0,
+       82,    0,   83,   83,   83,   83,   83,   84,   84,   84,
+        0,   84,   90,   90,   66,   90,   90,   90,   90,   90,
+       45,   90,   90,   90,   90,   90,   92,   82,   85,   83,
+        0,   83,   83,   83,   83,   84,   84,   84,   90,   90,
+       90,   90,   90,   90,   90,   20,   90,   44,   50,   90,
+       90,    0,   82,   83,   83,   83,   83,   84,   84,   84,
+       90,   90,   67,   68,   69,   70,   90,   21,   47,   90,
+        0,   83,   83,    0,   83,   83,   84,   90,   62,   90,
+       90,   92,   83,   83,   84,   90,   90,   90,    0,   83,
 
-       82,    0,   57,   89,   48,   81,   82,   82,   72,   81,
-       82,   82,    0,    0,   82,   82,    0,   82,   82,    0,
-       91,   82,   82,    0,   82,   82,    0,   82,   82,    0
+       83,    0,   58,   90,   49,   82,   83,   83,   73,   82,
+       83,   83,    0,    0,   83,   83,    0,   83,   83,    0,
+       92,   83,   83,    0,   83,   83,    0,   83,   83,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -1587,13 +1597,13 @@ static yyconst flex_int16_t yy_chk[4017] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[96] =
+static yyconst flex_int32_t yy_rule_can_match_eol[97] =
     {   0,
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,     };
+    0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,     };
 
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
@@ -1652,7 +1662,12 @@ static int yy_flex_strlen (yyconst char * );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -1840,55 +1855,55 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-{ return ClntParser::ADDRESS_LIST_; }
+{ return ClntParser::DUID_KEYWORD_; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-{ return ClntParser::NAME_; }
+{ return ClntParser::ADDRESS_LIST_; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-{ return ClntParser::IA_;}
+{ return ClntParser::NAME_; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-{ return ClntParser::TA_; }
+{ return ClntParser::IA_;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-{ return ClntParser::IAID_; }
+{ return ClntParser::TA_; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-{ return ClntParser::STATELESS_;}
+{ return ClntParser::IAID_; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-{ return ClntParser::LOGLEVEL_; }
+{ return ClntParser::STATELESS_;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-{ return ClntParser::LOGMODE_; }
+{ return ClntParser::LOGLEVEL_; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-{ return ClntParser::LOGNAME_; }
+{ return ClntParser::LOGMODE_; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-{ return ClntParser::LOGCOLORS_; }
+{ return ClntParser::LOGNAME_; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-{ return ClntParser::WORKDIR_;}
+{ return ClntParser::LOGCOLORS_; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-{ return ClntParser::SCRIPT_; }
+{ return ClntParser::WORKDIR_;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-{ return ClntParser::PREF_TIME_; }
+{ return ClntParser::SCRIPT_; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -1896,95 +1911,95 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-{ return ClntParser::VALID_TIME_; }
+{ return ClntParser::PREF_TIME_; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-{ return ClntParser::REMOTE_AUTOCONF_; }
+{ return ClntParser::VALID_TIME_; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-{ return ClntParser::T1_;}
+{ return ClntParser::REMOTE_AUTOCONF_; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-{ return ClntParser::T2_;}
+{ return ClntParser::T1_;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-{ return ClntParser::OPTION_; }
+{ return ClntParser::T2_;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-{ return ClntParser::DNS_SERVER_;}
+{ return ClntParser::OPTION_; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-{ return ClntParser::DOMAIN_;}
+{ return ClntParser::DNS_SERVER_;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-{ return ClntParser::NTP_SERVER_;}
+{ return ClntParser::DOMAIN_;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-{ return ClntParser::TIME_ZONE_;}
+{ return ClntParser::NTP_SERVER_;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-{ return ClntParser::SIP_SERVER_; }
+{ return ClntParser::TIME_ZONE_;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-{ return ClntParser::SIP_DOMAIN_; }
+{ return ClntParser::SIP_SERVER_; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-{ return ClntParser::FQDN_; }
+{ return ClntParser::SIP_DOMAIN_; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-{ return ClntParser::FQDN_S_; }
+{ return ClntParser::FQDN_; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-{ return ClntParser::DDNS_PROTOCOL_; }
+{ return ClntParser::FQDN_S_; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-{ return ClntParser::DDNS_TIMEOUT_; }
+{ return ClntParser::DDNS_PROTOCOL_; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-{ return ClntParser::NIS_SERVER_; }
+{ return ClntParser::DDNS_TIMEOUT_; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-{ return ClntParser::NIS_DOMAIN_; }
+{ return ClntParser::NIS_SERVER_; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-{ return ClntParser::NISP_SERVER_; }
+{ return ClntParser::NIS_DOMAIN_; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-{ return ClntParser::NISP_DOMAIN_; }
+{ return ClntParser::NISP_SERVER_; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-{ return ClntParser::LIFETIME_; }
+{ return ClntParser::NISP_DOMAIN_; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-{ return ClntParser::ROUTING_; }
+{ return ClntParser::LIFETIME_; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-{ return ClntParser::REJECT_SERVERS_;}
+{ return ClntParser::ROUTING_; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-{ return ClntParser::PREFERRED_SERVERS_;}
+{ return ClntParser::REJECT_SERVERS_;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
@@ -1992,23 +2007,23 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-{ return ClntParser::RAPID_COMMIT_;}
+{ return ClntParser::PREFERRED_SERVERS_;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-{ return ClntParser::RECONFIGURE_; }
+{ return ClntParser::RAPID_COMMIT_;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-{ return ClntParser::UNICAST_; }
+{ return ClntParser::RECONFIGURE_; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-{ return ClntParser::STRICT_RFC_NO_ROUTING_; }
+{ return ClntParser::UNICAST_; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-{ return ClntParser::PD_; }
+{ return ClntParser::STRICT_RFC_NO_ROUTING_; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
@@ -2016,107 +2031,107 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-{ return ClntParser::PREFIX_; }
+{ return ClntParser::PD_; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_; }
+{ return ClntParser::PREFIX_; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_LL_; }
+{ return ClntParser::DUID_TYPE_; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_LLT_; }
+{ return ClntParser::DUID_TYPE_LL_; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-{ return ClntParser::DUID_TYPE_EN_; }
+{ return ClntParser::DUID_TYPE_LLT_; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-{ return ClntParser::VENDOR_SPEC_; }
+{ return ClntParser::DUID_TYPE_EN_; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-{ return ClntParser::ANON_INF_REQUEST_; }
+{ return ClntParser::VENDOR_SPEC_; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-{ return ClntParser::INSIST_MODE_; }
+{ return ClntParser::ANON_INF_REQUEST_; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-{ return ClntParser::INACTIVE_MODE_; }
+{ return ClntParser::INSIST_MODE_; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-{ return ClntParser::AUTH_ENABLED_; }
+{ return ClntParser::INACTIVE_MODE_; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-{ return ClntParser::AUTH_ACCEPT_METHODS_; }
+{ return ClntParser::AUTH_ENABLED_; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_NONE_; }
+{ return ClntParser::AUTH_ACCEPT_METHODS_; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_PLAIN_; }
+{ return ClntParser::DIGEST_NONE_; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_MD5_; }
+{ return ClntParser::DIGEST_PLAIN_; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA1_; }
+{ return ClntParser::DIGEST_HMAC_MD5_; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA224_; }
+{ return ClntParser::DIGEST_HMAC_SHA1_; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA256_; }
+{ return ClntParser::DIGEST_HMAC_SHA224_; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA384_; }
+{ return ClntParser::DIGEST_HMAC_SHA256_; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-{ return ClntParser::DIGEST_HMAC_SHA512_; }
+{ return ClntParser::DIGEST_HMAC_SHA384_; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-{ return ClntParser::SKIP_CONFIRM_; }
+{ return ClntParser::DIGEST_HMAC_SHA512_; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-{ return ClntParser::AFTR_; }
+{ return ClntParser::SKIP_CONFIRM_; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-{ return ClntParser::DOWNLINK_PREFIX_IFACES_; }
+{ return ClntParser::AFTR_; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-{ return ClntParser::EXPERIMENTAL_; }
+{ return ClntParser::DOWNLINK_PREFIX_IFACES_; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-{ return ClntParser::ADDR_PARAMS_; }
+{ return ClntParser::EXPERIMENTAL_; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-{ return ClntParser::REQUEST_; }
+{ return ClntParser::ADDR_PARAMS_; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-;
+{ return ClntParser::REQUEST_; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
@@ -2124,17 +2139,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
+;
+	YY_BREAK
+case 79:
+YY_RULE_SETUP
 {
   BEGIN(COMMENT);
   ComBeg=yylineno;
 }
 	YY_BREAK
-case 79:
+case 80:
 YY_RULE_SETUP
 BEGIN(INITIAL);
 	YY_BREAK
-case 80:
-/* rule 80 can match eol */
+case 81:
+/* rule 81 can match eol */
 YY_RULE_SETUP
 ;
 	YY_BREAK
@@ -2146,17 +2165,6 @@ case YY_STATE_EOF(COMMENT):
 	YY_BREAK
     //IPv6 address - various forms
 
-case 81:
-YY_RULE_SETUP
-{
-    if(!inet_pton6(yytext,yylval.addrval)) { 
-        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
-        { YYABORT; }
-    } else {
-        return ClntParser::IPV6ADDR_;
-    }
-}
-	YY_BREAK
 case 82:
 YY_RULE_SETUP
 {
@@ -2170,23 +2178,23 @@ YY_RULE_SETUP
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-{ 
+{
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
-        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         return ClntParser::IPV6ADDR_;
     }
 }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-{
+{ 
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         return ClntParser::IPV6ADDR_;
     }
 }
@@ -2225,7 +2233,18 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case 88:
-/* rule 88 can match eol */
+YY_RULE_SETUP
+{
+    if(!inet_pton6(yytext,yylval.addrval)) { 
+        Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
+        { YYABORT; }
+    } else {
+        return ClntParser::IPV6ADDR_;
+    }
+}
+	YY_BREAK
+case 89:
+/* rule 89 can match eol */
 YY_RULE_SETUP
 {
     yylval.strval=new char[strlen(yytext)-1];
@@ -2234,7 +2253,7 @@ YY_RULE_SETUP
     return ClntParser::STRING_;
 }
 	YY_BREAK
-case 89:
+case 90:
 YY_RULE_SETUP
 {
     int len = strlen(yytext);
@@ -2257,7 +2276,7 @@ YY_RULE_SETUP
     return ClntParser::STRING_;
 }
 	YY_BREAK
-case 90:
+case 91:
 YY_RULE_SETUP
 {
     // DUID in 0x00010203 format
@@ -2291,7 +2310,7 @@ YY_RULE_SETUP
    return ClntParser::DUID_;
 }
 	YY_BREAK
-case 91:
+case 92:
 YY_RULE_SETUP
 {
    // DUID in 00:01:02:03 format
@@ -2321,7 +2340,7 @@ YY_RULE_SETUP
    return ClntParser::DUID_;
 }
 	YY_BREAK
-case 92:
+case 93:
 YY_RULE_SETUP
 { 
     yytext[strlen(yytext)-1]='\n';
@@ -2332,7 +2351,7 @@ YY_RULE_SETUP
     return ClntParser::HEXNUMBER_;
 }
 	YY_BREAK
-case 93:
+case 94:
 YY_RULE_SETUP
 { 
     if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
@@ -2342,11 +2361,11 @@ YY_RULE_SETUP
     return ClntParser::INTNUMBER_;
 }
 	YY_BREAK
-case 94:
+case 95:
 YY_RULE_SETUP
 {return yytext[0];} 
 	YY_BREAK
-case 95:
+case 96:
 YY_RULE_SETUP
 ECHO;
 	YY_BREAK
