@@ -500,7 +500,8 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
     else
         optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, PeerAddr, hint, false);
 
-    Options.push_back((Ptr*) optFQDN);
+		if (optFQDN)
+			Options.push_back((Ptr*) optFQDN);
 }
 
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
