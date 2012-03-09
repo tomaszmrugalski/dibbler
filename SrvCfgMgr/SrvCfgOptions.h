@@ -38,9 +38,11 @@ public:
     TSrvCfgOptions();
     TSrvCfgOptions(SPtr<TDUID> duid);
     TSrvCfgOptions(SPtr<TOptVendorData> remoteid);
+		TSrvCfgOptions(SPtr<TIPv6Addr> clntaddr);
     bool setOptions(SPtr<TSrvParsGlobalOpt> opt);
     SPtr<TDUID> getDuid();
     SPtr<TOptVendorData> getRemoteID();
+		SPtr<TIPv6Addr> getClntAddr();
 
     // address reservation
     void setAddr(SPtr<TIPv6Addr> addr);
@@ -151,8 +153,10 @@ private:
 
     void SetDefaults();
 
+		//client specification
     SPtr<TOptVendorData> RemoteID;
     SPtr<TDUID> Duid;
+		SPtr<TIPv6Addr> ClntAddr;
 };
 
 #endif

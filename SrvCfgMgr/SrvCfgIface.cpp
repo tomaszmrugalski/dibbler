@@ -42,8 +42,11 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, TMsg* pa
 
     SPtr<TOptVendorData> remoteID;
     TSrvMsg* par = dynamic_cast<TSrvMsg*>(parent);
+		SPtr<TIPv6Addr> peer;
     if (par) {
-	remoteID = par->getRemoteID();
+			remoteID = par->getRemoteID();
+			peer = par->getClientPeer();
+			Log(Debug) << "Check exceptions for peer = " << peer->getPlain() << LogEnd;
     }
 
     SPtr<TSrvCfgOptions> x;
@@ -66,6 +69,11 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, TMsg* pa
                            << remoteid->getVendorDataPlain() << "." << LogEnd;
             return x;
         }
+				if ( peer && x && x->getClntAddr() && *(peer) == *(x->getClntAddr()) ) {
+						Log(Debug) << "Found per-client configuration (exception) for client with link-local = "
+											 << peer->getPlain() << LogEnd;
+						return x;
+				}
     }
     return 0;
 }

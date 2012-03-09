@@ -518,6 +518,15 @@ bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
     return false;
 }
 
+SPtr<TIPv6Addr> TSrvMsg::getClientPeer()
+{
+   if (Relays > 0)
+   {
+       return PeerAddrTbl[0]; //first hop ?
+   }
+   return PeerAddr;
+}
+
 void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
     this->Relays = q->Relays;
     for (int i=0; i < this->Relays; i++) {
