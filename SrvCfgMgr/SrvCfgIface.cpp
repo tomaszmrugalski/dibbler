@@ -114,6 +114,40 @@ bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
     return false;
 }
 
+/*
+ * Check if a prefix is reserved for another client
+ */
+bool TSrvCfgIface::checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID) {
+  SPtr<TSrvCfgOptions> x;
+  ExceptionsLst.first();
+  Log(Debug) << " Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
+  while (x=ExceptionsLst.get()) {
+    SPtr<TOptVendorData> remoteid;
+    remoteid = x->getRemoteID();
+    if (remoteid)
+      Log(Debug) << " Exceptions for client " << remoteid << LogEnd;
+    else 
+      Log(Debug) << " Exceptions for client " << x->getDuid()->getPlain() << LogEnd;
+
+    if ( x->getPrefix() )
+      Log(Debug) << " Checking reserved pfx " << x->getPrefix()->getPlain() << LogEnd;
+    if ( x->getPrefix() && *(x->getPrefix()) == *pfx ) {
+      Log(Debug) << " Found matching prefix " << LogEnd;
+      if (
+          !( duid && x->getDuid() && (*(x->getDuid()) == *duid) ) //duid check
+          &&
+          !(remoteID && remoteid && (remoteID->getVendor() == remoteid->getVendor()) //remote id check
+            && (remoteid->getVendorDataLen() == remoteID->getVendorDataLen())
+            && !memcmp(remoteid->getVendorData(), remoteID->getVendorData(), remoteid->getVendorDataLen()))
+         )  {
+        Log(Debug) << " prefix is reserved for another client, cannot assign to this client " << LogEnd;
+        return true; //pfx is reserved for -another- client, dont use it for this duid/remoteid
+      }
+    }
+  }
+  return false;
+}
+
 void TSrvCfgIface::firstAddrClass() {
     this->SrvCfgAddrClassLst.first();
 }

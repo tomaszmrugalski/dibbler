@@ -522,12 +522,19 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
         validHint = false;
     }
 
+
+    SPtr<TOptVendorData> remoteID;
+    TSrvMsg * par = dynamic_cast<TSrvMsg*>(Parent);
+    if (par) {
+      remoteID = par->getRemoteID();
+    }
+
     if ( validHint ) {
       // hint is valid, try to use it
       ptrPD = SrvCfgMgr().getClassByPrefix(this->Iface, hint);
 
       // if the PD allow the hint, based on DUID, Addr, and Msg from client
-     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ))
+     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ) && !ptrIface->checkReservedPrefix(hint,ClntDuid,remoteID) )
          {
                   // case 2: address belongs to supported class, and is free
                   if ( ptrPD && SrvAddrMgr().prefixIsFree(hint) ) {

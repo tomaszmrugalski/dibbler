@@ -103,6 +103,7 @@ public:
     // per-client parameters (exceptions)
     void addClientExceptionsLst(List(TSrvCfgOptions) exLst);
     SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, TMsg* message, bool quiet=true);
+    bool checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID);
     bool addrReserved(SPtr<TIPv6Addr> addr);
     bool prefixReserved(SPtr<TIPv6Addr> prefix);
 
