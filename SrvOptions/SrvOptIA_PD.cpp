@@ -398,6 +398,7 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         // there's no reserved prefix for this lad
         return false;
     } 
+    Log(Debug) << "Assigning fixed lease" << LogEnd;
     
     // we've got fixed prefix, yay! Let's try to calculate its preferred and valid lifetimes
     SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
@@ -437,6 +438,11 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         SubOptions.append(optPrefix);
 
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed in-pool prefix.", Parent));
+
+        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, this->IAID, T1, T2, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+
+        // but CfgMgr has to increase usage only once. Don't ask my why :)
+        SrvCfgMgr().incrPrefixCount(Iface, reservedPrefix);
         
         return true;
     }
@@ -448,6 +454,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     SubOptions.append(optPrefix);
     
     SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed out-of-pool address.", Parent));
+
+    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, this->IAID, T1, T2, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
     
     return true;
 }
