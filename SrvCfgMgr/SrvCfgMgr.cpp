@@ -582,9 +582,13 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TSrvMsg> msg) {
             classCnt++;
         }
     }
-    if (!classCnt) {
+    if (!classCnt && ptrIface) {
         Log(Warning) << "There are no address class defined on the " << ptrIface->getFullName()
                      << ". Maybe you are trying to configure clients on cascade relay interface? "
+                     << "If that is so, please define separate class on this interface, too." << LogEnd;
+    } else if (!classCnt) {
+        Log(Warning) << "Interface not found."
+                     << "Maybe you are trying to configure clients on cascade relay interface? "
                      << "If that is so, please define separate class on this interface, too." << LogEnd;
     }
     return false;
