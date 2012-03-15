@@ -11,8 +11,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-linux.c,v 1.13 2009-03-09 22:27:23 thomson Exp $
- *
  */
 
 #define _GNU_SOURCE
@@ -310,7 +308,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
 	char   			buf[256];
     } req;
     inet_prefix lcl;
-    inet_prefix peer;
+    /* inet_prefix peer; */
     int local_len = 0;
     int peer_len = 0;
     int scoped = 0;
@@ -351,7 +349,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     addattr_l(&req.n, sizeof(req), IFA_CACHEINFO, &ci, sizeof(ci));
     
     if (peer_len == 0 && local_len) {
-	peer = lcl;
+	/* peer = lcl; */
 	addattr_l(&req.n, sizeof(req), IFA_ADDRESS, &lcl.data, lcl.bytelen);
     }
     if (req.ifa.ifa_prefixlen == 0)
@@ -385,8 +383,6 @@ int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
     /* FIXME: Linux kernel currently does not provide API for dynamic adresses */
 
     return ipaddr_add_or_del(addr, ifacename, prefixLength, pref, valid, ADDROPER_UPDATE);
-
-    return LOWLEVEL_NO_ERROR;
 }
 
 

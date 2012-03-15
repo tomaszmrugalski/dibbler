@@ -852,7 +852,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
                                             IPv6Addr->getPlain(),
 					    DNSUPDATE_AAAA, proto2);
 	    result2 = act2->run(timeout);
-	    act2->showResult(result);
+	    act2->showResult(result2);
 	    delete act2;
 	} // fqdnMode == 2
 	

@@ -7,7 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.cpp,v 1.48 2008-11-11 22:41:48 thomson Exp $
  */
 
 #include <cstdlib>
@@ -486,8 +485,6 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
     SPtr<TFQDN> alternative = 0; // best FQDN found for that client
     SPtr<TFQDN> foo;
 
-    bool knownName = false ; // whether the hint exists in the FQDN list
-
     FQDNLst.first();
     while (foo=this->FQDNLst.get()) {
 
@@ -502,7 +499,6 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
 
 	    if (foo->Name == hint) {
                 Log(Debug) << "FQDN: Client requested " << hint << ", but it is currently used." << LogEnd;
-	     	   knownName = true;
             }
             continue;
 	}
@@ -518,7 +514,6 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, st
 
 	if (foo->Name == hint){
 	    // client asked for this name. Let's check if client is allowed to get this name.
-	   knownName = true;
 	   if ( (!foo->Duid) && (!foo->Addr) ) {
 		Log(Debug) << "Client's hint: " << hint << " found in fqdn list, setting fqdn to "<< foo->Name << LogEnd;
 		return foo;

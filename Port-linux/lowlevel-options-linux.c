@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-options-linux.c,v 1.18 2008-11-13 21:05:42 thomson Exp $
- *
  */
 
 #define _BSD_SOURCE
@@ -423,8 +421,10 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     argv[2] = (char*)ifname;
     result = iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_EXCL, 3, argv);
 
-    /* FIXME: Parse result */
-    return LOWLEVEL_NO_ERROR;
+    if (result == 0)
+        return LOWLEVEL_NO_ERROR;
+    else
+        return LOWLEVEL_ERROR_UNSPEC;
 }
 
 int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
@@ -477,7 +477,9 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     argv[2] = (char*)ifname;
     
     result = iproute_modify(RTM_DELROUTE, 0, 3, argv);
-    /* FIXME: Parse result */
 
-    return LOWLEVEL_NO_ERROR;
+    if (result == 0)
+        return LOWLEVEL_NO_ERROR;
+    else
+        return LOWLEVEL_ERROR_UNSPEC;
 }
