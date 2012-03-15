@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Container.h,v 1.6 2006-03-03 20:21:46 thomson Exp $
+ * Released under GNU GPL v2 licence
  *
  */
 
@@ -25,7 +25,7 @@ public:
 
 	bool	append(const TYP &foo);
 	bool	prepend(const TYP& foo);    
-	const int count();
+	int count() const;
 	void	first();
 	void	delFirst();
 	void    del();
@@ -56,7 +56,7 @@ void TContainer<TYP>::clear() {
 }
 
 template <class TYP>
-const int TContainer<TYP>::count() {
+int TContainer<TYP>::count() const {
 	return (int)lista.size();
 }
 
