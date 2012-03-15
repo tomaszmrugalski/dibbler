@@ -17,6 +17,8 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 
+using namespace std;
+
 /** 
  * Used in REQUEST, RENEW, REBIND, DECLINE and RELEASE
  * 

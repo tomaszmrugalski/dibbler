@@ -5,7 +5,6 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.10 2008-01-01 20:21:14 thomson Exp $
  */
 
 #include <stdio.h>
@@ -19,6 +18,8 @@
 #include "Logger.h"
 #include "ReqOpt.h"
 #include "Portable.h"
+
+using namespace std;
 
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
 {

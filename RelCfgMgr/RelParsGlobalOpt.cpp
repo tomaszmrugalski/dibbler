@@ -11,6 +11,8 @@
 #include "RelParsGlobalOpt.h"
 #include "Portable.h"
 
+using namespace std;
+
 TRelParsGlobalOpt::TRelParsGlobalOpt(void) {
     WorkDir   = WORKDIR;
     GuessMode = false;

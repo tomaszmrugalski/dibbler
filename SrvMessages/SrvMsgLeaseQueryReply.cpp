@@ -7,7 +7,6 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQueryReply.cpp,v 1.7 2008-08-29 00:07:35 thomson Exp $
  */
 
 #include "SrvMsgLeaseQueryReply.h"
@@ -21,6 +20,7 @@
 #include "AddrClient.h"
 #include "SrvCfgMgr.h"
 
+using namespace std;
 
 TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
     :TSrvMsg(query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
@@ -223,6 +223,6 @@ void TSrvMsgLeaseQueryReply::doDuties() {
     IsDone = true;
 }
 
-string TSrvMsgLeaseQueryReply::getName() {
+string TSrvMsgLeaseQueryReply::getName() const {
     return "LEASE-QUERY-REPLY";
 }

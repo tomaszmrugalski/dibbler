@@ -18,22 +18,21 @@ class TRelCfgIface;
 #include "RelParsGlobalOpt.h"
 #include <iostream>
 #include <string>
-using namespace std;
 
 class TRelCfgIface
 {
-    friend ostream& operator<<(ostream& out,TRelCfgIface& iface);
+    friend std::ostream& operator<<(std::ostream& out,TRelCfgIface& iface);
 public:
-    TRelCfgIface(string ifaceName);
+    TRelCfgIface(std::string ifaceName);
     TRelCfgIface(int ifaceNr);
     virtual ~TRelCfgIface();
     void setDefaults();
 
-    void setName(string ifaceName);
+    void setName(std::string ifaceName);
     void setID(int ifaceID);
     int	getID();
-    string getName();
-    string getFullName();
+    std::string getName();
+    std::string getFullName();
 
     SPtr<TIPv6Addr> getServerUnicast();
     SPtr<TIPv6Addr> getClientUnicast();
@@ -46,7 +45,7 @@ public:
     int getInterfaceID();
     
 private:
-    string Name;
+    std::string Name;
     int	ID;
     int InterfaceID; // value of interface-id option (optional)
 

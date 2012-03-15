@@ -305,7 +305,7 @@ bool TClntMsgSolicit::check()
     return false;
 }
 
-string TClntMsgSolicit::getName() {
+std::string TClntMsgSolicit::getName() const {
     return "SOLICIT";
 }
 

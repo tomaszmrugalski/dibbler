@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.cpp,v 1.24 2008-11-11 21:55:27 thomson Exp $
- *
  */
 
 #include <limits.h>
@@ -23,6 +21,8 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+
+using namespace std;
 
 /**
  * @brief constructor for new IA
@@ -548,7 +548,7 @@ SPtr<TFQDN> TAddrIA::getFQDN()
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-ostream & operator<<(ostream & strum,TAddrIA &x) {
+std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
 
     SPtr<TAddrAddr> ptr;
     SPtr<TAddrPrefix> prefix;

@@ -20,7 +20,7 @@
 #include "OptVendorSpecInfo.h"
 using namespace std;
 
-TClntCfgIface::TClntCfgIface(string ifaceName) {
+TClntCfgIface::TClntCfgIface(const std::string& ifaceName) {
     setDefaults();
 
     NoConfig=false;
@@ -231,9 +231,9 @@ void TClntCfgIface::setIfaceID(int ifaceID)
     ID=ifaceID;
 }
 
-void TClntCfgIface::setIfaceName(string ifaceName)
+void TClntCfgIface::setIfaceName(const std::string& ifaceName)
 {
-    this->IfaceName=ifaceName;
+    IfaceName=ifaceName;
 }
 
 void TClntCfgIface::setNoConfig()
@@ -260,8 +260,8 @@ bool TClntCfgIface::getRapidCommit() {
 
 void TClntCfgIface::vendorSpecSupported(bool support)
 {
-    this->ReqVendorSpec   = support;
-    this->VendorSpecState = STATE_NOTCONFIGURED;
+    ReqVendorSpec   = support;
+    VendorSpecState = STATE_NOTCONFIGURED;
 }
 
 // --------------------------------------------------------------------------------

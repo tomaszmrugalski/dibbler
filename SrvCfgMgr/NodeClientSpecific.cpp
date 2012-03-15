@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeClientSpecific.cpp,v 1.1 2008-10-12 19:36:58 thomson Exp $
- *
  */
 
 #include "NodeClientSpecific.h"
@@ -15,6 +13,8 @@
 #include "DHCPConst.h"
 #include "OptVendorData.h"
 #include <sstream>
+
+using namespace std;
 
 SPtr<TSrvMsg> NodeClientSpecific::CurrentMsg;
 string NodeClientSpecific::vendor_spec_num  ;

@@ -40,10 +40,10 @@ public:
     void setUnicast(SPtr<TIPv6Addr> addr);
     SPtr<TIPv6Addr> getUnicast();
 
-    void setRelayName(string name);
+    void setRelayName(std::string name);
     void setRelayID(int ifindex);
     void setRelayInterfaceID(SPtr<TSrvOptInterfaceID> id);
-    string getRelayName();
+    std::string getRelayName();
     int getRelayID();
     SPtr<TSrvOptInterfaceID> getRelayInterfaceID();
     bool isRelay();
@@ -59,8 +59,8 @@ public:
     bool supportDNSServer();
 
     // option: Domain
-    List(string) * getDomainLst();
-    void setDomainLst(List(string) * domains);
+    List(std::string) * getDomainLst();
+    void setDomainLst(List(std::string) * domains);
     bool supportDomain();
 
     // option: NTP servers
@@ -69,8 +69,8 @@ public:
     bool supportNTPServer();
 
     // option: Timezone
-    string getTimezone();
-    void setTimezone(string timeZone);
+    std::string getTimezone();
+    void setTimezone(std::string timeZone);
     bool supportTimezone();
 
     // option: SIP servers
@@ -79,22 +79,22 @@ public:
     bool supportSIPServer();
 
     // option: SIP domains
-    List(string) * getSIPDomainLst();
-    void setSIPDomainLst(List(string) *domainlist);
+    List(std::string) * getSIPDomainLst();
+    void setSIPDomainLst(List(std::string) *domainlist);
     bool supportSIPDomain();
 
     // option: FQDN
     List(TFQDN) *getFQDNLst();
-    string getFQDNName(SPtr<TDUID> duid);
-    string getFQDNName(SPtr<TIPv6Addr> addr);
-    string getFQDNName();
+    std::string getFQDNName(SPtr<TDUID> duid);
+    std::string getFQDNName(SPtr<TIPv6Addr> addr);
+    std::string getFQDNName();
     int getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     void setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain);
     EUnknownFQDNMode getUnknownFQDN();
     std::string getFQDNDomain();
 
-    SPtr<TDUID> getFQDNDuid(string name);
+    SPtr<TDUID> getFQDNDuid(std::string name);
     void setFQDNLst(List(TFQDN) *fqdn);
     bool supportFQDN();
 
@@ -112,13 +112,13 @@ public:
     bool supportNISPServer();
 
     // option: NIS domain
-    string getNISDomain();
-    void setNISDomain(string domain);
+    std::string getNISDomain();
+    void setNISDomain(std::string domain);
     bool supportNISDomain();
 
     // option: NISP domain
-    string getNISPDomain();
-    void setNISPDomain(string domain);
+    std::string getNISPDomain();
+    void setNISPDomain(std::string domain);
     bool supportNISPDomain();
 
     // option: LIFETIME
@@ -144,7 +144,7 @@ private:
 
     // relay
     bool Relay;
-    string RelayName;
+    std::string RelayName;
     int RelayID;
     SPtr<TSrvOptInterfaceID> RelayInterfaceID;
 
@@ -164,16 +164,16 @@ private:
     bool VendorSpecSupport;
 
     List(TIPv6Addr) DNSServerLst;
-    List(string) DomainLst;			
+    List(std::string) DomainLst;			
     List(TIPv6Addr) NTPServerLst;
-    string Timezone;
+    std::string Timezone;
     List(TIPv6Addr) SIPServerLst;
-    List(string) SIPDomainLst;
+    List(std::string) SIPDomainLst;
     List(TFQDN) FQDNLst;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
-    string NISDomain;
-    string NISPDomain;
+    std::string NISDomain;
+    std::string NISPDomain;
     unsigned int Lifetime;
 
     List(TOptVendorSpecInfo) VendorSpec;

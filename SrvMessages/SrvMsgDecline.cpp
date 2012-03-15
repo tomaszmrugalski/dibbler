@@ -34,6 +34,6 @@ TSrvMsgDecline::~TSrvMsgDecline() {
 }
 
 
-string TSrvMsgDecline::getName() {
+std::string TSrvMsgDecline::getName() const {
     return "DECLINE";
 }

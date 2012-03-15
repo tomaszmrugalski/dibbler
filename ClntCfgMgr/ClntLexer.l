@@ -6,6 +6,8 @@
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "ClntParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();

@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-server.cpp,v 1.21 2008-10-10 20:39:12 thomson Exp $
- *                                                                           
  */
 
 #include <signal.h>
@@ -19,7 +17,9 @@
 #include "Logger.h"
 #include "daemon.h"
 
-TDHCPServer * ptr;
+using namespace std;
+
+TDHCPServer * ptr = 0;
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;

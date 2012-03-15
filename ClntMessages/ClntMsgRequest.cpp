@@ -238,7 +238,7 @@ bool TClntMsgRequest::check()
     return false;
 }
 
-string TClntMsgRequest::getName() {
+std::string TClntMsgRequest::getName() const {
     return "REQUEST";
 }
 

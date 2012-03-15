@@ -29,7 +29,7 @@
 class TClntOptFQDN : public TOptFQDN
 {
  public:
-    TClntOptFQDN(string fqdn, TMsg* parent);
+    TClntOptFQDN(const std::string& fqdn, TMsg* parent);
     TClntOptFQDN(char *buf, int bufsize, TMsg* parent);
     bool doDuties();
     void setSrvDuid(SPtr<TDUID> duid);

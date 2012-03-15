@@ -24,6 +24,8 @@
 #include "SrvOptIA_PD.h"
 #include "Logger.h"
 
+using namespace std;
+
 TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> solicit)
     :TSrvMsg(solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
 	     solicit->getTransID())
@@ -223,6 +225,6 @@ void TSrvMsgAdvertise::doDuties() {
     IsDone = true;
 }
 
-string TSrvMsgAdvertise::getName() {
+std::string TSrvMsgAdvertise::getName() const{
     return "ADVERTISE";
 }

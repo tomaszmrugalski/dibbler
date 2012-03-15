@@ -20,6 +20,7 @@
 #include <map>
 #include <pthread.h>
 
+using namespace std;
 using std::map;
 
 #define IF_RECONNECTED_DETECTED -1

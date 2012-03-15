@@ -32,6 +32,6 @@ bool TSrvMsgConfirm::check() {
 TSrvMsgConfirm::~TSrvMsgConfirm() {
 }
 
-string TSrvMsgConfirm::getName() {
+std::string TSrvMsgConfirm::getName() const {
     return "CONFIRM";
 }

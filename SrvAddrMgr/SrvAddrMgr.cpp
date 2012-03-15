@@ -19,9 +19,11 @@
 #include "SrvCfgAddrClass.h"
 #include "Portable.h"
 
+using namespace std;
+
 TSrvAddrMgr * TSrvAddrMgr::Instance = 0;
 
-TSrvAddrMgr::TSrvAddrMgr(string xmlfile, bool loadDB)
+TSrvAddrMgr::TSrvAddrMgr(const std::string& xmlfile, bool loadDB)
     :TAddrMgr(xmlfile, loadDB) {
 
     this->CacheMaxSize = 999999999;
@@ -704,7 +706,7 @@ void TSrvAddrMgr::checkCacheSize() {
     }
 }
 
-void TSrvAddrMgr::print(ostream & out) {
+void TSrvAddrMgr::print(std::ostream & out) {
     out << "  <cache size=\"" << this->Cache.count() << "\"/>" << endl;
 }
 

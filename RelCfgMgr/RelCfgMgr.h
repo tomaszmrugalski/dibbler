@@ -23,7 +23,7 @@
 class TRelCfgMgr : public TCfgMgr
 {
 public:  
-    friend ostream & operator<<(std::ostream &strum, TRelCfgMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TRelCfgMgr &x);
     virtual ~TRelCfgMgr();
 
     static void instanceCreate(const std::string cfgFile, const std::string xmlFile);
@@ -46,7 +46,7 @@ public:
     bool setupGlobalOpts(SPtr<TRelParsGlobalOpt> opt);
 
     // configuration parameters
-    string getWorkdir();
+    std::string getWorkdir();
     bool guessMode();
     ERelIfaceIdOrder getInterfaceIDOrder();
 

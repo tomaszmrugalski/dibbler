@@ -22,10 +22,12 @@
 
 TRelIfaceMgr * TRelIfaceMgr::Instance = 0;
 
+using namespace std;
+
 /*
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
  */
-TRelIfaceMgr::TRelIfaceMgr(string xmlFile) 
+TRelIfaceMgr::TRelIfaceMgr(const std::string& xmlFile) 
     : TIfaceMgr(xmlFile, true) {
 }
 

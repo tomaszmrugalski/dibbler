@@ -23,8 +23,8 @@ public:
     TClntParsGlobalOpt();
     ~TClntParsGlobalOpt();
 
-    void setWorkDir(string dir);
-    string getWorkDir();
+    void setWorkDir(std::string dir);
+    std::string getWorkDir();
     void setPrefixLength(int len);
     int getPrefixLength();
     void setDigest(DigestTypes digest);
@@ -52,7 +52,7 @@ public:
 
 
 private:
-    string WorkDir;
+    std::string WorkDir;
     int PrefixLength;
     DigestTypes Digest;
     bool   AnonInfRequest;

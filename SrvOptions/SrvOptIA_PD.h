@@ -32,7 +32,7 @@ class TSrvOptIA_PD : public TOptIA_PD
 
     TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent);    
     TSrvOptIA_PD(long IAID, long T1, long T2, TMsg* parent);    
-    TSrvOptIA_PD(long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);
+    TSrvOptIA_PD(long IAID, long T1, long T2, int Code, std::string Msg, TMsg* parent);
 
     void releaseAllPrefixes(bool quiet);
 

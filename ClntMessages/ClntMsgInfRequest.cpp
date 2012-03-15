@@ -179,7 +179,7 @@ bool TClntMsgInfRequest::check()
     return false;
 }
 
-string TClntMsgInfRequest::getName() {
+std::string TClntMsgInfRequest::getName() const {
     return "INF-REQUEST";
 }
 

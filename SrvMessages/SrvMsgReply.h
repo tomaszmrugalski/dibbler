@@ -41,7 +41,7 @@ class TSrvMsgReply : public TSrvMsg
     void doDuties();
     unsigned long getTimeout();
     bool check();
-    string getName();
+    std::string getName() const;
     
     ~TSrvMsgReply();
 private:

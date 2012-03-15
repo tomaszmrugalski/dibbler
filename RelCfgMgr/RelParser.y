@@ -17,6 +17,8 @@
 #include "Logger.h"
 #include "Portable.h"
 
+using namespace std;
+
 #define YY_USE_CLASS
 %}
 

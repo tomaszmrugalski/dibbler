@@ -6,9 +6,9 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgClientClass.cpp,v 1.1 2008-10-12 20:54:15 thomson Exp $
- *
  */
+
+using namespace std;
 
 #include "SrvCfgClientClass.h"
 #include "SrvMsg.h"

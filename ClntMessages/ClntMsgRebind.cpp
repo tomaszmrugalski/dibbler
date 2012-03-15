@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRebind.cpp,v 1.18 2009-03-24 23:17:17 thomson Exp $
- *
  */
 
 #include <cmath>
@@ -25,6 +23,8 @@
 #include "Logger.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptStatusCode.h"
+
+using namespace std;
 
 TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface)
   :TClntMsg(iface, 0, REBIND_MSG)
@@ -309,7 +309,7 @@ bool TClntMsgRebind::check() {
 	return 0;
 }
 
-string TClntMsgRebind::getName() {
+std::string TClntMsgRebind::getName() const {
     return "REBIND";
 }
 

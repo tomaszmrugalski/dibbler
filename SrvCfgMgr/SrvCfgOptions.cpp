@@ -12,6 +12,8 @@
 #include "Logger.h"
 #include "SrvCfgOptions.h"
 
+using namespace std;
+
 TSrvCfgOptions::TSrvCfgOptions() {
     SetDefaults();
 }

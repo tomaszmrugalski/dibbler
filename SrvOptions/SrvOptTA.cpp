@@ -23,6 +23,8 @@
 #include "DHCPConst.h"
 #include "SrvTransMgr.h"
 
+using namespace std;
+
 #define MAX_TA_RANDOM_TRIES 100
 
 /*

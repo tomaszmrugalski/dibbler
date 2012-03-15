@@ -19,6 +19,8 @@
 #include <arpa/inet.h>
 #endif
 
+using namespace std;
+
 TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {
@@ -86,9 +88,9 @@ char * TOptVendorData::getVendorData()
     return this->VendorData;
 }
 
-string TOptVendorData::getVendorDataPlain()
+std::string TOptVendorData::getVendorDataPlain()
 {
-    ostringstream tmp;
+    std::ostringstream tmp;
     tmp << "0x";
     for (int i=0; i<this->VendorDataLen; i++) {
 	tmp << setfill('0') << setw(2) << hex << (unsigned int) this->VendorData[i];

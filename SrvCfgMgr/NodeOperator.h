@@ -18,36 +18,36 @@
 
 class NodeOperator  : public Node {
 public:
-	enum OperatorType
-	{
-	    OPERATOR_EQUAL     = 1,
-	    OPERATOR_AND       = 2,
-	    OPERATOR_OR        = 3,
-	    OPERATOR_SUBSTRING = 4,
-	    OPERATOR_CONTAIN   = 5
-	};
+        enum OperatorType
+        {
+            OPERATOR_EQUAL     = 1,
+            OPERATOR_AND       = 2,
+            OPERATOR_OR        = 3,
+            OPERATOR_SUBSTRING = 4,
+            OPERATOR_CONTAIN   = 5
+        };
 
-	NodeOperator();
-	NodeOperator(OperatorType t , SPtr<Node>& lll, SPtr<Node>& rrr);
-	// Construction method for Substring
-	NodeOperator(OperatorType t , SPtr<Node>& lll,  int in,  int len);
-	// Construction method for Contain
-	NodeOperator(OperatorType t, SPtr<Node>& lll,  string s );
-	virtual ~NodeOperator();
-	virtual string exec(SPtr<TSrvMsg> msg);
-	virtual string exec();
+        NodeOperator();
+        NodeOperator(OperatorType t , SPtr<Node>& lll, SPtr<Node>& rrr);
+        // Construction method for Substring
+        NodeOperator(OperatorType t , SPtr<Node>& lll,  int in,  int len);
+        // Construction method for Contain
+        NodeOperator(OperatorType t, SPtr<Node>& lll,  std::string s );
+        virtual ~NodeOperator();
+        virtual std::string exec(SPtr<TSrvMsg> msg);
+        virtual std::string exec();
 
 private :
-	SPtr<Node> l;
-	SPtr<Node> r;
-	OperatorType type;
+        SPtr<Node> l;
+        SPtr<Node> r;
+        OperatorType type;
 
-	// support substring
-	int index;
-	int length;
+        // support substring
+        int index;
+        int length;
 
-	// support contain
-	std::string cotainString;
+        // support contain
+        std::string cotainString;
 };
 
 #endif /* NODEOPERATOR_H_ */

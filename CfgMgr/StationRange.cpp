@@ -168,7 +168,7 @@ void TStationRange::truncate(int minPrefix, int maxPrefix)
     AddrR->truncate(minPrefix, maxPrefix);
 }
 
-ostream& operator<<(ostream& out,TStationRange&  range)
+std::ostream& operator<<(std::ostream& out, TStationRange& range)
 {
     if (range.isAddrRange) {
 	// address range

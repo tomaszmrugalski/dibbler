@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-relay.cpp,v 1.13 2008-10-10 20:39:12 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -17,7 +15,9 @@
 #include "Logger.h"
 #include "daemon.h"
 
-TDHCPRelay * ptr;
+using namespace std;
+
+TDHCPRelay * ptr = 0;
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;

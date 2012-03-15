@@ -6,13 +6,13 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeOperator.cpp,v 1.2 2008-10-13 22:41:18 thomson Exp $
- *
  */
 
 #include "NodeOperator.h"
 #include "SrvMsg.h"
 #include "Logger.h"
+
+using namespace std;
 
 NodeOperator::NodeOperator()
     :Node(NODE_OPERATOR)

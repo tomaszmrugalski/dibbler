@@ -29,6 +29,8 @@
 #include "IfaceMgr.h"
 #include "Logger.h"
 
+using namespace std;
+
 /**
  * this constructor is used to create REPLY message as a response for CONFIRM message
  *
@@ -878,6 +880,6 @@ TSrvMsgReply::~TSrvMsgReply()
 
 }
 
-string TSrvMsgReply::getName() {
+string TSrvMsgReply::getName() const {
     return "REPLY";
 }

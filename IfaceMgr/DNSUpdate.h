@@ -61,7 +61,7 @@ private:
     DnsUpdateMode updateMode;
     DnsUpdateProtocol _proto;
    
-    void splitHostDomain(string fqdnName);
+    void splitHostDomain(std::string fqdnName);
 
     void createSOAMsg();
     void addinMsg_newPTR();
@@ -76,8 +76,8 @@ private:
     void sendMsgUDP(unsigned int timeout);
      
  public:
-    DNSUpdate(string dns_address, string zonename, string hostname, 
-	      string hostip, DnsUpdateMode updateMode, 
+    DNSUpdate(std::string dns_address, std::string zonename, std::string hostname, 
+	      std::string hostip, DnsUpdateMode updateMode, 
 	      DnsUpdateProtocol proto /*= DNSUPDATE_TCP*/ );
     void addDHCID(const char* duid, int duidlen);
     void addTSIG(const char* key, int keylen);

@@ -19,6 +19,8 @@
 #include "Portable.h"
 #include "Logger.h"
 
+using namespace std;
+
 TCfgMgr::TCfgMgr()
  :IsDone(false), 
   DUIDType(DUID_TYPE_LLT), /* default DUID type: LLT */ 
@@ -37,7 +39,7 @@ void TCfgMgr::setDDNSProtocol(DNSUpdateProtocol proto) {
 
 // method compares both files and if differs
 // returns true if files differs and false in the other case
-bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
+bool TCfgMgr::compareConfigs(const string& cfgFile, const string& oldCfgFile)
 {
 	std::ifstream oldF,newF;
     bool newConf=false;
@@ -86,7 +88,7 @@ bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
 }
 
 // replaces copy cfgFile to oldCfgFile
-void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
+void TCfgMgr::copyFile(const string& cfgFile, const string& oldCfgFile)
 {
     ifstream newF;
     ofstream oOldF;
@@ -128,7 +130,7 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
  * @return true if DUID value exists and is correct, false if doesn't. 
  *
  */
-bool TCfgMgr::loadDUID(const string duidFile)
+bool TCfgMgr::loadDUID(const std::string duidFile)
 {
     ifstream f;
     f.open(duidFile.c_str());

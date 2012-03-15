@@ -15,6 +15,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+using namespace std;
 #include "SmartPtr.h"
 #include "Portable.h"
 #include "FlexLexer.h"

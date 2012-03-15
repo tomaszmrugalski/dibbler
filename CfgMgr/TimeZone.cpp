@@ -9,6 +9,7 @@
 
 #include "TimeZone.h"
 
+using namespace std;
 
 TTimeZone::TTimeZone(string timeZone)
 {

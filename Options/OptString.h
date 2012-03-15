@@ -22,7 +22,7 @@ class TOptString : public TOpt
     TOptString(int type, const char *buf, unsigned short len, TMsg* parent);
     char * storeSelf( char* buf);
     int getSize();
-    string getString();
+    std::string getString();
     virtual bool doDuties() { return true; } // do nothing, actual code in ClntOpt* classes
     std::string getPlain() { return Str; }
  protected:

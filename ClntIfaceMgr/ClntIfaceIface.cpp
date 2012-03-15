@@ -16,6 +16,8 @@
 #include <io.h>
 #endif
 
+using namespace std;
+
 /*
  * stores informations about interface
  */
@@ -680,7 +682,7 @@ SPtr<TIPv6Addr> TClntIfaceIface::getDsLiteTunnel() {
 /*
  * just prints important informations (debugging & logging)
  */
-ostream & operator <<(ostream & strum, TClntIfaceIface &x) {
+std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     char buf[48];
     SPtr<TIPv6Addr> addr;
     SPtr<string> str;

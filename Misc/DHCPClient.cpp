@@ -21,6 +21,8 @@
 #include "Logger.h"
 #include "Portable.h"
 
+using namespace std;
+
 volatile int serviceShutdown;
 volatile int linkstateChange;
 

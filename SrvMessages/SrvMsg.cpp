@@ -47,6 +47,8 @@
 #include "SrvIfaceMgr.h"
 #include "AddrClient.h"
 
+using namespace std;
+
 /** 
  * this constructor is used to build message as a reply to the received message
  * (i.e. it is used to contruct ADVERTISE or REPLY)

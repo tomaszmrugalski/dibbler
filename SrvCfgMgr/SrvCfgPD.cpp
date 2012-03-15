@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgPD.cpp,v 1.12 2008-10-12 20:07:31 thomson Exp $
- *
  */
 
 #include "SrvCfgPD.h"
@@ -17,6 +15,9 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 #include "SrvMsg.h"
+
+using namespace std;
+
 /*
  * static field initialization
  */

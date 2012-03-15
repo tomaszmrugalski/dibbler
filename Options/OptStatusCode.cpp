@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStatusCode.cpp,v 1.7 2007-08-26 10:26:19 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -19,6 +17,8 @@
 #if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
 #endif
+
+using namespace std;
 
 TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
 	:TOpt(OPTION_STATUS_CODE, parent)
@@ -66,11 +66,11 @@ char * TOptStatusCode::storeSelf( char* buf)
     buf+=Message.length();
     return buf;
 }
-TOptStatusCode::TOptStatusCode(int status,string message, TMsg* parent)
-	:TOpt(OPTION_STATUS_CODE, parent)
+TOptStatusCode::TOptStatusCode(int status,const std::string& message, TMsg* parent)
+    :TOpt(OPTION_STATUS_CODE, parent)
 {
-    this->StatusCode = status;
-    this->Message = message;
+    StatusCode = status;
+    Message = message;
 }
 
 bool TOptStatusCode::doDuties()

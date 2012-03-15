@@ -31,6 +31,8 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
+using namespace std;
+
 TClntTransMgr * TClntTransMgr::Instance = 0;
 
 void TClntTransMgr::instanceCreate(const std::string config)

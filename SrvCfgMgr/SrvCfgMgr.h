@@ -32,12 +32,12 @@ class SrvParser;
 class TSrvCfgMgr : public TCfgMgr
 {
 public:
-    friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TSrvCfgMgr &x);
 
     static void instanceCreate(const std::string cfgFile, const std::string xmlDumpFile);
     static TSrvCfgMgr &instance();
 
-    bool parseConfigFile(string cfgFile);
+    bool parseConfigFile(std::string cfgFile);
 
     //Interfaces acccess methods
     void firstIface();
@@ -81,7 +81,7 @@ public:
     bool setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt);
 
     // configuration parameters
-    string getWorkdir();
+    std::string getWorkdir();
     bool stateless();
     bool inactiveMode();
     bool guessMode();
@@ -114,10 +114,10 @@ public:
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
 private:
-    TSrvCfgMgr(string cfgFile, string xmlFile);
+    TSrvCfgMgr(std::string cfgFile, std::string xmlFile);
     static TSrvCfgMgr * Instance;
     static int NextRelayID;
-    string XmlFile;
+    std::string XmlFile;
     bool reconfigure;
 
     bool IsDone;

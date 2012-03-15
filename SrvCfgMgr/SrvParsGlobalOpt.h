@@ -28,8 +28,8 @@ public:
     TSrvParsGlobalOpt(void);
     ~TSrvParsGlobalOpt(void);
 
-    string getWorkDir();
-    void setWorkDir(string dir);
+    std::string getWorkDir();
+    void setWorkDir(std::string dir);
     void setStateless(bool stateless);
     bool getStateless();
     void setCacheSize(int bytes);
@@ -52,7 +52,7 @@ public:
     
 private:
     bool   Experimental;
-    string WorkDir;
+    std::string WorkDir;
     bool   Stateless;
     bool   InactiveMode;
     bool   GuessMode;

@@ -4,10 +4,9 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
  *          Marek Senderski <msend@o2.pl>                                    
  *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
+ *
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.18 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 #include <climits>
@@ -16,6 +15,8 @@
 #include "OptString.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+
+using namespace std;
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 {

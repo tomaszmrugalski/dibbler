@@ -10,6 +10,8 @@
 #include <string>
 #include "SrvOptStatusCode.h"
 
+using namespace std;
+
 TSrvOptStatusCode::TSrvOptStatusCode( char * buf,  int len, TMsg* parent)
 	:TOptStatusCode(buf,len, parent) {
 

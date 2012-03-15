@@ -16,6 +16,7 @@
 
 /// @todo: TFQDN should be implemented using SPtr()
 
+using namespace std;
 
 TFQDN::TFQDN() {
     this->Duid = 0;
@@ -24,7 +25,7 @@ TFQDN::TFQDN() {
     this->used = false;
 }
 
-TFQDN::TFQDN(TDUID *duid_, string name_,bool used_) {
+TFQDN::TFQDN(TDUID *duid_, std::string name_,bool used_) {
     this->Addr = 0;
     this->Duid = duid_;
     this->Name = name_;

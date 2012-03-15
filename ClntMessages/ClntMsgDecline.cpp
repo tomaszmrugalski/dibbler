@@ -74,7 +74,7 @@ bool TClntMsgDecline::check()
 	return false;
 }
 
-string TClntMsgDecline::getName() {
+std::string TClntMsgDecline::getName() const {
     return "DECLINE";
 }
 

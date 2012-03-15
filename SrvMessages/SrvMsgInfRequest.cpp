@@ -33,7 +33,7 @@ unsigned long TSrvMsgInfRequest::getTimeout() {
     return 0;
 }
 
-string TSrvMsgInfRequest::getName() {
+std::string TSrvMsgInfRequest::getName() const {
     return "INF-REQUEST";
 }
 

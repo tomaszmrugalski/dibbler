@@ -25,23 +25,21 @@ class TSrvCfgIface;
 #include "OptVendorSpecInfo.h"
 #include "SrvCfgOptions.h"
 
-using namespace std;
-
 class TSrvCfgIface: public TSrvCfgOptions
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgIface& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgIface& iface);
 public:
     TSrvCfgIface();
-    TSrvCfgIface(string ifaceName);
+    TSrvCfgIface(std::string ifaceName);
     TSrvCfgIface(int ifaceNr);
     virtual ~TSrvCfgIface();
     void setDefaults();
 
-    void setName(string ifaceName);
+    void setName(std::string ifaceName);
     void setID(int ifaceID);
     int	getID();
-    string getName();
-    string getFullName();
+    std::string getName();
+    std::string getFullName();
 
     // permanent address management (IA_NA)
     void addAddrClass(SPtr<TSrvCfgAddrClass> addrClass);
@@ -92,11 +90,11 @@ public:
     void delTAAddr();
 
     // relays
-    string getRelayName();
+    std::string getRelayName();
     int getRelayID();
     SPtr<TSrvOptInterfaceID> getRelayInterfaceID();
     bool isRelay();
-    void setRelayName(string name);
+    void setRelayName(std::string name);
     void setRelayID(int id);
 
     // per-client parameters (exceptions)
@@ -105,11 +103,11 @@ public:
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
-    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, string hint);
-    SPtr<TDUID> getFQDNDuid(string name);
+    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, std::string hint);
+    SPtr<TDUID> getFQDNDuid(std::string name);
     void setFQDNLst(List(TFQDN) * fqdn);
     int getFQDNMode();
-    string getFQDNModeString();
+    std::string getFQDNModeString();
     int  getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     bool supportFQDN();
@@ -120,7 +118,7 @@ public:
 private:
     unsigned char preference;
     int	ID;
-    string Name;
+    std::string Name;
     bool NoConfig;
     SPtr<TIPv6Addr> Unicast;
     unsigned long IfaceMaxLease;
@@ -138,7 +136,7 @@ private:
 
     // --- relay ---
     bool Relay;
-    string RelayName;     // name of the underlaying physical interface (or other relay)
+    std::string RelayName;     // name of the underlaying physical interface (or other relay)
     int RelayID;          // ifindex
     SPtr<TSrvOptInterfaceID> RelayInterfaceID; // value of interface-id option (optional)
 

@@ -85,10 +85,10 @@ class TSrvAddrMgr : public TAddrMgr
     void dump();
 
  protected:
-    void print(ostream & out);
+    void print(std::ostream & out);
 
  private:
-    TSrvAddrMgr(string xmlfile, bool loadDB);
+    TSrvAddrMgr(const std::string& xmlfile, bool loadDB);
     static TSrvAddrMgr * Instance;
 
     void cacheRead();

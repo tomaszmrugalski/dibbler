@@ -1616,6 +1616,8 @@ static yyconst flex_int32_t yy_rule_can_match_eol[97] =
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "ClntParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();

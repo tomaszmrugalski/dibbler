@@ -32,7 +32,7 @@ bool TSrvMsgRenew::check() {
     return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
 }
 
-string TSrvMsgRenew::getName() {
+std::string TSrvMsgRenew::getName() const {
     return "RENEW";
 }
 

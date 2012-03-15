@@ -17,7 +17,7 @@ class TRelMsgGeneric: public TRelMsg {
 
  public:
     TRelMsgGeneric(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
-    string getName();
+    std::string getName() const;
     bool check();
 };
 

@@ -30,7 +30,7 @@ bool TSrvMsgRelease::check() {
     return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
 }
 
-string TSrvMsgRelease::getName() {
+std::string TSrvMsgRelease::getName() const {
     return "RELEASE";
 }
 

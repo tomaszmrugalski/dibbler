@@ -41,7 +41,7 @@ public:
     bool appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool includeClientID = true);
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
 				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
-    string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
+    std::string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt);
     void appendStatusCode();
     // bool delOption(int code);
@@ -74,7 +74,7 @@ protected:
     bool check(bool clntIDmandatory, bool srvIDmandatory);
 
     SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
-				  SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate);
+				  SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
     void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
     int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
 

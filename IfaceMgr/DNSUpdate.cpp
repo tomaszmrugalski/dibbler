@@ -9,8 +9,6 @@
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.21 2008-02-25 17:49:08 thomson Exp $
- *
  */
 
 #include "DNSUpdate.h"
@@ -18,6 +16,8 @@
 #include "Logger.h"
 #include <stdio.h>
 #include "sha256.h"
+
+using namespace std;
 
 DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
 		     string hostip, DnsUpdateMode updateMode,

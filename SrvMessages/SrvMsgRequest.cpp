@@ -39,6 +39,6 @@ TSrvMsgRequest::~TSrvMsgRequest() {
 
 }
 
-string TSrvMsgRequest::getName() {
+std::string TSrvMsgRequest::getName() const {
     return "REQUEST";
 }

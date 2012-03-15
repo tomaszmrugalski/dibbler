@@ -27,7 +27,7 @@
 
 class TSrvTransMgr
 {
-    friend ostream & operator<<(ostream &strum, TSrvTransMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TSrvTransMgr &x);
   public:
     static void instanceCreate(const std::string config);
     static TSrvTransMgr &instance();
@@ -54,10 +54,10 @@ class TSrvTransMgr
     int    getCtrlIface();
 
   private:
-    TSrvTransMgr(string xmlFile);
+    TSrvTransMgr(std::string xmlFile);
     ~TSrvTransMgr();
 
-    string XmlFile;
+    std::string XmlFile;
     List(TSrvMsg) MsgLst;
     bool IsDone;
 

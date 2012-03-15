@@ -13,8 +13,6 @@
 
 #include <list>
 
-using namespace std;
-
 #define List(x) TContainer< SPtr< x > >
 
 template <class TYP>
@@ -37,8 +35,8 @@ public:
 	void	delLast();
 
 private:
-	list<TYP> lista;
-	typename list<TYP>::iterator it;
+        std::list<TYP> lista;
+	typename std::list<TYP>::iterator it;
 };
 
 template <class TYP>
@@ -106,16 +104,16 @@ void TContainer<TYP>::del() {
 	first();
 }
 
-template <class TYP>TYP TContainer<TYP>::getLast() {	
+template <class TYP>TYP TContainer<TYP>::getLast() {
     return lista.back();
 }
 
-template <class TYP>void TContainer<TYP>::delLast() {    
-    lista.pop_back();    
+template <class TYP>void TContainer<TYP>::delLast() {
+    lista.pop_back();
     first();
 }
 
-template <class TYP>TYP TContainer<TYP>::getFirst() {	
+template <class TYP>TYP TContainer<TYP>::getFirst() {
     return lista.front();
 }
 #endif

@@ -11,6 +11,8 @@
 #include "Portable.h"
 #include "Logger.h"
 
+using namespace std;
+
 TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
     this->WorkDir          = WORKDIR;
     this->Stateless        = false;

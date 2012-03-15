@@ -8,7 +8,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgRelease.cpp,v 1.23 2009-03-24 23:17:17 thomson Exp $
  */
 
 #include "ClntMsgRelease.h"
@@ -27,6 +26,8 @@
 #include "AddrMgr.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
+
+using namespace std;
 
 /** 
  * create RELEASE message
@@ -113,7 +114,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
 	// --- DNS Update ---
 	SPtr<TIPv6Addr> dns = x->getFQDNDnsServer();
 	if (dns) {
-	    string fqdn = ptrIface->getFQDN();
+            string fqdn = ptrIface->getFQDN();
 	    ClntIfaceMgr().fqdnDel(ptrIface, x, fqdn);
 	}
 	// --- DNS Update ---
@@ -171,7 +172,7 @@ bool TClntMsgRelease::check()
 	return false;
 }
 
-string TClntMsgRelease::getName() {
+std::string TClntMsgRelease::getName() const {
     return "RELEASE";
 }
 

@@ -48,6 +48,8 @@
 #include "CfgMgr.h"
 #include <sstream>
 
+using namespace std;
+
 #define YY_USE_CLASS
 #define YY_SrvParser_MEMBERS  FlexLexer * lex;                                                     \
 List(TSrvParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
@@ -88,7 +90,7 @@ virtual ~SrvParser();
     CfgMgr = 0;                                                                   \
     nextHop = 0;
 
-#line 87 "SrvParser.y"
+#line 89 "SrvParser.y"
 typedef union
 {
     unsigned int ival;

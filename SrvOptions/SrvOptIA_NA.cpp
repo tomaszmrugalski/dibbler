@@ -7,7 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptIA_NA.cpp,v 1.31 2009-03-24 01:14:55 thomson Exp $
  */
 
 #ifdef WIN32
@@ -29,6 +28,8 @@
 #include "SrvAddrMgr.h"
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
+
+using namespace std;
 
 TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
     :TOptIA_NA(IAID,T1,T2, parent) {

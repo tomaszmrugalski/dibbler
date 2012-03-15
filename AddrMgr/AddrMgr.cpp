@@ -22,7 +22,9 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TAddrMgr::TAddrMgr(string xmlFile, bool loadfile) {
+using namespace std;
+
+TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
     this->IsDone = false;
     this->XmlFile = xmlFile;
 
@@ -68,12 +70,11 @@ void TAddrMgr::dbLoad(const char * xmlFile)
  *
  * stores content of the AddrMgr database to XML file
  *
- *
  */
 void TAddrMgr::dump()
 {
     std::ofstream xmlDump;
-    xmlDump.open(this->XmlFile.c_str(), ios::ate);
+    xmlDump.open(this->XmlFile.c_str(), std::ios::ate);
     xmlDump << *this;
     xmlDump.close();
 }

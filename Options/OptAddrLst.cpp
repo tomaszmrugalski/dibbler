@@ -67,7 +67,7 @@ bool TOptAddrLst::isValid()
 }
 
 std::string TOptAddrLst::getPlain() {
-    stringstream tmp;
+    std::stringstream tmp;
     AddrLst.first();
     SPtr<TIPv6Addr> addr;
     while (addr = AddrLst.get()) {

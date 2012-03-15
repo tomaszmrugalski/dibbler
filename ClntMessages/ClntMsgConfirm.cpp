@@ -184,7 +184,7 @@ bool TClntMsgConfirm::check()
         return 0;
 }
 
-string TClntMsgConfirm::getName() {
+std::string TClntMsgConfirm::getName() const {
     return "CONFIRM";
 }
 

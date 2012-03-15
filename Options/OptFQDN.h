@@ -35,23 +35,23 @@ class TOptFQDN : public TOpt
    * @param fqdn The FQDN about to be sent
    * @param parent The message in which this option is included
    */
-  	TOptFQDN(string fqdn, TMsg* parent);
+    TOptFQDN(std::string fqdn, TMsg* parent);
   	
-  	/**
-  	 * Constructor
-  	 * 
-  	 * Build the option with a buffer received
-  	 * @param buf the buffer received, containing the whole option
-  	 * @param bufsize the size of the buffer
-  	 * @param parent the message in which this option is included
-  	 */
-  	TOptFQDN(char * &buf, int &bufsize, TMsg* parent);
-  	
-  	/**
-  	 * Destructor - Does actually nothing
-  	 */
-  	~TOptFQDN();
-  	
+    /**
+     * Constructor
+     * 
+     * Build the option with a buffer received
+     * @param buf the buffer received, containing the whole option
+     * @param bufsize the size of the buffer
+     * @param parent the message in which this option is included
+     */
+    TOptFQDN(char * &buf, int &bufsize, TMsg* parent);
+    
+    /**
+     * Destructor - Does actually nothing
+     */
+    ~TOptFQDN();
+    
     int getSize();
     char * storeSelf( char* buf);
     bool isValid();
@@ -62,17 +62,16 @@ class TOptFQDN : public TOpt
     void setNFlag(bool flag);
     void setOFlag(bool flag);
     void setSFlag(bool flag);
-    string getFQDN();
+    std::string getFQDN();
 
   	
   private:
-  	string fqdn;
-  	char *encodedFQDN;
-  	bool flag_N;
-  	bool flag_O;
-  	bool flag_S;
-  	bool Valid;
-    
+    std::string fqdn;
+    char *encodedFQDN;
+    bool flag_N;
+    bool flag_O;
+    bool flag_S;
+    bool Valid;
 };
 
 #endif /* OPTFQDN_H */

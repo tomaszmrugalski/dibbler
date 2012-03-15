@@ -30,6 +30,8 @@
 #include "Logger.h"
 #include "Portable.h"
 
+using namespace std;
+
 #define YY_USE_CLASS
 #define YY_RelParser_MEMBERS  FlexLexer * lex;                                                     \
 List(TRelParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
@@ -49,7 +51,7 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 48 "RelParser.y"
+#line 50 "RelParser.y"
 typedef union    
 {
     unsigned int ival;

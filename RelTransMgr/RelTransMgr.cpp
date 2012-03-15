@@ -298,7 +298,7 @@ TRelTransMgr::~TRelTransMgr() {
     Log(Debug) << "RelTransMgr cleanup." << LogEnd;
 }
 
-void TRelTransMgr::instanceCreate( const std::string xmlFile )
+void TRelTransMgr::instanceCreate(const std::string& xmlFile)
 {
   if (Instance)
       Log(Crit) << "RelTransMgr instance already created. Application error!" << LogEnd;
@@ -314,10 +314,10 @@ TRelTransMgr& TRelTransMgr::instance()
 }
 
 
-ostream & operator<<(ostream &s, TRelTransMgr &x)
+std::ostream & operator<<(std::ostream &s, TRelTransMgr &x)
 {
-    s << "<TRelTransMgr>" << endl;
-    s << "<!-- RelTransMgr dumps are not implemented yet -->" << endl;
-    s << "</TRelTransMgr>" << endl;
+    s << "<TRelTransMgr>" << std::endl;
+    s << "<!-- RelTransMgr dumps are not implemented yet -->" << std::endl;
+    s << "</TRelTransMgr>" << std::endl;
     return s;
 }

@@ -7,8 +7,6 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.cpp,v 1.8 2008-11-11 20:55:46 thomson Exp $
-*
 */
 
 #include <string.h>
@@ -16,6 +14,8 @@
 #include "OptFQDN.h"
 #include "Logger.h"
 #include "Portable.h"
+
+using namespace std;
 
 TOptFQDN::TOptFQDN(string domain, TMsg* parent)
 		:TOpt(OPTION_FQDN, parent) {

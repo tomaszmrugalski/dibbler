@@ -25,7 +25,7 @@ public:
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     unsigned long getTimeout();
-    string getName();
+    std::string getName() const;
 
     void addrsAccepted();
     void addrsRejected();

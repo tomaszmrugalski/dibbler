@@ -23,7 +23,7 @@ class TOptVendorData : public TOpt
 
     int getVendor();
     char * getVendorData();      // returns vendor data (binary)
-    string getVendorDataPlain(); // returns vendor data (as a printable string)
+    std::string getVendorDataPlain(); // returns vendor data (as a printable string)
     int getVendorDataLen();      // returns vendor data length
     bool doDuties() { return true; }
 

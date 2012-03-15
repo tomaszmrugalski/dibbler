@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeConstant.cpp,v 1.1 2008-10-12 19:36:58 thomson Exp $
- *
  */
 
 #ifndef NODECONSTANT_CPP_
@@ -16,6 +14,8 @@
 #include "NodeConstant.h"
 #include "SrvMsg.h"
 #include "SrvMsg.h"
+
+using namespace std;
 
 NodeConstant::NodeConstant()
     :Node(NODE_CONST)

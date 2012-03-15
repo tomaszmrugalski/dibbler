@@ -238,11 +238,12 @@ int TMsg::setAuthInfoKey() {
     KeyGenNonce_ClientID = new char[KeyGenNonceLen+128];
 
     AAAkey = getAAAKey(AAASPI, &AAAkeyLen);
-    string fname = getAAAKeyFilename(AAASPI);
+    std::string fname = getAAAKeyFilename(AAASPI);
 
     // error, no file?
     if (!AAAkey) {
-        Log(Error) << "Auth: Unable to load key file for SPI " << hex << AAASPI <<": " << fname << " not found." << dec << LogEnd;
+        Log(Error) << "Auth: Unable to load key file for SPI " << std::hex << AAASPI <<": " << fname 
+                   << " not found." << std::dec << LogEnd;
         AuthInfoKey = NULL;
         delete KeyGenNonce_ClientID;
         return -1;

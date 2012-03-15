@@ -6,12 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptInteger.h,v 1.1 2006-10-29 13:11:46 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2004-11-02 01:23:13  thomson
- * Initial revision
- *
  */
 
 #ifndef OPTINTEGER4_H
@@ -20,8 +14,6 @@
 #include <string>
 
 #include "Opt.h"
-
-using namespace std;
 
 class TOptInteger : public TOpt
 {

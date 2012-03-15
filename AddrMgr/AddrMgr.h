@@ -44,8 +44,8 @@ class TAddrMgr;
 class TAddrMgr
 {
   public:
-    friend ostream & operator<<(ostream & strum,TAddrMgr &x);
-    TAddrMgr(string addrdb, bool loadfile = false);
+    friend std::ostream & operator<<(std::ostream & strum,TAddrMgr &x);
+    TAddrMgr(const std::string& addrdb, bool loadfile = false);
     virtual ~TAddrMgr();
 
     //--- Client container ---
@@ -102,7 +102,7 @@ class TAddrMgr
 #endif
 
 protected:
-    virtual void print(ostream & out) = 0;
+    virtual void print(std::ostream & out) = 0;
     bool addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
                    int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
                    SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
@@ -114,7 +114,7 @@ protected:
 
     bool IsDone;
     List(TAddrClient) ClntsLst;
-    string XmlFile;
+    std::string XmlFile;
 
     bool DeleteEmptyClient; // should the client without any IA, TA or PDs be deleted? (srv = yes, client = no)
 };

@@ -7,7 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.51 2009-03-24 23:17:17 thomson Exp $
  */
 
 #include <sstream>
@@ -22,6 +21,8 @@
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
 #endif
+
+using namespace std;
 
 TClntIfaceMgr * TClntIfaceMgr::Instance = 0;
 
@@ -161,7 +162,7 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
     }
 }
 
-TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
+TClntIfaceMgr::TClntIfaceMgr(const std::string& xmlFile)
     : TIfaceMgr(xmlFile, false)
 {
     struct iface * ptr;

@@ -52,8 +52,8 @@ public:
     bool supportDNSServer();
 
     // option: Domain
-    List(string) * getDomainLst();
-    void setDomainLst(List(string) * domains);
+    List(std::string) * getDomainLst();
+    void setDomainLst(List(std::string) * domains);
     bool supportDomain();
 
     // option: NTP servers
@@ -62,8 +62,8 @@ public:
     bool supportNTPServer();
 
     // option: Timezone
-    string getTimezone();
-    void setTimezone(string timeZone);
+    std::string getTimezone();
+    void setTimezone(std::string timeZone);
     bool supportTimezone();
 
     // option: SIP servers
@@ -72,8 +72,8 @@ public:
     bool supportSIPServer();
 
     // option: SIP domains
-    List(string) * getSIPDomainLst();
-    void setSIPDomainLst(List(string) *domainlist);
+    List(std::string) * getSIPDomainLst();
+    void setSIPDomainLst(List(std::string) *domainlist);
     bool supportSIPDomain();
 
     // option: NIS servers
@@ -87,13 +87,13 @@ public:
     bool supportNISPServer();
 
     // option: NIS domain
-    string getNISDomain();
-    void setNISDomain(string domain);
+    std::string getNISDomain();
+    void setNISDomain(std::string domain);
     bool supportNISDomain();
 
     // option: NISP domain
-    string getNISPDomain();
-    void setNISPDomain(string domain);
+    std::string getNISPDomain();
+    void setNISPDomain(std::string domain);
     bool supportNISPDomain();
 
     // option: LIFETIME
@@ -130,15 +130,15 @@ private:
 
     // options reservation
     List(TIPv6Addr) DNSServerLst;
-    List(string) DomainLst;
+    List(std::string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
-    string Timezone;
+    std::string Timezone;
     List(TIPv6Addr) SIPServerLst;
-    List(string) SIPDomainLst;
+    List(std::string) SIPDomainLst;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
-    string NISDomain;
-    string NISPDomain;
+    std::string NISDomain;
+    std::string NISPDomain;
     TOptList ExtraOpts;  // extra options ALWAYS sent to client (may also include ForcedOpts)
     TOptList ForcedOpts; // list of options that are forced to client
     unsigned int Lifetime;

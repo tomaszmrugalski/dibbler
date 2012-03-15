@@ -35,6 +35,8 @@
 #include "SrvOptStatusCode.h"
 #include "NodeClientSpecific.h"
 
+using namespace std;
+
 TSrvTransMgr * TSrvTransMgr::Instance = 0;
 
 TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)

@@ -35,6 +35,8 @@
 #include "CfgMgr.h"
 #include <sstream>
 
+using namespace std;
+
 #define YY_USE_CLASS
 %}
 

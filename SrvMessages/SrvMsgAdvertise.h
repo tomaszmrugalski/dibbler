@@ -39,7 +39,7 @@ class TSrvMsgAdvertise : public TSrvMsg
     bool handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit);
     void doDuties();
     unsigned long getTimeout();
-    string getName();
+    std::string getName() const;
     ~TSrvMsgAdvertise();
 };
 

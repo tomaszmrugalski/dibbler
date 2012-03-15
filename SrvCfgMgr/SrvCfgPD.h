@@ -45,13 +45,11 @@ class TSrvCfgPD;
 #include "SrvCfgPD.h"
 #include "Node.h"
 
-
-using namespace std;
 class TSrvCfgClientClass;
 
 class TSrvCfgPD
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgPD& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgPD& iface);
  public:
     TSrvCfgPD();
 
@@ -109,8 +107,8 @@ class TSrvCfgPD
     unsigned long PD_Assigned;
     unsigned long PD_Count;
 
-    List(string) allowLst;
-    List(string) denyLst;
+    List(std::string) allowLst;
+    List(std::string) denyLst;
 
     List(TSrvCfgClientClass) allowClientClassLst;
     List(TSrvCfgClientClass) denyClientClassLst;

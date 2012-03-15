@@ -20,8 +20,9 @@
 #include "ClntCfgMgr.h"
 #include "ClntCfgIface.h"
 #include "Logger.h"
-#include "FlexLexer.h"
 
+using namespace std;
+#include "FlexLexer.h"
 
 #include "ClntIfaceMgr.h"
 

@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgAddrClass.cpp,v 1.25 2008-10-12 19:42:45 thomson Exp $
- *
  */
 
 #include "SrvCfgAddrClass.h"
@@ -19,11 +17,10 @@
 #include "SrvOptAddrParams.h"
 #include "SrvMsg.h"
 
-/*
- * static field initialization
- */
-unsigned long TSrvCfgAddrClass::staticID=0;
+using namespace std;
 
+// static field initialization
+unsigned long TSrvCfgAddrClass::staticID=0;
 
 TSrvCfgAddrClass::TSrvCfgAddrClass() {
     this->T1Beg    = 0;

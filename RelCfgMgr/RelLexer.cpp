@@ -895,12 +895,13 @@ static yyconst flex_int32_t yy_rule_can_match_eol[41] =
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
 #include "RelParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
 
 
-#line 30 "RelLexer.l"
+#line 31 "RelLexer.l"
 using namespace std;
   unsigned ComBeg;    // line, in which comment begins
   unsigned LftCnt;    // how many chars : on the left side of '::' char was interpreted
@@ -912,7 +913,7 @@ using namespace std;
 namespace std{
   yy_RelParser_stype yylval;
 }
-#line 916 "RelLexer.cpp"
+#line 917 "RelLexer.cpp"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -1019,10 +1020,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 43 "RelLexer.l"
+#line 44 "RelLexer.l"
 
 
-#line 1026 "RelLexer.cpp"
+#line 1027 "RelLexer.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -1118,122 +1119,122 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 45 "RelLexer.l"
+#line 46 "RelLexer.l"
 ; // ignore end of line
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 46 "RelLexer.l"
+#line 47 "RelLexer.l"
 ; // ignore TABs and spaces
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 48 "RelLexer.l"
+#line 49 "RelLexer.l"
 { return RelParser::IFACE_;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 49 "RelLexer.l"
+#line 50 "RelLexer.l"
 { return RelParser::CLIENT_;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 50 "RelLexer.l"
+#line 51 "RelLexer.l"
 { return RelParser::SERVER_; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 51 "RelLexer.l"
+#line 52 "RelLexer.l"
 { return RelParser::UNICAST_; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 52 "RelLexer.l"
+#line 53 "RelLexer.l"
 { return RelParser::MULTICAST_; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 53 "RelLexer.l"
+#line 54 "RelLexer.l"
 { return RelParser::IFACE_ID_; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 54 "RelLexer.l"
+#line 55 "RelLexer.l"
 { return RelParser::IFACE_ID_ORDER_; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 55 "RelLexer.l"
+#line 56 "RelLexer.l"
 { return RelParser::GUESS_MODE_; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 56 "RelLexer.l"
+#line 57 "RelLexer.l"
 { return RelParser::OPTION_; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 57 "RelLexer.l"
+#line 58 "RelLexer.l"
 { return RelParser::REMOTE_ID_; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 58 "RelLexer.l"
+#line 59 "RelLexer.l"
 { return RelParser::ECHO_REQUEST_; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 60 "RelLexer.l"
+#line 61 "RelLexer.l"
 { return RelParser::LOGNAME_;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 61 "RelLexer.l"
+#line 62 "RelLexer.l"
 { return RelParser::LOGLEVEL_;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 62 "RelLexer.l"
+#line 63 "RelLexer.l"
 { return RelParser::LOGMODE_; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 64 "RelLexer.l"
+#line 65 "RelLexer.l"
 { return RelParser::WORKDIR_;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 66 "RelLexer.l"
+#line 67 "RelLexer.l"
 { yylval.ival=1; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 67 "RelLexer.l"
+#line 68 "RelLexer.l"
 { yylval.ival=0; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 68 "RelLexer.l"
+#line 69 "RelLexer.l"
 { yylval.ival=1; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 69 "RelLexer.l"
+#line 70 "RelLexer.l"
 { yylval.ival=0; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 71 "RelLexer.l"
+#line 72 "RelLexer.l"
 ;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 73 "RelLexer.l"
+#line 74 "RelLexer.l"
 ;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 75 "RelLexer.l"
+#line 76 "RelLexer.l"
 {
   BEGIN(COMMENT);
   ComBeg=yylineno; 
@@ -1241,17 +1242,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 80 "RelLexer.l"
+#line 81 "RelLexer.l"
 BEGIN(INITIAL);
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 81 "RelLexer.l"
+#line 82 "RelLexer.l"
 ;
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 82 "RelLexer.l"
+#line 83 "RelLexer.l"
 {
     Log(Crit) << "Comment not closed. (/* in line " << ComBeg << LogEnd;
   { YYABORT; }
@@ -1261,7 +1262,7 @@ case YY_STATE_EOF(COMMENT):
 
 case 27:
 YY_RULE_SETUP
-#line 89 "RelLexer.l"
+#line 90 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1273,7 +1274,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 98 "RelLexer.l"
+#line 99 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1285,7 +1286,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 107 "RelLexer.l"
+#line 108 "RelLexer.l"
 { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1297,7 +1298,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 116 "RelLexer.l"
+#line 117 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1309,7 +1310,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 125 "RelLexer.l"
+#line 126 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1321,7 +1322,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 134 "RelLexer.l"
+#line 135 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1333,7 +1334,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 143 "RelLexer.l"
+#line 144 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1346,7 +1347,7 @@ YY_RULE_SETUP
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 152 "RelLexer.l"
+#line 153 "RelLexer.l"
 {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
@@ -1356,7 +1357,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 159 "RelLexer.l"
+#line 160 "RelLexer.l"
 {
     int len = strlen(yytext);
     if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
@@ -1380,7 +1381,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 180 "RelLexer.l"
+#line 181 "RelLexer.l"
 {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
@@ -1393,7 +1394,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 190 "RelLexer.l"
+#line 191 "RelLexer.l"
 { 
     if(!sscanf(yytext,"%u",&(yylval.ival))) { 
         Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd; 
@@ -1404,7 +1405,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 198 "RelLexer.l"
+#line 199 "RelLexer.l"
 {
     // DUID
     int len;
@@ -1439,15 +1440,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 230 "RelLexer.l"
+#line 231 "RelLexer.l"
 { return yytext[0]; } 
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 233 "RelLexer.l"
+#line 234 "RelLexer.l"
 ECHO;
 	YY_BREAK
-#line 1451 "RelLexer.cpp"
+#line 1452 "RelLexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ADDR):
 	yyterminate();
@@ -2357,7 +2358,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 233 "RelLexer.l"
+#line 234 "RelLexer.l"
 
 
 

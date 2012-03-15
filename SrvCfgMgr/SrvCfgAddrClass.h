@@ -28,12 +28,10 @@ class TSrvCfgAddrClass;
 #include "SmartPtr.h"
 #include "SrvOptAddrParams.h"
 #include "SrvCfgClientClass.h"
-using namespace std;
-
 
 class TSrvCfgAddrClass
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgAddrClass& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgAddrClass& iface);
  public:
     TSrvCfgAddrClass();
 
@@ -92,8 +90,8 @@ class TSrvCfgAddrClass
     // new, better white/black-list
     unsigned long ID; // client class ID
     static unsigned long staticID;
-    List(string) allowLst;
-    List(string) denyLst;
+    List(std::string) allowLst;
+    List(std::string) denyLst;
     List(TSrvCfgClientClass) allowClientClassLst;
     List(TSrvCfgClientClass) denyClientClassLst;
 

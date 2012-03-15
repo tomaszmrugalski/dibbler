@@ -18,7 +18,7 @@ class TSrvOptStatusCode : public TOptStatusCode
 {
   public:
     TSrvOptStatusCode( char * buf,  int len, TMsg* parent);
-    TSrvOptStatusCode(int status, string Text, TMsg* parent);
+    TSrvOptStatusCode(int status, std::string Text, TMsg* parent);
     
     bool doDuties();
 };

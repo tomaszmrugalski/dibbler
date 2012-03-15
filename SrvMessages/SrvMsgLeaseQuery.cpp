@@ -42,6 +42,6 @@ TSrvMsgLeaseQuery::~TSrvMsgLeaseQuery() {
 
 }
 
-string TSrvMsgLeaseQuery::getName() {
+std::string TSrvMsgLeaseQuery::getName() const {
     return "LEASE-QUERY";
 }

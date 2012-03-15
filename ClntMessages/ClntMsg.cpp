@@ -44,6 +44,8 @@
 
 #include "Logger.h"
 
+using namespace std;
+
 static string msgs[] = { "",
 		  "SOLICIT",
 		  "ADVERTISE",

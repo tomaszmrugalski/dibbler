@@ -14,6 +14,7 @@
 #include "Logger.h"
 #include "Portable.h"
 
+using namespace std;
 
 TOptRtPrefix::TOptRtPrefix(uint32_t lifetime, uint8_t prefixlen, uint8_t metric, SPtr<TIPv6Addr> prefix, TMsg* parent)
     :TOpt(OPTION_RTPREFIX, parent), Lifetime(lifetime), PrefixLen(prefixlen), Metric(metric), Prefix(prefix) {

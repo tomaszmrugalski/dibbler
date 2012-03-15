@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgMgr.cpp,v 1.13 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -15,11 +13,11 @@
 #include "IfaceMgr.h"
 #include "RelIfaceMgr.h"
 #include "RelCfgIface.h"
+
+using namespace std;
 #include "FlexLexer.h"
 #include "RelParser.h"
 #include "RelCfgMgr.h"
-
-using namespace std;
 
 int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 

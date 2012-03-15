@@ -28,6 +28,8 @@
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 
+using namespace std;
+
 TSrvOptIA_PD::TSrvOptIA_PD( long iaid, long t1, long t2, TMsg* parent)
     :TOptIA_PD(IAID,T1,T2, parent)
 {
