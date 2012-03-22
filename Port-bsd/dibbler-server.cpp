@@ -7,7 +7,7 @@
  * released under GNU GPL v2 only licence
  *
  * $Id: dibbler-server.cpp,v 1.2 2008-08-29 00:07:31 thomson Exp $
- *                                                                           
+ *
  */
 
 #include <signal.h>
@@ -15,6 +15,8 @@
 #include "Portable.h"
 #include "Logger.h"
 #include "daemon.h"
+
+using namespace std;
 
 TDHCPServer * ptr;
 

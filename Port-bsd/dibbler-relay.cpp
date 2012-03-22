@@ -15,6 +15,8 @@
 #include "Logger.h"
 #include "daemon.h"
 
+using namespace std;
+
 TDHCPRelay * ptr;
 
 void signal_handler(int n) {
