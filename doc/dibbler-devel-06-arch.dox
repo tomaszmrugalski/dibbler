@@ -142,12 +142,19 @@ consists of serveral simple blocks:
   (see NodeClientSpecific::analyseMessage(msg) in void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg))
 
 2. black-list, white-list (TSrvCfgMgr::isClntSupported() called from TSrvTransMgr::relayMsg() )
-3. existing lease for this client/ia (TSrvOptIA_NA::renew() called from TSrvOptIA_NA::TSrvOptIA_NA() )
-4. fixed-lease (exception) (TSrvOptIA_NA::assignFixedLease() called from TSrvOptIA_NA::TSrvOptIA_NA() )
-5. max-client-leases (see code in TSrvOptIA_NA::TSrvOptIA_NA())
-6. cache (TSrvOptIA_NA::assignCachedAddr() called from  TSrvOptIA_NA::TSrvOptIA_NA())
-7. client's hint (TSrvOptIA_NA::assignRequestedAddr() called from TSrvOptIA_NA::TSrvOptIA_NA())
-8. new lease (TSrvOptIA_NA::assignRandomAddr() called from TSrvOptIA_NA::TSrvOptIA_NA())
+3. Check if there is existing lease for this client/ia. If there is, assign it. 
+   (TSrvOptIA_NA::renew() called from TSrvOptIA_NA::TSrvOptIA_NA() )
+4. Check if there is reserved address/prefix defined for this client. If it is, 
+   assign it (fixed-lease or "exception") (TSrvOptIA_NA::assignFixedLease() 
+   called from TSrvOptIA_NA::TSrvOptIA_NA() )
+5. Check if client didn't exceed max-client-leases (see code in TSrvOptIA_NA::TSrvOptIA_NA())
+6. See if there is a lease that was assigned previously (cache) (TSrvOptIA_NA::assignCachedAddr()
+   called from  TSrvOptIA_NA::TSrvOptIA_NA())
+7. See if client sent a hint and try to assign it, if possible. If requested 
+   address is not available, try to assign similar address (i.e. from the pool 
+   that hint belongs to). (TSrvOptIA_NA::assignRequestedAddr() called from 
+   TSrvOptIA_NA::TSrvOptIA_NA())
+8. randomly assign a new lease (TSrvOptIA_NA::assignRandomAddr() called from TSrvOptIA_NA::TSrvOptIA_NA())
 
 @section archAlgoFixedLease 6.6.2 Fixed lease management
 
