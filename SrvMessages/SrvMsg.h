@@ -72,6 +72,7 @@ public:
 
     void processOptions(SPtr<TSrvMsg> clientMsg, bool quiet);
     SPtr<TDUID> getClientDUID();
+		SPtr<TIPv6Addr> getClientPeer();
 
 protected:
     SPtr<TSrvOptOptionRequest> ORO;

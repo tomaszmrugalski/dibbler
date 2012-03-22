@@ -500,7 +500,8 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
     else
         optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, PeerAddr, hint, false);
 
-    Options.push_back((Ptr*) optFQDN);
+		if (optFQDN)
+			Options.push_back((Ptr*) optFQDN);
 }
 
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
@@ -515,6 +516,15 @@ bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
         return true;
     }
     return false;
+}
+
+SPtr<TIPv6Addr> TSrvMsg::getClientPeer()
+{
+   if (Relays > 0)
+   {
+       return PeerAddrTbl[0]; //first hop ?
+   }
+   return PeerAddr;
 }
 
 void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {

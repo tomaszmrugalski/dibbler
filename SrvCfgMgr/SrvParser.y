@@ -110,7 +110,7 @@ virtual ~SrvParser();
 %token PDCLASS_, PD_LENGTH_, PD_POOL_
 %token SCRIPT_
 %token VENDOR_SPEC_
-%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, PREFIX_, GUESS_MODE_
+%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, LINK_LOCAL_, ADDRESS_, PREFIX_, GUESS_MODE_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
@@ -283,6 +283,20 @@ Client
     // copy all defined options
     ClientLst.getLast()->setOptions(ParserOptStack.getLast());
     ParserOptStack.delLast();
+}
+
+| CLIENT_ LINK_LOCAL_ IPV6ADDR_ '{'
+{
+		ParserOptStack.append(new TSrvParsGlobalOpt());
+		SPtr<TIPv6Addr> clntaddr = new TIPv6Addr($3);
+		ClientLst.append(new TSrvCfgOptions(clntaddr));
+} ClientOptions
+'}'
+{
+		Log(Debug) << "Exception: Link-local-based exception specified." << LogEnd;
+		// copy all defined options
+		ClientLst.getLast()->setOptions(ParserOptStack.getLast());
+		ParserOptStack.delLast();
 };
 
 ClientOptions

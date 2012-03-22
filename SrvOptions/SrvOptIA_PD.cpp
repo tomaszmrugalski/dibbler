@@ -398,6 +398,7 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         // there's no reserved prefix for this lad
         return false;
     } 
+    Log(Debug) << "Assigning fixed lease" << LogEnd;
     
     // we've got fixed prefix, yay! Let's try to calculate its preferred and valid lifetimes
     SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
@@ -437,6 +438,11 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         SubOptions.append(optPrefix);
 
         SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed in-pool prefix.", Parent));
+
+        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, this->IAID, T1, T2, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+
+        // but CfgMgr has to increase usage only once. Don't ask my why :)
+        SrvCfgMgr().incrPrefixCount(Iface, reservedPrefix);
         
         return true;
     }
@@ -448,6 +454,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     SubOptions.append(optPrefix);
     
     SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed out-of-pool address.", Parent));
+
+    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, this->IAID, T1, T2, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
     
     return true;
 }
@@ -522,12 +530,19 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
         validHint = false;
     }
 
+
+    SPtr<TOptVendorData> remoteID;
+    TSrvMsg * par = dynamic_cast<TSrvMsg*>(Parent);
+    if (par) {
+      remoteID = par->getRemoteID();
+    }
+
     if ( validHint ) {
       // hint is valid, try to use it
       ptrPD = SrvCfgMgr().getClassByPrefix(this->Iface, hint);
 
       // if the PD allow the hint, based on DUID, Addr, and Msg from client
-     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ))
+     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ) && !ptrIface->checkReservedPrefix(hint,ClntDuid,remoteID) )
          {
                   // case 2: address belongs to supported class, and is free
                   if ( ptrPD && SrvAddrMgr().prefixIsFree(hint) ) {

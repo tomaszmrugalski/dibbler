@@ -474,7 +474,7 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
 {
     SPtr<TAddrClient> ptrAddrClient = this->getClient(clntDuid);
     if (!ptrAddrClient) {
-        Log(Warning) << "Unable to find client in the addrDB.";
+        Log(Warning) << "Unable to find client in the addrDB." << LogEnd;
         return 0;
     }
     ptrAddrClient->firstIA();

@@ -391,7 +391,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
 
     SPtr<TAddrClient> client = SrvAddrMgr().getClient(ClientDUID);
     if (!client) {
-        Log(Warning) << "Received RELEASE from unknown client." << LogEnd;
+        Log(Warning) << "Received RELEASE from unknown client DUID=" << ClientDUID->getPlain() << LogEnd;
         IsDone = true;
         return;
     }
