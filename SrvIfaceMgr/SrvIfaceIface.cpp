@@ -46,12 +46,16 @@ bool TSrvIfaceIface::appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfa
 
 SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
     int i=0;
+    if (!interfaceID) {
+        return 0;
+    }
+
     if (this->RelaysCnt==0) {
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
 	return 0;
     }
     for (i=0; i<this->RelaysCnt; i++) {
-	if (*Relays[i].interfaceID == *interfaceID)
+	if (Relays[i].interfaceID && (*Relays[i].interfaceID == *interfaceID) )
 	    return this->Relays[i].iface;
     }
     return 0;
