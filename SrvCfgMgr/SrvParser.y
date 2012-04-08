@@ -133,6 +133,7 @@ virtual ~SrvParser();
 %token SUBSTRING_, STRING_KEYWORD_, ADDRESS_LIST_
 %token CONTAIN_
 %token NEXT_HOP_, ROUTE_, INFINITE_
+%token SUBNET_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -218,6 +219,7 @@ InterfaceOptionDeclaration
 | VendorSpecOption
 | Client
 | InactiveMode
+| Subnet
 ;
 
 InterfaceDeclaration
@@ -1095,6 +1097,29 @@ InterfaceIDOption
 }
 ;
 
+Subnet
+:SUBNET_ IPV6ADDR_ '/' Number
+{
+    int prefix = $4;
+    if ( (prefix<1) || (prefix>128) ) {
+        Log(Crit) << "Invalid (1..128 allowed) prefix used: " << prefix
+                  << " in subnet definition in line " << lex->lineno() << LogEnd;
+        YYABORT;
+    }
+    SPtr<TIPv6Addr> min = new getRangeMin($2, prefix);
+    SPtr<TIPv6Addr> max = new getRangeMax($2, prefix);
+    SrvCfgIfaceLst.getLast()->addSubnet(min, max);
+    Log(Debug) << "Defined subnet " << prf->getPlain() << "/" << $4
+               << " on " << SrvCfgIfaceLst.getLast()->getFullName() << LogEnd;
+}|SUBNET_ IPV6ADDR_ '-' IPV6ADDR_
+{
+    SPtr<TIPv6Addr> min = new TIPv6Addr($2);
+    SPtr<TIPv6Addr> max = new TIPv6Addr($4);
+    SrvCfgIfaceLst.getLast()->addSubnet(min, max);
+    Log(Debug) << "Defined subnet " << min->getPlain() << "-" << max->getPlain()
+               << "on " << SrvCfgIfaceLst.getLast()->getFullName() << LogEnd;
+}
+
 ClassOptionDeclaration
 : PreferredTimeOption
 | ValidTimeOption
@@ -1738,7 +1763,7 @@ static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 SPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     char packed[16];
     char mask;
-    memcpy(packed, addrPacked,16);
+    memcpy(packed, addrPacked, 16);
     if (prefix%8!=0) {
 	mask = bitMask[prefix%8];
 	packed[prefix/8] = packed[prefix/8] & mask;

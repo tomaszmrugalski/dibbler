@@ -8,8 +8,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.h,v 1.31 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 class TSrvCfgIface;
@@ -22,6 +20,7 @@ class TSrvCfgIface;
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
+#include <vector>
 #include "OptVendorSpecInfo.h"
 #include "SrvCfgOptions.h"
 
@@ -68,6 +67,11 @@ public:
     bool addClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool delClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool supportPrefixDelegation();
+
+    // subnet management
+    void addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length);
+    void addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max);
+    bool addrInSubnet(SPtr<TIPv6Addr> addr);
 
     // other
     SPtr<TIPv6Addr> getUnicast();
@@ -133,6 +137,9 @@ private:
     // --- Prefix Delegation ---
     List(TSrvCfgPD) SrvCfgPDLst;
     bool PrefixDelegationSupport;
+
+    // --- subnets ---
+    std::vector<TStationRange> Subnets_;
 
     // --- relay ---
     bool Relay;

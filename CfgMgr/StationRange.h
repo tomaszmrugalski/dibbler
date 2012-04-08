@@ -29,15 +29,16 @@ class TStationRange
     TStationRange(SPtr<TDUID> duid);
     TStationRange(SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
     TStationRange(SPtr<TIPv6Addr> addr);
-    bool in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr);
-    bool in(SPtr<TIPv6Addr> addr);
-    bool in(SPtr<TDUID> duid);
-    SPtr<TIPv6Addr> getRandomAddr();
-    SPtr<TIPv6Addr> getRandomPrefix();
-    unsigned long rangeCount();
-    SPtr<TIPv6Addr> getAddrL();
-    SPtr<TIPv6Addr> getAddrR();
-    int getPrefixLength();
+
+    bool in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr) const;
+    bool in(SPtr<TIPv6Addr> addr) const;
+    bool in(SPtr<TDUID> duid) const;
+    SPtr<TIPv6Addr> getRandomAddr() const;
+    SPtr<TIPv6Addr> getRandomPrefix() const;
+    unsigned long rangeCount() const;
+    SPtr<TIPv6Addr> getAddrL() const;
+    SPtr<TIPv6Addr> getAddrR() const;
+    int getPrefixLength() const;
     void setPrefixLength(int len);
     void truncate(int minPrefix, int maxPrefix);
  private:

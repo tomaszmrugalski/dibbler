@@ -365,11 +365,12 @@ typedef
 #define	NEXT_HOP_	348
 #define	ROUTE_	349
 #define	INFINITE_	350
-#define	STRING_	351
-#define	HEXNUMBER_	352
-#define	INTNUMBER_	353
-#define	IPV6ADDR_	354
-#define	DUID_	355
+#define	SUBNET_	351
+#define	STRING_	352
+#define	HEXNUMBER_	353
+#define	INTNUMBER_	354
+#define	IPV6ADDR_	355
+#define	DUID_	356
 
 
 #line 169 "../bison++/bison.h"
@@ -511,6 +512,7 @@ static const int CONTAIN_;
 static const int NEXT_HOP_;
 static const int ROUTE_;
 static const int INFINITE_;
+static const int SUBNET_;
 static const int STRING_;
 static const int HEXNUMBER_;
 static const int INTNUMBER_;
@@ -617,11 +619,12 @@ static const int DUID_;
 	,NEXT_HOP_=348
 	,ROUTE_=349
 	,INFINITE_=350
-	,STRING_=351
-	,HEXNUMBER_=352
-	,INTNUMBER_=353
-	,IPV6ADDR_=354
-	,DUID_=355
+	,SUBNET_=351
+	,STRING_=352
+	,HEXNUMBER_=353
+	,INTNUMBER_=354
+	,IPV6ADDR_=355
+	,DUID_=356
 
 
 #line 215 "../bison++/bison.h"
