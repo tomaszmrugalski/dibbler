@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: IPv6Addr.cpp,v 1.11 2008-08-29 00:07:30 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -80,6 +78,10 @@ char* TIPv6Addr::storeSelf(char *buf) {
 
 bool TIPv6Addr::operator==(const TIPv6Addr &other) {
     return !memcmp(this->Addr,other.Addr,16);
+}
+
+bool TIPv6Addr::operator!=(const TIPv6Addr &other) {
+    return memcmp(this->Addr,other.Addr,16);
 }
 
 void TIPv6Addr::truncate(int minPrefix, int maxPrefix) {

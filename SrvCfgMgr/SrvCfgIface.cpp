@@ -7,7 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.cpp,v 1.48 2008-11-11 22:41:48 thomson Exp $
  */
 
 #include <cstdlib>
@@ -42,11 +41,11 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, TMsg* pa
 
     SPtr<TOptVendorData> remoteID;
     TSrvMsg* par = dynamic_cast<TSrvMsg*>(parent);
-		SPtr<TIPv6Addr> peer;
+    SPtr<TIPv6Addr> peer;
     if (par) {
-			remoteID = par->getRemoteID();
-			peer = par->getClientPeer();
-			Log(Debug) << "Check exceptions for peer = " << peer->getPlain() << LogEnd;
+        remoteID = par->getRemoteID();
+        peer = par->getClientPeer();
+        Log(Debug) << "Checking exceptions for link-local=" << peer->getPlain() << LogEnd;
     }
 
     SPtr<TSrvCfgOptions> x;
@@ -64,16 +63,16 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, TMsg* pa
         if ( remoteID && remoteid && (remoteID->getVendor() == remoteid->getVendor())
              && (remoteid->getVendorDataLen() == remoteID->getVendorDataLen())
              && !memcmp(remoteid->getVendorData(), remoteID->getVendorData(), remoteid->getVendorDataLen()) ) {
-                Log(Debug) << "Found per-client configuration (exception) for client with RemoteID: vendor="
-                           << remoteid->getVendor() << ", data="
-                           << remoteid->getVendorDataPlain() << "." << LogEnd;
+            Log(Debug) << "Found per-client configuration (exception) for client with RemoteID: vendor="
+                       << remoteid->getVendor() << ", data="
+                       << remoteid->getVendorDataPlain() << "." << LogEnd;
             return x;
         }
-				if ( peer && x && x->getClntAddr() && *(peer) == *(x->getClntAddr()) ) {
-						Log(Debug) << "Found per-client configuration (exception) for client with link-local = "
-											 << peer->getPlain() << LogEnd;
-						return x;
-				}
+        if ( peer && x && x->getClntAddr() && *(peer) == *(x->getClntAddr()) ) {
+            Log(Debug) << "Found per-client configuration (exception) for client with link-local="
+                       << peer->getPlain() << LogEnd;
+            return x;
+        }
     }
     return 0;
 }
@@ -114,37 +113,83 @@ bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
     return false;
 }
 
-/*
- * Check if a prefix is reserved for another client
- */
-bool TSrvCfgIface::checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID) {
-  SPtr<TSrvCfgOptions> x;
-  ExceptionsLst.first();
-  Log(Debug) << " Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
-  while (x=ExceptionsLst.get()) {
-    SPtr<TOptVendorData> remoteid;
-    remoteid = x->getRemoteID();
-    if (remoteid)
-      Log(Debug) << " Exceptions for client " << remoteid << LogEnd;
-    else 
-      Log(Debug) << " Exceptions for client " << x->getDuid()->getPlain() << LogEnd;
-
-    if ( x->getPrefix() )
-      Log(Debug) << " Checking reserved pfx " << x->getPrefix()->getPlain() << LogEnd;
-    if ( x->getPrefix() && *(x->getPrefix()) == *pfx ) {
-      Log(Debug) << " Found matching prefix " << LogEnd;
-      if (
-          !( duid && x->getDuid() && (*(x->getDuid()) == *duid) ) //duid check
-          &&
-          !(remoteID && remoteid && (remoteID->getVendor() == remoteid->getVendor()) //remote id check
-            && (remoteid->getVendorDataLen() == remoteID->getVendorDataLen())
-            && !memcmp(remoteid->getVendorData(), remoteID->getVendorData(), remoteid->getVendorDataLen()))
-         )  {
-        Log(Debug) << " prefix is reserved for another client, cannot assign to this client " << LogEnd;
-        return true; //pfx is reserved for -another- client, dont use it for this duid/remoteid
-      }
+/// @brief Checks if a prefix is reserved for another client.
+///
+/// @param pfx checked prefix (mandatory)
+/// @param duid Client's duid (mandatory)
+/// @param remoteID (can be NULL)
+/// @param link-local (can be NULL)
+///
+/// @return true if reserved for some else, false = not reserved
+bool TSrvCfgIface::checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid,
+                                       SPtr<TOptVendorData> myRemoteID,
+                                       SPtr<TIPv6Addr> linkLocal) {
+    // sanity check
+    if (!pfx || !duid) {
+        // should not happen
+        Log(Error) << "Reservation check failed. Required parameters not specified." << LogEnd;
+        return true;
     }
-  }
+
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst.first();
+    Log(Debug) << " Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
+    while (x=ExceptionsLst.get()) {
+
+        if (!x->getPrefix()) // that is not prefix reservation
+            continue;
+
+        if ( *(x->getPrefix()) != (*pfx) )
+            continue; // that is not the prefix we are looking for
+
+        // we found the prefix we are looking for. Let's check if we can use it
+
+        // DUID based reservation?
+        if (x->getDuid()) {
+            if (*duid == *x->getDuid()) {
+                return false; // reserved for us!
+            } else {
+                Log(Debug) << "Prefix " << x->getPrefix()->getPlain() << " is reserved for DUID="
+                           << x->getDuid()->getPlain() << LogEnd;
+                return true;
+            }
+        }
+
+        // remote-id based reservation?
+        SPtr<TOptVendorData> remoteid = x->getRemoteID();
+        if (remoteid) {
+            if ( (myRemoteID->getVendor() == remoteid->getVendor()) &&
+                 (myRemoteID->getVendorDataLen() == remoteid->getVendorDataLen()) &&
+                 (!memcmp(myRemoteID->getVendorData(), remoteid->getVendorData(), remoteid->getVendorDataLen())) ) {
+                return false; // reserved for us!
+            } else {
+                Log(Debug) << "Prefix " << x->getPrefix()->getPlain() << "is reserved for remote-id="
+                           << remoteid->getPlain() << LogEnd;
+                return true; // no, sorry. It's somebody else's prefix
+            }
+        }
+
+
+        // link-local based reservation
+        SPtr<TIPv6Addr> addr = x->getClntAddr();
+        if (addr) {
+            if (*linkLocal == *addr) {
+                return false; // reserved for us!
+            } else {
+                Log(Debug) << "Prefix " << x->getPrefix()->getPlain()
+                           << " is reserved for link-local address "
+                           << addr->getPlain() << LogEnd;
+                return true;
+            }
+        }
+
+        Log(Error) << "Found reservation for prefix " << x->getPrefix()->getPlain()
+                   << ", but it is misconfigured (no DUID, remote-id nor link-local specified)"
+                   << LogEnd;
+
+        // this reservation is malformed let's not use it
+        return true;
+    }
   return false;
 }
 

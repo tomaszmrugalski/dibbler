@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgOptions.h,v 1.5 2008-08-29 00:07:33 thomson Exp $
- *
  */
 
 #ifndef SRVCFGOPTIONS_H
@@ -38,25 +36,25 @@ public:
     TSrvCfgOptions();
     TSrvCfgOptions(SPtr<TDUID> duid);
     TSrvCfgOptions(SPtr<TOptVendorData> remoteid);
-		TSrvCfgOptions(SPtr<TIPv6Addr> clntaddr);
+    TSrvCfgOptions(SPtr<TIPv6Addr> clntaddr);
     bool setOptions(SPtr<TSrvParsGlobalOpt> opt);
     SPtr<TDUID> getDuid();
     SPtr<TOptVendorData> getRemoteID();
-		SPtr<TIPv6Addr> getClntAddr();
+    SPtr<TIPv6Addr> getClntAddr();
 
     // address reservation
     void setAddr(SPtr<TIPv6Addr> addr);
     SPtr<TIPv6Addr> getAddr();
-
+    
     void setPrefix(SPtr<TIPv6Addr> prefix, uint8_t length) { Prefix = prefix, PrefixLen = length; }
     SPtr<TIPv6Addr> getPrefix() { return Prefix; }
     uint8_t getPrefixLen() { return PrefixLen; }
-
+    
     // option: DNS Servers
     List(TIPv6Addr) * getDNSServerLst();
     void setDNSServerLst(List(TIPv6Addr) *lst);
     bool supportDNSServer();
-
+    
     // option: Domain
     List(string) * getDomainLst();
     void setDomainLst(List(string) * domains);
@@ -153,10 +151,10 @@ private:
 
     void SetDefaults();
 
-		//client specification
+    //client specification
     SPtr<TOptVendorData> RemoteID;
     SPtr<TDUID> Duid;
-		SPtr<TIPv6Addr> ClntAddr;
+    SPtr<TIPv6Addr> ClntAddr;
 };
 
 #endif

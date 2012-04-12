@@ -542,7 +542,8 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
       ptrPD = SrvCfgMgr().getClassByPrefix(this->Iface, hint);
 
       // if the PD allow the hint, based on DUID, Addr, and Msg from client
-     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ) && !ptrIface->checkReservedPrefix(hint,ClntDuid,remoteID) )
+     if (ptrPD && ptrPD->clntSupported(ClntDuid, ClntAddr, clientMsg ) &&
+         !ptrIface->checkReservedPrefix(hint,ClntDuid, remoteID, ClntAddr) )
          {
                   // case 2: address belongs to supported class, and is free
                   if ( ptrPD && SrvAddrMgr().prefixIsFree(hint) ) {
@@ -591,7 +592,8 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
     }
 
 
-    while (true) {
+    int attempts = 100;
+    while (attempts--) {
         List(TIPv6Addr) lst;
         lst = ptrPD->getRandomList();
         lst.first();
@@ -610,4 +612,7 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
             return lst;
         }
     };
+
+    // failed to find available prefixes after 100 attempts. Return empty list
+    return List(TIPv6Addr)();
 }
