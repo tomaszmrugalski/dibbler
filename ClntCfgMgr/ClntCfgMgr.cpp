@@ -42,8 +42,10 @@ static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
 
 TClntCfgMgr & TClntCfgMgr::instance()
 {
-  if (!Instance)
-    Log(Crit) << "Application error. Tried to access CfgMgr without instanceCreate!" << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "Application error. Tried to access CfgMgr without instanceCreate!" << LogEnd;
+        instanceCreate(CLNTCONF_FILE);
+    }
   // throw an exception here or something
   return *Instance;
 }

@@ -159,5 +159,5 @@ void PrintHex(const std::string& message, char *buffer, unsigned len) {
     } else
         Log(Debug) << message << "N/A (zero length)" << LogEnd;
 
-    delete buf;
+    delete [] buf;
 }

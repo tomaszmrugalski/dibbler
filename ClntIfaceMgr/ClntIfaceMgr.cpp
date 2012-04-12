@@ -37,8 +37,10 @@ void TClntIfaceMgr::instanceCreate(const std::string xmlFile)
 
 TClntIfaceMgr& TClntIfaceMgr::instance()
 {
-    if (!Instance)
+    if (!Instance) {
         Log(Crit) << "Requested IfaceMgr, but it is not created yet." << LogEnd;
+        instanceCreate(CLNTIFACEMGR_FILE);
+    }
     return *Instance;
 }
 

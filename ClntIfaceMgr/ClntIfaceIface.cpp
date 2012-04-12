@@ -540,6 +540,7 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
     if ( !(fout=fopen(fileout,"w"))) {
         Log(Debug) << "Unable to create/overwrite file " << fileout << " while trying to delete "
                    << str << " line." << LogEnd;
+        fclose(f);
         return;
     }
 

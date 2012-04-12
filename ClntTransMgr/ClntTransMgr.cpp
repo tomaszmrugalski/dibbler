@@ -46,9 +46,11 @@ void TClntTransMgr::instanceCreate(const std::string config)
 
 TClntTransMgr &TClntTransMgr::instance()
 {
-  if (!Instance)
-      Log(Crit) << "Error: ClntTransMgr not initialized. Crashing in 3... 2... 1..." << LogEnd;
-  return *Instance;
+    if (!Instance) {
+        Log(Crit) << "Error: ClntTransMgr not initialized. Crashing in 3... 2... 1..." << LogEnd;
+        instanceCreate(CLNTTRANSMGR_FILE);
+    }
+    return *Instance;
 }
 
 TClntTransMgr::TClntTransMgr(const std::string config)

@@ -687,7 +687,6 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
     if (0 > fd)
         return NULL;
 
-    /* FIXME should be freed somewhere */
     retval = malloc(st.st_size);
     if (!retval) {
         close(fd);
@@ -698,14 +697,18 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
         ret = read(fd, retval + offset, st.st_size - offset);
         if (!ret) break;
         if (ret < 0) {
+            close(fd);
+            free(retval);
             return NULL;
         }
         offset += ret;
     }
     close(fd);
 
-    if (offset != st.st_size)
+    if (offset != st.st_size) {
+        free(retval);
         return NULL;
+    }
 
     *len = st.st_size;
     return retval;
