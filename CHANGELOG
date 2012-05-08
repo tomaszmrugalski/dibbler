@@ -5,6 +5,7 @@
   - Cli: Reasons for rejecting IA_NA/IA_PD are now logged (i.e. T1>T2)
   - Cli: client no longer crashes when server's reply does not included expected IA_PD
   - gcc4.6 compilation warnings removed
+  - added missing header in ClntIfaceIface.h (debian #672003)
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

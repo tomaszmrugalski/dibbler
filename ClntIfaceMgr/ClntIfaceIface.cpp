@@ -8,6 +8,7 @@
  *
  */
 
+#include <unistd.h>
 #include <iostream>
 #include "ClntIfaceIface.h"
 #include "Portable.h"
