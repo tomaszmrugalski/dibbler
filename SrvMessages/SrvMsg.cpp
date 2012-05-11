@@ -53,14 +53,10 @@ using namespace std;
  * this constructor is used to build message as a reply to the received message
  * (i.e. it is used to contruct ADVERTISE or REPLY)
  * 
- * @param IfaceMgr 
- * @param TransMgr 
- * @param CfgMgr 
- * @param AddrMgr 
- * @param iface 
- * @param addr 
- * @param msgType 
- * @param transID 
+ * @param iface interface index
+ * @param addr peer address
+ * @param msgType message type
+ * @param transID transaction-id
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
     :TMsg(iface, addr, msgType, transID)
@@ -82,10 +78,6 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
  * this constructor builds message based on the buffer 
  * (i.e. SOLICIT, REQUEST, RENEW, REBIND, RELEASE, INF-REQUEST, DECLINE)
  * 
- * @param IfaceMgr 
- * @param TransMgr 
- * @param CfgMgr 
- * @param AddrMgr 
  * @param iface 
  * @param addr 
  * @param buf 

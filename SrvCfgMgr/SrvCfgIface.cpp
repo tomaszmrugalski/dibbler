@@ -391,9 +391,9 @@ TSrvCfgIface::TSrvCfgIface(int ifaceNr) {
     this->ID=ifaceNr;
 }
 
-TSrvCfgIface::TSrvCfgIface(string ifaceName) {
-    this->setDefaults();
-    this->Name=ifaceName;
+TSrvCfgIface::TSrvCfgIface(std::string ifaceName) {
+    setDefaults();
+    Name=ifaceName;
 }
 
 void TSrvCfgIface::setDefaults() {

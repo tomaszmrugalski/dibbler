@@ -11,7 +11,7 @@
 
 using namespace std;
 
-TTimeZone::TTimeZone(string timeZone)
+TTimeZone::TTimeZone(std::string timeZone)
 {
     Valid=true;
     const char *ptr=timeZone.c_str();

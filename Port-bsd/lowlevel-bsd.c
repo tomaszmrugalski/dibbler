@@ -242,7 +242,7 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
         unsigned long pref, unsigned long valid, int prefixLength) {
 
-    /** @TODO: implement this */
+    /// @todo: implement this
     sprintf(Message, "Address update on BSD systems not implemented yet.");
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
@@ -454,7 +454,7 @@ void microsleep(int microsecs) {
  * returns: -1 - address not found, 0 - addr is ok, 1 - addr is tentative
  */
 int is_addr_tentative(char * ifacename, int iface, char * addr) {
-    /* TODO: implement this */
+    /// @todo: implement this
     return 0;
 }
 

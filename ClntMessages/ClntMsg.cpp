@@ -87,10 +87,6 @@ void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
 /**
  * creates message, based on a received buffer
  *
- * @param IfaceMgr
- * @param TransMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param iface
  * @param addr
  * @param buf

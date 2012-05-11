@@ -371,7 +371,7 @@ EState TClntCfgIface::getRoutingEnabledState() {
 List(TIPv6Addr) * TClntCfgIface::getProposedDNSServerLst() {
     return &this->DNSServerLst;
 }
-List(string) * TClntCfgIface::getProposedDomainLst() {
+List(std::string) * TClntCfgIface::getProposedDomainLst() {
     return &this->DomainLst;
 }
 List(TIPv6Addr) * TClntCfgIface::getProposedNTPServerLst() {
@@ -383,7 +383,7 @@ string TClntCfgIface::getProposedTimezone() {
 List(TIPv6Addr) * TClntCfgIface::getProposedSIPServerLst() {
     return &this->SIPServerLst;
 }
-List(string) * TClntCfgIface::getProposedSIPDomainLst() {
+List(std::string) * TClntCfgIface::getProposedSIPDomainLst() {
     return &this->SIPDomainLst;
 }
 string TClntCfgIface::getProposedFQDN() {

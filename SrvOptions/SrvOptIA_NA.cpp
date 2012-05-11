@@ -93,8 +93,6 @@ TSrvOptIA_NA::TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent)
 /**
  * This constructor is used to create IA option as an aswer to a SOLICIT, SOLICIT (RAPID_COMMIT) or REQUEST
  *
- * @param addrMgr
- * @param cfgMgr
  * @param queryOpt
  * @param clntDuid
  * @param clntAddr

@@ -100,7 +100,7 @@ bool TClntParsIfaceOpt::getReqDNSServer() {
 }
 
 // --- option: domain ---
-List(string) * TClntParsIfaceOpt::getDomainLst() {
+List(std::string) * TClntParsIfaceOpt::getDomainLst() {
     return &this->DomainLst;
 }
 void TClntParsIfaceOpt::setDomainLst(List(string) * domain) {
@@ -149,7 +149,7 @@ bool TClntParsIfaceOpt::getReqSIPServer(){
 }
 
 // --- option: SIP domain ---
-List(string) * TClntParsIfaceOpt::getSIPDomainLst() {
+List(std::string) * TClntParsIfaceOpt::getSIPDomainLst() {
     return &this->SIPDomainLst;
 }
 void TClntParsIfaceOpt::setSIPDomainLst(List(string) * domain) {

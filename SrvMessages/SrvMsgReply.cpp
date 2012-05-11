@@ -34,10 +34,6 @@ using namespace std;
 /**
  * this constructor is used to create REPLY message as a response for CONFIRM message
  *
- * @param ifaceMgr
- * @param transMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param confirm
  */
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
@@ -174,10 +170,6 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
 /*
  * this constructor is used to create REPLY message as a response for DECLINE message
  *
- * @param ifaceMgr
- * @param transMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param decline
  */
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
@@ -290,10 +282,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
 /**
  * this constructor is used to create REPLY message as a response for REBIND message
  *
- * @param ifaceMgr
- * @param transMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param rebind
  */
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
@@ -365,10 +353,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
 /**
  * this constructor is used to create REPLY message as a response for RELEASE message
  *
- * @param ifaceMgr
- * @param transMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param release
  */
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
