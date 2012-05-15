@@ -6,6 +6,7 @@
   - Cli: client no longer crashes when server's reply does not included expected IA_PD
   - gcc4.6 compilation warnings removed
   - added missing header in ClntIfaceIface.h (debian #672003)
+  - debian/ directory is moved to debian branch and no longer available on master
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,
