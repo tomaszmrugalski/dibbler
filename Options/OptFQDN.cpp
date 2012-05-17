@@ -17,8 +17,8 @@
 
 using namespace std;
 
-TOptFQDN::TOptFQDN(string domain, TMsg* parent)
-		:TOpt(OPTION_FQDN, parent) {
+TOptFQDN::TOptFQDN(const std::string& domain, TMsg* parent)
+                :TOpt(OPTION_FQDN, parent) {
     fqdn = domain;
     flag_N = false;
     flag_S = false;
@@ -28,7 +28,7 @@ TOptFQDN::TOptFQDN(string domain, TMsg* parent)
 }
 
 TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
-		:TOpt(OPTION_FQDN, parent) {
+                :TOpt(OPTION_FQDN, parent) {
     this->Valid = false;
     // Extracting flags...
     unsigned char flags = *buf;
@@ -41,119 +41,117 @@ TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
     //Extracting domain name
     fqdn = "";
     if ( bufsize <= 255 ) {
-	unsigned char tmplength = *buf;
-	if (tmplength>bufsize) 
-	{
-	    Log(Warning) << "Malformed FQDN option: domain name encoding is invalid. "
-			 << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
-	    Valid = false;
-	    return;
-	}
+        unsigned char tmplength = *buf;
+        if (tmplength>bufsize)
+        {
+            Log(Warning) << "Malformed FQDN option: domain name encoding is invalid. "
+                         << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
+            Valid = false;
+            return;
+        }
 
-	buf++;
-	while (tmplength != 0) {
-	    fqdn.append(buf, tmplength);
-	    buf += tmplength;
-	    bufsize -= tmplength;
-	    tmplength = *buf;
-	    if (tmplength>bufsize) 
-	    {
-		Log(Warning) << "Malformed FQDN option: domain name encoding is invalid."
-			     << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
-		Valid = false;
-		return;
-	    }
-	    buf++;
-	    if ( tmplength != 0 ) {
-		fqdn.append(".");
-	    }
-	}
-	buf++;
-	bufsize--;
-	Valid = true;
+        buf++;
+        while (tmplength != 0) {
+            fqdn.append(buf, tmplength);
+            buf += tmplength;
+            bufsize -= tmplength;
+            tmplength = *buf;
+            if (tmplength>bufsize)
+            {
+                Log(Warning) << "Malformed FQDN option: domain name encoding is invalid."
+                             << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
+                Valid = false;
+                return;
+            }
+            buf++;
+            if ( tmplength != 0 ) {
+                fqdn.append(".");
+            }
+        }
+        buf++;
+        bufsize--;
+        Valid = true;
     }
     Log(Debug) << "FQDN: FQDN option received: fqdn name=" << fqdn << LogEnd;
 }
 
 TOptFQDN::~TOptFQDN() {
-	return;
+        return;
 }
 
 void TOptFQDN::setNFlag(bool flag) {
-	flag_N = flag;
+        flag_N = flag;
 }
 
 void TOptFQDN::setSFlag(bool flag) {
-	flag_S = flag;
+        flag_S = flag;
 }
 
 void TOptFQDN::setOFlag(bool flag) {
-	flag_O = flag;
+        flag_O = flag;
 }
 
 string TOptFQDN::getFQDN() {
-	return fqdn;
+        return fqdn;
 }
 
-/** 
+/**
  * @brief returns option size
  *
  * Each dot will be removed from the string, and replaced with a length < 63
  * The first length and the final 0 will increased the fqdn string length by 2
  * We also have to add 4 for the header (option type and size) and 1 for the flags.
  * 2 + 1 + 4 = 7
- * 
- * 
- * 
+ *
  * @return size of the option (without option header)
  */
 int TOptFQDN::getSize() {
-        if (fqdn.length())
-	    return fqdn.length() + 7;
-	else
-	    return 6;
+    if (fqdn.length())
+        return fqdn.length() + 7;
+    else
+        return 6;
 }
 
 char * TOptFQDN::storeSelf(char *buffer) {
-	// Type and size
-	buffer = writeUint16(buffer, OptType);
-	buffer = writeUint16(buffer, getSize()-4);
-//Flag Initialization
-	*buffer = 0;
-	if (flag_N) {
-		*buffer += FQDN_N;
-	}
-	if (flag_S) {
-		*buffer += FQDN_S;
-	}
-	if (flag_O) {
-		*buffer += FQDN_O;
-	}
-	buffer++;
+    // Type and size
+    buffer = writeUint16(buffer, OptType);
+    buffer = writeUint16(buffer, getSize()-4);
+    //Flag Initialization
+    *buffer = 0;
+    if (flag_N) {
+        *buffer += FQDN_N;
+    }
+    if (flag_S) {
+        *buffer += FQDN_S;
+    }
+    if (flag_O) {
+        *buffer += FQDN_O;
+    }
+    buffer++;
 
-	//FQDN data :)
-	if ( fqdn.length() != 0 ) {
-		string copy = "";
-		copy += fqdn;
-	        std::string::size_type dotpos = copy.find('.', 0);
-		while(dotpos != string::npos) {
-			*buffer = dotpos;
-			buffer++;
-			memcpy(buffer, copy.c_str(), dotpos);
-			buffer += dotpos;
-			copy.assign(copy, dotpos + 1, copy.length());
-			dotpos = copy.find('.', 0);
-		}
+    //FQDN data :)
+    if ( fqdn.length() != 0 ) {
+        string copy = "";
+        copy += fqdn;
+        std::string::size_type dotpos = copy.find('.', 0);
+        while(dotpos != string::npos) {
+            *buffer = dotpos;
+            buffer++;
+            memcpy(buffer, copy.c_str(), dotpos);
+            buffer += dotpos;
+            copy.assign(copy, dotpos + 1, copy.length());
+            dotpos = copy.find('.', 0);
+        }
 
-		*buffer = copy.length();
-		buffer++;
-		memcpy(buffer, copy.c_str(), copy.length());
-		buffer += copy.length();
-	}
-	*buffer = 0;
-	//buffer++;
+        *buffer = copy.length();
+        buffer++;
+        memcpy(buffer, copy.c_str(), copy.length());
+        buffer += copy.length();
+    }
+    *buffer = 0;
+    //buffer++;
 
-	return buffer;
+    return buffer;
 }
 
 bool TOptFQDN::isValid() {

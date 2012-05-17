@@ -16,7 +16,7 @@
 
 using namespace std;
 
-TOptDomainLst::TOptDomainLst(int type, List(string) strLst, TMsg* parent)
+TOptDomainLst::TOptDomainLst(int type, List(std::string) strLst, TMsg* parent)
     :TOpt(type, parent) {
     StringLst = strLst;
 }

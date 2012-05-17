@@ -7,8 +7,6 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.h,v 1.2 2006-04-30 17:32:35 thomson Exp $
-*
 */
  
 /**
@@ -35,7 +33,7 @@ class TOptFQDN : public TOpt
    * @param fqdn The FQDN about to be sent
    * @param parent The message in which this option is included
    */
-    TOptFQDN(std::string fqdn, TMsg* parent);
+    TOptFQDN(const std::string& fqdn, TMsg* parent);
   	
     /**
      * Constructor

@@ -429,9 +429,7 @@ void TClntMsg::setIface(int iface) {
 }
 
 /**
- * this function appends authentication option
- *
- * @param AddrMgr pointer to Address Manager
+ * @brief appends authentication option.
  *
  */
 void TClntMsg::appendAuthenticationOption()
@@ -463,7 +461,6 @@ void TClntMsg::appendAuthenticationOption()
 
 void TClntMsg::appendElapsedOption() {
     // include ELAPSED option
-
     if (!getOption(OPTION_ELAPSED_TIME))
 	Options.push_back(new TClntOptElapsed(this));
 }
