@@ -6,8 +6,6 @@
  *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvParsIfaceOpt.h,v 1.18 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 #ifndef TSRCPARSIFACEOPT_H_
@@ -85,16 +83,12 @@ public:
 
     // option: FQDN
     List(TFQDN) *getFQDNLst();
-    std::string getFQDNName(SPtr<TDUID> duid);
-    std::string getFQDNName(SPtr<TIPv6Addr> addr);
-    std::string getFQDNName();
     int getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     void setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain);
     EUnknownFQDNMode getUnknownFQDN();
     std::string getFQDNDomain();
 
-    SPtr<TDUID> getFQDNDuid(std::string name);
     void setFQDNLst(List(TFQDN) *fqdn);
     bool supportFQDN();
 
