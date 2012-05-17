@@ -12,6 +12,7 @@
  *
  */
 
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -32,8 +33,8 @@ using namespace std;
 TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
-TSrvCfgMgr::TSrvCfgMgr(const std::string cfgFile, const std::string xmlFile)
-    :TCfgMgr(), XmlFile(xmlFile), reconfigure(true)
+TSrvCfgMgr::TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
+    :TCfgMgr(), XmlFile(xmlFile), reconfigure(false)
 {
     setDefaults();
  
@@ -67,7 +68,7 @@ void TSrvCfgMgr::setDefaults()
     BulkLQTimeout = BULKLQ_TIMEOUT;
 }
 
-bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
+bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     int result;
     ifstream f;
 
@@ -81,7 +82,8 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
-    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still in constructor, so instance() singleton method can't be called
+    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still 
+                          // in constructor, so instance() singleton method can't be called
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
@@ -1002,18 +1004,22 @@ void TSrvCfgMgr::setCounters()
 }
 
 
-void TSrvCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlDumpFile )
+void TSrvCfgMgr::instanceCreate(const std::string& cfgFile, const std::string& xmlDumpFile )
 {
-    if (Instance)
-      Log(Crit) << "SrvCfgMgr already created. Application error!" << LogEnd;
+    if (Instance) {
+        Log(Crit) << "SrvCfgMgr already created. Application error!" << LogEnd;
+        return;
+    }
     Instance = new TSrvCfgMgr(cfgFile, xmlDumpFile);
 
 }
 
 TSrvCfgMgr & TSrvCfgMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "SrvCfgMgr not initalized yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "SrvCfgMgr not initalized yet. Application error. Emergency shutdown." << LogEnd;
+        exit(-1);
+    }
     return *Instance;
 }
 
