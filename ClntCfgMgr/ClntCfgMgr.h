@@ -107,7 +107,7 @@ private:
     bool validateAddr(SPtr<TClntCfgIface> ptrIface, 
 		      SPtr<TClntCfgIA> ptrIA,
 		      SPtr<TClntCfgAddr> ptrAddr);
-    bool parseConfigFile(std::string cfgFile);
+    bool parseConfigFile(const std::string& cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
 
     List(TClntCfgIface) ClntCfgIfaceLst;

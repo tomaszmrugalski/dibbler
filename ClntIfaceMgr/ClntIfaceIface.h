@@ -28,14 +28,14 @@ class TClntIfaceIface: public TIfaceIface {
     bool setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
     bool setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(std::string) domains);
     bool setNTPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, std::string timezone);
+    bool setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& timezone);
     bool setSIPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
     bool setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(std::string) domains);
-    bool setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, std::string fqdn);
+    bool setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& fqdn);
     bool setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, std::string domain);
+    bool setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain);
     bool setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, std::string domain);
+    bool setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain);
     bool setLifetime(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, unsigned int life);
 
     bool setDsLiteTunnel(SPtr<TIPv6Addr> remoteEndpoint);

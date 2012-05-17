@@ -103,7 +103,7 @@ public:
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
-    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, std::string hint);
+    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, const std::string& hint);
     SPtr<TDUID> getFQDNDuid(std::string name);
     void setFQDNLst(List(TFQDN) * fqdn);
     int getFQDNMode();

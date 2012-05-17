@@ -26,7 +26,7 @@ using namespace std;
 
 TClntIfaceMgr * TClntIfaceMgr::Instance = 0;
 
-void TClntIfaceMgr::instanceCreate(const std::string xmlFile)
+void TClntIfaceMgr::instanceCreate(const std::string& xmlFile)
 {
     if (Instance) {
         Log(Crit) << "Application error: Attempt to create another ClntIfaceMgr instance!" << LogEnd;
@@ -270,7 +270,7 @@ bool TClntIfaceMgr::doDuties() {
     return true;
 }
 
-bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
+bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, const std::string& fqdn)
 {
     SPtr<TIPv6Addr> DNSAddr;
     SPtr<TIPv6Addr> addr;
@@ -329,7 +329,7 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
     return true;
 }
 
-bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string fqdn)
+bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, const std::string& fqdn)
 {
     SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
 

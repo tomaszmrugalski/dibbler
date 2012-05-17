@@ -38,7 +38,7 @@ void TCfgMgr::setDDNSProtocol(DNSUpdateProtocol proto) {
 
 // method compares both files and if differs
 // returns true if files differs and false in the other case
-bool TCfgMgr::compareConfigs(const string& cfgFile, const string& oldCfgFile)
+bool TCfgMgr::compareConfigs(const std::string& cfgFile, const std::string& oldCfgFile)
 {
     std::ifstream oldF,newF;
     bool newConf=false;

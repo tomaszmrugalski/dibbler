@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntParsGlobalOpt.h,v 1.19 2008-08-30 21:41:11 thomson Exp $
- *
  */
 
 class TClntParsGlobalOpt;
@@ -23,7 +21,7 @@ public:
     TClntParsGlobalOpt();
     ~TClntParsGlobalOpt();
 
-    void setWorkDir(std::string dir);
+    void setWorkDir(const std::string& dir);
     std::string getWorkDir();
     void setPrefixLength(int len);
     int getPrefixLength();

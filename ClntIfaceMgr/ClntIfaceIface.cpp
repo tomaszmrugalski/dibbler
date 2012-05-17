@@ -113,7 +113,7 @@ bool TClntIfaceIface::setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
     return true;
 }
 
-bool TClntIfaceIface::setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(string) domains) {
+bool TClntIfaceIface::setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(std::string) domains) {
     // remove old domains
     SPtr<string> old, domain;
     this->DomainLst.first();
@@ -222,7 +222,7 @@ bool TClntIfaceIface::setNTPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
     return true;
 }
 
-bool TClntIfaceIface::setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string timezone) {
+bool TClntIfaceIface::setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& timezone) {
     this->TimezoneAddr = srv;
     this->TimezoneDUID = duid;
     if (timezone==this->Timezone) {
@@ -294,7 +294,7 @@ bool TClntIfaceIface::setSIPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
     this->SIPServerLstDUID = duid;
     return true;
 }
-bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(string) domains) {
+bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(std::string) domains) {
     // remove old domains
     SPtr<string> old, domain;
     this->SIPDomainLst.first();
@@ -348,7 +348,7 @@ bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
     return true;
 }
 
-bool TClntIfaceIface::setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string fqdn) {
+bool TClntIfaceIface::setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& fqdn) {
     this->FQDN = fqdn;
     this->FQDNDUID = duid;
     this->FQDNAddr = srv;
@@ -408,7 +408,7 @@ bool TClntIfaceIface::setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
     this->NISServerLstDUID = duid;
     return true;
 }
-bool TClntIfaceIface::setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string domain) {
+bool TClntIfaceIface::setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain) {
     this->NISDomainAddr = srv;
     this->NISDomainDUID = duid;
     if (domain==this->NISDomain) {
@@ -479,7 +479,7 @@ bool TClntIfaceIface::setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Li
     this->NISPServerLstDUID = duid;
     return true;
 }
-bool TClntIfaceIface::setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string domain) {
+bool TClntIfaceIface::setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain) {
     this->NISPDomainAddr = srv;
     this->NISPDomainDUID = duid;
     if (domain==this->NISPDomain) {

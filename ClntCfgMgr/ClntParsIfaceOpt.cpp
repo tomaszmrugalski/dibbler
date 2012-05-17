@@ -103,7 +103,7 @@ bool TClntParsIfaceOpt::getReqDNSServer() {
 List(std::string) * TClntParsIfaceOpt::getDomainLst() {
     return &this->DomainLst;
 }
-void TClntParsIfaceOpt::setDomainLst(List(string) * domain) {
+void TClntParsIfaceOpt::setDomainLst(List(std::string) * domain) {
     this->DomainLst=*domain;
     this->ReqDomain=true;
 }
@@ -124,7 +124,7 @@ bool TClntParsIfaceOpt::getReqNTPServer(){
 }
 
 // --- option: Timezone ---
-void TClntParsIfaceOpt::setTimezone(string Timezone) {
+void TClntParsIfaceOpt::setTimezone(const std::string& Timezone) {
     this->Timezone=Timezone;
     this->ReqTimezone=true;
 }
@@ -161,7 +161,7 @@ bool TClntParsIfaceOpt::getReqSIPDomain() {
 }
 
 // --- option: FQDN ---
-void TClntParsIfaceOpt::setFQDN(string fqdn) {
+void TClntParsIfaceOpt::setFQDN(const std::string& fqdn) {
     this->FQDN=fqdn;
     this->ReqFQDN=true;
 }
@@ -203,7 +203,7 @@ string TClntParsIfaceOpt::getNISDomain() {
     return this->NISDomain;
 }
 
-void TClntParsIfaceOpt::setNISDomain(string domain) {
+void TClntParsIfaceOpt::setNISDomain(const std::string& domain) {
     this->NISDomain=domain;
     this->ReqNISDomain=true;
 }
@@ -230,7 +230,7 @@ bool TClntParsIfaceOpt::getReqNISPServer(){
 string TClntParsIfaceOpt::getNISPDomain() {
     return this->NISPDomain;
 }
-void TClntParsIfaceOpt::setNISPDomain(string domain) {
+void TClntParsIfaceOpt::setNISPDomain(const std::string& domain) {
     this->NISPDomain=domain;
     this->ReqNISPDomain=true;
 }

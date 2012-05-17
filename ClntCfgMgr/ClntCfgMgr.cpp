@@ -8,8 +8,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntCfgMgr.cpp,v 1.66 2008-09-22 17:08:52 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -22,17 +20,12 @@
 #include "Logger.h"
 
 using namespace std;
+
 #include "FlexLexer.h"
-
 #include "ClntIfaceMgr.h"
-
 #include "ClntParsGlobalOpt.h"
 #include "TimeZone.h"
-
-#include "FlexLexer.h"
 #include "ClntParser.h"
-
-using namespace std;
 
 TClntCfgMgr * TClntCfgMgr::Instance = 0;
 
@@ -55,7 +48,7 @@ void TClntCfgMgr::instanceCreate(const std::string cfgFile) {
 }
 
 
-TClntCfgMgr::TClntCfgMgr(const string cfgFile)
+TClntCfgMgr::TClntCfgMgr(const std::string cfgFile)
   :TCfgMgr()
 {
     ScriptName = DEFAULT_SCRIPT;
@@ -93,7 +86,7 @@ void TClntCfgMgr::dump() {
     xmlDump.close();
 }
 
-bool TClntCfgMgr::parseConfigFile(string cfgFile)
+bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
 {
     #ifndef MOD_CLNT_EMBEDDED_CFG
     // --- normal operation: read config. file ---
@@ -771,7 +764,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     return strum;
 }
 
-void TClntCfgMgr::setDownlinkPrefixIfaces(List(string)& ifaces) {
+void TClntCfgMgr::setDownlinkPrefixIfaces(List(std::string)& ifaces) {
     ifaces.first();
     SPtr<string> iface;
     Log(Debug) << "PD: Following interfaces marked as downlink:";
