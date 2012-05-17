@@ -7,6 +7,7 @@
  *
  */
 
+#include <unistd.h>
 #include <fstream>
 #include "Logger.h"
 #include "IPv6Addr.h"
@@ -308,8 +309,10 @@ void TRelIfaceMgr::instanceCreate( const std::string xmlFile )
 
 TRelIfaceMgr& TRelIfaceMgr::instance()
 {
-    if (!Instance)
-      Log(Crit) << "RelIfaceMgr istance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+      Log(Crit) << "RelIfaceMgr istance not created yet. Application error. Emergency shutdown." << LogEnd;
+      exit(-1);
+    }
     return *Instance;
 }
 

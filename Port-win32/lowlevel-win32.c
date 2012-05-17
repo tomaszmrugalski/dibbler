@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.22 2008-10-13 22:41:18 thomson Exp $
- *
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -116,7 +114,6 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
     if (0 > fd)
         return NULL;
 
-    /** @todo should be freed somewhere */
     retval = malloc(st.st_size);
     if (!retval)
         return NULL;
@@ -125,14 +122,17 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
         ret = read(fd, retval + offset, st.st_size - offset);
         if (!ret) break;
         if (ret < 0) {
+            free(retval);
             return NULL;
         }
         offset += ret;
     }
     close(fd);
 
-    if (offset != st.st_size)
+    if (offset != st.st_size) {
+        free(retval);
         return NULL;
+    }
 
     *len = st.st_size;
     return retval;

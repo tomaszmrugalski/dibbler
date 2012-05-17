@@ -7,6 +7,7 @@
  *
  */
 
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -264,8 +265,10 @@ void TRelCfgMgr::instanceCreate( const std::string cfgFile, const std::string xm
 
 TRelCfgMgr& TRelCfgMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "RelCfgMgr instance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "RelCfgMgr instance not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(-1);
+    }
     return *Instance;
 }
 

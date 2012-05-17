@@ -10,7 +10,6 @@
  *
  */
 
-
 #ifndef PORTABLE_H
 #define PORTABLE_H
 

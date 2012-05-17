@@ -5,7 +5,6 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Requestor.cpp,v 1.7 2008-09-22 17:08:54 thomson Exp $
  */
 
 #include <string.h>
@@ -24,14 +23,14 @@
 
 using namespace std;
 
-void printHelp() 
+void printHelp()
 {
     cout << "Usage:" << endl
          << "-i IFACE - send query using iface inteface, e.g. -i eth0" << endl
          << "-addr ADDR - query about address, e.g. -addr 2000::43" << endl
          << "-duid DUID - query about DUID, e.g. -duid 00:11:22:33:44:55:66:77:88" << endl
          << "-timeout 10 - query timeout, specified in seconds" << endl
-	 << "-dstaddr 2000::1 - destination address (by default it is ff02::1:2)" << endl;
+         << "-dstaddr 2000::1 - destination address (by default it is ff02::1:2)" << endl;
 }
 
 bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
@@ -71,21 +70,21 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
                 Log(Error) << "Unable to parse command-line. -timeout used, but actual timeout value is missing." << LogEnd;
                 return false;
             }
-            timeout = atoi(argv[++i]);            
+            timeout = atoi(argv[++i]);
             continue;
         }
-	if (!strncmp(argv[i],"-dstaddr", 7)) {
-	    if (argc==i) {
-		Log(Error) << "Unable to parse command-line. -dstaddr used, but actual destination address is missing." << LogEnd;
-	    }
-	    dstaddr = argv[++i];
-	    continue;
-	}
-        if (!strncmp(argv[i], "--help", 5) || !strncmp(argv[i], "-h", 5) || !strncmp(argv[i], "/help", 5) || 
-	    !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
+        if (!strncmp(argv[i],"-dstaddr", 7)) {
+            if (argc==i) {
+                Log(Error) << "Unable to parse command-line. -dstaddr used, but actual destination address is missing." << LogEnd;
+            }
+            dstaddr = argv[++i];
+            continue;
+        }
+        if (!strncmp(argv[i], "--help", 5) || !strncmp(argv[i], "-h", 5) || !strncmp(argv[i], "/help", 5) ||
+            !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
             return false;
         }
-        
+
         Log(Error) << "Unable to parse command-line parameter: " << argv[i] << LogEnd;
         Log(Error) << "Please use -h for help." << LogEnd;
         return false;
@@ -117,10 +116,10 @@ int initWin()
 {
 #ifdef WIN32
     WSADATA wsaData;
-	if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
+        if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
         cout << "Unable to load WinSock 2.2 library." << endl;
-		return -1;
-	}
+                return -1;
+        }
 #endif
     return 0;
 }
@@ -137,13 +136,13 @@ int main(int argc, char *argv[])
     srand(time(NULL));      // Windows
 
     logger::setLogName("Requestor");
-	logger::Initialize((char*)REQLOG_FILE);
+        logger::Initialize((char*)REQLOG_FILE);
 
-	cout << DIBBLER_COPYRIGHT1 << " (REQUESTOR)" << endl;
-	cout << DIBBLER_COPYRIGHT2 << endl;
-	cout << DIBBLER_COPYRIGHT3 << endl;
-	cout << DIBBLER_COPYRIGHT4 << endl;
-	cout << endl;
+        cout << DIBBLER_COPYRIGHT1 << " (REQUESTOR)" << endl;
+        cout << DIBBLER_COPYRIGHT2 << endl;
+        cout << DIBBLER_COPYRIGHT3 << endl;
+        cout << DIBBLER_COPYRIGHT4 << endl;
+        cout << endl;
 
     if (!parseCmdLine(&a, argc, argv)) {
         Log(Crit) << "Aborted. Invalid command-line parameters or help called." << LogEnd;
@@ -160,7 +159,7 @@ int main(int argc, char *argv[])
         Log(Crit) << "Aborted. Socket binding failed." << LogEnd;
         return LOWLEVEL_ERROR_BIND_FAILED;
     }
- 
+
     if (!transMgr->SendMsg()) {
         Log(Crit) << "Aborted. Message transmission failed." << LogEnd;
         return LOWLEVEL_ERROR_SOCKET;
@@ -170,7 +169,7 @@ int main(int argc, char *argv[])
 
     }
 
-    free(transMgr);
+    delete transMgr;
 
     return LOWLEVEL_NO_ERROR;
 }

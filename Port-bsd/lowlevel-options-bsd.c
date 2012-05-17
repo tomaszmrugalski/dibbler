@@ -248,19 +248,7 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
     return LOWLEVEL_NO_ERROR;
 }
 
-/** 
- * returns if forwarding is enabled on this node (i.e. is it a router or not)
- * 
- * 
- * @return 
- */
-int prefix_forwarding_enabled()
-{
-    /** @todo: implement this */
-  return 0;
-}
-
-/** 
+/**
  * adds prefix - if this node has IPv6 forwarding disabled, it will configure that prefix on the
  * interface, which prefix has been received on. If the forwarding is enabled, it will be assigned
  * to all other up, running and multicast capable interfaces.

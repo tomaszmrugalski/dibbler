@@ -4,19 +4,11 @@
 
 
 int main() {
-    
+
     char dev[] = "eth0";
     char prefix[] = "2000::";
     int  len = 64;
     int result;
-
-    if (prefix_forwarding_enabled()) {
-	printf("IPv6 forward enabled\n");
-	return 0;
-    } else {
-	printf("IPv6 forward disabled\n");
-	return 0;
-    }
 
     domain_add("eth0", 4, "example.com");
     domain_add("eth0", 4, "klub.com.pl");

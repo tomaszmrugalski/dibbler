@@ -343,6 +343,9 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	res.tcpsendmessage(q, sockid);
 	
 	res.tcpwaitanswer(a, sockid);
+        if (!a) {
+            throw PException("tcpwaitanswer returned NULL");
+        }
 	if (a->RCODE != RCODE_NOERROR){    
 	    
 	    throw PException((char*)str_rcode(a->RCODE).c_str()); 
