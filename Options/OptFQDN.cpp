@@ -18,81 +18,85 @@
 using namespace std;
 
 TOptFQDN::TOptFQDN(const std::string& domain, TMsg* parent)
-                :TOpt(OPTION_FQDN, parent) {
-    fqdn = domain;
-    flag_N = false;
-    flag_S = false;
-    flag_O = false; // This flag is always off in client messages.
-
+    :TOpt(OPTION_FQDN, parent), fqdn_(domain), flag_N_(false), flag_O_(false),
+     flag_S_(false) {
+    // The O flag is always off in client messages.
     Valid = true;
 }
 
 TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
                 :TOpt(OPTION_FQDN, parent) {
-    this->Valid = false;
+    Valid = false;
+
+    if (bufsize < 2) {
+        Log(Warning) << "Truncated FQDN option received." << LogEnd;
+        return;
+    }
+
     // Extracting flags...
     unsigned char flags = *buf;
-    this->flag_N = flags & FQDN_N;
-    this->flag_S = flags & FQDN_S;
-    this->flag_O = flags & FQDN_O;
+    flag_N_ = flags & FQDN_N;
+    flag_S_ = flags & FQDN_S;
+    flag_O_ = flags & FQDN_O;
     buf += 1;
     bufsize -= 1;
 
     //Extracting domain name
-    fqdn = "";
+    fqdn_ = "";
     if ( bufsize <= 255 ) {
         unsigned char tmplength = *buf;
         if (tmplength>bufsize)
         {
             Log(Warning) << "Malformed FQDN option: domain name encoding is invalid. "
                          << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
-            Valid = false;
             return;
         }
 
         buf++;
         while (tmplength != 0) {
-            fqdn.append(buf, tmplength);
+            fqdn_.append(buf, tmplength);
             buf += tmplength;
             bufsize -= tmplength;
             tmplength = *buf;
             if (tmplength>bufsize)
             {
                 Log(Warning) << "Malformed FQDN option: domain name encoding is invalid."
-                             << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
-                Valid = false;
+                             << "(Is this message sent by Microsoft Vista client? Tell them to fix the FQDN option.)" << LogEnd;
                 return;
             }
             buf++;
             if ( tmplength != 0 ) {
-                fqdn.append(".");
+                fqdn_.append(".");
             }
         }
         buf++;
         bufsize--;
         Valid = true;
+    } else {
+        Log(Warning) << "Too long FQDN option (len=" << bufsize << ") received." << LogEnd;
+        return;
     }
-    Log(Debug) << "FQDN: FQDN option received: fqdn name=" << fqdn << LogEnd;
+    Log(Debug) << "FQDN: FQDN option received: fqdn name=" << fqdn_ << LogEnd;
 }
 
 TOptFQDN::~TOptFQDN() {
-        return;
+    return;
 }
 
 void TOptFQDN::setNFlag(bool flag) {
-        flag_N = flag;
+    flag_N_ = flag;
 }
 
 void TOptFQDN::setSFlag(bool flag) {
-        flag_S = flag;
+    flag_S_ = flag;
 }
 
 void TOptFQDN::setOFlag(bool flag) {
-        flag_O = flag;
+    flag_O_ = flag;
 }
 
-string TOptFQDN::getFQDN() {
-        return fqdn;
+std::string TOptFQDN::getFQDN() const {
+    return fqdn_;
 }
 
 /**
@@ -106,8 +110,8 @@ string TOptFQDN::getFQDN() {
  * @return size of the option (without option header)
  */
 int TOptFQDN::getSize() {
-    if (fqdn.length())
-        return fqdn.length() + 7;
+    if (fqdn_.length())
+        return fqdn_.length() + 7;
     else
         return 6;
 }
@@ -118,21 +122,21 @@ char * TOptFQDN::storeSelf(char *buffer) {
     buffer = writeUint16(buffer, getSize()-4);
     //Flag Initialization
     *buffer = 0;
-    if (flag_N) {
-        *buffer += FQDN_N;
+    if (flag_N_) {
+        *buffer |= FQDN_N;
     }
-    if (flag_S) {
-        *buffer += FQDN_S;
+    if (flag_S_) {
+        *buffer |= FQDN_S;
     }
-    if (flag_O) {
-        *buffer += FQDN_O;
+    if (flag_O_) {
+        *buffer |= FQDN_O;
     }
     buffer++;
 
     //FQDN data :)
-    if ( fqdn.length() != 0 ) {
+    if ( fqdn_.length() != 0 ) {
         string copy = "";
-        copy += fqdn;
+        copy += fqdn_;
         std::string::size_type dotpos = copy.find('.', 0);
         while(dotpos != string::npos) {
             *buffer = dotpos;
@@ -149,24 +153,23 @@ char * TOptFQDN::storeSelf(char *buffer) {
         buffer += copy.length();
     }
     *buffer = 0;
-    //buffer++;
 
     return buffer;
 }
 
-bool TOptFQDN::isValid() {
+bool TOptFQDN::isValid() const {
     /// @todo Check the validity of this option
     return Valid;
 }
 
-bool TOptFQDN::getNFlag( ) {
-    return flag_N;
+bool TOptFQDN::getNFlag() const {
+    return flag_N_;
 }
 
-bool TOptFQDN::getSFlag( ) {
-    return flag_S;
+bool TOptFQDN::getSFlag() const {
+    return flag_S_;
 }
 
-bool TOptFQDN::getOFlag( ) {
-    return flag_O;
+bool TOptFQDN::getOFlag() const {
+    return flag_O_;
 }

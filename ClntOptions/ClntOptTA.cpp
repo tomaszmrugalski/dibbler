@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptTA.cpp,v 1.7 2008-08-29 00:07:29 thomson Exp $
- *
  */
 
 #include "AddrIA.h"
@@ -24,8 +22,9 @@
  * 
  * @param iaid 
  * @param parent 
- */TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
-    :TOptTA(iaid, parent) 
+ */
+TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
+    :TOptTA(iaid, parent), Iface(-1)
 {
     // don't put any suboptions
 }

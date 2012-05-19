@@ -52,24 +52,22 @@ class TOptFQDN : public TOpt
     
     int getSize();
     char * storeSelf( char* buf);
-    bool isValid();
+    bool isValid() const;
     
-    bool getNFlag();
-    bool getSFlag();
-    bool getOFlag();
+    bool getNFlag() const;
+    bool getSFlag() const;
+    bool getOFlag() const;
     void setNFlag(bool flag);
     void setOFlag(bool flag);
     void setSFlag(bool flag);
-    std::string getFQDN();
+    std::string getFQDN() const;
 
   	
   private:
-    std::string fqdn;
-    char *encodedFQDN;
-    bool flag_N;
-    bool flag_O;
-    bool flag_S;
-    bool Valid;
+    std::string fqdn_;
+    bool flag_N_;
+    bool flag_O_;
+    bool flag_S_;
 };
 
 #endif /* OPTFQDN_H */

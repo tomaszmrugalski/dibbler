@@ -19,6 +19,9 @@
 // addresses reported as DECLINED are not used for 2 hours
 #define DECLINED_TIMEOUT ((unsigned long) 7200)
 
+// 1 (quiet) - 8 (debugv)
+#define DEFAULT_LOGLEVEL 7
+
 // DHCPv6 server default values
 #define SERVER_DEFAULT_DOMAIN ""
 #define SERVER_DEFAULT_TIMEZONE ""

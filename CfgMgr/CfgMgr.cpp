@@ -16,15 +16,18 @@
 #include "CfgMgr.h"
 #include "Logger.h"
 #include "Portable.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
 using namespace std;
 
 TCfgMgr::TCfgMgr()
- :IsDone(false),
+ :LogLevel(DEFAULT_LOGLEVEL),
+  IsDone(false),
   DUIDType(DUID_TYPE_LLT), /* default DUID type: LLT */
+  DUIDEnterpriseNumber(-1),
   DdnsProto(DNSUPDATE_TCP),
-  _DDNSTimeout(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
+  DDNSTimeout_(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
 {
 
 }

@@ -208,7 +208,7 @@ private:
     std::string IfaceName;
     int ID;
     bool NoConfig;
-    bool isIA;
+    bool Stateful_;
     bool Unicast;
     bool RapidCommit;
     int  PrefixLength; // default prefix length of the configured addresses
@@ -251,6 +251,7 @@ private:
     EState AuthenticationState;
     EState RoutingEnabledState;
 
+    /// @todo: Remove those booleans and use State directly
     bool ReqDNSServer;
     bool ReqDomain;
     bool ReqNTPServer;
