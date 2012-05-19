@@ -515,9 +515,11 @@ void TSrvTransMgr::instanceCreate( const std::string config )
 
 TSrvTransMgr & TSrvTransMgr::instance()
 {
-  if (!Instance)
-    Log(Crit) << "TransMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
-  return *Instance;
+    if (!Instance) {
+        Log(Crit) << "TransMgr not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
+    return *Instance;
 }
 
 /// TODO Remove this horrible workaround!

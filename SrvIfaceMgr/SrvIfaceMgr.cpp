@@ -11,6 +11,7 @@
  */
 
 #include <sstream>
+#include <cstdlib>
 #include <stdio.h>
 #include "Portable.h"
 #include "SmartPtr.h"
@@ -519,9 +520,11 @@ void TSrvIfaceMgr::instanceCreate( const std::string xmlDumpFile )
 
 TSrvIfaceMgr & TSrvIfaceMgr::instance()
 {
-  if (!Instance)
-      Log(Crit) << "SrvIfaceMgr not create yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
-  return *Instance;
+    if (!Instance) {
+        Log(Crit) << "SrvIfaceMgr not create yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
+    return *Instance;
 }
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {

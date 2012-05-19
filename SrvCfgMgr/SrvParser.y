@@ -649,7 +649,8 @@ ADDRESSDUIDRangeList
 }
 | DUID_
 {
-    PresentRangeLst.append(new TStationRange(new TDUID($1.duid,$1.length)));
+    SPtr<TDUID> duid(new TDUID($1.duid, $1.length));
+    PresentRangeLst.append(new TStationRange(duid, duid));
     delete $1.duid;
 }
 | DUID_ '-' DUID_
@@ -661,10 +662,13 @@ ADDRESSDUIDRangeList
 	PresentRangeLst.append(new TStationRange(duid1,duid2));
     else
 	PresentRangeLst.append(new TStationRange(duid2,duid1));
+
+    /// @todo: delete [] $1.duid; delete [] $3.duid?
 }
 | ADDRESSDUIDRangeList ',' DUID_
 {
-    PresentRangeLst.append(new TStationRange(new TDUID($3.duid,$3.length)));
+    SPtr<TDUID> duid(new TDUID($3.duid, $3.length));
+    PresentRangeLst.append(new TStationRange(duid, duid));
     delete $3.duid;
 }
 | ADDRESSDUIDRangeList ',' DUID_ '-' DUID_

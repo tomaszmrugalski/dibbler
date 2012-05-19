@@ -23,31 +23,28 @@ class TStationRange
 {
     friend std::ostream& operator<<(std::ostream& out, TStationRange& station);
  public:
-    TStationRange(void);
     ~TStationRange(void);
     TStationRange(SPtr<TDUID> duidl, SPtr<TDUID> duidr);
-    TStationRange(SPtr<TDUID> duid);
     TStationRange(SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
-    TStationRange(SPtr<TIPv6Addr> addr);
     bool in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr);
     bool in(SPtr<TIPv6Addr> addr);
     bool in(SPtr<TDUID> duid);
-    SPtr<TIPv6Addr> getRandomAddr();
-    SPtr<TIPv6Addr> getRandomPrefix();
-    unsigned long rangeCount();
-    SPtr<TIPv6Addr> getAddrL();
-    SPtr<TIPv6Addr> getAddrR();
-    int getPrefixLength();
+    SPtr<TIPv6Addr> getRandomAddr() const;
+    SPtr<TIPv6Addr> getRandomPrefix() const;
+    unsigned long rangeCount() const;
+    SPtr<TIPv6Addr> getAddrL() const;
+    SPtr<TIPv6Addr> getAddrR() const;
+    int getPrefixLength() const;
     void setPrefixLength(int len);
     void truncate(int minPrefix, int maxPrefix);
  private:
-    bool isAddrRange;
-    SPtr<TDUID> DUIDL;
-    SPtr<TDUID> DUIDR;
-    SPtr<TIPv6Addr> AddrL;
-    SPtr<TIPv6Addr> AddrR;
+    bool isAddrRange_;
+    SPtr<TDUID> DUIDL_;
+    SPtr<TDUID> DUIDR_;
+    SPtr<TIPv6Addr> AddrL_;
+    SPtr<TIPv6Addr> AddrR_;
 
-    int PrefixLength;
+    int PrefixLength_;
 };
 
 #endif

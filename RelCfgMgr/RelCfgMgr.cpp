@@ -7,6 +7,7 @@
  *
  */
 
+#include <cstdlib>
 #include <unistd.h>
 #include <iostream>
 #include <fstream>
@@ -267,7 +268,7 @@ TRelCfgMgr& TRelCfgMgr::instance()
 {
     if (!Instance) {
         Log(Crit) << "RelCfgMgr instance not created yet. Application error. Emergency shutdown." << LogEnd;
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
     return *Instance;
 }

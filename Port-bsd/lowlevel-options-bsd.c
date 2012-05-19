@@ -83,8 +83,10 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
     if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
 	return LOWLEVEL_ERROR_FILE;
-    if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
+    if ( !(f2= fopen(RESOLVCONF_FILE,"w+"))) {
+        fclose(f);
 	return LOWLEVEL_ERROR_FILE;
+    }
     while (fgets(buf,511,f)) {
 	if ( (!found) && (strstr(buf, "search")) ) {
 	    if (strlen(buf))
@@ -127,10 +129,13 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
     strcpy(&(searchbuf[1]), domain);
     unlink(RESOLVCONF_FILE".old");
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
-    if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
+    if ( !(f = fopen(RESOLVCONF_FILE".old","r")) ) {
 	return LOWLEVEL_ERROR_FILE;
-    if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
+    }
+    if ( !(f2= fopen(RESOLVCONF_FILE,"w+"))) {
+        fclose(f2);
 	return LOWLEVEL_ERROR_FILE;
+    }
     while (fgets(buf,511,f)) {
 	if ( (!found) && (ptr=strstr(buf, searchbuf)) ) {
 	    found = 1;

@@ -10,7 +10,7 @@
  *
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "SrvAddrMgr.h"
 #include "AddrClient.h"
 #include "AddrIA.h"
@@ -338,9 +338,10 @@ bool TSrvAddrMgr::delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6
     return result;
 }
 
-/*
- * how many addresses does this client have?
- */
+/// @brief returns number of addresses for a specific client
+///
+/// @param duid client's DUID
+/// @return number of addresses assigned
 unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
 {
     SPtr <TAddrClient> ptrClient;
@@ -869,7 +870,9 @@ void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )
 
 TSrvAddrMgr & TSrvAddrMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "SrvAddrMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "SrvAddrMgr not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     return *Instance;
 }

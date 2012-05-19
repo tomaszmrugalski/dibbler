@@ -7,7 +7,7 @@
  *
  */
 
-#include <unistd.h>
+#include <cstdlib>
 #include <fstream>
 #include "Logger.h"
 #include "IPv6Addr.h"
@@ -311,7 +311,7 @@ TRelIfaceMgr& TRelIfaceMgr::instance()
 {
     if (!Instance) {
       Log(Crit) << "RelIfaceMgr istance not created yet. Application error. Emergency shutdown." << LogEnd;
-      exit(-1);
+      exit(EXIT_FAILURE);
     }
     return *Instance;
 }

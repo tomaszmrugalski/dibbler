@@ -12,11 +12,10 @@
  *
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string>
-using namespace std;
 #include "SmartPtr.h"
 #include "Portable.h"
 #include "FlexLexer.h"
@@ -29,6 +28,9 @@ using namespace std;
 #include "AddrMgr.h"
 #include "TimeZone.h"
 #include "SrvParser.h"
+
+using namespace std;
+
 
 TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
@@ -1018,7 +1020,7 @@ TSrvCfgMgr & TSrvCfgMgr::instance()
 {
     if (!Instance) {
         Log(Crit) << "SrvCfgMgr not initalized yet. Application error. Emergency shutdown." << LogEnd;
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
     return *Instance;
 }
