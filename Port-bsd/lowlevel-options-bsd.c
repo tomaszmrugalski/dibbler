@@ -133,7 +133,7 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
 	return LOWLEVEL_ERROR_FILE;
     }
     if ( !(f2= fopen(RESOLVCONF_FILE,"w+"))) {
-        fclose(f2);
+        fclose(f);
 	return LOWLEVEL_ERROR_FILE;
     }
     while (fgets(buf,511,f)) {
