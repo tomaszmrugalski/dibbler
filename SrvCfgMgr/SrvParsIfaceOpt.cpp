@@ -1,12 +1,12 @@
 /*
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
+ * Dibbler - a portable DHCPv6
  *
- * released under GNU GPL v2 only licence                                
- *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
  */
 
 #include <climits>
@@ -59,11 +59,11 @@ void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string d
     FQDNDomain = domain;
 }
 
-/** 
+/**
  * returns enum that specifies, how to handle unknown FQDNs
- * 
- * 
- * @return 
+ *
+ *
+ * @return
  */
 EUnknownFQDNMode TSrvParsIfaceOpt::getUnknownFQDN() {
     return UnknownFQDN;
@@ -173,12 +173,12 @@ bool TSrvParsIfaceOpt::supportDNSServer(){
 }
 
 // --- option: DOMAIN ---
-void TSrvParsIfaceOpt::setDomainLst(List(string) * lst) {
+void TSrvParsIfaceOpt::setDomainLst(List(std::string) * lst) {
     this->DomainLst = *lst;
     this->DomainSupport = true;
 }
 
-List(string) * TSrvParsIfaceOpt::getDomainLst() {
+List(std::string) * TSrvParsIfaceOpt::getDomainLst() {
     return &this->DomainLst;
 }
 bool TSrvParsIfaceOpt::supportDomain(){
@@ -240,10 +240,10 @@ bool TSrvParsIfaceOpt::supportSIPServer(){
 }
 
 // --- option: SIP domain ---
-List(string) * TSrvParsIfaceOpt::getSIPDomainLst() { 
+List(std::string) * TSrvParsIfaceOpt::getSIPDomainLst() {
     return &this->SIPDomainLst;
 }
-void TSrvParsIfaceOpt::setSIPDomainLst(List(string) * domain) { 
+void TSrvParsIfaceOpt::setSIPDomainLst(List(std::string) * domain) {
     this->SIPDomainLst = *domain;
     this->SIPDomainSupport = true;
 }
@@ -264,16 +264,16 @@ List(TFQDN) *TSrvParsIfaceOpt::getFQDNLst() {
 }
 
 int TSrvParsIfaceOpt::getFQDNMode(){
-	return this->FQDNMode;
+        return this->FQDNMode;
 }
 void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode){
-	this->FQDNMode=FQDNMode;
+        this->FQDNMode=FQDNMode;
 }
 int TSrvParsIfaceOpt::getRevDNSZoneRootLength(){
-	return this->revDNSZoneRootLength;
+        return this->revDNSZoneRootLength;
 }
 void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength){
-	this->revDNSZoneRootLength = revDNSZoneRootLength;
+        this->revDNSZoneRootLength = revDNSZoneRootLength;
 }
 
 bool TSrvParsIfaceOpt::supportFQDN() {
@@ -293,11 +293,11 @@ bool TSrvParsIfaceOpt::supportNISServer(){
 }
 
 // --- option: NIS domain ---
-void TSrvParsIfaceOpt::setNISDomain(string domain) { 
+void TSrvParsIfaceOpt::setNISDomain(string domain) {
     this->NISDomain=domain;
     this->NISDomainSupport=true;
 }
-string TSrvParsIfaceOpt::getNISDomain() { 
+string TSrvParsIfaceOpt::getNISDomain() {
     return this->NISDomain;
 }
 bool TSrvParsIfaceOpt::supportNISDomain() {
@@ -317,11 +317,11 @@ bool TSrvParsIfaceOpt::supportNISPServer(){
 }
 
 // --- option: NIS+ domain ---
-void TSrvParsIfaceOpt::setNISPDomain(string domain) { 
+void TSrvParsIfaceOpt::setNISPDomain(string domain) {
     this->NISPDomain=domain;
     this->NISPDomainSupport=true;
 }
-string TSrvParsIfaceOpt::getNISPDomain() { 
+string TSrvParsIfaceOpt::getNISPDomain() {
     return this->NISPDomain;
 }
 bool TSrvParsIfaceOpt::supportNISPDomain() {
@@ -340,4 +340,3 @@ unsigned int TSrvParsIfaceOpt::getLifetime() {
 bool TSrvParsIfaceOpt::supportLifetime() {
     return this->LifetimeSupport;
 }
-

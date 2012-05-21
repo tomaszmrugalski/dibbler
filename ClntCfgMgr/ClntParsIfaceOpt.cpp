@@ -152,7 +152,7 @@ bool TClntParsIfaceOpt::getReqSIPServer(){
 List(std::string) * TClntParsIfaceOpt::getSIPDomainLst() {
     return &this->SIPDomainLst;
 }
-void TClntParsIfaceOpt::setSIPDomainLst(List(string) * domain) {
+void TClntParsIfaceOpt::setSIPDomainLst(List(std::string) * domain) {
     this->SIPDomainLst=*domain;
     this->ReqSIPDomain=true;
 }

@@ -73,11 +73,11 @@ bool TSrvCfgOptions::supportDNSServer(){
 }
 
 // --- option: DOMAIN ---
-void TSrvCfgOptions::setDomainLst(List(string) * lst) {
+void TSrvCfgOptions::setDomainLst(List(std::string) * lst) {
     this->DomainLst = *lst;
     this->DomainSupport = true;
 }
-List(string) * TSrvCfgOptions::getDomainLst() {
+List(std::string) * TSrvCfgOptions::getDomainLst() {
     return &this->DomainLst;
 }
 bool TSrvCfgOptions::supportDomain(){
@@ -121,10 +121,10 @@ bool TSrvCfgOptions::supportSIPServer(){
 }
 
 // --- option: SIP domain ---
-List(string) * TSrvCfgOptions::getSIPDomainLst() { 
+List(std::string) * TSrvCfgOptions::getSIPDomainLst() {
     return &this->SIPDomainLst;
 }
-void TSrvCfgOptions::setSIPDomainLst(List(string) * domain) { 
+void TSrvCfgOptions::setSIPDomainLst(List(std::string) * domain) {
     this->SIPDomainLst = *domain;
     this->SIPDomainSupport = true;
 }
@@ -145,11 +145,11 @@ bool TSrvCfgOptions::supportNISServer(){
 }
 
 // --- option: NIS domain ---
-void TSrvCfgOptions::setNISDomain(string domain) { 
+void TSrvCfgOptions::setNISDomain(string domain) {
     this->NISDomain=domain;
     this->NISDomainSupport=true;
 }
-string TSrvCfgOptions::getNISDomain() { 
+string TSrvCfgOptions::getNISDomain() {
     return this->NISDomain;
 }
 bool TSrvCfgOptions::supportNISDomain() {
@@ -169,11 +169,11 @@ bool TSrvCfgOptions::supportNISPServer(){
 }
 
 // --- option: NIS+ domain ---
-void TSrvCfgOptions::setNISPDomain(string domain) { 
+void TSrvCfgOptions::setNISPDomain(string domain) {
     this->NISPDomain=domain;
     this->NISPDomainSupport=true;
 }
-string TSrvCfgOptions::getNISPDomain() { 
+string TSrvCfgOptions::getNISPDomain() {
     return this->NISPDomain;
 }
 bool TSrvCfgOptions::supportNISPDomain() {
@@ -197,7 +197,7 @@ bool TSrvCfgOptions::supportLifetime() {
 #if 0
 bool TSrvCfgOptions::supportVendorSpec() {
     if (VendorSpec.count())
-	return true;
+        return true;
     return false;
 }
 #endif
@@ -221,7 +221,7 @@ List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
         }
 
     }
-    
+
     return returnList;
 }
 
@@ -235,11 +235,11 @@ SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() {
 
 void TSrvCfgOptions::addExtraOption(SPtr<TOpt> custom, bool always) {
     Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
-               << custom->getOptType() << " generic option (length=" 
+               << custom->getOptType() << " generic option (length="
                << custom->getSize() << ")." << LogEnd;
-    
+
     ExtraOpts.push_back(custom); // allways add to extra options
-    
+
     if (always)
         ForcedOpts.push_back(custom); // also add to forced, if requested so
 }
@@ -251,14 +251,14 @@ const TOptList& TSrvCfgOptions::getExtraOptions() {
 SPtr<TOpt> TSrvCfgOptions::getExtraOption(int type) {
     for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
     {
-	if ((*opt)->getOptType() == type)
-	    return *opt;
+        if ((*opt)->getOptType() == type)
+            return *opt;
     }
     return 0;
 }
 
 const TOptList& TSrvCfgOptions::getForcedOptions() {
-    
+
     return ForcedOpts;
 }
 
@@ -288,21 +288,21 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
 
     out << "    <client>" << endl;
     if (iface.Duid)
-	out << "      " << *iface.Duid;
+        out << "      " << *iface.Duid;
     else
-	out << "      <!-- <duid/> -->" << endl;
+        out << "      <!-- <duid/> -->" << endl;
     if (iface.RemoteID)
-	out << "      <RemoteID enterprise=\"" << iface.RemoteID->getVendor() << "\" length=\""
-	    << iface.RemoteID->getVendorDataLen() << "\">" << iface.RemoteID->getVendorDataPlain() << "</RemoteID>" << endl;
+        out << "      <RemoteID enterprise=\"" << iface.RemoteID->getVendor() << "\" length=\""
+            << iface.RemoteID->getVendorDataLen() << "\">" << iface.RemoteID->getVendorDataPlain() << "</RemoteID>" << endl;
     else
-	out << "      <!-- <RemoteID/> -->" << endl;
+        out << "      <!-- <RemoteID/> -->" << endl;
 
     out << "      <!-- paramteres start here -->" << endl;
 
     if (iface.Addr) {
-	out << "      <addr>" << iface.Addr->getPlain() << "</addr>" << endl;
+        out << "      <addr>" << iface.Addr->getPlain() << "</addr>" << endl;
     } else {
-	out << "      <!-- <addr/> -->" << endl;
+        out << "      <!-- <addr/> -->" << endl;
     }
 
     // option: DNS-SERVERS
@@ -386,15 +386,15 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
 #if 0
     // option: VENDOR-SPEC
     if (iface.VendorSpec.count()) {
-	out << "      <vendorSpecList count=\"" << iface.VendorSpec.count() << "\">" << endl;
-	iface.VendorSpec.first();
+        out << "      <vendorSpecList count=\"" << iface.VendorSpec.count() << "\">" << endl;
+        iface.VendorSpec.first();
         SPtr<TSrvOptVendorSpec> v;
-	while (v = iface.VendorSpec.get()) {
-	    out << v << endl;
-	}
-	out << "      </vendorSpecList>" << endl;
+        while (v = iface.VendorSpec.get()) {
+            out << v << endl;
+        }
+        out << "      </vendorSpecList>" << endl;
     } else {
-	out << "      <!-- <vendorSpec/> -->" << endl;
+        out << "      <!-- <vendorSpec/> -->" << endl;
     }
 #endif
 

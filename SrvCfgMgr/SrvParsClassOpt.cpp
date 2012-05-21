@@ -226,12 +226,12 @@ void TSrvParsClassOpt::setDenyClientClass(string s)
 	denyLst.append(SPtr<string> (new string(s)));
 }
 
-List(string) TSrvParsClassOpt::getAllowClientClassString()
+List(std::string) TSrvParsClassOpt::getAllowClientClassString()
 {
 	return allowLst;
 }
 
-List(string) TSrvParsClassOpt::getDenyClientClassString()
+List(std::string) TSrvParsClassOpt::getDenyClientClassString()
 {
 	return denyLst;
 }

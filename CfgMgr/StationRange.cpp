@@ -17,8 +17,9 @@ TStationRange::TStationRange( SPtr<TDUID> duidl, SPtr<TDUID> duidr)
 }
 
 TStationRange::TStationRange( SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrr)
-    :isAddrRange_(true), AddrL_(addrl), AddrR_(addrr)
+    :isAddrRange_(true), AddrL_(addrl), AddrR_(addrr), PrefixLength_(-1)
 {
+    /// @todo: prefix length could be calculated automatically here
 }
 
 bool TStationRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr)
