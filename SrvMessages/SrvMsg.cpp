@@ -83,11 +83,16 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
  * @param buf 
  * @param bufSize 
  */
-TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
-                 char* buf,  int bufSize)
+TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
+                 char* buf, int bufSize)
     :TMsg(iface, addr, buf, bufSize)
 {
-    this->Relays = 0;
+    Relays = 0;
+
+    for (int i=0; i<32; i++) {
+        HopTbl[i] = 0;
+        len[i] = 0;
+    }
 
 #ifndef MOD_DISABLE_AUTH
     this->AuthKeys = SrvCfgMgr().AuthKeys;

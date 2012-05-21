@@ -32,20 +32,20 @@
 using namespace std;
 
 TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
-    :TOptIA_NA(IAID,T1,T2, parent) {
+    :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
 
 }
 
-TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, int Code, string Text, TMsg* parent)
-    :TOptIA_NA(IAID,T1,T2, parent) {
+TSrvOptIA_NA::TSrvOptIA_NA(long IAID, long T1, long T2, int Code, string Text, TMsg* parent)
+    :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
     SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
 }
 
 /*
  * Create IA_NA option based on receive buffer
  */
-TSrvOptIA_NA::TSrvOptIA_NA( char * buf, int bufsize, TMsg* parent)
-    :TOptIA_NA(buf,bufsize, parent) {
+TSrvOptIA_NA::TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent)
+    :TOptIA_NA(buf,bufsize, parent), Iface(parent->getIface()) {
     int pos=0;
     while (pos<bufsize)
     {
