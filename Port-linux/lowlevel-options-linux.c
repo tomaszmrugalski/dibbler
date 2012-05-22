@@ -259,7 +259,7 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     /* try to use resolvconf it is available */
     if ( (f=resolvconf_open("-a", ifname))) {
         fprintf(f, "search %s\n", domain);
-        flose(f);
+        fclose(f);
         return LOWLEVEL_NO_ERROR;
     }
     
