@@ -25,7 +25,7 @@ public:
     TFQDN();    //Creates any addresses and names
     TFQDN(TDUID *duid_, const std::string& name, bool used);
     TFQDN(TIPv6Addr *addr_, const std::string& name, bool used);
-    TFQDN(const std::string name_, bool used);
+    TFQDN(const std::string& name_, bool used);
     TDUID* getDuid();
     TIPv6Addr* getAddr();
     std::string getName();

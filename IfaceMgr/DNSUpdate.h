@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.h,v 1.8 2006-10-04 21:43:56 thomson Exp $
- *
  */
 
 #ifdef WIN32
@@ -76,7 +74,7 @@ private:
     void sendMsgUDP(unsigned int timeout);
      
  public:
-    DNSUpdate(std::string dns_address, std::string zonename, std::string hostname, 
+    DNSUpdate(const std::string& dns_address, const std::string& zonename, const std::string& hostname, 
 	      std::string hostip, DnsUpdateMode updateMode, 
 	      DnsUpdateProtocol proto /*= DNSUPDATE_TCP*/ );
     void addDHCID(const char* duid, int duidlen);

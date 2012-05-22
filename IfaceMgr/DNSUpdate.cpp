@@ -19,8 +19,8 @@
 
 using namespace std;
 
-DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
-		     string hostip, DnsUpdateMode updateMode,
+DNSUpdate::DNSUpdate(const std::string& dns_address, const std::string& zonename, const std::string& hostname,
+		     std::string hostip, DnsUpdateMode updateMode,
 		     DnsUpdateProtocol proto /* = DNSUPDATE_TCP */)
     :_hostname(NULL) { 
     message= NULL;
@@ -71,7 +71,7 @@ DNSUpdate::~DNSUpdate() {
  * 
  * @param fqdnName 
  */
-void DNSUpdate::splitHostDomain(string fqdnName) {
+void DNSUpdate::splitHostDomain(std::string fqdnName) {
     std::string::size_type dotpos = fqdnName.find(".");
     string hostname = "";
     string domain = "";

@@ -57,8 +57,8 @@ List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;	                                    \
 List(TOptVendorSpecInfo) VendorSpec;					    \
 bool IfaceDefined(int ifaceNr);                                             \
-bool IfaceDefined(string ifaceName);                                        \
-bool StartIfaceDeclaration(string ifaceName);                               \
+bool IfaceDefined(const std::string& ifaceName);                            \
+bool StartIfaceDeclaration(const std::string& ifaceName);                   \
 bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \

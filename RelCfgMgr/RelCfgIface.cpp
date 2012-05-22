@@ -24,7 +24,7 @@ TRelCfgIface::TRelCfgIface(int ifaceNr) {
     this->ID=ifaceNr;
 }
 
-TRelCfgIface::TRelCfgIface(string ifaceName) {
+TRelCfgIface::TRelCfgIface(const std::string& ifaceName) {
     this->setDefaults();
     this->Name=ifaceName;
 }

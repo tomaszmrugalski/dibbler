@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgIface.h,v 1.4 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
 class TRelCfgIface;
@@ -23,7 +21,7 @@ class TRelCfgIface
 {
     friend std::ostream& operator<<(std::ostream& out,TRelCfgIface& iface);
 public:
-    TRelCfgIface(std::string ifaceName);
+    TRelCfgIface(const std::string& ifaceName);
     TRelCfgIface(int ifaceNr);
     virtual ~TRelCfgIface();
     void setDefaults();

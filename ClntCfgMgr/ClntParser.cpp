@@ -147,8 +147,8 @@ List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;	                                    \
 List(TOptVendorSpecInfo) VendorSpec;					    \
 bool IfaceDefined(int ifaceNr);                                             \
-bool IfaceDefined(string ifaceName);                                        \
-bool StartIfaceDeclaration(string ifaceName);                               \
+bool IfaceDefined(const std::string& ifaceName);                            \
+bool StartIfaceDeclaration(const std::string& ifaceName);                   \
 bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
@@ -2922,7 +2922,7 @@ bool ClntParser::IfaceDefined(int ifindex)
  *
  * @return true if not declared.
  */
-bool ClntParser::IfaceDefined(string ifaceName)
+bool ClntParser::IfaceDefined(const std::string& ifaceName)
 {
   SPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
@@ -2940,7 +2940,7 @@ bool ClntParser::IfaceDefined(string ifaceName)
  * creates new scope appropriately for interface options and declarations
  * clears all lists except the list of interfaces and adds new group
  */
-bool ClntParser::StartIfaceDeclaration(string ifaceName)
+bool ClntParser::StartIfaceDeclaration(const std::string& ifaceName)
 {
     if (!IfaceDefined(ifaceName))
 	return false;

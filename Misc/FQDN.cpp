@@ -37,7 +37,7 @@ TFQDN::TFQDN(TIPv6Addr *addr, const std::string& name, bool used) {
     this->Used_ = used;
 }
 
-TFQDN::TFQDN(string name,bool used) {
+TFQDN::TFQDN(const std::string& name, bool used) {
     this->Duid_ = 0;
     this->Addr_ = 0;
     this->Name_ = name;
