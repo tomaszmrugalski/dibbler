@@ -119,14 +119,14 @@ void daemon_die() {
 
 int init(const char * pidfile, const char * workdir) {
     string tmp;
-    /*FIXME: buf needs to fit "/proc/%d/exe", where %d is pid_t
+    /** @todo: buf needs to fit "/proc/%d/exe", where %d is pid_t
      * (on my system it's 20 B exactly with positive PID. However this is not
      * portable.) */
     char buf[20];
     char cmd[256];
     pid_t pid = getPID(pidfile);
     if (pid > 0) {
-	/* XXX: ISO C++ doesn't support 'j' length modifier nor 'll' nor
+	/* @todo: ISO C++ doesn't support 'j' length modifier nor 'll' nor
 	 * PRIdMAX macro. So, long int is the biggest printable type.
 	 * God bless pid_t to fit into long int. */
 	if (snprintf(buf, sizeof(buf), "/proc/%ld", (long int)pid)

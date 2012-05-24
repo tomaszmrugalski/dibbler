@@ -380,7 +380,7 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned 
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 		  unsigned long pref, unsigned long valid, int prefixLength)
 {
-    /* FIXME: Linux kernel currently does not provide API for dynamic adresses */
+    /** @todo: Linux kernel currently does not provide API for dynamic adresses */
 
     return ipaddr_add_or_del(addr, ifacename, prefixLength, pref, valid, ADDROPER_UPDATE);
 }

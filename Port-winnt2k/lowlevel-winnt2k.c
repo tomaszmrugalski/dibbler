@@ -101,7 +101,7 @@ int lowlevelInit()
     strcpy(buf+i,"\\system32\\cmd.exe");
     strncpy(cmdPath, buf, 256);
     
-    // FIXME: Use mktmpfile or something similar
+    /// @todo: Use mktmpfile or something similar
     strcpy(buf+i,"\\dibbler-ipv6.tmp");
     memcpy(tmpFile, buf, 256);
     //
@@ -497,7 +497,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     i=_spawnl(_P_WAIT,cmdPath,cmdPath, "/C", ipv6Path, arg1, arg2, arg3, arg4, arg5, arg6, arg7, NULL);
 
     if (i==-1) {
-        // FIXME: some better error support
+        /// @todo: some better error support
         return LOWLEVEL_ERROR_UNSPEC;
     }
 

@@ -484,14 +484,13 @@ FQDNList
 {
     TDUID* duidNew = new TDUID($3.duid,$3.length);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID " << duidNew->getPlain()<<LogEnd;
-    // FIXME: Use SPtr()
+    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(duidNew, $1,false));
 }
 | STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($3);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for address "<<*addr<<LogEnd;
-    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($3), $1,false));
 }
 | FQDNList ',' STRING_
@@ -503,14 +502,12 @@ FQDNList
 {
     TDUID* duidNew = new TDUID($5.duid,$5.length);
     Log(Debug)<< "FQDN:" << $3 << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
-    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN( duidNew, $3,false));
 }
 | FQDNList ',' STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($5);
     Log(Debug)<< "FQDN:" << $3<<" reserved for address "<< addr->getPlain() << LogEnd;
-    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($5), $3,false));
 }
 ;

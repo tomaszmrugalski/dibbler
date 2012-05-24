@@ -361,7 +361,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	    }
 	
 	if (a) {
-	    // delete a; // FIXME: Why is this commented out? Memory leak!
+	    // delete a; /// @todo: Why is this commented out? Memory leak!
 	    a = 0;
 	}
 	if (q) {
