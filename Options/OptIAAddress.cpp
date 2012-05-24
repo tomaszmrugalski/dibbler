@@ -44,9 +44,9 @@ TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref,
     this->ValidLifetime_ = valid;
 }
 
-int TOptIAAddress::getSize() {
+size_t TOptIAAddress::getSize() {
     int mySize = 28;
-    return mySize+getSubOptSize();
+    return mySize + getSubOptSize();
 }
 
 void TOptIAAddress::setPref(unsigned long pref) {

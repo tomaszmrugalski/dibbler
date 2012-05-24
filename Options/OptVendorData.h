@@ -17,7 +17,7 @@ class TOptVendorData : public TOpt
   public:
     TOptVendorData(int type, int enterprise, char * data, int dataLen, TMsg* parent);
     TOptVendorData(int type, char * buf,  int n, TMsg* parent);
-    int getSize();
+    size_t getSize();
     char * storeSelf( char* buf);
     bool isValid();
 

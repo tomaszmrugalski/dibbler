@@ -21,7 +21,7 @@ class TOptIAPrefix : public TOpt
   public:
     TOptIAPrefix( char * &addr, int &n, TMsg* parent);
     TOptIAPrefix( SPtr<TIPv6Addr> addr, char prefix_length,unsigned long pref, unsigned long valid, TMsg* parent);
-    int getSize();
+    size_t getSize();
 
     char * storeSelf( char* buf);
     SPtr<TIPv6Addr> getPrefix();

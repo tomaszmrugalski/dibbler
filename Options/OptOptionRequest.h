@@ -28,14 +28,14 @@ class TOptOptionRequest : public TOpt
     int  count();
     void clearOptions();
 
-     int getSize();
-     char * storeSelf( char* buf);
-     int  getReqOpt(int optNr);
-     bool isValid();
-     ~TOptOptionRequest();
+    size_t getSize();
+    char * storeSelf( char* buf);
+    int getReqOpt(int optNr);
+    bool isValid();
+    ~TOptOptionRequest();
   protected:
-    bool Valid;
-    unsigned short *Options; // you're kidding me, right? Rewrite this ASAP
+    bool Valid_;
+    unsigned short *Options; /// @todo: you're kidding me, right? Rewrite this ASAP
     int	OptCnt;
 };
 

@@ -27,7 +27,7 @@ class TOptStatusCode : public TOpt
     TOptStatusCode( char * &buf,  int &len, TMsg* parent);
     TOptStatusCode(int status, const std::string& Message, TMsg* parent);
     
-    int getSize();
+    size_t getSize();
     char * storeSelf( char* buf);
     
     int getCode();  
@@ -35,9 +35,9 @@ class TOptStatusCode : public TOpt
     
     bool doDuties();    
  private:
-    std::string Message;
-    int StatusCode;
-    bool Valid;
+    std::string Message_;
+    int StatusCode_;
+    bool Valid_;
 };
 
 #endif 

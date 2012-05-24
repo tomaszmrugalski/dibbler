@@ -22,7 +22,7 @@ public:
     uint32_t getSPI();
     void setAuthInfoLen(uint16_t len);
     void setDigestType(enum DigestTypes type);
-    int getSize();
+    size_t getSize();
     char * storeSelf(char* buf);
 
 private:

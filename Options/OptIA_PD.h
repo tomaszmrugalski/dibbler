@@ -17,7 +17,7 @@ class TOptIA_PD : public TOpt
   public:
     TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent);
     TOptIA_PD(char * &buf, int &bufsize, TMsg* parent);
-    int getSize();
+    size_t getSize();
     int getStatusCode();
 
 

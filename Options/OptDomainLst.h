@@ -22,7 +22,7 @@ public:
     const List(std::string)& getDomainLst() { return StringLst; }
     const std::string& getDomain();
     char * storeSelf( char* buf);
-    int getSize();
+    size_t getSize();
     int countString();
     bool doDuties() { return true; }
     virtual std::string getPlain();

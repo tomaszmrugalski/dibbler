@@ -38,9 +38,9 @@ TOptIAPrefix::TOptIAPrefix(SPtr<TIPv6Addr> prefix, char len, unsigned long pref,
      ValidLifetime_(valid), PrefixLength_(len), Valid_(true) {
     // we are not checking is prefix is a proper address type,
 }
-int TOptIAPrefix::getSize() {
-    int mySize = 29; // was 28 for Option IAAddress so, this should be 29, no idea why
-    return mySize + getSubOptSize();
+
+size_t TOptIAPrefix::getSize() {
+    return 29 + getSubOptSize();
 }
 
 void TOptIAPrefix::setPref(unsigned long pref) {

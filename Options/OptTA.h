@@ -22,7 +22,7 @@ class TOptTA : public TOpt
   public:
     TOptTA( long IAID, TMsg* parent);
     TOptTA( char * &buf, int &bufsize, TMsg* parent);
-    int getSize();
+    size_t getSize();
     int getStatusCode();
     
     unsigned long getIAID();

@@ -21,7 +21,7 @@ public:
     TOptInteger(int type, unsigned int len/* 1,2, or 4*/, unsigned int value, TMsg* parent);
     TOptInteger(int type, unsigned int len/* 1,2, or 4*/, char *&buf, int &bufsize, TMsg* parent);
     char * storeSelf( char* buf);
-    int getSize();
+    size_t getSize();
     unsigned int getValue();
     bool isValid();
     std::string getPlain();

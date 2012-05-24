@@ -89,7 +89,7 @@ char * TOptInteger::storeSelf(char* buf)
     }
     return buf+this->Len;    
 }
-int TOptInteger::getSize() {
+size_t TOptInteger::getSize() {
     return 4 /*option header length*/ + this->Len; 
 }
 

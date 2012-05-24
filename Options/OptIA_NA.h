@@ -19,7 +19,7 @@ class TOptIA_NA : public TOpt
   public:
     TOptIA_NA( long IAID, long t1,  long t2, TMsg* parent);
     TOptIA_NA( char * &buf, int &bufsize, TMsg* parent);
-    int getSize();
+    size_t getSize();
     int getStatusCode();
 
     unsigned long getIAID();

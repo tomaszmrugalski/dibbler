@@ -65,7 +65,7 @@ void TOptAuthentication::setRDM( uint8_t value) {
     RDM = value;
 }
 
-int TOptAuthentication::getSize() {
+size_t TOptAuthentication::getSize() {
     return 17 + AuthInfoLen;
 }
 

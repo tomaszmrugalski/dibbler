@@ -66,18 +66,15 @@ TOptAAAAuthentication::TOptAAAAuthentication(TMsg* parent)
 	AAASPI_ = value;
 }
 
- uint32_t TOptAAAAuthentication::getAAASPI()
-{
+uint32_t TOptAAAAuthentication::getAAASPI() {
 	return AAASPI_;
 }
 
- int TOptAAAAuthentication::getSize()
-{
+size_t TOptAAAAuthentication::getSize() {
 	return 8 + AAA_AUTH_INFO_LEN;
 }
 
- char * TOptAAAAuthentication::storeSelf( char* buf)
-{
+char * TOptAAAAuthentication::storeSelf(char* buf) {
     if (!Parent) {
         Log(Error) << "Attempted to send orphaned AAA Auth option." << LogEnd;
         return buf;

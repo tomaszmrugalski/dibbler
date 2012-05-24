@@ -36,13 +36,12 @@ TOptGeneric::~TOptGeneric() {
     }
 }
 
-int TOptGeneric::getSize()
+size_t TOptGeneric::getSize()
 {
-    return this->DataLen+4;
+    return DataLen + 4;
 }
 
- char * TOptGeneric::storeSelf( char* buf)
-{
+char * TOptGeneric::storeSelf(char* buf) {
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, this->DataLen);
     memmove(buf, this->Data, this->DataLen);

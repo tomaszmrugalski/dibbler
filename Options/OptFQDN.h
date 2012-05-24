@@ -50,7 +50,7 @@ class TOptFQDN : public TOpt
      */
     ~TOptFQDN();
     
-    int getSize();
+    size_t getSize();
     char * storeSelf( char* buf);
     bool isValid() const;
     

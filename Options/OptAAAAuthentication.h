@@ -22,7 +22,7 @@ public:
     TOptAAAAuthentication(TMsg* parent);
     void setAAASPI(uint32_t value);
     uint32_t getAAASPI();
-    int getSize();
+    size_t getSize();
     char * storeSelf(char* buf);
 
 private:

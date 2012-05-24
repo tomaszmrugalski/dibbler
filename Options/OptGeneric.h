@@ -25,7 +25,7 @@ class TOptGeneric : public TOpt
     TOptGeneric(int optType, const char * data, unsigned short dataLen, TMsg* parent);
     TOptGeneric(int optType, TMsg* parent);
     ~TOptGeneric();
-    int getSize();
+    size_t getSize();
     void setData(char * data, int dataLen);
     std::string getPlain();
     bool doDuties() { return true; }

@@ -81,7 +81,7 @@ SPtr<TIPv6Addr> TSrvOptLQ::getLinkAddr() {
     return Addr;
 }
 
-int TSrvOptLQ::getSize() {
+size_t TSrvOptLQ::getSize() {
     SPtr<TOpt> opt;
     int len = 17;
     SubOptions.first();
@@ -105,7 +105,7 @@ TSrvOptLQClientData::TSrvOptLQClientData(TMsg * parent)
 {
 }
 
-int TSrvOptLQClientData::getSize()
+size_t TSrvOptLQClientData::getSize()
 {
     int cnt = 0;
     SPtr<TOpt> x;

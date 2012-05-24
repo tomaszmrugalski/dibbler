@@ -49,8 +49,8 @@ int TOptTA::getStatusCode() {
     return -1;
 }
 
-int TOptTA::getSize() {
-    return 4+OPTION_IA_TA_LEN+getSubOptSize();
+size_t TOptTA::getSize() {
+    return 4 + OPTION_IA_TA_LEN + getSubOptSize();
 }
 
 char * TOptTA::storeSelf( char* buf) {

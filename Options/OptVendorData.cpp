@@ -51,9 +51,8 @@ TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
     this->VendorDataLen = n;
 }
 
-int TOptVendorData::getSize()
-{
-    return 8+VendorDataLen; /* 8 normal header(4) + enterprise (4) */
+size_t TOptVendorData::getSize() {
+    return 8 + VendorDataLen; /* 8 normal header(4) + enterprise (4) */
 }
 
 /** 

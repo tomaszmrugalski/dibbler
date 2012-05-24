@@ -67,9 +67,9 @@ int TOptIA_PD::getStatusCode() {
     return -1;
 }
 
-int TOptIA_PD::getSize() {
+size_t TOptIA_PD::getSize() {
     int mySize = 16;
-    return mySize+getSubOptSize();
+    return mySize + getSubOptSize();
 }
 
 char * TOptIA_PD::storeSelf( char* buf) {

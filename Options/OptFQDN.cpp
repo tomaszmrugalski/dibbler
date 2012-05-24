@@ -109,7 +109,7 @@ std::string TOptFQDN::getFQDN() const {
  *
  * @return size of the option (without option header)
  */
-int TOptFQDN::getSize() {
+size_t TOptFQDN::getSize() {
     if (fqdn_.length())
         return fqdn_.length() + 7;
     else

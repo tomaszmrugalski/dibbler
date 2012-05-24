@@ -105,7 +105,7 @@ char * TOptDomainLst::storeSelf(char* buf)
     return buf;
 }
 
-int TOptDomainLst::getSize() {
+size_t TOptDomainLst::getSize() {
     int len = 0;
     int tmplen = 0;
     SPtr<string> x;
