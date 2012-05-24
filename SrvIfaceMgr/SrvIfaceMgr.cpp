@@ -32,7 +32,7 @@
 #include "IPv6Addr.h"
 #include "AddrClient.h"
 #include "SrvIfaceIface.h"
-#include "SrvOptEcho.h"
+#include "OptOptionRequest.h"
 #include "OptGeneric.h"
 #include "OptVendorData.h"
 #include "OptIAAddress.h"
@@ -274,7 +274,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
     SPtr<TSrvIfaceIface> relayIface;
     int relays=0; // number of nested RELAY_FORW messages
     SPtr<TOptVendorData> remoteID = 0;
-    SPtr<TSrvOptEcho> echo = 0;
+    SPtr<TOptOptionRequest> echo = 0;
     SPtr<TOptGeneric> gen = 0;
 
     char * relay_buf = buf;
@@ -309,11 +309,12 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
         while (bufsize>=4) {
             unsigned short code = readUint16(buf);
             buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
-            unsigned short len  = readUint16(buf);
+            int len = readUint16(buf);
             buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
 
             if (len > bufsize) {
-                Log(Warning) << "Truncated option " << code << ": " << bufsize << " bytes remaining, but length is " << len
+                Log(Warning) << "Truncated option " << code << ": " << bufsize 
+                             << " bytes remaining, but length is " << len
                              << "." << LogEnd;
                 return 0;
             }
@@ -338,7 +339,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
                 break;
             case OPTION_ERO:
                 Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
-                echo = new TSrvOptEcho(buf, len, 0);
+                echo = new TOptOptionRequest(OPTION_ERO, buf, len, 0);
                 break;
             default:
                 gen = new TOptGeneric(code, buf, len, 0);

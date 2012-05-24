@@ -12,14 +12,8 @@
 #include "Logger.h"
 #include "SrvOptLQ.h"
 #include "SrvOptIAAddress.h"
-#include "SrvOptClientIdentifier.h"
+#include "OptDUID.h"
 #include "Portable.h"
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
 
 // --- TSrvOptLQ ---
 TSrvOptLQ::TSrvOptLQ(char * buf, int bufsize, TMsg* parent)
@@ -51,10 +45,10 @@ TSrvOptLQ::TSrvOptLQ(char * buf, int bufsize, TMsg* parent)
 	if (allowOptInOpt(parent->getType(), OPTION_LQ_QUERY, code)) {
 	    switch (code) {
 	    case OPTION_IAADDR:
-		SubOptions.append( new TSrvOptIAAddress(buf+pos,length,this->Parent));
+		SubOptions.append( new TSrvOptIAAddress(buf+pos, length, Parent));
 		break;
 	    case OPTION_CLIENTID:
-		SubOptions.append( new TSrvOptClientIdentifier(buf+pos, length, this->Parent) );
+		SubOptions.append( new TOptDUID(OPTION_CLIENTID, buf+pos, length, Parent) );
 		break;
 	    default:
 		Log(Warning) << "Not supported option " << code << " received in LQ_QUERY option." << LogEnd;

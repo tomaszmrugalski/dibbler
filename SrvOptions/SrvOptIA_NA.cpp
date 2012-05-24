@@ -18,7 +18,7 @@
 
 #include "SrvOptIA_NA.h"
 #include "SrvOptIAAddress.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "OptVendorData.h"
 #include "SrvCfgOptions.h"
 #include "Logger.h"
@@ -35,10 +35,10 @@ TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
     :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
 }
 
-TSrvOptIA_NA::TSrvOptIA_NA(long IAID, long T1, long T2, int Code, 
-                           std::string Text, TMsg* parent)
-    :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
-    SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
+TSrvOptIA_NA::TSrvOptIA_NA(long iaid, long t1, long t2, int code,
+                           std::string text, TMsg* parent)
+    :TOptIA_NA(iaid, t1, t2, parent), Iface(parent->getIface()) {
+    SubOptions.append(new TOptStatusCode(code, text, parent));
 }
 
 /// @brief constructor, create an IA_NA option based on received buffer
@@ -67,8 +67,8 @@ TSrvOptIA_NA::TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent)
                         (new TSrvOptIAAddress(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    opt = (Ptr*)SPtr<TSrvOptStatusCode>
-                        (new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt = (Ptr*)SPtr<TOptStatusCode>
+                        (new TOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
                     Log(Warning) <<"Option " << code<< "not supported "
@@ -135,17 +135,17 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
       } else {
           Log(Notice) << "Reserved address " << hint->getPlain() << " for this client found, trying to assign." << LogEnd;
       }
-      SPtr<TSrvOptStatusCode> ptrStatus;
-      if (this->assignAddr(hint, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet))
+      SPtr<TOptStatusCode> ptrStatus;
+      if (assignAddr(hint, DHCPV6_INFINITY, DHCPV6_INFINITY, quiet))
       {
           // include status code
-          ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-                                            "1 address granted. You may include IAADDR in IA option, if you want to provide a hint.",
-                                            this->Parent);
+          ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,
+                                         "1 address granted. You may include IAADDR in IA option, if you want to provide a hint.",
+                                         Parent);
       } else {
-          ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-                                            "No more addresses available. Sorry.",
-                                            this->Parent);
+          ptrStatus = new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+                                         "No more addresses available. Sorry.",
+                                         Parent);
       }
       this->SubOptions.append((Ptr*)ptrStatus);
 
@@ -239,18 +239,18 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
     }
 
     // --- now include STATUS CODE ---
-    SPtr<TSrvOptStatusCode> ptrStatus;
+    SPtr<TOptStatusCode> ptrStatus;
     if (ok) {
-      ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,
+      ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,
                                         "All addresses were assigned.",this->Parent);
       /// @todo: if this is solicit, place "all addrs would be assigned."
     } else {
         char buf[60];
         snprintf(buf, 60, "%lu addr(s) requested, but assigned only %lu.",addrsRequested, addrsAssigned);
         if (addrsAssigned) {
-            ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,buf, this->Parent);
+            ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,buf, this->Parent);
         } else {
-            ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,buf, this->Parent);
+            ptrStatus = new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,buf, this->Parent);
         }
 
     }
@@ -378,7 +378,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
     default: {
         Log(Warning) << "Unknown message type (" << msgType
                      << "). Cannot generate OPTION_IA_NA."<< LogEnd;
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL,
+        SubOptions.append(new TOptStatusCode(STATUSCODE_UNSPECFAIL,
                                                 "Unknown message type.",this->Parent));
         break;
     }
@@ -400,7 +400,7 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
     ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
       if (complainIfMissing) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
                                                 this->Parent));
         Log(Info) << "Unable to RENEW binding for IA(iaid=" << queryOpt->getIAID() << ", client="
                   << ClntDuid->getPlain() << ": No such client." << LogEnd;
@@ -413,7 +413,7 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
     ptrIA = ptrClient->getIA(IAID_);
     if (!ptrIA) {
       if (complainIfMissing) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
                                                 this->Parent ));
         Log(Info) << "Unable to RENEW binding for IA(iaid=" << queryOpt->getIAID() << ", client="
                   << ClntDuid->getPlain() << ": No such IA." << LogEnd;
@@ -438,8 +438,8 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
+    SPtr<TOptStatusCode> ptrStatus;
+    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
     SubOptions.append( (Ptr*)ptrStatus );
 
     return true;
@@ -452,7 +452,7 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
     SPtr <TAddrClient> ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
         // hmmm, that's not our client
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,
                                                 "Who are you? Do I know you?",this->Parent ));
         return;
     }
@@ -461,7 +461,7 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
     SPtr <TAddrIA> ptrIA;
     ptrIA = ptrClient->getIA(IAID_);
     if (!ptrIA) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,
                                                 "I see this IAID first time.",this->Parent ));
         return;
     }
@@ -484,8 +484,8 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
+    SPtr<TOptStatusCode> ptrStatus;
+    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
                                       this->Parent);
     SubOptions.append( (Ptr*)ptrStatus );
 }
@@ -535,8 +535,8 @@ void TSrvOptIA_NA::confirm(SPtr<TSrvOptIA_NA> queryOpt,
 
 
     if (NotOnLink)
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
-                                                "Those addresses are not valid on this link.",this->Parent ));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOTONLINK,
+                                             "Those addresses are not valid on this link.",this->Parent ));
 
 }
 

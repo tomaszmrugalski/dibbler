@@ -24,7 +24,7 @@ class TSrvMsgReply;
 #include "SrvMsgSolicit.h"
 #include "SrvMsgInfRequest.h"
 
-#include "SrvOptClientIdentifier.h"
+#include "OptDUID.h"
 
 class TSrvMsgReply : public TSrvMsg
 {

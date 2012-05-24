@@ -14,22 +14,17 @@
 #include "SrvMsg.h"
 #include "SrvTransMgr.h"
 #include "OptEmpty.h"
-#include "SrvOptClientIdentifier.h"
-#include "SrvOptServerIdentifier.h"
+#include "OptDUID.h"
+#include "OptAddr.h"
+#include "OptString.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
-#include "SrvOptOptionRequest.h"
-#include "SrvOptPreference.h"
-#include "SrvOptElapsed.h"
-#include "SrvOptServerUnicast.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "OptGeneric.h"
 #include "SrvOptLQ.h"
 #include "SrvOptTA.h"
 #include "SrvCfgOptions.h"
-#include "SrvOptTimeZone.h"
 #include "SrvOptFQDN.h"
-#include "SrvOptLifetime.h"
 #include "OptAddrLst.h"
 #include "OptDomainLst.h"
 
@@ -142,28 +137,28 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 	ptr= 0;
 	switch (code) {
 	case OPTION_CLIENTID:
-	    ptr = new TSrvOptClientIdentifier(buf+pos,length,this);
+	    ptr = new TOptDUID(OPTION_CLIENTID, buf+pos, length, this);
 	    break;
 	case OPTION_SERVERID:
-	    ptr =new TSrvOptServerIdentifier(buf+pos,length,this);
+	    ptr = new TOptDUID(OPTION_SERVERID, buf+pos, length, this);
 	    break;
 	case OPTION_IA_NA:
 	    ptr = new TSrvOptIA_NA(buf+pos,length,this);
 	    break;
 	case OPTION_ORO:
-	    ptr = new TSrvOptOptionRequest(buf+pos,length,this);
+	    ptr = new TOptOptionRequest(OPTION_ORO, buf+pos, length, this);
 	    break;
 	case OPTION_PREFERENCE:
-	    ptr = new TSrvOptPreference(buf+pos,length,this);
+	    ptr = new TOptInteger(OPTION_PREFERENCE, 1, buf+pos, length, this);
 	    break;
 	case OPTION_ELAPSED_TIME:
-	    ptr = new TSrvOptElapsed(buf+pos,length,this);
+	    ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf+pos, length, this);
 	    break;
 	case OPTION_UNICAST:
-	    ptr = new TSrvOptServerUnicast(buf+pos,length,this);
+	    ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
 	    break;
 	case OPTION_STATUS_CODE:
-	    ptr = new TSrvOptStatusCode(buf+pos,length,this);
+	    ptr = new TOptStatusCode(buf+pos,length,this);
 	    break;
 	case OPTION_RAPID_COMMIT:
 	    ptr = new TOptEmpty(code, buf+pos, length, this);
@@ -182,13 +177,13 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 	    ptr = new TOptDomainLst(code, buf+pos, length, this);
 	    break;
 	case OPTION_NEW_TZDB_TIMEZONE:
-	    ptr = new TSrvOptTimeZone(buf+pos, length,this);
+	    ptr = new TOptString(OPTION_NEW_TZDB_TIMEZONE, buf+pos, length, this);
 	    break;
 	case OPTION_FQDN:
 	    ptr = new TSrvOptFQDN(buf+pos, length, this);
 	    break;
 	case OPTION_INFORMATION_REFRESH_TIME:
-	    ptr = new TSrvOptLifetime(buf+pos, length, this);
+	    ptr = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA:
 	    ptr = new TSrvOptTA(buf+pos, length, this);
@@ -242,7 +237,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 	    Options.push_back( ptr );
 	else
 	    Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
-        pos+=length;
+        pos += length;
     }
 
 }
@@ -464,11 +459,11 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 #endif
 }
 
-bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool clientID /* =true */)
+bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID /* =true */)
 {
     // include our DUID (Server ID)
-    SPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
+    SPtr<TOptDUID> ptrSrvID;
+    ptrSrvID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
     Options.push_back((Ptr*)ptrSrvID);
     oro->delOption(OPTION_SERVERID);
 
@@ -479,17 +474,17 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool client
     }
 
     // ... and our preference
-    SPtr<TSrvOptPreference> ptrPreference;
+    SPtr<TOptInteger> ptrPreference;
     unsigned char preference = SrvCfgMgr().getIfaceByID(Iface)->getPreference();
     Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
-    ptrPreference = new TSrvOptPreference(preference,this);
+    ptrPreference = new TOptInteger(OPTION_PREFERENCE, 1, preference, this);
     Options.push_back((Ptr*)ptrPreference);
     oro->delOption(OPTION_PREFERENCE);
 
     // does this server support unicast?
     SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr().getIfaceByID(Iface)->getUnicast();
     if (unicastAddr) {
-	SPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
+	SPtr<TOptAddr> optUnicast = new TOptAddr(OPTION_UNICAST, unicastAddr, this);
 	Options.push_back((Ptr*)optUnicast);
 	oro->delOption(OPTION_UNICAST);
     }
@@ -508,7 +503,7 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool client
  * @return true, if any options (conveying configuration paramter) has been appended
  */
 bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
-				     int iface, SPtr<TSrvOptOptionRequest> reqOpts)
+				     int iface, SPtr<TOptOptionRequest> reqOpts)
 {
     bool newOptionAssigned = false;
     // client didn't want any option? Or maybe we're not supporting this client?
@@ -558,11 +553,11 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     
     // --- option: TIMEZONE --- 
     if ( reqOpts->isOption(OPTION_NEW_TZDB_TIMEZONE) && ptrIface->supportTimezone() ) {
-	SPtr<TSrvOptTimeZone> optTimezone;
+	SPtr<TOptString> optTimezone;
 	if (ex && ex->supportTimezone())
-	    optTimezone = new TSrvOptTimeZone(ex->getTimezone(),this);
+	    optTimezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, ex->getTimezone(), this);
 	else
-	    optTimezone = new TSrvOptTimeZone(ptrIface->getTimezone(),this);
+	    optTimezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, ptrIface->getTimezone(), this);
 	Options.push_back((Ptr*)optTimezone);
 	newOptionAssigned = true;
     };
@@ -645,11 +640,15 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     // --- option: INFORMATION_REFRESH_TIME ---
     // this option should be checked last 
     if ( newOptionAssigned && ptrIface->supportLifetime() ) {
-	SPtr<TSrvOptLifetime> optLifetime;
+	SPtr<TOptInteger> optLifetime;
 	if (ex && ex->supportLifetime())
-	    optLifetime = new TSrvOptLifetime(ex->getLifetime(), this);
+	    optLifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
+                                          OPTION_INFORMATION_REFRESH_TIME_LEN,
+                                          ex->getLifetime(), this);
 	else
-	    optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
+	    optLifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
+                                          OPTION_INFORMATION_REFRESH_TIME_LEN,
+                                          ptrIface->getLifetime(), this);
 	Options.push_back( (Ptr*)optLifetime);
 	newOptionAssigned = true;
     }
@@ -704,7 +703,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 /**
  * this function prints all options specified in the ORO option
  */
-string TSrvMsg::showRequestedOptions(SPtr<TSrvOptOptionRequest> oro) {
+string TSrvMsg::showRequestedOptions(SPtr<TOptOptionRequest> oro) {
     ostringstream x;
     int i = oro->count();
     x << i << " opts";
@@ -948,7 +947,7 @@ void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr
 bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
 
-    SPtr<TSrvOptServerIdentifier> optSrvID = (Ptr*) this->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> optSrvID = (Ptr*) this->getOption(OPTION_SERVERID);
     if (optSrvID) {
 	if ( !( *(SrvCfgMgr().getDUID()) == *(optSrvID->getDUID()) ) ) {
 	    Log(Debug) << "Wrong ServerID value detected. This message is not for me. Message ignored." << LogEnd;
@@ -958,7 +957,7 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     return status;
 }
 
-bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt)
+bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt)
 {
     reqOpt->delOption(OPTION_VENDOR_OPTS);
 
@@ -1046,7 +1045,7 @@ SPtr<TOptVendorData> TSrvMsg::getRemoteID()
  */
 void TSrvMsg::appendStatusCode()
 {
-    SPtr<TSrvOptStatusCode> rootLevel, optLevel;
+    SPtr<TOptStatusCode> rootLevel, optLevel;
     SPtr<TOpt> opt;
     //rootLevel = getOption(OPTION_STATUS_CODE);
 
@@ -1059,7 +1058,7 @@ void TSrvMsg::appendStatusCode()
 		if (optLevel->getCode() != STATUSCODE_SUCCESS) {
 		    // copy status code to root-level
 		    delOption(OPTION_STATUS_CODE);
-		    rootLevel = new TSrvOptStatusCode(optLevel->getCode(), optLevel->getText(), this);
+		    rootLevel = new TOptStatusCode(optLevel->getCode(), optLevel->getText(), this);
 		    Options.push_back( (Ptr*) rootLevel);
 		    return;
 		}
@@ -1097,5 +1096,5 @@ void TSrvMsg::getORO(SPtr<TMsg> msg)
 {
     ORO = (Ptr*)msg->getOption(OPTION_ORO);
     if (!ORO)
-        ORO = new TSrvOptOptionRequest(this);
+        ORO = new TOptOptionRequest(OPTION_ORO, this);
 }

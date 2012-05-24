@@ -20,7 +20,7 @@
 #include <sstream>
 #include "SrvOptIA_PD.h"
 #include "SrvOptIAPrefix.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
@@ -38,7 +38,7 @@ TSrvOptIA_PD::TSrvOptIA_PD( long iaid, long t1, long t2, int Code,
                             std::string Text, TMsg* parent)
     :TOptIA_PD(iaid, t1, t2, parent)
 {
-    SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
+    SubOptions.append(new TOptStatusCode(Code, Text, parent));
 }
 
 /*
@@ -69,8 +69,8 @@ TSrvOptIA_PD::TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent)
                         (new TSrvOptIAPrefix(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    opt = (Ptr*)SPtr<TSrvOptStatusCode>
-                        (new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt = (Ptr*)SPtr<TOptStatusCode>
+                        (new TOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
                     Log(Warning) <<"Option " << code<< "not supported "
@@ -208,8 +208,8 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TIPv6Addr> clntAddr
 
     // is the prefix delegation supported?
     if ( !ptrIface->supportPrefixDelegation() ) {
-        SPtr<TSrvOptStatusCode> ptrStatus;
-        ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+        SPtr<TOptStatusCode> ptrStatus;
+        ptrStatus = new TOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
                                           "Server support for prefix delegation is not enabled. Sorry buddy.",
                                           Parent);
         this->SubOptions.append((Ptr*)ptrStatus);
@@ -247,7 +247,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TIPv6Addr> clntAddr
     default: {
         Log(Warning) << "Unknown message type (" << msgType
                      << "). Cannot generate OPTION_PD."<< LogEnd;
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL,
+        SubOptions.append(new TOptStatusCode(STATUSCODE_UNSPECFAIL,
                                                 "Unknown message type.",this->Parent));
         break;
     }
@@ -289,13 +289,13 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface
     }
 
     // include status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
+    SPtr<TOptStatusCode> ptrStatus;
     if (status==STATUSCODE_SUCCESS) {
         ostringstream tmp;
         tmp << countPrefixes() << " prefix(es) granted.";
-        ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS, tmp.str(),  this->Parent);
+        ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS, tmp.str(),  this->Parent);
     } else {
-        ptrStatus = new TSrvOptStatusCode(status,
+        ptrStatus = new TOptStatusCode(status,
                                           "Unable to provide any prefixes. Sorry.", this->Parent);
     }
     this->SubOptions.append((Ptr*)ptrStatus);
@@ -312,7 +312,7 @@ void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) 
     SPtr <TAddrClient> ptrClient;
     ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
                                                 this->Parent));
         return;
     }
@@ -321,7 +321,7 @@ void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) 
     SPtr <TAddrIA> ptrIA;
     ptrIA = ptrClient->getPD(IAID_);
     if (!ptrIA) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
                                                 this->Parent ));
         return;
     }
@@ -343,8 +343,8 @@ void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) 
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Prefix(es) renewed.", this->Parent);
+    SPtr<TOptStatusCode> ptrStatus;
+    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Prefix(es) renewed.", this->Parent);
     SubOptions.append( (Ptr*)ptrStatus );
 }
 

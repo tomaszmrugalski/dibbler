@@ -20,7 +20,7 @@
 
 using namespace std;
 
-TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
+TOptStatusCode::TOptStatusCode(const char * buf, size_t  len, TMsg* parent)
     :TOpt(OPTION_STATUS_CODE, parent), Valid_(false)
 {
     if (len < 2) {

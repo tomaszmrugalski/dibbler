@@ -32,7 +32,7 @@
 #include "SrvMsgLeaseQuery.h"
 #include "SrvMsgLeaseQueryReply.h"
 #include "SrvOptIA_NA.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "NodeClientSpecific.h"
 
 using namespace std;
@@ -208,7 +208,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
                 while( (ptrOpt=answRep->getOption()) && (!found) ) {
                     if (ptrOpt->getOptType()==OPTION_IA_NA) {
                         SPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
-                        SPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
+                        SPtr<TOptStatusCode> ptrStat= (Ptr*)
                             ptrIA->getOption(OPTION_STATUS_CODE);
                         if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
                             found=true;

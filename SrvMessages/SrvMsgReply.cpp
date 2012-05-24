@@ -14,14 +14,12 @@
 #include "OptEmpty.h" // rapid-commit option
 #include "SrvMsgReply.h"
 #include "SrvMsg.h"
-#include "SrvOptOptionRequest.h"
-#include "SrvOptStatusCode.h"
+#include "OptOptionRequest.h"
+#include "OptStatusCode.h"
 #include "SrvOptIAAddress.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
 #include "SrvOptTA.h"
-#include "SrvOptServerIdentifier.h"
-#include "SrvOptTimeZone.h"
 #include "SrvOptFQDN.h"
 #include "AddrClient.h"
 #include "AddrIA.h"
@@ -133,25 +131,25 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
     }
     if (!checkCnt) {
         // no check
-        SPtr <TSrvOptStatusCode> ptrCode =
-            new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
-                                  "No addresses checked. Did you send any?",
-                                  this);
+        SPtr <TOptStatusCode> ptrCode =
+            new TOptStatusCode(STATUSCODE_NOTONLINK,
+                               "No addresses checked. Did you send any?",
+                               this);
         Options.push_back( (Ptr*) ptrCode );
     } else
     if (!OnLink) {
         // not-on-link
-        SPtr <TSrvOptStatusCode> ptrCode =
-            new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
-                                  "Sorry, those addresses are not valid for this link.",
-                                  this);
+        SPtr <TOptStatusCode> ptrCode =
+            new TOptStatusCode(STATUSCODE_NOTONLINK,
+                               "Sorry, those addresses are not valid for this link.",
+                               this);
         Options.push_back( (Ptr*) ptrCode );
     } else {
         // success
-        SPtr <TSrvOptStatusCode> ptrCode =
-            new TSrvOptStatusCode(STATUSCODE_SUCCESS,
-                                  "Your addresses are correct for this link! Yay!",
-                                  this);
+        SPtr <TOptStatusCode> ptrCode =
+            new TOptStatusCode(STATUSCODE_SUCCESS,
+                               "Your addresses are correct for this link! Yay!",
+                               this);
         Options.push_back( (Ptr*) ptrCode);
 
         if(validIAs.count()){
@@ -255,8 +253,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
             char buf[10];
             sprintf(buf,"%d",AddrsDeclinedCnt);
             string tmp = buf;
-            SPtr<TSrvOptStatusCode> optStatusCode =
-                new TSrvOptStatusCode(STATUSCODE_SUCCESS,tmp+" addrs declined.",this);
+            SPtr<TOptStatusCode> optStatusCode =
+                new TOptStatusCode(STATUSCODE_SUCCESS, tmp + " addrs declined.", this);
             replyIA_NA->addOption( (Ptr*) optStatusCode );
             break;
         };
@@ -439,7 +437,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
             {
                 SPtr<TSrvOptIA_NA> ansIA(new TSrvOptIA_NA(clntIA->getIAID(), clntIA->getT1(),clntIA->getT2(),this));
                 Options.push_back((Ptr*)ansIA);
-                ansIA->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
+                ansIA->addOption(new TOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
             };
             break;
         }
@@ -513,7 +511,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
             {
                 SPtr<TSrvOptIA_PD> ansPD(new TSrvOptIA_PD(pd->getIAID(), 0, 0, this));
                 Options.push_back((Ptr*)ansPD);
-                ansPD->addOption(new TSrvOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
+                ansPD->addOption(new TOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
             };
             break;
         }
@@ -523,7 +521,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
         }; // switch(...)
     } // while
 
-    Options.push_back(new TSrvOptStatusCode(STATUSCODE_SUCCESS,
+    Options.push_back(new TOptStatusCode(STATUSCODE_SUCCESS,
                                          "All IAs in RELEASE message were processed.",this));
 
     NotifyScripts = notifyParams;

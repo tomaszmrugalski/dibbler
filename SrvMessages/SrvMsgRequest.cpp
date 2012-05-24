@@ -15,7 +15,6 @@
 #include "DHCPConst.h"
 #include "SrvIfaceMgr.h"
 #include "SrvMsgAdvertise.h"
-#include "SrvOptServerIdentifier.h"
 #include "SrvOptIA_NA.h"
 #include "AddrClient.h"
 

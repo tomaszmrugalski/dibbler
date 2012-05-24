@@ -17,7 +17,7 @@
 
 #include "SrvOptTA.h"
 #include "SrvOptIAAddress.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
@@ -46,7 +46,7 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
 	    SubOptions.append(opt);
 	    break;
 	case OPTION_STATUS_CODE:
-	    opt = (Ptr*) SPtr<TSrvOptStatusCode>(new TSrvOptStatusCode(buf+pos,length,this->Parent));
+	    opt = (Ptr*) SPtr<TOptStatusCode>(new TOptStatusCode(buf+pos,length,this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	default:
@@ -94,7 +94,7 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt,
 
 TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
     :TOptTA(iaid, parent) {
-    SubOptions.append(new TSrvOptStatusCode(statusCode, txt, parent));
+    SubOptions.append(new TOptStatusCode(statusCode, txt, parent));
 }
 
 /**
@@ -135,7 +135,7 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
 	      << " is available, limit for client is " << addrsMax << ", "
 	      << willAssign << " will be assigned." << LogEnd;
     if (!willAssign) {
-	SubOptions.append( (Ptr*) new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+	SubOptions.append( (Ptr*) new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
 							"Sorry, buddy. No temporary addresses for you", 
                                                         Parent) );
 	Log(Warning) << "No temporary addresses were assigned in TA (iaid="<< IAID_ << ")." << LogEnd;
@@ -148,9 +148,9 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
     optAddr = this->assignAddr();
     if (!optAddr) {
 	Log(Error) << "No temporary address found. Server is NOT configured with TA option." << LogEnd;
-	SPtr<TSrvOptStatusCode> ptrStatus;
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-					  "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
+	SPtr<TOptStatusCode> ptrStatus;
+	ptrStatus = new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+                                       "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
         this->SubOptions.append((Ptr*)ptrStatus);
 	return;
     }

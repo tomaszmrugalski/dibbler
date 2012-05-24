@@ -20,7 +20,7 @@
 #include "SrvAddrMgr.h"
 #include "IPv6Addr.h"
 #include "SrvCfgIface.h"
-#include "SrvOptOptionRequest.h"
+#include "OptOptionRequest.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvOptFQDN.h"
 #include "OptVendorData.h"
@@ -38,13 +38,12 @@ public:
     bool copyClientID(SPtr<TMsg> donor);
 
     void appendAuthenticationOption(SPtr<TDUID> duid);
-    bool appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool includeClientID = true);
+    bool appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool includeClientID = true);
     bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
-				int iface, SPtr<TSrvOptOptionRequest> reqOpt);
-    std::string showRequestedOptions(SPtr<TSrvOptOptionRequest> oro);
-    bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt);
+				int iface, SPtr<TOptOptionRequest> reqOpt);
+    std::string showRequestedOptions(SPtr<TOptOptionRequest> oro);
+    bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt);
     void appendStatusCode();
-    // bool delOption(int code);
 
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
 		      SPtr<TIPv6Addr> peerAddr,
@@ -66,7 +65,7 @@ public:
     void send();
 
 protected:
-    SPtr<TSrvOptOptionRequest> ORO;
+    SPtr<TOptOptionRequest> ORO;
     void handleDefaultOption(SPtr<TOpt> ptrOpt);
     void getORO(SPtr<TMsg> clientMessage);
     SPtr<TDUID> ClientDUID;

@@ -14,11 +14,11 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TOptOptionRequest::TOptOptionRequest(TMsg* parent)
-        :TOpt(OPTION_ORO, parent)
+TOptOptionRequest::TOptOptionRequest(uint16_t code, TMsg* parent)
+        :TOpt(code, parent)
 {
-    this->Options=NULL;
-    this->OptCnt=0;
+    this->Options = NULL;
+    this->OptCnt = 0;
 }
 
 int  TOptOptionRequest::getReqOpt(int optNr) {
@@ -51,8 +51,8 @@ char * TOptOptionRequest::storeSelf( char* buf)
     return buf;
 }
 
-TOptOptionRequest::TOptOptionRequest(char * &buf, int &bufSize, TMsg* parent)
-    :TOpt(OPTION_ORO, parent), Valid_(false)
+TOptOptionRequest::TOptOptionRequest(uint16_t code, const char * buf, size_t bufSize, TMsg* parent)
+    :TOpt(code, parent), Valid_(false)
 {
     if (bufSize%2) {
         Log(Error) << "OPTION REQUEST option malformed: odd number of bytes (" << bufSize << ")." << LogEnd;
