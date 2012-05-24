@@ -48,12 +48,10 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
     }
 }
 
-/**
- * constructor used in building SOLICIT message
- *
- * @param ClntCfgPD
- * @param parent
- */
+/// @brief constructor used in building SOLICIT message
+///
+/// @param cfgPD
+/// @param parent
 TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> cfgPD, TMsg* parent)
     :TOptIA_PD(cfgPD->getIAID(), cfgPD->getT1(), cfgPD->getT2(), parent)
 {

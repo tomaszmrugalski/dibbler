@@ -18,18 +18,17 @@ using namespace std;
 
 TNotifyScriptParams::TNotifyScriptParams() 
     :envCnt(0), ipCnt(1), pdCnt(1) {
-    for (int i=0; i<512; i++) {
-        env[i]=0;
+    for (int i = 0; i<512; i++) {
+        env[i] = 0;
     }
 }
 
 /// adds parameter to parameters list
 ///
+/// @param name name of the parameter to be added
 /// @param value value to be copied
 ///
 /// @return next unused offset
-///
-
 void TNotifyScriptParams::addParam(const std::string& name, const std::string& value)
 {
     if (envCnt>=MAX_PARAMS) {

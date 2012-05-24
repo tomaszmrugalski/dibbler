@@ -92,7 +92,7 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt,
     }
 }
 
-TSrvOptTA::TSrvOptTA(int iaid, int statusCode, string txt, TMsg* parent)
+TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
     :TOptTA(iaid, parent) {
     SubOptions.append(new TSrvOptStatusCode(statusCode, txt, parent));
 }
