@@ -33,27 +33,29 @@ using namespace std;
 
 TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
     :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
-
 }
 
-TSrvOptIA_NA::TSrvOptIA_NA(long IAID, long T1, long T2, int Code, string Text, TMsg* parent)
+TSrvOptIA_NA::TSrvOptIA_NA(long IAID, long T1, long T2, int Code, 
+                           std::string Text, TMsg* parent)
     :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
     SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
 }
 
-/*
- * Create IA_NA option based on receive buffer
- */
+/// @brief constructor, create an IA_NA option based on received buffer
+///
+/// @param buf
+/// @param bufsize
+/// @param parent
 TSrvOptIA_NA::TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent)
     :TOptIA_NA(buf,bufsize, parent), Iface(parent->getIface()) {
     int pos=0;
-    while (pos<bufsize)
+    while (pos < bufsize)
     {
-        int code=buf[pos]*256+buf[pos+1];
-        pos+=2;
-        int length=buf[pos]*256+buf[pos+1];
-        pos+=2;
-        if ((code>0)&&(code<=24))
+        int code=buf[pos]*256 + buf[pos+1];
+        pos += 2;
+        int length=buf[pos]*256 + buf[pos+1];
+        pos += 2;
+        if ((code > 0) && (code <= 24))
         {
             if(allowOptInOpt(parent->getType(),OPTION_IA_NA,code)) {
                 SPtr<TOpt> opt;

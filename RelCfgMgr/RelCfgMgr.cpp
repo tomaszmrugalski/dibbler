@@ -38,7 +38,7 @@ TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
     this->IsDone = false;
 }
 
-bool TRelCfgMgr::parseConfigFile(string cfgFile) {
+bool TRelCfgMgr::parseConfigFile(std::string cfgFile) {
     int result;
     ifstream f;
 

@@ -26,7 +26,7 @@ string TRelParsGlobalOpt::getWorkDir() {
     return this->WorkDir;
 }
 
-void TRelParsGlobalOpt::setWorkDir(string dir) {
+void TRelParsGlobalOpt::setWorkDir(std::string dir) {
     this->WorkDir=dir;
 }
 

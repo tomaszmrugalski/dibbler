@@ -35,7 +35,7 @@ NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, SPtr<Node>& right)
     r = right;
 }
 
-NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left,  int in,  int len)
+NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, int in, int len)
     :Node(NODE_OPERATOR)
 {
     type = t;
@@ -45,7 +45,7 @@ NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left,  int in,  int len)
 }
 
 
-NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left,  string s )
+NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, std::string s)
     :Node(NODE_OPERATOR)
 {
     type = t;

@@ -597,7 +597,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     return 0;
 }
 
-SPtr<TDUID> TSrvCfgIface::getFQDNDuid(string name) {
+SPtr<TDUID> TSrvCfgIface::getFQDNDuid(std::string name) {
     SPtr<TDUID> res = new TDUID();
     return res;
 }

@@ -13,12 +13,12 @@
 using namespace std;
 
 TSrvOptStatusCode::TSrvOptStatusCode( char * buf,  int len, TMsg* parent)
-	:TOptStatusCode(buf,len, parent) {
+    :TOptStatusCode(buf,len, parent) {
 
 }
 
-TSrvOptStatusCode::TSrvOptStatusCode(int status,string message, TMsg* parent)
-	:TOptStatusCode(status,message, parent) {
+TSrvOptStatusCode::TSrvOptStatusCode(int status, std::string message, TMsg* parent)
+    :TOptStatusCode(status,message, parent) {
 }
 
 bool TSrvOptStatusCode::doDuties() {

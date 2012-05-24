@@ -181,7 +181,7 @@ false               { yylval.ival=0; return RelParser::INTNUMBER_;}
 {hexnumber} {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+    if(!sscanf(yytext,"%9x",&(yylval.ival))) {
       Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd; 
       YYABORT; 
     }
@@ -189,7 +189,7 @@ false               { yylval.ival=0; return RelParser::INTNUMBER_;}
 }
 
 {integer} { 
-    if(!sscanf(yytext,"%u",&(yylval.ival))) { 
+    if(!sscanf(yytext,"%9u",&(yylval.ival))) { 
         Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd; 
         YYABORT; 
     }

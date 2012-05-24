@@ -62,7 +62,7 @@ void TRelCfgIface::setOptions(SPtr<TRelParsGlobalOpt> opt) {
     InterfaceID_ = opt->getInterfaceID();
 }
 
-void TRelCfgIface::setName(string ifaceName) {
+void TRelCfgIface::setName(std::string ifaceName) {
     Name_ = ifaceName;
 }
 
@@ -78,7 +78,7 @@ int TRelCfgIface::getInterfaceID() {
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-ostream& operator<<(ostream& out,TRelCfgIface& iface) {
+ostream& operator<<(ostream& out, TRelCfgIface& iface) {
     SPtr<TIPv6Addr> addr;
     SPtr<string> str;
 

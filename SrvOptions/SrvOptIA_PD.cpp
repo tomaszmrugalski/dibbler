@@ -34,7 +34,8 @@ TSrvOptIA_PD::TSrvOptIA_PD( long iaid, long t1, long t2, TMsg* parent)
     :TOptIA_PD(iaid, t1, t2, parent) {
 }
 
-TSrvOptIA_PD::TSrvOptIA_PD( long iaid, long t1, long t2, int Code, string Text, TMsg* parent)
+TSrvOptIA_PD::TSrvOptIA_PD( long iaid, long t1, long t2, int Code, 
+                            std::string Text, TMsg* parent)
     :TOptIA_PD(iaid, t1, t2, parent)
 {
     SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
