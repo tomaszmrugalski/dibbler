@@ -136,8 +136,9 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
 	      << willAssign << " will be assigned." << LogEnd;
     if (!willAssign) {
 	SubOptions.append( (Ptr*) new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-							"Sorry, buddy. No temporary addresses for you", this->Parent) );
-	Log(Warning) << "No temporary addresses were assigned in TA (iaid="<< this->IAID << ")." << LogEnd;
+							"Sorry, buddy. No temporary addresses for you", 
+                                                        Parent) );
+	Log(Warning) << "No temporary addresses were assigned in TA (iaid="<< IAID_ << ")." << LogEnd;
 	return;
     }
 
@@ -180,8 +181,8 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
 	    continue;
 	optAddr = (Ptr*) opt;
 	addr = optAddr->getAddr();
-	SrvAddrMgr().delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
-	SrvCfgMgr().delClntAddr(this->Iface, addr);
+	SrvAddrMgr().delClntAddr(ClntDuid, IAID_, addr, quiet);
+	SrvCfgMgr().delClntAddr(Iface, addr);
     }
 }
 
@@ -227,7 +228,7 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
 	    if ((this->OrgMessage == REQUEST_MSG)) {
 		Log(Debug) << "Temporary address " << addr->getPlain() << " granted." << LogEnd;
 		SrvAddrMgr().addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface,
-				   this->IAID, addr, ta->getPref(), ta->getValid());
+				   IAID_, addr, ta->getPref(), ta->getValid());
 		SrvCfgMgr().addTAAddr(this->Iface);
 	    } else {
 		Log(Debug) << "Temporary address " << addr->getPlain() << " generated (not granted)." << LogEnd;

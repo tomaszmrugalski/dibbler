@@ -241,7 +241,7 @@ bool TClntOptTA::isValid()
 	if (!addr->getAddr()->linkLocal())
 	    continue;
 	Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_TA (IAID=" 
-		     << this->IAID << ") is link local. The whole IA_TA option is considered invalid."
+		     << IAID_ << ") is link local. The whole IA_TA option is considered invalid."
 		     << LogEnd;
 	return false;
     }

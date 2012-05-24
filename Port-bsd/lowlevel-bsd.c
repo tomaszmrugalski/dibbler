@@ -473,7 +473,7 @@ uint32_t getAAASPIfromFile() {
     if (!file)
         return 0;
 
-    fscanf(file, "%x", &ret);
+    fscanf(file, "%9x", &ret);
     fclose(file);
 
     return ret;
