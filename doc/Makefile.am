@@ -62,7 +62,7 @@ devel: $(DOXYGEN)
 
 cppcheck:
 	mkdir -p html
-	cppcheck --enable=all -f -v -j 2 -i bison++/  1> html/cppcheck.log 2> html/cppcheck-error.log
+	cppcheck --enable=all --suppressions-list=cppcheck-skip.txt -f -v -j 2 -i bison++/  1> html/cppcheck.log 2> html/cppcheck-error.log
 
 compile.log:
 	mkdir -p html

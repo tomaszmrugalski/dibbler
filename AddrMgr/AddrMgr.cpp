@@ -61,7 +61,8 @@ TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
  */
 void TAddrMgr::dbLoad(const char * xmlFile)
 {
-    Log(Info) << "Loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
+    Log(Info) << "Loading old address database (" << xmlFile
+              << "), using built-in routines." << LogEnd;
     xmlLoadBuiltIn(xmlFile);
 }
 

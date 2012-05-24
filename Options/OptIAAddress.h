@@ -22,7 +22,7 @@ class TOptIAAddress : public TOpt
     TOptIAAddress(char* &addr, int& n, TMsg* parent);
     TOptIAAddress( SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg* parent);
     int getSize();
-    
+
     char * storeSelf( char* buf);
     SPtr<TIPv6Addr> getAddr();
     unsigned long getPref();
@@ -33,10 +33,10 @@ class TOptIAAddress : public TOpt
 
     virtual bool doDuties() { return true; } // does nothing on its own
  private:
-    SPtr<TIPv6Addr> Addr;
-    unsigned long Valid;
-    unsigned long Pref;
-    bool ValidOpt;
+    SPtr<TIPv6Addr> Addr_;
+    unsigned long ValidLifetime_;
+    unsigned long PrefLifetime_;
+    bool Valid_;
 };
 
 #endif

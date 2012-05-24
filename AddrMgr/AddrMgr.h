@@ -81,7 +81,6 @@ class TAddrMgr
     void dbLoad(const char * xmlFile);
     virtual void dump();
     bool isDone();
-    bool restore;
 
 #ifdef MOD_LIBXML2
     // database loading methods that use libxml2

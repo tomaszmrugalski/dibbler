@@ -2155,7 +2155,7 @@ case YY_STATE_EOF(COMMENT):
 case 82:
 YY_RULE_SETUP
 {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -2166,7 +2166,7 @@ YY_RULE_SETUP
 case 83:
 YY_RULE_SETUP
 {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -2176,8 +2176,8 @@ YY_RULE_SETUP
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-{ 
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+{
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -2189,7 +2189,7 @@ YY_RULE_SETUP
 case 85:
 YY_RULE_SETUP
 {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -2200,7 +2200,7 @@ YY_RULE_SETUP
 case 86:
 YY_RULE_SETUP
 {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -2211,7 +2211,7 @@ YY_RULE_SETUP
 case 87:
 YY_RULE_SETUP
 {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -2222,7 +2222,7 @@ YY_RULE_SETUP
 case 88:
 YY_RULE_SETUP
 {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -2284,10 +2284,10 @@ YY_RULE_SETUP
     for (int i=0 ; i<len; i++)
     {
         yylval.duidval.duid[i>>1]<<=4;
-        if (!isxdigit(ptr[i])) { 
+        if (!isxdigit(ptr[i])) {
              Log(Crit) << "DUID parsing failed (" << yytext << ")." << LogEnd;
              { YYABORT; }
-        } 
+        }
         if (isalpha(ptr[i])) {
             yylval.duidval.duid[i>>1]|=toupper(ptr[i])-'A'+10;
         } else {
@@ -2316,22 +2316,22 @@ YY_RULE_SETUP
         x = *pos-'0';
       x *= 16;
 
-      if (isalpha(*(pos+1)))	
+      if (isalpha(*(pos+1)))
         x += (toupper(*(pos+1))-'A' + 10);
       else
         x += *(pos+1) - '0';
       yylval.duidval.duid[i] = x;
       i++;
    }
-   
+
    return ClntParser::DUID_;
 }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-{ 
+{
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",(unsigned int*)&(yylval.ival))) {
+    if(!sscanf(yytext,"%10x",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
@@ -2340,8 +2340,8 @@ YY_RULE_SETUP
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-{ 
-    if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
+{
+    if(!sscanf(yytext,"%10u",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
@@ -2350,7 +2350,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-{return yytext[0];} 
+{return yytext[0];}
 	YY_BREAK
 case 96:
 YY_RULE_SETUP

@@ -16,31 +16,32 @@
 #include "OptIAAddress.h"
 
 TOptIAAddress::TOptIAAddress(char * &buf, int& n, TMsg* parent)
-	:TOpt(OPTION_IAADDR, parent)
+    :TOpt(OPTION_IAADDR, parent), Valid_(false)
 {
-    ValidOpt=false;
-    if (n>=24)
-    {
-        Addr = new TIPv6Addr(buf);
-        buf += 16; n -= 16;
-        Pref = readUint32(buf);
-        buf += sizeof(uint32_t); n -= sizeof(uint32_t);
-        Valid = readUint32(buf);
-        buf += sizeof(uint32_t); n -= sizeof(uint32_t);
+    if ( n >= 24) {
+        Addr_ = new TIPv6Addr(buf);
+        buf += 16;
+        n -= 16;
+        PrefLifetime_ = readUint32(buf);
+        buf += sizeof(uint32_t);
+        n -= sizeof(uint32_t);
+        ValidLifetime_ = readUint32(buf);
+        buf += sizeof(uint32_t);
+        n -= sizeof(uint32_t);
 
-        ValidOpt=true;
+        Valid_ = true;
     }
 }
 
-TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
-			     unsigned long valid, TMsg* parent)
+TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref,
+                             unsigned long valid, TMsg* parent)
     :TOpt(OPTION_IAADDR, parent) {
     if(addr)
-        Addr=addr;
+        Addr_ = addr;
     else
-        Addr=new TIPv6Addr();
-    this->Pref = pref;
-    this->Valid = valid;
+        Addr_ = new TIPv6Addr();
+    this->PrefLifetime_  = pref;
+    this->ValidLifetime_ = valid;
 }
 
 int TOptIAAddress::getSize() {
@@ -49,11 +50,11 @@ int TOptIAAddress::getSize() {
 }
 
 void TOptIAAddress::setPref(unsigned long pref) {
-    this->Pref = pref;
+    PrefLifetime_ = pref;
 }
 
 void TOptIAAddress::setValid(unsigned long valid) {
-    this->Valid = valid;
+    ValidLifetime_ = valid;
 }
 
  char * TOptIAAddress::storeSelf( char* buf)
@@ -62,34 +63,30 @@ void TOptIAAddress::setValid(unsigned long valid) {
 
     buf = writeUint16(buf, getSize() - 4 );
 
-    memcpy(buf,Addr->getAddr(),16);
-    buf+=16;
+    memcpy(buf, Addr_->getAddr(), 16);
+    buf += 16;
 
-    buf = writeUint32(buf, Pref);
+    buf = writeUint32(buf, PrefLifetime_);
 
-    buf = writeUint32(buf, Valid);
+    buf = writeUint32(buf, ValidLifetime_);
 
-    buf=storeSubOpt(buf);
+    buf = storeSubOpt(buf);
 
     return buf;
 }
 
- SPtr<TIPv6Addr> TOptIAAddress::getAddr()
-{
-	return this->Addr;
+SPtr<TIPv6Addr> TOptIAAddress::getAddr() {
+    return Addr_;
 }
 
-unsigned long TOptIAAddress::getPref()
-{
-	return this->Pref;
+unsigned long TOptIAAddress::getPref() {
+    return PrefLifetime_;
 }
 
-unsigned long TOptIAAddress::getValid()
-{
-	return this->Valid;
+unsigned long TOptIAAddress::getValid() {
+    return ValidLifetime_;
 }
 
-bool TOptIAAddress::isValid()
-{
-    return this->ValidOpt;
+bool TOptIAAddress::isValid() {
+    return Valid_;
 }
