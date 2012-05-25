@@ -38,7 +38,7 @@
 using namespace std;
 
 #define YY_USE_CLASS
-#define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                           \
+#define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                                          \
 /*List of options in scope stack,the most fresh is last in the list*/       \
 List(TClntParsGlobalOpt) ParserOptStack;			            \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
@@ -56,7 +56,7 @@ List(TIPv6Addr) PresentAddrLst;			                            \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;	                                    \
 List(TOptVendorSpecInfo) VendorSpec;					    \
-bool IfaceDefined(int ifindex);                                             \
+bool IfaceDefined(int ifaceNr);                                             \
 bool IfaceDefined(const std::string& ifaceName);                            \
 bool StartIfaceDeclaration(const std::string& ifaceName);                   \
 bool StartIfaceDeclaration(int ifindex);                                    \

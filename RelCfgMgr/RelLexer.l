@@ -10,6 +10,10 @@ using namespace std;
 #include "RelParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
+
+/* duplicate default definition for cppcheck */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
+
 %}
 
 %x COMMENT

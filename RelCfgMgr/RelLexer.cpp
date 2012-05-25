@@ -58,7 +58,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -89,12 +88,15 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#endif /* ! C99 */
+
 #endif /* ! FLEXINT_H */
 
 /* begin standard C++ headers. */
 #include <iostream> 
 #include <errno.h>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 /* end standard C++ headers. */
 
@@ -152,7 +154,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -890,8 +900,12 @@ using namespace std;
 #include "Portable.h"
 #define YYABORT yyterminate();
 
+/* duplicate default definition for cppcheck */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
 
-#line 31 "RelLexer.l"
+
+
+#line 35 "RelLexer.l"
 using namespace std;
   unsigned ComBeg;    // line, in which comment begins
   unsigned LftCnt;    // how many chars : on the left side of '::' char was interpreted
@@ -903,7 +917,7 @@ using namespace std;
 namespace std{
   yy_RelParser_stype yylval;
 }
-#line 907 "RelLexer.cpp"
+#line 921 "RelLexer.cpp"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -935,7 +949,12 @@ static int yy_flex_strlen (yyconst char * );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -1005,10 +1024,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 44 "RelLexer.l"
+#line 48 "RelLexer.l"
 
 
-#line 1012 "RelLexer.cpp"
+#line 1031 "RelLexer.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -1104,122 +1123,122 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 46 "RelLexer.l"
+#line 50 "RelLexer.l"
 ; // ignore end of line
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 47 "RelLexer.l"
+#line 51 "RelLexer.l"
 ; // ignore TABs and spaces
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 49 "RelLexer.l"
+#line 53 "RelLexer.l"
 { return RelParser::IFACE_;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 50 "RelLexer.l"
+#line 54 "RelLexer.l"
 { return RelParser::CLIENT_;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 51 "RelLexer.l"
+#line 55 "RelLexer.l"
 { return RelParser::SERVER_; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 52 "RelLexer.l"
+#line 56 "RelLexer.l"
 { return RelParser::UNICAST_; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 53 "RelLexer.l"
+#line 57 "RelLexer.l"
 { return RelParser::MULTICAST_; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 54 "RelLexer.l"
+#line 58 "RelLexer.l"
 { return RelParser::IFACE_ID_; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 55 "RelLexer.l"
+#line 59 "RelLexer.l"
 { return RelParser::IFACE_ID_ORDER_; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "RelLexer.l"
+#line 60 "RelLexer.l"
 { return RelParser::GUESS_MODE_; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "RelLexer.l"
+#line 61 "RelLexer.l"
 { return RelParser::OPTION_; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "RelLexer.l"
+#line 62 "RelLexer.l"
 { return RelParser::REMOTE_ID_; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 59 "RelLexer.l"
+#line 63 "RelLexer.l"
 { return RelParser::ECHO_REQUEST_; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 61 "RelLexer.l"
+#line 65 "RelLexer.l"
 { return RelParser::LOGNAME_;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 62 "RelLexer.l"
+#line 66 "RelLexer.l"
 { return RelParser::LOGLEVEL_;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 63 "RelLexer.l"
+#line 67 "RelLexer.l"
 { return RelParser::LOGMODE_; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 65 "RelLexer.l"
+#line 69 "RelLexer.l"
 { return RelParser::WORKDIR_;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 67 "RelLexer.l"
+#line 71 "RelLexer.l"
 { yylval.ival=1; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 68 "RelLexer.l"
+#line 72 "RelLexer.l"
 { yylval.ival=0; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 69 "RelLexer.l"
+#line 73 "RelLexer.l"
 { yylval.ival=1; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 70 "RelLexer.l"
+#line 74 "RelLexer.l"
 { yylval.ival=0; return RelParser::INTNUMBER_;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 72 "RelLexer.l"
+#line 76 "RelLexer.l"
 ;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 74 "RelLexer.l"
+#line 78 "RelLexer.l"
 ;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 76 "RelLexer.l"
+#line 80 "RelLexer.l"
 {
   BEGIN(COMMENT);
   ComBeg=yylineno; 
@@ -1227,17 +1246,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 81 "RelLexer.l"
+#line 85 "RelLexer.l"
 BEGIN(INITIAL);
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 82 "RelLexer.l"
+#line 86 "RelLexer.l"
 ;
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 83 "RelLexer.l"
+#line 87 "RelLexer.l"
 {
     Log(Crit) << "Comment not closed. (/* in line " << ComBeg << LogEnd;
   { YYABORT; }
@@ -1247,7 +1266,7 @@ case YY_STATE_EOF(COMMENT):
 
 case 27:
 YY_RULE_SETUP
-#line 90 "RelLexer.l"
+#line 94 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1259,7 +1278,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 99 "RelLexer.l"
+#line 103 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1271,7 +1290,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 108 "RelLexer.l"
+#line 112 "RelLexer.l"
 { 
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1283,7 +1302,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 117 "RelLexer.l"
+#line 121 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1295,7 +1314,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 126 "RelLexer.l"
+#line 130 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1307,7 +1326,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 135 "RelLexer.l"
+#line 139 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1319,7 +1338,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 144 "RelLexer.l"
+#line 148 "RelLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) { 
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -1332,7 +1351,7 @@ YY_RULE_SETUP
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 153 "RelLexer.l"
+#line 157 "RelLexer.l"
 {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
@@ -1342,7 +1361,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 160 "RelLexer.l"
+#line 164 "RelLexer.l"
 {
     int len = strlen(yytext);
     if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
@@ -1366,11 +1385,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 181 "RelLexer.l"
+#line 185 "RelLexer.l"
 {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+    if(!sscanf(yytext,"%9x",&(yylval.ival))) {
       Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd; 
       YYABORT; 
     }
@@ -1379,9 +1398,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 191 "RelLexer.l"
+#line 195 "RelLexer.l"
 { 
-    if(!sscanf(yytext,"%u",&(yylval.ival))) { 
+    if(!sscanf(yytext,"%9u",&(yylval.ival))) { 
         Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd; 
         YYABORT; 
     }
@@ -1390,7 +1409,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 199 "RelLexer.l"
+#line 203 "RelLexer.l"
 {
     // DUID
     int len;
@@ -1425,15 +1444,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 231 "RelLexer.l"
+#line 235 "RelLexer.l"
 { return yytext[0]; } 
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 234 "RelLexer.l"
+#line 238 "RelLexer.l"
 ECHO;
 	YY_BREAK
-#line 1437 "RelLexer.cpp"
+#line 1456 "RelLexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ADDR):
 	yyterminate();
@@ -2343,7 +2362,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 234 "RelLexer.l"
+#line 238 "RelLexer.l"
 
 
 
