@@ -4,9 +4,11 @@
 
 #include <gtest/gtest.h>
 
+using namespace std;
+
 namespace {
 
-TEST(AddrPrefixTest, constructor) {
+TEST(AddrIATest, constructor) {
     SPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::abcd", true);
 
     const char duidData[] = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6};
@@ -18,7 +20,7 @@ TEST(AddrPrefixTest, constructor) {
     EXPECT_EQ(100u, ia->getT1());
     EXPECT_EQ(200u, ia->getT2());
     EXPECT_EQ(300u, ia->getIAID());
-    EXPECT_EQ("fe80::abcd", ia->getSrvAddr()->getPlain());
+    EXPECT_EQ(string("fe80::abcd"), ia->getSrvAddr()->getPlain());
     EXPECT_EQ(0, ia->getAddrCount());
 }
 

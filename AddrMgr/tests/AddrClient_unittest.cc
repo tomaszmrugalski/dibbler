@@ -1,8 +1,10 @@
 #include <IPv6Addr.h>
 #include <AddrClient.h>
 #include <DUID.h>
+#include <DHCPConst.h>
 #include <SmartPtr.h>
 #include <gtest/gtest.h>
+#include <climits>
 
 namespace {
     class AddrClientTest : public ::testing::Test {
@@ -22,14 +24,14 @@ TEST_F(AddrClientTest, constructor) {
     EXPECT_EQ(duid->getLen(), d->getLen());
     EXPECT_TRUE(duid == d);
 
-    EXPECT_EQ(client->countIA(), 0);
-    EXPECT_EQ(client->countPD(), 0);
-    EXPECT_EQ(client->countTA(), 0);
+    EXPECT_EQ(0, client->countIA());
+    EXPECT_EQ(0, client->countPD());
+    EXPECT_EQ(0, client->countTA());
 
-    EXPECT_EQ(client->getT1Timeout(), DHCPV6_INIFINITY);
-    EXPECT_EQ(client->getT2Timeout(), DHCPV6_INIFINITY);
-    EXPECT_EQ(client->getPrefTimeout(), DHCPV6_INIFINITY);
-    EXPECT_EQ(client->getValidTimeout(), DHCPV6_INIFINITY);
+    EXPECT_EQ(ULONG_MAX, client->getT1Timeout());
+    EXPECT_EQ(ULONG_MAX, client->getT2Timeout());
+    EXPECT_EQ(ULONG_MAX, client->getPrefTimeout());
+    EXPECT_EQ(ULONG_MAX, client->getValidTimeout());
 
     delete client;
 }
