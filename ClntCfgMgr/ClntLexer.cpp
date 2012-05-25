@@ -1622,6 +1622,10 @@ using namespace std;
 #include "Portable.h"
 #define YYABORT yyterminate();
 
+/* duplicate default definition from flex. This makes cppcheck
+   check for defined YY_FATAL_ERROR() go away. */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
+
   using namespace std;
 
 namespace std {
