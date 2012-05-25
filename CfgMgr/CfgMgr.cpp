@@ -45,7 +45,6 @@ bool TCfgMgr::compareConfigs(const std::string& cfgFile, const std::string& oldC
 {
     std::ifstream oldF,newF;
     bool newConf=false;
-    int  len;
     // It's common for client and server so why not to create CfgMgr
     //open new and saved config files
     newF.open(cfgFile.c_str(),   ios::in|ios::binary);
@@ -59,8 +58,8 @@ bool TCfgMgr::compareConfigs(const std::string& cfgFile, const std::string& oldC
             //first the length of both files
             newF.seekg(0,ios::end);
             oldF.seekg(0,ios::end);
-            if((len=newF.tellg())!=oldF.tellg())
-                newConf=true; //there is a diffrence at least in length
+            if((newF.tellg()) != oldF.tellg())
+                newConf = true; //there is a diffrence at least in length
             else
             {
                 //next contents

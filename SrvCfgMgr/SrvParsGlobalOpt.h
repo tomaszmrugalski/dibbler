@@ -28,38 +28,38 @@ public:
     TSrvParsGlobalOpt(void);
     ~TSrvParsGlobalOpt(void);
 
-    std::string getWorkDir();
-    void setWorkDir(std::string dir);
+    std::string getWorkDir() const;
+    void setWorkDir(const std::string& dir);
     void setStateless(bool stateless);
-    bool getStateless();
+    bool getStateless() const;
     void setCacheSize(int bytes);
-    int  getCacheSize();
+    int  getCacheSize() const;
     void addDigest(DigestTypes x);
-    List(DigestTypes) getDigest();
-    bool getExperimental(); // is experimental stuff allowed?
+    List(DigestTypes) getDigest() const;
+    bool getExperimental() const; // is experimental stuff allowed?
     void setExperimental(bool exper);
     void setInterfaceIDOrder(ESrvIfaceIdOrder order);
-    ESrvIfaceIdOrder getInterfaceIDOrder();
+    ESrvIfaceIdOrder getInterfaceIDOrder() const;
     void setInactiveMode(bool flex);
-    bool getInactiveMode();
+    bool getInactiveMode() const;
     void setGuessMode(bool guess);
-    bool getGuessMode();
+    bool getGuessMode() const;
 
     void setAuthLifetime(unsigned int lifetime);
-    unsigned int getAuthLifetime();
+    unsigned int getAuthLifetime() const;
     void setAuthKeyLen(unsigned int len);
-    unsigned int getAuthKeyLen();
+    unsigned int getAuthKeyLen() const;
     
 private:
-    bool   Experimental;
-    std::string WorkDir;
-    bool   Stateless;
-    bool   InactiveMode;
-    bool   GuessMode;
-    int    CacheSize;
-    unsigned int AuthLifetime;
-    unsigned int AuthKeyLen;
-    List(DigestTypes) DigestLst;
-    ESrvIfaceIdOrder InterfaceIDOrder;
+    bool   Experimental_;
+    std::string WorkDir_;
+    bool   Stateless_;
+    bool   InactiveMode_;
+    bool   GuessMode_;
+    int    CacheSize_;
+    unsigned int AuthLifetime_;
+    unsigned int AuthKeyLen_;
+    List(DigestTypes) DigestLst_;
+    ESrvIfaceIdOrder InterfaceIDOrder_;
 };
 #endif

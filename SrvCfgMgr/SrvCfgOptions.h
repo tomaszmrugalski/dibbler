@@ -39,12 +39,12 @@ public:
     TSrvCfgOptions(SPtr<TDUID> duid);
     TSrvCfgOptions(SPtr<TOptVendorData> remoteid);
     bool setOptions(SPtr<TSrvParsGlobalOpt> opt);
-    SPtr<TDUID> getDuid();
-    SPtr<TOptVendorData> getRemoteID();
+    SPtr<TDUID> getDuid() const;
+    SPtr<TOptVendorData> getRemoteID() const;
 
     // address reservation
     void setAddr(SPtr<TIPv6Addr> addr);
-    SPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr() const;
 
     // option: DNS Servers
     List(TIPv6Addr) * getDNSServerLst();

@@ -26,20 +26,20 @@ using namespace std;
 void TSrvCfgIface::addClientExceptionsLst(List(TSrvCfgOptions) exLst)
 {
     Log(Debug) << exLst.count() << " per-client configurations (exceptions) added." << LogEnd;
-    ExceptionsLst = exLst;
+    ExceptionsLst_ = exLst;
 }
 
-bool TSrvCfgIface::leaseQuerySupport()
+bool TSrvCfgIface::leaseQuerySupport() const
 {
-    return LeaseQuery;
+    return LeaseQuery_;
 }
 
 
 SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID, bool quiet)
 {
     SPtr<TSrvCfgOptions> x;
-    ExceptionsLst.first();
-    while (x=ExceptionsLst.get()) {
+    ExceptionsLst_.first();
+    while (x=ExceptionsLst_.get()) {
         if ( duid && x->getDuid() && (*(x->getDuid()) == *duid) ) {
             if (!quiet)
                 Log(Debug) << "Found per-client configuration (exception) for client with DUID="
@@ -62,7 +62,7 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TOp
 }
 
 void TSrvCfgIface::firstAddrClass() {
-    this->SrvCfgAddrClassLst.first();
+    SrvCfgAddrClassLst_.first();
 }
 
 /*
@@ -70,8 +70,8 @@ void TSrvCfgIface::firstAddrClass() {
  */
 bool TSrvCfgIface::getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
     SPtr<TSrvCfgAddrClass> ptrClass;
-    this->SrvCfgAddrClassLst.first();
-    while(ptrClass=SrvCfgAddrClassLst.get()) {
+    SrvCfgAddrClassLst_.first();
+    while(ptrClass=SrvCfgAddrClassLst_.get()) {
         if (ptrClass->clntPrefered(duid, clntAddr)) {
             classid=ptrClass->getID();
             return true;
@@ -91,8 +91,8 @@ bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntA
     unsigned int rnd;
 
     SPtr<TSrvCfgAddrClass> ptrClass;
-    this->SrvCfgAddrClassLst.first();
-    while( (ptrClass=SrvCfgAddrClassLst.get()) && (cnt<100) ) {
+    SrvCfgAddrClassLst_.first();
+    while( (ptrClass=SrvCfgAddrClassLst_.get()) && (cnt<100) ) {
         if (ptrClass->clntSupported(duid, clntAddr)) {
             clsid[cnt]   = ptrClass->getID();
             share[cnt]   = ptrClass->getShare();
@@ -121,42 +121,41 @@ bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntA
 
 
 void TSrvCfgIface::firstPD() {
-    this->SrvCfgPDLst.first();
+    SrvCfgPDLst_.first();
 }
 
-bool TSrvCfgIface::supportPrefixDelegation() {
-    return this->PrefixDelegationSupport;
+bool TSrvCfgIface::supportPrefixDelegation() const {
+    return SrvCfgPDLst_.count();
 }
 
 void TSrvCfgIface::addTA(SPtr<TSrvCfgTA> ta) {
-    this->SrvCfgTALst.append(ta);
+    SrvCfgTALst_.append(ta);
 }
 
 void TSrvCfgIface::firstTA() {
-    this->SrvCfgTALst.first();
+    SrvCfgTALst_.first();
 }
 SPtr<TSrvCfgTA> TSrvCfgIface::getTA() {
-    return this->SrvCfgTALst.get();
+    return SrvCfgTALst_.get();
 }
 
 void TSrvCfgIface::addPD(SPtr<TSrvCfgPD> pd) {
-    this->PrefixDelegationSupport = true;
-    this->SrvCfgPDLst.append(pd);
+    SrvCfgPDLst_.append(pd);
 }
 
 SPtr<TSrvCfgTA> TSrvCfgIface::getTA(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr) {
     SPtr<TSrvCfgTA> ta;
 
     // try to find preferred TA for this client
-    this->SrvCfgTALst.first();
-    while ( ta = this->getTA() ) {
+    SrvCfgTALst_.first();
+    while ( ta = getTA() ) {
         if (ta->clntPrefered(clntDuid, clntAddr))
             return ta;
     }
 
     // prefered not found? Then find first allowed
-    this->SrvCfgTALst.first();
-    while ( ta = this->getTA() ) {
+    SrvCfgTALst_.first();
+    while ( ta = getTA() ) {
         if (ta->clntSupported(clntDuid, clntAddr))
             return ta;
     }
@@ -165,13 +164,13 @@ SPtr<TSrvCfgTA> TSrvCfgIface::getTA(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAd
 }
 
 SPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
-    return SrvCfgAddrClassLst.get();
+    return SrvCfgAddrClassLst_.get();
 }
 
 SPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
-    this->firstAddrClass();
+    firstAddrClass();
     SPtr<TSrvCfgAddrClass> ptrClass;
-    while (ptrClass = this->getAddrClass()) {
+    while (ptrClass = getAddrClass()) {
         if (ptrClass->getID() == id)
             return ptrClass;
     }
@@ -180,8 +179,8 @@ SPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
 
 void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) {
     SPtr<TSrvCfgAddrClass> ptrClass;
-    this->firstAddrClass();
-    while (ptrClass = this->getAddrClass() ) {
+    firstAddrClass();
+    while (ptrClass = getAddrClass() ) {
         if (ptrClass->addrInPool(ptrAddr)) {
             unsigned int count = ptrClass->incrAssigned();
             if (quiet)
@@ -197,8 +196,8 @@ void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) 
 
 void TSrvCfgIface::delClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) {
     SPtr<TSrvCfgAddrClass> ptrClass;
-    this->firstAddrClass();
-    while (ptrClass = this->getAddrClass() ) {
+    firstAddrClass();
+    while (ptrClass = getAddrClass() ) {
         if (ptrClass->addrInPool(ptrAddr)) {
             unsigned long count = ptrClass->decrAssigned();
             if (quiet)
@@ -221,16 +220,16 @@ SPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SPtr<TDUID> clntDuid,
 
     // if there is class where client is on whitelist, it should be used rather than any other class
     // that would be also suitable
-    if(this->getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
+    if(getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
       Log(Debug) << "Found prefered class for client (duid = " << *clntDuid << ", addr = "
                 << *clntAddr << ")" << LogEnd;
-      return this->getClassByID(classid);
+      return getClassByID(classid);
     }
 
     // Get one of the normal classes
-    if(this->getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
+    if(getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
         Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd;
-        return this->getClassByID(classid);
+        return getClassByID(classid);
     }
 
     // This is some kind of problem...
@@ -239,8 +238,8 @@ SPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SPtr<TDUID> clntDuid,
     return 0;
 }
 
-long TSrvCfgIface::countAddrClass() {
-    return this->SrvCfgAddrClassLst.count();
+long TSrvCfgIface::countAddrClass() const {
+    return SrvCfgAddrClassLst_.count();
 }
 
 
@@ -250,13 +249,13 @@ long TSrvCfgIface::countAddrClass() {
 */
 
 SPtr<TSrvCfgPD> TSrvCfgIface::getPD() {
-    return SrvCfgPDLst.get();
+    return SrvCfgPDLst_.get();
 }
 
 SPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
-    this->firstPD();
+    firstPD();
     SPtr<TSrvCfgPD> ptrPD;
-    while (ptrPD = this->getPD()) {
+    while (ptrPD = getPD()) {
         if (ptrPD->getID() == id)
             return ptrPD;
     }
@@ -265,8 +264,8 @@ SPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
 
 bool TSrvCfgIface::addClntPrefix(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false */) {
     SPtr<TSrvCfgPD> ptrPD;
-    this->firstPD();
-    while (ptrPD = this->getPD() ) {
+    firstPD();
+    while (ptrPD = getPD() ) {
         if (ptrPD->prefixInPool(ptrAddr)) {
             unsigned long count = ptrPD->incrAssigned();
             if (quiet)
@@ -283,8 +282,8 @@ bool TSrvCfgIface::addClntPrefix(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false *
 
 bool TSrvCfgIface::delClntPrefix(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false */) {
     SPtr<TSrvCfgPD> ptrPD;
-    this->firstPD();
-    while (ptrPD = this->getPD() ) {
+    firstPD();
+    while (ptrPD = getPD() ) {
         if (ptrPD->prefixInPool(ptrAddr)) {
             unsigned long count = ptrPD->decrAssigned();
             if (quiet)
@@ -299,29 +298,27 @@ bool TSrvCfgIface::delClntPrefix(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false *
     return false;
 }
 
-long TSrvCfgIface::countPD() {
-    return this->SrvCfgPDLst.count();
+long TSrvCfgIface::countPD() const {
+    return SrvCfgPDLst_.count();
 }
 
 
-int TSrvCfgIface::getID() {
-    return this->ID;
+int TSrvCfgIface::getID() const {
+    return ID_;
 }
 
-string TSrvCfgIface::getName() {
-    return this->Name;
+string TSrvCfgIface::getName() const {
+    return Name_;
 }
 
-string TSrvCfgIface::getFullName() {
+string TSrvCfgIface::getFullName() const {
     ostringstream oss;
-    oss << this->ID;
-    return string(this->Name)
-        +"/"
-        +oss.str();
+    oss << ID_;
+    return string(Name_) + "/" + oss.str();
 }
 
 SPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {
-        return this->Unicast;
+        return Unicast_;
 }
 
 
@@ -330,25 +327,25 @@ TSrvCfgIface::~TSrvCfgIface() {
 
 void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     // default options
-    this->preference    = opt->getPreference();
-    this->IfaceMaxLease = opt->getIfaceMaxLease();
-    this->ClntMaxLease  = opt->getClntMaxLease();
-    this->RapidCommit   = opt->getRapidCommit();
-    this->Unicast       = opt->getUnicast();
-    this->LeaseQuery    = opt->getLeaseQuerySupport();
+    Preference_ = opt->getPreference();
+    IfaceMaxLease_ = opt->getIfaceMaxLease();
+    ClntMaxLease_  = opt->getClntMaxLease();
+    RapidCommit_   = opt->getRapidCommit();
+    Unicast_       = opt->getUnicast();
+    LeaseQuery_    = opt->getLeaseQuerySupport();
 
     if (opt->supportFQDN()){
-        UnknownFQDN = opt->getUnknownFQDN();
-        FQDNDomain  = opt->getFQDNDomain();
+        UnknownFQDN_ = opt->getUnknownFQDN();
+        FQDNDomain_  = opt->getFQDNDomain();
 
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
-        this->setFQDNLst(opt->getFQDNLst());
-        FQDNMode = opt->getFQDNMode();
+        setFQDNLst(opt->getFQDNLst());
+        FQDNMode_ = opt->getFQDNMode();
 
-        this->setRevDNSZoneRootLength(opt->getRevDNSZoneRootLength());
-        Log(Debug) <<"FQDN: Support is enabled on the " << this->getName()  << " interface." << LogEnd;
-        Log(Debug) <<"FQDN: Mode set to " << this->getFQDNMode() << ": ";
-        switch (this->getFQDNMode()) {
+        setRevDNSZoneRootLength(opt->getRevDNSZoneRootLength());
+        Log(Debug) <<"FQDN: Support is enabled on the " << getFullName()  << " interface." << LogEnd;
+        Log(Debug) <<"FQDN: Mode set to " << getFQDNMode() << ": ";
+        switch (getFQDNMode()) {
         case DNSUPDATE_MODE_NONE:
             Log(Cont) << "server will not perform any updates." << LogEnd;
             break;
@@ -361,19 +358,19 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
 #else
         Log(Error) << "DNSUpdate is disabled (please recompile)." << LogEnd;
 #endif
-        Log(Debug) <<"FQDN: revDNS zoneroot lenght set to " << this->getRevDNSZoneRootLength()<< "." << LogEnd;
+        Log(Debug) <<"FQDN: revDNS zoneroot lenght set to " << getRevDNSZoneRootLength()<< "." << LogEnd;
     }
 
     if (opt->isRelay()) {
-        this->Relay = true;
-        this->RelayName        = opt->getRelayName();
-        this->RelayID          = opt->getRelayID();
-        this->RelayInterfaceID = opt->getRelayInterfaceID();
+        Relay_ = true;
+        RelayName_        = opt->getRelayName();
+        RelayID_          = opt->getRelayID();
+        RelayInterfaceID_ = opt->getRelayInterfaceID();
     } else {
-        this->Relay = false;
-        this->RelayName = "";
-        this->RelayID = 0;
-        this->RelayInterfaceID = 0;
+        Relay_ = false;
+        RelayName_ = "";
+        RelayID_ = 0;
+        RelayInterfaceID_ = 0;
     }
 
     TSrvCfgOptions::setOptions(opt);
@@ -383,91 +380,89 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
  * default contructor
  */
 TSrvCfgIface::TSrvCfgIface() {
-    this->setDefaults();
-}
-
-TSrvCfgIface::TSrvCfgIface(int ifaceNr) {
-    this->setDefaults();
-    this->ID=ifaceNr;
-}
-
-TSrvCfgIface::TSrvCfgIface(std::string ifaceName) {
     setDefaults();
-    Name=ifaceName;
+}
+
+TSrvCfgIface::TSrvCfgIface(int ifindex) {
+    setDefaults();
+    ID_ = ifindex;
+}
+
+TSrvCfgIface::TSrvCfgIface(const std::string& ifaceName) {
+    setDefaults();
+    Name_ = ifaceName;
 }
 
 void TSrvCfgIface::setDefaults() {
-    this->ID = -1;
-    this->NoConfig=false;
-    this->Name = "[unknown]";
-    this->ID = -1;
-    this->NoConfig = false;
-    this->preference = 0;
+    ID_ = -1;
+    NoConfig_ = false;
+    Name_ = "[unknown]";
+    ID_ = -1;
+    Preference_ = 0;
 
-    this->UnknownFQDN = SERVER_DEFAULT_UNKNOWN_FQDN;
-    this->PrefixDelegationSupport = false;
+    UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
 }
 
 void TSrvCfgIface::setNoConfig() {
-    this->NoConfig=true;
+    NoConfig_ = true;
 }
 
-unsigned char TSrvCfgIface::getPreference() {
-    return this->preference;
+unsigned char TSrvCfgIface::getPreference() const {
+    return Preference_;
 }
 
-void TSrvCfgIface::setName(string ifaceName) {
-    this->Name=ifaceName;
+void TSrvCfgIface::setName(const std::string& ifaceName) {
+    Name_ = ifaceName;
 }
 
 void TSrvCfgIface::setID(int ifaceID) {
-    this->ID=ifaceID;
+    ID_ = ifaceID;
 }
 
-bool TSrvCfgIface::getRapidCommit() {
-    return this->RapidCommit;
+bool TSrvCfgIface::getRapidCommit() const {
+    return RapidCommit_;
 }
 
 
 void TSrvCfgIface::addAddrClass(SPtr<TSrvCfgAddrClass> addrClass) {
-    this->SrvCfgAddrClassLst.append(addrClass);
+    SrvCfgAddrClassLst_.append(addrClass);
 }
 
-long TSrvCfgIface::getIfaceMaxLease() {
-    return this->IfaceMaxLease;
+long TSrvCfgIface::getIfaceMaxLease() const {
+    return IfaceMaxLease_;
 }
 
-unsigned long TSrvCfgIface::getClntMaxLease() {
-    return this->ClntMaxLease;
+unsigned long TSrvCfgIface::getClntMaxLease() const {
+    return ClntMaxLease_;
 }
 
-string TSrvCfgIface::getRelayName() {
-    return this->RelayName;
+string TSrvCfgIface::getRelayName() const {
+    return RelayName_;
 }
 
-int TSrvCfgIface::getRelayID() {
-    return this->RelayID;
+int TSrvCfgIface::getRelayID() const {
+    return RelayID_;
 }
 
-SPtr<TSrvOptInterfaceID> TSrvCfgIface::getRelayInterfaceID() {
-    return this->RelayInterfaceID;
+SPtr<TSrvOptInterfaceID> TSrvCfgIface::getRelayInterfaceID() const {
+    return RelayInterfaceID_;
 }
 
-bool TSrvCfgIface::isRelay() {
-    return this->Relay;
+bool TSrvCfgIface::isRelay() const {
+    return Relay_;
 }
 
-void TSrvCfgIface::setRelayName(string name) {
-    this->RelayName = name;
+void TSrvCfgIface::setRelayName(const std::string& name) {
+    RelayName_ = name;
 }
 
 void TSrvCfgIface::setRelayID(int id) {
-    this->RelayID = id;
+    RelayID_ = id;
 }
 
 // --- option: FQDN ---
 void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
-    this->FQDNLst = *fqdn;
+    FQDNLst_ = *fqdn;
 }
 
 /**
@@ -485,8 +480,8 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     SPtr<TFQDN> alternative = 0; // best FQDN found for that client
     SPtr<TFQDN> foo;
 
-    FQDNLst.first();
-    while (foo=this->FQDNLst.get()) {
+    FQDNLst_.first();
+    while ( foo = FQDNLst_.get()) {
 
         if (foo->isUsed()) {
             // client sent a hint, but it is used currently
@@ -526,11 +521,11 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         }
     }
 
-    switch (UnknownFQDN)
+    switch (UnknownFQDN_)
     {
     default:
     {
-        Log(Error) << "FQDN: Invalid unknown-fqdn mode specified (" << UnknownFQDN << ")." << LogEnd;
+        Log(Error) << "FQDN: Invalid unknown-fqdn mode specified (" << UnknownFQDN_ << ")." << LogEnd;
         return 0;
     }
     case UNKNOWN_FQDN_REJECT:
@@ -552,7 +547,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     {
         Log(Info) << "FQDN: Accepting unknown (" << hint <<") FQDN requested by client." <<LogEnd;
         SPtr<TFQDN> newEntry = new TFQDN(hint,false);
-        FQDNLst.append(newEntry);
+        FQDNLst_.append(newEntry);
         Log(Debug) << "Retured FQDN  " << newEntry->getName() <<LogEnd;
         return newEntry;
     }
@@ -570,9 +565,9 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
             }
         }
 
-        assignedDomain += "." + FQDNDomain;
+        assignedDomain += "." + FQDNDomain_;
         SPtr<TFQDN> newEntry = new TFQDN(assignedDomain, false);
-        FQDNLst.append(newEntry);
+        FQDNLst_.append(newEntry);
         Log(Info) << "FQDN: Client requested (" << hint <<"), assigning (" << assignedDomain << ")." <<LogEnd;
         return newEntry;
     }
@@ -580,13 +575,13 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     {
         string tmp = addr->getPlain();
         std::string::size_type j = 0;
-        while ( (j=tmp.find("::"))!=std::string::npos)
-            tmp.replace(j,1,"-");
-        while ( (j=tmp.find(':'))!=std::string::npos)
-            tmp.replace(j,1,"-");
-        tmp = tmp + "." + FQDNDomain;
+        while ( (j = tmp.find("::"))!=std::string::npos)
+            tmp.replace(j, 1, "-");
+        while ( (j = tmp.find(':'))!=std::string::npos)
+            tmp.replace(j, 1, "-");
+        tmp = tmp + "." + FQDNDomain_;
         SPtr<TFQDN> newEntry = new TFQDN(tmp, false);
-        FQDNLst.append(newEntry);
+        FQDNLst_.append(newEntry);
         Log(Info) << "FQDN: Client requested (" << hint <<"), assiging (" << tmp << ")." <<LogEnd;
         return newEntry;
     }
@@ -597,33 +592,34 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     return 0;
 }
 
-SPtr<TDUID> TSrvCfgIface::getFQDNDuid(std::string name) {
+SPtr<TDUID> TSrvCfgIface::getFQDNDuid(const std::string& name) {
+    /// @todo: Implement this!
     SPtr<TDUID> res = new TDUID();
     return res;
 }
 
 List(TFQDN) *TSrvCfgIface::getFQDNLst() {
-    return &this->FQDNLst;
+    return &FQDNLst_;
 }
 
-bool TSrvCfgIface::supportFQDN() {
-    return FQDNLst.count() || UnknownFQDN>=UNKNOWN_FQDN_ACCEPT;
+bool TSrvCfgIface::supportFQDN() const {
+    return FQDNLst_.count() || (UnknownFQDN_ >= UNKNOWN_FQDN_ACCEPT);
 }
 
-int TSrvCfgIface::getFQDNMode(){
-    return FQDNMode;
+int TSrvCfgIface::getFQDNMode() const{
+    return FQDNMode_;
 }
 
-int TSrvCfgIface::getRevDNSZoneRootLength(){
-    return this->revDNSZoneRootLength;
+int TSrvCfgIface::getRevDNSZoneRootLength() const{
+    return RevDNSZoneRootLength_;
 }
 
 void TSrvCfgIface::setRevDNSZoneRootLength(int revDNSZoneRootLength){
-    this->revDNSZoneRootLength=revDNSZoneRootLength;
+    RevDNSZoneRootLength_ = revDNSZoneRootLength;
 }
 
-string TSrvCfgIface::getFQDNModeString() {
-    switch (this->FQDNMode) {
+string TSrvCfgIface::getFQDNModeString() const {
+    switch (FQDNMode_) {
     case 0:  return "updates disabled";
     case 1:  return "server will update PTR";
     case 2:  return "server will update PTR and AAAA";
@@ -634,11 +630,11 @@ string TSrvCfgIface::getFQDNModeString() {
 
 void TSrvCfgIface::addTAAddr() {
     SPtr<TSrvCfgTA> ta;
-    this->firstTA();
-    ta=this->getTA();
+    firstTA();
+    ta = getTA();
     if (!ta) {
         Log(Error) << "Unable to increase TA usage. TA (temporary addresses) is not found on the "
-                   << this->getFullName() << " interface." << LogEnd;
+                   << getFullName() << " interface." << LogEnd;
         return;
     }
     ta->incrAssigned();
@@ -646,11 +642,11 @@ void TSrvCfgIface::addTAAddr() {
 
 void TSrvCfgIface::delTAAddr() {
     SPtr<TSrvCfgTA> ta;
-    this->firstTA();
-    ta = this->getTA();
+    firstTA();
+    ta = getTA();
     if (!ta) {
         Log(Error) << "Unable to decrease TA usage. TA (temporary addresses) is not found on the "
-                   << this->getFullName() << " interface." << LogEnd;
+                   << getFullName() << " interface." << LogEnd;
         return;
     }
     ta->decrAssigned();
@@ -667,12 +663,12 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     SPtr<string> str;
 
     out << dec;
-    out << "  <SrvCfgIface name=\""<<iface.Name << "\" ifindex=\""<<iface.ID << "\">" << endl;
+    out << "  <SrvCfgIface name=\""<<iface.Name_ << "\" ifindex=\"" << iface.ID_ << "\">" << endl;
 
-    if (iface.Relay) {
-        out << "    <relay name=\"" << iface.RelayName << "\" ifindex=\"" << iface.RelayID;
-        if (iface.RelayInterfaceID) {
-          out << "\" interfaceid=\"" << iface.RelayInterfaceID->getPlain() << "\"";
+    if (iface.Relay_) {
+        out << "    <relay name=\"" << iface.RelayName_ << "\" ifindex=\"" << iface.RelayID_;
+        if (iface.RelayInterfaceID_) {
+          out << "\" interfaceid=\"" << iface.RelayInterfaceID_->getPlain() << "\"";
         } else {
           out << "\" interfaceid=null";
         }
@@ -681,18 +677,18 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <!-- <relay/> -->" << std::endl;
     }
 
-    out << "    <preference>" << (int)iface.preference << "</preference>" << std::endl;
-    out << "    <ifaceMaxLease>" << iface.IfaceMaxLease << "</ifaceMaxLease>" << std::endl;
-    out << "    <clntMaxLease>" << iface.ClntMaxLease << "</clntMaxLease>" << std::endl;
-    out << "    <LeaseQuery>" << (iface.LeaseQuery?"1":"0") << "</LeaseQuery>" << std::endl;
+    out << "    <preference>" << (int)iface.Preference_ << "</preference>" << std::endl;
+    out << "    <ifaceMaxLease>" << iface.IfaceMaxLease_ << "</ifaceMaxLease>" << std::endl;
+    out << "    <clntMaxLease>" << iface.ClntMaxLease_ << "</clntMaxLease>" << std::endl;
+    out << "    <LeaseQuery>" << (iface.LeaseQuery_?"1":"0") << "</LeaseQuery>" << std::endl;
 
-    if (iface.Unicast) {
-        out << "    <unicast>" << *(iface.Unicast) << "</unicast>" << endl;
+    if (iface.Unicast_) {
+        out << "    <unicast>" << *(iface.Unicast_) << "</unicast>" << endl;
     } else {
         out << "    <!-- <unicast/> -->" << endl;
     }
 
-    if (iface.RapidCommit) {
+    if (iface.RapidCommit_) {
         out << "    <rapid-commit/>" << std::endl;
     } else {
         out << "    <!-- <rapid-commit/> -->" << std::endl;
@@ -701,18 +697,18 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << endl;
     // print IA objects
     SPtr<TSrvCfgAddrClass>	ia;
-    iface.SrvCfgAddrClassLst.first();
-    out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst.count() << "-->" << endl;
-    while( ia=iface.SrvCfgAddrClassLst.get() ) {
+    iface.SrvCfgAddrClassLst_.first();
+    out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst_.count() << "-->" << endl;
+    while( ia=iface.SrvCfgAddrClassLst_.get() ) {
         out << *ia;
     }
 
     out << endl;
     // print PD objects
     SPtr<TSrvCfgPD>	pd;
-    iface.SrvCfgPDLst.first();
-    out << "    <!-- PD: prefix delegation class count: " << iface.SrvCfgPDLst.count() << "-->" << endl;
-    while( pd=iface.SrvCfgPDLst.get() ) {
+    iface.SrvCfgPDLst_.first();
+    out << "    <!-- PD: prefix delegation class count: " << iface.SrvCfgPDLst_.count() << "-->" << endl;
+    while( pd=iface.SrvCfgPDLst_.get() ) {
         out << *pd;
     }
 
@@ -720,7 +716,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     // print TA objects
     SPtr<TSrvCfgTA> ta;
     iface.firstTA();
-    out << "    <!-- TA: temporary IPv6 addr class count: " << iface.SrvCfgTALst.count() << "-->" << endl;
+    out << "    <!-- TA: temporary IPv6 addr class count: " << iface.SrvCfgTALst_.count() << "-->" << endl;
     while( ta=iface.getTA() )
     {
         out << *ta;
@@ -841,8 +837,8 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
       List(TFQDN) * lst = iface.getFQDNLst();
       out << "    <fqdnOptions count=\"" << lst->count() << "\" prefix=\""
           << iface.getRevDNSZoneRootLength() << "\""
-          << " domain=\"" << iface.FQDNDomain << "\""
-          << " unknownFqdnMode=\"" << iface.UnknownFQDN << "\""
+          << " domain=\"" << iface.FQDNDomain_ << "\""
+          << " unknownFqdnMode=\"" << iface.UnknownFQDN_ << "\""
           << ">" << endl;
       lst->first();
       while (f=lst->get()) {
@@ -855,9 +851,9 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
 
 
     SPtr<TSrvCfgOptions> ex;
-    out << "    <!-- " << iface.ExceptionsLst.count() << " per-client parameters (exceptions) -->" << endl;
-    iface.ExceptionsLst.first();
-    while (ex = iface.ExceptionsLst.get()) {
+    out << "    <!-- " << iface.ExceptionsLst_.count() << " per-client parameters (exceptions) -->" << endl;
+    iface.ExceptionsLst_.first();
+    while (ex = iface.ExceptionsLst_.get()) {
         out << *ex;
     }
 
@@ -869,21 +865,21 @@ void TSrvCfgIface::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
 {
     //  Log(Info)<<"Mapping allow, deny list inside interface "<<Name<<LogEnd;
     SPtr<TSrvCfgAddrClass> ptrClass;
-    this->SrvCfgAddrClassLst.first();
-    while(ptrClass=SrvCfgAddrClassLst.get()){
+    SrvCfgAddrClassLst_.first();
+    while(ptrClass = SrvCfgAddrClassLst_.get()){
         ptrClass->mapAllowDenyList(clientClassLst);
     }
 
     // Map the Allow and Deny list to TA c
     SPtr<TSrvCfgTA> ptrTA;
-    this->SrvCfgTALst.first();
-    while(ptrTA = SrvCfgTALst.get()){
+    SrvCfgTALst_.first();
+    while(ptrTA = SrvCfgTALst_.get()){
         ptrTA->mapAllowDenyList(clientClassLst);
     }
     // Map the Allow and Deny list to prefix
     SPtr<TSrvCfgPD> ptrPD;
-    this->SrvCfgPDLst.first();
-    while(ptrPD = SrvCfgPDLst.get()){
+    SrvCfgPDLst_.first();
+    while(ptrPD = SrvCfgPDLst_.get()){
         ptrPD->mapAllowDenyList(clientClassLst);
     }
 }

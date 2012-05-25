@@ -28,11 +28,11 @@ TSrvCfgOptions::TSrvCfgOptions(SPtr<TOptVendorData> remoteID) {
     RemoteID = remoteID;
 }
 
-SPtr<TDUID> TSrvCfgOptions::getDuid() {
+SPtr<TDUID> TSrvCfgOptions::getDuid() const {
     return Duid;
 }
 
-SPtr<TOptVendorData> TSrvCfgOptions::getRemoteID() {
+SPtr<TOptVendorData> TSrvCfgOptions::getRemoteID() const {
     return RemoteID;
 }
 
@@ -219,7 +219,6 @@ List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
             // enterprise number not specified => return all
             returnList.append(x);
         }
-
     }
 
     return returnList;
@@ -229,7 +228,7 @@ void TSrvCfgOptions::setAddr(SPtr<TIPv6Addr> addr) {
     Addr = addr;
 }
 
-SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() {
+SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() const {
     return Addr;
 }
 
