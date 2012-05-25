@@ -22,13 +22,13 @@ info:
 	@echo "GTEST_INCLUDES=$(GTEST_INCLUDES)"
 	@echo "HAVE_GTEST=$(HAVE_GTEST)"
 
-
 TESTS = 
 if HAVE_GTEST
 TESTS += AddrMgr_tests
 
 AddrMgr_tests_SOURCES = run_tests.cpp
 AddrMgr_tests_SOURCES += AddrAddr_unittest.cc
+AddrMgr_tests_SOURCES += AddrMgr_unittest.cc
 
 AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 
