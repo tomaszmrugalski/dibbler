@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptAuthentication.cpp,v 1.4 2008-08-29 00:07:28 thomson Exp $
- *
  */
 
 #include "ClntOptAuthentication.h"

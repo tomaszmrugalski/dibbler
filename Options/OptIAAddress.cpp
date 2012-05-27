@@ -35,13 +35,13 @@ TOptIAAddress::TOptIAAddress(char * &buf, int& n, TMsg* parent)
 
 TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref,
                              unsigned long valid, TMsg* parent)
-    :TOpt(OPTION_IAADDR, parent) {
+    :TOpt(OPTION_IAADDR, parent), Valid_(true) {
     if(addr)
         Addr_ = addr;
     else
         Addr_ = new TIPv6Addr();
-    this->PrefLifetime_  = pref;
-    this->ValidLifetime_ = valid;
+    PrefLifetime_  = pref;
+    ValidLifetime_ = valid;
 }
 
 size_t TOptIAAddress::getSize() {

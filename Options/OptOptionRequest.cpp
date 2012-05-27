@@ -15,10 +15,10 @@
 #include "Logger.h"
 
 TOptOptionRequest::TOptOptionRequest(uint16_t code, TMsg* parent)
-        :TOpt(code, parent)
+    :TOpt(code, parent), Valid_(true)
 {
-    this->Options = NULL;
-    this->OptCnt = 0;
+    Options = NULL;
+    OptCnt = 0;
 }
 
 int  TOptOptionRequest::getReqOpt(int optNr) {
@@ -30,10 +30,10 @@ int  TOptOptionRequest::getReqOpt(int optNr) {
 
 size_t TOptOptionRequest::getSize()
 {
-        if (!OptCnt)
+    if (!OptCnt)
         return 0;
-        int mySize = 4+(OptCnt<<1);
-        return mySize+getSubOptSize();
+    int mySize = 4+(OptCnt<<1);
+    return mySize+getSubOptSize();
 }
 
 char * TOptOptionRequest::storeSelf( char* buf)

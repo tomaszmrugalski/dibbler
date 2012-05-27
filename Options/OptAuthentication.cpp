@@ -17,8 +17,8 @@
 #include "Portable.h"
 
 TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
-    :TOpt(OPTION_AUTH, parent), Valid(false) {
-    AuthInfoLen = getDigestSize(parent->DigestType);
+    :TOpt(OPTION_AUTH, parent), Valid_(false) {
+    AuthInfoLen_ = getDigestSize(parent->DigestType);
 
     if (n < 13) {
         buf += n;
@@ -37,7 +37,7 @@ TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
     buf += sizeof(uint32_t);
     n -= sizeof(uint32_t);
 
-    if (n != AuthInfoLen){
+    if (n != AuthInfoLen_){
         buf += n;
         n = 0;
         return;
@@ -48,7 +48,7 @@ TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
     if (Parent->getType() != ADVERTISE_MSG)
         Parent->setAuthInfoKey(Parent->AuthKeys->Get(Parent->getSPI()));
 
-    PrintHex("Received digest: ", buf, AuthInfoLen);
+    PrintHex("Received digest: ", buf, AuthInfoLen_);
 
     buf += n;
     n = 0;
@@ -57,31 +57,31 @@ TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
 }
 
 TOptAuthentication::TOptAuthentication(TMsg* parent)
-    :TOpt(OPTION_AUTH, parent) {
-    AuthInfoLen = getDigestSize(parent->DigestType);
+    :TOpt(OPTION_AUTH, parent), Valid_(true) {
+    AuthInfoLen_ = getDigestSize(parent->DigestType);
 }
 
 void TOptAuthentication::setRDM( uint8_t value) {
-    RDM = value;
+    RDM_ = value;
 }
 
 size_t TOptAuthentication::getSize() {
-    return 17 + AuthInfoLen;
+    return 17 + AuthInfoLen_;
 }
 
 char * TOptAuthentication::storeSelf( char* buf) {
-    AuthInfoLen = getDigestSize(Parent->DigestType);
+    AuthInfoLen_ = getDigestSize(Parent->DigestType);
     uint32_t spi = Parent->getSPI();
     uint32_t aaaspi = Parent->getAAASPI();
 
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize() - 4);
-    *buf = RDM;
+    *buf = RDM_;
     buf+=1;
     buf = writeUint64(buf, Parent->getReplayDetection());
     buf = writeUint32(buf, spi);
 
-    memset(buf, 0, AuthInfoLen);
+    memset(buf, 0, AuthInfoLen_);
 
     Parent->setAuthInfoPtr(buf);
 
@@ -94,7 +94,7 @@ char * TOptAuthentication::storeSelf( char* buf) {
             Parent->AuthKeys->Add(spi, aaaspi, Parent->getAuthInfoKey());
     }
 
-    buf+=AuthInfoLen;
+    buf += AuthInfoLen_;
 
     return buf;
 }

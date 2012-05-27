@@ -31,14 +31,11 @@ uint32_t TOptIA_PD::getT2() {
     return T2_;
 }
 
-TOptIA_PD::TOptIA_PD( char * &buf, int &bufsize, TMsg* parent)
-    :TOpt(OPTION_IA_PD, parent) {
-    if (bufsize<12) {
-        Valid=false;
-        bufsize=0;
-
+TOptIA_PD::TOptIA_PD(char * &buf, int &bufsize, TMsg* parent)
+    :TOpt(OPTION_IA_PD, parent), Valid_(false) {
+    if (bufsize < 12) {
+        bufsize = 0;
     } else {
-        Valid=true;
         IAID_ = readUint32(buf);
         buf += sizeof(uint32_t);
         bufsize -= sizeof(uint32_t);
@@ -50,6 +47,7 @@ TOptIA_PD::TOptIA_PD( char * &buf, int &bufsize, TMsg* parent)
         T2_ = readUint32(buf);
         buf += sizeof(uint32_t);
         bufsize -= sizeof(uint32_t);
+        Valid = true;
     }
 }
 
