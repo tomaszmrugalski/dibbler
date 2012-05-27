@@ -223,7 +223,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     }
 }
 
-bool TSrvIfaceMgr::setupRelay(string name, int ifindex, int underIfindex, SPtr<TSrvOptInterfaceID> interfaceID) {
+bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex, 
+                              SPtr<TSrvOptInterfaceID> interfaceID) {
     SPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
     if (!under) {
         Log(Crit) << "Unable to setup " << name << "/" << ifindex

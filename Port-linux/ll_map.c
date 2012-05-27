@@ -51,7 +51,7 @@ int ll_remember_index(const struct sockaddr_nl *who,
 		return -1;
 
 
-	memset(tb, 0, sizeof(tb));
+	memset(tb, 0, sizeof(*tb));
 	parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), IFLA_PAYLOAD(n));
 	if (tb[IFLA_IFNAME] == NULL)
 		return 0;

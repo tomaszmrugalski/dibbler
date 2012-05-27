@@ -126,7 +126,7 @@ bool TSrvParsIfaceOpt::getRapidCommit() {
 }
 
 // --- relay related ---
-void TSrvParsIfaceOpt::setRelayName(string name) {
+void TSrvParsIfaceOpt::setRelayName(std::string name) {
     this->Relay      = true;
     this->RelayName  = name;
     this->RelayID    = -1;
@@ -216,7 +216,7 @@ bool TSrvParsIfaceOpt::supportNTPServer(){
 }
 
 // --- option: TIMEZONE ---
-void TSrvParsIfaceOpt::setTimezone(string timezone) {
+void TSrvParsIfaceOpt::setTimezone(std::string timezone) {
     this->Timezone=timezone;
     this->TimezoneSupport = true;
 }
@@ -228,7 +228,7 @@ bool TSrvParsIfaceOpt::supportTimezone(){
 }
 
 // --- option: SIP server ---
-void TSrvParsIfaceOpt::setSIPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
+void TSrvParsIfaceOpt::setSIPServerLst(List(TIPv6Addr) *lst) {
     this->SIPServerLst = *lst;
     this->SIPServerSupport = true;
 }
@@ -293,7 +293,7 @@ bool TSrvParsIfaceOpt::supportNISServer(){
 }
 
 // --- option: NIS domain ---
-void TSrvParsIfaceOpt::setNISDomain(string domain) {
+void TSrvParsIfaceOpt::setNISDomain(std::string domain) {
     this->NISDomain=domain;
     this->NISDomainSupport=true;
 }
@@ -317,7 +317,7 @@ bool TSrvParsIfaceOpt::supportNISPServer(){
 }
 
 // --- option: NIS+ domain ---
-void TSrvParsIfaceOpt::setNISPDomain(string domain) {
+void TSrvParsIfaceOpt::setNISPDomain(std::string domain) {
     this->NISPDomain=domain;
     this->NISPDomainSupport=true;
 }

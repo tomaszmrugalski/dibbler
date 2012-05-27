@@ -97,7 +97,7 @@ bool TSrvCfgOptions::supportNTPServer(){
 }
 
 // --- option: TIMEZONE ---
-void TSrvCfgOptions::setTimezone(string timezone) {
+void TSrvCfgOptions::setTimezone(std::string timezone) {
     this->Timezone=timezone;
     this->TimezoneSupport = true;
 }
@@ -109,7 +109,7 @@ bool TSrvCfgOptions::supportTimezone(){
 }
 
 // --- option: SIP server ---
-void TSrvCfgOptions::setSIPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
+void TSrvCfgOptions::setSIPServerLst(List(TIPv6Addr) *lst) {
     this->SIPServerLst = *lst;
     this->SIPServerSupport = true;
 }
@@ -133,7 +133,7 @@ bool TSrvCfgOptions::supportSIPDomain() {
 }
 
 // --- option: NIS server ---
-void TSrvCfgOptions::setNISServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
+void TSrvCfgOptions::setNISServerLst(List(TIPv6Addr) *lst) {
     this->NISServerLst     = *lst;
     this->NISServerSupport = true;
 }
@@ -145,7 +145,7 @@ bool TSrvCfgOptions::supportNISServer(){
 }
 
 // --- option: NIS domain ---
-void TSrvCfgOptions::setNISDomain(string domain) {
+void TSrvCfgOptions::setNISDomain(std::string domain) {
     this->NISDomain=domain;
     this->NISDomainSupport=true;
 }
@@ -157,7 +157,7 @@ bool TSrvCfgOptions::supportNISDomain() {
 }
 
 // --- option: NIS+ server ---
-void TSrvCfgOptions::setNISPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
+void TSrvCfgOptions::setNISPServerLst(List(TIPv6Addr) *lst) {
     this->NISPServerLst = *lst;
     this->NISPServerSupport = true;
 }
@@ -169,7 +169,7 @@ bool TSrvCfgOptions::supportNISPServer(){
 }
 
 // --- option: NIS+ domain ---
-void TSrvCfgOptions::setNISPDomain(string domain) {
+void TSrvCfgOptions::setNISPDomain(std::string domain) {
     this->NISPDomain=domain;
     this->NISPDomainSupport=true;
 }

@@ -728,7 +728,7 @@ string TSrvMsg::showRequestedOptions(SPtr<TOptOptionRequest> oro) {
  * @return FQDN option
  */
 SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
-				       SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate) {
+				       SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate) {
 
     SPtr<TSrvOptFQDN> optFQDN;
     SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID( this->Iface );
