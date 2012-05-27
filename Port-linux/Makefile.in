@@ -60,8 +60,6 @@ am_libLowLevel_a_OBJECTS = libLowLevel_a-daemon.$(OBJEXT) \
 	libLowLevel_a-interface.$(OBJEXT) \
 	libLowLevel_a-iproute.$(OBJEXT) \
 	libLowLevel_a-libnetlink.$(OBJEXT) \
-	libLowLevel_a-ll_map.$(OBJEXT) \
-	libLowLevel_a-ll_types.$(OBJEXT) \
 	libLowLevel_a-lowlevel-linux.$(OBJEXT) \
 	libLowLevel_a-lowlevel-linux-link-state.$(OBJEXT) \
 	libLowLevel_a-lowlevel-options-linux.$(OBJEXT) \
@@ -247,7 +245,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libLowLevel.a
 libLowLevel_a_CPPFLAGS = -I$(top_srcdir)/Misc
-libLowLevel_a_SOURCES = daemon.cpp daemon.h ethtool-kernel.h ethtool-local.h interface.c interface.h ip_common.h iproute.c libnetlink.c libnetlink.h ll_map.c ll_map.h ll_types.c lowlevel-linux.c lowlevel-linux-link-state.c lowlevel-options-linux.c rtm_map.h rt_names.h utils.c utils.h
+libLowLevel_a_SOURCES = daemon.cpp daemon.h ethtool-kernel.h \
+	ethtool-local.h interface.c interface.h ip_common.h iproute.c \
+	libnetlink.c libnetlink.h lowlevel-linux.c \
+	lowlevel-linux-link-state.c lowlevel-options-linux.c rtm_map.h \
+	rt_names.h utils.c utils.h
 
 # that's ugly hack. Those files should not be built here. They are compiled during link of respective daemons.
 # As far as this makefile is concerned, they should be treated as data, so they are included in make dist
@@ -304,8 +306,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-interface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-iproute.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-libnetlink.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-ll_map.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-ll_types.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-linux-link-state.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-linux.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-options-linux.Po@am__quote@
@@ -382,38 +382,6 @@ libLowLevel_a-libnetlink.obj: libnetlink.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libnetlink.c' object='libLowLevel_a-libnetlink.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-libnetlink.obj `if test -f 'libnetlink.c'; then $(CYGPATH_W) 'libnetlink.c'; else $(CYGPATH_W) '$(srcdir)/libnetlink.c'; fi`
-
-libLowLevel_a-ll_map.o: ll_map.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-ll_map.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-ll_map.Tpo -c -o libLowLevel_a-ll_map.o `test -f 'll_map.c' || echo '$(srcdir)/'`ll_map.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-ll_map.Tpo $(DEPDIR)/libLowLevel_a-ll_map.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ll_map.c' object='libLowLevel_a-ll_map.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-ll_map.o `test -f 'll_map.c' || echo '$(srcdir)/'`ll_map.c
-
-libLowLevel_a-ll_map.obj: ll_map.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-ll_map.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-ll_map.Tpo -c -o libLowLevel_a-ll_map.obj `if test -f 'll_map.c'; then $(CYGPATH_W) 'll_map.c'; else $(CYGPATH_W) '$(srcdir)/ll_map.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-ll_map.Tpo $(DEPDIR)/libLowLevel_a-ll_map.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ll_map.c' object='libLowLevel_a-ll_map.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-ll_map.obj `if test -f 'll_map.c'; then $(CYGPATH_W) 'll_map.c'; else $(CYGPATH_W) '$(srcdir)/ll_map.c'; fi`
-
-libLowLevel_a-ll_types.o: ll_types.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-ll_types.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-ll_types.Tpo -c -o libLowLevel_a-ll_types.o `test -f 'll_types.c' || echo '$(srcdir)/'`ll_types.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-ll_types.Tpo $(DEPDIR)/libLowLevel_a-ll_types.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ll_types.c' object='libLowLevel_a-ll_types.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-ll_types.o `test -f 'll_types.c' || echo '$(srcdir)/'`ll_types.c
-
-libLowLevel_a-ll_types.obj: ll_types.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-ll_types.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-ll_types.Tpo -c -o libLowLevel_a-ll_types.obj `if test -f 'll_types.c'; then $(CYGPATH_W) 'll_types.c'; else $(CYGPATH_W) '$(srcdir)/ll_types.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-ll_types.Tpo $(DEPDIR)/libLowLevel_a-ll_types.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ll_types.c' object='libLowLevel_a-ll_types.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-ll_types.obj `if test -f 'll_types.c'; then $(CYGPATH_W) 'll_types.c'; else $(CYGPATH_W) '$(srcdir)/ll_types.c'; fi`
 
 libLowLevel_a-lowlevel-linux.o: lowlevel-linux.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-linux.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-linux.Tpo -c -o libLowLevel_a-lowlevel-linux.o `test -f 'lowlevel-linux.c' || echo '$(srcdir)/'`lowlevel-linux.c
