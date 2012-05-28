@@ -113,7 +113,9 @@ public:
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
-private:
+
+    // used to be private, but we need access in tests
+protected:
     TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
     static TSrvCfgMgr * Instance;
     static int NextRelayID;

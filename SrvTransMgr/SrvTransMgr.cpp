@@ -414,9 +414,9 @@ void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrM
 
 /// @brief Removes expired leases and calls notify script
 ///
-/// @param addrLst
-/// @param tempAddrLst
-/// @param prefixLst
+/// @param addrLst list of expired address leases
+/// @param tempAddrLst list of expired temporary addresses leases
+/// @param prefixLst list of expired prefix delegation leases
 void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                                  std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
                                  std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst) {
