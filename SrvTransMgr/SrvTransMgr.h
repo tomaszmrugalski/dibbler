@@ -43,6 +43,10 @@ class TSrvTransMgr
     bool isDone();
     void shutdown();
 
+    SPtr<TSrvOptFQDN> addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
+                              SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
+    void removeFQDN(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
+
     void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);

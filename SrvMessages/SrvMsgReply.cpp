@@ -412,7 +412,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
             // if there was DNS Update performed, execute deleting Update
             SPtr<TFQDN> fqdn = ptrIA->getFQDN();
             if (fqdn) {
-                this->fqdnRelease(ptrIface, ptrIA, fqdn);
+                SrvTransMgr().removeFQDN(ptrIface, ptrIA, fqdn);
             }
 
             // let's verify each address
@@ -674,9 +674,9 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
 
             SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
             if (clntAssignedAddr)
-                optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAssignedAddr, hint, true);
+                optFQDN = SrvTransMgr().addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, true);
             else
-                optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAddr, hint, true);
+                optFQDN = SrvTransMgr().addFQDN(Iface, requestFQDN, ClientDUID, clntAddr, hint, true);
             if (optFQDN) {
                 Options.push_back((Ptr*) optFQDN);
             }

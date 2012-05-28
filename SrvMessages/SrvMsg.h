@@ -72,9 +72,11 @@ protected:
 
     bool check(bool clntIDmandatory, bool srvIDmandatory);
 
+#if 0
     SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
 				  SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
     void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
+#endif
     int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
 
 

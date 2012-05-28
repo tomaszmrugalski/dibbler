@@ -18,6 +18,7 @@
 #include "OptStatusCode.h"
 #include "SrvOptFQDN.h"
 #include "SrvOptIA_PD.h"
+#include "SrvTransMgr.h"
 #include "Logger.h"
 
 using namespace std;
@@ -117,9 +118,9 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
 
 	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
 	    if (clntAssignedAddr)
-		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
+		optFQDN = SrvTransMgr().addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
 	    else
-		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAddr, hint, false);
+		optFQDN = SrvTransMgr().addFQDN(Iface, requestFQDN, ClientDUID, clntAddr, hint, false);
 
 	    if (optFQDN) {
 		this->Options.push_back((Ptr*) optFQDN);
