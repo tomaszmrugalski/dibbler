@@ -49,28 +49,17 @@ public:
     bool getLeaseQuerySupport();
 
     //-- options related methods --
-    // option: DNS Servers
-    List(TIPv6Addr) * getDNSServerLst();
-    void setDNSServerLst(List(TIPv6Addr) *lst);
-    bool supportDNSServer();
-
-    // option: Domain
-    List(std::string) * getDomainLst();
-    void setDomainLst(List(std::string) * domains);
-    bool supportDomain();
-
-    // option: NTP servers
-    List(TIPv6Addr) * getNTPServerLst();
-    void setNTPServerLst(List(TIPv6Addr) *lst);
-    bool supportNTPServer();
-
-    // option: Timezone
-    std::string getTimezone();
-    void setTimezone(std::string timeZone);
-    bool supportTimezone();
-
+    // option: DNS Servers servers is now handled with extra options mechanism
+    // option: Domain servers is now handled with extra options mechanism
+    // option: NTP servers servers is now handled with extra options mechanism
+    // option: Timezone servers is now handled with extra options mechanism
     // option: SIP servers is now handled with extra options mechanism
     // option: SIP domains is now handled with extra options mechanism
+    // option: NIS servers is now handled with extra options mechanism
+    // option: NIS+ servers is now handled with extra options mechanism
+    // option: NIS domain is now handled with extra options mechanism
+    // option: NISP domain is now handled with extra options mechanism
+    // option: LIFETIME servers is now handled with extra options mechanism
 
     // option: FQDN
     List(TFQDN) *getFQDNLst();
@@ -85,17 +74,6 @@ public:
 
     int getFQDNMode();
     void setFQDNMode(int FQDNMode);
-
-    // option: NIS servers is now handled with extra options mechanism
-    // option: NIS+ servers is now handled with extra options mechanism
-    // option: NIS domain is now handled with extra options mechanism
-    // option: NISP domain is now handled with extra options mechanism
-
-    // option: LIFETIME
-    void setLifetime(unsigned int life);
-    unsigned int getLifetime();
-    bool supportLifetime();
-
 
 #if 0
     // option: VENDOR-SPEC INFO
@@ -125,20 +103,10 @@ private:
     SPtr<TSrvOptInterfaceID> RelayInterfaceID_;
 
     // options
-    bool DNSServerSupport;
-    bool DomainSupport;
-    bool NTPServerSupport;
-    bool TimezoneSupport;
     bool FQDNSupport_;
-    bool LifetimeSupport;
     bool VendorSpecSupport;
 
-    List(TIPv6Addr) DNSServerLst;
-    List(std::string) DomainLst;
-    List(TIPv6Addr) NTPServerLst;
-    std::string Timezone;
     List(TFQDN) FQDNLst_;
-    unsigned int Lifetime;
 
     List(TOptVendorSpecInfo) VendorSpec_;
 

@@ -1084,11 +1084,11 @@ static const short yyrline[] = { 0,
    980,   987,  1008,  1019,  1024,  1040,  1051,  1057,  1063,  1072,
   1076,  1083,  1088,  1093,  1101,  1102,  1103,  1104,  1105,  1106,
   1107,  1108,  1109,  1110,  1111,  1112,  1116,  1145,  1178,  1182,
-  1191,  1194,  1203,  1207,  1216,  1226,  1229,  1240,  1243,  1255,
-  1263,  1266,  1274,  1278,  1286,  1293,  1298,  1306,  1314,  1331,
-  1341,  1344,  1355,  1358,  1369,  1381,  1392,  1399,  1401,  1408,
-  1411,  1421,  1427,  1427,  1435,  1444,  1453,  1464,  1468,  1472,
-  1477,  1486
+  1194,  1197,  1208,  1212,  1223,  1235,  1238,  1249,  1252,  1264,
+  1272,  1275,  1283,  1287,  1295,  1302,  1307,  1315,  1323,  1340,
+  1350,  1353,  1364,  1367,  1378,  1390,  1401,  1412,  1414,  1421,
+  1424,  1434,  1440,  1440,  1448,  1457,  1466,  1477,  1481,  1485,
+  1490,  1499
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","RELAY_",
@@ -2888,47 +2888,56 @@ case 239:
 case 240:
 #line 1182 "SrvParser.y"
 {
-    ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
+    SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_DNS_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(nis_servers, false);
+
+    // ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 ;
     break;}
 case 241:
-#line 1191 "SrvParser.y"
+#line 1194 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 242:
-#line 1194 "SrvParser.y"
+#line 1197 "SrvParser.y"
 {
-    ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
+    SPtr<TOpt> domains = new TOptDomainLst(OPTION_DOMAIN_LIST, PresentStringLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(domains, false);
+    // ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 ;
     break;}
 case 243:
-#line 1204 "SrvParser.y"
+#line 1209 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 244:
-#line 1207 "SrvParser.y"
+#line 1212 "SrvParser.y"
 {
-    ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
+    SPtr<TOpt> ntp_servers = new TOptAddrLst(OPTION_SNTP_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(ntp_servers, false);
+    // ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
 ;
     break;}
 case 245:
-#line 1217 "SrvParser.y"
+#line 1224 "SrvParser.y"
 {
-    ParserOptStack.getLast()->setTimezone(yyvsp[0].strval);
+    SPtr<TOpt> timezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, string(yyvsp[0].strval), NULL);
+    ParserOptStack.getLast()->addExtraOption(timezone, false);
+    // ParserOptStack.getLast()->setTimezone($3);
 ;
     break;}
 case 246:
-#line 1226 "SrvParser.y"
+#line 1235 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 247:
-#line 1229 "SrvParser.y"
+#line 1238 "SrvParser.y"
 {
     SPtr<TOpt> sip_servers = new TOptAddrLst(OPTION_SIP_SERVER_A, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(sip_servers, false);
@@ -2936,13 +2945,13 @@ case 247:
 ;
     break;}
 case 248:
-#line 1240 "SrvParser.y"
+#line 1249 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 249:
-#line 1243 "SrvParser.y"
+#line 1252 "SrvParser.y"
 {
     SPtr<TOpt> sip_domains = new TOptDomainLst(OPTION_SIP_SERVER_D, PresentStringLst, NULL);
     ParserOptStack.getLast()->addExtraOption(sip_domains, false);
@@ -2950,7 +2959,7 @@ case 249:
 ;
     break;}
 case 250:
-#line 1256 "SrvParser.y"
+#line 1265 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)   << "No FQDNMode found, setting default mode 2 (all updates executed by server)." << LogEnd;
@@ -2960,13 +2969,13 @@ case 250:
 ;
     break;}
 case 251:
-#line 1263 "SrvParser.y"
+#line 1272 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 ;
     break;}
 case 252:
-#line 1267 "SrvParser.y"
+#line 1276 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)  << "FQDNMode found, setting value"<< yyvsp[0].ival <<LogEnd;
@@ -2976,14 +2985,14 @@ case 252:
 ;
     break;}
 case 253:
-#line 1274 "SrvParser.y"
+#line 1283 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 
 ;
     break;}
 case 254:
-#line 1279 "SrvParser.y"
+#line 1288 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug) << "FQDNMode found, setting value " << yyvsp[-1].ival <<LogEnd;
@@ -2993,28 +3002,28 @@ case 254:
 ;
     break;}
 case 255:
-#line 1286 "SrvParser.y"
+#line 1295 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 
 ;
     break;}
 case 256:
-#line 1294 "SrvParser.y"
+#line 1303 "SrvParser.y"
 {
     ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode(yyvsp[-1].ival), string(yyvsp[0].strval) );
     Log(Debug) << "FQDN: Unknown fqdn names processing set to " << yyvsp[-1].ival << ", domain=" << yyvsp[0].strval << "." << LogEnd;
 ;
     break;}
 case 257:
-#line 1299 "SrvParser.y"
+#line 1308 "SrvParser.y"
 {
     ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode(yyvsp[0].ival), string("") );
     Log(Debug) << "FQDN: Unknown fqdn names processing set to " << yyvsp[0].ival << ", no domain." << LogEnd;
 ;
     break;}
 case 258:
-#line 1307 "SrvParser.y"
+#line 1316 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     CfgMgr->setDDNSAddress(addr);
@@ -3022,7 +3031,7 @@ case 258:
 ;
     break;}
 case 259:
-#line 1315 "SrvParser.y"
+#line 1324 "SrvParser.y"
 {
     if (!strcasecmp(yyvsp[0].strval,"tcp"))
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_TCP);
@@ -3039,20 +3048,20 @@ case 259:
 ;
     break;}
 case 260:
-#line 1332 "SrvParser.y"
+#line 1341 "SrvParser.y"
 {
     Log(Debug) << "DDNS: Setting timeout to " << yyvsp[0].ival << "ms." << LogEnd;
     CfgMgr->setDDNSTimeout(yyvsp[0].ival);
 ;
     break;}
 case 261:
-#line 1341 "SrvParser.y"
+#line 1350 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 262:
-#line 1344 "SrvParser.y"
+#line 1353 "SrvParser.y"
 {
     SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_NIS_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(nis_servers, false);
@@ -3060,13 +3069,13 @@ case 262:
 ;
     break;}
 case 263:
-#line 1355 "SrvParser.y"
+#line 1364 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 264:
-#line 1358 "SrvParser.y"
+#line 1367 "SrvParser.y"
 {
     SPtr<TOpt> nisp_servers = new TOptAddrLst(OPTION_NISP_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(nisp_servers, false);
@@ -3074,7 +3083,7 @@ case 264:
 ;
     break;}
 case 265:
-#line 1370 "SrvParser.y"
+#line 1379 "SrvParser.y"
 {
     SPtr<TOpt> nis_domain = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, string(yyvsp[0].strval), NULL);
     ParserOptStack.getLast()->addExtraOption(nis_domain, false);
@@ -3082,38 +3091,42 @@ case 265:
 ;
     break;}
 case 266:
-#line 1382 "SrvParser.y"
+#line 1391 "SrvParser.y"
 {
     SPtr<TOpt> nispdomain = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, string(yyvsp[0].strval), NULL);
     ParserOptStack.getLast()->addExtraOption(nispdomain, false);
 ;
     break;}
 case 267:
-#line 1393 "SrvParser.y"
+#line 1402 "SrvParser.y"
 {
-    ParserOptStack.getLast()->setLifetime(yyvsp[0].ival);
+    SPtr<TOpt> lifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
+                                          OPTION_INFORMATION_REFRESH_TIME_LEN, 
+                                          uint32_t(yyvsp[0].ival), NULL);
+    ParserOptStack.getLast()->addExtraOption(lifetime, false);
+    //ParserOptStack.getLast()->setLifetime($3);
 ;
     break;}
 case 268:
-#line 1399 "SrvParser.y"
+#line 1412 "SrvParser.y"
 {
 ;
     break;}
 case 269:
-#line 1401 "SrvParser.y"
+#line 1414 "SrvParser.y"
 {
     // ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
 ;
     break;}
 case 270:
-#line 1409 "SrvParser.y"
+#line 1422 "SrvParser.y"
 {
     Log(Notice) << "ClientClass found, name: " << string(yyvsp[-1].strval) << LogEnd;
 ;
     break;}
 case 271:
-#line 1412 "SrvParser.y"
+#line 1425 "SrvParser.y"
 {
     SPtr<Node> cond =  NodeClientClassLst.getLast();
     SrvCfgClientClassLst.append( new TSrvCfgClientClass(string(yyvsp[-4].strval),cond));
@@ -3121,12 +3134,12 @@ case 271:
 ;
     break;}
 case 272:
-#line 1422 "SrvParser.y"
+#line 1435 "SrvParser.y"
 {
 ;
     break;}
 case 274:
-#line 1428 "SrvParser.y"
+#line 1441 "SrvParser.y"
 {
     SPtr<Node> r =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3136,7 +3149,7 @@ case 274:
 ;
     break;}
 case 275:
-#line 1436 "SrvParser.y"
+#line 1449 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3147,7 +3160,7 @@ case 275:
 ;
     break;}
 case 276:
-#line 1445 "SrvParser.y"
+#line 1458 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3158,7 +3171,7 @@ case 276:
 ;
     break;}
 case 277:
-#line 1454 "SrvParser.y"
+#line 1467 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3168,26 +3181,26 @@ case 277:
 ;
     break;}
 case 278:
-#line 1465 "SrvParser.y"
+#line 1478 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM));
 ;
     break;}
 case 279:
-#line 1469 "SrvParser.y"
+#line 1482 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_DATA));
 ;
     break;}
 case 280:
-#line 1473 "SrvParser.y"
+#line 1486 "SrvParser.y"
 {
     // Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
     NodeClientClassLst.append(new NodeConstant(string(yyvsp[0].strval)));
 ;
     break;}
 case 281:
-#line 1478 "SrvParser.y"
+#line 1491 "SrvParser.y"
 {
     //Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
     stringstream convert;
@@ -3198,7 +3211,7 @@ case 281:
 ;
     break;}
 case 282:
-#line 1487 "SrvParser.y"
+#line 1500 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3409,7 +3422,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 1493 "SrvParser.y"
+#line 1506 "SrvParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

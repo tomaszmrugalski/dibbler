@@ -31,12 +31,7 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     LeaseQuery_    = SERVER_DEFAULT_LEASEQUERY;
 
     // options
-    DNSServerSupport  = false;
-    DomainSupport     = false;
-    NTPServerSupport  = false;
-    TimezoneSupport   = false;
     FQDNSupport_      = false;
-    LifetimeSupport   = false;
     VendorSpecSupport = false;
 
     UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
@@ -157,30 +152,12 @@ bool TSrvParsIfaceOpt::isRelay() {
 }
 
 // --- option: DNS servers ---
-void TSrvParsIfaceOpt::setDNSServerLst(List(TIPv6Addr) *lst) {
-    this->DNSServerLst = *lst;
-    this->DNSServerSupport = true;
-}
-
-List(TIPv6Addr) * TSrvParsIfaceOpt::getDNSServerLst() {
-    return &this->DNSServerLst;
-}
-bool TSrvParsIfaceOpt::supportDNSServer(){
-    return this->DNSServerSupport;
-}
-
 // --- option: DOMAIN ---
-void TSrvParsIfaceOpt::setDomainLst(List(std::string) * lst) {
-    this->DomainLst = *lst;
-    this->DomainSupport = true;
-}
-
-List(std::string) * TSrvParsIfaceOpt::getDomainLst() {
-    return &this->DomainLst;
-}
-bool TSrvParsIfaceOpt::supportDomain(){
-    return this->DomainSupport;
-}
+// --- option: NTP-SERVERS ---
+// --- option: TIMEZONE ---
+// --- option: SIP server ---
+// --- option: SIP domain ---
+// --- option: LIFETIME ---
 
 #if 0
 // --- option: VENDOR-SPEC INFO ---
@@ -200,35 +177,7 @@ List(TOptVendorSpecInfo) TSrvParsIfaceOpt::getVendorSpec()
 }
 #endif
 
-// --- option: NTP-SERVERS ---
-void TSrvParsIfaceOpt::setNTPServerLst(List(TIPv6Addr) * lst) {
-    this->NTPServerLst = *lst;
-    this->NTPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getNTPServerLst() {
-    return &this->NTPServerLst;
-}
-bool TSrvParsIfaceOpt::supportNTPServer(){
-    return this->NTPServerSupport;
-}
-
-// --- option: TIMEZONE ---
-void TSrvParsIfaceOpt::setTimezone(std::string timezone) {
-    this->Timezone=timezone;
-    this->TimezoneSupport = true;
-}
-string TSrvParsIfaceOpt::getTimezone() {
-    return this->Timezone;
-}
-bool TSrvParsIfaceOpt::supportTimezone(){
-    return this->NTPServerSupport;
-}
-
-// --- option: SIP server ---
-// --- option: SIP domain ---
-
 // --- option: FQDN ---
-
 void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) *fqdn) {
     FQDNLst_ = *fqdn;
     FQDNSupport_ = true;
@@ -255,18 +204,6 @@ bool TSrvParsIfaceOpt::supportFQDN() {
     return FQDNSupport_;
 }
 
-// --- option: LIFETIME ---
-void TSrvParsIfaceOpt::setLifetime(unsigned int x) {
-    this->Lifetime = x;
-    this->LifetimeSupport = true;
-}
-unsigned int TSrvParsIfaceOpt::getLifetime() {
-    return this->Lifetime;
-}
-
-bool TSrvParsIfaceOpt::supportLifetime() {
-    return this->LifetimeSupport;
-}
 
 void TSrvParsIfaceOpt::addExtraOption(SPtr<TOpt> custom, bool always) {
     //Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")

@@ -658,7 +658,7 @@ bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
 	}
     }
 
-    if (ptrIface->supportFQDN() && !ptrIface->supportDNSServer()) {
+    if (ptrIface->supportFQDN() && !ptrIface->getExtraOption(OPTION_DNS_SERVERS)) {
 	Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
 		  << " Please disable FQDN support or add DNS servers." << LogEnd;
 	return false;
@@ -1073,14 +1073,17 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
 
     SPtr<TIPv6Addr> DNSAddr;
 
-    List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
+    SPtr<TOptAddrLst> opt = (Ptr*) ptrIface->getExtraOption(OPTION_DNS_SERVERS);
+    if (!opt) {
+        Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
+        return 0;
+    }
+    List(TIPv6Addr) DNSSrvLst = opt->getAddrLst();
     DNSSrvLst.first();
     if (DNSSrvLst.count())
         DNSAddr = DNSSrvLst.get();
 
     if (!DNSAddr) {
-        Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
-        return 0;
     }
     return DNSAddr;
 }

@@ -37,11 +37,6 @@ SPtr<TOptVendorData> TSrvCfgOptions::getRemoteID() const {
 }
 
 void TSrvCfgOptions::SetDefaults() {
-    this->DNSServerSupport        = false;
-    this->DomainSupport           = false;
-    this->NTPServerSupport        = false;
-    this->TimezoneSupport         = false;
-    this->LifetimeSupport         = false;
     this->VendorSpecSupport       = false;
 
     Duid = 0;
@@ -55,68 +50,12 @@ void TSrvCfgOptions::SetDefaults() {
 // --- options --------------------------------------------------------
 // --------------------------------------------------------------------
 // --- option: DNS servers ---
-void TSrvCfgOptions::setDNSServerLst(List(TIPv6Addr) *lst) {
-    this->DNSServerLst = *lst;
-    this->DNSServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgOptions::getDNSServerLst() {
-    return &this->DNSServerLst;
-}
-bool TSrvCfgOptions::supportDNSServer(){
-    return this->DNSServerSupport;
-}
-
 // --- option: DOMAIN ---
-void TSrvCfgOptions::setDomainLst(List(std::string) * lst) {
-    this->DomainLst = *lst;
-    this->DomainSupport = true;
-}
-List(std::string) * TSrvCfgOptions::getDomainLst() {
-    return &this->DomainLst;
-}
-bool TSrvCfgOptions::supportDomain(){
-    return this->DomainSupport;
-}
-
 // --- option: NTP-SERVERS ---
-void TSrvCfgOptions::setNTPServerLst(List(TIPv6Addr) * lst) {
-    this->NTPServerLst = *lst;
-    this->NTPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgOptions::getNTPServerLst() {
-    return &this->NTPServerLst;
-}
-bool TSrvCfgOptions::supportNTPServer(){
-    return this->NTPServerSupport;
-}
-
 // --- option: TIMEZONE ---
-void TSrvCfgOptions::setTimezone(std::string timezone) {
-    this->Timezone=timezone;
-    this->TimezoneSupport = true;
-}
-string TSrvCfgOptions::getTimezone() {
-    return this->Timezone;
-}
-bool TSrvCfgOptions::supportTimezone(){
-    return this->NTPServerSupport;
-}
-
 // --- option: SIP server ---
 // --- option: SIP domain ---
-
 // --- option: LIFETIME ---
-void TSrvCfgOptions::setLifetime(unsigned int x) {
-    this->Lifetime = x;
-    this->LifetimeSupport = true;
-}
-unsigned int TSrvCfgOptions::getLifetime() {
-    return this->Lifetime;
-}
-
-bool TSrvCfgOptions::supportLifetime() {
-    return this->LifetimeSupport;
-}
 
 // --- option: VENDOR-SPEC INFO ---
 #if 0
@@ -190,12 +129,6 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     addExtraOptions(opt->getExtraOptions());
     addForcedOptions(opt->getForcedOptions());
 
-    if (opt->supportDNSServer())  this->setDNSServerLst(opt->getDNSServerLst());
-    if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
-    if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
-    if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
-    if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
-
     return true;
 }
 
@@ -250,42 +183,12 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     }
 
     // option: DNS-SERVERS
-    out << "      <!-- <dns-servers count=\"" << iface.DNSServerLst.count() << "\"> -->" << endl;
-    iface.DNSServerLst.first();
-    while (addr = iface.DNSServerLst.get()) {
-        out << "      <dns-server>" << *addr << "</dns-server>" << endl;
-    }
-
     // option: DOMAINS
-    out << "      <!-- <domains count=\"" << iface.DomainLst.count() << "\"> -->" << endl;
-    iface.DomainLst.first();
-    while (str = iface.DomainLst.get()) {
-        out << "      <domain>" << *str << "</domain>" << endl;
-    }
-
     // NTP-SERVERS
-    out << "      <!-- <ntp-servers count=\"" << iface.NTPServerLst.count() << "\"> -->" << endl;
-    iface.NTPServerLst.first();
-    while (addr = iface.NTPServerLst.get()) {
-        out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;
-    }
-
     // option: TIMEZONE
-    if (iface.supportTimezone()) {
-        out << "      <timezone>" << iface.Timezone << "</timezone>" << endl;
-    } else {
-        out << "      <!-- <timezone/> -->" << endl;
-    }
-
     // option: SIP-SERVERS
     // option: SIP-DOMAINS
-
     // option: LIFETIME
-    if (iface.supportLifetime()) {
-        out << "      <lifetime>" << iface.Lifetime << "</lifetime>" << endl;
-    } else {
-        out << "      <!-- <lifetime/> -->" << endl;
-    }
 
 
 #if 0

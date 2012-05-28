@@ -519,59 +519,18 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, getRemoteID(), false/* false = verbose */);
 
     // --- option: DNS resolvers ---
-    if ( reqOpts->isOption(OPTION_DNS_SERVERS) && ptrIface->supportDNSServer() ) {
-	SPtr<TOpt> optDNS;
-	if (ex && ex->supportDNSServer())
-	    optDNS = new TOptAddrLst(OPTION_DNS_SERVERS, *ex->getDNSServerLst(), this);
-	else
-	    optDNS = new TOptAddrLst(OPTION_DNS_SERVERS, *ptrIface->getDNSServerLst(), this);
-	Options.push_back(optDNS);
-	newOptionAssigned = true;
-    };
-
     // --- option: DOMAIN LIST ---
-    if ( reqOpts->isOption(OPTION_DOMAIN_LIST) && ptrIface->supportDomain() ) {
-	SPtr<TOpt> optDomain;
-	if (ex && ex->supportDomain())
-	    optDomain = new TOptDomainLst(OPTION_DOMAIN_LIST, *ex->getDomainLst(),this);
-	else
-	    optDomain = new TOptDomainLst(OPTION_DOMAIN_LIST, *ptrIface->getDomainLst(),this);
-	Options.push_back((Ptr*)optDomain);
-	newOptionAssigned = true;
-    };
-    
     // --- option: NTP servers ---
-    if ( reqOpts->isOption(OPTION_SNTP_SERVERS) && ptrIface->supportNTPServer() ) {
-	SPtr<TOpt> optNTP;
-	if (ex && ex->supportNTPServer())
-	    optNTP = new TOptAddrLst(OPTION_SNTP_SERVERS, *ex->getNTPServerLst(),this);
-	else
-	    optNTP = new TOptAddrLst(OPTION_SNTP_SERVERS, *ptrIface->getNTPServerLst(),this);
-	Options.push_back((Ptr*)optNTP);
-	newOptionAssigned = true;
-    };
-    
     // --- option: TIMEZONE --- 
-    if ( reqOpts->isOption(OPTION_NEW_TZDB_TIMEZONE) && ptrIface->supportTimezone() ) {
-	SPtr<TOptString> optTimezone;
-	if (ex && ex->supportTimezone())
-	    optTimezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, ex->getTimezone(), this);
-	else
-	    optTimezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, ptrIface->getTimezone(), this);
-	Options.push_back((Ptr*)optTimezone);
-	newOptionAssigned = true;
-    };
-
     // --- option: SIP SERVERS is now handled with common extra options mechanism ---
     // --- option: SIP DOMAINS is now handled with common extra options mechanism ---
-
-    // --- option: FQDN ---
-    // see prepareFQDN() method
-
     // --- option: NIS SERVERS is now handled with common extra options mechanism ---
     // --- option: NIS DOMAIN is now handled with common extra options mechanism ---
     // --- option: NISP SERVERS is now handled with common extra options mechanism ---
     // --- option: NISP DOMAIN is now handled with common extra options mechanism ---
+
+    // --- option: FQDN ---
+    // see prepareFQDN() method
 
     // --- option: VENDOR SPEC ---
     if ( reqOpts->isOption(OPTION_VENDOR_OPTS)) {
@@ -581,19 +540,6 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     // --- option: INFORMATION_REFRESH_TIME ---
     // this option should be checked last 
-    if ( newOptionAssigned && ptrIface->supportLifetime() ) {
-	SPtr<TOptInteger> optLifetime;
-	if (ex && ex->supportLifetime())
-	    optLifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
-                                          OPTION_INFORMATION_REFRESH_TIME_LEN,
-                                          ex->getLifetime(), this);
-	else
-	    optLifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
-                                          OPTION_INFORMATION_REFRESH_TIME_LEN,
-                                          ptrIface->getLifetime(), this);
-	Options.push_back( (Ptr*)optLifetime);
-	newOptionAssigned = true;
-    }
 
     // --- option: forced options first ---
     TOptList extraOpts; // possible additional options
@@ -686,7 +632,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID
 	return 0;
     }
     
-    if (!ptrIface->supportDNSServer()) {
+    if (!ptrIface->getExtraOption(OPTION_DNS_SERVERS)) {
 	Log(Error) << "DNS server is not supported on " << ptrIface->getFullName() << " interface. DNS Update aborted." << LogEnd;
 	return 0;
     }

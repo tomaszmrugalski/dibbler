@@ -723,42 +723,12 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << endl << "    <!-- options -->" << endl;
 
     // option: DNS-SERVERS
-    out << "    <!-- <dns-servers count=\"" << iface.DNSServerLst.count() << "\"> -->" << endl;
-    iface.DNSServerLst.first();
-    while (addr = iface.DNSServerLst.get()) {
-        out << "    <dns-server>" << *addr << "</dns-server>" << endl;
-    }
-
     // option: DOMAINS
-    out << "    <!-- <domains count=\"" << iface.DomainLst.count() << "\"> -->" << endl;
-    iface.DomainLst.first();
-    while (str = iface.DomainLst.get()) {
-        out << "    <domain>" << *str << "</domain>" << endl;
-    }
-
     // NTP-SERVERS
-    out << "    <!-- <ntp-servers count=\"" << iface.NTPServerLst.count() << "\"> -->" << endl;
-    iface.NTPServerLst.first();
-    while (addr = iface.NTPServerLst.get()) {
-        out << "    <ntp-server>" << *addr << "</ntp-server>" << endl;
-    }
-
     // option: TIMEZONE
-    if (iface.supportTimezone()) {
-        out << "    <timezone>" << iface.Timezone << "</timezone>" << endl;
-    } else {
-        out << "    <!-- <timezone/> -->" << endl;
-    }
-
     // option: SIP-SERVERS
     // option: SIP-DOMAINS
-
     // option: LIFETIME
-    if (iface.supportLifetime()) {
-        out << "    <lifetime>" << iface.Lifetime << "</lifetime>" << endl;
-    } else {
-        out << "    <!-- <lifetime/> -->" << endl;
-    }
 
     // option: VENDOR-SPEC
 /*    if (iface.supportVendorSpec()) {

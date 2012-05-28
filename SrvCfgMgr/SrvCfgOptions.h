@@ -44,37 +44,17 @@ public:
     void setAddr(SPtr<TIPv6Addr> addr);
     SPtr<TIPv6Addr> getAddr() const;
 
-    // option: DNS Servers
-    List(TIPv6Addr) * getDNSServerLst();
-    void setDNSServerLst(List(TIPv6Addr) *lst);
-    bool supportDNSServer();
-
-    // option: Domain
-    List(std::string) * getDomainLst();
-    void setDomainLst(List(std::string) * domains);
-    bool supportDomain();
-
-    // option: NTP servers
-    List(TIPv6Addr) * getNTPServerLst();
-    void setNTPServerLst(List(TIPv6Addr) *lst);
-    bool supportNTPServer();
-
-    // option: Timezone
-    std::string getTimezone();
-    void setTimezone(std::string timeZone);
-    bool supportTimezone();
-
+    // option: DNS Servers is now handled with extra options mechanism
+    // option: Domain is now handled with extra options mechanism
+    // option: NTP servers is now handled with extra options mechanism
+    // option: Timezone is now handled with extra options mechanism
     // option: SIP servers is now handled with extra options mechanism
     // option: SIP domains is now handled with extra options mechanism
     // option: NIS servers is now handled with extra options mechanism
     // option: NIS+ servers is now handled with extra options mechanism
     // option: NIS domain is now handled with extra options mechanism
     // option: NIS+ domain is now handled with extra options mechanism
-
-    // option: LIFETIME
-    void setLifetime(unsigned int life);
-    unsigned int getLifetime();
-    bool supportLifetime();
+    // option: LIFETIME is now handled with extra options mechanism
 
     // option: VENDOR-SPEC
     List(TOptVendorSpecInfo) getVendorSpecLst(unsigned int vendor=0);
@@ -88,24 +68,14 @@ public:
 
 private:
     // options
-    bool DNSServerSupport;
-    bool DomainSupport;
-    bool NTPServerSupport;
-    bool TimezoneSupport;
-    bool LifetimeSupport;
     bool VendorSpecSupport;
 
     // address reservation
     SPtr<TIPv6Addr> Addr;
 
     // options reservation
-    List(TIPv6Addr) DNSServerLst;
-    List(std::string) DomainLst;
-    List(TIPv6Addr) NTPServerLst;
-    std::string Timezone;
     TOptList ExtraOpts_;  // extra options ALWAYS sent to client (may also include ForcedOpts)
     TOptList ForcedOpts_; // list of options that are forced to client
-    unsigned int Lifetime;
 
     void SetDefaults();
 

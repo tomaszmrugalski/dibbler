@@ -1180,7 +1180,10 @@ DNSServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
+    SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_DNS_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(nis_servers, false);
+
+    // ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1192,7 +1195,9 @@ DomainOption
     PresentStringLst.clear();
 } StringList
 {
-    ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
+    SPtr<TOpt> domains = new TOptDomainLst(OPTION_DOMAIN_LIST, PresentStringLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(domains, false);
+    // ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 }
 ;
 
@@ -1205,7 +1210,9 @@ NTPServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
+    SPtr<TOpt> ntp_servers = new TOptAddrLst(OPTION_SNTP_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(ntp_servers, false);
+    // ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1215,7 +1222,9 @@ NTPServerOption
 TimeZoneOption
 : OPTION_ TIME_ZONE_ STRING_
 {
-    ParserOptStack.getLast()->setTimezone($3);
+    SPtr<TOpt> timezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, string($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(timezone, false);
+    // ParserOptStack.getLast()->setTimezone($3);
 }
 ;
 
@@ -1391,7 +1400,11 @@ NISPDomainOption
 LifetimeOption
 :OPTION_ LIFETIME_ Number
 {
-    ParserOptStack.getLast()->setLifetime($3);
+    SPtr<TOpt> lifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
+                                          OPTION_INFORMATION_REFRESH_TIME_LEN, 
+                                          uint32_t($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(lifetime, false);
+    //ParserOptStack.getLast()->setLifetime($3);
 }
 ;
 
