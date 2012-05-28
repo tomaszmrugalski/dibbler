@@ -751,18 +751,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     }
 
     // option: SIP-SERVERS
-    out << "    <!-- <sip-servers count=\"" << iface.SIPServerLst.count() << "\"> -->" << endl;
-    iface.SIPServerLst.first();
-    while (addr = iface.SIPServerLst.get()) {
-        out << "    <sip-server>" << *addr << "</sip-server>" << endl;
-    }
-
     // option: SIP-DOMAINS
-    out << "    <!-- <sip-domains count=\"" << iface.SIPDomainLst.count() << "\"> -->" << endl;
-    iface.SIPDomainLst.first();
-    while (str = iface.SIPDomainLst.get()) {
-        out << "    <sip-domain>" << *str << "</sip-domain>" << endl;
-    }
 
     // option: LIFETIME
     if (iface.supportLifetime()) {

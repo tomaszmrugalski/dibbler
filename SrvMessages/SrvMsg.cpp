@@ -562,27 +562,8 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	newOptionAssigned = true;
     };
 
-    // --- option: SIP SERVERS ---
-    if ( reqOpts->isOption(OPTION_SIP_SERVER_A) && ptrIface->supportSIPServer() ) {
-	SPtr<TOpt> optSIPServer;
-	if (ex && ex->supportSIPServer())
-	    optSIPServer = new TOptAddrLst(OPTION_SIP_SERVER_A, *ex->getSIPServerLst(),this);
-	else
-	    optSIPServer = new TOptAddrLst(OPTION_SIP_SERVER_A, *ptrIface->getSIPServerLst(),this);
-	Options.push_back(optSIPServer);
-	newOptionAssigned = true;
-    };
-
-    // --- option: SIP DOMAINS ---
-    if ( reqOpts->isOption(OPTION_SIP_SERVER_D) && ptrIface->supportSIPDomain() ) {
-	SPtr<TOpt> optSIPDomain;
-	if (ex && ex->supportSIPDomain())
-	    optSIPDomain= new TOptDomainLst(OPTION_SIP_SERVER_D, *ex->getSIPDomainLst(),this);
-	else
-	    optSIPDomain= new TOptDomainLst(OPTION_SIP_SERVER_D, *ptrIface->getSIPDomainLst(),this);
-	Options.push_back(optSIPDomain);
-	newOptionAssigned = true;
-    };
+    // --- option: SIP SERVERS is now handled with common extra options mechanism ---
+    // --- option: SIP DOMAINS is now handled with common extra options mechanism ---
 
     // --- option: FQDN ---
     // see prepareFQDN() method

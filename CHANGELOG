@@ -9,7 +9,7 @@
   - debian/ directory is moved to debian branch and no longer available on master
   - Many cppcheck/doxygen warnings removed
   - Srv: Refactoring continues another 11 classes removed.
-  - Srv: NIS, NIS+ is now handled through unified option handling mechanism.
+  - Srv: NIS, NIS+, SIP options are now handled through unified option handling mechanism.
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

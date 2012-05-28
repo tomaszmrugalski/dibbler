@@ -35,8 +35,6 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     DomainSupport     = false;
     NTPServerSupport  = false;
     TimezoneSupport   = false;
-    SIPServerSupport  = false;
-    SIPDomainSupport  = false;
     FQDNSupport_      = false;
     LifetimeSupport   = false;
     VendorSpecSupport = false;
@@ -227,29 +225,7 @@ bool TSrvParsIfaceOpt::supportTimezone(){
 }
 
 // --- option: SIP server ---
-void TSrvParsIfaceOpt::setSIPServerLst(List(TIPv6Addr) *lst) {
-    this->SIPServerLst = *lst;
-    this->SIPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getSIPServerLst() {
-    return &this->SIPServerLst;
-}
-bool TSrvParsIfaceOpt::supportSIPServer(){
-    return this->SIPServerSupport;
-}
-
 // --- option: SIP domain ---
-List(std::string) * TSrvParsIfaceOpt::getSIPDomainLst() {
-    return &this->SIPDomainLst;
-}
-void TSrvParsIfaceOpt::setSIPDomainLst(List(std::string) * domain) {
-    this->SIPDomainLst = *domain;
-    this->SIPDomainSupport = true;
-}
-bool TSrvParsIfaceOpt::supportSIPDomain() {
-    return this->SIPDomainSupport;
-}
-
 
 // --- option: FQDN ---
 

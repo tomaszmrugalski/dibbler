@@ -64,16 +64,8 @@ public:
     void setTimezone(std::string timeZone);
     bool supportTimezone();
 
-    // option: SIP servers
-    List(TIPv6Addr) * getSIPServerLst();
-    void setSIPServerLst(List(TIPv6Addr) *addr);
-    bool supportSIPServer();
-
-    // option: SIP domains
-    List(std::string) * getSIPDomainLst();
-    void setSIPDomainLst(List(std::string) *domainlist);
-    bool supportSIPDomain();
-
+    // option: SIP servers is now handled with extra options mechanism
+    // option: SIP domains is now handled with extra options mechanism
     // option: NIS servers is now handled with extra options mechanism
     // option: NIS+ servers is now handled with extra options mechanism
     // option: NIS domain is now handled with extra options mechanism
@@ -100,8 +92,6 @@ private:
     bool DomainSupport;
     bool NTPServerSupport;
     bool TimezoneSupport;
-    bool SIPServerSupport;
-    bool SIPDomainSupport;
     bool LifetimeSupport;
     bool VendorSpecSupport;
 
@@ -113,8 +103,6 @@ private:
     List(std::string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
     std::string Timezone;
-    List(TIPv6Addr) SIPServerLst;
-    List(std::string) SIPDomainLst;
     TOptList ExtraOpts_;  // extra options ALWAYS sent to client (may also include ForcedOpts)
     TOptList ForcedOpts_; // list of options that are forced to client
     unsigned int Lifetime;

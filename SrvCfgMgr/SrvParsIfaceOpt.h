@@ -69,15 +69,8 @@ public:
     void setTimezone(std::string timeZone);
     bool supportTimezone();
 
-    // option: SIP servers
-    List(TIPv6Addr) * getSIPServerLst();
-    void setSIPServerLst(List(TIPv6Addr) *addr);
-    bool supportSIPServer();
-
-    // option: SIP domains
-    List(std::string) * getSIPDomainLst();
-    void setSIPDomainLst(List(std::string) *domainlist);
-    bool supportSIPDomain();
+    // option: SIP servers is now handled with extra options mechanism
+    // option: SIP domains is now handled with extra options mechanism
 
     // option: FQDN
     List(TFQDN) *getFQDNLst();
@@ -136,8 +129,6 @@ private:
     bool DomainSupport;
     bool NTPServerSupport;
     bool TimezoneSupport;
-    bool SIPServerSupport;
-    bool SIPDomainSupport;
     bool FQDNSupport_;
     bool LifetimeSupport;
     bool VendorSpecSupport;
@@ -146,8 +137,6 @@ private:
     List(std::string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
     std::string Timezone;
-    List(TIPv6Addr) SIPServerLst;
-    List(std::string) SIPDomainLst;
     List(TFQDN) FQDNLst_;
     unsigned int Lifetime;
 

@@ -41,8 +41,6 @@ void TSrvCfgOptions::SetDefaults() {
     this->DomainSupport           = false;
     this->NTPServerSupport        = false;
     this->TimezoneSupport         = false;
-    this->SIPServerSupport        = false;
-    this->SIPDomainSupport        = false;
     this->LifetimeSupport         = false;
     this->VendorSpecSupport       = false;
 
@@ -105,28 +103,7 @@ bool TSrvCfgOptions::supportTimezone(){
 }
 
 // --- option: SIP server ---
-void TSrvCfgOptions::setSIPServerLst(List(TIPv6Addr) *lst) {
-    this->SIPServerLst = *lst;
-    this->SIPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgOptions::getSIPServerLst() {
-    return &this->SIPServerLst;
-}
-bool TSrvCfgOptions::supportSIPServer(){
-    return this->SIPServerSupport;
-}
-
 // --- option: SIP domain ---
-List(std::string) * TSrvCfgOptions::getSIPDomainLst() {
-    return &this->SIPDomainLst;
-}
-void TSrvCfgOptions::setSIPDomainLst(List(std::string) * domain) {
-    this->SIPDomainLst = *domain;
-    this->SIPDomainSupport = true;
-}
-bool TSrvCfgOptions::supportSIPDomain() {
-    return this->SIPDomainSupport;
-}
 
 // --- option: LIFETIME ---
 void TSrvCfgOptions::setLifetime(unsigned int x) {
@@ -217,8 +194,6 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
     if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
     if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
-    if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
-    if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
 
     return true;
@@ -303,18 +278,7 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     }
 
     // option: SIP-SERVERS
-    out << "      <!-- <sip-servers count=\"" << iface.SIPServerLst.count() << "\"> -->" << endl;
-    iface.SIPServerLst.first();
-    while (addr = iface.SIPServerLst.get()) {
-        out << "      <sip-server>" << *addr << "</sip-server>" << endl;
-    }
-
     // option: SIP-DOMAINS
-    out << "      <!-- <sip-domains count=\"" << iface.SIPDomainLst.count() << "\"> -->" << endl;
-    iface.SIPDomainLst.first();
-    while (str = iface.SIPDomainLst.get()) {
-        out << "      <sip-domain>" << *str << "</sip-domain>" << endl;
-    }
 
     // option: LIFETIME
     if (iface.supportLifetime()) {
