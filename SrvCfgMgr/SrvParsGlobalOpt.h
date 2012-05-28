@@ -6,8 +6,6 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvParsGlobalOpt.h,v 1.12 2008-08-29 00:07:34 thomson Exp $
- *
  */
 
 #ifndef TSRVPARSGLOBALOPT_H_

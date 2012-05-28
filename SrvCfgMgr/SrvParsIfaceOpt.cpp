@@ -20,12 +20,15 @@ using namespace std;
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 {
-    Unicast       = 0;
-    Preference    = SERVER_DEFAULT_PREFERENCE;
-    RapidCommit   = SERVER_DEFAULT_RAPIDCOMMIT;
-    ClntMaxLease  = SERVER_DEFAULT_CLNTMAXLEASE;
-    IfaceMaxLease = SERVER_DEFAULT_IFACEMAXLEASE;
-    LeaseQuery    = false; // don't support leasequery unless explicitly configured to do so
+    Unicast_       = 0;
+    Preference_    = SERVER_DEFAULT_PREFERENCE;
+    RapidCommit_   = SERVER_DEFAULT_RAPIDCOMMIT;
+    ClntMaxLease_  = SERVER_DEFAULT_CLNTMAXLEASE;
+    IfaceMaxLease_ = SERVER_DEFAULT_IFACEMAXLEASE;
+    RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
+
+    // don't support leasequery unless explicitly configured to do so
+    LeaseQuery_    = SERVER_DEFAULT_LEASEQUERY;
 
     // options
     DNSServerSupport  = false;
@@ -34,7 +37,7 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     TimezoneSupport   = false;
     SIPServerSupport  = false;
     SIPDomainSupport  = false;
-    FQDNSupport       = false;
+    FQDNSupport_      = false;
     NISServerSupport  = false;
     NISDomainSupport  = false;
     NISPServerSupport = false;
@@ -42,21 +45,21 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     LifetimeSupport   = false;
     VendorSpecSupport = false;
 
-    UnknownFQDN = SERVER_DEFAULT_UNKNOWN_FQDN;
-    FQDNDomain = "";
+    UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
+    FQDNDomain_ = "";
 
-    Relay = false;
-    RelayName = "[unknown]";
-    RelayID = -1;
-    RelayInterfaceID = -1;
+    Relay_ = false;
+    RelayName_ = "[unknown]";
+    RelayID_ = -1;
+    RelayInterfaceID_ = -1;
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
 }
 
 void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain) {
-    UnknownFQDN = mode;
-    FQDNDomain = domain;
+    UnknownFQDN_ = mode;
+    FQDNDomain_ = domain;
 }
 
 /**
@@ -66,97 +69,97 @@ void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string d
  * @return
  */
 EUnknownFQDNMode TSrvParsIfaceOpt::getUnknownFQDN() {
-    return UnknownFQDN;
+    return UnknownFQDN_;
 }
 
 std::string TSrvParsIfaceOpt::getFQDNDomain() {
-    return FQDNDomain;
+    return FQDNDomain_;
 }
 
 void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support) {
-    this->LeaseQuery = support;
+    LeaseQuery_ = support;
 }
 
 bool TSrvParsIfaceOpt::getLeaseQuerySupport() {
-    return LeaseQuery;
+    return LeaseQuery_;
 }
 
 // --- unicast ---
 void TSrvParsIfaceOpt::setUnicast(SPtr<TIPv6Addr> addr) {
-    this->Unicast = addr;
+    Unicast_ = addr;
 }
 
 SPtr<TIPv6Addr> TSrvParsIfaceOpt::getUnicast() {
-    return this->Unicast;
+    return Unicast_;
 }
 
 // --- iface-max-lease ---
 void TSrvParsIfaceOpt::setIfaceMaxLease(long maxLease) {
-    this->IfaceMaxLease=maxLease;
+    IfaceMaxLease_ = maxLease;
 }
 
 long TSrvParsIfaceOpt::getIfaceMaxLease() {
-    return this->IfaceMaxLease;
+    return IfaceMaxLease_;
 }
 
 // --- clnt max lease ---
 void TSrvParsIfaceOpt::setClntMaxLease(long clntMaxLease) {
-    this->ClntMaxLease = clntMaxLease;
+    ClntMaxLease_ = clntMaxLease;
 }
 
 long TSrvParsIfaceOpt::getClntMaxLease() {
-    return this->ClntMaxLease;
+    return ClntMaxLease_;
 }
 
 // --- preference ---
 void TSrvParsIfaceOpt::setPreference(char pref) {
-    this->Preference=pref;
+    Preference_ = pref;
 }
 char TSrvParsIfaceOpt::getPreference() {
-    return this->Preference;
+    return Preference_;
 }
 
 // --- rapid commit ---
 void TSrvParsIfaceOpt::setRapidCommit(bool rapidComm) {
-    this->RapidCommit=rapidComm;
+    RapidCommit_ = rapidComm;
 }
 
 bool TSrvParsIfaceOpt::getRapidCommit() {
-    return this->RapidCommit;
+    return RapidCommit_;
 }
 
 // --- relay related ---
 void TSrvParsIfaceOpt::setRelayName(std::string name) {
-    this->Relay      = true;
-    this->RelayName  = name;
-    this->RelayID    = -1;
+    Relay_ = true;
+    RelayName_ = name;
+    RelayID_ = -1;
 }
 
 void TSrvParsIfaceOpt::setRelayID(int id) {
-    this->Relay      = true;
-    this->RelayName  = "[unknown]";
-    this->RelayID    = id;
+    Relay_ = true;
+    RelayName_ = "[unknown]";
+    RelayID_ = id;
 }
 
 void TSrvParsIfaceOpt::setRelayInterfaceID(SPtr<TSrvOptInterfaceID> id) {
-    this->Relay = true;
-    this->RelayInterfaceID= id;
+    Relay_ = true;
+    RelayInterfaceID_ = id;
 }
 
 string TSrvParsIfaceOpt::getRelayName() {
-    return this->RelayName;
+    return RelayName_;
 }
 
 int TSrvParsIfaceOpt::getRelayID() {
-    return this->RelayID;
+    return RelayID_;
 }
 
 SPtr<TSrvOptInterfaceID> TSrvParsIfaceOpt::getRelayInterfaceID() {
-    return this->RelayInterfaceID;
+    return RelayInterfaceID_;
 }
 
 bool TSrvParsIfaceOpt::isRelay() {
-    return this->Relay;
+    return Relay_;
 }
 
 // --- option: DNS servers ---
@@ -255,29 +258,29 @@ bool TSrvParsIfaceOpt::supportSIPDomain() {
 // --- option: FQDN ---
 
 void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) *fqdn) {
-    this->FQDNLst = *fqdn;
-    this->FQDNSupport = true;
+    FQDNLst_ = *fqdn;
+    FQDNSupport_ = true;
 }
 
 List(TFQDN) *TSrvParsIfaceOpt::getFQDNLst() {
-    return &this->FQDNLst;
+    return &this->FQDNLst_;
 }
 
 int TSrvParsIfaceOpt::getFQDNMode(){
-        return this->FQDNMode;
+    return FQDNMode_;
 }
 void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode){
-        this->FQDNMode=FQDNMode;
+    FQDNMode_ = FQDNMode;
 }
 int TSrvParsIfaceOpt::getRevDNSZoneRootLength(){
-        return this->revDNSZoneRootLength;
+    return RevDNSZoneRootLength_;
 }
 void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength){
-        this->revDNSZoneRootLength = revDNSZoneRootLength;
+    RevDNSZoneRootLength_ = revDNSZoneRootLength;
 }
 
 bool TSrvParsIfaceOpt::supportFQDN() {
-    return this->FQDNSupport;
+    return FQDNSupport_;
 }
 
 // --- option: NIS server ---
@@ -316,18 +319,6 @@ bool TSrvParsIfaceOpt::supportNISPServer(){
     return this->NISPServerSupport;
 }
 
-// --- option: NIS+ domain ---
-void TSrvParsIfaceOpt::setNISPDomain(std::string domain) {
-    this->NISPDomain=domain;
-    this->NISPDomainSupport=true;
-}
-string TSrvParsIfaceOpt::getNISPDomain() {
-    return this->NISPDomain;
-}
-bool TSrvParsIfaceOpt::supportNISPDomain() {
-    return this->NISPDomainSupport;
-}
-
 // --- option: LIFETIME ---
 void TSrvParsIfaceOpt::setLifetime(unsigned int x) {
     this->Lifetime = x;
@@ -339,4 +330,32 @@ unsigned int TSrvParsIfaceOpt::getLifetime() {
 
 bool TSrvParsIfaceOpt::supportLifetime() {
     return this->LifetimeSupport;
+}
+
+void TSrvParsIfaceOpt::addExtraOption(SPtr<TOpt> custom, bool always) {
+    //Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
+    //           << custom->getOptType() << " generic option (length="
+    //           << custom->getSize() << ")." << LogEnd;
+
+    ExtraOpts.push_back(custom); // allways add to extra options
+
+    if (always)
+        ForcedOpts.push_back(custom); // also add to forced, if requested so
+}
+
+const TOptList& TSrvParsIfaceOpt::getExtraOptions() {
+    return ExtraOpts;
+}
+
+SPtr<TOpt> TSrvParsIfaceOpt::getExtraOption(uint16_t type) {
+    for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+    {
+        if ((*opt)->getOptType() == type)
+            return *opt;
+    }
+    return 0;
+}
+
+const TOptList& TSrvParsIfaceOpt::getForcedOptions() {
+    return ForcedOpts;
 }

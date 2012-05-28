@@ -34,7 +34,6 @@ bool TSrvCfgIface::leaseQuerySupport() const
     return LeaseQuery_;
 }
 
-
 SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID, bool quiet)
 {
     SPtr<TSrvCfgOptions> x;
@@ -318,7 +317,7 @@ string TSrvCfgIface::getFullName() const {
 }
 
 SPtr<TIPv6Addr> TSrvCfgIface::getUnicast() {
-        return Unicast_;
+    return Unicast_;
 }
 
 
@@ -376,13 +375,6 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     TSrvCfgOptions::setOptions(opt);
 }
 
-/*
- * default contructor
- */
-TSrvCfgIface::TSrvCfgIface() {
-    setDefaults();
-}
-
 TSrvCfgIface::TSrvCfgIface(int ifindex) {
     setDefaults();
     ID_ = ifindex;
@@ -394,12 +386,18 @@ TSrvCfgIface::TSrvCfgIface(const std::string& ifaceName) {
 }
 
 void TSrvCfgIface::setDefaults() {
-    ID_ = -1;
     NoConfig_ = false;
     Name_ = "[unknown]";
     ID_ = -1;
+    RelayID_ = -1;
     Preference_ = 0;
 
+    IfaceMaxLease_ = SERVER_DEFAULT_IFACEMAXLEASE;
+    ClntMaxLease_ = SERVER_DEFAULT_CLNTMAXLEASE;
+    RapidCommit_ = SERVER_DEFAULT_RAPIDCOMMIT;
+    LeaseQuery_ = SERVER_DEFAULT_LEASEQUERY;
+
+    FQDNMode_ = DNSUPDATE_MODE_NONE;
     UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
 }
 
@@ -787,13 +785,6 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <nisplus-server>" << *addr << "</nisplus-server>" << endl;
     }
 
-    // option: NIS+-DOMAIN
-    if (iface.supportNISPDomain()) {
-        out << "    <nisplus-domain>" << iface.NISPDomain << "</nisplus-domain>" << endl;
-    } else {
-        out << "    <!-- <nisplus-domain/> -->" << endl;
-    }
-
     // option: LIFETIME
     if (iface.supportLifetime()) {
         out << "    <lifetime>" << iface.Lifetime << "</lifetime>" << endl;
@@ -828,7 +819,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     for (TOptList::iterator extra = extraLst.begin(); extra!=extraLst.end(); ++extra)
     {
         out << "      <extraOption type=\"" << (*extra)->getOptType()
-            << "\" length=\"" << (*extra)->getSize() << "\"/>" << endl;
+            << "\" length=\"" << (*extra)->getSize() << "\">" << ((*extra)->getPlain()) << "</extraOption>" << endl;
     }
 
     // option: FQDN

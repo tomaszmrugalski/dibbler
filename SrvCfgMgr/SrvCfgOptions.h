@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgOptions.h,v 1.5 2008-08-29 00:07:33 thomson Exp $
- *
  */
 
 #ifndef SRVCFGOPTIONS_H
@@ -91,10 +89,7 @@ public:
     void setNISDomain(std::string domain);
     bool supportNISDomain();
 
-    // option: NISP domain
-    std::string getNISPDomain();
-    void setNISPDomain(std::string domain);
-    bool supportNISPDomain();
+    // option: NIS+ domain is now handled with extra options mechanism
 
     // option: LIFETIME
     void setLifetime(unsigned int life);
@@ -106,11 +101,12 @@ public:
 
     void addExtraOption(SPtr<TOpt> extra, bool always);
     const TOptList& getExtraOptions();
-    SPtr<TOpt> getExtraOption(int type);
+    SPtr<TOpt> getExtraOption(uint16_t type);
     const TOptList& getForcedOptions();
+    void addExtraOptions(const TOptList& extra);
+    void addForcedOptions(const TOptList& extra);
 
 private:
-
     // options
     bool DNSServerSupport;
     bool DomainSupport;
@@ -139,8 +135,8 @@ private:
     List(TIPv6Addr) NISPServerLst;
     std::string NISDomain;
     std::string NISPDomain;
-    TOptList ExtraOpts;  // extra options ALWAYS sent to client (may also include ForcedOpts)
-    TOptList ForcedOpts; // list of options that are forced to client
+    TOptList ExtraOpts_;  // extra options ALWAYS sent to client (may also include ForcedOpts)
+    TOptList ForcedOpts_; // list of options that are forced to client
     unsigned int Lifetime;
 
     void SetDefaults();

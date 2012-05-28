@@ -620,16 +620,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 	newOptionAssigned = true;
     };
 
-    // --- option: NISP DOMAIN ---
-    if ( reqOpts->isOption(OPTION_NISP_DOMAIN_NAME) && ptrIface->supportNISPDomain() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISPDomain())
-	    opt = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, ex->getNISPDomain(), this);
-	else
-	    opt = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, ptrIface->getNISPDomain(), this);
-	Options.push_back((Ptr*)opt);
-	newOptionAssigned = true;
-    };
+    // --- option: NISP DOMAIN is now handled with common extra options mechanism ---
 
     // --- option: VENDOR SPEC ---
     if ( reqOpts->isOption(OPTION_VENDOR_OPTS)) {

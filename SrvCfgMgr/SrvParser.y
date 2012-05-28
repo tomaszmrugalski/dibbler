@@ -13,6 +13,7 @@
 #include "SrvParsIfaceOpt.h"
 #include "OptAddr.h"
 #include "OptAddrLst.h"
+#include "OptDomainLst.h"
 #include "OptString.h"
 #include "SrvCfgMgr.h"
 #include "SrvCfgTA.h"
@@ -1369,7 +1370,9 @@ NISDomainOption
 NISPDomainOption
 :OPTION_ NISP_DOMAIN_ STRING_
 {
-    ParserOptStack.getLast()->setNISPDomain($3);
+    // ParserOptStack.getLast()->setNISPDomain($3);
+    SPtr<TOpt> nispdomain = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, string($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(nispdomain, false);
 }
 ;
 

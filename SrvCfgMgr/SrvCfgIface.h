@@ -8,8 +8,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.h,v 1.31 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 class TSrvCfgIface;
@@ -29,7 +27,6 @@ class TSrvCfgIface: public TSrvCfgOptions
 {
     friend std::ostream& operator<<(std::ostream& out, TSrvCfgIface& iface);
 public:
-    TSrvCfgIface();
     TSrvCfgIface(const std::string& ifaceName);
     TSrvCfgIface(int ifindex);
     virtual ~TSrvCfgIface();
@@ -142,7 +139,6 @@ private:
     List(TFQDN) FQDNLst_;
     int FQDNMode_;
     int RevDNSZoneRootLength_;
-    unsigned int PrefixLength_;
     EUnknownFQDNMode UnknownFQDN_;
     std::string FQDNDomain_;
 

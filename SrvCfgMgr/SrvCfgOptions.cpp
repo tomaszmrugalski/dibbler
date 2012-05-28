@@ -53,8 +53,8 @@ void TSrvCfgOptions::SetDefaults() {
     Duid = 0;
     RemoteID = 0;
 
-    ExtraOpts.clear();
-    ForcedOpts.clear();
+    ExtraOpts_.clear();
+    ForcedOpts_.clear();
 }
 
 // --------------------------------------------------------------------
@@ -168,18 +168,6 @@ bool TSrvCfgOptions::supportNISPServer(){
     return this->NISPServerSupport;
 }
 
-// --- option: NIS+ domain ---
-void TSrvCfgOptions::setNISPDomain(std::string domain) {
-    this->NISPDomain=domain;
-    this->NISPDomainSupport=true;
-}
-string TSrvCfgOptions::getNISPDomain() {
-    return this->NISPDomain;
-}
-bool TSrvCfgOptions::supportNISPDomain() {
-    return this->NISPDomainSupport;
-}
-
 // --- option: LIFETIME ---
 void TSrvCfgOptions::setLifetime(unsigned int x) {
     this->Lifetime = x;
@@ -209,9 +197,9 @@ List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
     List(TOptVendorSpecInfo) returnList;
     returnList.clear();
 
-    for (TOptList::iterator opt = ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+    for (TOptList::iterator opt = ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
     {
-        if ( (*opt)->getOptType()!=OPTION_VENDOR_OPTS)
+        if ( (*opt)->getOptType() != OPTION_VENDOR_OPTS)
             continue;
         x = (Ptr*) *opt;
         if(!vendor || x->getVendor() == vendor)
@@ -237,18 +225,18 @@ void TSrvCfgOptions::addExtraOption(SPtr<TOpt> custom, bool always) {
                << custom->getOptType() << " generic option (length="
                << custom->getSize() << ")." << LogEnd;
 
-    ExtraOpts.push_back(custom); // allways add to extra options
+    ExtraOpts_.push_back(custom); // allways add to extra options
 
     if (always)
-        ForcedOpts.push_back(custom); // also add to forced, if requested so
+        ForcedOpts_.push_back(custom); // also add to forced, if requested so
 }
 
 const TOptList& TSrvCfgOptions::getExtraOptions() {
-    return ExtraOpts;
+    return ExtraOpts_;
 }
 
-SPtr<TOpt> TSrvCfgOptions::getExtraOption(int type) {
-    for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+SPtr<TOpt> TSrvCfgOptions::getExtraOption(uint16_t type) {
+    for (TOptList::iterator opt=ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
     {
         if ((*opt)->getOptType() == type)
             return *opt;
@@ -257,11 +245,14 @@ SPtr<TOpt> TSrvCfgOptions::getExtraOption(int type) {
 }
 
 const TOptList& TSrvCfgOptions::getForcedOptions() {
-
-    return ForcedOpts;
+    return ForcedOpts_;
 }
 
 bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
+
+    addExtraOptions(opt->getExtraOptions());
+    addForcedOptions(opt->getForcedOptions());
+
     if (opt->supportDNSServer())  this->setDNSServerLst(opt->getDNSServerLst());
     if (opt->supportDomain())     this->setDomainLst(opt->getDomainLst());
     if (opt->supportNTPServer())  this->setNTPServerLst(opt->getNTPServerLst());
@@ -271,10 +262,32 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportNISServer())  this->setNISServerLst(opt->getNISServerLst());
     if (opt->supportNISDomain())  this->setNISDomain(opt->getNISDomain());
     if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
-    if (opt->supportNISPDomain()) this->setNISPDomain(opt->getNISPDomain());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
 
     return true;
+}
+
+/// @brief Copies a list of extra options.
+///
+/// Extra options are options that may be requested by a client. This list also
+/// contains forced options (i.e. options that are sent regardless if client
+/// asks for them or not).
+///
+/// @param extra list of options to be copied
+void TSrvCfgOptions::addExtraOptions(const TOptList& extra) {
+    for (TOptList::const_iterator opt = extra.begin(); opt != extra.end(); ++opt)
+        ExtraOpts_.push_back(*opt);
+}
+
+/// @brief Copies a list of forced options.
+///
+/// This method add a list of forced options. Forced options are the ones that
+/// are sent to a client, regardless if client requested them or not.
+///
+/// @param forced list of forced options to be copied
+void TSrvCfgOptions::addForcedOptions(const TOptList& forced) {
+    for (TOptList::const_iterator opt = forced.begin(); opt != forced.end(); ++opt)
+        ForcedOpts_.push_back(*opt);
 }
 
 // --------------------------------------------------------------------
@@ -365,13 +378,6 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     iface.NISPServerLst.first();
     while (addr = iface.NISPServerLst.get()) {
         out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;
-    }
-
-    // option: NIS+-DOMAIN
-    if (iface.supportNISPDomain()) {
-        out << "      <nisplus-domain>" << iface.NISPDomain << "</nisplus-domain>" << endl;
-    } else {
-        out << "      <!-- <nisplus-domain/> -->" << endl;
     }
 
     // option: LIFETIME

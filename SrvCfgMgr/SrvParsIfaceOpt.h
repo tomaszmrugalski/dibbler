@@ -1,11 +1,11 @@
 /*
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                         
- * released under GNU GPL v2 only licence                                
- *                                                                           
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *  changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ * released under GNU GPL v2 only licence
+ *
  */
 
 #ifndef TSRCPARSIFACEOPT_H_
@@ -22,9 +22,7 @@ public:
     TSrvParsIfaceOpt(void);
     ~TSrvParsIfaceOpt(void);
 
-    bool uniAddress();
-    void setUniAddress(bool isUni);
-    void setClntMaxLease(long maxLeases);
+   void setClntMaxLease(long maxLeases);
     long getClntMaxLease();
     void setIfaceMaxLease(long maxLease);
     long getIfaceMaxLease();
@@ -110,10 +108,7 @@ public:
     void setNISDomain(std::string domain);
     bool supportNISDomain();
 
-    // option: NISP domain
-    std::string getNISPDomain();
-    void setNISPDomain(std::string domain);
-    bool supportNISPDomain();
+    // option: NISP domain is now handled with extra options mechanism
 
     // option: LIFETIME
     void setLifetime(unsigned int life);
@@ -128,19 +123,25 @@ public:
     List(TOptVendorSpecInfo) getVendorSpec();
 #endif
 
+    // extra options
+    void addExtraOption(SPtr<TOpt> extra, bool always);
+    const TOptList& getExtraOptions();
+    SPtr<TOpt> getExtraOption(uint16_t type);
+    const TOptList& getForcedOptions();
+
 private:
-    char Preference;
-    bool RapidCommit;
-    long IfaceMaxLease;
-    long ClntMaxLease;
-    SPtr<TIPv6Addr> Unicast;
-    bool LeaseQuery; // support for leasequery
+    char Preference_;
+    bool RapidCommit_;
+    long IfaceMaxLease_;
+    long ClntMaxLease_;
+    SPtr<TIPv6Addr> Unicast_;
+    bool LeaseQuery_; // support for leasequery
 
     // relay
-    bool Relay;
-    std::string RelayName;
-    int RelayID;
-    SPtr<TSrvOptInterfaceID> RelayInterfaceID;
+    bool Relay_;
+    std::string RelayName_;
+    int RelayID_;
+    SPtr<TSrvOptInterfaceID> RelayInterfaceID_;
 
     // options
     bool DNSServerSupport;
@@ -149,7 +150,7 @@ private:
     bool TimezoneSupport;
     bool SIPServerSupport;
     bool SIPDomainSupport;
-    bool FQDNSupport;
+    bool FQDNSupport_;
     bool NISServerSupport;
     bool NISDomainSupport;
     bool NISPServerSupport;
@@ -158,25 +159,30 @@ private:
     bool VendorSpecSupport;
 
     List(TIPv6Addr) DNSServerLst;
-    List(std::string) DomainLst;			
+    List(std::string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
     std::string Timezone;
     List(TIPv6Addr) SIPServerLst;
     List(std::string) SIPDomainLst;
-    List(TFQDN) FQDNLst;
+    List(TFQDN) FQDNLst_;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
     std::string NISDomain;
     std::string NISPDomain;
     unsigned int Lifetime;
 
-    List(TOptVendorSpecInfo) VendorSpec;
+    List(TOptVendorSpecInfo) VendorSpec_;
 
     // FQDN
-    int FQDNMode;
-    EUnknownFQDNMode UnknownFQDN; // accept, reject, append domain, generate procedurally
-    std::string FQDNDomain;
-    int revDNSZoneRootLength;
+    int FQDNMode_;
+    EUnknownFQDNMode UnknownFQDN_; // accept, reject, append domain, generate procedurally
+    std::string FQDNDomain_;
+    int RevDNSZoneRootLength_;
+
+    /// @brief extra options ALWAYS sent to client (may also include ForcedOpts)
+    TOptList ExtraOpts;
+    /// @brief list of options that are forced to client
+    TOptList ForcedOpts;
 };
 
 #endif
