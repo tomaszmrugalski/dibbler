@@ -25,7 +25,7 @@ int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TRelCfgMgr * TRelCfgMgr::Instance = 0;
 
-TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
+TRelCfgMgr::TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
     :TCfgMgr(), XmlFile(xmlFile)
 {
     // load config file
@@ -38,7 +38,7 @@ TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
     this->IsDone = false;
 }
 
-bool TRelCfgMgr::parseConfigFile(std::string cfgFile) {
+bool TRelCfgMgr::parseConfigFile(const std::string& cfgFile) {
     int result;
     ifstream f;
 
@@ -257,7 +257,7 @@ SPtr<TRelOptEcho> TRelCfgMgr::getEcho()
     return Echo;
 }
 
-void TRelCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlFile )
+void TRelCfgMgr::instanceCreate(const std::string& cfgFile, const std::string& xmlFile )
 {
     if (Instance)
         Log(Crit) << "RelCfgMgr instance already created. Application error!" << LogEnd;

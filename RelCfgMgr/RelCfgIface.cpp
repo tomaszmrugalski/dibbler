@@ -8,13 +8,17 @@
  */
 
 #include <sstream>
+#include "DHCPDefaults.h"
 #include "RelCfgIface.h"
 #include "Logger.h"
 
 using namespace std;
 
 TRelCfgIface::TRelCfgIface(int ifindex)
-    :Name_("[unknown]"), ID_(ifindex), InterfaceID_(-1) {
+    :Name_("[unknown]"), ID_(ifindex), InterfaceID_(-1),
+     ClientUnicast_(RELAY_CLIENT_UNICAST), ServerUnicast_(RELAY_SERVER_UNICAST),
+     ClientMulticast_(RELAY_CLIENT_MULTICAST), ServerMulticast_(RELAY_CLIENT_MULTICAST)
+{
 }
 
 TRelCfgIface::TRelCfgIface(const std::string& ifaceName)

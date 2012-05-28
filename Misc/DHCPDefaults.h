@@ -58,4 +58,11 @@
 
 #define CLIENT_DEFAULT_FQDN_FLAG_S true
 
+
+// ------- relay defaults -------
+#define RELAY_SERVER_UNICAST 0
+#define RELAY_CLIENT_UNICAST 0
+#define RELAY_SERVER_MULTICAST true
+#define RELAY_CLIENT_MULTICAST true
+
 #endif /* DHCPDEFAULTS_H */

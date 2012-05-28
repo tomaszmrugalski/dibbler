@@ -131,7 +131,7 @@ void TCfgMgr::copyFile(const std::string& cfgFile, const std::string& oldCfgFile
  * @return true if DUID value exists and is correct, false if doesn't.
  *
  */
-bool TCfgMgr::loadDUID(const std::string duidFile)
+bool TCfgMgr::loadDUID(const std::string& duidFile)
 {
     ifstream f;
     f.open(duidFile.c_str());
@@ -152,14 +152,15 @@ bool TCfgMgr::loadDUID(const std::string duidFile)
         int duidLen = s.length();
     int duidLen2 = DUID->getLen();
     if (duidLen <= 0 || duidLen2 == 0) {
-        Log(Error) << "DUID's value is 0. Please check that " << duidFile << " is not empty and contains actual DUID. You can also delete it." << LogEnd;
+        Log(Error) << "DUID's length is 0. Please check that " << duidFile
+                   << " is not empty and contains actual DUID. You can also delete it." << LogEnd;
         return false;
         }
 
-        return true;
+    return true;
 }
 
-bool TCfgMgr::setDUID(const std::string filename, TIfaceMgr & ifaceMgr) {
+bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr) {
 
     // --- load DUID ---
     if (this->loadDUID(filename)) {
@@ -237,7 +238,7 @@ bool TCfgMgr::setDUID(const std::string filename, TIfaceMgr & ifaceMgr) {
     return false;
 }
 
-bool TCfgMgr::generateDUID(const std::string duidFile, char * mac,int macLen, int macType)
+bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, int macType)
 {
     ofstream f;
     f.open( duidFile.c_str() );

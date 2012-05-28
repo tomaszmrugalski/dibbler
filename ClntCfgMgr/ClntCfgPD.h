@@ -41,13 +41,13 @@ class TClntCfgPD
     enum EState getState();
 
   private:
+    List(TClntCfgPrefix) ClntCfgPrefixLst_;
     unsigned long IAID_;
     unsigned long T1_;
     unsigned long T2_;
     char PrefixLength_;
 
     EState State_;
-    List(TClntCfgPrefix) ClntCfgPrefixLst_;
 };
 
 #endif

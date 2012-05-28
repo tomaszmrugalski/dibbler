@@ -65,10 +65,8 @@ SPtr<TClntCfgPrefix> TClntCfgPD::getPrefix() {
 }
 
 TClntCfgPD::TClntCfgPD(SPtr<TClntCfgPD> right, long iaid)
-    :ClntCfgPrefixLst_(right->ClntCfgPrefixLst_) {
-    IAID_ = iaid;
-    T1_ = right->getT1();
-    T2_ = right->getT2();
+    :ClntCfgPrefixLst_(right->ClntCfgPrefixLst_), IAID_(iaid), T1_(right->getT1()),
+     T2_(right->getT2()), PrefixLength_(right->getPrefixLength()) {
 }
 
 void TClntCfgPD::addPrefix(SPtr<TClntCfgPrefix> prefix) {

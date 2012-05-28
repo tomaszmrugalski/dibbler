@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeOperator.h,v 1.1 2008-10-12 19:36:58 thomson Exp $
- *
  */
 
 #ifndef NODEOPERATOR_H_
@@ -27,7 +25,6 @@ public:
             OPERATOR_CONTAIN   = 5
         };
 
-        NodeOperator();
         NodeOperator(OperatorType t , SPtr<Node>& lll, SPtr<Node>& rrr);
         // Construction method for Substring
         NodeOperator(OperatorType t , SPtr<Node>& lll,  int in,  int len);
@@ -38,16 +35,16 @@ public:
         virtual std::string exec();
 
 private :
-        SPtr<Node> l;
-        SPtr<Node> r;
-        OperatorType type;
+        OperatorType Type_;
+        SPtr<Node> L_;
+        SPtr<Node> R_;
 
         // support substring
-        int index;
-        int length;
+        int Index_;
+        int Length_;
 
         // support contain
-        std::string cotainString;
+        std::string ContainString_;
 };
 
 #endif /* NODEOPERATOR_H_ */

@@ -95,8 +95,6 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
     static char buf[4096];
     SPtr<TIPv6Addr> peer(new TIPv6Addr());
     int sockid;
-    int msgtype;
-    int ifaceid;
 
     sockid = TIfaceMgr::select(timeout, buf, bufsize, peer);
 
@@ -110,14 +108,13 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             }
             return 0; // NULL
         }
-        msgtype = buf[0];
+        int msgtype = buf[0];
         SPtr<TClntMsg> ptr;
         SPtr<TIfaceIface> ptrIface;
         ptrIface = this->getIfaceBySocket(sockid);
-        ifaceid = ptrIface->getID();
-        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-                   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-                   << ")." << LogEnd;
+        int ifaceid = ptrIface->getID();
+        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getFullName()
+                   << " (socket=" << sockid << ", addr=" << *peer << ")." << LogEnd;
 
         switch (msgtype) {
         case ADVERTISE_MSG:

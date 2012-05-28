@@ -53,9 +53,9 @@ class TCfgMgr
 
  protected:
     SPtr<TDUID> DUID;
-    bool setDUID(const std::string duidFile, TIfaceMgr &ifaceMgr);
-    bool loadDUID(const std::string filename);
-    bool generateDUID(const std::string duidFile,char * mac,int macLen, int macType);
+    bool setDUID(const std::string& duidFile, TIfaceMgr &ifaceMgr);
+    bool loadDUID(const std::string& filename);
+    bool generateDUID(const std::string& duidFile,char * mac,int macLen, int macType);
     std::string Workdir;
     std::string LogName;
     int LogLevel;

@@ -22,7 +22,7 @@
 class TSrvAddrMgr : public TAddrMgr
 {
   public:
-    static void instanceCreate(const std::string xmlFile, bool loadDB);
+    static void instanceCreate(const std::string& xmlFile, bool loadDB);
     static TSrvAddrMgr & instance();
 
     class TSrvCacheEntry

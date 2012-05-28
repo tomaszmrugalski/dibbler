@@ -36,12 +36,12 @@ public:
     int getInterfaceID();
 
 private:
-    SPtr<TIPv6Addr> ClientUnicast;
-    SPtr<TIPv6Addr> ServerUnicast;
-    bool ClientMulticast;
-    bool ServerMulticast;
+    SPtr<TIPv6Addr> ClientUnicast_;
+    SPtr<TIPv6Addr> ServerUnicast_;
+    bool ClientMulticast_;
+    bool ServerMulticast_;
 
-    int InterfaceID;
+    int InterfaceID_;
 };
 
 #endif

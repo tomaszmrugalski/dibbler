@@ -480,13 +480,14 @@ int  TClntCfgIface::getPrefixLength() {
 }
 
 void TClntCfgIface::setRoutingEnabledState(EState state) {
-    this->RoutingEnabledState = state;
+    RoutingEnabledState = state;
 }
 
 /**
  * add extra option to the list of supported extra options
  *
  * @param extra smart pointer to the supported option (to be sent)
+ * @param layout specifies layout of the option
  * @param sendAlways should this option be always sent? Even when already configured?
  */
 void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout, bool sendAlways) {
