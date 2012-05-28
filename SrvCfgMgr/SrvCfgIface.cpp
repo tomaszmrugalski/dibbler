@@ -764,27 +764,6 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <sip-domain>" << *str << "</sip-domain>" << endl;
     }
 
-    // option: NIS-SERVERS
-    out << "    <!-- <nis-servers count=\"" << iface.NISServerLst.count() << "\"> -->" << endl;
-    iface.NISServerLst.first();
-    while (addr = iface.NISServerLst.get()) {
-        out << "    <nis-server>" << *addr << "</nis-server>" << endl;
-    }
-
-    // option: NIS-DOMAIN
-    if (iface.supportNISDomain()) {
-        out << "    <nis-domain>" << iface.NISDomain << "</nis-domain>" << endl;
-    } else {
-        out << "    <!-- <nis-domain/> -->" << endl;
-    }
-
-    // option: NIS+-SERVERS
-    out << "    <!-- <nisplus-servers count=\"" << iface.NISPServerLst.count() << "\"> -->" << endl;
-    iface.NISPServerLst.first();
-    while (addr = iface.NISPServerLst.get()) {
-        out << "    <nisplus-server>" << *addr << "</nisplus-server>" << endl;
-    }
-
     // option: LIFETIME
     if (iface.supportLifetime()) {
         out << "    <lifetime>" << iface.Lifetime << "</lifetime>" << endl;

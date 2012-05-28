@@ -587,39 +587,9 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     // --- option: FQDN ---
     // see prepareFQDN() method
 
-    // --- option: NIS SERVERS ---
-    if ( reqOpts->isOption(OPTION_NIS_SERVERS) && ptrIface->supportNISServer() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISServer())
-	    opt = new TOptAddrLst(OPTION_NIS_SERVERS, *ex->getNISServerLst(),this);
-	else
-	    opt = new TOptAddrLst(OPTION_NIS_SERVERS, *ptrIface->getNISServerLst(),this);
-	Options.push_back(opt);
-	newOptionAssigned = true;
-    };
-
-    // --- option: NIS DOMAIN ---
-    if ( reqOpts->isOption(OPTION_NIS_DOMAIN_NAME) && ptrIface->supportNISDomain() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISDomain())
-	    opt = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, ex->getNISDomain(),this);
-	else
-	    opt = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, ptrIface->getNISDomain(),this);
-	Options.push_back(opt);
-	newOptionAssigned = true;
-    };
-
-    // --- option: NISP SERVERS ---
-    if ( reqOpts->isOption(OPTION_NISP_SERVERS) && ptrIface->supportNISPServer() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISPServer())
-	    opt = new TOptAddrLst(OPTION_NISP_SERVERS, *ex->getNISPServerLst(), this);
-	else
-	    opt = new TOptAddrLst(OPTION_NISP_SERVERS, *ptrIface->getNISPServerLst(), this);
-	Options.push_back((Ptr*) opt);
-	newOptionAssigned = true;
-    };
-
+    // --- option: NIS SERVERS is now handled with common extra options mechanism ---
+    // --- option: NIS DOMAIN is now handled with common extra options mechanism ---
+    // --- option: NISP SERVERS is now handled with common extra options mechanism ---
     // --- option: NISP DOMAIN is now handled with common extra options mechanism ---
 
     // --- option: VENDOR SPEC ---

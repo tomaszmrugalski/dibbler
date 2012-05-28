@@ -38,10 +38,6 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     SIPServerSupport  = false;
     SIPDomainSupport  = false;
     FQDNSupport_      = false;
-    NISServerSupport  = false;
-    NISDomainSupport  = false;
-    NISPServerSupport = false;
-    NISPDomainSupport = false;
     LifetimeSupport   = false;
     VendorSpecSupport = false;
 
@@ -281,42 +277,6 @@ void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength){
 
 bool TSrvParsIfaceOpt::supportFQDN() {
     return FQDNSupport_;
-}
-
-// --- option: NIS server ---
-void TSrvParsIfaceOpt::setNISServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
-    this->NISServerLst     = *lst;
-    this->NISServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getNISServerLst() {
-    return &this->NISServerLst;
-}
-bool TSrvParsIfaceOpt::supportNISServer(){
-    return this->NISServerSupport;
-}
-
-// --- option: NIS domain ---
-void TSrvParsIfaceOpt::setNISDomain(std::string domain) {
-    this->NISDomain=domain;
-    this->NISDomainSupport=true;
-}
-string TSrvParsIfaceOpt::getNISDomain() {
-    return this->NISDomain;
-}
-bool TSrvParsIfaceOpt::supportNISDomain() {
-    return this->NISDomainSupport;
-}
-
-// --- option: NIS+ server ---
-void TSrvParsIfaceOpt::setNISPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
-    this->NISPServerLst = *lst;
-    this->NISPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getNISPServerLst() {
-    return &this->NISPServerLst;
-}
-bool TSrvParsIfaceOpt::supportNISPServer(){
-    return this->NISPServerSupport;
 }
 
 // --- option: LIFETIME ---

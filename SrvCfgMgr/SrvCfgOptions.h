@@ -74,21 +74,9 @@ public:
     void setSIPDomainLst(List(std::string) *domainlist);
     bool supportSIPDomain();
 
-    // option: NIS servers
-    List(TIPv6Addr) * getNISServerLst();
-    void setNISServerLst( List(TIPv6Addr) *nislist);
-    bool supportNISServer();
-
-    // option: NIS+ servers
-    List(TIPv6Addr) * getNISPServerLst();
-    void setNISPServerLst( List(TIPv6Addr) *nisplist);
-    bool supportNISPServer();
-
-    // option: NIS domain
-    std::string getNISDomain();
-    void setNISDomain(std::string domain);
-    bool supportNISDomain();
-
+    // option: NIS servers is now handled with extra options mechanism
+    // option: NIS+ servers is now handled with extra options mechanism
+    // option: NIS domain is now handled with extra options mechanism
     // option: NIS+ domain is now handled with extra options mechanism
 
     // option: LIFETIME
@@ -114,10 +102,6 @@ private:
     bool TimezoneSupport;
     bool SIPServerSupport;
     bool SIPDomainSupport;
-    bool NISServerSupport;
-    bool NISDomainSupport;
-    bool NISPServerSupport;
-    bool NISPDomainSupport;
     bool LifetimeSupport;
     bool VendorSpecSupport;
 
@@ -131,10 +115,6 @@ private:
     std::string Timezone;
     List(TIPv6Addr) SIPServerLst;
     List(std::string) SIPDomainLst;
-    List(TIPv6Addr) NISServerLst;
-    List(TIPv6Addr) NISPServerLst;
-    std::string NISDomain;
-    std::string NISPDomain;
     TOptList ExtraOpts_;  // extra options ALWAYS sent to client (may also include ForcedOpts)
     TOptList ForcedOpts_; // list of options that are forced to client
     unsigned int Lifetime;

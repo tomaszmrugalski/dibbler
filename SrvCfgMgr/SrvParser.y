@@ -1338,7 +1338,9 @@ NISServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
+    SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_NIS_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(nis_servers, false);
+    ///ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1350,7 +1352,9 @@ NISPServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
+    SPtr<TOpt> nisp_servers = new TOptAddrLst(OPTION_NISP_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(nisp_servers, false);
+    // ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1360,7 +1364,9 @@ NISPServerOption
 NISDomainOption
 :OPTION_ NIS_DOMAIN_ STRING_
 {
-    ParserOptStack.getLast()->setNISDomain($3);
+    SPtr<TOpt> nis_domain = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, string($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(nis_domain, false);
+    // ParserOptStack.getLast()->setNISDomain($3);
 }
 ;
 
@@ -1370,7 +1376,6 @@ NISDomainOption
 NISPDomainOption
 :OPTION_ NISP_DOMAIN_ STRING_
 {
-    // ParserOptStack.getLast()->setNISPDomain($3);
     SPtr<TOpt> nispdomain = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, string($3), NULL);
     ParserOptStack.getLast()->addExtraOption(nispdomain, false);
 }

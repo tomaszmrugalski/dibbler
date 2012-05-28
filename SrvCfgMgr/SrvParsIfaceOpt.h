@@ -93,21 +93,9 @@ public:
     int getFQDNMode();
     void setFQDNMode(int FQDNMode);
 
-    // option: NIS servers
-    List(TIPv6Addr) * getNISServerLst();
-    void setNISServerLst( List(TIPv6Addr) *nislist);
-    bool supportNISServer();
-
-    // option: NIS+ servers
-    List(TIPv6Addr) * getNISPServerLst();
-    void setNISPServerLst( List(TIPv6Addr) *nisplist);
-    bool supportNISPServer();
-
-    // option: NIS domain
-    std::string getNISDomain();
-    void setNISDomain(std::string domain);
-    bool supportNISDomain();
-
+    // option: NIS servers is now handled with extra options mechanism
+    // option: NIS+ servers is now handled with extra options mechanism
+    // option: NIS domain is now handled with extra options mechanism
     // option: NISP domain is now handled with extra options mechanism
 
     // option: LIFETIME
@@ -151,10 +139,6 @@ private:
     bool SIPServerSupport;
     bool SIPDomainSupport;
     bool FQDNSupport_;
-    bool NISServerSupport;
-    bool NISDomainSupport;
-    bool NISPServerSupport;
-    bool NISPDomainSupport;
     bool LifetimeSupport;
     bool VendorSpecSupport;
 
@@ -165,10 +149,6 @@ private:
     List(TIPv6Addr) SIPServerLst;
     List(std::string) SIPDomainLst;
     List(TFQDN) FQDNLst_;
-    List(TIPv6Addr) NISServerLst;
-    List(TIPv6Addr) NISPServerLst;
-    std::string NISDomain;
-    std::string NISPDomain;
     unsigned int Lifetime;
 
     List(TOptVendorSpecInfo) VendorSpec_;

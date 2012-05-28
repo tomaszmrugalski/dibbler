@@ -43,10 +43,6 @@ void TSrvCfgOptions::SetDefaults() {
     this->TimezoneSupport         = false;
     this->SIPServerSupport        = false;
     this->SIPDomainSupport        = false;
-    this->NISServerSupport        = false;
-    this->NISDomainSupport        = false;
-    this->NISPServerSupport       = false;
-    this->NISPDomainSupport       = false;
     this->LifetimeSupport         = false;
     this->VendorSpecSupport       = false;
 
@@ -130,42 +126,6 @@ void TSrvCfgOptions::setSIPDomainLst(List(std::string) * domain) {
 }
 bool TSrvCfgOptions::supportSIPDomain() {
     return this->SIPDomainSupport;
-}
-
-// --- option: NIS server ---
-void TSrvCfgOptions::setNISServerLst(List(TIPv6Addr) *lst) {
-    this->NISServerLst     = *lst;
-    this->NISServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgOptions::getNISServerLst() {
-    return &this->NISServerLst;
-}
-bool TSrvCfgOptions::supportNISServer(){
-    return this->NISServerSupport;
-}
-
-// --- option: NIS domain ---
-void TSrvCfgOptions::setNISDomain(std::string domain) {
-    this->NISDomain=domain;
-    this->NISDomainSupport=true;
-}
-string TSrvCfgOptions::getNISDomain() {
-    return this->NISDomain;
-}
-bool TSrvCfgOptions::supportNISDomain() {
-    return this->NISDomainSupport;
-}
-
-// --- option: NIS+ server ---
-void TSrvCfgOptions::setNISPServerLst(List(TIPv6Addr) *lst) {
-    this->NISPServerLst = *lst;
-    this->NISPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvCfgOptions::getNISPServerLst() {
-    return &this->NISPServerLst;
-}
-bool TSrvCfgOptions::supportNISPServer(){
-    return this->NISPServerSupport;
 }
 
 // --- option: LIFETIME ---
@@ -259,9 +219,6 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     if (opt->supportTimezone())   this->setTimezone(opt->getTimezone());
     if (opt->supportSIPServer())  this->setSIPServerLst(opt->getSIPServerLst());
     if (opt->supportSIPDomain())  this->setSIPDomainLst(opt->getSIPDomainLst());
-    if (opt->supportNISServer())  this->setNISServerLst(opt->getNISServerLst());
-    if (opt->supportNISDomain())  this->setNISDomain(opt->getNISDomain());
-    if (opt->supportNISPServer()) this->setNISPServerLst(opt->getNISPServerLst());
     if (opt->supportLifetime())   this->setLifetime(opt->getLifetime());
 
     return true;
@@ -357,27 +314,6 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     iface.SIPDomainLst.first();
     while (str = iface.SIPDomainLst.get()) {
         out << "      <sip-domain>" << *str << "</sip-domain>" << endl;
-    }
-
-    // option: NIS-SERVERS
-    out << "      <!-- <nis-servers count=\"" << iface.NISServerLst.count() << "\"> -->" << endl;
-    iface.NISServerLst.first();
-    while (addr = iface.NISServerLst.get()) {
-        out << "      <nis-server>" << *addr << "</nis-server>" << endl;
-    }
-
-    // option: NIS-DOMAIN
-    if (iface.supportNISDomain()) {
-        out << "      <nis-domain>" << iface.NISDomain << "</nis-domain>" << endl;
-    } else {
-        out << "      <!-- <nis-domain/> -->" << endl;
-    }
-
-    // option: NIS+-SERVERS
-    out << "      <!-- <nisplus-servers count=\"" << iface.NISPServerLst.count() << "\"> -->" << endl;
-    iface.NISPServerLst.first();
-    while (addr = iface.NISPServerLst.get()) {
-        out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;
     }
 
     // option: LIFETIME
