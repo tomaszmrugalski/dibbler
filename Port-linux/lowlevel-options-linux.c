@@ -29,10 +29,50 @@
 
 extern char * Message;
 
+/* check whether the resolconf executable exists
+ * if not, return NULL,
+ * else return a pipe to it
+ * the pipe needs to be closed by the caller
+ *
+ * @param arg1
+ * @param arg2
+ * are command line arguments to resolvconf (-a|-d, "IFNAME")
+ */
+FILE *resolvconf_open(const char *arg1, const char *arg2)
+{
+    pid_t child;
+    int pipefd[2];
+
+    if (access(RESOLVCONF, X_OK) != 0)
+        return NULL;
+    if (pipe(pipefd) != 0)
+        return NULL;
+    switch(child=fork()) {
+      case 0: /* child */
+          close(pipefd[1]);
+	  close(0);
+	  dup(pipefd[0]);
+	  close(pipefd[0]);
+	  /* double fork so init reaps the child */
+	  if (!fork()) { /* child */
+              execl(RESOLVCONF, RESOLVCONF, arg1, arg2, (char *)NULL);
+	  } /* All other cases are meaningless here */
+	  exit(EXIT_FAILURE);
+	  break;
+    case EXIT_FAILURE: /* error */
+          return NULL;
+	  break;
+    }
+    /* parent */
+    close(pipefd[0]);
+    waitpid(child, NULL, 0);
+    return fdopen(pipefd[1], "w");
+}
+
 /* in iproute.c, borrowed from iproute2 */
 extern int iproute_modify(int cmd, unsigned flags, int argc, char **argv);
 
-/* Remove value of keyword from opened file in and the result is printed into
+/** Remove value of keyword from opened file in and the result is printed into
  * opened file out. If removed_empty and keyword remains without argument, it
  * will be removed too. Comments (starting with comment char) are respected.
  * All values following keyword are removed on all lines (global remove).
@@ -110,23 +150,35 @@ int cfg_value_del(FILE *in, FILE *out, const char *keyword, const char *value,
 }
 
 
-/* Removes value of keyword from file.
+/**
+ * @brief removes value of keyword from file.
+ *
  * It tries to do its best not to corrupt the file.
- * Returns LOWLEVEL ERROR codes */
+ * Returns LOWLEVEL ERROR codes
+ *
+ * @param file
+ * @param keyword
+ * @param value
+ *
+ * @return status code (one of LOWLEVEL_* defines)
+ */
 int cfg_file_del(const char *file, const char *keyword, const char *value) {
     FILE *fold, *ftmp;
     int tmpfd;
-    int error=LOWLEVEL_NO_ERROR;
+    int error = LOWLEVEL_NO_ERROR;
     struct stat st;
     char template[]="/etc/dibbler.XXXXXX";
 
     /* Create temporary FILE */
-    if (-1 == (tmpfd=mkstemp(template)))
-	return(LOWLEVEL_ERROR_FILE);
+    if ((tmpfd = mkstemp(template)) == -1)
+	return (LOWLEVEL_ERROR_FILE);
 
-    if (NULL == (ftmp=fdopen(tmpfd, "w"))) {
-	unlink(template);
+    if (!(ftmp = fdopen(tmpfd, "w"))) {
+        /* close the file first, then... */
 	close(tmpfd);
+
+        /* then delete it */
+	unlink(template);
 	return(LOWLEVEL_ERROR_FILE);
     }
 
@@ -141,8 +193,13 @@ int cfg_file_del(const char *file, const char *keyword, const char *value) {
     error = cfg_value_del(fold, ftmp, keyword, value, '#', 1);
 
     /* close the files */
-    if (EOF==fclose(fold)) error=LOWLEVEL_ERROR_FILE;
-    if (EOF==fclose(ftmp)) error=LOWLEVEL_ERROR_FILE;
+    if (fclose(fold) == EOF) {
+        error=LOWLEVEL_ERROR_FILE;
+    }
+
+    if (fclose(ftmp) == EOF) {
+        error=LOWLEVEL_ERROR_FILE;
+    }
 
     /* move temp file into place of the old one */
     if (error==LOWLEVEL_NO_ERROR) {
@@ -164,15 +221,18 @@ int cfg_file_del(const char *file, const char *keyword, const char *value) {
 int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
     FILE * f;
     unsigned char c;
-    if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
-	return LOWLEVEL_ERROR_FILE;
-    }
 
-    fseek(f, -1, SEEK_END);
-    c = fgetc(f);
-    fseek(f,0, SEEK_END);
-    if ( (c!=CR) && (c!=LF) ) {
-	fprintf(f,"\n");
+    if ( !(f=resolvconf_open("-a", ifname))) {
+	    if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
+		return LOWLEVEL_ERROR_FILE;
+	    }
+
+	    fseek(f, -1, SEEK_END);
+	    c = fgetc(f);
+	    fseek(f,0, SEEK_END);
+	    if ( (c!=CR) && (c!=LF) ) {
+		fprintf(f,"\n");
+	    }
     }
 
     fprintf(f,"nameserver %s\n",addrPlain);
@@ -181,7 +241,12 @@ int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
 }
 
 int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
-    return cfg_file_del(RESOLVCONF_FILE, "nameserver", addrPlain);
+    FILE *f;
+    
+    if ( !(f=resolvconf_open("-d", ifname)))
+	    return cfg_file_del(RESOLVCONF_FILE, "nameserver", addrPlain);
+    fclose(f);
+    return LOWLEVEL_NO_ERROR;
 }
 
 int domain_add(const char* ifname, int ifaceid, const char* domain) {
@@ -191,14 +256,23 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     unsigned char c;
     struct stat st;
 
+    /* try to use resolvconf it is available */
+    if ( (f=resolvconf_open("-a", ifname))) {
+        fprintf(f, "search %s\n", domain);
+        fclose(f);
+        return LOWLEVEL_NO_ERROR;
+    }
+    
+    /* otherwise do the edit on your own */
+
     memset(&st,0,sizeof(st));
     stat(RESOLVCONF_FILE, &st);
 
-    unlink(RESOLVCONF_FILE".old");
-    rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
-    if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
+    unlink(RESOLVCONF_FILE ".old");
+    rename(RESOLVCONF_FILE, RESOLVCONF_FILE ".old");
+    if ( !(f = fopen(RESOLVCONF_FILE ".old", "r")) )
 	return LOWLEVEL_ERROR_FILE;
-    if ( !(f2= fopen(RESOLVCONF_FILE,"w+"))) {
+    if ( !(f2 = fopen(RESOLVCONF_FILE, "w+")) ) {
         fclose(f);
 	return LOWLEVEL_ERROR_FILE;
     }
@@ -231,7 +305,11 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
 }
 
 int domain_del(const char * ifname, int ifaceid, const char *domain) {
-    return cfg_file_del(RESOLVCONF_FILE, "search", domain);
+    FILE * f;
+    if ( !(f = resolvconf_open("-d", ifname)))
+        return cfg_file_del(RESOLVCONF_FILE, "search", domain);
+    fclose(f);
+    return LOWLEVEL_NO_ERROR;
 }
 
 int ntp_add(const char* ifname, const int ifindex, const char* addrPlain){
