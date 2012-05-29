@@ -478,6 +478,7 @@ echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
 echo "DNS Update (clnt/srv) disabled: $MOD_CLNT_DISABLE_DNSUPDATE/$MOD_SRV_DISABLE_DNSUPDATE"
 echo "Authentication disabled       : $MOD_DISABLE_AUTH"
 echo "Link-state change detection   : $MOD_CLNT_CONFIRM"
+echo "/sbin/resolvconf support      : $MOD_RESOLVCONF"
 
 echo
 echo "Experimental features:"
