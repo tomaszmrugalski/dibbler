@@ -147,11 +147,10 @@ char *getDigestName(enum DigestTypes type) {
 }
 
 void PrintHex(const std::string& message, char *buffer, unsigned len) {
-    unsigned j;
     char *buf = new char[len*3+1];
 
     if (len) {
-        for (j = 0; j < len; j++) {
+        for (unsigned int j = 0; j < len; j++) {
             sprintf(buf + j*3, "%02x ", (unsigned char) *(buffer+j));
         }
 

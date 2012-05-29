@@ -20,6 +20,7 @@
 #include <sys/socket.h>
 #include <linux/rtnetlink.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include "Portable.h"
 #include "dibbler-config.h"
 
@@ -248,7 +249,7 @@ int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
 
     fseek(f,0, SEEK_END);
     /* if the file does not end with new-line, add it */
-    if ( (c! = CR) && (c! = LF) ) {
+    if ( (c != CR) && (c != LF) ) {
         fprintf(f,"\n");
     }
     fprintf(f,"nameserver %s\n",addrPlain);
