@@ -313,6 +313,26 @@ dnl ------------------------------------------------------------
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
+### support for resolvconf tool (mostly Debian, probably) ##############
+   AC_ARG_ENABLE(resolvconf,
+	[  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)],
+	[ case "${enableval}" in
+	       yes)
+	       MOD_RESOLVCONF=yes
+	       ;;
+	       no)
+	       MOD_RESOLVCONF=no
+	       ;;
+	       *)
+	       AC_MSG_ERROR(bad value ${enablevald} for --enable-resolvconf)
+	       ;;
+	  esac],
+	  [MOD_RESOLVCONF=no]
+    )
+
+AM_CONDITIONAL(RESOLVCONF, test $MOD_RESOLVCONF = yes)
+AM_COND_IF([RESOLVCONF], [AC_DEFINE([MOD_RESOLVCONF], [1], [Support for /sbin/resolvconf enabled?])])
+
 ### DNS Update ####################################
 ### We may add separate parameter for client and server eventually ##########
    AC_ARG_ENABLE(dns-update,

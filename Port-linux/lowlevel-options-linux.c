@@ -21,6 +21,7 @@
 #include <linux/rtnetlink.h>
 #include <sys/stat.h>
 #include "Portable.h"
+#include "dibbler-config.h"
 
 #define CR 0x0a
 #define LF 0x0d
@@ -29,14 +30,20 @@
 
 extern char * Message;
 
-/* check whether the resolconf executable exists
- * if not, return NULL,
- * else return a pipe to it
+
+#ifdef MOD_RESOLVCONF
+/** @brief check whether the resolconf executable exists
+ *
+ * Tries to spawn resolvconf process and returns a pipe to it.
+ * Parameters are passed to resolvconf as command line 
+ * arguments (e.g. -a|-d, "IFNAME")
+ *
  * the pipe needs to be closed by the caller
  *
- * @param arg1
- * @param arg2
- * are command line arguments to resolvconf (-a|-d, "IFNAME")
+ * @param arg1 first command line argument passed to resolvconf
+ * @param arg2 second command line argument passed to resolvconf
+ *
+ * @return file handler (pipe to resolvconf process) or NULL
  */
 FILE *resolvconf_open(const char *arg1, const char *arg2)
 {
@@ -47,7 +54,7 @@ FILE *resolvconf_open(const char *arg1, const char *arg2)
         return NULL;
     if (pipe(pipefd) != 0)
         return NULL;
-    switch(child=fork()) {
+    switch(child = fork()) {
       case 0: /* child */
           close(pipefd[1]);
 	  close(0);
@@ -68,11 +75,15 @@ FILE *resolvconf_open(const char *arg1, const char *arg2)
     waitpid(child, NULL, 0);
     return fdopen(pipefd[1], "w");
 }
+#endif
 
 /* in iproute.c, borrowed from iproute2 */
 extern int iproute_modify(int cmd, unsigned flags, int argc, char **argv);
 
-/** Remove value of keyword from opened file in and the result is printed into
+/**
+ * @brief Removes an entry from a file.
+ * 
+ * Remove value of keyword from opened file in and the result is printed into
  * opened file out. If removed_empty and keyword remains without argument, it
  * will be removed too. Comments (starting with comment char) are respected.
  * All values following keyword are removed on all lines (global remove).
@@ -219,34 +230,44 @@ int cfg_file_del(const char *file, const char *keyword, const char *value) {
           -2 - unable to open resolv.conf file
  */
 int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
-    FILE * f;
+    FILE * f = NULL;
     unsigned char c;
 
-    if ( !(f=resolvconf_open("-a", ifname))) {
-	    if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
-		return LOWLEVEL_ERROR_FILE;
-	    }
+#ifdef MOD_RESOLVCONF
+    /* try to use resolvconf */
+    f=resolvconf_open("-a", ifname);
+#endif
 
-	    fseek(f, -1, SEEK_END);
-	    c = fgetc(f);
-	    fseek(f,0, SEEK_END);
-	    if ( (c!=CR) && (c!=LF) ) {
-		fprintf(f,"\n");
-	    }
+    /* if resolvconf is not available, fallback to normal file append */
+    if (!f && !(f=fopen(RESOLVCONF_FILE, "a+")) ) {
+            return LOWLEVEL_ERROR_FILE;
     }
+    
+    fseek(f, -1, SEEK_END);
+    c = fgetc(f); /* read the last character */
 
+    fseek(f,0, SEEK_END);
+    /* if the file does not end with new-line, add it */
+    if ( (c! = CR) && (c! = LF) ) {
+        fprintf(f,"\n");
+    }
     fprintf(f,"nameserver %s\n",addrPlain);
     fclose(f);
     return LOWLEVEL_NO_ERROR;
 }
 
 int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
-    FILE *f;
+    FILE *f = NULL;
     
-    if ( !(f=resolvconf_open("-d", ifname)))
-	    return cfg_file_del(RESOLVCONF_FILE, "nameserver", addrPlain);
-    fclose(f);
-    return LOWLEVEL_NO_ERROR;
+#ifdef MOD_RESOLVCONF
+    /* try to use resolvconf to remove config */
+    if ((f=resolvconf_open("-d", ifname))) {
+        fclose(f);
+        return LOWLEVEL_NO_ERROR;
+    }
+#endif
+    
+    return cfg_file_del(RESOLVCONF_FILE, "nameserver", addrPlain);
 }
 
 int domain_add(const char* ifname, int ifaceid, const char* domain) {
@@ -256,12 +277,14 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     unsigned char c;
     struct stat st;
 
+#ifdef MOD_RESOLVCONF
     /* try to use resolvconf it is available */
     if ( (f=resolvconf_open("-a", ifname))) {
         fprintf(f, "search %s\n", domain);
         fclose(f);
         return LOWLEVEL_NO_ERROR;
     }
+#endif
     
     /* otherwise do the edit on your own */
 
@@ -306,10 +329,17 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
 
 int domain_del(const char * ifname, int ifaceid, const char *domain) {
     FILE * f;
-    if ( !(f = resolvconf_open("-d", ifname)))
-        return cfg_file_del(RESOLVCONF_FILE, "search", domain);
-    fclose(f);
-    return LOWLEVEL_NO_ERROR;
+
+#ifdef MOD_RESOLVCONF
+    /* try to use resolvconf if it is available */
+    if ((f = resolvconf_open("-d", ifname))) {
+        fclose(f);
+        return LOWLEVEL_NO_ERROR;
+    }
+#endif
+
+    /* otherwise fallback to normal file manipulation */
+    return cfg_file_del(RESOLVCONF_FILE, "search", domain);
 }
 
 int ntp_add(const char* ifname, const int ifindex, const char* addrPlain){

@@ -11,6 +11,7 @@
   - Srv: Refactoring continues another 11 classes removed.
   - Srv: NIS, NIS+, SIP, DNS, Domain, NTP and Lifetime options are now handled through
     unified option handling mechanism. Server code should be smaller now.
+  - Cli: support for resolvconf tool added (see --enable-resolvconf parameter)
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

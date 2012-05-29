@@ -627,6 +627,8 @@ ARCH
 GTEST_LDADD
 GTEST_LDFLAGS
 GTEST_INCLUDES
+RESOLVCONF_FALSE
+RESOLVCONF_TRUE
 LIBOBJS
 ALLOCA
 CXXCPP
@@ -765,6 +767,7 @@ enable_
 enable_debug
 enable_efence
 enable_bind_reuse
+enable_resolvconf
 enable_dns_update
 enable_auth
 with_gtest
@@ -1420,6 +1423,7 @@ Dibbler modular features:
   --enable-debug          Turn on debugging (default: no)
   --enable-efence         Enables linking with electric-fence (default: no)
   --enable-bind-reuse     Enables reusing the same port/address: SO_REUSEADDR (default: yes)
+  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)
   --enable-dns-update     Enables DNS Update mechanism (default: yes)
   --enable-auth           Enables authentication (default: yes)
   --enable-link-state     Enables link-state change detections (default: yes)
@@ -17071,6 +17075,40 @@ fi
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
+### support for resolvconf tool (mostly Debian, probably) ##############
+   # Check whether --enable-resolvconf was given.
+if test "${enable_resolvconf+set}" = set; then :
+  enableval=$enable_resolvconf;  case "${enableval}" in
+	       yes)
+	       MOD_RESOLVCONF=yes
+	       ;;
+	       no)
+	       MOD_RESOLVCONF=no
+	       ;;
+	       *)
+	       as_fn_error $? "bad value ${enablevald} for --enable-resolvconf" "$LINENO" 5
+	       ;;
+	  esac
+else
+  MOD_RESOLVCONF=no
+
+fi
+
+
+ if test $MOD_RESOLVCONF = yes; then
+  RESOLVCONF_TRUE=
+  RESOLVCONF_FALSE='#'
+else
+  RESOLVCONF_TRUE='#'
+  RESOLVCONF_FALSE=
+fi
+
+if test $MOD_RESOLVCONF = yes; then
+
+$as_echo "#define MOD_RESOLVCONF 1" >>confdefs.h
+
+fi
+
 ### DNS Update ####################################
 ### We may add separate parameter for client and server eventually ##########
    # Check whether --enable-dns-update was given.
@@ -17362,6 +17400,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${RESOLVCONF_TRUE}" && test -z "${RESOLVCONF_FALSE}"; then
+  as_fn_error $? "conditional \"RESOLVCONF\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_GTEST_TRUE}" && test -z "${HAVE_GTEST_FALSE}"; then
