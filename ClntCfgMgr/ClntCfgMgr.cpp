@@ -43,12 +43,12 @@ TClntCfgMgr & TClntCfgMgr::instance()
   return *Instance;
 }
 
-void TClntCfgMgr::instanceCreate(const std::string cfgFile) {
+void TClntCfgMgr::instanceCreate(const std::string& cfgFile) {
     Instance = new TClntCfgMgr(cfgFile);
 }
 
 
-TClntCfgMgr::TClntCfgMgr(const std::string cfgFile)
+TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
   :TCfgMgr()
 {
     ScriptName = DEFAULT_SCRIPT;

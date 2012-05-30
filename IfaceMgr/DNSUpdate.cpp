@@ -129,7 +129,7 @@ DnsUpdateResult DNSUpdate::run(int timeout){
     try {
 	sendMsg(timeout);
     } 
-    catch (PException p) {
+    catch (const PException& p) {
 	DnsUpdateResult result = DNSUPDATE_ERROR;
 	if (strstr(p.message,"Could not connect TCP socket") ){
 	    result = DNSUPDATE_CONNFAIL;
@@ -374,7 +374,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	
 	return RemoteDnsRR;
 	
-    } catch (PException p) {
+    } catch (const PException& p) {
 	if (q) {
 	    delete q;
 	    q = NULL;
@@ -424,7 +424,7 @@ void DNSUpdate::sendMsgTCP(unsigned int timeout){
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
-    } catch (PException p) {
+    } catch (const PException& p) {
 	
 	if (a) 
 	    delete a;
@@ -451,7 +451,7 @@ void DNSUpdate::sendMsgUDP(unsigned int timeout) {
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
-    } catch (PException p) {
+    } catch (const PException& p) {
 	
 	if (a) 
 	    delete a;

@@ -23,10 +23,10 @@
 class TClntTransMgr
 {
  private:
-  TClntTransMgr(const std::string config);
+  TClntTransMgr(const std::string& config);
 
   public:
-    static void instanceCreate(const std::string config);
+    static void instanceCreate(const std::string& config);
     static TClntTransMgr &instance();
     ~TClntTransMgr();
     void doDuties();
