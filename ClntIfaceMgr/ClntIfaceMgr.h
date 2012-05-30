@@ -42,7 +42,7 @@ private:
     TClntIfaceMgr(const std::string& xmlFile); // this is singleton
     
 public:
-    static void instanceCreate(const std::string xmlFile);
+    static void instanceCreate(const std::string& xmlFile);
     static TClntIfaceMgr& instance();
 
     ~TClntIfaceMgr();
@@ -59,8 +59,8 @@ public:
     bool notifyRemoteScripts(SPtr<TIPv6Addr> receivedAddr, SPtr<TIPv6Addr> serverAddr, int ifindex);
 #endif    
 
-    bool fqdnAdd(SPtr<TClntIfaceIface> iface, std::string domainname);
-    bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, std::string domainname);
+    bool fqdnAdd(SPtr<TClntIfaceIface> iface, const std::string& domainname);
+    bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, const std::string& domainname);
 
     bool addPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
     bool updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);

@@ -34,20 +34,20 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
 }
 
-void TClntParsGlobalOpt::setWorkDir(string dir) {
-    this->WorkDir=dir;
+void TClntParsGlobalOpt::setWorkDir(const std::string& dir) {
+    WorkDir = dir;
 }
 
 string TClntParsGlobalOpt::getWorkDir() {
-    return this->WorkDir;
+    return WorkDir;
 }
 
 void TClntParsGlobalOpt::setPrefixLength(int len) {
-    this->PrefixLength = len;
+    PrefixLength = len;
 }
 
 int TClntParsGlobalOpt::getPrefixLength() {
-    return this->PrefixLength;
+    return PrefixLength;
 }
 
 void TClntParsGlobalOpt::setDigest(DigestTypes digest) {

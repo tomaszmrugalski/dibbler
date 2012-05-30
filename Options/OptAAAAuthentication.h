@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: OptAAAAuthentication.h,v 1.2 2008-08-29 00:07:30 thomson Exp $
- *
  */
 
 #ifndef OPTAAAAUTHENTICATION_H
@@ -20,17 +18,15 @@
 class TOptAAAAuthentication : public TOpt
 {
 public:
-    TOptAAAAuthentication(TMsg* parent);
     TOptAAAAuthentication(char * &buf,  int &n,TMsg* parent);
+    TOptAAAAuthentication(TMsg* parent);
     void setAAASPI(uint32_t value);
     uint32_t getAAASPI();
-    int getSize();
+    size_t getSize();
     char * storeSelf(char* buf);
 
 private:
-    uint32_t AAASPI;
-
-    bool Valid;
+    uint32_t AAASPI_;
 };
 
 #endif 

@@ -47,7 +47,7 @@ char * TOptAddrLst::storeSelf(char* buf) {
     return buf;
 }
 
-int TOptAddrLst::getSize()
+size_t TOptAddrLst::getSize()
 {
     return 4+16*AddrLst.count();
 }

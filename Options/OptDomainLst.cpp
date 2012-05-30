@@ -16,7 +16,7 @@
 
 using namespace std;
 
-TOptDomainLst::TOptDomainLst(int type, List(string) strLst, TMsg* parent)
+TOptDomainLst::TOptDomainLst(int type, List(std::string) strLst, TMsg* parent)
     :TOpt(type, parent) {
     StringLst = strLst;
 }
@@ -105,7 +105,7 @@ char * TOptDomainLst::storeSelf(char* buf)
     return buf;
 }
 
-int TOptDomainLst::getSize() {
+size_t TOptDomainLst::getSize() {
     int len = 0;
     int tmplen = 0;
     SPtr<string> x;

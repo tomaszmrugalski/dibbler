@@ -140,7 +140,7 @@ bool ReqTransMgr::SendMsg()
         TReqOptAddr * optAddr = new TReqOptAddr(OPTION_IAADDR, a, msg);
         optAddr->storeSelf(buf+bufLen);
         bufLen += optAddr->getSize();
-        free(optAddr);
+        delete optAddr;
         
     } else {
         Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
@@ -155,7 +155,7 @@ bool ReqTransMgr::SendMsg()
         optDuid->storeSelf(buf+bufLen);
         bufLen += optDuid->getSize();
 
-        free(optDuid);
+        delete optDuid;
     }
 
     SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");

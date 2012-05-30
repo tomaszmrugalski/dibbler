@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgIface.h,v 1.4 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
 class TRelCfgIface;
@@ -23,10 +21,9 @@ class TRelCfgIface
 {
     friend std::ostream& operator<<(std::ostream& out,TRelCfgIface& iface);
 public:
-    TRelCfgIface(std::string ifaceName);
+    TRelCfgIface(const std::string& ifaceName);
     TRelCfgIface(int ifaceNr);
     virtual ~TRelCfgIface();
-    void setDefaults();
 
     void setName(std::string ifaceName);
     void setID(int ifaceID);
@@ -45,14 +42,14 @@ public:
     int getInterfaceID();
     
 private:
-    std::string Name;
-    int	ID;
-    int InterfaceID; // value of interface-id option (optional)
+    std::string Name_;
+    int	ID_;
+    int InterfaceID_; // value of interface-id option (optional)
 
-    SPtr<TIPv6Addr> ClientUnicast;
-    SPtr<TIPv6Addr> ServerUnicast;
-    bool ClientMulticast;
-    bool ServerMulticast;
+    SPtr<TIPv6Addr> ClientUnicast_;
+    SPtr<TIPv6Addr> ServerUnicast_;
+    bool ClientMulticast_;
+    bool ServerMulticast_;
 };
 
 #endif /* RELCFGIFACE_H */

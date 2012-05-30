@@ -85,7 +85,7 @@ void daemon_init() {
 	    Log(Crit) << "Can't fork first child." << endl;
 	    return;
 	} else if (childpid > 0) 
-	    exit(0); // parent process
+	    exit(EXIT_SUCCESS); // parent process
 	
 #if 0
 	// @todo: daemon spawning in Mac OS is done a bit differently
@@ -101,7 +101,7 @@ void daemon_init() {
 	    cout << "Can't fork second child." << endl;
 	    return;
 	} else if (childpid > 0)
-	    exit(0); // first child
+	    exit(EXIT_SUCCESS); // first child
 	
     } // getppid()!=1
 

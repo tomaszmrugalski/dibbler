@@ -98,14 +98,14 @@ struct iface* if_list_get() {
                 if (strlen(buf+22)==18) { // ethernet
                     tmp->hardwareType = 6; 
                     tmp->flags = IF_UP | IF_RUNNING | IF_MULTICAST;
-                    sscanf( (buf+22) ,"%x-%x-%x-%x-%x-%x", tmp->mac, tmp->mac+1, tmp->mac+2,
-                                                            tmp->mac+3, tmp->mac+4, tmp->mac+5);
+                    sscanf( (buf+22) ,"%2x-%2x-%2x-%2x-%2x-%2x", tmp->mac, tmp->mac+1, tmp->mac+2,
+                            tmp->mac+3, tmp->mac+4, tmp->mac+5);
                     tmp->maclen=6;
                 } else 
                 if (strlen(buf+22) > 7) { // tunnel 0.0.0.0
                     tmp->hardwareType = 131; // tunnel
-                    sscanf( (buf+22), "%d.%d.%d.%d", tmp->mac, tmp->mac+1,
-                                                     tmp->mac+2, tmp->mac+3);
+                    sscanf( (buf+22), "%3d.%3d.%3d.%3d", tmp->mac, tmp->mac+1,
+                            tmp->mac+2, tmp->mac+3);
                     tmp->maclen = 4;
                 } else
                 if (strlen(buf+22) < 2) { // loopback ""

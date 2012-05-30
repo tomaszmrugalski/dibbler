@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: lowlevel-win32.c,v 1.22 2008-10-13 22:41:18 thomson Exp $
- *
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -80,7 +78,7 @@ uint32_t getAAASPIfromFile() {
     if (!file)
         return 0;
 
-    fscanf(file, "%x", &ret);
+    fscanf(file, "%10x", &ret);
     fclose(file);
 
     return ret;
@@ -116,7 +114,6 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
     if (0 > fd)
         return NULL;
 
-    /** @todo should be freed somewhere */
     retval = malloc(st.st_size);
     if (!retval)
         return NULL;
@@ -125,14 +122,17 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
         ret = read(fd, retval + offset, st.st_size - offset);
         if (!ret) break;
         if (ret < 0) {
+            free(retval);
             return NULL;
         }
         offset += ret;
     }
     close(fd);
 
-    if (offset != st.st_size)
+    if (offset != st.st_size) {
+        free(retval);
         return NULL;
+    }
 
     *len = st.st_size;
     return retval;
@@ -280,7 +280,6 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     PIP_ADAPTER_UNICAST_ADDRESS linkaddr;
     char netAddr[16];
     unsigned long buflen=0;
-    int retVal=-1;
     
     PIP_ADAPTER_UNICAST_ADDRESS found=NULL;
     
@@ -368,7 +367,6 @@ extern int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thi
     struct ipv6_mreq ipmreq; 
     int	hops=1;
     char packedAddr[16];
-    char multiAddr[16] = { 0xff,2, 0,0, 0,0, 0,0, 0,0, 0,0, 0,1, 0,2};
     
     inet_pton6(addr,packedAddr);
     if ((s=socket(AF_INET6,SOCK_DGRAM, 0)) == INVALID_SOCKET)
@@ -483,8 +481,13 @@ extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
     sprintf(arg5,"\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
-
-    return LOWLEVEL_NO_ERROR;
+    if (i == 0) {
+        return LOWLEVEL_NO_ERROR;
+    } else {
+        sprintf(Message, "%s %s %s %s %s %s %s returned non-zero returncode %d",
+                netshPath, arg1, arg2, arg3, arg4, arg5, arg6);
+        return LOWLEVEL_ERROR_UNSPEC;
+    }
 }
 extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     // netsh interface ipv6 add dns interface="eth0" address=2000::123
@@ -499,8 +502,13 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     sprintf(arg6,"address=%s", addrPlain);
     i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
 
-    /// @todo: check status
-    return LOWLEVEL_NO_ERROR;
+    if (i == 0) {
+        return LOWLEVEL_NO_ERROR;
+    } else {
+        sprintf(Message, "%s %s %s %s %s %s %s returned non-zero returncode %d",
+                netshPath, arg1, arg2, arg3, arg4, arg5, arg6);
+        return LOWLEVEL_ERROR_UNSPEC;
+    }
 }
 
 extern int domain_add(const char* ifname, int ifaceid, const char* domain) {

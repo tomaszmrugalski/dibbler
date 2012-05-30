@@ -199,7 +199,7 @@ typedef enum {
 #define STATUSCODE_NOTALLOWED       10
 
 // INFINITY + 1 is 0. That's cool!
-#define DHCPV6_INFINITY (unsigned) 0xffffffff
+#define DHCPV6_INFINITY (uint32_t) 0xffffffff
 
 enum ETentative {
     TENTATIVE_UNKNOWN = -1,

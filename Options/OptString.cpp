@@ -46,10 +46,10 @@ char * TOptString::storeSelf(char* buf)
     return buf+1;
 }
 
-int TOptString::getSize() {
+size_t TOptString::getSize() {
     return (int)(Str.length()+6); // 4-normal header + 1 (strlen) + 1 (final 0)
 }
 
-string TOptString::getString() {
+std::string TOptString::getString() {
     return Str;
 }

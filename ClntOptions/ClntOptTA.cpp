@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptTA.cpp,v 1.7 2008-08-29 00:07:29 thomson Exp $
- *
  */
 
 #include "AddrIA.h"
@@ -24,8 +22,9 @@
  * 
  * @param iaid 
  * @param parent 
- */TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
-    :TOptTA(iaid, parent) 
+ */
+TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
+    :TOptTA(iaid, parent), Iface(-1)
 {
     // don't put any suboptions
 }
@@ -242,7 +241,7 @@ bool TClntOptTA::isValid()
 	if (!addr->getAddr()->linkLocal())
 	    continue;
 	Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_TA (IAID=" 
-		     << this->IAID << ") is link local. The whole IA_TA option is considered invalid."
+		     << IAID_ << ") is link local. The whole IA_TA option is considered invalid."
 		     << LogEnd;
 	return false;
     }

@@ -37,11 +37,11 @@ class TClntCfgMgr : public TCfgMgr
 {
     friend std::ostream & operator<<(std::ostream &strum, TClntCfgMgr &x);
  private:
-    TClntCfgMgr(const std::string cfgFile);
+    TClntCfgMgr(const std::string& cfgFile);
 
  public:
     static TClntCfgMgr & instance();
-    static void instanceCreate(const std::string cfgFile);
+    static void instanceCreate(const std::string& cfgFile);
     ~TClntCfgMgr();
     
     // --- Iface related ---
@@ -107,7 +107,7 @@ private:
     bool validateAddr(SPtr<TClntCfgIface> ptrIface, 
 		      SPtr<TClntCfgIA> ptrIA,
 		      SPtr<TClntCfgAddr> ptrAddr);
-    bool parseConfigFile(std::string cfgFile);
+    bool parseConfigFile(const std::string& cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
 
     List(TClntCfgIface) ClntCfgIfaceLst;

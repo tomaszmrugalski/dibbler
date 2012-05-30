@@ -11,51 +11,32 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TStationRange::TStationRange(void)
-{
-
-}
 TStationRange::TStationRange( SPtr<TDUID> duidl, SPtr<TDUID> duidr)
+    :isAddrRange_(false), DUIDL_(duidl), DUIDR_(duidr), PrefixLength_(-1)
 {
-    DUIDL=duidl;
-    DUIDR=duidr;
-    isAddrRange=false;
 }
 
 TStationRange::TStationRange( SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrr)
+    :isAddrRange_(true), AddrL_(addrl), AddrR_(addrr), PrefixLength_(-1)
 {
-    AddrL=addrl;
-    AddrR=addrr;
-    isAddrRange=true;
-}
-
-TStationRange::TStationRange( SPtr<TDUID> duid)
-{
-    this->DUIDL=this->DUIDR=duid;
-    this->isAddrRange=false;
-}
-
-TStationRange::TStationRange( SPtr<TIPv6Addr> addr)
-{
-    this->AddrL=this->AddrR=addr;
-    this->isAddrRange=true;
+    /// @todo: prefix length could be calculated automatically here
 }
 
 bool TStationRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr) const
 {
-    if (isAddrRange)
+    if (isAddrRange_)
     {
-        if ((*addr<=*AddrL)&&(*AddrL<=*addr)) return true;
-        if ((*addr<=*AddrR)&&(*AddrR<=*addr)) return true;
-        if (*addr<=*AddrL) return false;
-        if (*AddrR<=*addr) return false;
+        if ((*addr<=*AddrL_)&&(*AddrL_<=*addr)) return true;
+        if ((*addr<=*AddrR_)&&(*AddrR_<=*addr)) return true;
+        if (*addr<=*AddrL_) return false;
+        if (*AddrR_<=*addr) return false;
     }
     else
     {
         if (!duid)
             return false;
-        if (*duid<=*DUIDL) return false;
-        if (*DUIDR<=*duid) return false;
+        if (*duid <= *DUIDL_) return false;
+        if (*DUIDR_ <= *duid) return false;
         return true;
     }
     return false; // should not happen
@@ -63,12 +44,12 @@ bool TStationRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr) const
 
 bool TStationRange::in(SPtr<TIPv6Addr> addr) const
 {
-    if (isAddrRange)
+    if (isAddrRange_)
     {
-        if ((*addr<=*AddrL)&&(*AddrL<=*addr)) return true;
-        if ((*addr<=*AddrR)&&(*AddrR<=*addr)) return true;
-        if (*addr<=*AddrL) return false;
-        if (*AddrR<=*addr) return false;
+        if ((*addr<=*AddrL_)&&(*AddrL_<=*addr)) return true;
+        if ((*addr<=*AddrR_)&&(*AddrR_<=*addr)) return true;
+        if (*addr<=*AddrL_) return false;
+        if (*AddrR_<=*addr) return false;
         return true;
     } else
         return false;
@@ -76,38 +57,36 @@ bool TStationRange::in(SPtr<TIPv6Addr> addr) const
 
 bool TStationRange::in(SPtr<TDUID> duid) const
 {
-    if (isAddrRange)
+    if (isAddrRange_)
         return false;
     else
     {
-        if (*duid<=*DUIDL) return false;
-        if (*DUIDR<=*duid) return false;
+        if (*duid<=*DUIDL_) return false;
+        if (*DUIDR_<=*duid) return false;
     }
     return true;
 }
 
-SPtr<TIPv6Addr> TStationRange::getRandomAddr() const
-{
-    if(isAddrRange)
+SPtr<TIPv6Addr> TStationRange::getRandomAddr() const  {
+    if(isAddrRange_)
     {
         SPtr<TIPv6Addr> diff = new TIPv6Addr();
-        *diff=(*AddrR)-(*AddrL);
+        *diff=(*AddrR_)-(*AddrL_);
         --(*diff);
-        *diff=*diff+*AddrL;
+        *diff=*diff+*AddrL_;
         return diff;
     }
     else
         return 0;
 }
 
-SPtr<TIPv6Addr> TStationRange::getRandomPrefix() const
-{
-    if(isAddrRange)
+SPtr<TIPv6Addr> TStationRange::getRandomPrefix() const {
+    if(isAddrRange_)
     {
         SPtr<TIPv6Addr> diff = new TIPv6Addr();
-        *diff=(*AddrR)-(*AddrL);
+        *diff=(*AddrR_)-(*AddrL_);
         --(*diff);
-        *diff=*diff+*AddrL;
+        *diff=*diff+*AddrL_;
         return diff;
     }
     else
@@ -116,13 +95,10 @@ SPtr<TIPv6Addr> TStationRange::getRandomPrefix() const
 
 
 
-unsigned long TStationRange::rangeCount() const
-{
-    if(isAddrRange)
-    {
-
+unsigned long TStationRange::rangeCount() const {
+    if(isAddrRange_) {
         SPtr<TIPv6Addr> diff(new TIPv6Addr());
-        *diff=(*AddrR)-(*AddrL);
+        *diff=(*AddrR_)-(*AddrL_);
         char *addr=diff->getAddr();
         for(int i=0;i<12;i++)
         {
@@ -137,14 +113,12 @@ unsigned long TStationRange::rangeCount() const
         return 0;
 }
 
-int TStationRange::getPrefixLength() const
-{
-    return PrefixLength;
+int TStationRange::getPrefixLength() const {
+    return PrefixLength_;
 }
 
-void TStationRange::setPrefixLength(int len)
-{
-    this->PrefixLength = len;
+void TStationRange::setPrefixLength(int len) {
+    PrefixLength_ = len;
 }
 
 
@@ -152,38 +126,37 @@ TStationRange::~TStationRange(void) {
 }
 
 SPtr<TIPv6Addr> TStationRange::getAddrL() const {
-    return AddrL;
+    return AddrL_;
 }
 
 SPtr<TIPv6Addr> TStationRange::getAddrR() const {
-    return AddrR;
+    return AddrR_;
 }
 
-void TStationRange::truncate(int minPrefix, int maxPrefix)
-{
-    if (!isAddrRange) {
+void TStationRange::truncate(int minPrefix, int maxPrefix) {
+    if (!isAddrRange_) {
         Log(Error) << "Unable to truncace this pool: this is DUID pool, not address pool." << LogEnd;
         return;
     }
     // if the L and R addresses are not at the prefix boundaries, then we are
     // pretty f%%%ed up
-    AddrL->truncate(minPrefix, maxPrefix);
-    AddrR->truncate(minPrefix, maxPrefix);
+    AddrL_->truncate(minPrefix, maxPrefix);
+    AddrR_->truncate(minPrefix, maxPrefix);
 }
 
 std::ostream& operator<<(std::ostream& out, TStationRange& range)
 {
-    if (range.isAddrRange) {
+    if (range.isAddrRange_) {
         // address range
-        if(range.AddrL&&range.AddrR)
-            out << "      <range type=\"addr\" min=\"" << *range.AddrL
-                << "\" max=\""  << *range.AddrR << "\"/>" << std::endl;
+        if(range.AddrL_&&range.AddrR_)
+            out << "      <range type=\"addr\" min=\"" << *range.AddrL_
+                << "\" max=\""  << *range.AddrR_ << "\"/>" << std::endl;
     } else {
         // DUID range
-        if (range.DUIDL&&range.DUIDR) {
+        if (range.DUIDL_&&range.DUIDR_) {
             out << "      <range type=\"duid\">" << std::endl
-                << "         " << *range.DUIDL
-                << "         " << *range.DUIDR
+                << "         " << *range.DUIDL_
+                << "         " << *range.DUIDR_
                 << "      </range>" << std::endl;
         }
     }

@@ -7,8 +7,6 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.h,v 1.2 2006-04-30 17:32:35 thomson Exp $
-*
 */
  
 /**
@@ -35,7 +33,7 @@ class TOptFQDN : public TOpt
    * @param fqdn The FQDN about to be sent
    * @param parent The message in which this option is included
    */
-    TOptFQDN(std::string fqdn, TMsg* parent);
+    TOptFQDN(const std::string& fqdn, TMsg* parent);
   	
     /**
      * Constructor
@@ -52,26 +50,24 @@ class TOptFQDN : public TOpt
      */
     ~TOptFQDN();
     
-    int getSize();
+    size_t getSize();
     char * storeSelf( char* buf);
-    bool isValid();
+    bool isValid() const;
     
-    bool getNFlag();
-    bool getSFlag();
-    bool getOFlag();
+    bool getNFlag() const;
+    bool getSFlag() const;
+    bool getOFlag() const;
     void setNFlag(bool flag);
     void setOFlag(bool flag);
     void setSFlag(bool flag);
-    std::string getFQDN();
+    std::string getFQDN() const;
 
   	
   private:
-    std::string fqdn;
-    char *encodedFQDN;
-    bool flag_N;
-    bool flag_O;
-    bool flag_S;
-    bool Valid;
+    std::string fqdn_;
+    bool flag_N_;
+    bool flag_O_;
+    bool flag_S_;
 };
 
 #endif /* OPTFQDN_H */

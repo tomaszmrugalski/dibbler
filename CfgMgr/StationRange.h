@@ -23,10 +23,8 @@ class TStationRange
 {
     friend std::ostream& operator<<(std::ostream& out, TStationRange& station);
  public:
-    TStationRange(void);
     ~TStationRange(void);
     TStationRange(SPtr<TDUID> duidl, SPtr<TDUID> duidr);
-    TStationRange(SPtr<TDUID> duid);
     TStationRange(SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
     TStationRange(SPtr<TIPv6Addr> addr);
 
@@ -42,13 +40,13 @@ class TStationRange
     void setPrefixLength(int len);
     void truncate(int minPrefix, int maxPrefix);
  private:
-    bool isAddrRange;
-    SPtr<TDUID> DUIDL;
-    SPtr<TDUID> DUIDR;
-    SPtr<TIPv6Addr> AddrL;
-    SPtr<TIPv6Addr> AddrR;
+    bool isAddrRange_;
+    SPtr<TDUID> DUIDL_;
+    SPtr<TDUID> DUIDR_;
+    SPtr<TIPv6Addr> AddrL_;
+    SPtr<TIPv6Addr> AddrR_;
 
-    int PrefixLength;
+    int PrefixLength_;
 };
 
 #endif

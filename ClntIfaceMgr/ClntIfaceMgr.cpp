@@ -26,7 +26,7 @@ using namespace std;
 
 TClntIfaceMgr * TClntIfaceMgr::Instance = 0;
 
-void TClntIfaceMgr::instanceCreate(const std::string xmlFile)
+void TClntIfaceMgr::instanceCreate(const std::string& xmlFile)
 {
     if (Instance) {
         Log(Crit) << "Application error: Attempt to create another ClntIfaceMgr instance!" << LogEnd;
@@ -37,8 +37,10 @@ void TClntIfaceMgr::instanceCreate(const std::string xmlFile)
 
 TClntIfaceMgr& TClntIfaceMgr::instance()
 {
-    if (!Instance)
+    if (!Instance) {
         Log(Crit) << "Requested IfaceMgr, but it is not created yet." << LogEnd;
+        instanceCreate(CLNTIFACEMGR_FILE);
+    }
     return *Instance;
 }
 
@@ -93,8 +95,6 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
     static char buf[4096];
     SPtr<TIPv6Addr> peer(new TIPv6Addr());
     int sockid;
-    int msgtype;
-    int ifaceid;
 
     sockid = TIfaceMgr::select(timeout, buf, bufsize, peer);
 
@@ -108,14 +108,13 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             }
             return 0; // NULL
         }
-        msgtype = buf[0];
+        int msgtype = buf[0];
         SPtr<TClntMsg> ptr;
         SPtr<TIfaceIface> ptrIface;
         ptrIface = this->getIfaceBySocket(sockid);
-        ifaceid = ptrIface->getID();
-        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-                   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-                   << ")." << LogEnd;
+        int ifaceid = ptrIface->getID();
+        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getFullName()
+                   << " (socket=" << sockid << ", addr=" << *peer << ")." << LogEnd;
 
         switch (msgtype) {
         case ADVERTISE_MSG:
@@ -268,7 +267,7 @@ bool TClntIfaceMgr::doDuties() {
     return true;
 }
 
-bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
+bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, const std::string& fqdn)
 {
     SPtr<TIPv6Addr> DNSAddr;
     SPtr<TIPv6Addr> addr;
@@ -327,7 +326,7 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
     return true;
 }
 
-bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string fqdn)
+bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, const std::string& fqdn)
 {
     SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
 

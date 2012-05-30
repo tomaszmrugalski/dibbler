@@ -49,7 +49,7 @@ class TOpt
      *
      * @return the size
      */
-    virtual int getSize() = 0;
+    virtual size_t getSize() = 0;
 
     /**
      * This method transform the instance of the option class into bytecode

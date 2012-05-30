@@ -431,7 +431,7 @@ enum ETentative TAddrIA::getTentative()
     AddrLst.first();
 
     bool allChecked = true;
-    
+
     while ( ptrAddr = AddrLst.get() ) {
 	switch (ptrAddr->getTentative()) {
 	case TENTATIVE_YES:
@@ -444,7 +444,7 @@ enum ETentative TAddrIA::getTentative()
 	case TENTATIVE_UNKNOWN:
         if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
         {
-	    
+
             switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
             {
 	    case LOWLEVEL_TENTATIVE_YES:  

@@ -242,7 +242,7 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
         unsigned long pref, unsigned long valid, int prefixLength) {
 
-    /** @TODO: implement this */
+    /// @todo: implement this
     sprintf(Message, "Address update on BSD systems not implemented yet.");
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
@@ -454,7 +454,7 @@ void microsleep(int microsecs) {
  * returns: -1 - address not found, 0 - addr is ok, 1 - addr is tentative
  */
 int is_addr_tentative(char * ifacename, int iface, char * addr) {
-    /* TODO: implement this */
+    /// @todo: implement this
     return 0;
 }
 
@@ -473,7 +473,7 @@ uint32_t getAAASPIfromFile() {
     if (!file)
         return 0;
 
-    fscanf(file, "%x", &ret);
+    fscanf(file, "%9x", &ret);
     fclose(file);
 
     return ret;
@@ -506,7 +506,6 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
     if (0 > fd)
         return NULL;
 
-    /* FIXME should be freed somewhere */
     retval = malloc(st.st_size);
     if (!retval) {
         close(fd);
@@ -518,14 +517,17 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
         if (!ret)
             break;
         if (ret < 0) {
+            free(retval);
             return NULL;
         }
         offset += ret;
     }
     close(fd);
 
-    if (offset != st.st_size)
+    if (offset != st.st_size) {
+        free(retval);
         return NULL;
+    }
 
     *len = st.st_size;
     return retval;

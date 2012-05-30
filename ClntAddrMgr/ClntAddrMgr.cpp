@@ -292,7 +292,7 @@ int TClntAddrMgr::countTA()
     return Client->countTA();
 }
 
-void TClntAddrMgr::print(ostream &) {
+void TClntAddrMgr::print(std::ostream &) {
     
 }
 

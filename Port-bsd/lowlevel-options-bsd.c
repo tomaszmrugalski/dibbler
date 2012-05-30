@@ -83,8 +83,10 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
     if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
 	return LOWLEVEL_ERROR_FILE;
-    if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
+    if ( !(f2= fopen(RESOLVCONF_FILE,"w+"))) {
+        fclose(f);
 	return LOWLEVEL_ERROR_FILE;
+    }
     while (fgets(buf,511,f)) {
 	if ( (!found) && (strstr(buf, "search")) ) {
 	    if (strlen(buf))
@@ -127,10 +129,13 @@ int domain_del(const char * ifname, int ifaceid, const char *domain) {
     strcpy(&(searchbuf[1]), domain);
     unlink(RESOLVCONF_FILE".old");
     rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
-    if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
+    if ( !(f = fopen(RESOLVCONF_FILE".old","r")) ) {
 	return LOWLEVEL_ERROR_FILE;
-    if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
+    }
+    if ( !(f2= fopen(RESOLVCONF_FILE,"w+"))) {
+        fclose(f);
 	return LOWLEVEL_ERROR_FILE;
+    }
     while (fgets(buf,511,f)) {
 	if ( (!found) && (ptr=strstr(buf, searchbuf)) ) {
 	    found = 1;
@@ -248,19 +253,7 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
     return LOWLEVEL_NO_ERROR;
 }
 
-/** 
- * returns if forwarding is enabled on this node (i.e. is it a router or not)
- * 
- * 
- * @return 
- */
-int prefix_forwarding_enabled()
-{
-    /** @todo: implement this */
-  return 0;
-}
-
-/** 
+/**
  * adds prefix - if this node has IPv6 forwarding disabled, it will configure that prefix on the
  * interface, which prefix has been received on. If the forwarding is enabled, it will be assigned
  * to all other up, running and multicast capable interfaces.

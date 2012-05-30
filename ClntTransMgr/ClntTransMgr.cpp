@@ -35,9 +35,9 @@ using namespace std;
 
 TClntTransMgr * TClntTransMgr::Instance = 0;
 
-void TClntTransMgr::instanceCreate(const std::string config)
+void TClntTransMgr::instanceCreate(const std::string& config)
 {
-        if (Instance) {
+    if (Instance) {
         Log(Crit) << "ClntTransMgr instance already exists. Internal code error!" << LogEnd;
         return;
     }
@@ -46,12 +46,14 @@ void TClntTransMgr::instanceCreate(const std::string config)
 
 TClntTransMgr &TClntTransMgr::instance()
 {
-  if (!Instance)
-      Log(Crit) << "Error: ClntTransMgr not initialized. Crashing in 3... 2... 1..." << LogEnd;
-  return *Instance;
+    if (!Instance) {
+        Log(Crit) << "Error: ClntTransMgr not initialized. Trying to recover." << LogEnd;
+        instanceCreate(CLNTTRANSMGR_FILE);
+    }
+    return *Instance;
 }
 
-TClntTransMgr::TClntTransMgr(const std::string config)
+TClntTransMgr::TClntTransMgr(const std::string& config)
   :IsDone(true), Shutdown(true)
 {
     // should we set REUSE option during binding sockets?

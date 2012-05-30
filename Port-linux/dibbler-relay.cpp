@@ -91,16 +91,15 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
-    int len;
 
     logStart("(RELAY, Linux port)", "Relay", RELLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {
-	len = strlen(argv[1])+1;
-	if (len>255)
+	int len = strlen(argv[1])+1;
+	if (len > 255)
 	    len = 255;
-	strncpy(command,argv[1],len);
+	strncpy(command, argv[1], len);
     } else {
 	memset(command,0,256);
     }

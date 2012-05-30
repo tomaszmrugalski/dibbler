@@ -304,7 +304,7 @@ Dibbler started a long time ago, so parts of those guidelines may seem a bit ant
 There are many areas of the existing code that do not follow this rules. There may be many
 reasons for that. I used to accept patches that fail to follow those guidelines. That will not
 happen anymore. Unless you are providing some extra cool feature, expect your patch to be rejected
-if you don't follow this rules. Dibbler have some large chunks of code merges. For example, the
+if you don't follow this rules. Dibbler have some large chunks of code merged. For example, the
 whole poslib library used to be a separare library.
 
 Camel notation is a naming conventions when words are concatenated with first letter of each
@@ -320,12 +320,13 @@ word (usually except the first one) is capitalized.
     in method names and variables. It is capitalized in class names and class variables.
     e.g. <tt>setAddr()</tt>
  -# Class method starts with lower case and follow camel notation, e.g. <tt>getAddr();</tt>
- -# Class variables start with upper case and follow camel notation, e.g. int IfaceIndex; . Note:
-   I'm seriously considering switching to a different notation - lower-case with underscore
-   at the end, e.g. <tt>int iface_;</tt>, so you may contact me if you have strong suggestion one
-   way or the other.
+ -# Class variables start with upper case and follow camel notation and are ended with underscore,
+    e.g. <tt>int IfaceIndex_;</tt> . Note: I recently decided to extend the notation to use underscore
+    at the end, so most of the code does not follow that guideline yet.
  -# Each new method must be accompanied with doxygen comments. Doxygen comments for method should be placed
     in cpp files.
+ -# Contributed code must not introduce new warnings from <a href="http://cppcheck.sourceforge.net/">cppcheck</a>.
+    Please check your code before submitting patches.
  -# Try to use descriptive, but short names. Verb should be mentioned first (<tt>getAddr()</tt>),
     not last (do not use <tt>addrGet()</tt>)
  -# Please use types defined in stdint.h, e.g. uint8_t, int16_t, uint32_t etc. Current code
@@ -346,10 +347,12 @@ word (usually except the first one) is capitalized.
  -# Please do not add \c SrvOpt, ClntOpt or RelOpt classes. Options should be common for all components and very simple.
    Please do not put anything in \c doDuties(). This approach is deprecated and existing code will be cleaned up. Please
    put all the logic in appropriate managers (CfgMgr, IfaceMgr, TransMgr, etc.)
- -# Currently Options have Parent parameter that contains pointer to parent message. This will be removed soon.
+ -# Currently Options have Parent parameter that contains pointer to parent message. This may be removed some time in
+   the future.
  -# There are 4 main managers: \c AddrMgr, \c CfgMgr, \c IfaceMgr and \c TransMgr. You can access each of them at any time
    using defined macros, e.g. \c ClntCfgMgr(), \c SrvIfaceMgr() and similar.
  -# Support for googletest was added recently. While not strictly required, googletest-based unit tests for
-   new code is greatly appreciated.
+   new code is greatly appreciated. Once number of tests for existing code increases, they will become mandatory for
+   contributed code as well.
 
 */

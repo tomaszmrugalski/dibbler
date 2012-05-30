@@ -1,3 +1,9 @@
+SUBDIRS = .
+
+if HAVE_GTEST
+  SUBDIRS += tests
+endif
+
 noinst_LIBRARIES = libSrvCfgMgr.a
 
 libSrvCfgMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/CfgMgr -I$(top_srcdir)/SrvOptions

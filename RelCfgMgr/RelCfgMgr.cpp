@@ -7,6 +7,8 @@
  *
  */
 
+#include <cstdlib>
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -23,7 +25,7 @@ int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TRelCfgMgr * TRelCfgMgr::Instance = 0;
 
-TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
+TRelCfgMgr::TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
     :TCfgMgr(), XmlFile(xmlFile)
 {
     // load config file
@@ -36,7 +38,7 @@ TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
     this->IsDone = false;
 }
 
-bool TRelCfgMgr::parseConfigFile(string cfgFile) {
+bool TRelCfgMgr::parseConfigFile(const std::string& cfgFile) {
     int result;
     ifstream f;
 
@@ -255,7 +257,7 @@ SPtr<TRelOptEcho> TRelCfgMgr::getEcho()
     return Echo;
 }
 
-void TRelCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlFile )
+void TRelCfgMgr::instanceCreate(const std::string& cfgFile, const std::string& xmlFile )
 {
     if (Instance)
         Log(Crit) << "RelCfgMgr instance already created. Application error!" << LogEnd;
@@ -264,8 +266,10 @@ void TRelCfgMgr::instanceCreate( const std::string cfgFile, const std::string xm
 
 TRelCfgMgr& TRelCfgMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "RelCfgMgr instance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "RelCfgMgr instance not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     return *Instance;
 }
 

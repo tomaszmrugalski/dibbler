@@ -58,11 +58,12 @@ devel: $(DOXYGEN)
 	mkdir -p html/
 	doxygen doxygen.cfg > html/doxygen.log 2>html/doxygen-error.log
 	cp logo* html/
-	echo "Encountered `wc -l html/doxygen-error.log` errors and warnings."
+	echo "Encountered `cat html/doxygen-error.log | wc -l` errors and warnings."
 
 cppcheck:
 	mkdir -p html
-	cppcheck --enable=all -f -v -j 2 .. 1> html/cppcheck.log 2> html/cppcheck-error.log
+	cppcheck --enable=all --suppressions-list=cppcheck-skip.txt -f -v -j 2 \
+        -i bison++/ -i tests/ .. 1> html/cppcheck.log 2> html/cppcheck-error.log
 
 compile.log:
 	mkdir -p html
