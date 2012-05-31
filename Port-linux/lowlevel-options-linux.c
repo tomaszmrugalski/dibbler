@@ -258,9 +258,9 @@ int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
 }
 
 int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
-    FILE *f = NULL;
     
 #ifdef MOD_RESOLVCONF
+    FILE *f = NULL;
     /* try to use resolvconf to remove config */
     if ((f=resolvconf_open("-d", ifname))) {
         fclose(f);
@@ -329,9 +329,9 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
 }
 
 int domain_del(const char * ifname, int ifaceid, const char *domain) {
-    FILE * f;
 
 #ifdef MOD_RESOLVCONF
+    FILE * f;
     /* try to use resolvconf if it is available */
     if ((f = resolvconf_open("-d", ifname))) {
         fclose(f);
