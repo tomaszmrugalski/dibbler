@@ -4,14 +4,16 @@
 #include "IPv6Addr.h"
 #include "OptIAAddress.h"
 
+using namespace std;
+
 namespace {
 
  char expected[] = { 0, 5, // OPTION_IAADDR
-                          0, 24, // length = 24
-                          0x20, 0x1, 0x0d, 0xb8, 0, 1, 0, 0,
-                          0, 0, 0, 0, 0xde, 0xad, 0xbe, 0xef,
-                          0 , 0, 3, 0xe8,
-                          0, 0, 7, 0xd0
+                     0, 24, // length = 24
+                     0x20, 0x1, 0x0d, 0xb8, 0, 1, 0, 0,
+                     0, 0, 0, 0, 0xde, 0xad, 0xbe, 0xef,
+                     0 , 0, 3, 0xe8,
+                     0, 0, 7, 0xd0
 };
 
 TEST(OptIAAddressTest, storeSelf) {
@@ -39,6 +41,10 @@ TEST(OptIAAddressTest, parse) {
     char* ptr = expected+4;
     int len = 24;
     TOptIAAddress* opt = new TOptIAAddress(ptr, len, NULL);
+    
+    EXPECT_EQ(len, 0);
+    EXPECT_EQ(ptr, expected + 28);
+
     SPtr<TIPv6Addr> addr = opt->getAddr();
 
     EXPECT_EQ(string("2001:db8:1::dead:beef"), addr->getPlain());

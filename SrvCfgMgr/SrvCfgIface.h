@@ -8,8 +8,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgIface.h,v 1.31 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 class TSrvCfgIface;
@@ -25,23 +23,19 @@ class TSrvCfgIface;
 #include "OptVendorSpecInfo.h"
 #include "SrvCfgOptions.h"
 
-using namespace std;
-
 class TSrvCfgIface: public TSrvCfgOptions
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgIface& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgIface& iface);
 public:
-    TSrvCfgIface();
-    TSrvCfgIface(string ifaceName);
-    TSrvCfgIface(int ifaceNr);
+    TSrvCfgIface(const std::string& ifaceName);
+    TSrvCfgIface(int ifindex);
     virtual ~TSrvCfgIface();
     void setDefaults();
-
-    void setName(string ifaceName);
-    void setID(int ifaceID);
-    int	getID();
-    string getName();
-    string getFullName();
+    void setName(const std::string& ifaceName);
+    void setID(int ifindex);
+    int	getID() const;
+    std::string getName() const;
+    std::string getFullName() const;
 
     // permanent address management (IA_NA)
     void addAddrClass(SPtr<TSrvCfgAddrClass> addrClass);
@@ -51,7 +45,7 @@ public:
     SPtr<TSrvCfgAddrClass> getAddrClass();
     SPtr<TSrvCfgAddrClass> getClassByID(unsigned long id);
     SPtr<TSrvCfgAddrClass> getRandomClass(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr);
-    long countAddrClass();
+    long countAddrClass() const;
 
     // temporary address management (IA_TA)
     void addTA(SPtr<TSrvCfgTA> ta);
@@ -63,25 +57,25 @@ public:
     void addPDClass(SPtr<TSrvCfgPD> PDClass);
     SPtr<TSrvCfgPD> getPDByID(unsigned long id);
     //SPtr<TSrvCfgPD> getRandomPrefix(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr);
-    long countPD();
+    long countPD() const;
     void addPD(SPtr<TSrvCfgPD> pd);
     void firstPD();
     SPtr<TSrvCfgPD> getPD();
     bool addClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool delClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
-    bool supportPrefixDelegation();
+    bool supportPrefixDelegation() const;
 
     // other
     SPtr<TIPv6Addr> getUnicast();
     void setNoConfig();
     void setOptions(SPtr<TSrvParsGlobalOpt> opt);
 
-    unsigned char getPreference();
+    unsigned char getPreference() const;
 
-    bool getRapidCommit();
+    bool getRapidCommit() const;
 
-    long getIfaceMaxLease();
-    unsigned long getClntMaxLease();
+    long getIfaceMaxLease() const;
+    unsigned long getClntMaxLease() const;
 
     // IA address functions
     void addClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet = false);
@@ -92,11 +86,11 @@ public:
     void delTAAddr();
 
     // relays
-    string getRelayName();
-    int getRelayID();
-    SPtr<TSrvOptInterfaceID> getRelayInterfaceID();
-    bool isRelay();
-    void setRelayName(string name);
+    std::string getRelayName() const;
+    int getRelayID() const;
+    SPtr<TSrvOptInterfaceID> getRelayInterfaceID() const;
+    bool isRelay() const;
+    void setRelayName(const std::string& name);
     void setRelayID(int id);
 
     // per-client parameters (exceptions)
@@ -105,53 +99,51 @@ public:
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
-    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, string hint);
-    SPtr<TDUID> getFQDNDuid(string name);
+    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, const std::string& hint);
+    SPtr<TDUID> getFQDNDuid(const std::string& name);
     void setFQDNLst(List(TFQDN) * fqdn);
-    int getFQDNMode();
-    string getFQDNModeString();
-    int  getRevDNSZoneRootLength();
+    int getFQDNMode() const;
+    std::string getFQDNModeString() const;
+    int  getRevDNSZoneRootLength() const;
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
-    bool supportFQDN();
-    bool leaseQuerySupport();
+    bool supportFQDN() const;
+    bool leaseQuerySupport() const;
 
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 
 private:
-    unsigned char preference;
-    int	ID;
-    string Name;
-    bool NoConfig;
-    SPtr<TIPv6Addr> Unicast;
-    unsigned long IfaceMaxLease;
-    unsigned long ClntMaxLease;
-    bool RapidCommit;
-    List(TSrvCfgAddrClass) SrvCfgAddrClassLst; // IA_NA list (normal addresses)
-    bool LeaseQuery;
+    unsigned char Preference_;
+    int	ID_;
+    std::string Name_;
+    bool NoConfig_;
+    SPtr<TIPv6Addr> Unicast_;
+    unsigned long IfaceMaxLease_;
+    unsigned long ClntMaxLease_;
+    bool RapidCommit_;
+    List(TSrvCfgAddrClass) SrvCfgAddrClassLst_; // IA_NA list (normal addresses)
+    bool LeaseQuery_;
 
     // --- Temporary Addresses ---
-    List(TSrvCfgTA) SrvCfgTALst; // IA_TA list (temporary addresses)
+    List(TSrvCfgTA) SrvCfgTALst_; // IA_TA list (temporary addresses)
 
     // --- Prefix Delegation ---
-    List(TSrvCfgPD) SrvCfgPDLst;
-    bool PrefixDelegationSupport;
+    List(TSrvCfgPD) SrvCfgPDLst_;
 
     // --- relay ---
-    bool Relay;
-    string RelayName;     // name of the underlaying physical interface (or other relay)
-    int RelayID;          // ifindex
-    SPtr<TSrvOptInterfaceID> RelayInterfaceID; // value of interface-id option (optional)
+    bool Relay_;
+    std::string RelayName_;     // name of the underlaying physical interface (or other relay)
+    int RelayID_;          // ifindex
+    SPtr<TSrvOptInterfaceID> RelayInterfaceID_; // value of interface-id option (optional)
 
     // --- option: FQDN ---
-    List(TFQDN) FQDNLst;
-    int FQDNMode;
-    int revDNSZoneRootLength;
-    unsigned int PrefixLength;
-    EUnknownFQDNMode UnknownFQDN;
-    std::string FQDNDomain;
+    List(TFQDN) FQDNLst_;
+    int FQDNMode_;
+    int RevDNSZoneRootLength_;
+    EUnknownFQDNMode UnknownFQDN_;
+    std::string FQDNDomain_;
 
     // --- per-client parameters (exceptions) ---
-    List(TSrvCfgOptions) ExceptionsLst;
+    List(TSrvCfgOptions) ExceptionsLst_;
 };
 
 #endif /* SRVCONFIFACE_H */

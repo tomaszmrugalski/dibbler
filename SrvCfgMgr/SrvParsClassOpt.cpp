@@ -7,13 +7,13 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvParsClassOpt.cpp,v 1.10 2008-10-12 20:07:32 thomson Exp $
- *
  */
 
 #include <limits.h>
 #include "SrvParsClassOpt.h"
 #include "DHCPConst.h"
+
+using namespace std;
 
 TSrvParsClassOpt::TSrvParsClassOpt(void)
 {
@@ -216,24 +216,21 @@ SPtr<TSrvOptAddrParams> TSrvParsClassOpt::getAddrParams()
     return AddrParams;
 }
 
-void TSrvParsClassOpt::setAllowClientClass(string s)
-{
-	allowLst.append(SPtr<string> (new string(s)));
+void TSrvParsClassOpt::setAllowClientClass(std::string s) {
+    allowLst.append(SPtr<string> (new string(s)));
 }
 
-void TSrvParsClassOpt::setDenyClientClass(string s)
+void TSrvParsClassOpt::setDenyClientClass(std::string s)
 {
-	denyLst.append(SPtr<string> (new string(s)));
+    denyLst.append(SPtr<string> (new string(s)));
 }
 
-List(string) TSrvParsClassOpt::getAllowClientClassString()
-{
-	return allowLst;
+List(std::string) TSrvParsClassOpt::getAllowClientClassString() {
+    return allowLst;
 }
 
-List(string) TSrvParsClassOpt::getDenyClientClassString()
-{
-	return denyLst;
+List(std::string) TSrvParsClassOpt::getDenyClientClassString() {
+    return denyLst;
 }
 
 

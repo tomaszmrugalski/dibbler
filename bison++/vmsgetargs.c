@@ -145,6 +145,7 @@ int
 cli_get_value(Name,Buffer,Size)
      char *Name;
      char *Buffer;
+     int Size;
 {
   struct {int Size; char *Ptr;} Descr1,Descr2;
 

@@ -46,7 +46,7 @@ bool TRelMsgRelayForw::check() {
     return true;
 }
 
-string TRelMsgRelayForw::getName() {
+std::string TRelMsgRelayForw::getName() const {
     return "RELAY_FORW";
 }
 

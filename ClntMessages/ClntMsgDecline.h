@@ -22,7 +22,7 @@ class TClntMsgDecline : public TClntMsg
     
     void  answer(SPtr<TClntMsg> Rep);
     void  doDuties();
-    string getName();
+    std::string getName() const;
     ~TClntMsgDecline();
  private:
 };

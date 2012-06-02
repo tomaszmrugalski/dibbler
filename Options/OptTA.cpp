@@ -15,49 +15,52 @@
 #include "OptStatusCode.h"
 #include "Logger.h"
 
-TOptTA::TOptTA( long IAID, TMsg* parent)
-	:TOpt(OPTION_IA_TA, parent) {
-    this->IAID = IAID;
+TOptTA::TOptTA(uint32_t iaid, TMsg* parent)
+    :TOpt(OPTION_IA_TA, parent), IAID_(iaid), Valid_(true) {
 }
 
 unsigned long TOptTA::getIAID() {
-    return IAID;
+    return IAID_;
 }
 
-TOptTA::TOptTA( char * &buf, int &bufsize, TMsg* parent)
-    :TOpt(OPTION_IA_TA, parent) {
-    if (bufsize<OPTION_IA_TA_LEN) {
-        Valid=false;
-        bufsize=0;
-    } else {
-        Valid=true;
-        this->IAID = readUint32(buf);
-        buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
+TOptTA::TOptTA(char * &buf, int &bufsize, TMsg* parent)
+    :TOpt(OPTION_IA_TA, parent), Valid_(false) {
+    if (bufsize < OPTION_IA_TA_LEN) {
+        buf += bufsize;
+        bufsize = 0;
+        return;
     }
+
+    IAID_ = readUint32(buf);
+    buf += sizeof(uint32_t);
+    bufsize -= sizeof(uint32_t);
+    Valid_ = true;
+
+    /// @todo: Parse suboptions
 }
 
 int TOptTA::getStatusCode() {
     SPtr<TOpt> ptrOpt;
     SubOptions.first();
     while ( ptrOpt = SubOptions.get() ) {
-	if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
-	    SPtr <TOptStatusCode> ptrStatus;
-	    ptrStatus = (Ptr*) ptrOpt;
-	    return ptrStatus->getCode();
-	}
+        if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
+            SPtr <TOptStatusCode> ptrStatus;
+            ptrStatus = (Ptr*) ptrOpt;
+            return ptrStatus->getCode();
+        }
     }
     return -1;
 }
 
-int TOptTA::getSize() {
-    return 4+OPTION_IA_TA_LEN+getSubOptSize();
+size_t TOptTA::getSize() {
+    return 4 + OPTION_IA_TA_LEN + getSubOptSize();
 }
 
 char * TOptTA::storeSelf( char* buf) {
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize()-4);
-    buf = writeUint32(buf, IAID);
-    buf=this->storeSubOpt(buf);
+    buf = writeUint32(buf, IAID_);
+    buf = storeSubOpt(buf);
     return buf;
 }
 
@@ -72,7 +75,7 @@ unsigned long TOptTA::getMaxValid() {
             if (maxValid<ptrIAAddr->getValid())
                 maxValid=ptrIAAddr->getValid();
         }
-    }   
+    }
     return maxValid;
 }
 
@@ -88,8 +91,8 @@ int TOptTA::countAddrs() {
     SPtr<TOpt> opt;
     this->firstOption();
     while (opt = this->getOption() ) {
-	if (opt->getOptType() == OPTION_IAADDR)
-	    cnt++;
+        if (opt->getOptType() == OPTION_IAADDR)
+            cnt++;
     }
     return cnt;
 }

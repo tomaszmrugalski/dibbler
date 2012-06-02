@@ -13,7 +13,7 @@
 #include "Opt.h"
 #include "OptIAAddress.h"
 #include "SrvOptIAAddress.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "Msg.h"
 #include "Logger.h"
 
@@ -36,8 +36,8 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
                 switch (code)
                 {
                 case OPTION_STATUS_CODE:
-                    opt =(Ptr*)SPtr<TSrvOptStatusCode> (
-                        new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt =(Ptr*)SPtr<TOptStatusCode> (
+                        new TOptStatusCode(buf+pos, length, Parent));
                     break;
                 default:
                     Log(Warning) << "Option " << code<< " not supported "

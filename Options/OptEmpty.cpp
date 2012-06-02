@@ -19,8 +19,8 @@ TOptEmpty::TOptEmpty(int code, TMsg* parent)
     :TOpt(code, parent) {
 }
 
- int TOptEmpty::getSize() {
-     return 4;
+size_t TOptEmpty::getSize() {
+    return 4;
 }
 
  char * TOptEmpty::storeSelf( char* buf) {

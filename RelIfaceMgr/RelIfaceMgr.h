@@ -22,21 +22,21 @@ class TRelIfaceMgr: public TIfaceMgr {
    static void instanceCreate(const std::string xmlFile);
    static TRelIfaceMgr& instance();
     ~TRelIfaceMgr();
-    friend ostream & operator <<(ostream & strum, TRelIfaceMgr &x);
+    friend std::ostream & operator <<(std::ostream & strum, TRelIfaceMgr &x);
 
     SPtr<TRelMsg> decodeMsg(SPtr<TIfaceIface> iface, 
-				SPtr<TIPv6Addr> peer, 
-				char * buf, int bufsize);
-
+                            SPtr<TIPv6Addr> peer, 
+                            char * buf, int bufsize);
+    
     SPtr<TRelMsg> decodeRelayRepl(SPtr<TIfaceIface> iface, 
-				      SPtr<TIPv6Addr> peer, 
-				      char * buf, int bufsize);
+                                  SPtr<TIPv6Addr> peer, 
+                                  char * buf, int bufsize);
     SPtr<TRelMsg> decodeRelayForw(SPtr<TIfaceIface> iface, 
-				      SPtr<TIPv6Addr> peer, 
-				      char * buf, int bufsize);
+                                  SPtr<TIPv6Addr> peer, 
+                                  char * buf, int bufsize);
     SPtr<TRelMsg> decodeGeneric(SPtr<TIfaceIface> iface, 
-				    SPtr<TIPv6Addr> peer, 
-				    char * buf, int bufsize);
+                                SPtr<TIPv6Addr> peer, 
+                                char * buf, int bufsize);
     void dump();
     
     // ---sends messages---
@@ -46,7 +46,7 @@ class TRelIfaceMgr: public TIfaceMgr {
     SPtr<TRelMsg> select(unsigned long timeout);
 
   private:
-    TRelIfaceMgr(string xmlFile);
+    TRelIfaceMgr(const std::string& xmlFile);
     static TRelIfaceMgr * Instance;
 };
 

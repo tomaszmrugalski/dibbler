@@ -33,7 +33,7 @@ bool TClntMsgReply::check() {
     return TClntMsg::check(!anonInfReq /* clientID mandatory */, true /* serverID mandatory */ );
 }
 
-string TClntMsgReply::getName() {
+std::string TClntMsgReply::getName() const {
     return "REPLY";
 }
 

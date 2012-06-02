@@ -21,7 +21,7 @@ class TSrvMsgLeaseQueryDone : public TSrvMsg
 {
   public:
     TSrvMsgLeaseQueryDone(SPtr<TSrvMsgLeaseQuery> query);
-    string getName();
+    std::string getName() const;
     ~TSrvMsgLeaseQueryDone();
 };
 

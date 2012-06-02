@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 
     WSADATA wsaData;
 
-	cout << DIBBLER_COPYRIGHT1 << " (CLIENT, WinXP/2003/Vista port)" << endl;
+	cout << DIBBLER_COPYRIGHT1 << " (CLIENT, WinXP/2003/Vista/7 port)" << endl;
 	cout << DIBBLER_COPYRIGHT2 << endl;
 	cout << DIBBLER_COPYRIGHT3 << endl;
 	cout << DIBBLER_COPYRIGHT4 << endl;

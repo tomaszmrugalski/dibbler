@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgAddrClass.h,v 1.17 2008-10-12 19:42:45 thomson Exp $
- *
  */
 
 class TSrvCfgAddrClass;
@@ -28,12 +26,10 @@ class TSrvCfgAddrClass;
 #include "SmartPtr.h"
 #include "SrvOptAddrParams.h"
 #include "SrvCfgClientClass.h"
-using namespace std;
-
 
 class TSrvCfgAddrClass
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgAddrClass& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgAddrClass& iface);
  public:
     TSrvCfgAddrClass();
 
@@ -70,36 +66,36 @@ class TSrvCfgAddrClass
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 
  private:
-    unsigned long T1Beg;
-    unsigned long T2Beg;
-    unsigned long PrefBeg;
-    unsigned long ValidBeg;
-    unsigned long T1End;
-    unsigned long T2End;
-    unsigned long PrefEnd;
-    unsigned long ValidEnd;
-    unsigned long Share;
+    unsigned long T1Beg_;
+    unsigned long T2Beg_;
+    unsigned long PrefBeg_;
+    unsigned long ValidBeg_;
+    unsigned long T1End_;
+    unsigned long T2End_;
+    unsigned long PrefEnd_;
+    unsigned long ValidEnd_;
+    unsigned long Share_;
 
     long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
 
-    SPtr<TStationRange> Pool;
-    unsigned long ClassMaxLease;
-    unsigned long AddrsAssigned;
-    unsigned long AddrsCount;
+    SPtr<TStationRange> Pool_;
+    unsigned long ClassMaxLease_;
+    unsigned long AddrsAssigned_;
+    unsigned long AddrsCount_;
 
-    SPtr<TSrvOptAddrParams> AddrParams; // AddrParams - experimental option
+    SPtr<TSrvOptAddrParams> AddrParams_; // AddrParams - experimental option
 
     // new, better white/black-list
-    unsigned long ID; // client class ID
-    static unsigned long staticID;
-    List(string) allowLst;
-    List(string) denyLst;
-    List(TSrvCfgClientClass) allowClientClassLst;
-    List(TSrvCfgClientClass) denyClientClassLst;
+    unsigned long ID_; // client class ID
+    static unsigned long StaticID_;
+    List(std::string) AllowLst_;
+    List(std::string) DenyLst_;
+    List(TSrvCfgClientClass) AllowClientClassLst_;
+    List(TSrvCfgClientClass) DenyClientClassLst_;
 
     // old white/black-list
-    List(TStationRange) RejedClnt;
-    List(TStationRange) AcceptClnt;
+    List(TStationRange) RejedClnt_;
+    List(TStationRange) AcceptClnt_;
 };
 
 #endif

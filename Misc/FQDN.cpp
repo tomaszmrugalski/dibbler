@@ -5,8 +5,6 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: FQDN.cpp,v 1.7 2008-08-29 00:07:30 thomson Exp $
- *
  */
 
 #include <stdlib.h>
@@ -16,53 +14,54 @@
 
 /// @todo: TFQDN should be implemented using SPtr()
 
+using namespace std;
 
 TFQDN::TFQDN() {
-    this->Duid = 0;
-    this->Addr = 0;
-    this->Name = "";
-    this->used = false;
+    this->Duid_ = 0;
+    this->Addr_ = 0;
+    this->Name_ = "";
+    this->Used_ = false;
 }
 
-TFQDN::TFQDN(TDUID *duid_, string name_,bool used_) {
-    this->Addr = 0;
-    this->Duid = duid_;
-    this->Name = name_;
-    this->used = used_;
+TFQDN::TFQDN(TDUID *duid, const std::string& name, bool used) {
+    this->Addr_ = 0;
+    this->Duid_ = duid;
+    this->Name_ = name;
+    this->Used_ = used;
 }
 
-TFQDN::TFQDN(TIPv6Addr *addr_, string name_,bool used_) {
-    this->Duid = 0;
-    this->Addr = addr_;
-    this->Name = name_;
-    this->used = used_;
+TFQDN::TFQDN(TIPv6Addr *addr, const std::string& name, bool used) {
+    this->Duid_ = 0;
+    this->Addr_ = addr;
+    this->Name_ = name;
+    this->Used_ = used;
 }
 
-TFQDN::TFQDN(string name_,bool used_) {
-    this->Duid = 0;
-    this->Addr = 0;
-    this->Name = name_;
-    this->used = used_;
+TFQDN::TFQDN(const std::string& name, bool used) {
+    this->Duid_ = 0;
+    this->Addr_ = 0;
+    this->Name_ = name;
+    this->Used_ = used;
 }
 
 TDUID* TFQDN::getDuid() {
-    return this->Duid;
+    return Duid_;
 }
 
 TIPv6Addr* TFQDN::getAddr() {
-    return this->Addr;
+    return Addr_;
 }
 
 string TFQDN::getName() {
-    return this->Name;
+    return Name_;
 }
 
 bool TFQDN::isUsed() {
-    return this->used;
+    return Used_;
 }
 
 void TFQDN::setUsed(bool used) {
-    this->used = used;
+    Used_ = used;
 }
 
 // --------------------------------------------------------------------
@@ -71,13 +70,13 @@ void TFQDN::setUsed(bool used) {
 
 ostream& operator<<(ostream& out, TFQDN& fqdn) {
   out << "<fqdn";
-  if (fqdn.Duid) {
-    out << " duid=\"" << fqdn.Duid->getPlain() << "\"";
+  if (fqdn.Duid_) {
+    out << " duid=\"" << fqdn.Duid_->getPlain() << "\"";
   }
-  if (fqdn.Addr) {
-    out << " addr=\"" << fqdn.Addr->getPlain() << "\"";
+  if (fqdn.Addr_) {
+    out << " addr=\"" << fqdn.Addr_->getPlain() << "\"";
   }
 
-  out << " used=\"" << (fqdn.used?"TRUE":"FALSE") << "\">" << fqdn.getName() << "</fqdn>" << endl;
+  out << " used=\"" << (fqdn.Used_?"TRUE":"FALSE") << "\">" << fqdn.getName() << "</fqdn>" << endl;
   return out;
 }

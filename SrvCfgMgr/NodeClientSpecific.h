@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeClientSpecific.h,v 1.1 2008-10-12 19:36:58 thomson Exp $
- *
  */
 
 #ifndef NODECLIENTSPECIFIC_H_
@@ -19,11 +17,7 @@
 #include "Opt.h"
 #include <iostream>
 
-using namespace std;
-
-
 class NodeClientSpecific: public Node {
-
 
 public:
     enum ClientSpecificType
@@ -38,16 +32,16 @@ public:
     NodeClientSpecific();
     virtual ~NodeClientSpecific();
     NodeClientSpecific(ClientSpecificType t);
-    
-    string exec(SPtr<TSrvMsg> msg);
+
+    std::string exec(SPtr<TSrvMsg> msg);
     static void  analyseMessage(SPtr<TSrvMsg> msg);
-    
-    static string vendor_spec_num;
-    static string vendor_spec_data;
-    static string vendor_class_num;
-    static string vendor_class_data;
+
+    static std::string vendor_spec_num;
+    static std::string vendor_spec_data;
+    static std::string vendor_class_num;
+    static std::string vendor_class_data;
     static SPtr<TSrvMsg> CurrentMsg;
-    
+
 private:
     ClientSpecificType Type;
 

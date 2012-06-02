@@ -47,7 +47,7 @@ public:
     };
     typedef std::list< SPtr<TOptionStatus> > TOptionStatusLst;
 
-    TClntCfgIface(string ifaceName);
+    TClntCfgIface(const std::string& ifaceName);
     TClntCfgIface(int ifaceNr);
 
     void setRouting(bool enabled);
@@ -77,13 +77,13 @@ public:
     SPtr<TClntCfgTA> getTA();
     int countTA();
 
-    string getName(void);
-    string getFullName(void);
+    std::string getName(void);
+    std::string getFullName(void);
     void setOptions(SPtr<TClntParsGlobalOpt> opt);
     int	getID(void);
     void setNoConfig();
     void setIfaceID(int ifaceID);
-    void setIfaceName(string ifaceName);
+    void setIfaceName(const std::string& ifaceName);
     bool noConfig();
 
     bool stateless();
@@ -104,7 +104,7 @@ public:
     EState getDomainState();
     unsigned long getDomainTimeout();
     void setDomainState(EState state);
-    List(string) * getProposedDomainLst();
+    List(std::string) * getProposedDomainLst();
 
     // --- option: NTP servers ---
     bool isReqNTPServer();
@@ -118,7 +118,7 @@ public:
     EState getTimezoneState();
     unsigned long getTimezoneTimeout();
     void setTimezoneState(EState state);
-    string getProposedTimezone();
+    std::string getProposedTimezone();
 
     // --- option: SIP servers ---
     bool isReqSIPServer();
@@ -132,14 +132,14 @@ public:
     EState getSIPDomainState();
     unsigned long getSIPDomainTimeout();
     void setSIPDomainState(EState state);
-    List(string) * getProposedSIPDomainLst();
+    List(std::string) * getProposedSIPDomainLst();
 
     // --- option: FQDN ---
     bool isReqFQDN();
     EState getFQDNState();
     unsigned long getFQDNTimeout();
     void setFQDNState(EState state);
-    string getProposedFQDN();
+    std::string getProposedFQDN();
 
     // --- option: NIS servers ---
     bool isReqNISServer();
@@ -160,14 +160,14 @@ public:
     EState getNISDomainState();
     unsigned long getNISDomainTimeout();
     void setNISDomainState(EState state);
-    string getProposedNISDomain();
+    std::string getProposedNISDomain();
 
     // --- option: NIS+ domains ---
     bool isReqNISPDomain();
     EState getNISPDomainState();
     unsigned long getNISPDomainTimeout();
     void setNISPDomainState(EState state);
-    string getProposedNISPDomain();
+    std::string getProposedNISPDomain();
 
     // --- option: Lifetime ---
     bool isReqLifetime();
@@ -205,10 +205,10 @@ public:
 
 private:
     void setDefaults();
-    string IfaceName;
+    std::string IfaceName;
     int ID;
     bool NoConfig;
-    bool isIA;
+    bool Stateful_;
     bool Unicast;
     bool RapidCommit;
     int  PrefixLength; // default prefix length of the configured addresses
@@ -221,16 +221,16 @@ private:
     List(TClntCfgTA) ClntCfgTALst;
 
     List(TIPv6Addr) DNSServerLst;
-    List(string) DomainLst;
+    List(std::string) DomainLst;
     List(TIPv6Addr) NTPServerLst;
-    string Timezone;
+    std::string Timezone;
     List(TIPv6Addr) SIPServerLst;
-    List(string) SIPDomainLst;
-    string FQDN;
+    List(std::string) SIPDomainLst;
+    std::string FQDN;
     List(TIPv6Addr) NISServerLst;
     List(TIPv6Addr) NISPServerLst;
-    string NISDomain;
-    string NISPDomain;
+    std::string NISDomain;
+    std::string NISPDomain;
     List(TOptVendorSpecInfo) VendorSpecLst;
 
     EState DNSServerState;
@@ -251,6 +251,7 @@ private:
     EState AuthenticationState;
     EState RoutingEnabledState;
 
+    /// @todo: Remove those booleans and use State directly
     bool ReqDNSServer;
     bool ReqDomain;
     bool ReqNTPServer;

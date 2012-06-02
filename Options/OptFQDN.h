@@ -7,8 +7,6 @@
 *
 * released under GNU GPL v2 licence
 *
-* $Id: OptFQDN.h,v 1.2 2006-04-30 17:32:35 thomson Exp $
-*
 */
  
 /**
@@ -35,44 +33,41 @@ class TOptFQDN : public TOpt
    * @param fqdn The FQDN about to be sent
    * @param parent The message in which this option is included
    */
-  	TOptFQDN(string fqdn, TMsg* parent);
+    TOptFQDN(const std::string& fqdn, TMsg* parent);
   	
-  	/**
-  	 * Constructor
-  	 * 
-  	 * Build the option with a buffer received
-  	 * @param buf the buffer received, containing the whole option
-  	 * @param bufsize the size of the buffer
-  	 * @param parent the message in which this option is included
-  	 */
-  	TOptFQDN(char * &buf, int &bufsize, TMsg* parent);
-  	
-  	/**
-  	 * Destructor - Does actually nothing
-  	 */
-  	~TOptFQDN();
-  	
-    int getSize();
-    char * storeSelf( char* buf);
-    bool isValid();
+    /**
+     * Constructor
+     * 
+     * Build the option with a buffer received
+     * @param buf the buffer received, containing the whole option
+     * @param bufsize the size of the buffer
+     * @param parent the message in which this option is included
+     */
+    TOptFQDN(char * &buf, int &bufsize, TMsg* parent);
     
-    bool getNFlag();
-    bool getSFlag();
-    bool getOFlag();
+    /**
+     * Destructor - Does actually nothing
+     */
+    ~TOptFQDN();
+    
+    size_t getSize();
+    char * storeSelf( char* buf);
+    bool isValid() const;
+    
+    bool getNFlag() const;
+    bool getSFlag() const;
+    bool getOFlag() const;
     void setNFlag(bool flag);
     void setOFlag(bool flag);
     void setSFlag(bool flag);
-    string getFQDN();
+    std::string getFQDN() const;
 
   	
   private:
-  	string fqdn;
-  	char *encodedFQDN;
-  	bool flag_N;
-  	bool flag_O;
-  	bool flag_S;
-  	bool Valid;
-    
+    std::string fqdn_;
+    bool flag_N_;
+    bool flag_O_;
+    bool flag_S_;
 };
 
 #endif /* OPTFQDN_H */

@@ -27,7 +27,7 @@ class TClntMsgRebind : public TClntMsg
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     bool check();
-    string getName();
+    std::string getName() const;
     ~TClntMsgRebind();
  private:
     void updateIA(SPtr<TClntOptIA_NA> ptrOptIA,

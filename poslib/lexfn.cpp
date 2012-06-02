@@ -28,6 +28,8 @@
 
 #include "lexfn.h"
 
+using namespace std;
+
 bool txt_to_bool(const char *buff) {
   if (strcmpi(buff, "yes") == 0) return true;
   if (strcmpi(buff, "true") == 0) return true;

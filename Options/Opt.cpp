@@ -113,9 +113,10 @@ std::string TOpt::getPlain() {
 /// @param buf buffer to be parsed
 /// @param len length of the buffer
 /// @param parent pointer to parent message
+/// @param placeId specifies location of the message (option number for option parsing or 0 for message parsing)
+/// @param place text representation of the parsed scope
 ///
 /// @return true if parsing was successful, false if anomalies are detected
-///
 bool TOpt::parseOptions(TContainer< SPtr<TOpt> >& options,
                         const char* buf,
                         size_t len,

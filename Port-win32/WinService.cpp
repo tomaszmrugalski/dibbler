@@ -1,12 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6 
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
  * Released under GNU GPL v2 licence
- *                                                                           
- * $Id: WinService.cpp,v 1.19 2008-09-22 17:08:52 thomson Exp $
+ *
  */
 
 #include <windows.h>
@@ -16,8 +15,8 @@
 
 TWinService* TWinService::ServicePtr= NULL;
 
-TWinService::TWinService(const char* serviceName, const char* dispName, 
-			 DWORD serviceType, char* dependencies, char * descr)
+TWinService::TWinService(const char* serviceName, const char* dispName,
+                         DWORD serviceType, char* dependencies, char * descr)
 {
     ServicePtr= this;
     strncpy(ServiceName, serviceName, sizeof(ServiceName)-1);
@@ -27,9 +26,9 @@ TWinService::TWinService(const char* serviceName, const char* dispName,
     MinorVersion = 0;
     EventSource = NULL;
 
-	this->descr = descr;
-    
-    // set service status 
+        this->descr = descr;
+
+    // set service status
     hServiceStatus = NULL;
     Status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
     Status.dwCurrentState = SERVICE_STOPPED;
@@ -53,18 +52,18 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 {
     // Get a pointer to the C++ object
     TWinService* pService = ServicePtr;
-    
+
     // Register the control request handler
     pService->Status.dwCurrentState = SERVICE_START_PENDING;
     pService->hServiceStatus = RegisterServiceCtrlHandler(pService->ServiceName,Handler);
     if (pService->hServiceStatus==NULL)
-	{
+        {
         return;
     }
     // Start the initialisation
-    if (pService->Initialize()) 
-	{
-        // Do the real work. 
+    if (pService->Initialize())
+        {
+        // Do the real work.
         // When the Run function returns, the service has stopped.
         pService->IsRunning = TRUE;
         pService->Status.dwWin32ExitCode = 0;
@@ -77,10 +76,10 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 }
 
 void TWinService::Handler(DWORD dwOpcode) {
-	//DebugBreak();
+        //DebugBreak();
     // Get a pointer to the object
-	TWinService* pService = ServicePtr;
-    
+        TWinService* pService = ServicePtr;
+
     switch (dwOpcode) {
     case SERVICE_CONTROL_STOP: // 1
         pService->SetStatus(SERVICE_STOP_PENDING);
@@ -106,14 +105,14 @@ void TWinService::Handler(DWORD dwOpcode) {
         break;
 
     default:
-        if (dwOpcode >= SERVICE_CONTROL_USER) 
-		{
-            if (!pService->OnUserControl(dwOpcode)) 
-			{
+        if (dwOpcode >= SERVICE_CONTROL_USER)
+                {
+            if (!pService->OnUserControl(dwOpcode))
+                        {
             }
-        } 
-		else 
-		{
+        }
+                else
+                {
         }
         break;
     }
@@ -123,7 +122,7 @@ void TWinService::Handler(DWORD dwOpcode) {
 }
 
 void TWinService::LogEvent(WORD wType, DWORD dwID,
-		          const char* pszS1,
+                          const char* pszS1,
                   const char* pszS2,
                   const char* pszS3)
 {
@@ -132,13 +131,13 @@ void TWinService::LogEvent(WORD wType, DWORD dwID,
     ps[1] = pszS2;
     ps[2] = pszS3;
     int iStr = 0;
-    for (int i = 0; i < 3; i++) 
-        if (ps[i] != NULL) iStr++;      
+    for (int i = 0; i < 3; i++)
+        if (ps[i] != NULL) iStr++;
     // Check the event source has been registered and if
     // not then register it now
     if (!EventSource)
-        EventSource = ::RegisterEventSource(NULL,ServiceName); 
-    if (EventSource) 
+        EventSource = ::RegisterEventSource(NULL,ServiceName);
+    if (EventSource)
         ReportEvent(EventSource,wType,0,dwID,NULL,iStr,0,ps,NULL);
 }
 
@@ -182,28 +181,28 @@ bool TWinService::Install()
     // Get the executable file path
     char filePath[_MAX_PATH];
     GetModuleFileName(NULL, filePath, sizeof(filePath));
-	int i = strlen(filePath); 
-	sprintf(filePath+i, " service -d \"%s\"",ServiceDir.c_str());
+        int i = strlen(filePath);
+        sprintf(filePath+i, " service -d \"%s\"",ServiceDir.c_str());
 
     // Create the service
-	//printf("Install(): filepath=[%s]\nServiceName=[%s]\n",filePath,ServiceName);
-	//printf("ServiceDir=[%s]\n",ServiceDir.c_str());
+        //printf("Install(): filepath=[%s]\nServiceName=[%s]\n",filePath,ServiceName);
+        //printf("ServiceDir=[%s]\n",ServiceDir.c_str());
     SC_HANDLE hService = CreateService(	hSCM,ServiceName, DisplayName,
-					SERVICE_ALL_ACCESS,
-					SERVICE_WIN32_OWN_PROCESS,
-					ServiceType,
+                                        SERVICE_ALL_ACCESS,
+                                        SERVICE_WIN32_OWN_PROCESS,
+                                        ServiceType,
                                         SERVICE_ERROR_NORMAL,
-					filePath,NULL,NULL,Dependencies,NULL,NULL);
-    if (!hService) 
+                                        filePath,NULL,NULL,Dependencies,NULL,NULL);
+    if (!hService)
     {
         CloseServiceHandle(hSCM);
         Log(Crit) << "Unable to create " << ServiceName << " service." << LogEnd;
         return FALSE;
     }
 
-	SERVICE_DESCRIPTION sdBuf;
-	sdBuf.lpDescription = this->descr;
-	ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION, &sdBuf );
+        SERVICE_DESCRIPTION sdBuf;
+        sdBuf.lpDescription = this->descr;
+        ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION, &sdBuf );
 
     CloseServiceHandle(hService);
     CloseServiceHandle(hSCM);
@@ -225,10 +224,10 @@ bool TWinService::Uninstall()
 
     // Open the Service Control Manager
     SC_HANDLE hSCM = OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
-	if (!hSCM) {
-		Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
-		return false;
-	}
+        if (!hSCM) {
+                Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
+                return false;
+        }
     bool result = false;
     SC_HANDLE hService = ::OpenService(hSCM,ServiceName,DELETE);
     if (!hService) {
@@ -239,10 +238,10 @@ bool TWinService::Uninstall()
 
     if (!DeleteService(hService)) {
         Log(Crit) << "Unable to delete " << ServiceName << " service." << LogEnd;
-    	CloseServiceHandle(hService);
+        CloseServiceHandle(hService);
         CloseServiceHandle(hSCM);
         return false;
-	}
+        }
 
     CloseServiceHandle(hService);
     CloseServiceHandle(hSCM);
@@ -270,35 +269,35 @@ bool TWinService::StartService() {
 
 
     // open a handle to the SCM
-	SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
-	if(!handle)	{
-		Log(Crit) << "Could not connect to SCM dataase" << LogEnd;
-		return false;
-	}
+        SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
+        if(!handle)	{
+                Log(Crit) << "Could not connect to SCM dataase" << LogEnd;
+                return false;
+        }
 
-	// open a handle to the service
-	SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
-	if(!service) {
-		::CloseServiceHandle( handle );
-		Log(Crit) << "Could not get handle to " << ServiceName << " service" << LogEnd;
-		return false;
-	}
+        // open a handle to the service
+        SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
+        if(!service) {
+                ::CloseServiceHandle( handle );
+                Log(Crit) << "Could not get handle to " << ServiceName << " service" << LogEnd;
+                return false;
+        }
 
-	// and start the service!
-	if( !::StartService( service, 0, NULL ) ) {
-		Log(Crit) << "Service " << ServiceName << " startup failed." << LogEnd;
-    	::CloseServiceHandle( service );
-	    ::CloseServiceHandle( handle );
+        // and start the service!
+        if( !::StartService( service, 0, NULL ) ) {
+                Log(Crit) << "Service " << ServiceName << " startup failed." << LogEnd;
+        ::CloseServiceHandle( service );
+            ::CloseServiceHandle( handle );
         return false;
-	}
+        }
 
     Log(Notice) << "Service " << ServiceName << " started." << LogEnd;
-   	::CloseServiceHandle( service );
+        ::CloseServiceHandle( service );
     ::CloseServiceHandle( handle );
     return true;
 }
 
-bool TWinService::StopService() 
+bool TWinService::StopService()
 {
     if (!IsInstalled()) {
         Log(Crit) << "Unable to stop. Service " << ServiceName << " is not installed." << LogEnd;
@@ -306,36 +305,36 @@ bool TWinService::StopService()
     }
 
     // open a handle to the SCM
-	SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
-	if(!handle)	{
-		Log(Crit) << "Could not connect to SCM database" << LogEnd;
-		return false;
-	}
+    SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
+    if(!handle)	{
+        Log(Crit) << "Could not connect to SCM database" << LogEnd;
+        return false;
+    }
 
-	// open a handle to the service
-	SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
-	if(!service) {
-		::CloseServiceHandle( handle );
+    // open a handle to the service
+    SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
+    if(!service) {
+        ::CloseServiceHandle( handle );
         Log(Crit) << "Unable to open service " << ServiceName << LogEnd;
-		return false;
-	}
+        return false;
+    }
 
-	// send the STOP control request to the service
-	SERVICE_STATUS status;
-	::ControlService( service, SERVICE_CONTROL_STOP, &status );
-	::CloseServiceHandle( service );
-	::CloseServiceHandle( handle );
+    // send the STOP control request to the service
+    SERVICE_STATUS status;
+    ::ControlService( service, SERVICE_CONTROL_STOP, &status );
+    ::CloseServiceHandle( service );
+    ::CloseServiceHandle( handle );
 
     if (status.dwCurrentState == SERVICE_STOP_PENDING) {
         Log(Notice) << "Service " << ServiceName << " stop process initialized." << LogEnd;
         return true;
     }
 
-	if( status.dwCurrentState != SERVICE_STOPPED ) {
-		Log(Crit) << "Service " << ServiceName << " stop failed." << LogEnd;
+    if( status.dwCurrentState != SERVICE_STOPPED ) {
+        Log(Crit) << "Service " << ServiceName << " stop failed." << LogEnd;
         return false;
-	}
-	Log(Notice) << "Service " << ServiceName << " stopped." << LogEnd;
+    }
+    Log(Notice) << "Service " << ServiceName << " stopped." << LogEnd;
     return true;
 }
 
@@ -348,32 +347,29 @@ void TWinService::SetStatus(DWORD dwState)
 bool TWinService::Initialize()
 {
     // Start the initialization
-    SetStatus(SERVICE_START_PENDING);   
+    SetStatus(SERVICE_START_PENDING);
     // Perform the actual initialization
-    bool result = OnInit(); 
+    bool result = OnInit();
     // Set final state
     Status.dwWin32ExitCode = GetLastError();
     Status.dwCheckPoint = 0;
     Status.dwWaitHint = 0;
     if (!result) {
         SetStatus(SERVICE_STOPPED);
-        return false;    
+        return false;
     }
     SetStatus(SERVICE_RUNNING);
     return true;
 }
 void TWinService::Run()
 {
-	printf("WinService::Run()\n");
-	return;
-    while (IsRunning) {
-        Sleep(1000);
-    }
+    printf("WinService::Run()\n");
+    return;
 }
 
 bool TWinService::OnInit()
 {
-	return true;
+    return true;
 }
 
 void TWinService::OnStop()
@@ -398,15 +394,15 @@ void TWinService::OnShutdown()
 
 bool TWinService::OnUserControl(DWORD dwOpcode)
 {
-	return false;
+    return false;
 }
 
 int TWinService::getStatus() {
-	return this->Status.dwCurrentState;
+    return Status.dwCurrentState;
 }
 
 bool TWinService::isRunning() {
-    return this->isRunning(this->ServiceName);
+    return isRunning(this->ServiceName);
 }
 
 bool TWinService::isRunning(const char * name) {
@@ -416,26 +412,26 @@ bool TWinService::isRunning(const char * name) {
     SC_HANDLE hSCM = ::OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
     if (!hSCM) {
     //Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
-	return false;
+        return false;
     }
 
     // Try to open the service
     SC_HANDLE hService = OpenService(hSCM,name, GENERIC_READ);
     if (!hService) {
-	//Log(Crit) << "Unable to open " << name << " service." << LogEnd;
-	CloseServiceHandle(hSCM);
-	return false;
+        //Log(Crit) << "Unable to open " << name << " service." << LogEnd;
+        CloseServiceHandle(hSCM);
+        return false;
     }
 
     SERVICE_STATUS service;
     LPSERVICE_STATUS ptr = &service;
     memset((void*)&service,0, sizeof(SERVICE_STATUS) );
     if (QueryServiceStatus(hService, ptr)) {
-	state = ptr->dwCurrentState;
-    } 
+        state = ptr->dwCurrentState;
+    }
     CloseServiceHandle(hService);
     CloseServiceHandle(hSCM);
-    
+
     switch (state) {
     case SERVICE_STOPPED:
         return false;
@@ -458,21 +454,21 @@ void TWinService::showStatus() {
     serverRun  = this->isRunning("DHCPv6Server");
     clientRun  = this->isRunning("DHCPv6Client");
 
-    Log(Notice) <<  "Dibbler server : " << (serverInst? "INSTALLED":"NOT INSTALLED") 
+    Log(Notice) <<  "Dibbler server : " << (serverInst? "INSTALLED":"NOT INSTALLED")
                 << ", " << (serverRun ? "RUNNING":"NOT RUNNING") << LogEnd;
-    Log(Notice) <<  "Dibbler client : " << (clientInst? "INSTALLED":"NOT INSTALLED") 
+    Log(Notice) <<  "Dibbler client : " << (clientInst? "INSTALLED":"NOT INSTALLED")
                 << ", " << (clientRun ? "RUNNING":"NOT RUNNING") << LogEnd;
-    Log(Notice) <<  "Dibbler relay  : " << (relayInst ? "INSTALLED":"NOT INSTALLED") 
+    Log(Notice) <<  "Dibbler relay  : " << (relayInst ? "INSTALLED":"NOT INSTALLED")
                 << ", " << (relayRun  ? "RUNNING":"NOT RUNNING") << LogEnd;
 }
 
 bool TWinService::verifyPort() {
-    // does this proper Dibbler port for this windows?	
+    // does this proper Dibbler port for this windows?
     OSVERSIONINFO verinfo;
     verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
     GetVersionEx(&verinfo);
     bool ok=false;
-	if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) { 
+        if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) {
           Log(Notice) << "Windows XP detected (majorVersion=" << verinfo.dwMajorVersion
           << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
           ok = true;
@@ -505,7 +501,7 @@ bool TWinService::verifyPort() {
          Log(Notice) << "Windows XP:    major=5 minor=1" << LogEnd;
          Log(Notice) << "Windows 2003:  major=5 minor=2" << LogEnd;
          Log(Notice) << "Windows Vista: major=6 minor=0" << LogEnd;
-		 Log(Notice) << "Windows 7:     major=6 minor=1" << LogEnd;
+                 Log(Notice) << "Windows 7:     major=6 minor=1" << LogEnd;
     }
     return ok;
 }

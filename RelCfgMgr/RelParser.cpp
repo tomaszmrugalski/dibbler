@@ -117,15 +117,17 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include "Logger.h"
 #include "Portable.h"
 
+using namespace std;
+
 #define YY_USE_CLASS
-#line 23 "RelParser.y"
+#line 25 "RelParser.y"
 
 #include "FlexLexer.h"
 #define YY_RelParser_MEMBERS  FlexLexer * lex;                                                     \
 List(TRelParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
 List(TRelCfgIface) RelCfgIfaceLst;         /* list of RelCfg interfaces */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
-List(string) PresentStringLst;             /* string list */                         \
+List(std::string) PresentStringLst;             /* string list */                    \
 SPtr<TRelOptEcho> EchoOpt;                 /* echo request option */                 \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -139,7 +141,7 @@ virtual ~RelParser();
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
     this->lex = lex;
 
-#line 48 "RelParser.y"
+#line 50 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -605,11 +607,11 @@ static const short yyrhs[] = {    28,
 
 #if (YY_RelParser_DEBUG != 0) || defined(YY_RelParser_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    79,    83,    87,    88,    92,    93,    94,    95,    96,    97,
-    98,    99,   103,   104,   108,   109,   113,   114,   115,   116,
-   117,   121,   126,   134,   139,   150,   151,   155,   162,   169,
-   173,   180,   184,   191,   197,   202,   209,   216,   222,   229,
-   236,   242,   247,   252,   259
+    81,    85,    89,    90,    94,    95,    96,    97,    98,    99,
+   100,   101,   105,   106,   110,   111,   115,   116,   117,   118,
+   119,   123,   128,   136,   141,   152,   153,   157,   164,   171,
+   175,   182,   186,   193,   199,   204,   211,   218,   224,   231,
+   238,   244,   249,   254,   261
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","CLIENT_",
@@ -1192,14 +1194,14 @@ YYLABEL(yyreduce)
   switch (yyn) {
 
 case 22:
-#line 122 "RelParser.y"
+#line 124 "RelParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 23:
-#line 127 "RelParser.y"
+#line 129 "RelParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1209,108 +1211,108 @@ case 23:
 ;
     break;}
 case 24:
-#line 135 "RelParser.y"
+#line 137 "RelParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 25:
-#line 140 "RelParser.y"
+#line 142 "RelParser.y"
 {
     RelCfgIfaceLst.append(new TRelCfgIface(yyvsp[-4].ival));
     EndIfaceDeclaration();
 ;
     break;}
 case 26:
-#line 150 "RelParser.y"
+#line 152 "RelParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 27:
-#line 151 "RelParser.y"
+#line 153 "RelParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 28:
-#line 156 "RelParser.y"
+#line 158 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 29:
-#line 163 "RelParser.y"
+#line 165 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 30:
-#line 170 "RelParser.y"
+#line 172 "RelParser.y"
 { 
     ParserOptStack.getLast()->setServerMulticast(yyvsp[0].ival);
 ;
     break;}
 case 31:
-#line 174 "RelParser.y"
+#line 176 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerMulticast(true);
 ;
     break;}
 case 32:
-#line 181 "RelParser.y"
+#line 183 "RelParser.y"
 { 
     ParserOptStack.getLast()->setClientMulticast(yyvsp[0].ival);
 ;
     break;}
 case 33:
-#line 185 "RelParser.y"
+#line 187 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientMulticast(true);
 ;
     break;}
 case 34:
-#line 191 "RelParser.y"
+#line 193 "RelParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
 case 35:
-#line 197 "RelParser.y"
+#line 199 "RelParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
 case 36:
-#line 203 "RelParser.y"
+#line 205 "RelParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
 case 37:
-#line 210 "RelParser.y"
+#line 212 "RelParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
 case 38:
-#line 217 "RelParser.y"
+#line 219 "RelParser.y"
 {
     ParserOptStack.getLast()->setGuessMode(true);
 ;
     break;}
 case 39:
-#line 223 "RelParser.y"
+#line 225 "RelParser.y"
 {
     ParserOptStack.getLast()->setInterfaceID(yyvsp[0].ival);
 ;
     break;}
 case 40:
-#line 230 "RelParser.y"
+#line 232 "RelParser.y"
 {
     Log(Debug) << "RemoteID set: enterprise-number=" << yyvsp[-2].ival << ", remote-id length=" << yyvsp[0].duidval.length << LogEnd;
     ParserOptStack.getLast()->setRemoteID( new TOptVendorData(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
 ;
     break;}
 case 41:
-#line 237 "RelParser.y"
+#line 239 "RelParser.y"
 {
     EchoOpt = new TRelOptEcho(0);
     ParserOptStack.getLast()->setEcho(EchoOpt);
@@ -1318,27 +1320,27 @@ case 41:
 ;
     break;}
 case 42:
-#line 242 "RelParser.y"
+#line 244 "RelParser.y"
 {
     Log(Cont) << ", " << EchoOpt->count() << " opt(s) total." << LogEnd;
 ;
     break;}
 case 43:
-#line 248 "RelParser.y"
+#line 250 "RelParser.y"
 {
     EchoOpt->addOption(yyvsp[0].ival);
     Log(Cont) << " " << yyvsp[0].ival;
 ;
     break;}
 case 44:
-#line 253 "RelParser.y"
+#line 255 "RelParser.y"
 {
     EchoOpt->addOption(yyvsp[0].ival);
     Log(Cont) << " " << yyvsp[0].ival;
 ;
     break;}
 case 45:
-#line 260 "RelParser.y"
+#line 262 "RelParser.y"
 {
     if (!strncasecmp(yyvsp[0].strval,"before",6)) 
     {
@@ -1562,7 +1564,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "../bison++/bison.cc"
-#line 280 "RelParser.y"
+#line 282 "RelParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

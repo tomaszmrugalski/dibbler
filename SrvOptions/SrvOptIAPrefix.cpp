@@ -8,18 +8,11 @@
  *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-
 #include "DHCPConst.h"
 #include "Opt.h"
 #include "OptIAPrefix.h"
 #include "SrvOptIAPrefix.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "Msg.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -43,7 +36,7 @@ TSrvOptIAPrefix::TSrvOptIAPrefix( char * buf, int bufsize, TMsg* parent)
                 switch (code)
                     {
                     case OPTION_STATUS_CODE:
-                        opt =(Ptr*)SPtr<TSrvOptStatusCode> (new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                        opt =(Ptr*)SPtr<TOptStatusCode> (new TOptStatusCode(buf+pos,length,this->Parent));
                         break;
                     default:
                         Log(Warning) << "Option " << code<< " not supported "

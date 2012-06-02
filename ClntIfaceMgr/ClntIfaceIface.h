@@ -6,16 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceIface.h,v 1.10 2008-08-29 00:07:27 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.9  2008-08-21 00:25:08  thomson
- * Notify mechanism implemented.
- *
- * Revision 1.8  2008-08-19 23:27:33  thomson
- * TunnelMode additional support.
- *
- *
  */
 
 #ifndef CLNTIFACEIFACE_H
@@ -29,23 +19,23 @@
 
 class TClntIfaceIface: public TIfaceIface {
  public:
-    friend ostream & operator <<(ostream & strum, TClntIfaceIface &x);
+    friend std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x);
     TClntIfaceIface(char * name, int id, unsigned int flags, char* mac, 
 		    int maclen, char* llAddr, int llAddrCnt, char * globalAddr, 
 		    int globalAddrCnt, int hwType);
     ~TClntIfaceIface();
 
     bool setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(string) domains);
+    bool setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(std::string) domains);
     bool setNTPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string timezone);
+    bool setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& timezone);
     bool setSIPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(string) domains);
-    bool setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string fqdn);
+    bool setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(std::string) domains);
+    bool setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& fqdn);
     bool setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string domain);
+    bool setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain);
     bool setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(TIPv6Addr) addrs);
-    bool setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, string domain);
+    bool setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain);
     bool setLifetime(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, unsigned int life);
 
     bool setDsLiteTunnel(SPtr<TIPv6Addr> remoteEndpoint);
@@ -54,7 +44,7 @@ class TClntIfaceIface: public TIfaceIface {
     void removeAllOpts();
     unsigned int getTimeout();
 
-    string getFQDN();
+    std::string getFQDN();
     List(TIPv6Addr) getDNSServerLst();
 
  private:
@@ -67,7 +57,7 @@ class TClntIfaceIface: public TIfaceIface {
     SPtr<TIPv6Addr> DNSServerLstAddr;
     SPtr<TDUID>     DNSServerLstDUID;
 
-    List(string)    DomainLst;
+    List(std::string)    DomainLst;
     SPtr<TIPv6Addr> DomainLstAddr;
     SPtr<TDUID>     DomainLstDUID;
 
@@ -75,11 +65,11 @@ class TClntIfaceIface: public TIfaceIface {
     SPtr<TIPv6Addr> NTPServerLstAddr;
     SPtr<TDUID>     NTPServerLstDUID;
 
-    string Timezone;
+    std::string Timezone;
     SPtr<TIPv6Addr> TimezoneAddr;
     SPtr<TDUID>     TimezoneDUID;
 
-    string FQDN;
+    std::string FQDN;
     SPtr<TIPv6Addr> FQDNAddr;
     SPtr<TDUID>     FQDNDUID;
 
@@ -87,7 +77,7 @@ class TClntIfaceIface: public TIfaceIface {
     SPtr<TIPv6Addr> SIPServerLstAddr;
     SPtr<TDUID>     SIPServerLstDUID;
 
-    List(string)    SIPDomainLst;
+    List(std::string)    SIPDomainLst;
     SPtr<TIPv6Addr> SIPDomainLstAddr;
     SPtr<TDUID>     SIPDomainLstDUID;
 
@@ -95,7 +85,7 @@ class TClntIfaceIface: public TIfaceIface {
     SPtr<TIPv6Addr> NISServerLstAddr;
     SPtr<TDUID>     NISServerLstDUID;
 
-    string          NISDomain;
+    std::string     NISDomain;
     SPtr<TIPv6Addr> NISDomainAddr;
     SPtr<TDUID>     NISDomainDUID;
 
@@ -103,7 +93,7 @@ class TClntIfaceIface: public TIfaceIface {
     SPtr<TIPv6Addr> NISPServerLstAddr;
     SPtr<TDUID>     NISPServerLstDUID;
 
-    string          NISPDomain;
+    std::string     NISPDomain;
     SPtr<TIPv6Addr> NISPDomainAddr;
     SPtr<TDUID>     NISPDomainDUID;
 

@@ -24,7 +24,7 @@ class TSrvMsgLeaseQueryData : public TSrvMsgLeaseQueryReply
 
     bool check() {return true; };
     void doDuties() { };
-    string getName();
+    std::string getName() const;
     bool sendTCP();
     ~TSrvMsgLeaseQueryData();
 };

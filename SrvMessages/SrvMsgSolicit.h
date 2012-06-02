@@ -23,7 +23,7 @@ class TSrvMsgSolicit : public TSrvMsg
 
     void doDuties();
     void sortAnswers();
-    string getName();
+    std::string getName() const;
     unsigned long getTimeout();
     bool check();
     ~TSrvMsgSolicit();

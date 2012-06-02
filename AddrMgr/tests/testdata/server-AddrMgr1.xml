@@ -1,0 +1,28 @@
+<AddrMgr>
+  <timestamp>1330458023</timestamp>
+  <cache size="7"/>
+  <AddrClient>
+    <duid length="14">00:01:00:01:14:05:ad:45:88:ae:1d:7f:e8:b0</duid>
+    <!-- 1 IA(s) -->
+    <AddrIA unicast="fe80::21b7:2d8f:20eb:cb2c" T1="2000" T2="3000" IAID="425503820" state="NOTCONFIGURED" iface="2">
+      <duid length="14">00:01:00:01:14:05:ad:45:88:ae:1d:7f:e8:b0</duid>
+      <AddrAddr timestamp="1330457173" pref="3600" valid="7200" prefix="128">2001:db8:1111:0:f94d:c95c:5275:8388</AddrAddr>
+      <!--<fqdnDnsServer>-->
+      <!-- <fqdn>-->
+    </AddrIA>
+    <!-- 0 TA(s) -->
+    <!-- 0 PD(s) -->
+  </AddrClient>
+  <AddrClient>
+    <duid length="14">00:01:00:01:15:9e:3c:16:00:1e:8c:9b:73:49</duid>
+    <!-- 1 IA(s) -->
+    <AddrIA unicast="fe80::f66d:4ff:fe96:58f2" T1="2000" T2="3000" IAID="1" state="NOTCONFIGURED" iface="2">
+      <duid length="14">00:01:00:01:15:9e:3c:16:00:1e:8c:9b:73:49</duid>
+      <AddrAddr timestamp="1330455501" pref="3600" valid="7200" prefix="128">2001:db8:1111:0:1208:6720:ee67:6d7c</AddrAddr>
+      <!--<fqdnDnsServer>-->
+      <!-- <fqdn>-->
+    </AddrIA>
+    <!-- 0 TA(s) -->
+    <!-- 0 PD(s) -->
+  </AddrClient>
+</AddrMgr>

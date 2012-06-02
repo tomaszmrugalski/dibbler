@@ -21,7 +21,7 @@ class TRelMsgRelayRepl: public TRelMsg {
     TRelMsgRelayRepl(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
     int getSize();
     int storeSelf(char * buffer);
-    string getName();
+    std::string getName() const;
     bool check();
 
  private:

@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptStatusCode.cpp,v 1.7 2007-08-26 10:26:19 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -20,40 +18,38 @@
 #include <arpa/inet.h>
 #endif
 
-TOptStatusCode::TOptStatusCode( char * &buf, int  &len, TMsg* parent)
-	:TOpt(OPTION_STATUS_CODE, parent)
+using namespace std;
+
+TOptStatusCode::TOptStatusCode(const char * buf, size_t  len, TMsg* parent)
+    :TOpt(OPTION_STATUS_CODE, parent), Valid_(false)
 {
-    Valid=true;
-    if (len<2)
-    {
-        Valid=false;
-        buf+=len;
-        len=0;
+    if (len < 2) {
+        buf += len;
+        len = 0;
         return;
     }
-    this->StatusCode = readUint16(buf);
-    buf += sizeof(uint16_t); len -= sizeof(uint16_t);
-    char *Message = new char[len+1];
-    memcpy(Message,buf,len);
-    Message[len]=0;
-	this->Message=(string)Message;
-    delete [] Message;
+    StatusCode_ = readUint16(buf);
+    buf += sizeof(uint16_t);
+    len -= sizeof(uint16_t);
+    char *msg = new char[len+1];
+    memcpy(msg, buf, len);
+    msg[len]=0;
+    Message_ = (string)msg;
+    delete [] msg;
+    Valid_ = true;
 }
 
 
- int TOptStatusCode::getSize()
-{
-    return (int)(this->Message.length()+6);
+size_t TOptStatusCode::getSize() {
+    return Message_.length() + 6;
 }
 
- int TOptStatusCode::getCode()
-{
-    return StatusCode;
+int TOptStatusCode::getCode() {
+    return StatusCode_;
 }
 
-string TOptStatusCode::getText()
-{
-    return Message;
+string TOptStatusCode::getText() {
+    return Message_;
 }
 
 
@@ -61,42 +57,40 @@ char * TOptStatusCode::storeSelf( char* buf)
 {
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize()-4);
-    buf = writeUint16(buf, this->StatusCode);
-    strncpy((char *)buf,Message.c_str(),Message.length());
-    buf+=Message.length();
+    buf = writeUint16(buf, StatusCode_);
+    strncpy((char *)buf, Message_.c_str(), Message_.length());
+    buf += Message_.length();
     return buf;
 }
-TOptStatusCode::TOptStatusCode(int status,string message, TMsg* parent)
-	:TOpt(OPTION_STATUS_CODE, parent)
-{
-    this->StatusCode = status;
-    this->Message = message;
+TOptStatusCode::TOptStatusCode(int status,const std::string& message, TMsg* parent)
+    :TOpt(OPTION_STATUS_CODE, parent), Message_(message), StatusCode_(status),
+     Valid_(true) {
 }
 
 bool TOptStatusCode::doDuties()
 {
-    switch (StatusCode) {
+    switch (StatusCode_) {
     case STATUSCODE_SUCCESS:
-	Log(Notice) << "Status SUCCESS :" << Message << LogEnd;
-	break;
+        Log(Notice) << "Status SUCCESS :" << Message_ << LogEnd;
+        break;
     case STATUSCODE_UNSPECFAIL:
-	Log(Notice) << "Status UNSPECIFIED FAILURE :" << Message << LogEnd;
-	break;
+        Log(Notice) << "Status UNSPECIFIED FAILURE :" << Message_ << LogEnd;
+        break;
     case STATUSCODE_NOADDRSAVAIL:
-	Log(Notice) << "Status NO ADDRS AVAILABLE :" << Message << LogEnd;
-	break;
+        Log(Notice) << "Status NO ADDRS AVAILABLE :" << Message_ << LogEnd;
+        break;
     case STATUSCODE_NOBINDING:
-	Log(Notice) << "Status NO BINDING:" << Message << LogEnd;
-	break;
+        Log(Notice) << "Status NO BINDING:" << Message_ << LogEnd;
+        break;
     case STATUSCODE_NOTONLINK:
-	Log(Notice) << "Status NOT ON LINK:" << Message << LogEnd;
-	break;
+        Log(Notice) << "Status NOT ON LINK:" << Message_ << LogEnd;
+        break;
     case STATUSCODE_USEMULTICAST:
-	Log(Notice) << "Status USE MULTICAST:" << Message << LogEnd;
-	break;
+        Log(Notice) << "Status USE MULTICAST:" << Message_ << LogEnd;
+        break;
     case STATUSCODE_NOPREFIXAVAIL:
-	Log(Notice) << "Status NO PREFIX AVAILABLE :" << Message << LogEnd;
-	break;
+        Log(Notice) << "Status NO PREFIX AVAILABLE :" << Message_ << LogEnd;
+        break;
     }
     return true;
 }

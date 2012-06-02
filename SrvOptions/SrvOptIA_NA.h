@@ -28,7 +28,7 @@ class TSrvOptIA_NA : public TOptIA_NA
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent);
     TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent);    
     TSrvOptIA_NA(long IAID, long T1, long T2, TMsg* parent);    
-    TSrvOptIA_NA(long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);
+    TSrvOptIA_NA(long IAID, long T1, long T2, int Code, std::string Msg, TMsg* parent);
     /* Constructor used in answers to:
     * - SOLICIT 
     * - SOLICIT (with RAPID_COMMIT)

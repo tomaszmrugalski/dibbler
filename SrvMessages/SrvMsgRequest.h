@@ -30,7 +30,7 @@ class TSrvMsgRequest : public TSrvMsg
     bool check();
     unsigned long getTimeout();
     ~TSrvMsgRequest();
-    string getName();
+    std::string getName() const;
 
   private:
 };

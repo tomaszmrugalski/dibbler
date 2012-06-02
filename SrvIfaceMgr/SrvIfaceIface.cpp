@@ -6,12 +6,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.cpp,v 1.14 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 #include "Logger.h"
 #include "SrvIfaceIface.h"
+
+using namespace std;
 
 /*
   this one is used to create relay interfaces
@@ -46,12 +46,16 @@ bool TSrvIfaceIface::appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfa
 
 SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
     int i=0;
+    if (!interfaceID) {
+        return 0;
+    }
+
     if (this->RelaysCnt==0) {
 	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
 	return 0;
     }
     for (i=0; i<this->RelaysCnt; i++) {
-	if (*Relays[i].interfaceID == *interfaceID)
+	if (Relays[i].interfaceID && (*Relays[i].interfaceID == *interfaceID) )
 	    return this->Relays[i].iface;
     }
     return 0;
@@ -84,10 +88,9 @@ int TSrvIfaceIface::getRelayCnt() {
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
-/*
- * just prints important informations (debugging & logging)
- */
-ostream & operator <<(ostream & strum, TSrvIfaceIface &x) {
+
+/// @brief Prints important informations (debugging & logging).
+std::ostream & operator <<(std::ostream & strum, TSrvIfaceIface &x) {
     char buf[48];
     int i;
 

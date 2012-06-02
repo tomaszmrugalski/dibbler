@@ -6,12 +6,9 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgRelease.cpp,v 1.7 2008-08-29 00:07:35 thomson Exp $
- *
  */
 
 #include "SrvMsgRelease.h"
-#include "SrvOptServerIdentifier.h"
 #include "AddrClient.h"
 
 TSrvMsgRelease::TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
@@ -30,7 +27,7 @@ bool TSrvMsgRelease::check() {
     return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
 }
 
-string TSrvMsgRelease::getName() {
+std::string TSrvMsgRelease::getName() const {
     return "RELEASE";
 }
 

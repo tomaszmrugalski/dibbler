@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.cpp,v 1.24 2008-11-11 21:55:27 thomson Exp $
- *
  */
 
 #include <limits.h>
@@ -23,6 +21,8 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+
+using namespace std;
 
 /**
  * @brief constructor for new IA
@@ -431,7 +431,7 @@ enum ETentative TAddrIA::getTentative()
     AddrLst.first();
 
     bool allChecked = true;
-    
+
     while ( ptrAddr = AddrLst.get() ) {
 	switch (ptrAddr->getTentative()) {
 	case TENTATIVE_YES:
@@ -444,7 +444,7 @@ enum ETentative TAddrIA::getTentative()
 	case TENTATIVE_UNKNOWN:
         if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
         {
-	    
+
             switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
             {
 	    case LOWLEVEL_TENTATIVE_YES:  
@@ -548,7 +548,7 @@ SPtr<TFQDN> TAddrIA::getFQDN()
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-ostream & operator<<(ostream & strum,TAddrIA &x) {
+std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
 
     SPtr<TAddrAddr> ptr;
     SPtr<TAddrPrefix> prefix;

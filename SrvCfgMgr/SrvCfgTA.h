@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgTA.h,v 1.4 2008-10-12 20:07:32 thomson Exp $
  */
 
 class TSrcCfgTA;
@@ -24,12 +23,9 @@ class TSrcCfgTA;
 #include "IPv6Addr.h"
 #include "DUID.h"
 
-using namespace std;
-
-
 class TSrvCfgTA
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgTA& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgTA& iface);
  public:
     TSrvCfgTA();
 
@@ -70,8 +66,8 @@ class TSrvCfgTA
     unsigned long AddrsAssigned;
     unsigned long AddrsCount;
 
-    List(string) allowLst;
-    List(string) denyLst;
+    List(std::string) allowLst;
+    List(std::string) denyLst;
 
     List(TSrvCfgClientClass) allowClientClassLst;
     List(TSrvCfgClientClass) denyClientClassLst;

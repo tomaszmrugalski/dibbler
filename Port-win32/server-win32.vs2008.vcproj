@@ -45,10 +45,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
 				PreprocessorDefinitions="WIN32;_DEBUG"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DefaultCharIsUnsigned="true"
@@ -101,8 +102,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release32|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			OutputDirectory="Release32"
+			IntermediateDirectory="Release32"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -125,9 +126,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib\poslib"
+				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -431,6 +433,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptDomainLst.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptDUID.cpp"
 					>
 				</File>
@@ -491,10 +497,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptStringLst.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Options\OptTA.cpp"
 					>
 				</File>
@@ -528,14 +530,6 @@
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptClientIdentifier.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptDNSServers.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptDomainName.cpp"
 					>
 				</File>
 				<File
@@ -583,26 +577,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptNISDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNISPDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNISPServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNISServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNTPServers.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptOptionRequest.cpp"
 					>
 				</File>
@@ -616,14 +590,6 @@
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptServerUnicast.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptSIPDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptSIPServer.cpp"
 					>
 				</File>
 				<File

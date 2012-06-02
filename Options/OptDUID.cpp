@@ -19,14 +19,13 @@ TOptDUID::TOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
     DUID=duid;
 }
 
- int TOptDUID::getSize()
-{
-    if (this->DUID)
-	return this->DUID->getLen()+4;
+size_t TOptDUID::getSize() {
+    if (DUID)
+	return DUID->getLen() + 4;
     return 4;
 }
 
- char * TOptDUID::storeSelf( char* buf)
+char * TOptDUID::storeSelf( char* buf)
 {
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, DUID->getLen());

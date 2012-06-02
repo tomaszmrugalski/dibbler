@@ -31,7 +31,7 @@ public:
     void doDuties();
     bool shallRejectAnswer(SPtr<TClntMsg> msg);
     void sortAnswers();
-    string getName();
+    std::string getName() const;
     bool check();
     ~TClntMsgSolicit();
 

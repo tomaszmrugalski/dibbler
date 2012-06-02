@@ -47,7 +47,7 @@ char * TOptAddrLst::storeSelf(char* buf) {
     return buf;
 }
 
-int TOptAddrLst::getSize()
+size_t TOptAddrLst::getSize()
 {
     return 4+16*AddrLst.count();
 }
@@ -67,7 +67,7 @@ bool TOptAddrLst::isValid()
 }
 
 std::string TOptAddrLst::getPlain() {
-    stringstream tmp;
+    std::stringstream tmp;
     AddrLst.first();
     SPtr<TIPv6Addr> addr;
     while (addr = AddrLst.get()) {

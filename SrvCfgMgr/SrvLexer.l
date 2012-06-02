@@ -6,9 +6,16 @@
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "SrvParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
+
+/* duplicate default definition from flex. This makes cppcheck
+   check for defined YY_FATAL_ERROR() go away. */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
+
 %}
 
 %x COMMENT

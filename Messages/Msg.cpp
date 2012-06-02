@@ -238,13 +238,14 @@ int TMsg::setAuthInfoKey() {
     KeyGenNonce_ClientID = new char[KeyGenNonceLen+128];
 
     AAAkey = getAAAKey(AAASPI, &AAAkeyLen);
-    string fname = getAAAKeyFilename(AAASPI);
+    std::string fname = getAAAKeyFilename(AAASPI);
 
     // error, no file?
     if (!AAAkey) {
-        Log(Error) << "Auth: Unable to load key file for SPI " << hex << AAASPI <<": " << fname << " not found." << dec << LogEnd;
+        Log(Error) << "Auth: Unable to load key file for SPI " << std::hex << AAASPI <<": " << fname 
+                   << " not found." << std::dec << LogEnd;
         AuthInfoKey = NULL;
-        delete KeyGenNonce_ClientID;
+        delete [] KeyGenNonce_ClientID;
         return -1;
     }
     Log(Debug) << "Auth: AAA-key loaded from file " << fname << "." << LogEnd;
@@ -265,7 +266,7 @@ int TMsg::setAuthInfoKey() {
 
     PrintHex("Auth: AuthInfoKey (calculated): ", AuthInfoKey, AUTHKEYLEN);
 
-    delete KeyGenNonce_ClientID;
+    delete [] KeyGenNonce_ClientID;
 #endif
 
     return 0;
@@ -354,14 +355,15 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
             is_ok = true;
     } else if (AuthInfoPtr) {
 #ifndef MOD_DISABLE_AUTH
-        unsigned AuthInfoLen = getDigestSize(DigestType);
-        char *rcvdAuthInfo = new char[AuthInfoLen];
-        char *goodAuthInfo = new char[AuthInfoLen];
 
         if (!AuthInfoKey) {
             Log(Debug) << "Auth: No AuthInfoKey was set. This could mean bad SPI or no AAA-SPI file." << LogEnd;
             return false;
         }
+
+        unsigned AuthInfoLen = getDigestSize(DigestType);
+        char *rcvdAuthInfo = new char[AuthInfoLen];
+        char *goodAuthInfo = new char[AuthInfoLen];
 
         memmove(rcvdAuthInfo, AuthInfoPtr, AuthInfoLen);
         memset(AuthInfoPtr, 0, AuthInfoLen);

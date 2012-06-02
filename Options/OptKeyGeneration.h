@@ -25,7 +25,7 @@ public:
     void setLifetime(uint32_t value);
     void setAlgorithmId(uint16_t value);
     uint16_t getAlgorithmId();
-    int getSize();
+    size_t getSize();
     char *getDUID();
     char * storeSelf(char* buf);
     ~TOptKeyGeneration();
@@ -34,7 +34,7 @@ private:
     uint32_t Lifetime;
     uint16_t AlgorithmId;
 
-    bool Valid;
+    bool Valid_;
 };
 
 #endif 

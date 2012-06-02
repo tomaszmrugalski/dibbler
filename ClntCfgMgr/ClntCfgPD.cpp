@@ -2,7 +2,7 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
- * 
+ *
  * released under GNU GPL v2 only licence
  */
 
@@ -12,84 +12,77 @@
 #include "Logger.h"
 using namespace std;
 
-TClntCfgPD::TClntCfgPD() {
+TClntCfgPD::TClntCfgPD()
+    :T1_(CLIENT_DEFAULT_T1), T2_(CLIENT_DEFAULT_T2),
+     PrefixLength_(64), State_(STATE_NOTCONFIGURED)
+{
     static unsigned long nextIAID=1;
-    this->IAID = nextIAID++;
-    this->T1 = CLIENT_DEFAULT_T1;
-    this->T2 = CLIENT_DEFAULT_T2;
-    this->prefixLength = 64; // default value;
-    this->State = STATE_NOTCONFIGURED;
+    IAID_ = nextIAID++;
 }
 
-long TClntCfgPD::countPrefixes()
-{
-    return ClntCfgPrefixLst.count();
+long TClntCfgPD::countPrefixes() {
+    return ClntCfgPrefixLst_.count();
 }
 
 unsigned long TClntCfgPD::getT1() {
-    return T1;
+    return T1_;
 }
 
 char TClntCfgPD::getPrefixLength() {
-    return prefixLength;
+    return PrefixLength_;
 }
 unsigned long TClntCfgPD::getT2() {
-    return T2;
+    return T2_;
 }
 
 void TClntCfgPD::setState(enum EState state) {
-    State = state;
+    State_ = state;
 }
 
 enum EState TClntCfgPD::getState() {
-    return State;
+    return State_;
 }
 
 long  TClntCfgPD::getIAID() {
-    return IAID;
+    return IAID_;
 }
 
 void TClntCfgPD::setIAID(long iaid) {
-    IAID=iaid;
+    IAID_ = iaid;
 }
 
 void TClntCfgPD::setOptions(SPtr<TClntParsGlobalOpt> opt) {
-    this->T1=opt->getT1();
-    this->T2=opt->getT2();
+    T1_ = opt->getT1();
+    T2_ = opt->getT2();
 }
 
-void TClntCfgPD::firstPrefix()
-{
-    ClntCfgPrefixLst.first();
+void TClntCfgPD::firstPrefix() {
+    ClntCfgPrefixLst_.first();
 }
 
 SPtr<TClntCfgPrefix> TClntCfgPD::getPrefix() {
-    return ClntCfgPrefixLst.get();
+    return ClntCfgPrefixLst_.get();
 }
 
-TClntCfgPD::TClntCfgPD(SPtr<TClntCfgPD> right, long iAID)
-    :ClntCfgPrefixLst(right->ClntCfgPrefixLst)
-{
-    IAID=iAID;
-    T1=right->getT1();
-    T2=right->getT2();
+TClntCfgPD::TClntCfgPD(SPtr<TClntCfgPD> right, long iaid)
+    :ClntCfgPrefixLst_(right->ClntCfgPrefixLst_), IAID_(iaid), T1_(right->getT1()),
+     T2_(right->getT2()), PrefixLength_(right->getPrefixLength()) {
 }
 
-void TClntCfgPD::addPrefix(SPtr<TClntCfgPrefix> prefix)
-{
-    this->ClntCfgPrefixLst.append(prefix);    
+void TClntCfgPD::addPrefix(SPtr<TClntCfgPrefix> prefix) {
+    ClntCfgPrefixLst_.append(prefix);
 }
 
 ostream& operator<<(ostream& out,TClntCfgPD& pd)
 {
-    out << "        <pd iaid=\"" << pd.IAID << "\" state=\"" << StateToString(pd.State) << "\" t1=\"" 
-	<< pd.T1 << "\" t2=\"" << pd.T2 << "\" prefixes=\"" << pd.ClntCfgPrefixLst.count() << "\">" << std::endl;
+    out << "        <pd iaid=\"" << pd.IAID_ << "\" state=\"" << StateToString(pd.State_) << "\" t1=\""
+        << pd.T1_ << "\" t2=\"" << pd.T2_ << "\" prefixes=\"" << pd.ClntCfgPrefixLst_.count() << "\">" << std::endl;
 
     SPtr<TClntCfgPrefix> prefix;
-    
-    pd.ClntCfgPrefixLst.first();
-    while(prefix=pd.ClntCfgPrefixLst.get())
-    {	
+
+    pd.ClntCfgPrefixLst_.first();
+    while(prefix = pd.ClntCfgPrefixLst_.get())
+    {
         out << "          " << *prefix;
     }
     out << "        </pd>" << std::endl;

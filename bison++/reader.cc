@@ -400,7 +400,7 @@ read_declarations ()
 		  semantic_parser = 1;
 		  open_extra_files();
 		  fprintf(stderr,
-                "%semantic_parser no more supported in this version of bison !!! \n errors will be done ! use classic bison, use simple parser, or addapt this version to semantic parser\n");
+                "semantic_parser no more supported in this version of bison !!! \n errors will be done ! use classic bison, use simple parser, or addapt this version to semantic parser\n");
 		}
 	      break;
 

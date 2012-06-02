@@ -53,7 +53,7 @@ bool TRelMsgRelayRepl::check() {
     return true;
 }
 
-string TRelMsgRelayRepl::getName() {
+std::string TRelMsgRelayRepl::getName() const {
     return "RELAY_REPL";
 }
 

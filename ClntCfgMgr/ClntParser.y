@@ -48,11 +48,11 @@ List(DigestTypes)   DigestLst;                                              \
 List(TStationID) PresentStationLst;		                            \
 List(TIPv6Addr) PresentAddrLst;			                            \
 List(TClntCfgPrefix) PrefixLst;                                             \
-List(string) PresentStringLst;	                                            \
+List(std::string) PresentStringLst;	                                    \
 List(TOptVendorSpecInfo) VendorSpec;					    \
 bool IfaceDefined(int ifaceNr);                                             \
-bool IfaceDefined(string ifaceName);                                        \
-bool StartIfaceDeclaration(string ifaceName);                               \
+bool IfaceDefined(const std::string& ifaceName);                            \
+bool StartIfaceDeclaration(const std::string& ifaceName);                   \
 bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
@@ -78,7 +78,11 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;
+    DUIDEnterpriseID = 0;                                                   \
+                         CfgMgr = 0; \
+                         iaidSet = false; \
+                         iaid = 0xffffffff; \
+                         DUIDEnterpriseNumber = -1;
 
 %union
 {
@@ -113,7 +117,7 @@ namespace std
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
 %token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
-%token PD_, PREFIX_
+%token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
@@ -122,7 +126,7 @@ namespace std
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_
 %token AFTR_
 %token ROUTING_
-%token ADDRESS_LIST_, STRING_KEYWORD_, REQUEST_
+%token ADDRESS_LIST_, STRING_KEYWORD_, DUID_KEYWORD_, REQUEST_
 %token RECONFIGURE_
 %type  <ival> Number
 
@@ -165,6 +169,7 @@ GlobalOptionDeclaration
 | Experimental
 | SkipConfirm
 | ReconfigureAccept
+| DownlinkPrefixInterfaces
 ;
 
 InterfaceOptionDeclaration
@@ -199,6 +204,13 @@ IAOptionDeclaration
 | ADDRESOptionDeclaration
 | ExperimentalAddrParams
 ;
+
+DownlinkPrefixInterfaces
+: DOWNLINK_PREFIX_IFACES_ {
+    PresentStringLst.clear();
+} StringList {
+    CfgMgr->setDownlinkPrefixIfaces(PresentStringLst);
+}
 
 InterfaceDeclaration
 /////////////////////////////////////////////////////////////////////////////
@@ -1080,7 +1092,7 @@ DsLiteTunnelOption
 ;
 
 ExtraOption
-:OPTION_ Number '-' DUID_
+:OPTION_ Number DUID_KEYWORD_ DUID_
 {
     Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
@@ -1168,7 +1180,7 @@ bool ClntParser::IfaceDefined(int ifindex)
  *
  * @return true if not declared.
  */
-bool ClntParser::IfaceDefined(string ifaceName)
+bool ClntParser::IfaceDefined(const std::string& ifaceName)
 {
   SPtr<TClntCfgIface> ptr;
   ClntCfgIfaceLst.first();
@@ -1186,7 +1198,7 @@ bool ClntParser::IfaceDefined(string ifaceName)
  * creates new scope appropriately for interface options and declarations
  * clears all lists except the list of interfaces and adds new group
  */
-bool ClntParser::StartIfaceDeclaration(string ifaceName)
+bool ClntParser::StartIfaceDeclaration(const std::string& ifaceName)
 {
     if (!IfaceDefined(ifaceName))
 	return false;

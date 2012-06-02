@@ -80,12 +80,11 @@ TOptVendorSpecInfo::~TOptVendorSpecInfo()
 {
 }
 
-int TOptVendorSpecInfo::getSize()
-{
+size_t TOptVendorSpecInfo::getSize() {
     SPtr<TOpt> opt;
     unsigned int len = 8; // normal header(4) + enterprise(4)
     firstOption();
-    while (opt=getOption()) {
+    while (opt = getOption()) {
         len += opt->getSize();
     }
     return len;

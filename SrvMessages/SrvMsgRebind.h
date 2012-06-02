@@ -18,7 +18,7 @@ class TSrvMsgRebind : public TSrvMsg
     TSrvMsgRebind(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
     void doDuties();
-    string getName();
+    std::string getName() const;
     unsigned long getTimeout();
     bool check();
     ~TSrvMsgRebind();
