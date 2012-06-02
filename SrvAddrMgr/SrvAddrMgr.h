@@ -87,7 +87,6 @@ class TSrvAddrMgr : public TAddrMgr
  protected:
     void print(std::ostream & out);
 
- private:
     TSrvAddrMgr(const std::string& xmlfile, bool loadDB);
     static TSrvAddrMgr * Instance;
 

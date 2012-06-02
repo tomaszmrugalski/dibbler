@@ -1,7 +1,11 @@
 #include "IPv6Addr.h"
 #include "SrvIfaceMgr.h"
 #include "SrvCfgMgr.h"
+#include "SrvTransMgr.h"
+#include "OptDUID.h"
 #include "OptAddrLst.h"
+#include "SrvMsgSolicit.h"
+#include "SrvMsgAdvertise.h"
 
 #include <gtest/gtest.h>
 
@@ -9,18 +13,59 @@ using namespace std;
 
 namespace {
 
-    class SrvCfgMgrTest : public ::testing::Test {
-    public:
-        SrvCfgMgrTest() { }
+    class NakedSrvIfaceMgr: public TSrvIfaceMgr {
+        NakedSrvIfaceMgr(const std::string& xmlFile)
+            : TSrvIfaceMgr(xmlFile) {
+            TSrvIfaceMgr::Instance = this;
+        }
+        ~NakedSrvIfaceMgr() {
+            TSrvIfaceMgr::Instance = NULL;
+        }
+    };
+
+    class NakedSrvAddrMgr: public TSrvAddrMgr {
+        NakedSrvAddrMgr(const std::string& config, bool load_db)
+            :TSrvAddrMgr(config, load_db) {
+            TSrvAddrMgr::Instance = this;
+        }
+        ~NakedSrvAddrMgr() {
+            TSrvAddrMgr::Instance = NULL;
+        }
     };
 
     class NakedSrvCfgMgr : public TSrvCfgMgr {
     public:
         NakedSrvCfgMgr(const std::string& config, const std::string& dbfile)
-            :TSrvCfgMgr(config, dbfile) { }
+            :TSrvCfgMgr(config, dbfile) {
+            TSrvCfgMgr::Instance = this;
+        }
+        ~NakedSrvCfgMgr() {
+            TSrvCfgMgr::Instance = NULL;
+        }
+    };
+    class NakedSrvTransMgr: public TSrvTransMgr {
+    public:
+        NakedSrvTransMgr(const std::string& xmlFile): TSrvTransMgr(xmlFile) {
+            TSrvTransMgr::Instance = this;
+        }
+        List(TSrvMsg)& getMsgLst() { return MsgLst; }
+        ~NakedSrvTransMgr() {
+            TSrvTransMgr::Instance =  NULL;
+        }
     };
 
-TEST_F(SrvCfgMgrTest, constructor) {
+    class ServerTest : public ::testing::Test {
+    public:
+        ServerTest() {
+            clntDuid = new TDUID("00:01:00:06:15:0e:50:52:dc:2b:61:e5:40:9c");
+            clntId = new TOptDUID(OPTION_CLIENTID, clntDuid, NULL);
+        }
+        SPtr<TDUID> clntDuid;
+        SPtr<TOptDUID> clntId;
+    };
+
+
+TEST_F(ServerTest, constructor) {
 
     TSrvIfaceMgr::instanceCreate("testdata/server-IfaceMgr1.xml");
     TIfaceMgr & ifacemgr = SrvIfaceMgr();
@@ -35,17 +80,38 @@ TEST_F(SrvCfgMgrTest, constructor) {
                         "  option nis-domain nis.example.com\n"
                         "  option nis+-server 2000::501,2000::502\n"
                         "  option nis+-domain nisplus.example.com\n"
-                        "}\n"
-                        "\n"
-                        "iface nonexistent0 {\n"
-                        "  class { pool 2003::/64 }\n"
-                        "}");
+                        "}\n");
 
     ofstream cfgfile("testdata/server-1.conf");
     cfgfile << cfg;
     cfgfile.close();
 
     SPtr<NakedSrvCfgMgr> cfgmgr = new NakedSrvCfgMgr("testdata/server-1.conf", "testdata/server-CfgMgr1.xml");
+
+    TSrvAddrMgr::instanceCreate("testdata/server-AddrMgr1.xml", false); // don't load db
+
+    NakedSrvTransMgr * transmgr = new NakedSrvTransMgr("testdata/server-TransMgr1.xml");
+
+    // now generate client's message
+    char empty[] = { 0x01, 0x2, 0x3, 0x4};
+    SPtr<TIPv6Addr> clientAddr = new TIPv6Addr("fe80::1234", true);
+    SPtr<TSrvMsgSolicit> sol = new TSrvMsgSolicit(iface->getID(), clientAddr, empty, sizeof(empty));
+    sol->addOption((Ptr*)clntId);
+
+    EXPECT_EQ(0, transmgr->getMsgLst().count());
+
+    // process it through server usual routines
+    transmgr->relayMsg((Ptr*)sol);
+
+    EXPECT_EQ(1, transmgr->getMsgLst().count());
+
+    List(TSrvMsg) & msglst = transmgr->getMsgLst();
+    msglst.first();
+    SPtr<TSrvMsg> x = msglst.get();
+    ASSERT_TRUE(x);
+
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)x;
+
 
     SPtr<TSrvCfgIface> cfgIface;
     cfgmgr->firstIface();
@@ -71,7 +137,7 @@ TEST_F(SrvCfgMgrTest, constructor) {
 
         /// @todo: add validation of the remaining contents
     }
-    
+
 
     //delete cfgmgr;
 }

@@ -48,6 +48,7 @@ class TMsg
     SPtr<TOpt> getOption(int type);
     void firstOption();
     int countOption();
+    void addOption(SPtr<TOpt> opt) { Options.push_back(opt); }
 
     virtual SPtr<TOpt> getOption();
     

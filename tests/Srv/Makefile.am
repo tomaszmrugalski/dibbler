@@ -8,6 +8,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/Options
 AM_CPPFLAGS += -I$(top_srcdir)/SrvOptions
 AM_CPPFLAGS += -I$(top_srcdir)/Messages
 AM_CPPFLAGS += -I$(top_srcdir)/SrvMessages
+AM_CPPFLAGS += -I$(top_srcdir)/SrvTransMgr
 AM_CPPFLAGS += -I$(top_srcdir)/Misc
 
 # This is to workaround long long in gtest.h
