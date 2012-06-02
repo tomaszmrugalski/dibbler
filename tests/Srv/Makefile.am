@@ -11,7 +11,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/SrvMessages
 AM_CPPFLAGS += -I$(top_srcdir)/Misc
 
 # This is to workaround long long in gtest.h
-AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long
+AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 
 info:
         @echo "GTEST_LDADD=$(GTEST_LDADD)"
@@ -24,7 +24,7 @@ if HAVE_GTEST
 TESTS += Srv_tests
 
 Srv_tests_SOURCES = run_tests.cpp
-Srv_tests_SOURCES += srv_assign_unittest.cc
+Srv_tests_SOURCES += assign_unittest.cc
 
 Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 

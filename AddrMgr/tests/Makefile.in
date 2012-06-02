@@ -238,7 +238,7 @@ top_srcdir = @top_srcdir@
 
 # This is to workaround long long in gtest.h
 AM_CPPFLAGS = -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/Misc \
-	$(GTEST_INCLUDES) -Wno-long-long
+	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@AddrMgr_tests_SOURCES = run_tests.cpp \
 @HAVE_GTEST_TRUE@	AddrAddr_unittest.cc AddrPrefix_unittest.cc \
 @HAVE_GTEST_TRUE@	AddrIA_unittest.cc AddrClient_unittest.cc \

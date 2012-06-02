@@ -2,7 +2,7 @@ AM_CPPFLAGS  = -I$(top_srcdir)/AddrMgr
 AM_CPPFLAGS += -I$(top_srcdir)/Misc
 
 # This is to workaround long long in gtest.h
-AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long
+AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 
 # Darwin quirks:
 # dyld can't find proper lib if make instal was not done for gtest
