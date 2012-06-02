@@ -35,9 +35,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 TESTS = $(am__EXEEXT_1)
-@HAVE_GTEST_TRUE@am__append_1 = SrvCfgMgr_tests
+@HAVE_GTEST_TRUE@am__append_1 = Srv_tests
 noinst_PROGRAMS = $(am__EXEEXT_2)
-subdir = SrvCfgMgr/tests
+subdir = tests/Srv
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -47,15 +47,15 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/dibbler-config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_GTEST_TRUE@am__EXEEXT_1 = SrvCfgMgr_tests$(EXEEXT)
+@HAVE_GTEST_TRUE@am__EXEEXT_1 = Srv_tests$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
-am__SrvCfgMgr_tests_SOURCES_DIST = run_tests.cpp SrvCfgMgr_unittest.cc
-@HAVE_GTEST_TRUE@am_SrvCfgMgr_tests_OBJECTS = run_tests.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.$(OBJEXT)
-SrvCfgMgr_tests_OBJECTS = $(am_SrvCfgMgr_tests_OBJECTS)
+am__Srv_tests_SOURCES_DIST = run_tests.cpp srv_assign_unittest.cc
+@HAVE_GTEST_TRUE@am_Srv_tests_OBJECTS = run_tests.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	srv_assign_unittest.$(OBJEXT)
+Srv_tests_OBJECTS = $(am_Srv_tests_OBJECTS)
 am__DEPENDENCIES_1 =
-@HAVE_GTEST_TRUE@SrvCfgMgr_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+@HAVE_GTEST_TRUE@Srv_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvTransMgr/libSrvTransMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvCfgMgr/libSrvCfgMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/CfgMgr/libCfgMgr.a \
@@ -73,10 +73,9 @@ am__DEPENDENCIES_1 =
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
-SrvCfgMgr_tests_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(SrvCfgMgr_tests_LDFLAGS) \
-	$(LDFLAGS) -o $@
+Srv_tests_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(Srv_tests_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -103,8 +102,8 @@ am__v_CXXLD_0 = @echo "  CXXLD " $@;
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = $(SrvCfgMgr_tests_SOURCES)
-DIST_SOURCES = $(am__SrvCfgMgr_tests_SOURCES_DIST)
+SOURCES = $(Srv_tests_SOURCES)
+DIST_SOURCES = $(am__Srv_tests_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
@@ -248,10 +247,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 	-I$(top_srcdir)/Options -I$(top_srcdir)/SrvOptions \
 	-I$(top_srcdir)/Messages -I$(top_srcdir)/SrvMessages \
 	-I$(top_srcdir)/Misc $(GTEST_INCLUDES) -Wno-long-long
-@HAVE_GTEST_TRUE@SrvCfgMgr_tests_SOURCES = run_tests.cpp \
-@HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.cc
-@HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
-@HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDADD = $(GTEST_LDADD) \
+@HAVE_GTEST_TRUE@Srv_tests_SOURCES = run_tests.cpp \
+@HAVE_GTEST_TRUE@	srv_assign_unittest.cc
+@HAVE_GTEST_TRUE@Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@Srv_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvTransMgr/libSrvTransMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvCfgMgr/libSrvCfgMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/CfgMgr/libCfgMgr.a \
@@ -279,9 +278,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign SrvCfgMgr/tests/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign tests/Srv/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign SrvCfgMgr/tests/Makefile
+	  $(AUTOMAKE) --foreign tests/Srv/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -309,9 +308,9 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-SrvCfgMgr_tests$(EXEEXT): $(SrvCfgMgr_tests_OBJECTS) $(SrvCfgMgr_tests_DEPENDENCIES) 
-	@rm -f SrvCfgMgr_tests$(EXEEXT)
-	$(AM_V_CXXLD)$(SrvCfgMgr_tests_LINK) $(SrvCfgMgr_tests_OBJECTS) $(SrvCfgMgr_tests_LDADD) $(LIBS)
+Srv_tests$(EXEEXT): $(Srv_tests_OBJECTS) $(Srv_tests_DEPENDENCIES) 
+	@rm -f Srv_tests$(EXEEXT)
+	$(AM_V_CXXLD)$(Srv_tests_LINK) $(Srv_tests_OBJECTS) $(Srv_tests_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -319,8 +318,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SrvCfgMgr_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/srv_assign_unittest.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
