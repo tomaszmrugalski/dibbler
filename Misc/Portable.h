@@ -10,7 +10,6 @@
  *
  */
 
-
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
@@ -164,6 +163,7 @@ struct link_state_notify_t
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
+#define RESOLVCONF         "/sbin/resolvconf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
 #define TIMEZONE_FILE      "/etc/localtime"
 #define TIMEZONES_DIR      "/usr/share/zoneinfo"

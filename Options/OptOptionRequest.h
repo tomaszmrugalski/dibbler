@@ -19,8 +19,8 @@ class TClntConfMgr;
 class TOptOptionRequest : public TOpt
 {
   public:
-    TOptOptionRequest(TMsg* parent);
-    TOptOptionRequest(char * &buf,  int &bufSize, TMsg* parent);
+    TOptOptionRequest(uint16_t code, TMsg* parent);
+    TOptOptionRequest(uint16_t code, const char * buf, size_t size, TMsg* parent);
 
     void addOption(unsigned short optNr);
     void delOption(unsigned short optNr);
@@ -28,14 +28,15 @@ class TOptOptionRequest : public TOpt
     int  count();
     void clearOptions();
 
-     int getSize();
-     char * storeSelf( char* buf);
-     int  getReqOpt(int optNr);
-     bool isValid();
-     ~TOptOptionRequest();
+    size_t getSize();
+    char * storeSelf( char* buf);
+    int getReqOpt(int optNr);
+    bool isValid();
+    bool doDuties() { return true; }
+    ~TOptOptionRequest();
   protected:
-    bool Valid;
-    unsigned short *Options; // you're kidding me, right? Rewrite this ASAP
+    bool Valid_;
+    unsigned short *Options; /// @todo: you're kidding me, right? Rewrite this ASAP
     int	OptCnt;
 };
 

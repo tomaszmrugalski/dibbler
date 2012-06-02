@@ -11,18 +11,17 @@
 
 #include "SrvMsgAdvertise.h"
 #include "Logger.h"
-#include "SrvOptOptionRequest.h"
-#include "SrvOptClientIdentifier.h"
+#include "OptOptionRequest.h"
+#include "OptDUID.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptTA.h"
-#include "SrvOptServerUnicast.h"
-#include "SrvOptStatusCode.h"
-#include "SrvOptServerIdentifier.h"
-#include "SrvOptPreference.h"
-#include "SrvOptTimeZone.h"
+#include "OptStatusCode.h"
 #include "SrvOptFQDN.h"
 #include "SrvOptIA_PD.h"
+#include "SrvTransMgr.h"
 #include "Logger.h"
+
+using namespace std;
 
 TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> solicit)
     :TSrvMsg(solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
@@ -119,9 +118,9 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
 
 	    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
 	    if (clntAssignedAddr)
-		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
+		optFQDN = SrvTransMgr().addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
 	    else
-		optFQDN = this->prepareFQDN(requestFQDN, ClientDUID, clntAddr, hint, false);
+		optFQDN = SrvTransMgr().addFQDN(Iface, requestFQDN, ClientDUID, clntAddr, hint, false);
 
 	    if (optFQDN) {
 		this->Options.push_back((Ptr*) optFQDN);
@@ -223,6 +222,6 @@ void TSrvMsgAdvertise::doDuties() {
     IsDone = true;
 }
 
-string TSrvMsgAdvertise::getName() {
+std::string TSrvMsgAdvertise::getName() const{
     return "ADVERTISE";
 }

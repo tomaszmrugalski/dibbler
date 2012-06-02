@@ -14,28 +14,20 @@
 #include "SrvMsg.h"
 #include "SrvTransMgr.h"
 #include "OptEmpty.h"
-#include "SrvOptClientIdentifier.h"
-#include "SrvOptServerIdentifier.h"
+#include "OptDUID.h"
+#include "OptAddr.h"
+#include "OptString.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
-#include "SrvOptOptionRequest.h"
-#include "SrvOptPreference.h"
-#include "SrvOptElapsed.h"
-#include "SrvOptServerUnicast.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "OptGeneric.h"
 #include "SrvOptLQ.h"
 #include "SrvOptTA.h"
 #include "SrvCfgOptions.h"
-#include "SrvOptTimeZone.h"
 #include "SrvOptFQDN.h"
-#include "SrvOptLifetime.h"
 #include "OptAddrLst.h"
 #include "OptDomainLst.h"
 
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
-#include "DNSUpdate.h"
-#endif
 
 #ifndef MOD_DISABLE_AUTH
 #include "SrvOptAAAAuthentication.h"
@@ -47,18 +39,16 @@
 #include "SrvIfaceMgr.h"
 #include "AddrClient.h"
 
+using namespace std;
+
 /** 
  * this constructor is used to build message as a reply to the received message
  * (i.e. it is used to contruct ADVERTISE or REPLY)
  * 
- * @param IfaceMgr 
- * @param TransMgr 
- * @param CfgMgr 
- * @param AddrMgr 
- * @param iface 
- * @param addr 
- * @param msgType 
- * @param transID 
+ * @param iface interface index
+ * @param addr peer address
+ * @param msgType message type
+ * @param transID transaction-id
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
     :TMsg(iface, addr, msgType, transID)
@@ -80,20 +70,21 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
  * this constructor builds message based on the buffer 
  * (i.e. SOLICIT, REQUEST, RENEW, REBIND, RELEASE, INF-REQUEST, DECLINE)
  * 
- * @param IfaceMgr 
- * @param TransMgr 
- * @param CfgMgr 
- * @param AddrMgr 
  * @param iface 
  * @param addr 
  * @param buf 
  * @param bufSize 
  */
-TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
-                 char* buf,  int bufSize)
+TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
+                 char* buf, int bufSize)
     :TMsg(iface, addr, buf, bufSize)
 {
-    this->Relays = 0;
+    Relays = 0;
+
+    for (int i=0; i<32; i++) {
+        HopTbl[i] = 0;
+        len[i] = 0;
+    }
 
 #ifndef MOD_DISABLE_AUTH
     this->AuthKeys = SrvCfgMgr().AuthKeys;
@@ -143,28 +134,28 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 	ptr= 0;
 	switch (code) {
 	case OPTION_CLIENTID:
-	    ptr = new TSrvOptClientIdentifier(buf+pos,length,this);
+	    ptr = new TOptDUID(OPTION_CLIENTID, buf+pos, length, this);
 	    break;
 	case OPTION_SERVERID:
-	    ptr =new TSrvOptServerIdentifier(buf+pos,length,this);
+	    ptr = new TOptDUID(OPTION_SERVERID, buf+pos, length, this);
 	    break;
 	case OPTION_IA_NA:
 	    ptr = new TSrvOptIA_NA(buf+pos,length,this);
 	    break;
 	case OPTION_ORO:
-	    ptr = new TSrvOptOptionRequest(buf+pos,length,this);
+	    ptr = new TOptOptionRequest(OPTION_ORO, buf+pos, length, this);
 	    break;
 	case OPTION_PREFERENCE:
-	    ptr = new TSrvOptPreference(buf+pos,length,this);
+	    ptr = new TOptInteger(OPTION_PREFERENCE, 1, buf+pos, length, this);
 	    break;
 	case OPTION_ELAPSED_TIME:
-	    ptr = new TSrvOptElapsed(buf+pos,length,this);
+	    ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf+pos, length, this);
 	    break;
 	case OPTION_UNICAST:
-	    ptr = new TSrvOptServerUnicast(buf+pos,length,this);
+	    ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
 	    break;
 	case OPTION_STATUS_CODE:
-	    ptr = new TSrvOptStatusCode(buf+pos,length,this);
+	    ptr = new TOptStatusCode(buf+pos,length,this);
 	    break;
 	case OPTION_RAPID_COMMIT:
 	    ptr = new TOptEmpty(code, buf+pos, length, this);
@@ -183,13 +174,13 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 	    ptr = new TOptDomainLst(code, buf+pos, length, this);
 	    break;
 	case OPTION_NEW_TZDB_TIMEZONE:
-	    ptr = new TSrvOptTimeZone(buf+pos, length,this);
+	    ptr = new TOptString(OPTION_NEW_TZDB_TIMEZONE, buf+pos, length, this);
 	    break;
 	case OPTION_FQDN:
 	    ptr = new TSrvOptFQDN(buf+pos, length, this);
 	    break;
 	case OPTION_INFORMATION_REFRESH_TIME:
-	    ptr = new TSrvOptLifetime(buf+pos, length, this);
+	    ptr = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA:
 	    ptr = new TSrvOptTA(buf+pos, length, this);
@@ -243,7 +234,7 @@ TSrvMsg::TSrvMsg(int iface,  SPtr<TIPv6Addr> addr,
 	    Options.push_back( ptr );
 	else
 	    Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
-        pos+=length;
+        pos += length;
     }
 
 }
@@ -465,11 +456,11 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 #endif
 }
 
-bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool clientID /* =true */)
+bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID /* =true */)
 {
     // include our DUID (Server ID)
-    SPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
+    SPtr<TOptDUID> ptrSrvID;
+    ptrSrvID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
     Options.push_back((Ptr*)ptrSrvID);
     oro->delOption(OPTION_SERVERID);
 
@@ -480,17 +471,17 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool client
     }
 
     // ... and our preference
-    SPtr<TSrvOptPreference> ptrPreference;
+    SPtr<TOptInteger> ptrPreference;
     unsigned char preference = SrvCfgMgr().getIfaceByID(Iface)->getPreference();
     Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
-    ptrPreference = new TSrvOptPreference(preference,this);
+    ptrPreference = new TOptInteger(OPTION_PREFERENCE, 1, preference, this);
     Options.push_back((Ptr*)ptrPreference);
     oro->delOption(OPTION_PREFERENCE);
 
     // does this server support unicast?
     SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr().getIfaceByID(Iface)->getUnicast();
     if (unicastAddr) {
-	SPtr<TSrvOptServerUnicast> optUnicast = new TSrvOptServerUnicast(unicastAddr, this);
+	SPtr<TOptAddr> optUnicast = new TOptAddr(OPTION_UNICAST, unicastAddr, this);
 	Options.push_back((Ptr*)optUnicast);
 	oro->delOption(OPTION_UNICAST);
     }
@@ -509,7 +500,7 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TSrvOptOptionRequest> oro, bool client
  * @return true, if any options (conveying configuration paramter) has been appended
  */
 bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
-				     int iface, SPtr<TSrvOptOptionRequest> reqOpts)
+				     int iface, SPtr<TOptOptionRequest> reqOpts)
 {
     bool newOptionAssigned = false;
     // client didn't want any option? Or maybe we're not supporting this client?
@@ -525,117 +516,18 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, getRemoteID(), false/* false = verbose */);
 
     // --- option: DNS resolvers ---
-    if ( reqOpts->isOption(OPTION_DNS_SERVERS) && ptrIface->supportDNSServer() ) {
-	SPtr<TOpt> optDNS;
-	if (ex && ex->supportDNSServer())
-	    optDNS = new TOptAddrLst(OPTION_DNS_SERVERS, *ex->getDNSServerLst(), this);
-	else
-	    optDNS = new TOptAddrLst(OPTION_DNS_SERVERS, *ptrIface->getDNSServerLst(), this);
-	Options.push_back(optDNS);
-	newOptionAssigned = true;
-    };
-
     // --- option: DOMAIN LIST ---
-    if ( reqOpts->isOption(OPTION_DOMAIN_LIST) && ptrIface->supportDomain() ) {
-	SPtr<TOpt> optDomain;
-	if (ex && ex->supportDomain())
-	    optDomain = new TOptDomainLst(OPTION_DOMAIN_LIST, *ex->getDomainLst(),this);
-	else
-	    optDomain = new TOptDomainLst(OPTION_DOMAIN_LIST, *ptrIface->getDomainLst(),this);
-	Options.push_back((Ptr*)optDomain);
-	newOptionAssigned = true;
-    };
-    
     // --- option: NTP servers ---
-    if ( reqOpts->isOption(OPTION_SNTP_SERVERS) && ptrIface->supportNTPServer() ) {
-	SPtr<TOpt> optNTP;
-	if (ex && ex->supportNTPServer())
-	    optNTP = new TOptAddrLst(OPTION_SNTP_SERVERS, *ex->getNTPServerLst(),this);
-	else
-	    optNTP = new TOptAddrLst(OPTION_SNTP_SERVERS, *ptrIface->getNTPServerLst(),this);
-	Options.push_back((Ptr*)optNTP);
-	newOptionAssigned = true;
-    };
-    
     // --- option: TIMEZONE --- 
-    if ( reqOpts->isOption(OPTION_NEW_TZDB_TIMEZONE) && ptrIface->supportTimezone() ) {
-	SPtr<TSrvOptTimeZone> optTimezone;
-	if (ex && ex->supportTimezone())
-	    optTimezone = new TSrvOptTimeZone(ex->getTimezone(),this);
-	else
-	    optTimezone = new TSrvOptTimeZone(ptrIface->getTimezone(),this);
-	Options.push_back((Ptr*)optTimezone);
-	newOptionAssigned = true;
-    };
-
-    // --- option: SIP SERVERS ---
-    if ( reqOpts->isOption(OPTION_SIP_SERVER_A) && ptrIface->supportSIPServer() ) {
-	SPtr<TOpt> optSIPServer;
-	if (ex && ex->supportSIPServer())
-	    optSIPServer = new TOptAddrLst(OPTION_SIP_SERVER_A, *ex->getSIPServerLst(),this);
-	else
-	    optSIPServer = new TOptAddrLst(OPTION_SIP_SERVER_A, *ptrIface->getSIPServerLst(),this);
-	Options.push_back(optSIPServer);
-	newOptionAssigned = true;
-    };
-
-    // --- option: SIP DOMAINS ---
-    if ( reqOpts->isOption(OPTION_SIP_SERVER_D) && ptrIface->supportSIPDomain() ) {
-	SPtr<TOpt> optSIPDomain;
-	if (ex && ex->supportSIPDomain())
-	    optSIPDomain= new TOptDomainLst(OPTION_SIP_SERVER_D, *ex->getSIPDomainLst(),this);
-	else
-	    optSIPDomain= new TOptDomainLst(OPTION_SIP_SERVER_D, *ptrIface->getSIPDomainLst(),this);
-	Options.push_back(optSIPDomain);
-	newOptionAssigned = true;
-    };
+    // --- option: SIP SERVERS is now handled with common extra options mechanism ---
+    // --- option: SIP DOMAINS is now handled with common extra options mechanism ---
+    // --- option: NIS SERVERS is now handled with common extra options mechanism ---
+    // --- option: NIS DOMAIN is now handled with common extra options mechanism ---
+    // --- option: NISP SERVERS is now handled with common extra options mechanism ---
+    // --- option: NISP DOMAIN is now handled with common extra options mechanism ---
 
     // --- option: FQDN ---
     // see prepareFQDN() method
-
-    // --- option: NIS SERVERS ---
-    if ( reqOpts->isOption(OPTION_NIS_SERVERS) && ptrIface->supportNISServer() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISServer())
-	    opt = new TOptAddrLst(OPTION_NIS_SERVERS, *ex->getNISServerLst(),this);
-	else
-	    opt = new TOptAddrLst(OPTION_NIS_SERVERS, *ptrIface->getNISServerLst(),this);
-	Options.push_back(opt);
-	newOptionAssigned = true;
-    };
-
-    // --- option: NIS DOMAIN ---
-    if ( reqOpts->isOption(OPTION_NIS_DOMAIN_NAME) && ptrIface->supportNISDomain() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISDomain())
-	    opt = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, ex->getNISDomain(),this);
-	else
-	    opt = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, ptrIface->getNISDomain(),this);
-	Options.push_back(opt);
-	newOptionAssigned = true;
-    };
-
-    // --- option: NISP SERVERS ---
-    if ( reqOpts->isOption(OPTION_NISP_SERVERS) && ptrIface->supportNISPServer() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISPServer())
-	    opt = new TOptAddrLst(OPTION_NISP_SERVERS, *ex->getNISPServerLst(), this);
-	else
-	    opt = new TOptAddrLst(OPTION_NISP_SERVERS, *ptrIface->getNISPServerLst(), this);
-	Options.push_back((Ptr*) opt);
-	newOptionAssigned = true;
-    };
-
-    // --- option: NISP DOMAIN ---
-    if ( reqOpts->isOption(OPTION_NISP_DOMAIN_NAME) && ptrIface->supportNISPDomain() ) {
-	SPtr<TOpt> opt;
-	if (ex && ex->supportNISPDomain())
-	    opt = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, ex->getNISPDomain(), this);
-	else
-	    opt = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, ptrIface->getNISPDomain(), this);
-	Options.push_back((Ptr*)opt);
-	newOptionAssigned = true;
-    };
 
     // --- option: VENDOR SPEC ---
     if ( reqOpts->isOption(OPTION_VENDOR_OPTS)) {
@@ -645,15 +537,6 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 
     // --- option: INFORMATION_REFRESH_TIME ---
     // this option should be checked last 
-    if ( newOptionAssigned && ptrIface->supportLifetime() ) {
-	SPtr<TSrvOptLifetime> optLifetime;
-	if (ex && ex->supportLifetime())
-	    optLifetime = new TSrvOptLifetime(ex->getLifetime(), this);
-	else
-	    optLifetime = new TSrvOptLifetime(ptrIface->getLifetime(), this);
-	Options.push_back( (Ptr*)optLifetime);
-	newOptionAssigned = true;
-    }
 
     // --- option: forced options first ---
     TOptList extraOpts; // possible additional options
@@ -705,7 +588,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 /**
  * this function prints all options specified in the ORO option
  */
-string TSrvMsg::showRequestedOptions(SPtr<TSrvOptOptionRequest> oro) {
+string TSrvMsg::showRequestedOptions(SPtr<TOptOptionRequest> oro) {
     ostringstream x;
     int i = oro->count();
     x << i << " opts";
@@ -717,239 +600,22 @@ string TSrvMsg::showRequestedOptions(SPtr<TSrvOptOptionRequest> oro) {
     return x.str();
 }
 
-/** 
- * creates FQDN option and executes DNS Update procedure (if necessary)
- * 
- * @param requestFQDN  requested Fully Qualified Domain Name
- * @param clntDuid     client DUID
- * @param clntAddr     client address
- * @param hint         hint used to get name (it may or may not be used)
- * @param doRealUpdate - should the real update be performed (for example if response for
- *                       SOLICIT is prepare, this should be set to false)
- * 
- * @return FQDN option
- */
+#if 0
 SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
-				       SPtr<TIPv6Addr> clntAddr, string hint, bool doRealUpdate) {
-
-    SPtr<TSrvOptFQDN> optFQDN;
-    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID( this->Iface );
-    if (!ptrIface) {
-	Log(Crit) << "Msg received through not configured interface. "
-	    "Somebody call an exorcist!" << LogEnd;
-	this->IsDone = true;
-	return 0;
-    }
-    // FQDN is chosen, "" if no name for this host is found.
-    if (!ptrIface->supportFQDN()) {
-	Log(Error) << "FQDN is not defined on " << ptrIface->getFullName() << " interface." << LogEnd;
-	return 0;
-    }
-    
-    if (!ptrIface->supportDNSServer()) {
-	Log(Error) << "DNS server is not supported on " << ptrIface->getFullName() << " interface. DNS Update aborted." << LogEnd;
-	return 0;
-    }
-    
-    Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr=" << clntAddr->getPlain() << LogEnd;
-	
-    SPtr<TFQDN> fqdn = ptrIface->getFQDNName(clntDuid,clntAddr, hint);
-    if (!fqdn) {
-	Log(Debug) << "Unable to find FQDN for this client." << LogEnd;
-	return 0;
-    } 
-
-    optFQDN = new TSrvOptFQDN(fqdn->getName(), this);
-    optFQDN->setSFlag(false);
-    // Setting the O Flag correctly according to the difference between O flags
-    optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
-    string fqdnName = fqdn->getName();
-
-    if (requestFQDN->getNFlag()) {
-	      Log(Notice) << "FQDN: No DNS Update required." << LogEnd;
-	      return optFQDN;
-    }
-
-    if (!doRealUpdate) {
-	      Log(Debug) << "FQDN: Skipping update (probably a SOLICIT message)." << LogEnd;
-	      return optFQDN;
-    }
-
-    fqdn->setUsed(true);
-
-    int FQDNMode = ptrIface->getFQDNMode();
-    Log(Debug) << "FQDN: Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode=" << FQDNMode << LogEnd;
-
-    if ( FQDNMode==1 || FQDNMode==2 ) {
-	Log(Debug) << "FQDN: Server configuration allow DNS updates for " << clntDuid->getPlain() << LogEnd;
-	
-	if (FQDNMode == 1) 
-	    optFQDN->setSFlag(false);
-	else 
-	    if (FQDNMode == 2) 
-		optFQDN->setSFlag(true); // letting client update his AAAA
-	// Setting the O Flag correctly according to the difference between O flags
-	optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
-	
-	SPtr<TIPv6Addr> DNSAddr = SrvCfgMgr().getDDNSAddress(Iface);
-	if (!DNSAddr) {
-	    Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
-	    return 0;
-	}
-      	
-	SPtr<TAddrClient> ptrAddrClient = SrvAddrMgr().getClient(clntDuid);	
-	if (!ptrAddrClient) { 
-	    Log(Warning) << "Unable to find client."; 
-	    return 0;
-	}
-	ptrAddrClient->firstIA();
-	SPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
-	if (!ptrAddrIA) { 
-	    Log(Warning) << "Client does not have any addresses assigned." << LogEnd; 
-	    return 0;
-	}
-	ptrAddrIA->firstAddr();
-	SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
-	SPtr<TIPv6Addr> IPv6Addr = addr->get();
-	
-	Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" 
-		    << *IPv6Addr << " and FQDN=" << fqdnName << LogEnd;
-      	
-	//Test for DNS update
-	char zoneroot[128];
-	doRevDnsZoneRoot(IPv6Addr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
-
-	// that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
-	// and that would include both poslib and Dibbler headers in one place. Universe would implode then.
-	TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
-	DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
-	if (proto == TCfgMgr::DNSUPDATE_UDP)
-	    proto2 = DNSUpdate::DNSUPDATE_UDP;
-	if (proto == TCfgMgr::DNSUPDATE_ANY)
-	    proto2 = DNSUpdate::DNSUPDATE_ANY;
-	unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
-	
-	if (FQDNMode==1){
-	    /* add PTR only */
-	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
-					   DNSUPDATE_PTR, proto2);
-	    result = act->run(timeout);
-	    act->showResult(result);
-	    delete act;
-	} // fqdnMode == 1
-	else if (FQDNMode==2){
-	    DnsUpdateResult result = DNSUPDATE_SKIP;
-	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
-					   DNSUPDATE_PTR, proto2);
-	    result = act->run(timeout);
-	    act->showResult(result);
-	    delete act;
-      	    
-	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
-	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), "", fqdnName, 
-                                            IPv6Addr->getPlain(),
-					    DNSUPDATE_AAAA, proto2);
-	    result2 = act2->run(timeout);
-	    act2->showResult(result);
-	    delete act2;
-	} // fqdnMode == 2
-	
-	// regardless of the result, store the info
-	ptrAddrIA->setFQDN(fqdn);
-	ptrAddrIA->setFQDNDnsServer(DNSAddr);
-	
-#else
-      	Log(Error) << "This server is compiled without DNS Update support." << LogEnd;
-#endif
-    } else {
-	Log(Debug) << "Server configuration does NOT allow DNS updates for " << clntDuid->getPlain() << LogEnd;
-	optFQDN->setNFlag(true);
-    }
-    
-    return optFQDN;
+				       SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate) {
+    return SrvTransMgr().addFQDN(this->Iface, requestFQDN, clntDuid, clntAddr, hint, doRealUpdate);
 }
 
 void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn)
 {
-#ifdef MOD_CLNT_DISABLE_DNSUPDATE
-    Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
-    return;
-#else
-
-    string fqdnName = fqdn->getName();
-    int FQDNMode = ptrIface->getFQDNMode();
-    fqdn->setUsed(false);
-    int result;
-
-    SPtr<TIPv6Addr> dns = ptrIA->getFQDNDnsServer();
-    if (!dns) {
-	Log(Warning) << "Unable to find DNS Server for IA=" << ptrIA->getIAID() << LogEnd;
-	return;
-    }
-
-    ptrIA->firstAddr();
-    SPtr<TAddrAddr> addrAddr = ptrIA->getAddr();
-    SPtr<TIPv6Addr> clntAddr;
-    if (!addrAddr) {
-	Log(Error) << "Client does not have any addresses asigned to IA (IAID=" << ptrIA->getIAID() << ")." << LogEnd;
-	return;
-    }
-    clntAddr = addrAddr->get();
-
-    char zoneroot[128];
-    doRevDnsZoneRoot(clntAddr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
-
-
-    // that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
-    // and that would include both poslib and Dibbler headers in one place. Universe would implode then.
-    TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
-    DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
-    if (proto == TCfgMgr::DNSUPDATE_UDP)
-        proto2 = DNSUpdate::DNSUPDATE_UDP;
-    if (proto == TCfgMgr::DNSUPDATE_ANY)
-        proto2 = DNSUpdate::DNSUPDATE_ANY;
-    unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
-
-    if (FQDNMode == DNSUPDATE_MODE_PTR){
-	/* PTR cleanup */
-	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
-		    << " and FQDN=" << fqdn->getName() << LogEnd;
-	DNSUpdate *act = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), 
-                                       DNSUPDATE_PTR_CLEANUP, proto2);
-	result = act->run(timeout);
-	act->showResult(result);
-	delete act;
-	
-    } // fqdn mode 1 (PTR only)
-    else if (FQDNMode == DNSUPDATE_MODE_BOTH){
-	/* AAAA Cleanup */
-	Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server " << * dns << ", IP = " 
-		    << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
-	
-	DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdnName, clntAddr->getPlain(), 
-                                       DNSUPDATE_AAAA_CLEANUP, proto2);
-	result = act->run(timeout);
-	act->showResult(result);
-	delete act;
-	
-	/* PTR cleanup */
-	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
-		    << " and FQDN=" << fqdn->getName() << LogEnd;
-	DNSUpdate *act2 = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), 
-                                        DNSUPDATE_PTR_CLEANUP, proto2);
-	result = act2->run(timeout);
-	act2->showResult(result);
-	delete act2;
-    } // fqdn mode 2 (AAAA and PTR)
-#endif
+    SrvTransMgr().removeFQDN(ptrIface, ptrIA, fqdn);
 }
+#endif
 
 bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
 
-    SPtr<TSrvOptServerIdentifier> optSrvID = (Ptr*) this->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> optSrvID = (Ptr*) this->getOption(OPTION_SERVERID);
     if (optSrvID) {
 	if ( !( *(SrvCfgMgr().getDUID()) == *(optSrvID->getDUID()) ) ) {
 	    Log(Debug) << "Wrong ServerID value detected. This message is not for me. Message ignored." << LogEnd;
@@ -959,7 +625,7 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     return status;
 }
 
-bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TSrvOptOptionRequest> reqOpt)
+bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt)
 {
     reqOpt->delOption(OPTION_VENDOR_OPTS);
 
@@ -1047,7 +713,7 @@ SPtr<TOptVendorData> TSrvMsg::getRemoteID()
  */
 void TSrvMsg::appendStatusCode()
 {
-    SPtr<TSrvOptStatusCode> rootLevel, optLevel;
+    SPtr<TOptStatusCode> rootLevel, optLevel;
     SPtr<TOpt> opt;
     //rootLevel = getOption(OPTION_STATUS_CODE);
 
@@ -1060,7 +726,7 @@ void TSrvMsg::appendStatusCode()
 		if (optLevel->getCode() != STATUSCODE_SUCCESS) {
 		    // copy status code to root-level
 		    delOption(OPTION_STATUS_CODE);
-		    rootLevel = new TSrvOptStatusCode(optLevel->getCode(), optLevel->getText(), this);
+		    rootLevel = new TOptStatusCode(optLevel->getCode(), optLevel->getText(), this);
 		    Options.push_back( (Ptr*) rootLevel);
 		    return;
 		}
@@ -1098,5 +764,5 @@ void TSrvMsg::getORO(SPtr<TMsg> msg)
 {
     ORO = (Ptr*)msg->getOption(OPTION_ORO);
     if (!ORO)
-        ORO = new TSrvOptOptionRequest(this);
+        ORO = new TOptOptionRequest(OPTION_ORO, this);
 }

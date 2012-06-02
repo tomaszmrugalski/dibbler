@@ -6,12 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptInteger.h,v 1.1 2006-10-29 13:11:46 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2004-11-02 01:23:13  thomson
- * Initial revision
- *
  */
 
 #ifndef OPTINTEGER4_H
@@ -21,18 +15,17 @@
 
 #include "Opt.h"
 
-using namespace std;
-
 class TOptInteger : public TOpt
 {
 public:
-    TOptInteger(int type, unsigned int len/* 1,2, or 4*/, unsigned int value, TMsg* parent);
-    TOptInteger(int type, unsigned int len/* 1,2, or 4*/, char *&buf, int &bufsize, TMsg* parent);
+    TOptInteger(uint16_t type, unsigned int len/* 1,2, or 4*/, unsigned int value, TMsg* parent);
+    TOptInteger(uint16_t type, unsigned int len/* 1,2, or 4*/, const char *buf, size_t size, TMsg* parent);
     char * storeSelf( char* buf);
-    int getSize();
+    size_t getSize();
     unsigned int getValue();
     bool isValid();
     std::string getPlain();
+    bool doDuties() { return true; }
 protected:
     unsigned int Value;
     bool Valid;

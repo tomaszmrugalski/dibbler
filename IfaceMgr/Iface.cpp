@@ -25,6 +25,7 @@ using namespace std;
  */
 TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
 			 int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType)
+    :Mac(new char[maclen]),Maclen(maclen)
 {
     snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
 
@@ -32,8 +33,6 @@ TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* ma
     this->Flags = flags;
 
     // store mac address
-    this->Maclen=maclen;
-    this->Mac=new char[maclen];
     memcpy(this->Mac,mac,maclen);
  
     // store all link-layer addresses
@@ -89,13 +88,16 @@ unsigned int TIfaceIface::getFlags() {
 void TIfaceIface::updateState(struct iface *x)
 {
     this->Flags = x->flags;
-    free(this->Mac);
+    delete [] Mac;
+    Mac = new char[Maclen];
     Maclen = x->maclen;
-    this->Mac = new char[Maclen];
     memcpy(Mac, x->mac, Maclen);
 
-    if (LLAddrCnt && LLAddr)
-	free(LLAddr);
+    if (LLAddrCnt && LLAddr) {
+	delete [] LLAddr;
+        LLAddrCnt = 0;
+        LLAddr = 0;
+    }
     LLAddrCnt = x->linkaddrcount;
     if (LLAddrCnt) {
 	LLAddr = new char[16*LLAddrCnt];

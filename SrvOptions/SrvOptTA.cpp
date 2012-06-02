@@ -17,11 +17,13 @@
 
 #include "SrvOptTA.h"
 #include "SrvOptIAAddress.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
 #include "SrvTransMgr.h"
+
+using namespace std;
 
 #define MAX_TA_RANDOM_TRIES 100
 
@@ -44,7 +46,7 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
 	    SubOptions.append(opt);
 	    break;
 	case OPTION_STATUS_CODE:
-	    opt = (Ptr*) SPtr<TSrvOptStatusCode>(new TSrvOptStatusCode(buf+pos,length,this->Parent));
+	    opt = (Ptr*) SPtr<TOptStatusCode>(new TOptStatusCode(buf+pos,length,this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	default:
@@ -90,9 +92,9 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt,
     }
 }
 
-TSrvOptTA::TSrvOptTA(int iaid, int statusCode, string txt, TMsg* parent)
+TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
     :TOptTA(iaid, parent) {
-    SubOptions.append(new TSrvOptStatusCode(statusCode, txt, parent));
+    SubOptions.append(new TOptStatusCode(statusCode, txt, parent));
 }
 
 /**
@@ -133,9 +135,10 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
 	      << " is available, limit for client is " << addrsMax << ", "
 	      << willAssign << " will be assigned." << LogEnd;
     if (!willAssign) {
-	SubOptions.append( (Ptr*) new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-							"Sorry, buddy. No temporary addresses for you", this->Parent) );
-	Log(Warning) << "No temporary addresses were assigned in TA (iaid="<< this->IAID << ")." << LogEnd;
+	SubOptions.append( (Ptr*) new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+							"Sorry, buddy. No temporary addresses for you", 
+                                                        Parent) );
+	Log(Warning) << "No temporary addresses were assigned in TA (iaid="<< IAID_ << ")." << LogEnd;
 	return;
     }
 
@@ -145,9 +148,9 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
     optAddr = this->assignAddr();
     if (!optAddr) {
 	Log(Error) << "No temporary address found. Server is NOT configured with TA option." << LogEnd;
-	SPtr<TSrvOptStatusCode> ptrStatus;
-	ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-					  "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
+	SPtr<TOptStatusCode> ptrStatus;
+	ptrStatus = new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+                                       "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
         this->SubOptions.append((Ptr*)ptrStatus);
 	return;
     }
@@ -178,8 +181,8 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
 	    continue;
 	optAddr = (Ptr*) opt;
 	addr = optAddr->getAddr();
-	SrvAddrMgr().delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
-	SrvCfgMgr().delClntAddr(this->Iface, addr);
+	SrvAddrMgr().delClntAddr(ClntDuid, IAID_, addr, quiet);
+	SrvCfgMgr().delClntAddr(Iface, addr);
     }
 }
 
@@ -225,7 +228,7 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
 	    if ((this->OrgMessage == REQUEST_MSG)) {
 		Log(Debug) << "Temporary address " << addr->getPlain() << " granted." << LogEnd;
 		SrvAddrMgr().addTAAddr(this->ClntDuid, this->ClntAddr, this->Iface,
-				   this->IAID, addr, ta->getPref(), ta->getValid());
+				   IAID_, addr, ta->getPref(), ta->getValid());
 		SrvCfgMgr().addTAAddr(this->Iface);
 	    } else {
 		Log(Debug) << "Temporary address " << addr->getPlain() << " generated (not granted)." << LogEnd;

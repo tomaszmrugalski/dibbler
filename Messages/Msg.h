@@ -42,7 +42,7 @@ class TMsg
 
     virtual int storeSelf(char * buffer);
 
-    virtual string getName() = 0;
+    virtual std::string getName() const = 0;
 
     // returns requested option (or NULL, there is no such option)
     SPtr<TOpt> getOption(int type);

@@ -22,7 +22,9 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TAddrMgr::TAddrMgr(string xmlFile, bool loadfile) {
+using namespace std;
+
+TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
     this->IsDone = false;
     this->XmlFile = xmlFile;
 
@@ -59,7 +61,8 @@ TAddrMgr::TAddrMgr(string xmlFile, bool loadfile) {
  */
 void TAddrMgr::dbLoad(const char * xmlFile)
 {
-    Log(Info) << "Loading old address database (" << xmlFile << "), using built-in routines." << LogEnd;
+    Log(Info) << "Loading old address database (" << xmlFile
+              << "), using built-in routines." << LogEnd;
     xmlLoadBuiltIn(xmlFile);
 }
 
@@ -68,12 +71,11 @@ void TAddrMgr::dbLoad(const char * xmlFile)
  *
  * stores content of the AddrMgr database to XML file
  *
- *
  */
 void TAddrMgr::dump()
 {
     std::ofstream xmlDump;
-    xmlDump.open(this->XmlFile.c_str(), ios::ate);
+    xmlDump.open(this->XmlFile.c_str(), std::ios::ate);
     xmlDump << *this;
     xmlDump.close();
 }
@@ -847,49 +849,50 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool pd)
 {
     // address parameters
-    unsigned long timestamp, pref=DHCPV6_INFINITY, valid=DHCPV6_INFINITY;
     int prefix = CLIENT_DEFAULT_PREFIX_LENGTH;
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrAddr> addraddr;
-    char * x;
+    char * x = 0;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
-              timestamp=pref=valid=0;
-              addr = 0;
-              if ((x=strstr(buf,"timestamp"))) {
-                  timestamp = atoi(x+11);
-              }
-              if ((x=strstr(buf,"pref="))) {
-                  pref = atoi(x+6);
-              }
-              if ((x=strstr(buf,"valid"))) {
-                  valid = atoi(x+7);
-              }
-              if(pd==false) {
-                  if ((x=strstr(buf,"prefix="))) {
-                      prefix = atoi(x+8);
-                  }
-              }
-              else {
-                  if ((x=strstr(buf,"length="))) {
-                      prefix = atoi(x+8);
-                  }
-              }
-              if ((x=strstr(buf,">"))) {
-                  if(pd==false)
-                      x = strstr(x, "</AddrAddr>");
-                  else
-                      x = strstr(x, "</AddrPrefix>");
-                  if (x)
-                      *x = 0;
-                  addr = new TIPv6Addr(strstr(buf,">")+1, true);
-                  Log(Debug) << "Parsed addr=" << addr->getPlain() << ", pref=" << pref << ", valid=" << valid << ",ts=" << timestamp << LogEnd;
+        uint32_t timestamp = 0;
+        uint32_t pref = 0;
+        uint32_t valid = 0;
+        if ((x=strstr(buf,"timestamp"))) {
+            timestamp = atoi(x+11);
+        }
+        if ((x=strstr(buf,"pref="))) {
+            pref = atoi(x+6);
+        }
+        if ((x=strstr(buf,"valid"))) {
+            valid = atoi(x+7);
+        }
+        if(pd==false) {
+            if ((x=strstr(buf,"prefix="))) {
+                prefix = atoi(x+8);
+            }
+        }
+        else {
+            if ((x=strstr(buf,"length="))) {
+                prefix = atoi(x+8);
+            }
+        }
+        if ((x=strstr(buf,">"))) {
+            if (!pd)
+                x = strstr(x, "</AddrAddr>");
+            else
+                x = strstr(x, "</AddrPrefix>");
+            if (x)
+                *x = 0;
+            addr = new TIPv6Addr(strstr(buf,">")+1, true);
+            Log(Debug) << "Parsed addr=" << addr->getPlain() << ", pref=" << pref
+                       << ", valid=" << valid << ",ts=" << timestamp << LogEnd;
 
-              }
-              if (addr && timestamp && pref && valid && pd==false) {
-                  addraddr = new TAddrAddr(addr, pref, valid, prefix);
-                  addraddr->setTimestamp(timestamp);
-              }
+        }
+        if (addr && timestamp && pref && valid && pd==false) {
+            addraddr = new TAddrAddr(addr, pref, valid, prefix);
+            addraddr->setTimestamp(timestamp);
+        }
     }
     return addraddr;
 }
@@ -897,49 +900,48 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
 SPtr<TAddrPrefix> TAddrMgr::parseAddrPrefix(const char * xmlFile, char * buf, bool pd)
 {
     // address parameters
-    unsigned long timestamp, pref, valid, length;
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrPrefix> addraddr;
     char * x;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
-              timestamp=pref=valid=length=0;
-              addr = 0;
-              if ((x=strstr(buf,"timestamp"))) {
-                  timestamp = atoi(x+11);
-              }
-              if ((x=strstr(buf,"pref="))) {
-                  pref = atoi(x+6);
-              }
-              if ((x=strstr(buf,"valid"))) {
-                        valid = atoi(x+7);
-              }
-              if(pd==true) {
-                  if ((x=strstr(buf,"length="))) {
-                      length = atoi(x+8);
-                  }
-              }
-              else {
-                  if ((x=strstr(buf,"prefix="))) {
-                      length = atoi(x+8);
-                  }
-              }
-              if ((x=strstr(buf,">"))) {
-                  if(pd==true)
-                      x = strstr(x, "</AddrPrefix>");
-                  else
-                      x = strstr(x, "</AddrAddr>");
-                  if (x)
-                      *x = 0;
-                  addr = new TIPv6Addr(strstr(buf,">")+1, true);
-                  Log(Debug) << "Parsed prefix " << addr->getPlain() << "/"
-                             << length << ", pref=" << pref << ", valid=" << valid
-                             << ",ts=" << timestamp << LogEnd;
-              }
-              if (addr && timestamp && pref && valid && pd==true) {
-                  addraddr = new TAddrPrefix(addr, pref, valid, length);
-                  addraddr->setTimestamp(timestamp);
-              }
+        unsigned long timestamp = 0, pref = 0, valid = 0, length = 0;
+        addr = 0;
+        if ((x=strstr(buf,"timestamp"))) {
+            timestamp = atoi(x+11);
+        }
+        if ((x=strstr(buf,"pref="))) {
+            pref = atoi(x+6);
+        }
+        if ((x=strstr(buf,"valid"))) {
+            valid = atoi(x+7);
+        }
+        if (pd) {
+            if ((x=strstr(buf,"length="))) {
+                length = atoi(x+8);
+            }
+        }
+        else {
+            if ((x=strstr(buf,"prefix="))) {
+                length = atoi(x+8);
+            }
+        }
+        if ((x=strstr(buf,">"))) {
+            if (pd)
+                x = strstr(x, "</AddrPrefix>");
+            else
+                x = strstr(x, "</AddrAddr>");
+            if (x)
+                *x = 0;
+            addr = new TIPv6Addr(strstr(buf,">")+1, true);
+            Log(Debug) << "Parsed prefix " << addr->getPlain() << "/"
+                       << length << ", pref=" << pref << ", valid=" << valid
+                       << ",ts=" << timestamp << LogEnd;
+        }
+        if (addr && timestamp && pref && valid && pd==true) {
+            addraddr = new TAddrPrefix(addr, pref, valid, length);
+            addraddr->setTimestamp(timestamp);
+        }
     }
     return addraddr;
 }

@@ -51,7 +51,7 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
 
     // option: Timezone
     std::string getTimezone();
-    void setTimezone(std::string timeZone);
+    void setTimezone(const std::string& timeZone);
     bool getReqTimezone();
 
     // option: SIP servers
@@ -66,7 +66,7 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
 
     // option: FQDN
     std::string getFQDN();
-    void setFQDN(std::string fqdn);
+    void setFQDN(const std::string& fqdn);
     bool getReqFQDN();
 
     // option: NIS servers
@@ -81,12 +81,12 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
 
     // option: NIS domain
     std::string getNISDomain();
-    void setNISDomain(std::string domain);
+    void setNISDomain(const std::string& domain);
     bool getReqNISDomain();
 
     // option: NISP domain
     std::string getNISPDomain();
-    void setNISPDomain(std::string domain);
+    void setNISPDomain(const std::string& domain);
     bool getReqNISPDomain();
 
     // option: Lifetime

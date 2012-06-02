@@ -10,7 +10,7 @@
  *
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "SrvAddrMgr.h"
 #include "AddrClient.h"
 #include "AddrIA.h"
@@ -19,9 +19,11 @@
 #include "SrvCfgAddrClass.h"
 #include "Portable.h"
 
+using namespace std;
+
 TSrvAddrMgr * TSrvAddrMgr::Instance = 0;
 
-TSrvAddrMgr::TSrvAddrMgr(string xmlfile, bool loadDB)
+TSrvAddrMgr::TSrvAddrMgr(const std::string& xmlfile, bool loadDB)
     :TAddrMgr(xmlfile, loadDB) {
 
     this->CacheMaxSize = 999999999;
@@ -336,9 +338,10 @@ bool TSrvAddrMgr::delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6
     return result;
 }
 
-/*
- * how many addresses does this client have?
- */
+/// @brief returns number of addresses for a specific client
+///
+/// @param duid client's DUID
+/// @return number of addresses assigned
 unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
 {
     SPtr <TAddrClient> ptrClient;
@@ -561,7 +564,7 @@ void TSrvAddrMgr::doDuties(std::vector<TExpiredInfo>& addrLst,
                 expire.client = ptrClient;
                 expire.ia = pd;
                 expire.addr = prefix->get();
-		expire.prefixLen = prefix->getLength();
+                expire.prefixLen = prefix->getLength();
                 prefixLst.push_back(expire);
                 // delPrefix(ptrClient->getDUID(), pd->getIAID(), prefix->get(), false);
             } // while (prefix)
@@ -704,7 +707,7 @@ void TSrvAddrMgr::checkCacheSize() {
     }
 }
 
-void TSrvAddrMgr::print(ostream & out) {
+void TSrvAddrMgr::print(std::ostream & out) {
     out << "  <cache size=\"" << this->Cache.count() << "\"/>" << endl;
 }
 
@@ -779,24 +782,26 @@ void TSrvAddrMgr::cacheRead() {
         parsed = false;
         getline(f,s);
         string::size_type pos=0;
-        if ( (pos = s.find("<cache")!=string::npos) ) {
+        if ( ((pos = s.find("<cache")) != string::npos) ) {
             // parse beginning
 
             started = true;
-            if ( (pos = s.find("size=\""))!=string::npos ) {
+            if ( (pos = s.find("size=\"")) != string::npos ) {
                 s = s.substr(pos+6);
                 entries = atoi(s.c_str());
-                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file: parsing started, expecting " << entries << " entries." << LogEnd;
+                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file: parsing started, expecting "
+                           << entries << " entries." << LogEnd;
             } else {
-                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file:unable to find entries count. size=\"...\" missing in line "
-                           << lineno << "." << LogEnd;
+                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file:unable to find entries count. "
+                           << "size=\"...\" missing in line " << lineno << "." << LogEnd;
                 return;
             }
         }
 
         if (s.find("<entry")!=string::npos) {
             if (!started) {
-                Log(Error) << "Cache:" << SRVCACHE_FILE << " file: opening tag <cache> missing." << LogEnd;
+                Log(Error) << "Cache:" << SRVCACHE_FILE << " file: opening tag <cache> missing."
+                           << LogEnd;
                 return;
             }
 
@@ -856,7 +861,7 @@ void TSrvAddrMgr::cacheRead() {
     }
 }
 
-void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )
+void TSrvAddrMgr::instanceCreate(const std::string& xmlFile, bool loadDB)
 {
     if (Instance) {
         Log(Crit) << "SrvAddrMgr already exists! Application error" << LogEnd;
@@ -867,7 +872,9 @@ void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )
 
 TSrvAddrMgr & TSrvAddrMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "SrvAddrMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "SrvAddrMgr not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     return *Instance;
 }

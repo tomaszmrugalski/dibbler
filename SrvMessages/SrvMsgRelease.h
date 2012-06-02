@@ -22,7 +22,7 @@ class TSrvMsgRelease : public TSrvMsg
     void doDuties();
     unsigned long getTimeout();
     bool check();
-    string getName();
+    std::string getName() const;
     ~TSrvMsgRelease();
 };
 #endif /* SRVMSGRELEASE_H */

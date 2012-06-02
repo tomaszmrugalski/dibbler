@@ -18,7 +18,7 @@ class TOptEmpty : public TOpt
 public:
     TOptEmpty(int code, TMsg* parent);
     TOptEmpty(int code, const char * buf,  int n, TMsg* parent);
-    int getSize();
+    size_t getSize();
     char * storeSelf(char* buf);
     bool doDuties() { return false; }
 };

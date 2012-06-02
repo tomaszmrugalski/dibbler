@@ -5,7 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: OptTA.h,v 1.3 2008-08-29 00:07:31 thomson Exp $
  */
 
 class TOptTA;
@@ -20,9 +19,9 @@ class TOptTA;
 class TOptTA : public TOpt
 {
   public:
-    TOptTA( long IAID, TMsg* parent);
-    TOptTA( char * &buf, int &bufsize, TMsg* parent);
-    int getSize();
+    TOptTA(uint32_t iaid, TMsg* parent);
+    TOptTA(char * &buf, int &bufsize, TMsg* parent);
+    size_t getSize();
     int getStatusCode();
     
     unsigned long getIAID();
@@ -32,8 +31,8 @@ class TOptTA : public TOpt
     char * storeSelf( char* buf);
     bool isValid();
  protected:
-    bool Valid;
-    unsigned long IAID;
+    uint32_t IAID_;
+    bool Valid_;
 };
 
 

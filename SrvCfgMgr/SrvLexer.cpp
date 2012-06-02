@@ -58,6 +58,7 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
+#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -88,15 +89,12 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
-#endif /* ! C99 */
-
 #endif /* ! FLEXINT_H */
 
 /* begin standard C++ headers. */
 #include <iostream> 
 #include <errno.h>
 #include <cstdlib>
-#include <cstdio>
 #include <cstring>
 /* end standard C++ headers. */
 
@@ -154,15 +152,7 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
-#ifdef __ia64__
-/* On IA-64, the buffer size is 16k, not 8k.
- * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
- * Ditto for the __ia64__ case accordingly.
- */
-#define YY_BUF_SIZE 32768
-#else
 #define YY_BUF_SIZE 16384
-#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -2138,12 +2128,19 @@ static yyconst flex_int32_t yy_rule_can_match_eol[130] =
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "SrvParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
 
+/* duplicate default definition from flex. This makes cppcheck
+   check for defined YY_FATAL_ERROR() go away. */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
 
-#line 30 "SrvLexer.l"
+
+
+#line 37 "SrvLexer.l"
 using namespace std;
   unsigned ComBeg;    // line, in which comment begins
   unsigned LftCnt;    // how many chars : on the left side of '::' char was interpreted
@@ -2155,7 +2152,7 @@ using namespace std;
 namespace std{
   yy_SrvParser_stype yylval;
 }
-#line 2159 "SrvLexer.cpp"
+#line 2156 "SrvLexer.cpp"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -2187,12 +2184,7 @@ static int yy_flex_strlen (yyconst char * );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
-#ifdef __ia64__
-/* On IA-64, the buffer size is 16k, not 8k */
-#define YY_READ_BUF_SIZE 16384
-#else
 #define YY_READ_BUF_SIZE 8192
-#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -2262,10 +2254,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 43 "SrvLexer.l"
+#line 50 "SrvLexer.l"
 
 
-#line 2269 "SrvLexer.cpp"
+#line 2261 "SrvLexer.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -2361,562 +2353,562 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 45 "SrvLexer.l"
+#line 52 "SrvLexer.l"
 ; // ignore end of line
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 46 "SrvLexer.l"
+#line 53 "SrvLexer.l"
 ; // ignore TABs and spaces
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 48 "SrvLexer.l"
+#line 55 "SrvLexer.l"
 { return SrvParser::IFACE_;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 49 "SrvLexer.l"
+#line 56 "SrvLexer.l"
 { return SrvParser::CLASS_;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 50 "SrvLexer.l"
+#line 57 "SrvLexer.l"
 { return SrvParser::TACLASS_; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 51 "SrvLexer.l"
+#line 58 "SrvLexer.l"
 { return SrvParser::STATELESS_; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 52 "SrvLexer.l"
+#line 59 "SrvLexer.l"
 { return SrvParser::RELAY_; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 53 "SrvLexer.l"
+#line 60 "SrvLexer.l"
 { return SrvParser::IFACE_ID_; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 54 "SrvLexer.l"
+#line 61 "SrvLexer.l"
 { return SrvParser::IFACE_ID_ORDER_; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "SrvLexer.l"
+#line 63 "SrvLexer.l"
 { return SrvParser::LOGNAME_;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "SrvLexer.l"
+#line 64 "SrvLexer.l"
 { return SrvParser::LOGLEVEL_;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "SrvLexer.l"
+#line 65 "SrvLexer.l"
 { return SrvParser::LOGMODE_; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 59 "SrvLexer.l"
+#line 66 "SrvLexer.l"
 { return SrvParser::LOGCOLORS_; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 61 "SrvLexer.l"
+#line 68 "SrvLexer.l"
 { return SrvParser::WORKDIR_;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 63 "SrvLexer.l"
+#line 70 "SrvLexer.l"
 { return SrvParser::ACCEPT_ONLY_;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 64 "SrvLexer.l"
+#line 71 "SrvLexer.l"
 { return SrvParser::REJECT_CLIENTS_;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 66 "SrvLexer.l"
+#line 73 "SrvLexer.l"
 { return SrvParser::T1_;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 67 "SrvLexer.l"
+#line 74 "SrvLexer.l"
 { return SrvParser::T2_;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 68 "SrvLexer.l"
+#line 75 "SrvLexer.l"
 { return SrvParser::PREF_TIME_;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 69 "SrvLexer.l"
+#line 76 "SrvLexer.l"
 { return SrvParser::PREF_TIME_;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 70 "SrvLexer.l"
+#line 77 "SrvLexer.l"
 { return SrvParser::VALID_TIME_;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 72 "SrvLexer.l"
+#line 79 "SrvLexer.l"
 { return SrvParser::UNICAST_;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 73 "SrvLexer.l"
+#line 80 "SrvLexer.l"
 { return SrvParser::PREFERENCE_;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 74 "SrvLexer.l"
+#line 81 "SrvLexer.l"
 { return SrvParser::POOL_;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 75 "SrvLexer.l"
+#line 82 "SrvLexer.l"
 { return SrvParser::SHARE_;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 76 "SrvLexer.l"
+#line 83 "SrvLexer.l"
 { return SrvParser::RAPID_COMMIT_;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 77 "SrvLexer.l"
+#line 84 "SrvLexer.l"
 { return SrvParser::IFACE_MAX_LEASE_; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 78 "SrvLexer.l"
+#line 85 "SrvLexer.l"
 { return SrvParser::CLASS_MAX_LEASE_; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 79 "SrvLexer.l"
+#line 86 "SrvLexer.l"
 { return SrvParser::CLNT_MAX_LEASE_;  }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 80 "SrvLexer.l"
+#line 87 "SrvLexer.l"
 { return SrvParser::CLIENT_; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 81 "SrvLexer.l"
+#line 88 "SrvLexer.l"
 { return SrvParser::DUID_KEYWORD_; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 82 "SrvLexer.l"
+#line 89 "SrvLexer.l"
 { return SrvParser::REMOTE_ID_; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 83 "SrvLexer.l"
+#line 90 "SrvLexer.l"
 { return SrvParser::ADDRESS_;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 84 "SrvLexer.l"
+#line 91 "SrvLexer.l"
 { return SrvParser::GUESS_MODE_; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 86 "SrvLexer.l"
+#line 93 "SrvLexer.l"
 { return SrvParser::OPTION_; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 87 "SrvLexer.l"
+#line 94 "SrvLexer.l"
 { return SrvParser::DNS_SERVER_;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 88 "SrvLexer.l"
+#line 95 "SrvLexer.l"
 { return SrvParser::DOMAIN_;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 89 "SrvLexer.l"
+#line 96 "SrvLexer.l"
 { return SrvParser::NTP_SERVER_;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 90 "SrvLexer.l"
+#line 97 "SrvLexer.l"
 { return SrvParser::TIME_ZONE_;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 91 "SrvLexer.l"
+#line 98 "SrvLexer.l"
 { return SrvParser::SIP_SERVER_; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 92 "SrvLexer.l"
+#line 99 "SrvLexer.l"
 { return SrvParser::SIP_DOMAIN_; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 93 "SrvLexer.l"
+#line 100 "SrvLexer.l"
 { return SrvParser::NEXT_HOP_; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 94 "SrvLexer.l"
+#line 101 "SrvLexer.l"
 { return SrvParser::ROUTE_; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 95 "SrvLexer.l"
+#line 102 "SrvLexer.l"
 { return SrvParser::FQDN_; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 96 "SrvLexer.l"
+#line 103 "SrvLexer.l"
 { return SrvParser::INFINITE_; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 97 "SrvLexer.l"
+#line 104 "SrvLexer.l"
 { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 98 "SrvLexer.l"
+#line 105 "SrvLexer.l"
 { return SrvParser::FQDN_DDNS_ADDRESS_; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 99 "SrvLexer.l"
+#line 106 "SrvLexer.l"
 { return SrvParser::DDNS_PROTOCOL_; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 100 "SrvLexer.l"
+#line 107 "SrvLexer.l"
 { return SrvParser::DDNS_TIMEOUT_; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 101 "SrvLexer.l"
+#line 108 "SrvLexer.l"
 { return SrvParser::NIS_SERVER_; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 102 "SrvLexer.l"
+#line 109 "SrvLexer.l"
 { return SrvParser::NIS_DOMAIN_; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 103 "SrvLexer.l"
+#line 110 "SrvLexer.l"
 { return SrvParser::NISP_SERVER_; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 104 "SrvLexer.l"
+#line 111 "SrvLexer.l"
 { return SrvParser::NISP_DOMAIN_; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 105 "SrvLexer.l"
+#line 112 "SrvLexer.l"
 { return SrvParser::LIFETIME_; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 106 "SrvLexer.l"
+#line 113 "SrvLexer.l"
 { return SrvParser::CACHE_SIZE_; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 107 "SrvLexer.l"
+#line 114 "SrvLexer.l"
 { return SrvParser::PDCLASS_; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 108 "SrvLexer.l"
+#line 115 "SrvLexer.l"
 { return SrvParser::PD_LENGTH_; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 109 "SrvLexer.l"
+#line 116 "SrvLexer.l"
 { return SrvParser::PD_POOL_;}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 110 "SrvLexer.l"
+#line 117 "SrvLexer.l"
 { return SrvParser::VENDOR_SPEC_; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 111 "SrvLexer.l"
+#line 118 "SrvLexer.l"
 { return SrvParser::SCRIPT_; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 113 "SrvLexer.l"
+#line 120 "SrvLexer.l"
 { return SrvParser::EXPERIMENTAL_; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 114 "SrvLexer.l"
+#line 121 "SrvLexer.l"
 { return SrvParser::ADDR_PARAMS_; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 115 "SrvLexer.l"
+#line 122 "SrvLexer.l"
 { return SrvParser::REMOTE_AUTOCONF_NEIGHBORS_; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 117 "SrvLexer.l"
+#line 124 "SrvLexer.l"
 { return SrvParser::AFTR_; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 118 "SrvLexer.l"
+#line 125 "SrvLexer.l"
 { return SrvParser::INACTIVE_MODE_; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 119 "SrvLexer.l"
+#line 126 "SrvLexer.l"
 { return SrvParser::ACCEPT_LEASEQUERY_; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 120 "SrvLexer.l"
+#line 127 "SrvLexer.l"
 { return SrvParser::BULKLQ_ACCEPT_; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 121 "SrvLexer.l"
+#line 128 "SrvLexer.l"
 { return SrvParser::BULKLQ_TCPPORT_; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 122 "SrvLexer.l"
+#line 129 "SrvLexer.l"
 { return SrvParser::BULKLQ_MAX_CONNS_; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 123 "SrvLexer.l"
+#line 130 "SrvLexer.l"
 { return SrvParser::BULKLQ_TIMEOUT_; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 124 "SrvLexer.l"
+#line 131 "SrvLexer.l"
 { return SrvParser::AUTH_METHOD_; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 125 "SrvLexer.l"
+#line 132 "SrvLexer.l"
 { return SrvParser::AUTH_LIFETIME_; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 126 "SrvLexer.l"
+#line 133 "SrvLexer.l"
 { return SrvParser::AUTH_KEY_LEN_; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 127 "SrvLexer.l"
+#line 134 "SrvLexer.l"
 { return SrvParser::DIGEST_NONE_; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 128 "SrvLexer.l"
+#line 135 "SrvLexer.l"
 { return SrvParser::DIGEST_PLAIN_; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 129 "SrvLexer.l"
+#line 136 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_MD5_; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 130 "SrvLexer.l"
+#line 137 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_MD5_; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 131 "SrvLexer.l"
+#line 138 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA1_; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 132 "SrvLexer.l"
+#line 139 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA1_; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 133 "SrvLexer.l"
+#line 140 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA224_; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 134 "SrvLexer.l"
+#line 141 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA224_; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 135 "SrvLexer.l"
+#line 142 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA256_; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 136 "SrvLexer.l"
+#line 143 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA256_; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 137 "SrvLexer.l"
+#line 144 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA384_; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 138 "SrvLexer.l"
+#line 145 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA384_; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 139 "SrvLexer.l"
+#line 146 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA512_; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 140 "SrvLexer.l"
+#line 147 "SrvLexer.l"
 { return SrvParser::DIGEST_HMAC_SHA512_; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 141 "SrvLexer.l"
+#line 148 "SrvLexer.l"
 { return SrvParser::KEY_; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 142 "SrvLexer.l"
+#line 149 "SrvLexer.l"
 { return SrvParser::SECRET_; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 143 "SrvLexer.l"
+#line 150 "SrvLexer.l"
 { return SrvParser::ALGORITHM_; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 144 "SrvLexer.l"
+#line 151 "SrvLexer.l"
 { return SrvParser::CLIENT_CLASS_; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 145 "SrvLexer.l"
+#line 152 "SrvLexer.l"
 { return SrvParser::MATCH_IF_; }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 146 "SrvLexer.l"
+#line 153 "SrvLexer.l"
 { return SrvParser::EQ_; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 147 "SrvLexer.l"
+#line 154 "SrvLexer.l"
 { return SrvParser::AND_; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 148 "SrvLexer.l"
+#line 155 "SrvLexer.l"
 { return SrvParser::OR_; }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 149 "SrvLexer.l"
+#line 156 "SrvLexer.l"
 { return SrvParser::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 150 "SrvLexer.l"
+#line 157 "SrvLexer.l"
 { return SrvParser::CLIENT_VENDOR_SPEC_DATA_; }
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 151 "SrvLexer.l"
+#line 158 "SrvLexer.l"
 { return SrvParser::CLIENT_VENDOR_CLASS_EN_; }
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 152 "SrvLexer.l"
+#line 159 "SrvLexer.l"
 { return SrvParser::CLIENT_VENDOR_CLASS_DATA_; }
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 153 "SrvLexer.l"
+#line 160 "SrvLexer.l"
 { return SrvParser::ALLOW_; }
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 154 "SrvLexer.l"
+#line 161 "SrvLexer.l"
 { return SrvParser::DENY_; }
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 155 "SrvLexer.l"
+#line 162 "SrvLexer.l"
 { return SrvParser::SUBSTRING_; }
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 156 "SrvLexer.l"
+#line 163 "SrvLexer.l"
 { return SrvParser::CONTAIN_; }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 157 "SrvLexer.l"
+#line 164 "SrvLexer.l"
 { return SrvParser::STRING_KEYWORD_; }
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 158 "SrvLexer.l"
+#line 165 "SrvLexer.l"
 { return SrvParser::ADDRESS_LIST_; }
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 161 "SrvLexer.l"
+#line 168 "SrvLexer.l"
 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 162 "SrvLexer.l"
+#line 169 "SrvLexer.l"
 { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 163 "SrvLexer.l"
+#line 170 "SrvLexer.l"
 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 164 "SrvLexer.l"
+#line 171 "SrvLexer.l"
 { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 166 "SrvLexer.l"
+#line 173 "SrvLexer.l"
 ;
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 168 "SrvLexer.l"
+#line 175 "SrvLexer.l"
 ;
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 170 "SrvLexer.l"
+#line 177 "SrvLexer.l"
 {
   BEGIN(COMMENT);
   ComBeg=yylineno;
@@ -2924,17 +2916,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 175 "SrvLexer.l"
+#line 182 "SrvLexer.l"
 BEGIN(INITIAL);
 	YY_BREAK
 case 114:
 /* rule 114 can match eol */
 YY_RULE_SETUP
-#line 176 "SrvLexer.l"
+#line 183 "SrvLexer.l"
 ;
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 177 "SrvLexer.l"
+#line 184 "SrvLexer.l"
 {
     Log(Crit) << "Comment not closed. (/* in line " << ComBeg << LogEnd;
   { YYABORT; }
@@ -2944,7 +2936,7 @@ case YY_STATE_EOF(COMMENT):
 
 case 115:
 YY_RULE_SETUP
-#line 184 "SrvLexer.l"
+#line 191 "SrvLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) {
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -2956,7 +2948,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 193 "SrvLexer.l"
+#line 200 "SrvLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) {
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -2968,7 +2960,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 202 "SrvLexer.l"
+#line 209 "SrvLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) {
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -2980,7 +2972,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 211 "SrvLexer.l"
+#line 218 "SrvLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) {
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -2992,7 +2984,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 220 "SrvLexer.l"
+#line 227 "SrvLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) {
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -3004,7 +2996,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 229 "SrvLexer.l"
+#line 236 "SrvLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) {
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -3016,7 +3008,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 238 "SrvLexer.l"
+#line 245 "SrvLexer.l"
 {
     if(!inet_pton6(yytext,yylval.addrval)) {
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
@@ -3031,7 +3023,7 @@ YY_RULE_SETUP
 case 122:
 /* rule 122 can match eol */
 YY_RULE_SETUP
-#line 250 "SrvLexer.l"
+#line 257 "SrvLexer.l"
 {
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
@@ -3041,7 +3033,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 257 "SrvLexer.l"
+#line 264 "SrvLexer.l"
 {
     int len = strlen(yytext);
     if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
@@ -3065,7 +3057,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 278 "SrvLexer.l"
+#line 285 "SrvLexer.l"
 {
     // DUID
     int len;
@@ -3100,7 +3092,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 310 "SrvLexer.l"
+#line 317 "SrvLexer.l"
 {
    int len = (strlen(yytext)+1)/3;
    char * pos = 0;
@@ -3131,7 +3123,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 338 "SrvLexer.l"
+#line 345 "SrvLexer.l"
 {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
@@ -3144,7 +3136,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 348 "SrvLexer.l"
+#line 355 "SrvLexer.l"
 {
     // DECIMAL NUMBER
     if(!sscanf(yytext,"%u",&(yylval.ival))) {
@@ -3156,15 +3148,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 357 "SrvLexer.l"
+#line 364 "SrvLexer.l"
 { return yytext[0]; }
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 360 "SrvLexer.l"
+#line 367 "SrvLexer.l"
 ECHO;
 	YY_BREAK
-#line 3168 "SrvLexer.cpp"
+#line 3160 "SrvLexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ADDR):
 	yyterminate();
@@ -4074,7 +4066,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 360 "SrvLexer.l"
+#line 367 "SrvLexer.l"
 
 
 

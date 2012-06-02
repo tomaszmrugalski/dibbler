@@ -1,14 +1,12 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- * changes: Michal Kowalczuk <michal@kowalczuk.eu>
- *                                                                           
- * $Id: DHCPConst.cpp,v 1.19 2008-11-11 22:37:03 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
  *
- * released under GNU GPL v2 only licence                                
- *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ * changes: Michal Kowalczuk <michal@kowalczuk.eu>
+ *
+ * released under GNU GPL v2 only licence
+ *
  */
 #include "DHCPConst.h"
 #include "Logger.h"
@@ -38,9 +36,9 @@ int allowOptInMsg(int msg, int opt)
 {
     // standard options specified in RFC3315
     if (msg>13)
-	return 1; // allow everthing in new messages
+        return 1; // allow everthing in new messages
     if (opt <=20) {
-	    return OptInMsg[msg-1][opt-1];
+            return OptInMsg[msg-1][opt-1];
     }
 
     // additional options: allow them
@@ -76,38 +74,38 @@ int allowOptInOpt(int msgType, int parent, int subopt) {
 
     // additional options (not specified in RFC3315)
     if (subopt>20)
-	return 1;
+        return 1;
 
     if ((msgType==RELAY_FORW_MSG)||(msgType==RELAY_REPL_MSG)) {
-	    if ( (subopt==OPTION_INTERFACE_ID) || (subopt=OPTION_RELAY_MSG))
-	        return 1;
-	    return 0;
+            if ( (subopt==OPTION_INTERFACE_ID) || (subopt=OPTION_RELAY_MSG))
+                return 1;
+            return 0;
     }
 
     switch (parent) {
     case 0: //Option Field
-	if ((subopt!=OPTION_IAADDR)&&
-	    (subopt!=OPTION_RELAY_MSG)&&
-	    (subopt!=OPTION_INTERFACE_ID))
-	    return 1;
-	break;
+        if ((subopt!=OPTION_IAADDR)&&
+            (subopt!=OPTION_RELAY_MSG)&&
+            (subopt!=OPTION_INTERFACE_ID))
+            return 1;
+        break;
     case OPTION_IA_NA:
     case OPTION_IA_TA:
-	if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
-	    return 1;
-	break;
+        if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
+            return 1;
+        break;
     case OPTION_IAADDR:
-	if (subopt==OPTION_STATUS_CODE)
-	    return 1;
-	if (subopt==OPTION_ADDRPARAMS)
-	    return 1;
-	break;
+        if (subopt==OPTION_STATUS_CODE)
+            return 1;
+        if (subopt==OPTION_ADDRPARAMS)
+            return 1;
+        break;
     case OPTION_IA_PD:
-	if ( (subopt==OPTION_IAPREFIX) || (subopt==OPTION_STATUS_CODE))
-	    return 1;
+        if ( (subopt==OPTION_IAPREFIX) || (subopt==OPTION_STATUS_CODE))
+            return 1;
     case OPTION_LQ_QUERY:
       if ( (subopt == OPTION_IAADDR) || (subopt==OPTION_CLIENTID) )
-	return 1;
+        return 1;
     }
     return 0;
 }
@@ -148,19 +146,17 @@ char *getDigestName(enum DigestTypes type) {
     return DIGESTNAME[type];
 }
 
-void PrintHex(std::string message, char *buffer, unsigned len) {
-    unsigned j;
+void PrintHex(const std::string& message, char *buffer, unsigned len) {
     char *buf = new char[len*3+1];
 
     if (len) {
-        for (j = 0; j < len; j++) {
+        for (unsigned int j = 0; j < len; j++) {
             sprintf(buf + j*3, "%02x ", (unsigned char) *(buffer+j));
         }
 
         Log(Debug) << message << buf << LogEnd;
-    } else 
+    } else
         Log(Debug) << message << "N/A (zero length)" << LogEnd;
 
-    delete buf;
+    delete [] buf;
 }
-

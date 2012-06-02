@@ -27,7 +27,7 @@
 
 class TSrvTransMgr
 {
-    friend ostream & operator<<(ostream &strum, TSrvTransMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TSrvTransMgr &x);
   public:
     static void instanceCreate(const std::string config);
     static TSrvTransMgr &instance();
@@ -43,6 +43,10 @@ class TSrvTransMgr
     bool isDone();
     void shutdown();
 
+    SPtr<TSrvOptFQDN> addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
+                              SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
+    void removeFQDN(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
+
     void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);
@@ -54,10 +58,10 @@ class TSrvTransMgr
     int    getCtrlIface();
 
   private:
-    TSrvTransMgr(string xmlFile);
+    TSrvTransMgr(std::string xmlFile);
     ~TSrvTransMgr();
 
-    string XmlFile;
+    std::string XmlFile;
     List(TSrvMsg) MsgLst;
     bool IsDone;
 

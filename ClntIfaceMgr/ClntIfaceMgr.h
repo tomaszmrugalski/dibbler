@@ -32,21 +32,21 @@ class TClntIfaceIface;
 class TClntIfaceMgr : public TIfaceMgr
 {
 public:
-	typedef enum {
-		PREFIX_MODIFY_ADD,
-		PREFIX_MODIFY_UPDATE,
-		PREFIX_MODIFY_DEL
-	} PrefixModifyMode;
-
- private:
-    TClntIfaceMgr(string xmlFile); // this is singleton
+    typedef enum {
+        PREFIX_MODIFY_ADD,
+        PREFIX_MODIFY_UPDATE,
+        PREFIX_MODIFY_DEL
+    } PrefixModifyMode;
     
- public:
-    static void instanceCreate(const std::string xmlFile);
+private:
+    TClntIfaceMgr(const std::string& xmlFile); // this is singleton
+    
+public:
+    static void instanceCreate(const std::string& xmlFile);
     static TClntIfaceMgr& instance();
 
     ~TClntIfaceMgr();
-    friend ostream & operator <<(ostream & strum, TClntIfaceMgr &x);
+    friend std::ostream & operator <<(std::ostream & strum, TClntIfaceMgr &x);
     void dump();
     
     bool sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> addr);
@@ -59,8 +59,8 @@ public:
     bool notifyRemoteScripts(SPtr<TIPv6Addr> receivedAddr, SPtr<TIPv6Addr> serverAddr, int ifindex);
 #endif    
 
-    bool fqdnAdd(SPtr<TClntIfaceIface> iface, string domainname);
-    bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string domainname);
+    bool fqdnAdd(SPtr<TClntIfaceIface> iface, const std::string& domainname);
+    bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, const std::string& domainname);
 
     bool addPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
     bool updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
@@ -79,7 +79,7 @@ public:
     bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, 
 		      unsigned int valid, PrefixModifyMode mode);
 
-    string XmlFile;
+    std::string XmlFile;
 
     static TClntIfaceMgr * Instance;
 };

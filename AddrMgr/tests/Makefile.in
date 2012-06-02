@@ -50,9 +50,15 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_GTEST_TRUE@am__EXEEXT_1 = AddrMgr_tests$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
-am__AddrMgr_tests_SOURCES_DIST = run_tests.cpp AddrAddr_unittest.cc
+am__AddrMgr_tests_SOURCES_DIST = run_tests.cpp AddrAddr_unittest.cc \
+	AddrPrefix_unittest.cc AddrIA_unittest.cc \
+	AddrClient_unittest.cc AddrMgr_unittest.cc
 @HAVE_GTEST_TRUE@am_AddrMgr_tests_OBJECTS = run_tests.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	AddrAddr_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	AddrAddr_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrPrefix_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrIA_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrClient_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrMgr_unittest.$(OBJEXT)
 AddrMgr_tests_OBJECTS = $(am_AddrMgr_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@AddrMgr_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -233,11 +239,14 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/Misc \
 	$(GTEST_INCLUDES) -Wno-long-long
 @HAVE_GTEST_TRUE@AddrMgr_tests_SOURCES = run_tests.cpp \
-@HAVE_GTEST_TRUE@	AddrAddr_unittest.cc
+@HAVE_GTEST_TRUE@	AddrAddr_unittest.cc AddrPrefix_unittest.cc \
+@HAVE_GTEST_TRUE@	AddrIA_unittest.cc AddrClient_unittest.cc \
+@HAVE_GTEST_TRUE@	AddrMgr_unittest.cc
 @HAVE_GTEST_TRUE@AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@AddrMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/AddrMgr/libAddrMgr.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a
+@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
+@HAVE_GTEST_TRUE@	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 all: all-am
 
 .SUFFIXES:
@@ -292,6 +301,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrAddr_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrClient_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrIA_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrMgr_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrPrefix_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:

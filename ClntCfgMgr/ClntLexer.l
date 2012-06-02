@@ -6,9 +6,15 @@
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "ClntParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
+
+/* duplicate default definition from flex. This makes cppcheck
+   check for defined YY_FATAL_ERROR() go away. */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
 %}
 
 %x COMMENT
@@ -142,7 +148,7 @@ request               { return ClntParser::REQUEST_; }
 %{    //IPv6 address - various forms
 %}
 ({hex1to4}:){7}{hex1to4} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -151,7 +157,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -159,8 +165,8 @@ request               { return ClntParser::REQUEST_; }
     }
 }
 
-"::"(({hex1to4}:){1,7})?{hex1to4} { 
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+"::"(({hex1to4}:){1,7})?{hex1to4} {
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -170,7 +176,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -179,7 +185,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 "::" {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -188,7 +194,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -197,7 +203,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -252,10 +258,10 @@ request               { return ClntParser::REQUEST_; }
     for (int i=0 ; i<len; i++)
     {
         yylval.duidval.duid[i>>1]<<=4;
-        if (!isxdigit(ptr[i])) { 
+        if (!isxdigit(ptr[i])) {
              Log(Crit) << "DUID parsing failed (" << yytext << ")." << LogEnd;
              { YYABORT; }
-        } 
+        }
         if (isalpha(ptr[i])) {
             yylval.duidval.duid[i>>1]|=toupper(ptr[i])-'A'+10;
         } else {
@@ -282,34 +288,34 @@ request               { return ClntParser::REQUEST_; }
         x = *pos-'0';
       x *= 16;
 
-      if (isalpha(*(pos+1)))	
+      if (isalpha(*(pos+1)))
         x += (toupper(*(pos+1))-'A' + 10);
       else
         x += *(pos+1) - '0';
       yylval.duidval.duid[i] = x;
       i++;
    }
-   
+
    return ClntParser::DUID_;
 }
 
-{hexnumber} { 
+{hexnumber} {
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",(unsigned int*)&(yylval.ival))) {
+    if(!sscanf(yytext,"%10x",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
     return ClntParser::HEXNUMBER_;
 }
 
-{integer} { 
-    if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
+{integer} {
+    if(!sscanf(yytext,"%10u",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
     return ClntParser::INTNUMBER_;
 }
 
-.  {return yytext[0];} 
+.  {return yytext[0];}
 
 %%

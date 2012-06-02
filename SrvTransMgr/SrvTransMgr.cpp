@@ -32,8 +32,14 @@
 #include "SrvMsgLeaseQuery.h"
 #include "SrvMsgLeaseQueryReply.h"
 #include "SrvOptIA_NA.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "NodeClientSpecific.h"
+
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
+#include "DNSUpdate.h"
+#endif
+
+using namespace std;
 
 TSrvTransMgr * TSrvTransMgr::Instance = 0;
 
@@ -206,7 +212,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
                 while( (ptrOpt=answRep->getOption()) && (!found) ) {
                     if (ptrOpt->getOptType()==OPTION_IA_NA) {
                         SPtr<TSrvOptIA_NA> ptrIA=(Ptr*) ptrOpt;
-                        SPtr<TSrvOptStatusCode> ptrStat= (Ptr*)
+                        SPtr<TOptStatusCode> ptrStat= (Ptr*)
                             ptrIA->getOption(OPTION_STATUS_CODE);
                         if(ptrStat&&(ptrStat->getCode()==STATUSCODE_SUCCESS))
                             found=true;
@@ -412,9 +418,9 @@ void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrM
 
 /// @brief Removes expired leases and calls notify script
 ///
-/// @param addrLst
-/// @param tempAddrLst
-/// @param prefixLst
+/// @param addrLst list of expired address leases
+/// @param tempAddrLst list of expired temporary addresses leases
+/// @param prefixLst list of expired prefix delegation leases
 void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                                  std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
                                  std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst) {
@@ -472,6 +478,233 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
     SrvAddrMgr().dump();
 }
 
+/** 
+ * creates FQDN option and executes DNS Update procedure (if necessary)
+ * 
+ * @param requestFQDN  requested Fully Qualified Domain Name
+ * @param clntDuid     client DUID
+ * @param clntAddr     client address
+ * @param hint         hint used to get name (it may or may not be used)
+ * @param doRealUpdate - should the real update be performed (for example if response for
+ *                       SOLICIT is prepare, this should be set to false)
+ * 
+ * @return FQDN option
+ */
+SPtr<TSrvOptFQDN> TSrvTransMgr::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
+                                        SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate) {
+    SPtr<TSrvOptFQDN> optFQDN;
+    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(iface);
+    if (!ptrIface) {
+	Log(Crit) << "Msg received through not configured interface. "
+	    "Somebody call an exorcist!" << LogEnd;
+	this->IsDone = true;
+	return 0;
+    }
+    // FQDN is chosen, "" if no name for this host is found.
+    if (!ptrIface->supportFQDN()) {
+	Log(Error) << "FQDN is not defined on " << ptrIface->getFullName() << " interface." << LogEnd;
+	return 0;
+    }
+    
+    if (!ptrIface->getExtraOption(OPTION_DNS_SERVERS)) {
+	Log(Error) << "DNS server is not supported on " << ptrIface->getFullName() << " interface. DNS Update aborted." << LogEnd;
+	return 0;
+    }
+    
+    Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr=" << clntAddr->getPlain() << LogEnd;
+	
+    SPtr<TFQDN> fqdn = ptrIface->getFQDNName(clntDuid,clntAddr, hint);
+    if (!fqdn) {
+	Log(Debug) << "Unable to find FQDN for this client." << LogEnd;
+	return 0;
+    } 
+
+    optFQDN = new TSrvOptFQDN(fqdn->getName(), NULL);
+    optFQDN->setSFlag(false);
+    // Setting the O Flag correctly according to the difference between O flags
+    optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
+    string fqdnName = fqdn->getName();
+
+    if (requestFQDN->getNFlag()) {
+	      Log(Notice) << "FQDN: No DNS Update required." << LogEnd;
+	      return optFQDN;
+    }
+
+    if (!doRealUpdate) {
+	      Log(Debug) << "FQDN: Skipping update (probably a SOLICIT message)." << LogEnd;
+	      return optFQDN;
+    }
+
+    fqdn->setUsed(true);
+
+    int FQDNMode = ptrIface->getFQDNMode();
+    Log(Debug) << "FQDN: Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode=" << FQDNMode << LogEnd;
+
+    if ( FQDNMode==1 || FQDNMode==2 ) {
+	Log(Debug) << "FQDN: Server configuration allow DNS updates for " << clntDuid->getPlain() << LogEnd;
+	
+	if (FQDNMode == 1) 
+	    optFQDN->setSFlag(false);
+	else 
+	    if (FQDNMode == 2) 
+		optFQDN->setSFlag(true); // letting client update his AAAA
+	// Setting the O Flag correctly according to the difference between O flags
+	optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
+	
+	SPtr<TIPv6Addr> DNSAddr = SrvCfgMgr().getDDNSAddress(iface);
+	if (!DNSAddr) {
+	    Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
+	    return 0;
+	}
+      	
+	SPtr<TAddrClient> ptrAddrClient = SrvAddrMgr().getClient(clntDuid);	
+	if (!ptrAddrClient) { 
+	    Log(Warning) << "Unable to find client."; 
+	    return 0;
+	}
+	ptrAddrClient->firstIA();
+	SPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
+	if (!ptrAddrIA) { 
+	    Log(Warning) << "Client does not have any addresses assigned." << LogEnd; 
+	    return 0;
+	}
+	ptrAddrIA->firstAddr();
+	SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
+	SPtr<TIPv6Addr> IPv6Addr = addr->get();
+	
+	Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << *DNSAddr << ", IP=" 
+		    << *IPv6Addr << " and FQDN=" << fqdnName << LogEnd;
+      	
+	//Test for DNS update
+	char zoneroot[128];
+	doRevDnsZoneRoot(IPv6Addr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
+
+	// that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
+	// and that would include both poslib and Dibbler headers in one place. Universe would implode then.
+	TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+	DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+	if (proto == TCfgMgr::DNSUPDATE_UDP)
+	    proto2 = DNSUpdate::DNSUPDATE_UDP;
+	if (proto == TCfgMgr::DNSUPDATE_ANY)
+	    proto2 = DNSUpdate::DNSUPDATE_ANY;
+	unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+	
+	if (FQDNMode==1){
+	    /* add PTR only */
+	    DnsUpdateResult result = DNSUPDATE_SKIP;
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
+					   DNSUPDATE_PTR, proto2);
+	    result = act->run(timeout);
+	    act->showResult(result);
+	    delete act;
+	} // fqdnMode == 1
+	else if (FQDNMode==2){
+	    DnsUpdateResult result = DNSUPDATE_SKIP;
+	    DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), zoneroot, fqdnName, IPv6Addr->getPlain(), 
+					   DNSUPDATE_PTR, proto2);
+	    result = act->run(timeout);
+	    act->showResult(result);
+	    delete act;
+      	    
+	    DnsUpdateResult result2 = DNSUPDATE_SKIP;
+	    DNSUpdate *act2 = new DNSUpdate(DNSAddr->getPlain(), "", fqdnName, 
+                                            IPv6Addr->getPlain(),
+					    DNSUPDATE_AAAA, proto2);
+	    result2 = act2->run(timeout);
+	    act2->showResult(result2);
+	    delete act2;
+	} // fqdnMode == 2
+	
+	// regardless of the result, store the info
+	ptrAddrIA->setFQDN(fqdn);
+	ptrAddrIA->setFQDNDnsServer(DNSAddr);
+	
+#else
+      	Log(Error) << "This server is compiled without DNS Update support." << LogEnd;
+#endif
+    } else {
+	Log(Debug) << "Server configuration does NOT allow DNS updates for " << clntDuid->getPlain() << LogEnd;
+	optFQDN->setNFlag(true);
+    }
+    
+    return optFQDN;
+
+}
+
+void TSrvTransMgr::removeFQDN(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn) {
+#ifdef MOD_CLNT_DISABLE_DNSUPDATE
+    Log(Error) << "This version is compiled without DNS Update support." << LogEnd;
+    return;
+#else
+
+    string fqdnName = fqdn->getName();
+    int FQDNMode = ptrIface->getFQDNMode();
+    fqdn->setUsed(false);
+    int result;
+
+    SPtr<TIPv6Addr> dns = ptrIA->getFQDNDnsServer();
+    if (!dns) {
+	Log(Warning) << "Unable to find DNS Server for IA=" << ptrIA->getIAID() << LogEnd;
+	return;
+    }
+
+    ptrIA->firstAddr();
+    SPtr<TAddrAddr> addrAddr = ptrIA->getAddr();
+    SPtr<TIPv6Addr> clntAddr;
+    if (!addrAddr) {
+	Log(Error) << "Client does not have any addresses asigned to IA (IAID=" << ptrIA->getIAID() << ")." << LogEnd;
+	return;
+    }
+    clntAddr = addrAddr->get();
+
+    char zoneroot[128];
+    doRevDnsZoneRoot(clntAddr->getAddr(), zoneroot, ptrIface->getRevDNSZoneRootLength());
+
+
+    // that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
+    // and that would include both poslib and Dibbler headers in one place. Universe would implode then.
+    TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+    DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+    if (proto == TCfgMgr::DNSUPDATE_UDP)
+        proto2 = DNSUpdate::DNSUPDATE_UDP;
+    if (proto == TCfgMgr::DNSUPDATE_ANY)
+        proto2 = DNSUpdate::DNSUPDATE_ANY;
+    unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+
+    if (FQDNMode == DNSUPDATE_MODE_PTR){
+	/* PTR cleanup */
+	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
+		    << " and FQDN=" << fqdn->getName() << LogEnd;
+	DNSUpdate *act = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), 
+                                       DNSUPDATE_PTR_CLEANUP, proto2);
+	result = act->run(timeout);
+	act->showResult(result);
+	delete act;
+	
+    } // fqdn mode 1 (PTR only)
+    else if (FQDNMode == DNSUPDATE_MODE_BOTH){
+	/* AAAA Cleanup */
+	Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server " << * dns << ", IP = " 
+		    << *clntAddr << " and FQDN=" << fqdn->getName() << LogEnd;
+	
+	DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdnName, clntAddr->getPlain(), 
+                                       DNSUPDATE_AAAA_CLEANUP, proto2);
+	result = act->run(timeout);
+	act->showResult(result);
+	delete act;
+	
+	/* PTR cleanup */
+	Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server " << * dns << ", IP = " << *clntAddr 
+		    << " and FQDN=" << fqdn->getName() << LogEnd;
+	DNSUpdate *act2 = new DNSUpdate(dns->getPlain(), zoneroot, fqdnName, clntAddr->getPlain(), 
+                                        DNSUPDATE_PTR_CLEANUP, proto2);
+	result = act2->run(timeout);
+	act2->showResult(result);
+	delete act2;
+    } // fqdn mode 2 (AAAA and PTR)
+#endif
+}
 
 void TSrvTransMgr::shutdown()
 {
@@ -513,9 +746,11 @@ void TSrvTransMgr::instanceCreate( const std::string config )
 
 TSrvTransMgr & TSrvTransMgr::instance()
 {
-  if (!Instance)
-    Log(Crit) << "TransMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
-  return *Instance;
+    if (!Instance) {
+        Log(Crit) << "TransMgr not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
+    return *Instance;
 }
 
 /// TODO Remove this horrible workaround!

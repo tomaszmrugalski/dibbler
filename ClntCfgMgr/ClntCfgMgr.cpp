@@ -8,8 +8,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntCfgMgr.cpp,v 1.66 2008-09-22 17:08:52 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -20,18 +18,14 @@
 #include "ClntCfgMgr.h"
 #include "ClntCfgIface.h"
 #include "Logger.h"
-#include "FlexLexer.h"
-
-
-#include "ClntIfaceMgr.h"
-
-#include "ClntParsGlobalOpt.h"
-#include "TimeZone.h"
-
-#include "FlexLexer.h"
-#include "ClntParser.h"
 
 using namespace std;
+
+#include "FlexLexer.h"
+#include "ClntIfaceMgr.h"
+#include "ClntParsGlobalOpt.h"
+#include "TimeZone.h"
+#include "ClntParser.h"
 
 TClntCfgMgr * TClntCfgMgr::Instance = 0;
 
@@ -41,18 +35,20 @@ static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
 
 TClntCfgMgr & TClntCfgMgr::instance()
 {
-  if (!Instance)
-    Log(Crit) << "Application error. Tried to access CfgMgr without instanceCreate!" << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "Application error. Tried to access CfgMgr without instanceCreate!" << LogEnd;
+        instanceCreate(CLNTCONF_FILE);
+    }
   // throw an exception here or something
   return *Instance;
 }
 
-void TClntCfgMgr::instanceCreate(const std::string cfgFile) {
+void TClntCfgMgr::instanceCreate(const std::string& cfgFile) {
     Instance = new TClntCfgMgr(cfgFile);
 }
 
 
-TClntCfgMgr::TClntCfgMgr(const string cfgFile)
+TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
   :TCfgMgr()
 {
     ScriptName = DEFAULT_SCRIPT;
@@ -90,7 +86,7 @@ void TClntCfgMgr::dump() {
     xmlDump.close();
 }
 
-bool TClntCfgMgr::parseConfigFile(string cfgFile)
+bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
 {
     #ifndef MOD_CLNT_EMBEDDED_CFG
     // --- normal operation: read config. file ---
@@ -768,7 +764,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     return strum;
 }
 
-void TClntCfgMgr::setDownlinkPrefixIfaces(List(string)& ifaces) {
+void TClntCfgMgr::setDownlinkPrefixIfaces(List(std::string)& ifaces) {
     ifaces.first();
     SPtr<string> iface;
     Log(Debug) << "PD: Following interfaces marked as downlink:";

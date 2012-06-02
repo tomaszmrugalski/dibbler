@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgTA.cpp,v 1.5 2008-10-12 20:07:31 thomson Exp $
  */
 
 #include "SrvCfgTA.h"
@@ -15,6 +14,9 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 #include "SrvMsg.h"
+
+using namespace std;
+
 /*
  * static field initialization
  */

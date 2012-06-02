@@ -28,8 +28,8 @@ class TClntMsgAdvertise : public TClntMsg
     bool check();
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();
-    string getName();
-    string getInfo();
+    std::string getName() const;
+    std::string getInfo();
     ~TClntMsgAdvertise();
 };
 

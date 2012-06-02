@@ -35,13 +35,13 @@ class ClntParser;
 
 class TClntCfgMgr : public TCfgMgr
 {
-    friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TClntCfgMgr &x);
  private:
-    TClntCfgMgr(const std::string cfgFile);
+    TClntCfgMgr(const std::string& cfgFile);
 
  public:
     static TClntCfgMgr & instance();
-    static void instanceCreate(const std::string cfgFile);
+    static void instanceCreate(const std::string& cfgFile);
     ~TClntCfgMgr();
     
     // --- Iface related ---
@@ -55,7 +55,7 @@ class TClntCfgMgr : public TCfgMgr
     int countIfaces();
     void dump();
 
-    void setDownlinkPrefixIfaces(List(string)& ifaces);
+    void setDownlinkPrefixIfaces(List(std::string)& ifaces);
     const std::vector<std::string>& getDownlinkPrefixIfaces() { return DownlinkPrefixIfaces_; }
     
     void setReconfigure(bool enable);
@@ -72,7 +72,7 @@ class TClntCfgMgr : public TCfgMgr
     void setDigest(DigestTypes value);
 
     void setScript(std::string script) { ScriptName = script; }
-    string getScript() { return ScriptName; }
+    std::string getScript() { return ScriptName; }
 
     bool anonInfRequest();
     bool insistMode();
@@ -107,12 +107,12 @@ private:
     bool validateAddr(SPtr<TClntCfgIface> ptrIface, 
 		      SPtr<TClntCfgIA> ptrIA,
 		      SPtr<TClntCfgAddr> ptrAddr);
-    bool parseConfigFile(string cfgFile);
+    bool parseConfigFile(const std::string& cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
 
     List(TClntCfgIface) ClntCfgIfaceLst;
     List(TClntCfgIface) InactiveLst;
-    string ScriptName;
+    std::string ScriptName;
 
     bool AnonInfRequest;
     bool InsistMode;
@@ -138,6 +138,6 @@ private:
     static TClntCfgMgr * Instance;
 };
 
-typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);
+typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, std::string params);
 
 #endif

@@ -19,7 +19,7 @@ class TSrvMsgRenew : public TSrvMsg
     
     void doDuties();
     unsigned long getTimeout();
-    string getName();
+    std::string getName() const;
     bool check();
     ~TSrvMsgRenew();
 };

@@ -1,10 +1,22 @@
 
   Dibbler changelog
  ------------------- 
+0.8.3 [not-released-yet]
+  - Cli: Reasons for rejecting IA_NA/IA_PD are now logged (i.e. T1>T2)
+  - Cli: client no longer crashes when server's reply does not included expected IA_PD
+  - gcc4.6 compilation warnings removed
+  - added missing header in ClntIfaceIface.h (debian #672003)
+  - debian/ directory is moved to debian branch and no longer available on master
+  - Many cppcheck/doxygen warnings removed
+  - Srv: Refactoring continues another 11 classes removed.
+  - Srv: NIS, NIS+, SIP, DNS, Domain, NTP and Lifetime options are now handled through
+    unified option handling mechanism. Server code should be smaller now.
+  - Cli: support for resolvconf tool added (see --enable-resolvconf parameter)
+
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,
     ClntOpt*Domain. Client binary is now smaller by 36kb (exact size is architecture dependent)
-  - Srv: core refactoring, similar to client. Code is now a bit smaller. Removed classes:
+  - Srv: code refactoring, similar to client. Code is now a bit smaller. Removed classes:
     SrvOpt*Server, SrvOpt*Domain.
   - Cli/Srv: NIS, NIS+ domains are now encoded properly by client and server (bug #223, #227)
   - Example configs are now using 2001:db8:1:: prefix dedicated to testing and example purposes

@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-server.cpp,v 1.21 2008-10-10 20:39:12 thomson Exp $
- *                                                                           
  */
 
 #include <signal.h>
@@ -19,7 +17,9 @@
 #include "Logger.h"
 #include "daemon.h"
 
-TDHCPServer * ptr;
+using namespace std;
+
+TDHCPServer * ptr = 0;
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
@@ -95,13 +95,12 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
-    int len;
 
     logStart("(SERVER, Linux port)", "Server", SRVLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {
-	len = strlen(argv[1])+1;
+	int len = strlen(argv[1])+1;
 	if (len>255)
 	    len = 255;
 	strncpy(command,argv[1],len);

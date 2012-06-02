@@ -61,7 +61,7 @@ TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix,
 {
 }
 
-ostream& operator<<(ostream& out,TClntCfgPrefix& pref) {
+std::ostream& operator<<(std::ostream& out,TClntCfgPrefix& pref) {
     out << "<prefix length=\"" << (unsigned int)pref.PrefixLength << "\" preferred=\"" << pref.Pref 
 	<< "\" valid=\"" << pref.Valid << "\">";
     out << *pref.Prefix << "</prefix>" << std::endl;	

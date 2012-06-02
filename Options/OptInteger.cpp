@@ -19,14 +19,14 @@
 
 using namespace std;
 
-TOptInteger::TOptInteger(int type, unsigned int len, unsigned int value, TMsg* parent)
+TOptInteger::TOptInteger(uint16_t type, unsigned int integerLen, unsigned int value, TMsg* parent)
     :TOpt(type, parent) {
     this->Value = value;
     this->Valid = true;
-    this->Len   = len;
+    this->Len   = integerLen;
 }
 
-TOptInteger::TOptInteger(int type, unsigned int len, char *&buf, int &bufsize, TMsg* parent)
+TOptInteger::TOptInteger(uint16_t type, unsigned int len, const char *buf, size_t bufsize, TMsg* parent)
     :TOpt(type, parent)
 {
     if ((unsigned int)bufsize<len) {
@@ -55,8 +55,6 @@ TOptInteger::TOptInteger(int type, unsigned int len, char *&buf, int &bufsize, T
 	this->Valid = false;
 	return;
     }
-    buf += this->Len;
-    bufsize -= this->Len;
 }
 
 char * TOptInteger::storeSelf(char* buf)
@@ -89,7 +87,7 @@ char * TOptInteger::storeSelf(char* buf)
     }
     return buf+this->Len;    
 }
-int TOptInteger::getSize() {
+size_t TOptInteger::getSize() {
     return 4 /*option header length*/ + this->Len; 
 }
 

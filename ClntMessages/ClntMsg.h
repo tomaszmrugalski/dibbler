@@ -46,7 +46,7 @@ public:
 
     bool validateReplayDetection();
 
-    virtual string getName() = 0;
+    // virtual std::string getName() = 0;
     virtual void answer(SPtr<TClntMsg> reply);
 
  protected:

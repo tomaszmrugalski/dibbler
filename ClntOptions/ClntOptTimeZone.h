@@ -24,7 +24,7 @@
 class TClntOptTimeZone : public TOptString
 {
  public:
-    TClntOptTimeZone(string domain, TMsg* parent);
+    TClntOptTimeZone(const std::string& domain, TMsg* parent);
     TClntOptTimeZone(char *buf, int bufsize, TMsg* parent);
     bool doDuties();
     void setSrvDuid(SPtr<TDUID> duid);

@@ -10,7 +10,9 @@
 #include "ClntOptFQDN.h"
 #include "Logger.h"
 
-TClntOptFQDN::TClntOptFQDN(string domain, TMsg* parent)
+using namespace std;
+
+TClntOptFQDN::TClntOptFQDN(const std::string& domain, TMsg* parent)
     :TOptFQDN(domain, parent) {
     if (domain == "") {
 	// The domain is empty but client request FQDN, so we let the server make the update

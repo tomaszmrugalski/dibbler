@@ -34,7 +34,7 @@ TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent)
     this->Addr = addr;
 }
 
-int TOptAddr::getSize() {
+size_t TOptAddr::getSize() {
     // 20 - size of this option
     return 20 + getSubOptSize();
 }

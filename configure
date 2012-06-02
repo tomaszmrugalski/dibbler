@@ -627,6 +627,8 @@ ARCH
 GTEST_LDADD
 GTEST_LDFLAGS
 GTEST_INCLUDES
+RESOLVCONF_FALSE
+RESOLVCONF_TRUE
 LIBOBJS
 ALLOCA
 CXXCPP
@@ -765,6 +767,7 @@ enable_
 enable_debug
 enable_efence
 enable_bind_reuse
+enable_resolvconf
 enable_dns_update
 enable_auth
 with_gtest
@@ -1420,6 +1423,7 @@ Dibbler modular features:
   --enable-debug          Turn on debugging (default: no)
   --enable-efence         Enables linking with electric-fence (default: no)
   --enable-bind-reuse     Enables reusing the same port/address: SO_REUSEADDR (default: yes)
+  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)
   --enable-dns-update     Enables DNS Update mechanism (default: yes)
   --enable-auth           Enables authentication (default: yes)
   --enable-link-state     Enables link-state change detections (default: yes)
@@ -17071,6 +17075,40 @@ fi
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
+### support for resolvconf tool (mostly Debian, probably) ##############
+   # Check whether --enable-resolvconf was given.
+if test "${enable_resolvconf+set}" = set; then :
+  enableval=$enable_resolvconf;  case "${enableval}" in
+	       yes)
+	       MOD_RESOLVCONF=yes
+	       ;;
+	       no)
+	       MOD_RESOLVCONF=no
+	       ;;
+	       *)
+	       as_fn_error $? "bad value ${enablevald} for --enable-resolvconf" "$LINENO" 5
+	       ;;
+	  esac
+else
+  MOD_RESOLVCONF=no
+
+fi
+
+
+ if test $MOD_RESOLVCONF = yes; then
+  RESOLVCONF_TRUE=
+  RESOLVCONF_FALSE='#'
+else
+  RESOLVCONF_TRUE='#'
+  RESOLVCONF_FALSE=
+fi
+
+if test $MOD_RESOLVCONF = yes; then
+
+$as_echo "#define MOD_RESOLVCONF 1" >>confdefs.h
+
+fi
+
 ### DNS Update ####################################
 ### We may add separate parameter for client and server eventually ##########
    # Check whether --enable-dns-update was given.
@@ -17229,7 +17267,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg"
+ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17362,6 +17400,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${RESOLVCONF_TRUE}" && test -z "${RESOLVCONF_FALSE}"; then
+  as_fn_error $? "conditional \"RESOLVCONF\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_GTEST_TRUE}" && test -z "${HAVE_GTEST_FALSE}"; then
@@ -18379,6 +18421,7 @@ do
     "$PORT_SUBDIR/Makefile") CONFIG_FILES="$CONFIG_FILES $PORT_SUBDIR/Makefile" ;;
     "AddrMgr/tests/Makefile") CONFIG_FILES="$CONFIG_FILES AddrMgr/tests/Makefile" ;;
     "Options/tests/Makefile") CONFIG_FILES="$CONFIG_FILES Options/tests/Makefile" ;;
+    "SrvCfgMgr/tests/Makefile") CONFIG_FILES="$CONFIG_FILES SrvCfgMgr/tests/Makefile" ;;
     "Port-linux/Makefile") CONFIG_FILES="$CONFIG_FILES Port-linux/Makefile" ;;
     "Port-bsd/Makefile") CONFIG_FILES="$CONFIG_FILES Port-bsd/Makefile" ;;
     "Port-win32/Makefile") CONFIG_FILES="$CONFIG_FILES Port-win32/Makefile" ;;
@@ -20065,6 +20108,7 @@ echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
 echo "DNS Update (clnt/srv) disabled: $MOD_CLNT_DISABLE_DNSUPDATE/$MOD_SRV_DISABLE_DNSUPDATE"
 echo "Authentication disabled       : $MOD_DISABLE_AUTH"
 echo "Link-state change detection   : $MOD_CLNT_CONFIRM"
+echo "/sbin/resolvconf support      : $MOD_RESOLVCONF"
 
 echo
 echo "Experimental features:"

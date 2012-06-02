@@ -59,8 +59,8 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TAddrIA> addrIA, TMsg* parent)
 
     bool zeroTimes = false;
     if ( (parent->getType()==RELEASE_MSG) || (parent->getType()==DECLINE_MSG)) {
-	this->T1 = 0;
-	this->T2 = 0;
+	T1_ = 0;
+	T2_ = 0;
 	zeroTimes = true;
     }
 
@@ -463,14 +463,22 @@ bool TClntOptIA_NA::isValid()
     while (addr = this->getAddr()) {
 	if (addr->getAddr()->linkLocal()) {
 	    Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA (IAID=" 
-			 << this->IAID << ") is link local. The whole IA option is considered invalid."
+			 << IAID_ << ") is link local. The whole IA option is considered invalid."
 			 << LogEnd;
 	    return false;
 	}
     }
 
-    if (Valid)
-        return this->T1<=this->T2;
-    else
-        return false;
+    // RFC3315, section 22.4:
+    // If a client receives an IA_NA with T1 greater than T2, and both T1
+    // and T2 are greater than 0, the client discards the IA_NA option and
+    // processes the remainder of the message as though the server had not
+    // included the invalid IA_NA option.
+    if (T1_ > T2_) {
+	Log(Warning) << "Received malformed IA_NA: T1(" << T1_ << ") is greater than T2("
+		     << T2_ << "). Ignoring IA_NA." << LogEnd;
+	return false;
+    }
+
+    return Valid;
 }

@@ -15,13 +15,15 @@
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 
+using namespace std;
+
 volatile int serviceShutdown;
 
-TDHCPServer::TDHCPServer(string config)
+TDHCPServer::TDHCPServer(const std::string& config)
 {
     serviceShutdown = 0;
     srand(now());
-    this->IsDone = false;
+    IsDone = false;
 
     TSrvIfaceMgr::instanceCreate(SRVIFACEMGR_FILE);
     if ( SrvIfaceMgr().isDone() ) {

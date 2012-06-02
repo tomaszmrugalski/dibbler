@@ -6,51 +6,35 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeOperator.cpp,v 1.2 2008-10-13 22:41:18 thomson Exp $
- *
  */
 
 #include "NodeOperator.h"
 #include "SrvMsg.h"
 #include "Logger.h"
 
-NodeOperator::NodeOperator()
-    :Node(NODE_OPERATOR)
-{
-}
+using namespace std;
 
-NodeOperator::~NodeOperator() 
+NodeOperator::~NodeOperator()
 {
 }
 
 NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, SPtr<Node>& right)
-    :Node(NODE_OPERATOR)
+    :Node(NODE_OPERATOR), Type_(t), L_(left), R_(right)
 {
     if (left->Type == NODE_CONST && right->Type == NODE_CONST)
-	Log(Warning) << "Both tokens (" << left->exec(0) << " and " << right->exec(0) 
-		     << ") used in expression are constant." << LogEnd;
-
-    type = t;
-    l = left;
-    r = right;
+        Log(Warning) << "Both tokens (" << left->exec(0) << " and " << right->exec(0)
+                     << ") used in expression are constant." << LogEnd;
 }
 
-NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left,  int in,  int len)
-    :Node(NODE_OPERATOR)
+NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, int in, int len)
+    :Node(NODE_OPERATOR), Type_(t), L_(left), Index_(in), Length_(len)
 {
-    type = t;
-    l = left;
-    index  = in;
-    length = len;
 }
 
 
-NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left,  string s )
-    :Node(NODE_OPERATOR)
+NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, std::string s)
+    :Node(NODE_OPERATOR), Type_(t), L_(left), ContainString_(s)
 {
-    type = t;
-    l = left;
-    cotainString = s ;
 }
 
 string NodeOperator::exec()
@@ -60,41 +44,39 @@ string NodeOperator::exec()
 
 string NodeOperator::exec(SPtr<TSrvMsg> msg)
 {
-	switch (type)
-	{
-	case OPERATOR_EQUAL :
-		if (l->exec(msg) == r->exec(msg)) return "true";
-		return "false";
-		break;
-	case OPERATOR_AND :
-		if ( (l->exec(msg) == "true") && (r->exec(msg) == "true")) return "true";
-		return "false";
-		break;
-	case OPERATOR_OR :
-		if ( (l->exec(msg) == "true") || (r->exec(msg) == "true") ) return "true";
-		return "false";
-		break;
+    switch (Type_)
+    {
+    case OPERATOR_EQUAL :
+        if (L_->exec(msg) == R_->exec(msg))
+            return "true";
+        else
+            return "false";
+        break;
+    case OPERATOR_AND :
+        if ( (L_->exec(msg) == "true") && (R_->exec(msg) == "true"))
+            return "true";
+        else
+            return "false";
+        break;
 
-	case OPERATOR_SUBSTRING :
-		return (l->exec(msg)).substr(index,length);
-		break;
+    case OPERATOR_OR :
+        if ( (L_->exec(msg) == "true") || (R_->exec(msg) == "true") )
+            return "true";
+        else
+            return "false";
+        break;
 
-	case OPERATOR_CONTAIN :
-		// cout <<" OPERATOR_CONTAIN    OPERATOR_CONTAIN    OPERATOR_CONTAIN : "<< l->exec(msg) <<endl;
-   		// cout <<" Left : "<< l->exec(msg) <<endl;
-		// cout <<" Right : "<< r->exec(msg) << endl;
+    case OPERATOR_SUBSTRING :
+        return (L_->exec(msg)).substr(Index_, Length_);
+        break;
 
-		if ((l->exec(msg)).find((r->exec(msg)))!= string::npos )
-		{
-
-			return "true";
-		}
-
-		else return "false";
-			break;
-	default :
-		return "";
-
-	}
+    case OPERATOR_CONTAIN :
+        if ((L_->exec(msg)).find((R_->exec(msg)))!= string::npos )
+            return "true";
+        else
+            return "false";
+        break;
+    default :
+        return "";
+    }
 }
-
