@@ -38,7 +38,7 @@ AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 AddrMgr_tests_LDADD = $(GTEST_LDADD)
 AddrMgr_tests_LDADD += $(top_builddir)/AddrMgr/libAddrMgr.a
 AddrMgr_tests_LDADD += $(top_builddir)/Misc/libMisc.a
-AddrMgr_tests_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
+AddrMgr_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 endif
 
 noinst_PROGRAMS = $(TESTS)

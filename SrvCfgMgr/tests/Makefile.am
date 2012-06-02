@@ -42,7 +42,7 @@ SrvCfgMgr_tests_LDADD += $(top_builddir)/SrvOptions/libSrvOptions.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/Options/libOptions.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/Misc/libMisc.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/poslib/libposlib.a
-SrvCfgMgr_tests_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
+SrvCfgMgr_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 endif
 
 noinst_PROGRAMS = $(TESTS)

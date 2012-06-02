@@ -63,7 +63,8 @@ AddrMgr_tests_OBJECTS = $(am_AddrMgr_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@AddrMgr_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/AddrMgr/libAddrMgr.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a
+@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
@@ -246,7 +247,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/Misc \
 @HAVE_GTEST_TRUE@AddrMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/AddrMgr/libAddrMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
-@HAVE_GTEST_TRUE@	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
+@HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 all: all-am
 
 .SUFFIXES:
