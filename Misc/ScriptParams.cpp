@@ -18,18 +18,17 @@ using namespace std;
 
 TNotifyScriptParams::TNotifyScriptParams() 
     :envCnt(0), ipCnt(1), pdCnt(1) {
-    for (int i=0; i<512; i++) {
-        env[i]=0;
+    for (int i = 0; i<512; i++) {
+        env[i] = 0;
     }
 }
 
 /// adds parameter to parameters list
 ///
+/// @param name name of the parameter to be added
 /// @param value value to be copied
 ///
 /// @return next unused offset
-///
-
 void TNotifyScriptParams::addParam(const std::string& name, const std::string& value)
 {
     if (envCnt>=MAX_PARAMS) {
@@ -60,18 +59,18 @@ void TNotifyScriptParams::addAddr(SPtr<TIPv6Addr> addr, unsigned int prefered, u
                                   std::string txt /*= std::string("")*/ ) {
     stringstream name, value;
     name << "ADDR" << ipCnt;
-    addParam(name.str().c_str(), addr->getPlain());
+    addParam(name.str(), addr->getPlain());
     name.str("");
 
     name << "ADDR" << ipCnt << "PREF";
     value << prefered;
-    addParam(name.str().c_str(), value.str().c_str());
+    addParam(name.str(), value.str());
     name.str("");
     value.str("");
 
     name << "ADDR" << ipCnt << "VALID";
     value << valid;
-    addParam(name.str().c_str(), value.str().c_str());
+    addParam(name.str(), value.str());
     ipCnt++;
 }
 
@@ -79,24 +78,24 @@ void TNotifyScriptParams::addPrefix(SPtr<TIPv6Addr> prefix, unsigned short lengt
                                     unsigned int valid, std::string txt /*= std::string("") */ ) {
     stringstream name, value;
     name << "PREFIX" << pdCnt;
-    addParam(name.str().c_str(), prefix->getPlain());
+    addParam(name.str(), prefix->getPlain());
     name.str("");
 
     name << "PREFIX" << pdCnt << "LEN";
     value << length;
-    addParam(name.str().c_str(), value.str().c_str());
+    addParam(name.str(), value.str());
     name.str("");
     value.str("");
 
     name << "PREFIX" << pdCnt << "PREF";
     value << prefered;
-    addParam(name.str().c_str(), value.str().c_str());
+    addParam(name.str(), value.str());
     name.str("");
     value.str("");
 
     name << "PREFIX" << pdCnt << "VALID";
     value << valid;
-    addParam(name.str().c_str(), value.str().c_str());
+    addParam(name.str(), value.str());
     name.str("");
     value.str("");
 

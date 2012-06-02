@@ -31,7 +31,7 @@ class TSrvIfaceIface: public TIfaceIface {
 		   int maclen, char* llAddr, int llAddrCnt, char * globalAddr, 
 		   int globalAddrCnt, int hwType);
 
-    friend ostream & operator <<(ostream & strum, TSrvIfaceIface &x);
+    friend std::ostream & operator <<(std::ostream & strum, TSrvIfaceIface &x);
 
     void setUnderlaying(SPtr<TSrvIfaceIface> under);
     bool appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID);

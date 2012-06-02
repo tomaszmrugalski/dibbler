@@ -5,6 +5,8 @@
 #include "OptAddr.h"
 #include "OptGeneric.h"
 
+using namespace std;
+
 namespace {
 
 const char expected[] = { 0, 12, // OPTION_UNICAST

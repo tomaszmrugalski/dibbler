@@ -234,7 +234,7 @@ sha256_stream (FILE *stream, void *resblock)
   return 0;
 }
 
-/* FIXME: Avoid code duplication */
+/* @todo: Avoid code duplication */
 int
 sha224_stream (FILE *stream, void *resblock)
 {

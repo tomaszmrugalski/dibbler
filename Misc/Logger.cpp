@@ -18,15 +18,12 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 
-#ifdef LINUX
+#if defined(LINUX) || defined(BSD)
 #include <sys/time.h>
 #include <syslog.h>
 #endif
 
-#ifdef BSD
-#include <sys/time.h>
-#include <syslog.h>
-#endif
+using namespace std;
 
 namespace logger {
 

@@ -257,18 +257,19 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
         if (!pd) {
             Log(Notice) << "PD option requested, but not returned in this message. Ignored." << LogEnd;
             pdOk = false;
-        }
+        } else {
 
-        if (!pd->getOption(OPTION_IAPREFIX)) {
-            Log(Notice) << "Received PD without any prefixes." << LogEnd;
-            pdOk = false;
-        }
+	    if (!pd->getOption(OPTION_IAPREFIX)) {
+		Log(Notice) << "Received PD without any prefixes." << LogEnd;
+		pdOk = false;
+	    }
 
-        SPtr<TClntOptStatusCode> st = (Ptr*)pd->getOption(OPTION_STATUS_CODE);
-        if (st && st->getCode()!= STATUSCODE_SUCCESS) {
-            Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
-	            << "(" << st->getText() << "). Ignored." << LogEnd;
-            pdOk = false;
+	    SPtr<TClntOptStatusCode> st = (Ptr*)pd->getOption(OPTION_STATUS_CODE);
+	    if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+		Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
+			    << "(" << st->getText() << "). Ignored." << LogEnd;
+		pdOk = false;
+	    }
         }
         if (pdOk)
             somethingAssigned = true;
@@ -304,7 +305,7 @@ bool TClntMsgSolicit::check()
     return false;
 }
 
-string TClntMsgSolicit::getName() {
+std::string TClntMsgSolicit::getName() const {
     return "SOLICIT";
 }
 

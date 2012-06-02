@@ -18,7 +18,7 @@
 #include <sstream>
 #include "SrvOptIA_NA.h"
 #include "SrvOptIAAddress.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "OptVendorData.h"
 #include "SrvCfgOptions.h"
 #include "Logger.h"
@@ -38,8 +38,7 @@ using namespace std;
 /// @param T2 T2 timer value to be used.
 /// @param parent Pointer to parent message.
 TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
-    :TOptIA_NA(IAID,T1,T2, parent) {
-
+    :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
 }
 
 /// @brief Creates an IA_NA with option status code.
@@ -50,9 +49,10 @@ TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
 /// @param Code Status Code (to be set in status code option)
 /// @param Text text to be used in status code option as description
 /// @param parent Pointer to parent message.
-TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, int Code, string Text, TMsg* parent)
-    :TOptIA_NA(IAID,T1,T2, parent) {
-    SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
+TSrvOptIA_NA::TSrvOptIA_NA(long iaid, long t1, long t2, int code,
+                           const std::string& text, TMsg* parent)
+    :TOptIA_NA(iaid, t1, t2, parent), Iface(parent->getIface()) {
+    SubOptions.append(new TOptStatusCode(code, text, parent));
 }
 
 /// @brief Create IA_NA option based on receive buffer. 
@@ -61,48 +61,47 @@ TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, int Code, string Text, 
 /// @param bufsize length of the option (value or already parsed option-len)
 /// @param parent Pointer to parent message.
 TSrvOptIA_NA::TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent)
-    :TOptIA_NA(buf,bufsize, parent) {
-
-    /// @todo: implement unpack()
+    :TOptIA_NA(buf,bufsize, parent), Iface(parent->getIface()) {
     int pos=0;
-    while (pos<bufsize)
+    /// @todo: implement unpack()
+    while (pos < bufsize)
     {
-        int code=buf[pos]*256+buf[pos+1];
-        pos+=2;
-        int length=buf[pos]*256+buf[pos+1];
-        pos+=2;
-        if ((code>0)&&(code<=24))
+        int code=buf[pos]*256 + buf[pos+1];
+        pos += 2;
+        int length=buf[pos]*256 + buf[pos+1];
+        pos += 2;
+        if ((code > 0) && (code <= 24))
         {
             if(allowOptInOpt(parent->getType(),OPTION_IA_NA,code)) {
                 SPtr<TOpt> opt;
-		opt = SPtr<TOpt>(); /* NULL */
+                opt = SPtr<TOpt>(); /* NULL */
                 switch (code)
                 {
                 case OPTION_IAADDR:
                     opt = (Ptr*)SPtr<TSrvOptIAAddress>
-			(new TSrvOptIAAddress(buf+pos,length,this->Parent));
+                        (new TSrvOptIAAddress(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    opt = (Ptr*)SPtr<TSrvOptStatusCode>
-			(new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt = (Ptr*)SPtr<TOptStatusCode>
+                        (new TOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
-		    Log(Warning) <<"Option " << code<< "not supported "
-				 <<" in  message (type=" << parent->getType()
-				 <<") in this version of server." << LogEnd;
+                    Log(Warning) <<"Option " << code<< "not supported "
+                                 <<" in  message (type=" << parent->getType()
+                                 <<") in this version of server." << LogEnd;
                     break;
                 }
                 if((opt)&&(opt->isValid()))
                     SubOptions.append(opt);
             }
             else {
-		Log(Warning) << "Illegal option received (type=" << code
-			     << ") in an IA_NA option." << LogEnd;
-	    }
+                Log(Warning) << "Illegal option received (type=" << code
+                             << ") in an IA_NA option." << LogEnd;
+            }
         }
         else {
-	    Log(Warning) << "Unknown option received (type=" << code
-			 << ") in an IA_NA option." << LogEnd;
+            Log(Warning) << "Unknown option received (type=" << code
+                         << ") in an IA_NA option." << LogEnd;
         };
         pos+=length;
     }
@@ -144,7 +143,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
                   << leaseMax << LogEnd;
         stringstream tmp;
         tmp << "Sorry. You already have " << leaseAssigned << " lease(es) and you can't have more.";
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,tmp.str(), parent));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOADDRSAVAIL, tmp.str(), parent));
         return;
     }
 
@@ -163,8 +162,8 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
         return;
     }
 
-    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-                                            "No more addresses for you. Sorry.", Parent));
+    SubOptions.append(new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+                                         "No more addresses for you. Sorry.", Parent));
 }
 
 
@@ -260,8 +259,8 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
         // This is not the pool you are looking for.
         if (!pool->addrInPool(reservedAddr))
             continue;
-        T1 = pool->getT1(req->getT1());
-        T2 = pool->getT2(req->getT2());
+        T1_ = pool->getT1(req->getT1());
+        T2_ = pool->getT2(req->getT2());
         
         SPtr<TSrvOptIAAddress> hint = (Ptr*) req->getOption(OPTION_IAADDR);
         if (hint) {
@@ -276,7 +275,7 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
         SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
         SubOptions.append(optAddr);
         
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
         
         return true;
     }
@@ -286,7 +285,7 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
     SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
     SubOptions.append(optAddr);
     
-    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
+    SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
     
     return true;
 }
@@ -297,15 +296,14 @@ void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
     SPtr<TOptIAAddress> optAddr;
     this->firstOption();
     while ( opt = this->getOption() ) {
-	if (opt->getOptType() != OPTION_IAADDR)
-	    continue;
-	optAddr = (Ptr*) opt;
-	addr = optAddr->getAddr();
-	SrvAddrMgr().delClntAddr(this->ClntDuid, this->IAID, addr, quiet);
-	SrvCfgMgr().delClntAddr(this->Iface, addr);
+        if (opt->getOptType() != OPTION_IAADDR)
+            continue;
+        optAddr = (Ptr*) opt;
+        addr = optAddr->getAddr();
+        SrvAddrMgr().delClntAddr(this->ClntDuid, IAID_, addr, quiet);
+        SrvCfgMgr().delClntAddr(this->Iface, addr);
     }
 }
-
 
 bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t valid, bool quiet) {
     // Assign one address
@@ -322,23 +320,23 @@ bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t vali
 
     /// @todo: remove get addr-params
     if (ptrClass->getAddrParams()) {
-	Log(Debug) << "Experimental: addr-params subotion added." << LogEnd;
-	optAddr->addOption((Ptr*)ptrClass->getAddrParams());
+        Log(Debug) << "Experimental: addr-params subotion added." << LogEnd;
+        optAddr->addOption((Ptr*)ptrClass->getAddrParams());
     }
 
     SubOptions.append((Ptr*)optAddr);
 
-    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS, "Assigned an address.", Parent));
+    SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS, "Assigned an address.", Parent));
 
     Log(Info) << "Client " << ClntDuid->getPlain() << " got " << *addr
-	      << " (IAID=" << IAID << ", pref=" << pref << ",valid=" << valid << ")." << LogEnd;
+	      << " (IAID=" << IAID_ << ", pref=" << pref << ",valid=" << valid << ")." << LogEnd;
 
     // configure this IA
-    T1= ptrClass->getT1(T1);
-    T2= ptrClass->getT2(T2);
+    T1_ = ptrClass->getT1(T1_);
+    T2_ = ptrClass->getT2(T2_);
 
     // register this address as used by this client
-    SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID, T1, T2, addr, pref, valid, quiet);
+    SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, addr, pref, valid, quiet);
     SrvCfgMgr().addClntAddr(this->Iface, addr);
 
     return true;
@@ -351,28 +349,28 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
 {
     SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(Iface);
     if (!ptrIface) {
-	return 0;
+        return 0;
     }
 
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, Parent, false/* false = verbose */);
 
     if (ex)
-	return ex->getAddr();
+        return ex->getAddr();
 
     return 0;
 }
 
 // constructor used only in RENEW, REBIND, CONFIRM,DECLINE and RELEASE
 TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
-		 SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
-		 int iface, unsigned long &addrCount, int msgType , TMsg* parent)
+                 SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
+                 int iface, unsigned long &addrCount, int msgType , TMsg* parent)
     :TOptIA_NA(queryOpt->getIAID(),0x7fffffff,0x7fffffff, parent)
 {
     ClntDuid  = clntDuid;
     ClntAddr  = clntAddr;
     Iface     = iface;
 
-    this->IAID = queryOpt->getIAID();
+    IAID_ = queryOpt->getIAID();
 
     switch (msgType) {
     case SOLICIT_MSG:
@@ -397,10 +395,10 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
         this->decline(queryOpt, addrCount);
         break;
     default: {
-	Log(Warning) << "Unknown message type (" << msgType
-		     << "). Cannot generate OPTION_IA_NA."<< LogEnd;
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL,
-						"Unknown message type.",this->Parent));
+        Log(Warning) << "Unknown message type (" << msgType
+                     << "). Cannot generate OPTION_IA_NA."<< LogEnd;
+        SubOptions.append(new TOptStatusCode(STATUSCODE_UNSPECFAIL,
+                                                "Unknown message type.",this->Parent));
         break;
     }
     }
@@ -421,7 +419,7 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
     ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
       if (complainIfMissing) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
                                                 this->Parent));
         Log(Info) << "Unable to RENEW binding for IA(iaid=" << queryOpt->getIAID() << ", client="
                   << ClntDuid->getPlain() << ": No such client." << LogEnd;
@@ -431,10 +429,10 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
 
     // find that IA
     SPtr <TAddrIA> ptrIA;
-    ptrIA = ptrClient->getIA(this->IAID);
+    ptrIA = ptrClient->getIA(IAID_);
     if (!ptrIA) {
       if (complainIfMissing) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
                                                 this->Parent ));
         Log(Info) << "Unable to RENEW binding for IA(iaid=" << queryOpt->getIAID() << ", client="
                   << ClntDuid->getPlain() << ": No such IA." << LogEnd;
@@ -444,8 +442,8 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
 
     // everything seems ok, update data in addrdb
     ptrIA->setTimestamp();
-    this->T1 = ptrIA->getT1();
-    this->T2 = ptrIA->getT2();
+    T1_ = ptrIA->getT1();
+    T2_ = ptrIA->getT2();
 
     // send addr info to client
     SPtr<TAddrAddr> ptrAddr;
@@ -454,13 +452,13 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
         SPtr<TOptIAAddress> optAddr;
         ptrAddr->setTimestamp();
         optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),ptrAddr->getValid(),
-				       this->Parent);
+                                       this->Parent);
         SubOptions.append( (Ptr*)optAddr );
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
+    SPtr<TOptStatusCode> ptrStatus;
+    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
     SubOptions.append( (Ptr*)ptrStatus );
 
     return true;
@@ -473,17 +471,17 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
     SPtr <TAddrClient> ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
         // hmmm, that's not our client
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
-						"Who are you? Do I know you?",this->Parent ));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,
+                                                "Who are you? Do I know you?",this->Parent ));
         return;
     }
 
     // find that IA
     SPtr <TAddrIA> ptrIA;
-    ptrIA = ptrClient->getIA(this->IAID);
+    ptrIA = ptrClient->getIA(IAID_);
     if (!ptrIA) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,
-						"I see this IAID first time.",this->Parent ));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,
+                                                "I see this IAID first time.",this->Parent ));
         return;
     }
 
@@ -491,8 +489,8 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
 
     // everything seems ok, update data in addrdb
     ptrIA->setTimestamp();
-    this->T1 = ptrIA->getT1();
-    this->T2 = ptrIA->getT2();
+    T1_ = ptrIA->getT1();
+    T2_ = ptrIA->getT2();
 
     // send addr info to client
     SPtr<TAddrAddr> ptrAddr;
@@ -500,14 +498,14 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
     while ( ptrAddr = ptrIA->getAddr() ) {
         SPtr<TOptIAAddress> optAddr;
         optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),
-				       ptrAddr->getValid(),this->Parent);
+                                       ptrAddr->getValid(),this->Parent);
         SubOptions.append( (Ptr*)optAddr );
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
-				      this->Parent);
+    SPtr<TOptStatusCode> ptrStatus;
+    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
+                                      this->Parent);
     SubOptions.append( (Ptr*)ptrStatus );
 }
 
@@ -524,21 +522,21 @@ void TSrvOptIA_NA::confirm(SPtr<TSrvOptIA_NA> queryOpt,
 
     ia->firstOption();
     while ( subOpt = ia->getOption() ) {
-	if (subOpt->getOptType() != OPTION_IAADDR)
-	    continue;
+        if (subOpt->getOptType() != OPTION_IAADDR)
+            continue;
 
         SPtr<TSrvOptIAAddress> optAddr = (Ptr*)subOpt;
 
-	/// @todo: proper check if the addresses are valid or not should be performed
+        /// @todo: proper check if the addresses are valid or not should be performed
         SPtr<TSrvCfgAddrClass> ptrClass;
         ptrClass = SrvCfgMgr().getClassByAddr(this->Iface, optAddr->getAddr());
-	if (!ptrClass)
-	{
-	    NotOnLink = true;
-	    break;
-	}
+        if (!ptrClass)
+        {
+            NotOnLink = true;
+            break;
+        }
 
-	// set IA Address suboptions and IA
+        // set IA Address suboptions and IA
         optAddr->setPref( ptrClass->getPref(DHCPV6_INFINITY) );
         optAddr->setValid( ptrClass->getValid(DHCPV6_INFINITY) );
 
@@ -553,8 +551,8 @@ void TSrvOptIA_NA::confirm(SPtr<TSrvOptIA_NA> queryOpt,
 
 
     if (NotOnLink)
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOTONLINK,
-						"Those addresses are not valid on this link.",this->Parent ));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOTONLINK,
+                                             "Those addresses are not valid on this link.",this->Parent ));
 
 }
 
@@ -584,8 +582,8 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
     ptrIface = SrvCfgMgr().getIfaceByID(this->Iface);
     if (!ptrIface) {
         Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
-	           << this->Iface << LogEnd;
-        return 0;
+                   << Iface << LogEnd;
+        return 0; // NULL
     }
 
     // check if this address is ok
@@ -600,8 +598,8 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
 
     // is it multicast address (ff...)?
     if ((*(hint->getAddr()))==0xff) {
-	Log(Debug) << "Client requested multicast (" << *hint
-		   << ") address. Hint ignored." << LogEnd;
+        Log(Debug) << "Client requested multicast (" << *hint
+                   << ") address. Hint ignored." << LogEnd;
         return 0;
     }
 

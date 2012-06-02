@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-options-linux.c,v 1.18 2008-11-13 21:05:42 thomson Exp $
- *
  */
 
 #define _BSD_SOURCE
@@ -22,7 +20,9 @@
 #include <sys/socket.h>
 #include <linux/rtnetlink.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include "Portable.h"
+#include "dibbler-config.h"
 
 #define CR 0x0a
 #define LF 0x0d
@@ -31,10 +31,60 @@
 
 extern char * Message;
 
+
+#ifdef MOD_RESOLVCONF
+/** @brief check whether the resolconf executable exists
+ *
+ * Tries to spawn resolvconf process and returns a pipe to it.
+ * Parameters are passed to resolvconf as command line 
+ * arguments (e.g. -a|-d, "IFNAME")
+ *
+ * the pipe needs to be closed by the caller
+ *
+ * @param arg1 first command line argument passed to resolvconf
+ * @param arg2 second command line argument passed to resolvconf
+ *
+ * @return file handler (pipe to resolvconf process) or NULL
+ */
+FILE *resolvconf_open(const char *arg1, const char *arg2)
+{
+    pid_t child;
+    int pipefd[2];
+
+    if (access(RESOLVCONF, X_OK) != 0)
+        return NULL;
+    if (pipe(pipefd) != 0)
+        return NULL;
+    switch(child = fork()) {
+      case 0: /* child */
+          close(pipefd[1]);
+	  close(0);
+	  dup(pipefd[0]);
+	  close(pipefd[0]);
+	  /* double fork so init reaps the child */
+	  if (!fork()) { /* child */
+              execl(RESOLVCONF, RESOLVCONF, arg1, arg2, (char *)NULL);
+	  } /* All other cases are meaningless here */
+	  exit(EXIT_FAILURE);
+	  break;
+    case EXIT_FAILURE: /* error */
+          return NULL;
+	  break;
+    }
+    /* parent */
+    close(pipefd[0]);
+    waitpid(child, NULL, 0);
+    return fdopen(pipefd[1], "w");
+}
+#endif
+
 /* in iproute.c, borrowed from iproute2 */
 extern int iproute_modify(int cmd, unsigned flags, int argc, char **argv);
 
-/* Remove value of keyword from opened file in and the result is printed into
+/**
+ * @brief Removes an entry from a file.
+ * 
+ * Remove value of keyword from opened file in and the result is printed into
  * opened file out. If removed_empty and keyword remains without argument, it
  * will be removed too. Comments (starting with comment char) are respected.
  * All values following keyword are removed on all lines (global remove).
@@ -112,23 +162,35 @@ int cfg_value_del(FILE *in, FILE *out, const char *keyword, const char *value,
 }
 
 
-/* Removes value of keyword from file.
+/**
+ * @brief removes value of keyword from file.
+ *
  * It tries to do its best not to corrupt the file.
- * Returns LOWLEVEL ERROR codes */
+ * Returns LOWLEVEL ERROR codes
+ *
+ * @param file
+ * @param keyword
+ * @param value
+ *
+ * @return status code (one of LOWLEVEL_* defines)
+ */
 int cfg_file_del(const char *file, const char *keyword, const char *value) {
     FILE *fold, *ftmp;
     int tmpfd;
-    int error=LOWLEVEL_NO_ERROR;
+    int error = LOWLEVEL_NO_ERROR;
     struct stat st;
     char template[]="/etc/dibbler.XXXXXX";
 
     /* Create temporary FILE */
-    if (-1 == (tmpfd=mkstemp(template)))
-	return(LOWLEVEL_ERROR_FILE);
+    if ((tmpfd = mkstemp(template)) == -1)
+	return (LOWLEVEL_ERROR_FILE);
 
-    if (NULL == (ftmp=fdopen(tmpfd, "w"))) {
-	unlink(template);
+    if (!(ftmp = fdopen(tmpfd, "w"))) {
+        /* close the file first, then... */
 	close(tmpfd);
+
+        /* then delete it */
+	unlink(template);
 	return(LOWLEVEL_ERROR_FILE);
     }
 
@@ -143,8 +205,13 @@ int cfg_file_del(const char *file, const char *keyword, const char *value) {
     error = cfg_value_del(fold, ftmp, keyword, value, '#', 1);
 
     /* close the files */
-    if (EOF==fclose(fold)) error=LOWLEVEL_ERROR_FILE;
-    if (EOF==fclose(ftmp)) error=LOWLEVEL_ERROR_FILE;
+    if (fclose(fold) == EOF) {
+        error=LOWLEVEL_ERROR_FILE;
+    }
+
+    if (fclose(ftmp) == EOF) {
+        error=LOWLEVEL_ERROR_FILE;
+    }
 
     /* move temp file into place of the old one */
     if (error==LOWLEVEL_NO_ERROR) {
@@ -164,25 +231,43 @@ int cfg_file_del(const char *file, const char *keyword, const char *value) {
           -2 - unable to open resolv.conf file
  */
 int dns_add(const char * ifname, int ifaceid, const char * addrPlain) {
-    FILE * f;
+    FILE * f = NULL;
     unsigned char c;
-    if ( !(f=fopen(RESOLVCONF_FILE,"a+"))) {
-	return LOWLEVEL_ERROR_FILE;
-    }
 
+#ifdef MOD_RESOLVCONF
+    /* try to use resolvconf */
+    f=resolvconf_open("-a", ifname);
+#endif
+
+    /* if resolvconf is not available, fallback to normal file append */
+    if (!f && !(f=fopen(RESOLVCONF_FILE, "a+")) ) {
+            return LOWLEVEL_ERROR_FILE;
+    }
+    
     fseek(f, -1, SEEK_END);
-    c = fgetc(f);
-    fseek(f,0, SEEK_END);
-    if ( (c!=CR) && (c!=LF) ) {
-	fprintf(f,"\n");
-    }
+    c = fgetc(f); /* read the last character */
 
+    fseek(f,0, SEEK_END);
+    /* if the file does not end with new-line, add it */
+    if ( (c != CR) && (c != LF) ) {
+        fprintf(f,"\n");
+    }
     fprintf(f,"nameserver %s\n",addrPlain);
     fclose(f);
     return LOWLEVEL_NO_ERROR;
 }
 
 int dns_del(const char * ifname, int ifaceid, const char *addrPlain) {
+    
+#ifdef MOD_RESOLVCONF
+    FILE *f = NULL;
+    /* try to use resolvconf to remove config */
+    if ((f=resolvconf_open("-d", ifname))) {
+        fclose(f);
+        return LOWLEVEL_NO_ERROR;
+    }
+#endif
+    
     return cfg_file_del(RESOLVCONF_FILE, "nameserver", addrPlain);
 }
 
@@ -193,15 +278,28 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
     unsigned char c;
     struct stat st;
 
+#ifdef MOD_RESOLVCONF
+    /* try to use resolvconf it is available */
+    if ( (f=resolvconf_open("-a", ifname))) {
+        fprintf(f, "search %s\n", domain);
+        fclose(f);
+        return LOWLEVEL_NO_ERROR;
+    }
+#endif
+    
+    /* otherwise do the edit on your own */
+
     memset(&st,0,sizeof(st));
     stat(RESOLVCONF_FILE, &st);
 
-    unlink(RESOLVCONF_FILE".old");
-    rename(RESOLVCONF_FILE,RESOLVCONF_FILE".old");
-    if ( !(f = fopen(RESOLVCONF_FILE".old","r")) )
+    unlink(RESOLVCONF_FILE ".old");
+    rename(RESOLVCONF_FILE, RESOLVCONF_FILE ".old");
+    if ( !(f = fopen(RESOLVCONF_FILE ".old", "r")) )
 	return LOWLEVEL_ERROR_FILE;
-    if ( !(f2= fopen(RESOLVCONF_FILE,"w+")))
+    if ( !(f2 = fopen(RESOLVCONF_FILE, "w+")) ) {
+        fclose(f);
 	return LOWLEVEL_ERROR_FILE;
+    }
     while (fgets(buf,511,f)) {
 	if ( (!found) && (strstr(buf, "search")) ) {
 	    if (strlen(buf))
@@ -231,6 +329,17 @@ int domain_add(const char* ifname, int ifaceid, const char* domain) {
 }
 
 int domain_del(const char * ifname, int ifaceid, const char *domain) {
+
+#ifdef MOD_RESOLVCONF
+    FILE * f;
+    /* try to use resolvconf if it is available */
+    if ((f = resolvconf_open("-d", ifname))) {
+        fclose(f);
+        return LOWLEVEL_NO_ERROR;
+    }
+#endif
+
+    /* otherwise fallback to normal file manipulation */
     return cfg_file_del(RESOLVCONF_FILE, "search", domain);
 }
 
@@ -342,28 +451,7 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
     return LOWLEVEL_NO_ERROR;
 }
 
-/** 
- * returns if forwarding is enabled on this node (i.e. is it a router or not)
- * 
- * 
- * @return 
- */
-int prefix_forwarding_enabled()
-{
-    char returnCode;
-    int router = 0; /* is packet forwarding enabled on this machine? */
-    
-    FILE *f = fopen("/proc/sys/net/ipv6/conf/all/forwarding", "r");
-    if (f) {
-	returnCode = fgetc(f); /* read exactly one byte */
-	if (returnCode=='1')
-	    router = 1;
-    }
-    fclose(f);
-    return router;
-}
-
-/** 
+/**
  * adds prefix - if this node has IPv6 forwarding disabled, it will configure that prefix on the
  * interface, which prefix has been received on. If the forwarding is enabled, it will be assigned
  * to all other up, running and multicast capable interfaces.
@@ -423,8 +511,10 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     argv[2] = (char*)ifname;
     result = iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_EXCL, 3, argv);
 
-    /* FIXME: Parse result */
-    return LOWLEVEL_NO_ERROR;
+    if (result == 0)
+        return LOWLEVEL_NO_ERROR;
+    else
+        return LOWLEVEL_ERROR_UNSPEC;
 }
 
 int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
@@ -477,7 +567,9 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     argv[2] = (char*)ifname;
     
     result = iproute_modify(RTM_DELROUTE, 0, 3, argv);
-    /* FIXME: Parse result */
 
-    return LOWLEVEL_NO_ERROR;
+    if (result == 0)
+        return LOWLEVEL_NO_ERROR;
+    else
+        return LOWLEVEL_ERROR_UNSPEC;
 }

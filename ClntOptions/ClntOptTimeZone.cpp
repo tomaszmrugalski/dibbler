@@ -11,7 +11,7 @@
 #include "ClntMsg.h"
 #include "Logger.h"
 
-TClntOptTimeZone::TClntOptTimeZone(string domain, TMsg* parent)
+TClntOptTimeZone::TClntOptTimeZone(const std::string& domain, TMsg* parent)
     :TOptString(OPTION_NEW_TZDB_TIMEZONE, domain, parent) {
 
 }

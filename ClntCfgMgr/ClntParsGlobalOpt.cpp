@@ -6,14 +6,14 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntParsGlobalOpt.cpp,v 1.20 2008-08-30 21:41:11 thomson Exp $
- *
  */
 
 #include "ClntParsGlobalOpt.h"
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+
+using namespace std;
 
 TClntParsGlobalOpt::TClntParsGlobalOpt()
     :TClntParsIfaceOpt() {
@@ -34,20 +34,20 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
 }
 
-void TClntParsGlobalOpt::setWorkDir(string dir) {
-    this->WorkDir=dir;
+void TClntParsGlobalOpt::setWorkDir(const std::string& dir) {
+    WorkDir = dir;
 }
 
 string TClntParsGlobalOpt::getWorkDir() {
-    return this->WorkDir;
+    return WorkDir;
 }
 
 void TClntParsGlobalOpt::setPrefixLength(int len) {
-    this->PrefixLength = len;
+    PrefixLength = len;
 }
 
 int TClntParsGlobalOpt::getPrefixLength() {
-    return this->PrefixLength;
+    return PrefixLength;
 }
 
 void TClntParsGlobalOpt::setDigest(DigestTypes digest) {

@@ -29,7 +29,7 @@ bool TSrvMsgRebind::check() {
     return TSrvMsg::check(true /* ClientID required */, false /* ServerID not allowed */);
 }
 
-string TSrvMsgRebind::getName() {
+std::string TSrvMsgRebind::getName() const {
     return "REBIND";
 }
 

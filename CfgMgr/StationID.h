@@ -17,20 +17,18 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
-
 class TStationID
 {
-	friend std::ostream& operator<<(std::ostream& out,TStationID&  station);
+    friend std::ostream& operator<<(std::ostream& out, TStationID& station);
 public:
 
-	TStationID(SPtr<TIPv6Addr> addr);
+    TStationID(SPtr<TIPv6Addr> addr);
     TStationID(SPtr<TDUID> duid);
     bool operator==(SPtr<TIPv6Addr> addr);
     bool operator==(SPtr<TDUID> duid);
 
-	//TStationID(const TStationID& info);
-	//~TStationID();
+    //TStationID(const TStationID& info);
+    //~TStationID();
 private:
     bool isIDAddress;
     SPtr<TIPv6Addr> Addr;

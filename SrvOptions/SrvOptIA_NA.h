@@ -28,10 +28,8 @@ class TSrvOptIA_NA : public TOptIA_NA
 		 int iface, unsigned long &addrCount, int msgType , TMsg* parent);
     TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent);    
     TSrvOptIA_NA(long IAID, long T1, long T2, TMsg* parent);    
-    TSrvOptIA_NA(long IAID, long T1, long T2, int Code, string Msg, TMsg* parent);
+    TSrvOptIA_NA(long IAID, long T1, long T2, int Code, const std::string& Msg, TMsg* parent);
     TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, TMsg* parent);
-
-    // TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,  int iface, int msgType, TMsg* parent);
 
     void releaseAllAddrs(bool quiet);
 

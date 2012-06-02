@@ -18,7 +18,7 @@ class TSrvMsgDecline : public TSrvMsg
     TSrvMsgDecline(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
     
     bool  check();
-    string getName();
+    std::string getName() const;
     void  doDuties();
     unsigned long  getTimeout();
     ~TSrvMsgDecline();

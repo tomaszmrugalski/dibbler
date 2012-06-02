@@ -20,7 +20,7 @@
 #include <sstream>
 #include "SrvOptIA_PD.h"
 #include "SrvOptIAPrefix.h"
-#include "SrvOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
@@ -28,20 +28,22 @@
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 
+using namespace std;
+
 TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, int Code, string Text, TMsg* parent)
     :TOptIA_PD(iaid, t1, t2, parent)
 {
-    SubOptions.append(new TSrvOptStatusCode(Code, Text, parent));
+    SubOptions.append(new TOptStatusCode(Code, Text, parent));
 }
 
 /*
  * Create IA_PD option based on receive buffer
  */
-TSrvOptIA_PD::TSrvOptIA_PD( char * buf, int bufsize, TMsg* parent)
-    :TOptIA_PD(buf, bufsize, parent)
-{
+TSrvOptIA_PD::TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent)
+    :TOptIA_PD(buf, bufsize, parent) {
     int pos=0;
 
+    /// @todo: implement unpack
     while(pos<bufsize)
     {
         int code=buf[pos]*256+buf[pos+1];
@@ -62,8 +64,8 @@ TSrvOptIA_PD::TSrvOptIA_PD( char * buf, int bufsize, TMsg* parent)
                         (new TSrvOptIAPrefix(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    opt = (Ptr*)SPtr<TSrvOptStatusCode>
-                        (new TSrvOptStatusCode(buf+pos,length,this->Parent));
+                    opt = (Ptr*)SPtr<TOptStatusCode>
+                        (new TOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
                     Log(Warning) <<"Option " << code<< "not supported "
@@ -85,7 +87,6 @@ TSrvOptIA_PD::TSrvOptIA_PD( char * buf, int bufsize, TMsg* parent)
         };
         pos+=length;
     }
-
 }
 
 void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
@@ -98,7 +99,7 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
             continue;
         optPrefix = (Ptr*) opt;
         prefix = optPrefix->getPrefix();
-        SrvAddrMgr().delPrefix(ClntDuid, IAID, prefix, quiet);
+        SrvAddrMgr().delPrefix(ClntDuid, IAID_, prefix, quiet);
         SrvCfgMgr().decrPrefixCount(this->Iface, prefix);
     }
 }
@@ -110,7 +111,7 @@ bool TSrvOptIA_PD::existingLease() {
     SPtr<TAddrClient> client = SrvAddrMgr().getClient(ClntDuid);
     if (!client)
         return false;
-    SPtr<TAddrIA> pd = client->getPD(IAID);
+    SPtr<TAddrIA> pd = client->getPD(IAID_);
     if (!pd)
         return false;
     if (!pd->countPrefix())
@@ -121,17 +122,17 @@ bool TSrvOptIA_PD::existingLease() {
     while (prefix = pd->getPrefix()) {
         Log(Debug) << "Assinging existing lease: prefix=" << prefix->get()->getPlain() << "/" << prefix->getLength()
                    << ", pref=" << prefix->getPref() << ", valid=" << prefix->getValid() << LogEnd;
-        SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(prefix->get(), prefix->getLength(), 
+        SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(prefix->get(), prefix->getLength(),
                                                    prefix->getPref(), prefix->getValid(), this->Parent);
         SubOptions.append((Ptr*)optPrefix);
     }
 
-    T1 = pd->getT1();
-    T2 = pd->getT2();
+    T1_ = pd->getT1();
+    T2_ = pd->getT2();
 
     stringstream status;
     status << "Here's your existing lease: " << countPrefixes() << " prefix(es).";
-    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS, status.str(),  this->Parent) );
+    SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS, status.str(),  this->Parent) );
     return true;
 }
 
@@ -164,25 +165,29 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
         buf << prefix->getPlain() << "/" << this->PDLength << " ";
         optPrefix = new TSrvOptIAPrefix(prefix, (char)this->PDLength, this->Prefered, this->Valid, this->Parent);
         SubOptions.append((Ptr*)optPrefix);
-        
-        // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
-        // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
-        SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, this->IAID, this->T1, this->T2,
-                               prefix, this->Prefered, this->Valid, this->PDLength, false);
-        
-        // but CfgMgr has to increase usage only once. Don't ask my why :)
-        SrvCfgMgr().incrPrefixCount(Iface, prefix);
+       
+        /// @todo: master had if (!fake) here, assign branch didn't. Find out which one was right
+        // if (!fake)
+        {
+            // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
+            // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
+            SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, IAID_, T1_, T2_,
+                                   prefix, this->Prefered, this->Valid, this->PDLength, false);
+            
+            // but CfgMgr has to increase usage only once. Don't ask my why :)
+            SrvCfgMgr().incrPrefixCount(Iface, prefix);
+        }
     }
     Log(Info) << "PD:" << (fake?"(would be)":"") << " assigned prefix(es):" << buf.str() << LogEnd;
 
     if (prefixLst.count()) {
         stringstream tmp; 
         tmp << "Assigned " << prefixLst.count() << " prefix(es).";
-        SubOptions.append( new TSrvOptStatusCode(STATUSCODE_SUCCESS, tmp.str(), Parent) );
+        SubOptions.append( new TOptStatusCode(STATUSCODE_SUCCESS, tmp.str(), Parent) );
         return true;
     } 
 
-    SubOptions.append( new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+    SubOptions.append( new TOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
                                              "Unable to provide any prefixes. Sorry.", this->Parent) );
     return false;
 }
@@ -210,8 +215,8 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
 
     // is the prefix delegation supported?
     if ( !ptrIface->supportPrefixDelegation() ) {
-        SPtr<TSrvOptStatusCode> ptrStatus;
-        ptrStatus = new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
+        SPtr<TOptStatusCode> ptrStatus;
+        ptrStatus = new TOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
                                           "Server support for prefix delegation is not enabled. Sorry buddy.",
                                           Parent);
         this->SubOptions.append((Ptr*)ptrStatus);
@@ -249,7 +254,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
     default: {
         Log(Warning) << "Unknown message type (" << msgType
                      << "). Cannot generate OPTION_PD."<< LogEnd;
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL,
+        SubOptions.append(new TOptStatusCode(STATUSCODE_UNSPECFAIL,
                                                 "Unknown message type.",this->Parent));
         break;
     }
@@ -300,7 +305,7 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> qu
                   << leaseMax << LogEnd;
         stringstream tmp;
         tmp << "Sorry. You already have " << leaseAssigned << " lease(es) and you can't have more.";
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL,tmp.str(), Parent));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOPREFIXAVAIL,tmp.str(), Parent));
         return;
     }
 
@@ -320,24 +325,24 @@ void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) 
     SPtr <TAddrClient> ptrClient;
     ptrClient = SrvAddrMgr().getClient(this->ClntDuid);
     if (!ptrClient) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"Who are you? Do I know you?",
                                                 this->Parent));
         return;
     }
 
     // find that IA
     SPtr <TAddrIA> ptrIA;
-    ptrIA = ptrClient->getPD(this->IAID);
+    ptrIA = ptrClient->getPD(IAID_);
     if (!ptrIA) {
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
+        SubOptions.append(new TOptStatusCode(STATUSCODE_NOBINDING,"I see this IAID first time.",
                                                 this->Parent ));
         return;
     }
 
     // everything seems ok, update data in addrdb
     ptrIA->setTimestamp();
-    this->T1 = ptrIA->getT1();
-    this->T2 = ptrIA->getT2();
+    T1_ = ptrIA->getT1();
+    T2_ = ptrIA->getT2();
 
     // send addr info to client
     SPtr<TAddrPrefix> prefix;
@@ -351,8 +356,8 @@ void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) 
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TSrvOptStatusCode> ptrStatus;
-    ptrStatus = new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Prefix(es) renewed.", this->Parent);
+    SPtr<TOptStatusCode> ptrStatus;
+    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Prefix(es) renewed.", this->Parent);
     SubOptions.append( (Ptr*)ptrStatus );
 }
 
@@ -369,7 +374,7 @@ void TSrvOptIA_PD::confirm(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface
 }
 
 void TSrvOptIA_PD::decline(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
-    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_NOPREFIXAVAIL, "You tried to decline a prefix. Are you crazy?", Parent));
+    SubOptions.append(new TOptStatusCode(STATUSCODE_NOPREFIXAVAIL, "You tried to decline a prefix. Are you crazy?", Parent));
 }
 
 bool TSrvOptIA_PD::doDuties() {
@@ -420,8 +425,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
             continue;
 
         // we found matching pool! Yay!
-        T1 = pool->getT1(req->getT1());
-        T2 = pool->getT2(req->getT2());
+        T1_ = pool->getT1(req->getT1());
+        T2_ = pool->getT2(req->getT2());
 
         SPtr<TSrvOptIAPrefix> hint = (Ptr*) req->getOption(OPTION_IAPREFIX);
         if (hint) {
@@ -437,9 +442,9 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(reservedPrefix, ex->getPrefixLen(), pref, valid, Parent);
         SubOptions.append(optPrefix);
 
-        SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed in-pool prefix.", Parent));
+        SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed in-pool prefix.", Parent));
 
-        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, this->IAID, T1, T2, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
 
         // but CfgMgr has to increase usage only once. Don't ask my why :)
         SrvCfgMgr().incrPrefixCount(Iface, reservedPrefix);
@@ -453,9 +458,9 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(reservedPrefix, ex->getPrefixLen(), pref, valid, Parent);
     SubOptions.append(optPrefix);
     
-    SubOptions.append(new TSrvOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed out-of-pool address.", Parent));
+    SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed out-of-pool address.", Parent));
 
-    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, this->IAID, T1, T2, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
     
     return true;
 }
@@ -551,8 +556,8 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
                         this->PDLength = ptrPD->getPD_Length();
                         this->Prefered = ptrPD->getPrefered(this->Prefered);
                         this->Valid    = ptrPD->getValid(this->Valid);
-                        this->T1       = ptrPD->getT1(this->T1);
-                        this->T2       = ptrPD->getT2(this->T2);
+                        T1_       = ptrPD->getT1(T1_);
+                        T2_       = ptrPD->getT2(T2_);
                         lst.append(hint);
                         return lst;
                   }
@@ -567,8 +572,8 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
                         this->PDLength = ptrPD->getPD_Length();
                         this->Prefered = ptrPD->getPrefered(this->Prefered);
                         this->Valid    = ptrPD->getValid(this->Valid);
-                        this->T1       = ptrPD->getT1(this->T1);
-                        this->T2       = ptrPD->getT2(this->T2);
+                        T1_       = ptrPD->getT1(T1_);
+                        T2_       = ptrPD->getT2(T2_);
                         return lst;
                   } // if hint is used
            } // if the PD support hint, based on Client Class
@@ -607,8 +612,8 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
             this->PDLength = ptrPD->getPD_Length();
             this->Prefered = ptrPD->getPrefered(this->Prefered);
             this->Valid    = ptrPD->getValid(this->Valid);
-            this->T1       = ptrPD->getT1(this->T1);
-            this->T2       = ptrPD->getT2(this->T2);
+            T1_       = ptrPD->getT1(T1_);
+            T2_       = ptrPD->getT2(T2_);
             return lst;
         }
     };

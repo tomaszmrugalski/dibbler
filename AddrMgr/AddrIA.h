@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.h,v 1.11 2009-03-24 23:17:16 thomson Exp $
- *
  */
 
 class TAddrIA;
@@ -24,8 +22,6 @@ class TAddrIA;
 #include "DUID.h"
 #include "FQDN.h"
 
-using namespace std;
-
 class TAddrIA
 {
   public:
@@ -36,7 +32,7 @@ class TAddrIA
 	TYPE_PD
     } TIAType;
 
-    friend ostream & operator<<(ostream & strum,TAddrIA &x);
+    friend std::ostream & operator<<(std::ostream & strum,TAddrIA &x);
     TAddrIA(int iface, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
 	    unsigned long T1, unsigned long T2,unsigned long ID);
     ~TAddrIA();

@@ -19,6 +19,8 @@
 #endif
 #include "ClntOptPreference.h"
 
+using namespace std;
+
 /* 
  * creates buffer based on buffer
  */
@@ -47,7 +49,7 @@ void TClntMsgAdvertise::doDuties() {
     // this should never happen
 }
 
-string TClntMsgAdvertise::getName() {
+string TClntMsgAdvertise::getName() const {
     return "ADVERTISE";
 }
 

@@ -27,7 +27,8 @@ class TSrvOptIA_PD : public TOptIA_PD
   public:
     TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, TMsg* parent);
     TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent);    
-    TSrvOptIA_PD(uint32_t IAID, uint32_t T1, uint32_t T2, int Code, string Msg, TMsg* parent);
+    TSrvOptIA_PD(uint32_t IAID, uint32_t T1, uint32_t T2, TMsg* parent);    
+    TSrvOptIA_PD(uint32_t IAID, uint32_t T1, uint32_t T2, int Code, std::string Msg, TMsg* parent);
 
     void releaseAllPrefixes(bool quiet);
 

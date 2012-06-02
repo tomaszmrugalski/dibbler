@@ -14,33 +14,31 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
 class TTimeZone
 {
 public:
-    TTimeZone(string timeZone);    
+    TTimeZone(const std::string timeZone);
     bool isValid();
     int getLength();
-    string get();
+    std::string get();
 private:
-    string ValidateZoneName(const char* &start);
-    string ValidateTime(const char* &start); //hh[:mm[:ss]]
-    string ValidateOffset(const char* &start); //[+|-]hh[:mm[:ss]]
-    string ValidateDayOfTheYear(const char* &start); //Jn,n,Mm.n.d
-    string ValidateJulianDay(const char* &start); //n
-    string ValidateZeroJulianDay(const char* &start); //n
-    string ValidateDayOfTheWeek(const char* &start); //m.n.d
-    string readNumber(const char* &start,int &number);
-    string Std;
-    string StdOffset;
-    string Dst;
-    string DstOffset;
-    string Start;
-    string StartTime;
-    string End;
-    string EndTime;
+    std::string ValidateZoneName(const char* &start);
+    std::string ValidateTime(const char* &start); //hh[:mm[:ss]]
+    std::string ValidateOffset(const char* &start); //[+|-]hh[:mm[:ss]]
+    std::string ValidateDayOfTheYear(const char* &start); //Jn,n,Mm.n.d
+    std::string ValidateJulianDay(const char* &start); //n
+    std::string ValidateZeroJulianDay(const char* &start); //n
+    std::string ValidateDayOfTheWeek(const char* &start); //m.n.d
+    std::string readNumber(const char* &start,int &number);
+    std::string Std;
+    std::string StdOffset;
+    std::string Dst;
+    std::string DstOffset;
+    std::string Start;
+    std::string StartTime;
+    std::string End;
+    std::string EndTime;
     bool   Valid;
-    string TZone;
+    std::string TZone;
 };
 #endif

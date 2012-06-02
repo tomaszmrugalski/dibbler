@@ -5,8 +5,6 @@
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
  *
- * $Id: Logger.h,v 1.19 2008-11-13 22:29:55 thomson Exp $
- *
  * Released under GNU GPL v2 only licence
  *
  */
@@ -25,37 +23,34 @@
 namespace logger {
 
     enum Elogmode {
-	LOGMODE_FULL,
-	LOGMODE_SHORT,
-	LOGMODE_PRECISE,
-	LOGMODE_SYSLOG,  /* unix only */
-	LOGMODE_EVENTLOG /* windows only */
+        LOGMODE_FULL,
+        LOGMODE_SHORT,
+        LOGMODE_PRECISE,
+        LOGMODE_SYSLOG,  /* unix only */
+        LOGMODE_EVENTLOG /* windows only */
     };
 
-    using namespace std;
-    ostream& logCont();
-    ostream& logEmerg();
-    ostream& logAlert();
-    ostream& logCrit();
-    ostream& logError();
-    ostream& logWarning();
-    ostream& logNotice();
-    ostream& logInfo();
-    ostream& logDebug();
+    std::ostream& logCont();
+    std::ostream& logEmerg();
+    std::ostream& logAlert();
+    std::ostream& logCrit();
+    std::ostream& logError();
+    std::ostream& logWarning();
+    std::ostream& logNotice();
+    std::ostream& logInfo();
+    std::ostream& logDebug();
+    std::ostream & endl (std::ostream & strum);
 
     void Initialize(const char * file);
     void Terminate();
-    void setLogName(string x);
+    void setLogName(const std::string x);
     void setLogLevel(int x);
-    void setLogMode(string x);
+    void setLogMode(const std::string x);
     void EchoOff();
     void EchoOn();
     void setColors(bool colors);
-    string getLogName();
+    std::string getLogName();
     int getLogLevel();
-    
-    ostream & endl (ostream & strum);
-
 }
 
 std::string StateToString(EState state);
@@ -63,6 +58,6 @@ std::string StatusCodeToString(int status);
 std::string MsgTypeToString(int msgType);
 
 // for debugging purposes
-void PrintHex(std::string message, char *buf, unsigned len);
+void PrintHex(const std::string& message, char *buf, unsigned len);
 
 #endif

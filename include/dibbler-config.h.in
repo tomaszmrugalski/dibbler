@@ -227,6 +227,9 @@
    */
 #undef LT_OBJDIR
 
+/* Support for /sbin/resolvconf enabled? */
+#undef MOD_RESOLVCONF
+
 /* Name of package */
 #undef PACKAGE
 

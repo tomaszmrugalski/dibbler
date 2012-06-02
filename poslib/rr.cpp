@@ -229,7 +229,7 @@ stl_string rr_tostring(u_int16 RRTYPE, const unsigned char *_RDATA, int RDLENGTH
 stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int RDLENGTH, domainname& zone) {
     char buff[128];
     const unsigned char *ptr;
-    string ret;
+    std::string ret;
     domainname dom;
     int x, y;
     message_buff msgbuff = message_buff((unsigned char*)RDATA, RDLENGTH);

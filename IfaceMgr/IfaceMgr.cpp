@@ -26,11 +26,13 @@
 #include "OptIAPrefix.h"
 #include "ScriptParams.h"
 
+using namespace std;
+
 /// constructor
 ///
 /// @param xmlFile xml file, where interface info will be stored
 /// @param getIfaces  specifies if interfaces should be detected
-TIfaceMgr::TIfaceMgr(string xmlFile, bool getIfaces)
+TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
 {
     this->XmlFile = xmlFile;
     this->IsDone  = false;
@@ -98,7 +100,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIface() {
  * gets interface by it's name (or NULL if no such inteface exists)
  * @param name - interface name
  */
-SPtr<TIfaceIface> TIfaceMgr::getIfaceByName(string name) {
+SPtr<TIfaceIface> TIfaceMgr::getIfaceByName(const std::string& name) {
     SPtr<TIfaceIface> ptr;
     IfaceLst.first();
     while ( ptr = IfaceLst.get() ) {

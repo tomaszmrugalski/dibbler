@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: Container.h,v 1.6 2006-03-03 20:21:46 thomson Exp $
+ * Released under GNU GPL v2 licence
  *
  */
 
@@ -12,8 +12,6 @@
 #define CONTAINER_H
 
 #include <list>
-
-using namespace std;
 
 #define List(x) TContainer< SPtr< x > >
 
@@ -25,7 +23,7 @@ public:
 
 	bool	append(const TYP &foo);
 	bool	prepend(const TYP& foo);    
-	const int count();
+	int count() const;
 	void	first();
 	void	delFirst();
 	void    del();
@@ -37,8 +35,8 @@ public:
 	void	delLast();
 
 private:
-	list<TYP> lista;
-	typename list<TYP>::iterator it;
+        std::list<TYP> lista;
+	typename std::list<TYP>::iterator it;
 };
 
 template <class TYP>
@@ -56,7 +54,7 @@ void TContainer<TYP>::clear() {
 }
 
 template <class TYP>
-const int TContainer<TYP>::count() {
+int TContainer<TYP>::count() const {
 	return (int)lista.size();
 }
 
@@ -106,16 +104,16 @@ void TContainer<TYP>::del() {
 	first();
 }
 
-template <class TYP>TYP TContainer<TYP>::getLast() {	
+template <class TYP>TYP TContainer<TYP>::getLast() {
     return lista.back();
 }
 
-template <class TYP>void TContainer<TYP>::delLast() {    
-    lista.pop_back();    
+template <class TYP>void TContainer<TYP>::delLast() {
+    lista.pop_back();
     first();
 }
 
-template <class TYP>TYP TContainer<TYP>::getFirst() {	
+template <class TYP>TYP TContainer<TYP>::getFirst() {
     return lista.front();
 }
 #endif

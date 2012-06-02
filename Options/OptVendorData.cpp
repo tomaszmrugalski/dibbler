@@ -19,6 +19,8 @@
 #include <arpa/inet.h>
 #endif
 
+using namespace std;
+
 TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {
@@ -49,9 +51,8 @@ TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
     this->VendorDataLen = n;
 }
 
-int TOptVendorData::getSize()
-{
-    return 8+VendorDataLen; /* 8 normal header(4) + enterprise (4) */
+size_t TOptVendorData::getSize() {
+    return 8 + VendorDataLen; /* 8 normal header(4) + enterprise (4) */
 }
 
 /** 
@@ -86,9 +87,9 @@ char * TOptVendorData::getVendorData()
     return this->VendorData;
 }
 
-string TOptVendorData::getVendorDataPlain()
+std::string TOptVendorData::getVendorDataPlain()
 {
-    ostringstream tmp;
+    std::ostringstream tmp;
     tmp << "0x";
     for (int i=0; i<this->VendorDataLen; i++) {
 	tmp << setfill('0') << setw(2) << hex << (unsigned int) this->VendorData[i];

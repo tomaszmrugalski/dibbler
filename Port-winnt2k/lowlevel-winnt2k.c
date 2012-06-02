@@ -6,8 +6,6 @@
  *
  * based on code from Dibbler 0.2.0-RC2 and Dibbler 0.4.0
  *
- * $Id: lowlevel-winnt2k.c,v 1.7 2008-09-22 17:08:54 thomson Exp $
- *
  * released under GNU GPL v2 licence
  *
  */
@@ -103,7 +101,7 @@ int lowlevelInit()
     strcpy(buf+i,"\\system32\\cmd.exe");
     strncpy(cmdPath, buf, 256);
     
-    // FIXME: Use mktmpfile or something similar
+    /// @todo: Use mktmpfile or something similar
     strcpy(buf+i,"\\dibbler-ipv6.tmp");
     memcpy(tmpFile, buf, 256);
     //
@@ -180,14 +178,14 @@ extern struct iface* if_list_get()
                 if (strlen(buf+22)==18) { // ethernet
                     tmp->hardwareType = 6;
                     tmp->flags = IF_UP | IF_RUNNING | IF_MULTICAST;
-                    sscanf( (buf+22) ,"%x-%x-%x-%x-%x-%x", tmp->mac, tmp->mac+1, tmp->mac+2,
-                                                            tmp->mac+3, tmp->mac+4, tmp->mac+5);
+                    sscanf( (buf+22) ,"%2x-%2x-%2x-%2x-%2x-%2x", tmp->mac, tmp->mac+1, tmp->mac+2,
+                            tmp->mac+3, tmp->mac+4, tmp->mac+5);
                     tmp->maclen=6;
                 } else
                 if (strlen(buf+22) > 7) { // tunnel 0.0.0.0
                     tmp->hardwareType = 131; // tunnel
-                    sscanf( (buf+22), "%d.%d.%d.%d", tmp->mac, tmp->mac+1,
-                                                     tmp->mac+2, tmp->mac+3);
+                    sscanf( (buf+22), "%3d.%3d.%3d.%3d", tmp->mac, tmp->mac+1,
+                            tmp->mac+2, tmp->mac+3);
                     tmp->maclen = 4;
                 } else
                 if (strlen(buf+22) < 2) { // loopback ""
@@ -491,18 +489,15 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     char arg6[]="age";
     char arg7[]="publish"; // publish
     int i;
-    
+
     sprintf(arg2, "%s/%d", prefixPlain, prefixLength);
     sprintf(arg3,"%d", ifindex);
     sprintf(arg5,"%d/%d", valid, prefered);
 
-    if (prefix_forwarding_enabled())
-        i=_spawnl(_P_WAIT,cmdPath,cmdPath, "/C", ipv6Path, arg1, arg2, arg3, arg4, arg5, arg6, arg7, NULL);
-    else
-        i=_spawnl(_P_WAIT,cmdPath,cmdPath, "/C", ipv6Path, arg1, arg2, arg3, arg4, arg5, arg6, NULL);
+    i=_spawnl(_P_WAIT,cmdPath,cmdPath, "/C", ipv6Path, arg1, arg2, arg3, arg4, arg5, arg6, arg7, NULL);
 
     if (i==-1) {
-        // FIXME: some better error support
+        /// @todo: some better error support
         return LOWLEVEL_ERROR_UNSPEC;
     }
 
@@ -518,12 +513,6 @@ int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int 
 int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength)
 {
     return prefix_add(ifname, ifindex, prefixPlain, prefixLength, 0, 0);
-}
-
-int prefix_forwarding_enabled()
-{
-    // FIXME: Detect if IPv6 forwarding is enabled or not
-    return 1;
 }
 
 /* when updating this file, remember to also update copy in Port-win32/lowlevel-win32.c */
@@ -542,7 +531,7 @@ uint32_t getAAASPIfromFile() {
     if (!file)
         return 0;
 
-    fscanf(file, "%x", &ret);
+    fscanf(file, "%10x", &ret);
     fclose(file);
 
     return ret;
@@ -578,7 +567,6 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
     if (0 > fd)
         return NULL;
 
-    /* FIXME should be freed somewhere */
     retval = malloc(st.st_size);
     if (!retval)
         return NULL;
@@ -587,14 +575,17 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
         ret = read(fd, retval + offset, st.st_size - offset);
         if (!ret) break;
         if (ret < 0) {
+            free(retval);
             return NULL;
         }
         offset += ret;
     }
     close(fd);
 
-    if (offset != st.st_size)
+    if (offset != st.st_size) {
+        free(retval);
         return NULL;
+    }
 
     *len = st.st_size;
     return retval;

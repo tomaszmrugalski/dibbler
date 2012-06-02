@@ -14,11 +14,10 @@
 #include <string>
 #include "SmartPtr.h"
 
-using namespace std;
 class TDHCPServer
 {
   public:
-    TDHCPServer(string config);
+    TDHCPServer(const std::string& config);
     void run();
     void stop();
     bool isDone();

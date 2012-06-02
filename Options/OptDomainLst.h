@@ -12,23 +12,22 @@
 #include "Opt.h"
 #include <iostream>
 #include <string>
-using namespace std;
 
 class TOptDomainLst : public TOpt
 {
 public:
-    TOptDomainLst(int type, List(string) strLst, TMsg* parent);
+    TOptDomainLst(int type, List(std::string) strLst, TMsg* parent);
     TOptDomainLst(int type, const std::string& domain, TMsg* parent);
     TOptDomainLst(int type, const char *buf, unsigned short bufsize, TMsg* parent);
-    const List(string)& getDomainLst() { return StringLst; }
+    const List(std::string)& getDomainLst() { return StringLst; }
     const std::string& getDomain();
     char * storeSelf( char* buf);
-    int getSize();
+    size_t getSize();
     int countString();
     bool doDuties() { return true; }
     virtual std::string getPlain();
 protected:
-    List(string) StringLst;
+    List(std::string) StringLst;
 };
 
 #endif

@@ -97,16 +97,16 @@ void pos_resolver::tcpwaitanswer(DnsMessage*& ans, int sockid) {
     ans = NULL;
     tcpreadall(sockid, (char*)len_b, 2, end.after(getcurtime()));
     len = len_b[0] * 256 + len_b[1];
-    msg = (unsigned char *)malloc(len);
+    msg = new unsigned char[len];
     tcpreadall(sockid, (char*)msg, len, end.after(getcurtime()));
     ans = new DnsMessage();
     ans->read_from_data(msg, len);
   } catch(PException p) {
     if (ans) { delete ans; ans = NULL; }
-    if (msg) { delete msg; msg = NULL; }
+    if (msg) { delete [] msg; msg = NULL; }
     throw p;
   }
-  if (msg) { delete msg; msg = NULL; }
+  if (msg) { delete [] msg; msg = NULL; }
 }
 
 /* stand-alone client resolver */

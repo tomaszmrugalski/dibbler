@@ -12,6 +12,7 @@
  *
  */
 
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -23,17 +24,20 @@
 #include "SrvCfgIface.h"
 #include "Logger.h"
 #include "IfaceMgr.h"
-#include "SrvIfaceMgr.h"
+#include "SrvIfaceMgr.h"x
 #include "AddrMgr.h"
 #include "TimeZone.h"
 #include "SrvParser.h"
-#include "SrvOptClientIdentifier.h"
+#include "OptDUID.h"
+
+using namespace std;
+
 
 TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
-TSrvCfgMgr::TSrvCfgMgr(const std::string cfgFile, const std::string xmlFile)
-    :TCfgMgr(), XmlFile(xmlFile), reconfigure(true)
+TSrvCfgMgr::TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
+    :TCfgMgr(), XmlFile(xmlFile), reconfigure(false)
 {
     setDefaults();
 
@@ -67,7 +71,7 @@ void TSrvCfgMgr::setDefaults()
     BulkLQTimeout = BULKLQ_TIMEOUT;
 }
 
-bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
+bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     int result;
     ifstream f;
 
@@ -81,7 +85,8 @@ bool TSrvCfgMgr::parseConfigFile(string cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
-    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still in constructor, so instance() singleton method can't be called
+    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still 
+                          // in constructor, so instance() singleton method can't be called
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
@@ -551,7 +556,7 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TSrvMsg> msg) {
         // malformed message or anonymous inf-request
         duid = new TDUID("", 0); // zero-length DUID
     } else {
-        SPtr<TSrvOptClientIdentifier> clientId = (Ptr*) opt;
+        SPtr<TOptDUID> clientId = (Ptr*) opt;
         duid = clientId->getDUID();
     }
 
@@ -702,10 +707,10 @@ bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
         }
     }
 
-    if (ptrIface->supportFQDN() && !ptrIface->supportDNSServer()) {
-        Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
-                  << " Please disable FQDN support or add DNS servers." << LogEnd;
-        return false;
+    if (ptrIface->supportFQDN() && !ptrIface->getExtraOption(OPTION_DNS_SERVERS)) {
+	Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
+		  << " Please disable FQDN support or add DNS servers." << LogEnd;
+	return false;
     }
 
     SPtr<TSrvCfgAddrClass> ptrClass;
@@ -1048,18 +1053,22 @@ void TSrvCfgMgr::setCounters()
 }
 
 
-void TSrvCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlDumpFile )
+void TSrvCfgMgr::instanceCreate(const std::string& cfgFile, const std::string& xmlDumpFile )
 {
-    if (Instance)
-      Log(Crit) << "SrvCfgMgr already created. Application error!" << LogEnd;
+    if (Instance) {
+        Log(Crit) << "SrvCfgMgr already created. Application error!" << LogEnd;
+        return;
+    }
     Instance = new TSrvCfgMgr(cfgFile, xmlDumpFile);
 
 }
 
 TSrvCfgMgr & TSrvCfgMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "SrvCfgMgr not initalized yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "SrvCfgMgr not initalized yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     return *Instance;
 }
 
@@ -1111,14 +1120,17 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
 
     SPtr<TIPv6Addr> DNSAddr;
 
-    List(TIPv6Addr) DNSSrvLst = *ptrIface->getDNSServerLst();
+    SPtr<TOptAddrLst> opt = (Ptr*) ptrIface->getExtraOption(OPTION_DNS_SERVERS);
+    if (!opt) {
+        Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
+        return 0;
+    }
+    List(TIPv6Addr) DNSSrvLst = opt->getAddrLst();
     DNSSrvLst.first();
     if (DNSSrvLst.count())
         DNSAddr = DNSSrvLst.get();
 
     if (!DNSAddr) {
-        Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
-        return 0;
     }
     return DNSAddr;
 }

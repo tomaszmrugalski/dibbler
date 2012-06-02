@@ -7,7 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.cpp,v 1.51 2009-03-24 23:17:17 thomson Exp $
  */
 
 #include <sstream>
@@ -23,9 +22,11 @@
 #include "DNSUpdate.h"
 #endif
 
+using namespace std;
+
 TClntIfaceMgr * TClntIfaceMgr::Instance = 0;
 
-void TClntIfaceMgr::instanceCreate(const std::string xmlFile)
+void TClntIfaceMgr::instanceCreate(const std::string& xmlFile)
 {
     if (Instance) {
         Log(Crit) << "Application error: Attempt to create another ClntIfaceMgr instance!" << LogEnd;
@@ -36,8 +37,10 @@ void TClntIfaceMgr::instanceCreate(const std::string xmlFile)
 
 TClntIfaceMgr& TClntIfaceMgr::instance()
 {
-    if (!Instance)
+    if (!Instance) {
         Log(Crit) << "Requested IfaceMgr, but it is not created yet." << LogEnd;
+        instanceCreate(CLNTIFACEMGR_FILE);
+    }
     return *Instance;
 }
 
@@ -92,8 +95,6 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
     static char buf[4096];
     SPtr<TIPv6Addr> peer(new TIPv6Addr());
     int sockid;
-    int msgtype;
-    int ifaceid;
 
     sockid = TIfaceMgr::select(timeout, buf, bufsize, peer);
 
@@ -107,14 +108,13 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             }
             return 0; // NULL
         }
-        msgtype = buf[0];
+        int msgtype = buf[0];
         SPtr<TClntMsg> ptr;
         SPtr<TIfaceIface> ptrIface;
         ptrIface = this->getIfaceBySocket(sockid);
-        ifaceid = ptrIface->getID();
-        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-                   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-                   << ")." << LogEnd;
+        int ifaceid = ptrIface->getID();
+        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getFullName()
+                   << " (socket=" << sockid << ", addr=" << *peer << ")." << LogEnd;
 
         switch (msgtype) {
         case ADVERTISE_MSG:
@@ -161,7 +161,7 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
     }
 }
 
-TClntIfaceMgr::TClntIfaceMgr(string xmlFile)
+TClntIfaceMgr::TClntIfaceMgr(const std::string& xmlFile)
     : TIfaceMgr(xmlFile, false)
 {
     struct iface * ptr;
@@ -267,7 +267,7 @@ bool TClntIfaceMgr::doDuties() {
     return true;
 }
 
-bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
+bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, const std::string& fqdn)
 {
     SPtr<TIPv6Addr> DNSAddr;
     SPtr<TIPv6Addr> addr;
@@ -303,6 +303,7 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
         // remember DNS Address (used during address release)
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
         TCfgMgr::DNSUpdateProtocol proto = ClntCfgMgr().getDDNSProtocol();
         DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
         if (proto == TCfgMgr::DNSUPDATE_UDP)
@@ -311,7 +312,6 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
             proto2 = DNSUpdate::DNSUPDATE_ANY;
         unsigned int timeout = ClntCfgMgr().getDDNSTimeout();
 
-#ifndef MOD_CLNT_DISABLE_DNSUPDATE
         /* add AAAA record */
         DNSUpdate *act = new DNSUpdate(DNSAddr->getPlain(), "", fqdn, addr->getPlain(),
                                        DNSUPDATE_AAAA, proto2);
@@ -326,7 +326,7 @@ bool TClntIfaceMgr::fqdnAdd(SPtr<TClntIfaceIface> iface, string fqdn)
     return true;
 }
 
-bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, string fqdn)
+bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, const std::string& fqdn)
 {
     SPtr<TIPv6Addr> dns = ia->getFQDNDnsServer();
 
@@ -343,6 +343,7 @@ bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, strin
 
     SPtr<TClntCfgIface> ptrIface = ClntCfgMgr().getIface(iface->getID());
 
+#ifndef MOD_CLNT_DISABLE_DNSUPDATE
     TCfgMgr::DNSUpdateProtocol proto = ClntCfgMgr().getDDNSProtocol();
     DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
     if (proto == TCfgMgr::DNSUPDATE_UDP)
@@ -353,7 +354,7 @@ bool TClntIfaceMgr::fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, strin
 
     Log(Debug) << "FQDN: Cleaning up DNS AAAA record in server " << *dns << ", for IP=" << *myAddr
                << " and FQDN=" << fqdn << LogEnd;
-#ifndef MOD_CLNT_DISABLE_DNSUPDATE
+
     DNSUpdate *act = new DNSUpdate(dns->getPlain(), "", fqdn, myAddr->getPlain(),
                                    DNSUPDATE_AAAA_CLEANUP, proto2);
     int result = act->run(timeout);

@@ -21,13 +21,13 @@
 class TDHCPClient
 {
   public:
-    TDHCPClient(const std::string config);
+    TDHCPClient(const std::string& config);
     void run();
     void stop();
     void resetLinkstate();
-    bool isDone();
+    bool isDone() const;
     bool checkPrivileges();
-    void setWorkdir(const std::string workdir);
+    void setWorkdir(const std::string& workdir);
 #ifdef MOD_CLNT_CONFIRM
     void requestLinkstateChange();
 #endif

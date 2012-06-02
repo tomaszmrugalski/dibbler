@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: Node.h,v 1.1 2008-10-12 19:36:58 thomson Exp $
- *
  */
 
 #ifndef NODE_H_
@@ -15,7 +13,6 @@
 #include <iostream>
 #include "SmartPtr.h"
 
-using namespace std;
 class TSrvMsg;
 class Node
 {
@@ -29,7 +26,7 @@ public:
 
     Node(NodeType type);
     virtual ~Node();
-    virtual string exec(SPtr<TSrvMsg> msg) = 0;
+    virtual std::string exec(SPtr<TSrvMsg> msg) = 0;
 
     NodeType Type;
 };

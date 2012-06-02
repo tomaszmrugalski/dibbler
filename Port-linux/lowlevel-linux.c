@@ -11,8 +11,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: lowlevel-linux.c,v 1.13 2009-03-09 22:27:23 thomson Exp $
- *
  */
 
 #define _GNU_SOURCE
@@ -147,7 +145,7 @@ struct iface * if_list_get()
     struct ifinfomsg *ifi;
     struct rtattr * tb[IFLA_MAX+1];
     int len;
-    memset(tb, 0, sizeof(tb));
+    memset(tb, 0, sizeof(*tb));
     memset(&rth,0, sizeof(rth));
 
     rtnl_open(&rth, 0);
@@ -219,7 +217,7 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
 	struct nlmsghdr *n = &ainfo->h;
 	struct ifaddrmsg *ifa = NLMSG_DATA(n);
 	if ( (ifa->ifa_family == AF_INET6) && (ifa->ifa_index == ifindex) ) {
-	    memset(rta_tb, 0, sizeof(rta_tb));
+	    memset(rta_tb, 0, sizeof(*rta_tb));
 	    parse_rtattr(rta_tb, IFA_MAX, IFA_RTA(ifa), n->nlmsg_len - NLMSG_LENGTH(sizeof(*ifa)));
 	    if (!rta_tb[IFA_LOCAL])   rta_tb[IFA_LOCAL]   = rta_tb[IFA_ADDRESS];
 	    if (!rta_tb[IFA_ADDRESS]) rta_tb[IFA_ADDRESS] = rta_tb[IFA_LOCAL];
@@ -260,7 +258,7 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 	struct nlmsghdr *n = &ainfo->h;
 	struct ifaddrmsg *ifa = NLMSG_DATA(n);
 	if ( (ifa->ifa_family == AF_INET6) && (ifa->ifa_index == ifindex) ) {
-	    memset(rta_tb, 0, sizeof(rta_tb));
+	    memset(rta_tb, 0, sizeof(*rta_tb));
 	    parse_rtattr(rta_tb, IFA_MAX, IFA_RTA(ifa), n->nlmsg_len - NLMSG_LENGTH(sizeof(*ifa)));
 	    if (!rta_tb[IFA_LOCAL])   rta_tb[IFA_LOCAL]   = rta_tb[IFA_ADDRESS];
 	    if (!rta_tb[IFA_ADDRESS]) rta_tb[IFA_ADDRESS] = rta_tb[IFA_LOCAL];
@@ -310,7 +308,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
 	char   			buf[256];
     } req;
     inet_prefix lcl;
-    inet_prefix peer;
+    /* inet_prefix peer; */
     int local_len = 0;
     int peer_len = 0;
     int scoped = 0;
@@ -351,7 +349,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     addattr_l(&req.n, sizeof(req), IFA_CACHEINFO, &ci, sizeof(ci));
     
     if (peer_len == 0 && local_len) {
-	peer = lcl;
+	/* peer = lcl; */
 	addattr_l(&req.n, sizeof(req), IFA_ADDRESS, &lcl.data, lcl.bytelen);
     }
     if (req.ifa.ifa_prefixlen == 0)
@@ -382,11 +380,9 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned 
 int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 		  unsigned long pref, unsigned long valid, int prefixLength)
 {
-    /* FIXME: Linux kernel currently does not provide API for dynamic adresses */
+    /** @todo: Linux kernel currently does not provide API for dynamic adresses */
 
     return ipaddr_add_or_del(addr, ifacename, prefixLength, pref, valid, ADDROPER_UPDATE);
-
-    return LOWLEVEL_NO_ERROR;
 }
 
 
@@ -608,7 +604,7 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
 	struct nlmsghdr *n = &ainfo->h;
 	struct ifaddrmsg *ifa = NLMSG_DATA(n);
 	
-	memset(rta_tb, 0, sizeof(rta_tb));
+	memset(rta_tb, 0, sizeof(*rta_tb));
 	
 	if (ifa->ifa_index == iface && ifa->ifa_family==AF_INET6) {
 	    parse_rtattr(rta_tb, IFA_MAX, IFA_RTA(ifa), n->nlmsg_len - NLMSG_LENGTH(sizeof(*ifa)));
@@ -658,7 +654,10 @@ uint32_t getAAASPIfromFile() {
     if (!file)
         return 0;
 
-    fscanf(file, "%x", &ret);
+    if (fscanf(file, "%10x", &ret) <= 0) {
+        /// @todo: print an error here
+        ret = 0;
+    }
     fclose(file);
 
     return ret;
@@ -691,7 +690,6 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
     if (0 > fd)
         return NULL;
 
-    /* FIXME should be freed somewhere */
     retval = malloc(st.st_size);
     if (!retval) {
         close(fd);
@@ -702,14 +700,18 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
         ret = read(fd, retval + offset, st.st_size - offset);
         if (!ret) break;
         if (ret < 0) {
+            close(fd);
+            free(retval);
             return NULL;
         }
         offset += ret;
     }
     close(fd);
 
-    if (offset != st.st_size)
+    if (offset != st.st_size) {
+        free(retval);
         return NULL;
+    }
 
     *len = st.st_size;
     return retval;

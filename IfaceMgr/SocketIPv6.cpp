@@ -13,10 +13,13 @@
 
 #include <string.h>
 #include <string>
+#include <ostream>
 #include "SocketIPv6.h"
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+
+using namespace std;
 
 /**
  * static elements of TIfaceSocket class
@@ -268,7 +271,7 @@ void TIfaceSocket::printError(int error, char * iface, int ifaceid, SPtr<TIPv6Ad
 /*
  * flush this data in XML format
  */
-ostream & operator <<(ostream & strum, TIfaceSocket &x)
+std::ostream & operator <<(std::ostream & strum, TIfaceSocket &x)
 {
     strum << dec 
 	  << "<IfaceSocket"

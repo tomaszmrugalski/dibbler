@@ -132,7 +132,7 @@ public:
 protected:
 	virtual int LexerInput( char* buf, int max_size );
 	virtual void LexerOutput( const char* buf, int size );
-	virtual void LexerError( const char* msg );
+        virtual void LexerError( const char* msg ) __attribute__ ((noreturn));
 
 	void yyunput( int c, char* buf_ptr );
 	int yyinput();

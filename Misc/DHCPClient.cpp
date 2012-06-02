@@ -1,13 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: DHCPClient.cpp,v 1.34 2009-03-24 23:17:18 thomson Exp $
- *                                                                           
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
  */
 
 #include <iostream>
@@ -21,10 +19,12 @@
 #include "Logger.h"
 #include "Portable.h"
 
+using namespace std;
+
 volatile int serviceShutdown;
 volatile int linkstateChange;
 
-TDHCPClient::TDHCPClient(const std::string config)
+TDHCPClient::TDHCPClient(const std::string& config)
   :IsDone(false)
 {
     serviceShutdown = 0;
@@ -45,11 +45,11 @@ TDHCPClient::TDHCPClient(const std::string config)
         return;
     }
 
-	TClntAddrMgr::instanceCreate(ClntCfgMgr().getDUID(), ClntCfgMgr().useConfirm(), CLNTADDRMGR_FILE, false);
+        TClntAddrMgr::instanceCreate(ClntCfgMgr().getDUID(), ClntCfgMgr().useConfirm(), CLNTADDRMGR_FILE, false);
     if ( ClntAddrMgr().isDone() ) {
-     	Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
-  	    IsDone = true;
-  	    return;
+        Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
+            IsDone = true;
+            return;
     }
 
     TClntTransMgr::instanceCreate(CLNTTRANSMGR_FILE);
@@ -62,12 +62,12 @@ TDHCPClient::TDHCPClient(const std::string config)
     if (ClntCfgMgr().useConfirm())
         initLinkStateChange();
     else
-	Log(Debug) << "Confirm disabled, skipping link change detection." << LogEnd;
+        Log(Debug) << "Confirm disabled, skipping link change detection." << LogEnd;
 }
 
-/** 
+/**
  * initializes low-level link state change detection mechanism
- * 
+ *
  */
 void TDHCPClient::initLinkStateChange()
 {
@@ -79,13 +79,13 @@ void TDHCPClient::initLinkStateChange()
     ClntCfgMgr().firstIface();
     SPtr<TClntCfgIface> iface;
     Log(Debug) << "Initialising link-state detection for interfaces: ";
-    while (iface = ClntCfgMgr().getIface()) 
+    while (iface = ClntCfgMgr().getIface())
     {
-	linkstates.ifindex[linkstates.cnt++] = iface->getID();
-	Log(Cont) << iface->getFullName() << " ";
+        linkstates.ifindex[linkstates.cnt++] = iface->getID();
+        Log(Cont) << iface->getFullName() << " ";
     }
     Log(Cont) << LogEnd;
-    
+
     link_state_change_init(&linkstates, &linkstateChange);
 }
 
@@ -94,7 +94,7 @@ void TDHCPClient::stop() {
 
 #ifdef MOD_CLNT_CONFIRM
     if (ClntCfgMgr().useConfirm())
-	link_state_change_cleanup();
+        link_state_change_cleanup();
 #endif
 
 #ifdef WIN32
@@ -102,9 +102,13 @@ void TDHCPClient::stop() {
     SPtr<TIfaceIface> iface = ClntIfaceMgr().getIfaceByID(ClntTransMgr().getCtrlIface());
     Log(Warning) << "Sending SHUTDOWN packet on the " << iface->getName()
         << "/" << iface->getID() << " (addr=" << ClntTransMgr().getCtrlAddr() << ")." << LogEnd;
-    int fd = sock_add("", ClntTransMgr().getCtrlIface(),"::",0,true, false); 
+    int fd = sock_add("", ClntTransMgr().getCtrlIface(),"::",0,true, false);
     char buf = CONTROL_MSG;
     int cnt = sock_send(fd,ClntTransMgr().getCtrlAddr(),&buf,1,DHCPCLIENT_PORT,ClntTransMgr().getCtrlIface());
+    if (cnt<0) {
+        Log(Error) << "Failed to send shutdown command" << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     sock_del(fd);
 #endif
 }
@@ -137,46 +141,46 @@ void TDHCPClient::run()
     SPtr<TMsg> msg;
     while ( (!this->isDone()) && !ClntTransMgr().isDone() )
     {
-	if (serviceShutdown)
-	    ClntTransMgr().shutdown();
+        if (serviceShutdown)
+            ClntTransMgr().shutdown();
 
-#ifdef MOD_CLNT_CONFIRM	
+#ifdef MOD_CLNT_CONFIRM
         if (linkstateChange) {
           ClntAddrMgr().setIA2Confirm(&linkstates);
           this->resetLinkstate();
         }
 #endif
 
-	ClntTransMgr().doDuties();
-	
-	unsigned int timeout = ClntTransMgr().getTimeout();
+        ClntTransMgr().doDuties();
 
-	if (timeout == 0)
-	    timeout = 1;
-	
+        unsigned int timeout = ClntTransMgr().getTimeout();
+
+        if (timeout == 0)
+            timeout = 1;
+
         Log(Debug) << "Sleeping for " << timeout << " second(s)." << LogEnd;
         SPtr<TClntMsg> msg=ClntIfaceMgr().select(timeout);
-	
+
         if (msg) {
-	    int iface = msg->getIface();
-	    SPtr<TIfaceIface> ptrIface;
-	    ptrIface = ClntIfaceMgr().getIfaceByID(iface);
-            Log(Info) << "Received " << msg->getName() << " on " << ptrIface->getName() 
-		      << "/" << iface	<< hex << ",TransID=0x" << msg->getTransID() 
-		      << dec << ", " << msg->countOption() << " opts:";
+            int iface = msg->getIface();
+            SPtr<TIfaceIface> ptrIface;
+            ptrIface = ClntIfaceMgr().getIfaceByID(iface);
+            Log(Info) << "Received " << msg->getName() << " on " << ptrIface->getName()
+                      << "/" << iface	<< hex << ",TransID=0x" << msg->getTransID()
+                      << dec << ", " << msg->countOption() << " opts:";
             SPtr<TOpt> ptrOpt;
             msg->firstOption();
             while (ptrOpt = msg->getOption() )
-                Log(Cont) << " " << ptrOpt->getOptType(); 
+                Log(Cont) << " " << ptrOpt->getOptType();
             Log(Cont) << LogEnd;
-	    
+
             ClntTransMgr().relayMsg(msg);
         }
     }
     Log(Notice) << "Bye bye." << LogEnd;
 }
 
-bool TDHCPClient::isDone() {
+bool TDHCPClient::isDone() const {
     return IsDone;
 }
 
@@ -185,7 +189,7 @@ bool TDHCPClient::checkPrivileges() {
     return true;
 }
 
-void TDHCPClient::setWorkdir(std::string workdir) {
+void TDHCPClient::setWorkdir(const std::string& workdir) {
     ClntCfgMgr().setWorkdir(workdir);
     ClntCfgMgr().dump();
 }

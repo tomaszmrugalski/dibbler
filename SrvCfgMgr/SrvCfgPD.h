@@ -45,13 +45,11 @@ class TSrvCfgPD;
 #include "SrvCfgPD.h"
 #include "Node.h"
 
-
-using namespace std;
 class TSrvCfgClientClass;
 
 class TSrvCfgPD
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgPD& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgPD& iface);
  public:
     TSrvCfgPD();
 
@@ -88,32 +86,32 @@ class TSrvCfgPD
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 
  private:
-    unsigned long PD_T1Beg;
-    unsigned long PD_T2Beg;
-    unsigned long PD_T1End;
-    unsigned long PD_T2End;
-    unsigned long PD_Length;     // (shorter) prefix, assigned to the user, e.g. 64
-    unsigned long PD_PrefBeg;
-    unsigned long PD_PrefEnd;
-    unsigned long PD_ValidBeg;
-    unsigned long PD_ValidEnd;
+    unsigned long PD_T1Beg_;
+    unsigned long PD_T2Beg_;
+    unsigned long PD_T1End_;
+    unsigned long PD_T2End_;
+    unsigned long PD_Length_;     // (shorter) prefix, assigned to the user, e.g. 64
+    unsigned long PD_PrefBeg_;
+    unsigned long PD_PrefEnd_;
+    unsigned long PD_ValidBeg_;
+    unsigned long PD_ValidEnd_;
 
     unsigned long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
 
-    unsigned long ID;
-    static unsigned long staticID;
+    unsigned long ID_;
+    static unsigned long StaticID_;
 
-    List(TStationRange) PoolLst;
-    SPtr<TStationRange> CommonPool; /* common part of all available prefix pools (section b in the description above) */
-    unsigned long PD_MaxLease;
-    unsigned long PD_Assigned;
-    unsigned long PD_Count;
+    List(TStationRange) PoolLst_;
+    SPtr<TStationRange> CommonPool_; /* common part of all available prefix pools (section b in the description above) */
+    unsigned long PD_MaxLease_;
+    unsigned long PD_Assigned_;
+    unsigned long PD_Count_;
 
-    List(string) allowLst;
-    List(string) denyLst;
+    List(std::string) AllowLst_;
+    List(std::string) DenyLst_;
 
-    List(TSrvCfgClientClass) allowClientClassLst;
-    List(TSrvCfgClientClass) denyClientClassLst;
+    List(TSrvCfgClientClass) AllowClientClassLst_;
+    List(TSrvCfgClientClass) DenyClientClassLst_;
 };
 
 #endif

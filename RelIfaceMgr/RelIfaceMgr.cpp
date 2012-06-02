@@ -7,6 +7,7 @@
  *
  */
 
+#include <cstdlib>
 #include <fstream>
 #include "Logger.h"
 #include "IPv6Addr.h"
@@ -22,10 +23,12 @@
 
 TRelIfaceMgr * TRelIfaceMgr::Instance = 0;
 
+using namespace std;
+
 /*
  * constructor. Do nothing particular, just invoke IfaceMgr constructor
  */
-TRelIfaceMgr::TRelIfaceMgr(string xmlFile) 
+TRelIfaceMgr::TRelIfaceMgr(const std::string& xmlFile) 
     : TIfaceMgr(xmlFile, true) {
 }
 
@@ -306,8 +309,10 @@ void TRelIfaceMgr::instanceCreate( const std::string xmlFile )
 
 TRelIfaceMgr& TRelIfaceMgr::instance()
 {
-    if (!Instance)
-      Log(Crit) << "RelIfaceMgr istance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+      Log(Crit) << "RelIfaceMgr istance not created yet. Application error. Emergency shutdown." << LogEnd;
+      exit(EXIT_FAILURE);
+    }
     return *Instance;
 }
 

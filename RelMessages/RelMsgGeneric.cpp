@@ -22,7 +22,7 @@ bool TRelMsgGeneric::check() {
     return true;
 }
 
-string TRelMsgGeneric::getName() {
+std::string TRelMsgGeneric::getName() const {
     switch (this->MsgType) {
     case SOLICIT_MSG:             return "SOLICIT";
     case ADVERTISE_MSG:           return "ADVERTISE";

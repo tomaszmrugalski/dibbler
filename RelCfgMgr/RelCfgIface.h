@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgIface.h,v 1.4 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
 class TRelCfgIface;
@@ -18,22 +16,20 @@ class TRelCfgIface;
 #include "RelParsGlobalOpt.h"
 #include <iostream>
 #include <string>
-using namespace std;
 
 class TRelCfgIface
 {
-    friend ostream& operator<<(ostream& out,TRelCfgIface& iface);
+    friend std::ostream& operator<<(std::ostream& out,TRelCfgIface& iface);
 public:
-    TRelCfgIface(string ifaceName);
+    TRelCfgIface(const std::string& ifaceName);
     TRelCfgIface(int ifaceNr);
     virtual ~TRelCfgIface();
-    void setDefaults();
 
-    void setName(string ifaceName);
+    void setName(std::string ifaceName);
     void setID(int ifaceID);
     int	getID();
-    string getName();
-    string getFullName();
+    std::string getName();
+    std::string getFullName();
 
     SPtr<TIPv6Addr> getServerUnicast();
     SPtr<TIPv6Addr> getClientUnicast();
@@ -46,14 +42,14 @@ public:
     int getInterfaceID();
     
 private:
-    string Name;
-    int	ID;
-    int InterfaceID; // value of interface-id option (optional)
+    std::string Name_;
+    int	ID_;
+    int InterfaceID_; // value of interface-id option (optional)
 
-    SPtr<TIPv6Addr> ClientUnicast;
-    SPtr<TIPv6Addr> ServerUnicast;
-    bool ClientMulticast;
-    bool ServerMulticast;
+    SPtr<TIPv6Addr> ClientUnicast_;
+    SPtr<TIPv6Addr> ServerUnicast_;
+    bool ClientMulticast_;
+    bool ServerMulticast_;
 };
 
 #endif /* RELCFGIFACE_H */

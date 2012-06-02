@@ -6,8 +6,6 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.cpp,v 1.19 2009-03-24 22:41:07 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -15,6 +13,8 @@
 #include <limits.h>
 #include "AddrClient.h"
 #include "Logger.h"
+
+using namespace std;
 
 /**
  * @brief constructor for creating client
@@ -339,7 +339,7 @@ uint64_t TAddrClient::getNextReplayDetectionSent() {
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-ostream & operator<<(ostream & strum,TAddrClient &x) 
+std::ostream & operator<<(std::ostream & strum, TAddrClient &x) 
 {
     if (x.DUID->getLen()==1)
 	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;

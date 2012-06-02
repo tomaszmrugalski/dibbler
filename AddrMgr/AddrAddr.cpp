@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrAddr.cpp,v 1.13 2008-08-17 22:41:41 thomson Exp $
  */
 
 #include <iostream>
@@ -16,6 +15,8 @@
 #include "AddrAddr.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+
+using namespace std;
 
 /**
  * @brief AddrAddr constructor for addresses

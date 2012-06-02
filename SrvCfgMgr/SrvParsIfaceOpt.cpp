@@ -1,12 +1,11 @@
 /*
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>                                                                        
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvParsIfaceOpt.cpp,v 1.18 2008-11-11 22:41:49 thomson Exp $
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *    changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *
+ * released under GNU GPL v2 only licence
  *
  */
 
@@ -17,172 +16,148 @@
 #include "DHCPDefaults.h"
 #include "Logger.h"
 
+using namespace std;
+
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 {
-    Unicast       = 0;
-    Preference    = SERVER_DEFAULT_PREFERENCE;
-    RapidCommit   = SERVER_DEFAULT_RAPIDCOMMIT;
-    ClntMaxLease  = SERVER_DEFAULT_CLNTMAXLEASE;
-    IfaceMaxLease = SERVER_DEFAULT_IFACEMAXLEASE;
-    LeaseQuery    = false; // don't support leasequery unless explicitly configured to do so
+    Unicast_       = 0;
+    Preference_    = SERVER_DEFAULT_PREFERENCE;
+    RapidCommit_   = SERVER_DEFAULT_RAPIDCOMMIT;
+    ClntMaxLease_  = SERVER_DEFAULT_CLNTMAXLEASE;
+    IfaceMaxLease_ = SERVER_DEFAULT_IFACEMAXLEASE;
+    RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
+
+    // don't support leasequery unless explicitly configured to do so
+    LeaseQuery_    = SERVER_DEFAULT_LEASEQUERY;
 
     // options
-    DNSServerSupport  = false;
-    DomainSupport     = false;
-    NTPServerSupport  = false;
-    TimezoneSupport   = false;
-    SIPServerSupport  = false;
-    SIPDomainSupport  = false;
-    FQDNSupport       = false;
-    NISServerSupport  = false;
-    NISDomainSupport  = false;
-    NISPServerSupport = false;
-    NISPDomainSupport = false;
-    LifetimeSupport   = false;
+    FQDNSupport_      = false;
     VendorSpecSupport = false;
 
-    UnknownFQDN = SERVER_DEFAULT_UNKNOWN_FQDN;
-    FQDNDomain = "";
+    UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
+    FQDNDomain_ = "";
 
-    Relay = false;
-    RelayName = "[unknown]";
-    RelayID = -1;
-    RelayInterfaceID = -1;
+    Relay_ = false;
+    RelayName_ = "[unknown]";
+    RelayID_ = -1;
+    RelayInterfaceID_ = -1;
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
 }
 
 void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain) {
-    UnknownFQDN = mode;
-    FQDNDomain = domain;
+    UnknownFQDN_ = mode;
+    FQDNDomain_ = domain;
 }
 
-/** 
+/**
  * returns enum that specifies, how to handle unknown FQDNs
- * 
- * 
- * @return 
+ *
+ *
+ * @return
  */
 EUnknownFQDNMode TSrvParsIfaceOpt::getUnknownFQDN() {
-    return UnknownFQDN;
+    return UnknownFQDN_;
 }
 
 std::string TSrvParsIfaceOpt::getFQDNDomain() {
-    return FQDNDomain;
+    return FQDNDomain_;
 }
 
 void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support) {
-    this->LeaseQuery = support;
+    LeaseQuery_ = support;
 }
 
 bool TSrvParsIfaceOpt::getLeaseQuerySupport() {
-    return LeaseQuery;
+    return LeaseQuery_;
 }
 
 // --- unicast ---
 void TSrvParsIfaceOpt::setUnicast(SPtr<TIPv6Addr> addr) {
-    this->Unicast = addr;
+    Unicast_ = addr;
 }
 
 SPtr<TIPv6Addr> TSrvParsIfaceOpt::getUnicast() {
-    return this->Unicast;
+    return Unicast_;
 }
 
 // --- iface-max-lease ---
 void TSrvParsIfaceOpt::setIfaceMaxLease(long maxLease) {
-    this->IfaceMaxLease=maxLease;
+    IfaceMaxLease_ = maxLease;
 }
 
 long TSrvParsIfaceOpt::getIfaceMaxLease() {
-    return this->IfaceMaxLease;
+    return IfaceMaxLease_;
 }
 
 // --- clnt max lease ---
 void TSrvParsIfaceOpt::setClntMaxLease(long clntMaxLease) {
-    this->ClntMaxLease = clntMaxLease;
+    ClntMaxLease_ = clntMaxLease;
 }
 
 long TSrvParsIfaceOpt::getClntMaxLease() {
-    return this->ClntMaxLease;
+    return ClntMaxLease_;
 }
 
 // --- preference ---
 void TSrvParsIfaceOpt::setPreference(char pref) {
-    this->Preference=pref;
+    Preference_ = pref;
 }
 char TSrvParsIfaceOpt::getPreference() {
-    return this->Preference;
+    return Preference_;
 }
 
 // --- rapid commit ---
 void TSrvParsIfaceOpt::setRapidCommit(bool rapidComm) {
-    this->RapidCommit=rapidComm;
+    RapidCommit_ = rapidComm;
 }
 
 bool TSrvParsIfaceOpt::getRapidCommit() {
-    return this->RapidCommit;
+    return RapidCommit_;
 }
 
 // --- relay related ---
-void TSrvParsIfaceOpt::setRelayName(string name) {
-    this->Relay      = true;
-    this->RelayName  = name;
-    this->RelayID    = -1;
+void TSrvParsIfaceOpt::setRelayName(std::string name) {
+    Relay_ = true;
+    RelayName_ = name;
+    RelayID_ = -1;
 }
 
 void TSrvParsIfaceOpt::setRelayID(int id) {
-    this->Relay      = true;
-    this->RelayName  = "[unknown]";
-    this->RelayID    = id;
+    Relay_ = true;
+    RelayName_ = "[unknown]";
+    RelayID_ = id;
 }
 
 void TSrvParsIfaceOpt::setRelayInterfaceID(SPtr<TSrvOptInterfaceID> id) {
-    this->Relay = true;
-    this->RelayInterfaceID= id;
+    Relay_ = true;
+    RelayInterfaceID_ = id;
 }
 
 string TSrvParsIfaceOpt::getRelayName() {
-    return this->RelayName;
+    return RelayName_;
 }
 
 int TSrvParsIfaceOpt::getRelayID() {
-    return this->RelayID;
+    return RelayID_;
 }
 
 SPtr<TSrvOptInterfaceID> TSrvParsIfaceOpt::getRelayInterfaceID() {
-    return this->RelayInterfaceID;
+    return RelayInterfaceID_;
 }
 
 bool TSrvParsIfaceOpt::isRelay() {
-    return this->Relay;
+    return Relay_;
 }
 
 // --- option: DNS servers ---
-void TSrvParsIfaceOpt::setDNSServerLst(List(TIPv6Addr) *lst) {
-    this->DNSServerLst = *lst;
-    this->DNSServerSupport = true;
-}
-
-List(TIPv6Addr) * TSrvParsIfaceOpt::getDNSServerLst() {
-    return &this->DNSServerLst;
-}
-bool TSrvParsIfaceOpt::supportDNSServer(){
-    return this->DNSServerSupport;
-}
-
 // --- option: DOMAIN ---
-void TSrvParsIfaceOpt::setDomainLst(List(string) * lst) {
-    this->DomainLst = *lst;
-    this->DomainSupport = true;
-}
-
-List(string) * TSrvParsIfaceOpt::getDomainLst() {
-    return &this->DomainLst;
-}
-bool TSrvParsIfaceOpt::supportDomain(){
-    return this->DomainSupport;
-}
+// --- option: NTP-SERVERS ---
+// --- option: TIMEZONE ---
+// --- option: SIP server ---
+// --- option: SIP domain ---
+// --- option: LIFETIME ---
 
 #if 0
 // --- option: VENDOR-SPEC INFO ---
@@ -202,217 +177,58 @@ List(TOptVendorSpecInfo) TSrvParsIfaceOpt::getVendorSpec()
 }
 #endif
 
-// --- option: NTP-SERVERS ---
-void TSrvParsIfaceOpt::setNTPServerLst(List(TIPv6Addr) * lst) {
-    this->NTPServerLst = *lst;
-    this->NTPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getNTPServerLst() {
-    return &this->NTPServerLst;
-}
-bool TSrvParsIfaceOpt::supportNTPServer(){
-    return this->NTPServerSupport;
-}
-
-// --- option: TIMEZONE ---
-void TSrvParsIfaceOpt::setTimezone(string timezone) {
-    this->Timezone=timezone;
-    this->TimezoneSupport = true;
-}
-string TSrvParsIfaceOpt::getTimezone() {
-    return this->Timezone;
-}
-bool TSrvParsIfaceOpt::supportTimezone(){
-    return this->NTPServerSupport;
-}
-
-// --- option: SIP server ---
-void TSrvParsIfaceOpt::setSIPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
-    this->SIPServerLst = *lst;
-    this->SIPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getSIPServerLst() {
-    return &this->SIPServerLst;
-}
-bool TSrvParsIfaceOpt::supportSIPServer(){
-    return this->SIPServerSupport;
-}
-
-// --- option: SIP domain ---
-List(string) * TSrvParsIfaceOpt::getSIPDomainLst() { 
-    return &this->SIPDomainLst;
-}
-void TSrvParsIfaceOpt::setSIPDomainLst(List(string) * domain) { 
-    this->SIPDomainLst = *domain;
-    this->SIPDomainSupport = true;
-}
-bool TSrvParsIfaceOpt::supportSIPDomain() {
-    return this->SIPDomainSupport;
-}
-
-
 // --- option: FQDN ---
-
 void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) *fqdn) {
-    this->FQDNLst = *fqdn;
-    this->FQDNSupport = true;
-}
-
-string TSrvParsIfaceOpt::getFQDNName(SPtr<TDUID> duid) {
-    int cpt = 1;
-    string res = "";
-    SPtr<TFQDN> foo = FQDNLst.getFirst();
-    FQDNLst.first();
-    foo = FQDNLst.get();
-    while(!(*(*foo).Duid == *duid) && cpt<FQDNLst.count()){
-        foo = FQDNLst.get();	
- 	cpt++;
-    }
-    if (cpt<FQDNLst.count()) {
-        res = (*foo).Name;
-    } else {
-        if (*(*foo).Duid == *duid) {
-	    res = (*foo).Name;
-	}
-    }
-    return res;
-}
-
-string TSrvParsIfaceOpt::getFQDNName(SPtr<TIPv6Addr> addr) {
-    int cpt = 1;
-    string res = "";
-    SPtr<TFQDN> foo = FQDNLst.getFirst();
-    FQDNLst.first();
-    foo = FQDNLst.get();
-    while(!(*(*foo).Addr == *addr) && cpt<FQDNLst.count()){
-        foo = FQDNLst.get();
- 	cpt++;
-    }
-    if (cpt<FQDNLst.count()) {
-        res = (*foo).Name;
-    } else {
-        if (*(*foo).Addr == *addr) {
-	    res = (*foo).Name;
-	}
-    }
-    return res;
-}
-
-string TSrvParsIfaceOpt::getFQDNName() {
-    int cpt = 1;
-    string res = "";
-    SPtr<TFQDN> foo = FQDNLst.getFirst();
-    FQDNLst.first();
-    foo = FQDNLst.get();
-    Log(Debug)<<"FQDN used ? : "<<(*foo).used<<LogEnd;
-    Log(Debug)<<"FQDN Addr ? : "<<*(*foo).Addr<<LogEnd;
-    Log(Debug)<<"FQDN Duid ? : "<<*(*foo).Duid<<LogEnd;
-    while((!(*(*foo).Addr == *(new TIPv6Addr())) || 
-           !(*(*foo).Duid == *(new TDUID())) ||
-           (*foo).used == true ) &&
-          cpt<FQDNLst.count()){
-        foo = FQDNLst.get();
-        Log(Debug)<<"FQDN <while>used ? : "<<(*foo).used<<LogEnd;
-        cpt++;
-    }
-    if (cpt<FQDNLst.count()) {
-        FQDNLst.getPrev();
-        (*(FQDNLst.get())).used=true;
-        res = (*foo).Name;
-    } else {
-        if (*(*foo).Addr == *(new TIPv6Addr()) && (*(*foo).Duid == *(new TDUID())) &&
-            (*foo).used==false) {
-            (*foo).used=true;
-	    res = (*foo).Name;
-	}
-    }
-    return res;
-}
-
-SPtr<TDUID> TSrvParsIfaceOpt::getFQDNDuid(string name) {
-    SPtr<TDUID> res = new TDUID();
-    return res;
+    FQDNLst_ = *fqdn;
+    FQDNSupport_ = true;
 }
 
 List(TFQDN) *TSrvParsIfaceOpt::getFQDNLst() {
-    return &this->FQDNLst;
+    return &this->FQDNLst_;
 }
 
 int TSrvParsIfaceOpt::getFQDNMode(){
-	return this->FQDNMode;
+    return FQDNMode_;
 }
 void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode){
-	this->FQDNMode=FQDNMode;
+    FQDNMode_ = FQDNMode;
 }
 int TSrvParsIfaceOpt::getRevDNSZoneRootLength(){
-	return this->revDNSZoneRootLength;
+    return RevDNSZoneRootLength_;
 }
 void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength){
-	this->revDNSZoneRootLength = revDNSZoneRootLength;
+    RevDNSZoneRootLength_ = revDNSZoneRootLength;
 }
 
 bool TSrvParsIfaceOpt::supportFQDN() {
-    return this->FQDNSupport;
+    return FQDNSupport_;
 }
 
-// --- option: NIS server ---
-void TSrvParsIfaceOpt::setNISServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
-    this->NISServerLst     = *lst;
-    this->NISServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getNISServerLst() {
-    return &this->NISServerLst;
-}
-bool TSrvParsIfaceOpt::supportNISServer(){
-    return this->NISServerSupport;
+
+void TSrvParsIfaceOpt::addExtraOption(SPtr<TOpt> custom, bool always) {
+    //Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
+    //           << custom->getOptType() << " generic option (length="
+    //           << custom->getSize() << ")." << LogEnd;
+
+    ExtraOpts.push_back(custom); // allways add to extra options
+
+    if (always)
+        ForcedOpts.push_back(custom); // also add to forced, if requested so
 }
 
-// --- option: NIS domain ---
-void TSrvParsIfaceOpt::setNISDomain(string domain) { 
-    this->NISDomain=domain;
-    this->NISDomainSupport=true;
-}
-string TSrvParsIfaceOpt::getNISDomain() { 
-    return this->NISDomain;
-}
-bool TSrvParsIfaceOpt::supportNISDomain() {
-    return this->NISDomainSupport;
+const TOptList& TSrvParsIfaceOpt::getExtraOptions() {
+    return ExtraOpts;
 }
 
-// --- option: NIS+ server ---
-void TSrvParsIfaceOpt::setNISPServerLst(TContainer<SPtr<TIPv6Addr> > *lst) {
-    this->NISPServerLst = *lst;
-    this->NISPServerSupport = true;
-}
-List(TIPv6Addr) * TSrvParsIfaceOpt::getNISPServerLst() {
-    return &this->NISPServerLst;
-}
-bool TSrvParsIfaceOpt::supportNISPServer(){
-    return this->NISPServerSupport;
+SPtr<TOpt> TSrvParsIfaceOpt::getExtraOption(uint16_t type) {
+    for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+    {
+        if ((*opt)->getOptType() == type)
+            return *opt;
+    }
+    return 0;
 }
 
-// --- option: NIS+ domain ---
-void TSrvParsIfaceOpt::setNISPDomain(string domain) { 
-    this->NISPDomain=domain;
-    this->NISPDomainSupport=true;
+const TOptList& TSrvParsIfaceOpt::getForcedOptions() {
+    return ForcedOpts;
 }
-string TSrvParsIfaceOpt::getNISPDomain() { 
-    return this->NISPDomain;
-}
-bool TSrvParsIfaceOpt::supportNISPDomain() {
-    return this->NISPDomainSupport;
-}
-
-// --- option: LIFETIME ---
-void TSrvParsIfaceOpt::setLifetime(unsigned int x) {
-    this->Lifetime = x;
-    this->LifetimeSupport = true;
-}
-unsigned int TSrvParsIfaceOpt::getLifetime() {
-    return this->Lifetime;
-}
-
-bool TSrvParsIfaceOpt::supportLifetime() {
-    return this->LifetimeSupport;
-}
-

@@ -22,19 +22,23 @@ info:
 	@echo "GTEST_INCLUDES=$(GTEST_INCLUDES)"
 	@echo "HAVE_GTEST=$(HAVE_GTEST)"
 
-
 TESTS = 
 if HAVE_GTEST
 TESTS += AddrMgr_tests
 
 AddrMgr_tests_SOURCES = run_tests.cpp
 AddrMgr_tests_SOURCES += AddrAddr_unittest.cc
+AddrMgr_tests_SOURCES += AddrPrefix_unittest.cc
+AddrMgr_tests_SOURCES += AddrIA_unittest.cc
+AddrMgr_tests_SOURCES += AddrClient_unittest.cc
+AddrMgr_tests_SOURCES += AddrMgr_unittest.cc
 
 AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 
 AddrMgr_tests_LDADD = $(GTEST_LDADD)
 AddrMgr_tests_LDADD += $(top_builddir)/AddrMgr/libAddrMgr.a
 AddrMgr_tests_LDADD += $(top_builddir)/Misc/libMisc.a
+AddrMgr_tests_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 endif
 
 noinst_PROGRAMS = $(TESTS)

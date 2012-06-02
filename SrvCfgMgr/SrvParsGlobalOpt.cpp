@@ -11,112 +11,106 @@
 #include "Portable.h"
 #include "Logger.h"
 
-TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
-    this->WorkDir          = WORKDIR;
-    this->Stateless        = false;
-    this->CacheSize        = SERVER_DEFAULT_CACHE_SIZE;
-    this->Experimental     = false;
-    this->InterfaceIDOrder = SRV_IFACE_ID_ORDER_BEFORE;
-    this->InactiveMode     = false;
-    this->GuessMode        = false;
-    this->AuthLifetime     = DHCPV6_INFINITY;
-    this->AuthKeyLen       = 16;
+using namespace std;
 
-    this->DigestLst.clear();
+TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
+    WorkDir_          = WORKDIR;
+    Stateless_        = false;
+    CacheSize_        = SERVER_DEFAULT_CACHE_SIZE;
+    Experimental_     = false;
+    InterfaceIDOrder_ = SRV_IFACE_ID_ORDER_BEFORE;
+    InactiveMode_     = false;
+    GuessMode_        = false;
+    AuthLifetime_     = DHCPV6_INFINITY;
+    AuthKeyLen_       = 16;
+    DigestLst_.clear();
 }
 
 TSrvParsGlobalOpt::~TSrvParsGlobalOpt(void) {
 }
 
-string TSrvParsGlobalOpt::getWorkDir() {
-    return this->WorkDir;
+std::string TSrvParsGlobalOpt::getWorkDir() const {
+    return WorkDir_;
 }
 
-void TSrvParsGlobalOpt::setWorkDir(string dir) {
-    this->WorkDir=dir;
+void TSrvParsGlobalOpt::setWorkDir(const std::string& dir) {
+    WorkDir_ = dir;
 }
 
 void TSrvParsGlobalOpt::setStateless(bool stateless) {
-    this->Stateless = stateless;
+    Stateless_ = stateless;
 }
 
-bool TSrvParsGlobalOpt::getStateless() {
-    return this->Stateless;
+bool TSrvParsGlobalOpt::getStateless() const {
+    return Stateless_;
 }
 
 void TSrvParsGlobalOpt::setExperimental(bool exper) {
-    this->Experimental = exper;
+    Experimental_ = exper;
 }
 
-bool TSrvParsGlobalOpt::getExperimental() {
-    return this->Experimental;
+bool TSrvParsGlobalOpt::getExperimental() const {
+    return Experimental_;
 }
 
 void TSrvParsGlobalOpt::setCacheSize(int bytes) {
-    this->CacheSize = bytes;
+    CacheSize_ = bytes;
 }
 
-int  TSrvParsGlobalOpt::getCacheSize() {
-    return this->CacheSize;
+int  TSrvParsGlobalOpt::getCacheSize() const {
+    return CacheSize_;
 }
 
 void TSrvParsGlobalOpt::addDigest(DigestTypes x) {
     SPtr<DigestTypes> dt = new DigestTypes;
     *dt = x;
 
-    this->DigestLst.append(dt);
+    DigestLst_.append(dt);
     Log(Debug) << "Auth: New digest type " << getDigestName(x) << " added." << LogEnd;
 }
 
-List(DigestTypes) TSrvParsGlobalOpt::getDigest() {
-    return this->DigestLst;
+List(DigestTypes) TSrvParsGlobalOpt::getDigest() const {
+    return DigestLst_;
 }
 
 void TSrvParsGlobalOpt::setInterfaceIDOrder(ESrvIfaceIdOrder order) {
-    InterfaceIDOrder = order;
+    InterfaceIDOrder_ = order;
 }
 
-ESrvIfaceIdOrder TSrvParsGlobalOpt::getInterfaceIDOrder() {
-    return InterfaceIDOrder;
+ESrvIfaceIdOrder TSrvParsGlobalOpt::getInterfaceIDOrder() const {
+    return InterfaceIDOrder_;
 }
 
-void TSrvParsGlobalOpt::setInactiveMode(bool flex)
-{
-    InactiveMode = flex;
+void TSrvParsGlobalOpt::setInactiveMode(bool flex) {
+    InactiveMode_ = flex;
 }
 
-bool TSrvParsGlobalOpt::getInactiveMode()
-{
-    return InactiveMode;
+bool TSrvParsGlobalOpt::getInactiveMode() const {
+    return InactiveMode_;
 }
 
-void TSrvParsGlobalOpt::setAuthLifetime(unsigned int lifetime)
-{
-    AuthLifetime = lifetime;
+void TSrvParsGlobalOpt::setAuthLifetime(unsigned int lifetime) {
+    AuthLifetime_ = lifetime;
     Log(Debug) << "AUTH: Authorisation lifetime set to " << lifetime << "." << LogEnd;
 }
 
-unsigned int TSrvParsGlobalOpt::getAuthLifetime()
+unsigned int TSrvParsGlobalOpt::getAuthLifetime() const
 {
-    return AuthLifetime;
+    return AuthLifetime_;
 }
 
-void TSrvParsGlobalOpt::setAuthKeyLen(unsigned int len)
-{
-    AuthKeyLen = len;
+void TSrvParsGlobalOpt::setAuthKeyLen(unsigned int len) {
+    AuthKeyLen_ = len;
     Log(Debug) << "AUTH: Key gen nonce length set to " << len << "." << LogEnd;
 }
 
-unsigned int TSrvParsGlobalOpt::getAuthKeyLen()
-{
-    return AuthKeyLen;
+unsigned int TSrvParsGlobalOpt::getAuthKeyLen() const {
+    return AuthKeyLen_;
 }
 
-void TSrvParsGlobalOpt::setGuessMode(bool guess)
-{
-    GuessMode = guess;
+void TSrvParsGlobalOpt::setGuessMode(bool guess) {
+    GuessMode_ = guess;
 }
-bool TSrvParsGlobalOpt::getGuessMode()
-{
-    return GuessMode;
+bool TSrvParsGlobalOpt::getGuessMode() const {
+    return GuessMode_;
 }

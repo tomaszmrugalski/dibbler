@@ -239,7 +239,8 @@ libSrvTransMgr_a_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr \
 	-I$(top_srcdir)/Options -I$(top_srcdir)/SrvOptions \
 	-I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvAddrMgr \
 	-I$(top_srcdir)/SrvMessages -I$(top_srcdir)/Messages \
-	-I$(top_srcdir)/SrvIfaceMgr -I$(top_srcdir)/IfaceMgr
+	-I$(top_srcdir)/SrvIfaceMgr -I$(top_srcdir)/IfaceMgr \
+	-I$(top_srcdir)/poslib
 libSrvTransMgr_a_SOURCES = SrvTransMgr.cpp SrvTransMgr.h
 all: all-am
 

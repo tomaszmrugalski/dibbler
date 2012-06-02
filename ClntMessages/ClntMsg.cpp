@@ -44,6 +44,8 @@
 
 #include "Logger.h"
 
+using namespace std;
+
 static string msgs[] = { "",
 		  "SOLICIT",
 		  "ADVERTISE",
@@ -85,10 +87,6 @@ void TClntMsg::invalidAllowOptInOpt(int msg, int parentOpt, int childOpt) {
 /**
  * creates message, based on a received buffer
  *
- * @param IfaceMgr
- * @param TransMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param iface
  * @param addr
  * @param buf
@@ -136,31 +134,31 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	switch (code) {
 	case OPTION_CLIENTID:
 	case OPTION_SERVERID:
-	    ptr = new TOptDUID(code, buf+pos,length,this);
+	    ptr = new TOptDUID(code, buf+pos, length, this);
 	    break;
 	case OPTION_IA_NA:
-	    ptr = new TClntOptIA_NA(buf+pos,length,this);
+	    ptr = new TClntOptIA_NA(buf+pos, length, this);
 	    break;
 	case OPTION_IA_PD:
-	    ptr = new TClntOptIA_PD(buf+pos,length,this);
+	    ptr = new TClntOptIA_PD(buf+pos, length, this);
 	    break;
 	case OPTION_ORO:
-	    ptr = new TClntOptOptionRequest(buf+pos,length,this);
+	    ptr = new TClntOptOptionRequest(buf+pos, length, this);
 	    break;
 	case OPTION_PREFERENCE:
-	    ptr = new TClntOptPreference(buf+pos,length,this);
+	    ptr = new TClntOptPreference(buf+pos, length, this);
 	    break;
 	case OPTION_ELAPSED_TIME:
-	    ptr = new TClntOptElapsed(buf+pos,length,this);
+	    ptr = new TClntOptElapsed(buf+pos, length, this);
 	    break;
 	case OPTION_UNICAST:
-	    ptr = new TOptAddr(OPTION_UNICAST,buf+pos,length,this);
+	    ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
 	    break;
 	case OPTION_STATUS_CODE:
-	    ptr = new TClntOptStatusCode(buf+pos,length,this);
+	    ptr = new TClntOptStatusCode(buf+pos, length, this);
 	    break;
 	case OPTION_RAPID_COMMIT:
-	    ptr = new TOptEmpty(code, buf+pos,length,this);
+	    ptr = new TOptEmpty(code, buf+pos, length, this);
 	    break;
 	case OPTION_NIS_SERVERS:
 	case OPTION_NISP_SERVERS:
@@ -176,8 +174,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TOptDomainLst(code, buf+pos, length, this);
 	    break;
 	case OPTION_NEW_TZDB_TIMEZONE:
-	    ptr = new TClntOptTimeZone(buf+pos, length,this);
-	    break;
+	    ptr = new TClntOptTimeZone(buf+pos, length, this);
 	    break;
 	case OPTION_FQDN:
 	    ptr = new TClntOptFQDN(buf+pos, length, this);
@@ -431,9 +428,7 @@ void TClntMsg::setIface(int iface) {
 }
 
 /**
- * this function appends authentication option
- *
- * @param AddrMgr pointer to Address Manager
+ * @brief appends authentication option.
  *
  */
 void TClntMsg::appendAuthenticationOption()
@@ -465,7 +460,6 @@ void TClntMsg::appendAuthenticationOption()
 
 void TClntMsg::appendElapsedOption() {
     // include ELAPSED option
-
     if (!getOption(OPTION_ELAPSED_TIME))
 	Options.push_back(new TClntOptElapsed(this));
 }

@@ -23,13 +23,13 @@
 class TRelCfgMgr : public TCfgMgr
 {
 public:  
-    friend ostream & operator<<(std::ostream &strum, TRelCfgMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TRelCfgMgr &x);
     virtual ~TRelCfgMgr();
 
-    static void instanceCreate(const std::string cfgFile, const std::string xmlFile);
+    static void instanceCreate(const std::string& cfgFile, const std::string& xmlFile);
     static TRelCfgMgr& instance();
 
-    bool parseConfigFile(const std::string cfgFile);
+    bool parseConfigFile(const std::string& cfgFile);
 
     //Interfaces access methods
     void firstIface();
@@ -46,7 +46,7 @@ public:
     bool setupGlobalOpts(SPtr<TRelParsGlobalOpt> opt);
 
     // configuration parameters
-    string getWorkdir();
+    std::string getWorkdir();
     bool guessMode();
     ERelIfaceIdOrder getInterfaceIDOrder();
 
@@ -55,7 +55,7 @@ public:
 
 private:
     static TRelCfgMgr * Instance;
-    TRelCfgMgr(const std::string cfgFile, const std::string xmlFile);
+    TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
 
     std::string XmlFile;
 

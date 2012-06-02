@@ -313,6 +313,26 @@ dnl ------------------------------------------------------------
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
+### support for resolvconf tool (mostly Debian, probably) ##############
+   AC_ARG_ENABLE(resolvconf,
+	[  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)],
+	[ case "${enableval}" in
+	       yes)
+	       MOD_RESOLVCONF=yes
+	       ;;
+	       no)
+	       MOD_RESOLVCONF=no
+	       ;;
+	       *)
+	       AC_MSG_ERROR(bad value ${enablevald} for --enable-resolvconf)
+	       ;;
+	  esac],
+	  [MOD_RESOLVCONF=no]
+    )
+
+AM_CONDITIONAL(RESOLVCONF, test $MOD_RESOLVCONF = yes)
+AM_COND_IF([RESOLVCONF], [AC_DEFINE([MOD_RESOLVCONF], [1], [Support for /sbin/resolvconf enabled?])])
+
 ### DNS Update ####################################
 ### We may add separate parameter for client and server eventually ##########
    AC_ARG_ENABLE(dns-update,
@@ -445,7 +465,7 @@ AM_CONDITIONAL(HAVE_GTEST, [test "$gtest_path" != "no"])
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
 
-AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg)
+AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg)
 
 dnl ----------------------------------------
 dnl Print out configured parameters
@@ -458,6 +478,7 @@ echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
 echo "DNS Update (clnt/srv) disabled: $MOD_CLNT_DISABLE_DNSUPDATE/$MOD_SRV_DISABLE_DNSUPDATE"
 echo "Authentication disabled       : $MOD_DISABLE_AUTH"
 echo "Link-state change detection   : $MOD_CLNT_CONFIRM"
+echo "/sbin/resolvconf support      : $MOD_RESOLVCONF"
 
 echo
 echo "Experimental features:"

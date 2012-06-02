@@ -82,11 +82,11 @@ class TSrvParsClassOpt
 
     // Allow and deny list
 
-    void setAllowClientClass(string s);
-    List(string) getAllowClientClassString();
+    void setAllowClientClass(std::string s);
+    List(std::string) getAllowClientClassString();
 
-    void setDenyClientClass(string s);
-    List(string) getDenyClientClassString();
+    void setDenyClientClass(std::string s);
+    List(std::string) getDenyClientClassString();
 
 private:
     //Ranges of T1 i T2
@@ -109,7 +109,7 @@ private:
     // AddrParams fields
     SPtr<TSrvOptAddrParams> AddrParams;
 
-    List(string) allowLst;
-    List(string) denyLst;
+    List(std::string) allowLst;
+    List(std::string) denyLst;
 };
 #endif

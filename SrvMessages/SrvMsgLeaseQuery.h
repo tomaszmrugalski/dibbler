@@ -23,7 +23,7 @@ class TSrvMsgLeaseQuery : public TSrvMsg
     void doDuties();
     bool check();
     ~TSrvMsgLeaseQuery();
-    string getName();
+    std::string getName() const;
 
   private:
 };
