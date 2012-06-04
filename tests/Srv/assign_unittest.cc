@@ -8,6 +8,9 @@
 #include "SrvMsgAdvertise.h"
 #include "SrvMsgRequest.h"
 #include "SrvMsgReply.h"
+#include "SrvOptIA_NA.h"
+#include "SrvOptIA_PD.h"
+#include "SrvOptTA.h"
 
 #include <gtest/gtest.h>
 
@@ -111,6 +114,21 @@ namespace {
             return true;
         }
 
+        SPtr<TSrvMsgSolicit> createSolicit() {
+
+            char empty[] = { 0x01, 0x1, 0x2, 0x3};
+            SPtr<TSrvMsgSolicit> sol = new TSrvMsgSolicit(iface_->getID(), clntAddr_, empty, sizeof(empty));
+
+            ia_iaid_ = 123;
+            ia_ = new TSrvOptIA_NA(ia_iaid_, 100, 200, &(*sol));
+            ta_iaid_ = 456;
+            ta_ = new TOptTA(ta_iaid_, &(*sol));
+            pd_iaid_ = 789;
+            pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, &(*sol));
+
+            return sol;
+        }
+
         SPtr<TSrvMsg> sendAndReceive(SPtr<TSrvMsg> clntMsg) {
             EXPECT_EQ(0, transmgr_->getMsgLst().count());
 
@@ -154,6 +172,13 @@ namespace {
         SPtr<TIPv6Addr> clntAddr_;
         SPtr<TDUID> clntDuid_;
         SPtr<TOptDUID> clntId_;
+
+        SPtr<TSrvOptIA_NA> ia_;
+        SPtr<TSrvOptIA_PD> pd_;
+        SPtr<TOptTA>    ta_;
+        uint32_t ia_iaid_;
+        uint32_t ta_iaid_;
+        uint32_t pd_iaid_;
     };
 
 TEST_F(ServerTest, CfgMgr_options1) {
@@ -194,14 +219,20 @@ TEST_F(ServerTest, CfgMgr_solicit_advertise1) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate client's message
-    char empty[] = { 0x01, 0x1, 0x2, 0x3};
-    SPtr<TSrvMsgSolicit> sol = new TSrvMsgSolicit(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    SPtr<TSrvMsgSolicit> sol = createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
+    sol->addOption((Ptr*)ia_); // include IA_NA
 
     SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol);
     ASSERT_TRUE(adv); // check that there is a response
 
-    /// @todo: check that received advertise is ok
+    SPtr<TSrvOptIA_NA> ia = (Ptr*) adv->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(ia);
+
+    // check that returned IAID is proper
+    EXPECT_EQ(ia_->getIAID(), ia->getIAID());
+
+    // @todo: check that returned address is indeed from the proper range
 }
 
 

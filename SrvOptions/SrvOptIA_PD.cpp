@@ -35,6 +35,10 @@ TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, int Code, st
     SubOptions.append(new TOptStatusCode(Code, Text, parent));
 }
 
+TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
+    :TOptIA_PD(iaid, t1, t2, parent) {
+}
+
 /*
  * Create IA_PD option based on receive buffer
  */
