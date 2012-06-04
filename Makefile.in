@@ -323,12 +323,12 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-CODE_SUBDIRS = Misc Options AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr \
-	ClntIfaceMgr ClntMessages ClntOptions ClntTransMgr IfaceMgr \
-	Messages RelCfgMgr RelIfaceMgr RelMessages RelOptions \
-	RelTransMgr Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr \
-	SrvMessages SrvOptions SrvTransMgr doc poslib
-SUBDIRS = $(CODE_SUBDIRS) @PORT_SUBDIR@ $(am__append_1)
+CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr \
+	Messages poslib SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages \
+	SrvTransMgr SrvCfgMgr RelCfgMgr RelIfaceMgr RelMessages \
+	RelOptions RelTransMgr ClntOptions ClntTransMgr ClntAddrMgr \
+	ClntCfgMgr ClntIfaceMgr ClntMessages Requestor doc
+SUBDIRS = $(CODE_SUBDIRS) $(am__append_1)
 DIST_SUBDIRS = $(CODE_SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
 dibbler_client_SOURCES =  \
 	$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp \
@@ -1161,15 +1161,15 @@ requestor: dibbler-requestor
 bison: bison/bison++
 
 bison/bison++:
-		@echo "[CONFIG ] /bison++/"
-		cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
-		@echo "[MAKE   ] /bison++/bison++"
-		$(MAKE) -C $(top_srcdir)/bison++
+                @echo "[CONFIG ] /bison++/"
+                cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
+                @echo "[MAKE   ] /bison++/bison++"
+                $(MAKE) -C $(top_srcdir)/bison++
 
 parser:
-		$(MAKE) -C SrvCfgMgr parser
-		$(MAKE) -C ClntCfgMgr parser
-		$(MAKE) -C RelCfgMgr parser
+                $(MAKE) -C SrvCfgMgr parser
+                $(MAKE) -C ClntCfgMgr parser
+                $(MAKE) -C RelCfgMgr parser
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
