@@ -1161,15 +1161,15 @@ requestor: dibbler-requestor
 bison: bison/bison++
 
 bison/bison++:
-                @echo "[CONFIG ] /bison++/"
-                cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
-                @echo "[MAKE   ] /bison++/bison++"
-                $(MAKE) -C $(top_srcdir)/bison++
+		@echo "[CONFIG ] /bison++/"
+		cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
+		@echo "[MAKE   ] /bison++/bison++"
+		$(MAKE) -C $(top_srcdir)/bison++
 
 parser:
-                $(MAKE) -C SrvCfgMgr parser
-                $(MAKE) -C ClntCfgMgr parser
-                $(MAKE) -C RelCfgMgr parser
+		$(MAKE) -C SrvCfgMgr parser
+		$(MAKE) -C ClntCfgMgr parser
+		$(MAKE) -C RelCfgMgr parser
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

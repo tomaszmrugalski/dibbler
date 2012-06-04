@@ -134,12 +134,12 @@ dist_noinst_DATA += tests
 bison: bison/bison++
 
 bison/bison++:
-                @echo "[CONFIG ] /bison++/"
-                cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
-                @echo "[MAKE   ] /bison++/bison++"
-                $(MAKE) -C $(top_srcdir)/bison++
+		@echo "[CONFIG ] /bison++/"
+		cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
+		@echo "[MAKE   ] /bison++/bison++"
+		$(MAKE) -C $(top_srcdir)/bison++
 
 parser:
-                $(MAKE) -C SrvCfgMgr parser
-                $(MAKE) -C ClntCfgMgr parser
-                $(MAKE) -C RelCfgMgr parser
+		$(MAKE) -C SrvCfgMgr parser
+		$(MAKE) -C ClntCfgMgr parser
+		$(MAKE) -C RelCfgMgr parser
