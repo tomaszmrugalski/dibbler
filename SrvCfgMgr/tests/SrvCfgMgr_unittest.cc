@@ -1,4 +1,5 @@
 #include "IPv6Addr.h"
+#include "SrvIfaceMgr.h"
 #include "SrvCfgMgr.h"
 #include "OptAddrLst.h"
 
@@ -21,29 +22,41 @@ namespace {
 
 TEST_F(SrvCfgMgrTest, constructor) {
 
-    string cfg = string("iface \"eth0\" {\n"
-                        "  class { pool 2001:db8:1111::/64 }"
+    TSrvIfaceMgr::instanceCreate("testdata/server-IfaceMgr1.xml");
+    TIfaceMgr & ifacemgr = SrvIfaceMgr();
+
+    ifacemgr.firstIface();
+    SPtr<TIfaceIface> iface = ifacemgr.getIface();
+    string iface_name = iface->getName();
+
+    string cfg = string("iface \"" + iface_name + "\" {\n"
+                        "  class { pool 2001:db8:1111::/64 }\n"
                         "  option nis-server 2000::400,2000::401,2000::404,2000::405,2000::405\n"
                         "  option nis-domain nis.example.com\n"
                         "  option nis+-server 2000::501,2000::502\n"
                         "  option nis+-domain nisplus.example.com\n"
                         "}\n"
-                        "iface vboxnet0 {\n"
+                        "\n"
+                        "iface nonexistent0 {\n"
                         "  class { pool 2003::/64 }\n"
                         "}");
 
+    ofstream cfgfile("testdata/server-1.conf");
+    cfgfile << cfg;
+    cfgfile.close();
+
     SPtr<NakedSrvCfgMgr> cfgmgr = new NakedSrvCfgMgr("testdata/server-1.conf", "testdata/server-CfgMgr1.xml");
 
-    SPtr<TSrvCfgIface> iface;
+    SPtr<TSrvCfgIface> cfgIface;
     cfgmgr->firstIface();
-    while (iface = cfgmgr->getIface()) {
-        if (iface->getName() == "eth0")
+    while (cfgIface = cfgmgr->getIface()) {
+        if (cfgIface->getName() == iface_name)
             break;
     }
-    if (!iface) {
-        ADD_FAILURE() << "Failed to find expected eth0 interface." << endl;
+    if (!cfgIface) {
+        ADD_FAILURE() << "Failed to find expected " << iface_name << " interface." << endl;
     } else {
-        SPtr<TOptAddrLst> opt = (Ptr*)iface->getExtraOption(OPTION_NIS_SERVERS);
+        SPtr<TOptAddrLst> opt = (Ptr*)cfgIface->getExtraOption(OPTION_NIS_SERVERS);
         EXPECT_TRUE(opt);
         List(TIPv6Addr) addrLst = opt->getAddrLst();
 
@@ -60,7 +73,7 @@ TEST_F(SrvCfgMgrTest, constructor) {
     }
     
 
-    delete cfgmgr;
+    //delete cfgmgr;
 }
 
 

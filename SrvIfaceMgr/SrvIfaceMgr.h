@@ -47,7 +47,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
    
    void redetectIfaces();
    
-private:
+protected:
    TSrvIfaceMgr(const std::string& xmlFile);
    static TSrvIfaceMgr * Instance;
    

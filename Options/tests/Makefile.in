@@ -233,7 +233,7 @@ top_srcdir = @top_srcdir@
 
 # This is to workaround long long in gtest.h
 AM_CPPFLAGS = -I$(top_srcdir)/Options -I$(top_srcdir)/Misc \
-	$(GTEST_INCLUDES) -Wno-long-long
+	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@Opt_tests_SOURCES = run_tests.cpp OptAddr_unittest.cc \
 @HAVE_GTEST_TRUE@	OptIAAddress_unittest.cc \
 @HAVE_GTEST_TRUE@	OptRtPrefix_unittest.cc

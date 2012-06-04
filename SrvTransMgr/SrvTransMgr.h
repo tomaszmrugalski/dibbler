@@ -56,7 +56,8 @@ class TSrvTransMgr
     char * getCtrlAddr();
     int    getCtrlIface();
 
-  private:
+    // not private, as we need to instantiate derived SrvTransMgr in tests
+  protected:
     TSrvTransMgr(std::string xmlFile);
     ~TSrvTransMgr();
 
