@@ -26,7 +26,6 @@
 #include "DHCPConst.h"
 #include "Msg.h"
 #include "SrvCfgMgr.h"
-#include "SrvTransMgr.h"
 
 using namespace std;
 

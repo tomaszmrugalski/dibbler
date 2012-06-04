@@ -410,7 +410,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
             // if there was DNS Update performed, execute deleting Update
             SPtr<TFQDN> fqdn = ptrIA->getFQDN();
             if (fqdn) {
-                SrvTransMgr().removeFQDN(ptrIface, ptrIA, fqdn);
+                delFQDN(ptrIface, ptrIA, fqdn);
             }
 
             // let's verify each address

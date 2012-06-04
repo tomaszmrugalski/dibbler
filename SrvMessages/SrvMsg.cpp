@@ -12,7 +12,6 @@
 #include <sstream>
 #include "Portable.h"
 #include "SrvMsg.h"
-#include "SrvTransMgr.h"
 #include "OptEmpty.h"
 #include "OptDUID.h"
 #include "OptAddr.h"
@@ -45,10 +44,6 @@ using namespace std;
  * this constructor is used to build message as a reply to the received message
  * (i.e. it is used to contruct ADVERTISE or REPLY)
  *
- * @param IfaceMgr
- * @param TransMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param iface
  * @param addr
  * @param msgType
@@ -74,10 +69,6 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
  * this constructor builds message based on the buffer
  * (i.e. SOLICIT, REQUEST, RENEW, REBIND, RELEASE, INF-REQUEST, DECLINE)
  *
- * @param IfaceMgr
- * @param TransMgr
- * @param CfgMgr
- * @param AddrMgr
  * @param iface
  * @param addr
  * @param buf
@@ -128,78 +119,78 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 
         SPtr<TOpt> ptr;
 
-	if (!allowOptInMsg(MsgType,code)) {
-	    Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Option ignored." << LogEnd;
-	    pos+=length;
-	    continue;
-	}
-	if (!allowOptInOpt(MsgType,0,code)) {
-	    Log(Warning) <<"Option " << code << " can't be present in message (type="
-			 << MsgType <<") directly. Option ignored." << LogEnd;
-	    pos+=length;
-	    continue;
-	}
-	ptr= 0;
-	switch (code) {
-	case OPTION_CLIENTID:
-	    ptr = new TOptDUID(OPTION_CLIENTID, buf+pos, length, this);
-	    break;
-	case OPTION_SERVERID:
-	    ptr = new TOptDUID(OPTION_SERVERID, buf+pos, length, this);
-	    break;
-	case OPTION_IA_NA:
-	    ptr = new TSrvOptIA_NA(buf+pos,length,this);
-	    break;
-	case OPTION_ORO:
-	    ptr = new TOptOptionRequest(OPTION_ORO, buf+pos, length, this);
-	    break;
-	case OPTION_PREFERENCE:
-	    ptr = new TOptInteger(OPTION_PREFERENCE, 1, buf+pos, length, this);
-	    break;
-	case OPTION_ELAPSED_TIME:
-	    ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf+pos, length, this);
-	    break;
-	case OPTION_UNICAST:
-	    ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
-	    break;
-	case OPTION_STATUS_CODE:
-	    ptr = new TOptStatusCode(buf+pos,length,this);
-	    break;
-	case OPTION_RAPID_COMMIT:
-	    ptr = new TOptEmpty(code, buf+pos, length, this);
-	    break;
-	case OPTION_DNS_SERVERS:
-	case OPTION_SNTP_SERVERS:
-	case OPTION_SIP_SERVER_A:
-	case OPTION_NIS_SERVERS:
-	case OPTION_NISP_SERVERS:
-	    ptr = new TOptAddrLst(code, buf+pos, length, this);
-	    break;
-	case OPTION_DOMAIN_LIST:
-	case OPTION_SIP_SERVER_D:
-	case OPTION_NIS_DOMAIN_NAME:
-	case OPTION_NISP_DOMAIN_NAME:
-	    ptr = new TOptDomainLst(code, buf+pos, length, this);
-	    break;
-	case OPTION_NEW_TZDB_TIMEZONE:
-	    ptr = new TOptString(OPTION_NEW_TZDB_TIMEZONE, buf+pos, length, this);
-	    break;
-	case OPTION_FQDN:
-	    ptr = new TSrvOptFQDN(buf+pos, length, this);
-	    break;
-	case OPTION_INFORMATION_REFRESH_TIME:
-	    ptr = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf+pos, length, this);
-	    break;
-	case OPTION_IA_TA:
-	    ptr = new TSrvOptTA(buf+pos, length, this);
-	    break;
-	case OPTION_IA_PD:
-	    ptr = new TSrvOptIA_PD(buf+pos, length, this);
-	    break;
-	case OPTION_LQ_QUERY:
-	    ptr = new TSrvOptLQ(buf+pos, length, this);
-	    break;
-	    // remaining LQ options are not supported to be received by server
+        if (!allowOptInMsg(MsgType,code)) {
+            Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Option ignored." << LogEnd;
+            pos+=length;
+            continue;
+        }
+        if (!allowOptInOpt(MsgType,0,code)) {
+            Log(Warning) <<"Option " << code << " can't be present in message (type="
+                         << MsgType <<") directly. Option ignored." << LogEnd;
+            pos+=length;
+            continue;
+        }
+        ptr= 0;
+        switch (code) {
+        case OPTION_CLIENTID:
+            ptr = new TOptDUID(OPTION_CLIENTID, buf+pos, length, this);
+            break;
+        case OPTION_SERVERID:
+            ptr = new TOptDUID(OPTION_SERVERID, buf+pos, length, this);
+            break;
+        case OPTION_IA_NA:
+            ptr = new TSrvOptIA_NA(buf+pos,length,this);
+            break;
+        case OPTION_ORO:
+            ptr = new TOptOptionRequest(OPTION_ORO, buf+pos, length, this);
+            break;
+        case OPTION_PREFERENCE:
+            ptr = new TOptInteger(OPTION_PREFERENCE, 1, buf+pos, length, this);
+            break;
+        case OPTION_ELAPSED_TIME:
+            ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf+pos, length, this);
+            break;
+        case OPTION_UNICAST:
+            ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
+            break;
+        case OPTION_STATUS_CODE:
+            ptr = new TOptStatusCode(buf+pos,length,this);
+            break;
+        case OPTION_RAPID_COMMIT:
+            ptr = new TOptEmpty(code, buf+pos, length, this);
+            break;
+        case OPTION_DNS_SERVERS:
+        case OPTION_SNTP_SERVERS:
+        case OPTION_SIP_SERVER_A:
+        case OPTION_NIS_SERVERS:
+        case OPTION_NISP_SERVERS:
+            ptr = new TOptAddrLst(code, buf+pos, length, this);
+            break;
+        case OPTION_DOMAIN_LIST:
+        case OPTION_SIP_SERVER_D:
+        case OPTION_NIS_DOMAIN_NAME:
+        case OPTION_NISP_DOMAIN_NAME:
+            ptr = new TOptDomainLst(code, buf+pos, length, this);
+            break;
+        case OPTION_NEW_TZDB_TIMEZONE:
+            ptr = new TOptString(OPTION_NEW_TZDB_TIMEZONE, buf+pos, length, this);
+            break;
+        case OPTION_FQDN:
+            ptr = new TSrvOptFQDN(buf+pos, length, this);
+            break;
+        case OPTION_INFORMATION_REFRESH_TIME:
+            ptr = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf+pos, length, this);
+            break;
+        case OPTION_IA_TA:
+            ptr = new TSrvOptTA(buf+pos, length, this);
+            break;
+        case OPTION_IA_PD:
+            ptr = new TSrvOptIA_PD(buf+pos, length, this);
+            break;
+        case OPTION_LQ_QUERY:
+            ptr = new TSrvOptLQ(buf+pos, length, this);
+            break;
+            // remaining LQ options are not supported to be received by server
 
 #ifndef MOD_DISABLE_AUTH
         case OPTION_AAAAUTH:
@@ -226,22 +217,22 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 #endif
 
         break;
-	case OPTION_VENDOR_OPTS:
-	    ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
-	    break;
-	case OPTION_RECONF_ACCEPT:
-	case OPTION_USER_CLASS:
-	case OPTION_VENDOR_CLASS:
-	case OPTION_RECONF_MSG:
-	case OPTION_RELAY_MSG:
-	default:
-	    Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
-	    break;
-	}
-	if ( (ptr) && (ptr->isValid()) )
-	    Options.push_back( ptr );
-	else
-	    Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
+        case OPTION_VENDOR_OPTS:
+            ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
+            break;
+        case OPTION_RECONF_ACCEPT:
+        case OPTION_USER_CLASS:
+        case OPTION_VENDOR_CLASS:
+        case OPTION_RECONF_MSG:
+        case OPTION_RELAY_MSG:
+        default:
+            Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
+            break;
+        }
+        if ( (ptr) && (ptr->isValid()) )
+            Options.push_back( ptr );
+        else
+            Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
         pos += length;
     }
 
@@ -498,11 +489,148 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
     if (!clntAssignedAddr)
         /// @todo: Perhaps we should not do the update at all?
         clntAssignedAddr = PeerAddr; // it's better than nothing
-    optFQDN = SrvTransMgr().addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
+
+    optFQDN = addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
     /// @todo: Why is doRealUpdate set to false???
 
     if (optFQDN)
         Options.push_back((Ptr*) optFQDN);
+}
+
+/**
+ * creates FQDN option and executes DNS Update procedure (if necessary)
+ *
+ * @param requestFQDN  requested Fully Qualified Domain Name
+ * @param clntDuid     client DUID
+ * @param clntAddr     client address
+ * @param hint         hint used to get name (it may or may not be used)
+ * @param doRealUpdate - should the real update be performed (for example if response for
+ *                       SOLICIT is prepare, this should be set to false)
+ *
+ * @return FQDN option
+ */
+SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
+                                   SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
+                                   std::string hint, bool doRealUpdate) {
+    SPtr<TSrvOptFQDN> optFQDN;
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
+    if (!cfgIface) {
+        Log(Crit) << "Msg received through not configured interface. "
+            "Somebody call an exorcist!" << LogEnd;
+        this->IsDone = true;
+        return 0;
+    }
+    // FQDN is chosen, "" if no name for this host is found.
+    if (!cfgIface->supportFQDN()) {
+        Log(Error) << "FQDN is not defined on " << cfgIface->getFullName() << " interface."
+                   << LogEnd;
+        return 0;
+    }
+
+    Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr="
+               << clntAddr->getPlain() << LogEnd;
+
+    SPtr<TFQDN> fqdn = cfgIface->getFQDNName(clntDuid,clntAddr, hint);
+    if (!fqdn) {
+        Log(Debug) << "Unable to find FQDN for this client." << LogEnd;
+        return 0;
+    }
+
+    optFQDN = new TSrvOptFQDN(fqdn->getName(), NULL);
+    optFQDN->setSFlag(false);
+    // Setting the O Flag correctly according to the difference between O flags
+    optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
+    string fqdnName = fqdn->getName();
+
+    if (requestFQDN->getNFlag()) {
+              Log(Notice) << "FQDN: No DNS Update required." << LogEnd;
+              return optFQDN;
+    }
+
+    fqdn->setUsed(true);
+
+    int FQDNMode = cfgIface->getFQDNMode();
+    Log(Debug) << "FQDN: Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode="
+               << FQDNMode << LogEnd;
+
+    if ( FQDNMode==1 || FQDNMode==2 ) {
+        Log(Debug) << "FQDN: Server configuration allow DNS updates for " << clntDuid->getPlain()
+                   << LogEnd;
+
+        if (FQDNMode == 1)
+            optFQDN->setSFlag(false);
+        else
+            if (FQDNMode == 2)
+                optFQDN->setSFlag(true); // letting client update his AAAA
+        // Setting the O Flag correctly according to the difference between O flags
+        optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
+
+        SPtr<TIPv6Addr> DNSAddr = SrvCfgMgr().getDDNSAddress(iface);
+        if (!DNSAddr) {
+            Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
+            return 0;
+        }
+
+        SPtr<TAddrClient> ptrAddrClient = SrvAddrMgr().getClient(clntDuid);
+        if (!ptrAddrClient) {
+            Log(Warning) << "Unable to find client.";
+            return 0;
+        }
+
+        ptrAddrClient->firstIA();
+        SPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
+        if (!ptrAddrIA) {
+            Log(Warning) << "Client does not have any addresses assigned." << LogEnd;
+            return 0;
+        }
+        ptrAddrIA->firstAddr();
+        SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
+        SPtr<TIPv6Addr> IPv6Addr = addr->get();
+
+        Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << DNSAddr->getPlain() << ", IP="
+                    << IPv6Addr->getPlain() << " and FQDN=" << fqdnName << LogEnd;
+
+        // regardless of the result, store the info
+        ptrAddrIA->setFQDN(fqdn);
+        ptrAddrIA->setFQDNDnsServer(DNSAddr);
+
+        SrvIfaceMgr().addFQDN(cfgIface->getID(), DNSAddr, addr->get(), fqdnName);
+    } else {
+        Log(Debug) << "Server configuration does NOT allow DNS updates for " << clntDuid->getPlain() << LogEnd;
+        optFQDN->setNFlag(true);
+    }
+
+    return optFQDN;
+
+}
+
+void TSrvMsg::delFQDN(SPtr<TSrvCfgIface> cfgIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn) {
+    string fqdnName = fqdn->getName();
+    fqdn->setUsed(false);
+
+    SPtr<TIPv6Addr> dns = ptrIA->getFQDNDnsServer();
+    if (!dns) {
+        Log(Warning) << "Unable to find DNS Server for IA=" << ptrIA->getIAID() << LogEnd;
+        return;
+    }
+
+    ptrIA->firstAddr();
+    SPtr<TAddrAddr> addrAddr = ptrIA->getAddr();
+    SPtr<TIPv6Addr> clntAddr;
+    if (!addrAddr) {
+        Log(Error) << "Client does not have any addresses asigned to IA (IAID=" << ptrIA->getIAID() << ")." << LogEnd;
+        return;
+    }
+    clntAddr = addrAddr->get();
+    if (!clntAddr) {
+        // WTF? Removing FQDN for a client without address?
+        Log(Error) << "Failed to remove FQDN for client: "
+                   << "no address assigned for this client in database." << LogEnd;
+        return;
+    }
+
+    // do the actual update over wire
+    SrvIfaceMgr().delFQDN(cfgIface->getID(), dns, clntAddr, fqdnName);
 }
 
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
@@ -664,9 +792,9 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID 
     // does this server support unicast?
     SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr().getIfaceByID(Iface)->getUnicast();
     if (unicastAddr) {
-	SPtr<TOptAddr> optUnicast = new TOptAddr(OPTION_UNICAST, unicastAddr, this);
-	Options.push_back((Ptr*)optUnicast);
-	oro->delOption(OPTION_UNICAST);
+        SPtr<TOptAddr> optUnicast = new TOptAddr(OPTION_UNICAST, unicastAddr, this);
+        Options.push_back((Ptr*)optUnicast);
+        oro->delOption(OPTION_UNICAST);
     }
 
     return true;
@@ -682,8 +810,8 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID 
  *
  * @return true, if any options (conveying configuration paramter) has been appended
  */
-bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
-				     int iface, SPtr<TOptOptionRequest> reqOpts)
+bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
+                                     int iface, SPtr<TOptOptionRequest> reqOpts)
 {
     bool newOptionAssigned = false;
     // client didn't want any option? Or maybe we're not supporting this client?
@@ -703,7 +831,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     // --- option: DNS resolvers ---
     // --- option: DOMAIN LIST ---
     // --- option: NTP servers ---
-    // --- option: TIMEZONE --- 
+    // --- option: TIMEZONE ---
     // --- option: SIP SERVERS is now handled with common extra options mechanism ---
     // --- option: SIP DOMAINS is now handled with common extra options mechanism ---
     // --- option: NIS SERVERS is now handled with common extra options mechanism ---
@@ -721,7 +849,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     }
 
     // --- option: INFORMATION_REFRESH_TIME ---
-    // this option should be checked last 
+    // this option should be checked last
 
     // --- option: forced options first ---
     TOptList extraOpts; // possible additional options
@@ -786,8 +914,8 @@ string TSrvMsg::showRequestedOptions(SPtr<TOptOptionRequest> oro) {
 }
 
 #if 0
-SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
-				       SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate) {
+SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid,
+                                       SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate) {
     return SrvTransMgr().addFQDN(this->Iface, requestFQDN, clntDuid, clntAddr, hint, doRealUpdate);
 }
 
@@ -904,8 +1032,8 @@ void TSrvMsg::appendStatusCode()
 
     firstOption();
     while (opt = getOption()) {
-	switch ( opt->getOptType() ) {
-	case OPTION_IA_NA:
+        switch ( opt->getOptType() ) {
+        case OPTION_IA_NA:
             {
                 if (optLevel= (Ptr*)opt->getOption(OPTION_STATUS_CODE)) {
                     if (optLevel->getCode() != STATUSCODE_SUCCESS) {
@@ -917,7 +1045,7 @@ void TSrvMsg::appendStatusCode()
                     }
                 }
             }
-	default:
+        default:
             {
             }
         }

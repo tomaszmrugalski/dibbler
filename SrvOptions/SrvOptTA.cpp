@@ -5,7 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptTA.cpp,v 1.8 2008-10-12 20:16:14 thomson Exp $
  */
 
 #ifdef WIN32
@@ -21,7 +20,6 @@
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
-#include "SrvTransMgr.h"
 
 using namespace std;
 
