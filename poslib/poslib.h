@@ -21,7 +21,7 @@
 #ifndef __POSLIB_POSLIB_H
 #define __POSLIB_POSLIB_H
 
-/*! \mainpage Poslib documentation
+/*! \page Poslib documentation
  *
  * \section intro Introduction
  * Poslib is a DNS client/server library written in C++, which is available for

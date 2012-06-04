@@ -49,9 +49,11 @@ virtual ~RelParser();
 #define YY_RelParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_RelParser_CONSTRUCTOR_CODE                                                           \
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
-    this->lex = lex;
+    this->lex = lex;                                                              \
+    yynerrs = 0;                                                                  \
+    yychar = 0;
 
-#line 50 "RelParser.y"
+#line 52 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
