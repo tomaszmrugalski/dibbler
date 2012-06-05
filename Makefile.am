@@ -13,7 +13,7 @@ if HAVE_GTEST
     SUBDIRS += tests
 endif
 
-DIST_SUBDIRS = $(CODE_SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
+DIST_SUBDIRS = $(CODE_SUBDIRS) Port-win32 bison++ @EXTRA_DIST_SUBDIRS@ tests
 
 sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay dibbler-requestor
 

@@ -208,12 +208,14 @@ dnl ---------------------------------------------
       PORT_SUBDIR="Port-linux"
       PORT_CFLAGS=
       PORT_LDFLAGS="-lpthread"
+      EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k"
       ;;
     Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=
       PORT_LDFLAGS=
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k"
       ;;
     OpenBSD)
       ARCH="BSD"
@@ -226,6 +228,7 @@ dnl ---------------------------------------------
       PORT_LDFLAGS = "-lws2_32"
       PORT_CFLAGS  = "-DMINGWBUILD"
       PORT_SUBDIR  = "Port-win2k"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-bsd"
       ;;
     *)
       AC_MSG_ERROR("Unsupported OS: uname returned $system")
@@ -447,6 +450,9 @@ AC_SUBST(CPPFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(ARCH)
 AC_SUBST(PORT_SUBDIR)
+
+# Lists all port directories that are unused on this platform (e.g. BSD and winn2k on Linux)
+AC_SUBST(EXTRA_DIST_SUBDIRS)
 AC_SUBST(PORT_LDFLAGS)
 AC_SUBST(PORT_CFLAGS)
 AC_SUBST(LINKPRINT)
