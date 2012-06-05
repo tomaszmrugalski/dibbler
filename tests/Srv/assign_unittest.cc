@@ -4,6 +4,7 @@
 #include "SrvTransMgr.h"
 #include "OptDUID.h"
 #include "OptAddrLst.h"
+#include "OptStatusCode.h"
 #include "SrvMsgSolicit.h"
 #include "SrvMsgAdvertise.h"
 #include "SrvMsgRequest.h"
@@ -11,6 +12,7 @@
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
 #include "SrvOptTA.h"
+#include "DHCPConst.h"
 
 #include <gtest/gtest.h>
 
@@ -155,6 +157,42 @@ namespace {
             return rsp;
         }
 
+        bool checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
+                        SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1, uint32_t t2,
+                        uint32_t pref, uint32_t valid) {
+            TStationRange range(minRange, maxRange);
+            int count = 0;
+
+            EXPECT_EQ(iaid, ia_->getIAID());
+            EXPECT_EQ(t1, ia_->getT1());
+            EXPECT_EQ(t2, ia_->getT2());
+
+            ia->firstOption();
+            while (SPtr<TOpt> option = ia->getOption()) {
+                switch (option->getOptType()) {
+                case OPTION_STATUS_CODE: {
+                    SPtr<TOptStatusCode> optCode = (Ptr*)option;
+                    EXPECT_EQ(STATUSCODE_SUCCESS, optCode->getCode());
+                    break;
+                }
+                case OPTION_IAADDR: {
+                    SPtr<TSrvOptIAAddress> optAddr = (Ptr*)option;
+                    cout << "Checking address " << optAddr->getAddr()->getPlain() << endl;
+                    EXPECT_TRUE( range.in(optAddr->getAddr()) );
+                    EXPECT_EQ(pref, optAddr->getPref() );
+                    EXPECT_EQ(valid, optAddr->getValid() );
+                    count++;
+                    break;
+                }
+                default:
+                    ADD_FAILURE() << "Unexpected option type " << option->getOptType()
+                                  << " received in IA_NA(iaid=" << ia_->getIAID();
+                    break;
+                }
+            }
+            return (count>0);
+        }
+
         ~ServerTest() {
             delete transmgr_;
             delete cfgmgr_;
@@ -223,16 +261,20 @@ TEST_F(ServerTest, CfgMgr_solicit_advertise1) {
     sol->addOption((Ptr*)clntId_); // include client-id
     sol->addOption((Ptr*)ia_); // include IA_NA
 
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
+
     SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol);
     ASSERT_TRUE(adv); // check that there is a response
 
-    SPtr<TSrvOptIA_NA> ia = (Ptr*) adv->getOption(OPTION_IA_NA);
-    ASSERT_TRUE(ia);
+    SPtr<TSrvOptIA_NA> rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
 
-    // check that returned IAID is proper
-    EXPECT_EQ(ia_->getIAID(), ia->getIAID());
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::");
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff");
 
-    // @todo: check that returned address is indeed from the proper range
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
 }
 
 
