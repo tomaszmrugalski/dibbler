@@ -56,6 +56,20 @@ void TClntCfgIface::setDefaults() {
     VendorSpecState = STATE_DISABLED;
     RoutingEnabledState = STATE_DISABLED;
 
+    ReqDNSServer = false;
+    ReqDomain = false;
+    ReqNTPServer = false;
+    ReqTimezone = false;
+    ReqSIPServer = false;
+    ReqSIPDomain = false;
+    ReqFQDN = false;
+    ReqNISServer = false;
+    ReqNISPServer = false;
+    ReqNISDomain = false;
+    ReqNISPDomain = false;
+    ReqLifetime = false;
+    ReqVendorSpec = false;
+
     ExtraOpts.clear();
 }
 
@@ -274,9 +288,6 @@ void TClntCfgIface::vendorSpecSupported(bool support)
 bool TClntCfgIface::isReqDNSServer() {
     return this->ReqDNSServer;
 }
-bool TClntCfgIface::isReqPrefixDelegation() {
-    return this->ReqPrefixDelegation;
-}
 bool TClntCfgIface::isReqDomain() {
     return this->ReqDomain;
 }
@@ -471,11 +482,11 @@ void TClntCfgIface::setAuthenticationState(EState state) {
     this->AuthenticationState = state;
 }
 
-void TClntCfgIface::setPrefixLength(int len) {
+void TClntCfgIface::setOnLinkPrefixLength(int len) {
     this->PrefixLength = len;
 }
 
-int  TClntCfgIface::getPrefixLength() {
+int  TClntCfgIface::getOnLinkPrefixLength() {
     return this->PrefixLength;
 }
 

@@ -23,11 +23,12 @@ using namespace std;
  */
 unsigned long TSrvCfgPD::StaticID_ = 0;
 
-TSrvCfgPD::TSrvCfgPD() {
-    PD_T1Beg_    = 0;
-    PD_T1End_    = DHCPV6_INFINITY;
-    PD_T2Beg_    = 0;
-    PD_T2End_    = DHCPV6_INFINITY;
+TSrvCfgPD::TSrvCfgPD()
+    :PD_T1Beg_(SERVER_DEFAULT_MIN_T1), PD_T1End_(SERVER_DEFAULT_MAX_T1), 
+     PD_T2Beg_(SERVER_DEFAULT_MIN_T2), PD_T2End_(SERVER_DEFAULT_MAX_T2),
+     PD_PrefBeg_(SERVER_DEFAULT_MIN_PREF), PD_PrefEnd_(SERVER_DEFAULT_MAX_PREF),
+     PD_ValidBeg_(SERVER_DEFAULT_MIN_VALID), PD_ValidEnd_(SERVER_DEFAULT_MAX_VALID)
+{
     ID_ = StaticID_++;
     PD_Assigned_ = 0;
     PD_Count_ = 0;

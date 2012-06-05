@@ -87,8 +87,8 @@ class TSrvCfgPD
 
  private:
     unsigned long PD_T1Beg_;
-    unsigned long PD_T2Beg_;
     unsigned long PD_T1End_;
+    unsigned long PD_T2Beg_;
     unsigned long PD_T2End_;
     unsigned long PD_Length_;     // (shorter) prefix, assigned to the user, e.g. 64
     unsigned long PD_PrefBeg_;

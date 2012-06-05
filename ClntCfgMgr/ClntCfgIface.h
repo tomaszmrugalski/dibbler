@@ -174,10 +174,9 @@ public:
     EState getLifetimeState();
     void setLifetimeState(EState state);
 
-    // --- option: Prefix Delegation ---
-    bool isReqPrefixDelegation();
-    void setPrefixLength(int len);
-    int  getPrefixLength();
+    // --- see strict-rfc-no-routing ---
+    void setOnLinkPrefixLength(int len);
+    int  getOnLinkPrefixLength();
 
     // --- option: VendorSpec ---
     bool isReqVendorSpec();

@@ -526,6 +526,8 @@ void TSrvCfgIface::setDefaults() {
     NoConfig_ = false;
     Name_ = "[unknown]";
     ID_ = -1;
+    Relay_ = false;
+    RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
     RelayID_ = -1;
     Preference_ = 0;
 

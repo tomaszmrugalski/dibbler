@@ -23,12 +23,10 @@ using namespace std;
 unsigned long TSrvCfgTA::staticID=0;
 
 
-TSrvCfgTA::TSrvCfgTA() {
-    this->Pref  = SERVER_DEFAULT_TA_PREF_LIFETIME;
-    this->Pref  = SERVER_DEFAULT_TA_VALID_LIFETIME;
-    this->ID    = staticID++;
-    this->AddrsAssigned = 0;
-    this->AddrsCount = 0;
+TSrvCfgTA::TSrvCfgTA() 
+    :Pref(SERVER_DEFAULT_TA_PREF_LIFETIME), Valid(SERVER_DEFAULT_TA_VALID_LIFETIME),
+     ClassMaxLease(SERVER_DEFAULT_CLASS_MAX_LEASE), AddrsAssigned(0), AddrsCount(0) {
+    ID = staticID++;
 }
 
 TSrvCfgTA::~TSrvCfgTA() {
