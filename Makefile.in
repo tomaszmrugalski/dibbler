@@ -222,6 +222,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -329,7 +330,7 @@ CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr \
 	RelOptions RelTransMgr ClntOptions ClntTransMgr ClntAddrMgr \
 	ClntCfgMgr ClntIfaceMgr ClntMessages Requestor doc
 SUBDIRS = $(CODE_SUBDIRS) $(am__append_1)
-DIST_SUBDIRS = $(CODE_SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
+DIST_SUBDIRS = $(CODE_SUBDIRS) Port-win32 bison++ @EXTRA_DIST_SUBDIRS@ tests
 dibbler_client_SOURCES =  \
 	$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp \
 	$(top_srcdir)/Misc/DHCPClient.cpp \
