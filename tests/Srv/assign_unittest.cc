@@ -9,6 +9,12 @@
 #include "SrvMsgAdvertise.h"
 #include "SrvMsgRequest.h"
 #include "SrvMsgReply.h"
+#include "SrvMsgRenew.h"
+#include "SrvMsgRebind.h"
+#include "SrvMsgRelease.h"
+#include "SrvMsgConfirm.h"
+#include "SrvMsgDecline.h"
+#include "SrvMsgInfRequest.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
 #include "SrvOptTA.h"
@@ -117,37 +123,92 @@ namespace {
             return true;
         }
 
+        void createIAs(TMsg * msg) {
+            ia_iaid_ = 123;
+            ia_ = new TSrvOptIA_NA(ia_iaid_, 100, 200, msg);
+            ta_iaid_ = 456;
+            ta_ = new TOptTA(ta_iaid_, msg);
+            pd_iaid_ = 789;
+            pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, msg);
+        }
+
         SPtr<TSrvMsgSolicit> createSolicit() {
 
-            char empty[] = { 0x01, 0x1, 0x2, 0x3};
+            char empty[] = { SOLICIT_MSG, 0x1, 0x2, 0x3};
             SPtr<TSrvMsgSolicit> sol = new TSrvMsgSolicit(iface_->getID(), clntAddr_, empty, sizeof(empty));
-
-            ia_iaid_ = 123;
-            ia_ = new TSrvOptIA_NA(ia_iaid_, 100, 200, &(*sol));
-            ta_iaid_ = 456;
-            ta_ = new TOptTA(ta_iaid_, &(*sol));
-            pd_iaid_ = 789;
-            pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, &(*sol));
-
+            createIAs(&(*sol));
             return sol;
         }
 
-        SPtr<TSrvMsg> sendAndReceive(SPtr<TSrvMsg> clntMsg) {
-            EXPECT_EQ(0, transmgr_->getMsgLst().count());
+        SPtr<TSrvMsgRequest> createRequest() {
+            char empty[] = { REQUEST_MSG, 0x1, 0x2, 0x4};
+            SPtr<TSrvMsgRequest> request = new TSrvMsgRequest(iface_->getID(), clntAddr_, empty, sizeof(empty));
+            createIAs(&(*request));
+            return request;
+        }
+
+        SPtr<TSrvMsgRenew> createRenew() {
+            char empty[] = { RENEW_MSG, 0x1, 0x2, 0x5};
+            SPtr<TSrvMsgRenew> renew = new TSrvMsgRenew(iface_->getID(), clntAddr_, empty, sizeof(empty));
+            createIAs(&(*renew));
+            return renew;
+        }
+
+        SPtr<TSrvMsgRebind> createRebind() {
+            char empty[] = { REBIND_MSG, 0x1, 0x2, 0x6};
+            SPtr<TSrvMsgRebind> rebind = new TSrvMsgRebind(iface_->getID(), clntAddr_, empty, sizeof(empty));
+            createIAs(&(*rebind));
+            return rebind;
+        }
+
+        SPtr<TSrvMsgRelease> createRelease() {
+            char empty[] = { RELEASE_MSG, 0x1, 0x2, 0x7};
+            SPtr<TSrvMsgRelease> release = new TSrvMsgRelease(iface_->getID(), clntAddr_, empty, sizeof(empty));
+            createIAs(&(*release));
+            return release;
+        }
+
+        SPtr<TSrvMsgDecline> createDecline() {
+            char empty[] = { DECLINE_MSG, 0x1, 0x2, 0x8};
+            SPtr<TSrvMsgDecline> decline = new TSrvMsgDecline(iface_->getID(), clntAddr_, empty, sizeof(empty));
+            createIAs(&(*decline));
+            return decline;
+        }
+
+        SPtr<TSrvMsgConfirm> createConfirm() {
+            char empty[] = { CONFIRM_MSG, 0x1, 0x2, 0x9};
+            SPtr<TSrvMsgConfirm> confirm = new TSrvMsgConfirm(iface_->getID(), clntAddr_, empty, sizeof(empty));
+            createIAs(&(*confirm));
+            return confirm;
+        }
+
+        SPtr<TSrvMsgInfRequest> createInfRequest() {
+            char empty[] = { INFORMATION_REQUEST_MSG, 0x1, 0x2, 0xa};
+            SPtr<TSrvMsgInfRequest> infrequest = new TSrvMsgInfRequest(iface_->getID(), clntAddr_, empty, sizeof(empty));
+            createIAs(&(*infrequest));
+            return infrequest;
+        }
+
+        SPtr<TSrvMsg> sendAndReceive(SPtr<TSrvMsg> clntMsg, int expectedMsgCount = 1) {
+            EXPECT_EQ(expectedMsgCount - 1, transmgr_->getMsgLst().count());
 
             // process it through server usual routines
             transmgr_->relayMsg(clntMsg);
 
-            EXPECT_EQ(1, transmgr_->getMsgLst().count());
+            EXPECT_EQ(expectedMsgCount, transmgr_->getMsgLst().count());
 
             List(TSrvMsg) & msglst = transmgr_->getMsgLst();
             msglst.first();
-            SPtr<TSrvMsg> rsp = msglst.get();
-            if (!rsp) {
-                ADD_FAILURE() << "MsgLst empty. No message response generated.";
-                return 0;
+            SPtr<TSrvMsg> rsp;
+            while (rsp = msglst.get()) {
+                if (rsp->getTransID() == clntMsg->getTransID())
+                    break;
             }
 
+            if (!rsp) {
+                ADD_FAILURE() << "Response with transid=" << hex << clntMsg->getTransID() << " not found.";
+                return 0;
+            }
 
             if (clntMsg->getTransID() != rsp->getTransID()) {
                 ADD_FAILURE() << "Returned message has transid=" << rsp->getTransID()
@@ -178,7 +239,7 @@ namespace {
                 }
                 case OPTION_IAADDR: {
                     SPtr<TSrvOptIAAddress> optAddr = (Ptr*)option;
-                    cout << "Checking address " << optAddr->getAddr()->getPlain() << endl;
+                    cout << "Checking received address " << optAddr->getAddr()->getPlain() << endl;
                     EXPECT_TRUE( range.in(optAddr->getAddr()) );
                     EXPECT_EQ(pref, optAddr->getPref() );
                     EXPECT_EQ(valid, optAddr->getValid() );
@@ -257,7 +318,7 @@ TEST_F(ServerTest, CfgMgr_solicit_advertise1) {
 
     ASSERT_TRUE( createMgrs(cfg) );
 
-    // now generate client's message
+    // now generate SOLICIT
     SPtr<TSrvMsgSolicit> sol = createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
     sol->addOption((Ptr*)ia_); // include IA_NA
@@ -266,14 +327,38 @@ TEST_F(ServerTest, CfgMgr_solicit_advertise1) {
     ia_->setT1(101);
     ia_->setT2(102);
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol);
-    ASSERT_TRUE(adv); // check that there is a response
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    ASSERT_TRUE(adv); // check that there is an ADVERTISE response
+
 
     SPtr<TSrvOptIA_NA> rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
     ASSERT_TRUE(rcvIA);
 
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
     SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff", true);
+
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
+
+    cout << "REQUEST" << endl;
+
+    // now generate REQUEST
+    SPtr<TSrvMsgRequest> req = createRequest();
+    req->addOption((Ptr*)clntId_);
+    req->addOption((Ptr*)ia_);
+
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
+
+    ASSERT_TRUE(adv->getOption(OPTION_SERVERID));
+    req->addOption(adv->getOption(OPTION_SERVERID));
+
+    // ... and get REPLY from the server
+    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    ASSERT_TRUE(reply);
+
+    rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
 
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
 }

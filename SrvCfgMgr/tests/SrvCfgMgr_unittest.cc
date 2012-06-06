@@ -9,9 +9,30 @@ using namespace std;
 
 namespace {
 
+    class NakedSrvIfaceMgr: public TSrvIfaceMgr {
+    public:
+        NakedSrvIfaceMgr(const std::string& xmlFile)
+            : TSrvIfaceMgr(xmlFile) {
+            TSrvIfaceMgr::Instance = this;
+        }
+        ~NakedSrvIfaceMgr() {
+            TSrvIfaceMgr::Instance = NULL;
+        }
+    };
+
     class SrvCfgMgrTest : public ::testing::Test {
     public:
-        SrvCfgMgrTest() { }
+        SrvCfgMgrTest() {
+            ifacemgr_ = new NakedSrvIfaceMgr("testdata/server-IfaceMgr.xml");
+
+            // try to pick up an up and running interface
+            ifacemgr_->firstIface();
+            while ( (iface_ = ifacemgr_->getIface())
+                    && (!iface_->flagUp() || !iface_->flagRunning())) {
+            }
+        }
+        NakedSrvIfaceMgr * ifacemgr_;
+        SPtr<TIfaceIface> iface_;
     };
 
     class NakedSrvCfgMgr : public TSrvCfgMgr {
@@ -22,14 +43,8 @@ namespace {
 
 TEST_F(SrvCfgMgrTest, constructor) {
 
-    TSrvIfaceMgr::instanceCreate("testdata/server-IfaceMgr1.xml");
-    TIfaceMgr & ifacemgr = SrvIfaceMgr();
-
-    ifacemgr.firstIface();
-    SPtr<TIfaceIface> iface = ifacemgr.getIface();
-    string iface_name = iface->getName();
-
-    string cfg = string("iface \"" + iface_name + "\" {\n"
+    ASSERT_TRUE(iface_);
+    string cfg = string("iface \"") + iface_->getName() + "\" {\n"
                         "  class { pool 2001:db8:1111::/64 }\n"
                         "  option nis-server 2000::400,2000::401,2000::404,2000::405,2000::405\n"
                         "  option nis-domain nis.example.com\n"
@@ -39,7 +54,7 @@ TEST_F(SrvCfgMgrTest, constructor) {
                         "\n"
                         "iface nonexistent0 {\n"
                         "  class { pool 2003::/64 }\n"
-                        "}");
+                        "}";
 
     ofstream cfgfile("testdata/server-1.conf");
     cfgfile << cfg;
@@ -50,11 +65,11 @@ TEST_F(SrvCfgMgrTest, constructor) {
     SPtr<TSrvCfgIface> cfgIface;
     cfgmgr->firstIface();
     while (cfgIface = cfgmgr->getIface()) {
-        if (cfgIface->getName() == iface_name)
+        if (cfgIface->getName() == iface_->getName())
             break;
     }
     if (!cfgIface) {
-        ADD_FAILURE() << "Failed to find expected " << iface_name << " interface." << endl;
+        ADD_FAILURE() << "Failed to find expected " << iface_->getName() << " interface." << endl;
     } else {
         SPtr<TOptAddrLst> opt = (Ptr*)cfgIface->getExtraOption(OPTION_NIS_SERVERS);
         EXPECT_TRUE(opt);
@@ -68,10 +83,8 @@ TEST_F(SrvCfgMgrTest, constructor) {
 
         ASSERT_TRUE(addr);
         EXPECT_EQ(string("2000::400"), addr->getPlain());
-
-        /// @todo: add validation of the remaining contents
     }
-    
+
 
     //delete cfgmgr;
 }
