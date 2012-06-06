@@ -45,7 +45,7 @@ List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-List(TStationID) PresentStationLst;                                         \
+List(THostID) PresentStationLst;                                         \
 List(TIPv6Addr) PresentAddrLst;                                             \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;                                         \
@@ -832,19 +832,19 @@ Routing
 ADDRESDUIDList
 : IPV6ADDR_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr($1))));
+    PresentStationLst.append(SPtr<THostID> (new THostID(new TIPv6Addr($1))));
 }
 | DUID_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TDUID($1.duid,$1.length))));
+    PresentStationLst.append(SPtr<THostID> (new THostID(new TDUID($1.duid,$1.length))));
 }
 | ADDRESDUIDList ',' IPV6ADDR_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr($3))));
+    PresentStationLst.append(SPtr<THostID> (new THostID(new TIPv6Addr($3))));
 }
 | ADDRESDUIDList ',' DUID_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID( new TDUID($3.duid,$3.length))));
+    PresentStationLst.append(SPtr<THostID> (new THostID( new TDUID($3.duid,$3.length))));
 }
 ;
 

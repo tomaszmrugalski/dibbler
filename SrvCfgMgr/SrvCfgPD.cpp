@@ -85,10 +85,10 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
     PD_Length_   = prefixLength;
     PD_MaxLease_ = opt->getClassMaxLease();
 
-    SPtr<TStationRange> PD_Range;
+    SPtr<THostRange> PD_Range;
 
     opt->firstPool();
-    SPtr<TStationRange> pool = 0;
+    SPtr<THostRange> pool = 0;
     if (!(pool=opt->getPool())) {
         Log(Error) << "Unable to find any prefix pools. Please define at least one using 'pd-pool' keyword." << LogEnd;
         return false;
@@ -124,7 +124,7 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
         return false;
     }
 
-    CommonPool_ = new TStationRange( new TIPv6Addr(*pool->getAddrL()), new TIPv6Addr(*pool->getAddrR()));
+    CommonPool_ = new THostRange( new TIPv6Addr(*pool->getAddrL()), new TIPv6Addr(*pool->getAddrR()));
     CommonPool_->truncate(pool->getPrefixLength()+1, prefixLength);
     CommonPool_->setPrefixLength(poolLength);
 
@@ -144,7 +144,7 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 
 bool TSrvCfgPD::prefixInPool(SPtr<TIPv6Addr> prefix)
 {
-    SPtr<TStationRange> pool = 0;
+    SPtr<THostRange> pool = 0;
     PoolLst_.first();
     while ( pool = PoolLst_.get() ) {
         if (pool->in(prefix))
@@ -160,7 +160,7 @@ bool TSrvCfgPD::prefixInPool(SPtr<TIPv6Addr> prefix)
  */
 SPtr<TIPv6Addr> TSrvCfgPD::getRandomPrefix()
 {
-    SPtr<TStationRange> pool;
+    SPtr<THostRange> pool;
     PoolLst_.first();
     pool = PoolLst_.get();
     if (pool)
@@ -177,7 +177,7 @@ SPtr<TIPv6Addr> TSrvCfgPD::getRandomPrefix()
  */
 List(TIPv6Addr) TSrvCfgPD::getRandomList() {
     SPtr<TIPv6Addr> commonPart,tmp;
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
 
     List(TIPv6Addr) lst;
     lst.clear();
@@ -239,9 +239,9 @@ ostream& operator<<(ostream& out,TSrvCfgPD& prefix)
     out << "      <valid-lifetime min=\"" << prefix.PD_ValidBeg_ << "\" max=\"" << prefix.PD_ValidEnd_  << "\" />" << endl;
     out << "      <PDMaxLease>" << prefix.PD_MaxLease_ << "</PDMaxLease>" << endl;
 
-    SPtr<TStationRange> statRange;
+    SPtr<THostRange> statRange;
     out << "      <!-- prefix range -->" << endl;
-    SPtr<TStationRange> pool;
+    SPtr<THostRange> pool;
     prefix.PoolLst_.first();
     while (pool = prefix.PoolLst_.get()) {
         out << *pool;

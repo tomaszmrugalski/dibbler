@@ -13,6 +13,7 @@
 #include "SrvOptIA_PD.h"
 #include "SrvOptTA.h"
 #include "DHCPConst.h"
+#include "HostRange.h"
 
 #include <gtest/gtest.h>
 
@@ -160,7 +161,7 @@ namespace {
         bool checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
                         SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1, uint32_t t2,
                         uint32_t pref, uint32_t valid) {
-            TStationRange range(minRange, maxRange);
+            THostRange range(minRange, maxRange);
             int count = 0;
 
             EXPECT_EQ(iaid, ia_->getIAID());
@@ -271,8 +272,8 @@ TEST_F(ServerTest, CfgMgr_solicit_advertise1) {
     SPtr<TSrvOptIA_NA> rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
     ASSERT_TRUE(rcvIA);
 
-    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::");
-    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff");
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff", true);
 
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
 }

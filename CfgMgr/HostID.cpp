@@ -7,40 +7,40 @@
  * released under GNU GPL v2 only licence
  */
 
-#include "StationID.h"
+#include "HostID.h"
 
 #include <iostream>
 #include <iomanip>
 
 using namespace std;
 
-TStationID::TStationID(SPtr<TIPv6Addr> addr)
+THostID::THostID(SPtr<TIPv6Addr> addr)
 {
     this->Addr=addr;
     isIDAddress=true;
 }
 
-TStationID::TStationID(SPtr<TDUID> duid)
+THostID::THostID(SPtr<TDUID> duid)
 {
     this->DUID=duid;
     isIDAddress=false;
 }
 
-bool TStationID::operator==(SPtr<TIPv6Addr> addr)
+bool THostID::operator==(SPtr<TIPv6Addr> addr)
 {   
     if (!isIDAddress)
         return false;
     return *addr==*Addr;
 }
 
-bool TStationID::operator==(SPtr<TDUID> duid)
+bool THostID::operator==(SPtr<TDUID> duid)
 {
     if (isIDAddress)
         return false;
     return *duid==*DUID;
 }
 
-ostream& operator<<(ostream& out,TStationID&  station)
+ostream& operator<<(ostream& out,THostID&  station)
 {
     if (station.DUID) {
         out<<*station.DUID;

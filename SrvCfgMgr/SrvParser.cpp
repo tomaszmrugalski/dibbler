@@ -154,8 +154,8 @@ List(std::string) PresentStringLst;             /* string list */               
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
-List(TStationRange) PresentRangeLst;                                                 \
-List(TStationRange) PDLst;                                                           \
+List(THostRange) PresentRangeLst;                                                 \
+List(THostRange) PDLst;                                                           \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -2299,7 +2299,7 @@ case 158:
 case 159:
 #line 578 "SrvParser.y"
 {
-	PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
+	PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
 case 160:
@@ -2308,9 +2308,9 @@ case 160:
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     ;
     break;}
 case 161:
@@ -2326,15 +2326,15 @@ case 161:
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin(yyvsp[-2].addrval, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax(yyvsp[-2].addrval, prefix);
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     ;
     break;}
 case 162:
 #line 607 "SrvParser.y"
 {
-	PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
+	PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
 case 163:
@@ -2343,9 +2343,9 @@ case 163:
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     ;
     break;}
 case 164:
@@ -2361,11 +2361,11 @@ case 164:
 
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin(yyvsp[-2].addrval, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax(yyvsp[-2].addrval, prefix);
-	SPtr<TStationRange> range = 0;
+	SPtr<THostRange> range = 0;
 	if (*addr1<=*addr2)
-	    range = new TStationRange(addr1,addr2);
+	    range = new THostRange(addr1,addr2);
 	else
-	    range = new TStationRange(addr2,addr1);
+	    range = new THostRange(addr2,addr1);
 	range->setPrefixLength(prefix);
 	PDLst.append(range);
     ;
@@ -2373,7 +2373,7 @@ case 164:
 case 165:
 #line 646 "SrvParser.y"
 {
-    PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
+    PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
 ;
     break;}
 case 166:
@@ -2382,15 +2382,15 @@ case 166:
     SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
     if (*addr1<=*addr2)
-	PresentRangeLst.append(new TStationRange(addr1,addr2));
+	PresentRangeLst.append(new THostRange(addr1,addr2));
     else
-	PresentRangeLst.append(new TStationRange(addr2,addr1));
+	PresentRangeLst.append(new THostRange(addr2,addr1));
 ;
     break;}
 case 167:
 #line 659 "SrvParser.y"
 {
-    PresentRangeLst.append(new TStationRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
+    PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
 ;
     break;}
 case 168:
@@ -2399,16 +2399,16 @@ case 168:
     SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
     if (*addr1<=*addr2)
-	PresentRangeLst.append(new TStationRange(addr1,addr2));
+	PresentRangeLst.append(new THostRange(addr1,addr2));
     else
-	PresentRangeLst.append(new TStationRange(addr2,addr1));
+	PresentRangeLst.append(new THostRange(addr2,addr1));
 ;
     break;}
 case 169:
 #line 672 "SrvParser.y"
 {
     SPtr<TDUID> duid(new TDUID(yyvsp[0].duidval.duid, yyvsp[0].duidval.length));
-    PresentRangeLst.append(new TStationRange(duid, duid));
+    PresentRangeLst.append(new THostRange(duid, duid));
     delete yyvsp[0].duidval.duid;
 ;
     break;}
@@ -2419,9 +2419,9 @@ case 170:
     SPtr<TDUID> duid2(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
 
     if (*duid1<=*duid2)
-	PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new THostRange(duid1,duid2));
     else
-	PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new THostRange(duid2,duid1));
 
     /// @todo: delete [] $1.duid; delete [] $3.duid?
 ;
@@ -2430,7 +2430,7 @@ case 171:
 #line 690 "SrvParser.y"
 {
     SPtr<TDUID> duid(new TDUID(yyvsp[0].duidval.duid, yyvsp[0].duidval.length));
-    PresentRangeLst.append(new TStationRange(duid, duid));
+    PresentRangeLst.append(new THostRange(duid, duid));
     delete yyvsp[0].duidval.duid;
 ;
     break;}
@@ -2440,9 +2440,9 @@ case 172:
     SPtr<TDUID> duid2(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
     SPtr<TDUID> duid1(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
     if (*duid1<=*duid2)
-	PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new THostRange(duid1,duid2));
     else
-	PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new THostRange(duid2,duid1));
     delete yyvsp[-2].duidval.duid;
     delete yyvsp[0].duidval.duid;
 ;
@@ -3676,7 +3676,7 @@ bool SrvParser::EndPDDeclaration()
 
     int len = 0;
     this->PDLst.first();
-    while ( SPtr<TStationRange> pool = PDLst.get() ) {
+    while ( SPtr<THostRange> pool = PDLst.get() ) {
 	if (!len)
 	    len = pool->getPrefixLength();
 	if (len!=pool->getPrefixLength()) {

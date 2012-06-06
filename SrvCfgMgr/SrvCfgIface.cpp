@@ -795,7 +795,7 @@ void TSrvCfgIface::delTAAddr() {
 // --------------------------------------------------------------------
 
 ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
-    SPtr<TStationID> Station;
+    SPtr<THostID> Station;
     SPtr<TIPv6Addr> addr;
     SPtr<string> str;
 

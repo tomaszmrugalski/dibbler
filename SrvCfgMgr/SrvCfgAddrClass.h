@@ -81,7 +81,7 @@ class TSrvCfgAddrClass
 
     long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
 
-    SPtr<TStationRange> Pool_;
+    SPtr<THostRange> Pool_;
     unsigned long ClassMaxLease_;
     unsigned long AddrsAssigned_;
     unsigned long AddrsCount_;
@@ -97,8 +97,8 @@ class TSrvCfgAddrClass
     List(TSrvCfgClientClass) DenyClientClassLst_;
 
     // old white/black-list
-    List(TStationRange) RejedClnt_;
-    List(TStationRange) AcceptClnt_;
+    List(THostRange) RejedClnt_;
+    List(THostRange) AcceptClnt_;
 };
 
 #endif

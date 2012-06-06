@@ -47,7 +47,7 @@ TSrvCfgAddrClass::~TSrvCfgAddrClass() {
  */
 bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt_.first();
     // is client on black list?
     while(range = RejedClnt_.get())
@@ -88,7 +88,7 @@ bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, 
                         return true;
         }
 
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt_.first();
 
     // is client on black list?
@@ -117,7 +117,7 @@ bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, 
  */
 bool TSrvCfgAddrClass::clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt_.first();
     // is client on black list?
     while(range = RejedClnt_.get())
@@ -179,7 +179,7 @@ void TSrvCfgAddrClass::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 
     ClassMaxLease_ = opt->getClassMaxLease();
 
-    SPtr<TStationRange> statRange;
+    SPtr<THostRange> statRange;
     opt->firstRejedClnt();
     while(statRange = opt->getRejedClnt())
         RejedClnt_.append(statRange);
@@ -293,7 +293,7 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     out << "      <valid min=\"" << addrClass.ValidBeg_ << "\" max=\""<< addrClass.ValidEnd_ << "\" />" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease_ << "</ClassMaxLease>" << endl;
 
-    SPtr<TStationRange> statRange;
+    SPtr<THostRange> statRange;
     out << "      <!-- address range -->" << endl;
     out << *addrClass.Pool_;
 

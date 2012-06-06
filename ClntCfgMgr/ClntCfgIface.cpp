@@ -123,7 +123,7 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     if (ReqVendorSpec) setVendorSpecState(STATE_NOTCONFIGURED);
 
     // copy preferred-server list
-    SPtr<TStationID> station;
+    SPtr<THostID> station;
     opt->firstPrefSrv();
     while (station = opt->getPrefSrv())
         PrefSrvLst.append(station);
@@ -137,7 +137,7 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
 bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
 {
     RejectedSrvLst.first();
-    SPtr<TStationID> RejectedSrv;
+    SPtr<THostID> RejectedSrv;
     while(RejectedSrv=RejectedSrvLst.get())
     {
         if (((*RejectedSrv)==addr)||((*RejectedSrv)==duid))
