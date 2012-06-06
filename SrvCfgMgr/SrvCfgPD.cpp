@@ -30,6 +30,7 @@ TSrvCfgPD::TSrvCfgPD()
      PD_ValidBeg_(SERVER_DEFAULT_MIN_VALID), PD_ValidEnd_(SERVER_DEFAULT_MAX_VALID)
 {
     ID_ = StaticID_++;
+    PD_MaxLease_ = SERVER_DEFAULT_CLASSMAXLEASE;
     PD_Assigned_ = 0;
     PD_Count_ = 0;
     PD_Length_ = 0;

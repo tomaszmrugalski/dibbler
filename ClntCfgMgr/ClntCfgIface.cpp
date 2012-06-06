@@ -70,6 +70,8 @@ void TClntCfgIface::setDefaults() {
     ReqLifetime = false;
     ReqVendorSpec = false;
 
+    ReqPrefixDelegation = false;
+
     ExtraOpts.clear();
 }
 
