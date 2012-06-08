@@ -112,7 +112,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent)
 /// @param queryMsg 
 /// @param parent 
 TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, TMsg* parent)
-    :TOptIA_NA(queryOpt->getIAID(), DHCPV6_INFINITY, DHCPV6_INFINITY, parent) {
+    :TOptIA_NA(queryOpt->getIAID(), queryOpt->getT1(), queryOpt->getT2(), parent) {
 
     Iface = parent->getIface();
     ClntAddr = queryMsg->getAddr();
@@ -198,6 +198,9 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
 /// This method may delete entry from cache if it finds out that entry is used by someone else
 /// or is no longer valid (i.e. updated config has different pool definitions).
 /// That is step 6 of lease assignment policy.
+///
+/// @param queryOpt IA_NA option sent by client
+/// @param quiet should the assignment messages be logged (it shouldn't for solicit)
 ///
 /// @return true, if address was assigned
 bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
