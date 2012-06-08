@@ -520,8 +520,8 @@ TEST_F(ServerTest, SARR_inpool_reservation_negative) {
         ADD_FAILURE() << "Assigned address that was reserved for someone else.";
     }
 
-    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::babe", true);
-    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::babe", true);
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff", true);
 
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
 

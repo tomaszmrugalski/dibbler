@@ -165,7 +165,6 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
                                          "No more addresses for you. Sorry.", Parent));
 }
 
-
 bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA> queryOpt, bool quiet) {
     SPtr<TOpt> opt;
     SPtr<TIPv6Addr> hint, candidate;
@@ -178,6 +177,11 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
 	case OPTION_IAADDR: {
 	    optAddr = (Ptr*) opt;
 	    hint    = optAddr->getAddr();
+
+            if (SrvCfgMgr().addrReserved(hint)) {
+                Log(Debug) << "Requested address " << hint->getPlain() << " is reserved for someone else, sorry." << LogEnd;
+                return false;
+            }
 
             if (candidate = getAddressHint(queryMsg, hint)) {
                 if (assignAddr(candidate, optAddr->getPref(), optAddr->getValid(), quiet))

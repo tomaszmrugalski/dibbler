@@ -642,7 +642,7 @@ bool TSrvCfgMgr::addrReserved(SPtr<TIPv6Addr> addr) {
     SPtr<TSrvCfgIface> iface;
     SrvCfgIfaceLst.first();
     while (iface = SrvCfgIfaceLst.get()) {
-        if (addrReserved(addr))
+        if (iface->addrReserved(addr))
             return true;
     }
     return false;

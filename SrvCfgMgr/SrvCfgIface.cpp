@@ -88,7 +88,7 @@ bool TSrvCfgIface::addrReserved(SPtr<TIPv6Addr> addr)
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
     while (x=ExceptionsLst_.get()) {
-        if (x->getAddr() == addr)
+        if (*x->getAddr() == *addr)
             return true;
     }
     return false;
