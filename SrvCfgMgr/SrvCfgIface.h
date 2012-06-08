@@ -118,7 +118,15 @@ public:
 
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 
+    // following methods are used by out-of-pool reservations (others are using
+    // methods from pool (SrvCfgAddrClass)
+    uint32_t getT1(uint32_t proposal);
+    uint32_t getT2(uint32_t proposal);
+    uint32_t getPref(uint32_t proposal);
+    uint32_t getValid(uint32_t proposal);
 private:
+    uint32_t chooseTime(uint32_t min, uint32_t max, uint32_t proposal);
+
     unsigned char Preference_;
     int	ID_;
     std::string Name_;
@@ -151,6 +159,14 @@ private:
 
     // --- per-client parameters (exceptions) ---
     List(TSrvCfgOptions) ExceptionsLst_;
+    uint32_t T1Min_;
+    uint32_t T1Max_;
+    uint32_t T2Min_;
+    uint32_t T2Max_;
+    uint32_t PrefMin_;
+    uint32_t PrefMax_;
+    uint32_t ValidMin_;
+    uint32_t ValidMax_;
 };
 
 #endif /* SRVCONFIFACE_H */

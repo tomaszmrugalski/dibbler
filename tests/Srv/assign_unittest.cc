@@ -74,7 +74,7 @@ namespace {
     class ServerTest : public ::testing::Test {
     public:
         ServerTest() {
-            clntDuid_ = new TDUID("00:01:00:06:15:0e:50:52:dc:2b:61:e5:40:9c");
+            clntDuid_ = new TDUID("00:01:00:0a:0b:0c:0d:0e:0f");
             clntId_ = new TOptDUID(OPTION_CLIENTID, clntDuid_, NULL);
             clntAddr_ = new TIPv6Addr("fe80::1234", true);
 
@@ -103,6 +103,8 @@ namespace {
             ofstream cfgfile("testdata/server.conf");
             cfgfile << config;
             cfgfile.close();
+
+            unlink("server-cache.xml");
 
             cfgmgr_ = new NakedSrvCfgMgr("testdata/server.conf", "testdata/server-CfgMgr.xml");
             addrmgr_ = new NakedSrvAddrMgr("testdata/server-AddrMgr.xml", false); // don't load db
@@ -381,7 +383,6 @@ TEST_F(ServerTest, SARR_single_class_params) {
     SPtr<TSrvMsgSolicit> sol = createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
     sol->addOption((Ptr*)ia_); // include IA_NA
-
     ia_->setIAID(100);
     ia_->setT1(101);
     ia_->setT2(102);
@@ -403,7 +404,122 @@ TEST_F(ServerTest, SARR_single_class_params) {
     SPtr<TSrvMsgRequest> req = createRequest();
     req->addOption((Ptr*)clntId_);
     req->addOption((Ptr*)ia_);
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
 
+    ASSERT_TRUE(adv->getOption(OPTION_SERVERID));
+    req->addOption(adv->getOption(OPTION_SERVERID));
+
+    // ... and get REPLY from the server
+    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    ASSERT_TRUE(reply);
+
+    rcvIA = (Ptr*) reply->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
+
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
+}
+
+TEST_F(ServerTest, SARR_inpool_reservation) {
+
+    // check that an interface was successfully selected
+    string cfg = "iface REPLACE_ME {\n"
+        "  t1 1000\n"
+        "  t2 2000\n"
+        "  preferred-lifetime 3000\n"
+        "  valid-lifetime 4000\n"
+        "  class { pool 2001:db8:123::/64 }\n"
+        "  client duid 00:01:00:0a:0b:0c:0d:0e:0f {\n"
+        "    address 2001:db8:123::babe\n"
+        "  }\n"
+        "}\n";
+
+    ASSERT_TRUE( createMgrs(cfg) );
+
+    // now generate SOLICIT
+    SPtr<TSrvMsgSolicit> sol = createSolicit();
+    sol->addOption((Ptr*)clntId_); // include client-id
+    sol->addOption((Ptr*)ia_); // include IA_NA
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
+
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    ASSERT_TRUE(adv); // check that there is an ADVERTISE response
+
+    SPtr<TSrvOptIA_NA> rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
+
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::babe", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::babe", true);
+
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
+
+    cout << "REQUEST" << endl;
+
+    // now generate REQUEST
+    SPtr<TSrvMsgRequest> req = createRequest();
+    req->addOption((Ptr*)clntId_);
+    req->addOption((Ptr*)ia_);
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
+
+    ASSERT_TRUE(adv->getOption(OPTION_SERVERID));
+    req->addOption(adv->getOption(OPTION_SERVERID));
+
+    // ... and get REPLY from the server
+    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    ASSERT_TRUE(reply);
+
+    rcvIA = (Ptr*) reply->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
+
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
+}
+
+TEST_F(ServerTest, SARR_outpool_reservation) {
+
+    // check that an interface was successfully selected
+    string cfg = "iface REPLACE_ME {\n"
+        "  t1 1000\n"
+        "  t2 2000\n"
+        "  preferred-lifetime 3000\n"
+        "  valid-lifetime 4000\n"
+        "  class { pool 2001:db8:123::/64 }\n"
+        "  client duid 00:01:00:0a:0b:0c:0d:0e:0f {\n"
+        "    address 2002::babe\n"
+        "  }\n"
+        "}\n";
+
+    ASSERT_TRUE( createMgrs(cfg) );
+
+    // now generate SOLICIT
+    SPtr<TSrvMsgSolicit> sol = createSolicit();
+    sol->addOption((Ptr*)clntId_); // include client-id
+    sol->addOption((Ptr*)ia_); // include IA_NA
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
+
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    ASSERT_TRUE(adv); // check that there is an ADVERTISE response
+
+    SPtr<TSrvOptIA_NA> rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
+
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2002::babe", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2002::babe", true);
+
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
+
+    cout << "REQUEST" << endl;
+
+    // now generate REQUEST
+    SPtr<TSrvMsgRequest> req = createRequest();
+    req->addOption((Ptr*)clntId_);
+    req->addOption((Ptr*)ia_);
     ia_->setIAID(100);
     ia_->setT1(101);
     ia_->setT2(102);

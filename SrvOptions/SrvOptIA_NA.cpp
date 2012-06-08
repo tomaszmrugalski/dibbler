@@ -254,25 +254,26 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
     // if the lease is not within normal range, treat it as fixed, infinite one
     uint32_t pref = DHCPV6_INFINITY;
     uint32_t valid = DHCPV6_INFINITY;
-    
+
+    SPtr<TSrvOptIAAddress> hint = (Ptr*) req->getOption(OPTION_IAADDR);
+    if (hint) {
+        pref = hint->getPref();
+        valid = hint->getValid();
+    }
+
     SPtr<TSrvCfgAddrClass> pool;
     iface->firstAddrClass();
     while (pool = iface->getAddrClass()) {
         // This is not the pool you are looking for.
         if (!pool->addrInPool(reservedAddr))
             continue;
+
         T1_ = pool->getT1(req->getT1());
         T2_ = pool->getT2(req->getT2());
-        
-        SPtr<TSrvOptIAAddress> hint = (Ptr*) req->getOption(OPTION_IAADDR);
-        if (hint) {
-            pref = hint->getPref();
-            valid = hint->getValid();
-        }
-        
+
         pref = pool->getPref(pref);
         valid = pool->getValid(valid);
-        
+
         Log(Info) << "Reserved in-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
         SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
         SubOptions.append(optAddr);
@@ -283,6 +284,10 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
     }
     
     // This address does not belong to any pool. Assign it anyway
+    T1_ = iface->getT1(req->getT1());
+    T2_ = iface->getT2(req->getT2());
+    pref = iface->getPref(pref);
+    valid = iface->getValid(valid);
     Log(Info) << "Reserved out-of-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
     SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
     SubOptions.append(optAddr);

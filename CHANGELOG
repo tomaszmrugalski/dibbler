@@ -14,6 +14,7 @@
   - Srv: NIS, NIS+, SIP, DNS, Domain, NTP and Lifetime options are now handled through
     unified option handling mechanism. Server code should be smaller now.
   - Cli: support for resolvconf tool added (see --enable-resolvconf parameter)
+  - Srv: out-of-pool reservations now use T1,T2,preferred,valid times from the interface
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

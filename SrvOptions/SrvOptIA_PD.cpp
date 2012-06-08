@@ -406,7 +406,6 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         // there's no reserved prefix for this lad
         return false;
     } 
-    Log(Debug) << "Assigning fixed lease" << LogEnd;
     
     // we've got fixed prefix, yay! Let's try to calculate its preferred and valid lifetimes
     SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
@@ -419,6 +418,11 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     // if the lease is not within normal range, treat it as fixed, infinite one
     uint32_t pref = DHCPV6_INFINITY;
     uint32_t valid = DHCPV6_INFINITY;
+    SPtr<TSrvOptIAPrefix> hint = (Ptr*) req->getOption(OPTION_IAPREFIX);
+    if (hint) {
+        pref = hint->getPref();
+        valid = hint->getValid();
+    }
     
     SPtr<TSrvCfgPD> pool;
     iface->firstPD();
@@ -430,12 +434,6 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
         // we found matching pool! Yay!
         T1_ = pool->getT1(req->getT1());
         T2_ = pool->getT2(req->getT2());
-
-        SPtr<TSrvOptIAPrefix> hint = (Ptr*) req->getOption(OPTION_IAPREFIX);
-        if (hint) {
-            pref = hint->getPref();
-            valid = hint->getValid();
-        }
         
         pref = pool->getPrefered(pref);
         valid = pool->getValid(valid);
@@ -456,6 +454,10 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     }
     
     // This address does not belong to any pool. Assign it anyway
+    T1_ = iface->getT1(req->getT1());
+    T2_ = iface->getT2(req->getT2());
+    pref = iface->getPref(pref);
+    valid = iface->getValid(valid);
     Log(Info) << "Reserved out-of-pool address " << reservedPrefix->getPlain()
               << static_cast<unsigned int>(ex->getPrefixLen()) << " for this client found, assigning." << LogEnd;
     SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(reservedPrefix, ex->getPrefixLen(), pref, valid, Parent);

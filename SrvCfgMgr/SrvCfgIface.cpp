@@ -470,11 +470,19 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     Unicast_       = opt->getUnicast();
     LeaseQuery_    = opt->getLeaseQuerySupport();
 
+    T1Min_    = opt->getT1Beg();
+    T1Max_    = opt->getT1End();
+    T2Min_    = opt->getT2Beg();
+    T2Max_    = opt->getT2End();
+    PrefMin_  = opt->getPrefBeg();
+    PrefMax_  = opt->getPrefEnd();
+    ValidMax_ = opt->getValidBeg();
+    ValidMax_ = opt->getValidEnd();
+
     if (opt->supportFQDN()){
         UnknownFQDN_ = opt->getUnknownFQDN();
         FQDNDomain_  = opt->getFQDNDomain();
 
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
         setFQDNLst(opt->getFQDNLst());
         FQDNMode_ = opt->getFQDNMode();
 
@@ -491,9 +499,6 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
         case DNSUPDATE_MODE_BOTH:
             Log(Cont) << "server will perform both (AAAA and PTR) updates." << LogEnd;
         }
-#else
-        Log(Error) << "DNSUpdate is disabled (please recompile)." << LogEnd;
-#endif
         Log(Debug) <<"FQDN: RevDNS zoneroot lenght set to " << getRevDNSZoneRootLength()<< "." << LogEnd;
     }
 
@@ -538,6 +543,15 @@ void TSrvCfgIface::setDefaults() {
 
     FQDNMode_ = DNSUPDATE_MODE_NONE;
     UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
+
+    T1Min_    = SERVER_DEFAULT_MIN_T1;
+    T1Max_    = SERVER_DEFAULT_MAX_T1;
+    T2Min_    = SERVER_DEFAULT_MIN_T2;
+    T2Max_    = SERVER_DEFAULT_MAX_T2;
+    PrefMin_  = SERVER_DEFAULT_MIN_PREF;
+    PrefMax_  = SERVER_DEFAULT_MAX_PREF;
+    ValidMin_ = SERVER_DEFAULT_MIN_VALID;
+    ValidMax_ = SERVER_DEFAULT_MAX_VALID;
 }
 
 void TSrvCfgIface::setNoConfig() {
@@ -950,4 +964,30 @@ void TSrvCfgIface::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
     while(ptrPD = SrvCfgPDLst_.get()){
         ptrPD->mapAllowDenyList(clientClassLst);
     }
+}
+
+
+uint32_t TSrvCfgIface::chooseTime(uint32_t min, uint32_t max, uint32_t proposal)
+{
+    if (proposal < min)
+        return min;
+    if (proposal > max)
+        return max;
+    return proposal;
+}
+
+uint32_t TSrvCfgIface::getT1(uint32_t proposal) {
+    return chooseTime(T1Min_, T1Max_, proposal);
+}
+
+uint32_t TSrvCfgIface::getT2(uint32_t proposal) {
+    return chooseTime(T2Min_, T2Max_, proposal);
+}
+
+uint32_t TSrvCfgIface::getPref(uint32_t proposal) {
+    return chooseTime(PrefMin_, PrefMax_, proposal);
+}
+
+uint32_t TSrvCfgIface::getValid(uint32_t proposal) {
+    return chooseTime(ValidMin_, ValidMax_, proposal);
 }
