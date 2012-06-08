@@ -479,6 +479,75 @@ TEST_F(ServerTest, SARR_inpool_reservation) {
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
 }
 
+TEST_F(ServerTest, SARR_inpool_reservation_negative) {
+
+    // check that an interface was successfully selected
+    string cfg = "iface REPLACE_ME {\n"
+        "  t1 1000\n"
+        "  t2 2000\n"
+        "  preferred-lifetime 3000\n"
+        "  valid-lifetime 4000\n"
+        "  class { pool 2001:db8:123::/64 }\n"
+        "  client duid 00:01:00:00:00:00:00:00:00 {\n" // not our DUID
+        "    address 2001:db8:123::babe\n"
+        "  }\n"
+        "}\n";
+
+    ASSERT_TRUE( createMgrs(cfg) );
+
+    // now generate SOLICIT
+    SPtr<TSrvMsgSolicit> sol = createSolicit();
+    sol->addOption((Ptr*)clntId_); // include client-id
+    sol->addOption((Ptr*)ia_); // include IA_NA
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
+    SPtr<TIPv6Addr> addr = new TIPv6Addr("2001:db8:123::babe", true);
+    SPtr<TSrvOptIAAddress> optAddr = new TSrvOptIAAddress(addr, 1000, 2000, &(*sol));
+    ia_->addOption((Ptr*)optAddr);
+
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    ASSERT_TRUE(adv); // check that there is an ADVERTISE response
+
+    SPtr<TSrvOptIA_NA> rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
+
+    SPtr<TSrvOptIAAddress> rcvOptAddr = (Ptr*)rcvIA->getOption(OPTION_IAADDR);
+    ASSERT_TRUE(rcvOptAddr);
+    cout << "Requested " << addr->getPlain() << ", received " << rcvOptAddr->getAddr()->getPlain() << endl;
+
+    if (addr->getPlain() == rcvOptAddr->getAddr()->getPlain()) {
+        ADD_FAILURE() << "Assigned address that was reserved for someone else.";
+    }
+
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::babe", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::babe", true);
+
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
+
+    cout << "REQUEST" << endl;
+
+    // now generate REQUEST
+    SPtr<TSrvMsgRequest> req = createRequest();
+    req->addOption((Ptr*)clntId_);
+    req->addOption((Ptr*)ia_);
+    ia_->setIAID(100);
+    ia_->setT1(101);
+    ia_->setT2(102);
+
+    ASSERT_TRUE(adv->getOption(OPTION_SERVERID));
+    req->addOption(adv->getOption(OPTION_SERVERID));
+
+    // ... and get REPLY from the server
+    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    ASSERT_TRUE(reply);
+
+    rcvIA = (Ptr*) reply->getOption(OPTION_IA_NA);
+    ASSERT_TRUE(rcvIA);
+
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
+}
+
 TEST_F(ServerTest, SARR_outpool_reservation) {
 
     // check that an interface was successfully selected
