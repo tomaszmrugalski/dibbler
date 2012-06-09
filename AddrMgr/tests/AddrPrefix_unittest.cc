@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace {
+namespace test {
 
 TEST(AddrPrefixTest, constructor) {
     SPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::abcd", true);

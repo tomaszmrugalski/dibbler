@@ -2,7 +2,7 @@
 #include <AddrMgr.h>
 #include <gtest/gtest.h>
 
-namespace {
+namespace test {
 
     class AddrMgrTest : public ::testing::Test {
     public:

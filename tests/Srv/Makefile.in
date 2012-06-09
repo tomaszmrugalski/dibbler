@@ -50,8 +50,10 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_GTEST_TRUE@am__EXEEXT_1 = Srv_tests$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
-am__Srv_tests_SOURCES_DIST = run_tests.cpp assign_unittest.cc
+am__Srv_tests_SOURCES_DIST = run_tests.cpp assign_utils.cc \
+	assign_utils.h assign_unittest.cc
 @HAVE_GTEST_TRUE@am_Srv_tests_OBJECTS = run_tests.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	assign_utils.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	assign_unittest.$(OBJEXT)
 Srv_tests_OBJECTS = $(am_Srv_tests_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -99,6 +101,22 @@ CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 AM_V_CXXLD = $(am__v_CXXLD_$(V))
 am__v_CXXLD_ = $(am__v_CXXLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CXXLD_0 = @echo "  CXXLD " $@;
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_$(V))
+am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
+am__v_CC_0 = @echo "  CC    " $@;
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_$(V))
+am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
+am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
@@ -249,7 +267,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 	-I$(top_srcdir)/Messages -I$(top_srcdir)/SrvMessages \
 	-I$(top_srcdir)/SrvTransMgr -I$(top_srcdir)/Misc \
 	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
-@HAVE_GTEST_TRUE@Srv_tests_SOURCES = run_tests.cpp assign_unittest.cc
+@HAVE_GTEST_TRUE@Srv_tests_SOURCES = run_tests.cpp assign_utils.cc \
+@HAVE_GTEST_TRUE@	assign_utils.h assign_unittest.cc
 @HAVE_GTEST_TRUE@Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@Srv_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvTransMgr/libSrvTransMgr.a \
@@ -320,6 +339,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assign_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assign_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:
