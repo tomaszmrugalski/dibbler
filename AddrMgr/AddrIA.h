@@ -64,7 +64,6 @@ class TAddrIA
     void addAddr(SPtr<TAddrAddr> x);
     void addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid);
     void addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix);
-    int getAddrCount();
 
     //--- prefix list related methods ---
     void firstPrefix();
@@ -72,7 +71,7 @@ class TAddrIA
 
     void addPrefix(SPtr<TAddrPrefix> x);
     void addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int length);
-    int getPrefixCount();
+    int countPrefix();
     bool delPrefix(SPtr<TAddrPrefix> x);
     bool delPrefix(SPtr<TIPv6Addr> x);
 

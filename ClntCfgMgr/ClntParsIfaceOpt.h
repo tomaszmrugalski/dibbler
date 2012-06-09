@@ -17,7 +17,7 @@
 #include "DHCPConst.h"
 #include "Container.h"
 #include "ClntParsIAOpt.h"
-#include "StationID.h"
+#include "HostID.h"
 #include "IPv6Addr.h"
 #include "ClntOptVendorSpec.h"
 

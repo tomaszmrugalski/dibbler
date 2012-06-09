@@ -37,6 +37,7 @@
 #include "OptVendorData.h"
 #include "OptIAAddress.h"
 #include "OptIAPrefix.h"
+#include "DNSUpdate.h"
 
 using namespace std;
 
@@ -137,12 +138,11 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     return (sock->send(msg,size,addr,port));
 }
 
-/**
- * reads messages from all interfaces
- * it's wrapper around IfaceMgr::select(...) method
- * @param timeout - how long can we wait for packets?
- * returns SPtr to message object
- */
+// @brief reads messages from all interfaces
+// it's wrapper around IfaceMgr::select(...) method
+//
+// @param timeout how long can we wait for packets (in seconds)
+// @return message object (or NULL)
 SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     // static buffer speeds things up
@@ -168,7 +168,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         SPtr<TSrvIfaceIface> ptrIface;
 
         // get interface
-        ptrIface = (Ptr*)this->getIfaceBySocket(sockid);
+        ptrIface = (Ptr*)getIfaceBySocket(sockid);
 
         Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
                    << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
@@ -187,7 +187,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         case INFORMATION_REQUEST_MSG:
         case LEASEQUERY_MSG:
         {
-            ptr = this->decodeMsg(ptrIface, peer, buf, bufsize);
+            ptr = decodeMsg(ptrIface, peer, buf, bufsize);
             if (!ptr->validateReplayDetection() ||
                 !ptr->validateAuthInfo(buf, bufsize)) {
                 Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
@@ -197,7 +197,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         }
         case RELAY_FORW_MSG:
         {
-            ptr = this->decodeRelayForw(ptrIface, peer, buf, bufsize);
+            ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
             if (!ptr)
                 return 0;
             if (!ptr->validateReplayDetection() ||
@@ -223,7 +223,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     }
 }
 
-bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex, 
+bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
                               SPtr<TSrvOptInterfaceID> interfaceID) {
     SPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
     if (!under) {
@@ -314,7 +314,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
             buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
 
             if (len > bufsize) {
-                Log(Warning) << "Truncated option " << code << ": " << bufsize 
+                Log(Warning) << "Truncated option " << code << ": " << bufsize
                              << " bytes remaining, but length is " << len
                              << "." << LogEnd;
                 return 0;
@@ -523,10 +523,132 @@ void TSrvIfaceMgr::instanceCreate( const std::string xmlDumpFile )
 TSrvIfaceMgr & TSrvIfaceMgr::instance()
 {
     if (!Instance) {
-        Log(Crit) << "SrvIfaceMgr not create yet. Application error. Emergency shutdown." << LogEnd;
+        Log(Crit) << "SrvIfaceMgr not create yet. Application error. Emergency shutdown."
+                  << LogEnd;
         exit(EXIT_FAILURE);
     }
     return *Instance;
+}
+
+bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr,
+                           const std::string& name) {
+
+    bool success = true;
+
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
+    if (!cfgIface) {
+        Log(Error) << "Unable find cfgIface with ifindex=" << iface << ", DDNS failed."
+                   << LogEnd;
+        return false;
+    }
+
+    DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
+
+    TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+    DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+    if (proto == TCfgMgr::DNSUPDATE_UDP)
+        proto2 = DNSUpdate::DNSUPDATE_UDP;
+    if (proto == TCfgMgr::DNSUPDATE_ANY)
+        proto2 = DNSUpdate::DNSUPDATE_ANY;
+    unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+
+    // FQDNMode: 0 = NONE, 1 = PTR only, 2 = BOTH PTR and AAAA
+    if ((FQDNMode == DNSUPDATE_MODE_PTR) || (FQDNMode == DNSUPDATE_MODE_BOTH)) {
+        //Test for DNS update
+        char zoneroot[128];
+        doRevDnsZoneRoot(addr->getAddr(), zoneroot, cfgIface->getRevDNSZoneRootLength());
+        /* add PTR only */
+        DnsUpdateResult result = DNSUPDATE_SKIP;
+        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
+                                       DNSUPDATE_PTR, proto2);
+        result = act->run(timeout);
+        act->showResult(result);
+        delete act;
+
+        success = (result == DNSUPDATE_SUCCESS);
+    }
+
+    if (FQDNMode == 2) {
+        DnsUpdateResult result = DNSUPDATE_SKIP;
+        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name,
+                                       addr->getPlain(),
+                                       DNSUPDATE_AAAA, proto2);
+        result = act->run(timeout);
+        act->showResult(result);
+        delete act;
+        success = (result == DNSUPDATE_SUCCESS) && success;
+    }
+#else
+    Log(Info) << "DNSUpdate not compiled in. Pretending success." << LogEnd;
+#endif
+
+    return success;
+}
+
+bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr,
+                           const std::string& name) {
+
+    bool success = true;
+
+#ifndef MOD_SRV_DISABLE_DNSUPDATE
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
+    if (!cfgIface) {
+        Log(Error) << "Unable find cfgIface with ifindex=" << iface << ", DDNS failed."
+                   << LogEnd;
+        return false;
+    }
+
+    DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
+    char zoneroot[128];
+    doRevDnsZoneRoot(addr->getAddr(), zoneroot, cfgIface->getRevDNSZoneRootLength());
+
+    // that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
+    // and that would include both poslib and Dibbler headers in one place. Universe would
+    // implode then.
+    TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+    DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+    if (proto == TCfgMgr::DNSUPDATE_UDP)
+        proto2 = DNSUpdate::DNSUPDATE_UDP;
+    if (proto == TCfgMgr::DNSUPDATE_ANY)
+        proto2 = DNSUpdate::DNSUPDATE_ANY;
+    unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+
+    // FQDNMode: 0 = NONE, 1 = PTR only, 2 = BOTH PTR and AAAA
+    if ((FQDNMode == DNSUPDATE_MODE_PTR) || (FQDNMode == DNSUPDATE_MODE_BOTH)) {
+        /* PTR cleanup */
+        Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server "
+                    << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
+                    << " and FQDN=" << name << LogEnd;
+        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
+                                       DNSUPDATE_PTR_CLEANUP, proto2);
+        int result = act->run(timeout);
+        act->showResult(result);
+        delete act;
+        success = (result == DNSUPDATE_SUCCESS);
+    }
+
+    if (FQDNMode == DNSUPDATE_MODE_BOTH) {
+        /* AAAA Cleanup */
+        Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server "
+                    << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
+                    << " and FQDN=" << name << LogEnd;
+
+        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name, addr->getPlain(),
+                                       DNSUPDATE_AAAA_CLEANUP, proto2);
+        int result = act->run(timeout);
+        act->showResult(result);
+        delete act;
+
+        success = (result == DNSUPDATE_SUCCESS) && success;
+
+    }
+#else
+    Log(Info) << "DNSUpdate not compiled in. Pretending success." << LogEnd;
+#endif
+
+    return success;
+
 }
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {

@@ -101,8 +101,8 @@ class TSrvCfgPD
     unsigned long ID_;
     static unsigned long StaticID_;
 
-    List(TStationRange) PoolLst_;
-    SPtr<TStationRange> CommonPool_; /* common part of all available prefix pools (section b in the description above) */
+    List(THostRange) PoolLst_;
+    SPtr<THostRange> CommonPool_; /* common part of all available prefix pools (section b in the description above) */
     unsigned long PD_MaxLease_;
     unsigned long PD_Assigned_;
     unsigned long PD_Count_;

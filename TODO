@@ -1,24 +1,44 @@
 
  Dibbler code TODO
 -------------------
+
+Note: This is a scratchpad. It just happens to be available with the rest of the code.
+
+Important:
+- Implement 8 step lease assignment algorithm (done for IA_NA, todo for IA_PD)
+- Implement support for fixed leases: (see dibbler-devel-06-arch 6.6.2)  
+
+- Srv: Implement access control for PD
+
+- Expressions (options, client-id, ...)
+- DNS Update(delete) after expiration
+
+- Common option parsing
+
+
+Refactor:
+- remove Msg* in TOpt
+- remove many SrvOpt and ClntOpt classes
+- rename TSrvOptTA to TSrvOptIA_TA
+
 tentative plans for 0.9.0:
+- DNS Updates: UDP support [DONE]
 - add cppcheck to make devel
-- DNS Updates: UDP support
 - DNS Updates: DHC ID record (RFC4701)
 - DNS Updates: conflict resolution (RFC4703)
 - DNS Updates: security (TSIG)
 - Support for subscriber-id (bug 209)
 - Support for storing remote-id, subscriber-id in server-cache.xml
 - Reconfigure
-- BSD support
-- Routing configuration
+- BSD support [done]
+- Routing configuration [done]
 - Universal system for handling new (custom) options
 
 1.0.0
 - Received options are stored in /var/lib/dibbler/option-{option-name}.
   This MUST be done for ALL options. Also, it MUST add interface name
   to those file names.
-- Implement support for SNTP option (RFC4075)
+- Implement support for SNTP option (RFC4075 replacement)
 - remaining RFC3315 features (M,O bits)
 - Bulk Leasequery
 - Fix references in User's guide
@@ -29,7 +49,6 @@ tentative plans for 0.9.0:
 - Mac OS: create dmg package for easier installation
 - accept "option domain-name" besides "option domain"
 - RFC3315, 9.1 duid length is no longer than 128 octets
-- Srv: Implement access control for PD
 - Add sanity length checks in Options constructors
 - Remove setDUID() method from TOpt()
 - Implement support for Client vendor class options
@@ -178,15 +197,6 @@ New tasks should be added to the TODO list. After task is implemented, it should
  ---------------
 Netboot: https://datatracker.ietf.org/doc/draft-ietf-dhc-dhcpv6-opt-netboot/
 DS-Lite tunnel: https://datatracker.ietf.org/doc/draft-ietf-softwire-ds-lite-tunnel-option/
-
-
-
-  INFO
- ------
-- Linux kernel does not support finite lifetimes: kernel sources:
-   addrconf.c:  inet6_rtm_newaddr() :1579, functions ipv6_add_addr and in ndisc.c:ndisc_router_discovery
-
-
 
  REDESIGN IDEAS
 ----------------

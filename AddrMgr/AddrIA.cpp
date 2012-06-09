@@ -213,11 +213,6 @@ int TAddrIA::delAddr(SPtr<TIPv6Addr> addr)
     return -1;
 }
 
-int TAddrIA::getAddrCount()
-{
-    return this->AddrLst.count();
-}
-
 // --------------------------------------------------------------------
 // --- prefix related methods -----------------------------------------
 // --------------------------------------------------------------------
@@ -241,7 +236,7 @@ void TAddrIA::addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long 
     PrefixLst.append(ptr);
 }
 
-int TAddrIA::getPrefixCount()
+int TAddrIA::countPrefix()
 {
     return this->PrefixLst.count();
 }

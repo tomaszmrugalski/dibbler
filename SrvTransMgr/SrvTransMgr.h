@@ -33,7 +33,6 @@ class TSrvTransMgr
     static TSrvTransMgr &instance();
 
     bool openSocket(SPtr<TSrvCfgIface> confIface);
-    SPtr<TSrvMsg> getCurrentRequest();
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
@@ -43,9 +42,11 @@ class TSrvTransMgr
     bool isDone();
     void shutdown();
 
+#if 0
     SPtr<TSrvOptFQDN> addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
                               SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
     void removeFQDN(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
+#endif
 
     void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
@@ -67,9 +68,9 @@ class TSrvTransMgr
     bool IsDone;
 
     int ctrlIface;
-    char ctrlAddr[48];
+    char ctrlAddr[48]; // @todo: WTF is that? It should be TIPv6Addr
 
-    SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
+    //SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
 
     static TSrvTransMgr * Instance;
 };

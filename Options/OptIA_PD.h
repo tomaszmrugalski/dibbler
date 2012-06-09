@@ -20,12 +20,14 @@ class TOptIA_PD : public TOpt
     size_t getSize();
     int getStatusCode();
 
-
-    uint32_t getIAID();
-    uint32_t getT1();
-    uint32_t getT2();
-    uint32_t getMaxValid();
+    uint32_t getIAID() const;
+    uint32_t getT1() const;
+    uint32_t getT2() const;
     int countPrefixes();
+
+    void setT1(uint32_t t1);
+    void setT2(uint32_t t2);
+    void setIAID(uint32_t iaid);
 
     char * storeSelf( char* buf);
     bool isValid();

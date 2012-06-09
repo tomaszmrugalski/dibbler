@@ -142,13 +142,44 @@ must be properly configured to support such traffic. See section
 \ref{example-server-relay2} for details about server configuration and
 section \ref{example-relay-cascade} for example relays configuration.
 
+\subsection{Address and prefix assignment policy}
+
+Address and prefix assignment routines has been rewritten after 0.8.1
+was released. It currently follows this algorithm:
+
+\begin{enumerate}
+\item Client classification is performed (a class is assigned to a client)
+\item Client access control is performed (hosts listed on black-list are rejected,
+  if any; if there is white-list defined, host must be on that list,
+  otherwise it is rejected)
+\item If existing lease this client/ia exists, it is assigned again
+  (e.g. after host reboot)
+\item Fixed lease is searched (using per-client configuration or so
+  called exception mechanism). If found, this fixed lease is assigned.
+\item max-client-leases is checked. If client already has maximum
+  number of leases, further leases are declined.
+\item Server checks if there is cached (i.e. previously assinged, but
+  later released or expired) lease for this client. It is assigned, if
+  possible.
+\item Server checks if client sent any hints in SOLICIT or REQUEST
+  message. Server tries to assign requested address or prefix. If this lease cannot be
+  assinged for any reason, server tries to assign similar lease
+  (i.e. from the same pool if client's hint was within supporte
+  pool).
+\item Otherwise, if all of above steps fails, server assigns a random
+  address or prefix from supported pools.
+\end{enumerate}
+
+This algorithm is supported for non-temporary addresses and
+prefixes. It is not supported for temporary addresses.
+
 \subsection{Routing configuration}
 \label{feature-routing}
 Until recently, DHCPv6 protocol did not define a way to provision
-routing configuration information to clients and relay or Router
-Advertisment mechanism of Neighbor Discovery
-protocol \cite{rfc4862}. While that approach works, it brings a number
-of drawbacks. In particular:
+routing configuration information to clients. The only way to deliver
+this information to hosts was to use Router Advertisment mechanism in
+Neighbor Discovery protocol \cite{rfc4862}. While that approach works,
+it brings a number of drawbacks. In particular:
 \begin{enumerate}
 \item RA sent by router affects all hosts in a network. There is no
 way to differentiate this information on a per host basis. There is no
@@ -1207,11 +1238,9 @@ department in a corporate network may be configured to be in a
 different subdomain. Is is possible to specify that for particular
 client different configuration options should be provided. Each client
 is identified by its DUID. This mechanism is called \emph{per client
-  configuration}, but it is sometimes referred to as \emph{exceptions}.
-
-Note: This mechanism does not apply to prefix granting. Prefix
-delegation reservation will be implemented at a later date. If you
-need this feature, please contact author.
+  configuration}, but it is sometimes referred to as
+\emph{exceptions}. Support for per client prefix configuration has
+been added in 0.8.2RC1.
 
 See section \ref{example-server-exceptions} for server configuration
 examples.

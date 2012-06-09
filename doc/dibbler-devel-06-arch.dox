@@ -134,4 +134,39 @@ consists of serveral simple blocks:
 
 @todo
 
+@section archAlgo 6.6 Algorithms
+
+@section archAlgoLeaseAssignment 6.6.1 Lease assignment policy
+
+1. Client classification is performed (a class is assigned to a client) 
+  (see NodeClientSpecific::analyseMessage(msg) in void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg))
+
+2. black-list, white-list (TSrvCfgMgr::isClntSupported() called from TSrvTransMgr::relayMsg() )
+3. Check if there is existing lease for this client/ia. If there is, assign it. 
+   (TSrvOptIA_NA::renew() called from TSrvOptIA_NA::TSrvOptIA_NA() )
+4. Check if there is reserved address/prefix defined for this client. If it is, 
+   assign it (fixed-lease or "exception") (TSrvOptIA_NA::assignFixedLease() 
+   called from TSrvOptIA_NA::TSrvOptIA_NA() )
+5. Check if client didn't exceed max-client-leases (see code in TSrvOptIA_NA::TSrvOptIA_NA())
+6. See if there is a lease that was assigned previously (cache) (TSrvOptIA_NA::assignCachedAddr()
+   called from  TSrvOptIA_NA::TSrvOptIA_NA())
+7. See if client sent a hint and try to assign it, if possible. If requested 
+   address is not available, try to assign similar address (i.e. from the pool 
+   that hint belongs to). (TSrvOptIA_NA::assignRequestedAddr() called from 
+   TSrvOptIA_NA::TSrvOptIA_NA())
+8. randomly assign a new lease (TSrvOptIA_NA::assignRandomAddr() called from TSrvOptIA_NA::TSrvOptIA_NA())
+
+@section archAlgoFixedLease 6.6.2 Fixed lease management
+
+1. Old database is read when server starts.
+2. Existing leases are confirmed against current configuration. Invalid 
+   leases are removed.
+
+The following steps are somewhat not feasible as there may be reservations for remote-id 
+or subscriber-id (or mac address) 
+
+// 3. List of fixed leases is created, based on configuration.
+// 4. An attempt to add each fixed lease to DB is tried. If lease
+//   is already in DB, addition is skipped. Leases are marked as fixed.
+
 */

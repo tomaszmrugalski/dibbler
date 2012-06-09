@@ -133,6 +133,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -237,7 +238,9 @@ noinst_LIBRARIES = libSrvAddrMgr.a
 libSrvAddrMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvCfgMgr \
 	-I$(top_srcdir)/CfgMgr -I$(top_srcdir)/Options \
-	-I$(top_srcdir)/SrvOptions
+	-I$(top_srcdir)/SrvOptions -I$(top_srcdir)/IfaceMgr \
+	-I$(top_srcdir)/SrvIfaceMgr -I$(top_srcdir)/SrvMessages \
+	-I$(top_srcdir)/Messages
 libSrvAddrMgr_a_SOURCES = SrvAddrMgr.cpp SrvAddrMgr.h
 all: all-am
 

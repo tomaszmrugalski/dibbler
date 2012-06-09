@@ -32,7 +32,9 @@ public:
     TIPv6Addr operator-(const TIPv6Addr &other);
     TIPv6Addr operator+(const TIPv6Addr &other);
     TIPv6Addr& operator--();
+    TIPv6Addr& operator++();
     bool operator==(const TIPv6Addr &other);
+    bool operator!=(const TIPv6Addr &other);
     bool operator<=(const TIPv6Addr &other);
     void truncate(int minPrefix, int maxPrefix);
     void shiftL(int bits);

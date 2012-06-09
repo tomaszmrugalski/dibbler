@@ -185,6 +185,7 @@ typedef enum {
 #define OPTION_INFORMATION_REFRESH_TIME_LEN         4
 
 // --- Status Codes ---
+/// @todo: convert this to enum
 #define STATUSCODE_SUCCESS          0
 #define STATUSCODE_UNSPECFAIL       1
 #define STATUSCODE_NOADDRSAVAIL     2

@@ -25,7 +25,9 @@ if HAVE_GTEST
 TESTS += Srv_tests
 
 Srv_tests_SOURCES = run_tests.cpp
-Srv_tests_SOURCES += assign_unittest.cc
+Srv_tests_SOURCES += assign_utils.cc assign_utils.h
+Srv_tests_SOURCES += assign_addr_unittest.cc assign_prefix_unittest.cc
+Srv_tests_SOURCES += options_unittest.cc
 
 Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 

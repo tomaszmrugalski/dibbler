@@ -44,6 +44,9 @@ class TSrvIfaceMgr :public TIfaceMgr {
    
    // ---receives messages---
    SPtr<TSrvMsg> select(unsigned long timeout);
+
+   bool addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr, const std::string& domainname);
+   bool delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr, const std::string& domainname);
    
    void redetectIfaces();
    

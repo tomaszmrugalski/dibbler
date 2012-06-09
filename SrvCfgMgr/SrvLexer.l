@@ -87,7 +87,9 @@ client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;  }
 client              { return SrvParser::CLIENT_; }
 duid                { return SrvParser::DUID_KEYWORD_; }
 remote-id           { return SrvParser::REMOTE_ID_; }
+link-local					{ return SrvParser::LINK_LOCAL_; }
 address             { return SrvParser::ADDRESS_;}
+prefix              { return SrvParser::PREFIX_; }
 guess-mode          { return SrvParser::GUESS_MODE_; }
 
 option              { return SrvParser::OPTION_; }
