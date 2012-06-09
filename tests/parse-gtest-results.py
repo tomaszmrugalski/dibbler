@@ -48,7 +48,7 @@ execTimeCnt = 0.0
 dirList = os.listdir(".")
 for fname in dirList:
     #print(fname)
-    if (fname.count(".") == 0):
+    if (fname.count(".") != 1):
         continue
     name,ext = fname.split('.')
     if (ext != "xml"):
@@ -63,5 +63,5 @@ for fname in dirList:
     totalCnt += total
     execTimeCnt = execTime
 
-print("Passed:%d Failed:%d Disabled:%d Errors:%d Total:%d execTime:%f"
+print("%d:%d:%d:%d:%d:%f"
       % (passedCnt, failedCnt, disabledCnt, errorsCnt, totalCnt, execTimeCnt))
