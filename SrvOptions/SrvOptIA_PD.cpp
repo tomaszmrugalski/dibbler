@@ -202,7 +202,7 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
 /// @param msgType message type of client request
 /// @param parent 
 TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, TMsg* parent)
-    :TOptIA_PD(queryOpt->getIAID(), DHCPV6_INFINITY, DHCPV6_INFINITY, parent)
+    :TOptIA_PD(queryOpt->getIAID(), queryOpt->getT1(), queryOpt->getT2(), parent)
 {
     int msgType = clientMsg->getType();
     ClntDuid  = clientMsg->getClientDUID();

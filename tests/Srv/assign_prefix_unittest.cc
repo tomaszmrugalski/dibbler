@@ -14,74 +14,46 @@ using namespace std;
 
 namespace test {
 
-
-TEST_F(ServerTest, CfgMgr_options1) {
-
-    string cfg = "iface REPLACE_ME {\n"
-                 "  class { pool 2001:db8:1111::/64 }\n"
-                 "  option nis-server 2000::400,2000::401,2000::404,2000::405,2000::406\n"
-                 "  option nis-domain nis.example.com\n"
-                 "  option nis+-server 2000::501,2000::502\n"
-                 "  option nis+-domain nisplus.example.com\n"
-                 "}\n";
-
-    ASSERT_TRUE( createMgrs(cfg) );
-
-    // check that NIS-SERVERS option is handled properly
-    SPtr<TOptAddrLst> opt = (Ptr*)cfgIface_->getExtraOption(OPTION_NIS_SERVERS);
-    ASSERT_TRUE(opt); // check that NIS-servers are supported
-    List(TIPv6Addr) addrLst = opt->getAddrLst();
-
-    ASSERT_EQ(5, addrLst.count());
-    addrLst.first();
-
-    EXPECT_EQ(string("2000::400"), addrLst.get()->getPlain());
-    EXPECT_EQ(string("2000::401"), addrLst.get()->getPlain());
-    EXPECT_EQ(string("2000::404"), addrLst.get()->getPlain());
-    EXPECT_EQ(string("2000::405"), addrLst.get()->getPlain());
-    EXPECT_EQ(string("2000::406"), addrLst.get()->getPlain());
-    EXPECT_FALSE(addrLst.get()); // no additional addresses
-}
-
-TEST_F(ServerTest, SARR_single_class) {
+TEST_F(ServerTest, SARR_prefix_single_class) {
 
     // check that an interface was successfully selected
     string cfg = "iface REPLACE_ME {\n"
-                 "  class { pool 2001:db8:123::/64 }\n"
-                 "}\n";
+        "  pd-class {\n"
+        "    pd-pool 2001:db8:123::/48\n"
+        "    pd-length 64\n"
+        "  }\n"
+        "}\n";
 
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate SOLICIT
     SPtr<TSrvMsgSolicit> sol = createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)ia_); // include IA_NA
+    sol->addOption((Ptr*)pd_); // include IA_PD
 
-    ia_->setIAID(100);
-    ia_->setT1(101);
-    ia_->setT2(102);
+    pd_->setIAID(100);
+    pd_->setT1(101);
+    pd_->setT2(102);
 
     SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
 
-    SPtr<TSrvOptIA_NA> rcvIA = (Ptr*) adv->getOption(OPTION_IA_NA);
-    ASSERT_TRUE(rcvIA);
+    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    ASSERT_TRUE(rcvPD);
 
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
-    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123:ffff:ffff:ffff:ffff:ffff", true);
 
-    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
-
-    cout << "REQUEST" << endl;
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID, 64) );
 
     // now generate REQUEST
     SPtr<TSrvMsgRequest> req = createRequest();
     req->addOption((Ptr*)clntId_);
-    req->addOption((Ptr*)ia_);
+    req->addOption((Ptr*)pd_);
 
-    ia_->setIAID(100);
-    ia_->setT1(101);
-    ia_->setT2(102);
+    pd_->setIAID(100);
+    pd_->setT1(101);
+    pd_->setT2(102);
 
     ASSERT_TRUE(adv->getOption(OPTION_SERVERID));
     req->addOption(adv->getOption(OPTION_SERVERID));
@@ -90,15 +62,16 @@ TEST_F(ServerTest, SARR_single_class) {
     SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
     ASSERT_TRUE(reply);
 
-    rcvIA = (Ptr*) reply->getOption(OPTION_IA_NA);
-    ASSERT_TRUE(rcvIA);
+    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    ASSERT_TRUE(rcvPD);
 
     // server should return T1 = 101, becasue SERVER_DEFAULT_MIN_T1(5) < 101 < SERVER_DEFAULT_MAX_T1 (3600)
     // server should return T2 = 101, becasue SERVER_DEFAULT_MIN_T1(10) < 102 < SERVER_DEFAULT_MAX_T1 (5400)
-    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID, 64) );
 }
 
-TEST_F(ServerTest, SARR_single_class_params) {
+#if 0
+TEST_F(ServerTest, SARR_prefix_single_class_params) {
 
     // check that an interface was successfully selected
     string cfg = "iface REPLACE_ME {\n"
@@ -153,7 +126,7 @@ TEST_F(ServerTest, SARR_single_class_params) {
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
 }
 
-TEST_F(ServerTest, SARR_inpool_reservation) {
+TEST_F(ServerTest, SARR_prefix_inpool_reservation) {
 
     // check that an interface was successfully selected
     string cfg = "iface REPLACE_ME {\n"
@@ -211,7 +184,7 @@ TEST_F(ServerTest, SARR_inpool_reservation) {
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
 }
 
-TEST_F(ServerTest, SARR_inpool_reservation_negative) {
+TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
 
     // check that an interface was successfully selected
     string cfg = "iface REPLACE_ME {\n"
@@ -280,7 +253,7 @@ TEST_F(ServerTest, SARR_inpool_reservation_negative) {
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
 }
 
-TEST_F(ServerTest, SARR_outpool_reservation) {
+TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
 
     // check that an interface was successfully selected
     string cfg = "iface REPLACE_ME {\n"
@@ -337,6 +310,6 @@ TEST_F(ServerTest, SARR_outpool_reservation) {
 
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 1000, 2000, 3000, 4000));
 }
-
+#endif
 
 }

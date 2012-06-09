@@ -144,8 +144,12 @@ namespace test {
         SPtr<TSrvMsg> sendAndReceive(SPtr<TSrvMsg> clntMsg, int expectedMsgCount = 1);
 
         bool checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
-                        SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1, 
+                        SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1,
                         uint32_t t2, uint32_t pref, uint32_t valid);
+
+        bool checkIA_PD(SPtr<TSrvOptIA_PD> ia, SPtr<TIPv6Addr> minRange,
+                        SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1,
+                        uint32_t t2, uint32_t pref, uint32_t valid, uint8_t prefixLen);
 
         ~ServerTest() {
             delete transmgr_;
