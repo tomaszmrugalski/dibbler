@@ -67,7 +67,7 @@ bool ServerTest::checkIA_PD(SPtr<TSrvOptIA_PD> pd, SPtr<TIPv6Addr> minRange,
         case OPTION_IAPREFIX: {
             SPtr<TSrvOptIAPrefix> optPrefix = (Ptr*)option;
             cout << "Checking received prefix " << optPrefix->getPrefix()->getPlain()
-                 << "/" << optPrefix->getPrefixLength() << endl;
+                 << "/" << (int)optPrefix->getPrefixLength() << endl;
             EXPECT_TRUE( range.in(optPrefix->getPrefix()) );
             EXPECT_EQ(pref, optPrefix->getPref() );
             EXPECT_EQ(valid, optPrefix->getValid() );
