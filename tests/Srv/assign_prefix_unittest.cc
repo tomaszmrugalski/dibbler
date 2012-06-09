@@ -110,7 +110,7 @@ TEST_F(ServerTest, SARR_prefix_single_class_params) {
     // now generate REQUEST
     SPtr<TSrvMsgRequest> req = createRequest();
     req->addOption((Ptr*)clntId_);
-    req->addOption((Ptr*)ia_);
+    req->addOption((Ptr*)pd_);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
@@ -199,7 +199,7 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
         "  valid-lifetime 4000\n"
         "  pd-class {\n"
         "    pd-pool 2001:db8:123::/48\n"
-        "    pd-length 68\n"
+        "    pd-length 56\n"
         "  }\n"
         "  client duid 00:01:00:00:00:00:00:00:00 {\n" // not our DUID
         "    prefix 2002:babe::/68\n"
@@ -230,16 +230,16 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
     ASSERT_TRUE(rcvOptPrefix);
     cout << "Requested " << prefix->getPlain() << "/" << prefixLen
          << ", received " << rcvOptPrefix->getPrefix()->getPlain() << "/"
-         << rcvOptPrefix->getPrefixLength() << endl;
+         << (int)rcvOptPrefix->getPrefixLength() << endl;
 
     if (prefix->getPlain() == rcvOptPrefix->getPrefix()->getPlain()) {
         ADD_FAILURE() << "Assigned address that was reserved for someone else.";
     }
 
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
-    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123:ffff:ffff:ffff:ffff:ffff", true);
 
-    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 64));
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 56));
 
     cout << "REQUEST" << endl;
 
@@ -261,7 +261,7 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
     rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
     ASSERT_TRUE(rcvPD);
 
-    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 64));
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 56));
 }
 
 TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
@@ -274,7 +274,7 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
         "  valid-lifetime 4000\n"
         "  pd-class {\n"
         "    pd-pool 2001:db8:123::/48\n"
-        "    pd-length 66\n"
+        "    pd-length 50\n"
         "  }\n"
         "  client duid 00:01:00:0a:0b:0c:0d:0e:0f {\n"
         "    prefix 2002:babe::/32\n"
@@ -297,10 +297,10 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
     SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
     ASSERT_TRUE(rcvPD);
 
-    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2002::babe", true);
-    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2002::babe", true);
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr("2002:babe::", true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2002:babe::", true);
 
-    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 66));
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 32));
 
     cout << "REQUEST" << endl;
 
@@ -322,7 +322,7 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
     rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
     ASSERT_TRUE(rcvPD);
 
-    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 66));
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 32));
 }
 
 }
