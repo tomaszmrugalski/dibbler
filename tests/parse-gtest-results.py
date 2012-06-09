@@ -3,6 +3,8 @@
 #import easy to use xml parser called minidom:
 from xml.dom.minidom import parseString
 import os
+import sys
+
 
 #<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.059" name="AllTests">
 #  <testsuite name="ServerTest" tests="1" failures="0" disabled="0" errors="0" time="0.053">
@@ -11,6 +13,13 @@ import os
 #</testsuites>
 
 #all these imports are standard on most modern python implementations
+
+if (len(sys.argv) > 1):
+    dir = sys.argv[1]
+else:
+    dir = "."
+
+# print("Looking for XMLs in %s" % dir)
 
 def parseFile(xmlFile):
     #open the xml file for reading:
