@@ -2,6 +2,8 @@
 #include <gtest/gtest.h>
 #include "OptAddrLst.h"
 
+using namespace std;
+
 namespace test {
 
 TEST_F(ServerTest, CfgMgr_options1) {

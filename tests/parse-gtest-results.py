@@ -64,7 +64,7 @@ for fname in dirList:
         continue
     #print("Parsing file %s" % fname)
 
-    (passed, failed, disabled, errors, total, execTime) = parseFile(fname)
+    (passed, failed, disabled, errors, total, execTime) = parseFile(dir + "/" + fname)
     passedCnt += passed
     failedCnt += failed
     disabledCnt += disabled
