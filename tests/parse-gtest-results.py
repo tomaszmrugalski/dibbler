@@ -19,7 +19,7 @@ if (len(sys.argv) > 1):
 else:
     dir = "."
 
-# print("Looking for XMLs in %s" % dir)
+#print("Looking for XMLs in %s" % dir)
 
 def parseFile(xmlFile):
     #open the xml file for reading:
@@ -54,7 +54,7 @@ errorsCnt = 0
 totalCnt = 0
 execTimeCnt = 0.0
 
-dirList = os.listdir(".")
+dirList = os.listdir(dir)
 for fname in dirList:
     #print(fname)
     if (fname.count(".") != 1):
@@ -62,8 +62,8 @@ for fname in dirList:
     name,ext = fname.split('.')
     if (ext != "xml"):
         continue
-    print("Parsing file %s" % fname)
-    
+    #print("Parsing file %s" % fname)
+
     (passed, failed, disabled, errors, total, execTime) = parseFile(fname)
     passedCnt += passed
     failedCnt += failed
