@@ -52,11 +52,12 @@ am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
 am__Srv_tests_SOURCES_DIST = run_tests.cpp assign_utils.cc \
 	assign_utils.h assign_addr_unittest.cc \
-	assign_prefix_unittest.cc
+	assign_prefix_unittest.cc options_unittest.cc
 @HAVE_GTEST_TRUE@am_Srv_tests_OBJECTS = run_tests.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	assign_utils.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	assign_addr_unittest.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	assign_prefix_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	assign_prefix_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	options_unittest.$(OBJEXT)
 Srv_tests_OBJECTS = $(am_Srv_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@Srv_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -271,7 +272,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@Srv_tests_SOURCES = run_tests.cpp assign_utils.cc \
 @HAVE_GTEST_TRUE@	assign_utils.h assign_addr_unittest.cc \
-@HAVE_GTEST_TRUE@	assign_prefix_unittest.cc
+@HAVE_GTEST_TRUE@	assign_prefix_unittest.cc options_unittest.cc
 @HAVE_GTEST_TRUE@Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@Srv_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvTransMgr/libSrvTransMgr.a \
@@ -344,6 +345,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assign_addr_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assign_prefix_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assign_utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/options_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:

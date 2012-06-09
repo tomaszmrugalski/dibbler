@@ -8,7 +8,7 @@ TESTS =
 if HAVE_GTEST
 TESTS += CfgMgr_tests
 
-CfgMgr_tests_SOURCES = run_tests.cpp
+CfgMgr_tests_SOURCES = run_tests.cc
 CfgMgr_tests_SOURCES += HostID_unittest.cc
 CfgMgr_tests_SOURCES += HostRange_unittest.cc
 
