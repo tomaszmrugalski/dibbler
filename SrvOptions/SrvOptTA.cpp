@@ -94,11 +94,10 @@ TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
     SubOptions.append(new TOptStatusCode(statusCode, txt, parent));
 }
 
-/**
- * used in response to SOLICIT message
- *
- * @param queryOpt
- */
+/// @brief constructor used in SOLICIT message (and others)
+///
+/// @param clientMsg client message that we are currently responding to
+/// @param queryOpt specific IA_TA option we are trying to answer now
 void TSrvOptTA::solicit(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt) {
     solicitRequest(clientMsg, queryOpt, true);
 }

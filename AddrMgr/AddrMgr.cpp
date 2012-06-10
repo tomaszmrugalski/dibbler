@@ -56,7 +56,6 @@ TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
  *   version that is available.
  *
  * @param xmlFile filename of the database
- * @param server is this server side (i.e. don't manipulate states)
  *
  */
 void TAddrMgr::dbLoad(const char * xmlFile)
@@ -590,7 +589,7 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
  * @brief parses XML section that defines single client
  *
  * parses XML section that defines single client.
- * That is <AddrClient>...</AddrClient> section.
+ * That is &lt;AddrClient&gt;...&lt;/AddrClient&gt; section.
  *
  * @param xmlFile name of the file being currently read
  * @param f file handle
@@ -730,7 +729,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrTA(const char * xmlFile, FILE *f) {
 /**
  * @brief parses part XML section that represents single PD
  *
- * (section between <AddrPD>...</AddrPD>)
+ * (section between &lt;AddrPD&gt;...&lt;/AddrPD&gt;)
  *
  * @param xmlFile name of the file being currently read
  * @param f file handle
@@ -792,7 +791,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
 /**
  * @brief parses part XML section that represents single IA
  *
- * (section between <AddrIA>...</AddrIA>)
+ * (section between &lt;AddrIA&gt;...&lt;/AddrIA&gt;)
  *
  * @param xmlFile name of the file being currently read
  * @param f file handle
@@ -855,7 +854,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 /**
  * @brief parses single address
  *
- * parses single address that is defined in <AddrAddr> tag.
+ * parses single address that is defined in &lt;AddrAddr&gt; tag.
  *
  * @param xmlFile name of the file being currently read
  * @param buf null terminated buffer that contains string to parse

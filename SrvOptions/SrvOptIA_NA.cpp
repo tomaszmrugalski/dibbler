@@ -42,11 +42,11 @@ TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
 
 /// @brief Creates an IA_NA with option status code.
 ///
-/// @param IAID iaid value to be used.
-/// @param T1 T1 timer value to be used.
-/// @param T2 T2 timer value to be used.
-/// @param Code Status Code (to be set in status code option)
-/// @param Text text to be used in status code option as description
+/// @param iaid iaid value to be used.
+/// @param t1 T1 timer value to be used.
+/// @param t2 T2 timer value to be used.
+/// @param code Status Code (to be set in status code option)
+/// @param text text to be used in status code option as description
 /// @param parent Pointer to parent message.
 TSrvOptIA_NA::TSrvOptIA_NA(long iaid, long t1, long t2, int code,
                            const std::string& text, TMsg* parent)
@@ -203,7 +203,6 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
 /// or is no longer valid (i.e. updated config has different pool definitions).
 /// That is step 6 of lease assignment policy.
 ///
-/// @param queryOpt IA_NA option sent by client
 /// @param quiet should the assignment messages be logged (it shouldn't for solicit)
 ///
 /// @return true, if address was assigned

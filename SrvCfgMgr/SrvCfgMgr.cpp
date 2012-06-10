@@ -650,7 +650,7 @@ bool TSrvCfgMgr::addrReserved(SPtr<TIPv6Addr> addr) {
 
 /// checks if a prefix is reserved (checks all interfaces)
 ///
-/// @param addr
+/// @param prefix prefix to be checked
 ///
 /// @return true if reserved, false otherwise
 bool TSrvCfgMgr::prefixReserved(SPtr<TIPv6Addr> prefix) {

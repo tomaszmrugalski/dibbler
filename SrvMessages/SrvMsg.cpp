@@ -500,6 +500,7 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
 /**
  * creates FQDN option and executes DNS Update procedure (if necessary)
  *
+ * @param iface interface index
  * @param requestFQDN  requested Fully Qualified Domain Name
  * @param clntDuid     client DUID
  * @param clntAddr     client address

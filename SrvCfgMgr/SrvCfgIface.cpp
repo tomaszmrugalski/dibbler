@@ -116,8 +116,8 @@ bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
 ///
 /// @param pfx checked prefix (mandatory)
 /// @param duid Client's duid (mandatory)
-/// @param remoteID (can be NULL)
-/// @param link-local (can be NULL)
+/// @param myRemoteID (can be NULL)
+/// @param linkLocal (can be NULL)
 ///
 /// @return true if reserved for some else, false = not reserved
 bool TSrvCfgIface::checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid,
